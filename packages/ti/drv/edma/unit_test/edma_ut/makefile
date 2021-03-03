@@ -7,7 +7,19 @@ else
 include $(RULES_MAKE)
 endif
 
+BUILD_OS_TYPE = tirtos
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
 APP_NAME = edma_unit_testapp
+CFLAGS_TEST_DEFINES = -DUSE_BIOS
+endif
+ifeq ($(BUILD_OS_TYPE),freertos)
+APP_NAME = edma_freertos_unit_testapp
+CFLAGS_TEST_DEFINES = -DFREERTOS
+endif
 
 #
 # This file is common makefile for building UDMA memcpy test app for both TI-RTOS/baremetal
@@ -20,9 +32,15 @@ INCDIR =
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
+ifeq ($(BUILD_OS_TYPE),tirtos)
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+ifeq ($(BUILD_OS_TYPE),freertos)
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+INCLUDE_EXTERNAL_INTERFACES += freertos
+endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 # Append local auxilia�ry linker command file
@@ -33,7 +51,7 @@ endif
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += main.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

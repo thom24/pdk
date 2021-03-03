@@ -411,6 +411,7 @@ void vPortYield()
     oldSP = (void **)(&pxCurrentTCB->pxTopOfStack);
     vTaskSwitchContext();
     newSP = (void **)(&pxCurrentTCB->pxTopOfStack);
+    _enable_interrupts();
     ti_sysbios_family_c62_TaskSupport_swap__E(oldSP, newSP);
 }
 

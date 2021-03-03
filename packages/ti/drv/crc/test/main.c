@@ -44,8 +44,8 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include "ti/sysbios/BIOS.h"
-#include "ti/sysbios/knl/Task.h"
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 #include "ti/drv/crc/crc.h"
 #include "crc_test.h"
 
@@ -53,7 +53,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -64,19 +64,18 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-
-static void Test_initTask(UArg arg0, UArg arg1);
+static void Test_initTask(void* arg0, void* arg1);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
-static void Test_initTask(UArg arg0, UArg arg1)
+static void Test_initTask(void* arg0, void* arg1)
 {
     int32_t testResult = 0;
     /* Debug Message: */
@@ -241,14 +240,17 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
 int32_t main (void)
 {
-    Task_Params     taskParams;
+    TaskP_Params     taskParams;
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 4*1024;
-    Task_create(Test_initTask, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    /* Start BIOS */
-	BIOS_start();
+    TaskP_create(Test_initTask, &taskParams);
+
+    OS_start();
+
+    return(0);
 }
 

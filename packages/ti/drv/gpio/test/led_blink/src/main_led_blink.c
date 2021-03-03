@@ -42,17 +42,13 @@
  *
  */
 
-
-#ifdef USE_BIOS
-/* XDCtools Header files */
+#if defined (SOC_AM65XX) && defined (USE_BIOS)
+/* Required for UArg definition as the task function for bios is called from
+ * cfg file not using TaskP for AM65xx. */
 #include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
+#endif
 
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#endif /* #ifdef USE_BIOS */
+#include <ti/osal/TaskP.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -93,6 +89,14 @@
 #define DELAY_VALUE       (1)
 #else
 #define DELAY_VALUE       (500U)   /* 500 msec */
+#endif
+
+#define APP_TSK_STACK_MAIN              (0x8000U)
+
+#if defined (USE_BIOS) || defined (FREERTOS)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 #endif
 
 /**********************************************************************
@@ -399,8 +403,13 @@ uint32_t gpioPin;
 /*
  *  ======== test function ========
  */
-#ifdef USE_BIOS
+#if defined (USE_BIOS) || defined (FREERTOS)
+#if defined (SOC_AM65XX) && defined (USE_BIOS)
+/* For AM65xx the task function for bios is called from cfg file not using TaskP. */
 void gpio_test(UArg arg0, UArg arg1)
+#else
+void gpio_test(void* arg0, void* arg1)
+#endif
 {
 #else
 int main()
@@ -487,7 +496,7 @@ int main()
 #endif
 }
 
-#ifdef USE_BIOS
+#if defined (USE_BIOS) || defined (FREERTOS)
 /*
  *  ======== main ========
  */
@@ -502,32 +511,18 @@ int main(void)
 #endif
 
 #if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X)
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+    TaskP_Params taskParams;
 
-    Error_init(&eb);
-	
-    /* Initialize the task params */
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
+    taskParams.priority =2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    /* Set the task priority higher than the default priority (1) */
-    taskParams.priority = 2;
-  #if defined (SOC_TPR12) || defined (SOC_AWR294X)
-    taskParams.stackSize = 4*1024;
-  #else
-    taskParams.stackSize = 0x8000;
-  #endif
-
-    task = Task_create(gpio_test, &taskParams, &eb);
-    if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
-    }
+    TaskP_create(gpio_test, &taskParams);
 #endif
 
-    /* Start BIOS */
-    BIOS_start();
+    OS_start();
+
     return (0);
 }
 #endif

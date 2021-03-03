@@ -222,6 +222,22 @@ int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eve
   return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
 }
 
+int32_t EventCombinerP_dispatchUnplug(uint32_t eventId)
+{
+    CSL_IntcObj  intcObj;
+    CSL_IntcHandle handleTemp=(CSL_IntcHandle)&intcObj;
+
+    CSL_dint();
+
+    handleTemp->eventId = (CSL_IntcEventId)eventId;
+    CSL_intcUnplugEventHandler(handleTemp);
+    (void)EventCombinerP_disableEvent(eventId);
+
+    CSL_rint();
+
+    return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
+}
+
 #ifdef __cplusplus
 }
 #endif

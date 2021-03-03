@@ -125,6 +125,7 @@ drvuart_FIRM_LIST = $(uart_FIRM_LIST)
 ############################
 #uart_EXAMPLE_LIST = drv_uart_unit_test drv_uart_polling_mode_app drv_uart_intr_mode_app
 uart_EXAMPLE_LIST = UART_Baremetal_TestApp UART_Baremetal_DMA_TestApp UART_TestApp UART_SMP_TestApp UART_DMA_TestApp UART_DMA_SMP_TestApp
+uart_EXAMPLE_LIST += UART_Freertos_TestApp UART_Freertos_DMA_TestApp
 drvuart_EXAMPLE_LIST = $(uart_EXAMPLE_LIST)
 
 #
@@ -407,6 +408,32 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 UART_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export UART_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN
 endif
+
+# UART unit test freertos app
+export UART_Freertos_TestApp_COMP_LIST = UART_Freertos_TestApp
+UART_Freertos_TestApp_RELPATH = ti/drv/uart/test
+UART_Freertos_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_Freertos_TestApp_BOARD_DEPENDENCY = yes
+export UART_Freertos_TestApp_CORE_DEPENDENCY = no
+export UART_Freertos_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes
+UART_Freertos_TestApp_PKG_LIST = UART_Freertos_TestApp
+UART_Freertos_TestApp_INCLUDE = $(UART_Freertos_TestApp_PATH)
+export UART_Freertos_TestApp_BOARDLIST = tpr12_evm
+export UART_Freertos_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+export UART_Freertos_TestApp_SBL_APPIMAGEGEN = yes
+
+# UART unit test freertos app
+export UART_Freertos_DMA_TestApp_COMP_LIST = UART_Freertos_DMA_TestApp
+UART_Freertos_DMA_TestApp_RELPATH = ti/drv/uart/test
+UART_Freertos_DMA_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_Freertos_DMA_TestApp_BOARD_DEPENDENCY = yes
+export UART_Freertos_DMA_TestApp_CORE_DEPENDENCY = no
+export UART_Freertos_DMA_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes DMA=enable
+UART_Freertos_DMA_TestApp_PKG_LIST = UART_Freertos_DMA_TestApp
+UART_Freertos_DMA_TestApp_INCLUDE = $(UART_Freertos_DMA_TestApp_PATH)
+export UART_Freertos_DMA_TestApp_BOARDLIST = tpr12_evm
+export UART_Freertos_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+export UART_Freertos_DMA_TestApp_SBL_APPIMAGEGEN = yes
 
 # UART unit test rtos app
 UART_TestApp_COMP_LIST = UART_TestApp

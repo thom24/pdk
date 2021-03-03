@@ -46,6 +46,7 @@
 #include <string.h>
 #include "ti/osal/MemoryP.h"
 #include "ti/drv/crc/crc.h"
+#include "crc_log.h"
 #include "crc_test.h"
 #include "crcmodel.h"
 
@@ -507,7 +508,7 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
              * NOTE: If the data is modified then there will be a failure
              * and a new CRC64 has to be generated from the above link */
             CRC64Bit = 0x77c41a42f112ad04;
-            printf ("Debug: 64 Bit Software CRC is 0x%016llx\n", CRC64Bit);
+            CRC_log ("Debug: 64 Bit Software CRC is 0x%016llx\n", CRC64Bit);
 
             ptrCRCTypeString = "ISO 3309(64 Bit Polynomial)";
 
@@ -612,7 +613,7 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
 		/* Debug Message: */
         if (type == CRC_Type_64BIT)
         {
-            printf("Debug: CRC Driver signature is 0x%016llx\n", signature);
+            CRC_log("Debug: CRC Driver signature is 0x%016llx\n", signature);
         }
         else
         {
@@ -646,7 +647,7 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
 			{
 				if (CRC64Bit != signature)
 				{
-					printf ("Error: Mismatch in the CRC Detected Expected: %016llx Got %016llx\n", CRC64Bit, signature);
+					CRC_log ("Error: Mismatch in the CRC Detected Expected: %016llx Got %016llx\n", CRC64Bit, signature);
 					return -1;
 				}
 				break;
@@ -683,20 +684,20 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
 
 void Test_crcAppPrint0(const char   *infoString)
 {
-    printf(infoString);
+    CRC_log(infoString);
 }
 
 void Test_crcAppPrint1(const char   *infoString,
                        uintptr_t     param0)
 {
-    printf(infoString, param0);
+    CRC_log(infoString, param0);
 }
 
 void Test_crcAppPrint2(const char   *infoString,
                        uintptr_t     param0,
                        uintptr_t     param1)
 {
-    printf(infoString, param0, param1);
+    CRC_log(infoString, param0, param1);
 }
 
 void Test_crcAppPrint3(const char   *infoString,
@@ -704,6 +705,6 @@ void Test_crcAppPrint3(const char   *infoString,
                        uintptr_t     param1,
                        uintptr_t     param2)
 {
-    printf(infoString, param0, param1, param2);
+    CRC_log(infoString, param0, param1, param2);
 }
 

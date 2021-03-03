@@ -50,48 +50,24 @@
 #include <stdio.h>
 #include <time.h>
 
-/* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/IHeap.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/Memory.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/knl/Semaphore.h>
-#include <ti/sysbios/knl/Clock.h>
-#include <ti/sysbios/heaps/HeapBuf.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <ti/sysbios/knl/Event.h>
-#if defined (BUILD_DSP_1)
-#include <ti/sysbios/family/c64p/Hwi.h>
-#include <ti/sysbios/family/c64p/EventCombiner.h>
-#if defined (SOC_TPR12) || defined (SOC_AWR294X)
-#include <ti/sysbios/family/c66/Cache.h>
-#else
-#include <ti/sysbios/family/c64p/Cache.h>
-#endif
-#endif
 #include <assert.h>
 #include <ti/osal/SemaphoreP.h>
+#include <ti/osal/TaskP.h>
 #include <ti/drv/edma/edma.h>
 
-#if defined (SOC_TPR12) || defined (SOC_AWR294X)
-#ifdef BUILD_MCU
-#include <ti/sysbios/family/arm/v7r/Cache.h>
-#endif
-#endif
 
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_types.h>
 #include "ti/osal/osal.h"
 #include "ti/osal/CycleprofilerP.h"
 
+#include "edma_log.h"
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
 
 #define TEST_NO_ERROR 0
 #define TEST_E_EDMA_API -1
@@ -268,6 +244,7 @@ typedef struct testLinkedChannelsConfig_t_
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 /*
  * Define the CACHE_LINSEZ based on system Cache configuration
  * TPR12 use case: only L1 cache is enabled
@@ -1382,7 +1359,7 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
 
         if ((errorCode = EDMA_configChannel(handle, config, isEnableChannel)) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
+            EDMA_log("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
             goto exit;
         }
     }
@@ -1406,7 +1383,7 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
             }
             if (errorCode != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_Dma(Qdma)StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
+                EDMA_log("Error: EDMA_Dma(Qdma)StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
                 goto exit;
             }
         }
@@ -1414,7 +1391,7 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
         {
             if ((errorCode = EDMA_startTransfer(handle, channelId, channelType)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
+                EDMA_log("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
                 goto exit;
             }
         }
@@ -1456,7 +1433,7 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
                             config->paramSetConfig.transferCompletionCode,
                             (bool *) &testState.channelState[channel].isTransferDone)) != EDMA_NO_ERROR)
                     {
-                        printf("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
+                        EDMA_log("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
                         goto exit;
                     }
                     testState.channelState[channel].transferEndTimeStamp = CycleprofilerP_getTimeStamp();
@@ -1489,7 +1466,7 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
                             }
                             if (errorCode != EDMA_NO_ERROR)
                             {
-                                printf("Error: EDMA_Dma(Qdma)StartTransfer() of test channel %d failed with error code = %d\n",
+                                EDMA_log("Error: EDMA_Dma(Qdma)StartTransfer() of test channel %d failed with error code = %d\n",
                                     channel, errorCode);
                                 goto exit;
                             }
@@ -1498,7 +1475,7 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
                         {
                             if ((errorCode = EDMA_startTransfer(handle, channelId, channelType)) != EDMA_NO_ERROR)
                             {
-                                printf("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
+                                EDMA_log("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
                                 goto exit;
                             }
                         }
@@ -1522,7 +1499,7 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
 
     if (timeout == 0)
     {
-        printf("FAIL: Test timed out\n");
+        EDMA_log("FAIL: Test timed out\n");
     }
 
     /* check if completed transfers have been successful */
@@ -1542,19 +1519,19 @@ bool Test_unchainedUnlinked(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
         {
             if (testState.channelState[channel].isPass == true)
             {
-                printf("Test channel %d transfer completed successfully\n", channel);
-                printf("..transfer time in CPU cycles = %u\n",
+                EDMA_log("Test channel %d transfer completed successfully\n", channel);
+                EDMA_log("..transfer time in CPU cycles = %u\n",
                     Test_getTransferTime(&testState.channelState[channel]));
             }
             else
             {
-                printf("FAIL: Test channel %d transfer completed but unsuccessful\n", channel);
+                EDMA_log("FAIL: Test channel %d transfer completed but unsuccessful\n", channel);
                 isTestPass = false;
             }
         }
         else
         {
-            printf("FAIL: Test channel %d transfer did not complete\n", channel);
+            EDMA_log("FAIL: Test channel %d transfer did not complete\n", channel);
             isTestPass = false;
         }
     }
@@ -1647,7 +1624,8 @@ void Test_initBufs(uint8_t channelStart, uint8_t channelEnd)
     }
 
 #if (defined(BUILD_DSP_1) || ((defined(SOC_TPR12) || defined (SOC_AWR294X)) && defined(BUILD_MCU)))
-    Cache_wbInvAll();
+    CacheP_wbInv(testSrcBuf, sizeof(testSrcBuf));
+    CacheP_wbInv(testDstBuf, sizeof(testDstBuf));
 #endif
 }
 
@@ -1739,7 +1717,7 @@ bool Test_simultaneousUnchainedUnlinkedTransfersSuite(EDMA_Handle handle,
     char featureString[FEATURE_STRING_LEN];
 
 #ifdef testChannelConfig__DBG
-    printf("\nTest#%d...\n", *testIteration);
+    EDMA_log("\nTest#%d...\n", *testIteration);
     Test_init_testChannelConfig(
 
         /* startChannel, endChannel */
@@ -1757,7 +1735,7 @@ bool Test_simultaneousUnchainedUnlinkedTransfersSuite(EDMA_Handle handle,
 #endif
     strncpy(featureString, "A type single transfer (bCount = 1 AND cCount = 1), mix QDMA and DMA",
         FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     Test_init_testChannelConfig(
 
         /* startChannel, endChannel */
@@ -1777,7 +1755,7 @@ bool Test_simultaneousUnchainedUnlinkedTransfersSuite(EDMA_Handle handle,
 
     strncpy(featureString, "A type multi transfers (bCount != 1 AND cCount != 1)",
         FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
 
     Test_init_testChannelConfig(
 
@@ -1798,7 +1776,7 @@ bool Test_simultaneousUnchainedUnlinkedTransfersSuite(EDMA_Handle handle,
 
     strncpy(featureString, "AB type multi transfers (cCount != 1)",
         FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     Test_init_testChannelConfig(
 
         /* startChannel, endChannel */
@@ -1818,7 +1796,7 @@ bool Test_simultaneousUnchainedUnlinkedTransfersSuite(EDMA_Handle handle,
 
     strncpy(featureString, "Mix of A and AB type multi transfers",
         FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     Test_init_testChannelConfig(
 
         /* startChannel, endChannel */
@@ -1878,7 +1856,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
              ((config->paramSetConfig.bCount != 1) || (config->paramSetConfig.cCount != 1))) ||
             ((config->paramSetConfig.transferType == (uint8_t)EDMA3_SYNC_AB) && (config->paramSetConfig.cCount != 1)))
         {
-            printf("Error: cannot presently handle multi-transfer with chaining in the test code\n");
+            EDMA_log("Error: cannot presently handle multi-transfer with chaining in the test code\n");
             goto exit;
         }
 
@@ -1894,7 +1872,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
 
         if ((errorCode = EDMA_configChannel(handle, config, isEnableChannel)) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
+            EDMA_log("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
             goto exit;
         }
     }
@@ -1911,7 +1889,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
              (fromChannelConfig->paramSetConfig.isFinalChainingEnabled == true) ||
              (fromChannelConfig->paramSetConfig.isIntermediateChainingEnabled == true)))
         {
-            printf("Bad configuration of intermediate chained channel %d\n", channel);
+            EDMA_log("Bad configuration of intermediate chained channel %d\n", channel);
             goto exit;
         }
 
@@ -1923,7 +1901,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
          (toChannelConfig->paramSetConfig.isFinalChainingEnabled == false) &&
          (toChannelConfig->paramSetConfig.isIntermediateChainingEnabled == false)))
     {
-        printf("Bad configuration of last channel in the chain = %d\n", channelEnd);
+        EDMA_log("Bad configuration of last channel in the chain = %d\n", channelEnd);
         goto exit;
     }
 
@@ -1946,7 +1924,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
         }
         if (errorCode != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_Dma(Qdma)StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
+            EDMA_log("Error: EDMA_Dma(Qdma)StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
             goto exit;
         }
     }
@@ -1954,7 +1932,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
     {
         if ((errorCode = EDMA_startTransfer(handle, channelId, channelType)) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
+            EDMA_log("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
             goto exit;
         }
     }
@@ -1971,7 +1949,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
                     config->paramSetConfig.transferCompletionCode,
                     (bool *) &testState.channelState[channel].isTransferDone)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
+                EDMA_log("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
                 goto exit;
             }
             testState.channelState[channel].transferEndTimeStamp = CycleprofilerP_getTimeStamp();
@@ -1981,7 +1959,7 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
 
     if (timeout == 0)
     {
-        printf("FAIL: Test timed out\n");
+        EDMA_log("FAIL: Test timed out\n");
     }
 
     overallPass = true;
@@ -2001,20 +1979,20 @@ bool Test_chainedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
     {
         if (overallPass == true)
         {
-            printf("Transfers completed successfully\n");
-            printf("..transfer time in CPU cycles = %u\n",
+            EDMA_log("Transfers completed successfully\n");
+            EDMA_log("..transfer time in CPU cycles = %u\n",
                 testState.channelState[channelEnd].transferEndTimeStamp -
                 testState.channelState[channelStart].transferStartTimeStamp);
         }
         else
         {
-            printf("FAIL: Transfers completed but unsuccessful\n");
+            EDMA_log("FAIL: Transfers completed but unsuccessful\n");
             isTestPass = false;
         }
     }
     else
     {
-        printf("FAIL: Transfers did not complete\n");
+        EDMA_log("FAIL: Transfers did not complete\n");
         isTestPass = false;
     }
 exit:
@@ -2046,7 +2024,7 @@ bool Test_chainedTransfersSuite(EDMA_Handle handle,
 
     strncpy(featureString, "Chained Transfers of A type single transfer (bCount = 1 AND cCount = 1)",
         FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     Test_init_testChannelConfig(
 
         /* startChannel, endChannel */
@@ -2160,7 +2138,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
          ((config->paramSetConfig.bCount != 1) || (config->paramSetConfig.cCount != 1))) ||
         ((config->paramSetConfig.transferType == (uint8_t)EDMA3_SYNC_AB) && (config->paramSetConfig.cCount != 1)))
     {
-        printf("Error: cannot presently handle multi-transfer with chaining in the test code\n");
+        EDMA_log("Error: cannot presently handle multi-transfer with chaining in the test code\n");
         goto exit;
     }
 
@@ -2177,7 +2155,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
 
     if ((errorCode = EDMA_configChannel(handle, config, isEnableChannel)) != EDMA_NO_ERROR)
     {
-        printf("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
+        EDMA_log("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
         goto exit;
     }
 
@@ -2188,7 +2166,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
         if ((errorCode = EDMA_configParamSet(handle, testLinkChannelConfig[0].paramId[param],
             &testLinkChannelConfig[0].paramConfig[param])) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_configParamSet() failed with error code = %d\n", errorCode);
+            EDMA_log("Error: EDMA_configParamSet() failed with error code = %d\n", errorCode);
             goto exit;
         }
     }
@@ -2211,7 +2189,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
             /* trigger the channel */
             if ((errorCode = EDMA_startTransfer(handle, channelId, channelType)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
+                EDMA_log("Error: EDMA_StartTransfer() of test channel %d failed with error code = %d\n", channel, errorCode);
                 goto exit;
             }
 
@@ -2238,7 +2216,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
                             transferCompletionCode,
                             (bool *) &testState.channelState[channel].isTransferDone)) != EDMA_NO_ERROR)
                     {
-                        printf("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
+                        EDMA_log("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
                         goto exit;
                     }
                     testState.channelState[channel].transferEndTimeStamp = CycleprofilerP_getTimeStamp();
@@ -2248,7 +2226,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
 
             if (timeout == 0)
             {
-                printf("FAIL: Test transfer #%d of linked transfers timed out\n", channel);
+                EDMA_log("FAIL: Test transfer #%d of linked transfers timed out\n", channel);
                 goto exit;
             }
         }
@@ -2260,7 +2238,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
         /* trigger the QDMA channel */
         if ((errorCode = EDMA_startTransfer(handle, channelId, channelType)) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_StartTransfer() of test channel %d failed with \
+            EDMA_log("Error: EDMA_StartTransfer() of test channel %d failed with \
                 error code = %d\n", channelId, errorCode);
             goto exit;
         }
@@ -2276,7 +2254,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
                             paramSetConfig.transferCompletionCode,
                         (bool *) &testState.channelState[TEST_NUM_PARAM_LINKS].isTransferDone)) != EDMA_NO_ERROR)
                 {
-                    printf("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
+                    EDMA_log("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
                     goto exit;
                 }
                 testState.channelState[TEST_NUM_PARAM_LINKS].transferEndTimeStamp = CycleprofilerP_getTimeStamp();
@@ -2286,7 +2264,7 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
 
         if (timeout == 0)
         {
-            printf("FAIL: Test transfer #%d of linked transfers timed out\n", TEST_NUM_PARAM_LINKS);
+            EDMA_log("FAIL: Test transfer #%d of linked transfers timed out\n", TEST_NUM_PARAM_LINKS);
             goto exit;
         }
         /* since the last transfer was done, mark previous as done so that the next
@@ -2314,20 +2292,20 @@ bool Test_linkedTransfers(EDMA_Handle handle, EDMA_instanceInfo_t *instInfo,
     {
         if (overallPass == true)
         {
-            printf("Transfers completed successfully\n");
-            printf("..transfer time in CPU cycles = %u\n",
+            EDMA_log("Transfers completed successfully\n");
+            EDMA_log("..transfer time in CPU cycles = %u\n",
                 testState.channelState[TEST_NUM_PARAM_LINKS].transferEndTimeStamp -
                 testState.channelState[0].transferStartTimeStamp);
             isTestPass = true;
         }
         else
         {
-            printf("FAIL: Transfers completed but unsuccessful\n");
+            EDMA_log("FAIL: Transfers completed but unsuccessful\n");
         }
     }
     else
     {
-        printf("FAIL: Transfers did not complete\n");
+        EDMA_log("FAIL: Transfers did not complete\n");
     }
 
 exit:
@@ -2354,7 +2332,7 @@ bool Test_linkedTransfersSuite(EDMA_Handle handle,
 
     strncpy(featureString, "DMA Linked Transfers of A type single transfer (bCount = 1 AND cCount = 1)",
         FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     Test_initLinkedConfig(&testChannelConfig__A_SINGLE_XFER_DMA_LINK,
                           instanceInfo->isTransferCompletionInterruptConnected);
     areTestPass = areTestPass && (Test_linkedTransfers(handle, instanceInfo,
@@ -2363,7 +2341,7 @@ bool Test_linkedTransfersSuite(EDMA_Handle handle,
 
     strncpy(featureString, "QDMA Linked Transfers of A type single transfer (bCount = 1 AND cCount = 1)",
         FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     Test_initLinkedConfig(&testChannelConfig__A_SINGLE_XFER_QDMA_LINK,
                           instanceInfo->isTransferCompletionInterruptConnected);
     areTestPass = areTestPass && (Test_linkedTransfers(handle, instanceInfo,
@@ -2510,7 +2488,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
         config.paramId = config.channelId;
         if ((errorCode = EDMA_configChannel(handle, &config, isEnableChannel)) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
+            EDMA_log("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
             goto exit;
         }
     }
@@ -2523,7 +2501,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
             if ((errorCode = EDMA_startTransfer(handle, channelId[channel],
                 config.channelType)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_StartTransfer() of test channel %d\
+                EDMA_log("Error: EDMA_StartTransfer() of test channel %d\
                     failed with error code = %d\n", channel, errorCode);
                 goto exit;
             }
@@ -2546,7 +2524,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
         {
             if ((errorCode = EDMA_getErrorStatus(handle, &isAnyError, &errorInfo)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_getErrorStatus() failed with error code = %d\n", errorCode);
+                EDMA_log("Error: EDMA_getErrorStatus() failed with error code = %d\n", errorCode);
             }
 
             if (isAnyError == true)
@@ -2559,7 +2537,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
 
     if (i > 10000U)
     {
-        printf("FAIL: Did not trigger error\n");
+        EDMA_log("FAIL: Did not trigger error\n");
         goto exit;
     }
 
@@ -2581,7 +2559,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
             /* clean up re-triggerings which can happen as older state is cleared.  */
             if ((errorCode = EDMA_getErrorStatus(handle, &isAnyError, &errorInfo)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_getErrorStatus() failed with error code = %d\n", errorCode);
+                EDMA_log("Error: EDMA_getErrorStatus() failed with error code = %d\n", errorCode);
                 goto exit;
             }
         }
@@ -2602,7 +2580,7 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
         }
         if (missCount == 0)
         {
-            printf("FAIL: Did not detect expected missed event of channel %d\n",
+            EDMA_log("FAIL: Did not detect expected missed event of channel %d\n",
                 channelId[channel]);
             isTestPass = false;
         }
@@ -2640,14 +2618,14 @@ bool Test_missedEvents(EDMA_Handle handle, uint8_t channelType, bool isErrorInte
             }
             if (missCount != 0)
             {
-                printf("FAIL: Unexpected missed event of channel %d\n", channel);
+                EDMA_log("FAIL: Unexpected missed event of channel %d\n", channel);
                 isTestPass = false;
             }
         }
     }
     if (isTestPass == true)
     {
-        printf("All expected missed events detected and no false detection\n");
+        EDMA_log("All expected missed events detected and no false detection\n");
     }
 exit:
     return(isTestPass);
@@ -2697,13 +2675,13 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
     /* configure channel */
     if ((errorCode = EDMA_configChannel(handle, &config, true)) != EDMA_NO_ERROR)
     {
-        printf("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
+        EDMA_log("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
         goto exit;
     }
 
     if ((errorCode = EDMA_startTransfer(handle, config.channelId, config.channelType)) != EDMA_NO_ERROR)
     {
-        printf("Error: EDMA_StartTransfer() failed with error code = %d\n", errorCode);
+        EDMA_log("Error: EDMA_StartTransfer() failed with error code = %d\n", errorCode);
         goto exit;
     }
 
@@ -2724,7 +2702,7 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
             if ((errorCode = EDMA_getTransferControllerErrorStatus(handle, config.eventQueueId,
                 &isAnyError, &errorInfo)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_getTransferControllerErrorStatus() failed with error code = %d\n", errorCode);
+                EDMA_log("Error: EDMA_getTransferControllerErrorStatus() failed with error code = %d\n", errorCode);
                 goto exit;
             }
             if (isAnyError)
@@ -2737,7 +2715,7 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
 
     if (i > 10000U)
     {
-        printf("FAIL: Did not trigger error\n");
+        EDMA_log("FAIL: Did not trigger error\n");
         goto exit;
     }
 
@@ -2760,7 +2738,7 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
             if ((errorCode = EDMA_getTransferControllerErrorStatus(handle, config.eventQueueId,
                 &isAnyError, &errorInfo)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_getTransferControllerErrorStatus() failed with error code = %d\n", errorCode);
+                EDMA_log("Error: EDMA_getTransferControllerErrorStatus() failed with error code = %d\n", errorCode);
                 goto exit;
             }
         }
@@ -2778,11 +2756,11 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
                 (info->busErrorInfo.errorCode <= 0x7))
             {
                 isTestPass = true;
-                printf("Detected invalid source address\n");
+                EDMA_log("Detected invalid source address\n");
             }
             else
             {
-                printf("FAIL: Did not detect invalid source address\n");
+                EDMA_log("FAIL: Did not detect invalid source address\n");
             }
         }
     }
@@ -2794,11 +2772,11 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
                 (info->busErrorInfo.errorCode <= 0xF))
             {
                 isTestPass = true;
-                printf("Detected invalid destination address\n");
+                EDMA_log("Detected invalid destination address\n");
             }
             else
             {
-                printf("FAIL: Did not detect invalid destination address\n");
+                EDMA_log("FAIL: Did not detect invalid destination address\n");
             }
         }
     } else if (testId == TEST_INVALID_TRANSFER_REQUEST_ID)
@@ -2806,11 +2784,11 @@ bool Test_transferControllerErrors(EDMA_Handle handle, uint8_t testId,
         if (info->isTransferRequestError == true)
         {
             isTestPass = true;
-            printf("Detected invalid transfer request\n");
+            EDMA_log("Detected invalid transfer request\n");
         }
         else
         {
-            printf("FAIL: Did not detect invalid transfer request\n");
+            EDMA_log("FAIL: Did not detect invalid transfer request\n");
         }
     }
 
@@ -2840,7 +2818,7 @@ bool Test_errorDetectionSuite(EDMA_Handle handle,
     char featureString[FEATURE_STRING_LEN];
 
     strncpy(featureString, "Missed DMA events", FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     areTestsPass = areTestsPass && (Test_missedEvents(handle, (uint8_t)EDMA3_CHANNEL_TYPE_DMA,
                                                      instanceInfo->isErrorInterruptConnected));
     *testIteration += 1;
@@ -2848,40 +2826,40 @@ bool Test_errorDetectionSuite(EDMA_Handle handle,
 /* This is being discussed with Kyle */
 #if 0
     strncpy(featureString, "Missed QDMA events", FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     areTestsPass = areTestsPass && (Test_missedEvents(handle, (uint8_t)EDMA3_CHANNEL_TYPE_QDMA,
                                                      instanceInfo->isErrorInterruptConnected));
     *testIteration += 1;
 #endif
 
 #if 0
-    printf("\nTest#%d...\n", *testIteration);
+    EDMA_log("\nTest#%d...\n", *testIteration);
     strncpy(featureString, "Queue threshold exceeded", FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     areTestsPass = areTestsPass && (Test_outstandingTransfersExceeded());
     *testIteration += 1;
 
-    printf("\nTest#%d..\n", *testIteration);
+    EDMA_log("\nTest#%d..\n", *testIteration);
     strncpy(featureString, "Outstanding transfers exceeded", FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     areTestsPass = areTestsPass && (Test_queueThresholdExceeded());
     *testIteration += 1;
 #endif
 
     strncpy(featureString, "Invalid source address", FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     areTestsPass = areTestsPass && (Test_transferControllerErrors(handle, TEST_INVALID_SOURCE_ADDRESS_ID,
                                                      &instanceInfo->isTransferControllerErrorInterruptConnected[0]));
     *testIteration += 1;
 
     strncpy(featureString, "Invalid transfer request", FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     areTestsPass = areTestsPass && (Test_transferControllerErrors(handle, TEST_INVALID_TRANSFER_REQUEST_ID,
                                                      &instanceInfo->isTransferControllerErrorInterruptConnected[0]));
     *testIteration += 1;
 
     strncpy(featureString, "Invalid destination address", FEATURE_STRING_LEN);
-    printf("\nTest#%d..%s\n", *testIteration, featureString);
+    EDMA_log("\nTest#%d..%s\n", *testIteration, featureString);
     areTestsPass = areTestsPass && (Test_transferControllerErrors(handle, TEST_INVALID_DESTINATION_ADDRESS_ID,
                                                      &instanceInfo->isTransferControllerErrorInterruptConnected[0]));
     *testIteration += 1;
@@ -2914,13 +2892,13 @@ bool Test_instance(uint8_t instanceId)
     {
         if (errorCode == EDMA_E_INVALID__INSTANCE_ID)
         {
-            printf("Edma Instance not supported. Skipping this instance\n");
+            EDMA_log("Edma Instance not supported. Skipping this instance\n");
             isTestPass = true;
             goto exit;
         }
         else
         {
-            printf("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
+            EDMA_log("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
             goto exit;
         }
     }
@@ -2960,54 +2938,54 @@ bool Test_instance(uint8_t instanceId)
     }
     if ((errorCode = EDMA_configErrorMonitoring(handle, &errorConfig)) != EDMA_NO_ERROR)
     {
-        printf("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errorCode);
+        EDMA_log("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errorCode);
         goto exit;
     }
 
     isTestPass = true;
 #ifndef TEST_DBG_DISABLE_UNLINKED_UNCHAINED
-    printf("\n==================================================\n");
-    printf("Testing simultaneous unlinked unchained transfers\n");
-    printf("==================================================\n");
+    EDMA_log("\n==================================================\n");
+    EDMA_log("Testing simultaneous unlinked unchained transfers\n");
+    EDMA_log("==================================================\n");
     isTestPass = isTestPass &&
         Test_simultaneousUnchainedUnlinkedTransfersSuite(handle, &instanceInfo, &testIteration);
 #endif
 #ifndef TEST_DBG_DISABLE_CHAINED
-    printf("\n==================================================\n");
-    printf("Testing chained transfers\n");
-    printf("==================================================\n");
+    EDMA_log("\n==================================================\n");
+    EDMA_log("Testing chained transfers\n");
+    EDMA_log("==================================================\n");
     isTestPass = isTestPass &&
         Test_chainedTransfersSuite(handle, &instanceInfo, &testIteration);
 #endif
 #ifndef TEST_DBG_DISABLE_LINKED
-    printf("\n==================================================\n");
-    printf("Testing linked transfers\n");
-    printf("==================================================\n");
+    EDMA_log("\n==================================================\n");
+    EDMA_log("Testing linked transfers\n");
+    EDMA_log("==================================================\n");
     isTestPass = isTestPass &&
     Test_linkedTransfersSuite(handle, &instanceInfo, &testIteration);
 #endif
 #ifndef TEST_DBG_DISABLE_ERROR
-    printf("\n==================================================\n");
-    printf("Testing Error Detection\n");
-    printf("==================================================\n");
+    EDMA_log("\n==================================================\n");
+    EDMA_log("Testing Error Detection\n");
+    EDMA_log("==================================================\n");
     isTestPass = isTestPass &&
     Test_errorDetectionSuite(handle, &instanceInfo, &testIteration);
 #endif
     if ((errorCode = EDMA_close(handle)) != EDMA_NO_ERROR)
     {
-        printf("Debug: edma Instance %p closing error, errorCode = %d\n", handle, errorCode);
+        EDMA_log("Debug: edma Instance %p closing error, errorCode = %d\n", handle, errorCode);
     }
 
     /* Test driver re open and close back to back. */
-    printf("\n==================================================\n");
-    printf("Testing Driver re open/close\n");
-    printf("==================================================\n");
+    EDMA_log("\n==================================================\n");
+    EDMA_log("Testing Driver re open/close\n");
+    EDMA_log("==================================================\n");
     while (openCloseTestCount-- > 0)
     {
         handle = EDMA_open(instanceId, &errorCode, &instanceInfo);
         if (handle == NULL)
         {
-            printf("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
+            EDMA_log("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
             isTestPass = false;
             break;
         }
@@ -3015,7 +2993,7 @@ bool Test_instance(uint8_t instanceId)
         {
             if ((errorCode = EDMA_close(handle)) != EDMA_NO_ERROR)
             {
-                printf("Debug: edma Instance %p closing error, errorCode = %d\n", handle, errorCode);
+                EDMA_log("Debug: edma Instance %p closing error, errorCode = %d\n", handle, errorCode);
                 isTestPass = false;
                 break;
             }
@@ -3024,11 +3002,11 @@ bool Test_instance(uint8_t instanceId)
 
     if (isTestPass == true)
     {
-        printf("All Tests of Instance %d PASSED\n", instanceId);
+        EDMA_log("All Tests of Instance %d PASSED\n", instanceId);
     }
     else
     {
-        printf("All Tests of Instance %d did NOT Pass\n", instanceId);
+        EDMA_log("All Tests of Instance %d did NOT Pass\n", instanceId);
     }
 
 exit:
@@ -3087,7 +3065,9 @@ void Test_updateTestConfig()
 
 }
 
-void Test_task(UArg arg0, UArg arg1)
+#if defined (USE_BIOS) || defined (FREERTOS)
+void Test_task(void* arg0, void* arg1)
+#endif
 {
     time_t start, end;
     double duration;
@@ -3099,7 +3079,7 @@ void Test_task(UArg arg0, UArg arg1)
        tests fail */
     volatile bool result;
 
-    System_printf ("Updating the addresses in testConfig for access from EDMA\n");
+    EDMA_log ("Updating the addresses in testConfig for access from EDMA\n");
     /* Run-time update of test configs */
     Test_updateTestConfig();
 
@@ -3108,32 +3088,35 @@ void Test_task(UArg arg0, UArg arg1)
     {
         char instName[25];
         EDMA_getInstanceName(gInstanceId, &instName[0], sizeof(instName));
-        printf("\n=====================================================\n");
-        printf("Testing EDMA instance #%d: %s\n", gInstanceId, instName);
-        printf("=====================================================\n");
+        EDMA_log("\n=====================================================\n");
+        EDMA_log("Testing EDMA instance #%d: %s\n", gInstanceId, instName);
+        EDMA_log("=====================================================\n");
         result = Test_instance(gInstanceId);
         isTestPass = isTestPass && result;
     }
 
-    printf("edma test finished\n");
+    EDMA_log("edma test finished\n");
     if (isTestPass == true)
     {
-        printf("All tests have passed.\n");
+        EDMA_log("All tests have passed.\n");
     }
     else
     {
-        printf("All Tests did NOT Pass\n");
+        EDMA_log("All Tests did NOT Pass\n");
     }
 
     time(&end);
 
     duration = difftime(end, start);
 
-    //System_printf cannot print float, use printf
-    printf("Time to run test = %f seconds\n", duration);
+    //System_EDMA_log cannot print float, use EDMA_log
+    EDMA_log("Time to run test = %f seconds\n", duration);
 
+#if defined (USE_BIOS) || defined (FREERTOS)
     /* exit BIOS */
-    BIOS_exit(0);
+    OS_stop();
+#endif
+
 }
 
 /**
@@ -3146,16 +3129,17 @@ void Test_task(UArg arg0, UArg arg1)
  */
 void main (void)
 {
-    Task_Params taskParams;
+    TaskP_Params taskParams;
 
     CycleprofilerP_init();
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 4*1024;
-    Task_create(Test_task, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    /* Start BIOS */
-    BIOS_start();
+    TaskP_create(Test_task, &taskParams);
+
+    OS_start();
     return;
 }

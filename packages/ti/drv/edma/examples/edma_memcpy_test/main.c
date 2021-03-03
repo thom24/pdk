@@ -46,12 +46,6 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#if defined (USE_BIOS)
-/* BIOS/XDC Include Files. */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#endif
-
 /* CSL Header files */
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_types.h>
@@ -60,6 +54,11 @@
 #include <ti/osal/osal.h>
 #include <ti/drv/edma/edma.h>
 
+#if defined (USE_BIOS) || defined (FREERTOS)
+#include <ti/osal/TaskP.h>
+#endif
+
+#include "edma_log.h"
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -78,6 +77,10 @@
 #define TF_ROUND_UP(x, y)                   CSL_NEXT_MULTIPLE_OF_POW2(x,y)
 
 #define TEST_TIMEOUT_CYCLES                 (1000000U)
+
+#if defined (USE_BIOS) || defined (FREERTOS)
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
+#endif
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -120,6 +123,11 @@ uint32_t gInstanceId = EDMA_DRV_INST_MSS_A;
 #endif
 
 volatile uint32_t gCcErrCnt = 0U, gTcErrCnt = 0U;
+
+#if defined (USE_BIOS) || defined (FREERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -193,7 +201,7 @@ static bool Test_instance(uint8_t instanceId)
         handle = EDMA_open(instanceId, &errorCode, &instanceInfo);
         if (handle == NULL)
         {
-            printf("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
+            EDMA_log("Error: Unable to open the edma Instance, erorCode = %d\n", errorCode);
             isTestPass = false;
         }
     }
@@ -235,7 +243,7 @@ static bool Test_instance(uint8_t instanceId)
         isEnableChannel = false;
         if ((errorCode = EDMA_configChannel(handle, &config, isEnableChannel)) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
+            EDMA_log("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
         }
     }
 
@@ -243,7 +251,7 @@ static bool Test_instance(uint8_t instanceId)
     {
         if ((errorCode = EDMA_startTransfer(handle, config.channelId, config.channelType)) != EDMA_NO_ERROR)
         {
-            printf("Error: EDMA_StartTransfer() failed with error code = %d\n", errorCode);
+            EDMA_log("Error: EDMA_StartTransfer() failed with error code = %d\n", errorCode);
         }
     }
 
@@ -258,7 +266,7 @@ static bool Test_instance(uint8_t instanceId)
                     config.paramSetConfig.transferCompletionCode,
                     (bool *) &isTransferDone)) != EDMA_NO_ERROR)
             {
-                printf("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
+                EDMA_log("Error: EDMA_isTransferComplete() failed with error code = %d\n", errorCode);
             }
             timeout--;
         }
@@ -268,7 +276,7 @@ static bool Test_instance(uint8_t instanceId)
     {
         if (timeout == 0)
         {
-            printf("FAIL: Test timed out\n");
+            EDMA_log("FAIL: Test timed out\n");
         }
         else
         {
@@ -279,8 +287,8 @@ static bool Test_instance(uint8_t instanceId)
     return(isTestPass);
 }
 
-#if defined (USE_BIOS)
-void Test_task(UArg arg0, UArg arg1)
+#if defined (USE_BIOS) || defined (FREERTOS)
+void Test_task(void* arg0, void* arg1)
 #else
 void main (void)
 #endif
@@ -291,36 +299,37 @@ void main (void)
 
     char instName[25];
     EDMA_getInstanceName(gInstanceId, &instName[0], sizeof(instName));
-    printf("Testing EDMA instance #%d: %s\n", gInstanceId, instName);
+    EDMA_log("Testing EDMA instance #%d: %s\n", gInstanceId, instName);
     isTestPass = Test_instance(gInstanceId);
 
-    printf("edma test finished\n");
+    EDMA_log("edma test finished\n");
     if (isTestPass == true)
     {
-        printf("All tests have passed.\n");
+        EDMA_log("All tests have passed.\n");
     }
     else
     {
-        printf("All Tests did NOT Pass\n");
+        EDMA_log("All Tests did NOT Pass\n");
     }
 
-#if defined (USE_BIOS)
-    BIOS_exit(0);
+#if defined (USE_BIOS) || defined (FREERTOS)
+    OS_stop();
 #endif
 }
 
-#if defined (USE_BIOS)
+#if defined (USE_BIOS) || defined (FREERTOS)
 void main (void)
 {
-    Task_Params taskParams;
+    TaskP_Params taskParams;
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 4*1024;
-    Task_create(Test_task, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    /* Start BIOS */
-    BIOS_start();
+    TaskP_create(Test_task, &taskParams);
+
+    OS_start();
     return;
 }
 #endif

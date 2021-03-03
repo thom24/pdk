@@ -59,6 +59,10 @@
 /* OSAL Header files */
 #include <ti/osal/osal.h>
 
+#if defined (USE_BIOS) || defined (FREERTOS)
+#include <ti/osal/TaskP.h>
+#endif
+
 /* UART Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
@@ -3262,19 +3266,19 @@ void UART_test_print_test_results(bool pass)
 #endif
 }
 
-#ifdef USE_BIOS
+#if defined (USE_BIOS) || defined (FREERTOS)
 /*
  *  ======== taskFxn ========
  */
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void *a0, void *a1)
 #else
 int main(void)
-#endif /* #ifdef USE_BIOS */
+#endif /* #if defined (USE_BIOS) || defined (FREERTOS) */
 {
     bool testResult = false;
     uint32_t i;
 
-#ifndef USE_BIOS
+#if !(defined(USE_BIOS) || defined(FREERTOS))
     if (Board_initUART() == false)
     {
         return(0);
@@ -3307,42 +3311,37 @@ int main(void)
     }
 }
 
-#ifdef USE_BIOS
+#if defined (USE_BIOS) || defined (FREERTOS)
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 /*
  *  ======== main ========
  */
 Int main()
 {
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+    TaskP_Params taskParams;
 
 	Uart_appC7xPreInit();
 
     if (Board_initUART() == false)
     {
-        System_printf("\nBoard_initUART failed!\n");
+        printf("\nBoard_initUART failed!\n");
         return(0);
     }
 
-    Error_init(&eb);
-
     /* Initialize the task params */
-    Task_Params_init(&taskParams);
-
+    TaskP_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */
-    taskParams.priority = 2;
-    taskParams.stackSize = 0x6000;
+    taskParams.priority =2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    task = Task_create(taskFxn, &taskParams, &eb);
-    if (task == NULL) {
-
-        BIOS_exit(0);
-    }
-        BIOS_start();    /* does not return */
+    TaskP_create(taskFxn, &taskParams);
+    /* Start the scheduler to start the tasks executing. */
+    OS_start();
     return(0);
 }
-#endif /* #ifdef USE_BIOS */
+#endif /* #if defined (USE_BIOS) || defined (FREERTOS) */
 
 #ifdef UART_DMA_ENABLE
 #if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12) || defined (SOC_AWR294X))

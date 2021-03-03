@@ -100,6 +100,14 @@ int32_t EventCombinerP_clearEvent(uint32_t eventId);
 int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eventIsrRoutine,uintptr_t arg,bool unmask );
 
 /*!
+ *  @brief  Function to unplug an ISR handler to an event inside event combiner
+ *
+ *  @param  eventId  The event id (4-127)
+ *
+ */
+int32_t EventCombinerP_dispatchUnplug(uint32_t eventId);
+
+/*!
  *  @brief  Function to return the Hwi Handle corresponding to an event combiner group number
  *
  *  @param  groupNum  The event combiner group id (0-3)

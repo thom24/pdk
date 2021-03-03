@@ -46,28 +46,16 @@
 #include <string.h>
 #include <stdio.h>
 
-/* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/IHeap.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/Memory.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/knl/Semaphore.h>
-#include <ti/sysbios/knl/Clock.h>
-#include <ti/sysbios/heaps/HeapBuf.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <ti/sysbios/knl/Event.h>
+#include "MIBSPI_log.h"
 
 #include <ti/board/board.h>
 #include <ti/drv/edma/edma.h>
 /* SPI test include files */
 #include "mibspi_test_common.h"
-#include "MIBSPI_log.h"
 
+#include <ti/osal/TaskP.h>
+
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
 /**************************************************************************
  *************************** Local Definitions *********************************
  **************************************************************************/
@@ -75,6 +63,7 @@
 /**************************************************************************
  *************************** Global Definitions ********************************
  **************************************************************************/
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 /* System DMA handle, created in init Task */
 EDMA_Handle          gDmaHandle[MIBSPI_TEST_NUM_SPIINSTANCES] = {NULL,NULL};
 #ifdef BUILD_MCU1_0
@@ -126,7 +115,7 @@ static bool Board_initMIBSPI(void)
  *  @retval
  *      Not Applicable.
  */
-static void Test_initTask(UArg arg0, UArg arg1)
+static void Test_initTask(void* arg0, void* arg1)
 {
     int32_t         retVal = 0;
     MibSpi_HwCfg cfg;
@@ -235,7 +224,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
         MCPI test framework script waits for DSP halt,
         if DSP doesn't halt, script will wait until timeout then claim test fail.
      */
-    BIOS_exit(0);
+    OS_stop();
 
     return;
 }
@@ -250,7 +239,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
  */
 int main (void)
 {
-    Task_Params      taskParams;
+    TaskP_Params      taskParams;
 
     /* Debug Message: */
     MIBSPI_log ("******************************************\n");
@@ -258,12 +247,14 @@ int main (void)
     MIBSPI_log ("******************************************\n");
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 6*1024;
-    Task_create(Test_initTask, &taskParams, NULL);
+    /* Initialize the Task Parameters. */
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    /* Start BIOS */
-    BIOS_start();
+    TaskP_create(Test_initTask, &taskParams);
+
+    OS_start();
 
     return 0;
 

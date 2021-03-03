@@ -118,10 +118,6 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
 */
    if(interruptRegParams->corepacConfig.intVecNum == OSAL_REGINT_INTVEC_EVENT_COMBINER) {
       OsalArch_oneTimeInit();
-      (void)EventCombinerP_dispatchPlug((uint32_t)interruptRegParams->corepacConfig.corepacEventNum,
-                                  interruptRegParams->corepacConfig.isrRoutine,
-                                  interruptRegParams->corepacConfig.arg,
-                                  (bool)interruptRegParams->corepacConfig.enableIntr);
       /* Map to a particular group */
       if(hwiInputParams.evtId > 3U) {
           /* For C66X the interrupt needs to be grouped to {0,1,2,3} to either of the four 32-bit event registers  */
@@ -138,19 +134,25 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
                /* Get the default OSAL mapped ones */
            (void)Osal_getHwAttrs(&hwAttrs);
 
+          /* Unconditionally enable interrupt if creating interrupt for event combiner */
+          hwiInputParams.enableIntr = true;
+
            /* No need to register seperately in case of baremetal , the HwiP_Create() takes care of it */
-               
-          hwiPHandle =  HwiP_create(hwAttrs.ECM_intNum[hwiInputParams.evtId],interruptRegParams->corepacConfig.isrRoutine, &hwiInputParams);
+          HwiP_create(hwAttrs.ECM_intNum[hwiInputParams.evtId],interruptRegParams->corepacConfig.isrRoutine, &hwiInputParams);
+          /* Get the interrupt handler corresponding to the event id. */
+          hwiPHandle = EventCombinerP_getHwi(hwiInputParams.evtId);
        
            if(hwiPHandle==NULL_PTR) {
               ret=OSAL_INT_ERR_EVENTCOMBINER_REG;
-           } 
-       } else {
-          /* The Event combiner handle already exists. Now plug the ISR routine in to
+           }
+       }
+       if(ret == OSAL_INT_SUCCESS) {
+          /* The Event combiner handle already exists or created. Now plug the ISR routine in to
               the CSL_intcEventHandlerRecord_p */
             (void)EventCombinerP_dispatchPlug((uint32_t)interruptRegParams->corepacConfig.corepacEventNum,
                                         interruptRegParams->corepacConfig.isrRoutine,
-                                        interruptRegParams->corepacConfig.arg,(bool)true);
+                                        interruptRegParams->corepacConfig.arg,
+                                        interruptRegParams->corepacConfig.enableIntr);
        }
    } else {
        /* Do not use the event combiner. Use the supplied ISR routine */
@@ -276,10 +278,9 @@ OsalInterruptRetCode_e Osal_DeleteInterrupt(HwiP_Handle handle,int32_t corepacEv
           if this is a event combiner handle, in which case the handle->eventId = [0-3]
         */  
        hwi_eventId=(((Hwi_Struct *)handle)->handle)->eventId;
-       if( (hwi_eventId > 0) && (hwi_eventId <4)) { 
+       if( (hwi_eventId >= 0) && (hwi_eventId <4)) {
            /* This is event combiner, so do not destroy the hwi, but remove the dispatch table entry */
-          (void)EventCombinerP_dispatchPlug((uint32_t)corepacEventNum,(EventCombinerP_FuncPtr) NULL_PTR,0,(bool)false);
-          (void)EventCombinerP_disableEvent((uint32_t)corepacEventNum);
+           EventCombinerP_dispatchUnplug((uint32_t)corepacEventNum);
           /* Return Success */
        } else {
           /* This is not an event dispatcher function, so destruct the HwiP as usual */

@@ -91,11 +91,25 @@ crc_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
 export crc_testapp_BOARD_DEPENDENCY = yes
 export crc_testapp_CORE_DEPENDENCY = yes
 export crc_testapp_XDC_CONFIGURO = yes
+export crc_freertos_testapp_MAKEFILE = -f makefile IS_TIRTOS=yes
 crc_testapp_PKG_LIST = crc_testapp
 crc_testapp_INCLUDE = $(crc_testapp_PATH)
 export crc_testapp_BOARDLIST = $(drvcrc_BOARDLIST)
 export crc_testapp_$(SOC)_CORELIST = $(drvcrc_$(SOC)_CORELIST)
 crc_EXAMPLE_LIST += crc_testapp
+
+export crc_testapp_COMP_LIST = crc_freertos_testapp
+crc_freertos_testapp_RELPATH = ti/drv/crc/test
+crc_freertos_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
+export crc_freertos_testapp_BOARD_DEPENDENCY = yes
+export crc_freertos_testapp_CORE_DEPENDENCY = yes
+export crc_freertos_testapp_XDC_CONFIGURO = no
+export crc_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
+crc_freertos_testapp_PKG_LIST = crc_freertos_testapp
+crc_freertos_testapp_INCLUDE = $(crc_freertos_testapp_PATH)
+export crc_freertos_testapp_BOARDLIST = tpr12_evm
+export crc_freertos_testapp_$(SOC)_CORELIST = $(drvcrc_$(SOC)_CORELIST)
+crc_EXAMPLE_LIST += crc_freertos_testapp
 
 
 export crc_LIB_LIST

@@ -47,27 +47,12 @@
 #include <stddef.h>
 #include <string.h>
 #include <stdio.h>
-#include <stdbool.h>
-
-/* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/IHeap.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/Memory.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/knl/Semaphore.h>
-#include <ti/sysbios/knl/Clock.h>
-#include <ti/sysbios/heaps/HeapBuf.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <ti/sysbios/knl/Event.h>
+#include "hwa_log.h"
 
 /* mmWave SK Include Files: */
-#include <ti/osal/SemaphoreP.h> //<uitl/profiling/profiling_osal.h>
+#include <ti/osal/SemaphoreP.h>
 #include <ti/osal/CycleprofilerP.h>
+#include <ti/osal/TaskP.h>
 #include <ti/drv/hwa/hwa.h>
 #include <ti/drv/hwa/soc/hwa_soc.h>
 #include <ti/board/board_cfg.h>
@@ -78,6 +63,7 @@
 #include "hwa_testvector_output.h"
 #include "fft_window.h"
 
+#define APP_TSK_STACK_MAIN              (2U * 1024U)
 
 /**************************************************************************
  *************************** Local Definitions ****************************
@@ -86,6 +72,8 @@
 /**************************************************************************
  *************************** Global Definitions ****************************
  **************************************************************************/
+
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 
 /**
  * @brief
@@ -338,7 +326,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     uint32_t                numLoops;
 
 
-    System_printf("\n\n ------- HWA context switch tests ------- \n\n");
+    HWA_log("\n\n ------- HWA context switch tests ------- \n\n");
 
     /*configure paramset used for the context switch tests */
     memset(gHWATestParamConfig, 0, sizeof(gHWATestParamConfig));  //init to zero
@@ -437,7 +425,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_enableContextSwitch(handle, 1);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableContextSwitch return %d\n", errCode);
+        HWA_log("Error: HWA_enableContextSwitch return %d\n", errCode);
     }
 
     /* set up the data */
@@ -465,7 +453,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     compareCode2 = 0;
 
     /* force context switch tests */
-    System_printf("\n Debug: HWA context switch (force switch) : test starts \n");
+    HWA_log("\n Debug: HWA context switch (force switch) : test starts \n");
 
 
     /* set up the background thread, 6 paramsets, loop 3, all paramsetDone interrupt enabled
@@ -515,7 +503,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     {
         errCode = HWA_enableParamSetInterrupt(handle, ii, &paramISRConfig);
     }
-    System_printf("Debug: background thread %d paramsets configuration done\n", paramsetIdx + 1);
+    HWA_log("Debug: background thread %d paramsets configuration done\n", paramsetIdx + 1);
 
     /* set up the ALT thread paramsets, 2 paramsets, loop 2, all paramsetDone interrupt enabled
        paramset 10: immediate triggered, INTR1
@@ -530,14 +518,14 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     gHWATestParamConfig[1].contextswitchCfg = HWA_PARAMSET_CONTEXTSWITCH_DISABLE;
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[1], NULL);
     errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-    System_printf("Debug: ALT (high priority) thread paramset %d, ", paramsetIdx);
+    HWA_log("Debug: ALT (high priority) thread paramset %d, ", paramsetIdx);
 
     paramsetIdx++; //paramset 11
     gHWATestParamConfig[1].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
     gHWATestParamConfig[1].contextswitchCfg = HWA_PARAMSET_CONTEXTSWITCH_DISABLE;
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-    System_printf("paramset %d configuration done\n ", paramsetIdx);
+    HWA_log("paramset %d configuration done\n ", paramsetIdx);
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
 
@@ -560,7 +548,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_enableDoneInterrupt(handle, 0, HWA_Test_DoneISR_Callback, doneSem);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
     /* param all done interrupt for ALT thread  */
@@ -571,7 +559,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_enableDoneInterrupt(handle, 1, HWA_Test_ALT_DoneISR_Callback, doneSemALT);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
 
@@ -622,17 +610,17 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     }
     gHWAOneLoopDone = 0;
     /* then wait for ALT thread done interrupt */
-    status = SemaphoreP_pend(doneSemALT, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSemALT, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
     /* then wait for background thread done interrupt */
-    status = SemaphoreP_pend(doneSem, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSem, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
     /* disable interrupt */
@@ -647,55 +635,55 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_disableDoneInterrupt(handle, 1);
 
 
-    System_printf("\n Debug:  HWA completed, check the results \n\n");
+    HWA_log("\n Debug:  HWA completed, check the results \n\n");
     /* check the results in gHWAcontextswitchTestParamSetIdx */
     compareCode1 = memcmp((uint8_t *)gHWAcontextswitchTestParamSetIdx, (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (force switch) : first loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (force switch) : first loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (force switch) : first loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (force switch) : first loop  generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
     compareCode1 = memcmp((uint8_t *) (gHWAcontextswitchTestParamSetIdx + 10), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (force switch) : second loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (force switch) : second loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (force switch) : second loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (force switch) : second loop  generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t *)(gHWAcontextswitchTestParamSetIdx + 20), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (force switch) : third loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (force switch) : third loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (force switch) : third loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (force switch) : third loop  generated by HWA found correct\n");
     }
 
     /* check the interrupt counts from two threads*/
     if ((intr2ParamDoneCount == 18) && (intr1ParamDoneCount==12))
     {
-        System_printf("Debug: HWA context switch (force switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (force switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
         compareCode1 = 0;
     }
     else
     {
-        System_printf("Debug: HWA context switch (force switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
+        HWA_log("Debug: HWA context switch (force switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
         compareCode1 = 1;
     }
 
     compareCode2 += compareCode1;
     if (compareCode2 == 0)
     {
-        System_printf("\n Debug: HWA context switch (force switch) : test passes \n");
+        HWA_log("\n Debug: HWA context switch (force switch) : test passes \n");
     }
     /* disable HWA */
     errCode = HWA_enable(handle, 0);
@@ -708,7 +696,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
     /* software trigger context switch */
 
-    System_printf("\n");
+    HWA_log("\n");
 
     /* 6 background thread paramsets same as forced context switch test, except all paramsets are software triggered,
        and in paramset 2, context switch is triggered by software
@@ -716,7 +704,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
        ALT thread, paramset 10, INTR1,pramset 11, INTR2
     */
 
-    System_printf("\n Debug: HWA context switch (software trigger switch) : test starts \n");
+    HWA_log("\n Debug: HWA context switch (software trigger switch) : test starts \n");
     paramsetIdx = 0;
 	gHWATestParamConfig[0].triggerMode = HWA_TRIG_MODE_SOFTWARE;
     gHWATestParamConfig[0].contextswitchCfg = HWA_PARAMSET_CONTEXTSWITCH_DISABLE;
@@ -756,7 +744,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 	{
 		errCode = HWA_enableParamSetInterrupt(handle, ii, &paramISRConfig);
 	}
-	System_printf("Debug: background thread %d paramsets configuration done\n", paramsetIdx + 1);
+	HWA_log("Debug: background thread %d paramsets configuration done\n", paramsetIdx + 1);
 
 	/* 2 paramsets in ALT thread, same as foced context switch test, except all software triggered */
 	paramsetIdx = 10;
@@ -766,14 +754,14 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
 	paramISRConfig.interruptTypeFlag = HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR1;
 	errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-	System_printf("Debug: high-priority thread paramset %d, ", 10);
+	HWA_log("Debug: high-priority thread paramset %d, ", 10);
 
 
 	paramsetIdx++; 
 	errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[1], NULL);
 	paramISRConfig.interruptTypeFlag = HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR2;
 	errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-	System_printf("paramset %d configurations done\n", 11);
+	HWA_log("paramset %d configurations done\n", 11);
 
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
@@ -799,7 +787,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_enableDoneInterrupt(handle, 0, HWA_Test_DoneISR_Callback, doneSem);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
     /* param all done interrupt for ALT thread */
@@ -810,7 +798,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
     numLoops = gCommonConfig.numLoops;
@@ -818,7 +806,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_enableContextSwitch(handle, 1);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableContextSwitch return %d\n", errCode);
+        HWA_log("Error: HWA_enableContextSwitch return %d\n", errCode);
     }
 
     errCode = HWA_enable(handle, 1);
@@ -894,18 +882,18 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     }
 
     /* then wait for ALT thread done interrupt */
-    status = SemaphoreP_pend(doneSemALT, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSemALT, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
 
     /* then wait for background thread done interrupt */
-    status = SemaphoreP_pend(doneSem, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSem, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
 
@@ -925,48 +913,48 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_disableDoneInterrupt(handle, 1);
 
 
-    System_printf("\n Debug:  HWA completed, check the results \n\n");
+    HWA_log("\n Debug:  HWA completed, check the results \n\n");
     /* check the results in gHWAcontextswitchTestParamSetIdx */
     compareCode1 = memcmp((uint8_t *) (gHWAcontextswitchTestParamSetIdx + 30), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (software trigger switch) : first loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (software trigger switch) : first loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (software trigger switch) : first loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (software trigger switch) : first loop  generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
     compareCode1 = memcmp((uint8_t *)(gHWAcontextswitchTestParamSetIdx + 40), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (software trigger switch) : second loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (software trigger switch) : second loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (software trigger switch) : second loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (software trigger switch) : second loop  generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t *)(gHWAcontextswitchTestParamSetIdx + 50), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (software trigger switch) : third loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (software trigger switch) : third loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (software trigger switch) : third loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (software trigger switch) : third loop  generated by HWA found correct\n");
     }
 
     /* check the interrupt counts from two threads*/
     if ((intr2ParamDoneCount == 18  + 15) && (intr1ParamDoneCount == 12 + 15))
     {
-        System_printf("Debug: HWA context switch (software trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (software trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
         compareCode1 = 0;
     }
     else
     {
-        System_printf("Debug: HWA context switch (software trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
+        HWA_log("Debug: HWA context switch (software trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
         compareCode1 = 1;
     }
 
@@ -974,7 +962,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
     if (compareCode2 == 0)
     {
-        System_printf("\n Debug: HWA context switch (software trigger switch) : test passes \n");
+        HWA_log("\n Debug: HWA context switch (software trigger switch) : test passes \n");
     }
 
     errCode = HWA_enable(handle, 0);
@@ -988,7 +976,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
 
     /* DMA trigger context switch */
-    System_printf("\n");
+    HWA_log("\n");
 
     /* 6 paramsets in background thread are same as force context switch test, except
        paramset 0, 1 are immediate trigger,
@@ -998,7 +986,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
        and all use INTR1
    */
 
-    System_printf("\n Debug: HWA context switch (DMA trigger switch) : test starts \n");
+    HWA_log("\n Debug: HWA context switch (DMA trigger switch) : test starts \n");
     paramsetIdx = 0;
     gHWATestParamConfig[0].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
     gHWATestParamConfig[0].contextswitchCfg = HWA_PARAMSET_CONTEXTSWITCH_DISABLE;
@@ -1035,20 +1023,20 @@ static void HWA_contextswitch_test(HWA_Handle handle)
         errCode = HWA_enableParamSetInterrupt(handle, ii, &paramISRConfig);
     }
 
-    System_printf("Debug: background thread %d paramsets configuration done\n", paramsetIdx + 1);
+    HWA_log("Debug: background thread %d paramsets configuration done\n", paramsetIdx + 1);
 
     /* 2 paramsets in ALT thread are same as forced context switch, except all immediate trigger */
     paramsetIdx = 10;
     gHWATestParamConfig[1].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[1], NULL);
     errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-    System_printf("Debug: high-priority thread paramset %d, ", 10);
+    HWA_log("Debug: high-priority thread paramset %d, ", 10);
 
 
     paramsetIdx++;
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[1], NULL);
     errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-    System_printf("paramset %d configurations done\n", 11);
+    HWA_log("paramset %d configurations done\n", 11);
 
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
@@ -1074,7 +1062,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_enableDoneInterrupt(handle, 0, HWA_Test_DoneISR_Callback, doneSem);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
     /* param all done interrupt for ALT thread */
@@ -1085,14 +1073,14 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
 
     errCode = HWA_enableContextSwitch(handle, 1);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableContextSwitch return %d\n", errCode);
+        HWA_log("Error: HWA_enableContextSwitch return %d\n", errCode);
     }
 
     errCode = HWA_enable(handle, 1);
@@ -1107,10 +1095,10 @@ static void HWA_contextswitch_test(HWA_Handle handle)
         errCode = HWA_setSoftwareTrigger(handle); //param 2
 
         /* then wait for ALT thread done interrupt */
-        status = SemaphoreP_pend(doneSemALT, BIOS_WAIT_FOREVER);
+        status = SemaphoreP_pend(doneSemALT, SemaphoreP_WAIT_FOREVER);
         if (status != SemaphoreP_OK)
         {
-            System_printf("Error: SemaphoreP_pend returned %d\n", status);
+            HWA_log("Error: SemaphoreP_pend returned %d\n", status);
         }
         //when ALT thread is done, trigger param3
         errCode = HWA_setSoftwareTrigger(handle); //param 3
@@ -1118,10 +1106,10 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
 
     /* then wait for background done interrupt */
-    status = SemaphoreP_pend(doneSem, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSem, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
 
@@ -1137,55 +1125,55 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_disableDoneInterrupt(handle, 1);
 
 
-    System_printf("\n Debug:  HWA completed, check the results \n\n");
+    HWA_log("\n Debug:  HWA completed, check the results \n\n");
     /* check the results in gHWAcontextswitchTestParamSetIdx */
     compareCode1 = memcmp((uint8_t *)(gHWAcontextswitchTestParamSetIdx + 60), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (DMA trigger switch) : first loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (DMA trigger switch) : first loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (DMA trigger switch) : first loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (DMA trigger switch) : first loop  generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
     compareCode1 = memcmp((uint8_t *)(gHWAcontextswitchTestParamSetIdx + 70), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (DMA trigger switch) : second loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (DMA trigger switch) : second loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (DMA trigger switch) : second loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (DMA trigger switch) : second loop  generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t *)(gHWAcontextswitchTestParamSetIdx + 80), (uint8_t*)gHWATest_contextswitchParamIdx_output, 10 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (DMA trigger switch) : third loop output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (DMA trigger switch) : third loop output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (DMA trigger switch) : third loop  generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (DMA trigger switch) : third loop  generated by HWA found correct\n");
     }
 
 
     /* check the interrupt counts from two threads*/
     if ((intr2ParamDoneCount == (18 + 15)) && (intr1ParamDoneCount == (12 + 15 + 30)))
     {
-        System_printf("Debug: HWA context switch (DMA trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (DMA trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
         compareCode1 = 0;
     }
     else
     {
-        System_printf("Debug: HWA context switch (DMA trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
+        HWA_log("Debug: HWA context switch (DMA trigger switch) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
         compareCode1 = 1;
     }
 
     if (compareCode2 == 0)
     {
-        System_printf("\n Debug: HWA context switch (DMA trigger switch) : test passes \n");
+        HWA_log("\n Debug: HWA context switch (DMA trigger switch) : test passes \n");
     }
 
 
@@ -1202,7 +1190,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     /* multiple context switches in background switch with dummy paramsets,
        context switch is enabled by either force, or software trigger,
        all use INTR2 */
-    System_printf("\n");
+    HWA_log("\n");
 
     /* set up paramsets for background thread */
 
@@ -1232,13 +1220,13 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     gHWATestParamConfig[1].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[1], NULL);
     errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-    System_printf("Debug: high-priority thread paramset %d, ", 10);
+    HWA_log("Debug: high-priority thread paramset %d, ", 10);
 
 
     paramsetIdx++;
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[1], NULL);
     errCode = HWA_enableParamSetInterrupt(handle, paramsetIdx, &paramISRConfig);
-    System_printf("paramset %d configurations done\n", 11);
+    HWA_log("paramset %d configurations done\n", 11);
 
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
@@ -1263,7 +1251,7 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_enableDoneInterrupt(handle, 0, HWA_Test_DoneISR_Callback, doneSem);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
     /* param all done interrupt for ALT thread */
@@ -1274,24 +1262,24 @@ static void HWA_contextswitch_test(HWA_Handle handle)
 
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt return %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt return %d\n", errCode);
     }
 
 
     errCode = HWA_enableContextSwitch(handle, 1);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableContextSwitch return %d\n", errCode);
+        HWA_log("Error: HWA_enableContextSwitch return %d\n", errCode);
     }
 
     errCode = HWA_enable(handle, 1);
 
     errCode = HWA_setSoftwareTrigger(handle); //trigger paramset 32
     /* force context switch, then wait for ALT thread done interrupt */
-    status = SemaphoreP_pend(doneSemALT, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSemALT, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
     /* trigger high-priority ALT thread */
@@ -1300,19 +1288,19 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     errCode = HWA_setSoftwareTrigger(handle); //trigger paramset 33
 
     /* force context switch, then wait for ALT thread done interrupt */
-    status = SemaphoreP_pend(doneSemALT, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSemALT, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
     errCode = HWA_setSoftwareTrigger(handle); //trigger paramset 34
 
     /* wait for background thread done */
-    status = SemaphoreP_pend(doneSem, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSem, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 
 
@@ -1331,51 +1319,51 @@ static void HWA_contextswitch_test(HWA_Handle handle)
     if (doneSemALT != NULL)
         SemaphoreP_delete(doneSemALT);
 
-    System_printf("\n Debug:  HWA completed, check the results \n\n");
+    HWA_log("\n Debug:  HWA completed, check the results \n\n");
 
     compareCode1 = memcmp((uint8_t *)(gHWAcontextswitchTestParamSetIdx + 90), (uint8_t*) (gHWATest_contextswitchParamIdx_output + 10), 7 * sizeof(uint32_t));
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA context switch (multiple switches from dummy paramset) : output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA context switch (multiple switches from dummy paramset) : output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA context switch (multiple switches from dummy paramset) : output generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (multiple switches from dummy paramset) : output generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
 
     /* check the interrupt counts from two threads*/
     if ((intr2ParamDoneCount == (18 + 15 + 7)) && (intr1ParamDoneCount == (12 + 15 + 30)))
     {
-        System_printf("Debug: HWA context switch (multiple switches from dummy paramset) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
+        HWA_log("Debug: HWA context switch (multiple switches from dummy paramset) : INTR1/INTR2 paramsetDone interrupts generated by HWA found correct\n");
         compareCode1 = 0;
     }
     else
     {
-        System_printf("Debug: HWA context switch (multiple switches from dummy paramset) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
+        HWA_log("Debug: HWA context switch (multiple switches from dummy paramset) : INTR1/INTR2 paramsetDone interrupts generated by HWA found incorrect : %d, %d\n", intr2ParamDoneCount, intr1ParamDoneCount);
         compareCode1 = 1;
     }
     compareCode2 += compareCode1;
 
     if (compareCode2 == 0)
     {
-        System_printf("\n Debug: HWA context switch (multiple switches from dummy paramset) : test passes \n");
+        HWA_log("\n Debug: HWA context switch (multiple switches from dummy paramset) : test passes \n");
     }
 
-    System_printf("\n");
+    HWA_log("\n");
     if (compareCode2 != 0)
     {
         //MCPI_setFeatureTestResult("HWA context switch Tests", MCPI_TestResult_FAIL);
-        System_printf("Feature :  HWA context switch Tests FAIL\n");
+        HWA_log("Feature :  HWA context switch Tests FAIL\n");
         finalTestResultsPass = 0;
     }
     else
     {
         //MCPI_setFeatureTestResult("HWA context switch Tests", MCPI_TestResult_PASS);
-        System_printf("Feature :  HWA context switch Tests PASS\n");
+        HWA_log("Feature :  HWA context switch Tests PASS\n");
     }
 
-    System_printf("\n HWA context switch tests complelted \n\n");
+    HWA_log("\n HWA context switch tests complelted \n\n");
 
 
 }
@@ -1396,7 +1384,7 @@ static void HWA_fft4k_test(HWA_Handle handle)
     uint16_t                fftSize = 4096;
 
     compareCode2 = 0;
-    System_printf("\n\n ------- HWA FFT 4K tests ------- \n\n");
+    HWA_log("\n\n ------- HWA FFT 4K tests ------- \n\n");
 
     /* FFT size 4096 */
     paramsetIdx = 0;
@@ -1447,15 +1435,15 @@ static void HWA_fft4k_test(HWA_Handle handle)
 
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (Immediate trigged, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (Immediate trigged, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate trigged, AccelMode FFT - 4K]", MCPI_TestResult_FAIL);
-        System_printf("Feature :  API HWA_configParamSet() [Immediate trigged, AccelMode FFT - 4K] FAIL\n");
+        HWA_log("Feature :  API HWA_configParamSet() [Immediate trigged, AccelMode FFT - 4K] FAIL\n");
         finalTestResultsPass  =0;
         return;
     }
     else
     {
-        System_printf("Debug: paramset %d : Immediate Trigger AccelMode FFT - 4K - first paramset \n", paramsetIdx);
+        HWA_log("Debug: paramset %d : Immediate Trigger AccelMode FFT - 4K - first paramset \n", paramsetIdx);
 
     }
 
@@ -1502,15 +1490,15 @@ static void HWA_fft4k_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
         //PI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4K]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4K] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4K] FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        System_printf("Debug: paramset %d : Immediate Trigger AccelMode FFT - 4K - second paramset \n", paramsetIdx);
+        HWA_log("Debug: paramset %d : Immediate Trigger AccelMode FFT - 4K - second paramset \n", paramsetIdx);
     }
 
     /* common configuration */
@@ -1529,15 +1517,15 @@ static void HWA_fft4k_test(HWA_Handle handle)
     errCode = HWA_configCommon(handle, &gCommonConfig);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configCommon(%d) (Immediate triggered, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configCommon(%d) (Immediate triggered, AccelMode FFT - 4K) returned %d\n", errCode, paramsetIdx);
        // MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4K]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4 FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 4 FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        System_printf("Debug: HWA_configCommon FFT - 4K \n", paramsetIdx);
+        HWA_log("Debug: paramset %d : HWA_configCommon FFT - 4K \n", paramsetIdx);
     }
 
     /* copy the input data */
@@ -1547,9 +1535,9 @@ static void HWA_fft4k_test(HWA_Handle handle)
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_WINDOW_RAM, (uint8_t *)win_fft4k, sizeof(win_fft4k), gHWATestParamConfig[0].accelModeArgs.fftMode.windowStart);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
+        HWA_log("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
+        HWA_log("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
 		finalTestResultsPass = 0;
         return;
     }
@@ -1567,23 +1555,23 @@ static void HWA_fft4k_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 0);
 
     /* check the results */
-    System_printf("\n");
+    HWA_log("\n");
 
     compareCode2 = memcmp((uint8_t *)((uint32_t)dstAddr + 2 * HWA_MEMn_SIZE) , (uint8_t*)gHWATest_FFT4K_output, 4 * 2 * fftSize); //output is 32bits I/32 bitsQ
 
     if (compareCode2 != 0)
     {
         //MCPI_setFeatureTestResult("HWA 4KFFT Tests", MCPI_TestResult_FAIL);
-        System_printf("Feature : HWA 4KFFT Tests FAIL\n");
+        HWA_log("Feature : HWA 4KFFT Tests FAIL\n");
         finalTestResultsPass  = 0;
     }
     else
     {
        // MCPI_setFeatureTestResult("HWA 4KFFT Tests", MCPI_TestResult_PASS);
-        System_printf("Feature : HWA 4KFFT Tests PASS\n");
+        HWA_log("Feature : HWA 4KFFT Tests PASS\n");
     }
 
-    System_printf("\n HWA 4KFFT test completed \n\n");
+    HWA_log("\n HWA 4KFFT test completed \n\n");
 
 }
 /**
@@ -1606,7 +1594,7 @@ static void HWA_2dfft_test(HWA_Handle handle)
 
 
     compareCode2 = 0;
-    System_printf("\n\n ------- HWA 2D FFT tests ------- \n\n");
+    HWA_log("\n\n ------- HWA 2D FFT tests ------- \n\n");
 
     /* 2D fft test  */
     paramsetIdx = 0;
@@ -1662,15 +1650,15 @@ static void HWA_2dfft_test(HWA_Handle handle)
 
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode FFT - 2DFFT) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode FFT - 2DFFT) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 2DFFT]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 2DFFT] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode FFT - 2DFFT] FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        System_printf("Debug: paramset %d : Immediate Trigger AccelMode FFT - 2DFFT\n", paramsetIdx);
+        HWA_log("Debug: paramset %d : Immediate Trigger AccelMode FFT - 2DFFT\n", paramsetIdx);
     }
 
     /* configure the common register */
@@ -1689,9 +1677,9 @@ static void HWA_2dfft_test(HWA_Handle handle)
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_WINDOW_RAM, (uint8_t *)win_fft2d, sizeof(win_fft2d), gHWATestParamConfig[paramsetIdx].accelModeArgs.fftMode.windowStart);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
+        HWA_log("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
+        HWA_log("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -1707,23 +1695,23 @@ static void HWA_2dfft_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 0);
 
     /* check the results */
-    System_printf("\n");
+    HWA_log("\n");
 
     compareCode2 = memcmp(dstAddr, (uint8_t*)gHWATest_2DFFT_output, 4 * fftSize1 * fftSize2);
 
     if (compareCode2 != 0)
     {
         //MCPI_setFeatureTestResult("HWA 2DFFT Tests", MCPI_TestResult_FAIL);
-        System_printf("Feature : HWA 2DFFT Tests FAIL\n");
+        HWA_log("Feature : HWA 2DFFT Tests FAIL\n");
         finalTestResultsPass = 0;
     }
     else
     {
        // MCPI_setFeatureTestResult("HWA 2DFFT Tests", MCPI_TestResult_PASS);
-        System_printf("Feature : HWA 2DFFT Tests PASS\n");
+        HWA_log("Feature : HWA 2DFFT Tests PASS\n");
     }
 
-    System_printf("\n HWA 2DFFT test completed \n\n");
+    HWA_log("\n HWA 2DFFT test completed \n\n");
 
 }
 
@@ -1750,7 +1738,7 @@ static void HWA_compress_test(HWA_Handle handle)
 
 
     compareCode2 = 0;
-    System_printf("\n\n ------- HWA compress/decompress tests ------- \n\n");
+    HWA_log("\n\n ------- HWA compress/decompress tests ------- \n\n");
     /* Do dma trigger mode test - simple FFT - one pass */
     paramsetIdx = 0;
     memset(gHWATestParamConfig, 0, sizeof(gHWATestParamConfig));  //init to zero
@@ -1794,15 +1782,15 @@ static void HWA_compress_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode compress) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode compress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode compress]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode compress] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode compress] FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        System_printf("Debug: paramset %d : Immediate Trigger AccelMode Compression(BFP)\n", paramsetIdx);
+        HWA_log("Debug: paramset %d : Immediate Trigger AccelMode Compression(BFP)\n", paramsetIdx);
     }
 
     paramsetIdx++; //decompress
@@ -1845,15 +1833,15 @@ static void HWA_compress_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (software triggered, AccelMode decompress) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (software triggered, AccelMode decompress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [software triggered, AccelMode decompress]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [software triggered, AccelMode decompress] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [software triggered, AccelMode decompress] FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        System_printf("Debug: paramset %d : software Trigger AccelMode deCompression(BFP)\n", paramsetIdx);
+        HWA_log("Debug: paramset %d : software Trigger AccelMode deCompression(BFP)\n", paramsetIdx);
     }
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
@@ -1877,17 +1865,17 @@ static void HWA_compress_test(HWA_Handle handle)
 
     errCode = HWA_singleParamSetDonePolling(handle, paramsetIdx);
 
-    System_printf("\n");
+    HWA_log("\n");
 
     /* checked the decompressed data in M2*/
     compareCode1 = memcmp((uint8_t *)((uint32_t)dstAddr + HWA_MEMn_SIZE), (uint8_t*)HWA_BFPcompdecomp_output, 4 * HWA_TEST_NUM_RX_ANT * numBFPInputBlock);
     if (compareCode1 != 0)
     {
-        System_printf("Error: HCompression/decompression BFP output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HCompression/decompression BFP output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: Compression/decompression BFP output generated by HWA found correct\n");
+        HWA_log("Debug: Compression/decompression BFP output generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
 
@@ -1933,15 +1921,15 @@ static void HWA_compress_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (software triggered, AccelMode compress) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (software triggered, AccelMode compress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [software triggered, AccelMode compress]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [software triggered, AccelMode compress] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [software triggered, AccelMode compress] FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        System_printf("\nDebug: paramset %d : software Trigger AccelMode Compression(EGE)\n", paramsetIdx);
+        HWA_log("\nDebug: paramset %d : software Trigger AccelMode Compression(EGE)\n", paramsetIdx);
     }
 
     paramsetIdx++;
@@ -1982,15 +1970,15 @@ static void HWA_compress_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (immediate triggered, AccelMode decompress) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (immediate triggered, AccelMode decompress) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [immediate triggered, AccelMode decompress]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [software triggered, AccelMode compress] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [software triggered, AccelMode compress] FAIL\n");
 		finalTestResultsPass = 0;
         return;
     }
     else
     {
-        System_printf("Debug: paramset %d : immediate Trigger AccelMode deCompression(EGE)\n", paramsetIdx);
+        HWA_log("Debug: paramset %d : immediate Trigger AccelMode deCompression(EGE)\n", paramsetIdx);
     }
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
@@ -2019,37 +2007,37 @@ static void HWA_compress_test(HWA_Handle handle)
     errCode = HWA_setSoftwareTrigger(handle);
     errCode = HWA_singleParamSetDonePolling(handle, paramsetIdx);
 
-    System_printf("\n");
+    HWA_log("\n");
 
     /* checked the decompressed data in M2*/
     compareCode1 = memcmp((uint8_t *)((uint32_t)dstAddr + HWA_MEMn_SIZE), (uint8_t*)HWA_EGEcompdecomp_output, 4 * HWA_TEST_NUM_RX_ANT * numBFPInputBlock);
     if (compareCode1 != 0)
     {
-        System_printf("Error: Compression/decompression EGE output found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: Compression/decompression EGE output found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: Compression/decompression EGE output generated by HWA found correct\n");
+        HWA_log("Debug: Compression/decompression EGE output generated by HWA found correct\n");
     }
     compareCode2 += compareCode1;
 
 
     errCode = HWA_enable(handle, 0);
 
-    System_printf("\n");
+    HWA_log("\n");
     if (compareCode2 != 0)
     {
        // MCPI_setFeatureTestResult("HWA compression/decompression Tests", MCPI_TestResult_FAIL);
-        System_printf("Feature : HWA compression/decompression Tests FAIL\n");
+        HWA_log("Feature : HWA compression/decompression Tests FAIL\n");
         finalTestResultsPass = 0;
     }
     else
     {
        // MCPI_setFeatureTestResult("HWA compression/decompression Tests", MCPI_TestResult_PASS);
-        System_printf("Feature : HWA compression/decompression Tests PASS\n");
+        HWA_log("Feature : HWA compression/decompression Tests PASS\n");
     }
 
-    System_printf("\n HWA compression/decompression test completed \n");
+    HWA_log("\n HWA compression/decompression test completed \n");
 
 }
 /**
@@ -2088,7 +2076,7 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
      * Test: DMA triggered mode
      **************************************************************************
      **************************************************************************/
-    System_printf("\n------- HWA FFT with pre-processing test ------- \n\n");
+    HWA_log("\n------- HWA FFT with pre-processing test ------- \n\n");
     /* Do dma trigger mode test - simple FFT - one pass */
     paramsetIdx = 0;
     memset(gHWATestParamConfig, 0, sizeof(gHWATestParamConfig));  //init to zero
@@ -2108,16 +2096,16 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) (DMA Trigger paramset for ping buffer, AccelMode None) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) (DMA Trigger paramset for ping buffer, AccelMode None) returned %d\n", errCode, paramsetIdx);
        // MCPI_setFeatureTestResult("API HWA_configParamSet() [DMA Trigger paramset for ping buffer, AccelMode None]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [DMA Trigger paramset for ping buffer, AccelMode None] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [DMA Trigger paramset for ping buffer, AccelMode None] FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        //System_printf("Debug: API HWA_configParamSet() [DMA Trigger paramset for ping buffer, AccelMode None] Pass\n");
-        System_printf("Debug: paramset %d : DMA Trigger AccelMode None\n", paramsetIdx);
+        //HWA_log("Debug: API HWA_configParamSet() [DMA Trigger paramset for ping buffer, AccelMode None] Pass\n");
+        HWA_log("Debug: paramset %d : DMA Trigger AccelMode None\n", paramsetIdx);
     }
     paramsetIdx++;
     pingParamSetIdx = paramsetIdx;
@@ -2172,16 +2160,16 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate Triggered, Ping buffer FFT processing with DC and Interference Statistics ]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [Immediate Triggered, Ping buffer FFT processing with DC and Interference Statistics] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [Immediate Triggered, Ping buffer FFT processing with DC and Interference Statistics] FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-       // System_printf("Debug: API HWA_configParamSet() [Immediate Triggered, Ping buffer FFT processing with DC and Interference Statistics] PASS\n");
-        System_printf("Debug: paramset %d : Immediate Trigger AccelMode FFT with DC, interference estimation enabled \n", paramsetIdx);
+       // HWA_log("Debug: API HWA_configParamSet() [Immediate Triggered, Ping buffer FFT processing with DC and Interference Statistics] PASS\n");
+        HWA_log("Debug: paramset %d : Immediate Trigger AccelMode FFT with DC, interference estimation enabled \n", paramsetIdx);
     }
     paramsetIdx++;
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_DMA; //Immediate triggered  - in demo this will be HWA_TRIG_MODE_DMA
@@ -2190,16 +2178,16 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() [DMA Trigger paramset for pong buffer, AccelMode None]", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() [DMA Trigger paramset for pong buffer, AccelMode None] FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() [DMA Trigger paramset for pong buffer, AccelMode None] FAIL\n");
 		finalTestResultsPass = 0;
 	    return;
     }
     else
     {
-       // System_printf("Debug: API HWA_configParamSet() [DMA Trigger paramset for pong buffer, AccelMode None] PASS\n");
-        System_printf("Debug: paramset %d : DMA Trigger AccelMode None\n", paramsetIdx);
+       // HWA_log("Debug: API HWA_configParamSet() [DMA Trigger paramset for pong buffer, AccelMode None] PASS\n");
+        HWA_log("Debug: paramset %d : DMA Trigger AccelMode None\n", paramsetIdx);
     }
     paramsetIdx++;
     pongParamSetIdx = paramsetIdx;
@@ -2228,16 +2216,16 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, Pong buffer FFT processing with interference localization/mitigation enabled (all pass) )", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, Pong buffer FFT processing with interference localization/mitigation enabled (all pass)) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Immediate Triggered, Pong buffer FFT processing with interference localization/mitigation enabled (all pass)) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        //System_printf("Debug: API HWA_configParamSet() (Immediate Triggered, Pong buffer FFT processing with interference localization/mitigation enabled (all pass) ) PASS\n");
-        System_printf("Debug: paramset %d : Immediate Trigger AccelMode FFT, with intereference mitigation enabled \n", paramsetIdx);
+        //HWA_log("Debug: API HWA_configParamSet() (Immediate Triggered, Pong buffer FFT processing with interference localization/mitigation enabled (all pass) ) PASS\n");
+        HWA_log("Debug: paramset %d : Immediate Trigger AccelMode FFT, with intereference mitigation enabled \n", paramsetIdx);
     }
 
     /* this paramset also enable the threshold mitigation, by zero out all the samples to zero*/
@@ -2261,16 +2249,16 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, FFT processing with localization/interference mitigation(all zero out) )", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, FFT processing with localization/interference mitigation(all zero out)) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Immediate Triggered, FFT processing with localization/interference mitigation(all zero out)) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        //System_printf("Debug: API HWA_configParamSet() (Immediate Triggered, FFT processing with localization/interference mitigation(all zero out)) PASS\n");
-        System_printf("Debug: paramset %d : Immediate Triggered, AccelMode FFT, interference mitigation with threshold 0\n", paramsetIdx);
+        //HWA_log("Debug: API HWA_configParamSet() (Immediate Triggered, FFT processing with localization/interference mitigation(all zero out)) PASS\n");
+        HWA_log("Debug: paramset %d : Immediate Triggered, AccelMode FFT, interference mitigation with threshold 0\n", paramsetIdx);
     }
 
 
@@ -2305,16 +2293,16 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, FFT enabled with shuffle addressing(wraparound) + channel combine + zeroinsert )", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, FFT enabled with shuffle addressing(wraparound) + channel combine + zeroinsert) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Immediate Triggered, FFT enabled with shuffle addressing(wraparound) + channel combine + zeroinsert) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-       //System_printf("Debug: API HWA_configParamSet() (Immediate Triggered,FFT enabled with shuffle addressing(wraparound) + channel combine + zeroinsert) PASS\n");
-       System_printf("Debug: paramset %d : Immediate Trigger AccelMode FFT with shuffle addressing \n", paramsetIdx);
+       //HWA_log("Debug: API HWA_configParamSet() (Immediate Triggered,FFT enabled with shuffle addressing(wraparound) + channel combine + zeroinsert) PASS\n");
+       HWA_log("Debug: paramset %d : Immediate Trigger AccelMode FFT with shuffle addressing \n", paramsetIdx);
     }
     /* config shuffle ram */
     {
@@ -2328,9 +2316,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_SHUFFLE_RAM, (uint8_t*)shuffleIdx, HWA_TEST_NUM_SAMPLES * sizeof(uint16_t), 0);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) returned %d\n", errCode);
+        HWA_log("Error: HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) FAIL\n");
+        HWA_log("Feature : API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2342,9 +2330,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_WINDOW_RAM, (uint8_t *)win_data225, sizeof(win_data225), HWA_TEST_1DFFT_WINDOW_START);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
+        HWA_log("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
+        HWA_log("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2353,9 +2341,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_WINDOW_RAM, (uint8_t *)win_data225, sizeof(win_data225), sizeof(win_data225));  //in terms of byte
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0) returned %d\n", errCode);
+        HWA_log("Error: HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0) FAIL\n");
+        HWA_log("Feature : API HWA_configRam(HWA_RAM_TYPE_WINDOW_RAM with offset not 0) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2373,9 +2361,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     if (errCode != 0)
     {
         //retCode = HWA_TEST_ERROR;
-        System_printf("Error: HWA_enableParamSetInterrupt returned %d\n", errCode);
+        HWA_log("Error: HWA_enableParamSetInterrupt returned %d\n", errCode);
        // MCPI_setFeatureTestResult("HWA_enableParamSetInterrupt", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_enableParamSetInterrupt FAIL\n");
+        HWA_log("Feature : API HWA_enableParamSetInterrupt FAIL\n");
         return;
     }
 
@@ -2391,9 +2379,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_enableDoneInterrupt(handle, 0, HWA_Test_DoneISR_Callback, doneSem);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enableDoneInterrupt returned %d\n", errCode);
+        HWA_log("Error: HWA_enableDoneInterrupt returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enableDoneInterrupt()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_enableDoneInterrupt() FAIL\n");
+        HWA_log("Feature : API HWA_enableDoneInterrupt() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2456,9 +2444,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_configCommon(handle, &gCommonConfig);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configCommon returned %d\n", errCode);
+        HWA_log("Error: HWA_configCommon returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configCommon()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_enableDoneInterrupt() FAIL\n");
+        HWA_log("Feature : API HWA_enableDoneInterrupt() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2472,9 +2460,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     drvApiCycles[DRV_API_ENABLE] = endTime - startTime;
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(1) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enable() to enable HWA", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_enable() to enable HWA FAIL\n");
+        HWA_log("Feature : API HWA_enable() to enable HWA FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2485,9 +2473,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_reset(handle);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_reset returned %d\n", errCode);
+        HWA_log("Error: HWA_reset returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_reset()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_reset( ) FAIL\n");
+        HWA_log("Feature : API HWA_reset( ) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2520,9 +2508,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
 
     if (errCode != 0)
     {
-        System_printf("Error: HWA_setDMA2ACCManualTrig(0) returned %d\n", errCode);
+        HWA_log("Error: HWA_setDMA2ACCManualTrig(0) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_setDMA2ACCManualTrig(ch:0)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_setDMA2ACCManualTrig(ch:0) FAIL\n");
+        HWA_log("Feature : API HWA_setDMA2ACCManualTrig(ch:0) FAIL\n");
         finalTestResultsPass = 0;
 		return;
     }
@@ -2530,9 +2518,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_setDMA2ACCManualTrig(handle, HWA_TEST_SRC_TRIGGER_DMACH1);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_setDMA2ACCManualTrig(1) returned %d\n", errCode);
+        HWA_log("Error: HWA_setDMA2ACCManualTrig(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_setDMA2ACCManualTrig(ch:1)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_setDMA2ACCManualTrig(ch:1) FAIL\n");
+        HWA_log("Feature : API HWA_setDMA2ACCManualTrig(ch:1) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2545,18 +2533,18 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
      /* now wait for the interrupts */
 #ifdef TEST_PARAMSET_INTERRUPT
     /* first wait for the paramSet done interrupt */
-    status = SemaphoreP_pend(paramSetSem, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(paramSetSem, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
         //retCode = HWA_TEST_ERROR;
-        System_printf("Error: SemaphoreP_pend returned %d\n", status);
+        HWA_log("Error: SemaphoreP_pend returned %d\n", status);
     }
 #endif
     /* then wait for the all paramSets done interrupt */
-    status = SemaphoreP_pend(doneSem, BIOS_WAIT_FOREVER);
+    status = SemaphoreP_pend(doneSem, SemaphoreP_WAIT_FOREVER);
     if (status != SemaphoreP_OK)
     {
-        System_printf("Error: Wait for all paramsets done failed %d\n", status);
+        HWA_log("Error: Wait for all paramsets done failed %d\n", status);
         return;
     }
 
@@ -2566,9 +2554,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_readDCEstimateReg(handle, DCEstResult, 0, HWA_TEST_NUM_RX_ANT);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readDCEstimateReg returned %d\n", errCode);
+        HWA_log("Error: HWA_readDCEstimateReg returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readDCEstimateReg", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readDCEstimateReg() FAIL\n");
+        HWA_log("Feature : API HWA_readDCEstimateReg() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2577,9 +2565,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_readInterfThreshReg(handle, magEstResult, 0, HWA_TEST_NUM_RX_ANT, HWA_INTERFERENCE_THRESHOLD_TYPE_MAG);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readInterfThreshReg(MAG) returned %d\n", errCode);
+        HWA_log("Error: HWA_readInterfThreshReg(MAG) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readInterfThreshReg(MAG)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readInterfThreshReg(MAG) FAIL\n");
+        HWA_log("Feature : API HWA_readInterfThreshReg(MAG) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2588,9 +2576,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_readInterfThreshReg(handle, magDiffEstResult, 0, HWA_TEST_NUM_RX_ANT, HWA_INTERFERENCE_THRESHOLD_TYPE_MAGDIFF);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readInterfThreshReg(MAGDIFF) returned %d\n", errCode);
+        HWA_log("Error: HWA_readInterfThreshReg(MAGDIFF) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readInterfThreshReg(MAGDIFF)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readInterfThreshReg(MAGDIFF) FAIL\n");
+        HWA_log("Feature : API HWA_readInterfThreshReg(MAGDIFF) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2598,9 +2586,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_readDCAccReg(handle, DCAccResult, 0, HWA_TEST_NUM_RX_ANT);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readDCAccReg returned %d\n", errCode);
+        HWA_log("Error: HWA_readDCAccReg returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readDCAccReg", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readDCAccReg() FAIL\n");
+        HWA_log("Feature : API HWA_readDCAccReg() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2608,9 +2596,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_readIntfAccReg(handle, magAccResult, HWA_INTERFERENCE_THRESHOLD_TYPE_MAG, 0, HWA_TEST_NUM_RX_ANT);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readIntfAccReg(MAG) returned %d\n", errCode);
+        HWA_log("Error: HWA_readIntfAccReg(MAG) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_readIntfAccReg(MAG)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readIntfAccReg(MAG) FAIL\n");
+        HWA_log("Feature : API HWA_readIntfAccReg(MAG) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2618,48 +2606,48 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_readIntfAccReg(handle, magDiffAccResult, HWA_INTERFERENCE_THRESHOLD_TYPE_MAGDIFF, 0, HWA_TEST_NUM_RX_ANT);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readIntfAccReg(MAGDIFF) returned %d\n", errCode);
+        HWA_log("Error: HWA_readIntfAccReg(MAGDIFF) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readIntfAccReg(MAGDIFF)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readIntfAccReg(MAGDIFF) FAIL\n");
+        HWA_log("Feature : API HWA_readIntfAccReg(MAGDIFF) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
 
-    System_printf("\nDebug: HWA FFT with pre-processing test result check\n");
-    System_printf("\n");
+    HWA_log("\nDebug: HWA FFT with pre-processing test result check\n");
+    HWA_log("\n");
 
     /* check the results*/
     compareCode2 = 0;
     compareCode1 = memcmp((uint8_t *)DCEstResult, (uint8_t*)gHWATest_dcest_output, 2 * HWA_TEST_NUM_RX_ANT * 4);
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA DC ESTIMATION found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA DC ESTIMATION found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA DC ESTIMATION found correct\n");
+        HWA_log("Debug: HWA DC ESTIMATION found correct\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t *)magEstResult, (uint8_t*)gHWATest_intefMag_output, HWA_TEST_NUM_RX_ANT * 4);
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA Interference Statistics Magnitude found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA Interference Statistics Magnitude found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA Interference Statistics Magnitude found correct\n");
+        HWA_log("Debug: HWA Interference Statistics Magnitude found correct\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t *)magDiffEstResult, (uint8_t*)gHWATest_intefMagDiff_output, HWA_TEST_NUM_RX_ANT * 4);
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA Interference Statistics Magnitude DIFF found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA Interference Statistics Magnitude DIFF found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA Interference Statistics Magnitude DIFF found correct\n");
+        HWA_log("Debug: HWA Interference Statistics Magnitude DIFF found correct\n");
     }
     compareCode2 += compareCode1;
 
@@ -2667,22 +2655,22 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t *)DCAccResult, (uint8_t*)HWA_dcAccumulator_output, 2 * HWA_TEST_NUM_RX_ANT * 8);
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA DC Accumulator found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA DC Accumulator found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA DC Accumulator found correct\n");
+        HWA_log("Debug: HWA DC Accumulator found correct\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t *)magAccResult, (uint8_t*)HWA_magAccumulator_output, HWA_TEST_NUM_RX_ANT * 8);
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA Interference Mag Accumulator found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA Interference Mag Accumulator found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA Interference Mag Accumulator found correct\n");
+        HWA_log("Debug: HWA Interference Mag Accumulator found correct\n");
     }
 
     compareCode2 += compareCode1;
@@ -2690,11 +2678,11 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t *)magDiffAccResult, (uint8_t*)HWA_magDiffAccumulator_output, HWA_TEST_NUM_RX_ANT * 8);
     if (compareCode1 != 0)
     {
-        System_printf("Error: HWA  Interference Magdiff Accumulator found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: HWA  Interference Magdiff Accumulator found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: HWA  Interference Magdiff Accumulator found correct\n");
+        HWA_log("Debug: HWA  Interference Magdiff Accumulator found correct\n");
     }
     compareCode2 += compareCode1;
 
@@ -2708,11 +2696,11 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     compareCode2 += compareCode1;
     if (compareCode1 != 0)
     {
-        System_printf("Error: fft output produced by HWA in MEM1 found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: fft output produced by HWA in MEM1 found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: fft output produced by HWA (paramset 1) found correct\n");
+        HWA_log("Debug: fft output produced by HWA (paramset 1) found correct\n");
     }
 
     /* pong fft + interference all pass through*/
@@ -2722,11 +2710,11 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
 
     if (compareCode1 != 0)
     {
-        System_printf("Error: fft output produced by HWA in MEM2 found incorrect: error %d\n", compareCode2);
+        HWA_log("Error: fft output produced by HWA in MEM2 found incorrect: error %d\n", compareCode2);
     }
     else
     {
-        System_printf("Debug: fft output produced by HWA (paramset 3) found correct\n");
+        HWA_log("Debug: fft output produced by HWA (paramset 3) found correct\n");
     }
 
      /* fft interference all zero-out */
@@ -2742,11 +2730,11 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     }
     if (compareCode1 != 0)
     {
-        System_printf("Error: fft output produced by HWA in MEM3 found incorrect: error %d\n", compareCode2);
+        HWA_log("Error: fft output produced by HWA in MEM3 found incorrect: error %d\n", compareCode2);
     }
     else
     {
-        System_printf("Debug: fft output produced by HWA (paramset 4) found correct\n");
+        HWA_log("Debug: fft output produced by HWA (paramset 4) found correct\n");
     }
     compareCode2 += compareCode1;
 
@@ -2757,11 +2745,11 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     compareCode2 += compareCode1;
     if (compareCode1 != 0)
     {
-        System_printf("Error: fft output produced by HWA in MEM4 found incorrect: error %d\n", compareCode2);
+        HWA_log("Error: fft output produced by HWA in MEM4 found incorrect: error %d\n", compareCode2);
     }
     else
     {
-        System_printf("Debug: fft output produced by HWA (paramset 5) found correct\n");
+        HWA_log("Debug: fft output produced by HWA (paramset 5) found correct\n");
     }
 
 
@@ -2771,18 +2759,18 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_disableParamSetInterrupt(handle, paramsetIdx, HWA_PARAMDONE_INTERRUPT_TYPE_CPU_INTR1);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_disableParamSetInterrupt returned %d\n", errCode);
+        HWA_log("Error: HWA_disableParamSetInterrupt returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_disableParamSetInterrupt() ", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readIntfAccReg(MAGDIFF) FAIL\n");
+        HWA_log("Feature : API HWA_readIntfAccReg(MAGDIFF) FAIL\n");
 		finalTestResultsPass = 0;
     }
 
     errCode = HWA_disableDoneInterrupt(handle, 0);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_disableDoneInterrupt returned %d\n", errCode);
+        HWA_log("Error: HWA_disableDoneInterrupt returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_disableDoneInterrupt() ", MCPI_TestResult_FAIL);
-        System_printf("Feature :  API HWA_disableDoneInterrupt() FAIL\n");
+        HWA_log("Feature :  API HWA_disableDoneInterrupt() FAIL\n");
         finalTestResultsPass = 0;
     }
 
@@ -2790,9 +2778,9 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 0); // set 0 to disable
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(0) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(0) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_enable() to disable HWA", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_enable() to disable HWA FAIL\n");
+        HWA_log("Feature : API HWA_enable() to disable HWA FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2805,22 +2793,22 @@ static void HWA_fftwithPreproc_test(HWA_Handle handle)
     if (doneSem != NULL)
         SemaphoreP_delete(doneSem);
 
-    System_printf("\n");
+    HWA_log("\n");
 
     /* final FFT test results*/
     if (compareCode2 != 0)
     {
         //MCPI_setFeatureTestResult("HWA FFT with pre-processing Tests", MCPI_TestResult_FAIL);
-        System_printf("Feature : HWA FFT with pre-processing Tests FAIL\n");
+        HWA_log("Feature : HWA FFT with pre-processing Tests FAIL\n");
         finalTestResultsPass= 0;
     }
     else
     {
        // MCPI_setFeatureTestResult("HWA FFT with pre-processing Tests", MCPI_TestResult_PASS);
-        System_printf("Feature : HWA FFT with pre-processing Tests PASS\n");
+        HWA_log("Feature : HWA FFT with pre-processing Tests PASS\n");
     }
 
-    System_printf("\n HWA FFT with pre-processing test completed \n");
+    HWA_log("\n HWA FFT with pre-processing test completed \n");
 
 }
 
@@ -2843,7 +2831,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     uint8_t     paramsetCheckArray[16];
     uint8_t     numCheckParamSets;
 
-    System_printf("\n------- HWA complex multiply Tests -------\n\n");
+    HWA_log("\n------- HWA complex multiply Tests -------\n\n");
 
     paramsetIdx = 0;
     memset(gHWATestParamConfig, 0, sizeof(gHWATestParamConfig));  //init to zero
@@ -2891,16 +2879,16 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx + startParamIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", paramsetIdx + startParamIdx, errCode);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", paramsetIdx + startParamIdx, errCode);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, FFT disabled, scale multiplication mode )", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, complex multiply: vector multiplication) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, complex multiply: vector multiplication) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        //System_printf("Debug: API HWA_configParamSet() (Immediate Triggered, complex multiply: vector multiplication mode PASS\n");
-        System_printf("Debug: paramset %d :Immediate Triggered, AccelMode FFT, complex multiply: vector multiplication\n", paramsetIdx + startParamIdx);
+        //HWA_log("Debug: API HWA_configParamSet() (Immediate Triggered, complex multiply: vector multiplication mode PASS\n");
+        HWA_log("Debug: paramset %d :Immediate Triggered, AccelMode FFT, complex multiply: vector multiplication\n", paramsetIdx + startParamIdx);
     }
 
 
@@ -2922,16 +2910,16 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx + startParamIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx + startParamIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx + startParamIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, magnitude mode with sum statistics output )", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, magnitude mode with sum statistics output) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Immediate Triggered, magnitude mode with sum statistics output) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-        //System_printf("Debug: API HWA_configParamSet() (Immediate Triggered, magnitude mode with sum statistics output PASS\n");
-        System_printf("Debug: paramset %d :Immediate Triggered, AccelMode FFT, magnitude mode with sum statistics output\n", paramsetIdx + startParamIdx);
+        //HWA_log("Debug: API HWA_configParamSet() (Immediate Triggered, magnitude mode with sum statistics output PASS\n");
+        HWA_log("Debug: paramset %d :Immediate Triggered, AccelMode FFT, magnitude mode with sum statistics output\n", paramsetIdx + startParamIdx);
     }
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
@@ -2949,7 +2937,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     errCode = HWA_configCommon(handle, &gCommonConfig);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configCommon returned %d\n", errCode);
+        HWA_log("Error: HWA_configCommon returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configCommon()", MCPI_TestResult_FAIL);
         return;
     }
@@ -2966,9 +2954,9 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
 
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configRam returned %d\n", errCode);
+        HWA_log("Error: HWA_configRam returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_VECTORMULTIPLY_RAM) ", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configRam(HWA_RAM_TYPE_VECTORMULTIPLY_RAM) FAIL\n");
+        HWA_log("Feature : API HWA_configRam(HWA_RAM_TYPE_VECTORMULTIPLY_RAM) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -2992,7 +2980,7 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 1); // set 1 to enable
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(1) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(1) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_enable() to enable HWA", MCPI_TestResult_FAIL);
         return;
     }
@@ -3005,23 +2993,23 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     errCode = HWA_paramSetDonePolling(handle, numCheckParamSets, paramsetCheckArray);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
+        HWA_log("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_paramSetDonePolling()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_paramSetDonePolling() FAIL\n");
+        HWA_log("Feature : API HWA_paramSetDonePolling() FAIL\n");
         finalTestResultsPass = 0;
 		return;
     }
 
-    System_printf("\n Debug: HWA complex multiply test result check \n");
-    System_printf("\n");
+    HWA_log("\n Debug: HWA complex multiply test result check \n");
+    HWA_log("\n");
 
     /*statistics block output check, I_SUM1_LSB  */
     errCode = HWA_readStatsReg(handle, statsResults, 4);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readStatsReg() returned %d\n", errCode);
+        HWA_log("Error: HWA_readStatsReg() returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_readStatsReg()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readStatsReg() FAIL \n");
+        HWA_log("Feature : API HWA_readStatsReg() FAIL \n");
         finalTestResultsPass = 0;
         return;
     }
@@ -3032,11 +3020,11 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
         HWA_TEST_NUM_SAMPLES*HWA_TEST_NUM_RX_ANT*HWA_TEST_COMPLEX_16BIT_SIZE);
     if (compareCode1 != 0)
     {
-        System_printf("Error: output produced by HWA in MEM1 found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: output produced by HWA in MEM1 found incorrect: error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: vector multiply output produced by HWA (paramset 31) found correct\n");
+        HWA_log("Debug: vector multiply output produced by HWA (paramset 31) found correct\n");
     }
     compareCode2 += compareCode1;
 
@@ -3049,22 +3037,22 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
 
     if (compareCode1 != 0)
     {
-        System_printf("Error: magnitude square sum outputs in common registers produced by HWA : error %d\n", compareCode1);
+        HWA_log("Error: magnitude square sum outputs in common registers produced by HWA : error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: magnitude square sum outputs in common registers produced by HWA (paramset 32) found correct\n");
+        HWA_log("Debug: magnitude square sum outputs in common registers produced by HWA (paramset 32) found correct\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t *)((uint32_t)dstAddr + HWA_MEMn_SIZE), (uint8_t *)gHWATest_magSquareSum_output, sizeof(uint32_t) * 2 * HWA_TEST_NUM_RX_ANT);
     if (compareCode1 != 0)
     {
-        System_printf("Error: magnitude square sum outputs in memory produced by HWA : error %d\n", compareCode1);
+        HWA_log("Error: magnitude square sum outputs in memory produced by HWA : error %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: magnitude square sum outputs in data memory produced by HWA (paramset 32) found correct\n");
+        HWA_log("Debug: magnitude square sum outputs in data memory produced by HWA (paramset 32) found correct\n");
     }
     compareCode2 += compareCode1;
 
@@ -3072,25 +3060,25 @@ static void HWA_complexmultiply_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 0); // set 0 to disable
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(0) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(0) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enable() to disable HWA", MCPI_TestResult_FAIL);
         return;
     }
 
-    System_printf("\n");
+    HWA_log("\n");
     /* final results*/
     if (compareCode2 != 0)
     {
         //MCPI_setFeatureTestResult("Immediate triggered complex multiply test ", MCPI_TestResult_FAIL);
-        System_printf("Feature : Immediate triggered complex multiply tests FAIL\n");
+        HWA_log("Feature : Immediate triggered complex multiply tests FAIL\n");
         finalTestResultsPass = 0;
     }
     else
     {
         //MCPI_setFeatureTestResult("Immediate triggered complex multiply test", MCPI_TestResult_PASS);
-        System_printf("Feature : Immediate triggered complex multiply tests PASS\n");
+        HWA_log("Feature : Immediate triggered complex multiply tests PASS\n");
     }
-    System_printf("\nHWA complex multiple test completed\n");
+    HWA_log("\nHWA complex multiple test completed\n");
 
     return;
 }
@@ -3124,7 +3112,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     volatile uint32_t        endTime;
 
 
-    System_printf("\n------- HWA Azim FFT calculation test ------- \n\n");
+    HWA_log("\n------- HWA Azim FFT calculation test ------- \n\n");
 
     paramsetIdx = 0;
     memset(gHWATestParamConfig, 0, sizeof(gHWATestParamConfig));  //init to zero
@@ -3180,16 +3168,16 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Software Triggered, AccelMode FFT, with channel combine, and zero insert )", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Software Triggered, AccelMode FFT, with channel combine, and zero insert) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Software Triggered, AccelMode FFT, with channel combine, and zero insert) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-       // System_printf("Debug: API HWA_configParamSet() (Software Triggered, azim FFT PASS\n");
-        System_printf("Debug: paramset %d Software Triggered, AccelMode FFT, with channel combine, and zero insert\n", paramsetIdx);
+       // HWA_log("Debug: API HWA_configParamSet() (Software Triggered, azim FFT PASS\n");
+        HWA_log("Debug: paramset %d Software Triggered, AccelMode FFT, with channel combine, and zero insert\n", paramsetIdx);
     }
 
     /* configure shuffle index */
@@ -3208,9 +3196,9 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_SHUFFLE_RAM, (uint8_t*)shuffleIdx, numInputSymbols * sizeof(uint16_t), 0);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) returned %d\n", errCode);
+        HWA_log("Error: HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM)", MCPI_TestResult_FAIL);
-        System_printf("Feature: API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) FAIL\n");
+        HWA_log("Feature: API HWA_configRam(HWA_RAM_TYPE_SHUFFLE_RAM) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -3277,16 +3265,16 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered,AccelMode FFT with CDF calculation, and 2D maximum enabled)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Immediate Triggered,AccelMode FFT with CDF calculation, and 2D maximum enabled) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Immediate Triggered,AccelMode FFT with CDF calculation, and 2D maximum enabled) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
-       // System_printf("Debug: API HWA_configParamSet() (Immediate Triggered,CDF calculation PASS\n");
-        System_printf("Debug: paramset %d Immediate Triggered,AccelMode FFT with CDF calculation, and 2D maximum enabled\n", paramsetIdx);
+       // HWA_log("Debug: API HWA_configParamSet() (Immediate Triggered,CDF calculation PASS\n");
+        HWA_log("Debug: paramset %d Immediate Triggered,AccelMode FFT with CDF calculation, and 2D maximum enabled\n", paramsetIdx);
 
     }
 
@@ -3348,7 +3336,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_configCommon(handle, &gCommonConfig);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configCommon returned %d\n", errCode);
+        HWA_log("Error: HWA_configCommon returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configCommon()", MCPI_TestResult_FAIL);
         return;
     }
@@ -3358,9 +3346,9 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_clearHistogramRAM(handle);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_clearHistgoramRAM(1) returned %d\n", errCode);
+        HWA_log("Error: HWA_clearHistgoramRAM(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_clearHistgoramRAM() to clear Histogram RAM", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_clearHistgoramRAM() to clear Histogram RAM FAIL\n");
+        HWA_log("Feature : API HWA_clearHistgoramRAM() to clear Histogram RAM FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -3371,7 +3359,7 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 1); // set 1 to enable
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(1) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enable() to enable HWA", MCPI_TestResult_FAIL);
         return;
     }
@@ -3385,9 +3373,9 @@ static void HWA_azimfft_test(HWA_Handle handle)
     if (errCode != 0)
     {
         //retCode = HWA_TEST_ERROR;
-        System_printf("Error: HWA_setSoftwareTrigger returned %d\n", errCode);
+        HWA_log("Error: HWA_setSoftwareTrigger returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_setSoftwareTrigger()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_setSoftwareTrigger() FAIL\n");
+        HWA_log("Feature : API HWA_setSoftwareTrigger() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -3399,16 +3387,16 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_paramSetDonePolling(handle, numCheckParamSets, paramsetCheckArray);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
+        HWA_log("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_paramSetDonePolling()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_paramSetDonePolling() FAIL\n");
+        HWA_log("Feature : API HWA_paramSetDonePolling() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
 
 
-    System_printf("\nDebug:  HWA Azim FFT test result check\n");
-    System_printf("\n");
+    HWA_log("\nDebug:  HWA Azim FFT test result check\n");
+    HWA_log("\n");
     /* compare the results*/
     compareCode2 = 0;
     for (ii = 0; ii < numIterations; ii++)
@@ -3416,11 +3404,11 @@ static void HWA_azimfft_test(HWA_Handle handle)
         compareCode1 = memcmp((uint8_t *)((uint32_t)dstAddr + ii * HWA_TEST_COMPLEX_32BIT_SIZE * fftSize), (uint8_t*)gHWATest_azimfft_output, HWA_TEST_COMPLEX_32BIT_SIZE * fftSize);
         if (compareCode1 != 0)
         {
-            System_printf("Error: output produced by HWA Azim %d Iteration found incorrect: error %d\n", ii, compareCode1);
+            HWA_log("Error: output produced by HWA Azim %d Iteration found incorrect: error %d\n", ii, compareCode1);
         }
         else
         {
-            System_printf("Debug: HWA Azim FFT %d Iteration found correct (paramset 0)\n", ii);
+            HWA_log("Debug: HWA Azim FFT %d Iteration found correct (paramset 0)\n", ii);
         }
         compareCode2 += compareCode1;
     }
@@ -3428,12 +3416,12 @@ static void HWA_azimfft_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t *)ramMemAddress, (uint8_t*)gHWATest_histogram_output, 64 * 16);
     if (compareCode1 != 0)
     {
-        System_printf("Error: output produced by HWA Histogram found incorrect: error %d\n", compareCode1);
+        HWA_log("Error: output produced by HWA Histogram found incorrect: error %d\n", compareCode1);
 
     }
     else
     {
-        System_printf("Debug: output produced by HWA Histogram found correct (paramset 1)\n");
+        HWA_log("Debug: output produced by HWA Histogram found correct (paramset 1)\n");
 
     }
     compareCode2 += compareCode1;
@@ -3443,9 +3431,9 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_readHistThresholdRam(handle, cdfThresholdResults, 16, 0);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_readHistThresholdRam() returned %d\n", errCode);
+        HWA_log("Error: HWA_readHistThresholdRam() returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_readHistThresholdRam()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_readHistThresholdRam() FAIL\n");
+        HWA_log("Feature : API HWA_readHistThresholdRam() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
@@ -3460,44 +3448,44 @@ static void HWA_azimfft_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t*)cdfCntBitNum, (uint8_t*)HWA_cdfBitNum_output, 16);
     if (compareCode1 != 0)
     {
-        System_printf("Error: CDF threshold bit number returned %d\n", compareCode1);
+        HWA_log("Error: CDF threshold bit number returned %d\n", compareCode1);
       //  MCPI_setFeatureTestResult("CDF threshold bit number", MCPI_TestResult_FAIL);
-        System_printf("Feature: CDF threshold bit number FAIL\n");
+        HWA_log("Feature: CDF threshold bit number FAIL\n");
 		finalTestResultsPass = 0;
 		return;
     }
     else
     {
-        System_printf("Debug: CDF threshold bit number output by HWA found correct (paramset 1)\n");
+        HWA_log("Debug: CDF threshold bit number output by HWA found correct (paramset 1)\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t*)cdfCntCdfValue, (uint8_t*)HWA_cdfCdfValue_output, 16 * 2);
     if (compareCode1 != 0)
     {
-        System_printf("Error: CDF threshold CDF value returned %d\n", compareCode1);
+        HWA_log("Error: CDF threshold CDF value returned %d\n", compareCode1);
         //MCPI_setFeatureTestResult("CDF threshold CDF value ", MCPI_TestResult_FAIL);
-        System_printf("Feature : CDF threshold CDF value FAIL\n");
+        HWA_log("Feature : CDF threshold CDF value FAIL\n");
         finalTestResultsPass = 0;
     }
     else
     {
-        System_printf("Debug: CDF threshold CDF value output by HWA found correct (paramset 1)\n");
+        HWA_log("Debug: CDF threshold CDF value output by HWA found correct (paramset 1)\n");
     }
     compareCode2 += compareCode1;
 
     compareCode1 = memcmp((uint8_t*)cdfCntHistValue, (uint8_t*)HWA_cdfPdfValue_output, 16 * 2);
     if (compareCode1 != 0)
     {
-        System_printf("Error: CDF threshold PDF value returned %d\n", compareCode1);
+        HWA_log("Error: CDF threshold PDF value returned %d\n", compareCode1);
         //MCPI_setFeatureTestResult("CDF threshold PDF value ", MCPI_TestResult_FAIL);
-        System_printf("Feature : CDF threshold PDF value FAIL\n");
+        HWA_log("Feature : CDF threshold PDF value FAIL\n");
 		finalTestResultsPass = 0;
 		return;
     }
     else
     {
-        System_printf("Debug: CDF threshold PDF value output by HWA found correct (paramset 1)\n");
+        HWA_log("Debug: CDF threshold PDF value output by HWA found correct (paramset 1)\n");
     }
     compareCode2 += compareCode1;
 
@@ -3505,11 +3493,11 @@ static void HWA_azimfft_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t *)ramMemAddress, (uint8_t *)HWA_2Dmax_dim1_maxIdx_output, sizeof(uint16_t) * 256);
     if (compareCode1 != 0)
     {
-        System_printf("Error: 2D maximum Iteration max location idx returned %d\n", compareCode1);
+        HWA_log("Error: 2D maximum Iteration max location idx returned %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: 2D maximum Iteration max location idx output by HWA found correct (paramset 1)\n");
+        HWA_log("Debug: 2D maximum Iteration max location idx output by HWA found correct (paramset 1)\n");
     }
     compareCode2 += compareCode1;
 
@@ -3517,11 +3505,11 @@ static void HWA_azimfft_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t *)ramMemAddress, (uint8_t *)HWA_2Dmax_dim1_maxValue_output, sizeof(uint32_t) * 256);
     if (compareCode1 != 0)
     {
-        System_printf("Error: 2D maximum Iteration max value returned %d\n", compareCode1);
+        HWA_log("Error: 2D maximum Iteration max value returned %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: 2D maximum Iteration max value output by HWA found correct (paramset 1)\n");
+        HWA_log("Debug: 2D maximum Iteration max value output by HWA found correct (paramset 1)\n");
     }
     compareCode2 += compareCode1;
 
@@ -3529,11 +3517,11 @@ static void HWA_azimfft_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t *)ramMemAddress, (uint8_t *)HWA_2Dmax_dim2_maxIdx_output, sizeof(uint16_t) * 16);
     if (compareCode1 != 0)
     {
-        System_printf("Error: 2D maximum sample max location idx returned %d\n", compareCode1);
+        HWA_log("Error: 2D maximum sample max location idx returned %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: 2D maximum sample max location idx value output by HWA found correct (paramset 1)\n");
+        HWA_log("Debug: 2D maximum sample max location idx value output by HWA found correct (paramset 1)\n");
     }
     compareCode2 += compareCode1;
 
@@ -3541,11 +3529,11 @@ static void HWA_azimfft_test(HWA_Handle handle)
     compareCode1 = memcmp((uint8_t *)ramMemAddress, (uint8_t *)HWA_2Dmax_dim2_maxValue_output, sizeof(uint32_t) * 16);
     if (compareCode1 != 0)
     {
-        System_printf("Error: 2D maximum sample max Value returned %d\n", compareCode1);
+        HWA_log("Error: 2D maximum sample max Value returned %d\n", compareCode1);
     }
     else
     {
-        System_printf("Debug: 2D maximum sample max value output by HWA found correct (paramset 1)\n");
+        HWA_log("Debug: 2D maximum sample max value output by HWA found correct (paramset 1)\n");
     }
     compareCode2 += compareCode1;
 
@@ -3554,26 +3542,26 @@ static void HWA_azimfft_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 0); // set 0 to disable
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(0) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(0) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enable() to disable HWA", MCPI_TestResult_FAIL);
         return;
     }
 
-    System_printf("\n");
+    HWA_log("\n");
     /* final results*/
     if (compareCode2 != 0)
     {
         //MCPI_setFeatureTestResult("Software triggered azim FFT test ", MCPI_TestResult_FAIL);
-        System_printf("Feature : Software triggered azim FFT test FAIL\n");
+        HWA_log("Feature : Software triggered azim FFT test FAIL\n");
         finalTestResultsPass = 0;
     }
     else
     {
         //MCPI_setFeatureTestResult("Software triggered azim FFT test ", MCPI_TestResult_PASS);
-        System_printf("Feature : Software triggered azim FFT test PASS\n");
+        HWA_log("Feature : Software triggered azim FFT test PASS\n");
     }
 
-    System_printf("\nHWA azim FFT test completed\n");
+    HWA_log("\nHWA azim FFT test completed\n");
     return;
 }
 
@@ -3593,7 +3581,7 @@ void HWA_histogram_test(HWA_Handle handle)
     uint8_t                *dstAddr = (uint8_t*)SOC_HWA_MEM1;
 
 
-    System_printf("\n ------- HWA Histogram test ------- \n\n");
+    HWA_log("\n ------- HWA Histogram test ------- \n\n");
 
     paramsetIdx = 0;
     memset(gHWATestParamConfig, 0, sizeof(gHWATestParamConfig));  //init to zero
@@ -3640,16 +3628,16 @@ void HWA_histogram_test(HWA_Handle handle)
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
+        HWA_log("Error: HWA_configParamSet(%d) returned %d\n", errCode, paramsetIdx);
         //MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, Histogram calculation)", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, Histogram calculation) FAIL\n");
+        HWA_log("Feature : API HWA_configParamSet() (Immediate Triggered, AccelMode FFT, Histogram calculation) FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
     else
     {
        // MCPI_setFeatureTestResult("API HWA_configParamSet() (Immediate Triggered,FFT enabled enabled with vector multiply)", MCPI_TestResult_PASS);
-        System_printf("Debug: paramset %d Immediate Triggered, AccelMode FFT, Histogram calculation\n", paramsetIdx);
+        HWA_log("Debug: paramset %d Immediate Triggered, AccelMode FFT, Histogram calculation\n", paramsetIdx);
     }
 
     /* configure common register */
@@ -3665,7 +3653,7 @@ void HWA_histogram_test(HWA_Handle handle)
     errCode = HWA_configCommon(handle, &gCommonConfig);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_configCommon returned %d\n", errCode);
+        HWA_log("Error: HWA_configCommon returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_configCommon()", MCPI_TestResult_FAIL);
         return;
     }
@@ -3679,7 +3667,7 @@ void HWA_histogram_test(HWA_Handle handle)
     errCode = HWA_clearHistogramRAM(handle);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_clearHistgoramRAM(1) returned %d\n", errCode);
+        HWA_log("Error: HWA_clearHistgoramRAM(1) returned %d\n", errCode);
        // MCPI_setFeatureTestResult("API HWA_clearHistgoramRAM() to clear Histogram RAM", MCPI_TestResult_FAIL);
         return;
     }
@@ -3692,7 +3680,7 @@ void HWA_histogram_test(HWA_Handle handle)
     errCode = HWA_enable(handle, 1); // set 1 to enable
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(1) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(1) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enable() to enable HWA", MCPI_TestResult_FAIL);
         return;
     }
@@ -3702,7 +3690,7 @@ void HWA_histogram_test(HWA_Handle handle)
     if (errCode != 0)
     {
         //retCode = HWA_TEST_ERROR;
-        System_printf("Error: HWA_setSoftwareTrigger returned %d\n", errCode);
+        HWA_log("Error: HWA_setSoftwareTrigger returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_setSoftwareTrigger()", MCPI_TestResult_FAIL);
         return;
     }
@@ -3712,7 +3700,7 @@ void HWA_histogram_test(HWA_Handle handle)
     errCode = HWA_singleParamSetDonePolling(handle, paramsetIdx);
     if (errCode != 0)
     {
-        System_printf("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
+        HWA_log("Error: HWA_paramSetDonePolling() returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_paramSetDonePolling()", MCPI_TestResult_FAIL);
         return;
     }
@@ -3726,31 +3714,31 @@ void HWA_histogram_test(HWA_Handle handle)
 
     compareCode2 += compareCode1;
 
-    System_printf("\nHWA run to complete, paramdone is generated \n");
+    HWA_log("\nHWA run to complete, paramdone is generated \n");
     /* disable HWA*/
     errCode = HWA_enable(handle, 0); // set 0 to disable
     if (errCode != 0)
     {
-        System_printf("Error: HWA_enable(0) returned %d\n", errCode);
+        HWA_log("Error: HWA_enable(0) returned %d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_enable() to disable HWA", MCPI_TestResult_FAIL);
         return;
     }
 
-    System_printf("\n");
+    HWA_log("\n");
     /* final results*/
     if (compareCode2 != 0)
     {
         //MCPI_setFeatureTestResult("Software triggered Histogram test ", MCPI_TestResult_FAIL);
-        System_printf("Feature : Software triggered Histogram test FAIL\n");
+        HWA_log("Feature : Software triggered Histogram test FAIL\n");
 		finalTestResultsPass = 0; 
     }
     else
     {
         //MCPI_setFeatureTestResult("Software triggered Histogram test ", MCPI_TestResult_PASS);
-        System_printf("Feature : Software triggered Histogram test PASS\n");
+        HWA_log("Feature : Software triggered Histogram test PASS\n");
     }
 
-    System_printf("\nHWA Histogram test completed\n");
+    HWA_log("\nHWA Histogram test completed\n");
     return;
 
 }
@@ -3803,203 +3791,203 @@ void HWA_benchmark()
 
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the HWA Instance err:%d\n", errCode);
+        HWA_log("Error: Unable to open the HWA Instance err:%d\n", errCode);
     }
 
-    System_printf("\n\n----------------  HWA Benchmark ------------------------\n\n");
+    HWA_log("\n\n----------------  HWA Benchmark ------------------------\n\n");
 
     /* memcpy to and from L2 DSP to M0, 1k or 2k*/
-    System_printf("------ Data copied from L2 DSP to M0 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data copied from L2 DSP to M0 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 2; ii < 15; ii++)
     {
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(srcAddr, (uint8_t *)benchmarkData, (1 << ii));
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", (1 << ii), endTime - startTime);
+        HWA_log("%d  \t%d\n", (1 << ii), endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
-    System_printf("------Data copied from M0 to DSP L2 benchmark: ------\n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------Data copied from M0 to DSP L2 benchmark: ------\n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 2; ii < 15; ii++)
     {
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t *)benchmarkData, srcAddr, (1 << ii));
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", (1 << ii), endTime - startTime);
+        HWA_log("%d  \t%d\n", (1 << ii), endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
-    System_printf("------one word read/copied back to M0 from L2 benchmark: ------\n");
+    HWA_log("------one word read/copied back to M0 from L2 benchmark: ------\n");
     startTime = CycleprofilerP_getTimeStamp();
     *srcWordAddr = (++(*srcWordAddr));
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("cycle is %d\n", endTime - startTime);
-    System_printf("\n");
+    HWA_log("cycle is %d\n", endTime - startTime);
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_WINDOW_RAM);
-    System_printf("------ Data from L2 copied to window ram benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data from L2 copied to window ram benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 14; ii++)
     {
         dataSizeInByte = (1 << ii);
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t*)ramAddr, benchmarkData, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_VECTORMULTIPLY_RAM);
-    System_printf("------ Data from L2 copied to vector multiply ram benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data from L2 copied to vector multiply ram benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 14; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t*)ramAddr, benchmarkData, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_LUT_FREQ_DEROTATE_RAM);
-    System_printf("------ Data from L2 copied to frequency derotate ram benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data from L2 copied to frequency derotate ram benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 2; ii < 9; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t*)ramAddr, benchmarkData, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_SHUFFLE_RAM);
-    System_printf("------ Data from L2 copied to shuffle ram benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data from L2 copied to shuffle ram benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 2; ii < 10; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t*)ramAddr, benchmarkData, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_HIST_THRESH_RAM);
-    System_printf("------ Data read from histogram threshold RAM to L2 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data read from histogram threshold RAM to L2 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 2; ii < 9; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(benchmarkData, (uint8_t*)ramAddr, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_HISTOGRAM_RAM);
-    System_printf("------ Data read from histogram RAM to L2 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data read from histogram RAM to L2 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 14; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(benchmarkData, (uint8_t*)ramAddr, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_2DSTAT_ITER_VAL);
-    System_printf("------ Data read from 2D iteration maxima value RAM to L2 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data read from 2D iteration maxima value RAM to L2 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 13; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(benchmarkData, (uint8_t*)ramAddr, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
-    System_printf("------ Data write to 2D iteration maxima value RAM from L2 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data write to 2D iteration maxima value RAM from L2 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 13; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t*)ramAddr, benchmarkData, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_2DSTAT_ITER_IDX);
-    System_printf("------ Data read from 2D iteration maxima index RAM to L2 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data read from 2D iteration maxima index RAM to L2 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 12; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(benchmarkData, (uint8_t*)ramAddr, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_2DSTAT_SAMPLE_VAL);
-    System_printf("------ Data read from 2D sample maxima value RAM to L2 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data read from 2D sample maxima value RAM to L2 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 11; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(benchmarkData, (uint8_t*)ramAddr, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
-    System_printf("------ Data write to 2D sample maxima value RAM from L2 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t cycles \n");
+    HWA_log("------ Data write to 2D sample maxima value RAM from L2 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t cycles \n");
     for (ii = 4; ii < 11; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t*)ramAddr, benchmarkData,  dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
 
     ramAddr = HWA_getRamAddress(HWA_RAM_TYPE_2DSTAT_SAMPLE_IDX);
-    System_printf("------ Data copied from 2D sample maxima value index RAM to L2 benchmark:------ \n");
+    HWA_log("------ Data copied from 2D sample maxima value index RAM to L2 benchmark:------ \n");
     for (ii = 4; ii < 10; ii++)
     {
         dataSizeInByte = 1 << ii;
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(benchmarkData, (uint8_t*)ramAddr, dataSizeInByte);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", dataSizeInByte, endTime - startTime);
+        HWA_log("%d  \t%d\n", dataSizeInByte, endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     /* memcpy to and from L1 DSP to M0, 1k or 2k for DSP*/
     /*TODO: cache or not cache */
-    System_printf("------ Data copied from L1D to M0 benchmark:------ \n");
-    System_printf("DataSizeInBytes \t L1D-M0 cycles \n");
+    HWA_log("------ Data copied from L1D to M0 benchmark:------ \n");
+    HWA_log("DataSizeInBytes \t L1D-M0 cycles \n");
 #ifdef BUILD_DSP_1
     for (ii = 2; ii < 15; ii++)
 #endif
@@ -4010,12 +3998,12 @@ void HWA_benchmark()
         startTime = CycleprofilerP_getTimeStamp();
         memcpy(srcAddr, (uint8_t *)benchmarkL1Data, (1 << ii));
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", (1 << ii), endTime - startTime);
+        HWA_log("%d  \t%d\n", (1 << ii), endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
-    System_printf("DataSizeInBytes \t M0-L1D cycles \n");
+    HWA_log("DataSizeInBytes \t M0-L1D cycles \n");
 #ifdef BUILD_DSP_1
     for (ii = 2; ii < 15; ii++)
 #endif
@@ -4026,12 +4014,12 @@ void HWA_benchmark()
         startTime = CycleprofilerP_getTimeStamp();
         memcpy((uint8_t *)benchmarkL1Data, srcAddr, (1 << ii));
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d  \t%d\n", (1 << ii), endTime - startTime);
+        HWA_log("%d  \t%d\n", (1 << ii), endTime - startTime);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     /* DSP to HWA param + common , compared with 18 (modify 18 test bench )*/
-    System_printf("------ HWA FFT mode benchmark:------\n");
+    HWA_log("------ HWA FFT mode benchmark:------\n");
 
     fftSize = 256;
     memset((void *)&gHWATestParamConfig[paramsetIdx], 0, sizeof(HWA_ParamConfig));
@@ -4078,7 +4066,7 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to paramset cycles:  %d\n", endTime - startTime);
+    HWA_log("write to paramset cycles:  %d\n", endTime - startTime);
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
     gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG;
@@ -4090,14 +4078,14 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configCommon(handle, &gCommonConfig);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to common register cycles:  %d\n", endTime - startTime);
+    HWA_log("write to common register cycles:  %d\n", endTime - startTime);
 
     errCode = HWA_configRam(handle, HWA_RAM_TYPE_WINDOW_RAM, (uint8_t *)win_data225, sizeof(win_data225), HWA_TEST_1DFFT_WINDOW_START);
     memcpy(srcAddr, (uint8_t *)gHWATest_1DFFT_input,
         HWA_TEST_NUM_SAMPLES*HWA_TEST_NUM_RX_ANT*HWA_TEST_COMPLEX_16BIT_SIZE);
 
-    System_printf("\n");
-    System_printf("1iteration\n FFTSize \t  cycles(w/softwaretrig)\n");
+    HWA_log("\n");
+    HWA_log("1iteration\n FFTSize \t  cycles(w/softwaretrig)\n");
     for (ii = 8; ii < 12; ii++)
     {
         fftSize = 1 << ii;
@@ -4114,14 +4102,14 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", fftSize, endTime - startTime);
+        HWA_log("%d \t  %d\n", fftSize, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
 
     //fft with size 256, upto 16 iteration
-    System_printf("\n");
+    HWA_log("\n");
     fftSize = 256;
-    System_printf("FFTSize=%d\n iterationNum \t  cycles(w/softwaretrig)\n", fftSize);
+    HWA_log("FFTSize=%d\n iterationNum \t  cycles(w/softwaretrig)\n", fftSize);
 
 
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = fftSize - 1;
@@ -4141,11 +4129,11 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", ii, endTime - startTime);
+        HWA_log("%d \t  %d\n", ii, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
 
-    System_printf("\n------ HWA CFAR mode benchmark:------\n");
+    HWA_log("\n------ HWA CFAR mode benchmark:------\n");
     paramsetIdx = 1;
     memset((void *)&gHWATestParamConfig[paramsetIdx], 0, sizeof(HWA_ParamConfig));
     cfarLength = 16;
@@ -4187,7 +4175,7 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to paramset cycles:  %d\n", endTime - startTime);
+    HWA_log("write to paramset cycles:  %d\n", endTime - startTime);
 
     gCommonConfig.paramStartIdx = paramsetIdx;
     gCommonConfig.paramStopIdx = paramsetIdx;
@@ -4196,10 +4184,10 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configCommon(handle, &gCommonConfig);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to common register cycles:  %d\n", endTime - startTime);
+    HWA_log("write to common register cycles:  %d\n", endTime - startTime);
 
-    System_printf("\n");
-    System_printf("1 iteration \n CFAR length \t cycles(w/softwaretrig): \n");
+    HWA_log("\n");
+    HWA_log("1 iteration \n CFAR length \t cycles(w/softwaretrig): \n");
 
     for (ii = 4; ii < 11; ii++)
     {
@@ -4215,12 +4203,12 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf(" %d \t  %d\n", cfarLength, endTime - startTime);
+        HWA_log(" %d \t  %d\n", cfarLength, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
-    System_printf("CFAR length = 256\n ItemrationNumb \t cycles(w/softwaretrig): \n");
+    HWA_log("CFAR length = 256\n ItemrationNumb \t cycles(w/softwaretrig): \n");
 
     cfarLength = 256;
     gHWATestParamConfig[paramsetIdx].source.srcAcnt = cfarLength - 1;
@@ -4238,13 +4226,13 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf(" %d \t  %d\n", ii, endTime - startTime);
+        HWA_log(" %d \t  %d\n", ii, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
-    System_printf("------ HWA local maxima mode benchmark:------\n");
+    HWA_log("------ HWA local maxima mode benchmark:------\n");
 
     paramsetIdx = 2;
     memset((void *)&gHWATestParamConfig[paramsetIdx], 0, sizeof(HWA_ParamConfig));
@@ -4288,7 +4276,7 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to paramset cycles:  %d\n", endTime - startTime);
+    HWA_log("write to paramset cycles:  %d\n", endTime - startTime);
 
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
     gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG |
@@ -4308,10 +4296,10 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configCommon(handle, &gCommonConfig);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to common register cycles:  %d\n", endTime - startTime);
+    HWA_log("write to common register cycles:  %d\n", endTime - startTime);
 
-    System_printf("fix Bcnt = %d/4 \n", localMaxBcnt);
-    System_printf("Ccount length \t cycles(w/softwaretrig)\n");
+    HWA_log("fix Bcnt = %d/4 \n", localMaxBcnt);
+    HWA_log("Ccount length \t cycles(w/softwaretrig)\n");
 
     for (ii = 3; ii < 11; ii++)
     {
@@ -4327,10 +4315,10 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", localMaxCcnt, endTime - startTime);
+        HWA_log("%d \t  %d\n", localMaxCcnt, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     localMaxBcnt = 64;
     gHWATestParamConfig[paramsetIdx].source.srcAIdx = localMaxBcnt * sizeof(uint16_t);
@@ -4338,8 +4326,8 @@ void HWA_benchmark()
     gHWATestParamConfig[paramsetIdx].source.srcBcircShiftWrap = mathUtils_floorLog2(localMaxBcnt / 4);
     gHWATestParamConfig[paramsetIdx].source.wrapComb = localMaxBcnt * localMaxCcnt * 2;
 
-    System_printf("fix Bcnt = %d/4 \n", localMaxBcnt);
-    System_printf("Ccount length \t cycles(w/softwaretrig)\n");
+    HWA_log("fix Bcnt = %d/4 \n", localMaxBcnt);
+    HWA_log("Ccount length \t cycles(w/softwaretrig)\n");
 
     for (ii = 3; ii < 11; ii++)
     {
@@ -4355,13 +4343,13 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", localMaxCcnt, endTime - startTime);
+        HWA_log("%d \t  %d\n", localMaxCcnt, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
-    System_printf("------ HWA Histogram CDF only Calculation benchmark:------\n");
+    HWA_log("------ HWA Histogram CDF only Calculation benchmark:------\n");
     paramsetIdx = 3;
     memset((void *)&gHWATestParamConfig[paramsetIdx], 0, sizeof(HWA_ParamConfig));
     histgramBcnt = 256;
@@ -4416,8 +4404,8 @@ void HWA_benchmark()
     gCommonConfig.numLoops = 1; //do only one iteration
     //errCode = HWA_configCommon(handle, &gCommonConfig);
 
-    System_printf("Acount fixed to 16\n");
-    System_printf("Bcount length \t cycles(w/softwaretrig)\n");
+    HWA_log("Acount fixed to 16\n");
+    HWA_log("Bcount length \t cycles(w/softwaretrig)\n");
 
     for (ii = 3; ii < 11; ii++)
     {
@@ -4432,15 +4420,15 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", histgramBcnt, endTime - startTime);
+        HWA_log("%d \t  %d\n", histgramBcnt, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     histgramBcnt = 256;
     gHWATestParamConfig[paramsetIdx].source.srcBcnt = histgramBcnt - 1;
-    System_printf("Bcount fixed to %d\n", histgramBcnt);
-    System_printf("Acount  \t cycles(w/softwaretrig)\n");
+    HWA_log("Bcount fixed to %d\n", histgramBcnt);
+    HWA_log("Acount  \t cycles(w/softwaretrig)\n");
     for (ii = 1; ii < 7; ii++)
     {
         histgramAcnt = (1 << ii);
@@ -4457,14 +4445,14 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", histgramAcnt, endTime - startTime);
+        HWA_log("%d \t  %d\n", histgramAcnt, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
 
-    System_printf("------ HWA Histogram with CDF Calculation benchmark:------\n");
+    HWA_log("------ HWA Histogram with CDF Calculation benchmark:------\n");
     paramsetIdx = 4;
     gHWATestParamConfig[paramsetIdx] = gHWATestParamConfig[paramsetIdx - 1];
 
@@ -4483,8 +4471,8 @@ void HWA_benchmark()
     gCommonConfig.numLoops = 1; //do only one iteration
     /* histogram calculation */
     gCommonConfig.advStatConfig.cdfCntThresh = 110;
-    System_printf("Acount fixed to %d \n", histgramAcnt);
-    System_printf("Bcount length \t cycles(w/softwaretrig)\n");
+    HWA_log("Acount fixed to %d \n", histgramAcnt);
+    HWA_log("Bcount length \t cycles(w/softwaretrig)\n");
 
     for (ii = 3; ii < 11; ii++)
     {
@@ -4499,16 +4487,16 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", histgramBcnt, endTime - startTime);
+        HWA_log("%d \t  %d\n", histgramBcnt, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
     histgramBcnt = 256;
     gHWATestParamConfig[paramsetIdx].source.srcBcnt = histgramBcnt - 1;
-    System_printf("Bcount fixed to 256\n");
-    System_printf("Acount  \t cycles(w/softwaretrig)\n");
+    HWA_log("Bcount fixed to 256\n");
+    HWA_log("Acount  \t cycles(w/softwaretrig)\n");
     for (ii = 1; ii < 7; ii++)
     {
         histgramAcnt = (1 << ii);
@@ -4525,13 +4513,13 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf("%d \t  %d\n", histgramAcnt, endTime - startTime);
+        HWA_log("%d \t  %d\n", histgramAcnt, endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
-    System_printf("------ HWA compression mode benchmark:------\n");
+    HWA_log("------ HWA compression mode benchmark:------\n");
     paramsetIdx = 5;
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
 
@@ -4572,7 +4560,7 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to paramset cycles:  %d\n", endTime - startTime);
+    HWA_log("write to paramset cycles:  %d\n", endTime - startTime);
 
     gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG;
 
@@ -4583,9 +4571,9 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configCommon(handle, &gCommonConfig);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to common register cycles:  %d\n", endTime - startTime);
-    System_printf("\nBFP compress: 4 16bits-complex values (4 * 4 bytes)--> 2 words (2 * 4bytes) \n");
-    System_printf("number of compressed blocks \t cycles(w/softwaretrig): \n");
+    HWA_log("write to common register cycles:  %d\n", endTime - startTime);
+    HWA_log("\nBFP compress: 4 16bits-complex values (4 * 4 bytes)--> 2 words (2 * 4bytes) \n");
+    HWA_log("number of compressed blocks \t cycles(w/softwaretrig): \n");
 
     for (ii = 6; ii < 11; ii++)
     {
@@ -4597,10 +4585,10 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf(" %d \t  %d\n", (1<<ii), endTime - startTime);
+        HWA_log(" %d \t  %d\n", (1<<ii), endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     /* BFP decompression */
 
@@ -4634,8 +4622,8 @@ void HWA_benchmark()
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.headerEnable = HWA_FEATURE_BIT_ENABLE;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.scaleFactorBW = 4; //log2(sample bits)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.BFPMantissaBW = 7;
-    System_printf("\nBFP dec compress: 2 words (2 * 4bytes) --> 4 16bits-complex values (4 * 4 bytes)\n");
-    System_printf("number of compressed blocks \t cycles(w/softwaretrig): \n");
+    HWA_log("\nBFP dec compress: 2 words (2 * 4bytes) --> 4 16bits-complex values (4 * 4 bytes)\n");
+    HWA_log("number of compressed blocks \t cycles(w/softwaretrig): \n");
 
     for (ii = 6; ii < 11; ii++)
     {
@@ -4647,11 +4635,11 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf(" %d \t  %d\n", (1 << ii), endTime - startTime);
+        HWA_log(" %d \t  %d\n", (1 << ii), endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
 
-    System_printf("\n");
+    HWA_log("\n");
 
     /* compression EGE */
     paramsetIdx = 6;
@@ -4694,7 +4682,7 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to paramset cycles:  %d\n", endTime - startTime);
+    HWA_log("write to paramset cycles:  %d\n", endTime - startTime);
 
     gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG | HWA_COMMONCONFIG_MASK_EGECOMRESS_KPARAM;
 
@@ -4715,10 +4703,10 @@ void HWA_benchmark()
     startTime = CycleprofilerP_getTimeStamp();
     errCode = HWA_configCommon(handle, &gCommonConfig);
     endTime = CycleprofilerP_getTimeStamp();
-    System_printf("write to common register cycles:  %d\n", endTime - startTime);
+    HWA_log("write to common register cycles:  %d\n", endTime - startTime);
 
-    System_printf("\n EGE compress: 16 16bits-complex values (16 * 4 bytes)--> 8 words (8 * 4bytes) \n");
-    System_printf("number of compressed blocks \t cycles(w/softwaretrig): \n");
+    HWA_log("\n EGE compress: 16 16bits-complex values (16 * 4 bytes)--> 8 words (8 * 4bytes) \n");
+    HWA_log("number of compressed blocks \t cycles(w/softwaretrig): \n");
     for (ii = 2; ii < 9; ii++)
     {
         gHWATestParamConfig[paramsetIdx].source.srcBcnt = (1 << ii) - 1;
@@ -4729,10 +4717,10 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf(" %d \t  %d\n", (1 << ii), endTime - startTime);
+        HWA_log(" %d \t  %d\n", (1 << ii), endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
     /* EGE decompression */
     gHWATestParamConfig[paramsetIdx].source.srcAddr = (uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
@@ -4766,8 +4754,8 @@ void HWA_benchmark()
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.scaleFactorBW = 4; //log2(sample bits)
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.EGEKarrayLength = 3;
 
-    System_printf("\n EGE decompress: 8 words (8 * 4bytes) ---> 16 16bits-complex values (16 * 4 bytes)  \n");
-    System_printf("number of decompressed blocks \t cycles(w/softwaretrig): \n");
+    HWA_log("\n EGE decompress: 8 words (8 * 4bytes) ---> 16 16bits-complex values (16 * 4 bytes)  \n");
+    HWA_log("number of decompressed blocks \t cycles(w/softwaretrig): \n");
     for (ii = 2; ii < 9; ii++)
     {
         gHWATestParamConfig[paramsetIdx].source.srcBcnt = (1 << ii) - 1;
@@ -4778,22 +4766,22 @@ void HWA_benchmark()
         errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
         HWA_singleParamSetDonePolling(handle, paramsetIdx);
         endTime = CycleprofilerP_getTimeStamp();
-        System_printf(" %d \t  %d\n", (1 << ii), endTime - startTime);
+        HWA_log(" %d \t  %d\n", (1 << ii), endTime - startTime);
         errCode = HWA_enable(handle, 0);
     }
-    System_printf("\n");
+    HWA_log("\n");
 
 
 
-    System_printf("------ HWA Driver API benchmark:------\n");
-    System_printf("HWA_init: %d\n", drvApiCycles[DRV_API_INIT]);
-    System_printf("HWA_open: %d\n", drvApiCycles[DRV_API_OPEN]);
-    System_printf("HWA_close: %d\n", drvApiCycles[DRV_API_CLOSE]);
-    System_printf("HWA_enable: %d\n", drvApiCycles[DRV_API_ENABLE]);
-    System_printf("HWA_setSoftwareTrigger: %d\n", drvApiCycles[DRV_API_SOFTWARETRIG]);
-    System_printf("HWA_setDMA2ACCManualTrig: %d\n", drvApiCycles[DRV_API_DMAMANUALTRIG]);
-    System_printf("HWA_setSourceAddress: %d\n", drvApiCycles[DRV_API_SETSRCADDR]);
-    System_printf("\n");
+    HWA_log("------ HWA Driver API benchmark:------\n");
+    HWA_log("HWA_init: %d\n", drvApiCycles[DRV_API_INIT]);
+    HWA_log("HWA_open: %d\n", drvApiCycles[DRV_API_OPEN]);
+    HWA_log("HWA_close: %d\n", drvApiCycles[DRV_API_CLOSE]);
+    HWA_log("HWA_enable: %d\n", drvApiCycles[DRV_API_ENABLE]);
+    HWA_log("HWA_setSoftwareTrigger: %d\n", drvApiCycles[DRV_API_SOFTWARETRIG]);
+    HWA_log("HWA_setDMA2ACCManualTrig: %d\n", drvApiCycles[DRV_API_DMAMANUALTRIG]);
+    HWA_log("HWA_setSourceAddress: %d\n", drvApiCycles[DRV_API_SETSRCADDR]);
+    HWA_log("\n");
 
     errCode = HWA_close(handle);
 
@@ -4809,7 +4797,7 @@ void HWA_benchmark()
 *  @retval
 *      Not Applicable.
 */
-static void Test_initTask(UArg arg0, UArg arg1)
+static void Test_initTask(void* arg0, void* arg1)
 {
     HWA_Handle              handle;
     int32_t                 errCode;
@@ -4825,7 +4813,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
     endTime = CycleprofilerP_getTimeStamp();
     drvApiCycles[DRV_API_INIT] = endTime - startTime;
 
-    System_printf("Debug: HWA has been initialized\n");
+    HWA_log("Debug: HWA has been initialized\n");
 
     /**************************************************************************
     * Open the HWA Instance
@@ -4835,13 +4823,13 @@ static void Test_initTask(UArg arg0, UArg arg1)
     		&errCode);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the HWA Instance err:%d\n", errCode);
+        HWA_log("Error: Unable to open the HWA Instance err:%d\n", errCode);
         //MCPI_setFeatureTestResult("API HWA_open()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_open() FAIL\n");
+        HWA_log("Feature : API HWA_open() FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
-    System_printf("Debug: HWA Instance %p has been opened successfully\n", handle);
+    HWA_log("Debug: HWA Instance %p has been opened successfully\n", handle);
 
     /**************************************************************************
     * Test: Graceful shutdown
@@ -4849,13 +4837,13 @@ static void Test_initTask(UArg arg0, UArg arg1)
     errCode = HWA_close(handle);
     if (errCode)
     {
-        System_printf("Error: HWA Instance %p closed with err:%d\n", handle, errCode);
+        HWA_log("Error: HWA Instance %p closed with err:%d\n", handle, errCode);
         //MCPI_setFeatureTestResult("API HWA_close()", MCPI_TestResult_FAIL);
-        System_printf("Feature : API HWA_close() FAIL\n");
+        HWA_log("Feature : API HWA_close() FAIL\n");
 		finalTestResultsPass = 0;
         return;
     }
-    System_printf("Debug: HWA Instance %p closed successfully\n", handle);
+    HWA_log("Debug: HWA Instance %p closed successfully\n", handle);
 
     /**************************************************************************
     * Test: Reopen the driver
@@ -4865,13 +4853,13 @@ static void Test_initTask(UArg arg0, UArg arg1)
     		&errCode);
     if (handle == NULL)
     {
-        System_printf("Error: Unable to open the HWA Instance err:%d\n", errCode);
+        HWA_log("Error: Unable to open the HWA Instance err:%d\n", errCode);
         //MCPI_setFeatureTestResult("HWA reopen", MCPI_TestResult_FAIL);
-        System_printf("Feature : HWA reopen FAIL\n");
+        HWA_log("Feature : HWA reopen FAIL\n");
         finalTestResultsPass = 0;
         return;
     }
-    System_printf("Debug: HWA Instance %p has been reopened successfully\n", handle);
+    HWA_log("Debug: HWA Instance %p has been reopened successfully\n", handle);
 
 
     /* test fft with preprocessing */
@@ -4903,7 +4891,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
     /* test context switch */
     HWA_contextswitch_test(handle);
-    System_printf("\n");
+    HWA_log("\n");
 
 
     HWA_controlPeripheralSuspendMode(handle, 0); //disable the peripheral suspende
@@ -4914,12 +4902,12 @@ static void Test_initTask(UArg arg0, UArg arg1)
     endTime = CycleprofilerP_getTimeStamp();
     drvApiCycles[DRV_API_CLOSE] = endTime - startTime;
     if (errCode != 0) {
-        System_printf("Error: HWA_close() failed with err:%d\n", errCode);
+        HWA_log("Error: HWA_close() failed with err:%d\n", errCode);
         //MCPI_setFeatureTestResult("HWA_close()", MCPI_TestResult_FAIL);
     }
     else
     {
-       System_printf("Debug: HWA Instance %p has been closed successfully\n", handle);
+       HWA_log("Debug: HWA Instance %p has been closed successfully\n", handle);
     }
 
     //MCPI_setTestResult();
@@ -4931,15 +4919,16 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
     if (finalTestResultsPass == 1)
 	{
-		System_printf("ALL HWA TESTS PASS\n");
+		HWA_log("ALL HWA TESTS PASS\n");
 	}
 	else
 	{
-		System_printf("HWA TESTS FAIL\n");
+		HWA_log("HWA TESTS FAIL\n");
 	}
-    System_printf("\n\n------- HWA driver test completed ----------\n\n");
+    HWA_log("\n\n------- HWA driver test completed ----------\n\n");
 
-    BIOS_exit(0);
+    OS_stop();
+
     return;
 }
 
@@ -4953,7 +4942,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
  */
 int main (void)
 {
-    Task_Params     taskParams;
+    TaskP_Params     taskParams;
     Board_initCfg   boardCfg;
     Board_STATUS  boardStatus;
 
@@ -4963,21 +4952,22 @@ int main (void)
     boardStatus = Board_init (boardCfg);
     if (boardStatus != BOARD_SOK)
     {
-        System_printf ("Debug: Board Init Fail \n");
+        HWA_log ("Debug: Board Init Fail \n");
     }
 
     CycleprofilerP_init();
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 4*1024;
-    Task_create(Test_initTask, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+
+    TaskP_create(Test_initTask, &taskParams);
 
     /* Debug Message: */
-    System_printf ("Debug: Launching BIOS \n");
+    HWA_log ("Debug: Launching BIOS \n");
 
-    /* Start BIOS */
-    BIOS_start();
+    OS_start();
     return 0;
 }
 

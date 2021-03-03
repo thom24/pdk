@@ -18,4 +18,6 @@ packages/ti/*/*/lib
 packages/ti/*/*/*/lib
 packages/ti/boot/sbl/tools/combined_appimage/bin/
 packages/ti/diag/serdes_diag/
+packages/ti/kernel/freertos/FreeRTOS-LTS/
+packages/ti/kernel/freertos/FreeRTOS-Labs/
 

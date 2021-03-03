@@ -113,6 +113,7 @@ export watchdog_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
 export watchdog_testapp_COMP_LIST = watchdog_testapp
 watchdog_testapp_RELPATH = ti/drv/watchdog/test
 watchdog_testapp_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
+watchdog_testapp_MAKEFILE = -f makefile
 export watchdog_testapp_BOARD_DEPENDENCY = yes
 export watchdog_testapp_CORE_DEPENDENCY = yes
 export watchdog_testapp_XDC_CONFIGURO = yes
@@ -121,6 +122,20 @@ watchdog_testapp_INCLUDE = $(watchdog_testapp_PATH)
 export watchdog_testapp_BOARDLIST = $(drvwatchdog_BOARDLIST)
 export watchdog_testapp_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
 watchdog_EXAMPLE_LIST += watchdog_testapp
+
+# watchdog freertos test app
+export watchdog_freertos_testapp_COMP_LIST = watchdog_freertos_testapp
+watchdog_freertos_testapp_RELPATH = ti/drv/watchdog/test
+watchdog_freertos_testapp_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
+watchdog_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
+export watchdog_freertos_testapp_BOARD_DEPENDENCY = yes
+export watchdog_freertos_testapp_CORE_DEPENDENCY = yes
+export watchdog_freertos_testapp_XDC_CONFIGURO = no
+watchdog_freertos_testapp_PKG_LIST = watchdog_freertos_testapp
+watchdog_freertos_testapp_INCLUDE = $(watchdog_freertos_testapp_PATH)
+export watchdog_freertos_testapp_BOARDLIST = $(drvwatchdog_BOARDLIST)
+export watchdog_freertos_testapp_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
+watchdog_EXAMPLE_LIST += watchdog_freertos_testapp
 
 export watchdog_LIB_LIST
 export watchdog_EXAMPLE_LIST

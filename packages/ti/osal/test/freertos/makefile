@@ -15,14 +15,10 @@ BUILD_OS_TYPE = freertos
 
 SRCDIR = ../src
 INCDIR = ../src
-INCDIR +=  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
-INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
-INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
-INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/dpl/common
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
+INCLUDE_EXTERNAL_INTERFACES = pdk freertos
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)

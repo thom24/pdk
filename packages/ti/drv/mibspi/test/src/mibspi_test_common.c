@@ -48,25 +48,14 @@
 #include <string.h>
 #include <stdio.h>
 
-/* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/IHeap.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/Memory.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/knl/Semaphore.h>
-#include <ti/sysbios/knl/Clock.h>
-#include <ti/sysbios/heaps/HeapBuf.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <ti/sysbios/knl/Event.h>
+#include "MIBSPI_log.h"
+
+#if defined (USE_BIOS)
 #ifdef BUILD_MCU1_0
 #include <ti/sysbios/family/arm/v7a/Pmu.h>
 #endif
-#include <ti/sysbios/hal/Cache.h>
+#endif
+
 #include <ti/csl/soc.h>
 
 #include <ti/drv/mibspi/MIBSPI.h>
@@ -75,7 +64,6 @@
 
 
 #include "mibspi_test_common.h"
-#include "MIBSPI_log.h"
 
 /**************************************************************************
  *************************** Local Definitions *********************************
@@ -177,7 +165,7 @@ void Test_delay(uint32_t count)
  */
 void Test_benchmarkStart(uint32_t counter)
 {
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
     /* Initialize counter to count cycles */
     Pmu_configureCounter(counter, 0x11, FALSE);
 
@@ -201,7 +189,7 @@ void Test_benchmarkStart(uint32_t counter)
  */
 uint32_t Test_benchmarkStop(uint32_t counter)
 {
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
     /* Stop PMU counter */
     Pmu_stopCounter(counter);
 
@@ -383,8 +371,8 @@ static int32_t Test_spiLoopback(const MIBSPI_Handle handle, uint8_t slaveIndex, 
         /* Clear receive buffer */
         memset((void *)&rxBuf[0], 0x0, SPI_DATA_BLOCK_SIZE);
 
-        Cache_wbInv((Ptr)txBuf, sizeof(txBuf), Cache_Type_ALL,TRUE);
-        Cache_wbInv((Ptr)rxBuf, sizeof(rxBuf), Cache_Type_ALL,TRUE);
+        CacheP_wbInv((Ptr)txBuf, sizeof(txBuf));
+        CacheP_wbInv((Ptr)rxBuf, sizeof(rxBuf));
         if(Test_spiReadWrite(handle, len, (void *)rxBuf, (void *)txBuf, slaveIndex) == 0)
         {
             /* Check data integrity */
@@ -486,8 +474,8 @@ static void Test_spiLoopBackDataThroughput(uint32_t inst, uint32_t bitRate)
 
     memset((void *)&rxBuf[0], 0x0, SPI_DATA_BLOCK_SIZE);
 
-    Cache_wbInv((Ptr)txBuf, sizeof(txBuf), Cache_Type_ALL,TRUE);
-    Cache_wbInv((Ptr)rxBuf, sizeof(rxBuf), Cache_Type_ALL,TRUE);
+    CacheP_wbInv((Ptr)txBuf, sizeof(txBuf));
+    CacheP_wbInv((Ptr)rxBuf, sizeof(rxBuf));
 
     // Start the counter
     Test_benchmarkStart(0);
@@ -592,17 +580,17 @@ void Test_spiMasterWrite(const MIBSPI_Handle handle, uint8_t slaveIndex)
         txBuf[0] = loop;
         Test_spiWrite(handle, SPI_TEST_MSGLEN, (void *)txBuf, slaveIndex);
 
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
         Pmu_startCounter(1);
 #endif
         Test_delay(delay);
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
         Pmu_stopCounter(1);
 #endif
     }
 
     cycles = Test_benchmarkStop(0);
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
     delayCycles = Pmu_getCount(1);
 #else
     delayCycles = 1000; //TODO
@@ -640,17 +628,17 @@ void Test_spiMasterRead(const MIBSPI_Handle handle, uint8_t slaveIndex)
     {
         /* Read data from slave */
         Test_spiRead(handle, SPI_TEST_MSGLEN, (void *)rxBuf, slaveIndex);
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
         Pmu_startCounter(1);
 #endif
         Test_delay(delay);
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
         Pmu_stopCounter(1);
 #endif
         rxBuf[0] = loop;
     }
     cycles = Test_benchmarkStop(0);
-#ifdef BUILD_MCU1_0
+#if (defined (USE_BIOS) && (BUILD_MCU1_0))
     delayCycles = Pmu_getCount(1);
 #else
     delayCycles = 1000;
@@ -1086,7 +1074,7 @@ void Test_spiAPI_oneInstance(uint8_t inst)
         ret = MIBSPI_transfer(handle, &transaction);
         if (ret != true)
         {
-            MIBSPI_log("Debug: MIBSPI_transfer failed with NULL pointers for both TX and RX. \n", transaction.status);
+            MIBSPI_log("Debug: MIBSPI_transfer failed with NULL pointers for both TX and RX with error=%d. \n", transaction.status);
         }
         else
         {
@@ -1225,10 +1213,10 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
      **************************************************************************/
     snprintf(testCase, 64, "SPI loopback test - instance(%d), 8bits DMA mode", inst);
 
+    params.dataSize =8;
 #ifdef MIBSPI_DMA_ENABLE
     /* Change dma configuration */
     params.dmaEnable = 1;
-    params.dataSize =8;
 #else
     params.dmaEnable = 0;
     params.dmaHandle = NULL;
@@ -1417,8 +1405,8 @@ static int32_t Test_spiLoopbackSlave(const MIBSPI_Handle handle, uint32_t maxEle
         /* Clear receive buffer */
         memset((void *)&rxBuf[0], 0x0, SPI_DATA_BLOCK_SIZE);
 
-        Cache_wbInv((Ptr)txBuf, sizeof(txBuf), Cache_Type_ALL,TRUE);
-        Cache_wbInv((Ptr)rxBuf, sizeof(rxBuf), Cache_Type_ALL,TRUE);
+        CacheP_wbInv((Ptr)txBuf, sizeof(txBuf));
+        CacheP_wbInv((Ptr)rxBuf, sizeof(rxBuf));
         if(Test_spiReadWrite(handle, len, (void *)rxBuf, (void *)txBuf, 0) == 0)
         {
             /* Check data integrity */

@@ -87,6 +87,7 @@ export mailbox_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 export mailbox_msg_testapp_COMP_LIST = mailbox_msg_testapp
 mailbox_msg_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_msg_testapp
 mailbox_msg_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_msg_testapp
+export mailbox_msg_testapp_MAKEFILE = -f makefile IS_TIRTOS=yes
 export mailbox_msg_testapp_BOARD_DEPENDENCY = yes
 export mailbox_msg_testapp_CORE_DEPENDENCY = yes
 export mailbox_msg_testapp_XDC_CONFIGURO = yes
@@ -95,6 +96,20 @@ mailbox_msg_testapp_INCLUDE = $(mailbox_msg_testapp_PATH)
 export mailbox_msg_testapp_BOARDLIST = $(drvmailbox_tpr_BOARDLIST)
 export mailbox_msg_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 mailbox_EXAMPLE_LIST += mailbox_msg_testapp
+
+# mailbox freertos msg test app
+export mailbox_msg_freertos_testapp_COMP_LIST = mailbox_msg_freertos_testapp
+mailbox_msg_freertos_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_msg_testapp
+mailbox_msg_freertos_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_msg_testapp
+export mailbox_msg_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
+export mailbox_msg_freertos_testapp_BOARD_DEPENDENCY = yes
+export mailbox_msg_freertos_testapp_CORE_DEPENDENCY = yes
+export mailbox_msg_freertos_testapp_XDC_CONFIGURO = yes
+mailbox_msg_freertos_testapp_PKG_LIST = mailbox_msg_freertos_testapp
+mailbox_msg_freertos_testapp_INCLUDE = $(mailbox_msg_freertos_testapp_PATH)
+export mailbox_msg_freertos_testapp_BOARDLIST = $(drvmailbox_tpr_BOARDLIST)
+export mailbox_msg_freertos_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
+mailbox_EXAMPLE_LIST += mailbox_msg_freertos_testapp
 
 # mailbox perf test app
 export mailbox_perf_testapp_COMP_LIST = mailbox_perf_testapp

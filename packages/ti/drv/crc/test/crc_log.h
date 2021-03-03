@@ -1,5 +1,5 @@
 /**
- *  \file   MIBSPI_log.h
+ *  \file   crc_log.h
  *
  *  \brief  This file contains the prototypes for the log print functions. By
             default the prints will be directed to serial console using UART.
@@ -39,8 +39,8 @@
  *
  */
 
-#ifndef MIBSPI_LOG_H
-#define MIBSPI_LOG_H
+#ifndef CRC_LOG_H
+#define CRC_LOG_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -55,7 +55,7 @@ extern "C" {
 
 #if defined(UART_CONSOLE)
     #if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
-        #define OSAL_log                printf
+        #define CRC_log                printf
     #else
         /* UART Header files */
         #include <ti/drv/uart/UART.h>
@@ -69,20 +69,21 @@ extern "C" {
         /**********************************************************************
          ************************** Macros ************************************
          **********************************************************************/
-        #define MIBSPI_log                UART_printf
+        #define CRC_log                UART_printf
     #endif
 #else
     #if defined(EMPTY_OSAL_LOG)
         static void dummy_printf(const char *pcString, ...)
         {
         }
-        #define MIBSPI_log                dummy_printf
+        #define CRC_log                dummy_printf
     #else
         #if defined(BARE_METAL) || defined(FREERTOS)
-            #define MIBSPI_log                printf
+            #define CRC_log                printf
         #else
-            #include <xdc/runtime/System.h>
-            #define MIBSPI_log                System_printf
+            // #include <xdc/runtime/System.h>
+            // #define CRC_log                System_printf
+            #define CRC_log                printf
         #endif /* BARE_METAL */
     #endif /* EMPTY_OSAL_LOG */
 #endif /* UART_CONSOLE */
@@ -91,4 +92,4 @@ extern "C" {
 }
 #endif
 
-#endif /* MIBSPI_LOG_H */
+#endif /* CRC_LOG_H */

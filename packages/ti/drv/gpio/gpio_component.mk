@@ -110,7 +110,7 @@ drvgpio_LIB_LIST = $(gpio_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-gpio_EXAMPLE_LIST = GPIO_Baremetal_LedBlink_TestApp GPIO_LedBlink_TestApp
+gpio_EXAMPLE_LIST = GPIO_Baremetal_LedBlink_TestApp GPIO_LedBlink_TestApp GPIO_Freertos_LedBlink_TestApp
 drvgpio_EXAMPLE_LIST = $(gpio_EXAMPLE_LIST)
 
 #
@@ -291,6 +291,21 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 GPIO_LedBlink_TestApp_SBL_APPIMAGEGEN = yes
 export GPIO_LedBlink_TestApp_SBL_APPIMAGEGEN
 endif
+
+# GPIO free rtos Example led blink
+export GPIO_Freertos_LedBlink_TestApp_COMP_LIST = GPIO_Freertos_LedBlink_TestApp
+GPIO_Freertos_LedBlink_TestApp_RELPATH = ti/drv/gpio/test/led_blink
+GPIO_Freertos_LedBlink_TestApp_PATH = $(PDK_GPIO_COMP_PATH)/test/led_blink
+GPIO_Freertos_LedBlink_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes
+export GPIO_Freertos_LedBlink_TestApp_BOARD_DEPENDENCY = yes
+export GPIO_Freertos_LedBlink_TestApp_CORE_DEPENDENCY = no
+export GPIO_Freertos_LedBlink_TestApp_XDC_CONFIGURO = no
+GPIO_Freertos_LedBlink_TestApp_PKG_LIST = GPIO_Freertos_LedBlink_TestApp
+GPIO_Freertos_LedBlink_TestApp_INCLUDE = $(GPIO_Freertos_LedBlink_TestApp_PATH)
+export GPIO_Freertos_LedBlink_TestApp_BOARDLIST = tpr12_evm
+#TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
+export GPIO_Freertos_LedBlink_TestApp_$(SOC)_CORELIST = mcu1_0
+export GPIO_Freertos_LedBlink_TestApp_SBL_APPIMAGEGEN = yes
 
 export drvgpio_LIB_LIST
 export drvgpio_EXAMPLE_LIST

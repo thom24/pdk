@@ -287,14 +287,35 @@ void TaskP_setPrio(TaskP_Handle handle, uint32_t priority)
 
 TaskP_Handle TaskP_self(void)
 {
-    // return ((TaskP_Handle)Task_self());
-    return NULL_PTR;
+    TaskHandle_t taskHndl;
+    TaskP_Handle retHandle = NULL_PTR;
+    uint32_t        i, maxTasks;
+
+    taskHndl = xTaskGetCurrentTaskHandle();
+    if (taskHndl != NULL_PTR)
+    {
+        /* Now get the corresponding TaskP Handle */
+        maxTasks        = OSAL_FREERTOS_CONFIGNUM_TASK;
+        for (i = 0; i < maxTasks; i++)
+        {
+            if ((gOsalTaskPfreertosPool[i].used == TRUE) &&
+                (gOsalTaskPfreertosPool[i].taskHndl == taskHndl))
+            {
+                retHandle = (TaskP_Handle) (&gOsalTaskPfreertosPool[i]);
+                break;
+            }
+        }
+    }
+
+    return retHandle;
 }
 
 TaskP_Handle TaskP_selfmacro(void)
 {
-    // return ((TaskP_Handle)Task_selfMacro());
-    return NULL_PTR;
+    /* For freertos task self is not implemented as inline macro.
+     * So call the TaskP_self API itself.
+     */
+    return TaskP_self();
 }
 
 void TaskP_yield(void) {
@@ -326,6 +347,16 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
     DebugP_assert((taskHandle->used != FALSE));
 
     return (taskHandle->taskHndl);
+}
+
+void OS_start(void)
+{
+    vTaskStartScheduler();
+}
+
+void OS_stop(void)
+{
+    vTaskEndScheduler();
 }
 
 /* Nothing past this point */

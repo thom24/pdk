@@ -1,7 +1,24 @@
 # Makefile for Watchdog test app for TI RTOS
+ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
+else
+include $(RULES_MAKE)
+endif
 
 BUILD_OS_TYPE = tirtos
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
+APP_NAME = watchdog_testapp
+endif
+ifeq ($(BUILD_OS_TYPE),freertos)
+APP_NAME = watchdog_freertos_testapp
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
 
@@ -13,6 +30,13 @@ ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
   XDC_CFG_UPDATE_$(CORE) = ./$(SOC)/dss_nmi_exception.xs
   PACKAGE_SRCS_COMMON += ./$(SOC)
 endif
+endif
+endif
+
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+EXTERNAL_INTERFACES += freertos
 endif
 
 SRCDIR = .
@@ -26,13 +50,11 @@ SRCS_c66xdsp_1 += main_dss.c
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
-APP_NAME = watchdog_testapp
-
 # List all the specific components required by the application
 COMP_LIST_COMMON += watchdog esm
 
 PACKAGE_SRCS_COMMON = .
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

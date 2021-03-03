@@ -32,6 +32,7 @@
 /*
  *  ======== TaskP_tirtos.c ========
  */
+#include "ti/sysbios/BIOS.h"
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/knl/Clock.h>
 #include "TaskP.h"
@@ -153,6 +154,16 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
         isTaskTerminated = 1;
     }
     return isTaskTerminated;
+}
+
+void OS_start(void)
+{
+    BIOS_start();
+}
+
+void OS_stop(void)
+{
+    BIOS_exit(0);
 }
 
 /* Nothing past this point */

@@ -1,19 +1,27 @@
 # Makefile for SPI master/slave test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
+BUILD_OS_TYPE = tirtos
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+ifeq ($(BAREMETAL), yes)
+BUILD_OS_TYPE=baremetal
+endif
+
+ifeq ($(BUILD_OS_TYPE),baremetal)
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_$(CORE) =
-else
-BUILD_OS_TYPE = tirtos
+MIBSPI_OS_TESTPREFIX=_Baremetal
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
   XDC_CFG_FILE_$(CORE) = ./$(SOC)/mss.cfg
@@ -22,7 +30,14 @@ ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
   XDC_CFG_FILE_$(CORE) = ./$(SOC)/dss.cfg
 endif
 endif
+MIBSPI_OS_TESTPREFIX=
+endif
 
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+EXTERNAL_INTERFACES = freertos
+MIBSPI_OS_TESTPREFIX=_Freertos
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 endif
 
 SRCDIR = . src
@@ -32,13 +47,6 @@ ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCDIR += $(SOC)
 INCDIR += $(SOC)
 endif
-
-ifeq ($(BUILD_OS_TYPE), tirtos)
-MIBSPI_OS_TESTPREFIX=
-else
-MIBSPI_OS_TESTPREFIX=_Baremetal
-endif
-
 
 # Common source files across all platforms and cores
 SRCS_COMMON += main_mibspi_test.c mibspi_test_common.c
@@ -75,10 +83,13 @@ endif
 # Master running on mcu1_0 core, use the common linker command file in build
 #CFLAGS_SPI_MS     = -DMIBSPI_MASTER_TASK
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+
 # MIBSPI uses local linker command file to avoid code/data memory conflict with master application
-ifeq ($(IS_BAREMETAL),yes)
+ifeq ($(BUILD_OS_TYPE),baremetal)
 EXTERNAL_LNKCMD_FILE_LOCAL =  ./$(SOC)/mss_spi_linker.cmd
-else
+endif
+
+ifeq ($(BUILD_OS_TYPE), tirtos)
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
   EXTERNAL_LNKCMD_FILE_LOCAL =  ./$(SOC)/mss_spi_linker.cmd
 endif

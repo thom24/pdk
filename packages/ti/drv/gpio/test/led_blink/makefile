@@ -1,16 +1,26 @@
 # Makefile for GPIO LED Blink unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
+BUILD_OS_TYPE = tirtos
 ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
+endif
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+
+
+ifeq ($(BUILD_OS_TYPE),baremetal)
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
-else
-BUILD_OS_TYPE = tirtos
+GPIO_OS_TESTPREFIX=_Baremetal
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
@@ -21,12 +31,14 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 tpr12 awr294x am64x))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
+GPIO_OS_TESTPREFIX=
 endif
 
-ifeq ($(BUILD_OS_TYPE), tirtos)
-GPIO_OS_TESTPREFIX=
-else
-GPIO_OS_TESTPREFIX=_Baremetal
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+EXTERNAL_INTERFACES = freertos
+COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
+GPIO_OS_TESTPREFIX=_Freertos
 endif
 
 #Name of the directory created under packages/ti/binary/

@@ -129,6 +129,10 @@ export freertos_SOC_DEPENDENCY
 freertos_PKG_LIST = freertos
 export freertos_PKG_LIST
 freertos_INCLUDE = $(freertos_PATH)
+freertos_INCLUDE += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
+freertos_INCLUDE += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
+freertos_INCLUDE += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
+
 export freertos_SOCLIST
 export freertos_$(SOC)_CORELIST
 

@@ -1,20 +1,27 @@
 # Makefile for UART unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-
+BUILD_OS_TYPE = tirtos
 ifeq ($(IS_BAREMETAL),yes)
 BUILD_OS_TYPE = baremetal
+endif
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+
+ifeq ($(BUILD_OS_TYPE),baremetal)
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP) 
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
-else
-BUILD_OS_TYPE = tirtos
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) 
+COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP)
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x tpr12 awr294x))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -31,8 +38,16 @@ endif
 
 endif
 
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
+EXTERNAL_INTERFACES = freertos
+XDC_CFG_FILE_mpu1_0 =
+XDC_CFG_FILE_mcu1_0 =
+endif
+
 SRCDIR = . src
-INCDIR = . src
+INCDIR += . src
 # Common source files across all platforms and cores
 SRCS_COMMON += main_uart_test.c
 
@@ -43,8 +58,12 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
 ifeq ($(BUILD_OS_TYPE), tirtos)
 UART_OS_TYPE=
-else
+endif
+ifeq ($(BUILD_OS_TYPE), baremetal)
 UART_OS_TYPE=_Baremetal
+endif
+ifeq ($(BUILD_OS_TYPE),freertos)
+UART_OS_TYPE=_freertos
 endif
 
 # DMA enabled build

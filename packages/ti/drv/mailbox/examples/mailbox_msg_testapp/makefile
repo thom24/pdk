@@ -7,7 +7,17 @@ else
 include $(RULES_MAKE)
 endif
 
+BUILD_OS_TYPE = tirtos
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
 APP_NAME = mailbox_msg_testapp
+endif
+ifeq ($(BUILD_OS_TYPE),freertos)
+APP_NAME = mailbox_msg_freertos_testapp
+endif
 
 #
 # This file is common makefile for building Mailbox test app for both TI-RTOS/baremetal
@@ -19,11 +29,21 @@ INCDIR =
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-# List all the components required by the application
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_OS_DEFINES = -DUSE_BIOS
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-COMP_LIST_COMMON += mailbox 
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+INCLUDE_EXTERNAL_INTERFACES += freertos
+endif
+
+# List all the components required by the application
+COMP_LIST_COMMON += mailbox
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
@@ -31,7 +51,7 @@ SRCS_mcu1_0 += main_mss.c
 SRCS_c66xdsp_1 += main_dss.c
 SRCS_COMMON += app_sync.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

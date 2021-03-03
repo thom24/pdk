@@ -7,7 +7,17 @@ else
 include $(RULES_MAKE)
 endif
 
+BUILD_OS_TYPE = tirtos
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
 APP_NAME = hwa_testapp
+endif
+ifeq ($(BUILD_OS_TYPE),freertos)
+APP_NAME = hwa_freertos_testapp
+endif
 
 #
 # This file is common makefile for building UDMA memcpy test app for both TI-RTOS/baremetal
@@ -20,6 +30,8 @@ INCDIR = . src/
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_OS_DEFINES = -DUSE_BIOS
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 COMP_LIST_COMMON += hwa
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
@@ -30,13 +42,23 @@ endif
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/hwa/test/$(SOC)/mss_hwa_linker.cmd
 endif
+endif
+
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+COMP_LIST_COMMON += hwa
+INCLUDE_EXTERNAL_INTERFACES += pdk freertos
+APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
+endif
+
 # Common source files and CFLAGS across all platforms and cores
 
 
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += main.c  
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

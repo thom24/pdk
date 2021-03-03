@@ -89,6 +89,7 @@ export hwa_$(SOC)_CORELIST
 export hwa_testapp_COMP_LIST = hwa_testapp
 hwa_testapp_RELPATH = ti/drv/hwa/test
 hwa_testapp_PATH = $(PDK_HWA_COMP_PATH)/test
+export hwa_testapp_MAKEFILE = -f makefile
 export hwa_testapp_BOARD_DEPENDENCY = yes
 export hwa_testapp_CORE_DEPENDENCY = yes
 export hwa_testapp_XDC_CONFIGURO = yes
@@ -97,6 +98,20 @@ hwa_testapp_INCLUDE = $(hwa_testapp_PATH)
 export hwa_testapp_BOARDLIST = $(drvhwa_BOARDLIST)
 export hwa_testapp_$(SOC)_CORELIST = $(drvhwa_$(SOC)_CORELIST)
 hwa_EXAMPLE_LIST += hwa_testapp
+
+# HWA freertos unit test
+export hwa_freertos_testapp_COMP_LIST = hwa_freertos_testapp
+hwa_freertos_testapp_RELPATH = ti/drv/hwa/test
+hwa_freertos_testapp_PATH = $(PDK_HWA_COMP_PATH)/test
+export hwa_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
+export hwa_freertos_testapp_BOARD_DEPENDENCY = yes
+export hwa_freertos_testapp_CORE_DEPENDENCY = yes
+export hwa_freertos_testapp_XDC_CONFIGURO = no
+hwa_freertos_testapp_PKG_LIST = hwa_freertos_testapp
+hwa_freertos_testapp_INCLUDE = $(hwa_freertos_testapp_PATH)
+export hwa_freertos_testapp_BOARDLIST = $(drvhwa_BOARDLIST)
+export hwa_freertos_testapp_$(SOC)_CORELIST = $(drvhwa_$(SOC)_CORELIST)
+hwa_EXAMPLE_LIST += hwa_freertos_testapp
 
 export hwa_LIB_LIST
 export hwa_EXAMPLE_LIST

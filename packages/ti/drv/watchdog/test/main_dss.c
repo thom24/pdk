@@ -43,24 +43,7 @@
 #include <stdio.h>
 #include <math.h>
 
-/* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/IHeap.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/Memory.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/knl/Semaphore.h>
-#include <ti/sysbios/knl/Clock.h>
-#include <ti/sysbios/heaps/HeapBuf.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/family/c64p/Hwi.h>
-#include <ti/sysbios/family/c64p/EventCombiner.h>
-#include <ti/sysbios/family/c64p/Cache.h>
+#include <ti/osal/TaskP.h>
 
 /* PDK Include Files: */
 #include <ti/drv/watchdog/watchdog.h>
@@ -75,6 +58,8 @@
 /**************************************************************************
  *************************** Global Definitions ***************************
  **************************************************************************/
+#define APP_TSK_STACK_MAIN              (6U * 1024U)
+
 /** \brief Number of messages sent */
 #define WATCHDOG_APP_TEST_RESET          1
 #define WATCHDOG_APP_TEST_INTERRUPT      2
@@ -83,6 +68,8 @@
 volatile uint32_t       testSelection = 0;
 volatile uint32_t       gWatchdogInt = 0;
 Watchdog_Handle         watchdogHandle;
+
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -310,7 +297,7 @@ static int32_t Watchdog_initConfig(void)
  *  @retval
  *      Not Applicable.
  */
-static void Test_initTask(UArg arg0, UArg arg1)
+static void Test_initTask(void* arg0, void* arg1)
 {
     int32_t         retVal = 0;
 
@@ -352,8 +339,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
         WATCHDOG_log("All Tests PASSED\n");
     }
 
-    /* Exit BIOS */
-    BIOS_exit(0);
+    OS_stop();
 
     return;
 }
@@ -370,7 +356,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
  */
 int32_t main (void)
 {
-    Task_Params     taskParams;
+    TaskP_Params     taskParams;
     /* Call board init functions */
     Board_initCfg   boardCfg;
     int32_t         ret;
@@ -382,9 +368,12 @@ int32_t main (void)
     }
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 6*1024;
-    Task_create(Test_initTask, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.priority =2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+
+    TaskP_create(Test_initTask, &taskParams);
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_MODULE_CLOCK |
@@ -396,8 +385,8 @@ int32_t main (void)
     /* Debug Message: */
     WATCHDOG_log("Debug: Launching BIOS\n");
 
-    /* Start BIOS */
-    BIOS_start();
+    OS_start();
+
     return 0;
 }
 

@@ -66,6 +66,7 @@ INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON += -DFREERTOS
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

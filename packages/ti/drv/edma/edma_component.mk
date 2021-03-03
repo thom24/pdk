@@ -98,6 +98,20 @@ export edma_baremetal_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
 export edma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
 edma_EXAMPLE_LIST += edma_baremetal_memcpy_testapp
 
+# EDMA freertos memcpy test app
+export edma_freertos_memcpy_testapp_COMP_LIST = edma_freertos_memcpy_testapp
+edma_freertos_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
+edma_freertos_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
+export edma_freertos_memcpy_testapp_MAKEFILE = -fmakefile IS_FREERTOS=yes
+export edma_freertos_memcpy_testapp_BOARD_DEPENDENCY = yes
+export edma_freertos_memcpy_testapp_CORE_DEPENDENCY = yes
+export edma_freertos_memcpy_testapp_XDC_CONFIGURO = no
+edma_freertos_memcpy_testapp_PKG_LIST = edma_freertos_memcpy_testapp
+edma_freertos_memcpy_testapp_INCLUDE = $(edma_freertos_memcpy_testapp_PATH)
+export edma_freertos_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
+export edma_freertos_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
+edma_EXAMPLE_LIST += edma_freertos_memcpy_testapp
+
 # EDMA memcpy test app
 export edma_memcpy_testapp_COMP_LIST = edma_memcpy_testapp
 edma_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
@@ -116,6 +130,7 @@ edma_EXAMPLE_LIST += edma_memcpy_testapp
 export edma_unit_testapp_COMP_LIST = edma_unit_testapp
 edma_unit_testapp_RELPATH = ti/drv/edma/unit_test/edma_ut
 edma_unit_testapp_PATH = $(PDK_EDMA_COMP_PATH)/unit_test/edma_ut
+export edma_unit_testapp_MAKEFILE = -fmakefile
 export edma_unit_testapp_BOARD_DEPENDENCY = yes
 export edma_unit_testapp_CORE_DEPENDENCY = yes
 export edma_unit_testapp_XDC_CONFIGURO = yes
@@ -124,6 +139,20 @@ edma_unit_testapp_INCLUDE = $(edma_unit_testapp_PATH)
 export edma_unit_testapp_BOARDLIST = $(drvedma_BOARDLIST)
 export edma_unit_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
 edma_EXAMPLE_LIST += edma_unit_testapp
+
+# EDMA freertos unit test app
+export edma_freertos_unit_testapp_COMP_LIST = edma_freertos_unit_testapp
+edma_freertos_unit_testapp_RELPATH = ti/drv/edma/unit_test/edma_ut
+edma_freertos_unit_testapp_PATH = $(PDK_EDMA_COMP_PATH)/unit_test/edma_ut
+export edma_freertos_unit_testapp_MAKEFILE = -fmakefile IS_FREERTOS=yes
+export edma_freertos_unit_testapp_BOARD_DEPENDENCY = yes
+export edma_freertos_unit_testapp_CORE_DEPENDENCY = yes
+export edma_freertos_unit_testapp_XDC_CONFIGURO = no
+edma_freertos_unit_testapp_PKG_LIST = edma_freertos_unit_testapp
+edma_freertos_unit_testapp_INCLUDE = $(edma_freertos_unit_testapp_PATH)
+export edma_freertos_unit_testapp_BOARDLIST = $(drvedma_BOARDLIST)
+export edma_freertos_unit_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
+edma_EXAMPLE_LIST += edma_freertos_unit_testapp
 
 
 export edma_LIB_LIST

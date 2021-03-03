@@ -249,6 +249,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
     if (hwi_hnd->used)
     {
         hwi_hnd->used = (bool)false;
+        CSL_intcUnplugEventHandler(hwi_hnd->hwi.handle);
         status = CSL_intcClose(hwi_hnd->hwi.handle);
 
         if (status == CSL_SOK)
