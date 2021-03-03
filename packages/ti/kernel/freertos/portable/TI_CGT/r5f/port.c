@@ -124,7 +124,8 @@ uint32_t ulPortSchedularRunning = pdFALSE;
  * assembly code so is implemented in portASM.s.
  */
 extern void vPortRestoreTaskContext( void );
-
+static uint64_t prvPortReadPmuCounter(void);
+    
 static void prvTaskExitError( void )
 {
     /* A function that implements a task must not exit or attempt to return to
@@ -210,11 +211,12 @@ StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
 }
 
 TimerP_Handle pTickTimerHandle = NULL;
-
+uint64_t portLastTimerTS;
 static void prvPorttimerTickIsr(uintptr_t args)
 {
     void vPortTimerTickHandler();
 
+    portLastTimerTS = prvPortReadPmuCounter();
     vPortTimerTickHandler();
 }
 
@@ -362,24 +364,34 @@ void vPortConfigTimerForRunTimeStats()
     gTimeStampOverFlowCount = 0;
 }
 
-/* return current counter value of high speed counter in units of 10's of usecs */
-uint32_t uiPortGetRunTimeCounterValue()
+static uint64_t prvPortReadPmuCounter(void)
 {
-    uint64_t timeInUsecs;
     uint32_t tsLo;
     uint32_t ovsrStatus;
     uint64_t ts;
 
     tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
-
     ovsrStatus = (CSL_armR5PmuReadCntrOverflowStatus() & (0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
 
     if (ovsrStatus != 0)
     {
         tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
         gTimeStampOverFlowCount++;
+        CSL_armR5PmuClearCntrOverflowStatus((0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
     }
     ts = ((uint64_t)tsLo | ((uint64_t) gTimeStampOverFlowCount << 32U));
+
+    return ts;
+}
+
+
+/* return current counter value of high speed counter in units of 10's of usecs */
+uint32_t uiPortGetRunTimeCounterValue()
+{
+    uint64_t timeInUsecs;
+    uint64_t ts;
+
+    ts = prvPortReadPmuCounter();
     timeInUsecs = (ts * 1000000) / configCPU_CLOCK_HZ;
 
 
