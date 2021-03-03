@@ -31,8 +31,8 @@
  */
 
 
-#ifndef TI_FREERTOS_MCU1_0_CONFIG_H
-#define TI_FREERTOS_MCU1_0_CONFIG_H
+#ifndef TI_FREERTOS_MCU3_0_CONFIG_H
+#define TI_FREERTOS_MCU3_0_CONFIG_H
 
 
 /*-----------------------------------------------------------
@@ -46,5 +46,5 @@
  * FreeRTOS REFERENCE MANUAL.
  *----------------------------------------------------------*/
 
-#define configTIMER_ID                                                    (1)
-#endif /* TI_FREERTOS_MCU1_0_CONFIG_H */
+#define configTIMER_ID                                                    (2)
+#endif /* TI_FREERTOS_MCU3_0_CONFIG_H */

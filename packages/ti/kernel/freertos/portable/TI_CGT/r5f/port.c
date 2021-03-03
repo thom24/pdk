@@ -65,13 +65,6 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
 
-// TODO : DebugP_assert from nonos dosen't have any print. 
-//        Else implement print support for DebugP_assert and
-//        DebugP_assertNoLog with no prints
-#define DebugP_assertNoLog DebugP_assert
-// TODO : Implement log based on zone or use DebugP_logx
-#define DebugP_logError DebugP_log1
-
 /* Let the user override the pre-loading of the initial LR with the address of
  * prvTaskExitError() in case is messes up unwinding of the stack in the
  * debugger. */
@@ -134,7 +127,7 @@ static void prvTaskExitError( void )
      *
      * Force an assert() to be triggered if configASSERT() is
      * defined, then stop here so application writers can catch the error. */
-    DebugP_assertNoLog(0);
+    DebugP_assert(0);
 }
 
 StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
@@ -257,6 +250,12 @@ BaseType_t xPortStartScheduler(void)
      */
     portDISABLE_INTERRUPTS();
 
+    #if (configCOPY_RESET_VECTORS==1)
+    /* Relocate FreeRTOS Reset Vectors to ATCM*/
+    void _freertosresetvectors (void);  
+    memcpy((void *)configMCU_ATCM_BASE, (void *)_freertosresetvectors, 0x40);
+    #endif
+
     /* Start the ISR handling of the timer that generates the tick ISR. */
     ulPortSchedularRunning = pdTRUE;
 
@@ -327,7 +326,7 @@ void vPortEnterCritical( void )
      * assert function also uses a critical section. */
     if( ulCriticalNesting == 1 )
     {
-        DebugP_assertNoLog( ulPortInterruptNesting == 0);
+        DebugP_assert( ulPortInterruptNesting == 0);
     }
     #endif
 }
@@ -427,8 +426,8 @@ void vPortEndScheduler()
 void vApplicationStackOverflowHook( TaskHandle_t xTask,
                                     char * pcTaskName )
 {
-    DebugP_logError("[FreeRTOS] Stack overflow detected for task [%s]", (uintptr_t)pcTaskName);
-    DebugP_assertNoLog(0);
+    DebugP_log1("[FreeRTOS] Stack overflow detected for task [%s]", (uintptr_t)pcTaskName);
+    DebugP_assert(0);
 }
 
 /* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an

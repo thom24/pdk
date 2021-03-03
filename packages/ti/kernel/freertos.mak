@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building mailbox.
+# This file is the makefile for building freertos.
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 

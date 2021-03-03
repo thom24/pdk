@@ -79,7 +79,7 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
 #endif
 
 #ifdef SOC_AM65XX
-    #ifdef BUILD_MCU1_0
+    #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
         #define PING_INT_NUM           (CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_0)
         #define PONG_INT_NUM           (CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_1)
     #endif
@@ -90,12 +90,44 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
         #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
         #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
     #endif
+    #ifdef BUILD_MCU1_1
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+#endif
+    #ifdef BUILD_MCU2_0
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU2_1
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU3_0
+        #define PING_INT_NUM           (CSLR_R5FSS1_CORE0_INTR_R5FSS1_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS1_CORE0_INTR_R5FSS1_INTROUTER0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU3_1
+        #define PING_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_1)
+    #endif
 #endif
 
 #ifdef SOC_J7200
     #ifdef BUILD_MCU1_0
         #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
         #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU1_1
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+#endif
+    #ifdef BUILD_MCU2_0
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU2_1
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_1)
     #endif
 #endif
 
@@ -127,7 +159,7 @@ static void pong_isr(uintptr_t arg)
 void ping_main(void *args)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of 10's of usecs */
 
     DebugP_log0("\r\n");
     DebugP_log0("[FreeRTOS] ping task ... start !!!\r\n");
@@ -140,6 +172,7 @@ void ping_main(void *args)
             SemaphoreP_pend(gPingSem, SemaphoreP_WAIT_FOREVER);
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
+        curTime *= 10;
 
         DebugP_log0("\r\n");
         DebugP_log1("execution time for task switches = %" PRId64 " us\r\n", curTime);
@@ -155,6 +188,7 @@ void ping_main(void *args)
             ulTaskNotifyTake( pdTRUE, portMAX_DELAY); /* wait for pong to signal */
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
+        curTime *= 10;
 
         DebugP_log0("\r\n");
         DebugP_log1("execution time for task switches = %" PRId64 " us\r\n", curTime);
@@ -182,6 +216,7 @@ void ping_main(void *args)
             SemaphoreP_pend(gPingSem, SemaphoreP_WAIT_FOREVER);
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
+        curTime *= 10;
 
         hwiStatus = HwiP_delete(hHwi);
         DebugP_assert(hwiStatus == HwiP_OK);

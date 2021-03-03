@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building EDMA memcpy test app for TI RTOS
+# This file is the makefile for building FreeRTOS Unit Test
 #
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -12,9 +12,6 @@ APP_NAME = freertos_test_ut
 BUILD_OS_TYPE=baremetal
 CFLAGS_TEST_DEFINES =
 
-#
-# This file is common makefile for building UDMA memcpy test app for both TI-RTOS/baremetal
-#
 
 SRCDIR = .
 INCDIR =  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
@@ -29,17 +26,14 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 else
 # List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-INCLUDE_EXTERNAL_INTERFACES += xdc bios
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 
 COMP_LIST_COMMON += freertos
 
-ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+ifeq ($(ISA),$(filter $(ISA), c66))
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
 endif
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+ifeq ($(ISA),$(filter $(ISA), r5f))
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
 endif
 
@@ -58,12 +52,11 @@ SRCS_COMMON += unity_config.c unity.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
 CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
+CFLAGS_LOCAL_COMMON += --c99
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =
 #   CFLAGS_LOCAL_<core/SoC/platform-name> =
-CFLAGS_LOCAL_c66xdsp_1 = --c99
-CFLAGS_LOCAL_mcu1_0 = --c99
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

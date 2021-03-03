@@ -69,9 +69,9 @@ ifeq ($(freertos_component_make_include), )
 freertos_BOARDLIST       = tpr12_evm j721e_evm j7200_evm am65xx_evm am65xx_idk
 freertos_SOCLIST         = tpr12 j721e j7200 am65xx
 freertos_tpr12_CORELIST   = c66xdsp_1 mcu1_0
-freertos_j721e_CORELIST   = mcu1_0
-freertos_j7200_CORELIST   = mcu1_0
-freertos_am65xx_CORELIST   = mcu1_0
+freertos_j721e_CORELIST   = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+freertos_j7200_CORELIST   = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+freertos_am65xx_CORELIST   = mcu1_0 mcu1_1
 
 ############################
 # freertos package
@@ -133,7 +133,7 @@ export freertos_$(SOC)_CORELIST
 #
 # freertos rtos baremetal test app
 
-# freertos rtos test app
+# freertos rtos task switch test app
 freertos_test_task_switch_COMP_LIST = freertos_test_task_switch
 freertos_test_task_switch_RELPATH = ti/kernel/test/freertos/task_switch
 freertos_test_task_switch_PATH = $(PDK_FREERTOS_COMP_PATH)/test/freertos/task_switch
@@ -154,7 +154,7 @@ export freertos_test_task_switch_BOARDLIST
 freertos_test_task_switch_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
 export freertos_test_task_switch_$(SOC)_CORELIST
 
-# freertos rtos test app
+# freertos rtos unit test app
 freertos_test_ut_COMP_LIST = freertos_test_ut
 freertos_test_ut_RELPATH = ti/kernel/test/freertos/ut
 freertos_test_ut_PATH = $(PDK_FREERTOS_COMP_PATH)/test/freertos/ut
@@ -175,7 +175,7 @@ export freertos_test_ut_BOARDLIST
 freertos_test_ut_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
 export freertos_test_ut_$(SOC)_CORELIST
 
-# freertos rtos test app
+# freertos rtos posix test app
 freertos_test_posix_COMP_LIST = freertos_test_posix
 freertos_test_posix_RELPATH = ti/kernel/test/freertos/
 freertos_test_posix_PATH = $(PDK_FREERTOS_COMP_PATH)/test/freertos/posix_demo

@@ -38,6 +38,15 @@
 #ifdef BUILD_MCU1_0
 #include "FreeRTOSConfig_mcu1_0.h"
 #endif
+#ifdef BUILD_MCU1_1
+#include "FreeRTOSConfig_mcu1_1.h"
+#endif
+#ifdef BUILD_MCU2_0
+#include "FreeRTOSConfig_mcu2_0.h"
+#endif
+#ifdef BUILD_MCU2_1
+#include "FreeRTOSConfig_mcu2_1.h"
+#endif
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -162,5 +171,11 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define INCLUDE_xTimerDelete        (1)
 #define INCLUDE_vSemaphoreDelete    (1)
 
+/* 
+ * This is not a FreeRTOS defined config and is defined by TI to enable
+ * copy of _freertosresetvectors to ATCM 
+ */
+#define configCOPY_RESET_VECTORS    (0)
+#define configMCU_ATCM_BASE         (0x0UL)
 
 #endif /* TI_FREERTOS_CONFIG_H */

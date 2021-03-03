@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building EDMA memcpy test app for TI RTOS
+# This file is the makefile for building FreeRTOS Task Switch Example App
 #
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -12,9 +12,6 @@ APP_NAME = freertos_test_task_switch
 BUILD_OS_TYPE=freertos
 CFLAGS_TEST_DEFINES =
 
-#
-# This file is common makefile for building UDMA memcpy test app for both TI-RTOS/baremetal
-#
 
 SRCDIR = .
 INCDIR =  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
@@ -31,10 +28,10 @@ else
 # List all the components required by the application
 endif
 
-ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
+ifeq ($(ISA),$(filter $(ISA), c66))
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
 endif
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+ifeq ($(ISA),$(filter $(ISA), r5f))
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
 endif
 
