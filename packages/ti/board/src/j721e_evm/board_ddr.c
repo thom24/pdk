@@ -419,6 +419,10 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
 {
     Board_STATUS status = BOARD_SOK;
 
+    /* Unlock the PLL register access for DDR clock bypass */
+    HW_WR_REG32(BOARD_PLL12_LOCK0, KICK0_UNLOCK);
+    HW_WR_REG32(BOARD_PLL12_LOCK1, KICK1_UNLOCK);
+
     /* PLL should be bypassed while configuring the DDR */
     Board_DDRSetPLLExtBypass();
 
@@ -457,6 +461,10 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     {
          status = emif_ConfigureECC();
     }
+
+    /* Lock the PLL registers access */
+    HW_WR_REG32(BOARD_PLL12_LOCK0, KICK_LOCK);
+    HW_WR_REG32(BOARD_PLL12_LOCK1, KICK_LOCK);
 
     return status;
 }
