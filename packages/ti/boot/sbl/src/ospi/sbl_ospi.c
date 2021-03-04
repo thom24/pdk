@@ -237,6 +237,14 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     ospi_cfg.phyEnable = false;
 #endif
 
+#if defined(SOC_J721E)
+    ospi_cfg.phyEnable = false;
+    /* OSPI baud rate = (master reference clock) / (baud rate devisor)
+     * Default baud rate devisor is 32
+     * Using a smaller devisor to get higher speeds */
+    ospi_cfg.baudRateDiv = 6;
+#endif
+
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
@@ -252,13 +260,8 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     {
         SBL_ADD_PROFILE_POINT;
 
-#if defined(SIM_BUILD) || defined(SOC_J7200) || defined(SOC_AM64X)
         /* Disable PHY pipeline mode */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
-#else
-        /* Enable PHY pipeline mode  even though DMA is not used */
-        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), TRUE);
-#endif
 
 #if defined(SOC_J7200) || defined(SOC_AM64X)
         /* Until OSPI PHY + DMA is enabled at this early stage, the
@@ -374,7 +377,12 @@ int32_t SBL_ospiInit(void *handle)
     /* J7200/AM64X: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
     ospi_cfg.phyEnable = true;
 #else
+#if defined(SOC_J721E)
+    ospi_cfg.phyEnable = true;
+    ospi_cfg.cacheEnable = true;
+#else
     ospi_cfg.phyEnable = false;
+#endif
 #endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -391,7 +399,7 @@ int32_t SBL_ospiInit(void *handle)
         *(Board_flashHandle *) handle = h;
         /* Update the static handle as well, for later use */
         boardHandle = (void *)h;
-#if !(SBL_USE_DMA)
+#if !(SBL_USE_DMA) && !defined(SOC_J721E)
         /* Disable PHY pipeline mode if not using DMA */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
 #endif
@@ -471,7 +479,14 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
 #endif
 
 #else
+#if defined(SOC_J721E)
+    Board_flashHandle h = *(const Board_flashHandle *) handle;
+    uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
+    SBL_DCacheClean((void *)dst, length);
+    Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
+#else
     memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+#endif
 #endif /* #if SBL_USE_DMA */
 
 #else
