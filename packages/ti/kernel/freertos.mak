@@ -8,15 +8,18 @@ MODULE_NAME = freertos
 SRCDIR = freertos/portable/TI_CGT/$(ISA)
 SRCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/ \
           ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/portable/MemMang \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/FreeRTOS-Plus-POSIX/source
+          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/source
 	
 INCDIR = freertos/config/$(SOC)/$(ISA)
 INCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include \
           freertos/portable/TI_CGT/$(ISA) \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/include \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/include/private \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/FreeRTOS-Plus-POSIX/include \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/FreeRTOS-Plus-POSIX/include/portable
+          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include \
+          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include/private \
+          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include/FreeRTOS_POSIX \
+          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/include \
+          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/include/portable
+
+
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component

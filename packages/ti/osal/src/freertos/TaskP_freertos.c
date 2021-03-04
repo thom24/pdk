@@ -100,12 +100,14 @@ void TaskP_compileTime_SizeChk(void)
 void TaskP_Function (void *arg)
 {
     TaskP_freertos *handle = (TaskP_freertos *)(arg);
+    TaskP_Handle hTask;
 
     /* Call the application function. */
     (*handle->taskfxn)(handle->arg0, handle->arg0);
 
+    hTask = handle;
     /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
-    TaskP_delete((TaskP_Handle) handle);
+    TaskP_delete(&hTask);
 }
 
 /*
@@ -211,11 +213,12 @@ TaskP_Handle TaskP_create(void *taskfxn, const TaskP_Params *params)
 /*
  *  ======== TaskP_delete ========
  */
-TaskP_Status TaskP_delete(TaskP_Handle *handle)
+TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
 {
     uintptr_t   key;
     TaskP_Status ret = TaskP_OK;
-    TaskP_freertos *task = (TaskP_freertos *)handle;
+    TaskP_Handle hTask = *hTaskPtr;
+    TaskP_freertos *task = (TaskP_freertos *)hTask;
     TaskHandle_t            taskHndl;
 
     if((task != NULL_PTR) && (task->used==TRUE))
@@ -251,7 +254,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *handle)
  */
 void TaskP_Params_init(TaskP_Params *params)
 {
-    params->name = "FREERTOS_TASK";
+    params->name = (uint8_t *)"FREERTOS_TASK";
     params->stacksize = 0;
     params->stack = NULL;
     params->priority = (TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST) / 2;
@@ -276,7 +279,7 @@ void TaskP_sleepInMsecs(uint32_t timeoutInMsecs)
 
 void TaskP_setPrio(TaskP_Handle handle, uint32_t priority)
 {
-    TaskP_freertos *taskHandle = handle;
+    TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert((handle != NULL_PTR));
     vTaskPrioritySet(taskHandle->taskHndl, priority);
@@ -301,7 +304,7 @@ void TaskP_yield(void) {
 uint32_t TaskP_isTerminated(TaskP_Handle handle)
 {
     uint32_t isTaskTerminated = 0;
-    TaskP_freertos *taskHandle = handle;
+    TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert((handle != NULL_PTR));
     if(eTaskGetState(taskHandle->taskHndl) != eDeleted)
@@ -317,9 +320,9 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
 
 TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
-    TaskP_freertos *taskHandle = handle;
+    DebugP_assert((handle != NULL_PTR));
     DebugP_assert((taskHandle->used != FALSE));
 
     return (taskHandle->taskHndl);

@@ -18,10 +18,10 @@ INCDIR =  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/dpl/common
-INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/include
-INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/include/private
-INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/FreeRTOS-Plus-POSIX/include
-INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-Plus-POSIX/FreeRTOS-Plus-POSIX/include/portable
+INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include
+INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include/private
+INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/include
+INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/include/portable
 
 
 # List all the external components/interfaces, whose interface header files
