@@ -35,6 +35,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #include "board_ddr.h"
 
+#ifdef BUILD_MCU
 typedef struct Board_DDRThermalMgmtInstance_s
 {
     LPDDR4_Config      boardDDRCfg;
@@ -442,3 +443,5 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
     }
     return status;
 }
+
+#endif /* BUILD_MCU*/
