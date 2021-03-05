@@ -667,8 +667,8 @@ mmcsdTestMMCProfile_t * mmcsdTestProfiles[] = {
 	&EMMCProfiles_HS_SDR,
 	&EMMCProfiles_HS_DDR,
 	&EMMCProfiles_HS200,
-#if !defined(SOC_AM65XX)
-    /* HS400 mode for AM65x has been descoped for AM65x */
+#if !defined(SOC_AM65XX) !defined(SOC_J721E)
+    /* HS400 mode for AM65x has been descoped for AM65x & J721E */
 	&EMMCProfiles_HS400,
 #endif
     &EMMCProfiles_Default,

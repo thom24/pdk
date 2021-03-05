@@ -95,7 +95,8 @@ MMCSD_v2_HwAttrs MMCSDInitCfg[MMCSD_CNT] =
         0,/* Crossbar mux in */
 		0, /* Cross bar instance number for IRQ83 used in eventNum */
 #endif
-        MMCSD_SUPPORT_MMC_ALL, /* Supported modes */
+        (MMCSD_SUPPORT_MMC_DS | MMCSD_SUPPORT_MMC_HS_SDR |
+         MMCSD_SUPPORT_MMC_HS_DDR | MMCSD_SUPPORT_MMC_HS200),/*Supported modes*/
         MMCSD_configSocIntrPath,
         MMCSD_HW_PHY,
 		MMCSD_AUTO_HW_TUNING
