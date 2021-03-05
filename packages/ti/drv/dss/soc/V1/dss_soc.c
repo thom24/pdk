@@ -90,7 +90,8 @@ static const Dss_DctrlNodeIdInfo gDss_DctrlNodeIdInfo[] = {
     {DSS_DCTRL_NODE_EDP_DPI1, CSL_DSS_DPI_ID_EDP_1,      DSS_DCTRL_NODE_TYPE_OUTPUT},  /* Virtual Node */
     {DSS_DCTRL_NODE_EDP_DPI2, CSL_DSS_DPI_ID_EDP_2,      DSS_DCTRL_NODE_TYPE_OUTPUT},  /* Virtual Node */
     {DSS_DCTRL_NODE_EDP_DPI3, CSL_DSS_DPI_ID_EDP_3,      DSS_DCTRL_NODE_TYPE_OUTPUT},  /* Virtual Node */
-    {DSS_DCTRL_NODE_DSI_DPI2, CSL_DSS_DPI_ID_DSI,        DSS_DCTRL_NODE_TYPE_OUTPUT}   /* Virtual Node */
+    {DSS_DCTRL_NODE_DSI_DPI2, CSL_DSS_DPI_ID_DSI,        DSS_DCTRL_NODE_TYPE_OUTPUT},   /* Virtual Node */
+    {DSS_DCTRL_NODE_WB,       CSL_DSS_WB_PIPE_ID_1,      DSS_DCTRL_NODE_TYPE_OUTPUT}   /* Virtual Node */
 };
 
 static const Dss_CommRegInfo gDss_commRegInfo[] = {
@@ -151,7 +152,8 @@ static const Dss_EventGroupInfo gDss_EventGroupInfo[] = {
     {DSS_EVENT_GROUP_VID1, CSL_DSS_VID_PIPE_ID_VID1, DSS_EVENT_GROUP_TYPE_PIPE},
     {DSS_EVENT_GROUP_VIDL1, CSL_DSS_VID_PIPE_ID_VIDL1, DSS_EVENT_GROUP_TYPE_PIPE},
     {DSS_EVENT_GROUP_VID2, CSL_DSS_VID_PIPE_ID_VID2, DSS_EVENT_GROUP_TYPE_PIPE},
-    {DSS_EVENT_GROUP_VIDL2, CSL_DSS_VID_PIPE_ID_VIDL2, DSS_EVENT_GROUP_TYPE_PIPE}
+    {DSS_EVENT_GROUP_VIDL2, CSL_DSS_VID_PIPE_ID_VIDL2, DSS_EVENT_GROUP_TYPE_PIPE},
+    {DSS_EVENT_GROUP_WB, CSL_DSS_WB_PIPE_ID_1, DSS_EVENT_GROUP_TYPE_WB_PIPE}
 };
 
 static const uint32_t gDss_PipeErrEvents[] = {
@@ -165,6 +167,11 @@ static const uint32_t gDss_VpFuncEvents[] = {
 
 static const uint32_t gDss_VpErrEvents[] = {
     DSS_VP_EVENT_SYNC_LOST
+};
+
+static const uint32_t gDss_WbFuncEvents[] = {
+    DSS_WB_PIPE_EVENT_BUFF_FRAME_DONE,
+    DSS_WB_PIPE_EVENT_BUFF_OVERFLOW
 };
 
 /* Global containing SoC information. */
@@ -489,6 +496,24 @@ int32_t Dss_enableL1Event(Dss_EvtMgrInfo *evtMgrInfo,
         evtMgrInfo->l1Mask[eventCnt] = event;
         evtMgrInfo->allEvents[eventCnt] = event;
     }
+    else if(DSS_EVENT_GROUP_WB == eventGroup)
+    {
+        /* Clear the status of interrupt */
+        regVal = CSL_REG32_RD(&commRegs->WB_IRQSTATUS);
+        regVal |= eventGroup;
+        CSL_REG32_WR(&commRegs->WB_IRQSTATUS, regVal);
+
+        /* Enable the interrupts at the WB Pipe level */
+        regVal = CSL_REG32_RD(&commRegs->WB_IRQENABLE);
+        regVal |= event;
+        CSL_REG32_WR(&commRegs->WB_IRQENABLE, regVal);
+
+        /* Store the register address in evtMgrInfo instance */
+        evtMgrInfo->l1EnableReg[eventCnt] = &commRegs->WB_IRQENABLE;
+        evtMgrInfo->l1StatusReg[eventCnt] = &commRegs->WB_IRQSTATUS;
+        evtMgrInfo->l1Mask[eventCnt] = event;
+        evtMgrInfo->allEvents[eventCnt] = event;
+    }
     else
     {
         GT_assert(DssTrace, FALSE);
@@ -528,6 +553,17 @@ void Dss_getEnabledPipeErrEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
     for(i=0U; i<*numEvts; i++)
     {
         events[i] = gDss_PipeErrEvents[i];
+    }
+}
+
+void Dss_getEnabledWbPipeFuncEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
+                                    uint32_t *numEvts)
+{
+    uint32_t i;
+    *numEvts = sizeof(gDss_WbFuncEvents)/sizeof(uint32_t);
+    for(i=0U; i<*numEvts; i++)
+    {
+        events[i] = gDss_WbFuncEvents[i];
     }
 }
 

@@ -78,8 +78,6 @@ extern "C" {
  *      - IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS
  *      - IOCTL_DSS_DISP_SET_PIPE_CSC_COEFF
  * 2. IOCTLs from Display Controller Driver (Refer to #DRV_DSS_DCTRL_IOCTL):
- *      - IOCTL_DSS_DCTRL_SET_PATH
- *      - IOCTL_DSS_DCTRL_CLEAR_PATH
  *      - IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS
  *      - IOCTL_DSS_DCTRL_SET_LAYER_PARAMS
  *      - IOCTL_DSS_DCTRL_SET_GLOBAL_DSS_PARAMS
@@ -161,7 +159,9 @@ typedef struct
 {
     CSL_DssWbPipeCfg pipeCfg;
     /**< Configuration for WB pipeline
-     *   See \ref CSL_DssWbPipeCfg for details */
+     *   See \ref CSL_DssWbPipeCfg for details
+     *   Note: Only 'CSL_DSS_WB_PIPE_MODE_M2M' mode
+     *         supported for "pipeCfg.wbMode" */
 } Dss_WbPipeCfgParams;
 
 /**
@@ -212,7 +212,7 @@ typedef struct
     /**< ID DSS pipeline to use.
      *   See \ref CSL_DssVidPipeId for details */
     uint32_t overlayId;
-    /**< ID DSS overlay to use. CSL_DssOverlayId.
+    /**< ID DSS overlay to use.
      *   See \ref CSL_DssOverlayId for details */
 } Dss_WbCreateParams;
 
@@ -285,6 +285,8 @@ static inline void Dss_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams)
     if(NULL != cfgParams)
     {
         CSL_dssWbPipeCfgInit(&(cfgParams->pipeCfg));
+        /* Set mode to M2M mode */
+        cfgParams->pipeCfg.wbMode = CSL_DSS_WB_PIPE_MODE_M2M;
     }
 }
 

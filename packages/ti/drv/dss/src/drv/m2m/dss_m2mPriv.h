@@ -46,7 +46,7 @@
 #include <ti/drv/dss/dss.h>
 
 #ifdef __cplusplus
-extern "C" {
+"C" {
 #endif
 
 /* ========================================================================== */
@@ -158,8 +158,6 @@ struct DssM2MDrv_dctrlCfg_t
     /**< Overlay layer information */
     Dss_DctrlGlobalDssParams globalParams;
     /**< global DSS Configuration */
-    Dss_DctrlPathInfo pathInfo;
-    /**< DSS path information */
 };
 
 /*
@@ -290,6 +288,10 @@ struct DssM2MDrv_InstObj_t
     uint32_t inUse;
     /**< Current is being used or not.
       *   See \ref DSSM2M_DrvUsageStatus for details */
+    uint32_t numRegEvtHandle;
+    /**< Number of registered event group handles */
+    void *evtGroupHandle[DSS_DISP_INST_EVT_MGR_MAX_CLIENTS];
+    /**< Handle to registered event groups */
     DssM2MDrv_CommonObj *commonObjRef;
     /**< Reference to driver common object */
     Dss_WbStatus status;
@@ -308,11 +310,13 @@ struct DssM2MDrv_InstObj_t
     DssM2M_DrvBufManObj bmObj;
     /**< Buffer management object */
     uint32_t pipeId;
-    /**< ID DSS pipeline to use.
-     *   See \ref CSL_DssVidPipeId for details */
+    /**< ID of DSS pipeline used. */
     uint32_t overlayId;
-    /**< ID DSS overlay to use. CSL_DssOverlayId.
-     *   See \ref CSL_DssOverlayId for details */
+    /**< ID of DSS overlay used. */
+    uint32_t pathCfgDone;
+    /**< Path configuration done. True if done, false otherwise. */
+    Dss_DctrlPathInfo pathInfo;
+    /**< DSS path information */
 };
 
 /*
@@ -348,8 +352,49 @@ struct DssM2MDrv_CommonObj_t
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
+int32_t Dss_m2mDrvIoctlSetDssPipeParams(DssM2MDrv_VirtContext *context,
+                                               const Dss_DispParams *pipeCfg);
 
-/* None */
+int32_t Dss_m2mDrvIoctlSetPipeMflagParams(DssM2MDrv_VirtContext *context,
+                                  const Dss_DispPipeMflagParams *mFlagParams);
+
+int32_t Dss_m2mDrvIoctlSetPipeCsc(DssM2MDrv_VirtContext *context,
+                                         const CSL_DssCscCoeff *csc);
+
+int32_t Dss_m2mDrvIoctlSetOverlayParams(DssM2MDrv_VirtContext *context,
+                                    const Dss_DctrlOverlayParams *ovlParams);
+
+int32_t Dss_m2mDrvIoctlSetLayerParams(DssM2MDrv_VirtContext *context,
+                        const Dss_DctrlOverlayLayerParams *ovlLayerParams);
+
+int32_t Dss_m2mDrvIoctlSetGlobalParams(DssM2MDrv_VirtContext *context,
+                               const Dss_DctrlGlobalDssParams *globalParams);
+
+uint32_t Dss_m2mDrvDctrlOvlCfgChk(const Dss_DctrlOverlayParams *instCfg,
+                                  const Dss_DctrlOverlayParams *progCfg);
+
+uint32_t Dss_m2mDrvDctrlOvlLayerCfgChk(const Dss_DctrlOverlayLayerParams *instCfg,
+                                       const Dss_DctrlOverlayLayerParams *progCfg);
+
+uint32_t Dss_m2mDrvDctrlGlobalCfgChk(const Dss_DctrlGlobalDssParams *instCfg,
+                                     const Dss_DctrlGlobalDssParams *progCfg);
+
+uint32_t Dss_m2mDrvDctrlPathCfgChk(const Dss_DctrlPathInfo * instCfg,
+                                   const Dss_DctrlPathInfo * progCfg);
+
+int32_t Dss_m2mDrvPrgramDctrl(DssM2MDrv_VirtContext *context);
+
+uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
+                                  const Dss_DispParams *progCfg);
+
+uint32_t Dss_m2mDrvDispMFlagCfgChk(const Dss_DispPipeMflagParams *instCfg,
+                                   const Dss_DispPipeMflagParams *progCfg);
+
+uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
+                                 const CSL_DssCscCoeff *progCfg);
+
+int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context);
+
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

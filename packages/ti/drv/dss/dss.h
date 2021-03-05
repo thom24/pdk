@@ -70,7 +70,9 @@
 #include <ti/drv/dss/soc/dss_soc.h>
 #include <ti/drv/dss/include/dss_disp.h>
 #include <ti/drv/dss/include/dss_dctrl.h>
+#if defined (SOC_J721E)
 #include <ti/drv/dss/include/dss_m2m.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -86,8 +88,10 @@ extern "C" {
 /** \brief Display controller driver ID used at the time of FVID2 create. */
 #define DSS_DCTRL_DRV_ID                    (FVID2_DSS_DRV_BASE + 0x01U)
 
+#if defined (SOC_J721E)
 /** \brief Display M2M driver ID used at the time of FVID2 create. */
 #define DSS_M2M_DRV_ID                      (FVID2_DSS_DRV_BASE + 0x02U)
+#endif
 
 /*
  *  IOCTLs Base address.
@@ -101,9 +105,10 @@ extern "C" {
 /** \brief IOCTL base address for the SOC specific display controller driver
  *   IOCTLs. */
 #define DSS_DCTRL_SOC_IOCTL_BASE            (DSS_DCTRL_IOCTL_BASE + 0x40U)
+#if defined (SOC_J721E)
 /** \brief IOCTL base address for the Display M2M Driver IOCTLs. */
 #define DSS_M2M_IOCTL_BASE                  (FVID2_DSS_DRV_IOCTL_BASE + 0x200U)
-
+#endif
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

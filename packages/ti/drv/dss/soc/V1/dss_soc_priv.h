@@ -78,6 +78,8 @@ extern "C" {
 #define DSS_EVENT_GROUP_VID2              CSL_DSS_DISPC_INTR_VID2_MASK
 /**< \brief Event Group for VIDL2 */
 #define DSS_EVENT_GROUP_VIDL2             CSL_DSS_DISPC_INTR_VIDL2_MASK
+/**< \brief Event Group for WB */
+#define DSS_EVENT_GROUP_WB                CSL_DSS_DISPC_INTR_WB_MASK
 /**< \brief Invalid Event Group */
 #define DSS_EVENT_GROUP_INVALID           ((uint32_t) 0xFFU)
 /* @} */
@@ -93,6 +95,8 @@ extern "C" {
 #define DSS_EVENT_GROUP_TYPE_VP               ((uint32_t) 0x00U)
 /**< \brief Event Group for Pipe */
 #define DSS_EVENT_GROUP_TYPE_PIPE             ((uint32_t) 0x01U)
+/**< \brief Event Group for WB/M2M Pipe */
+#define DSS_EVENT_GROUP_TYPE_WB_PIPE          ((uint32_t) 0x02U)
 /**< \brief Invalid Event Group */
 #define DSS_EVENT_GROUP_TYPE_INVALID          ((uint32_t) 0xFFU)
 /* @} */
@@ -175,7 +179,24 @@ extern "C" {
                                     CSL_DSS_VID_PIPE_INTR_WINDOWEND_MASK
 /**< \brief Buffer underflow interrupt */
 #define DSS_PIPE_EVENT_BUFF_UNDERFLOW     \
-                                    CSL_DSS_VID_PIPE_INTR_BUFUNDERFLOW_MASK
+                                    CSL_DSS_WB_PIPE_INTR_OVERFLOW_MASK
+/* @} */
+/**
+ *  \anchor Dss_WbPipeEvents
+ *  \name   List of Write-back Pipeline Events.
+ *
+ *  @{
+ */
+/**< \brief Buffer overflow interrupt */
+#define DSS_WB_PIPE_EVENT_BUFF_OVERFLOW         CSL_DSS_WB_PIPE_INTR_OVERFLOW_MASK
+/**< \brief Buffer/Frame done interrupt */
+#define DSS_WB_PIPE_EVENT_BUFF_FRAME_DONE       CSL_DSS_WB_PIPE_INTR_FRAMEDONE_MASK
+/**< \brief WB sync interrupt */
+#define DSS_WB_PIPE_EVENT_BUFF_WB_SYNC          CSL_DSS_WB_PIPE_INTR_WBSYNC_MASK
+/**< \brief WB all interrupts mask */
+#define DSS_WB_PIPE_EVENT_ALL                   (CSL_DSS_WB_PIPE_INTR_OVERFLOW_MASK   \
+                                                 CSL_DSS_WB_PIPE_INTR_FRAMEDONE_MASK   \
+                                                 CSL_DSS_WB_PIPE_INTR_WBSYNC_MASK)
 /* @} */
 
 /** \brief Maximum number of clients for Event Manager */
@@ -491,6 +512,17 @@ void Dss_getEnabledVpErrEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
  */
 void Dss_getEnabledPipeErrEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
                                  uint32_t *numEvts);
+
+/**
+ *  \brief This API returns the list of enabled WB pipeline functional events.
+ *
+ *  \param  events    Array of events.
+ *  \param  numEvts   Pointer to number of events.
+ *
+ *  \return Pointer to WB pipeline functional events.
+ */
+void Dss_getEnabledWbPipeFuncEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
+                                    uint32_t *numEvts);
 
 /**
  *  \brief Check if the given node is video pipe node

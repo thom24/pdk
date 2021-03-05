@@ -65,14 +65,38 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
+/* Returns TRUE if instance and channel/context configurations matches,
+   returns FALSE otherwise */
+uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
+                                  const Dss_DispParams *progCfg);
+
+/* Returns TRUE if instance and channel/context configurations matches,
+   returns FALSE otherwise */
+uint32_t Dss_m2mDrvDispMFlagCfgChk(const Dss_DispPipeMflagParams *instCfg,
+                                   const Dss_DispPipeMflagParams *progCfg);
+
+/* Returns TRUE if instance and channel/context configurations matches,
+   returns FALSE otherwise */
+uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
+                                 const CSL_DssCscCoeff *progCfg);
+
+int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context);
+
+/*
+ * Display IOCTLs
+ */
+static int32_t Dss_m2mDrvValidateDispParams(DssM2MDrv_InstObj *instObj,
+                                            const Dss_DispParams *dispParams);
+
 int32_t Dss_m2mDrvIoctlSetDssPipeParams(DssM2MDrv_VirtContext *context,
                                         const Dss_DispParams *pipeCfg);
 
-int32_t Dss_m2mDrvIoctlSetPiprMflagParams(DssM2MDrv_VirtContext *context,
+int32_t Dss_m2mDrvIoctlSetPipeMflagParams(DssM2MDrv_VirtContext *context,
                                   const Dss_DispPipeMflagParams *mFlagParams);
 
 int32_t Dss_m2mDrvIoctlSetPipeCsc(DssM2MDrv_VirtContext *context,
                                   const CSL_DssCscCoeff *csc);
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -81,6 +105,324 @@ int32_t Dss_m2mDrvIoctlSetPipeCsc(DssM2MDrv_VirtContext *context,
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
+uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
+                                  const Dss_DispParams *progCfg)
+{
+    uint32_t retVal = (uint32_t) TRUE;
+    uint32_t loopCnt = 0U;
+
+    /* check for Pipe configurations */
+    if ((instCfg->pipeCfg.pipeType          != progCfg->pipeCfg.pipeType)         ||
+        (instCfg->pipeCfg.pixelInc          != progCfg->pipeCfg.pixelInc)         ||
+        (instCfg->pipeCfg.yuvAlign          != progCfg->pipeCfg.yuvAlign)         ||
+        (instCfg->pipeCfg.outWidth          != progCfg->pipeCfg.outWidth)         ||
+        (instCfg->pipeCfg.outHeight         != progCfg->pipeCfg.outHeight)        ||
+        (instCfg->pipeCfg.scEnable          != progCfg->pipeCfg.scEnable)         ||
+        (instCfg->pipeCfg.cscRange          != progCfg->pipeCfg.cscRange)         ||
+        (instCfg->pipeCfg.flipType          != progCfg->pipeCfg.flipType)         ||
+        (instCfg->pipeCfg.nibbleModeEnable  != progCfg->pipeCfg.nibbleModeEnable) ||
+        (instCfg->pipeCfg.gammaEnable       != progCfg->pipeCfg.gammaEnable)      ||
+        (instCfg->pipeCfg.inFmt.width       != progCfg->pipeCfg.inFmt.width)      ||
+        (instCfg->pipeCfg.inFmt.height      != progCfg->pipeCfg.inFmt.height)     ||
+        (instCfg->pipeCfg.inFmt.pitch       != progCfg->pipeCfg.inFmt.pitch)      ||
+        (instCfg->pipeCfg.inFmt.dataFormat  != progCfg->pipeCfg.inFmt.dataFormat) ||
+        (instCfg->pipeCfg.inFmt.scanFormat  != progCfg->pipeCfg.inFmt.scanFormat) ||
+        (instCfg->pipeCfg.inFmt.ccsFormat   != progCfg->pipeCfg.inFmt.ccsFormat)  ||
+        (instCfg->pipeCfg.inFmt.fieldMerged != progCfg->pipeCfg.inFmt.fieldMerged))
+    {
+        retVal = (uint32_t) FALSE;
+    }
+    else
+    {
+        for (loopCnt = 0U ; loopCnt < CSL_DSS_NUM_LUT_ENTRIES ; loopCnt++)
+        {
+            if (instCfg->pipeCfg.clutData[loopCnt] !=
+                progCfg->pipeCfg.clutData[loopCnt])
+            {
+                break;
+            }
+        }
+        if (loopCnt < CSL_DSS_NUM_LUT_ENTRIES)
+        {
+            retVal = (uint32_t) FALSE;
+        }
+    }
+    /* check for DMA configurations */
+    if (retVal == ((uint32_t) TRUE))
+    {
+        if ((instCfg->dmaCfg.bufPreloadControl  != progCfg->dmaCfg.bufPreloadControl)  ||
+            (instCfg->dmaCfg.preloadVal         != progCfg->dmaCfg.preloadVal)         ||
+            (instCfg->dmaCfg.bufLowThreshold    != progCfg->dmaCfg.bufLowThreshold)    ||
+            (instCfg->dmaCfg.bufHighThreshold   != progCfg->dmaCfg.bufHighThreshold)   ||
+            (instCfg->dmaCfg.selfRefreshControl != progCfg->dmaCfg.selfRefreshControl) ||
+            (instCfg->dmaCfg.selfRefreshEnable  != progCfg->dmaCfg.selfRefreshEnable)  ||
+            (instCfg->dmaCfg.arbitration        != progCfg->dmaCfg.arbitration))
+        {
+            retVal = (uint32_t) FALSE;
+        }
+    }
+    /* check for Alpha configurations */
+    if (retVal == ((uint32_t) TRUE))
+    {
+        if ((instCfg->alphaCfg.globalAlpha      != progCfg->alphaCfg.globalAlpha)  ||
+            (instCfg->alphaCfg.preMultiplyAlpha != progCfg->alphaCfg.preMultiplyAlpha))
+        {
+            retVal = (uint32_t) FALSE;
+        }
+    }
+    /* check for VC1 configurations */
+    if (retVal == ((uint32_t) TRUE))
+    {
+        if ((instCfg->vc1Cfg.vc1Enable != progCfg->vc1Cfg.vc1Enable) ||
+            (instCfg->vc1Cfg.rangeY    != progCfg->vc1Cfg.rangeY)    ||
+            (instCfg->vc1Cfg.rangeUV   != progCfg->vc1Cfg.rangeUV))
+        {
+            retVal = (uint32_t) FALSE;
+        }
+    }
+    /* check for Crop configurations */
+    if (retVal == ((uint32_t) TRUE))
+    {
+        if ((instCfg->cropParams.cropEnable         != progCfg->cropParams.cropEnable)         ||
+            (instCfg->cropParams.cropCfg.cropTop    != progCfg->cropParams.cropCfg.cropTop)    ||
+            (instCfg->cropParams.cropCfg.cropBottom != progCfg->cropParams.cropCfg.cropBottom) ||
+            (instCfg->cropParams.cropCfg.cropLeft   != progCfg->cropParams.cropCfg.cropLeft)   ||
+            (instCfg->cropParams.cropCfg.cropRight  != progCfg->cropParams.cropCfg.cropRight))
+        {
+            retVal = (uint32_t) FALSE;
+        }
+    }
+    /* check for Layer configurations */
+    if (retVal == ((uint32_t) TRUE))
+    {
+        if ((instCfg->layerPos.startX != progCfg->layerPos.startX) ||
+            (instCfg->layerPos.startY != progCfg->layerPos.startY))
+        {
+            retVal = (uint32_t) FALSE;
+        }
+    }
+
+    return retVal;
+}
+
+uint32_t Dss_m2mDrvDispMFlagCfgChk(const Dss_DispPipeMflagParams *instCfg,
+                                   const Dss_DispPipeMflagParams *progCfg)
+{
+    uint32_t retVal = (uint32_t) TRUE;
+
+    if ((instCfg->mflagCfg.thresholdLow  != progCfg->mflagCfg.thresholdLow)  ||
+        (instCfg->mflagCfg.thresholdHigh != progCfg->mflagCfg.thresholdHigh))
+    {
+        retVal = (uint32_t) FALSE;
+    }
+
+    return retVal;
+}
+
+uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
+                                 const CSL_DssCscCoeff *progCfg)
+{
+    uint32_t retVal = (uint32_t) TRUE;
+
+    if ((instCfg->cscRange     != progCfg->cscRange)    ||
+        (instCfg->c00          != progCfg->c00)         ||
+        (instCfg->c01          != progCfg->c01)         ||
+        (instCfg->c02          != progCfg->c02)         ||
+        (instCfg->c10          != progCfg->c10)         ||
+        (instCfg->c11          != progCfg->c11)         ||
+        (instCfg->c12          != progCfg->c12)         ||
+        (instCfg->c20          != progCfg->c20)         ||
+        (instCfg->c21          != progCfg->c21)         ||
+        (instCfg->c22          != progCfg->c22)         ||
+        (instCfg->preOffset1   != progCfg->preOffset1)  ||
+        (instCfg->preOffset2   != progCfg->preOffset2)  ||
+        (instCfg->preOffset3   != progCfg->preOffset3)  ||
+        (instCfg->postOffset1  != progCfg->postOffset1) ||
+        (instCfg->postOffset2  != progCfg->postOffset2) ||
+        (instCfg->postOffset3  != progCfg->postOffset3))
+    {
+        retVal = (uint32_t) FALSE;
+    }
+
+    return retVal;
+}
+
+int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
+{
+    int32_t retVal = FVID2_SOK;
+    uint32_t copyCfg = (uint32_t) FALSE;
+    uint32_t layerNum;
+    DssM2MDrv_InstObj *instObj;
+    DssM2MDrv_DispPipeCfg *instCfg, *progCfg;
+    CSL_DssOverlayPipePosCfg overlayPosCfg;
+
+    instObj = context->instObj;
+    instCfg = &context->instCfg.pipeCfg;
+    progCfg = &instObj->progCfg.pipeCfg;
+    GT_assert(DssTrace, (NULL != instObj->pipeRegs));
+    GT_assert(DssTrace, (NULL != instObj->ovrRegs));
+
+    /* Re-program DSS pipe only if channel/instance configurations
+       are different than programmed */
+    if (FVID2_SOK == retVal)
+    {
+        /* Check DSS Pipeline configuration */
+        if (((uint32_t) FALSE) == Dss_m2mDrvDispPipeCfgChk(&instCfg->cfgParams,
+                                                           &progCfg->cfgParams))
+        {
+            if (FVID2_SOK == retVal)
+            {
+                /* Program: DSS Pipeline */
+                retVal = CSL_dssVidPipeSetConfig(instObj->pipeRegs,
+                            (const CSL_DssVidPipeCfg *)(&instCfg->cfgParams.pipeCfg),
+                            (const CSL_DssVidPipeVC1Cfg *)(&instCfg->cfgParams.vc1Cfg));
+            }
+            if (FVID2_SOK == retVal)
+            {
+                /* Program: DMA, Alpha, Crop, Layer configurations */
+                CSL_dssVidPipeSetDmaConfig(instObj->pipeRegs,
+                            (const CSL_DssVidPipeDmaCfg *)(&instCfg->cfgParams.dmaCfg));
+
+                CSL_dssVidPipeSetAlphaConfig(instObj->pipeRegs,
+                            (const CSL_DssVidPipeAlphaCfg *)(&instCfg->cfgParams.alphaCfg));
+
+#if defined (SOC_J721E)
+                CSL_dssVidPipeSetCropConfig(instObj->pipeRegs,
+                        (const Fvid2_EdgeCropConfig *)(&instCfg->cfgParams.cropParams.cropCfg),
+                        instCfg->cfgParams.cropParams.cropEnable);
+#endif
+                layerNum = CSL_dssOverlayGetEnabledPipeLayerNum(instObj->ovrRegs,
+                                                                instObj->pipeId);
+                GT_assert(DssTrace, (layerNum < CSL_DSS_OVERLAY_LAYER_MAX));
+                overlayPosCfg.layerPos.startX = instCfg->cfgParams.layerPos.startX;
+                overlayPosCfg.layerPos.startY = instCfg->cfgParams.layerPos.startY;
+                CSL_dssOverlaySetPipePosConfig(instObj->ovrRegs,
+                            (const CSL_DssOverlayPipePosCfg *)(&overlayPosCfg),
+                            layerNum);
+            }
+            if (FVID2_SOK == retVal)
+            {
+                copyCfg = (uint32_t) TRUE;
+            }
+        }
+    }
+    if (FVID2_SOK == retVal)
+    {
+        /* Check DSS Pipeline MFlag configuration */
+        if (((uint32_t) FALSE) == Dss_m2mDrvDispMFlagCfgChk(&instCfg->mFlagParams,
+                                                            &progCfg->mFlagParams))
+        {
+            if (FVID2_SOK == retVal)
+            {
+                /* Program: DSS Pipeline MFlag */
+                CSL_dssVidPipeSetMflagConfig(instObj->pipeRegs,
+                    (const CSL_DssVidPipeMFlagCfg *)(&instCfg->mFlagParams.mflagCfg));
+                copyCfg = (uint32_t) TRUE;
+            }
+        }
+    }
+    if (FVID2_SOK == retVal)
+    {
+        /* Check DSS Pipeline Csc configuration */
+        if (((uint32_t) FALSE) == Dss_m2mDrvDispCscCfgChk(&instCfg->cscCoeff,
+                                                          &progCfg->cscCoeff))
+        {
+            if (FVID2_SOK == retVal)
+            {
+                /* Program: DSS Pipeline Csc */
+               CSL_dssVidPipeSetCSCCoeff(instObj->pipeRegs,
+                        (const CSL_DssCscCoeff *)(&instCfg->cscCoeff));
+                copyCfg = (uint32_t) TRUE;
+            }
+        }
+    }
+    if ((FVID2_SOK == retVal) && (((uint32_t) TRUE) == copyCfg))
+    {
+        /* Update instance configurations */
+        Fvid2Utils_memcpy(&progCfg, &instCfg, sizeof(DssM2MDrv_DispPipeCfg));
+    }
+
+    return retVal;
+}
+
+static int32_t Dss_m2mDrvValidateDispParams(DssM2MDrv_InstObj *instObj,
+                                            const Dss_DispParams *dispParams)
+{
+    int32_t retVal = FVID2_SOK;
+
+    /* Not Checked: Interlaced to progressive or vice versa, not supported in M2M */
+    /* Scaling ratio check */
+    if(((dispParams->pipeCfg.inFmt.height * 16U) <
+                                        (dispParams->pipeCfg.outHeight)) ||
+       ((dispParams->pipeCfg.inFmt.width * 16U) <
+                                        (dispParams->pipeCfg.outWidth)))
+    {
+        GT_0trace(DssTrace,
+                  GT_ERR,
+                  "M2M: Upscaling ratio is more than 16x \r\n");
+        retVal = FVID2_EINVALID_PARAMS;
+    }
+    if(((dispParams->pipeCfg.inFmt.height) >
+                                    (dispParams->pipeCfg.outHeight * 4U)) ||
+       ((dispParams->pipeCfg.inFmt.width) >
+                                    (dispParams->pipeCfg.outWidth * 4U)))
+    {
+        GT_0trace(DssTrace,
+                  GT_ERR,
+                  "M2M: Downscaling ratio is more than 0.25x \r\n");
+        retVal = FVID2_EINVALID_PARAMS;
+    }
+
+    if((dispParams->pipeCfg.inFmt.height != dispParams->pipeCfg.outHeight) ||
+       (dispParams->pipeCfg.inFmt.width != dispParams->pipeCfg.outWidth))
+    {
+        if(TRUE == Dss_dispIsVidLInst(instObj->pipeId))
+        {
+            GT_0trace(DssTrace,
+                      GT_ERR,
+                      "M2M: Scaling cant be enabled for video lite pipe \r\n");
+            retVal = FVID2_EINVALID_PARAMS;
+        }
+        if(FALSE == dispParams->pipeCfg.scEnable)
+        {
+            GT_0trace(DssTrace,
+                      GT_ERR,
+                      "M2M: Scaling should be enabled \r\n");
+            retVal = FVID2_EINVALID_PARAMS;
+        }
+    }
+
+    if((dispParams->cropParams.cropCfg.cropTop >= 32U) ||
+       (dispParams->cropParams.cropCfg.cropBottom >= 32U) ||
+       (dispParams->cropParams.cropCfg.cropLeft >= 32U) ||
+       (dispParams->cropParams.cropCfg.cropRight >= 32U))
+    {
+        GT_0trace(DssTrace,
+                  GT_ERR,
+                  "M2M: Crop Parameter(s) should be less than 32 \r\n");
+        retVal = FVID2_EINVALID_PARAMS;
+    }
+
+    if(((dispParams->pipeCfg.flipType == FVID2_FLIP_TYPE_V) ||
+        (dispParams->pipeCfg.flipType == FVID2_FLIP_TYPE_H)) &&
+       ((dispParams->pipeCfg.inFmt.dataFormat == FVID2_DF_RGB24_888) ||
+        (dispParams->pipeCfg.inFmt.dataFormat == FVID2_DF_BGR24_888)))
+    {
+        GT_0trace(DssTrace,
+                  GT_ERR,
+                  "M2M: Flip Parameter(s) should not be used for 24-bit RGB/BGR formats \r\n");
+        retVal = FVID2_EINVALID_PARAMS;
+    }
+
+    /* There is a limitation with scaling in DSS, where maximum scaling ratio
+     * supported is the ratio of the DSS functional clock and Pixel Clock.
+     * Driver can't check this condition as it is unaware of Pixel Clock.
+     * So it should be checked by the application.
+     */
+
+    return retVal;
+}
+
 int32_t Dss_m2mDrvIoctlSetDssPipeParams(DssM2MDrv_VirtContext *context,
                                         const Dss_DispParams *pipeCfg)
 {
@@ -93,17 +435,21 @@ int32_t Dss_m2mDrvIoctlSetDssPipeParams(DssM2MDrv_VirtContext *context,
     }
     else
     {
-        /* upgrade configurations into context object and re-program HW module
-           on buffer submission */
-        Fvid2Utils_memcpy(&context->instCfg.pipeCfg.cfgParams,
-                          pipeCfg,
-                          sizeof(Dss_DispParams));
+        retVal = Dss_m2mDrvValidateDispParams(context->instObj, pipeCfg);
+        if (retVal == FVID2_SOK)
+        {
+            /* upgrade configurations into context object and re-program HW module
+               on buffer submission */
+            Fvid2Utils_memcpy(&context->instCfg.pipeCfg.cfgParams,
+                              pipeCfg,
+                              sizeof(Dss_DispParams));
+        }
     }
 
     return retVal;
 }
 
-int32_t Dss_m2mDrvIoctlSetPiprMflagParams(DssM2MDrv_VirtContext *context,
+int32_t Dss_m2mDrvIoctlSetPipeMflagParams(DssM2MDrv_VirtContext *context,
                                   const Dss_DispPipeMflagParams *mFlagParams)
 {
     int32_t retVal = FVID2_SOK;
