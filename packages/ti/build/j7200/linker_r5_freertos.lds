@@ -66,10 +66,10 @@ MEMORY
 SECTIONS
 {
     .freertosrstvectors      : {} palign(8)      > VECTORS
-    .bootCode        : {} palign(8)      > MSMC3
-    .startupCode     : {} palign(8)      > MSMC3
-    .text.hwi       : {} palign(8) > MSMC3	
-    .startupData     : {} palign(8)      > MSMC3, type = NOINIT
+    .bootCode        : {} palign(8)      > OCMC_RAM
+    .startupCode     : {} palign(8)      > OCMC_RAM
+    .text.hwi        : {} palign(8)      > OCMC_RAM	
+    .startupData     : {} palign(8)      > OCMC_RAM, type = NOINIT
     .text            : {} palign(8)      > DDR0
     GROUP {
         .text.hwi    : palign(8)

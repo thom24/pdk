@@ -67,27 +67,27 @@ SECTIONS
 {
     .intc_text               : {} palign(8) > VECTORS
     .freertosrstvectors      : {} palign(8) > RESET_VECTORS
-    .bootCode                : {} palign(8) > MSMC3
-    .startupCode             : {} palign(8) > MSMC3
-    .text.hwi                : {} palign(8) > MSMC3	
-    .startupData             : {} palign(8) > MSMC3, type = NOINIT
+    .bootCode                : {} palign(8) > OCMRAM
+    .startupCode             : {} palign(8) > OCMRAM
+    .text.hwi                : {} palign(8) > OCMRAM	
+    .startupData             : {} palign(8) > OCMRAM, type = NOINIT
 
-    .text                    : {} palign(8) > MSMC3
+    .text                    : {} palign(8) > DDR0
     GROUP {
         .text.hwi            : palign(8)
         .text.cache          : palign(8)
         .text.mpu            : palign(8)
         .text.boot           : palign(8)
-    }                                       > MSMC3
-    .const                   : {} palign(8) > MSMC3
-    .cinit                   : {} palign(8) > MSMC3
-    .pinit                   : {} palign(8) > MSMC3
+    }                                       > DDR0
+    .const                   : {} palign(8) > DDR0
+    .cinit                   : {} palign(8) > DDR0
+    .pinit                   : {} palign(8) > DDR0
 
-    .bss                     : {} align(8)   > MSMC3
+    .bss                     : {} align(8)   > DDR0
     .far                     : {} align(8)   > DDR0
-    .data                    : {} palign(128)> MSMC3
-    .boardcfg_data           : {} palign(128)> MSMC3
-    .sysmem                  : {} align(8)   > MSMC3
+    .data                    : {} palign(128)> DDR0
+    .boardcfg_data           : {} palign(128)> DDR0
+    .sysmem                  : {} align(8)   > DDR0
 
     /*------- USB ram disk dev-msc example ------*/
     .bss:extMemCache:ramdisk : {} align (32) > DDR0
@@ -100,25 +100,25 @@ SECTIONS
     /*------- LLD buffer for benchmarking -------*/
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
 
-    .stack      : {}                            align(8)    > MSMC3  (HIGH)
+    .stack      : {}                            align(8)    > DDR0  (HIGH)
 
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;}   align(8)    > MSMC3  (HIGH)
+    .irqStack   : {. = . + __IRQ_STACK_SIZE;}   align(8)    > DDR0  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
 
-    .fiqStack  	: {. = . + __FIQ_STACK_SIZE;}   align(8)    > MSMC3  (HIGH)
+    .fiqStack  	: {. = . + __FIQ_STACK_SIZE;}   align(8)    > DDR0  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
 
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(8)    > MSMC3  (HIGH)
+    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(8)    > DDR0  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
 
-    .undStack  	: {. = . + __UND_STACK_SIZE;}   align(8)    > MSMC3  (HIGH)
+    .undStack  	: {. = . + __UND_STACK_SIZE;}   align(8)    > DDR0  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
 
-    .svcStack  	: {. = . + __SVC_STACK_SIZE;}   align(8)    > MSMC3  (HIGH)
+    .svcStack  	: {. = . + __SVC_STACK_SIZE;}   align(8)    > DDR0  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 } 
