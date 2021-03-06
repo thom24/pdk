@@ -93,7 +93,13 @@ freertos_EXAMPLE_LIST =
 ifeq ($(SOC),$(filter $(SOC), $(freertos_SOCLIST)))
 freertos_EXAMPLE_LIST =  freertos_test_task_switch
 freertos_EXAMPLE_LIST += freertos_test_ut
+ifneq ($(wildcard $(PDK_FREERTOS_COMP_PATH)/freertos_posix.mak),)
+ifneq ($(wildcard $(PDK_FREERTOS_COMP_PATH)/test/freertos/posix_demo),)
+ifneq ($(wildcard $(FREERTOS_LABS_INSTALL_PATH)/FreeRTOS-POSIX),)
 freertos_EXAMPLE_LIST += freertos_test_posix
+endif
+endif
+endif
 endif
 
 

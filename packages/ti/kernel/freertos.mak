@@ -7,18 +7,11 @@ MODULE_NAME = freertos
 
 SRCDIR = freertos/portable/TI_CGT/$(ISA)
 SRCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/ \
-          ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/portable/MemMang \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/source
+          ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/portable/MemMang
 	
 INCDIR = freertos/config/$(SOC)/$(ISA)
 INCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include \
-          freertos/portable/TI_CGT/$(ISA) \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include/private \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/include/FreeRTOS_POSIX \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/include \
-          ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/include/portable
-
+          freertos/portable/TI_CGT/$(ISA)
 
 
 # List all the external components/interfaces, whose interface header files
@@ -30,22 +23,11 @@ SRCS_COMMON += \
     timers.c \
     queue.c \
     list.c \
-    FreeRTOS_POSIX_clock.c \
-    FreeRTOS_POSIX_pthread_barrier.c \
-    FreeRTOS_POSIX_pthread_cond.c \
-    FreeRTOS_POSIX_pthread_mutex.c \
-    FreeRTOS_POSIX_pthread.c \
-    FreeRTOS_POSIX_sched.c \
-    FreeRTOS_POSIX_semaphore.c \
-    FreeRTOS_POSIX_unistd.c \
-    FreeRTOS_POSIX_utils.c \
     port.c
 
 # FreeRTOS tasks does not compile in CPP build. Skip it for CPP build
 ifneq ($(CPLUSPLUS_BUILD), yes)
 SRCS_COMMON += \
-    FreeRTOS_POSIX_timer.c \
-    FreeRTOS_POSIX_mqueue.c \
     tasks.c \
     heap_4.c
 endif
@@ -76,11 +58,18 @@ SRCS_ASM_COMMON := \
     port_Hwi_handlers_asm.asm
 endif
 
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 PACKAGE_SRCS_COMMON = freertos.mak freertos_component.mk makefile
 PACKAGE_SRCS_COMMON += freertos
-PACKAGE_SRCS_COMMON += test
+PACKAGE_SRCS_COMMON += test/freertos/task_switch
+PACKAGE_SRCS_COMMON += test/freertos/ut
+PACKAGE_SRCS_COMMON += test/freertos/build
+
+
+#include posix support files if present
+-include freertos_posix.mak
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
