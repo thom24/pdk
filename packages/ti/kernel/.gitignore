@@ -9,4 +9,6 @@ docs/doxygen/html/
 package/*
 Settings.h
 Settings.xdc
+freertos/FreeRTOS-Labs/
+freertos/FreeRTOS-LTS/
 
