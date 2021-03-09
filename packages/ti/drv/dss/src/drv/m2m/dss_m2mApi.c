@@ -88,9 +88,6 @@ Dss_EvtMgrClientInfo gDss_M2MEvtMgrClientInfo[DSS_DISP_EVT_MGR_MAX_CLIENTS];
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */
 /* ========================================================================== */
-static int32_t Dss_m2mDrvSetWbPipeDmaCfg(DssM2MDrv_InstObj *instObj,
-                                         const CSL_DssWbPipeDmaCfg *dmaCfg);
-
 static int32_t Dss_m2mDrvCreateInstQueues(DssM2MDrv_VirtContext *context);
 
 static int32_t Dss_m2mDrvDeleteInstQueues(DssM2MDrv_VirtContext *context);
@@ -151,7 +148,7 @@ int32_t Dss_m2mDrvInit(const Dss_InitParams *initParams)
 {
     int32_t retVal = FVID2_SOK;
     DssM2MDrv_CommonObj *m2mObj;
-    uint32_t loopCnt = 0U, contextCnt = 0U, eventGroup;
+    uint32_t loopCnt = 0U, contextCnt = 0U, eventGroup, pipeIdx = 0U;
     uint32_t numEvents, evtMgrId, numHandle;
     DssM2MDrv_VirtContext *virtContext;
     DssM2MDrv_InstObj *instObj;
@@ -194,9 +191,15 @@ int32_t Dss_m2mDrvInit(const Dss_InitParams *initParams)
         instObj->commonObjRef            = m2mObj;
         instObj->wbRegs                  = socInfo->wbRegs[loopCnt];
         instObj->commRegs                = NULL;
-        instObj->pipeRegs                = NULL;
+        instObj->numPipe                 = 0U;
+        for (pipeIdx = 0U ;
+             pipeIdx < DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE ;
+             pipeIdx++)
+        {
+            instObj->pipeRegs[pipeIdx] = NULL;
+            instObj->pipeId[pipeIdx]   = CSL_DSS_VID_PIPE_ID_MAX;
+        }
         instObj->ovrRegs                 = NULL;
-        instObj->pipeId                  = CSL_DSS_VID_PIPE_ID_MAX;
         instObj->overlayId               = CSL_DSS_OVERLAY_ID_MAX;
         instObj->pathCfgDone             = (uint32_t) FALSE;
         /* Allocate instance semaphore */
@@ -207,7 +210,13 @@ int32_t Dss_m2mDrvInit(const Dss_InitParams *initParams)
              contextCnt++)
         {
             virtContext            = &m2mObj->virtContext[loopCnt][contextCnt];
-            virtContext->pipeId    = CSL_DSS_VID_PIPE_ID_MAX;
+            for (pipeIdx = 0U ;
+                 pipeIdx < DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE ;
+                 pipeIdx++)
+            {
+                virtContext->pipeId[pipeIdx] = CSL_DSS_VID_PIPE_ID_MAX;
+            }
+            virtContext->numPipe   = 0U;
             virtContext->overlayId = CSL_DSS_OVERLAY_ID_MAX;
             virtContext->contextId = contextCnt;
             virtContext->state     = DSSM2M_DRV_STATE_IDLE;
@@ -267,7 +276,7 @@ int32_t Dss_m2mDrvDeInit(void)
 {
     int32_t retVal = FVID2_SOK;
     DssM2MDrv_CommonObj *m2mObj;
-    uint32_t loopCnt = 0U, contextCnt = 0U, eventIdx = 0U;
+    uint32_t loopCnt = 0U, contextCnt = 0U, eventIdx = 0U, pipeIdx = 0U;
     DssM2MDrv_VirtContext *virtContext;
     DssM2MDrv_InstObj *instObj;
 
@@ -285,7 +294,14 @@ int32_t Dss_m2mDrvDeInit(void)
         instObj->inUse                   = DSSM2M_DRV_USAGE_STATUS_NOT_USED;
         instObj->commonObjRef            = NULL;
         instObj->commRegs                = NULL;
-        instObj->pipeRegs                = NULL;
+        for (pipeIdx = 0U ;
+             pipeIdx < DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE ;
+             pipeIdx++)
+        {
+            instObj->pipeRegs[pipeIdx] = NULL;
+            instObj->pipeId[pipeIdx]   = CSL_DSS_VID_PIPE_ID_MAX;
+        }
+        instObj->numPipe                 = 0U;
         instObj->ovrRegs                 = NULL;
         instObj->wbRegs                  = NULL;
         instObj->pathCfgDone             = (uint32_t) FALSE;
@@ -294,6 +310,7 @@ int32_t Dss_m2mDrvDeInit(void)
              contextCnt++)
         {
             virtContext            = &m2mObj->virtContext[loopCnt][contextCnt];
+            virtContext->numPipe   = 0U;
             virtContext->state     = DSSM2M_DRV_STATE_UNINIT;
             virtContext->inUse     = DSSM2M_DRV_USAGE_STATUS_NOT_USED;
             virtContext->instObj   = NULL;
@@ -352,7 +369,7 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
         /* Get free Virtual Context */
         for (loopCnt = 0U ; loopCnt < DSSM2M_NUM_VIRTUAL_CONTEXT ; loopCnt++)
         {
-            if (m2mObj->virtContext[createParams->instId][loopCnt].inUse ==
+            if (m2mObj->virtContext[instId][loopCnt].inUse ==
                                 DSSM2M_DRV_USAGE_STATUS_NOT_USED)
             {
                 break;
@@ -365,7 +382,7 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
         }
         else
         {
-            virtContext = &m2mObj->virtContext[createParams->instId][loopCnt];
+            virtContext = &m2mObj->virtContext[instId][loopCnt];
             instObj = virtContext->instObj;
             GT_assert(DssTrace, (NULL != instObj->commonObjRef));
 
@@ -376,15 +393,31 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
                                        SemaphoreP_WAIT_FOREVER);
             }
 
-            /* Check if same DSS Pipe and Overlay is provided within
-               different Create calls */
-            if (((instObj->pipeId != CSL_DSS_VID_PIPE_ID_MAX) &&
-                            (instObj->pipeId != createParams->pipeId)) ||
-                ((instObj->overlayId != CSL_DSS_OVERLAY_ID_MAX) &&
-                            (instObj->overlayId != createParams->overlayId)))
+            for (loopCnt = 0U ;
+                 loopCnt < createParams->numPipe ;
+                 loopCnt++)
+            {
+                if (((instObj->pipeId[loopCnt] != CSL_DSS_VID_PIPE_ID_MAX) &&
+                    (instObj->pipeId[loopCnt] != createParams->pipeId[loopCnt])) ||
+                    (createParams->pipeId[loopCnt] == CSL_DSS_VID_PIPE_ID_MAX))
+                {
+                    break;
+                }
+            }
+            if (loopCnt < createParams->numPipe)
             {
                 retVal = FVID2_EBADARGS;
-                GT_0trace(DssTrace, GT_ERR, "Wrong Pipe/Overlay instance used!!!\r\n");
+                GT_0trace(DssTrace, GT_ERR, "Wrong Pipe instance used!!!\r\n");
+            }
+
+            /* Check if same DSS Pipe and Overlay is provided within
+               different Create calls */
+            if (((instObj->overlayId != CSL_DSS_OVERLAY_ID_MAX) &&
+                 (instObj->overlayId != createParams->overlayId)) ||
+                 (createParams->overlayId == CSL_DSS_OVERLAY_ID_MAX))
+            {
+                retVal = FVID2_EBADARGS;
+                GT_0trace(DssTrace, GT_ERR, "Wrong Overlay instance used!!!\r\n");
             }
 
             if (FVID2_SOK == retVal)
@@ -404,15 +437,14 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
                 Fvid2Utils_memset(&virtContext->instCfg,
                                   0U,
                                   sizeof(DssM2MDrv_moduleCfg));
-                virtContext->pipeId    = createParams->pipeId;
+                for (loopCnt = 0U ;
+                     loopCnt < createParams->numPipe ;
+                     loopCnt++)
+                {
+                    virtContext->pipeId[loopCnt] = createParams->pipeId[loopCnt];
+                }
+                virtContext->numPipe   = createParams->numPipe;
                 virtContext->overlayId = createParams->overlayId;
-                /* Update WB pipeline DMA configurations */
-                Fvid2Utils_memcpy(&virtContext->instCfg.wbPipeCfg.dmaCfg,
-                                  &createParams->dmaCfg,
-                                  sizeof(CSL_DssWbPipeDmaCfg));
-                /* Configure WB pipeline */
-                retVal = Dss_m2mDrvSetWbPipeDmaCfg(instObj,
-                                                   &createParams->dmaCfg);
             }
 
             if (FVID2_SOK == retVal)
@@ -425,11 +457,17 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
 
             if (FVID2_SOK == retVal)
             {
-                if ((0U == m2mObj->numVirtContUsed[createParams->instId]) &&
+                if ((0U == m2mObj->numVirtContUsed[instId]) &&
                     (DSSM2M_DRV_USAGE_STATUS_NOT_USED == instObj->inUse))
                 {
-                    instObj->pipeId    = virtContext->pipeId;
+                    for (loopCnt = 0U ;
+                         loopCnt < createParams->numPipe ;
+                         loopCnt++)
+                    {
+                        instObj->pipeId[loopCnt] = virtContext->pipeId[loopCnt];
+                    }
                     instObj->overlayId = virtContext->overlayId;
+                    instObj->numPipe   = virtContext->numPipe;
                     /* Set instance status */
                     Fvid2Utils_memset(&instObj->status,
                                       0U,
@@ -446,13 +484,18 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
                     instObj->commRegs      =
                         instObj->commonObjRef->socInfo.commRegs[CSL_DSS_COMM_REG_ID_0];
                     instObj->ovrRegs       =
-                        instObj->commonObjRef->socInfo.overlayRegs[createParams->overlayId];;
-                    instObj->pipeRegs      =
-                        instObj->commonObjRef->socInfo.pipeRegs[createParams->pipeId];;
+                        instObj->commonObjRef->socInfo.overlayRegs[createParams->overlayId];
+                    for (loopCnt = 0U ;
+                         loopCnt < DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE ;
+                         loopCnt++)
+                    {
+                        instObj->pipeRegs[createParams->pipeId[loopCnt]] =
+                            instObj->commonObjRef->socInfo.pipeRegs[createParams->pipeId[loopCnt]];
+                    }
                     virtContext->inUse     = DSSM2M_DRV_USAGE_STATUS_IN_USE;
                     virtContext->state     = DSSM2M_DRV_STATE_CREATED;
                     instObj->inUse         = DSSM2M_DRV_USAGE_STATUS_IN_USE;
-                    m2mObj->numVirtContUsed[createParams->instId]++;
+                    m2mObj->numVirtContUsed[instId]++;
                     drvHandle = (Fdrv_Handle)virtContext;
                 }
             }
@@ -476,6 +519,7 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
 int32_t Dss_m2mDelete(Fdrv_Handle handle, void *reserved)
 {
     int32_t retVal = FVID2_SOK;
+    uint32_t pipeIdx;
     DssM2MDrv_CommonObj *m2mObj;
     DssM2MDrv_VirtContext *virtContext;
     DssM2MDrv_InstObj *instObj;
@@ -510,17 +554,29 @@ int32_t Dss_m2mDelete(Fdrv_Handle handle, void *reserved)
             Fvid2Utils_destructQ(virtContext->doneQ);
             virtContext->doneQ = NULL;
         }
-        virtContext->pipeId    = CSL_DSS_VID_PIPE_ID_MAX;
+        for (pipeIdx = 0U ;
+             pipeIdx < DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE ;
+             pipeIdx++)
+        {
+            virtContext->pipeId[pipeIdx] = CSL_DSS_VID_PIPE_ID_MAX;
+        }
+        virtContext->numPipe   = 0U;
         virtContext->overlayId = CSL_DSS_OVERLAY_ID_MAX;
 
         /* Delete Queues only on delete call for last opened Virtual context */
         if ((0U == m2mObj->numVirtContUsed[virtContext->contextId]) &&
                     (DSSM2M_DRV_USAGE_STATUS_IN_USE == instObj->inUse))
         {
-            instObj->pipeId    = CSL_DSS_VID_PIPE_ID_MAX;
+            for (pipeIdx = 0U ;
+                 pipeIdx < DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE ;
+                 pipeIdx++)
+            {
+                instObj->pipeRegs[pipeIdx] = NULL;
+                instObj->pipeId[pipeIdx]   = CSL_DSS_VID_PIPE_ID_MAX;
+            }
+            instObj->numPipe   = 0U;
             instObj->overlayId = CSL_DSS_OVERLAY_ID_MAX;
             instObj->commRegs  = NULL;
-            instObj->pipeRegs  = NULL;
             instObj->ovrRegs   = NULL;
             if(NULL != instObj->commonObjRef->lockSem)
             {
@@ -551,7 +607,7 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
     int32_t retVal = FVID2_SOK;
     DssM2MDrv_VirtContext *virtContext= NULL;
     DssM2MDrv_InstObj *instObj = NULL;
-    uint32_t semTimeout, frmCnt, cookie;;
+    uint32_t semTimeout, frmCnt, cookie, loopCnt;
     DssM2M_DrvQueObj *qObj;
     DssM2M_DrvBufManObj *bmObj;
 
@@ -618,27 +674,31 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
 
     }
     if ((FVID2_SOK == retVal) &&
-        (inProcessList->numFrames != outProcessList->numFrames))
+        (inProcessList->numFrames != virtContext->createParams.numPipe) &&
+        (outProcessList->numFrames != 1U))
     {
         retVal = FVID2_EBADARGS;
         GT_0trace(DssTrace, GT_ERR,
-            "Number of frames input & output frame list does not match !!\r\n");
+            "Number of frames in input (must be equal to number of pipes used) OR "
+            "output (must be equal to 1) frame list does not match !!\r\n");
     }
     if (FVID2_SOK == retVal)
     {
-        for (frmCnt = 0 ; frmCnt < inProcessList->numFrames ; frmCnt++)
+        qObj = (DssM2M_DrvQueObj *) Fvid2Utils_dequeue(bmObj->freeQ);
+        if (qObj == NULL)
         {
-            qObj = (DssM2M_DrvQueObj *) Fvid2Utils_dequeue(bmObj->freeQ);
-            if (qObj == NULL)
-            {
-                GT_0trace(DssTrace, GT_ERR,
-                          "ALLOC: Q object allocation failed\r\n");
-                retVal = FVID2_EALLOC;
-                break;
-            }
+            GT_0trace(DssTrace, GT_ERR,
+                      "ALLOC: Q object allocation failed\r\n");
+            retVal = FVID2_EALLOC;
+        }
+        if (FVID2_SOK == retVal)
+        {
             qObj->virtContext = virtContext;
-            qObj->inFrm       = inProcessList->frames[frmCnt];
-            qObj->outFrm      = outProcessList->frames[frmCnt];
+            qObj->outFrm      = outProcessList->frames[0U];
+            for (frmCnt = 0 ; frmCnt < inProcessList->numFrames ; frmCnt++)
+            {
+                qObj->inFrm[frmCnt] = inProcessList->frames[frmCnt];
+            }
             Fvid2Utils_queue(bmObj->reqQ, &qObj->qElem, qObj);
             virtContext->wbStatus.queueCount++;
             instObj->status.queueCount++;
@@ -648,26 +708,39 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
     if (FVID2_SOK == retVal)
     {
         GT_assert(DssTrace, (NULL != instObj->commRegs));
-        GT_assert(DssTrace, (NULL != instObj->pipeRegs));
+        for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+        {
+            GT_assert(DssTrace,
+                    (NULL != instObj->pipeRegs[virtContext->pipeId[loopCnt]]));
+        }
         GT_assert(DssTrace, (NULL != instObj->ovrRegs));
         GT_assert(DssTrace, (NULL != instObj->wbRegs));
+
         if (Fvid2Utils_getNumQElem(bmObj->currQ) == 0U)
         {
             qObj = (DssM2M_DrvQueObj *) Fvid2Utils_dequeue(bmObj->reqQ);
             GT_assert(DssTrace, (NULL != qObj));
-            CSL_dssVidPipeEnable(instObj->pipeRegs, (uint32_t) FALSE);
+            for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+            {
+                CSL_dssVidPipeEnable(instObj->pipeRegs[virtContext->pipeId[loopCnt]],
+                                     (uint32_t) FALSE);
+            }
             CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) FALSE);
 
-            retVal = Dss_m2mDrvPrgramDctrl(qObj->virtContext);
             retVal += Dss_m2mDrvPrgramDisp(qObj->virtContext);
+            retVal += Dss_m2mDrvPrgramDctrl(qObj->virtContext);
             retVal += Dss_m2mDrvPrgramWbPipe(qObj->virtContext);
 
             if (FVID2_SOK == retVal)
             {
-                CSL_dssVidPipeSetBuffAddr(instObj->pipeRegs,
-                                          FVID2_FID_TOP,
-                                          qObj->inFrm->addr[0U],
-                                          qObj->inFrm->addr[1U]);
+                for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+                {
+                    CSL_dssVidPipeSetBuffAddr(
+                            instObj->pipeRegs[qObj->inFrm[loopCnt]->chNum],
+                            FVID2_FID_TOP,
+                            qObj->inFrm[loopCnt]->addr[0U],
+                            qObj->inFrm[loopCnt]->addr[1U]);
+                }
                 CSL_dssWbPipeSetBuffAddr(instObj->wbRegs,
                                          FVID2_FID_TOP,
                                          qObj->outFrm->addr[0U],
@@ -682,7 +755,11 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
             }
 
             CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) TRUE);
-            CSL_dssVidPipeEnable(instObj->pipeRegs, (uint32_t) TRUE);
+            for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+            {
+                CSL_dssVidPipeEnable(instObj->pipeRegs[virtContext->pipeId[loopCnt]],
+                                     (uint32_t) TRUE);
+            }
         }
     }
 
@@ -704,7 +781,7 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
     int32_t retVal = FVID2_SOK;
     DssM2MDrv_VirtContext *virtContext= NULL;
     DssM2MDrv_InstObj *instObj = NULL;
-    uint32_t semTimeout, cookie, loopBreakFlag = 1U;
+    uint32_t semTimeout, cookie, loopCnt;
     DssM2M_DrvQueObj *qObj;
     DssM2M_DrvBufManObj *bmObj;
 
@@ -761,30 +838,25 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
         inProcessList->perListCfg  = NULL;
         outProcessList->numFrames  = 0U;
         outProcessList->perListCfg = NULL;
-        do
+        /* Only De-queue one frame per call */
+        qObj = (DssM2M_DrvQueObj *) Fvid2Utils_dequeue(virtContext->doneQ);
+        if (qObj != NULL)
         {
-            qObj = (DssM2M_DrvQueObj *) Fvid2Utils_dequeue(virtContext->doneQ);
-            if (qObj != NULL)
+            for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
             {
-                inProcessList->frames[inProcessList->numFrames]   = qObj->inFrm;
+                inProcessList->frames[loopCnt] = qObj->inFrm[loopCnt];
                 inProcessList->numFrames++;
-                outProcessList->frames[outProcessList->numFrames] = qObj->outFrm;
-                outProcessList->numFrames++;
-                qObj->virtContext = NULL;
-                qObj->inFrm       = NULL;
-                qObj->outFrm      = NULL;
-                virtContext->wbStatus.dequeueCount++;
-                instObj->status.dequeueCount++;
-                Fvid2Utils_queue(bmObj->freeQ, &qObj->qElem, qObj);
+                qObj->inFrm[loopCnt] = NULL;
             }
-             /* Max frames limit exceeded exit */
-            if ((inProcessList->numFrames >= FVID2_MAX_FRAME_PTR) ||
-                (outProcessList->numFrames >= FVID2_MAX_FRAME_PTR) ||
-                (qObj == NULL))
-            {
-                loopBreakFlag = 0U;
-            }
-        } while(loopBreakFlag == 1U);
+
+            outProcessList->frames[outProcessList->numFrames] = qObj->outFrm;
+            outProcessList->numFrames++;
+            qObj->virtContext = NULL;
+            qObj->outFrm      = NULL;
+            virtContext->wbStatus.dequeueCount++;
+            instObj->status.dequeueCount++;
+            Fvid2Utils_queue(bmObj->freeQ, &qObj->qElem, qObj);
+        }
     }
 
     if ((NULL != instObj->commonObjRef->lockSem) && (NULL != instObj))
@@ -823,11 +895,11 @@ int32_t Dss_m2mControl(Fdrv_Handle handle,
             case FVID2_STOP:
                 retVal = Dss_m2mDrvIoctlStop(virtContext);
             break;
-            case IOCTL_DSS_M2M_SET_PIPE_PARAMS:
+            case IOCTL_DSS_M2M_SET_WB_PIPE_PARAMS:
                 retVal = Dss_m2mDrvIoctlSetWbPipeParams(virtContext,
                                     (const Dss_WbPipeCfgParams *)cmdArgs);
             break;
-            case IOCTL_DSS_M2M_SET_PIPE_MFLAG_PARAMS:
+            case IOCTL_DSS_M2M_SET_WB_PIPE_MFLAG_PARAMS:
                 retVal = Dss_m2mDrvIoctlSetmFlagParams(virtContext,
                                     (const Dss_WbPipeMflagParams *)cmdArgs);
             break;
@@ -835,11 +907,11 @@ int32_t Dss_m2mControl(Fdrv_Handle handle,
                 retVal = Dss_m2mDrvIoctlGetCurrentStatus(virtContext,
                                     (Dss_WbStatus *)cmdArgs);
             break;
-            case IOCTL_DSS_M2M_SET_PIPE_CSC_COEFF:
+            case IOCTL_DSS_M2M_SET_WB_PIPE_CSC_COEFF:
                 retVal = Dss_m2mDrvIoctlSetWbPipeCsc(virtContext,
                                     (const CSL_DssCscCoeff *)cmdArgs);
             break;
-            case IOCTL_DSS_M2M_SET_PIPE_DMA_CFG:
+            case IOCTL_DSS_M2M_SET_WB_PIPE_DMA_CFG:
                 retVal = Dss_m2mDrvIoctlSetDmaCfg(virtContext,
                                     (const CSL_DssWbPipeDmaCfg *)cmdArgs);
             break;
@@ -847,17 +919,17 @@ int32_t Dss_m2mControl(Fdrv_Handle handle,
                 tsParams = (Fvid2_TimeStampParams *)cmdArgs;
                 gDssM2mCommonObj.getTimeStamp = tsParams->timeStampFxn;
             break;
-            case IOCTL_DSS_DISP_SET_DSS_PARAMS:
+            case IOCTL_DSS_M2M_SET_PIPE_PARAMS:
                 retVal = Dss_m2mDrvIoctlSetDssPipeParams(virtContext,
-                                    (const Dss_DispParams *)cmdArgs);
+                                    (const Dss_PipeCfgParams *)cmdArgs);
             break;
-            case IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS:
+            case IOCTL_DSS_M2M_SET_PIPE_MFLAG_PARAMS:
                 retVal = Dss_m2mDrvIoctlSetPipeMflagParams(virtContext,
-                                    (const Dss_DispPipeMflagParams *)cmdArgs);
+                                    (const Dss_PipeMflagParams *)cmdArgs);
             break;
-            case IOCTL_DSS_DISP_SET_PIPE_CSC_COEFF:
+            case IOCTL_DSS_M2M_SET_PIPE_CSC_COEFF:
                 retVal = Dss_m2mDrvIoctlSetPipeCsc(virtContext,
-                                    (const CSL_DssCscCoeff *)cmdArgs);
+                                    (const Dss_PipeCscParams *)cmdArgs);
             break;
             case IOCTL_DSS_DCTRL_SET_PATH:
             break;
@@ -890,8 +962,8 @@ int32_t Dss_m2mControl(Fdrv_Handle handle,
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
-static int32_t Dss_m2mDrvSetWbPipeDmaCfg(DssM2MDrv_InstObj *instObj,
-                                         const CSL_DssWbPipeDmaCfg *dmaCfg)
+int32_t Dss_m2mDrvSetWbPipeDmaCfg(DssM2MDrv_InstObj *instObj,
+                                  const CSL_DssWbPipeDmaCfg *dmaCfg)
 {
     int32_t retVal = FVID2_SOK;
 
@@ -916,7 +988,7 @@ static int32_t Dss_m2mDrvCreateInstQueues(DssM2MDrv_VirtContext *context)
 {
     int32_t retVal = FVID2_SOK;
     DssM2M_DrvBufManObj *bmObj;
-    uint32_t qCnt = 0U;
+    uint32_t qCnt = 0U, loopCnt;
     DssM2M_DrvQueObj *qObj;
     DssM2MDrv_InstObj *instObj;
 
@@ -948,7 +1020,10 @@ static int32_t Dss_m2mDrvCreateInstQueues(DssM2MDrv_VirtContext *context)
         {
             qObj              = &bmObj->m2mQObj[qCnt];
             qObj->virtContext = context;
-            qObj->inFrm       = NULL;
+            for (loopCnt = 0U ; loopCnt < context->numPipe ; loopCnt++)
+            {
+                qObj->inFrm[loopCnt] = NULL;
+            }
             qObj->outFrm      = NULL;
             Fvid2Utils_queue(bmObj->freeQ, &qObj->qElem, qObj);
         }
@@ -1395,6 +1470,7 @@ static void Dss_wbPipeCbFxn(const uint32_t *event,
 static void Dss_wbPipeDmaCompletionCbFxn(DssM2MDrv_InstObj *instObj)
 {
     int32_t retVal = FVID2_SOK;
+    uint32_t loopCnt;
     DssM2MDrv_VirtContext *virtContext= NULL;
     DssM2M_DrvQueObj *qObj = NULL;
     DssM2M_DrvBufManObj *bmObj = NULL;
@@ -1431,26 +1507,39 @@ static void Dss_wbPipeDmaCompletionCbFxn(DssM2MDrv_InstObj *instObj)
     if (FVID2_SOK == retVal)
     {
         GT_assert(DssTrace, (NULL != instObj->commRegs));
-        GT_assert(DssTrace, (NULL != instObj->pipeRegs));
+        for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+        {
+            GT_assert(DssTrace,
+                    (NULL != instObj->pipeRegs[virtContext->pipeId[loopCnt]]));
+        }
         GT_assert(DssTrace, (NULL != instObj->ovrRegs));
         GT_assert(DssTrace, (NULL != instObj->wbRegs));
+
         if (Fvid2Utils_getNumQElem(bmObj->currQ) == 0U)
         {
             qObj = (DssM2M_DrvQueObj *) Fvid2Utils_dequeue(bmObj->reqQ);
             GT_assert(DssTrace, (NULL != qObj));
-            CSL_dssVidPipeEnable(instObj->pipeRegs, (uint32_t) FALSE);
+            for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+            {
+                CSL_dssVidPipeEnable(instObj->pipeRegs[virtContext->pipeId[loopCnt]],
+                                     (uint32_t) FALSE);
+            }
             CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) FALSE);
 
-            retVal = Dss_m2mDrvPrgramDctrl(qObj->virtContext);
             retVal += Dss_m2mDrvPrgramDisp(qObj->virtContext);
+            retVal += Dss_m2mDrvPrgramDctrl(qObj->virtContext);
             retVal += Dss_m2mDrvPrgramWbPipe(qObj->virtContext);
 
             if (FVID2_SOK == retVal)
             {
-                CSL_dssVidPipeSetBuffAddr(instObj->pipeRegs,
-                                          FVID2_FID_TOP,
-                                          qObj->inFrm->addr[0U],
-                                          qObj->inFrm->addr[1U]);
+                for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+                {
+                    CSL_dssVidPipeSetBuffAddr(
+                            instObj->pipeRegs[qObj->inFrm[loopCnt]->chNum],
+                            FVID2_FID_TOP,
+                            qObj->inFrm[loopCnt]->addr[0U],
+                            qObj->inFrm[loopCnt]->addr[1U]);
+                }
                 CSL_dssWbPipeSetBuffAddr(instObj->wbRegs,
                                          FVID2_FID_TOP,
                                          qObj->outFrm->addr[0U],
@@ -1460,10 +1549,16 @@ static void Dss_wbPipeDmaCompletionCbFxn(DssM2MDrv_InstObj *instObj)
             {
                 /* Queue back in case of failure */
                 Fvid2Utils_queue(bmObj->reqQ, &qObj->qElem, qObj);
+                GT_0trace(DssTrace, GT_ERR,
+                          "Programming Failed: DSS Pipe/Disp/WB Pipe\r\n");
             }
 
             CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) TRUE);
-            CSL_dssVidPipeEnable(instObj->pipeRegs, (uint32_t) TRUE);
+            for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
+            {
+                CSL_dssVidPipeEnable(instObj->pipeRegs[virtContext->pipeId[loopCnt]],
+                                     (uint32_t) TRUE);
+            }
         }
     }
 

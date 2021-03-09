@@ -204,6 +204,9 @@ typedef void (*Dss_DctrlDpHpdCbFxn)(uint32_t hpdState, void *appData);
 #define DSS_M2M_WB_PIPELINE_ID_MAX                   (CSL_DSS_WB_PIPE_ID_MAX)
 #define DSSM2M_NUM_WB_PIPELINE                       (CSL_DSS_WB_PIPE_ID_MAX)
 
+/** \brief DSS pipe-lines number available in the SoC for blending in M2M mode */
+#define DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE       (1U)
+
 /** \brief DSS M2M DRV Virtual Context: Number of virtual contexts per DSS M2M pipeline */
 #define DSSM2M_NUM_VIRTUAL_CONTEXT                   (8U)
 

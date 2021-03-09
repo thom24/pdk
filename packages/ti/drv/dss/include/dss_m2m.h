@@ -73,14 +73,12 @@ extern "C" {
  * These are display FVID2 APIs that can be called by the application.
  * Display M2M driver supports additional IOCTLs from other modules/drivers
  * and those are follows:
- * 1. IOCTLs from Display Pipe Driver (Refer to \ref DRV_DSS_DISP_IOCTL):
- *      - IOCTL_DSS_DISP_SET_DSS_PARAMS
- *      - IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS
- *      - IOCTL_DSS_DISP_SET_PIPE_CSC_COEFF
- * 2. IOCTLs from Display Controller Driver (Refer to \ref DRV_DSS_DCTRL_IOCTL):
+ * 1. IOCTLs from Display Controller Driver (Refer to \ref DRV_DSS_DCTRL_IOCTL):
  *      - IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS
  *      - IOCTL_DSS_DCTRL_SET_LAYER_PARAMS
  *      - IOCTL_DSS_DCTRL_SET_GLOBAL_DSS_PARAMS
+ *          - These Global Parameters are common across multiple driver handles
+ *            across multiple DSS drivers like DISP, DCTRL and M2M.
  */
 
 /**
@@ -94,12 +92,12 @@ extern "C" {
  *
  * \return  FVID2_SOK if successful, else suitable error code
  */
-#define IOCTL_DSS_M2M_SET_PIPE_PARAMS          (DSS_M2M_IOCTL_BASE + 0x0001U)
+#define IOCTL_DSS_M2M_SET_WB_PIPE_PARAMS          (DSS_M2M_IOCTL_BASE + 0x0001U)
 
 /**
- * \brief Command to set MFLAG parameters for video pipe.
+ * \brief Command to set MFLAG parameters for WB pipe.
  *
- *  This IOCTL can be used to set the MFLAG parameters for the given video pipe.
+ *  This IOCTL can be used to set the MFLAG parameters for the given WB pipe.
  *
  * \param cmdArgs       [IN]  Pointer of type #Dss_WbPipeMflagParams
  * \param cmdArgsStatus [OUT] NULL
@@ -107,7 +105,7 @@ extern "C" {
  * \return  FVID2_SOK if successful, else suitable error code
  *
  */
-#define IOCTL_DSS_M2M_SET_PIPE_MFLAG_PARAMS   (DSS_M2M_IOCTL_BASE + 0x0002U)
+#define IOCTL_DSS_M2M_SET_WB_PIPE_MFLAG_PARAMS   (DSS_M2M_IOCTL_BASE + 0x0002U)
 
 /**
  * \brief Command to get the display status.
@@ -127,7 +125,7 @@ extern "C" {
 #define IOCTL_DSS_M2M_GET_CURRENT_STATUS      (DSS_M2M_IOCTL_BASE + 0x0003U)
 
 /**
- * \brief Command to program the CSC coefficients for Video Pipe.
+ * \brief Command to program the CSC coefficients for WB Pipe.
  *  By default BT 601 coefficients are set.
  *
  * \param cmdArgs       [IN]  Pointer of type #CSL_DssCscCoeff
@@ -135,7 +133,7 @@ extern "C" {
  *
  * \return  FVID2_SOK if successful, else suitable error code
  */
-#define IOCTL_DSS_M2M_SET_PIPE_CSC_COEFF      (DSS_M2M_IOCTL_BASE + 0x0004U)
+#define IOCTL_DSS_M2M_SET_WB_PIPE_CSC_COEFF      (DSS_M2M_IOCTL_BASE + 0x0004U)
 
 /**
  * \brief Command to program the write-back pipe DMA configuration parameters
@@ -145,8 +143,44 @@ extern "C" {
  *
  * \return  FVID2_SOK if successful, else suitable error code
  */
-#define IOCTL_DSS_M2M_SET_PIPE_DMA_CFG       (DSS_M2M_IOCTL_BASE + 0x0005U)
+#define IOCTL_DSS_M2M_SET_WB_PIPE_DMA_CFG       (DSS_M2M_IOCTL_BASE + 0x0005U)
 
+/**
+ * \brief Command to set DSS display pipeline parameters.
+ *
+ *  This IOCTL is used to program the DSS display parameters. Refer to structure
+ *  #Dss_PipeCfgParams for details on DSS parameters.
+ *
+ * \param cmdArgs       [IN]  Pointer of type #Dss_PipeCfgParams
+ * \param cmdArgsStatus [OUT] NULL
+ *
+ * \return  FVID2_SOK if successful, else suitable error code
+ */
+#define IOCTL_DSS_M2M_SET_PIPE_PARAMS          (DSS_M2M_IOCTL_BASE + 0x0006U)
+
+/**
+ * \brief Command to set MFLAG parameters for video pipe.
+ *
+ *  This IOCTL can be used to set the MFLAG parameters for the given video pipe.
+ *
+ * \param cmdArgs       [IN]  Pointer of type #Dss_PipeMflagParams
+ * \param cmdArgsStatus [OUT] NULL
+ *
+ * \return  FVID2_SOK if successful, else suitable error code
+ *
+ */
+#define IOCTL_DSS_M2M_SET_PIPE_MFLAG_PARAMS   (DSS_M2M_IOCTL_BASE + 0x0007U)
+
+/**
+ * \brief Command to program the CSC coefficients for Video Pipe.
+ *  By default BT 601 coefficients are set.
+ *
+ * \param cmdArgs       [IN]  Pointer of type #Dss_PipeCscParams
+ * \param cmdArgsStatus [OUT] NULL
+ *
+ * \return  FVID2_SOK if successful, else suitable error code
+ */
+#define IOCTL_DSS_M2M_SET_PIPE_CSC_COEFF      (DSS_M2M_IOCTL_BASE + 0x0008U)
 /* @} */
 
 /* ========================================================================== */
@@ -167,7 +201,7 @@ typedef struct
 /**
  *  \brief Structure containing Video write-back Pipe Mflag Information.
  *   This structure is used as an argument to
- *   IOCTL_DSS_M2M_SET_PIPE_MFLAG_PARAMS.
+ *   IOCTL_DSS_M2M_SET_WB_PIPE_MFLAG_PARAMS.
  */
 typedef struct
 {
@@ -199,17 +233,16 @@ typedef struct
 
 /**
  *  \brief Structure containing display driver create arguments, used when
- *   calling Fvid2_create().
+ *   calling Fvid2_create(). Application shall maintain same create time
+ *   configurations between multiple driver handles for same WB pipe-line.
  */
 typedef struct
 {
-    uint32_t instId;
-    /**< DSS M2M/WB pipeline instance ID */
-    CSL_DssWbPipeDmaCfg dmaCfg;
-    /**< DMA configuration for WB pipeline
-     *   See \ref CSL_DssWbPipeDmaCfg for details */
-    uint32_t pipeId;
-    /**< ID DSS pipeline to use.
+    uint32_t numPipe;
+    /**< Number of Display pipe-lines used for given M2M/WB pipeline.
+     *   This should be set to '1' (as done in Dss_m2mCreateParamsInit()) */
+    uint32_t pipeId[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
+    /**< ID DSS pipeline to use. Application shall only set pipe IDs which are used.
      *   See \ref CSL_DssVidPipeId for details */
     uint32_t overlayId;
     /**< ID DSS overlay to use.
@@ -224,6 +257,48 @@ typedef struct
     int32_t retVal;
     /**< Create status, FVID2_SOK on success, else failure. */
 } Dss_WbCreateStatus;
+
+/**
+ *  \brief Structure containing video pipe configuration.
+ *   This structure is used as an argument to
+ *   IOCTL_DSS_M2M_SET_PIPE_PARAMS.
+ */
+typedef struct
+{
+    uint32_t pipeId;
+    /**< Display Pipe-line ID */
+    Dss_DispParams cfgParams;
+    /**< Configuration for Display pipeline
+     *   See \ref Dss_DispParams for details */
+} Dss_PipeCfgParams;
+
+/**
+ *  \brief Structure containing Video Pipe Mflag Information.
+ *   This structure is used as an argument to
+ *   IOCTL_DSS_M2M_SET_PIPE_MFLAG_PARAMS.
+ */
+typedef struct
+{
+    uint32_t pipeId;
+    /**< Display Pipe-line ID */
+    Dss_DispPipeMflagParams mFlagCfg;
+    /**< MFlag configuration parameters for display pipeline
+     *   See \ref Dss_DispPipeMflagParams for details */
+} Dss_PipeMflagParams;
+
+/**
+ *  \brief Structure containing Video Pipe CSC Information.
+ *   This structure is used as an argument to
+ *   IOCTL_DSS_M2M_SET_PIPE_CSC_COEFF.
+ */
+typedef struct
+{
+    uint32_t pipeId;
+    /**< Display Pipe-line ID */
+    CSL_DssCscCoeff csc;
+    /**< MFlag configuration parameters for WB pipeline
+     *   See \ref CSL_DssCscCoeff for details */
+} Dss_PipeCscParams;
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */
 /* ========================================================================== */
@@ -271,12 +346,18 @@ static inline void Dss_m2mStatusInit(Dss_WbStatus *status);
 /* ========================================================================== */
 static inline void Dss_m2mCreateParamsInit(Dss_WbCreateParams *createParams)
 {
+    uint32_t loopCnt = 0U;
+
     if(NULL != createParams)
     {
-        createParams->instId    = DSS_M2M_WB_PIPELINE_ID_0;
-        createParams->pipeId    = CSL_DSS_VID_PIPE_ID_VID1;
+        createParams->numPipe = 1U;
+        for (loopCnt = 0U ;
+             loopCnt < DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE ;
+             loopCnt++)
+        {
+            createParams->pipeId[loopCnt] = CSL_DSS_VID_PIPE_ID_MAX;
+        }
         createParams->overlayId = CSL_DSS_OVERLAY_ID_1;
-        CSL_dssWbPipeDmaCfgInit(&(createParams->dmaCfg));
     }
 }
 
@@ -285,6 +366,9 @@ static inline void Dss_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams)
     if(NULL != cfgParams)
     {
         CSL_dssWbPipeCfgInit(&(cfgParams->pipeCfg));
+        /* dataFormat is fixed as Display pipe/overlay can only output in
+           ARGB48 format */
+        cfgParams->pipeCfg.inFmt.dataFormat = FVID2_DF_ARGB48_12121212;
         /* Set mode to M2M mode */
         cfgParams->pipeCfg.wbMode = CSL_DSS_WB_PIPE_MODE_M2M;
     }

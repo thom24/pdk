@@ -262,7 +262,7 @@ int32_t Dss_m2mDrvPrgramDctrl(DssM2MDrv_VirtContext *context)
                     {
                         layerCfg.layerEnable = TRUE;
                         layerCfg.layerNum = instCfg->ovlLayerParams.pipeLayerNum[loopCnt];
-                        layerCfg.inputPipe = instObj->pipeId;
+                        layerCfg.inputPipe = loopCnt;
                         CSL_dssOverlaySetLayerConfig(
                                             instObj->ovrRegs,
                                             (const CSL_DssOverlayLayerCfg *) &layerCfg);

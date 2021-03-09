@@ -182,7 +182,7 @@ struct DssM2MDrv_WbPipeCfg_t
  */
 struct DssM2MDrv_moduleCfg_t
 {
-    DssM2MDrv_DispPipeCfg pipeCfg;
+    DssM2MDrv_DispPipeCfg pipeCfg[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
     /**< Display pipeline configuration parameters */
     DssM2MDrv_dctrlCfg dctrlCfg;
     /**< Display controller configuration parameters  */
@@ -223,7 +223,9 @@ struct DssM2MDrv_VirtContext_t
     /**< Linked List object for doneQ */
     uint32_t numBufQed;
     /**< Number of buffers Queued to HW */
-    uint32_t pipeId;
+    uint32_t numPipe;
+    /**< Number of Display pipe-lines used for given M2M/WB pipeline. */
+    uint32_t pipeId[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
     /**< ID DSS pipeline to use.
      *   See \ref CSL_DssVidPipeId for details */
     uint32_t overlayId;
@@ -243,7 +245,9 @@ struct DssM2M_DrvQueObj_t
     /**< FVID2 Utils queue element used in node addition */
     DssM2MDrv_VirtContext *virtContext;
     /**< Reference to the instance object for this queue object */
-    Fvid2_Frame *inFrm;
+    uint32_t numPipe;
+    /**< Number of DSS pipes used. This will be also equal to number of frames in inFrm */
+    Fvid2_Frame *inFrm[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
     /**< #FVID2_frame to read the incoming frame packets from memory */
     Fvid2_Frame *outFrm;
     /**< #FVID2_frame to store the outgoing frame packets to memory */
@@ -301,7 +305,7 @@ struct DssM2MDrv_InstObj_t
       *  See \ref DssM2MDrv_moduleCfg for details */
     CSL_dss_commRegs *commRegs;
     /**< Write-back Pipe registers */
-    CSL_dss_pipeRegs *pipeRegs;
+    CSL_dss_pipeRegs *pipeRegs[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
     /**< Write-back Pipe registers */
     CSL_dss_overlayRegs *ovrRegs;
     /**< Write-back Pipe registers */
@@ -309,7 +313,9 @@ struct DssM2MDrv_InstObj_t
     /**< Write-back Pipe registers */
     DssM2M_DrvBufManObj bmObj;
     /**< Buffer management object */
-    uint32_t pipeId;
+    uint32_t numPipe;
+    /**< Number of Display pipe-lines used for given M2M/WB pipeline. */
+    uint32_t pipeId[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
     /**< ID of DSS pipeline used. */
     uint32_t overlayId;
     /**< ID of DSS overlay used. */
@@ -353,13 +359,13 @@ struct DssM2MDrv_CommonObj_t
 /*                          Function Declarations                             */
 /* ========================================================================== */
 int32_t Dss_m2mDrvIoctlSetDssPipeParams(DssM2MDrv_VirtContext *context,
-                                               const Dss_DispParams *pipeCfg);
+                                        const Dss_PipeCfgParams *pipeCfg);
 
 int32_t Dss_m2mDrvIoctlSetPipeMflagParams(DssM2MDrv_VirtContext *context,
-                                  const Dss_DispPipeMflagParams *mFlagParams);
+                                  const Dss_PipeMflagParams *mFlagParams);
 
 int32_t Dss_m2mDrvIoctlSetPipeCsc(DssM2MDrv_VirtContext *context,
-                                         const CSL_DssCscCoeff *csc);
+                                  const Dss_PipeCscParams *csc);
 
 int32_t Dss_m2mDrvIoctlSetOverlayParams(DssM2MDrv_VirtContext *context,
                                     const Dss_DctrlOverlayParams *ovlParams);
@@ -395,7 +401,8 @@ uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
 
 int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context);
 
-
+int32_t Dss_m2mDrvSetWbPipeDmaCfg(DssM2MDrv_InstObj *instObj,
+                                  const CSL_DssWbPipeDmaCfg *dmaCfg);
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
