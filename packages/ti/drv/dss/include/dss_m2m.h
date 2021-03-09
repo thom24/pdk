@@ -73,11 +73,11 @@ extern "C" {
  * These are display FVID2 APIs that can be called by the application.
  * Display M2M driver supports additional IOCTLs from other modules/drivers
  * and those are follows:
- * 1. IOCTLs from Display Pipe Driver (Refer to #DRV_DSS_DISP_IOCTL):
+ * 1. IOCTLs from Display Pipe Driver (Refer to \ref DRV_DSS_DISP_IOCTL):
  *      - IOCTL_DSS_DISP_SET_DSS_PARAMS
  *      - IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS
  *      - IOCTL_DSS_DISP_SET_PIPE_CSC_COEFF
- * 2. IOCTLs from Display Controller Driver (Refer to #DRV_DSS_DCTRL_IOCTL):
+ * 2. IOCTLs from Display Controller Driver (Refer to \ref DRV_DSS_DCTRL_IOCTL):
  *      - IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS
  *      - IOCTL_DSS_DCTRL_SET_LAYER_PARAMS
  *      - IOCTL_DSS_DCTRL_SET_GLOBAL_DSS_PARAMS
@@ -252,7 +252,7 @@ static inline void Dss_m2mPipeCfgParamsInit(Dss_WbPipeCfgParams *cfgParams);
 /**
  *  \brief Dss_WbPipeMflagParams structure init function.
  *
- *  \param  cfgParams     [IN]Pointer to #Dss_WbPipeMflagParams structure.
+ *  \param  mFlagParams   [IN]Pointer to #Dss_WbPipeMflagParams structure.
  *
  *  \return None
  */
@@ -261,7 +261,7 @@ static inline void Dss_m2mMFlagParamsInit(Dss_WbPipeMflagParams *mFlagParams);
 /**
  *  \brief Dss_WbStatus structure init function.
  *
- *  \param  cfgParams     [IN]Pointer to #Dss_WbStatus structure.
+ *  \param  status       [IN]Pointer to #Dss_WbStatus structure.
  *
  *  \return None
  */
