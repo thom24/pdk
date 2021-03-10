@@ -52,6 +52,17 @@
 #define OSPI_CALIBRATE_DELAY        (20U)
 #define OSPI_XIP_SETUP_DELAY        (250U)
 
+/* Set the indirect trigger address offset at a non-cached location */
+#ifdef SPI_CACHE_ENABLE
+#if defined(SOC_J7200) || defined(SOC_AM64X)
+        #define OSPI_INDAC_TRIG_ADDR (0x3FC0000)
+#else
+        #define OSPI_INDAC_TRIG_ADDR (0x3FE0000)
+#endif
+#else
+        #define OSPI_INDAC_TRIG_ADDR (0x0000000)
+#endif
+
 /* OSPI AM57x functions */
 static void       OSPI_close_v0(SPI_Handle handle);
 static void       OSPI_init_v0(SPI_Handle handle);
@@ -211,7 +222,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                     rdBytes = (rdBytes > object->readCountIdx) ? object->readCountIdx : rdBytes;
 
                     /* Read data from FIFO */
-                    CSL_ospiReadFifoData(hwAttrs->dataAddr+0x3FE0000, object->readBufIdx, rdBytes);
+                    CSL_ospiReadFifoData(hwAttrs->dataAddr + OSPI_INDAC_TRIG_ADDR, object->readBufIdx, rdBytes);
 
                     object->readBufIdx += rdBytes;
                     object->readCountIdx -= rdBytes;
@@ -230,7 +241,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                         }
                     }
                     rdBytes = object->readCountIdx;
-                    CSL_ospiReadFifoData(hwAttrs->dataAddr+0x3FE0000, object->readBufIdx, rdBytes);
+                    CSL_ospiReadFifoData(hwAttrs->dataAddr + OSPI_INDAC_TRIG_ADDR, object->readBufIdx, rdBytes);
                     object->readBufIdx += rdBytes;
                     object->readCountIdx -= rdBytes;
                 }
@@ -277,7 +288,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 wrBytes = (wrBytes > object->writeCountIdx) ? object->writeCountIdx : wrBytes;
 
                 /* Write data to FIFO */
-                CSL_ospiWriteFifoData(hwAttrs->dataAddr+0x3FE0000, object->writeBufIdx, wrBytes);
+                CSL_ospiWriteFifoData(hwAttrs->dataAddr + OSPI_INDAC_TRIG_ADDR, object->writeBufIdx, wrBytes);
 
                 object->writeBufIdx += wrBytes;
                 object->writeCountIdx -= wrBytes;
@@ -289,7 +300,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                     (object->writeCountIdx <= (sramLevel * CSL_OSPI_FIFO_WIDTH)))
                 {
                     wrBytes = object->writeCountIdx;
-                    CSL_ospiWriteFifoData(hwAttrs->dataAddr+0x3FE0000, object->writeBufIdx, wrBytes);
+                    CSL_ospiWriteFifoData(hwAttrs->dataAddr + OSPI_INDAC_TRIG_ADDR, object->writeBufIdx, wrBytes);
                     object->writeBufIdx += wrBytes;
                     object->writeCountIdx -= wrBytes;
                 }
@@ -624,12 +635,12 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
             if (hwAttrs->dacEnable)
             {
                 CSL_ospiSetIndTrigAddr((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                       0x4000000);
+                                        0x4000000);
             }
             else
             {
                 CSL_ospiSetIndTrigAddr((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                       0x3FE0000);
+                                       OSPI_INDAC_TRIG_ADDR);
             }
 
             /* Disable write completion auto polling */
@@ -827,7 +838,7 @@ static int32_t OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
             rdBytes = (rdBytes > remaining) ? remaining : rdBytes;
 
             /* Read data from FIFO */
-            CSL_ospiReadFifoData(hwAttrs->dataAddr+0x3FE0000, pDst, rdBytes);
+            CSL_ospiReadFifoData(hwAttrs->dataAddr + OSPI_INDAC_TRIG_ADDR, pDst, rdBytes);
 
             pDst += rdBytes;
             remaining -= rdBytes;
@@ -944,7 +955,9 @@ static int32_t OSPI_dac_xfer_mode_read_v0(SPI_Handle handle,
             CSL_archMemoryFence();
 #endif
         }
+#ifdef SPI_CACHE_ENABLE
     CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
+#endif
     }
 
     return (0);
@@ -1232,7 +1245,7 @@ static int32_t OSPI_ind_xfer_mode_write_v0(SPI_Handle handle,
                 wrBytes = (wrBytes > remaining) ? remaining : wrBytes;
 
                 /* Write data to FIFO */
-                CSL_ospiWriteFifoData(hwAttrs->dataAddr+0x3FE0000, pSrc, wrBytes);
+                CSL_ospiWriteFifoData(hwAttrs->dataAddr + OSPI_INDAC_TRIG_ADDR, pSrc, wrBytes);
 
                 pSrc += wrBytes;
                 remaining -= wrBytes;
@@ -1324,7 +1337,9 @@ static int32_t OSPI_dac_xfer_mode_write_v0(SPI_Handle handle,
             }
         }
     }
+#ifdef SPI_CACHE_ENABLE
     CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
+#endif
     return (retVal);
 }
 

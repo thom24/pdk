@@ -1088,26 +1088,12 @@ void spi_test()
     /* Init SPI driver */
     SPI_init();
 
-    while(1)
+    for (i = 0; ; i++)
     {
-        UART_printf("\r\n Which UT would you like to run? (9 to exit)\n");
-        i = 0;
-        UART_scanFmt("%d", &i);
-
-        if(i == 9)
-        {
-            break;
-        }
-
         test = &Ospi_tests[i];
         if (test->testFunc == NULL)
         {
-            UART_printf("\r\n Invalid number entered\n");
-            continue;
-        }
-        else
-        {
-            UART_printf("\r\n Running UT %d\n", i);
+            break;
         }
 
         OSPI_configClk(test->clk, true);
@@ -1122,7 +1108,7 @@ void spi_test()
         {
             SPI_log("\r\n %s have failed\r\n", test->testDesc);
             testFail = true;
-            //break;
+            break;
         }
     }
 
@@ -1164,12 +1150,6 @@ int main(void)
 
     Board_init(boardCfg);
 
-    volatile int loop = 0;
-    while(loop)
-    {
-        /* wait for CCS connection */
-    }
-
 #ifdef USE_BIOS
 
 	Error_init(&eb);
@@ -1210,8 +1190,6 @@ bool VerifyData(uint8_t *expData,
         {
             match = 0;
             SPI_log("Data mismatch at idx %d\n", idx);
-            SPI_log("\r\n expData \t rxData \n");
-            SPI_log("\r\n %d \t %d \n", *expData, *rxData);
         }
         expData++;
         rxData++;
