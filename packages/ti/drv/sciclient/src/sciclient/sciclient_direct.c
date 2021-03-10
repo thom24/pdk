@@ -200,6 +200,8 @@ const uint8_t gcSciclientDirectExtBootX509MagicWord[
     SCICLIENT_DIRECT_EXTBOOT_X509_MAGIC_WORD_LEN] =
     { 'E', 'X', 'T', 'B', 'O', 'O', 'T', 0 };
 
+extern Sciclient_ServiceHandle_t gSciclientHandle;
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -359,15 +361,23 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
             case TISCI_MSG_RM_PSIL_READ:
             case TISCI_MSG_RM_PSIL_WRITE:
             default:
+            {
                 /*
                  * These RM messages and all baseport and security messages are
                  * entirely processed on DMSC. When called on mcu1_0 directly,
                  * these are treated as native calls to DMSC. If these requests
                  * are made from other CPUs, the sciserver will take care of
                  * setting the forward status prior to calling this function.
+                 * The MCU1_0 will always be secure when trying to send the message
+                 * to the TIFS directly to avoid self blocking.
                  */
+                uint32_t bkupMode;
+                bkupMode = gSciclientHandle.isSecureMode;
+                gSciclientHandle.isSecureMode = 1U;
                 ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
+                gSciclientHandle.isSecureMode = bkupMode;
                 break;
+            }
         }
     }
 

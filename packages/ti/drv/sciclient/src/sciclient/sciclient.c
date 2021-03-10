@@ -112,7 +112,7 @@ static int32_t Sciclient_C66xRatMap(uint32_t ratRegion);
 /**
  *   \brief Handle used by #Sciclient_service function
  */
-static Sciclient_ServiceHandle_t gSciclientHandle =
+Sciclient_ServiceHandle_t gSciclientHandle =
     (Sciclient_ServiceHandle_t){0};
 
 /**
@@ -382,20 +382,6 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
             gSciclientHandle.isSecureMode = 0U;
         }
 #if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200))
-        /*
-         * On j721e and j7200 devices, all services sent on non-secure queues
-         * are first processed by the Sciserver instance on MCU R5F0 and
-         * forwarded to DMSC if security-related configurations are required.
-         *
-         * In a similar manner, all applications running locally on MCU R5F0
-         * will be handled directly and only forwarded to DMSC for additional
-         * security-related processing if necessary.
-         *
-         * All service forwarding to DMSC is performed over the secure queue.
-         * Therefore, we force Sciclient to use secure mode in this build
-         * configuration.
-         */
-        gSciclientHandle.isSecureMode = 1U;
         if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
         {
             /* Run pm_init */
@@ -477,6 +463,20 @@ int32_t Sciclient_serviceGetThreadIds (const Sciclient_ReqPrm_t *pReqPrm,
         {
             *txThread = TISCI_SEC_PROXY_DM2DMSC_WRITE_NOTIFY_RESP_THREAD_ID;
             *rxThread = TISCI_SEC_PROXY_DM2DMSC_READ_RESPONSE_THREAD_ID;
+           /*
+            * On j721e and j7200 devices, all services sent on non-secure queues
+            * are first processed by the Sciserver instance on MCU R5F0 and
+            * forwarded to DMSC if security-related configurations are required.
+            *
+            * In a similar manner, all applications running locally on MCU R5F0
+            * will be handled directly and only forwarded to DMSC for additional
+            * security-related processing if necessary.
+            *
+            * All service forwarding to DMSC is performed over the secure queue.
+            * Therefore, we force Sciclient to use secure mode in this build
+            * configuration.
+            */
+            *contextId = SCICLIENT_CONTEXT_SEC;
         }
         else
         {
