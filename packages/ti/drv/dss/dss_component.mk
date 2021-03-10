@@ -209,6 +209,29 @@ dss_baremetal_display_testapp_SBL_APPIMAGEGEN = yes
 export dss_baremetal_display_testapp_SBL_APPIMAGEGEN
 endif
 
+# DSS display M2M test app
+dss_m2m_testapp_COMP_LIST = dss_m2m_testapp
+dss_m2m_testapp_RELPATH = ti/drv/dss/examples/dss_m2m_test
+dss_m2m_testapp_PATH = $(PDK_DSS_COMP_PATH)/examples/dss_m2m_test
+dss_m2m_testapp_BOARD_DEPENDENCY = yes
+dss_m2m_testapp_CORE_DEPENDENCY = yes
+dss_m2m_testapp_XDC_CONFIGURO = yes
+export dss_m2m_testapp_COMP_LIST
+export dss_m2m_testapp_BOARD_DEPENDENCY
+export dss_m2m_testapp_CORE_DEPENDENCY
+export dss_m2m_testapp_XDC_CONFIGURO
+dss_m2m_testapp_PKG_LIST = dss_m2m_testapp
+dss_m2m_testapp_INCLUDE = $(dss_m2m_testapp_PATH)
+dss_m2m_testapp_BOARDLIST = j721e_evm
+export dss_m2m_testapp_BOARDLIST
+dss_m2m_testapp_$(SOC)_CORELIST = $(drvdss_$(SOC)_CORELIST)
+export dss_m2m_testapp_$(SOC)_CORELIST
+dss_EXAMPLE_LIST += dss_m2m_testapp
+ifeq ($(SOC),$(filter $(SOC), j721e))
+dss_m2m_testapp_SBL_APPIMAGEGEN = yes
+export dss_m2m_testapp_SBL_APPIMAGEGEN
+endif
+
 export dss_LIB_LIST
 export dss_APP_LIB_LIST
 export dss_EXAMPLE_LIST
