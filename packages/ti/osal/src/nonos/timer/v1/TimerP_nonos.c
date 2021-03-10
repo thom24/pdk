@@ -559,6 +559,15 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
   {
     if (timer->tickFxn != (TimerP_Fxn) NULL_PTR)
     {
+      /* PDK-6534 If the timers were indeed running (left running from previous)
+            op. The provided ISR could be invoked at un-expected time.
+            Ensure to reset the timer */
+
+      /* tiocpCfg is populated by tiocpCfg */
+      if ((timer->tiocpCfg & TIMERP_DM_TIOCP_CFG_SOFTRESET_FLAG) > 0U) {
+       (void)TIMERReset(baseAddr);
+      }
+
       intNum          = timer->intNum;
       /* Initialize with defaults */
       Osal_RegisterInterrupt_initParams(&interruptRegParams);
