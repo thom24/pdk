@@ -692,10 +692,10 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
     if ((testId == SPI_TEST_ID_WORD_LEN) || (testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
     {
 #if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
-        /* enalbe loopback mode */
+        /* enable loopback mode */
         spi_cfg.chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_4;
 #else
-        /* enalbe loopback mode */
+        /* enable loopback mode */
         spi_cfg.loopback = 1;
 #endif
     }
@@ -1450,6 +1450,8 @@ SPI_Tests Spi_tests_master[] =
     {SPI_test_multi_channel, SPI_TEST_ID_TX_ONLY, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel TX_ONLY test", 0, },
 #endif
 #endif
+
+#if !defined (SOC_J721E) && !defined (SOC_J7200)
 #ifdef SPI_DMA_ENABLE
     {SPI_test_single_channel, SPI_TEST_ID_WORD_LEN, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master data size test in loopback dma mode", SPI_TEST_DATA_SIZE, },
 #endif
@@ -1468,6 +1470,9 @@ SPI_Tests Spi_tests_master[] =
 #endif
     {SPI_test_multi_channel, SPI_TEST_ID_INIT_DELAY, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel init delay test", SPI_TEST_INIT_DELAY, },
 #endif
+
+#endif /* Loopback not supported on j721e, j7200 */
+
 #ifdef SPI_DMA_ENABLE
      {SPI_test_single_channel, SPI_TEST_ID_DMA_CB_CANCEL, true, false, true, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in dma callback mode", },
 #endif
