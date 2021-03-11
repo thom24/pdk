@@ -114,6 +114,61 @@ Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms = {0};
 #endif
 #endif
 
+#ifndef SBL_SKIP_BRD_CFG_RM
+uint16_t gCertLength = 0;
+#endif
+static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
+{
+    uint16_t cert_len = 0;
+    uint8_t *cert_len_ptr = (uint8_t *)&cert_len;
+    uint8_t *x509_cert_ptr;
+
+    struct tisci_msg_board_config_rm_req *req =
+        (struct tisci_msg_board_config_rm_req *) msg_recv;
+
+   x509_cert_ptr = (uint8_t *)req->tisci_boardcfg_rmp_low;
+
+
+    if (*x509_cert_ptr != 0x30)
+    {
+        /* The data does not contain a certificate - return */
+        return 0;
+    }
+
+    cert_len = *(x509_cert_ptr + 1);
+
+    /* If you need more than 2 bytes to store the cert length  */
+    /* it means that the cert length is greater than 64 Kbytes */
+    /* and we do not support it                                */
+    if ((cert_len > 0x80) &&
+        (cert_len != 0x82))
+    {
+        return 0;
+    }
+
+    if (cert_len == 0x82)
+    {
+        *cert_len_ptr = *(x509_cert_ptr + 3);
+        *(cert_len_ptr + 1) = *(x509_cert_ptr + 2);
+
+        /* add current offset from start of x509 cert */
+        cert_len += 3;
+    }
+    else
+    {
+        /* add current offset from start of x509 cert  */
+        /* if cert len was obtained from 2nd byte i.e. */
+        /* cert size is 127 bytes or less              */
+        cert_len += 1;
+    }
+
+    /* cert_len now contains the offset of the last byte */
+    /* of the cert from the ccert_start. To get the size */
+    /* of certificate, add 1                             */
+
+    return cert_len + 1;
+}
+
 void SBL_SciClientInit(void)
 {
     int32_t status = CSL_EFAIL;
@@ -278,6 +333,7 @@ void SBL_SciClientInit(void)
     sblBoardCfgRmPrms.boardConfigHigh = 0;
     sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
     sblBoardCfgRmPrms.devGrp = SBL_DEVGRP;
+    gCertLength = boardcfgRmFindCertSize((uint32_t*)boardCfgInfo.boardCfgLowRm);
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
     if (status != CSL_PASS)
     {
@@ -386,7 +442,7 @@ static int32_t Sciclient_setBoardConfigHeader ()
         .boardConfigLow =
             (uint32_t) SCISERVER_BOARDCONFIG_DATA_ADDR + alignedOffset,
         .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES,
+        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES - gCertLength,
         .devGrp = DEVGRP_ALL
     };
     status = Sciclient_boardCfgPrepHeader (
@@ -404,7 +460,7 @@ static int32_t Sciclient_setBoardConfigHeader ()
         SBL_log(SBL_LOG_MIN,"FAILED\n");
     }
     memcpy((void *)boardCfgPrms_pm.boardConfigLow, (void *) sblBoardCfgPmPrms.boardConfigLow, SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES);
-    memcpy((void *)boardCfgPrms_rm.boardConfigLow, (void *) sblBoardCfgRmPrms.boardConfigLow, SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES);
+    memcpy((void *)boardCfgPrms_rm.boardConfigLow, (void *) sblBoardCfgRmPrms.boardConfigLow, SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES - gCertLength);
 #endif
     return status;
 }

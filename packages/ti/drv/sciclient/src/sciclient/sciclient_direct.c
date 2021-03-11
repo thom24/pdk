@@ -329,7 +329,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                      * to replace the certificate.
                      *
                      * If the certificate is consumed, need to adjust the size
-                     * of the boardcfg requrest.
+                     * of the boardcfg request.
                      *
                      * If the certificate is not consumed (duplicate RM boardcfg
                      * send), then the pointer to the boardcfg structure needs
@@ -670,6 +670,7 @@ static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize)
     }
     else if (newSize == adjSize)
     {
+        req->tisci_boardcfg_rm_size -= adjSize;
         req->tisci_boardcfg_rmp_low += adjSize;
     }
     else
