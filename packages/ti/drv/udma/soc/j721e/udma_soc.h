@@ -313,8 +313,11 @@ extern "C" {
  *  This should be max(UDMA_NUM_CORE,UDMA_NUM_INST_ID) */
 #define UDMA_RM_SHARED_RES_MAX_INST             (UDMA_NUM_CORE)
 
-/* Start of C7x non-discrete(?) events associated to CLEC inputs is 32 */
-#define UDMA_C7X_CORE_INTR_OFFSET               (32U)
+/* Start of C7x events associated to CLEC that UDMA Driver will manage */
+/* Events  0 - 32  : left for other drivers
+ * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
+ * Events 48 - 63  : managed by UDMA for routing various UDMA events to C7x  */ 
+#define UDMA_C7X_CORE_INTR_OFFSET               (48U)
 /* Start of C66x core interrupts */
 #define UDMA_C66X_CORE_INTR_OFFSET              (32U)
 
