@@ -252,6 +252,8 @@ typedef struct OSPI_v0_HwAttrs_s {
     uint32_t        csSotDelay;
     /*! Master mode baud rate divisor value  */
     uint32_t        baudRateDiv;
+    /*! Enable Cache */
+    bool            cacheEnable;
 
 } OSPI_v0_HwAttrs;
 

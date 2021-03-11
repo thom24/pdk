@@ -657,6 +657,10 @@ void OSPI_initConfig(OSPI_Tests *test)
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
 #endif
 
+#ifdef SPI_CACHE_ENABLE
+    ospi_cfg.cacheEnable = true;
+#endif
+
     /* Modify the default OSPI configurations */
     ospi_cfg.dacEnable = test->dacMode;
     if (test->dacMode)

@@ -53,14 +53,10 @@
 #define OSPI_XIP_SETUP_DELAY        (250U)
 
 /* Set the indirect trigger address offset at a non-cached location */
-#ifdef SPI_CACHE_ENABLE
 #if defined(SOC_J7200) || defined(SOC_AM64X)
-        #define OSPI_INDAC_TRIG_ADDR (0x3FC0000)
+    #define OSPI_INDAC_TRIG_ADDR (0x3FC0000)
 #else
-        #define OSPI_INDAC_TRIG_ADDR (0x3FE0000)
-#endif
-#else
-        #define OSPI_INDAC_TRIG_ADDR (0x0000000)
+    #define OSPI_INDAC_TRIG_ADDR (0x3FE0000)
 #endif
 
 /* OSPI AM57x functions */
@@ -931,10 +927,13 @@ static int32_t OSPI_dac_xfer_mode_read_v0(SPI_Handle handle,
     else
 #endif
     {
-        if (hwAttrs->phyEnable == (bool)true)
+        if (hwAttrs->cacheEnable == (bool)true)
         {
-            /* Enable PHY pipeline mode for read */
-            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+            if (hwAttrs->phyEnable == (bool)true)
+            {
+                /* Enable PHY pipeline mode for read */
+                CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+            }
         }
         pSrc = (uint8_t *)(hwAttrs->dataAddr + offset);
         remainSize = (uint32_t)transaction->count & 3U;
@@ -955,9 +954,10 @@ static int32_t OSPI_dac_xfer_mode_read_v0(SPI_Handle handle,
             CSL_archMemoryFence();
 #endif
         }
-#ifdef SPI_CACHE_ENABLE
-    CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
-#endif
+        if (hwAttrs->cacheEnable == (bool)true)
+        {
+            CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
+        }
     }
 
     return (0);
@@ -1337,9 +1337,10 @@ static int32_t OSPI_dac_xfer_mode_write_v0(SPI_Handle handle,
             }
         }
     }
-#ifdef SPI_CACHE_ENABLE
-    CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
-#endif
+    if (hwAttrs->cacheEnable == (bool)true)
+    {
+        CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
+    }
     return (retVal);
 }
 

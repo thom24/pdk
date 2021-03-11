@@ -375,8 +375,9 @@ OSPI_v0_HwAttrs ospiInitCfg[CSL_OSPI_PER_CNT + 1U] =
         (bool)true,                        /* enable DDR */
         (bool)false,                       /* enable XIP */
         10U,                               /* Chip Select Start Of Transfer delay */
-        0                                  /* Baudrate divider. Set to a non-zero value (2 to 32)
+        0,                                 /* Baudrate divider. Set to a non-zero value (2 to 32)
                                               to override default divider settings */
+        (bool)false,                       /* enable Cache */
     },
     {
         1,                                  /* Instance Number */
@@ -414,7 +415,8 @@ OSPI_v0_HwAttrs ospiInitCfg[CSL_OSPI_PER_CNT + 1U] =
         (bool)true,
         (bool)false,
         10U,
-        0
+        0,
+        (bool)false,
     }
 };
 
