@@ -163,17 +163,19 @@ export board_ddr_thermal_test_app_MAKEFILE
 export board_ddr_thermal_test_app_XDC_CONFIGURO
 board_ddr_thermal_test_app_PKG_LIST = board_ddr_thermal_test_app
 board_ddr_thermal_test_app_INCLUDE = $(board_ddr_thermal_test_app_PATH)
-board_ddr_thermal_test_app_BOARDLIST = j721e_evm
+board_ddr_thermal_test_app_BOARDLIST = j721e_evm j7200_evm
 export board_ddr_thermal_test_app_BOARDLIST
-board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-export board_ddr_thermal_test_app_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e))
+board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+else
+board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+endif
+export board_ddr_thermal_test_app_$(SOC)_CORELIST
 board_ddr_thermal_test_app_SBL_APPIMAGEGEN = yes
 export board_ddr_thermal_test_app_SBL_APPIMAGEGEN
 
 # Packaged for below board_EXAMPLE
 board_EXAMPLE_LIST += board_ddr_thermal_test_app
-endif
 
 
 # Board baremetal DDR thermal monitor test app
@@ -191,17 +193,15 @@ export board_baremetal_ddr_thermal_test_app_MAKEFILE
 export board_baremetal_ddr_thermal_test_app_XDC_CONFIGURO
 board_baremetal_ddr_thermal_test_app_PKG_LIST = board_ddr_thermal_test_app
 board_baremetal_ddr_thermal_test_app_INCLUDE = $(board_baremetal_ddr_thermal_test_app_PATH)
-board_baremetal_ddr_thermal_test_app_BOARDLIST = j721e_evm
+board_baremetal_ddr_thermal_test_app_BOARDLIST = j721e_evm j7200_evm
 export board_baremetal_ddr_thermal_test_app_BOARDLIST
 board_baremetal_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0
 export board_ddr_thermal_test_app_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), j721e))
 board_baremetal_ddr_thermal_test_app_SBL_APPIMAGEGEN = yes
 export board_baremetal_ddr_thermal_test_app_SBL_APPIMAGEGEN
 
 # Packaged for below board_EXAMPLE
 board_EXAMPLE_LIST += board_baremetal_ddr_thermal_test_app
-endif
 
 export board_LIB_LIST
 export board_EXAMPLE_LIST
