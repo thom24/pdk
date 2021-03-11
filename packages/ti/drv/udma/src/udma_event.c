@@ -402,6 +402,7 @@ int32_t Udma_eventGetRxFlowIdFwStatus(Udma_EventHandle eventHandle,
         regVal = CSL_REG32_RD(&drvHandle->udmapRegs.pGenCfgRegs->RFLOWFWSTAT);
         if(CSL_FEXT(regVal, UDMAP_GCFG_RFLOWFWSTAT_PEND) != 0U)
         {
+            struct tisci_msg_rm_udmap_gcfg_cfg_resp resp;
             status->flowId  = CSL_FEXT(regVal, UDMAP_GCFG_RFLOWFWSTAT_FLOWID);
             status->chNum   = CSL_FEXT(regVal, UDMAP_GCFG_RFLOWFWSTAT_CHANNEL);
             status->isException = TRUE;
@@ -414,7 +415,7 @@ int32_t Udma_eventGetRxFlowIdFwStatus(Udma_EventHandle eventHandle,
             gcfgReq.psil_to      = 0U;  /* Not set/used */
             gcfgReq.rflowfwstat  = 0U;  /* Write 0 to clear */
             retVal = Sciclient_rmUdmapGcfgCfg(
-                         &gcfgReq, (struct tisci_msg_rm_udmap_gcfg_cfg_resp *) NULL_PTR, UDMA_SCICLIENT_TIMEOUT);
+                         &gcfgReq, &resp, UDMA_SCICLIENT_TIMEOUT);
             if(CSL_PASS != retVal)
             {
                 Udma_printf(drvHandle,
