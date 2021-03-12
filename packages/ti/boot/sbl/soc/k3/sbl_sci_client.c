@@ -123,10 +123,7 @@ static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
     uint8_t *cert_len_ptr = (uint8_t *)&cert_len;
     uint8_t *x509_cert_ptr;
 
-    struct tisci_msg_board_config_rm_req *req =
-        (struct tisci_msg_board_config_rm_req *) msg_recv;
-
-   x509_cert_ptr = (uint8_t *)req->tisci_boardcfg_rmp_low;
+    x509_cert_ptr = (uint8_t *)msg_recv;
 
 
     if (*x509_cert_ptr != 0x30)

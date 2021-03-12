@@ -49,6 +49,8 @@
 #include <ti/csl/csl_rat.h>
 
 #include <ti/drv/sciclient/sciserver.h>
+#include <ti/osal/osal.h>
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -125,6 +127,9 @@ static uint8_t gSecHeaderSizeWords = 0;
  *   \brief Maximum size(bytes) of a sciclient message.
  */
 static uint32_t gSciclient_maxMsgSizeBytes;
+
+/** \brief Flag to mention write in progress or not */
+static uint32_t gSciclient_writeInProgress = 0U;
 
 /**
  *  \brief Static Header for Security Messages.
@@ -425,6 +430,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
     }
     if (status == CSL_PASS)
     {
+        gSciclient_writeInProgress = 0U;
         status = Sciclient_abiCheck();
     }
     return status;
@@ -674,6 +680,24 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
 
     /* CRITICAL Section */
     key = HwiP_disable();
+    timeToWait = pReqPrm->timeout;
+    while (gSciclient_writeInProgress == 1U)
+    {
+        HwiP_restore(key);
+        if (timeToWait > 0U)
+        {
+            timeToWait--;
+        }
+        else
+        {
+            status = CSL_ETIMEOUT;
+            break;
+        }
+        Osal_delay(10);
+        key = HwiP_disable();
+    }
+    gSciclient_writeInProgress = 1U; 
+    HwiP_restore(key);
 
     if (CSL_PASS == status)
     {
@@ -762,6 +786,8 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             }
         }
     }
+    key = HwiP_disable();
+    gSciclient_writeInProgress = 0U; 
     HwiP_restore(key);
 
     /* Wait for response: Interrupt based waiting */
