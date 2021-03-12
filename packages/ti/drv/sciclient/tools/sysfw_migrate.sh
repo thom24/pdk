@@ -222,9 +222,8 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
     ./firmwareHeaderGen.sh am65x_sr2-hs
     ./firmwareHeaderGen.sh j721e
     ./firmwareHeaderGen.sh j721e-hs
-    ./firmwareHeaderGen.sh j721e_sr1.1-hs
-    ./firmwareHeaderGen.sh am64x-vlab
-    ./firmwareHeaderGen.sh am64x-zebu
+    ./firmwareHeaderGen.sh j721e_sr1_1-hs
+    ./firmwareHeaderGen.sh am64x
     ./firmwareHeaderGen.sh j7200
 
 fi
