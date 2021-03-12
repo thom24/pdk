@@ -54,25 +54,12 @@
  * |----|--------------|------|----|--------------------------------------------------|----|---------------------|------|
  * | 7  | 0xA4000000   | 8MB  | T  | DDR (VRing Buffer) - Uncacheable, Shareable      | F  | RW at PL 1 & PL 2   | 0x0  |
  * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 8  | 0x50000000   | 32MB | T  | OSPI flash memory - UnCacheable                  | F  | RW at PL 1 & PL 2   | 0x0  |
+ * | 8  | 0x50000000   | 64MB | T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
  * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 9  | 0x52000000   | 16MB | T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 10 | 0x53000000   | 8MB  | T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 11 | 0x53800000   | 4MB  | T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 12 | 0x53C00000   | 2MB  | T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 13 | 0x53E00000   | 1MB  | T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 14 | 0x53F00000   | 512KB| T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 15 | 0x53F80000   | 256KB| T  | OSPI flash memory - Cacheable                    | F  | RW at PL 1 & PL 2   | 0x0  |
- * |----|---------------------|----|--------------------------------------------------|----|---------------------|------|
- * | 16 | 0x53FC0000   | 128KB| T  | OSPI flash memory - UnCacheable                  | F  | RW at PL 1 & PL 2   | 0x0  |
+ * | 9  | 0x53FC0000   | 256KB| T  | OSPI flash memory - UnCacheable                  | F  | RW at PL 1 & PL 2   | 0x0  |
  *  --------------------------------------------------------------------------------------------------------------------
  */
+
 
 /*
  * Note: Marking a region as shareable will cause the region to behave as outer shareable with write through
@@ -177,6 +164,16 @@ attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(7, 0xA4000000, MPU.RegionSize_8M, attrs);
 
 attrs.enable = true;
+attrs.bufferable = true;
+attrs.cacheable = true;
+attrs.shareable = false;
+attrs.noExecute = false;
+attrs.accPerm = 3;          /* RW at PL1 & PL2*/
+attrs.tex = 1;
+attrs.subregionDisableMask = 0;
+MPU.setRegionMeta(8, 0x50000000, MPU.RegionSize_64M, attrs);
+
+attrs.enable = true;
 attrs.bufferable = false;
 attrs.cacheable = false;
 attrs.shareable = false;
@@ -184,84 +181,4 @@ attrs.noExecute = false;
 attrs.accPerm = 3;          /* RW at PL1 & PL2 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(8, 0x50000000, MPU.RegionSize_32M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(9, 0x52000000, MPU.RegionSize_16M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(10, 0x53000000, MPU.RegionSize_8M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(11, 0x53800000, MPU.RegionSize_4M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(12, 0x53C00000, MPU.RegionSize_2M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(13, 0x53E00000, MPU.RegionSize_1M, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(14, 0x53F00000, MPU.RegionSize_512K, attrs);
-
-attrs.enable = true;
-attrs.bufferable = true;
-attrs.cacheable = true;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(15, 0x53F80000, MPU.RegionSize_256K, attrs);
-
-attrs.enable = true;
-attrs.bufferable = false;
-attrs.cacheable = false;
-attrs.shareable = false;
-attrs.noExecute = false;
-attrs.accPerm = 3;          /* RW at PL1 & PL2 */
-attrs.tex = 1;
-attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(16, 0x53FC0000, MPU.RegionSize_128K, attrs);
+MPU.setRegionMeta(9, 0x53FC0000, MPU.RegionSize_256K, attrs);

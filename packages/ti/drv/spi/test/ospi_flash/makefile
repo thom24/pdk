@@ -13,9 +13,13 @@ SRCDIR += . src
 SRCS_COMMON += main_ospi_flash_test.c 
 ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x))
     ifeq ($(CACHE), enable)
-        SRCS_COMMON += ./$(SOC)/cached/baremetal_mpu_config.c
+        ifeq ($(CORE),$(filter $(SOC), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+            SRCS_COMMON += ./$(SOC)/cached/baremetal_mpu_config.c
+        endif
     else
-        SRCS_COMMON += ./$(SOC)/non_cached/baremetal_mpu_config.c
+        ifeq ($(CORE),$(filter $(SOC), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+            SRCS_COMMON += ./$(SOC)/non_cached/baremetal_mpu_config.c
+        endif
     endif
 endif
 OSPI_OS_TESTPREFIX=_Baremetal
