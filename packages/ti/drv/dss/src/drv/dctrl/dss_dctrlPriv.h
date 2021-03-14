@@ -103,6 +103,7 @@ typedef struct
     Dss_DctrlDrvInstObj *instObj;
     /**< Display instance objects pointer */
     Dss_DctrlDrvInitParams drvInitParams;
+    /**< Display driver initialization parameters objects pointer */
 } Dss_DctrlDrvCommonObj;
 
 /**

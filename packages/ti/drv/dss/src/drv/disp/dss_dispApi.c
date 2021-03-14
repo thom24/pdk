@@ -107,6 +107,7 @@ static int32_t Dss_dispDrvControl(Fdrv_Handle handle,
 
 extern Dss_EvtMgrClientInfo gDss_DispEvtMgrClientInfo[DSS_DISP_EVT_MGR_MAX_CLIENTS];
 
+extern SemaphoreP_Handle gDssStartSyncSem;
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */
 /* ========================================================================== */
@@ -1171,6 +1172,13 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
 
     /* Check for NULL pointers */
     GT_assert(DssTrace, (NULL != instObj));
+
+    /* wait for start sync semaphore */
+    if(NULL != gDssStartSyncSem)
+    {
+        /* Take the instance semaphore */
+        (void) SemaphoreP_pend(gDssStartSyncSem, SemaphoreP_WAIT_FOREVER);
+    }
 
     /* Take the instance semaphore */
     (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);

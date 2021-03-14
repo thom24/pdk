@@ -102,6 +102,9 @@ Dss_DctrlDrvGraphObj gDss_DctrlDrvGraphObj;
 Dss_DctrlDrvInfo gDss_DctrlDrvInfo;
 Dss_EvtMgrClientInfo gDss_DctrlEvtMgrClientInfo[DSS_DCTRL_EVT_MGR_MAX_CLIENTS];
 
+/* Semaphore to sync up back to back Fvid2_start() calls.
+   A VSYNC is needed between back to back Fvid2_start() calls. */
+SemaphoreP_Handle gDssStartSyncSem;
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */
 /* ========================================================================== */
@@ -335,6 +338,13 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
                 sizeof (Dss_DctrlDrvInitParams));
         }
     }
+    if (FVID2_SOK == retVal)
+    {
+        /* create semaphore */
+        SemaphoreP_Params_init(&semParams);
+        semParams.mode    = SemaphoreP_Mode_BINARY;
+        gDssStartSyncSem = SemaphoreP_create(1U, &semParams);
+    }
 
     return (retVal);
 }
@@ -420,6 +430,12 @@ int32_t Dss_dctrlDrvDeInit(void)
                       "Unregistering from FVID2 driver manager failed\r\n");
         }
         pObj->isRegistered = FALSE;
+    }
+
+    if (gDssStartSyncSem != NULL)
+    {
+        /* Delete semaphore */
+        (void)SemaphoreP_delete(gDssStartSyncSem);
     }
 
     return (retVal);
@@ -1991,6 +2007,12 @@ static void Dss_dctrlFuncCbFxn(const uint32_t *event,
         }
         else if(DSS_VP_EVENT_VSYNC == currEvent)
         {
+            /* Post crate sync semaphore */
+            if(NULL != gDssStartSyncSem)
+            {
+                /* Post the instance semaphore */
+                (void) SemaphoreP_post(gDssStartSyncSem);
+            }
             activePipeNum = 0U;
             for(j=0U; j<gDss_DctrlDrvInfo.numValidPipes; j++)
             {
