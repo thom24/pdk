@@ -175,6 +175,9 @@ int32_t Dss_m2mDrvInit(const Dss_InitParams *initParams)
     m2mObj->getTimeStamp = NULL;
     m2mObj->isRegistered = (uint32_t)FALSE;
 
+    /* Allocate instance semaphore */
+    SemaphoreP_Params_init(&semParams);
+    semParams.mode           = SemaphoreP_Mode_BINARY;
     m2mObj->lockSem = SemaphoreP_create(1U, &semParams);
     if (m2mObj->lockSem == NULL)
     {
@@ -202,9 +205,6 @@ int32_t Dss_m2mDrvInit(const Dss_InitParams *initParams)
         instObj->ovrRegs                 = NULL;
         instObj->overlayId               = CSL_DSS_OVERLAY_ID_MAX;
         instObj->pathCfgDone             = (uint32_t) FALSE;
-        /* Allocate instance semaphore */
-        SemaphoreP_Params_init(&semParams);
-        semParams.mode           = SemaphoreP_Mode_BINARY;
         for (contextCnt = 0U ;
              contextCnt < DSSM2M_NUM_VIRTUAL_CONTEXT ;
              contextCnt++)
@@ -243,7 +243,7 @@ int32_t Dss_m2mDrvInit(const Dss_InitParams *initParams)
         instObj->numRegEvtHandle++;
     }
 
-    if (FVID2_SOK != retVal)
+    if (FVID2_SOK == retVal)
     {
         /* Initialize Driver operations */
         Fvid2DrvOps_init(&m2mObj->fvidDrvOps);

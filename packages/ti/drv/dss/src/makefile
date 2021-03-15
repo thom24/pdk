@@ -19,7 +19,7 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721e))
   SRCDIR += soc/V1
   INCDIR += soc/V1
-  PACKAGE_SRCS_COMMON = soc/V1
+  PACKAGE_SRCS_COMMON = soc/V1 include/dss_m2m.h
   CFLAGS_LOCAL_COMMON = -DREF_CLK_19_2MHz -DHAVE_CMN_PLL1
 endif
 
@@ -34,7 +34,8 @@ include soc/src_files_soc.mk
 include src/csl/src_files_csl.mk
 include src/drv/src_files_drv.mk
 
-PACKAGE_SRCS_COMMON += dss.h dss_component.mk makefile .gitignore include docs src/makefile
+PACKAGE_SRCS_COMMON += dss.h dss_component.mk makefile .gitignore docs src/makefile
+PACKAGE_SRCS_COMMON += include/dss_cfg.h include/dss_dctrl.h include/dss_disp.h
 PACKAGE_SRCS_COMMON += soc/dss_soc.h soc/src_files_soc.mk src/csl/src_files_csl.mk src/drv/src_files_drv.mk
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc.xdt dssver.h dssver.h.xdt

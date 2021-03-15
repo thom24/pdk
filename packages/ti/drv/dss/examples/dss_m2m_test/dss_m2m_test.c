@@ -532,30 +532,33 @@ static int32_t App_runTest(M2MApp_AppObj *appObj)
     {
         while (appObj->numFramesWb < appObj->numFramesToConvert)
         {
-            for (instIdx = 0U ; instIdx < appObj->numInst ; instIdx++)
+            if (FVID2_SOK == retVal)
             {
-                instObj = &appObj->instParams[instIdx];
-                /* Wait for Semaphore */
-                (void) SemaphoreP_post(instObj->syncSem);
-                /* Get processed frames */
-                retVal = Fvid2_processRequest(instObj->drvHandle,
-                                              &inFrmList,
-                                              &outFrmList,
-                                              FVID2_TIMEOUT_NONE);
-                if(FVID2_SOK != retVal)
+                for (instIdx = 0U ; instIdx < appObj->numInst ; instIdx++)
                 {
-                    App_consolePrintf("\nERROR: Fvid2_processRequest Failed!!!\r\n");
-                    break;
-                }
-                /* Submit back frames for processing */
-                retVal = Fvid2_processRequest(instObj->drvHandle,
-                                              &inFrmList,
-                                              &outFrmList,
-                                              FVID2_TIMEOUT_NONE);
-                if(FVID2_SOK != retVal)
-                {
-                    App_consolePrintf("\nERROR: Fvid2_processRequest Failed!!!\r\n");
-                    break;
+                    instObj = &appObj->instParams[instIdx];
+                    /* Wait for Semaphore */
+                    (void) SemaphoreP_pend(instObj->syncSem, SemaphoreP_WAIT_FOREVER);
+                    /* Get processed frames */
+                    retVal = Fvid2_processRequest(instObj->drvHandle,
+                                                  &inFrmList,
+                                                  &outFrmList,
+                                                  FVID2_TIMEOUT_NONE);
+                    if(FVID2_SOK != retVal)
+                    {
+                        App_consolePrintf("\nERROR: Fvid2_processRequest Failed!!!\r\n");
+                        break;
+                    }
+                    /* Submit back frames for processing */
+                    retVal = Fvid2_processRequest(instObj->drvHandle,
+                                                  &inFrmList,
+                                                  &outFrmList,
+                                                  FVID2_TIMEOUT_NONE);
+                    if(FVID2_SOK != retVal)
+                    {
+                        App_consolePrintf("\nERROR: Fvid2_processRequest Failed!!!\r\n");
+                        break;
+                    }
                 }
             }
         }
