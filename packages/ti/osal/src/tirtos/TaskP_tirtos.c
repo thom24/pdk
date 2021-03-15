@@ -78,7 +78,15 @@ TaskP_Handle TaskP_create(void *taskfxn, const TaskP_Params *params)
  */
 TaskP_Status TaskP_delete(TaskP_Handle *handle)
 {
-    Task_delete((Task_Handle *)handle);
+    /* In case of apps with the BIOS cfg 'Task.deleteTerminatedTasks' enabled, 
+     * cleanup happens in BIOS idle task.
+     * Deleting terminated task will results in BIOS error.
+     * Hence to make BIOS config independent,
+     * Delete the Task only when flag is disbaled.*/
+    if (Task_deleteTerminatedTasks == FALSE)
+    {
+        Task_delete((Task_Handle *)handle);
+    }
     return TaskP_OK;
 }
 
