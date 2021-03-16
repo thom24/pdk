@@ -129,11 +129,15 @@ extern char eepromData[I2C_EEPROM_RX_LENGTH];
 #if defined (SOC_J721E)
 /* By default for, first available output from IR */
 #define I2C_INST_WKUP_I2C0_INT_NUM_MAIN (CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_0)
+/* Interrupt reserved for Core ID 1. 128 is based on RM */
+#define I2C_INST_WKUP_I2C0_INT_OFFSET   (128U)
 #endif
 
 #if defined (SOC_J7200)
 /* Applicable for MCU 20/21 only */
 #define I2C_INST_WKUP_I2C0_INT_NUM_MAIN (CSLR_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0)
+/* No interrupt router, its directly connected */
+#define I2C_INST_WKUP_I2C0_INT_OFFSET   (0U)
 #endif /* J7200 Specific */
 /**********************************************************************
  ************************** Internal functions ************************
@@ -215,6 +219,7 @@ bool Board_initI2C(void)
 #if defined (BUILD_MPU)
     i2c_cfg.intNum = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_I2C0_POINTRPEND_0;
 #endif
+
 #if defined (BUILD_MCU)
     CSL_ArmR5CPUInfo info;
 
@@ -231,7 +236,8 @@ bool Board_initI2C(void)
         }
         else
         {
-            i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MAIN + 128U;
+            i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MAIN +
+                                I2C_INST_WKUP_I2C0_INT_OFFSET;
         }
     }
     else
@@ -239,7 +245,8 @@ bool Board_initI2C(void)
         /* Pulsar R5 core is on the MCU domain */
         i2c_cfg.intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0;
     }
-#endif
+#endif /* for mcu builds only */
+
 #if defined (BUILD_C7X_1)
     i2c_cfg.eventId = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_I2C0_POINTRPEND_0 + 992U, /* eventId, input event # to CLEC */
 #endif
