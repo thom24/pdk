@@ -1758,8 +1758,9 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                     }
                     uint32_t txDelay = *ctrlData++;
                     uint32_t rxDelay = *ctrlData;
+                    uint32_t funcClk = hwAttrs->funcClk;
                     CSL_ospiConfigPhyDLL((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                         txDelay, rxDelay);
+                                         txDelay, rxDelay, funcClk);
                 }
                 else
                 {
