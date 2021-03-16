@@ -72,9 +72,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <math.h>
 
 /* TI-RTOS Header files */
 #include <ti/osal/osal.h>
+#include <ti/osal/soc/osal_soc.h>
 #include "OSAL_log.h"
 
 #include "OSAL_board.h"
@@ -771,6 +773,27 @@ bool OSAL_timer_test()
         ret = false;
       }
     }
+
+    for (i = 0; i < (log2(TIMERP_AVAILABLE_MASK+1U)+1U); i++)
+    {
+        TimerP_Params_init(&timerParams);
+        timerParams.runMode    = TimerP_RunMode_CONTINUOUS;
+        timerParams.startMode  = TimerP_StartMode_USER;
+        timerParams.periodType = TimerP_PeriodType_MICROSECS;
+        timerParams.period     = OSAL_TEST_TIMER_PERIOD;
+        handle = TimerP_create(TimerP_ANY, NULL, &timerParams);
+        /* don't expect the handle to be null */
+        if (handle == NULL_PTR)
+        {
+            OSAL_log("\n Error: Timer Create failed for %d th time \n", i);
+            ret = false;
+        }
+        if (TimerP_delete(handle) != TimerP_OK)
+        {
+            OSAL_log("\n Error: Timer Delete failed for %d th time \n", i);
+            ret = false;
+        }
+    }    
     return (ret);
 }
 

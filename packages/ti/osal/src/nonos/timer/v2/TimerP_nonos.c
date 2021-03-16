@@ -573,6 +573,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
 {
   /* Release or free the memory */
   uint32_t key;
+  uint32_t id;
   uint32_t index = (uint32_t)(( ((uintptr_t) handle) - ((uintptr_t) gTimerStructs) )/sizeof(TimerP_Struct)); /* struct subtraction */
   TimerP_Status ret = TimerP_OK;
   TimerP_Struct *timer = (TimerP_Struct *) handle;
@@ -587,13 +588,23 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
       (void)HwiP_delete(timer->hwi);
     }
 
+    /* reset the timer's bit field in the mask and clear the used flag */
     gTimerStructs[index].used = (bool)false;
+    id = gTimerStructs[index].timerId;
+    uint32_t shift = ((uint32_t) 1u) << id;
+    if(((gTimerAnyMask & shift)) == 0U)
+    {
+      gTimerAnyMask |= shift;
+    }
+    else
+    {
+      ret = TimerP_FAILURE;	
+    }
     /* Found the osal timer object to delete */
     if (gOsalTimerAllocCnt > 0U)
     {
       gOsalTimerAllocCnt--;
     }
-    ret = TimerP_OK;
   }
   else
   {
