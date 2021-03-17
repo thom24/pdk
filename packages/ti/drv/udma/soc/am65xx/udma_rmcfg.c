@@ -165,15 +165,15 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         4U,         /* startTxHcCh */
         2U,         /* numTxHcCh */
-        80U,       /* startTxCh */
-        16U,        /* numTxCh */
+        72U,       /* startTxCh */
+        32U,        /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         4U,         /* startRxHcCh */
         2U,         /* numRxHcCh */
-        110U,       /* startRxCh */
-        16U,        /* numRxCh */
+        86U,       /* startRxCh */
+        32U,        /* numRxCh */
 
         {8U},       /* startUtcCh[] */
         {12U},      /* numUtcCh[] */
@@ -181,7 +181,7 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         72U,        /* startFreeFlow */
         64U,        /* numFreeFlow */
         152U,       /* startFreeRing */
-        100U,       /* numFreeRing */
+        256U,       /* numFreeRing */
 
         648U,       /* startGlobalEvent */
         64U,        /* numGlobalEvent */
@@ -213,14 +213,14 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
         0U,         /* numTxUhcCh */
         6U,         /* startTxHcCh */
         2U,         /* numTxHcCh */
-        96U,       /* startTxCh */
+        104U,       /* startTxCh */
         14U,        /* numTxCh */
 
         0U,         /* startRxUhcCh */
         0U,         /* numRxUhcCh */
         6U,         /* startRxHcCh */
         2U,         /* numRxHcCh */
-        126U,       /* startRxCh */
+        118U,       /* startRxCh */
         14U,        /* numRxCh */
 
         {20U},      /* startUtcCh[] */
@@ -228,11 +228,11 @@ const Udma_RmInitPrms gUdmaRmDefCfg_MainNavss[UDMA_NUM_CORE] =
 
         136U,       /* startFreeFlow */
         8U,         /* numFreeFlow */
-        252U,       /* startFreeRing */
-        100U,       /* numFreeRing */
+        408U,       /* startFreeRing */
+        32U,        /* numFreeRing */
 
         904U,       /* startGlobalEvent */
-        64U,       /* numGlobalEvent */
+        64U,        /* numGlobalEvent */
         168U,       /* startVintr */
         16U,        /* numVintr */
         36U,        /* startIrIntr */
