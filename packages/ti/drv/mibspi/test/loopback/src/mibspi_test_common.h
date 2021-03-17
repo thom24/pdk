@@ -82,4 +82,3 @@ extern void Test_loopbackSlave_oneInstance(uint32_t inst);
 #endif
 
 #endif  /* MIBSPI_TEST_COMMON_H_ */
-

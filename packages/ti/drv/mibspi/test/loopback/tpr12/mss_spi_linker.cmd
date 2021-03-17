@@ -33,7 +33,7 @@ PAGE 1:
 /* Section Configuration                                                      */
 SECTIONS{
     .intvecs : {} > VECTORS
-    
+
     /* Allocate data preferentially in one bank and code (.text) in another,
        this can improve performance due to simultaneous misses from L1P
        and L1D caches to L2 SRAM.
@@ -41,15 +41,15 @@ SECTIONS{
        and allowed to overflow into Z and can be split from Y to Z.
        The linker notation "X > Y | Z" indicates section X is first allocated in Y
        and allowed to overflow into Z and cannot be split from Y to Z. Some sections
-       like bss are not allowed to be split so > notation is used for them 
+       like bss are not allowed to be split so > notation is used for them
     */
     .text    : {} >> TCMA_RAM | L2_RAM_BANK0 | L2_RAM_BANK1
-    
+
     .const   : {} >> L2_RAM_BANK1 | L2_RAM_BANK0
     .switch  : {} >> L2_RAM_BANK1 | L2_RAM_BANK0
     .cio:    : {} >> SBL_RESERVED_L2_RAM | L2_RAM_BANK1 | L2_RAM_BANK0
     .data:   : {} >> L2_RAM_BANK1 | L2_RAM_BANK0
-    
+
     .cinit   : {} > L2_RAM_BANK1 | L2_RAM_BANK0
     .pinit   : {} > L2_RAM_BANK1 | L2_RAM_BANK0
     .bss     : {} > SBL_RESERVED_L2_RAM | L2_RAM_BANK1 | L2_RAM_BANK0
@@ -72,4 +72,3 @@ SECTIONS{
 /*    systemHeap      : { } > DATA_RAM   */
 /*    .MCPILogBuffer  : { } > DATA_RAM   */
 /*----------------------------------------------------------------------------*/
-

@@ -1434,4 +1434,3 @@ static int32_t Test_spiLoopbackSlave(const MIBSPI_Handle handle, uint32_t maxEle
     /* Return number of failures */
     return failed;
 }
-

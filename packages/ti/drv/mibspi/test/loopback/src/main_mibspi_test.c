@@ -86,7 +86,7 @@ static bool Board_initMIBSPI(void)
     Board_initCfg boardCfg;
     Board_STATUS  status;
 
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |  
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_MODULE_CLOCK  |
                BOARD_INIT_UNLOCK_MMR;
 
@@ -259,4 +259,3 @@ int main (void)
     return 0;
 
 }
-

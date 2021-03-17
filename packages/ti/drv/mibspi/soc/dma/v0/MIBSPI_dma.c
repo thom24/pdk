@@ -456,7 +456,7 @@ static void MIBSPI_edmaRegUpdateRxParams(const MibSpiDriver_Object*    ptrMibSpi
     /* Linking transfers in EDMA3 are not used.*/
     rxParamSet->paramSetConfig.linkAddress = EDMA_NULL_LINK_ADDRESS;
 
-    rxParamSet->paramSetConfig.bCountReload = 0;
+    rxParamSet->paramSetConfig.bCountReload = rxParamSet->paramSetConfig.bCount;
 
 
     /* EDMA3_DRV_OPT_FIELD_TCINTEN */
@@ -535,7 +535,7 @@ static void MIBSPI_edmaRegUpdateTxParams(const MibSpiDriver_Object*    ptrMibSpi
 
     /* Linking transfers in EDMA3 are not used. */
     txParamSet->paramSetConfig.linkAddress = EDMA_NULL_LINK_ADDRESS;
-    txParamSet->paramSetConfig.bCountReload = 0;
+    txParamSet->paramSetConfig.bCountReload = txParamSet->paramSetConfig.bCount;
 
 
     /* EDMA3_DRV_OPT_FIELD_TCINTEN */
@@ -616,7 +616,7 @@ static void MIBSPI_edmaRamUpdateRxParams(const MibSpiDriver_Object*    ptrMibSpi
     /* Linking transfers in EDMA3 are not used.*/
     rxParamSet->paramSetConfig.linkAddress = EDMA_NULL_LINK_ADDRESS;
 
-    rxParamSet->paramSetConfig.bCountReload = 0;
+    rxParamSet->paramSetConfig.bCountReload = rxParamSet->paramSetConfig.bCount;
 
 
     /* EDMA3_DRV_OPT_FIELD_TCINTEN */
@@ -690,7 +690,7 @@ static void MIBSPI_edmaRamUpdateTxParams(const MibSpiDriver_Object*    ptrMibSpi
 
     /* Linking transfers in EDMA3 are not used. */
     txParamSet->paramSetConfig.linkAddress = EDMA_NULL_LINK_ADDRESS;
-    txParamSet->paramSetConfig.bCountReload = 0;
+    txParamSet->paramSetConfig.bCountReload = txParamSet->paramSetConfig.bCount;
 
 
     /* EDMA3_DRV_OPT_FIELD_TCINTEN */

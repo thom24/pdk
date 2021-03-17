@@ -92,4 +92,3 @@ SECTIONS
     .l3ram: {} > L3SRAM
 
 }
-

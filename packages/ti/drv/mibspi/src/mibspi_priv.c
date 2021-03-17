@@ -1637,9 +1637,9 @@ static void MIBSPI_dataTransfer
             srcData = (srcData == (uint8_t *)NULL)? (uint8_t *)NULL : (uint8_t *)(srcData + size * ptrMibSpiDriver->params.dataSize / 8U);
             dstData = (dstData == (uint8_t *)NULL)? (uint8_t *)NULL : (uint8_t *)(dstData + size * ptrMibSpiDriver->params.dataSize / 8U);
 
-            /* Transfer finished, unblock the thread */
-            SemaphoreP_post(ptrMibSpiDriver->transferCompleteSem);
         }
+        /* Transfer finished, unblock the thread */
+        SemaphoreP_post(ptrMibSpiDriver->transferCompleteSem);
     }
 
     return;

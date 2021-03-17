@@ -116,4 +116,3 @@ attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
 MPU.setRegionMeta(4, 0x88000000, MPU.RegionSize_4M, attrs);
-
