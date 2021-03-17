@@ -42,12 +42,6 @@
 #include <sbl_err_trap.h>
 #include <sbl_sci_client.h>
 
-#if defined(SBL_ENABLE_HLOS_BOOT) && defined(SOC_AM65XX)
-const uint32_t gSciclient_boardCfgLow_hlos_rm[(SCICLIENT_BOARDCFG_RM_LINUX_SIZE_IN_BYTES+3U)/4U]
-    __attribute__(( aligned(128), section(".boardcfg_data") ))
-    = SCICLIENT_BOARDCFG_RM_LINUX;
-#endif
-
 #ifdef __cplusplus
 #pragma DATA_SECTION(".firmware")
 #else
@@ -200,12 +194,6 @@ void SBL_SciClientInit(void)
     SBL_ADD_PROFILE_POINT;
 
     status = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
-
-#if defined(SBL_ENABLE_HLOS_BOOT) && defined(SOC_AM65XX)
-    /* Replace default Sciclient boardCfgLowRm with alternate version for HLOS boot */
-	boardCfgInfo.boardCfgLowRm     = &gSciclient_boardCfgLow_hlos_rm[0U];
-	boardCfgInfo.boardCfgLowRmSize = SCICLIENT_BOARDCFG_RM_LINUX_SIZE_IN_BYTES;
-#endif
 
     if (status != CSL_PASS)
     {

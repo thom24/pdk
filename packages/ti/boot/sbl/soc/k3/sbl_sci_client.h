@@ -39,12 +39,6 @@
 #include <ti/board/board.h>
 #include <ti/drv/sciclient/sciclient.h>
 
-#if defined(SBL_ENABLE_HLOS_BOOT)
-#  if defined(SOC_AM65XX)
-#    include <ti/drv/sciclient/soc/V0/sciclient_defaultBoardcfg_rm_linux_hex.h>
-#  endif
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
