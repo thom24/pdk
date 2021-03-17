@@ -94,9 +94,12 @@ drvspi_dra78x_CORELIST = c66x ipu1_0
 drvspi_am65xx_CORELIST = mpu1_0 mcu1_0
 drvspi_j721e_CORELIST  = $(DEFAULT_j721e_CORELIST)
 drvspi_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721e_CORELISTARM_CACHE  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvspi_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvspi_j7200_CORELIST_CACHE     = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvspi_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvspi_am64x_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvspi_am64x_CORELISTARM_CACHE  = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvspi_tpr12_CORELIST  = mcu1_0
 drvspi_awr294x_CORELIST  = mcu1_0
 ############################
@@ -667,9 +670,9 @@ OSPI_Baremetal_Flash_Cache_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_Cache_TestAp
 OSPI_Baremetal_Flash_Cache_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Baremetal_Flash_Cache_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e am64x))
-OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
+OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM_CACHE)
 else
-OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_CACHE)
 endif
 export OSPI_Baremetal_Flash_Cache_TestApp_$(SOC)_CORELIST
 
@@ -694,9 +697,9 @@ OSPI_Baremetal_Flash_Dma_Cache_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_Dma_Cach
 OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e am64x))
-OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM_CACHE)
 else
-OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_CACHE)
 endif
 export OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST
 
