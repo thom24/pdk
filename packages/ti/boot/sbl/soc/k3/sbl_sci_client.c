@@ -431,7 +431,7 @@ static int32_t Sciclient_setBoardConfigHeader ()
     {
         .boardConfigLow = (uint32_t)SCISERVER_BOARDCONFIG_DATA_ADDR,
         .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
+        .boardConfigSize = (uint16_t)SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES,
         .devGrp = DEVGRP_ALL
     };
     Sciclient_BoardCfgPrms_t boardCfgPrms_rm =
@@ -439,7 +439,7 @@ static int32_t Sciclient_setBoardConfigHeader ()
         .boardConfigLow =
             (uint32_t) SCISERVER_BOARDCONFIG_DATA_ADDR + alignedOffset,
         .boardConfigHigh = 0,
-        .boardConfigSize = SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES - gCertLength,
+        .boardConfigSize = (uint16_t)SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES - gCertLength,
         .devGrp = DEVGRP_ALL
     };
     status = Sciclient_boardCfgPrepHeader (
