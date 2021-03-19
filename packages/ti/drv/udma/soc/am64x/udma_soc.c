@@ -272,6 +272,14 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     return;
 }
 
+uint32_t Udma_getGlobalEventOffset(void)
+{
+    uint32_t globalEventOffset = 0U;
+
+    globalEventOffset = CSL_DMSS_GEM_INTA0_SEVI_OFFSET;
+
+    return (globalEventOffset);
+}
 
 uint32_t Udma_getCoreId(void)
 {

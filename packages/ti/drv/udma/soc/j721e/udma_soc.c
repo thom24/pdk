@@ -329,7 +329,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     pIaRegs->pGcntRtiRegs   = (CSL_intaggr_gcntrtiRegs *) UDMA_MCU_NAVSS0_UDMASS_INTA0_GCNTRTI_BASE;
     CSL_intaggrGetCfg(pIaRegs);
 
-    drvHandle->iaGemOffset  = CSL_NAVSS_GEM_MCU_UDMA_INTA0_SEVI_OFFSET;
     drvHandle->devIdIa      = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0;
     drvHandle->devIdIr      = TISCI_DEV_MCU_NAVSS0_INTR_0;
 #if defined (BUILD_MCU1_0)
@@ -352,7 +351,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     CSL_intaggrGetCfg(pIaRegs);
 #endif
 
-    drvHandle->iaGemOffset  = CSL_NAVSS_GEM_MAIN_UDMA_INTA0_SEVI_OFFSET;
     drvHandle->devIdIa      = TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0;
     drvHandle->devIdIr      = TISCI_DEV_NAVSS0_INTR_ROUTER_0;
     drvHandle->clecRtMap    = CSL_CLEC_RTMAP_DISABLE;
@@ -389,6 +387,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 #endif
 
     drvHandle->devIdCore    = Udma_getCoreSciDevId();
+    drvHandle->iaGemOffset  = Udma_getGlobalEventOffset();
 
     /*
      * UTC config init
@@ -509,6 +508,20 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     return;
 }
 
+uint32_t Udma_getGlobalEventOffset(void)
+{
+    uint32_t globalEventOffset = 0U;
+
+    /* Global Events(SEVI) Offset - Tied to cores and not based on NAVSS instance */
+#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
+    globalEventOffset = CSL_NAVSS_GEM_MCU_UDMA_INTA0_SEVI_OFFSET;
+#else
+    globalEventOffset = CSL_NAVSS_GEM_MAIN_UDMA_INTA0_SEVI_OFFSET;
+#endif
+
+    return (globalEventOffset);
+}
+
 uint32_t Udma_getCoreId(void)
 {
     uint32_t coreId;
@@ -584,6 +597,7 @@ uint16_t Udma_getCoreSciDevId(void)
 
     return (coreSciDevId);
 }
+
 uint32_t Udma_isCacheCoherent(void)
 {
     uint32_t isCacheCoherent;

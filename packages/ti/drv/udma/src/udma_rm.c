@@ -2253,13 +2253,19 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
                                                rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeNum,
                                                &rmInitPrms->startGlobalEvent,
                                                &rmInitPrms->numGlobalEvent);
-    #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)   
-        if(TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == rmDefBoardCfgPrms[UDMA_RM_RES_ID_GLOBAL_EVENT].sciclientReqType)
+        if(rmInitPrms->numGlobalEvent != 0U)
         {
-            /* Substract Offset */  
-            rmInitPrms->startGlobalEvent                   -=  CSL_NAVSS_GEM_MCU_UDMA_INTA0_SEVI_OFFSET;  
+            uint32_t offset = Udma_getGlobalEventOffset();
+            /* Substract Offset for Global Events */
+            if(rmInitPrms->startGlobalEvent >= offset)
+            {
+                rmInitPrms->startGlobalEvent               -=  offset;  
+            }
+            else
+            {
+                retVal = UDMA_EFAIL;
+            }
         }
-    #endif
 
         /* Virtual Interrupts */
         /* Shared resource - Split based on instance */

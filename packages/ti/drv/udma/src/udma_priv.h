@@ -159,7 +159,7 @@ typedef struct
 
 /* SOC APIs */
 void Udma_initDrvHandle(Udma_DrvHandle drvHandle);
-int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms);
+uint32_t Udma_getGlobalEventOffset(void);
 const Udma_RmDefBoardCfgPrms *Udma_rmGetDefBoardCfgPrms(uint32_t instId);
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
 int32_t Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle,
@@ -265,6 +265,7 @@ int32_t Udma_ringProxyDequeueRaw(Udma_RingHandle ringHandle,
  */
 int32_t Udma_rmInit(Udma_DrvHandle drvHandle);
 int32_t Udma_rmDeinit(Udma_DrvHandle drvHandle);
+int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms);
 /* Channel RM APIs */
 uint32_t Udma_rmAllocBlkCopyCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle);
 void Udma_rmFreeBlkCopyCh(uint32_t chNum, Udma_DrvHandle drvHandle);
