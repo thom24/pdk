@@ -78,7 +78,7 @@ static int32_t App_runTest(M2MApp_AppObj *appObj);
 static int32_t App_initParams(M2MApp_AppObj *appObj);
 static int32_t App_allocAndQueueFrames(M2MApp_InstParams *appObj);
 static int32_t App_pipeCbFxn(Fvid2_Handle handle, void *appData);
-
+extern void App_wait(uint32_t wait_in_ms);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -223,13 +223,14 @@ static int32_t App_initParams(M2MApp_AppObj *appObj)
         wbPipeCfg = &instObj->wbCfg.pipeCfg;
         /* Dont' need to set dataFormat as this is fixed to 'FVID2_DF_ARGB48_12121212'
            and is set in 'Dss_m2mPipeCfgParamsInit()' */
-        wbPipeCfg->inFmt.width      = APP_DSS_M2M_IN_FRAME_WIDTH;
-        wbPipeCfg->inFmt.height     = APP_DSS_M2M_IN_FRAME_HEIGHT;
-        wbPipeCfg->outFmt.width     = APP_DSS_M2M_OUT_FRAME_WIDTH;
-        wbPipeCfg->outFmt.height    = APP_DSS_M2M_OUT_FRAME_HEIGHT;
-        wbPipeCfg->outFmt.ccsFormat = FVID2_CCSF_BITS8_PACKED;
-        wbPipeCfg->inPos.startX     = 0U;
-        wbPipeCfg->inPos.startY     = 0U;
+        wbPipeCfg->inFmt.width       = APP_DSS_M2M_IN_FRAME_WIDTH;
+        wbPipeCfg->inFmt.height      = APP_DSS_M2M_IN_FRAME_HEIGHT;
+        wbPipeCfg->outFmt.width      = APP_DSS_M2M_OUT_FRAME_WIDTH;
+        wbPipeCfg->outFmt.height     = APP_DSS_M2M_OUT_FRAME_HEIGHT;
+        wbPipeCfg->outFmt.dataFormat = APP_DSS_M2M_OUT_FRAME_FORMAT;
+        wbPipeCfg->outFmt.ccsFormat  = FVID2_CCSF_BITS8_PACKED;
+        wbPipeCfg->inPos.startX      = 0U;
+        wbPipeCfg->inPos.startY      = 0U;
         for(planeIdx = 0U ; planeIdx < FVID2_MAX_PLANES; planeIdx++)
         {
             wbPipeCfg->outFmt.pitch[planeIdx] = APP_DSS_M2M_OUT_FRAME_PITCH;
@@ -486,10 +487,19 @@ static int32_t App_delete(M2MApp_AppObj *appObj)
                                                &inFrmList,
                                                &outFrmList,
                                                FVID2_TIMEOUT_NONE);
-            if(FVID2_SOK != retVal)
+            if (retVal == FVID2_ENO_MORE_BUFFERS)
+            {
+                retVal = FVID2_SOK;
+                break;
+            }
+            else if (FVID2_SOK != retVal)
             {
                 App_consolePrintf("\nERROR: Fvid2_getProcessedRequest Failed!!!\r\n");
                 break;
+            }
+            else
+            {
+                /* Do nothing here */
             }
         }
 
@@ -540,10 +550,10 @@ static int32_t App_runTest(M2MApp_AppObj *appObj)
                     /* Wait for Semaphore */
                     (void) SemaphoreP_pend(instObj->syncSem, SemaphoreP_WAIT_FOREVER);
                     /* Get processed frames */
-                    retVal = Fvid2_processRequest(instObj->drvHandle,
-                                                  &inFrmList,
-                                                  &outFrmList,
-                                                  FVID2_TIMEOUT_NONE);
+                    retVal = Fvid2_getProcessedRequest(instObj->drvHandle,
+                                                       &inFrmList,
+                                                       &outFrmList,
+                                                       FVID2_TIMEOUT_NONE);
                     if(FVID2_SOK != retVal)
                     {
                         App_consolePrintf("\nERROR: Fvid2_processRequest Failed!!!\r\n");
@@ -564,7 +574,6 @@ static int32_t App_runTest(M2MApp_AppObj *appObj)
         }
     }
 
-
     for (instIdx = 0U ; instIdx < appObj->numInst ; instIdx++)
     {
         instObj = &appObj->instParams[instIdx];
@@ -573,6 +582,36 @@ static int32_t App_runTest(M2MApp_AppObj *appObj)
         if (FVID2_SOK != retVal)
         {
             App_consolePrintf("\nERROR: Fvid2_stop Failed!!!\r\n");
+            break;
+        }
+    }
+
+    for (instIdx = 0U ; instIdx < appObj->numInst ; instIdx++)
+    {
+        /* Get status */
+        retVal += Fvid2_control(instObj->drvHandle,
+                                IOCTL_DSS_M2M_GET_CURRENT_STATUS,
+                                &instObj->wbStatus,
+                                NULL);
+        if (FVID2_SOK == retVal)
+        {
+            App_consolePrintf(
+                "\n\r==========================================================\r\n");
+            App_consolePrintf("Display M2M Status: %d\r\n", instIdx);
+            App_consolePrintf(
+                "==========================================================\r\n");
+            App_consolePrintf("Input Format: 0x%x\r\n", APP_DSS_M2M_IN_FRAME_FORMAT);
+            App_consolePrintf("Output Format: 0x%x\r\n", APP_DSS_M2M_OUT_FRAME_FORMAT);
+            App_consolePrintf("Frames Submitted: %d\r\n", instObj->wbStatus.queueCount);
+            App_consolePrintf("Frames Got Back After Processing: %d\r\n", instObj->wbStatus.dequeueCount);
+            App_consolePrintf("Frames Processed: %d\r\n", instObj->wbStatus.wbFrmCount);
+            App_consolePrintf("Frames Underflow Count: %d\r\n", instObj->wbStatus.underflowCount);
+            App_consolePrintf(
+                "==========================================================\r\n");
+        }
+        else
+        {
+            App_consolePrintf("\nERROR: Fvid2_control(IOCTL_DSS_M2M_GET_CURRENT_STATUS) Failed!!!\r\n");
             break;
         }
     }
@@ -602,18 +641,19 @@ static int32_t App_allocAndQueueFrames(M2MApp_InstParams *instObj)
     {
         frm = inFrmList.frames[pipeIdx];
         /* init Fvid2_Frame to 0's  */
-        Fvid2Frame_init(frm);
+        frm = (Fvid2_Frame *) &instObj->inFrames[pipeIdx];
         frm->chNum = instObj->createParams.pipeId[pipeIdx];
         frm->addr[0U] = (uint64_t)(APP_DSS_M2M_DDR_LOAD_ADDRESS +
                (pipeIdx * APP_DSS_M2M_IN_FRAME_PITCH * APP_DSS_M2M_IN_FRAME_HEIGHT));
+        inFrmList.frames[pipeIdx] = frm;
     }
     inFrmList.numFrames = instObj->numPipe;
-    outFrmList.numFrames = 1U;
-    frm = outFrmList.frames[0U];
+    frm = (Fvid2_Frame *) &instObj->outFrames[0U];
     /* init Fvid2_Frame to 0's  */
-    Fvid2Frame_init(frm);
     frm->addr[0U] = (uint64_t)&(gOutFrms[(instObj->instIdx * APP_DSS_M2M_CH_NUM)][0U]);
     frm->addr[1U] = (uint64_t)&(gOutUVComp[(instObj->instIdx * APP_DSS_M2M_CH_NUM)][0U]);
+    outFrmList.frames[0U] = frm;
+    outFrmList.numFrames = 1U;
     retVal = Fvid2_processRequest(instObj->drvHandle,
                                   &inFrmList,
                                   &outFrmList,

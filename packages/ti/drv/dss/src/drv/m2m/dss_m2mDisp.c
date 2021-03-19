@@ -339,7 +339,7 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
         if ((FVID2_SOK == retVal) && (((uint32_t) TRUE) == copyCfg))
         {
             /* Update instance configurations */
-            Fvid2Utils_memcpy(&progCfg, &instCfg, sizeof(DssM2MDrv_DispPipeCfg));
+            Fvid2Utils_memcpy(progCfg, instCfg, sizeof(DssM2MDrv_DispPipeCfg));
         }
     }
 
