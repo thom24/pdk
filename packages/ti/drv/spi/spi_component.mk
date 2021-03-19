@@ -364,7 +364,7 @@ export MCSPI_Baremetal_Master_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am64x))
 MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0 m4f_0
 else
-MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
+MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_1
 endif
 export MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
@@ -410,7 +410,7 @@ export MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am64x))
 MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
 else
-MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
+MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_1
 endif
 export MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
