@@ -48,11 +48,6 @@ endif
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 SRCS_COMMON += udma_ring_normal.c
 endif
-#Query Sciclient_DefaulfBoardCfg_rm is currently not used for all SOC
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
-SRCDIR += soc
-SRCS_COMMON += udma_rmcfg_common.c
-endif
 #LCDMA RA is not present in all SOC
 ifeq ($(SOC),$(filter $(SOC), am64x))
 SRCS_COMMON += udma_ring_lcdma.c

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -224,7 +224,7 @@ int32_t Udma_memcpyTest(void)
     Udma_ChHandle   chHandle = &gUdmaChObj;
 
     App_print("UDMA memcpy application started...\n");
-
+    
     retVal = App_init(drvHandle);
     if(UDMA_SOK != retVal)
     {
@@ -520,7 +520,6 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
 #endif
 
 #if defined UDMA_OVERRIDE_DEF_RM_SHARED_RES_PRMS
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) 
     /* Override the default RM Shared Resource parameters. 
     *  For example, using maximum no.of available resources of Global Events
     *  for current instance and updating mimium requirement to 10U */
@@ -538,7 +537,6 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
     {
         App_print("Global Event is not a shared resource!!\n");
     }
-#endif
 #endif
 
     /* UDMA driver init */

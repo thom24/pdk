@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -340,27 +340,6 @@ typedef struct
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-#if defined(SOC_AM65XX)
-/**
- *  \brief Returns the default RM config structure based on instance and core.
- *  User can use this API to get the default config and override as per need.
- *
- *  Note: The driver internally uses this same API to init the #Udma_RmInitPrms
- *  structure in #UdmaInitPrms_init API
- *
- *  \param instId       [IN] \ref Udma_InstanceId
- *
- *  \return Const pointer to default RM init config #Udma_RmInitPrms
- */
-const Udma_RmInitPrms *Udma_rmGetDefaultCfg(uint32_t instId);
-
-/**
- *  \brief API to check the default configuration across all instance and cores.
- *
- *  \return \ref Udma_ErrorCodes
- */
-int32_t Udma_rmCheckDefaultCfg(void);
-#else
 /**
  *  \brief Returns the RM Shared Resource default parameters structure for the 
  *  requested resource.
@@ -376,7 +355,6 @@ int32_t Udma_rmCheckDefaultCfg(void);
  *          parameters structure
  */
 Udma_RmSharedResPrms *Udma_rmGetSharedResPrms(uint32_t resId);
-#endif
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

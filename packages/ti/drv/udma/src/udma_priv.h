@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -339,20 +339,6 @@ uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
 void Udma_rmFreeIrIntr(uint32_t irIntrNum, Udma_DrvHandle drvHandle);
 uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum);
 uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIntrNum);
-void Udma_rmFreeCoreIntr(uint32_t coreIntrNum, Udma_DrvHandle drvHandle);
-#if !defined(SOC_AM65XX)
-/* Query Sciclient_DefaultBoardCfg_rm API */
-int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCfgPrms *rmDefBoardCfgPrms,
-                                                  Udma_RmDefBoardCfgResp *rmDefBoardCfgResp,
-                                                  uint32_t *splitResFlag);
-/* Set Shared Resource rmInitPrms API */
-int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrms,
-                                      uint32_t instId,
-                                      uint32_t rangeStart,
-                                      uint32_t rangeTotalNum,
-                                      uint32_t *start,
-                                      uint32_t *num);
-#endif
 
 /* Utils APIs */
 uint64_t Udma_virtToPhyFxn(const void *virtAddr,

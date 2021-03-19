@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -47,15 +47,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/** \brief External start channel of DRU0 UTC */
-#define UDMA_UTC_START_CH_DRU0          (0U)
-/** \brief Number of channels present in DRU0 UTC */
-#define UDMA_UTC_NUM_CH_DRU0            (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
-/** \brief Start thread ID of DRU0 UTC */
-#define UDMA_UTC_START_THREAD_ID_DRU0   (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
-/** \brief DRU0 UTC baseaddress */
-#define UDMA_UTC_BASE_DRU0              (CSL_COMPUTE_CLUSTER0_DRU_BASE)
-
+/* None */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -299,21 +291,6 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
         drvHandle->extChOffset + pUdmapRegs->txExtUtcChanCnt;
 
     return;
-}
-
-int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
-{
-    int32_t retVal = UDMA_SOK;
-
-    const Udma_RmInitPrms *rmInitDefaultCfg;
-
-    if(NULL_PTR != rmInitPrms)
-    {
-        rmInitDefaultCfg = Udma_rmGetDefaultCfg(instId);
-        (void) memcpy(rmInitPrms, rmInitDefaultCfg, sizeof (Udma_RmInitPrms));
-    }
-
-    return (retVal);
 }
 
 uint32_t Udma_getCoreId(void)

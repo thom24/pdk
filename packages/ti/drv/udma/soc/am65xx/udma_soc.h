@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -178,6 +178,15 @@ extern "C" {
 #define UDMA_UTC_ID_MSMC_DRU0           (UDMA_UTC_ID0)
 /* @} */
 
+/** \brief External start channel of DRU0 UTC */
+#define UDMA_UTC_START_CH_DRU0          (0U)
+/** \brief Number of channels present in DRU0 UTC */
+#define UDMA_UTC_NUM_CH_DRU0            (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
+/** \brief Start thread ID of DRU0 UTC */
+#define UDMA_UTC_START_THREAD_ID_DRU0   (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
+/** \brief DRU0 UTC baseaddress */
+#define UDMA_UTC_BASE_DRU0              (CSL_COMPUTE_CLUSTER0_DRU_BASE)
+
 /**
  *  \anchor Udma_CoreId
  *  \name Core ID specific to a SOC
@@ -225,6 +234,53 @@ extern "C" {
 #define UDMA_DRU_CORE_ID_MCU1_0         (CSL_DRU_CORE_ID_1)
 #define UDMA_DRU_CORE_ID_MCU1_1         (CSL_DRU_CORE_ID_2)
 /* @} */
+
+/**
+ *  \anchor Udma_RmResId
+ *  \name UDMA Resources ID
+ *
+ *  List of all UDMA Resources Id's.
+ *
+ *  @{
+ */
+/** \brief Ultra High Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX_UHC                   (0U)
+/** \brief High Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX_HC                    (1U) 
+/** \brief Normal Capacity TX and Block Copy Channels */
+#define UDMA_RM_RES_ID_TX                       (2U) 
+/** \brief Ultra High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_UHC                   (3U) 
+/** \brief High Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX_HC                    (4U) 
+/** \brief Normal Capacity RX Channels */
+#define UDMA_RM_RES_ID_RX                       (5U) 
+/** \brief UTC - Extended Channels (MSMC_DRU) */
+#define UDMA_RM_RES_ID_UTC                      (6U) 
+/** \brief Free Flows */
+#define UDMA_RM_RES_ID_RX_FLOW                  (7U) 
+/** \brief Free Rings */
+#define UDMA_RM_RES_ID_RING                     (8U) 
+/** \brief Global Event */
+#define UDMA_RM_RES_ID_GLOBAL_EVENT             (9U) 
+/** \brief Virtual Interrupts */
+#define UDMA_RM_RES_ID_VINTR                    (10U) 
+/** \brief Interrupt Router Interrupts */
+#define UDMA_RM_RES_ID_IR_INTR                  (11U) 
+/** \brief Proxy */
+#define UDMA_RM_RES_ID_PROXY                    (12U) 
+/** \brief Ring Monitors */
+#define UDMA_RM_RES_ID_RING_MON                 (13U) 
+/** \brief Total number of resources */
+#define UDMA_RM_NUM_RES                         (14U) 
+/* @} */
+
+/** \brief Total number of shared resources - 
+ *  Global_Event/IR Intr/VINT */
+#define UDMA_RM_NUM_SHARED_RES                  (3U) 
+/** \brief Maximum no.of instances to split a shared resource. 
+ *  This should be max(UDMA_NUM_CORE,UDMA_NUM_INST_ID) */
+#define UDMA_RM_SHARED_RES_MAX_INST             (UDMA_NUM_CORE)
 
 /**
  *  \anchor Udma_PsilCh
@@ -468,10 +524,6 @@ extern "C" {
 /* @} */
 
 /* @} */
-
-/** \brief Maximum no.of instances to split a shared resource. 
- *  Note: This is only used when querying from defaultBoardCfg*/ 
-#define UDMA_RM_SHARED_RES_MAX_INST              (0)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
