@@ -70,7 +70,7 @@ ifeq ($(HLOS_BOOT),yes)
   SBL_CFLAGS += -DSBL_ENABLE_HLOS_BOOT -DSBL_HLOS_OWNS_FLASH
 endif
 ifeq ($(BUILD_HS),yes)
-  SBL_CFLAGS += -DSBL_BUILD_HS
+  SBL_CFLAGS += -DSBL_BUILD_HS -DBUILD_HS
 endif
 # BOOTMODE specific CFLAGS
 ifeq ($(BOOTMODE), mmcsd)
