@@ -165,30 +165,39 @@ int32_t esmPinTimeInit(uint32_t pinClearTime)
                                           clkId,
                                           &esmInputClk,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal == CSL_PASS) {
 #ifdef PRINT_DEBUG
-    DIAG_printf("  WKUP ESM input clock is %d\n", esmInputClk);
+        DIAG_printf("  WKUP ESM input clock is %d\n", esmInputClk);
 #endif
-    /* MCU ESM clock */
-    modId = TISCI_DEV_MCU_ESM0;
-    clkId = TISCI_DEV_MCU_ESM0_CLK;
+        /* MCU ESM clock */
+        modId = TISCI_DEV_MCU_ESM0;
+        clkId = TISCI_DEV_MCU_ESM0_CLK;
 
-    retVal = Sciclient_pmGetModuleClkFreq(modId,
-                                          clkId,
-                                          &esmInputClk,
-                                          SCICLIENT_SERVICE_WAIT_FOREVER);
+        retVal = Sciclient_pmGetModuleClkFreq(modId,
+                                              clkId,
+                                              &esmInputClk,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (retVal == CSL_PASS) {
 #ifdef PRINT_DEBUG
-    DIAG_printf("  MCU ESM input clock is %d\n", esmInputClk);
+            DIAG_printf("  MCU ESM input clock is %d\n", esmInputClk);
 #endif
+        }
+    }
 
-    /* Translate Pin Timer Time (microseconds) into number of ESM cycles */
-    pinClearTimeCycles = (uint32_t)((float)pinClearTime /
-                         1000000 * (float)esmInputClk);
-    DIAG_printf("\n  Any clear of MCU_SAFETY_ERRORn pin will first wait " \
-                "%d usecs", pinClearTime);
-    /* Translate Minimum Time Interval (cycles) into time (microseconds)*/
-    esmPinMinIntervalUsec = (uint32_t)((float)esmPinMinIntervalCycles /
-                                       (float)esmInputClk * 1000000);
-    DIAG_printf("\n  Minimum Time Interval is %d usecs", esmPinMinIntervalUsec);
+    if (retVal == CSL_PASS) {
+        /* Translate Pin Timer Time (microseconds) into number of ESM cycles */
+        pinClearTimeCycles = (uint32_t)((float)pinClearTime /
+                             1000000 * (float)esmInputClk);
+        DIAG_printf("\n  Any clear of MCU_SAFETY_ERRORn pin will first wait " \
+                    "%d usecs", pinClearTime);
+        /* Translate Minimum Time Interval (cycles) into time (microseconds)*/
+        esmPinMinIntervalUsec = (uint32_t)((float)esmPinMinIntervalCycles /
+                                           (float)esmInputClk * 1000000);
+        DIAG_printf("\n  Minimum Time Interval is %d usecs", esmPinMinIntervalUsec);
+    }
+    else {
+        retVal = -1;
+    }
 
     /* If desired, ESMSetErrPinLowTimePreload can be used to change
      * minimum interval time here */
@@ -261,7 +270,10 @@ int32_t diag_esm_timerInit(void)
        return -1;
     }
 
-    esmPinTimeInit(PIN_CLEAR_PERIOD_USEC);
+    if (esmPinTimeInit(PIN_CLEAR_PERIOD_USEC) != 0) {
+       DIAG_printf("ERR: Pin Time Init failed\n");
+       return -1;
+    }
 
     DIAG_printf("\nESM example timer initialization complete\n");
 

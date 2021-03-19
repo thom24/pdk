@@ -48,6 +48,10 @@
 /* For interrupt ID numbers */
 #include <ti/csl/soc/cslr_soc_intr.h>
 
+/* Sciclient */
+#include <ti/csl/csl_types.h>
+#include <ti/drv/sciclient/sciclient.h>
+
 /* Diagnostic example utility functions, e.g. print outputs */
 #include <diag_utils.h>
 #include <sdr_esm.h>
@@ -216,6 +220,7 @@ extern volatile uint8_t  currUseCase;
 int32_t ESM_Example_init (void)
 {
     int32_t retValue=0;
+    Sciclient_ConfigPrms_t config;
     SDR_Result result;
 
 #ifdef UART_PRINTF
@@ -224,6 +229,18 @@ int32_t ESM_Example_init (void)
 #endif
 
     DIAG_printf("\nESM_Example_init: UART ready to print, proceeding with ESM Example init \n");
+
+    if (retValue == 0) {
+        /* Initialize Sciclient */
+        retValue = Sciclient_configPrmsInit(&config);
+        if (retValue == CSL_PASS) {
+            retValue = Sciclient_init(&config);
+        }
+        if (retValue != CSL_PASS) {
+            DIAG_printf("ESM_Example_init: Error initializing Sciclient: result = %d\n", retValue);
+            retValue = -1;
+        }
+    }
 
     if (retValue == 0) {
         /* Initialize MCU ESM module */
