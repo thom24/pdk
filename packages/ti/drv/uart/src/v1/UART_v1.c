@@ -401,13 +401,13 @@ static inline void UART_procLineStatusErr(UART_Handle handle)
  *  count.
  *
  *  If THR interrupt is received, ISR calls the in-lined function writeData,
- *  to write the data to the TX FIFO. After all the data are sent, TX FIFO empty 
- *  interrupt is enabled, ISR will update the actual number of bytes transferred 
- *  and transfer status in writeTrans and calls back to application in the callback 
+ *  to write the data to the TX FIFO. After all the data are sent, TX FIFO empty
+ *  interrupt is enabled, ISR will update the actual number of bytes transferred
+ *  and transfer status in writeTrans and calls back to application in the callback
  *  mode or post the read semaphone in the blocking mode.
- *  
+ *
  *  TX FIFO empty interrupt is enabled after all the data are written to the TX
- *  FIFO, ISR will 
+ *  FIFO, ISR will
  *
  *  In DMA mode, three UART interrupt is enabled:
  *    1. line status rx error
@@ -419,13 +419,13 @@ static inline void UART_procLineStatusErr(UART_Handle handle)
  *  disables the DMA RX channel and calls back to application in the callback mode
  *  or post the read semaphone in the blocking mode.
  *
- *  DMA RX transfer completion is handled in UART_rxIsrHandler. If the read size 
- *  is not multiple of RX threshold size, RHR interrupt is enabled to receive the 
- *  remaining bytes in ISR.  
- *  
- *  TX transfer completion is handled in UART_txIsrHandler. After all the data are 
- *  sent, TX FIFO empty interrupt is enabled, ISR will update the actual number of 
- *  bytes transferred and transfer status in writeTrans and calls back to application 
+ *  DMA RX transfer completion is handled in UART_rxIsrHandler. If the read size
+ *  is not multiple of RX threshold size, RHR interrupt is enabled to receive the
+ *  remaining bytes in ISR.
+ *
+ *  TX transfer completion is handled in UART_txIsrHandler. After all the data are
+ *  sent, TX FIFO empty interrupt is enabled, ISR will update the actual number of
+ *  bytes transferred and transfer status in writeTrans and calls back to application
  *  in the callback mode or post the read semaphone in the blocking mode.
  *
  *  @param(arg)         The UART_Handle for this Hwi.
@@ -442,7 +442,7 @@ static void UART_v1_hwiIntFxn(uintptr_t arg)
     while ((bool)true)
     {
         intType = UARTIntIdentityGet(hwAttrs->baseAddr);
-        
+
         if ((intType & UART_INTID_RX_THRES_REACH) == UART_INTID_RX_THRES_REACH)
         {
             if ((intType & UART_INTID_RX_LINE_STAT_ERROR) ==
@@ -700,10 +700,10 @@ static bool UART_getWLenStbFlag(UART_LEN dataLength, UART_STOP stopBits, uint32_
                 value |= UART_FRAME_NUM_STB_1;
                 break;
         }
-        
+
         ret = (bool)true;
     }
-    
+
     *pValue = value;
     return ret;
 }
@@ -731,7 +731,10 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
 
     /* If params are NULL use defaults. */
     if (params == NULL) {
-        UART_Params_init(&object->params);
+        if(NULL != object)
+        {
+            UART_Params_init(&object->params);
+        }
     }
     else {
         /* Save UART parameters. */
@@ -1362,7 +1365,7 @@ static void UART_writeCancel_v1(UART_Handle handle)
     UART_HwAttrs const *hwAttrs;
 
     object = (UART_V1_Object*)handle->object;
-    
+
     if (UART_writeCancelNoCB(handle) == (bool)true)
     {
         hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
