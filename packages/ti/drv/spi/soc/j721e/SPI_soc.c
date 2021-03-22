@@ -932,7 +932,6 @@ int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
         }
         else
         {
-            hwAttrs->intrNum = intNum;
             src_index = hwAttrs->eventId;               /* Index coming from the peripheral */
             dst_host_irq = hwAttrs->intrNum;            /* By default it is set for MCU R5 */
 
