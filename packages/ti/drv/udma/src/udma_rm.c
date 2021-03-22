@@ -2096,17 +2096,16 @@ int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrm
     int32_t     retVal = UDMA_SOK;
     uint32_t    i;
     uint32_t    sumInstShare = 0U;
-    uint32_t    instFinalShare[UDMA_RM_SHARED_RES_MAX_INST];
+    uint32_t    instFinalShare[UDMA_RM_SHARED_RES_MAX_INST]={0};
     uint32_t    splitCnt = 0U;
     uint32_t    splitShare;
     uint32_t    splitMod;
     uint32_t    udmaResvCnt;
-    uint32_t    numInst = rmSharedResPrms->numInst; 
-    uint32_t    minReq = rmSharedResPrms->minReq;
-    uint32_t    startResrvCnt = rmSharedResPrms->startResrvCnt;
-    uint32_t    endResrvCnt = rmSharedResPrms->endResrvCnt;
-    uint32_t    numUnresvRes = (rangeTotalNum > (startResrvCnt + endResrvCnt)) ?
-                                    (rangeTotalNum - (startResrvCnt + endResrvCnt)) : 0U;
+    uint32_t    numInst; 
+    uint32_t    minReq;
+    uint32_t    startResrvCnt;
+    uint32_t    endResrvCnt;
+    uint32_t    numUnresvRes;
 
     /* Error Check */
     if(NULL_PTR == rmSharedResPrms)
@@ -2115,6 +2114,13 @@ int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrm
     }
     if(UDMA_SOK == retVal)
     {
+        numInst = rmSharedResPrms->numInst; 
+        minReq = rmSharedResPrms->minReq;
+        startResrvCnt = rmSharedResPrms->startResrvCnt;
+        endResrvCnt = rmSharedResPrms->endResrvCnt;
+        numUnresvRes = (rangeTotalNum > (startResrvCnt + endResrvCnt)) ?
+                                    (rangeTotalNum - (startResrvCnt + endResrvCnt)) : 0U;
+
         /* Check for minimum requirement with total usable*/
         if((numInst > UDMA_RM_SHARED_RES_MAX_INST) ||
            (numUnresvRes < (numInst * minReq)))
