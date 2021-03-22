@@ -260,8 +260,8 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
 
     for (pipeIdx = 0U ; pipeIdx < context->numPipe ; pipeIdx++)
     {
-        instCfg = &context->instCfg.pipeCfg[pipeIdx];
-        progCfg = &instObj->progCfg.pipeCfg[pipeIdx];
+        instCfg = &context->instCfg.pipeCfg[context->pipeId[pipeIdx]];
+        progCfg = &instObj->progCfg.pipeCfg[context->pipeId[pipeIdx]];
         /* Re-program DSS pipe only if channel/instance configurations
            are different than programmed */
         if (FVID2_SOK == retVal)

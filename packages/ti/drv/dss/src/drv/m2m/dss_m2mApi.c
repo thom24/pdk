@@ -541,11 +541,10 @@ Fdrv_Handle Dss_m2mCreate(uint32_t drvId,
                 (void) SemaphoreP_post(instObj->commonObjRef->lockSem);
             }
         }
-    }
-
-    if (NULL != createStatusArgs)
-    {
-        createStatus->retVal = retVal;
+        if (NULL != createStatusArgs)
+        {
+            createStatus->retVal = retVal;
+        }
     }
 
     return (drvHandle);
@@ -669,7 +668,9 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
     {
         virtContext = (DssM2MDrv_VirtContext *)handle;
         instObj     = virtContext->instObj;
+        GT_assert(DssTrace, (NULL != instObj));
         bmObj       = &instObj->bmObj;
+        GT_assert(DssTrace, (NULL != bmObj));
 
         if ((instObj->inUse != DSSM2M_DRV_USAGE_STATUS_IN_USE) ||
             (virtContext->inUse != DSSM2M_DRV_USAGE_STATUS_IN_USE) ||
@@ -841,7 +842,9 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
     {
         virtContext = (DssM2MDrv_VirtContext *)handle;
         instObj     = virtContext->instObj;
+        GT_assert(DssTrace, (NULL != instObj));
         bmObj       = &instObj->bmObj;
+        GT_assert(DssTrace, (NULL != bmObj));
 
         if ((instObj->inUse != DSSM2M_DRV_USAGE_STATUS_IN_USE) ||
             (virtContext->inUse != DSSM2M_DRV_USAGE_STATUS_IN_USE) ||

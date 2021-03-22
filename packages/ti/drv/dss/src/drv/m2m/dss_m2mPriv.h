@@ -182,7 +182,7 @@ struct DssM2MDrv_WbPipeCfg_t
  */
 struct DssM2MDrv_moduleCfg_t
 {
-    DssM2MDrv_DispPipeCfg pipeCfg[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
+    DssM2MDrv_DispPipeCfg pipeCfg[CSL_DSS_VID_PIPE_ID_MAX];
     /**< Display pipeline configuration parameters */
     DssM2MDrv_dctrlCfg dctrlCfg;
     /**< Display controller configuration parameters  */
@@ -305,7 +305,7 @@ struct DssM2MDrv_InstObj_t
       *  See \ref DssM2MDrv_moduleCfg for details */
     CSL_dss_commRegs *commRegs;
     /**< Write-back Pipe registers */
-    CSL_dss_pipeRegs *pipeRegs[DSSM2M_NUM_PIPELINE_TO_USE_IN_M2M_MODE];
+    CSL_dss_pipeRegs *pipeRegs[CSL_DSS_VID_PIPE_ID_MAX];
     /**< Write-back Pipe registers */
     CSL_dss_overlayRegs *ovrRegs;
     /**< Write-back Pipe registers */
