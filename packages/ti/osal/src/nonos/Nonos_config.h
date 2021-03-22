@@ -206,6 +206,11 @@ void TimerP_updateDefaultInfoTbl(void);
  * change. Example: J721e has two R5FSS, one in MAIN and other in MCU.
  */
 uint32_t TimerP_mapId(uint32_t id);
+/*
+ * This function does the reverse of TimerP_mapId.
+ * This is required for TimerP_delete to free up the correct bit in mask. 
+ */
+uint32_t TimerP_reverseMapId(uint32_t id);
 #endif
 
 /* Reference the default initializations for the dmtimers */

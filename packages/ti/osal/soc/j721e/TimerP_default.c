@@ -478,6 +478,25 @@ uint32_t TimerP_mapId(uint32_t id)
     return (translate_id);
 }
 
+uint32_t TimerP_reverseMapId(uint32_t id)
+{
+    uint32_t translate_id;
+
+    CSL_ArmR5CPUInfo info;
+
+    CSL_armR5GetCpuID(&info);
+
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        translate_id = id;
+    }
+    else
+    {
+        translate_id = id - 12U;
+    }
+    return (translate_id);
+}
+
 void TimerP_updateDefaultInfoTbl(void)
 {
     uint32_t         i;

@@ -742,6 +742,12 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
 
     key = (uint32_t)HwiP_disable();
 
+    
+    id = gTimerStructs[index].timerId;
+    #if defined (BUILD_MCU)
+    id = TimerP_reverseMapId(id);
+    #endif
+
     if((timer != NULL_PTR) && ((gTimerStructs[index].used) == (bool)true))
     {
       /* clear the ISR that was set before */
@@ -752,7 +758,6 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
       
       /* reset the timer's bit field in the mask and clear the used flag */
       gTimerStructs[index].used = (bool)false;
-      id = gTimerStructs[index].timerId;
       uint32_t shift = ((uint32_t) 1u) << id;
       if(((gTimerAnyMask & shift)) == 0U)
       {

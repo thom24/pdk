@@ -185,6 +185,10 @@ uint32_t TimerP_mapId(uint32_t id)
      */
     return (id);
 }
+uint32_t TimerP_reverseMapId(uint32_t id)
+{
+    return (id);
+}
 void TimerP_updateDefaultInfoTbl(void)
 {
     /*
