@@ -553,9 +553,13 @@ bool OSAL_timer_test()
     TimerP_Status timerStatus;
     Osal_HwAttrs  hwAttrs;
 
-#if defined(BARE_METAL) || defined(FREERTOS)
+#if defined(BARE_METAL)
     int32_t       id    = OSAL_TEST_TIMER_ID;
 #else
+    /* Pass TimerP_ANY for FreeRTOS, since FreeRTOS kernel running on each core
+     * will use one timer per core. So if there is a conflict in the id passed
+     * TimerP_create will fail. See FreeRTOS_config_<core>.h for details about
+     * the timer instance used by each core */
     int32_t       id    = TimerP_ANY;
 #endif
 
@@ -568,7 +572,7 @@ bool OSAL_timer_test()
 #endif
 
 #if defined(SOC_J721E)
-#if !defined(BARE_METAL)
+#if !(defined(BARE_METAL) || defined(FREERTOS))
 #if defined(BUILD_C66X_1) || defined(BUILD_C66X_2) || defined(BUILD_C7X_1) || defined(BUILD_MCU1_0)
     id                  = OSAL_TEST_TIMER_ID;
 #endif

@@ -288,6 +288,7 @@ OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = no
 endif
 export OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN
 
+# OSAL FreeRTOS unit test app
 OSAL_freertos_TestApp_COMP_LIST = OSAL_freertos_TestApp
 OSAL_freertos_TestApp_RELPATH = ti/osal/test/freertos
 OSAL_freertos_TestApp_PATH = $(PDK_OSAL_COMP_PATH)/test/freertos
@@ -298,7 +299,7 @@ export OSAL_freertos_TestApp_BOARD_DEPENDENCY
 export OSAL_freertos_TestApp_CORE_DEPENDENCY
 OSAL_freertos_TestApp_PKG_LIST = OSAL_freertos_TestApp
 OSAL_freertos_TestApp_INCLUDE = $(OSAL_freertos_TestApp_PATH)
-OSAL_freertos_TestApp_BOARDLIST = tpr12_evm
+OSAL_freertos_TestApp_BOARDLIST = $(libosal_freertos_BOARDLIST)
 export OSAL_freertos_TestApp_BOARDLIST
 OSAL_freertos_TestApp_SBL_APPIMAGEGEN = yes
 export OSAL_freertos_TestApp_SBL_APPIMAGEGEN
@@ -400,16 +401,19 @@ endif
 ifeq ($(SOC),$(filter $(SOC), am65xx))
  OSAL_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0
+ OSAL_freertos_TestApp_$(SOC)_CORELIST = mcu1_0 mcu1_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
-	OSAL_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 c66xdsp_1 c7x_1
+ OSAL_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 c66xdsp_1 c7x_1
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
+ OSAL_freertos_TestApp_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
  OSAL_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0
+ OSAL_freertos_TestApp_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
@@ -425,6 +429,7 @@ endif
 
 export OSAL_Baremetal_TestApp_$(SOC)_CORELIST
 export OSAL_TestApp_$(SOC)_CORELIST
+export OSAL_freertos_TestApp_$(SOC)_CORELIST
 
 osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
 osal_EXAMPLE_LIST += OSAL_freertos_TestApp
