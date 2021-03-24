@@ -44,6 +44,12 @@
 #include <ti/board/board.h>
 #include <ti/csl/example/ospi/ospi_flash/common/ospi_flash_common.h>
 
+#if defined (SOC_AM65XX)
+/** Required for runtime relocation of .udma_critical_fxns / .udma_buffer_r5_tcm to TCM from loaded area */
+#include <cpy_tbl.h>
+/* Refer Compiler User Guide for details */
+#endif /* SOC_AM65XX */
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -70,7 +76,10 @@ extern int32_t App_setGTCClk(uint32_t moduleId,
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+#if defined (SOC_AM65XX)
+/** Required for runtime relocation of .udma_critical_fxns / .udma_buffer_r5_tcm to TCM from loaded area */
+extern COPY_TABLE _r5tcm_run_time_load_section;
+#endif /* SOC_AM65XX */
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -80,6 +89,11 @@ int main(void)
 {
     Board_initCfg boardCfg;
     int32_t       status;
+
+#if defined (SOC_AM65XX)
+    /** Required for runtime relocation of .udma_critical_fxns / .udma_buffer_r5_tcm to TCM from loaded area */
+    copy_in(&_r5tcm_run_time_load_section);
+#endif /* SOC_AM65XX */
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_MODULE_CLOCK |

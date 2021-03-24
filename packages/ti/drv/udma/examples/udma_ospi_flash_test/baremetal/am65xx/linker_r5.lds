@@ -23,42 +23,32 @@ __ABORT_STACK_SIZE  = 0x1000;
 __UND_STACK_SIZE    = 0x1000;
 __SVC_STACK_SIZE    = 0x1000;
 
-/* Memory Map */
+/*----------------------------------------------------------------------------*/
+/* Memory Sections                                                            */
 MEMORY
 {
-    /* 'intvecs' and 'intc_text' sections shall be placed within */
-    /* a range of +\- 16 MB */
-    VECTORS (X)  		        : origin=0x41C7F000 length=0x1000
-    /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
-    RESET_VECTORS (X)  		    : origin=0x41C00000 length=0x100
-
-    /* MCU0_R5F_0 local view */
-    MCU0_R5F_TCMA_SBL_RSVD (X)	: origin=0x0		length=0x100
-    MCU0_R5F_TCMA (X)		    : origin=0x100		length=0x8000 - 0x100
-    MCU0_R5F_TCMB0 (RWIX)	    : origin=0x41010000	length=0x8000
-
-    /* MCU0_R5F_1 SoC view */
-    MCU0_R5F1_ATCM (RWIX)  	    : origin=0x41400000 length=0x8000
-    MCU0_R5F1_BTCM (RWIX) 	    : origin=0x41410000 length=0x8000
-
-    /* MCU0 memory used for SBL. Avaiable after boot for app starts for dynamic use */
-    SBL_RESERVED (RWIX) 	    : origin=0x41C00100 length=0x3E000 - 0x100	 /* ~247KB */
-
-    /* Used by SBL at runtime to load SYSFW. */
-    SBL_SYSFW_RESERVED (RWIX) 	: origin=0x41C3E000 length=0x100            /* ~256B */
+    /* Refer the user guide for details on persistence of these sections */
+    /* Also, when these memories can be used by apps */
+    MCU0_ATCM_NOT_USED          (R)     : origin=0x0        length=0x7FFF
+    /* To load .udma_critical_fxns / .udma_buffer_r5_tcm in TCM at run time */
+    MCU0_BTCM_RUN_TIME_LOAD     (RWIX)  : origin=0x41010000 length=0x7FFF
     
-    /* MCU0 share locations */
-    OCMRAM (RWIX)               : origin=0x41C3E100 length=0x80000 - 0x3F100 /* ~260KB */
+    /* Used by SBL, can be used after APPs is started */
+    MCU_MSRAM_RSVD_UNUSED       (R)     : origin=0x41C00000 length=0x200
+    MCU_MSRAM_RSVD_SBL          (RWIX)  : origin=0x41C00200 length=0x3DE00
 
-    /* AM65XX M4 locations */
-    MSMC3 (RWIX)                : origin=0x70000000 length=0xF0000              /* 1MB - 64K */
-    MSMC3_H (RWIX)              : origin=0x70100000 length=0xE2000              /* 1MB -56K */
+    VECTORS                     (RWIX)  : origin=0x41C3E000 length=0x100
+    RESET_VECTORS               (RWIX)  : origin=0x41C3E100 length=0x1000
+    OCMRAM                      (RWIX)  : origin=0x41C3F100 length=0x40F00
 
-    /* Reserved for DMSC */
-    MSMC3_DMSC (RWIX)           : origin=0x701F0000 length=0x10000              /* 64K */
+    /* COMPUTE_CLUSTER0_MSMC_SRAM */
+    MSMC3                       (RWIX) : origin=0x70000000 length=0x1EFC00
+    /* The origin and length is determined by board cfg, */
+    /* refer user guide for details */
+    MSMC3_RSVD_DMSC             (RWIX)  : origin=0x701F0000 length=0x1000
+    DDR0                        (RWIX)  : origin=0x80000000 length=0x7FFFFFE4
 
-    DDR0 (RWIX)  		        : origin=0x80000000 length=0x80000000    	    /* 2GB */
-}  
+}  /* end of MEMORY */
 
 /* Section Configuration */
 SECTIONS
@@ -86,8 +76,21 @@ SECTIONS
     .benchmark_buffer (NOLOAD) {} ALIGN (8) > OCMRAM
 
     /* OSPI app sections */
-    .udma_buffer_r5_tcm : {} palign(128) > MCU0_R5F_TCMA
-    .udma_critical_fxns : {} palign(8)   > MCU0_R5F_TCMA
+    .udma_buffer_r5_tcm : {} palign(128) > MSMC3
+    .udma_critical_fxns : {} palign(8)   > MSMC3
+
+    /* To load .udma_critical_fxns / .udma_buffer_r5_tcm in TCM at run time */
+    /* Defines copy table & location where it will be loaded by SBL/ICE */
+    .r5tcm_run_time_load : {
+                    *(.udma_critical_fxns),
+                    *(.udma_buffer_r5_tcm)
+                 } palign(8) load = MSMC3,
+                    run = MCU0_BTCM_RUN_TIME_LOAD,
+                    table(_r5tcm_run_time_load_section)
+
+    /* To load .udma_critical_fxns / .udma_buffer_r5_tcm in TCM at run time */
+    /* This is the region which will have all the copy tables */
+    .ovly       : {} palign(128) load = MSMC3
 
     .stack  	: {} align(4)		> MSMC3  (HIGH)
 
