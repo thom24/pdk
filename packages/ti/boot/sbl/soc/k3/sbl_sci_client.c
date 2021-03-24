@@ -178,14 +178,9 @@ void SBL_SciClientInit(void)
     Sciclient_configPrmsInit(&config);
     config.opModeFlag               =   SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
     config.pBoardCfgPrms            =   NULL;
-    config.isSecureMode             =   1;
+    config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
     config.c66xRatRegion            =   0;
     config.skipLocalBoardCfgProcess =   TRUE;
-
-#if defined(SOC_AM65XX)
-    config.isSecureMode = 0U;
-#endif /* AM65xx the default board cfg is for non-secure mode */
-
 #endif
 
     SBL_ADD_PROFILE_POINT;
