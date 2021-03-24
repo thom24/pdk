@@ -2026,6 +2026,7 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
     return (irIntrNum);
 } 
 
+#if !defined(SOC_AM65XX)
 int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCfgPrms *rmDefBoardCfgPrms,
                                                   Udma_RmDefBoardCfgResp *rmDefBoardCfgResp,
                                                   uint32_t *splitResFlag)
@@ -2186,6 +2187,7 @@ int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrm
     
     return (retVal);
 }
+#endif
 
 static int32_t Udma_rmCheckResLeak(Udma_DrvHandle drvHandle,
                                    const uint32_t *allocFlag,

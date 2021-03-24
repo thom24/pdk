@@ -340,6 +340,7 @@ void Udma_rmFreeIrIntr(uint32_t irIntrNum, Udma_DrvHandle drvHandle);
 uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum);
 uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIntrNum);
 void Udma_rmFreeCoreIntr(uint32_t coreIntrNum, Udma_DrvHandle drvHandle);
+#if !defined(SOC_AM65XX)
 /* Query Sciclient_DefaultBoardCfg_rm API */
 int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCfgPrms *rmDefBoardCfgPrms,
                                                   Udma_RmDefBoardCfgResp *rmDefBoardCfgResp,
@@ -351,6 +352,7 @@ int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrm
                                       uint32_t rangeTotalNum,
                                       uint32_t *start,
                                       uint32_t *num);
+#endif
 
 /* Utils APIs */
 uint64_t Udma_virtToPhyFxn(const void *virtAddr,
