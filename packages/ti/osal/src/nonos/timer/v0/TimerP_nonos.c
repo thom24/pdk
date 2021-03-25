@@ -559,7 +559,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
         }
         /* reset the timer's bit field in the mask and clear the used flag */
         gTimerStructs[index].used = (bool)false;
-        id = gTimerStructs[index].timerId;
+        id = gTimerStructs[index].id;
         uint32_t shift = ((uint32_t) 1u) << id;
         if(((gTimerAnyMask & shift)) == 0U)
         {
