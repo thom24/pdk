@@ -2199,12 +2199,7 @@ static int32_t Dss_dctrlConnectNodes(uint32_t inputNode, uint32_t outNode)
 static void Dss_dctrlVpSetGoBit(uint32_t vpId)
 {
     CSL_dss_vpRegs *vpRegs;
-    CSL_dss_commRegs *commRegs;
     const Dss_SocInfo *socInfo;
-    const Dss_DctrlVpParams *vpParams;
-    uint32_t syncVpId;
-    uint32_t vpMask;
-    uint32_t i;
 
     socInfo = Dss_getSocInfo();
 
@@ -2212,31 +2207,7 @@ static void Dss_dctrlVpSetGoBit(uint32_t vpId)
     vpRegs = socInfo->vpRegs[vpId];
     GT_assert(DssTrace, (NULL != vpRegs));
 
-    /* Get DSS common_m / common_0 registers */
-    /* XXX if common_0/m is not enabled in rmInfo? */
-    commRegs = socInfo->commRegs[0U];
-    GT_assert(DssTrace, (NULL != commRegs));
-
-    vpParams = &gDss_DctrlDrvInfo.vpParams[vpId];
-
-    if(TRUE == vpParams->syncOpCfg.enabled)
-    {
-        if(TRUE == vpParams->syncOpCfg.isPrimary)
-        {
-            vpMask = (uint32_t)(1U << vpId);
-            for(i = 0U; i < vpParams->syncOpCfg.numSyncVpIds; i++)
-            {
-                syncVpId = vpParams->syncOpCfg.syncVpIds[i];
-                vpMask |= (uint32_t)(1U << syncVpId);
-            }
-
-            CSL_dssGlobalVpGoBitEnable(commRegs, vpMask);
-        }
-    }
-    else
-    {
-        CSL_dssVpSetGoBit(vpRegs);
-    }
+    CSL_dssVpSetGoBit(vpRegs);
 }
 
 static void Dss_dctrlVpReset(uint32_t vpId)
