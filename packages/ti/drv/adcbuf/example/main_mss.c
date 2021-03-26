@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2020
+ *  Copyright (c) Texas Instruments Incorporated 2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -269,7 +269,7 @@ void Test_ADCBUFContModeConfig(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataF
         printf("Error: ADCBufMMWave_CMD_CONF_DATA_FORMAT failed with [Error=%d]\n", retVal);
 
     /* Enable all 4  Rx Channel */
-    for (channel=0; channel < SYS_COMMON_NUM_RX_CHANNEL; channel++)
+    for (channel=0; channel < NUM_RX_CHANNEL; channel++)
     {
         rxChanConf.channel = channel;
         rxChanConf.offset    = offset;

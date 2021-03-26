@@ -1,14 +1,14 @@
 /**
- *   @file  adcbuf_xwr1xxx.c
+ *   @file  adcbuf_soc.c
  *
  *   @brief
- *      XWR14xx ADCBUF configuration: This file is provided as a sample
+ *      ADCBUF configuration: This file is provided as a sample
  *      file but it can be customized by application developers to
  *      meet their application requirements.
  *
  *  \par
  *  NOTE:
- *      (C) Copyright 2016 Texas Instruments, Inc.
+ *      (C) Copyright 2021 Texas Instruments, Inc.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -46,7 +46,6 @@
 #include <stdint.h>
 #include <ti/drv/adcbuf/adcbuf.h>
 #include <ti/drv/adcbuf/src/adcbuf_mmwave.h>
-#include <ti/csl/soc/awr294x/src/cslr_soc.h>
 
 #define RSS_ADCBUF_DFE_CQ_BASE  (0xA2060000U)
 

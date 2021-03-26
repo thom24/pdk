@@ -319,7 +319,7 @@ typedef struct ADCBuf_rxTestPatternConf_t
 typedef struct ADCBuf_TestPatternConf_t
 {
     /* Test pattern configuration for 4 channels */
-    ADCBuf_rxTestPatternConf rxConfig[SYS_COMMON_NUM_RX_CHANNEL];
+    ADCBuf_rxTestPatternConf rxConfig[NUM_RX_CHANNEL];
 
     /* Periodicity of the pattern */
     uint16_t               period;

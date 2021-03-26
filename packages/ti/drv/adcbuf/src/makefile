@@ -19,7 +19,7 @@ ifeq ($(SOC),$(filter $(SOC), awr294x))
 endif
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(ADCBUF_CFLAGS)
 
-PACKAGE_SRCS_COMMON = adcbuf.h makefile adcbuff_component.mk makefile src soc/$(SOC) include
+PACKAGE_SRCS_COMMON = adcbuf.h adcbuf_component.mk makefile src soc/$(SOC) soc/adcbuf_soc.h
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc
 

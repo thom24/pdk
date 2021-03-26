@@ -52,12 +52,10 @@
 #define ADCBUF_NUMBITS_CHIRPTHRESHOLD         (5U)
 
 /* Number of register bits to configure number of samples */
-#define ADCBUF_NUMBITS_NUMBER_SAMPLES         (ADCBUFCFG4_ADCBUFSAMPCNT_BIT_END - \
-                                               ADCBUFCFG4_ADCBUFSAMPCNT_BIT_START + 1U)
+#define ADCBUF_NUMBITS_NUMBER_SAMPLES         (16)
 
 /* Number of register bits to configure channel address offset */
-#define ADCBUF_NUMBITS_CHAN_ADDR_OFFSET       (ADCBUFCFG2_ADCBUFADDRX0_BIT_END - \
-                                               ADCBUFCFG2_ADCBUFADDRX0_BIT_START + 1U)
+#define ADCBUF_NUMBITS_CHAN_ADDR_OFFSET       (11)
 
 /*
  * =============================================================================
@@ -83,6 +81,7 @@ static int32_t ADCBUFCmdParamCheck(ADCBufMMWave_CMD cmd, void* arg);
 
 static void ADCBUFSetPingNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t threshhold);
 static void ADCBUFSetPongNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t threshhold);
+static uint32_t isChannelEnabled(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t channel);
 
 /* External Functions */
 void ADCBUF_MMWave_init(ADCBuf_Handle handle);
@@ -135,10 +134,10 @@ const ADCBuf_FxnTable gADCBufFxnTable = {
 static void ADCBUFSrcSelect(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t source)
 {
     /* Setup the ADC buffer source */
-	ptrRssCtrlRegBase->DMMSWINT1 = CSL_FINSR(ptrRssCtrlRegBase->DMMSWINT1,
-                                             DMMSWINT1_DMMADCBUFWREN_BIT_END,
-                                             DMMSWINT1_DMMADCBUFWREN_BIT_START,
-                                             source);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->DMMSWINT1, 
+                       CSL_RSS_CTRL_DMMSWINT1_DMMSWINT1_DMMADCBUFWREN_MASK,
+                       CSL_RSS_CTRL_DMMSWINT1_DMMSWINT1_DMMADCBUFWREN_SHIFT,
+                       source);
 }
 
 /**
@@ -158,10 +157,10 @@ static void ADCBUFSrcSelect(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t sourc
  */
 static void ADCBUFSetPingNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t threshhold)
 {
-	ptrRssCtrlRegBase->ADCBUFCFG4 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG4,
-                                             ADCBUFCFG4_ADCBUFNUMCHRPPING_BIT_END,
-                                             ADCBUFCFG4_ADCBUFNUMCHRPPING_BIT_START,
-                                             threshhold);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG4, 
+                       CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFNUMCHRPPING_MASK,
+                       CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFNUMCHRPPING_SHIFT,
+                       threshhold);
 }
 
 /**
@@ -182,10 +181,10 @@ static void ADCBUFSetPingNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase
 static void ADCBUFSetPongNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t threshhold)
 {
     /* Number of chirps for Pong buffer */
-	ptrRssCtrlRegBase->ADCBUFCFG4 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG4,
-                                             ADCBUFCFG4_ADCBUFNUMCHRPPONG_BIT_END,
-                                             ADCBUFCFG4_ADCBUFNUMCHRPPONG_BIT_START,
-                                             threshhold);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG4, 
+                       CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFNUMCHRPPONG_MASK,
+                       CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFNUMCHRPPONG_SHIFT,
+                       threshhold);
 }
 
 /**
@@ -206,10 +205,10 @@ static void ADCBUFSetPongNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase
 static void ADCBUFContinuousModeCtrl(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t mode)
 {
     /* Setup the continuous mode control */
-	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                              ADCBUFCFG1_ADCBUFCONTMODEEN_BIT_END,
-                                              ADCBUFCFG1_ADCBUFCONTMODEEN_BIT_START,
-                                              mode);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                       CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFCONTMODEEN_MASK,
+                       CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFCONTMODEEN_SHIFT,
+                       mode);
 }
 
 /**
@@ -230,16 +229,16 @@ static void ADCBUFContinuousModeCtrl(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint3
 static void ADCBUFContinuousModeStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase,   uint16_t numSamples)
 {
     /* Starts the continuous mode operation */
-	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                              ADCBUFCFG1_ADCBUFCONTSTRTPL_BIT_END,
-                                              ADCBUFCFG1_ADCBUFCONTSTRTPL_BIT_START,
-                                              1U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                       CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFCONTSTRTPL_MASK,
+                       CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFCONTSTRTPL_SHIFT,
+                       1U);
 
     /* Setup the sample count */
-	ptrRssCtrlRegBase->ADCBUFCFG4 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG4,
-                                              ADCBUFCFG4_ADCBUFSAMPCNT_BIT_END,
-                                              ADCBUFCFG4_ADCBUFSAMPCNT_BIT_START,
-                                              (uint32_t)numSamples);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG4, 
+                       CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFSAMPCNT_MASK,
+                       CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFSAMPCNT_SHIFT,
+                       (uint32_t) numSamples);
 }
 
 /**
@@ -257,10 +256,10 @@ static void ADCBUFContinuousModeStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase,   ui
  */
 static void ADCBUFContinuousModeStop(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase)
 {
-	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                              ADCBUFCFG1_ADCBUFCONTSTOPPL_BIT_END,
-                                              ADCBUFCFG1_ADCBUFCONTSTOPPL_BIT_START,
-                                              1U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                       CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFCONTSTOPPL_MASK,
+                       CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFCONTSTOPPL_SHIFT,
+                       1U);
 }
 
 /**
@@ -288,31 +287,31 @@ static void ADCBUFConfigureDataFormat(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint
     if(dataFormat == 0)    /* Complex data format */
     {
         /* The requested data format is complex */
-    	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                  ADCBUFCFG1_ADCBUFREALONLYMODE_BIT_END,
-                                                  ADCBUFCFG1_ADCBUFREALONLYMODE_BIT_START,
-                                                  (uint32_t)dataFormat);
+        CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                        CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFREALONLYMODE_MASK,
+                        CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFREALONLYMODE_SHIFT,
+                        (uint32_t)dataFormat);
 
         /* Setup the IQ swap configuration */
-    	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                  ADCBUFCFG1_ADCBUFIQSWAP_BIT_END,
-                                                  ADCBUFCFG1_ADCBUFIQSWAP_BIT_START,
-                                                  (uint32_t)iqConfig);
+        CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                        CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFIQSWAP_MASK,
+                        CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFIQSWAP_SHIFT,
+                        (uint32_t)iqConfig);
     }
     else
     {
         /* The requested data format is real */
-    	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                  ADCBUFCFG1_ADCBUFREALONLYMODE_BIT_END,
-                                                  ADCBUFCFG1_ADCBUFREALONLYMODE_BIT_START,
-                                                  (uint32_t)dataFormat);
+        CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                        CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFREALONLYMODE_MASK,
+                        CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFREALONLYMODE_SHIFT,
+                        (uint32_t)dataFormat);
     }
 
     /* Update the interleave mode */
-    ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                              ADCBUFCFG1_ADCBUFWRITEMODE_BIT_END,
-                                              ADCBUFCFG1_ADCBUFWRITEMODE_BIT_START,
-                                              (uint32_t)interleave);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFWRITEMODE_MASK,
+                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_ADCBUFWRITEMODE_SHIFT,
+                    (uint32_t)interleave);
 }
 
 /**
@@ -338,53 +337,55 @@ static void ADCBUFChannelEnSetOffset(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint8
     {
         case 0U:
             /* Enable the channel */
-        	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                     ADCBUFCFG1_RX0EN_BIT_END,
-                                                     ADCBUFCFG1_RX0EN_BIT_START,
-                                                     1U);
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX0EN_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX0EN_SHIFT,
+                               1U);
 
             /* Setup the offset */
-            ptrRssCtrlRegBase->ADCBUFCFG2 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG2,
-                                                    ADCBUFCFG2_ADCBUFADDRX0_BIT_END,
-                                                    ADCBUFCFG2_ADCBUFADDRX0_BIT_START,
-                                                    ((uint32_t)offset >> 4U));
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG2, 
+                               CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX0_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX0_SHIFT,
+                               ((uint32_t)offset >> 4U));
             break;
         case 1U:
             /* Enable the channel */
-        	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                     ADCBUFCFG1_RX1EN_BIT_END,
-                                                     ADCBUFCFG1_RX1EN_BIT_START,
-                                                     1U);
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX1EN_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX1EN_SHIFT,
+                               1U);
+
             /* Setup the offset */
-            ptrRssCtrlRegBase->ADCBUFCFG2 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG2,
-                                                    ADCBUFCFG2_ADCBUFADDRX1_BIT_END,
-                                                    ADCBUFCFG2_ADCBUFADDRX1_BIT_START,
-                                                    ((uint32_t)offset >> 4U));
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG2, 
+                               CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX1_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX1_SHIFT,
+                               ((uint32_t)offset >> 4U));
             break;
         case 2U:
             /* Enable the channel */
-        	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                     ADCBUFCFG1_RX2EN_BIT_END,
-                                                     ADCBUFCFG1_RX2EN_BIT_START,
-                                                     1U);
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX2EN_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX2EN_SHIFT,
+                               1U);
+
             /* Setup the offset */
-            ptrRssCtrlRegBase->ADCBUFCFG3 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG3,
-                                                    ADCBUFCFG3_ADCBUFADDRX2_BIT_END,
-                                                    ADCBUFCFG3_ADCBUFADDRX2_BIT_START,
-                                                    ((uint32_t)offset >> 4U));
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG3, 
+                               CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX2_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX2_SHIFT,
+                               ((uint32_t)offset >> 4U));
             break;
         case 3U:
             /* Enable the channel */
-        	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                     ADCBUFCFG1_RX3EN_BIT_END,
-                                                     ADCBUFCFG1_RX3EN_BIT_START,
-                                                     1U);
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX3EN_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX3EN_SHIFT,
+                               1U);
 
             /* Setup the offset */
-            ptrRssCtrlRegBase->ADCBUFCFG3 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG3,
-                                                    ADCBUFCFG3_ADCBUFADDRX3_BIT_END,
-                                                    ADCBUFCFG3_ADCBUFADDRX3_BIT_START,
-                                                    ((uint32_t)offset >> 4U));
+            CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG3, 
+                               CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX3_MASK,
+                               CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX3_SHIFT,
+                               ((uint32_t)offset >> 4U));
             break;
 
         default:
@@ -412,10 +413,35 @@ static void ADCBUFChannelEnSetOffset(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint8
 static void ADCBUFChannelDisable(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint8_t channel)
 {
     /* Disable the channel */
-	ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                              ADCBUFCFG1_RX0EN_BIT_END + channel,
-                                              ADCBUFCFG1_RX0EN_BIT_START + channel,
-                                              0U);
+    if(channel == 0)
+    {
+        CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX0EN_MASK,
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX0EN_SHIFT,
+                            0U);
+    }
+    else if (channel == 1)
+    {
+        CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX1EN_MASK,
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX1EN_SHIFT,
+                            0U);
+    }
+    else if (channel == 2)
+    {
+        CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX2EN_MASK,
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX2EN_SHIFT,
+                            0U);
+    }
+    else if (channel == 3)
+    {
+        CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1, 
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX3EN_MASK,
+                            CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX3EN_SHIFT,
+                            0U);
+    }
+
 }
 
 /**
@@ -442,98 +468,100 @@ static void ADCBUFTestPatternConfig(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, const 
 {
     /* Setup the test pattern */
     /* RX1 Config */
-	ptrRssCtrlRegBase->TESTPATTERNRX1ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX1ICFG,
-                                                    TESTPATTERNRX1ICFG_TSTPATRX1IINCR_BIT_END,
-                                                    TESTPATTERNRX1ICFG_TSTPATRX1IINCR_BIT_START,
-                                                    testPatternConf->rxConfig[0].rxIInc);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX1ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX1ICFG_TESTPATTERNRX1ICFG_TSTPATRX1IINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX1ICFG_TESTPATTERNRX1ICFG_TSTPATRX1IINCR_SHIFT,
+                        testPatternConf->rxConfig[0].rxIInc);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX1ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX1ICFG,
-                                                    TESTPATTERNRX1ICFG_TSTPATRX1IOFFSET_BIT_END,
-                                                    TESTPATTERNRX1ICFG_TSTPATRX1IOFFSET_BIT_START,
-                                                    testPatternConf->rxConfig[0].rxIOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX1ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX1ICFG_TESTPATTERNRX1ICFG_TSTPATRX1IOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX1ICFG_TESTPATTERNRX1ICFG_TSTPATRX1IOFFSET_SHIFT,
+                        testPatternConf->rxConfig[0].rxIOffset);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX1QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX1QCFG,
-                                                    TESTPATTERNRX1QCFG_TSTPATRX1QINCR_BIT_END,
-                                                    TESTPATTERNRX1QCFG_TSTPATRX1QINCR_BIT_START,
-                                                    testPatternConf->rxConfig[0].rxQInc);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX1QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX1QCFG_TESTPATTERNRX1QCFG_TSTPATRX1QINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX1QCFG_TESTPATTERNRX1QCFG_TSTPATRX1QINCR_SHIFT,
+                        testPatternConf->rxConfig[0].rxQInc);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX1QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX1QCFG,
-                                                    TESTPATTERNRX1QCFG_TSTPATRX1QOFFSET_BIT_END,
-                                                    TESTPATTERNRX1QCFG_TSTPATRX1QOFFSET_BIT_START,
-                                                    testPatternConf->rxConfig[0].rxQOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX1QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX1QCFG_TESTPATTERNRX1QCFG_TSTPATRX1QOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX1QCFG_TESTPATTERNRX1QCFG_TSTPATRX1QOFFSET_SHIFT,
+                        testPatternConf->rxConfig[0].rxQOffset);
 
     /* RX2 Config */
-    ptrRssCtrlRegBase->TESTPATTERNRX2ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX2ICFG,
-                                                    TESTPATTERNRX2ICFG_TSTPATRX2IINCR_BIT_END,
-                                                    TESTPATTERNRX2ICFG_TSTPATRX2IINCR_BIT_START,
-                                                    testPatternConf->rxConfig[1].rxIInc);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX2ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX2ICFG_TESTPATTERNRX2ICFG_TSTPATRX2IINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX2ICFG_TESTPATTERNRX2ICFG_TSTPATRX2IINCR_SHIFT,
+                        testPatternConf->rxConfig[1].rxIInc);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX2ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX2ICFG,
-                                                    TESTPATTERNRX2ICFG_TSTPATRX2IOFFSET_BIT_END,
-                                                    TESTPATTERNRX2ICFG_TSTPATRX2IOFFSET_BIT_START,
-                                                    testPatternConf->rxConfig[1].rxIOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX2ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX2ICFG_TESTPATTERNRX2ICFG_TSTPATRX2IOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX2ICFG_TESTPATTERNRX2ICFG_TSTPATRX2IOFFSET_SHIFT,
+                        testPatternConf->rxConfig[1].rxIOffset);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX2QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX2QCFG,
-                                                     TESTPATTERNRX2QCFG_TSTPATRX2QINCR_BIT_END,
-                                                     TESTPATTERNRX2QCFG_TSTPATRX2QINCR_BIT_START,
-                                                     testPatternConf->rxConfig[1].rxQInc);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX2QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX2QCFG_TESTPATTERNRX2QCFG_TSTPATRX2QINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX2QCFG_TESTPATTERNRX2QCFG_TSTPATRX2QINCR_SHIFT,
+                        testPatternConf->rxConfig[1].rxQInc);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX2QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX2QCFG,
-                                                     TESTPATTERNRX2QCFG_TSTPATRX2QOFFSET_BIT_END,
-                                                     TESTPATTERNRX2QCFG_TSTPATRX2QOFFSET_BIT_START,
-                                                     testPatternConf->rxConfig[1].rxQOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX2QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX2QCFG_TESTPATTERNRX2QCFG_TSTPATRX2QOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX2QCFG_TESTPATTERNRX2QCFG_TSTPATRX2QOFFSET_SHIFT,
+                        testPatternConf->rxConfig[1].rxQOffset);
 
     /* RX3 Config */
-    ptrRssCtrlRegBase->TESTPATTERNRX3ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX3ICFG,
-                                                    TESTPATTERNRX3ICFG_TSTPATRX3IINCR_BIT_END,
-                                                    TESTPATTERNRX3ICFG_TSTPATRX3IINCR_BIT_START,
-                                                    testPatternConf->rxConfig[2].rxIInc);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX3ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX3ICFG_TESTPATTERNRX3ICFG_TSTPATRX3IINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX3ICFG_TESTPATTERNRX3ICFG_TSTPATRX3IINCR_SHIFT,
+                        testPatternConf->rxConfig[2].rxIInc);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX3ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX3ICFG,
-                                                    TESTPATTERNRX3ICFG_TSTPATRX3IOFFSET_BIT_END,
-                                                    TESTPATTERNRX3ICFG_TSTPATRX3IOFFSET_BIT_START,
-                                                    testPatternConf->rxConfig[2].rxIOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX3ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX3ICFG_TESTPATTERNRX3ICFG_TSTPATRX3IOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX3ICFG_TESTPATTERNRX3ICFG_TSTPATRX3IOFFSET_SHIFT,
+                        testPatternConf->rxConfig[2].rxIOffset);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX3QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX3QCFG,
-                                                     TESTPATTERNRX3QCFG_TSTPATRX3QINCR_BIT_END,
-                                                     TESTPATTERNRX3QCFG_TSTPATRX3QINCR_BIT_START,
-                                                     testPatternConf->rxConfig[2].rxQInc);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX3QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX3QCFG_TESTPATTERNRX3QCFG_TSTPATRX3QINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX3QCFG_TESTPATTERNRX3QCFG_TSTPATRX3QINCR_SHIFT,
+                        testPatternConf->rxConfig[2].rxQInc);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX3QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX3QCFG,
-                                                     TESTPATTERNRX3QCFG_TSTPATRX3QOFFSET_BIT_END,
-                                                     TESTPATTERNRX3QCFG_TSTPATRX3QOFFSET_BIT_START,
-                                                     testPatternConf->rxConfig[2].rxQOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX3QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX3QCFG_TESTPATTERNRX3QCFG_TSTPATRX3QOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX3QCFG_TESTPATTERNRX3QCFG_TSTPATRX3QOFFSET_SHIFT,
+                        testPatternConf->rxConfig[2].rxQOffset);
 
     /* RX4 Config */
-    ptrRssCtrlRegBase->TESTPATTERNRX4ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX4ICFG,
-                                                    TESTPATTERNRX4ICFG_TSTPATRX4IINCR_BIT_END,
-                                                    TESTPATTERNRX4ICFG_TSTPATRX4IINCR_BIT_START,
-                                                    testPatternConf->rxConfig[3].rxIInc);
-    ptrRssCtrlRegBase->TESTPATTERNRX4ICFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX4ICFG,
-                                                    TESTPATTERNRX4ICFG_TSTPATRX4IOFFSET_BIT_END,
-                                                    TESTPATTERNRX4ICFG_TSTPATRX4IOFFSET_BIT_START,
-                                                    testPatternConf->rxConfig[3].rxIOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX4ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX4ICFG_TESTPATTERNRX4ICFG_TSTPATRX4IINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX4ICFG_TESTPATTERNRX4ICFG_TSTPATRX4IINCR_SHIFT,
+                        testPatternConf->rxConfig[3].rxIInc);
 
-    ptrRssCtrlRegBase->TESTPATTERNRX4QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX4QCFG,
-                                                     TESTPATTERNRX4QCFG_TSTPATRX4QINCR_BIT_END,
-                                                     TESTPATTERNRX4QCFG_TSTPATRX4QINCR_BIT_START,
-                                                     testPatternConf->rxConfig[3].rxQInc);
-    ptrRssCtrlRegBase->TESTPATTERNRX4QCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNRX4QCFG,
-                                                     TESTPATTERNRX4QCFG_TSTPATRX4QOFFSET_BIT_END,
-                                                     TESTPATTERNRX4QCFG_TSTPATRX4QOFFSET_BIT_START,
-                                                     testPatternConf->rxConfig[3].rxQOffset);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX4ICFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX4ICFG_TESTPATTERNRX4ICFG_TSTPATRX4IOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX4ICFG_TESTPATTERNRX4ICFG_TSTPATRX4IOFFSET_SHIFT,
+                        testPatternConf->rxConfig[3].rxIOffset);
+
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX4QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX4QCFG_TESTPATTERNRX4QCFG_TSTPATRX4QINCR_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX4QCFG_TESTPATTERNRX4QCFG_TSTPATRX4QINCR_SHIFT,
+                        testPatternConf->rxConfig[3].rxQInc);
+
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNRX4QCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNRX4QCFG_TESTPATTERNRX4QCFG_TSTPATRX4QOFFSET_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNRX4QCFG_TESTPATTERNRX4QCFG_TSTPATRX4QOFFSET_SHIFT,
+                        testPatternConf->rxConfig[3].rxQOffset);
 
     /* Setup the period */
-    ptrRssCtrlRegBase->TESTPATTERNVLDCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNVLDCFG,
-                                                    TESTPATTERNVLDCFG_TSTPATVLDCNT_BIT_END,
-                                                    TESTPATTERNVLDCFG_TSTPATVLDCNT_BIT_START,
-                                                    testPatternConf->period);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNVLDCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATVLDCNT_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATVLDCNT_SHIFT,
+                        testPatternConf->period);
 
     /* Setup the sample count */
-    ptrRssCtrlRegBase->ADCBUFCFG4 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG4,
-                                             ADCBUFCFG4_ADCBUFSAMPCNT_BIT_END,
-                                             ADCBUFCFG4_ADCBUFSAMPCNT_BIT_START,
-                                             (testPatternConf->numSamples));
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->ADCBUFCFG4, 
+                        CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFSAMPCNT_MASK,
+                        CSL_RSS_CTRL_ADCBUFCFG4_ADCBUFCFG4_ADCBUFSAMPCNT_SHIFT,
+                        (testPatternConf->numSamples));
 }
 
 /**
@@ -552,16 +580,16 @@ static void ADCBUFTestPatternConfig(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, const 
 static void ADCBUFTestPatternStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase)
 {
     /* Lower the clock */
-	ptrRssCtrlRegBase->TESTPATTERNVLDCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNVLDCFG,
-                                                     TESTPATTERNVLDCFG_TSTPATVLDCNT_BIT_END,
-                                                     TESTPATTERNVLDCFG_TSTPATVLDCNT_BIT_START,
-                                                     0x32U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNVLDCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATVLDCNT_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATVLDCNT_SHIFT,
+                        0x32U);
 
     /* Test pattern start */
-	ptrRssCtrlRegBase->TESTPATTERNVLDCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNVLDCFG,
-                                                     TESTPATTERNVLDCFG_TSTPATGENEN_BIT_END,
-                                                     TESTPATTERNVLDCFG_TSTPATGENEN_BIT_START,
-                                                     0x7U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNVLDCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATGENEN_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATGENEN_SHIFT,
+                        0x7U);
 }
 
 /**
@@ -579,10 +607,10 @@ static void ADCBUFTestPatternStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase)
  */
 static void ADCBUFTestPatternStop(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase)
 {
-	ptrRssCtrlRegBase->TESTPATTERNVLDCFG = CSL_FINSR(ptrRssCtrlRegBase->TESTPATTERNVLDCFG,
-                                                     TESTPATTERNVLDCFG_TSTPATGENEN_BIT_END,
-                                                     TESTPATTERNVLDCFG_TSTPATGENEN_BIT_START,
-                                                     0x0U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNVLDCFG, 
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATGENEN_MASK,
+                        CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATGENEN_SHIFT,
+                        0x0U);
 }
 
 /**
@@ -609,34 +637,34 @@ static int32_t ADCBUFCQConfig
     int32_t errCode = ADCBUF_STATUS_SUCCESS;
     
     /* Configure the CQ data width */
-    ptrRssCtrlRegBase->CQCFG1 = CSL_FINSR(ptrRssCtrlRegBase->CQCFG1,
-                                        CQCFG1_CQDATAWIDTH_BIT_END,
-                                        CQCFG1_CQDATAWIDTH_BIT_START,
-                                        cqCfg->cqDataWidth);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->CQCFG1, 
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQDATAWIDTH_MASK,
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQDATAWIDTH_SHIFT,
+                        cqCfg->cqDataWidth);
 
     /* Configure the if 96 bit pack mode */
-    ptrRssCtrlRegBase->CQCFG1 = CSL_FINSR(ptrRssCtrlRegBase->CQCFG1,
-                                        CQCFG1_CQ96BITPACKEN_BIT_END,
-                                        CQCFG1_CQ96BITPACKEN_BIT_START,
-                                        cqCfg->cq96BitPackEn);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->CQCFG1, 
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ96BITPACKEN_MASK,
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ96BITPACKEN_SHIFT,
+                        cqCfg->cq96BitPackEn);
 
     /* Configure the CQ1 base address */
-    ptrRssCtrlRegBase->CQCFG1 = CSL_FINSR(ptrRssCtrlRegBase->CQCFG1,
-                                        CQCFG1_CQ0BASEADDR_BIT_END,
-                                        CQCFG1_CQ0BASEADDR_BIT_START,
-                                        (uint32_t)cqCfg->cq0AddrOffset >> 4U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->CQCFG1, 
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ0BASEADDR_MASK,
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ0BASEADDR_SHIFT,
+                        ((uint32_t)cqCfg->cq0AddrOffset >> 4U));
 
     /* Configure the CQ2 base address */
-    ptrRssCtrlRegBase->CQCFG1 = CSL_FINSR(ptrRssCtrlRegBase->CQCFG1,
-                                        CQCFG1_CQ1BASEADDR_BIT_END,
-                                        CQCFG1_CQ1BASEADDR_BIT_START,
-                                        (uint32_t)cqCfg->cq1AddrOffset >> 4U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->CQCFG1, 
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ1BASEADDR_MASK,
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ1BASEADDR_SHIFT,
+                        ((uint32_t)cqCfg->cq1AddrOffset >> 4U));
 
     /* Configure the CQ3 base address */
-    ptrRssCtrlRegBase->CQCFG1 = CSL_FINSR(ptrRssCtrlRegBase->CQCFG1,
-                                        CQCFG1_CQ2BASEADDR_BIT_END,
-                                        CQCFG1_CQ2BASEADDR_BIT_START,
-                                        (uint32_t)cqCfg->cq2AddrOffset >> 4U);
+    CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->CQCFG1, 
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ2BASEADDR_MASK,
+                        CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ2BASEADDR_SHIFT,
+                        ((uint32_t)cqCfg->cq2AddrOffset >> 4U));
 
     return errCode;
 
@@ -765,7 +793,7 @@ static int32_t ADCBUFCmdParamCheck(ADCBufMMWave_CMD cmd, void* arg)
                 rxChanConf = (ADCBuf_RxChanConf *)arg;
 
                 /* Hardware supports channels 0-3 */
-                if( (rxChanConf->channel >= SYS_COMMON_NUM_RX_CHANNEL) ||
+                if( (rxChanConf->channel >= NUM_RX_CHANNEL) ||
                     (((uint32_t)rxChanConf->offset >> 4) >= ((uint32_t)0x1U << ADCBUF_NUMBITS_CHAN_ADDR_OFFSET)) )
                 {
                     retCode = ADCBUF_STATUS_INVALID_PARAMS;
@@ -801,6 +829,38 @@ static int32_t ADCBUFCmdParamCheck(ADCBufMMWave_CMD cmd, void* arg)
     }
 
     return retCode;
+}
+
+static uint32_t isChannelEnabled(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t channel)
+{
+    uint32_t retVal = 0;
+
+    if(channel == 0)
+    {
+        retVal = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX0EN_MASK,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX0EN_SHIFT);
+    }
+    else if(channel == 1)
+    {
+        retVal = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX1EN_MASK,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX1EN_SHIFT);
+    }
+    else if(channel == 2)
+    {
+        retVal = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX2EN_MASK,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX2EN_SHIFT);
+    }
+    else if(channel == 3)
+    {
+        retVal = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG1,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX3EN_MASK,
+                                    CSL_RSS_CTRL_ADCBUFCFG1_ADCBUFCFG1_RX3EN_SHIFT);
+    }
+
+    return retVal;
 }
 
 /*
@@ -1066,7 +1126,7 @@ int_fast16_t ADCBUF_MMWave_control(ADCBuf_Handle handle, uint_fast8_t cmd, void 
                 uint32_t                 channelMask;
 
                 channelMask = *(uint32_t *)arg;
-                for(channel = 0; channel < SYS_COMMON_NUM_RX_CHANNEL; channel++)
+                for(channel = 0; channel < NUM_RX_CHANNEL; channel++)
                 {
                     if(channelMask & ((uint32_t)0x1U << channel))
                     {
@@ -1141,7 +1201,7 @@ uint32_t ADCBUF_MMWave_getChanBufAddr(ADCBuf_Handle handle, uint8_t channel, int
     uint32_t                 chanAddress = (uint32_t)0U;
 
     /* Parameter check */
-    if ((channel >= SYS_COMMON_NUM_RX_CHANNEL) ||
+    if ((channel >= NUM_RX_CHANNEL) ||
        (handle == (ADCBuf_Handle)NULL))
     {
         /* Out of range channel number or invalid handle */
@@ -1165,33 +1225,34 @@ uint32_t ADCBUF_MMWave_getChanBufAddr(ADCBuf_Handle handle, uint8_t channel, int
     *errCode = ADCBUF_STATUS_SUCCESS;
 
     /* Check if the channel is enabled? */
-    if(CSL_FEXTR(ptrRssCtrlRegBase->ADCBUFCFG1, ADCBUFCFG1_RX0EN_BIT_END + channel,
-                 ADCBUFCFG1_RX0EN_BIT_START + channel) != (uint32_t)0U)
+    /*if(CSL_FEXTR(ptrRssCtrlRegBase->ADCBUFCFG1, ADCBUFCFG1_RX0EN_BIT_END + channel,
+                 ADCBUFCFG1_RX0EN_BIT_START + channel) != (uint32_t)0U)*/
+    if(isChannelEnabled(ptrRssCtrlRegBase, channel) == (uint32_t)0U)
     {
         uint32_t addrOffset;
 
         switch(channel)
         {
             case 0U:
-                addrOffset = CSL_FEXTR(ptrRssCtrlRegBase->ADCBUFCFG2,
-                                      ADCBUFCFG2_ADCBUFADDRX0_BIT_END,
-                                      ADCBUFCFG2_ADCBUFADDRX0_BIT_START);
+                addrOffset = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG2,
+                                                CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX0_MASK,
+                                                CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX0_SHIFT);
                 break;
             case 1U:
-                addrOffset = CSL_FEXTR(ptrRssCtrlRegBase->ADCBUFCFG2,
-                                      ADCBUFCFG2_ADCBUFADDRX1_BIT_END,
-                                      ADCBUFCFG2_ADCBUFADDRX1_BIT_START);
+                addrOffset = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG2,
+                                                CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX1_MASK,
+                                                CSL_RSS_CTRL_ADCBUFCFG2_ADCBUFCFG2_ADCBUFADDRX1_SHIFT);
                 break;
 
             case 2U:
-                addrOffset = CSL_FEXTR(ptrRssCtrlRegBase->ADCBUFCFG3,
-                                      ADCBUFCFG3_ADCBUFADDRX2_BIT_END,
-                                      ADCBUFCFG3_ADCBUFADDRX2_BIT_START);
+                addrOffset = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG3,
+                                                CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX2_MASK,
+                                                CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX2_SHIFT);
                 break;
             case 3U:
-                addrOffset = CSL_FEXTR(ptrRssCtrlRegBase->ADCBUFCFG3,
-                                      ADCBUFCFG3_ADCBUFADDRX3_BIT_END,
-                                      ADCBUFCFG3_ADCBUFADDRX3_BIT_START);
+                addrOffset = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->ADCBUFCFG3,
+                                                CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX3_MASK,
+                                                CSL_RSS_CTRL_ADCBUFCFG3_ADCBUFCFG3_ADCBUFADDRX3_SHIFT);
                 break;
             default:
                 *errCode = ADCBUF_STATUS_INVALID_PARAMS;
@@ -1276,23 +1337,23 @@ uint32_t ADCBUF_MMWave_getCQBufAddr
     switch(cqType)
     {
         case ADCBufMMWave_CQType_CQ0:
-            addrOffset = CSL_FEXTR(ptrRssCtrlRegBase->CQCFG1,
-                                  CQCFG1_CQ0BASEADDR_BIT_END,
-                                  CQCFG1_CQ0BASEADDR_BIT_START);
+            addrOffset = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->CQCFG1,
+                                            CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ0BASEADDR_MASK,
+                                            CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ0BASEADDR_SHIFT);
 
             break;
 
         case ADCBufMMWave_CQType_CQ1:
-            addrOffset = CSL_FEXTR(ptrRssCtrlRegBase->CQCFG1,
-                                  CQCFG1_CQ1BASEADDR_BIT_END,
-                                  CQCFG1_CQ1BASEADDR_BIT_START);
+            addrOffset = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->CQCFG1,
+                                            CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ1BASEADDR_MASK,
+                                            CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ1BASEADDR_SHIFT);
 
             break;
 
         case ADCBufMMWave_CQType_CQ2:
-            addrOffset = CSL_FEXTR(ptrRssCtrlRegBase->CQCFG1,
-                                  CQCFG1_CQ2BASEADDR_BIT_END,
-                                  CQCFG1_CQ2BASEADDR_BIT_START);
+            addrOffset = CSL_REG32_FEXT_RAW(&ptrRssCtrlRegBase->CQCFG1,
+                                            CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ2BASEADDR_MASK,
+                                            CSL_RSS_CTRL_CQCFG1_CQCFG1_CQ2BASEADDR_SHIFT);
 
             break;
 
