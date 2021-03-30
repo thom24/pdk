@@ -928,6 +928,17 @@ ifneq ($(adcbuf_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(adcbuf_EXAMPLE_LIST)
 endif
 
+# - used to ignore include if component not present
+-include $(PDK_CBUFF_COMP_PATH)/cbuff_component.mk
+ifneq ($(cbuff_LIB_LIST),)
+  pdk_LIB_LIST += $(cbuff_LIB_LIST)
+endif
+ifneq ($(cbuff_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(cbuff_APP_LIB_LIST)
+endif
+ifneq ($(cbuff_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(cbuff_EXAMPLE_LIST)
+endif
 
 # Components included for non-baremetal OS
 ifneq ($(BUILD_OS_TYPE), baremetal)
