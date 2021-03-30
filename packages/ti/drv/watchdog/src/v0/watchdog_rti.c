@@ -328,7 +328,8 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
     Watchdog_Handle         retHandle = NULL;
     ESM_NotifyParams        notifyParams;
     int32_t                 errCode, retVal = 0;
-    uint32_t                preloadValue;
+    uint32_t                preloadMaxValue;
+    uint64_t                preloadValueTmp;
 
     /* Only NMI mode is supported in the DSS subsystem.
      * Resetting the system is supported only in the MSS sysbsystem. */
@@ -353,9 +354,10 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
 
     /* Calculate preload value from the expiration time */
     /* Expiration time (in millisecond)/1000 = (preload value + 1)*(2^13)/RTICLK */
-    preloadValue = (((ptrHwCfg->rtiClkFrequency) * (params->expirationTime) / 1000) >> 13) - 1;
-
-    if (preloadValue > WATCHDOG_MAX_PRELOAD_VALUE)
+    preloadValueTmp =((uint64_t)(ptrHwCfg->rtiClkFrequency)) * ((uint64_t)params->expirationTime) / 1000;
+    /* Pre load is 12 bit value in register and actual value should be multiplied by 2^13) */
+    preloadMaxValue = (1 << (12 + 13)) - 1;
+    if (preloadValueTmp > preloadMaxValue)
     {
         retVal = -1;
     }
@@ -390,6 +392,13 @@ static Watchdog_Handle WatchdogRTI_open(Watchdog_Handle handle, Watchdog_Params*
 
     if (retVal >= 0 )
     {
+        uint32_t                preloadValue;
+        /* CSL API needs shifted value but doesnot do -1 while programming.
+         * So updating the preload value.
+         */
+        preloadValue = ((uint32_t)(preloadValueTmp) >> 13) - 1;
+        preloadValue = preloadValue << 13;
+
         /* Clear the status flags */
         RTIDwwdClearStatus(ptrHwCfg->baseAddr, WATCHDOG_CLEAR_STATUS);
 
