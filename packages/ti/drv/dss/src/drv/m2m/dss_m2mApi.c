@@ -786,12 +786,13 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
                                          qObj->outFrm->addr[0U],
                                          qObj->outFrm->addr[1U]);
 
-                CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) TRUE);
                 for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
                 {
                     CSL_dssVidPipeEnable(instObj->pipeRegs[virtContext->pipeId[loopCnt]],
                                          (uint32_t) TRUE);
                 }
+                CSL_dssWbPipeSetGoBit(instObj->wbRegs);
+                CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) TRUE);
             }
             else
             {
@@ -1636,12 +1637,13 @@ static void Dss_wbPipeDmaCompletionCbFxn(DssM2MDrv_InstObj *instObj)
                                          qObj->outFrm->addr[0U],
                                          qObj->outFrm->addr[1U]);
 
-                CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) TRUE);
                 for (loopCnt = 0U ; loopCnt < virtContext->numPipe ; loopCnt++)
                 {
                     CSL_dssVidPipeEnable(instObj->pipeRegs[virtContext->pipeId[loopCnt]],
                                          (uint32_t) TRUE);
                 }
+                CSL_dssWbPipeSetGoBit(instObj->wbRegs);
+                CSL_dssWbPipeEnable(instObj->wbRegs, (uint32_t) TRUE);
             }
             else
             {

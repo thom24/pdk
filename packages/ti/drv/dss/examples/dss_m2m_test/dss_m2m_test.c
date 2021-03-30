@@ -244,7 +244,8 @@ static int32_t App_initParams(M2MApp_AppObj *appObj)
         ovrParams = &instObj->ovrCfg;
         Dss_dctrlOverlayParamsInit(ovrParams);
         ovrParams->overlayId = APP_DSS_M2M_DSS_OVERLAY_ID;
-        ovrParams->overlayCfg.colorKeyEnable = TRUE;
+        ovrParams->colorbarEnable = FALSE;
+        ovrParams->overlayCfg.colorKeyEnable = FALSE;
         ovrParams->overlayCfg.colorKeySel = CSL_DSS_OVERLAY_TRANS_COLOR_DEST;
         ovrParams->overlayCfg.backGroundColor = 0xc8c800U;
 

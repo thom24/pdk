@@ -106,13 +106,13 @@ extern "C" {
                             (APP_DSS_M2M_IN_FRAME_WIDTH * APP_DSS_M2M_IN_FRAME_BPP))
 
 /**< Output Frame Attribute: Format */
-#define APP_DSS_M2M_OUT_FRAME_FORMAT                     (FVID2_DF_RGB24_888)
+#define APP_DSS_M2M_OUT_FRAME_FORMAT                     (FVID2_DF_YUV420SP_UV)
 /**< Output Frame Attribute: Width in pixels */
 #define APP_DSS_M2M_OUT_FRAME_WIDTH                      ((uint32_t)1920U)
 /**< Output Frame Attribute: Height in pixels */
 #define APP_DSS_M2M_OUT_FRAME_HEIGHT                     ((uint32_t)1080U)
 /**< Output Frame Attribute: Bytes per pixel */
-#define APP_DSS_M2M_OUT_FRAME_BPP                        (3U)
+#define APP_DSS_M2M_OUT_FRAME_BPP                        (1U)
 /**< Output Frame Attribute: Pitch in bytes */
 #define APP_DSS_M2M_OUT_FRAME_PITCH                      ((uint32_t)\
                             (APP_DSS_M2M_OUT_FRAME_WIDTH * APP_DSS_M2M_OUT_FRAME_BPP))
