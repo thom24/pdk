@@ -1264,7 +1264,7 @@ else
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x))
   PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos 
   PDK_COMMON_FREERTOS_COMP += freertos
 ifeq ($(ARCH),c66x)
