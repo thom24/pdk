@@ -64,6 +64,8 @@ typedef uint32_t Mailbox_Instance;
 #define MAILBOX_INST_MSS_CR5B        (1U)
 /*! \brief HSM M4 Mailbox INST */
 #define MAILBOX_INST_HSM_CM4         (2U)
+/*! \brief RCSS R4 Mailbox INST */
+#define MAILBOX_INST_RCSS            (3U)
 /*! \brief C66x Mailbox INST */
 #define MAILBOX_INST_DSP             (4U)
 /*! \brief DSS M4 Mailbox INST */
@@ -72,6 +74,9 @@ typedef uint32_t Mailbox_Instance;
 #define MAILBOX_INST_LAST            (MAILBOX_INST_DSP_CM4)
 /*! \brief Invalid Mailbox INST */
 #define MAILBOX_INST_INVALID         (0xFFU)
+
+/*! \brief Mailbox Buffer Size */
+#define MAILBOX_BUFF_UNIT_SIZE       (512U)
 
 /** @}*/ /* end defgroup MAILBOX_INSTANCE */
 

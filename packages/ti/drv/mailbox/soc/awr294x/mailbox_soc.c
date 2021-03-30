@@ -45,10 +45,25 @@
 #include <ti/drv/mailbox/mailbox.h>
 #include <ti/drv/mailbox/src/mailbox_internal.h>
 #include <ti/osal/MemoryP.h>
+#include <ti/csl/hw_types.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
+/*! \brief Mailbox receive buffer size */
+
+/*! \brief Mailbox receive buffer size 512 bytes */
+#define MAILBOX_512B                 (0U)
+
+/*! \brief Mailbox receive buffer size 1024 bytes */
+#define MAILBOX_1024B                (1U)
+
+/*! \brief Mailbox receive buffer size 1536 bytes */
+#define MAILBOX_1536B                (2U)
+
+/*! \brief Mailbox receive buffer size 2048 bytes */
+#define MAILBOX_2048B                (3U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -115,6 +130,8 @@ typedef struct Mailbox_HwCfg_t
 
 static void Mailbox_boxFullISR(uintptr_t arg);
 static void Mailbox_boxEmptyISR(uintptr_t arg);
+static int32_t Mailbox_validateLocalEndPointRxMem(void);
+static int32_t Mailbox_writeReset(Mbox_Handle handle);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -152,6 +169,21 @@ Mailbox_HwCfg   gMailboxMssDssHwCfg =
     .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_ACK,
     .remoteProcNum          = MAILBOX_INST_DSP
 };
+
+/**
+ * @brief   This is SOC specific configuration and should *NOT* be modified by the customer.
+ *          Communication between MSS and BSS (RCSS master).
+ */
+Mailbox_HwCfg   gMailboxMssRcssHwCfg =
+{
+    .mbxReg                 = &gMboxReg,
+    .baseLocalToRemote.data = (uint8_t *)(CSL_RCSS_MAILBOX_U_BASE),
+    .baseRemoteToLocal.data = (uint8_t *)(CSL_MSS_MBOX_U_BASE),
+    .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_REQ,
+    .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_ACK,
+    .remoteProcNum          = MAILBOX_INST_RCSS
+};
+
 #endif
 
 #if defined (_TMS320C6X)
@@ -179,6 +211,20 @@ Mailbox_HwCfg   gMailboxDssMssHwCfg =
     .boxFullIntNum          = CSL_DSS_INTR_DSS_DSP_MBOX_READ_REQ,
     .boxEmptyIntNum         = CSL_DSS_INTR_DSS_DSP_MBOX_READ_ACK,
     .remoteProcNum          = MAILBOX_INST_MSS_CR5A
+};
+
+/**
+ * @brief   This is SOC specific configuration and should *NOT* be modified by the customer.
+ *          Communication between RCSS and DSS (RCSS master).
+ */
+Mailbox_HwCfg   gMailboxDssRcssHwCfg =
+{
+    .mbxReg                 = &gMboxReg,
+    .baseLocalToRemote.data = (uint8_t *)(CSL_RCSS_MAILBOX_U_BASE + CSL_RCSS_MAILBOX_DSS_OFFSET),
+    .baseRemoteToLocal.data = (uint8_t *)(CSL_DSS_MAILBOX_U_BASE),
+    .boxFullIntNum          = CSL_DSS_INTR_DSS_DSP_MBOX_READ_REQ,
+    .boxEmptyIntNum         = CSL_DSS_INTR_DSS_DSP_MBOX_READ_ACK,
+    .remoteProcNum          = MAILBOX_INST_RCSS
 };
 #endif
 
@@ -210,6 +256,14 @@ int32_t Mailbox_validateLocalEndPoint(Mailbox_Instance localEndpoint)
 int32_t Mailbox_validateRemoteEndPoint(Mailbox_Instance localEndpoint, Mailbox_Instance remoteEndpoint)
 {
     int32_t retVal = MAILBOX_SOK;
+
+    /* Configure Rx memory size and offset only if remoteEndpoint is RCSS */
+    if ((remoteEndpoint == MAILBOX_INST_RCSS) && ((localEndpoint == MAILBOX_INST_MSS_CR5A) || 
+        (localEndpoint == MAILBOX_INST_DSP)))
+    {
+        retVal = Mailbox_validateLocalEndPointRxMem();
+    }
+
     if ((remoteEndpoint == localEndpoint) || (remoteEndpoint > MAILBOX_INST_LAST))
     {
         retVal = MAILBOX_EINVAL;
@@ -287,6 +341,9 @@ int32_t getMailboxTypeFromProcNum(uint32_t procNum, Mailbox_Instance *remoteEndp
         case MAILBOX_INST_MSS_CR5A:
             *remoteEndpoint = MAILBOX_INST_MSS_CR5A;
             break;
+        case MAILBOX_INST_RCSS:
+            *remoteEndpoint = MAILBOX_INST_RCSS;
+            break;
         case MAILBOX_INST_DSP:
             *remoteEndpoint = MAILBOX_INST_DSP;
             break;
@@ -359,11 +416,49 @@ int32_t Mailbox_getBoxEmptyRemoteInst(Mailbox_Instance *remoteEndpoint)
 void* Mailbox_getHwCfg(Mailbox_Instance remoteEndpoint)
 {
     Mailbox_HwCfg *hwCfg = NULL;
+    volatile uint32_t rssCtrlBootInfoReg3 = HW_RD_REG32((CSL_RSS_PROC_CTRL_U_BASE + CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3));
+    uint32_t mssOffsetIndex = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_OFFSET_INDEX);
+    uint32_t mssBuffSize    = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_BUFF_SIZE);
+    uint32_t mssSysSelect   = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_SYS_SELECT);
+    uint32_t mssEnable      = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_ENABLE);
+    uint32_t dssOffsetIndex = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_OFFSET_INDEX);
+    uint32_t dssBuffSize    = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_BUFF_SIZE);
+    uint32_t dssSysSelect   = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_SYS_SELECT);
+    uint32_t dssEnable      = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_ENABLE);
+
 #if defined (__TI_ARM_V7R4__)
     /*This is local endpoint MSS*/
     if(remoteEndpoint == MAILBOX_INST_DSP)
     {
+        /* If MSS-RSS communication enabled*/
+        if(mssEnable && (!mssSysSelect))
+        {
+            /* If MSS memory offset is Zero. */
+            if(mssOffsetIndex == 0u)
+            {
+                /* Remote to local memory starts after mss buffer size*/
+                gMailboxMssDssHwCfg.baseRemoteToLocal.data += ((mssBuffSize + 1) * MAILBOX_BUFF_UNIT_SIZE);
+            }
+        }
+        
+        /* If DSS-RSS communication enabled*/
+        if(dssEnable && (!dssSysSelect))
+        {
+            /* If DSS memory offset is Zero. */
+            if(dssOffsetIndex == 0u)
+            {
+                /* Remote to local memory starts after mss buffer size*/
+                gMailboxMssDssHwCfg.baseLocalToRemote.data += ((dssBuffSize + 1) * MAILBOX_BUFF_UNIT_SIZE);
+            }
+        }
+        
         hwCfg = &gMailboxMssDssHwCfg;
+    }
+    else
+    {
+        gMailboxMssRcssHwCfg.baseRemoteToLocal.data += (mssOffsetIndex * ((mssBuffSize + 1) * MAILBOX_BUFF_UNIT_SIZE));
+
+        hwCfg = &gMailboxMssRcssHwCfg;
     }
 #endif
 
@@ -371,7 +466,35 @@ void* Mailbox_getHwCfg(Mailbox_Instance remoteEndpoint)
     /* This is local endpoint DSS */
     if(remoteEndpoint == MAILBOX_INST_MSS_CR5A)
     {
+        /* If MSS-RSS communication enabled*/
+        if(mssEnable && (!mssSysSelect))
+        {
+            /* If MSS memory offset is Zero. */
+            if(mssOffsetIndex == 0u)
+            {
+                /* Remote to local memory starts after mss buffer size*/
+                gMailboxDssMssHwCfg.baseLocalToRemote.data += ((mssBuffSize + 1) * MAILBOX_BUFF_UNIT_SIZE);
+            }
+        }
+        
+        /* If DSS-RSS communication enabled*/
+        if(dssEnable && (!dssSysSelect))
+        {
+            /* If MSS memory offset is Zero. */
+            if(dssOffsetIndex == 0u)
+            {
+                /* Remote to local memory starts after DSS buffer size*/
+                gMailboxDssMssHwCfg.baseRemoteToLocal.data += ((dssBuffSize + 1) * MAILBOX_BUFF_UNIT_SIZE);
+            }
+        }
+
         hwCfg = &gMailboxDssMssHwCfg;
+    }
+    else
+    {
+        gMailboxDssRcssHwCfg.baseRemoteToLocal.data += (dssOffsetIndex * ((dssBuffSize + 1) * MAILBOX_BUFF_UNIT_SIZE));
+        
+        hwCfg = &gMailboxDssRcssHwCfg;
     }
 #endif
     return (void *)hwCfg;
@@ -828,6 +951,10 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
     }
 
 exit:
+    if(retVal == MAILBOX_ETXFULL)
+    {
+        Mailbox_writeReset(handle);
+    }
     return retVal;
 }
 
@@ -1098,6 +1225,83 @@ static void Mailbox_boxEmptyISR(uintptr_t arg)
     return;
 }
 
+static int32_t Mailbox_validateLocalEndPointRxMem()
+{
+    int32_t retVal = MAILBOX_SOK;
+    uint32_t endAddress = 0ul;
+    uint32_t startAddress = 0ul;
+    volatile uint32_t rssCtrlBootInfoReg3 = HW_RD_REG32((CSL_RSS_PROC_CTRL_U_BASE + CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3));
+    uint32_t mssOffsetIndex = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_OFFSET_INDEX);
+    uint32_t mssBuffSize    = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_BUFF_SIZE);
+    uint32_t dssOffsetIndex = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_OFFSET_INDEX);
+    uint32_t dssBuffSize    = HW_GET_FIELD(rssCtrlBootInfoReg3, CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_BUFF_SIZE);
+
+    /* Validate local End point Mailbox size and offset. */
+    if ((mssBuffSize <= MAILBOX_2048B) && (dssBuffSize <= MAILBOX_2048B))
+    {
+        #if defined (BUILD_MCU1_0)
+        startAddress = CSL_MSS_MBOX_U_BASE;
+        #elif defined (BUILD_DSP_1)
+        startAddress = CSL_DSS_MAILBOX_U_BASE;
+        #endif
+
+        #if defined (BUILD_MCU1_0)
+        endAddress = startAddress + mssBuffSize * (1 + mssOffsetIndex);
+        if(endAddress > (CSL_MSS_MBOX_U_BASE + CSL_MSS_MAILBOX_U_SIZE))
+        {
+            retVal = MAILBOX_EINVAL;
+        }
+        #elif defined (BUILD_DSP_1)
+        endAddress = startAddress + dssBuffSize * (1 + dssOffsetIndex);
+        if(endAddress > (CSL_DSS_MAILBOX_U_BASE + CSL_DSS_MAILBOX_U_SIZE))
+        {
+            retVal = MAILBOX_EINVAL;
+        }
+        #endif
+    }
+    else
+    {
+        retVal = MAILBOX_EINVAL;
+    }
+
+    return retVal;
+}
+
+/*
+ *  ======== Mailbox_writeReset ========
+ *  Used when a write is never acknowledged by the receiver,
+ *  do a writeReset so a new message can be sent.
+ */
+ 
+static int32_t Mailbox_writeReset(Mbox_Handle handle)
+{
+    Mailbox_Driver*     driver;
+    int32_t             retVal = 0;
+    Mailbox_HwCfg       *hwCfg = NULL;
+
+    driver = (Mailbox_Driver*)handle;
+
+    /* Sanity Check: Validate the arguments */
+    if ((handle == NULL) || (driver->hwCfg == NULL))
+    {
+        /* Error: Invalid Arguments */
+        DebugP_log0 ("MAILBOX: Mailbox_writeReset Error! Null handle");
+        retVal = MAILBOX_EINVAL;
+    }
+    else
+    {
+        hwCfg = (Mailbox_HwCfg *)driver->hwCfg;
+
+        /* make sure "mailbox empty" interrupt is clear */
+        CSL_Mbox_clearTxAckInterrupt(hwCfg->mbxReg, hwCfg->remoteProcNum);
+
+        /* Reset mailbox TX status to empty so a new message can be sent*/
+        driver->txBoxStatus = MAILBOX_TX_BOX_EMPTY;
+    }
+
+    return retVal;
+}
+
 uint64_t Mailbox_defaultVirtToPhyFxn(const void *virtAddr)
 {
     return ((uint64_t) virtAddr);
@@ -1114,3 +1318,4 @@ void *Mailbox_defaultPhyToVirtFxn(uint64_t phyAddr)
 
     return ((void *) temp);
 }
+
