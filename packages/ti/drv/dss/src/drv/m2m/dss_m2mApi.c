@@ -694,7 +694,7 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
     {
         semTimeout = timeout;
     }
-    if ((NULL != instObj->commonObjRef->lockSem) && (NULL != instObj))
+    if ((NULL != instObj) && (NULL != instObj->commonObjRef->lockSem))
     {
         /* Take the instance semaphore */
         (void) SemaphoreP_pend(instObj->commonObjRef->lockSem, semTimeout);
@@ -805,7 +805,7 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
         }
     }
 
-    if ((NULL != instObj->commonObjRef->lockSem) && (NULL != instObj))
+    if ((NULL != instObj) && (NULL != instObj->commonObjRef->lockSem))
     {
         /* Post the instance semaphore */
         (void) SemaphoreP_post(instObj->commonObjRef->lockSem);
@@ -869,7 +869,7 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
     {
         semTimeout = timeout;
     }
-    if ((NULL != instObj->commonObjRef->lockSem) && (NULL != instObj))
+    if ((NULL != instObj) && (NULL != instObj->commonObjRef->lockSem))
     {
         /* Take the instance semaphore */
         (void) SemaphoreP_pend(instObj->commonObjRef->lockSem, semTimeout);
@@ -903,9 +903,9 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
         }
     }
 
-    if ((inProcessList->numFrames == 0U) &&
-        (outProcessList->numFrames == 0U) &&
-        (retVal == FVID2_SOK))
+    if ((retVal == FVID2_SOK) &&
+        (inProcessList->numFrames == 0U) &&
+        (outProcessList->numFrames == 0U))
     {
         if ((virtContext->state == DSSM2M_DRV_STATE_CREATED) ||
             (virtContext->state == DSSM2M_DRV_STATE_STOPPED))
@@ -914,7 +914,7 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
         }
     }
 
-    if ((NULL != instObj->commonObjRef->lockSem) && (NULL != instObj))
+    if ((NULL != instObj) && (NULL != instObj->commonObjRef->lockSem))
     {
         /* Post the instance semaphore */
         (void) SemaphoreP_post(instObj->commonObjRef->lockSem);
