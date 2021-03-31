@@ -9,26 +9,23 @@ endif
 
 
 APP_NAME = freertos_test_ut
-BUILD_OS_TYPE=baremetal
+BUILD_OS_TYPE=freertos
 CFLAGS_TEST_DEFINES =
 
 
 SRCDIR = .
-INCDIR =  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
-INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
-INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
-INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/dpl/common
+INCDIR = .
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
-ifeq ($(BUILD_OS_TYPE), baremetal)
-COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+INCLUDE_EXTERNAL_INTERFACES = pdk freertos
+ifeq ($(BUILD_OS_TYPE), freertos)
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 else
 # List all the components required by the application
 endif
 
-COMP_LIST_COMMON += freertos
+#COMP_LIST_COMMON += freertos
 
 ifeq ($(ISA),$(filter $(ISA), c66))
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd

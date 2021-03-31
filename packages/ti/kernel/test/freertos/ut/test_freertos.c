@@ -457,6 +457,7 @@ void test_taskDelay(void)
 
 void ping_main(void *args)
 {
+    printf("Starting freertos ut\n");
     UNITY_BEGIN();
 
     RUN_TEST(test_taskSwitchWithSemaphore, 1, NULL);
@@ -471,6 +472,10 @@ void ping_main(void *args)
 
     UNITY_END();
 
+    if (Unity.TestFailures == 0)
+    {
+        printf("All Tests PASSED\n");
+    }
     /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
     vTaskDelete(NULL);
 }
