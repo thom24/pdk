@@ -192,11 +192,12 @@ int32_t EventCombinerP_clearEvent(uint32_t eventNum)
 int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eventIsrRoutine,uintptr_t arg,bool unmask )
 {
    CSL_IntcObj  intcObj;
+   uint32_t     key;
    CSL_IntcHandle handleTemp=(CSL_IntcHandle)&intcObj;
    
    CSL_IntcEventHandlerRecord  evtHandler;
 
-   CSL_dint();
+   key = _disable_interrupts();
    /* Plug the function in to the CSL_intcEventHandlerRecord_p */
    /* This is a temporary handle, so that CSL_intcPlugEventHandler() registers the
        actual eventId (>4). The real Handle for Event Combiner has handle->eventId <4.
@@ -216,7 +217,7 @@ int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eve
    {
       (void)EventCombinerP_disableEvent(eventId);
    }
-   CSL_rint();
+   _restore_interrupts(key);
    
   /* Nothing to be done, as HwiP_Create() already takes care of this internally, via CSL_intcOpen() */
   return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
@@ -226,14 +227,15 @@ int32_t EventCombinerP_dispatchUnplug(uint32_t eventId)
 {
     CSL_IntcObj  intcObj;
     CSL_IntcHandle handleTemp=(CSL_IntcHandle)&intcObj;
+    uint32_t     key;
 
-    CSL_dint();
+    key = _disable_interrupts();
 
     handleTemp->eventId = (CSL_IntcEventId)eventId;
     CSL_intcUnplugEventHandler(handleTemp);
     (void)EventCombinerP_disableEvent(eventId);
 
-    CSL_rint();
+    _restore_interrupts(key);
 
     return OSAL_EVTCOMBINE_GROUPREG_SUCCESS;
 }
