@@ -18,7 +18,7 @@ PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += gpadc.c gpadc_soc.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(GPADC_CFLAGS)
-PACKAGE_SRCS_COMMON = gpadc.h gpadc_cfg.h gpadc_component.mk makefile .gitignore src soc/$(SOC)
+PACKAGE_SRCS_COMMON = gpadc.h gpadc_cfg.h gpadc_component.mk makefile src soc/$(SOC)
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc
 
