@@ -63,7 +63,7 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
 UART_OS_TYPE=_Baremetal
 endif
 ifeq ($(BUILD_OS_TYPE),freertos)
-UART_OS_TYPE=_freertos
+UART_OS_TYPE=_Freertos
 endif
 
 # DMA enabled build

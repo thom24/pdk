@@ -8,8 +8,8 @@ include $(RULES_MAKE)
 endif
 
 
-APP_NAME = freertos_test_posix_demo
-BUILD_OS_TYPE=baremetal
+APP_NAME = freertos_test_posix
+BUILD_OS_TYPE=freertos
 CFLAGS_TEST_DEFINES =
 
 
@@ -27,13 +27,13 @@ INCDIR += ${FREERTOS_LABS_INSTALL_PATH}/FreeRTOS-POSIX/FreeRTOS-Plus-POSIX/inclu
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
-ifeq ($(BUILD_OS_TYPE), baremetal)
-COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
+ifeq ($(BUILD_OS_TYPE), freertos)
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 else
 # List all the components required by the application
 endif
 
-COMP_LIST_COMMON += freertos
+# COMP_LIST_COMMON += freertos
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 # Append local auxillary linker command file
