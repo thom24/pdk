@@ -813,6 +813,20 @@ endif
 ifneq ($(crc_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(crc_EXAMPLE_LIST)
 endif
+
+#Below applicable only for TPR12 devices
+# - used to ignore include if component not present
+-include $(PDK_GPADC_COMP_PATH)/gpadc_component.mk
+ifneq ($(gpadc_LIB_LIST),)
+  pdk_LIB_LIST += $(gpadc_LIB_LIST)
+endif
+ifneq ($(gpadc_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(gpadc_APP_LIB_LIST)
+endif
+ifneq ($(gpadc_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(gpadc_EXAMPLE_LIST)
+endif
+
 # - used to ignore include if component not present
 -include $(PDK_HWA_COMP_PATH)/hwa_component.mk
 ifneq ($(hwa_LIB_LIST),)

@@ -252,6 +252,9 @@ endif
 ifneq ($(PDK_CAN_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CAN_ROOT_PATH)
 endif
+ifneq ($(PDK_GPADC_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_GPADC_ROOT_PATH)
+endif
 
 export pdk_INCLUDE
 

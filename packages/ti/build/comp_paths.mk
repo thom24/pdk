@@ -113,6 +113,8 @@ export PDK_DIAG_EX_COMP_PATH = $(pdk_PATH)/ti/diag/examples
 #Below applicable only for TPR12 devices
 PDK_CRC_ROOT_PATH ?= $(pdk_PATH)
 export PDK_CRC_COMP_PATH = $(PDK_CRC_ROOT_PATH)/ti/drv/crc
+PDK_GPADC_ROOT_PATH ?= $(pdk_PATH)
+export PDK_GPADC_COMP_PATH = $(PDK_GPADC_ROOT_PATH)/ti/drv/gpadc
 PDK_EDMA_ROOT_PATH ?= $(pdk_PATH)
 export PDK_EDMA_COMP_PATH = $(PDK_EDMA_ROOT_PATH)/ti/drv/edma
 PDK_HWA_ROOT_PATH ?= $(pdk_PATH)
