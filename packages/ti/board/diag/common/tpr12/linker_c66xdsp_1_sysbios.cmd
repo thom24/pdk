@@ -69,7 +69,7 @@ ti_sysbios_family_c66_Cache_l2Size  = 0;
 SECTIONS
 {
     /* hard addresses forces vecs to be allocated there */
-    .csl_vect: {. = align(32); } > 0x00800000
+    .vecs: {. = align(32); } > 0x00800000
 
     .fardata:  {} > L2SRAM
     .const:    {} > L2SRAM
