@@ -1093,9 +1093,8 @@ NB_RCV_PORT_CONTEXT_INITIALIZED_WITH_COLLISION:
     
 NB_PROCESS_32BYTES_CHECK_FLAGS:
     
-    .if $defined("ICSS_SWITCH_BUILD")
-    QBBC    NB_PROCESS_32BYTES_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift     ; MII_RCV.rx_flags.host_rcv_flag
-    .endif
+    ;Common for both the use cases i.e. switch and dual mac
+    QBBC    NB_PROCESS_32BYTES_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift  
 
     QBGE    LESS_THAN_64_BYTES_RCVD, MII_RCV.byte_cntr,  32
     QBA        EXIT_PREPROCESSING_NB
@@ -1152,8 +1151,9 @@ RCV_NB_QUEUE_WRAPPED:
     .endif
     
 NB_PROCESS_32BYTES_CHECK_FLAGS_QUEUE_NOT_FULL:
-    .if $defined("ICSS_SWITCH_BUILD")
+    
 NB_PROCESS_32BYTES_CHECK_FWD_FLAG:
+    .if $defined("ICSS_SWITCH_BUILD")
     .if    $defined("TWO_PORT_CFG")
 
     QBBC    NB_PROCESS_32BYTES_CHECK_FLAG_DONE, MII_RCV.rx_flags, 1    ;MII_RCV.rx_flags.fwd_flag
@@ -1463,9 +1463,8 @@ PTP_NOT_ENABLED_RX_LB:
     QBLE	LB_XIN_STORE_LESS_THAN_32_FROM_UPPER_BANK, R18_RCV_BYTECOUNT, 32	
     
 LB_STORE_FIRST_32_BYTES:
-    .if $defined("ICSS_SWITCH_BUILD")
-    QBBC    LB_PROCESS_32BYTES_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
-    .endif
+    QBBC    LB_PROCESS_32BYTES_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift
+
     .if $defined(PTP)
     ADD     RCV_TEMP_REG_3.w2, MII_RCV.byte_cntr, 32
     QBLT    MORE_THAN_32_BYTES_RCVD, RCV_TEMP_REG_3.w2, 32
@@ -1501,8 +1500,9 @@ RCV_LB_QUEUE_WRAPPED_LOWER:
     SET	MII_RCV.rx_flags , MII_RCV.rx_flags , 4	
     .endif
 LB_PROCESS_32BYTES_CHECK_FLAGS_QUEUE_NOT_FULL_1:
-    .if $defined("ICSS_SWITCH_BUILD")
+
 LB_PROCESS_32BYTES_CHECK_FWD_FLAG:
+    .if $defined("ICSS_SWITCH_BUILD")
     .if    $defined("TWO_PORT_CFG")
     QBBC    LB_PROCESS_32BYTES_CHECK_FLAG_DONE, MII_RCV.rx_flags, fwd_flag_shift    ;MII_RCV.rx_flags.fwd_flag
     
@@ -1551,9 +1551,7 @@ LB_STORE_FROM_UPPER_BUFFER:
     QBEQ	LB_PROCESS_CHECK_FWD_FLAG, R0.b1, 0	
     
     ; Receive for Host Queue
-    .if $defined("ICSS_SWITCH_BUILD")
-    QBBC    LB_PROCESS_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
-    .endif
+    QBBC    LB_PROCESS_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift
     SBCO	&Ethernet, L3_OCMC_RAM_CONST, MII_RCV.buffer_index, b1	
     
     ADD	    MII_RCV.byte_cntr, MII_RCV.byte_cntr, R0.b1     ; increment the count by R1 bytes	
@@ -1754,6 +1752,9 @@ PTP_PORT_QUEUE_RELEASE_DONE:
     .endif
     ; For Host Receive
     QBBC    LB_UPDATE_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
+    .if $defined("ICSS_DUAL_EMAC_BUILD")
+    QBBC    LB_RELEASE_HOST_QUEUE, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
+    .endif  ;ICSS_DUAL_EMAC_BUILD
     .endif ;TWO_PORT_CFG
     LDI	R0.b0, SHIFT_R2_TO_R26	
     .if $defined("PRU0")	
