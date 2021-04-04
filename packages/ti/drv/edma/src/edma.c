@@ -852,7 +852,8 @@ int32_t EDMA_getErrorStatus(EDMA_Handle handle, bool *isAnyError, EDMA_errorInfo
         hwAttrs = edmaConfig->hwAttrs;
         ccBaseAddr = hwAttrs->CCbaseAddress;
 
-        if (*isAnyError = EDMA_isError(ccBaseAddr))
+        *isAnyError = EDMA_isError(ccBaseAddr);
+        if (*isAnyError == TRUE)
         {
             EDMA_getErrorStatusInfo(hwAttrs, ccBaseAddr, errorInfo);
             EDMA_clearErrors(hwAttrs, ccBaseAddr, edmaConfig->initParams.regionId, errorInfo);
@@ -987,8 +988,9 @@ int32_t EDMA_getTransferControllerErrorStatus(EDMA_Handle handle, uint8_t transf
         edmaConfig = (EDMA_Config_t *) handle;
         hwAttrs = edmaConfig->hwAttrs;
         tcBaseAddr = hwAttrs->TCbaseAddress[transferControllerId];
+        *isAnyError = EDMA_isTransferControllerError(tcBaseAddr);
 
-        if (*isAnyError = EDMA_isTransferControllerError(tcBaseAddr))
+        if (*isAnyError == TRUE)
         {
             EDMA_getTransferControllerErrorStatusInfo(tcBaseAddr, errorInfo);
             EDMA_clearTransferControllerErrors(tcBaseAddr, errorInfo);
