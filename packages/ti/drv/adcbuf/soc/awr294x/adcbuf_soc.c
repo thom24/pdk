@@ -58,18 +58,21 @@
 #endif
 
 /**************************************************************************
- ************************* Extern Declarations ****************************
- **************************************************************************/
-
-/**
- * @brief   This is the ADCBUF Driver registered function table
- */
-extern const ADCBuf_FxnTable gADCBufFxnTable;
-
-/**************************************************************************
  ************************** Global Variables ******************************
  **************************************************************************/
 
+const ADCBuf_FxnTable gADCBufFxnTable = {
+    /*! Function to close the specified peripheral */
+    &ADCBUF_MMWave_close,
+    /*! Function to driver implementation specific control function */
+    &ADCBUF_MMWave_control,
+    /*! Function to initialize the given data object */
+    &ADCBUF_MMWave_init,
+    /*! Function to open the specified peripheral */
+    &ADCBUF_MMWave_open,
+    /*! Function to get ADCBuf channel address */
+    &ADCBUF_MMWave_getChanBufAddr
+};
 
 /**
  * @brief   This is AWR2944 ADCBUF specific configuration for MSS/DSS Subsystem.

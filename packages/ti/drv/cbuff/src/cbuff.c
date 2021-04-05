@@ -1515,7 +1515,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     }
 
     /* Allocate memory for the CBUFF Driver: */
-    ptrDriverMCB = MemoryP_ctrlAlloc (sizeof(CBUFF_DriverMCB), 0);
+    ptrDriverMCB = (CBUFF_DriverMCB*)MemoryP_ctrlAlloc (sizeof(CBUFF_DriverMCB), 0);
     if (ptrDriverMCB == NULL)
     {
         /* Error: Out of memory */
@@ -1532,7 +1532,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     memset ((void *)ptrDriverMCB, 0, sizeof(CBUFF_DriverMCB));
 
     /* Allocate memory for the sessions: */
-    ptrDriverMCB->ptrSessionTable = MemoryP_ctrlAlloc ((sizeof(CBUFF_Session) * ptrInitCfg->maxSessions), 0);
+    ptrDriverMCB->ptrSessionTable = (CBUFF_Session*) MemoryP_ctrlAlloc ((sizeof(CBUFF_Session) * ptrInitCfg->maxSessions), 0);
     if (ptrDriverMCB->ptrSessionTable == NULL)
     {
         /* Error: Out of memory */
@@ -1573,7 +1573,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     intrPrms.corepacConfig.arg              = (uintptr_t) ptrDriverMCB;
     intrPrms.corepacConfig.isrRoutine       = CBUFF_ISR;
     intrPrms.corepacConfig.priority         = priority;
-    intrPrms.corepacConfig.name             = "CBUFF ISR";
+    intrPrms.corepacConfig.name             = (char *)("CBUFF ISR");
 
     #if defined (_TMS320C6X)
     /* On C66x, we use Event Combiner to map the interrupt to the CPU Intc.  To
@@ -1605,7 +1605,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     intrPrms.corepacConfig.arg              = (uintptr_t) ptrDriverMCB;
     intrPrms.corepacConfig.isrRoutine       = CBUFF_ErrorISR;
     intrPrms.corepacConfig.priority         = priority;
-    intrPrms.corepacConfig.name             = "CBUFF ERROR ISR";
+    intrPrms.corepacConfig.name             = (char *)("CBUFF ERROR ISR");
 
     #if defined (_TMS320C6X)
     /* On C66x, we use Event Combiner to map the interrupt to the CPU Intc.  To

@@ -578,35 +578,18 @@ typedef struct ADCBuf_Config_t
 
 
 /**
-* @brief
-*  ADCBUF CQ monitoring type
-*
-* @details
-*  The structure is used to define CQ monitoring types.
-*
-*/
-typedef enum ADCBufMMWave_CQType_e
-{
-    /**
-     * @brief   CQ type for CQ0.
-     */
-    ADCBufMMWave_CQType_CQ0,
+ * @brief
+ *  ADCBUF CQ monitoring type
+ *
+ * @details
+ *  used to define CQ monitoring types.
+ */
+typedef uint32_t ADCBufMMWave_CQType;
 
-    /**
-     * @brief   CQ type for CQ1.
-     */
-    ADCBufMMWave_CQType_CQ1,
-
-    /**
-     * @brief   CQ type for CQ2.
-     */
-    ADCBufMMWave_CQType_CQ2,
-
-    /**
-     * @brief   Maximum number of CQ which can be supported.
-     */
-    ADCBufMMWave_CQType_MAX_CQ
-}ADCBufMMWave_CQType;
+#define ADCBufMMWave_CQType_CQ0          ((uint32_t) 0) /*! CQ type for CQ0. */
+#define ADCBufMMWave_CQType_CQ1          ((uint32_t) 1) /*! CQ type for CQ1. */
+#define ADCBufMMWave_CQType_CQ2          ((uint32_t) 2) /*! CQ type for CQ2. */
+#define ADCBufMMWave_CQType_MAX_CQ       ((uint32_t) 3) /*! Maximum number of CQ which can be supported. */
 
 /** @}*/ /* end defgroup ADCBUF_DRIVER_EXTERNAL_DATA_STRUCTURE */
 

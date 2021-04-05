@@ -106,6 +106,13 @@ typedef struct ADCBufMMWave_Object_t
 
 } ADCBufMMWave_Object, *ADCBufMMWave_Handle;
 
+/* External Functions */
+void ADCBUF_MMWave_init(ADCBuf_Handle handle);
+ADCBuf_Handle ADCBUF_MMWave_open(ADCBuf_Handle handle, const ADCBuf_Params *params);
+void ADCBUF_MMWave_close(ADCBuf_Handle handle);
+int_fast16_t ADCBUF_MMWave_control(ADCBuf_Handle handle, uint_fast8_t cmd, void * arg);
+uint32_t ADCBUF_MMWave_getChanBufAddr(ADCBuf_Handle handle, uint8_t channel, int32_t *errCode);
+
 #ifdef __cplusplus
 }
 #endif

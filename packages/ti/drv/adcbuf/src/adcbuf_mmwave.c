@@ -83,32 +83,6 @@ static void ADCBUFSetPingNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase
 static void ADCBUFSetPongNumChirpThreshhold(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t threshhold);
 static uint32_t isChannelEnabled(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t channel);
 
-/* External Functions */
-void ADCBUF_MMWave_init(ADCBuf_Handle handle);
-ADCBuf_Handle ADCBUF_MMWave_open(ADCBuf_Handle handle, const ADCBuf_Params *params);
-void ADCBUF_MMWave_close(ADCBuf_Handle handle);
-int_fast16_t ADCBUF_MMWave_control(ADCBuf_Handle handle, uint_fast8_t cmd, void * arg);
-uint32_t ADCBUF_MMWave_getChanBufAddr(ADCBuf_Handle handle, uint8_t channel, int32_t *errCode);
-
-/*
- * =============================================================================
- * Constants
- * =============================================================================
- */
-
-const ADCBuf_FxnTable gADCBufFxnTable = {
-    /*! Function to close the specified peripheral */
-    &ADCBUF_MMWave_close,
-    /*! Function to driver implementation specific control function */
-    &ADCBUF_MMWave_control,
-    /*! Function to initialize the given data object */
-    &ADCBUF_MMWave_init,
-    /*! Function to open the specified peripheral */
-    &ADCBUF_MMWave_open,
-    /*! Function to get ADCBuf channel address */
-    &ADCBUF_MMWave_getChanBufAddr
-};
-
 /*
  * =============================================================================
  * Internal  Function Definitions
@@ -941,7 +915,7 @@ ADCBuf_Handle ADCBUF_MMWave_open(ADCBuf_Handle handle, const ADCBuf_Params *para
         else
         {
             /* Allocate memory for the driver: */
-            ptrADCBufObject = MemoryP_ctrlAlloc ((uint32_t)sizeof(ADCBufMMWave_Object), 0);
+            ptrADCBufObject = (ADCBufMMWave_Object* )MemoryP_ctrlAlloc ((uint32_t)sizeof(ADCBufMMWave_Object), 0);
             if (ptrADCBufObject == NULL)
             {
                 /* Error: memory allocation failed */
@@ -1004,7 +978,7 @@ void ADCBUF_MMWave_close(ADCBuf_Handle handle)
     DebugP_assert( handle != (ADCBuf_Handle)NULL );
 
     /* Get the pointer to the object */
-    ptrADCBufObject = handle->object;
+    ptrADCBufObject = (ADCBufMMWave_Object* )handle->object;
 
     /* Mark the module as available */
     ptrADCBufObject->isOpen = false;
@@ -1051,7 +1025,7 @@ int_fast16_t ADCBUF_MMWave_control(ADCBuf_Handle handle, uint_fast8_t cmd, void 
     }
 
     /* Get the Object from ADCBuf Handle */
-    object = handle->object;
+    object = (ADCBufMMWave_Object* )handle->object;
 
     /* Get the DSSREG base address */
     ptrRssCtrlRegBase = object->ptrRssCtrlRegBase;
@@ -1213,7 +1187,7 @@ uint32_t ADCBUF_MMWave_getChanBufAddr(ADCBuf_Handle handle, uint8_t channel, int
     DebugP_assert(handle->object != (ADCBufMMWave_Object *)NULL);
 
     /* Get the Object from ADCBuf Handle */
-    ptrADCBufObject = handle->object;
+    ptrADCBufObject = (ADCBufMMWave_Object* )handle->object;
 
     /* Get the pointer to the object and hwAttrs */
     ptrADCBufHwCfg = (ADCBuf_HwCfg *)handle->hwAttrs;
@@ -1326,7 +1300,7 @@ uint32_t ADCBUF_MMWave_getCQBufAddr
     DebugP_assert(handle->object != (ADCBufMMWave_Object *)NULL);
 
     /* Get the Object from ADCBuf Handle */
-    ptrADCBufObject = handle->object;
+    ptrADCBufObject = (ADCBufMMWave_Object* )handle->object;
 
     /* Get the pointer to the object and hwAttrs */
     ptrADCBufHwCfg = (ADCBuf_HwCfg *)handle->hwAttrs;
