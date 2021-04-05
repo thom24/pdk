@@ -65,10 +65,11 @@
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Task.h>
 
-#include <ti/board/board.h>
-#include <ti/board/src/tpr12_evm/include/board_clock.h>
-
+#include <ti/osal/TaskP.h>
 #include <ti/osal/DebugP.h>
+#include <ti/osal/CacheP.h>
+
+#include <ti/board/board.h>
 #include <ti/csl/cslr.h>
 
 #include <ti/drv/edma/soc/edma_soc.h>
