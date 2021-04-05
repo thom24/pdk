@@ -59,19 +59,12 @@
 #include <string.h>
 #include <stdio.h>
 
-/* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-
 #include <ti/osal/TaskP.h>
 #include <ti/osal/DebugP.h>
 #include <ti/osal/CacheP.h>
 
 #include <ti/board/board.h>
 #include <ti/csl/cslr.h>
-
 #include <ti/drv/edma/soc/edma_soc.h>
 
 /* Cbuff Driver: */
@@ -111,6 +104,7 @@
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
+static uint8_t  gAppTskStackMain[4 * 1024] __attribute__((aligned(32)));
 
 uint16_t gUserBuffer0[CSL_NEXT_MULTIPLE_OF_POW2(1024,CSL_CACHE_L1D_LINESIZE)] __attribute__ ((aligned(CSL_CACHE_L1D_LINESIZE)));
 
@@ -349,9 +343,9 @@ int32_t Test_Cbuff
     uint32_t i = 0;
 
     /* Debug Message: */
-    System_printf ("---------------------------------------------------\n");
-    System_printf ("Debug: Testing CBUFF interface \n");
-    System_printf ("---------------------------------------------------\n");
+    DebugP_log0 ("---------------------------------------------------\n");
+    DebugP_log0 ("Debug: Testing CBUFF interface \n");
+    DebugP_log0 ("---------------------------------------------------\n");
 
     /* Initialize the configuration: */
     memset ((void*)&initCfg, 0, sizeof(CBUFF_InitCfg));
@@ -375,7 +369,7 @@ int32_t Test_Cbuff
     cbuffHandle = CBUFF_init (&initCfg, &errCode);
     if (cbuffHandle == NULL)
     {
-        System_printf ("Error: CBUFF Driver initialization failed [Error code %d]\n", errCode);
+        DebugP_log1 ("Error: CBUFF Driver initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -414,45 +408,45 @@ int32_t Test_Cbuff
     sessionHandle = CBUFF_open (cbuffHandle, &sessionCfg, &errCode);
     if (sessionHandle == NULL)
     {
-        System_printf ("Error: Unable to create the session [Error code %d]\n", errCode);
+        DebugP_log1 ("Error: Unable to create the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Debug Message: Display the EDMA Channel Usage for the test. */
-    System_printf ("Debug: EDMA Channel Usage = %d\n", gCBUFFEDMAChannelResourceCounter);
+    DebugP_log1 ("Debug: EDMA Channel Usage = %d\n", gCBUFFEDMAChannelResourceCounter);
 
     /* Activate the session: */
     if (CBUFF_activateSession (sessionHandle, &errCode) < 0)
     {
-        System_printf ("Error: Unable to activate the session [Error code %d]\n", errCode);
+        DebugP_log1 ("Error: Unable to activate the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Deactivate the session: */
     if (CBUFF_deactivateSession (sessionHandle, &errCode) < 0)
     {
-        System_printf ("Error: Unable to deactivate the session [Error code %d]\n", errCode);
+        DebugP_log1 ("Error: Unable to deactivate the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Delete the session: */
     if (CBUFF_close (sessionHandle, &errCode) < 0)
     {
-        System_printf ("Error: Unable to delete the session [Error code %d]\n", errCode);
+        DebugP_log1 ("Error: Unable to delete the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Sanity Check: Ensure that all the EDMA resources have been cleaned up */
     if (gCBUFFEDMAChannelResourceCounter != 0)
     {
-        System_printf ("Error: EDMA Channel Memory leak detected\n");
+        DebugP_log0 ("Error: EDMA Channel Memory leak detected\n");
         return -1;
     }
 
     return 0;
 }
 
-void Test_initTask(UArg arg0, UArg arg1)
+void Test_initTask(void* arg0, void* arg1)
 {
 	EDMA_Handle         edmaHandle;
 	int32_t             errCode;
@@ -464,7 +458,7 @@ void Test_initTask(UArg arg0, UArg arg1)
 
     char instName[25];
     EDMA_getInstanceName(gInstanceId, &instName[0], sizeof(instName));
-    System_printf("EDMA instance #%d: %s\n", gInstanceId, instName);
+    DebugP_log2("EDMA instance #%d: %s\n", gInstanceId, (uintptr_t)instName);
 
     EDMA3CCInitParams_init(&initParam);
     initParam.initParamSet = TRUE;
@@ -478,7 +472,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     	edmaHandle = EDMA_open(gInstanceId, &errCode, &instanceInfo);
         if (edmaHandle == NULL)
         {
-        	System_printf("Error: Unable to open the edma Instance, erorCode = %d\n", errCode);
+        	DebugP_log1("Error: Unable to open the edma Instance, erorCode = %d\n", errCode);
         }
     }
 
@@ -493,7 +487,7 @@ void Test_initTask(UArg arg0, UArg arg1)
     errCode = EDMA_configErrorMonitoring(edmaHandle, &errorConfig);
     if (errCode != EDMA_NO_ERROR)
     {
-        System_printf("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errCode);
+        DebugP_log1("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errCode);
         return;
     }
 
@@ -501,15 +495,15 @@ void Test_initTask(UArg arg0, UArg arg1)
     if (Test_Cbuff (edmaHandle) < 0)
         return;
 
-    /* Exit BIOS */
-    BIOS_exit(0);
+    /* Stop OS */
+    OS_stop();
 
     return;
 }
 
 int main (void)
 {
-    Task_Params    taskParams;
+    TaskP_Params    taskParams;
 
     MmwDemo_BoardInit();
 
@@ -523,16 +517,17 @@ int main (void)
     HW_WR_REG32(CSL_TOP_CTRL_U_BASE + 4, 0x10);
 
     /* Debug Message: */
-    System_printf ("***********************************************\n");
-    System_printf ("************** CBUFF Unit Tests ***************\n");
-    System_printf ("***********************************************\n");
+    DebugP_log0 ("***********************************************\n");
+    DebugP_log0 ("************** CBUFF Unit Tests ***************\n");
+    DebugP_log0 ("***********************************************\n");
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 4*1024;
-    Task_create(Test_initTask, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof(gAppTskStackMain);
+    TaskP_create(Test_initTask, &taskParams);
 
-    /* Start BIOS */
-    BIOS_start();
+    /* Start OS */
+    OS_start();
     return 0;
 }
