@@ -68,8 +68,8 @@ ifeq ($(osal_component_make_include), )
 
 libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
 libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
-libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm
-libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12
+libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm
+libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x
 libosal_tda2xx_CORELIST = a15_0 ipu1_0
 libosal_tda2px_CORELIST = a15_0 ipu1_0
 libosal_tda2ex_CORELIST = a15_0 ipu1_0
