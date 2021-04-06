@@ -129,7 +129,7 @@ spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_TestApp MCSPI_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp MCSPI_Slave_Dma_TestApp
-spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_Dma_TestApp OSPI_Baremetal_Flash_Cache_TestApp  OSPI_Baremetal_Flash_Dma_Cache_TestApp OSPI_Flash_Cache_TestApp OSPI_Flash_Dma_Cache_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
+spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_Dma_TestApp OSPI_Baremetal_Flash_Cache_TestApp  OSPI_Baremetal_Flash_Dma_Cache_TestApp OSPI_Flash_Cache_TestApp OSPI_Flash_Dma_Cache_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Flash_TestApp QSPI_Freertos_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_Flash_Dma_TestApp QSPI_Freertos_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
 drvspi_EXAMPLE_LIST = $(spi_EXAMPLE_LIST)
 
 #
@@ -852,6 +852,25 @@ QSPI_Flash_TestApp_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
 export QSPI_Flash_TestApp_BOARDLIST
 QSPI_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
+# QSPI Flash Freertos Test app
+QSPI_Freertos_Flash_TestApp_COMP_LIST = QSPI_Freertos_Flash_TestApp
+QSPI_Freertos_Flash_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
+QSPI_Freertos_Flash_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
+QSPI_Freertos_Flash_TestApp_BOARD_DEPENDENCY = yes
+QSPI_Freertos_Flash_TestApp_CORE_DEPENDENCY = yes
+QSPI_Freertos_Flash_TestApp_XDC_CONFIGURO = yes
+QSPI_Freertos_Flash_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes
+export QSPI_Freertos_Flash_TestApp_COMP_LIST
+export QSPI_Freertos_Flash_TestApp_BOARD_DEPENDENCY
+export QSPI_Freertos_Flash_TestApp_CORE_DEPENDENCY
+export QSPI_Freertos_Flash_TestApp_XDC_CONFIGURO
+export QSPI_Freertos_Flash_TestApp_MAKEFILE
+QSPI_Freertos_Flash_TestApp_PKG_LIST = QSPI_Freertos_Flash_TestApp
+QSPI_Freertos_Flash_TestApp_INCLUDE = $(QSPI_Freertos_Flash_TestApp_PATH)
+QSPI_Freertos_Flash_TestApp_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
+export QSPI_Freertos_Flash_TestApp_BOARDLIST
+QSPI_Freertos_Flash_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+
 # QSPI Baremetal dma Flash Test app
 QSPI_Baremetal_Flash_Dma_TestApp_COMP_LIST = QSPI_Baremetal_Flash_Dma_TestApp
 QSPI_Baremetal_Flash_Dma_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
@@ -887,6 +906,25 @@ QSPI_Flash_Dma_TestApp_INCLUDE = $(QSPI_Flash_Dma_TestApp_PATH)
 QSPI_Flash_Dma_TestApp_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
 export QSPI_Flash_Dma_TestApp_BOARDLIST
 QSPI_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+
+# QSPI Freertos dma Flash Test app
+QSPI_Freertos_Flash_Dma_TestApp_COMP_LIST = QSPI_Freertos_Flash_Dma_TestApp
+QSPI_Freertos_Flash_Dma_TestApp_RELPATH = ti/drv/spi/test/qspi_flash
+QSPI_Freertos_Flash_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
+QSPI_Freertos_Flash_Dma_TestApp_BOARD_DEPENDENCY = yes
+QSPI_Freertos_Flash_Dma_TestApp_CORE_DEPENDENCY = yes
+QSPI_Freertos_Flash_Dma_TestApp_XDC_CONFIGURO = yes
+QSPI_Freertos_Flash_Dma_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes DMA=enable
+export QSPI_Freertos_Flash_Dma_TestApp_COMP_LIST
+export QSPI_Freertos_Flash_Dma_TestApp_BOARD_DEPENDENCY
+export QSPI_Freertos_Flash_Dma_TestApp_CORE_DEPENDENCY
+export QSPI_Freertos_Flash_Dma_TestApp_XDC_CONFIGURO
+export QSPI_Freertos_Flash_Dma_TestApp_MAKEFILE
+QSPI_Freertos_Flash_Dma_TestApp_PKG_LIST = QSPI_Freertos_Flash_Dma_TestApp
+QSPI_Freertos_Flash_Dma_TestApp_INCLUDE = $(QSPI_Freertos_Flash_Dma_TestApp_PATH)
+QSPI_Freertos_Flash_Dma_TestApp_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
+export QSPI_Freertos_Flash_Dma_TestApp_BOARDLIST
+QSPI_Freertos_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 
 # QSPI dma File Flash Write Test app. 
 # This app allows us to write files to flash device using CCS.

@@ -39,19 +39,7 @@
  *
  */
 
-
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/System.h>
-#include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
-#endif /* #ifdef USE_BIOS */
+#include <ti/osal/TaskP.h>
 
 /* TI-RTOS Header files */
 #include <ti/csl/soc.h>
@@ -108,6 +96,9 @@
 #define QSPI_TEST_ID_MMAP         1   /* Memory map with DMA disabled mode test */
 #define QSPI_TEST_ID_MMAP_DMA     2   /* Memory map with DMA enabled mode test */
 
+#if defined (USE_BIOS) || defined (FREERTOS)
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
+#endif
 
 /* Define the SPI test interface */
 typedef struct QSPI_Tests_s
@@ -148,6 +139,10 @@ static EDMA3_RM_Handle QSPIApp_edmaInit(void);
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+
+#if defined (USE_BIOS) || defined (FREERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 
 /* Buffer containing the known data that needs to be written to flash */
 #if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
@@ -457,8 +452,8 @@ QSPI_Tests qspi_tests[] =
 /*
  *  ======== test function ========
  */
-#ifdef USE_BIOS
-void spi_test(UArg arg0, UArg arg1)
+#if defined (USE_BIOS) || defined (FREERTOS)
+void spi_test(void* arg0, void* arg1)
 #else
 void spi_test()
 #endif
@@ -509,18 +504,15 @@ int main(void)
     /* Call board init functions */
     Board_initCfg boardCfg;
 
-#if defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_TPR12) || defined (SOC_AWR294X)
-#ifdef USE_BIOS
-    Task_Handle task;
-    Error_Block eb;
+#if defined (USE_BIOS) || defined (FREERTOS)
+    TaskP_Params taskParams;
 
-    Error_init(&eb);
-    task = Task_create(spi_test, NULL, &eb);
-    if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
-    }
-#endif
+    /* Initialize the Task Parameters. */
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+
+    TaskP_create(spi_test, &taskParams);
 #endif
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
@@ -532,9 +524,8 @@ int main(void)
     QSPI_board_crossbarInit();
 #endif
 
-#ifdef USE_BIOS
-    /* Start BIOS */
-    BIOS_start();
+#if defined (USE_BIOS) || defined (FREERTOS)
+    OS_start();
 #else
     spi_test();
 #endif

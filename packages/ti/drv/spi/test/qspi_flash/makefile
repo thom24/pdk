@@ -1,16 +1,26 @@
 # Makefile for SPI unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
+BUILD_OS_TYPE = tirtos
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+ifeq ($(BAREMETAL), yes)
+BUILD_OS_TYPE=baremetal
+endif
+
+ifeq ($(BUILD_OS_TYPE),baremetal)
+QSPI_OS_TESTPREFIX=_Baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
-else
-BUILD_OS_TYPE = tirtos
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
+QSPI_OS_TESTPREFIX=
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP) 
@@ -19,7 +29,13 @@ ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_r5f.cfg
 endif
+endif
 
+ifeq ($(BUILD_OS_TYPE),freertos)
+QSPI_OS_TESTPREFIX=_Freertos
+CFLAGS_OS_DEFINES = -DFREERTOS
+EXTERNAL_INTERFACES = freertos
+COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
 endif
 
 SRCDIR = . src src/Flash_S25FL
@@ -27,14 +43,6 @@ INCDIR = . src src/Flash_S25FL
 
 # Common source files across all platforms and cores
 SRCS_COMMON += main_qspi_flash_test.c S25FL.c
-
-ifeq ($(BUILD_OS_TYPE), tirtos)
-QSPI_OS_TESTPREFIX=
-else
-QSPI_OS_TESTPREFIX=_Baremetal
-endif
-
-
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component

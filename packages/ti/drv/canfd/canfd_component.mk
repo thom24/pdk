@@ -89,7 +89,7 @@ drvcanfd_LIB_LIST = $(canfd_LIB_LIST)
 canfd_EXAMPLE_LIST = 
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-canfd_EXAMPLE_LIST = canfd_test
+canfd_EXAMPLE_LIST = canfd_test canfd_freertos_test
 endif
 
 drvcanfd_EXAMPLE_LIST = $(canfd_EXAMPLE_LIST)
@@ -152,6 +152,26 @@ canfd_test_BOARDLIST = $(drvcanfd_BOARDLIST)
 export canfd_test_BOARDLIST
 canfd_test_$(SOC)_CORELIST = mcu1_0
 export canfd_test_$(SOC)_CORELIST
+
+canfd_freertos_test_COMP_LIST = canfd_freertos_test
+canfd_freertos_test_RELPATH = ti/drv/canfd/test
+canfd_freertos_test_PATH = $(PDK_CANFD_COMP_PATH)/test
+canfd_freertos_test_BOARD_DEPENDENCY = yes
+canfd_freertos_test_CORE_DEPENDENCY = no
+canfd_freertos_test_XDC_CONFIGURO = yes
+canfd_freertos_test_MAKEFILE = -f makefile IS_FREERTOS=yes
+export canfd_freertos_test_COMP_LIST
+export canfd_freertos_test_BOARD_DEPENDENCY
+export canfd_freertos_test_CORE_DEPENDENCY
+export canfd_freertos_test_XDC_CONFIGURO
+export canfd_freertos_test_MAKEFILE
+canfd_freertos_test_PKG_LIST = canfd_freertos_test
+export canfd_freertos_test_PKG_LIST
+canfd_freertos_test_INCLUDE = $(canfd_freertos_test_PATH)
+canfd_freertos_test_BOARDLIST = $(drvcanfd_BOARDLIST)
+export canfd_freertos_test_BOARDLIST
+canfd_freertos_test_$(SOC)_CORELIST = mcu1_0
+export canfd_freertos_test_$(SOC)_CORELIST
 
 
 

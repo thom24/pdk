@@ -1,15 +1,25 @@
 # Makefile for CANFD test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
+BUILD_OS_TYPE = tirtos
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
+ifeq ($(BAREMETAL), yes)
+BUILD_OS_TYPE=baremetal
+endif
+
+ifeq ($(BUILD_OS_TYPE),baremetal)
+CANFD_OS_TESTPREFIX=_Baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_$(CORE) =
-else
-BUILD_OS_TYPE = tirtos
+endif
+
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CANFD_OS_TESTPREFIX=
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
@@ -28,6 +38,13 @@ endif
 
 endif
 
+ifeq ($(BUILD_OS_TYPE),freertos)
+CANFD_OS_TESTPREFIX=_freertos
+CFLAGS_OS_DEFINES = -DFREERTOS
+EXTERNAL_INTERFACES = freertos
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+endif
+
 SRCDIR = . src
 INCDIR = . src
 
@@ -35,13 +52,6 @@ ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCDIR += $(SOC)
 INCDIR += $(SOC)
 endif
-
-ifeq ($(BUILD_OS_TYPE), tirtos)
-CANFD_OS_TESTPREFIX=
-else
-CANFD_OS_TESTPREFIX=_Baremetal
-endif
-
 
 # Common source files across all platforms and cores
 SRCS_COMMON += main_canfd_test.c
@@ -57,23 +67,7 @@ APP_NAME = canfd$(CANFD_OS_TESTPREFIX)_test
 # Name of the binary if different fmake clrom the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 LOCAL_APP_NAME =  canfd$(CANFD_OS_TESTPREFIX)_$(BOARD)_$(CORE)_test
 
-
 COMP_LIST_COMMON += canfd esm
-
-# Master running on mcu1_0 core, use the common linker command file in build
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-    ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-        EXTERNAL_LNKCMD_FILE_LOCAL =  ./tpr12/mss_canfd_linker.cmd
-    endif
-endif
-
-ifeq ($(SOC),$(filter $(SOC), awr294x))
-    ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-        EXTERNAL_LNKCMD_FILE_LOCAL =  ./awr294x/mss_canfd_linker.cmd
-    endif
-endif
-
-# tpr12 build
 
 PACKAGE_SRCS_COMMON = ../test
 

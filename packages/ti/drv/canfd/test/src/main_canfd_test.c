@@ -42,29 +42,10 @@
  **************************************************************************/
 
 /* Standard Include Files. */
-#include <stdint.h>
-#include <stdlib.h>
-#include <stddef.h>
 #include <string.h>
-#include <stdio.h>
-#include <math.h>
 
-/* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/IHeap.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/Memory.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/knl/Semaphore.h>
-#include <ti/sysbios/knl/Clock.h>
-#include <ti/sysbios/heaps/HeapBuf.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <ti/sysbios/knl/Event.h>
-#include <ti/sysbios/family/arm/v7a/Pmu.h>
+#include <ti/osal/TaskP.h>
+#include <ti/osal/CycleprofilerP.h>
 
 #include <ti/osal/DebugP.h>
 #include <ti/board/board.h>
@@ -99,6 +80,8 @@
 #define MSS_SYS_VCLK                        (200U * 1000U * 1000U)
 /** \brief VBUSP Frequency in MHz */
 #define VBUSP_FREQ                          (MSS_SYS_VCLK /1000000U)
+
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
 
 /* Global Variables */
 CANFD_Reason            gErrorReason;
@@ -144,6 +127,8 @@ uint32_t                gTerminate = 0;
 uint32_t                gMCANMode = 2U;
 CANFD_MCANFrameType     testFrameType = CANFD_MCANFrameType_FD;
 
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+
 /**
  *  @b Description
  *  @n
@@ -155,16 +140,9 @@ CANFD_MCANFrameType     testFrameType = CANFD_MCANFrameType_FD;
  *  @retval
  *      Not Applicable.
  */
-void Test_benchmarkStart(uint32_t counter)
+uint32_t Test_benchmarkStart(void)
 {
-    /* Initialize counter to count cycles */
-    Pmu_configureCounter(counter, 0x11, FALSE);
-
-    /* Reset PMU counter */
-    Pmu_resetCount(counter);
-
-    /* Start PMU counter */
-    Pmu_startCounter(counter);
+    return CycleprofilerP_getTimeStamp();
 }
 
 /**
@@ -179,13 +157,11 @@ void Test_benchmarkStart(uint32_t counter)
  *  @retval
  *      Current PMU counter value.
  */
-uint32_t Test_benchmarkStop(uint32_t counter)
+uint32_t Test_benchmarkStop(uint32_t startCount)
 {
-    /* Stop PMU counter */
-    Pmu_stopCounter(counter);
+    uint32_t endCount = CycleprofilerP_getTimeStamp();
 
-    /* Read PMU counter */
-    return (Pmu_getCount(counter));
+    return (endCount - startCount);
 }
 
 /**
@@ -242,6 +218,7 @@ static void MCANAppCallback(CANFD_MsgObjHandle handle, CANFD_Reason reason)
     if (reason == CANFD_Reason_RX)
     {
         {
+            uint32_t stratCnt;
             /* Reset the receive buffer */
             memset(&rxData, 0, sizeof (rxData));
             testDataLength = 0;
@@ -249,7 +226,7 @@ static void MCANAppCallback(CANFD_MsgObjHandle handle, CANFD_Reason reason)
             if ((testSelection != MCAN_APP_TEST_EXTERNAL_DATA) && (gRxPkts < MCAN_APP_TEST_MESSAGE_COUNT))
             {
                 /* Reset the counter: */
-                Test_benchmarkStart(0);
+                stratCnt = Test_benchmarkStart();
             }
             retVal = CANFD_getData (handle, &id, &rxFrameType, &rxIdType, &rxDataLength, &rxData[0], &errCode);
             if (retVal < 0)
@@ -267,7 +244,7 @@ static void MCANAppCallback(CANFD_MsgObjHandle handle, CANFD_Reason reason)
             if ((testSelection != MCAN_APP_TEST_EXTERNAL_DATA) && (gRxPkts < MCAN_APP_TEST_MESSAGE_COUNT))
             {
                 /* Stop the counter: */
-                rxTicks[gRxPkts] = Test_benchmarkStop(0);
+                rxTicks[gRxPkts] = Test_benchmarkStop(stratCnt);
 
                 /* Update the receive statistics: */
                 minRxTicks   = (minRxTicks < rxTicks[gRxPkts]) ? minRxTicks : rxTicks[gRxPkts];
@@ -510,8 +487,9 @@ static int32_t mcanLoopbackTest()
 
     while (iterationCount != MCAN_APP_TEST_MESSAGE_COUNT)
     {
+        uint32_t stratCnt;
         /* Reset the counter: */
-        Test_benchmarkStart(0);
+        stratCnt = Test_benchmarkStart();
 
         {
             /* Send data over Tx message object */
@@ -527,7 +505,7 @@ static int32_t mcanLoopbackTest()
             }
         }
         /* Stop the counter: */
-        txTicks[iterationCount] = Test_benchmarkStop(0);
+        txTicks[iterationCount] = Test_benchmarkStop(stratCnt);
 
         /* Update the transmit statistics: */
         minTxTicks   = (minTxTicks < txTicks[iterationCount]) ? minTxTicks : txTicks[iterationCount];
@@ -968,8 +946,9 @@ static int32_t mcanPowerDownTest()
 
     while (iterationCount != MCAN_APP_TEST_MESSAGE_COUNT)
     {
+        uint32_t stratCnt;
         /* Reset the counter: */
-        Test_benchmarkStart(0);
+        stratCnt = Test_benchmarkStart();
 
         {
             /* Send data over Tx message object */
@@ -985,7 +964,7 @@ static int32_t mcanPowerDownTest()
             }
         }
         /* Stop the counter: */
-        txTicks[iterationCount] = Test_benchmarkStop(0);
+        txTicks[iterationCount] = Test_benchmarkStop(stratCnt);
 
         /* Update the transmit statistics: */
         minTxTicks   = (minTxTicks < txTicks[iterationCount]) ? minTxTicks : txTicks[iterationCount];
@@ -1078,8 +1057,9 @@ static int32_t mcanPowerDownTest()
     iterationCount = 0;
     while (iterationCount != MCAN_APP_TEST_MESSAGE_COUNT)
     {
+        uint32_t stratCnt;
         /* Reset the counter: */
-        Test_benchmarkStart(0);
+        stratCnt = Test_benchmarkStart();
 
         {
             /* Send data over Tx message object */
@@ -1095,7 +1075,7 @@ static int32_t mcanPowerDownTest()
             }
         }
         /* Stop the counter: */
-        txTicks[iterationCount] = Test_benchmarkStop(0);
+        txTicks[iterationCount] = Test_benchmarkStop(stratCnt);
 
         /* Update the transmit statistics: */
         minTxTicks   = (minTxTicks < txTicks[iterationCount]) ? minTxTicks : txTicks[iterationCount];
@@ -1293,13 +1273,13 @@ static int32_t mcanTransmitTest()
                 idIndex = 0;
             }
             msgId = txMsgObjectParams.msgIdentifier + idIndex;
-            Task_sleep(100U);
+            TaskP_sleep(100U);
             while(length > MCAN_APP_TEST_DATA_SIZE)
             {
 
                 retVal = CANFD_transmitData (txMsgObjHandle, msgId, CANFD_MCANFrameType_FD, MCAN_APP_TEST_DATA_SIZE, &txData[0], &errCode);
                 length = length - MCAN_APP_TEST_DATA_SIZE;
-                Task_sleep(100);
+                TaskP_sleep(100);
             }
             idIndex++;
         }
@@ -1309,7 +1289,7 @@ static int32_t mcanTransmitTest()
             length = 128U;
             index = 0;
             msgId = txMsgObjectParams.msgIdentifier;
-            Task_sleep(100);
+            TaskP_sleep(100);
             while(length > 8U)
             {
 
@@ -1317,12 +1297,12 @@ static int32_t mcanTransmitTest()
                 length = length - 8U;
                 index = index + 8U;
                 msgId = msgId + 1U;
-                Task_sleep(100U);
+                TaskP_sleep(100U);
             }
             retVal = CANFD_transmitData (txMsgObjHandle, msgId, CANFD_MCANFrameType_CLASSIC, length, &txData[index], &errCode);
 
         }
-        Task_sleep(200U);
+        TaskP_sleep(200U);
         if (retVal < 0)
         {
             gErrMsgLstCnt++;
@@ -1641,7 +1621,7 @@ static int32_t mcanEVM_EVMTest()
 
         /* 8 bits per byte * (data size + header) * Number of packet * VBUS frequency / total ticks */
         throughput = 8.0 * (MCAN_APP_TEST_DATA_SIZE + 16U) * gRxPkts * VBUSP_FREQ / totalRxTicks;
-        printf("Debug: Rx Throughput: %.2f Mbps\n", throughput);
+        UART_printf("Debug: Rx Throughput: %.2f Mbps\n", throughput);
 
         UART_printf("\n\n");
 
@@ -1777,7 +1757,7 @@ static int32_t mcanMultiTransmission()
             {
                 UART_printf ("Error: CANFD transmit data retry failed [Error code %d]\n", errCode);
             }
-            Task_sleep(100);
+            TaskP_sleep(100);
         }
 
         /* Delete the transmit message object */
@@ -1912,7 +1892,7 @@ static int32_t mcanMsgIdRangeTest()
         while (gRxDoneFlag == 0);
         gRxDoneFlag = 0;
 
-        Task_sleep(100);
+        TaskP_sleep(100);
 
         if (gTerminate == 1)
         {
@@ -1983,7 +1963,7 @@ static int32_t mcanMsgIdRangeTest()
  *  @retval
  *      Not Applicable.
  */
-static void Test_initTask(UArg arg0, UArg arg1)
+static void Test_initTask(void* arg0, void* arg1)
 {
     int32_t         retVal = 0;
 
@@ -1991,8 +1971,10 @@ static void Test_initTask(UArg arg0, UArg arg1)
     retVal = PlatformInit();
     if (retVal < 0)
     {
-        BIOS_exit(0);
+        OS_stop();
     }
+
+    CycleprofilerP_init();
 
     while (1)
     {
@@ -2097,7 +2079,7 @@ static void Test_initTask(UArg arg0, UArg arg1)
 
 
     /* Exit BIOS */
-    BIOS_exit(0);
+    OS_stop();
 
     return;
 }
@@ -2112,18 +2094,20 @@ static void Test_initTask(UArg arg0, UArg arg1)
  */
 int32_t main (void)
 {
-    Task_Params     taskParams;
+    TaskP_Params taskParams;
 
     /* Initialize the ESM: Dont clear errors as TI RTOS does it */
     ESM_init(0U, 0U);
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 6U*1024U;
-    Task_create(Test_initTask, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    /* Start BIOS */
-    BIOS_start();
+    TaskP_create(Test_initTask, &taskParams);
+
+    OS_start();
+
     return 0;
 }
 
