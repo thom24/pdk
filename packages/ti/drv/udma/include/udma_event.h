@@ -293,6 +293,8 @@ typedef struct
      *   register. This is used to clear if interrupt occurred */
     uint64_t                intrMask;
     /**< [OUT] Interrupt mask to check and clear */
+    uint32_t                vintrNum;
+    /**< [OUT] IA Virtual interrupt number allocated. */
     uint32_t                coreIntrNum;
     /**< [OUT] Core interrupt number allocated.
      *   This number can be used to register with the OSAL 

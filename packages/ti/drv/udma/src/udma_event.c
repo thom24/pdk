@@ -203,11 +203,14 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
                 if(NULL_PTR == eventHandle->eventPrms.masterEventHandle)
                 {
                     /* This is master handle - copy directly from here itself */
+                    eventPrms->vintrNum     = eventHandle->vintrNum;
                     eventPrms->coreIntrNum  = eventHandle->coreIntrNum;
                 }
                 else
                 {
-                    /* Copy core number from master handle */
+                    /* Copy from master handle */
+                    eventPrms->vintrNum       = 
+                        eventHandle->eventPrms.masterEventHandle->vintrNum;
                     eventPrms->coreIntrNum    =
                         eventHandle->eventPrms.masterEventHandle->coreIntrNum;
                 }
@@ -215,6 +218,7 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
                 eventHandle->eventPrms.intrStatusReg   = eventPrms->intrStatusReg;
                 eventHandle->eventPrms.intrClearReg    = eventPrms->intrClearReg;
                 eventHandle->eventPrms.intrMask        = eventPrms->intrMask;
+                eventHandle->eventPrms.vintrNum        = eventPrms->vintrNum;
                 eventHandle->eventPrms.coreIntrNum     = eventPrms->coreIntrNum;
             }
         }
@@ -311,7 +315,13 @@ int32_t Udma_eventDisable(Udma_EventHandle eventHandle)
         drvHandle = eventHandle->drvHandle;
         if(NULL_PTR != drvHandle)
         {
-            vintrNum = eventHandle->vintrNum;
+            /* In case of shared events "eventHandle->vintrNum" will be invalid,
+            * since it relies on the master event.
+            * Hence, use "eventHandle->eventPrms.vintrNum" 
+            * which will be populated with,
+            * master events vintrNum for shared events and 
+            * its own vintrNum for exlcusive events. */
+            vintrNum = eventHandle->eventPrms.vintrNum;
             vintrBitNum = vintrNum * UDMA_MAX_EVENTS_PER_VINTR;
             vintrBitNum += eventHandle->vintrBitNum;
 
@@ -335,7 +345,13 @@ int32_t Udma_eventEnable(Udma_EventHandle eventHandle)
         drvHandle = eventHandle->drvHandle;
         if(NULL_PTR != drvHandle)
         {
-            vintrNum = eventHandle->vintrNum;
+            /* In case of shared events "eventHandle->vintrNum" will be invalid,
+             * since it relies on the master event.
+             * Hence, use "eventHandle->eventPrms.vintrNum" 
+             * which will be populated with,
+             * master events vintrNum for shared events and 
+             * its own vintrNum exlcusive events. */
+            vintrNum = eventHandle->eventPrms.vintrNum;
             vintrBitNum = vintrNum * UDMA_MAX_EVENTS_PER_VINTR;
             vintrBitNum += eventHandle->vintrBitNum;
 
@@ -457,6 +473,7 @@ void UdmaEventPrms_init(Udma_EventPrms *eventPrms)
         eventPrms->intrStatusReg        = (volatile uint64_t *) NULL_PTR;
         eventPrms->intrClearReg         = (volatile uint64_t *) NULL_PTR;
         eventPrms->intrMask             = 0U;
+        eventPrms->vintrNum             = UDMA_EVENT_INVALID;
         eventPrms->coreIntrNum          = UDMA_INTR_INVALID;
     }
 
