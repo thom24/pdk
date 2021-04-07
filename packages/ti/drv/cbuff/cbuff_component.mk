@@ -78,7 +78,7 @@ export cbuff_$(SOC)_CORELIST = $(drvcbuff_$(SOC)_CORELIST)
 
 # Cbuff manual test app
 export cbuff_manual_testapp_COMP_LIST = cbuff_manual_testapp
-cbuff_manual_testapp_RELPATH = ti/drv/cbuff/examples/cbuff_manual_testapp
+cbuff_manual_testapp_RELPATH = ti/drv/cbuff/example/cbuff_manual_testapp
 cbuff_manual_testapp_PATH = $(PDK_CBUFF_COMP_PATH)/example/cbuff_manual_testapp
 export cbuff_manual_testapp_BOARD_DEPENDENCY = yes
 export cbuff_manual_testapp_CORE_DEPENDENCY = yes

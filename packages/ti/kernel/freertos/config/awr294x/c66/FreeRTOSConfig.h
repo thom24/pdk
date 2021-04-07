@@ -169,4 +169,8 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define configTIMER_ID                                                    (0)
 #define configTIMER_INT_NUM                                               (15)
 
+#define portCONFIGURE_CACHE_LIP_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
+#define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
+#define portCONFIGURE_CACHE_L2_SIZE                                       (DSPICFG_CACHE_SIZE_L2_DISABLED)
+
 #endif /* TI_FREERTOS_CONFIG_H */

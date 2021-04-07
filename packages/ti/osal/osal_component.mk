@@ -101,6 +101,7 @@ libosal_freertos_am65xx_CORELIST = mcu1_0 mcu1_1
 libosal_freertos_j721e_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 libosal_freertos_j7200_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 libosal_freertos_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
+libosal_freertos_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 
 
 ############################
@@ -319,7 +320,7 @@ OSAL_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_TestApp_BOARDLIST
 OSAL_TestApp_$(SOC)_CORELIST = $(osal_$(SOC)_CORELIST)
 export OSAL_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12))
 OSAL_TestApp_SBL_APPIMAGEGEN = yes
 else
 OSAL_TestApp_SBL_APPIMAGEGEN = no
