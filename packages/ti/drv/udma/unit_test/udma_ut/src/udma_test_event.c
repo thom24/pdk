@@ -61,6 +61,10 @@
 
 static int32_t udmaTestEventOutOfRangeFlowLoop(UdmaTestTaskObj *taskObj,
                                                uint32_t loopCnt);
+static int32_t udmaTestEventDisableEnableSanityLoop(UdmaTestTaskObj *taskObj,
+                                                    uint32_t loopCnt);
+static int32_t udmaTestEventDisableEnableFxns(UdmaTestTaskObj *taskObj,
+                                              Udma_EventHandle eventHandle);
 static void udmaTestEventCb(Udma_EventHandle eventHandle,
                             uint32_t eventType,
                             void *appData);
@@ -91,6 +95,33 @@ int32_t udmaTestEventOutOfRangeFlow(UdmaTestTaskObj *taskObj)
     {
         /* Perform flow event test */
         retVal = udmaTestEventOutOfRangeFlowLoop(taskObj, loopCnt);
+        if(UDMA_SOK != retVal)
+        {
+            break;
+        }
+
+        loopCnt++;
+    }
+
+    retVal += gUdmaTestEventResult;
+
+    return (retVal);
+}
+
+int32_t udmaTestEventDisableEnableSanity(UdmaTestTaskObj *taskObj)
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t    loopCnt = 0U;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Event Disable and Enable Sanity check Testcase ::\r\n", taskObj->taskId);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Loop count           : %d ::\r\n", taskObj->taskId, taskObj->loopCnt);
+
+    gUdmaTestEventResult = UDMA_SOK;
+    while(loopCnt < taskObj->loopCnt)
+    {
+        retVal = udmaTestEventDisableEnableSanityLoop(taskObj, loopCnt);
         if(UDMA_SOK != retVal)
         {
             break;
@@ -177,6 +208,116 @@ static int32_t udmaTestEventOutOfRangeFlowLoop(UdmaTestTaskObj *taskObj,
             GT_1trace(taskObj->traceMask, GT_INFO1,
                       " Testing for NAVSS Inst: %s passed!!\r\n", instanceIdStr[instId]);
         }
+    }
+
+    return (retVal);
+}
+
+static int32_t udmaTestEventDisableEnableSanityLoop(UdmaTestTaskObj *taskObj,
+                                                    uint32_t loopCnt)
+{
+    int32_t                     retVal = UDMA_SOK;
+    uint32_t                    instId;
+    Udma_DrvHandle              drvHandle;
+    Udma_EventPrms              eventPrms;
+    struct Udma_EventObj        eventObj;
+    Udma_EventHandle            eventHandle = NULL;
+    char                       *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
+
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+    {
+        if(0U == loopCnt)
+        {
+            GT_1trace(taskObj->traceMask, GT_INFO1,
+                      " Testing for NAVSS Inst: %s ...\r\n", instanceIdStr[instId]);
+        }
+
+        drvHandle = &taskObj->testObj->drvObj[instId];
+
+        eventHandle = &eventObj;
+
+        /* Exclusive Event Enable/Disable Test */
+        UdmaEventPrms_init(&eventPrms);
+        eventPrms.eventType         = UDMA_EVENT_TYPE_ERR_OUT_OF_RANGE_FLOW;
+        eventPrms.eventMode         = UDMA_EVENT_MODE_EXCLUSIVE;
+        eventPrms.masterEventHandle = NULL;
+        eventPrms.eventCb           = &udmaTestEventCb;
+        retVal = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA exclusive event register failed!!\n");
+        }
+        
+        retVal += udmaTestEventDisableEnableFxns(taskObj, eventHandle);
+        if(UDMA_SOK == retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Exclusive Event Disable/Enable passed!!\n");
+        }
+
+        retVal += Udma_eventUnRegister(eventHandle);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Exclusive Event unregister failed!!\n");
+        }
+
+        /* Shared Event Enable/Disable Test */
+        UdmaEventPrms_init(&eventPrms);
+        eventPrms.eventType         = UDMA_EVENT_TYPE_ERR_OUT_OF_RANGE_FLOW;
+        eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
+        eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(drvHandle);
+        eventPrms.eventCb           = &udmaTestEventCb;
+        retVal += Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA shared event register failed!!\n");
+        }
+
+        retVal += udmaTestEventDisableEnableFxns(taskObj, eventHandle);
+        if(UDMA_SOK == retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Shared Event Disable/Enable passed!!\n");
+        }
+
+        retVal += Udma_eventUnRegister(eventHandle);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR, " Shared Event unregister failed!!\n");
+        }
+        
+
+        if(0U == loopCnt)
+        {
+            GT_1trace(taskObj->traceMask, GT_INFO1,
+                      " Testing for NAVSS Inst: %s passed!!\r\n", instanceIdStr[instId]);
+        }
+    }
+
+    return (retVal);
+}
+
+static int32_t udmaTestEventDisableEnableFxns(UdmaTestTaskObj *taskObj,
+                                              Udma_EventHandle eventHandle)
+{
+    int32_t                     retVal = UDMA_SOK;
+
+    /* Note: This sanity just checks event disable and enable API's.
+     * This test doesn't wait for the event to happen.
+     */
+
+    /* Just check API sanity */
+    retVal = Udma_eventDisable(eventHandle);
+    if(UDMA_SOK != retVal)
+    {
+        GT_0trace(taskObj->traceMask, GT_ERR,
+            " UDMA event disable failed!!\n");
+    }
+    retVal += Udma_eventEnable(eventHandle);
+    if(UDMA_SOK != retVal)
+    {
+        GT_0trace(taskObj->traceMask, GT_ERR,
+            " UDMA event enable failed!!\n");
     }
 
     return (retVal);

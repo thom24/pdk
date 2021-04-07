@@ -663,6 +663,7 @@ int32_t udmaTestFlowAllocTc(UdmaTestTaskObj *taskObj);
  * UDMA event test functions
  */
 int32_t udmaTestEventOutOfRangeFlow(UdmaTestTaskObj *taskObj);
+int32_t udmaTestEventDisableEnableSanity(UdmaTestTaskObj *taskObj);
 /*
  * UDMA misc test functions
  */
