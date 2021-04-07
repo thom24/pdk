@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building Sciclient firmware boot test application.
+# This file is the makefile for building Sciclient rtos test application.
 #
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -8,36 +8,48 @@ include $(RULES_MAKE)
 endif
 
 APP_NAME = sciclient_rtos_app
-BUILD_OS_TYPE=tirtos
+
+BUILD_OS_TYPE = tirtos
+ifeq ($(IS_BAREMETAL),yes)
+BUILD_OS_TYPE = baremetal
+endif
+ifeq ($(IS_FREERTOS),yes)
+BUILD_OS_TYPE = freertos
+endif
 
 SRCDIR = . $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/common
 INCDIR = . $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/common
 
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_OS_DEFINES = -DUSE_BIOS
+EXTERNAL_INTERFACES = bios xdc
+COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP)
+# Enable XDC build for application by providing XDC CFG File per core
+XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
+EXTERNAL_INTERFACES = freertos
+XDC_CFG_FILE_$(CORE) =
+endif
+
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk sciclient osal_tirtos board uart bios xdc
+INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
 
 # List all the components required by the application
-COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) bios xdc
-
 ifeq ($(ARCH),c66x)
   COMP_LIST_COMMON += csl_intc
-else
-  ifneq ($(ARCH),c71)
-    COMP_LIST_COMMON += csl_init
-  endif
 endif
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON = sciclient_rtos_main.c \
-			  sciclient_appCommon.c
+              sciclient_appCommon.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-
 PACKAGE_SRCS_COMMON = . ../common
-
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

@@ -42,19 +42,9 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#if defined (__aarch64__)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
-#endif
 
 #include <ti/osal/TimerP.h>
+#include <ti/osal/TaskP.h>
 
 #include <stdint.h>
 #include <string.h>
@@ -62,11 +52,9 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/hw_types.h>
-#include <ti/sysbios/knl/Clock.h>
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_ut_tests.h>
 #if defined (__C7100__)
-#include <ti/sysbios/family/c7x/Mmu.h>
 #include <ti/csl/csl_clec.h>
 #endif
 
@@ -85,7 +73,7 @@
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
-void mainTask(UArg arg0, UArg arg1);
+void mainTask(void* arg0, void* arg1);
 static int32_t App_getRevisionTestPol(void);
 static int32_t App_getRevisionTestIntr(void);
 static int32_t App_timeoutTest(void);
@@ -116,9 +104,8 @@ static uint8_t  gAppTskStackMain[16*1024] __attribute__((aligned(8192)));;
 
 int main(void)
 {
-    Task_Handle task;
-    Task_Params taskParams;
-    Error_Block eb;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
     App_SciclientC7xPreInit();
 
@@ -143,25 +130,21 @@ int main(void)
     }
     #endif
 
-    Task_Params_init(&taskParams);
-    taskParams.priority = 2;
+    TaskP_Params_init(&taskParams);
     taskParams.stack        = gAppTskStackMain;
-    taskParams.stackSize    = sizeof (gAppTskStackMain);
-
-    Error_init(&eb);
-    
-    task = Task_create(mainTask, &taskParams, &eb);
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+    task = TaskP_create(mainTask, &taskParams);
     if(NULL==task)
     {
-        BIOS_exit(0);
+        OS_stop();
     }
 
-    BIOS_start();
+    OS_start();
 
     return retVal;
 }
 
-void mainTask(UArg arg0, UArg arg1)
+void mainTask(void* arg0, void* arg1)
 {
     /*To suppress unused variable warning*/
     (void)arg0;

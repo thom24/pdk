@@ -42,19 +42,9 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#if defined (__aarch64__)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
-#endif
-#include <ti/sysbios/family/arm/v7r/Cache.h>
 #include <ti/osal/TimerP.h>
+#include <ti/osal/TaskP.h>
+#include <ti/osal/CacheP.h>
 
 #include <stdint.h>
 #include <string.h>
@@ -62,7 +52,6 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/hw_types.h>
-#include <ti/sysbios/knl/Clock.h>
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
 
 
@@ -120,7 +109,7 @@
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
-void mainTask(UArg arg0, UArg arg1);
+void mainTask(void *arg0, void *arg1);
 
 int32_t Sciclient_fw_test(
         uint16_t fwl_id,
@@ -154,39 +143,42 @@ uint32_t gAbortRecieved = 0U;
 
 int main(void)
 {
-    Task_Handle task;
-    Task_Params taskParams;
-    Error_Block eb;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
 #if defined (SOC_J721E)
+#if defined (USE_BIOS)
     extern const UInt32 ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors[];
     memcpy((void*)CSL_MCU_ARMSS_ATCM_BASE, 
            (void*) &ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors,
            0x60);
-    Cache_wbInvAll();
+    CacheP_wbInv((const void*)CSL_MCU_ARMSS_ATCM_BASE, 0x60);
+    CacheP_wbInv((const void*)&ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors, 0x60);
+#endif
+#if defined (FREERTOS)
+    *(uint32_t*) (CSL_MCU_ARMSS_ATCM_BASE + 0x30) = &Sciclient_fw_abort_handler;
+#endif
 #endif
 
     uint32_t retVal = CSL_PASS;
 
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
     taskParams.priority = 2;
     taskParams.stack        = gAppTskStackMain;
-    taskParams.stackSize    = sizeof (gAppTskStackMain);
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    Error_init(&eb);
-    
-    task = Task_create(mainTask, &taskParams, &eb);
+    task = TaskP_create(mainTask, &taskParams);
     if(NULL==task)
     {
-        BIOS_exit(0);
+        OS_stop();
     }
 
-    BIOS_start();
+    OS_start();
 
     return retVal;
 }
 
-void mainTask(UArg arg0, UArg arg1)
+void mainTask(void *arg0, void* arg1)
 {
     /*To suppress unused variable warning*/
     (void)arg0;
@@ -551,7 +543,7 @@ int32_t Sciclient_fw_test(
         while (p < (uint32_t*)pass_end_address)
         {
             *p = 0xABCDEF01;
-            Cache_wbInvAll();
+            CacheP_wbInv((const void*)p, 4);
             volatile uint32_t value = *p;
             if (value != 0xABCDEF01)
             {
@@ -573,7 +565,7 @@ int32_t Sciclient_fw_test(
         while (p < (uint32_t*) fail_end_address)
         {
             *p = (uint32_t)p; // This should fail
-            Cache_wbInvAll();
+            CacheP_wbInv((const void*)p, 4);
             volatile uint32_t value = *p;
             if (value == (uint32_t)p)
             {

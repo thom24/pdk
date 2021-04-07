@@ -45,17 +45,6 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#ifndef BARE_METAL
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <ti/csl/csl_types.h>

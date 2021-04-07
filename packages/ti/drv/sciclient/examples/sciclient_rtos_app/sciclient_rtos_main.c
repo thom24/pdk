@@ -42,18 +42,11 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#ifndef BARE_METAL
-/* XDCtools Header files */
+#if defined (__C7100__)
 #include <xdc/std.h>
 #include <xdc/runtime/Error.h>
 #include <xdc/runtime/System.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#if defined (__aarch64__)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
-#endif
+#include <ti/sysbios/family/c7x/Mmu.h>
 #endif
 
 #include <stdint.h>
@@ -63,11 +56,8 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/hw_types.h>
 #include <sciclient_appCommon.h>
-#include <ti/sysbios/knl/Clock.h>
 
-#if defined (__C7100__)
-#include <ti/sysbios/family/c7x/Mmu.h>
-#endif
+#include <ti/osal/TaskP.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -85,8 +75,8 @@
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
 
-void GetRevisionTest1(UArg arg0, UArg arg1);
-void GetRevisionTest2(UArg arg0, UArg arg1);
+void GetRevisionTest1(void* arg0, void *arg1);
+void GetRevisionTest2(void* arg0, void *arg1);
 
 void appReset(void);
 
@@ -115,44 +105,42 @@ void appReset(void)
 
 int main(void)
 {
-    Task_Handle task1,task2;
-    Task_Params taskParams1,taskParams2;
-    Error_Block eb;
+    TaskP_Handle task1,task2;
+    TaskP_Params taskParams1,taskParams2;
 
     App_SciclientC7xPreInit();
 
     uint32_t    retVal = CSL_PASS;
 
-    Task_Params_init(&taskParams1);
-    Task_Params_init(&taskParams2);
+    TaskP_Params_init(&taskParams1);
+    TaskP_Params_init(&taskParams2);
     taskParams1.priority = 14;
     taskParams2.priority = 15;
 
-    Error_init(&eb);
     App_sciclientConsoleInit();
     App_sciclientC66xIntrConfig();
 
-    task1 = Task_create(GetRevisionTest1, &taskParams1, &eb);
+    task1 = TaskP_create(GetRevisionTest1, &taskParams1);
     if (task1 == NULL)
     {
         App_sciclientPrintf("Task_create() GetRevisionTest1 failed!\n");
-        BIOS_exit(0);
+        OS_stop();
     }
 
-    task2 = Task_create(GetRevisionTest2, &taskParams2, &eb);
+    task2 = TaskP_create(GetRevisionTest2, &taskParams2);
     if (task2 == NULL)
     {
         App_sciclientPrintf("Task_create() GetRevisionTest2 failed!\n");
-        BIOS_exit(0);
+        OS_stop();
     }
 
     /* Start BIOS */
-    BIOS_start();
+    OS_start();
 
     return retVal;
 }
 
-void GetRevisionTest1(UArg arg0, UArg arg1)
+void GetRevisionTest1(void* arg0, void* arg1)
 {
     int32_t status = CSL_PASS;
     volatile uint32_t loopForever = 1U;
@@ -233,7 +221,7 @@ void GetRevisionTest1(UArg arg0, UArg arg1)
     while (loopForever) {;}
 }
 
-void GetRevisionTest2(UArg arg0, UArg arg1)
+void GetRevisionTest2(void* arg0, void*  arg1)
 {
     int32_t status = CSL_PASS;
     volatile uint32_t loopForever = 1U;
@@ -278,7 +266,7 @@ void GetRevisionTest2(UArg arg0, UArg arg1)
                 App_sciclientPrintf(
                                   " ABI revision %d.%d\n", response.abi_major,
                                   response.abi_minor);
-                Task_sleep(100);
+                TaskP_sleep(100);
             }
             else
             {

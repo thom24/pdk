@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2020 Texas Instruments Incorporated
+ *  Copyright (C) 2020-2021 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -43,14 +43,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-
 /* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
 #include <ti/osal/osal.h>
 #include <ti/osal/SemaphoreP.h>
 #include <ti/osal/TaskP.h>
@@ -86,7 +79,7 @@
 void Sciserver_tirtosUserMsgHwiFxn(uintptr_t arg);
 void Sciserver_tirtosUnRegisterIntr();
 void Sciserver_tirtosDeinit();
-void Sciserver_tirtosUserMsgTask(uintptr_t arg0, uintptr_t arg1);
+void Sciserver_tirtosUserMsgTask(void* arg0, void* arg1);
 
 static int32_t Sciserver_tirtosInitHwis(void);
 static int32_t Sciserver_tirtosInitSemaphores(void);
@@ -197,7 +190,7 @@ void Sciserver_tirtosUserMsgHwiFxn(uintptr_t arg)
 
     if ((ret != CSL_PASS) && (soft_error != true)) {
         /* At this point secure proxy is broken so halt */
-        BIOS_exit(0);
+        OS_stop();
     }
 }
 
@@ -226,7 +219,7 @@ void Sciserver_tirtosDeinit()
     Sciserver_tirtosUnRegisterIntr();
 }
 
-void Sciserver_tirtosUserMsgTask(uintptr_t arg0, uintptr_t arg1)
+void Sciserver_tirtosUserMsgTask(void *arg0, void* arg1)
 {
     uintptr_t key;
     uint32_t i = 0U;
@@ -274,7 +267,7 @@ void Sciserver_tirtosUserMsgTask(uintptr_t arg0, uintptr_t arg1)
         if (ret != CSL_PASS)
         {
             /* Failed to process message and failed to send nak response */
-            BIOS_exit(0);
+            OS_stop();
         }
         else
         {

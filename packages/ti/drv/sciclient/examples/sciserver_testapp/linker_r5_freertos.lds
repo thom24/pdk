@@ -31,7 +31,10 @@
  *
  */
 
-/* linker options */
+/*=========================*/
+/*     Linker Settings     */
+/*=========================*/
+
 --retain="*(.bootCode)"
 --retain="*(.startupCode)"
 --retain="*(.startupData)"
@@ -40,16 +43,18 @@
 --retain="*(.abortStack)"
 --retain="*(.undStack)"
 --retain="*(.svcStack)"
+
 --fill_value=0
---stack_size=0x2000
+--stack_size=0x4000
 --heap_size=0x1000
+--entry_point=_freertosresetvectors
 
--e __VECS_ENTRY_POINT
---retain="*(.utilsCopyVecsToAtcm)"
+-stack  0x4000  /* SOFTWARE STACK SIZE */
+-heap   0x1000  /* HEAP AREA SIZE      */
 
-#define BTCM_START 0x41010000
-
-/* Stack Sizes for various modes */
+/*-------------------------------------------*/
+/*       Stack Sizes for various modes       */
+/*-------------------------------------------*/
 __IRQ_STACK_SIZE = 0x100;
 __FIQ_STACK_SIZE = 0x100;
 __ABORT_STACK_SIZE = 0x100;
@@ -59,9 +64,8 @@ __SVC_STACK_SIZE = 0x100;
 
 MEMORY
 {
-    R5F_TCMA_SBL_RSVD(X)     : ORIGIN = 0x00000000 , LENGTH = 0x00000100
-    RESET_VECTORS(RWIX)      : ORIGIN = 0x41010000 , LENGTH = 0x00000100
-    R5F_TCMB0(RWIX)          : ORIGIN = 0x41010100 , LENGTH = 0x00007F00
+    VECTORS (X)                 : ORIGIN = 0x00000000 , LENGTH = 0x00000040
+    R5F_TCMB0(RWIX)             : ORIGIN = 0x41010100 , LENGTH = 0x00007F00
     OCMC_RAM_BOARD_CFG (RWIX)   : ORIGIN = 0x41c80000 , LENGTH = 0x2000
     /* Sciserver App Space */
     OCMC_RAM_SCISERVER (RWIX)   : ORIGIN = 0x41C82000 , LENGTH = 0x60000
@@ -70,29 +74,25 @@ MEMORY
 
 SECTIONS
 {
-    .vecs : {
-         *(.vecs)
-    } palign(8) > BTCM_START
-    .vecs       : {
-        __VECS_ENTRY_POINT = .;
-    } palign(8) > RESET_VECTORS
-    xdc.meta (COPY): { *(xdc.meta) } > R5F_TCMB0
-    .init_text  : {
-                     boot.*(.text)
-                     *(.text:ti_sysbios_family_arm_MPU_*)
-                     *(.text:ti_sysbios_family_arm_v7r_Cache_*)
-                  }  palign(8) > R5F_TCMB0
-    .text:xdc_runtime_Startup_reset__I     : {} palign(8) > R5F_TCMB0
-    .utilsCopyVecsToAtcm                   : {} palign(8) > R5F_TCMB0
-
-    .text           : {} palign(8)   > OCMC_RAM_SCISERVER
-    .cinit          : {} palign(8)   > OCMC_RAM_SCISERVER
-    .bss            : {} align(8)    > OCMC_RAM_SCISERVER
-    .far            : {} align(8)    > OCMC_RAM_SCISERVER
+    .freertosrstvectors : {} palign(8) > VECTORS
+    .bootCode           : {} palign(8) > OCMC_RAM_SCISERVER
+    .startupCode        : {} palign(8) > OCMC_RAM_SCISERVER
+    .text.hwi           : {} palign(8) > OCMC_RAM_SCISERVER
+    .startupData        : {} palign(8) > OCMC_RAM_SCISERVER, type = NOINIT
+    .text               : {} palign(8) > OCMC_RAM_SCISERVER
+    GROUP {
+        .text.hwi       : palign(8)
+        .text.cache     : palign(8)
+        .text.mpu       : palign(8)
+        .text.boot      : palign(8)
+    }                                > OCMC_RAM_SCISERVER
     .const          : {} palign(8)   > OCMC_RAM_SCISERVER
+    .cinit          : {} palign(8)   > OCMC_RAM_SCISERVER
+    .bss            : {} align(4)    > OCMC_RAM_SCISERVER
+    .far            : {} align(4)    > OCMC_RAM_SCISERVER
     .data           : {} palign(128) > OCMC_RAM_SCISERVER
-    .sysmem         : {} align(8)    > OCMC_RAM_SCISERVER
-    .stack          : {} align(4)    > R5F_TCMB0
+    .sysmem         : {}             > OCMC_RAM_SCISERVER
+    .stack          : {} align(4)    > OCMC_RAM_SCISERVER
     .data_buffer    : {} palign(128) > OCMC_RAM_SCISERVER
     .boardcfg_data  : {} palign(8)   > OCMC_RAM_SCISERVER
     .const*         : {} palign(4)   > R5F_TCMB0
@@ -110,7 +110,7 @@ SECTIONS
     .undStack       : {. = . + __UND_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__UND_STACK_START)
                         RUN_END(__UND_STACK_END)
-    .svcStac        : {. = . + __SVC_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
+    .svcStack        : {. = . + __SVC_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__SVC_STACK_START)
                         RUN_END(__SVC_STACK_END)
     
