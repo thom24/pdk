@@ -5,7 +5,7 @@ BUILD_OS_TYPE = tirtos
 ifeq ($(IS_FREERTOS),yes)
 BUILD_OS_TYPE = freertos
 endif
-ifeq ($(BAREMETAL), yes)
+ifeq ($(IS_BAREMETAL), yes)
 BUILD_OS_TYPE=baremetal
 endif
 
