@@ -41,6 +41,7 @@
 #include <ti/osal/TaskP.h>
 
 #include <FreeRTOS.h>
+#include <task.h>
 
 /* External Clock should be defined under osal_soc.h
  * if SOC is not supporting it, set to -1
@@ -120,6 +121,10 @@ Osal_ThreadType Osal_getThreadType(void)
     if( xPortInIsrContext())
     {
         osalThreadType = Osal_ThreadType_Hwi;
+    }
+    else if(taskSCHEDULER_NOT_STARTED == xTaskGetSchedulerState())
+    {
+        osalThreadType = Osal_ThreadType_Main;
     }
     else
     {
