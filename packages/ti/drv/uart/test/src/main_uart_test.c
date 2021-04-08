@@ -38,17 +38,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#endif /* #ifdef USE_BIOS */
-
 /* CSL Header files */
 #if defined(_TMS320C6X)
 #include <ti/csl/csl_chip.h>
@@ -59,9 +48,7 @@
 /* OSAL Header files */
 #include <ti/osal/osal.h>
 
-#if defined (USE_BIOS) || defined (FREERTOS)
 #include <ti/osal/TaskP.h>
-#endif
 
 /* UART Header files */
 #include <ti/drv/uart/UART.h>
@@ -1029,10 +1016,16 @@ Err:
 }
 
 #if !defined(UART_API2_NOT_SUPPORTED)
-#ifdef USE_BIOS
+#if defined (USE_BIOS) || defined (FREERTOS)
+#if defined (__C7100__)
+#define APP_TSK_STACK_WRITE              (16U * 1024U)
+#else
+#define APP_TSK_STACK_WRITE              (8U * 1024U)
+#endif /* #if defined (__C7100__) */
+static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(32)));
 /* Use a global variable to sync the read task and the write task */
 volatile bool taskSyncFlag;
-Void UART_simultaneous_rw_write(UArg a0, UArg a1)
+void UART_simultaneous_rw_write(void *a0, void *a1)
 {
 	UART_Handle      uart = (UART_Handle)a0;
 	bool             dmaMode = (bool)a1;
@@ -1060,8 +1053,6 @@ Void UART_simultaneous_rw_write(UArg a0, UArg a1)
 
     /* resume the read test task */
     taskSyncFlag = true;
-
-    Task_exit ();
 }
 
 /*
@@ -1086,10 +1077,9 @@ static bool UART_test_simultaneous_rw(bool dmaMode)
     UART_Params      uartParams;
     uintptr_t         addrScanPrompt, addrEchoPrompt;
     UART_Transaction transaction;
-    Task_Handle      writeTask;
-    Task_Params      writeTaskParams;
-    Error_Block      eb;
-    bool             ret = false;
+    TaskP_Handle      writeTask;
+    TaskP_Params      writeTaskParams;
+    bool              ret = false;
 
     /* UART SoC init configuration */
     UART_initConfig(dmaMode);
@@ -1107,17 +1097,12 @@ static bool UART_test_simultaneous_rw(bool dmaMode)
     /* run the write teas when task is created */
     taskSyncFlag = true;
 
-    Error_init(&eb);
-
     /* Initialize the task params */
-    Task_Params_init(&writeTaskParams);
-    writeTaskParams.arg0 = (UArg)uart;
-    writeTaskParams.arg1 = (UArg)dmaMode;
-#if defined (__C7100__)
-    writeTaskParams.stackSize = 1024*16;
-#else
-    writeTaskParams.stackSize = 1024*8;
-#endif
+    TaskP_Params_init(&writeTaskParams);
+    writeTaskParams.arg0 = (void *)uart;
+    writeTaskParams.arg1 = (void *)dmaMode;
+    writeTaskParams.stack = gAppTskStackWrite;
+    writeTaskParams.stacksize = sizeof (gAppTskStackWrite);
     /*
      * Set the write task priority to the default priority (1)
      * lower than the read task priority (2)
@@ -1125,10 +1110,9 @@ static bool UART_test_simultaneous_rw(bool dmaMode)
     writeTaskParams.priority = 1;
 
     /* Create the UART write task */
-    writeTask = Task_create((Task_FuncPtr)UART_simultaneous_rw_write, &writeTaskParams, &eb);
+    writeTask = TaskP_create(UART_simultaneous_rw_write, &writeTaskParams);
     if (writeTask == NULL)
     {
-        System_abort("Task create failed");
         goto Err;
     }
 
@@ -1172,6 +1156,8 @@ static bool UART_test_simultaneous_rw(bool dmaMode)
         Osal_delay(100);
     }
     taskSyncFlag = false;
+    /* Delete write task */
+    TaskP_delete(writeTask);
 
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrEchoPrompt;
@@ -1201,8 +1187,8 @@ Err:
 
     return (ret);
 }
-#endif
-#endif
+#endif /* #if defined (USE_BIOS) || defined (FREERTOS) */
+#endif /* #if !defined(UART_API2_NOT_SUPPORTED) */
 
 /*
  *  ======== UART read cancel test ========
@@ -3127,7 +3113,7 @@ UART_Tests Uart_tests[] =
     {UART_test_read_write_cancel, true, UART_TEST_ID_DMA_CANCEL, "\r\n UART DMA read write cancel test, enter less than 16 chars"},
 #endif
     {UART_test_read_write_cancel, false, UART_TEST_ID_CANCEL, "\r\n UART non-DMA read write cancel test, enter less than 16 chars"},
-#ifdef USE_BIOS
+#if defined (USE_BIOS) || defined (FREERTOS)
 #if !defined(UART_API2_NOT_SUPPORTED)
 #ifdef UART_DMA_ENABLE
     {UART_test_simultaneous_rw, true, UART_TEST_ID_DMA_RW, "\r\n UART DMA simultaneous read write test "},

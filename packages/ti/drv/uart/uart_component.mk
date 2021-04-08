@@ -68,6 +68,7 @@ ifeq ($(uart_component_make_include), )
 
 # under other list
 drvuart_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
+drvuart_freertos_BOARDLIST = am65xx_evm j721e_evm j7200_evm tpr12_evm
 drvuart_dma_SOCLIST     = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am437x am65xx j721e j7200
 drvuart_SOCLIST         = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 drvuart_tda2xx_CORELIST = ipu1_0
@@ -92,13 +93,17 @@ drvuart_c6657_CORELIST  = c66x
 drvuart_am437x_CORELIST = a9host
 drvuart_am335x_CORELIST = a8host pru_0 pru_1
 drvuart_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
+drvuart_am65xx_FREERTOS_CORELIST = mcu1_0 mcu1_1
 drvuart_j721e_CORELIST = $(DEFAULT_j721e_CORELIST)
 drvuart_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvuart_j721e_FREERTOS_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvuart_j7200_CORELIST = $(DEFAULT_j7200_CORELIST)
 drvuart_j7200_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvuart_j7200_FREERTOS_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
 drvuart_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_tpr12_CORELIST = mcu1_0 c66xdsp_1
+drvuart_tpr12_FREERTOS_CORELIST = mcu1_0 c66xdsp_1
 drvuart_awr294x_CORELIST = mcu1_0 c66xdsp_1
 
 ############################
@@ -418,11 +423,11 @@ export UART_Freertos_TestApp_CORE_DEPENDENCY = no
 export UART_Freertos_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes
 UART_Freertos_TestApp_PKG_LIST = UART_Freertos_TestApp
 UART_Freertos_TestApp_INCLUDE = $(UART_Freertos_TestApp_PATH)
-export UART_Freertos_TestApp_BOARDLIST = tpr12_evm
-export UART_Freertos_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+export UART_Freertos_TestApp_BOARDLIST = $(drvuart_freertos_BOARDLIST)
+export UART_Freertos_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_FREERTOS_CORELIST)
 export UART_Freertos_TestApp_SBL_APPIMAGEGEN = yes
 
-# UART unit test freertos app
+# UART unit test freertos dma app
 export UART_Freertos_DMA_TestApp_COMP_LIST = UART_Freertos_DMA_TestApp
 UART_Freertos_DMA_TestApp_RELPATH = ti/drv/uart/test
 UART_Freertos_DMA_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
