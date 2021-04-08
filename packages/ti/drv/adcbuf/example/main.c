@@ -42,14 +42,12 @@
 #include <stdio.h>
 
 /* BIOS/XDC Include Files. */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
+#include <ti/osal/TaskP.h>
+#include <ti/osal/DebugP.h>
+#include <ti/osal/SemaphoreP.h>
 
 /* ADCBUF Driver: */
 #include <ti/drv/adcbuf/adcbuf.h>
-
 #include <ti/drv/edma/edma.h>
 #include <ti/csl/soc.h>
 #include <ti/osal/osal.h>
@@ -57,6 +55,8 @@
 /* ========================================================================== */
 /*                                 Macros                                     */
 /* ========================================================================== */
+static uint8_t  gAppTskStackMain[4 * 1024] __attribute__((aligned(32)));
+
 /* Test definition specific to the device */
 #define TOTAL_TEST_CASES                    (4U)
 #define TEST_ADCBUF_NUM_SAMPLES             (1024U)
@@ -967,7 +967,7 @@ EDMA_Handle Test_ADCBUFInitEDMA(void)
  *  @retval
  *      Not Applicable.
  */
-void Test_ADCBUFInitTask(UArg arg0, UArg arg1)
+void Test_ADCBUFInitTask(void* arg0, void* arg1)
 {
 	EDMA_Handle          EdmaHandle = NULL;
 	SemaphoreP_Params    semParams;
@@ -1009,9 +1009,9 @@ void Test_ADCBUFInitTask(UArg arg0, UArg arg1)
 
     /* Basic API Test */
     if(Test_ADCBUFApiTest() < 0)
-    	printf ("ADCBUF Basic API test failed\n");
+        printf ("ADCBUF Basic API test failed\n");
     else
-    	printf ("ADCBUF Basic API test passed\n");
+        printf ("ADCBUF Basic API test passed\n");
 
     /**************************************************************************
      * Test: Parameter validation test
@@ -1019,9 +1019,9 @@ void Test_ADCBUFInitTask(UArg arg0, UArg arg1)
 
     /* Test input parameters */
     if (Test_ADCBUFCmdParamsCheckTest() < 0)
-    	printf ("ADCBUF Input Parameters Validation Test failed\n");
+        printf ("ADCBUF Input Parameters Validation Test failed\n");
     else
-    	printf ("ADCBUF Input Parameters Validation Test passed\n");
+        printf ("ADCBUF Input Parameters Validation Test passed\n");
 
     /**************************************************************************
      * Test: Reopen the driver to test in Continuous Mode
@@ -1081,9 +1081,9 @@ void Test_ADCBUFInitTask(UArg arg0, UArg arg1)
         /* Register interrupts */
         if(OSAL_INT_SUCCESS != Osal_RegisterInterrupt(&intrPrms, &hwiHandle))
         {
-        	printf("Error: Unable to register Chirp interrupt\n");
-        	hwiHandle = NULL;
-        	goto Exit;
+            printf("Error: Unable to register Chirp interrupt\n");
+            hwiHandle = NULL;
+            goto Exit;
         }
 
         /* Initialize the data format for the test */
@@ -1127,7 +1127,7 @@ void Test_ADCBUFInitTask(UArg arg0, UArg arg1)
                 while(edmaTransComplete == false)
                 {
                     EDMA_isTransferComplete(EdmaHandle, 0, &edmaTransComplete);
-                    Task_sleep(1);
+                    TaskP_sleepInMsecs(1);
                 }
             }
             else
@@ -1202,7 +1202,7 @@ void Test_ADCBUFInitTask(UArg arg0, UArg arg1)
             printf ("gVerifyFailCount = %d\n", gVerifyFailCount);
         }
         else
-        	printf ("ADCBUF Test Pattern passed\n");
+            printf ("ADCBUF Test Pattern passed\n");
 
         /* Clear the counter */
         gIntCounter = 0;
@@ -1221,12 +1221,8 @@ void Test_ADCBUFInitTask(UArg arg0, UArg arg1)
     printf("Debug: Semaphore Instance %p has been closed successfully\n", gIntSemaHandle);
 
 Exit:
-    /* After test all done, terminate DSP by calling BIOS_exit().
-        This is required by MCPI test framework script.
-        MCPI test framework script waits for DSP halt,
-        if DSP doesn't halt, script will wait until timeout then claim test fail.
-     */
-    BIOS_exit(0);
+    /* Stop OS */
+    OS_stop();
 
     return;
 }
@@ -1241,15 +1237,16 @@ Exit:
  */
 int main (void)
 {
-    Task_Params    taskParams;
+    TaskP_Params    taskParams;
 
     /* Initialize the Task Parameters. */
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 4*1024;
-    Task_create(Test_ADCBUFInitTask, &taskParams, NULL);
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof(gAppTskStackMain);
+    TaskP_create(Test_ADCBUFInitTask, &taskParams);
 
-    /* Start BIOS */
-    BIOS_start();
+    /* Start OS */
+    OS_start();
 
     return 0;
 }

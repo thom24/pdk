@@ -1199,9 +1199,7 @@ uint32_t ADCBUF_MMWave_getChanBufAddr(ADCBuf_Handle handle, uint8_t channel, int
     *errCode = ADCBUF_STATUS_SUCCESS;
 
     /* Check if the channel is enabled? */
-    /*if(CSL_FEXTR(ptrRssCtrlRegBase->ADCBUFCFG1, ADCBUFCFG1_RX0EN_BIT_END + channel,
-                 ADCBUFCFG1_RX0EN_BIT_START + channel) != (uint32_t)0U)*/
-    if(isChannelEnabled(ptrRssCtrlRegBase, channel) == (uint32_t)0U)
+    if(isChannelEnabled(ptrRssCtrlRegBase, channel) != (uint32_t)0U)
     {
         uint32_t addrOffset;
 

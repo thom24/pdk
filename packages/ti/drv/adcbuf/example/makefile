@@ -27,8 +27,8 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
-SRCS_mcu1_0 += main_mss.c
-#SRCS_c66xdsp_1 += main.c
+SRCS_mcu1_0 += main.c
+SRCS_c66xdsp_1 += main.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
