@@ -93,6 +93,7 @@ uint32_t gSocUsbControllerInstOffsetArray[]  = {USB_DWC_CORE_OFFSET,
 
 uint32_t gSocUsbWrapperInstOffsetArray[]  = {0x0U,0x0U};
 
+uint32_t gUsbEnumStatus = 0;
 
 /**
 * \brief Enumeration for different modes supported by a controller instance.
@@ -124,6 +125,12 @@ uint32_t USBSSGetGlobalHostIntrStatus(uint32_t instNum)
     /* Host interrupt status bit is at the 7th position.*/    
     regVal &= (0x1<<7);
     return(regVal);
+}
+
+uint32_t USBSSGetEumerationStatus(uint32_t instNum)
+{
+    /* Need to extend for USB instance support */
+    return(gUsbEnumStatus);
 }
 
 uint32_t USBSSGetGlobalDevIntrStatus(uint32_t instNum) 
@@ -518,12 +525,18 @@ void USB_Host_Init(uint32_t instanceNumber)
     /* USB3.0 */
     /*regVal = HW_RD_REG32(baseAddr + DWC_USB_GUSB3PIPECTL); */
     /*HW_WR_FIELD32(baseAddr + DWC_USB_GUSB3PIPECTL, DWC_USB_GUSB3PIPECTL_LFPSFILT, 1); */
-    HW_WR_REG32(baseAddr + DWC_USB_GUSB3PIPECTL, 0x00040002); /* this value gives a much cleaner LSSM */
+    /*HW_WR_REG32(baseAddr + DWC_USB_GUSB3PIPECTL, 0x00040002);*/ /* this value gives a much cleaner LSSM */
 
 
     /*Write to Config Register. Doing this after the host rst above.  */
     /*otherwise enable_slot command will fail */
-    HW_WR_FIELD32(baseAddr + DWC_USB_CONFIG, DWC_USB_CONFIG_MAXSLOTSEN, NO_OF_SLOTS);
+    HW_WR_FIELD32(baseAddr + DWC_USB_CONFIG, DWC_USB_CONFIG_MAXSLOTSEN, 0x40);
+    HW_WR_REG32(baseAddr + DWC_USB_DNCTRL, 0x2);
+    HW_WR_REG32(baseAddr + DWC_USB_OCTL, 0x40);
+
+    regVal = HW_RD_REG32(baseAddr + DWC_USB_GUCTL);
+    regVal |= 0x4000;
+    HW_WR_REG32(baseAddr + DWC_USB_GUCTL, regVal);
 
     /* Device context base address pointer */
     /*This one was creating trouble as our allingnment was 64byte  */
@@ -1734,8 +1747,6 @@ static uint32_t xhci_handle_psc_event(uint32_t instanceNumber,
     return NO_ERROR;
 } /* xhci_handling_psc_event */
 
-
-
 uint32_t xhci_enum(uint32_t instanceNumber)
 {
     uint32_t        rc = NO_ERROR;
@@ -1773,6 +1784,7 @@ uint32_t xhci_enum(uint32_t instanceNumber)
 
             case USB_HOST_UNKNOWN:
             {
+                debug_printf(" xhci_enum - USB_HOST_UNKNOWN\n");
                 /*Wait for Pending interrupt */
                 /*xhci_wait_for_event(baseAddr); */
                 if (!xhci_pending_event(baseAddr)) 
@@ -1804,9 +1816,12 @@ uint32_t xhci_enum(uint32_t instanceNumber)
 
             case USB_HOST_DEV_CONNECTED:
             {
+                debug_printf(" xhci_enum - USB_HOST_DEV_CONNECTED\n");
+
                 /* USB3.0 port is mapped to PORTSC2 (as mentioned in 4.24.2.2 */
                 if (portNum == 1) /* which means root hub port #2 (xhciPortNum = 2) */
                 {
+                    gUsbEnumStatus = 3;
                     debug_printf("Using USB3.0 initialization sequence\n");
 
                     /* for USB3.0, advance the state machine without reset the port. */
@@ -1814,13 +1829,14 @@ uint32_t xhci_enum(uint32_t instanceNumber)
                 } 
                 else 
                 {
+                    gUsbEnumStatus = 2;
                     debug_printf("xhciPortNum!=2. Using USB2.0 initialization sequence\n");
                     debug_printf("about to do port reset! PORTSC%d=0x%x\n", 
                                  portNum+1,
                                  HW_RD_REG32(baseAddr + portStatusReg)); 
 
                     /*Port Reset */
-                    usb_osalDelayMs(125);	/* delay 125ms before resetting the device */
+                    usb_osalDelayMs(150);	/* delay 150ms before resetting the device */
 
                     HW_WR_FIELD32(baseAddr + portStatusReg, DWC_USB_PORTSC1_PR, 0x01);
                    
@@ -1828,7 +1844,7 @@ uint32_t xhci_enum(uint32_t instanceNumber)
                     xhciData->expectingTrbType = TRB_PSC;
                     xhci_wait_for_event(baseAddr);
 
-                    usb_osalDelayMs(125);	/* delay 125ms after reset. // needed for Galileo */
+                    usb_osalDelayMs(150);	/* delay 150ms after reset. // needed for Galileo */
 
                     /*Check if Port uint32_t Change event has come and  */
                     /*Port Reset has happened */
@@ -1870,6 +1886,8 @@ uint32_t xhci_enum(uint32_t instanceNumber)
 
             case USB_HOST_PORT_RESET:
             {
+                debug_printf(" xhci_enum - USB_HOST_PORT_RESET\n");
+
                 usb_osalDelayMs(15);	/* delay 15ms after resetting the device */
 
                 /*Get the Slot Context using Enable Slot command 4.3.2 in xHCI Spec */
@@ -1968,9 +1986,12 @@ uint32_t xhci_enum(uint32_t instanceNumber)
 
             case USB_HOST_SLOT_ENABLED:
             {
+                debug_printf(" xhci_enum - USB_HOST_SLOT_ENABLED\n");
+
                 debug_printf("about to set Address\n"); 
                 rc = USB_HOST_xHCI_Address_Device(instanceNumber, xhciData->xhciPortSpeed) ;    
                 if (rc != NO_ERROR) return rc;
+                usb_osalDelayMs(15);	/* delay 15ms after set address */
 
                 debug_printf("about to get device descriptor\n"); 
                 rc = USBHostGetDeviceDescriptor(instanceNumber, USB_HOST_DEVICE_ADDRESS);
@@ -2001,6 +2022,7 @@ uint32_t xhci_enum(uint32_t instanceNumber)
             }
 
             case USB_HOST_DEV_DETACHED:
+                debug_printf(" xhci_enum - USB_HOST_DEV_DETACHED\n");
                 /* fall through */
             default:
                 break;

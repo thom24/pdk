@@ -100,7 +100,6 @@ void usbPhyOn(uint32_t instanceNumber, uint32_t invertPolarity)
 {
 }
 
-
 void usb3_phy_reset(uint32_t portNumber)
 {
     volatile uint32_t loop;
@@ -128,6 +127,8 @@ void usb3_phy_reset(uint32_t portNumber)
 
     for (loop = 0; loop < 0x10000; loop++);
 
+    HW_WR_REG32(dwc3BaseAddr + DWC_USB_GUSB3PIPECTL, 0x08040002);
+
     /* USB 2 PHY Reset */
     HW_WR_FIELD32(dwc3BaseAddr +  DWC_USB_GUSB2PHYCFG,
                   DWC_USB_GUSB2PHYCFG_PHYSOFTRST,
@@ -145,6 +146,7 @@ void usb3_phy_reset(uint32_t portNumber)
                   DWC_USB_GCTL_CORESOFTRESET,
                   DWC_USB_GCTL_CORESOFTRESET_NO);
 
+    HW_WR_REG32(dwc3BaseAddr + DWC_USB_GUSB3PIPECTL, 0x08040002);
 }
 
 static int32_t usb3_wrapper_config(uint32_t portNumber)
@@ -196,7 +198,6 @@ void usbClockCfg(uint32_t portNumber)
     regVal = HW_RD_REG32(phyBase + CSL_USB3_PHY2_ANA_CONFIG1);
     regVal |= ((1U<<31));    /*DISCON_DETECT_BYPASS */
     HW_WR_REG32(phyBase + CSL_USB3_PHY2_ANA_CONFIG1, regVal);
-
 
     /* usb3_phy_reset(portNumber); */
 } /* usbClockCfg */
@@ -294,8 +295,8 @@ int32_t usbClockSSCfg(void)
             rc = 0;
 
             /* force signal detect high for lane 0 - 11/14/2018 */
-            debug_printf("Forcing serdes sig detect high for lane 0\n");
-            CSL_serdesForceSigDetHigh(baseAddr, 0);
+            /*debug_printf("Forcing serdes sig detect high for lane 0\n");*/
+            /*CSL_serdesForceSigDetHigh(baseAddr, 0);*/
         }
         else
         {
@@ -426,6 +427,20 @@ void usb30Debug(void)
 
             break;
         }
+        else
+        {
+            debug_printf("Did not get config.active and finished dumping TBUS data\n\n");
+
+            /* printing tbus data */
+            debug_printf("TBUS: pma_ln_dlpf_bf_i[9:0] = %d\n", (tbusLaneDump.tbusData[41])&0x3FF);
+            debug_printf("TBUS: ln_astat_i[5:0] = %d\n", (tbusLaneDump.tbusData[12])&0x3F);
+
+            att = (CSL_serdesReadSelectedTbus(CSL_SERDES0_BASE, 0+1, 0x40) & 0x070) >> 4;
+            boost = (CSL_serdesReadSelectedTbus(CSL_SERDES0_BASE, 0+1, 0x44) & 0x078) >> 3;
+
+            debug_printf("\nAttenuation is %d\n", att );
+            debug_printf("Boost is %d\n", boost );
+        }
     }
 }
 #endif
@@ -449,5 +464,8 @@ void usb_controller_setup_host_mode(uint32_t portNum)
     /* USB3.0 */
     /*regVal = HW_RD_REG32(baseAddr + DWC_USB_GUSB3PIPECTL); */
     /*HW_WR_FIELD32(baseAddr + DWC_USB_GUSB3PIPECTL, DWC_USB_GUSB3PIPECTL_LFPSFILT, 1); */
-    HW_WR_REG32(baseAddr + DWC_USB_GUSB3PIPECTL, 0x00040002); /* this value gives a much cleaner LSSM */
+    //HW_WR_REG32(baseAddr + DWC_USB_GUSB3PIPECTL, 0x08040002); /* this value gives a much cleaner LSSM */
+    regVal = HW_RD_REG32(baseAddr + DWC_USB_GUCTL);
+    regVal |= 0x4000;
+    HW_WR_REG32(baseAddr + DWC_USB_GUCTL, regVal);
 }

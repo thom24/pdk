@@ -99,6 +99,8 @@ extern "C" {
 
 #define CSZ_1                       1 /*In Aegis HCCPARAMS CSZ is 1 */
 
+#define USB3_ENUM_RETRY_CNT_MAX     (10U)
+
 /* Slot Context Data Structure - 6.2.2 - Figure 74 */
 struct xhci_slot_context {
     uint32_t    device_info0;
@@ -486,6 +488,7 @@ void XHCIIntrDisable (uint32_t instNum);
 uint32_t USBSSGetGlobalHostIntrStatus(uint32_t instNum) ;
 uint32_t USBSSGetGlobalDevIntrStatus(uint32_t instNum) ;
 uint32_t USBSSGetGlobalOTGIntrStatus(uint32_t instNum) ;
+uint32_t USBSSGetEumerationStatus(uint32_t instNum);
 
 /* TBD: Additional proototype dependency outside the source file */
 void saveDeviceDescriptor(uint32_t ulIndex, uint8_t* buffer);

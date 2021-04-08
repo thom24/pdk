@@ -90,6 +90,8 @@ Defines the help message for cat.
 #define FS_SHELL_APP_UTILS_CMD_INFO_BM  "   : Benchmark USB host throughput\n"\
                                         "       bm <TestFile>\n"\
                                         "       Need at least 100MB free on your USB drive\n"
+#define FS_SHELL_APP_UTILS_CMD_INFO_INFO  "  : Show the Device Enumeration Info"
+
 
 #define FS_SHELL_TERM_KEY   27U /* ESC key is used to terminate user input */
 #define MAX_UINT64_VAL      (0xFFFFFFFFFFFFFFFF)
@@ -275,6 +277,8 @@ int32_t FSShellAppUtilsCmdHelp(int32_t argc, char *argv[]);
  **/
 int32_t FSShellAppUtilsCmdBm(int32_t argc, char *argv[]);
 
+int32_t FSShellAppUtilsCmdInfo(int32_t argc, char *argv[]);
+
 /**
  *  \brief   This function corrects the entered command based on user input.
  *
@@ -421,6 +425,9 @@ fsShellAppUtilsCmdEntry_t gFsShellAppUtilsCmdTable[] =
     { "pwd",      &FSShellAppUtilsCmdPwd,   FS_SHELL_APP_UTILS_CMD_INFO_PWD},
     { "cat",      &FSShellAppUtilsCmdCat,   FS_SHELL_APP_UTILS_CMD_INFO_CAT},
     { "bm",       &FSShellAppUtilsCmdBm,    FS_SHELL_APP_UTILS_CMD_INFO_BM},
+#if defined(SOC_AM65XX)
+    { "info",     &FSShellAppUtilsCmdInfo,  FS_SHELL_APP_UTILS_CMD_INFO_INFO},
+#endif
     { 0, 0, 0 }
 };
 
@@ -1598,6 +1605,33 @@ int32_t FSShellAppUtilsCmdBm(int32_t argc, char *argv[])
     /* Return success. */
     return retStat;
 }
+
+#if defined(SOC_AM65XX)
+extern uint32_t USBSSGetEumerationStatus(uint32_t instNum);
+int32_t FSShellAppUtilsCmdInfo(int32_t argc, char *argv[])
+{
+    int32_t  retStat = S_PASS;
+    uint32_t usb3Enumerated;
+
+    usb3Enumerated = USBSSGetEumerationStatus(0);
+
+    if(usb3Enumerated == 3)
+    {
+        consolePrintf("USB Device is Enumerated with USB3 Mode\n");
+    }
+    else if(usb3Enumerated == 2)
+    {
+        consolePrintf("USB Device is Enumerated with USB2 Mode\n");
+    }
+    else
+    {
+        consolePrintf("USB Device is Enumerated with Unknown Mode\n");
+    }
+
+    /* Return success. */
+    return retStat;
+}
+#endif
 
 /*-----------------------------------------------------------
  * applying user correction during command input
