@@ -75,6 +75,11 @@ typedef uint32_t Mailbox_Instance;
 /*! \brief Invalid Mailbox INST */
 #define MAILBOX_INST_INVALID         (0xFFU)
 
+/** @}*/ /* end defgroup MAILBOX_INSTANCE */
+
+/*! \brief */
+#define MAILBOX_MAX_INST           (MAILBOX_INST_LAST + 1U)
+
 /*! \brief Mailbox Buffer Size */
 #define MAILBOX_BUFF_UNIT_SIZE       (512U)
 

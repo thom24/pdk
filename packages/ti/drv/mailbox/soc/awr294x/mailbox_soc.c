@@ -137,6 +137,8 @@ static int32_t Mailbox_writeReset(Mbox_Handle handle);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+Mailbox_Driver         g_mBoxDrivers[MAILBOX_MAX_INST];
+
 /**
  * @brief
  *  Global Variable for tracking information required by the mailbox driver.
@@ -317,17 +319,13 @@ Mbox_Handle Mailbox_allocDriver(Mailbox_Instance remoteEndpoint)
 {
     Mailbox_Driver *driver = NULL;
 
-    driver = (Mailbox_Driver *) MemoryP_ctrlAlloc((uint32_t)sizeof(Mailbox_Driver), 0);
+    driver = &g_mBoxDrivers[remoteEndpoint];
 
     return (Mbox_Handle)driver;
 }
 
 int32_t Mailbox_freeDriver(Mbox_Handle handle)
 {
-    Mailbox_Driver *driver = (Mailbox_Driver *)(handle);
-
-    MemoryP_ctrlFree(driver, (uint32_t)sizeof(Mailbox_Driver));
-
     return MAILBOX_SOK;
 }
 

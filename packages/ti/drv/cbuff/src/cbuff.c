@@ -54,6 +54,8 @@
 #include <ti/osal/osal.h>
 #include <ti/csl/hw_types.h>
 
+CBUFF_DriverMCB    g_cbuffDriver = {0};
+CBUFF_Session      g_cbuffSession[CBUFF_MAX_NUM_SESSION] = {0u};
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
@@ -1515,7 +1517,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     }
 
     /* Allocate memory for the CBUFF Driver: */
-    ptrDriverMCB = (CBUFF_DriverMCB*)MemoryP_ctrlAlloc (sizeof(CBUFF_DriverMCB), 0);
+    ptrDriverMCB = &g_cbuffDriver;
     if (ptrDriverMCB == NULL)
     {
         /* Error: Out of memory */
@@ -1532,7 +1534,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     memset ((void *)ptrDriverMCB, 0, sizeof(CBUFF_DriverMCB));
 
     /* Allocate memory for the sessions: */
-    ptrDriverMCB->ptrSessionTable = (CBUFF_Session*) MemoryP_ctrlAlloc ((sizeof(CBUFF_Session) * ptrInitCfg->maxSessions), 0);
+    ptrDriverMCB->ptrSessionTable = &g_cbuffSession[0];
     if (ptrDriverMCB->ptrSessionTable == NULL)
     {
         /* Error: Out of memory */
@@ -1947,9 +1949,6 @@ int32_t CBUFF_deinit (CBUFF_Handle cBuffHandle, int32_t* errCode)
                 }
             }
         }
-
-        /* Cleanup the memory for the allocated session table */
-        MemoryP_ctrlFree (ptrDriverMCB->ptrSessionTable, (sizeof(CBUFF_Session) * ptrDriverMCB->initCfg.maxSessions));
     }
 
     /* Deregister the CBUFF Error ISR Handler only if had been registered */
@@ -1970,9 +1969,6 @@ int32_t CBUFF_deinit (CBUFF_Handle cBuffHandle, int32_t* errCode)
         /* Error: Unable to deinitialize the HSI. Error code is already setup */
         return retVal;
     }
-
-    /* Cleanup the memory */
-    MemoryP_ctrlFree (ptrDriverMCB, sizeof(CBUFF_DriverMCB));
 
     /* CBUFF has been deinitialized successfully. */
     retVal = 0;

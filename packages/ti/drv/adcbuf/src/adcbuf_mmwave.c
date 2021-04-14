@@ -45,6 +45,13 @@
 
 /*
  * =============================================================================
+ * Gobal Definitions
+ * =============================================================================
+ */
+/* Static instance of ADCBUF driver */
+ADCBufMMWave_Object         g_adcBufDriver = {0U};
+/*
+ * =============================================================================
  * Local Definitions
  * =============================================================================
  */
@@ -915,7 +922,7 @@ ADCBuf_Handle ADCBUF_MMWave_open(ADCBuf_Handle handle, const ADCBuf_Params *para
         else
         {
             /* Allocate memory for the driver: */
-            ptrADCBufObject = (ADCBufMMWave_Object* )MemoryP_ctrlAlloc ((uint32_t)sizeof(ADCBufMMWave_Object), 0);
+            ptrADCBufObject = &g_adcBufDriver;
             if (ptrADCBufObject == NULL)
             {
                 /* Error: memory allocation failed */
@@ -982,9 +989,6 @@ void ADCBUF_MMWave_close(ADCBuf_Handle handle)
 
     /* Mark the module as available */
     ptrADCBufObject->isOpen = false;
-
-    /* Free the memory */
-    MemoryP_ctrlFree (ptrADCBufObject, (uint32_t)sizeof(ADCBufMMWave_Object));
 
     /* Reset the object handle : */
     handle->object = NULL;
