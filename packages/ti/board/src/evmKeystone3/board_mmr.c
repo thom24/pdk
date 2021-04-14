@@ -82,17 +82,21 @@ Board_STATUS Board_unlockMMR(void)
     lock1 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK1);
     MMR_unlock(lock0, lock1);
 
+#ifdef BOARD_MMR_UNLOCK_ALL
     lock0 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0);
     lock1 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1);
     MMR_unlock(lock0, lock1);
+#endif
 
     lock0 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK3_KICK0);
     lock1 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK3_KICK1);
     MMR_unlock(lock0, lock1);
 
+#ifdef BOARD_MMR_UNLOCK_ALL
     lock0 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK6_KICK0);
     lock1 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK6_KICK1);
     MMR_unlock(lock0, lock1);
+#endif
 
     lock0 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK7_KICK0);
     lock1 = (uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK7_KICK1);
@@ -107,17 +111,21 @@ Board_STATUS Board_unlockMMR(void)
     lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK1_KICK1);
     MMR_unlock(lock0, lock1);
 
+#ifdef BOARD_MMR_UNLOCK_ALL
     lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK2_KICK0);
     lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK2_KICK1);
     MMR_unlock(lock0, lock1);
+#endif
 
     lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK3_KICK0);
     lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK3_KICK1);
     MMR_unlock(lock0, lock1);
 
+#ifdef BOARD_MMR_UNLOCK_ALL
     lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK6_KICK0);
     lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK6_KICK1);
     MMR_unlock(lock0, lock1);
+#endif
 
     lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK7_KICK0);
     lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK7_KICK1);
@@ -132,6 +140,7 @@ Board_STATUS Board_unlockMMR(void)
     lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK1_KICK1);
     MMR_unlock(lock0, lock1);
 
+#ifdef BOARD_MMR_UNLOCK_ALL
     lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK0);
     lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK1);
     MMR_unlock(lock0, lock1);
@@ -139,6 +148,7 @@ Board_STATUS Board_unlockMMR(void)
     lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK6_KICK0);
     lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK6_KICK1);
     MMR_unlock(lock0, lock1);
+#endif
     
     return BOARD_SOK;
 }
