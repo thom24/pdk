@@ -70,6 +70,8 @@ libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM57
 libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm
 libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x
+libosal_safertos_BOARDLIST  = tpr12_evm
+libosal_safertos_SOCLIST    = tpr12
 libosal_tda2xx_CORELIST = a15_0 ipu1_0
 libosal_tda2px_CORELIST = a15_0 ipu1_0
 libosal_tda2ex_CORELIST = a15_0 ipu1_0
@@ -102,7 +104,7 @@ libosal_freertos_j721e_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 libosal_freertos_j7200_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 libosal_freertos_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
 libosal_freertos_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
-
+libosal_safertos_tpr12_CORELIST = c66xdsp_1
 
 ############################
 # osal package
@@ -114,6 +116,13 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
 osal_LIB_LIST += osal_tirtos osal_tirtos_indp
 endif
 osal_LIB_LIST += osal_freertos
+
+ifeq ($(SOC),$(filter $(SOC), $(safertos_SOCLIST)))
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+osal_LIB_LIST += osal_safertos
+endif
+endif
+
 libosal_LIB_LIST = $(osal_LIB_LIST)
 
 ############################
@@ -266,6 +275,33 @@ export osal_freertos_SOCLIST
 osal_freertos_$(SOC)_CORELIST = $(libosal_freertos_$(SOC)_CORELIST)
 export osal_freertos_$(SOC)_CORELIST
 
+# OSAL SAFE RTOS LIB
+osal_safertos_COMP_LIST = osal_safertos
+osal_safertos_RELPATH = ti/osal
+osal_safertos_PATH = $(PDK_OSAL_COMP_PATH)
+osal_safertos_LIBNAME = ti.osal
+export osal_safertos_LIBNAME
+osal_safertos_LIBPATH = $(osal_safertos_PATH)/lib/safertos
+export osal_safertos_LIBPATH
+osal_safertos_OBJPATH = $(osal_safertos_RELPATH)/osal_safertos
+export osal_safertos_OBJPATH
+osal_safertos_MAKEFILE = -f build/makefile_safertos.mk
+export osal_safertos_MAKEFILE
+osal_safertos_PLATFORM_DEPENDENCY = no
+osal_safertos_CORE_DEPENDENCY = no
+osal_safertos_SOC_DEPENDENCY = yes
+export osal_safertos_COMP_LIST
+export osal_safertos_PLATFORM_DEPENDENCY
+export osal_safertos_CORE_DEPENDENCY
+export osal_safertos_SOC_DEPENDENCY
+osal_safertos_PKG_LIST = osal_safertos
+export osal_safertos_PKG_LIST
+osal_safertos_INCLUDE = $(osal_safertos_PATH)
+osal_safertos_SOCLIST = $(libosal_safertos_SOCLIST)
+export osal_safertos_SOCLIST
+osal_safertos_$(SOC)_CORELIST = $(libosal_safertos_$(SOC)_CORELIST)
+export osal_safertos_$(SOC)_CORELIST
+
 #
 # OSAL Examples
 #
@@ -303,6 +339,21 @@ OSAL_freertos_TestApp_BOARDLIST = $(libosal_freertos_BOARDLIST)
 export OSAL_freertos_TestApp_BOARDLIST
 OSAL_freertos_TestApp_SBL_APPIMAGEGEN = yes
 export OSAL_freertos_TestApp_SBL_APPIMAGEGEN
+
+OSAL_safertos_TestApp_COMP_LIST = OSAL_safertos_TestApp
+OSAL_safertos_TestApp_RELPATH = ti/osal/test/safertos
+OSAL_safertos_TestApp_PATH = $(PDK_OSAL_COMP_PATH)/test/safertos
+OSAL_safertos_TestApp_BOARD_DEPENDENCY = yes
+OSAL_safertos_TestApp_CORE_DEPENDENCY = no
+export OSAL_safertos_TestApp_COMP_LIST
+export OSAL_safertos_TestApp_BOARD_DEPENDENCY
+export OSAL_safertos_TestApp_CORE_DEPENDENCY
+OSAL_safertos_TestApp_PKG_LIST = OSAL_safertos_TestApp
+OSAL_safertos_TestApp_INCLUDE = $(OSAL_safertos_TestApp_PATH)
+OSAL_safertos_TestApp_BOARDLIST = tpr12_evm
+export OSAL_safertos_TestApp_BOARDLIST
+OSAL_safertos_TestApp_SBL_APPIMAGEGEN = yes
+export OSAL_safertos_TestApp_SBL_APPIMAGEGEN
 
 # OSAL sysbios unit test app
 OSAL_TestApp_COMP_LIST = OSAL_TestApp
@@ -420,6 +471,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12))
  OSAL_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
  OSAL_freertos_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+ OSAL_safertos_TestApp_$(SOC)_CORELIST = c66xdsp_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), awr294x))
@@ -433,6 +485,11 @@ export OSAL_freertos_TestApp_$(SOC)_CORELIST
 
 osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
 osal_EXAMPLE_LIST += OSAL_freertos_TestApp
+ifeq ($(SOC),$(filter $(SOC), $(safertos_SOCLIST)))
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+osal_EXAMPLE_LIST += OSAL_safertos_TestApp
+endif
+endif
 
 # do not support RTOS example for AM64x yet
 osal_EXAMPLE_LIST += OSAL_TestApp

@@ -38,7 +38,7 @@
  *
  */
 
-#if !(defined(BARE_METAL) || defined(FREERTOS))
+#if !(defined(BARE_METAL) || defined(FREERTOS) || defined(SAFERTOS))
 /* XDCtools Header files */
 #include <xdc/std.h>
 #if defined (SOC_J721E) || defined(SOC_J7200)
@@ -60,12 +60,18 @@
 #endif
 
 #if !defined(BARE_METAL)
-/* include for both tirtos and freertos. */
+/* include for both tirtos, safertos and freertos. */
 #include <ti/osal/TaskP.h>
 #endif
 
 #if defined (FREERTOS)
 #include "FreeRTOS.h"
+#include "task.h"
+#include <ti/osal/MemoryP.h>
+#endif
+
+#if defined (SAFERTOS)
+#include "safeRTOS.h"
 #include "task.h"
 #include <ti/osal/MemoryP.h>
 #endif
@@ -109,7 +115,7 @@
 #undef  TWO_TIMER_INTERRUPT_TEST
 #define TWO_TIMER_INTERRUPT_TEST 1
 #endif
-#elif defined (FREERTOS)
+#elif defined (FREERTOS) || defined (SAFERTOS)
 
 #else
 void ErrorHandler(Error_Block *eb)
@@ -1152,7 +1158,7 @@ bool OSAL_semaphore_test()
     return true;
 }
 
-#if !(defined(BARE_METAL) || defined(FREERTOS))
+#if !(defined(BARE_METAL) || defined(FREERTOS) || defined(SAFERTOS))
 
 /*
  *  ======== Queue test function ========
@@ -1314,7 +1320,7 @@ bool OSAL_log_test()
 #endif
 
 #ifndef BARE_METAL
-#if  defined(FREERTOS)
+#if  defined(FREERTOS) || defined(SAFERTOS)
 
 #else
 #include <ti/sysbios/knl/Clock.h>
@@ -1336,7 +1342,7 @@ bool OSAL_log_test()
 uint64_t OSAL_get_ticks()
 {
     uint64_t ticks;
-#if  defined(FREERTOS)
+#if  defined(FREERTOS) || defined(SAFERTOS)
     ticks = (uint64_t)uiPortGetRunTimeCounterValue();
 #else
     ticks = (uint64_t)Clock_getTicks();
@@ -1375,7 +1381,7 @@ bool OSAL_task_sleep_test(void)
     OSAL_log(" \n \
                diff_nticks = %d \n \
                diff_tout   = %d \n ", diff_nticks, diff_tout);
-#if  !defined(FREERTOS)
+#if  !(defined(FREERTOS) || defined(SAFERTOS))
     OSAL_log(" Clock_tickPeriod = %d \n \
                Clock_tickSource = %d ", Clock_tickPeriod, Clock_tickSource);
 #endif
@@ -1385,7 +1391,7 @@ bool OSAL_task_sleep_test(void)
 }
 #endif
 
-#if  defined(FREERTOS)
+#if  defined(FREERTOS) || defined(SAFERTOS)
 bool OSAL_mempry_test()
 {
     void *memPtr1, *memPtr2, *memPtr[5];
@@ -1460,7 +1466,7 @@ bool OSAL_mempry_test()
  */
 #if defined(BARE_METAL)
 void osal_test()
-#elif defined(FREERTOS)
+#elif defined(FREERTOS) || defined(SAFERTOS)
 void osal_test(void *arg0, void *arg1)
 #else
 void osal_test(UArg arg0, UArg arg1)
@@ -1624,7 +1630,7 @@ void osal_test(UArg arg0, UArg arg1)
       OSAL_log("\n Memory Statistics query failed \n");
     }
 
-#if !(defined(BARE_METAL) || defined(FREERTOS))
+#if !(defined(BARE_METAL) || defined(FREERTOS) || defined(SAFERTOS))
     if(OSAL_swi_test() == true)
     {
         OSAL_log("\n SWI tests have passed. \n");
@@ -1658,7 +1664,7 @@ void osal_test(UArg arg0, UArg arg1)
     }
 #endif
 
-#if defined(FREERTOS)
+#if defined(FREERTOS) || defined(SAFERTOS)
     if(OSAL_mempry_test() == true)
     {
         OSAL_log("\n MemoryP Log tests have passed. \n");
@@ -1810,7 +1816,7 @@ int main(void)
      */
 #if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X)|| defined(SOC_AM64X)
     TaskP_Params taskParams;
-#if !defined(FREERTOS)
+#if !(defined(FREERTOS) || defined(SAFERTOS))
     Error_Block  eb;
 #endif
     TaskP_Params_init(&taskParams);
@@ -1822,7 +1828,7 @@ int main(void)
 #endif
     TaskP_create(osal_test, &taskParams);
 #endif
-#if defined (FREERTOS)
+#if defined (FREERTOS) || defined(SAFERTOS)
     /* Start the scheduler to start the tasks executing. */
     vTaskStartScheduler();
 #else

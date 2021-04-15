@@ -160,7 +160,7 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 ifeq ($(XDC_CFG_FILE_$(CORE)),)
-  ifneq ($(BUILD_OS_TYPE),freertos)
+  ifneq ($(BUILD_OS_TYPE),$(filter $(BUILD_OS_TYPE), freertos safertos))
   LNKFLAGS_INTERNAL_COMMON += -u _CSL_intcVectorTable
   LNKFLAGS_INTERNAL_COMMON += -u CSL_intcIvpSet
   else

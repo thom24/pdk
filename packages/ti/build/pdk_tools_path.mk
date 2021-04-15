@@ -114,7 +114,9 @@ endif
   export M4_TOOLCHAIN_INSTALL_DIR  ?= $(TOOLCHAIN_PATH_M4)
   export FREERTOS_KERNEL_INSTALL_PATH   ?= $(PDK_INSTALL_PATH)/ti/kernel/freertos/FreeRTOS-LTS
   export FREERTOS_LABS_INSTALL_PATH     ?= $(PDK_INSTALL_PATH)/ti/kernel/freertos/FreeRTOS-Labs
-  
+  export SAFERTOS_KERNEL_INSTALL_PATH   ?= $(SDK_INSTALL_PATH)/safertos
+  export SAFERTOS_LABS_INSTALL_PATH     ?= $(SDK_INSTALL_PATH)/safertos
+
 ifeq ($(SOC),$(filter $(SOC), am335x))
   export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
   export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu

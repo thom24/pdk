@@ -125,6 +125,35 @@ function modBuild()
                 }
                 libUtility.buildLibrary ("freertos", soc, libOptions, Pkg.name, dev.targets[target], targetFiles_freertos);                
             }
+        /* Build the target libs for SoC specific SafeRTOS */
+        /* Build the libraries for the SoCs */
+        for each(var soc in soc_names)
+        {
+            var dev = socs[soc];
+            var targetFiles_safertos;
+
+                    if (dev.familyType == "keystone") {
+                       targetFiles_safertos = osTypes["safertos"].srcFile.slice().concat(keyStoneFamilySrcFiles["safertos"].srcFile.slice());
+                    }
+                    else {
+                       targetFiles_safertos = osTypes["safertos"].srcFile.slice().concat(amFamilySrcFiles["safertos"].srcFile.slice());
+                    }
+
+            /* Don't build if it is not configured */
+            if (dev.build == "false")
+                continue;
+
+            /* Build the libraries for the soc targets */
+            for (var target=0; target < dev.targets.length; target++)
+            {
+                print (" Building for Soc: " + soc + " target : " + dev.targets[target] );
+                var copts_loc  = osTypes["safertos"].copts + " " + dev.copts;
+                var libOptions = {
+                                copts: copts_loc,
+                                incs:  osalIncludePath,
+                }
+                libUtility.buildLibrary ("safertos", soc, libOptions, Pkg.name, dev.targets[target], targetFiles_safertos);
+            }
         }	
     }		
     /* Add all the .c files to the release package. */

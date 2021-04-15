@@ -897,6 +897,17 @@ ifneq ($(freertos_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(freertos_EXAMPLE_LIST)
 endif
 
+-include $(PDK_SAFERTOS_COMP_PATH)/safertos_component.mk
+ifneq ($(safertos_LIB_LIST),)
+  pdk_LIB_LIST += $(safertos_LIB_LIST)
+endif
+ifneq ($(safertos_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(safertos_APP_LIB_LIST)
+endif
+ifneq ($(safertos_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(safertos_EXAMPLE_LIST)
+endif
+
 -include $(PDK_ESM_COMP_PATH)/esm_component.mk
 ifneq ($(esm_LIB_LIST),)
   pdk_LIB_LIST += $(esm_LIB_LIST)
@@ -1281,11 +1292,15 @@ endif
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x))
   PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos 
   PDK_COMMON_FREERTOS_COMP += freertos
+  PDK_COMMON_SAFERTOS_COMP = $(PDK_COMMON_COMP) osal_safertos
+  PDK_COMMON_SAFERTOS_COMP += safertos
 ifeq ($(ARCH),c66x)
   PDK_COMMON_FREERTOS_COMP += csl_intc
+  PDK_COMMON_SAFERTOS_COMP += csl_intc
 else
   ifneq ($(ARCH),c71)
     PDK_COMMON_FREERTOS_COMP += csl_init
+    PDK_COMMON_SAFERTOS_COMP += csl_init
   endif
 endif
 endif
@@ -1293,6 +1308,7 @@ endif
 export PDK_COMMON_TIRTOS_COMP
 export PDK_COMMON_BAREMETAL_COMP
 export PDK_COMMON_FREERTOS_COMP
+export PDK_COMMON_SAFERTOS_COMP
 
 pdk_component_make_include := 1
 endif
