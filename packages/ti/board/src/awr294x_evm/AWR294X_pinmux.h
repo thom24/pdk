@@ -35,7 +35,7 @@
  *
  * \file   AWR294X_pinmux.h
  *
- * \brief  This file contains pad configure register offsets and bit-field
+ * \brief  This file contains pad configure register offsets and bit-field 
  *         value macros for different configurations,
  *
  *           BIT[9]		    PUPDSEL		    Pullup/PullDown Selection 0 -- Pull Down
@@ -51,8 +51,8 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include "pinmux.h"
-#include "csl_types.h"
+#include <ti/board/src/awr294x_evm/include/pinmux.h>
+#include <ti/csl/csl_types.h>
 #include <ti/csl/soc/awr294x/src/cslr_mss_iomux.h>
 
 #ifdef __cplusplus
@@ -67,7 +67,7 @@ extern "C" {
 
 /** \brief Active mode configurations */
 /** \brief Resistor disable */
-#define PIN_PULL_DISABLE                (0x1U << 8U)
+#define PIN_PULL_DISABLE                (0x1U << 8U)  
 /** \brief Pull direction */
 #define	PIN_PULL_DIRECTION              (0x1U << 9U)
 
@@ -76,7 +76,7 @@ extern "C" {
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/** \brief Pinmux configuration data for the board. Auto-generated from
+/** \brief Pinmux configuration data for the board. Auto-generated from 
            Pinmux tool. */
 extern pinmuxBoardCfg_t gAWR294XPinmuxData[];
 
