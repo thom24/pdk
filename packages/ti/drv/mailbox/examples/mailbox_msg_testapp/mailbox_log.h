@@ -78,11 +78,11 @@ extern "C" {
         }
         #define MAILBOX_log                dummy_printf
     #else
-        #if defined(BARE_METAL) || defined(FREERTOS)
-            #define MAILBOX_log                printf
-        #else
+        #if defined(USE_BIOS)
             #include <xdc/runtime/System.h>
             #define MAILBOX_log                System_printf
+        #else
+            #define MAILBOX_log                printf
         #endif /* BARE_METAL */
     #endif /* EMPTY_OSAL_LOG */
 #endif /* UART_CONSOLE */

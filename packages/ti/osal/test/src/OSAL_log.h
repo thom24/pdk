@@ -74,10 +74,10 @@ extern "C" {
         }
         #define OSAL_log                dummy_printf
     #else
-        #if defined(BARE_METAL) || defined(FREERTOS) || defined(SAFERTOS)
-            #define OSAL_log                printf
-        #else
+        #if defined(USE_BIOS)
             #define OSAL_log                System_printf
+        #else
+            #define OSAL_log                printf
         #endif /* BARE_METAL */
     #endif /* EMPTY_OSAL_LOG */
 #endif /* UART_CONSOLE */

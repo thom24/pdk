@@ -69,6 +69,7 @@ ifeq ($(uart_component_make_include), )
 # under other list
 drvuart_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
 drvuart_freertos_BOARDLIST = am65xx_evm j721e_evm j7200_evm tpr12_evm
+drvuart_safertos_BOARDLIST = tpr12_evm
 drvuart_dma_SOCLIST     = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am437x am65xx j721e j7200
 drvuart_SOCLIST         = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 drvuart_tda2xx_CORELIST = ipu1_0
@@ -104,6 +105,7 @@ drvuart_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
 drvuart_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_tpr12_CORELIST = mcu1_0 c66xdsp_1
 drvuart_tpr12_FREERTOS_CORELIST = mcu1_0 c66xdsp_1
+drvuart_tpr12_SAFERTOS_CORELIST = c66xdsp_1
 drvuart_awr294x_CORELIST = mcu1_0 c66xdsp_1
 
 ############################
@@ -131,6 +133,9 @@ drvuart_FIRM_LIST = $(uart_FIRM_LIST)
 #uart_EXAMPLE_LIST = drv_uart_unit_test drv_uart_polling_mode_app drv_uart_intr_mode_app
 uart_EXAMPLE_LIST = UART_Baremetal_TestApp UART_Baremetal_DMA_TestApp UART_TestApp UART_SMP_TestApp UART_DMA_TestApp UART_DMA_SMP_TestApp
 uart_EXAMPLE_LIST += UART_Freertos_TestApp UART_Freertos_DMA_TestApp
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+uart_EXAMPLE_LIST += UART_Safertos_TestApp UART_Safertos_DMA_TestApp
+endif
 drvuart_EXAMPLE_LIST = $(uart_EXAMPLE_LIST)
 
 #
@@ -437,8 +442,34 @@ export UART_Freertos_DMA_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes DMA=enab
 UART_Freertos_DMA_TestApp_PKG_LIST = UART_Freertos_DMA_TestApp
 UART_Freertos_DMA_TestApp_INCLUDE = $(UART_Freertos_DMA_TestApp_PATH)
 export UART_Freertos_DMA_TestApp_BOARDLIST = tpr12_evm
-export UART_Freertos_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+export UART_Freertos_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_FREERTOS_CORELIST)
 export UART_Freertos_DMA_TestApp_SBL_APPIMAGEGEN = yes
+
+# UART unit test safertos app
+export UART_Safertos_TestApp_COMP_LIST = UART_Safertos_TestApp
+UART_Safertos_TestApp_RELPATH = ti/drv/uart/test
+UART_Safertos_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_Safertos_TestApp_BOARD_DEPENDENCY = yes
+export UART_Safertos_TestApp_CORE_DEPENDENCY = no
+export UART_Safertos_TestApp_MAKEFILE = -f makefile IS_SAFERTOS=yes
+UART_Safertos_TestApp_PKG_LIST = UART_Safertos_TestApp
+UART_Safertos_TestApp_INCLUDE = $(UART_Safertos_TestApp_PATH)
+export UART_Safertos_TestApp_BOARDLIST = $(drvuart_safertos_BOARDLIST)
+export UART_Safertos_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_SAFERTOS_CORELIST)
+export UART_Safertos_TestApp_SBL_APPIMAGEGEN = yes
+
+# UART unit test safertos dma app
+export UART_Safertos_DMA_TestApp_COMP_LIST = UART_Safertos_DMA_TestApp
+UART_Safertos_DMA_TestApp_RELPATH = ti/drv/uart/test
+UART_Safertos_DMA_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_Safertos_DMA_TestApp_BOARD_DEPENDENCY = yes
+export UART_Safertos_DMA_TestApp_CORE_DEPENDENCY = no
+export UART_Safertos_DMA_TestApp_MAKEFILE = -f makefile IS_SAFERTOS=yes DMA=enable
+UART_Safertos_DMA_TestApp_PKG_LIST = UART_Safertos_DMA_TestApp
+UART_Safertos_DMA_TestApp_INCLUDE = $(UART_Safertos_DMA_TestApp_PATH)
+export UART_Safertos_DMA_TestApp_BOARDLIST =  $(drvuart_safertos_BOARDLIST)
+export UART_Safertos_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_SAFERTOS_CORELIST)
+export UART_Safertos_DMA_TestApp_SBL_APPIMAGEGEN = yes
 
 # UART unit test rtos app
 UART_TestApp_COMP_LIST = UART_TestApp

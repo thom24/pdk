@@ -78,7 +78,7 @@ extern "C" {
         }
         #define HWA_log                dummy_printf
     #else
-        #if defined(BARE_METAL) || defined(FREERTOS)
+        #if !defined(USE_BIOS)
             #define HWA_log                printf
         #else
             #include <xdc/runtime/System.h>

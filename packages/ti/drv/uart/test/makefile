@@ -8,9 +8,12 @@ endif
 ifeq ($(IS_FREERTOS),yes)
 BUILD_OS_TYPE = freertos
 endif
+ifeq ($(IS_SAFERTOS),yes)
+BUILD_OS_TYPE = safertos
+endif
 
 ifeq ($(BUILD_OS_TYPE),baremetal)
-CFLAGS_OS_DEFINES =
+CFLAGS_OS_DEFINES = -DBAREMETAL
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP) 
 EXTERNAL_INTERFACES =
@@ -46,6 +49,14 @@ XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 endif
 
+ifeq ($(BUILD_OS_TYPE),safertos)
+CFLAGS_OS_DEFINES = -DSAFERTOS
+COMP_LIST_COMMON  = $(PDK_COMMON_SAFERTOS_COMP)
+EXTERNAL_INTERFACES = safertos
+XDC_CFG_FILE_mpu1_0 =
+XDC_CFG_FILE_mcu1_0 =
+endif
+
 SRCDIR = . src
 INCDIR += . src
 # Common source files across all platforms and cores
@@ -64,6 +75,9 @@ UART_OS_TYPE=_Baremetal
 endif
 ifeq ($(BUILD_OS_TYPE),freertos)
 UART_OS_TYPE=_Freertos
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+UART_OS_TYPE=_Safertos
 endif
 
 # DMA enabled build

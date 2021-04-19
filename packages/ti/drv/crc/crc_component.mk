@@ -38,6 +38,8 @@ drvcrc_SOCLIST          = tpr12 awr294x
 drvcrc_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 drvcrc_awr294x_CORELIST   = $(DEFAULT_awr294x_CORELIST)
 drvcrc_BOARDLIST        = tpr12_evm awr294x_evm
+drvcrc_safertos_BOARDLIST = tpr12_evm
+drvcrc_safertos_tpr12_CORELIST   = c66xdsp_1
 
 ############################
 # crc package
@@ -98,7 +100,7 @@ export crc_testapp_BOARDLIST = $(drvcrc_BOARDLIST)
 export crc_testapp_$(SOC)_CORELIST = $(drvcrc_$(SOC)_CORELIST)
 crc_EXAMPLE_LIST += crc_testapp
 
-export crc_testapp_COMP_LIST = crc_freertos_testapp
+export crc_freertos_testapp_COMP_LIST = crc_freertos_testapp
 crc_freertos_testapp_RELPATH = ti/drv/crc/test
 crc_freertos_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
 export crc_freertos_testapp_BOARD_DEPENDENCY = yes
@@ -107,10 +109,24 @@ export crc_freertos_testapp_XDC_CONFIGURO = no
 export crc_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
 crc_freertos_testapp_PKG_LIST = crc_freertos_testapp
 crc_freertos_testapp_INCLUDE = $(crc_freertos_testapp_PATH)
-export crc_freertos_testapp_BOARDLIST = tpr12_evm
+export crc_freertos_testapp_BOARDLIST = $(drvcrc_BOARDLIST)
 export crc_freertos_testapp_$(SOC)_CORELIST = $(drvcrc_$(SOC)_CORELIST)
 crc_EXAMPLE_LIST += crc_freertos_testapp
 
+export crc_safertos_testapp_COMP_LIST = crc_safertos_testapp
+crc_safertos_testapp_RELPATH = ti/drv/crc/test
+crc_safertos_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
+export crc_safertos_testapp_BOARD_DEPENDENCY = yes
+export crc_safertos_testapp_CORE_DEPENDENCY = yes
+export crc_safertos_testapp_XDC_CONFIGURO = no
+export crc_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
+crc_safertos_testapp_PKG_LIST = crc_safertos_testapp
+crc_safertos_testapp_INCLUDE = $(crc_safertos_testapp_PATH)
+export crc_safertos_testapp_BOARDLIST = $(drvcrc_safertos_BOARDLIST)
+export crc_safertos_testapp_$(SOC)_CORELIST = $(drvcrc_safertos_$(SOC)_CORELIST)
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+crc_EXAMPLE_LIST += crc_safertos_testapp
+endif
 
 export crc_LIB_LIST
 export crc_EXAMPLE_LIST

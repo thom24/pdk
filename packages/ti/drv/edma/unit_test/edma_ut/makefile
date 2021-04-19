@@ -11,6 +11,9 @@ BUILD_OS_TYPE = tirtos
 ifeq ($(IS_FREERTOS),yes)
 BUILD_OS_TYPE = freertos
 endif
+ifeq ($(IS_SAFERTOS),yes)
+BUILD_OS_TYPE = safertos
+endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
 APP_NAME = edma_unit_testapp
@@ -19,6 +22,10 @@ endif
 ifeq ($(BUILD_OS_TYPE),freertos)
 APP_NAME = edma_freertos_unit_testapp
 CFLAGS_TEST_DEFINES = -DFREERTOS
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+APP_NAME = edma_safertos_unit_testapp
+CFLAGS_TEST_DEFINES = -DSAFERTOS
 endif
 
 #
@@ -40,6 +47,10 @@ endif
 ifeq ($(BUILD_OS_TYPE),freertos)
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 INCLUDE_EXTERNAL_INTERFACES += freertos
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
+INCLUDE_EXTERNAL_INTERFACES += safertos
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))

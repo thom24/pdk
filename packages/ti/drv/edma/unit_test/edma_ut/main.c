@@ -3065,9 +3065,7 @@ void Test_updateTestConfig()
 
 }
 
-#if defined (USE_BIOS) || defined (FREERTOS)
 void Test_task(void* arg0, void* arg1)
-#endif
 {
     time_t start, end;
     double duration;
@@ -3112,10 +3110,8 @@ void Test_task(void* arg0, void* arg1)
     //System_EDMA_log cannot print float, use EDMA_log
     EDMA_log("Time to run test = %f seconds\n", duration);
 
-#if defined (USE_BIOS) || defined (FREERTOS)
     /* exit BIOS */
     OS_stop();
-#endif
 
 }
 

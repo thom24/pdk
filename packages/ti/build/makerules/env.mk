@@ -321,11 +321,6 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 endif
 
 ifeq ($(BUILD_OS_TYPE),safertos)
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_safertos.lds
-    endif
-  endif
   ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
     ifeq ($(CONFIG_BLD_XDC_c66),)
         CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_safertos.cmd

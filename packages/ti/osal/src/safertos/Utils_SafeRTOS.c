@@ -121,6 +121,10 @@ Osal_ThreadType Osal_getThreadType( void )
     {
         osalThreadType = Osal_ThreadType_Hwi;
     }
+    else if(pdFALSE == xTaskIsSchedulerStarted())
+    {
+        osalThreadType = Osal_ThreadType_Main;
+    }
     else
     {
         osalThreadType = Osal_ThreadType_Task;

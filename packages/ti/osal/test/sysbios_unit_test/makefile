@@ -101,7 +101,7 @@ ifeq ($(SOC),$(filter $(SOC), awr294x))
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT) -DUSE_BIOS
 CFLAGS_LOCAL_COMMON += -DENABLE_TIMER_TEST
 
 # Core/SoC/platform specific source files and CFLAGS

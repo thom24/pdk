@@ -67,19 +67,20 @@ typedef void ( * TaskP_mainFunction_t )(  void *arg0, void *arg1 );
  */
 typedef struct TaskP_SafeRTOS_s {
     bool                    used;
-    xTCB                    *taskObj;
+    xTCB                    taskObj;
     portTaskHandleType      taskHndl;
     TaskP_mainFunction_t    taskfxn;
     void                    *arg0;
     void                    *arg1;
 } TaskP_SafeRTOS;
 
-/* task obj is too large to keep in structure. So keep it in global array. */
-static xTCB   gOsalSafeRTOSTaskObjPool[OSAL_SAFERTOS_CONFIGNUM_TASK];
 /* global pool of statically allocated task pools */
 static TaskP_SafeRTOS gOsalTaskPSafeRTOSPool[OSAL_SAFERTOS_CONFIGNUM_TASK];
 
 uint32_t  gOsalTaskAllocCnt, gOsalTaskPeak;
+
+portBaseType xInitializeScheduler( void );
+static uint32_t gOsalSafertosSchedulerInitialized = (uint32_t) FALSE;
 
 void TaskP_compileTime_SizeChk( void )
 {
@@ -142,7 +143,6 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
          if ( taskPool[i].used == FALSE )
          {
              taskPool[i].used = TRUE;
-             taskPool[i].taskObj = &gOsalSafeRTOSTaskObjPool[i];
              /* Update statistics */
              gOsalTaskAllocCnt++;
              if ( gOsalTaskAllocCnt > gOsalTaskPeak )
@@ -187,7 +187,7 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
          {
              ( pdTASK_CODE )&TaskP_Function,  /* The function that implements the task being created. */
              ( portCharType* )params->name,   /* The name of the task being created. The kernel does not use this itself, its just to assist debugging. */
-             handle->taskObj,               /* TCB for the task. */
+             &handle->taskObj,               /* TCB for the task. */
              params->stack,                 /* The buffer allocated for use as the task stack. */
              params->stacksize,             /* The size of the buffer allocated for use as the task stack - note this is in BYTES! */
              handle,                        /* The task parameter. */
@@ -195,9 +195,16 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
              NULL                          	/* Thread Local Storage not used. */
          };
 
-         /* Create the check task. */
-         xCreateResult = xTaskCreate(  &xTaskPParams, /* The structure containing the task parameters created at the start of this function. */
-                                      &handle->taskHndl  );            /* This parameter can be used to receive a handle to the created task, but is not used in this case. */
+        key = HwiP_disable(  );
+        if (gOsalSafertosSchedulerInitialized == FALSE)
+        {
+            xInitializeScheduler();
+            gOsalSafertosSchedulerInitialized = TRUE;
+        }
+        HwiP_restore( key );
+        /* Create the check task. */
+        xCreateResult = xTaskCreate(&xTaskPParams,      /* The structure containing the task parameters created at the start of this function. */
+                                    &handle->taskHndl); /* This parameter can be used to receive a handle to the created task, but is not used in this case. */
 
         if(  (  xCreateResult == pdFAIL  ) || (  handle->taskHndl == NULL  )  )
         {
@@ -236,11 +243,12 @@ TaskP_Status TaskP_delete( TaskP_Handle *hTaskPtr )
     {
         key = HwiP_disable(  );
         task->used      = FALSE;
-        task->taskObj   = NULL;
         task->taskHndl  = NULL;
         task->taskfxn   = NULL;
         task->arg0      = NULL;
         task->arg1      = NULL;
+
+        memset(&task->taskObj, 0, sizeof(task->taskObj));
 
         /* Found the osal task object to delete */
         if ( gOsalTaskAllocCnt > 0U )
@@ -297,14 +305,35 @@ void TaskP_setPrio( TaskP_Handle handle, uint32_t priority )
 
 TaskP_Handle TaskP_self( void )
 {
-    // return ( ( TaskP_Handle )Task_self(  ) );
-    return NULL_PTR;
+    portTaskHandleType taskHndl;
+    TaskP_Handle retHandle = NULL_PTR;
+    uint32_t        i, maxTasks;
+
+    taskHndl = xTaskGetCurrentTaskHandle();
+    if (taskHndl != NULL_PTR)
+    {
+        /* Now get the corresponding TaskP Handle */
+        maxTasks        = OSAL_SAFERTOS_CONFIGNUM_TASK;
+        for (i = 0; i < maxTasks; i++)
+        {
+            if ((gOsalTaskPSafeRTOSPool[i].used == TRUE) &&
+                (gOsalTaskPSafeRTOSPool[i].taskHndl == taskHndl))
+            {
+                retHandle = (TaskP_Handle) (&gOsalTaskPSafeRTOSPool[i]);
+                break;
+            }
+        }
+    }
+
+    return retHandle;
 }
 
 TaskP_Handle TaskP_selfmacro( void )
 {
-    // return ( ( TaskP_Handle )Task_selfMacro(  ) );
-    return NULL_PTR;
+    /* For safertos task self is not implemented as inline macro.
+     * So call the TaskP_self API itself.
+     */
+    return TaskP_self();
 }
 
 void TaskP_yield( void ) {
@@ -337,5 +366,25 @@ portTaskHandleType TaskP_getSafeRTOSHandle( TaskP_Handle handle )
 
     return ( taskHandle->taskHndl );
 }
+
+void OS_start(void)
+{
+    uintptr_t       key;
+    key = HwiP_disable(  );
+    if (gOsalSafertosSchedulerInitialized == FALSE)
+    {
+        xInitializeScheduler();
+        gOsalSafertosSchedulerInitialized = TRUE;
+    }
+    HwiP_restore( key );
+
+    xTaskStartScheduler(pdTRUE);
+}
+
+void OS_stop(void)
+{
+    vTaskSuspendScheduler();
+}
+
 
 /* Nothing past this point */

@@ -44,7 +44,7 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "ti/osal/MemoryP.h"
+#include <stdint.h>
 #include "ti/drv/crc/crc.h"
 #include "crc_log.h"
 #include "crc_test.h"
@@ -54,7 +54,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+#define CRC_API_TEST_REAL_DATA_SIZE             (16U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -72,7 +72,9 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-/* None */
+static uint8_t  gDataAligned16 [CRC_API_TEST_REAL_DATA_SIZE] __attribute__((aligned(16)));
+static uint8_t  gDataAligned32 [CRC_API_TEST_REAL_DATA_SIZE] __attribute__((aligned(32)));
+static uint8_t  gDataAligned128[CRC_API_TEST_REAL_DATA_SIZE] __attribute__((aligned(128)));
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -415,7 +417,7 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
     uint64_t        signature;
     CRC_SigGenCfg   signGenCfg;
     CRC_Channel     crcChannelNum;
-    uint8_t         realData[] = { 0x70, 0x61, 0x6e, 0x6b, 0x61, 0x6a, 0x20, 0x6b, 0x61, 0x70, 0x6f, 0x6f, 0x72, 0x21, 0x21, 0x21 };
+    uint8_t         realData[CRC_API_TEST_REAL_DATA_SIZE] = { 0x70, 0x61, 0x6e, 0x6b, 0x61, 0x6a, 0x20, 0x6b, 0x61, 0x70, 0x6f, 0x6f, 0x72, 0x21, 0x21, 0x21 };
     int32_t         CRC16Bit;
     uint32_t        CRC32Bit;
     uint64_t        CRC64Bit;
@@ -431,13 +433,7 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
         case CRC_Type_16BIT:
         {
             /* Allocate memory for the test data: This needs to be done to ensure that the alignment is 16 bits */
-            ptrTestData = MemoryP_ctrlAlloc (sizeof(realData), 16);
-            if (ptrTestData == NULL)
-            {
-                Test_crcAppPrint0 ("Error: Unable to allocate memory for the 16bit CRC Tests\n");
-                return -1;
-            }
-
+            ptrTestData = &gDataAligned16[0];
             /* Populate the CRC Model Configuration: */
             crcModelCfg.cm_width = 16;
             crcModelCfg.cm_poly  = 0x1021;
@@ -461,13 +457,7 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
         case CRC_Type_32BIT:
         {
             /* Allocate memory for the test data: This needs to be done to ensure that the alignment is 32 bits */
-            ptrTestData = MemoryP_ctrlAlloc (sizeof(realData), 32);
-            if (ptrTestData == NULL)
-            {
-                Test_crcAppPrint0 ("Error: Unable to allocate memory for the 32bit CRC Tests\n");
-                return -1;
-            }
-
+            ptrTestData = &gDataAligned32[0];
             /* Populate the CRC Model Configuration: */
             crcModelCfg.cm_width = 32;
             crcModelCfg.cm_poly  = 0x4C11DB7;
@@ -495,13 +485,7 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
         case CRC_Type_64BIT:
         {
             /* Allocate memory for the test data: This needs to be done to ensure that the alignment is 64 bits */
-            ptrTestData = MemoryP_ctrlAlloc (sizeof(realData), 128);
-            if (ptrTestData == NULL)
-            {
-                Test_crcAppPrint0 ("Error: Unable to allocate memory for the 64bit CRC Tests\n");
-                return -1;
-            }
-
+            ptrTestData = &gDataAligned128[0];
             /* This is the computed CRC using the software algorithm:
              * Refer to the following link:
              *  http://www.zorc.breitbandkatze.de/crc.html
@@ -677,8 +661,6 @@ int32_t Test_crcAPI(CRC_Type type, CRC_DataLen dataLen)
     Test_crcAppPrint2 ("Debug: Testing CRC Functionality Polynomial [%s] for Data Length %s Passed\n",
             (uintptr_t) ptrCRCTypeString, (uintptr_t) ptrDataLengthTestString);
 
-    /* Cleanup the memory: */
-    MemoryP_ctrlFree (ptrTestData, sizeof(realData));
     return 0;
 }
 

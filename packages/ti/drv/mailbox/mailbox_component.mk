@@ -36,6 +36,7 @@ ifeq ($(mailbox_component_make_include), )
 
 drvmailbox_SOCLIST          = tpr12 am64x awr294x
 drvmailbox_tpr12_CORELIST   = mcu1_0 c66xdsp_1
+drvmailbox_safertos_tpr12_CORELIST   = c66xdsp_1
 drvmailbox_awr294x_CORELIST = mcu1_0 c66xdsp_1
 drvmailbox_am64x_CORELIST   = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvmailbox_am64x_rtos_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
@@ -45,6 +46,7 @@ drvmailbox_am64x_rtos_LASTCORE := $(word $(words $(drvmailbox_am64x_rtos_CORELIS
 drvmailbox_BOARDLIST        = tpr12_evm tpr12_qt am64x_evm awr294x_evm
 drvmailbox_k3_BOARDLIST     = am64x_evm
 drvmailbox_tpr_BOARDLIST    = tpr12_evm tpr12_qt awr294x_evm
+drvmailbox_safertos_tpr_BOARDLIST    = tpr12_evm
 
 ############################
 # mailbox package
@@ -110,6 +112,22 @@ mailbox_msg_freertos_testapp_INCLUDE = $(mailbox_msg_freertos_testapp_PATH)
 export mailbox_msg_freertos_testapp_BOARDLIST = $(drvmailbox_tpr_BOARDLIST)
 export mailbox_msg_freertos_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 mailbox_EXAMPLE_LIST += mailbox_msg_freertos_testapp
+
+# mailbox safertos msg test app
+export mailbox_msg_safertos_testapp_COMP_LIST = mailbox_msg_safertos_testapp
+mailbox_msg_safertos_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_msg_testapp
+mailbox_msg_safertos_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_msg_testapp
+export mailbox_msg_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
+export mailbox_msg_safertos_testapp_BOARD_DEPENDENCY = yes
+export mailbox_msg_safertos_testapp_CORE_DEPENDENCY = yes
+export mailbox_msg_safertos_testapp_XDC_CONFIGURO = yes
+mailbox_msg_safertos_testapp_PKG_LIST = mailbox_msg_safertos_testapp
+mailbox_msg_safertos_testapp_INCLUDE = $(mailbox_msg_safertos_testapp_PATH)
+export mailbox_msg_safertos_testapp_BOARDLIST = $(drvmailbox_safertos_tpr_BOARDLIST)
+export mailbox_msg_safertos_testapp_$(SOC)_CORELIST = $(drvmailbox_safertos_$(SOC)_CORELIST)
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+mailbox_EXAMPLE_LIST += mailbox_msg_safertos_testapp
+endif
 
 # mailbox perf test app
 export mailbox_perf_testapp_COMP_LIST = mailbox_perf_testapp

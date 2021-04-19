@@ -64,6 +64,8 @@
 #include <ti/osal/DebugP.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
+#include <ti/csl/arch/csl_arch.h>
+#include <ti/osal/src/nonos/Nonos_config.h>
 
 /* Let the user override the pre-loading of the initial LR with the address of
  * prvTaskExitError() in case is messes up unwinding of the stack in the
@@ -502,4 +504,26 @@ BaseType_t xPortInIsrContext()
         inISR =  true;
     }
     return inISR;
+}
+
+/*****************************************************************************/
+/* _SYSTEM_POST_CINIT() - _system_post_cinit() is a hook function called in  */
+/* the C/C++ auto-initialization function after cinit() and before pinit().  */
+/*                                                                           */
+/* The version of _system_post_cinit() below is skeletal and is provided to  */
+/* illustrate the interface and provide default behavior.  To replace this   */
+/* version rewrite the routine and include it as part of the current project.*/
+/* The linker will include the updated version if it is linked in prior to   */
+/* linking with the C/C++ runtime library.                                   */
+/*****************************************************************************/
+
+/*---------------------------------------------------------------------------*/
+/* __TI_default_system_post_cinit indicates that the default                 */
+
+void _system_post_cinit(void)
+{
+    osalArch_Config_t cfg;
+
+    cfg.disableIrqOnInit = true;
+    osalArch_Init(&cfg);
 }

@@ -111,6 +111,7 @@ drvgpio_LIB_LIST = $(gpio_LIB_LIST)
 # List below all examples for allowed values
 ############################
 gpio_EXAMPLE_LIST = GPIO_Baremetal_LedBlink_TestApp GPIO_LedBlink_TestApp GPIO_Freertos_LedBlink_TestApp
+
 drvgpio_EXAMPLE_LIST = $(gpio_EXAMPLE_LIST)
 
 #

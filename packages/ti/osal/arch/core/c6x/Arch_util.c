@@ -52,6 +52,15 @@ typedef struct HwiP_nonOs_s {
 /* Local hwi structures */
 static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
 
+osalArch_Config_t gOsalArchConfig =
+{
+    .disableIrqOnInit = false,
+};
+
+void osalArch_Init (osalArch_Config_t *cfg)
+{
+    gOsalArchConfig = *cfg;
+}
 
 /*
  * Dummy function to check size during compile time
@@ -199,7 +208,10 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     {
          OsalArch_oneTimeInit();
          (void)CSL_intcGlobalNmiEnable();
-         /* Do not enable global interrupts, yet. */
+         if (gOsalArchConfig.disableIrqOnInit == false)
+         {
+            (void)CSL_intcGlobalEnable((CSL_IntcGlobalEnableState *)NULL_PTR);
+         }
 
          vectId = (CSL_IntcParam)interruptNum;
          hwi_handle->handle = CSL_intcOpen (&hwi_handle->intcObj, (CSL_IntcEventId)params->evtId, &vectId, (CSL_Status *) NULL_PTR);

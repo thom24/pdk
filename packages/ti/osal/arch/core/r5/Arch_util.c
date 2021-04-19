@@ -61,6 +61,16 @@ static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
 /* local function */
 static void osalArch_TimestampCcntAutoRefresh(uintptr_t arg);
 
+osalArch_Config_t gOsalArchConfig =
+{
+    .disableIrqOnInit = false,
+};
+
+void osalArch_Init (osalArch_Config_t *cfg)
+{
+    gOsalArchConfig = *cfg;
+}
+
 /*
  * Dummy function to check size during compile time
  *  ======== HwiP_compileTime_SizeChk ========
@@ -232,7 +242,10 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             }
 #endif
             gFirstTime = (bool)false;
-            Intc_SystemEnable();
+            if (gOsalArchConfig.disableIrqOnInit == false)
+            {
+                Intc_SystemEnable();
+            }
         }
 
         /* Disable the interrupt first */

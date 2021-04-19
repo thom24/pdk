@@ -70,6 +70,8 @@ drvwatchdog_SOCLIST          = tpr12 awr294x
 drvwatchdog_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 drvwatchdog_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 drvwatchdog_BOARDLIST        = tpr12_evm tpr12_qt awr294x_evm
+drvwatchdog_safertos_BOARDLIST        = tpr12_evm
+drvwatchdog_safertos_tpr12_CORELIST   = c66xdsp_1
 
 ############################
 # watchdog package
@@ -136,6 +138,22 @@ watchdog_freertos_testapp_INCLUDE = $(watchdog_freertos_testapp_PATH)
 export watchdog_freertos_testapp_BOARDLIST = $(drvwatchdog_BOARDLIST)
 export watchdog_freertos_testapp_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
 watchdog_EXAMPLE_LIST += watchdog_freertos_testapp
+
+# watchdog safertos test app
+export watchdog_safertos_testapp_COMP_LIST = watchdog_safertos_testapp
+watchdog_safertos_testapp_RELPATH = ti/drv/watchdog/test
+watchdog_safertos_testapp_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
+watchdog_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
+export watchdog_safertos_testapp_BOARD_DEPENDENCY = yes
+export watchdog_safertos_testapp_CORE_DEPENDENCY = yes
+export watchdog_safertos_testapp_XDC_CONFIGURO = no
+watchdog_safertos_testapp_PKG_LIST = watchdog_safertos_testapp
+watchdog_safertos_testapp_INCLUDE = $(watchdog_safertos_testapp_PATH)
+export watchdog_safertos_testapp_BOARDLIST = $(drvwatchdog_safertos_BOARDLIST)
+export watchdog_safertos_testapp_$(SOC)_CORELIST = $(drvwatchdog_safertos_$(SOC)_CORELIST)
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+watchdog_EXAMPLE_LIST += watchdog_safertos_testapp
+endif
 
 export watchdog_LIB_LIST
 export watchdog_EXAMPLE_LIST

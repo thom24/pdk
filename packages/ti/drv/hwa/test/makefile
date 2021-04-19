@@ -11,12 +11,18 @@ BUILD_OS_TYPE = tirtos
 ifeq ($(IS_FREERTOS),yes)
 BUILD_OS_TYPE = freertos
 endif
+ifeq ($(IS_SAFERTOS),yes)
+BUILD_OS_TYPE = safertos
+endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
 APP_NAME = hwa_testapp
 endif
 ifeq ($(BUILD_OS_TYPE),freertos)
 APP_NAME = hwa_freertos_testapp
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+APP_NAME = hwa_safertos_testapp
 endif
 
 #
@@ -49,6 +55,14 @@ CFLAGS_OS_DEFINES = -DFREERTOS
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 COMP_LIST_COMMON += hwa
 INCLUDE_EXTERNAL_INTERFACES += pdk freertos
+APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
+endif
+
+ifeq ($(BUILD_OS_TYPE),safertos)
+CFLAGS_OS_DEFINES = -DSAFERTOS
+COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
+COMP_LIST_COMMON += hwa
+INCLUDE_EXTERNAL_INTERFACES += pdk safertos
 APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
 endif
 

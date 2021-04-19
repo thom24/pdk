@@ -9,12 +9,18 @@ BUILD_OS_TYPE = tirtos
 ifeq ($(IS_FREERTOS),yes)
 BUILD_OS_TYPE = freertos
 endif
+ifeq ($(IS_SAFERTOS),yes)
+BUILD_OS_TYPE = safertos
+endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
 APP_NAME = watchdog_testapp
 endif
 ifeq ($(BUILD_OS_TYPE),freertos)
 APP_NAME = watchdog_freertos_testapp
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+APP_NAME = watchdog_safertos_testapp
 endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
@@ -37,6 +43,11 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 CFLAGS_OS_DEFINES = -DFREERTOS
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES += freertos
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+CFLAGS_OS_DEFINES = -DSAFERTOS
+COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
+EXTERNAL_INTERFACES += safertos
 endif
 
 SRCDIR = .

@@ -5,6 +5,9 @@ BUILD_OS_TYPE = tirtos
 ifeq ($(IS_FREERTOS),yes)
 BUILD_OS_TYPE = freertos
 endif
+ifeq ($(IS_SAFERTOS),yes)
+BUILD_OS_TYPE = safertos
+endif
 ifeq ($(BAREMETAL), yes)
 BUILD_OS_TYPE=baremetal
 endif
@@ -38,6 +41,12 @@ CFLAGS_OS_DEFINES = -DFREERTOS
 EXTERNAL_INTERFACES = freertos
 MIBSPI_OS_TESTPREFIX=_Freertos
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+CFLAGS_OS_DEFINES = -DSAFERTOS
+EXTERNAL_INTERFACES = safertos
+MIBSPI_OS_TESTPREFIX=_Safertos
+COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
 endif
 
 SRCDIR = . src

@@ -78,11 +78,11 @@ extern "C" {
         }
         #define MIBSPI_log                dummy_printf
     #else
-        #if defined(BARE_METAL) || defined(FREERTOS)
-            #define MIBSPI_log                printf
-        #else
+        #if defined(USE_BIOS)
             #include <xdc/runtime/System.h>
             #define MIBSPI_log                System_printf
+        #else
+            #define MIBSPI_log                printf
         #endif /* BARE_METAL */
     #endif /* EMPTY_OSAL_LOG */
 #endif /* UART_CONSOLE */

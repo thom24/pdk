@@ -54,7 +54,7 @@
 #include <ti/osal/osal.h>
 #include <ti/drv/edma/edma.h>
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 #include <ti/osal/TaskP.h>
 #endif
 
@@ -78,7 +78,7 @@
 
 #define TEST_TIMEOUT_CYCLES                 (1000000U)
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 #endif
 
@@ -124,7 +124,7 @@ uint32_t gInstanceId = EDMA_DRV_INST_MSS_A;
 
 volatile uint32_t gCcErrCnt = 0U, gTcErrCnt = 0U;
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 #endif
 
@@ -287,7 +287,7 @@ static bool Test_instance(uint8_t instanceId)
     return(isTestPass);
 }
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 void Test_task(void* arg0, void* arg1)
 #else
 void main (void)
@@ -312,12 +312,12 @@ void main (void)
         EDMA_log("All Tests did NOT Pass\n");
     }
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
     OS_stop();
 #endif
 }
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 void main (void)
 {
     TaskP_Params taskParams;

@@ -171,7 +171,7 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
-#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 96U)
+#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 136U)
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_TASKP_SIZE_BYTES
@@ -181,7 +181,7 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
-#define  OSAL_SAFERTOS_TASKP_SIZE_BYTES ((uint32_t) 128U)
+#define  OSAL_SAFERTOS_TASKP_SIZE_BYTES ((uint32_t) 156U)
 
 /**
  *  \brief This structure holds static memory status parameters of OSAL

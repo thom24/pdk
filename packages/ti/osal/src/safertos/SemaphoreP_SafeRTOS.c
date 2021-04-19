@@ -51,7 +51,7 @@ extern uint32_t  gOsalSemAllocCnt, gOsalSemPeak;
  *  The order is important as the semaphore object has to be word aligned.
  */
 typedef struct SemaphoreP_safertos_s {
-    portInt8Type      semObj;
+    uint64_t          semObj[(portQUEUE_OVERHEAD_BYTES/sizeof(uint64_t) + 1)];
     xSemaphoreHandle  semHndl;
     bool              used;
 } SemaphoreP_safertos;
@@ -191,17 +191,22 @@ int32_t SemaphoreP_constructBinary( SemaphoreP_safertos *handle, uint32_t initCo
 {
     int32_t status;
 
-    portBaseType xResult = xSemaphoreCreateBinary(  &handle->semObj, &handle->semHndl  );
+    portBaseType xResult = xSemaphoreCreateBinary((portInt8Type *)&(handle->semObj[0]), &handle->semHndl  );
     if(  (  xResult != pdPASS  ) || (  handle->semHndl == NULL  )  )
     {
         status = SemaphoreP_FAILURE;
     }
     else
     {
-        if( initCount == 1 )
+        if( initCount == 0 )
         {
-            /* post a semaphore to increment initial count to 1 */
-            xSemaphoreGive( handle->semHndl );
+            uint32_t            isSemTaken;
+            DebugP_assert(xPortInIsrContext( ) == false);
+            /* SafeRTOS on BinarySemaphore create initializes semaphore with count of 1.
+             * So we need to take semaphore to make count 0, if we are creating a binary semaphore with init count of 0.
+             */
+            isSemTaken = xSemaphoreTake( handle->semHndl, portMAX_DELAY);
+            DebugP_assert(isSemTaken == true);
         }
         status = SemaphoreP_OK;
     }
@@ -216,7 +221,7 @@ int32_t SemaphoreP_constructCounting( SemaphoreP_safertos *handle, uint32_t init
     portBaseType xResult = xSemaphoreCreateCounting(
                                 maxCount,
                                 initCount,
-                                &handle->semObj,
+                                (portInt8Type *)&(handle->semObj[0]),
 								&handle->semHndl  );
     if(  (  xResult != pdPASS  ) || (  handle->semHndl == NULL  )  )
     {
@@ -244,6 +249,7 @@ SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
     if( ( semaphore != NULL_PTR ) && ( semaphore->used==TRUE ) )
     {
         /* vSemaphoreDelete( semaphore->semHndl ); */
+        memset(&semaphore->semObj, 0, sizeof(semaphore->semObj));
 		semaphore->semHndl = NULL;
         key = HwiP_disable(  );
         semaphore->used = FALSE;
@@ -305,7 +311,7 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
         isSemTaken = xSemaphoreTake( pSemaphore->semHndl, timeout );
     }
 
-    if( isSemTaken )
+    if( isSemTaken == pdPASS)
     {
         ret_val = SemaphoreP_OK;
     }

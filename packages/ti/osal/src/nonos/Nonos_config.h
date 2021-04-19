@@ -46,6 +46,10 @@ extern "C" {
 #include <ti/osal/soc/osal_soc.h>
 #include <ti/csl/csl_types.h>
 
+typedef struct osalArch_Config_s {
+    bool disableIrqOnInit;
+}osalArch_Config_t;
+
 /* Host emulation defines _TMS320C6X which needs to be */
 #if defined (HOST_EMULATION)
 	#if defined (__C7100__)
@@ -296,6 +300,8 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
 void OsalArch_compileTime_SizeChk(void);
 void SemaphoreP_compileTime_SizeChk(void);
 void HwiP_compileTime_SizeChk(void);
+
+void osalArch_Init (osalArch_Config_t *cfg);
 
 #ifdef __cplusplus
 }

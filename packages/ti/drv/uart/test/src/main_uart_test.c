@@ -1016,7 +1016,7 @@ Err:
 }
 
 #if !defined(UART_API2_NOT_SUPPORTED)
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 #if defined (__C7100__)
 #define APP_TSK_STACK_WRITE              (16U * 1024U)
 #else
@@ -1187,7 +1187,7 @@ Err:
 
     return (ret);
 }
-#endif /* #if defined (USE_BIOS) || defined (FREERTOS) */
+#endif /* #if !defined(BAREMETAL) */
 #endif /* #if !defined(UART_API2_NOT_SUPPORTED) */
 
 /*
@@ -3113,7 +3113,7 @@ UART_Tests Uart_tests[] =
     {UART_test_read_write_cancel, true, UART_TEST_ID_DMA_CANCEL, "\r\n UART DMA read write cancel test, enter less than 16 chars"},
 #endif
     {UART_test_read_write_cancel, false, UART_TEST_ID_CANCEL, "\r\n UART non-DMA read write cancel test, enter less than 16 chars"},
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 #if !defined(UART_API2_NOT_SUPPORTED)
 #ifdef UART_DMA_ENABLE
     {UART_test_simultaneous_rw, true, UART_TEST_ID_DMA_RW, "\r\n UART DMA simultaneous read write test "},
@@ -3252,19 +3252,19 @@ void UART_test_print_test_results(bool pass)
 #endif
 }
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 /*
  *  ======== taskFxn ========
  */
 void taskFxn(void *a0, void *a1)
 #else
 int main(void)
-#endif /* #if defined (USE_BIOS) || defined (FREERTOS) */
+#endif /* #if !defined(BAREMETAL) */
 {
     bool testResult = false;
     uint32_t i;
 
-#if !(defined(USE_BIOS) || defined(FREERTOS))
+#if defined(BAREMETAL)
     if (Board_initUART() == false)
     {
         return(0);
@@ -3297,7 +3297,7 @@ int main(void)
     }
 }
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if !defined(BAREMETAL)
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 /*
@@ -3327,7 +3327,7 @@ Int main()
     OS_start();
     return(0);
 }
-#endif /* #if defined (USE_BIOS) || defined (FREERTOS) */
+#endif /* #if !defined(BAREMETAL) */
 
 #ifdef UART_DMA_ENABLE
 #if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12) || defined (SOC_AWR294X))

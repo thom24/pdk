@@ -38,6 +38,8 @@ drvhwa_SOCLIST          = tpr12 awr294x
 drvhwa_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 drvhwa_awr294x_CORELIST   = $(DEFAULT_awr294x_CORELIST)
 drvhwa_BOARDLIST        = tpr12_evm awr294x_evm
+drvhwa_safertos_BOARDLIST        = tpr12_evm
+drvhwa_safertos_tpr12_CORELIST   = c66xdsp_1
 
 ############################
 # hwa package
@@ -112,6 +114,22 @@ hwa_freertos_testapp_INCLUDE = $(hwa_freertos_testapp_PATH)
 export hwa_freertos_testapp_BOARDLIST = $(drvhwa_BOARDLIST)
 export hwa_freertos_testapp_$(SOC)_CORELIST = $(drvhwa_$(SOC)_CORELIST)
 hwa_EXAMPLE_LIST += hwa_freertos_testapp
+
+# HWA safertos unit test
+export hwa_safertos_testapp_COMP_LIST = hwa_safertos_testapp
+hwa_safertos_testapp_RELPATH = ti/drv/hwa/test
+hwa_safertos_testapp_PATH = $(PDK_HWA_COMP_PATH)/test
+export hwa_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
+export hwa_safertos_testapp_BOARD_DEPENDENCY = yes
+export hwa_safertos_testapp_CORE_DEPENDENCY = yes
+export hwa_safertos_testapp_XDC_CONFIGURO = no
+hwa_safertos_testapp_PKG_LIST = hwa_safertos_testapp
+hwa_safertos_testapp_INCLUDE = $(hwa_safertos_testapp_PATH)
+export hwa_safertos_testapp_BOARDLIST = $(drvhwa_safertos_BOARDLIST)
+export hwa_safertos_testapp_$(SOC)_CORELIST = $(drvhwa_safertos_$(SOC)_CORELIST)
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+hwa_EXAMPLE_LIST += hwa_safertos_testapp
+endif
 
 export hwa_LIB_LIST
 export hwa_EXAMPLE_LIST
