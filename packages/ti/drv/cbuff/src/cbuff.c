@@ -54,8 +54,6 @@
 #include <ti/osal/osal.h>
 #include <ti/csl/hw_types.h>
 
-CBUFF_DriverMCB    g_cbuffDriver = {0};
-CBUFF_Session      g_cbuffSession[CBUFF_MAX_NUM_SESSION] = {0u};
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
@@ -1517,7 +1515,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     }
 
     /* Allocate memory for the CBUFF Driver: */
-    ptrDriverMCB = &g_cbuffDriver;
+    ptrDriverMCB = (CBUFF_DriverMCB*)gCBUFFHwAttribute.cbuffInstanceAddr;
     if (ptrDriverMCB == NULL)
     {
         /* Error: Out of memory */
@@ -1534,7 +1532,7 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     memset ((void *)ptrDriverMCB, 0, sizeof(CBUFF_DriverMCB));
 
     /* Allocate memory for the sessions: */
-    ptrDriverMCB->ptrSessionTable = &g_cbuffSession[0];
+    ptrDriverMCB->ptrSessionTable = (CBUFF_Session*)gCBUFFHwAttribute.cbuffSessionAddr;
     if (ptrDriverMCB->ptrSessionTable == NULL)
     {
         /* Error: Out of memory */

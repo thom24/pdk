@@ -359,6 +359,16 @@ typedef struct CBUFF_Hw_Attrib_t
      * modes which are supported by the platform
      */
     uint32_t        chirpModeEndIndex;
+
+    /**
+     * @brief   CBUFF MCB address
+     */
+    uint32_t    cbuffInstanceAddr;
+
+    /**
+     * @brief   CBUFF Session address
+     */
+    uint32_t     cbuffSessionAddr;
 }CBUFF_Hw_Attrib;
 
 /**

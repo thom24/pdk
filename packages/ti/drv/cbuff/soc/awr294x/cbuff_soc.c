@@ -82,6 +82,9 @@
 /*                          Global Variables                                  */
 /* ========================================================================== */
 
+CBUFF_DriverMCB    g_cbuffDriver = {0};
+CBUFF_Session      g_cbuffSession[CBUFF_MAX_NUM_SESSION] = {0u};
+
 /**
  * @brief   This is the AWR294x Hardware attributes which are used by the
  * CBUFF driver
@@ -160,7 +163,9 @@ CBUFF_Hw_Attrib gCBUFFHwAttribute =
      *  thus defined from 1 to 8
      ***************************************************************/
     1U,
-    8U
+    8U,
+    (uint32_t)&g_cbuffDriver,
+    (uint32_t)&g_cbuffSession[0]
 };
 
 
@@ -257,4 +262,3 @@ bool CBUFF_isMultipleChirpNonInterleavedDataFormatSupported(CBUFF_DataFmt dataFm
 {
     return(false);
 }
-
