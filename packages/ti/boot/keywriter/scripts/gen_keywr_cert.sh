@@ -360,8 +360,13 @@ encrypt "${tifek_info[file]}" "${aes256key_info[file]}" tmpdir/enc_aes_key.enc
 echo "# encrypt SMPK-priv signed aes256 key(hash) with tifek public part"
 # sign_the_hash <PRIV-KEY.PEM> <OUTPUT> <INPUT>
 sign_the_hash "${smpk_info[file]}" tmpdir/smpk_sign_aes256.sign "${aes256key_info[file]}"
-# raw_encrypt <PUBLIC-KEY.PEM> <DATA> <ENCRYPTED-OUTPUT>
-raw_encrypt "${tifek_info[file]}" tmpdir/smpk_sign_aes256.sign tmpdir/enc_smpk_signed_aes_key.enc
+# Block Size is 256 Bytes => 2048 bits
+dd if=tmpdir/smpk_sign_aes256.sign of=tmpdir/smpk_sign_aes256_1.sign bs=256 count=1 status=none
+dd if=tmpdir/smpk_sign_aes256.sign of=tmpdir/smpk_sign_aes256_2.sign bs=256 skip=1 count=1 status=none
+# encrypt <PUBLIC-KEY.PEM> <DATA> <ENCRYPTED-OUTPUT>
+encrypt "${tifek_info[file]}" tmpdir/smpk_sign_aes256_1.sign tmpdir/enc_smpk_signed_aes_key_1.enc
+encrypt "${tifek_info[file]}" tmpdir/smpk_sign_aes256_2.sign tmpdir/enc_smpk_signed_aes_key_2.enc
+cat tmpdir/enc_smpk_signed_aes_key_1.enc tmpdir/enc_smpk_signed_aes_key_2.enc > tmpdir/enc_smpk_signed_aes_key.enc
 
 echo "# encrypt smpk-pub hash using aes256 key"
 # gen_pub_key_x509_extension <PRIV.PEM> <PUB.DER> <PUB.HASH> <SMPKH/BMPKH> <IV> <RS> <FIELD> <OUTPUT>
@@ -378,8 +383,12 @@ if [[ "${secondary_cert_info[flag]}" == "yes" ]]; then
 	echo "# encrypt BMPK-priv signed aes256 key(hash) with tifek public part"
 	# sign_the_hash <PRIV-KEY.PEM> <OUTPUT> <INPUT>
 	sign_the_hash "${bmpk_info[file]}" tmpdir/bmpk_sign_aes256.sign "${aes256key_info[file]}"
-	# raw_encrypt <PUBLIC-KEY.PEM> <DATA> <ENCRYPTED-OUTPUT>
-	raw_encrypt "${tifek_info[file]}" tmpdir/bmpk_sign_aes256.sign tmpdir/enc_bmpk_signed_aes_key.enc
+	dd if=tmpdir/bmpk_sign_aes256.sign of=tmpdir/bmpk_sign_aes256_1.sign bs=256 count=1 status=none
+	dd if=tmpdir/bmpk_sign_aes256.sign of=tmpdir/bmpk_sign_aes256_2.sign bs=256 skip=1 count=1 status=none
+	# encrypt <PUBLIC-KEY.PEM> <DATA> <ENCRYPTED-OUTPUT>
+	encrypt "${tifek_info[file]}" tmpdir/bmpk_sign_aes256_1.sign tmpdir/enc_bmpk_signed_aes_key_1.enc
+	encrypt "${tifek_info[file]}" tmpdir/bmpk_sign_aes256_2.sign tmpdir/enc_bmpk_signed_aes_key_2.enc
+	cat tmpdir/enc_bmpk_signed_aes_key_1.enc tmpdir/enc_bmpk_signed_aes_key_2.enc > tmpdir/enc_bmpk_signed_aes_key.enc
 	
 	echo "# encrypt bmpk-pub hash using aes256 key"
 	# gen_pub_key_x509_extension <PRIV.PEM> <PUB.DER> <PUB.HASH> <SMPKH/BMPKH> <IV> <RS> <FIELD> <OUTPUT>
