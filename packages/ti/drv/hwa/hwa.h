@@ -772,7 +772,6 @@ extern "C" {
  * @{
  */
 #define HWA_COMPRESS_METHOD_EGE                 ((uint8_t)0U)    /*!<  Exp-Golomb algorithm */
-#define HWA_COMPRESS_METHOD_BFP                 ((uint8_t)1U)    /*!<  Block Floating point algorithm */
  /** @}*/ /*HWA_COMPRESS_METHOD*/
 
 /**
@@ -1763,15 +1762,10 @@ typedef struct HWA_AccelModeCompress_t {
 												  \ref HWA_AccelModeCompress::method is set to HWA_COMPRESS_METHOND_EGE only
 												  sets the CMP_EGE_K_ARR_LEN bits of register CMPDCMP in paramset */
 	uint8_t     scaleFactorBW;             /*!<  4 bits value: it specifies the number of bits for storing the scale
-												  factor for both BFP and EG algorithm. If the input is 16-bit (real or complex),
+												  factor for EG algorithm. If the input is 16-bit (real or complex),
 												  scaleFactorBW is set to 4, if the input is 32-bit (real or complex), the scaleFactorBW 
 												  is set to 5.
 												  sets the CMP_SCALEFAC_BW bits of register CMPDCMP in paramset */
-	uint8_t     BFPMantissaBW;             /*!<  5 bits value: specify the number of bits for mantissa, applied to
-												  \ref HWA_AccelModeCompress::method is set to HWA_COMPRESS_METHOD_BFP only
-												  sets the CMP_BFP_MANTISSA_BW bits of register CMPDCMP in paramset */
-	uint8_t     scaleFactor;               /*!<  5 bits values: hard coded scale factor for BFP, only if first pass is disabled.,
-												  sets the CMP_SCALEFAC bits of register CMPDCMP in paramset */
 	uint8_t     passSelect;                /*!<  see \ref HWA_COMPRESS_PATHSELECT macro for the correct values,
                                                  sets the CMP_PASS_SEL bits of register CMPDCMP in paramset */
     uint8_t     headerEnable;              /*!<  see \ref HWA_FEATURE_BIT macro for the correct values,

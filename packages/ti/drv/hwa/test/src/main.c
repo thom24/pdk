@@ -1719,7 +1719,7 @@ static void HWA_2dfft_test(HWA_Handle handle)
 /**
 *  @b Description
 *  @n
-*      compress/decompress test function, includes BFP compress/decompress, and EGE compress/decompress tests.
+*      compress/decompress test function, includes EGE compress/decompress tests.
 *
 *  @retval
 *      Not Applicable.
@@ -1730,7 +1730,6 @@ static void HWA_compress_test(HWA_Handle handle)
     uint8_t                 paramsetIdx = 0;
     uint8_t                *srcAddr = (uint8_t*)SOC_HWA_MEM0;
     uint8_t                *dstAddr = (uint8_t*)SOC_HWA_MEM1;
-    uint8_t                 numBFPInputBlock = 32;
     uint8_t                 numEGEInputData = 128;
     uint8_t                 numEGEBlockSize = 16; //number of complex data
     uint8_t                 numEGECompressedWord;
@@ -1744,146 +1743,8 @@ static void HWA_compress_test(HWA_Handle handle)
     memset(gHWATestParamConfig, 0, sizeof(gHWATestParamConfig));  //init to zero
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
 
-    gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_IMMEDIATE;
-    gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_COMPRESS;
-
-    /* input the 4 rx ant, 1D fft output, compressed per range bin, per chirp*/
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = (uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].source.srcAcnt = HWA_TEST_NUM_RX_ANT - 1; // 4 samples per block
-    gHWATestParamConfig[paramsetIdx].source.srcAIdx = HWA_TEST_COMPLEX_16BIT_SIZE * numBFPInputBlock;
-    gHWATestParamConfig[paramsetIdx].source.srcBcnt = numBFPInputBlock - 1;
-    gHWATestParamConfig[paramsetIdx].source.srcBIdx = HWA_TEST_COMPLEX_16BIT_SIZE; //16 bits
-    gHWATestParamConfig[paramsetIdx].source.srcRealComplex = HWA_SAMPLES_FORMAT_COMPLEX; //complex data
-    gHWATestParamConfig[paramsetIdx].source.srcWidth = HWA_SAMPLES_WIDTH_16BIT; //16-bit
-    gHWATestParamConfig[paramsetIdx].source.srcSign = HWA_SAMPLES_SIGNED; //signed
-    gHWATestParamConfig[paramsetIdx].source.srcConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].source.srcScale = 0;
-
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = (uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].dest.dstAcnt = 2 - 1; //50% - 2 32 words
-    gHWATestParamConfig[paramsetIdx].dest.dstAIdx = 4;  // 1 word
-    gHWATestParamConfig[paramsetIdx].dest.dstBIdx = 2 * 4; // 2 words
-    gHWATestParamConfig[paramsetIdx].dest.dstRealComplex = HWA_SAMPLES_FORMAT_REAL;
-    gHWATestParamConfig[paramsetIdx].dest.dstWidth = HWA_SAMPLES_WIDTH_32BIT;
-    gHWATestParamConfig[paramsetIdx].dest.dstSign = HWA_SAMPLES_UNSIGNED;
-    gHWATestParamConfig[paramsetIdx].dest.dstConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].dest.dstScale = 0;
-    gHWATestParamConfig[paramsetIdx].dest.dstSkipInit = 0; // no skipping
-
-    /* two path BFP */
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.ditherEnable = HWA_FEATURE_BIT_DISABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.compressDecompress = HWA_CMP_DCMP_COMPRESS;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.method = HWA_COMPRESS_METHOD_BFP;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.passSelect = HWA_COMPRESS_PATHSELECT_BOTHPASSES;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.headerEnable = HWA_FEATURE_BIT_ENABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.scaleFactorBW = 4; //log2(sample bits)
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.BFPMantissaBW = 7;
-
-    errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
-    if (errCode != 0)
-    {
-        HWA_log("Error: HWA_configParamSet(%d) (Immediate triggered, AccelMode compress) returned %d\n", errCode, paramsetIdx);
-        //MCPI_setFeatureTestResult("API HWA_configParamSet() [Immediate triggered, AccelMode compress]", MCPI_TestResult_FAIL);
-        HWA_log("Feature : API HWA_configParamSet() [Immediate triggered, AccelMode compress] FAIL\n");
-        finalTestResultsPass = 0;
-        return;
-    }
-    else
-    {
-        HWA_log("Debug: paramset %d : Immediate Trigger AccelMode Compression(BFP)\n", paramsetIdx);
-    }
-
-    paramsetIdx++; //decompress
-    gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_SOFTWARE;
-    gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_COMPRESS;
-
-    /*source the previous param dst*/
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = (uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0 ); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].source.srcAcnt = 2 - 1; // 4 samples per block
-    gHWATestParamConfig[paramsetIdx].source.srcAIdx = 4; // 1 word
-    gHWATestParamConfig[paramsetIdx].source.srcBcnt = numBFPInputBlock - 1;// HWA_TEST_1DFFT_SIZE - 1;
-    gHWATestParamConfig[paramsetIdx].source.srcBIdx = 2 * 4; //2 words
-    gHWATestParamConfig[paramsetIdx].source.srcRealComplex = HWA_SAMPLES_FORMAT_REAL;
-    gHWATestParamConfig[paramsetIdx].source.srcWidth = HWA_SAMPLES_WIDTH_32BIT;
-    gHWATestParamConfig[paramsetIdx].source.srcSign = HWA_SAMPLES_UNSIGNED;
-    gHWATestParamConfig[paramsetIdx].source.srcConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].source.srcScale = 0;
-
-    /* M2*/
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = (uint32_t)((uint32_t)dstAddr + HWA_MEMn_SIZE  - SOC_HWA_MEM0 ); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].dest.dstAcnt = HWA_TEST_NUM_RX_ANT - 1; //50% - 2 32 words
-    gHWATestParamConfig[paramsetIdx].dest.dstAIdx = HWA_TEST_COMPLEX_16BIT_SIZE * numBFPInputBlock;
-    gHWATestParamConfig[paramsetIdx].dest.dstBIdx =  HWA_TEST_COMPLEX_16BIT_SIZE;
-    gHWATestParamConfig[paramsetIdx].dest.dstRealComplex = HWA_SAMPLES_FORMAT_COMPLEX;
-    gHWATestParamConfig[paramsetIdx].dest.dstWidth = HWA_SAMPLES_WIDTH_16BIT;
-    gHWATestParamConfig[paramsetIdx].dest.dstSign = HWA_SAMPLES_SIGNED;
-    gHWATestParamConfig[paramsetIdx].dest.dstConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].dest.dstScale = 0;
-    gHWATestParamConfig[paramsetIdx].dest.dstSkipInit = 0; // no skipping
-
-    /* two path BFP */
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.ditherEnable = HWA_FEATURE_BIT_DISABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.compressDecompress = HWA_CMP_DCMP_DECOMPRESS;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.method = HWA_COMPRESS_METHOD_BFP;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.passSelect = HWA_COMPRESS_PATHSELECT_BOTHPASSES;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.headerEnable = HWA_FEATURE_BIT_ENABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.scaleFactorBW = 4; //log2(sample bits)
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.BFPMantissaBW = 7;
-
-    errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
-    if (errCode != 0)
-    {
-        HWA_log("Error: HWA_configParamSet(%d) (software triggered, AccelMode decompress) returned %d\n", errCode, paramsetIdx);
-        //MCPI_setFeatureTestResult("API HWA_configParamSet() [software triggered, AccelMode decompress]", MCPI_TestResult_FAIL);
-        HWA_log("Feature : API HWA_configParamSet() [software triggered, AccelMode decompress] FAIL\n");
-        finalTestResultsPass = 0;
-        return;
-    }
-    else
-    {
-        HWA_log("Debug: paramset %d : software Trigger AccelMode deCompression(BFP)\n", paramsetIdx);
-    }
-
-    memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
-    gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG;
-
-    gCommonConfig.paramStartIdx = 0 ;
-    gCommonConfig.paramStopIdx = paramsetIdx ;
-    gCommonConfig.numLoops = 1;
-
-    errCode = HWA_configCommon(handle, &gCommonConfig);
-
-    /* copy the input data */
-    memcpy(srcAddr, (uint8_t*)gHWATest_compressBFP_input, sizeof(uint32_t) * HWA_TEST_NUM_RX_ANT * numBFPInputBlock);
-
-
-    errCode = HWA_enable(handle, 1); // set 1 to enable
-
-    errCode = HWA_singleParamSetDonePolling(handle, 0);
-
-    errCode = HWA_setSoftwareTrigger(handle);
-
-    errCode = HWA_singleParamSetDonePolling(handle, paramsetIdx);
-
-    HWA_log("\n");
-
-    /* checked the decompressed data in M2*/
-    compareCode1 = memcmp((uint8_t *)((uint32_t)dstAddr + HWA_MEMn_SIZE), (uint8_t*)HWA_BFPcompdecomp_output, 4 * HWA_TEST_NUM_RX_ANT * numBFPInputBlock);
-    if (compareCode1 != 0)
-    {
-        HWA_log("Error: HCompression/decompression BFP output found incorrect: error %d\n", compareCode1);
-    }
-    else
-    {
-        HWA_log("Debug: Compression/decompression BFP output generated by HWA found correct\n");
-    }
-    compareCode2 += compareCode1;
-
-    errCode = HWA_enable(handle, 0);
     /*EGE algorithm */
-
     numEGECompressedWord = numEGEBlockSize >> 1; //50%
-    paramsetIdx++;
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_SOFTWARE;
     gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_COMPRESS;
 
@@ -2010,7 +1871,7 @@ static void HWA_compress_test(HWA_Handle handle)
     HWA_log("\n");
 
     /* checked the decompressed data in M2*/
-    compareCode1 = memcmp((uint8_t *)((uint32_t)dstAddr + HWA_MEMn_SIZE), (uint8_t*)HWA_EGEcompdecomp_output, 4 * HWA_TEST_NUM_RX_ANT * numBFPInputBlock);
+    compareCode1 = memcmp((uint8_t *)((uint32_t)dstAddr + HWA_MEMn_SIZE), (uint8_t*)HWA_EGEcompdecomp_output, 4 * numEGEInputData);
     if (compareCode1 != 0)
     {
         HWA_log("Error: Compression/decompression EGE output found incorrect: error %d\n", compareCode1);
@@ -4520,129 +4381,8 @@ void HWA_benchmark()
 
 
     HWA_log("------ HWA compression mode benchmark:------\n");
-    paramsetIdx = 5;
-    memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
-
-    gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_SOFTWARE;
-    gHWATestParamConfig[paramsetIdx].accelMode = HWA_ACCELMODE_COMPRESS;
-
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = (uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].source.srcAcnt = HWA_TEST_NUM_RX_ANT - 1; // 4 samples per block
-    gHWATestParamConfig[paramsetIdx].source.srcAIdx = HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
-    gHWATestParamConfig[paramsetIdx].source.srcBcnt = HWA_TEST_1DFFT_SIZE - 1;
-    gHWATestParamConfig[paramsetIdx].source.srcBIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; //16 bits
-    gHWATestParamConfig[paramsetIdx].source.srcRealComplex = HWA_SAMPLES_FORMAT_COMPLEX; //complex data
-    gHWATestParamConfig[paramsetIdx].source.srcWidth = HWA_SAMPLES_WIDTH_16BIT; //16-bit
-    gHWATestParamConfig[paramsetIdx].source.srcSign = HWA_SAMPLES_SIGNED; //signed
-    gHWATestParamConfig[paramsetIdx].source.srcConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].source.srcScale = 8;
-
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = (uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].dest.dstAcnt = 2 - 1; //50% - 2 32 words
-    gHWATestParamConfig[paramsetIdx].dest.dstAIdx = 4;  // 1 word
-    gHWATestParamConfig[paramsetIdx].dest.dstBIdx = 2 * 4; // 2 words
-    gHWATestParamConfig[paramsetIdx].dest.dstRealComplex = HWA_SAMPLES_FORMAT_REAL; //same as input - complex
-    gHWATestParamConfig[paramsetIdx].dest.dstWidth = HWA_SAMPLES_WIDTH_32BIT; //same as input - 16 bit
-    gHWATestParamConfig[paramsetIdx].dest.dstSign = HWA_SAMPLES_UNSIGNED; //same as input - signed
-    gHWATestParamConfig[paramsetIdx].dest.dstConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].dest.dstScale = 0;
-    gHWATestParamConfig[paramsetIdx].dest.dstSkipInit = 0; // no skipping
-
-    /* two path BFP */
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.ditherEnable = HWA_FEATURE_BIT_DISABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.compressDecompress = HWA_CMP_DCMP_COMPRESS;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.method = HWA_COMPRESS_METHOD_BFP;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.passSelect = HWA_COMPRESS_PATHSELECT_BOTHPASSES;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.headerEnable = HWA_FEATURE_BIT_ENABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.scaleFactorBW = 4; //log2(sample bits)
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.BFPMantissaBW = 7;
-
-    startTime = CycleprofilerP_getTimeStamp();
-    errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
-    endTime = CycleprofilerP_getTimeStamp();
-    HWA_log("write to paramset cycles:  %d\n", endTime - startTime);
-
-    gCommonConfig.configMask = HWA_COMMONCONFIG_MASK_STATEMACHINE_CFG;
-
-    gCommonConfig.paramStartIdx = paramsetIdx;
-    gCommonConfig.paramStopIdx = paramsetIdx;
-    gCommonConfig.numLoops = 1; //do only one iteration
-
-    startTime = CycleprofilerP_getTimeStamp();
-    errCode = HWA_configCommon(handle, &gCommonConfig);
-    endTime = CycleprofilerP_getTimeStamp();
-    HWA_log("write to common register cycles:  %d\n", endTime - startTime);
-    HWA_log("\nBFP compress: 4 16bits-complex values (4 * 4 bytes)--> 2 words (2 * 4bytes) \n");
-    HWA_log("number of compressed blocks \t cycles(w/softwaretrig): \n");
-
-    for (ii = 6; ii < 11; ii++)
-    {
-        gHWATestParamConfig[paramsetIdx].source.srcBcnt = (1<<ii) - 1;
-        errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
-        errCode = HWA_configCommon(handle, &gCommonConfig);
-        errCode = HWA_enable(handle, 1);
-        startTime = CycleprofilerP_getTimeStamp();
-        errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
-        HWA_singleParamSetDonePolling(handle, paramsetIdx);
-        endTime = CycleprofilerP_getTimeStamp();
-        HWA_log(" %d \t  %d\n", (1<<ii), endTime - startTime);
-        errCode = HWA_enable(handle, 0);
-    }
-    HWA_log("\n");
-
-    /* BFP decompression */
-
-    gHWATestParamConfig[paramsetIdx].source.srcAddr = (uint32_t)((uint32_t)dstAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].source.srcAcnt = 2 - 1; //50% - 2 32 words
-    gHWATestParamConfig[paramsetIdx].source.srcAIdx = 4;  // 1 word
-    gHWATestParamConfig[paramsetIdx].source.srcBcnt = HWA_TEST_1DFFT_SIZE - 1;
-    gHWATestParamConfig[paramsetIdx].source.srcBIdx = 2 * 4; // 2 words
-    gHWATestParamConfig[paramsetIdx].source.srcRealComplex = HWA_SAMPLES_FORMAT_REAL; //same as input - complex
-    gHWATestParamConfig[paramsetIdx].source.srcWidth = HWA_SAMPLES_WIDTH_32BIT; //16-bit
-    gHWATestParamConfig[paramsetIdx].source.srcSign = HWA_SAMPLES_UNSIGNED; //signed
-    gHWATestParamConfig[paramsetIdx].source.srcConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].source.srcScale = 8;
-
-    gHWATestParamConfig[paramsetIdx].dest.dstAddr = (uint32_t)((uint32_t)srcAddr - SOC_HWA_MEM0); // address is relative to start of MEM0
-    gHWATestParamConfig[paramsetIdx].dest.dstAcnt = HWA_TEST_NUM_RX_ANT - 1; // 4 samples per block
-    gHWATestParamConfig[paramsetIdx].dest.dstAIdx = HWA_TEST_COMPLEX_16BIT_SIZE; // 16 bytes
-    gHWATestParamConfig[paramsetIdx].dest.dstBIdx = HWA_TEST_NUM_RX_ANT * HWA_TEST_COMPLEX_16BIT_SIZE; //16 bits
-    gHWATestParamConfig[paramsetIdx].dest.dstRealComplex = HWA_SAMPLES_FORMAT_COMPLEX; //complex da
-    gHWATestParamConfig[paramsetIdx].dest.dstWidth = HWA_SAMPLES_WIDTH_16BIT; //same as input - 16 bit
-    gHWATestParamConfig[paramsetIdx].dest.dstSign = HWA_SAMPLES_SIGNED; //same as input - signed
-    gHWATestParamConfig[paramsetIdx].dest.dstConjugate = HWA_FEATURE_BIT_DISABLE; //no conjugate
-    gHWATestParamConfig[paramsetIdx].dest.dstScale = 0;
-    gHWATestParamConfig[paramsetIdx].dest.dstSkipInit = 0; // no skipping
-
-                                                           /* two path BFP */
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.ditherEnable = HWA_FEATURE_BIT_DISABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.compressDecompress = HWA_CMP_DCMP_DECOMPRESS;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.method = HWA_COMPRESS_METHOD_BFP;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.passSelect = HWA_COMPRESS_PATHSELECT_BOTHPASSES;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.headerEnable = HWA_FEATURE_BIT_ENABLE;
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.scaleFactorBW = 4; //log2(sample bits)
-    gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.BFPMantissaBW = 7;
-    HWA_log("\nBFP dec compress: 2 words (2 * 4bytes) --> 4 16bits-complex values (4 * 4 bytes)\n");
-    HWA_log("number of compressed blocks \t cycles(w/softwaretrig): \n");
-
-    for (ii = 6; ii < 11; ii++)
-    {
-        gHWATestParamConfig[paramsetIdx].source.srcBcnt = (1 << ii) - 1;
-        errCode = HWA_configParamSet(handle, paramsetIdx, &gHWATestParamConfig[paramsetIdx], NULL);
-        errCode = HWA_configCommon(handle, &gCommonConfig);
-        errCode = HWA_enable(handle, 1);
-        startTime = CycleprofilerP_getTimeStamp();
-        errCode = HWA_setSoftwareTrigger(handle);  //through DSP software trigger
-        HWA_singleParamSetDonePolling(handle, paramsetIdx);
-        endTime = CycleprofilerP_getTimeStamp();
-        HWA_log(" %d \t  %d\n", (1 << ii), endTime - startTime);
-        errCode = HWA_enable(handle, 0);
-    }
-
-    HWA_log("\n");
-
     /* compression EGE */
-    paramsetIdx = 6;
+    paramsetIdx = 5;
     memset((void *)&gCommonConfig, 0, sizeof(HWA_CommonConfig));
 
     gHWATestParamConfig[paramsetIdx].triggerMode = HWA_TRIG_MODE_SOFTWARE;
@@ -4745,7 +4485,7 @@ void HWA_benchmark()
     gHWATestParamConfig[paramsetIdx].dest.dstScale = 0;
     gHWATestParamConfig[paramsetIdx].dest.dstSkipInit = 0; // no skipping
 
-                                                           /* two path BFP */
+    /* two path EGE */
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.ditherEnable = HWA_FEATURE_BIT_DISABLE;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.compressDecompress = HWA_CMP_DCMP_DECOMPRESS;
     gHWATestParamConfig[paramsetIdx].accelModeArgs.compressMode.method = HWA_COMPRESS_METHOD_EGE;
@@ -4789,7 +4529,7 @@ void HWA_benchmark()
 }
 #endif
 /**
-*  @b Description
+*  @b Descriptions
 *  @n
 *      System Initialization Task which initializes the various
 *      components in the system.

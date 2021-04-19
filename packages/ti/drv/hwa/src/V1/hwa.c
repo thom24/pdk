@@ -670,18 +670,15 @@ static int32_t HWA_validateParamSetConfig(HWA_Driver *ptrHWADriver, HWA_ParamCon
 				 (
 					 (paramConfig->accelModeArgs.compressMode.compressDecompress > HWA_CMP_DCMP_DECOMPRESS) ||
 					 (paramConfig->accelModeArgs.compressMode.ditherEnable >  HWA_FEATURE_BIT_ENABLE) ||
-					 ((paramConfig->accelModeArgs.compressMode.method != HWA_COMPRESS_METHOD_BFP ) &&
-					  (paramConfig->accelModeArgs.compressMode.method != HWA_COMPRESS_METHOD_EGE)) ||
+					 (paramConfig->accelModeArgs.compressMode.method != HWA_COMPRESS_METHOD_EGE) ||
 					 ((paramConfig->accelModeArgs.compressMode.passSelect != HWA_COMPRESS_PATHSELECT_BOTHPASSES) &&
 					  (paramConfig->accelModeArgs.compressMode.passSelect != HWA_COMPRESS_PATHSELECT_SECONDPASS) )||
 					 (paramConfig->accelModeArgs.compressMode.headerEnable >  HWA_FEATURE_BIT_ENABLE)   ||
 					 (paramConfig->accelModeArgs.compressMode.scaleFactorBW > ( 1U << 4U)) ||
-					 (paramConfig->accelModeArgs.compressMode.BFPMantissaBW > ( 1 << 5U) ) ||
 					 ((paramConfig->accelModeArgs.compressMode.method == HWA_COMPRESS_METHOD_EGE) &&
 					 ((paramConfig->accelModeArgs.compressMode.EGEKarrayLength > 3U ) ||(paramConfig->accelModeArgs.compressMode.EGEKarrayLength < 1U)))||
 					  /* if first pass is disabled */
 					  ( (paramConfig->accelModeArgs.compressMode.passSelect == HWA_COMPRESS_PATHSELECT_SECONDPASS) &&
-						(paramConfig->accelModeArgs.compressMode.scaleFactor >  (1U << 5U) ) &&
 						(
 						   (paramConfig->accelModeArgs.compressMode.method == HWA_COMPRESS_METHOD_EGE) &&
 						   (paramConfig->accelModeArgs.compressMode.EGEKidx > 31U)
@@ -2464,12 +2461,10 @@ int32_t HWA_configParamSet(HWA_Handle handle, uint8_t paramsetIdx, HWA_ParamConf
             }
             if (paramConfig->accelMode == HWA_ACCELMODE_COMPRESS)
             {
-                paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_SCALEFAC_END, CMPDCMP_CMP_SCALEFAC_START, paramConfig->accelModeArgs.compressMode.scaleFactor);
                 paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_EGE_OPT_K_INDX_END, CMPDCMP_CMP_EGE_OPT_K_INDX_START, paramConfig->accelModeArgs.compressMode.EGEKidx);
                 paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_PASS_SEL_END, CMPDCMP_CMP_PASS_SEL_START, paramConfig->accelModeArgs.compressMode.passSelect);
                 paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_HEADER_EN_END, CMPDCMP_CMP_HEADER_EN_START, paramConfig->accelModeArgs.compressMode.headerEnable);
                 paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_SCALEFAC_BW_END, CMPDCMP_CMP_SCALEFAC_BW_START, paramConfig->accelModeArgs.compressMode.scaleFactorBW);
-                paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_BFP_MANTISSA_BW_END, CMPDCMP_CMP_BFP_MANTISSA_BW_START, paramConfig->accelModeArgs.compressMode.BFPMantissaBW);
                 paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_EGE_K_ARR_LEN_END, CMPDCMP_CMP_EGE_K_ARR_LEN_START, paramConfig->accelModeArgs.compressMode.EGEKarrayLength);
                 paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_METHOD_END, CMPDCMP_CMP_METHOD_START, paramConfig->accelModeArgs.compressMode.method);
                 paramReg.accelModeParam.CMPDCMPPATH.CMPDCMP   |= CSL_FMKR(CMPDCMP_CMP_DCMP_END, CMPDCMP_CMP_DCMP_START, paramConfig->accelModeArgs.compressMode.compressDecompress);
