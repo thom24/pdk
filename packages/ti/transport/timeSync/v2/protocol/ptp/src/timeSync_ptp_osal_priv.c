@@ -258,41 +258,49 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
 
     for (portNum = 0; portNum < TIMESYNC_PTP_MAX_PORTS_SUPPORTED; portNum++)
     {
-        hTimeSyncPtp->ptpPdelayResEvtHandle[portNum] = EventP_create(&eventParams);
-
-        if (hTimeSyncPtp->ptpPdelayResEvtHandle[portNum] == NULL)
+        if (TIMESYNC_IS_BIT_SET(hTimeSyncPtp->ptpConfig.portMask, portNum))
         {
-            return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            hTimeSyncPtp->ptpPdelayResEvtHandle[portNum] = EventP_create(&eventParams);
+            if (hTimeSyncPtp->ptpPdelayResEvtHandle[portNum] == NULL)
+            {
+                return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            }
         }
     }
 
     for (portNum = 0; portNum < TIMESYNC_PTP_MAX_PORTS_SUPPORTED; portNum++)
     {
-        hTimeSyncPtp->txTSAvailableEvtHandle[portNum] = EventP_create(&eventParams);
-
-        if (hTimeSyncPtp->txTSAvailableEvtHandle[portNum] == NULL)
+        if (TIMESYNC_IS_BIT_SET(hTimeSyncPtp->ptpConfig.portMask, portNum))
         {
-            return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            hTimeSyncPtp->txTSAvailableEvtHandle[portNum] = EventP_create(&eventParams);
+            if (hTimeSyncPtp->txTSAvailableEvtHandle[portNum] == NULL)
+            {
+                return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            }
         }
     }
 
     for (portNum = 0; portNum < TIMESYNC_PTP_MAX_PORTS_SUPPORTED; portNum++)
     {
-        hTimeSyncPtp->ptpPdelayReqEvtHandle[portNum] = EventP_create(&eventParams);
-
-        if (hTimeSyncPtp->ptpPdelayReqEvtHandle[portNum] == NULL)
+        if (TIMESYNC_IS_BIT_SET(hTimeSyncPtp->ptpConfig.portMask, portNum))
         {
-            return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            hTimeSyncPtp->ptpPdelayReqEvtHandle[portNum] = EventP_create(&eventParams);
+            if (hTimeSyncPtp->ptpPdelayReqEvtHandle[portNum] == NULL)
+            {
+                return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            }
         }
     }
 
     for (portNum = 0; portNum < TIMESYNC_PTP_MAX_PORTS_SUPPORTED; portNum++)
     {
-        hTimeSyncPtp->ptpSendFollowUpEvtHandle[portNum] = EventP_create(&eventParams);
-
-        if (hTimeSyncPtp->ptpSendFollowUpEvtHandle[portNum] == NULL)
+        if (TIMESYNC_IS_BIT_SET(hTimeSyncPtp->ptpConfig.portMask, portNum))
         {
-            return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            hTimeSyncPtp->ptpSendFollowUpEvtHandle[portNum] = EventP_create(&eventParams);
+            if (hTimeSyncPtp->ptpSendFollowUpEvtHandle[portNum] == NULL)
+            {
+                return TIMESYNC_UNABLE_TO_CREATE_EVENT;
+            }
         }
     }
 
@@ -355,15 +363,18 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     taskParams.arg0 = (void *)hTimeSyncPtp;
     for (portNum = 0; portNum < TIMESYNC_PTP_MAX_PORTS_SUPPORTED; portNum++)
     {
-        /* Assign port number value to global variable as a workaround to
-         * avoid compilation error */
-        gPortNum[portNum] = portNum;
-        taskParams.arg1 = (void *)&gPortNum[portNum];
-        hTimeSyncPtp->txTsTask[portNum] = TaskP_create(TimeSyncPtp_txTsTask,
-                                                       &taskParams);
-        if (hTimeSyncPtp->txTsTask[portNum] == NULL)
+        if (TIMESYNC_IS_BIT_SET(hTimeSyncPtp->ptpConfig.portMask, portNum))
         {
-            status += TIMESYNC_UNABLE_TO_CREATE_TASK;
+            /* Assign port number value to global variable as a workaround to
+             * avoid compilation error */
+            gPortNum[portNum] = portNum;
+            taskParams.arg1 = (void *)&gPortNum[portNum];
+            hTimeSyncPtp->txTsTask[portNum] = TaskP_create(TimeSyncPtp_txTsTask,
+                                                           &taskParams);
+            if (hTimeSyncPtp->txTsTask[portNum] == NULL)
+            {
+                status += TIMESYNC_UNABLE_TO_CREATE_TASK;
+            }
         }
     }
 
