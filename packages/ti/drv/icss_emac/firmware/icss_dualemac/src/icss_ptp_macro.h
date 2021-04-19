@@ -120,9 +120,13 @@ NOT_A_PTP_FRAME_2:
 ;---------------------------------------------------------------------------------------------------------
 M_GPTP_CHECK_AND_SET_FLAGS    .macro
     CLR     R22, R22, RX_IS_VLAN_BIT
+    CLR     R22, R22, RX_IS_PTP_BIT
+    CLR     R22, R22, RX_IS_UDP_PTP_BIT
     ;This code is used to control PTP packet forwarding from driver, if mem location
     ;is set to 1 then FW skips the flow. By default (0) flow is taken
-    LBCO    &RCV_TEMP_REG_3.b0, ICSS_SHARED_CONST, DISABLE_PTP_FRAME_FORWARDING_CTRL_OFFSET, 1    
+    .if $defined(ICSS_SWITCH_BUILD)
+        LBCO    &RCV_TEMP_REG_3.b0, ICSS_SHARED_CONST, DISABLE_PTP_FRAME_FORWARDING_CTRL_OFFSET, 1
+    .endif ;ICSS_SWITCH_BUILD    
     ;PTP_HSR_NON_LL_MAC_ID_L is 0
     QBNE    CHECK_PTP_LINK_LOCAL_RX, R3.w0, 0
     LDI32   RCV_TEMP_REG_2, PTP_HSR_PRP_NON_LL_MAC_ID_H
@@ -271,6 +275,8 @@ NOT_A_PTP_FRAME_3:
 ;****************************************************************************
 M_GPTP_TX_PRE_PROC  .macro
 
+    CLR     R22, R22, TX_IS_PTP_BIT
+    CLR     R22, R22, TX_IS_UDP_PTP_BIT
     QBNE    CHECK_PTP_LINK_LOCAL_TX, R3.w0, 0
     LDI32   R10, PTP_HSR_PRP_NON_LL_MAC_ID_H
     QBNE    CHECK_PTP_LINK_LOCAL_TX, R2, R10
