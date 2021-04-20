@@ -305,7 +305,7 @@ MS_SCH_OPPOSITE_PORT_LINK_DOWN:
     QBBC	MS_SCH_OPP_PORT_FULL_DUPLEX, R20, 1	 ;replaced: QBBC    MS_SCH_OPP_PORT_FULL_DUPLEX, R20.PORT_IS_HD 
     SET	R22 , R22 , 23 
 MS_SCH_OPP_PORT_FULL_DUPLEX:
-    .endif	;ICSS_SWITCH_BUILD
+    .endif	;ICSS_SWITCH_BUILD	
 
     ; Check INTR_PAC_STATUS_OFFSET for Interrupt Pacing logic status
     .if $defined(PRU0)
@@ -395,6 +395,22 @@ TS_DIFF_DONE:
 NO_INTR_PENDING:
 TIMER_NOT_ELAPSED:
 INTR_PAC_DIS:
+    ;This is required because there is too much processing in background task
+    ;and it's possible to miss Last Block
+    .if $defined("ICSS_REV1")	
+        .if $defined("PRU0")	
+            QBBC	EARLY_RX_LB_DONE, R31, 30
+        .else
+            QBBC	EARLY_RX_LB_DONE, R31, 31
+        .endif
+    .endif ;ICSS_REV1
+
+    .if $defined("ICSS_REV2")
+        QBBC  EARLY_RX_LB_DONE, R31, 20
+    .endif ;ICSS_REV2
+    
+    JAL	  CALL_REG, FN_RCV_LB
+EARLY_RX_LB_DONE:
 
     .if $defined(PTP)
     .if $defined(PRU0) 
