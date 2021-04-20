@@ -883,12 +883,13 @@ void TimeSync_reset(TimeSync_Handle timeSyncHandle)
 
                 EnetQueue_enq(&gTimeSyncCpswObj.rxFreeQ, &pktInfo->node);
 
-                EnetAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
-                                                 ENET_PKTSTATE_APP_WITH_FREEQ,
-                                                 ENET_PKTSTATE_APP_WITH_DRIVER);
-
                 pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gTimeSyncCpswObj.rxReadyQ);
             }
+
+            EnetAppUtils_validatePacketState(&gTimeSyncCpswObj.rxFreeQ,
+                                             ENET_PKTSTATE_APP_WITH_FREEQ,
+                                             ENET_PKTSTATE_APP_WITH_DRIVER);
+
             EnetDma_submitRxPktQ(gTimeSyncCpswObj.hRxFlow,
                                          &gTimeSyncCpswObj.rxFreeQ);
 
