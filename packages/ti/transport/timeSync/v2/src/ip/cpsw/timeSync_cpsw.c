@@ -117,12 +117,6 @@
 #define TIMESYNC_DOUBLE_TAG_VLAN_HDR_SIZE   (8U)
 
 /**
- * @def TIMESYNC_PPS_HW_PUSH_NUM
- *      CPTS hardware push instance used for PPS
- */
-#define TIMESYNC_PPS_HW_PUSH_NUM            (CPSW_CPTS_HWPUSH_1)
-
-/**
  * @def TIMESYNC_MILLION_PARTS
  *      Value of million useful in PPM calculations
  */
@@ -185,6 +179,9 @@ typedef struct TimeSync_Obj_s
     EnetDma_PktQ txFreePktInfoQ;
 
     TimeSync_TxPktInfo txTsPktInfo;
+
+    /** CPTS hardware push instance used for PPS */
+    CpswCpts_HwPush hwPush;
 } TimeSync_Obj;
 
 /* ========================================================================== */
@@ -215,7 +212,7 @@ static void TimeSync_getMsgId(uint8_t *msgId,
 static void TimeSync_getSeqId(uint16_t *seqId,
                               uint8_t *frame);
 
-static int32_t TimeSync_configPps(void);
+static int32_t TimeSync_configPps(Enet_Type enetType);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -299,7 +296,7 @@ void TimeSync_ppsHwPushNotifyFxn(void *cbArg,
     {
         timeSyncHandle = (TimeSync_Handle)cbArg;
 
-        if (hwPushNum == TIMESYNC_PPS_HW_PUSH_NUM)
+        if (hwPushNum == gTimeSyncCpswObj.hwPush)
         {
             /* Call PPS callback */
             pPpsConfig = &timeSyncHandle->timeSyncConfig.protoCfg.ppsConfig;
@@ -328,16 +325,19 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
         {
             gTimeSyncCpswObj.enetType = ENET_CPSW_2G;
             gTimeSyncCpswObj.instId   = 0U;
+            gTimeSyncCpswObj.hwPush   = CPSW_CPTS_HWPUSH_3;
         }
         else if (timeSyncConfig->socConfig.ipVersion == TIMESYNC_IP_VER_CPSW_9G)
         {
             gTimeSyncCpswObj.enetType = ENET_CPSW_9G;
             gTimeSyncCpswObj.instId   = 0U;
+            gTimeSyncCpswObj.hwPush   = CPSW_CPTS_HWPUSH_1;
         }
         else if (timeSyncConfig->socConfig.ipVersion == TIMESYNC_IP_VER_CPSW_5G)
         {
             gTimeSyncCpswObj.enetType = ENET_CPSW_5G;
             gTimeSyncCpswObj.instId   = 0U;
+            gTimeSyncCpswObj.hwPush   = CPSW_CPTS_HWPUSH_1;
         }
         else
         {
@@ -406,7 +406,7 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
 
         if (status == TIMESYNC_OK)
         {
-            status = TimeSync_configPps();
+            status = TimeSync_configPps(gTimeSyncCpswObj.enetType);
             if (status != TIMESYNC_OK)
             {
                 EnetAppUtils_print("Failed to configure PPS generation: %d\n", status);
@@ -728,7 +728,7 @@ int32_t TimeSync_getPpsTs(TimeSync_Handle timeSyncHandle,
     if (timeSyncHandle != NULL)
     {
         lookupEventInArgs.eventType = CPSW_CPTS_EVENTTYPE_HW_TS_PUSH;
-        lookupEventInArgs.hwPushNum = TIMESYNC_PPS_HW_PUSH_NUM;
+        lookupEventInArgs.hwPushNum = gTimeSyncCpswObj.hwPush;
         lookupEventInArgs.portNum = 0U;
         lookupEventInArgs.seqId = 0U;
         lookupEventInArgs.domain  = 0U;
@@ -1514,7 +1514,7 @@ static void TimeSync_getSeqId(uint16_t *seqId,
     *seqId = ntohs(*seqId);
 }
 
-static int32_t TimeSync_configPps(void)
+static int32_t TimeSync_configPps(Enet_Type enetType)
 {
     int32_t status = TIMESYNC_OK;
     Enet_IoctlPrms prms;
@@ -1523,13 +1523,31 @@ static int32_t TimeSync_configPps(void)
     uint64_t tsVal = 0U;
 
     /* Configure Time Sync Router to route GENF0 signal to hardware push 1 */
-    status = EnetAppUtils_setTimeSyncRouter(gTimeSyncCpswObj.enetType,
-                                            CSLR_TIMESYNC_INTRTR0_IN_CPSW0_CPTS_GENF0_0,
-                                            CSLR_TIMESYNC_INTRTR0_OUTL_CPSW0_CPTS_HW1_PUSH_0);
+#if defined(SOC_AM65XX)
+    uint32_t tsrIn = 12U;  /* SYNCEVENT_INTRTRIN_12 (MCU_CPSW_GENF0_EVT) */
+    uint32_t tsrOut = 24U; /* SYNCEVT_RTR_SYNC24_EVT (MPU_CPSW0_CPTS_HW3_PUSH) */
+
+    /* Explicit register call as AM65xx doesn't have TimeSync router inputs/output macros */
+    CSL_REG32_WR(CSL_TIMESYNC_INTRTR0_INTR_ROUTER_CFG_BASE + 0x4U + (0x4U * tsrOut), tsrIn);
+#else
+    if (enetType == ENET_CPSW_2G)
+    {
+        status = EnetAppUtils_setTimeSyncRouter(gTimeSyncCpswObj.enetType,
+                                                CSLR_TIMESYNC_INTRTR0_IN_MCU_CPSW0_CPTS_GENF0_0,
+                                                CSLR_TIMESYNC_INTRTR0_OUTL_MCU_CPSW0_CPTS_HW3_PUSH_0);
+    }
+    else
+    {
+        status = EnetAppUtils_setTimeSyncRouter(gTimeSyncCpswObj.enetType,
+                                                CSLR_TIMESYNC_INTRTR0_IN_CPSW0_CPTS_GENF0_0,
+                                                CSLR_TIMESYNC_INTRTR0_OUTL_CPSW0_CPTS_HW1_PUSH_0);
+    }
+
     EnetAppUtils_assert(status == TIMESYNC_OK);
+#endif
 
     /* Register hardware push 1 callback */
-    hwPushCbInArgs.hwPushNum = TIMESYNC_PPS_HW_PUSH_NUM;
+    hwPushCbInArgs.hwPushNum = gTimeSyncCpswObj.hwPush;
     hwPushCbInArgs.hwPushNotifyCb = TimeSync_ppsHwPushNotifyFxn;
     hwPushCbInArgs.hwPushNotifyCbArg = (void *)&gTimeSyncCpswObj;
     ENET_IOCTL_SET_IN_ARGS(&prms, &hwPushCbInArgs);
