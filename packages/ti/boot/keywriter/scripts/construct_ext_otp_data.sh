@@ -59,6 +59,13 @@ case $key in
 	shift # past argument
     shift # past value
     ;;
+	*)
+		echo "ERR: Invalid input argument(s)"
+		echo "$1" "$2"
+		exit
+	shift
+	shift
+	;;
 esac
 done
 #################################################################
