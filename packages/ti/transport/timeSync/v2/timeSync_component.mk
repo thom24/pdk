@@ -161,5 +161,11 @@ export timeSyncv2_EXAMPLE_LIST
 export drvtimeSync_LIB_LIST = $(timeSyncv2_LIB_LIST)
 export drvtimeSync_EXAMPLE_LIST = $(timeSyncv2_EXAMPLE_LIST)
 
+ifeq ($(BUILD_PROFILE),debug)
+TIMESYNC_CFLAGS += -DENET_CFG_DEV_ERROR=1
+endif
+
+export TIMESYNC_CFLAGS
+
 timeSync_component_make_include := 1
 endif

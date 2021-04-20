@@ -34,7 +34,7 @@ ifeq ($(SOC),$(filter $(SOC), am335x am437x))
 SRCS_COMMON += timeSync_icss_ecap_edma.c
 endif
 
-TIMESYNC_CFLAGS =
+TIMESYNC_CFLAGS +=
 CFLAGS_LOCAL_a15_0  = -mno-unaligned-access
 CFLAGS_LOCAL_a8host = -mno-unaligned-access
 CFLAGS_LOCAL_a9host = -mno-unaligned-access
