@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2020-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -114,7 +114,7 @@ static void OTP_SciClientInit(void)
 
 	if (status != CSL_PASS)                                                  
 	{                                                                        
-		UART_printf("Sciclient board config pm...FAILED \n");
+		/* Sciclient board config pm..FAILS */
 		KeywrErrLoop(__FILE__, __LINE__);                                      
 	}
 
@@ -202,6 +202,8 @@ int main()
 
 	UART_printf("%s (%s - %s)\n", OTP_VERSION_STR, __DATE__, __TIME__);
 	OTP_SciClientInit();
+
+	OTP_VppEn();
 
 	UART_printf("Key programming sequence initialted\n");
 	UART_printf("Taking OTP certificate from 0x%x\n", (uint32_t *)keywriter_cert);	

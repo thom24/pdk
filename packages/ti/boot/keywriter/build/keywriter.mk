@@ -14,6 +14,11 @@ SRCDIR                      += $(KEYWRITER_APP_DIR)
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/board/src/$(BOARD)/include
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/csl
 INCDIR                      += $(KEYWRITER_APP_DIR)/boardcfgs/$(SOC)
+INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic
+INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/include
+INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/common
+INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/power_test
+INCDIR                      += $(KEYWRITER_APP_DIR)/soc/$(SOC)
 
 PACKAGE_SRCS_COMMON          = .
 
@@ -22,14 +27,16 @@ PACKAGE_SRCS_COMMON          = .
 INCLUDE_EXTERNAL_INTERFACES  = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON             = sciclient_direct board uart osal_nonos csl csl_init i2c gpio rm_pm_hal
+COMP_LIST_COMMON             = pmic sciclient_direct board uart osal_nonos csl csl_init i2c gpio rm_pm_hal
 
 CFLAGS_LOCAL_COMMON          = $(PDK_CFLAGS)
 
 SRCS_COMMON                 += main.c
+SRCS_COMMON                 += soc/$(SOC)/pmic_example.c
+SRCS_COMMON                 += soc/$(SOC)/keywriter_utils.c
 SRCS_ASM_COMMON             += init.asm
 
-EXTERNAL_LNKCMD_FILE_LOCAL   = $(PDK_KEYWR_COMP_PATH)/linker.lds
+EXTERNAL_LNKCMD_FILE_LOCAL   = $(PDK_KEYWR_COMP_PATH)/soc/$(SOC)/linker.lds
 
 export R5_STARTUP_MODE      := SPLIT_MODE
 

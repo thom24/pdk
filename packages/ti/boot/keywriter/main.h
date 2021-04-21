@@ -63,6 +63,7 @@
 #include <keywr_defaultBoardcfg_pm_hex.h>
 #include <keywr_defaultBoardcfg_security_hex.h>
 
+#include <keywriter_utils.h>
 
 /* Discard any previous definitions 
  * These two macros are defined in ti-fs-keywriter.h file.
@@ -111,11 +112,20 @@ const uint32_t gKeywr_boardCfgLow_pm[(KEYWR_BOARDCFG_PM_SIZE_IN_BYTES+3U)/4U]
     = KEYWR_BOARDCFG_PM;
 
 /**
- *  \brief  CSL Reset Vectors.
- *  \param  fileName
- *  \param  lineNo
- *  \return None
+ * \brief  CSL Reset Vectors
+ *
+ * \param  fileName
+ * \param  lineNo
+ *
+ * \return None
  */
 void KeywrErrLoop (const char *fileName, int32_t lineNo);
+
+/**  
+ * \brief SoC specific implementation to pull VPP high for efuse programming
+ *
+ * \return None
+ */
+void OTP_VppEn(void);
 
 #endif	/* KEYWR_MAIN_H_ */
