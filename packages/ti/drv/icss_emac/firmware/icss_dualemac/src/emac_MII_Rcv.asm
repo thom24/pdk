@@ -1752,9 +1752,6 @@ PTP_PORT_QUEUE_RELEASE_DONE:
     .endif
     ; For Host Receive
     QBBC    LB_UPDATE_CHECK_FWD_FLAG, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
-    .if $defined("ICSS_DUAL_EMAC_BUILD")
-    QBBC    LB_RELEASE_HOST_QUEUE, MII_RCV.rx_flags, host_rcv_flag_shift    ;MII_RCV.rx_flags.host_rcv_flag
-    .endif  ;ICSS_DUAL_EMAC_BUILD
     .endif ;TWO_PORT_CFG
     LDI	R0.b0, SHIFT_R2_TO_R26	
     .if $defined("PRU0")	
