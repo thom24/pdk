@@ -147,8 +147,8 @@ CBUFF_Hw_Attrib gCBUFFHwAttribute =
     },
     4U,     /* Maximum of 4 LVDS Lanes supported on the AWR2944  */
 #if defined (__TI_ARM_V7R4__)
-	CSL_MSS_INTR_DSS_CBUFF_INT,
 	CSL_MSS_INTR_DSS_CBUFF_INT_ERR,
+	CSL_MSS_INTR_DSS_CBUFF_INT,
 	RSS_FRAME_START_TO_MSS,
 #endif
 
