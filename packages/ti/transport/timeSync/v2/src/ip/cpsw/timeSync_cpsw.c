@@ -436,32 +436,29 @@ int32_t TimeSync_getRxTimestamp(TimeSync_Handle timeSyncHandle,
 {
     int32_t status = TIMESYNC_OK;
     Enet_IoctlPrms prms;
-    CpswCpts_Event lookupEventInArgs;
-    CpswCpts_Event lookupEventOutArgs;
-
+    EnetTimeSync_GetEthTimestampInArgs inArgs;
+    uint64_t tsVal;
 
     if (timeSyncHandle != NULL)
     {
-        lookupEventInArgs.eventType = CPSW_CPTS_EVENTTYPE_ETH_RECEIVE;
-        lookupEventInArgs.hwPushNum = CPSW_CPTS_HWPUSH_INVALID;
-        lookupEventInArgs.portNum = rxPort;
-        lookupEventInArgs.seqId = seqId;
-        lookupEventInArgs.msgType = (EnetTimeSync_MsgType)rxFrameType;
-        lookupEventInArgs.domain  = 0U;
+        inArgs.msgType = (EnetTimeSync_MsgType)rxFrameType;
+        inArgs.seqId   = seqId;
+        inArgs.portNum = rxPort;
+        inArgs.domain  = 0U;
 
         if (status == TIMESYNC_OK)
         {
-            ENET_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
+            ENET_IOCTL_SET_INOUT_ARGS(&prms, &inArgs, &tsVal);
             status = Enet_ioctl(timeSyncHandle->hEnet,
                                 timeSyncHandle->coreId,
-                                CPSW_CPTS_IOCTL_LOOKUP_EVENT,
+                                ENET_TIMESYNC_IOCTL_GET_ETH_RX_TIMESTAMP,
                                 &prms);
             if (status == ENET_ENOTFOUND)
             {
-                lookupEventOutArgs.tsVal = 0U;
+                tsVal = 0U;
             }
-            *nanoseconds = (uint32_t)(lookupEventOutArgs.tsVal % (uint64_t)TIMESYNC_SEC_TO_NS);
-            *seconds = lookupEventOutArgs.tsVal / (uint64_t)TIMESYNC_SEC_TO_NS;
+            *nanoseconds = (uint32_t)(tsVal % (uint64_t)TIMESYNC_SEC_TO_NS);
+            *seconds = tsVal / (uint64_t)TIMESYNC_SEC_TO_NS;
         }
     }
     else
@@ -481,31 +478,29 @@ int32_t TimeSync_getTxTimestamp(TimeSync_Handle timeSyncHandle,
 {
     int32_t status = TIMESYNC_OK;
     Enet_IoctlPrms prms;
-    CpswCpts_Event lookupEventInArgs;
-    CpswCpts_Event lookupEventOutArgs;
+    EnetTimeSync_GetEthTimestampInArgs inArgs;
+    uint64_t tsVal;
 
     if (timeSyncHandle != NULL)
     {
-        lookupEventInArgs.eventType = CPSW_CPTS_EVENTTYPE_ETH_TRANSMIT;
-        lookupEventInArgs.hwPushNum = CPSW_CPTS_HWPUSH_INVALID;
-        lookupEventInArgs.portNum = txPort;
-        lookupEventInArgs.seqId = seqId;
-        lookupEventInArgs.msgType = (EnetTimeSync_MsgType)txFrameType;
-        lookupEventInArgs.domain  = 0U;
+        inArgs.msgType = (EnetTimeSync_MsgType)txFrameType;
+        inArgs.seqId = seqId;
+        inArgs.portNum = txPort;
+        inArgs.domain  = 0U;
 
         if (status == TIMESYNC_OK)
         {
-            ENET_IOCTL_SET_INOUT_ARGS(&prms, &lookupEventInArgs, &lookupEventOutArgs);
+            ENET_IOCTL_SET_INOUT_ARGS(&prms, &inArgs, &tsVal);
             status = Enet_ioctl(timeSyncHandle->hEnet,
                                 timeSyncHandle->coreId,
-                                CPSW_CPTS_IOCTL_LOOKUP_EVENT,
+                                ENET_TIMESYNC_IOCTL_GET_ETH_TX_TIMESTAMP,
                                 &prms);
             if (status == ENET_ENOTFOUND)
             {
-                lookupEventOutArgs.tsVal = 0U;
+                tsVal = 0U;
             }
-            *nanoseconds = (uint32_t)(lookupEventOutArgs.tsVal % (uint64_t)TIMESYNC_SEC_TO_NS);
-            *seconds = lookupEventOutArgs.tsVal / (uint64_t)TIMESYNC_SEC_TO_NS;
+            *nanoseconds = (uint32_t)(tsVal % (uint64_t)TIMESYNC_SEC_TO_NS);
+            *seconds = tsVal / (uint64_t)TIMESYNC_SEC_TO_NS;
         }
     }
     else
