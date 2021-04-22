@@ -61,6 +61,7 @@ extern IntrFuncPtr fxnArray[R5_VIM_INTR_NUM];
 extern uint32_t    intrSrcType[R5_VIM_INTR_NUM];
 extern uint16_t    intrPri[R5_VIM_INTR_NUM];
 extern uint8_t     intrMap[R5_VIM_INTR_NUM];
+extern CSL_R5ExptnHandlers gExptnHandlers;
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -239,6 +240,7 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
 
 void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_reserved_handler(void)
 {
+    /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
     while(loop)
         ;
@@ -246,6 +248,7 @@ void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_reserved_hand
 
 void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_undefined_handler(void)
 {
+    /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
     while(loop)
         ;
@@ -253,16 +256,31 @@ void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_undefined_han
 
 void __attribute__((interrupt("PABT"), section(".text.hwi"))) HwiP_prefetch_abort_handler(void)
 {
+    /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
     while(loop)
         ;
 }
 
-void __attribute__((interrupt("DABT"), section(".text.hwi"))) HwiP_data_abort_handler(void)
+/* Data Abort handler starts execution in HwiP_data_abort_handler, defined in portASM.S 
+ * After some initial assembly logic it then branches to this function.
+ * After exiting this function it does some more assembly to return to the next instruction
+ * following the one which caused the exception.
+ */
+void __attribute__((section(".text.hwi"))) HwiP_data_abort_handler_c(void)
 {
-    volatile uint32_t loop = 1;
-    while(loop)
-        ;
+    /* Call registered call back */
+    if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
+    {
+        gExptnHandlers.dabtExptnHandler(gExptnHandlers.dabtExptnHandlerArgs);
+    }
+    else
+    {
+        /* Go into an infinite loop.*/
+        volatile uint32_t loop = 1;
+        while(loop)
+            ;
+    }
 }
 
 /********************************* End of file ******************************/

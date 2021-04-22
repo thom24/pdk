@@ -63,6 +63,7 @@
         .ref vTaskSwitchContext
         .ref ulPortInterruptNesting
         .ref HwiP_irq_handler_c
+        .ref HwiP_data_abort_handler_c
 
 SYS_MODE   .set     0x1F
 SVC_MODE   .set     0x13 
@@ -255,6 +256,34 @@ switch_before_exit:
 	;  next. 
 	portRESTORE_CONTEXT
 
+;  FUNCTION DEF: void HwiP_data_abort_handler(void)
+        .global HwiP_data_abort_handler
+        .sect ".text.hwi"
+        .arm
+HwiP_data_abort_handler: .asmfunc
+	;  Return to the instruction following the interrupted.
+	SUB		lr, lr, #4
+
+	;  Push the return address and SPSR.
+	PUSH	{lr}
+	MRS	lr, SPSR
+	PUSH	{lr}
+
+	;  Push used registers.
+	PUSH	{r0-r4, r12}
+
+	;  Call the interrupt handler.
+	LDR	r1, vApplicationDataAbortHandlerConst
+	BLX	r1
+
+	;  Restore used registers, LR and SPSR before  returning. 
+	POP	{r0-r4, r12}
+	POP	{LR}
+	MSR	SPSR_cxsf, LR
+	POP	{LR}
+	MOVS	PC, LR
+        .endasmfunc
+
 ulPortYieldRequiredAddr: .word ulPortYieldRequired
 pxCurrentTCBConst: .word pxCurrentTCB
 ulCriticalNestingConst: .word ulCriticalNesting
@@ -262,5 +291,6 @@ ulPortTaskHasFPUContextConst: .word ulPortTaskHasFPUContext
 vTaskSwitchContextConst: .word vTaskSwitchContext
 ulPortInterruptNestingConst: .word ulPortInterruptNesting
 vApplicationIRQHandlerConst: .word HwiP_irq_handler_c
+vApplicationDataAbortHandlerConst: .word HwiP_data_abort_handler_c
 
         .end
