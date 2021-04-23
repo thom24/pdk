@@ -87,6 +87,46 @@ endif
 
 DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE_LIST_$(SOC)))
 
+# The below defines various RTOS types
+DEFAULT_RTOS_LIST = tirtos freertos safertos
+
+# The below defines the DEFAULT_$(SOC)_CORELIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
+# This is derived from the DEFAULT_$(SOC)_CORELIST defined above.
+# DEFAULT_$(SOC)_CORELIST_<rtos_type> is a subset of all the cores and is used for building components for the particular 'rtos_type'.
+
+
+DEFAULT_$(SOC)_CORELIST_tirtos = $(DEFAULT_$(SOC)_CORELIST)
+
+
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx tpr12 awr294x))
+DEFAULT_CORELIST_EXCLUDE_CORES_freertos =
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+# FreeRTOS is not supported on mpu core
+DEFAULT_CORELIST_EXCLUDE_CORES_freertos += mpu1_0
+endif
+ifeq ($(SOC),$(filter $(SOC), j721e))
+# FreeRTOS is not currently supported on J7 c66x/c7x cores 
+DEFAULT_CORELIST_EXCLUDE_CORES_freertos += c66xdsp_1 c66xdsp_2 c7x_1 c7x-hostemu
+endif
+else
+#FreeRTOS is not supported on other SOCs
+DEFAULT_CORELIST_EXCLUDE_CORES_freertos = $(DEFAULT_$(SOC)_CORELIST)
+endif
+
+DEFAULT_$(SOC)_CORELIST_freertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES_freertos), $(DEFAULT_$(SOC)_CORELIST))
+
+
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+# FreeRTOS is not currently supported on mcu cores 
+DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mcu1_0
+else
+#SafeRTOS is not supported on other SOCs
+DEFAULT_CORELIST_EXCLUDE_CORES_safertos = $(DEFAULT_$(SOC)_CORELIST)
+endif
+
+DEFAULT_$(SOC)_CORELIST_safertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES_safertos), $(DEFAULT_$(SOC)_CORELIST))
+
+
 # Core types (without the core IDs). This will be used to parse and order the establish the order of cores
 # in the case of building libraries for multiple cores
 

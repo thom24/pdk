@@ -67,7 +67,9 @@
 ifeq ($(uart_component_make_include), )
 
 # under other list
+drvuart_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvuart_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
+drvuart_tirtos_BOARDLIST   = $(drvuart_BOARDLIST)
 drvuart_freertos_BOARDLIST = am65xx_evm j721e_evm j7200_evm tpr12_evm
 drvuart_safertos_BOARDLIST = tpr12_evm
 drvuart_dma_SOCLIST     = tda2xx tda2px dra72x dra75x tda2ex tda3xx dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am437x am65xx j721e j7200
@@ -94,18 +96,13 @@ drvuart_c6657_CORELIST  = c66x
 drvuart_am437x_CORELIST = a9host
 drvuart_am335x_CORELIST = a8host pru_0 pru_1
 drvuart_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
-drvuart_am65xx_FREERTOS_CORELIST = mcu1_0 mcu1_1
 drvuart_j721e_CORELIST = $(DEFAULT_j721e_CORELIST)
 drvuart_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvuart_j721e_FREERTOS_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvuart_j7200_CORELIST = $(DEFAULT_j7200_CORELIST)
 drvuart_j7200_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvuart_j7200_FREERTOS_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
 drvuart_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvuart_tpr12_CORELIST = mcu1_0 c66xdsp_1
-drvuart_tpr12_FREERTOS_CORELIST = mcu1_0 c66xdsp_1
-drvuart_tpr12_SAFERTOS_CORELIST = c66xdsp_1
 drvuart_awr294x_CORELIST = mcu1_0 c66xdsp_1
 
 ############################
@@ -131,11 +128,8 @@ drvuart_FIRM_LIST = $(uart_FIRM_LIST)
 # List below all examples for allowed values
 ############################
 #uart_EXAMPLE_LIST = drv_uart_unit_test drv_uart_polling_mode_app drv_uart_intr_mode_app
-uart_EXAMPLE_LIST = UART_Baremetal_TestApp UART_Baremetal_DMA_TestApp UART_TestApp UART_SMP_TestApp UART_DMA_TestApp UART_DMA_SMP_TestApp
-uart_EXAMPLE_LIST += UART_Freertos_TestApp UART_Freertos_DMA_TestApp
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-uart_EXAMPLE_LIST += UART_Safertos_TestApp UART_Safertos_DMA_TestApp
-endif
+uart_EXAMPLE_LIST = UART_Baremetal_TestApp UART_Baremetal_DMA_TestApp 
+
 drvuart_EXAMPLE_LIST = $(uart_EXAMPLE_LIST)
 
 #
@@ -419,161 +413,142 @@ UART_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export UART_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN
 endif
 
-# UART unit test freertos app
-export UART_Freertos_TestApp_COMP_LIST = UART_Freertos_TestApp
-UART_Freertos_TestApp_RELPATH = ti/drv/uart/test
-UART_Freertos_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-export UART_Freertos_TestApp_BOARD_DEPENDENCY = yes
-export UART_Freertos_TestApp_CORE_DEPENDENCY = no
-export UART_Freertos_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes
-UART_Freertos_TestApp_PKG_LIST = UART_Freertos_TestApp
-UART_Freertos_TestApp_INCLUDE = $(UART_Freertos_TestApp_PATH)
-export UART_Freertos_TestApp_BOARDLIST = $(drvuart_freertos_BOARDLIST)
-export UART_Freertos_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_FREERTOS_CORELIST)
-export UART_Freertos_TestApp_SBL_APPIMAGEGEN = yes
 
-# UART unit test freertos dma app
-export UART_Freertos_DMA_TestApp_COMP_LIST = UART_Freertos_DMA_TestApp
-UART_Freertos_DMA_TestApp_RELPATH = ti/drv/uart/test
-UART_Freertos_DMA_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-export UART_Freertos_DMA_TestApp_BOARD_DEPENDENCY = yes
-export UART_Freertos_DMA_TestApp_CORE_DEPENDENCY = no
-export UART_Freertos_DMA_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes DMA=enable
-UART_Freertos_DMA_TestApp_PKG_LIST = UART_Freertos_DMA_TestApp
-UART_Freertos_DMA_TestApp_INCLUDE = $(UART_Freertos_DMA_TestApp_PATH)
-export UART_Freertos_DMA_TestApp_BOARDLIST = tpr12_evm
-export UART_Freertos_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_FREERTOS_CORELIST)
-export UART_Freertos_DMA_TestApp_SBL_APPIMAGEGEN = yes
+# UART RTOS Unit Test Apps
+define UART_TESTAPP_RULE
 
-# UART unit test safertos app
-export UART_Safertos_TestApp_COMP_LIST = UART_Safertos_TestApp
-UART_Safertos_TestApp_RELPATH = ti/drv/uart/test
-UART_Safertos_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-export UART_Safertos_TestApp_BOARD_DEPENDENCY = yes
-export UART_Safertos_TestApp_CORE_DEPENDENCY = no
-export UART_Safertos_TestApp_MAKEFILE = -f makefile IS_SAFERTOS=yes
-UART_Safertos_TestApp_PKG_LIST = UART_Safertos_TestApp
-UART_Safertos_TestApp_INCLUDE = $(UART_Safertos_TestApp_PATH)
-export UART_Safertos_TestApp_BOARDLIST = $(drvuart_safertos_BOARDLIST)
-export UART_Safertos_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_SAFERTOS_CORELIST)
-export UART_Safertos_TestApp_SBL_APPIMAGEGEN = yes
-
-# UART unit test safertos dma app
-export UART_Safertos_DMA_TestApp_COMP_LIST = UART_Safertos_DMA_TestApp
-UART_Safertos_DMA_TestApp_RELPATH = ti/drv/uart/test
-UART_Safertos_DMA_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-export UART_Safertos_DMA_TestApp_BOARD_DEPENDENCY = yes
-export UART_Safertos_DMA_TestApp_CORE_DEPENDENCY = no
-export UART_Safertos_DMA_TestApp_MAKEFILE = -f makefile IS_SAFERTOS=yes DMA=enable
-UART_Safertos_DMA_TestApp_PKG_LIST = UART_Safertos_DMA_TestApp
-UART_Safertos_DMA_TestApp_INCLUDE = $(UART_Safertos_DMA_TestApp_PATH)
-export UART_Safertos_DMA_TestApp_BOARDLIST =  $(drvuart_safertos_BOARDLIST)
-export UART_Safertos_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_SAFERTOS_CORELIST)
-export UART_Safertos_DMA_TestApp_SBL_APPIMAGEGEN = yes
-
-# UART unit test rtos app
-UART_TestApp_COMP_LIST = UART_TestApp
-UART_TestApp_RELPATH = ti/drv/uart/test
-UART_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-UART_TestApp_BOARD_DEPENDENCY = yes
-UART_TestApp_CORE_DEPENDENCY = no
-UART_TestApp_MAKEFILE = -f makefile
-UART_TestApp_XDC_CONFIGURO = yes
-export UART_TestApp_COMP_LIST
-export UART_TestApp_BOARD_DEPENDENCY
-export UART_TestApp_CORE_DEPENDENCY
-export UART_TestApp_MAKEFILE
-export UART_TestApp_XDC_CONFIGURO
-UART_TestApp_PKG_LIST = UART_TestApp
-UART_TestApp_INCLUDE = $(UART_TestApp_PATH)
-UART_TestApp_BOARDLIST = $(drvuart_BOARDLIST)
-export UART_TestApp_BOARDLIST
+export UART_TestApp_$(1)_COMP_LIST = UART_TestApp_$(1)
+export UART_TestApp_$(1)_RELPATH = ti/drv/uart/test
+export UART_TestApp_$(1)_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export UART_TestApp_$(1)_CORE_DEPENDENCY = no
+export UART_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export UART_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+UART_TestApp_$(1)_PKG_LIST = UART_TestApp_$(1)
+UART_TestApp_$(1)_INCLUDE = $(UART_TestApp_$(1)_PATH)
+export UART_TestApp_$(1)_BOARDLIST = $(drvuart_$(1)_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), am64x))
-UART_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+export UART_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else
-UART_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+export UART_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvuart_$(SOC)_CORELIST))
 endif
-export UART_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-UART_TestApp_SBL_APPIMAGEGEN = yes
-export UART_TestApp_SBL_APPIMAGEGEN
+export UART_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+endif
+ifneq ($(1),$(filter $(1), safertos))
+uart_EXAMPLE_LIST += UART_TestApp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+uart_EXAMPLE_LIST += UART_TestApp_$(1)
+endif
 endif
 
-# UART unit test rtos app with SMP enabled
-UART_SMP_TestApp_COMP_LIST = UART_SMP_TestApp
-UART_SMP_TestApp_RELPATH = ti/drv/uart/test
-UART_SMP_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-UART_SMP_TestApp_BOARD_DEPENDENCY = yes
-UART_SMP_TestApp_CORE_DEPENDENCY = no
-UART_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-UART_SMP_TestApp_XDC_CONFIGURO = yes
-export UART_SMP_TestApp_COMP_LIST
-export UART_SMP_TestApp_BOARD_DEPENDENCY
-export UART_SMP_TestApp_CORE_DEPENDENCY
-export UART_SMP_TestApp_MAKEFILE
-export UART_SMP_TestApp_XDC_CONFIGURO
-UART_SMP_TestApp_PKG_LIST = UART_SMP_TestApp
-UART_SMP_TestApp_INCLUDE = $(UART_SMP_TestApp_PATH)
-UART_SMP_TestApp_BOARDLIST = $(drvuart_BOARDLIST)
-export UART_SMP_TestApp_BOARDLIST
-UART_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export UART_SMP_TestApp_$(SOC)_CORELIST
+endef
+
+UART_TESTAPP_MACRO_LIST := $(foreach curos,$(drvuart_RTOS_LIST),$(call UART_TESTAPP_RULE,$(curos)))
+
+$(eval ${UART_TESTAPP_MACRO_LIST})
+
+
+# UART RTOS Unit Test Apps with SMP enabled
+define UART_SMP_TESTAPP_RULE
+
+export UART_SMP_TestApp_$(1)_COMP_LIST = UART_SMP_TestApp_$(1)
+export UART_SMP_TestApp_$(1)_RELPATH = ti/drv/uart/test
+export UART_SMP_TestApp_$(1)_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_SMP_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export UART_SMP_TestApp_$(1)_CORE_DEPENDENCY = no
+export UART_SMP_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export UART_SMP_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) SMP=enable
+UART_SMP_TestApp_$(1)_PKG_LIST = UART_SMP_TestApp_$(1)
+UART_SMP_TestApp_$(1)_INCLUDE = $(UART_SMP_TestApp_$(1)_PATH)
+export UART_SMP_TestApp_$(1)_BOARDLIST = $(drvuart_$(1)_BOARDLIST)
+export UART_SMP_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-UART_SMP_TestApp_SBL_APPIMAGEGEN = yes
-export UART_SMP_TestApp_SBL_APPIMAGEGEN
+export UART_SMP_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+endif
+ifneq ($(1),$(filter $(1), safertos))
+uart_EXAMPLE_LIST += UART_SMP_TestApp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+uart_EXAMPLE_LIST += UART_SMP_TestApp_$(1)
+endif
 endif
 
-# UART unit test rtos dma app
-UART_DMA_TestApp_COMP_LIST = UART_DMA_TestApp
-UART_DMA_TestApp_RELPATH = ti/drv/uart/test
-UART_DMA_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-UART_DMA_TestApp_BOARD_DEPENDENCY = yes
-UART_DMA_TestApp_CORE_DEPENDENCY = no
-UART_DMA_TestApp_MAKEFILE = -f makefile DMA=enable
-UART_DMA_TestApp_XDC_CONFIGURO = yes
-export UART_DMA_TestApp_COMP_LIST
-export UART_DMA_TestApp_BOARD_DEPENDENCY
-export UART_DMA_TestApp_CORE_DEPENDENCY
-export UART_DMA_TestApp_MAKEFILE
-export UART_DMA_TestApp_XDC_CONFIGURO
-UART_DMA_TestApp_PKG_LIST = UART_DMA_TestApp
-UART_DMA_TestApp_INCLUDE = $(UART_DMA_TestApp_PATH)
-UART_DMA_TestApp_BOARDLIST = $(drvuart_BOARDLIST)
-export UART_DMA_TestApp_BOARDLIST
+endef
+
+UART_SMP_TESTAPP_MACRO_LIST := $(foreach curos,$(drvuart_RTOS_LIST),$(call UART_SMP_TESTAPP_RULE,$(curos)))
+
+$(eval ${UART_SMP_TESTAPP_MACRO_LIST})
+
+
+# UART DMA RTOS Unit Test Apps
+define UART_DMA_TESTAPP_RULE
+
+export UART_DMA_TestApp_$(1)_COMP_LIST = UART_DMA_TestApp_$(1)
+export UART_DMA_TestApp_$(1)_RELPATH = ti/drv/uart/test
+export UART_DMA_TestApp_$(1)_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_DMA_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export UART_DMA_TestApp_$(1)_CORE_DEPENDENCY = no
+export UART_DMA_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export UART_DMA_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) DMA=enable
+UART_DMA_TestApp_$(1)_PKG_LIST = UART_DMA_TestApp_$(1)
+UART_DMA_TestApp_$(1)_INCLUDE = $(UART_DMA_TestApp_$(1)_PATH)
+export UART_DMA_TestApp_$(1)_BOARDLIST = $(drvuart_$(1)_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
-UART_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELISTARM)
+export UART_DMA_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvuart_$(SOC)_CORELISTARM))
 else
-UART_DMA_TestApp_$(SOC)_CORELIST = $(drvuart_$(SOC)_CORELIST)
+export UART_DMA_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvuart_$(SOC)_CORELIST))
 endif
-export UART_DMA_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-UART_DMA_TestApp_SBL_APPIMAGEGEN = yes
-export UART_DMA_TestApp_SBL_APPIMAGEGEN
+export UART_DMA_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+endif
+ifneq ($(1),$(filter $(1), safertos))
+uart_EXAMPLE_LIST += UART_DMA_TestApp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+uart_EXAMPLE_LIST += UART_DMA_TestApp_$(1)
+endif
 endif
 
-# UART unit test rtos dma app with SMP enabled
-UART_DMA_SMP_TestApp_COMP_LIST = UART_DMA_SMP_TestApp
-UART_DMA_SMP_TestApp_RELPATH = ti/drv/uart/test
-UART_DMA_SMP_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
-UART_DMA_SMP_TestApp_BOARD_DEPENDENCY = yes
-UART_DMA_SMP_TestApp_CORE_DEPENDENCY = no
-UART_DMA_SMP_TestApp_MAKEFILE = -f makefile DMA=enable SMP=enable
-UART_DMA_SMP_TestApp_XDC_CONFIGURO = yes
-export UART_DMA_SMP_TestApp_COMP_LIST
-export UART_DMA_SMP_TestApp_BOARD_DEPENDENCY
-export UART_DMA_SMP_TestApp_CORE_DEPENDENCY
-export UART_DMA_SMP_TestApp_MAKEFILE
-export UART_DMA_SMP_TestApp_XDC_CONFIGURO
-UART_DMA_SMP_TestApp_PKG_LIST = UART_DMA_SMP_TestApp
-UART_DMA_SMP_TestApp_INCLUDE = $(UART_DMA_SMP_TestApp_PATH)
-UART_DMA_SMP_TestApp_BOARDLIST = $(drvuart_BOARDLIST)
-export UART_DMA_SMP_TestApp_BOARDLIST
-UART_DMA_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export UART_DMA_SMP_TestApp_$(SOC)_CORELIST
+endef
+
+UART_DMA_TESTAPP_MACRO_LIST := $(foreach curos,$(drvuart_RTOS_LIST),$(call UART_DMA_TESTAPP_RULE,$(curos)))
+
+$(eval ${UART_DMA_TESTAPP_MACRO_LIST})
+
+
+# UART DMA RTOS Unit Test Apps with SMP enabled
+define UART_DMA_SMP_TESTAPP_RULE
+
+export UART_DMA_SMP_TestApp_$(1)_COMP_LIST = UART_DMA_SMP_TestApp_$(1)
+export UART_DMA_SMP_TestApp_$(1)_RELPATH = ti/drv/uart/test
+export UART_DMA_SMP_TestApp_$(1)_PATH = $(PDK_UART_COMP_PATH)/test
+export UART_DMA_SMP_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export UART_DMA_SMP_TestApp_$(1)_CORE_DEPENDENCY = no
+export UART_DMA_SMP_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export UART_DMA_SMP_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) DMA=enable SMP=enable
+UART_DMA_SMP_TestApp_$(1)_PKG_LIST = UART_DMA_SMP_TestApp_$(1)
+UART_DMA_SMP_TestApp_$(1)_INCLUDE = $(UART_DMA_SMP_TestApp_$(1)_PATH)
+export UART_DMA_SMP_TestApp_$(1)_BOARDLIST = $(drvuart_$(1)_BOARDLIST)
+export UART_DMA_SMP_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-UART_DMA_SMP_TestApp_SBL_APPIMAGEGEN = yes
-export UART_DMA_SMP_TestApp_SBL_APPIMAGEGEN
+export UART_DMA_SMP_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 endif
+ifneq ($(1),$(filter $(1), safertos))
+uart_EXAMPLE_LIST += UART_DMA_SMP_TestApp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+uart_EXAMPLE_LIST += UART_DMA_SMP_TestApp_$(1)
+endif
+endif
+
+endef
+
+UART_DMA_SMP_TESTAPP_MACRO_LIST := $(foreach curos,$(drvuart_RTOS_LIST),$(call UART_DMA_SMP_TESTAPP_RULE,$(curos)))
+
+$(eval ${UART_DMA_SMP_TESTAPP_MACRO_LIST})
+
 
 # UART Polling mode Test app
 UART_BasicExample_Polling_ExampleProject_COMP_LIST = UART_BasicExample_Polling_ExampleProject
