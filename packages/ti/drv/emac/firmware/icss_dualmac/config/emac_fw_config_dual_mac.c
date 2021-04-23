@@ -289,6 +289,21 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
                          (pIcssgFwCfg->rxPktFlowStart));
         HWREGB (icssgBaseAddr + CSL_ICSS_G_DRAM1_SLV_RAM_REGS_BASE + SPL_PKT_DEFAULT_PRIORITY) = 0;
         HWREGB (icssgBaseAddr + CSL_ICSS_G_DRAM1_SLV_RAM_REGS_BASE + QUEUE_NUM_UNTAGGED) = 0x0;
+        
+        /* Ingress rate limiter in FW uses Class8 and Class9 for rate control,
+           make them hit always by default */
+        HWREG(icssgBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
+              CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_GATES8_PRU1) =  0x70;
+        HWREG(icssgBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE +
+              CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_RX_CLASS_GATES9_PRU1) =  0x70;
+
+        uint32_t icssgMiiRGBaseAddr = icssgBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE;
+        CSL_REG32_WR(icssgMiiRGBaseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_START_LEN_PRU1, 0x60000U);
+        CSL_REG32_WR(icssgMiiRGBaseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_CFG_PRU1, 0x5555U);
+        CSL_REG32_WR(icssgMiiRGBaseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA0_PRU1, 0x00C28001U);   //01:80:C2:00
+        CSL_REG32_WR(icssgMiiRGBaseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA1_PRU1, 0x0E00U);          //00:0X
+        CSL_REG32_WR(icssgMiiRGBaseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA_MASK0_PRU1, 0x0U);
+        CSL_REG32_WR(icssgMiiRGBaseAddr+CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FT1_1_DA_MASK1_PRU1, 0x0F00U);
      }
 
     //Program RXCFG0/1 and TXCFG0/1
@@ -318,6 +333,10 @@ void emac_icssg_dual_mac_fw_config_fxn(uint32_t portNum, EMAC_ICSSG_FW_CFG_PG2 *
         /*Configure shift enable for Scratch pad*/
         HWREG(icssgBaseAddr + CSL_ICSSCFG_REGS_BASE +
               CSL_ICSSCFG_SPP) = 0xA;
+
+    HWREG (icssgBaseAddr + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_REGS_BASE + CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2)= 
+           (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_PRU0_EN_SHIFT)|
+           (0x1 << CSL_ICSS_G_PR1_MII_RT_PR1_MII_RT_G_CFG_REGS_G_FDB_GEN_CFG2_FDB_PRU1_EN_SHIFT) ;
 
     //Init RGMII config for ICSSG : TXL2, TXPRU enable etc
 #ifndef SUPPORT_MII

@@ -2026,6 +2026,32 @@ void test_EMAC_verify_ut_dual_mac_icssg(void)
     }
 
     initComplete = 1;
+
+//#define TEST_ICSSG0_10M_FD //Uncomment to test 10Mbps FD using ICSSG0 port loopback
+
+#if defined (TEST_ICSSG0_100M_FD) || defined (TEST_ICSSG0_10M_FD)
+    uint16_t regData = 0, phyAddress = 0;
+    uint32_t mdioBaseAddress = 0xb032400;
+    
+    CSL_MDIO_phyRegRead(mdioBaseAddress, phyAddress, 0x9, &regData); //CFG1
+    /* Disable 1G FD and 1G HD advertise*/
+    regData &= ~(0x300);
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyAddress, 0x9, regData);
+#endif
+#ifdef TEST_ICSSG0_10M_FD
+    CSL_MDIO_phyRegRead(mdioBaseAddress, phyAddress, 0x4, &regData); //ANAR
+    /* Only enable 10M FD advertisement */
+    regData &= ~(0x1A0);
+    regData |= 0x40;
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyAddress, 0x4, regData);
+#endif
+#if defined (TEST_ICSSG0_100M_FD) || defined (TEST_ICSSG0_10M_FD)
+    CSL_MDIO_phyRegRead(mdioBaseAddress, phyAddress, 0x0, &regData); //BMCR
+    /* Enable and restart Auto negotiation */
+    regData |= 0x1200;
+    CSL_MDIO_phyRegWrite(mdioBaseAddress, phyAddress, 0x0, regData);
+#endif
+
     /* Need to poll for link for ICSSG ports as they are port 2 port tests */
     /* For standalone CPSW test, we use internal loopback at CPSW-SS */
     app_test_check_port_link(portNum, endPort);
