@@ -188,7 +188,7 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
              ( pdTASK_CODE )&TaskP_Function,  /* The function that implements the task being created. */
              ( portCharType* )params->name,   /* The name of the task being created. The kernel does not use this itself, its just to assist debugging. */
              &handle->taskObj,               /* TCB for the task. */
-             params->stack,                 /* The buffer allocated for use as the task stack. */
+             (portInt8Type *)params->stack,                 /* The buffer allocated for use as the task stack. */
              params->stacksize,             /* The size of the buffer allocated for use as the task stack - note this is in BYTES! */
              handle,                        /* The task parameter. */
              taskPriority,                  /* The priority to assigned to the task being created. */

@@ -303,7 +303,7 @@ Mbox_Handle Mailbox_allocDriver(Mailbox_Instance remoteEndpoint)
 
 int32_t Mailbox_freeDriver(Mbox_Handle handle)
 {
-    Mailbox_Driver *driver = handle;
+    Mailbox_Driver *driver = (Mailbox_Driver *) handle;
     Mailbox_driverPoolElem  *mboxPool;
     uint32_t                 i, maxMboxDrvElem;
     int32_t         retVal = MAILBOX_EINVAL;
