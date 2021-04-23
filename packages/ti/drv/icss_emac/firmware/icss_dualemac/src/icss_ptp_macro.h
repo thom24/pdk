@@ -319,33 +319,6 @@ SET_PTP_UDP_TX_TAG:
 
 
 CONTINUE_PRE_PROC:
-    .if !$defined(ICSS_REV1)
-    ;Just before pushing to FIFO store the current Tx SOF TS
-    ;This is used for comparison later to make sure SOF has actually
-    ;updated.
-
-    .if $defined("ICSS_SWITCH_BUILD")
-    .if $defined(PRU0)
-        LBCO    &R10, IEP_CONST, CAP_RISE_TX_SOF_PORT2_OFFSET, 8
-        LDI     RCV_TEMP_REG_1.w0, PTP_PREV_TX_TIMESTAMP_P2
-        SBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 8
-    .else
-        LBCO    &R10, IEP_CONST, CAP_RISE_TX_SOF_PORT1_OFFSET, 8
-        LDI     RCV_TEMP_REG_1.w0, PTP_PREV_TX_TIMESTAMP_P1
-        SBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 8
-    .endif ; PRU0
-    .else
-    .if $defined(PRU0)
-        LBCO    &R10, IEP_CONST, CAP_RISE_TX_SOF_PORT1_OFFSET, 8
-        LDI     RCV_TEMP_REG_1.w0, PTP_PREV_TX_TIMESTAMP_P1
-        SBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 8
-    .else
-        LBCO    &R10, IEP_CONST, CAP_RISE_TX_SOF_PORT2_OFFSET, 8
-        LDI     RCV_TEMP_REG_1.w0, PTP_PREV_TX_TIMESTAMP_P2
-        SBCO    &R10, ICSS_SHARED_CONST, RCV_TEMP_REG_1.w0, 8
-    .endif ; PRU0
-    .endif ; ICSS_SWITCH_BUILD
-    .endif ; ICSS_REV1
 
 EXIT_PTP_TX_PRE_PROC:
     .endm 

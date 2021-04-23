@@ -219,6 +219,7 @@ FN_TIMESTAMP_GPTP_PACKET_EXIT:
 
 FN_GET_TX_TIMESTAMP:
 
+    .if $defined("ICSS_REV1")
     ;we need to make sure that the timestamp here is actual value
     ;this we do by comparing with Tx SOF of previous frame
     .if $defined("ICSS_SWITCH_BUILD")
@@ -244,6 +245,7 @@ FN_GET_TX_TIMESTAMP:
     .endif ; switch build
 
 LOAD_TX_SOF_TS:
+    .endif ;ICSS_REV1
 
     .if $defined("ICSS_SWITCH_BUILD")
     .if $defined (PRU0)
@@ -258,8 +260,9 @@ LOAD_TX_SOF_TS:
     LBCO    &R4, IEP_CONST, CAP_RISE_TX_SOF_PORT2_OFFSET, 4
     .endif
     .endif
-
-    QBEQ    LOAD_TX_SOF_TS, R4, R5
+    .if $defined("ICSS_REV1")
+        QBEQ    LOAD_TX_SOF_TS, R4, R5
+    .endif ;ICSS_REV1
 
     ;This also loads 2 bytes in R3.w0
     LBCO    &R2, ICSS_SHARED_CONST, TIMESYNC_SECONDS_COUNT_OFFSET, 6
@@ -649,16 +652,6 @@ FN_PTP_TX_ADD_DELAY:
     QBBC    EXIT_PTP_TX_ADD_DELAY, R22, TX_IS_PTP_BIT
     CLR     R22, R22, TX_IS_PTP_BIT
 
-    ;we need to make sure that the timestamp here is actual value
-    ;this we do by comparing with Tx SOF of previous frame
-    .if    $isdefed("PRU0")
-    LDI     R20.w0, PTP_PREV_TX_TIMESTAMP_P1
-    .else
-    LDI     R20.w0, PTP_PREV_TX_TIMESTAMP_P2
-    .endif
-    LBCO    &R20, ICSS_SHARED_CONST, R20.w0, 8
-    ;get the timestamp
-
 LOAD_TX_SOF_TS:
     
     .if  $defined("ICSS_SWITCH_BUILD")
@@ -674,11 +667,6 @@ LOAD_TX_SOF_TS:
     LBCO    &R10, IEP_CONST, CAP_RISE_TX_SOF_PORT2_OFFSET, 8
     .endif
     .endif
-
-    QBNE    TX_SOF_OK, R10, R20
-    QBEQ    LOAD_TX_SOF_TS, R11, R21
-
-TX_SOF_OK:
 
     ;Do phy delay correction here
     LDI     R0.w2, MII_TX_CORRECTION_OFFSET
@@ -957,16 +945,6 @@ PTP_TX_IS_VLAN_UDP:
     SET     two_step_reg_udp_vlan, two_step_reg_udp_vlan, GPTP_802_3_two_step_bit
 PTP_TX_UDP_GET_TS:
 
-    ;we need to make sure that the timestamp here is actual value
-    ;this we do by comparing with Tx SOF of previous frame
-    .if    $isdefed("PRU0")
-    LDI     R20.w0, PTP_PREV_TX_TIMESTAMP_P1
-    .else
-    LDI     R20.w0, PTP_PREV_TX_TIMESTAMP_P2
-    .endif
-    LBCO    &R20, ICSS_SHARED_CONST, R20.w0, 8
-    ;get the timestamp
-
 LOAD_TX_SOF_TS_UDP:
     
     .if  $defined("ICSS_SWITCH_BUILD")
@@ -982,10 +960,7 @@ LOAD_TX_SOF_TS_UDP:
     LBCO    &R10, IEP_CONST, CAP_RISE_TX_SOF_PORT2_OFFSET, 8
     .endif
     .endif
-
-    QBNE    TX_SOF_OK_UDP, R10, R20
-    QBEQ    LOAD_TX_SOF_TS_UDP, R11, R21
-
+    
 TX_SOF_OK_UDP:
     
     QBNE    NOT_DELAY_REQ_TX_UDP, PTP_MSG_ID_REG_UDP, PTP_DLY_REQ_MSG_ID    
