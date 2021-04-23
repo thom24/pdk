@@ -214,6 +214,11 @@ static void Test_initTask(void* arg0, void* arg1)
         Test_loopback_oneInstance(1U, 2U);
         MIBSPI_log("Debug: Loopback test finished!\n");
 
+#ifdef MIBSPI_DMA_ENABLE
+        /* MibSPIA loopback test , MibSPIA only supports one slave */
+        Test_loopback_oneInstance_callback(0U, 0U);
+        MIBSPI_log("Debug: Loopback test in callback mode finished!\n");
+#endif
 
     }
 

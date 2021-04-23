@@ -218,6 +218,16 @@ static int32_t MIBSPI_validateParams(const MIBSPI_Params *params)
         }
     }
 
+    /* Validate transfer mode. */
+    if(params->transferMode == MIBSPI_MODE_CALLBACK)
+    {
+        if(params->transferCallbackFxn == NULL)
+        {
+            retVal = MIBSPI_STATUS_ERROR;
+            goto Exit;
+        }
+    }
+
     /* Validate DMA driver handle */
     if(params->dmaEnable == (uint8_t)1U)
     {
@@ -226,6 +236,7 @@ static int32_t MIBSPI_validateParams(const MIBSPI_Params *params)
             retVal = MIBSPI_STATUS_ERROR;
         }
     }
+
 Exit:
     return retVal;
 }
@@ -2065,6 +2076,9 @@ static void MIBSPI_initTransactionState(Mibspi_transactionState_t *transactionSt
     transactionState->transferErr = MIBSPI_XFER_ERR_NONE;
     transactionState->transaction = transaction;
     transactionState->transaction->status = MIBSPI_TRANSFER_STARTED;
+    transactionState->remainSize = 0U;
+    transactionState->dataLength = 0U;
+    transactionState->dataSizeInBytes = 0U;
 
     HwiP_restore(key);
 }
@@ -2078,6 +2092,9 @@ static void MIBSPI_resetTransactionState(Mibspi_transactionState_t *transactionS
     transactionState->edmaCbCheck = MIBSPI_NONE_EDMA_CALLBACK_OCCURED;
     transactionState->transferErr = MIBSPI_XFER_ERR_NONE;
     transactionState->transaction = NULL;
+    transactionState->remainSize = 0U;
+    transactionState->dataLength = 0U;
+    transactionState->dataSizeInBytes = 0U;
 
     HwiP_restore(key);
 }
@@ -2203,6 +2220,15 @@ bool MIBSPI_transferCore(MIBSPI_Handle handle, MIBSPI_Transaction *transaction)
                 dataLength -= remainSize;
             }
 
+            if (ptrMibSpiDriver->params.transferMode == MIBSPI_MODE_CALLBACK)
+            {
+                /* Tell ISR function how much data there is remaining after this transfer
+                 * (if remainSize > 0 then this is the first of two transfers) */
+                ptrMibSpiDriver->transactionState.remainSize = remainSize;
+                ptrMibSpiDriver->transactionState.dataLength = dataLength;
+                ptrMibSpiDriver->transactionState.dataSizeInBytes = dataSizeInBytes;
+            }
+
             if(ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
             {
                 MIBSPI_dataTransfer(ptrMibSpiDriver, (uint8_t *)transaction->txBuf, (uint8_t *)transaction->rxBuf, dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
@@ -2231,10 +2257,9 @@ bool MIBSPI_transferCore(MIBSPI_Handle handle, MIBSPI_Transaction *transaction)
             }
             else
             {
-                /* Execution should not reach here */
-                transaction->status = MIBSPI_TRANSFER_FAILED;
-                ret = false;
-                remainSize = 0;
+                /* Return success status if non-blocking mode */
+                ret = true;
+                return ret;
             }
 
             /* Check if transfer finished */
@@ -2391,17 +2416,55 @@ void MIBSPI_dmaDoneCb(MIBSPI_Handle mibspiHandle)
         {
             /* Call the transfer completion callback function */
             if ((ptrMibSpiDriver->transactionState.transaction->status == MIBSPI_TRANSFER_STARTED) &&
+                (ptrMibSpiDriver->transactionState.transferErr == MIBSPI_XFER_ERR_NONE) &&
+                (ptrMibSpiDriver->transactionState.remainSize > 0U))
+            {
+                /* Change buffer pointer and data size for the second transfer */
+                ptrMibSpiDriver->transactionState.transaction->txBuf = (void *)((ptrMibSpiDriver->transactionState.transaction->txBuf == NULL) ?
+                    NULL : (uint8_t *)ptrMibSpiDriver->transactionState.transaction->txBuf +
+                    ptrMibSpiDriver->transactionState.dataLength * (ptrMibSpiDriver->transactionState.dataSizeInBytes));
+                ptrMibSpiDriver->transactionState.transaction->rxBuf = (void *)((ptrMibSpiDriver->transactionState.transaction->rxBuf == NULL) ?
+                    NULL : (uint8_t *)ptrMibSpiDriver->transactionState.transaction->rxBuf +
+                    ptrMibSpiDriver->transactionState.dataLength * (ptrMibSpiDriver->transactionState.dataSizeInBytes));
+                ptrMibSpiDriver->transactionState.dataLength = ptrMibSpiDriver->transactionState.remainSize;
+                ptrMibSpiDriver->transactionState.remainSize = 0U;
+
+                /* Transfer the remaining size */
+                if(ptrMibSpiDriver->params.mode == MIBSPI_SLAVE)
+                {
+                    MIBSPI_dataTransfer(ptrMibSpiDriver, (uint8_t *)ptrMibSpiDriver->transactionState.transaction->txBuf,
+                        (uint8_t *)ptrMibSpiDriver->transactionState.transaction->rxBuf, ptrMibSpiDriver->transactionState.dataLength, MIBSPI_SLAVEMODE_TRANS_GROUP);
+                }
+                else
+                {
+                    MIBSPI_dataTransfer(ptrMibSpiDriver, (uint8_t *)ptrMibSpiDriver->transactionState.transaction->txBuf,
+                        (uint8_t *)ptrMibSpiDriver->transactionState.transaction->rxBuf, ptrMibSpiDriver->transactionState.dataLength, ptrMibSpiDriver->transactionState.transaction->slaveIndex);
+                }
+            }
+            else if ((ptrMibSpiDriver->transactionState.transaction->status == MIBSPI_TRANSFER_STARTED) &&
                 (ptrMibSpiDriver->transactionState.transferErr == MIBSPI_XFER_ERR_NONE))
             {
+                /* Update status*/
                 ptrMibSpiDriver->transactionState.transaction->status = MIBSPI_TRANSFER_COMPLETED;
             }
             else
             {
+                /* Update status */
                 ptrMibSpiDriver->transactionState.transaction->status = MIBSPI_TRANSFER_FAILED;
             }
 
-            ptrMibSpiDriver->params.transferCallbackFxn(mibspiHandle, ptrMibSpiDriver->transactionState.transaction);
-            MIBSPI_resetTransactionState(&ptrMibSpiDriver->transactionState);
+            if ((ptrMibSpiDriver->transactionState.transaction->status == MIBSPI_TRANSFER_COMPLETED) ||
+                (ptrMibSpiDriver->transactionState.transaction->status == MIBSPI_TRANSFER_FAILED))
+            {
+                /* Call transferCallbackFxn */
+                ptrMibSpiDriver->params.transferCallbackFxn(mibspiHandle, ptrMibSpiDriver->transactionState.transaction);
+
+                /* Disable transfer group */
+                MIBSPI_transferGroupDisable((ptrMibSpiDriver->ptrHwCfg->ptrSpiRegBase), ptrMibSpiDriver->transactionState.transaction->slaveIndex);
+
+                /* Reset transaction state */
+                MIBSPI_resetTransactionState(&ptrMibSpiDriver->transactionState);
+            }
         }
     }
 }

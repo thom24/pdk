@@ -62,7 +62,6 @@
 #include <ti/drv/edma/edma.h>
 #include <ti/osal/HwiP.h>
 
-
 #include "mibspi_test_common.h"
 
 /**************************************************************************
@@ -296,6 +295,13 @@ static int32_t Test_spiWrite(const MIBSPI_Handle handle, uint32_t dataLen, void*
     return 0;
 }
 
+/* Test_spiReadWrite is called for the callback mode test also.
+ * So keep the MIBSPI_Transaction object persistant till the transfer is complete.
+ * So use the global variable insted of using the local variable
+ * which is initialized in stack.
+ */
+static MIBSPI_Transaction  gTransactionRdWr;
+
 /**
  *  @b Description
  *  @n
@@ -312,16 +318,14 @@ static int32_t Test_spiWrite(const MIBSPI_Handle handle, uint32_t dataLen, void*
  */
 static int32_t Test_spiReadWrite(const MIBSPI_Handle handle, uint32_t dataLen, void* inBuffer, void* outBuffer, uint8_t slaveIndex)
 {
-    MIBSPI_Transaction  transaction;
-
     /* Configure Data Transfer */
-    transaction.count = dataLen;
-    transaction.txBuf = outBuffer;
-    transaction.rxBuf = inBuffer;
-    transaction.slaveIndex = slaveIndex;
+    gTransactionRdWr.count = dataLen;
+    gTransactionRdWr.txBuf = outBuffer;
+    gTransactionRdWr.rxBuf = inBuffer;
+    gTransactionRdWr.slaveIndex = slaveIndex;
 
     /* Start Data Transfer */
-    if (MIBSPI_transfer(handle, &transaction) != true)
+    if (MIBSPI_transfer(handle, &gTransactionRdWr) != true)
     {
         return -1;
     }
@@ -398,6 +402,93 @@ static int32_t Test_spiLoopback(const MIBSPI_Handle handle, uint8_t slaveIndex, 
     /* Return number of failures */
     return failed;
 }
+
+#ifdef MIBSPI_DMA_ENABLE
+uint32_t gTestCallbackDone = 0;
+
+void Test_loopback_callbackFxn (MIBSPI_Handle handle,
+                                MIBSPI_Transaction * transaction)
+{
+    gTestCallbackDone = 1;
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This function tests SPI driver in Digital Loopback mode.
+ *
+ *   @param[in] handle            SPI driver handle
+ *   @param[in] slaveIndex        Flag for internal/external loopback
+ *   @param[in] maxElem           Maxim data element
+ *   @param[in] dataSize          Data size in number of bytes
+ *
+ *  @retval    Successful                   =0
+ *             Number of transfer failures  >0
+ *             API failures                 <0
+ */
+static int32_t Test_spiLoopback_callback(const MIBSPI_Handle handle, uint8_t slaveIndex, uint32_t maxElem, uint8_t dataSize)
+{
+    MibSpi_LoopBackType            loopback;
+    uint32_t           loop;
+    uint32_t           idx;
+    uint32_t           failed = 0;
+    uint32_t           len=0;
+
+    /* Only dataSize of 1 byte or 2 bytes are supported */
+    if ((dataSize != (uint8_t)1U) && (dataSize != (uint8_t)2U))
+        return -1;
+
+    /* Enable digital loopback */
+    loopback = MIBSPI_LOOPBK_DIGITAL;
+    if(MIBSPI_control(handle, MIBSPI_CMD_LOOPBACK_ENABLE, (void *)&loopback) < 0)
+        return -1;
+    for(loop=0; loop < maxElem; loop++)
+    {
+        len = (maxElem - loop) * dataSize;
+
+        /* Prepare Tx/Rx Buffer */
+        for(idx=0; idx<maxElem * dataSize; idx++)
+        {
+            txBuf[idx] = (loop * 0x10 + 0x55 + idx) & 0xFF;
+        }
+
+        /* Clear receive buffer */
+        memset((void *)&rxBuf[0], 0x0, SPI_DATA_BLOCK_SIZE);
+
+        CacheP_wbInv((Ptr)txBuf, sizeof(txBuf));
+        CacheP_wbInv((Ptr)rxBuf, sizeof(rxBuf));
+        gTestCallbackDone = 0;
+        if(Test_spiReadWrite(handle, len, (void *)rxBuf, (void *)txBuf, slaveIndex) == 0)
+        {
+            /* Wait for the callback function. */
+            while (gTestCallbackDone == 0)
+            {
+                /* waiting for the callback funciton to be called. */
+            }
+            /* Check data integrity */
+            if (memcmp((void *)txBuf, (void *)rxBuf, len) != 0)
+            {
+                MIBSPI_log("Error: MIBSPI_transfer is successful with incorrect data(0x%x), length = %d\n", rxBuf[0], len);
+                failed++;
+            }
+        }
+        else
+        {
+            MIBSPI_log("Debug: MIBSPI_transfer failed for length = %d\n", len);
+            failed++;
+        }
+    }
+    MIBSPI_log("Debug: Finished Digital loopback with various length test,  failed %d out of %d times\n", failed, loop);
+
+    /* Disable digital loopback */
+    loopback = MIBSPI_LOOPBK_NONE;
+    if(MIBSPI_control(handle, MIBSPI_CMD_LOOPBACK_ENABLE, (void *)&loopback) < 0)
+        return -1;
+
+    /* Return number of failures */
+    return failed;
+}
+#endif
 
 /**
  *  @b Description
@@ -1297,6 +1388,99 @@ void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex)
     /* Start Loopback throughput Test in master mode */
     Test_spiLoopBackDataThroughput(inst, 40000000U);
 }
+
+#ifdef MIBSPI_DMA_ENABLE
+/**
+ *  @b Description
+ *  @n
+ *      SPI loopback test.
+ *
+ *   @param[in] inst               SPI instance: 0-SPIA, 1-SPIB
+ *
+ *  @retval
+ *      Not Applicable.
+ */
+void Test_loopback_oneInstance_callback(uint32_t inst, uint8_t slaveIndex)
+{
+    MIBSPI_Params     params;
+    MIBSPI_Handle     handle;
+    char testCase[64];
+
+    snprintf(testCase, 64, "SPI loopback test callback mode - instance(%d), 16bits DMA mode", inst);
+
+    /**************************************************************************
+     * Test: Open the driver in master mode for loopback test
+     **************************************************************************/
+    /* Setup the default SPI Parameters */
+    MIBSPI_Params_init(&params);
+    params.frameFormat = MIBSPI_POL0_PHA0;
+
+    /* Configure for the callback mode. */
+    params.transferMode = MIBSPI_MODE_CALLBACK;
+    params.transferCallbackFxn = &Test_loopback_callbackFxn;
+
+    /* Enable DMA and set DMA channels to be used */
+    params.dmaEnable = 1;
+    params.dmaHandle = gDmaHandle[inst];
+
+    params.eccEnable = 0;
+    params.mode = MIBSPI_MASTER;
+    params.u.masterParams.bitRate = 1000000U;
+
+    /* mibSPIA support only one slave */
+    if(inst == 0)
+    {
+        params.u.masterParams.numSlaves = 1;
+        params.u.masterParams.slaveProf[0].chipSelect = 0;
+        params.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM;
+        params.u.masterParams.slaveProf[0].dmaReqLine = 0U;
+    }
+    else if(inst == 1)
+    {
+        /* The total element size of 3 slaves is MIBSPI_RAM_MAX_ELEM
+         * In this example, it is distributed among 3 slaves by MIBSPI_RAM_MAX_ELEM - 6U, 4U, and 2U
+         */
+        memset((void *)&params.u.masterParams.slaveProf[0], 0, sizeof(params.u.masterParams.slaveProf));
+
+        params.u.masterParams.numSlaves = 3;
+        params.u.masterParams.slaveProf[0].chipSelect = 0;
+        params.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM/2;
+        params.u.masterParams.slaveProf[0].dmaReqLine = 0U;
+        params.u.masterParams.slaveProf[1].chipSelect = 1;
+        params.u.masterParams.slaveProf[1].ramBufLen = MIBSPI_RAM_MAX_ELEM/4;
+        params.u.masterParams.slaveProf[1].dmaReqLine = 1U;
+        params.u.masterParams.slaveProf[2].chipSelect = 2;
+        params.u.masterParams.slaveProf[2].ramBufLen = MIBSPI_RAM_MAX_ELEM/4;
+        params.u.masterParams.slaveProf[2].dmaReqLine = 2U;
+    }
+    else
+    {
+        printf("Error: Invalid instance(=%d) of MibSPI\n", inst);
+    }
+
+    handle = MIBSPI_open(gMibspiInst[inst], &params);
+    if (handle == NULL)
+    {
+        MIBSPI_log("Error: Unable to open the SPI Instance\n");
+        return;
+    }
+    MIBSPI_log("Debug: SPI Instance %p has been reopened in master mode successfully\n", handle);
+
+    /* Start Internal Loopback Test in master mode */
+    if(Test_spiLoopback_callback(handle, slaveIndex, 128, 2) == 0)
+    {
+
+    }
+    else
+    {
+
+    }
+
+    /* Close the driver: */
+    MIBSPI_close(handle);
+    MIBSPI_log("Debug: SPI Instance %p has been closed successfully\n", handle);
+}
+#endif
 
 /**
  *  @b Description

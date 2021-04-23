@@ -75,6 +75,7 @@ extern bool gXWR1xxxSlaveReady;
 extern void Test_spiAPI_twoInstance(void);
 extern void Test_spiAPI_oneInstance(uint8_t inst);
 extern void Test_loopback_oneInstance(uint32_t inst, uint8_t slaveIndex);
+extern void Test_loopback_oneInstance_callback(uint32_t inst, uint8_t slaveIndex);
 extern void Test_loopbackSlave_oneInstance(uint32_t inst);
 
 #ifdef __cplusplus

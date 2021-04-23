@@ -219,6 +219,10 @@ typedef struct Mibspi_transactionState_s
     enum MibSpi_xferErr_e    transferErr;
 
     MIBSPI_Transaction         *transaction;
+
+    volatile uint16_t remainSize;
+    volatile uint16_t dataLength;
+    volatile uint16_t dataSizeInBytes;
 } Mibspi_transactionState_t;
 
 
