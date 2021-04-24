@@ -386,15 +386,6 @@ typedef struct CBUFF_BufferCfg_t
 typedef struct CBUFF_Stats_t
 {
     /**
-     * @brief   Number of frame start interrupts received: This is available
-     * only if the driver is initialized in the debug mode. Else this is
-     * always set to 0.
-     *
-     * @sa CBUFF_InitCfg_t::enableDebugMode
-     */
-    uint32_t    numFrameStart;
-
-    /**
      * @brief   Number of frame done interrupts received: This is available
      * only in the following cases:
      *  (a) Enable debug mode

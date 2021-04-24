@@ -51,20 +51,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#if defined (__TI_ARM_V7R4__)
-/**
- * @brief   Frame start interrupt from BSS
- */
-#define RSS_FRAME_START_TO_MSS         (154U)
-#endif
-
-
-#if defined (_TMS320C6X)
-/**
- * @brief   Frame start interrupt from BSS
- */
-#define DFE_FRAME_START_TO_DSS         (48U)
-#endif
+/* None */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -111,10 +98,10 @@ CBUFF_Hw_Attrib gCBUFFHwAttribute =
      * - Each Chirp Parameter is 4 bytes or 2 CBUFF Units
      ***************************************************************/
     {
-        (EDMA3_DSS_CP1_BASE + 0*4U),
-        (EDMA3_DSS_CP1_BASE + 1*4U),
-        (EDMA3_DSS_CP1_BASE + 2*4U),
-        (EDMA3_DSS_CP1_BASE + 3*4U)
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG4) + 0*4U),
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG4) + 1*4U),
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG4) + 2*4U),
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG4) + 3*4U)
     },
     /***************************************************************
      * Chirp Parameters:
@@ -124,10 +111,10 @@ CBUFF_Hw_Attrib gCBUFFHwAttribute =
      * - Each Chirp Parameter is 4 bytes or 2 CBUFF Units
      ***************************************************************/
     {
-        (EDMA3_DSS_CP0_BASE + 0*4U),
-        (EDMA3_DSS_CP0_BASE + 1*4U),
-        (EDMA3_DSS_CP0_BASE + 2*4U),
-        (EDMA3_DSS_CP0_BASE + 3*4U)
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG0) + 0*4U),
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG0) + 1*4U),
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG0) + 2*4U),
+        ((CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CPREG0) + 3*4U)
     },
     /***************************************************************
      * Chirp Parameters:
@@ -136,26 +123,24 @@ CBUFF_Hw_Attrib gCBUFFHwAttribute =
      *   can be upto 8 chirps in Multi-Chirp Mode.
      ***************************************************************/
     {
-        EDMA3_DSS_CHIRP0_BASE,
-        EDMA3_DSS_CHIRP1_BASE,
-        EDMA3_DSS_CHIRP2_BASE,
-        EDMA3_DSS_CHIRP3_BASE,
-        EDMA3_DSS_CHIRP4_BASE,
-        EDMA3_DSS_CHIRP5_BASE,
-        EDMA3_DSS_CHIRP6_BASE,
-        EDMA3_DSS_CHIRP7_BASE
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH0CPREG0),
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH1CPREG0),
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH2CPREG0),
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH3CPREG0),
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH4CPREG0),
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH5CPREG0),
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH6CPREG0),
+        (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_CH7CPREG0)
     },
     4U,     /* Maximum of 4 LVDS Lanes supported on the AWR2944  */
 #if defined (__TI_ARM_V7R4__)
 	CSL_MSS_INTR_DSS_CBUFF_INT_ERR,
 	CSL_MSS_INTR_DSS_CBUFF_INT,
-	RSS_FRAME_START_TO_MSS,
 #endif
 
 #if defined (_TMS320C6X)
 	CSL_DSS_INTR_DSS_CBUFF_INT_ERR,
 	CSL_DSS_INTR_DSS_CBUFF_INT,
-	DFE_FRAME_START_TO_DSS,
 #endif
     /***************************************************************
      * Chirp Mode:

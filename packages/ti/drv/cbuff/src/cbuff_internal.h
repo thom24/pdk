@@ -344,11 +344,6 @@ typedef struct CBUFF_Hw_Attrib_t
     uint32_t        cbuffInterrupt;
 
     /**
-     * @brief   CBUFF Frame Start Interrupt
-     */
-    uint32_t        frameStartInterrupt;
-
-    /**
      * @brief   CBUFF Chirp Mode Start Index: This is the range of chirp
      * modes which are supported by the platform
      */
@@ -526,11 +521,6 @@ typedef struct CBUFF_DriverMCB_t
     HwiP_Handle                     hwiErrorISRHandle;
 
     /**
-     * @brief   SOC Listener Handle for the Frame Start System Interrupt
-     */
-    SOC_SysIntListenerHandle        frameStartListener;
-
-    /**
      * @brief   This is the table which tracks all the sessions which can be created by
      * the CBUFF Driver.
      */
@@ -546,11 +536,6 @@ typedef struct CBUFF_DriverMCB_t
      * @brief   Number of active LVDS lanes configured
      */
     uint8_t                         numActiveLVDSLanes;
-
-    /**
-     * @brief   Total number of frame start interrupts received
-     */
-    uint32_t                        totalNumFrameStart;
 
     /**
      * @brief   Total number of frame done interrupts received

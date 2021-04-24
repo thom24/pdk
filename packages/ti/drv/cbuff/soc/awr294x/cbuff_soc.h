@@ -57,77 +57,17 @@ extern "C" {
 /* This is the size of the Chirp Parameters (CP) in CBUFF Units */
 #define CP_SIZE_CBUFF_UNITS                                     (2U)
 
-
-/*************************************************************
- * BASE Address used in the Single Chirp Mode to get the
- * Chirp Profile Data
- *************************************************************/
-#define EDMA3_DSS_CP0_BASE                                      (0x05020C08U)
-#define EDMA3_DSS_CP1_BASE                                      (0x05020C18U)
-
-/*************************************************************
- * BASE Address used in the Multiple Chirp Mode to get the
- * Chirp Profile Data
- *************************************************************/
-#define EDMA3_DSS_CHIRP0_BASE                                   (0x05020C48U)
-#define EDMA3_DSS_CHIRP1_BASE                                   (0x05020C88U)
-#define EDMA3_DSS_CHIRP2_BASE                                   (0x05020CC8U)
-#define EDMA3_DSS_CHIRP3_BASE                                   (0x05020D08U)
-#define EDMA3_DSS_CHIRP4_BASE                                   (0x05020D48U)
-#define EDMA3_DSS_CHIRP5_BASE                                   (0x05020D88U)
-#define EDMA3_DSS_CHIRP6_BASE                                   (0x05020DC8U)
-#define EDMA3_DSS_CHIRP7_BASE                                   (0x05020E08U)
-
-
-/**
- * @brief
- *  SOC System Interrupt Listener Function
- */
-typedef void (*SOC_SysIntListenerFxn)(uintptr_t arg);
-
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
 
-/**
- * @brief
- *  SOC Interrupt Listener Configuration
- *
- * @details
- *  The structure describes the configuration information which is need to initialize
- *  the system interrupt listener
- */
-typedef struct SOC_SysIntListenerCfg_t
-{
-    /**
-     * @brief
-     *  System interrupt on which the listener is to be registered
-     */
-    uint32_t                systemInterrupt;
-
-    /**
-     * @brief
-     *  Listener Function to be registered
-     */
-    SOC_SysIntListenerFxn   listenerFxn;
-
-    /**
-     * @brief
-     *  Optional argument with which the listener function is to be invoked on
-     *  an ISR
-     */
-    uintptr_t               arg;
-}SOC_SysIntListenerCfg;
+/* None */
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-/**
- * @brief
- *  SOC System Interrupt Listener Handle
- */
-typedef void*   SOC_SysIntListenerHandle;
+/* None */
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

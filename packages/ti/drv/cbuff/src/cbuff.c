@@ -97,7 +97,6 @@ static void CBUFF_deregisterFrameDone (CBUFF_DriverMCB* ptrDriverMCB);
  **************************************************************************/
 static void CBUFF_ISR (uintptr_t arg);
 static void CBUFF_ErrorISR (uintptr_t arg);
-static void CBUFF_FrameStartISR (uintptr_t arg);
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -733,35 +732,6 @@ static void CBUFF_ErrorISR (uintptr_t arg)
 
     /* Increment the error counter */
     ptrDriverMCB->totalNumErrorInterrupts++;
-    return;
-}
-
-/**
- *  @b Description
- *  @n
- *      The function is the registered ISR for the CBUFF to handle
- *      the start of the frame
- *
- *  @param[in]  arg
- *      Pointer to the CBUFF Driver MCB
- *
- *  \ingroup CBUFF_DRIVER_INTERNAL_FUNCTION
- *
- *  @retval
- *      Not applicable
- */
-static void CBUFF_FrameStartISR (uintptr_t arg)
-{
-    CBUFF_DriverMCB*        ptrDriverMCB;
-
-    /* Get the pointer to the driver MCB: */
-    ptrDriverMCB = (CBUFF_DriverMCB*)arg;
-
-    /* Sanity Check: */
-    DebugP_assert (ptrDriverMCB != NULL);
-
-    /* Increment the frame start counter */
-    ptrDriverMCB->totalNumFrameStart++;
     return;
 }
 
@@ -1439,7 +1409,6 @@ int32_t CBUFF_control
             ptrStats->chirpError      = CSL_FEXTR(stats, 16U, 16U);
 
             /* Copy over the CBUFF statistics: */
-            ptrStats->numFrameStart      = ptrDriverMCB->totalNumFrameStart;
             ptrStats->numFrameDone       = ptrDriverMCB->totalNumFrameDone;
             ptrStats->numChirpDone       = ptrDriverMCB->totalNumChirpDone;
             ptrStats->numErrorInterrupts = ptrDriverMCB->totalNumErrorInterrupts;
@@ -1451,7 +1420,6 @@ int32_t CBUFF_control
         case CBUFF_Command_CLEAR_CBUFF_STATS:
         {
             /* Reset the statistics: */
-            ptrDriverMCB->totalNumFrameStart      = 0U;
             ptrDriverMCB->totalNumFrameDone       = 0U;
             ptrDriverMCB->totalNumChirpDone       = 0U;
             ptrDriverMCB->totalNumErrorInterrupts = 0U;
@@ -1497,7 +1465,6 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
     CBUFF_Handle            retHandle = NULL;
     CBUFF_DriverMCB*        ptrDriverMCB = NULL;
     OsalRegisterIntrParams_t    intrPrms;
-    SOC_SysIntListenerCfg   listenerCfg;
     int32_t                 tmpErrCode;
     uint8_t                 index;
     CBUFF_Session*          ptrSession;
@@ -1638,17 +1605,6 @@ CBUFF_Handle CBUFF_init (CBUFF_InitCfg* ptrInitCfg, int32_t* errCode)
      * We do not want to overwhelm the system with a large number of interrupts. */
      if (ptrDriverMCB->initCfg.enableDebugMode == true)
      {
-        /* Register the CBUFF Frame Start Listener: */
-        memset ((void*)&listenerCfg, 0, sizeof(SOC_SysIntListenerCfg));
-        listenerCfg.systemInterrupt = gCBUFFHwAttribute.frameStartInterrupt;
-        listenerCfg.listenerFxn     = &CBUFF_FrameStartISR;
-        listenerCfg.arg             = (uintptr_t)ptrDriverMCB;
-        if (ptrDriverMCB->frameStartListener == NULL)
-        {
-            /* Error: Unable to register the frame start listener. Error code is already setup.*/
-            return retHandle;
-        }
-
         /* Debug Mode: Enable the Chirp & Frame Done Interrupt: */
         CBUFF_enableChirpDoneInt (ptrDriverMCB->ptrCBUFFReg);
         CBUFF_enableFrameDoneInt (ptrDriverMCB->ptrCBUFFReg);
