@@ -41,10 +41,10 @@
 /* ========================================================================== */
 
 #include <stdint.h>
+#include <string.h>
 #include <ti/csl/soc.h>
 #include <ti/drv/mailbox/mailbox.h>
 #include <ti/drv/mailbox/src/mailbox_internal.h>
-#include <ti/osal/MemoryP.h>
 #include <ti/csl/hw_types.h>
 
 /* ========================================================================== */
@@ -136,8 +136,16 @@ static int32_t Mailbox_writeReset(Mbox_Handle handle);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
+/*!
+ *  @brief    Semaphore structure
+ */
+typedef struct Mailbox_driverPoolElem_s {
+    bool            used;
+    Mailbox_Driver  mbxDrvObj;
+} Mailbox_driverPoolElem;
 
-Mailbox_Driver         g_mBoxDrivers[MAILBOX_MAX_INST];
+/* global pool of statically allocated semaphore pools */
+static Mailbox_driverPoolElem gMailboxDriversPool[MAILBOX_DRIVER_POOL_NUM_ELEMENTS];
 
 /**
  * @brief
@@ -318,15 +326,61 @@ int32_t Mailbox_isMultiChannelSupported(Mailbox_Instance localEndpoint, Mailbox_
 Mbox_Handle Mailbox_allocDriver(Mailbox_Instance remoteEndpoint)
 {
     Mailbox_Driver *driver = NULL;
+    Mailbox_driverPoolElem  *mboxPool;
+    uint32_t                 i, maxMboxDrvElem;
+    uintptr_t         key;
 
-    driver = &g_mBoxDrivers[remoteEndpoint];
+    mboxPool = &gMailboxDriversPool[0];
+    maxMboxDrvElem = MAILBOX_DRIVER_POOL_NUM_ELEMENTS;
+
+    key = HwiP_disable();
+
+     for (i = 0; i < maxMboxDrvElem; i++)
+     {
+         if (mboxPool[i].used == FALSE)
+         {
+             mboxPool[i].used = TRUE;
+             break;
+         }
+     }
+     HwiP_restore(key);
+
+    if (i < maxMboxDrvElem)
+    {
+        /* Grab the memory */
+        driver = (Mailbox_Driver *) &mboxPool[i].mbxDrvObj;
+        memset(driver, 0, sizeof(Mailbox_Driver));
+    }
 
     return (Mbox_Handle)driver;
 }
 
 int32_t Mailbox_freeDriver(Mbox_Handle handle)
 {
-    return MAILBOX_SOK;
+    Mailbox_Driver *driver = (Mailbox_Driver *) handle;
+    Mailbox_driverPoolElem  *mboxPool;
+    uint32_t                 i, maxMboxDrvElem;
+    int32_t         retVal = MAILBOX_EINVAL;
+    uintptr_t         key;
+
+    mboxPool = &gMailboxDriversPool[0];
+    maxMboxDrvElem = MAILBOX_DRIVER_POOL_NUM_ELEMENTS;
+
+    key = HwiP_disable();
+    for (i = 0; i < maxMboxDrvElem; i++)
+    {
+        if ((mboxPool[i].used == TRUE) &&
+            (&mboxPool[i].mbxDrvObj == driver))
+        {
+            mboxPool[i].used = FALSE;
+            memset(driver, 0, sizeof(Mailbox_Driver));
+            retVal = MAILBOX_SOK;
+            break;
+        }
+    }
+    HwiP_restore(key);
+
+    return retVal;
 }
 
 /* TODO: Proc Num itself can be used as Mailbox type. */

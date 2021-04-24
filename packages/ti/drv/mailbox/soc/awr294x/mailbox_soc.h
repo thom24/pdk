@@ -80,6 +80,8 @@ typedef uint32_t Mailbox_Instance;
 /*! \brief */
 #define MAILBOX_MAX_INST           (MAILBOX_INST_LAST + 1U)
 
+#define MAILBOX_DRIVER_POOL_NUM_ELEMENTS    (MAILBOX_MAX_INST * MAILBOX_CH_ID_MAX)
+
 /*! \brief Mailbox Buffer Size */
 #define MAILBOX_BUFF_UNIT_SIZE       (512U)
 
