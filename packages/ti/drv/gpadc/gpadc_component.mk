@@ -34,9 +34,10 @@
 #
 ifeq ($(gpadc_component_make_include), )
 
-drvgpadc_SOCLIST          = tpr12
+drvgpadc_SOCLIST          = tpr12 awr294x
 drvgpadc_tpr12_CORELIST   = mcu1_0
-drvgpadc_BOARDLIST        = tpr12_evm
+drvgpadc_awr294x_CORELIST = mcu1_0
+drvgpadc_BOARDLIST        = tpr12_evm awr294x_evm
 
 ############################
 # gpadc package
@@ -53,7 +54,7 @@ drvgpadc_LIB_LIST = $(gpadc_LIB_LIST)
 # List below all examples for allowed values
 ############################
 gpadc_EXAMPLE_LIST =
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), $(drvgpadc_SOCLIST)))
 gpadc_EXAMPLE_LIST = gpadc_testapp
 endif
 
