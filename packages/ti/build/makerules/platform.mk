@@ -504,7 +504,7 @@ ifeq ($(ISA),r5f)
 
   ifeq ($(SOC),$(filter $(SOC), awr294x))
     # Use the platform define from TI RTOS but do not use the default linker command file (false)
-    PLATFORM_XDC = "ti.platforms.cortexR:TPR12:0"
+    PLATFORM_XDC = "ti.platforms.cortexR:AWR29XX:0"
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -747,7 +747,7 @@ ifeq ($(ISA),c66)
     endif
 
     ifeq ($(SOC),$(filter $(SOC), awr294x))
-      PLATFORM_XDC = "ti.platforms.c6x:TPR12"
+      PLATFORM_XDC = "ti.platforms.c6x:AWR29XX"
     endif
 
   endif
