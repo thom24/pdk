@@ -288,7 +288,7 @@ void SemaphoreP_Params_init( SemaphoreP_Params *params )
  */
 SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
 {
-    uint32_t            isSemTaken;
+    portBaseType        isSemTaken;
     SemaphoreP_Status   ret_val;
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
@@ -309,6 +309,10 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
             timeout = portMAX_DELAY;
         }
         isSemTaken = xSemaphoreTake( pSemaphore->semHndl, timeout );
+        if ( timeout == SemaphoreP_WAIT_FOREVER )
+        {
+            DebugP_assert(isSemTaken == pdPASS);
+        }
     }
 
     if( isSemTaken == pdPASS)

@@ -403,7 +403,10 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
                 }
 #endif
                 gFirstTime = (bool)false;
-                Intc_SystemEnable();
+                if (gOsalArchConfig.disableIrqOnInit == false)
+                {
+                    Intc_SystemEnable();
+                }
             }
 
             /* Disable the interrupt first */
