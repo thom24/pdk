@@ -173,7 +173,7 @@ CONTINUE_PROCESSING:
 ;******************************************************************************************	
     .if $defined("ICSS_DUAL_EMAC_BUILD")
 ;check for SFD Errors    
-    .if $defined("HALF_DUPLEX_ENABLED")	
+    .if $defined("RX_ERROR_HANDLING")	
 ; below code not needed for Full Duple
     .if $defined("PRU0")	
     LBCO	&RCV_TEMP_REG_3.b0, MII_RT_CFG_CONST, ICSS_MIIRT_RXERR0, 1      ;read the PRUSS_MII_RT_RX_ERR0 register	
@@ -212,7 +212,7 @@ CHECK_FOR_SHORT_SFD:
     LDI	RCV_TEMP_REG_3 , RX_ERROR_OFFSET
     QBA     COUNT_RX_STATS
     ; Check if SA matches with Slave's Interface MAC addr
-    .endif  ;HALF_DUPLEX_ENABLED
+    .endif  ;RX_ERROR_HANDLING
     .endif  ;ICSS_DUAL_EMAC_BUILD
 CONTINUE_PROCESSING_PKT:
 
@@ -278,10 +278,10 @@ DROP_PKT:
     LDI	RCV_TEMP_REG_3 , RX_DROPPED_FRAMES_OFFSET       ; else drop frame and increase the stats
     QBA     COUNT_RX_STATS
     ;QBA     EXIT_FB
-    .if $defined("HALF_DUPLEX_ENABLED")	
+    .if $defined("RX_ERROR_HANDLING")	
 COUNT_SFD_ERROR:
     LDI	RCV_TEMP_REG_3 , SFD_ERROR_OFFSET
-    .endif	;HALF_DUPLEX_ENABLED
+    .endif	;RX_ERROR_HANDLING
     
 COUNT_RX_STATS:
 ;count statistics based on offset set in RCV_TEMP_REG_3
@@ -1359,7 +1359,7 @@ LB_CHECK_ERRORS:
     ADD	RCV_TEMP_REG_2, RCV_TEMP_REG_2, 1	
     SBCO	&RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4	
     .if $defined("ICSS_DUAL_EMAC_BUILD")
-    .if $defined("HALF_DUPLEX_ENABLED")	
+    .if $defined("RX_ERROR_HANDLING")	
     ;check R31 error
     QBBC	NO_R31_ERROR, R31, 19       ; if cleared so no error and continue normal operation
     ;else clear the error
@@ -1399,7 +1399,7 @@ COUNT_SFD_ERROR1:
     LBCO	&RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4	
     ADD	RCV_TEMP_REG_2, RCV_TEMP_REG_2, 1	
     SBCO	&RCV_TEMP_REG_2, PRU_DMEM_ADDR, RCV_TEMP_REG_3, 4	
-    .endif ;HALF_DUPLEX_ENABLED
+    .endif ;RX_ERROR_HANDLING
     .endif ;ICSS_DUAL_EMAC_BUILD
 NO_PREAMBLE_ERROR:
     
