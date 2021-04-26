@@ -446,7 +446,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             pAppEntry->entryPoint_DSP7 = entry;
             break;
 #endif
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
         case ONLY_LOAD_ID:
             /* Only loading, ignore entry point*/
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
@@ -455,6 +455,9 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
         case DSP1_C66X_ID:
         case MCU1_CPU0_ID:
         case MCU1_CPU1_ID:
+#if defined (SOC_AWR294X)
+        case RSS1_R4_ID:
+#endif
             /* All other cores*/
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
@@ -1005,7 +1008,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 }
 #endif
 
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
 #include <ti/osal/osal.h>
 #include "sbl_utils_addrxlate.h"
 

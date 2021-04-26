@@ -412,12 +412,24 @@ extern void SBL_RcmDspApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutCon
 extern void SBL_RcmPerApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hsDivCfg);
 
 extern void SBL_RcmStartMeminitTCMA(void);
+#if defined (SOC_AWR294X)
+extern void SBL_RcmStartMeminitTCMBSS(void);
+extern void SBL_RcmStartMeminitStaticBSS(void);
+extern void SBL_RcmStartMeminitSharedBSS(void);
+extern void SBL_RcmBSSControl(void);
+extern void SBL_RcmPopulateBSSControl(void);
+#endif /* defined (SOC_AWR294X) */
 extern void SBL_RcmStartMeminitTCMB(void);
 extern void SBL_RcmStartMeminitL2(void);
 extern void SBL_RcmStartMeminitDSSL2(uint32_t l2bankMask);
 extern void SBL_RcmStartMeminitDSSL3(uint32_t l3bankMask);
 
 extern void SBL_RcmWaitMeminitTCMA(void);
+#if defined (SOC_AWR294X)
+extern void SBL_RcmWaitMeminitTCMBSS(void);
+extern void SBL_RcmWaitMeminitStaticBSS(void);
+extern void SBL_RcmWaitMeminitSharedBSS(void);
+#endif /* defined (SOC_AWR294X) */
 extern void SBL_RcmWaitMeminitTCMB(void);
 extern void SBL_RcmWaitMeminitL2(void);
 extern void SBL_RcmWaitMeminitDSSL2(uint32_t l2bankMask);

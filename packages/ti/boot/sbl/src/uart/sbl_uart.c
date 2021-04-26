@@ -51,7 +51,7 @@
 
 #include "sbl_err_trap.h"
 
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
 #include "sbl_rcm.h"
 #else /* TPR12 does not have SCI CLIENT, SYSFW, UDMA modules */
 #include "sbl_sci_client.h"
@@ -69,7 +69,7 @@
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
-#ifdef SOC_TPR12
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
 /* TPR12 SBL presently does not support certificate parsing so use the entire
  * SBL scratch for UART receive
  */
@@ -105,7 +105,7 @@ static void SBL_UART_seek(void *srcAddr, uint32_t location)
     *xModemPktBuffIndx = location;
 }
 
-#ifndef SOC_TPR12 /* SysFw not present for TPR12 */
+#if (!defined(SOC_TPR12)  && !defined(SOC_AWR294X))/* SysFw not present for TPR12 */
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
     SBL_ADD_PROFILE_POINT;
@@ -133,7 +133,7 @@ int32_t SBL_uartInit(uint32_t inClkFreqHz)
     SBL_ADD_PROFILE_POINT;
 
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
-#ifdef SOC_TPR12
+#if (defined(SOC_TPR12) || defined (SOC_AWR294X))
     uart_cfg.clockFrequency = inClkFreqHz;
     uart_cfg.dmaMode = 0;
 #else
@@ -143,7 +143,7 @@ int32_t SBL_uartInit(uint32_t inClkFreqHz)
     uart_cfg.enableInterrupt = FALSE;
     UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
 
-#ifdef SOC_TPR12
+#if(defined(SOC_TPR12) || defined (SOC_AWR294X))
     {
         UART_Params uartPrms;
 
@@ -179,7 +179,7 @@ int32_t SBL_UARTBootImage(sblEntryPoint_t *pEntry)
     /* Re-initialize the uart to a different freq */
     /* depending on whether SysFwConfigPm has run */
     /* or not                                     */
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     {
         uint32_t uartFreq;
         Rcm_Return rcmRetVal;

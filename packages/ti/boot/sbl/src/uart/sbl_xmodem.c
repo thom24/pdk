@@ -51,7 +51,7 @@
 
 #define MAXRETRANS          (100U)
 #define SBL_XMODEM_DELAY    (0x3FFFFF)
-#ifdef SOC_TPR12
+#if (defined(SOC_TPR12) || defined (SOC_AWR294X))
 #include <ti/csl/soc.h>
 #include <ti/csl/cslr_sci.h>
 
@@ -206,7 +206,7 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
     uint8_t *p;
     uint8_t trychar = 'C';
     uint8_t packetno = 1;
-#ifdef SOC_TPR12
+#if (defined (SOC_TPR12) || defined(SOC_AWR294X))
 #if (BOARD_UART_INSTANCE != 0)
 #error "UART base address is set assuming UART instance 0 (MSS SCIA)"
 #endif

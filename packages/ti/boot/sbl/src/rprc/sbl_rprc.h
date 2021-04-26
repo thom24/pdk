@@ -50,7 +50,7 @@
 #include <soc/sbl_soc.h>
 #include <stdio.h>
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12) || defined(SOC_AWR294X)
 #include "sbl_log.h"
 #include "sbl_soc_cfg.h"
 #include <ti/board/board.h>
@@ -99,7 +99,7 @@ extern "C"
 #define MPU_DSP2_L1P_CACHE              (0x41600000)
 #define MPU_DSP2_L1D_CACHE              (0x41700000)
 
-#if !defined(SOC_AM574x) && !defined (SOC_J721E) && !defined (SOC_TPR12)
+#if !defined(SOC_AM574x) && !defined (SOC_J721E) && !defined (SOC_TPR12) && !defined (SOC_AWR294X)
 #define SOC_DSP_L2_BASE                 (0x800000)
 #define SOC_DSP_L1P_BASE                (0xe00000)
 #define SOC_DSP_L1D_BASE                (0xf00000)

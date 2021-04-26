@@ -74,6 +74,8 @@
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
 #elif defined(tpr12_qt)
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q16FWSF
+#elif defined(awr294x_evm)
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q16FWSF
 #endif
 
 #if defined(tpr12_qt)
@@ -182,7 +184,7 @@ int32_t SBL_qspiInit(void *handle)
     }
     retVal = QSPI_socGetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspi_cfg);
     DebugP_assert(retVal == 0);
-#ifdef SOC_TPR12
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     {
         Rcm_Return rcmRetVal;
 

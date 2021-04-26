@@ -40,12 +40,6 @@
 #include <ti/csl/soc.h>
 
 
-#include <ti/csl/soc/tpr12/src/cslr_mss_ctrl.h>
-#include <ti/csl/soc/tpr12/src/cslr_mss_rcm.h>
-#include <ti/csl/soc/tpr12/src/cslr_mss_toprcm.h>
-#include <ti/csl/soc/tpr12/src/cslr_dss_ctrl.h>
-#include <ti/csl/soc/tpr12/src/cslr_dss_rcm.h>
-
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */

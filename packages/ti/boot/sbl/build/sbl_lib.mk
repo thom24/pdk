@@ -32,8 +32,8 @@ INCDIR	+= $(PDK_SBL_COMP_PATH)/src/ospi
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/hyperflash
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/mmcsd
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/uart
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/$(SOC)
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/tpr12
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/qspi
 else
 INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3
@@ -46,8 +46,8 @@ SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/hyperflash
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/mmcsd
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/uart
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/$(SOC)
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/tpr12
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/src/qspi
 else
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3
@@ -68,8 +68,8 @@ endif
 
 PACKAGE_SRCS_COMMON  = ./build ./src ./tools
 PACKAGE_SRCS_COMMON += ./soc/sbl_soc.h
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-PACKAGE_SRCS_COMMON += ./soc/$(SOC)
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+PACKAGE_SRCS_COMMON += ./soc/tpr12
 else
 PACKAGE_SRCS_COMMON += ./soc/k3
 endif
@@ -82,12 +82,12 @@ SRCS_COMMON += sbl_rprc.c
 SRCS_COMMON += sbl_slave_core_boot.c
 SRCS_COMMON += UART_soc.c
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCS_COMMON += sbl_utils_addrxlate.c
 SRCS_COMMON += sbl_csl.c
 SRCS_COMMON += sbl_rcm.c
 else
-#SBL_qos not applicable to TPR12
+#SBL_qos not applicable to TPR12 AWR294x
 SRCS_COMMON += sbl_qos.c
 SRCS_COMMON += sbl_sci_client.c
 SRCS_COMMON += sbl_vid_map.c
@@ -98,13 +98,13 @@ SRCS_ASM_COMMON += sbl_init.asm
 
 # scratch memory given to the SBL
 # for image load and parsing
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0x10220000
   SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x00040000
 else
   SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
   SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
-endif # ifeq ($(SOC), tpr12)
+endif # ifeq ($(SOC), tpr12 awr294x)
 
 # Check for custom flags
 ifeq ($(BOOTMODE), cust)

@@ -147,6 +147,36 @@ static void SBL_memInitTCMBCR5(void)
     SBL_RcmWaitMeminitTCMB();
 }
 
+#if defined (SOC_AWR294X)
+static void SBL_BSSControl(void)
+{
+    SBL_RcmBSSControl();
+}
+
+static void SBL_PopulateBSSBootInfo(void)
+{
+    SBL_RcmPopulateBSSControl();
+}
+
+static void SBL_memInitTCMBSS(void)
+{
+    SBL_RcmStartMeminitTCMBSS();
+    SBL_RcmWaitMeminitTCMBSS();
+}
+
+static void SBL_memInitStaticBSS(void)
+{
+    SBL_RcmStartMeminitStaticBSS();
+    SBL_RcmWaitMeminitStaticBSS();
+}
+
+static void SBL_memInitSharedBSS(void)
+{
+    SBL_RcmStartMeminitSharedBSS();
+    SBL_RcmWaitMeminitSharedBSS();
+}
+#endif /* defined (SOC_AWR294X) */
+
 void SBL_cr5AUnhalt(CSL_mss_ctrlRegs *mssCtrl)
 {
     //Core A unhalt
@@ -309,6 +339,18 @@ void SBL_SetupCoreMem(uint32_t core_id)
             SBL_log(SBL_LOG_MAX, "DSP Meminit... \n");
             SBL_memInitc66x();
             break;
+#if defined (SOC_AWR294X)
+        case RSS1_R4_ID:
+            SBL_log(SBL_LOG_MAX, "BSS Control : Allocate DSS L3 and FW development mode of operation... \n");
+            SBL_BSSControl();
+            SBL_log(SBL_LOG_MAX, "BSS TCM Meminit... \n");
+            SBL_memInitTCMBSS();
+            SBL_log(SBL_LOG_MAX, "BSS Static Meminit... \n");
+            SBL_memInitStaticBSS();
+            SBL_log(SBL_LOG_MAX, "BSS Shared memory Meminit... \n");
+            SBL_memInitSharedBSS();
+            break;
+#endif /* defined (SOC_AWR294X) */
         case MCU1_CPU1_ID:
             SBL_log(SBL_LOG_MAX, "Switching core id %d to split mode... \n", core_id-1);
             /* Image for second MCU core present, disable lock step for the cluster */
@@ -379,6 +421,15 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             SBL_c66xStart();
             SBL_ADD_PROFILE_POINT;
             break;
+#if defined (SOC_AWR294X)
+        case RSS1_R4_ID:
+            /* Populate the BSS Boot Info registers */
+            /* BSS Unhalt will be done in the MSS Application */
+            SBL_log(SBL_LOG_MAX, "Populate BSS Boot info registers\n");
+            SBL_PopulateBSSBootInfo();
+            SBL_ADD_PROFILE_POINT;
+            break;
+#endif /* defined (SOC_AWR294X) */
     }
 }
 

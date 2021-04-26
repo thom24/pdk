@@ -705,6 +705,34 @@ CSL_dss_ctrlRegs* CSL_DSS_CTRL_getBaseAddress (void)
     return (CSL_dss_ctrlRegs *) CSL_DSS_CTRL_U_BASE;
 }
 
+#if defined (SOC_AWR294X)
+/**
+ *  @b Description
+ *  @n
+ *      The function is used to get the base address to the RSS CTRL register space
+ *
+ *  @retval
+ *      pointer to the RSS CTRL Register space.
+ */
+CSL_rss_ctrlRegs* CSL_RSS_CTRL_getBaseAddress (void)
+{
+    return (CSL_rss_ctrlRegs *) CSL_RSS_CTRL_U_BASE;
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      The function is used to get the base address to the RSS PROC CTRL register space
+ *
+ *  @retval
+ *      pointer to the RSS PROC CTRL Register space.
+ */
+CSL_rss_proc_ctrlRegs* CSL_RSS_PROC_CTRL_getBaseAddress (void)
+{
+    return (CSL_rss_proc_ctrlRegs *) CSL_RSS_PROC_CTRL_U_BASE;
+}
+#endif /* defined (SOC_AWR294X) */
+
 /**
  *  @b Description
  *  @n
@@ -2590,6 +2618,127 @@ void SBL_RcmStartMeminitTCMA(void)
 
 }
 
+#if defined (SOC_AWR294X)
+/**
+ *  @b Description
+ *  @n
+ *      This API starts the memory initialization for RSS TCM memory
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmStartMeminitTCMBSS(void)
+{    
+    CSL_rss_ctrlRegs *rssCtrl = CSL_RSS_CTRL_getBaseAddress ();
+
+    /* Check MEMINIT STATUS is zero to confirm no inprogress MEM INIT */
+    while (CSL_FEXT(rssCtrl->BSS_TCM_MEMINIT_STATUS, MSS_CTRL_MSS_ATCM_MEM_INIT_STATUS_MSS_ATCM_MEM_INIT_STATUS_MEM_STATUS) != 0);
+
+    /* Clear MEMINIT DONE before initiating MEMINIT */
+    CSL_FINS(rssCtrl->BSS_TCM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE, 1);
+    while (CSL_FEXT(rssCtrl->BSS_TCM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 0);
+
+    CSL_FINS(rssCtrl->BSS_TCM_MEMINIT, MSS_CTRL_MSS_ATCM_MEM_INIT_MSS_ATCM_MEM_INIT_MEM_INIT, 1);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API starts the memory initialization for RSS Static memory
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmStartMeminitStaticBSS(void)
+{
+    CSL_rss_proc_ctrlRegs *rssProcCtrl = CSL_RSS_PROC_CTRL_getBaseAddress ();
+
+    /* Check MEMINIT STATUS is zero to confirm no inprogress MEM INIT */
+    while (CSL_FEXT(rssProcCtrl->RSS_STATIC_MEM_MEMINIT_STATUS, MSS_CTRL_MSS_ATCM_MEM_INIT_STATUS_MSS_ATCM_MEM_INIT_STATUS_MEM_STATUS) != 0);
+
+    /* Clear MEMINIT DONE before initiating MEMINIT */
+    CSL_FINS(rssProcCtrl->RSS_STATIC_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE, 1);
+    while (CSL_FEXT(rssProcCtrl->RSS_STATIC_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 0);
+
+    CSL_FINS(rssProcCtrl->RSS_STATIC_MEM_MEMINIT, MSS_CTRL_MSS_ATCM_MEM_INIT_MSS_ATCM_MEM_INIT_MEM_INIT, 1);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API starts the memory initialization for RSS Shared memory
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmStartMeminitSharedBSS(void)
+{
+    CSL_rss_ctrlRegs *rssCtrl = CSL_RSS_CTRL_getBaseAddress ();
+    
+    /* Check MEMINIT STATUS is zero to confirm no inprogress MEM INIT */
+    while (CSL_FEXT(rssCtrl->RSS_SHARED_MEM_MEMINIT_STATUS, MSS_CTRL_MSS_ATCM_MEM_INIT_STATUS_MSS_ATCM_MEM_INIT_STATUS_MEM_STATUS) != 0);
+
+    /* Clear MEMINIT DONE before initiating MEMINIT */
+    CSL_FINS(rssCtrl->RSS_SHARED_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE, 1);
+    while (CSL_FEXT(rssCtrl->RSS_SHARED_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 0);
+
+    CSL_FINS(rssCtrl->RSS_SHARED_MEM_MEMINIT, MSS_CTRL_MSS_ATCM_MEM_INIT_MSS_ATCM_MEM_INIT_MEM_INIT, 1);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API configures the allocation of memory banks and sets the mode of operation
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmBSSControl(void)
+{    
+    CSL_rss_ctrlRegs *rssCtrl = CSL_RSS_CTRL_getBaseAddress ();
+
+    /* Allocate DSS L3 Bank as TCM for BSS */
+    CSL_FINSR(rssCtrl->BSS_CONTROL, 30, 28, 0x7U);
+    /* Sets FW development mode */
+    CSL_FINSR(rssCtrl->BSS_CONTROL, 11, 0, 0x111U);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API configures various BOOT INFO registers
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmPopulateBSSControl(void)
+{    
+    CSL_rss_proc_ctrlRegs *rssProcCtrl = CSL_RSS_PROC_CTRL_getBaseAddress ();
+
+    /*  Boot status register
+        Bits 15:0 -> XTAL frequency in MHz as an unsigned number */
+    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG0, 15, 0, 0x0U);
+    /*  Redundant configuration as above */
+    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG1, 15, 0, 0x0U);
+    /* 
+        Boot time Mailbox Memory configuration
+        Bits 7:0 -> MSS
+        Bits 15:8 -> DSS
+                              MSS CR5 A	  DSS DSP
+        Tx Buffer Size        512 B	      512 B
+        Tx Buffer Offset      0x0000      0x0000   
+    */
+    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG3, 15, 0, 0x8080U);
+    /*  Redundant configuration as above */
+    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG4, 15, 0, 0x8080U);
+}
+#endif /* defined (SOC_AWR294X) */
+
 /**
  *  @b Description
  *  @n
@@ -2631,6 +2780,75 @@ void SBL_RcmWaitMeminitTCMA(void)
     while (CSL_FEXT(mssCtrl->MSS_ATCM_MEM_INIT_STATUS, MSS_CTRL_MSS_ATCM_MEM_INIT_STATUS_MSS_ATCM_MEM_INIT_STATUS_MEM_STATUS) != 0);
     while (CSL_FEXT(mssCtrl->MSS_ATCM_MEM_INIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 0);
 }
+
+#if defined (SOC_AWR294X)
+/**
+ *  @b Description
+ *  @n
+ *      This API waits for Memory initialization for RSS TCM to complete
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmWaitMeminitTCMBSS(void)
+{
+    CSL_rss_ctrlRegs *rssCtrl = CSL_RSS_CTRL_getBaseAddress ();
+
+    while (CSL_FEXT(rssCtrl->BSS_TCM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 1);
+    CSL_FINS(rssCtrl->BSS_TCM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE, 1);
+    
+    /* Check MEMINIT STATUS is zero to confirm no inprogress MEM INIT */
+    while (CSL_FEXT(rssCtrl->BSS_TCM_MEMINIT_STATUS, MSS_CTRL_MSS_ATCM_MEM_INIT_STATUS_MSS_ATCM_MEM_INIT_STATUS_MEM_STATUS) != 0);
+    while (CSL_FEXT(rssCtrl->BSS_TCM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 0);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API waits for Static Memory initialization for RSS to complete
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmWaitMeminitStaticBSS(void)
+{
+    CSL_rss_proc_ctrlRegs *rssProcCtrl = CSL_RSS_PROC_CTRL_getBaseAddress ();
+    
+    while (CSL_FEXT(rssProcCtrl->RSS_STATIC_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 1);
+    CSL_FINS(rssProcCtrl->RSS_STATIC_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE, 1);
+    
+    /* Check MEMINIT STATUS is zero to confirm no inprogress MEM INIT */
+    while (CSL_FEXT(rssProcCtrl->RSS_STATIC_MEM_MEMINIT_STATUS, MSS_CTRL_MSS_ATCM_MEM_INIT_STATUS_MSS_ATCM_MEM_INIT_STATUS_MEM_STATUS) != 0);
+    while (CSL_FEXT(rssProcCtrl->RSS_STATIC_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 0);
+    /* Write 0 after mem init is completed */
+    CSL_FINS(rssProcCtrl->RSS_STATIC_MEM_MEMINIT, MSS_CTRL_MSS_ATCM_MEM_INIT_MSS_ATCM_MEM_INIT_MEM_INIT, 0);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This API waits for Shared Memory initialization for RSS to complete
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     None
+ */
+void SBL_RcmWaitMeminitSharedBSS(void)
+{
+    CSL_rss_ctrlRegs *rssCtrl = CSL_RSS_CTRL_getBaseAddress ();
+    
+    while (CSL_FEXT(rssCtrl->RSS_SHARED_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 1);
+    CSL_FINS(rssCtrl->RSS_SHARED_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE, 1);
+    
+    /* Check MEMINIT STATUS is zero to confirm no inprogress MEM INIT */
+    while (CSL_FEXT(rssCtrl->RSS_SHARED_MEM_MEMINIT_STATUS, MSS_CTRL_MSS_ATCM_MEM_INIT_STATUS_MSS_ATCM_MEM_INIT_STATUS_MEM_STATUS) != 0);
+    while (CSL_FEXT(rssCtrl->RSS_SHARED_MEM_MEMINIT_DONE, MSS_CTRL_MSS_ATCM_MEM_INIT_DONE_MSS_ATCM_MEM_INIT_DONE_MEM_INIT_DONE) != 0);
+    /* Write 0 after mem init is completed */
+    CSL_FINS(rssCtrl->RSS_SHARED_MEM_MEMINIT, MSS_CTRL_MSS_ATCM_MEM_INIT_MSS_ATCM_MEM_INIT_MEM_INIT, 0);
+}
+#endif /* defined (SOC_AWR294X) */
 
 /**
  *  @b Description

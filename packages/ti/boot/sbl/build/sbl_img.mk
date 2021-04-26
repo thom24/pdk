@@ -23,7 +23,7 @@ APP_NAME = sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
 LOCAL_APP_NAME=sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)_$(CORE)
 BUILD_OS_TYPE = baremetal
 
-ifeq ($(SOC), tpr12)
+ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 SRCDIR += $(PDK_SBL_COMP_PATH)/board/evmTPR12
 else
 SRCDIR += $(PDK_SBL_COMP_PATH)/board/k3
@@ -31,7 +31,7 @@ endif
 
 INCDIR      += $(PDK_SBL_COMP_PATH)
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc
-ifeq ($(SOC), tpr12)
+ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/tpr12
 else
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/k3
@@ -120,13 +120,13 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
 
 SRCS_COMMON += sbl_main.c
 
-ifeq ($(SOC), tpr12)
+ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
   SRCS_COMMON += sbl_pinmux.c
   SRCS_COMMON += sbl_module_clock_config.c
 endif
 
 
-ifeq ($(SOC), tpr12)
+ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/soc/tpr12/linker.cmd
 else
 EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/soc/k3/$(SOC)/linker.cmd

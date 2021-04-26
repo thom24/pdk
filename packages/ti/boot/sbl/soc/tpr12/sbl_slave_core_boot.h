@@ -49,12 +49,24 @@ extern "C" {
  *    SOC core definitions
  */
 typedef uint32_t cpu_core_id_t;
+#ifdef SOC_TPR12
 #define SBL_FIRST_CORE_ID               (0U)
 #define MCU1_CPU0_ID                    (SBL_FIRST_CORE_ID)
 #define MCU1_CPU1_ID                    (1U)
 #define DSP1_C66X_ID                    (2U)
 /* Last core in the list of supported cores */
 #define SBL_LAST_CORE_ID                (DSP1_C66X_ID)
+#elif defined (SOC_AWR294X)
+#define SBL_FIRST_CORE_ID               (0U)
+#define MCU1_CPU0_ID                    (SBL_FIRST_CORE_ID)
+#define MCU1_CPU1_ID                    (1U)
+#define DSP1_C66X_ID                    (2U)
+#define RSS1_R4_ID                      (3U)
+/* Last core in the list of supported cores */
+#define SBL_LAST_CORE_ID                (RSS1_R4_ID)
+#else
+#error "Unknown SOC"
+#endif
 
 /* add additional MPU/MCU cores before this */
 /* only SMP core ID should be after this */

@@ -61,6 +61,12 @@ typedef enum Utils_mmapMemId_types
     UTILS_MEMID_DSS_L1D,
     UTILS_MEMID_DSS_L1P,
     UTILS_MEMID_MSS_L2,
+#if defined (SOC_AWR294X)
+    UTILS_MEMID_BSS_SHARED_RAM,
+    UTILS_MEMID_BSS_TCMA_RAM,
+    UTILS_MEMID_BSS_TCMB,
+    UTILS_MEMID_BSS_STATIC_MEM,
+#endif
     UTILS_MEMID_UNKNOWN
 }Utils_mmapMemId_e;
 
@@ -129,7 +135,31 @@ static const Utils_mmapSegmentEntry gMemSegmentTblVirtDSP[] =
         .memId       = UTILS_MEMID_DSS_L2,
     },
 };
-
+#if defined (SOC_AWR294X)
+static const Utils_mmapSegmentEntry gMemSegmentTblVirtBSS[] = 
+{  
+    {
+        .baseAddress = 0x00000000,  
+        .length      = (256 * 1024),
+        .memId       = UTILS_MEMID_BSS_SHARED_RAM,
+    },
+    {
+        .baseAddress = 0x00080000,  
+        .length      = (32 * 1024),
+        .memId       = UTILS_MEMID_BSS_TCMA_RAM,
+    },
+    {
+        .baseAddress = 0x01000000,
+        .length      = (64 * 1024),
+        .memId       = UTILS_MEMID_BSS_TCMB,
+    },
+    {
+        .baseAddress = 0x04020000,
+        .length      = (16 * 1024),
+        .memId       = UTILS_MEMID_BSS_STATIC_MEM,
+    },
+};
+#endif
 #ifndef BUILD_MCU1_0
 #error "Self Core address assumes SBL runs on MCU1_0"
 #endif
@@ -145,6 +175,12 @@ static const uint32_t gSelfCoreMemAddress[] =
     [UTILS_MEMID_DSS_L1D]       = 0x80F00000,
     [UTILS_MEMID_DSS_L1P]       = 0x80E00000,
     [UTILS_MEMID_MSS_L2]        = 0x10200000,
+#if defined (SOC_AWR294X)
+    [UTILS_MEMID_BSS_SHARED_RAM]= 0xA0000000,
+    [UTILS_MEMID_BSS_TCMA_RAM]  = 0xA0080000,
+    [UTILS_MEMID_BSS_TCMB]      = 0xA1000000,
+    [UTILS_MEMID_BSS_STATIC_MEM]= 0xA4020000,
+#endif
 };
 
 
@@ -191,6 +227,12 @@ static void Utils_getVirtAddrTblInfo(Utils_mmapSegmentEntry const **tblBase, uin
             *tblBase = &gMemSegmentTblVirtDSP[0];
             *tblLen = UTILS_ARRAYSIZE(gMemSegmentTblVirtDSP);
             break;
+#if defined (SOC_AWR294X)
+        case RSS1_R4_ID:
+            *tblBase = &gMemSegmentTblVirtBSS[0];
+            *tblLen = UTILS_ARRAYSIZE(gMemSegmentTblVirtBSS);
+            break;
+#endif
     }
 }
 
