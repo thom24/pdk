@@ -53,7 +53,29 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_OFFSET_INDEX_SHIFT              (0U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_OFFSET_INDEX_MASK               (0x0000000FU)
 
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_BUFF_SIZE_SHIFT                 (4U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_BUFF_SIZE_MASK                  (0x00000030U)
+
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_SYS_SELECT_SHIFT                (6U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_SYS_SELECT_MASK                 (0x00000040U)
+
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_ENABLE_SHIFT                    (7U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_MSS_ENABLE_MASK                     (0x00000080U)
+
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_OFFSET_INDEX_SHIFT              (8U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_OFFSET_INDEX_MASK               (0x00000F00U)
+
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_BUFF_SIZE_SHIFT                 (12U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_BUFF_SIZE_MASK                  (0x00003000U)
+
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_SYS_SELECT_SHIFT                (14U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_SYS_SELECT_MASK                 (0x00004000U)
+
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_ENABLE_SHIFT                    (15U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG3_DSS_ENABLE_MASK                     (0x00008000U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
