@@ -59,6 +59,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 #include <ti/osal/DebugP.h>
 #include <ti/osal/CacheP.h>
@@ -505,6 +506,7 @@ int main (void)
 {
     TaskP_Params    taskParams;
 
+    OS_init();
     MmwDemo_BoardInit();
 
     /* Configure HSI interface Clock */

@@ -53,6 +53,7 @@
 /* SPI test include files */
 #include "mibspi_test_common.h"
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
@@ -240,6 +241,8 @@ static void Test_initTask(void* arg0, void* arg1)
 int main (void)
 {
     TaskP_Params      taskParams;
+
+    OS_init();
 
     /* Debug Message: */
     MIBSPI_log ("******************************************\n");

@@ -63,6 +63,7 @@
 
 #include "mailbox_log.h"
 
+#include <ti/osal/osal.h>
 #include <ti/osal/DebugP.h>
 #include <ti/osal/TaskP.h>
 
@@ -354,6 +355,8 @@ void Test_initTask(void* arg0, void* arg1)
 int main (void)
 {
     TaskP_Params    taskParams;
+
+    OS_init();
 
     /* Initialize the Task Parameters. */
     TaskP_Params_init(&taskParams);

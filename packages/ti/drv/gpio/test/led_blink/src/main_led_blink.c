@@ -48,6 +48,7 @@
 #include <xdc/std.h>
 #endif
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
 #include <stdio.h>
@@ -512,6 +513,8 @@ int main(void)
 
 #if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X)
     TaskP_Params taskParams;
+
+    OS_init();
 
     TaskP_Params_init(&taskParams);
     taskParams.priority =2;

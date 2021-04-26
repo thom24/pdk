@@ -177,18 +177,6 @@ extern void TaskP_yield(void);
  */
 extern uint32_t TaskP_isTerminated(TaskP_Handle handle);
 
-/*!
- *  @brief  Function to strat OS / scheduler
- *
- */
-extern void OS_start(void);
-
-/*!
- *  @brief  Function to stop OS / scheduler
- *
- */
-extern void OS_stop(void);
-
 #ifdef __cplusplus
 }
 #endif

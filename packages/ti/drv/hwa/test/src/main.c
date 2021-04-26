@@ -50,6 +50,7 @@
 #include "hwa_log.h"
 
 /* mmWave SK Include Files: */
+#include <ti/osal/osal.h>
 #include <ti/osal/SemaphoreP.h>
 #include <ti/osal/CycleprofilerP.h>
 #include <ti/osal/TaskP.h>
@@ -4686,6 +4687,7 @@ int main (void)
     Board_initCfg   boardCfg;
     Board_STATUS  boardStatus;
 
+    OS_init();
 
     boardCfg = BOARD_INIT_UNLOCK_MMR | BOARD_INIT_MODULE_CLOCK;
 

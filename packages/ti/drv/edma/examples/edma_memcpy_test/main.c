@@ -322,6 +322,8 @@ void main (void)
 {
     TaskP_Params taskParams;
 
+    OS_init();
+
     /* Initialize the Task Parameters. */
     TaskP_Params_init(&taskParams);
     taskParams.stack        = gAppTskStackMain;

@@ -3127,6 +3127,7 @@ void main (void)
 {
     TaskP_Params taskParams;
 
+    OS_init();
     CycleprofilerP_init();
 
     /* Initialize the Task Parameters. */

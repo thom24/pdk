@@ -39,6 +39,7 @@
  *
  */
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
 /* TI-RTOS Header files */
@@ -506,6 +507,8 @@ int main(void)
 
 #if defined (USE_BIOS) || defined (FREERTOS)
     TaskP_Params taskParams;
+
+    OS_init();
 
     /* Initialize the Task Parameters. */
     TaskP_Params_init(&taskParams);

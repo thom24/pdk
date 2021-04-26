@@ -79,8 +79,7 @@ static TaskP_SafeRTOS gOsalTaskPSafeRTOSPool[OSAL_SAFERTOS_CONFIGNUM_TASK];
 
 uint32_t  gOsalTaskAllocCnt, gOsalTaskPeak;
 
-portBaseType xInitializeScheduler( void );
-static uint32_t gOsalSafertosSchedulerInitialized = (uint32_t) FALSE;
+extern uint32_t gSaftRtosInitDone;
 
 void TaskP_compileTime_SizeChk( void )
 {
@@ -126,6 +125,8 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
     DebugP_assert( ( taskfxn != NULL_PTR ) );
     DebugP_assert( ( params != NULL_PTR ) );
     DebugP_assert( ( params->stack != NULL_PTR ) );
+    /* Check if the OS_init is done. */
+    DebugP_assert( ( gSaftRtosInitDone == TRUE ) );
 
     /* Pick up the internal static memory block */
     taskPool        = ( TaskP_SafeRTOS * ) &gOsalTaskPSafeRTOSPool[0];
@@ -195,13 +196,6 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
              NULL                          	/* Thread Local Storage not used. */
          };
 
-        key = HwiP_disable(  );
-        if (gOsalSafertosSchedulerInitialized == FALSE)
-        {
-            xInitializeScheduler();
-            gOsalSafertosSchedulerInitialized = TRUE;
-        }
-        HwiP_restore( key );
         /* Create the check task. */
         xCreateResult = xTaskCreate(&xTaskPParams,      /* The structure containing the task parameters created at the start of this function. */
                                     &handle->taskHndl); /* This parameter can be used to receive a handle to the created task, but is not used in this case. */
@@ -381,14 +375,8 @@ portTaskHandleType TaskP_getSafeRTOSHandle( TaskP_Handle handle )
 
 void OS_start(void)
 {
-    uintptr_t       key;
-    key = HwiP_disable(  );
-    if (gOsalSafertosSchedulerInitialized == FALSE)
-    {
-        xInitializeScheduler();
-        gOsalSafertosSchedulerInitialized = TRUE;
-    }
-    HwiP_restore( key );
+    /* Check if the OS_init is done. */
+    DebugP_assert( ( gSaftRtosInitDone == TRUE ) );
 
     xTaskStartScheduler(pdTRUE);
 }

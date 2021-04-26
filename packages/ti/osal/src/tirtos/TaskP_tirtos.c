@@ -156,6 +156,11 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
     return isTaskTerminated;
 }
 
+void OS_init( void )
+{
+
+}
+
 void OS_start(void)
 {
     BIOS_start();

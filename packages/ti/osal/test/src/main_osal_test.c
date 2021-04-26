@@ -1807,9 +1807,11 @@ int main(void)
      */
 #if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X)|| defined(SOC_AM64X)
     TaskP_Params taskParams;
+
 #if defined(USE_BIOS)
     Error_Block  eb;
 #endif
+    OS_init();
     TaskP_Params_init(&taskParams);
     taskParams.priority =2;
     taskParams.stack        = gAppTskStackMain;

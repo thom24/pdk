@@ -43,6 +43,7 @@
 #include <stdio.h>
 #include <math.h>
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
 /* PDK Include Files: */
@@ -394,6 +395,8 @@ int32_t main (void)
     {
         return -1;
     }
+
+    OS_init();
 
     /* Initialize the Task Parameters. */
     TaskP_Params_init(&taskParams);

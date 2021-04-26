@@ -44,6 +44,7 @@
 /* Standard Include Files. */
 #include <string.h>
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 #include <ti/osal/CycleprofilerP.h>
 
@@ -2095,6 +2096,8 @@ static void Test_initTask(void* arg0, void* arg1)
 int32_t main (void)
 {
     TaskP_Params taskParams;
+
+    OS_init();
 
     /* Initialize the ESM: Dont clear errors as TI RTOS does it */
     ESM_init(0U, 0U);

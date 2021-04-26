@@ -3315,6 +3315,8 @@ Int main()
         return(0);
     }
 
+    OS_init();
+
     /* Initialize the task params */
     TaskP_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */

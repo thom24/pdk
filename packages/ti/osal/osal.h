@@ -436,6 +436,24 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
    }                                                                   \
    while ((bool)false)
 
+/*!
+ *  @brief  Function for initializing the OS / scheduler
+ *
+ */
+extern void OS_init(void);
+
+/*!
+ *  @brief  Function to strat OS / scheduler
+ *
+ */
+extern void OS_start(void);
+
+/*!
+ *  @brief  Function to stop OS / scheduler
+ *
+ */
+extern void OS_stop(void);
+
 #ifdef __cplusplus
 }
 #endif

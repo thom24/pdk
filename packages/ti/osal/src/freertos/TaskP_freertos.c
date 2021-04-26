@@ -360,6 +360,11 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
     return (taskHandle->taskHndl);
 }
 
+void OS_init( void )
+{
+
+}
+
 void OS_start(void)
 {
     vTaskStartScheduler();
