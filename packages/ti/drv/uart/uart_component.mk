@@ -363,7 +363,7 @@ UART_Baremetal_TestApp_RELPATH = ti/drv/uart/test
 UART_Baremetal_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
 UART_Baremetal_TestApp_BOARD_DEPENDENCY = yes
 UART_Baremetal_TestApp_CORE_DEPENDENCY = no
-UART_Baremetal_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
+UART_Baremetal_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 export UART_Baremetal_TestApp_COMP_LIST
 export UART_Baremetal_TestApp_BOARD_DEPENDENCY
 export UART_Baremetal_TestApp_CORE_DEPENDENCY
@@ -393,7 +393,7 @@ UART_Baremetal_DMA_TestApp_RELPATH = ti/drv/uart/test
 UART_Baremetal_DMA_TestApp_PATH = $(PDK_UART_COMP_PATH)/test
 UART_Baremetal_DMA_TestApp_BOARD_DEPENDENCY = yes
 UART_Baremetal_DMA_TestApp_CORE_DEPENDENCY = no
-UART_Baremetal_DMA_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
+UART_Baremetal_DMA_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal DMA=enable
 export UART_Baremetal_DMA_TestApp_COMP_LIST
 export UART_Baremetal_DMA_TestApp_BOARD_DEPENDENCY
 export UART_Baremetal_DMA_TestApp_CORE_DEPENDENCY
