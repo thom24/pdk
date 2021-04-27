@@ -90,6 +90,16 @@ DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE
 # The below defines various RTOS types
 DEFAULT_RTOS_LIST = tirtos freertos safertos
 
+# The below defines the DEFAULT_SOCLIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
+DEFAULT_SOCLIST_tirtos   = $(SOC_LIST_CATALOG) $(SOC_LIST_INFOTAINMENT) $(SOC_LIST_J6_TDA)
+DEFAULT_SOCLIST_freertos = am65xx j721e j7200
+DEFAULT_SOCLIST_safertos = tpr12
+
+# The below defines the DEFAULT_BOARDLIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
+DEFAULT_BOARDLIST_tirtos   = evmDRA72x evmDRA75x evmDRA78x evmAM572x idkAM572x idkAM571x idkAM574x $(BOARD_LIST_J6_TDA) $(BOARD_LIST_J7_TDA) $(BOARD_LIST_TPR12) am64x_evm am64x_svb
+DEFAULT_BOARDLIST_freertos = am65xx_evm am65xx_idk j721e_evm j7200_evm tpr12_evm
+DEFAULT_BOARDLIST_safertos = tpr12_evm
+
 # The below defines the DEFAULT_$(SOC)_CORELIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
 # This is derived from the DEFAULT_$(SOC)_CORELIST defined above.
 # DEFAULT_$(SOC)_CORELIST_<rtos_type> is a subset of all the cores and is used for building components for the particular 'rtos_type'.
@@ -117,7 +127,7 @@ DEFAULT_$(SOC)_CORELIST_freertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES
 
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-# FreeRTOS is not currently supported on mcu cores 
+# SafeRTOS is not currently supported on mcu cores 
 DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mcu1_0
 else
 #SafeRTOS is not supported on other SOCs
