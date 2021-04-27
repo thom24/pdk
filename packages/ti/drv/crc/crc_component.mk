@@ -34,12 +34,11 @@
 #
 ifeq ($(crc_component_make_include), )
 
+drvcrc_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvcrc_SOCLIST          = tpr12 awr294x
 drvcrc_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 drvcrc_awr294x_CORELIST   = $(DEFAULT_awr294x_CORELIST)
-drvcrc_BOARDLIST        = tpr12_evm awr294x_evm
-drvcrc_safertos_BOARDLIST = tpr12_evm
-drvcrc_safertos_tpr12_CORELIST   = c66xdsp_1
+drvcrc_BOARDLIST = tpr12_evm awr294x_evm
 
 ############################
 # crc package
@@ -85,48 +84,34 @@ export crc_$(SOC)_CORELIST
 #
 # CRC Examples
 #
+# CRC RTOS Test Apps
+define crc_testapp_RULE
 
-# CRC memcpy test app
-export crc_testapp_COMP_LIST = crc_testapp
-crc_testapp_RELPATH = ti/drv/crc/test
-crc_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
-export crc_testapp_BOARD_DEPENDENCY = yes
-export crc_testapp_CORE_DEPENDENCY = yes
-export crc_testapp_XDC_CONFIGURO = yes
-export crc_freertos_testapp_MAKEFILE = -f makefile IS_TIRTOS=yes
-crc_testapp_PKG_LIST = crc_testapp
-crc_testapp_INCLUDE = $(crc_testapp_PATH)
-export crc_testapp_BOARDLIST = $(drvcrc_BOARDLIST)
-export crc_testapp_$(SOC)_CORELIST = $(drvcrc_$(SOC)_CORELIST)
-crc_EXAMPLE_LIST += crc_testapp
-
-export crc_freertos_testapp_COMP_LIST = crc_freertos_testapp
-crc_freertos_testapp_RELPATH = ti/drv/crc/test
-crc_freertos_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
-export crc_freertos_testapp_BOARD_DEPENDENCY = yes
-export crc_freertos_testapp_CORE_DEPENDENCY = yes
-export crc_freertos_testapp_XDC_CONFIGURO = no
-export crc_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
-crc_freertos_testapp_PKG_LIST = crc_freertos_testapp
-crc_freertos_testapp_INCLUDE = $(crc_freertos_testapp_PATH)
-export crc_freertos_testapp_BOARDLIST = $(drvcrc_BOARDLIST)
-export crc_freertos_testapp_$(SOC)_CORELIST = $(drvcrc_$(SOC)_CORELIST)
-crc_EXAMPLE_LIST += crc_freertos_testapp
-
-export crc_safertos_testapp_COMP_LIST = crc_safertos_testapp
-crc_safertos_testapp_RELPATH = ti/drv/crc/test
-crc_safertos_testapp_PATH = $(PDK_CRC_COMP_PATH)/test
-export crc_safertos_testapp_BOARD_DEPENDENCY = yes
-export crc_safertos_testapp_CORE_DEPENDENCY = yes
-export crc_safertos_testapp_XDC_CONFIGURO = no
-export crc_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
-crc_safertos_testapp_PKG_LIST = crc_safertos_testapp
-crc_safertos_testapp_INCLUDE = $(crc_safertos_testapp_PATH)
-export crc_safertos_testapp_BOARDLIST = $(drvcrc_safertos_BOARDLIST)
-export crc_safertos_testapp_$(SOC)_CORELIST = $(drvcrc_safertos_$(SOC)_CORELIST)
+export crc_testapp_$(1)_COMP_LIST = crc_testapp_$(1)
+export crc_testapp_$(1)_RELPATH = ti/drv/crc/test
+export crc_testapp_$(1)_PATH = $(PDK_CRC_COMP_PATH)/test
+export crc_testapp_$(1)_BOARD_DEPENDENCY = yes
+export crc_testapp_$(1)_CORE_DEPENDENCY = no
+export crc_testapp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export crc_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export crc_testapp_$(1)_PKG_LIST = crc_testapp_$(1)
+export crc_testapp_$(1)_INCLUDE = $(crc_testapp_$(1)_PATH)
+export crc_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvcrc_BOARDLIST))
+export crc_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvcrc_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+crc_EXAMPLE_LIST += crc_testapp_$(1)
+else
 ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-crc_EXAMPLE_LIST += crc_safertos_testapp
+crc_EXAMPLE_LIST += crc_testapp_$(1)
 endif
+endif
+export crc_testapp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+crc_testapp_MACRO_LIST := $(foreach curos,$(drvcrc_RTOS_LIST),$(call crc_testapp_RULE,$(curos)))
+
+$(eval ${crc_testapp_MACRO_LIST})
 
 export crc_LIB_LIST
 export crc_EXAMPLE_LIST

@@ -66,6 +66,7 @@
 #
 ifeq ($(canfd_component_make_include), )
 
+drvcanfd_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvcanfd_BOARDLIST       = tpr12_evm awr294x_evm
 drvcanfd_SOCLIST         = tpr12 awr294x
 drvcanfd_tpr12_CORELIST   = mcu1_0
@@ -133,47 +134,33 @@ export canfd_$(SOC)_CORELIST
 # CANFD rtos baremetal test app
 
 # CANFD rtos test app
-canfd_test_COMP_LIST = canfd_test
-canfd_test_RELPATH = ti/drv/canfd/test
-canfd_test_PATH = $(PDK_CANFD_COMP_PATH)/test
-canfd_test_BOARD_DEPENDENCY = yes
-canfd_test_CORE_DEPENDENCY = no
-canfd_test_XDC_CONFIGURO = yes
-canfd_test_MAKEFILE = -f makefile
-export canfd_test_COMP_LIST
-export canfd_test_BOARD_DEPENDENCY
-export canfd_test_CORE_DEPENDENCY
-export canfd_test_XDC_CONFIGURO
-export canfd_test_MAKEFILE
-canfd_test_PKG_LIST = canfd_test
-export canfd_test_PKG_LIST
-canfd_test_INCLUDE = $(canfd_test_PATH)
-canfd_test_BOARDLIST = $(drvcanfd_BOARDLIST)
-export canfd_test_BOARDLIST
-canfd_test_$(SOC)_CORELIST = mcu1_0
-export canfd_test_$(SOC)_CORELIST
+define canfd_test_RULE
 
-canfd_freertos_test_COMP_LIST = canfd_freertos_test
-canfd_freertos_test_RELPATH = ti/drv/canfd/test
-canfd_freertos_test_PATH = $(PDK_CANFD_COMP_PATH)/test
-canfd_freertos_test_BOARD_DEPENDENCY = yes
-canfd_freertos_test_CORE_DEPENDENCY = no
-canfd_freertos_test_XDC_CONFIGURO = yes
-canfd_freertos_test_MAKEFILE = -f makefile IS_FREERTOS=yes
-export canfd_freertos_test_COMP_LIST
-export canfd_freertos_test_BOARD_DEPENDENCY
-export canfd_freertos_test_CORE_DEPENDENCY
-export canfd_freertos_test_XDC_CONFIGURO
-export canfd_freertos_test_MAKEFILE
-canfd_freertos_test_PKG_LIST = canfd_freertos_test
-export canfd_freertos_test_PKG_LIST
-canfd_freertos_test_INCLUDE = $(canfd_freertos_test_PATH)
-canfd_freertos_test_BOARDLIST = $(drvcanfd_BOARDLIST)
-export canfd_freertos_test_BOARDLIST
-canfd_freertos_test_$(SOC)_CORELIST = mcu1_0
-export canfd_freertos_test_$(SOC)_CORELIST
+export canfd_test_$(1)_COMP_LIST = canfd_test_$(1)
+export canfd_test_$(1)_RELPATH = ti/drv/canfd/test
+export canfd_test_$(1)_PATH = $(PDK_CANFD_COMP_PATH)/test
+export canfd_test_$(1)_BOARD_DEPENDENCY = yes
+export canfd_test_$(1)_CORE_DEPENDENCY = no
+export canfd_test_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export canfd_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export canfd_test_$(1)_PKG_LIST = canfd_test_$(1)
+export canfd_test_$(1)_INCLUDE = $(canfd_test_$(1)_PATH)
+export canfd_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvcanfd_BOARDLIST))
+export canfd_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvcanfd_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+canfd_EXAMPLE_LIST += canfd_test_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+canfd_EXAMPLE_LIST += canfd_test_$(1)
+endif
+endif
+export canfd_test_$(1)_SBL_APPIMAGEGEN = yes
 
+endef
 
+canfd_test_MACRO_LIST := $(foreach curos,$(drvcanfd_RTOS_LIST),$(call canfd_test_RULE,$(curos)))
+
+$(eval ${canfd_test_MACRO_LIST})
 
 export drvcanfd_LIB_LIST
 export canfd_LIB_LIST

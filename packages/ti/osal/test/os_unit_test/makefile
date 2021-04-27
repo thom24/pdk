@@ -3,9 +3,9 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 export DISABLE_RECURSE_DEPS
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = OSAL_TestApp
+APP_NAME = OSAL_TestApp_$(BUILD_OS_TYPE)
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  OSAL_$(BOARD)_$(CORE)TestApp
+LOCAL_APP_NAME =  OSAL_$(BOARD)_$(CORE)TestApp_$(BUILD_OS_TYPE)
 
 PACKAGE_SRCS_COMMON = . ../src
 
@@ -16,9 +16,9 @@ INCDIR = . ../src ../
 SRCS_COMMON += main_osal_test.c
 endif
 
-# List all the external components/interfaces, whose interface header files
-# need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_OS_DEFINES = -DUSE_BIOS
+EXTERNAL_INTERFACES = bios xdc
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
@@ -101,8 +101,29 @@ ifeq ($(SOC),$(filter $(SOC), awr294x))
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT) -DUSE_BIOS
-CFLAGS_LOCAL_COMMON += -DENABLE_TIMER_TEST
+endif
+
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+EXTERNAL_INTERFACES = freertos
+COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
+endif
+
+ifeq ($(BUILD_OS_TYPE),safertos)
+CFLAGS_OS_DEFINES = -DSAFERTOS
+EXTERNAL_INTERFACES = safertos
+COMP_LIST_COMMON    = $(PDK_COMMON_SAFERTOS_COMP)
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x))
+  CFLAGS_OSAL_UT += -DENABLE_TIMER_TEST
+endif
+
+# List all the external components/interfaces, whose interface header files
+# need to be included for this component
+INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
+
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

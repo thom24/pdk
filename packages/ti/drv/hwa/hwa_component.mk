@@ -34,12 +34,11 @@
 #
 ifeq ($(hwa_component_make_include), )
 
+drvhwa_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvhwa_SOCLIST          = tpr12 awr294x
 drvhwa_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 drvhwa_awr294x_CORELIST   = $(DEFAULT_awr294x_CORELIST)
 drvhwa_BOARDLIST        = tpr12_evm awr294x_evm
-drvhwa_safertos_BOARDLIST        = tpr12_evm
-drvhwa_safertos_tpr12_CORELIST   = c66xdsp_1
 
 ############################
 # hwa package
@@ -87,49 +86,34 @@ export hwa_$(SOC)_CORELIST
 # HWA Examples
 #
 
-# HWA unit test 
-export hwa_testapp_COMP_LIST = hwa_testapp
-hwa_testapp_RELPATH = ti/drv/hwa/test
-hwa_testapp_PATH = $(PDK_HWA_COMP_PATH)/test
-export hwa_testapp_MAKEFILE = -f makefile
-export hwa_testapp_BOARD_DEPENDENCY = yes
-export hwa_testapp_CORE_DEPENDENCY = yes
-export hwa_testapp_XDC_CONFIGURO = yes
-hwa_testapp_PKG_LIST = hwa_testapp
-hwa_testapp_INCLUDE = $(hwa_testapp_PATH)
-export hwa_testapp_BOARDLIST = $(drvhwa_BOARDLIST)
-export hwa_testapp_$(SOC)_CORELIST = $(drvhwa_$(SOC)_CORELIST)
-hwa_EXAMPLE_LIST += hwa_testapp
+# HWA unit test
+define hwa_testapp_RULE
 
-# HWA freertos unit test
-export hwa_freertos_testapp_COMP_LIST = hwa_freertos_testapp
-hwa_freertos_testapp_RELPATH = ti/drv/hwa/test
-hwa_freertos_testapp_PATH = $(PDK_HWA_COMP_PATH)/test
-export hwa_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
-export hwa_freertos_testapp_BOARD_DEPENDENCY = yes
-export hwa_freertos_testapp_CORE_DEPENDENCY = yes
-export hwa_freertos_testapp_XDC_CONFIGURO = no
-hwa_freertos_testapp_PKG_LIST = hwa_freertos_testapp
-hwa_freertos_testapp_INCLUDE = $(hwa_freertos_testapp_PATH)
-export hwa_freertos_testapp_BOARDLIST = $(drvhwa_BOARDLIST)
-export hwa_freertos_testapp_$(SOC)_CORELIST = $(drvhwa_$(SOC)_CORELIST)
-hwa_EXAMPLE_LIST += hwa_freertos_testapp
-
-# HWA safertos unit test
-export hwa_safertos_testapp_COMP_LIST = hwa_safertos_testapp
-hwa_safertos_testapp_RELPATH = ti/drv/hwa/test
-hwa_safertos_testapp_PATH = $(PDK_HWA_COMP_PATH)/test
-export hwa_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
-export hwa_safertos_testapp_BOARD_DEPENDENCY = yes
-export hwa_safertos_testapp_CORE_DEPENDENCY = yes
-export hwa_safertos_testapp_XDC_CONFIGURO = no
-hwa_safertos_testapp_PKG_LIST = hwa_safertos_testapp
-hwa_safertos_testapp_INCLUDE = $(hwa_safertos_testapp_PATH)
-export hwa_safertos_testapp_BOARDLIST = $(drvhwa_safertos_BOARDLIST)
-export hwa_safertos_testapp_$(SOC)_CORELIST = $(drvhwa_safertos_$(SOC)_CORELIST)
+export hwa_testapp_$(1)_COMP_LIST = hwa_testapp_$(1)
+export hwa_testapp_$(1)_RELPATH = ti/drv/hwa/test
+export hwa_testapp_$(1)_PATH = $(PDK_HWA_COMP_PATH)/test
+export hwa_testapp_$(1)_BOARD_DEPENDENCY = yes
+export hwa_testapp_$(1)_CORE_DEPENDENCY = yes
+export hwa_testapp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export hwa_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export hwa_testapp_$(1)_PKG_LIST = hwa_testapp_$(1)
+export hwa_testapp_$(1)_INCLUDE = $(hwa_testapp_$(1)_PATH)
+export hwa_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvhwa_BOARDLIST))
+export hwa_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvhwa_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+hwa_EXAMPLE_LIST += hwa_testapp_$(1)
+else
 ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-hwa_EXAMPLE_LIST += hwa_safertos_testapp
+hwa_EXAMPLE_LIST += hwa_testapp_$(1)
 endif
+endif
+export hwa_testapp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+hwa_testapp_MACRO_LIST := $(foreach curos,$(drvhwa_RTOS_LIST),$(call hwa_testapp_RULE,$(curos)))
+
+$(eval ${hwa_testapp_MACRO_LIST})
 
 export hwa_LIB_LIST
 export hwa_EXAMPLE_LIST

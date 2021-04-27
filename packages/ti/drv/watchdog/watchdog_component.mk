@@ -66,12 +66,11 @@
 #
 ifeq ($(watchdog_component_make_include), )
 
+drvwatchdog_RTOS_LIST        = $(DEFAULT_RTOS_LIST)
 drvwatchdog_SOCLIST          = tpr12 awr294x
 drvwatchdog_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 drvwatchdog_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 drvwatchdog_BOARDLIST        = tpr12_evm tpr12_qt awr294x_evm
-drvwatchdog_safertos_BOARDLIST        = tpr12_evm
-drvwatchdog_safertos_tpr12_CORELIST   = c66xdsp_1
 
 ############################
 # watchdog package
@@ -110,50 +109,34 @@ export watchdog_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
 #
 # Watchdog Examples
 #
-
 # watchdog test app
-export watchdog_testapp_COMP_LIST = watchdog_testapp
-watchdog_testapp_RELPATH = ti/drv/watchdog/test
-watchdog_testapp_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
-watchdog_testapp_MAKEFILE = -f makefile
-export watchdog_testapp_BOARD_DEPENDENCY = yes
-export watchdog_testapp_CORE_DEPENDENCY = yes
-export watchdog_testapp_XDC_CONFIGURO = yes
-watchdog_testapp_PKG_LIST = watchdog_testapp
-watchdog_testapp_INCLUDE = $(watchdog_testapp_PATH)
-export watchdog_testapp_BOARDLIST = $(drvwatchdog_BOARDLIST)
-export watchdog_testapp_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
-watchdog_EXAMPLE_LIST += watchdog_testapp
+define watchdog_testapp_RULE
 
-# watchdog freertos test app
-export watchdog_freertos_testapp_COMP_LIST = watchdog_freertos_testapp
-watchdog_freertos_testapp_RELPATH = ti/drv/watchdog/test
-watchdog_freertos_testapp_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
-watchdog_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
-export watchdog_freertos_testapp_BOARD_DEPENDENCY = yes
-export watchdog_freertos_testapp_CORE_DEPENDENCY = yes
-export watchdog_freertos_testapp_XDC_CONFIGURO = no
-watchdog_freertos_testapp_PKG_LIST = watchdog_freertos_testapp
-watchdog_freertos_testapp_INCLUDE = $(watchdog_freertos_testapp_PATH)
-export watchdog_freertos_testapp_BOARDLIST = $(drvwatchdog_BOARDLIST)
-export watchdog_freertos_testapp_$(SOC)_CORELIST = $(drvwatchdog_$(SOC)_CORELIST)
-watchdog_EXAMPLE_LIST += watchdog_freertos_testapp
-
-# watchdog safertos test app
-export watchdog_safertos_testapp_COMP_LIST = watchdog_safertos_testapp
-watchdog_safertos_testapp_RELPATH = ti/drv/watchdog/test
-watchdog_safertos_testapp_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
-watchdog_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
-export watchdog_safertos_testapp_BOARD_DEPENDENCY = yes
-export watchdog_safertos_testapp_CORE_DEPENDENCY = yes
-export watchdog_safertos_testapp_XDC_CONFIGURO = no
-watchdog_safertos_testapp_PKG_LIST = watchdog_safertos_testapp
-watchdog_safertos_testapp_INCLUDE = $(watchdog_safertos_testapp_PATH)
-export watchdog_safertos_testapp_BOARDLIST = $(drvwatchdog_safertos_BOARDLIST)
-export watchdog_safertos_testapp_$(SOC)_CORELIST = $(drvwatchdog_safertos_$(SOC)_CORELIST)
+export watchdog_testapp_$(1)_COMP_LIST = watchdog_testapp_$(1)
+export watchdog_testapp_$(1)_RELPATH = ti/drv/watchdog/test
+export watchdog_testapp_$(1)_PATH = $(PDK_WATCHDOG_COMP_PATH)/test
+export watchdog_testapp_$(1)_BOARD_DEPENDENCY = yes
+export watchdog_testapp_$(1)_CORE_DEPENDENCY = no
+export watchdog_testapp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export watchdog_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export watchdog_testapp_$(1)_PKG_LIST = watchdog_testapp_$(1)
+export watchdog_testapp_$(1)_INCLUDE = $(watchdog_testapp_$(1)_PATH)
+export watchdog_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvwatchdog_BOARDLIST))
+export watchdog_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvwatchdog_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+watchdog_EXAMPLE_LIST += watchdog_testapp_$(1)
+else
 ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-watchdog_EXAMPLE_LIST += watchdog_safertos_testapp
+watchdog_EXAMPLE_LIST += watchdog_testapp_$(1)
 endif
+endif
+export watchdog_testapp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+watchdog_testapp_MACRO_LIST := $(foreach curos,$(drvwatchdog_RTOS_LIST),$(call watchdog_testapp_RULE,$(curos)))
+
+$(eval ${watchdog_testapp_MACRO_LIST})
 
 export watchdog_LIB_LIST
 export watchdog_EXAMPLE_LIST

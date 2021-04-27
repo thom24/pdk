@@ -1,16 +1,7 @@
 # Makefile for CANFD test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-ifeq ($(BAREMETAL), yes)
-BUILD_OS_TYPE=baremetal
-endif
-
 ifeq ($(BUILD_OS_TYPE),baremetal)
-CANFD_OS_TESTPREFIX=_Baremetal
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
@@ -19,7 +10,6 @@ XDC_CFG_FILE_$(CORE) =
 endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
-CANFD_OS_TESTPREFIX=
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
@@ -39,7 +29,6 @@ endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
-CANFD_OS_TESTPREFIX=_freertos
 CFLAGS_OS_DEFINES = -DFREERTOS
 EXTERNAL_INTERFACES = freertos
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
@@ -62,10 +51,10 @@ SRCS_COMMON += main_canfd_test.c
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = canfd$(CANFD_OS_TESTPREFIX)_test
+APP_NAME = canfd_test_$(BUILD_OS_TYPE)
 
 # Name of the binary if different fmake clrom the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  canfd$(CANFD_OS_TESTPREFIX)_$(BOARD)_$(CORE)_test
+LOCAL_APP_NAME =  canfd_$(BOARD)_$(CORE)_test_$(BUILD_OS_TYPE)
 
 COMP_LIST_COMMON += canfd esm
 

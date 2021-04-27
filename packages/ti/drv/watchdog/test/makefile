@@ -5,23 +5,7 @@ else
 include $(RULES_MAKE)
 endif
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-ifeq ($(IS_SAFERTOS),yes)
-BUILD_OS_TYPE = safertos
-endif
-
-ifeq ($(BUILD_OS_TYPE),tirtos)
-APP_NAME = watchdog_testapp
-endif
-ifeq ($(BUILD_OS_TYPE),freertos)
-APP_NAME = watchdog_freertos_testapp
-endif
-ifeq ($(BUILD_OS_TYPE),safertos)
-APP_NAME = watchdog_safertos_testapp
-endif
+APP_NAME = watchdog_testapp_$(BUILD_OS_TYPE)
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
 CFLAGS_OS_DEFINES = -DUSE_BIOS

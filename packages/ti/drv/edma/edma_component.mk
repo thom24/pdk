@@ -34,12 +34,11 @@
 #
 ifeq ($(edma_component_make_include), )
 
+drvedma_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvedma_SOCLIST          = tpr12 awr294x
 drvedma_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 drvedma_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
-drvedma_BOARDLIST        = tpr12_evm tpr12_qt awr294x_evm
-drvedma_safertos_BOARDLIST      = tpr12_evm
-drvedma_safertos_tpr12_CORELIST = c66xdsp_1
+drvedma_BOARDLIST   = tpr12_evm awr294x_evm
 
 ############################
 # edma package
@@ -90,7 +89,7 @@ export edma_$(SOC)_CORELIST
 export edma_baremetal_memcpy_testapp_COMP_LIST = edma_baremetal_memcpy_testapp
 edma_baremetal_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
 edma_baremetal_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
-export edma_baremetal_memcpy_testapp_MAKEFILE = -fmakefile BAREMETAL=yes
+export edma_baremetal_memcpy_testapp_MAKEFILE = -fmakefile BUILD_OS_TYPE=baremetal
 export edma_baremetal_memcpy_testapp_BOARD_DEPENDENCY = yes
 export edma_baremetal_memcpy_testapp_CORE_DEPENDENCY = yes
 export edma_baremetal_memcpy_testapp_XDC_CONFIGURO = yes
@@ -100,95 +99,64 @@ export edma_baremetal_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
 export edma_baremetal_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
 edma_EXAMPLE_LIST += edma_baremetal_memcpy_testapp
 
-# EDMA freertos memcpy test app
-export edma_freertos_memcpy_testapp_COMP_LIST = edma_freertos_memcpy_testapp
-edma_freertos_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
-edma_freertos_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
-export edma_freertos_memcpy_testapp_MAKEFILE = -fmakefile IS_FREERTOS=yes
-export edma_freertos_memcpy_testapp_BOARD_DEPENDENCY = yes
-export edma_freertos_memcpy_testapp_CORE_DEPENDENCY = yes
-export edma_freertos_memcpy_testapp_XDC_CONFIGURO = no
-edma_freertos_memcpy_testapp_PKG_LIST = edma_freertos_memcpy_testapp
-edma_freertos_memcpy_testapp_INCLUDE = $(edma_freertos_memcpy_testapp_PATH)
-export edma_freertos_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
-export edma_freertos_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
-edma_EXAMPLE_LIST += edma_freertos_memcpy_testapp
+# EDMA memcpy Test App
+define edma_memcpy_testapp_RULE
 
-# EDMA safertos memcpy test app
-export edma_safertos_memcpy_testapp_COMP_LIST = edma_safertos_memcpy_testapp
-edma_safertos_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
-edma_safertos_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
-export edma_safertos_memcpy_testapp_MAKEFILE = -fmakefile IS_SAFERTOS=yes
-export edma_safertos_memcpy_testapp_BOARD_DEPENDENCY = yes
-export edma_safertos_memcpy_testapp_CORE_DEPENDENCY = yes
-export edma_safertos_memcpy_testapp_XDC_CONFIGURO = no
-edma_safertos_memcpy_testapp_PKG_LIST = edma_safertos_memcpy_testapp
-edma_safertos_memcpy_testapp_INCLUDE = $(edma_safertos_memcpy_testapp_PATH)
-export edma_safertos_memcpy_testapp_BOARDLIST = $(drvedma_safertos_BOARDLIST)
-export edma_safertos_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_safertos_$(SOC)_CORELIST)
+export edma_memcpy_testapp_$(1)_COMP_LIST = edma_memcpy_testapp_$(1)
+export edma_memcpy_testapp_$(1)_RELPATH = ti/drv/edma/examples/edma_memcpy_test
+export edma_memcpy_testapp_$(1)_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
+export edma_memcpy_testapp_$(1)_BOARD_DEPENDENCY = yes
+export edma_memcpy_testapp_$(1)_CORE_DEPENDENCY = no
+export edma_memcpy_testapp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export edma_memcpy_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export edma_memcpy_testapp_$(1)_PKG_LIST = edma_memcpy_testapp_$(1)
+export edma_memcpy_testapp_$(1)_INCLUDE = $(edma_memcpy_testapp_$(1)_PATH)
+export edma_memcpy_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvedma_BOARDLIST))
+export edma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvedma_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+edma_EXAMPLE_LIST += edma_memcpy_testapp_$(1)
+else
 ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-edma_EXAMPLE_LIST += edma_safertos_memcpy_testapp
+edma_EXAMPLE_LIST += edma_memcpy_testapp_$(1)
 endif
+endif
+export edma_memcpy_testapp_$(1)_SBL_APPIMAGEGEN = yes
 
-# EDMA memcpy test app
-export edma_memcpy_testapp_COMP_LIST = edma_memcpy_testapp
-edma_memcpy_testapp_RELPATH = ti/drv/edma/examples/edma_memcpy_test
-edma_memcpy_testapp_PATH = $(PDK_EDMA_COMP_PATH)/examples/edma_memcpy_test
-export edma_memcpy_testapp_MAKEFILE = -fmakefile
-export edma_memcpy_testapp_BOARD_DEPENDENCY = yes
-export edma_memcpy_testapp_CORE_DEPENDENCY = yes
-export edma_memcpy_testapp_XDC_CONFIGURO = yes
-edma_memcpy_testapp_PKG_LIST = edma_memcpy_testapp
-edma_memcpy_testapp_INCLUDE = $(edma_memcpy_testapp_PATH)
-export edma_memcpy_testapp_BOARDLIST = $(drvedma_BOARDLIST)
-export edma_memcpy_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
-edma_EXAMPLE_LIST += edma_memcpy_testapp
+endef
+
+edma_memcpy_testapp_MACRO_LIST := $(foreach curos,$(drvedma_RTOS_LIST),$(call edma_memcpy_testapp_RULE,$(curos)))
+
+$(eval ${edma_memcpy_testapp_MACRO_LIST})
+
 
 # EDMA unit test app
-export edma_unit_testapp_COMP_LIST = edma_unit_testapp
-edma_unit_testapp_RELPATH = ti/drv/edma/unit_test/edma_ut
-edma_unit_testapp_PATH = $(PDK_EDMA_COMP_PATH)/unit_test/edma_ut
-export edma_unit_testapp_MAKEFILE = -fmakefile
-export edma_unit_testapp_BOARD_DEPENDENCY = yes
-export edma_unit_testapp_CORE_DEPENDENCY = yes
-export edma_unit_testapp_XDC_CONFIGURO = yes
-edma_unit_testapp_PKG_LIST = edma_unit_testapp
-edma_unit_testapp_INCLUDE = $(edma_unit_testapp_PATH)
-export edma_unit_testapp_BOARDLIST = $(drvedma_BOARDLIST)
-export edma_unit_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
-edma_EXAMPLE_LIST += edma_unit_testapp
+define edma_unit_testapp_RULE
 
-# EDMA freertos unit test app
-export edma_freertos_unit_testapp_COMP_LIST = edma_freertos_unit_testapp
-edma_freertos_unit_testapp_RELPATH = ti/drv/edma/unit_test/edma_ut
-edma_freertos_unit_testapp_PATH = $(PDK_EDMA_COMP_PATH)/unit_test/edma_ut
-export edma_freertos_unit_testapp_MAKEFILE = -fmakefile IS_FREERTOS=yes
-export edma_freertos_unit_testapp_BOARD_DEPENDENCY = yes
-export edma_freertos_unit_testapp_CORE_DEPENDENCY = yes
-export edma_freertos_unit_testapp_XDC_CONFIGURO = no
-edma_freertos_unit_testapp_PKG_LIST = edma_freertos_unit_testapp
-edma_freertos_unit_testapp_INCLUDE = $(edma_freertos_unit_testapp_PATH)
-export edma_freertos_unit_testapp_BOARDLIST = $(drvedma_BOARDLIST)
-export edma_freertos_unit_testapp_$(SOC)_CORELIST = $(drvedma_$(SOC)_CORELIST)
-edma_EXAMPLE_LIST += edma_freertos_unit_testapp
-
-# EDMA safertos unit test app
-export edma_safertos_unit_testapp_COMP_LIST = edma_safertos_unit_testapp
-edma_safertos_unit_testapp_RELPATH = ti/drv/edma/unit_test/edma_ut
-edma_safertos_unit_testapp_PATH = $(PDK_EDMA_COMP_PATH)/unit_test/edma_ut
-export edma_safertos_unit_testapp_MAKEFILE = -fmakefile IS_SAFERTOS=yes
-export edma_safertos_unit_testapp_BOARD_DEPENDENCY = yes
-export edma_safertos_unit_testapp_CORE_DEPENDENCY = yes
-export edma_safertos_unit_testapp_XDC_CONFIGURO = no
-edma_safertos_unit_testapp_PKG_LIST = edma_safertos_unit_testapp
-edma_safertos_unit_testapp_INCLUDE = $(edma_safertos_unit_testapp_PATH)
-export edma_safertos_unit_testapp_BOARDLIST = $(drvedma_safertos_BOARDLIST)
-export edma_safertos_unit_testapp_$(SOC)_CORELIST = $(drvedma_safertos_$(SOC)_CORELIST)
+export edma_unit_testapp_$(1)_COMP_LIST = edma_unit_testapp_$(1)
+export edma_unit_testapp_$(1)_RELPATH = ti/drv/edma/unit_test/edma_ut
+export edma_unit_testapp_$(1)_PATH = $(PDK_EDMA_COMP_PATH)/unit_test/edma_ut
+export edma_unit_testapp_$(1)_BOARD_DEPENDENCY = yes
+export edma_unit_testapp_$(1)_CORE_DEPENDENCY = no
+export edma_unit_testapp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export edma_unit_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export edma_unit_testapp_$(1)_PKG_LIST = edma_unit_testapp_$(1)
+export edma_unit_testapp_$(1)_INCLUDE = $(edma_unit_testapp_$(1)_PATH)
+export edma_unit_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvedma_BOARDLIST))
+export edma_unit_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvedma_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+edma_EXAMPLE_LIST += edma_unit_testapp_$(1)
+else
 ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-edma_EXAMPLE_LIST += edma_safertos_unit_testapp
+edma_EXAMPLE_LIST += edma_unit_testapp_$(1)
 endif
+endif
+export edma_unit_testapp_$(1)_SBL_APPIMAGEGEN = yes
 
+endef
 
+edma_unit_testapp_MACRO_LIST := $(foreach curos,$(drvedma_RTOS_LIST),$(call edma_unit_testapp_RULE,$(curos)))
+
+$(eval ${edma_unit_testapp_MACRO_LIST})
 
 export edma_LIB_LIST
 export edma_EXAMPLE_LIST

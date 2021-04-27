@@ -7,23 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-ifeq ($(IS_SAFERTOS),yes)
-BUILD_OS_TYPE = safertos
-endif
-
-ifeq ($(BUILD_OS_TYPE),tirtos)
-APP_NAME = crc_testapp
-endif
-ifeq ($(BUILD_OS_TYPE),freertos)
-APP_NAME = crc_freertos_testapp
-endif
-ifeq ($(BUILD_OS_TYPE),safertos)
-APP_NAME = crc_safertos_testapp
-endif
+APP_NAME = crc_testapp_$(BUILD_OS_TYPE)
 
 #
 # This file is common makefile for building UDMA memcpy test app for both TI-RTOS/baremetal

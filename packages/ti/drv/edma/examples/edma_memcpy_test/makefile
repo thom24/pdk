@@ -7,31 +7,22 @@ else
 include $(RULES_MAKE)
 endif
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-ifeq ($(IS_SAFERTOS),yes)
-BUILD_OS_TYPE = safertos
-endif
-ifeq ($(BAREMETAL), yes)
-BUILD_OS_TYPE=baremetal
+ifeq ($(BUILD_OS_TYPE),baremetal)
+APP_NAME = edma_baremetal_memcpy_testapp
+else
+APP_NAME = edma_memcpy_testapp_$(BUILD_OS_TYPE)
 endif
 
 ifeq ($(BUILD_OS_TYPE),baremetal)
-APP_NAME = edma_baremetal_memcpy_testapp
 CFLAGS_TEST_DEFINES = -DBAREMETAL
 endif
 ifeq ($(BUILD_OS_TYPE),tirtos)
-APP_NAME = edma_memcpy_testapp
 CFLAGS_TEST_DEFINES = -DUSE_BIOS
 endif
 ifeq ($(BUILD_OS_TYPE),freertos)
-APP_NAME = edma_freertos_memcpy_testapp
 CFLAGS_TEST_DEFINES = -DFREERTOS
 endif
 ifeq ($(BUILD_OS_TYPE),safertos)
-APP_NAME = edma_safertos_memcpy_testapp
 CFLAGS_TEST_DEFINES = -DSAFERTOS
 endif
 

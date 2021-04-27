@@ -1,13 +1,8 @@
 # Makefile for SPI unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-ifeq ($(IS_BAREMETAL), yes)
-BUILD_OS_TYPE=baremetal
-endif
+QSPI_OS_TESTPREFIX=
+QSPI_OS_TESTPOSTFIX=
 
 ifeq ($(BUILD_OS_TYPE),baremetal)
 QSPI_OS_TESTPREFIX=_Baremetal
@@ -21,6 +16,7 @@ endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
 QSPI_OS_TESTPREFIX=
+QSPI_OS_TESTPOSTFIX=_tirtos
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP) 
@@ -32,7 +28,8 @@ endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
-QSPI_OS_TESTPREFIX=_Freertos
+QSPI_OS_TESTPREFIX=
+QSPI_OS_TESTPOSTFIX=_freertos
 CFLAGS_OS_DEFINES = -DFREERTOS
 EXTERNAL_INTERFACES = freertos
 COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
@@ -51,27 +48,27 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 ifeq ($(DMA), enable)
     ifeq ($(SMP), enable)
         #Name of the directory created under packages/ti/binary/
-        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp
+        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp$(QSPI_OS_TESTPOSTFIX)
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_TestApp
+        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_TestApp$(QSPI_OS_TESTPOSTFIX)
     else
         #Name of the directory created under packages/ti/binary/
-        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_TestApp
+        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_TestApp$(QSPI_OS_TESTPOSTFIX)
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)TestApp
+        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)TestApp$(QSPI_OS_TESTPOSTFIX)
     endif
 
 COMP_LIST_COMMON += spi_dma
 CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 else
     ifeq ($(SMP), enable)
-        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_SMP_TestApp
+        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_SMP_TestApp$(QSPI_OS_TESTPOSTFIX)
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)_SMP_TestApp
+        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)_SMP_TestApp$(QSPI_OS_TESTPOSTFIX)
     else
-        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_TestApp
+        APP_NAME = QSPI$(QSPI_OS_TESTPREFIX)_Flash_TestApp$(QSPI_OS_TESTPOSTFIX)
         # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)TestApp
+        LOCAL_APP_NAME =  QSPI$(QSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)TestApp$(QSPI_OS_TESTPOSTFIX)
     endif
 
 COMP_LIST_COMMON += spi

@@ -66,8 +66,8 @@
 #
 ifeq ($(mibspi_component_make_include), )
 
+drvmibspi_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvmibspi_BOARDLIST       = tpr12_evm tpr12_qt awr294x_evm
-drvmibspi_safertos_BOARDLIST    = tpr12_evm
 drvmibspi_SOCLIST         = tpr12 awr294x
 drvmibspi_tpr12_CORELIST   = mcu1_0 c66xdsp_1
 drvmibspi_awr294x_CORELIST   = mcu1_0 c66xdsp_1
@@ -87,23 +87,14 @@ drvmibspi_LIB_LIST = $(mibspi_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-mibspi_EXAMPLE_LIST = 
+mibspi_EXAMPLE_LIST = MIBSPI_Slavemode_TestApp MIBSPI_Slavemode_Dma_TestApp
+
 ############################
 # spi examples
 # List of examples under spi
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-mibspi_EXAMPLE_LIST = MIBSPI_Loopback_TestApp MIBSPI_Loopback_Dma_TestApp
-mibspi_EXAMPLE_LIST += MIBSPI_Freertos_Loopback_TestApp MIBSPI_Freertos_Loopback_Dma_TestApp
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-mibspi_EXAMPLE_LIST += MIBSPI_Safertos_Loopback_TestApp MIBSPI_Safertos_Loopback_Dma_TestApp
-endif
-mibspi_EXAMPLE_LIST += MIBSPI_Slavemode_TestApp MIBSPI_Slavemode_Dma_TestApp
-endif
-
-drvmibspi_EXAMPLE_LIST = $(mibspi_EXAMPLE_LIST)
 
 #
 # MIBSPI Modules
@@ -172,130 +163,63 @@ export mibspi_dma_$(SOC)_CORELIST
 # MIBSPI baremetal master slave Test app
 
 # MIBSPI baremetal dma master slave Test app
+# MIBSPI Loopback Test App
+define MIBSPI_Loopback_TestApp_RULE
 
-# MIBSPI rtos master slave Test app
-MIBSPI_Loopback_TestApp_COMP_LIST = MIBSPI_Loopback_TestApp
-MIBSPI_Loopback_TestApp_RELPATH = ti/drv/mibspi/test/loopback
-MIBSPI_Loopback_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
-MIBSPI_Loopback_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_Loopback_TestApp_CORE_DEPENDENCY = no
-MIBSPI_Loopback_TestApp_XDC_CONFIGURO = yes
-MIBSPI_Loopback_TestApp_MAKEFILE = -f makefile
-export MIBSPI_Loopback_TestApp_COMP_LIST
-export MIBSPI_Loopback_TestApp_BOARD_DEPENDENCY
-export MIBSPI_Loopback_TestApp_CORE_DEPENDENCY
-export MIBSPI_Loopback_TestApp_XDC_CONFIGURO
-export MIBSPI_Loopback_TestApp_MAKEFILE
-MIBSPI_Loopback_TestApp_PKG_LIST = MIBSPI_Loopback_TestApp
-export MIBSPI_Loopback_TestApp_PKG_LIST
-MIBSPI_Loopback_TestApp_INCLUDE = $(MIBSPI_Loopback_TestApp_PATH)
-MIBSPI_Loopback_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-export MIBSPI_Loopback_TestApp_BOARDLIST
-MIBSPI_Loopback_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
-export MIBSPI_Loopback_TestApp_$(SOC)_CORELIST
+export MIBSPI_Loopback_TestApp_$(1)_COMP_LIST = MIBSPI_Loopback_TestApp_$(1)
+export MIBSPI_Loopback_TestApp_$(1)_RELPATH = ti/drv/mibspi/test/loopback
+export MIBSPI_Loopback_TestApp_$(1)_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
+export MIBSPI_Loopback_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export MIBSPI_Loopback_TestApp_$(1)_CORE_DEPENDENCY = no
+export MIBSPI_Loopback_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export MIBSPI_Loopback_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export MIBSPI_Loopback_TestApp_$(1)_PKG_LIST = MIBSPI_Loopback_TestApp_$(1)
+export MIBSPI_Loopback_TestApp_$(1)_INCLUDE = $(MIBSPI_Loopback_TestApp_$(1)_PATH)
+export MIBSPI_Loopback_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmibspi_BOARDLIST))
+export MIBSPI_Loopback_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmibspi_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+mibspi_EXAMPLE_LIST += MIBSPI_Loopback_TestApp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+mibspi_EXAMPLE_LIST += MIBSPI_Loopback_TestApp_$(1)
+endif
+endif
+export MIBSPI_Loopback_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 
-# SPI rtos dma master slave Test app
-MIBSPI_Loopback_Dma_TestApp_COMP_LIST = MIBSPI_Loopback_Dma_TestApp
-MIBSPI_Loopback_Dma_TestApp_RELPATH = ti/drv/mibspi/test/loopback
-MIBSPI_Loopback_Dma_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
-MIBSPI_Loopback_Dma_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_Loopback_Dma_TestApp_CORE_DEPENDENCY = no
-MIBSPI_Loopback_Dma_TestApp_XDC_CONFIGURO = yes
-MIBSPI_Loopback_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
-export MIBSPI_Loopback_Dma_TestApp_COMP_LIST
-export MIBSPI_Loopback_Dma_TestApp_BOARD_DEPENDENCY
-export MIBSPI_Loopback_Dma_TestApp_CORE_DEPENDENCY
-export MIBSPI_Loopback_Dma_TestApp_XDC_CONFIGURO
-export MIBSPI_Loopback_Dma_TestApp_MAKEFILE
-MIBSPI_Loopback_Dma_TestApp_PKG_LIST = MIBSPI_Loopback_Dma_TestApp
-export MIBSPI_Loopback_Dma_TestApp_PKG_LIST
-MIBSPI_Loopback_Dma_TestApp_INCLUDE = $(MIBSPI_Loopback_Dma_TestApp_PATH)
-MIBSPI_Loopback_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-export MIBSPI_Loopback_Dma_TestApp_BOARDLIST
-MIBSPI_Loopback_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
-export MIBSPI_Loopback_Dma_TestApp_$(SOC)_CORELIST
+endef
 
-MIBSPI_Freertos_Loopback_TestApp_COMP_LIST = MIBSPI_Freertos_Loopback_TestApp
-MIBSPI_Freertos_Loopback_TestApp_RELPATH = ti/drv/mibspi/test/loopback
-MIBSPI_Freertos_Loopback_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
-MIBSPI_Freertos_Loopback_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_Freertos_Loopback_TestApp_CORE_DEPENDENCY = no
-MIBSPI_Freertos_Loopback_TestApp_XDC_CONFIGURO = no
-MIBSPI_Freertos_Loopback_TestApp_MAKEFILE = -f makefile IS_FREERTOS=yes
-export MIBSPI_Freertos_Loopback_TestApp_COMP_LIST
-export MIBSPI_Freertos_Loopback_TestApp_BOARD_DEPENDENCY
-export MIBSPI_Freertos_Loopback_TestApp_CORE_DEPENDENCY
-export MIBSPI_Freertos_Loopback_TestApp_XDC_CONFIGURO
-export MIBSPI_Freertos_Loopback_TestApp_MAKEFILE
-MIBSPI_Freertos_Loopback_TestApp_PKG_LIST = MIBSPI_Freertos_Loopback_TestApp
-export MIBSPI_Freertos_Loopback_TestApp_PKG_LIST
-MIBSPI_Freertos_Loopback_TestApp_INCLUDE = $(MIBSPI_Freertos_Loopback_TestApp_PATH)
-MIBSPI_Freertos_Loopback_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-export MIBSPI_Freertos_Loopback_TestApp_BOARDLIST
-MIBSPI_Freertos_Loopback_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
-export MIBSPI_Freertos_Loopback_TestApp_$(SOC)_CORELIST
+MIBSPI_Loopback_TestApp_MACRO_LIST := $(foreach curos,$(drvmibspi_RTOS_LIST),$(call MIBSPI_Loopback_TestApp_RULE,$(curos)))
 
-# SPI rtos dma master slave Test app
-MIBSPI_Freertos_Loopback_Dma_TestApp_COMP_LIST = MIBSPI_Freertos_Loopback_Dma_TestApp
-MIBSPI_Freertos_Loopback_Dma_TestApp_RELPATH = ti/drv/mibspi/test/loopback
-MIBSPI_Freertos_Loopback_Dma_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
-MIBSPI_Freertos_Loopback_Dma_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_Freertos_Loopback_Dma_TestApp_CORE_DEPENDENCY = no
-MIBSPI_Freertos_Loopback_Dma_TestApp_XDC_CONFIGURO = no
-MIBSPI_Freertos_Loopback_Dma_TestApp_MAKEFILE = -f makefile DMA=enable IS_FREERTOS=yes
-export MIBSPI_Freertos_Loopback_Dma_TestApp_COMP_LIST
-export MIBSPI_Freertos_Loopback_Dma_TestApp_BOARD_DEPENDENCY
-export MIBSPI_Freertos_Loopback_Dma_TestApp_CORE_DEPENDENCY
-export MIBSPI_Freertos_Loopback_Dma_TestApp_XDC_CONFIGURO
-export MIBSPI_Freertos_Loopback_Dma_TestApp_MAKEFILE
-MIBSPI_Freertos_Loopback_Dma_TestApp_PKG_LIST = MIBSPI_Freertos_Loopback_Dma_TestApp
-export MIBSPI_Freertos_Loopback_Dma_TestApp_PKG_LIST
-MIBSPI_Freertos_Loopback_Dma_TestApp_INCLUDE = $(MIBSPI_Freertos_Loopback_Dma_TestApp_PATH)
-MIBSPI_Freertos_Loopback_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
-export MIBSPI_Freertos_Loopback_Dma_TestApp_BOARDLIST
-MIBSPI_Freertos_Loopback_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
-export MIBSPI_Freertos_Loopback_Dma_TestApp_$(SOC)_CORELIST
+$(eval ${MIBSPI_Loopback_TestApp_MACRO_LIST})
 
-MIBSPI_Safertos_Loopback_TestApp_COMP_LIST = MIBSPI_Safertos_Loopback_TestApp
-MIBSPI_Safertos_Loopback_TestApp_RELPATH = ti/drv/mibspi/test/loopback
-MIBSPI_Safertos_Loopback_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
-MIBSPI_Safertos_Loopback_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_Safertos_Loopback_TestApp_CORE_DEPENDENCY = no
-MIBSPI_Safertos_Loopback_TestApp_XDC_CONFIGURO = no
-MIBSPI_Safertos_Loopback_TestApp_MAKEFILE = -f makefile IS_SAFERTOS=yes
-export MIBSPI_Safertos_Loopback_TestApp_COMP_LIST
-export MIBSPI_Safertos_Loopback_TestApp_BOARD_DEPENDENCY
-export MIBSPI_Safertos_Loopback_TestApp_CORE_DEPENDENCY
-export MIBSPI_Safertos_Loopback_TestApp_XDC_CONFIGURO
-export MIBSPI_Safertos_Loopback_TestApp_MAKEFILE
-MIBSPI_Safertos_Loopback_TestApp_PKG_LIST = MIBSPI_Safertos_Loopback_TestApp
-export MIBSPI_Safertos_Loopback_TestApp_PKG_LIST
-MIBSPI_Safertos_Loopback_TestApp_INCLUDE = $(MIBSPI_Safertos_Loopback_TestApp_PATH)
-MIBSPI_Safertos_Loopback_TestApp_BOARDLIST = $(drvmibspi_safertos_BOARDLIST)
-export MIBSPI_Safertos_Loopback_TestApp_BOARDLIST
-MIBSPI_Safertos_Loopback_TestApp_$(SOC)_CORELIST = c66xdsp_1
-export MIBSPI_Safertos_Loopback_TestApp_$(SOC)_CORELIST
+# MIBSPI Loopback Dma Test App
+define MIBSPI_Loopback_Dma_TestApp_RULE
 
-# SPI rtos dma master slave Test app
-MIBSPI_Safertos_Loopback_Dma_TestApp_COMP_LIST = MIBSPI_Safertos_Loopback_Dma_TestApp
-MIBSPI_Safertos_Loopback_Dma_TestApp_RELPATH = ti/drv/mibspi/test/loopback
-MIBSPI_Safertos_Loopback_Dma_TestApp_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
-MIBSPI_Safertos_Loopback_Dma_TestApp_BOARD_DEPENDENCY = yes
-MIBSPI_Safertos_Loopback_Dma_TestApp_CORE_DEPENDENCY = no
-MIBSPI_Safertos_Loopback_Dma_TestApp_XDC_CONFIGURO = no
-MIBSPI_Safertos_Loopback_Dma_TestApp_MAKEFILE = -f makefile DMA=enable IS_SAFERTOS=yes
-export MIBSPI_Safertos_Loopback_Dma_TestApp_COMP_LIST
-export MIBSPI_Safertos_Loopback_Dma_TestApp_BOARD_DEPENDENCY
-export MIBSPI_Safertos_Loopback_Dma_TestApp_CORE_DEPENDENCY
-export MIBSPI_Safertos_Loopback_Dma_TestApp_XDC_CONFIGURO
-export MIBSPI_Safertos_Loopback_Dma_TestApp_MAKEFILE
-MIBSPI_Safertos_Loopback_Dma_TestApp_PKG_LIST = MIBSPI_Safertos_Loopback_Dma_TestApp
-export MIBSPI_Safertos_Loopback_Dma_TestApp_PKG_LIST
-MIBSPI_Safertos_Loopback_Dma_TestApp_INCLUDE = $(MIBSPI_Safertos_Loopback_Dma_TestApp_PATH)
-MIBSPI_Safertos_Loopback_Dma_TestApp_BOARDLIST = $(drvmibspi_safertos_BOARDLIST)
-export MIBSPI_Safertos_Loopback_Dma_TestApp_BOARDLIST
-MIBSPI_Safertos_Loopback_Dma_TestApp_$(SOC)_CORELIST = c66xdsp_1
-export MIBSPI_Safertos_Loopback_Dma_TestApp_$(SOC)_CORELIST
+export MIBSPI_Loopback_Dma_TestApp_$(1)_COMP_LIST = MIBSPI_Loopback_Dma_TestApp_$(1)
+export MIBSPI_Loopback_Dma_TestApp_$(1)_RELPATH = ti/drv/mibspi/test/loopback
+export MIBSPI_Loopback_Dma_TestApp_$(1)_PATH = $(PDK_MIBSPI_COMP_PATH)/test/loopback
+export MIBSPI_Loopback_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export MIBSPI_Loopback_Dma_TestApp_$(1)_CORE_DEPENDENCY = no
+export MIBSPI_Loopback_Dma_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export MIBSPI_Loopback_Dma_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)  DMA=enable
+export MIBSPI_Loopback_Dma_TestApp_$(1)_PKG_LIST = MIBSPI_Loopback_Dma_TestApp_$(1)
+export MIBSPI_Loopback_Dma_TestApp_$(1)_INCLUDE = $(MIBSPI_Loopback_Dma_TestApp_$(1)_PATH)
+export MIBSPI_Loopback_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmibspi_BOARDLIST))
+export MIBSPI_Loopback_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmibspi_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+mibspi_EXAMPLE_LIST += MIBSPI_Loopback_Dma_TestApp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+mibspi_EXAMPLE_LIST += MIBSPI_Loopback_Dma_TestApp_$(1)
+endif
+endif
+export MIBSPI_Loopback_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+MIBSPI_Loopback_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvmibspi_RTOS_LIST),$(call MIBSPI_Loopback_Dma_TestApp_RULE,$(curos)))
+
+$(eval ${MIBSPI_Loopback_Dma_TestApp_MACRO_LIST})
 
 # MIBSPI rtos master slave Test app
 MIBSPI_Slavemode_TestApp_COMP_LIST = MIBSPI_Slavemode_TestApp
@@ -338,6 +262,8 @@ MIBSPI_Slavemode_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
 export MIBSPI_Slavemode_Dma_TestApp_BOARDLIST
 MIBSPI_Slavemode_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 export MIBSPI_Slavemode_Dma_TestApp_$(SOC)_CORELIST
+
+drvmibspi_EXAMPLE_LIST = $(mibspi_EXAMPLE_LIST)
 
 export drvmibspi_LIB_LIST
 export mibspi_LIB_LIST

@@ -1,26 +1,6 @@
 # Makefile for SPI master/slave test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-ifeq ($(IS_SAFERTOS),yes)
-BUILD_OS_TYPE = safertos
-endif
-ifeq ($(BAREMETAL), yes)
-BUILD_OS_TYPE=baremetal
-endif
-
-ifeq ($(BUILD_OS_TYPE),baremetal)
-CFLAGS_OS_DEFINES =
-LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
-EXTERNAL_INTERFACES =
-XDC_CFG_FILE_$(CORE) =
-MIBSPI_OS_TESTPREFIX=_Baremetal
-endif
-
 ifeq ($(BUILD_OS_TYPE),tirtos)
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
@@ -33,19 +13,16 @@ ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
   XDC_CFG_FILE_$(CORE) = ./$(SOC)/dss.cfg
 endif
 endif
-MIBSPI_OS_TESTPREFIX=
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
 CFLAGS_OS_DEFINES = -DFREERTOS
 EXTERNAL_INTERFACES = freertos
-MIBSPI_OS_TESTPREFIX=_Freertos
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 endif
 ifeq ($(BUILD_OS_TYPE),safertos)
 CFLAGS_OS_DEFINES = -DSAFERTOS
 EXTERNAL_INTERFACES = safertos
-MIBSPI_OS_TESTPREFIX=_Safertos
 COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
 endif
 
@@ -69,19 +46,19 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 ifeq ($(DMA), enable)
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_Dma_TestApp
+APP_NAME = MIBSPI_Loopback_Dma_TestApp_$(BUILD_OS_TYPE)
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_Dma_$(BOARD)_$(CORE)TestApp
+LOCAL_APP_NAME =  MIBSPI_Loopback_Dma_$(BOARD)_$(CORE)TestApp_$(BUILD_OS_TYPE)
 
 COMP_LIST_COMMON += mibspi_dma
 CFLAGS_SPI_DMA    = -DMIBSPI_DMA_ENABLE
 else
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_TestApp
+APP_NAME = MIBSPI_Loopback_TestApp_$(BUILD_OS_TYPE)
 
 # Name of the binary if different fmake clrom the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  MIBSPI$(MIBSPI_OS_TESTPREFIX)_Loopback_$(BOARD)_$(CORE)TestApp
+LOCAL_APP_NAME =  MIBSPI_Loopback_$(BOARD)_$(CORE)TestApp_$(BUILD_OS_TYPE)
 
 
 COMP_LIST_COMMON += mibspi
@@ -94,10 +71,6 @@ endif
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 
 # MIBSPI uses local linker command file to avoid code/data memory conflict with master application
-ifeq ($(BUILD_OS_TYPE),baremetal)
-EXTERNAL_LNKCMD_FILE_LOCAL =  ./$(SOC)/mss_spi_linker.cmd
-endif
-
 ifeq ($(BUILD_OS_TYPE), tirtos)
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
   EXTERNAL_LNKCMD_FILE_LOCAL =  ./$(SOC)/mss_spi_linker.cmd

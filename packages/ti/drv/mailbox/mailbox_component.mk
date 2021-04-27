@@ -34,9 +34,9 @@
 #
 ifeq ($(mailbox_component_make_include), )
 
+drvmailbox_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvmailbox_SOCLIST          = tpr12 am64x awr294x
 drvmailbox_tpr12_CORELIST   = mcu1_0 c66xdsp_1
-drvmailbox_safertos_tpr12_CORELIST   = c66xdsp_1
 drvmailbox_awr294x_CORELIST = mcu1_0 c66xdsp_1
 drvmailbox_am64x_CORELIST   = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvmailbox_am64x_rtos_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
@@ -84,50 +84,34 @@ export mailbox_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
 #
 # Mailbox Examples
 #
-
 # mailbox msg test app
-export mailbox_msg_testapp_COMP_LIST = mailbox_msg_testapp
-mailbox_msg_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_msg_testapp
-mailbox_msg_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_msg_testapp
-export mailbox_msg_testapp_MAKEFILE = -f makefile IS_TIRTOS=yes
-export mailbox_msg_testapp_BOARD_DEPENDENCY = yes
-export mailbox_msg_testapp_CORE_DEPENDENCY = yes
-export mailbox_msg_testapp_XDC_CONFIGURO = yes
-mailbox_msg_testapp_PKG_LIST = mailbox_msg_testapp
-mailbox_msg_testapp_INCLUDE = $(mailbox_msg_testapp_PATH)
-export mailbox_msg_testapp_BOARDLIST = $(drvmailbox_tpr_BOARDLIST)
-export mailbox_msg_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
-mailbox_EXAMPLE_LIST += mailbox_msg_testapp
+define mailbox_msg_testapp_RULE
 
-# mailbox freertos msg test app
-export mailbox_msg_freertos_testapp_COMP_LIST = mailbox_msg_freertos_testapp
-mailbox_msg_freertos_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_msg_testapp
-mailbox_msg_freertos_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_msg_testapp
-export mailbox_msg_freertos_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
-export mailbox_msg_freertos_testapp_BOARD_DEPENDENCY = yes
-export mailbox_msg_freertos_testapp_CORE_DEPENDENCY = yes
-export mailbox_msg_freertos_testapp_XDC_CONFIGURO = yes
-mailbox_msg_freertos_testapp_PKG_LIST = mailbox_msg_freertos_testapp
-mailbox_msg_freertos_testapp_INCLUDE = $(mailbox_msg_freertos_testapp_PATH)
-export mailbox_msg_freertos_testapp_BOARDLIST = $(drvmailbox_tpr_BOARDLIST)
-export mailbox_msg_freertos_testapp_$(SOC)_CORELIST = $(drvmailbox_$(SOC)_CORELIST)
-mailbox_EXAMPLE_LIST += mailbox_msg_freertos_testapp
-
-# mailbox safertos msg test app
-export mailbox_msg_safertos_testapp_COMP_LIST = mailbox_msg_safertos_testapp
-mailbox_msg_safertos_testapp_RELPATH = ti/drv/mailbox/examples/mailbox_msg_testapp
-mailbox_msg_safertos_testapp_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_msg_testapp
-export mailbox_msg_safertos_testapp_MAKEFILE = -f makefile IS_SAFERTOS=yes
-export mailbox_msg_safertos_testapp_BOARD_DEPENDENCY = yes
-export mailbox_msg_safertos_testapp_CORE_DEPENDENCY = yes
-export mailbox_msg_safertos_testapp_XDC_CONFIGURO = yes
-mailbox_msg_safertos_testapp_PKG_LIST = mailbox_msg_safertos_testapp
-mailbox_msg_safertos_testapp_INCLUDE = $(mailbox_msg_safertos_testapp_PATH)
-export mailbox_msg_safertos_testapp_BOARDLIST = $(drvmailbox_safertos_tpr_BOARDLIST)
-export mailbox_msg_safertos_testapp_$(SOC)_CORELIST = $(drvmailbox_safertos_$(SOC)_CORELIST)
+export mailbox_msg_testapp_$(1)_COMP_LIST = mailbox_msg_testapp_$(1)
+export mailbox_msg_testapp_$(1)_RELPATH = ti/drv/mailbox/examples/mailbox_msg_testapp
+export mailbox_msg_testapp_$(1)_PATH = $(PDK_MAILBOX_COMP_PATH)/examples/mailbox_msg_testapp
+export mailbox_msg_testapp_$(1)_BOARD_DEPENDENCY = yes
+export mailbox_msg_testapp_$(1)_CORE_DEPENDENCY = no
+export mailbox_msg_testapp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export mailbox_msg_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export mailbox_msg_testapp_$(1)_PKG_LIST = mailbox_msg_testapp_$(1)
+export mailbox_msg_testapp_$(1)_INCLUDE = $(mailbox_msg_testapp_$(1)_PATH)
+export mailbox_msg_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmailbox_tpr_BOARDLIST))
+export mailbox_msg_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmailbox_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+mailbox_EXAMPLE_LIST += mailbox_msg_testapp_$(1)
+else
 ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-mailbox_EXAMPLE_LIST += mailbox_msg_safertos_testapp
+mailbox_EXAMPLE_LIST += mailbox_msg_testapp_$(1)
 endif
+endif
+export mailbox_msg_testapp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+mailbox_msg_testapp_MACRO_LIST := $(foreach curos,$(drvmailbox_RTOS_LIST),$(call mailbox_msg_testapp_RULE,$(curos)))
+
+$(eval ${mailbox_msg_testapp_MACRO_LIST})
 
 # mailbox perf test app
 export mailbox_perf_testapp_COMP_LIST = mailbox_perf_testapp

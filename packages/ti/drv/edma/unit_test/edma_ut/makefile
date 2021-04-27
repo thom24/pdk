@@ -7,26 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-ifeq ($(IS_SAFERTOS),yes)
-BUILD_OS_TYPE = safertos
-endif
-
-ifeq ($(BUILD_OS_TYPE),tirtos)
-APP_NAME = edma_unit_testapp
-CFLAGS_TEST_DEFINES = -DUSE_BIOS
-endif
-ifeq ($(BUILD_OS_TYPE),freertos)
-APP_NAME = edma_freertos_unit_testapp
-CFLAGS_TEST_DEFINES = -DFREERTOS
-endif
-ifeq ($(BUILD_OS_TYPE),safertos)
-APP_NAME = edma_safertos_unit_testapp
-CFLAGS_TEST_DEFINES = -DSAFERTOS
-endif
+APP_NAME = edma_unit_testapp_$(BUILD_OS_TYPE)
 
 #
 # This file is common makefile for building UDMA memcpy test app for both TI-RTOS/baremetal
@@ -40,15 +21,18 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_TEST_DEFINES = -DUSE_BIOS
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
 INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_TEST_DEFINES = -DFREERTOS
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 INCLUDE_EXTERNAL_INTERFACES += freertos
 endif
 ifeq ($(BUILD_OS_TYPE),safertos)
+CFLAGS_TEST_DEFINES = -DSAFERTOS
 COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
 INCLUDE_EXTERNAL_INTERFACES += safertos
 endif
