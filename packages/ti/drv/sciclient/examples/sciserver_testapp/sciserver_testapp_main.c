@@ -45,6 +45,7 @@
 #include <ti/board/board.h>
 #include <ti/drv/sciclient/sciserver_tirtos.h>
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
 /* ========================================================================== */
@@ -82,6 +83,8 @@ int main(void)
     Sciclient_ConfigPrms_t clientPrms;
     Sciserver_TirtosCfgPrms_t appPrms;
 
+    OS_init();
+
     /* Sciclient needs to be initialized before Sciserver. Sciserver depends on
      * Sciclient API to execute message forwarding */
     ret = Sciclient_configPrmsInit(&clientPrms);
@@ -114,15 +117,15 @@ int main(void)
         App_sciclientConsoleInit();
     }
 
-   // App_sciclientPrintf("Sciserver Built On: %s %s\n", __DATE__, __TIME__);
+   App_sciclientPrintf("Sciserver Built On: %s %s\n", __DATE__, __TIME__);
     if (ret == CSL_PASS)
     {
-       // App_sciclientPrintf("Starting Sciserver..... PASSED\n");
+       App_sciclientPrintf("Starting Sciserver..... PASSED\n");
 
         uint32_t freqHz;
         Sciclient_pmGetModuleClkFreq(TISCI_DEV_GTC0, TISCI_DEV_GTC0_GTC_CLK,
             (uint64_t *) &freqHz, SCICLIENT_SERVICE_WAIT_FOREVER);
-       // App_sciclientPrintf("GTC freq: %d\n", freqHz);
+       App_sciclientPrintf("GTC freq: %d\n", freqHz);
 
         OS_start();
     }

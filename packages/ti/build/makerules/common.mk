@@ -492,7 +492,12 @@ SBL_APPIMAGE_PATH_SIGNED_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage.signed
 # Please refer the user guide for more details on sciclient server
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
-  MULTI_CORE_APP_PARAMS = $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/drv/sciclient/tools/ccsLoadDmsc/$(SOC)/sciserver_testapp_mcu1_0_release.rprc
+  ifneq ($(BUILD_OS_TYPE),baremetal)
+    MULTI_CORE_APP_PARAMS = $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/drv/sciclient/tools/ccsLoadDmsc/$(SOC)/sciserver_testapp_$(BUILD_OS_TYPE)_mcu1_0_release.rprc
+  else
+    #Use FreeRTOS version of Sciserver when running Baremetal apps
+    MULTI_CORE_APP_PARAMS = $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/drv/sciclient/tools/ccsLoadDmsc/$(SOC)/sciserver_testapp_freertos_mcu1_0_release.rprc
+  endif
 else
   MULTI_CORE_APP_PARAMS =
 endif

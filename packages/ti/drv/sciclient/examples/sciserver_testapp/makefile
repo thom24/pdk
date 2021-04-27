@@ -7,24 +7,10 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = sciserver_testapp
-BUILD_OS_TYPE=tirtos
-
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
-endif
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
+APP_NAME = sciserver_testapp_$(BUILD_OS_TYPE)
 
 SRCDIR = . ../common
 INCDIR = . ../common
-
-# List all the external components/interfaces, whose interface header files
-# need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk sciclient osal_tirtos board uart bios xdc
-
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON = sciserver_testapp_main.c \
@@ -37,8 +23,10 @@ PACKAGE_SRCS_COMMON = . ../common
 ifeq ($(BUILD_OS_TYPE),tirtos)
 # List all the components required by the application
 COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) bios xdc
+EXTERNAL_INTERFACES = bios xdc
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_sysbios.lds
+CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciserver_testapp/linker_r5_sysbios.lds
+COMP_LIST_COMMON += sciserver_tirtos
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
@@ -46,15 +34,17 @@ CFLAGS_OS_DEFINES = -DFREERTOS
 # List all the components required by the application
 COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES = freertos
-XDC_CFG_FILE_$(CORE) = 
-CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/$(APP_NAME)/linker_r5_freertos.lds
+CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciserver_testapp/linker_r5_freertos.lds
+COMP_LIST_COMMON += sciserver_freertos
 endif
 
-COMP_LIST_COMMON += sciserver_tirtos
+# List all the external components/interfaces, whose interface header files
+# need to be included for this component
+INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
-#   SRCS_<coqre/SoC/platform-name> =
+#   SRCS_<core/SoC/platform-name> =
 #   CFLAGS_LOCAL_<core/SoC/platform-name> =
 
 # Include common make files

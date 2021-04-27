@@ -57,6 +57,7 @@
 #include <ti/csl/hw_types.h>
 #include <sciclient_appCommon.h>
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
 /* ========================================================================== */
@@ -111,6 +112,8 @@ int main(void)
     App_SciclientC7xPreInit();
 
     uint32_t    retVal = CSL_PASS;
+
+    OS_init();
 
     TaskP_Params_init(&taskParams1);
     TaskP_Params_init(&taskParams2);

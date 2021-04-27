@@ -42,7 +42,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-
+#include <ti/osal/osal.h>
 #include <ti/osal/TimerP.h>
 #include <ti/osal/TaskP.h>
 
@@ -129,6 +129,8 @@ int main(void)
         CSL_clecConfigEvent(regs, 256 + 992, &evtCfg);
     }
     #endif
+
+    OS_init();
 
     TaskP_Params_init(&taskParams);
     taskParams.stack        = gAppTskStackMain;

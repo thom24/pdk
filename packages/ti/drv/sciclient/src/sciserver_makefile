@@ -7,19 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
-endif
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
-
-ifeq ($(BUILD_OS_TYPE), baremetal)
-MODULE_NAME = sciserver_baremetal
-else
-MODULE_NAME = sciserver_tirtos
-endif
+MODULE_NAME = sciserver_$(BUILD_OS_TYPE)
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
   SCISERVER_SOCVER = V1

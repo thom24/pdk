@@ -67,10 +67,9 @@ SECTIONS
 {
     .intc_text               : {} palign(8) > VECTORS
     .freertosrstvectors      : {} palign(8) > RESET_VECTORS
-    .bootCode                : {} palign(8) > OCMC_RAM
-    .startupCode             : {} palign(8) > OCMC_RAM
-    .text.hwi                : {} palign(8) > OCMC_RAM	
-    .startupData             : {} palign(8) > OCMC_RAM, type = NOINIT
+    .bootCode                : {} palign(8) > OCMRAM
+    .startupCode             : {} palign(8) > OCMRAM
+    .startupData             : {} palign(8) > OCMRAM, type = NOINIT
 
     .text                    : {} palign(8) > DDR0
     GROUP {

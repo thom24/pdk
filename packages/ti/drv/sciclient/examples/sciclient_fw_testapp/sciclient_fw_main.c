@@ -42,6 +42,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
+#include <ti/osal/osal.h>
 #include <ti/osal/TimerP.h>
 #include <ti/osal/TaskP.h>
 #include <ti/osal/CacheP.h>
@@ -122,6 +123,8 @@ int32_t Sciclient_fw_test(
 
 int32_t Sciclient_firewallBackground();
 
+void Sciclient_fw_abort_C_handler();
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -155,12 +158,19 @@ int main(void)
     CacheP_wbInv((const void*)CSL_MCU_ARMSS_ATCM_BASE, 0x60);
     CacheP_wbInv((const void*)&ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors, 0x60);
 #endif
-#if defined (FREERTOS)
-    *(uint32_t*) (CSL_MCU_ARMSS_ATCM_BASE + 0x30) = &Sciclient_fw_abort_handler;
 #endif
+#if defined (FREERTOS) && defined (BUILD_MCU)
+    /* Register exception handler */
+    /* This is needed for data abort which should occur during writing to firewalled region */
+    CSL_R5ExptnHandlers sciclientR5ExptnHandlers;
+    Intc_InitExptnHandlers(&sciclientR5ExptnHandlers);
+    sciclientR5ExptnHandlers.dabtExptnHandler = &Sciclient_fw_abort_C_handler;
+    Intc_RegisterExptnHandlers(&sciclientR5ExptnHandlers);
 #endif
 
     uint32_t retVal = CSL_PASS;
+
+    OS_init();
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 2;

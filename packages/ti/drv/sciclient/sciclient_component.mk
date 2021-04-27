@@ -34,6 +34,8 @@
 #
 ifeq ($(sciclient_component_make_include), )
 
+drvsciclient_RTOS_LIST           = $(DEFAULT_RTOS_LIST)
+
 ############################
 # sciclient package
 # List of components included under sciclient
@@ -46,10 +48,26 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 sciclient_LIB_LIST += rm_pm_hal 
-sciclient_LIB_LIST += sciserver_tirtos
 sciclient_LIB_LIST += sciserver_baremetal
 sciclient_LIB_LIST += sciclient_direct
 sciclient_LIB_LIST += sciclient_direct_hs
+
+define SCISERVER_RTOS_LIB_LIST_RULE
+
+ifneq ($(1),$(filter $(1), safertos))
+sciclient_LIB_LIST += sciserver_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+sciclient_LIB_LIST += sciserver_$(1)
+endif
+endif
+
+endef
+
+SCISERVER_RTOS_LIB_LIST_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCISERVER_RTOS_LIB_LIST_RULE,$(curos)))
+
+$(eval ${SCISERVER_RTOS_LIB_LIST_MACRO_LIST})
+
 endif
 
 drvsciclient_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
@@ -59,6 +77,16 @@ drvsciclient_j721e_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c
 drvsciclient_j7200_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvsciclient_am64x_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvsciclient_DISABLE_PARALLEL_MAKE = yes
+
+define DRV_SCICLIENT_RTOS_BOARDLIST_RULE
+
+drvsciclient_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvsciclient_BOARDLIST))
+
+endef
+
+DRV_SCICLIENT_RTOS_BOARDLIST_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call DRV_SCICLIENT_RTOS_BOARDLIST_RULE,$(curos)))
+
+$(eval ${DRV_SCICLIENT_RTOS_BOARDLIST_MACRO_LIST})
 
 export sciclient_COMP_LIST = sciclient
 export sciclient_RELPATH = ti/drv/sciclient
@@ -129,20 +157,29 @@ export sciclient_direct_hs_SOCLIST = j721e j7200
 export sciclient_direct_hs_BOARDLIST = j721e_evm j7200_evm
 export sciclient_direct_hs_$(SOC)_CORELIST = mcu1_0
 
-export sciserver_tirtos_COMP_LIST = sciserver_tirtos
-export sciserver_tirtos_RELPATH = ti/drv/sciserver_tirtos
-export sciserver_tirtos_OBJPATH = ti/drv/sciserver_tirtos
-export sciserver_tirtos_LIBNAME = sciserver_tirtos
-export sciserver_tirtos_PATH = $(PDK_SCICLIENT_COMP_PATH)
-export sciserver_tirtos_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-export sciserver_tirtos_MAKEFILE = -fsrc/sciserver_makefile IS_FREERTOS=yes
-export sciserver_tirtos_BOARD_DEPENDENCY = no
-export sciserver_tirtos_CORE_DEPENDENCY = yes
-export sciserver_tirtos_PKG_LIST = sciserver_tirtos
-export sciserver_tirtos_INCLUDE = $(sciserver_PATH)
-export sciserver_tirtos_SOCLIST = j721e j7200
-export sciserver_tirtos_BOARDLIST = j721e_evm j7200_evm
-export sciserver_tirtos_$(SOC)_CORELIST = mcu1_0
+define SCISERVER_RTOS_LIB_RULE
+
+export sciserver_$(1)_COMP_LIST = sciserver_$(1)
+export sciserver_$(1)_RELPATH = ti/drv/sciserver_$(1)
+export sciserver_$(1)_OBJPATH = ti/drv/sciserver_$(1)
+export sciserver_$(1)_LIBNAME = sciserver_$(1)
+export sciserver_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciserver_$(1)_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciserver_$(1)_MAKEFILE = -fsrc/sciserver_makefile BUILD_OS_TYPE=$(1)
+export sciserver_$(1)_BOARD_DEPENDENCY = no
+export sciserver_$(1)_CORE_DEPENDENCY = yes
+export sciserver_$(1)_PKG_LIST = sciserver_$(1)
+export sciserver_$(1)_INCLUDE = $(sciserver_PATH)
+export sciserver_$(1)_SOCLIST = $(filter $(DEFAULT_SOCLIST_$(1)), j721e j7200)
+export sciserver_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm)
+export sciserver_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+
+endef
+
+SCISERVER_RTOS_LIB_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCISERVER_RTOS_LIB_RULE,$(curos)))
+
+$(eval ${SCISERVER_RTOS_LIB_MACRO_LIST})
+
 
 export sciserver_baremetal_COMP_LIST = sciserver_baremetal
 export sciserver_baremetal_RELPATH = ti/drv/sciserver_baremetal
@@ -150,7 +187,7 @@ export sciserver_baremetal_OBJPATH = ti/drv/sciserver_baremetal
 export sciserver_baremetal_LIBNAME = sciserver_baremetal
 export sciserver_baremetal_PATH = $(PDK_SCICLIENT_COMP_PATH)
 export sciserver_baremetal_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-export sciserver_baremetal_MAKEFILE = -fsrc/sciserver_makefile IS_BAREMETAL=yes
+export sciserver_baremetal_MAKEFILE = -fsrc/sciserver_makefile BUILD_OS_TYPE=baremetal
 export sciserver_baremetal_BOARD_DEPENDENCY = no
 export sciserver_baremetal_CORE_DEPENDENCY = yes
 export sciserver_baremetal_PKG_LIST = sciserver_baremetal
@@ -230,98 +267,140 @@ export sciclient_ccs_init_SBL_APPIMAGEGEN = no
 export sciclient_ccs_init_SBL_IMAGEGEN = yes
 sciclient_EXAMPLE_LIST += sciclient_ccs_init
 
-# SCICLIENT RTOS Application
-export sciclient_rtos_app_COMP_LIST = sciclient_rtos_app
-export sciclient_rtos_app_RELPATH = ti/drv/sciclient/examples/sciclient_rtos_app
-export sciclient_rtos_app_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_rtos_app
-export sciclient_rtos_app_BOARD_DEPENDENCY = no
-export sciclient_rtos_app_CORE_DEPENDENCY = yes
-export sciclient_rtos_app_PKG_LIST = sciclient_rtos_app
-export sciclient_rtos_app_INCLUDE = $(sciclient_rtos_app_PATH)
-export sciclient_rtos_app_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm
+# SCICLIENT RTOS Applications
+define SCICLIENT_RTOS_APP_RULE
+
+export sciclient_rtos_app_$(1)_COMP_LIST = sciclient_rtos_app_$(1)
+export sciclient_rtos_app_$(1)_RELPATH = ti/drv/sciclient/examples/sciclient_rtos_app
+export sciclient_rtos_app_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_rtos_app
+export sciclient_rtos_app_$(1)_BOARD_DEPENDENCY = no
+export sciclient_rtos_app_$(1)_CORE_DEPENDENCY = yes
+export sciclient_rtos_app_$(1)_PKG_LIST = sciclient_rtos_app_$(1)
+export sciclient_rtos_app_$(1)_INCLUDE = $(sciclient_rtos_app_$(1)_PATH)
+export sciclient_rtos_app_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm)
 ifeq ($(SOC), am64x)
 # No M4F for the RTOS App
-export sciclient_rtos_app_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+export sciclient_rtos_app_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else
-export sciclient_rtos_app_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
+export sciclient_rtos_app_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvsciclient_$(SOC)_CORELIST))
 endif
-export sciclient_rtos_app_SBL_APPIMAGEGEN = yes
-export sciclient_rtos_app_SBL_IMAGEGEN = no
-# Free RTOS is currently only supported on R5Fs.
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
-export sciclient_rtos_app_MAKEFILE = -f makefile IS_FREERTOS=yes
+export sciclient_rtos_app_$(1)_SBL_APPIMAGEGEN = yes
+export sciclient_rtos_app_$(1)_SBL_IMAGEGEN = no
+export sciclient_rtos_app_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export sciclient_rtos_app_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+ifneq ($(1),$(filter $(1), safertos))
+sciclient_EXAMPLE_LIST += sciclient_rtos_app_$(1)
 else
-export sciclient_rtos_app_XDC_CONFIGURO = yes
-export sciclient_rtos_app_MAKEFILE = -f makefile
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+sciclient_EXAMPLE_LIST += sciclient_rtos_app_$(1)
 endif
-sciclient_EXAMPLE_LIST += sciclient_rtos_app
+endif
 
-# SCICLIENT UT
-export sciclient_unit_testapp_COMP_LIST = sciclient_unit_testapp
-export sciclient_unit_testapp_RELPATH = ti/drv/sciclient/examples/sciclient_unit_testapp
-export sciclient_unit_testapp_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_unit_testapp
-export sciclient_unit_testapp_BOARD_DEPENDENCY = no
-export sciclient_unit_testapp_CORE_DEPENDENCY = yes
-export sciclient_unit_testapp_PKG_LIST = sciclient_unit_testapp
-export sciclient_unit_testapp_INCLUDE = $(sciclient_unit_testapp_PATH)
-export sciclient_unit_testapp_BOARDLIST = am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm
+endef
+
+SCICLIENT_RTOS_APP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCICLIENT_RTOS_APP_RULE,$(curos)))
+
+$(eval ${SCICLIENT_RTOS_APP_MACRO_LIST})
+
+
+# SCICLIENT RTOS UTs
+define SCICLIENT_UNIT_TESTAPP_RULE
+
+export sciclient_unit_testapp_$(1)_COMP_LIST = sciclient_unit_testapp_$(1)
+export sciclient_unit_testapp_$(1)_RELPATH = ti/drv/sciclient/examples/sciclient_unit_testapp
+export sciclient_unit_testapp_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_unit_testapp
+export sciclient_unit_testapp_$(1)_BOARD_DEPENDENCY = no
+export sciclient_unit_testapp_$(1)_CORE_DEPENDENCY = yes
+export sciclient_unit_testapp_$(1)_PKG_LIST = sciclient_unit_testapp_$(1)
+export sciclient_unit_testapp_$(1)_INCLUDE = $(sciclient_unit_testapp_$(1)_PATH)
+export sciclient_unit_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_evm j721e_sim j721e_evm am64x_evm j7200_evm)
 ifeq ($(SOC),am64x)
 # No M4F for the RTOS App
-export sciclient_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+export sciclient_unit_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else
-export sciclient_unit_testapp_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
+export sciclient_unit_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvsciclient_$(SOC)_CORELIST))
 endif
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm))
-export sciclient_unit_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-endif
-export sciclient_unit_testapp_SBL_APPIMAGEGEN = no
+export sciclient_unit_testapp_$(1)_SBL_APPIMAGEGEN = no
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
-export sciclient_unit_testapp_SBL_APPIMAGEGEN = yes
+export sciclient_unit_testapp_$(1)_SBL_APPIMAGEGEN = yes
 endif
-export sciclient_unit_testapp_SBL_IMAGEGEN = no
-# Free RTOS is currently only supported on R5Fs.
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
-export sciclient_unit_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
+export sciclient_unit_testapp_$(1)_SBL_IMAGEGEN = no
+export sciclient_unit_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export sciclient_unit_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+ifneq ($(1),$(filter $(1), safertos))
+sciclient_EXAMPLE_LIST += sciclient_unit_testapp_$(1)
 else
-export sciclient_unit_testapp_MAKEFILE = -f makefile
-export sciclient_unit_testapp_XDC_CONFIGURO = yes
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+sciclient_EXAMPLE_LIST += sciclient_unit_testapp_$(1)
 endif
-sciclient_EXAMPLE_LIST += sciclient_unit_testapp
+endif
 
-# SCISERVER
-export sciserver_testapp_COMP_LIST = sciserver_testapp
-export sciserver_testapp_RELPATH = ti/drv/sciclient/examples/sciserver_testapp
-export sciserver_testapp_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciserver_testapp
-export sciserver_testapp_BOARD_DEPENDENCY = no
-export sciserver_testapp_CORE_DEPENDENCY = yes
-export sciserver_testapp_PKG_LIST = sciserver_testapp
-export sciserver_testapp_INCLUDE = $(sciserver_testapp_PATH)
-export sciserver_testapp_BOARDLIST = j721e_evm j7200_evm
-export sciserver_testapp_$(SOC)_CORELIST = mcu1_0
-export sciserver_testapp_SBL_APPIMAGEGEN = yes
-export sciserver_testapp_SBL_IMAGEGEN = no
-# Free RTOS is currently only supported on R5Fs.
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
-export sciserver_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
+endef
+
+SCICLIENT_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCICLIENT_UNIT_TESTAPP_RULE,$(curos)))
+
+$(eval ${SCICLIENT_UNIT_TESTAPP_MACRO_LIST})
+
+
+# SCISERVER RTOS Apps
+define SCISERVER_TESTAPP_RULE
+
+export sciserver_testapp_$(1)_COMP_LIST = sciserver_testapp_$(1)
+export sciserver_testapp_$(1)_RELPATH = ti/drv/sciclient/examples/sciserver_testapp
+export sciserver_testapp_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciserver_testapp
+export sciserver_testapp_$(1)_BOARD_DEPENDENCY = no
+export sciserver_testapp_$(1)_CORE_DEPENDENCY = yes
+export sciserver_testapp_$(1)_PKG_LIST = sciserver_testapp_$(1)
+export sciserver_testapp_$(1)_INCLUDE = $(sciserver_testapp_$(1)_PATH)
+export sciserver_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm)
+export sciserver_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+export sciserver_testapp_$(1)_SBL_APPIMAGEGEN = yes
+export sciserver_testapp_$(1)_SBL_IMAGEGEN = no
+export sciserver_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export sciserver_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+ifneq ($(1),$(filter $(1), safertos))
+sciclient_EXAMPLE_LIST += sciserver_testapp_$(1)
 else
-export sciserver_testapp_MAKEFILE = -f makefile
-export sciserver_testapp_XDC_CONFIGURO = yes
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+sciclient_EXAMPLE_LIST += sciserver_testapp_$(1)
 endif
-sciclient_EXAMPLE_LIST += sciserver_testapp
+endif
 
-# SCICLIENT Firewall Unit test
-export sciclient_fw_testapp_COMP_LIST = sciclient_fw_testapp
-export sciclient_fw_testapp_RELPATH = ti/drv/sciclient/examples/sciclient_fw_testapp
-export sciclient_fw_testapp_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_fw_testapp
-export sciclient_fw_testapp_BOARD_DEPENDENCY = no
-export sciclient_fw_testapp_CORE_DEPENDENCY = yes
-export sciclient_fw_testapp_PKG_LIST = sciclient_fw_testapp
-export sciclient_fw_testapp_BOARDLIST = am65xx_evm j721e_evm j7200_evm
-export sciclient_fw_testapp_$(SOC)_CORELIST = mcu1_0
-export sciclient_fw_testapp_SBL_APPIMAGEGEN = yes
-export sciclient_fw_testapp_SBL_IMAGEGEN = no
-export sciclient_fw_testapp_MAKEFILE = -f makefile IS_FREERTOS=yes
-sciclient_EXAMPLE_LIST += sciclient_fw_testapp
+endef
+
+SCISERVER_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCISERVER_TESTAPP_RULE,$(curos)))
+
+$(eval ${SCISERVER_TESTAPP_MACRO_LIST})
+
+
+# SCICLIENT RTOS Firewall Unit tests
+define SCICLIENT_FW_TESTAPP_RULE
+
+export sciclient_fw_testapp_$(1)_COMP_LIST = sciclient_fw_testapp_$(1)
+export sciclient_fw_testapp_$(1)_RELPATH = ti/drv/sciclient/examples/sciclient_fw_testapp
+export sciclient_fw_testapp_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_fw_testapp
+export sciclient_fw_testapp_$(1)_BOARD_DEPENDENCY = no
+export sciclient_fw_testapp_$(1)_CORE_DEPENDENCY = yes
+export sciclient_fw_testapp_$(1)_PKG_LIST = sciclient_fw_testapp_$(1)
+export sciclient_fw_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_evm j721e_evm j7200_evm)
+export sciclient_fw_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+export sciclient_fw_testapp_$(1)_SBL_APPIMAGEGEN = yes
+export sciclient_fw_testapp_$(1)_SBL_IMAGEGEN = no
+export sciclient_fw_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+ifneq ($(1),$(filter $(1), safertos))
+sciclient_EXAMPLE_LIST += sciclient_fw_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+sciclient_EXAMPLE_LIST += sciclient_fw_testapp_$(1)
+endif
+endif
+
+endef
+
+SCICLIENT_FW_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCICLIENT_FW_TESTAPP_RULE,$(curos)))
+
+$(eval ${SCICLIENT_FW_TESTAPP_MACRO_LIST})
+
 
 export sciclient_LIB_LIST
 export sciclient_EXAMPLE_LIST

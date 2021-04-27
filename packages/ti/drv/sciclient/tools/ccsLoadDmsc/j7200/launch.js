@@ -47,6 +47,8 @@
 
 
 //<!!!!!! EDIT THIS !!!!!>
+// Set this to 0, if using 'tirtos' instead of 'freertos'
+isFreertos = 1;  
 // Set this to 1 to allow loading the GEL files directly from the ccxml file.
 disableGelLoad = 0;
 // Set to 1 to use the firmware with Firewalls.
@@ -62,7 +64,16 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 pathSciclient = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j7200/"
 ccs_init_elf_file = pathSciclient+"sciclient_ccs_init_mcu1_0_release.xer5f";
 loadSciserverFlag = 1;
-sciserver_elf_file = pathSciclient+"sciserver_testapp_mcu1_0_release.xer5f";
+if(isFreertos == 1)
+{
+    //Path to FreeRTOS sciserver
+    sciserver_elf_file = pathSciclient+"sciserver_testapp_freertos_mcu1_0_release.xer5f";
+}
+else
+{
+    //Path to TIRTOS sciserver
+    sciserver_elf_file = pathSciclient+"sciserver_testapp_tirtos_mcu1_0_release.xer5f";
+}
 
 //path to sysfw bin
 sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-j7200-gp.bin"

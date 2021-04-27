@@ -7,15 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = sciclient_rtos_app
-
-BUILD_OS_TYPE = tirtos
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
-endif
-ifeq ($(IS_FREERTOS),yes)
-BUILD_OS_TYPE = freertos
-endif
+APP_NAME = sciclient_rtos_app_$(BUILD_OS_TYPE)
 
 SRCDIR = . $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/common
 INCDIR = . $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/common
@@ -32,7 +24,6 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 CFLAGS_OS_DEFINES = -DFREERTOS
 COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES = freertos
-XDC_CFG_FILE_$(CORE) =
 endif
 
 # List all the external components/interfaces, whose interface header files
