@@ -47,7 +47,7 @@ MEMORY
 
     VECTORS                     (RWIX)  : ORIGIN = 0x41C3E000 LENGTH = 0x00000100
     RESET_VECTORS               (RWIX)  : ORIGIN = 0x41C3E100 LENGTH = 0x00001000
-    OCMRAM                      (RWIX)  : ORIGIN = 0x41C3F100 LENGTH = 0x00040F00
+    OCMC_RAM                    (RWIX)  : ORIGIN = 0x41C3F100 LENGTH = 0x00040F00
 
     /*====================== COMPUTE_CLUSTER0_MSMC_SRAM =======================*/
     MSMC3                       (RWIX)  : ORIGIN = 0x70000000 LENGTH = 0x001EFC00
@@ -67,10 +67,10 @@ SECTIONS
 {
     .intc_text               : {} palign(8) > VECTORS
     .freertosrstvectors      : {} palign(8) > RESET_VECTORS
-    .bootCode                : {} palign(8) > OCMRAM
-    .startupCode             : {} palign(8) > OCMRAM
-    .text.hwi                : {} palign(8) > OCMRAM	
-    .startupData             : {} palign(8) > OCMRAM, type = NOINIT
+    .bootCode                : {} palign(8) > OCMC_RAM
+    .startupCode             : {} palign(8) > OCMC_RAM
+    .text.hwi                : {} palign(8) > OCMC_RAM	
+    .startupData             : {} palign(8) > OCMC_RAM, type = NOINIT
 
     .text                    : {} palign(8) > DDR0
     GROUP {
