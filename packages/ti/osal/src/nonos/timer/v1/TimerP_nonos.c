@@ -44,6 +44,10 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 
+#if defined(FREERTOS)
+#include <FreeRTOS.h>
+#endif
+
 /* DM Timer Implementation */
 extern void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line);
 #define TIMOSAL_Assert(expression) (Osal_DebugP_assert(((int32_t)((expression)?1:0)),\
@@ -928,6 +932,15 @@ TimerP_Status TimerP_setPeriodMicroSecs(TimerP_Handle handle, uint32_t microsecs
 /* Get time in micro seconds */
 uint64_t TimerP_getTimeInUsecs(void)
 {
+    uint64_t         curTime;
+    #if defined(FREERTOS)
+    /* In case of FreeRTOS get the current counter value from
+     * the timer used by OS itself, instead of using an 
+     * additional timer for the same */
+    /* uiPortGetRunTimeCounterValue returns current counter value 
+     * in units of 10's of usecs */
+    curTime = uiPortGetRunTimeCounterValue()*10U;
+    #else
     TimeStamp_Struct timestamp64;
     uint64_t         cur_ts, freq;
     uint32_t         tsFreqKHz;
@@ -935,12 +948,13 @@ uint64_t TimerP_getTimeInUsecs(void)
     /* Get the timestamp */
     osalArch_TimestampGet64(&timestamp64);
 
-    /* Get the frequency of the timeStatmp provider */
+    /* Get the frequency of the timeStamp provider */
     tsFreqKHz  = (uint32_t)osalArch_TimeStampGetFreqKHz();
 
     cur_ts = ((uint64_t) timestamp64.hi << 32U) | timestamp64.lo;
     freq = (uint64_t) (tsFreqKHz);
-
-    return ((cur_ts*1000u)/freq);
+    curTime = (cur_ts*1000u)/freq;
+    #endif
+    return (curTime);
 }
 /* This file implements the DM timer osal functions on AM devices */
