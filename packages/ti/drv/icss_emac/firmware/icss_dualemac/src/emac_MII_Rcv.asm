@@ -598,6 +598,11 @@ SET_FORWARDING:
     .endif ; ICSS_STP_SWITCH
     QBBS    FB_NO_CT, R23, 0 ;Xmt_active            ; check if we can set cut-through
     QBBC    FB_NO_CT, R22, 31 ;PACKET_TX_ALLOWED
+    ;If two ports are configured at two different speeds dont do cut-through
+    LDI     RCV_TEMP_REG_2.w0, PHY_SPEED_OFFSET       
+    LBCO    &RCV_TEMP_REG_1.w0, PRU1_DMEM_CONST , RCV_TEMP_REG_2.w0, 2
+    LBCO    &RCV_TEMP_REG_1.w2, PRU0_DMEM_CONST , RCV_TEMP_REG_2.w0, 2
+    QBNE    FB_NO_CT, RCV_TEMP_REG_1.w0, RCV_TEMP_REG_1.w2
     QBA        FB_CT_HANDLING
     
 FB_NO_CT:
