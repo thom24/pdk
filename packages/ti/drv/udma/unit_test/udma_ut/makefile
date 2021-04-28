@@ -3,9 +3,9 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-APP_NAME = udma_unit_testapp
+APP_NAME = udma_unit_testapp_$(BUILD_OS_TYPE)
 ifeq ($(UDMA_UT_MANUAL_ENTRY), yes)
-APP_NAME = udma_user_input_unit_testapp
+APP_NAME = udma_user_input_unit_testapp_$(BUILD_OS_TYPE)
 endif
 ifeq ($(UDMA_UT_BAREMETAL), yes)
 APP_NAME = udma_baremetal_unit_testapp
@@ -32,11 +32,17 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA),$(filter $(ISA), a53 a72))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
   endif
-else
+endif
+ifeq ($(BUILD_OS_TYPE), tirtos)
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
   COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-  SRCS_COMMON = main_tirtos.c
+  SRCS_COMMON = main_rtos.c
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+ifeq ($(BUILD_OS_TYPE), freertos)
+  COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+  INCLUDE_EXTERNAL_INTERFACES += freertos
+  SRCS_COMMON = main_rtos.c
 endif
 # List all the specific components required by the application
 COMP_LIST_COMMON += udma_apputils
@@ -55,10 +61,10 @@ ifneq ($(SOC),$(filter $(SOC), am64x))
 SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
 endif
 SRCS_COMMON += utils_trace.c
-ifeq ($(BUILD_OS_TYPE), baremetal)
-SRCS_COMMON += utils_prf_baremetal.c utils_mem_baremetal.c
-else
+ifeq ($(BUILD_OS_TYPE), tirtos)
 SRCS_COMMON += utils_prf.c utils_mem.c
+else
+SRCS_COMMON += utils_prf_baremetal.c utils_mem_baremetal.c
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(UDMAUT_CFLAGS) 
@@ -77,8 +83,12 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   else
     EXTERNAL_LNKCMD_FILE_LOCAL = baremetal/$(SOC)/linker_$(ISA).lds
   endif
-else
-EXTERNAL_LNKCMD_FILE_LOCAL = rtos/$(SOC)/linker_$(CORE).lds
+endif
+ifeq ($(BUILD_OS_TYPE), tirtos)
+  EXTERNAL_LNKCMD_FILE_LOCAL = rtos/$(SOC)/linker_$(CORE).lds
+endif
+ifeq ($(BUILD_OS_TYPE), freertos)
+  APPEND_LNKCMD_FILE = rtos/linker_append.cmd
 endif
 
 # Core/SoC/platform specific source files and CFLAGS

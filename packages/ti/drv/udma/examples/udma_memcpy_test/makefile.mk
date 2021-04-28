@@ -14,11 +14,17 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA),$(filter $(ISA), a53 a72))
     LNKFLAGS_LOCAL_$(CORE) += --entry Entry
   endif
-else
+endif
+ifeq ($(BUILD_OS_TYPE), tirtos)
   COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  SRCS_COMMON = main_tirtos.c
+  SRCS_COMMON = main_rtos.c
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+ifeq ($(BUILD_OS_TYPE), freertos)
+  COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+  INCLUDE_EXTERNAL_INTERFACES += freertos
+  SRCS_COMMON = main_rtos.c
 endif
 
 # List all the specific components required by the application

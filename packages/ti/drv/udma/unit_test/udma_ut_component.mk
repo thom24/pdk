@@ -52,37 +52,68 @@ drvudma_dynamic_ut_am64x_CORELIST  = mcu1_0
 udma_ut_LIB_LIST =
 udma_ut_EXAMPLE_LIST =
 
-# udma unit test app
-export udma_unit_testapp_COMP_LIST = udma_unit_testapp
-udma_unit_testapp_RELPATH = ti/drv/udma/unit_test/udma_ut
-udma_unit_testapp_PATH = $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut
-export udma_unit_testapp_MAKEFILE = -fmakefile
-export udma_unit_testapp_BOARD_DEPENDENCY = yes
-export udma_unit_testapp_CORE_DEPENDENCY = yes
-export udma_unit_testapp_XDC_CONFIGURO = yes
-udma_unit_testapp_PKG_LIST = udma_unit_testapp
-udma_unit_testapp_INCLUDE = $(udma_unit_testapp_PATH)
-export udma_unit_testapp_BOARDLIST = $(drvudma_BOARDLIST)
-export udma_unit_testapp_$(SOC)_CORELIST = $(drvudma_ut_$(SOC)_CORELIST)
-export udma_unit_testapp_SBL_APPIMAGEGEN = yes
-udma_ut_EXAMPLE_LIST += udma_unit_testapp
 
-# udma unit test app - with user input
-export udma_user_input_unit_testapp_COMP_LIST = udma_user_input_unit_testapp
-udma_user_input_unit_testapp_RELPATH = ti/drv/udma/unit_test/udma_ut
-udma_user_input_unit_testapp_PATH = $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut
-export udma_user_input_unit_testapp_MAKEFILE = -fmakefile UDMA_UT_MANUAL_ENTRY=yes
-export udma_user_input_unit_testapp_BOARD_DEPENDENCY = yes
-export udma_user_input_unit_testapp_CORE_DEPENDENCY = yes
-export udma_user_input_unit_testapp_XDC_CONFIGURO = yes
-udma_user_input_unit_testapp_PKG_LIST = udma_user_input_unit_testapp
-udma_user_input_unit_testapp_INCLUDE = $(udma_user_input_unit_testapp_PATH)
-export udma_user_input_unit_testapp_BOARDLIST = $(drvudma_BOARDLIST)
-export udma_user_input_unit_testapp_$(SOC)_CORELIST = $(drvudma_ut_$(SOC)_CORELIST)
-export udma_user_input_unit_testapp_SBL_APPIMAGEGEN = yes
-udma_ut_EXAMPLE_LIST += udma_user_input_unit_testapp
+# RTOS udma unit test apps
+define UDMA_UNIT_TESTAPP_RULE
 
-# udma unit test app
+export udma_unit_testapp_$(1)_COMP_LIST = udma_unit_testapp_$(1)
+udma_unit_testapp_$(1)_RELPATH = ti/drv/udma/unit_test/udma_ut
+udma_unit_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut
+export udma_unit_testapp_$(1)_MAKEFILE = -fmakefile  BUILD_OS_TYPE=$(1)
+export udma_unit_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_unit_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_unit_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+udma_unit_testapp_$(1)_PKG_LIST = udma_unit_testapp_$(1)
+udma_unit_testapp_$(1)_INCLUDE = $(udma_unit_testapp_$(1)_PATH)
+export udma_unit_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_unit_testapp_$(1)_$(SOC)_CORELIST =  $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_ut_$(SOC)_CORELIST))
+export udma_unit_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_ut_EXAMPLE_LIST += udma_unit_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_ut_EXAMPLE_LIST += udma_unit_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_UNIT_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_UNIT_TESTAPP_MACRO_LIST})
+
+
+# RTOS udma unit test apps - with user input
+define UDMA_USER_INPUT_UNIT_TESTAPP_RULE
+
+export udma_user_input_unit_testapp_$(1)_COMP_LIST = udma_user_input_unit_testapp_$(1)
+udma_user_input_unit_testapp_$(1)_RELPATH = ti/drv/udma/unit_test/udma_ut
+udma_user_input_unit_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut
+export udma_user_input_unit_testapp_$(1)_MAKEFILE = -fmakefile  BUILD_OS_TYPE=$(1) UDMA_UT_MANUAL_ENTRY=yes
+export udma_user_input_unit_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_user_input_unit_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_user_input_unit_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+udma_user_input_unit_testapp_$(1)_PKG_LIST = udma_user_input_unit_testapp_$(1)
+udma_user_input_unit_testapp_$(1)_INCLUDE = $(udma_user_input_unit_testapp_$(1)_PATH)
+export udma_user_input_unit_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_user_input_unit_testapp_$(1)_$(SOC)_CORELIST =  $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_ut_$(SOC)_CORELIST))
+export udma_user_input_unit_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_ut_EXAMPLE_LIST += udma_user_input_unit_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_ut_EXAMPLE_LIST += udma_user_input_unit_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_USER_INPUT_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_USER_INPUT_UNIT_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_USER_INPUT_UNIT_TESTAPP_MACRO_LIST})
+
+
+# udma baremetal unit test app
 export udma_baremetal_unit_testapp_COMP_LIST = udma_baremetal_unit_testapp
 udma_baremetal_unit_testapp_RELPATH = ti/drv/udma/unit_test/udma_ut
 udma_baremetal_unit_testapp_PATH = $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut
@@ -97,7 +128,7 @@ export udma_baremetal_unit_testapp_$(SOC)_CORELIST = $(drvudma_ut_$(SOC)_CORELIS
 export udma_baremetal_unit_testapp_SBL_APPIMAGEGEN = yes
 udma_ut_EXAMPLE_LIST += udma_baremetal_unit_testapp
 
-# udma unit test app - for dynamic analysis
+# udma baremetal unit test app - for dynamic analysis
 export udma_dynamic_unit_testapp_COMP_LIST = udma_dynamic_unit_testapp
 udma_dynamic_unit_testapp_RELPATH = ti/drv/udma/unit_test/udma_ut
 udma_dynamic_unit_testapp_PATH = $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut

@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = udma_chaining_testapp
+APP_NAME = udma_chaining_testapp_$(BUILD_OS_TYPE)
 
 SRCDIR = .
 INCDIR =
@@ -16,15 +16,22 @@ INCDIR =
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-# List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+ifeq ($(BUILD_OS_TYPE), tirtos)
+  # List all the components required by the application
+  COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
+  INCLUDE_EXTERNAL_INTERFACES += xdc bios
+  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+ifeq ($(BUILD_OS_TYPE), freertos)
+  COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+  INCLUDE_EXTERNAL_INTERFACES += freertos
+endif
+
 COMP_LIST_COMMON += udma_apputils
-INCLUDE_EXTERNAL_INTERFACES += xdc bios
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
-SRCS_COMMON = main_tirtos.c udma_chaining_test.c
+SRCS_COMMON = main_rtos.c udma_chaining_test.c
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 # Core/SoC/platform specific source files and CFLAGS

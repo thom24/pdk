@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -31,25 +31,19 @@
  */
 
 /**
- *  \file main_tirtos.c
+ *  \file main_rtos.c
  *
- *  \brief Main file for TI-RTOS build
+ *  \brief Main file for RTOS build
  */
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
+#include <ti/osal/osal.h>
+#include <ti/osal/TaskP.h>
 #include <ti/board/board.h>
-
-#include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
+#include <udma_test.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -64,7 +58,6 @@
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 #endif
 
-
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -75,8 +68,7 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static Void taskFxn(UArg a0, UArg a1);
-extern int32_t Udma_druTest(void);
+void taskFxn(void *a0, void *a1);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -91,44 +83,28 @@ static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32))
 
 int main(void)
 {
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
-
-    Error_init(&eb);
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
     Udma_appC7xPreInit();
 
-    /* Initialize the task params */
-    Task_Params_init(&taskParams);
-    /* Set the task priority higher than the default priority (1) */
-    taskParams.priority     = 2;
-    taskParams.stack        = gAppTskStackMain;
-    taskParams.stackSize    = sizeof (gAppTskStackMain);
+    OS_init();
 
-    task = Task_create(taskFxn, &taskParams, &eb);
+    /* Initialize the task params */
+    TaskP_Params_init(&taskParams);
+    /* Set the task priority higher than the default priority (1) */
+    taskParams.priority = 2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+
+    task = TaskP_create(taskFxn, &taskParams);
     if(NULL == task)
     {
-        BIOS_exit(0);
+        OS_stop();
     }
-    BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
 
     return(0);
-}
-
-static Void taskFxn(UArg a0, UArg a1)
-{
-    Board_initCfg boardCfg;
-
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_UART_STDIO;
-    Board_init(boardCfg);
-
-    Udma_appC66xIntrConfig();
-
-    Udma_druTest();
-
-    return;
 }
 
 #if defined(BUILD_MPU) || defined (__C7100__)

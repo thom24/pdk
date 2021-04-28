@@ -34,6 +34,11 @@
 #
 ifeq ($(udma_component_make_include), )
 
+# List with various rtos_types(such as tirtos(sysbios),freertos,safertos) to build RTOS apps. 
+# Use the Default List defined in 'ti/build/makerules/component.mk'
+# This list will be used to generate RTOS app make rule for each rtos_type.
+drvudma_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
+
 drvudma_SOCLIST         = am65xx j721e j7200 am64x
 drvudma_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvudma_dru_BOARDLIST   = am65xx_evm am65xx_idk j721e_evm
@@ -41,6 +46,24 @@ drvudma_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
 drvudma_j721e_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1 c7x-hostemu
 drvudma_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvudma_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
+
+# Define the rule to generate UDMA Drivers BOARDLIST for each rtos_type
+# Default BOARDLIST for each rtos_type is defined in 'ti/build/makerules/component.mk'
+# The following rule filters out UDMA Drivers BOARDLIST for each rtos_type.
+# Here $(1) refers tot the first argument passed to the rule.
+# In this case it is $(curos), each instance in "drvudma_RTOS_LIST" (ie, tirtos/freertos/safertos..)
+define DRV_UDMA_BOARDLIST_RULE
+
+drvudma_$(1)_BOARDLIST     = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvudma_BOARDLIST))
+drvudma_dru_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvudma_dru_BOARDLIST))
+
+endef
+
+# Define the macro list with rules of all rtos_types
+DRV_UDMA_BOARDLIST_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call DRV_UDMA_BOARDLIST_RULE,$(curos)))
+
+# Evaluate the macro list to generate BOARDLIST for all rtos_types
+$(eval ${DRV_UDMA_BOARDLIST_MACRO_LIST})
 
 ifneq ($(SOC),$(filter $(SOC), am64x am65xx))
 drvudma_$(SOC)_example_CORELIST = $(drvudma_$(SOC)_CORELIST)
@@ -164,38 +187,94 @@ export dmautils_baremetal_autoinc_circular_testapp_BOARDLIST = j721e_hostemu j72
 export dmautils_baremetal_autoinc_circular_testapp_$(SOC)_CORELIST = c7x_1 c7x-hostemu
 udma_EXAMPLE_LIST += dmautils_baremetal_autoinc_circular_testapp
 
-# UDMA memcpy test app
-export udma_memcpy_testapp_COMP_LIST = udma_memcpy_testapp
-udma_memcpy_testapp_RELPATH = ti/drv/udma/examples/udma_memcpy_test
-udma_memcpy_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_memcpy_test
-export udma_memcpy_testapp_BOARD_DEPENDENCY = yes
-export udma_memcpy_testapp_CORE_DEPENDENCY = yes
-export udma_memcpy_testapp_XDC_CONFIGURO = yes
-udma_memcpy_testapp_PKG_LIST = udma_memcpy_testapp
-udma_memcpy_testapp_INCLUDE = $(udma_memcpy_testapp_PATH)
-export udma_memcpy_testapp_BOARDLIST = $(drvudma_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_memcpy_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
-else
-export udma_memcpy_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
-endif
-export udma_memcpy_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_memcpy_testapp
+# RTOS UDMA memcpy test apps
 
-# UDMA memcpy test app
-export udma_memcpy_smp_testapp_COMP_LIST = udma_memcpy_smp_testapp
-udma_memcpy_smp_testapp_RELPATH = ti/drv/udma/examples/udma_memcpy_test
-udma_memcpy_smp_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_memcpy_test
-udma_memcpy_smp_testapp_MAKEFILE = -f makefile SMP=enable
-export udma_memcpy_smp_testapp_BOARD_DEPENDENCY = yes
-export udma_memcpy_smp_testapp_CORE_DEPENDENCY = yes
-export udma_memcpy_smp_testapp_XDC_CONFIGURO = yes
-udma_memcpy_smp_testapp_PKG_LIST = udma_memcpy_smp_testapp
-udma_memcpy_smp_testapp_INCLUDE = $(udma_memcpy_smp_testapp_PATH)
-export udma_memcpy_smp_testapp_BOARDLIST = am65xx_idk
-export udma_memcpy_smp_testapp_$(SOC)_CORELIST = mpu1_0
-export udma_memcpy_smp_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_memcpy_smp_testapp
+# Define the rule to generate the 'UDMA memcpy test app' make rule for each rtos_type
+# - Here $(1) refers to the first argument passed to the rule.
+#   - In this case it is $(curos), each instance in "drvudma_RTOS_LIST" (ie, tirtos/freertos/safertos)
+# - The target name will be <app_name>_<rtos_type> (ie, udma_memcpy_testapp_tirtos/udma_memcpy_testapp_freertos/...)
+# - Set XDC_CONFIGURO only for 'rtos_type = tirtos'
+# - Pass the arg BUILD_OS_TYPE=<rtos_type> to the common makefile for all rtos_types
+#   - In the common makefile, make use the param $(BUILD_OS_TYPE)
+#   - For example:
+#       APP_NAME = udma_memcpy_testapp_$(BUILD_OS_TYPE)
+#       ifeq ($(BUILD_OS_TYPE), tirtos)
+#           INCLUDE_EXTERNAL_INTERFACES += xdc bios
+#       endif
+#       ifeq ($(BUILD_OS_TYPE), tirtos)
+#           INCLUDE_EXTERNAL_INTERFACES += freertos
+#       endif
+# - Here BOARDLIST passed for the target is drivers BOARDLIST for the particular rtos_type(ie, $(drvudma_$(rtos_type)_BOARDLIST). )
+#   - If passing a custom or common BOARDLIST, one **should** always filter with Default BOARDLIST for each rtos_type(ie, $(DEFAULT_BOARDLIST_$(rtos_type)). )
+#   - For example "export udma_memcpy_testapp_$(1)_BOARDLIST =  $(filter $(DEFAULT_BOARDLIST_$(1)), am64x_evm j721e_evm )
+#   - This is because, in case of passing custom or common BOARDLIST, some boards may not be supporting all rtos_types
+# - CORELIST passed for the target **should** always be filtered with the Default CORELIST of the SOC for each rtos_type (ie, $(DEFAULT_$(SOC)_CORELIST_$(1)). )
+#   - The default CORELIST of an SOC for each rtos_type is defined in 'ti/build/makerules/component.mk'
+#   - This is because some rtos_type won't be supported on specific cores. (For example, FreeRTOS is not supported on mpu1_0 core)
+# - SafeRTOS example should be added to the example list only if SafeRTOS Kernel is present in the path.
+define UDMA_MEMCPY_TESTAPP_RULE
+
+export udma_memcpy_testapp_$(1)_COMP_LIST = udma_memcpy_testapp_$(1)
+udma_memcpy_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_memcpy_test
+udma_memcpy_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_memcpy_test
+export udma_memcpy_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_memcpy_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_memcpy_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_memcpy_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_memcpy_testapp_$(1)_PKG_LIST = udma_memcpy_testapp_$(1)
+udma_memcpy_testapp_$(1)_INCLUDE = $(udma_memcpy_testapp_$(1)_PATH)
+export udma_memcpy_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+export udma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1)
+else
+export udma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_$(SOC)_example_CORELIST))
+endif
+export udma_memcpy_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_memcpy_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_memcpy_testapp_$(1)
+endif
+endif
+
+endef
+
+# Define the macro list with 'UDMA memcpy test app' rule of all rtos_types
+UDMA_MEMCPY_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_MEMCPY_TESTAPP_RULE,$(curos)))
+
+# Evaluate the macro list to generate 'UDMA memcpy test app' make rule for all rtos_types
+$(eval ${UDMA_MEMCPY_TESTAPP_MACRO_LIST})
+
+
+# RTOS UDMA memcpy test apps with SMP enabled
+define UDMA_MEMCPY_SMP_TESTAPP_RULE
+
+export udma_memcpy_smp_testapp_$(1)_COMP_LIST = udma_memcpy_smp_testapp_$(1)
+udma_memcpy_smp_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_memcpy_test
+udma_memcpy_smp_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_memcpy_test
+export udma_memcpy_smp_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_memcpy_smp_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_memcpy_smp_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_memcpy_smp_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) SMP=enable
+udma_memcpy_smp_testapp_$(1)_PKG_LIST = udma_memcpy_smp_testapp_$(1)
+udma_memcpy_smp_testapp_$(1)_INCLUDE = $(udma_memcpy_smp_testapp_$(1)_PATH)
+export udma_memcpy_smp_testapp_$(1)_BOARDLIST =  $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_idk )
+export udma_memcpy_smp_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
+export udma_memcpy_smp_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_memcpy_smp_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_memcpy_smp_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_MEMCPY_SMP_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_MEMCPY_SMP_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_MEMCPY_SMP_TESTAPP_MACRO_LIST})
 
 # UDMA memcpy baremetal test app
 export udma_baremetal_memcpy_testapp_COMP_LIST = udma_baremetal_memcpy_testapp
@@ -215,109 +294,193 @@ endif
 export udma_baremetal_memcpy_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_baremetal_memcpy_testapp
 
-# UDMA chaining test app
-export udma_chaining_testapp_COMP_LIST = udma_chaining_testapp
-udma_chaining_testapp_RELPATH = ti/drv/udma/examples/udma_chaining_test
-udma_chaining_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_chaining_test
-export udma_chaining_testapp_BOARD_DEPENDENCY = yes
-export udma_chaining_testapp_CORE_DEPENDENCY = yes
-export udma_chaining_testapp_XDC_CONFIGURO = yes
-udma_chaining_testapp_PKG_LIST = udma_chaining_testapp
-udma_chaining_testapp_INCLUDE = $(udma_chaining_testapp_PATH)
-export udma_chaining_testapp_BOARDLIST = $(drvudma_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_chaining_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0
-else
-export udma_chaining_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
-endif
-export udma_chaining_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_chaining_testapp
+# RTOS UDMA chaining test apps
+define UDMA_CHAINING_TESTAPP_RULE
 
-# UDMA SW trigger test app
-export udma_sw_trigger_testapp_COMP_LIST = udma_sw_trigger_testapp
-udma_sw_trigger_testapp_RELPATH = ti/drv/udma/examples/udma_sw_trigger_test
-udma_sw_trigger_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_sw_trigger_test
-export udma_sw_trigger_testapp_BOARD_DEPENDENCY = yes
-export udma_sw_trigger_testapp_CORE_DEPENDENCY = yes
-export udma_sw_trigger_testapp_XDC_CONFIGURO = yes
-udma_sw_trigger_testapp_PKG_LIST = udma_sw_trigger_testapp
-udma_sw_trigger_testapp_INCLUDE = $(udma_sw_trigger_testapp_PATH)
-export udma_sw_trigger_testapp_BOARDLIST = $(drvudma_BOARDLIST)
-export udma_sw_trigger_testapp_$(SOC)_CORELIST = mcu1_0
-export udma_sw_trigger_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_sw_trigger_testapp
-
-# UDMA DRU test app
-export udma_dru_testapp_COMP_LIST = udma_dru_testapp
-udma_dru_testapp_RELPATH = ti/drv/udma/examples/udma_dru_test
-udma_dru_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_dru_test
-export udma_dru_testapp_BOARD_DEPENDENCY = yes
-export udma_dru_testapp_CORE_DEPENDENCY = yes
-export udma_dru_testapp_XDC_CONFIGURO = yes
-udma_dru_testapp_PKG_LIST = udma_dru_testapp
-udma_dru_testapp_INCLUDE = $(udma_dru_testapp_PATH)
-export udma_dru_testapp_BOARDLIST = $(drvudma_dru_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_dru_testapp_$(SOC)_CORELIST = mcu2_0 c66xdsp_1 c66xdsp_2 c7x_1
+export udma_chaining_testapp_$(1)_COMP_LIST = udma_chaining_testapp_$(1)
+udma_chaining_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_chaining_test
+udma_chaining_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_chaining_test
+export udma_chaining_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_chaining_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_chaining_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_chaining_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_chaining_testapp_$(1)_PKG_LIST = udma_chaining_testapp_$(1)
+udma_chaining_testapp_$(1)_INCLUDE = $(udma_chaining_testapp_$(1)_PATH)
+export udma_chaining_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_chaining_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0)
+export udma_chaining_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_chaining_testapp_$(1)
 else
-export udma_dru_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_chaining_testapp_$(1)
 endif
-export udma_dru_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_dru_testapp
+endif
 
-# UDMA DRU Direct TR test app
-export udma_dru_direct_tr_testapp_COMP_LIST = udma_dru_direct_tr_testapp
-udma_dru_direct_tr_testapp_RELPATH = ti/drv/udma/examples/udma_dru_direct_tr_test
-udma_dru_direct_tr_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_dru_direct_tr_test
-export udma_dru_direct_tr_testapp_BOARD_DEPENDENCY = yes
-export udma_dru_direct_tr_testapp_CORE_DEPENDENCY = yes
-export udma_dru_direct_tr_testapp_XDC_CONFIGURO = yes
-udma_dru_direct_tr_testapp_PKG_LIST = udma_dru_direct_tr_testapp
-udma_dru_direct_tr_testapp_INCLUDE = $(udma_dru_direct_tr_testapp_PATH)
-export udma_dru_direct_tr_testapp_BOARDLIST = $(drvudma_dru_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = mcu2_0 c66xdsp_1 c7x_1
-else
-export udma_dru_direct_tr_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
-endif
-export udma_dru_direct_tr_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_dru_direct_tr_testapp
+endef
 
-# UDMA CRC test app
-export udma_crc_testapp_COMP_LIST = udma_crc_testapp
-udma_crc_testapp_RELPATH = ti/drv/udma/examples/udma_crc_test
-udma_crc_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_crc_test
-export udma_crc_testapp_BOARD_DEPENDENCY = yes
-export udma_crc_testapp_CORE_DEPENDENCY = yes
-export udma_crc_testapp_XDC_CONFIGURO = yes
-udma_crc_testapp_PKG_LIST = udma_crc_testapp
-udma_crc_testapp_INCLUDE = $(udma_crc_testapp_PATH)
-export udma_crc_testapp_BOARDLIST = $(drvudma_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_crc_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0
-else
-export udma_crc_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
-endif
-export udma_crc_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_crc_testapp
+UDMA_CHAINING_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_CHAINING_TESTAPP_RULE,$(curos)))
 
-# UDMA ADC test app
-export udma_adc_testapp_COMP_LIST = udma_adc_testapp
-udma_adc_testapp_RELPATH = ti/drv/udma/examples/udma_adc_test
-udma_adc_testapp_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_adc_test
-export udma_adc_testapp_BOARD_DEPENDENCY = yes
-export udma_adc_testapp_CORE_DEPENDENCY = yes
-export udma_adc_testapp_XDC_CONFIGURO = yes
-udma_adc_testapp_PKG_LIST = udma_adc_testapp
-udma_adc_testapp_INCLUDE = $(udma_adc_testapp_PATH)
-export udma_adc_testapp_BOARDLIST = $(drvudma_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e))
-export udma_adc_testapp_$(SOC)_CORELIST = mpu1_0 mcu1_0
+$(eval ${UDMA_CHAINING_TESTAPP_MACRO_LIST})
+
+
+# RTOS UDMA SW trigger test apps
+define UDMA_SW_TRIGGER_TESTAPP_RULE
+
+export udma_sw_trigger_testapp_$(1)_COMP_LIST = udma_sw_trigger_testapp_$(1)
+udma_sw_trigger_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_sw_trigger_test
+udma_sw_trigger_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_sw_trigger_test
+export udma_sw_trigger_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_sw_trigger_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_sw_trigger_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_sw_trigger_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_sw_trigger_testapp_$(1)_PKG_LIST = udma_sw_trigger_testapp_$(1)
+udma_sw_trigger_testapp_$(1)_INCLUDE = $(udma_sw_trigger_testapp_$(1)_PATH)
+export udma_sw_trigger_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_sw_trigger_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+export udma_sw_trigger_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_sw_trigger_testapp_$(1)
 else
-export udma_adc_testapp_$(SOC)_CORELIST = $(drvudma_$(SOC)_example_CORELIST)
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_sw_trigger_testapp_$(1)
 endif
-export udma_adc_testapp_SBL_APPIMAGEGEN = yes
-udma_EXAMPLE_LIST += udma_adc_testapp
+endif
+
+endef
+
+UDMA_SW_TRIGGER_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_SW_TRIGGER_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_SW_TRIGGER_TESTAPP_MACRO_LIST})
+
+
+# RTOS UDMA DRU test apps
+define UDMA_DRU_TESTAPP_RULE
+
+export udma_dru_testapp_$(1)_COMP_LIST = udma_dru_testapp_$(1)
+udma_dru_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_dru_test
+udma_dru_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_dru_test
+export udma_dru_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_dru_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_dru_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_dru_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_dru_testapp_$(1)_PKG_LIST = udma_dru_testapp_$(1)
+udma_dru_testapp_$(1)_INCLUDE = $(udma_dru_testapp_$(1)_PATH)
+export udma_dru_testapp_$(1)_BOARDLIST = $(drvudma_dru_$(1)_BOARDLIST)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+export udma_dru_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c66xdsp_1 c66xdsp_2 c7x_1)
+else
+export udma_dru_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_$(SOC)_example_CORELIST))
+endif
+export udma_dru_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_dru_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_dru_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_DRU_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_DRU_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_DRU_TESTAPP_MACRO_LIST})
+
+
+# RTOS UDMA DRU Direct TR test apps
+define UDMA_DRU_DIRECT_TR_TESTAPP_RULE
+
+export udma_dru_direct_tr_testapp_$(1)_COMP_LIST = udma_dru_direct_tr_testapp_$(1)
+udma_dru_direct_tr_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_dru_direct_tr_test
+udma_dru_direct_tr_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_dru_direct_tr_test
+export udma_dru_direct_tr_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_dru_direct_tr_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_dru_direct_tr_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_dru_direct_tr_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_dru_direct_tr_testapp_$(1)_PKG_LIST = udma_dru_direct_tr_testapp_$(1)
+udma_dru_direct_tr_testapp_$(1)_INCLUDE = $(udma_dru_direct_tr_testapp_$(1)_PATH)
+export udma_dru_direct_tr_testapp_$(1)_BOARDLIST = $(drvudma_dru_$(1)_BOARDLIST)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+export udma_dru_direct_tr_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c66xdsp_1 c7x_1)
+else
+export udma_dru_direct_tr_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_$(SOC)_example_CORELIST))
+endif
+export udma_dru_direct_tr_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_dru_direct_tr_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_dru_direct_tr_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_DRU_DIRECT_TR_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_DRU_DIRECT_TR_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_DRU_DIRECT_TR_TESTAPP_MACRO_LIST})
+
+
+# RTOS UDMA CRC test apps
+define UDMA_CRC_TESTAPP_RULE
+
+export udma_crc_testapp_$(1)_COMP_LIST = udma_crc_testapp_$(1)
+udma_crc_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_crc_test
+udma_crc_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_crc_test
+export udma_crc_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_crc_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_crc_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_crc_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_crc_testapp_$(1)_PKG_LIST = udma_crc_testapp_$(1)
+udma_crc_testapp_$(1)_INCLUDE = $(udma_crc_testapp_$(1)_PATH)
+export udma_crc_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_crc_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0)
+export udma_crc_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_crc_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_crc_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_CRC_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_CRC_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_CRC_TESTAPP_MACRO_LIST})
+
+
+# RTOS UDMA ADC test apps
+define UDMA_ADC_TESTAPP_RULE
+
+export udma_adc_testapp_$(1)_COMP_LIST = udma_adc_testapp_$(1)
+udma_adc_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_adc_test
+udma_adc_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_adc_test
+export udma_adc_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_adc_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_adc_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export udma_adc_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_adc_testapp_$(1)_PKG_LIST = udma_adc_testapp_$(1)
+udma_adc_testapp_$(1)_INCLUDE = $(udma_adc_testapp_$(1)_PATH)
+export udma_adc_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_adc_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0)
+export udma_adc_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_adc_testapp_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+udma_EXAMPLE_LIST += udma_adc_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_ADC_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_ADC_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_ADC_TESTAPP_MACRO_LIST})
+
 
 # UDMA Baremetal OSPI Flash test app
 export udma_baremetal_ospi_flash_testapp_COMP_LIST = udma_baremetal_ospi_flash_testapp
