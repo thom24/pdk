@@ -980,8 +980,12 @@ void TimeSync_writeTsSingleStepSync(TimeSync_Handle timeSyncHandle,
 static int32_t TimeSync_openDma(void)
 {
     int32_t status = TIMESYNC_OK;
+    EnetDma_Handle hDma;
     EnetUdma_OpenRxFlowPrms cpswRxFlowCfg;
     EnetUdma_OpenTxChPrms cpswTxChCfg;
+
+    hDma = Enet_getDmaHandle(gTimeSyncCpswObj.hEnet);
+    EnetAppUtils_assert(hDma != NULL);
 
     /* Open the CPSW TX channel  */
     if (status == TIMESYNC_OK)
@@ -1050,7 +1054,7 @@ static int32_t TimeSync_openDma(void)
             cpswRxFlowCfg.startIdx = gTimeSyncCpswObj.rxFlowStartIdx;
             cpswRxFlowCfg.flowIdx  = gTimeSyncCpswObj.rxFlowIdx;
 
-            gTimeSyncCpswObj.hRxFlow = EnetDma_openRxCh(&cpswRxFlowCfg);
+            gTimeSyncCpswObj.hRxFlow = EnetDma_openRxCh(hDma, &cpswRxFlowCfg);
             if (NULL == gTimeSyncCpswObj.hRxFlow)
             {
                 EnetAppUtils_freeRxFlow(gTimeSyncCpswObj.hEnet,
