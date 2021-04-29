@@ -23,7 +23,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include "pinmux.h"
+#include <ti/board/src/am65xx_idk/include/pinmux.h>
 #include "csl_types.h"
 
 #ifdef __cplusplus
