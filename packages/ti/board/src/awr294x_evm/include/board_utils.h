@@ -56,6 +56,9 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
+#define BOARD_PLL_MODE1    (0U)
+#define BOARD_PLL_MODE2    (1U)
+
 /**
  * \brief Structure to configure the board I2C parameters
  */
@@ -68,6 +71,18 @@ typedef struct Board_I2cInitCfg_s
     /** I2C controller interrupt enable/disable flag */
     bool enableIntr;
 } Board_I2cInitCfg_t;
+
+/**
+ * \brief Structure to configure the board init parameters
+ */
+typedef struct Board_initParams_s
+{
+    /** PLL mode selection
+        BOARD_PLL_MODE1 - Enable PLL mode 1 (Default)
+        BOARD_PLL_MODE2 - Enable PLL mode 2
+     */
+    uint32_t pllMode;
+} Board_initParams_t;
 
 /**
  * \brief Function to get I2C configurations used by board
@@ -91,6 +106,41 @@ Board_STATUS Board_getI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
  *
  */
 Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg);
+
+/**
+ * \brief Function to get board init params
+ *
+ *  This function shall be used to know the current board init
+ *  parameters and update them if needed using the function Board_setInitParams.
+ *
+ * \param   initParams  [IN]  Board init params structure
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_getInitParams(Board_initParams_t *initParams);
+
+/**
+ * \brief Function to configure board init parameters
+ *
+ *  Board init params includes the parameters used by Board_init
+ *  function for different operations. Default init parameters
+ *  used by Board_init can be updated using this function.
+ *  All the default params can be overwritten by calling this function
+ *  or some of can be changed by reading the existing init parameters
+ *  using Board_getInitParams function.
+ *
+ * Usage:
+ * Call Board_getInitParams to get the default board init parameters
+ * Update the parameters as needed
+ * Call Board_setInitParams to update the default board init parameters
+ *
+ * \param   initCfg  [IN]  Board Init config structure
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code.
+ *
+ */
+Board_STATUS Board_setInitParams(Board_initParams_t *initParams);
 
 /**
  *  \brief    Function to generate delay in micro seconds
