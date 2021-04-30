@@ -74,7 +74,7 @@ extern "C" {
  *            For 8bit data size, the maximum transfer size is 64 bytes
  *            For 16bit data size, the maximum transfer size is 128 bytes
  */
-#define MIBSPI_RAM_MAX_ELEM          64U
+#define MIBSPI_RAM_MAX_ELEM          128U
 
 /**
  * @brief
