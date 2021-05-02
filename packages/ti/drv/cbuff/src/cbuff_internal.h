@@ -476,12 +476,12 @@ typedef struct CBUFF_Session_t
     /**
      * @brief   Number of frame done interrupts received
      */
-    uint32_t                        numFrameDone;
+    volatile uint32_t               numFrameDone;
 
     /**
      * @brief   Number of chirp done interrupts received
      */
-    uint32_t                        numChirpDone;
+    volatile uint32_t               numChirpDone;
 }CBUFF_Session;
 
 /**
@@ -540,12 +540,12 @@ typedef struct CBUFF_DriverMCB_t
     /**
      * @brief   Total number of frame done interrupts received
      */
-    uint32_t                        totalNumFrameDone;
+    volatile uint32_t               totalNumFrameDone;
 
     /**
      * @brief   Total number of chirp done interrupts received
      */
-    uint32_t                        totalNumChirpDone;
+    volatile uint32_t               totalNumChirpDone;
 
     /**
      * @brief   Number of interrupts received when there is no active session
@@ -555,7 +555,7 @@ typedef struct CBUFF_DriverMCB_t
     /**
      * @brief   Total number of error interrupts received
      */
-    uint32_t                        totalNumErrorInterrupts;
+    volatile uint32_t               totalNumErrorInterrupts;
 }CBUFF_DriverMCB;
 
 /**

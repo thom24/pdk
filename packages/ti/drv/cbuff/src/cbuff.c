@@ -723,12 +723,22 @@ static void CBUFF_ISR (uintptr_t arg)
 static void CBUFF_ErrorISR (uintptr_t arg)
 {
     CBUFF_DriverMCB*        ptrDriverMCB;
+    uint8_t                 isFrameError = 0;
+    uint8_t                 isChirpError = 0;
 
     /* Get the pointer to the driver MCB: */
     ptrDriverMCB = (CBUFF_DriverMCB*)arg;
 
     /* Sanity Check: */
     DebugP_assert (ptrDriverMCB != NULL);
+
+    /* Get the CBUFF Error Status: */
+    isFrameError = (uint8_t)HW_GET_FIELD(ptrDriverMCB->ptrCBUFFReg->STAT_CBUFF_REG1, CSL_CBUFF_STAT_CBUFF_REG1_S_FRAME_ERR);
+    isChirpError = (uint8_t)HW_GET_FIELD(ptrDriverMCB->ptrCBUFFReg->STAT_CBUFF_REG1, CSL_CBUFF_STAT_CBUFF_REG1_S_CHIRP_ERR);
+
+    /* Clear the CBUFF Error Status: */
+    HW_SET_FIELD32(ptrDriverMCB->ptrCBUFFReg->CLR_CBUFF_REG1, CSL_CBUFF_STAT_CBUFF_REG1_S_FRAME_ERR, (uint32_t)isFrameError);
+    HW_SET_FIELD32(ptrDriverMCB->ptrCBUFFReg->CLR_CBUFF_REG1, CSL_CBUFF_STAT_CBUFF_REG1_S_CHIRP_ERR, (uint32_t)isChirpError);
 
     /* Increment the error counter */
     ptrDriverMCB->totalNumErrorInterrupts++;
