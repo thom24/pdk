@@ -59,11 +59,7 @@ endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
-
-INCDIR =  ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS/include
-INCDIR += $(PDK_SAFERTOS_COMP_PATH)/portable/TI_CGT/$(ISA)
-INCDIR += $(PDK_SAFERTOS_COMP_PATH)/config/$(SOC)/$(ISA)
+INCLUDE_EXTERNAL_INTERFACES = pdk safertos
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
 

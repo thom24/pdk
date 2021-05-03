@@ -136,7 +136,6 @@ export ns_PATH := $(NS_INSTALL_PATH)
 export radarLink_PATH := $(RADARLINK_INSTALL_PATH)
 export ipc_PATH := $(IPC_INSTALL_PATH)
 export uia_PATH := $(UIA_INSTALL_PATH)
-export safertos_PATH := $(SAFERTOS_KERNEL_INSTALL_PATH)
 
 export ROOTDIR := $(pdk_PATH)
 XDCPATH =
