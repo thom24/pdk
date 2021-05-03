@@ -517,26 +517,14 @@ int32_t TimeSync_adjTimeSlowComp(TimeSync_Handle timeSyncHandle,
 {
     int32_t status = TIMESYNC_OK;
     Enet_IoctlPrms prms;
-    EnetTimeSync_TimestampAdj setTsPpmInArgs;
-    int32_t ppmVal = 0;
-
-    ppmVal = ((double)(adjOffset) / (double)(interval)) * TIMESYNC_PPM_VALUE;
+    EnetTimeSync_TimestampAdj adjTsInArgs;
 
     if (timeSyncHandle != NULL)
     {
-        setTsPpmInArgs.mode = ENET_TIMESYNC_ADJMODE_PPM;
-        if (ppmVal < 0)
-        {
-            setTsPpmInArgs.dir = ENET_TIMESYNC_ADJDIR_DECREASE;
-            setTsPpmInArgs.adjVal = (-1 * ppmVal);
-        }
-        else
-        {
-            setTsPpmInArgs.dir = ENET_TIMESYNC_ADJDIR_INCREASE;
-            setTsPpmInArgs.adjVal = ppmVal;
-        }
+        adjTsInArgs.adjValInNsecs   = adjOffset;
+        adjTsInArgs.intervalInNsecs = interval;
 
-        ENET_IOCTL_SET_IN_ARGS(&prms, &setTsPpmInArgs);
+        ENET_IOCTL_SET_IN_ARGS(&prms, &adjTsInArgs);
         status = Enet_ioctl(timeSyncHandle->hEnet,
                             timeSyncHandle->coreId,
                             ENET_TIMESYNC_IOCTL_ADJUST_TIMESTAMP,
