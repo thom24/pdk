@@ -741,7 +741,8 @@ int total_frames_sent=0;
 Void Audio_echo_Task()
 {
     Mcasp_HwInfo hwInfo;
-    volatile int32_t i32Count, status = 0;
+    volatile int32_t status = 0;
+    uint32_t i32Count;
 	hMcaspDev  = NULL;
     uint32_t timeout = 0, maxTimeout = 0;
     int32_t txSemStatus, rxSemStatus;
