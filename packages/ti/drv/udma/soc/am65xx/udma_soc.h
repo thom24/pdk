@@ -211,16 +211,6 @@ extern "C" {
 /* @} */
 
 /**
- *  \anchor Udma_RmResId
- *  \name UDMA Resources ID
- *
- *  List of all UDMA Resources Id's.
- *
- *  @{
- */
-/* @} */
-
-/**
  *  \anchor Udma_DruSubmitCoreId
  *  \name DRU core ID register to use for direct TR submission.
  *   Each CPU should have a unique submit register to avoid corrupting
