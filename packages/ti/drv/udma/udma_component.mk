@@ -233,7 +233,7 @@ export udma_memcpy_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_memcpy_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_memcpy_testapp_$(1)
 endif
 endif
@@ -265,7 +265,7 @@ export udma_memcpy_smp_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_memcpy_smp_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_memcpy_smp_testapp_$(1)
 endif
 endif
@@ -312,7 +312,7 @@ export udma_chaining_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_chaining_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_chaining_testapp_$(1)
 endif
 endif
@@ -342,7 +342,7 @@ export udma_sw_trigger_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_sw_trigger_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_sw_trigger_testapp_$(1)
 endif
 endif
@@ -376,7 +376,7 @@ export udma_dru_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_dru_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_dru_testapp_$(1)
 endif
 endif
@@ -410,7 +410,7 @@ export udma_dru_direct_tr_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_dru_direct_tr_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_dru_direct_tr_testapp_$(1)
 endif
 endif
@@ -440,7 +440,7 @@ export udma_crc_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_crc_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_crc_testapp_$(1)
 endif
 endif
@@ -470,7 +470,7 @@ export udma_adc_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_adc_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_EXAMPLE_LIST += udma_adc_testapp_$(1)
 endif
 endif

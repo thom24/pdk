@@ -126,7 +126,7 @@ export watchdog_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIS
 ifneq ($(1),$(filter $(1), safertos))
 watchdog_EXAMPLE_LIST += watchdog_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 watchdog_EXAMPLE_LIST += watchdog_testapp_$(1)
 endif
 endif

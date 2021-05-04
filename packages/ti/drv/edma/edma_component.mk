@@ -116,7 +116,7 @@ export edma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORE
 ifneq ($(1),$(filter $(1), safertos))
 edma_EXAMPLE_LIST += edma_memcpy_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 edma_EXAMPLE_LIST += edma_memcpy_testapp_$(1)
 endif
 endif
@@ -146,7 +146,7 @@ export edma_unit_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELI
 ifneq ($(1),$(filter $(1), safertos))
 edma_EXAMPLE_LIST += edma_unit_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 edma_EXAMPLE_LIST += edma_unit_testapp_$(1)
 endif
 endif

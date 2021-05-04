@@ -180,7 +180,7 @@ export MIBSPI_Loopback_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_
 ifneq ($(1),$(filter $(1), safertos))
 mibspi_EXAMPLE_LIST += MIBSPI_Loopback_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 mibspi_EXAMPLE_LIST += MIBSPI_Loopback_TestApp_$(1)
 endif
 endif
@@ -209,7 +209,7 @@ export MIBSPI_Loopback_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(S
 ifneq ($(1),$(filter $(1), safertos))
 mibspi_EXAMPLE_LIST += MIBSPI_Loopback_Dma_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 mibspi_EXAMPLE_LIST += MIBSPI_Loopback_Dma_TestApp_$(1)
 endif
 endif

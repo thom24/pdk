@@ -290,7 +290,7 @@ export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST
 ifneq ($(1),$(filter $(1), safertos))
 gpio_EXAMPLE_LIST += GPIO_LedBlink_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 gpio_EXAMPLE_LIST += GPIO_LedBlink_TestApp_$(1)
 endif
 endif

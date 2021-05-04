@@ -851,7 +851,7 @@ export QSPI_Flash_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_COREL
 ifneq ($(1),$(filter $(1), safertos))
 spi_EXAMPLE_LIST += QSPI_Flash_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 spi_EXAMPLE_LIST += QSPI_Flash_TestApp_$(1)
 endif
 endif
@@ -896,7 +896,7 @@ export QSPI_Flash_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_C
 ifneq ($(1),$(filter $(1), safertos))
 spi_EXAMPLE_LIST += QSPI_Flash_Dma_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 spi_EXAMPLE_LIST += QSPI_Flash_Dma_TestApp_$(1)
 endif
 endif

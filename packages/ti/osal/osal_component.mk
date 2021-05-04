@@ -119,7 +119,7 @@ osal_LIB_LIST += osal_tirtos osal_tirtos_indp
 endif
 osal_LIB_LIST += osal_freertos
 ifeq ($(SOC),$(filter $(SOC), $(libosal_safertos_SOCLIST)))
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 osal_LIB_LIST += osal_safertos
 endif
 endif
@@ -341,7 +341,7 @@ export OSAL_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(
 ifneq ($(1),$(filter $(1), safertos))
 osal_EXAMPLE_LIST += OSAL_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 osal_EXAMPLE_LIST += OSAL_TestApp_$(1)
 endif
 endif

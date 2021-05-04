@@ -101,7 +101,7 @@ export mailbox_msg_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORE
 ifneq ($(1),$(filter $(1), safertos))
 mailbox_EXAMPLE_LIST += mailbox_msg_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 mailbox_EXAMPLE_LIST += mailbox_msg_testapp_$(1)
 endif
 endif

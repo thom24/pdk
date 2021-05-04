@@ -101,7 +101,7 @@ export crc_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1
 ifneq ($(1),$(filter $(1), safertos))
 crc_EXAMPLE_LIST += crc_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 crc_EXAMPLE_LIST += crc_testapp_$(1)
 endif
 endif

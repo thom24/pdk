@@ -75,8 +75,9 @@ safertos_tpr12_CORELIST  = c66xdsp_1
 # List of components included under safertos lib
 # The components included here are built and will be part of safertos lib
 ############################
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 safertos_LIB_LIST = safertos
-
+endif
 
 
 ############################
@@ -87,10 +88,11 @@ safertos_LIB_LIST = safertos
 ############################
 safertos_EXAMPLE_LIST =
 
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 ifeq ($(SOC),$(filter $(SOC), $(safertos_SOCLIST)))
 safertos_EXAMPLE_LIST =  safertos_test_task_switch
 endif
-
+endif
 
 #
 # safertos Modules

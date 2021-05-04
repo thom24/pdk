@@ -446,7 +446,7 @@ endif
 ifneq ($(1),$(filter $(1), safertos))
 uart_EXAMPLE_LIST += UART_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 uart_EXAMPLE_LIST += UART_TestApp_$(1)
 endif
 endif
@@ -478,7 +478,7 @@ endif
 ifneq ($(1),$(filter $(1), safertos))
 uart_EXAMPLE_LIST += UART_SMP_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 uart_EXAMPLE_LIST += UART_SMP_TestApp_$(1)
 endif
 endif
@@ -514,7 +514,7 @@ endif
 ifneq ($(1),$(filter $(1), safertos))
 uart_EXAMPLE_LIST += UART_DMA_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 uart_EXAMPLE_LIST += UART_DMA_TestApp_$(1)
 endif
 endif
@@ -546,7 +546,7 @@ endif
 ifneq ($(1),$(filter $(1), safertos))
 uart_EXAMPLE_LIST += UART_DMA_SMP_TestApp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 uart_EXAMPLE_LIST += UART_DMA_SMP_TestApp_$(1)
 endif
 endif

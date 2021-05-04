@@ -71,7 +71,7 @@ export udma_unit_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_ut_EXAMPLE_LIST += udma_unit_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_ut_EXAMPLE_LIST += udma_unit_testapp_$(1)
 endif
 endif
@@ -101,7 +101,7 @@ export udma_user_input_unit_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_ut_EXAMPLE_LIST += udma_user_input_unit_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 udma_ut_EXAMPLE_LIST += udma_user_input_unit_testapp_$(1)
 endif
 endif
