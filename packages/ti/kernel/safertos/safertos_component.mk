@@ -66,9 +66,10 @@
 #
 ifeq ($(safertos_component_make_include), )
 
-safertos_BOARDLIST       = tpr12_evm
-safertos_SOCLIST         = tpr12
+safertos_BOARDLIST       = tpr12_evm awr294x_evm
+safertos_SOCLIST         = tpr12 awr294x
 safertos_tpr12_CORELIST  = c66xdsp_1
+safertos_awr294x_CORELIST  = c66xdsp_1
 
 ############################
 # safertos package

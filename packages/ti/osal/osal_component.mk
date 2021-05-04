@@ -72,8 +72,8 @@ libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574
 libosal_tirtos_BOARDLIST    = $(libosal_BOARDLIST)
 libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm
 libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x
-libosal_safertos_BOARDLIST  = tpr12_evm
-libosal_safertos_SOCLIST    = tpr12
+libosal_safertos_BOARDLIST  = tpr12_evm awr294x_evm
+libosal_safertos_SOCLIST    = tpr12 awr294x
 libosal_tda2xx_CORELIST = a15_0 ipu1_0
 libosal_tda2px_CORELIST = a15_0 ipu1_0
 libosal_tda2ex_CORELIST = a15_0 ipu1_0
@@ -107,6 +107,7 @@ libosal_freertos_j7200_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 libosal_freertos_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
 libosal_freertos_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 libosal_safertos_tpr12_CORELIST = c66xdsp_1
+libosal_safertos_awr294x_CORELIST = c66xdsp_1
 
 ############################
 # osal package
