@@ -24,7 +24,7 @@
 /* ========================================================================== */
 
 #include <ti/board/src/am65xx_evm/include/pinmux.h>
-#include "csl_types.h"
+#include <ti/csl/csl_types.h>
 
 #ifdef __cplusplus
 extern "C" {

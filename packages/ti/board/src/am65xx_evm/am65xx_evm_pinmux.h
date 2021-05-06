@@ -47,7 +47,7 @@
 /* ========================================================================== */
 
 #include <ti/board/src/am65xx_evm/include/pinmux.h>
-#include "csl_types.h"
+#include <ti/csl/csl_types.h>
 #include "AM65xx_pinmux.h"
 #include <ti/csl/soc/am65xx/src/cslr_wkup_ctrl_mmr.h>
 
