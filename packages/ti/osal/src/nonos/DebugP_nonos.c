@@ -39,7 +39,7 @@
 
 #include <ti/osal/DebugP.h>
 
-#if DebugP_LOG_ENABLED
+#if DebugP_ASSERT_ENABLED
 extern volatile bool Osal_DebugP_Assert_Val;
 
 /*
