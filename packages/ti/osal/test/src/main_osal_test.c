@@ -1320,11 +1320,7 @@ bool OSAL_log_test()
 #endif
 #ifndef SIM_BUILD
 #define   OSAL_TASKP_TEST_ITERATION    (10U)
-#if  defined(FREERTOS) || defined(SAFERTOS)
-#define   OSAL_TASKP_TEST_1MS          (1U)
-#else
 #define   OSAL_TASKP_TEST_1MS          (1000U)
-#endif
 #define   OSAL_TASKP_TEST_TICKS        (1000U)
 #else
 #define   OSAL_TASKP_TEST_ITERATION    (2U)

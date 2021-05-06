@@ -295,8 +295,8 @@ void TaskP_sleepInMsecs( uint32_t timeoutInMsecs )
 {
     uint32_t ticks;
 
-    /* portTICK_PERIOD_MS is in units of usecs */
-    ticks = ( uint32_t )( ( uint64_t )timeoutInMsecs * 1000U ) / portTICK_PERIOD_MS;
+    /* portTICK_PERIOD_MS is in units of msecs */
+    ticks = timeoutInMsecs / portTICK_PERIOD_MS;
 
     ( void )xTaskDelay( ticks );
 }
