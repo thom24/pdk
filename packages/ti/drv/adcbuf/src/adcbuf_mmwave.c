@@ -79,7 +79,7 @@ static void ADCBUFConfigureDataFormat(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint
 static void ADCBUFChannelEnSetOffset(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint8_t channel, uint16_t offset);
 static void ADCBUFChannelDisable(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint8_t channel);
 static void ADCBUFTestPatternConfig(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, const ADCBuf_TestPatternConf *testPatternConf);
-static void ADCBUFTestPatternStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase);
+static void ADCBUFTestPatternStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t numOfClks);
 static void ADCBUFTestPatternStop(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase);
 static int32_t ADCBUFCQConfig(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, ADCBuf_CQConf *cqCfg);
 static int32_t ADCBUFDriverParamsCheck(const ADCBuf_Params *params);
@@ -99,8 +99,7 @@ static uint32_t isChannelEnabled(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t 
 /**
  *  @b Description
  *  @n
- *      Selects the source of ADCBUF (DFE or HIL)
- *      HIL is only support in XWR16xx/XWR18xx/XWR68xx
+ *      Selects the source of ADCBUF (DFE or HIL).
  *
  *  @param[in]  ptrRssCtrlRegBase
  *      Pointer to the RSS CTRL Register Base
@@ -552,19 +551,23 @@ static void ADCBUFTestPatternConfig(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, const 
  *
  *  @param[in]  ptrRssCtrlRegBase
  *      Pointer to the RSS CTRL Register Base
+ *  @param[in]  numOfClks
+ *      Number of Interconnect clocks between 
+ *      successive samples for the test pattern gen.
+ *      Valid Range is 0x00 to 0xFF.
  *
  *  \ingroup ADCBUF_DRIVER_INTERNAL_FUNCTION
  *
  *  @retval
  *      N/A
  */
-static void ADCBUFTestPatternStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase)
+static void ADCBUFTestPatternStart(CSL_rss_ctrlRegs  *ptrRssCtrlRegBase, uint32_t numOfClks)
 {
     /* Lower the clock */
     CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNVLDCFG, 
                         CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATVLDCNT_MASK,
                         CSL_RSS_CTRL_TESTPATTERNVLDCFG_TESTPATTERNVLDCFG_TSTPATVLDCNT_SHIFT,
-                        0x32U);
+                        numOfClks);
 
     /* Test pattern start */
     CSL_REG32_FINS_RAW(&ptrRssCtrlRegBase->TESTPATTERNVLDCFG, 
@@ -791,7 +794,14 @@ static int32_t ADCBUFCmdParamCheck(ADCBufMMWave_CMD cmd, void* arg)
                 }
                 break;
 
-            /* XWR16XX specific commands */
+            case ADCBufMMWave_CMD_START_TEST_PATTERN:
+                paramVal = *(uint32_t *)arg;
+                if(paramVal > 0xFFU)
+                {
+                    retCode = ADCBUF_STATUS_INVALID_PARAMS;
+                }
+                break;
+
             case ADCBufMMWave_CMD_SET_PING_CHIRP_THRESHHOLD:
             case ADCBufMMWave_CMD_SET_PONG_CHIRP_THRESHHOLD:
                 if(((*(uint8_t *)arg) == 0) || ((*(uint8_t *)arg) > (uint8_t)(0x1U <<ADCBUF_NUMBITS_CHIRPTHRESHOLD)))
@@ -1121,13 +1131,7 @@ int_fast16_t ADCBUF_MMWave_control(ADCBuf_Handle handle, uint_fast8_t cmd, void 
             break;
 
         case ADCBufMMWave_CMD_START_TEST_PATTERN:
-            ADCBUFTestPatternStart(ptrRssCtrlRegBase);
-
-            /* The following is for test pattern test only, in other cases, this value should not be touched. */
-            ptrRssCtrlRegBase->ADCBUFCFG1 = CSL_FINSR(ptrRssCtrlRegBase->ADCBUFCFG1,
-                                                   31U,
-                                                   17U,
-                                                   0U);
+            ADCBUFTestPatternStart(ptrRssCtrlRegBase, *(uint32_t *)arg);
             status = ADCBUF_STATUS_SUCCESS;
             break;
 

@@ -232,12 +232,13 @@ void Test_ADCBUFIntCallBackFunc(uintptr_t arg)
 void Test_ADCBUFContDataPathWithTestPattern(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataFormat)
 {
     int32_t retVal = 0;
+    uint32_t numOfClks = 0x32;
 
     /* Configure test pattern */
     Test_ADCBUFContModeConfig(handle, ptrDataFormat);
 
     /* Start Test Pattern generation */
-    if ((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_START_TEST_PATTERN, NULL) ) < 0)
+    if ((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_START_TEST_PATTERN, (void *)&numOfClks)) < 0)
        printf("Error: ADCBufMMWave_CMD_START_TEST_PATTERN failed with [Error=%d]\n", retVal);
 }
 
