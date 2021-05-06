@@ -67,10 +67,10 @@
 #define EDMA_DSS_CC2_ERRAGG_MASK_REG_ADDRESS    (CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_TPCC_C_ERRAGG_MASK)
 #define EDMA_DSS_CC2_ERRAGG_STATUS_REG_ADDRESS  (CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_TPCC_C_ERRAGG_STATUS)
 
-#define EDMA_DSS_CC3_INTAGG_MASK_REG_ADDRESS    (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_INTAGG_MASK)
-#define EDMA_DSS_CC3_INTAGG_STATUS_REG_ADDRESS  (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_INTAGG_STATUS)
-#define EDMA_DSS_CC3_ERRAGG_MASK_REG_ADDRESS    (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_ERRAGG_MASK)
-#define EDMA_DSS_CC3_ERRAGG_STATUS_REG_ADDRESS  (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_ERRAGG_STATUS)
+#define EDMA_DSS_CC3_INTAGG_MASK_REG_ADDRESS    (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_INTAGG_MASK)
+#define EDMA_DSS_CC3_INTAGG_STATUS_REG_ADDRESS  (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_INTAGG_STATUS)
+#define EDMA_DSS_CC3_ERRAGG_MASK_REG_ADDRESS    (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_ERRAGG_MASK)
+#define EDMA_DSS_CC3_ERRAGG_STATUS_REG_ADDRESS  (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_ERRAGG_STATUS)
 #endif
 
 #if defined (__TI_ARM_V7R4__)
@@ -100,10 +100,10 @@
 #define EDMA_MSS_CC4_ERRAGG_MASK_REG_ADDRESS    (CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_TPCC_C_ERRAGG_MASK)
 #define EDMA_MSS_CC4_ERRAGG_STATUS_REG_ADDRESS  (CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_TPCC_C_ERRAGG_STATUS)
 
-#define EDMA_MSS_CC5_INTAGG_MASK_REG_ADDRESS    (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_INTAGG_MASK)
-#define EDMA_MSS_CC5_INTAGG_STATUS_REG_ADDRESS  (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_INTAGG_STATUS)
-#define EDMA_MSS_CC5_ERRAGG_MASK_REG_ADDRESS    (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_ERRAGG_MASK)
-#define EDMA_MSS_CC5_ERRAGG_STATUS_REG_ADDRESS  (CSL_RCSS_CTRL_U_BASE + CSL_RCSS_CTRL_RCSS_TPCC_A_ERRAGG_STATUS)
+#define EDMA_MSS_CC5_INTAGG_MASK_REG_ADDRESS    (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_INTAGG_MASK)
+#define EDMA_MSS_CC5_INTAGG_STATUS_REG_ADDRESS  (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_INTAGG_STATUS)
+#define EDMA_MSS_CC5_ERRAGG_MASK_REG_ADDRESS    (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_ERRAGG_MASK)
+#define EDMA_MSS_CC5_ERRAGG_STATUS_REG_ADDRESS  (CSL_RSS_CTRL_U_BASE + CSL_RSS_CTRL_RSS_TPCC_A_ERRAGG_STATUS)
 #endif
 
 /* ========================================================================== */
@@ -168,20 +168,20 @@ const EDMA_hwAttrs_t gEdmaHwAttrs[EDMA_NUM_CC] = {
         .transferControllerErrorInterruptNum[1] = CSL_DSS_INTR_DSS_TPCC_C_ERRAGG  //EDMA_INTERRUPT_NOT_CONNECTED_ID
     },
     {
-        .CCbaseAddress      = CSL_RCSS_TPCC_A_U_BASE,
+        .CCbaseAddress      = CSL_RSS_TPCC_A_U_BASE,
         .CCcompletionInterruptsAggregatorMaskRegAddress   = EDMA_DSS_CC3_INTAGG_MASK_REG_ADDRESS,
         .CCcompletionInterruptsAggregatorStatusRegAddress = EDMA_DSS_CC3_INTAGG_STATUS_REG_ADDRESS,
         .CCerrorInterruptsAggregatorMaskRegAddress        = EDMA_DSS_CC3_ERRAGG_MASK_REG_ADDRESS,
         .CCerrorInterruptsAggregatorStatusRegAddress      = EDMA_DSS_CC3_ERRAGG_STATUS_REG_ADDRESS,
-        .TCbaseAddress[0]   = CSL_RCSS_TPTC_A0_U_BASE,
-        .TCbaseAddress[1]   = CSL_RCSS_TPTC_A1_U_BASE,
-        .numEventQueues     = EDMA_RCSS_TPCC_A_NUM_TC,
-        .numParamSets       = EDMA_RCSS_TPCC_A_NUM_PARAM_SETS,
+        .TCbaseAddress[0]   = CSL_RSS_TPTC_A0_U_BASE,
+        .TCbaseAddress[1]   = CSL_RSS_TPTC_A1_U_BASE,
+        .numEventQueues     = EDMA_RSS_TPCC_A_NUM_TC,
+        .numParamSets       = EDMA_RSS_TPCC_A_NUM_PARAM_SETS,
         .isChannelMapExist = true,
-        .transferCompletionInterruptNum = CSL_DSS_INTR_RCSS_TPCC_A_INTAGG,
-        .errorInterruptNum                      = CSL_DSS_INTR_RCSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
-        .transferControllerErrorInterruptNum[0] = CSL_DSS_INTR_RCSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
-        .transferControllerErrorInterruptNum[1] = CSL_DSS_INTR_RCSS_TPCC_A_ERRAGG  //EDMA_INTERRUPT_NOT_CONNECTED_ID
+        .transferCompletionInterruptNum = CSL_DSS_INTR_RSS_TPCC_A_INTAGG,
+        .errorInterruptNum                      = CSL_DSS_INTR_RSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
+        .transferControllerErrorInterruptNum[0] = CSL_DSS_INTR_RSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
+        .transferControllerErrorInterruptNum[1] = CSL_DSS_INTR_RSS_TPCC_A_ERRAGG  //EDMA_INTERRUPT_NOT_CONNECTED_ID
     }
 };
 #endif
@@ -270,20 +270,20 @@ const EDMA_hwAttrs_t gEdmaHwAttrs[EDMA_NUM_CC] = {
         .transferControllerErrorInterruptNum[1] = CSL_MSS_INTR_DSS_TPCC_C_ERRAGG  //EDMA_INTERRUPT_NOT_CONNECTED_ID,
     },
     {
-        .CCbaseAddress      = CSL_RCSS_TPCC_A_U_BASE,
+        .CCbaseAddress      = CSL_RSS_TPCC_A_U_BASE,
         .CCcompletionInterruptsAggregatorMaskRegAddress   = EDMA_MSS_CC5_INTAGG_MASK_REG_ADDRESS,
         .CCcompletionInterruptsAggregatorStatusRegAddress = EDMA_MSS_CC5_INTAGG_STATUS_REG_ADDRESS,
         .CCerrorInterruptsAggregatorMaskRegAddress        = EDMA_MSS_CC5_ERRAGG_MASK_REG_ADDRESS,
         .CCerrorInterruptsAggregatorStatusRegAddress      = EDMA_MSS_CC5_ERRAGG_STATUS_REG_ADDRESS,
-        .TCbaseAddress[0]   = CSL_RCSS_TPTC_A0_U_BASE,
-        .TCbaseAddress[1]   = CSL_RCSS_TPTC_A1_U_BASE,
-        .numEventQueues     = EDMA_RCSS_TPCC_A_NUM_TC,
-        .numParamSets       = EDMA_RCSS_TPCC_A_NUM_PARAM_SETS,
+        .TCbaseAddress[0]   = CSL_RSS_TPTC_A0_U_BASE,
+        .TCbaseAddress[1]   = CSL_RSS_TPTC_A1_U_BASE,
+        .numEventQueues     = EDMA_RSS_TPCC_A_NUM_TC,
+        .numParamSets       = EDMA_RSS_TPCC_A_NUM_PARAM_SETS,
         .isChannelMapExist = true,
-        .transferCompletionInterruptNum = CSL_MSS_INTR_RCSS_TPCC_A_INTAGG,
-        .errorInterruptNum                      = CSL_MSS_INTR_RCSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
-        .transferControllerErrorInterruptNum[0] = CSL_MSS_INTR_RCSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
-        .transferControllerErrorInterruptNum[1] = CSL_MSS_INTR_RCSS_TPCC_A_ERRAGG  //EDMA_INTERRUPT_NOT_CONNECTED_ID
+        .transferCompletionInterruptNum = CSL_MSS_INTR_RSS_TPCC_A_INTAGG,
+        .errorInterruptNum                      = CSL_MSS_INTR_RSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
+        .transferControllerErrorInterruptNum[0] = CSL_MSS_INTR_RSS_TPCC_A_ERRAGG, //EDMA_INTERRUPT_NOT_CONNECTED_ID,
+        .transferControllerErrorInterruptNum[1] = CSL_MSS_INTR_RSS_TPCC_A_ERRAGG  //EDMA_INTERRUPT_NOT_CONNECTED_ID
     }
 };
 
@@ -307,7 +307,7 @@ const EDMA_hwAttrs_t* EDMA_getHwAttrs(uint32_t instanceId)
         case EDMA_DRV_INST_DSS_C:
             hwAttrs = &gEdmaHwAttrs[2];
             break;
-        case EDMA_DRV_INST_RCSS_A:
+        case EDMA_DRV_INST_RSS_A:
             hwAttrs = &gEdmaHwAttrs[3];
             break;
         default:
@@ -338,7 +338,7 @@ const EDMA_hwAttrs_t* EDMA_getHwAttrs(uint32_t instanceId)
         case EDMA_DRV_INST_MSS_B:
             hwAttrs = &gEdmaHwAttrs[1];
             break;
-        case EDMA_DRV_INST_RCSS_A:
+        case EDMA_DRV_INST_RSS_A:
             hwAttrs = &gEdmaHwAttrs[5];
             break;
         default:
@@ -367,8 +367,8 @@ void EDMA_getInstanceName (uint32_t instanceId, char *str, uint32_t size)
         case EDMA_DRV_INST_MSS_B:
             strncpy(str, "EDMA_DRV_INST_MSS_B\0", size);
             break;
-        case EDMA_DRV_INST_RCSS_A:
-            strncpy(str, "EDMA_DRV_INST_RCSS_A\0", size);
+        case EDMA_DRV_INST_RSS_A:
+            strncpy(str, "EDMA_DRV_INST_RSS_A\0", size);
             break;
         default:
             strncpy(str, "EDMA_DRV_INST_INVALID\0", size);

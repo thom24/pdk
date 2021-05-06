@@ -182,16 +182,16 @@ Mailbox_HwCfg   gMailboxMssDssHwCfg =
 
 /**
  * @brief   This is SOC specific configuration and should *NOT* be modified by the customer.
- *          Communication between MSS and BSS (RCSS master).
+ *          Communication between MSS and BSS (RSS master).
  */
 Mailbox_HwCfg   gMailboxMssRcssHwCfg =
 {
     .mbxReg                 = &gMboxReg,
-    .baseLocalToRemote.data = (uint8_t *)(CSL_RCSS_MAILBOX_U_BASE),
+    .baseLocalToRemote.data = (uint8_t *)(CSL_RSS_MAILBOX_U_BASE),
     .baseRemoteToLocal.data = (uint8_t *)(CSL_MSS_MBOX_U_BASE),
     .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_REQ,
     .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_ACK,
-    .remoteProcNum          = MAILBOX_INST_RCSS
+    .remoteProcNum          = MAILBOX_INST_RSS
 };
 
 #endif
@@ -225,16 +225,16 @@ Mailbox_HwCfg   gMailboxDssMssHwCfg =
 
 /**
  * @brief   This is SOC specific configuration and should *NOT* be modified by the customer.
- *          Communication between RCSS and DSS (RCSS master).
+ *          Communication between RSS and DSS (RSS master).
  */
 Mailbox_HwCfg   gMailboxDssRcssHwCfg =
 {
     .mbxReg                 = &gMboxReg,
-    .baseLocalToRemote.data = (uint8_t *)(CSL_RCSS_MAILBOX_U_BASE + CSL_RCSS_MAILBOX_DSS_OFFSET),
+    .baseLocalToRemote.data = (uint8_t *)(CSL_RSS_MAILBOX_U_BASE + CSL_RSS_MAILBOX_DSS_OFFSET),
     .baseRemoteToLocal.data = (uint8_t *)(CSL_DSS_MAILBOX_U_BASE),
     .boxFullIntNum          = CSL_DSS_INTR_DSS_DSP_MBOX_READ_REQ,
     .boxEmptyIntNum         = CSL_DSS_INTR_DSS_DSP_MBOX_READ_ACK,
-    .remoteProcNum          = MAILBOX_INST_RCSS
+    .remoteProcNum          = MAILBOX_INST_RSS
 };
 #endif
 
@@ -267,8 +267,8 @@ int32_t Mailbox_validateRemoteEndPoint(Mailbox_Instance localEndpoint, Mailbox_I
 {
     int32_t retVal = MAILBOX_SOK;
 
-    /* Configure Rx memory size and offset only if remoteEndpoint is RCSS */
-    if ((remoteEndpoint == MAILBOX_INST_RCSS) && ((localEndpoint == MAILBOX_INST_MSS_CR5A) || 
+    /* Configure Rx memory size and offset only if remoteEndpoint is RSS */
+    if ((remoteEndpoint == MAILBOX_INST_RSS) && ((localEndpoint == MAILBOX_INST_MSS_CR5A) || 
         (localEndpoint == MAILBOX_INST_DSP)))
     {
         retVal = Mailbox_validateLocalEndPointRxMem();
@@ -393,8 +393,8 @@ int32_t getMailboxTypeFromProcNum(uint32_t procNum, Mailbox_Instance *remoteEndp
         case MAILBOX_INST_MSS_CR5A:
             *remoteEndpoint = MAILBOX_INST_MSS_CR5A;
             break;
-        case MAILBOX_INST_RCSS:
-            *remoteEndpoint = MAILBOX_INST_RCSS;
+        case MAILBOX_INST_RSS:
+            *remoteEndpoint = MAILBOX_INST_RSS;
             break;
         case MAILBOX_INST_DSP:
             *remoteEndpoint = MAILBOX_INST_DSP;

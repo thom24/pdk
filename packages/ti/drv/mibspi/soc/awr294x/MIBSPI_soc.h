@@ -61,8 +61,8 @@ enum MibSpi_InstanceId
 {
     MIBSPI_INST_ID_MSS_SPIA  = 0xA,
     MIBSPI_INST_ID_MSS_SPIB  = 0xB,
-    MIBSPI_INST_ID_RCSS_SPIA = 0x1A,
-    MIBSPI_INST_ID_RCSS_SPIB = 0x1B
+    MIBSPI_INST_ID_RSS_SPIA  = 0x1A,
+    MIBSPI_INST_ID_RSS_SPIB  = 0x1B
 };
 
 #ifdef __cplusplus

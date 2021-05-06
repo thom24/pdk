@@ -66,7 +66,12 @@ uint32_t PllRegs[BOARD_PLL_COUNT] = {
  * This structure gives the different PLL controller configurations
  *
  */
-const Board_Pll_config_t pllConfig[BOARD_PLL_COUNT] = {
+/* By default, in C++ all const objects declared at global namespace scope have internal linkage. 
+ * That is, they are, in effect, static const. This causes compilation issue with CPP build if
+ * not referenced in this file. So adding extern.. If you define a const object and give it the 
+ * extern qualifier you give it external linkage.
+ */
+extern const Board_Pll_config_t pllConfig[BOARD_PLL_COUNT] = {
     /* Board_Pll_type , Board_Pll_clkout_type clkOut,
        mIntMult, nDiv, m2Div, n2Div, fracM,
        hsDiv3, hsDiv2, hsDiv1, hsDiv0 */

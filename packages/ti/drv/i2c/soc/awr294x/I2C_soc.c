@@ -53,7 +53,7 @@
 
 /**
  * @brief   This is the AWR294X MSS specific I2C configuration. There are
- * 3 I2C instances (MSS-I2C, RCSS-I2C-A/B) available on the MSS. 
+ * 3 I2C instances (MSS-I2C, RSS-I2C-A/B) available on the MSS. 
  */
 
 /* I2C configuration structure */
@@ -71,8 +71,8 @@ I2C_HwAttrs i2cInitCfg[CSL_I2C_CNT] =
         I2C_OWN_ADDR, /* default I2C own slave addresse */
     },
     {
-        CSL_RCSS_I2CA_U_BASE,
-        CSL_MSS_INTR_RCSS_I2CA_INT, /* I2C int0 number for R5F INTC */
+        CSL_RSS_I2CA_U_BASE,
+        CSL_MSS_INTR_RSS_I2CA_INT, /* I2C int0 number for R5F INTC */
         0, /* Event ID not used for R5F INTC */
         INVALID_INTC_MUX_NUM, /* CIC num not used in R5F GIC */
         0, /* cicEventId not used for ARM */
@@ -82,8 +82,8 @@ I2C_HwAttrs i2cInitCfg[CSL_I2C_CNT] =
         I2C_OWN_ADDR, /* default I2C own slave addresse */
     },
     {
-        CSL_RCSS_I2CB_U_BASE,
-        CSL_MSS_INTR_RCSS_I2CB_INT, /* I2C int0 number for R5F INTC */
+        CSL_RSS_I2CB_U_BASE,
+        CSL_MSS_INTR_RSS_I2CB_INT, /* I2C int0 number for R5F INTC */
         0, /* Event ID not used for R5F INTC */
         INVALID_INTC_MUX_NUM, /* CIC num not used in R5F GIC */
         0, /* cicEventId not used for ARM */
@@ -137,16 +137,16 @@ I2C_config_list I2C_config = {
 
 /**
  * @brief   This is the AWR294X DSS specific I2C configuration. There are
- * 2 I2C instances (RCSS-I2C-A/B) available on the DSS. 
+ * 2 I2C instances (RSS-I2C-A/B) available on the DSS. 
  */
 
 /* I2C configuration structure */
 I2C_HwAttrs i2cInitCfg[CSL_I2C_CNT] =
 {
     {
-        CSL_RCSS_I2CA_U_BASE,
+        CSL_RSS_I2CA_U_BASE,
         OSAL_REGINT_INTVEC_EVENT_COMBINER,  /* default DSP Interrupt vector number */
-        CSL_DSS_INTR_RCSS_I2CA_INT, /*  DSP INTC I2C Event ID */
+        CSL_DSS_INTR_RSS_I2CA_INT, /*  DSP INTC I2C Event ID */
         INVALID_INTC_MUX_NUM, /* CIC num not used for AWR294X */
         0, /* cicEventId not used for AWR294X */
         0, /* HostIntNum not used for AWR294X */
@@ -155,9 +155,9 @@ I2C_HwAttrs i2cInitCfg[CSL_I2C_CNT] =
         I2C_OWN_ADDR, /* default I2C own slave addresse */
     },
     {
-        CSL_RCSS_I2CB_U_BASE,
+        CSL_RSS_I2CB_U_BASE,
         OSAL_REGINT_INTVEC_EVENT_COMBINER,  /* default DSP Interrupt vector number */
-        CSL_DSS_INTR_RCSS_I2CB_INT, /*  DSP INTC I2C Event ID */
+        CSL_DSS_INTR_RSS_I2CB_INT, /*  DSP INTC I2C Event ID */
         INVALID_INTC_MUX_NUM, /* CIC num not used for AWR294X */
         0, /* cicEventId not used for AWR294X */
         0, /* HostIntNum not used for AWR294X */

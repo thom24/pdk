@@ -85,12 +85,12 @@ Board_STATUS Board_unlockMMR(void)
     lock1 = (uint32_t *)(BOARD_DSS_CTRL_U_BASE + BOARD_DSS_CTRL_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(BOARD_RCSS_RCM_U_BASE + BOARD_RCSS_RCM_LOCK0_KICK0);
-    lock1 = (uint32_t *)(BOARD_RCSS_RCM_U_BASE + BOARD_RCSS_RCM_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_RSS_RCM_U_BASE + BOARD_RSS_RCM_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_RSS_RCM_U_BASE + BOARD_RSS_RCM_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
-    lock0 = (uint32_t *)(BOARD_RCSS_CTRL_U_BASE + BOARD_RCSS_CTRL_LOCK0_KICK0);
-    lock1 = (uint32_t *)(BOARD_RCSS_CTRL_U_BASE + BOARD_RCSS_CTRL_LOCK0_KICK1);
+    lock0 = (uint32_t *)(BOARD_RSS_CTRL_U_BASE + BOARD_RSS_CTRL_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_RSS_CTRL_U_BASE + BOARD_RSS_CTRL_LOCK0_KICK1);
     MMR_unlock(lock0, lock1);
 
     lock0 = (uint32_t *)(CSL_MSS_IOMUX_U_BASE + CSL_MSS_IOMUX_IOCFGKICK0);

@@ -200,6 +200,10 @@ typedef enum Rcm_PeripheralId_e
      * @brief   Value specifying RCSS MCASPC AUX
      */
     Rcm_PeripheralId_RCSS_MCASPC_AUX,
+    /**
+     * @brief   Value specifying RSS FRC
+     */
+    Rcm_PeripheralId_RSS_FRC,
 }Rcm_PeripheralId;
 
 typedef enum Rcm_PeripheralClockSource_e

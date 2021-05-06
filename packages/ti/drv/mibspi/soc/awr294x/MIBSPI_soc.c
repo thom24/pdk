@@ -56,8 +56,8 @@
 #if defined (BUILD_MCU)
 #define MIBSPI_ENTRY_INDEX_MSS_SPIA                                 (0)
 #define MIBSPI_ENTRY_INDEX_MSS_SPIB                                 (1)
-#define MIBSPI_ENTRY_INDEX_RCSS_SPIA                                (2)
-#define MIBSPI_ENTRY_INDEX_RCSS_SPIB                                (3)
+#define MIBSPI_ENTRY_INDEX_RSS_SPIA                                (2)
+#define MIBSPI_ENTRY_INDEX_RSS_SPIB                                (3)
 
 #define MIBSPI_MSS_SPIA_INT0                               (CSL_MSS_INTR_MSS_SPIA_INT0)
 #define MIBSPI_MSS_SPIA_INT1                               (CSL_MSS_INTR_MSS_SPIA_INT1)
@@ -65,28 +65,28 @@
 #define MIBSPI_MSS_SPIB_INT0                               (CSL_MSS_INTR_MSS_SPIB_INT0)
 #define MIBSPI_MSS_SPIB_INT1                               (CSL_MSS_INTR_MSS_SPIB_INT1)
 
-#define MIBSPI_RCSS_SPIA_INT0                              (CSL_MSS_INTR_RCSS_SPIA_INT0)
-#define MIBSPI_RCSS_SPIA_INT1                              (CSL_MSS_INTR_RCSS_SPIA_INT1)
+#define MIBSPI_RSS_SPIA_INT0                              (CSL_MSS_INTR_RSS_SPIA_INT0)
+#define MIBSPI_RSS_SPIA_INT1                              (CSL_MSS_INTR_RSS_SPIA_INT1)
 
-#define MIBSPI_RCSS_SPIB_INT0                              (CSL_MSS_INTR_RCSS_SPIB_INT0)
-#define MIBSPI_RCSS_SPIB_INT1                              (CSL_MSS_INTR_RCSS_SPIB_INT1)
+#define MIBSPI_RSS_SPIB_INT0                              (CSL_MSS_INTR_RSS_SPIB_INT0)
+#define MIBSPI_RSS_SPIB_INT1                              (CSL_MSS_INTR_RSS_SPIB_INT1)
 
 
 #elif defined (BUILD_DSP_1)
-#define MIBSPI_ENTRY_INDEX_RCSS_SPIA                                (0)
-#define MIBSPI_ENTRY_INDEX_RCSS_SPIB                                (1)
+#define MIBSPI_ENTRY_INDEX_RSS_SPIA                                (0)
+#define MIBSPI_ENTRY_INDEX_RSS_SPIB                                (1)
 
-#define MIBSPI_RCSS_SPIA_INT0                              (CSL_DSS_INTR_RCSS_SPIA_INT0)
-#define MIBSPI_RCSS_SPIA_INT1                              (CSL_DSS_INTR_RCSS_SPIA_INT1)
+#define MIBSPI_RSS_SPIA_INT0                              (CSL_DSS_INTR_RSS_SPIA_INT0)
+#define MIBSPI_RSS_SPIA_INT1                              (CSL_DSS_INTR_RSS_SPIA_INT1)
 
-#define MIBSPI_RCSS_SPIB_INT0                              (CSL_DSS_INTR_RCSS_SPIB_INT0)
-#define MIBSPI_RCSS_SPIB_INT1                              (CSL_DSS_INTR_RCSS_SPIB_INT1)
+#define MIBSPI_RSS_SPIB_INT0                              (CSL_DSS_INTR_RSS_SPIB_INT0)
+#define MIBSPI_RSS_SPIB_INT1                              (CSL_DSS_INTR_RSS_SPIB_INT1)
 
 #else
     #error "Unsupported target build"
 #endif
 
-#define MIBSPI_ENTRY_INDEX_MAX                                      (MIBSPI_ENTRY_INDEX_RCSS_SPIB)
+#define MIBSPI_ENTRY_INDEX_MAX                                      (MIBSPI_ENTRY_INDEX_RSS_SPIB)
 #define MIBSPI_ENTRY_INDEX_CNT                                      (MIBSPI_ENTRY_INDEX_MAX + 1)
 
 
@@ -103,11 +103,11 @@ MibSpiDriver_Object MibspiObjects[MIBSPI_ENTRY_INDEX_CNT] =
         .mibspiHandle = NULL,
     },
 #endif
-    [MIBSPI_ENTRY_INDEX_RCSS_SPIA] =
+    [MIBSPI_ENTRY_INDEX_RSS_SPIA] =
     {
         .mibspiHandle = NULL,
     },
-    [MIBSPI_ENTRY_INDEX_RCSS_SPIB] =
+    [MIBSPI_ENTRY_INDEX_RSS_SPIB] =
     {
         .mibspiHandle = NULL,
     },
@@ -217,18 +217,18 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
 
     },
 #endif
-    [MIBSPI_ENTRY_INDEX_RCSS_SPIA] =
+    [MIBSPI_ENTRY_INDEX_RSS_SPIA] =
     {
-        /* RCSS MIbSPIA Hardware configuration */
-        .mibspiInstId  = MIBSPI_INST_ID_RCSS_SPIA,
-        .ptrSpiRegBase = (CSL_mss_spiRegs *)CSL_RCSS_SPIA_U_BASE,
-        .ptrMibSpiRam  = (CSL_mibspiRam  *)CSL_RCSS_SPIA_RAM_U_BASE,
+        /* RSS MIbSPIA Hardware configuration */
+        .mibspiInstId  = MIBSPI_INST_ID_RSS_SPIA,
+        .ptrSpiRegBase = (CSL_mss_spiRegs *)CSL_RSS_SPIA_U_BASE,
+        .ptrMibSpiRam  = (CSL_mibspiRam  *)CSL_RSS_SPIA_RAM_U_BASE,
         .clockSrcFreq  = MSS_SYS_VCLK,
-        .interrupt0Num = MIBSPI_RCSS_SPIA_INT0,
-        .interrupt1Num = MIBSPI_RCSS_SPIA_INT1,
-        .edmaCCId      = EDMA_DRV_INST_RCSS_A, /* RCSS TPCC A */
+        .interrupt0Num = MIBSPI_RSS_SPIA_INT0,
+        .interrupt1Num = MIBSPI_RSS_SPIA_INT1,
+        .edmaCCId      = EDMA_DRV_INST_RSS_A, /* RSS TPCC A */
         .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
-        .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RCSS_SPIA_U_BASE)->TGCTRL),
+        .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RSS_SPIA_U_BASE)->TGCTRL),
         .numCsPins           = 2,
         .numParallelModePins = 0,
         .featureBitMap       = (MIBSPI_FEATURE_SPIENA_PIN),
@@ -238,18 +238,18 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
         {
             [0] =
             {
-                EDMA_RCSS_TPCC_A_EVT_SPIA_DMA_REQ0,
-                EDMA_RCSS_TPCC_A_EVT_SPIA_DMA_REQ1
+                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ0,
+                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ1
             },
             [1] =
             {
-                EDMA_RCSS_TPCC_A_EVT_SPIA_DMA_REQ2,
-                EDMA_RCSS_TPCC_A_EVT_SPIA_DMA_REQ3
+                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ2,
+                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ3
             },
             [2] =
             {
-                EDMA_RCSS_TPCC_A_EVT_SPIA_DMA_REQ4,
-                EDMA_RCSS_TPCC_A_EVT_SPIA_DMA_REQ5
+                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ4,
+                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ5
             }
         },
         .versionInfo =
@@ -263,18 +263,18 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
         },
 
     },
-    [MIBSPI_ENTRY_INDEX_RCSS_SPIB] =
+    [MIBSPI_ENTRY_INDEX_RSS_SPIB] =
     {
         /* MSS MIbSPIB Hardware configuration */
-        .mibspiInstId  = MIBSPI_INST_ID_RCSS_SPIB,
-        .ptrSpiRegBase = (CSL_mss_spiRegs *)CSL_RCSS_SPIB_U_BASE,
-        .ptrMibSpiRam  = (CSL_mibspiRam  *)CSL_RCSS_SPIB_RAM_U_BASE,
+        .mibspiInstId  = MIBSPI_INST_ID_RSS_SPIB,
+        .ptrSpiRegBase = (CSL_mss_spiRegs *)CSL_RSS_SPIB_U_BASE,
+        .ptrMibSpiRam  = (CSL_mibspiRam  *)CSL_RSS_SPIB_RAM_U_BASE,
         .clockSrcFreq  = MSS_SYS_VCLK,
-        .interrupt0Num = MIBSPI_RCSS_SPIB_INT0,
-        .interrupt1Num = MIBSPI_RCSS_SPIB_INT1,
-        .edmaCCId      = EDMA_DRV_INST_RCSS_A, /* RCSS TPCC A */
+        .interrupt0Num = MIBSPI_RSS_SPIB_INT0,
+        .interrupt1Num = MIBSPI_RSS_SPIB_INT1,
+        .edmaCCId      = EDMA_DRV_INST_RSS_A, /* RSS TPCC A */
         .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
-        .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RCSS_SPIB_U_BASE)->TGCTRL),
+        .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RSS_SPIB_U_BASE)->TGCTRL),
         .numCsPins           = 2,
         .numParallelModePins = 0,
         .featureBitMap       = (MIBSPI_FEATURE_SPIENA_PIN),
@@ -284,18 +284,18 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
         {
             [0] =
             {
-                EDMA_RCSS_TPCC_A_EVT_SPIB_DMA_REQ0,
-                EDMA_RCSS_TPCC_A_EVT_SPIB_DMA_REQ1
+                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ0,
+                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ1
             },
             [1] =
             {
-                EDMA_RCSS_TPCC_A_EVT_SPIB_DMA_REQ2,
-                EDMA_RCSS_TPCC_A_EVT_SPIB_DMA_REQ3
+                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ2,
+                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ3
             },
             [2] =
             {
-                EDMA_RCSS_TPCC_A_EVT_SPIB_DMA_REQ4,
-                EDMA_RCSS_TPCC_A_EVT_SPIB_DMA_REQ5
+                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ4,
+                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ5
             }
         },
         .versionInfo =
@@ -335,18 +335,18 @@ MIBSPI_Config MIBSPI_config[MIBSPI_ENTRY_INDEX_CNT] =
     },
 #endif
 
-    [MIBSPI_ENTRY_INDEX_RCSS_SPIA] =
-    /* RCSS MibSPIA driver config */
+    [MIBSPI_ENTRY_INDEX_RSS_SPIA] =
+    /* RSS MibSPIA driver config */
     {
-        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RCSS_SPIA], /* SPI Driver Object */
-        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RCSS_SPIA]   /* SPI Hw configuration */
+        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RSS_SPIA], /* SPI Driver Object */
+        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RSS_SPIA]   /* SPI Hw configuration */
     },
 
-    [MIBSPI_ENTRY_INDEX_RCSS_SPIB] =
-    /* RCSS MibSPIB driver config */
+    [MIBSPI_ENTRY_INDEX_RSS_SPIB] =
+    /* RSS MibSPIB driver config */
     {
-        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RCSS_SPIB], /* SPI Driver Object */
-        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RCSS_SPIB]   /* SPI Hw configuration */
+        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RSS_SPIB], /* SPI Driver Object */
+        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RSS_SPIB]   /* SPI Hw configuration */
     },
 };
 
@@ -484,38 +484,6 @@ MIBSPI_Handle MIBSPI_socGetInstHandle(enum MibSpi_InstanceId mibspiInstanceId)
 
 
 
-static void MIBSPI_socMemInitRCSSSPIA()
-{
-    CSL_rcss_ctrlRegs *rcssCtrl = (CSL_rcss_ctrlRegs *)CSL_RCSS_CTRL_U_BASE;
-
-    /* Clear MEMINIT DONE before initiating MEMINIT */
-    CSL_FINS(rcssCtrl->RCSS_SPIA_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIA_MEMINIT_DONE_RCSS_SPIA_MEMINIT_DONE_MEM0_DONE, 1);
-    while (CSL_FEXT(rcssCtrl->RCSS_SPIA_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIA_MEMINIT_DONE_RCSS_SPIA_MEMINIT_DONE_MEM0_DONE) != 0);
-
-    CSL_FINS(rcssCtrl->RCSS_SPIA_MEMINIT, RCSS_CTRL_RCSS_SPIA_MEMINIT_RCSS_SPIA_MEMINIT_MEM0_INIT, 1);
-
-    while (CSL_FEXT(rcssCtrl->RCSS_SPIA_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIA_MEMINIT_DONE_RCSS_SPIA_MEMINIT_DONE_MEM0_DONE) != 1);
-    CSL_FINS(rcssCtrl->RCSS_SPIA_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIA_MEMINIT_DONE_RCSS_SPIA_MEMINIT_DONE_MEM0_DONE, 1);
-    while (CSL_FEXT(rcssCtrl->RCSS_SPIA_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIA_MEMINIT_DONE_RCSS_SPIA_MEMINIT_DONE_MEM0_DONE) != 0);
-
-}
-
-static void MIBSPI_socMemInitRCSSSPIB()
-{
-    CSL_rcss_ctrlRegs *rcssCtrl = (CSL_rcss_ctrlRegs *)CSL_RCSS_CTRL_U_BASE;
-
-    /* Clear MEMINIT DONE before initiating MEMINIT */
-    CSL_FINS(rcssCtrl->RCSS_SPIB_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIB_MEMINIT_DONE_RCSS_SPIB_MEMINIT_DONE_MEM0_DONE, 1);
-    while (CSL_FEXT(rcssCtrl->RCSS_SPIB_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIB_MEMINIT_DONE_RCSS_SPIB_MEMINIT_DONE_MEM0_DONE) != 0);
-
-    CSL_FINS(rcssCtrl->RCSS_SPIB_MEMINIT, RCSS_CTRL_RCSS_SPIB_MEMINIT_RCSS_SPIB_MEMINIT_MEM0_INIT, 1);
-
-    while (CSL_FEXT(rcssCtrl->RCSS_SPIB_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIB_MEMINIT_DONE_RCSS_SPIB_MEMINIT_DONE_MEM0_DONE) != 1);
-    CSL_FINS(rcssCtrl->RCSS_SPIB_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIB_MEMINIT_DONE_RCSS_SPIB_MEMINIT_DONE_MEM0_DONE, 1);
-    while (CSL_FEXT(rcssCtrl->RCSS_SPIB_MEMINIT_DONE, RCSS_CTRL_RCSS_SPIB_MEMINIT_DONE_RCSS_SPIB_MEMINIT_DONE_MEM0_DONE) != 0);
-
-}
-
 static void MIBSPI_socMemInitMSSSPIA(void)
 {
     CSL_mss_ctrlRegs *mssCtrl = (CSL_mss_ctrlRegs *)CSL_MSS_CTRL_U_BASE;
@@ -557,12 +525,6 @@ void MIBSPI_socMemInit(enum MibSpi_InstanceId mibspiInstanceId)
             break;
         case MIBSPI_INST_ID_MSS_SPIB:
             MIBSPI_socMemInitMSSSPIB();
-            break;
-        case MIBSPI_INST_ID_RCSS_SPIA:
-            MIBSPI_socMemInitRCSSSPIA();
-            break;
-        case MIBSPI_INST_ID_RCSS_SPIB:
-            MIBSPI_socMemInitRCSSSPIB();
             break;
     }
     return;

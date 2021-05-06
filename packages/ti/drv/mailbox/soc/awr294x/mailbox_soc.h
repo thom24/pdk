@@ -64,8 +64,8 @@ typedef uint32_t Mailbox_Instance;
 #define MAILBOX_INST_MSS_CR5B        (1U)
 /*! \brief HSM M4 Mailbox INST */
 #define MAILBOX_INST_HSM_CM4         (2U)
-/*! \brief RCSS R4 Mailbox INST */
-#define MAILBOX_INST_RCSS            (3U)
+/*! \brief RSS R4 Mailbox INST */
+#define MAILBOX_INST_RSS             (3U)
 /*! \brief C66x Mailbox INST */
 #define MAILBOX_INST_DSP             (4U)
 /*! \brief DSS M4 Mailbox INST */

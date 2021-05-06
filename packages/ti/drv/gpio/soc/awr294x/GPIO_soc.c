@@ -86,20 +86,20 @@ static GPIO_v2_HwAttrs gMssGpioHwAtrrib =
     CSL_MSS_INTR_MSS_GIO_INT1       /* Low Interrupt    */
 };
 
-static GPIO_v2_HwAttrs gRcssGpioHwAtrrib =
+static GPIO_v2_HwAttrs gRSSGpioHwAtrrib =
 {
-    CSL_RCSS_GIO_U_BASE,
-    CSL_MSS_INTR_RCSS_GIO_INT0,     /* High Interrupt   */
-    CSL_MSS_INTR_RCSS_GIO_INT1      /* Low Interrupt    */
+    CSL_RSS_GIO_U_BASE,
+    CSL_MSS_INTR_RSS_GIO_INT0,     /* High Interrupt   */
+    CSL_MSS_INTR_RSS_GIO_INT1      /* Low Interrupt    */
 };
 #endif
 
 #if defined (_TMS320C6X)
-static GPIO_v2_HwAttrs gRcssGpioHwAtrrib =
+static GPIO_v2_HwAttrs gRSSGpioHwAtrrib =
 {
-    CSL_RCSS_GIO_U_BASE,
-    CSL_DSS_INTR_RCSS_GIO_INT0,     /* High Interrupt   */
-    CSL_DSS_INTR_RCSS_GIO_INT1      /* Low Interrupt    */
+    CSL_RSS_GIO_U_BASE,
+    CSL_DSS_INTR_RSS_GIO_INT0,     /* High Interrupt   */
+    CSL_DSS_INTR_RSS_GIO_INT1      /* Low Interrupt    */
 };
 
 #endif
@@ -123,7 +123,7 @@ CSL_PUBLIC_CONST GPIOConfigList GPIO_config =
     {
         &GPIO_FxnTable_v2,
         NULL,
-        &gRcssGpioHwAtrrib
+        &gRSSGpioHwAtrrib
     },
     {
         NULL,
@@ -181,7 +181,7 @@ int32_t GPIO_getHwAttr (GPIO_v2_HwAttrs **gpioHwAttr, uint32_t gpioInst)
         {
             *gpioHwAttr = (GPIO_v2_HwAttrs *)(GPIO_config[0].hwAttrs);
         }
-        else if (gpioInst == GPIO_INST_RCSS)
+        else if (gpioInst == GPIO_INST_RSS)
         {
             *gpioHwAttr = (GPIO_v2_HwAttrs *)(GPIO_config[1].hwAttrs);
         }

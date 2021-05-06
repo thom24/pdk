@@ -66,12 +66,12 @@ extern "C" {
 /*! @brief MSS_B instance of EDMA */
 #define EDMA_DRV_INST_MSS_B                         (4U)
 /*! @brief RCSS_A instance of EDMA */
-#define EDMA_DRV_INST_RCSS_A                        (5U)
+#define EDMA_DRV_INST_RSS_A                         (5U)
 
 /*! @brief First instance of EDMA */
 #define EDMA_DRV_INST_MIN                           (EDMA_DRV_INST_DSS_A)
 /*! @brief Last instance of EDMA */
-#define EDMA_DRV_INST_MAX                           (EDMA_DRV_INST_RCSS_A)
+#define EDMA_DRV_INST_MAX                           (EDMA_DRV_INST_RSS_A)
 
 /** @}*/ /* end defgroup EDMA_INSTANCE */
 

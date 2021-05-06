@@ -543,6 +543,7 @@ static const uint16_t gDssSciClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
 };
 
+#if defined(SOC_TPR12)
 static const uint16_t gRcssSciClkSrcValMap[] = 
 {
     [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
@@ -592,6 +593,30 @@ static const uint16_t gRcssMCASPAuxClkSrcValMap[] =
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2] = 0x333U,
     [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x444U,
 };
+
+#endif
+
+#if defined(SOC_AWR294X)
+/*RSS_BSS_CLK_GCM_CLKSRC_SEL
+ * 0   XTALCLK
+ * 1   WUCPUCLK
+ * 2   SYS_CLK
+ * 3   DPLL_PER_HSDIV0_CLKOUT1
+ * 4   APLL_1p8G_HSDIV0_CLKOUT2
+ * 5   RCCLK10M
+ * 6   XREF_CLK0
+ * 7   RCCLK32K
+ */
+static const uint16_t gRssFRCClkSrcValMap[] = 
+{
+    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x000U,
+    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2] = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U,
+};
+#endif
 
 static const uint16_t gCptsClkSrcValMap[] = 
 {
@@ -705,6 +730,13 @@ CSL_dss_ctrlRegs* CSL_DSS_CTRL_getBaseAddress (void)
     return (CSL_dss_ctrlRegs *) CSL_DSS_CTRL_U_BASE;
 }
 
+#if defined (SOC_TPR12)
+CSL_rcss_rcmRegs* CSL_RCSSRCM_getBaseAddress (void)
+{
+    return (CSL_rcss_rcmRegs*) CSL_RCSS_RCM_U_BASE;
+}
+#endif
+
 #if defined (SOC_AWR294X)
 /**
  *  @b Description
@@ -731,6 +763,12 @@ CSL_rss_proc_ctrlRegs* CSL_RSS_PROC_CTRL_getBaseAddress (void)
 {
     return (CSL_rss_proc_ctrlRegs *) CSL_RSS_PROC_CTRL_U_BASE;
 }
+
+CSL_rss_rcmRegs* CSL_RCSSRCM_getBaseAddress (void)
+{
+    return (CSL_rss_rcmRegs*) CSL_RSS_RCM_U_BASE;
+}
+
 #endif /* defined (SOC_AWR294X) */
 
 /**
@@ -754,10 +792,6 @@ CSL_dss_rcmRegs* CSL_DSSRCM_getBaseAddress (void)
     return (CSL_dss_rcmRegs*) CSL_DSS_RCM_U_BASE;
 }
 
-CSL_rcss_rcmRegs* CSL_RCSSRCM_getBaseAddress (void)
-{
-    return (CSL_rcss_rcmRegs*) CSL_RCSS_RCM_U_BASE;
-}
 
 
 /**
@@ -1014,7 +1048,11 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
 {
     CSL_mss_rcmRegs *ptrMSSRCMRegs;
     CSL_dss_rcmRegs *ptrDSSRCMRegs;
+#if defined(SOC_TPR12)
     CSL_rcss_rcmRegs *ptrRCSSRCMRegs;
+#elif defined (SOC_AWR294X)
+    CSL_rss_rcmRegs *ptrRCSSRCMRegs;
+#endif
     CSL_mss_toprcmRegs *ptrTOPRCMRegs;
 
     ptrMSSRCMRegs = CSL_RCM_getBaseAddress ();
@@ -1157,6 +1195,7 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
             *clkSrcVal = gDssSciClkSrcValMap[clkSource];
             break;
         }
+#if defined(SOC_TPR12)
         case Rcm_PeripheralId_RCSS_SCIA:
         {
             *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_SCIA_CLK_SRC_SEL);
@@ -1220,6 +1259,15 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
             *clkSrcVal = gRcssMCASPAuxClkSrcValMap[clkSource];
             break;
         }
+#elif defined(SOC_AWR294X)
+        case Rcm_PeripheralId_RSS_FRC:
+        {
+            *clkSrcReg  = &(ptrRCSSRCMRegs->RSS_FRC_CLK_SRC_SEL);
+            *clkdDivReg = &(ptrRCSSRCMRegs->RSS_FRC_CLK_DIV_VAL);
+            *clkSrcVal = gRssFRCClkSrcValMap[clkSource];
+            break;
+        }
+#endif
         default:
         {
             *clkSrcReg  = NULL;
@@ -1256,7 +1304,11 @@ static Rcm_Return getClkSrcAndDivValue (Rcm_PeripheralId PeriphID,
 {
     CSL_mss_rcmRegs *ptrMSSRCMRegs;
     CSL_dss_rcmRegs *ptrDSSRCMRegs;
+#if defined(SOC_TPR12)
     CSL_rcss_rcmRegs *ptrRCSSRCMRegs;
+#elif defined(SOC_AWR294X)
+    CSL_rss_rcmRegs *ptrRCSSRCMRegs;
+#endif
     CSL_mss_toprcmRegs *ptrTOPRCMRegs;
     uint32_t clkSrc;
     uint32_t clkSrcId;
@@ -1441,6 +1493,7 @@ static Rcm_Return getClkSrcAndDivValue (Rcm_PeripheralId PeriphID,
             *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
             break;
         }
+#if defined(SOC_TPR12)
         case Rcm_PeripheralId_RCSS_SCIA:
         {
             clkSrc  = ptrRCSSRCMRegs->RCSS_SCIA_CLK_SRC_SEL;
@@ -1522,6 +1575,17 @@ static Rcm_Return getClkSrcAndDivValue (Rcm_PeripheralId PeriphID,
             *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
             break;
         }
+#elif defined(SOC_AWR294X)
+        case Rcm_PeripheralId_RSS_FRC:
+        {
+            clkSrc  = ptrRCSSRCMRegs->RSS_FRC_CLK_SRC_SEL;
+            *clkDiv = ptrRCSSRCMRegs->RSS_FRC_CLK_DIV_VAL;
+            clkSrcId = getClkSrcFromClkSelVal(gRssFRCClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRssFRCClkSrcValMap), clkSrc);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
+            break;
+        }
+#endif
         default:
         {
             *clkDiv = 0U;
