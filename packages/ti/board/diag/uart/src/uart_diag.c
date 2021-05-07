@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@
 #define FIFO_SIZE     (64U)
 #define BAUD_RATE_MAX (7384615U)
 
-#if defined(SOC_TPR12) && defined (__TI_ARM_V7R4__)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X)) && defined (__TI_ARM_V7R4__)
 #include <string.h>
 static uint8_t gUartTestBuf[100] = "\nTesting UART print to console at 115.2k baud rate";
 #endif
@@ -870,7 +870,7 @@ int main(void)
 
     return ret;
 }
-#elif defined(SOC_TPR12) && defined (__TI_ARM_V7R4__)
+#elif (defined(SOC_TPR12) || defined(SOC_AWR294X)) && defined (__TI_ARM_V7R4__)
 int main(void)
 {
     Board_STATUS status;
