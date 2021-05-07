@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -89,7 +89,7 @@ extern "C" {
 #define MAX_NUM_OF_BOARDS                       (4U)
 #define STARTING_BOARD_NUM                      (2U)
 
-#elif defined(tpr12_evm)
+#elif defined(tpr12_evm) || defined(awr294x_evm)
 #define MAX_NUM_OF_BOARDS						(BOARD_ID_MAX_BOARDS)
 #elif defined(am64x_evm)
 #define I2C_INSTANCE                            (0U)

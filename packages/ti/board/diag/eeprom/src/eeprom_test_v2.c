@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,10 +41,10 @@
  *  Operation: This test display the board details by reading
  *			   Board id EEPROM
  *
- *  Supported SoCs: AM65XX, J721E, J7200, TPR12, AM64x.
+ *  Supported SoCs: AM65XX, J721E, J7200, TPR12, AM64x, AWR294x
  *
  *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm,
- *                       am64x_evm ,am64x_svb.
+ *                       am64x_evm ,am64x_svb, awr294x_evm
  *
  */
 
@@ -71,6 +71,10 @@ Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_WKUP, false},
 };
 #elif defined(SOC_TPR12)
+boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
+    {"EVM Board\0",                 BOARD_I2C_EEPROM_ADDR,     true}
+};
+#elif defined(SOC_AWR294X)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
     {"EVM Board\0",                 BOARD_I2C_EEPROM_ADDR,     true}
 };
@@ -173,7 +177,7 @@ int8_t eepromTest(uint8_t slaveAddress)
     UART_dataWrite((char *)&info.boardInfo.variant, BOARD_VARIANT_LEN);
     UART_printf("\n\tPCB Revision: ");
     UART_dataWrite((char *)&info.boardInfo.pcbRev, BOARD_PCBREV_LEN);
-#if defined(SOC_AM65XX) || defined(SOC_TPR12)
+#if defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AWR294X)
     UART_printf("\n\tSchematic and BOM Revision: ");
     UART_dataWrite((char *)&info.boardInfo.schbomRev, BOARD_SCHMBOM_REV_LEN);
 #else
@@ -258,7 +262,7 @@ int main(void)
     Board_initCfg boardCfg;
 #if defined(SOC_AM65XX)
     boardPresDetect_t isBoardDetect = APP_CARD_DETECT;
-#elif !defined(SOC_TPR12)
+#elif !(defined(SOC_TPR12) || defined(SOC_AWR294X))
     uint8_t isBoardDetect = 0U;
 #endif
     uint8_t index;
@@ -286,7 +290,7 @@ int main(void)
     /* Detecting Boards */
     enableWKUPI2C();
 #endif
-#if !(defined(SOC_TPR12))
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
 	for(index = STARTING_BOARD_NUM; index < MAX_NUM_OF_BOARDS; index++)
     {
         boardProgInfo[index].isBoardPresent = Board_detectBoard(isBoardDetect);
@@ -297,7 +301,7 @@ int main(void)
     {
         if (boardProgInfo[index].isBoardPresent)
         {
-#if !((defined(am65xx_evm) || defined(am65xx_idk) || defined(SOC_TPR12)))
+#if !((defined(am65xx_evm) || defined(am65xx_idk) || defined(SOC_TPR12) || defined(SOC_AWR294X)))
             Board_setI2cInitConfig(&boardI2cInitCfg[index]);
 #endif
             UART_printf("\n%s:", boardProgInfo[index].boardName);
