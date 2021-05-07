@@ -43,9 +43,9 @@
  *  The test code showcases usage of the CPSW Driver exported API for
  *  sending/receiving Ethernet packets.
  *
- *  Supported SoCs: TPR12.
+ *  Supported SoCs: TPR12, AWR294x
  *
- *  Supported Platforms:tpr12_evm.
+ *  Supported Platforms:tpr12_evm, awr294x_evm.
  *
  */
 
@@ -105,7 +105,7 @@ static void BoardDiag_enetLpbkCloseEnet(void)
         UART_printf("Failed to close port link: %d\n", status);
     }
 
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294x))
     /* Detach core */
     if (status == ENET_SOK)
     {
@@ -1326,7 +1326,7 @@ static int8_t BoardDiag_cpswLoopbackTest()
         UART_printf("Failed to open Enet driver: %d\n", status);
         return -1;
     }
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294x))
     if (status == ENET_SOK)
     {
         /* Attach the core with RM */
