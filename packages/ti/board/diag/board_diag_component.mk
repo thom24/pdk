@@ -459,7 +459,7 @@ export board_diag_expHeader_CORE_DEPENDENCY
 export board_diag_expHeader_MAKEFILE
 board_diag_expHeader_PKG_LIST = board_diag_expHeader
 board_diag_expHeader_INCLUDE = $(board_diag_expHeader_PATH)
-board_diag_expHeader_BOARDLIST = j721e_evm j7200_evm tpr12_evm am64x_evm awr294x_evm
+board_diag_expHeader_BOARDLIST = j721e_evm j7200_evm tpr12_evm am64x_evm
 board_diag_expHeader_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_expHeader_$(SOC)_CORELIST
 export board_diag_expHeader_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
