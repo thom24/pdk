@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,7 +44,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
 #include <ti/drv/mibspi/MIBSPI.h>
 #include <ti/drv/mibspi/soc/MIBSPI_soc.h>
 #endif
@@ -56,7 +56,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AWR294X)
 #include <ti/csl/soc.h>
 #include "board_utils.h"
 #include "diag_common_cfg.h"
@@ -161,6 +161,12 @@ extern I2C_config_list I2C_config;
 #define TPS65313_PMIC_REG                  (0x0EU) //TODO: Need to update regitser value for tpr12_evm
 #define TPS65313_PMIC_VOLTAGE_VAL          (0x41U) //TODO: Need to update regitser voltage value for tpr12_evm
 
+/* LP8762 Register value */
+#define LP8762_PMIC_SPI_CS                 (0x0U)
+#define LP8762_PMICID_REG                  (0x01U)
+#define LP8762_PMIC_REG                    (0x14U)
+#define LP8762_PMIC_VOLTAGE_VAL            (0xADU)
+
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
@@ -253,11 +259,21 @@ pmic_data_t tps65313 = {
     0U
 };
 
+pmic_data_t lp8762 = {
+    LP8762_PMIC_SPI_CS,
+    MIBSPI_INST_ID_MSS_SPIB,
+    LP8762_PMICID_REG,
+    0U,
+    LP8762_PMIC_REG,
+    LP8762_PMIC_VOLTAGE_VAL,
+    0U,
+    0U
+};
 
 void setPmicVoltage(void *h, pmic_data_t *pPmicData, uint8_t val)
 {
     uint8_t tx[2];
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
     /*TODO: Need to add write command */
     MIBSPI_Handle handle;
     handle = (MIBSPI_Handle )h;
@@ -308,7 +324,7 @@ uint8_t readPmicVoltage(void *h, uint8_t slaveSelect, uint8_t regOffset)
 {
     uint8_t tx[1];
     uint8_t rx[1];
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
     /*TODO: Need to add read ID command */
     MIBSPI_Handle handle;
     handle = (MIBSPI_Handle)h;
@@ -378,10 +394,10 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 }
 #endif
 
-#if (defined (SOC_AM437x)) || (defined (SOC_AM335x)) || (defined (SOC_TPR12))
+#if (defined (SOC_AM437x)) || (defined (SOC_AM335x)) || (defined (SOC_TPR12) || defined(SOC_AWR294X))
 uint32_t getPmicId(void *h, pmic_data_t *pPmicData)
 {
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     uint8_t tx[2] = {0, 0};
     uint8_t rx[2];
     //uint8_t status = 0;
@@ -503,7 +519,7 @@ uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 void *Board_PmicInit(uint8_t devInstance)
 {
 
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     MIBSPI_Params     params;
     MIBSPI_Handle     handle;
 
@@ -556,7 +572,7 @@ void *Board_PmicInit(uint8_t devInstance)
 
 void Board_PmicDeinit(void* h)
 {
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     MIBSPI_Handle handle;
     handle = (MIBSPI_Handle)h;
     MIBSPI_close(handle);
@@ -571,7 +587,7 @@ int pmic_test()
 {
     int ret = 0;
 /* TODO: Need to update it for tpr12 after getting register details*/
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
     uint8_t voltage, val;
 #endif
     void* handle = NULL;
@@ -591,7 +607,7 @@ int pmic_test()
 #endif
 
 /* TODO: Need to update it for tpr12 */
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     stat = BOARD_SOK;
 #endif
 
@@ -601,7 +617,7 @@ int pmic_test()
         pPmicData = Get_PmicData(info.boardInfo.boardName);
 #else
 /* TODO : Need to update this after Flashing board id details */
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
         pPmicData = &tps65313;
         numPmic = 1;
 #else
@@ -616,13 +632,13 @@ int pmic_test()
 
         while(numPmic)
         {
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
             val = pPmicData->pmicVoltVal;
 #endif
             UART_printf("Testing PMIC module... \n");
             UART_printf("PMIC ID = 0x%08x\n", getPmicId(handle, pPmicData));
             numPmic--;
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
             voltage = readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg);
             UART_printf("Initial PMIC voltage = 0x%x\n", voltage);
             UART_printf("Setting PMIC voltage to 0x%x\n", val);
@@ -733,6 +749,11 @@ pmic_data_t* Get_PmicData(char *pBoardName)
     else if (strncmp("TPR_EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
     {
         pPmicData = &tps65313;
+    }
+    /* Check if the board is AWR294x_EVM by comparing the string read from EEPROM. */
+    else if (strncmp("AWR294X_EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    {
+        pPmicData = &lp8762;
     }
     else
     {

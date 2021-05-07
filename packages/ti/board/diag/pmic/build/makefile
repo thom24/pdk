@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -73,7 +73,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 
-ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
 COMP_LIST_COMMON += mibspi
 endif
 
