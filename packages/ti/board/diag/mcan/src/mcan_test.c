@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,9 +42,9 @@
  *  Operation: MCAN operational mode is set to CAN-FD. This test will need
  *  two MCAN ports.
  *
- *  Supported SoCs: AM65XX, J721E, J7200,AM64x, TPR12.
+ *  Supported SoCs: AM65XX, J721E, J7200,AM64x, TPR12, AWR294X
  *
- *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb & tpr12_evm.
+ *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb, tpr12_evm, awr294x_evm
  *
  */
 
@@ -84,7 +84,7 @@ BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] =
  {CSL_MCAN1_MSGMEM_RAM_BASE,     1, MAIN_MCAN1_TX_INT_NUM, MAIN_MCAN1_RX_INT_NUM, MAIN_MCAN1_TS_INT_NUM},
 };
 
-#elif defined(tpr12_evm)
+#elif (defined(tpr12_evm) || defined(awr294x_evm))
 BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] = {{CSL_MSS_MCANA_MSG_RAM_U_BASE,     0, MAIN_MCAN0_TX_INT_NUM, MAIN_MCAN0_RX_INT_NUM, MAIN_MCAN0_TS_INT_NUM},
                                                        {CSL_MSS_MCANB_MSG_RAM_U_BASE,     1, MAIN_MCAN1_TX_INT_NUM, MAIN_MCAN1_RX_INT_NUM, MAIN_MCAN1_TS_INT_NUM},
                                                       };
@@ -816,7 +816,7 @@ static void BoardDiag_mcanMainconfigs(void)
 }
 #endif  /* #if defined(SOC_J721E) || defined(SOC_J7200) */
 
-#if !defined(SOC_AM64X) && !defined(SOC_TPR12)
+#if !defined(SOC_AM64X) && !defined(SOC_TPR12) && !defined(SOC_AWR294X)
 
 /**
  * \brief   This API Initializes the GPIO module
@@ -870,7 +870,7 @@ void BoardDiag_McanMuxEnable(i2cIoExpPinNumber_t pinNum,
 }
 #endif
 
-#if !defined(SOC_TPR12)
+#if !defined(SOC_TPR12) && !defined(SOC_AWR294X)
 /**
  * \brief   This API enables the CAN transceivers by setting the STB pins
  *
@@ -973,7 +973,7 @@ static void BoardDiag_mcanEnable(void)
     }
 #endif
 }
-#endif /* ifndef SOC_TPR12 */
+#endif /* #if !defined(SOC_TPR12) && !defined(SOC_AWR294X) */
 
 /**
  * \brief  This function executes MCAN Diagnostic test
@@ -1003,10 +1003,10 @@ int32_t BoardDiag_mcanTest(void)
     UART_printf  ("***********************************************\n");
 #endif
 
-#if !defined(SOC_TPR12)
+#if !defined(SOC_TPR12) && !defined(SOC_AWR294X)
     BoardDiag_mcanEnable();
 #endif
-#if defined(am65xx_idk) || defined(SOC_AM64X) || defined(SOC_TPR12)
+#if defined(am65xx_idk) || defined(SOC_AM64X) || defined(SOC_TPR12) || defined(SOC_AWR294X)
     mcanMaxPorts = MCAN_MAX_PORTS;
 #else
     if(expBoardDetect)
