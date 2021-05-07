@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -69,7 +69,7 @@
 #define SPI_INSTANCE      (2U)
 
 #define BOARD_SPI_FIRST_PAGE        (0x0000)
-#if defined(tpr12_evm)
+#if (defined(tpr12_evm) || defined(awr294x_evm))
 #define BOARD_SPI_LAST_PAGE         (0x1FF000)
 #else
 #define BOARD_SPI_LAST_PAGE         (0xFFFF00)

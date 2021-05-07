@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  a test pattern to a memory page and reading the same page for
  *  data verification.
  *
- *  Supported SoCs : AM65XX and TPR12
+ *  Supported SoCs : AM65XX, TPR12, AWR294X
  *
- *  Supported Platforms: am65xx-evm,am65xx_idk and tpr12_evm.
+ *  Supported Platforms: am65xx-evm,am65xx_idk, tpr12_evm, awr294x_evm
  *
  */
 
@@ -74,7 +74,7 @@ int BoardDiag_SpiReadWriteTest(Board_flashHandle  handle,
 {
     uint32_t blockNum, pageNum;      /* Block, page number */
     uint32_t failIndex;
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     uint32_t ioMode = BOARD_FLASH_QSPI_IO_MODE_QUAD;
 #else
     uint32_t ioMode = BOARD_FLASH_QSPI_IO_MODE_SINGLE;
@@ -319,7 +319,7 @@ int BoardDiag_SpiFlashTest(void)
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
     bool testStatus = true;          /* return value */
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     QSPI_HwAttrs qspiCfg;
 
     /* Get the default SPI init configurations */
@@ -420,7 +420,7 @@ int BoardDiag_SpiFlashStressTest(void)
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
     bool testStatus = 0;          /* return value */
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     QSPI_HwAttrs qspiCfg;
 #else
     SPI_v1_HWAttrs spi_cfg;
@@ -433,7 +433,7 @@ int BoardDiag_SpiFlashStressTest(void)
     spiParams.bitRate = MAX_CLOCK;
     params = &spiParams;
 
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     /* Get the default SPI init configurations */
     QSPI_socGetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspiCfg);
 
