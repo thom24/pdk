@@ -73,6 +73,7 @@ board_diag_j721e_BOARDLIST = j721e_evm
 board_diag_j721e_CORELIST = mpu1_0 mcu1_0
 board_diag_j7200_CORELIST = mpu1_0 mcu1_0
 board_diag_tpr12_CORELIST = mcu1_0
+board_diag_awr294x_CORELIST = mcu1_0
 board_diag_am64x_CORELIST = mpu1_0 mcu1_0
 
 ############################
@@ -207,7 +208,7 @@ export board_diag_button_BOARD_DEPENDENCY = yes
 export board_diag_button_CORE_DEPENDENCY = yes
 board_diag_button_PKG_LIST = board_diag_button
 board_diag_button_INCLUDE = $(board_diag_button_PATH)
-board_diag_button_BOARDLIST = am65xx_evm am65xx_idk tpr12_evm am64x_evm
+board_diag_button_BOARDLIST = am65xx_evm am65xx_idk tpr12_evm am64x_evm awr294x_evm
 export board_diag_button_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_button_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += board_diag_button
@@ -246,7 +247,7 @@ export board_diag_cpsw_CORE_DEPENDENCY
 export board_diag_cpsw_MAKEFILE
 board_diag_cpsw_PKG_LIST = board_diag_cpsw
 board_diag_cpsw_INCLUDE = $(board_diag_cpsw_PATH)
-board_diag_cpsw_BOARDLIST = tpr12_evm
+board_diag_cpsw_BOARDLIST = tpr12_evm awr294x_evm
 board_diag_cpsw_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_cpsw_$(SOC)_CORELIST
 export board_diag_cpsw_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -318,7 +319,7 @@ export board_diag_currentMonitor_CORE_DEPENDENCY
 export board_diag_currentMonitor_MAKEFILE
 board_diag_currentMonitor_PKG_LIST = board_diag_currentMonitor
 board_diag_currentMonitor_INCLUDE = $(board_diag_currentMonitor_PATH)
-board_diag_currentMonitor_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb
+board_diag_currentMonitor_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb awr294x_evm
 board_diag_currentMonitor_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_currentMonitor_$(SOC)_CORELIST
 export board_diag_currentMonitor_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -398,7 +399,7 @@ export board_diag_eeprom_CORE_DEPENDENCY
 export board_diag_eeprom_MAKEFILE
 board_diag_eeprom_PKG_LIST = board_diag_eeprom
 board_diag_eeprom_INCLUDE = $(board_diag_eeprom_PATH)
-board_diag_eeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb
+board_diag_eeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb awr294x_evm
 board_diag_eeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_eeprom_$(SOC)_CORELIST
 export board_diag_eeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -458,7 +459,7 @@ export board_diag_expHeader_CORE_DEPENDENCY
 export board_diag_expHeader_MAKEFILE
 board_diag_expHeader_PKG_LIST = board_diag_expHeader
 board_diag_expHeader_INCLUDE = $(board_diag_expHeader_PATH)
-board_diag_expHeader_BOARDLIST = j721e_evm j7200_evm tpr12_evm am64x_evm
+board_diag_expHeader_BOARDLIST = j721e_evm j7200_evm tpr12_evm am64x_evm awr294x_evm
 board_diag_expHeader_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_expHeader_$(SOC)_CORELIST
 export board_diag_expHeader_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -643,7 +644,7 @@ export board_diag_led_CORE_DEPENDENCY
 export board_diag_led_MAKEFILE
 board_diag_led_PKG_LIST = board_diag_led
 board_diag_led_INCLUDE = $(board_diag_led_PATH)
-board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk tpr12_evm j7200_evm am64x_evm
+board_diag_led_BOARDLIST = j721e_evm am65xx_evm am65xx_idk tpr12_evm j7200_evm am64x_evm awr294x_evm
 board_diag_led_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_led_$(SOC)_CORELIST
 export board_diag_led_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -718,7 +719,7 @@ export board_diag_mcan_CORE_DEPENDENCY
 export board_diag_mcan_MAKEFILE
 board_diag_mcan_PKG_LIST = board_diag_mcan
 board_diag_mcan_INCLUDE = $(board_diag_mcan_PATH)
-board_diag_mcan_BOARDLIST = j721e_evm am65xx_idk j7200_evm am64x_evm tpr12_evm am64x_svb
+board_diag_mcan_BOARDLIST = j721e_evm am65xx_idk j7200_evm am64x_evm tpr12_evm am64x_svb awr294x_evm
 board_diag_mcan_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_mcan_$(SOC)_CORELIST
 export board_diag_mcan_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -793,7 +794,7 @@ export board_diag_norflash_CORE_DEPENDENCY
 export board_diag_norflash_MAKEFILE
 board_diag_norflash_PKG_LIST = board_diag_norflash
 board_diag_norflash_INCLUDE = $(board_diag_norflash_PATH)
-board_diag_norflash_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_svb
+board_diag_norflash_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_svb awr294x_evm
 board_diag_norflash_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_norflash_$(SOC)_CORELIST
 export board_diag_norflash_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -868,7 +869,7 @@ export board_diag_pmic_CORE_DEPENDENCY
 export board_diag_pmic_MAKEFILE
 board_diag_pmic_PKG_LIST = board_diag_pmic
 board_diag_pmic_INCLUDE = $(board_diag_pmic_PATH)
-board_diag_pmic_BOARDLIST = j721e_evm j7200_evm tpr12_evm
+board_diag_pmic_BOARDLIST = j721e_evm j7200_evm tpr12_evm awr294x_evm
 board_diag_pmic_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_pmic_$(SOC)_CORELIST
 export board_diag_pmic_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -943,7 +944,7 @@ export board_diag_temperature_CORE_DEPENDENCY
 export board_diag_temperature_MAKEFILE
 board_diag_temperature_PKG_LIST = board_diag_temperature
 board_diag_temperature_INCLUDE = $(board_diag_temperature_PATH)
-board_diag_temperature_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb
+board_diag_temperature_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb awr294x_evm
 board_diag_temperature_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_temperature_$(SOC)_CORELIST
 export board_diag_temperature_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -963,7 +964,7 @@ export board_diag_uart_CORE_DEPENDENCY
 export board_diag_uart_MAKEFILE
 board_diag_uart_PKG_LIST = board_diag_uart
 board_diag_uart_INCLUDE = $(board_diag_uart_PATH)
-board_diag_uart_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm
+board_diag_uart_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm awr294x_evm
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 board_diag_uart_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 else
