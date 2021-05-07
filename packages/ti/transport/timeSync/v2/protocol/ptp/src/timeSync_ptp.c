@@ -345,6 +345,7 @@ void TimeSyncPtp_processRxNotifyTask(void *arg)
     uint8_t rxFrame[TIMESYNC_PTP_RX_MAX_MTU];
     TimeSyncPtp_Handle hTimeSyncPtp = NULL;
     volatile bool taskRunFlag = true;
+    int32_t status;
 
     if (arg != NULL)
     {
@@ -355,19 +356,22 @@ void TimeSyncPtp_processRxNotifyTask(void *arg)
             {
                 SemaphoreP_pend(hTimeSyncPtp->pktRxSemHandle, SemaphoreP_WAIT_FOREVER);
 
-                TimeSync_getPtpFrame(hTimeSyncPtp->timeSyncHandle,
-                                     &rxFrame[0U],
-                                     &size,
-                                     &rxPort);
-                dstMacId = rxFrame;
+                status = TimeSync_getPtpFrame(hTimeSyncPtp->timeSyncHandle,
+                                              &rxFrame[0U],
+                                              &size,
+                                              &rxPort);
+                if (status == TIMESYNC_OK)
+                {
+                    dstMacId = rxFrame;
 
-                if (TIMESYNC_COMPARE_MAC(dstMacId, timeSyncMAC))
-                {
-                    TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 0);
-                }
-                else if (TIMESYNC_COMPARE_MAC(dstMacId, linkLocalMAC))
-                {
-                    TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 1);
+                    if (TIMESYNC_COMPARE_MAC(dstMacId, timeSyncMAC))
+                    {
+                        TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 0);
+                    }
+                    else if (TIMESYNC_COMPARE_MAC(dstMacId, linkLocalMAC))
+                    {
+                        TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 1);
+                    }
                 }
             }
         }
