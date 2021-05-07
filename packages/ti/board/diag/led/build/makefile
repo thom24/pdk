@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += led_test.c diag_common_cfg.c
-ifeq ($(SOC), $(filter $(SOC), am65xx tpr12 am64x))
+ifeq ($(SOC), $(filter $(SOC), am65xx tpr12 am64x awr294x))
 SRCS_COMMON += GPIO_LED_config.c
 PACKAGE_SRCS_COMMON += $(BOARD)
 endif

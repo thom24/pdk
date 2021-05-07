@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -57,7 +57,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_AWR294X))
 #include "diag_common_cfg.h"
 #endif
 
@@ -105,7 +105,7 @@ void AppGpioCallbackFxn(void);
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_AWR294X)))
 void BoardDiag_AppDelay(uint32_t delayVal);
 #endif
 

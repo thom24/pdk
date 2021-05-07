@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2015-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -41,12 +41,12 @@
  *  Operation: This test verifies by toggling all available general
  *             purpose LEDs.
  *
- *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx, J721E, TPR12, J7200,AM64x
+ *  Supported SoCs: AM335x, AM437x, AM571x, AM572x, K2G, AM65xx, J721E, TPR12, J7200, AM64x, AWR294X
  *
  *  Supported Platforms: bbbAM335x, skAM335x, icev2AM335x, iceAMIC110,
  *                       evmAM437x, idkAM437x, skAM437x, evmAM571x, idkAM571x,
  *                       evmAM572x, idkAM572x, evmK2G, iceK2G, am65xx_evm,
- *                       am65xx_idk, j721e_evm, tpr12_evm, j7200_evm,am64x_evm.
+ *                       am65xx_idk, j721e_evm, tpr12_evm, j7200_evm,am64x_evm, awr294x_evm.
  */
 
 #include "led_test.h"
@@ -56,7 +56,7 @@ i2cIoExpPinNumber_t gUserLeds[BOARD_GPIO_LED_NUM] = { PIN_NUM_6,
                                                       PIN_NUM_7 };
 #endif
 
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
 extern GPIO_v2_Config GPIO_v2_config;
 #endif
 
@@ -151,7 +151,7 @@ static int8_t led_run_test(void)
 #endif
     char p = 'y';
     int i, j;
-#if !defined(tpr12_evm)
+#if !(defined(tpr12_evm) || defined(awr294x_evm))
     int k;
 #endif
 
@@ -194,7 +194,7 @@ static int8_t led_run_test(void)
     GPIO_socSetInitCfg(0, &gpioCfg);
     GPIO_init();
 #else
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     GPIO_v2_updateConfig(&GPIO_v2_config);
 #endif
     GPIO_init();
@@ -256,7 +256,7 @@ static int8_t led_run_test(void)
         GPIO_write(i, GPIO_PIN_VAL_LOW);
 #else
 
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
         GPIO_write(GPIO_v2_config.pinConfigs[i].pinIndex, GPIO_PIN_VAL_LOW);
 #else
         GPIO_write(i, GPIO_PIN_VAL_LOW);
@@ -271,7 +271,7 @@ static int8_t led_run_test(void)
         UART_printf("or any other character to indicate failure: ");
 #endif
 
-#if defined(tpr12_evm)
+#if (defined(tpr12_evm) || defined(awr294x_evm))
         for (i=0; i<NUMBER_OF_CYCLES; i++) {
             for (j=0; j<BOARD_GPIO_LED_NUM; j++) {
                 GPIO_write(GPIO_v2_config.pinConfigs[j].pinIndex, GPIO_PIN_VAL_HIGH);
@@ -337,7 +337,7 @@ static int8_t led_run_test(void)
 #endif
                     }
                 }
-#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_AWR294X)))
                 BoardDiag_AppDelay(5000000);
 #else
                 BOARD_delay(250000);
@@ -375,7 +375,7 @@ static int8_t led_run_test(void)
 
         GPIO_write(i, GPIO_PIN_VAL_LOW);
 #else
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
         GPIO_write(GPIO_v2_config.pinConfigs[i].pinIndex, GPIO_PIN_VAL_LOW);
 #else
         GPIO_write(i, GPIO_PIN_VAL_LOW);
