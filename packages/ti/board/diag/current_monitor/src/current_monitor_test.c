@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,9 +44,9 @@
  *  bus voltage, power, current readings and displaying it on to the serial
  *  console.
  *
- *  Supported SoCs: K2G, AM65XX, J721E, J7200, TPR12 & AM64x
+ *  Supported SoCs: K2G, AM65XX, J721E, J7200, TPR12, AM64x, AWR294x
  *
- *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm, am64x_evm & am64x_svb.
+ *  Supported Platforms: iceK2G, am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm, am64x_evm, am64x_svb, awr294x_evm
  *
  */
 
@@ -54,7 +54,7 @@
 
 extern I2C_config_list I2C_config;
 
-#if defined(am65xx_evm) || defined(am65xx_idk) //J7ES_TBD: Need to change back 'defined(am65xx_evm) || defined(am65xx_idk)' to 'defined(SOC_AM65XX)'
+#if defined(am65xx_evm) || defined(am65xx_idk)
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VDD_CORE",      0x40, {0.002, 0.0025, 1.25, 305.17, 0.000152, 16777}},
     {"VDD_MCU",       0x41, {0.01, 0.0025, 1.25,  38.14,  0.0000305, 16777}},
@@ -140,6 +140,15 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VIOIN_1V8", 	 0x41, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}},
     {"VIOIN_3V3",    0x44, {0.002, 0.0025, 1.25, 0.001068115, 0.0000427, 59919}},
     {"VDD_SRAM_1V2", 0x45, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}}
+};
+#elif defined(SOC_AWR294X)
+inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
+    {"INA_1V2",      0x40, {0.002, 0.0025, 1.25, 0.001373291, 0.0000549, 46603}},
+    {"INA_1V8", 	 0x41, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}},
+    {"INA_1V0RF1",   0x42, {0.002, 0.0025, 1.25, 0.001068115, 0.0000427, 59919}},
+    {"INA_1V0RF2",   0x43, {0.002, 0.0025, 1.25, 0.001068115, 0.0000427, 59919}},
+    {"INA_3V3",      0x44, {0.002, 0.0025, 1.25, 0.000991821, 0.0000397, 64528}}
+
 };
 #elif defined(am64x_evm) 
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
@@ -534,7 +543,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 
     /* Initializes the I2C Parameters */
     I2C_Params_init(&i2cParams);
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AWR294X))
     i2cParams.bitRate = I2C_400kHz;
 #endif
     /* Configures the I2C instance with the passed parameters*/
@@ -792,7 +801,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
  *            -1 - in case of failure.
  *
  */
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
 int main(void)
 {
     Board_STATUS status;

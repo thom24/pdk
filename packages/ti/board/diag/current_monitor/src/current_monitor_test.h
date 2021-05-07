@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -82,6 +82,8 @@ extern "C" {
 #define NUM_OF_INA_DEVICES                (0x08U)
 #elif defined(SOC_K2G) || defined(SOC_TPR12)
 #define NUM_OF_INA_DEVICES                (0x04U)
+#elif defined(SOC_AWR294X)
+#define NUM_OF_INA_DEVICES                (0x05U)
 #elif defined(SOC_J721E)
 #define NUM_OF_INA_DEVICES                (31U)
 #define TOT_INA_IN_PM1                    (15U)
