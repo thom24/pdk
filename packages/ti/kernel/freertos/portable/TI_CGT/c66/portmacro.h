@@ -101,6 +101,7 @@
 /* Task switch utilities. */
     extern void vPortYeildFromISR( uint32_t x );
     extern void vPortYield(void);
+    extern void vPortYieldAsyncFromISR( void );
     #define portYIELD_FROM_ISR( x )    vPortYeildFromISR( x )
     #define portEND_SWITCHING_ISR( x ) vPortYeildFromISR( x )
     #define portYIELD()                vPortYield();
@@ -147,10 +148,11 @@
 
     extern BaseType_t xPortInIsrContext(void);
 
+    #define portMEMORY_BARRIER()    _mfence()
+
     #ifdef __cplusplus
         } /* extern C */
     #endif
 
-    #define portMEMORY_BARRIER()    asm("    mfence \n")
 
 #endif /* PORTMACRO_H */

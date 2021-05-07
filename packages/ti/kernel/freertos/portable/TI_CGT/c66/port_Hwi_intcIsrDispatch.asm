@@ -10,15 +10,17 @@
 ; *  @date 12th June, 2004
 ; *  @author Ruchika Kharwar
 ; */
-    .def __Hwi_intcVectorTable
-    .ref _CSL_intcCpuIntrTable
+    .def _Hwi_intcVectorTable
+
+
+    .ref CSL_intcCpuIntrTable
     .ref ti_sysbios_family_c64p_Hwi_dispatchAlways
-    .ref _CSL_Entry
+    .ref CSL_Entry
 
 
 RESV    .macro num
     .loop num
-    mvkh _CSL_intcCpuIntrTable,a4
+    mvkh CSL_intcCpuIntrTable,a4
     .endloop
     .endm
 _Hwi_intcpush .macro reg
@@ -41,13 +43,13 @@ CALLDISP .macro intr
     .sect ".hwi_vect"
     .align 0x400
     .nocmp
-__Hwi_intcVectorTable:
+_Hwi_intcVectorTable:
 __Hwi_intcRsv0:
     NOP
     NOP
     NOP
-    mvkl _CSL_Entry,b0
-    mvkh _CSL_Entry,b0
+    mvkl CSL_Entry,b0
+    mvkh CSL_Entry,b0
     b       b0
     NOP 
     NOP 4
@@ -115,7 +117,7 @@ __Hwi_intcIsr15:
     .global CSL_intcIvpSet
 CSL_intcIvpSet:
     bnop b3,2
-    mvkl __Hwi_intcVectorTable, b0
-    mvkh __Hwi_intcVectorTable, b0
+    mvkl _Hwi_intcVectorTable, b0
+    mvkh _Hwi_intcVectorTable, b0
     mvc b0, istp
 

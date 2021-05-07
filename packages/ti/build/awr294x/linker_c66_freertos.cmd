@@ -32,6 +32,7 @@
 
 #define L1P_CACHE_SIZE (16*1024)
 #define L1D_CACHE_SIZE (16*1024)
+--symbol_map _Hwi_intcVectorTable=Hwi_intcVectorTable
 
 MEMORY
 {

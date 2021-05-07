@@ -60,7 +60,8 @@ PAGE 1:
 
 -stack  0x2000                              /* SOFTWARE STACK SIZE           */
 -heap   0x1000                              /* HEAP AREA SIZE                */
--u _Hwi_intcVectorTable
+--symbol_map _Hwi_intcVectorTable=Hwi_intcVectorTable
+
 
 SECTIONS
 {

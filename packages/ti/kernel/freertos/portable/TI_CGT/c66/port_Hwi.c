@@ -70,7 +70,7 @@ void ti_sysbios_family_c64p_Hwi_dispatchC__I(int32_t intNum)
         if (ulPortYieldRequired != pdFALSE)
         {
             ulPortYieldRequired = pdFALSE;
-            vPortYield();
+            vPortYieldAsyncFromISR();
         }
     
     }
