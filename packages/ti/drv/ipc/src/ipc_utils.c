@@ -42,12 +42,20 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
+#include <ti/drv/ipc/ipc.h>
 #include "ipc_osal.h"
 #include "ipc_utils.h"
+#include "ipc_priv.h"
 
 #include <ti/csl/csl_types.h>
 #include <ti/drv/ipc/soc/ipc_soc.h>
 #include <ti/drv/ipc/include/ipc_types.h>
+
+#if defined (IPC_CFG_PRINT_ENABLE)
+/* This is needed for vsnprintf */
+#include <stdio.h>
+#include <stdarg.h>
+#endif
 
 /* ========================================================================== */
 /*                            Local Types/Defines                             */
@@ -318,6 +326,45 @@ uintptr_t IpcUtils_getMemoryAddress(uint32_t daAddr, uint32_t size)
 #else
     return daAddr;
 #endif
+}
+
+void SystemP_printf(const char *format, ...)
+{
+#if defined (IPC_CFG_PRINT_ENABLE)
+    va_list     vaArgPtr;
+    char       *buf;
+    Ipc_Object      *pObj  = NULL;
+    Ipc_OsalPrms    *pOsal = NULL;
+
+    pObj = getIpcObjInst(0U);
+    pOsal = &pObj->initPrms.osalPrms;
+
+    if(NULL != pObj->initPrms.printFxn)
+    {
+        if(NULL != pOsal->lockMutex)
+        {
+            pOsal->lockMutex(pObj->printLock, SemaphoreP_WAIT_FOREVER);
+        }
+
+        buf = &pObj->printBuf[0];
+        (void) va_start(vaArgPtr, format);
+        (void) vsnprintf(
+            buf, IPC_PRINT_BUF_LEN, (const char *) format, vaArgPtr);
+        va_end(vaArgPtr);
+
+        pObj->initPrms.printFxn("[IPC] ");
+        pObj->initPrms.printFxn(buf);
+
+        /* This assumes that both lock/unlock will be both provided or not
+         * provided. Any other combo will result in invalid lock operation */
+        if(NULL != pOsal->unlockMutex)
+        {
+            pOsal->unlockMutex(pObj->printLock);
+        }
+    }
+#endif
+
+    return;
 }
 /* ========================================================================== */
 /*                          Local Functions                                   */

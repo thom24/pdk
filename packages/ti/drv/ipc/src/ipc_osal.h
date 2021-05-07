@@ -71,8 +71,6 @@ extern "C" {
  */
 void IpcOsalPrms_init (Ipc_OsalPrms *initPrms);
 
-int32_t SystemP_printf(const char* fmt, ...);
-
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */

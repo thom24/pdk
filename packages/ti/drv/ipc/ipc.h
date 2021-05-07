@@ -133,6 +133,10 @@ typedef struct Ipc_InitPrms_s
     Ipc_NewMsgReceivedFxn   newMsgFxn;
     /**< Optional callback function, that would be invoked when a new message
         is received */
+
+    Ipc_PrintFxn           printFxn;
+    /**< If not NULL, this function will be called to print debug/info message
+     *   with appropriate string. */
 } Ipc_InitPrms;
 
 /**

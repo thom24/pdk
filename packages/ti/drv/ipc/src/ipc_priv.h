@@ -74,6 +74,9 @@ extern "C" {
  */
 #define RPMessage_MAX_RESERVED_ENDPOINT  100
 
+/** \brief IPC print buffer length */
+#define IPC_PRINT_BUF_LEN              ((uint32_t) 1024U)
+
 /**
  *  \brief This structure is for proc info
  */
@@ -97,6 +100,10 @@ typedef struct Ipc_Object_s
     /**< Initialization parameters */
     void            *interruptHandle;
     /**< Interrupt handler handle */
+    void            *printLock;
+    /**< Mutex to protect print buffer. */
+    char             printBuf[IPC_PRINT_BUF_LEN];
+    /**< Print buffer */
 } Ipc_Object;
 
 /* ========================================================================== */
@@ -110,6 +117,17 @@ typedef struct Ipc_Object_s
 /* ========================================================================== */
 
 Ipc_Object *getIpcObjInst(uint32_t instId);
+
+/**
+ *  \brief Prints to Shared memory and invokes registered PrintFxn
+ *
+ *  This function prints the provided formatted string to shared memory and then
+ *  invokes application register print function \ref Ipc_PrintFxn
+ *
+ *  \param drvHandle    [IN] Driver handle
+ *  \param format       [IN] Formatted string followed by variable arguments
+ */
+void SystemP_printf(const char *format, ...);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

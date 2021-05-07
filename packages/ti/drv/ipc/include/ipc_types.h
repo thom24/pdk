@@ -173,6 +173,15 @@ typedef uint32_t (*Ipc_VirtToPhyFxn)(const void *virtAddr);
 typedef void *(*Ipc_PhyToVirtFxn)(uint32_t phyAddr);
 
 /**
+ *  \brief IPC info/debug print function prototype.
+ *
+ *  This function is used by the driver to print info/debug messages.
+ *
+ *  \param str      [OUT] Info string to print.
+ */
+typedef void (*Ipc_PrintFxn)(const char *str);
+
+/**
  *  \brief IPC OSAL interrupt disable function prototype.
  *
  *  \return Cookie to be passed back to enable interrupt function

@@ -401,6 +401,12 @@ void rpmsg_vdevMonitorFxn(UArg arg0, UArg arg1)
 }
 #endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)*/
 
+static void IpcTestPrint(const char *str)
+{
+    System_printf("%s", str);
+
+    return;
+}
 
 int32_t Ipc_echo_test(void)
 {
@@ -408,6 +414,7 @@ int32_t Ipc_echo_test(void)
     Task_Params       params;
     uint32_t          numProc = gNumRemoteProc;
     Ipc_VirtIoParams  vqParam;
+    Ipc_InitPrms      initPrms;
     uint32_t          index = 0;
 
     /* Step1 : Initialize the multiproc */
@@ -416,7 +423,13 @@ int32_t Ipc_echo_test(void)
     System_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
             Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
 
-    Ipc_init(NULL);
+    
+    /* Initialize params with defaults */
+    IpcInitPrms_init(0U, &initPrms);
+    
+    initPrms.printFxn = &IpcTestPrint;
+
+    Ipc_init(&initPrms);
 
     //System_printf("Required Local memory for Virtio_Object = %d\r\n",
     //   numProc * Ipc_getVqObjMemoryRequiredPerCore());

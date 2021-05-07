@@ -543,6 +543,12 @@ static void IpcTestBaremetalNewMsgCb(uint32_t srcEndPt, uint32_t procId)
     return;
 }
 
+static void IpcTestPrint(const char *str)
+{
+    System_printf("%s", str);
+
+    return;
+}
 uint32_t Ipc_exampleVirtToPhyFxn(const void *virtAddr)
 {
     return ((uint32_t) virtAddr);
@@ -593,6 +599,7 @@ int32_t Ipc_echo_test(void)
         initPrms.newMsgFxn = &IpcTestBaremetalNewMsgCb;
         initPrms.virtToPhyFxn = &Ipc_exampleVirtToPhyFxn;
         initPrms.phyToVirtFxn = &Ipc_examplePhyToVirtFxn;
+        initPrms.printFxn = &IpcTestPrint;
 
         if (IPC_SOK != Ipc_init(&initPrms))
         {

@@ -120,16 +120,6 @@ static int32_t Ipc_osalHIsrPost(Ipc_OsalHIsrHandle *handle)
     return (rtnVal);
 }
 
-int32_t SystemP_printf(const char* fmt, ...)
-{
-    int32_t ret;
-    va_list args;
-    va_start(args, fmt);
-    ret = System_vprintf(fmt, args);
-    va_end(args);
-    return ret;
-}
-
 void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t arg)
 {
     OsalRegisterIntrParams_t    intrPrms;

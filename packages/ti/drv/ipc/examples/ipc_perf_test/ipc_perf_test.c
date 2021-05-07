@@ -50,6 +50,7 @@
 /* XDCtools Header files */
 #include <xdc/std.h>
 #include <ti/sysbios/BIOS.h>
+#include <xdc/runtime/System.h>
 
 #include <ti/board/board.h>
 #include <ti/drv/uart/UART.h>
@@ -59,7 +60,7 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 #include <ti/drv/ipc/include/ipc_config.h>
-#include <ti/drv/ipc/src/ipc_osal.h>
+#include <ti/drv/ipc/src/ipc_priv.h>
 
 #include "ipc_perf_test.h"
 #include "ipc_test_defs.h"
@@ -388,17 +389,30 @@ RPMessage_Handle Ipc_createRpmsg(uint8_t *buf, uint32_t bufSize, uint32_t *myEnd
     return (handle);   
 }
 
+static void IpcTestPrint(const char *str)
+{
+    System_printf("%s", str);
+
+    return;
+}
+
 void Ipc_perf_test_setup(void)
 {
     SemaphoreP_Params semPrms;
     Ipc_VirtIoParams  vqParam;
+    Ipc_InitPrms      initPrms;
     RPMessage_Params  cntrlParam;
     uint32_t          selfId  = Ipc_getCoreId();
     uint32_t          numProc = sizeof(remoteProc)/sizeof(uint32_t);
    
     Ipc_mpSetConfig(selfId, numProc, remoteProc);
+ 
+    /* Initialize params with defaults */
+    IpcInitPrms_init(0U, &initPrms);
+    
+    initPrms.printFxn = &IpcTestPrint;
 
-    Ipc_init(NULL);
+    Ipc_init(&initPrms);
 
     vqParam.vqObjBaseAddr = (void*)sysVqBuf;
     vqParam.vqBufSize     = numProc * Ipc_getVqObjMemoryRequiredPerCore();

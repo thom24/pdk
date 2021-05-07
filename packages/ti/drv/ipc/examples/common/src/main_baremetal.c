@@ -45,6 +45,7 @@
 #include <ti/osal/src/nonos/Nonos_config.h>
 /* SCI Client */
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/board/board.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -93,6 +94,18 @@ void ipc_initSciclient()
 
 }
 
+#if !defined(A72_LINUX_OS)
+void ipc_boardInit()
+{
+    Board_initCfg           boardCfg;
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO;
+    Board_init(boardCfg);
+
+}
+#endif
+
 /*
  * Main function for the test code
  *
@@ -101,6 +114,10 @@ int main(void)
 {
 
     ipc_initSciclient();
+
+#if !defined(A72_LINUX_OS)
+    ipc_boardInit();
+#endif
 
     Ipc_echo_test();
     return(0);

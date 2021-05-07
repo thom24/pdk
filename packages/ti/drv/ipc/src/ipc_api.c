@@ -1640,6 +1640,8 @@ void IpcInitPrms_init(uint32_t instId, Ipc_InitPrms *initPrms)
 
         initPrms->virtToPhyFxn          = NULL;
         initPrms->phyToVirtFxn          = NULL;
+        initPrms->newMsgFxn             = NULL;
+        initPrms->printFxn              = NULL;
 
         IpcOsalPrms_init(&initPrms->osalPrms);
     }
@@ -1669,7 +1671,9 @@ int32_t Ipc_init(Ipc_InitPrms *cfg)
         if (0U == cfg->instId)
         {
             if ((NULL == cfg->osalPrms.disableAllIntr) ||
-                (NULL == cfg->osalPrms.restoreAllIntr))
+                (NULL == cfg->osalPrms.restoreAllIntr) ||
+                (NULL == cfg->osalPrms.createMutex) ||
+                (NULL == cfg->osalPrms.unlockMutex))
             {
                 retVal = IPC_EINVALID_PARAMS;
             }
@@ -1682,8 +1686,20 @@ int32_t Ipc_init(Ipc_InitPrms *cfg)
     }
     if (IPC_SOK == retVal)
     {
-        IpcUtils_Init(&gIpcObject.initPrms.osalPrms);
+        retVal = IpcUtils_Init(&gIpcObject.initPrms.osalPrms);
         Ipc_mailboxModuleStartup();
+    }
+    if (IPC_SOK == retVal)
+    {   
+        gIpcObject.printLock = gIpcObject.initPrms.osalPrms.createMutex();
+        if(NULL == gIpcObject.printLock)
+        {
+            retVal = IPC_EALLOC;
+        }
+        else
+        {
+            gIpcObject.initPrms.osalPrms.unlockMutex(gIpcObject.printLock);
+        }
     }
     gIpcObject.instId = 0U;
 
@@ -1693,6 +1709,12 @@ int32_t Ipc_init(Ipc_InitPrms *cfg)
 int32_t Ipc_deinit(void)
 {
     int32_t  retVal = IPC_SOK;
+
+    if(NULL == gIpcObject.printLock)
+    {
+        gIpcObject.initPrms.osalPrms.deleteMutex(gIpcObject.printLock);
+        gIpcObject.printLock = NULL;
+    }
 
     return (retVal);
 }
