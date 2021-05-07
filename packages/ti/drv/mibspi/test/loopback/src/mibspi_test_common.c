@@ -404,7 +404,7 @@ static int32_t Test_spiLoopback(const MIBSPI_Handle handle, uint8_t slaveIndex, 
 }
 
 #ifdef MIBSPI_DMA_ENABLE
-uint32_t gTestCallbackDone = 0;
+volatile uint32_t gTestCallbackDone = 0;
 
 void Test_loopback_callbackFxn (MIBSPI_Handle handle,
                                 MIBSPI_Transaction * transaction)
@@ -464,6 +464,15 @@ static int32_t Test_spiLoopback_callback(const MIBSPI_Handle handle, uint8_t sla
             while (gTestCallbackDone == 0)
             {
                 /* waiting for the callback funciton to be called. */
+                /* Need Nop so that interrupts get enabled atleast for a few cycles in C66x case */
+                asm(" nop ");
+                asm(" nop ");
+                asm(" nop ");
+                asm(" nop ");
+                asm(" nop ");
+                asm(" nop ");
+                asm(" nop ");
+                asm(" nop ");
             }
             /* Check data integrity */
             if (memcmp((void *)txBuf, (void *)rxBuf, len) != 0)

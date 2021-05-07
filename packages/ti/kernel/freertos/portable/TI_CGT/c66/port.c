@@ -201,7 +201,7 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
     #endif
 } tskTCB;
 
-extern tskTCB * pxCurrentTCB;
+extern  tskTCB * volatile pxCurrentTCB;
 /*
  * Starts the first task executing.  This function is necessarily written in
  * assembly code so is implemented in portASM.s.
@@ -237,7 +237,7 @@ void Task_exit(void)
 
 void Task_enter(void)
 {
-
+    portENABLE_INTERRUPTS();
 }
 
 void ti_sysbios_knl_Task_Func(uint32_t arg1, uint32_t arg2)
@@ -520,8 +520,16 @@ void vPortYieldAsyncFromISR( void )
     vTaskSwitchContext();
     newSP = ( void ** )( &pxCurrentTCB->pxTopOfStack );
     /* We should not be swapping from one task back to same task. Indicates bug in invocation of vPortYieldAsyncFromISR */
-    DebugP_assert(oldSP != newSP);
-    ti_sysbios_family_c62_TaskSupport_swap__E( oldSP, newSP );
+    //DebugP_assert(oldSP != newSP);
+    if(oldSP != newSP)
+    {
+        ti_sysbios_family_c62_TaskSupport_swap__E( oldSP, newSP );
+    }
+    else
+    {
+        DebugP_log1("Doing switch to same task:%p",(uintptr_t)oldSP);
+        uxPortIncorrectYieldCount++;
+    }
     /* Interrupts should be disabled in case of async yield from ISR */
     /* Enable interrupts if task was preempted outside critical section */
     portDISABLE_INTERRUPTS();
