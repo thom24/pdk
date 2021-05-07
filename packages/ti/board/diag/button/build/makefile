@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2020-2021 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += button_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk tpr12_evm am64x_evm))
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk tpr12_evm am64x_evm awr294x_evm))
 SRCS_COMMON += GPIO_Button_config.c
 endif
 

@@ -45,8 +45,8 @@
 #include "board_cfg.h"
 #include <ti/osal/osal.h>
 
-static Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MSS, 0};
-static Board_initParams_t gBoardInitParams = {BOARD_PLL_MODE1};
+Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MSS, 0};
+Board_initParams_t gBoardInitParams = {BOARD_PLL_MODE1};
 
 /**
  * \brief Function to get I2C configurations used by board

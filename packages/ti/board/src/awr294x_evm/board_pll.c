@@ -46,6 +46,7 @@
 #include "board_internal.h"
 #include "board_utils.h"
 
+#ifdef ENABLE_PLL_CONFIG_STRUCT
 /**
  *
  * \brief  PLL base address
@@ -233,6 +234,7 @@ void Board_PLLConfig(const Board_Pll_config_t *data)
     /* program multiplier/divider values into PLL/HSDIV */
     Board_PLLProgram(data);
 }
+#endif
 
 /**
  * \brief  PLL initialization for mode1

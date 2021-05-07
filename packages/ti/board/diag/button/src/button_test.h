@@ -55,11 +55,11 @@
 
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/csl/soc.h>
-#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X)))
 #include <ti/starterware/include/interrupt.h>
 #endif
 
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
 #include "diag_common_cfg.h"
 #endif
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -44,16 +44,16 @@
  *             On a key press the diagnostic test sequentially moves to the
  *             other buttons in the keypad.
  *
- *  Supported SoCs: AM335x, AM437x, AM65xx, TPR12,AM64x.
+ *  Supported SoCs: AM335x, AM437x, AM65xx, TPR12, AM64x, AWR294x
  *
  *  Supported Platforms: skAM335x, skAM437x, evmAM437x am65xx_evm, am65xx_idk,
- *                       tpr12_evm,am64x_evm.
+ *                       tpr12_evm,am64x_evm, awr294x_evm.
  *
  */
 
 #include "button_test.h"
 
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
 extern GPIO_v2_Config GPIO_v2_config;
 #endif
 
@@ -75,7 +75,7 @@ gpioInfo_t KeyScn[4];
 int main(void)
 {
     int status = S_PASS;
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
     Board_IDInfo_v2 info;
 #else
     Board_IDInfo boardInfo;
@@ -100,14 +100,14 @@ int main(void)
     UART_printf  ("*                 Button Test               *\n");
     UART_printf  ("*********************************************\n");
 
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
     Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
 #else
     Board_getIDInfo(&boardInfo);
 #endif
 
     /* Update the KeyPad information. */
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
     status = BoardDiag_GetKeyPadInfo(info.boardInfo.boardName, &boardKeyPad);
 #else
     status = BoardDiag_GetKeyPadInfo(boardInfo.boardName, &boardKeyPad);
@@ -184,7 +184,7 @@ int32_t BoardDiag_ButtonTest(keyPadInfo_t *pBoardKeyPad)
 #elif defined(SOC_AM64X)
     GPIO_init();
 #else
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     GPIO_v2_updateConfig(&GPIO_v2_config);
 #endif
     GPIO_init();
@@ -240,15 +240,15 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
     UART_printf(  "Button SW %2d            ", button);
     UART_printf("WAIT      Waiting for button press");
 
-#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X))
+#if (defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
     do
     {
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
         level = GPIO_read(GPIO_v2_config.pinConfigs[scnKey].pinIndex);
 #else
         level = GPIO_read(scnKey);
 #endif
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     }while(level == 0);
 #else
     }while(level == 1);
@@ -259,12 +259,12 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
     UART_printf("WAIT      Waiting for button release...");
     do
     {
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
         level = GPIO_read(GPIO_v2_config.pinConfigs[scnKey].pinIndex);
 #else
         level = GPIO_read(scnKey);
 #endif
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     }while(level == 1);
 #else
     }while(level == 0);
@@ -280,7 +280,7 @@ int32_t BoardDiag_KeyPressCheck(keyPadInfo_t *pBoardKeyPad,
 
     UART_printf("Button SW %2d            ", button);
 
-#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X)))
     if(level != 1)
     {
         UART_printf("FAIL                                            \n");
@@ -406,7 +406,7 @@ int32_t BoardDiag_GetKeyPadInfo(char *pBoardName, keyPadInfo_t *pBoardKeyPad)
         KeyScn[1].instance=0;
         KeyScn[1].pin=27;
     }
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     /* TODO: Need to update after programming board ID EEPROM
      * Check if the board is EVM TPR12 by comparing the string read from
        EEPROM. */
