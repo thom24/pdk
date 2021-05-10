@@ -574,7 +574,7 @@ int32_t Dss_m2mDelete(Fdrv_Handle handle, void *reserved)
         /* Set states of driver object and instance object */
         virtContext->inUse = DSSM2M_DRV_USAGE_STATUS_NOT_USED;
         virtContext->state = DSSM2M_DRV_STATE_IDLE;
-        m2mObj->numVirtContUsed[virtContext->contextId]--;
+        m2mObj->numVirtContUsed[virtContext->instObj->drvInstId]--;
 
         if(NULL != virtContext->doneQ)
         {
@@ -582,6 +582,10 @@ int32_t Dss_m2mDelete(Fdrv_Handle handle, void *reserved)
             do
             {
                 qObj = (DssM2M_DrvQueObj *) Fvid2Utils_dequeue(virtContext->doneQ);
+                if (NULL != qObj)
+                {
+                    Fvid2Utils_queue(instObj->bmObj.freeQ, &qObj->qElem, qObj);
+                }
             } while (NULL != qObj);
 
             /* Delete the free Q */
@@ -598,7 +602,7 @@ int32_t Dss_m2mDelete(Fdrv_Handle handle, void *reserved)
         virtContext->overlayId = CSL_DSS_OVERLAY_ID_MAX;
 
         /* Delete Queues only on delete call for last opened Virtual context */
-        if ((0U == m2mObj->numVirtContUsed[virtContext->contextId]) &&
+        if ((0U == m2mObj->numVirtContUsed[virtContext->instObj->drvInstId]) &&
                     (DSSM2M_DRV_USAGE_STATUS_IN_USE == instObj->inUse))
         {
             for (pipeIdx = 0U ;
