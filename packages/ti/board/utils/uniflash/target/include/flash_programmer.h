@@ -164,6 +164,7 @@ extern "C" {
 #define UFP_BAUDRATE_6000000        (6000000U)
 
 #define UFP_CMD_PROGRAM             (0x50U)
+#define UFP_CMD_PROGRAM_XIP         (0x51U)
 #define UFP_CMD_ERASE               (0x45U)
 #define UFP_CMD_GET_MAX_BAUDRATE    (0x47U)
 #define UFP_CMD_SET_BAUDRATE        (0x53U)

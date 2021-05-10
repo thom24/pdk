@@ -436,8 +436,14 @@ SBL_TDA3X_SIGNING_TOOL_DIR=$(PDK_TDA3X_SECURITY_COMP_PATH)/tools/tda3xx
 SBL_CHIMAGE_BIN_FILE=$(SBL_TOOLS_PATH)/chimage/tda3x_chqspi_clock64mhz.bin
 ifeq ($(OS),Windows_NT)
   SBL_OUTRPRC=$(OUTRPRC_PATH)
+  ifeq ($($(APP_NAME)_SBL_XIP_APPIMAGEGEN),yes)
+  SBL_XIP_GEN=$(SBL_TOOLS_PATH)/xipGen/xipGen.exe
+  endif
 else
   SBL_OUTRPRC=mono $(OUTRPRC_PATH)
+  ifeq ($($(APP_NAME)_SBL_XIP_APPIMAGEGEN),yes)
+  SBL_XIP_GEN=$(SBL_TOOLS_PATH)/xipGen/xipGen.out
+  endif
 endif
 SBL_TIIMAGE=$(SBL_TOOLS_PATH)/tiimage/tiimage$(EXE_EXT)
 SBL_CHIMAGE=$(SBL_TOOLS_PATH)/chimage/chimage$(EXE_EXT)
@@ -485,6 +491,21 @@ SBL_APPIMAGE_PATH_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage
 SBL_APP_BINIMAGE_PATH=$(EXE_NAME).bin
 SBL_APPIMAGE_PATH_SIGNED=$(BINDIR)/$(SBL_IMAGE_NAME).appimage.signed
 SBL_APPIMAGE_PATH_SIGNED_BE=$(BINDIR)/$(SBL_IMAGE_NAME)_BE.appimage.signed
+
+ifeq ($($(APP_NAME)_SBL_XIP_APPIMAGEGEN),yes)
+SBL_RPRC_NAME=$(SBL_IMAGE_NAME).rprc
+SBL_RPRC_XIP_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).rprc_xip
+SBL_RPRC_XIP_NAME=$(SBL_IMAGE_NAME).rprc_xip
+SBL_RPRC_TMP_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).rprc_tmp
+SBL_RPRC_TMP_NAME=$(SBL_IMAGE_NAME).rprc_tmp
+SBL_APPIMAGE_XIP_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).appimage_xip
+MULTI_CORE_APP_PARAMS_XIP = $(SBL_CORE_ID_$(CORE)) $(SBL_RPRC_XIP_PATH)
+  ifeq ($(SOC),$(filter $(SOC), am64x))
+  FLASH_START_ADDR = 0x60000000
+  else
+  FLASH_START_ADDR = 0x50000000
+  endif
+endif
 
 # When building apps for cores other than MCU 10, MCU 10 should host sciclient
 # server.
@@ -696,7 +717,6 @@ endif
 	$(MV) $(SBL_TIIMAGE_PATH_SIGNED_BE) $(SBL_IMAGE_PATH_SIGNED)
   endif
 endif
-	$(RM) -f $(SBL_STDOUT_FILE) $(SBL_STDOUT_FILE2)
 	$(ECHO) \# Signed SBL image $(SBL_IMAGE_PATH_SIGNED) created.
 	$(ECHO) \#
 
@@ -714,12 +734,24 @@ clean_appimagerprc: $(EXE_NAME)
 	$(RM) -f $@ $(SBL_APPIMAGE_PATH_BE) $(SBL_RPRC_PATH)
 
 sbl_appimagerprc: clean_appimagerprc
+  ifeq ($($(APP_NAME)_SBL_XIP_APPIMAGEGEN),yes)
+	$(SBL_OUTRPRC) $(EXE_NAME) $(SBL_RPRC_TMP_PATH) >> $(SBL_STDOUT_FILE)
+	$(CHMOD) a+x $(SBL_XIP_GEN)
+  else
 	$(SBL_OUTRPRC) $(EXE_NAME) $(SBL_RPRC_PATH) >> $(SBL_STDOUT_FILE)
+  endif
 	$(CHMOD) a+x $(SBL_IMAGE_GEN)
 
 $(SBL_APPIMAGE_PATH): sbl_appimagerprc
+  ifeq ($($(APP_NAME)_SBL_XIP_APPIMAGEGEN),yes)
+	$(SBL_XIP_GEN) -i $(SBL_RPRC_TMP_PATH) -o $(SBL_RPRC_PATH) -x $(SBL_RPRC_XIP_PATH) --flash-start-addr $(FLASH_START_ADDR) -v > $(SBL_STDOUT_FILE)
+	$(SBL_IMAGE_GEN) LE $(SBL_DEV_ID) $(SBL_APPIMAGE_PATH)    $(MULTI_CORE_APP_PARAMS) >> $(SBL_STDOUT_FILE)
+	$(SBL_IMAGE_GEN) LE $(SBL_DEV_ID) $(SBL_APPIMAGE_XIP_PATH) $(MULTI_CORE_APP_PARAMS_XIP) >> $(SBL_STDOUT_FILE)
+	$(SBL_IMAGE_GEN) BE $(SBL_DEV_ID) $(SBL_APPIMAGE_PATH_BE) $(MULTI_CORE_APP_PARAMS) >> $(SBL_STDOUT_FILE)
+  else
 	$(SBL_IMAGE_GEN) LE $(SBL_DEV_ID) $@                      $(MULTI_CORE_APP_PARAMS) >> $(SBL_STDOUT_FILE)
 	$(SBL_IMAGE_GEN) BE $(SBL_DEV_ID) $(SBL_APPIMAGE_PATH_BE) $(MULTI_CORE_APP_PARAMS) >> $(SBL_STDOUT_FILE)
+  endif
 ifeq ($(SOC),$(filter $(SOC), tda3xx))
   ifneq ($(BUILD_HS),yes)
 	$(RM) -f $(SBL_APPIMAGE_PATH_BE)
@@ -737,7 +769,6 @@ else
    endif
  endif
 endif
-	$(RM) -f $(SBL_STDOUT_FILE)
 	$(ECHO) \# SBL App image $@ and $(SBL_APPIMAGE_PATH_BE) created.
 	$(ECHO) \#
 endif

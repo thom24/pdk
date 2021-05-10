@@ -249,10 +249,17 @@ static int8_t UFP_ospiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
             return -1;
         }
 
-        /* Get ending block number */
-        if (Board_flashOffsetToBlkPage(gOspiHandle, offset+length, &endBlockNum, &pageNum))
+        if(length < NOR_BLOCK_SIZE)
         {
-            return -1;
+            endBlockNum = startBlockNum;
+        }
+        else
+        {
+            /* Get ending block number */
+            if (Board_flashOffsetToBlkPage(gOspiHandle, offset+length, &endBlockNum, &pageNum))
+            {
+                return -1;
+            }
         }
 
         /* Erase blocks, to which data has to be written */

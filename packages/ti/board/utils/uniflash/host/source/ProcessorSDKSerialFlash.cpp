@@ -1943,7 +1943,8 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 	int err = 0, i = 0, v = 0;
 	unsigned char header[16];
     unsigned char supBaudRate = 0, hwFlowCtrl = 0;
-	const char start = 'S', program = PROGRAM_CMD, setBaudrate = SET_BAUDRATE_CMD;
+	const char start = 'S', setBaudrate = SET_BAUDRATE_CMD;
+	char program = PROGRAM_CMD;
     const char setFlowCtrlCmd = SET_FLOW_CONTROL_CMD;
     const char *sysfwFileName[NUM_OF_SYSFW] = {"sysfw.bin" , "tifs.bin"};
     std::string sysfw_path, tempSysfw_path;
@@ -1973,6 +1974,17 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 
 			if( chparam(*optInName, *optInVal) != 0)
 				displayHelp();
+		}
+		if(!(strcmp( *optInName,"-f" )))
+		{
+			char* ext;
+			ext = strrchr((char*)*optInVal,'.');
+			cout<<"The file extension is "<<ext<<endl;
+			if(!(strcmp( ext,".appimage_xip" )))
+			{
+				program = PROGRAM_XIP_CMD;
+				cout<<"The command type has been changed to "<<program<<endl;
+			}
 		}
 	}
 	if((RBL == 1) | (optionLen < 6))

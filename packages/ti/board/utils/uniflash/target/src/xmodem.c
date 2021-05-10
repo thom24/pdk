@@ -383,6 +383,283 @@ int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType)
 }
 
 /**
+ *	\brief		This function receives the image, using xmodem protocol
+ *				from uniflash and copies to the specified location of XIP Flash.
+ *
+ *	\param		devType	[IN]   Flash device type to flash image.
+ *
+ *  \return		
+ *
+ */
+int8_t UFP_xModemXipFileReceive(uint8_t devType)
+{
+    int32_t c;
+	uint16_t len = 0;
+    uint32_t offset = 0;
+    uint16_t i, bufsz;
+	uint8_t retry;
+    uint32_t retrans = MAXRETRANS + 1;
+    int8_t ret;
+	unsigned char xbuff[1030]; /* 1024 for XModem 1k + 3 head chars + 2 crc + nul */
+	unsigned char *p;
+	unsigned char trychar = 'C';
+	unsigned char packetno = 1;
+    UFP_fxnTable const *fnPtr = (UPF_flashFxnPtr[devType]).UPF_fxnTablePtr;
+    Bootloader_MetaHeaderStart static mHdrStr;
+    Bootloader_MetaHeaderCore  static mHdrCore[BOOTLOADER_MAX_INPUT_FILES];
+    Bootloader_RprcFileHeader  static rprcHeader;
+    Bootloader_RprcSectionHeader static rprcSection;
+    Bootloader_ExpectedSection static expectedSection = META_HEADER;
+    uint32_t maxBaudRate;
+    uint8_t *imgPtr;
+    uint8_t *chkPtr;
+    uint32_t wrSize;
+    uint8_t  static overflowBuffer[DATA_BUFF_LEN];
+    uint32_t static overflowSize = 0;
+    uint32_t static sectionOffset;
+    uint32_t static sectionRemaining;
+    uint32_t static sectionCount;
+
+    maxBaudRate = UFP_getMaxBaudrate();
+    ret = UFP_uartConfig(maxBaudRate);
+    if(ret != 0)
+    {
+        return -1;
+    }
+
+	for(;;)
+	{
+		for(retry = 1; retry < MAXRETRANS; ++retry)
+		{
+			if(trychar)
+			{
+				outbyte(trychar);
+			}
+			if((c = inbyte(DELAY))>= 0)
+			{
+				switch(c)
+				{
+					case XMODEM_CMD_SOH:
+						bufsz = 128;
+						goto start_recv;
+					case XMODEM_CMD_STX:
+						bufsz = 1024;
+						goto start_recv;
+					case XMODEM_CMD_EOT:
+                        if(overflowSize > 0)
+                        {
+                            memmove(&gDataRxBuff[overflowSize], &gDataRxBuff[0], overflowSize);
+                            memcpy(&gDataRxBuff[0], &overflowBuffer[0], overflowSize);
+                            ret = fnPtr->UFP_flashProgram(&gDataRxBuff[0], &gDataCheckBuff[0], sectionOffset, DATA_BUFF_LEN);
+                            if (ret != 0)
+                            {
+                                return -1;
+                            }
+                            ret = UFP_flashCheck(&gDataRxBuff[0], &gDataCheckBuff[0], overflowSize);
+                            if (ret != 0)
+                            {
+                                return -1;
+                            }
+                        }
+                        outbyte(XMODEM_STS_ACK);
+						return 0; /* normal end */
+					case XMODEM_CMD_CAN:
+						if((c = inbyte(DELAY)) == XMODEM_CMD_CAN)
+						{
+							outbyte(XMODEM_STS_ACK);
+							return -1; /* canceled by remote */
+						}
+						break;
+					default:
+						break;
+				}
+			}
+		}
+		if(trychar == 'C')
+		{
+			trychar = XMODEM_STS_NAK;
+			continue;
+		}
+		outbyte(XMODEM_CMD_CAN);
+		outbyte(XMODEM_CMD_CAN);
+		outbyte(XMODEM_CMD_CAN); /* sync error */
+		return -1;
+
+		start_recv:
+		trychar = 0;
+		p = xbuff;
+		*p++ = c;
+
+		/* bufsz( 1024/128 ) + crc (2 bytes) + 2nd & 3rd bytes of Data Packet
+		( Packet Number + 1's complement of Packet Number ) */
+		for (i = 0; i < (bufsz + 4); ++i)
+		{
+			if ((c = inbyte(DELAY)) < 0)
+				goto reject;
+			*p++ = c;
+		}
+
+		if (xbuff[1] == (unsigned char)(~xbuff[2]) && 
+			(xbuff[1] == packetno || xbuff[1] == (unsigned char)packetno-1) &&
+			check(&xbuff[3], bufsz) )
+		{
+			if (xbuff[1] == packetno)
+			{
+                memcpy (&gDataRxBuff[len], &xbuff[3], bufsz); 
+                len += bufsz;
+				++packetno;
+				retrans = MAXRETRANS+1;
+			}
+			if (--retrans <= 0)
+			{
+				outbyte(XMODEM_CMD_CAN);
+				outbyte(XMODEM_CMD_CAN);
+				outbyte(XMODEM_CMD_CAN);
+				return -1;
+			}
+            if(overflowSize > 0)
+            {
+                memmove(&gDataRxBuff[overflowSize], &gDataRxBuff[0], bufsz);
+                memcpy(&gDataRxBuff[0], &overflowBuffer[0], overflowSize);
+            }
+            imgPtr = &gDataRxBuff[0];
+            chkPtr = &gDataCheckBuff[0];
+            parser:
+            switch(expectedSection)
+            {
+                case META_HEADER:     /* Meta Header */
+                    memset(&mHdrCore[0], 0xFF, BOOTLOADER_MAX_INPUT_FILES*sizeof(Bootloader_MetaHeaderCore));
+                    memcpy(&mHdrStr, imgPtr, sizeof(Bootloader_MetaHeaderStart));
+                    imgPtr += sizeof(Bootloader_MetaHeaderStart);
+                    offset += sizeof(Bootloader_MetaHeaderStart);
+                    if(mHdrStr.magicStr != BOOTLOADER_META_HDR_MAGIC_STR)
+                    {
+                        ret = -1;
+                        if (ret != 0)
+                        {
+                            return -1;
+                        }
+                    }
+                    else
+                    {
+                        /* Read all the core offset addresses */
+                        uint32_t i;
+
+                        for(i=0U; i<mHdrStr.numFiles; i++)
+                        {
+                            memcpy(&mHdrCore[i], imgPtr, sizeof(Bootloader_MetaHeaderCore));
+                            imgPtr += sizeof(Bootloader_MetaHeaderCore);
+                            offset += sizeof(Bootloader_MetaHeaderCore);
+                        }
+                    }
+                    /* Skip Header End */
+                    imgPtr += sizeof(Bootloader_MetaHeaderCore);
+                    offset += sizeof(Bootloader_MetaHeaderCore);
+                    /* Update Expected Section */
+                    expectedSection = RPRC_HEADER;
+                case RPRC_HEADER: /* RPRC Header */
+                    if(offset+sizeof(Bootloader_RprcFileHeader) >= bufsz)
+                    {
+                        expectedSection = RPRC_HEADER;
+                    }
+                    else
+                    {
+                        memcpy(&rprcHeader, imgPtr, sizeof(Bootloader_RprcFileHeader));
+                        imgPtr += sizeof(Bootloader_RprcFileHeader);
+                        offset += sizeof(Bootloader_RprcFileHeader);
+                        if(rprcHeader.magic != BOOTLOADER_RPRC_MAGIC_NUMBER)
+                        {
+                            ret = -1;
+                            if (ret != 0)
+                            {
+                                return -1;
+                            }
+                        }
+                        expectedSection = SECTION_HEADER;
+                        sectionCount = 1;
+                    }
+                case SECTION_HEADER: /* Section Header */
+                    if(offset+sizeof(Bootloader_RprcSectionHeader) >= bufsz)
+                    {
+                        expectedSection = SECTION_HEADER;
+                    }
+                    else
+                    {
+                        memcpy(&rprcSection, imgPtr, sizeof(Bootloader_RprcSectionHeader));
+                        imgPtr += sizeof(Bootloader_RprcSectionHeader);
+                        offset += sizeof(Bootloader_RprcSectionHeader);
+                        sectionOffset = rprcSection.addr;
+                        sectionRemaining = rprcSection.size;
+                        expectedSection = SECTION_CONTENT;
+                    }
+                    break;
+                case SECTION_CONTENT: /* Section Content */
+                    if(sectionRemaining < bufsz)
+                    {
+                        wrSize = sectionRemaining;
+                    }
+                    else
+                    {
+                        wrSize = bufsz;
+                    }
+
+                    ret = fnPtr->UFP_flashProgram(imgPtr, chkPtr, sectionOffset, wrSize);
+                    if (ret != 0)
+                    {
+                        return -1;
+                    }
+
+                    ret = UFP_flashCheck(imgPtr, chkPtr, wrSize);
+                    if (ret != 0)
+                    {
+                        return -1;
+                    }
+
+                    imgPtr += wrSize;
+                    offset += wrSize;
+                    sectionOffset += wrSize;
+                    sectionRemaining -= wrSize;
+                    if(sectionOffset >= (rprcSection.addr+rprcSection.size))
+                    {
+                        sectionCount++;
+                        if(sectionCount > rprcHeader.sectionCount)
+                        {
+                            expectedSection = RPRC_HEADER;
+                        }
+                        else
+                        {
+                            expectedSection = SECTION_HEADER;
+                        }
+                    }
+            }
+            if(offset < (bufsz+overflowSize)) /* There is still more data */
+            {
+                if( (bufsz + overflowSize - offset) > (DATA_BUFF_LEN - bufsz))
+                {
+                    goto parser;
+                }
+                else
+                {
+                    overflowSize = bufsz + overflowSize - offset;
+                    memset(overflowBuffer, 0xFF, overflowSize);
+                    memcpy(overflowBuffer, imgPtr, overflowSize);
+                }
+            }
+            else
+            {
+                overflowSize = 0;
+            }
+            offset = 0;
+            len = 0;
+			outbyte(XMODEM_STS_ACK);
+			continue;
+		}
+        reject:
+            outbyte(XMODEM_STS_NAK);
+	}
+}
+
+/**
  *	\brief		This function receive the header information of the image
  *				from uniflash using xmodem protocol.
  *

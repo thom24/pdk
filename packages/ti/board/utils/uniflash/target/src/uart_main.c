@@ -218,6 +218,11 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
                        (hdrBuf[5] << 8) | (hdrBuf[4]));
             *imgType = hdrBuf[3] - '0';
             break;
+        case UFP_CMD_PROGRAM_XIP:
+            outbyte(XMODEM_STS_ACK);
+            *devType = hdrBuf[2] - '0';
+            *imgType = hdrBuf[3] - '0';
+            break;
         case UFP_CMD_SET_BAUDRATE:
             outbyte(XMODEM_STS_ACK);
             gMaxBaudRate = gUfpBaudRateList[hdrBuf[2]];
@@ -403,7 +408,7 @@ int main(void)
 #endif
         }
 
-        if((command == UFP_CMD_ERASE) || (command == UFP_CMD_PROGRAM))
+        if((command == UFP_CMD_ERASE) || (command == UFP_CMD_PROGRAM) || (command == UFP_CMD_PROGRAM_XIP))
         {
             if (UPF_flashFxnPtr[devType].UPF_fxnTablePtr->UFP_flashInit == NULL)
             {
@@ -427,9 +432,13 @@ int main(void)
                 ret = UPF_flashFxnPtr[devType].UPF_fxnTablePtr->
                                                UFP_flashErase(offset, eraseLength);
             }
-            else
+            else if (command == UFP_CMD_PROGRAM)
             {
                 ret = UFP_xModemFileReceive(offset, devType);
+            }
+            else
+            {
+                ret = UFP_xModemXipFileReceive(devType);
             }
 
             UPF_flashFxnPtr[devType].UPF_fxnTablePtr->UFP_flashClose();

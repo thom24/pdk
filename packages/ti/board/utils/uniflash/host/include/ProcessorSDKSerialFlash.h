@@ -70,6 +70,7 @@ using namespace std;
 #define ERR_COMSTAT             -7
 
 #define PROGRAM_CMD             0x50U
+#define PROGRAM_XIP_CMD         0x51U
 #define ERASE_CMD               0x45U
 #define GET_MAX_BAUDRATE_CMD    0x47U
 #define SET_BAUDRATE_CMD        0x53U

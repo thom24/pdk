@@ -67,6 +67,63 @@ extern "C" {
 #define XMODEM_STS_SUCCESS      (0x2AU)
 #define XMODEM_STS_FAILURE      (0x2BU)
 
+/* Magic number and tokens for RPRC format */
+#define BOOTLOADER_RPRC_MAGIC_NUMBER   0x43525052
+#define BOOTLOADER_RPRC_RESOURCE       0
+#define BOOTLOADER_RPRC_BOOTADDR       5
+
+#define BOOTLOADER_MAX_INPUT_FILES 10
+#define BOOTLOADER_META_HDR_MAGIC_STR 0x5254534D /* MSTR in ascii */
+#define BOOTLOADER_META_HDR_MAGIC_END 0x444E454D /* MEND in ascii */
+
+#define BOOTLOADER_MAX_ADDR_REGIONS 2
+
+#define BOOTLOADER_DEVICE_ID 55U
+
+typedef struct Bootloader_RprcFileHeader_s 
+{
+    uint32_t magic;
+    uint32_t entry;
+    uint32_t rsvdAddr;
+    uint32_t sectionCount;
+    uint32_t version;
+
+} Bootloader_RprcFileHeader;
+
+typedef struct Bootloader_RprcSectionHeader_s 
+{
+    uint32_t addr;
+    uint32_t rsvdAddr;
+    uint32_t size;
+    uint32_t rsvdCrc;
+    uint32_t rsvd;
+
+} Bootloader_RprcSectionHeader;
+
+typedef struct Bootloader_MetaHeaderStart_s
+{
+    uint32_t magicStr;
+    uint32_t numFiles;
+    uint32_t devId;
+    uint32_t rsvd;
+
+} Bootloader_MetaHeaderStart;
+
+typedef struct Bootloader_MetaHeaderCore_s
+{
+    uint32_t coreId;
+    uint32_t imageOffset;
+
+} Bootloader_MetaHeaderCore;
+
+typedef enum Bootloader_ExpectedSection_s
+{
+    META_HEADER,
+    RPRC_HEADER,
+    SECTION_HEADER,
+    SECTION_CONTENT
+} Bootloader_ExpectedSection;
+
 /**
  *	\brief		This function generates delay in msec.
  *
@@ -95,6 +152,12 @@ int8_t UFP_xModemHeaderReceive(unsigned char *xbuff);
  *				to the specified location of DDR using xmodem protocol.
  */
 int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType);
+
+/**
+ *	\brief		This function receives the image, using xmodem protocol
+ *				from uniflash and copies to the specified location of XIP Flash.
+ */
+int8_t UFP_xModemXipFileReceive(uint8_t devType);
 
 uint32_t UFP_xModemFirmwareReceive(unsigned char *dest, uint32_t destsz);
 
