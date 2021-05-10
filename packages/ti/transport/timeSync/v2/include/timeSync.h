@@ -372,6 +372,9 @@ typedef enum
     /** CPSW 5G */
     TIMESYNC_IP_VER_CPSW_5G = 4U,
 
+    /** ICSSG Dual-MAC */
+    TIMESYNC_IP_VER_ICSSG_DUALMAC = 5U,
+
     /** Unknown IP */
     TIMESYNC_IP_VER_UNKNOWN = 0xFFFE
 } TimeSync_EthIpVer;
@@ -481,6 +484,9 @@ typedef struct
 
     /** IP version */
     TimeSync_EthIpVer ipVersion;
+
+    /** Instance Id.  Set to 0 if there is ginel instance of the Ethernet peripheral */
+    uint32_t instId;
 }TimeSync_SocConfig;
 
 /**

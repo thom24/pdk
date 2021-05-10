@@ -8,13 +8,16 @@ MODULE_NAME = timeSync_hal
 SRCDIR = src
 
 ifeq ($(SOC),$(filter $(SOC), am574x am572x am571x am335x am437x k2g))
-  SRCDIR += src/ip/icss  
+  SRCDIR += src/ip/icss
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
-  SRCDIR += src/ip/cpsw  
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  SRCDIR += src/ip/cpsw
+endif
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+  SRCDIR += src/ip/icssg
 endif
 
-INCDIR = . .. ../include ./ip/cpsw ./ip/icss/ $(EDMA3LLD_BIOS6_INSTALLDIR)/packages
+INCDIR = . .. ../include ./ip/cpsw ./ip/icssg $(EDMA3LLD_BIOS6_INSTALLDIR)/packages
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -24,8 +27,12 @@ INCLUDE_INTERNAL_INTERFACES = cpsw
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON  = timeSync_tools.c
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 SRCS_COMMON += timeSync_cpsw.c
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+SRCS_COMMON += timeSync_icssg.c
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am335x am437x))
