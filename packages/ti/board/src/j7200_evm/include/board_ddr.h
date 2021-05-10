@@ -62,6 +62,9 @@ extern "C" {
 #define BOARD_CTRL_MMR_PART5_LOCK0       (0x115008U)
 #define BOARD_CTRL_MMR_PART5_LOCK1       (0x11500CU)
 
+#define BOARD_PLL12_LOCK0                (0x68C010U)
+#define BOARD_PLL12_LOCK1                (0x68C014U)
+
 #define BOARD_DDR_SRAM_MAX               (512U)
 
 #define BOARD_DDR_CTL_REG_OFFSET         (0)
