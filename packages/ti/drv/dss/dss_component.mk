@@ -38,6 +38,17 @@ drvdss_SOCLIST         = am65xx j721e
 drvdss_BOARDLIST       = am65xx_evm j721e_evm
 drvdss_am65xx_CORELIST = mpu1_0
 drvdss_j721e_CORELIST  = mcu2_0
+drvdss_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
+
+define DRV_DSS_RTOS_BOARDLIST_RULE
+
+drvdss_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvdss_BOARDLIST))
+
+endef
+
+DRV_DSS_RTOS_BOARDLIST_MACRO_LIST := $(foreach curos, $(drvdss_RTOS_LIST), $(call DRV_DSS_RTOS_BOARDLIST_RULE,$(curos)))
+
+$(eval ${DRV_DSS_RTOS_BOARDLIST_MACRO_LIST})
 
 ############################
 # DSS package
@@ -141,27 +152,32 @@ dss_APP_LIB_LIST += dss_app_utils dss_app_utils_sysbios
 #
 
 # DSS colorbar test app
-dss_colorbar_testapp_COMP_LIST = dss_colorbar_testapp
-dss_colorbar_testapp_RELPATH = ti/drv/dss/examples/dss_colorbar_test
-dss_colorbar_testapp_PATH = $(PDK_DSS_COMP_PATH)/examples/dss_colorbar_test
-dss_colorbar_testapp_BOARD_DEPENDENCY = yes
-dss_colorbar_testapp_CORE_DEPENDENCY = yes
-dss_colorbar_testapp_XDC_CONFIGURO = yes
-export dss_colorbar_testapp_COMP_LIST
-export dss_colorbar_testapp_BOARD_DEPENDENCY
-export dss_colorbar_testapp_CORE_DEPENDENCY
-export dss_colorbar_testapp_XDC_CONFIGURO
-dss_colorbar_testapp_PKG_LIST = dss_colorbar_testapp
-dss_colorbar_testapp_INCLUDE = $(dss_colorbar_testapp_PATH)
-dss_colorbar_testapp_BOARDLIST = $(drvdss_BOARDLIST)
-export dss_colorbar_testapp_BOARDLIST
-dss_colorbar_testapp_$(SOC)_CORELIST = $(drvdss_$(SOC)_CORELIST)
-export dss_colorbar_testapp_$(SOC)_CORELIST
-dss_EXAMPLE_LIST += dss_colorbar_testapp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
-dss_colorbar_testapp_SBL_APPIMAGEGEN = yes
-export dss_colorbar_testapp_SBL_APPIMAGEGEN
+define DSS_COLORBAR_TESTAPP_RULE
+
+export dss_colorbar_testapp_$(1)_COMP_LIST = dss_colorbar_testapp_$(1)
+dss_colorbar_testapp_$(1)_RELPATH = ti/drv/dss/examples/dss_colorbar_test
+dss_colorbar_testapp_$(1)_PATH = $(PDK_DSS_COMP_PATH)/examples/dss_colorbar_test
+export dss_colorbar_testapp_$(1)_BOARD_DEPENDENCY = yes
+export dss_colorbar_testapp_$(1)_CORE_DEPENDENCY = yes
+export dss_colorbar_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export dss_colorbar_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+dss_colorbar_testapp_$(1)_PKG_LIST = dss_colorbar_testapp_$(1)
+dss_colorbar_testapp_$(1)_INCLUDE = $(dss_colorbar_testapp_$(1)_PATH)
+export dss_colorbar_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvdss_BOARDLIST) )
+export dss_colorbar_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvdss_$(SOC)_CORELIST))
+export dss_colorbar_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+dss_EXAMPLE_LIST += dss_colorbar_testapp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+dss_EXAMPLE_LIST += dss_colorbar_testapp_$(1)
 endif
+endif
+endef
+
+DSS_COLORBAR_TESTAPP_MACRO_LIST := $(foreach curos, $(drvdss_RTOS_LIST), $(call DSS_COLORBAR_TESTAPP_RULE,$(curos)))
+
+$(eval ${DSS_COLORBAR_TESTAPP_MACRO_LIST})
 
 # DSS display test app
 dss_display_testapp_COMP_LIST = dss_display_testapp

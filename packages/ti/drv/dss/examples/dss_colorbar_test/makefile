@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = dss_colorbar_testapp
+APP_NAME = dss_colorbar_testapp_$(BUILD_OS_TYPE)
 
 SRCDIR = .
 INCDIR = .
@@ -15,20 +15,30 @@ INCDIR = .
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
-
-# List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP) 
 COMP_LIST_COMMON += fvid2 dss dss_app_utils
 
-INCLUDE_EXTERNAL_INTERFACES += xdc bios
-SRCS_COMMON = main_tirtos.c
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+# List all the components required by the application
+ifeq ($(BUILD_OS_TYPE),tirtos)
+  CFLAGS_OS_DEFINES = -DUSE_BIOS
+  INCLUDE_EXTERNAL_INTERFACES += xdc bios
+  COMP_LIST_COMMON += $(PDK_COMMON_TIRTOS_COMP)
+
+  SRCS_COMMON += main_rtos.c
+  # Enable XDC build for application by providing XDC CFG File per core
+  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+
+ifeq ($(BUILD_OS_TYPE),freertos)
+  CFLAGS_OS_DEFINES = -DFREERTOS
+  INCLUDE_EXTERNAL_INTERFACES += freertos
+  COMP_LIST_COMMON += $(PDK_COMMON_FREERTOS_COMP)
+  SRCS_COMMON += main_rtos.c
+endif
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += dss_colorbar_test.c
-CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(DSS_CFLAGS)
+CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(DSS_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
