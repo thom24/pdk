@@ -50,6 +50,7 @@
 #include "sbl_err_trap.h"
 #include "sbl_sci_client.h"
 #include "sbl_soc_cfg.h"
+#include "sbl_dma.h"
 
 /* TI-RTOS Header files */
 #include <ti/drv/spi/SPI.h>
@@ -293,7 +294,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     return CSL_PASS;
 #else
    SBL_ADD_PROFILE_POINT;
- 
+
      /* Get default OSPI cfg */
     OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
@@ -302,7 +303,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
       /* Set up ROM to load system firmware */
       *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
    }
- 
+
    SBL_ADD_PROFILE_POINT;
 
    return CSL_PASS;
@@ -479,6 +480,10 @@ int32_t SBL_ospiInit(void *handle)
 #if SBL_USE_DMA
     ospi_cfg.dmaEnable = true;
     Ospi_udma_init(&ospi_cfg);
+
+    #if defined(SOC_J721E)
+    SBL_udmaInit(gDrvHandle);
+    #endif
 #endif
 
 #if SBL_USE_DMA
@@ -623,6 +628,9 @@ int32_t SBL_ospiClose(const void *handle)
     SBL_log(SBL_LOG_MAX, "SBL_ospiClose called\n");
     Board_flashClose(h);
 #if SBL_USE_DMA
+    #if defined(SOC_J721E)
+    SBL_udmaDeInit();
+    #endif
     Ospi_udma_deinit();
 #endif
     SBL_ADD_PROFILE_POINT;
@@ -854,7 +862,7 @@ int32_t SBL_loadOSPIBootData()
                     /* not enough buffer to read entire boot data */
                     retVal = E_FAIL;
                 }
-	        }
+            }
             else
             {
                 /* bad or unsupported image type */
@@ -863,9 +871,9 @@ int32_t SBL_loadOSPIBootData()
         }
         else
         {
-	        /* Keys not found */
+            /* Keys not found */
             retVal = E_FAIL;
-	    }
+        }
     }
     else
     {

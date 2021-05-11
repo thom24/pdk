@@ -39,6 +39,7 @@
 #include "sbl_sci_client.h"
 #include "sbl_err_trap.h"
 #include "sbl_qos.h"
+#include "sbl_dma.h"
 #include <strings.h>
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
@@ -402,12 +403,16 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
 
             SBL_ADD_PROFILE_POINT;
 
-            SBL_SeekMem(NULL, 0);
-
             /* Image is loaded. RPRC parsing no longer */
             /* neeeds to access the boot media. Update */
             /* caller with image load address          */
+            #if defined(SOC_J721E)
+            SBL_udmaSeekMem(NULL, 0);
+            SBL_SetMulticoreImageImgReadfxn((void *)SBL_udmaReadData, (void *)SBL_udmaSeekMem);
+            #else
+            SBL_SeekMem(NULL, 0);
             SBL_SetMulticoreImageImgReadfxn((void *)SBL_ReadMem, (void *)SBL_SeekMem);
+            #endif
             *img_handle = (void *)(cert_load_addr+cert_len);
             *ImageOffsetPtr = 0;
             SBL_log(SBL_LOG_MAX,"done\r\n", img_len, scratch_mem_ptr);

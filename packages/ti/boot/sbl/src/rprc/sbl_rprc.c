@@ -230,7 +230,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
 
-	    /* Immediately boot these cores */
+            /* Immediately boot these cores */
             if (bootFlag == SBL_BOOT_AFTER_COPY)
             {
                 SBL_SlaveCoreBoot(CoreID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
@@ -246,7 +246,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             /* DO NOT immediately boot these cores, SBL is still running! */
 
             break;
-      
+
         case MPU1_SMP_ID:
             /* Cluster 1 SMP*/
             SBL_log(SBL_LOG_MAX, "Setting SMP entry point for MPU1 @0x%x\n", entry);
@@ -342,7 +342,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             /* DSP0*/
             pAppEntry->entryPoint_DSP0 = entry;
             break;
-#endif    
+#endif
 #if defined(AM572x_BUILD) || defined(AM574x_BUILD) || defined(K2H_BUILD) || defined(K2E_BUILD) || defined(K2L_BUILD) || defined(K2K_BUILD) || defined(K2G_BUILD)
         case MPU_CPU1_ID:
             /* CSL_MPU CPU1 */
@@ -524,7 +524,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
             }
             else
             {
-                
+
             }
 #else
             if ((section.addr >= CSL_MSMC_SRAM_REGS) &&
@@ -581,7 +581,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
             }
             else
             {
-                
+
             }
 #endif
 #else
@@ -867,7 +867,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
         /* Setup CPUs internal memory before using it */
         SBL_SetupCoreMem(CoreId);
 
-	/*read entrypoint and copy sections to memory*/
+    /*read entrypoint and copy sections to memory*/
         for (i = (0U); i < header.SectionCount; i++)
         {
             fp_readData(&section, srcAddr, sizeof (rprcSectionHeader_t));
