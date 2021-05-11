@@ -49,7 +49,7 @@
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#if !defined(DSS_TESTAPP_BAREMETAL)
+#if defined(DSS_TESTAPP_TIRTOS)
 #include <ti/drv/dss/examples/utils/app_utils_prf.h>
 #endif
 
@@ -123,7 +123,7 @@ static int32_t DispApp_pipeCbFxn(Fvid2_Handle handle, void *appData);
 /* ========================================================================== */
 
 DispApp_Obj gDispApp_Obj;
-#if !defined(DSS_TESTAPP_BAREMETAL)
+#if defined(DSS_TESTAPP_TIRTOS)
 uint32_t gTestStopTime, gTestStartTime;
 #endif
 
@@ -141,7 +141,7 @@ int32_t Dss_displayTest(void)
 
     App_print("DSS display application started...\r\n");
 
-#if !defined(DSS_TESTAPP_BAREMETAL)
+#if defined(DSS_TESTAPP_TIRTOS)
     Utils_prfLoadCalcStart();
     Utils_prfLoadRegister(TaskP_self(), "Display_testapp");
 #endif
@@ -157,7 +157,7 @@ int32_t Dss_displayTest(void)
     retVal = DispApp_runTest(&gDispApp_Obj);
 #endif
 
-#if !defined(DSS_TESTAPP_BAREMETAL)
+#if defined(DSS_TESTAPP_TIRTOS)
     Utils_prfLoadCalcStop();
     Utils_prfLoadPrintAll(TRUE, 0);
     Utils_prfLoadCalcReset();
@@ -279,7 +279,7 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
         }
     }
 
-#if !defined(DSS_TESTAPP_BAREMETAL)
+#if defined(DSS_TESTAPP_TIRTOS)
     gTestStartTime = AppUtils_getCurTimeInMsec();
 #endif
 
@@ -327,7 +327,7 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
         }
     }
 
-#if !defined(DSS_TESTAPP_BAREMETAL)
+#if defined(DSS_TESTAPP_TIRTOS)
     gTestStopTime = AppUtils_getCurTimeInMsec();
 #endif
 

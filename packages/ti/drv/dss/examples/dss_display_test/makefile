@@ -7,6 +7,10 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = dss_display_testapp
+ifeq ($(BUILD_OS_TYPE), baremetal)
+    APP_NAME = dss_$(BUILD_OS_TYPE)_display_testapp
+else
+    APP_NAME = dss_display_testapp_$(BUILD_OS_TYPE)
+endif
 
 include makefile.mk

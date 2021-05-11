@@ -180,33 +180,39 @@ DSS_COLORBAR_TESTAPP_MACRO_LIST := $(foreach curos, $(drvdss_RTOS_LIST), $(call 
 $(eval ${DSS_COLORBAR_TESTAPP_MACRO_LIST})
 
 # DSS display test app
-dss_display_testapp_COMP_LIST = dss_display_testapp
-dss_display_testapp_RELPATH = ti/drv/dss/examples/dss_display_test
-dss_display_testapp_PATH = $(PDK_DSS_COMP_PATH)/examples/dss_display_test
-dss_display_testapp_BOARD_DEPENDENCY = yes
-dss_display_testapp_CORE_DEPENDENCY = yes
-dss_display_testapp_XDC_CONFIGURO = yes
-export dss_display_testapp_COMP_LIST
-export dss_display_testapp_BOARD_DEPENDENCY
-export dss_display_testapp_CORE_DEPENDENCY
-export dss_display_testapp_XDC_CONFIGURO
-dss_display_testapp_PKG_LIST = dss_display_testapp
-dss_display_testapp_INCLUDE = $(dss_display_testapp_PATH)
-dss_display_testapp_BOARDLIST = $(drvdss_BOARDLIST)
-export dss_display_testapp_BOARDLIST
-dss_display_testapp_$(SOC)_CORELIST = $(drvdss_$(SOC)_CORELIST)
-export dss_display_testapp_$(SOC)_CORELIST
-dss_EXAMPLE_LIST += dss_display_testapp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
-dss_display_testapp_SBL_APPIMAGEGEN = yes
-export dss_display_testapp_SBL_APPIMAGEGEN
+define DSS_DISPLAY_TESTAPP_RULE
+
+export dss_display_testapp_$(1)_COMP_LIST = dss_display_testapp_$(1)
+dss_display_testapp_$(1)_RELPATH = ti/drv/dss/examples/dss_display_test
+dss_display_testapp_$(1)_PATH = $(PDK_DSS_COMP_PATH)/examples/dss_display_test
+export dss_display_testapp_$(1)_BOARD_DEPENDENCY = yes
+export dss_display_testapp_$(1)_CORE_DEPENDENCY = yes
+export dss_display_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export dss_display_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+dss_colorbar_testapp_$(1)_PKG_LIST = dss_colorbar_testapp_$(1)
+dss_display_testapp_$(1)_INCLUDE = $(dss_display_testapp_$(1)_PATH)
+export dss_display_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvdss_BOARDLIST) )
+export dss_display_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvdss_$(SOC)_CORELIST))
+export dss_display_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+dss_EXAMPLE_LIST += dss_display_testapp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+dss_EXAMPLE_LIST += dss_display_testapp_$(1)
 endif
+endif
+
+endef
+
+DSS_DISPLAY_TESTAPP_MACRO_LIST := $(foreach curos, $(drvdss_RTOS_LIST), $(call DSS_DISPLAY_TESTAPP_RULE,$(curos)))
+
+$(eval ${DSS_DISPLAY_TESTAPP_MACRO_LIST})
 
 # DSS display baremetal test app
 dss_baremetal_display_testapp_COMP_LIST = dss_baremetal_display_testapp
 dss_baremetal_display_testapp_RELPATH = ti/drv/dss/examples/dss_display_test
 dss_baremetal_display_testapp_PATH = $(PDK_DSS_COMP_PATH)/examples/dss_display_test
-dss_baremetal_display_testapp_MAKEFILE = -fmakefile_baremetal
+dss_baremetal_display_testapp_MAKEFILE = -fmakefile BUILD_OS_TYPE=baremetal
 export dss_baremetal_display_testapp_MAKEFILE
 dss_baremetal_display_testapp_BOARD_DEPENDENCY = yes
 dss_baremetal_display_testapp_CORE_DEPENDENCY = yes

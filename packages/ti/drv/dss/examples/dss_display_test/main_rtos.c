@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,23 +32,19 @@
  */
 
 /**
- *  \file main_tirtos.c
+ *  \file main_rtos.c
  *
- *  \brief Main file for TI-RTOS build
+ *  \brief Main file for RTOS builds
  */
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
+#include <stdint.h>
 #include <stdio.h>
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
+
 #include <ti/board/board.h>
 #include <ti/drv/dss/examples/utils/app_utils.h>
 #include "dss_display_test.h"
@@ -73,7 +69,7 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static Void taskFxn(UArg a0, UArg a1);
+static void taskFxn(void* a0, void* a1);
 extern int32_t Dss_displayTest(void);
 #if(1U == DISP_APP_TEST_OVERLAY_VP_4)
 static void App_clkRateSet(uint32_t moduleId,
@@ -93,30 +89,30 @@ static uint8_t gDispAppTskStackMain[DISP_APP_TSK_STACK_MAIN];
 
 int main(void)
 {
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
-    Error_init(&eb);
+    OS_init();
 
     /* Initialize the task params */
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */
     taskParams.priority = 2;
     taskParams.stack = gDispAppTskStackMain;
-    taskParams.stackSize = sizeof(gDispAppTskStackMain);
+    taskParams.stacksize = sizeof(gDispAppTskStackMain);
 
-    task = Task_create(taskFxn, &taskParams, &eb);
+    task = TaskP_create(taskFxn, &taskParams);
     if(NULL == task)
     {
-        BIOS_exit(0);
+        OS_stop();
     }
-    BIOS_start();    /* does not return */
+
+    OS_start();    /* does not return */
 
     return(0);
 }
 
-static Void taskFxn(UArg a0, UArg a1)
+static void taskFxn(void* a0, void* a1)
 {
     int32_t retVal = CSL_PASS;
 #if(1U == DISP_APP_TEST_MULTISYNC)
@@ -196,7 +192,7 @@ static Void taskFxn(UArg a0, UArg a1)
 #endif
 #if(1U == DISP_APP_TEST_OVERLAY_VP_4)
     uint64_t clkFreq = 0U;
-    
+
     /* set CSITX clocks */
     App_clkRateSet(TISCI_DEV_DSS0,
                    TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK,
@@ -238,7 +234,7 @@ void InitMmu(void)
 
 void App_wait(uint32_t wait_in_ms)
 {
-    Task_sleep(wait_in_ms);
+    TaskP_sleep(wait_in_ms);
 }
 
 #if(1U == DISP_APP_TEST_OVERLAY_VP_4)
