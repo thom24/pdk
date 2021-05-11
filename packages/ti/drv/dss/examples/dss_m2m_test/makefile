@@ -7,6 +7,6 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = dss_m2m_testapp
+APP_NAME = dss_m2m_testapp_$(BUILD_OS_TYPE)
 
 include makefile.mk

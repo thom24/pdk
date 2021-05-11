@@ -43,14 +43,11 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
+#include <stdint.h>
 #include <stdio.h>
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
+
 #include <ti/board/board.h>
 #include <ti/drv/dss/examples/utils/app_utils.h>
 #include <ti/drv/sciclient/sciclient.h>
