@@ -100,7 +100,9 @@ else
 SRCS_COMMON += sbl_qos.c
 SRCS_COMMON += sbl_sci_client.c
 SRCS_COMMON += sbl_vid_map.c
+ifeq ($(SBL_USE_DMA), yes)
 SRCS_COMMON += sbl_dma.c
+endif
 endif
 
 SRCS_ASM_COMMON += sbl_misc.asm

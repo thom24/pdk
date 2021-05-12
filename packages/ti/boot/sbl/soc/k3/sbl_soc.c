@@ -39,12 +39,15 @@
 #include "sbl_sci_client.h"
 #include "sbl_err_trap.h"
 #include "sbl_qos.h"
-#include "sbl_dma.h"
 #include <strings.h>
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/board/board.h>
 #include <ti/board/src/devices/board_devices.h>
+
+#if SBL_USE_DMA
+#include "sbl_dma.h"
+#endif
 
 sblProfileInfo_t sblProfileLog[MAX_PROFILE_LOG_ENTRIES];
 uint32_t sblProfileLogIndx = 0, sblProfileLogOvrFlw = 0;
@@ -406,7 +409,7 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
             /* Image is loaded. RPRC parsing no longer */
             /* neeeds to access the boot media. Update */
             /* caller with image load address          */
-            #if defined(SOC_J721E)
+            #if defined(SOC_J721E) && SBL_USE_DMA
             SBL_udmaSeekMem(NULL, 0);
             SBL_SetMulticoreImageImgReadfxn((void *)SBL_udmaReadData, (void *)SBL_udmaSeekMem);
             #else

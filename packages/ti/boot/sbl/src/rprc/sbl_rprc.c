@@ -246,7 +246,6 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             /* DO NOT immediately boot these cores, SBL is still running! */
 
             break;
-
         case MPU1_SMP_ID:
             /* Cluster 1 SMP*/
             SBL_log(SBL_LOG_MAX, "Setting SMP entry point for MPU1 @0x%x\n", entry);
@@ -867,7 +866,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
         /* Setup CPUs internal memory before using it */
         SBL_SetupCoreMem(CoreId);
 
-    /*read entrypoint and copy sections to memory*/
+	/*read entrypoint and copy sections to memory*/
         for (i = (0U); i < header.SectionCount; i++)
         {
             fp_readData(&section, srcAddr, sizeof (rprcSectionHeader_t));

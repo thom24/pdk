@@ -50,7 +50,10 @@
 #include "sbl_err_trap.h"
 #include "sbl_sci_client.h"
 #include "sbl_soc_cfg.h"
+
+#if SBL_USE_DMA
 #include "sbl_dma.h"
+#endif
 
 /* TI-RTOS Header files */
 #include <ti/drv/spi/SPI.h>
