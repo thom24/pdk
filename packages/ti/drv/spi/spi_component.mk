@@ -94,6 +94,7 @@ drvspi_dra72x_CORELIST = c66x a15_0 ipu1_0
 drvspi_dra75x_CORELIST = c66x a15_0 ipu1_0
 drvspi_dra78x_CORELIST = c66x ipu1_0
 drvspi_am65xx_CORELIST = mpu1_0 mcu1_0
+drvspi_am65xx_CORELIST_CACHE = mpu1_0 mcu1_0
 drvspi_j721e_CORELIST  = $(DEFAULT_j721e_CORELIST)
 drvspi_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvspi_j721e_CORELISTARM_CACHE  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1

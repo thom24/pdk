@@ -11,7 +11,7 @@ XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 SRCDIR += . src
 SRCS_COMMON += main_ospi_flash_test.c 
-ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x))
+ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx))
     ifeq ($(CACHE), enable)
         ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
             SRCS_COMMON += ./$(SOC)/cached/baremetal_mpu_config.c
@@ -36,8 +36,13 @@ INCDIR = . src
 
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-XDC_CFG_FILE_mpu1_0 = ./$(SOC)/ospiFlashTest_a53.cfg
-XDC_CFG_FILE_mcu1_0 = ./$(SOC)/ospiFlashTest_r5.cfg
+    ifeq ($(CACHE), enable)
+        XDC_CFG_FILE_mpu1_0 = ./$(SOC)/cached/ospiFlashTest_a53.cfg
+        XDC_CFG_FILE_mcu1_0 = ./$(SOC)/cached/ospiFlashTest_r5.cfg
+    else
+        XDC_CFG_FILE_mpu1_0 = ./$(SOC)/non_cached/ospiFlashTest_a53.cfg
+        XDC_CFG_FILE_mcu1_0 = ./$(SOC)/non_cached/ospiFlashTest_r5.cfg
+    endif
 endif
 ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x))
     ifeq ($(CACHE), enable)
