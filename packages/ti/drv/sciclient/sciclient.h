@@ -310,6 +310,12 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/am64x/tisci_sec_proxy.h>
 #include <ti/drv/sciclient/soc/sysfw/include/am64x/tisci_boardcfg_constraints.h>
 #endif
+#if defined (SOC_J721S2)
+#include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_resasg_types.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_hosts.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_sec_proxy.h>
+#include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_boardcfg_constraints.h>
+#endif
 
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_sec_macros.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_dkek.h>

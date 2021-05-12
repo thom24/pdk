@@ -43,7 +43,7 @@
 #include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
 #include <ti/csl/soc.h>
 #include <string.h> /*For memcpy*/
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #include <ti/csl/csl_clec.h>
 #endif
 #include <ti/csl/csl_rat.h>
@@ -150,7 +150,7 @@ int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
 
     if(NULL != pCfgPrms)
     {
-#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
         Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
 
         /* populate the default board configuration */
@@ -386,7 +386,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
         {
             gSciclientHandle.isSecureMode = 0U;
         }
-#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
         if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
         {
             /* Run pm_init */
@@ -455,7 +455,7 @@ int32_t Sciclient_serviceGetThreadIds (const Sciclient_ReqPrm_t *pReqPrm,
     }
     if(*contextId < SCICLIENT_CONTEXT_MAX_NUM)
     {
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
         /*
          * Derive the thread ID from the context. If the message is to be
          * forwarded, use the dedicated DM2DMSC queue. Otherwise, use the queue
@@ -493,7 +493,7 @@ int32_t Sciclient_serviceGetThreadIds (const Sciclient_ReqPrm_t *pReqPrm,
             *txThread = gSciclientMap[*contextId].reqHighPrioThreadId;
 #endif
             *rxThread = gSciclientMap[*contextId].respThreadId;
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
         }
 #endif
 

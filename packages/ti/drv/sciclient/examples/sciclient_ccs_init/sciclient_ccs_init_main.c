@@ -75,7 +75,7 @@
 #define CONFIG_BOARDCFG_RM (1)
 #endif
 
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
 #define SCICLIENT_CCS_DEVGRP0 (DEVGRP_00)
 #define SCICLIENT_CCS_DEVGRP1 (DEVGRP_01)
 #endif
@@ -84,7 +84,7 @@
 #define SCICLIENT_CCS_DEVGRP0 (DEVGRP_ALL)
 #endif
 
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
 /** \brief Aligned address at which the X509 header is placed. */
 #define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00U)
 
@@ -125,7 +125,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
          */
 #if defined (SOC_AM64X)
         .main_isolation_hostid = TISCI_HOST_ID_MAIN_0_R5_0,
-#elif defined (SOC_J7200) || defined (SOC_J721E)
+#elif defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
         .main_isolation_hostid = TISCI_HOST_ID_MCU_0_R5_1,
 #else
         .main_isolation_hostid = TISCI_HOST_ID_R5_1,

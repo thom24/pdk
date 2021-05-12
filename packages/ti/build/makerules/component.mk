@@ -81,7 +81,7 @@ include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 DEFAULT_CORELIST_EXCLUDE_CORES = $(CORE_LIST_PRU)
 
 # For J7 cores, mpu1_1 is not a part of default core list
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
 DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1
 endif
 
@@ -108,15 +108,15 @@ DEFAULT_BOARDLIST_safertos = tpr12_evm awr294x_evm
 DEFAULT_$(SOC)_CORELIST_tirtos = $(DEFAULT_$(SOC)_CORELIST)
 
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 am65xx tpr12 awr294x))
 DEFAULT_CORELIST_EXCLUDE_CORES_freertos =
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 am65xx))
 # FreeRTOS is not supported on mpu core
 DEFAULT_CORELIST_EXCLUDE_CORES_freertos += mpu1_0
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
-# FreeRTOS is not currently supported on J7 c66x/c7x cores 
-DEFAULT_CORELIST_EXCLUDE_CORES_freertos += c66xdsp_1 c66xdsp_2 c7x_1 c7x-hostemu
+ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
+# FreeRTOS is not currently supported on J7 c66x/c7x cores
+DEFAULT_CORELIST_EXCLUDE_CORES_freertos += c66xdsp_1 c66xdsp_2 c7x_1 c7x_2 c7x-hostemu
 endif
 else
 #FreeRTOS is not supported on other SOCs
@@ -127,7 +127,7 @@ DEFAULT_$(SOC)_CORELIST_freertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES
 
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-# SafeRTOS is not currently supported on mcu cores 
+# SafeRTOS is not currently supported on mcu cores
 DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mcu1_0
 else
 #SafeRTOS is not supported on other SOCs
@@ -1251,6 +1251,11 @@ ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x-hostemu))
   PDK_LNKFLAGS += --define=BUILD_C7X_1
 endif
 
+ifeq ($(CORE),$(filter $(CORE), c7x_2))
+  PDK_CFLAGS += -DBUILD_C7X_2
+  PDK_LNKFLAGS += --define=BUILD_C7X_2
+endif
+
 ifeq ($(CORE),$(filter $(CORE), qnx_mpu1_0))
   PDK_CFLAGS += -DQNX_OS -DBUILD_MPU1_0
   PDK_LNKFLAGS += --define=QNX_OS --define=BUILD_MPU1_0
@@ -1276,7 +1281,7 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j7200)) 
+ifeq ($(SOC),$(filter $(SOC), j7200))
   PDK_COMMON_COMP = csl uart i2c board udma gpio pmic pm_lib
   ifeq ($(CORE),mcu1_0)
     PDK_COMMON_COMP += sciclient_direct rm_pm_hal
@@ -1285,18 +1290,27 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx)) 
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+  PDK_COMMON_COMP = csl
+  ifeq ($(CORE),mcu1_0)
+    PDK_COMMON_COMP += sciclient_direct rm_pm_hal
+  else
+    PDK_COMMON_COMP += sciclient
+  endif
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
   PDK_COMMON_COMP = csl uart i2c board gpio pm_lib
   ifeq ($(CORE),$(filter $(CORE), mpu1_0 mcu1_0 mcu1_1))
     PDK_COMMON_COMP += sciclient udma
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am64x)) 
+ifeq ($(SOC),$(filter $(SOC), am64x))
   PDK_COMMON_COMP = csl uart i2c board gpio sciclient udma
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12)) 
+ifeq ($(SOC),$(filter $(SOC), tpr12))
   PDK_COMMON_COMP = csl uart i2c board gpio edma
 endif
 
@@ -1342,8 +1356,8 @@ else
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x))
-  PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos 
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 tpr12 awr294x))
+  PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos
   PDK_COMMON_FREERTOS_COMP += freertos
   PDK_COMMON_SAFERTOS_COMP = $(PDK_COMMON_COMP) osal_safertos
   PDK_COMMON_SAFERTOS_COMP += safertos

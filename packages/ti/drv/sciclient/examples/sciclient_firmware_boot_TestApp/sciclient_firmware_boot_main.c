@@ -92,13 +92,13 @@ void _resetvectors (void);
  *  main
  *  Application main function.
  */
-#if defined (SOC_J7200)
+#if defined (SOC_J7200) || defined (SOC_J721S2)
 #define CSL_MCU_ARMSS_ATCM_BASE (0x0U)
 #endif
 int32_t main(void)
 {
     int32_t status;
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)CSL_MCU_ARMSS_ATCM_BASE, (void *)_resetvectors, 0x100);
 #elif defined (SOC_AM65XX)
@@ -126,7 +126,7 @@ int32_t main(void)
         App_printPerfStats();
     }
     #endif
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
     if (status == CSL_PASS)
     {
         App_sciclientPrintf("Trying a Domain Reset...\n");

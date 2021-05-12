@@ -183,6 +183,13 @@ ifeq ($(BOARD),$(filter $(BOARD), j7200_sim j7200_hostemu j7200_evm))
  SBL_DEV_ID=55
 endif
 
+# J721S2
+ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
+ SOC = j721s2
+ SBL_RUN_ADDRESS=0x41C00100
+ SBL_DEV_ID=55
+endif
+
 # AM64X
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
  SOC = am64x
@@ -299,7 +306,7 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))
     ISA_EXT = a53
     ARCH = armv8a
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2))
     ISA = a72
     ISA_EXT = a72
     ARCH = armv8a
@@ -313,7 +320,7 @@ ifeq ($(CORE),$(filter $(CORE), qnx_mpu1_0))
 endif
 
 # C7x DSP
-ifeq ($(CORE),$(filter $(CORE), c7x_1))
+ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2))
  ISA = c7x
  ISA_EXT = 71
  ARCH = c71
@@ -493,6 +500,14 @@ ifeq ($(ISA),r5f)
     endif
   endif
 
+  ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
+    ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
+      PLATFORM_XDC = "ti.platforms.cortexR:J721S2_MCU"
+    else
+      PLATFORM_XDC = "ti.platforms.cortexR:J721S2_MAIN"
+    endif
+  endif
+
   ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
       PLATFORM_XDC = "ti.platforms.cortexR:AM64X"
   endif
@@ -579,6 +594,10 @@ ifeq ($(ISA),a72)
     PLATFORM_XDC = "ti.platforms.cortexA:J7200"
   endif
 
+  ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
+    PLATFORM_XDC = "ti.platforms.cortexA:J721S2"
+  endif
+
   ENDIAN_EXT = fg
   FORMAT_EXT =
 
@@ -653,6 +672,9 @@ ifeq ($(ISA),c7x)
     endif
     ifeq ($(BOARD),$(filter $(BOARD), j7200_sim j7200_evm))
       PLATFORM_XDC = "ti.platforms.tms320C7x:J7200"
+    endif
+    ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
+      PLATFORM_XDC = "ti.platforms.tms320C7x:J721S2"
     endif
   endif
 
@@ -899,7 +921,7 @@ ifeq ($(SOC),$(filter $(SOC), tda3xx dra78x))
   SBL_CORE_ID_arp32_1 = 8
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2))
   SBL_CORE_ID_mpu1_0 = 0
   SBL_CORE_ID_mpu1_1 = 1
   SBL_CORE_ID_mpu2_0 = 2

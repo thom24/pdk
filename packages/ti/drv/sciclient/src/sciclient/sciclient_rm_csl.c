@@ -384,7 +384,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
     SciUdmaRmObj       *rmObj;
 
     /* Program ring OES */
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if((TISCI_DEV_NAVSS0_RINGACC_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_RINGACC0 == req->src_id))
 #else
@@ -406,7 +406,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
     }
 
     /* Program channel OES */
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if((TISCI_DEV_NAVSS0_UDMAP_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->src_id))
 #else
@@ -415,7 +415,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 #endif
     {
         rmObj = &gSciUdmaRmObjMain;
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
         if(TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->src_id)
 #else
         if(TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->src_id)
@@ -490,7 +490,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
             rmObj = &gSciUdmaRmObjMcu;
         }
 
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
         /* Program GIC IR */
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
         {
@@ -640,7 +640,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
     SciUdmaRmObj       *rmObj;
 
     /* Reset ring OES */
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if((TISCI_DEV_NAVSS0_RINGACC_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_RINGACC0 == req->src_id))
 #else
@@ -662,7 +662,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
     }
 
     /* Reset channel OES */
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if((TISCI_DEV_NAVSS0_UDMAP_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->src_id))
 #else
@@ -671,7 +671,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
 #endif
     {
         rmObj = &gSciUdmaRmObjMain;
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
         if(TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->src_id)
 #else
         if(TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->src_id)
@@ -911,7 +911,7 @@ int32_t Sciclient_rmUdmapTxChCfg(
     SciUdmaRmObj       *rmObj;
 
     rmObj = &gSciUdmaRmObjMain;
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if(TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->nav_id)
 #else
     if(TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->nav_id)
@@ -956,7 +956,7 @@ int32_t Sciclient_rmUdmapRxChCfg(
     SciUdmaRmObj       *rmObj;
 
     rmObj = &gSciUdmaRmObjMain;
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if(TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->nav_id)
 #else
     if(TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->nav_id)
@@ -1001,7 +1001,7 @@ int32_t Sciclient_rmUdmapFlowCfg(
     SciUdmaRmObj       *rmObj;
 
     rmObj = &gSciUdmaRmObjMain;
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if(TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->nav_id)
 #else
     if(TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->nav_id)
@@ -1056,7 +1056,7 @@ int32_t Sciclient_rmUdmapFlowSizeThreshCfg(
     SciUdmaRmObj   *rmObj;
 
     rmObj = &gSciUdmaRmObjMain;
-#if defined (SOC_J7200) || defined (SOC_J721E)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
     if(TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->nav_id)
 #else
     if(TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->nav_id)

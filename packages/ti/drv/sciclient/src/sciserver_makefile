@@ -15,6 +15,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j7200))
   SCISERVER_SOCVER = V2
 endif
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+  SCISERVER_SOCVER = V4
+endif
 
 SRCDIR = src/sciserver
 SRCDIR += src/sciserver/$(SOC)
@@ -34,7 +37,7 @@ INCDIR += src/rm_pm_hal/rm
 INCLUDE_EXTERNAL_INTERFACES = pdk osal
 
 # Common source files and CFLAGS across all platforms and cores
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     SRCS_COMMON  = sciserver.c
     SRCS_COMMON += sciserver_secproxyTransfer.c
     SRCS_COMMON += sciserver_secproxyRoutingDescription.c

@@ -39,6 +39,7 @@
 #         For J721E-HS (ES1.1)  : ./firmwareHeaderGen.sh j721e_sr1_1-hs
 #         For AM64x             : ./firmwareHeaderGen.sh am64x
 #         For J7200             : ./firmwareHeaderGen.sh j7200
+#         For J721S2            : ./firmwareHeaderGen.hs j721s2-zebu
 export RM=rm
 export MV=mv
 export MAKE=gcc
@@ -162,6 +163,15 @@ export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/sysfw_cert.bin
 export SYSFW_LOAD_ADDR=0x44000
 fi
 
+if [ "$FW_SOC" = "j721s2" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V4
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V4$BIN_EXT.h
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/tifs$BIN_EXT.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert.bin
+export SYSFW_LOAD_ADDR=0x40000
+fi
 
 # SBL_CERT_GEN may already be depending on how this is called
 export SBL_CERT_GEN="${SBL_CERT_GEN:-$ROOTDIR/ti/build/makerules/x509CertificateGen.sh}"

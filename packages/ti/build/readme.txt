@@ -74,6 +74,7 @@ Steps to build
   j721e_evm             - J721E EVM build
   j7200_evm             - J7200 EVM build
   j7200_sim             - J7200 SIM build
+  j721s2_evm            - J721S2 EVM build
   am64x_evm             - AM64X EVM build
   am64x_svb             - AM64X SVB build with LPDDR4
   tpr12_evm             - TPR12 EVM build

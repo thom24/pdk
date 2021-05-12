@@ -59,6 +59,10 @@
 #include <ti/drv/sciclient/soc/V3/sciclient_soc_priv.h>
 #endif
 
+#if defined (SOC_J721S2)
+#include <ti/drv/sciclient/soc/V4/sciclient_soc_priv.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

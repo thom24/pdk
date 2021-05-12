@@ -308,7 +308,7 @@ else
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x))
+  ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 tpr12 awr294x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
     endif 
@@ -329,7 +329,7 @@ ifeq ($(BUILD_OS_TYPE),safertos)
 endif
 
 ifeq ($(BUILD_OS_TYPE),baremetal)
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e am77x j7200 am64x))
+  ifeq ($(SOC),$(filter $(SOC), am65xx j721e am77x j7200 j721s2 am64x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
     endif
@@ -344,7 +344,7 @@ ifeq ($(BUILD_OS_TYPE),baremetal)
         CONFIG_BLD_LNK_m4f   = $(pdk_PATH)/ti/build/$(SOC)/linker_m4f.lds
     endif
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2))
     ifeq ($(CONFIG_BLD_XDC_a72),)
         CONFIG_BLD_LNK_a72   = $(pdk_PATH)/ti/build/$(SOC)/linker_a72_mpu1_0.lds
     endif
@@ -517,7 +517,7 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
     endif
   endif
 
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e am77x j7200 am64x))
+  ifeq ($(SOC),$(filter $(SOC), am65xx j721e am77x j7200 j721s2 am64x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_XDC_r5f   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_r5f.bld
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_sysbios.lds
@@ -530,7 +530,7 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
     endif
   endif
 
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2))
     ifeq ($(CONFIG_BLD_XDC_a72),)
         CONFIG_BLD_XDC_a72   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_a72.bld
         CONFIG_BLD_LNK_a72   = $(pdk_PATH)/ti/build/$(SOC)/linker_a72_mpu1_0.lds
