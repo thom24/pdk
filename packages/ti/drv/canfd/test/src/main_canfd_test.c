@@ -52,7 +52,12 @@
 #include <ti/board/board.h>
 #include <ti/drv/esm/esm.h>
 #include <ti/drv/canfd/canfd.h>
+#if defined (SIM_BUILD)
+#include <stdio.h>
+#define UART_printf     printf
+#else
 #include <ti/drv/uart/UART_stdio.h>
+#endif
 
 /**************************************************************************
  *************************** Global Definitions ***************************
@@ -1979,6 +1984,10 @@ static void Test_initTask(void* arg0, void* arg1)
 
     while (1)
     {
+#if defined (SIM_BUILD)
+        UART_printf ("CANFD Unit Test\nMCAN Internal loopback test\n");
+        testSelection = MCAN_APP_TEST_INTERNAL_LOOPBACK;
+#else
         UART_printf ("*******************************************************\n");
         UART_printf ("CANFD Unit Test Menu                        \n");
         UART_printf ("Please select the type of test to execute:  \n");
@@ -1994,6 +2003,7 @@ static void Test_initTask(void* arg0, void* arg1)
         UART_printf ("> Enter your selection: ");
 
         UART_scanFmt ("%d",&testSelection);
+#endif
 
         /* Validate the selection: */
         if ((testSelection >= MCAN_APP_TEST_INTERNAL_LOOPBACK) && (testSelection <= MCAN_APP_TEST_MSGID_RANGE))

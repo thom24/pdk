@@ -446,6 +446,10 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 endif
 
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+endif
+
 export OSAL_Baremetal_TestApp_$(SOC)_CORELIST
 export OSAL_TestApp_$(SOC)_CORELIST
 export OSAL_freertos_TestApp_$(SOC)_CORELIST

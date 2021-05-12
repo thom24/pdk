@@ -73,9 +73,6 @@ enum MibSpi_InstanceId gMibspiInst[MIBSPI_TEST_NUM_SPIINSTANCES] = {MIBSPI_INST_
 #ifdef BUILD_DSP_1
 #ifdef SOC_TPR12
 enum MibSpi_InstanceId gMibspiInst[MIBSPI_TEST_NUM_SPIINSTANCES] = {MIBSPI_INST_ID_RCSS_SPIA, MIBSPI_INST_ID_RCSS_SPIB};
-#elif defined (SOC_AWR294X)
-/* AWR294x has only MSS_SPI instances. No RCSS MIBSPI instances */
-enum MibSpi_InstanceId gMibspiInst[MIBSPI_TEST_NUM_SPIINSTANCES] = {MIBSPI_INST_ID_MSS_SPIA, MIBSPI_INST_ID_MSS_SPIA};
 #endif 
 #endif
 

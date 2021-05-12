@@ -652,7 +652,7 @@ bool OSAL_timer_test()
 
 #if !defined(SOC_J721E) || !defined(SOC_J7200)
 #if defined(_TMS320C6X)
-#if defined(SOC_TPR12)
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
     timerParams.intNum     = 16;
 #else
     timerParams.intNum     = 15;

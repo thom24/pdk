@@ -70,7 +70,7 @@ drvmibspi_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 drvmibspi_BOARDLIST       = tpr12_evm tpr12_qt awr294x_evm
 drvmibspi_SOCLIST         = tpr12 awr294x
 drvmibspi_tpr12_CORELIST   = mcu1_0 c66xdsp_1
-drvmibspi_awr294x_CORELIST   = mcu1_0 c66xdsp_1
+drvmibspi_awr294x_CORELIST   = mcu1_0
 
 ############################
 # mibspi package

@@ -60,7 +60,11 @@ COMP_LIST_COMMON += canfd esm
 
 PACKAGE_SRCS_COMMON = ../test
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+CFLAGS_UT_DEFINES = -DSIM_BUILD
+endif
+
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES) $(CFLAGS_UT_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

@@ -119,6 +119,9 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x))
   CFLAGS_OSAL_UT += -DENABLE_TIMER_TEST
 endif
 
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+  CFLAGS_OSAL_UT += -DSIM_BUILD
+endif
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)

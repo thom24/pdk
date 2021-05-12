@@ -75,7 +75,11 @@
 #define VBUSP_FREQ              MSS_SYS_VCLK /1000000U
 
 /* Number of Loops of Data echo test when XWR1xxx is configured as Master */
+#if defined (SIM_BUILD)
+#define SPI_TEST_LOOP           2
+#else
 #define SPI_TEST_LOOP           1000
+#endif
 
 #ifdef SPI_MULT_ICOUNT_SUPPORT
  /* Block size used for the test*/

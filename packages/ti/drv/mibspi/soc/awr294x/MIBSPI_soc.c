@@ -56,8 +56,6 @@
 #if defined (BUILD_MCU)
 #define MIBSPI_ENTRY_INDEX_MSS_SPIA                                 (0)
 #define MIBSPI_ENTRY_INDEX_MSS_SPIB                                 (1)
-#define MIBSPI_ENTRY_INDEX_RSS_SPIA                                (2)
-#define MIBSPI_ENTRY_INDEX_RSS_SPIB                                (3)
 
 #define MIBSPI_MSS_SPIA_INT0                               (CSL_MSS_INTR_MSS_SPIA_INT0)
 #define MIBSPI_MSS_SPIA_INT1                               (CSL_MSS_INTR_MSS_SPIA_INT1)
@@ -65,28 +63,11 @@
 #define MIBSPI_MSS_SPIB_INT0                               (CSL_MSS_INTR_MSS_SPIB_INT0)
 #define MIBSPI_MSS_SPIB_INT1                               (CSL_MSS_INTR_MSS_SPIB_INT1)
 
-#define MIBSPI_RSS_SPIA_INT0                              (CSL_MSS_INTR_RSS_SPIA_INT0)
-#define MIBSPI_RSS_SPIA_INT1                              (CSL_MSS_INTR_RSS_SPIA_INT1)
-
-#define MIBSPI_RSS_SPIB_INT0                              (CSL_MSS_INTR_RSS_SPIB_INT0)
-#define MIBSPI_RSS_SPIB_INT1                              (CSL_MSS_INTR_RSS_SPIB_INT1)
-
-
-#elif defined (BUILD_DSP_1)
-#define MIBSPI_ENTRY_INDEX_RSS_SPIA                                (0)
-#define MIBSPI_ENTRY_INDEX_RSS_SPIB                                (1)
-
-#define MIBSPI_RSS_SPIA_INT0                              (CSL_DSS_INTR_RSS_SPIA_INT0)
-#define MIBSPI_RSS_SPIA_INT1                              (CSL_DSS_INTR_RSS_SPIA_INT1)
-
-#define MIBSPI_RSS_SPIB_INT0                              (CSL_DSS_INTR_RSS_SPIB_INT0)
-#define MIBSPI_RSS_SPIB_INT1                              (CSL_DSS_INTR_RSS_SPIB_INT1)
-
 #else
     #error "Unsupported target build"
 #endif
 
-#define MIBSPI_ENTRY_INDEX_MAX                                      (MIBSPI_ENTRY_INDEX_RSS_SPIB)
+#define MIBSPI_ENTRY_INDEX_MAX                                      (MIBSPI_ENTRY_INDEX_MSS_SPIB)
 #define MIBSPI_ENTRY_INDEX_CNT                                      (MIBSPI_ENTRY_INDEX_MAX + 1)
 
 
@@ -103,14 +84,6 @@ MibSpiDriver_Object MibspiObjects[MIBSPI_ENTRY_INDEX_CNT] =
         .mibspiHandle = NULL,
     },
 #endif
-    [MIBSPI_ENTRY_INDEX_RSS_SPIA] =
-    {
-        .mibspiHandle = NULL,
-    },
-    [MIBSPI_ENTRY_INDEX_RSS_SPIB] =
-    {
-        .mibspiHandle = NULL,
-    },
 };
 
 
@@ -217,99 +190,6 @@ MibSpi_HwCfg gMibspiHwCfg[MIBSPI_ENTRY_INDEX_CNT] =
 
     },
 #endif
-    [MIBSPI_ENTRY_INDEX_RSS_SPIA] =
-    {
-        /* RSS MIbSPIA Hardware configuration */
-        .mibspiInstId  = MIBSPI_INST_ID_RSS_SPIA,
-        .ptrSpiRegBase = (CSL_mss_spiRegs *)CSL_RSS_SPIA_U_BASE,
-        .ptrMibSpiRam  = (CSL_mibspiRam  *)CSL_RSS_SPIA_RAM_U_BASE,
-        .clockSrcFreq  = MSS_SYS_VCLK,
-        .interrupt0Num = MIBSPI_RSS_SPIA_INT0,
-        .interrupt1Num = MIBSPI_RSS_SPIA_INT1,
-        .edmaCCId      = EDMA_DRV_INST_RSS_A, /* RSS TPCC A */
-        .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
-        .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RSS_SPIA_U_BASE)->TGCTRL),
-        .numCsPins           = 2,
-        .numParallelModePins = 0,
-        .featureBitMap       = (MIBSPI_FEATURE_SPIENA_PIN),
-        .numDmaReqLines      = 3,
-        .dmaReqlineCfg =
-        /* AWR294X MibSPI-B supports 6 DMA request lines */
-        {
-            [0] =
-            {
-                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ0,
-                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ1
-            },
-            [1] =
-            {
-                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ2,
-                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ3
-            },
-            [2] =
-            {
-                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ4,
-                EDMA_RSS_TPCC_A_EVT_SPIA_DMA_REQ5
-            }
-        },
-        .versionInfo =
-        {
-            .scheme = MIBSPI_SPIREV_SCHEME_VAL,
-            .functionality = MIBSPI_SPIREV_FUNC_VAL,
-            .rtl = MIBSPI_SPIREV_RTL_VAL,
-            .major = MIBSPI_SPIREV_MAJOR_VAL,
-            .custom = MIBSPI_SPIREV_CUSTOM_VAL,
-            .minor = MIBSPI_SPIREV_MINOR_VAL,
-        },
-
-    },
-    [MIBSPI_ENTRY_INDEX_RSS_SPIB] =
-    {
-        /* MSS MIbSPIB Hardware configuration */
-        .mibspiInstId  = MIBSPI_INST_ID_RSS_SPIB,
-        .ptrSpiRegBase = (CSL_mss_spiRegs *)CSL_RSS_SPIB_U_BASE,
-        .ptrMibSpiRam  = (CSL_mibspiRam  *)CSL_RSS_SPIB_RAM_U_BASE,
-        .clockSrcFreq  = MSS_SYS_VCLK,
-        .interrupt0Num = MIBSPI_RSS_SPIB_INT0,
-        .interrupt1Num = MIBSPI_RSS_SPIB_INT1,
-        .edmaCCId      = EDMA_DRV_INST_RSS_A, /* RSS TPCC A */
-        .mibspiRamSize       = CSL_MIBSPIRAM_MAX_ELEMENTS,
-        .numTransferGroups   = MIBSPI_UTILS_ARRAYSIZE(((CSL_mss_spiRegs *)CSL_RSS_SPIB_U_BASE)->TGCTRL),
-        .numCsPins           = 2,
-        .numParallelModePins = 0,
-        .featureBitMap       = (MIBSPI_FEATURE_SPIENA_PIN),
-        .numDmaReqLines = 3,
-        .dmaReqlineCfg =
-        /* AWR294X MibSPI-B supports 6 DMA request lines */
-        {
-            [0] =
-            {
-                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ0,
-                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ1
-            },
-            [1] =
-            {
-                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ2,
-                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ3
-            },
-            [2] =
-            {
-                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ4,
-                EDMA_RSS_TPCC_A_EVT_SPIB_DMA_REQ5
-            }
-        },
-        .versionInfo =
-        {
-            .scheme = MIBSPI_SPIREV_SCHEME_VAL,
-            .functionality = MIBSPI_SPIREV_FUNC_VAL,
-            .rtl = MIBSPI_SPIREV_RTL_VAL,
-            .major = MIBSPI_SPIREV_MAJOR_VAL,
-            .custom = MIBSPI_SPIREV_CUSTOM_VAL,
-            .minor = MIBSPI_SPIREV_MINOR_VAL,
-        },
-
-    },
-
 };
 
 /**
@@ -335,19 +215,6 @@ MIBSPI_Config MIBSPI_config[MIBSPI_ENTRY_INDEX_CNT] =
     },
 #endif
 
-    [MIBSPI_ENTRY_INDEX_RSS_SPIA] =
-    /* RSS MibSPIA driver config */
-    {
-        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RSS_SPIA], /* SPI Driver Object */
-        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RSS_SPIA]   /* SPI Hw configuration */
-    },
-
-    [MIBSPI_ENTRY_INDEX_RSS_SPIB] =
-    /* RSS MibSPIB driver config */
-    {
-        .object  =  &MibspiObjects[MIBSPI_ENTRY_INDEX_RSS_SPIB], /* SPI Driver Object */
-        .hwAttrs =  &gMibspiHwCfg[MIBSPI_ENTRY_INDEX_RSS_SPIB]   /* SPI Hw configuration */
-    },
 };
 
 static int32_t MIBSPI_socValidateCfg(const MibSpi_HwCfg *cfg)
