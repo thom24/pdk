@@ -26,7 +26,6 @@ COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) bios xdc
 EXTERNAL_INTERFACES = bios xdc
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciserver_testapp/linker_r5_sysbios.lds
-COMP_LIST_COMMON += sciserver_tirtos
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
@@ -35,8 +34,9 @@ CFLAGS_OS_DEFINES = -DFREERTOS
 COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES = freertos
 CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciserver_testapp/linker_r5_freertos.lds
-COMP_LIST_COMMON += sciserver_freertos
 endif
+
+COMP_LIST_COMMON += sciserver_tirtos
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component

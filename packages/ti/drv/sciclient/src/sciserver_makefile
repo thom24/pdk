@@ -42,16 +42,9 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200))
     SRCS_COMMON += sciserver_secproxyConfigData.c
     SRCS_COMMON += sciserver_dmTxRoutingData.c
 # Keep the sciclient.c the first file in this list. This is used to trigger
-# the generation of the header files from the firware binary file.
-ifeq ($(BUILD_OS_TYPE), tirtos)
+# the generation of the header files from the firmware binary file.
+ifneq ($(BUILD_OS_TYPE), baremetal)
     SRCS_COMMON += sciserver_tirtos.c
-    INCLUDE_EXTERNAL_INTERFACES += bios xdc
-endif
-ifeq ($(BUILD_OS_TYPE), freertos)
-    SRCS_COMMON += sciserver_tirtos.c
-    CFLAGS_OS_DEFINES = -DFREERTOS
-    COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
-    INCLUDE_EXTERNAL_INTERFACES += freertos
 endif
 endif
 

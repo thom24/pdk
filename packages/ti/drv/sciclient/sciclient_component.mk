@@ -48,26 +48,10 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 sciclient_LIB_LIST += rm_pm_hal 
+sciclient_LIB_LIST += sciserver_tirtos
 sciclient_LIB_LIST += sciserver_baremetal
 sciclient_LIB_LIST += sciclient_direct
 sciclient_LIB_LIST += sciclient_direct_hs
-
-define SCISERVER_RTOS_LIB_LIST_RULE
-
-ifneq ($(1),$(filter $(1), safertos))
-sciclient_LIB_LIST += sciserver_$(1)
-else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
-sciclient_LIB_LIST += sciserver_$(1)
-endif
-endif
-
-endef
-
-SCISERVER_RTOS_LIB_LIST_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCISERVER_RTOS_LIB_LIST_RULE,$(curos)))
-
-$(eval ${SCISERVER_RTOS_LIB_LIST_MACRO_LIST})
-
 endif
 
 drvsciclient_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
