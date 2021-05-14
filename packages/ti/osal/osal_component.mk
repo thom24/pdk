@@ -67,8 +67,8 @@
 ifeq ($(osal_component_make_include), )
 
 libosal_RTOS_LIST = $(DEFAULT_RTOS_LIST)
-libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
-libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
+libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm j721s2_evm
+libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2
 libosal_tirtos_BOARDLIST    = $(libosal_BOARDLIST)
 libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm
 libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x
@@ -101,6 +101,7 @@ libosal_j7200_CORELIST = $(DEFAULT_j7200_CORELIST)
 libosal_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
 libosal_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
 libosal_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
+libosal_j721s2_CORELIST = $(DEFAULT_j721s2_CORELIST)
 libosal_freertos_am65xx_CORELIST = mcu1_0 mcu1_1
 libosal_freertos_j721e_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 libosal_freertos_j7200_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
@@ -108,6 +109,7 @@ libosal_freertos_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
 libosal_freertos_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 libosal_safertos_tpr12_CORELIST = c66xdsp_1
 libosal_safertos_awr294x_CORELIST = c66xdsp_1
+libosal_freertos_j721s2_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 
 ############################
 # osal package
