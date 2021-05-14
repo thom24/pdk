@@ -5,7 +5,7 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = timeSync
 
-ifneq ($(SOC),$(filter $(SOC), j721e j7200))
+ifneq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
 ifeq ($(SOC),$(filter $(SOC), am574x am572x am571x am335x am437x k2g))
   SRCDIR = src
   INCDIR = . ../include .. $(EDMA3LLD_BIOS6_INSTALLDIR)/packages
