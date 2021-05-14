@@ -53,7 +53,7 @@ uint8_t vint_usage_count_NAVSS0_MODSS_INTA_1[64] = {0};
 uint8_t vint_usage_count_NAVSS0_UDMASS_INTA_0[256] = {0};
 uint8_t vint_usage_count_MCU_NAVSS0_INTA_0[256] = {0};
 uint8_t vint_usage_count_MCU_SA3_SS0_INTAGGR_0[8] = {0};
-static struct Sciclient_rmIaUsedMapping rom_usage_MCU_NAVSS0_UDMASS_INTA_0[3U] = {
+static struct Sciclient_rmIaUsedMapping rom_usage_MCU_NAVSS0_UDMASS_INTA_0[5U] = {
     {
         .event = 16404U,
         .cleared = false,
@@ -211,7 +211,7 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_rom_usage    = 0U,
     },
     {
-        .dev_id         = TISCI_DEV_NAVSS0_INTR_ROUTER_0,
+        .dev_id         = TISCI_DEV_NAVSS0_INTR_0,
         .cfg            = 0x310e0000,
         .n_inp          = 442u,
         .n_outp         = 512u,
@@ -220,7 +220,7 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_rom_usage    = 0U,
     },
     {
-        .dev_id         = TISCI_DEV_MCU_NAVSS0_INTR_0,
+        .dev_id         = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
         .cfg            = 0x28540000,
         .n_inp          = 261u,
         .n_outp         = 64u,

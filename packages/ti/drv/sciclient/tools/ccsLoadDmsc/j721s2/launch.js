@@ -53,7 +53,7 @@ disableGelLoad = 0;
 if (disableGelLoad == 0)
 {
     //Path to GEL files
-    gelFilePath = "k3-avv-repo/framework/gels/K3J7";
+    gelFilePath = "k3-avv-repo/framework/gels/K3J7AEP";
 }
 //PDK path. Edit this
 pdkPath = "/ti/j7presi/workarea/pdk";
@@ -62,7 +62,7 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 pathSciclient = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j721s2/"
 ccs_init_elf_file = pathSciclient+"sciclient_ccs_init_mcu1_0_release.xer5f";
 loadSciserverFlag = 1;
-sciserver_elf_file = pathSciclient+"sciserver_testapp_mcu1_0_release.xer5f";
+sciserver_elf_file = pathSciclient+"sciserver_testapp_tirtos_mcu1_0_release.xer5f";
 
 //path to sysfw bin
 sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-j721s2-gp-zebu.bin"
@@ -80,7 +80,7 @@ function updateScriptVars()
     //Open a debug session
     dsMCU1_0 = debugServer.openSession( ".*MCU_Cortex_R5_0" );
     dsMCU1_1 = debugServer.openSession( ".*MCU_Cortex_R5_1" );
-    dsDMSC_0 = debugServer.openSession( ".*DMSC_Cortex_M4_0" );
+    dsDMSC_0 = debugServer.openSession( ".*CORTEX_M4F_0" );
 }
 
 function printVars()
@@ -95,7 +95,7 @@ function connectTargets()
     updateScriptVars();
     sysResetVar=dsDMSC_0.target.getResetType(1);
     sysResetVar.issueReset();
-    print("Connecting to DMSC_Cortex_M4_0!");
+    print("Connecting to Cortex_M4F_0!");
     // Connect targets
     dsDMSC_0.target.connect();
     print("Fill R5F ATCM memory...");
@@ -165,7 +165,7 @@ function connectTargets()
     /* Run the DDR Configuration */
     print("J721S2 Running the DDR configuration... Wait till it completes!");
     dsDMSC_0.target.halt();
-    dsDMSC_0.expression.evaluate("J7ES_LPDDR4_Config_Late()");
+    dsDMSC_0.expression.evaluate("J7_LPDDR4_4266MTs_Config_FULL_SEPARATE()");
     dsDMSC_0.target.runAsynch();
 }
 
@@ -230,7 +230,7 @@ function doEverything()
     printVars();
     connectTargets();
     disconnectTargets();
-    sampleDDRCheck ();
+    // sampleDDRCheck ();
     if (loadSciserverFlag == 1)
     {
         loadSciserver();

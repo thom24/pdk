@@ -315,6 +315,14 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_hosts.h>
 #include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_sec_proxy.h>
 #include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_boardcfg_constraints.h>
+
+/* Translate "DM2TIFS" to "DM2DMSC" related macros for existing sources */
+#define TISCI_HOST_ID_DMSC2DM TISCI_HOST_ID_TIFS2DM
+
+#define TISCI_SEC_PROXY_DM2DMSC_WRITE_NOTIFY_RESP_THREAD_ID \
+	TISCI_SEC_PROXY_DM2TIFS_WRITE_NOTIFY_RESP_THREAD_ID
+#define TISCI_SEC_PROXY_DM2DMSC_READ_RESPONSE_THREAD_ID \
+	TISCI_SEC_PROXY_DM2TIFS_READ_RESPONSE_THREAD_ID
 #endif
 
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_sec_macros.h>

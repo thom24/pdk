@@ -156,7 +156,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_1
+        CSLR_GIC500SS0_SPI_NAVSS0_INTR_0_OUTL_INTR_1
     },
     {
         /** Context **/
@@ -174,7 +174,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_3
+        CSLR_GIC500SS0_SPI_NAVSS0_INTR_0_OUTL_INTR_3
     },
     {
         /** Context **/
@@ -192,7 +192,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_2_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_5
+        CSLR_GIC500SS0_SPI_NAVSS0_INTR_0_OUTL_INTR_5
     },
     {
         /** Context **/
@@ -210,7 +210,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_3_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_7
+        CSLR_GIC500SS0_SPI_NAVSS0_INTR_0_OUTL_INTR_7
     },
     {
         /** Context **/
@@ -228,7 +228,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_A72_4_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_9
+        CSLR_GIC500SS0_SPI_NAVSS0_INTR_0_OUTL_INTR_9
     },
     {
         /** Context **/
@@ -336,7 +336,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_0_R5_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_193
+        CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_193
     },
     {
         /** Context **/
@@ -354,7 +354,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_0_R5_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_195
+        CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_195
     },
     {
         /** Context **/
@@ -372,7 +372,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_0_R5_2_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_225
+        CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_225
     },
     {
         /** Context **/
@@ -390,7 +390,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_0_R5_3_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_227
+        CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_227
     },
     {
         /** Context **/
@@ -408,7 +408,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_1_R5_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_257
+        CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_257
     },
     {
         /** Context **/
@@ -426,7 +426,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_1_R5_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_259
+        CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_259
     },
     {
         /** Context **/
@@ -444,7 +444,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_1_R5_2_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_289
+        CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_289
     },
     {
         /** Context **/
@@ -462,6 +462,6 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_MAIN_1_R5_3_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_291
+        CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_291
     }
 };
