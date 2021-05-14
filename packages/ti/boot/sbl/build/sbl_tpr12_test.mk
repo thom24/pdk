@@ -14,6 +14,7 @@ SRCDIR      += $(PDK_SBL_COMP_PATH)/example/tpr12MulticoreApp
 INCDIR      += $(PDK_SBL_COMP_PATH)
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/tpr12
+INCDIR      += $(PDK_SBL_COMP_PATH)/soc/tpr12/cfg_$(SOC)
 INCDIR      += $(PDK_SBL_COMP_PATH)/example/tpr12MulticoreApp
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)

@@ -34,6 +34,7 @@ INCDIR	+= $(PDK_SBL_COMP_PATH)/src/mmcsd
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/uart
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/tpr12
+INCDIR      += $(PDK_SBL_COMP_PATH)/soc/tpr12/cfg_$(SOC)
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/qspi
 else
 INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3

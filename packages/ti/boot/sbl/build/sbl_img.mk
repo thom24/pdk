@@ -24,7 +24,12 @@ LOCAL_APP_NAME=sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)_$(CORE)
 BUILD_OS_TYPE = baremetal
 
 ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
+ifeq ($(SOC), tpr12)
 SRCDIR += $(PDK_SBL_COMP_PATH)/board/evmTPR12
+endif
+ifeq ($(SOC), awr294x)
+SRCDIR += $(PDK_SBL_COMP_PATH)/board/evmAWR294x
+endif
 else
 SRCDIR += $(PDK_SBL_COMP_PATH)/board/k3
 endif
@@ -33,6 +38,7 @@ INCDIR      += $(PDK_SBL_COMP_PATH)
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc
 ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/tpr12
+INCDIR      += $(PDK_SBL_COMP_PATH)/soc/tpr12/cfg_$(SOC)
 else
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/k3
 endif
@@ -120,8 +126,10 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
 
 SRCS_COMMON += sbl_main.c
 
-ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
+ifeq ($(SOC), $(filter $(SOC), tpr12))
   SRCS_COMMON += sbl_pinmux.c
+endif
+ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
   SRCS_COMMON += sbl_module_clock_config.c
 endif
 

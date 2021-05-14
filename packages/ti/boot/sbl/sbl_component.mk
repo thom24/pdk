@@ -702,13 +702,23 @@ export sbl_hyperflash_img_hlos_hs_SBL_IMAGEGEN = yes
 # SBL UART Image
 sbl_uart_img_COMP_LIST = sbl_uart_img
 ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
+ifeq ($(SOC), $(filter $(SOC), tpr12))
 sbl_uart_img_RELPATH = ti/boot/sbl/board/evmTPR12
+endif
+ifeq ($(SOC), $(filter $(SOC), awr294x))
+sbl_uart_img_RELPATH = ti/boot/sbl/board/evmAWR294x
+endif
 else
 sbl_uart_img_RELPATH = ti/boot/sbl/board/k3
 endif
 sbl_uart_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/uart/bin
 ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
+ifeq ($(SOC), $(filter $(SOC), tpr12))
 sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmTPR12
+endif
+ifeq ($(SOC), $(filter $(SOC), awr294x))
+sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmAWR294x
+endif
 else
 sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 endif
@@ -756,9 +766,19 @@ export sbl_uart_img_hs_SBL_IMAGEGEN = yes
 # SBL QSPI Image
 ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_qspi_img_COMP_LIST = sbl_qspi_img
-sbl_qspi_img_RELPATH = ti/boot/sbl/board/tpr12
+ifeq ($(SOC), $(filter $(SOC), tpr12))
+sbl_qspi_img_RELPATH = ti/boot/sbl/board/evmTPR12
+endif
+ifeq ($(SOC), $(filter $(SOC), awr294x))
+sbl_qspi_img_RELPATH = ti/boot/sbl/board/evmAWR294x
+endif
 sbl_qspi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/qspi/bin
+ifeq ($(SOC), $(filter $(SOC), tpr12))
 sbl_qspi_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmTPR12
+endif
+ifeq ($(SOC), $(filter $(SOC), awr294x))
+sbl_qspi_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmAWR294x
+endif
 sbl_qspi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=qspi SBL_USE_DMA=yes BUILD_HS=no
 export sbl_qspi_img_MAKEFILE
 export sbl_qspi_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
