@@ -46,8 +46,6 @@ extern Board_I2cInitCfg_t gBoardI2cInitCfg;
 
 Board_I2cObj_t gBoardI2cObj[BOARD_I2C_PORT_CNT] = {
     {NULL, BOARD_SOC_DOMAIN_MSS,  0, 0},
-    {NULL, BOARD_SOC_DOMAIN_RCSS, 1, 0},
-    {NULL, BOARD_SOC_DOMAIN_RCSS, 2, 0}
 };
 
 /**

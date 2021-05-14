@@ -428,7 +428,7 @@
 #include <ti/osal/MuxIntcP.h>
 #include <ti/osal/osal.h>
 #include <ti/osal/osalver.h>
-#include <ti/osal/Queue.h>
+#include <ti/osal/QueueP.h>
 #include <ti/osal/RegisterIntr.h>
 #include <ti/osal/SemaphoreP.h>
 #include <ti/osal/TaskP.h>

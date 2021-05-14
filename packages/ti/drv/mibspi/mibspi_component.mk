@@ -239,7 +239,7 @@ export MIBSPI_Slavemode_TestApp_PKG_LIST
 MIBSPI_Slavemode_TestApp_INCLUDE = $(MIBSPI_Slavemode_TestApp_PATH)
 MIBSPI_Slavemode_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
 export MIBSPI_Slavemode_TestApp_BOARDLIST
-MIBSPI_Slavemode_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+MIBSPI_Slavemode_TestApp_$(SOC)_CORELIST = $(drvmibspi_$(SOC)_CORELIST)
 export MIBSPI_Slavemode_TestApp_$(SOC)_CORELIST
 
 # MIBSPI rtos master slave Dma Test app
@@ -260,7 +260,7 @@ export MIBSPI_Slavemode_Dma_TestApp_PKG_LIST
 MIBSPI_Slavemode_Dma_TestApp_INCLUDE = $(MIBSPI_Slavemode_Dma_TestApp_PATH)
 MIBSPI_Slavemode_Dma_TestApp_BOARDLIST = $(drvmibspi_BOARDLIST)
 export MIBSPI_Slavemode_Dma_TestApp_BOARDLIST
-MIBSPI_Slavemode_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+MIBSPI_Slavemode_Dma_TestApp_$(SOC)_CORELIST = $(drvmibspi_$(SOC)_CORELIST)
 export MIBSPI_Slavemode_Dma_TestApp_$(SOC)_CORELIST
 
 drvmibspi_EXAMPLE_LIST = $(mibspi_EXAMPLE_LIST)

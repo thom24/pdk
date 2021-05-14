@@ -97,7 +97,7 @@ drvi2c_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvi2c_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvi2c_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvi2c_tpr12_CORELIST  = mcu1_0 c66xdsp_1
-drvi2c_awr294x_CORELIST  = mcu1_0 c66xdsp_1
+drvi2c_awr294x_CORELIST  = mcu1_0
 
 
 ############################

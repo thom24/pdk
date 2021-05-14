@@ -65,7 +65,7 @@ extern "C" {
 #include <ti/osal/CacheP.h>
 #include <ti/osal/TimerP.h>
 #include <ti/osal/RegisterIntr.h>
-#include <ti/osal/Queue.h>
+#include <ti/osal/QueueP.h>
 #include <ti/osal/CycleprofilerP.h>
 #include <ti/osal/DebugP.h>
 #ifdef _TMS320C6X

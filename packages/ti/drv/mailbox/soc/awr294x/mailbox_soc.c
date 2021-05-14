@@ -187,7 +187,7 @@ Mailbox_HwCfg   gMailboxMssDssHwCfg =
 Mailbox_HwCfg   gMailboxMssRcssHwCfg =
 {
     .mbxReg                 = &gMboxReg,
-    .baseLocalToRemote.data = (uint8_t *)(CSL_RSS_MAILBOX_U_BASE),
+    .baseLocalToRemote.data = (uint8_t *)(CSL_RSS_CR4_MBOX_U_BASE),
     .baseRemoteToLocal.data = (uint8_t *)(CSL_MSS_MBOX_U_BASE),
     .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_REQ,
     .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_ACK,
@@ -230,7 +230,7 @@ Mailbox_HwCfg   gMailboxDssMssHwCfg =
 Mailbox_HwCfg   gMailboxDssRcssHwCfg =
 {
     .mbxReg                 = &gMboxReg,
-    .baseLocalToRemote.data = (uint8_t *)(CSL_RSS_MAILBOX_U_BASE + CSL_RSS_MAILBOX_DSS_OFFSET),
+    .baseLocalToRemote.data = (uint8_t *)(CSL_RSS_CR4_MBOX_U_BASE + CSL_RSS_MAILBOX_DSS_OFFSET),
     .baseRemoteToLocal.data = (uint8_t *)(CSL_DSS_MAILBOX_U_BASE),
     .boxFullIntNum          = CSL_DSS_INTR_DSS_DSP_MBOX_READ_REQ,
     .boxEmptyIntNum         = CSL_DSS_INTR_DSS_DSP_MBOX_READ_ACK,

@@ -96,7 +96,7 @@ drvgpio_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvgpio_j7200_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_j7200_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_tpr12_CORELIST    = mcu1_0 c66xdsp_1
-drvgpio_awr294x_CORELIST    = mcu1_0 c66xdsp_1
+drvgpio_awr294x_CORELIST    = mcu1_0
 drvgpio_am64x_CORELIST    = $(DEFAULT_am64x_CORELIST)
 drvgpio_am64x_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 ############################

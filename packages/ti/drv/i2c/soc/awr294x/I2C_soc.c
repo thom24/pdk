@@ -70,28 +70,6 @@ I2C_HwAttrs i2cInitCfg[CSL_I2C_CNT] =
         true, /* interrupt mode enabled */
         I2C_OWN_ADDR, /* default I2C own slave addresse */
     },
-    {
-        CSL_RSS_I2CA_U_BASE,
-        CSL_MSS_INTR_RSS_I2CA_INT, /* I2C int0 number for R5F INTC */
-        0, /* Event ID not used for R5F INTC */
-        INVALID_INTC_MUX_NUM, /* CIC num not used in R5F GIC */
-        0, /* cicEventId not used for ARM */
-        0, /* HostIntNum not used for ARM */
-        I2C_MODULE_FREQ_200M,  /* default I2C frequency, system clock/6 */
-        true, /* interrupt mode enabled */
-        I2C_OWN_ADDR, /* default I2C own slave addresse */
-    },
-    {
-        CSL_RSS_I2CB_U_BASE,
-        CSL_MSS_INTR_RSS_I2CB_INT, /* I2C int0 number for R5F INTC */
-        0, /* Event ID not used for R5F INTC */
-        INVALID_INTC_MUX_NUM, /* CIC num not used in R5F GIC */
-        0, /* cicEventId not used for ARM */
-        0, /* HostIntNum not used for ARM */
-        I2C_MODULE_FREQ_200M,  /* default I2C frequency, system clock/6 */
-        true, /* interrupt mode enabled */
-        I2C_OWN_ADDR, /* default I2C own slave addresse */
-    }
 };
 
 /* I2C objects */
@@ -103,85 +81,6 @@ I2C_config_list I2C_config = {
         &I2C_v0_FxnTable,
         &I2cObjects[0],
         &i2cInitCfg[0]
-    },
-
-    {
-        &I2C_v0_FxnTable,
-        &I2cObjects[1],
-        &i2cInitCfg[1]
-    },
-
-    {
-        &I2C_v0_FxnTable,
-        &I2cObjects[2],
-        &i2cInitCfg[2]
-    },
-
-    /*"pad to full predefined length of array"*/
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL},
-    {NULL, NULL, NULL}
-};
-
-#elif defined (_TMS320C6X)
-
-#define CSL_I2C_CNT    CSL_DSS_I2C_PER_CNT
-
-/**
- * @brief   This is the AWR294X DSS specific I2C configuration. There are
- * 2 I2C instances (RSS-I2C-A/B) available on the DSS. 
- */
-
-/* I2C configuration structure */
-I2C_HwAttrs i2cInitCfg[CSL_I2C_CNT] =
-{
-    {
-        CSL_RSS_I2CA_U_BASE,
-        OSAL_REGINT_INTVEC_EVENT_COMBINER,  /* default DSP Interrupt vector number */
-        CSL_DSS_INTR_RSS_I2CA_INT, /*  DSP INTC I2C Event ID */
-        INVALID_INTC_MUX_NUM, /* CIC num not used for AWR294X */
-        0, /* cicEventId not used for AWR294X */
-        0, /* HostIntNum not used for AWR294X */
-        I2C_MODULE_FREQ_200M,  /* default I2C frequency, system clock/6 */
-        true, /* interrupt mode enabled */
-        I2C_OWN_ADDR, /* default I2C own slave addresse */
-    },
-    {
-        CSL_RSS_I2CB_U_BASE,
-        OSAL_REGINT_INTVEC_EVENT_COMBINER,  /* default DSP Interrupt vector number */
-        CSL_DSS_INTR_RSS_I2CB_INT, /*  DSP INTC I2C Event ID */
-        INVALID_INTC_MUX_NUM, /* CIC num not used for AWR294X */
-        0, /* cicEventId not used for AWR294X */
-        0, /* HostIntNum not used for AWR294X */
-        I2C_MODULE_FREQ_200M,  /* default I2C frequency, system clock/6 */
-        true, /* interrupt mode enabled */
-        I2C_OWN_ADDR, /* default I2C own slave addresse */
-    }
-};
-
-/* I2C objects */
-I2C_v0_Object I2cObjects[CSL_I2C_CNT];
-
-/* I2C configuration structure */
-I2C_config_list I2C_config = {
-    {
-        &I2C_v0_FxnTable,
-        &I2cObjects[0],
-        &i2cInitCfg[0]
-    },
-
-    {
-        &I2C_v0_FxnTable,
-        &I2cObjects[1],
-        &i2cInitCfg[1]
     },
 
     /*"pad to full predefined length of array"*/
@@ -196,8 +95,10 @@ I2C_config_list I2C_config = {
     {NULL, NULL, NULL},
     {NULL, NULL, NULL},
     {NULL, NULL, NULL},
+    {NULL, NULL, NULL},
     {NULL, NULL, NULL}
 };
+
 
 #else
 #error "Error: Please check the compiler flags since BUILD_XXX is not defined for the AWR294X device"

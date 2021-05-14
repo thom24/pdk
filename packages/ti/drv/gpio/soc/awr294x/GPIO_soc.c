@@ -86,23 +86,8 @@ static GPIO_v2_HwAttrs gMssGpioHwAtrrib =
     CSL_MSS_INTR_MSS_GIO_INT1       /* Low Interrupt    */
 };
 
-static GPIO_v2_HwAttrs gRSSGpioHwAtrrib =
-{
-    CSL_RSS_GIO_U_BASE,
-    CSL_MSS_INTR_RSS_GIO_INT0,     /* High Interrupt   */
-    CSL_MSS_INTR_RSS_GIO_INT1      /* Low Interrupt    */
-};
 #endif
 
-#if defined (_TMS320C6X)
-static GPIO_v2_HwAttrs gRSSGpioHwAtrrib =
-{
-    CSL_RSS_GIO_U_BASE,
-    CSL_DSS_INTR_RSS_GIO_INT0,     /* High Interrupt   */
-    CSL_DSS_INTR_RSS_GIO_INT1      /* Low Interrupt    */
-};
-
-#endif
 
 /**
  * \brief GPIO configuration structure for AWR294X.
@@ -110,20 +95,9 @@ static GPIO_v2_HwAttrs gRSSGpioHwAtrrib =
 CSL_PUBLIC_CONST GPIOConfigList GPIO_config =
 {
     {
-    #if defined (_TMS320C6X)
-        &GPIO_FxnTable_v2,
-        NULL,
-        NULL
-    #else
         &GPIO_FxnTable_v2,
         NULL,
         &gMssGpioHwAtrrib
-    #endif
-    },
-    {
-        &GPIO_FxnTable_v2,
-        NULL,
-        &gRSSGpioHwAtrrib
     },
     {
         NULL,
@@ -149,17 +123,6 @@ static GPIO_PinConfig gGpioPinConfigs[GPIO_ALL_INST_MAX_PINS] =
     GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
     GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
 
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
-
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
-
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
-
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG,
-    GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG, GPIO_DO_NOT_CONFIG
 };
 
 /* GPIO Driver call back functions */
@@ -180,10 +143,6 @@ int32_t GPIO_getHwAttr (GPIO_v2_HwAttrs **gpioHwAttr, uint32_t gpioInst)
         if (gpioInst == GPIO_INST_MCU)
         {
             *gpioHwAttr = (GPIO_v2_HwAttrs *)(GPIO_config[0].hwAttrs);
-        }
-        else if (gpioInst == GPIO_INST_RSS)
-        {
-            *gpioHwAttr = (GPIO_v2_HwAttrs *)(GPIO_config[1].hwAttrs);
         }
         else
         {

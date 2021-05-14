@@ -39,7 +39,7 @@
  */ 
  
 /** ============================================================================
- *  @file       Queue.h
+ *  @file       QueueP.h
  *
  *  @brief      Queue Handling routines for RTOS 
  *
@@ -47,8 +47,8 @@
  *  ============================================================================
  */
 
-#ifndef ti_osal_Queue__include
-#define ti_osal_Queue__include
+#ifndef ti_osal_QueueP__include
+#define ti_osal_QueueP__include
 
 #include <stdbool.h>
 
@@ -122,5 +122,5 @@ void Osal_Queue_put(Osal_Queue_Handle queueHandle,Osal_Queue_Elem *ptr);
 }
 #endif
 
-#endif /* ti_osal_CacheP__include */
+#endif /* ti_osal_QueueP__include */
 /* @} */
