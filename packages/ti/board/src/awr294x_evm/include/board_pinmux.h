@@ -56,7 +56,7 @@ extern "C" {
 #endif
 
 #define MODE_PIN_MASK                   (0xFU)
-#define PINMUX_BIT_MASK                 (0xFFF8FFF0U)
+#define PINMUX_BIT_MASK                 (0xFFFFFCF0U)
 
 /* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
 #define PMUX_CTRL	(CSL_MSS_IOMUX_U_BASE)
