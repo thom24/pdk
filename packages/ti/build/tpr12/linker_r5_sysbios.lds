@@ -32,7 +32,7 @@ PAGE 1:
 /* Section Configuration                                                      */
 SECTIONS{
     .intvecs : {} > VECTORS
-    
+
     /* The linker notation "X >> Y | Z" indicates section X is first allocated in Y
        and allowed to overflow into Z and can be split from Y to Z.
        The linker notation "X > Y | Z" indicates section X is first allocated in Y
@@ -40,12 +40,12 @@ SECTIONS{
        like bss are not allowed to be split so > notation is used for them 
     */
     .text    : {} >> TCMA_RAM | L2_RAM
-    
+
     .const   : {} > L2_RAM
     .switch  : {} > L2_RAM
     .cio:    : {} > SBL_RESERVED_L2_RAM | L2_RAM
     .data:   : {} > L2_RAM
-    
+
     .cinit   : {} > L2_RAM
     .pinit   : {} > L2_RAM
     .bss     : {} > SBL_RESERVED_L2_RAM | L2_RAM

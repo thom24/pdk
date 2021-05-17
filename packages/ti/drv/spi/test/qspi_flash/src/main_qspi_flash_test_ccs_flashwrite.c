@@ -626,8 +626,7 @@ void spi_test(UArg arg0, UArg arg1)
     {
         SPI_log("\n All tests have passed. \n");
     }
-
-    while(1);
+    BIOS_exit(0);
 }
 
 /*
