@@ -15,6 +15,7 @@ INCDIR = . $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/common
 ifeq ($(BUILD_OS_TYPE),tirtos)
 CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
+# List all the components required by the application
 COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP)
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
@@ -22,6 +23,7 @@ endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
 CFLAGS_OS_DEFINES = -DFREERTOS
+# List all the components required by the application
 COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES = freertos
 endif
@@ -29,11 +31,6 @@ endif
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
-
-# List all the components required by the application
-ifeq ($(ARCH),c66x)
-  COMP_LIST_COMMON += csl_intc
-endif
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON = sciclient_ut_main.c \

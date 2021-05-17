@@ -31,10 +31,6 @@ endif
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
 
-ifeq ($(ARCH),c66x)
-  COMP_LIST_COMMON += csl_intc
-endif
-
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON = sciclient_fw_main.c \
               sciclient_appCommon.c
