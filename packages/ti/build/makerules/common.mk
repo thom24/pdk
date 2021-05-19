@@ -509,7 +509,7 @@ endif
 
 #MCUx_1 cores requires a dummy application to run from MCUx_0 core
 #as MCUx_1 cores cannot be at a higher power state than MCUx_0 core
-ifeq ($(SOC),$(filter $(SOC), am64x))
+ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
   ifeq ($(CORE),$(filter $(CORE), mcu1_1))
   MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
   endif
