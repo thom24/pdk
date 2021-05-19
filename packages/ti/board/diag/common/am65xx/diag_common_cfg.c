@@ -373,8 +373,8 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
-        .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
+        .cacheable        = (uint32_t)FALSE,
+        .cachePolicy      = 0,
         .memAttr          = 0U,
     },
     {
