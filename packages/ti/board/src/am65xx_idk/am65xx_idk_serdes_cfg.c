@@ -156,12 +156,12 @@ Board_STATUS Board_twoOneLanePcieSerdesCfg(void)
 
     /* Selects the SERDES0 lane function to configure PCIe0 Lane0 */
     CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL), 1, 0, 0x1);
-    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL), 7, 4, 0x4);
+    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL), 7, 4, 0x6);
     CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_REFCLK_SEL), 1, 0, 0x3);
 
     /* Selects the SERDES1 lane function to configure PCIe0 Lane1 */
-    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 1, 0, 0x0);
-    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 7, 4, 0x0);
+    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 1, 0, 0x1);
+    CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 7, 4, 0x4);
     CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_REFCLK_SEL), 1, 0, 0x3);
 
     /* Configuring PCIe0 Lane0 */
@@ -345,6 +345,14 @@ Board_STATUS Board_serdesCfg(void)
 {
     Board_STATUS ret;
 
+   /* Unlock Lock1 Kick Registers */
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0) = KICK0_UNLOCK_VAL;
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK1) = KICK1_UNLOCK_VAL;
+
+    /* Unlock Lock2 Kick Registers */
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0) = KICK0_UNLOCK_VAL;
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1) = KICK1_UNLOCK_VAL;
+
 /* Enable this code after programming EEPROM IDs for the personality cards */
 #ifdef ENABLE_BOARD_DETECT
     Board_IDInfo boardInfo;
@@ -378,6 +386,12 @@ Board_STATUS Board_serdesCfg(void)
 #else
     ret = Board_twoLanePcieSerdesCfg();
 #endif
+
+    /* Lock the Kick Registers */
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0) = 0;
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK1) = 0;
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0) = 0;
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1) = 0;
 
     return ret;
 }
