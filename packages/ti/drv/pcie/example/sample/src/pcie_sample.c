@@ -172,6 +172,9 @@ __attribute__((aligned(0x01000))) /* GCC way of aligning */
 #define PCIE_EXAMPLE_BUF_EMPTY 0
 #define PCIE_EXAMPLE_BUF_FULL  1
 
+#define KICK0 0x68EF3490ull
+#define KICK1 0xD172BC5Aull
+
 /* Does not need to be aligned (even for cache) since it is only accessed locally */
 uint32_t srcBuf[PCIE_BUFSIZE_APP];
 
@@ -2667,6 +2670,16 @@ int main() {
     return 0;
   }
 #endif
+
+#if defined(SOC_AM65XX)
+    /* MMR unlock for PCIe register access */
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0) = KICK0;
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1) = KICK1;
+
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK6_KICK0) = KICK0;
+    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK6_KICK1) = KICK1;
+#endif
+
 #endif
   BIOS_start();
   return 0;
