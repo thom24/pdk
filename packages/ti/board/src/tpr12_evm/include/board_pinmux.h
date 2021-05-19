@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2020-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -56,7 +56,7 @@ extern "C" {
 #endif
 
 #define MODE_PIN_MASK                   (0xFU)
-#define PINMUX_BIT_MASK                 (0xFFFFFCF0U)
+#define PINMUX_BIT_MASK                 (0xFFF8FFF0U)
 
 /* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
 #define PMUX_CTRL	(CSL_MSS_IOMUX_U_BASE)

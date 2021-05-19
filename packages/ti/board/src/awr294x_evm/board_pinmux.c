@@ -94,8 +94,8 @@ Board_STATUS Board_pinmuxConfig (void)
                 {
                     rdRegVal = HW_RD_REG32((PMUX_CTRL + pInstanceData[k].pinOffset));
                     rdRegVal = (rdRegVal & PINMUX_BIT_MASK);
-                    rdRegVal = (rdRegVal | pInstanceData[k].pinSettings);
-                    HW_WR_REG32((PMUX_CTRL + pInstanceData[k].pinOffset), rdRegVal);
+                    HW_WR_REG32((PMUX_CTRL + pInstanceData[k].pinOffset),
+                                (pInstanceData[k].pinSettings));
                 }
             }
         }
