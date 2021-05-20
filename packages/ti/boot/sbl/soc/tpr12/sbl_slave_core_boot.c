@@ -175,6 +175,12 @@ static void SBL_memInitSharedBSS(void)
     SBL_RcmStartMeminitSharedBSS();
     SBL_RcmWaitMeminitSharedBSS();
 }
+
+static void SBL_cr4BSSUnhalt(void)
+{
+    SBL_RcmBSSR4Unhalt();
+}
+
 #endif /* defined (SOC_AWR294X) */
 
 void SBL_cr5AUnhalt(CSL_mss_ctrlRegs *mssCtrl)
@@ -427,6 +433,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* BSS Unhalt will be done in the MSS Application */
             SBL_log(SBL_LOG_MAX, "Populate BSS Boot info registers\n");
             SBL_PopulateBSSBootInfo();
+            SBL_cr4BSSUnhalt();
             SBL_ADD_PROFILE_POINT;
             break;
 #endif /* defined (SOC_AWR294X) */

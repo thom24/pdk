@@ -35,7 +35,7 @@ extern "C" {
 #ifdef SOC_K2G
 #include <ti/csl/src/ip/uart/V0/uart.h>
 #else
-#if !defined(SOC_TPR12)
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
 #include <ti/csl/src/ip/uart/V1/uart.h>
 #endif
 #endif
@@ -44,13 +44,13 @@ extern "C" {
 #include <ti/drv/uart/src/UART_osal.h>
 #include <ti/csl/tistdtypes.h>
 
-#ifdef SOC_TPR12
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
 #include <ti/drv/uart/UART_stdio.h>
 #endif
 
 #include <flash_programmer.h>
 
-#if defined(SOC_TPR12)
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
 #define DATA_BUFF_LEN           (2*1024U)
 #else
 #define DATA_BUFF_LEN           (4*1024U)

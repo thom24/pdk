@@ -75,7 +75,7 @@
 #elif defined(tpr12_qt)
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q16FWSF
 #elif defined(awr294x_evm)
-#define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q16FWSF
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
 #endif
 
 #if defined(tpr12_qt)
@@ -236,10 +236,18 @@ int32_t SBL_qspiFlashRead(void *handle, uint8_t *dst, uint32_t length,
 {
     uint32_t start_time = SBL_ADD_PROFILE_POINT;
     uint32_t end_time = 0;
+    bool disableDMA = false;
 
 #if !defined(SBL_BYPASS_QSPI_DRIVER)
 #if SBL_USE_DMA
-    if (length > 4 * 1024)
+#if (defined (SOC_AWR294X))
+    /* EDMA not working for AWR294x when transfering from QSPI Flash to DSS L3/ DSS L2. 
+     * Disable until rootcaused and fixed
+     */
+    disableDMA = true;
+#endif
+
+    if ((length > 4 * 1024) && (disableDMA != true))
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
         uint32_t ioMode  = QSPI_FLASH_QUAD_READ;

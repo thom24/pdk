@@ -120,6 +120,7 @@ TimerP_rtiTimerDefault gRtiTimerPInfoTbl[TimerP_numTimerDevices] = {
 #endif
 
 /* Returns the default frquency lower 32 bits */
+__attribute__((weak)) int32_t TimerP_getDefaultFreqLo(uint32_t timerId);
 int32_t TimerP_getDefaultFreqLo(uint32_t timerId)
 {
     /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */

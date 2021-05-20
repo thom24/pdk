@@ -74,6 +74,17 @@ extern "C" {
 #include <ti/drv/edma/edma.h>
 #endif
 
+#elif defined(SOC_AWR294X)
+#include <ti/board/src/flash/include/board_flash.h>
+#include <ti/board/src/flash/nor/qspi/nor_qspi.h>
+
+#ifdef SPI_DMA_ENABLE
+#include <ti/csl/soc.h>
+#include <ti/osal/CacheP.h>
+/* EDMA3 Header files */
+#include <ti/drv/edma/edma.h>
+#endif
+
 #endif
 
 #ifdef iceK2G
@@ -87,6 +98,8 @@ extern "C" {
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
 #elif defined(tpr12_qt)
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_W25Q16FWSF
+#elif defined(awr294x_evm)
+#define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
 #endif
 
 #if !(defined(SOC_K2G) || defined(j721e_evm))

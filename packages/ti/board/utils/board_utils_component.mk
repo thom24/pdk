@@ -86,6 +86,8 @@ board_utils_j7200_BOARDLIST = j7200_evm
 board_utils_j7200_CORELIST = mcu1_0
 board_utils_tpr12_BOARDLIST = tpr12_evm
 board_utils_tpr12_CORELIST = mcu1_0
+board_utils_awr294x_BOARDLIST = awr294x_evm
+board_utils_awr294x_CORELIST = mcu1_0
 board_utils_am64x_BOARDLIST = am64x_evm
 board_utils_am64x_CORELIST = mcu1_0
 
@@ -162,7 +164,7 @@ export board_utils_uart_flash_programmer_hs_SBL_IMAGEGEN
 # Uniflash utils is not supported for any profile
 # other than release due to memory constraint
 ifneq ($(BUILD_PROFILE), release)
-ifneq ($(SOC), tpr12)
+ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 board_utils_EXAMPLE_LIST =
 endif # TPR12 Debug Uniflash build supported
 endif # ifneq ($(BUILD_PROFILE), release)

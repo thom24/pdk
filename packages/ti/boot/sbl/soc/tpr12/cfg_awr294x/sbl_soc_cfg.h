@@ -64,27 +64,51 @@
 #define SBL_MSS_SPIA_FREQ_HZ                             (SBL_FREQ_MHZ2HZ(200U))
 #define SBL_MSS_SPIB_FREQ_HZ                             (SBL_FREQ_MHZ2HZ(200U))
 #define SBL_MSS_I2C_FREQ_HZ                              (SBL_FREQ_MHZ2HZ(200U))
-#define SBL_MCANA_FREQ_HZ                                 (SBL_FREQ_MHZ2HZ(80U))
-#define SBL_MCANB_FREQ_HZ                                 (SBL_FREQ_MHZ2HZ(80U))
-#define SBL_CSIRX_FREQ_HZ                                 (SBL_FREQ_MHZ2HZ(96U))
-#define SBL_QSPI_FREQ_HZ                                  (SBL_FREQ_MHZ2HZ(80U))
+#define SBL_MCANA_FREQ_HZ                                (SBL_FREQ_MHZ2HZ(80U))
+#define SBL_MCANB_FREQ_HZ                                (SBL_FREQ_MHZ2HZ(80U))
+#define SBL_CSIRX_FREQ_HZ                                (SBL_FREQ_MHZ2HZ(96U))
+#define SBL_QSPI_FREQ_HZ                                 (SBL_FREQ_MHZ2HZ(80U))
 #define SBL_DSS_RTIA_FREQ_HZ                             (SBL_FREQ_MHZ2HZ(200U))
 #define SBL_DSS_RTIB_FREQ_HZ                             (SBL_FREQ_MHZ2HZ(200U))
 #define SBL_DSS_WDT_FREQ_HZ                              (SBL_FREQ_MHZ2HZ(200U))
 #define SBL_DSS_SCIA_FREQ_HZ                             (SBL_FREQ_MHZ2HZ(200U))
 #define SBL_CPSW_FREQ_HZ                                 (SBL_FREQ_MHZ2HZ(200U))
-#define SBL_CPTS_FREQ_HZ                                 (SBL_FREQ_MHZ2HZ(200U))
+
+#define SBL_MSS_SCIA_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_SCIB_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_RTIA_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_RTIB_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_RTIC_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_WDT_SYS150_FREQ_HZ                       (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_SPIA_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_SPIB_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MSS_I2C_SYS150_FREQ_HZ                       (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_MCANA_SYS150_FREQ_HZ                         (SBL_FREQ_MHZ2HZ(60U))
+#define SBL_MCANB_SYS150_FREQ_HZ                         (SBL_FREQ_MHZ2HZ(60U))
+#define SBL_CSIRX_SYS150_FREQ_HZ                         (SBL_FREQ_MHZ2HZ(96U))
+#define SBL_QSPI_SYS150_FREQ_HZ                          (SBL_FREQ_MHZ2HZ(60U))
+#define SBL_DSS_RTIA_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_DSS_RTIB_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_DSS_WDT_SYS150_FREQ_HZ                       (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_DSS_SCIA_SYS150_FREQ_HZ                      (SBL_FREQ_MHZ2HZ(150U))
+#define SBL_CPSW_SYS150_FREQ_HZ                          (SBL_FREQ_MHZ2HZ(150U))
 
 /* Macro representing the offset where the App Image has to be written/Read from
    the QSPI Flash.
 */
 #define QSPI_OFFSET_SI              (0xA0000U)
 
+typedef enum Rcm_ModuleClkInitStage_e
+{
+    Rcm_ModuleClkInitStage_PRE_APLL_SWITCH,
+    Rcm_ModuleClkInitStage_POST_APLL_SWITCH,
+} Rcm_ModuleClkInitStage;
+
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
 void SBL_SocEarlyInit(uint32_t isBuildHs);
 void SBL_SocLateInit(void);
-extern void SBL_moduleClockInit(void);
+extern void SBL_moduleClockInit(Rcm_ModuleClkInitStage initStage);
 
 #endif

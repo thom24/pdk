@@ -367,11 +367,6 @@ int main()
 
     SBL_ADD_PROFILE_POINT;
 
-#if !defined(SBL_SKIP_PINMUX_ENABLE)
-    // SBL_UARTAPinmuxConfig();
-    // SBL_QSPIPinmuxConfig();
-#endif
-
 #if !defined(SBL_SKIP_LATE_INIT)
     SBL_ADD_PROFILE_POINT;
     /* Any SoC specific Init. */
@@ -381,39 +376,52 @@ int main()
 #if defined(SBL_ENABLE_PLL)
     {
         Rcm_PllHsDivOutConfig hsDivCfg;
+        Rcm_Return retVal;
 
 
         SBL_log(SBL_LOG_MAX, "Initlialzing PLLs ...");
         SBL_ADD_PROFILE_POINT;
-        hsDivCfg.hsdivOutEnMask = RCM_PLL_HSDIV_OUTPUT_ENABLE_1;
-        /* Configure CLKOUT1 to DSS PLL Fout/2. Divider is hsDivOut + 1 so set 1 */
-        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(450U);
-        SBL_RcmDspApllConfig(RCM_PLL_FOUT_FREQID_CLK_900MHZ, &hsDivCfg);
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2, 
+                                    Rcm_HSDIVClkOutMuxClockSource_DPLL_CORE_HSDIV0_CLKOUT2_PreMux);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
 
         hsDivCfg.hsdivOutEnMask = (RCM_PLL_HSDIV_OUTPUT_ENABLE_1 |
-                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_2 |
-                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_3);
-        /* Configure CLKOUT1 to DSS PLL Fout/2. Divider is hsDivOut + 1 so set 1 */
-        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(192U);
-        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2] = SBL_FREQ_MHZ2HZ(96U);
-        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX3] = SBL_FREQ_MHZ2HZ(172.8);
-        SBL_RcmPerApllConfig(RCM_PLL_FOUT_FREQID_CLK_1728MHZ, &hsDivCfg);
+                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_2);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(450U);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2] = SBL_FREQ_MHZ2HZ(450U);
+        SBL_RcmDspDpllConfig(RCM_PLL_FOUT_FREQID_CLK_900MHZ, &hsDivCfg);
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1, 
+                           Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT1_PreMux);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2, 
+                           Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT2_PreMux);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
 
-        //SBL_RcmPerApllConfig();
+        hsDivCfg.hsdivOutEnMask = RCM_PLL_HSDIV_OUTPUT_ENABLE_1;
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(200U);
+        SBL_RcmPerDpllConfig(RCM_PLL_FOUT_FREQID_CLK_800MHZ, &hsDivCfg);
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1, 
+                           Rcm_HSDIVClkOutMuxClockSource_DPLL_PER_HSDIV0_CLKOUT1_PreMux);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
         SBL_log(SBL_LOG_MAX, "done.\n");
     }
 #endif
 
 #if defined(SBL_ENABLE_CLOCKS)
-    SBL_log(SBL_LOG_MAX, "InitlialzingClocks ...");
-    SBL_ADD_PROFILE_POINT;
-    //HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+MSS_CR5_DIV_VAL_CLKDIV, 0x000);  //MSS_CR5_DIV_VAL_CLKDIV = 0x111;
-    //HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+MSS_CR5_CLK_SRC_SEL_CLKSRCSEL, 0x222);  //MSS_CR5_CLK_SRC_SEL_CLKSRCSEL = 0x222
-    //HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE+SYS_CLK_DIV_VAL_CLKDIV, 0x111);  //Div by 2
-    SBL_RcmSetCR5SysClock(SBL_MCU1_CPU0_FREQ_HZ, SBL_SYSCLK_FREQ_HZ);
+    {
+        Rcm_Return retVal;
+        Rcm_EfuseBootFreqConfig bootFreqEfuseCfg;
 
-    SBL_moduleClockInit();
-    SBL_log(SBL_LOG_MAX, "done.\n");
+        SBL_log(SBL_LOG_MAX, "InitlialzingClocks ...");
+        SBL_ADD_PROFILE_POINT;
+        SBL_RcmGetEfuseBootFrequency(&bootFreqEfuseCfg);
+        SBL_RcmSetCR5SysClock(bootFreqEfuseCfg.r5FreqHz, bootFreqEfuseCfg.sysClkFreqHz);
+
+        retVal = SBL_RcmSetRssClkSrc (Rcm_RssClkSrcId_SYS_CLK);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
+        SBL_moduleClockInit(Rcm_ModuleClkInitStage_PRE_APLL_SWITCH);
+        SBL_log(SBL_LOG_MAX, "done.\n");
+    }
 #endif
 
     SBL_log(SBL_LOG_MAX, "Begin parsing user application\n");
@@ -425,13 +433,66 @@ int main()
     sblProfileLogAddr = sblProfileLog;
     sblProfileLogIndxAddr = &sblProfileLogIndx;
     sblProfileLogOvrFlwAddr = &sblProfileLogOvrFlw;
+    /* First Boot BSS R4 so that APLL switch happens and we reconfigure module clocks */
+#if defined(SBL_ENABLE_CLOCKS)
+    if (tpr12_evmEntry.CpuEntryPoint[RSS1_R4_ID] != SBL_INVALID_ENTRY_ADDR)
+    {
+        Rcm_PllHsDivOutConfig hsDivCfg;
+        Rcm_Return retVal;
+
+        SBL_ADD_PROFILE_POINT;
+        SBL_log(SBL_LOG_MAX, "Initiating BSS Boot  ...");
+        SBL_SlaveCoreBoot(RSS1_R4_ID, NULL, &tpr12_evmEntry);
+        SBL_log(SBL_LOG_MAX, "Waiting for BSS Boot complete to allow APLL switch ...");
+        SBL_RcmWaitBSSBootComplete();
+
+        hsDivCfg.hsdivOutEnMask = (RCM_PLL_HSDIV_OUTPUT_ENABLE_0 |
+                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_1 |
+                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_2 | 
+                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_3);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0] = SBL_FREQ_MHZ2HZ(400U);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(400U);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2] = SBL_FREQ_MHZ2HZ(240U);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX3] = SBL_FREQ_MHZ2HZ(200U);
+        SBL_RcmApllHSDivConfig(RCM_APLLID_1P2G, &hsDivCfg);
+
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2, 
+                           Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT0);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2, 
+                           Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT2);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1, 
+                           Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT3);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
+
+
+        hsDivCfg.hsdivOutEnMask = (RCM_PLL_HSDIV_OUTPUT_ENABLE_0 |
+                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_1);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0] = SBL_FREQ_MHZ2HZ(360U);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(450U);
+        SBL_RcmApllHSDivConfig(RCM_APLLID_1P8G, &hsDivCfg);
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1, 
+                           Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1);
+        DebugP_assert(retVal == Rcm_Return_SUCCESS);
+
+        SBL_RcmSetCR5SysClock(SBL_MCU1_CPU0_FREQ_HZ, SBL_SYSCLK_FREQ_HZ);
+        SBL_moduleClockInit(Rcm_ModuleClkInitStage_POST_APLL_SWITCH);
+        SBL_log(SBL_LOG_MAX, "done.\n");
+    }
+#endif
+
     for (core_id = SBL_FIRST_CORE_ID; core_id <= SBL_LAST_CORE_ID; core_id ++)
     {
         /* Try booting all cores other than the cluster running the SBL */
         if ((tpr12_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR) &&
-            (core_id != MCU1_CPU1_ID))
+            (core_id != MCU1_CPU1_ID) &&
+            (core_id != RSS1_R4_ID))
+        {
             SBL_SlaveCoreBoot(core_id, NULL, &tpr12_evmEntry);
+        }
     }
+
 
     /* Boot the core running SBL in the end */
     if ((tpr12_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR) ||

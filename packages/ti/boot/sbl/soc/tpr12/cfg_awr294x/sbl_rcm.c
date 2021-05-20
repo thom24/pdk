@@ -25,50 +25,47 @@
 /**************************************************************************
  ************************** Local Definitions *****************************
  **************************************************************************/
-#define L3MEMCONFIG_START_BIT               (7U)
-#define L3MEMCONFIG_END_BIT                 (10U)
-#define FLASHMODECONFIG_START_BIT           (15U)
-#define FLASHMODECONFIG_END_BIT             (16U)
-#define QSPIFREQCONFIG_START_BIT            (17U)
-#define QSPIFREQCONFIG_END_BIT              (18U)
-#define BISTENABLECONFIG_START_BIT          (1U)
-#define BISTENABLECONFIG_END_BIT            (9U)
-#define COREADPLLTRIMCONFIG_START_BIT       (0U)
-#define COREADPLLTRIMCONFIG_END_BIT         (11U)
-#define DSPADPLLTRIMCONFIG_START_BIT        (12U)
-#define DSPADPLLTRIMCONFIG_END_BIT          (23U)
-#define PERADPLLTRIMCONFIG_START_BIT        (0U)
-#define PERADPLLTRIMCONFIG_END_BIT          (11U)
-#define COREADPLLTRIMVALIDCONFIG_START_BIT  (12U)
-#define COREADPLLTRIMVALIDCONFIG_END_BIT    (12U)
-#define DSPADPLLTRIMVALIDCONFIG_START_BIT   (13U)
-#define DSPADPLLTRIMVALIDCONFIG_END_BIT     (13U)
-#define PERADPLLTRIMVALIDCONFIG_START_BIT   (14U)
-#define PERADPLLTRIMVALIDCONFIG_END_BIT     (14U)
-#define PARTID_START_BIT                    (13U)
-#define PARTID_END_BIT                      (24U)
-#define PARTNUMBER_START_BIT                (0U)
-#define PARTNUMBER_END_BIT                  (2U)
-#define PGVERSION_START_BIT                 (0U)
-#define PGVERSION_END_BIT                   (3U)
-#define ROMVERSION_START_BIT                (4U)
-#define ROMVERSION_END_BIT                  (6U)
-#define METALVERSION_START_BIT              (7U)
-#define METALVERSION_END_BIT                (9U)
-#define XTAL_FREQ_SCALE_START_BIT           (25U)
-#define XTAL_FREQ_SCALE_END_BIT             (25U)
- 
+/**
+* FROM     ROW   Fields               Start Bit   End Bit  # of bits
+* FROM1    10    XTAL_FREQ_SCALE        25          25       1
+* FROM1    11    L3_MEM_SIZE             7          10       4
+* FROM1    11    FLASH_MODE             15          16       2
+* FROM1    11    QSPI_CLK_FREQ          17          18       2
+* FROM1    40    CORE_ADPLL_TRIM         0          11       12
+* FROM1    40    DSP_ADPLL_TRIM         12          23       12
+* FROM1    41    PER_ADPLL_TRIM          0          11       12
+* FROM1    41    CORE_ADPLL_TRIM_VALID  12          12       1
+* FROM1    41    DSP_ADPLL_TRIM_VALID   13          13       1
+* FROM1    41    PER_ADPLL_TRIM_VALID   14          14       1
+* FROM1    43    BOOT_FREQUENCY_SELECT   8          11       4
+*/
+#define SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, fromNum, row, startBit, endBit)  CSL_extract8((topCtrlReg)->EFUSE##fromNum##_ROW_##row, endBit, startBit)
+
+#define SBL_EFUSE_FIELD_EXTRACT_XTAL_FREQ_SCALE(topCtrlReg)          SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 10, 25,  25)
+
+#define SBL_EFUSE_FIELD_EXTRACT_L3_MEM_SIZE(topCtrlReg)              SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 11, 7,  10)
+#define SBL_EFUSE_FIELD_EXTRACT_FLASH_MODE(topCtrlReg)               SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 11, 15, 16)
+#define SBL_EFUSE_FIELD_EXTRACT_QSPI_CLK_FREQ(topCtrlReg)            SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 11, 17, 18)
+#define SBL_EFUSE_FIELD_EXTRACT_BOOT_FREQ(topCtrlReg)                SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 43,  8, 11)
+
+#define SBL_EFUSE_FIELD_EXTRACT_CORE_ADPLL_TRIM(topCtrlReg)          SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 40, 0,  11)
+#define SBL_EFUSE_FIELD_EXTRACT_DSP_ADPLL_TRIM(topCtrlReg)           SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 40, 12, 23)
+
+#define SBL_EFUSE_FIELD_EXTRACT_PER_ADPLL_TRIM(topCtrlReg)           SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 41, 0,  11)
+#define SBL_EFUSE_FIELD_EXTRACT_CORE_ADPLL_TRIM_VALID(topCtrlReg)    SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 41, 12, 12)
+#define SBL_EFUSE_FIELD_EXTRACT_DSP_ADPLL_TRIM_VALID(topCtrlReg)     SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 41, 13, 13)
+#define SBL_EFUSE_FIELD_EXTRACT_PER_ADPLL_TRIM_VALID(topCtrlReg)     SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 41, 14, 14)
+
 #define RCM_CORE_ADPLL_DEFAULT_VALUE            (0x9U)
 #define RCM_DSP_ADPLL_DEFAULT_VALUE             (0x9U)
 #define RCM_PER_ADPLL_DEFAULT_VALUE             (0x9U)
-#define RCM_PLL_SYS_CLK_FREQUENCY_HZ            (200000000U)
-#define RCM_PLL_HSDIV_CLKOUT2_FREQUENCY_HZ      (400000000U)
-#define RCM_XTAL_CLK_40MHZ                      (40000000U)
-#define RCM_XTAL_CLK_50MHZ                      (50000000U)
+
+#define RCM_XTAL_CLK_40MHZ                      (SBL_FREQ_MHZ2HZ(40U))
+#define RCM_XTAL_CLK_50MHZ                      (SBL_FREQ_MHZ2HZ(50U))
 #define RCM_XTAL_CLK_49p152MHZ                  (49152000U)
 #define RCM_XTAL_CLK_45p1584MHZ                 (45158400U)
-#define RCM_XTAL_CLK_20MHZ                      (20000000U)
-#define RCM_XTAL_CLK_25MHZ                      (25000000U)
+#define RCM_XTAL_CLK_20MHZ                      (SBL_FREQ_MHZ2HZ(20U))
+#define RCM_XTAL_CLK_25MHZ                      (SBL_FREQ_MHZ2HZ(25U))
 #define RCM_XTAL_CLK_24p576MHZ                  (24576000U)
 #define RCM_XTAL_CLK_22p5792MHZ                 (22579200U)
 
@@ -86,16 +83,74 @@ typedef enum RcmXtalFreqId_e
     RCM_XTAL_FREQID_CLK_22p5792MHZ
 } Rcm_XtalFreqId;
 
-typedef enum RcmPLLId_e
+typedef enum RcmFixedClockId_e
 {
-    RCM_PLLID_CORE,
-    RCM_PLLID_DSS,
-    RCM_PLLID_PER,
-    RCM_PLLID_XTALCLK,
-    RCM_PLLID_WUCPUCLK,
-    RCM_PLLID_RCCLK32K,
-    RCM_PLLID_RCCLK10M,
-} Rcm_PllId;
+    RCM_FIXEDCLKID_ANA_HSI_CLK,
+    RCM_FIXEDCLKID_FE1_REF_CLK,
+    RCM_FIXEDCLKID_DSS_DSP_DITHERED_CLK,
+    RCM_FIXEDCLKID_XREF_CLK0,
+    RCM_FIXEDCLKID_XREF_CLK1,
+    RCM_FIXEDCLKID_WUCPUCLK,
+    RCM_FIXEDCLKID_RCCLK32K,
+    RCM_FIXEDCLKID_RCCLK10M,
+    RCM_FIXEDCLKID_APLL1P8GHZ,
+    RCM_FIXEDCLKID_APLL1P2GHZ,
+} RcmFixedClockId;
+
+typedef enum RcmClockSrcId_e
+{
+    RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT0,
+    RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT1,
+    RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT2,
+    RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT3,
+    RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT0,
+    RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT1,
+    RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT2,
+    RCM_CLKSRCID_APLL_1p8GHZ,
+    RCM_CLKSRCID_APLL_400MHZ,
+    RCM_CLKSRCID_APLL_CLK_HSI,
+    RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT0,
+    RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT1,
+    RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2,
+    RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2_PreMux,
+    RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT0,
+    RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1,
+    RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1_DITH,
+    RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1_PreMux,
+    RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2,
+    RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2_PreMux,
+    RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT0,
+    RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1,
+    RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1_PreMux,
+    RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT2,
+    RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT3,
+    RCM_CLKSRCID_FE1_REF_CLK,
+    RCM_CLKSRCID_PLL_CORE_CLK,
+    RCM_CLKSRCID_PLL_PER_CLK,
+    RCM_CLKSRCID_RCCLK10M,
+    RCM_CLKSRCID_RCCLK32K,
+    RCM_CLKSRCID_SYS_CLK,
+    RCM_CLKSRCID_WUCPUCLK,
+    RCM_CLKSRCID_XREF_CLK0,
+    RCM_CLKSRCID_XREF_CLK1,
+    RCM_CLKSRCID_XTALCLK,
+} RcmClockSrcId;
+
+typedef enum RcmClockSrcType_e
+{
+    RCM_CLKSRCTYPE_XTAL,
+    RCM_CLKSRCTYPE_FIXED,
+    RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+    RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+    RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
+} RcmClockSrcType;
+
+typedef enum RcmDpllIdType_e
+{
+    RCM_DPLL_CORE,
+    RCM_DPLL_DSS,
+    RCM_DPLL_PER,
+} RcmDpllId_e;
 
 typedef enum RcmPllHSDIVOutId_e
 {
@@ -106,17 +161,50 @@ typedef enum RcmPllHSDIVOutId_e
     RCM_PLLHSDIV_OUT_NONE,
 } Rcm_PllHSDIVOutId;
 
+typedef struct Rcm_DpllHsDivInfo_s
+{
+    RcmDpllId_e dpllId;
+    Rcm_PllHSDIVOutId hsdivOut;
+} Rcm_DpllHsDivInfo;
+
+typedef struct Rcm_ApllHsDivInfo_s
+{
+    Rcm_ApllId apllId;
+    Rcm_PllHSDIVOutId hsdivOut;
+} Rcm_ApllHsDivInfo;
+
+typedef struct Rcm_HsDivOutMuxInfo_s
+{
+    Rcm_HSDIVClkOutMuxId hsdivMuxId;
+} Rcm_HsDivOutMuxInfo;
+
+typedef struct Rcm_FixedClkInfo_s
+{
+    RcmFixedClockId fixedClkId;
+} Rcm_FixedClkInfo;
+
 typedef struct Rcm_ClkSrcInfo_s
 {
-    Rcm_PllId pllId;
-    Rcm_PllHSDIVOutId hsDivOut;
+    RcmClockSrcType clkSrcType;
+    union {
+        Rcm_FixedClkInfo  fixedClkInfo;
+        Rcm_ApllHsDivInfo apllHsDivInfo;
+        Rcm_DpllHsDivInfo dpllHsDivInfo;
+        Rcm_HsDivOutMuxInfo hsdivMuxInfo;
+    } u;
 } Rcm_ClkSrcInfo;
+
 
 typedef struct Rcm_XTALInfo_s
 {
     uint32_t Finp;
     bool     div2flag;
 } Rcm_XTALInfo;
+
+typedef struct Rcm_FixedClocks_s
+{
+    uint32_t       fOut;
+} Rcm_FixedClocks_t;
 
 typedef struct Rcm_ADPLLJConfig_s
 {
@@ -129,10 +217,10 @@ typedef struct Rcm_ADPLLJConfig_s
 } Rcm_ADPLLJConfig_t;
 
 
-/* Table populated from TPR12_ADPLLJ_Settings_1p0.xlsx. 
+/* Table populated from AWR294x_ADPLLJ_Settings_1p0.xlsx. 
  * Each entry corresponds to tab in the excel sheet
  */
-const Rcm_ADPLLJConfig_t gADPLLJConfigTbl[] = 
+static const Rcm_ADPLLJConfig_t gADPLLJConfigTbl[] = 
 {
     /* CORE_DSP_800_40MHz */
     {
@@ -146,58 +234,40 @@ const Rcm_ADPLLJConfig_t gADPLLJConfigTbl[] =
     /* CORE_DSP_2000_40MHz */
     {
         .Finp = 40U,
-        .N = 39U,
-        .Fout = 2000U,
-        .M2 = 1U,
-        .M = 2000U,
-        .FracM = 0U,
-    },
-    /* CORE_DSP_2000_40MHz */
-    {
-        .Finp = 40U,
         .N = 19U,
         .Fout = 2000U,
         .M2 = 1U,
         .M = 1000U,
         .FracM = 0U,
     },
-    /* CORE_PER_1728_40MHz */
-    {
-        .Finp = 40U,
-        .N   = 39U,
-        .Fout = 1728U,
-        .M2  = 1U,
-        .M = 1728U,
-        .FracM = 0U,
-    },
-    /* DSP_900_40MHz  */
+    /* DSP_900_40MHz */
     {
         .Finp = 40U,
         .N = 19U,
         .Fout = 900U,
         .M2 = 1U,
-        .M  = 450U,
+        .M = 450U,
         .FracM = 0U,
     },
-    /* DSP_1800_40MHz  */
+    /* DSP_1800_40MHz */
     {
         .Finp = 40U,
-        .N    = 19U,
+        .N = 19U,
         .Fout = 1800U,
-        .M2   = 1U,
-        .M    = 900U,
+        .M2 = 1U,
+        .M = 900U,
         .FracM = 0U,
     },
-    /* PER_1920_40MHz  */
+    /* PER_1920_40MHz */
     {
         .Finp = 40U,
         .N = 19U,
         .Fout = 1920U,
-        .M2   = 1U,
-        .M    = 960U,
+        .M2 = 1U,
+        .M = 960U,
         .FracM = 0U,
     },
-    /* CORE_DSP_800_50MHz  */
+    /* CORE_DSP_800_50MHz */
     {
         .Finp = 50U,
         .N = 24U,
@@ -206,136 +276,225 @@ const Rcm_ADPLLJConfig_t gADPLLJConfigTbl[] =
         .M = 400U,
         .FracM = 0U,
     },
-    /* CORE_DSP_2000_50MHz  */
+    /* CORE_DSP_2000_50MHz */
     {
-       .Finp = 50U,
-       .N = 24U,
-       .Fout = 2000U,
-       .M2 = 1U,
-       .M = 1000U,
-       .FracM = 0U,
+        .Finp = 50U,
+        .N = 24U,
+        .Fout = 2000U,
+        .M2 = 1U,
+        .M = 1000U,
+        .FracM = 0U,
     },
-    /* DSP_1800_50MHz  */
+    /* DSP_1800_50MHz */
     {
-       .Finp = 50U,
-       .N = 24U,
-       .Fout = 1800U,
-       .M2 = 1U,
-       .M = 900U,
-       .FracM = 0U,
+        .Finp = 50U,
+        .N = 24U,
+        .Fout = 1800U,
+        .M2 = 1U,
+        .M = 900U,
+        .FracM = 0U,
     },
-    /* PER_1920_50MHz  */
+    /* PER_1699_40MHz */
     {
-       .Finp = 50U,
-       .N = 24U,
-       .Fout = 1920U,
-       .M2 = 1U,
-       .M = 960U,
-       .FracM = 0U,
+        .Finp = 40U,
+        .N = 16U,
+        .Fout = 1699U,
+        .M2 = 1U,
+        .M = 722U,
+        .FracM = 44032U,
     },
-    /* CORE_800_49152  */
+    /* PER_1920_50MHz */
     {
-       .Finp = 49U,
-       .N = 23U,
-       .Fout = 800U,
-       .M2 = 1U,
-       .M = 390U,
-       .FracM = 163840U,
+        .Finp = 50U,
+        .N = 24U,
+        .Fout = 1920U,
+        .M2 = 1U,
+        .M = 960U,
+        .FracM = 0U,
     },
-    /* CORE_2000_49152  */
+    /* CORE_800_49152 */
     {
-       .Finp = 49U,
-       .N = 21U,
-       .Fout = 2000U,
-       .M2 = 1U,
-       .M = 895U,
-       .FracM = 47787U,
+        .Finp = 49U,
+        .N = 23U,
+        .Fout = 800U,
+        .M2 = 1U,
+        .M = 390U,
+        .FracM = 163840U,
     },
-    /* DSP_1800_49152  */
+    /* CORE_2000_49152 */
     {
-       .Finp = 49U,
-       .N = 20U,
-       .Fout = 1800U,
-       .M2 = 1U,
-       .M = 769U,
-       .FracM = 11264U,
+        .Finp = 49U,
+        .N = 21U,
+        .Fout = 2000U,
+        .M2 = 1U,
+        .M = 895U,
+        .FracM = 47787U,
     },
-    /* DSP_1728_49152  */
+    /* DSP_1800_49152 */
     {
-       .Finp = 49U,
-       .N = 19U,
-       .Fout = 1728U,
-       .M2 = 1U,
-       .M = 703U,
-       .FracM = 32768U,
+        .Finp = 49U,
+        .N = 20U,
+        .Fout = 1800U,
+        .M2 = 1U,
+        .M = 769U,
+        .FracM = 11264U,
     },
-    /* PER_1966p08_49152  */
+    /* DSP_1728_49152 */
     {
-       .Finp = 49U,
-       .N = 19U,
-       .Fout = 1966U,
-       .M2 = 1U,
-       .M = 800U,
-       .FracM = 209715200U,
+        .Finp = 49U,
+        .N = 19U,
+        .Fout = 1728U,
+        .M2 = 1U,
+        .M = 703U,
+        .FracM = 32768U,
     },
-    /* CORE_800_451584  */
+    /* PER_1966p08_49152 */
     {
-       .Finp = 45U,
-       .N = 20U,
-       .Fout = 800U,
-       .M2 = 1U,
-       .M = 372U,
-       .FracM = 6242U,
+        .Finp = 49U,
+        .N = 19U,
+        .Fout = 1966U,
+        .M2 = 1U,
+        .M = 800U,
+        .FracM = 209715200U,
     },
-    /* CORE_2000_451584  */
+    /* CORE_800_451584 */
     {
-       .Finp = 45U,
-       .N = 20U,
-       .Fout = 2000U,
-       .M2 = 1U,
-       .M = 930U,
-       .FracM = 15604U,
+        .Finp = 45U,
+        .N = 20U,
+        .Fout = 800U,
+        .M2 = 1U,
+        .M = 372U,
+        .FracM = 6242U,
     },
-    /* DSP_1800_451584  */
+    /* CORE_2000_451584 */
     {
-       .Finp = 45U,
-       .N = 20U,
-       .Fout = 1800U,
-       .M2 = 1U,
-       .M = 837U,
-       .FracM = 14043U,
+        .Finp = 45U,
+        .N = 20U,
+        .Fout = 2000U,
+        .M2 = 1U,
+        .M = 930U,
+        .FracM = 15604U,
     },
-    /* DSP_1728_451584  */
+    /* DSP_1800_451584 */
     {
-       .Finp = 45U,
-       .N = 18U,
-       .Fout = 1728U,
-       .M2 = 1U,
-       .M = 727U,
-       .FracM = 10700U,
+        .Finp = 45U,
+        .N = 20U,
+        .Fout = 1800U,
+        .M2 = 1U,
+        .M = 837U,
+        .FracM = 14043U,
     },
-    /* PER_1806p336_451584  */
+    /* DSP_1728_451584 */
     {
-       .Finp = 45U,
-       .N = 18U,
-       .Fout = 1806U,
-       .M2 = 1U,
-       .M = 760U,
-       .FracM = 0U,
+        .Finp = 45U,
+        .N = 18U,
+        .Fout = 1728U,
+        .M2 = 1U,
+        .M = 727U,
+        .FracM = 10700U,
     },
-    /* PER_1699_40MHz  */
+    /* PER_1806p336_451584 */
     {
-       .Finp = 40U,
-       .N = 16U,
-       .Fout = 1699U,
-       .M2 = 1U,
-       .M = 722U,
-       .FracM = 44032U,
+        .Finp = 45U,
+        .N = 18U,
+        .Fout = 1806U,
+        .M2 = 1U,
+        .M = 760U,
+        .FracM = 0U,
+    },
+    /* CORE_600_40MHz */
+    {
+        .Finp = 40U,
+        .N = 19U,
+        .Fout = 600U,
+        .M2 = 1U,
+        .M = 300U,
+        .FracM = 0U,
+    },
+    /* CORE_600_50MHz */
+    {
+        .Finp = 50U,
+        .N = 24U,
+        .Fout = 600U,
+        .M2 = 1U,
+        .M = 300U,
+        .FracM = 0U,
+    },
+    /* CORE_600_49152 */
+    {
+        .Finp = 49U,
+        .N = 23U,
+        .Fout = 600U,
+        .M2 = 1U,
+        .M = 292U,
+        .FracM = 253952U,
+    },
+    /* CORE_600_451584 */
+    {
+        .Finp = 45U,
+        .N = 20U,
+        .Fout = 600U,
+        .M2 = 1U,
+        .M = 279U,
+        .FracM = 4681U,
+    }
+};
+
+static const Rcm_FixedClocks_t gFixedClocksTbl[] =
+{
+    [RCM_FIXEDCLKID_ANA_HSI_CLK] = 
+    {
+        /* ANA_HSI_CLK_TO_DIG	400	400	400	400.000 */
+        .fOut = SBL_FREQ_MHZ2HZ(400U),
+    },
+    [RCM_FIXEDCLKID_FE1_REF_CLK] = 
+    {
+        /* FE1_REF_CLK	0.000	0.000	0.000	0.000	Tied OFF. Not used in 29xx */
+        .fOut = SBL_FREQ_MHZ2HZ(0U),
+    },
+    [RCM_FIXEDCLKID_DSS_DSP_DITHERED_CLK] = 
+    {
+        /* DSS_DSP_DITHERED_CLK	500.000	500.000	500.000	500.000 */
+        .fOut = SBL_FREQ_MHZ2HZ(500U),
+    },
+    [RCM_FIXEDCLKID_XREF_CLK0] = 
+    {
+        /* XREF_CLK0	64.100	64.100	64.100	64.000 */
+        .fOut = SBL_FREQ_MHZ2HZ(64.100),
+    },
+    [RCM_FIXEDCLKID_XREF_CLK1] = 
+    {
+        /* XREF_CLK1	64.100	64.100	64.100	64.000 */
+        .fOut = SBL_FREQ_MHZ2HZ(64.100),
+    },
+    [RCM_FIXEDCLKID_WUCPUCLK] = 
+    {
+        /* WUCPUCLK	50.000	50.000	50.000	50.000 */
+        .fOut = SBL_FREQ_MHZ2HZ(64.100),
+    },
+    [RCM_FIXEDCLKID_RCCLK32K] = 
+    {
+        /* RCCLK32K	0.032	0.032	0.032	0.032 */
+        .fOut = SBL_FREQ_MHZ2HZ(0.032),
+    },
+    [RCM_FIXEDCLKID_RCCLK10M] = 
+    {
+        /* RCCLK10M	10.000	10.000	10.000	10.000 */
+        .fOut = SBL_FREQ_MHZ2HZ(10U),
+    },
+    [RCM_FIXEDCLKID_APLL1P8GHZ] = 
+    {
+        /*ANA_PLL_1800	1800	1800	1800	1800 */
+        .fOut = SBL_FREQ_MHZ2HZ(1800U),
+    },
+    [RCM_FIXEDCLKID_APLL1P2GHZ] = 
+    {
+        /*ANA_PLL_1200	1200	1200	1200	1200 */
+        .fOut = SBL_FREQ_MHZ2HZ(1200U),
     },
 };
 
-
-const Rcm_XTALInfo gXTALInfo[] = 
+static const Rcm_XTALInfo gXTALInfo[] = 
 {
     [RCM_XTAL_FREQID_CLK_40MHZ]      = {.Finp = SBL_FREQ_HZ2MHZ(RCM_XTAL_CLK_40MHZ),      .div2flag = false},
     [RCM_XTAL_FREQID_CLK_50MHZ]      = {.Finp = SBL_FREQ_HZ2MHZ(RCM_XTAL_CLK_50MHZ),      .div2flag = false},
@@ -347,7 +506,19 @@ const Rcm_XTALInfo gXTALInfo[] =
     [RCM_XTAL_FREQID_CLK_22p5792MHZ] = {.Finp = SBL_FREQ_HZ2MHZ(RCM_XTAL_CLK_50MHZ),      .div2flag = true},
 };
 
-const uint32_t gPLLFreqId2FOutMap[] = 
+static const uint32_t gXTALFreqTbl[] = 
+{
+    [RCM_XTAL_FREQID_CLK_40MHZ]      = RCM_XTAL_CLK_40MHZ,
+    [RCM_XTAL_FREQID_CLK_50MHZ]      = RCM_XTAL_CLK_50MHZ,
+    [RCM_XTAL_FREQID_CLK_49p152MHZ]  = RCM_XTAL_CLK_49p152MHZ,
+    [RCM_XTAL_FREQID_CLK_45p1584MHZ] = RCM_XTAL_CLK_45p1584MHZ,
+    [RCM_XTAL_FREQID_CLK_20MHZ]      = RCM_XTAL_CLK_40MHZ,
+    [RCM_XTAL_FREQID_CLK_25MHZ]      = RCM_XTAL_CLK_50MHZ,
+    [RCM_XTAL_FREQID_CLK_24p576MHZ]  = RCM_XTAL_CLK_49p152MHZ,
+    [RCM_XTAL_FREQID_CLK_22p5792MHZ] = RCM_XTAL_CLK_50MHZ,
+};
+
+static const uint32_t gPLLFreqId2FOutMap[] = 
 {
     [RCM_PLL_FOUT_FREQID_CLK_800MHZ]        = 800U,
     [RCM_PLL_FOUT_FREQID_CLK_900MHZ]        = 900U,
@@ -358,83 +529,478 @@ const uint32_t gPLLFreqId2FOutMap[] =
     [RCM_PLL_FOUT_FREQID_CLK_1728MHZ]       = 1728U,
     [RCM_PLL_FOUT_FREQID_CLK_1966p08MHZ]    = 1966U,
     [RCM_PLL_FOUT_FREQID_CLK_1806p336MHZ]   = 1806U,
+    [RCM_PLL_FOUT_FREQID_CLK_600MHZ]        = 600U,
+
 };
 
-const Rcm_ClkSrcInfo gDspClkSrcInfoMap[] =
+/**
+* 0   XTALCLK
+* 1   WUCPUCLK
+* 2   SYSCLK
+* 3   DPLL_PER_HSDIV0_CLKOUT1
+* 4   RCCLK10M
+* 5   RCCLK10M
+* 6   XREF_CLK0
+* 7   RCCLK32K
+*/
+static const Rcm_ClkSrcInfo gAWR294xClkSrcInfoMap[] = 
 {
-    [Rcm_DSPClockSource_XTAL_CLK] = 
+    [RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT0] =
     {
-        .pllId = RCM_PLLID_XTALCLK, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_NONE,
+        .clkSrcType = RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+        .u.apllHsDivInfo = 
+        {
+            .apllId = RCM_APLLID_1P2G,
+            .hsdivOut = RCM_PLLHSDIV_OUT_0,
+        },
     },
-    [Rcm_DSPClockSource_DPLL_DSP_HSDIV0_CLKOUT1] =
+    [RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT1] =
     {
-        .pllId = RCM_PLLID_DSS, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_1,
+        .clkSrcType = RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+        .u.apllHsDivInfo = 
+        {
+            .apllId = RCM_APLLID_1P2G,
+            .hsdivOut = RCM_PLLHSDIV_OUT_1,
+        },
     },
-    [Rcm_DSPClockSource_DPLL_CORE_HSDIV0_CLKOUT1] =
+    [RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT2] =
     {
-        .pllId = RCM_PLLID_CORE, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_1,
+        .clkSrcType = RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+        .u.apllHsDivInfo = 
+        {
+            .apllId = RCM_APLLID_1P2G,
+            .hsdivOut = RCM_PLLHSDIV_OUT_2,
+        },
+    },
+    [RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT3] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+        .u.apllHsDivInfo = 
+        {
+            .apllId = RCM_APLLID_1P2G,
+            .hsdivOut = RCM_PLLHSDIV_OUT_3,
+        },
+    },
+    [RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT0] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+        .u.apllHsDivInfo = 
+        {
+            .apllId = RCM_APLLID_1P8G,
+            .hsdivOut = RCM_PLLHSDIV_OUT_0,
+        },
+    },
+    [RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT1] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+        .u.apllHsDivInfo = 
+        {
+            .apllId = RCM_APLLID_1P8G,
+            .hsdivOut = RCM_PLLHSDIV_OUT_1,
+        },
+    },
+    [RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT2] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_APLL_HSDIVOUT,
+        .u.apllHsDivInfo = 
+        {
+            .apllId = RCM_APLLID_1P8G,
+            .hsdivOut = RCM_PLLHSDIV_OUT_2,
+        },
+    },
+
+    [RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT0] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_CORE,
+            .hsdivOut = RCM_PLLHSDIV_OUT_0,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT1] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_CORE,
+            .hsdivOut = RCM_PLLHSDIV_OUT_1,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2_PreMux] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_CORE,
+            .hsdivOut = RCM_PLLHSDIV_OUT_2,
+        },
+    },
+    [RCM_CLKSRCID_PLL_CORE_CLK] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_CORE,
+            .hsdivOut = RCM_PLLHSDIV_OUT_NONE,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT0] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_DSS,
+            .hsdivOut = RCM_PLLHSDIV_OUT_0,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1_PreMux] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_DSS,
+            .hsdivOut = RCM_PLLHSDIV_OUT_1,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2_PreMux] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_DSS,
+            .hsdivOut = RCM_PLLHSDIV_OUT_2,
+        },
+    },
+    [RCM_CLKSRCID_PLL_PER_CLK] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_PER,
+            .hsdivOut = RCM_PLLHSDIV_OUT_NONE,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT0] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_PER,
+            .hsdivOut = RCM_PLLHSDIV_OUT_0,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1_PreMux] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_PER,
+            .hsdivOut = RCM_PLLHSDIV_OUT_1,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT2] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_PER,
+            .hsdivOut = RCM_PLLHSDIV_OUT_2,
+        },
+    },
+    [RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT3] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUT,
+        .u.dpllHsDivInfo = 
+        {
+            .dpllId = RCM_DPLL_PER,
+            .hsdivOut = RCM_PLLHSDIV_OUT_3,
+        },
+    },
+    [RCM_CLKSRCID_APLL_1p8GHZ] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo =
+        {
+            .fixedClkId = RCM_FIXEDCLKID_APLL1P8GHZ,
+        }
+    },
+    [RCM_CLKSRCID_APLL_400MHZ] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_ANA_HSI_CLK,
+        }
+    },
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1_DITH] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_DSS_DSP_DITHERED_CLK,
+        }
+    },
+    [RCM_CLKSRCID_FE1_REF_CLK] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_FE1_REF_CLK,
+        }
+    },
+    [RCM_CLKSRCID_RCCLK10M] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_RCCLK10M,
+        }
+    },
+    [RCM_CLKSRCID_RCCLK32K] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_RCCLK32K,
+        }
+    },
+    [RCM_CLKSRCID_XREF_CLK0] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_XREF_CLK0,
+        }
+    },
+    [RCM_CLKSRCID_XREF_CLK1] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_XREF_CLK1,
+        }
+    },
+    [RCM_CLKSRCID_WUCPUCLK] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_WUCPUCLK,
+        }
+    },
+    [RCM_CLKSRCID_APLL_CLK_HSI]
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_FIXED,
+        .u.fixedClkInfo = 
+        {
+            .fixedClkId = RCM_FIXEDCLKID_ANA_HSI_CLK,
+        }
+    },
+
+    [RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2] =
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
+        .u.hsdivMuxInfo = 
+        {
+            .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2,
+        }
+    },
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1]
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
+        .u.hsdivMuxInfo = 
+        {
+            .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1,
+        }
+    },
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2]
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
+        .u.hsdivMuxInfo = 
+        {
+            .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2,
+        }
+    },
+    [RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1]
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
+        .u.hsdivMuxInfo = 
+        {
+            .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1,
+        }
+    },
+    [RCM_CLKSRCID_SYS_CLK]
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
+        .u.hsdivMuxInfo = 
+        {
+            .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2,
+        }
+    },
+    [RCM_CLKSRCID_XTALCLK]
+    {
+        .clkSrcType = RCM_CLKSRCTYPE_XTAL,
     },
 };
 
-const Rcm_ClkSrcInfo gPeripheralClkSrcInfoMap[] = 
+
+static const RcmClockSrcId gDspClkSrcInfoMap[] =
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 
-    {
-        .pllId = RCM_PLLID_XTALCLK, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_NONE,
-    },
-    [Rcm_PeripheralClockSource_SYS_CLK] = 
-    {
-        .pllId = RCM_PLLID_CORE, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_2,
-    },
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 
-    {
-        .pllId = RCM_PLLID_CORE, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_2,
-    },
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 
-    {
-        .pllId = RCM_PLLID_PER, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_1,
-    },
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2] = 
-    {
-        .pllId = RCM_PLLID_PER, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_2,
-    },
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 
-    {
-        .pllId = RCM_PLLID_PER, 
-        .hsDivOut = RCM_PLLHSDIV_OUT_3,
-    },
+    [Rcm_DSPClockSource_XTALCLK]  = RCM_CLKSRCID_XTALCLK,
+    [Rcm_DSPClockSource_RCCLK10M] = RCM_CLKSRCID_RCCLK10M,
+    [Rcm_DSPClockSource_DPLL_DSP_HSDIV0_CLKOUT1] = RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1,
+    [Rcm_DSPClockSource_DPLL_DSP_HSDIV0_CLKOUT1_DITH] = RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1_DITH,
+    [Rcm_DSPClockSource_DPLL_CORE_HSDIV0_CLKOUT1] = RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT1,
+    [Rcm_DSPClockSource_DPLL_PER_HSDIV0_CLKOUT3] = RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT3,
 };
 
-const Rcm_ClkSrcInfo gCR5ClkSrcInfoMap =
+static const RcmClockSrcId gPeripheralClkSrcInfoMap[] = 
 {
-    .pllId = RCM_PLLID_CORE, 
-    .hsDivOut = RCM_PLLHSDIV_OUT_2,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1] = RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT1,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2] = RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2] = RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT2,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK] = RCM_CLKSRCID_FE1_REF_CLK,
+    [Rcm_PeripheralClockSource_RCCLK10M] = RCM_CLKSRCID_RCCLK10M,
+    [Rcm_PeripheralClockSource_RCCLK32K] = RCM_CLKSRCID_RCCLK32K,
+    [Rcm_PeripheralClockSource_SYS_CLK] = RCM_CLKSRCID_SYS_CLK,
+    [Rcm_PeripheralClockSource_WUCPUCLK] = RCM_CLKSRCID_WUCPUCLK,
+    [Rcm_PeripheralClockSource_XREF_CLK0] = RCM_CLKSRCID_XREF_CLK0,
+    [Rcm_PeripheralClockSource_XREF_CLK1] = RCM_CLKSRCID_XREF_CLK1,
+    [Rcm_PeripheralClockSource_XTALCLK] = RCM_CLKSRCID_XTALCLK,
 };
 
+static const RcmClockSrcId gCR5ClkSrcInfoMap[] =
+{
+    [Rcm_CR5ClockSource_XTALCLK] = RCM_CLKSRCID_XTALCLK,
+    [Rcm_CR5ClockSource_RCCLK10M] = RCM_CLKSRCID_RCCLK10M,
+    [Rcm_CR5ClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2,
+    [Rcm_CR5ClockSource_SYS_CLK] = RCM_CLKSRCID_SYS_CLK,
+    [Rcm_CR5ClockSource_WUCPUCLK] = RCM_CLKSRCID_WUCPUCLK,
+};
+
+static const RcmClockSrcId gRssBssFrcClkSrcInfoMap[] = 
+{
+    [Rcm_RssBssFrcClockSource_XTALCLK] = RCM_CLKSRCID_XTALCLK,
+    [Rcm_RssBssFrcClockSource_WUCPUCLK] = RCM_CLKSRCID_WUCPUCLK,
+    [Rcm_RssBssFrcClockSource_SYS_CLK] = RCM_CLKSRCID_SYS_CLK,
+    [Rcm_RssBssFrcClockSource_DPLL_PER_HSDIV0_CLKOUT1] = RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1,
+    [Rcm_RssBssFrcClockSource_APLL_1p8G_HSDIV0_CLKOUT2] = RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT2,
+    [Rcm_RssBssFrcClockSource_RCCLK10M] = RCM_CLKSRCID_RCCLK10M,
+    [Rcm_RssBssFrcClockSource_XREF_CLK0] = RCM_CLKSRCID_XREF_CLK0,
+    [Rcm_RssBssFrcClockSource_RCCLK32K] = RCM_CLKSRCID_RCCLK32K,
+};
+
+static const RcmClockSrcId gHsiClkSrcInfoMap[] =
+{
+    [Rcm_HSIClockSource_PLL_CORE_CLK] = RCM_CLKSRCID_PLL_CORE_CLK,
+    [Rcm_HSIClockSource_APLL_CLK_HSI] = RCM_CLKSRCID_APLL_CLK_HSI,
+    [Rcm_HSIClockSource_APLL_1p8GHZ] = RCM_CLKSRCID_APLL_1p8GHZ,
+    [Rcm_HSIClockSource_PLL_PER_CLK] = RCM_CLKSRCID_PLL_PER_CLK,
+    [Rcm_HSIClockSource_DPLL_CORE_HSDIV0_CLKOUT0] = RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT0,
+    [Rcm_HSIClockSource_RCCLK10M] = RCM_CLKSRCID_RCCLK10M,
+    [Rcm_HSIClockSource_DPLL_DSP_HSDIV0_CLKOUT0] = RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT0,
+    [Rcm_HSIClockSource_DPLL_PER_HSDIV0_CLKOUT0] = RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT0,
+};
+
+static const RcmClockSrcId gHsDivMuxClkSrcInfoMap[] =
+{
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_CORE_HSDIV0_CLKOUT2_PreMux] = RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2_PreMux,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT1_PreMux] = RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1_PreMux,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT2_PreMux] = RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2_PreMux,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_PER_HSDIV0_CLKOUT1_PreMux] = RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1_PreMux,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT0] = RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT0,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT1] = RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT1,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT2] = RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT2,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT3] = RCM_CLKSRCID_APLL_1p2G_HSDIV0_CLKOUT3,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT0] = RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT0,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1] = RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT1,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_400MHZ] = RCM_CLKSRCID_APLL_400MHZ,
+};
+
+static const RcmClockSrcId gRssClkSrcInfoMap[] =
+{
+    [Rcm_RssClkSrcId_WUCPUCLK] = RCM_CLKSRCID_WUCPUCLK,
+    [Rcm_RssClkSrcId_XTALCLK]  = RCM_CLKSRCID_XTALCLK,
+    [Rcm_RssClkSrcId_DPLL_CORE_HSDIV0_CLKOUT2_MUXED] = RCM_CLKSRCID_DPLL_CORE_HSDIV0_CLKOUT2,
+    [Rcm_RssClkSrcId_DPLL_PER_HSDIV0_CLKOUT1_MUXED] = RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1,
+    [Rcm_RssClkSrcId_APLL_1P8_HSDIV0_CLKOUT2] = RCM_CLKSRCID_APLL_1p8G_HSDIV0_CLKOUT2,
+    [Rcm_RssClkSrcId_RCCLK10M] = RCM_CLKSRCID_RCCLK10M,
+    [Rcm_RssClkSrcId_SYS_CLK] = RCM_CLKSRCID_SYS_CLK,
+};
+
+static const uint16_t gRssClkSrcValMap[] =
+{
+    [Rcm_RssClkSrcId_WUCPUCLK]                           =  0x000U,
+    [Rcm_RssClkSrcId_XTALCLK]                            =  0x111U,
+    [Rcm_RssClkSrcId_DPLL_CORE_HSDIV0_CLKOUT2_MUXED]     =  0x222U,
+    [Rcm_RssClkSrcId_DPLL_PER_HSDIV0_CLKOUT1_MUXED]      =  0x333U,
+    [Rcm_RssClkSrcId_APLL_1P8_HSDIV0_CLKOUT2]            =  0x444U,
+    [Rcm_RssClkSrcId_RCCLK10M]                           =  0x555U,
+    [Rcm_RssClkSrcId_SYS_CLK]                            =  0x666U,
+};
+
+static const uint16_t gCsiRxClkSrcValMap[] = 
+{
+    [Rcm_PeripheralClockSource_XTALCLK]                  = 0x000U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                 = 0x111U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]  = 0x333U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                 = 0x666U,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1] = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]  = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]              = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                 = 0x888U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                  = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                = 0x888U,
+};
+
+static const uint16_t gRtiClkSrcValMap[] =
+{
+    [Rcm_PeripheralClockSource_XTALCLK]                    =    0x000U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]                =    0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                    =    0x222U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]    =    0x333U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                   =    0x444U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                  =    0x666U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                   =    0x777U,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]   =    0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]   =    0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]    =    0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]    =    0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_WUCPUCLK]                   =    0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XREF_CLK1]                  =    0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+};
 
 /**
  * @brief
- *  Mapping Array for RTI
+ *  Mapping Array for QSPI
  *
  * @details
- *  Mapping Array between Clock mode and Clock Mode Value for RTI and WDG
+ *  Mapping Array between Clock mode and Clock Mode Value for QSPI
  */
-static const uint16_t gRtiClkSrcValMap[] =
+static const uint16_t gQspiClkSrcValMap[] =
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x000U, /* XTAL_CLK */
-    [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U, /* SYS_CLK */
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U, /* DPLL_CORE_HSDIV0_CLKOUT2 - Not Valid in this case */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                  =  0x000,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]  =  0x111,
+    [Rcm_PeripheralClockSource_SYS_CLK]                   =  0x222,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]  =  0x333,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] =  0x444,
+    [Rcm_PeripheralClockSource_RCCLK10M]                 =  0x555,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                =  0x666,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1] =  0x888, 
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  =  0x888,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]              =  0x888,
+    [Rcm_PeripheralClockSource_RCCLK32K]                 =  0x888,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                 =  0x888,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                =  0x888,
 };
 
 /**
@@ -446,43 +1012,41 @@ static const uint16_t gRtiClkSrcValMap[] =
  */
 static const uint16_t gSpiClkSrcValMap[] =
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U, /* XTAL_CLK */
-    [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U, /* SYS_CLK */
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x333U, /* DPLL_CORE_HSDIV0_CLKOUT2 */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x444U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                    = 0x000,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                   = 0x111,
+    [Rcm_PeripheralClockSource_SYS_CLK]                     = 0x222,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]    = 0x333,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]   = 0x444,
+    [Rcm_PeripheralClockSource_RCCLK10M]                   = 0x555,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                  = 0x666,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]   = 0x888, 
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]    = 0x888,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]    = 0x888,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]                = 0x888,
+    [Rcm_PeripheralClockSource_RCCLK32K]                   = 0x888,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                  = 0x888,
 };
 
 static const uint16_t gI2CClkSrcValMap[] = 
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x444U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                    = 0x000U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                   = 0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                     = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]    = 0x333U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]   = 0x444U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                   = 0x555U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                  = 0x666U,
 
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]    = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]    = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]                = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                   = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                  = 0x888U,
 };
 
 
-/**
- * @brief
- *  Mapping Array for QSPI
- *
- * @details
- *  Mapping Array between Clock mode and Clock Mode Value for QSPI
- */
-static const uint16_t gQspiClkSrcValMap[] =
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x000U, /* XTAL_CLK */
-    [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U, /* SYS_CLK */
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x444U, /* DPLL_CORE_HSDIV0_CLKOUT2 */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-
-};
 
 /**
  * @brief
@@ -493,110 +1057,133 @@ static const uint16_t gQspiClkSrcValMap[] =
  */
 static const uint16_t gSciClkSrcValMap[] =
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U, /* XTAL_CLK */
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U, /* SYS_CLK */
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x444U, /* DPLL_CORE_HSDIV0_CLKOUT2 */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                    = 0x000U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                   = 0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                     = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]    = 0x333U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]   = 0x444U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                   = 0x555U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                  = 0x666U,
 
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]    = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]    = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]                = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                   = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                  = 0x888U,
 };
 
 static const uint16_t gMcanClkSrcValMap[] = 
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x888U, /* XTAL clock source not supported for MCANA */
-    [Rcm_PeripheralClockSource_SYS_CLK]  = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x444U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                    = 0x000U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]    = 0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                     = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]    = 0x333U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]   = 0x444U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                   = 0x555U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                  = 0x666U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                  = 0x777U,
 
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]    = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]                = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                   = 0x888U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                   = 0x888U,
 };
 
-static const uint16_t gCsiRxClkSrcValMap[] = 
+static const uint16_t gCptsClkSrcValMap[] = 
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x666U, /* XTAL clock source not supported for MCANA */
-    [Rcm_PeripheralClockSource_SYS_CLK]  = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x222,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                    = 0x000U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                   = 0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                     = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]   = 0x333U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]    = 0x444U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                   = 0x555U,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]    = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]    = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]                = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                   = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                  = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                  = 0x888U,
 };
+
+static const uint16_t gCpswClkSrcValMap[] = 
+{
+    [Rcm_PeripheralClockSource_XTALCLK]                   = 0x000U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                  = 0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                    = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]   = 0x333U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]  = 0x444U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                  = 0x555U,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]  = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]               = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                  = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                 = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                 = 0x888U,
+
+};
+
+static const uint16_t gDssHwaClkSrcValMap[] = 
+{
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]  = 0x000U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                   = 0x111U,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]  = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]               = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                  = 0x888U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                  = 0x888U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                  = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                 = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                 = 0x888U,
+    [Rcm_PeripheralClockSource_XTALCLK]                   = 0x888U,
+};
+
 
 static const uint16_t gDssRtiClkSrcValMap[] = 
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                   = 0x000U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                  = 0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                   = 0x222U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]   = 0x333U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                  = 0x444U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                 = 0x666U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                  = 0x777U,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]  = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]  = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]               = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                 = 0x888U,
 };
 
 static const uint16_t gDssSciClkSrcValMap[] = 
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x666U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_PeripheralClockSource_XTALCLK]                   = 0x000U,
+    [Rcm_PeripheralClockSource_WUCPUCLK]                  = 0x111U,
+    [Rcm_PeripheralClockSource_SYS_CLK]                   = 0x222U,
+    [Rcm_PeripheralClockSource_RCCLK32K]                  = 0x333U,
+    [Rcm_PeripheralClockSource_RCCLK10M]                  = 0x444U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1]   = 0x666U,
+
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT1]  = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2]  = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]   = 0x888U,
+    [Rcm_PeripheralClockSource_FE1_REF_CLK]               = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK0]                 = 0x888U,
+    [Rcm_PeripheralClockSource_XREF_CLK1]                 = 0x888U,
 };
 
-#if defined(SOC_TPR12)
-static const uint16_t gRcssSciClkSrcValMap[] = 
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-};
 
-static const uint16_t gRcssSpiClkSrcValMap[] = 
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-};
-
-static const uint16_t gRcssI2CClkSrcValMap[] = 
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-};
-
-static const uint16_t gRcssATLClkSrcValMap[] = 
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2] = 0x444U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x666U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-};
-
-static const uint16_t gRcssMCASPAuxClkSrcValMap[] = 
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x888U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x444U,
-};
-
-#endif
-
-#if defined(SOC_AWR294X)
 /*RSS_BSS_CLK_GCM_CLKSRC_SEL
  * 0   XTALCLK
  * 1   WUCPUCLK
@@ -607,47 +1194,112 @@ static const uint16_t gRcssMCASPAuxClkSrcValMap[] =
  * 6   XREF_CLK0
  * 7   RCCLK32K
  */
-static const uint16_t gRssFRCClkSrcValMap[] = 
+static const uint16_t gRssBssFrcClkSrcValMap[] = 
 {
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x000U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x333U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2] = 0x888U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U,
-};
-#endif
-
-static const uint16_t gCptsClkSrcValMap[] = 
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x444U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
+    [Rcm_RssBssFrcClockSource_XTALCLK]                    = 0x000U,
+    [Rcm_RssBssFrcClockSource_WUCPUCLK]                   = 0x111U,
+    [Rcm_RssBssFrcClockSource_SYS_CLK]                    = 0x222U,
+    [Rcm_RssBssFrcClockSource_DPLL_PER_HSDIV0_CLKOUT1]    = 0x333U,
+    [Rcm_RssBssFrcClockSource_APLL_1p8G_HSDIV0_CLKOUT2]   = 0x444U,
+    [Rcm_RssBssFrcClockSource_RCCLK10M]                   = 0x555U,
+    [Rcm_RssBssFrcClockSource_XREF_CLK0]                  = 0x666U,
+    [Rcm_RssBssFrcClockSource_RCCLK32K]                   = 0x777U,
 };
 
-static const uint16_t gCpswClkSrcValMap[] = 
-{
-    [Rcm_PeripheralClockSource_XTAL_CLK] = 0x111U,
-    [Rcm_PeripheralClockSource_SYS_CLK] = 0x222U,
-    [Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x444U,
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT2]  = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-    [Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT3] = 0x888U, /* Set unsupported clock source to 0x888 which indicates invalid value */
-};
 
 static const uint16_t gDspcoreClkSrcValMap[] = 
 {
-    [Rcm_DSPClockSource_XTAL_CLK] = 0x111,
-    [Rcm_DSPClockSource_DPLL_DSP_HSDIV0_CLKOUT1] = 0x222,
-    [Rcm_DSPClockSource_DPLL_CORE_HSDIV0_CLKOUT1] = 0x444
+    [Rcm_DSPClockSource_XTALCLK]                       =  0x000,
+    [Rcm_DSPClockSource_RCCLK10M]                      =  0x111,
+    [Rcm_DSPClockSource_DPLL_DSP_HSDIV0_CLKOUT1]       =  0x222,
+    [Rcm_DSPClockSource_DPLL_DSP_HSDIV0_CLKOUT1_DITH]  =  0x333,
+    [Rcm_DSPClockSource_DPLL_CORE_HSDIV0_CLKOUT1]      =  0x444,
+    [Rcm_DSPClockSource_DPLL_PER_HSDIV0_CLKOUT3]       =  0x666,
 };
 
 static const uint16_t gCR5ClkSrcValMap[] = 
 {
-    [Rcm_CR5ClockSource_DPLL_CORE_HSDIV0_CLKOUT2] = 0x222U,
+    [Rcm_CR5ClockSource_XTALCLK]                       = 0x000U,
+    [Rcm_CR5ClockSource_RCCLK10M]                      = 0x111U,
+    [Rcm_CR5ClockSource_DPLL_CORE_HSDIV0_CLKOUT2]      = 0x222U,
+    [Rcm_CR5ClockSource_SYS_CLK]                       = 0x333U,
+    [Rcm_CR5ClockSource_WUCPUCLK]                      = 0x666U,
+};
+
+static const uint16_t gHSIClkSrcValMap[] = 
+{
+    [Rcm_HSIClockSource_PLL_CORE_CLK]                  = 0x000U,
+    [Rcm_HSIClockSource_APLL_CLK_HSI]                  = 0x111U,
+    [Rcm_HSIClockSource_APLL_1p8GHZ]                   = 0x222U,
+    [Rcm_HSIClockSource_PLL_PER_CLK]                   = 0x333U,
+    [Rcm_HSIClockSource_DPLL_CORE_HSDIV0_CLKOUT0]      = 0x444U,
+    [Rcm_HSIClockSource_RCCLK10M]                      = 0x555U,
+    [Rcm_HSIClockSource_DPLL_DSP_HSDIV0_CLKOUT0]       = 0x666U,
+    [Rcm_HSIClockSource_DPLL_PER_HSDIV0_CLKOUT0]       = 0x777U,
+};
+
+static const uint16_t g_PllCore_Out2_HSDivClkSrcValMap[] =
+{
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_CORE_HSDIV0_CLKOUT2_PreMux]  = 0x000U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT0]         = 0x111U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT0]         = 0x222U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_400MHZ]                      = 0x333U,
+
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT1_PreMux]   = 0x888U, 
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT2_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_PER_HSDIV0_CLKOUT1_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT1]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT2]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT3]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1]         = 0x888U,
+};
+
+static const uint16_t g_PllDsp_Out1_HSDivClkSrcValMap[] =
+{
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT1_PreMux]   = 0x000U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT1]         = 0x111U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1]         = 0x222U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_400MHZ]                      = 0x333U,
+
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_CORE_HSDIV0_CLKOUT2_PreMux]  = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT2_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_PER_HSDIV0_CLKOUT1_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT0]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT2]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT3]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT0]         = 0x888U,
+};
+
+static const uint16_t g_PllDsp_Out2_HSDivClkSrcValMap[] =
+{
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT2_PreMux]   = 0x000U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT2]         = 0x111U,
+
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_CORE_HSDIV0_CLKOUT2_PreMux]  = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT1_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_PER_HSDIV0_CLKOUT1_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT0]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT1]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT3]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT0]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_400MHZ]                      = 0x888U,
+};
+
+static const uint16_t g_PllPer_Out1_HSDivClkSrcValMap[] =
+{
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_PER_HSDIV0_CLKOUT1_PreMux]   = 0x000U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT3]         = 0x111U,
+
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_CORE_HSDIV0_CLKOUT2_PreMux]  = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT1_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT2_PreMux]   = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT0]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT1]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT2]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT0]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1]         = 0x888U,
+    [Rcm_HSDIVClkOutMuxClockSource_APLL_400MHZ]                      = 0x888U,
 };
 
 /**
@@ -711,6 +1363,10 @@ static uint32_t SBL_RcmGetPerFout(uint32_t Finp, bool div2flag);
 static uint32_t SBL_RcmGetCoreHSDivOut(uint32_t Finp, bool div2flag, Rcm_PllHSDIVOutId hsDivOut);
 static uint32_t SBL_RcmGetDSSHSDivOut(uint32_t Finp, bool div2flag, Rcm_PllHSDIVOutId hsDivOut);
 static uint32_t SBL_RcmGetPerHSDivOut(uint32_t Finp, bool div2flag, Rcm_PllHSDIVOutId hsDivOut);
+static uint32_t SBL_RcmGetModuleClkDivFromRegVal(uint32_t moduleClkDivRegVal);
+static uint32_t SBL_RcmGetApllHSDivOutFreq(Rcm_ApllId apllId, Rcm_PllHSDIVOutId hsDivOut);
+static Rcm_Return SBL_RcmGetHSDivClkSrc(Rcm_HSDIVClkOutMuxId clkOutMuxId, RcmClockSrcId * clkSrcId);
+static Rcm_Return SBL_RcmGetRssClkSrc(RcmClockSrcId * clkSrcId);
 
 /**
  *  @b Description
@@ -720,24 +1376,17 @@ static uint32_t SBL_RcmGetPerHSDivOut(uint32_t Finp, bool div2flag, Rcm_PllHSDIV
  *  @retval
  *      pointer to the MSS CTRL Register space.
  */
-CSL_mss_ctrlRegs* CSL_MSS_CTRL_getBaseAddress (void)
+static CSL_mss_ctrlRegs* CSL_MSS_CTRL_getBaseAddress (void)
 {
     return (CSL_mss_ctrlRegs*) CSL_MSS_CTRL_U_BASE;
 }
 
-CSL_dss_ctrlRegs* CSL_DSS_CTRL_getBaseAddress (void)
+static CSL_dss_ctrlRegs* CSL_DSS_CTRL_getBaseAddress (void)
 {
     return (CSL_dss_ctrlRegs *) CSL_DSS_CTRL_U_BASE;
 }
 
-#if defined (SOC_TPR12)
-CSL_rcss_rcmRegs* CSL_RCSSRCM_getBaseAddress (void)
-{
-    return (CSL_rcss_rcmRegs*) CSL_RCSS_RCM_U_BASE;
-}
-#endif
 
-#if defined (SOC_AWR294X)
 /**
  *  @b Description
  *  @n
@@ -746,7 +1395,7 @@ CSL_rcss_rcmRegs* CSL_RCSSRCM_getBaseAddress (void)
  *  @retval
  *      pointer to the RSS CTRL Register space.
  */
-CSL_rss_ctrlRegs* CSL_RSS_CTRL_getBaseAddress (void)
+static CSL_rss_ctrlRegs* CSL_RSS_CTRL_getBaseAddress (void)
 {
     return (CSL_rss_ctrlRegs *) CSL_RSS_CTRL_U_BASE;
 }
@@ -759,17 +1408,17 @@ CSL_rss_ctrlRegs* CSL_RSS_CTRL_getBaseAddress (void)
  *  @retval
  *      pointer to the RSS PROC CTRL Register space.
  */
-CSL_rss_proc_ctrlRegs* CSL_RSS_PROC_CTRL_getBaseAddress (void)
+static CSL_rss_proc_ctrlRegs* CSL_RSS_PROC_CTRL_getBaseAddress (void)
 {
     return (CSL_rss_proc_ctrlRegs *) CSL_RSS_PROC_CTRL_U_BASE;
 }
 
-CSL_rss_rcmRegs* CSL_RCSSRCM_getBaseAddress (void)
+static CSL_rss_rcmRegs* CSL_RSSRCM_getBaseAddress (void)
 {
     return (CSL_rss_rcmRegs*) CSL_RSS_RCM_U_BASE;
 }
 
-#endif /* defined (SOC_AWR294X) */
+
 
 /**
  *  @b Description
@@ -781,13 +1430,13 @@ CSL_rss_rcmRegs* CSL_RCSSRCM_getBaseAddress (void)
  *  @retval
  *      Base Address of the RCM Register
  */
-CSL_mss_rcmRegs* CSL_RCM_getBaseAddress (void)
+static CSL_mss_rcmRegs* CSL_RCM_getBaseAddress (void)
 {
     return (CSL_mss_rcmRegs*) CSL_MSS_RCM_U_BASE;
 }
 
 
-CSL_dss_rcmRegs* CSL_DSSRCM_getBaseAddress (void) 
+static CSL_dss_rcmRegs* CSL_DSSRCM_getBaseAddress (void) 
 {
     return (CSL_dss_rcmRegs*) CSL_DSS_RCM_U_BASE;
 }
@@ -805,7 +1454,7 @@ CSL_dss_rcmRegs* CSL_DSSRCM_getBaseAddress (void)
  *  @retval
  *      Base Address of the Top-level RCM Register
  */
-CSL_mss_toprcmRegs* CSL_TopRCM_getBaseAddress (void)
+static CSL_mss_toprcmRegs* CSL_TopRCM_getBaseAddress (void)
 {
     return (CSL_mss_toprcmRegs*) CSL_MSS_TOPRCM_U_BASE;
 }
@@ -821,7 +1470,7 @@ CSL_mss_toprcmRegs* CSL_TopRCM_getBaseAddress (void)
  *  @retval
  *      Base Address of the Top-level CTRL Register
  */
-CSL_top_ctrlRegs* CSL_TopCtrl_getBaseAddress (void)
+static CSL_top_ctrlRegs* CSL_TopCtrl_getBaseAddress (void)
 {
     return (CSL_top_ctrlRegs*)CSL_TOP_CTRL_U_BASE;
 }
@@ -837,11 +1486,10 @@ CSL_top_ctrlRegs* CSL_TopCtrl_getBaseAddress (void)
  *  @retval
  *      Efuse Row Value for XTAL Frequency scale.
  */
-uint8_t CSL_TopCtrl_readXtalFreqScale (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
+static uint8_t CSL_TopCtrl_readXtalFreqScale (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
 {
-    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_10, \
-                          XTAL_FREQ_SCALE_END_BIT, \
-                          XTAL_FREQ_SCALE_START_BIT));
+
+    return (SBL_EFUSE_FIELD_EXTRACT_XTAL_FREQ_SCALE(ptrTopCtrlRegs));
 }
 
 /**
@@ -855,11 +1503,9 @@ uint8_t CSL_TopCtrl_readXtalFreqScale (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
  *  @retval
  *      Efuse Row Value for Core ADPLL Trim Valid Flag.
  */
-uint8_t CSL_TopCtrl_readCoreADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
+static uint8_t CSL_TopCtrl_readCoreADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
 {
-    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_41, \
-                          COREADPLLTRIMVALIDCONFIG_END_BIT, \
-                          COREADPLLTRIMVALIDCONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_CORE_ADPLL_TRIM_VALID(ptrTopCtrlRegs));
 }
 
 /**
@@ -873,11 +1519,9 @@ uint8_t CSL_TopCtrl_readCoreADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopC
  *  @retval
  *      Efuse Row Value for Core ADPLL Trim Valid Flag.
  */
-uint8_t CSL_TopCtrl_readDspADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
+static uint8_t CSL_TopCtrl_readDspADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
 {
-    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_41, \
-                          DSPADPLLTRIMVALIDCONFIG_END_BIT, \
-                          DSPADPLLTRIMVALIDCONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_DSP_ADPLL_TRIM_VALID(ptrTopCtrlRegs));
 }
 
 /**
@@ -891,30 +1535,11 @@ uint8_t CSL_TopCtrl_readDspADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCt
  *  @retval
  *      Efuse Row Value for Core ADPLL Trim Valid Flag.
  */
-uint8_t CSL_TopCtrl_readPerADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
+static uint8_t CSL_TopCtrl_readPerADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
 {
-    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_41, \
-                          PERADPLLTRIMVALIDCONFIG_END_BIT, \
-                          PERADPLLTRIMVALIDCONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_PER_ADPLL_TRIM_VALID(ptrTopCtrlRegs));
 }
 
-/**
- *  @b Description
- *  @n
- *      The function is read the Efuse row config for Core ADPLL Trim Valid Flag
- *
- *  @param[in] ptrTopCtrlRegs
- *      Pointer to the MSS TOP CTRL Registers base address
- *
- *  @retval
- *      Efuse Row Value for Core ADPLL Trim Valid Flag.
- */
-uint8_t CSL_TopCtrl_readPERADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
-{
-    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_41, \
-                          PERADPLLTRIMVALIDCONFIG_END_BIT, \
-                          PERADPLLTRIMVALIDCONFIG_START_BIT));
-}
 
 /**
  *  @b Description
@@ -927,11 +1552,9 @@ uint8_t CSL_TopCtrl_readPERADPLLTrimValidEfuse (const CSL_top_ctrlRegs* ptrTopCt
  *  @retval
  *      Efuse Row Value for QSPI Clock Frequency.
  */
-uint8_t CSL_TopCtrl_readQSPIClkFreqEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+static uint8_t CSL_TopCtrl_readQSPIClkFreqEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
 {
-    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_11, \
-                          QSPIFREQCONFIG_END_BIT, \
-                          QSPIFREQCONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_QSPI_CLK_FREQ(ptrTopCtrlRegs));
 }
 
 /**
@@ -945,11 +1568,14 @@ uint8_t CSL_TopCtrl_readQSPIClkFreqEfuse (const CSL_top_ctrlRegs * ptrTopCtrlReg
  *  @retval
  *      Efuse Row Value for FLash Mode.
  */
-uint8_t CSL_TopCtrl_readFlashModeEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+static uint8_t CSL_TopCtrl_readFlashModeEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
 {
-    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_11, \
-                          FLASHMODECONFIG_END_BIT, \
-                          FLASHMODECONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_FLASH_MODE(ptrTopCtrlRegs));
+}
+
+static uint8_t CSL_TopCtrl_readR5ClkFreqEfuse(const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+{
+    return (SBL_EFUSE_FIELD_EXTRACT_BOOT_FREQ(ptrTopCtrlRegs));
 }
 
 /**
@@ -963,7 +1589,7 @@ uint8_t CSL_TopCtrl_readFlashModeEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
  *  @retval
  *      Not Applicable.
  */
-void CSL_DSSRCM_enableAccess(CSL_dss_rcmRegs *ptrDSSRcmRegs)
+static void CSL_DSSRCM_enableAccess(CSL_dss_rcmRegs *ptrDSSRcmRegs)
 {
     ptrDSSRcmRegs->LOCK0_KICK0 = 0x01234567;
     ptrDSSRcmRegs->LOCK0_KICK1 =  0xFEDCBA8;
@@ -986,7 +1612,7 @@ void CSL_DSSRCM_disableAccess(CSL_dss_rcmRegs *ptrDSSRcmRegs)
     ptrDSSRcmRegs->LOCK0_KICK1 =  0x0;
 }
 
-void CSL_DSS_CTRL_enableAccess(CSL_dss_ctrlRegs *ptrDSSCtrlRegs)
+static void CSL_DSS_CTRL_enableAccess(CSL_dss_ctrlRegs *ptrDSSCtrlRegs)
 {
     ptrDSSCtrlRegs->LOCK0_KICK0 = 0x01234567;
     ptrDSSCtrlRegs->LOCK0_KICK1 = 0xFEDCBA8;
@@ -1019,6 +1645,373 @@ static uint32_t getClkSrcFromClkSelVal(const uint16_t *clkSelTbl, uint32_t numEn
     return clkSource;
 }
 
+static void getHSDIVClkOutMuxClkSrcAndDivReg (Rcm_HSDIVClkOutMuxId hsDivMuxId,
+                                              Rcm_HSDIVClkOutMuxClockSource clkSource, 
+                                              uint16_t *muxSelVal,
+                                              volatile uint32_t **muxSelReg)
+{
+    CSL_mss_toprcmRegs *ptrTOPRCMRegs;
+
+    ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
+
+    switch(hsDivMuxId)
+    {
+        case  Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2:
+            *muxSelReg = &ptrTOPRCMRegs->PLLC_CLK2_SRC_SEL;
+            *muxSelVal = g_PllCore_Out2_HSDivClkSrcValMap[clkSource];
+            break;
+        case  Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1:
+            *muxSelReg = &ptrTOPRCMRegs->PLLD_CLK1_SRC_SEL;
+            *muxSelVal = g_PllDsp_Out1_HSDivClkSrcValMap[clkSource];
+            break;
+        case  Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2:
+            *muxSelReg = &ptrTOPRCMRegs->PLLD_CLK2_SRC_SEL;
+            *muxSelVal = g_PllDsp_Out2_HSDivClkSrcValMap[clkSource];
+            break;        
+        case  Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1:
+            *muxSelReg = &ptrTOPRCMRegs->PLLP_CLK1_SRC_SEL;
+            *muxSelVal = g_PllPer_Out1_HSDivClkSrcValMap[clkSource];
+            break;
+        default:
+            DebugP_assert(FALSE);
+    }
+}
+
+static Rcm_Return getFixedRootClkFout(RcmFixedClockId fixedClkId,
+                                      uint32_t *fOut)
+{
+    *fOut = gFixedClocksTbl[fixedClkId].fOut;
+    return Rcm_Return_SUCCESS;
+}
+
+static Rcm_Return getHSDIVClkOutMuxClkSrc(Rcm_HSDIVClkOutMuxId hsDivMuxId, 
+                                          Rcm_HSDIVClkOutMuxClockSource *clkSource)
+{
+    uint32_t clkSrcId;
+    Rcm_Return retVal = Rcm_Return_SUCCESS;
+    CSL_mss_toprcmRegs *ptrTOPRCMRegs;
+    uint32_t clkSrcRegVal;
+
+    ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
+
+    switch(hsDivMuxId)
+    {
+        case  Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2:
+            clkSrcRegVal  = ptrTOPRCMRegs->PLLC_CLK2_SRC_SEL;
+            clkSrcId = getClkSrcFromClkSelVal(g_PllCore_Out2_HSDivClkSrcValMap, SBL_UTILS_ARRAYSIZE(g_PllCore_Out2_HSDivClkSrcValMap), clkSrcRegVal);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_HSDIVClkOutMuxClockSource) clkSrcId;
+            break;
+        case  Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1:
+            clkSrcRegVal  = ptrTOPRCMRegs->PLLD_CLK1_SRC_SEL;
+            clkSrcId = getClkSrcFromClkSelVal(g_PllDsp_Out1_HSDivClkSrcValMap, SBL_UTILS_ARRAYSIZE(g_PllDsp_Out1_HSDivClkSrcValMap), clkSrcRegVal);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_HSDIVClkOutMuxClockSource) clkSrcId;
+            break;
+        case  Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2:
+            clkSrcRegVal  = ptrTOPRCMRegs->PLLD_CLK2_SRC_SEL;
+            clkSrcId = getClkSrcFromClkSelVal(g_PllDsp_Out2_HSDivClkSrcValMap, SBL_UTILS_ARRAYSIZE(g_PllDsp_Out2_HSDivClkSrcValMap), clkSrcRegVal);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_HSDIVClkOutMuxClockSource) clkSrcId;
+            break;        
+        case  Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1:
+            clkSrcRegVal  = ptrTOPRCMRegs->PLLP_CLK1_SRC_SEL;
+            clkSrcId = getClkSrcFromClkSelVal(g_PllPer_Out1_HSDivClkSrcValMap, SBL_UTILS_ARRAYSIZE(g_PllPer_Out1_HSDivClkSrcValMap), clkSrcRegVal);
+            DebugP_assert(clkSrcId != ~0U);
+            *clkSource = (Rcm_HSDIVClkOutMuxClockSource) clkSrcId;
+            break;
+        default:
+            DebugP_assert(FALSE);
+    }
+
+    return retVal;
+}
+
+static void getRssBssFrcClkSrcAndDivReg (Rcm_RssBssFrcClockSource clkSource, 
+                                        uint16_t *clkSrcVal,
+                                        volatile uint32_t **clkSrcReg,
+                                        volatile uint32_t **clkdDivReg)
+{
+    CSL_rss_rcmRegs *ptrRSSRCMRegs;
+
+    ptrRSSRCMRegs = CSL_RSSRCM_getBaseAddress ();
+
+    *clkSrcReg  = &(ptrRSSRCMRegs->RSS_FRC_CLK_SRC_SEL);
+    *clkdDivReg = &(ptrRSSRCMRegs->RSS_FRC_CLK_DIV_VAL);
+    *clkSrcVal = gRssBssFrcClkSrcValMap[clkSource];
+}
+
+static Rcm_Return getRssBssFrcClkSrcAndDivValue (Rcm_RssBssFrcClockSource *clkSource, 
+                                                 volatile uint32_t *clkDiv)
+{
+    uint32_t clkSrc;
+    uint32_t clkSrcId;
+    Rcm_Return retVal = Rcm_Return_SUCCESS;
+    CSL_rss_rcmRegs *ptrRSSRCMRegs;
+
+    ptrRSSRCMRegs = CSL_RSSRCM_getBaseAddress ();
+
+    clkSrc  = ptrRSSRCMRegs->RSS_FRC_CLK_SRC_SEL;
+    *clkDiv = ptrRSSRCMRegs->RSS_FRC_CLK_DIV_VAL;
+    clkSrcId = getClkSrcFromClkSelVal(gRssBssFrcClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRssBssFrcClkSrcValMap), clkSrc);
+    DebugP_assert(clkSrcId != ~0U);
+    *clkSource = (Rcm_RssBssFrcClockSource) clkSrcId;
+    return retVal;
+}
+
+static void getRssClkSrcRegInfo (Rcm_RssClkSrcId clkSource, 
+                                   uint16_t *clkSrcVal,
+                                   volatile uint32_t **clkSrcReg)
+{
+    CSL_mss_toprcmRegs *ptrTOPRCMRegs;
+
+    ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
+
+    *clkSrcReg  = &(ptrTOPRCMRegs->RSS_CLK_SRC_SEL);
+    *clkSrcVal = gRssClkSrcValMap[clkSource];
+}
+
+static Rcm_Return getRssClkSrc (Rcm_RssClkSrcId *clkSource)
+{
+    uint32_t clkSrc;
+    uint32_t clkSrcId;
+    Rcm_Return retVal = Rcm_Return_SUCCESS;
+    CSL_mss_toprcmRegs *ptrTOPRCMRegs;
+
+    ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
+
+    clkSrc  = ptrTOPRCMRegs->RSS_CLK_SRC_SEL;
+    clkSrcId = getClkSrcFromClkSelVal(gRssClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRssClkSrcValMap), clkSrc);
+    DebugP_assert(clkSrcId != ~0U);
+    *clkSource = (Rcm_RssClkSrcId) clkSrcId;
+    return retVal;
+}
+
+static void getHSIClkSrcAndDivReg (Rcm_HSIClockSource clkSource, 
+                                   uint16_t *clkSrcVal,
+                                   volatile uint32_t **clkSrcReg,
+                                   volatile uint32_t **clkdDivReg)
+{
+    CSL_mss_toprcmRegs *ptrTOPRCMRegs;
+
+    ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
+
+    *clkSrcReg  = &(ptrTOPRCMRegs->HSI_CLK_SRC_SEL);
+    *clkdDivReg = &(ptrTOPRCMRegs->HSI_DIV_VAL);
+    *clkSrcVal = gHSIClkSrcValMap[clkSource];
+}
+
+static Rcm_Return getHSIClkSrcAndDivValue (Rcm_HSIClockSource *clkSource, 
+                                           volatile uint32_t *clkDiv)
+{
+    uint32_t clkSrc;
+    uint32_t clkSrcId;
+    Rcm_Return retVal = Rcm_Return_SUCCESS;
+    CSL_mss_toprcmRegs *ptrTOPRCMRegs;
+
+    ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
+
+    clkSrc  = ptrTOPRCMRegs->HSI_CLK_SRC_SEL;
+    *clkDiv = ptrTOPRCMRegs->HSI_DIV_VAL;
+    clkSrcId = getClkSrcFromClkSelVal(gHSIClkSrcValMap, SBL_UTILS_ARRAYSIZE(gHSIClkSrcValMap), clkSrc);
+    DebugP_assert(clkSrcId != ~0U);
+    *clkSource = (Rcm_HSIClockSource) clkSrcId;
+    return retVal;
+}
+
+uint32_t SBL_RcmGetDpllHSDivOutFreq (RcmDpllId_e dpllId, Rcm_PllHSDIVOutId hsDivOut)
+{
+    Rcm_XtalFreqId clkFreqId;
+    uint32_t Finp, FOut;
+
+    clkFreqId = SBL_RcmGetXTALFrequency();
+    switch(dpllId)
+    {
+        case RCM_DPLL_CORE:
+        {
+            Finp = gXTALInfo[clkFreqId].Finp;
+
+            if (hsDivOut != RCM_PLLHSDIV_OUT_NONE)
+            {
+                FOut = SBL_RcmGetCoreHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, hsDivOut);
+            }
+            else
+            {
+                FOut = SBL_RcmGetCoreFout(Finp, gXTALInfo[clkFreqId].div2flag);
+            }
+            break;
+        }
+        case RCM_DPLL_PER: 
+        {
+            Finp = gXTALInfo[clkFreqId].Finp;
+            if (hsDivOut != RCM_PLLHSDIV_OUT_NONE)
+            {
+                FOut = SBL_RcmGetPerHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, hsDivOut);
+            }
+            else
+            {
+                FOut = SBL_RcmGetPerFout(Finp, gXTALInfo[clkFreqId].div2flag);
+            }
+            break;
+        }
+        case RCM_DPLL_DSS:
+        {
+            Finp = gXTALInfo[clkFreqId].Finp;
+            if (hsDivOut != RCM_PLLHSDIV_OUT_NONE)
+            {
+                FOut = SBL_RcmGetDSSHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, hsDivOut);
+            }
+            else
+            {
+                FOut = SBL_RcmGetDSSFout(Finp, gXTALInfo[clkFreqId].div2flag);
+            }
+            break;
+        }
+    }
+    return FOut;
+}
+
+
+uint32_t SBL_RcmGetFreqLeafNode (RcmClockSrcId clkSrcId)
+{
+    Rcm_XtalFreqId clkFreqId;
+    uint32_t FOut;
+    const Rcm_ClkSrcInfo *clkSrcInfo;
+
+    clkSrcInfo = &gAWR294xClkSrcInfoMap[clkSrcId];
+    switch (clkSrcInfo->clkSrcType)
+    {
+        case RCM_CLKSRCTYPE_XTAL:
+        {
+            clkFreqId = SBL_RcmGetXTALFrequency();
+            FOut = gXTALFreqTbl[clkFreqId];
+            break;
+        }
+        case RCM_CLKSRCTYPE_FIXED:
+        {
+            getFixedRootClkFout(clkSrcInfo->u.fixedClkInfo.fixedClkId ,&FOut);
+            break;
+        }
+        case RCM_CLKSRCTYPE_APLL_HSDIVOUT:
+        {
+            FOut = SBL_RcmGetApllHSDivOutFreq(clkSrcInfo->u.apllHsDivInfo.apllId, 
+                                   clkSrcInfo->u.apllHsDivInfo.hsdivOut);
+        
+            break;
+        }
+        case RCM_CLKSRCTYPE_DPLL_HSDIVOUT:
+        {
+            FOut = SBL_RcmGetDpllHSDivOutFreq(clkSrcInfo->u.dpllHsDivInfo.dpllId, 
+                                              clkSrcInfo->u.dpllHsDivInfo.hsdivOut);
+            break;
+        }
+        case RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX:
+        {
+            /* RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX is not a leaf node */
+            DebugP_assert(FALSE);
+            break;
+        }
+    }
+    return (FOut);
+}
+
+uint32_t SBL_RcmGetFreq (RcmClockSrcId clkSrcId)
+{
+    uint32_t FOut;
+    Rcm_Return retVal = Rcm_Return_SUCCESS;
+    const Rcm_ClkSrcInfo *clkSrcInfo;
+
+    clkSrcInfo = &gAWR294xClkSrcInfoMap[clkSrcId];
+    if (clkSrcInfo->clkSrcType == RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX)
+    {
+        RcmClockSrcId hsMuxSrcClkId;
+        retVal = SBL_RcmGetHSDivClkSrc(clkSrcInfo->u.hsdivMuxInfo.hsdivMuxId, &hsMuxSrcClkId);
+        DebugP_assert(Rcm_Return_SUCCESS == retVal);
+        FOut = SBL_RcmGetFreqLeafNode(hsMuxSrcClkId);
+        /* If SYS_CLKD clock source additional divide Fout of CORE_CLK_OUT_2 by SYS_CLK_DIV */
+        if (clkSrcId == RCM_CLKSRCID_SYS_CLK)
+        {
+            CSL_mss_toprcmRegs *ptrTopRCMRegs;
+            uint32_t sysClkDiv;
+
+            /* Core PLL settings */
+            ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
+            sysClkDiv = CSL_FEXT(ptrTopRCMRegs->SYS_CLK_DIV_VAL, MSS_TOPRCM_SYS_CLK_DIV_VAL_SYS_CLK_DIV_VAL_CLKDIV);
+            sysClkDiv = (sysClkDiv & 0xF) + 1;
+            FOut = FOut / sysClkDiv;
+        }
+    }
+    else
+    {
+        FOut = SBL_RcmGetFreqLeafNode(clkSrcId);
+    }
+    return (FOut);
+}
+
+
+uint32_t SBL_RcmGetHSIInFreq (Rcm_HSIClockSource  clkSource)
+{
+    RcmClockSrcId clkSrcId;
+    uint32_t FOut;
+
+    clkSrcId = gHsiClkSrcInfoMap[clkSource];
+    FOut = SBL_RcmGetFreq(clkSrcId);
+    return (FOut);
+}
+
+Rcm_Return SBL_RcmGetHSIFreq (uint32_t *freqHz)
+{
+    uint32_t            clkDivisorRegVal;
+    uint32_t            clkDivisor;
+    Rcm_Return          retVal;
+    uint32_t            Finp;
+    Rcm_HSIClockSource  clkSource;
+
+    retVal = getHSIClkSrcAndDivValue(&clkSource, &clkDivisorRegVal);
+    DebugP_assert(retVal == Rcm_Return_SUCCESS);
+    if (Rcm_Return_SUCCESS == retVal)
+    {
+        Finp = SBL_RcmGetHSIInFreq(clkSource);
+        clkDivisor = SBL_RcmGetModuleClkDivFromRegVal(clkDivisorRegVal);
+        *freqHz = Finp / clkDivisor;
+    }
+    return (retVal);
+}
+
+Rcm_Return SBL_RcmGetRssBssFrcFreq (uint32_t *freqHz)
+{
+    uint32_t            clkDivisorRegVal;
+    uint32_t            clkDivisor;
+    Rcm_Return          retVal;
+    uint32_t            Finp;
+    Rcm_RssBssFrcClockSource  clkSource;
+    RcmClockSrcId rootClkId;
+
+    retVal = getRssBssFrcClkSrcAndDivValue(&clkSource, &clkDivisorRegVal);
+    DebugP_assert(retVal == Rcm_Return_SUCCESS);
+    if (Rcm_Return_SUCCESS == retVal)
+    {
+        rootClkId = gRssBssFrcClkSrcInfoMap[clkSource];
+        Finp = SBL_RcmGetFreq(rootClkId);
+        clkDivisor = SBL_RcmGetModuleClkDivFromRegVal(clkDivisorRegVal);
+        *freqHz = Finp / clkDivisor;
+    }
+    return (retVal);
+}
+
+Rcm_Return SBL_RcmGetRssClkFreq (uint32_t *freqHz)
+{
+    Rcm_Return          retVal;
+    RcmClockSrcId       rootClkId;
+
+    retVal = SBL_RcmGetRssClkSrc(&rootClkId);
+    DebugP_assert(retVal == Rcm_Return_SUCCESS);
+    if (Rcm_Return_SUCCESS == retVal)
+    {
+        *freqHz = SBL_RcmGetFreq(rootClkId);
+    }
+    return (retVal);
+}
 
 /**
  *  @b Description
@@ -1048,20 +2041,22 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
 {
     CSL_mss_rcmRegs *ptrMSSRCMRegs;
     CSL_dss_rcmRegs *ptrDSSRCMRegs;
-#if defined(SOC_TPR12)
-    CSL_rcss_rcmRegs *ptrRCSSRCMRegs;
-#elif defined (SOC_AWR294X)
-    CSL_rss_rcmRegs *ptrRCSSRCMRegs;
-#endif
     CSL_mss_toprcmRegs *ptrTOPRCMRegs;
 
     ptrMSSRCMRegs = CSL_RCM_getBaseAddress ();
     ptrDSSRCMRegs = CSL_DSSRCM_getBaseAddress ();
     ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
-    ptrRCSSRCMRegs = CSL_RCSSRCM_getBaseAddress ();
 
     switch (PeriphID)
     {
+        case Rcm_PeripheralId_CSIRX:
+        {
+            *clkSrcReg  = &(ptrTOPRCMRegs->CSIRX_CLK_SRC_SEL);
+            *clkdDivReg = &(ptrTOPRCMRegs->CSIRX_DIV_VAL);
+            *clkSrcVal = gCsiRxClkSrcValMap[clkSource];
+            break;
+        }
+
         case Rcm_PeripheralId_MSS_RTIA:
         {
             *clkSrcReg  = &(ptrMSSRCMRegs->MSS_RTIA_CLK_SRC_SEL);
@@ -1090,18 +2085,11 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
             *clkSrcVal = gRtiClkSrcValMap[clkSource];
             break;
         }
-        case Rcm_PeripheralId_MSS_SCIA:
+        case Rcm_PeripheralId_MSS_QSPI:
         {
-            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_SCIA_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrMSSRCMRegs->MSS_SCIA_CLK_DIV_VAL);
-            *clkSrcVal = gSciClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_MSS_SCIB:
-        {
-            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_SCIB_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrMSSRCMRegs->MSS_SCIB_CLK_DIV_VAL);
-            *clkSrcVal = gSciClkSrcValMap[clkSource];
+            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_QSPI_CLK_SRC_SEL);
+            *clkdDivReg = &(ptrMSSRCMRegs->MSS_QSPI_CLK_DIV_VAL);
+            *clkSrcVal = gQspiClkSrcValMap[clkSource];
             break;
         }
         case Rcm_PeripheralId_MSS_SPIA:
@@ -1125,11 +2113,18 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
             *clkSrcVal = gI2CClkSrcValMap[clkSource];
             break;
         }
-        case Rcm_PeripheralId_MSS_QSPI:
+        case Rcm_PeripheralId_MSS_SCIA:
         {
-            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_QSPI_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrMSSRCMRegs->MSS_QSPI_CLK_DIV_VAL);
-            *clkSrcVal = gQspiClkSrcValMap[clkSource];
+            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_SCIA_CLK_SRC_SEL);
+            *clkdDivReg = &(ptrMSSRCMRegs->MSS_SCIA_CLK_DIV_VAL);
+            *clkSrcVal = gSciClkSrcValMap[clkSource];
+            break;
+        }
+        case Rcm_PeripheralId_MSS_SCIB:
+        {
+            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_SCIB_CLK_SRC_SEL);
+            *clkdDivReg = &(ptrMSSRCMRegs->MSS_SCIB_CLK_DIV_VAL);
+            *clkSrcVal = gSciClkSrcValMap[clkSource];
             break;
         }
         case Rcm_PeripheralId_MSS_MCANA:
@@ -1146,13 +2141,6 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
             *clkSrcVal = gMcanClkSrcValMap[clkSource];
             break;
         }
-        case Rcm_PeripheralId_MSS_CPSW:
-        {
-            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_CPSW_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrMSSRCMRegs->MSS_CPSW_CLK_DIV_VAL);
-            *clkSrcVal = gCpswClkSrcValMap[clkSource];
-            break;
-        }
         case Rcm_PeripheralId_MSS_CPTS:
         {
             *clkSrcReg  = &(ptrMSSRCMRegs->MSS_CPTS_CLK_SRC_SEL);
@@ -1160,11 +2148,18 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
             *clkSrcVal = gCptsClkSrcValMap[clkSource];
             break;
         }
-        case Rcm_PeripheralId_CSIRX:
+        case Rcm_PeripheralId_MSS_CPSW:
         {
-            *clkSrcReg  = &(ptrTOPRCMRegs->CSIRX_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrTOPRCMRegs->CSIRX_DIV_VAL);
-            *clkSrcVal = gCsiRxClkSrcValMap[clkSource];
+            *clkSrcReg  = &(ptrMSSRCMRegs->MSS_CPSW_CLK_SRC_SEL);
+            *clkdDivReg = &(ptrMSSRCMRegs->MSS_CPSW_CLK_DIV_VAL);
+            *clkSrcVal = gCpswClkSrcValMap[clkSource];
+            break;
+        }
+        case Rcm_PeripheralId_DSS_HWA:
+        {
+            *clkSrcReg  = &(ptrDSSRCMRegs->DSS_HWA_CLK_SRC_SEL);
+            *clkdDivReg = (volatile uint32_t *)NULL;
+            *clkSrcVal = gDssHwaClkSrcValMap[clkSource];
             break;
         }
         case Rcm_PeripheralId_DSS_RTIA:
@@ -1195,79 +2190,6 @@ static void getClkSrcAndDivReg (Rcm_PeripheralId PeriphID,
             *clkSrcVal = gDssSciClkSrcValMap[clkSource];
             break;
         }
-#if defined(SOC_TPR12)
-        case Rcm_PeripheralId_RCSS_SCIA:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_SCIA_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_SCIA_CLK_DIV_VAL);
-            *clkSrcVal = gRcssSciClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_SPIA:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_SPIA_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_SPIA_CLK_DIV_VAL);
-            *clkSrcVal = gRcssSpiClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_SPIB:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_SPIB_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_SPIB_CLK_DIV_VAL);
-            *clkSrcVal = gRcssSpiClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_I2CA:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_I2CA_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_I2CA_CLK_DIV_VAL);
-            *clkSrcVal = gRcssI2CClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_I2CB:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_I2CB_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_I2CB_CLK_DIV_VAL);
-            *clkSrcVal = gRcssI2CClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_ATL:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_ATL_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_ATL_CLK_DIV_VAL);
-            *clkSrcVal = gRcssATLClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_MCASPA_AUX:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_MCASPA_AUX_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_MCASPA_AUX_CLK_DIV_VAL);
-            *clkSrcVal = gRcssMCASPAuxClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_MCASPB_AUX:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_MCASPB_AUX_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_MCASPB_AUX_CLK_DIV_VAL);
-            *clkSrcVal = gRcssMCASPAuxClkSrcValMap[clkSource];
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_MCASPC_AUX:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RCSS_MCASPC_AUX_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RCSS_MCASPC_AUX_CLK_DIV_VAL);
-            *clkSrcVal = gRcssMCASPAuxClkSrcValMap[clkSource];
-            break;
-        }
-#elif defined(SOC_AWR294X)
-        case Rcm_PeripheralId_RSS_FRC:
-        {
-            *clkSrcReg  = &(ptrRCSSRCMRegs->RSS_FRC_CLK_SRC_SEL);
-            *clkdDivReg = &(ptrRCSSRCMRegs->RSS_FRC_CLK_DIV_VAL);
-            *clkSrcVal = gRssFRCClkSrcValMap[clkSource];
-            break;
-        }
-#endif
         default:
         {
             *clkSrcReg  = NULL;
@@ -1304,11 +2226,6 @@ static Rcm_Return getClkSrcAndDivValue (Rcm_PeripheralId PeriphID,
 {
     CSL_mss_rcmRegs *ptrMSSRCMRegs;
     CSL_dss_rcmRegs *ptrDSSRCMRegs;
-#if defined(SOC_TPR12)
-    CSL_rcss_rcmRegs *ptrRCSSRCMRegs;
-#elif defined(SOC_AWR294X)
-    CSL_rss_rcmRegs *ptrRCSSRCMRegs;
-#endif
     CSL_mss_toprcmRegs *ptrTOPRCMRegs;
     uint32_t clkSrc;
     uint32_t clkSrcId;
@@ -1317,7 +2234,6 @@ static Rcm_Return getClkSrcAndDivValue (Rcm_PeripheralId PeriphID,
     ptrMSSRCMRegs = CSL_RCM_getBaseAddress ();
     ptrDSSRCMRegs = CSL_DSSRCM_getBaseAddress ();
     ptrTOPRCMRegs = CSL_TopRCM_getBaseAddress ();
-    ptrRCSSRCMRegs = CSL_RCSSRCM_getBaseAddress ();
 
     switch (PeriphID)
     {
@@ -1493,99 +2409,17 @@ static Rcm_Return getClkSrcAndDivValue (Rcm_PeripheralId PeriphID,
             *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
             break;
         }
-#if defined(SOC_TPR12)
-        case Rcm_PeripheralId_RCSS_SCIA:
+        case Rcm_PeripheralId_DSS_HWA:
         {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_SCIA_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_SCIA_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssSciClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssSciClkSrcValMap), clkSrc);
+            clkSrc  = ptrDSSRCMRegs->DSS_HWA_CLK_SRC_SEL;
+            /* HWA does not have a clk div register and divider is always 1 */
+            *clkDiv = 1U;
+            clkSrcId = getClkSrcFromClkSelVal(gDssHwaClkSrcValMap, SBL_UTILS_ARRAYSIZE(gDssHwaClkSrcValMap), clkSrc);
             DebugP_assert(clkSrcId != ~0U);
             *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
             break;
+
         }
-        case Rcm_PeripheralId_RCSS_SPIA:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_SPIA_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_SPIA_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssSpiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssSpiClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_SPIB:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_SPIB_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_SPIB_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssSpiClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssSpiClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_I2CA:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_I2CA_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_I2CA_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssI2CClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssI2CClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_I2CB:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_I2CB_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_I2CB_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssI2CClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssI2CClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_ATL:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_ATL_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_ATL_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssATLClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssATLClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_MCASPA_AUX:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_MCASPA_AUX_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_MCASPA_AUX_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssMCASPAuxClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssMCASPAuxClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_MCASPB_AUX:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_MCASPB_AUX_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_MCASPB_AUX_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssMCASPAuxClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssMCASPAuxClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-        case Rcm_PeripheralId_RCSS_MCASPC_AUX:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RCSS_MCASPC_AUX_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RCSS_MCASPC_AUX_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRcssMCASPAuxClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRcssMCASPAuxClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-#elif defined(SOC_AWR294X)
-        case Rcm_PeripheralId_RSS_FRC:
-        {
-            clkSrc  = ptrRCSSRCMRegs->RSS_FRC_CLK_SRC_SEL;
-            *clkDiv = ptrRCSSRCMRegs->RSS_FRC_CLK_DIV_VAL;
-            clkSrcId = getClkSrcFromClkSelVal(gRssFRCClkSrcValMap, SBL_UTILS_ARRAYSIZE(gRssFRCClkSrcValMap), clkSrc);
-            DebugP_assert(clkSrcId != ~0U);
-            *clkSource = (Rcm_PeripheralClockSource) clkSrcId;
-            break;
-        }
-#endif
         default:
         {
             *clkDiv = 0U;
@@ -2124,9 +2958,7 @@ static Rcm_XtalFreqId SBL_RcmGetXTALFrequency(void)
  */
 uint16_t CSL_TopCtrl_readCoreADPLLTrimEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
 {
-    return (CSL_extract16 (ptrTopCtrlRegs->EFUSE1_ROW_40, \
-                           COREADPLLTRIMCONFIG_END_BIT, \
-                           COREADPLLTRIMCONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_CORE_ADPLL_TRIM(ptrTopCtrlRegs));
 }
 
 
@@ -2144,9 +2976,7 @@ uint16_t CSL_TopCtrl_readCoreADPLLTrimEfuse (const CSL_top_ctrlRegs* ptrTopCtrlR
  */
 uint16_t CSL_TopCtrl_readDspADPLLTrimEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
 {
-    return (CSL_extract16 (ptrTopCtrlRegs->EFUSE1_ROW_40, \
-                           DSPADPLLTRIMCONFIG_END_BIT, \
-                           DSPADPLLTRIMCONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_DSP_ADPLL_TRIM(ptrTopCtrlRegs));
 }
 
 /**
@@ -2162,9 +2992,7 @@ uint16_t CSL_TopCtrl_readDspADPLLTrimEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRe
  */
 uint16_t CSL_TopCtrl_readPerADPLLTrimEfuse (const CSL_top_ctrlRegs* ptrTopCtrlRegs)
 {
-    return (CSL_extract16 (ptrTopCtrlRegs->EFUSE1_ROW_41,
-                           PERADPLLTRIMCONFIG_END_BIT,
-                           PERADPLLTRIMCONFIG_START_BIT));
+    return (SBL_EFUSE_FIELD_EXTRACT_PER_ADPLL_TRIM(ptrTopCtrlRegs));
 }
 
 /**
@@ -2270,7 +3098,7 @@ static uint16_t SBL_RcmGetPerTrimVal(void)
  *
  *  @retval     None
  */
-void SBL_RcmCoreApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hsDivCfg)
+void SBL_RcmCoreDpllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hsDivCfg)
 {
     Rcm_XtalFreqId XTALFreq;
     uint16_t coreTrimVal;
@@ -2368,19 +3196,105 @@ void SBL_RcmCoreApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *h
     return;
 }
 
-static uint32_t SBL_RcmGetCR5SysclkInFrequency(void)
+void SBL_RcmApllHSDivConfig(Rcm_ApllId apllId, Rcm_PllHsDivOutConfig *hsDivCfg)
+{
+    CSL_mss_toprcmRegs *ptrTopRCMRegs;
+    uint32_t hsDivOutRegVal;
+    uint32_t FOut;
+    volatile uint32_t *regHsDivClkOut0;
+    volatile uint32_t *regHsDivClkOut1;
+    volatile uint32_t *regHsDivClkOut2;
+    volatile uint32_t *regHsDivClkOut3;
+    volatile uint32_t *regHsDiv;
+
+    ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
+    if (apllId == RCM_APLLID_1P2G)
+    {
+        FOut = gFixedClocksTbl[RCM_FIXEDCLKID_APLL1P2GHZ].fOut;
+        regHsDivClkOut0 = &ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT0;
+        regHsDivClkOut1 = &ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT1;
+        regHsDivClkOut2 = &ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT2;
+        regHsDivClkOut3 = &ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT3;
+        regHsDiv        = &ptrTopRCMRegs->PLL_1P2_HSDIVIDER;
+    }
+    else
+    {
+        FOut = gFixedClocksTbl[RCM_FIXEDCLKID_APLL1P8GHZ].fOut;
+        regHsDivClkOut0 = &ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT0;
+        regHsDivClkOut1 = &ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT1;
+        regHsDivClkOut2 = &ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT2;
+        regHsDivClkOut3 = &ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT3;
+        regHsDiv        = &ptrTopRCMRegs->PLL_1P8_HSDIVIDER;
+    }
+
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_0)
+    {
+        DebugP_assert((FOut % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0]) == 0);
+        hsDivOutRegVal = FOut / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0];
+        hsDivOutRegVal--;
+        *regHsDivClkOut0 = CSL_insert8 (*regHsDivClkOut0, 4U, 0U, hsDivOutRegVal);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_1)
+    {
+        DebugP_assert((FOut % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1]) == 0);
+        hsDivOutRegVal = FOut / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1];
+        hsDivOutRegVal--;
+        *regHsDivClkOut1 = CSL_insert8 (*regHsDivClkOut1, 4U, 0U, hsDivOutRegVal);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_2)
+    {
+        DebugP_assert((FOut % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2]) == 0);
+        hsDivOutRegVal = FOut / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2];
+        hsDivOutRegVal--;
+        *regHsDivClkOut2 = CSL_insert8 (*regHsDivClkOut2, 4U, 0U, hsDivOutRegVal);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_3)
+    {
+        DebugP_assert((FOut % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX3]) == 0);
+        hsDivOutRegVal = FOut / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX3];
+        hsDivOutRegVal--;
+        *regHsDivClkOut3 = CSL_insert8 (*regHsDivClkOut3, 4U, 0U, hsDivOutRegVal);
+    }
+    /* Generate Trigger to latch these values */
+    *regHsDiv = CSL_insert8 (*regHsDiv, 2U, 2U, 0x1U);
+    *regHsDiv = CSL_insert8 (*regHsDiv, 2U, 2U, 0x0U);
+
+    /* Ungate the clocks */
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_0)
+    {
+        *regHsDivClkOut0 = CSL_insert8 (*regHsDivClkOut0, 8U, 8U, 0x1U);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_1)
+    {
+        *regHsDivClkOut1 = CSL_insert8 (*regHsDivClkOut1, 8U, 8U, 0x1U);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_2)
+    {
+        *regHsDivClkOut2 = CSL_insert8 (*regHsDivClkOut2, 8U, 8U, 0x1U);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_3)
+    {
+        *regHsDivClkOut3 = CSL_insert8 (*regHsDivClkOut3, 8U, 8U, 0x1U);
+    }
+    return;
+}
+
+static uint32_t SBL_RcmGetCR5InFrequency(void)
 {
     uint32_t clkFreq = 0U;
-    Rcm_ClkSrcInfo const * clkSrcInfo;
-    Rcm_XtalFreqId clkFreqId;
-    uint32_t Finp;
+    RcmClockSrcId rootClkSrcId;
+    Rcm_CR5ClockSource r5ClkSrcId;
+    CSL_mss_toprcmRegs *ptrTopRCMRegs;
+    uint32_t clkSrcVal;
 
-
-    clkSrcInfo = &gCR5ClkSrcInfoMap;
-    clkFreqId = SBL_RcmGetXTALFrequency ();
-
-    Finp = gXTALInfo[clkFreqId].Finp;
-    clkFreq = SBL_RcmGetCoreHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, clkSrcInfo->hsDivOut);
+    /* Core PLL settings */
+    ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
+    /* Select CLKOUT2 as clock for R5 Core */
+    clkSrcVal = CSL_extract16 (ptrTopRCMRegs->MSS_CR5_CLK_SRC_SEL, 11U, 0U);
+    r5ClkSrcId = (Rcm_CR5ClockSource) getClkSrcFromClkSelVal(gCR5ClkSrcValMap, SBL_UTILS_ARRAYSIZE(gCR5ClkSrcValMap), clkSrcVal);
+    DebugP_assert(r5ClkSrcId != ~0U);
+    rootClkSrcId = gCR5ClkSrcInfoMap[r5ClkSrcId];
+    clkFreq= SBL_RcmGetFreq(rootClkSrcId);
 
     return (clkFreq);
 
@@ -2418,7 +3332,7 @@ void SBL_RcmSetCR5SysClock(uint32_t cr5FreqHz, uint32_t sysClkFreqHz)
     uint32_t Finp;
     uint32_t moduleClkDivVal;
 
-    Finp = SBL_RcmGetCR5SysclkInFrequency();
+    Finp = SBL_RcmGetCR5InFrequency();
     moduleClkDivVal = SBL_RcmGetModuleClkDivVal(Finp, cr5FreqHz);
 
     ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
@@ -2443,7 +3357,7 @@ uint32_t SBL_RcmGetCR5Freq(void)
     CSL_mss_toprcmRegs *ptrTopRCMRegs;
 
     ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
-    Finp = SBL_RcmGetCR5SysclkInFrequency();
+    Finp = SBL_RcmGetCR5InFrequency();
     moduleClkDivRegVal = ptrTopRCMRegs->MSS_CR5_DIV_VAL;
     clkDivVal = SBL_RcmGetModuleClkDivFromRegVal(moduleClkDivRegVal);
     return (Finp / clkDivVal);
@@ -2480,7 +3394,7 @@ Rcm_Return SBL_RcmSetPeripheralClock (Rcm_PeripheralId periphID,
     clkDivisor = SBL_RcmGetModuleClkDivVal(Finp, freqHz);
     getClkSrcAndDivReg (periphID, clkSource, &clkSrcVal, &ptrClkSrcReg, &ptrClkDivReg);
 
-    if ((ptrClkSrcReg != NULL) && (ptrClkDivReg != NULL) && (clkSrcVal != 0x888U))
+    if ((ptrClkSrcReg != NULL)  && (clkSrcVal != 0x888U))
     {
         uint16_t            clkDivVal;
 
@@ -2488,9 +3402,12 @@ Rcm_Return SBL_RcmSetPeripheralClock (Rcm_PeripheralId periphID,
         clkDivVal = ((uint16_t)clkDivisor & 0xFU);
         clkDivVal = (clkDivVal | (clkDivVal << 4U) | (clkDivVal << 8U));
 
-        /* Write the Divider Value */
-        *ptrClkDivReg = CSL_insert16 (*ptrClkDivReg, 11U, 0U, clkDivVal);
-
+        /* Some registers like HWA do not have ClkDiv reg */
+        if (ptrClkDivReg != NULL)
+        {
+            /* Write the Divider Value */
+            *ptrClkDivReg = CSL_insert16 (*ptrClkDivReg, 11U, 0U, clkDivVal);
+        }
         /* Write the Clock Source Selection Value */
         *ptrClkSrcReg = CSL_insert16 (*ptrClkSrcReg, 11U, 0U, clkSrcVal);
         retVal = Rcm_Return_SUCCESS;
@@ -2537,6 +3454,90 @@ Rcm_Return SBL_RcmGetPeripheralFreq (Rcm_PeripheralId periphID,
         clkDivisor = SBL_RcmGetModuleClkDivFromRegVal(clkDivisorRegVal);
         *freqHz = Finp / clkDivisor;
     }
+    return (retVal);
+}
+
+Rcm_Return SBL_RcmSetHSIClock (Rcm_HSIClockSource clkSource,
+                               uint32_t freqHz)
+{
+    volatile uint32_t   *ptrClkSrcReg, *ptrClkDivReg;
+    uint16_t            clkSrcVal;
+    uint32_t            clkDivisor;
+    Rcm_Return          retVal;
+    uint32_t            Finp;
+    RcmClockSrcId       rootClkId;
+
+    rootClkId = gHsiClkSrcInfoMap[clkSource];
+    Finp = SBL_RcmGetFreq(rootClkId);
+    clkDivisor = SBL_RcmGetModuleClkDivVal(Finp, freqHz);
+    getHSIClkSrcAndDivReg (clkSource, &clkSrcVal, &ptrClkSrcReg, &ptrClkDivReg);
+
+    if ((ptrClkSrcReg != NULL)  && (clkSrcVal != 0x888U))
+    {
+        uint16_t            clkDivVal;
+
+        /* Create the Divider Value to be programmed */
+        clkDivVal = ((uint16_t)clkDivisor & 0xFU);
+        clkDivVal = (clkDivVal | (clkDivVal << 4U) | (clkDivVal << 8U));
+
+        /* Some registers like HWA do not have ClkDiv reg */
+        if (ptrClkDivReg != NULL)
+        {
+            /* Write the Divider Value */
+            *ptrClkDivReg = CSL_insert16 (*ptrClkDivReg, 11U, 0U, clkDivVal);
+        }
+        /* Write the Clock Source Selection Value */
+        *ptrClkSrcReg = CSL_insert16 (*ptrClkSrcReg, 11U, 0U, clkSrcVal);
+        retVal = Rcm_Return_SUCCESS;
+    }
+    else
+    {
+        /* Error */
+        retVal = Rcm_Return_ERROR;
+    }
+
+    return (retVal);
+}
+
+Rcm_Return SBL_RcmSetRssBssFrcClock (Rcm_RssBssFrcClockSource clkSource,
+                                     uint32_t freqHz)
+{
+    volatile uint32_t   *ptrClkSrcReg, *ptrClkDivReg;
+    uint16_t            clkSrcVal;
+    uint32_t            clkDivisor;
+    Rcm_Return          retVal;
+    uint32_t            Finp;
+    RcmClockSrcId       rootClkId;
+
+    rootClkId = gRssBssFrcClkSrcInfoMap[clkSource];
+    Finp = SBL_RcmGetFreq(rootClkId);
+    clkDivisor = SBL_RcmGetModuleClkDivVal(Finp, freqHz);
+    getRssBssFrcClkSrcAndDivReg (clkSource, &clkSrcVal, &ptrClkSrcReg, &ptrClkDivReg);
+
+    if ((ptrClkSrcReg != NULL)  && (clkSrcVal != 0x888U))
+    {
+        uint16_t            clkDivVal;
+
+        /* Create the Divider Value to be programmed */
+        clkDivVal = ((uint16_t)clkDivisor & 0xFU);
+        clkDivVal = (clkDivVal | (clkDivVal << 4U) | (clkDivVal << 8U));
+
+        /* Some registers like HWA do not have ClkDiv reg */
+        if (ptrClkDivReg != NULL)
+        {
+            /* Write the Divider Value */
+            *ptrClkDivReg = CSL_insert16 (*ptrClkDivReg, 11U, 0U, clkDivVal);
+        }
+        /* Write the Clock Source Selection Value */
+        *ptrClkSrcReg = CSL_insert16 (*ptrClkSrcReg, 11U, 0U, clkSrcVal);
+        retVal = Rcm_Return_SUCCESS;
+    }
+    else
+    {
+        /* Error */
+        retVal = Rcm_Return_ERROR;
+    }
+
     return (retVal);
 }
 
@@ -2596,67 +3597,14 @@ Rcm_ResetCause SBL_RcmGetResetCause (void)
 uint32_t SBL_RcmGetPeripheralClockFrequency(Rcm_PeripheralClockSource clkSource)
 {
     uint32_t clkFreq = 0U;
-    Rcm_ClkSrcInfo const * clkSrcInfo;
-    Rcm_XtalFreqId clkFreqId;
-    uint32_t Finp;
+    RcmClockSrcId rootClkSrcId;
 
 
-    clkSrcInfo = &gPeripheralClkSrcInfoMap[clkSource];
-    clkFreqId = SBL_RcmGetXTALFrequency ();
-    switch (clkSrcInfo->pllId)
-    {
-        case RCM_PLLID_CORE:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            clkFreq = SBL_RcmGetCoreHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, clkSrcInfo->hsDivOut);
-            if (clkSource == Rcm_PeripheralClockSource_SYS_CLK)
-            {
-                CSL_mss_toprcmRegs *ptrTopRCMRegs;
-                uint32_t sysClkDiv;
-
-                /* Core PLL settings */
-                ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
-                sysClkDiv = CSL_FEXT(ptrTopRCMRegs->SYS_CLK_DIV_VAL, MSS_TOPRCM_SYS_CLK_DIV_VAL_SYS_CLK_DIV_VAL_CLKDIV);
-                sysClkDiv = (sysClkDiv & 0xF) + 1;
-                clkFreq = clkFreq / sysClkDiv;
-            }
-            break;
-        }
-        case RCM_PLLID_DSS:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            clkFreq = SBL_RcmGetDSSHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, clkSrcInfo->hsDivOut);
-            break;
-        }
-        case RCM_PLLID_PER:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            clkFreq = SBL_RcmGetPerHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, clkSrcInfo->hsDivOut);
-            break;
-        }
-        case RCM_PLLID_XTALCLK:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            if (gXTALInfo[clkFreqId].div2flag)
-            {
-                clkFreq = Finp/2;
-            }
-            else
-            {
-                clkFreq = Finp;
-            }
-            break;
-        }
-        default:
-        {
-            DebugP_assert(FALSE);
-            break;
-        }
-    }
+    rootClkSrcId = gPeripheralClkSrcInfoMap[clkSource];
+    clkFreq = SBL_RcmGetFreq(rootClkSrcId);
     return (clkFreq);
 
 }
-
 
 /**
  *  @b Description
@@ -2786,9 +3734,9 @@ void SBL_RcmPopulateBSSControl(void)
 
     /*  Boot status register
         Bits 15:0 -> XTAL frequency in MHz as an unsigned number */
-    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG0, 15, 0, 0x0U);
+    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG0, 15, 0, 0x28U);
     /*  Redundant configuration as above */
-    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG1, 15, 0, 0x0U);
+    CSL_FINSR(rssProcCtrl->RSS_CR4_BOOT_INFO_REG1, 15, 0, 0x28U);
     /* 
         Boot time Mailbox Memory configuration
         Bits 7:0 -> MSS
@@ -2948,7 +3896,7 @@ void SBL_RcmWaitMeminitL2(void)
  *
  *  @retval     None
  */
-void SBL_RcmDspApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hsDivCfg)
+void SBL_RcmDspDpllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hsDivCfg)
 {
     Rcm_XtalFreqId XTALFreq;
     uint16_t dspTrimVal;
@@ -3074,7 +4022,7 @@ void SBL_RcmDspApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hs
  *
  *  @retval     None
  */
-void SBL_RcmPerApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hsDivCfg)
+void SBL_RcmPerDpllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *hsDivCfg)
 {
     Rcm_XtalFreqId XTALFreq;
     uint16_t perTrimVal;
@@ -3240,6 +4188,100 @@ Rcm_Return SBL_RcmSetDspCoreClock (Rcm_DSPClockSource clkSource,
     return (retVal);
 }
 
+Rcm_Return SBL_RcmSetHSDivMux (Rcm_HSDIVClkOutMuxId clkOutMuxId, 
+                               Rcm_HSDIVClkOutMuxClockSource muxSource)
+{
+    volatile uint32_t   *ptrClkSrcReg;
+    uint16_t            clkSrcVal;
+    Rcm_Return          retVal;
+
+    getHSDIVClkOutMuxClkSrcAndDivReg (clkOutMuxId, muxSource, &clkSrcVal, &ptrClkSrcReg);
+
+    if ((ptrClkSrcReg != NULL) && (clkSrcVal != 0x888U))
+    {
+        /* Write the Clock Source Selection Value */
+        *ptrClkSrcReg = CSL_insert16 (*ptrClkSrcReg, 11U, 0U, clkSrcVal);
+        retVal = Rcm_Return_SUCCESS;
+    }
+    else
+    {
+        /* Error */
+        retVal = Rcm_Return_ERROR;
+    }
+
+    return (retVal);
+}
+
+Rcm_Return SBL_RcmSetRssClkSrc (Rcm_RssClkSrcId rssClkSrcId)
+{
+    volatile uint32_t   *ptrClkSrcReg;
+    uint16_t            clkSrcVal;
+    Rcm_Return          retVal;
+
+    getRssClkSrcRegInfo (rssClkSrcId, &clkSrcVal, &ptrClkSrcReg);
+
+    if ((ptrClkSrcReg != NULL) && (clkSrcVal != 0x888U))
+    {
+        /* Write the Clock Source Selection Value */
+        *ptrClkSrcReg = CSL_insert16 (*ptrClkSrcReg, 11U, 0U, clkSrcVal);
+        retVal = Rcm_Return_SUCCESS;
+    }
+    else
+    {
+        /* Error */
+        retVal = Rcm_Return_ERROR;
+    }
+
+    return (retVal);
+}
+
+static Rcm_Return SBL_RcmGetRssClkSrc(RcmClockSrcId * clkSrcId)
+{
+    Rcm_Return          retVal;
+    Rcm_RssClkSrcId     rssClkSrcId;
+
+    retVal = getRssClkSrc(&rssClkSrcId);
+    DebugP_assert(retVal = Rcm_Return_SUCCESS);
+    
+    if (Rcm_Return_SUCCESS == retVal)
+    {
+        /* Write the Clock Source Selection Value */
+        *clkSrcId = gRssClkSrcInfoMap[rssClkSrcId];
+        retVal = Rcm_Return_SUCCESS;
+    }
+    else
+    {
+        /* Error */
+        retVal = Rcm_Return_ERROR;
+    }
+
+    return (retVal);
+}
+
+
+static Rcm_Return SBL_RcmGetHSDivClkSrc(Rcm_HSDIVClkOutMuxId clkOutMuxId, RcmClockSrcId * clkSrcId)
+{
+    Rcm_Return          retVal;
+    Rcm_HSDIVClkOutMuxClockSource muxSource;
+
+    retVal = getHSDIVClkOutMuxClkSrc (clkOutMuxId, &muxSource);
+    DebugP_assert(retVal = Rcm_Return_SUCCESS);
+    
+    if (Rcm_Return_SUCCESS == retVal)
+    {
+        /* Write the Clock Source Selection Value */
+        *clkSrcId = gHsDivMuxClkSrcInfoMap[muxSource];
+        retVal = Rcm_Return_SUCCESS;
+    }
+    else
+    {
+        /* Error */
+        retVal = Rcm_Return_ERROR;
+    }
+
+    return (retVal);
+}
+
 /**
  *  @b Description
  *  @n
@@ -3255,52 +4297,11 @@ Rcm_Return SBL_RcmSetDspCoreClock (Rcm_DSPClockSource clkSource,
 uint32_t SBL_RcmGetDSPClockFrequency(Rcm_DSPClockSource clkSource)
 {
     uint32_t clkFreq = 0U;
-    Rcm_ClkSrcInfo const * clkSrcInfo;
-    Rcm_XtalFreqId clkFreqId;
-    uint32_t Finp;
+    RcmClockSrcId clkSrcId;
 
 
-    clkSrcInfo = &gDspClkSrcInfoMap[clkSource];
-    clkFreqId = SBL_RcmGetXTALFrequency ();
-    switch (clkSrcInfo->pllId)
-    {
-        case RCM_PLLID_CORE:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            clkFreq = SBL_RcmGetCoreHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, clkSrcInfo->hsDivOut);
-            break;
-        }
-        case RCM_PLLID_DSS:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            clkFreq = SBL_RcmGetDSSHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, clkSrcInfo->hsDivOut);
-            break;
-        }
-        case RCM_PLLID_PER:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            clkFreq = SBL_RcmGetPerHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, clkSrcInfo->hsDivOut);
-            break;
-        }
-        case RCM_PLLID_XTALCLK:
-        {
-            Finp = gXTALInfo[clkFreqId].Finp;
-            if (gXTALInfo[clkFreqId].div2flag)
-            {
-                clkFreq = Finp/2;
-            }
-            else
-            {
-                clkFreq = Finp;
-            }
-            break;
-        }
-        default:
-        {
-            DebugP_assert(FALSE);
-            break;
-        }
-    }
+    clkSrcId = gDspClkSrcInfoMap[clkSource];
+    clkFreq = SBL_RcmGetFreq(clkSrcId);
     return (clkFreq);
 }
 
@@ -3876,6 +4877,83 @@ static uint32_t SBL_RcmGetPerHSDivOut(uint32_t Finp, bool div2flag, Rcm_PllHSDIV
     return (FOut/(clkDiv  + 1));
 }
 
+static uint32_t SBL_RcmGetApllHSDivOutFreq(Rcm_ApllId apllId, Rcm_PllHSDIVOutId hsDivOut)
+{
+    CSL_mss_toprcmRegs *ptrTopRCMRegs;
+    uint32_t FOut;
+    uint32_t clkDiv;
+
+    if (apllId == RCM_APLLID_1P2G)
+    {
+        FOut = gFixedClocksTbl[RCM_FIXEDCLKID_APLL1P2GHZ].fOut;
+    }
+    else
+    {
+        FOut = gFixedClocksTbl[RCM_FIXEDCLKID_APLL1P8GHZ].fOut;
+    }
+    
+    ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
+    switch(hsDivOut)
+    {
+        case RCM_PLLHSDIV_OUT_0:
+        {
+            if (apllId == RCM_APLLID_1P2G)
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT0, MSS_TOPRCM_PLL_1P2_HSDIVIDER_CLKOUT0_PLL_1P2_HSDIVIDER_CLKOUT0_DIV);
+            }
+            else
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT0, MSS_TOPRCM_PLL_1P8_HSDIVIDER_CLKOUT0_PLL_1P8_HSDIVIDER_CLKOUT0_DIV);
+            }
+            break;
+        }
+        case RCM_PLLHSDIV_OUT_1:
+        {
+            if (apllId == RCM_APLLID_1P2G)
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT1, MSS_TOPRCM_PLL_1P2_HSDIVIDER_CLKOUT1_PLL_1P2_HSDIVIDER_CLKOUT1_DIV);
+            }
+            else
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT1, MSS_TOPRCM_PLL_1P8_HSDIVIDER_CLKOUT1_PLL_1P8_HSDIVIDER_CLKOUT1_DIV);
+            }
+            break;
+        }
+        case RCM_PLLHSDIV_OUT_2:
+        {
+            if (apllId == RCM_APLLID_1P2G)
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT2, MSS_TOPRCM_PLL_1P2_HSDIVIDER_CLKOUT2_PLL_1P2_HSDIVIDER_CLKOUT2_DIV);
+            }
+            else
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT2, MSS_TOPRCM_PLL_1P8_HSDIVIDER_CLKOUT2_PLL_1P8_HSDIVIDER_CLKOUT2_DIV);
+            }
+            break;
+        }
+        case RCM_PLLHSDIV_OUT_3:
+        {
+            if (apllId == RCM_APLLID_1P2G)
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P2_HSDIVIDER_CLKOUT3, MSS_TOPRCM_PLL_1P2_HSDIVIDER_CLKOUT3_PLL_1P2_HSDIVIDER_CLKOUT3_DIV);
+            }
+            else
+            {
+                clkDiv = CSL_FEXT(ptrTopRCMRegs->PLL_1P8_HSDIVIDER_CLKOUT3, MSS_TOPRCM_PLL_1P8_HSDIVIDER_CLKOUT3_PLL_1P8_HSDIVIDER_CLKOUT3_DIV);
+            }
+            break;
+        }
+        case RCM_PLLHSDIV_OUT_NONE:
+        {
+            DebugP_assert(FALSE);
+            clkDiv = 0;
+            break;
+        }
+    }
+    return (FOut/(clkDiv + 1));
+}
+
+
 static uint32_t SBL_RcmADPLLJGetFOut(uint32_t Finp, uint32_t N, uint32_t M, uint32_t M2, uint32_t FracM, bool div2flag)
 {
     uint32_t i;
@@ -3923,4 +5001,122 @@ void SBL_RcmGetEfuseQSPIConfig(Rcm_EfuseQspiConfig *qspiEfuseCfg)
 
 }
 
+/**
+* @b Description
+* @n
+* The function is used to unhalt the BSS
+*
+*
+* @retval
+* Success - 0
+*/
+void SBL_RcmBSSR4Unhalt(void)
+{
+    CSL_rss_ctrlRegs *rssCtrl = CSL_RSS_CTRL_getBaseAddress ();
+    volatile uint32_t unhaltStatus;
+
+    unhaltStatus = CSL_FEXT(rssCtrl->BSS_CONTROL, RSS_CTRL_BSS_CONTROL_BSS_CONTROL_HALT);
+    if (unhaltStatus != 0x0) 
+    {
+        /* Bring the BSS out of the HALT state */
+        CSL_FINS(rssCtrl->BSS_CONTROL, RSS_CTRL_BSS_CONTROL_BSS_CONTROL_HALT, 0U);
+    }
+    return;
+}
+
+/*****************************************************************************
+ *  The register RSS_PROC_CTRL:RSS_CR4_BOOT_INFO_REG0 contains the boot status 
+ *  information, which includes the following fields 
+ * 
+ *   XTAL Frequency    15:0    XTAL frequency in MHz as an unsigned number
+ *   APLL Calibration Done    16    
+ *   APLL Calibration Status    17    
+ *   BSS Boot Done    18    The bit will be set once the BSS boots up before entering the idle task loop
+ *   BSS Boot Status    19    The bit indicated that all the boot-time monitors have passed
+ *   BSS Fault Status    22:20    
+ *   Firmware Fault Status Number
+ *
+ *   0    No-Fault
+ *   1    BSS Firmware ASSERT
+ *   2    BSS Firmware CPU Abort
+ *   3    ESM Group 1 Error
+ *   4    ESM Group 2 Error
+ *   5    ANA LDO WU fault (Deprecated)
+ *   6    ANA LDO SC fault
+ *
+ *   Mailbox Boot Config Status    26:23    
+ *   The set bits indicate the successful configuration of the mailbox system
+ *   23    MSS configuration Success
+ *   24    DSS configuration Success 
+ *   26:25    Reserved
+ *   Reserved    31:27
+ *
+ *****************************************************************************/
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG0_RSS_CR4_BOOT_INFO_REG0_BOOTSTATUS_MASK  (0x000F0000U)
+#define CSL_RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG0_RSS_CR4_BOOT_INFO_REG0_BOOTSTATUS_SHIFT (16U)
+
+void SBL_RcmWaitBSSBootComplete(void)
+{
+    CSL_rss_proc_ctrlRegs *rssProcCtrl = CSL_RSS_PROC_CTRL_getBaseAddress ();
+    volatile uint32_t bssStatus;
+
+    do
+    {
+        /* Wait until the value in the Spare reg0 [19:16] becomes 0xF.
+         * SPARE0[16] : 0 indicates APLL calibration is ongoing
+         * 1 indicates APLL calibration is complete
+         * SPARE0[17] : 0 indicates APLL calibration did not succeed
+         * 1 indicates APLL calibration was successful
+         * SPARE0[18] : 0 indicates BSS powerup is ongoing
+         * 1 indicates BSS powerup is complete
+         * SPARE0[19] : 0 indicates BSS powerup did not succeed
+         * 1 indicates BSS powerup was successful
+         */
+        bssStatus = CSL_FEXT(rssProcCtrl->RSS_CR4_BOOT_INFO_REG0,
+                             RSS_PROC_CTRL_RSS_CR4_BOOT_INFO_REG0_RSS_CR4_BOOT_INFO_REG0_BOOTSTATUS);
+    } while(bssStatus != 0xFU);
+}
+
+/**
+ *  @b Description
+ *  @n
+ *      This function returns the R5 Clock Frequency efuse value
+ *
+ *  \ingroup DRIVER_RCM_FUNCTIONS
+ *
+ *  @retval     R5 Clock Frequency Efuse
+ *
+ */
+void SBL_RcmGetEfuseBootFrequency(Rcm_EfuseBootFreqConfig *bootFreqEfuseCfg)
+{
+    CSL_top_ctrlRegs* ptrTopCtrlRegs;
+    uint8_t bootFreqValEfuse;
+
+    ptrTopCtrlRegs = CSL_TopCtrl_getBaseAddress ();
+
+    bootFreqValEfuse = CSL_TopCtrl_readR5ClkFreqEfuse (ptrTopCtrlRegs);
+    switch (bootFreqValEfuse)
+    {
+        case RCM_EFUSE_R5_CLK_300_SYS_CLK_150MHz:
+        {
+            bootFreqEfuseCfg->r5FreqHz     = SBL_FREQ_MHZ2HZ(300U);
+            bootFreqEfuseCfg->sysClkFreqHz = SBL_FREQ_MHZ2HZ(150U);
+            break;
+        }
+        case RCM_EFUSE_R5_CLK_200_SYS_CLK_200MHz:
+        {
+            bootFreqEfuseCfg->r5FreqHz     = SBL_FREQ_MHZ2HZ(200U);
+            bootFreqEfuseCfg->sysClkFreqHz = SBL_FREQ_MHZ2HZ(200U);
+            break;
+        }
+        case RCM_EFUSE_R5_CLK_400_SYS_CLK_200MHz:
+        {
+            bootFreqEfuseCfg->r5FreqHz     = SBL_FREQ_MHZ2HZ(400U);
+            bootFreqEfuseCfg->sysClkFreqHz = SBL_FREQ_MHZ2HZ(200U);
+            break;
+        }
+        default:
+            DebugP_assert(FALSE);
+    }
+}
 

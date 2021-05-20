@@ -77,7 +77,7 @@ ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm am6
   endif
 endif
 
-ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
   SRCDIR += $(UNIFLASH_BASE_DIR)/soc/$(SOC) $(UNIFLASH_BASE_DIR)/src/qspi
   INCDIR += $(UNIFLASH_BASE_DIR)/src/qspi
 endif
@@ -92,7 +92,7 @@ ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm am6
 COMP_LIST_COMMON += spi_dma mmcsd
 endif
 
-ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
 COMP_LIST_COMMON += spi_dma
 endif
 
@@ -112,7 +112,7 @@ else
   ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm))
   PACKAGE_SRCS_COMMON += ../../soc/k3
   endif
-  ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+  ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
   PACKAGE_SRCS_COMMON += ../../soc/$(SOC)
   endif
   PACKAGE_SRCS_COMMON = ../../target ../../host ../../../board_utils_component.mk
@@ -137,7 +137,7 @@ ifeq ($(BOARD), $(filter $(BOARD), am64x_evm))
 SRCS_ASM_COMMON += ufp_init.asm ufp_misc.asm
 endif
 
-ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm))
+ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
 SRCS_COMMON += qspi.c
 EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/$(SOC)/linker.cmd
 BOARD_UTILS_CFLAGS += -DSPI_DMA_ENABLE

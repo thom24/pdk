@@ -201,7 +201,7 @@ int32_t inbyte(uint32_t msec)
 {
 #if defined(SOC_K2G)
     return(UART_charGetTimeout_v0(uart_baseAddr, msec));
-#elif defined(SOC_TPR12)
+#elif (defined(SOC_TPR12) || defined(SOC_AWR294X))
     uint8_t data;
     if(UART_readPolling(gUfpUartHandle, (void*)&data, 1) > 0)
     {
@@ -228,7 +228,7 @@ void outbyte(uint8_t c)
 {
 #if defined(SOC_K2G)
     UART_charPut_v0(uart_baseAddr, c);
-#elif defined(SOC_TPR12)
+#elif (defined(SOC_TPR12) || defined(SOC_AWR294X))
     UART_writePolling(gUfpUartHandle, (const void*)&c, 1);
 #else
     UARTCharPut(uart_baseAddr, c);

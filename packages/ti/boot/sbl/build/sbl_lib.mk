@@ -49,6 +49,7 @@ SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/uart
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/tpr12
+SRCDIR += $(PDK_SBL_COMP_PATH)/soc/tpr12/cfg_$(SOC)
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/src/qspi
 else
 SRCDIR	+= $(PDK_SBL_COMP_PATH)/soc/k3
