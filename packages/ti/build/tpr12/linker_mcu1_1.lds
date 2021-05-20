@@ -37,15 +37,20 @@ PAGE 0:
     /*  Reset Vectors base address(RESET_VECTORS) should be 64 bytes aligned  */
     RESET_VECTORS (X) : origin=0x00000000 length=0x100
     /* RESET_VECTORS (X) : origin=0x00020000 length=0x100 */
-    TCMA_RAM (RX) : origin=0x00000100 length=0x00007F00
+    TCMA_RAM (RX) : origin=0x00000100 length=0x00003F00
     TCMB_RAM (RW) : origin=0x00080000 length=0x00008000
-    SBL_RESERVED_L2_RAM (RW)   : origin=0x10200000 length=0x00060000
-    L2_RAM (RW)   : origin=0x10260000 length=0x00090000
-    L3_RAM (RW)   : origin=0x88000000 length=0x00390000
-    HWA_RAM (RW)  : origin=0x82000000 length=0x00020000
+    SBL_RESERVED_L2_RAM_0 (RW)   : origin=0x10200000 length=0x00030000
+    SBL_RESERVED_L2_RAM_1 (RW)   : origin=0x10230000 length=0x00030000
+    L2_RAM_0 (RW) : origin=0x10260000 length=0x00048000
+    L2_RAM_1 (RW) : origin=0x102A8000 length=0x00048000
+    L3_RAM_0 (RW) : origin=0x88000000 length=0x001C8000
+    L3_RAM_1 (RW) : origin=0x881C8000 length=0x001C8000
+    HWA_RAM_0 (RW)  : origin=0x82000000 length=0x00010000
+    HWA_RAM_1 (RW)  : origin=0x82010000 length=0x00010000
 
 PAGE 1:
-    L3_RAM (RW)   : origin=0x88000000 length=0x00390000
+    L3_RAM_0 (RW) : origin=0x88000000 length=0x001C8000
+    L3_RAM_1 (RW) : origin=0x881C8000 length=0x001C8000
 }
 
 /*----------------------------------------------------------------------------*/
@@ -64,31 +69,31 @@ SECTIONS{
        and allowed to overflow into Z and cannot be split from Y to Z. Some sections
        like bss are not allowed to be split so > notation is used for them
     */
-    .text    : {} >> TCMA_RAM | L2_RAM
+    .text    : {} >> TCMA_RAM | L2_RAM_1
 
-    .const   : {} > L2_RAM
-    .switch  : {} > L2_RAM
-    .cio:    : {} > SBL_RESERVED_L2_RAM | L2_RAM
-    .data:   : {} > L2_RAM
+    .const   : {} > L2_RAM_1
+    .switch  : {} > L2_RAM_1
+    .cio:    : {} > SBL_RESERVED_L2_RAM_1 | L2_RAM_1
+    .data:   : {} > L2_RAM_1
 
-    .cinit   : {} > L2_RAM
-    .pinit   : {} > L2_RAM
-    .bss     : {} > SBL_RESERVED_L2_RAM | L2_RAM
-    .stack   : {} > TCMB_RAM | SBL_RESERVED_L2_RAM | L2_RAM
-    .sysmem  : {} > SBL_RESERVED_L2_RAM | L2_RAM
-    .irqStack  : {. = . + __IRQ_STACK_SIZE;} align(4)    > L2_RAM  (HIGH)
+    .cinit   : {} > L2_RAM_1
+    .pinit   : {} > L2_RAM_1
+    .bss     : {} > SBL_RESERVED_L2_RAM_1 | L2_RAM_1
+    .stack   : {} > TCMB_RAM | SBL_RESERVED_L2_RAM_1 | L2_RAM_1
+    .sysmem  : {} > SBL_RESERVED_L2_RAM_1 | L2_RAM_1
+    .irqStack  : {. = . + __IRQ_STACK_SIZE;} align(4)    > L2_RAM_1  (HIGH)
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
-    .fiqStack  : {. = . + __FIQ_STACK_SIZE;} align(4)    > L2_RAM  (HIGH)
+    .fiqStack  : {. = . + __FIQ_STACK_SIZE;} align(4)    > L2_RAM_1  (HIGH)
     RUN_START(__FIQ_STACK_START)
     RUN_END(__FIQ_STACK_END)
-    .abortStack  : {. = . + __ABORT_STACK_SIZE;} align(4)> L2_RAM  (HIGH)
+    .abortStack  : {. = . + __ABORT_STACK_SIZE;} align(4)> L2_RAM_1  (HIGH)
     RUN_START(__ABORT_STACK_START)
     RUN_END(__ABORT_STACK_END)
-    .undStack  : {. = . + __UND_STACK_SIZE;} align(4)    > L2_RAM  (HIGH)
+    .undStack  : {. = . + __UND_STACK_SIZE;} align(4)    > L2_RAM_1  (HIGH)
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack  : {. = . + __SVC_STACK_SIZE;} align(4)    > L2_RAM  (HIGH)
+    .svcStack  : {. = . + __SVC_STACK_SIZE;} align(4)    > L2_RAM_1  (HIGH)
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 }

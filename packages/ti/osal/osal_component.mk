@@ -449,7 +449,7 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
- OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
+ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 mcu1_1 c66xdsp_1
 endif
 
 export OSAL_Baremetal_TestApp_$(SOC)_CORELIST

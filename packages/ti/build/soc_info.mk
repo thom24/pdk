@@ -62,5 +62,5 @@ CORE_LIST_j721s2   = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_
 CORE_LIST_am64x    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0 mpu1_1
 CORE_LIST_k3_CORELIST = m3
 CORE_LIST_PRU = pru_0 pru_1
-CORE_LIST_tpr12    = mcu1_0 c66xdsp_1
-CORE_LIST_awr294x  = mcu1_0 c66xdsp_1
+CORE_LIST_tpr12    = mcu1_0 mcu1_1 c66xdsp_1
+CORE_LIST_awr294x  = mcu1_0 mcu1_1 c66xdsp_1

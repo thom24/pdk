@@ -38,6 +38,9 @@
 #ifdef BUILD_MCU1_0
 #include "FreeRTOSConfig_mcu1_0.h"
 #endif
+#ifdef BUILD_MCU1_1
+#include "FreeRTOSConfig_mcu1_1.h"
+#endif
 
 /*-----------------------------------------------------------
  * Application specific definitions.
