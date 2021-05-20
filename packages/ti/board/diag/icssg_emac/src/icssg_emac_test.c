@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -123,8 +123,10 @@ uint8_t icss_tx_port_queue[3][100352] __attribute__ ((aligned (BOARD_DIAG_ICSS_E
 void emac_icssg_update_link_params_icssg_dual_mac(uint32_t portNum, EMAC_LINK_INFO_T *p_info);
 
 PRUICSS_Handle prussHandle[BOARD_DIAG_ICSS_EMAC_MAX_INTANCES] = {NULL, NULL, NULL};
-BOARD_DIAG_ICSSG_EMAC_MCB_T   app_mcb;
+BOARD_DIAG_ICSSG_EMAC_MCB_T_V2   app_mcb;
 EMAC_MAC_ADDR_T  macTest;
+
+EMAC_OPEN_CONFIG_INFO_T open_cfg __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
 
 EMAC_HwAttrs_V5         emac_cfg;
 EMAC_CHAN_MAC_ADDR_T    chan_cfg[BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE];
@@ -154,6 +156,22 @@ static const uint8_t test_pkt[BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE] = {
     0x01,0x02,0x03,0x04,
     0x01,0x02,0x03,0x04,
     0x01,0x02,0x03,0x04,
+    0x01,0x02,0x03,0x04,
+    0x11,0x12,0x13,0x14,
+    0x21,0x22,0x23,0x24,
+    0x31,0x32,0x33,0x34,
+    0x41,0x42,0x43,0x44,
+    0x51,0x52,0x53,0x54,
+    0x61,0x62,0x63,0x64,
+    0x71,0x72,0x73,0x74,
+    0x81,0x82,0x83,0x84,
+    0x91,0x92,0x93,0x94,
+    0xA1,0xA2,0xA3,0xA4,
+    0x01,0x02,0xB3,0xB4,
+    0xC1,0xC2,0xC3,0xC4,
+    0xD1,0xD2,0xD3,0xD4,
+    0xE1,0xE2,0xE3,0xE4,
+    0xF1,0xF2,0xF3,0xF4,
     0x01,0x02,0x03,0x04,
     0xfe,0xfe
 };
@@ -201,6 +219,23 @@ void app_test_rx_mgmt_response_cb(uint32_t port_num, EMAC_IOCTL_CMD_RESP_T* pCmd
         }
     }
 }
+
+/*
+ *  ======== app_test_wait_mgmt_resp ========
+ */
+void app_test_wait_mgmt_resp(uint32_t waitTimeMilliSec)
+{
+    int32_t retVal = 0;
+
+    retVal = EMAC_osalPendLock(gAppTestIoctlWaitAckSem, waitTimeMilliSec);
+
+    if(SemaphoreP_TIMEOUT == retVal)
+    {
+        UART_printf("ERROR: IOCTL management response not received for %u ms, Semaphore_pend timed out! RC: %d\n\r",
+                    waitTimeMilliSec, retVal);
+        while (1);
+    }
+}
     
 void BoardDiag_setPortStateCtrl(uint32_t startP, uint32_t endP)
 {
@@ -224,26 +259,10 @@ void BoardDiag_setPortStateCtrl(uint32_t startP, uint32_t endP)
             }
             else
             {
-                BOARD_delay(100000);
+                emac_poll_ctrl (pNum, 0, EMAC_POLL_RX_MGMT_RING_ALL, 0);
+                app_test_wait_mgmt_resp(1000);
             }
         }
-    }
-}
-
-/*
- *  ======== app_test_wait_mgmt_resp ========
- */
-void app_test_wait_mgmt_resp(uint32_t waitTimeMilliSec)
-{
-    int32_t retVal = 0;
-
-    retVal = EMAC_osalPendLock(gAppTestIoctlWaitAckSem, waitTimeMilliSec);
-
-    if(SemaphoreP_TIMEOUT == retVal)
-    {
-        UART_printf("ERROR: IOCTL management response not received for %u ms, Semaphore_pend timed out! RC: %d\n\r",
-                    waitTimeMilliSec, retVal);
-        while (1);
     }
 }
 
@@ -325,7 +344,7 @@ EMAC_PKT_DESC_T* BoardDiag_AppAllocPkt(uint32_t  portNum, uint32_t pktSize)
     if (pktSize <= BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE)
     {
         /* Get a packet descriptor from the free queue */
-        p_pkt_desc              = BoardDiag_appQueuePop(&app_mcb.emac_pcb[portNum].freeQueue);
+        p_pkt_desc              = BoardDiag_appQueuePop(&app_mcb.freeQueue);
         if(p_pkt_desc != NULL)
         {
             p_pkt_desc->AppPrivate  = (uint32_t)p_pkt_desc;
@@ -358,7 +377,7 @@ void BoardDiag_AppFreePkt(uint32_t  portNum,
                           EMAC_PKT_DESC_T *pPktDesc)
 {
     /* Free a packet descriptor to the free queue */
-    BoardDiag_appQueuePush(&app_mcb.emac_pcb[portNum].freeQueue,
+    BoardDiag_appQueuePush(&app_mcb.freeQueue,
                    (EMAC_PKT_DESC_T *)pPktDesc->AppPrivate);
 }
 
@@ -477,31 +496,27 @@ static void BoardDiag_emacPhyExtendedRegRead (uint32_t baseAddr,
 static void BoardDiag_appInit(void)
 {
     EMAC_PKT_DESC_T  *p_pkt_desc;
-    uint32_t         index;
     uint32_t         count;
     uint8_t          *pktbuf_ptr;
 
     UART_printf ("\nEMAC loopback test application initialization\n");
 
     /* Reset application control block */
-    memset(&app_mcb, 0, sizeof (BOARD_DIAG_ICSSG_EMAC_MCB_T));
+    memset(&app_mcb, 0, sizeof (BOARD_DIAG_ICSSG_EMAC_MCB_T_V2));
 
     app_mcb.core_num = 0;
     /* packet buffer stores in internal memory */
     pktbuf_ptr = (uint8_t *) ((uint32_t) app_pkt_buffer) ;
 
     /* Initialize the free packet queue */
-    for (index = 0; index < EMAC_MAX_NUM_EMAC_PORTS; index++)
+    for (count = 0; count < BOARD_DIAG_ICSSG_EMAC_MAX_PKTS; count++)
     {
-        for (count = 0; count < BOARD_DIAG_ICSSG_EMAC_MAX_PKTS; count++)
-        {
-            p_pkt_desc               = &app_mcb.emac_pcb[index].pkt_desc[count];
-            p_pkt_desc->pDataBuffer  = pktbuf_ptr;
-            p_pkt_desc->BufferLen    = BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE;
-            BoardDiag_appQueuePush(&app_mcb.emac_pcb[index].freeQueue,
-                                   p_pkt_desc );
-            pktbuf_ptr += BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE;
-        }
+        p_pkt_desc               = &app_mcb.pkt_desc[count];
+        p_pkt_desc->pDataBuffer  = pktbuf_ptr;
+        p_pkt_desc->BufferLen    = BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE;
+        BoardDiag_appQueuePush(&app_mcb.freeQueue,
+                               p_pkt_desc );
+        pktbuf_ptr += BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE;
     }
 }
 
@@ -865,7 +880,6 @@ void BoardDiag_setupFwDualmac(uint32_t port_num, EMAC_HwAttrs_V5 *pEmacCfg)
  */
 static int8_t BoardDiag_icssgemacLoopbackTest(uint32_t portNum)
 {
-    EMAC_OPEN_CONFIG_INFO_T open_cfg;
     EMAC_CONFIG_INFO_T      cfg_info;
     EMAC_DRV_ERR_E          open_ret;
     int8_t   ret    = 0;
@@ -1011,6 +1025,25 @@ void BoardDiag_IcssgUdmaInit(void)
 #else
     instId = UDMA_INST_ID_MCU_0;
 #endif
+
+    /* Override the default RM Shared Resource parameters. 
+    *  For example, using maximum no.of available resources of Global Events
+    *  for current instance and updating mimium requirement to 10U */
+    Udma_RmSharedResPrms *rmSharedResPrms;
+    
+    rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_GLOBAL_EVENT);
+    if(NULL_PTR != rmSharedResPrms)
+    {
+        rmSharedResPrms->instShare[instId] = UDMA_RM_SHARED_RES_CNT_REST;
+        rmSharedResPrms->minReq            = 10U;
+        /* #UdmaInitPrms_init makes use of this information, 
+         * in initilaizing #Udma_RmInitPrms */
+    }
+    else
+    {
+        UART_printf("Global Event is not a shared resource!!\n");
+    }
+
     UdmaInitPrms_init(instId, &initPrms);
     initPrms.rmInitPrms.numIrIntr = BOARD_DIAG_ICSS_EMAC_MAX_PORTS*8;
     initPrms.rmInitPrms.numRxCh = BOARD_DIAG_ICSS_EMAC_MAX_PORTS*4;
@@ -1163,7 +1196,7 @@ int8_t BoardDiag_IcssgEmacTest(void)
         gPktRcvCount = 0;
         for (index = 0; index < BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT; index++)
         {
-            gPktRcvd = 1;
+            gPktRcvd = 0;
             timeout  = 0;
 
             BoardDiag_appTestSendPkts(portNum);
@@ -1184,8 +1217,6 @@ int8_t BoardDiag_IcssgEmacTest(void)
                     break;
                 }
             }
-            
-            gPktRcvCount = BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT;
             
 #if defined(DIAG_STRESS_TEST)
             char rdBuf = 'y';

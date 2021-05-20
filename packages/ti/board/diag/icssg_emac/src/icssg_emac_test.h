@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -105,7 +105,7 @@ extern void BOARD_delay(uint32_t usecs);
 #endif
 
 /* DO NOT CHANGE test_pkt UNLESS BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE IS UPDATED */
-#define BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE          (64U)
+#define BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE          (128U)
 
 #define BOARD_DIAG_ICSS_EMAC_NUM_HOST_DESC          (128U)
 
@@ -121,13 +121,13 @@ extern void BOARD_delay(uint32_t usecs);
 /**
  * @brief  Max EMAC packet size in bytes initialized for the driver
  */
-#define BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE          (64U)
+#define BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE          (128U)
 
 /**
  * @brief  Max packet size in bytes used in the application,
  *         align to 128 byte cache line size
  */
-#define BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE           (64U)
+#define BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE           (128U)
 
 /**
  * @brief  Total packet buffer size in bytes per core
@@ -140,7 +140,7 @@ extern void BOARD_delay(uint32_t usecs);
  * @brief  Max number of packets in the application free packet queue
  *
  */
-#define BOARD_DIAG_ICSSG_EMAC_MAX_PKTS              ((BOARD_DIAG_ICSS_EMAC_MAX_PORTS*64))
+#define BOARD_DIAG_ICSSG_EMAC_MAX_PKTS              ((BOARD_DIAG_ICSS_EMAC_MAX_PORTS*BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE))
 
 /**
  * @brief  Max number of packet descriptors per port initialized
@@ -250,15 +250,14 @@ typedef struct BOARD_DIAG_ICSSG_EMAC_EMAC_PCB_tag
  * @details
  *  Maintains the EMAC control information and error statistics.
  */
-typedef struct BOARD_DIAG_ICSSG_EMAC_MCB_tag
+typedef struct BOARD_DIAG_ICSSG_EMAC_MCB_V2_tag
 {
-    Uint32              core_num;
-    /**< DSP core number */
-    Uint32              timer_count;
-    /**< 100 msec timer count */
-    BOARD_DIAG_ICSSG_EMAC_EMAC_PCB_T      emac_pcb[EMAC_MAX_NUM_EMAC_PORTS];
+    uint32_t                             core_num;
+    EMAC_PKT_DESC_T                      pkt_desc[BOARD_DIAG_ICSSG_EMAC_MAX_PKTS];
+    /**< Pre-allocated/initialized packet descriptiors for both free queue and RX queues */
+    BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T    freeQueue;
     /**< EMAC port control block */
-} BOARD_DIAG_ICSSG_EMAC_MCB_T;
+} BOARD_DIAG_ICSSG_EMAC_MCB_T_V2;
 
 typedef struct BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_tag {
     const uint32_t *pru;
