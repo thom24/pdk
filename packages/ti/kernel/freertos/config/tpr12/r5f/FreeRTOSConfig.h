@@ -96,7 +96,7 @@
 #define configCHECK_FOR_STACK_OVERFLOW          (0) 
 #endif
 #define configRECORD_STACK_HIGH_ADDRESS         (1)
-#define configQUEUE_REGISTRY_SIZE               (0)
+#define configQUEUE_REGISTRY_SIZE               (32)
 #define configUSE_QUEUE_SETS                    (0)
 #define configUSE_TIME_SLICING                  (0) /* keep as 0 to get same functionality as SysBIOS6 */
 #define configUSE_NEWLIB_REENTRANT              (0)
