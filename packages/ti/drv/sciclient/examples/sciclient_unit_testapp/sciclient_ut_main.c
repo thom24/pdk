@@ -53,10 +53,16 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/hw_types.h>
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
+
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_ut_tests.h>
 #if defined (__C7100__)
 #include <ti/csl/csl_clec.h>
 #endif
+
+/* This is only needed as this test case is running back to back Sciclient
+ * Init and de-inits.
+ */
+#include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -199,6 +205,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 /*                 Internal Function Definitions                              */
 /* ========================================================================== */
 
+/* This is only needed as this test case is running back to back Sciclient
+ * Init and de-inits.
+ */
+extern Sciclient_ServiceHandle_t gSciclientHandle;
+
 int32_t App_getRevisionTestPol(void)
 {
     int32_t status = CSL_EFAIL;
@@ -225,7 +236,14 @@ int32_t App_getRevisionTestPol(void)
         (uint8_t *) &response,
         sizeof (response)
     };
-
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
+    
     status = Sciclient_init(&config);
 
     if (status == CSL_PASS)
@@ -270,7 +288,7 @@ int32_t App_getRevisionTestIntr(void)
     int32_t status = CSL_EFAIL;
     Sciclient_ConfigPrms_t        config =
     {
-        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
         NULL,
         1
     };
@@ -291,7 +309,14 @@ int32_t App_getRevisionTestIntr(void)
         (uint8_t *) &response,
         sizeof (response)
     };
-
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
+    
     status = Sciclient_init(&config);
     if (status == CSL_PASS)
     {
@@ -372,7 +397,13 @@ static int32_t App_invalidReqPrmTest(void)
         (uint8_t *) &response,
         sizeof (response)
     };
-
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
     status = Sciclient_init(&config);
     if (status == CSL_PASS)
     {
@@ -439,7 +470,13 @@ static int32_t App_timeoutTest(void)
         (uint8_t *) &response,
         sizeof (response)
     };
-
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
     status = Sciclient_init(&config);
     if (status == CSL_PASS)
     {
@@ -476,7 +513,13 @@ static int32_t App_msmcQueryTest(void)
 
     const struct tisci_query_msmc_req req = {};
     struct tisci_query_msmc_resp resp;
-
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
     status = Sciclient_init(&config);
     if (status == CSL_PASS)
     {
@@ -580,7 +623,13 @@ static int32_t App_rmGetResourceRange(void)
         NULL,
         1
     };
-
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
     status = Sciclient_init(&config);
     
     for (i = 0U; i < sizeof (gAppSciclientTstParams)/sizeof (struct appSciclientRmGetRangeTest); i++)

@@ -258,11 +258,16 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
 
             /* Register interrupts for secure and non-secure contexts of the CPU */
             /* Non-Secure */
-            uint32_t contextId = Sciclient_getCurrentContext(TISCI_MSG_VERSION);
+            uint32_t contextId = SCICLIENT_CONTEXT_NONSEC;
             if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
             {
                 OsalRegisterIntrParams_t    intrPrms;
                 rxThread = gSciclientMap[contextId].respThreadId;
+                CSL_secProxyGetDataAddr(&gSciclient_secProxyCfg, rxThread, 0U);
+                /* Get the Max Message Size */
+                gSciclient_maxMsgSizeBytes = 
+                        CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
+                        CSL_SEC_PROXY_RSVD_MSG_BYTES;
                 Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
                 Osal_RegisterInterrupt_initParams(&intrPrms);
                 /* Populate the interrupt parameters */
@@ -314,11 +319,16 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 status = CSL_EFAIL;
             }
             /* Secure Context */
-            contextId = Sciclient_getCurrentContext(TISCI_MSG_BOARD_CONFIG);
+            contextId = SCICLIENT_CONTEXT_SEC;
             if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
             {
                 OsalRegisterIntrParams_t    intrPrms;
                 rxThread = gSciclientMap[contextId].respThreadId;
+                CSL_secProxyGetDataAddr(&gSciclient_secProxyCfg, rxThread, 0U);
+                /* Get the Max Message Size */
+                gSciclient_maxMsgSizeBytes = 
+                        CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
+                        CSL_SEC_PROXY_RSVD_MSG_BYTES;
                 Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
                 Osal_RegisterInterrupt_initParams(&intrPrms);
                 /* Populate the interrupt parameters */
@@ -833,14 +843,8 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         }
 
         /* Read the last register of the rxThread */
-        if ((((uint32_t) gSecHeaderSizeWords*4U) +
-            (SCICLIENT_HEADER_SIZE_IN_WORDS*4U) +
-            rxPayloadSize) <=
-            (gSciclient_maxMsgSizeBytes - 4U))
-        {
-            (void) Sciclient_readThread32(rxThread,
+        (void) Sciclient_readThread32(rxThread,
                             (uint8_t)((gSciclient_maxMsgSizeBytes/4U) - 1U));
-        }
     }
 
     if ((status == CSL_PASS) &&
@@ -891,7 +895,7 @@ int32_t Sciclient_deinit(void)
             /* De-register interrupts */
             if (gSciclientHandle.respIntr[0] != NULL)
             {
-                contextId = Sciclient_getCurrentContext(TISCI_MSG_VERSION);
+                contextId = SCICLIENT_CONTEXT_NONSEC;
                 if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
                 {
                     (void) Osal_DeleteInterrupt(gSciclientHandle.respIntr[0], (int32_t) gSciclientMap[contextId].respIntrNum);
@@ -899,7 +903,7 @@ int32_t Sciclient_deinit(void)
             }
             if (gSciclientHandle.respIntr[1] != NULL)
             {
-                contextId = Sciclient_getCurrentContext(TISCI_MSG_BOARD_CONFIG);
+                contextId = SCICLIENT_CONTEXT_SEC;
                 if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
                 {
                     (void) Osal_DeleteInterrupt(gSciclientHandle.respIntr[1], (int32_t) gSciclientMap[contextId].respIntrNum);
