@@ -83,7 +83,7 @@ struct Udma_EventObj    gUdmaRxMgmtPsiCqEventObj[EMAC_MAX_PORTS][EMAC_TEST_MAX_S
 Udma_DrvHandle          gDrvHandle = NULL;
 
 
-uint8_t  app_pkt_buffer[BOARD_DIAG_ICSS_EMAC_TOTAL_PKTBUF_SIZE] __attribute__ ((aligned (128)));
+uint8_t  app_pkt_buffer[BOARD_DIAG_ICSS_EMAC_TOTAL_PKTBUF_SIZE] __attribute__ ((aligned (128))) __attribute__ ((section (".data_buffer")));
 /* TX/RX ring entries memory */
 
 static uint8_t gTxRingMem[BOARD_DIAG_ICSS_EMAC_MAX_PORTS][EMAC_TEST_MAX_CHANS_PER_PORT][EMAC_TEST_APP_RING_MEM_SIZE] __attribute__ ((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__ ((section (".data_buffer"))); 
