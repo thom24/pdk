@@ -103,7 +103,7 @@ void TaskP_Function (void *arg)
     TaskP_Handle hTask;
 
     /* Call the application function. */
-    (*handle->taskfxn)(handle->arg0, handle->arg0);
+    (*handle->taskfxn)(handle->arg0, handle->arg1);
 
     hTask = handle;
     /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
