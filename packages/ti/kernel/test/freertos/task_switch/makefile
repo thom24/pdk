@@ -32,9 +32,12 @@ ifeq ($(ISA),$(filter $(ISA), c66))
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
 endif
 ifeq ($(ISA),$(filter $(ISA), r5f))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_$(CORE)_freertos.lds
+else
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
 endif
-
+endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12))
 # Append local auxillary linker command file

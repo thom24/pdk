@@ -65,7 +65,7 @@
 #define NUM_TASK_SWITCHES (1000000u)
 
 #if defined (SOC_TPR12) || defined (SOC_AWR294X)
-    #ifdef BUILD_MCU1_0
+    #if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1)
         #define PING_INT_NUM           (236u)
         #define PONG_INT_NUM           (237u)
     #endif

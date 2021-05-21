@@ -86,10 +86,10 @@ am64x_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
 sbl_am64x_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
 am64x_LASTCORE := $(word $(words $(sbl_am64x_CORELIST)), $(sbl_am64x_CORELIST))
 
-sbl_tpr12_CORELIST := mcu1_0 mcu1_1 c66xdsp_1
+sbl_tpr12_CORELIST := mcu1_0 c66xdsp_1
 tpr12_LASTCORE := $(word $(words $(sbl_tpr12_CORELIST)), $(sbl_tpr12_CORELIST))
 
-sbl_awr294x_CORELIST := mcu1_0 mcu1_1 c66xdsp_1
+sbl_awr294x_CORELIST := mcu1_0 c66xdsp_1
 awr294x_LASTCORE := $(word $(words $(sbl_awr294x_CORELIST)), $(sbl_awr294x_CORELIST))
 
 sbl_DISABLE_PARALLEL_MAKE = yes

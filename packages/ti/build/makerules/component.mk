@@ -128,7 +128,7 @@ DEFAULT_$(SOC)_CORELIST_freertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 # SafeRTOS is not currently supported on mcu cores
-DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mcu1_0
+DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mcu1_0 mcu1_1
 else
 #SafeRTOS is not supported on other SOCs
 DEFAULT_CORELIST_EXCLUDE_CORES_safertos = $(DEFAULT_$(SOC)_CORELIST)

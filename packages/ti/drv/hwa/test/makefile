@@ -29,7 +29,7 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
 EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/hwa/test/$(SOC)/dss_hwa_linker.cmd
 endif
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
 EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/hwa/test/$(SOC)/mss_hwa_linker.cmd
 endif
 endif
@@ -39,7 +39,12 @@ CFLAGS_OS_DEFINES = -DFREERTOS
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 COMP_LIST_COMMON += hwa
 INCLUDE_EXTERNAL_INTERFACES += pdk freertos
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
 APPEND_LNKCMD_FILE = ./$(SOC)/linker_$(ISA).cmd
+endif
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
+EXTERNAL_LNKCMD_FILE_LOCAL = ./$(SOC)/linker_$(ISA).cmd
+endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),safertos)

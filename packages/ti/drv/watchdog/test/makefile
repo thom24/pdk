@@ -39,6 +39,7 @@ INCDIR =
 
 # Common source files across all platforms and cores
 SRCS_mcu1_0 += main_mss.c
+SRCS_mcu1_1 += main_mss.c
 SRCS_c66xdsp_1 += main_dss.c
 
 # List all the external components/interfaces, whose interface header files
