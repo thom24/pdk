@@ -58,7 +58,6 @@ endif
 
 ifeq ($(SOC),$(filter $(SOC), j721s2))
 CONFIG_SOC_FOLDER_STRING="j721s2"
-CONFIG_CLK_PLL_16FFT_FRACF_CALIBRATION=y
 endif
 
 # SoC Specific source files

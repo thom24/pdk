@@ -90,8 +90,7 @@ extern "C" {
 /* @} */
 #if defined(SOC_J721S2)
 /* HACK: until UART driver is added for J721S2 */
-void UART_printf_dummy(const char *pstr, ...);
-#define App_sciclientPrintf UART_printf_dummy
+#define App_sciclientPrintf printf
 #else
 #define App_sciclientPrintf UART_printf
 #endif

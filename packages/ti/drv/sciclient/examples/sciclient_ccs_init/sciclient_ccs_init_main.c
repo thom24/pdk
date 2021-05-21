@@ -75,12 +75,12 @@
 #define CONFIG_BOARDCFG_RM (1)
 #endif
 
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
 #define SCICLIENT_CCS_DEVGRP0 (DEVGRP_00)
 #define SCICLIENT_CCS_DEVGRP1 (DEVGRP_01)
 #endif
 
-#if defined (SOC_AM64X)
+#if defined (SOC_AM64X) || defined (SOC_J721S2)
 #define SCICLIENT_CCS_DEVGRP0 (DEVGRP_ALL)
 #endif
 
@@ -397,6 +397,11 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr)
         if (CSL_PASS == status)
         {
             printf("PASSED\n");
+#if defined(SOC_J721S2)
+            /* TEMP HACK: trigger deferred PM init w/ dummy request */
+            Sciclient_pmSetModuleRst(0xffffffffU, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            printf("!! Completed PM deferred init!!\n");
+#endif
         }
         else
         {

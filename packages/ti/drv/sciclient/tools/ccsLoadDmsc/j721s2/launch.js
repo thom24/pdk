@@ -90,8 +90,8 @@ function printVars()
 
 function connectTargets()
 {
-    /* Set timeout of 20 seconds */
-    script.setScriptTimeout(200000);
+    /* Set timeout of 200 seconds */
+    script.setScriptTimeout(2000000);
     updateScriptVars();
     sysResetVar=dsDMSC_0.target.getResetType(1);
     sysResetVar.issueReset();
@@ -165,7 +165,7 @@ function connectTargets()
     /* Run the DDR Configuration */
     print("J721S2 Running the DDR configuration... Wait till it completes!");
     dsDMSC_0.target.halt();
-    dsDMSC_0.expression.evaluate("J7_LPDDR4_4266MTs_Config_FULL_SEPARATE()");
+    dsDMSC_0.expression.evaluate("J7_LPDDR4_Config_Late()");
     dsDMSC_0.target.runAsynch();
 }
 

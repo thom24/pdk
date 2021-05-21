@@ -37,20 +37,20 @@ SECTIONS
     .text:ti_sysbios_family_arm_MPU*       : {} palign(8) > R5F_TCMB0
     .utilsCopyVecsToAtcm                   : {} palign(8) > R5F_TCMB0
 
-    .text       : {} palign(8)   > DDR0
-    .cinit      : {} palign(8)   > DDR0
-    .bss        : {} align(8)    > DDR0
-    .far        : {} align(8)    > DDR0
-    .const      : {} palign(8)   > DDR0
-    .data       : {} palign(128) > DDR0
-    .sysmem     : {} align(8)    > DDR0
-    .stack      : {} align(4)    > DDR0
-    .data_buffer: {} palign(128) > DDR0
-    .bss.devgroup*: {} align(4)    > DDR0
-    .const.devgroup*: {} align(4)    > DDR0
-    .boardcfg_data: {} align(4)    > DDR0
+    .text       : {} palign(8)   > MSMC3
+    .cinit      : {} palign(8)   > MSMC3
+    .bss        : {} align(8)    > MSMC3
+    .far        : {} align(8)    > MSMC3
+    .const      : {} palign(8)   > MSMC3
+    .data       : {} palign(128) > MSMC3
+    .sysmem     : {} align(8)    > MSMC3
+    .stack      : {} align(4)    > MSMC3
+    .data_buffer: {} palign(128) > MSMC3
+    .bss.devgroup*: {} align(4)    > MSMC3
+    .const.devgroup*: {} align(4)    > MSMC3
+    .boardcfg_data: {} align(4)    > MSMC3
 
     /* USB or any other LLD buffer for benchmarking */
-    .benchmark_buffer: (NOLOAD) {} align (8) > DDR0
+    .benchmark_buffer: (NOLOAD) {} align (8) > MSMC3
 
 }
