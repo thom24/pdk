@@ -309,12 +309,18 @@ void vPortTaskUsesFPU( void )
 void vPortEnterCritical( void )
 {
     /* Mask interrupts up to the max syscall interrupt priority. */
+    asm ( " DSB ");
+    asm ( " ISB ");
     asm ( " CPSID	i");
+    asm ( " DSB ");
+    asm ( " ISB ");
 
     /* Now interrupts are disabled ulCriticalNesting can be accessed
      * directly.  Increment ulCriticalNesting to keep a count of how many times
      * portENTER_CRITICAL() has been called. */
     ulCriticalNesting++;
+    asm ( " DSB ");
+    asm ( " ISB ");
 
     #if (configOPTIMIZE_FOR_LATENCY==0)
     /* This API should NOT be called from within ISR context. Below logic checks for this.
@@ -339,7 +345,11 @@ void vPortExitCritical( void )
     {
         /* Decrement the nesting count as the critical section is being
          * exited. */
+        asm ( " DSB ");
+        asm ( " ISB ");
         ulCriticalNesting--;
+        asm ( " DSB ");
+        asm ( " ISB ");
 
         /* If the nesting level has reached zero then all interrupt
          * priorities must be re-enabled. */
@@ -348,6 +358,8 @@ void vPortExitCritical( void )
             /* Critical nesting has reached zero so all interrupt priorities
              * should be unmasked. */
             asm ( " CPSIE	i");
+            asm ( " DSB ");
+            asm ( " ISB ");
         }
     }
 }
