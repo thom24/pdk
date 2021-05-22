@@ -369,6 +369,20 @@ typedef struct
      *   0x8 = Channel 9
      */
 	GPADC_MeasExtSrcType  channelID;
+
+    /**
+     * \brief
+     *   Unique muxing config value per channel
+     */
+    uint32_t channelConfigValue;
+
+    /**
+     * \brief
+     *  Channel parameters including channel paramVal(subsystem-type), collect samples
+     *    and skip samples
+     */
+    uint8_t channelParamValue;
+
     /**
      * \brief
      *   GPADC driver considers channels configuration passed to the

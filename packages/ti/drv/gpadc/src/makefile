@@ -15,7 +15,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 
-SRCS_COMMON += gpadc.c gpadc_soc.c
+SRCS_COMMON += gpadc.c gpadc_soc.c gpadc_soc_temp.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(GPADC_CFLAGS)
 PACKAGE_SRCS_COMMON = gpadc.h gpadc_cfg.h gpadc_component.mk makefile src soc/$(SOC)

@@ -51,6 +51,7 @@
 #include <ti/osal/DebugP.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/gpadc/gpadc.h>
+#include <ti/drv/gpadc/soc/tpr12/gpadc_soc_temp.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -58,6 +59,12 @@
 
 #define GPADC_CHANNEL_READ     1U
 #define GPADC_GROUP_READ       2U
+#define GPADC_TEMPERATURE_READ 3U
+
+
+#define LOWER_REFERENCE                 0
+#define UPPER_REFERENCE                 1800
+#define ADC_DEF_CHANNEL_RESOLUTION      (10U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -72,6 +79,7 @@
 static int32_t PlatformInit(void);
 static int32_t GPADC_Group_Channel_Read(void);
 static int32_t GPADC_Single_Channel_Read(uint8_t channelIndex);
+static int32_t GPADC_Temperature_Sensors_Read(void);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -176,6 +184,7 @@ static int32_t GPADC_Group_Channel_Read(void)
 	uint8_t index =0;
 	GPADC_ConvResultType convRes;
 	uint32_t channelIndex;
+    uint32_t adcInMv;
 
 
     memset(&CfgPtr,0,sizeof(CfgPtr));
@@ -186,7 +195,7 @@ static int32_t GPADC_Group_Channel_Read(void)
 	CfgPtr.convMode = GPADC_ONESHOT_CONV_MODE;
 
 	UART_printf("Select Channel Bitmap for Group Read <0x1FF to 0x001>\t");
-	UART_scanFmt ("%x",&channelIndex);
+	UART_scanFmt("%x",&channelIndex);
 
 	for (index = 0; index < MAX_GPADC_MEAS_SOURCES; index++)
 	{
@@ -220,13 +229,50 @@ static int32_t GPADC_Group_Channel_Read(void)
 		retVal = E_NOT_OK;
 	}
 
+	UART_printf(" Channel\tHW_CH\t\tADC Value\tVolt\r\n");
+
 	for(index=0; index < MAX_GPADC_MEAS_SOURCES; index++)
 	{
-		UART_printf("GPADC EXT%d  AvgValue %d\n",index+1, gpadc_result[index]);
+
+		adcInMv = (gpadc_result[index] * (UPPER_REFERENCE -LOWER_REFERENCE))/
+				(1<<ADC_DEF_CHANNEL_RESOLUTION);
+
+		UART_printf(
+				" %4d\t\tADC_IN%d\t0x%08x\t%04dmV\r\n",
+				index, index, gpadc_result[index], adcInMv);
 	}
 
 	return retVal;
 }
+
+static int32_t GPADC_Temperature_Sensors_Read(void)
+{
+	GPADC_StdReturnType convRes;
+	GPADC_TempSensValueType tempValues;
+	uint8_t numAverageSamples;
+
+    memset(&tempValues,0,sizeof(tempValues));
+
+    GPADC_initTempMeasurement();
+    numAverageSamples = 5U;
+    convRes = GPADC_readTemperature(numAverageSamples, &tempValues);
+
+	if(E_OK == convRes)
+	{
+		UART_printf("Temperature read conversion successful\n");
+	}
+	else if(E_NOT_OK == convRes)
+	{
+		UART_printf("Temperature read conversion unsuccessful\n");
+	}
+
+	UART_printf("DSP Temp Sensor temp value %d\n", tempValues.DigDspTempValue);
+	UART_printf("HWA Temp Sensor temp value %d\n", tempValues.DigHwaTempValue);
+	UART_printf("HSM Temp Sensor temp value %d\n", tempValues.DigHsmTempValue);
+
+	return convRes;
+}
+
 
 int32_t main (void)
 {
@@ -244,20 +290,21 @@ int32_t main (void)
     	UART_printf ("Please select the type of test to execute:  \n");
     	UART_printf ("1. GPADC Single Channel Read                       \n");
     	UART_printf ("2. GPADC Group  Channel Read                       \n");
+    	UART_printf ("3. GPADC Temperature Sensors Read                       \n");
     	UART_printf ("*******************************************************\n");
     	UART_printf ("> Enter your selection:\t");
 
-    	UART_scanFmt ("%d",&testSelection);
+    	UART_scanFmt("%d",&testSelection);
 
         /* Validate the selection: */
-    }while((testSelection < GPADC_CHANNEL_READ) || (testSelection > GPADC_GROUP_READ ));
+    }while((testSelection < GPADC_CHANNEL_READ) || (testSelection > GPADC_TEMPERATURE_READ ));
 
     if (testSelection == GPADC_CHANNEL_READ)
     {
     	do
     	{
     		UART_printf("Select Channel to be read <1-9>\t");
-    		UART_scanFmt ("%d",&channelIndex);
+    		UART_scanFmt("%d",&channelIndex);
     	}while((channelIndex <= 0) || (channelIndex > 9));
 
     	channelIndex = channelIndex - 1U;
@@ -282,6 +329,18 @@ int32_t main (void)
         else
         {
         	UART_printf("GPADC Group Read testing : Pass\n");
+        }
+    }
+    else if (testSelection == GPADC_TEMPERATURE_READ)
+    {
+        retVal = GPADC_Temperature_Sensors_Read();
+        if (retVal == E_NOT_OK)
+        {
+        	UART_printf("GPADC Temperature Sensor Read testing : Fail\n");
+        }
+        else
+        {
+        	UART_printf("GPADC Temperature Sensor Read testing : Pass\n");
         }
     }
 }

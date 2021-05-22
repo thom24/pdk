@@ -43,6 +43,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <ti/osal/DebugP.h>
+#include <ti/csl/hw_types.h>
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
 #include "gpadc_soc.h"
 /******************************************************************************
@@ -56,15 +57,15 @@
  */
 GPADC_CfgAndParamValuesType GPADC_ConfigParamLuTab[MAX_GPADC_MEAS_SOURCES] = {
     /*! UnBuffConfigVal, BuffConfigVal, {ParamVal, CollectSamples, b4_SkipSamples, Reserved}, time */
-    {    0x400U,         0x2U,          { 124U,        4U,           8U,            0U },     74U }, /* #0 M_GPADC_MEAS_EXT_CH1 */
-    {    0x800U,         0x4U,          { 124U,        4U,           8U,            0U },     74U }, /* #1 M_GPADC_MEAS_EXT_CH2 */
-    {   0x1000U,         0x8U,          { 124U,        4U,           8U,            0U },     74U }, /* #2 M_GPADC_MEAS_EXT_CH3 */
-    {   0x2000U,        0x10U,          { 124U,        4U,           8U,            0U },     74U }, /* #3 M_GPADC_MEAS_EXT_CH4 */
-    {   0x4000U,     0x10000U,          { 124U,        4U,           8U,            0U },     74U }, /* #4 M_GPADC_MEAS_EXT_CH5 */
-    {   0x8000U,    0x200000U,          { 124U,        4U,           8U,            0U },     74U }, /* #5 M_GPADC_MEAS_EXT_CH6 */
-    {0x1000000U,    0x400000U,          { 124U,        4U,           8U,            0U },     74U }, /* #6 M_GPADC_MEAS_EXT_CH7 */
-    {0x2000000U,    0x800000U,          { 124U,        4U,           8U,            0U },     74U }, /* #7 M_GPADC_MEAS_EXT_CH8 */
-    {0x8000000U,   0x4000000U,          { 124U,        4U,           8U,            0U },     74U }, /* #8 M_GPADC_MEAS_EXT_CH9 */
+    {    0x400U,         0x2U,          { 2U,        255U,           0U,            0U },     74U }, /* #0 M_GPADC_MEAS_EXT_CH1 */
+    {    0x800U,         0x4U,          { 2U,        255U,           0U,            0U },     74U }, /* #1 M_GPADC_MEAS_EXT_CH2 */
+    {   0x1000U,         0x8U,          { 2U,        255U,           0U,            0U },     74U }, /* #2 M_GPADC_MEAS_EXT_CH3 */
+    {   0x2000U,        0x10U,          { 2U,        255U,           0U,            0U },     74U }, /* #3 M_GPADC_MEAS_EXT_CH4 */
+    {   0x4000U,     0x10000U,          { 2U,        255U,           0U,            0U },     74U }, /* #4 M_GPADC_MEAS_EXT_CH5 */
+    {   0x8000U,    0x200000U,          { 2U,        255U,           0U,            0U },     74U }, /* #5 M_GPADC_MEAS_EXT_CH6 */
+    {0x1000000U,    0x400000U,          { 2U,        255U,           0U,            0U },     74U }, /* #6 M_GPADC_MEAS_EXT_CH7 */
+    {0x2000000U,    0x800000U,          { 2U,        255U,           0U,            0U },     74U }, /* #7 M_GPADC_MEAS_EXT_CH8 */
+    {0x8000000U,   0x4000000U,          { 2U,        255U,           0U,            0U },     74U }, /* #8 M_GPADC_MEAS_EXT_CH9 */
 };
 
 GPADC_DriverObjectType GPADCDrvObj;
@@ -100,22 +101,26 @@ void GPADC_DriverInit(const GPADC_ConfigType *CfgPtr)
     		channelNumber = ConfigPtr->channelConfig[channelIndex].channelID;
     		GPADCDrvObj.driverChannelConfig[channelNumber].isChannelConfigured = TRUE;
     		GPADCDrvObj.driverChannelConfig[channelNumber].isChannelBufferedMode = ConfigPtr->channelConfig[channelIndex].isBufferedMode;
-    		if(ConfigPtr->channelConfig[channelIndex].isBufferedMode)
-    		{
-    			GPADCDrvObj.driverChannelConfig[channelNumber].channelConfigValue = GPADC_ConfigParamLuTab[channelNumber].BuffConfigValue;
-    		}
-    		else
-    		{
-    			GPADCDrvObj.driverChannelConfig[channelNumber].channelConfigValue = GPADC_ConfigParamLuTab[channelNumber].UnbuffConfigValue;
-    		}
+
 
     		if(ConfigPtr->channelConfig[channelIndex].useLuTable)
     		{
+        		if(ConfigPtr->channelConfig[channelIndex].isBufferedMode)
+        		{
+        			GPADCDrvObj.driverChannelConfig[channelNumber].channelConfigValue = GPADC_ConfigParamLuTab[channelNumber].BuffConfigValue;
+        		}
+        		else
+        		{
+        			GPADCDrvObj.driverChannelConfig[channelNumber].channelConfigValue = GPADC_ConfigParamLuTab[channelNumber].UnbuffConfigValue;
+        		}
+
     			GPADCDrvObj.driverChannelConfig[channelNumber].channelParamValue.b32_Val = GPADC_ConfigParamLuTab[channelNumber].ParamInfo.b32_Val;
     		}
     		else
     		{
-    			GPADCDrvObj.driverChannelConfig[channelNumber].channelParamValue.bits.b8_ParamValue = GPADC_ConfigParamLuTab[channelNumber].ParamInfo.bits.b8_ParamValue;
+    			GPADCDrvObj.driverChannelConfig[channelNumber].channelConfigValue = ConfigPtr->channelConfig[channelIndex].channelConfigValue;
+
+    			GPADCDrvObj.driverChannelConfig[channelNumber].channelParamValue.bits.b8_ParamValue = ConfigPtr->channelConfig[channelIndex].channelParamValue;
 
     			GPADCDrvObj.driverChannelConfig[channelNumber].channelParamValue.bits.b8_CollectSamples = ConfigPtr->channelConfig[channelIndex].collectSamples;
     			skipSamples = ConfigPtr->channelConfig[channelIndex].skipSamples;
@@ -216,13 +221,17 @@ void GPADC_DriverDeInit(void)
 void GPADC_ResetRelease(void)
 {
     uint32_t regWrSts = 0U;
+    uint32_t regVal;
     /* Release Reset GPADC for digital FSM */
     M_REG_STRUCT_SWRITE(MSS_GPADC_RST_CTRL_PTR->bits.b3_Assert, M_GPADC_FSM_DEASSERT_RESET, regWrSts);
 
-    M_REG_STRUCT_SWRITE(MSS_TOPRCM_ANA_REG_TW_ANA_TMUX_CTRL_LOWV_PTR->bits.b1_ClkTmuxEsdCtrl, 1U, regWrSts);
-    M_REG_STRUCT_SWRITE(MSS_TOPRCM_ANA_REG_TW_ANA_TMUX_CTRL_LOWV_PTR->bits.b1_AnaTestEn, 1U, regWrSts);
+    regVal = HW_RD_REG32(AR_RFANACIO_TW_ANA_TMUX_CTRL_REG_ADDR);
+    HW_SET_FIELD32(regVal,AR_RFANACIO_TW_ANA_TMUX_CTRL_CLK_TMUX_ESD_CTRL ,CLK_TMUX_ESD_CTRL_ENABLE);
+    HW_WR_REG32(AR_RFANACIO_TW_ANA_TMUX_CTRL_REG_ADDR, regVal);
 
-    M_REG_STRUCT_SWRITE(MSS_TOPRCM_ANA_REG_REFSYS_SPARE_REG_LOWV_PTR->bits.b1_AnaogTestTmuxEsdCtrl, 1U, regWrSts);
+    regVal = HW_RD_REG32(AR_RFANACIO_RX_REFSYS_TMUX_SPARE_CTRL_REG_ADDR);
+    HW_SET_FIELD32(regVal,AR_RFANACIO_RX_REFSYS_TMUX_SPARE_CTRL_ANA_TEST_ESD_MUX_EN ,ANA_TEST_ESD_MUX_EN);
+    HW_WR_REG32(AR_RFANACIO_RX_REFSYS_TMUX_SPARE_CTRL_REG_ADDR, regVal);
 
     M_REG_STRUCT_SWRITE(MSS_TOPRCM_ANA_REG_TW_CTRL_REG_LOWV_PTR->bits.b1_AdcRefBufEn, 1U, regWrSts);
 

@@ -135,6 +135,16 @@ extern "C" {
  */
 #define M_GPADC_TIMEOUT_MAX         (200000U)
 
+#define AR_RFANACIO_TW_ANA_TMUX_CTRL_REG_ADDR                        (0xA32013CCU)
+#define AR_RFANACIO_TW_ANA_TMUX_CTRL_CLK_TMUX_ESD_CTRL_MASK          (0x40000000U)
+#define AR_RFANACIO_TW_ANA_TMUX_CTRL_CLK_TMUX_ESD_CTRL_SHIFT         (0x0000001EU)
+#define CLK_TMUX_ESD_CTRL_ENABLE                                     (1U)
+
+#define AR_RFANACIO_RX_REFSYS_TMUX_SPARE_CTRL_REG_ADDR                        (0xA3201144U)
+#define AR_RFANACIO_RX_REFSYS_TMUX_SPARE_CTRL_ANA_TEST_ESD_MUX_EN_MASK        (0x80000000U)
+#define AR_RFANACIO_RX_REFSYS_TMUX_SPARE_CTRL_ANA_TEST_ESD_MUX_EN_SHIFT       (0x0000001FU)
+#define ANA_TEST_ESD_MUX_EN                                                   (1U)
+
 /******************************************************************************
  * TYPE-DEFINE STRUCT/ENUM/UNION DEFINITIONS
  ******************************************************************************
