@@ -5,14 +5,14 @@ ifeq ($(SMP), enable)
     #Name of the directory created under packages/ti/binary/
     APP_NAME = PCIE_sample_SMP_ExampleProject
     # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-    LOCAL_APP_NAME =  PCIE_sample__$(BOARD)_$(CORE)_SMP_Example_Project
+    LOCAL_APP_NAME =  PCIE_sample_$(BOARD)_$(CORE)_SMP_Example_Project
 
     CFLAGS_PCIE_SMP    = -DPCIE_SMP_ENABLE
 else
     #Name of the directory created under packages/ti/binary/
     APP_NAME = PCIE_sample_ExampleProject
     # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-    LOCAL_APP_NAME =  PCIE_sample__$(BOARD)_$(CORE)Example_Project
+    LOCAL_APP_NAME =  PCIE_sample_$(BOARD)_$(CORE)Example_Project
 endif
 
 

@@ -318,6 +318,7 @@ pcieRet_e pcieSetGen2(Pcie_Handle handle)
 
   pcieRegisters_t        regs;
   pcieLinkCapReg_t       linkCap;
+  pcieLinkCtrl2Reg_t     linkCtrl2;
   pcieGen2Reg_t          gen2;
 
   uint8_t                targetGen, dirSpd;
@@ -354,6 +355,26 @@ pcieRet_e pcieSetGen2(Pcie_Handle handle)
   {
     regs.linkCap = NULL; /* Nothing to write back */
   }
+
+#if defined(SOC_AM65XX)
+  /* Set gen2/gen3 in link ctrl2 */
+  regs.linkCtrl2 = &linkCtrl2;
+  if ((retVal = Pcie_readRegs (handle, pcie_LOCATION_LOCAL, &regs)) != pcie_RET_OK)
+  {
+    PCIE_logPrintf ("GET linkCtrl2 register failed!\n");
+    return retVal;
+  }
+
+  if (linkCtrl2.tgtSpeed != targetGen)
+  {
+    PCIE_logPrintf ("PowerUP linkCtrl2 gen=%d change to %d\n", linkCtrl2.tgtSpeed, targetGen);
+    linkCtrl2.tgtSpeed = targetGen;
+  }
+  else
+  {
+    regs.linkCtrl2 = NULL; /* Nothing to write back */
+  }
+#endif
 
   /* Setting PL_GEN2 */
   gen2.numFts = 0xF;

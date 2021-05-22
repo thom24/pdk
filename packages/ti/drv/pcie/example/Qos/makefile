@@ -4,7 +4,7 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 #Name of the directory created under packages/ti/binary/
 APP_NAME = PCIE_Qos_ExampleProject
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  PCIE_Qos__$(BOARD)_$(CORE)Example_Project
+LOCAL_APP_NAME =  PCIE_Qos_$(BOARD)_$(CORE)Example_Project
 
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e))

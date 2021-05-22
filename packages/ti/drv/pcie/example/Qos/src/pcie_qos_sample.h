@@ -76,8 +76,9 @@
 #define UDMA
 #define PCIE_EXAMPLE_LINE_SIZE     (1048576*8)          /* 8MB */
 
-/* AM6 is GEN3 */
-#define GEN3   
+/* AM6 is GEN3 but limiting the QoS example to GEN2 due to
+   stability issues with GEN3 */
+#define GEN2
 
 /* Set up printf */
 #include <ti/drv/uart/UART_stdio.h>
