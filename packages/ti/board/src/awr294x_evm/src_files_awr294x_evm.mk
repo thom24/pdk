@@ -6,7 +6,7 @@ INCDIR += src/awr294x_evm src/awr294x_evm/include
 SRCS_COMMON += board_init.c board_mmr.c board_pinmux.c board_pll.c board_clock.c board_utils.c board_info.c board_lld_init.c board_ethernet_config.c
 
 ifeq ($(BOARD_VARIANT),)
-SRCS_COMMON += AWR294X_pinmux_data.c
+SRCS_COMMON += AWR294X_pinmux_data_lop.c
 endif
 
 ifeq ($(BOARD_VARIANT), AWR294X_ETS)
