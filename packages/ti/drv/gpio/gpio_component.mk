@@ -70,7 +70,7 @@ drvgpio_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 # under other list
 drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm am64x_evm
 drvgpio_tirtos_BOARDLIST = $(drvgpio_BOARDLIST)
-drvgpio_freertos_BOARDLIST = tpr12_evm
+drvgpio_freertos_BOARDLIST = tpr12_evm awr294x_evm
 drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 awr294x am64x
 drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 
 drvgpio_am574x_CORELIST = c66x a15_0 ipu1_0
