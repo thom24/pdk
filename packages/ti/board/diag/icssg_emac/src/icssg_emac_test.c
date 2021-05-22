@@ -123,7 +123,7 @@ uint8_t icss_tx_port_queue[3][100352] __attribute__ ((aligned (BOARD_DIAG_ICSS_E
 void emac_icssg_update_link_params_icssg_dual_mac(uint32_t portNum, EMAC_LINK_INFO_T *p_info);
 
 PRUICSS_Handle prussHandle[BOARD_DIAG_ICSS_EMAC_MAX_INTANCES] = {NULL, NULL, NULL};
-BOARD_DIAG_ICSSG_EMAC_MCB_T_V2   app_mcb;
+BOARD_DIAG_ICSSG_EMAC_MCB_V2_T   app_mcb;
 EMAC_MAC_ADDR_T  macTest;
 
 EMAC_OPEN_CONFIG_INFO_T open_cfg __attribute__ ((aligned (BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ)));
@@ -242,6 +242,9 @@ void BoardDiag_setPortStateCtrl(uint32_t startP, uint32_t endP)
     EMAC_DRV_ERR_E retVal;
     EMAC_IOCTL_PARAMS params;
     uint32_t pNum;
+    uint32_t mgmtRings = EMAC_POLL_RX_MGMT_RING_ALL;
+    uint32_t pktRings = (EMAC_POLL_RX_PKT_RING1 | EMAC_POLL_RX_PKT_RING2);
+    uint32_t txRings =  EMAC_POLL_TX_COMPLETION_RING_ALL;
 
     if (gPgVersion != APP_TEST_AM65XX_PG1_0_VERSION)
     {
@@ -253,13 +256,11 @@ void BoardDiag_setPortStateCtrl(uint32_t startP, uint32_t endP)
 
             if(retVal != EMAC_DRV_RESULT_IOCTL_IN_PROGRESS)
             {
-               //UART_printf("app_test_set_port_state_ctrl:port_num: %d: failed with code %d\n", pNum, retVal);
-               //while (1);
-               BOARD_delay(100000);
+                BOARD_delay(100000);
             }
             else
             {
-                emac_poll_ctrl (pNum, 0, EMAC_POLL_RX_MGMT_RING_ALL, 0);
+                emac_poll_ctrl (pNum, pktRings, mgmtRings, txRings);
                 app_test_wait_mgmt_resp(1000);
             }
         }
@@ -308,22 +309,25 @@ static EMAC_PKT_DESC_T* BoardDiag_appQueuePop(BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T 
 static void BoardDiag_appQueuePush(BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T *pq,
                                    EMAC_PKT_DESC_T *pPktHdr)
 {
-    pPktHdr->pNext = 0;
-
-    if( !pq->pHead )
+    if(pq != NULL)
     {
-        /* Queue is empty - Initialize it with this one packet */
-        pq->pHead = pPktHdr;
-        pq->pTail = pPktHdr;
-    }
-    else
-    {
-        /* Queue is not empty - Push onto end */
-        pq->pTail->pNext = pPktHdr;
-        pq->pTail        = pPktHdr;
-    }
+        pPktHdr->pNext = 0;
 
-    pq->Count++;
+        if( !pq->pHead )
+        {
+            /* Queue is empty - Initialize it with this one packet */
+            pq->pHead = pPktHdr;
+            pq->pTail = pPktHdr;
+        }
+        else
+        {
+            /* Queue is not empty - Push onto end */
+            pq->pTail->pNext = pPktHdr;
+            pq->pTail        = pPktHdr;
+        }
+
+        pq->Count++;
+    }
 }
 
 /**
@@ -376,9 +380,12 @@ EMAC_PKT_DESC_T* BoardDiag_AppAllocPkt(uint32_t  portNum, uint32_t pktSize)
 void BoardDiag_AppFreePkt(uint32_t  portNum,
                           EMAC_PKT_DESC_T *pPktDesc)
 {
-    /* Free a packet descriptor to the free queue */
-    BoardDiag_appQueuePush(&app_mcb.freeQueue,
-                   (EMAC_PKT_DESC_T *)pPktDesc->AppPrivate);
+    if(pPktDesc != NULL)
+    {
+        /* Free a packet descriptor to the free queue */
+        BoardDiag_appQueuePush(&app_mcb.freeQueue,
+                       (EMAC_PKT_DESC_T *)pPktDesc->AppPrivate);
+    }
 }
 
 /**
@@ -502,7 +509,7 @@ static void BoardDiag_appInit(void)
     UART_printf ("\nEMAC loopback test application initialization\n");
 
     /* Reset application control block */
-    memset(&app_mcb, 0, sizeof (BOARD_DIAG_ICSSG_EMAC_MCB_T_V2));
+    memset(&app_mcb, 0, sizeof (BOARD_DIAG_ICSSG_EMAC_MCB_V2_T));
 
     app_mcb.core_num = 0;
     /* packet buffer stores in internal memory */
@@ -1019,41 +1026,12 @@ void BoardDiag_IcssgUdmaInit(void)
     int32_t         retVal = UDMA_SOK;
     Udma_InitPrms   initPrms;
     uint32_t        instId;
-    /* UDMA driver init */
-#if defined (__aarch64__)
-    instId = UDMA_INST_ID_MAIN_0;
-#else
-    instId = UDMA_INST_ID_MCU_0;
-#endif
 
-    /* Override the default RM Shared Resource parameters. 
-    *  For example, using maximum no.of available resources of Global Events
-    *  for current instance and updating mimium requirement to 10U */
-    Udma_RmSharedResPrms *rmSharedResPrms;
-    
-    rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_GLOBAL_EVENT);
-    if(NULL_PTR != rmSharedResPrms)
-    {
-        rmSharedResPrms->instShare[instId] = UDMA_RM_SHARED_RES_CNT_REST;
-        rmSharedResPrms->minReq            = 10U;
-        /* #UdmaInitPrms_init makes use of this information, 
-         * in initilaizing #Udma_RmInitPrms */
-    }
-    else
-    {
-        UART_printf("Global Event is not a shared resource!!\n");
-    }
+    /* UDMA driver init */
+    instId = UDMA_INST_ID_MAIN_0;
 
     UdmaInitPrms_init(instId, &initPrms);
-    initPrms.rmInitPrms.numIrIntr = BOARD_DIAG_ICSS_EMAC_MAX_PORTS*8;
-    initPrms.rmInitPrms.numRxCh = BOARD_DIAG_ICSS_EMAC_MAX_PORTS*4;
-    initPrms.rmInitPrms.numTxCh= BOARD_DIAG_ICSS_EMAC_MAX_PORTS*4;
 
-    initPrms.rmInitPrms.startFreeFlow = 0;
-    initPrms.rmInitPrms.numFreeFlow = 120;
-
-    initPrms.rmInitPrms.startFreeRing= 2;
-    initPrms.rmInitPrms.numFreeRing = 300;
     retVal = Udma_init(&gUdmaDrvObj, &initPrms);
     if(UDMA_SOK == retVal)
     {

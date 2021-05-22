@@ -257,7 +257,7 @@ typedef struct BOARD_DIAG_ICSSG_EMAC_MCB_V2_tag
     /**< Pre-allocated/initialized packet descriptiors for both free queue and RX queues */
     BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T    freeQueue;
     /**< EMAC port control block */
-} BOARD_DIAG_ICSSG_EMAC_MCB_T_V2;
+} BOARD_DIAG_ICSSG_EMAC_MCB_V2_T;
 
 typedef struct BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_tag {
     const uint32_t *pru;

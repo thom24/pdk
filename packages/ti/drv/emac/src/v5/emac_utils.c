@@ -630,7 +630,7 @@ emac_cleanup_comp_ring (uint32_t portNum, Udma_RingHandle ringHandle)
         {
             if (pCppiDesc != NULL)
             {
-                EMAC_FREE_PKT(portNum, pCppiDesc->appPtr);
+                emac_mcb.port_cb[portNum].free_pkt_cb(portNum, pCppiDesc->appPtr);
                 pCppiDesc->nextPtr = NULL;
             }
         }
@@ -652,7 +652,7 @@ void emac_cleanup_free_ring(uint32_t portNum, uint64_t *pRingMem)
         for (descNum = 0; descNum < emac_mcb.port_cb[portNum].num_of_rx_pkt_desc;descNum++)
         {
             pCppiDesc = (EMAC_CPPI_DESC_T*)(uintptr_t)pRingMem[descNum];
-            EMAC_FREE_PKT(portNum, pCppiDesc->appPtr);
+            emac_mcb.port_cb[portNum].free_pkt_cb(portNum, pCppiDesc->appPtr);
         }
     }
 }
@@ -729,7 +729,7 @@ emac_close_tx_subsystem (uint32_t portNum)
             {
                 if (pCppiDesc)
                 {
-                    EMAC_FREE_PKT(portNum, pCppiDesc->appPtr);
+                    emac_mcb.port_cb[portNum].free_pkt_cb(portNum, pCppiDesc->appPtr);
                     pCppiDesc->nextPtr =  emac_mcb.port_cb[portNum].txReadyDescs[chanNum];
                     emac_mcb.port_cb[portNum].txReadyDescs[chanNum] = pCppiDesc;
                 }
@@ -1269,7 +1269,7 @@ EMAC_DRV_ERR_E emac_poll_tx_ring(uint32_t portNum, Udma_RingHandle compRingHandl
                 pPktDesc = pCppiDesc->appPtr;
                 if ((pPktDesc != NULL) && (!(pCppiDesc->hostDesc.pktInfo2 & EMAC_FW_MGMT_PKT)))
                 {
-                   /* EMAC_FREE_PKT needs to be invoked on Port/Slice used to transmit the packet
+                   /* EMAC FREE PKT needs to be invoked on Port/Slice used to transmit the packet
                       as packet will be scheduled by ICSSG firmware irrespective of the port in which
                       application is polling for TX completion */ 
                    
@@ -1284,7 +1284,7 @@ EMAC_DRV_ERR_E emac_poll_tx_ring(uint32_t portNum, Udma_RingHandle compRingHandl
                          temp = (portNum & 0x6) + 1; /*Switch Port1 */
                     }
               
-                    EMAC_FREE_PKT(temp, pCppiDesc->appPtr);
+                    emac_mcb.port_cb[portNum].free_pkt_cb(temp, pCppiDesc->appPtr);
                 }
                 key = EMAC_osalHardwareIntDisable();
                 pCppiDesc->nextPtr = emac_mcb.port_cb[portNum].txReadyDescs[ringNum];
@@ -1684,7 +1684,7 @@ emac_setup_udma_channel_interrupt(uint32_t portNum, EMAC_PER_CHANNEL_CFG_RX*pChC
     eventPrms.eventType         = UDMA_EVENT_TYPE_DMA_COMPLETION;
     eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
     eventPrms.chHandle          = (Udma_ChHandle)(pChCfg->chHandle);
-    eventPrms.masterEventHandle = NULL;
+    eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(emac_mcb.port_cb[portNum].udmaHandle);
 
     pRxChannel->subChan[0].eventHandle = eventHandle;
 
