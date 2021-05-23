@@ -236,10 +236,11 @@ int32_t SBL_qspiFlashRead(void *handle, uint8_t *dst, uint32_t length,
 {
     uint32_t start_time = SBL_ADD_PROFILE_POINT;
     uint32_t end_time = 0;
-    bool disableDMA = false;
 
 #if !defined(SBL_BYPASS_QSPI_DRIVER)
 #if SBL_USE_DMA
+    bool disableDMA = false;
+
 #if (defined (SOC_AWR294X))
     /* EDMA not working for AWR294x when transfering from QSPI Flash to DSS L3/ DSS L2. 
      * Disable until rootcaused and fixed
