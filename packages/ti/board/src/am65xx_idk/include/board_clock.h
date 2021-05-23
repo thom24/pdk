@@ -44,7 +44,7 @@
 extern "C" {
 #endif
 
-#include "board_internal.h"
+#include <ti/board/src/evmKeystone3/include/board_internal.h>
 
 /**
  *  \brief PSC configuration parameters
