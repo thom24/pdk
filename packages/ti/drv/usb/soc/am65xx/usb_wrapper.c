@@ -202,6 +202,31 @@ void usbClockCfg(uint32_t portNumber)
     /* usb3_phy_reset(portNumber); */
 } /* usbClockCfg */
 
+/* Unlocks the MMR registers needed for USB SerDes configuration */
+static int32_t usbUnlockMMR(void)
+{
+    uint32_t lock1Reg;
+    uint32_t lock2Reg;
+
+    /* set SERDES0 refclock to MAIN_PLL */
+    /* Unlock Lock1 Kick Registers */
+    HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0), KICK0);
+    HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK1), KICK1);
+
+    /* Unlock Lock2 Kick Registers */
+    HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0), KICK0);
+    HW_WR_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1), KICK1);
+
+    lock1Reg = HW_RD_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0));
+    lock2Reg = HW_RD_REG32((CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0));
+
+    if(((lock1Reg & 0x1) != 0x1) || ((lock2Reg & 0x1) != 0x1))
+    {
+        return -1;
+    }
+
+    return 0;
+}
 
 /* setting up clock for USB3.0 Super speed 
  * On AM6/Maxwell, only USBSS0 is SS capable
@@ -221,93 +246,88 @@ int32_t usbClockSSCfg(void)
 	CSL_SerdesLaneEnableParams serdesLaneEnableParams;
 	CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
 
-    /* set SERDES0 refclock to MAIN_PLL */
-    /* Unlock Lock1 Kick Registers */
-    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0) = KICK0;
-    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK1) = KICK1;
+    /* Make sure MMR unlock is done before configuring the SERDES */
+    rc = usbUnlockMMR();
+    if(rc == 0)
+    {
+        /* Select lane_func_sel based on the serdes type */
+        /* change SERDES mux to do USB PHY */
+        /* #define CSL_FINS(reg, PER_REG_FIELD, val) */
+        CSL_FINS(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE +
+                               CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL),
+                               MAIN_CTRL_MMR_CFG0_SERDES0_CTRL_LANE_FUNC_SEL,
+                               0x0); /* USB3 function */
 
-    /* Unlock Lock2 Kick Registers */
-    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0) = KICK0;
-    *(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1) = KICK1;
+        /* SERDES0_CTRL_CLKSEL */
+        CSL_FINS(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE +
+                               CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL),
+                               MAIN_CTRL_MMR_CFG0_SERDES0_CTRL_CLK_SEL,
+                               0x4); /* left input - which goes to clk mux */
 
-    /* Select lane_func_sel based on the serdes type */
-    /* change SERDES mux to do USB PHY */ 
-    /* #define CSL_FINS(reg, PER_REG_FIELD, val) */
-    CSL_FINS(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + 
-                           CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL),
-                           MAIN_CTRL_MMR_CFG0_SERDES0_CTRL_LANE_FUNC_SEL, 
-                           0x0); /* USB3 function */
+        /* Set the serdes refclk input mux to main_pll_clkout */
+        CSL_FINS(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE +
+                               CSL_MAIN_CTRL_MMR_CFG0_SERDES0_REFCLK_SEL),
+                               MAIN_CTRL_MMR_CFG0_SERDES0_REFCLK_SEL_CLK_SEL,
+                               0x2); /* MAIN_PLL_CLKOUT */
 
-    /* SERDES0_CTRL_CLKSEL */ 
-    CSL_FINS(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + 
-                           CSL_MAIN_CTRL_MMR_CFG0_SERDES0_CTRL),
-                           MAIN_CTRL_MMR_CFG0_SERDES0_CTRL_CLK_SEL, 
-                           0x4); /* left input - which goes to clk mux */ 
+        memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
 
-    /* Set the serdes refclk input mux to main_pll_clkout */
-    CSL_FINS(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + 
-                           CSL_MAIN_CTRL_MMR_CFG0_SERDES0_REFCLK_SEL),
-                           MAIN_CTRL_MMR_CFG0_SERDES0_REFCLK_SEL_CLK_SEL, 
-                           0x2); /* MAIN_PLL_CLKOUT */
-
-    memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
-
-    serdesLaneEnableParams.baseAddr     = baseAddr;
-    serdesLaneEnableParams.refClock     = refClock;
-    serdesLaneEnableParams.linkRate     = linkRate;
-    serdesLaneEnableParams.numLanes     = numLanes;
-    serdesLaneEnableParams.laneMask     = 0x1; /* all lanes */
-    serdesLaneEnableParams.phyType      = CSL_SERDES_PHY_TYPE_USB;
-    serdesLaneEnableParams.operatingMode= CSL_SERDES_FUNCTIONAL_MODE;
-    serdesLaneEnableParams.forceAttBoost= CSL_SERDES_FORCE_ATT_BOOST_DISABLED;
+        serdesLaneEnableParams.baseAddr     = baseAddr;
+        serdesLaneEnableParams.refClock     = refClock;
+        serdesLaneEnableParams.linkRate     = linkRate;
+        serdesLaneEnableParams.numLanes     = numLanes;
+        serdesLaneEnableParams.laneMask     = 0x1; /* all lanes */
+        serdesLaneEnableParams.phyType      = CSL_SERDES_PHY_TYPE_USB;
+        serdesLaneEnableParams.operatingMode= CSL_SERDES_FUNCTIONAL_MODE;
+        serdesLaneEnableParams.forceAttBoost= CSL_SERDES_FORCE_ATT_BOOST_DISABLED;
 #if defined(ENABLE_SERDES_SSC_MODE)
-    serdesLaneEnableParams.sscMode      = CSL_SERDES_SSC_ENABLED;
+        serdesLaneEnableParams.sscMode      = CSL_SERDES_SSC_ENABLED;
 #else
-    serdesLaneEnableParams.sscMode      = CSL_SERDES_SSC_DISABLED;
+        serdesLaneEnableParams.sscMode      = CSL_SERDES_SSC_DISABLED;
 #endif
 
-    for(i=0; i< serdesLaneEnableParams.numLanes; i++)
-    {
-      serdesLaneEnableParams.laneCtrlRate[i] = CSL_SERDES_LANE_FULL_RATE;
-      serdesLaneEnableParams.loopbackMode[i] = CSL_SERDES_LOOPBACK_DISABLED;
-      serdesLaneEnableParams.rxCoeff.forceAttVal[i] = 7;
-      serdesLaneEnableParams.rxCoeff.forceBoostVal[i] = 1;
-    }
+        for(i=0; i< serdesLaneEnableParams.numLanes; i++)
+        {
+          serdesLaneEnableParams.laneCtrlRate[i] = CSL_SERDES_LANE_FULL_RATE;
+          serdesLaneEnableParams.loopbackMode[i] = CSL_SERDES_LOOPBACK_DISABLED;
+          serdesLaneEnableParams.rxCoeff.forceAttVal[i] = 7;
+          serdesLaneEnableParams.rxCoeff.forceBoostVal[i] = 1;
+        }
 
-    /* init the SERDES */
-    sdrc = CSL_serdesUSBInit(&serdesLaneEnableParams);
-    if (sdrc == CSL_SERDES_NO_ERR)
-    {
-        rc = 0;
-    }
-    else
-    {
-        rc = sdrc;
-    }
-
-    if (rc == 0)
-    {
-        /* Common Lane Enable API for lane enable, pll enable etc */
-        laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
-
-        if (laneRetVal == CSL_SERDES_LANE_ENABLE_NO_ERR)
+        /* init the SERDES */
+        sdrc = CSL_serdesUSBInit(&serdesLaneEnableParams);
+        if (sdrc == CSL_SERDES_NO_ERR)
         {
             rc = 0;
-
-            /* force signal detect high for lane 0 - 11/14/2018 */
-            /*debug_printf("Forcing serdes sig detect high for lane 0\n");*/
-            /*CSL_serdesForceSigDetHigh(baseAddr, 0);*/
         }
         else
         {
-            rc = laneRetVal;
+            rc = sdrc;
         }
+
+        if (rc == 0)
+        {
+            /* Common Lane Enable API for lane enable, pll enable etc */
+            laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
+
+            if (laneRetVal == CSL_SERDES_LANE_ENABLE_NO_ERR)
+            {
+                rc = 0;
+
+                /* force signal detect high for lane 0 - 11/14/2018 */
+                /*debug_printf("Forcing serdes sig detect high for lane 0\n");*/
+                /*CSL_serdesForceSigDetHigh(baseAddr, 0);*/
+            }
+            else
+            {
+                rc = laneRetVal;
+            }
+        }
+
+        /* set PIPE3_TXB_CLK to PIPE3_TXB_CLK */
+        CSL_FINSR(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE +
+                                CSL_MAIN_CTRL_MMR_CFG0_SPARE_CTRL1), 0, 0, 0x0);
     }
-
-    /* set PIPE3_TXB_CLK to PIPE3_TXB_CLK */
-    CSL_FINSR(*(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + 
-                            CSL_MAIN_CTRL_MMR_CFG0_SPARE_CTRL1), 0, 0, 0x0);
-
 
     return rc;
 }
