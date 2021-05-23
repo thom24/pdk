@@ -94,7 +94,13 @@ Defines the help message for cat.
 
 
 #define FS_SHELL_TERM_KEY   27U /* ESC key is used to terminate user input */
-#define MAX_UINT64_VAL      (0xFFFFFFFFFFFFFFFF)
+
+#if defined(__aarch64__)
+#define MAX_TIME_VAL      (0xFFFFFFFFFFFFFFFF)
+#else
+#define MAX_TIME_VAL      (0xFFFFFFFF)
+#endif
+
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
@@ -1318,7 +1324,7 @@ static int32_t writing_bm_file(uint32_t ticksPerSec, uint32_t fileSize, uint32_t
             }
             else
             {
-                cycleCnt = cycleCnt + endTime + (MAX_UINT64_VAL - startTime);
+                cycleCnt = cycleCnt + endTime + (MAX_TIME_VAL - startTime);
             }
         }
 
@@ -1353,7 +1359,7 @@ static int32_t writing_bm_file(uint32_t ticksPerSec, uint32_t fileSize, uint32_t
             }
             else
             {
-                cycleCnt = cycleCnt + endTime + (MAX_UINT64_VAL - startTime);
+                cycleCnt = cycleCnt + endTime + (MAX_TIME_VAL - startTime);
             }
         }
 
@@ -1452,7 +1458,7 @@ static int32_t reading_bm_file(uint32_t ticksPerSec, uint32_t fileSize, uint32_t
             }
             else
             {
-                cycleCnt = cycleCnt + endTime + (MAX_UINT64_VAL - startTime);
+                cycleCnt = cycleCnt + endTime + (MAX_TIME_VAL - startTime);
             }
         }
         if ((retStat == S_PASS) & (remainder>0))
@@ -1487,7 +1493,7 @@ static int32_t reading_bm_file(uint32_t ticksPerSec, uint32_t fileSize, uint32_t
             }
             else
             {
-                cycleCnt = cycleCnt + endTime + (MAX_UINT64_VAL - startTime);
+                cycleCnt = cycleCnt + endTime + (MAX_TIME_VAL - startTime);
             }
         }
 
