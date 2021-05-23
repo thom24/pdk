@@ -155,7 +155,7 @@ board_utils_uart_flash_programmer_hs_BOARDLIST = $(board_utils_$(SOC)_BOARDLIST)
 export board_utils_uart_flash_programmer_hs_BOARDLIST
 board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST = $(board_utils_$(SOC)_CORELIST)
 export board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), j7200 tpr12 am64x))
+ifneq ($(SOC), $(filter $(SOC), j7200 tpr12 am64x awr294x))
 board_utils_EXAMPLE_LIST += board_utils_uart_flash_programmer_hs
 endif
 board_utils_uart_flash_programmer_hs_SBL_IMAGEGEN = yes

@@ -460,22 +460,22 @@ static const Rcm_FixedClocks_t gFixedClocksTbl[] =
     [RCM_FIXEDCLKID_XREF_CLK0] = 
     {
         /* XREF_CLK0	64.100	64.100	64.100	64.000 */
-        .fOut = SBL_FREQ_MHZ2HZ(64.100),
+        .fOut = 64100000U,
     },
     [RCM_FIXEDCLKID_XREF_CLK1] = 
     {
         /* XREF_CLK1	64.100	64.100	64.100	64.000 */
-        .fOut = SBL_FREQ_MHZ2HZ(64.100),
+        .fOut = 64100000U,
     },
     [RCM_FIXEDCLKID_WUCPUCLK] = 
     {
         /* WUCPUCLK	50.000	50.000	50.000	50.000 */
-        .fOut = SBL_FREQ_MHZ2HZ(64.100),
+        .fOut = SBL_FREQ_MHZ2HZ(50),
     },
     [RCM_FIXEDCLKID_RCCLK32K] = 
     {
         /* RCCLK32K	0.032	0.032	0.032	0.032 */
-        .fOut = SBL_FREQ_MHZ2HZ(0.032),
+        .fOut = 32000U,
     },
     [RCM_FIXEDCLKID_RCCLK10M] = 
     {
@@ -789,7 +789,7 @@ static const Rcm_ClkSrcInfo gAWR294xClkSrcInfoMap[] =
             .fixedClkId = RCM_FIXEDCLKID_WUCPUCLK,
         }
     },
-    [RCM_CLKSRCID_APLL_CLK_HSI]
+    [RCM_CLKSRCID_APLL_CLK_HSI] = 
     {
         .clkSrcType = RCM_CLKSRCTYPE_FIXED,
         .u.fixedClkInfo = 
@@ -806,7 +806,7 @@ static const Rcm_ClkSrcInfo gAWR294xClkSrcInfoMap[] =
             .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2,
         }
     },
-    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1]
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT1] =
     {
         .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
         .u.hsdivMuxInfo = 
@@ -814,7 +814,7 @@ static const Rcm_ClkSrcInfo gAWR294xClkSrcInfoMap[] =
             .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1,
         }
     },
-    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2]
+    [RCM_CLKSRCID_DPLL_DSP_HSDIV0_CLKOUT2] =
     {
         .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
         .u.hsdivMuxInfo = 
@@ -822,7 +822,7 @@ static const Rcm_ClkSrcInfo gAWR294xClkSrcInfoMap[] =
             .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2,
         }
     },
-    [RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1]
+    [RCM_CLKSRCID_DPLL_PER_HSDIV0_CLKOUT1] =
     {
         .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
         .u.hsdivMuxInfo = 
@@ -830,7 +830,7 @@ static const Rcm_ClkSrcInfo gAWR294xClkSrcInfoMap[] =
             .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1,
         }
     },
-    [RCM_CLKSRCID_SYS_CLK]
+    [RCM_CLKSRCID_SYS_CLK] =
     {
         .clkSrcType = RCM_CLKSRCTYPE_DPLL_HSDIVOUTMUX,
         .u.hsdivMuxInfo = 
@@ -838,7 +838,7 @@ static const Rcm_ClkSrcInfo gAWR294xClkSrcInfoMap[] =
             .hsdivMuxId = Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2,
         }
     },
-    [RCM_CLKSRCID_XTALCLK]
+    [RCM_CLKSRCID_XTALCLK] =
     {
         .clkSrcType = RCM_CLKSRCTYPE_XTAL,
     },
