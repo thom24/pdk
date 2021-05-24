@@ -46,20 +46,11 @@
 #include <stdint.h>
 #include <string.h>
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Memory.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-
+#include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/ipcver.h>
-#include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 #include <ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test/ipc_neg_setup.h>
+
 #include <ti/osal/osal.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
@@ -173,13 +164,13 @@ void Ipc_reportResult(uint32_t id, int32_t result)
     gTotalTests++;
     if (result == IPC_SOK)
     {
-        System_printf("[%s] [%s] : [TEST_PASS]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
+        App_printf("[%s] [%s] : [TEST_PASS]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
         UART_printf("[%s] [%s] : [TEST_PASS]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
         gTotalTestsPassed++;
     }
     else
     {
-        System_printf("[%s] [%s] : [TEST_FAIL]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
+        App_printf("[%s] [%s] : [TEST_FAIL]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
         UART_printf("[%s] [%s] : [TEST_FAIL]\n", Ipc_mpGetSelfName(), negTestCases[id].testName);
         gTotalTestsFailed++;
     }
@@ -211,7 +202,7 @@ int32_t rpmsg_neg_responderFxn(uint32_t testId)
     buf = pRecvTaskBuf;
     if (buf == NULL)
     {
-        System_printf("RecvTask: buffer allocation failed\n");
+        App_printf("RecvTask: buffer allocation failed\n");
         return IPC_EFAIL;
     }
 
@@ -237,7 +228,7 @@ int32_t rpmsg_neg_responderFxn(uint32_t testId)
 
     /* Testing TEST_RPMSG_CREATE_NULL_ENDPNT */
     {
-        System_printf("RPMessage_create NULL Endpt\n");
+        App_printf("RPMessage_create NULL Endpt\n");
         handle = RPMessage_create(&params, NULL);
         if (!handle)
         {
@@ -253,7 +244,7 @@ int32_t rpmsg_neg_responderFxn(uint32_t testId)
     handle = RPMessage_create(&params, &myEndPt);
     if (!handle)
     {
-        System_printf("RecvTask: Failed to create endpoint\n");
+        App_printf("RecvTask: Failed to create endpoint\n");
         return IPC_EFAIL;
     }
     buf2 = pTimeoutBuf;
@@ -263,7 +254,7 @@ int32_t rpmsg_neg_responderFxn(uint32_t testId)
     handleTimeout = RPMessage_create(&params, &myTimeoutEndPt);
     if (!handleTimeout)
     {
-        System_printf("RecvTask: Failed to create timeout endpoint\n");
+        App_printf("RecvTask: Failed to create timeout endpoint\n");
         RPMessage_delete(&handle);
         return IPC_EFAIL;
     }
@@ -287,7 +278,7 @@ int32_t rpmsg_neg_responderFxn(uint32_t testId)
 
         if(len > RP_MSG_TEST_BUF_SIZE)
         {
-            System_printf("SendTask%d: snprintf failed, len %d\n", remoteProcId, len);
+            App_printf("SendTask%d: snprintf failed, len %d\n", remoteProcId, len);
             len = RP_MSG_TEST_BUF_SIZE;
         }
 
@@ -370,7 +361,7 @@ int32_t rpmsg_neg_responderFxn(uint32_t testId)
 
     /* Testing TEST_RPMSG_RCV_TIMEOUT */
     {
-        System_printf("[%s] calling RPMessage_recv with timeout 100...\n", Ipc_mpGetSelfName());
+        App_printf("[%s] calling RPMessage_recv with timeout 100...\n", Ipc_mpGetSelfName());
         status = RPMessage_recv(handleTimeout, (Ptr)str, &len, &remoteEndPt, &remoteProcId, 100);
 
         if (status != IPC_ETIMEOUT)
@@ -397,7 +388,7 @@ int32_t ipc_neg_test(uint32_t testId)
     /* Step1 : Initialize the multiproc */
     Ipc_mpSetConfig(selfProcId, numProc, pRemoteProcArray);
 
-    System_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
+    App_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
             Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
 
     Ipc_init(NULL);
@@ -457,12 +448,12 @@ int32_t ipc_neg_test(uint32_t testId)
     }
 
 
-    System_printf("Ipc_initVirtIO\n");
+    App_printf("Ipc_initVirtIO\n");
     vqParam.vringBufSize  = IPC_VRING_BUFFER_SIZE;
     status = Ipc_initVirtIO(&vqParam);
     if (status != IPC_SOK)
     {
-        System_printf("[%s] Ipc_initVirtIO failed\n");
+        App_printf("[%s] Ipc_initVirtIO failed\n");
         return IPC_EFAIL;
     }
 
@@ -559,12 +550,12 @@ int32_t ipc_neg_test(uint32_t testId)
     }
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
 
-    System_printf("RPMessage_init\n");
+    App_printf("RPMessage_init\n");
     cntrlParam.stackSize   = IPC_TASK_STACKSIZE;
     status = RPMessage_init(&cntrlParam);
     if (status != IPC_SOK)
     {
-        System_printf("[%s] RPMessage_init failed\n", Ipc_mpGetSelfName());
+        App_printf("[%s] RPMessage_init failed\n", Ipc_mpGetSelfName());
         return IPC_EFAIL;
     }
 

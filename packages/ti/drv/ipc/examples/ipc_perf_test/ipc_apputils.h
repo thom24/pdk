@@ -152,32 +152,11 @@ uint32_t Ipc_appIsPrintSupported(void);
 void Ipc_appC66xIntrConfig(void);
 
 /**
- * \brief Sets core frequency
- *
- * \param selfId Core ID
- * */
-void Ipc_setCoreFrq(uint32_t selfId);
-
-/**
- * brief Get timestam in micro-second
- *
- * \param frq frequency
+ * brief Get timestamp in micro-second
  *
  * \returns timestamp
  * */
-uint64_t Ipc_getTimeInUsec(uint64_t frq);
-
-/**
- * \brief Gets the Time Stamp
- *
- * */
-uint64_t Ipc_getTimestampFrq(void);
-
-/**
- * \brief Sets CPU frequency in Hz
- * */
-int32_t Ipc_setCpuHz(uint32_t freq);
-
+uint64_t Ipc_getTimeInUsec(void);
 
 #ifdef __cplusplus
 }

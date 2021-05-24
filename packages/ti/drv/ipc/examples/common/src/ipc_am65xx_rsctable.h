@@ -47,10 +47,10 @@ extern "C" {
 #endif
 
 #include <ti/drv/ipc/include/ipc_rsctypes.h>
-#ifdef BAREMETAL
-#include "ipc_trace.h"
+#ifdef SYSBIOS
+  #include <xdc/runtime/SysMin.h>
 #else
-#include <xdc/runtime/SysMin.h>
+  #include "ipc_trace.h"
 #endif
 
 /*
@@ -63,12 +63,12 @@ extern "C" {
 /* flip up bits whose indices represent features we support */
 #define RPMSG_R5F_C0_FEATURES          1
 
-#ifdef BAREMETAL
-#define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
+#ifdef SYSBIOS
+  #define IPC_TRACE_BUFFER_MAX_SIZE     (0x80000)
+  extern __T1_xdc_runtime_SysMin_Module_State__outbuf xdc_runtime_SysMin_Module_State_0_outbuf__A[];
+  #define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
 #else
-#define IPC_TRACE_BUFFER_MAX_SIZE     (0x80000)
-extern __T1_xdc_runtime_SysMin_Module_State__outbuf xdc_runtime_SysMin_Module_State_0_outbuf__A[];
-#define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
+  #define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
 #endif
 
 #define RPMSG_VRING_ADDR_ANY FW_RSC_ADDR_ANY

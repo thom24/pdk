@@ -44,6 +44,15 @@
 extern "C" {
 #endif
 
+#ifdef SYSBIOS
+  /* To print to SysMin Buffer(view from CCS ROV) */
+  #include <xdc/runtime/System.h>
+  #define App_printf System_printf
+#else
+  #include "ipc_trace.h"
+  #define App_printf  Ipc_Trace_printf
+#endif
+
 /* this should be >= RPMessage_getObjMemRequired() */
 #define IPC_RPMESSAGE_OBJ_SIZE  256U
 

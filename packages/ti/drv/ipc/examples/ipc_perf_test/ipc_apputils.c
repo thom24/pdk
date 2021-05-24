@@ -41,13 +41,6 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <xdc/std.h>
-#include <xdc/runtime/Types.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Timestamp.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Clock.h>
-
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/sciclient/sciclient.h>
 #include "ipc_apputils.h"
@@ -234,85 +227,10 @@ void Ipc_appC66xIntrConfig(void)
     return;
 }
 
-int32_t Ipc_setCpuHz(uint32_t freq)
+uint64_t Ipc_getTimeInUsec(void)
 {
-    uint32_t cookie;
-    Types_FreqHz cpuHz;
-    Types_FreqHz oldCpuHz;
-
-    BIOS_getCpuFreq(&oldCpuHz);
-
-    cookie = HwiP_disable();
-    cpuHz.lo = freq;
-    cpuHz.hi = 0;
-    BIOS_setCpuFreq(&cpuHz);
-    Clock_tickStop();
-    Clock_tickReconfig();
-    Clock_tickStart();
-    HwiP_restore(cookie);
-
-    BIOS_getCpuFreq(&cpuHz);
-
-    return 0;
+    return (TimerP_getTimeInUsecs());
 }
-
-uint64_t Ipc_getTimestampFrq(void)
-{
-    Types_FreqHz frq;
-    uint64_t     retFrq;
-
-    Timestamp_getFreq(&frq);
-    retFrq = ((uint64_t) frq.hi << 32) | frq.lo;
-    return retFrq;
-}
-
-uint64_t Ipc_getTimeInUsec(uint64_t frq)
-{
-    Types_Timestamp64 bios_timestamp64;
-    uint64_t cur_ts;
-
-    Timestamp_get64(&bios_timestamp64);
-    cur_ts = ((uint64_t) bios_timestamp64.hi << 32) | bios_timestamp64.lo;
-    return (cur_ts*1000000u)/frq;
-}
-
-void Ipc_setCoreFrq(uint32_t selfId)
-{
-    uint32_t clkMhz = 2000;
-#if defined(SOC_J721E) || defined(SOC_J7200)
-    switch(selfId)
-    {
-        case IPC_MPU1_0:    clkMhz = 2000;    break;
-        case IPC_MCU1_0:
-        case IPC_MCU1_1:    clkMhz = 1000;    break; 
-        case IPC_MCU2_0:
-        case IPC_MCU2_1:    clkMhz = 1000;    break;
-#if defined(SOC_J721E)
-        case IPC_MCU3_0:
-        case IPC_MCU3_1:    clkMhz = 1000;    break;
-        case IPC_C66X_1:
-        case IPC_C66X_2:    clkMhz = 1350;    break;
-        case IPC_C7X_1:     clkMhz = 1000;    break;
-#endif
-
-        default:            clkMhz = 2000;    break;
-    }
-#else
-    switch(selfId)
-    {
-        case IPC_MPU1_0:    clkMhz = 2000;    break;
-        case IPC_MCU1_0:
-        case IPC_MCU1_1:    clkMhz = 1000;    break;                            
-
-        default:            clkMhz = 2000;    break;
-    }
-
-#endif
-
-    /* convert to Hz before setting */
-    Ipc_setCpuHz(clkMhz*1000*1000);
-}
-
 
 void sysIdleLoop(void)
 {

@@ -47,10 +47,7 @@
 #include <stdint.h>
 #include <string.h>
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/System.h>
+#include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 
 #include <ti/board/board.h>
 #include <ti/drv/uart/UART.h>
@@ -61,6 +58,7 @@
 #include <ti/osal/TaskP.h>
 #include <ti/drv/ipc/include/ipc_config.h>
 #include <ti/drv/ipc/src/ipc_priv.h>
+
 
 #include "ipc_perf_test.h"
 #include "ipc_test_defs.h"
@@ -76,16 +74,6 @@
 #define VQ_BUF_SIZE             2048U
 #define MSGSIZE                 256U
 #define SERVICE                 "ti.ipc4.ping-pong"
-
-#ifdef SOC_AM65XX
-#define VRING_BASE_ADDRESS      0xA2000000U
-#elif defined(SOC_J7200)
-#define VRING_BASE_ADDRESS      0xA4000000U
-#elif defined(SOC_AM64X)
-#define VRING_BASE_ADDRESS      0xA5000000U
-#else
-#define VRING_BASE_ADDRESS      0xAA000000U
-#endif
 
 #define PRINT_HOST_CORE         (IPC_MPU1_0)
 
@@ -225,10 +213,10 @@ int32_t Ipc_perf_test(void)
 
         Ipc_sendMessage(handle, myEndPt, tstcase->hostCore, IPC_PING);
         status = RPMessage_getRemoteEndPt(tstcase->hostCore, SERVICE, &remoteProcId,
-            &remoteEndPt, BIOS_WAIT_FOREVER);
+            &remoteEndPt, SemaphoreP_WAIT_FOREVER);
         if(tstcase->hostCore != remoteProcId)
         {
-            SystemP_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
+            App_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
                     tstcase->hostCore, status);
         }
 
@@ -249,7 +237,7 @@ int32_t Ipc_perf_test(void)
                 if( (selfId != tstcase->hostCore) ||
                     ((PRINT_HOST_CORE == selfId) && (curTestIndex == 0)))
                 {
-                    SemaphoreP_pend(semHandle, BIOS_WAIT_FOREVER);
+                    SemaphoreP_pend(semHandle, SemaphoreP_WAIT_FOREVER);
                     if(testCompleted == TRUE )
                     {
                         continue;
@@ -273,7 +261,7 @@ int32_t Ipc_perf_test(void)
                     }
                     else
                     {
-                        SystemP_printf("Starting test now ....\n");
+                        App_printf("Starting test now ....\n");
                     }
 
                 }
@@ -337,7 +325,7 @@ void Ipc_recvTaskFxn(uint32_t *arg0, uint32_t *arg1)
         if(IPC_SOK != status)
         {
             testCompleted = TRUE;
-            SystemP_printf("Ipc_recvTaskFxn:  recvd fxn failed...exiting\n");
+            App_printf("Ipc_recvTaskFxn:  recvd fxn failed...exiting\n");
             break;
         }
 
@@ -391,7 +379,7 @@ RPMessage_Handle Ipc_createRpmsg(uint8_t *buf, uint32_t bufSize, uint32_t *myEnd
 
 static void IpcTestPrint(const char *str)
 {
-    System_printf("%s", str);
+    App_printf("%s", str);
 
     return;
 }
@@ -445,7 +433,6 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
 
     uint32_t            iCnt;
     volatile uint64_t   roundtrip_start, roundtrip_delta;
-    uint64_t            frq;
     uint32_t            myEndPt = 0;
     int32_t             status = IPC_SOK;
 
@@ -456,17 +443,16 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
     uint16_t            len;
 
     roundtrip_delta = 0U;
-    frq = Ipc_getTimestampFrq();
 
     handle = Ipc_createRpmsg(tstBuf, RPMSG_DATA_SIZE, &myEndPt);
     if(NULL != handle)
     {
         Ipc_sendMessage(handle, myEndPt, coreId, IPC_PING);
         status = RPMessage_getRemoteEndPt(coreId, SERVICE, &remoteProcId,
-                &remoteEndPt, BIOS_WAIT_FOREVER);
+                &remoteEndPt, SemaphoreP_WAIT_FOREVER);
         if(coreId != remoteProcId) 
         {
-            SystemP_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
+            App_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
                     coreId, status);
             status = IPC_EFAIL;
         }
@@ -475,12 +461,12 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
         {
             buf[0] = IPC_PERF_TEST;
             
-            roundtrip_start = Ipc_getTimeInUsec(frq);
+            roundtrip_start = Ipc_getTimeInUsec();
 
             status = RPMessage_send(handle, coreId, ENDPT1, myEndPt, (Ptr)buf, bufSize);
             if (status != IPC_SOK) 
             {
-                SystemP_printf("Ipc_runPerfTest (remote %d): rpmsg_senderFxn: RPMessage_send "
+                App_printf("Ipc_runPerfTest (remote %d): rpmsg_senderFxn: RPMessage_send "
                         " failed status %d\n", coreId, status);
             }
             /* wait a for a response message: */
@@ -489,14 +475,14 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
                     &remoteProcId, IPC_RPMESSAGE_TIMEOUT_FOREVER);
             if(status != IPC_SOK) 
             {
-                SystemP_printf("Ipc_runPerfTest (remote %d): RPMessage_recv failed with code %d\n",
+                App_printf("Ipc_runPerfTest (remote %d): RPMessage_recv failed with code %d\n",
                         coreId, status);
             }
-            roundtrip_delta += (Ipc_getTimeInUsec(frq) - roundtrip_start);
+            roundtrip_delta += (Ipc_getTimeInUsec() - roundtrip_start);
         }
 
         roundtrip_delta = roundtrip_delta/numCount;
-        SystemP_printf("Host: %s, Remote: %s, Size: %d, Roundtrip Time: %d us\n", 
+        App_printf("Host: %s, Remote: %s, Size: %d, Roundtrip Time: %d us\n", 
                Ipc_mpGetSelfName(), Ipc_mpGetName(coreId), bufSize,
                (uint32_t)roundtrip_delta);
 
@@ -546,7 +532,7 @@ void Ipc_sendTestCompletedMsgCore(RPMessage_Handle handle, uint32_t srcEndPt, ui
     status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
     if (status != IPC_SOK) 
     {
-        SystemP_printf("Ipc_sendTestCompletedMsgCore (remote %d): "
+        App_printf("Ipc_sendTestCompletedMsgCore (remote %d): "
                 " failed status %d\n", dstCoreId, status);
     }
 }
@@ -568,7 +554,7 @@ void Ipc_sendMessage(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t dstCor
     status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
     if (status != IPC_SOK)
     {
-        SystemP_printf("Ipc_sendPingMessage (remote %d): RPMessage_send "
+        App_printf("Ipc_sendPingMessage (remote %d): RPMessage_send "
                 " failed status %d\n", dstCoreId, status);
     }
 }
@@ -599,7 +585,7 @@ void Ipc_sendNewTestIndex(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t t
     status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
     if (status != IPC_SOK) 
     {
-        SystemP_printf("Ipc_sendNewTestIndex (remote %d): RPMessage_send "
+        App_printf("Ipc_sendNewTestIndex (remote %d): RPMessage_send "
                 " failed status %d\n", dstCoreId, status);
     }
 }
@@ -635,7 +621,7 @@ void Ipc_sendTestResult(RPMessage_Handle handle, uint32_t srcEndPt)
         status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
         if (status != IPC_SOK) 
         {
-            SystemP_printf("Ipc_sendTestResult: RPMessage_send failed status %d\n", 
+            App_printf("Ipc_sendTestResult: RPMessage_send failed status %d\n", 
                     status);
         }
     }
@@ -657,7 +643,7 @@ uint32_t Ipc_processPerfCmd(RPMessage_Handle handle, uint32_t dstEndPt, uint32_t
             if(IPC_SOK != RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, 
                         buf, bufSize))
             {
-                SystemP_printf("Ipc_processPerfCmd: RPMessage_send failed\n");
+                App_printf("Ipc_processPerfCmd: RPMessage_send failed\n");
             }
         }
         else if(bufSize > 4U)

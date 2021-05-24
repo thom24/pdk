@@ -54,8 +54,8 @@
 /* SCI Client */
 #include <ti/drv/sciclient/sciclient.h>
 
-#include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
+#include <ti/drv/ipc/ipc.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

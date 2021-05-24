@@ -53,6 +53,7 @@ ifeq ($(BUILD_OS_TYPE), freertos)
   INCLUDE_EXTERNAL_INTERFACES += freertos
   CFLAGS_LOCAL_COMMON = -DFREERTOS
   COMP_LIST_COMMON +=  $(PDK_COMMON_FREERTOS_COMP)
+  SRCS_COMMON += ipc_trace.c
   ifeq ($(ISA), r5f)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif

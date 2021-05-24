@@ -45,18 +45,6 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Timestamp.h>
-#include <xdc/runtime/Types.h>
-#include <xdc/runtime/Memory.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-
 #include <ti/drv/ipc/ipc.h>
 #include <ti/osal/osal.h>
 
@@ -93,16 +81,16 @@ void sysIdleLoop(void)
 
 static uint8_t *traceBufAddr = 0U;
 
-Void traceBuf_cacheWb()
+void traceBuf_cacheWb()
 {
-    static uint64_t oldticks;
-    uint64_t newticks;
-    Types_Timestamp64 bios_timestamp64;
+    static uint32_t oldticks;
+    uint32_t newticks;
 
-    Timestamp_get64(&bios_timestamp64);
-    newticks = ((uint64_t) bios_timestamp64.hi << 32) | bios_timestamp64.lo;
+    newticks = CycleprofilerP_getTimeStamp();
     /* Don't keep flusing cache */
-    if ((newticks - oldticks) >= (uint64_t)CACHE_WB_TICK_PERIOD) {
+    if (((newticks - oldticks) >= (uint64_t)CACHE_WB_TICK_PERIOD) ||
+         (newticks < oldticks /* Counter overflow occurred */))
+    {
         oldticks = newticks;
 
         /* Flush the cache of the SysMin buffer only: */
@@ -115,7 +103,7 @@ Void traceBuf_cacheWb()
     }
 }
 
-Void traceBuf_cacheWb_Exception()
+void traceBuf_cacheWb_Exception()
 {
     uint8_t *traceBufAddr = 0;
 

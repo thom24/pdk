@@ -47,10 +47,10 @@ extern "C" {
 #endif
 
 #include <ti/drv/ipc/include/ipc_rsctypes.h>
-#ifdef BAREMETAL
-#include "ipc_trace.h"
+#ifdef SYSBIOS
+  #include <xdc/runtime/SysMin.h>
 #else
-#include <xdc/runtime/SysMin.h>
+  #include "ipc_trace.h"
 #endif
 
 /*
@@ -69,11 +69,12 @@ extern "C" {
 #define RPMSG_C66_DSP_FEATURES  1U
 #define RPMSG_C7X_DSP_FEATURES  1U
 
-#ifdef BAREMETAL
-#define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
+#ifdef SYSBIOS
+  #define IPC_TRACE_BUFFER_MAX_SIZE     (0x80000)
+  extern __T1_xdc_runtime_SysMin_Module_State__outbuf xdc_runtime_SysMin_Module_State_0_outbuf__A[];
+  #define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
 #else
-extern __T1_xdc_runtime_SysMin_Module_State__outbuf xdc_runtime_SysMin_Module_State_0_outbuf__A[];
-#define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
+  #define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
 #endif
 
 #define RPMSG_VRING_ADDR_ANY FW_RSC_ADDR_ANY
@@ -137,9 +138,9 @@ const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section 
 
     {
 #ifdef BUILD_C7X_1
-        (TRACE_INTS_VER1 | TYPE_TRACE), TRACEBUFADDR, 0x80000, 0, "trace:r5f0",
+        (TRACE_INTS_VER1 | TYPE_TRACE), TRACEBUFADDR, IPC_TRACE_BUFFER_MAX_SIZE, 0, "trace:r5f0",
 #else
-        (TRACE_INTS_VER0 | TYPE_TRACE), TRACEBUFADDR, 0x80000, 0, "trace:r5f0",
+        (TRACE_INTS_VER0 | TYPE_TRACE), TRACEBUFADDR, IPC_TRACE_BUFFER_MAX_SIZE, 0, "trace:r5f0",
 #endif
     },
 };

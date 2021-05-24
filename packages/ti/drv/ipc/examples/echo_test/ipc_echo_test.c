@@ -46,20 +46,8 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#if !defined(BAREMETAL)
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Memory.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#endif
-
-#include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
+#include <ti/drv/ipc/ipc.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

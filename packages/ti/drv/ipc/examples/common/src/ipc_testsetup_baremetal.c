@@ -46,6 +46,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <ti/drv/ipc/examples/common/src/ipc_setup.h>
+
 #include <ti/osal/HwiP.h>
 #include <ti/osal/osal.h>
 /* SCI Client */
@@ -53,8 +55,6 @@
 
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/ipcver.h>
-#include <ti/drv/ipc/examples/common/src/ipc_setup.h>
-#include "ipc_trace.h"
 #ifndef BUILD_MPU1_0
 #if defined(SOC_AM65XX)
 #include <ti/drv/ipc/examples/common/src/ipc_am65xx_rsctable.h>
@@ -110,8 +110,8 @@ uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-/* Define System_printf to use Ipc_Trace_printf */
-#define System_printf Ipc_Trace_printf
+
+/* None */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -154,21 +154,21 @@ void rpmsg_vdevMonitorFxn(void)
     status = Ipc_lateVirtioCreate(IPC_MPU1_0);
     if(status != IPC_SOK)
     {
-        System_printf("%s: Ipc_lateVirtioCreate failed\n", __func__);
+        App_printf("%s: Ipc_lateVirtioCreate failed\n", __func__);
         return;
     }
 
     status = RPMessage_lateInit(IPC_MPU1_0);
     if(status != IPC_SOK)
     {
-        System_printf("%s: RPMessage_lateInit failed\n", __func__);
+        App_printf("%s: RPMessage_lateInit failed\n", __func__);
         return;
     }
 
     status = RPMessage_announce(IPC_MPU1_0, RecvEndPt, SERVICE_PING);
     if(status != IPC_SOK)
     {
-        System_printf("rpmsg_vdevMonitorFxn: RPMessage_announce() failed\n");
+        App_printf("rpmsg_vdevMonitorFxn: RPMessage_announce() failed\n");
     }
 }
 #endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)*/
@@ -218,7 +218,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
     buf = &pRecvTaskBuf[gRecvTaskBufIdx++ * rpmsgDataSize];
     if(buf == NULL)
     {
-        System_printf("RecvTask: buffer allocation failed\n");
+        App_printf("RecvTask: buffer allocation failed\n");
         return;
     }
 
@@ -232,7 +232,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
     handle = RPMessage_create(&params, &myEndPt);
     if(!handle)
     {
-        System_printf("RecvTask: Failed to create endpoint\n");
+        App_printf("RecvTask: Failed to create endpoint\n");
         return;
     }
 
@@ -246,7 +246,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
     status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, service_ping.name);
     if(status != IPC_SOK)
     {
-        System_printf("RecvTask: RPMessage_announce() for %s failed\n", service_ping.name);
+        App_printf("RecvTask: RPMessage_announce() for %s failed\n", service_ping.name);
         return;
     }
 
@@ -259,13 +259,13 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
     handle_chrdev = RPMessage_create(&params, &myEndPt);
     if (!handle_chrdev)
     {
-        System_printf("RecvTask: Failed to create chrdev endpoint\n");
+        App_printf("RecvTask: Failed to create chrdev endpoint\n");
         return;
     }
     status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, service_chrdev.name);
     if (status != IPC_SOK)
     {
-        System_printf("RecvTask: RPMessage_announce() for %s failed\n", service_chrdev.name);
+        App_printf("RecvTask: RPMessage_announce() for %s failed\n", service_chrdev.name);
     }
 #endif
 
@@ -343,7 +343,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
         if(status != IPC_SOK)
         {
 #ifdef DEBUG_PRINT
-            System_printf("RecvTask: failed with code %d\n", status);
+            App_printf("RecvTask: failed with code %d\n", status);
 #endif
             emptyReceiveCalls++;
             lastNumMessagesReceived++;
@@ -362,7 +362,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                 str[len] = '\0';
             }
 #ifdef DEBUG_PRINT
-            System_printf("RecvTask: Revcvd msg \"%s\" len %d from %s\n",
+            App_printf("RecvTask: Revcvd msg \"%s\" len %d from %s\n",
                     str, len, Ipc_mpGetName(remoteProcId));
 #endif
         }
@@ -375,7 +375,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                 len = snprintf(str, 255, "pong %d", n);
                 if(len > 255)
                 {
-                    System_printf("RecvTask: snprintf failed, len %d\n", len);
+                    App_printf("RecvTask: snprintf failed, len %d\n", len);
                     len = 255;
                 }
                 str[len++] = '\0';
@@ -391,7 +391,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                     if (pCntPing[i] < NUMMSGS)
                     {
 #ifdef DEBUG_PRINT
-                        System_printf("SendTask%d: Received \"%s\" len %d from %s endPt %d \n",
+                        App_printf("SendTask%d: Received \"%s\" len %d from %s endPt %d \n",
                                       remoteProcId, str, len, Ipc_mpGetName(remoteProcId),
                                       remoteEndPt);
 #endif
@@ -400,13 +400,13 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                         len = snprintf(str, 255, "ping %d", pCntPing[i]++);
                         if (len > 255)
                         {
-                            System_printf("SendTask%d: snprintf failed, len %d\n", remoteProcId, len);
+                            App_printf("SendTask%d: snprintf failed, len %d\n", remoteProcId, len);
                             len = 255;
                         }
                         str[len++] = '\0';
 
 #ifdef DEBUG_PRINT
-                        System_printf("SendTask%d: Sending \"%s\" from %s to %s...\n", remoteProcId,
+                        App_printf("SendTask%d: Sending \"%s\" from %s to %s...\n", remoteProcId,
                                       str, Ipc_mpGetSelfName(),
                                       Ipc_mpGetName(remoteProcId));
 #endif
@@ -414,7 +414,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                         status = RPMessage_send(pHandleArray[i], remoteProcId, ENDPT_PING, pEndptArray[i], (Ptr)str, len);
                         if (status != IPC_SOK)
                         {
-                            System_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",
+                            App_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",
                                           remoteProcId,
                                           str, Ipc_mpGetSelfName(),
                                           Ipc_mpGetName(remoteProcId));
@@ -422,7 +422,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                     }
                     else if (pCntPing[i] == NUMMSGS)
                     {
-                        System_printf("%s <--> %s, Ping- %d, pong - %d completed\n",
+                        App_printf("%s <--> %s, Ping- %d, pong - %d completed\n",
                                       Ipc_mpGetSelfName(),
                                       Ipc_mpGetName(remoteProcId),
                                       pCntPing[i], pCntPong[i]);
@@ -433,7 +433,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
                 else
                 {
                     /* If this is not ping/pong message, just print the message */
-                    System_printf("%s <--> %s : %s recvd : %d:%d:%d\n",
+                    App_printf("%s <--> %s : %s recvd : %d:%d:%d\n",
                                   Ipc_mpGetSelfName(),
                                   Ipc_mpGetName(remoteProcId),
                                   str,
@@ -445,14 +445,14 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
             if (responseSent == 0)
             {
 #ifdef DEBUG_PRINT
-                System_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s\n",
+                App_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s\n",
                               str, len, Ipc_mpGetSelfName(),
                               Ipc_mpGetName(remoteProcId));
 #endif
                 status = RPMessage_send(*responseHandle, remoteProcId, remoteEndPt, myEndPt, str, len);
                 if (status != IPC_SOK)
                 {
-                    System_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s failed!!!\n",
+                    App_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s failed!!!\n",
                                   str, len, Ipc_mpGetSelfName(),
                                   Ipc_mpGetName(remoteProcId));
                 }
@@ -461,7 +461,7 @@ void rpmsg_responderFxn(uintptr_t arg0, uintptr_t arg1)
         }
     }
 
-    System_printf("%s responder task exiting ...\n",
+    App_printf("%s responder task exiting ...\n",
                     Ipc_mpGetSelfName());
 }
 
@@ -487,7 +487,7 @@ void rpmsg_startSender(uint16_t dstProc, uint32_t numProc, RPMessage_Handle *han
     *handle = RPMessage_create(&params, myEndPt);
     if(!(*handle))
     {
-        System_printf("SendTask %d: Failed to create message endpoint\n",
+        App_printf("SendTask %d: Failed to create message endpoint\n",
                 dstProc);
         return;
     }
@@ -497,7 +497,7 @@ void rpmsg_startSender(uint16_t dstProc, uint32_t numProc, RPMessage_Handle *han
             &remoteEndPt, TEST_TIMEOUT_FOREVER);
     if(dstProc != remoteProcId)
     {
-        System_printf("SendTask%d: RPMessage_getRemoteEndPt() malfunctioned, status %d\n",
+        App_printf("SendTask%d: RPMessage_getRemoteEndPt() malfunctioned, status %d\n",
                 dstProc, status);
         return;
     }
@@ -511,13 +511,13 @@ void rpmsg_startSender(uint16_t dstProc, uint32_t numProc, RPMessage_Handle *han
     len = snprintf(buf, 255, "ping %d", 1);
     if (len > 255)
     {
-        System_printf("SendTask%d: snprintf failed, len %d\n", dstProc, len);
+        App_printf("SendTask%d: snprintf failed, len %d\n", dstProc, len);
         len = 255;
     }
     buf[len++] = '\0';
 
 #ifdef DEBUG_PRINT
-    System_printf("SendTask%d: Sending \"%s\" from %s to %s...\n", dstProc,
+    App_printf("SendTask%d: Sending \"%s\" from %s to %s...\n", dstProc,
                   buf, Ipc_mpGetSelfName(),
                   Ipc_mpGetName(dstProc));
 #endif
@@ -525,7 +525,7 @@ void rpmsg_startSender(uint16_t dstProc, uint32_t numProc, RPMessage_Handle *han
     status = RPMessage_send(*handle, dstProc, ENDPT_PING, *myEndPt, (Ptr)buf, len);
     if (status != IPC_SOK)
     {
-        System_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",
+        App_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",
             dstProc,
             buf, Ipc_mpGetSelfName(),
             Ipc_mpGetName(dstProc));
@@ -545,7 +545,7 @@ static void IpcTestBaremetalNewMsgCb(uint32_t srcEndPt, uint32_t procId)
 
 static void IpcTestPrint(const char *str)
 {
-    System_printf("%s", str);
+    App_printf("%s", str);
 
     return;
 }
@@ -590,7 +590,7 @@ int32_t Ipc_echo_test(void)
     /* Step1 : Initialize the multiproc */
     if (IPC_SOK == Ipc_mpSetConfig(selfProcId, numProc, pRemoteProcArray))
     {
-        System_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
+        App_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
                 Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
 
         /* Initialize params with defaults */
@@ -607,7 +607,7 @@ int32_t Ipc_echo_test(void)
         }
     }
 #ifdef DEBUG_PRINT
-    System_printf("Required Local memory for Virtio_Object = %d\r\n",
+    App_printf("Required Local memory for Virtio_Object = %d\r\n",
                   numProc * Ipc_getVqObjMemoryRequiredPerCore());
 #endif
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
@@ -625,7 +625,7 @@ int32_t Ipc_echo_test(void)
             // Task_sleep(100);
         }
     }
-    System_printf("Linux VDEV ready now .....\n");
+    App_printf("Linux VDEV ready now .....\n");
 #endif
 #endif
 
@@ -641,7 +641,7 @@ int32_t Ipc_echo_test(void)
     RPMessage_Params cntrlParam;
 
 #ifdef DEBUG_PRINT
-    System_printf("Required Local memory for RPMessage Object = %d\n",
+    App_printf("Required Local memory for RPMessage Object = %d\n",
                   RPMessage_getObjMemRequired());
 #endif
 

@@ -47,7 +47,7 @@ extern "C" {
 void SetManualBreak();
 void sysIdleLoop(void);
 void traceBuf_cacheWb(void);
-Void traceBuf_cacheWb_Exception();
+void traceBuf_cacheWb_Exception();
 
 #ifdef __cplusplus
 }

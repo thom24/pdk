@@ -44,13 +44,10 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
+#include <ti/drv/ipc/examples/common/src/ipc_setup.h>
+
+#include <ti/osal/osal.h>
+#include <ti/osal/TaskP.h>
 
 #include "ipc_utils.h"
 #include <ti/csl/csl_types.h>
@@ -103,10 +100,12 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static Void taskFxn(UArg a0, UArg a1);
-extern int32_t Ipc_echo_test(void);
+static void taskFxn(void* a0, void* a1);
+
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
 void Ipc_setupSciServer(void);
 /**< Initialize SCI Server, to process RM/PM Requests by other cores */
+#endif
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -130,7 +129,7 @@ void ipc_initSciclient()
     ret = Sciclient_configPrmsInit(&config);
     if (ret != CSL_PASS)
     {
-        System_printf("Sciclient_configPrmsInit Failed\n");
+        App_printf("Sciclient_configPrmsInit Failed\n");
     }
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
@@ -141,7 +140,7 @@ void ipc_initSciclient()
             &config.inPmPrms, &config.inRmPrms);
         if (ret != CSL_PASS)
         {
-            System_printf("Sciclient_boardCfgParseHeader Failed\n");
+            App_printf("Sciclient_boardCfgParseHeader Failed\n");
         }
     }
 #endif
@@ -151,7 +150,7 @@ void ipc_initSciclient()
         ret = Sciclient_init(&config);
         if (ret != CSL_PASS)
         {
-            System_printf("Sciclient_init Failed\n");
+            App_printf("Sciclient_init Failed\n");
         }
     }
 }
@@ -224,7 +223,7 @@ void ipc_timerInterruptInit(void)
     status = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
     if(status != 0)
     {
-        System_printf(" ERROR: failed to setup timer interrupt !!!\n" );
+        App_printf(" ERROR: failed to setup timer interrupt !!!\n" );
     }
 
     return;
@@ -233,9 +232,8 @@ void ipc_timerInterruptInit(void)
 
 int main(void)
 {
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
     /* Initialize SCI Client - It must be called before board init */
     ipc_initSciclient();
@@ -251,26 +249,32 @@ int main(void)
     ipc_timerInterruptInit();
 #endif
 
-    Error_init(&eb);
+#if defined ECHO_TEST_BTCM && defined FREERTOS
+    /* Relocate FreeRTOS Reset Vectors from BTCM*/
+    void _freertosresetvectors (void);  
+    memcpy((void *)0x0, (void *)_freertosresetvectors, 0x40);
+#endif
+
+    OS_init();
 
     /* Initialize the task params */
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */
     taskParams.priority = 2;
     taskParams.stack        = gAppTskStackMain;
-    taskParams.stackSize    = sizeof (gAppTskStackMain);
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    task = Task_create(taskFxn, &taskParams, &eb);
+    task = TaskP_create(taskFxn, &taskParams);
     if(NULL == task)
     {
-        BIOS_exit(0);
+        OS_stop();
     }
-    BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
 
     return(0);
 }
 
-static Void taskFxn(UArg a0, UArg a1)
+static void taskFxn(void* a0, void* a1)
 {
 #ifdef IPC_NEGATIVE_TEST
     Ipc_echo_neg_test();
@@ -362,10 +366,10 @@ void InitMmu(void)
 }
 #endif
 
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
 void Ipc_setupSciServer(void)
 {
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
     Sciserver_TirtosCfgPrms_t appPrms;
     int32_t ret = CSL_PASS;
 
@@ -383,14 +387,13 @@ void Ipc_setupSciServer(void)
 
     if (ret == CSL_PASS)
     {
-        System_printf("Starting Sciserver..... PASSED\n");
+        App_printf("Starting Sciserver..... PASSED\n");
     }
     else
     {
-        System_printf("Starting Sciserver..... FAILED\n");
+        App_printf("Starting Sciserver..... FAILED\n");
     }
 
-#endif
     return;
 }
-
+#endif
