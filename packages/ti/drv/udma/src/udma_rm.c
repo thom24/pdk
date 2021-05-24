@@ -2317,12 +2317,13 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         if(UDMA_INST_ID_MCU_0 == instId)
         {
             uint32_t offset = 0U;
+            uint32_t start = 0U; /* Returned start value not used in this case, Passing to avoid dereferencing of NULL pointer */
             /* Add the no. of IR Interrupts reserved for C7x/C66x in Main NAVSS Instance */  
             retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
                                                    UDMA_INST_ID_MAIN_0,
                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
-                                                   NULL,
+                                                   &start,
                                                    &offset);
         #if defined (__C7100__)
             rmInitPrms->startC7xCoreIntr                   +=  offset;  
