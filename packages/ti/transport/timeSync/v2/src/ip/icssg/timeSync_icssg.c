@@ -185,7 +185,7 @@ typedef struct TimeSync_Obj_s
 
     uint64_t lastRxTs;
 
-    bool txTsDone;
+    volatile bool txTsDone;
 
     /* Sequence number used as cookie for timestamp events. This value is passed
      * to the DMA packet when submitting a packet for transmission. Driver will
