@@ -40,7 +40,7 @@
 #include <ti/osal/CycleprofilerP.h>
 
 
-#ifdef _TMS320C6X
+#if defined _TMS320C6X && (defined(SOC_TPR12) || defined(SOC_AWR294X))
 #include <c6x.h>
 void CycleprofilerP_init(void)
 {
@@ -50,9 +50,9 @@ uint32_t CycleprofilerP_getTimeStamp(void)
 {
     return(TSCL);
 }
-#endif
 
-#if defined(__ARM_ARCH_7A__) || defined(__TI_ARM_V7R4__)
+#else
+
 #include <ti/csl/soc.h>
 #include <ti/osal/soc/osal_soc.h>
 #include <ti/csl/arch/csl_arch.h>

@@ -39,6 +39,7 @@
 
 #include <ti/osal/CycleprofilerP.h>
 
+#if defined(SOC_TPR12) || defined(SOC_AWR294X)
 
 #ifdef _TMS320C6X
 #include <c6x.h>
@@ -64,4 +65,23 @@ uint32_t CycleprofilerP_getTimeStamp(void)
     return(Pmu_getCount(0));
 }
 #endif
+
+#else
+
+#include <xdc/runtime/Types.h>
+#include <xdc/runtime/Timestamp.h>
+
+void CycleprofilerP_init(void)
+{
+}
+uint32_t CycleprofilerP_getTimeStamp(void)
+{
+    Types_Timestamp64 bios_timestamp64 = {0U, 0U};
+    
+    Timestamp_get64(&bios_timestamp64);
+    return(bios_timestamp64.lo);
+}
+
+#endif
+
 

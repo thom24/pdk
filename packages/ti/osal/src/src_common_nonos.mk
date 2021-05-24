@@ -16,12 +16,12 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
 
 ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x am335x am437x k2h k2k k2e k2l k2g c6678 c6657 omapl137 omapl138 am65xx j721e am64x j721s2))
   SRCDIR      += soc/$(SOC)
-  SRCS_COMMON += TimerP_default.c
+  SRCS_COMMON += TimerP_default.c CycleprofilerP_nonos.c
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
   SRCDIR      += soc/$(SOC)
-  SRCS_COMMON += TimerP_default_$(ISA).c
+  SRCS_COMMON += TimerP_default_$(ISA).c CycleprofilerP_nonos.c
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
