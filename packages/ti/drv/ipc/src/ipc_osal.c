@@ -213,7 +213,6 @@ void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t ar
     return (hwiHandle);
 }
 
-/* We need only mutex in IPC driver. Use semaphore in binary mode */
 static void *Ipc_osalMutexCreate(void)
 {
     SemaphoreP_Params   semPrms;

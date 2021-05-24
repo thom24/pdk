@@ -79,7 +79,7 @@ extern "C" {
 #define  IPC_MAX_NAME_ENTRY             (100u)
 
 #ifdef BUILD_C7X_1
-#define  IPC_TASK_STACKSIZE  0x4000U
+#define  IPC_TASK_STACKSIZE  0x8000U
 #else
 #define  IPC_TASK_STACKSIZE  0x2000U
 #endif
