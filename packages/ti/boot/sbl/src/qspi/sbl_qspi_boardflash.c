@@ -83,7 +83,6 @@
 #define QSPI_OFFSET_SI              (0x80000U)
 #endif
 
-#define SBL_QSPI_MAX_DMA_XFER_SIZE  (192 * 1024)
 
 /* QSPI Flash Read Sector API. */
 static int32_t SBL_QSPI_ReadSectors(void *dstAddr,
@@ -240,8 +239,6 @@ int32_t SBL_qspiFlashRead(void *handle, uint8_t *dst, uint32_t length,
 
 #if !defined(SBL_BYPASS_QSPI_DRIVER)
 #if SBL_USE_DMA
-
-
     if (length > 4 * 1024)
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
@@ -262,37 +259,10 @@ int32_t SBL_qspiFlashRead(void *handle, uint8_t *dst, uint32_t length,
         }
 
         dma_dst = (uint8_t *)((uintptr_t)(CSL_locToGlobAddr((uintptr_t)dma_dst)));
-        if (dma_len < SBL_QSPI_MAX_DMA_XFER_SIZE)
+        if (Board_flashRead(h, dma_offset, dma_dst, dma_len, (void *)(&ioMode)))
         {
-            if (Board_flashRead(h, dma_offset, dma_dst, dma_len, (void *)(&ioMode)))
-            {
-                SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
-                SblErrLoop(__FILE__, __LINE__);
-            }
-        }
-        else
-        {
-            uint32_t i;
-            uint32_t cur_dma_offset = dma_offset;
-            uint8_t  *cur_dma_dst = dma_dst;
-
-            for (i = 0; i < (dma_len/SBL_QSPI_MAX_DMA_XFER_SIZE); i++)
-            {
-                if (Board_flashRead(h, cur_dma_offset, cur_dma_dst, SBL_QSPI_MAX_DMA_XFER_SIZE, (void *)(&ioMode)))
-                {
-                    SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
-                    SblErrLoop(__FILE__, __LINE__);
-                }
-                cur_dma_offset += SBL_QSPI_MAX_DMA_XFER_SIZE;
-                cur_dma_dst    += SBL_QSPI_MAX_DMA_XFER_SIZE;
-            }
-            cur_dma_offset = dma_offset  + (i * SBL_QSPI_MAX_DMA_XFER_SIZE);
-            cur_dma_dst    = dma_dst + (i * SBL_QSPI_MAX_DMA_XFER_SIZE);
-            if (Board_flashRead(h, cur_dma_offset, cur_dma_dst, (dma_len % SBL_QSPI_MAX_DMA_XFER_SIZE), (void *)(&ioMode)))
-            {
-                SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
-                SblErrLoop(__FILE__, __LINE__);
-            }
+            SBL_log(SBL_LOG_ERR, "Board_flashRead failed!\n");
+            SblErrLoop(__FILE__, __LINE__);
         }
     }
     else

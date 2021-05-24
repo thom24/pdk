@@ -271,7 +271,7 @@ static int32_t QSPI_dmaMemcpy(SPI_Handle     handle,
 
 {
     QSPI_HwAttrs const   *hwAttrs;
-    EDMA_paramConfig_t    paramSet;
+    EDMA_paramConfig_t    paramSet = {0};
     int32_t               cIdx;
     int32_t               status = SPI_STATUS_SUCCESS;
     int32_t               edmaStatus;
@@ -288,21 +288,23 @@ static int32_t QSPI_dmaMemcpy(SPI_Handle     handle,
     /* set destination address */
     paramSet.paramSetConfig.destinationAddress = (uint32_t)destBuf;
 
-    /* aCount holds the number of bytes in an array. */
+    /*
+     * aCount holds the number of bytes in an array.
+     * bCnt holds the number of such arrays to be transferred.
+     */
     if (length < QSPI_DMA_MAX_XFER_CHUNK_SIZE)
     {
         paramSet.paramSetConfig.aCount = 1;
+        paramSet.paramSetConfig.bCount = (uint16_t)(length);
     }
     else
     {
-        paramSet.paramSetConfig.aCount = ((uint32_t)(length / QSPI_DMA_MAX_XFER_CHUNK_SIZE));
+        paramSet.paramSetConfig.aCount = (uint16_t)(QSPI_DMA_MAX_XFER_CHUNK_SIZE);
+        paramSet.paramSetConfig.bCount = ((uint32_t)(length / QSPI_DMA_MAX_XFER_CHUNK_SIZE));
     }
 
-    /*
-     * bCnt holds the number of such arrays to be transferred.
-     * cCnt holds the number of frames of aCnt*bBcnt bytes to be transferred
-     */
-    paramSet.paramSetConfig.bCount = (uint16_t)(length / paramSet.paramSetConfig.aCount);
+    /* cCnt holds the number of frames of aCnt*bBcnt bytes to be transferred */
+
     paramSet.paramSetConfig.cCount = (uint16_t)1;
     /* cIdx will not be used as the cCount is always set to 1. */
     cIdx = (int32_t)paramSet.paramSetConfig.bCount;
