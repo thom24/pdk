@@ -310,6 +310,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
 }
 
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 void OSPI_configClk(uint32_t freq)
 {
     OSPI_v0_HwAttrs ospi_cfg;
@@ -407,6 +408,7 @@ void OSPI_configClk(uint32_t freq)
     SBL_log(SBL_LOG_MAX, "OSPI RCLK running at %d MHz. \n", (uint32_t)ospi_rclk_freq);
 
 }
+#endif
 
 int32_t SBL_ospiInit(void *handle)
 {
@@ -446,7 +448,25 @@ int32_t SBL_ospiInit(void *handle)
 #endif
         ospi_cfg.funcClk = ospiFunClk;
         ospi_cfg.baudRateDiv = 0;
+
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
         OSPI_configClk(ospiFunClk);
+#else
+        struct ospiClkParams
+        {
+            uint32_t moduleId;
+            uint32_t clockId;
+        };
+        struct ospiClkParams ospiClkInfo[] = {
+                                                {SBL_DEV_ID_OSPI0, SBL_CLK_ID_OSPI0},
+#ifdef SBL_DEV_ID_OSPI1
+                                                {SBL_DEV_ID_OSPI1, SBL_CLK_ID_OSPI1},
+#endif
+                                            };
+        Sciclient_pmSetModuleClkFreq(ospiClkInfo[BOARD_OSPI_NOR_INSTANCE].moduleId, ospiClkInfo[BOARD_OSPI_NOR_INSTANCE].clockId, ospiFunClk, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+        ospi_cfg.funcClk = (uint32_t)ospiFunClk;
+        SBL_log(SBL_LOG_MAX, "ospiFunClk = %d Hz \n", ospi_cfg.funcClk);
+#endif
     }
 #endif
 
