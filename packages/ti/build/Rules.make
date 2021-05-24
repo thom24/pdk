@@ -140,7 +140,10 @@ export uia_PATH := $(UIA_INSTALL_PATH)
 export ROOTDIR := $(pdk_PATH)
 XDCPATH =
 ifeq ($(BUILD_OS_TYPE),tirtos)
-  XDCPATH = $(bios_PATH)/packages;$(xdc_PATH)/packages;$(edma3_lld_PATH)/packages;$(ndk_PATH)/packages;$(ns_PATH)/;$(pdk_PATH);$(ipc_PATH)/packages;$(uia_PATH)/packages;
+  XDCPATH = $(bios_PATH)/packages;$(xdc_PATH)/packages;$(ndk_PATH)/packages;$(ns_PATH)/;$(pdk_PATH);$(uia_PATH)/packages;
+  ifneq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J7_TDA)))
+    XDCPATH += $(edma3_lld_PATH)/packages;$(ipc_PATH)/packages;
+  endif
 endif
 export XDCPATH
 
