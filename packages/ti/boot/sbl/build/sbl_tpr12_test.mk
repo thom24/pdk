@@ -30,9 +30,9 @@ COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 SRCS_COMMON += sbl_smp_multicore.c
 
 # asm files and linker scripts change due to different tool chains for R5 and A53
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-  SRCS_ASM_COMMON = sbl_smp_r5.asm
-endif
+#ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+#  SRCS_ASM_COMMON = sbl_smp_r5.asm
+#endif
 
 
 

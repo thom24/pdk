@@ -41,12 +41,16 @@
 #include <ti/osal/CacheP.h>
 
 #define DSP_CORE_UP_PATTERN    0xC0FFEE
+#define MCU1_1_CORE_UP_PATTERN    0xC0ABCD
 
 #ifdef BUILD_C66X_1
 	#define DSP_POKE_MEM_ADDR ((volatile int *)0xC0200000)
+#elif defined (BUILD_MCU1_1)
+    #define MCU1_1_POKE_MEM_ADDR ((volatile int *)0x10230000)
 #else
 	#ifdef BUILD_MCU1_0
 		#define DSP_POKE_MEM_ADDR ((volatile int *)0x10200000)
+        #define MCU1_1_POKE_MEM_ADDR ((volatile int *)0x10230000)
 	#endif
 #endif
 
@@ -62,10 +66,26 @@ int main()
 }
 #endif
 
-#if defined (BUILD_MCU1_0)
-
+#if defined (BUILD_MCU1_1)
 int main()
 {
+    CacheP_Inv((const void *)MCU1_1_POKE_MEM_ADDR,sizeof(int));
+
+	*(MCU1_1_POKE_MEM_ADDR) = MCU1_1_CORE_UP_PATTERN;
+    CacheP_wbInv((const void *)MCU1_1_POKE_MEM_ADDR,sizeof(int));
+    return 0;
+}
+#endif
+
+#if defined (BUILD_MCU1_0)
+#if !defined(tpr12_qt)
+    #define App_printf UART_printf
+#else
+    #define App_printf printf
+#endif
+int main()
+{
+    uint32_t dspCoreUp = 0, mcu1CoreUp = 0;
 #if !defined(tpr12_qt)
     Board_initCfg boardCfg;
 
@@ -74,31 +94,43 @@ int main()
         BOARD_INIT_UART_STDIO;
     /* Board Init UART for logging. */
     Board_init(boardCfg);
-    UART_printf("MPU SMP boot test\r\n");
 #endif
+    App_printf("MCU1_0 boot test\r\n");
 
     CacheP_Inv((const void *)DSP_POKE_MEM_ADDR,sizeof(int));
-    while (*(DSP_POKE_MEM_ADDR) != DSP_CORE_UP_PATTERN)
+    CacheP_Inv((const void *)MCU1_1_POKE_MEM_ADDR,sizeof(int));
+    while ((dspCoreUp == 0) || (mcu1CoreUp == 0))
     {
-        CacheP_Inv((const void *)DSP_POKE_MEM_ADDR,sizeof(int));
+        if (dspCoreUp == 0)
+        {
+            if (*(DSP_POKE_MEM_ADDR) == DSP_CORE_UP_PATTERN)
+            {
+                CacheP_Inv((const void *)DSP_POKE_MEM_ADDR,sizeof(int));
+                dspCoreUp = 1;
+                App_printf("Dsp Core is up\r\n");
+            }
+        }
+
+        if (mcu1CoreUp == 0)
+        {
+            if (*(MCU1_1_POKE_MEM_ADDR) == MCU1_1_CORE_UP_PATTERN)
+            {
+                CacheP_Inv((const void *)MCU1_1_POKE_MEM_ADDR,sizeof(int));
+                mcu1CoreUp = 1;
+                App_printf("MCU1 Core is up\r\n");
+            }
+        }
     }
  
     /* Check if MPUs have run in AMP mode */
-    if (*(DSP_POKE_MEM_ADDR) != DSP_CORE_UP_PATTERN)
+    if ((*(DSP_POKE_MEM_ADDR) != DSP_CORE_UP_PATTERN) ||
+        (*(MCU1_1_POKE_MEM_ADDR) != MCU1_1_CORE_UP_PATTERN))
     {
-#if !defined(tpr12_qt)
-        UART_printf("Some tests have failed\r\n");
-#else
-        printf("Some tests have failed\r\n");
-#endif
+        App_printf("Some tests have failed\r\n");
     }
     else
     {
-#if !defined(tpr12_qt)
-        UART_printf("All tests have passed\r\n");
-#else
-        printf("All tests have passed\r\n");
-#endif
+        App_printf("All tests have passed\r\n");
     }
     return 0;
 }

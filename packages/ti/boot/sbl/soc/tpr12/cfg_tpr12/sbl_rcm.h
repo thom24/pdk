@@ -457,6 +457,8 @@ extern Rcm_Return SBL_RcmGetPeripheralFreq (Rcm_PeripheralId periphID,
                                             uint32_t *freqHz);
 extern uint32_t SBL_RcmGetCR5Freq(void);
 
+uint32_t SBL_rcmIsDualCoreSwitchSupported(void);
+
 #ifdef __cplusplus
 }
 #endif

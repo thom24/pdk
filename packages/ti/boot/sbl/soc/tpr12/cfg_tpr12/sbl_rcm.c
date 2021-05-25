@@ -27,6 +27,10 @@
  **************************************************************************/
 #define L3MEMCONFIG_START_BIT               (7U)
 #define L3MEMCONFIG_END_BIT                 (10U)
+#define DUALCOREBOOTENABLE_START_BIT        (13U)
+#define DUALCOREBOOTENABLE_END_BIT          (13U)
+#define DUALCORESWITCHDISABLE_START_BIT     (14U)
+#define DUALCORESWITCHDISABLE_END_BIT       (14U)
 #define FLASHMODECONFIG_START_BIT           (15U)
 #define FLASHMODECONFIG_END_BIT             (16U)
 #define QSPIFREQCONFIG_START_BIT            (17U)
@@ -3815,4 +3819,32 @@ void SBL_RcmGetEfuseQSPIConfig(Rcm_EfuseQspiConfig *qspiEfuseCfg)
 
 }
 
+uint8_t CSL_TopCtrl_dualCoreBootEnableEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+{
+    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_11, \
+                          DUALCOREBOOTENABLE_END_BIT, \
+                          DUALCOREBOOTENABLE_START_BIT));
+}
 
+uint8_t CSL_TopCtrl_dualCoreSwitchDisableEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+{
+    return (CSL_extract8 (ptrTopCtrlRegs->EFUSE1_ROW_11, \
+                          DUALCORESWITCHDISABLE_END_BIT, \
+                          DUALCORESWITCHDISABLE_START_BIT));
+}
+
+uint32_t SBL_rcmIsDualCoreSwitchSupported(void)
+{
+    CSL_top_ctrlRegs* ptrTopCtrlRegs;
+    uint8_t dualCoreBootEnable, dualCoreSwitchDisable;
+    uint32_t retVal = false;
+
+    ptrTopCtrlRegs = CSL_TopCtrl_getBaseAddress ();
+    dualCoreBootEnable = CSL_TopCtrl_dualCoreBootEnableEfuse(ptrTopCtrlRegs);
+    dualCoreSwitchDisable = CSL_TopCtrl_dualCoreSwitchDisableEfuse(ptrTopCtrlRegs);
+    if ((dualCoreBootEnable == 0) && (dualCoreSwitchDisable == 0))
+    {
+        retVal = true;
+    }
+    return retVal;
+}

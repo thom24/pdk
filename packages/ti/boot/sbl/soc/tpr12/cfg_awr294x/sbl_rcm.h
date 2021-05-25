@@ -427,6 +427,7 @@ extern void SBL_RcmBSSR4Unhalt(void);
 extern void SBL_RcmWaitBSSBootComplete(void);
 extern void SBL_RcmGetEfuseBootFrequency(Rcm_EfuseBootFreqConfig *bootFreqEfuseCfg);
 
+uint32_t SBL_rcmIsDualCoreSwitchSupported(void);
 #ifdef __cplusplus
 }
 #endif

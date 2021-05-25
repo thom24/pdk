@@ -91,6 +91,12 @@ uint32_t dspInstruction[10] =
     0x00000000  /* NOP                        */
 };
 
+/*
+ * Variable to hold the mcu tcm mem init status. There is no separate ctrl for
+ * R5A and R5B TCM mem init. So it should be done only once.
+ */
+uint32_t gMcuMemInitDone = 0;
+
 /* ========================================================================== */
 /*                           Internal Functions                               */
 /* ========================================================================== */
@@ -197,15 +203,9 @@ void SBL_cr5BUnhalt(CSL_mss_ctrlRegs *mssCtrl)
 
 void SBL_localR5CoreTriggerReset(void)
 {
-    CSL_mss_ctrlRegs *mssCtrl = (CSL_mss_ctrlRegs *)CSL_MSS_CTRL_U_BASE;
-    CSL_FINS(mssCtrl->R5_CONTROL, MSS_CTRL_R5_CONTROL_R5_CONTROL_RESET_FSM_TRIGGER, 0x7);
-    asm(" wfi ");
-}
-
-
-static void SBL_dualCoreBoot(CSL_mss_ctrlRegs *mssCtrl, CSL_mss_rcmRegs *rcmRegs)
-{
     uint32_t regVal;
+    CSL_mss_rcmRegs *rcmRegs = (CSL_mss_rcmRegs *)CSL_MSS_RCM_U_BASE;
+    CSL_mss_ctrlRegs *mssCtrl = (CSL_mss_ctrlRegs *)CSL_MSS_CTRL_U_BASE;
 
     regVal = rcmRegs->RST2ASSERTDLY;
     CSL_FINS(regVal, MSS_RCM_RST2ASSERTDLY_RST2ASSERTDLY_R5SSA, 0x0);
@@ -222,11 +222,34 @@ static void SBL_dualCoreBoot(CSL_mss_ctrlRegs *mssCtrl, CSL_mss_rcmRegs *rcmRegs
     rcmRegs->RST_WFICHECK = regVal;
 
     regVal = mssCtrl->R5_CONTROL;
-    CSL_FINS(regVal, MSS_CTRL_R5_CONTROL_R5_CONTROL_LOCK_STEP, 0x0);
-    CSL_FINS(regVal, MSS_CTRL_R5_CONTROL_R5_CONTROL_LOCK_STEP_SWITCH_WAIT, 0x7);
+    CSL_FINS(regVal, MSS_CTRL_R5_CONTROL_R5_CONTROL_RESET_FSM_TRIGGER, 0x7);
     mssCtrl->R5_CONTROL = regVal;
 
+    asm(" wfi ");
+}
 
+static void SBL_dualCoreBoot(CSL_mss_ctrlRegs *mssCtrl, CSL_mss_rcmRegs *rcmRegs)
+{
+    uint32_t regVal;
+
+    if (SBL_rcmIsDualCoreSwitchSupported() == TRUE)
+    {
+        regVal = mssCtrl->R5_CONTROL;
+        if ((regVal & CSL_MSS_CTRL_R5_CONTROL_R5_CONTROL_LOCK_STEP_MASK) == 0x0)
+        {
+            /* It is already in dual core mode. Skip programming LOCK STEP Bit. */
+        }
+        else
+        {
+            CSL_FINS(regVal, MSS_CTRL_R5_CONTROL_R5_CONTROL_LOCK_STEP, 0x0);
+            CSL_FINS(regVal, MSS_CTRL_R5_CONTROL_R5_CONTROL_LOCK_STEP_SWITCH_WAIT, 0x7);
+            mssCtrl->R5_CONTROL = regVal;
+        }
+    }
+    else
+    {
+        SBL_log(SBL_LOG_MAX, "Dual Core Boot Not Supported.\n");
+    }
 }
 
 static void SBL_lockStepBoot(CSL_mss_ctrlRegs *mssCtrl, CSL_mss_rcmRegs *rcmRegs)
@@ -363,8 +386,12 @@ void SBL_SetupCoreMem(uint32_t core_id)
             SBL_ConfigMcuLockStep(SBL_DISABLE_MCU_LOCKSTEP);
             /* DOnt break, fall through for enabling TCMs */
         case MCU1_CPU0_ID:
-            SBL_memInitTCMACR5();
-            SBL_memInitTCMBCR5();
+            if (gMcuMemInitDone == 0)
+            {
+                SBL_memInitTCMACR5();
+                SBL_memInitTCMBCR5();
+                gMcuMemInitDone = 1;
+            }
             break;
         default:
             /* No special memory setup needed */
@@ -387,11 +414,12 @@ void SBL_SetupCoreMem(uint32_t core_id)
  **/
 void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *pAppEntry)
 {
+    CSL_mss_ctrlRegs *mssCtrl = (CSL_mss_ctrlRegs *) CSL_MSS_CTRL_U_BASE;
     SBL_ADD_PROFILE_POINT;
 
 #if defined(SBL_SKIP_MCU_RESET)
     /* Finished processing images for all cores, start MCU_0 */
-    if ((core_id == MCU1_CPU1_ID) &&
+    if ((core_id == MCU1_CPU0_ID) &&
         (pAppEntry->CpuEntryPoint[core_id] >=  SBL_INVALID_ENTRY_ADDR))
     {
             /* Display profile logs */
@@ -406,7 +434,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
     /* Power down and then power up each core*/
     switch (core_id)
     {
-        case MCU1_CPU1_ID:
+        case MCU1_CPU0_ID:
             /* Display profile logs */
             SBL_printProfileLog();
 
@@ -419,8 +447,9 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 #endif
             break;
 
-        case MCU1_CPU0_ID:
+        case MCU1_CPU1_ID:
 
+            SBL_cr5BUnhalt(mssCtrl);
             break;
         case DSP1_C66X_ID:
             SBL_log(SBL_LOG_MAX, "SBL_procBootReleaseProcessor, ProcId 0x%x...\n", core_id);

@@ -29,6 +29,8 @@
 * FROM     ROW   Fields               Start Bit   End Bit  # of bits
 * FROM1    10    XTAL_FREQ_SCALE        25          25       1
 * FROM1    11    L3_MEM_SIZE             7          10       4
+* FROM1    11    DUALCORE_BOOT_ENABLE   13          13       1
+* FROM1    11    DUALCORE_SWITCH_DISABLE 14         14      1
 * FROM1    11    FLASH_MODE             15          16       2
 * FROM1    11    QSPI_CLK_FREQ          17          18       2
 * FROM1    40    CORE_ADPLL_TRIM         0          11       12
@@ -55,6 +57,9 @@
 #define SBL_EFUSE_FIELD_EXTRACT_CORE_ADPLL_TRIM_VALID(topCtrlReg)    SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 41, 12, 12)
 #define SBL_EFUSE_FIELD_EXTRACT_DSP_ADPLL_TRIM_VALID(topCtrlReg)     SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 41, 13, 13)
 #define SBL_EFUSE_FIELD_EXTRACT_PER_ADPLL_TRIM_VALID(topCtrlReg)     SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 41, 14, 14)
+
+#define SBL_EFUSE_FIELD_EXTRACT_DUALCORE_BOOT_ENABLE(topCtrlReg)     SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 11, 13, 13)
+#define SBL_EFUSE_FIELD_EXTRACT_DUALCORE_SWITCH_DISABLE(topCtrlReg)  SBL_EFUSE_FIELD_EXTRACT(topCtrlReg, 1, 11, 14, 14)
 
 #define RCM_CORE_ADPLL_DEFAULT_VALUE            (0x9U)
 #define RCM_DSP_ADPLL_DEFAULT_VALUE             (0x9U)
@@ -5120,3 +5125,28 @@ void SBL_RcmGetEfuseBootFrequency(Rcm_EfuseBootFreqConfig *bootFreqEfuseCfg)
     }
 }
 
+uint8_t CSL_TopCtrl_dualCoreBootEnableEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+{
+    return (SBL_EFUSE_FIELD_EXTRACT_DUALCORE_BOOT_ENABLE(ptrTopCtrlRegs));
+}
+
+uint8_t CSL_TopCtrl_dualCoreSwitchDisableEfuse (const CSL_top_ctrlRegs * ptrTopCtrlRegs)
+{
+    return (SBL_EFUSE_FIELD_EXTRACT_DUALCORE_SWITCH_DISABLE(ptrTopCtrlRegs));
+}
+
+uint32_t SBL_rcmIsDualCoreSwitchSupported(void)
+{
+    CSL_top_ctrlRegs* ptrTopCtrlRegs;
+    uint8_t dualCoreBootEnable, dualCoreSwitchDisable;
+    uint32_t retVal = false;
+
+    ptrTopCtrlRegs = CSL_TopCtrl_getBaseAddress ();
+    dualCoreBootEnable = CSL_TopCtrl_dualCoreBootEnableEfuse(ptrTopCtrlRegs);
+    dualCoreSwitchDisable = CSL_TopCtrl_dualCoreSwitchDisableEfuse(ptrTopCtrlRegs);
+    if ((dualCoreBootEnable == 0) && (dualCoreSwitchDisable == 0))
+    {
+        retVal = true;
+    }
+    return retVal;
+}

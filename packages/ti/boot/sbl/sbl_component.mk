@@ -86,7 +86,7 @@ am64x_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
 sbl_am64x_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
 am64x_LASTCORE := $(word $(words $(sbl_am64x_CORELIST)), $(sbl_am64x_CORELIST))
 
-sbl_tpr12_CORELIST := mcu1_0 c66xdsp_1
+sbl_tpr12_CORELIST := mcu1_0 mcu1_1 c66xdsp_1
 tpr12_LASTCORE := $(word $(words $(sbl_tpr12_CORELIST)), $(sbl_tpr12_CORELIST))
 
 sbl_awr294x_CORELIST := mcu1_0 c66xdsp_1
@@ -1370,7 +1370,7 @@ export sbl_tpr12_test_BOARDLIST
 sbl_tpr12_test_$(SOC)_CORELIST = $(sbl_tpr12_CORELIST)
 export sbl_tpr12_test_$(SOC)_CORELIST
 sbl_EXAMPLE_LIST += sbl_tpr12_test
-sbl_tpr12_test_SBL_APPIMAGEGEN = no
+sbl_tpr12_test_SBL_APPIMAGEGEN = yes
 export sbl_tpr12_test_SBL_APPIMAGEGEN
 endif
 
