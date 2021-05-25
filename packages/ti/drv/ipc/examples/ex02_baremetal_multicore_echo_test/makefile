@@ -10,7 +10,6 @@ endif
 APP_NAME = ex02_baremetal_multicore_echo_test
 
 SRCS_COMMON = ex02_baremetal_multicore_echo_test.c
-CFLAGS_LOCAL_COMMON = -DIPC_EXCLUDE_CTRL_TASKS -DBAREMETAL
 BUILD_OS_TYPE = baremetal
 
 include ../common/makefile.mk

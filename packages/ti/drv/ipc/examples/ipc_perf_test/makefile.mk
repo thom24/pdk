@@ -1,7 +1,7 @@
 #
 # This file is the makefile for building IPC example app for TI RTOS
 #
-SRCDIR = . 
+SRCDIR = . ../common/src
 INCDIR =
 
 # List all the external components/interfaces, whose interface header files
@@ -10,55 +10,58 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = ipc
-ifeq ($(BUILD_OS_TYPE), baremetal)
-  COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
 ifeq ($(SOC), am64x)
   COMP_LIST_COMMON += mailbox
 endif
-  SRCS_COMMON = main_baremetal.c
-  ifeq ($(ISA),$(filter $(ISA), a53, a72))
-    LNKFLAGS_LOCAL_$(CORE) += --entry Entry
-  endif
-else
-  INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  COMP_LIST_COMMON += $(PDK_COMMON_TIRTOS_COMP)
-ifeq ($(SOC), am64x)
-  COMP_LIST_COMMON += mailbox
-endif
+
+SRCS_COMMON += main_tirtos.c
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   ifeq ($(CORE),mcu1_0)
     COMP_LIST_COMMON += sciserver_tirtos
   endif
 endif
 
-  SRCS_COMMON += main_tirtos.c
+ifeq ($(BUILD_OS_TYPE), tirtos)
+  INCLUDE_EXTERNAL_INTERFACES += xdc bios
+  CFLAGS_LOCAL_COMMON = -DSYSBIOS
+  COMP_LIST_COMMON += $(PDK_COMMON_TIRTOS_COMP)
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
-  XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
-  ifeq ($(ISA), r5f)
-    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+    XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
+    ifeq ($(ISA), r5f)
+      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
+    endif
+    ifeq ($(CORE), mcu1_0)
+      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA)_sbl.cfg
+      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
+    else
+      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
+    endif
   endif
-  ifeq ($(CORE), mcu1_0)
-    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA)_sbl.cfg
-    EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
-  else
+  ifeq ($(SOC),$(filter $(SOC), am65xx))
+    XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
     EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
+    ifeq ($(ISA), r5f)
+      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
+      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
+    endif
   endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-  XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
-  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
+ifeq ($(BUILD_OS_TYPE), freertos)
+  INCLUDE_EXTERNAL_INTERFACES += freertos
+  CFLAGS_LOCAL_COMMON = -DFREERTOS
+  COMP_LIST_COMMON +=  $(PDK_COMMON_FREERTOS_COMP)
   ifeq ($(ISA), r5f)
-    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
-    EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
+	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
-endif
+  EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds
+  APPEND_LNKCMD_FILE += $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/memory_map_ddr.cmd
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = .
+PACKAGE_SRCS_COMMON = . ../common ../../common
 SRCS_COMMON += ipc_perf_test.c ipc_apputils.c ipc_test_defs.c
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)

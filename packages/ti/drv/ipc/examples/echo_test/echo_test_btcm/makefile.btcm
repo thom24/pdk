@@ -13,7 +13,7 @@ SRCDIR = . ../ ../../common/src
 SRCS_COMMON = ipc_echo_test.c
 
 ECHO_TEST_BTCM = 1
-CFLAGS_LOCAL_COMMON = -DA72_LINUX_OS
+CFLAGS_LOCAL_COMMON = -DA72_LINUX_OS #-DA72_LINUX_OS_IPC_ATTACH
 
 include ../../common/makefile.mk
 

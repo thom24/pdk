@@ -142,7 +142,9 @@ ipc_echo_test_RELPATH = ti/drv/ipc/examples/echo_test
 ipc_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test
 ipc_echo_test_BOARD_DEPENDENCY = yes
 ipc_echo_test_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ipc_echo_test_XDC_CONFIGURO = yes
+endif
 export ipc_echo_test_COMP_LIST
 export ipc_echo_test_BOARD_DEPENDENCY
 export ipc_echo_test_CORE_DEPENDENCY
@@ -191,7 +193,9 @@ ipc_echo_testb_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test/echo_test_btcm
 ipc_echo_testb_MAKEFILE = -fmakefile.btcm
 ipc_echo_testb_BOARD_DEPENDENCY = yes
 ipc_echo_testb_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ipc_echo_testb_XDC_CONFIGURO = yes
+endif
 export ipc_echo_testb_MAKEFILE
 export ipc_echo_testb_COMP_LIST
 export ipc_echo_testb_BOARD_DEPENDENCY
@@ -232,7 +236,9 @@ ex01_bios_2core_echo_test_RELPATH = ti/drv/ipc/examples/ex01_bios_2core_echo_tes
 ex01_bios_2core_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex01_bios_2core_echo_test
 ex01_bios_2core_echo_test_BOARD_DEPENDENCY = yes
 ex01_bios_2core_echo_test_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ex01_bios_2core_echo_test_XDC_CONFIGURO = yes
+endif
 export ex01_bios_2core_echo_test_COMP_LIST
 export ex01_bios_2core_echo_test_BOARD_DEPENDENCY
 export ex01_bios_2core_echo_test_CORE_DEPENDENCY
@@ -251,7 +257,9 @@ ex02_bios_multicore_echo_test_RELPATH = ti/drv/ipc/examples/ex02_bios_multicore_
 ex02_bios_multicore_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_bios_multicore_echo_test
 ex02_bios_multicore_echo_test_BOARD_DEPENDENCY = yes
 ex02_bios_multicore_echo_test_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ex02_bios_multicore_echo_test_XDC_CONFIGURO = yes
+endif
 export ex02_bios_multicore_echo_test_COMP_LIST
 export ex02_bios_multicore_echo_test_BOARD_DEPENDENCY
 export ex02_bios_multicore_echo_test_CORE_DEPENDENCY
@@ -289,7 +297,9 @@ ex05_bios_multicore_echo_negative_test_RELPATH = ti/drv/ipc/examples/ex05_bios_m
 ex05_bios_multicore_echo_negative_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex05_bios_multicore_echo_negative_test
 ex05_bios_multicore_echo_negative_test_BOARD_DEPENDENCY = yes
 ex05_bios_multicore_echo_negative_test_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ex05_bios_multicore_echo_negative_test_XDC_CONFIGURO = yes
+endif
 export ex05_bios_multicore_echo_negative_test_COMP_LIST
 export ex05_bios_multicore_echo_negative_test_BOARD_DEPENDENCY
 export ex05_bios_multicore_echo_negative_test_CORE_DEPENDENCY
@@ -310,7 +320,9 @@ ex02_bios_multicore_echo_testb_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_bios_mu
 ex02_bios_multicore_echo_testb_MAKEFILE = -fmakefile.btcm
 ex02_bios_multicore_echo_testb_BOARD_DEPENDENCY = yes
 ex02_bios_multicore_echo_testb_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ex02_bios_multicore_echo_testb_XDC_CONFIGURO = yes
+endif
 export ex02_bios_multicore_echo_testb_COMP_LIST
 export ex02_bios_multicore_echo_testb_BOARD_DEPENDENCY
 export ex02_bios_multicore_echo_testb_CORE_DEPENDENCY
@@ -329,7 +341,9 @@ ex03_linux_bios_2core_echo_test_RELPATH = ti/drv/ipc/examples/ex03_linux_bios_2c
 ex03_linux_bios_2core_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex03_linux_bios_2core_echo_test
 ex03_linux_bios_2core_echo_test_BOARD_DEPENDENCY = yes
 ex03_linux_bios_2core_echo_test_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ex03_linux_bios_2core_echo_test_XDC_CONFIGURO = yes
+endif
 export ex03_linux_bios_2core_echo_test_COMP_LIST
 export ex03_linux_bios_2core_echo_test_BOARD_DEPENDENCY
 export ex03_linux_bios_2core_echo_test_CORE_DEPENDENCY
@@ -348,7 +362,9 @@ ipc_perf_test_RELPATH = ti/drv/ipc/examples/ipc_perf_test
 ipc_perf_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ipc_perf_test
 ipc_perf_test_BOARD_DEPENDENCY = yes
 ipc_perf_test_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ipc_perf_test_XDC_CONFIGURO = yes
+endif
 export ipc_perf_test_COMP_LIST
 export ipc_perf_test_BOARD_DEPENDENCY
 export ipc_perf_test_CORE_DEPENDENCY
@@ -374,7 +390,9 @@ ipc_multicore_perf_test_DEPENDS_ON=ipc_perf_test
 export ipc_multicore_perf_test_DEPENDS_ON
 ipc_multicore_perf_test_BOARD_DEPENDENCY = yes
 ipc_multicore_perf_test_CORE_DEPENDENCY = yes
+ifneq ($(BUILD_OS_TYPE), freertos)
 ipc_multicore_perf_test_XDC_CONFIGURO = yes
+endif
 export ipc_multicore_perf_test_COMP_LIST
 export ipc_multicore_perf_test_BOARD_DEPENDENCY
 export ipc_multicore_perf_test_CORE_DEPENDENCY
