@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = ex03_linux_bios_2core_echo_test
+APP_NAME = ex03_linux_bios_2core_echo_test_$(BUILD_OS_TYPE)
 
 SRCS_COMMON = ex03_linux_bios_2core_echo_test.c
 CFLAGS_LOCAL_COMMON = -DA72_LINUX_OS

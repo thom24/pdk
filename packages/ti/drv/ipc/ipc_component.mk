@@ -41,25 +41,26 @@ ifeq ($(ipc_component_make_include), )
 ############################
 ipc_LIB_LIST = ipc
 
+drvipc_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
+
 drvipc_SOCLIST         = am65xx j721e j7200 am64x
 drvipc_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_qt j721e_evm j7200_evm am64x_evm
 drvipc_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
 drvipc_am65xx_LASTCORE := $(word $(words $(drvipc_am65xx_CORELIST)), $(drvipc_am65xx_CORELIST))
 drvipc_am65xx_BAREMETAL_CORELIST = mcu1_0 mcu1_1
-drvipc_am65xx_TIRTOS_CORELIST = $(drvipc_am65xx_CORELIST)
+drvipc_am65xx_RTOS_CORELIST = $(drvipc_am65xx_CORELIST)
 drvipc_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
-drvipc_j721e_APPCORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
-drvipc_j721e_LASTCORE := $(word $(words $(drvipc_j721e_APPCORELIST)), $(drvipc_j721e_APPCORELIST))
+drvipc_j721e_LASTCORE := $(word $(words $(drvipc_j721e_CORELIST)), $(drvipc_j721e_CORELIST))
 drvipc_j721e_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvipc_j721e_TIRTOS_CORELIST = $(drvipc_j721e_CORELIST)
+drvipc_j721e_RTOS_CORELIST = $(drvipc_j721e_CORELIST)
 drvipc_j7200_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu1_1 mcu2_1
 drvipc_j7200_LASTCORE := $(word $(words $(drvipc_j7200_CORELIST)), $(drvipc_j7200_CORELIST))
 drvipc_j7200_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvipc_j7200_TIRTOS_CORELIST = $(drvipc_j7200_CORELIST)
+drvipc_j7200_RTOS_CORELIST = $(drvipc_j7200_CORELIST)
 drvipc_am64x_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvipc_am64x_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
-drvipc_am64x_TIRTOS_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvipc_am64x_LASTCORE := $(word $(words $(drvipc_am64x_TIRTOS_CORELIST)), $(drvipc_am64x_TIRTOS_CORELIST))
+drvipc_am64x_RTOS_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvipc_am64x_LASTCORE := $(word $(words $(drvipc_am64x_RTOS_CORELIST)), $(drvipc_am64x_RTOS_CORELIST))
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
 ifeq ($(BUILD_OS_TYPE), qnx)
@@ -136,34 +137,33 @@ ipc_LIB_LIST += ipc_baremetal
 # IPC Examples
 #
 
-# IPC echo_test
-ipc_echo_test_COMP_LIST = ipc_echo_test
-ipc_echo_test_RELPATH = ti/drv/ipc/examples/echo_test
-ipc_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test
-ipc_echo_test_BOARD_DEPENDENCY = yes
-ipc_echo_test_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ipc_echo_test_XDC_CONFIGURO = yes
-endif
-export ipc_echo_test_COMP_LIST
-export ipc_echo_test_BOARD_DEPENDENCY
-export ipc_echo_test_CORE_DEPENDENCY
-export ipc_echo_test_XDC_CONFIGURO
-ipc_echo_test_PKG_LIST = ipc_echo_test
-ipc_echo_test_INCLUDE = $(ipc_echo_test_PATH)
-ipc_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
-export ipc_echo_test_BOARDLIST
-ipc_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ipc_echo_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ipc_echo_test
+# RTOS IPC Echo tests
+define IPC_ECHO_TEST_RULE
 
--include $(PDK_IPC_COMP_PATH)/unit_test/ipc_ut_component.mk
-ifneq ($(ipc_ut_LIB_LIST),)
-  ipc_LIB_LIST += $(ipc_ut_LIB_LIST)
+export ipc_echo_test_$(1)_COMP_LIST = ipc_echo_test_$(1)
+ipc_echo_test_$(1)_RELPATH = ti/drv/ipc/examples/echo_test
+ipc_echo_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test
+export ipc_echo_test_$(1)_BOARD_DEPENDENCY = yes
+export ipc_echo_test_$(1)_CORE_DEPENDENCY = yes
+export ipc_echo_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ipc_echo_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+ipc_echo_test_$(1)_PKG_LIST = ipc_echo_test_$(1)
+ipc_echo_test_$(1)_INCLUDE = $(ipc_echo_test_$(1)_PATH)
+export ipc_echo_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ipc_echo_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ipc_echo_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ipc_echo_test_$(1)
 endif
-ifneq ($(ipc_ut_EXAMPLE_LIST),)
-  ipc_EXAMPLE_LIST += $(ipc_ut_EXAMPLE_LIST)
 endif
+endef
+
+IPC_ECHO_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_ECHO_TEST_RULE,$(curos)))
+
+$(eval ${IPC_ECHO_TEST_MACRO_LIST})
+
 
 # IPC echo_test baremetal
 ipc_echo_baremetal_test_COMP_LIST = ipc_echo_baremetal_test
@@ -186,28 +186,33 @@ ipc_echo_baremetal_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_CORELIST)
 export ipc_echo_baremetal_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_echo_baremetal_test
 
-# IPC echo_test - use R5F BTCM
-ipc_echo_testb_COMP_LIST = ipc_echo_testb
-ipc_echo_testb_RELPATH = ti/drv/ipc/examples/echo_test/echo_test_btcm
-ipc_echo_testb_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test/echo_test_btcm
-ipc_echo_testb_MAKEFILE = -fmakefile.btcm
-ipc_echo_testb_BOARD_DEPENDENCY = yes
-ipc_echo_testb_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ipc_echo_testb_XDC_CONFIGURO = yes
+# RTOS IPC Echo tests - use R5F BTCM
+define IPC_ECHO_TESTB_RULE
+
+export ipc_echo_testb_$(1)_COMP_LIST = ipc_echo_testb_$(1)
+ipc_echo_testb_$(1)_RELPATH = ti/drv/ipc/examples/echo_test/echo_test_btcm
+ipc_echo_testb_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/echo_test/echo_test_btcm
+export ipc_echo_testb_$(1)_BOARD_DEPENDENCY = yes
+export ipc_echo_testb_$(1)_CORE_DEPENDENCY = yes
+export ipc_echo_testb_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ipc_echo_testb_$(1)_MAKEFILE = -fmakefile.btcm BUILD_OS_TYPE=$(1)
+ipc_echo_testb_$(1)_PKG_LIST = ipc_echo_testb_$(1)
+ipc_echo_testb_$(1)_INCLUDE = $(ipc_echo_testb_$(1)_PATH)
+export ipc_echo_testb_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ipc_echo_testb_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ipc_echo_testb_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ipc_echo_testb_$(1)
 endif
-export ipc_echo_testb_MAKEFILE
-export ipc_echo_testb_COMP_LIST
-export ipc_echo_testb_BOARD_DEPENDENCY
-export ipc_echo_testb_CORE_DEPENDENCY
-export ipc_echo_testb_XDC_CONFIGURO
-ipc_echo_testb_PKG_LIST = ipc_echo_testb
-ipc_echo_testb_INCLUDE = $(ipc_echo_testb_PATH)
-ipc_echo_testb_BOARDLIST = $(drvipc_BOARDLIST)
-export ipc_echo_testb_BOARDLIST
-ipc_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ipc_echo_testb_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ipc_echo_testb
+endif
+endef
+
+IPC_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_ECHO_TESTB_RULE,$(curos)))
+
+$(eval ${IPC_ECHO_TESTB_MACRO_LIST})
+
 
 # IPC echo_test baremetal - use R5F BTCM
 ipc_echo_baremetal_testb_COMP_LIST = ipc_echo_baremetal_testb
@@ -230,47 +235,61 @@ ipc_echo_baremetal_testb_$(SOC)_CORELIST = mcu1_0
 export ipc_echo_baremetal_testb_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ipc_echo_baremetal_testb
 
-# IPC ex01_bios_2core_echo_test
-ex01_bios_2core_echo_test_COMP_LIST = ex01_bios_2core_echo_test
-ex01_bios_2core_echo_test_RELPATH = ti/drv/ipc/examples/ex01_bios_2core_echo_test
-ex01_bios_2core_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex01_bios_2core_echo_test
-ex01_bios_2core_echo_test_BOARD_DEPENDENCY = yes
-ex01_bios_2core_echo_test_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ex01_bios_2core_echo_test_XDC_CONFIGURO = yes
-endif
-export ex01_bios_2core_echo_test_COMP_LIST
-export ex01_bios_2core_echo_test_BOARD_DEPENDENCY
-export ex01_bios_2core_echo_test_CORE_DEPENDENCY
-export ex01_bios_2core_echo_test_XDC_CONFIGURO
-ex01_bios_2core_echo_test_PKG_LIST = ex01_bios_2core_echo_test
-ex01_bios_2core_echo_test_INCLUDE = $(ex01_bios_2core_echo_test_PATH)
-ex01_bios_2core_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
-export ex01_bios_2core_echo_test_BOARDLIST
-ex01_bios_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ex01_bios_2core_echo_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ex01_bios_2core_echo_test
+# RTOS IPC Tests - ex01_bios_2core_echo_test
+define EX01_BIOS_2CORE_ECHO_TEST_RULE
 
-# IPC ex02_bios_multicore_echo_test
-ex02_bios_multicore_echo_test_COMP_LIST = ex02_bios_multicore_echo_test
-ex02_bios_multicore_echo_test_RELPATH = ti/drv/ipc/examples/ex02_bios_multicore_echo_test
-ex02_bios_multicore_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_bios_multicore_echo_test
-ex02_bios_multicore_echo_test_BOARD_DEPENDENCY = yes
-ex02_bios_multicore_echo_test_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ex02_bios_multicore_echo_test_XDC_CONFIGURO = yes
+export ex01_bios_2core_echo_test_$(1)_COMP_LIST = ex01_bios_2core_echo_test_$(1)
+ex01_bios_2core_echo_test_$(1)_RELPATH = ti/drv/ipc/examples/ex01_bios_2core_echo_test
+ex01_bios_2core_echo_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/ex01_bios_2core_echo_test
+export ex01_bios_2core_echo_test_$(1)_BOARD_DEPENDENCY = yes
+export ex01_bios_2core_echo_test_$(1)_CORE_DEPENDENCY = yes
+export ex01_bios_2core_echo_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ex01_bios_2core_echo_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+ex01_bios_2core_echo_test_$(1)_PKG_LIST = ex01_bios_2core_echo_test_$(1)
+ex01_bios_2core_echo_test_$(1)_INCLUDE = $(ex01_bios_2core_echo_test_$(1)_PATH)
+export ex01_bios_2core_echo_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ex01_bios_2core_echo_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ex01_bios_2core_echo_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ex01_bios_2core_echo_test_$(1)
 endif
-export ex02_bios_multicore_echo_test_COMP_LIST
-export ex02_bios_multicore_echo_test_BOARD_DEPENDENCY
-export ex02_bios_multicore_echo_test_CORE_DEPENDENCY
-export ex02_bios_multicore_echo_test_XDC_CONFIGURO
-ex02_bios_multicore_echo_test_PKG_LIST = ex02_bios_multicore_echo_test
-ex02_bios_multicore_echo_test_INCLUDE = $(ex02_bios_multicore_echo_test_PATH)
-ex02_bios_multicore_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
-export ex02_bios_multicore_echo_test_BOARDLIST
-ex02_bios_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ex02_bios_multicore_echo_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_test
+endif
+endef
+
+EX01_BIOS_2CORE_ECHO_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call EX01_BIOS_2CORE_ECHO_TEST_RULE,$(curos)))
+
+$(eval ${EX01_BIOS_2CORE_ECHO_TEST_MACRO_LIST})
+
+
+# RTOS IPC Tests - ex02_bios_multicore_echo_test
+define EX02_BIOS_MULTICORE_ECHO_TEST_RULE
+
+export ex02_bios_multicore_echo_test_$(1)_COMP_LIST = ex02_bios_multicore_echo_test_$(1)
+ex02_bios_multicore_echo_test_$(1)_RELPATH = ti/drv/ipc/examples/ex02_bios_multicore_echo_test
+ex02_bios_multicore_echo_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_bios_multicore_echo_test
+export ex02_bios_multicore_echo_test_$(1)_BOARD_DEPENDENCY = yes
+export ex02_bios_multicore_echo_test_$(1)_CORE_DEPENDENCY = yes
+export ex02_bios_multicore_echo_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ex02_bios_multicore_echo_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+ex02_bios_multicore_echo_test_$(1)_PKG_LIST = ex02_bios_multicore_echo_test_$(1)
+ex02_bios_multicore_echo_test_$(1)_INCLUDE = $(ex02_bios_multicore_echo_test_$(1)_PATH)
+export ex02_bios_multicore_echo_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ex02_bios_multicore_echo_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_test_$(1)
+endif
+endif
+endef
+
+EX02_BIOS_MULTICORE_ECHO_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call EX02_BIOS_MULTICORE_ECHO_TEST_RULE,$(curos)))
+
+$(eval ${EX02_BIOS_MULTICORE_ECHO_TEST_MACRO_LIST})
+
 
 # IPC ex02_baremetal_multicore_echo_test
 ex02_baremetal_multicore_echo_test_COMP_LIST = ex02_baremetal_multicore_echo_test
@@ -291,121 +310,152 @@ ex02_baremetal_multicore_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_BAREMETAL_C
 export ex02_baremetal_multicore_echo_test_$(SOC)_CORELIST
 ipc_EXAMPLE_LIST += ex02_baremetal_multicore_echo_test
 
-# IPC ex05_bios_multicore_echo_negative_test
-ex05_bios_multicore_echo_negative_test_COMP_LIST = ex05_bios_multicore_echo_negative_test
-ex05_bios_multicore_echo_negative_test_RELPATH = ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test
-ex05_bios_multicore_echo_negative_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex05_bios_multicore_echo_negative_test
-ex05_bios_multicore_echo_negative_test_BOARD_DEPENDENCY = yes
-ex05_bios_multicore_echo_negative_test_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ex05_bios_multicore_echo_negative_test_XDC_CONFIGURO = yes
-endif
-export ex05_bios_multicore_echo_negative_test_COMP_LIST
-export ex05_bios_multicore_echo_negative_test_BOARD_DEPENDENCY
-export ex05_bios_multicore_echo_negative_test_CORE_DEPENDENCY
-export ex05_bios_multicore_echo_negative_test_XDC_CONFIGURO
-ex05_bios_multicore_echo_negative_test_PKG_LIST = ex05_bios_multicore_echo_negative_test
-ex05_bios_multicore_echo_negative_test_INCLUDE = $(ex05_bios_multicore_echo_negative_test_PATH)
-ex05_bios_multicore_echo_negative_test_BOARDLIST = $(drvipc_BOARDLIST)
-export ex05_bios_multicore_echo_negative_test_BOARDLIST
-ex05_bios_multicore_echo_negative_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ex05_bios_multicore_echo_negative_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ex05_bios_multicore_echo_negative_test
-export ex05_bios_multicore_echo_negative_test_SBL_APPIMAGEGEN = yes
 
-# IPC ex02_bios_multicore_echo_testb - use R5F BTCM
-ex02_bios_multicore_echo_testb_COMP_LIST = ex02_bios_multicore_echo_testb
-ex02_bios_multicore_echo_testb_RELPATH = ti/drv/ipc/examples/ex02_bios_multicore_echo_test/ex02_bios_multicore_echo_testb
-ex02_bios_multicore_echo_testb_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_bios_multicore_echo_test/ex02_bios_multicore_echo_testb
-ex02_bios_multicore_echo_testb_MAKEFILE = -fmakefile.btcm
-ex02_bios_multicore_echo_testb_BOARD_DEPENDENCY = yes
-ex02_bios_multicore_echo_testb_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ex02_bios_multicore_echo_testb_XDC_CONFIGURO = yes
-endif
-export ex02_bios_multicore_echo_testb_COMP_LIST
-export ex02_bios_multicore_echo_testb_BOARD_DEPENDENCY
-export ex02_bios_multicore_echo_testb_CORE_DEPENDENCY
-export ex02_bios_multicore_echo_testb_XDC_CONFIGURO
-ex02_bios_multicore_echo_testb_PKG_LIST = ex02_bios_multicore_echo_testb
-ex02_bios_multicore_echo_testb_INCLUDE = $(ex02_bios_multicore_echo_testb_PATH)
-ex02_bios_multicore_echo_testb_BOARDLIST = $(drvipc_BOARDLIST)
-export ex02_bios_multicore_echo_testb_BOARDLIST
-ex02_bios_multicore_echo_testb_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ex02_bios_multicore_echo_testb_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_testb
+# RTOS IPC Tests - ex05_bios_multicore_echo_negative_test
+define EX05_BIOS_MULTICORE_ECHO_NEGATIVE_TEST_RULE
 
-# IPC ex03_linux_bios_2core_echo_test
-ex03_linux_bios_2core_echo_test_COMP_LIST = ex03_linux_bios_2core_echo_test
-ex03_linux_bios_2core_echo_test_RELPATH = ti/drv/ipc/examples/ex03_linux_bios_2core_echo_test
-ex03_linux_bios_2core_echo_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ex03_linux_bios_2core_echo_test
-ex03_linux_bios_2core_echo_test_BOARD_DEPENDENCY = yes
-ex03_linux_bios_2core_echo_test_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ex03_linux_bios_2core_echo_test_XDC_CONFIGURO = yes
+export ex05_bios_multicore_echo_negative_test_$(1)_COMP_LIST = ex05_bios_multicore_echo_negative_test_$(1)
+ex05_bios_multicore_echo_negative_test_$(1)_RELPATH = ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test
+ex05_bios_multicore_echo_negative_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/ex05_bios_multicore_echo_negative_test
+export ex05_bios_multicore_echo_negative_test_$(1)_BOARD_DEPENDENCY = yes
+export ex05_bios_multicore_echo_negative_test_$(1)_CORE_DEPENDENCY = yes
+export ex05_bios_multicore_echo_negative_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ex05_bios_multicore_echo_negative_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+ex05_bios_multicore_echo_negative_test_$(1)_PKG_LIST = ex05_bios_multicore_echo_negative_test_$(1)
+ex05_bios_multicore_echo_negative_test_$(1)_INCLUDE = $(ex05_bios_multicore_echo_negative_test_$(1)_PATH)
+export ex05_bios_multicore_echo_negative_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ex05_bios_multicore_echo_negative_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+export ex05_bios_multicore_echo_negative_test_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ex05_bios_multicore_echo_negative_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ex05_bios_multicore_echo_negative_test_$(1)
 endif
-export ex03_linux_bios_2core_echo_test_COMP_LIST
-export ex03_linux_bios_2core_echo_test_BOARD_DEPENDENCY
-export ex03_linux_bios_2core_echo_test_CORE_DEPENDENCY
-export ex03_linux_bios_2core_echo_test_XDC_CONFIGURO
-ex03_linux_bios_2core_echo_test_PKG_LIST = ex03_linux_bios_2core_echo_test
-ex03_linux_bios_2core_echo_test_INCLUDE = $(ex03_linux_bios_2core_echo_test_PATH)
-ex03_linux_bios_2core_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
-export ex03_linux_bios_2core_echo_test_BOARDLIST
-ex03_linux_bios_2core_echo_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ex03_linux_bios_2core_echo_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ex03_linux_bios_2core_echo_test
+endif
+endef
 
-# IPC performance_test
-ipc_perf_test_COMP_LIST = ipc_perf_test
-ipc_perf_test_RELPATH = ti/drv/ipc/examples/ipc_perf_test
-ipc_perf_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ipc_perf_test
-ipc_perf_test_BOARD_DEPENDENCY = yes
-ipc_perf_test_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ipc_perf_test_XDC_CONFIGURO = yes
-endif
-export ipc_perf_test_COMP_LIST
-export ipc_perf_test_BOARD_DEPENDENCY
-export ipc_perf_test_CORE_DEPENDENCY
-export ipc_perf_test_XDC_CONFIGURO
-ipc_perf_test_PKG_LIST = ipc_perf_test
-ipc_perf_test_INCLUDE = $(ipc_perf_test_PATH)
-ipc_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
-export ipc_perf_test_BOARDLIST
-ipc_perf_test_$(SOC)_CORELIST = $(drvipc_$(SOC)_TIRTOS_CORELIST)
-export ipc_perf_test_$(SOC)_CORELIST
-ipc_EXAMPLE_LIST += ipc_perf_test
-export ipc_perf_test_SBL_APPIMAGEGEN = yes
+EX05_BIOS_MULTICORE_ECHO_NEGATIVE_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call EX05_BIOS_MULTICORE_ECHO_NEGATIVE_TEST_RULE,$(curos)))
 
-# Multicore IPC performance test
-ipc_multicore_perf_test_COMP_LIST = ipc_multicore_perf_test
-ipc_multicore_perf_test_RELPATH = ti/drv/ipc/examples/ipc_perf_test
-ipc_multicore_perf_test_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/ipc_perf_test/bin
-ipc_multicore_perf_test_PATH = $(PDK_IPC_COMP_PATH)/examples/ipc_perf_test
-ipc_multicore_perf_test_MAKEFILE = -f$(PDK_IPC_COMP_PATH)/examples/ipc_multicore_perf_test.mk
-export ipc_multicore_perf_test_MAKEFILE
-# IPC multicore perf test depends on ipc_perf_test for all the cores
-ipc_multicore_perf_test_DEPENDS_ON=ipc_perf_test
-export ipc_multicore_perf_test_DEPENDS_ON
-ipc_multicore_perf_test_BOARD_DEPENDENCY = yes
-ipc_multicore_perf_test_CORE_DEPENDENCY = yes
-ifneq ($(BUILD_OS_TYPE), freertos)
-ipc_multicore_perf_test_XDC_CONFIGURO = yes
+$(eval ${EX05_BIOS_MULTICORE_ECHO_NEGATIVE_TEST_MACRO_LIST})
+
+
+# RTOS IPC Tests - ex02_bios_multicore_echo_testb - use R5F BTCM
+define EX02_BIOS_MULTICORE_ECHO_TESTB_RULE
+
+export ex02_bios_multicore_echo_testb_$(1)_COMP_LIST = ex02_bios_multicore_echo_testb_$(1)
+ex02_bios_multicore_echo_testb_$(1)_RELPATH = ti/drv/ipc/examples/ex02_bios_multicore_echo_test/ex02_bios_multicore_echo_testb
+ex02_bios_multicore_echo_testb_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/ex02_bios_multicore_echo_test/ex02_bios_multicore_echo_testb
+export ex02_bios_multicore_echo_testb_$(1)_BOARD_DEPENDENCY = yes
+export ex02_bios_multicore_echo_testb_$(1)_CORE_DEPENDENCY = yes
+export ex02_bios_multicore_echo_testb_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ex02_bios_multicore_echo_testb_$(1)_MAKEFILE =  -fmakefile.btcm BUILD_OS_TYPE=$(1)
+ex02_bios_multicore_echo_testb_$(1)_PKG_LIST = ex02_bios_multicore_echo_testb_$(1)
+ex02_bios_multicore_echo_testb_$(1)_INCLUDE = $(ex02_bios_multicore_echo_testb_$(1)_PATH)
+export ex02_bios_multicore_echo_testb_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ex02_bios_multicore_echo_testb_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_testb_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ex02_bios_multicore_echo_testb_$(1)
 endif
-export ipc_multicore_perf_test_COMP_LIST
-export ipc_multicore_perf_test_BOARD_DEPENDENCY
-export ipc_multicore_perf_test_CORE_DEPENDENCY
-export ipc_multicore_perf_test_XDC_CONFIGURO
-ipc_multicore_perf_test_PKG_LIST = ipc_multicore_perf_test
-ipc_multicore_perf_test_INCLUDE = $(ipc_multicore_perf_test_PATH)
-ipc_multicore_perf_test_BOARDLIST = $(drvipc_BOARDLIST)
-export ipc_multicore_perf_test_BOARDLIST
-ipc_multicore_perf_test_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
-export ipc_multicore_perf_test_$(SOC)_CORELIST
-ipc_DUP_EXAMPLE_LIST += ipc_multicore_perf_test
-ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
-export ipc_multicore_perf_test_SBL_APPIMAGEGEN
+endif
+endef
+
+EX02_BIOS_MULTICORE_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call EX02_BIOS_MULTICORE_ECHO_TESTB_RULE,$(curos)))
+
+$(eval ${EX02_BIOS_MULTICORE_ECHO_TESTB_MACRO_LIST})
+
+
+# RTOS IPC Tests - ex03_linux_bios_2core_echo_test
+define EX03_LINUX_BIOS_2CORE_ECHO_TEST_RULE
+
+export ex03_linux_bios_2core_echo_test_$(1)_COMP_LIST = ex03_linux_bios_2core_echo_test_$(1)
+ex03_linux_bios_2core_echo_test_$(1)_RELPATH = ti/drv/ipc/examples/ex03_linux_bios_2core_echo_test
+ex03_linux_bios_2core_echo_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/ex03_linux_bios_2core_echo_test
+export ex03_linux_bios_2core_echo_test_$(1)_BOARD_DEPENDENCY = yes
+export ex03_linux_bios_2core_echo_test_$(1)_CORE_DEPENDENCY = yes
+export ex03_linux_bios_2core_echo_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ex03_linux_bios_2core_echo_test_$(1)_MAKEFILE =  -fmakefile BUILD_OS_TYPE=$(1)
+ex03_linux_bios_2core_echo_test_$(1)_PKG_LIST = ex03_linux_bios_2core_echo_test_$(1)
+ex03_linux_bios_2core_echo_test_$(1)_INCLUDE = $(ex03_linux_bios_2core_echo_test_$(1)_PATH)
+export ex03_linux_bios_2core_echo_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ex03_linux_bios_2core_echo_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ex03_linux_bios_2core_echo_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ex03_linux_bios_2core_echo_test_$(1)
+endif
+endif
+endef
+
+EX03_LINUX_BIOS_2CORE_ECHO_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call EX03_LINUX_BIOS_2CORE_ECHO_TEST_RULE,$(curos)))
+
+$(eval ${EX03_LINUX_BIOS_2CORE_ECHO_TEST_MACRO_LIST})
+
+
+# RTOS IPC Performance Tests
+define IPC_PERF_TEST_RULE
+
+export ipc_perf_test_$(1)_COMP_LIST = ipc_perf_test_$(1)
+ipc_perf_test_$(1)_RELPATH = ti/drv/ipc/examples/ipc_perf_test
+ipc_perf_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/ipc_perf_test
+export ipc_perf_test_$(1)_BOARD_DEPENDENCY = yes
+export ipc_perf_test_$(1)_CORE_DEPENDENCY = yes
+export ipc_perf_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ipc_perf_test_$(1)_MAKEFILE =  -fmakefile BUILD_OS_TYPE=$(1)
+ipc_perf_test_$(1)_PKG_LIST = ipc_perf_test_$(1)
+ipc_perf_test_$(1)_INCLUDE = $(ipc_perf_test_$(1)_PATH)
+export ipc_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ipc_perf_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+export ipc_perf_test_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ipc_perf_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ipc_perf_test_$(1)
+endif
+endif
+endef
+
+IPC_PERF_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_PERF_TEST_RULE,$(curos)))
+
+$(eval ${IPC_PERF_TEST_MACRO_LIST})
+
+
+# RTOS Multicore IPC performance tests
+# This test depends on ipc_perf_test for all the cores
+define IPC_MULTICORE_PERF_TEST_RULE
+
+export ipc_multicore_perf_test_$(1)_COMP_LIST = ipc_multicore_perf_test_$(1)
+ipc_multicore_perf_test_$(1)_RELPATH = ti/drv/ipc/examples/ipc_perf_test
+ipc_multicore_perf_test_$(1)_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/ipc_perf_test_$(1)/bin
+ipc_multicore_perf_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/ipc_perf_test
+export ipc_multicore_perf_test_$(1)_BOARD_DEPENDENCY = yes
+export ipc_multicore_perf_test_$(1)_CORE_DEPENDENCY = yes
+export ipc_multicore_perf_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ipc_multicore_perf_test_$(1)_MAKEFILE =  -f$(PDK_IPC_COMP_PATH)/examples/ipc_multicore_perf_test.mk BUILD_OS_TYPE=$(1)
+export ipc_multicore_perf_test_$(1)_DEPENDS_ON=ipc_perf_test_$(1)
+ipc_multicore_perf_test_$(1)_PKG_LIST = ipc_multicore_perf_test_$(1)
+ipc_multicore_perf_test_$(1)_INCLUDE = $(ipc_multicore_perf_test_$(1)_PATH)
+export ipc_multicore_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ipc_multicore_perf_test_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
+export ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
+ifneq ($(1),$(filter $(1), safertos))
+ipc_DUP_EXAMPLE_LIST += ipc_multicore_perf_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_DUP_EXAMPLE_LIST += ipc_multicore_perf_test_$(1)
+endif
+endif
+endef
+
+IPC_MULTICORE_PERF_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_MULTICORE_PERF_TEST_RULE,$(curos)))
+
+$(eval ${IPC_MULTICORE_PERF_TEST_MACRO_LIST})
+
 
 # IPC ex04_linux_baremetal_2core_echo_test
 ex04_linux_baremetal_2core_echo_test_COMP_LIST = ex04_linux_baremetal_2core_echo_test

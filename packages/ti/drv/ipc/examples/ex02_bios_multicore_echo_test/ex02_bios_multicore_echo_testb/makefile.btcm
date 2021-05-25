@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = ex02_bios_multicore_echo_testb
+APP_NAME = ex02_bios_multicore_echo_testb_$(BUILD_OS_TYPE)
 
 SRCDIR = ../ ../../common/src ../../echo_test/echo_test_btcm
 SRCS_COMMON = ex02_bios_multicore_echo_test.c

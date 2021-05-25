@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = ipc_echo_testb
+APP_NAME = ipc_echo_testb_$(BUILD_OS_TYPE)
 
 SRCDIR = . ../ ../../common/src
 SRCS_COMMON = ipc_echo_test.c

@@ -7,7 +7,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = ipc_perf_test
+APP_NAME = ipc_perf_test_$(BUILD_OS_TYPE)
 
 include makefile.mk
 
