@@ -75,7 +75,14 @@ typedef struct {
 /* ========================================================================== */
 
 /** \brief Sciserver TI-RTOS Application Init.
- *  \param None
+ * 
+ *         NOTE: If this function is called form a Task Context
+ *         (i.e, not from main / after starting the Schedular),
+ *         the callee Task should be of priority higher than  
+ *         max of passed init param(pPrms) Task priorities
+ *         i.e Sciserver_TirtosCfgPrms_t->taskPriority[x]
+ * 
+ *  \param pPrms Pointer to #Sciserver_TirtosCfgPrms_t
  *  \return CSL_PASS if the init has happened correctly.
  *          CSL_EFAIL if otherwise.
  */

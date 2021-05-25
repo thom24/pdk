@@ -78,6 +78,13 @@
 #define APP_TSK_STACK_MAIN              (32U * 1024U)
 /**< Test application stack size */
 
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+/**< SCI Server Init Task stack size */
+#define APP_SCISERVER_INIT_TSK_STACK        (32U * 1024U)
+/* SCI Server Init Task Priority - must be higher than High priority Sciserver task */
+#define IPC_INIT_SCISERVER_TASK_PRI         (6)
+#endif
+
 /* High Priority for SCI Server - must be higher than Low priority task */
 #define IPC_SETUP_SCISERVER_TASK_PRI_HIGH   (5)
 /*
@@ -114,6 +121,12 @@ void Ipc_setupSciServer(void);
 /* Test application stack */
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN]
 __attribute__ ((aligned(8192)));
+
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+/* Sciserver Init TAsk stack */
+static uint8_t  gSciserverInitTskStack[APP_SCISERVER_INIT_TSK_STACK]
+__attribute__ ((aligned(8192)));
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -235,19 +248,7 @@ int main(void)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
-    /* Initialize SCI Client - It must be called before board init */
-    ipc_initSciclient();
 
-    /* Initialize SCI Client Server */
-    Ipc_setupSciServer();
-
-#if !defined(A72_LINUX_OS)
-    ipc_boardInit();
-#endif
-
-#if defined (__C7100__) ||  defined (_TMS320C6X)
-    ipc_timerInterruptInit();
-#endif
 
 #if defined ECHO_TEST_BTCM && defined FREERTOS
     /* Relocate FreeRTOS Reset Vectors from BTCM*/
@@ -276,6 +277,35 @@ int main(void)
 
 static void taskFxn(void* a0, void* a1)
 {
+
+    /* Initialize SCI Client - It must be called before board init */
+    ipc_initSciclient();
+
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+    TaskP_Handle sciserverInitTask;
+    TaskP_Params sciserverInitTaskParams;
+
+    /* Initialize SCI Client Server */
+    TaskP_Params_init(&sciserverInitTaskParams);
+    sciserverInitTaskParams.priority     = IPC_INIT_SCISERVER_TASK_PRI;
+    sciserverInitTaskParams.stack        = gSciserverInitTskStack;
+    sciserverInitTaskParams.stacksize    = sizeof (gSciserverInitTskStack);
+
+    sciserverInitTask = TaskP_create(Ipc_setupSciServer, &sciserverInitTaskParams);
+    if(NULL == sciserverInitTask)
+    {
+        OS_stop();
+    }
+#endif
+
+#if !defined(A72_LINUX_OS)
+    ipc_boardInit();
+#endif
+
+#if defined (__C7100__) ||  defined (_TMS320C6X)
+    ipc_timerInterruptInit();
+#endif
+
 #ifdef IPC_NEGATIVE_TEST
     Ipc_echo_neg_test();
 #else
