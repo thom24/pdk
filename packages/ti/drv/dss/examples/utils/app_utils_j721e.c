@@ -84,11 +84,11 @@ void App_configureSoC(void)
                  CSL_WKUP_CTRL_MMR_CFG0_V_IO_DRVSTRNGTH0_PROXY, 0xFU);
 }
 
-void App_configureLCD(uint32_t app_output)
+void App_configureLCD(App_utilsLcdCfgParams cfgParams)
 {
     int32_t status = PM_SUCCESS;
 
-    if(APP_OUTPUT_HDMI == app_output)
+    if(APP_OUTPUT_HDMI == cfgParams.outType)
     {
         if(PM_SUCCESS == status)
         {
@@ -119,7 +119,7 @@ void App_configureLCD(uint32_t app_output)
         {
             status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
                     TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
-                    148500000ULL,
+                    cfgParams.pixelClk,
                     0,
                     SCICLIENT_SERVICE_WAIT_FOREVER);
         }
@@ -138,7 +138,7 @@ void App_configureLCD(uint32_t app_output)
             Board_control(BOARD_CTRL_CMD_SET_HDMI_PD_HIGH, (void*) 0U);
         }
     }
-    else if (APP_OUTPUT_DSI == app_output)
+    else if (APP_OUTPUT_DSI == cfgParams.outType)
     {
         if(PM_SUCCESS == status)
         {
@@ -178,7 +178,8 @@ void App_configureLCD(uint32_t app_output)
         {
             /* Set the clock at the desirable frequency*/
             status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK, 74250000u,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
+                cfgParams.pixelClk,
                 TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
         }
@@ -237,7 +238,7 @@ void App_configureLCD(uint32_t app_output)
         {
             status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
                 TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
-                148500000ULL,
+                cfgParams.pixelClk,
                 0U,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
         }

@@ -53,7 +53,7 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-
+/* Display output type */
 #if defined (SOC_AM65XX)
 #define APP_OUTPUT_OLDI          (0)
 #else
@@ -65,9 +65,16 @@ extern "C" {
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
-
-/* None */
-
+/**
+ *  \brief LCD configuration parameters.
+ */
+typedef struct
+{
+    uint32_t outType;
+    /**< Display output type */
+    uint64_t pixelClk;
+    /**< Pixel Clock in Hz */
+} App_utilsLcdCfgParams;
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                   */
 /* ========================================================================== */
@@ -78,7 +85,7 @@ extern "C" {
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-void App_configureLCD(uint32_t app_output);
+void App_configureLCD(App_utilsLcdCfgParams cfgParams);
 void App_configureSoC(void);
 
 /* ========================================================================== */

@@ -112,6 +112,7 @@ static void taskFxn(void* a0, void* a1)
 {
     Board_initCfg boardCfg;
     int32_t retVal = CSL_PASS;
+    App_utilsLcdCfgParams lcdParams;
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                 BOARD_INIT_UNLOCK_MMR |
@@ -119,12 +120,18 @@ static void taskFxn(void* a0, void* a1)
     Board_init(boardCfg);
 
 #if defined (SOC_AM65XX)
-    App_configureLCD(APP_OUTPUT_OLDI);
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_OLDI;
+    lcdParams.pixelClk = (uint64_t)497500000;
+    App_configureLCD(lcdParams);
 #else
 #if (1U == DISP_APP_TEST_EDP)
-    App_configureLCD(APP_OUTPUT_EDP);
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_EDP;
+    lcdParams.pixelClk = (uint64_t)148500000ULL;
+    App_configureLCD(lcdParams);
 #else
-    App_configureLCD(APP_OUTPUT_HDMI);
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_HDMI;
+    lcdParams.pixelClk = (uint64_t)148500000ULL;
+    App_configureLCD(lcdParams);
 #endif
 #endif
     App_configureSoC();

@@ -124,13 +124,13 @@ void App_configureSoC(void)
                  CSL_MAIN_CTRL_MMR_CFG0_OLDI_CLK_IO_CTRL, regVal);
 }
 
-void App_configureLCD(uint32_t app_output)
+void App_configureLCD(App_utilsLcdCfgParams cfgParams)
 {
     int32_t status = PM_SUCCESS;
     Sciclient_init(NULL);
     status = PMLIBClkRateSet(TISCI_DEV_OLDI_TX_CORE_MAIN_0,
                              TISCI_DEV_OLDI_TX_CORE_MAIN_0_BUS_OLDI_PLL_CLK,
-                             497500000);
+                             cfgParams.pixelClk);
 
     if(PM_SUCCESS == status)
     {
