@@ -39,6 +39,7 @@
 #         For J721E-HS (ES1.1)  : ./firmwareHeaderGen.sh j721e_sr1_1-hs
 #         For AM64x             : ./firmwareHeaderGen.sh am64x
 #         For J7200             : ./firmwareHeaderGen.sh j7200
+#         For J7200             : ./firmwareHeaderGen.sh j7200-hs
 #         For J721S2            : ./firmwareHeaderGen.sh j721s2-zebu
 export RM=rm
 export MV=mv
