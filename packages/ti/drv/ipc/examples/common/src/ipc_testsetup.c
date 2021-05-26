@@ -400,7 +400,7 @@ void rpmsg_vdevMonitorFxn(void* arg0, void* arg1)
 
 static void IpcTestPrint(const char *str)
 {
-    //App_printf("%s", str);
+    App_printf("%s", str);
 
     return;
 }

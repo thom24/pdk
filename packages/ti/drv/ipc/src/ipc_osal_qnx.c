@@ -51,6 +51,7 @@
 #include <semaphore.h>
 
 #include <ti/drv/ipc/ipc.h>
+#include <ti/drv/ipc/src/ipc_priv.h>
 #include <ti/drv/ipc/soc/ipc_soc.h>
 #include <ti/drv/ipc/include/ipc_types.h>
 
@@ -59,16 +60,6 @@
 #define NVSS_INTRTR_SIZE    0x1000
 uintptr_t g_navssIntRtrBaseVirtAddr = 0;
 #endif
-
-int32_t SystemP_printf(const char* fmt, ...)
-{
-    int32_t ret;
-    va_list args;
-    va_start(args, fmt);
-    ret = vprintf(fmt, args);
-    va_end(args);
-    return ret;
-}
 
 void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t arg)
 {
