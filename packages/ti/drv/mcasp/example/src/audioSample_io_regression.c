@@ -743,6 +743,7 @@ Void Audio_echo_Task()
     Mcasp_HwInfo hwInfo;
     volatile int32_t status = 0;
     uint32_t i32Count;
+    volatile uint32_t loopForever = 1u;
 	hMcaspDev  = NULL;
     uint32_t timeout = 0, maxTimeout = 0;
     int32_t txSemStatus, rxSemStatus;
@@ -882,8 +883,10 @@ Void Audio_echo_Task()
     /* Configure the Device loopback test's paramters such as loopback mask */
     config_deviceloopback(tx_frame_size,rx_frame_size);
 
+    i32Count = 0;
+
     /* Forever loop to continuously receive and transmit audio data           */
-    for (i32Count = 0; i32Count >= 0; i32Count++)
+    while (loopForever)
     {
 
     	if(gblErrFlagXmt || gblErrFlagRcv)
@@ -1000,7 +1003,7 @@ Void Audio_echo_Task()
 		profiling_start();
 #endif
 
-    } /* end of for (i32Count = 0; i32Count >= 0; i32Count++) */
+    } /* end of while (loopForever) */
 
         MCASP_log("\nTotal frames sent:     %d", tx_frames);
         MCASP_log("\nTotal frames received: %d", rx_frames);

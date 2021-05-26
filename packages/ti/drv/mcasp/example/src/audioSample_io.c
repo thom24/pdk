@@ -855,6 +855,7 @@ Void Audio_echo_Task()
     Mcasp_HwInfo hwInfo;
     volatile int32_t status = 0;
     uint32_t i32Count;
+    volatile uint32_t loopForever = 1u;
 	hMcaspDev  = NULL;
 #ifdef DEVICE_LOOPBACK
     uint32_t timeout = 0;
@@ -1016,8 +1017,10 @@ Void Audio_echo_Task()
     semTimeout = BIOS_WAIT_FOREVER;
 #endif
 
+    i32Count = 0;
+
     /* Forever loop to continuously receive and transmit audio data           */
-    for (i32Count = 0; i32Count >= 0; i32Count++)
+    while (loopForever)
     {
 
     	if(gblErrFlagXmt || gblErrFlagRcv)
@@ -1185,7 +1188,7 @@ Void Audio_echo_Task()
 		    MCASP_log("mcaspControlChanTest Failed\n");
 		}
 
-    } /* end of for (i32Count = 0; i32Count >= 0; i32Count++) */
+    } /* end of while (loopForever) */
 
         MCASP_log("\nTotal frames sent:     %d", tx_frames);
         MCASP_log("\nTotal frames received: %d", rx_frames);
