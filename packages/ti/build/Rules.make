@@ -142,7 +142,7 @@ XDCPATH =
 ifeq ($(BUILD_OS_TYPE),tirtos)
   XDCPATH = $(bios_PATH)/packages;$(xdc_PATH)/packages;$(ndk_PATH)/packages;$(ns_PATH)/;$(pdk_PATH);$(uia_PATH)/packages;
   ifneq ($(BOARD),$(filter $(BOARD), j721e_evm j7200_evm j721s2_evm))
-    XDCPATH += $(edma3_lld_PATH)/packages;$(ipc_PATH)/packages;
+    XDCPATH +=$(edma3_lld_PATH)/packages;$(ipc_PATH)/packages;
   endif
 endif
 export XDCPATH
