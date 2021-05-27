@@ -604,7 +604,7 @@ static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, bool ss
 
     if (ssc)
     {
-        enableSsc(pD, 0x04D7, 0x006A); /* values specific for VCO. */
+        enableSsc(pD, 0x04A5, 0x006A); /* values specific for VCO. */
     }
 }
 
