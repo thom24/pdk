@@ -48,6 +48,8 @@
 #include <xdc/std.h>
 #endif
 
+#include <ti/csl/arch/csl_arch.h>
+
 #include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
@@ -137,12 +139,52 @@ extern void GPIOAppUpdateConfig(uint32_t *gpioBaseAddr, uint32_t *gpioPin);
 void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtrOutIntNum, GPIO_v0_HwAttrs *cfg)
 {
     GPIO_IntCfg       *intCfg;
-    uint32_t           bankNum;
+    uint32_t           bankNum = 0U;
 
     intCfg = cfg->intCfg;
 
 #if defined (am65xx_evm) || defined (am65xx_idk)
 
+    struct tisci_msg_rm_get_resource_range_resp res = {0};
+    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    int32_t retVal = 0;
+    uint16_t intNum, dst_id = TISCI_DEV_GIC0;
+
+    {
+        #if defined(BUILD_MCU)
+        CSL_ArmR5CPUInfo r5CpuInfo;
+        CSL_armR5GetCpuID(&r5CpuInfo);
+        if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+        {
+            if(r5CpuInfo.cpuID == 0U)
+            {
+                dst_id = TISCI_DEV_MCU_ARMSS0_CPU0;
+            }
+            else
+            {
+                dst_id = TISCI_DEV_MCU_ARMSS0_CPU1;
+            }
+        }
+        #endif /* defined(BUILD_MCU) */
+    }
+
+    req.type = TISCI_DEV_WKUP_GPIOMUX_INTRTR0;
+    req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+    retVal = Sciclient_rmGetResourceRange(&req,
+                                        &res,
+                                        SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    if (CSL_PASS != retVal || res.range_num == 0)
+    {
+        UART_printf("\n GPIO LED Blink App - Error \n");
+        UART_printf("\n Could not register interrupts \n");
+    }
+    else
+    {
+        retVal = Sciclient_rmIrqTranslateIrOutput(req.type,
+                                        res.range_start,
+                                        dst_id,
+                                        &intNum);
     /* no main domain GPIO pins directly connected to LEDs on GP EVM,
        use WKUP domain GPIO pins which connected to LEDs on base board */
     cfg->baseAddr = CSL_WKUP_GPIO0_BASE;
@@ -150,21 +192,15 @@ void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtr
     bankNum = pinNum/16; /* Each GPIO bank has 16 pins */
 
     /* WKUP GPIO int router input interrupt is the GPIO bank interrupt */
-#if defined (__aarch64__)
-#if defined (SOC_AM65XX)
-    intCfg[pinNum].intNum = CSL_GIC0_INTR_WKUP_GPIOMUX_INTRTR0_BUS_OUTP_0 + bankNum;
-#endif
-#else
-#if defined (SOC_AM65XX)
-    intCfg[pinNum].intNum = CSL_MCU0_INTR_GPIOMUX_INTR0_OUTP_0 + bankNum;
-#endif
-#endif
+    intCfg[pinNum].intNum = intNum + bankNum;
+    intCfg[pinNum].intNum = intNum + bankNum;
+
     intCfg[pinNum].eventId = 0;
     intCfg[pinNum].intcMuxNum = INVALID_INTC_MUX_NUM;
     intCfg[pinNum].intcMuxInEvent = 0;
     intCfg[pinNum].intcMuxOutEvent = 0;
 
-    /* Setup interrupt router configuration for gpio port/pin */
+    }
 #else
     /* Use main domain GPIO pins directly connected to IDK EVM */
 
@@ -172,27 +208,27 @@ void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtr
     if (portNum == 0)
     {
         /* MAIN GPIO int router input interrupt is the GPIO bank interrupt */
-#if defined (__aarch64__)
-#if defined (SOC_AM65XX)
-        intCfg[pinNum].intNum = CSL_GIC0_INTR_MAIN_GPIOMUX_INTROUTER_MAIN_GPIOMUX_INTROUTER_MAIN_0_BUS_OUTP_0 + bankNum;
-#endif
-#else
-#if defined (SOC_AM65XX)
-        intCfg[pinNum].intNum = CSL_MCU0_INTR_MAIN2MCU_PULSE_INTR0_OUTP_0 + bankNum;
-#endif
-#endif
+    #if defined (__aarch64__)
+        #if defined (SOC_AM65XX)
+            intCfg[pinNum].intNum = CSL_GIC0_INTR_MAIN_GPIOMUX_INTROUTER_MAIN_GPIOMUX_INTROUTER_MAIN_0_BUS_OUTP_0 + bankNum;
+        #endif
+    #else
+        #if defined (SOC_AM65XX)
+            intCfg[pinNum].intNum = CSL_MCU0_INTR_MAIN2MCU_PULSE_INTR0_OUTP_0 + bankNum;
+        #endif
+    #endif
     }
     else
     {
-#if defined (__aarch64__)
-#if defined (SOC_AM65XX)
-        intCfg[pinNum].intNum = CSL_GIC0_INTR_MAIN_GPIOMUX_INTROUTER_MAIN_GPIOMUX_INTROUTER_MAIN_0_BUS_OUTP_6 + bankNum;
-#endif
-#else
-#if defined (SOC_AM65XX)
-        intCfg[pinNum].intNum = CSL_MCU0_INTR_MAIN2MCU_PULSE_INTR0_OUTP_6 + bankNum;
-#endif
-#endif
+    #if defined (__aarch64__)
+        #if defined (SOC_AM65XX)
+            intCfg[pinNum].intNum = CSL_GIC0_INTR_MAIN_GPIOMUX_INTROUTER_MAIN_GPIOMUX_INTROUTER_MAIN_0_BUS_OUTP_6 + bankNum;
+        #endif
+    #else
+        #if defined (SOC_AM65XX)
+            intCfg[pinNum].intNum = CSL_MCU0_INTR_MAIN2MCU_PULSE_INTR0_OUTP_6 + bankNum;
+        #endif
+    #endif
     }
     intCfg[pinNum].eventId = 0;
     intCfg[pinNum].intcMuxNum = INVALID_INTC_MUX_NUM;
@@ -210,37 +246,39 @@ void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtr
     bankNum = pinNum/16; /* Each GPIO bank has 16 pins */
 
     /* WKUP GPIO int router input interrupt is the GPIO bank interrupt */
-#if defined (BUILD_MPU)
-    intCfg[pinNum].intNum = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + bankNum;
-#endif
-#if defined (BUILD_C7X_1)
-    intCfg[pinNum].eventId = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + 992 + bankNum;	/* GPIO_CLEC_GIC_SPI_IN_EVT_OFFSET is 992 */
-#endif
-#if defined (BUILD_MCU)
-    intCfg[pinNum].intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0 + bankNum;
-#endif
+    #if defined (BUILD_MPU)
+        intCfg[pinNum].intNum = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + bankNum;
+    #endif
+    #if defined (BUILD_C7X_1)
+        intCfg[pinNum].eventId = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + 992 + bankNum;	/* GPIO_CLEC_GIC_SPI_IN_EVT_OFFSET is 992 */
+    #endif
+    #if defined (BUILD_MCU)
+        intCfg[pinNum].intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0 + bankNum;
+    #endif
     intCfg[pinNum].intcMuxNum = INVALID_INTC_MUX_NUM;
     intCfg[pinNum].intcMuxInEvent = 0;
     intCfg[pinNum].intcMuxOutEvent = 0;
 #endif
 
-    #if defined(am64x_evm)
+#if defined(am64x_evm)
 
     cfg->baseAddr = CSL_GPIO0_BASE;
 
     bankNum = pinNum/16; /* Each GPIO bank has 16 pins */
 
     /* Main GPIO int router input interrupt is the GPIO bank interrupt */
-#if defined (BUILD_MPU)
-    intCfg[pinNum].intNum = CSLR_GICSS0_SPI_MAIN_GPIOMUX_INTROUTER0_OUTP_0 + bankNum;
-#endif
-#if defined (BUILD_MCU)
-    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE0_INTR_MAIN_GPIOMUX_INTROUTER0_OUTP_0 + bankNum;
-#endif
+    #if defined (BUILD_MPU)
+        intCfg[pinNum].intNum = CSLR_GICSS0_SPI_MAIN_GPIOMUX_INTROUTER0_OUTP_0 + bankNum;
+    #endif
+    #if defined (BUILD_MCU)
+        intCfg[pinNum].intNum = CSLR_R5FSS0_CORE0_INTR_MAIN_GPIOMUX_INTROUTER0_OUTP_0 + bankNum;
+    #endif
     intCfg[pinNum].intcMuxNum = INVALID_INTC_MUX_NUM;
     intCfg[pinNum].intcMuxInEvent = 0;
     intCfg[pinNum].intcMuxOutEvent = 0;
+
 #endif
+
     GPIO_log("\nIntConfig:  portNum[%d], pinNum[%d], bankNum[%d], intNum[%d], eventId[%d]", portNum, pinNum,bankNum, intCfg[pinNum].intNum, intCfg[pinNum].eventId);
 }
 #endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM64X) */
@@ -297,19 +335,19 @@ static void Board_initGPIO(void)
 
 	/* change default GPIO port from MAIN GPIO0 to WAKEUP GPIO0 to access TP45 */
     gpio_cfg.baseAddr = CSL_WKUP_GPIO0_BASE;
-#if defined (BUILD_MPU)	
+#if defined (BUILD_MPU)
 	gpio_cfg.intCfg->intNum = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16;
 #endif
 #if defined (BUILD_MCU)
 	gpio_cfg.intCfg->intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0;
 #endif
-#if defined (BUILD_C7X_1)	
+#if defined (BUILD_C7X_1)
 	gpio_cfg.intCfg->eventId = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + 992;
 #endif
 
 /* --- TODO: move this into the board library --- */
 /* For SYSBIOS only */
-#ifndef BAREMETAL 
+#ifndef BAREMETAL
 #if defined (SOC_J721E)
 /* set up C7x CLEC for DMTimer0 */
 #if defined (BUILD_C7X_1)
@@ -373,7 +411,7 @@ static void Board_initGPIO(void)
 #endif /* for SOC_J721E */
 #endif /* for SYSBIOS */
 /* --- TODO: move this into the board library --- */
-    
+
     GPIO_configIntRouter(GPIO_LED0_PORT_NUM, GPIO_LED0_PIN_NUM, 0, &gpio_cfg);
 
     /* For J721E EVM, there is not GPIO pin directly connected to LEDs */
@@ -493,6 +531,8 @@ int main()
             UART_printStatus("\n All tests have passed \n");
             testOutput = 0;
         }
+        UART_printf("\n Blink Iteration - %d \n", gpio_intr_triggered);
+        UART_printStatus("\n All tests have passed \n");
     }
 #endif
 }
@@ -565,7 +605,7 @@ void AppGpioCallbackFxn(void)
     GPIO_toggle(USER_LED1);
     AppLoopDelay(DELAY_VALUE);
 #endif
-    gpio_intr_triggered = 1;
+    gpio_intr_triggered++;
 }
 #endif
 
