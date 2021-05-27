@@ -265,12 +265,15 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
  */
 void TaskP_Params_init(TaskP_Params *params)
 {
-    params->name = (uint8_t *)"FREERTOS_TASK";
-    params->stacksize = 0;
-    params->stack = NULL;
-    params->priority = (TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST) / 2;
-    params->arg0 = NULL;
-    params->arg1 = NULL;
+    if(params != NULL_PTR)
+    {
+        params->name = (uint8_t *)"FREERTOS_TASK";
+        params->stacksize = 0;
+        params->stack = NULL;
+        params->priority = (TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST) / 2;
+        params->arg0 = NULL;
+        params->arg1 = NULL;
+    }
 }
 
 void TaskP_sleep(uint32_t timeout)

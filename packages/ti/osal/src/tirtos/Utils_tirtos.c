@@ -62,6 +62,7 @@
 uint32_t  gOsalSemAllocCnt   = 0U, gOsalSemPeak = 0U;
 uint32_t  gOsalTimerAllocCnt = 0U, gOsalTimerPeak = 0U;
 uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak = 0U;
+uint32_t  gOsalMutexAllocCnt = 0U, gOsalMutexPeak = 0U;
 
 /* Global Osal_HwAttr structure */
 Osal_HwAttrs  gOsal_HwAttrs = {

@@ -59,6 +59,7 @@
 extern "C" {
 #endif
 
+#include <ti/osal/TaskP.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/MuxIntcP.h>
 #include <ti/osal/SemaphoreP.h>
@@ -67,6 +68,9 @@ extern "C" {
 #include <ti/osal/RegisterIntr.h>
 #include <ti/osal/QueueP.h>
 #include <ti/osal/CycleprofilerP.h>
+#include <ti/osal/MailboxP.h>
+#include <ti/osal/MutexP.h>
+#include <ti/osal/ClockP.h>
 #include <ti/osal/DebugP.h>
 #ifdef _TMS320C6X
 #include <ti/osal/EventCombinerP.h>

@@ -103,6 +103,16 @@
 #define OSAL_TIRTOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
 #define OSAL_TIRTOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
 #define OSAL_TIRTOS_MAX_TIMERP_PER_SOC       ((uint32_t) 20U)
+#define OSAL_TIRTOS_MAX_MUTEXP_PER_SOC       ((uint32_t) 20U)
+
+/* Max number of various modules for FreeRTOS */
+#define OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 80U)
+#define OSAL_FREERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
+#define OSAL_FREERTOS_MAX_TIMERP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_CLOCKP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_MUTEXP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
 
 #endif
 
@@ -145,6 +155,19 @@
 #endif /* OSAL_TIRTOS_CONFIGNUM_SEMAPHORE */
 
 /*********************************************************************
+ * @def OSAL_TIRTOS_CONFIGNUM_MUTEX
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for mutex
+ *********************************************************************/
+
+/* Set the number of MutexP_Handles for TIRTOS */
+#ifndef OSAL_TIRTOS_CONFIGNUM_MUTEX
+#define OSAL_TIRTOS_CONFIGNUM_MUTEX (OSAL_TIRTOS_MAX_MUTEXP_PER_SOC)
+#endif /* OSAL_TIRTOS_CONFIGNUM_MUTEX */
+
+/*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_SEMAPHORE
  * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
@@ -169,6 +192,45 @@
 #ifndef OSAL_FREERTOS_CONFIGNUM_TASK
 #define OSAL_FREERTOS_CONFIGNUM_TASK (OSAL_FREERTOS_MAX_TASKP_PER_SOC)
 #endif /* OSAL_FREERTOS_CONFIGNUM_TASK */
+
+/*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_CLOCK
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for mutex
+ *********************************************************************/
+
+/* Set the number of ClockP_Handles for FREERTOS */
+#ifndef OSAL_FREERTOS_CONFIGNUM_CLOCK
+#define OSAL_FREERTOS_CONFIGNUM_CLOCK (OSAL_FREERTOS_MAX_CLOCKP_PER_SOC)
+#endif /* OSAL_FREERTOS_CONFIGNUM_CLOCK */
+
+/*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_MUTEX
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for mutex
+ *********************************************************************/
+
+/* Set the number of MutexP_Handles for FREERTOS */
+#ifndef OSAL_FREERTOS_CONFIGNUM_MUTEX
+#define OSAL_FREERTOS_CONFIGNUM_MUTEX (OSAL_FREERTOS_MAX_MUTEXP_PER_SOC)
+#endif /* OSAL_FREERTOS_CONFIGNUM_MUTEX */
+
+/*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_MAILBOX
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for mutex
+ *********************************************************************/
+
+/* Set the number of MailboxP_Handles for FREERTOS */
+#ifndef OSAL_FREERTOS_CONFIGNUM_MAILBOX
+#define OSAL_FREERTOS_CONFIGNUM_MAILBOX (OSAL_FREERTOS_MAX_MAILBOXP_PER_SOC)
+#endif /* OSAL_FREERTOS_CONFIGNUM_MAILBOX */
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_CONFIGNUM_SEMAPHORE
@@ -226,6 +288,7 @@
 #ifndef OSAL_NONOS_CONFIGNUM_SEMAPHORE
 #define OSAL_NONOS_CONFIGNUM_SEMAPHORE (OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC)
 #endif
+
 
 
 #ifdef __cplusplus
