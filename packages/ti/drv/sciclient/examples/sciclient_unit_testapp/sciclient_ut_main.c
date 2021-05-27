@@ -217,7 +217,7 @@ int32_t App_getRevisionTestPol(void)
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
         NULL,
-        1
+        0 /* isSecure = 0 un secured for all cores */
     };
     struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm =
@@ -290,7 +290,7 @@ int32_t App_getRevisionTestIntr(void)
     {
         SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
         NULL,
-        1
+        0 /* isSecure = 0 un secured for all cores */
     };
 
     struct tisci_msg_version_req request;
@@ -362,7 +362,7 @@ static int32_t App_invalidReqPrmTest(void)
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
         NULL,
-        1
+        0 /* isSecure = 0 un secured for all cores */
     };
     struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm_badTxSize =
@@ -452,7 +452,7 @@ static int32_t App_timeoutTest(void)
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
         NULL,
-        1
+        0 /* isSecure = 0 un secured for all cores */
     };
     struct tisci_msg_version_req request;
     const Sciclient_ReqPrm_t      reqPrm =
@@ -508,7 +508,7 @@ static int32_t App_msmcQueryTest(void)
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
         NULL,
-        1
+        0 /* isSecure = 0 un secured for all cores */
     };
 
     const struct tisci_query_msmc_req req = {};
@@ -621,7 +621,7 @@ static int32_t App_rmGetResourceRange(void)
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
         NULL,
-        1
+        0 /* isSecure = 0 un secured for all cores */
     };
     /* This is only needed as this test case is running back to back Sciclient
      * Init and de-inits.

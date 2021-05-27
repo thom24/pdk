@@ -665,7 +665,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
     /* size of response payload in bytes */
     uint32_t          rxPayloadSize =0U;
     uint8_t           *pLocalRespPayload = NULL;
-    volatile Sciclient_RomFirmwareLoadHdr_t *pLocalRespHdr;
+    volatile Sciclient_RomFirmwareLoadHdr_t *pLocalRespHdr = NULL;
     uint32_t          txThread;
     uint32_t          contextId;
     uint32_t          rxThread;

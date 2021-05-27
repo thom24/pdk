@@ -146,7 +146,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         TISCI_SEC_PROXY_R5_2_NOTIFY_READ_THREAD_ID,
 
         /** Notification Interrupt Number */
-        CSL_MCU0_INTR_NAVSS0_R5_0_PEND_5
+        CSL_MCU0_INTR_NAVSS0_R5_0_PEND_1
 
     },
 
@@ -173,7 +173,7 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         TISCI_SEC_PROXY_R5_3_NOTIFY_READ_THREAD_ID,
 
         /** Notification Interrupt Number */
-        CSL_MCU0_INTR_NAVSS0_R5_0_PEND_7
+        CSL_MCU0_INTR_NAVSS0_R5_0_PEND_3
 
     },
 
