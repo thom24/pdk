@@ -121,7 +121,7 @@ typedef struct
     uint32_t  type;
     /**< Type of trace  */
 
-#ifdef BUILD_C7X_1
+#if defined(BUILD_C7X_1) || defined(BUILD_C7X_2)
     uint64_t  da;
 #else
     uint32_t  da;

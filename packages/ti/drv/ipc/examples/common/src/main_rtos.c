@@ -63,7 +63,7 @@
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/board/board.h>
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
 #include <ti/drv/sciclient/sciserver_tirtos.h>
 #endif
 
@@ -78,7 +78,7 @@
 #define APP_TSK_STACK_MAIN              (32U * 1024U)
 /**< Test application stack size */
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
 /**< SCI Server Init Task stack size */
 #define APP_SCISERVER_INIT_TSK_STACK        (32U * 1024U)
 /* SCI Server Init Task Priority - must be higher than High priority Sciserver task */
@@ -106,7 +106,7 @@
 
 static void taskFxn(void* a0, void* a1);
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
 void Ipc_setupSciServer(void);
 /**< Initialize SCI Server, to process RM/PM Requests by other cores */
 #endif
@@ -119,7 +119,7 @@ void Ipc_setupSciServer(void);
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN]
 __attribute__ ((aligned(8192)));
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
 /* Sciserver Init TAsk stack */
 static uint8_t  gSciserverInitTskStack[APP_SCISERVER_INIT_TSK_STACK]
 __attribute__ ((aligned(8192)));
@@ -142,7 +142,7 @@ void ipc_initSciclient()
         App_printf("Sciclient_configPrmsInit Failed\n");
     }
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
     if (ret == CSL_PASS)
     {
         ret = Sciclient_boardCfgParseHeader(
@@ -279,7 +279,7 @@ static void taskFxn(void* a0, void* a1)
     /* Initialize SCI Client - It must be called before board init */
     ipc_initSciclient();
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
     TaskP_Handle sciserverInitTask;
     TaskP_Params sciserverInitTaskParams;
 
@@ -371,7 +371,11 @@ static void IpcInitMmu(Bool isSecure)
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
     (void)Mmu_map(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure);
+#if defined(SOC_J721S2)
+    (void)Mmu_map(0xA6000000U, 0xA6000000U, 0x00100000U, &attrs, isSecure);
+#else
     (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, isSecure);
+#endif
 
     return;
 }
@@ -394,7 +398,7 @@ void InitMmu(void)
 }
 #endif
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
 void Ipc_setupSciServer(void)
 {
 

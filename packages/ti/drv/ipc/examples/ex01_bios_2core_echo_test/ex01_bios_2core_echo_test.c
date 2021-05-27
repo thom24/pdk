@@ -80,7 +80,7 @@
  * enough for 9 task_stack, so creating task_stack on global.
  * C7x cfg has 256k default heap, so no need to put task_stack on global
  */
-#if !defined(BUILD_C7X_1)
+#if !defined(BUILD_C7X_1) && !defined(BUILD_C7X_2)
 
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
 
@@ -110,7 +110,7 @@ uint8_t *pRecvTaskBuf = g_rspBuf;
 uint8_t *pSysVqBuf = sysVqBuf;
 
 /* am65x can only use MCU1_0 and MCU1_1 for this 2-core IPC echo test */
-/* j7200 uses MCU1_0 and MCU2_0 for this 2-core IPC echo test */
+/* j7200 & j721s2 use MCU1_0 and MCU2_0 for this 2-core IPC echo test */
 /* am64x uses MCU1_0 and MCU2_0 for this 2-core IPC echo test */
 
 #ifdef BUILD_MCU1_0
@@ -120,7 +120,7 @@ uint32_t remoteProc[] =
 #if defined (SOC_AM65XX)
     IPC_MCU1_1
 #endif
-#if defined (SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_J7200) || defined (SOC_AM64X) || defined (SOC_J721S2)
     IPC_MCU2_0
 #endif
 };
@@ -137,7 +137,7 @@ uint32_t remoteProc[] =
 #endif
 
 /* For j721e, we use MCU2_0 and C66X_1 for this 2-core IPC echo test */
-/* j7200 uses MCU1_0 and MCU2_0 for this 2-core IPC echo test */
+/* j7200 & j721s2 use MCU1_0 and MCU2_0 for this 2-core IPC echo test */
 
 #ifdef BUILD_MCU2_0
 uint32_t selfProcId = IPC_MCU2_0;
@@ -146,7 +146,7 @@ uint32_t remoteProc[] =
 #if defined (SOC_J721E)
     IPC_C66X_1
 #endif
-#if defined (SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_J7200) || defined (SOC_AM64X) || defined (SOC_J721S2)
     IPC_MCU1_0
 #endif
 };

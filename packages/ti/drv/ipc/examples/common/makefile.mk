@@ -24,7 +24,7 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA), r5f)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x j721s2))
     EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
     ifeq ($(ECHO_TEST_BTCM), 1)
       ifeq ($(ISA), r5f)
@@ -38,7 +38,7 @@ endif
 ifeq ($(BUILD_OS_TYPE), tirtos)
   COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
   COMP_LIST_COMMON += ipc 
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     ifeq ($(CORE),mcu1_0)
       COMP_LIST_COMMON += sciserver_tirtos
     endif
@@ -49,7 +49,7 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/ipc_override.cfg
     ifeq ($(ECHO_TEST_BTCM), 1)
       ifeq ($(ISA), r5f)
@@ -81,7 +81,7 @@ endif
 ifeq ($(BUILD_OS_TYPE), freertos)
   COMP_LIST_COMMON =  $(PDK_COMMON_FREERTOS_COMP)
   COMP_LIST_COMMON += ipc
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     ifeq ($(CORE),mcu1_0)
       COMP_LIST_COMMON += sciserver_tirtos
     endif

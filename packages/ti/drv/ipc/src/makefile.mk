@@ -12,6 +12,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), am64x))
   SRCDIR += soc/V2
 endif
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+  SRCDIR += soc/V3
+endif
 INCDIR =
 
 #$(ECHO) $(ISA)

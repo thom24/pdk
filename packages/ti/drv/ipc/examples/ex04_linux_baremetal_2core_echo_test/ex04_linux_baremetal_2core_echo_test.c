@@ -69,6 +69,8 @@
 #define CORE_IN_TEST            5
 #elif defined (SOC_AM64X)
 #define CORE_IN_TEST            6
+#elif defined (SOC_J721S2)
+#define CORE_IN_TEST            9
 #else
 #error "Invalid SOC"
 #endif

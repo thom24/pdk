@@ -107,6 +107,10 @@ uint32_t Ipc_isCacheCoherent(void);
 #if defined (SOC_AM64X)
 #include <ti/drv/ipc/soc/V2/ipc_soc.h>
 #endif
+
+#if defined (SOC_J721S2)
+#include <ti/drv/ipc/soc/V3/ipc_soc.h>
+#endif
 #ifdef __cplusplus
 }
 #endif

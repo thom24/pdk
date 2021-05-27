@@ -77,6 +77,8 @@
 #define CORE_IN_TEST            4
 #elif defined (SOC_AM64X)
 #define CORE_IN_TEST            6
+#elif defined (SOC_J721S2)
+#define CORE_IN_TEST            8
 #else
 #error "Invalid SOC"
 #endif
@@ -89,7 +91,7 @@
  * enough for 9 task_stack, so creating task_stack on global.
  * C7x cfg has 256k default heap, so no need to put task_stack on global
  */
-#if !defined(BUILD_C7X_1)
+#if !defined(BUILD_C7X_1) && !defined(BUILD_C7X_2)
 
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+3)*IPC_TASK_STACKSIZE];
 
@@ -133,6 +135,8 @@ uint32_t remoteProc[] =
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
 #elif defined (SOC_AM64X)
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_M4F_0
+#elif defined (SOC_J721S2)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
 #endif
 };
 #endif
@@ -149,6 +153,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
 #elif defined (SOC_AM64X)
     IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_M4F_0
+#elif defined (SOC_J721S2)
+    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
 #endif
 };
 #endif
@@ -165,6 +171,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
 #elif defined (SOC_AM64X)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_M4F_0
+#elif defined (SOC_J721S2)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
 #endif
 };
 #endif
@@ -179,6 +187,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
 #elif defined (SOC_AM64X)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1, IPC_M4F_0
+#elif defined (SOC_J721S2)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
 #endif
 };
 #endif
@@ -193,6 +203,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
 #elif defined (SOC_AM64X)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_M4F_0
+#elif defined (SOC_J721S2)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
 #endif
 };
 #endif
@@ -201,7 +213,11 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_MCU3_0;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_J721E)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
+#elif defined (SOC_J721S2)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
+#endif
 };
 #endif
 
@@ -209,7 +225,11 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_MCU3_1;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_J721E)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
+#elif defined (SOC_J721S2)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C7X_1, IPC_C7X_2
+#endif
 };
 #endif
 
@@ -237,7 +257,19 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_C7X_1;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_J721E)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2
+#elif defined (SOC_J721S2)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_2
+#endif
+};
+#endif
+
+#ifdef BUILD_C7X_2
+uint32_t selfProcId = IPC_C7X_2;
+uint32_t remoteProc[] =
+{
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1
 };
 #endif
 
