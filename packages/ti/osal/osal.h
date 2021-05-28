@@ -110,6 +110,18 @@ extern "C" {
 /* @} */
 
 /*********************************************************************
+ * @def osal_WAIT_FOREVER
+ * OSAL timeout wait forever
+ *********************************************************************/
+#define osal_WAIT_FOREVER (~((uint32_t)0U))
+
+/*********************************************************************
+ * @def osal_NO_WAIT
+ * OSAL timeout no wait
+ *********************************************************************/
+#define osal_NO_WAIT       ((uint32_t)0U)
+
+/*********************************************************************
  * @def OSAL_NONOS_SEMAPHOREP_SIZE_BYTES
  * Semaphorep handle size for non-os use case
  * Application can use this size to provide a secondary extended

@@ -213,7 +213,7 @@ int32_t Ipc_perf_test(void)
 
         Ipc_sendMessage(handle, myEndPt, tstcase->hostCore, IPC_PING);
         status = RPMessage_getRemoteEndPt(tstcase->hostCore, SERVICE, &remoteProcId,
-            &remoteEndPt, SemaphoreP_WAIT_FOREVER);
+            &remoteEndPt, osal_WAIT_FOREVER);
         if(tstcase->hostCore != remoteProcId)
         {
             App_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
@@ -449,7 +449,7 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
     {
         Ipc_sendMessage(handle, myEndPt, coreId, IPC_PING);
         status = RPMessage_getRemoteEndPt(coreId, SERVICE, &remoteProcId,
-                &remoteEndPt, SemaphoreP_WAIT_FOREVER);
+                &remoteEndPt, osal_WAIT_FOREVER);
         if(coreId != remoteProcId) 
         {
             App_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
