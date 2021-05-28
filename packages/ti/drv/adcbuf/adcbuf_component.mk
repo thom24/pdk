@@ -34,6 +34,7 @@
 #
 ifeq ($(adcbuf_component_make_include), )
 
+drvadcbuf_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
 drvadcbuf_SOCLIST            = awr294x
 drvadcbuf_awr294x_CORELIST   = mcu1_0 c66xdsp_1
 drvadcbuf_BOARDLIST          = awr294x_evm
@@ -75,19 +76,33 @@ export adcbuf_$(SOC)_CORELIST = $(drvadcbuf_$(SOC)_CORELIST)
 #
 # adcbuf Examples
 #
+define adcbuf_test_RULE
 
-# adcbuf test app
-export adcbuf_testapp_COMP_LIST = adcbuf_testapp
-adcbuf_testapp_RELPATH = ti/drv/adcbuf/example/
-adcbuf_testapp_PATH = $(PDK_ADCBUF_COMP_PATH)/example
-export adcbuf_testapp_BOARD_DEPENDENCY = yes
-export adcbuf_testapp_CORE_DEPENDENCY = yes
-export adcbuf_testapp_XDC_CONFIGURO = yes
-adcbuf_testapp_PKG_LIST = adcbuf_testapp
-adcbuf_testapp_INCLUDE = $(adcbuf_testapp_PATH)
-export adcbuf_testapp_BOARDLIST = $(drvadcbuf_awr294x_BOARDLIST)
-export adcbuf_testapp_$(SOC)_CORELIST = $(drvadcbuf_$(SOC)_CORELIST)
-adcbuf_EXAMPLE_LIST += adcbuf_testapp
+export adcbuf_test_$(1)_COMP_LIST = adcbuf_test_$(1)
+export adcbuf_test_$(1)_RELPATH = ti/drv/adcbuf/example
+export adcbuf_test_$(1)_PATH = $(PDK_ADCBUF_COMP_PATH)/example
+export adcbuf_test_$(1)_BOARD_DEPENDENCY = yes
+export adcbuf_test_$(1)_CORE_DEPENDENCY = yes
+export adcbuf_test_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export adcbuf_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export adcbuf_test_$(1)_PKG_LIST = adcbuf_test_$(1)
+export adcbuf_test_$(1)_INCLUDE = $(adcbuf_test_$(1)_PATH)
+export adcbuf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvadcbuf_BOARDLIST))
+export adcbuf_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvadcbuf_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+adcbuf_EXAMPLE_LIST += adcbuf_test_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+adcbuf_EXAMPLE_LIST += adcbuf_test_$(1)
+endif
+endif
+export adcbuf_test_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+adcbuf_test_MACRO_LIST := $(foreach curos,$(drvadcbuf_RTOS_LIST),$(call adcbuf_test_RULE,$(curos)))
+
+$(eval ${adcbuf_test_MACRO_LIST})
 
 export adcbuf_LIB_LIST
 export adcbuf_EXAMPLE_LIST

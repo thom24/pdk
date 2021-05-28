@@ -7,30 +7,38 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = cbuff_manual_testapp
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_OS_DEFINES = -DUSE_BIOS
+EXTERNAL_INTERFACES = bios xdc
+COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
 
-#
-# This file is common makefile for building CBUFF test app for both TI-RTOS/baremetal
-#
+ifeq ($(BUILD_OS_TYPE),freertos)
+CFLAGS_OS_DEFINES = -DFREERTOS
+EXTERNAL_INTERFACES = freertos
+COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+endif
+
 SRCDIR = .
-INCDIR =
+INCDIR = .
+
+#Name of the directory created under packages/ti/binary/
+APP_NAME = cbuff_manual_test_$(BUILD_OS_TYPE)
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk
+INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
 # List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-COMP_LIST_COMMON += adcbuf cbuff
-INCLUDE_EXTERNAL_INTERFACES += xdc bios pdk
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+COMP_LIST_COMMON += cbuff adcbuf
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 SRCS_mcu1_0 += main.c
 SRCS_c66xdsp_1 += main.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

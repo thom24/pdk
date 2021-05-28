@@ -125,6 +125,11 @@ volatile int8_t gInstanceId = EDMA_DRV_INST_DSS_A;
   */
  uint8_t  gCBUFFEDMAChannelResourceCounter = 0;
 
+/**
+ * @brief   This is a global variable which tracks the SW trigger Frame Done interrupt count.
+ */
+ volatile uint32_t  gCBUFFSwTriggerFrameDoneCounter = 0;
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -152,7 +157,7 @@ volatile int8_t gInstanceId = EDMA_DRV_INST_DSS_A;
  *  @retval
  *      Error   -   false
  */
-static bool MmwDemo_BoardInit(void)
+static bool Test_BoardInit(void)
 {
     Board_initCfg boardCfg;
     Board_STATUS  status;
@@ -319,10 +324,24 @@ void Test_EDMAFreeCBUFFChannel(CBUFF_EDMAChannelCfg* ptrEDMACfg)
 /**
  *  @b Description
  *  @n
+ *      This is the registered function which is hooked up with the
+ *      CBUFF driver to indicate frame done interrupt.
+ *
+ *  @retval
+ *      Not applicable
+ */
+static void Test_SwTriggerFrameDone (CBUFF_SessionHandle sessionHandle)
+{
+    /* Increment stats*/
+    gCBUFFSwTriggerFrameDoneCounter++;
+    return;
+}
+
+/**
+ *  @b Description
+ *  @n
  *      The function is used to test the invalid data size
  *
- *  @param[in]  socHandle
- *      SOC Driver Handle
  *  @param[in]  edmaHandle
  *      EDMA Driver Handle
  *
@@ -341,12 +360,7 @@ int32_t Test_Cbuff
     CBUFF_InitCfg       initCfg;
     int32_t             errCode;
     CBUFF_SessionHandle sessionHandle;
-    uint32_t i = 0;
-
-    /* Debug Message: */
-    DebugP_log0 ("---------------------------------------------------\n");
-    DebugP_log0 ("Debug: Testing CBUFF interface \n");
-    DebugP_log0 ("---------------------------------------------------\n");
+    uint32_t index = 0;
 
     /* Initialize the configuration: */
     memset ((void*)&initCfg, 0, sizeof(CBUFF_InitCfg));
@@ -358,19 +372,19 @@ int32_t Test_Cbuff
     initCfg.enableDebugMode          = false;
     initCfg.maxSessions              = 2U;
     initCfg.interface                = CBUFF_Interface_LVDS;
-    initCfg.lvdsCfg.crcEnable      = 0U;
-    initCfg.lvdsCfg.msbFirst       = 1U;
-    initCfg.lvdsCfg.ddrClockMode   = 1U;
-    initCfg.lvdsCfg.ddrClockModeMux= 1U;
+    initCfg.lvdsCfg.crcEnable        = 0U;
+    initCfg.lvdsCfg.msbFirst         = 1U;
+    initCfg.lvdsCfg.ddrClockMode     = 1U;
+    initCfg.lvdsCfg.ddrClockModeMux  = 1U;
 
     /* Setup the lanes */
-    initCfg.lvdsCfg.lvdsLaneEnable = 0xFU;
+    initCfg.lvdsCfg.lvdsLaneEnable = 0x1U;
 
     /* Initialize the CBUFF Driver: */
     cbuffHandle = CBUFF_init (&initCfg, &errCode);
     if (cbuffHandle == NULL)
     {
-        DebugP_log1 ("Error: CBUFF Driver initialization failed [Error code %d]\n", errCode);
+        printf ("Error: CBUFF Driver initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -383,15 +397,15 @@ int32_t Test_Cbuff
     /*The delay below is needed only if the DCA1000EVM is being used to capture the data traces.
       This is needed because the DCA1000EVM FPGA needs the delay to lock to the
       bit clock before they can start capturing the data correctly. */
-    TaskP_sleepInMsecs(HSI_DCA_MIN_DELAY_MSEC);
+    TaskP_sleep(HSI_DCA_MIN_DELAY_MSEC);
 
     /* Initialize the configuration */
     memset ((void*)&sessionCfg, 0, sizeof(CBUFF_SessionCfg));
 
     /* Initialize the configuration: */
-    for(i = 0; i < (sizeof(gUserBuffer0)/2); i++)
+    for(index = 0; index < (sizeof(gUserBuffer0)/2); index++)
     {
-    	gUserBuffer0[i] = i;
+    	gUserBuffer0[index] = index;
     }
     CacheP_wbInv (gUserBuffer0, sizeof(gUserBuffer0));
 
@@ -400,8 +414,9 @@ int32_t Test_Cbuff
     sessionCfg.edmaHandle                         = edmaHandle;
     sessionCfg.allocateEDMAChannelFxn             = Test_EDMAAllocateCBUFFChannel;
     sessionCfg.freeEDMAChannelFxn                 = Test_EDMAFreeCBUFFChannel;
-    sessionCfg.dataType                           = CBUFF_DataType_COMPLEX;
-    sessionCfg.u.swCfg.userBufferInfo[0].size     = sizeof(gUserBuffer0);
+    sessionCfg.frameDoneCallbackFxn               = Test_SwTriggerFrameDone;
+    sessionCfg.dataType                           = CBUFF_DataType_REAL;
+    sessionCfg.u.swCfg.userBufferInfo[0].size     = sizeof(gUserBuffer0)/2;
     sessionCfg.u.swCfg.userBufferInfo[0].address  = (uint32_t)&gUserBuffer0[0];
 
 
@@ -409,40 +424,53 @@ int32_t Test_Cbuff
     sessionHandle = CBUFF_open (cbuffHandle, &sessionCfg, &errCode);
     if (sessionHandle == NULL)
     {
-        DebugP_log1 ("Error: Unable to create the session [Error code %d]\n", errCode);
+        printf ("Error: Unable to create the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Debug Message: Display the EDMA Channel Usage for the test. */
-    DebugP_log1 ("Debug: EDMA Channel Usage = %d\n", gCBUFFEDMAChannelResourceCounter);
+    printf ("Debug: EDMA Channel Usage = %d\n", gCBUFFEDMAChannelResourceCounter);
 
     /* Activate the session: */
     if (CBUFF_activateSession (sessionHandle, &errCode) < 0)
     {
-        DebugP_log1 ("Error: Unable to activate the session [Error code %d]\n", errCode);
+        printf ("Error: Unable to activate the session [Error code %d]\n", errCode);
         return -1;
     }
+
+    while (gCBUFFSwTriggerFrameDoneCounter != 1)
+    {
+        printf("waiting for frameDone interrupt : %d\n", gCBUFFSwTriggerFrameDoneCounter);
+        TaskP_sleep(1);
+    }
+
+    printf("Received frameDone interrupt : %d\n", gCBUFFSwTriggerFrameDoneCounter);
+
+    printf("Data is transmitted over LVDS successfully.\n");
+
 
     /* Deactivate the session: */
     if (CBUFF_deactivateSession (sessionHandle, &errCode) < 0)
     {
-        DebugP_log1 ("Error: Unable to deactivate the session [Error code %d]\n", errCode);
+        printf ("Error: Unable to deactivate the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Delete the session: */
     if (CBUFF_close (sessionHandle, &errCode) < 0)
     {
-        DebugP_log1 ("Error: Unable to delete the session [Error code %d]\n", errCode);
+        printf ("Error: Unable to delete the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Sanity Check: Ensure that all the EDMA resources have been cleaned up */
     if (gCBUFFEDMAChannelResourceCounter != 0)
     {
-        DebugP_log0 ("Error: EDMA Channel Memory leak detected\n");
+        printf ("Error: EDMA Channel Memory leak detected\n");
         return -1;
     }
+
+    printf("---End of the Test---.\n");
 
     return 0;
 }
@@ -459,7 +487,7 @@ void Test_initTask(void* arg0, void* arg1)
 
     char instName[25];
     EDMA_getInstanceName(gInstanceId, &instName[0], sizeof(instName));
-    DebugP_log2("EDMA instance #%d: %s\n", gInstanceId, (uintptr_t)instName);
+    printf("EDMA instance #%d: %s\n", gInstanceId, instName);
 
     EDMA3CCInitParams_init(&initParam);
     initParam.initParamSet = TRUE;
@@ -473,7 +501,7 @@ void Test_initTask(void* arg0, void* arg1)
     	edmaHandle = EDMA_open(gInstanceId, &errCode, &instanceInfo);
         if (edmaHandle == NULL)
         {
-        	DebugP_log1("Error: Unable to open the edma Instance, erorCode = %d\n", errCode);
+            printf("Error: Unable to open the edma Instance, erorCode = %d\n", errCode);
         }
     }
 
@@ -488,7 +516,7 @@ void Test_initTask(void* arg0, void* arg1)
     errCode = EDMA_configErrorMonitoring(edmaHandle, &errorConfig);
     if (errCode != EDMA_NO_ERROR)
     {
-        DebugP_log1("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errCode);
+        printf("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errCode);
         return;
     }
 
@@ -507,21 +535,22 @@ int main (void)
     TaskP_Params    taskParams;
 
     OS_init();
-    MmwDemo_BoardInit();
+    Test_BoardInit();
 
     /* Configure HSI interface Clock */
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE + CSL_MSS_TOPRCM_HSI_CLK_SRC_SEL, 0x444);  //Div by 2
+    /* Configured by Board library. */
+    /*HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE + CSL_MSS_TOPRCM_HSI_CLK_SRC_SEL, 0x444);  //Div by 2
     HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE + CSL_MSS_TOPRCM_HSI_DIV_VAL, 0x111);
-    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE + CSL_MSS_TOPRCM_HSI_CLK_GATE , 0x0);
+    HW_WR_REG32(CSL_MSS_TOPRCM_U_BASE + CSL_MSS_TOPRCM_HSI_CLK_GATE , 0x0);*/
 
     /* Select MDO source as CBUFF. By default it is set to AURORA. */
     /* Probably this functionality has to be from Board library. */
-    HW_WR_REG32(CSL_TOP_CTRL_U_BASE + 4, 0x10);
+    HW_WR_REG32((CSL_TOP_CTRL_U_BASE + CSL_TOP_CTRL_MDO_CTRL), 0x10);
 
     /* Debug Message: */
-    DebugP_log0 ("***********************************************\n");
-    DebugP_log0 ("************** CBUFF Unit Tests ***************\n");
-    DebugP_log0 ("***********************************************\n");
+    printf ("***********************************************\n");
+    printf ("************** CBUFF Unit Tests ***************\n");
+    printf ("***********************************************\n");
 
     /* Initialize the Task Parameters. */
     TaskP_Params_init(&taskParams);

@@ -34,10 +34,10 @@
 #
 ifeq ($(cbuff_component_make_include), )
 
+drvcbuff_RTOS_LIST            = $(DEFAULT_RTOS_LIST)
 drvcbuff_SOCLIST              = awr294x
 drvcbuff_awr294x_CORELIST     = mcu1_0 c66xdsp_1
 drvcbuff_BOARDLIST            = awr294x_evm
-drvcbuff_awr294x_BOARDLIST    = awr294x_evm
 
 ############################
 # cbuff package
@@ -75,19 +75,34 @@ export cbuff_$(SOC)_CORELIST = $(drvcbuff_$(SOC)_CORELIST)
 #
 # Cbuff Examples
 #
-
 # Cbuff manual test app
-export cbuff_manual_testapp_COMP_LIST = cbuff_manual_testapp
-cbuff_manual_testapp_RELPATH = ti/drv/cbuff/example/cbuff_manual_testapp
-cbuff_manual_testapp_PATH = $(PDK_CBUFF_COMP_PATH)/example/cbuff_manual_testapp
-export cbuff_manual_testapp_BOARD_DEPENDENCY = yes
-export cbuff_manual_testapp_CORE_DEPENDENCY = yes
-export cbuff_manual_testapp_XDC_CONFIGURO = yes
-cbuff_manual_testapp_PKG_LIST = cbuff_manual_testapp
-cbuff_manual_testapp_INCLUDE = $(cbuff_manual_testapp_PATH)
-export cbuff_manual_testapp_BOARDLIST = $(drvcbuff_awr294x_BOARDLIST)
-export cbuff_manual_testapp_$(SOC)_CORELIST = $(drvcbuff_$(SOC)_CORELIST)
-cbuff_EXAMPLE_LIST += cbuff_manual_testapp
+define cbuff_test_RULE
+
+export cbuff_manual_test_$(1)_COMP_LIST = cbuff_manual_test_$(1)
+export cbuff_manual_test_$(1)_RELPATH = ti/drv/cbuff/example/cbuff_manual_testapp
+export cbuff_manual_test_$(1)_PATH = $(PDK_CBUFF_COMP_PATH)/example/cbuff_manual_testapp
+export cbuff_manual_test_$(1)_BOARD_DEPENDENCY = yes
+export cbuff_manual_test_$(1)_CORE_DEPENDENCY = yes
+export cbuff_manual_test_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export cbuff_manual_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export cbuff_manual_test_$(1)_PKG_LIST = cbuff_manual_test_$(1)
+export cbuff_manual_test_$(1)_INCLUDE = $(cbuff_manual_test_$(1)_PATH)
+export cbuff_manual_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvcbuff_BOARDLIST))
+export cbuff_manual_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvcbuff_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+cbuff_EXAMPLE_LIST += cbuff_manual_test_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+cbuff_EXAMPLE_LIST += cbuff_manual_test_$(1)
+endif
+endif
+export cbuff_manual_test_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+cbuff_test_MACRO_LIST := $(foreach curos,$(drvcbuff_RTOS_LIST),$(call cbuff_test_RULE,$(curos)))
+
+$(eval ${cbuff_test_MACRO_LIST})
 
 export cbuff_LIB_LIST
 export cbuff_EXAMPLE_LIST

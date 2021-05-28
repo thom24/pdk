@@ -42,6 +42,7 @@
 #include <stdio.h>
 
 /* BIOS/XDC Include Files. */
+#include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 #include <ti/osal/DebugP.h>
 #include <ti/osal/SemaphoreP.h>
@@ -50,7 +51,7 @@
 #include <ti/drv/adcbuf/adcbuf.h>
 #include <ti/drv/edma/edma.h>
 #include <ti/csl/soc.h>
-#include <ti/osal/osal.h>
+
 
 /* ========================================================================== */
 /*                                 Macros                                     */
@@ -1061,7 +1062,7 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
         intrPrms.corepacConfig.arg              = (uintptr_t) handle;
         intrPrms.corepacConfig.isrRoutine       = Test_ADCBUFIntCallBackFunc;
         intrPrms.corepacConfig.priority         = intrPriority;
-        intrPrms.corepacConfig.name             = "ADC_CAPTURE_COMPLETE";
+        intrPrms.corepacConfig.name             = (char *)"ADC_CAPTURE_COMPLETE";
 
         #if defined (_TMS320C6X)
         /* On C66x, we use Event Combiner to map the interrupt to the CPU Intc.  To
