@@ -70,7 +70,7 @@ uint32_t gOsalClockAllocCnt, gOsalClockPeak;
 
 void ClockP_timerCallbackFunction(TimerHandle_t xTimer)
 {
-    ClockP_freertos *pTimer = pvTimerGetTimerID(xTimer);
+    ClockP_freertos *pTimer = (ClockP_freertos *)pvTimerGetTimerID(xTimer);
 
     if(pTimer->callback && pTimer != NULL_PTR)
     {
@@ -100,7 +100,7 @@ ClockP_Handle ClockP_create(void *clockfxn,
 {
     
     ClockP_freertos *pTimer = (ClockP_freertos *)NULL_PTR;
-    ClockP_freertos *timerPool = NULL_PTR;
+    ClockP_freertos *timerPool;
     UBaseType_t      uxAutoReload = pdFALSE;
     ClockP_Handle    ret_handle = NULL_PTR;
     uint32_t         i;
@@ -155,7 +155,7 @@ ClockP_Handle ClockP_create(void *clockfxn,
         pTimer->arg = params->arg;
 
         pTimer->timerHndl = xTimerCreateStatic(
-                                NULL_PTR,
+                                (const char *)NULL_PTR,
                                 params->period,
                                 uxAutoReload,
                                 pTimer,
