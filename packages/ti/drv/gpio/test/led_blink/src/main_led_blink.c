@@ -436,6 +436,7 @@ static void Board_initGPIO(void)
  ************************** Global Variables **************************
  **********************************************************************/
 volatile uint32_t gpio_intr_triggered = 0;
+volatile uint32_t last_gpio_intr_count = 0;
 uint32_t gpioBaseAddr;
 uint32_t gpioPin;
 
@@ -454,11 +455,6 @@ void gpio_test(void* arg0, void* arg1)
 int main()
 {
     Board_initGPIO();
-#endif
-#if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x)|| defined(SOC_AM335x) || defined(SOC_AM437x) || \
-    defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || \
-    defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
-    uint32_t testOutput = 1;
 #endif
 
     /* GPIO initialization */
@@ -504,6 +500,8 @@ int main()
     }
 #else
 
+    UART_printStatus("\n Awaiting interrupt occurrence \n");
+
     while(1)
     {
 #if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x)|| defined(SOC_AM335x) || defined(SOC_AM437x)
@@ -526,13 +524,15 @@ int main()
         GPIO_toggle(USER_LED1);
 #endif
         AppDelay(DELAY_VALUE);
-        if (testOutput)
+        if (gpio_intr_triggered != last_gpio_intr_count)
         {
+            UART_printf("\n Blink Iteration - %d \n", gpio_intr_triggered);
+            last_gpio_intr_count = gpio_intr_triggered;
+
+            /* This string is required to ensure automated tests and result
+                parser is able to determine status of this application */
             UART_printStatus("\n All tests have passed \n");
-            testOutput = 0;
         }
-        UART_printf("\n Blink Iteration - %d \n", gpio_intr_triggered);
-        UART_printStatus("\n All tests have passed \n");
     }
 #endif
 }
