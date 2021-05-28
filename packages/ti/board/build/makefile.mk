@@ -99,7 +99,7 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), awr294x_evm))
 include $(PDK_BOARD_COMP_PATH)/src/awr294x_evm/src_files_awr294x_evm.mk
 include $(PDK_BOARD_COMP_PATH)/src/flash/src_files_flash.mk
-PACKAGE_SRCS_COMMON += src/awr294x_evm
+PACKAGE_SRCS_COMMON += src/awr294x_evm/include
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), evmAM572x idkAM571x idkAM572x idkAM574x))
