@@ -82,6 +82,9 @@
 #define OSPI_MPU_REGION_NUM         (0x6)
 #define OSPI_MPU_ENABLE_REGION      (0x1)
 
+/* Macro to config OSPI for optimized XIP performance (166MHz+PHY+Pipeline) */
+#undef BUILD_XIP
+
 /* Initialize the OSPI driver and the controller. */
 static void SBL_OSPI_Initialize(void);
 
@@ -237,7 +240,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     ospi_cfg.phyEnable = false;
 #endif
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(BUILD_XIP)
     ospi_cfg.phyEnable = false;
     /* OSPI baud rate = (master reference clock) / (baud rate devisor)
      * Default baud rate devisor is 32
@@ -307,6 +310,104 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
 }
 
+void OSPI_configClk(uint32_t freq)
+{
+    OSPI_v0_HwAttrs ospi_cfg;
+	int32_t retVal;
+    uint64_t ospi_rclk_freq;
+    uint32_t parClk;
+#if defined (SOC_AM64X)
+    uint32_t clkID[] = {
+                           TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK,
+    };
+    uint32_t devID[] = {
+                           TISCI_DEV_FSS0_OSPI_0,
+    };
+#else
+    uint32_t clkID[] = {
+                           TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK,
+                           TISCI_DEV_MCU_FSS0_OSPI_1_OSPI_RCLK_CLK
+    };
+    uint32_t devID[] = {
+                           TISCI_DEV_MCU_FSS0_OSPI_0,
+	                       TISCI_DEV_MCU_FSS0_OSPI_1
+    };
+#endif
+
+    /* Get the default SPI init configurations */
+    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
+    retVal = Sciclient_pmModuleClkRequest(devID[BOARD_OSPI_NOR_INSTANCE],
+                                          clkID[BOARD_OSPI_NOR_INSTANCE],
+                                          TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
+                                          TISCI_MSG_FLAG_AOP,
+                                          SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_MAX, "Sciclient_pmModuleClkRequest failed \n");
+    }
+
+    /* Max clocks */
+    if (freq == OSPI_MODULE_CLK_166M)
+    {
+#if defined (SOC_AM64X)
+        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;
+#else
+        parClk = TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK;
+#endif
+
+        retVal = Sciclient_pmSetModuleClkParent(devID[BOARD_OSPI_NOR_INSTANCE],
+                                                clkID[BOARD_OSPI_NOR_INSTANCE],
+                                                parClk,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    else
+    {
+#if defined (SOC_AM64X)
+        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;
+#else
+        parClk = TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_1_HSDIVOUT4_CLK;
+#endif
+        retVal = Sciclient_pmSetModuleClkParent(devID[BOARD_OSPI_NOR_INSTANCE],
+                                                clkID[BOARD_OSPI_NOR_INSTANCE],
+                                                parClk,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleClkParent failed \n");
+    }
+
+	ospi_cfg.funcClk = freq;
+    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
+    ospi_rclk_freq = (uint64_t)freq;
+    retVal = Sciclient_pmSetModuleClkFreq(devID[BOARD_OSPI_NOR_INSTANCE],
+                                          clkID[BOARD_OSPI_NOR_INSTANCE],
+                                          ospi_rclk_freq,
+                                          TISCI_MSG_FLAG_AOP,
+                                          SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleClkFreq failed \n");
+    }
+
+	ospi_rclk_freq = 0;
+    retVal = Sciclient_pmGetModuleClkFreq(devID[BOARD_OSPI_NOR_INSTANCE],
+                                          clkID[BOARD_OSPI_NOR_INSTANCE],
+                                          &ospi_rclk_freq,
+                                          SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_MAX, "Sciclient_pmGetModuleClkFreq failed \n");
+    }
+
+    SBL_log(SBL_LOG_MAX, "OSPI RCLK running at %d MHz. \n", (uint32_t)ospi_rclk_freq);
+
+}
+
 int32_t SBL_ospiInit(void *handle)
 {
 #if (!defined(SBL_BYPASS_OSPI_DRIVER) \
@@ -331,39 +432,27 @@ int32_t SBL_ospiInit(void *handle)
 
 #if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT)
     {
-        struct ospiClkParams
-        {
-            uint32_t moduleId;
-            uint32_t clockId;
-        };
-        struct ospiClkParams ospiClkInfo[] = {
-                                                {SBL_DEV_ID_OSPI0, SBL_CLK_ID_OSPI0},
-#ifdef SBL_DEV_ID_OSPI1
-                                                {SBL_DEV_ID_OSPI1, SBL_CLK_ID_OSPI1},
-#endif                                                
-                                             };
-        uint64_t ospiFunClk;
-
         /* System Firmware reconfigures the OSPI clock to
          * unsupported values. This is a workaround until
          * that issue is fixed
          */
-#if defined(SOC_AM64X)
+        uint64_t ospiFunClk;
+#if defined(SOC_AM64X) || defined(SOC_J721E) || defined(BUILD_XIP)
         ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
+        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
 #else
         ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_133M);
+        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_2;
 #endif
-        Sciclient_pmSetModuleClkFreq(ospiClkInfo[BOARD_OSPI_NOR_INSTANCE].moduleId, ospiClkInfo[BOARD_OSPI_NOR_INSTANCE].clockId, ospiFunClk, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-        ospi_cfg.funcClk = (uint32_t)ospiFunClk;
-        SBL_log(SBL_LOG_MAX, "ospiFunClk = %d Hz \n", ospi_cfg.funcClk);
+        ospi_cfg.funcClk = ospiFunClk;
+        ospi_cfg.baudRateDiv = 0;
+        OSPI_configClk(ospiFunClk);
     }
 #endif
 
     ospi_cfg.dtrEnable = true;
 
-#if defined(SOC_J7200)
-    ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
-#elif defined(SOC_AM64X)
+#if defined(SOC_AM64X)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_166M;
 #endif
 
@@ -377,7 +466,7 @@ int32_t SBL_ospiInit(void *handle)
     /* J7200/AM64X: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
     ospi_cfg.phyEnable = true;
 #else
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(BUILD_XIP)
     ospi_cfg.phyEnable = true;
     ospi_cfg.cacheEnable = true;
 #else
@@ -399,7 +488,7 @@ int32_t SBL_ospiInit(void *handle)
         *(Board_flashHandle *) handle = h;
         /* Update the static handle as well, for later use */
         boardHandle = (void *)h;
-#if !(SBL_USE_DMA) && !defined(SOC_J721E)
+#if !(SBL_USE_DMA) && !defined(SOC_J721E) && !defined(BUILD_XIP)
         /* Disable PHY pipeline mode if not using DMA */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
 #endif
@@ -479,7 +568,7 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
 #endif
 
 #else
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(BUILD_XIP)
     Board_flashHandle h = *(const Board_flashHandle *) handle;
     uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
     SBL_DCacheClean((void *)dst, length);
@@ -637,6 +726,18 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 #endif
 
     SBL_ospiClose(&boardHandle);
+
+#if defined(BUILD_XIP) && (defined(SOC_J7200) || defined(SOC_AM64X)) /* These fields are reset by Nor_xspiClose but are required for XIP */
+    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr);
+
+    CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                    OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD,
+                    1);
+
+    CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                    OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_DQS_ENABLE_FLD,
+                    1);
+#endif
 
 #if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
 /* Only put OSPI flash back into SPI mode if we're going to directly boot ATF/U-boot/Linux from SBL */
