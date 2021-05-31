@@ -136,7 +136,7 @@ static Mailbox_driverPoolElem gMailboxDriversPool[MAILBOX_DRIVER_POOL_NUM_ELEMEN
  */
 extern Mailbox_MCB gMailboxMCB;
 
-#if defined (__TI_ARM_V7R4__)
+#if defined (BUILD_MCU1_0)
 CSL_mboxRegAddr gMboxReg =
 {
     .memInit        = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_MAILBOX_MEM_INIT),
@@ -153,18 +153,66 @@ CSL_mboxRegAddr gMboxReg =
  * @brief   This is SOC specific configuration and should *NOT* be modified by the customer.
  *          Communication between MSS and DSS (MSS master).
  */
-Mailbox_HwCfg   gMailboxMssDssHwCfg =
+Mailbox_HwCfg   gRemoteHwCfg[] =
 {
-    .mbxReg                 = &gMboxReg,
-    .baseLocalToRemote.data = (uint8_t *)(CSL_DSS_MAILBOX_U_BASE),
-    .baseRemoteToLocal.data = (uint8_t *)(CSL_MSS_MBOX_U_BASE),
-    .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_REQ,
-    .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_ACK,
-    .remoteProcNum          = MAILBOX_INST_DSP
+    {
+        .mbxReg                 = &gMboxReg,
+        .baseLocalToRemote.data = (uint8_t *)(CR5A_TO_DSS_MBX_MEM),
+        .baseRemoteToLocal.data = (uint8_t *)(DSS_TO_CR5A_MBX_MEM),
+        .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_REQ,
+        .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_ACK,
+        .remoteProcNum          = MAILBOX_INST_DSP
+    },
+    {
+        .mbxReg                 = &gMboxReg,
+        .baseLocalToRemote.data = (uint8_t *)(CR5A_TO_CR5B_MBX_MEM),
+        .baseRemoteToLocal.data = (uint8_t *)(CR5B_TO_CR5A_MBX_MEM),
+        .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_REQ,
+        .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5A_MBOX_READ_ACK,
+        .remoteProcNum          = MAILBOX_INST_MSS_CR5B
+    }
 };
 #endif
 
-#if defined (_TMS320C6X)
+#if defined (BUILD_MCU1_1)
+CSL_mboxRegAddr gMboxReg =
+{
+    .memInit        = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_MAILBOX_MEM_INIT),
+    .memInitDone    = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_MAILBOX_MEM_INIT_DONE),
+    .memInitStatus  = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_MAILBOX_MEM_INIT_STATUS),
+    .mboxWriteDone  = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5B_MBOX_WRITE_DONE),
+    .mboxReadReq    = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5B_MBOX_READ_REQ),
+    .mboxReadDone   = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5B_MBOX_READ_DONE),
+    .mboxReadDoneAck = (uintptr_t)(CSL_MSS_CTRL_U_BASE + CSL_MSS_CTRL_MSS_CR5A_B_MBOX_READ_DONE_ACK)
+};
+
+
+/**
+ * @brief   This is SOC specific configuration and should *NOT* be modified by the customer.
+ *          Communication between MSS and DSS (MSS master).
+ */
+Mailbox_HwCfg   gRemoteHwCfg[] =
+{
+    {
+        .mbxReg                 = &gMboxReg,
+        .baseLocalToRemote.data = (uint8_t *)(CR5B_TO_DSS_MBX_MEM),
+        .baseRemoteToLocal.data = (uint8_t *)(DSS_TO_CR5B_MBX_MEM),
+        .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5B_MBOX_READ_REQ,
+        .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5B_MBOX_READ_ACK,
+        .remoteProcNum          = MAILBOX_INST_DSP
+    },
+    {
+        .mbxReg                 = &gMboxReg,
+        .baseLocalToRemote.data = (uint8_t *)(CR5B_TO_CR5A_MBX_MEM),
+        .baseRemoteToLocal.data = (uint8_t *)(CR5A_TO_CR5B_MBX_MEM),
+        .boxFullIntNum          = CSL_MSS_INTR_MSS_CR5B_MBOX_READ_REQ,
+        .boxEmptyIntNum         = CSL_MSS_INTR_MSS_CR5B_MBOX_READ_ACK,
+        .remoteProcNum          = MAILBOX_INST_MSS_CR5A
+    }
+};
+#endif
+
+#if defined (BUILD_DSP_1)
 CSL_mboxRegAddr gMboxReg =
 {
     .memInit        = (uintptr_t)(CSL_DSS_CTRL_U_BASE + CSL_DSS_CTRL_DSS_MAILBOX_MEMINIT_START),
@@ -181,14 +229,24 @@ CSL_mboxRegAddr gMboxReg =
  * @brief   This is SOC specific configuration and should *NOT* be modified by the customer.
  *          Communication between MSS and DSS (MSS master).
  */
-Mailbox_HwCfg   gMailboxDssMssHwCfg =
+Mailbox_HwCfg   gRemoteHwCfg[] =
 {
-    .mbxReg                 = &gMboxReg,
-    .baseLocalToRemote.data = (uint8_t *)(CSL_MSS_MBOX_U_BASE),
-    .baseRemoteToLocal.data = (uint8_t *)(CSL_DSS_MAILBOX_U_BASE),
-    .boxFullIntNum          = CSL_DSS_INTR_DSS_DSP_MBOX_READ_REQ,
-    .boxEmptyIntNum         = CSL_DSS_INTR_DSS_DSP_MBOX_READ_ACK,
-    .remoteProcNum          = MAILBOX_INST_MSS_CR5A
+    {
+        .mbxReg                 = &gMboxReg,
+        .baseLocalToRemote.data = (uint8_t *)(DSS_TO_CR5A_MBX_MEM),
+        .baseRemoteToLocal.data = (uint8_t *)(CR5A_TO_DSS_MBX_MEM),
+        .boxFullIntNum          = CSL_DSS_INTR_DSS_DSP_MBOX_READ_REQ,
+        .boxEmptyIntNum         = CSL_DSS_INTR_DSS_DSP_MBOX_READ_ACK,
+        .remoteProcNum          = MAILBOX_INST_MSS_CR5A
+    },
+    {
+        .mbxReg                 = &gMboxReg,
+        .baseLocalToRemote.data = (uint8_t *)(DSS_TO_CR5B_MBX_MEM),
+        .baseRemoteToLocal.data = (uint8_t *)(CR5B_TO_DSS_MBX_MEM),
+        .boxFullIntNum          = CSL_DSS_INTR_DSS_DSP_MBOX_READ_REQ,
+        .boxEmptyIntNum         = CSL_DSS_INTR_DSS_DSP_MBOX_READ_ACK,
+        .remoteProcNum          = MAILBOX_INST_MSS_CR5B
+    }
 };
 #endif
 
@@ -202,6 +260,11 @@ int32_t Mailbox_validateLocalEndPoint(Mailbox_Instance localEndpoint)
     /* Validate local End point based on the Core. */
 #if defined (BUILD_MCU1_0)
     if (localEndpoint != MAILBOX_INST_MSS_CR5A)
+    {
+        retVal = MAILBOX_EINVAL;
+    }
+#elif defined (BUILD_MCU1_1)
+    if (localEndpoint != MAILBOX_INST_MSS_CR5B)
     {
         retVal = MAILBOX_EINVAL;
     }
@@ -252,13 +315,22 @@ int32_t Mailbox_isMultiChannelSupported(Mailbox_Instance localEndpoint, Mailbox_
     int32_t retVal = MAILBOX_EINVAL;
 #if defined (BUILD_MCU1_0)
     /* Multichannel supported only between DSS and MSS. */
-    if ((localEndpoint == MAILBOX_INST_MSS_CR5A) && (remoteEndpoint == MAILBOX_INST_DSP))
+    if ((localEndpoint == MAILBOX_INST_MSS_CR5A) &&
+        ((remoteEndpoint == MAILBOX_INST_DSP) || (remoteEndpoint == MAILBOX_INST_MSS_CR5B)))
+    {
+        retVal = MAILBOX_SOK;
+    }
+#elif defined (BUILD_MCU1_1)
+    /* Multichannel supported only between DSS and MSS. */
+    if ((localEndpoint == MAILBOX_INST_MSS_CR5B) &&
+        ((remoteEndpoint == MAILBOX_INST_MSS_CR5A) || (remoteEndpoint == MAILBOX_INST_DSP)))
     {
         retVal = MAILBOX_SOK;
     }
 #elif defined (BUILD_DSP_1)
     /* Multichannel supported only between DSS and MSS. */
-    if ((localEndpoint == MAILBOX_INST_DSP) && (remoteEndpoint == MAILBOX_INST_MSS_CR5A))
+    if ((localEndpoint == MAILBOX_INST_DSP) &&
+        ((remoteEndpoint == MAILBOX_INST_MSS_CR5A) || (remoteEndpoint == MAILBOX_INST_MSS_CR5B)))
     {
         retVal = MAILBOX_SOK;
     }
@@ -339,6 +411,9 @@ int32_t getMailboxTypeFromProcNum(uint32_t procNum, Mailbox_Instance *remoteEndp
         case MAILBOX_INST_MSS_CR5A:
             *remoteEndpoint = MAILBOX_INST_MSS_CR5A;
             break;
+        case MAILBOX_INST_MSS_CR5B:
+            *remoteEndpoint = MAILBOX_INST_MSS_CR5B;
+            break;
         case MAILBOX_INST_DSP:
             *remoteEndpoint = MAILBOX_INST_DSP;
             break;
@@ -411,21 +486,15 @@ int32_t Mailbox_getBoxEmptyRemoteInst(Mailbox_Instance *remoteEndpoint)
 void* Mailbox_getHwCfg(Mailbox_Instance remoteEndpoint)
 {
     Mailbox_HwCfg *hwCfg = NULL;
-#if defined (__TI_ARM_V7R4__)
-    /*This is local endpoint MSS*/
-    if(remoteEndpoint == MAILBOX_INST_DSP)
+    uint32_t       numRemote, i;
+    numRemote = sizeof(gRemoteHwCfg)/sizeof(Mailbox_HwCfg);
+    for (i=0; i<numRemote; i++)
     {
-        hwCfg = &gMailboxMssDssHwCfg;
+        if (gRemoteHwCfg[i].remoteProcNum == remoteEndpoint)
+        {
+            hwCfg= &gRemoteHwCfg[i];
+        }
     }
-#endif
-
-#if defined (_TMS320C6X)
-    /* This is local endpoint DSS */
-    if(remoteEndpoint == MAILBOX_INST_MSS_CR5A)
-    {
-        hwCfg = &gMailboxDssMssHwCfg;
-    }
-#endif
     return (void *)hwCfg;
 }
 
@@ -487,7 +556,7 @@ int32_t Mailbox_registerInterrupts(Mbox_Handle handle)
 
         /* Register the Interrupt Handler: Every mailbox has 2 interrupts: "mailbox full" and "mailbox empty"*/
         /************** Mailbox full ***********/
-#if defined(_TMS320C6X)
+#if defined(BUILD_DSP_1)
         priority = MAILBOX_OSAL_DEFAULT_PRIORITY;
 #else
         priority = 0x1U;
@@ -821,7 +890,7 @@ int32_t Mailbox_write(Mbox_Handle handle, const uint8_t *buffer, uint32_t size)
             memcpy((void *)(hwCfg)->baseLocalToRemote.data, (const void *)buffer, size);
         }
 
-#if defined (__TI_ARM_V7R4__)
+#if defined (BUILD_MCU1_0)
         //MEM_BARRIER(); //TODO
 #endif
     }

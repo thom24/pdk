@@ -167,7 +167,11 @@ void Test_initTask(void* arg0, void* arg1)
 
     /* Setup the default Mailbox init Parameters */
     Mailbox_initParams_init(&initParam);
+#if defined (BUILD_MCU1_0)
     initParam.localEndpoint = MAILBOX_INST_MSS_CR5A;
+#elif defined (BUILD_MCU1_1)
+    initParam.localEndpoint = MAILBOX_INST_MSS_CR5B;
+#endif
 
     /* Initialize the Mailbox */
     Mailbox_init(&initParam);

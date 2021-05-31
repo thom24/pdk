@@ -85,6 +85,41 @@ typedef uint32_t Mailbox_Instance;
 /*! \brief Mailbox Buffer Size */
 #define MAILBOX_BUFF_UNIT_SIZE       (512U)
 
+/* DSS Mailbox memory first 512 Bytes are reserved for remote core RSS.
+   Remaning memory is divided between the CR5A and CR5B cores. */
+#define DSS_MBX_RSS_OFFSET          (0)
+#define DSS_MBX_RSS_SIZE            (512)
+
+#define DSS_MBX_CR5A_OFFSET         (DSS_MBX_RSS_SIZE)
+#define DSS_MBX_CR5B_OFFSET         (DSS_MBX_RSS_SIZE + (CSL_DSS_MAILBOX_U_SIZE - DSS_MBX_RSS_SIZE)/2)
+
+/* R5 Mailbox is common betweeen CR5A and CR5B.
+ * First 512 Bytes are reserved for RSS core.
+ * Divide Remaining memory eaually between other supported remote cores. */
+#define CR5A_MBX_RSS_OFFSET         (0)
+#define CR5A_MBX_RSS_SIZE           (512)
+
+#define CR5A_MBX_DSS_OFFSET         (CR5A_MBX_RSS_SIZE)
+#define CR5A_MBX_CR5B_OFFSET        (CR5A_MBX_RSS_SIZE + (CSL_MSS_MAILBOX_U_SIZE - CR5A_MBX_RSS_SIZE)/4)
+
+#define CR5B_MBX_DSS_OFFSET         (CR5A_MBX_RSS_SIZE + (CSL_MSS_MAILBOX_U_SIZE - CR5A_MBX_RSS_SIZE)/2)
+#define CR5B_MBX_CR5A_OFFSET        (CR5A_MBX_RSS_SIZE + ((CSL_MSS_MAILBOX_U_SIZE - CR5A_MBX_RSS_SIZE)/4)*3)
+
+/* Mailbox addresses for writing from Core1 to Core2. */
+#define CR5A_TO_RSS_MBX_MEM         (CSL_RSS_CR4_MBOX_U_BASE)
+#define CR5A_TO_DSS_MBX_MEM         (CSL_DSS_MAILBOX_U_BASE + DSS_MBX_CR5A_OFFSET)
+#define CR5A_TO_CR5B_MBX_MEM        (CSL_MSS_MBOX_U_BASE + CR5B_MBX_CR5A_OFFSET)
+
+#define DSS_TO_RSS_MBX_MEM          (CSL_RSS_CR4_MBOX_U_BASE + CSL_RSS_MAILBOX_DSS_OFFSET)
+#define DSS_TO_CR5A_MBX_MEM         (CSL_MSS_MBOX_U_BASE + CR5A_MBX_DSS_OFFSET)
+#define DSS_TO_CR5B_MBX_MEM         (CSL_MSS_MBOX_U_BASE + CR5B_MBX_DSS_OFFSET)
+
+#define CR5B_TO_DSS_MBX_MEM         (CSL_DSS_MAILBOX_U_BASE + DSS_MBX_CR5B_OFFSET)
+#define CR5B_TO_CR5A_MBX_MEM        (CSL_MSS_MBOX_U_BASE + CR5A_MBX_CR5B_OFFSET)
+
+#define RSS_TO_CR5A_MBX_MEM         (CSL_MSS_MBOX_U_BASE)
+#define RSS_TO_DSS_MBX_MEM          (CSL_DSS_MAILBOX_U_BASE)
+
 /** @}*/ /* end defgroup MAILBOX_INSTANCE */
 
 /* ========================================================================== */

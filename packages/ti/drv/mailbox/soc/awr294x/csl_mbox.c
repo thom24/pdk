@@ -115,7 +115,13 @@ void CSL_Mbox_clearBoxFullInterrupt (CSL_mboxRegAddr* pMboxRegAddr, uint32_t pro
 void CSL_Mbox_triggerAckInterrupt (CSL_mboxRegAddr* pMboxRegAddr, uint32_t processorId)
 {
     /* raise interrupt to the processor */
+#if defined (BUILD_MCU1_1)
+    /* Read Done ack register for CR5A and CR5B are same.
+       CR5A is from bit 0 to 7 and CR5B is from bit 8 to 15. */
+    HW_WR_REG32(pMboxRegAddr->mboxReadDoneAck, ((1U << processorId) << 8));
+#else
     HW_WR_REG32(pMboxRegAddr->mboxReadDoneAck, (1U << processorId));
+#endif
 }
 
 uint32_t CSL_Mbox_getBoxEmptyIntr (CSL_mboxRegAddr* pMboxRegAddr)

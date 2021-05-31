@@ -114,6 +114,12 @@ volatile uint32_t testAppCallbackFlag=0;
 
 /*Global array to keep handles of channels between mss and dss*/
 Mbox_Handle  handleArray[MAILBOX_CH_ID_MAX + 1];
+
+/* Select the remote Mailbox Inst based on whether the MSS binary is
+ * run on Core A or Core B */
+uint32_t gRemoteMailboxInst = MAILBOX_INST_MSS_CR5A;
+// uint32_t gRemoteMailboxInst = MAILBOX_INST_MSS_CR5B;
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -171,7 +177,7 @@ void Test_initTask(void* arg0, void* arg1)
 
     /* Setup the default Mailbox open Parameters */
     Mailbox_openParams_init(&openParam);
-    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.remoteEndpoint = gRemoteMailboxInst;
     openParam.cfg.readMode = MAILBOX_MODE_CALLBACK;
     openParam.cfg.readCallback = Test_appCallbackFunction;
     //openParam.cfg.writeTimeout = 1000U;
@@ -490,7 +496,7 @@ void multiChannelTest (void)
 
     /****** ch 1 *********************************************/
     Mailbox_openParams_init(&openParam);
-    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.remoteEndpoint = gRemoteMailboxInst;
     openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
     openParam.cfg.chId         = MAILBOX_CH_ID_1;
     openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
@@ -514,7 +520,7 @@ void multiChannelTest (void)
 
     /****** ch 3 *********************************************/
     Mailbox_openParams_init(&openParam);
-    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.remoteEndpoint = gRemoteMailboxInst;
     openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
     openParam.cfg.chId         = MAILBOX_CH_ID_3;
     openParam.cfg.readMode     = MAILBOX_MODE_CALLBACK;
@@ -539,7 +545,7 @@ void multiChannelTest (void)
 
     /****** ch 4 *********************************************/
     Mailbox_openParams_init(&openParam);
-    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.remoteEndpoint = gRemoteMailboxInst;
     openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
     openParam.cfg.chId         = MAILBOX_CH_ID_4;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;
@@ -563,7 +569,7 @@ void multiChannelTest (void)
 
     /****** ch 7 *********************************************/
     Mailbox_openParams_init(&openParam);
-    openParam.remoteEndpoint = MAILBOX_INST_MSS_CR5A;
+    openParam.remoteEndpoint = gRemoteMailboxInst;
     openParam.cfg.chType       = MAILBOX_CHTYPE_MULTI;
     openParam.cfg.chId         = MAILBOX_CH_ID_7;
     openParam.cfg.readMode     = MAILBOX_MODE_BLOCKING;

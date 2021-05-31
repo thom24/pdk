@@ -79,6 +79,29 @@ typedef uint32_t Mailbox_Instance;
 #define MAILBOX_MAX_INST           (MAILBOX_INST_LAST + 1U)
 
 #define MAILBOX_DRIVER_POOL_NUM_ELEMENTS    (MAILBOX_MAX_INST * MAILBOX_CH_ID_MAX)
+
+/* Devide DSS Mailbox mem half between CR5A and CR5B. */
+#define DSS_MBX_CR5A_OFFSET         (0)
+#define DSS_MBX_CR5B_OFFSET         (CSL_DSS_MAILBOX_U_SIZE/2)
+
+/* R5 Mailbox is common betweeen CR5A and CR5B.
+ * Divide equally between the supported remote croes. */
+#define CR5A_MBX_DSS_OFFSET         (0)
+#define CR5A_MBX_CR5B_OFFSET        (CSL_MSS_MAILBOX_U_SIZE/4)
+
+#define CR5B_MBX_DSS_OFFSET         (CSL_MSS_MAILBOX_U_SIZE/2)
+#define CR5B_MBX_CR5A_OFFSET        ((CSL_MSS_MAILBOX_U_SIZE/4)*3)
+
+/* Mailbox addresses for writing from Core1 to Core2. */
+#define CR5A_TO_DSS_MBX_MEM         (CSL_DSS_MAILBOX_U_BASE + DSS_MBX_CR5A_OFFSET)
+#define CR5A_TO_CR5B_MBX_MEM        (CSL_MSS_MBOX_U_BASE + CR5B_MBX_CR5A_OFFSET)
+
+#define CR5B_TO_DSS_MBX_MEM         (CSL_DSS_MAILBOX_U_BASE + DSS_MBX_CR5B_OFFSET)
+#define CR5B_TO_CR5A_MBX_MEM        (CSL_MSS_MBOX_U_BASE + CR5A_MBX_CR5B_OFFSET)
+
+#define DSS_TO_CR5A_MBX_MEM         (CSL_MSS_MBOX_U_BASE + CR5A_MBX_DSS_OFFSET)
+#define DSS_TO_CR5B_MBX_MEM         (CSL_MSS_MBOX_U_BASE + CR5B_MBX_DSS_OFFSET)
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
