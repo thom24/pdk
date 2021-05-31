@@ -34,6 +34,7 @@
 #
 ifeq ($(gpadc_component_make_include), )
 
+drvgpadc_RTOS_LIST        = $(DEFAULT_RTOS_LIST)
 drvgpadc_SOCLIST          = tpr12 awr294x
 drvgpadc_tpr12_CORELIST   = mcu1_0
 drvgpadc_awr294x_CORELIST = mcu1_0
@@ -54,11 +55,7 @@ drvgpadc_LIB_LIST = $(gpadc_LIB_LIST)
 # List below all examples for allowed values
 ############################
 gpadc_EXAMPLE_LIST =
-ifeq ($(SOC),$(filter $(SOC), $(drvgpadc_SOCLIST)))
-gpadc_EXAMPLE_LIST = gpadc_testapp
-endif
 
-drvgpadc_EXAMPLE_LIST = $(gpadc_EXAMPLE_LIST)
 #
 # GPADC Modules
 #
@@ -90,25 +87,34 @@ export gpadc_$(SOC)_CORELIST
 #
 # GPADC Examples
 #
-
 # GPADC test app
-export gpadc_testapp_COMP_LIST = gpadc_testapp
-gpadc_testapp_RELPATH = ti/drv/gpadc/test
-gpadc_testapp_PATH = $(PDK_GPADC_COMP_PATH)/test
-export gpadc_testapp_BOARD_DEPENDENCY = yes
-export gpadc_testapp_CORE_DEPENDENCY = no
-export gpadc_testapp_XDC_CONFIGURO = yes
-gpadc_testapp_MAKEFILE = -f makefile
-export gpadc_testapp_COMP_LIST
-export gpadc_testapp_BOARD_DEPENDENCY
-export gpadc_testapp_CORE_DEPENDENCY
-export gpadc_testapp_XDC_CONFIGURO
-export gpadc_testapp_MAKEFILE
-gpadc_testapp_PKG_LIST = gpadc_testapp
-gpadc_testapp_INCLUDE = $(gpadc_testapp_PATH)
-export gpadc_testapp_BOARDLIST = $(drvgpadc_BOARDLIST)
-export gpadc_testapp_$(SOC)_CORELIST = $(drvgpadc_$(SOC)_CORELIST)
+define gpadc_test_RULE
 
+export gpadc_test_$(1)_COMP_LIST = gpadc_test_$(1)
+export gpadc_test_$(1)_RELPATH = ti/drv/gpadc/test
+export gpadc_test_$(1)_PATH = $(PDK_GPADC_COMP_PATH)/test
+export gpadc_test_$(1)_BOARD_DEPENDENCY = yes
+export gpadc_test_$(1)_CORE_DEPENDENCY = no
+export gpadc_test_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export gpadc_test_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export gpadc_test_$(1)_PKG_LIST = gpadc_test_$(1)
+export gpadc_test_$(1)_INCLUDE = $(gpadc_test_$(1)_PATH)
+export gpadc_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvgpadc_BOARDLIST))
+export gpadc_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvgpadc_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+gpadc_EXAMPLE_LIST += gpadc_test_$(1)
+else
+ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+gpadc_EXAMPLE_LIST += gpadc_test_$(1)
+endif
+endif
+export gpadc_test_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+gpadc_test_MACRO_LIST := $(foreach curos,$(drvgpadc_RTOS_LIST),$(call gpadc_test_RULE,$(curos)))
+
+$(eval ${gpadc_test_MACRO_LIST})
 
 export gpadc_LIB_LIST
 export gpadc_EXAMPLE_LIST

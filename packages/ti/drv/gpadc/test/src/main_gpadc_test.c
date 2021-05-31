@@ -45,8 +45,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
-#include "ti/sysbios/BIOS.h"
-#include "ti/sysbios/knl/Task.h"
+#include <ti/osal/osal.h>
+#include <ti/osal/TaskP.h>
 #include <ti/board/board.h>
 #include <ti/osal/DebugP.h>
 #include <ti/drv/uart/UART_stdio.h>
@@ -84,6 +84,7 @@ static int32_t GPADC_Temperature_Sensors_Read(void);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
+static uint8_t  gAppTskStackMain[4 * 1024] __attribute__((aligned(32)));
 
 volatile uint32_t       testSelection = 0;
 
@@ -137,9 +138,9 @@ static int32_t GPADC_Single_Channel_Read(uint8_t channelIndex)
 	CfgPtr.convMode = GPADC_ONESHOT_CONV_MODE;
 
 	CfgPtr.channelConfig[0].channelID = (GPADC_MeasExtSrcType)channelIndex;
-	CfgPtr.channelConfig[0].isConfigured = TRUE;
-	CfgPtr.channelConfig[0].isBufferedMode = FALSE;
-	CfgPtr.channelConfig[0].useLuTable = TRUE;
+	CfgPtr.channelConfig[0].isConfigured = true;
+	CfgPtr.channelConfig[0].isBufferedMode = false;
+	CfgPtr.channelConfig[0].useLuTable = true;
 
 	GPADC_Init(&CfgPtr);
 	convRes = GPADC_StartSingleChannelConversion((GPADC_MeasExtSrcType)channelIndex, &gpadc_result);
@@ -202,9 +203,9 @@ static int32_t GPADC_Group_Channel_Read(void)
 		if(channelIndex | (0x01 << index))
 		{
 			CfgPtr.channelConfig[index].channelID = (GPADC_MeasExtSrcType)index;
-			CfgPtr.channelConfig[index].isConfigured = TRUE;
-			CfgPtr.channelConfig[index].isBufferedMode = FALSE;
-			CfgPtr.channelConfig[index].useLuTable = TRUE;
+			CfgPtr.channelConfig[index].isConfigured = true;
+			CfgPtr.channelConfig[index].isBufferedMode = false;
+			CfgPtr.channelConfig[index].useLuTable = true;
 		}
 	}
 
@@ -274,14 +275,10 @@ static int32_t GPADC_Temperature_Sensors_Read(void)
 }
 
 
-int32_t main (void)
+void Test_initTask(void* arg0, void* arg1)
 {
     int32_t retVal = 0;
-	uint8_t channelIndex = 0;
-
-    /* Initialize the platform */
-    retVal = PlatformInit();
-    DebugP_assert(retVal == 0);
+    uint8_t channelIndex = 0;
 
     do
     {
@@ -343,6 +340,28 @@ int32_t main (void)
         	UART_printf("GPADC Temperature Sensor Read testing : Pass\n");
         }
     }
+}
+
+int32_t main (void)
+{
+    TaskP_Params    taskParams;
+    int32_t retVal = 0;
+
+    OS_init();
+
+    /* Initialize the platform */
+    retVal = PlatformInit();
+    DebugP_assert(retVal == 0);
+
+    /* Initialize the Task Parameters. */
+    TaskP_Params_init(&taskParams);
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof(gAppTskStackMain);
+    TaskP_create(Test_initTask, &taskParams);
+
+    /* Start OS */
+    OS_start();
+    return 0;
 }
 
 /*
