@@ -246,6 +246,10 @@ export USB_HostMsc_TestApp_INCLUDE
 export USB_HostMsc_TestApp_BOARDLIST
 export USB_HostMsc_TestApp_$(SOC)_CORELIST
 export USB_HostMsc_TestApp_MAKEFILE
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+USB_HostMsc_TestApp_SBL_APPIMAGEGEN = yes
+export USB_HostMsc_TestApp_SBL_APPIMAGEGEN
+endif
 
 #USB RTOS host MSC example with SMP enabled
 USB_HostMsc_SMP_TestApp_COMP_LIST = USB_HostMsc_TestApp
@@ -294,6 +298,10 @@ export USB_DevMsc_TestApp_PKG_LIST
 export USB_DevMsc_TestApp_INCLUDE
 export USB_DevMsc_TestApp_BOARDLIST
 export USB_DevMsc_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+USB_DevMsc_TestApp_SBL_APPIMAGEGEN = yes
+export USB_DevMsc_TestApp_SBL_APPIMAGEGEN
+endif
 
 #USB RTOS dev bulk example
 USB_DevBulk_TestApp_COMP_LIST = USB_DevBulk_TestApp
@@ -317,6 +325,11 @@ export USB_DevBulk_TestApp_PKG_LIST
 export USB_DevBulk_TestApp_INCLUDE
 export USB_DevBulk_TestApp_BOARDLIST
 export USB_DevBulk_TestApp_$(SOC)_CORELIST
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+USB_DevBulk_TestApp_SBL_APPIMAGEGEN = yes
+export USB_DevBulk_TestApp_SBL_APPIMAGEGEN
+endif
 
 # Baremetal projects
 # Bare-metal USB host project
@@ -344,6 +357,11 @@ export USB_Baremetal_HostMsc_TestApp_BOARDLIST
 export USB_Baremetal_HostMsc_TestApp_$(SOC)_CORELIST
 export USB_Baremetal_HostMsc_TestApp_MAKEFILE
 
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+USB_Baremetal_HostMsc_TestApp_SBL_APPIMAGEGEN = yes
+export USB_Baremetal_HostMsc_TestApp_SBL_APPIMAGEGEN
+endif
+
 # Bare metal USB dev MSC example
 USB_Baremetal_DevMsc_TestApp_COMP_LIST = USB_Baremetal_DevMsc_TestApp
 USB_Baremetal_DevMsc_TestApp_RELPATH = ti/drv/usb/example/build/usb_dev_msc
@@ -368,6 +386,10 @@ export USB_Baremetal_DevMsc_TestApp_INCLUDE
 export USB_Baremetal_DevMsc_TestApp_BOARDLIST
 export USB_Baremetal_DevMsc_TestApp_$(SOC)_CORELIST
 
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+USB_Baremetal_DevMsc_TestApp_SBL_APPIMAGEGEN = yes
+export USB_Baremetal_DevMsc_TestApp_SBL_APPIMAGEGEN
+endif
 
 
 # USB3.0 USB host project - RTOS
@@ -397,6 +419,10 @@ export USB_HostMsc_usb30_TestApp_BOARDLIST
 export USB_HostMsc_usb30_TestApp_$(SOC)_CORELIST
 export USB_HostMsc_usb30_TestApp_MAKEFILE
 
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+USB_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN = yes
+export USB_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN
+endif
 
 # USB3.0 USB host project - baremetal
 # only AM65x EVM supports USB3.0
@@ -425,7 +451,10 @@ export USB_Baremetal_HostMsc_usb30_TestApp_BOARDLIST
 export USB_Baremetal_HostMsc_usb30_TestApp_$(SOC)_CORELIST
 export USB_Baremetal_HostMsc_usb30_TestApp_MAKEFILE
 
-
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+USB_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN = yes
+export USB_Baremetal_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN
+endif
 
 
 
