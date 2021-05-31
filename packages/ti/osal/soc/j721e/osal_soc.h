@@ -107,6 +107,7 @@ extern "C" {
 #define OSAL_FREERTOS_MAX_CLOCKP_PER_SOC     ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_MUTEXP_PER_SOC     ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_QUEUEP_PER_SOC     ((uint32_t) 20U)
 
 #define OSAL_ARCH_TIMER_INST_FOR_TS         (TimerP_ANY)
 /**< Default timer instance for timer */

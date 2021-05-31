@@ -113,6 +113,7 @@
 #define OSAL_FREERTOS_MAX_CLOCKP_PER_SOC     ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_MUTEXP_PER_SOC     ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_QUEUEP_PER_SOC     ((uint32_t) 20U)
 
 #endif
 
@@ -231,6 +232,19 @@
 #ifndef OSAL_FREERTOS_CONFIGNUM_MAILBOX
 #define OSAL_FREERTOS_CONFIGNUM_MAILBOX (OSAL_FREERTOS_MAX_MAILBOXP_PER_SOC)
 #endif /* OSAL_FREERTOS_CONFIGNUM_MAILBOX */
+
+/*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_QUEUE
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for mutex
+ *********************************************************************/
+
+/* Set the number of QueueP_Handles for FREERTOS */
+#ifndef OSAL_FREERTOS_CONFIGNUM_QUEUE
+#define OSAL_FREERTOS_CONFIGNUM_QUEUE (OSAL_FREERTOS_MAX_QUEUEP_PER_SOC)
+#endif /* OSAL_FREERTOS_CONFIGNUM_QUEUE */
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_CONFIGNUM_SEMAPHORE

@@ -1153,7 +1153,7 @@ bool OSAL_semaphore_test()
     return true;
 }
 
-#if defined(USE_BIOS)
+#if !defined(BARE_METAL)
 
 /*
  *  ======== Queue test function ========
@@ -1246,6 +1246,14 @@ bool OSAL_queue_test()
     return true;
 }
 
+#endif
+
+
+#if defined(USE_BIOS)
+
+/*
+ *  ======== SWI test function ========
+ */
 volatile bool gFlagSwi;
 void mySwiFxn(uintptr_t arg0, uintptr_t arg1)
 {
@@ -1643,7 +1651,10 @@ void osal_test(void *arg0, void *arg1)
         OSAL_log("\n SWI tests have failed. \n");
         testFail = true;
     }
+#endif
 
+#if !defined(BARE_METAL)
+    /* No QueueP test for Baremetal */
     if(OSAL_queue_test() == true)
     {
         OSAL_log("\n Queue tests have passed. \n");

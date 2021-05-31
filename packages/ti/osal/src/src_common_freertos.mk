@@ -4,13 +4,13 @@ INCDIR = . src/freertos src/nonos arch/core
 
 SRCS_COMMON += HwiP_nonos.c SwiP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c
 SRCS_COMMON += SemaphoreP_freertos.c TaskP_freertos.c MemoryP_freertos.c Utils_freertos.c
-SRCS_COMMON += ClockP_freertos.c MailboxP_freertos.c MutexP_freertos.c
+SRCS_COMMON += ClockP_freertos.c MailboxP_freertos.c MutexP_freertos.c QueueP_freertos.c
 
 PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h \
-                      TimerP.h RegisterIntr.h EventCombinerP.h CycleprofilerP.h CacheP.h DebugP.h MailboxP.h MutexP.h ClockP.h soc/osal_soc.h soc/$(SOC) \
+                      TimerP.h RegisterIntr.h EventCombinerP.h CycleprofilerP.h CacheP.h DebugP.h MailboxP.h MutexP.h ClockP.h QueueP.h soc/osal_soc.h soc/$(SOC) \
                       src/nonos/Nonos_config.h src/nonos/HwiP_nonos.c src/nonos/SwiP_nonos.c src/nonos/CycleprofilerP_nonos.c \
                       src/nonos/RegisterIntr_nonos.c src/freertos/SemaphoreP_freertos.c src/freertos/TaskP_freertos.c src/freertos/Utils_freertos.c src/nonos/DebugP_nonos.c \
-                      src/freertos/MemoryP_freertos.c src/freertos/ClockP_freertos.c src/freertos/MailboxP_freertos.c src/freertos/MutexP_freertos.c \
+                      src/freertos/MemoryP_freertos.c src/freertos/ClockP_freertos.c src/freertos/MailboxP_freertos.c src/freertos/MutexP_freertos.c src/freertos/QueueP_freertos.c \
                       src/src_common_freertos.mk src/Module.xs \
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
                       build \
