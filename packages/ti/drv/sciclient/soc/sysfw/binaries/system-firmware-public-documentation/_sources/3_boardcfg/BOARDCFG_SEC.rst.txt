@@ -212,6 +212,12 @@ The magic number to be populated in the ``subhdr`` is ``0x4081``.
     Wildcard host ID (128U/0x80) cannot be used in the ``write_host`` field. The host ID used here must map to 
     a secure proxy thread.
 
+.. important::
+
+    Only ``write_host`` can perform writes to OTP revision (swrev, keyrev) using 
+    :ref:`TISCI_MSG_WRITE_SWREV <sec-api-wr-swrev-otp>` and 
+    :ref:`TISCI_MSG_WRITE_KEYREV <sec-api-wr-keyrev-otp>`
+
 .. warning::
 
     Even though OTP functionality is not available on GP devices, the boardcfg structure for OTP must be present.

@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                21.01.01
+                21.05.00
               </div>
             
           
@@ -522,6 +522,12 @@ writes to OTP rows</td>
 <p class="last">Wildcard host ID (128U/0x80) cannot be used in the <code class="docutils literal"><span class="pre">write_host</span></code> field. The host ID used here must map to
 a secure proxy thread.</p>
 </div>
+<div class="admonition important">
+<p class="first admonition-title">Important</p>
+<p class="last">Only <code class="docutils literal"><span class="pre">write_host</span></code> can perform writes to OTP revision (swrev, keyrev) using
+<a class="reference internal" href="../2_tisci_msgs/security/otp_revision.html#sec-api-wr-swrev-otp"><span class="std std-ref">TISCI_MSG_WRITE_SWREV</span></a> and
+<a class="reference internal" href="../2_tisci_msgs/security/otp_revision.html#sec-api-wr-keyrev-otp"><span class="std std-ref">TISCI_MSG_WRITE_KEYREV</span></a></p>
+</div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">Even though OTP functionality is not available on GP devices, the boardcfg structure for OTP must be present.
@@ -807,7 +813,7 @@ be transferred</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'21.01.01',
+            VERSION:'21.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -105,6 +105,8 @@ must not be accessible to any host, the host ID must be set to 0.
 If a row is marked as non-secure, the owning host can read the MMR by using the
 :ref:`TISCI_MSG_READ_OTP_MMR <sec-api-ext-otp-read-otp-mmr>` message.
 
+.. _extended-otp-write-api:
+
 Extended OTP Write API
 ======================
 

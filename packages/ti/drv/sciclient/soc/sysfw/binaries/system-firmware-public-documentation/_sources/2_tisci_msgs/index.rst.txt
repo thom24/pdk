@@ -64,3 +64,4 @@ Secure Management
    security/dkek_management
    security/security_handover
    security/keywriter
+   security/otp_revision

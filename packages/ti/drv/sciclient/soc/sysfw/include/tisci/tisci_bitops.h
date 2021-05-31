@@ -56,7 +56,7 @@
 
 
 /** TISCI_BIT macro for easily calculating a bit at offset (n) */
-#define TISCI_BIT(n)  (1UL << (n))
+#define TISCI_BIT(n)  (((uint32_t) 1U) << (n))
 
 
 static inline uint32_t get_field(uint32_t val, uint32_t end, uint32_t start);

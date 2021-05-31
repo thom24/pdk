@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                21.01.01
+                21.05.00
               </div>
             
           
@@ -121,6 +121,7 @@
 <li class="toctree-l3"><a class="reference internal" href="dkek_management.html">Derived KEK TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security_handover.html">Security Handover Message Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="keywriter.html">OTP Keywriter TISCI Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="otp_revision.html">OTP Revision Read/Write Message Description</a></li>
 </ul>
 </li>
 </ul>
@@ -661,6 +662,12 @@ configuration of the processor.</p>
 <p class="last">Boot vector address and config are processor specific configurations. This
 may be done in separate invocations as required in processor specific startup
 sequence.</p>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Note bits 6:0 of the R5F Vector Table address are always 0. The TISCI
+message will return failure if the bits 6:0 of the bootvector_lo are non-zero.
+Refer the section on CTRLMMR_*_BOOTVECT_LO for the R5F in the TRM.</p>
 </div>
 <p><p><strong>struct tisci_msg_proc_set_config_resp</strong></p>
 <p>Response to Processor Boot Configuration message.</p>
@@ -1695,7 +1702,7 @@ the reset to allow the processor to execute.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'21.01.01',
+            VERSION:'21.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

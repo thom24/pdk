@@ -184,7 +184,19 @@
 							"fmt": "%d",
                             "higher_bit": 1,
                             "lower_bit": 0,
-                            "name": "0x01 => Certificate length > ASN1P_IMAX, 0x02 => Issue fetching certificate, 0x3 => Issue with Hash operation, 0x4 => Hash comparison fails"
+                            "name": "Error code"
+						}
+					]
+				},
+				"0x04":{
+					"action_long": "Points of failures during run time OTP Revision read/write",
+					"action_short": "OTP_REV",
+					"msg_data": [
+						{
+							"fmt": "%d",
+                            "higher_bit": 2,
+                            "lower_bit": 0,
+                            "name": "Error code"
 						}
 					]
 				},

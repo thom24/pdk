@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                21.01.01
+                21.05.00
               </div>
             
           
@@ -124,6 +124,7 @@
 <li class="toctree-l2"><a class="reference internal" href="security_handover.html">Performing Security Handover</a></li>
 <li class="toctree-l2"><a class="reference internal" href="secure_debug.html">Secure Debug User Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="key_writer.html">Key  Writer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="otp_revision.html">Run time read/write to KEYREV and SWREV</a></li>
 </ul>
 </li>
 </ul>
@@ -266,7 +267,7 @@ must not be accessible to any host, the host ID must be set to 0.</p>
 <a class="reference internal" href="../2_tisci_msgs/security/extended_otp.html#sec-api-ext-otp-read-otp-mmr"><span class="std std-ref">TISCI_MSG_READ_OTP_MMR</span></a> message.</p>
 </div>
 <div class="section" id="extended-otp-write-api">
-<h2>Extended OTP Write API<a class="headerlink" href="#extended-otp-write-api" title="Permalink to this headline">¶</a></h2>
+<span id="id1"></span><h2>Extended OTP Write API<a class="headerlink" href="#extended-otp-write-api" title="Permalink to this headline">¶</a></h2>
 <p>System Firmware allows for only one host in the system to have write access to the
 extended OTP region. This host is specified in the security board configuration
 <a class="reference internal" href="../3_boardcfg/BOARDCFG_SEC.html#pub-boardcfg-ext-otp-config"><span class="std std-ref">Extended OTP array configuration</span></a> using the <code class="docutils literal"><span class="pre">write_host</span></code> field.</p>
@@ -327,7 +328,7 @@ to the row even after a device cold/warm reset.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'21.01.01',
+            VERSION:'21.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

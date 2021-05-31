@@ -256,6 +256,11 @@ configuration of the processor.
    may be done in separate invocations as required in processor specific startup
    sequence.
 
+.. note::
+   Note bits 6:0 of the R5F Vector Table address are always 0. The TISCI
+   message will return failure if the bits 6:0 of the bootvector_lo are non-zero.
+   Refer the section on CTRLMMR_*_BOOTVECT_LO for the R5F in the TRM.
+
 .. sysfwapistruct:: tisci_msg_proc_set_config_resp
 
 .. attention::
