@@ -1160,21 +1160,23 @@ bool OSAL_semaphore_test()
  */
 typedef struct Test_Queue_Buf_s
 {
-    Osal_Queue_Elem lnk;
-    uint32_t        index;
-    uint8_t*        pkt;
+    QueueP_Elem lnk;
+    uint32_t    index;
+    uint8_t*    pkt;
 
 } Test_Queue_Buf;
 
 bool OSAL_queue_test()
 {
-    Osal_Queue_Elem queueList;
-    Osal_Queue_Handle   handle;
+    QueueP_Params   params;
+    QueueP_Handle   handle;
     Test_Queue_Buf buf[10], *pBuf;
+    QueueP_Status   status;
     int i;
 
-    Osal_Queue_construct((void *)&queueList, (void *)NULL);
-    handle = Osal_Queue_handle((void *)&queueList);
+    QueueP_Params_init(&params);
+
+    handle = QueueP_create(&params);
 
     if (handle == NULL_PTR)
     {
@@ -1191,12 +1193,17 @@ bool OSAL_queue_test()
     /* Test 1: queue push/pop test */
     for (i = 0; i < 10; i++)
     {
-        Osal_Queue_put(handle, (Osal_Queue_Elem *)&buf[i]);
+        status = QueueP_put(handle, (QueueP_Elem *)&buf[i]);
+        if(QueueP_OK != status)
+        {
+            OSAL_log("Failed to push to queue \n");
+            return false;
+        }
     }
 
     for (i = 0; i < 10; i++)
     {
-        pBuf = (Test_Queue_Buf *)Osal_Queue_get(handle);
+        pBuf = (Test_Queue_Buf *)QueueP_get(handle);
 
         if (pBuf == NULL_PTR)
         {
@@ -1213,17 +1220,26 @@ bool OSAL_queue_test()
     }
 
     /* Test 2: queue empty test */
-    if (!Osal_Queue_empty(handle))
+    /* After poping all the pushed elements, queue should be empty */ 
+    if (QueueP_EMPTY != QueueP_isEmpty(handle))
     {
         OSAL_log("Empty queue check failed\n");
         return false;
     }
 
-    pBuf = (Test_Queue_Buf *)Osal_Queue_get(handle);
+    /* When called with an empty queue, QueueP_get should return a pointer to the queue itself */
+    pBuf = QueueP_get(handle);
 
-    if (pBuf != (Test_Queue_Buf *)&queueList)
+    if (pBuf != QueueP_getQPtr(handle))
     {
-        OSAL_log("Queue is still not empry with element %p handle %p queue struct %p\n", pBuf, handle, &queueList);
+        OSAL_log("Queue is still not empty with element %p, handle %p \n", pBuf, handle);
+        return false;
+    }
+
+    status = QueueP_delete(handle);
+    if(QueueP_OK != status)
+    {
+        OSAL_log("Failed to delete queue \n");
         return false;
     }
 

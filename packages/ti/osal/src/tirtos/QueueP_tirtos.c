@@ -30,14 +30,116 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== HwiP_tirtos.c ========
+ *  ======== QueueP_tirtos.c ========
  */
+#include <ti/osal/QueueP.h>
 
-#include <ti/osal/osal.h>
 #include <ti/sysbios/knl/Queue.h>
+#include <xdc/runtime/Memory.h>
+#include <xdc/runtime/Error.h>
 #include <ti/osal/src/tirtos/tirtos_config.h>
+
+/*
+ *  ======== QueueP_Params_init ========
+ */
+void QueueP_Params_init(QueueP_Params *params)
+{
+    if (params != NULL_PTR)
+    {
+        params->pErrBlk =  NULL_PTR;
+    }
+    return;
+}
+
+/*
+ *  ======== QueueP_create ========
+ */
+QueueP_Handle QueueP_create(const QueueP_Params *params)
+{
+    Queue_Handle queueHandle;
+    Queue_Params queueParams;
+    Error_Block       *pErrBlk = (Error_Block *) NULL_PTR;
+
+    Queue_Params_init(&queueParams);
+
+    if(params != NULL_PTR)
+    {
+        pErrBlk = (Error_Block *) params->pErrBlk;
+    }
+
+    if (pErrBlk !=  NULL_PTR)
+    {
+        Error_init(pErrBlk);
+    }
+
+    queueHandle = Queue_create(&queueParams, pErrBlk);
+
+    return ((QueueP_Handle)queueHandle);
+}
+
+/*
+ *  ======== QueueP_delete ========
+ */
+QueueP_Status QueueP_delete(QueueP_Handle handle)
+{
+    Queue_delete((Queue_Handle *)&handle);
+
+    return QueueP_OK;
+}
+
+/*
+ *  ======== QueueP_get ========
+ */
+void * QueueP_get(QueueP_Handle handle)
+{
+    return Queue_get((Queue_Handle)handle);
+}
+
+/*
+ *  ======== QueueP_put ========
+ */
+QueueP_Status QueueP_put(QueueP_Handle handle, void *elem)
+{
+    Queue_put((Queue_Handle)handle, (Queue_Elem *)elem);
+
+    return QueueP_OK;
+}
+
+/*
+ *  ======== QueueP_isEmpty ========
+ */
+QueueP_State QueueP_isEmpty(QueueP_Handle handle)
+{
+    QueueP_State ret_val;
+
+    if(Queue_empty((Queue_Handle)handle))
+    {
+        ret_val = QueueP_EMPTY;
+    } 
+    else
+    {
+        ret_val = QueueP_NOTEMPTY;  
+    }
+    
+    return (ret_val);
+}
+
+/*
+ *  ======== QueueP_getQPtr ========
+ */
+void * QueueP_getQPtr(QueueP_Handle handle)
+{
+    /* For SYSBIOS, queue pointer is the handle itself */
+    return handle;
+}
+
+/** =====================================================
+ *  NOTE: The following will be obsolete in next release
+ *  ================================================== */
+
 /*!
  *  @brief  Function to construct the queue
+ *  [NOTE: This will be obsolete in next release]
  *
  *  @param  structPtr  Pointer to the structure containing the queue element
  *
@@ -50,6 +152,7 @@ void Osal_Queue_construct(void * structPtr, const void * params)
 }
 /*!
  *  @brief  Function to return the queue handle from the structure
+ *  [NOTE: This will be obsolete in next release]
  *
  *  @param  structPtr  Pointer to the structure containing the queue element
  *
@@ -60,6 +163,7 @@ Osal_Queue_Handle Osal_Queue_handle(void *structPtr)
 }
 /*!
  *  @brief  Function to empty the queue
+ *  [NOTE: This will be obsolete in next release]
  *
  *  @param  handle   The queue handle
  *
@@ -79,6 +183,7 @@ bool Osal_Queue_empty(Osal_Queue_Handle handle)
 }
 /*!
  *  @brief  Function to return the element at the front of the queue
+ *  [NOTE: This will be obsolete in next release]
  *
  *  @param  handle   The queue handle
  *
@@ -90,6 +195,7 @@ return Queue_get(Queue_handle((Queue_Struct *)handle));
 }
 /*!
  *  @brief  Function to return the element at the front of the queue
+ *  [NOTE: This will be obsolete in next release]
  *
  *  @param  handle   The queue handle
  *
