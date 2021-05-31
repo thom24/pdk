@@ -85,6 +85,7 @@ int main(void)
 static int32_t appBoardInit(void)
 {
     Board_initCfg boardCfg;
+    App_utilsLcdCfgParams lcdParams;
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                 BOARD_INIT_UNLOCK_MMR |
@@ -92,9 +93,13 @@ static int32_t appBoardInit(void)
     Board_init(boardCfg);
 
 #if defined (SOC_AM65XX)
-    App_configureLCD(APP_OUTPUT_OLDI);
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_OLDI;
+    lcdParams.pixelClk = (uint64_t)497500000;
+    App_configureLCD(lcdParams);
 #else
-    App_configureLCD(APP_OUTPUT_HDMI);
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_HDMI;
+    lcdParams.pixelClk = (uint64_t)148500000ULL;
+    App_configureLCD(lcdParams);
 #endif
     App_configureSoC();
 
