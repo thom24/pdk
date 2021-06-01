@@ -119,7 +119,7 @@ RTOS_BIN_PATH ?= $(PDK_INSTALL_PATH)/ti/boot/sbl/example/k3MulticoreApp/binary/$
 # Example:
 # IMG1 ?= mcu1_0,$(RTOS_BIN_PATH)/sbl_baremetal_boot_test_$(SOC)_idk_mcu1_0TestApp_release.xer5f
 #
-IMG1 ?= mcu1_0,$(PDK_INSTALL_PATH)/ti/binary/ipc_echo_testb/bin/$(BOARD)/ipc_echo_testb_mcu1_0_release_strip.xer5f
+IMG1 ?= mcu1_0,$(PDK_INSTALL_PATH)/ti/binary/ipc_echo_testb_freertos/bin/$(BOARD)/ipc_echo_testb_freertos_mcu1_0_release_strip.xer5f
 IMG2 ?=
 IMG3 ?=
 IMG4 ?=
