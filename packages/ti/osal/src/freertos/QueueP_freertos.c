@@ -163,8 +163,8 @@ QueueP_Status QueueP_delete(QueueP_Handle handle)
     {
         q = &queue->queueHndl;
 
-        q->next = NULL_PTR;
-        q->prev = NULL_PTR;
+        q->next = (Queue_Elem *)NULL_PTR;
+        q->prev = (Queue_Elem *)NULL_PTR;
 
         key = HwiP_disable();
         queue->used = FALSE;
