@@ -20,6 +20,12 @@ EXTERNAL_INTERFACES = freertos
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
 endif
 
+ifeq ($(BUILD_OS_TYPE),safertos)
+CFLAGS_OS_DEFINES = -DSAFERTOS
+EXTERNAL_INTERFACES = safertos
+COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
+endif
+
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
