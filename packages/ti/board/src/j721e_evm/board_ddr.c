@@ -41,6 +41,7 @@ static LPDDR4_PrivateData gBoardDdrPd;
 /* Local function prototypes */
 static int32_t emif_ConfigureECC(void);
 
+#ifdef BOARD_DDR_ENABLE_PLL_BYPASS
 /**
  * \brief   Set DDR PLL to bypass, efectively 20MHz or 19.2MHz (on silicon).
  *
@@ -60,19 +61,20 @@ static void Board_DDRSetPLLExtBypass(void)
     regVal |= (fieldVal << 31);
     HW_WR_REG32(regAddr, regVal);
 }
+#endif
 
 /**
  * \brief   Set DDR PLL clock value
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
-static Board_STATUS Board_DDRSetPLLClock(void)
+static Board_STATUS Board_DDRSetPLLClock(uint64_t frequency)
 {
     Board_STATUS status = BOARD_SOK;
 
     status = Board_PLLInit(TISCI_DEV_DDR0,
                            TISCI_DEV_DDR0_DDRSS_DDR_PLL_CLK,
-                           DDRSS_PLL_FREQUENCY_1);
+                           frequency);
     if(status != BOARD_SOK)
     {
         BOARD_DEBUG_LOG("Failed to Set the DDR PLL Clock Frequency\n");
@@ -114,15 +116,19 @@ static void Board_DDRChangeFreqAck(void)
 
         if(reqType == 1)
         {
-            Board_DDRSetPLLClock();
+            Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_1);
         }
         else if(reqType == 2)
         {
-            Board_DDRSetPLLClock();
+            Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_2);
         }
         else if(reqType == 0)
         {
+#ifndef BOARD_DDR_ENABLE_PLL_BYPASS
+            Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_0);
+#else
             Board_DDRSetPLLExtBypass();
+#endif
         }
         else
         {
@@ -423,8 +429,13 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     HW_WR_REG32(BOARD_PLL12_LOCK0, KICK0_UNLOCK);
     HW_WR_REG32(BOARD_PLL12_LOCK1, KICK1_UNLOCK);
 
-    /* PLL should be bypassed while configuring the DDR */
+#ifdef BOARD_DDR_ENABLE_PLL_BYPASS
+    /* Bypass PLL while configuring the DDR */
     Board_DDRSetPLLExtBypass();
+#else
+    /* Set to Boot Frequency(F0) while configuring the DDR */
+    Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_0);
+#endif
 
     /* Partition5 lockkey0 */
     HW_WR_REG32(BOARD_CTRL_MMR_PART5_LOCK0, KICK0_UNLOCK);
