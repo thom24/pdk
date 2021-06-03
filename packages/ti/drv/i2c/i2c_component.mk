@@ -122,7 +122,7 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp I2C_Eeprom_TestApp I2C_Eeprom_SMP_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
+i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp I2C_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
 drvi2c_EXAMPLE_LIST = $(i2c_EXAMPLE_LIST)
 
 #
@@ -398,27 +398,6 @@ I2C_Eeprom_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
 endif
 export I2C_Eeprom_TestApp_$(SOC)_CORELIST
 export I2C_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
-
-# I2C rtos EEPROM test with SMP enabled
-I2C_Eeprom_SMP_TestApp_COMP_LIST = I2C_Eeprom_SMP_TestApp
-I2C_Eeprom_SMP_TestApp_RELPATH = ti/drv/i2c/test/eeprom_read
-I2C_Eeprom_SMP_TestApp_PATH = $(PDK_I2C_COMP_PATH)/test/eeprom_read
-I2C_Eeprom_SMP_TestApp_BOARD_DEPENDENCY = yes
-I2C_Eeprom_SMP_TestApp_CORE_DEPENDENCY = no
-I2C_Eeprom_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-I2C_Eeprom_SMP_TestApp_XDC_CONFIGURO = yes
-export I2C_Eeprom_SMP_TestApp_COMP_LIST
-export I2C_Eeprom_SMP_TestApp_BOARD_DEPENDENCY
-export I2C_Eeprom_SMP_TestApp_CORE_DEPENDENCY
-export I2C_Eeprom_SMP_TestApp_XDC_CONFIGURO
-export I2C_Eeprom_SMP_TestApp_MAKEFILE
-I2C_Eeprom_SMP_TestApp_PKG_LIST = I2C_Eeprom_SMP_TestApp
-I2C_Eeprom_SMP_TestApp_INCLUDE = $(I2C_Eeprom_SMP_TestApp_PATH)
-I2C_Eeprom_SMP_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm am64x_evm
-export I2C_Eeprom_SMP_TestApp_BOARDLIST
-I2C_Eeprom_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export I2C_Eeprom_SMP_TestApp_$(SOC)_CORELIST
-export I2C_Eeprom_SMP_TestApp_SBL_APPIMAGEGEN = yes
 
 # I2C Utility
 drv_i2c_utility_COMP_LIST = drv_i2c_utility
