@@ -98,7 +98,7 @@ drvi2c_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvi2c_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvi2c_tpr12_CORELIST  = mcu1_0 c66xdsp_1
 drvi2c_awr294x_CORELIST  = mcu1_0
-
+drvi2c_RTOS_LIST         = $(DEFAULT_RTOS_LIST)
 
 ############################
 # i2c package
@@ -122,8 +122,7 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp I2C_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
-drvi2c_EXAMPLE_LIST = $(i2c_EXAMPLE_LIST)
+i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
 
 #
 # I2C Modules
@@ -375,29 +374,47 @@ export I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST
 export I2C_Baremetal_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
 
 # I2C rtos EEPROM test
-I2C_Eeprom_TestApp_COMP_LIST = I2C_Eeprom_TestApp
-I2C_Eeprom_TestApp_RELPATH = ti/drv/i2c/test/eeprom_read
-I2C_Eeprom_TestApp_PATH = $(PDK_I2C_COMP_PATH)/test/eeprom_read
-I2C_Eeprom_TestApp_BOARD_DEPENDENCY = yes
-I2C_Eeprom_TestApp_CORE_DEPENDENCY = no
-I2C_Eeprom_TestApp_MAKEFILE = -f makefile
-I2C_Eeprom_TestApp_XDC_CONFIGURO = yes
-export I2C_Eeprom_TestApp_COMP_LIST
-export I2C_Eeprom_TestApp_BOARD_DEPENDENCY
-export I2C_Eeprom_TestApp_CORE_DEPENDENCY
-export I2C_Eeprom_TestApp_XDC_CONFIGURO
-export I2C_Eeprom_TestApp_MAKEFILE
-I2C_Eeprom_TestApp_PKG_LIST = I2C_Eeprom_TestApp
-I2C_Eeprom_TestApp_INCLUDE = $(I2C_Eeprom_TestApp_PATH)
-I2C_Eeprom_TestApp_BOARDLIST = $(drvi2c_BOARDLIST)
-export I2C_Eeprom_TestApp_BOARDLIST
+define I2C_Eeprom_TestApp_RULE
+
+I2C_Eeprom_TestApp_$(1)_COMP_LIST = I2C_Eeprom_TestApp_$(1)
+I2C_Eeprom_TestApp_$(1)_RELPATH = ti/drv/i2c/test/eeprom_read
+I2C_Eeprom_TestApp_$(1)_PATH = $(PDK_I2C_COMP_PATH)/test/eeprom_read
+I2C_Eeprom_TestApp_$(1)_BOARD_DEPENDENCY = yes
+I2C_Eeprom_TestApp_$(1)_CORE_DEPENDENCY = yes
+I2C_Eeprom_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+I2C_Eeprom_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+export I2C_Eeprom_TestApp_$(1)_COMP_LIST
+export I2C_Eeprom_TestApp_$(1)_BOARD_DEPENDENCY
+export I2C_Eeprom_TestApp_$(1)_CORE_DEPENDENCY
+export I2C_Eeprom_TestApp_$(1)_XDC_CONFIGURO
+export I2C_Eeprom_TestApp_$(1)_MAKEFILE
+I2C_Eeprom_TestApp_$(1)_PKG_LIST = I2C_Eeprom_TestApp_$(1)
+I2C_Eeprom_TestApp_$(1)_INCLUDE = $(I2C_Eeprom_TestApp_$(1)_PATH)
+I2C_Eeprom_TestApp_$(1)_BOARDLIST = = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvi2c_BOARDLIST))
+export I2C_Eeprom_TestApp_$(1)_BOARDLIST
+
 ifeq ($(SOC),$(filter $(SOC), am64x))
-I2C_Eeprom_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+    I2C_Eeprom_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else
-I2C_Eeprom_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
+    I2C_Eeprom_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(i2c_$(SOC)_CORELIST))
 endif
-export I2C_Eeprom_TestApp_$(SOC)_CORELIST
-export I2C_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
+
+    ifneq ($(1),$(filter $(1), safertos))
+        i2c_EXAMPLE_LIST += I2C_Eeprom_TestApp_$(1)
+    else
+        ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+            i2c_EXAMPLE_LIST += I2C_Eeprom_TestApp_$(1)
+        endif
+    endif
+
+export I2C_Eeprom_TestApp_$(1)_$(SOC)_CORELIST
+export I2C_Eeprom_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+#i2c_EXAMPLE_LIST is exported at the end of the file
+
+I2C_Eeprom_TestApp_MACRO_LIST := $(foreach curos,$(drvi2c_RTOS_LIST),$(call I2C_Eeprom_TestApp_RULE,$(curos)))
+$(eval ${I2C_Eeprom_TestApp_MACRO_LIST})
 
 # I2C Utility
 drv_i2c_utility_COMP_LIST = drv_i2c_utility
@@ -468,6 +485,9 @@ export I2C_Slave_TestApp_BOARDLIST
 I2C_Slave_TestApp_$(SOC)_CORELIST = $(i2c_$(SOC)_CORELIST)
 export I2C_Slave_TestApp_$(SOC)_CORELIST
 export I2C_Slave_TestApp_SBL_APPIMAGEGEN = yes
+
+# Export all supported examples
+drvi2c_EXAMPLE_LIST = $(i2c_EXAMPLE_LIST)
 
 export drvi2c_LIB_LIST
 export drvi2c_EXAMPLE_LIST

@@ -94,7 +94,7 @@ typedef struct TaskP_Params_s
     uint32_t stacksize;  /*!< The stack size of the task                  */
     void *arg0;          /*!< argument 0                                        */
     void *arg1;          /*!< argument 1                                        */
-    void *stack;         /*!< pointer to stack memory, if NULL OS will allocate internally */
+    void *stack;         /*!< pointer to stack memory, shall be non-null value */
 } TaskP_Params;
 
 /*!

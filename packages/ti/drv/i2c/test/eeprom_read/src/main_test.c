@@ -46,16 +46,7 @@
  *
  */
 
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#endif /* #ifdef USE_BIOS */
+#include <ti/osal/osal.h>
 
 #include <stdio.h>
 #include <string.h>
@@ -875,7 +866,7 @@ void test_I2C_Eeprom_TestApp_runner(void)
        @cores: mpu1_0, mcu1_0 */
 
     UNITY_BEGIN();
-#ifdef USE_BIOS
+#ifdef RTOS_ENV
     RUN_TEST(test_I2C_Eeprom_TestApp);
 #else
     RUN_TEST(test_I2C_Eeprom_BareMetal_TestApp);
@@ -886,11 +877,11 @@ void test_I2C_Eeprom_TestApp_runner(void)
 }
 #endif
 
-#ifdef USE_BIOS
+#ifdef RTOS_ENV
 /*
  *  ======== test function ========
  */
-void i2c_test(UArg arg0, UArg arg1)
+void i2c_test(void *arg0, void *arg1)
 #else
 int main ()
 #endif
@@ -904,7 +895,7 @@ int main ()
 
     if (Board_initI2C() == false)
     {
-#ifdef USE_BIOS
+#ifdef RTOS_ENV
         return;
 #else
         return(0);
@@ -944,53 +935,43 @@ int main ()
 #endif
 }
 
-#ifdef USE_BIOS
+#ifdef RTOS_ENV
 /*
  *  ======== main ========
  */
+
+/**< Stack for application task */
+#define APP_EEPROMREAD_TASK_STACK_SIZE  (0x8000)
+uint8_t gEepromReadAppStack[APP_EEPROMREAD_TASK_STACK_SIZE];
+
 int main(void)
 {
     I2c_appC7xPreInit();
-    
-#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_OMAPL137)
-    Task_Handle task;
-    Error_Block eb;
 
-    Error_init(&eb);
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
-    task = Task_create(i2c_test, NULL, &eb);
-    if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
-    }
-#endif
-
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X)
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
-
-    Error_init(&eb);
+    OS_init ();
 
     /* Initialize the task params */
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
 
     /* Set the task priority higher than the default priority (1) */
     taskParams.priority = 2;
-    taskParams.stackSize = 0x8000;
+    taskParams.stacksize = 0x8000;
+    taskParams.stack = (void *) gEepromReadAppStack;
 
-    task = Task_create(i2c_test, &taskParams, &eb);
+    task = TaskP_create(i2c_test, &taskParams);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        OS_stop();
+        OSAL_Assert(task == NULL);
     }
-#endif
 
-    /* Start BIOS */
-    BIOS_start();
+    /* Start RTOS */
+    OS_start();
     return (0);
 }
-#endif /* #ifdef USE_BIOS */
+#endif /* #ifdef RTOS_ENV */
 
 #if defined(BUILD_MPU) || defined (__C7100__)
 extern void Osal_initMmuDefault(void);
