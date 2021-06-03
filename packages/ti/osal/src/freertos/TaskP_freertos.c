@@ -236,7 +236,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
         vTaskDelete(task->taskHndl);
 
         key = HwiP_disable();
-        (void )memset( (void *)&task->taskObj, 0, sizeof(task->taskObj));
+        //(void )memset( (void *)task->taskObj, 0, sizeof(task->taskObj));
         task->used      = FALSE;
         task->taskObj   = NULL;
         task->taskHndl  = NULL;
