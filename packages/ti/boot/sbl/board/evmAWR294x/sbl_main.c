@@ -486,7 +486,7 @@ int main()
     {
         /* Try booting all cores other than the cluster running the SBL */
         if ((tpr12_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR) &&
-            (core_id != MCU1_CPU1_ID) &&
+            (core_id != MCU1_CPU0_ID) &&
             (core_id != RSS1_R4_ID))
         {
             SBL_SlaveCoreBoot(core_id, NULL, &tpr12_evmEntry);
@@ -495,10 +495,10 @@ int main()
 
 
     /* Boot the core running SBL in the end */
-    if ((tpr12_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR) ||
-        (tpr12_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] < SBL_INVALID_ENTRY_ADDR))
+    if ((tpr12_evmEntry.CpuEntryPoint[MCU1_CPU0_ID] != SBL_INVALID_ENTRY_ADDR) ||
+        (tpr12_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR))
     {
-        SBL_SlaveCoreBoot(MCU1_CPU1_ID, NULL, &tpr12_evmEntry);
+        SBL_SlaveCoreBoot(MCU1_CPU0_ID, NULL, &tpr12_evmEntry);
         /* Execute a WFI */
         SBL_localR5CoreTriggerReset();
     }
