@@ -4,8 +4,6 @@ export DISABLE_RECURSE_DEPS
 
 #Name of the directory created under packages/ti/binary/
 APP_NAME = OSAL_TestApp_$(BUILD_OS_TYPE)
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  OSAL_$(BOARD)_$(CORE)TestApp_$(BUILD_OS_TYPE)
 
 PACKAGE_SRCS_COMMON = . ../src
 

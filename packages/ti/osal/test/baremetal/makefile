@@ -9,8 +9,6 @@ endif
 
 #Name of the directory created under packages/ti/binary/
 APP_NAME = OSAL_Baremetal_TestApp
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  OSAL_Baremetal_$(BOARD)_$(CORE)TestApp
 BUILD_OS_TYPE = baremetal
 
 SRCDIR = ../src
