@@ -70,7 +70,7 @@ drvgpio_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 # under other list
 drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm am64x_evm
 drvgpio_tirtos_BOARDLIST = $(drvgpio_BOARDLIST)
-drvgpio_freertos_BOARDLIST = tpr12_evm awr294x_evm
+drvgpio_freertos_BOARDLIST = tpr12_evm awr294x_evm am65xx_evm am65xx_idk j721e_evm j7200_evm
 drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 awr294x am64x
 drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 
 drvgpio_am574x_CORELIST = c66x a15_0 ipu1_0
@@ -278,21 +278,25 @@ export GPIO_LedBlink_TestApp_$(1)_PKG_LIST = GPIO_LedBlink_TestApp_$(1)
 export GPIO_LedBlink_TestApp_$(1)_INCLUDE = $(GPIO_LedBlink_TestApp_$(1)_PATH)
 export GPIO_LedBlink_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvgpio_$(1)_BOARDLIST))
 GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvgpio_$(SOC)_CORELIST))
+
 #update the corelist for specific socs which support testcases only on few cores
 ifeq ($(SOC),$(filter $(SOC), am64x))
-GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
+    GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 endif
+
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-#TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
-GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+    #TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
+    GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
 endif
+
 export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST
+
 ifneq ($(1),$(filter $(1), safertos))
-gpio_EXAMPLE_LIST += GPIO_LedBlink_TestApp_$(1)
+    gpio_EXAMPLE_LIST += GPIO_LedBlink_TestApp_$(1)
 else
-ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-gpio_EXAMPLE_LIST += GPIO_LedBlink_TestApp_$(1)
-endif
+    ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+        gpio_EXAMPLE_LIST += GPIO_LedBlink_TestApp_$(1)
+    endif
 endif
 export GPIO_LedBlink_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 

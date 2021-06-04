@@ -1,6 +1,10 @@
 # Makefile for GPIO LED Blink unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
+ifeq ($(IS_BAREMETAL),yes)
+    BUILD_OS_TYPE = baremetal
+endif
+
 ifeq ($(BUILD_OS_TYPE),baremetal)
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
@@ -13,7 +17,7 @@ GPIO_OS_TESTPOSTFIX=
 endif
 
 ifeq ($(BUILD_OS_TYPE),tirtos)
-CFLAGS_OS_DEFINES = -DUSE_BIOS
+CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
 ifeq ($(SOC),$(filter $(SOC), am65xx))
@@ -28,7 +32,7 @@ GPIO_OS_TESTPOSTFIX=_tirtos
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
-CFLAGS_OS_DEFINES = -DFREERTOS
+CFLAGS_OS_DEFINES = -DFREERTOS -DRTOS_ENV
 EXTERNAL_INTERFACES = freertos
 COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
 GPIO_OS_TESTPREFIX=
@@ -37,8 +41,6 @@ endif
 
 #Name of the directory created under packages/ti/binary/
 APP_NAME = GPIO$(GPIO_OS_TESTPREFIX)_LedBlink_TestApp$(GPIO_OS_TESTPOSTFIX)
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME =  GPIO$(GPIO_OS_TESTPREFIX)_LedBlink_$(BOARD)_$(CORE)TestApp$(GPIO_OS_TESTPOSTFIX)
 
 SRCDIR = . src
 INCDIR = . src

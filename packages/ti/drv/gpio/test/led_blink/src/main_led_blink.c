@@ -42,12 +42,6 @@
  *
  */
 
-#if defined (SOC_AM65XX) && defined (USE_BIOS)
-/* Required for UArg definition as the task function for bios is called from
- * cfg file not using TaskP for AM65xx. */
-#include <xdc/std.h>
-#endif
-
 #include <ti/csl/arch/csl_arch.h>
 
 #include <ti/osal/osal.h>
@@ -443,13 +437,8 @@ uint32_t gpioPin;
 /*
  *  ======== test function ========
  */
-#if defined (USE_BIOS) || defined (FREERTOS)
-#if defined (SOC_AM65XX) && defined (USE_BIOS)
-/* For AM65xx the task function for bios is called from cfg file not using TaskP. */
-void gpio_test(UArg arg0, UArg arg1)
-#else
+#if defined (RTOS_ENV)
 void gpio_test(void* arg0, void* arg1)
-#endif
 {
 #else
 int main()
@@ -537,7 +526,7 @@ int main()
 #endif
 }
 
-#if defined (USE_BIOS) || defined (FREERTOS)
+#if defined (RTOS_ENV)
 /*
  *  ======== main ========
  */
