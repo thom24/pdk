@@ -9,6 +9,6 @@ endif
 
 MODULE_NAME = ipc_baremetal
 
-BUILD_OS_TYPE = baremetal
+CFLAGS_LOCAL_COMMON +=  -DIPC_EXCLUDE_CTRL_TASKS -DIPC_ONE_CONTEXT_FOR_HISRGATE_HWIGATE
 
 include src/makefile.mk

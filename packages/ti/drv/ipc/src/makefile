@@ -9,4 +9,6 @@ endif
 
 MODULE_NAME = ipc
 
+CFLAGS_LOCAL_COMMON +=  -DIPC_CFG_PRINT_ENABLE
+
 include src/makefile.mk
