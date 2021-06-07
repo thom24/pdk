@@ -63,6 +63,7 @@ uint32_t  gOsalSemAllocCnt   = 0U, gOsalSemPeak = 0U;
 uint32_t  gOsalTimerAllocCnt = 0U, gOsalTimerPeak = 0U;
 uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak = 0U;
 uint32_t  gOsalMutexAllocCnt = 0U, gOsalMutexPeak = 0U;
+uint32_t  gOsalHeapAllocCnt   = 0U, gOsalHeapPeak = 0U;
 
 #ifndef OSAL_CPU_FREQ_KHZ_DEFAULT
 #define OSAL_CPU_FREQ_KHZ_DEFAULT (400000)

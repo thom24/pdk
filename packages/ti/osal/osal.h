@@ -72,6 +72,8 @@ extern "C" {
 #include <ti/osal/MutexP.h>
 #include <ti/osal/ClockP.h>
 #include <ti/osal/DebugP.h>
+#include <ti/osal/HeapP.h>
+#include <ti/osal/MemoryP.h>
 #ifdef _TMS320C6X
 #include <ti/osal/EventCombinerP.h>
 #endif

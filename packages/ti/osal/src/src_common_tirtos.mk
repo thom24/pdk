@@ -10,12 +10,12 @@ SRCS_COMMON += TimerP_tirtos.c CycleprofilerP_tirtos.c
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 tpr12 awr294x))
-SRCS_COMMON += ClockP_tirtos.c MailboxP_tirtos.c MutexP_tirtos.c
+SRCS_COMMON += ClockP_tirtos.c MailboxP_tirtos.c MutexP_tirtos.c HeapP_tirtos.c MemoryP_tirtos.c
 endif
 
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-  SRCS_COMMON += TimerP_tirtos.c CycleprofilerP_tirtos.c MemoryP_tirtos.c
+  SRCS_COMMON += TimerP_tirtos.c CycleprofilerP_tirtos.c
 endif
 
 ifeq ($(ISA),$(filter $(ISA), a53 a72 c7x))
@@ -24,8 +24,8 @@ ifeq ($(ISA),$(filter $(ISA), a53 a72 c7x))
 endif
 
 PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h MemoryP.h CycleprofilerP.h \
-                      CacheP.h EventCombinerP.h EventP.h QueueP.h RegisterIntr.h TaskP.h TimerP.h  MailboxP.h MutexP.h ClockP.h soc/$(SOC) soc/osal_soc.h \
-                      src/tirtos/CacheP_tirtos.c src/tirtos/CycleprofilerP_tirtos.c src/tirtos/EventCombinerP_tirtos.c \
+                      CacheP.h EventCombinerP.h EventP.h QueueP.h RegisterIntr.h TaskP.h TimerP.h  MailboxP.h MutexP.h ClockP.h HeapP.h soc/$(SOC) soc/osal_soc.h \
+                      src/tirtos/CacheP_tirtos.c src/tirtos/CycleprofilerP_tirtos.c src/tirtos/EventCombinerP_tirtos.c src/tirtos/HeapP_tirtos.c \
                       src/tirtos/EventP_tirtos.c src/tirtos/HwiP_tirtos.c src/tirtos/SwiP_tirtos.c src/tirtos/MemoryP_tirtos.c \
                       src/tirtos/QueueP_tirtos.c src/tirtos/RegisterIntr_tirtos.c src/tirtos/SemaphoreP_tirtos.c src/tirtos/TaskP_tirtos.c \
                       src/tirtos/TimerP_tirtos.c src/tirtos/DebugP_tirtos.c src/tirtos/Utils_tirtos.c src/tirtos/tirtos_config.h src/src_common_tirtos.mk \
