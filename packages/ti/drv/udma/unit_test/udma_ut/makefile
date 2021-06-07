@@ -58,13 +58,19 @@ SRCS_COMMON += udma_test_event.c udma_test_flow.c
 SRCS_COMMON += udma_test_bug.c udma_test_misc.c
 SRCS_COMMON += udma_test_soc.c
 ifneq ($(SOC),$(filter $(SOC), am64x))
-SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
+  SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
 endif
 SRCS_COMMON += utils_trace.c
-ifeq ($(BUILD_OS_TYPE), tirtos)
-SRCS_COMMON += utils_prf.c utils_mem.c
+ifneq ($(BUILD_OS_TYPE), baremetal)
+  SRCS_COMMON += utils_mem.c
+  # Use baremetal utils_perf for FreeRTOS until Load OSAL is implemented 
+  ifeq ($(BUILD_OS_TYPE), tirtos)
+    SRCS_COMMON += utils_prf.c
+  else 
+    SRCS_COMMON += utils_prf_baremetal.c
+  endif
 else
-SRCS_COMMON += utils_prf_baremetal.c utils_mem_baremetal.c
+  SRCS_COMMON += utils_prf_baremetal.c utils_mem_baremetal.c
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(UDMAUT_CFLAGS) 

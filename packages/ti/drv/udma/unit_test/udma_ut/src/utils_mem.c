@@ -42,12 +42,10 @@
 /* ========================================================================== */
 
 #include <string.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Memory.h>
-#include <xdc/runtime/IHeap.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <ti/sysbios/knl/Clock.h>
 #include "udma_test.h"
+#include <ti/osal/osal.h>
+#include <ti/osal/HeapP.h>
+#include <ti/osal/MemoryP.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -72,8 +70,7 @@
 /* ========================================================================== */
 
 /* Memory pool handle */
-static HeapMem_Handle gUtilsHeapMemHandle[UTILS_MEM_HEAP_NUM] = {NULL, NULL};
-static HeapMem_Struct gUtilsHeapMemStruct[UTILS_MEM_HEAP_NUM];
+static HeapP_Handle gUtilsHeapMemHandle[UTILS_MEM_HEAP_NUM] = {NULL, NULL};
 
 static uint8_t gUtilsHeapMemMsmc[UTILS_MEM_HEAP_SIZE_MSMC] __attribute__(( aligned(128), section(".udma_buffer_msmc") ));
 static uint8_t gUtilsHeapMemDdr[UTILS_MEM_HEAP_SIZE_DDR] __attribute__(( aligned(128), section(".udma_buffer_ddr") ));
@@ -88,38 +85,34 @@ static uint32_t gUtilsMemClearBuf = FALSE;
 
 int32_t Utils_memInit(void)
 {
-    HeapMem_Params heapMemPrm;
+    HeapP_Params heapMemPrm;
 
     /* create memory pool heap - Msmc */
-    HeapMem_Params_init(&heapMemPrm);
+    HeapP_Params_init(&heapMemPrm);
     heapMemPrm.buf  = gUtilsHeapMemMsmc;
     heapMemPrm.size = sizeof (gUtilsHeapMemMsmc);
-    HeapMem_construct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_MSMC], &heapMemPrm);
-    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_MSMC] = HeapMem_handle(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_MSMC]);
+    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_MSMC] = HeapP_create(&heapMemPrm);
     GT_assert(UdmaUtTrace, gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_MSMC] != NULL);
 
     /* create memory pool heap - DDR */
-    HeapMem_Params_init(&heapMemPrm);
+    HeapP_Params_init(&heapMemPrm);
     heapMemPrm.buf  = gUtilsHeapMemDdr;
     heapMemPrm.size = sizeof (gUtilsHeapMemDdr);
-    HeapMem_construct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_DDR], &heapMemPrm);
-    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_DDR] = HeapMem_handle(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_DDR]);
+    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_DDR] = HeapP_create(&heapMemPrm);
     GT_assert(UdmaUtTrace, gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_DDR] != NULL);
 
     /* create memory pool heap - internal */
-    HeapMem_Params_init(&heapMemPrm);
+    HeapP_Params_init(&heapMemPrm);
     heapMemPrm.buf  = gUtilsHeapMemInternal;
     heapMemPrm.size = sizeof (gUtilsHeapMemInternal);
-    HeapMem_construct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_INTERNAL], &heapMemPrm);
-    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_INTERNAL] = HeapMem_handle(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_INTERNAL]);
+    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_INTERNAL] = HeapP_create(&heapMemPrm);
     GT_assert(UdmaUtTrace, gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_INTERNAL] != NULL);
 
     /* create memory pool heap - OSPI */
-    HeapMem_Params_init(&heapMemPrm);
+    HeapP_Params_init(&heapMemPrm);
     heapMemPrm.buf  = gUtilsHeapMemOspi;
     heapMemPrm.size = sizeof (gUtilsHeapMemOspi);
-    HeapMem_construct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_OSPI], &heapMemPrm);
-    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_OSPI] = HeapMem_handle(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_OSPI]);
+    gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_OSPI] = HeapP_create(&heapMemPrm);
     GT_assert(UdmaUtTrace, gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_OSPI] != NULL);
 
     gUtilsMemClearBuf = TRUE;
@@ -130,13 +123,13 @@ int32_t Utils_memInit(void)
 int32_t Utils_memDeInit(void)
 {
     /* delete memory pool heap  */
-    HeapMem_destruct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_MSMC]);
+    HeapP_delete(&gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_MSMC]);
     gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_MSMC] = NULL;
-    HeapMem_destruct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_DDR]);
+    HeapP_delete(&gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_DDR]);
     gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_DDR] = NULL;
-    HeapMem_destruct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_INTERNAL]);
+    HeapP_delete(&gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_INTERNAL]);
     gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_INTERNAL] = NULL;
-    HeapMem_destruct(&gUtilsHeapMemStruct[UTILS_MEM_HEAP_ID_OSPI]);
+    HeapP_delete(&gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_OSPI]);
     gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_OSPI] = NULL;
     return (UDMA_SOK);
 }
@@ -155,7 +148,7 @@ void *Utils_memAlloc(uint32_t heapId, uint32_t size, uint32_t align)
     }
 
     /* allocate memory  */
-        addr = HeapMem_alloc(gUtilsHeapMemHandle[heapId], size, align, NULL);
+        addr = HeapP_alloc(gUtilsHeapMemHandle[heapId], size);
     if((addr != NULL) && (TRUE == gUtilsMemClearBuf))
     {
         memset(addr, 0U, size);
@@ -177,7 +170,7 @@ int32_t Utils_memFree(uint32_t heapId, void *addr, uint32_t size)
         size = UDMA_CACHELINE_ALIGNMENT;
     }
     /* free previously allocated memory  */
-    HeapMem_free(gUtilsHeapMemHandle[heapId], addr, size);
+    HeapP_free(gUtilsHeapMemHandle[heapId], addr, size);
     return (UDMA_SOK);
 }
 
@@ -238,10 +231,9 @@ int32_t Utils_memCheckHeapStat(const Utils_MemHeapStatus *heapStat)
 
 uint32_t Utils_memGetSystemHeapFreeSpace(void)
 {
-    Memory_Stats stats;
-    extern const IHeap_Handle Memory_defaultHeapInstance;
+    MemoryP_Stats stats;
 
-    Memory_getStats(Memory_defaultHeapInstance, &stats);
+    MemoryP_getStats(&stats);
 
     return ((uint32_t) (stats.totalFreeSize));
 }
@@ -249,12 +241,12 @@ uint32_t Utils_memGetSystemHeapFreeSpace(void)
 uint32_t Utils_memGetBufferHeapFreeSpace(uint32_t heapId)
 {
     uint32_t        totalFreeSize = 0U;
-    Memory_Stats    stats;
+    HeapP_MemStats  stats;
 
     GT_assert(UdmaUtTrace, heapId < UTILS_MEM_HEAP_NUM);
     if(NULL != gUtilsHeapMemHandle[heapId])
     {
-        HeapMem_getStats(gUtilsHeapMemHandle[heapId], &stats);
+        HeapP_getHeapStats(gUtilsHeapMemHandle[heapId], &stats);
         totalFreeSize = (uint32_t) stats.totalFreeSize;
     }
     return (totalFreeSize);
