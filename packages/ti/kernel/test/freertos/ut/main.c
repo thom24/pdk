@@ -60,7 +60,8 @@ int main()
     Board_initCfg boardCfg;
     Board_STATUS  status;
 
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |  
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO |
                BOARD_INIT_UNLOCK_MMR;
 
     status = Board_init(boardCfg);

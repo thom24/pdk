@@ -55,7 +55,7 @@ extern "C" {
 /*!
  *  @brief Flash device size in bytes.
  */
-#ifdef TPR12_QT
+#if defined (tpr12_evm) || defined (awr294x_evm)
 #define S25FL_FLASH_DEVICE_SIZE        (16 * 1024 *1024)
 #else
 #define S25FL_FLASH_DEVICE_SIZE        (32 * 1024 *1024)
@@ -74,7 +74,7 @@ extern "C" {
 /*!
  *  @brief Flash device ID.
  */
-#ifdef TPR12_QT
+#if defined (tpr12_evm) || defined (awr294x_evm)
 #define S25FL_FLASH_DEVICE_ID          (0x14)
 #else
 #define S25FL_FLASH_DEVICE_ID          (0x18)

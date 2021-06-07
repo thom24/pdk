@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#if defined (BUILD_M4F) || defined(SOC_TPR12) || defined(SOC_AWR294X)
+#if defined (BUILD_M4F)
 #undef  UART_CONSOLE
 #else
 #define UART_CONSOLE

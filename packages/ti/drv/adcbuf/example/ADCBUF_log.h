@@ -1,5 +1,5 @@
 /**
- *  \file   OSAL_log.h
+ *  \file   ADCBUF_log.h
  *
  *  \brief  This file contains the prototypes for the log print functions. By
             default the prints will be directed to serial console using UART.
@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2016-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,17 +39,24 @@
  *
  */
 
-#ifndef OSAL_LOG_H
-#define OSAL_LOG_H
+#ifndef ADCBUF_LOG_H
+#define ADCBUF_LOG_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #include <stdio.h>
+#if defined (BUILD_M4F)
+#undef  UART_CONSOLE
+#else
 #define UART_CONSOLE
+#endif
 
 #if defined(UART_CONSOLE)
+    #if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
+        #define ADCBUF_log                printf
+    #else
         /* UART Header files */
         #include <ti/drv/uart/UART.h>
         #include <ti/drv/uart/UART_stdio.h>
@@ -62,18 +69,20 @@ extern "C" {
         /**********************************************************************
          ************************** Macros ************************************
          **********************************************************************/
-        #define OSAL_log                UART_printf
+        #define ADCBUF_log                UART_printf
+    #endif
 #else
     #if defined(EMPTY_OSAL_LOG)
         static void dummy_printf(const char *pcString, ...)
         {
         }
-        #define OSAL_log                dummy_printf
+        #define ADCBUF_log                dummy_printf
     #else
         #if defined(USE_BIOS)
-            #define OSAL_log                System_printf
+            #include <xdc/runtime/System.h>
+            #define ADCBUF_log                System_printf
         #else
-            #define OSAL_log                printf
+            #define ADCBUF_log                printf
         #endif /* BARE_METAL */
     #endif /* EMPTY_OSAL_LOG */
 #endif /* UART_CONSOLE */
@@ -82,4 +91,4 @@ extern "C" {
 }
 #endif
 
-#endif /* OSAL_LOG_H */
+#endif /* ADCBUF_LOG_H */

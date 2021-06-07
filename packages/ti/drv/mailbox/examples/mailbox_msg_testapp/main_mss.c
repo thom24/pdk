@@ -66,6 +66,7 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/DebugP.h>
 #include <ti/osal/TaskP.h>
+#include <ti/board/board.h>
 
 /* Mailbox Driver: */
 #include <ti/drv/mailbox/mailbox.h>
@@ -359,6 +360,16 @@ void Test_initTask(void* arg0, void* arg1)
 int main (void)
 {
     TaskP_Params    taskParams;
+    Board_initCfg boardCfg;
+    Board_STATUS  status;
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO |
+               BOARD_INIT_UNLOCK_MMR;
+
+    status = Board_init(boardCfg);
+
+    DebugP_assert(status == BOARD_SOK);
 
     OS_init();
 

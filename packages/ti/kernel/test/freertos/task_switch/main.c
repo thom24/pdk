@@ -53,7 +53,8 @@ int main()
     Board_STATUS  status;
     TaskP_Params      taskParams;
 
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |  
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO |
                BOARD_INIT_UNLOCK_MMR;
 
     status = Board_init(boardCfg);

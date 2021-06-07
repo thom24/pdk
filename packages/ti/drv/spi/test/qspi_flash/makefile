@@ -77,9 +77,6 @@ endif
 
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_DMA) $(CFLAGS_OS_DEFINES)
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-CFLAGS_LOCAL_COMMON += -DTPR12_QT
-endif
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =

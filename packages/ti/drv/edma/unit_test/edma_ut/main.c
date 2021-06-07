@@ -60,6 +60,7 @@
 #include <ti/csl/csl_types.h>
 #include "ti/osal/osal.h"
 #include "ti/osal/CycleprofilerP.h"
+#include <ti/board/board.h>
 
 #include "edma_log.h"
 
@@ -3107,8 +3108,7 @@ void Test_task(void* arg0, void* arg1)
 
     duration = difftime(end, start);
 
-    //System_EDMA_log cannot print float, use EDMA_log
-    EDMA_log("Time to run test = %f seconds\n", duration);
+    EDMA_log("Time to run test = %d seconds\n", (uint32_t) duration);
 
     /* exit BIOS */
     OS_stop();
@@ -3126,8 +3126,15 @@ void Test_task(void* arg0, void* arg1)
 void main (void)
 {
     TaskP_Params taskParams;
+    Board_STATUS boardStatus;
+    Board_initCfg boardCfg;
 
     OS_init();
+    boardCfg = (BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK |
+                BOARD_INIT_UART_STDIO);
+    boardStatus = Board_init(boardCfg);
+
+    DebugP_assert(boardStatus == BOARD_SOK);
     CycleprofilerP_init();
 
     /* Initialize the Task Parameters. */

@@ -237,12 +237,19 @@ static void Test_initTask(void* arg0, void* arg1)
     }
 
 }
-
+#include <ti/board/board.h>
 int32_t main (void)
 {
     TaskP_Params     taskParams;
+    Board_STATUS boardStatus;
+    Board_initCfg boardCfg;
 
     OS_init();
+    boardCfg = (BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK |
+                BOARD_INIT_UART_STDIO);
+    boardStatus = Board_init(boardCfg);
+
+    DebugP_assert(boardStatus == BOARD_SOK);
 
     /* Initialize the Task Parameters. */
     TaskP_Params_init(&taskParams);

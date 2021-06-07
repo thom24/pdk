@@ -42,6 +42,7 @@
 #include <unity.h>
 #include <unity_config.h>
 #include <ti/csl/soc.h>
+#include <FREERTOS_log.h>
 
 /* 
  * IMPORTANT NOTES: 
@@ -203,8 +204,8 @@ void test_taskSwitchWithSemaphore(void)
     uint32_t count; /* loop `count` times */
     uint64_t curTime;
 
-    DebugP_log0("\r\n");
-    DebugP_log0("[FreeRTOS] ping task ... start !!!\r\n");
+    FREERTOS_log("\r\n");
+    FREERTOS_log("[FreeRTOS] ping task ... start !!!\r\n");
     count = NUM_TASK_SWITCHES;
     curTime = uiPortGetRunTimeCounterValue();
     while (count--)
@@ -215,10 +216,10 @@ void test_taskSwitchWithSemaphore(void)
     curTime = uiPortGetRunTimeCounterValue() - curTime;
     curTime *= 10;
 
-        DebugP_log0("\r\n");
-        DebugP_log1("execution time for task switches = %" PRId64 " us\r\n", curTime);
-        DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
-        DebugP_log1("time per task switch (semaphore give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
+        FREERTOS_log("\r\n");
+        FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+        FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
+        FREERTOS_log("time per task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
 }
 
 /* switch between ping and pong tasks using direct-to-task notifications */
@@ -237,10 +238,10 @@ void test_taskSwitchWithTaskNotify(void)
     curTime = uiPortGetRunTimeCounterValue() - curTime;
     curTime *= 10;
 
-        DebugP_log0("\r\n");
-        DebugP_log1("execution time for task switches = %" PRId64 " us\r\n", curTime);
-        DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
-        DebugP_log1("time per task switch (direct-to-task notification give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
+        FREERTOS_log("\r\n");
+        FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+        FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
+        FREERTOS_log("time per task switch (direct-to-task notification give/take) = %d ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
 }
 
 /* just invoke the task switch logic without any semaphores or direct-to-task notifications */
@@ -258,10 +259,10 @@ void test_taskYeild(void)
     curTime = uiPortGetRunTimeCounterValue() - curTime;
     curTime *= 10;
 
-    DebugP_log0("\r\n");
-    DebugP_log1("execution time for task yields = %" PRId64 " us\r\n", curTime);
-    DebugP_log1("number of task yields = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES);
-    DebugP_log1("time per task yield = %" PRId32 " ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
+    FREERTOS_log("\r\n");
+    FREERTOS_log("execution time for task yields = %d ms\r\n", (uint32_t)(curTime/1000));
+    FREERTOS_log("number of task yields = %d \r\n", (uint32_t)NUM_TASK_SWITCHES);
+    FREERTOS_log("time per task yield = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
 }
 
 /* switch from ping to ISR and back to the same task using semaphores, here there is no task switch */
@@ -295,10 +296,10 @@ void test_taskToIsrUsingSemaphoreAndNoTaskSwitch(void)
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
 
-    DebugP_log0("\r\n");
-    DebugP_log1("execution time for task - ISR - task switches = %" PRId64 " us\r\n", curTime);
-    DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES);
-    DebugP_log1("time per task - ISR - task switch (semaphore give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
+    FREERTOS_log("\r\n");
+    FREERTOS_log("execution time for task - ISR - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+    FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES);
+    FREERTOS_log("time per task - ISR - task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
 }
 
 /* switch from ping to ISR and back to the same task using direct-to-task notify, here there is no task switch */
@@ -331,10 +332,10 @@ void test_taskToIsrUsingTaskNotifyAndNoTaskSwitch(void)
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
 
-    DebugP_log0("\r\n");
-    DebugP_log1("execution time for task - ISR - task switches = %" PRId64 " us\r\n", curTime);
-    DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES);
-    DebugP_log1("time per task - ISR - task switch (direct-to-task notification give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
+    FREERTOS_log("\r\n");
+    FREERTOS_log("execution time for task - ISR - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+    FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES);
+    FREERTOS_log("time per task - ISR - task switch (direct-to-task notification give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
 }
 
 /* switch from ping task to ISR to pong task and back to ping task using semaphores, here there is a task switch */
@@ -366,10 +367,10 @@ void test_taskToIsrUsingSemaphoreAndWithTaskSwitch(void)
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
 
-    DebugP_log0("\r\n");
-    DebugP_log1("execution time for task - ISR - task - task switches = %" PRId64 " us\r\n", curTime);
-    DebugP_log1("number of ISRs = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
-    DebugP_log1("time per task - ISR - task switch (semaphore give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime * 1000 / (2 * NUM_TASK_SWITCHES)));
+    FREERTOS_log("\r\n");
+    FREERTOS_log("execution time for task - ISR - task - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+    FREERTOS_log("number of ISRs = %d \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
+    FREERTOS_log("time per task - ISR - task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (2 * NUM_TASK_SWITCHES)));
 }
 
 /* switch from ping task to ISR to pong task and back to ping task using direct-to-task notify, here there is task switch */
@@ -401,10 +402,10 @@ void test_taskToIsrUsingTaskNotifyAndWithTaskSwitch(void)
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
 
-    DebugP_log0("\r\n");
-    DebugP_log1("execution time for task - ISR - task switches = %" PRId64 " us\r\n", curTime);
-    DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
-    DebugP_log1("time per task - ISR - task switch (direct-to-task notification give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES * 2)));
+    FREERTOS_log("\r\n");
+    FREERTOS_log("execution time for task - ISR - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+    FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
+    FREERTOS_log("time per task - ISR - task switch (direct-to-task notification give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES * 2)));
 }
 
 /* switch between ping and pong tasks and do float operations in between */
@@ -431,10 +432,10 @@ void test_taskSwitchWithFloatOperations(void)
     curTime = uiPortGetRunTimeCounterValue() - curTime;
     curTime *= 10;
 
-    DebugP_log0("\r\n");
-    DebugP_log1("execution time for task switches = %" PRId64 " us\r\n", curTime);
-    DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
-    DebugP_log1("time per task switch (semaphore give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES * 2)));
+    FREERTOS_log("\r\n");
+    FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+    FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
+    FREERTOS_log("time per task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES * 2)));
     TEST_ASSERT_UINT32_WITHIN(1, (NUM_TASK_SWITCHES / 100), (uint32_t)f);
 }
 
@@ -457,7 +458,7 @@ void test_taskDelay(void)
 
 void ping_main(void *args)
 {
-    printf("Starting freertos ut\n");
+    FREERTOS_log("Starting freertos ut\n");
     UNITY_BEGIN();
 
     RUN_TEST(test_taskSwitchWithSemaphore, 1, NULL);
@@ -474,7 +475,7 @@ void ping_main(void *args)
 
     if (Unity.TestFailures == 0)
     {
-        printf("All Tests PASSED\n");
+        FREERTOS_log("All Tests PASSED\n");
     }
     /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
     vTaskDelete(NULL);

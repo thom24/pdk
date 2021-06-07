@@ -47,7 +47,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#if defined (BUILD_M4F) || defined(SOC_TPR12) || defined(SOC_AWR294X)
+#if defined (BUILD_M4F)
 #undef  UART_CONSOLE
 #else
 #define UART_CONSOLE
@@ -55,7 +55,7 @@ extern "C" {
 
 #if defined(UART_CONSOLE)
     #if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
-        #define OSAL_log                printf
+        #define MIBSPI_log                printf
     #else
         /* UART Header files */
         #include <ti/drv/uart/UART.h>

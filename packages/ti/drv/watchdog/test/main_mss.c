@@ -335,7 +335,7 @@ static void Test_initTask(void* arg0, void* arg1)
         WATCHDOG_log("*******************************************************\n");
         WATCHDOG_log("> Enter your selection: ");
 
-        scanf("%d", &testSelection);
+        WATCHDOG_scanf("%d", &testSelection);
 
         while (testSelection == 0);
 

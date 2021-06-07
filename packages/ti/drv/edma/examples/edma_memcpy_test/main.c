@@ -53,6 +53,7 @@
 /* Driver Include files. */
 #include <ti/osal/osal.h>
 #include <ti/drv/edma/edma.h>
+#include <ti/board/board.h>
 
 #if !defined(BAREMETAL)
 #include <ti/osal/TaskP.h>
@@ -298,6 +299,15 @@ void main (void)
     volatile bool isTestPass;
 
     char instName[25];
+    Board_STATUS boardStatus;
+    Board_initCfg boardCfg;
+
+    boardCfg = (BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK |
+                BOARD_INIT_UART_STDIO);
+    boardStatus = Board_init(boardCfg);
+
+    DebugP_assert(boardStatus == BOARD_SOK);
+
     EDMA_getInstanceName(gInstanceId, &instName[0], sizeof(instName));
     EDMA_log("Testing EDMA instance #%d: %s\n", gInstanceId, instName);
     isTestPass = Test_instance(gInstanceId);

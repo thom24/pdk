@@ -41,6 +41,7 @@
 #include <FreeRTOS.h>
 #include <task.h>
 #include <ti/csl/soc.h>
+#include <FREERTOS_log.h>
 
 TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
 
@@ -161,8 +162,8 @@ void ping_main(void *args)
     uint32_t count; /* loop `count` times */
     volatile uint64_t curTime; /* time in units of 10's of usecs */
 
-    DebugP_log0("\r\n");
-    DebugP_log0("[FreeRTOS] ping task ... start !!!\r\n");
+    FREERTOS_log("\r\n");
+    FREERTOS_log("[FreeRTOS] ping task ... start !!!\r\n");
     { /* switch between ping and pong tasks using semaphores */
         count = NUM_TASK_SWITCHES;
         curTime = uiPortGetRunTimeCounterValue();
@@ -174,10 +175,10 @@ void ping_main(void *args)
         curTime = uiPortGetRunTimeCounterValue() - curTime;
         curTime *= 10;
 
-        DebugP_log0("\r\n");
-        DebugP_log1("execution time for task switches = %" PRId64 " us\r\n", curTime);
-        DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
-        DebugP_log1("time per task switch (semaphore give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
+        FREERTOS_log("\r\n");
+        FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+        FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
+        FREERTOS_log("time per task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
     }
     { /* switch between ping and pong tasks using direct-to-task notifications */
         count = NUM_TASK_SWITCHES;
@@ -190,10 +191,10 @@ void ping_main(void *args)
         curTime = uiPortGetRunTimeCounterValue() - curTime;
         curTime *= 10;
 
-        DebugP_log0("\r\n");
-        DebugP_log1("execution time for task switches = %" PRId64 " us\r\n", curTime);
-        DebugP_log1("number of task switches = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
-        DebugP_log1("time per task switch (direct-to-task notification give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
+        FREERTOS_log("\r\n");
+        FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+        FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
+        FREERTOS_log("time per task switch (direct-to-task notification give/take) = %d ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
     }
     { /* switch from ping task to ISR to pong task and back to ping task using semaphores, here there is a task switch */
         HwiP_Params hwiParams;
@@ -221,21 +222,20 @@ void ping_main(void *args)
         hwiStatus = HwiP_delete(hHwi);
         DebugP_assert(hwiStatus == HwiP_OK);
 
-        DebugP_log0("\r\n");
-        DebugP_log1("execution time for task - ISR - task - task switches = %" PRId64 " us\r\n", curTime);
-        DebugP_log1("number of ISRs = %" PRId32 " \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
-        DebugP_log1("time per task - ISR - task switch (semaphore give/take) = %" PRId32 " ns\r\n", (uint32_t)(curTime*1000/(2*NUM_TASK_SWITCHES)));
+        FREERTOS_log("\r\n");
+        FREERTOS_log("execution time for task - ISR - task - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
+        FREERTOS_log("number of ISRs = %d \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
+        FREERTOS_log("time per task - ISR - task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime*1000/(2*NUM_TASK_SWITCHES)));
     }
 
     /* delay some time, just to show delay works */
     vTaskDelay( 100 / portTICK_PERIOD_MS);
     vTaskDelay( 101 / portTICK_PERIOD_MS);
 
-    DebugP_log0("\r\n");
-    DebugP_log0("[FreeRTOS] ping task ... done !!!\r\n");
-    DebugP_log0("\r\n");
-    DebugP_log0("All tests have passed!!\r\n");
-    printf("All tests have passed!!\r\n");
+    FREERTOS_log("\r\n");
+    FREERTOS_log("[FreeRTOS] ping task ... done !!!\r\n");
+    FREERTOS_log("\r\n");
+    FREERTOS_log("All tests have passed!!\r\n");
 }
 
 void pong_main(void *args)

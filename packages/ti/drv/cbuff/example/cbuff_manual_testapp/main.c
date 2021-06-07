@@ -71,7 +71,7 @@
 /* Cbuff Driver: */
 #include <ti/drv/cbuff/cbuff.h>
 #include <ti/drv/cbuff/src/cbuff_internal.h>
-
+#include "CBUFF_log.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -164,6 +164,7 @@ static bool Test_BoardInit(void)
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_MODULE_CLOCK  |
+               BOARD_INIT_UART_STDIO    |
                BOARD_INIT_UNLOCK_MMR;
 
     status = Board_init(boardCfg);
@@ -384,7 +385,7 @@ int32_t Test_Cbuff
     cbuffHandle = CBUFF_init (&initCfg, &errCode);
     if (cbuffHandle == NULL)
     {
-        printf ("Error: CBUFF Driver initialization failed [Error code %d]\n", errCode);
+        CBUFF_log ("Error: CBUFF Driver initialization failed [Error code %d]\n", errCode);
         return -1;
     }
 
@@ -424,53 +425,53 @@ int32_t Test_Cbuff
     sessionHandle = CBUFF_open (cbuffHandle, &sessionCfg, &errCode);
     if (sessionHandle == NULL)
     {
-        printf ("Error: Unable to create the session [Error code %d]\n", errCode);
+        CBUFF_log ("Error: Unable to create the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Debug Message: Display the EDMA Channel Usage for the test. */
-    printf ("Debug: EDMA Channel Usage = %d\n", gCBUFFEDMAChannelResourceCounter);
+    CBUFF_log ("Debug: EDMA Channel Usage = %d\n", gCBUFFEDMAChannelResourceCounter);
 
     /* Activate the session: */
     if (CBUFF_activateSession (sessionHandle, &errCode) < 0)
     {
-        printf ("Error: Unable to activate the session [Error code %d]\n", errCode);
+        CBUFF_log ("Error: Unable to activate the session [Error code %d]\n", errCode);
         return -1;
     }
 
     while (gCBUFFSwTriggerFrameDoneCounter != 1)
     {
-        printf("waiting for frameDone interrupt : %d\n", gCBUFFSwTriggerFrameDoneCounter);
+        CBUFF_log("waiting for frameDone interrupt : %d\n", gCBUFFSwTriggerFrameDoneCounter);
         TaskP_sleep(1);
     }
 
-    printf("Received frameDone interrupt : %d\n", gCBUFFSwTriggerFrameDoneCounter);
+    CBUFF_log("Received frameDone interrupt : %d\n", gCBUFFSwTriggerFrameDoneCounter);
 
-    printf("Data is transmitted over LVDS successfully.\n");
+    CBUFF_log("Data is transmitted over LVDS successfully.\n");
 
 
     /* Deactivate the session: */
     if (CBUFF_deactivateSession (sessionHandle, &errCode) < 0)
     {
-        printf ("Error: Unable to deactivate the session [Error code %d]\n", errCode);
+        CBUFF_log ("Error: Unable to deactivate the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Delete the session: */
     if (CBUFF_close (sessionHandle, &errCode) < 0)
     {
-        printf ("Error: Unable to delete the session [Error code %d]\n", errCode);
+        CBUFF_log ("Error: Unable to delete the session [Error code %d]\n", errCode);
         return -1;
     }
 
     /* Sanity Check: Ensure that all the EDMA resources have been cleaned up */
     if (gCBUFFEDMAChannelResourceCounter != 0)
     {
-        printf ("Error: EDMA Channel Memory leak detected\n");
+        CBUFF_log ("Error: EDMA Channel Memory leak detected\n");
         return -1;
     }
 
-    printf("---End of the Test---.\n");
+    CBUFF_log("---End of the Test---.\n");
 
     return 0;
 }
@@ -487,7 +488,7 @@ void Test_initTask(void* arg0, void* arg1)
 
     char instName[25];
     EDMA_getInstanceName(gInstanceId, &instName[0], sizeof(instName));
-    printf("EDMA instance #%d: %s\n", gInstanceId, instName);
+    CBUFF_log("EDMA instance #%d: %s\n", gInstanceId, instName);
 
     EDMA3CCInitParams_init(&initParam);
     initParam.initParamSet = TRUE;
@@ -501,7 +502,7 @@ void Test_initTask(void* arg0, void* arg1)
     	edmaHandle = EDMA_open(gInstanceId, &errCode, &instanceInfo);
         if (edmaHandle == NULL)
         {
-            printf("Error: Unable to open the edma Instance, erorCode = %d\n", errCode);
+            CBUFF_log("Error: Unable to open the edma Instance, erorCode = %d\n", errCode);
         }
     }
 
@@ -516,7 +517,7 @@ void Test_initTask(void* arg0, void* arg1)
     errCode = EDMA_configErrorMonitoring(edmaHandle, &errorConfig);
     if (errCode != EDMA_NO_ERROR)
     {
-        printf("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errCode);
+        CBUFF_log("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", errCode);
         return;
     }
 
@@ -548,9 +549,9 @@ int main (void)
     HW_WR_REG32((CSL_TOP_CTRL_U_BASE + CSL_TOP_CTRL_MDO_CTRL), 0x10);
 
     /* Debug Message: */
-    printf ("***********************************************\n");
-    printf ("************** CBUFF Unit Tests ***************\n");
-    printf ("***********************************************\n");
+    CBUFF_log ("***********************************************\n");
+    CBUFF_log ("************** CBUFF Unit Tests ***************\n");
+    CBUFF_log ("***********************************************\n");
 
     /* Initialize the Task Parameters. */
     TaskP_Params_init(&taskParams);

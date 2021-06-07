@@ -14,7 +14,7 @@ CFLAGS_TEST_DEFINES =
 
 
 SRCDIR = .
-INCDIR = .
+INCDIR = . ../
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
@@ -44,7 +44,7 @@ APPEND_LNKCMD_FILE = ../build/$(SOC)/linker_$(ISA).cmd
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = .
+PACKAGE_SRCS_COMMON = . ../FREERTOS_log.h
 SRCS_COMMON += main.c test_freertos.c
 
 SRCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config

@@ -52,7 +52,7 @@ extern "C" {
  ************************** Macros ************************************
  **********************************************************************/
 /* Enable the below macro to have prints on the IO Console */
-#ifdef TPR12_QT
+#ifdef tpr12_qt
 #define IO_CONSOLE
 #endif
 
@@ -60,7 +60,6 @@ extern "C" {
 /* UART Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#include <ti/csl/soc/am572x/src/cslr_control_core_pad_io.h>
 
 /**********************************************************************
  ************************** Global Variables **************************

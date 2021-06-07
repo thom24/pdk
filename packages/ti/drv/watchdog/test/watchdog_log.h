@@ -47,11 +47,7 @@ extern "C" {
 #endif
 
 #include <stdio.h>
-#if defined(SOC_TPR12) || defined(SOC_AWR294X)
-#undef  UART_CONSOLE
-#else
 #define UART_CONSOLE
-#endif
 
 #if defined(UART_CONSOLE)
     /* UART Header files */
@@ -67,8 +63,10 @@ extern "C" {
      ************************** Macros ************************************
      **********************************************************************/
     #define WATCHDOG_log                UART_printf
+    #define WATCHDOG_scanf              UART_scanFmt
 #else
     #define WATCHDOG_log                printf
+    #define WATCHDOG_scanf              scanf
 #endif /* UART_CONSOLE */
 
 #ifdef __cplusplus

@@ -164,6 +164,7 @@ freertos_test_task_switch_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_task_switch_BOARDLIST
 freertos_test_task_switch_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
 export freertos_test_task_switch_$(SOC)_CORELIST
+export freertos_test_task_switch_SBL_APPIMAGEGEN = yes
 
 # freertos rtos unit test app
 freertos_test_ut_COMP_LIST = freertos_test_ut
@@ -185,6 +186,7 @@ freertos_test_ut_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_ut_BOARDLIST
 freertos_test_ut_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
 export freertos_test_ut_$(SOC)_CORELIST
+export freertos_test_ut_SBL_APPIMAGEGEN = yes
 
 # freertos rtos posix test app
 freertos_test_posix_COMP_LIST = freertos_test_posix

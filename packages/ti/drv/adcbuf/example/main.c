@@ -50,8 +50,10 @@
 /* ADCBUF Driver: */
 #include <ti/drv/adcbuf/adcbuf.h>
 #include <ti/drv/edma/edma.h>
+#include <ti/osal/DebugP.h>
+#include <ti/board/board.h>
 #include <ti/csl/soc.h>
-
+#include "ADCBUF_log.h"
 
 /* ========================================================================== */
 /*                                 Macros                                     */
@@ -240,7 +242,7 @@ void Test_ADCBUFContDataPathWithTestPattern(ADCBuf_Handle handle, ADCBuf_dataFor
 
     /* Start Test Pattern generation */
     if ((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_START_TEST_PATTERN, (void *)&numOfClks)) < 0)
-       printf("Error: ADCBufMMWave_CMD_START_TEST_PATTERN failed with [Error=%d]\n", retVal);
+       ADCBUF_log("Error: ADCBufMMWave_CMD_START_TEST_PATTERN failed with [Error=%d]\n", retVal);
 }
 
 /**
@@ -268,7 +270,7 @@ void Test_ADCBUFContModeConfig(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataF
 
     /* Configure ADC buffer data format */
     if ((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_CONF_DATA_FORMAT, (void *)ptrDataFormat)) < 0)
-        printf("Error: ADCBufMMWave_CMD_CONF_DATA_FORMAT failed with [Error=%d]\n", retVal);
+        ADCBUF_log("Error: ADCBufMMWave_CMD_CONF_DATA_FORMAT failed with [Error=%d]\n", retVal);
 
     /* Enable all 4  Rx Channel */
     for (channel=0; channel < NUM_RX_CHANNEL; channel++)
@@ -276,7 +278,7 @@ void Test_ADCBUFContModeConfig(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataF
         rxChanConf.channel = channel;
         rxChanConf.offset    = offset;
         if((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_CHANNEL_ENABLE, (void *)&rxChanConf)) < 0)
-            printf("Error: ADCBufMMWave_CMD_CHANNEL_ENABLE failed for channel %d offset =0x%x with [Error = %d]\n",
+            ADCBUF_log("Error: ADCBufMMWave_CMD_CHANNEL_ENABLE failed for channel %d offset =0x%x with [Error = %d]\n",
                                      channel, offset, retVal);
         /* Test purpose only : Verify channel address */
         {
@@ -288,7 +290,7 @@ void Test_ADCBUFContModeConfig(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataF
 
                 if(channelAddr != offset)
                 {
-                    printf("Error: ADCBuf_getChanBufAddr() return mismatched channel(%d) buffer address [%x: %x]\n",
+                    ADCBUF_log("Error: ADCBuf_getChanBufAddr() return mismatched channel(%d) buffer address [%x: %x]\n",
                                  channel, offset, channelAddr);
 
                     retVal = -1;
@@ -296,7 +298,7 @@ void Test_ADCBUFContModeConfig(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataF
             }
             else
             {
-                printf("Error: ADCBuf_getChanBufAddr failed for channel %d with [Error = %d]\n",
+                ADCBUF_log("Error: ADCBuf_getChanBufAddr failed for channel %d with [Error = %d]\n",
                                          channel, retVal);
             }
         }
@@ -307,12 +309,12 @@ void Test_ADCBUFContModeConfig(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataF
     /* Configure ADC buffer in continuous mode */
     arg = 1;
     if ((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_SET_CONTINUOUS_MODE, (void *)&arg)) < 0)
-        printf("Error: ADCBufMMWave_CMD_SET_CONTINUOUS_MODE failed with [Error=%d]\n", retVal);
+        ADCBUF_log("Error: ADCBufMMWave_CMD_SET_CONTINUOUS_MODE failed with [Error=%d]\n", retVal);
 
     /* Start the continuous streaming mode in ADCBUFF */
     numSamples = gADCBUFTestParam.numSamples;
     if ((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_START_CONTINUOUS_MODE, (void *)&numSamples)) < 0)
-        printf("Error: ADCBufMMWave_CMD_START_CONTINUOUS_MODE failed with [Error=%d]\n", retVal);
+        ADCBUF_log("Error: ADCBufMMWave_CMD_START_CONTINUOUS_MODE failed with [Error=%d]\n", retVal);
 
     /* Configure Test Pattern generation */
     testPatternConf.period = 255;
@@ -328,7 +330,7 @@ void Test_ADCBUFContModeConfig(ADCBuf_Handle handle, ADCBuf_dataFormat *ptrDataF
 
     /* Send control command to driver */
     if ( (retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_CONF_TEST_PATTERN, (void *)&testPatternConf)) < 0)
-        printf("Error: ADCBufMMWave_CMD_CONF_TEST_PATTERN failed with [Error=%d]\n", retVal);
+        ADCBUF_log("Error: ADCBufMMWave_CMD_CONF_TEST_PATTERN failed with [Error=%d]\n", retVal);
 
 }
 
@@ -404,7 +406,7 @@ int32_t Test_ADCBUFConfigEdma(EDMA_Handle handle, uint8_t chId,
 
     if ((errorCode = EDMA_configChannel(handle, &config, false)) != EDMA_NO_ERROR)
     {
-        printf("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
+        ADCBUF_log("Error: EDMA_configChannel() failed with error code = %d\n", errorCode);
         goto Exit;
     }
 
@@ -446,19 +448,19 @@ static int32_t Test_ADCBUFEDMA_setup_shadow_link (EDMA_Handle handle, uint32_t c
     paramConfig.transferCompletionCallbackFxnArg = (uintptr_t) handle;
     if ((errorCode = EDMA_configParamSet(handle, linkChId, &paramConfig)) != EDMA_NO_ERROR)
     {
-        printf("Error: EDMA_configParamSet() failed with error code = %d\n", errorCode);
+        ADCBUF_log("Error: EDMA_configParamSet() failed with error code = %d\n", errorCode);
         goto exit;
     }
 
     if ((errorCode = EDMA_linkParamSets(handle, chId, linkChId)) != EDMA_NO_ERROR)
     {
-        printf("Error: EDMA_linkParamSets() failed with error code = %d\n", errorCode);
+        ADCBUF_log("Error: EDMA_linkParamSets() failed with error code = %d\n", errorCode);
         goto exit;
     }
 
     if ((errorCode = EDMA_linkParamSets(handle, linkChId, linkChId)) != EDMA_NO_ERROR)
     {
-        printf("Error: EDMA_linkParamSets() failed with error code = %d\n", errorCode);
+        ADCBUF_log("Error: EDMA_linkParamSets() failed with error code = %d\n", errorCode);
         goto exit;
     }
 
@@ -494,7 +496,7 @@ uint32_t Test_ADCBUFVerifyDataPattern(void *memAddr, ADCBuf_dataFormat *ptrDataF
     uint32_t             numSamples;
 
     ptrDataAddress = (volatile uint32_t *)memAddr;
-    printf("Debug: First 4 32 bit words 0x%x     0x%x    0x%x    0x%x\n", ptrDataAddress[0],
+    ADCBUF_log("Debug: First 4 32 bit words 0x%x     0x%x    0x%x    0x%x\n", ptrDataAddress[0],
                         ptrDataAddress[1], ptrDataAddress[2], ptrDataAddress[3]);
 
     /* Set the address offset */
@@ -646,7 +648,7 @@ void Test_ADCBUFCloseEDMA(EDMA_Handle handle)
 
     if ((retVal = EDMA_close(handle)) != EDMA_NO_ERROR)
     {
-        printf("Debug: edma Instance %p closing error, errorCode = %d\n", handle, retVal);
+        ADCBUF_log("Debug: edma Instance %p closing error, errorCode = %d\n", handle, retVal);
     }
 }
 
@@ -673,17 +675,17 @@ static int32_t Test_ADCBUFApiTest(void)
     handle = ADCBuf_open(0, &params);
     if (handle == NULL)
     {
-        printf("Error: Unable to open the ADCBUF Instance\n");
+        ADCBUF_log("Error: Unable to open the ADCBUF Instance\n");
         retVal = -1;
         goto Exit;
     }
-    printf("Debug: ADCBUF Instance(0) %p has been opened successfully\n", handle);
+    ADCBUF_log("Debug: ADCBUF Instance(0) %p has been opened successfully\n", handle);
 
     /**************************************************************************
      * Test: Graceful shutdown
      **************************************************************************/
     ADCBuf_close(handle);
-    printf("Debug: ADCBUF Instance %p has been closed successfully\n", handle);
+    ADCBUF_log("Debug: ADCBUF Instance %p has been closed successfully\n", handle);
 
 Exit:
     return retVal;
@@ -717,30 +719,30 @@ static int32_t Test_ADCBUFCmdParamsCheckTest(void)
     handle = ADCBuf_open(0, &params);
     if (handle == NULL)
     {
-        printf("Error: Unable to open the ADCBUF Instance\n");
+        ADCBUF_log("Error: Unable to open the ADCBUF Instance\n");
         testResult = -1;
         goto Exit;
     }
-    printf("Debug: ADCBUF Instance(0) %p has been opened successfully\n", handle);
+    ADCBUF_log("Debug: ADCBUF Instance(0) %p has been opened successfully\n", handle);
 
     /* Params check Test */
     command = ADCBufMMWave_CMD_SET_SRC;
     arg = 0x5;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d with arg=%d\n", command, arg);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg=%d\n", command, arg);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg=%d\n", command, arg);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg=%d\n", command, arg);
         testResult = -1;
     }
 
     command = ADCBufMMWave_CMD_SET_CONTINUOUS_MODE;
     arg = 0x8;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d with arg=%d\n", command, arg);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg=%d\n", command, arg);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg=%d\n", command, arg);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg=%d\n", command, arg);
         testResult = -1;
     }
 
@@ -748,30 +750,30 @@ static int32_t Test_ADCBUFCmdParamsCheckTest(void)
     memset ((void *)&dataFormat, 0, sizeof(dataFormat));
     dataFormat.adcOutFormat = 2;
     if ((retVal = ADCBuf_control(handle, command, (void *)&dataFormat)) < 0)
-        printf("Debug: Passed the param check for command=%d with adcOutFormat=%d \n", command, dataFormat.adcOutFormat);
+        ADCBUF_log("Debug: Passed the param check for command=%d with adcOutFormat=%d \n", command, dataFormat.adcOutFormat);
     else
     {
-        printf("Error: Failed the param check for command=%d with adcOutFormat=%d\n", command, dataFormat.adcOutFormat);
+        ADCBUF_log("Error: Failed the param check for command=%d with adcOutFormat=%d\n", command, dataFormat.adcOutFormat);
         testResult = -1;
     }
 
     memset ((void *)&dataFormat, 0, sizeof(dataFormat));
     dataFormat.sampleInterleave = 2;
     if ((retVal = ADCBuf_control(handle, command, (void *)&dataFormat)) < 0)
-        printf("Debug: Passed the param check for command=%d with sampleInterleave=%d\n", command, dataFormat.sampleInterleave);
+        ADCBUF_log("Debug: Passed the param check for command=%d with sampleInterleave=%d\n", command, dataFormat.sampleInterleave);
     else
     {
-        printf("Error: Failed the param check for command=%d with sampleInterleave=%d\n", command, dataFormat.sampleInterleave);
+        ADCBUF_log("Error: Failed the param check for command=%d with sampleInterleave=%d\n", command, dataFormat.sampleInterleave);
         testResult = -1;
     }
 
     memset ((void *)&dataFormat, 0, sizeof(dataFormat));
     dataFormat.channelInterleave = 2;
     if ((retVal = ADCBuf_control(handle, command, (void *)&dataFormat)) < 0)
-        printf("Debug: Passed the param check for command=%d channelInterleave=%d\n", command, dataFormat.channelInterleave);
+        ADCBUF_log("Debug: Passed the param check for command=%d channelInterleave=%d\n", command, dataFormat.channelInterleave);
     else
     {
-        printf("Error: Failed the param check for command=%d with channelInterleave=%d\n", command, dataFormat.channelInterleave);
+        ADCBUF_log("Error: Failed the param check for command=%d with channelInterleave=%d\n", command, dataFormat.channelInterleave);
         testResult = -1;
     }
 
@@ -779,10 +781,10 @@ static int32_t Test_ADCBUFCmdParamsCheckTest(void)
     memset ((void *)&cqConf, 0, sizeof(cqConf));
     cqConf.cqDataWidth= 5;
     if ((retVal = ADCBuf_control(handle, command, (void *)&cqConf)) < 0)
-        printf("Debug: Passed the param check for command=%d with cqDataWidth=%d \n", command, cqConf.cqDataWidth);
+        ADCBUF_log("Debug: Passed the param check for command=%d with cqDataWidth=%d \n", command, cqConf.cqDataWidth);
     else
     {
-        printf("Error: Failed the param check for command=%d with cqDataWidth=%d\n", command, cqConf.cqDataWidth);
+        ADCBUF_log("Error: Failed the param check for command=%d with cqDataWidth=%d\n", command, cqConf.cqDataWidth);
         testResult = -1;
     }
 
@@ -790,20 +792,20 @@ static int32_t Test_ADCBUFCmdParamsCheckTest(void)
     memset ((void *)&cqConf, 0, sizeof(cqConf));
     cqConf.cq96BitPackEn = 4;
     if ((retVal = ADCBuf_control(handle, command, (void *)&cqConf)) < 0)
-        printf("Debug: Passed the param check for command=%d with cq96BitPackEn=%d \n", command, cqConf.cqDataWidth);
+        ADCBUF_log("Debug: Passed the param check for command=%d with cq96BitPackEn=%d \n", command, cqConf.cqDataWidth);
     else
     {
-        printf("Error: Failed the param check for command=%d with cq96BitPackEn=%d\n", command, cqConf.cq96BitPackEn);
+        ADCBUF_log("Error: Failed the param check for command=%d with cq96BitPackEn=%d\n", command, cqConf.cq96BitPackEn);
         testResult = -1;
     }
 
     command = ADCBufMMWave_CMD_START_CONTINUOUS_MODE;
     arg = 0x1U<<16;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d \n", command);
+        ADCBUF_log("Debug: Passed the param check for command=%d \n", command);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg=%d\n", command, arg);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg=%d\n", command, arg);
         testResult = -1;
     }
 
@@ -811,10 +813,10 @@ static int32_t Test_ADCBUFCmdParamsCheckTest(void)
     memset ((void *)&rxChanConf, 0, sizeof(rxChanConf));
     rxChanConf.channel = 6;
     if ((retVal = ADCBuf_control(handle, command, (void *)&rxChanConf)) < 0)
-        printf("Debug: Passed the param check for command=%d with channel = %d\n", command, rxChanConf.channel);
+        ADCBUF_log("Debug: Passed the param check for command=%d with channel = %d\n", command, rxChanConf.channel);
     else
     {
-        printf("Error: Failed the param check for command=%d with channel=%d\n", command, rxChanConf.channel);
+        ADCBUF_log("Error: Failed the param check for command=%d with channel=%d\n", command, rxChanConf.channel);
         testResult = -1;
     }
 
@@ -822,40 +824,40 @@ static int32_t Test_ADCBUFCmdParamsCheckTest(void)
     rxChanConf.channel = 2;
     rxChanConf.offset = 0x1U << 15U;
     if ((retVal = ADCBuf_control(handle, command, (void *)&rxChanConf)) < 0)
-        printf("Debug: Passed the param check for command=%d with offset = %d\n", command, rxChanConf.offset);
+        ADCBUF_log("Debug: Passed the param check for command=%d with offset = %d\n", command, rxChanConf.offset);
     else
     {
-        printf("Error: Failed the param check for command=%d with offset=%d\n", command, rxChanConf.offset);
+        ADCBUF_log("Error: Failed the param check for command=%d with offset=%d\n", command, rxChanConf.offset);
         testResult = -1;
     }
 
     command = ADCBufMMWave_CMD_SET_CHIRP_THRESHHOLD;
     arg = 35;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg = %d , retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg = %d , retVal=%d\n", command, arg, retVal);
         testResult = -1;
     }
 
     command = ADCBufMMWave_CMD_SET_PING_CHIRP_THRESHHOLD;
     arg = 35;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
         testResult = -1;
     }
 
     command = ADCBufMMWave_CMD_SET_PONG_CHIRP_THRESHHOLD;
     arg = 35;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
         testResult = -1;
     }
 
@@ -863,37 +865,37 @@ static int32_t Test_ADCBUFCmdParamsCheckTest(void)
     arg = 0xc;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
     {
-        printf("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
         testResult = -1;
     }
     else
     {
-        printf("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
     }
 
     command = ADCBufMMWave_CMD_CHANNEL_DISABLE;
     arg = 0x1c;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
         testResult = -1;
     }
 
     command = ADCBufMMWave_CMD_CHANNEL_DISABLE;
     arg = 0x0;
     if ((retVal = ADCBuf_control(handle, command, (void *)&arg)) < 0)
-        printf("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Debug: Passed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
     else
     {
-        printf("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
+        ADCBUF_log("Error: Failed the param check for command=%d with arg = %d, retVal=%d\n", command, arg, retVal);
         testResult = -1;
     }
 
     /* Close ADCbuf driver */
     ADCBuf_close(handle);
-    printf("Debug: ADCBUF Instance %p has been closed successfully\n", handle);
+    ADCBUF_log("Debug: ADCBUF Instance %p has been closed successfully\n", handle);
 
 Exit:
     return testResult;
@@ -928,10 +930,10 @@ EDMA_Handle Test_ADCBUFInitEDMA(void)
     retVal = EDMA_init(gInstanceId, &initParam);
     if (retVal != EDMA_NO_ERROR)
     {
-        printf ("Debug: EDMA instance 0 initialization returned error %d\n", retVal);
+        ADCBUF_log ("Debug: EDMA instance 0 initialization returned error %d\n", retVal);
         return NULL;
     }
-    printf ("Debug: EDMA instance 0 has been initialized\n");
+    ADCBUF_log ("Debug: EDMA instance 0 has been initialized\n");
 
     memset(&EDMAErrorInfo, 0, sizeof(EDMAErrorInfo));
     memset(&EDMATransferControllerErrorInfo, 0, sizeof(EDMATransferControllerErrorInfo));
@@ -940,7 +942,7 @@ EDMA_Handle Test_ADCBUFInitEDMA(void)
     EdmaHandle = EDMA_open(gInstanceId, &retVal, &instanceInfo);
     if (EdmaHandle == NULL)
     {
-        printf("Error: Unable to open the edma Instance, erorCode = %d\n", retVal);
+        ADCBUF_log("Error: Unable to open the edma Instance, erorCode = %d\n", retVal);
     }
 
     /* Configure EDMA Error Monitor */
@@ -953,7 +955,7 @@ EDMA_Handle Test_ADCBUFInitEDMA(void)
     errorConfig.transferControllerCallbackFxn = Test_edmaTransferControllerErrorCallbackFxn;
     if ((retVal = EDMA_configErrorMonitoring(EdmaHandle, &errorConfig)) != EDMA_NO_ERROR)
     {
-        printf("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", retVal);
+        ADCBUF_log("Debug: EDMA_configErrorMonitoring() failed with errorCode = %d\n", retVal);
         return NULL;
     }
 
@@ -988,9 +990,9 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
     HwiP_Handle                 hwiHandle = NULL;
     uint32_t                    intrPriority;
 
-    printf("\n/*******************************************************************/ \n");
-    printf("/************************* ADCBUF Test *****************************/ \n");
-    printf("/*******************************************************************/ \n");
+    ADCBUF_log("\n/*******************************************************************/ \n");
+    ADCBUF_log("/************************* ADCBUF Test *****************************/ \n");
+    ADCBUF_log("/*******************************************************************/ \n");
 
     /* Initialize the ADCBUF */
     ADCBuf_init();
@@ -1000,7 +1002,7 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
         EdmaHandle = Test_ADCBUFInitEDMA();
         if(EdmaHandle == NULL)
         {
-            printf("Debug: EDMA Init failed \n");
+            ADCBUF_log("Debug: EDMA Init failed \n");
             goto Exit;
         }
     }
@@ -1011,9 +1013,9 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
 
     /* Basic API Test */
     if(Test_ADCBUFApiTest() < 0)
-        printf ("ADCBUF Basic API test failed\n");
+        ADCBUF_log ("ADCBUF Basic API test failed\n");
     else
-        printf ("ADCBUF Basic API test passed\n");
+        ADCBUF_log ("ADCBUF Basic API test passed\n");
 
     /**************************************************************************
      * Test: Parameter validation test
@@ -1021,9 +1023,9 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
 
     /* Test input parameters */
     if (Test_ADCBUFCmdParamsCheckTest() < 0)
-        printf ("ADCBUF Input Parameters Validation Test failed\n");
+        ADCBUF_log ("ADCBUF Input Parameters Validation Test failed\n");
     else
-        printf ("ADCBUF Input Parameters Validation Test passed\n");
+        ADCBUF_log ("ADCBUF Input Parameters Validation Test passed\n");
 
     /**************************************************************************
      * Test: Reopen the driver to test in Continuous Mode
@@ -1044,10 +1046,10 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
         handle = ADCBuf_open(0, &params);
         if (handle == NULL)
         {
-            printf("Error: Unable to open the ADCBUF Instance\n");
+            ADCBUF_log("Error: Unable to open the ADCBUF Instance\n");
             return;
         }
-        printf("Debug: ADCBUF Instance %p has been reopened successfully\n", handle);
+        ADCBUF_log("Debug: ADCBUF Instance %p has been reopened successfully\n", handle);
 
         /* Register chirp interrupt */
         #if defined(_TMS320C6X)
@@ -1083,7 +1085,7 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
         /* Register interrupts */
         if(OSAL_INT_SUCCESS != Osal_RegisterInterrupt(&intrPrms, &hwiHandle))
         {
-            printf("Error: Unable to register Chirp interrupt\n");
+            ADCBUF_log("Error: Unable to register Chirp interrupt\n");
             hwiHandle = NULL;
             goto Exit;
         }
@@ -1092,7 +1094,7 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
         dataFormat = dataFmtTestCase_awr2944[index];
 
         /* Print out the test params */
-        printf("ADCBUF Test Pattern with dataFormat=%d, sampleSwap=%d, interleave=%d \n",
+        ADCBUF_log("ADCBUF Test Pattern with dataFormat=%d, sampleSwap=%d, interleave=%d \n",
                        dataFormat.adcOutFormat, dataFormat.sampleInterleave,
 					   dataFormat.channelInterleave);
 
@@ -1160,7 +1162,7 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
                 rxChanMask = 0xF;
                 if ((retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_CHANNEL_DISABLE, (void *)&rxChanMask)) < 0)
                 {
-                   printf("Error: ADCBufMMWave_CMD_CHANNEL_DISABLE failed with [Error=%d]\n", retVal);
+                   ADCBUF_log("Error: ADCBufMMWave_CMD_CHANNEL_DISABLE failed with [Error=%d]\n", retVal);
                 }
 
                 /* ADCBuf Test Pattern Test, this function will be blocked until gTestRun is set to 0 */
@@ -1170,11 +1172,11 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
 
         /* StopTest Pattern generation */
         if (( retVal = ADCBuf_control(handle, ADCBufMMWave_CMD_STOP_TEST_PATTERN, NULL)) < 0)
-           printf("Error: ADCBufMMWave_CMD_STOP_TEST_PATTERN failed with [Error=%d]\n", retVal);
+           ADCBUF_log("Error: ADCBufMMWave_CMD_STOP_TEST_PATTERN failed with [Error=%d]\n", retVal);
 
         /* Close  ADCBuf driver */
         ADCBuf_close(handle);
-        printf("Debug: ADCBUF Instance %p has been closed successfully\n", handle);
+        ADCBUF_log("Debug: ADCBUF Instance %p has been closed successfully\n", handle);
 
         /* Deregister chirp interrupt listener */
         #if defined (_TMS3206X)
@@ -1200,11 +1202,11 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
         /* Send test results to logger */
         if (gVerifyFailCount > 0)
         {
-            printf ("ADCBUF Test Pattern failed\n");
-            printf ("gVerifyFailCount = %d\n", gVerifyFailCount);
+            ADCBUF_log ("ADCBUF Test Pattern failed\n");
+            ADCBUF_log ("gVerifyFailCount = %d\n", gVerifyFailCount);
         }
         else
-            printf ("ADCBUF Test Pattern passed\n");
+            ADCBUF_log ("ADCBUF Test Pattern passed\n");
 
         /* Clear the counter */
         gIntCounter = 0;
@@ -1220,7 +1222,7 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
         Test_ADCBUFCloseEDMA(EdmaHandle);
     /* Delete semaphore */
     SemaphoreP_delete(gIntSemaHandle);
-    printf("Debug: Semaphore Instance %p has been closed successfully\n", gIntSemaHandle);
+    ADCBUF_log("Debug: Semaphore Instance %p has been closed successfully\n", gIntSemaHandle);
 
 Exit:
     /* Stop OS */
@@ -1240,6 +1242,14 @@ Exit:
 int main (void)
 {
     TaskP_Params    taskParams;
+    Board_STATUS boardStatus;
+    Board_initCfg boardCfg;
+
+    boardCfg = (BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK | 
+                BOARD_INIT_UART_STDIO);
+    boardStatus = Board_init(boardCfg);
+
+    DebugP_assert(boardStatus == BOARD_SOK);
 
     OS_init();
 

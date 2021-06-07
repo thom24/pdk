@@ -4689,7 +4689,9 @@ int main (void)
 
     OS_init();
 
-    boardCfg = BOARD_INIT_UNLOCK_MMR | BOARD_INIT_MODULE_CLOCK;
+    boardCfg = BOARD_INIT_UNLOCK_MMR |
+               BOARD_INIT_UART_STDIO |
+               BOARD_INIT_MODULE_CLOCK;
 
     boardStatus = Board_init (boardCfg);
     if (boardStatus != BOARD_SOK)
