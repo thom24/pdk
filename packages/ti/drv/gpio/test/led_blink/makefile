@@ -1,10 +1,6 @@
 # Makefile for GPIO LED Blink unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-ifeq ($(IS_BAREMETAL),yes)
-    BUILD_OS_TYPE = baremetal
-endif
-
 ifeq ($(BUILD_OS_TYPE),baremetal)
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry

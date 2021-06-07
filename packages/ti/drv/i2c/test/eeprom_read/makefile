@@ -1,10 +1,6 @@
 # Makefile for I2C EEPROM unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-ifeq ($(IS_BAREMETAL),yes)
-    BUILD_OS_TYPE = baremetal
-endif
-
 #Baremetal Specifics
 ifeq ($(BUILD_OS_TYPE), baremetal)
 
