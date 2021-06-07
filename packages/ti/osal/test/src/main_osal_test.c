@@ -1153,7 +1153,7 @@ bool OSAL_semaphore_test()
     return true;
 }
 
-#if !defined(BARE_METAL) || !defined (SAFERTOS)
+#if !defined(BARE_METAL) && !defined (SAFERTOS)
 
 /*
  *  ======== Queue test function ========
@@ -1653,7 +1653,7 @@ void osal_test(void *arg0, void *arg1)
     }
 #endif
 
-#if !defined(BARE_METAL) || !defined (SAFERTOS)
+#if !defined(BARE_METAL) && !defined (SAFERTOS)
     /* No QueueP test for Baremetal */
     if(OSAL_queue_test() == true)
     {
