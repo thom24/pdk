@@ -283,29 +283,6 @@ MMCSD_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_TestApp_SBL_APPIMAGEGEN
 endif
 
-# SD Readwrite test with SMP enabled
-MMCSD_SMP_TestApp_COMP_LIST = MMCSD_SMP_TestApp
-MMCSD_SMP_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_TestApp
-MMCSD_SMP_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_TestApp
-MMCSD_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-MMCSD_SMP_TestApp_BOARD_DEPENDENCY = yes
-MMCSD_SMP_TestApp_CORE_DEPENDENCY = no
-MMCSD_SMP_TestApp_XDC_CONFIGURO = yes
-export MMCSD_SMP_TestApp_COMP_LIST
-export MMCSD_SMP_TestApp_BOARD_DEPENDENCY
-export MMCSD_SMP_TestApp_CORE_DEPENDENCY
-export MMCSD_SMP_TestApp_XDC_CONFIGURO
-MMCSD_SMP_TestApp_PKG_LIST = MMCSD_SMP_TestApp
-MMCSD_SMP_TestApp_INCLUDE = $(MMCSD_SMP_TestApp_PATH)
-MMCSD_SMP_TestApp_BOARDLIST = am65xx_idk
-export MMCSD_SMP_TestApp_BOARDLIST
-MMCSD_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export MMCSD_SMP_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-MMCSD_SMP_TestApp_SBL_APPIMAGEGEN = yes
-export MMCSD_SMP_TestApp_SBL_APPIMAGEGEN
-endif
-
 # EMMC Readwrite test
 MMCSD_EMMC_TestApp_COMP_LIST = MMCSD_EMMC_TestApp
 MMCSD_EMMC_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_EMMC_TestApp
@@ -414,29 +391,6 @@ export MMCSD_DMA_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
 MMCSD_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_DMA_TestApp_SBL_APPIMAGEGEN
-endif
-
-# SD DMA Unit test with SMP enabled
-MMCSD_DMA_SMP_TestApp_COMP_LIST = MMCSD_DMA_SMP_TestApp
-MMCSD_DMA_SMP_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_DMA_TestApp
-MMCSD_DMA_SMP_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_DMA_TestApp
-MMCSD_DMA_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-MMCSD_DMA_SMP_TestApp_BOARD_DEPENDENCY = yes
-MMCSD_DMA_SMP_TestApp_CORE_DEPENDENCY = no
-MMCSD_DMA_SMP_TestApp_XDC_CONFIGURO = yes
-export MMCSD_DMA_SMP_TestApp_COMP_LIST
-export MMCSD_DMA_SMP_TestApp_BOARD_DEPENDENCY
-export MMCSD_DMA_SMP_TestApp_CORE_DEPENDENCY
-export MMCSD_DMA_SMP_TestApp_XDC_CONFIGURO
-MMCSD_DMA_SMP_TestApp_PKG_LIST = MMCSD_DMA_SMP_TestApp
-MMCSD_DMA_SMP_TestApp_INCLUDE = $(MMCSD_DMA_SMP_TestApp_PATH)
-MMCSD_DMA_SMP_TestApp_BOARDLIST = am65xx_idk
-export MMCSD_DMA_SMP_TestApp_BOARDLIST
-MMCSD_DMA_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export MMCSD_DMA_SMP_TestApp_$(SOC)_CORELIS
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-MMCSD_DMA_SMP_TestApp_SBL_APPIMAGEGEN = yes
-export MMCSD_DMA_SMP_TestApp_SBL_APPIMAGEGEN
 endif
 
 # Baremetal eMMC Readwrite test
@@ -575,10 +529,8 @@ endif
 export drvmmcsd_LIB_LIST
 export mmcsd_LIB_LIST
 mmcsd_EXAMPLE_LIST += MMCSD_TestApp
-mmcsd_EXAMPLE_LIST += MMCSD_SMP_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_EMMC_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_DMA_TestApp
-mmcsd_EXAMPLE_LIST += MMCSD_DMA_SMP_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_EMMC_DMA_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_DMA_TestApp

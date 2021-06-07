@@ -7,16 +7,6 @@ endif
 
 export DISABLE_RECURSE_DEPS
 
-
-ifeq ($(SMP), enable)
-#Name of the directory created under packages/ti/binary/
-APP_NAME = MMCSD_SMP_TestApp
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_$(BOARD)_$(CORE)_SMP_TestApp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-    LOCAL_APP_NAME =  MMCSD_SMP_TestApp_$(CORE)
-endif
-else
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
@@ -24,8 +14,6 @@ LOCAL_APP_NAME = MMCSD_$(BOARD)_$(CORE)TestApp
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
     LOCAL_APP_NAME =  MMCSD_TestApp_$(CORE)
 endif
-endif
-
 
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
