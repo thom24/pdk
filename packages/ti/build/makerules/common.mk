@@ -506,6 +506,9 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0))
   MULTI_CORE_APP_PARAMS =
 endif
 
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_R4) $(MMWAVE_DFP_INSTALL_PATH)/firmware/radarss/xwr2xxx_radarss_metarprc.bin
+endif
 
 #MCUx_1 cores requires a dummy application to run from MCUx_0 core
 #as MCUx_1 cores cannot be at a higher power state than MCUx_0 core

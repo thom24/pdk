@@ -946,12 +946,18 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2))
   SBL_CORE_ID_load_only = 21
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-#  SBL_CORE_ID_mcu1_0 = 0
-# Presently MCU1 supports only lock step so configure MCU_1_0 core id as MCU_1_SMP_CORE_ID so that SBL configure MCU1 in lock step
-  SBL_CORE_ID_mcu1_0 = 3
+ifeq ($(SOC),$(filter $(SOC), tpr12))
+  SBL_CORE_ID_mcu1_0 = 0
   SBL_CORE_ID_mcu1_1 = 1
   SBL_CORE_ID_c66xdsp_1 = 2
+  SBL_CORE_ID_mcu_smp = 3
+endif
+ifeq ($(SOC),$(filter $(SOC), awr294x))
+  SBL_CORE_ID_mcu1_0 = 0
+  SBL_CORE_ID_mcu1_1 = 1
+  SBL_CORE_ID_c66xdsp_1 = 2
+  SBL_CORE_ID_R4 = 3
+  SBL_CORE_ID_mcu_smp = 4
 endif
 
 export SOC
