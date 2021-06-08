@@ -91,7 +91,7 @@
 #define APP_TSK_STACK_MAIN              (0x8000U)
 
 #if defined (USE_BIOS) || defined (FREERTOS)
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X) || defined(SOC_AM65XX)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 #endif
 #endif
@@ -540,7 +540,7 @@ int main(void)
     AppGPIOInit();
 #endif
 
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X) || defined(SOC_AM65XX)
     TaskP_Params taskParams;
 
     OS_init();
