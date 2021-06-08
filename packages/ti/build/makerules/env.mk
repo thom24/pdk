@@ -80,7 +80,6 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
   # NS
   ns_INCLUDE = $(ns_PATH)/source/
   export ns_INCLUDE
-
 endif
 
 #Below applicable only for TDA devices
@@ -199,6 +198,9 @@ ifneq ($(PDK_UDMA_ROOT_PATH), $(pdk_PATH))
 endif
 ifneq ($(PDK_ENET_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_ENET_ROOT_PATH)
+endif
+ifneq ($(PDK_LWIP_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_LWIP_ROOT_PATH)
 endif
 ifneq ($(PDK_CSIRX_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CSIRX_ROOT_PATH)
