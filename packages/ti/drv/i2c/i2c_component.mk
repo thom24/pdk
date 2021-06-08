@@ -354,7 +354,7 @@ I2C_Baremetal_Eeprom_TestApp_RELPATH = ti/drv/i2c/test/eeprom_read
 I2C_Baremetal_Eeprom_TestApp_PATH = $(PDK_I2C_COMP_PATH)/test/eeprom_read
 I2C_Baremetal_Eeprom_TestApp_BOARD_DEPENDENCY = yes
 I2C_Baremetal_Eeprom_TestApp_CORE_DEPENDENCY = no
-I2C_Baremetal_Eeprom_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
+I2C_Baremetal_Eeprom_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 export I2C_Baremetal_Eeprom_TestApp_COMP_LIST
 export I2C_Baremetal_Eeprom_TestApp_BOARD_DEPENDENCY
 export I2C_Baremetal_Eeprom_TestApp_CORE_DEPENDENCY
