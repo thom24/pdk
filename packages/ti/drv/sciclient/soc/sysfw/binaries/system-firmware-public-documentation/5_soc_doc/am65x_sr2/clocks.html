@@ -131,7 +131,6 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#j721e-legacy">J721E Legacy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 </ul>
 </li>
@@ -5281,7 +5280,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="12%" />
-<col width="76%" />
+<col width="75%" />
 <col width="13%" />
 </colgroup>
 <thead valign="bottom">
@@ -5342,6 +5341,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-even"><td>14</td>
 <td>DEV_NAVSS0_BUS_RCLK_BUS_IN5_BOARD_0_BUS_EXT_REFCLK1_OUT</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_NAVSS0_BUS_CPTS0_GENF4_0</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_NAVSS0_BUS_CPTS0_GENF5_0</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>17</td>
+<td>DEV_NAVSS0_BUS_CPTS0_GENF2_0</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>18</td>
+<td>DEV_NAVSS0_BUS_CPTS0_GENF3_0</td>
+<td>Output clock</td>
 </tr>
 </tbody>
 </table>
@@ -6663,6 +6678,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_TIMER0_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
 <td>Parent input clock option to DEV_TIMER0_BUS_TIMER_TCLK_CLK</td>
 </tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER0_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER0_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER0_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER0_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER0_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER0_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER0_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
+<td>Parent input clock option to DEV_TIMER0_BUS_TIMER_TCLK_CLK</td>
+</tr>
 <tr class="row-odd"><td>17</td>
 <td>DEV_TIMER0_BUS_TIMER_HCLK_CLK</td>
 <td>Input clock</td>
@@ -6737,6 +6768,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>12</td>
 <td>DEV_TIMER1_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_TIMER1_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER1_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER1_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER1_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER1_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER1_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER1_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER1_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
 <td>Parent input clock option to DEV_TIMER1_BUS_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>17</td>
@@ -6815,6 +6862,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_TIMER10_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
 <td>Parent input clock option to DEV_TIMER10_BUS_TIMER_TCLK_CLK</td>
 </tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER10_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER10_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER10_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER10_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER10_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER10_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER10_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
+<td>Parent input clock option to DEV_TIMER10_BUS_TIMER_TCLK_CLK</td>
+</tr>
 <tr class="row-odd"><td>17</td>
 <td>DEV_TIMER10_BUS_TIMER_HCLK_CLK</td>
 <td>Input clock</td>
@@ -6889,6 +6952,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>12</td>
 <td>DEV_TIMER11_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_TIMER11_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER11_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER11_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER11_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER11_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER11_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER11_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER11_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
 <td>Parent input clock option to DEV_TIMER11_BUS_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>17</td>
@@ -6967,6 +7046,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_TIMER2_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
 <td>Parent input clock option to DEV_TIMER2_BUS_TIMER_TCLK_CLK</td>
 </tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER2_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER2_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER2_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER2_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER2_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER2_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER2_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
+<td>Parent input clock option to DEV_TIMER2_BUS_TIMER_TCLK_CLK</td>
+</tr>
 <tr class="row-odd"><td>17</td>
 <td>DEV_TIMER2_BUS_TIMER_HCLK_CLK</td>
 <td>Input clock</td>
@@ -7041,6 +7136,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>12</td>
 <td>DEV_TIMER3_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_TIMER3_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER3_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER3_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER3_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER3_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER3_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER3_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER3_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
 <td>Parent input clock option to DEV_TIMER3_BUS_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>17</td>
@@ -7119,6 +7230,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_TIMER4_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
 <td>Parent input clock option to DEV_TIMER4_BUS_TIMER_TCLK_CLK</td>
 </tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER4_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER4_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER4_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER4_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER4_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER4_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER4_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
+<td>Parent input clock option to DEV_TIMER4_BUS_TIMER_TCLK_CLK</td>
+</tr>
 <tr class="row-odd"><td>17</td>
 <td>DEV_TIMER4_BUS_TIMER_HCLK_CLK</td>
 <td>Input clock</td>
@@ -7193,6 +7320,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>12</td>
 <td>DEV_TIMER5_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_TIMER5_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER5_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER5_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER5_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER5_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER5_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER5_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER5_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
 <td>Parent input clock option to DEV_TIMER5_BUS_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>17</td>
@@ -7271,6 +7414,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_TIMER6_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
 <td>Parent input clock option to DEV_TIMER6_BUS_TIMER_TCLK_CLK</td>
 </tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER6_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER6_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER6_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER6_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER6_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER6_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER6_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
+<td>Parent input clock option to DEV_TIMER6_BUS_TIMER_TCLK_CLK</td>
+</tr>
 <tr class="row-odd"><td>17</td>
 <td>DEV_TIMER6_BUS_TIMER_HCLK_CLK</td>
 <td>Input clock</td>
@@ -7345,6 +7504,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>12</td>
 <td>DEV_TIMER7_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_TIMER7_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER7_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER7_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER7_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER7_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER7_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER7_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER7_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
 <td>Parent input clock option to DEV_TIMER7_BUS_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>17</td>
@@ -7423,6 +7598,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_TIMER8_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
 <td>Parent input clock option to DEV_TIMER8_BUS_TIMER_TCLK_CLK</td>
 </tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER8_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER8_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER8_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER8_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER8_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER8_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER8_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
+<td>Parent input clock option to DEV_TIMER8_BUS_TIMER_TCLK_CLK</td>
+</tr>
 <tr class="row-odd"><td>17</td>
 <td>DEV_TIMER8_BUS_TIMER_HCLK_CLK</td>
 <td>Input clock</td>
@@ -7497,6 +7688,22 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>12</td>
 <td>DEV_TIMER9_BUS_TIMER_TCLK_CLK_PARENT_MX_WAKEUP_GS80_WKUP_0_BUS_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_TIMER9_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER9_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF2_0</td>
+<td>Parent input clock option to DEV_TIMER9_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER9_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF3_0</td>
+<td>Parent input clock option to DEV_TIMER9_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER9_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF4_0</td>
+<td>Parent input clock option to DEV_TIMER9_BUS_TIMER_TCLK_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER9_BUS_TIMER_TCLK_CLK_PARENT_NAVSS256L_MAIN_0_BUS_CPTS0_GENF5_0</td>
 <td>Parent input clock option to DEV_TIMER9_BUS_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>17</td>
