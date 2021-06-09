@@ -103,6 +103,10 @@ BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
 };
 #endif
 
+#if defined(SOC_AWR294X)
+extern GPIO_v2_Config GPIO_v2_config;
+#endif
+
 /**
  * \brief   This function will configure MCAN module
  *
@@ -1193,6 +1197,12 @@ int main(void)
     {
         return -1;
     }
+
+#if defined(SOC_AWR294X)
+    GPIO_v2_updateConfig(&GPIO_v2_config);
+    GPIO_init();
+    GPIO_write(GPIO_v2_config.pinConfigs[0].pinIndex, 1);
+#endif
 
     retVal = BoardDiag_mcanTest();
 
