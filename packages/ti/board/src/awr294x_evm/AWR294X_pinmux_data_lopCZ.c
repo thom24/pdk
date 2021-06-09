@@ -136,9 +136,9 @@ static pinmuxPerCfg_t gMymss_gpio1PinCfg[] =
 };
 static pinmuxPerCfg_t gMymss_gpio2PinCfg[] =
 {
-    /* MyMSS_GPIO1 -> MSS_GPIO26 -> E19 */
+    /* MyMSS_GPIO1 -> MSS_GPIO2 -> E19 */
     {
-        CSL_MSS_IOMUX_PADAZ_CFG_REG, PIN_MODE(0) | \
+        CSL_MSS_IOMUX_PADAZ_CFG_REG, PIN_MODE(1) | \
         ((PIN_PULL_DISABLE) & (~PIN_PULL_DIRECTION))
     },
     {PINMUX_END}
