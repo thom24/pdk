@@ -163,6 +163,8 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define INCLUDE_vSemaphoreDelete    (1)
 #define INCLUDE_xTaskAbortDelay     (1)
 #define INCLUDE_xTaskGetCurrentTaskHandle   (1)
+#define INCLUDE_xEventGroupSetBitFromISR    (1)
+#define INCLUDE_xTimerPendFunctionCall      (1)
 
 /* Size of ISR Stack in c66x */
 #define configHWI_TASK_STACK_DEPTH                                        (4096)

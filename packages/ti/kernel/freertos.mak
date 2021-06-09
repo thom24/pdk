@@ -25,10 +25,11 @@ SRCS_COMMON += \
     list.c \
     port.c
 
-# FreeRTOS tasks does not compile in CPP build. Skip it for CPP build
+# FreeRTOS tasks, event_groups does not compile in CPP build. Skip it for CPP build
 ifneq ($(CPLUSPLUS_BUILD), yes)
 SRCS_COMMON += \
     tasks.c \
+    event_groups.c \
     heap_4.c
 endif
 

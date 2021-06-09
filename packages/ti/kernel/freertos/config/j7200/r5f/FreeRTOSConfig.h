@@ -170,6 +170,8 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define INCLUDE_vTaskSuspend        (1)
 #define INCLUDE_xTimerDelete        (1)
 #define INCLUDE_vSemaphoreDelete    (1)
+#define INCLUDE_xEventGroupSetBitFromISR    (1)
+#define INCLUDE_xTimerPendFunctionCall      (1)
 
 /* 
  * This is not a FreeRTOS defined config and is defined by TI to enable
