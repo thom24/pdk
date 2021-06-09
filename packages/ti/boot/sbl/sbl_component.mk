@@ -1075,6 +1075,32 @@ endif
 sbl_boot_xip_entry_SBL_APPIMAGEGEN = yes
 export sbl_boot_xip_entry_SBL_APPIMAGEGEN
 
+# Multicore XIP entry
+sbl_boot_multicore_xip_entry_COMP_LIST = sbl_boot_multicore_xip_entry
+sbl_boot_multicore_xip_entry_RELPATH = ti/boot/sbl/example/sblMcXipEntryApp
+sbl_boot_multicore_xip_entry_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+sbl_boot_multicore_xip_entry_PATH = $(PDK_SBL_COMP_PATH)/example/sblMcXipEntryApp
+sbl_boot_multicore_xip_entry_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/example/sblMcXipEntryApp/makefile.mk
+export sbl_boot_multicore_xip_entry_MAKEFILE
+sbl_boot_multicore_xip_entry_BOARD_DEPENDENCY = no
+sbl_boot_multicore_xip_entry_SOC_DEPENDENCY = no
+sbl_boot_multicore_xip_entry_CORE_DEPENDENCY = no
+export sbl_boot_multicore_xip_entry_COMP_LIST
+export sbl_boot_multicore_xip_entry_BOARD_DEPENDENCY
+export sbl_boot_multicore_xip_entry_SOC_DEPENDENCY
+export sbl_boot_multicore_xip_entry_CORE_DEPENDENCY
+sbl_boot_multicore_xip_entry_PKG_LIST = sbl_boot_multicore_xip_entry
+sbl_boot_multicore_xip_entry_INCLUDE = $(sbl_boot_multicore_xip_entry_PATH)
+sbl_boot_multicore_xip_entry_BOARDLIST = j721e_evm j7200_evm
+export sbl_boot_multicore_xip_entry_BOARDLIST
+sbl_boot_multicore_xip_entry_$(SOC)_CORELIST = mcu1_0 mcu2_0
+export sbl_boot_multicore_xip_entry_$(SOC)_CORELIST
+ifneq ($(SOC),$(filter $(SOC), tpr12 awr294x))
+sbl_EXAMPLE_LIST += sbl_boot_multicore_xip_entry
+endif
+sbl_boot_multicore_xip_entry_SBL_APPIMAGEGEN = yes
+export sbl_boot_multicore_xip_entry_SBL_APPIMAGEGEN
+
 # Display profiling info before MCU1_0 boot
 # increases delay time, between end of SBL
 # and start of app, but useful for

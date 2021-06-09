@@ -324,6 +324,23 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
+#if defined(SBL_OCM_MAIN_DOMAIN_RAT)
+    {
+        /* Region 9 configuration: 1MB Virtually Mapped Main OCMRAM */
+        .regionId         = 9U,
+        .enable           = 1U,
+        .baseAddr         = 0xD0000000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_1MB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+        .memAttr          = 0U,
+    },
+#endif
+
 };
 
 #endif
@@ -382,8 +399,18 @@ int main()
 
     SBL_ADD_PROFILE_POINT;
 
-    /* Setup RAT */
-    SBL_RAT_Config(sblRatCfgList);
+#if defined(SBL_OCM_MAIN_DOMAIN_RAT)
+    /* Setup RAT to load data into MCU2_0 OCM RAM for MCU1_0 */
+    /* This is mapping the OCM RAM for MCU2_0 (a 40 bit address) Main domain to 0xD0000000 */
+    SBL_log(SBL_LOG_MAX, "Initializing RAT ...");
+#define RAT_BASE (0x40F90000)
+#define REGION_ID (0x0)
+    *(unsigned int *)(RAT_BASE + 0x44 + (REGION_ID*0x10)) = 0xD0000000; //IN ADDRESS
+    *(unsigned int *)(RAT_BASE + 0x48 + (REGION_ID*0x10)) = 0x02000000;
+    *(unsigned int *)(RAT_BASE + 0x4C + (REGION_ID*0x10)) = 0x0000004F; //Upper 16 bits of the real physical address.
+    *(unsigned int *)(RAT_BASE + 0x40 + (REGION_ID*0x10)) = 0x80000013;
+    SBL_log(SBL_LOG_MAX, "done.\n");
+#endif
 
     SBL_ADD_PROFILE_POINT;
 
