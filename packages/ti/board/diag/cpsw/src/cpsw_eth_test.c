@@ -105,7 +105,7 @@ static void BoardDiag_enetLpbkCloseEnet(void)
         UART_printf("Failed to close port link: %d\n", status);
     }
 
-#if !(defined(SOC_TPR12) || defined(SOC_AWR294x))
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
     /* Detach core */
     if (status == ENET_SOK)
     {
@@ -1326,7 +1326,7 @@ static int8_t BoardDiag_cpswLoopbackTest()
         UART_printf("Failed to open Enet driver: %d\n", status);
         return -1;
     }
-#if !(defined(SOC_TPR12) || defined(SOC_AWR294x))
+#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
     if (status == ENET_SOK)
     {
         /* Attach the core with RM */
