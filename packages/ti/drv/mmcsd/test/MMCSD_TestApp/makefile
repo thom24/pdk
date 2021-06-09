@@ -5,14 +5,46 @@ else
 include $(RULES_MAKE)
 endif
 
-export DISABLE_RECURSE_DEPS
+#Baremetal Specifics
+ifeq ($(BUILD_OS_TYPE), baremetal)
 
-#Name of the directory created under packages/ti/binary/
-APP_NAME = MMCSD_TestApp
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_$(BOARD)_$(CORE)TestApp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-    LOCAL_APP_NAME =  MMCSD_TestApp_$(CORE)
+    APP_NAME = MMCSD_Baremetal_TestApp
+
+    CFLAGS_OS_DEFINES = -DBARE_METAL
+    LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
+    COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
+    EXTERNAL_INTERFACES =
+    XDC_CFG_FILE_mpu1_0 =
+    XDC_CFG_FILE_mcu1_0 =
+
+endif
+
+#TI RTOS Specifics
+ifeq ($(BUILD_OS_TYPE), tirtos)
+
+    APP_NAME = MMCSD_TestApp_$(BUILD_OS_TYPE)
+    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
+
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+        XDC_CFG_FILE_mpu1_0 = ../am65xx/a53/mmcsdUnitTest_a53.cfg
+        XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+    else
+        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+    endif
+
+    EXTERNAL_INTERFACES = xdc bios
+    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+
+endif
+
+#FreeRTOS Specifics
+ifeq ($(BUILD_OS_TYPE), freertos)
+
+    APP_NAME = MMCSD_TestApp_$(BUILD_OS_TYPE)
+    CFLAGS_OS_DEFINES = -DFREERTOS -DRTOS_ENV
+    EXTERNAL_INTERFACES = freertos
+    COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+
 endif
 
 
@@ -22,17 +54,6 @@ INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
 SRCS_COMMON += main.c profiling.c
 
-ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = ../am65xx/a53/mmcsdUnitTest_a53.cfg
-endif
-
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-# Enable XDC build for application by providing XDC CFG File per core
-#XDC_CFG_FILE_$(CORE) = ../am65xx/r5/mmcsdUnitTest_r5.cfg
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-endif
-
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
@@ -41,17 +62,10 @@ INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
 SRCS_COMMON += main.c
 
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
 endif
 
-# List all the external components/interfaces, whose interface header files
-# need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 COMP_LIST_COMMON += mmcsd
 
 #CFLAGS_MMCSD_UT += -DIO_CONSOLE
@@ -71,7 +85,11 @@ CFLAGS_MMCSD_UT    += -Dj721e_sim
 endif
 
 PACKAGE_SRCS_COMMON = ../
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT) $(CFLAGS_OS_DEFINES)
+
+# List all the external components/interfaces, whose interface header files
+# need to be included for this component
+INCLUDE_EXTERNAL_INTERFACES = $(EXTERNAL_INTERFACES) pdk
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

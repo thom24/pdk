@@ -86,6 +86,8 @@ drvmmcsd_am65xx_CORELIST     = mpu1_0 mcu1_0
 drvmmcsd_j721e_CORELIST     = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvmmcsd_j7200_CORELIST     = mpu1_0 mcu1_0 mcu2_0 mcu2_1
 drvmmcsd_am64x_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvmmcsd_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
+
 ############################
 # mmcsd package
 # List of components included under mmcsd lib
@@ -262,26 +264,43 @@ mmcsd_dma_profile_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export mmcsd_dma_profile_$(SOC)_CORELIST
 
 # SD Readwrite test
-MMCSD_TestApp_COMP_LIST = MMCSD_TestApp
-MMCSD_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_TestApp
-MMCSD_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_TestApp
-MMCSD_TestApp_BOARD_DEPENDENCY = yes
-MMCSD_TestApp_CORE_DEPENDENCY = no
-MMCSD_TestApp_XDC_CONFIGURO = yes
-export MMCSD_TestApp_COMP_LIST
-export MMCSD_TestApp_BOARD_DEPENDENCY
-export MMCSD_TestApp_CORE_DEPENDENCY
-export MMCSD_TestApp_XDC_CONFIGURO
-MMCSD_TestApp_PKG_LIST = MMCSD_TestApp
-MMCSD_TestApp_INCLUDE = $(MMCSD_TestApp_PATH)
-MMCSD_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
-export MMCSD_TestApp_BOARDLIST
-MMCSD_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
-export MMCSD_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-MMCSD_TestApp_SBL_APPIMAGEGEN = yes
-export MMCSD_TestApp_SBL_APPIMAGEGEN
-endif
+define MMCSD_TestApp_RULE
+
+    export MMCSD_TestApp_$(1)_COMP_LIST = MMCSD_TestApp_$(1)
+    export MMCSD_TestApp_$(1)_RELPATH = ti/drv/mmcsd/test/MMCSD_TestApp
+    export MMCSD_TestApp_$(1)_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_TestApp
+    export MMCSD_TestApp_$(1)_BOARD_DEPENDENCY = yes
+    export MMCSD_TestApp_$(1)_CORE_DEPENDENCY = no
+    export MMCSD_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+    export MMCSD_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+    MMCSD_TestApp_$(1)_PKG_LIST = MMCSD_TestApp_$(1)
+    MMCSD_TestApp_$(1)_INCLUDE = $(MMCSD_TestApp_$(1)_PATH)
+    export MMCSD_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
+
+    ifeq ($(SOC),$(filter $(SOC), am64x))
+        export MMCSD_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
+    else
+        export MMCSD_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
+    endif
+
+    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+        MMCSD_TestApp_$(1)_$(SOC)_SBL_APPIMAGEGEN = yes
+        export MMCSD_TestApp_$(1)_$(SOC)_SBL_APPIMAGEGEN
+    endif
+
+    ifneq ($(1),$(filter $(1), safertos))
+        mmcsd_EXAMPLE_LIST += MMCSD_TestApp_$(1)
+    else
+        ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+            i2c_EXAMPLE_LIST += MMCSD_TestApp_$(1)
+        endif
+    endif
+
+endef
+
+MMCSD_TestApp_MACRO_LIST := $(foreach curos,$(drvmmcsd_RTOS_LIST),$(call MMCSD_TestApp_RULE,$(curos)))
+$(eval ${MMCSD_TestApp_MACRO_LIST})
+
 
 # EMMC Readwrite test
 MMCSD_EMMC_TestApp_COMP_LIST = MMCSD_EMMC_TestApp
@@ -333,10 +352,12 @@ MMCSD_Baremetal_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_Baremetal_TestApp
 MMCSD_Baremetal_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_Baremetal_TestApp
 MMCSD_Baremetal_TestApp_BOARD_DEPENDENCY = yes
 MMCSD_Baremetal_TestApp_CORE_DEPENDENCY = no
-MMCSD_Baremetal_TestApp_XDC_CONFIGURO = yes
+MMCSD_Baremetal_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+MMCSD_Baremetal_TestApp_XDC_CONFIGURO = no
 export MMCSD_Baremetal_TestApp_COMP_LIST
 export MMCSD_Baremetal_TestApp_BOARD_DEPENDENCY
 export MMCSD_Baremetal_TestApp_CORE_DEPENDENCY
+export MMCSD_Baremetal_TestApp_MAKEFILE
 export MMCSD_Baremetal_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_TestApp_PKG_LIST = MMCSD_Baremetal_TestApp
 MMCSD_Baremetal_TestApp_INCLUDE = $(MMCSD_Baremetal_TestApp_PATH)
@@ -355,10 +376,12 @@ MMCSD_Baremetal_DMA_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_Baremetal_DMA_Test
 MMCSD_Baremetal_DMA_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_Baremetal_DMA_TestApp
 MMCSD_Baremetal_DMA_TestApp_BOARD_DEPENDENCY = yes
 MMCSD_Baremetal_DMA_TestApp_CORE_DEPENDENCY = no
-MMCSD_Baremetal_DMA_TestApp_XDC_CONFIGURO = yes
+MMCSD_Baremetal_DMA_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+MMCSD_Baremetal_DMA_TestApp_XDC_CONFIGURO = no
 export MMCSD_Baremetal_DMA_TestApp_COMP_LIST
 export MMCSD_Baremetal_DMA_TestApp_BOARD_DEPENDENCY
 export MMCSD_Baremetal_DMA_TestApp_CORE_DEPENDENCY
+export MMCSD_Baremetal_DMA_TestApp_MAKEFILE
 export MMCSD_Baremetal_DMA_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_DMA_TestApp_PKG_LIST = MMCSD_Baremetal_DMA_TestApp
 MMCSD_Baremetal_DMA_TestApp_INCLUDE = $(MMCSD_Baremetal_DMA_TestApp_PATH)
@@ -399,10 +422,12 @@ MMCSD_Baremetal_EMMC_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_Baremetal_EMMC_Te
 MMCSD_Baremetal_EMMC_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_Baremetal_EMMC_TestApp
 MMCSD_Baremetal_EMMC_TestApp_BOARD_DEPENDENCY = yes
 MMCSD_Baremetal_EMMC_TestApp_CORE_DEPENDENCY = no
-MMCSD_Baremetal_EMMC_TestApp_XDC_CONFIGURO = yes
+MMCSD_Baremetal_EMMC_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+MMCSD_Baremetal_EMMC_TestApp_XDC_CONFIGURO = no
 export MMCSD_Baremetal_EMMC_TestApp_COMP_LIST
 export MMCSD_Baremetal_EMMC_TestApp_BOARD_DEPENDENCY
 export MMCSD_Baremetal_EMMC_TestApp_CORE_DEPENDENCY
+export MMCSD_Baremetal_EMMC_TestApp_MAKEFILE
 export MMCSD_Baremetal_EMMC_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_EMMC_TestApp_PKG_LIST = MMCSD_Baremetal_EMMC_TestApp
 MMCSD_Baremetal_EMMC_TestApp_INCLUDE = $(MMCSD_Baremetal_EMMC_TestApp_PATH)
@@ -421,10 +446,12 @@ MMCSD_Baremetal_EMMC_DMA_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_Baremetal_EMM
 MMCSD_Baremetal_EMMC_DMA_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_Baremetal_EMMC_DMA_TestApp
 MMCSD_Baremetal_EMMC_DMA_TestApp_BOARD_DEPENDENCY = yes
 MMCSD_Baremetal_EMMC_DMA_TestApp_CORE_DEPENDENCY = no
-MMCSD_Baremetal_EMMC_DMA_TestApp_XDC_CONFIGURO = yes
+MMCSD_Baremetal_EMMC_DMA_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+MMCSD_Baremetal_EMMC_DMA_TestApp_XDC_CONFIGURO = no
 export MMCSD_Baremetal_EMMC_DMA_TestApp_COMP_LIST
 export MMCSD_Baremetal_EMMC_DMA_TestApp_BOARD_DEPENDENCY
 export MMCSD_Baremetal_EMMC_DMA_TestApp_CORE_DEPENDENCY
+export MMCSD_Baremetal_EMMC_DMA_TestApp_MAKEFILE
 export MMCSD_Baremetal_EMMC_DMA_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_EMMC_DMA_TestApp_PKG_LIST = MMCSD_Baremetal_EMMC_DMA_TestApp
 MMCSD_Baremetal_EMMC_DMA_TestApp_INCLUDE = $(MMCSD_Baremetal_EMMC_DMA_TestApp_PATH)
@@ -465,10 +492,12 @@ MMCSD_Baremetal_Regression_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_Baremetal_R
 MMCSD_Baremetal_Regression_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_Baremetal_Regression_TestApp
 MMCSD_Baremetal_Regression_TestApp_BOARD_DEPENDENCY = yes
 MMCSD_Baremetal_Regression_TestApp_CORE_DEPENDENCY = no
-MMCSD_Baremetal_Regression_TestApp_XDC_CONFIGURO = yes
+MMCSD_Baremetal_Regression_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+MMCSD_Baremetal_Regression_TestApp_XDC_CONFIGURO = no
 export MMCSD_Baremetal_Regression_TestApp_COMP_LIST
 export MMCSD_Baremetal_Regression_TestApp_BOARD_DEPENDENCY
 export MMCSD_Baremetal_Regression_TestApp_CORE_DEPENDENCY
+export MMCSD_Baremetal_Regression_TestApp_MAKEFILE
 export MMCSD_Baremetal_Regression_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_Regression_TestApp_PKG_LIST = MMCSD_Baremetal_Regression_TestApp
 MMCSD_Baremetal_Regression_TestApp_INCLUDE = $(MMCSD_Baremetal_Regression_TestApp_PATH)
@@ -510,10 +539,12 @@ MMCSD_EMMC_Baremetal_Regression_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_EMMC_B
 MMCSD_EMMC_Baremetal_Regression_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_EMMC_Baremetal_Regression_TestApp
 MMCSD_EMMC_Baremetal_Regression_TestApp_BOARD_DEPENDENCY = yes
 MMCSD_EMMC_Baremetal_Regression_TestApp_CORE_DEPENDENCY = no
-MMCSD_EMMC_Baremetal_Regression_TestApp_XDC_CONFIGURO = yes
+MMCSD_EMMC_Baremetal_Regression_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+MMCSD_EMMC_Baremetal_Regression_TestApp_XDC_CONFIGURO = no
 export MMCSD_EMMC_Baremetal_Regression_TestApp_COMP_LIST
 export MMCSD_EMMC_Baremetal_Regression_TestApp_BOARD_DEPENDENCY
 export MMCSD_EMMC_Baremetal_Regression_TestApp_CORE_DEPENDENCY
+export MMCSD_EMMC_Baremetal_Regression_TestApp_MAKEFILE
 export MMCSD_EMMC_Baremetal_Regression_TestApp_XDC_CONFIGURO
 MMCSD_EMMC_Baremetal_Regression_TestApp_PKG_LIST = MMCSD_EMMC_Baremetal_Regression_TestApp
 MMCSD_EMMC_Baremetal_Regression_TestApp_INCLUDE = $(MMCSD_EMMC_Baremetal_Regression_TestApp_PATH)
@@ -528,7 +559,7 @@ endif
 
 export drvmmcsd_LIB_LIST
 export mmcsd_LIB_LIST
-mmcsd_EXAMPLE_LIST += MMCSD_TestApp
+
 mmcsd_EXAMPLE_LIST += MMCSD_EMMC_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_DMA_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_EMMC_DMA_TestApp

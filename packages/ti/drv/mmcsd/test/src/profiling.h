@@ -48,7 +48,7 @@ extern "C" {
 
 #include <stdio.h>
 
-#ifndef BARE_METAL
+#if defined (USE_BIOS)
 #include <xdc/std.h>
 #include <xdc/runtime/System.h>
 #endif

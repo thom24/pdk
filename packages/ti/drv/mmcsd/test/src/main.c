@@ -39,34 +39,29 @@
  *
  */
 
-
-#ifndef BARE_METAL
-/* XDCtools Header files */
+#if defined (USE_BIOS)
+/* This is a must include header for ti rtos */
 #include <xdc/std.h>
-#include <xdc/runtime/System.h>
+#endif
+
 #include <stdio.h>
 #include <string.h>
-#include <ti/sysbios/knl/Task.h>
-#include <xdc/runtime/Error.h>
-
-#include <ti/osal/osal.h>
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
-#if defined (__aarch64__)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
-#endif
-#else
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_timer.h>
 #include <ti/csl/arch/csl_arch.h>
-#endif
 
 #include <ti/osal/osal.h>
+
 #include "MMCSD_log.h"
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/drv/mmcsd/src/MMCSD_osal.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
+
+#if defined (USE_BIOS)
+#if defined (BUILD_MPU)
+#include <ti/sysbios/family/arm/v8a/Mmu.h>
+#endif
+#endif
 
 #ifdef MMCSD_TEST_FATFS_BENCHMARK_ENABLED
 #include <ti/fs/fatfs/ff.h>
@@ -310,6 +305,11 @@ void AppGpioCallbackFxn(void);
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+ #ifdef RTOS_ENV
+#define APP_TSK_STACK_MAIN              (0x8000U)
+
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 
 MMCSD_Handle handle = NULL;
 
@@ -344,6 +344,8 @@ void InitMmu(void)
 volatile int emuwait_mmu=1;
 Void InitMmu()
 {
+    #ifndef FREERTOS
+
     bool ret= false;
     Mmu_MapAttrs attrs;
 
@@ -492,7 +494,7 @@ mmu_exit:
 		 System_printf("Mmu_map returned error %d",ret);
 		 while(emuwait_mmu);
 	 }
-
+    #endif /* not defined for FREERTOS */
     return;
 }
 #endif
@@ -970,7 +972,7 @@ uint32_t hwAttrsConfigDefaultSaved=0;
 #ifdef BARE_METAL
 void mmcsd_test()
 #else
-void mmcsd_test(UArg arg0, UArg arg1)
+void mmcsd_test(void *arg0, void *arg1)
 #endif
 {
     MMCSD_Error ret;
@@ -1209,14 +1211,16 @@ volatile uint32_t emuwait_board=1;
  */
 int main(void)
 {
-	Board_STATUS board_status;
-#ifndef BARE_METAL
-    Task_Handle task;
-    Error_Block eb;
+    Board_STATUS board_status;
+#ifdef RTOS_ENV
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 #endif
 
+    OS_init();
+
 #ifdef GPIO_ENABLED
-	board_initGPIO();
+    board_initGPIO();
 #endif
 
     Board_initCfg boardCfg;
@@ -1229,18 +1233,24 @@ int main(void)
 
     board_status=Board_init(boardCfg);
     if(board_status!=BOARD_SOK) {
-		while(emuwait_board);
-	}
-
-#ifndef BARE_METAL
-    Error_init(&eb);
-	task = Task_create(mmcsd_test, NULL, &eb);
-    if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        while(emuwait_board);
     }
-    /* Start BIOS */
-    BIOS_start();
+
+#ifdef RTOS_ENV
+    TaskP_Params_init (&taskParams);
+    taskParams.priority =2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+
+    task = TaskP_create(mmcsd_test, &taskParams);
+    if (task == NULL) {
+        OS_stop();
+        OSAL_Assert(task == NULL);
+    }
+
+    /* Start RTOS */
+    OS_start();
+
 #else
   mmcsd_test();
 #endif

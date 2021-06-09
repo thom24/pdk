@@ -39,18 +39,16 @@
  *
  */
 
-
+#if defined (USE_BIOS)
 /* XDCtools Header files */
 #include <xdc/std.h>
 #include <xdc/runtime/System.h>
+#endif
 #include <stdio.h>
 #include <string.h>
-#include <ti/sysbios/knl/Task.h>
+
 
 #include <ti/osal/osal.h>
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-/* TI-RTOS Header files */
 #include <ti/csl/cslr_device.h>
 #include "MMCSD_log.h"
 #include "profiling.h"
@@ -108,17 +106,17 @@ void profile_initPerfCounters()
 #endif
 
     memset(&profile_Context,0,sizeof(profile_Context));
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_READ].name,"MMCSD_READ");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_WRITE].name,"MMCSD_WRITE");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_CMD_WAIT].name,"PROFILE_MMCSD_WRITE_CMD_WAIT");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_DATA_WAIT].name,"PROFILE_MMCSD_WRITE_DATA_WAIT");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_DATA_TRANSFER_SUBMIT].name,"PROFILE_MMCSD_WRITE_DATA_TRANSFER_SUBMIT");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_DATA_TRANSFER_COMPLETE].name,"PROFILE_MMCSD_WRITE_DATA_TRANSFER_COMPLETE");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_READ].name,"MMCSD_READ");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_WRITE].name,"MMCSD_WRITE");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_CMD_WAIT].name,"PROFILE_MMCSD_WRITE_CMD_WAIT");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_DATA_WAIT].name,"PROFILE_MMCSD_WRITE_DATA_WAIT");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_DATA_TRANSFER_SUBMIT].name,"PROFILE_MMCSD_WRITE_DATA_TRANSFER_SUBMIT");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_WRITE_DATA_TRANSFER_COMPLETE].name,"PROFILE_MMCSD_WRITE_DATA_TRANSFER_COMPLETE");
 
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_READ_CMD_WAIT].name,"PROFILE_MMCSD_READ_CMD_WAIT");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_READ_DATA_WAIT].name,"PROFILE_MMCSD_READ_DATA_WAIT");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_READ_DATA_TRANSFER_SUBMIT].name,"PROFILE_MMCSD_READ_DATA_TRANSFER_SUBMIT");
-    System_sprintf(profile_Context.profile_Points[PROFILE_MMCSD_READ_DATA_TRANSFER_COMPLETE].name,"PROFILE_MMCSD_READ_DATA_TRANSFER_COMPLETE");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_READ_CMD_WAIT].name,"PROFILE_MMCSD_READ_CMD_WAIT");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_READ_DATA_WAIT].name,"PROFILE_MMCSD_READ_DATA_WAIT");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_READ_DATA_TRANSFER_SUBMIT].name,"PROFILE_MMCSD_READ_DATA_TRANSFER_SUBMIT");
+    MMCSD_log(profile_Context.profile_Points[PROFILE_MMCSD_READ_DATA_TRANSFER_COMPLETE].name,"PROFILE_MMCSD_READ_DATA_TRANSFER_COMPLETE");
 
 }
 
@@ -149,7 +147,7 @@ void profile_calibration_test()
     float seconds_measured_by_ticks=0,milliseconds_measured_by_ticks=0;
 	MMCSD_log("Calibration Test: Counting 5 seconds..\n");
 	start_time=readTime32();
-	Task_sleep(5000);
+	TaskP_sleepInMsecs(5000);
 	end_time=readTime32();
 	
     MMCSD_log("Calibration Test: End 5 seconds..\n");
@@ -162,7 +160,7 @@ void profile_calibration_test()
 	milliseconds_measured_by_ticks = (float)((float)time_diff/(float)profile_Context.ticks_per_ms);
 	seconds_measured_by_ticks = (float)milliseconds_measured_by_ticks/(float)1000;
 	
-    System_snprintf(uart_print_string,sizeof(uart_print_string)," Seconds measured by tick calculation is %5.2f",seconds_measured_by_ticks);
+    MMCSD_log(uart_print_string,sizeof(uart_print_string)," Seconds measured by tick calculation is %5.2f",seconds_measured_by_ticks);
 	
 	MMCSD_log("CalibrationTest: %s\n",uart_print_string);
 	
@@ -174,7 +172,7 @@ void profile_calibrate()
 	uint32_t start_time, end_time,time_diff;
 	MMCSD_log("Calibration Start\n");
 	start_time=readTime32();
-	Task_sleep(1000);
+	TaskP_sleepInMsecs(1000);
 	end_time=readTime32();
 	if(end_time > start_time) {
 	   time_diff=end_time-start_time;
@@ -244,13 +242,13 @@ void profile_calculate_all_time()
 
 void profile_display(uint32_t profile_id)
 {
-    System_snprintf(uart_print_string,sizeof(uart_print_string),"%5.2f",(float)(profile_Context.profile_Points[profile_id].total_bytes_transferred)/(1024*1024));
+    MMCSD_log(uart_print_string,sizeof(uart_print_string),"%5.2f",(float)(profile_Context.profile_Points[profile_id].total_bytes_transferred)/(1024*1024));
     MMCSD_log("Results[%d:%s]:   Bytes transferred : %s MBytes \n",profile_id,profile_Context.profile_Points[profile_id].name, uart_print_string);
 
-    System_snprintf(uart_print_string,sizeof(uart_print_string),"%5.2f",profile_Context.profile_Points[profile_id].total_time_ms);
+    MMCSD_log(uart_print_string,sizeof(uart_print_string),"%5.2f",profile_Context.profile_Points[profile_id].total_time_ms);
     MMCSD_log("Results[%d:%s]:   Total Time in ms : %s milli seconds\n",profile_id,profile_Context.profile_Points[profile_id].name, uart_print_string);
 
-    System_snprintf(uart_print_string,sizeof(uart_print_string),"%5.2f",profile_Context.profile_Points[profile_id].bandwidth_mbytes_per_sec);
+    MMCSD_log(uart_print_string,sizeof(uart_print_string),"%5.2f",profile_Context.profile_Points[profile_id].bandwidth_mbytes_per_sec);
     MMCSD_log("Results[%d:%s]:   Throughput : %s MBytes/sec \n",profile_id,profile_Context.profile_Points[profile_id].name, uart_print_string);
 
 }
@@ -342,7 +340,7 @@ void mmcsd_display_benchmarks(mmcsdTestBenchmarks_t *benchmarks_ptr)
    MMCSD_log ("Throughput is measured by reading/writing a contiguous block of memory of varying sizes using MMCSD_Write/Read() APIs ");
    MMCSD_log ("\n\n---------------------------------------\n" );
 
-   System_snprintf(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string), "| %4s | %6s | %8s |","Size(KB)","Write(MB/s)","Read(MB/s)");
+   MMCSD_log(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string), "| %4s | %6s | %8s |","Size(KB)","Write(MB/s)","Read(MB/s)");
    MMCSD_log ("%s",mmcsd_uart_print_string);
    MMCSD_log ("\n---------------------------------------" );
    for(i=0;i<MMCSD_TEST_MAX_NUM_BENCHMARKS;i++) 
@@ -352,7 +350,7 @@ void mmcsd_display_benchmarks(mmcsdTestBenchmarks_t *benchmarks_ptr)
 
 		
  
-		 System_snprintf(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string),"\n|  %6d  |  %5.2f   |   %5.2f   |",
+		 MMCSD_log(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string),"\n|  %6d  |  %5.2f   |   %5.2f   |",
               (uint32_t)( benchmarks_ptr->RAW_measurements[i].read.num_bytes_transferred/1024),
                     benchmarks_ptr->RAW_measurements[i].write.bandwidth_mbytes_per_sec,
 		      benchmarks_ptr->RAW_measurements[i].read.bandwidth_mbytes_per_sec);
@@ -367,14 +365,14 @@ void mmcsd_display_benchmarks(mmcsdTestBenchmarks_t *benchmarks_ptr)
    MMCSD_log ("Throughput is measured by reading/writing a file of various sizes using FAT32");
    MMCSD_log ("\n\n---------------------------------------\n" );
 
-   System_snprintf(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string),  "| %4s | %6s | %8s |","Size(KB)","Write(MB/s)","Read(MB/s)");
+   MMCSD_log(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string),  "| %4s | %6s | %8s |","Size(KB)","Write(MB/s)","Read(MB/s)");
    MMCSD_log ("%s",mmcsd_uart_print_string);
    MMCSD_log ("\n--------------------------------------" );
    for(i=0;i<MMCSD_TEST_MAX_NUM_BENCHMARKS;i++) 
    {
       if(benchmarks_ptr->FATFS_measurements[i].valid) 
       {
- 		 System_snprintf(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string),"\n|  %6d  |    %5.2f   |   %5.2f   |",
+ 		 MMCSD_log(mmcsd_uart_print_string,sizeof(mmcsd_uart_print_string),"\n|  %6d  |    %5.2f   |   %5.2f   |",
              (uint32_t)( benchmarks_ptr->FATFS_measurements[i].read.num_bytes_transferred/1024),
                     benchmarks_ptr->FATFS_measurements[i].write.bandwidth_mbytes_per_sec,
 		      benchmarks_ptr->FATFS_measurements[i].read.bandwidth_mbytes_per_sec);
