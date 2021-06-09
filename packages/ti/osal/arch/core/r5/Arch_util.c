@@ -462,6 +462,8 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
     {
         hwi_hnd->used = (bool)false;
         Intc_IntUnregister((uint16_t)(hwi_hnd->hwi.intNum));
+        /* Disabling the interrupt in INTC. */
+        Intc_IntDisable((uint16_t)(hwi_hnd->hwi.intNum));
     }
     else
     {
