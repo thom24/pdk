@@ -40,27 +40,16 @@
  */
 
 
-#ifndef BARE_METAL
-/* XDCtools Header files */
+#if defined (USE_BIOS)
+/* This is a must include header for ti rtos */
 #include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <stdio.h>
-#include <string.h>
-#include <ti/sysbios/knl/Task.h>
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
-#if defined (__aarch64__)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
 #endif
 
-#else
-
+#include <stdio.h>
+#include <string.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_timer.h>
 #include <ti/csl/arch/csl_arch.h>
-
-#endif
 
 #include <ti/osal/osal.h>
 #ifdef MMCSD_EDMA_ENABLED
@@ -71,6 +60,12 @@
 #endif
 #ifdef MMCSD_ADMA_ENABLED
 #define MMCSD_DMA_ENABLED 1
+#endif
+
+#if defined (USE_BIOS)
+#if defined (BUILD_MPU)
+#include <ti/sysbios/family/arm/v8a/Mmu.h>
+#endif
 #endif
 
 /* TI-RTOS Header files */
@@ -233,6 +228,11 @@ static void delay(unsigned int delayValue);
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+#ifdef RTOS_ENV
+#define APP_TSK_STACK_MAIN              (0x8000U)
+
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 
 MMCSD_Handle handle = NULL;
 #define DATA_BUF_ALIGN               (256)
@@ -886,7 +886,7 @@ uint32_t hwAttrsConfigDefaultSaved=0;
 #ifdef BARE_METAL
 void mmcsd_test()
 #else
-void mmcsd_test(UArg arg0, UArg arg1)
+void mmcsd_test(void *arg0, void *arg1)
 #endif
 {
     MMCSD_Error ret;
@@ -1100,13 +1100,16 @@ volatile uint32_t emuwait_board=1;
 
 int main(void)
 {
-#ifndef BARE_METAL
-	Task_Handle task;
-	Error_Block eb;
+#ifdef RTOS_ENV
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 #endif
+
     /* Call board init functions */
     Board_initCfg boardCfg;
     Board_STATUS board_status;
+
+    OS_init();
 
 #if !defined(SOC_OMAPL137)  && defined(GPIO_ENABLED)
     board_initGPIO();
@@ -1127,19 +1130,26 @@ int main(void)
 #ifdef evmAM437x
      pinmux_emmc_AM437x();
 #endif
-#ifndef BARE_METAL
-    Error_init(&eb);
-    task = Task_create(mmcsd_test, NULL, &eb);
+
+#ifdef RTOS_ENV
+    TaskP_Params_init (&taskParams);
+    taskParams.priority     = 2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
+
+    task = TaskP_create(mmcsd_test, &taskParams);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        OS_stop();
+        OSAL_Assert(task == NULL);
     }
 
-    /* Start BIOS */
-    BIOS_start();
+    /* Start RTOS */
+    OS_start();
+
 #else
   mmcsd_test();
 #endif
+
     return (0);
 }
 

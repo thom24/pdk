@@ -305,7 +305,7 @@ void AppGpioCallbackFxn(void);
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
- #ifdef RTOS_ENV
+#ifdef RTOS_ENV
 #define APP_TSK_STACK_MAIN              (0x8000U)
 
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));

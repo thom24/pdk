@@ -5,14 +5,35 @@ else
 include $(RULES_MAKE)
 endif
 
-export DISABLE_RECURSE_DEPS
+# Assumes - this would not be invoked for baremetal - refer mmcsd_component.mk
 
-#Name of the directory created under packages/ti/binary/
-APP_NAME = MMCSD_EMMC_TestApp
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_$(BOARD)_EMMC_$(CORE)TestApp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-    LOCAL_APP_NAME =  MMCSD_EMMC_TestApp_$(CORE)
+#TI RTOS Specifics
+ifeq ($(BUILD_OS_TYPE), tirtos)
+
+    APP_NAME = MMCSD_EMMC_TestApp_$(BUILD_OS_TYPE)
+    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
+
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+        XDC_CFG_FILE_mpu1_0 = ../am65xx/a53/mmcsdUnitTest_a53.cfg
+        XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+    else
+        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+    endif
+
+    INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
+
+    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+
+endif
+
+#FreeRTOS Specifics
+ifeq ($(BUILD_OS_TYPE), freertos)
+
+    APP_NAME = MMCSD_EMMC_TestApp_$(BUILD_OS_TYPE)
+    CFLAGS_OS_DEFINES = -DFREERTOS -DRTOS_ENV
+    INCLUDE_EXTERNAL_INTERFACES = freertos pdk
+    COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
@@ -21,54 +42,38 @@ INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
 SRCS_COMMON += main_emmc.c profiling.c
 
-ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = ../am65xx/a53/mmcsdUnitTest_a53.cfg
-endif
-
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-endif
-
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
-SRCDIR = ../src ../../
-INCDIR = ../src ../include ../../
-# Common source files across all platforms and cores
-SRCS_COMMON += main_emmc.c
-
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+    SRCDIR = ../src ../../
+    INCDIR = ../src ../include ../../
+    # Common source files across all platforms and cores
+    SRCS_COMMON += main_emmc.c
 
 endif
 
-# List all the external components/interfaces, whose interface header files
-# need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 COMP_LIST_COMMON += mmcsd
 
 # CFLAGS_MMCSD_UT += -DIO_CONSOLE
 # am65xx build
 ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
-CFLAGS_MMCSD_UT    += -DsimAM65xx
+    CFLAGS_MMCSD_UT    += -DsimAM65xx
 endif
 
 # EVM build
 ifeq ($(BOARD),$(filter $(BOARD), am65xx-evm))
-CFLAGS_MMCSD_UT += -DevmAM65xx
+    CFLAGS_MMCSD_UT += -DevmAM65xx
 endif
 
 # j7 build
 ifeq ($(BOARD),$(filter $(BOARD), j721e-evm))
-CFLAGS_MMCSD_UT    += -Dj721e_sim
+    CFLAGS_MMCSD_UT    += -Dj721e_sim
 endif
 
 PACKAGE_SRCS_COMMON = ../
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

@@ -289,10 +289,12 @@ define MMCSD_TestApp_RULE
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        mmcsd_EXAMPLE_LIST += MMCSD_TestApp_$(1)
+        ifeq ($(1),$(filter $(1), freertos tirtos))
+            mmcsd_EXAMPLE_LIST += MMCSD_TestApp_$(1)
+        endif
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            i2c_EXAMPLE_LIST += MMCSD_TestApp_$(1)
+            mmcsd_EXAMPLE_LIST += MMCSD_TestApp_$(1)
         endif
     endif
 
@@ -303,26 +305,38 @@ $(eval ${MMCSD_TestApp_MACRO_LIST})
 
 
 # EMMC Readwrite test
-MMCSD_EMMC_TestApp_COMP_LIST = MMCSD_EMMC_TestApp
-MMCSD_EMMC_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_EMMC_TestApp
-MMCSD_EMMC_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_EMMC_TestApp
-MMCSD_EMMC_TestApp_BOARD_DEPENDENCY = yes
-MMCSD_EMMC_TestApp_CORE_DEPENDENCY = no
-MMCSD_EMMC_TestApp_XDC_CONFIGURO = yes
-export MMCSD_EMMC_TestApp_COMP_LIST
-export MMCSD_EMMC_TestApp_BOARD_DEPENDENCY
-export MMCSD_EMMC_TestApp_CORE_DEPENDENCY
-export MMCSD_EMMC_TestApp_XDC_CONFIGURO
-MMCSD_EMMC_TestApp_PKG_LIST = MMCSD_EMMC_TestApp_COMP_LIST
-MMCSD_EMMC_TestApp_INCLUDE = $(MMCSD_EMMC_TestApp_PATH)
-MMCSD_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
-export MMCSD_EMMC_TestApp_BOARDLIST
-MMCSD_EMMC_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
-export MMCSD_EMMC_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-MMCSD_EMMC_TestApp_SBL_APPIMAGEGEN = yes
-export MMCSD_EMMC_TestApp_SBL_APPIMAGEGEN
-endif
+define MMCSD_EMMC_TestApp_RULE
+
+    export MMCSD_EMMC_TestApp_$(1)_COMP_LIST = MMCSD_EMMC_TestApp_$(1)
+    export MMCSD_EMMC_TestApp_$(1)_RELPATH = ti/drv/mmcsd/test/MMCSD_EMMC_TestApp
+    export MMCSD_EMMC_TestApp_$(1)_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_EMMC_TestApp
+    export MMCSD_EMMC_TestApp_$(1)_BOARD_DEPENDENCY = yes
+    export MMCSD_EMMC_TestApp_$(1)_CORE_DEPENDENCY = no
+    export MMCSD_EMMC_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+    export MMCSD_EMMC_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+    MMCSD_EMMC_TestApp_$(1)_PKG_LIST = MMCSD_EMMC_TestApp_$(1)
+    MMCSD_EMMC_TestApp_$(1)_INCLUDE = $(MMCSD_EMMC_TestApp_$(1)_PATH)
+    export MMCSD_EMMC_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
+
+    export MMCSD_EMMC_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
+    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+        export MMCSD_EMMC_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+    endif
+
+    ifneq ($(1),$(filter $(1), safertos))
+        ifeq ($(1),$(filter $(1), freertos tirtos))
+            mmcsd_EXAMPLE_LIST += MMCSD_EMMC_TestApp_$(1)
+        endif
+    else
+        ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+            mmcsd_EXAMPLE_LIST += MMCSD_EMMC_TestApp_$(1)
+        endif
+    endif
+
+endef
+
+MMCSD_EMMC_TestApp_MACRO_LIST := $(foreach curos,$(drvmmcsd_RTOS_LIST),$(call MMCSD_EMMC_TestApp_RULE,$(curos)))
+$(eval ${MMCSD_EMMC_TestApp_MACRO_LIST})
 
 # EMMC ReadwriteDMA test
 MMCSD_EMMC_DMA_TestApp_COMP_LIST = MMCSD_EMMC_DMA_TestApp
@@ -560,7 +574,6 @@ endif
 export drvmmcsd_LIB_LIST
 export mmcsd_LIB_LIST
 
-mmcsd_EXAMPLE_LIST += MMCSD_EMMC_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_DMA_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_EMMC_DMA_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_TestApp
