@@ -74,14 +74,18 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 
 ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
-COMP_LIST_COMMON += mibspi
+COMP_LIST_COMMON += mibspi_dma
 endif
 
 # Common source files and CFLAGS across all platforms and cores
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 PACKAGE_SRCS_COMMON = ../src/pmic_test_v2.c ../src/pmic_test_v2.h 
 else
+ifeq ($(BOARD), $(filter $(BOARD), awr294x_evm))
+PACKAGE_SRCS_COMMON = ../src/pmic_test_awr294x.c
+else
 PACKAGE_SRCS_COMMON = ../src/pmic_test.c
+endif
 endif
 PACKAGE_SRCS_COMMON += makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
@@ -91,7 +95,11 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
 SRCS_COMMON += pmic_test_v2.c
 else
+ifeq ($(BOARD), $(filter $(BOARD), awr294x_evm))
+SRCS_COMMON += pmic_test_awr294x.c
+else
 SRCS_COMMON += pmic_test.c
+endif
 endif
 
 SRCS_COMMON += diag_common_cfg.c
