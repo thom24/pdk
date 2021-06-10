@@ -5,37 +5,36 @@ else
 include $(RULES_MAKE)
 endif
 
-export DISABLE_RECURSE_DEPS
 
-#Name of the directory created under packages/ti/binary/
-APP_NAME = MMCSD_DMA_TestApp
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_DMA_$(BOARD)_$(CORE)TestApp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-    LOCAL_APP_NAME =  MMCSD_DMA_TestApp_$(CORE)
-endif
+#TI RTOS Specifics
+ifeq ($(BUILD_OS_TYPE), tirtos)
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-SRCDIR = ../src ../../
-INCDIR = ../src ../include ../../
-# Common source files across all platforms and cores
-SRCS_COMMON += main.c profiling.c
+    APP_NAME = MMCSD_DMA_TestApp_$(BUILD_OS_TYPE)
+    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
 
-CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+        XDC_CFG_FILE_mpu1_0 = ../am65xx/a53/mmcsdUnitTest_a53.cfg
+        XDC_CFG_FILE_mcu1_0 = ../am65xx/r5/mmcsdUnitTest_r5.cfg
+        SRCS_COMMON += profiling.c
+    else
+        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+    endif
 
-ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = ../am65xx/a53/mmcsdUnitTest_a53.cfg
-endif
-
-ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-# Enable XDC build for application by providing XDC CFG File per core
-XDC_CFG_FILE_$(CORE) = ../am65xx/r5/mmcsdUnitTest_r5.cfg
-endif
+    EXTERNAL_INTERFACES = xdc bios
+    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+#FreeRTOS Specifics
+ifeq ($(BUILD_OS_TYPE), freertos)
+
+    APP_NAME = MMCSD_DMA_TestApp_$(BUILD_OS_TYPE)
+    CFLAGS_OS_DEFINES = -DFREERTOS -DRTOS_ENV
+    EXTERNAL_INTERFACES = freertos
+    COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+
+endif
+
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
@@ -43,20 +42,9 @@ SRCS_COMMON += main.c
 
 CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED
 
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-endif
-
-# List all the external components/interfaces, whose interface header files
-# need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
-
 # List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 COMP_LIST_COMMON += mmcsd
 
-# CFLAGS_MCASP_UT = -DMCASP_MASTER -DDEVICE_LOOPBACK -DDSP_MODE
-# CFLAGS_MMCSD_UT += -DIO_CONSOLE
 # am65xx build
 ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
 CFLAGS_MMCSD_UT    += -DsimAM6x
@@ -68,7 +56,11 @@ CFLAGS_MMCSD_UT += -DevmAM65xx
 endif
 
 PACKAGE_SRCS_COMMON = ../
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT) $(CFLAGS_OS_DEFINES)
+
+# List all the external components/interfaces, whose interface header files
+# need to be included for this component
+INCLUDE_EXTERNAL_INTERFACES = $(EXTERNAL_INTERFACES) pdk
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
