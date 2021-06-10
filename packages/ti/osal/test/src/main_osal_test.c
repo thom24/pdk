@@ -1246,6 +1246,79 @@ bool OSAL_queue_test()
     return true;
 }
 
+bool OSAL_event_test()
+{
+    EventP_Params   params;
+    EventP_Handle   handle;
+    EventP_Status   status;
+    uint32_t        eventMask;
+    uint32_t        retEventMask;
+
+    EventP_Params_init(&params);
+
+    handle = EventP_create(&params);
+
+    if (handle == NULL_PTR)
+    {
+        OSAL_log("Failed to create event \n");
+        return false;
+    }
+
+    /* Test 1: event post test */
+    eventMask = EventP_ID_00 + EventP_ID_02 + EventP_ID_04 + EventP_ID_05; 
+    status = EventP_post(handle, eventMask);
+    if(EventP_OK != status)
+    {
+        OSAL_log("Failed to post an event \n");
+        return false;
+    }
+
+    /* Test 2: event wait with AND logic test */
+    eventMask = EventP_ID_00 + EventP_ID_02;
+    retEventMask = EventP_wait(handle, eventMask, EventP_WaitMode_ALL, EventP_WAIT_FOREVER);
+    if((retEventMask & eventMask) != eventMask)
+    {
+        OSAL_log("EventP_wait returned %d, but expect %d \n", retEventMask, eventMask);
+        return false;
+    }
+
+    /* Test 3: EventP_wait Timeout test */
+    /* Event 0 should be cleared since its already consumed  */
+    eventMask = EventP_ID_00 + EventP_ID_04;
+    retEventMask = EventP_wait(handle, eventMask, EventP_WaitMode_ALL, EventP_NO_WAIT);
+    if((retEventMask & eventMask) == eventMask)
+    {
+        OSAL_log("EventP_wait Timeout test failed \n");
+        OSAL_log("EventP_wait returned %d, but expect %d \n", retEventMask, 0);
+        return false;
+    }
+    
+    /* Test 4: event wait with OR logic test */
+    eventMask = EventP_ID_00 + EventP_ID_04;
+    retEventMask = EventP_wait(handle, eventMask, EventP_WaitMode_ANY, EventP_WAIT_FOREVER);
+    if((retEventMask & eventMask) != EventP_ID_04)
+    {
+        OSAL_log("EventP_wait returned %d, but expect %d \n", retEventMask, EventP_ID_04);
+        return false;
+    }
+
+    /* Test 5: event get posted events test */
+    retEventMask = EventP_getPostedEvents(handle);
+    if((retEventMask & EventP_ID_05) != EventP_ID_05)
+    {
+        OSAL_log("EventP_getPostedEvents returned %d, but expect %d \n", retEventMask, EventP_ID_05);
+        return false;
+    }
+
+    status = EventP_delete(&handle);
+    if(EventP_OK != status)
+    {
+        OSAL_log("Failed to delete event \n");
+        return false;
+    }
+
+    return true;
+}
 #endif
 
 
@@ -1662,6 +1735,16 @@ void osal_test(void *arg0, void *arg1)
     else
     {
         OSAL_log("\n Queue tests have failed. \n");
+        testFail = true;
+    }
+
+    if(OSAL_event_test() == true)
+    {
+        OSAL_log("\n Event tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n Event tests have failed. \n");
         testFail = true;
     }
 #endif
