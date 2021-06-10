@@ -38,6 +38,10 @@
 #include <xdc/runtime/Error.h>
 #include <ti/osal/src/tirtos/tirtos_config.h>
 
+extern void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line);
+#define EVENTOSAL_Assert(expression) (Osal_DebugP_assert((int32_t)((expression)?1:0),\
+                                                  __FILE__, __LINE__))
+
 /*
  *  ======== EventP_create ========
  */
@@ -56,9 +60,11 @@ EventP_Handle EventP_create(EventP_Params *params)
 /*
  *  ======== EventP_delete ========
  */
-void EventP_delete(EventP_Handle *handle)
+EventP_Status EventP_delete(EventP_Handle *handle)
 {
     Event_delete((Event_Handle *)handle);
+
+    return EventP_OK;
 }
 
 /*
@@ -69,21 +75,52 @@ void EventP_Params_init(EventP_Params *params)
     Event_Params eventParams;
     Event_Params_init(&eventParams);
 }
+
+/*
+ *  ======== EventP_wait ========
+ */
+uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
+                     uint8_t waitMode, uint32_t timeout)
+{
+    EVENTOSAL_Assert(eventMask > EventP_ID_23);
+    EVENTOSAL_Assert(eventMask == EventP_ID_NONE);
+
+    uint32_t ret_val = 0U;
+
+    if(EventP_WaitMode_ANY == waitMode)
+    {
+        ret_val = Event_pend((Event_Object *)handle, Event_Id_NONE, eventMask, timeout);
+    }
+    else if(EventP_WaitMode_ALL == waitMode)
+    {
+        ret_val = Event_pend((Event_Object *)handle, eventMask, Event_Id_NONE, timeout);
+    }
+
+    return (ret_val);
+}
+
 /*
  *  ======== EventP_pend ========
  */
+/** =====================================================================================
+ *  NOTE: The will be obsolete in next release.  Please migrate to new API EventP_wait()
+ *  ==================================================================================== */
 uint32_t EventP_pend(EventP_Handle handle, uint32_t andMask, uint32_t orMask,
                      uint32_t timeout)
 {
     return (Event_pend((Event_Object *)handle, andMask, orMask, timeout));
 }
+
 /*
  *  ======== EventP_post ========
  */
-void EventP_post(EventP_Handle handle, uint32_t eventMask)
+EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
 {
     Event_post((Event_Object *)handle, eventMask);
+
+    return EventP_OK;
 }
+
 /*
  *  ======== EventP_getPostedEvents ========
  */

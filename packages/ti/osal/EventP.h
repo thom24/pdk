@@ -57,65 +57,116 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
-#include <ti/sysbios/knl/Event.h>
 
 /**
  * \name Event ID definitions
- * Pre-defined Event Ids. Event_Ids are provided to simplify the specification
- * of andMasks and orMasks arguments to Event_pend().
- * Since each Event_Id is a bitmask composed of only a single bit,
- * a group of Event_Ids within an andMask or orMask can be indicated by simply adding them together.
+ * Pre-defined Event Ids. EventP_Ids are provided to simplify the specification
+ * of mask argument to EventP_wait().
+ * Since each EventP_Id is a bitmask composed of only a single bit,
+ * a group of EventP_Ids within a Mask can be indicated by simply adding them together.
  *  @{
  */
 
 /*!
-*  @brief    Event ID 0
+*  @brief    Event ID NONE
 */
-#define EventP_ID_NONE     Event_Id_NONE
+#define EventP_ID_NONE     0x0
 /*!
  *  @brief    Event ID 0
  */
-#define EventP_ID_00        Event_Id_00
+#define EventP_ID_00       0x1
 /*!
  *  @brief    Event ID 1
  */
-#define EventP_ID_01        Event_Id_01
+#define EventP_ID_01       0x2
 /*!
  *  @brief    Event ID 2
  */
-#define EventP_ID_02        Event_Id_02
+#define EventP_ID_02       0x4
 /*!
  *  @brief    Event ID 3
  */
-#define EventP_ID_03        Event_Id_03
+#define EventP_ID_03       0x8
 /*!
  *  @brief    Event ID 4
  */
-#define EventP_ID_04        Event_Id_04
+#define EventP_ID_04       0x10
 /*!
  *  @brief    Event ID 5
  */
-#define EventP_ID_05        Event_Id_05
+#define EventP_ID_05       0x20
 /*!
  *  @brief    Event ID 6
  */
-#define EventP_ID_06        Event_Id_06
+#define EventP_ID_06       0x40
 /*!
  *  @brief    Event ID 7
  */
-#define EventP_ID_07        Event_Id_07
+#define EventP_ID_07       0x80
 /*!
  *  @brief    Event ID 8
  */
-#define EventP_ID_08        Event_Id_08
+#define EventP_ID_08       0x100
 /*!
  *  @brief    Event ID 9
  */
-#define EventP_ID_09        Event_Id_09
+#define EventP_ID_09       0x200
 /*!
  *  @brief    Event ID 10
  */
-#define EventP_ID_10        Event_Id_10
+#define EventP_ID_10       0x400
+/*!
+ *  @brief    Event ID 11
+ */
+#define EventP_ID_11       0x800
+/*!
+ *  @brief    Event ID 12
+ */
+#define EventP_ID_12       0x1000
+/*!
+ *  @brief    Event ID 13
+ */
+#define EventP_ID_13       0x2000
+/*!
+ *  @brief    Event ID 14
+ */
+#define EventP_ID_14       0x4000
+/*!
+ *  @brief    Event ID 15
+ */
+#define EventP_ID_15       0x8000
+/*!
+ *  @brief    Event ID 16
+ */
+#define EventP_ID_16       0x10000
+/*!
+ *  @brief    Event ID 17
+ */
+#define EventP_ID_17       0x20000
+/*!
+ *  @brief    Event ID 18
+ */
+#define EventP_ID_18       0x40000
+/*!
+ *  @brief    Event ID 19
+ */
+#define EventP_ID_19       0x80000
+/*!
+ *  @brief    Event ID 20
+ */
+#define EventP_ID_20       0x100000
+/*!
+ *  @brief    Event ID 21
+ */
+#define EventP_ID_21       0x200000
+/*!
+ *  @brief    Event ID 22
+ */
+#define EventP_ID_22       0x400000
+/*!
+ *  @brief    Event ID 23
+ */
+#define EventP_ID_23       0x800000
 /* @} */
 
 /*!
@@ -128,6 +179,18 @@ typedef enum EventP_Status_e
     /*! API failed */
     EventP_FAILURE    = (-(int32_t)1)
 } EventP_Status;
+
+/*!
+ *  @brief  Event wait modes for EventP_wait API
+ */
+typedef enum EventP_WaitMode_e {
+    EventP_WaitMode_ANY,       /*!< Test bits for logical OR. 
+                                *   EventP_wait will return when ANY of the bits 
+                                *   set in mask are set in the Event bits*/
+    EventP_WaitMode_ALL        /*!< Test bits for logical AND.  
+                                *   EventP_wait will return when ALL the bits 
+                                *   set in mask are set in the Event bits*/
+}EventP_WaitMode;
 
 /*!
  *  @brief    Wait forever define
@@ -172,8 +235,11 @@ extern EventP_Handle EventP_create(EventP_Params *params);
  *  @brief  Function to delete an event.
  *
  *  @param  handle  A EventP_Handle returned from EventP_create
+ *  @return Status of the functions
+ *    - EventP_OK: Deleted the event instance
+ *    - EventP_FAILURE: Failed to delete the event instance
  */
-extern void EventP_delete(EventP_Handle *handle);
+extern EventP_Status EventP_delete(EventP_Handle *handle);
 
 /*!
  *  @brief  Initialize params structure to default values.
@@ -183,7 +249,22 @@ extern void EventP_delete(EventP_Handle *handle);
 extern void EventP_Params_init(EventP_Params *params);
 
 /*!
+ *  @brief  Function for Event Wait
+ *
+ *  @param handle    EventP_Handle created via EventP_create API
+ *  @param eventMask mask of eventIds to pend on (must be non-zero)
+ *                   Only supports upto 24 bits.
+ *  @param waitMode  Event wait mode. \ref EventP_WaitMode
+ *  @param timeout   return from wait() after this many system time units
+ *  @return All consumed events or zero if timeout
+ */
+extern uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
+                            uint8_t waitMode, uint32_t timeout);
+
+/*!
  *  @brief  Function for Event Pend
+ *  [NOTE: This will be obsolete in next release. Please migrate to new API EventP_wait()]
+ *  [NOTE: SYSBIOS only]
  *
  *  @param handle  EventP handle.created via EventP_create API
  *  @param andMask return from pend() when ALL of these events have occurred
@@ -199,8 +280,11 @@ extern uint32_t EventP_pend(EventP_Handle handle, uint32_t andMask,
  *
  *  @param handle  A EventP_Handle returned from EventP_create.
  *  @param eventMask  mask of eventIds to post (must be non-zero)
+ *  @return Status of the functions
+ *    - EventP_OK: Posted the events
+ *    - EventP_FAILURE: Failed to post the events
  */
-extern void EventP_post(EventP_Handle handle, uint32_t eventMask);
+extern EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask);
 
 /*!
  *  @brief  Function to return Event Posted.
