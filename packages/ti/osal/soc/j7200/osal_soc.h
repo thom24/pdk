@@ -112,6 +112,7 @@ extern "C" {
 #define OSAL_FREERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_QUEUEP_PER_SOC     ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_HEAPP_PER_SOC      ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
