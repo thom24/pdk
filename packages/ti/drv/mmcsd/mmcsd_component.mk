@@ -507,26 +507,40 @@ export MMCSD_Baremetal_EMMC_DMA_TestApp_SBL_APPIMAGEGEN
 endif
 
 # SD Regression Test App
-MMCSD_Regression_TestApp_COMP_LIST = MMCSD_Regression_TestApp
-MMCSD_Regression_TestApp_RELPATH = ti/drv/mmcsd/test/MMCSD_Regression_TestApp
-MMCSD_Regression_TestApp_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_Regression_TestApp
-MMCSD_Regression_TestApp_BOARD_DEPENDENCY = yes
-MMCSD_Regression_TestApp_CORE_DEPENDENCY = yes
-MMCSD_Regression_TestApp_XDC_CONFIGURO = yes
-export MMCSD_Regression_TestApp_COMP_LIST
-export MMCSD_Regression_TestApp_BOARD_DEPENDENCY
-export MMCSD_Regression_TestApp_CORE_DEPENDENCY
-export MMCSD_Regression_TestApp_XDC_CONFIGURO
-MMCSD_Regression_TestApp_PKG_LIST = MMCSD_Regression_TestApp
-MMCSD_Regression_TestApp_INCLUDE = $(MMCSD_Regression_TestApp_PATH)
-MMCSD_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
-export MMCSD_Regression_TestApp_BOARDLIST
-MMCSD_Regression_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
-export MMCSD_Regression_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-MMCSD_Regression_TestApp_SBL_APPIMAGEGEN = yes
-export MMCSD_Regression_TestApp_SBL_APPIMAGEGEN
-endif
+define MMCSD_Regression_TestApp_RULE
+
+    export MMCSD_Regression_TestApp_$(1)_COMP_LIST = MMCSD_Regression_TestApp_$(1)
+    export MMCSD_Regression_TestApp_$(1)_RELPATH = ti/drv/mmcsd/test/MMCSD_Regression_TestApp
+    export MMCSD_Regression_TestApp_$(1)_PATH = $(PDK_MMCSD_COMP_PATH)/test/MMCSD_Regression_TestApp
+    export MMCSD_Regression_TestApp_$(1)_BOARD_DEPENDENCY = yes
+    export MMCSD_Regression_TestApp_$(1)_CORE_DEPENDENCY = yes
+    export MMCSD_Regression_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+    export MMCSD_Regression_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+
+    MMCSD_Regression_TestApp_$(1)_PKG_LIST = MMCSD_Regression_TestApp_$(1)
+    MMCSD_Regression_TestApp_$(1)_INCLUDE = $(MMCSD_Regression_TestApp_$(1)_PATH)
+    export MMCSD_Regression_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
+    export MMCSD_Regression_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
+
+    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+        export MMCSD_Regression_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+    endif
+
+    ifneq ($(1),$(filter $(1), safertos))
+        ifeq ($(1),$(filter $(1), freertos tirtos))
+            mmcsd_EXAMPLE_LIST += MMCSD_Regression_TestApp_$(1)
+        endif
+    else
+        ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+            mmcsd_EXAMPLE_LIST += MMCSD_Regression_TestApp_$(1)
+        endif
+    endif
+
+endef
+
+MMCSD_Regression_TestApp_MACRO_LIST := $(foreach curos,$(drvmmcsd_RTOS_LIST),$(call MMCSD_Regression_TestApp_RULE,$(curos)))
+$(eval ${MMCSD_Regression_TestApp_MACRO_LIST})
+
 
 # SD Regression Test App
 MMCSD_Baremetal_Regression_TestApp_COMP_LIST = MMCSD_Baremetal_Regression_TestApp
@@ -602,13 +616,10 @@ endif
 export drvmmcsd_LIB_LIST
 export mmcsd_LIB_LIST
 
-mmcsd_EXAMPLE_LIST += MMCSD_DMA_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_DMA_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_EMMC_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_EMMC_DMA_TestApp
-mmcsd_EXAMPLE_LIST += MMCSD_Regression_TestApp
-mmcsd_EXAMPLE_LIST += MMCSD_EMMC_Regression_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_Baremetal_Regression_TestApp
 mmcsd_EXAMPLE_LIST += MMCSD_EMMC_Baremetal_Regression_TestApp
 
