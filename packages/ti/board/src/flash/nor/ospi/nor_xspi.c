@@ -606,8 +606,6 @@ void Nor_xspiClose(NOR_HANDLE handle)
     {
         norOspiInfo = (NOR_Info *)handle;
         spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
-        hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
-        pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
 
         if (spiHandle)
         {
@@ -615,6 +613,8 @@ void Nor_xspiClose(NOR_HANDLE handle)
             * Some fields in RD_DATA_CAPTURE_REG are modified by the Nor_spiPhyTune API.
             * These fields need to be reset here to avoid errors in subsequent tests.
             */
+            hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
+            pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
             CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
                             OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD,
                             0);
