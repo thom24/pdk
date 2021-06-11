@@ -1215,9 +1215,9 @@ int main(void)
 #ifdef RTOS_ENV
     TaskP_Handle task;
     TaskP_Params taskParams;
-#endif
 
     OS_init();
+#endif
 
 #ifdef GPIO_ENABLED
     board_initGPIO();

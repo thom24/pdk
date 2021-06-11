@@ -1100,16 +1100,18 @@ volatile uint32_t emuwait_board=1;
 
 int main(void)
 {
-#ifdef RTOS_ENV
-    TaskP_Handle task;
-    TaskP_Params taskParams;
-#endif
-
     /* Call board init functions */
     Board_initCfg boardCfg;
     Board_STATUS board_status;
 
+#ifdef RTOS_ENV
+    TaskP_Handle task;
+    TaskP_Params taskParams;
+
+
     OS_init();
+#endif
+
 
 #if !defined(SOC_OMAPL137)  && defined(GPIO_ENABLED)
     board_initGPIO();
