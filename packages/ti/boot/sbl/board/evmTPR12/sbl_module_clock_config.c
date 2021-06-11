@@ -296,6 +296,8 @@ void SBL_moduleClockInit(void)
                                            SBLModuleClockCfgTbl[i].freqHz);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
     }
+    /* Temp hack to configure RGMII/MII100/MII10 clocks */
+    SBL_rcmConfigEthMacIf();
 }
 
 

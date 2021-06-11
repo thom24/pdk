@@ -2157,6 +2157,65 @@ static uint16_t SBL_RcmGetPerTrimVal(void)
     return (perADPLLTrimVal);
 }
 
+void SBL_RcmCoreApllHSDivConfig(Rcm_PllHsDivOutConfig *hsDivCfg)
+{
+    CSL_mss_toprcmRegs *ptrTopRCMRegs;
+    uint32_t hsDivOutRegVal;
+    uint32_t Fout;
+    uint32_t Finp;
+    Rcm_XtalFreqId clkFreqId;
+
+    /* Core PLL settings */
+    ptrTopRCMRegs = CSL_TopRCM_getBaseAddress();
+    clkFreqId = SBL_RcmGetXTALFrequency();
+    Finp = gXTALInfo[clkFreqId].Finp;
+    Fout = SBL_RcmGetCoreFout(Finp, gXTALInfo[clkFreqId].div2flag);
+    /* Derive Clocks */
+    /* TPR12_Ch08_Clock_Arch_0p91 is used as reference for below settings */
+    /* Set clock divider values from Core PLL*/
+    /* 400Mhz */
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_0)
+    {
+        DebugP_assert((Fout % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0]) == 0);
+        hsDivOutRegVal = Fout / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0];
+        hsDivOutRegVal--;
+        ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0, 4U, 0U, hsDivOutRegVal);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_1)
+    {
+        DebugP_assert((Fout % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1]) == 0);
+        hsDivOutRegVal = Fout / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1];
+        hsDivOutRegVal--;
+        ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1, 4U, 0U, hsDivOutRegVal);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_2)
+    {
+        DebugP_assert((Fout % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2]) == 0);
+        hsDivOutRegVal = Fout / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2];
+        hsDivOutRegVal--;
+        ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2, 4U, 0U, hsDivOutRegVal);
+    }
+    /* Core PLL output 3 not used.WIll not configure */
+    DebugP_assert((hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_3) == 0);
+    /* Generate Trigger to latch these values */
+    ptrTopRCMRegs->PLL_CORE_HSDIVIDER         = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER, 2U, 2U, 0x1U);
+    ptrTopRCMRegs->PLL_CORE_HSDIVIDER         = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER, 2U, 2U, 0x0U);
+
+    /* Ungate the clocks */
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_0)
+    {
+        ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0, 8U, 8U, 0x1U);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_1)
+    {
+        ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1, 8U, 8U, 0x1U);
+    }
+    if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_2)
+    {
+        ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2, 8U, 8U, 0x1U);
+    }
+}
+
 /**
  *  @b Description
  *  @n
@@ -2170,16 +2229,11 @@ void SBL_RcmCoreApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *h
 {
     Rcm_XtalFreqId XTALFreq;
     uint16_t coreTrimVal;
-    CSL_mss_toprcmRegs *ptrTopRCMRegs;
     Rcm_ADPLLJConfig_t const * adplljCfg;
-    uint32_t hsDivOutRegVal;
-    uint32_t Fout;
 
-    Fout = SBL_FREQ_MHZ2HZ(gPLLFreqId2FOutMap[outFreqId]);
     /* read the Core ADPLL trim value */
     coreTrimVal = SBL_RcmGetCoreTrimVal ();
     /* Core PLL settings */
-    ptrTopRCMRegs = CSL_TopRCM_getBaseAddress ();
 
     /* read the XTAL Frequency */
     XTALFreq = SBL_RcmGetXTALFrequency ();
@@ -2213,52 +2267,7 @@ void SBL_RcmCoreApllConfig(Rcm_PllFoutFreqId outFreqId, Rcm_PllHsDivOutConfig *h
         }
         /* Configure and Lock Core PLL */
         configurePllCore (coreTrimVal);
-
-        /* Derive Clocks */
-        /* TPR12_Ch08_Clock_Arch_0p91 is used as reference for below settings */
-        /* Set clock divider values from Core PLL*/
-        /* 400Mhz */
-        if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_0)
-        {
-            DebugP_assert((Fout % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0]) == 0);
-            hsDivOutRegVal = Fout / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0];
-            hsDivOutRegVal--;
-            ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0, 4U, 0U, hsDivOutRegVal);
-        }
-        if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_1)
-        {
-            DebugP_assert((Fout % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1]) == 0);
-            hsDivOutRegVal = Fout / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1];
-            hsDivOutRegVal--;
-            ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1, 4U, 0U, hsDivOutRegVal);
-        }
-        if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_2)
-        {
-            DebugP_assert((Fout % hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2]) == 0);
-            hsDivOutRegVal = Fout / hsDivCfg->hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2];
-            hsDivOutRegVal--;
-            ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2, 4U, 0U, hsDivOutRegVal);
-        }
-        /* Core PLL output 3 not used.WIll not configure */
-        DebugP_assert((hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_3) == 0);
-        /* Generate Trigger to latch these values */
-        ptrTopRCMRegs->PLL_CORE_HSDIVIDER         = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER, 2U, 2U, 0x1U);
-        ptrTopRCMRegs->PLL_CORE_HSDIVIDER         = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER, 2U, 2U, 0x0U);
-
-        /* Ungate the clocks */
-        if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_0)
-        {
-            ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT0, 8U, 8U, 0x1U);
-        }
-        if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_1)
-        {
-            ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT1, 8U, 8U, 0x1U);
-        }
-        if (hsDivCfg->hsdivOutEnMask & RCM_PLL_HSDIV_OUTPUT_ENABLE_2)
-        {
-            ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2 = CSL_insert8 (ptrTopRCMRegs->PLL_CORE_HSDIVIDER_CLKOUT2, 8U, 8U, 0x1U);
-        }
-
+        SBL_RcmCoreApllHSDivConfig(hsDivCfg);
     }
 
     return;
@@ -3847,4 +3856,28 @@ uint32_t SBL_rcmIsDualCoreSwitchSupported(void)
         retVal = true;
     }
     return retVal;
+}
+
+void SBL_rcmConfigEthMacIf(void)
+{
+    CSL_mss_rcmRegs *ptrMSSRCMRegs;
+    uint32_t clkFreq = 0U;
+    Rcm_XtalFreqId clkFreqId;
+    uint32_t Finp;
+    uint32_t clkDivisor;
+    uint32_t mii10ClkDivVal;
+
+
+    clkFreqId = SBL_RcmGetXTALFrequency ();
+    Finp = gXTALInfo[clkFreqId].Finp;
+
+    ptrMSSRCMRegs = CSL_RCM_getBaseAddress ();
+    clkFreq = SBL_RcmGetCoreHSDivOut(Finp, gXTALInfo[clkFreqId].div2flag, RCM_PLLHSDIV_OUT_1);
+    clkDivisor = SBL_RcmGetModuleClkDivVal(clkFreq, SBL_FREQ_MHZ2HZ(50U));
+    ptrMSSRCMRegs->MSS_MII100_CLK_DIV_VAL = CSL_insert16 (ptrMSSRCMRegs->MSS_MII100_CLK_DIV_VAL, 11U, 0U, SBL_RcmGetModuleClkDivRegVal(clkDivisor));
+    clkDivisor = SBL_RcmGetModuleClkDivVal(clkFreq, SBL_FREQ_MHZ2HZ(5U));
+    mii10ClkDivVal = (clkDivisor & 0xFF) | ((clkDivisor & 0xFF) << 8) | ((clkDivisor & 0xFF) << 16);
+    ptrMSSRCMRegs->MSS_MII10_CLK_DIV_VAL  = CSL_insert32 (ptrMSSRCMRegs->MSS_MII10_CLK_DIV_VAL, 23U, 0U, mii10ClkDivVal);
+    clkDivisor = SBL_RcmGetModuleClkDivVal(clkFreq, SBL_FREQ_MHZ2HZ(50U));
+    ptrMSSRCMRegs->MSS_RGMII_CLK_DIV_VAL = CSL_insert16 (ptrMSSRCMRegs->MSS_RGMII_CLK_DIV_VAL, 11U, 0U, SBL_RcmGetModuleClkDivRegVal(clkDivisor));
 }

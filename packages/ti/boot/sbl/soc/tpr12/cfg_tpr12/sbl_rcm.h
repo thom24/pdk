@@ -459,6 +459,11 @@ extern uint32_t SBL_RcmGetCR5Freq(void);
 
 uint32_t SBL_rcmIsDualCoreSwitchSupported(void);
 
+void SBL_RcmCoreApllHSDivConfig(Rcm_PllHsDivOutConfig *hsDivCfg);
+
+void SBL_rcmConfigEthMacIf(void);
+
+
 #ifdef __cplusplus
 }
 #endif
