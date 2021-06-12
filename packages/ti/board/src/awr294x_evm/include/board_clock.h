@@ -166,6 +166,20 @@ typedef struct Board_Clk_config_s
  */
 Board_STATUS Board_moduleClockInit(void);
 
+/**
+ * \brief switch to APLL clock 
+ *
+ * Switches clock tree to APLL by configuring HSDIV mux outputs
+ * Should be invoked early (ideally at boottime ) after the 
+ * BSS R4 core is loaded and APLL calibration is done
+ *
+ * \return  BOARD_SOK              - Clock initialization sucessful.
+ *          BOARD_INIT_CLOCK_FAIL  - Clock initialization failed.
+ *
+ */
+Board_STATUS Board_aPLLClockSwitch(void);
+
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */

@@ -368,6 +368,13 @@ typedef struct Rcm_EfuseBootFreqConfig_s
     uint32_t           sysClkFreqHz;
 } Rcm_EfuseBootFreqConfig;
 
+typedef struct Rcm_DeviceFreqConfig_s
+{
+    uint32_t           dspFreqHz;
+    uint32_t           r5FreqHz;
+    uint32_t           sysClkFreqHz;
+} Rcm_DeviceFreqConfig;
+
 
 /**************************************************************************
  ************************* Extern Declarations ****************************
@@ -422,12 +429,24 @@ extern uint32_t SBL_RcmGetCR5Freq(void);
 extern Rcm_Return SBL_RcmSetHSDivMux (Rcm_HSDIVClkOutMuxId clkOutMuxId, 
                                Rcm_HSDIVClkOutMuxClockSource muxSource);
 
-extern Rcm_Return SBL_RcmSetRssClkSrc (Rcm_RssClkSrcId rssClkSrcId);
+extern Rcm_Return SBL_RcmSetRssClkFreq (Rcm_RssClkSrcId rssClkSrcId,
+                                        uint32_t freqHz);
 extern void SBL_RcmBSSR4Unhalt(void);
 extern void SBL_RcmWaitBSSBootComplete(void);
 extern void SBL_RcmGetEfuseBootFrequency(Rcm_EfuseBootFreqConfig *bootFreqEfuseCfg);
+extern void SBL_RcmGetDeviceFrequency(Rcm_DeviceFreqConfig *deviceFreqEfuseCfg);
+extern void SBL_RcmCoreApllHSDivConfig(Rcm_PllHsDivOutConfig *hsDivCfg);
+extern void SBL_rcmConfigEthMacIf(void);
 
-uint32_t SBL_rcmIsDualCoreSwitchSupported(void);
+extern uint32_t SBL_rcmIsDualCoreSwitchSupported(void);
+extern Rcm_Return SBL_RcmSetHSIClock (Rcm_HSIClockSource clkSource,
+                               uint32_t freqHz);
+extern void SBL_RcmCoreDpllHSDivOutEnable(uint32_t hsDivOutIdx, uint32_t divVal);
+
+extern void SBL_RcmCoreDpllDisable(void);
+extern void SBL_RcmDspDpllDisable(void);
+extern void SBL_RcmPerDpllDisable(void);
+
 #ifdef __cplusplus
 }
 #endif
