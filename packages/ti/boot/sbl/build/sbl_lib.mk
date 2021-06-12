@@ -6,20 +6,27 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 ifeq ($(SBL_USE_DMA),no)
   ifneq ($(BOOTMODE), cust)
     ifeq ($(HLOS_BOOT),yes)
-      MODULE_NAME = sbl_lib_$(BOOTMODE)_nondma_hlos
+      BASE_NAME = sbl_lib_$(BOOTMODE)_nondma_hlos
     else
-      MODULE_NAME = sbl_lib_$(BOOTMODE)_nondma
+      BASE_NAME = sbl_lib_$(BOOTMODE)_nondma
     endif
   else
-    MODULE_NAME = sbl_lib_$(BOOTMODE)
+    BASE_NAME = sbl_lib_$(BOOTMODE)
   endif
 else
   ifeq ($(HLOS_BOOT),yes)
-    MODULE_NAME = sbl_lib_$(BOOTMODE)_hlos
+    BASE_NAME = sbl_lib_$(BOOTMODE)_hlos
   else
-    MODULE_NAME = sbl_lib_$(BOOTMODE)
+    BASE_NAME = sbl_lib_$(BOOTMODE)
   endif
 endif
+
+HS_SUFFIX=
+ifeq ($(BUILD_HS),yes)
+HS_SUFFIX=_hs
+endif
+
+MODULE_NAME = $(BASE_NAME)$(HS_SUFFIX)
 
 INCDIR	+= $(PDK_INSTALL_PATH)
 INCDIR	+= $(PDK_INSTALL_PATH)/ti/drv/uart/soc/$(SOC)

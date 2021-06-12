@@ -61,14 +61,14 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
 # Check for custom flags
 ifeq ($(BOOTMODE), cust)
   SBL_CFLAGS = $(CUST_SBL_FLAGS)
-  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)
+  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(HS_SUFFIX)
 else
   ifeq ($(SBL_USE_DMA),yes)
     SBL_CFLAGS += -DSBL_USE_DMA=1
   else
     SBL_CFLAGS += -DSBL_USE_DMA=0
   endif
-  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)$(HLOS_SUFFIX)
+  COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)$(HLOS_SUFFIX)$(HS_SUFFIX)
 endif # ifeq ($(BOOTMODE), cust)
 
 # HLOS Boot flags
