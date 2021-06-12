@@ -176,4 +176,16 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
 #define portCONFIGURE_CACHE_L2_SIZE                                       (DSPICFG_CACHE_SIZE_L2_DISABLED)
 
+/* 
+ * This is not a FreeRTOS defined config and is defined by TI to enable
+ * load update in idle task 
+ */
+#define configLOAD_UPDATE_IN_IDLE   (1)
+#define configLOAD_WINDOW_IN_MS     (500)
+
+#if (configLOAD_UPDATE_IN_IDLE==1)
+#undef  configUSE_IDLE_HOOK
+#define configUSE_IDLE_HOOK         (1)
+#endif
+
 #endif /* TI_FREERTOS_CONFIG_H */
