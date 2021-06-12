@@ -233,10 +233,23 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
                         "So there will be resource leak\n");
         }
 
+        /* Before deleting the FreeRTOS Task, Check if Load measuremnent is started.
+         * If yes, pass the TaskP_Handle to the responsible Load API.
+         * This load API will check if the task was registered for load measurement
+         * and update the load if registered. */
+        extern bool gLoadP_startLoadCalc;
+        if(gLoadP_startLoadCalc)
+        {
+            extern void Load_updateDeleteTaskLoad(TaskP_Handle taskHandle);
+            Load_updateDeleteTaskLoad(hTask);
+        }
+        
         vTaskDelete(task->taskHndl);
 
         key = HwiP_disable();
-        //(void )memset( (void *)task->taskObj, 0, sizeof(task->taskObj));
+        /* In FreeRTOS, task is deleted in the idle task.
+         * So the TaskObj should not be memset to 0 */
+        /* (void )memset( (void *)task->taskObj, 0, sizeof(task->taskObj)); */
         task->used      = FALSE;
         task->taskObj   = NULL;
         task->taskHndl  = NULL;
