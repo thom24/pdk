@@ -62,6 +62,8 @@
 #if !defined(BARE_METAL)
 /* include for both tirtos, safertos and freertos. */
 #include <ti/osal/TaskP.h>
+#include <ti/osal/EventP.h>
+#include <ti/osal/LoadP.h>
 #endif
 
 #if defined (FREERTOS)
@@ -1246,6 +1248,9 @@ bool OSAL_queue_test()
     return true;
 }
 
+/*
+ *  ======== Event test function ========
+ */
 bool OSAL_event_test()
 {
     EventP_Params   params;
@@ -1319,6 +1324,171 @@ bool OSAL_event_test()
 
     return true;
 }
+
+/*
+ *  ======== Load test function ========
+ */
+#define OSAL_LOAD_TEST_TASK_PRIO      (1U)
+#define OSAL_LOAD_TEST_NUM_TASKS      (3U)
+
+static uint8_t  gAppTskStackLoadTask[OSAL_LOAD_TEST_NUM_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+
+static volatile uint32_t gWait[OSAL_LOAD_TEST_NUM_TASKS];
+
+void loadTestFxn(volatile uint32_t *wait, SemaphoreP_Handle hDoneSem)
+{
+    while(*wait);
+
+    SemaphoreP_post(hDoneSem);
+}
+
+bool OSAL_load_test()
+{
+    TaskP_Params        taskParams;
+    TaskP_Handle        hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS+1];
+    SemaphoreP_Params   semPrms;
+    SemaphoreP_Handle   hDoneSem;
+    LoadP_Status        status = LoadP_OK;
+    LoadP_Stats         loadStatsTask[OSAL_LOAD_TEST_NUM_TASKS+1];
+    uint32_t            cpuLoad;
+    uint32_t            i; 
+    char *taskNameStr[] = { "Task A", "Task B", "Task C"};
+
+    /* Create semaphore to signal completion of load tasks */
+    SemaphoreP_Params_init(&semPrms);
+    semPrms.mode = SemaphoreP_Mode_COUNTING;
+    hDoneSem = SemaphoreP_create(0U, &semPrms);
+
+    /* Register current task for load measurement */
+    status += LoadP_registerTask(TaskP_self(), "OSAL_load_test main task");
+
+    /* Start Load measurement */
+    LoadP_start();
+
+    /* Create tasks and register for load measurement */
+    for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
+    {
+        TaskP_Params_init(&taskParams);
+        taskParams.priority     = OSAL_LOAD_TEST_TASK_PRIO;
+        taskParams.stack        = &gAppTskStackLoadTask[i];
+        taskParams.stacksize    = APP_TSK_STACK_MAIN;
+        taskParams.arg0         = (uint32_t *) &gWait[i];
+        taskParams.arg1         = hDoneSem;
+        gWait[i]                = 1;
+        hLoadTestTask[i] = TaskP_create(loadTestFxn, &taskParams);
+
+        status += LoadP_registerTask(hLoadTestTask[i], taskNameStr[i]);
+    }
+    if(LoadP_OK != status)
+    {
+        OSAL_log("Failed to register tasks for load measurement \n");
+        /* Stop Load measurement and report failure*/
+        LoadP_stop();
+        return false;
+    }
+
+    /* ==============================================================================
+     * Stay in while loop of Task A for ~2s, (Expected Task Load:......2s/7s = ~28%)
+     *           followed by Task B for ~1s, (Expected Task Load:......1s/7s = ~14%)
+     *           followed by Task C for ~0.5s(Expected Task Load:.....0.5/7s =  ~7%)
+     *  And finally go to idle mode for ~3.5s(Expected CPU Load :(7-3.5)s/7s = ~50%) 
+     * ------------------------------------------------------------------------------
+     * Total Time: ~(2s+1s+0.5+3.5s) =  ~7s |
+     * =============================================================================*/
+    {
+        uint32_t waitTimeInMsec[OSAL_LOAD_TEST_NUM_TASKS] = {2000, 1000, 500};
+        uint32_t idleTimeInMsec = 3500;
+        
+        for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
+        {
+            TaskP_sleepInMsecs(waitTimeInMsec[i]);
+            gWait[i] = 0;
+        }
+
+        /* Wait for tasks completion */
+        for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
+        {
+            SemaphoreP_pend(hDoneSem, SemaphoreP_WAIT_FOREVER);
+        }
+
+        TaskP_sleepInMsecs(idleTimeInMsec);
+    }
+
+    /* Stop Load Measurement */
+    LoadP_stop();
+
+    hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS] = TaskP_self();
+    /* Query Load stats for each task and print % load */  
+    for(i = 0U; i <= OSAL_LOAD_TEST_NUM_TASKS; i++)
+    {
+        status += LoadP_getTaskLoad(hLoadTestTask[i], &loadStatsTask[i]);
+
+        if(loadStatsTask[i].percentLoad > 0U)
+        {
+            OSAL_log("    %s - Load = %d%% \n", loadStatsTask[i].name, loadStatsTask[i].percentLoad);
+        }
+        else
+        {   
+            /* Load less than 1%, Try to get fractional part */
+            OSAL_log("\n    %s - Load = 0.000%d%% \n", loadStatsTask[i].name, loadStatsTask[i].threadTime/(loadStatsTask[i].totalTime/(100*1000)));
+        }
+    }
+    if(LoadP_OK != status)
+    {
+        OSAL_log("Failed to get tasks load measurement \n");
+        return false;
+    }
+
+    /* Query CPU Load */
+    cpuLoad = LoadP_getCPULoad();
+    OSAL_log("\n    CPU Load = %d%% \n", cpuLoad);
+
+    /* Un-register tasks from load measurement */
+    for(i = 0U; i <= OSAL_LOAD_TEST_NUM_TASKS; i++)
+    {
+        status += LoadP_unRegisterTask(hLoadTestTask[i]);
+    }
+    if(LoadP_OK != status)
+    {
+        OSAL_log("Failed to un-register tasks for load measurement \n");
+        return false;
+    }
+
+    /* Delete Semaphore */
+    SemaphoreP_delete(hDoneSem);
+    hDoneSem = NULL;
+
+    /* ===========================
+     *  LoadP API's Negative test 
+     * ===========================*/
+    status = LoadP_getTaskLoad(TaskP_self(),&loadStatsTask[0]);
+    if(LoadP_OK == status)
+    {
+        OSAL_log("LoadP_getTaskLoad doesn't returned failure for an unregistered task \n");
+        return false;
+    }
+    status = LoadP_unRegisterTask(TaskP_self());
+    if(LoadP_OK == status)
+    {
+        OSAL_log("LoadP_unRegisterTask doesn't returned failure for an unregistered task \n");
+        return false;
+    }
+    status = LoadP_registerTask(NULL,"Invalid Task Handle test :P");
+    if(LoadP_OK == status)
+    {
+        OSAL_log("LoadP_registerTask doesn't returned failure when no task handle passed \n");
+        return false;
+    }
+    status = LoadP_registerTask(TaskP_self(),NULL);
+    if(LoadP_OK == status)
+    {
+        OSAL_log("LoadP_registerTask doesn't returned failure for NULL task name \n");
+        return false;
+    }
+
+    return true;
+}
+
 #endif
 
 
@@ -1745,6 +1915,17 @@ void osal_test(void *arg0, void *arg1)
     else
     {
         OSAL_log("\n Event tests have failed. \n");
+        testFail = true;
+    }
+    
+    OSAL_log(" \n OSAL Load Test Starting...\n Takes about 10 seconds ...\n\n"); 
+    if(OSAL_load_test() == true)
+    {
+        OSAL_log("\n Load tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n Load tests have failed. \n");
         testFail = true;
     }
 #endif
