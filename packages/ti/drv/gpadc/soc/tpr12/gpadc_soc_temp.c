@@ -44,8 +44,8 @@
 #include <stdint.h>
 #include <string.h>
 #include <ti/osal/DebugP.h>
-#include <ti/csl/soc/awr294x/src/cslr_soc_baseaddress.h>
-#include <ti/csl/soc/awr294x/src/cslr_top_ctrl.h>
+#include <ti/csl/soc/tpr12/src/cslr_soc_baseaddress.h>
+#include <ti/csl/soc/tpr12/src/cslr_top_ctrl.h>
 #include "gpadc.h"
 #include "gpadc_soc.h"
 #include "gpadc_soc_temp.h"

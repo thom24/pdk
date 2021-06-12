@@ -51,7 +51,12 @@
 #include <ti/osal/DebugP.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/gpadc/gpadc.h>
+#if defined(SOC_TPR12)
 #include <ti/drv/gpadc/soc/tpr12/gpadc_soc_temp.h>
+#elif defined(SOC_AWR294X)
+#include <ti/drv/gpadc/soc/awr294x/gpadc_soc_temp.h>
+#endif
+
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
