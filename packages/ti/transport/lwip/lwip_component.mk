@@ -73,9 +73,9 @@ drvlwip_RTOS_LIST       = tirtos freertos
 
 drvlwip_SOCLIST         = am65xx j721e j7200 tpr12 awr294x
 drvlwip_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm j7200_evm tpr12_evm awr294x_evm
-drvlwip_am65xx_CORELIST = mpu1_0 mcu1_0
-drvlwip_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1
-drvlwip_j7200_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1
+drvlwip_am65xx_CORELIST = mcu1_0
+drvlwip_j721e_CORELIST  = mcu1_0 mcu2_0 mcu2_1
+drvlwip_j7200_CORELIST  = mcu1_0 mcu2_0 mcu2_1
 drvlwip_tpr12_CORELIST  = mcu1_0
 drvlwip_awr294x_CORELIST  = mcu1_0
 
