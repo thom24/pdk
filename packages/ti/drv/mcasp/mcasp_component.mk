@@ -98,7 +98,7 @@ drvmcasp_LIB_LIST = $(mcasp_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_DeviceLoopback_SMP_TestApp MCASP_DeviceLoopback_TestApp MCASP_DeviceLoopback_Regression_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
+mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_DeviceLoopback_TestApp MCASP_DeviceLoopback_Regression_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
 #
 # MCASP Modules
 #
@@ -181,30 +181,6 @@ export MCASP_AudioLoopback_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 MCASP_AudioLoopback_TestApp_SBL_APPIMAGEGEN = yes
 export MCASP_AudioLoopback_TestApp_SBL_APPIMAGEGEN
-endif
-
-# McASP Audio Loopback example app with SMP enabled
-MCASP_DeviceLoopback_SMP_TestApp_COMP_LIST = MCASP_DeviceLoopback_SMP_TestApp
-MCASP_DeviceLoopback_SMP_TestApp_RELPATH = ti/drv/mcasp/example/MCASP_DeviceLoopback_TestApp
-MCASP_DeviceLoopback_SMP_TestApp_PATH = $(PDK_MCASP_COMP_PATH)/example/MCASP_DeviceLoopback_TestApp
-MCASP_DeviceLoopback_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-MCASP_DeviceLoopback_SMP_TestApp_BOARD_DEPENDENCY = yes
-MCASP_DeviceLoopback_SMP_TestApp_CORE_DEPENDENCY = no
-MCASP_DeviceLoopback_SMP_TestApp_XDC_CONFIGURO = yes
-export MCASP_DeviceLoopback_SMP_TestApp_COMP_LIST
-export MCASP_DeviceLoopback_SMP_TestApp_BOARD_DEPENDENCY
-export MCASP_DeviceLoopback_SMP_TestApp_CORE_DEPENDENCY
-export MCASP_DeviceLoopback_SMP_TestApp_XDC_CONFIGURO
-export MCASP_DeviceLoopback_SMP_TestApp_MAKEFILE
-MCASP_DeviceLoopback_SMP_TestApp_PKG_LIST = MCASP_DeviceLoopback_SMP_TestApp
-MCASP_DeviceLoopback_SMP_TestApp_INCLUDE = $(MCASP_DeviceLoopback_SMP_TestApp_PATH)
-MCASP_DeviceLoopback_SMP_TestApp_BOARDLIST = am65xx_evm am65xx_idk
-export MCASP_DeviceLoopback_TestApp_BOARDLIST
-MCASP_DeviceLoopback_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export MCASP_DeviceLoopback_SMP_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-MCASP_DeviceLoopback_SMP_TestApp_SBL_APPIMAGEGEN = yes
-export MCASP_DeviceLoopback_SMP_TestApp_SBL_APPIMAGEGEN
 endif
 
 # McASP sysbios unit test app
