@@ -2308,7 +2308,16 @@ bool MIBSPI_transferCore(MIBSPI_Handle handle, MIBSPI_Transaction *transaction)
         }while(0);
 
 #endif
+    /* For master blocking mode, if CS Hold is set clear it in SPIDAT1 reg here. */
+    if ((ret == TRUE) && (ptrMibSpiDriver->params.mode == MIBSPI_MASTER) &&
+        (ptrMibSpiDriver->params.transferMode == MIBSPI_MODE_BLOCKING) &&
+        (ptrMibSpiDriver->params.csHold != 0))
+        {
+            CSL_mss_spiRegs *ptrMibSpiReg = ptrMibSpiDriver->ptrHwCfg->ptrSpiRegBase;
+            CSL_FINS(ptrMibSpiReg->SPIDAT1,SPI_SPIDAT1_CSHOLD, 0U);
+        }
     }
+
     /* Disable transfer group */
     MIBSPI_transferGroupDisable((ptrMibSpiDriver->ptrHwCfg->ptrSpiRegBase), transaction->slaveIndex);
     
@@ -2451,6 +2460,14 @@ void MIBSPI_dmaDoneCb(MIBSPI_Handle mibspiHandle)
             {
                 /* Update status */
                 ptrMibSpiDriver->transactionState.transaction->status = MIBSPI_TRANSFER_FAILED;
+            }
+
+            /* For master blocking mode, if CS Hold is set clear it in SPIDAT1 reg here. */
+            if ((ptrMibSpiDriver->transactionState.transaction->status == MIBSPI_TRANSFER_COMPLETED) &&
+                (ptrMibSpiDriver->params.mode == MIBSPI_MASTER) &&
+                (ptrMibSpiDriver->params.csHold != 0))
+            {
+                CSL_FINS(ptrMibSpiReg->SPIDAT1,SPI_SPIDAT1_CSHOLD, 0U);
             }
 
             if ((ptrMibSpiDriver->transactionState.transaction->status == MIBSPI_TRANSFER_COMPLETED) ||
