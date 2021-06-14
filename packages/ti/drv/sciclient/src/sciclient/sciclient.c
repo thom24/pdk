@@ -166,7 +166,7 @@ int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
                 pCfgPrms->inPmPrms.boardConfigHigh = 0U;
                 pCfgPrms->inPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
                 pCfgPrms->inPmPrms.devGrp = DEVGRP_ALL;
-                
+
                 pCfgPrms->inRmPrms.boardConfigLow = (uintptr_t)boardCfgInfo.boardCfgLowRm;
                 pCfgPrms->inRmPrms.boardConfigHigh = 0U;
                 pCfgPrms->inRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
@@ -211,28 +211,29 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
     }
     HwiP_restore(key);
 
-    if (pCfgPrms != NULL)
+
+    if(1U == b_doInit)
     {
-        /* Initialize Config params */
-        if((pCfgPrms->opModeFlag ==
-            SCICLIENT_SERVICE_OPERATION_MODE_POLLED) ||
-            (pCfgPrms->opModeFlag ==
-            SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT))
+        if (pCfgPrms != NULL)
         {
-            gSciclientHandle.opModeFlag = pCfgPrms->opModeFlag;
+            /* Initialize Config params */
+            if((pCfgPrms->opModeFlag ==
+                SCICLIENT_SERVICE_OPERATION_MODE_POLLED) ||
+                (pCfgPrms->opModeFlag ==
+                SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT))
+            {
+                gSciclientHandle.opModeFlag = pCfgPrms->opModeFlag;
+            }
+            else
+            {
+                status = CSL_EBADARGS;
+            }
         }
         else
         {
-            status = CSL_EBADARGS;
+            gSciclientHandle.opModeFlag =
+                    SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
         }
-    }
-    else
-    {
-        gSciclientHandle.opModeFlag =
-                SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
-    }
-    if(1U == b_doInit)
-    {
         if ((gSciclientHandle.opModeFlag ==
                     SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT) &&
                 (status == CSL_PASS))
@@ -265,7 +266,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 rxThread = gSciclientMap[contextId].respThreadId;
                 CSL_secProxyGetDataAddr(&gSciclient_secProxyCfg, rxThread, 0U);
                 /* Get the Max Message Size */
-                gSciclient_maxMsgSizeBytes = 
+                gSciclient_maxMsgSizeBytes =
                         CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
                         CSL_SEC_PROXY_RSVD_MSG_BYTES;
                 Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
@@ -326,7 +327,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 rxThread = gSciclientMap[contextId].respThreadId;
                 CSL_secProxyGetDataAddr(&gSciclient_secProxyCfg, rxThread, 0U);
                 /* Get the Max Message Size */
-                gSciclient_maxMsgSizeBytes = 
+                gSciclient_maxMsgSizeBytes =
                         CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
                         CSL_SEC_PROXY_RSVD_MSG_BYTES;
                 Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
@@ -381,7 +382,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
             }
         }
         if (pCfgPrms != NULL)
-        {  
+        {
             if( (CSL_PASS==status) && ((pCfgPrms->isSecureMode==0U) ||
                     (pCfgPrms->isSecureMode==1U)) )
             {
@@ -523,7 +524,7 @@ int32_t Sciclient_serviceGetThreadIds (const Sciclient_ReqPrm_t *pReqPrm,
         gSciclient_secHeader.integ_check = (uint16_t)0;
         gSciclient_secHeader.rsvd = (uint16_t)0;
         /* Get the Max Message Size */
-        gSciclient_maxMsgSizeBytes = 
+        gSciclient_maxMsgSizeBytes =
                 CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
                 CSL_SEC_PROXY_RSVD_MSG_BYTES;
     }
@@ -532,7 +533,7 @@ int32_t Sciclient_serviceGetThreadIds (const Sciclient_ReqPrm_t *pReqPrm,
         status = CSL_EBADARGS;
     }
 
-    return status; 
+    return status;
 }
 
 int32_t Sciclient_servicePrepareHeader(const Sciclient_ReqPrm_t *pReqPrm,
@@ -547,7 +548,7 @@ int32_t Sciclient_servicePrepareHeader(const Sciclient_ReqPrm_t *pReqPrm,
     {
         status = CSL_EBADARGS;
     }
-    if(status == CSL_PASS)    
+    if(status == CSL_PASS)
     {
         dummyHdr = (struct tisci_msg_version_req *)pReqPrm->pReqPayload;
         if (dummyHdr == NULL)
@@ -555,7 +556,7 @@ int32_t Sciclient_servicePrepareHeader(const Sciclient_ReqPrm_t *pReqPrm,
             status = CSL_EBADARGS;
         }
     }
-    if(status == CSL_PASS)    
+    if(status == CSL_PASS)
     {
         *header = &dummyHdr->hdr;
         /* This is done in such a fashion as the C66x does not honor a non word aligned
@@ -608,7 +609,7 @@ int32_t Sciclient_serviceGetPayloadSize(const Sciclient_ReqPrm_t *pReqPrm,
         /* The request Payload is expected to have the Header the payload */
         if (pReqPrm->reqPayloadSize > 0U)
         {
-            *txPayloadSize = pReqPrm->reqPayloadSize - 
+            *txPayloadSize = pReqPrm->reqPayloadSize -
                             sizeof(struct tisci_header);
         }
         else
@@ -706,12 +707,12 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         Osal_delay(10);
         key = HwiP_disable();
     }
-    gSciclient_writeInProgress = 1U; 
+    gSciclient_writeInProgress = 1U;
     HwiP_restore(key);
 
     if (CSL_PASS == status)
     {
-        status = Sciclient_servicePrepareHeader(pReqPrm, &localSeqId, 
+        status = Sciclient_servicePrepareHeader(pReqPrm, &localSeqId,
                  contextId, &header);
     }
     if (CSL_PASS == status)
@@ -738,7 +739,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
                               (const uint8_t *)&gSciclient_secHeader,
                               gSecHeaderSizeWords,
                               (uint8_t *) header,
-                              (pReqPrm->pReqPayload + 
+                              (pReqPrm->pReqPayload +
                               sizeof(struct tisci_header)),
                               txPayloadSize,
                               gSciclient_maxMsgSizeBytes);
@@ -783,9 +784,9 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             timeToWait =  pReqPrm->timeout;
             while (timeToWait > 0U)
             {
-                uint32_t numCurrentMsgs = 
+                uint32_t numCurrentMsgs =
                         (HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
-                        CSL_SEC_PROXY_RT_THREAD_STATUS_CUR_CNT_MASK) - 
+                        CSL_SEC_PROXY_RT_THREAD_STATUS_CUR_CNT_MASK) -
                         initialCount;
                 if ((pLocalRespHdr->seq == (uint32_t) localSeqId))
                 {
@@ -802,7 +803,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         }
     }
     key = HwiP_disable();
-    gSciclient_writeInProgress = 0U; 
+    gSciclient_writeInProgress = 0U;
     HwiP_restore(key);
 
     /* Wait for response: Interrupt based waiting */
