@@ -524,6 +524,9 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware);
  *          prior to the application calling the #Sciclient_init.
  *          If a void pointer is passed, default values will be used, else
  *          the values passed will be used.
+ *          Only first Sciclient_init call configuration will take effect,
+ *          subsequent calls will return pass witout overwriting the previous
+ *          configuration
  *
  *  Requirement: DOX_REQ_TAG(PDK-2146)
  *
