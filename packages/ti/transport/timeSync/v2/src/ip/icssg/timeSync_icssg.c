@@ -41,14 +41,16 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+
+/* OSAL Header files */
+#include <ti/osal/osal.h>
+#include <ti/osal/soc/osal_soc.h>
+
 #include <ti/drv/sciclient/sciclient.h>
 
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
 
 #include <ti/drv/enet/enet.h>
 #include <ti/drv/enet/include/dma/udma/enet_udma.h>

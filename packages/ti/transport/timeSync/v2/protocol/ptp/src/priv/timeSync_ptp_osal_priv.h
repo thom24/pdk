@@ -44,12 +44,12 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
 
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Clock.h>
-
+/* OSAL Header files */
+#include <ti/osal/osal.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/TimerP.h>
 #include <ti/osal/TaskP.h>
@@ -72,7 +72,7 @@
 #define TIMESYNC_PTP_TX_TS_TASK_PRIORITY                     (6U)
 
 /**
- * @def TIMESYNC_PTP_TX_TS_TASK_PRIORITY
+ * @def TIMESYNC_PTP_FLW_UP_TX_TASK_PRIORITY
  *      Priority of task which takes time stamp and processes them
  */
 #define TIMESYNC_PTP_FLW_UP_TX_TASK_PRIORITY                 (4U)
@@ -118,6 +118,91 @@
  *      Priority for Tx callback interrupt. Range 0-31
  */
 #define TIMESYNC_PTP_TX_CALLBACK_HWI_PRIORITY                (20U)
+
+/**
+ * @def TIMESYNC_PTP_NRT_TASK_PRIORITY
+ *      Priority of task which process peer delay frames
+ */
+#define TIMESYNC_PTP_NRT_TASK_PRIORITY                       (2U)
+
+/**
+ * @def TIMESYNC_PTP_BACKGROUND_TASK_PRIORITY
+ *      Priority of background Task to do computation
+ */
+#define TIMESYNC_PTP_BACKGROUND_TASK_PRIORITY                (7U)
+
+/**
+ * @def TIMESYNC_PTP_PPS_TASK_PRIORITY
+ *      Priority of task where local clock is synchronized to latch0 timestamp
+ */
+#define TIMESYNC_PTP_PPS_TASK_PRIORITY                       (6U)
+
+/**
+ * @def TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE
+ *      Stack size of task which sends Pdelay request frames
+ */
+#define TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE            (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_TX_TS_TASK_STACKSIZE
+ *      Stack size of task which takes time stamp and processes them
+ */
+#define TIMESYNC_PTP_TX_TS_TASK_STACKSIZE                     (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_FLW_UP_TX_TASK_STACKSIZE
+ *      Stack size of task which takes time stamp and processes them
+ */
+#define TIMESYNC_PTP_FLW_UP_TX_TASK_STACKSIZE                 (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_SYNC_TASK_STACKSIZE
+ *      Stack size of task which processes sync frame
+ */
+#define TIMESYNC_PTP_SYNC_TASK_STACKSIZE                      (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_ANNOUNCE_TASK_STACKSIZE
+ *      Stack size of task which sends Announce frames
+ */
+#define TIMESYNC_PTP_ANNOUNCE_TASK_STACKSIZE                  (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_FOLLOW_UP_TASK_STACKSIZE
+ *      Stack size of task which sends Follow Up frames
+ */
+#define TIMESYNC_PTP_FOLLOW_UP_TASK_STACKSIZE                 (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_TX_NOTIFY_TASK_STACKSIZE
+ *      Stack size of task which process packet Tx notification
+ */
+#define TIMESYNC_PTP_TX_NOTIFY_TASK_STACKSIZE                 (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_RX_NOTIFY_TASK_STACKSIZE
+ *      Stack size of task which process packet Rx notification
+ */
+#define TIMESYNC_PTP_RX_NOTIFY_TASK_STACKSIZE                 (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_NRT_TASK_STACKSIZE
+ *      Stack size of task which process peer delay frames
+ */
+#define TIMESYNC_PTP_NRT_TASK_STACKSIZE                       (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_BACKGROUND_TASK_STACKSIZE
+ *      Stack size of background Task to do computation
+ */
+#define TIMESYNC_PTP_BACKGROUND_TASK_STACKSIZE                (8U * 1024U)
+
+/**
+ * @def TIMESYNC_PTP_PPS_TASK_STACKSIZE
+ *      Stack size of task where local clock is synchronized to latch0 timestamp
+ */
+#define TIMESYNC_PTP_PPS_TASK_STACKSIZE                       (8U * 1024U)
+
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */

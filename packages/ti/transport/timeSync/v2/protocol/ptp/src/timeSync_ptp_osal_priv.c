@@ -41,7 +41,13 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <xdc/std.h>
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+
+/* OSAL Header files */
+#include <ti/osal/osal.h>
+#include <ti/osal/soc/osal_soc.h>
 
 #include <ti/transport/timeSync/v2/include/timeSync.h>
 #include <ti/transport/timeSync/v2/include/timeSync_tools.h>
@@ -60,6 +66,18 @@
  */
 static uint8_t gPortNum[TIMESYNC_PTP_MAX_PORTS_SUPPORTED];
 
+/**< Task Stack memory */
+static uint8_t gTimeSyncPtp_processTxNotifyTaskStackBuf[TIMESYNC_PTP_TX_NOTIFY_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_processRxNotifyTaskStackBuf[TIMESYNC_PTP_RX_NOTIFY_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_pdelayReqSendTaskStackBuf[TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_delayReqSendTaskStackBuf[TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_txTsTaskStackBuf[TIMESYNC_PTP_MAX_PORTS_SUPPORTED][TIMESYNC_PTP_TX_TS_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_syncTxTaskStackBuf[TIMESYNC_PTP_SYNC_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_announceTxTaskStackBuf[TIMESYNC_PTP_ANNOUNCE_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_nRTTaskStackBuf[TIMESYNC_PTP_NRT_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_backgroundTaskStackBuf[TIMESYNC_PTP_BACKGROUND_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+static uint8_t gTimeSyncPtp_ppsTaskStackBuf[TIMESYNC_PTP_PPS_TASK_STACKSIZE] __attribute__ ((aligned(32)));
+
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
@@ -72,8 +90,8 @@ static uint8_t gPortNum[TIMESYNC_PTP_MAX_PORTS_SUPPORTED];
  * @param  a1 is port number
  * @return none
  */
-static void TimeSyncPtp_txTsTask(UArg a0,
-                                 UArg a1);
+static void TimeSyncPtp_txTsTask(void* a0,
+                                 void* a1);
 
 /**
  * @brief This is used for
@@ -82,8 +100,8 @@ static void TimeSyncPtp_txTsTask(UArg a0,
  * @param  a1 is NULL
  * @return none
  */
-static void TimeSyncPtp_pdelayReqSendTask(UArg a0,
-                                          UArg a1);
+static void TimeSyncPtp_pdelayReqSendTask(void* a0,
+                                          void* a1);
 
 /**
  * @brief This is used for
@@ -92,8 +110,8 @@ static void TimeSyncPtp_pdelayReqSendTask(UArg a0,
  * @param  a1 is NULL
  * @return none
  */
-static void TimeSyncPtp_delayReqSendTask(UArg a0,
-                                         UArg a1);
+static void TimeSyncPtp_delayReqSendTask(void* a0,
+                                         void* a1);
 
 /**
  * @brief This is used for
@@ -103,8 +121,8 @@ static void TimeSyncPtp_delayReqSendTask(UArg a0,
  * @param  a1 is NULL
  * @return none
  */
-static void TimeSyncPtp_backgroundTask(UArg a0,
-                                       UArg a1);
+static void TimeSyncPtp_backgroundTask(void* a0,
+                                       void* a1);
 
 /**
  * @brief This is used for synchronizing to time of day
@@ -112,8 +130,8 @@ static void TimeSyncPtp_backgroundTask(UArg a0,
  * @param  a1 is NULL
  * @return none
  */
-static void TimeSyncPtp_ppsTask(UArg arg0,
-                                UArg arg1);
+static void TimeSyncPtp_ppsTask(void* arg0,
+                                void* arg1);
 
 /**
  * @brief NRT stands for non-real time
@@ -123,8 +141,8 @@ static void TimeSyncPtp_ppsTask(UArg arg0,
  * @param  a1 is NULL
  * @return none
  */
-static void TimeSyncPtp_nRTTask(UArg a0,
-                                UArg a1);
+static void TimeSyncPtp_nRTTask(void* a0,
+                                void* a1);
 
 /**
  * @brief This is the main master task which sends a pre-formatted Sync frame at
@@ -133,7 +151,7 @@ static void TimeSyncPtp_nRTTask(UArg a0,
  * @param  a0 generic argument. PTP Handle is passed through this
  * @return none
  */
-static void TimeSyncPtp_syncTxTask(UArg arg);
+static void TimeSyncPtp_syncTxTask(void* arg);
 
 /**
  * @brief This is task which sends pre-formatted Announce frames when
@@ -142,8 +160,8 @@ static void TimeSyncPtp_syncTxTask(UArg arg);
  * @param  a1 is NULL
  * @return none
  */
-static void TimeSyncPtp_announceTxTask(UArg a0,
-                                       UArg a1);
+static void TimeSyncPtp_announceTxTask(void* a0,
+                                       void* a1);
 
 /**
  * @brief This is the ISR for DMTimer which is configured to sync send interval. It posts
@@ -151,7 +169,7 @@ static void TimeSyncPtp_announceTxTask(UArg a0,
  * @param  arg generic argument PTP Handle is passed through this
  * @return none
  */
-static void TimeSyncPtp_syncTxIsr(UArg arg);
+static void TimeSyncPtp_syncTxIsr(void* arg);
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -159,36 +177,28 @@ static void TimeSyncPtp_syncTxIsr(UArg arg);
 
 int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
 {
-    Clock_Params clkParams;
+    ClockP_Params clkParams;
     TaskP_Params taskParams;
     SemaphoreP_Params semaphoreParams;
     EventP_Params eventParams;
-    Error_Block eb;
     uint8_t portNum = 0;
     int8_t status = TIMESYNC_OK;
     uint32_t period = 0U;
 
     /* Clock setup */
-    Error_init(&eb);
-    Clock_Params_init(&clkParams);
+    ClockP_Params_init(&clkParams);
     period = hTimeSyncPtp->ptpConfig.syncSendInterval / 1000U;
-    clkParams.startFlag = false;
+    clkParams.startMode = ClockP_StartMode_USER;
     clkParams.period    = period;
-    clkParams.arg       = (UArg)hTimeSyncPtp;
+    clkParams.runMode   = ClockP_RunMode_CONTINUOUS;
+    clkParams.arg       = (void*)hTimeSyncPtp;
 
     /* Creating clock and setting clock callback function*/
-    hTimeSyncPtp->syncTxTimer = Clock_create((Clock_FuncPtr) &TimeSyncPtp_syncTxIsr,
-                                             period,
-                                             &clkParams,
-                                             &eb);
+    hTimeSyncPtp->syncTxTimer = ClockP_create((void *)TimeSyncPtp_syncTxIsr,
+                                             &clkParams);
     if (hTimeSyncPtp->syncTxTimer == NULL)
     {
         return TIMESYNC_UNABLE_TO_CREATE_CLOCK;
-    }
-    else
-    {
-        Clock_setTimeout(hTimeSyncPtp->syncTxTimer, period);
-        Clock_setPeriod(hTimeSyncPtp->syncTxTimer, period);
     }
 
     /*Create semaphore for sending Sync frames*/
@@ -310,6 +320,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     TaskP_Params_init(&taskParams);
     taskParams.priority = TIMESYNC_PTP_TX_NOTIFY_TASK_PRIORITY;
     taskParams.arg0 = (void *)hTimeSyncPtp;
+    taskParams.stack = &gTimeSyncPtp_processTxNotifyTaskStackBuf[0];
+    taskParams.stacksize = TIMESYNC_PTP_TX_NOTIFY_TASK_STACKSIZE;
     hTimeSyncPtp->pktTxNotifyTask = TaskP_create(TimeSyncPtp_processTxNotifyTask,
                                                  &taskParams);
 
@@ -322,6 +334,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     TaskP_Params_init(&taskParams);
     taskParams.priority = TIMESYNC_PTP_RX_NOTIFY_TASK_PRIORITY;
     taskParams.arg0 = (void *)hTimeSyncPtp;
+    taskParams.stack = &gTimeSyncPtp_processRxNotifyTaskStackBuf[0];
+    taskParams.stacksize = TIMESYNC_PTP_RX_NOTIFY_TASK_STACKSIZE;
     hTimeSyncPtp->pktRxNotifyTask = TaskP_create(TimeSyncPtp_processRxNotifyTask,
                                                  &taskParams);
 
@@ -335,6 +349,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
         TaskP_Params_init(&taskParams);
         taskParams.priority = TIMESYNC_PTP_DELAY_REQ_SEND_TASK_PRIORITY;
         taskParams.arg0 = (void *)hTimeSyncPtp;
+        taskParams.stack = &gTimeSyncPtp_pdelayReqSendTaskStackBuf[0];
+        taskParams.stacksize = TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE;
         hTimeSyncPtp->pDelayReqSendTask = TaskP_create(TimeSyncPtp_pdelayReqSendTask,
                                                        &taskParams);
 
@@ -349,6 +365,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
         TaskP_Params_init(&taskParams);
         taskParams.priority = TIMESYNC_PTP_DELAY_REQ_SEND_TASK_PRIORITY;
         taskParams.arg0 = (void *)hTimeSyncPtp;
+        taskParams.stack = &gTimeSyncPtp_delayReqSendTaskStackBuf[0];
+        taskParams.stacksize = TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE;
         hTimeSyncPtp->delayReqSendTask = TaskP_create(TimeSyncPtp_delayReqSendTask,
                                                       &taskParams);
 
@@ -369,6 +387,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
              * avoid compilation error */
             gPortNum[portNum] = portNum;
             taskParams.arg1 = (void *)&gPortNum[portNum];
+            taskParams.stack = &gTimeSyncPtp_txTsTaskStackBuf[portNum][0];
+            taskParams.stacksize = TIMESYNC_PTP_TX_TS_TASK_STACKSIZE;
             hTimeSyncPtp->txTsTask[portNum] = TaskP_create(TimeSyncPtp_txTsTask,
                                                            &taskParams);
             if (hTimeSyncPtp->txTsTask[portNum] == NULL)
@@ -387,6 +407,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     TaskP_Params_init(&taskParams);
     taskParams.priority = TIMESYNC_PTP_SYNC_TASK_PRIORITY;
     taskParams.arg0 = (void *)hTimeSyncPtp;
+    taskParams.stack = &gTimeSyncPtp_syncTxTaskStackBuf[0];
+    taskParams.stacksize = TIMESYNC_PTP_SYNC_TASK_STACKSIZE;
     hTimeSyncPtp->syncTxTask = TaskP_create(TimeSyncPtp_syncTxTask,
                                             &taskParams);
 
@@ -399,6 +421,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     TaskP_Params_init(&taskParams);
     taskParams.priority = TIMESYNC_PTP_ANNOUNCE_TASK_PRIORITY;
     taskParams.arg0 = (void *)hTimeSyncPtp;
+    taskParams.stack = &gTimeSyncPtp_announceTxTaskStackBuf[0];
+    taskParams.stacksize = TIMESYNC_PTP_ANNOUNCE_TASK_STACKSIZE;
     hTimeSyncPtp->announceTxTask = TaskP_create(TimeSyncPtp_announceTxTask,
                                                 &taskParams);
 
@@ -409,8 +433,10 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
 
     /* NRT Task to process peer delay frames*/
     TaskP_Params_init(&taskParams);
-    taskParams.priority = 2;
+    taskParams.priority = TIMESYNC_PTP_NRT_TASK_PRIORITY;
     taskParams.arg0 = (void *)hTimeSyncPtp;
+    taskParams.stack = &gTimeSyncPtp_nRTTaskStackBuf[0];
+    taskParams.stacksize = TIMESYNC_PTP_NRT_TASK_STACKSIZE;
     hTimeSyncPtp->nRTTask = TaskP_create(TimeSyncPtp_nRTTask,
                                          &taskParams);
 
@@ -421,8 +447,10 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
 
     /* Background Task to do computation*/
     TaskP_Params_init(&taskParams);
-    taskParams.priority = 7;
+    taskParams.priority = TIMESYNC_PTP_BACKGROUND_TASK_PRIORITY;
     taskParams.arg0 = (void *)hTimeSyncPtp;
+    taskParams.stack = &gTimeSyncPtp_backgroundTaskStackBuf[0];
+    taskParams.stacksize = TIMESYNC_PTP_BACKGROUND_TASK_STACKSIZE;
     hTimeSyncPtp->backgroundTask = TaskP_create(TimeSyncPtp_backgroundTask,
                                                 &taskParams);
 
@@ -435,8 +463,10 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     {
         /* Task where local clock is synchronized to latch0 timestamp*/
         TaskP_Params_init(&taskParams);
-        taskParams.priority = 6;
+        taskParams.priority = TIMESYNC_PTP_PPS_TASK_PRIORITY;
         taskParams.arg0 = (void *)hTimeSyncPtp;
+        taskParams.stack = &gTimeSyncPtp_ppsTaskStackBuf[0];
+        taskParams.stacksize = TIMESYNC_PTP_PPS_TASK_STACKSIZE;
         hTimeSyncPtp->ppsTask = TaskP_create(TimeSyncPtp_ppsTask,
                                              &taskParams);
 
@@ -453,8 +483,8 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
 /*                           Task Definitions                                 */
 /* ========================================================================== */
 
-static void TimeSyncPtp_pdelayReqSendTask(UArg a0,
-                                          UArg a1)
+static void TimeSyncPtp_pdelayReqSendTask(void* a0,
+                                          void* a1)
 {
     TimeSyncPtp_Handle hTimeSyncPtp;
     uint8_t linkStatus = 0U;
@@ -517,8 +547,8 @@ static void TimeSyncPtp_pdelayReqSendTask(UArg a0,
     }
 }
 
-static void TimeSyncPtp_delayReqSendTask(UArg a0,
-                                         UArg a1)
+static void TimeSyncPtp_delayReqSendTask(void* a0,
+                                         void* a1)
 {
     TimeSyncPtp_Handle hTimeSyncPtp = (TimeSyncPtp_Handle)a0;
     int32_t retVal;
@@ -553,8 +583,8 @@ static void TimeSyncPtp_delayReqSendTask(UArg a0,
     }
 }
 
-static void TimeSyncPtp_txTsTask(UArg a0,
-                                 UArg a1)
+static void TimeSyncPtp_txTsTask(void* a0,
+                                 void* a1)
 {
     TimeSyncPtp_Handle hTimeSyncPtp = (TimeSyncPtp_Handle)a0;
     uint8_t portNum = *((uint8_t *)a1);
@@ -563,10 +593,10 @@ static void TimeSyncPtp_txTsTask(UArg a0,
     while (1)
     {
         /*Pend on event to process Tx timestamp interrupt*/
-        events = EventP_pend(hTimeSyncPtp->txTSAvailableEvtHandle[portNum],
-                             EventP_ID_NONE,
+        events = EventP_wait(hTimeSyncPtp->txTSAvailableEvtHandle[portNum],
                              (hTimeSyncPtp->eventIdPdelayReq + hTimeSyncPtp->eventIdSync +
                               hTimeSyncPtp->eventIdPdelayResp),
+                             EventP_WaitMode_ANY,
                              EventP_WAIT_FOREVER);
 
         if (events & hTimeSyncPtp->eventIdSync)
@@ -586,8 +616,8 @@ static void TimeSyncPtp_txTsTask(UArg a0,
     }
 }
 
-static void TimeSyncPtp_nRTTask(UArg a0,
-                                UArg a1)
+static void TimeSyncPtp_nRTTask(void* a0,
+                                void* a1)
 {
     uint32_t events = 0U;
     TimeSyncPtp_Handle hTimeSyncPtp = (TimeSyncPtp_Handle)a0;
@@ -604,9 +634,9 @@ static void TimeSyncPtp_nRTTask(UArg a0,
                 if (linkStatus)
                 {
                     /*Wait 1ms then move on to other tasks*/
-                    events = EventP_pend(hTimeSyncPtp->ptpPdelayResEvtHandle[port],
+                    events = EventP_wait(hTimeSyncPtp->ptpPdelayResEvtHandle[port],
                                          (hTimeSyncPtp->eventIdPdelayResp + hTimeSyncPtp->eventIdPdelayRespFlwUp),
-                                         EventP_ID_NONE,
+                                         EventP_WaitMode_ALL,
                                          1);
 
                     /*Calculate Peer Delay on port*/
@@ -628,9 +658,9 @@ static void TimeSyncPtp_nRTTask(UArg a0,
 
                     /*Wait 1ms then move on to other tasks*/
                     /*Send Pdelay response on port*/
-                    events = EventP_pend(hTimeSyncPtp->ptpPdelayReqEvtHandle[port],
+                    events = EventP_wait(hTimeSyncPtp->ptpPdelayReqEvtHandle[port],
                                          (hTimeSyncPtp->eventIdPdelayReq),
-                                         EventP_ID_NONE,
+                                         EventP_WaitMode_ALL,
                                          1);
 
                     if (events)
@@ -641,9 +671,9 @@ static void TimeSyncPtp_nRTTask(UArg a0,
                     }
 
                     /*Wait 1ms then move on to other tasks*/
-                    events = EventP_pend(hTimeSyncPtp->ptpSendFollowUpEvtHandle[port],
+                    events = EventP_wait(hTimeSyncPtp->ptpSendFollowUpEvtHandle[port],
                                          (hTimeSyncPtp->eventIdSync + hTimeSyncPtp->eventIdFlwUpGenerated),
-                                         EventP_ID_NONE,
+                                         EventP_WaitMode_ALL,
                                          1);
 
                     if (events)
@@ -663,8 +693,8 @@ static void TimeSyncPtp_nRTTask(UArg a0,
     }
 }
 
-static void TimeSyncPtp_backgroundTask(UArg a0,
-                                       UArg a1)
+static void TimeSyncPtp_backgroundTask(void* a0,
+                                       void* a1)
 {
     TimeSyncPtp_Handle hTimeSyncPtp = (TimeSyncPtp_Handle)a0;
     uint8_t count = 0;
@@ -721,7 +751,7 @@ static void TimeSyncPtp_backgroundTask(UArg a0,
     }
 }
 
-static void TimeSyncPtp_syncTxTask(UArg arg)
+static void TimeSyncPtp_syncTxTask(void* arg)
 {
     TimeSyncPtp_Handle hTimeSyncPtp = NULL;
     uint8_t offset = 0;
@@ -733,7 +763,7 @@ static void TimeSyncPtp_syncTxTask(UArg arg)
     int8_t linkStatus = 0;
     volatile bool runFlag = false;
 
-    /* UArg is typedef-ed from uint */
+    /* void* is typedef-ed from uint */
     if (arg != 0x0U)
     {
         hTimeSyncPtp = (TimeSyncPtp_Handle)arg;
@@ -818,8 +848,8 @@ static void TimeSyncPtp_syncTxTask(UArg arg)
     }
 }
 
-static void TimeSyncPtp_announceTxTask(UArg a0,
-                                       UArg a1)
+static void TimeSyncPtp_announceTxTask(void* a0,
+                                       void* a1)
 {
     TimeSyncPtp_Handle hTimeSyncPtp = (TimeSyncPtp_Handle)a0;
     uint64_t sec = 0;
@@ -893,8 +923,8 @@ static void TimeSyncPtp_announceTxTask(UArg a0,
     }
 }
 
-static void TimeSyncPtp_ppsTask(UArg arg0,
-                                UArg arg1)
+static void TimeSyncPtp_ppsTask(void* arg0,
+                                void* arg1)
 {
     TimeSyncPtp_Handle hTimeSyncPtp = (TimeSyncPtp_Handle)arg0;
     int32_t retVal = TIMESYNC_OK;
@@ -934,7 +964,7 @@ void TimeSyncPtp_notifyPps(void *arg)
     }
 }
 
-static void TimeSyncPtp_syncTxIsr(UArg arg)
+static void TimeSyncPtp_syncTxIsr(void* arg)
 {
     TimeSyncPtp_Handle hTimeSyncPtp = (TimeSyncPtp_Handle)arg;
 
@@ -950,7 +980,7 @@ void TimeSyncPtp_enableMaster(TimeSyncPtp_Handle hTimeSyncPtp)
     TimeSyncPtp_initializeFollowUp(hTimeSyncPtp);
 
     /*Start the clock*/
-    Clock_start(hTimeSyncPtp->syncTxTimer);
+    ClockP_start(hTimeSyncPtp->syncTxTimer);
 }
 
 void TimeSyncPtp_disableMaster(TimeSyncPtp_Handle hTimeSyncPtp)
@@ -959,7 +989,7 @@ void TimeSyncPtp_disableMaster(TimeSyncPtp_Handle hTimeSyncPtp)
     hTimeSyncPtp->ptpConfig.isMaster = 0;
 
     /*Stop the timer*/
-    Clock_stop(hTimeSyncPtp->syncTxTimer);
+    ClockP_stop(hTimeSyncPtp->syncTxTimer);
 }
 
 void TimeSyncPtp_enableBoundaryClock(TimeSyncPtp_Handle hTimeSyncPtp)
@@ -967,11 +997,11 @@ void TimeSyncPtp_enableBoundaryClock(TimeSyncPtp_Handle hTimeSyncPtp)
     TimeSyncPtp_initializeFollowUp(hTimeSyncPtp);
 
     /*Start the clock*/
-    Clock_start(hTimeSyncPtp->syncTxTimer);
+    ClockP_start(hTimeSyncPtp->syncTxTimer);
 }
 
 void TimeSyncPtp_disableBoundaryClock(TimeSyncPtp_Handle hTimeSyncPtp)
 {
     /*Stop the timer*/
-    Clock_stop(hTimeSyncPtp->syncTxTimer);
+    ClockP_stop(hTimeSyncPtp->syncTxTimer);
 }

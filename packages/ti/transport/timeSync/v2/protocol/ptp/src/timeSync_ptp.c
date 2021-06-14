@@ -40,9 +40,14 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+
+/* OSAL Header files */
+#include <ti/osal/osal.h>
+#include <ti/osal/soc/osal_soc.h>
+
 #include <math.h>
 
 #include <ti/transport/timeSync/v2/include/timeSync.h>

@@ -41,7 +41,14 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <xdc/std.h>
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
+
+/* OSAL Header files */
+#include <ti/osal/osal.h>
+#include <ti/osal/soc/osal_soc.h>
+
 #include <ti/csl/soc.h>
 #if defined(__ARM_ARCH_7A__)
 #include <ti/csl/csl_armGicAux.h>
@@ -226,7 +233,7 @@ void TimeSync_notifyRxFxn(uint32_t *queue_number,
     }
 }
 
-void TimeSync_notifyTxFxn(UArg arg)
+void TimeSync_notifyTxFxn(void* arg)
 {
     volatile uint32_t *intStatusPtr = NULL;
     volatile uint8_t *bytePtr = NULL;
@@ -296,13 +303,13 @@ void TimeSync_notifyTxFxn(UArg arg)
     }
 }
 
-void TimeSync_latchIsr(UArg arg)
+void TimeSync_latchIsr(void* arg)
 {
     volatile uint32_t *intStatusPtr = NULL;
     TimeSync_Handle timeSyncHandle  = NULL;
     TimeSync_PpsConfig *pPpsConfig  = NULL;
 
-    /* Uarg is of type integer, so compared against 0U */
+    /* void* is of type integer, so compared against 0U */
     if (arg != 0x0U)
     {
         timeSyncHandle = (TimeSync_Handle)arg;
@@ -1285,7 +1292,7 @@ static int32_t TimeSync_registerTxIntr(TimeSync_Handle timeSyncHandle)
     /*Setup Tx callback interrupt*/
     Osal_RegisterInterrupt_initParams(&intrInitParams);
     intrInitParams.corepacConfig.priority = TIMESYNC_TX_CALLBACK_HWI_PRIORITY;
-    intrInitParams.corepacConfig.arg = (xdc_UArg)timeSyncHandle;
+    intrInitParams.corepacConfig.arg = (uintptr_t)timeSyncHandle;
     intrInitParams.corepacConfig.isrRoutine = TimeSync_notifyTxFxn;
     intrInitParams.corepacConfig.corepacEventNum = timeSyncHandle->txIntNum;
 
@@ -1321,7 +1328,7 @@ static int32_t TimeSync_registerLatchIntr(TimeSync_Handle timeSyncHandle)
     /*Setup latch0 interrupt*/
     Osal_RegisterInterrupt_initParams(&intrInitParams);
     intrInitParams.corepacConfig.priority = TIMESYNC_PTP_LATCH0_HWI_PRIORITY;
-    intrInitParams.corepacConfig.arg = (xdc_UArg)timeSyncHandle;
+    intrInitParams.corepacConfig.arg = (uintptr_t)timeSyncHandle;
     intrInitParams.corepacConfig.isrRoutine = TimeSync_latchIsr;
     intrInitParams.corepacConfig.corepacEventNum = TIMESYNC_PTP_LATCH_INT_NUM;
 

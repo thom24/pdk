@@ -45,13 +45,12 @@
 /* ========================================================================== */
 
 #include <stdlib.h>
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
 
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Clock.h>
-
+/* OSAL Header files */
+#include <ti/osal/osal.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/TimerP.h>
 #include <ti/osal/TaskP.h>
@@ -162,8 +161,8 @@
 #define TIMESYNC_PTP_FILTER_ALPHA_COEFF_TOD                  (0.75)
 
 /**
- * @def TIMESYNC_PTP_FOLLOW_UP_TASK_PRIORITY
- *      Priority of task which sends Follow Up frames
+ * @def TIMESYNC_PTP_SYNC_FOLLOW_UP_BUFFER_SIZE
+ *      Buffer size used for Follow Up frames
  */
 #define TIMESYNC_PTP_SYNC_FOLLOW_UP_BUFFER_SIZE              (64U)
 
@@ -996,7 +995,7 @@ typedef struct TimeSyncPtp_Obj_s
 
     /**-----------------Master tasks, semaphores and events----------------*/
     /** Handle for timer which posts the semaphore which in turn sends Sync frames */
-    Clock_Handle syncTxTimer;
+    ClockP_Handle syncTxTimer;
 
     /** Tx packet notify task handle*/
     TaskP_Handle pktTxNotifyTask;
