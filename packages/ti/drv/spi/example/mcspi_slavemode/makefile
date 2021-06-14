@@ -80,11 +80,6 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
     endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am64x))
-CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK -Dam64x_evm=am64x_evm
-APP_MASTER_SLAVE  = Master
-endif
-
 # DMA enabled build
 ifeq ($(DMA), enable)
 
@@ -100,6 +95,20 @@ endif
 
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)$(MCSPI_DMA_MODE_INFIX)_TestApp_$(BUILD_OS_TYPE)
+
+ifeq ($(SOC),$(filter $(SOC), am64x))
+CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK -Dam64x_evm=am64x_evm
+APP_MASTER_SLAVE  = Master
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+    ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm))
+        CFLAGS_SPI_MS    += -Dam65xx_evm=am65xx_evm
+    endif
+    ifeq ($(BOARD),$(filter $(BOARD), am65xx_idk))
+        CFLAGS_SPI_MS    += -Dam65xx_idk=am65xx_idk
+    endif
+endif
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
 CFLAGS_SPI_MS    += -Dj7200_evm=j7200_evm

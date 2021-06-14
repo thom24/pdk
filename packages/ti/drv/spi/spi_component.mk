@@ -363,7 +363,7 @@ MCSPI_Baremetal_Master_TestApp_PKG_LIST = MCSPI_Baremetal_Master_TestApp
 MCSPI_Baremetal_Master_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_TestApp_PATH)
 MCSPI_Baremetal_Master_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Baremetal_Master_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x am65xx))
 MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0 m4f_0
 else
 MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_1
@@ -379,7 +379,7 @@ export MCSPI_Baremetal_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemod
 MCSPI_Baremetal_Slave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY = no
-MCSPI_Baremetal_Slave_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
+MCSPI_Baremetal_Slave_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 export MCSPI_Baremetal_Slave_TestApp_COMP_LIST
 export MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY
 export MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY
@@ -400,7 +400,7 @@ export MCSPI_Baremetal_Master_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_sla
 MCSPI_Baremetal_Master_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY = no
-MCSPI_Baremetal_Master_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
+MCSPI_Baremetal_Master_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
 export MCSPI_Baremetal_Master_Dma_TestApp_COMP_LIST
 export MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY
 export MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY
@@ -409,7 +409,7 @@ MCSPI_Baremetal_Master_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_Master_Dma_TestApp
 MCSPI_Baremetal_Master_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_Dma_TestApp_PATH)
 MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x am65xx))
 MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
 else
 MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_1
@@ -425,7 +425,7 @@ export MCSPI_Baremetal_Slave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slav
 MCSPI_Baremetal_Slave_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY = no
-MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
+MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
 export MCSPI_Baremetal_Slave_Dma_TestApp_COMP_LIST
 export MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY
 export MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY
