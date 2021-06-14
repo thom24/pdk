@@ -390,7 +390,7 @@ export I2C_Eeprom_TestApp_$(1)_XDC_CONFIGURO
 export I2C_Eeprom_TestApp_$(1)_MAKEFILE
 I2C_Eeprom_TestApp_$(1)_PKG_LIST = I2C_Eeprom_TestApp_$(1)
 I2C_Eeprom_TestApp_$(1)_INCLUDE = $(I2C_Eeprom_TestApp_$(1)_PATH)
-I2C_Eeprom_TestApp_$(1)_BOARDLIST = = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvi2c_BOARDLIST))
+I2C_Eeprom_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvi2c_BOARDLIST))
 export I2C_Eeprom_TestApp_$(1)_BOARDLIST
 
 ifeq ($(SOC),$(filter $(SOC), am64x))

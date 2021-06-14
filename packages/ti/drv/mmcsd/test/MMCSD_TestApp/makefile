@@ -5,20 +5,6 @@ else
 include $(RULES_MAKE)
 endif
 
-#Baremetal Specifics
-ifeq ($(BUILD_OS_TYPE), baremetal)
-
-    APP_NAME = MMCSD_Baremetal_TestApp
-
-    CFLAGS_OS_DEFINES = -DBARE_METAL
-    LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
-    COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
-    EXTERNAL_INTERFACES =
-    XDC_CFG_FILE_mpu1_0 =
-    XDC_CFG_FILE_mcu1_0 =
-
-endif
-
 #TI RTOS Specifics
 ifeq ($(BUILD_OS_TYPE), tirtos)
 
@@ -48,21 +34,17 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 endif
 
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-SRCDIR = ../src ../../
-INCDIR = ../src ../include ../../
-# Common source files across all platforms and cores
-SRCS_COMMON += main.c profiling.c
-
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
 SRCS_COMMON += main.c
 
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+
+SRCS_COMMON += profiling.c
+
 endif
+
 
 
 # List all the components required by the application

@@ -275,7 +275,7 @@ define MMCSD_TestApp_RULE
     export MMCSD_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
     MMCSD_TestApp_$(1)_PKG_LIST = MMCSD_TestApp_$(1)
     MMCSD_TestApp_$(1)_INCLUDE = $(MMCSD_TestApp_$(1)_PATH)
-    export MMCSD_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
+    export MMCSD_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
 
     ifeq ($(SOC),$(filter $(SOC), am64x))
         export MMCSD_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
@@ -316,7 +316,7 @@ define MMCSD_EMMC_TestApp_RULE
     export MMCSD_EMMC_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
     MMCSD_EMMC_TestApp_$(1)_PKG_LIST = MMCSD_EMMC_TestApp_$(1)
     MMCSD_EMMC_TestApp_$(1)_INCLUDE = $(MMCSD_EMMC_TestApp_$(1)_PATH)
-    export MMCSD_EMMC_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
+    export MMCSD_EMMC_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
 
     export MMCSD_EMMC_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
@@ -351,7 +351,7 @@ define MMCSD_EMMC_DMA_TestApp_RULE
 
     MMCSD_EMMC_DMA_TestApp_$(1)_PKG_LIST = MMCSD_EMMC_DMA_TestApp_$(1)
     MMCSD_EMMC_DMA_TestApp_$(1)_INCLUDE = $(MMCSD_EMMC_DMA_TestApp_$(1)_PATH)
-    export MMCSD_EMMC_DMA_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
+    export MMCSD_EMMC_DMA_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_EMMC_DMA_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
@@ -435,7 +435,7 @@ define MMCSD_DMA_TestApp_RULE
 
     MMCSD_DMA_TestApp_$(1)_PKG_LIST = MMCSD_DMA_TestApp_$(1)
     MMCSD_DMA_TestApp_$(1)_INCLUDE = $(MMCSD_DMA_TestApp_$(1)_PATH)
-    export MMCSD_DMA_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm
+    export MMCSD_DMA_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_DMA_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
@@ -519,7 +519,7 @@ define MMCSD_Regression_TestApp_RULE
 
     MMCSD_Regression_TestApp_$(1)_PKG_LIST = MMCSD_Regression_TestApp_$(1)
     MMCSD_Regression_TestApp_$(1)_INCLUDE = $(MMCSD_Regression_TestApp_$(1)_PATH)
-    export MMCSD_Regression_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
+    export MMCSD_Regression_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_Regression_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
@@ -579,7 +579,7 @@ define MMCSD_EMMC_Regression_TestApp_RULE
 
     MMCSD_EMMC_Regression_TestApp_$(1)_PKG_LIST = MMCSD_EMMC_Regression_TestApp_$(1)
     MMCSD_EMMC_Regression_TestApp_$(1)_INCLUDE = $(MMCSD_EMMC_Regression_TestApp_$(1)_PATH)
-    export MMCSD_EMMC_Regression_TestApp_$(1)_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm
+    export MMCSD_EMMC_Regression_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_EMMC_Regression_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
