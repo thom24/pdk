@@ -802,7 +802,7 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
     if(appTestObj->testId != UDMA_OSPI_FLASH_TEST_ID_WR_TUNING)
     {
     #if defined(FLASH_TYPE_XSPI)
-        OspiFlash_spiPhyTune(TRUE, OSPI_FLASH_TUNING_DATA_OFFSET);
+        OspiFlash_spiPhyTune(TRUE, OSPI_FLASH_TUNING_DATA_OFFSET, appTestObj->clk);
     #endif
 
         App_udmaTrObjInitRead(appTestObj, appTrObj);
