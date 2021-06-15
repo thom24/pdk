@@ -971,6 +971,23 @@ static bool OSPI_flash_test(void *arg)
     }
 #endif
 #ifdef OSPI_PROFILE
+    if( (test->dacMode) && (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) )
+    {
+        uint64_t    startPhyTuningTime;
+        uint64_t    elapsedPhyTuningTime;
+        uint8_t     tmpRxBuf[4U];
+
+        /* Dummy flash read to get just the PHY tuning time */
+        startPhyTuningTime = TimerP_getTimeInUsecs();
+        if (Board_flashRead(boardHandle, 0U, &tmpRxBuf[0], 4U, (void *)(&readMode)))
+        {
+            SPI_log("\n Dummy Board_flashRead for PHY tuning measurement failed. \n");
+            testPassed = false;
+            goto err;
+        }
+        elapsedPhyTuningTime = TimerP_getTimeInUsecs() - startPhyTuningTime;
+        SPI_log("\n PHY tuning + 4 byte read took %d us \n", (uint32_t)elapsedPhyTuningTime);
+    }
 #ifdef USE_BIOS
     Load_reset( );
 #endif
