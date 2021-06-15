@@ -50,17 +50,11 @@
 /* ========================================================================== */
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
+#include <stdint.h>
+#include <stdio.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
-#include <xdc/std.h>
-#include <ti/sysbios/io/IOM.h>
-#include <xdc/runtime/Memory.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#include <xdc/runtime/IHeap.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/Log.h>
-#include <xdc/runtime/System.h>
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Semaphore.h>
 #include <mcasp_drv.h>
 #include <ti/csl/csl_chip.h>
 #include <ti/sdo/edma3/drv/edma3_drv.h>
@@ -82,9 +76,6 @@
   #include "deviceloopback.h"
 #endif
 
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/hal/Cache.h>
-
 /* ========================================================================== */
 /*                          IMPORTED VARIABLES                                */
 /* ========================================================================== */
@@ -104,8 +95,8 @@ extern HeapMem_Handle myHeap;
 #define BUFLEN                  (2*48000/1000) /* number of samples per serializer in the frame  */
 #define BUFALIGN                128 /* alignment of buffer for use of L2 cache */
 
-/* This is the number of buffers used by the application to be issued and reclaimed 
-   This number can be higher than 2 (Ping pong) also. The McASP driver puts them in 
+/* This is the number of buffers used by the application to be issued and reclaimed
+   This number can be higher than 2 (Ping pong) also. The McASP driver puts them in
    a queue internally and process them in order and give back to the application */
 #define NUM_BUFS                2
 
@@ -117,8 +108,8 @@ Ptr  hAicChannel;
 
 
 /* Function prototype */
-static Void createStreams();
-static Void prime();
+static void createStreams();
+static void prime();
 
 void SoundBufferPlay(void *pvBuffer, unsigned long ulEvent);
 void SoundBufferRec(void *pvBuffer, unsigned long ulEvent);
@@ -139,10 +130,9 @@ Ptr hMcaspRxChan;
 
 int rxFrameIndex=(NUM_BUFS-1), txFrameIndex=(NUM_BUFS-1);
 volatile int RxFlag=0,TxFlag=0;
-Semaphore_Handle semR,semT;
-Semaphore_Params params;
+SemaphoreP_Handle semR,semT;
+SemaphoreP_Params params;
 
-Error_Block eb;
 /**************************************************************************************/
 /*   FUNCTION DESCRIPTION: This utility function converts local GEM L2 address in to global
     memory addresses used by the EDMA inside McASP
@@ -178,7 +168,7 @@ static uint32_t getGlobalAddr (uint32_t addr)
 }
 /*********************** APPLICATION DEFINED FUNCTIONS: Begin ****************************/
 /* The below functions need to be defined by the application and are registered to the
-   McASP driver during instantiation 
+   McASP driver during instantiation
  */
 /*
  * This call back function is provided to the McASP driver during mcaspCreateChan()
@@ -201,7 +191,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
 		   MCASP_log("Rx Buf Address mismatch\n");
 		}
 	/* post semaphore */
-	Semaphore_post(semR);
+	SemaphoreP_post(semR);
 	}
 	if(ioBuf->cmd == MCASP_WRITE)
 		{
@@ -211,7 +201,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
 		}
 		TxFlag++;
 		/* post semaphore */
-		Semaphore_post(semT);
+		SemaphoreP_post(semT);
 		}
 
 }
@@ -250,7 +240,7 @@ void GblErrRcv(Mcasp_errCbStatus errCbStat)
 /* FUNCTION DESCRIPTION: This function analyzes the result of error interrupts, if it
  * happened
 */
-/**************************************************************************************/	 
+/**************************************************************************************/
 void mcaspAnalyzeErrors(Mcasp_errCbStatus *errCbStat)
 {
     MCASP_log("\n------------ Error stats --------------\n");
@@ -293,11 +283,11 @@ void ErrorWatchDogRoutine()
 }
 
 /**************************************************************************************/
-/*   FUNCTION DESCRIPTION: This function creates the McASP channels for Tx and Rx 
+/*   FUNCTION DESCRIPTION: This function creates the McASP channels for Tx and Rx
      This function also creates the codec channels (if any)
 */
-/**************************************************************************************/	 
-static Void createStreams()
+/**************************************************************************************/
+static void createStreams()
 {
 	int status;
 
@@ -305,7 +295,7 @@ static Void createStreams()
 	char remName[10]="aic";
 #if !defined(MCASP_MASTER)
 /* Configure the external clock: In Slave mode, McASP is not the master, start initializing the external clock provider (AIC codec below),
-   before configuring McASP clocks (in mcaspCreateChan() below) 
+   before configuring McASP clocks (in mcaspCreateChan() below)
 */
 #if defined(AIC_CODEC)
 /* In this case AIC provides the frame clocks, hence we need to start it first */
@@ -322,13 +312,13 @@ static Void createStreams()
 			(IOM_COMPLETED != status))
 	{
 		MCASP_log("AIC Create Channel Failed\n");
-		BIOS_exit(0);
+		OS_stop();
 	}
 #endif
-	
+
 #endif
-	
-	
+
+
 	mcasp_chanparam[0].edmaHandle = hEdma;
     mcasp_chanparam[1].edmaHandle = hEdma;
 
@@ -342,7 +332,7 @@ static Void createStreams()
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Tx Failed\n");
 		UART_printStatus("\n Some tests have failed.\n");
-		BIOS_exit(0);
+		OS_stop();
 	}
 
 	/* Create Mcasp channel for Rx */
@@ -354,9 +344,9 @@ static Void createStreams()
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Rx Failed\n");
 		UART_printStatus("\n Some tests have failed.\n");
-		BIOS_exit(0);
+		OS_stop();
 	}
-#if defined(MCASP_MASTER) 
+#if defined(MCASP_MASTER)
 /* If MCASP master, configure the clock of the slave device attached to McASP now.
     In the below case, it is the AIC codec */
 
@@ -393,9 +383,8 @@ MCASP_Packet txFrame[NUM_BUFS];
 #include <ti/sysbios/family/c64p/Hwi.h>
 
 Hwi_Handle myHwi;
-static Void prime()
+static void prime()
 {
-	Error_Block  eb;
     int32_t        count = 0, status;
     IHeap_Handle iheap;
     uint32_t tx_bytes_per_sample=(mcasp_chanparam[1].wordWidth/8);
@@ -407,12 +396,11 @@ static Void prime()
     uint32_t rx_frame_size = BUFLEN*RX_NUM_SERIALIZER*rx_bytes_per_sample;
 
     iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
-    Error_init(&eb);
 
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < (NUM_BUFS ); count ++)
     {
-        rxbuf[count] = Memory_calloc(iheap, rx_frame_size,BUFALIGN, &eb);
+        rxbuf[count] = Memory_calloc(iheap, rx_frame_size,BUFALIGN);
         if(NULL == rxbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
@@ -422,7 +410,7 @@ static Void prime()
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < (NUM_BUFS); count ++)
     {
-        txbuf[count] = Memory_calloc(iheap, tx_frame_size,BUFALIGN, &eb);
+        txbuf[count] = Memory_calloc(iheap, tx_frame_size,BUFALIGN);
         if(NULL == txbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
@@ -492,7 +480,7 @@ int total_frames_sent=0;
 #define NUM_TEST_FRAMES 100
 #endif
 
-Void Audio_echo_Task()
+void Audio_echo_Task()
 {
     volatile int32_t i32Count, status = 0;
 	hMcaspDev  = NULL;
@@ -516,7 +504,7 @@ Void Audio_echo_Task()
 
 	enableEDMAHwEvent(EDMACC_NUM,MCASP_RX_DMA_CH);
     enableEDMAHwEvent(EDMACC_NUM,MCASP_TX_DMA_CH);
-	
+
     hEdma = edma3init(EDMACC_NUM, &edmaResult);
 
     if (edmaResult != EDMA3_DRV_SOK)
@@ -531,11 +519,11 @@ Void Audio_echo_Task()
         }
 
 	/* 2. SEM Initializations */
-    Semaphore_Params_init(&params);
+    SemaphoreP_Params_init(&params);
 
 	/* Create semaphores to wait for buffer reclaiming */
-    semR = Semaphore_create(0, &params, &eb);
-    semT = Semaphore_create(0, &params, &eb);
+    semR = SemaphoreP_create(0, &params);
+    semT = SemaphoreP_create(0, &params);
 
 	/* 3. McASP Initializations */
 	/* Initialize McASP Tx and Rx parameters */
@@ -589,14 +577,14 @@ Void Audio_echo_Task()
 #if defined(DEVICE_LOOPBACK)
     	dlb_process_events();
 #endif
-    	Semaphore_pend(semR, BIOS_WAIT_FOREVER);
-    	Semaphore_pend(semT, BIOS_WAIT_FOREVER);
+    	SemaphoreP_pend(semR, BIOS_WAIT_FOREVER);
+    	SemaphoreP_pend(semT, BIOS_WAIT_FOREVER);
 
 #ifdef MEASURE_TIME
-    profiling_end();  
+    profiling_end();
 #endif
-/* For Device loopback test (ramp) we send a fininte number of frames. For other tests and 
-   the default case, the number of frames is inifinite and the demo never exits out of 
+/* For Device loopback test (ramp) we send a fininte number of frames. For other tests and
+   the default case, the number of frames is inifinite and the demo never exits out of
    the for loop */
 #if defined(DEVICE_LOOPBACK)
         if(total_frames_sent==NUM_TEST_FRAMES)
@@ -610,7 +598,7 @@ Void Audio_echo_Task()
     	Cache_inv((void *)((uint8_t *)rxbuf[grxFrameIndexCount]),rx_frame_size,Cache_Type_ALL, TRUE);
         /******************************* Sample Processing Begins ***************************/
 	    /* (BUFLEN* RX_NUM_SERIALIZER) 32-bit samples samples have been accumulated in rxbuf[grxFrameIndexCount] now.
-	       Application specific processing on these samples, before sending it back to McASP via 
+	       Application specific processing on these samples, before sending it back to McASP via
 	       txbuf[grxFrameIndexCount].
 		   APPLICATION SPECIFIC PROCESSING could be done here. Below are the few audio demos and their
 		   application specific processing shown below.
@@ -634,7 +622,7 @@ Void Audio_echo_Task()
        	SoundBufferRec(rxbuf[grxFrameIndexCount], 0);
 
     	/******************************* Sample Processing End ***************************/
-        
+
    		Cache_wbInv((void *)((uint8_t *)txbuf[gtxFrameIndexCount]),tx_frame_size,Cache_Type_ALL, TRUE);
 
         /* Issue full buffer to the output stream                             */
@@ -666,9 +654,9 @@ Void Audio_echo_Task()
 		profiling_start();
 #endif
 		total_frames_sent++;
-		
+
 }
-       
+
   	    MCASP_log("\nTotal %d frames sent",total_frames_sent);
   	    ErrorWatchDogRoutine();
   	    if(gblErrFlagXmt) {
@@ -690,7 +678,7 @@ Void Audio_echo_Task()
              * Please note that the test may not recover from this state. */
             bool dlbMode=FALSE; /* Forcefully disable */
             Mcasp_localSubmitIoctl(hMcaspTxChan,Mcasp_IOCTL_SET_DLB_MODE,&dlbMode,NULL);
-            Task_sleep(1000);
+            TaskP_sleep(1000);
             /* The test should be hung by now after "Total 100 frames sent" */
 
         }
@@ -706,14 +694,13 @@ Void Audio_echo_Task()
 			IHeap_Handle iheap;
 
 			iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
-			Error_init(&eb);
 			for(i32Count = 0; i32Count < (NUM_BUFS); i32Count ++)
 				{
 					Memory_free(iheap,rxbuf[i32Count],rx_frame_size);
 					Memory_free(iheap,txbuf[i32Count],tx_frame_size);
 				}
 		}
-	  /* Display profiling results */	
+	  /* Display profiling results */
 #ifdef MEASURE_TIME
       profiling_display_results();
 #endif
@@ -729,6 +716,6 @@ Void Audio_echo_Task()
 #endif
 
 
-    BIOS_exit(0);
+    OS_stop();
 }
 

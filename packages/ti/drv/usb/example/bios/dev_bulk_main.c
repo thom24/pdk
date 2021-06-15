@@ -43,15 +43,11 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <stdio.h>
 #include <stdlib.h>
-#include <ti/sysbios/knl/Task.h>
-
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
+#include <stdint.h>
+#include <stdio.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
 #include <ti/board/board.h>
 
@@ -126,7 +122,7 @@ uint8_t g_bulkRxBuffer[MAX_TRANSFER_SIZE] __attribute__ ((aligned (CACHE_LINE_SI
 #define COMMAND_PACKET_SENT     0x00000004
 
 /* internal status of the bulk connection */
-typedef enum 
+typedef enum
 {
     BULK_STATE_DISCONNECT = 1,
     BULK_STATE_CONNECT,
@@ -206,14 +202,14 @@ convertData(uint8_t *incomingPcData,
 }
 
 
-/* 
- * USB bulk write throughput test 
- * USB host sends bulk packets to us 
+/*
+ * USB bulk write throughput test
+ * USB host sends bulk packets to us
  *
  * Write == USB OUT
  * i.e USB host write to USB device (which does the read)
- * 
- * We know when host finishes sending the packets when the data size is 
+ *
+ * We know when host finishes sending the packets when the data size is
  * less than max packet size
  */
 void doUsbBulkWriteThroughput(USB_Handle usb_handle, uint32_t transferSize)
@@ -229,7 +225,7 @@ void doUsbBulkWriteThroughput(USB_Handle usb_handle, uint32_t transferSize)
 
         if (rxBytes < MAX_TRANSFER_SIZE)
         {
-            /* last packet has size smaller than the max packet size 
+            /* last packet has size smaller than the max packet size
                means we aleady receive last packet */
             break;
         }
@@ -244,9 +240,9 @@ void doUsbBulkWriteThroughput(USB_Handle usb_handle, uint32_t transferSize)
 }
 
 
-/* 
- * USB bulk read throughput test 
- * USB host expects us to send out bulk packets 
+/*
+ * USB bulk read throughput test
+ * USB host expects us to send out bulk packets
  * We agree with USB host that we would send 10MB worth of packets
  *
  * Read means USB IN in this case - so we write to host.
@@ -270,13 +266,13 @@ void doUsbBulkReadThroughput(USB_Handle usb_handle, uint32_t transferSize)
     {
         USBD_bulkWrite(usb_handle, g_bulkTxBuffer, numRemain);
     }
-    
+
     consolePrintf("Finish read throughput test\n");
 }
 
-/* 
- * USB bulk demo/test 
- * USB host sends bulk packets of ascii string to us 
+/*
+ * USB bulk demo/test
+ * USB host sends bulk packets of ascii string to us
  * We swap the letter case and send the string back to host.
  *
  * We know when host finishes sending the packets when the packet contains a string of "ENDDEMO"
@@ -287,7 +283,7 @@ void doUsbBulkDemo(USB_Handle usb_handle)
 
     while(1)
     {
-        /* start waiting for bulk transfer from USB host 
+        /* start waiting for bulk transfer from USB host
            USB device cannot send anything to USB host unless USB host asks for it */
         USBD_bulkRead(usb_handle, g_bulkRxBuffer, &rxBytes);
 
@@ -311,9 +307,9 @@ void doUsbBulkDemo(USB_Handle usb_handle)
 
 
 
-/* 
+/*
  *  find the transfer size specified in a command string which has the following format
- *  WRITE_THROUGHPUT=4000; 
+ *  WRITE_THROUGHPUT=4000;
  *  or
  *  READ_THROUGHPUT=8000;
  *  The transfer size is the value 4000 or 8000 in the above examples
@@ -347,11 +343,11 @@ uint32_t findTransferSize(char* cmdStr, uint32_t cmdLen)
             valid = 1;
             break;
         }
-        
+
         j++;
         i++;
     }
-    
+
     if (valid==1)
     {
         return atoi(valStr);
@@ -366,7 +362,7 @@ uint32_t findTransferSize(char* cmdStr, uint32_t cmdLen)
 // task function
 //
 //*****************************************************************************
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void * a0, void * a1)
 {
     USB_Params  usb_dev_params;
     USB_Handle  usb_handle;
@@ -410,32 +406,32 @@ Void taskFxn(UArg a0, UArg a1)
         {
             consolePrintf("%s\n", g_pcStatus);
             g_ulFlags &= ~COMMAND_STATUS_UPDATE;
-            
+
             if (g_bulk_state == BULK_STATE_CONNECT)
             {
-                /* we received received "SetConfig" from host, and the LLD has 
+                /* we received received "SetConfig" from host, and the LLD has
                  * finished handling SetConfig.
-                 * Need to wait a little just in case the host sends some extra 
-                 * request (observed Linux host sending 2 Get String Descriptors 
+                 * Need to wait a little just in case the host sends some extra
+                 * request (observed Linux host sending 2 Get String Descriptors
                  * but not on Windows)
                  */
                 usb_osalDelayMs(500);
                 g_bulk_state = BULK_STATE_READY;
             }
         }
-        
+
         if (g_bulk_state == BULK_STATE_READY)
         {
-            /* start waiting for bulk transfer from USB host 
+            /* start waiting for bulk transfer from USB host
                USB device cannot send anything to USB host unless USB host asks for it */
             USBD_bulkRead(usb_handle, g_bulkRxBuffer, &rxBytes);
 
-            /* check to see what USB host wants: 
+            /* check to see what USB host wants:
                i.e if USB host wants a demo or a throughput test */
             if (strncmp((char*)g_bulkRxBuffer, "WRITE_THROUGHPUT", 16) == 0)
             {
                 /* USB Host wants to do a write throughput. Find out how much data it wants to send us */
-                transferSize = findTransferSize((char*)g_bulkRxBuffer, MAX_TRANSFER_SIZE); 
+                transferSize = findTransferSize((char*)g_bulkRxBuffer, MAX_TRANSFER_SIZE);
 
                 if (transferSize == 0)
                 {
@@ -443,9 +439,9 @@ Void taskFxn(UArg a0, UArg a1)
                 }
                 else
                 {
-                    /* note that console printf prints to UART which is slow and causes USB host to retry 
+                    /* note that console printf prints to UART which is slow and causes USB host to retry
                        many times resulting many POLL or NAK.
-                       Since we intentionally leave the printf here, the host program needs 
+                       Since we intentionally leave the printf here, the host program needs
                        to delay a bit after it sends the string command out before it actually performs the test */
                     consolePrintf("About to do write throughput test by receving %d bytes\n", transferSize);
 
@@ -464,11 +460,11 @@ Void taskFxn(UArg a0, UArg a1)
                 }
                 else
                 {
-                    /* note console printf prints to UART which is very slow 
-                       The USB host might time out with these prints. 
-                       Since we intentionally leave the printf here, the host program needs 
-                       to delay a bit after it sends the string command out before it actually 
-                       performs the test. Or we can implement some handsake mechanism which the device 
+                    /* note console printf prints to UART which is very slow
+                       The USB host might time out with these prints.
+                       Since we intentionally leave the printf here, the host program needs
+                       to delay a bit after it sends the string command out before it actually
+                       performs the test. Or we can implement some handsake mechanism which the device
                        sends back to host a message saying it's ready for multiple packets */
                     consolePrintf("About to do read throughput test by sending %d bytes\n", transferSize);
 
@@ -481,19 +477,19 @@ Void taskFxn(UArg a0, UArg a1)
                 consolePrintf("About to do echo test\n");
                 doUsbBulkDemo(usb_handle);
             }
-              
+
         }
 
         if (g_ulFlags & COMMAND_PACKET_RECEIVED)
         {
-            /* printf will cause problem if host PC keeps sending or expecting data 
+            /* printf will cause problem if host PC keeps sending or expecting data
                since it will delay our response to host PC */
             /* consolePrintf("Rx: %d bytes\n", g_rxBytes); */
             g_ulFlags &= ~COMMAND_PACKET_RECEIVED;
         }
         if (g_ulFlags & COMMAND_PACKET_SENT)
         {
-            /* printf to UART console is slow. It will delay our reponse to host PC 
+            /* printf to UART console is slow. It will delay our reponse to host PC
                and causes time out at host PC if host PC is doing a lot of reading / sending */
             /* consolePrintf("Total Tx: %d\n", g_ulTxCount); */
             g_ulFlags &= ~COMMAND_PACKET_SENT;
@@ -562,10 +558,9 @@ void usbCoreIntrHandler(uint32_t* pUsbParam)
 int main(void)
 {
 
-    Task_Handle task;
-    Task_Params tskParams;
-    Error_Block eb;
-         
+    TaskP_Handle task;
+    TaskP_Params tskParams;
+
     Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_PINMUX_CONFIG |
@@ -573,20 +568,20 @@ int main(void)
 
     Board_init(boardCfg);
 
-    Error_init(&eb);
+    OS_init();
 
-    Task_Params_init(&tskParams);
-    tskParams.stackSize = 0x4000;
-    task = Task_create(taskFxn, &tskParams, &eb);
+    TaskP_Params_init(&tskParams);
+    tskParams.stacksize = 0x4000;
+    task = TaskP_create(taskFxn, &tskParams);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        consolePrintf("TaskP_create() failed!\n");
+        OS_stop();
     }
 
     delayTimerSetup();
 
 
-    BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
 
     return 0;
 }
@@ -616,7 +611,7 @@ usbdbulkEventCallback(struct usbGadgetObj *pGadgetObject,
         {
             g_pcStatus = "host connected\n";
             g_ulFlags |= COMMAND_STATUS_UPDATE;
-            
+
             g_bulk_state = BULK_STATE_CONNECT;
             break;
         }
@@ -625,7 +620,7 @@ usbdbulkEventCallback(struct usbGadgetObj *pGadgetObject,
         {
             g_pcStatus = "host disconnected\n";
             g_ulFlags |= COMMAND_STATUS_UPDATE;
-            
+
             g_bulk_state = BULK_STATE_DISCONNECT;
             break;
         }

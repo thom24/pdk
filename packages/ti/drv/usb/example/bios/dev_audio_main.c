@@ -34,17 +34,10 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Semaphore.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
 #include <ti/board/board.h>
 
@@ -81,7 +74,7 @@
 #if (defined (evmAM335x)||defined(evmAM437x) || defined(evmOMAPL137)) || defined(lcdkOMAPL138) \
          || defined (lcdkC6748)
 /* only USB#0 on AM437EVM can be USB DEV */
-#define USB_DEV_INSTANCE                     0 
+#define USB_DEV_INSTANCE                     0
 #else
 /* on idkAM572x, USB1 is attached to a USB device connector */
 #define USB_DEV_INSTANCE                     1
@@ -90,7 +83,7 @@
 /* ========================================================================== */
 /*                 Global Variables                                           */
 /* ========================================================================== */
-Semaphore_Handle hSemEventHandler = NULL;
+SemaphoreP_Handle hSemEventHandler = NULL;
 uint32_t gs_Volume = 0;
 Bool gusVolumeMute = TRUE;
 
@@ -114,7 +107,7 @@ extern void mcaspUpdateVolume(uint8_t volume);
 // task function
 //
 //*****************************************************************************
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void * a0, void * a1)
 {
     USB_Params  usb_dev_params;
     USB_Handle  usb_handle;
@@ -125,10 +118,10 @@ Void taskFxn(UArg a0, UArg a1)
     usb_dev_params.usbMode = USB_DEVICE_AC_MODE;
     usb_dev_params.instanceNo = USB_DEV_INSTANCE;  /* USB port # */
     usb_dev_params.usbClassData = (void*)&g_sAudioDevice;
-    
+
     usb_handle = USB_open(usb_dev_params.instanceNo, &usb_dev_params);
 
-    if (usb_handle == 0) 
+    if (usb_handle == 0)
     {
         ///consolePrintf("Failed to open USB driver\n");
         printf("Failed to open USB driver\n");
@@ -146,7 +139,7 @@ Void taskFxn(UArg a0, UArg a1)
         /* Main while loop. All USB dev events are handled in interrupt context */
 
         /* Pend forever until a volume change is requested by the HOST */
-        Semaphore_pend(hSemEventHandler, BIOS_WAIT_FOREVER );
+        SemaphoreP_pend(hSemEventHandler, BIOS_WAIT_FOREVER );
 
         /* Update Codec Volume */
         if(gusVolumeMute)
@@ -247,7 +240,7 @@ usbDAudioEventCallback(struct usbGadgetObj *pGadgetObject, void *pvCBData, uint3
 		 break;
 	}
 
-	Semaphore_post(hSemEventHandler);
+	SemaphoreP_post(hSemEventHandler);
     return(0);
 }
 
@@ -257,26 +250,26 @@ usbDAudioEventCallback(struct usbGadgetObj *pGadgetObject, void *pvCBData, uint3
 int usb_main(void)
 {
 
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
-    Semaphore_Params semParams;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
+    SemaphoreP_Params semParams;
 
     // initialize the audio buffers
     audio_buffer_init();
 
     /*Initialize the Semaphore params*/
-    Semaphore_Params_init( &semParams );
-    hSemEventHandler = ( Semaphore_Handle )Semaphore_create( 0, &semParams, &eb );
+    SemaphoreP_Params_init( &semParams );
+    hSemEventHandler = ( SemaphoreP_Handle )SemaphoreP_create( 0, &semParams);
 
-    Error_init(&eb);
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 0x1f00;
+    OS_init();
+
+    TaskP_Params_init(&taskParams);
+    taskParams.stacksize = 0x1f00;
     taskParams.priority = 1;
-    task = Task_create(taskFxn, NULL, &eb);
+    task = TaskP_create(taskFxn, NULL);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        System_printf("TaskP_create() failed!\n");
+        OS_stop();
     }
 
 #if defined (evmAM335x) || defined (evmOMAPL137) || defined (lcdkOMAPL138) \
@@ -296,6 +289,8 @@ int usb_main(void)
     CSL_xbarMpuIrqConfigure(CSL_XBAR_INST_MPU_IRQ_78,  CSL_XBAR_USB2_IRQ_INTR0);  /* main irq */
     CSL_xbarMpuIrqConfigure(CSL_XBAR_INST_MPU_IRQ_92,  CSL_XBAR_USB2_IRQ_INTR1);  /* misc irq */
 #endif
+
+    OS_start();    /* does not return */
 
     return 0;
 }

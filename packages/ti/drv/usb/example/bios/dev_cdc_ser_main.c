@@ -43,16 +43,10 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
 #include <ti/board/board.h>
 
@@ -96,9 +90,9 @@
 // \addtogroup example_list
 // <h1>USB Serial Device (usb_dev_serial)</h1>
 //
-// This example application creates a virtual serial port when connected 
-// to a USB host PC.  
-// The application uses the USB Communication Device Class, 
+// This example application creates a virtual serial port when connected
+// to a USB host PC.
+// The application uses the USB Communication Device Class,
 // Abstract Control Model (ACM) to write to and read data from USB host PC
 //
 //*****************************************************************************
@@ -159,7 +153,7 @@ uint8_t g_cdcRxBuffer[MAX_TRANSFER_SIZE] __attribute__ ((aligned (CACHE_LINE_SIZ
 
 
 /* status of the CDC USB connection */
-typedef enum 
+typedef enum
 {
     CDC_STATE_DISCONNECT = 1,
     CDC_STATE_CONNECT,
@@ -392,7 +386,7 @@ ControlHandler(struct usbGadgetObj *pGadgetObject,
 // task function
 //
 //*****************************************************************************
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void * a0, void * a1)
 {
     USB_Params  usb_dev_params;
     USB_Handle  usb_handle;
@@ -435,13 +429,13 @@ Void taskFxn(UArg a0, UArg a1)
         {
             consolePrintf("%s\n", g_pcStatus);
             g_ulFlags &= ~COMMAND_STATUS_UPDATE;
-            
+
             if (g_cdc_state == CDC_STATE_CONNECT)
             {
-                /* we received received "SetConfig" from host, and the LLD has 
+                /* we received received "SetConfig" from host, and the LLD has
                  * finished handling SetConfig.
-                 * Need to wait a little just in case the host sends some extra 
-                 * request (observed Linux host sending 2 Get String Descriptors 
+                 * Need to wait a little just in case the host sends some extra
+                 * request (observed Linux host sending 2 Get String Descriptors
                  * but not on Windows)
                  */
                 g_cdc_state = CDC_STATE_READY;
@@ -449,12 +443,12 @@ Void taskFxn(UArg a0, UArg a1)
                 /* start a bulk OUT transaction - this is a non-blocking call
                  * data will arrive in the provided buffer when the host actually
                  * sends data to us. Data is arrived when usbdCdcEventCallback function is called with
-                 * event USB_EVENT_RX_AVAILABLE 
+                 * event USB_EVENT_RX_AVAILABLE
                  */
                 USBD_cdcRead(usb_handle, g_cdcRxBuffer, &rxBytes);
             }
         }
-        
+
         if (g_cdc_state == CDC_STATE_READY)
         {
             if (g_ulFlags & COMMAND_PACKET_RECEIVED)
@@ -549,10 +543,9 @@ void usbCoreIntrHandler(uint32_t* pUsbParam)
 int main(void)
 {
 
-    Task_Handle task;
-    Task_Params tskParams;
-    Error_Block eb;
-         
+    TaskP_Handle task;
+    TaskP_Params tskParams;
+
 #ifdef USB_UART_POLL_MODE
     UART_HwAttrs uart_cfg;
     uint32_t uartInstance = 0;
@@ -577,20 +570,19 @@ int main(void)
 
    Board_init(boardCfg);
 
-    Error_init(&eb);
+    OS_init();
 
-    Task_Params_init(&tskParams);
-    tskParams.stackSize = 0x4000;
-    task = Task_create(taskFxn, &tskParams, &eb);
+    TaskP_Params_init(&tskParams);
+    tskParams.stacksize = 0x4000;
+    task = TaskP_create(taskFxn, &tskParams);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        System_printf("TaskP_create() failed!\n");
+        OS_stop();
     }
 
     delayTimerSetup();
 
-
-    BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
 
     return 0;
 }
@@ -600,7 +592,7 @@ int main(void)
 /*****************************************************************************
  * This function is called back from USB LLD CDC class
  * it is mostly running in interrupt context.
- * pvCBData is the callbackData associated with the CDC Device struct (g_sCDCDevice) 
+ * pvCBData is the callbackData associated with the CDC Device struct (g_sCDCDevice)
  * ulEvent is USB Lib USB events
  * ulMsgValue value depends on the Events.
  *   For RX_AVAILABLE, TX_COMPLETE events:

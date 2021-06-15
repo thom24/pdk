@@ -1,7 +1,7 @@
 /*
  * audioSample_main.c
  *
- * This file contains the test / demo code to demonstrate the Audio component 
+ * This file contains the test / demo code to demonstrate the Audio component
  * driver functionality on SYS/BIOS 6.
  *
  * Copyright (C) 2017 Texas Instruments Incorporated - http://www.ti.com/
@@ -50,23 +50,13 @@
 /* ========================================================================== */
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
-
-#include <xdc/std.h>
 #include <string.h>
-#include <xdc/runtime/Log.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/io/GIO.h>
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/System.h>
-#include <ti/sysbios/knl/Semaphore.h>
-#include <ti/sysbios/knl/Task.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
+#include <stdint.h>
+#include <stdio.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
 #include <mcasp_drv.h>
-#include <ti/sysbios/io/IOM.h>
 #ifdef AIC_CODEC
 #include <Aic31.h>
 #endif
@@ -102,22 +92,21 @@ extern int usb_main(void);
 
 
 /**
- *  \brief  Void main(Void)
+ *  \brief  void main(void)
  *
  *   Main function of the sample application. This function enables
  *   the mcasp instance in the power sleep controller and also
  *   enables the pinmux for the mcasp instance. This also powers up
- *   any codecs if attached to McASP like the AIC codec, before switching to 
+ *   any codecs if attached to McASP like the AIC codec, before switching to
  *   the task to Audio_echo_task().
  *
  *  \param  None
  *  \return None
  */
-int main(Void)
+int main(void)
 {
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
     /* enable the pinmux & PSC-enable for the mcasp device    */
     configureAudio();
@@ -134,21 +123,22 @@ int main(Void)
     Aic31_init();
 #endif
 
-    Error_init(&eb);
-    Task_Params_init(&taskParams);
-    taskParams.stackSize = 0x1c00;
+    OS_init();
+
+    TaskP_Params_init(&taskParams);
+    taskParams.stacksize = 0x1c00;
     taskParams.priority = 2;
-    task = Task_create(Audio_echo_Task, &taskParams, &eb);
+    task = TaskP_create(Audio_echo_Task, &taskParams, &eb);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        System_printf("TaskP_create() failed!\n");
+        OS_stop();
     }
 
     usb_main();
 
     Log_info0("\r\nAudio Sample Main\n");
 
-    BIOS_start();
+    OS_start();    /* does not return */
 
     return 0;
 }

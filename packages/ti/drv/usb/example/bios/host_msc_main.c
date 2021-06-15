@@ -34,15 +34,10 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
 #include <ti/board/board.h>
 
@@ -210,10 +205,10 @@ extern void consolePrintf(const char *pcString, ...);
 extern void usbcGpioInit();
 
 /*****************************************************************************
-* main 
+* main
 *
 *****************************************************************************/
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void * a0, void * a1)
 {
     USB_Params  usb_host_params;
     USB_Handle  usb_handle;
@@ -246,7 +241,7 @@ Void taskFxn(UArg a0, UArg a1)
     usb_host_params.instanceNo   = USB_INSTANCE;
     usb_handle = USB_open(usb_host_params.instanceNo, &usb_host_params);
 
-    if (usb_handle == 0) 
+    if (usb_handle == 0)
     {
         UART_printStatus("\n Some tests have failed.\n");
         /* failed to open the USB driver */
@@ -271,7 +266,7 @@ Void taskFxn(UArg a0, UArg a1)
 
     UART_printStatus("\n Test in progress.\n");
 
-    while(1) {    
+    while(1) {
         rc = USBHCDMain(USB_INSTANCE, (void*)g_ulMSCInstance);
 
         if (rc != 0)
@@ -320,8 +315,8 @@ Void taskFxn(UArg a0, UArg a1)
 void usbHostIntrConfig(USB_Params* usbParams)
 {
 #if defined(SOC_AM65XX)
-    /* we are not utilizing interrupt in host mode for xHCI yet. 
-       if we enable interrupt, the interrupt pre-empts the main while loop that 
+    /* we are not utilizing interrupt in host mode for xHCI yet.
+       if we enable interrupt, the interrupt pre-empts the main while loop that
        handles the USB host events. So return here */
     return;
 
@@ -353,7 +348,7 @@ void usbHostIntrConfig(USB_Params* usbParams)
     hwiInputParams.priority = 0x10U;
     hwiInputParams.evtId = 0;
 
-    if (usbParams->instanceNo == 0) 
+    if (usbParams->instanceNo == 0)
     {
 #if defined(SOC_J721E)
         /* J7 has different interrupt for USB host or USB device */
@@ -361,10 +356,10 @@ void usbHostIntrConfig(USB_Params* usbParams)
 #else
         mainIntNo = SYS_INT_USB0;
 #endif
-    } 
+    }
 
 #if !defined(SOC_OMAPL137) && !defined(SOC_OMAPL138)
-    else 
+    else
     {
         mainIntNo = SYS_INT_USB1;
     }
@@ -382,7 +377,7 @@ void usbHostIntrConfig(USB_Params* usbParams)
 #endif
 
     USB_irqConfig(usbParams->usbHandle, usbParams);
-#endif    
+#endif
 }
 
 
@@ -463,18 +458,17 @@ void usbCoreIntrHandler(uint32_t* pUsbParam)
 }
 
 /*****************************************************************************
-* main 
+* main
 *
 *****************************************************************************/
 int main(void)
 {
 
-    Task_Handle task;
-    Task_Params params;
-    Error_Block eb;
+    TaskP_Handle task;
+    TaskP_Params params;
     Board_STATUS boardRc;
 
-    System_printf("enter main()\n");
+    consolePrintf("enter main()\n");
 
 
     Board_initCfg boardCfg;
@@ -486,16 +480,17 @@ int main(void)
     boardRc = Board_init(boardCfg);
     if (boardRc != BOARD_SOK)
     {
-        System_printf("Board Init failed with code: 0x%x!\n", boardRc);
+        consolePrintf("Board Init failed with code: 0x%x!\n", boardRc);
     }
 
-    Error_init(&eb);
-    Task_Params_init(&params);
-    params.stackSize = 0x2000;
-    task = Task_create(taskFxn, &params, &eb);
+    OS_init();
+
+    TaskP_Params_init(&params);
+    params.stacksize = 0x2000;
+    task = TaskP_create(taskFxn, &params);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        consolePrintf("TaskP_create() failed!\n");
+        OS_stop();
     }
 
     delayTimerSetup();
@@ -510,7 +505,7 @@ int main(void)
     CSL_xbarIrqConfigure(CSL_XBAR_IRQ_CPU_ID_MPU, CSL_XBAR_INST_MPU_IRQ_92,  CSL_XBAR_USB2_IRQ_INTR1);  /* misc irq */
 #endif
 
-    BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
 
     return 0;
 }

@@ -42,19 +42,11 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Event.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 #include <ti/osal/HwiP.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
 
 #include <ti/board/board.h>
 
@@ -104,7 +96,7 @@
 
 #if (defined (evmAM335x)||defined(evmAM437x)||defined (bbbAM335x))
 /* only USB#0 on AM437EVM can be USB DEV */
-#define USB_DEV_INSTANCE                     0 
+#define USB_DEV_INSTANCE                     0
 #else
 /* on idkAM572x, USB1 is attached to a USB device connector */
 #define USB_DEV_INSTANCE                     1
@@ -137,9 +129,9 @@
 void usbdIntrConfig(USB_Handle usbHandle, USB_Params* usbDevParams);
 void consolePrintf(const char *pcString, ...);
 
-static void hwiCoreIntrHandler(UArg arg);
+static void hwiCoreIntrHandler(void * arg);
 #if (defined (SOC_AM335x))
-static void hwiDmaHandler(UArg arg);
+static void hwiDmaHandler(void * arg);
 #endif
 
 #ifdef USB_DEVICE_EMMC
@@ -210,10 +202,10 @@ GPIO_v1_Config GPIO_v1_config = {
 EDMA3_RM_Handle gEdmaHandle = NULL;
 
 
-#define USB_INTERRUPT_EVNT     Event_Id_00
-#define USB_DMA_INTERRUPT_EVNT Event_Id_01
+#define USB_INTERRUPT_EVNT     EventP_Id_00
+#define USB_DMA_INTERRUPT_EVNT EventP_Id_01
 
-Event_Handle hEvents;
+EventP_Handle hEvents;
 uint32_t g_resetUsb = 0;
 
 /* ========================================================================== */
@@ -232,7 +224,7 @@ static void resetUsb(USB_Params*  usbDdevParams);
 // task function
 //
 //*****************************************************************************
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void * a0, void * a1)
 {
     USB_Params  usb_dev_params;
     USB_Handle  usb_handle;
@@ -245,7 +237,7 @@ Void taskFxn(UArg a0, UArg a1)
 #endif
 
     consolePrintf("\nRTOS USB Dev MSC - MMCSD example!!\n");
-    
+
     /* initialize MMCSD example application */
     EDMA3_DRV_Result edmaResult = 0;
     gEdmaHandle = (EDMA3_RM_Handle)edma3init(MMCSD_EDMACC_NUM, &edmaResult);
@@ -294,10 +286,10 @@ Void taskFxn(UArg a0, UArg a1)
     usb_dev_params.usbMode = USB_DEVICE_MSC_MODE;
     usb_dev_params.instanceNo = USB_DEV_INSTANCE;  /* USB port # */
     usb_dev_params.usbClassData = (void*)&g_sMSCDevice;
-    
+
     usb_handle = USB_open(usb_dev_params.instanceNo, &usb_dev_params);
 
-    if (usb_handle == 0) 
+    if (usb_handle == 0)
     {
         consolePrintf("Failed to open USB driver\n");
         UART_printStatus("\n Some tests have failed.\n");
@@ -322,8 +314,8 @@ Void taskFxn(UArg a0, UArg a1)
 #endif
 
         /* Main while loop. All USB dev events are handled in this task context */
-        events = Event_pend(hEvents,
-                            Event_Id_NONE,
+        events = EventP_pend(hEvents,
+                            EventP_Id_NONE,
                             USB_INTERRUPT_EVNT + USB_DMA_INTERRUPT_EVNT,
                             BIOS_WAIT_FOREVER);
 
@@ -377,12 +369,12 @@ void usbdIntrConfig(USB_Handle usbHandle, USB_Params* usbDevParams)
                               &hwiInputParams);
 
 #if (defined (SOC_AM335x))
-    /* on AM335, the DMA interrupt is handled inside the USB LLD. But we need to handle all 
+    /* on AM335, the DMA interrupt is handled inside the USB LLD. But we need to handle all
      * interrupts in task context. So we move the the DMA interrupt handler to application
      * layer. For that we need to tell the USB LLD to not register DMA handler on its own
      * before calling the USB_IrqConfig()
-     * 
-     * Handling USB events in IRQ is fine if we access RamDisk, but We really need to handle 
+     *
+     * Handling USB events in IRQ is fine if we access RamDisk, but We really need to handle
      * all USB events in main task context for the interface with MMCSD to work
      */
     usbHandle->handleCppiDmaInApp = TRUE;
@@ -401,31 +393,30 @@ void usbdIntrConfig(USB_Handle usbHandle, USB_Params* usbDevParams)
 }
 
 /* main entry point for core interrupt handler */
-static void hwiCoreIntrHandler(UArg arg)
+static void hwiCoreIntrHandler(void * arg)
 {
 	HwiP_disableInterrupt(SYS_INT_USB0);
-    Event_post(hEvents, USB_INTERRUPT_EVNT);
+    EventP_post(hEvents, USB_INTERRUPT_EVNT);
 }
 
 #if (defined (SOC_AM335x))
 /* main entry point for DMA interrupt handler */
-static void hwiDmaHandler(UArg arg)
+static void hwiDmaHandler(void * arg)
 {
     HwiP_disableInterrupt(SYS_INT_USBSSINT);
-    Event_post(hEvents, USB_DMA_INTERRUPT_EVNT);
+    EventP_post(hEvents, USB_DMA_INTERRUPT_EVNT);
 }
 #endif
 
 
 /*****************************************************************************
- *  main 
+ *  main
 *****************************************************************************/
 int main(void)
 {
 
-    Task_Handle task;
-    Task_Params tskParams;
-    Error_Block eb;
+    TaskP_Handle task;
+    TaskP_Params tskParams;
 
     Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_MODULE_CLOCK |
@@ -433,21 +424,21 @@ int main(void)
         BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
 
-    Error_init(&eb);
+    OS_init();
 
-    hEvents = Event_create(NULL, &eb);
+    hEvents = EventP_create(NULL);
     if (hEvents == NULL)
     {
-        System_printf("Event_create() failed!\n");
-        BIOS_exit(0);
+        System_printf("EventP_create() failed!\n");
+        OS_stop();
     }
 
-    Task_Params_init(&tskParams);
-    tskParams.stackSize = 0x4000;
-    task = Task_create(taskFxn, &tskParams, &eb);
+    TaskP_Params_init(&tskParams);
+    tskParams.stacksize = 0x4000;
+    task = TaskP_create(taskFxn, &tskParams);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        System_printf("TaskP_create() failed!\n");
+        OS_stop();
     }
 
     delayTimerSetup();
@@ -465,7 +456,7 @@ int main(void)
     CSL_xbarMpuIrqConfigure(CSL_XBAR_INST_MPU_IRQ_92,  CSL_XBAR_USB2_IRQ_INTR1);  /* misc irq */
 #endif
 
-    BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
 
     return 0;
 }
@@ -501,9 +492,9 @@ void AppGpioCallbackFxn(void)
 #endif
 
 
-/* 
+/*
  * In AM335x, CPPI DMA and MUSB could get into a bad state which the USB seems
- * to send bulk IN with bogus data immediately after an IN token received from 
+ * to send bulk IN with bogus data immediately after an IN token received from
  * USB host.  This bad state normally happens after USB cable is unplugged
  * while a bulk-in transfer is happening. Cleaning up CPPI/USB pending/stuck
  * transaction does not work yet. Reset the USBSS and USB stack instead for now

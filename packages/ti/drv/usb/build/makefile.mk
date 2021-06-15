@@ -56,40 +56,40 @@ ifeq ($(SOC),$(filter $(SOC), am437x am571x am572x am574x k2g am65xx dra72x dra7
 endif
 
 
-ifeq ($(SOC),$(filter $(SOC), j721e))
-    SRCDIR += src/cdn/core_driver/host/src  src/cdn/core_driver/device/src src/cdn/core_driver/common/src  src/cdn
-    INCDIR += src/cdn/core_driver/host/include src/cdn/core_driver/host/src  src/xhci
-    INCDIR += src/cdn/core_driver/device/include  src/cdn/core_driver/device/src 
-    INCDIR += src/cdn/core_driver/common/include src/cdn/core_driver/common/src 
-    INCDIR += src/cdn 
-
-    SRCS_COMMON += usb_cdn.c usb_cdn_dcd.c usbhenum_dwc.c 
-    SRCS_COMMON += cusbd.c  cusbdma.c  cusbdma_obj_if.c  cusbd_obj_if.c cps.c cusbd_sanity.c cusb_ch9_sanity.c cusbdma_sanity.c list_sanity.c
-    SRCS_COMMON += cdn_xhci_sanity.c
-    PACKAGE_SRCS_COMMON += src/cdn
-
-#ifeq ($(USE_CDN_XHCI),y)
-    SRCS_COMMON += cdn_xhci.c cdn_xhci_obj_if.c xhci_mem_alloc.c
-    CFLAGS_LOCAL_COMMON += -DUSE_CDN_XHCI
-
-ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-    CFLAGS_LOCAL_COMMON += -DPLATFORM_64_BIT 
-endif
-
-ifneq ($(findstring mcu,$(CORE)),)
-    # allow unalgined access with the R5 core
-    #CFLAGS_LOCAL_COMMON += --unaligned_access=off
-endif
+#ifeq ($(SOC),$(filter $(SOC), j721e))
+#    SRCDIR += src/cdn/core_driver/host/src  src/cdn/core_driver/device/src src/cdn/core_driver/common/src  src/cdn
+#    INCDIR += src/cdn/core_driver/host/include src/cdn/core_driver/host/src  src/xhci
+#    INCDIR += src/cdn/core_driver/device/include  src/cdn/core_driver/device/src
+#    INCDIR += src/cdn/core_driver/common/include src/cdn/core_driver/common/src
+#    INCDIR += src/cdn
+#
+#    SRCS_COMMON += usb_cdn.c usb_cdn_dcd.c usbhenum_dwc.c
+#    SRCS_COMMON += cusbd.c  cusbdma.c  cusbdma_obj_if.c  cusbd_obj_if.c cps.c cusbd_sanity.c cusb_ch9_sanity.c cusbdma_sanity.c list_sanity.c
+#    SRCS_COMMON += cdn_xhci_sanity.c
+#    PACKAGE_SRCS_COMMON += src/cdn
+#
+##ifeq ($(USE_CDN_XHCI),y)
+#    SRCS_COMMON += cdn_xhci.c cdn_xhci_obj_if.c xhci_mem_alloc.c
+#    CFLAGS_LOCAL_COMMON += -DUSE_CDN_XHCI
+#
+#ifeq ($(CORE),$(filter $(CORE), mpu1_0))
+#    CFLAGS_LOCAL_COMMON += -DPLATFORM_64_BIT
+#endif
+#
+#ifneq ($(findstring mcu,$(CORE)),)
+#    # allow unalgined access with the R5 core
+#    #CFLAGS_LOCAL_COMMON += --unaligned_access=off
+#endif
 
 #else
 #    SRCDIR += src/xhci
-#    SRCS_COMMON += usb_xhci_hcd.c 
+#    SRCS_COMMON += usb_xhci_hcd.c
 #    PACKAGE_SRCS_COMMON += src/xhci
 #endif
 
     # cdn's driver xhci_mem_alloc needs this flag
-    CFLAGS_LOCAL_COMMON += -DUSBSSP_DEMO_TB
-endif
+#    CFLAGS_LOCAL_COMMON += -DUSBSSP_DEMO_TB
+#endif
 
 
 SRCDIR += soc soc/$(SOC)
@@ -121,9 +121,9 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 #CFLAGS_LOCAL_COMMON += -DUSB3_DEBUG                #this flag enable USB3.0 debug
 #CFLAGS_LOCAL_COMMON += -DPRINT_COMPLIANCE_STATUS   #this flag makes the code wait for USB port to get to compliance state
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
-CFLAGS_LOCAL_COMMON += -DDEBUG
-endif
+#ifeq ($(SOC),$(filter $(SOC), j721e))
+#CFLAGS_LOCAL_COMMON += -DDEBUG
+#endif
 #CFLAGS_LOCAL_COMMON += -DDEBUG_PRINT_EN            #this flag enable debug prints. Used only with UART in poll mode
 endif
 

@@ -33,16 +33,10 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
 #include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
 #include <ti/board/board.h>
 
@@ -82,7 +76,7 @@
     defined(lcdkOMAPL138) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || \
     defined(j721e_evm))
 /* only USB#0 on AM437EVM can be USB DEV */
-#define USB_DEV_INSTANCE                     0 
+#define USB_DEV_INSTANCE                     0
 #else
 /* on idkAM572x, USB1 is attached to a USB device connector */
 #define USB_DEV_INSTANCE                     1
@@ -125,7 +119,7 @@ uint32_t g_resetUsb = 0;
 * task function
 *
 *****************************************************************************/
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void * a0, void * a1)
 {
     USB_Params  usb_dev_params;
     USB_Handle  usb_handle;
@@ -139,10 +133,10 @@ Void taskFxn(UArg a0, UArg a1)
     usb_dev_params.usbMode = USB_DEVICE_MSC_MODE;
     usb_dev_params.instanceNo = USB_DEV_INSTANCE;  /* USB port # */
     usb_dev_params.usbClassData = (void*)&g_sMSCDevice;
-    
+
     usb_handle = USB_open(usb_dev_params.instanceNo, &usb_dev_params);
 
-    if (usb_handle == 0) 
+    if (usb_handle == 0)
     {
         consolePrintf("Failed to open USB driver\n");
         UART_printStatus("\n Some tests have failed.\n");
@@ -250,7 +244,7 @@ void usbCoreIntrHandler(uint32_t* pUsbParam)
 }
 
 
-/* format the ramDisk with FAT16 format and have a readme.txt file as content 
+/* format the ramDisk with FAT16 format and have a readme.txt file as content
  * the disk image is a FAT16 formatted from Linux
  */
 void formatRamDisk(void)
@@ -295,19 +289,18 @@ void formatRamDisk(void)
 }
 
 /*****************************************************************************
- *  main 
+ *  main
 *****************************************************************************/
 int main(void)
 {
 
-    Task_Handle task;
-    Task_Params params;
-    Error_Block eb;
+    TaskP_Handle task;
+    TaskP_Params params;
     volatile uint32_t emuwait_board=1;
-    
+
     Board_initCfg boardCfg;
     Board_STATUS board_status;
-    
+
     boardCfg = BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_UART_STDIO;
@@ -316,13 +309,13 @@ int main(void)
     if(board_status!=BOARD_SOK) {
 		while(emuwait_board);
 	}
-    Error_init(&eb);
-    Task_Params_init(&params);
-    params.stackSize = 0x2000;
-    task = Task_create(taskFxn, &params, &eb);
+    OS_init();
+    TaskP_Params_init(&params);
+    params.stacksize = 0x2000;
+    task = TaskP_create(taskFxn, &params);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        consolePrintf("TaskP_create() failed!\n");
+        OS_stop();
     }
 
 #if defined (evmAM335x) || defined (evmOMAPL137) || defined (lcdkOMAPL138) || defined(j721e_evm)
@@ -349,14 +342,14 @@ int main(void)
 #endif
 #endif
 
-    BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
 
     return 0;
 }
 
-/* 
+/*
  * In AM335x, CPPI DMA and MUSB could get into a bad state which the USB seems
- * to send bulk IN with bogus data immediately after an IN token received from 
+ * to send bulk IN with bogus data immediately after an IN token received from
  * USB host.  This bad state normally happens after USB cable is unplugged
  * while a bulk-in transfer is happening. Cleaning up CPPI/USB pending/stuck
  * transaction does not work yet. Reset the USBSS and USB stack instead for now

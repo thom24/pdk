@@ -33,11 +33,15 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* 
- * This file contains implementation for usb_osal for bare metal USB examples 
+/*
+ * This file contains implementation for usb_osal for bare metal USB examples
  */
+#include <stdint.h>
 #include <stdio.h>
 #include "types.h"
+
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
 #ifdef TIRTOS
 #include <xdc/runtime/System.h>
@@ -188,7 +192,7 @@ void usb_osalInitPerfUnit(void)
     val &= 0x80000000;
 
     CSL_armR5PmuClearCntrOverflowStatus(val);
-    CSL_armR5PmuCfgCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, 
+    CSL_armR5PmuCfgCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM,
                         CSL_ARM_R5_PMU_EVENT_TYPE_CYCLE_CNT);
 
     CSL_armR5PmuEnableAllCntrs(1);
@@ -223,9 +227,9 @@ void usb_osalInitPerfUnit(void)
 }
 
 
-/* 
+/*
  * start the cycle counter unit
- * 
+ *
  */
 void usb_osalStartPerfCounter(void)
 {
@@ -255,10 +259,10 @@ void usb_osalClearPerfCounter(void)
 #endif
 }
 
-/* 
- * read time stamp count 
+/*
+ * read time stamp count
  * Using SOC/ARM/DSP provided performance measure counter unit
- * 
+ *
  */
 uint64_t usb_osalGetPerfCounter(void)
 {
@@ -274,7 +278,7 @@ uint64_t usb_osalGetPerfCounter(void)
 #endif
 #else
 #if !(defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_J721E))
-    __asm__ __volatile__ ("MRC p15, 0, %0, c9, c13, 0\t\n": "=r"(timeVal)); 
+    __asm__ __volatile__ ("MRC p15, 0, %0, c9, c13, 0\t\n": "=r"(timeVal));
 #endif
 #endif
 

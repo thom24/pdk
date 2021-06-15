@@ -67,10 +67,9 @@
 ifeq ($(usb_component_make_include), )
 
 # under other list
-drvusb_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm
-drvusb_SOCLIST         = am574x am572x am571x am437x am335x dra72x dra75x k2g omapl137 omapl138 am65xx j721e
+drvusb_BOARDLIST       = am65xx_evm am65xx_idk
+drvusb_SOCLIST         = am574x am572x am571x am437x am335x dra72x dra75x k2g omapl137 omapl138 am65xx
 drvusb_am65xx_CORELIST = mpu1_0 mcu1_0
-drvusb_j721e_CORELIST  = mpu1_0 mcu1_0
 drvusb_am574x_CORELIST = a15_0
 drvusb_am572x_CORELIST = a15_0
 drvusb_am571x_CORELIST = a15_0
@@ -81,6 +80,14 @@ drvusb_dra75x_CORELIST = a15_0 ipu1_0
 drvusb_k2g_CORELIST = a15_0
 drvusb_omapl137_CORELIST = arm9_0 c674x
 drvusb_omapl138_CORELIST = arm9_0 c674x
+
+usb_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
+define DRV_USB_RTOS_BOARDLIST_RULE
+usb_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvusb_BOARDLIST))
+endef
+DRV_USB_RTOS_BOARDLIST_MACRO_LIST := $(foreach curos, $(usb_RTOS_LIST), $(call DRV_USB_RTOS_BOARDLIST_RULE,$(curos)))
+$(eval ${DRV_USB_RTOS_BOARDLIST_MACRO_LIST})
+
 ############################
 # usb package
 # List of components included under usb lib
@@ -98,8 +105,6 @@ drvusb_LIB_LIST = $(usb_LIB_LIST)
 # The app names in the EXAMPLE_LIST need to match with the APP_NAME in the example makefiles
 # in ti/drv/usb/example/build
 ############################
-
-usb_EXAMPLE_LIST =  USB_HostMsc_TestApp USB_DevMsc_TestApp USB_DevBulk_TestApp
 
 ifeq ($(SOC),$(filter $(SOC), am65xx ))
     usb_EXAMPLE_LIST += USB_Baremetal_HostMsc_TestApp USB_Baremetal_DevMsc_TestApp USB_Baremetal_HostMsc_usb30_TestApp
@@ -223,113 +228,88 @@ export usb_profile_indp_$(SOC)_CORELIST
 
 #USB examples
 #USB RTOS host MSC example
-USB_HostMsc_TestApp_COMP_LIST = USB_HostMsc_TestApp
-USB_HostMsc_TestApp_RELPATH = ti/drv/usb/example/build/usb_host_msc
-USB_HostMsc_TestApp_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_host_msc
-USB_HostMsc_TestApp_MAKEFILE = -f makefile USB30=no
-USB_HostMsc_TestApp_BOARD_DEPENDENCY = yes
-USB_HostMsc_TestApp_CORE_DEPENDENCY = no
-USB_HostMsc_TestApp_XDC_CONFIGURO = yes
-USB_HostMsc_TestApp_PKG_LIST = USB_HostMsc_TestApp
-USB_HostMsc_TestApp_INCLUDE = $(USB_HostMsc_TestApp_PATH)
-USB_HostMsc_TestApp_BOARDLIST = $(drvusb_BOARDLIST)
-USB_HostMsc_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
+define USB_HOSTMSC_TESTAPP_RULE
 
-export USB_HostMsc_TestApp_COMP_LIST
-export USB_HostMsc_TestApp_RELPATH
-export USB_HostMsc_TestApp_PATH
-export USB_HostMsc_TestApp_BOARD_DEPENDENCY
-export USB_HostMsc_TestApp_CORE_DEPENDENCY
-export USB_HostMsc_TestApp_XDC_CONFIGURO
-export USB_HostMsc_TestApp_PKG_LIST
-export USB_HostMsc_TestApp_INCLUDE
-export USB_HostMsc_TestApp_BOARDLIST
-export USB_HostMsc_TestApp_$(SOC)_CORELIST
-export USB_HostMsc_TestApp_MAKEFILE
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-USB_HostMsc_TestApp_SBL_APPIMAGEGEN = yes
-export USB_HostMsc_TestApp_SBL_APPIMAGEGEN
+export USB_HostMsc_TestApp_$(1)_COMP_LIST = USB_HostMsc_TestApp_$(1)
+USB_HostMsc_TestApp_$(1)_RELPATH = ti/drv/usb/example/build/usb_host_msc
+USB_HostMsc_TestApp_$(1)_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_host_msc
+export USB_HostMsc_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export USB_HostMsc_TestApp_$(1)_CORE_DEPENDENCY = no
+export USB_HostMsc_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export USB_HostMsc_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) USB30=no
+USB_HostMsc_TestApp_$(1)_PKG_LIST = USB_HostMsc_TestApp_$(1)
+USB_HostMsc_TestApp_$(1)_INCLUDE = $(USB_HostMsc_TestApp_$(1)_PATH)
+export USB_HostMsc_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvusb_BOARDLIST))
+export USB_HostMsc_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+usb_EXAMPLE_LIST += USB_HostMsc_TestApp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+usb_EXAMPLE_LIST += USB_HostMsc_TestApp_$(1)
+endif
 endif
 
-#USB RTOS host MSC example with SMP enabled
-USB_HostMsc_SMP_TestApp_COMP_LIST = USB_HostMsc_TestApp
-USB_HostMsc_SMP_TestApp_RELPATH = ti/drv/usb/example/build/usb_host_msc
-USB_HostMsc_SMP_TestApp_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_host_msc
-USB_HostMsc_SMP_TestApp_MAKEFILE = -f makefile USB30=no SMP=enable
-USB_HostMsc_SMP_TestApp_BOARD_DEPENDENCY = yes
-USB_HostMsc_SMP_TestApp_CORE_DEPENDENCY = no
-USB_HostMsc_SMP_TestApp_XDC_CONFIGURO = yes
-USB_HostMsc_SMP_TestApp_PKG_LIST = USB_HostMsc_TestApp
-USB_HostMsc_SMP_TestApp_INCLUDE = $(USB_HostMsc_SMP_TestApp_PATH)
-USB_HostMsc_SMP_TestApp_BOARDLIST = $(drvusb_BOARDLIST)
-USB_HostMsc_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
+endef
 
-export USB_HostMsc_SMP_TestApp_COMP_LIST
-export USB_HostMsc_SMP_TestApp_RELPATH
-export USB_HostMsc_SMP_TestApp_PATH
-export USB_HostMsc_SMP_TestApp_BOARD_DEPENDENCY
-export USB_HostMsc_SMP_TestApp_CORE_DEPENDENCY
-export USB_HostMsc_SMP_TestApp_XDC_CONFIGURO
-export USB_HostMsc_SMP_TestApp_PKG_LIST
-export USB_HostMsc_SMP_TestApp_INCLUDE
-export USB_HostMsc_SMP_TestApp_BOARDLIST
-export USB_HostMsc_SMP_TestApp_$(SOC)_CORELIST
-export USB_HostMsc_SMP_TestApp_MAKEFILE
+USB_HOSTMSC_TESTAPP_MACRO_LIST := $(foreach curos, $(usb_RTOS_LIST), $(call USB_HOSTMSC_TESTAPP_RULE,$(curos)))
+
+$(eval ${USB_HOSTMSC_TESTAPP_MACRO_LIST})
 
 #USB RTOS dev MSC example
-USB_DevMsc_TestApp_COMP_LIST = USB_DevMsc_TestApp
-USB_DevMsc_TestApp_RELPATH = ti/drv/usb/example/build/usb_dev_msc
-USB_DevMsc_TestApp_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_dev_msc
-USB_DevMsc_TestApp_BOARD_DEPENDENCY = yes
-USB_DevMsc_TestApp_CORE_DEPENDENCY = no
-USB_DevMsc_TestApp_XDC_CONFIGURO = yes
-USB_DevMsc_TestApp_PKG_LIST = USB_DevMsc_TestApp
-USB_DevMsc_TestApp_INCLUDE = $(USB_DevMsc_TestApp_PATH)
-USB_DevMsc_TestApp_BOARDLIST = $(drvusb_BOARDLIST)
-USB_DevMsc_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
+define USB_DEVMSC_TESTAPP_RULE
 
-export USB_DevMsc_TestApp_COMP_LIST
-export USB_DevMsc_TestApp_RELPATH
-export USB_DevMsc_TestApp_PATH
-export USB_DevMsc_TestApp_BOARD_DEPENDENCY
-export USB_DevMsc_TestApp_CORE_DEPENDENCY
-export USB_DevMsc_TestApp_XDC_CONFIGURO
-export USB_DevMsc_TestApp_PKG_LIST
-export USB_DevMsc_TestApp_INCLUDE
-export USB_DevMsc_TestApp_BOARDLIST
-export USB_DevMsc_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-USB_DevMsc_TestApp_SBL_APPIMAGEGEN = yes
-export USB_DevMsc_TestApp_SBL_APPIMAGEGEN
+export USB_DevMsc_TestApp_$(1)_COMP_LIST = USB_DevMsc_TestApp_$(1)
+USB_DevMsc_TestApp_$(1)_RELPATH = ti/drv/usb/example/build/usb_dev_msc
+USB_DevMsc_TestApp_$(1)_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_dev_msc
+export USB_DevMsc_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export USB_DevMsc_TestApp_$(1)_CORE_DEPENDENCY = no
+export USB_DevMsc_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export USB_DevMsc_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) USB30=no
+USB_DevMsc_TestApp_$(1)_PKG_LIST = USB_DevMsc_TestApp_$(1)
+USB_DevMsc_TestApp_$(1)_INCLUDE = $(USB_DevMsc_TestApp_$(1)_PATH)
+export USB_DevMsc_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvusb_BOARDLIST))
+export USB_DevMsc_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+usb_EXAMPLE_LIST += USB_DevMsc_TestApp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+usb_EXAMPLE_LIST += USB_DevMsc_TestApp_$(1)
 endif
+endif
+
+endef
+
+USB_DEVMSC_TESTAPP_MACRO_LIST := $(foreach curos, $(usb_RTOS_LIST), $(call USB_DEVMSC_TESTAPP_RULE,$(curos)))
+
+$(eval ${USB_DEVMSC_TESTAPP_MACRO_LIST})
 
 #USB RTOS dev bulk example
-USB_DevBulk_TestApp_COMP_LIST = USB_DevBulk_TestApp
-USB_DevBulk_TestApp_RELPATH = ti/drv/usb/example/build/usb_dev_bulk
-USB_DevBulk_TestApp_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_dev_bulk
-USB_DevBulk_TestApp_BOARD_DEPENDENCY = yes
-USB_DevBulk_TestApp_CORE_DEPENDENCY = no
-USB_DevBulk_TestApp_XDC_CONFIGURO = yes
-USB_DevBulk_TestApp_PKG_LIST = USB_DevBulk_TestApp
-USB_DevBulk_TestApp_INCLUDE = $(USB_DevBulk_TestApp_PATH)
-USB_DevBulk_TestApp_BOARDLIST = $(drvusb_BOARDLIST)
-USB_DevBulk_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
+define USB_DEVBULK_TESTAPP_RULE
 
-export USB_DevBulk_TestApp_COMP_LIST
-export USB_DevBulk_TestApp_RELPATH
-export USB_DevBulk_TestApp_PATH
-export USB_DevBulk_TestApp_BOARD_DEPENDENCY
-export USB_DevBulk_TestApp_CORE_DEPENDENCY
-export USB_DevBulk_TestApp_XDC_CONFIGURO
-export USB_DevBulk_TestApp_PKG_LIST
-export USB_DevBulk_TestApp_INCLUDE
-export USB_DevBulk_TestApp_BOARDLIST
-export USB_DevBulk_TestApp_$(SOC)_CORELIST
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-USB_DevBulk_TestApp_SBL_APPIMAGEGEN = yes
-export USB_DevBulk_TestApp_SBL_APPIMAGEGEN
+export USB_DevBulk_TestApp_$(1)_COMP_LIST = USB_DevBulk_TestApp_$(1)
+USB_DevBulk_TestApp_$(1)_RELPATH = ti/drv/usb/example/build/usb_dev_bulk
+USB_DevBulk_TestApp_$(1)_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_dev_bulk
+export USB_DevBulk_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export USB_DevBulk_TestApp_$(1)_CORE_DEPENDENCY = no
+export USB_DevBulk_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export USB_DevBulk_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) USB30=no
+USB_DevBulk_TestApp_$(1)_PKG_LIST = USB_DevBulk_TestApp_$(1)
+USB_DevBulk_TestApp_$(1)_INCLUDE = $(USB_DevBulk_TestApp_$(1)_PATH)
+export USB_DevBulk_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvusb_BOARDLIST))
+export USB_DevBulk_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+usb_EXAMPLE_LIST += USB_DevBulk_TestApp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+usb_EXAMPLE_LIST += USB_DevBulk_TestApp_$(1)
 endif
+endif
+
+endef
+
+USB_DEVBULK_TESTAPP_MACRO_LIST := $(foreach curos, $(usb_RTOS_LIST), $(call USB_DEVBULK_TESTAPP_RULE,$(curos)))
+
+$(eval ${USB_DEVBULK_TESTAPP_MACRO_LIST})
 
 # Baremetal projects
 # Bare-metal USB host project
@@ -357,11 +337,6 @@ export USB_Baremetal_HostMsc_TestApp_BOARDLIST
 export USB_Baremetal_HostMsc_TestApp_$(SOC)_CORELIST
 export USB_Baremetal_HostMsc_TestApp_MAKEFILE
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-USB_Baremetal_HostMsc_TestApp_SBL_APPIMAGEGEN = yes
-export USB_Baremetal_HostMsc_TestApp_SBL_APPIMAGEGEN
-endif
-
 # Bare metal USB dev MSC example
 USB_Baremetal_DevMsc_TestApp_COMP_LIST = USB_Baremetal_DevMsc_TestApp
 USB_Baremetal_DevMsc_TestApp_RELPATH = ti/drv/usb/example/build/usb_dev_msc
@@ -386,43 +361,38 @@ export USB_Baremetal_DevMsc_TestApp_INCLUDE
 export USB_Baremetal_DevMsc_TestApp_BOARDLIST
 export USB_Baremetal_DevMsc_TestApp_$(SOC)_CORELIST
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-USB_Baremetal_DevMsc_TestApp_SBL_APPIMAGEGEN = yes
-export USB_Baremetal_DevMsc_TestApp_SBL_APPIMAGEGEN
-endif
 
 
 # USB3.0 USB host project - RTOS
 # only AM65x EVM supports USB3.0 - so limit BOARD here.
 # AM5 also has USB3.0 but it has no makefile project ATM.
-USB_HostMsc_usb30_TestApp_COMP_LIST = USB_HostMsc_usb30_TestApp
-USB_HostMsc_usb30_TestApp_RELPATH = ti/drv/usb/example/build/usb_host_msc
-USB_HostMsc_usb30_TestApp_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_host_msc
-USB_HostMsc_usb30_TestApp_BOARD_DEPENDENCY = yes
-USB_HostMsc_usb30_TestApp_CORE_DEPENDENCY = no
-USB_HostMsc_usb30_TestApp_XDC_CONFIGURO = yes
-USB_HostMsc_usb30_TestApp_MAKEFILE = -f makefile USB30=yes
-USB_HostMsc_usb30_TestApp_PKG_LIST = USB_HostMsc_usb30_TestApp
-USB_HostMsc_usb30_TestApp_INCLUDE = $(USB_HostMsc_usb30_TestApp_PATH)
-USB_HostMsc_usb30_TestApp_BOARDLIST = am65xx_evm j721e_evm
-USB_HostMsc_usb30_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
+define USB_HOSTMSC_USB30_TESTAPP_RULE
 
-export USB_HostMsc_usb30_TestApp_COMP_LIST
-export USB_HostMsc_usb30_TestApp_RELPATH
-export USB_HostMsc_usb30_TestApp_PATH
-export USB_HostMsc_usb30_TestApp_BOARD_DEPENDENCY
-export USB_HostMsc_usb30_TestApp_CORE_DEPENDENCY
-export USB_HostMsc_usb30_TestApp_XDC_CONFIGURO
-export USB_HostMsc_usb30_TestApp_PKG_LIST
-export USB_HostMsc_usb30_TestApp_INCLUDE
-export USB_HostMsc_usb30_TestApp_BOARDLIST
-export USB_HostMsc_usb30_TestApp_$(SOC)_CORELIST
-export USB_HostMsc_usb30_TestApp_MAKEFILE
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-USB_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN = yes
-export USB_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN
+export USB_HostMsc_usb30_TestApp_$(1)_COMP_LIST = USB_HostMsc_usb30_TestApp_$(1)
+USB_HostMsc_usb30_TestApp_$(1)_RELPATH = ti/drv/usb/example/build/usb_host_msc
+USB_HostMsc_usb30_TestApp_$(1)_PATH = $(PDK_USB_COMP_PATH)/example/build/usb_host_msc
+export USB_HostMsc_usb30_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export USB_HostMsc_usb30_TestApp_$(1)_CORE_DEPENDENCY = no
+export USB_HostMsc_usb30_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export USB_HostMsc_usb30_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) USB30=yes
+USB_HostMsc_usb30_TestApp_$(1)_PKG_LIST = USB_HostMsc_usb30_TestApp_$(1)
+USB_HostMsc_usb30_TestApp_$(1)_INCLUDE = $(USB_HostMsc_usb30_TestApp_$(1)_PATH)
+export USB_HostMsc_usb30_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_evm)
+export USB_HostMsc_usb30_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+usb_EXAMPLE_LIST += USB_HostMsc_usb30_TestApp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+usb_EXAMPLE_LIST += USB_HostMsc_usb30_TestApp_$(1)
 endif
+endif
+
+endef
+
+USB_HOSTMSC_USB30_TESTAPP_MACRO_LIST := $(foreach curos, $(usb_RTOS_LIST), $(call USB_HOSTMSC_USB30_TESTAPP_RULE,$(curos)))
+
+$(eval ${USB_HOSTMSC_USB30_TESTAPP_MACRO_LIST})
+
 
 # USB3.0 USB host project - baremetal
 # only AM65x EVM supports USB3.0
@@ -436,7 +406,7 @@ USB_Baremetal_HostMsc_usb30_TestApp_XDC_CONFIGURO = yes
 USB_Baremetal_HostMsc_usb30_TestApp_MAKEFILE = -f makefile USB30=yes BAREMETAL=yes
 USB_Baremetal_HostMsc_usb30_TestApp_PKG_LIST = USB_Baremetal_HostMsc_usb30_TestApp
 USB_Baremetal_HostMsc_usb30_TestApp_INCLUDE = $(USB_Baremetal_HostMsc_usb30_TestApp_PATH)
-USB_Baremetal_HostMsc_usb30_TestApp_BOARDLIST = am65xx_evm j721e_evm
+USB_Baremetal_HostMsc_usb30_TestApp_BOARDLIST = am65xx_evm
 USB_Baremetal_HostMsc_usb30_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
 
 export USB_Baremetal_HostMsc_usb30_TestApp_COMP_LIST
@@ -450,13 +420,6 @@ export USB_Baremetal_HostMsc_usb30_TestApp_INCLUDE
 export USB_Baremetal_HostMsc_usb30_TestApp_BOARDLIST
 export USB_Baremetal_HostMsc_usb30_TestApp_$(SOC)_CORELIST
 export USB_Baremetal_HostMsc_usb30_TestApp_MAKEFILE
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-USB_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN = yes
-export USB_Baremetal_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN
-endif
-
-
 
 export drvusb_LIB_LIST
 export usb_LIB_LIST
