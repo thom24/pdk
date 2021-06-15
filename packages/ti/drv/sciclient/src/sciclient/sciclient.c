@@ -814,6 +814,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
     if ((gSciclientHandle.opModeFlag ==
          SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT) &&
         (status == CSL_PASS) &&
+        ((pReqPrm->flags & TISCI_MSG_FLAG_MASK) != 0U) &&
         (pReqPrm->forwardStatus != SCISERVER_FORWARD_MSG))
     {
         status = SemaphoreP_pend(gSciclientHandle.semHandles[localSeqId],timeToWait);
