@@ -379,7 +379,7 @@ export MCSPI_Baremetal_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemod
 MCSPI_Baremetal_Slave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY = no
-MCSPI_Baremetal_Slave_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+MCSPI_Baremetal_Slave_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes
 export MCSPI_Baremetal_Slave_TestApp_COMP_LIST
 export MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY
 export MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY
@@ -400,7 +400,7 @@ export MCSPI_Baremetal_Master_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_sla
 MCSPI_Baremetal_Master_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY = no
-MCSPI_Baremetal_Master_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
+MCSPI_Baremetal_Master_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
 export MCSPI_Baremetal_Master_Dma_TestApp_COMP_LIST
 export MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY
 export MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY
@@ -425,7 +425,7 @@ export MCSPI_Baremetal_Slave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slav
 MCSPI_Baremetal_Slave_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY = no
-MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
+MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE = -f makefile IS_BAREMETAL=yes DMA=enable
 export MCSPI_Baremetal_Slave_Dma_TestApp_COMP_LIST
 export MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY
 export MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY
