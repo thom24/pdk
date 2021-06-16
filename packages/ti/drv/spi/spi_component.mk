@@ -130,6 +130,7 @@ drvspi_FIRM_LIST = $(spi_FIRM_LIST)
 ############################
 spi_EXAMPLE_LIST = drv_mcspi_loopback_app
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
+spi_EXAMPLE_LIST +=  MCSPI_Slave_TestApp
 spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp MCSPI_Slave_Dma_TestApp
 spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_Dma_TestApp OSPI_Baremetal_Flash_Cache_TestApp  OSPI_Baremetal_Flash_Dma_Cache_TestApp OSPI_Flash_Cache_TestApp OSPI_Flash_Dma_Cache_TestApp OSPI_Flash_SMP_TestApp OSPI_Flash_Dma_SMP_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
@@ -457,7 +458,7 @@ define MCSPI_Master_TestApp_RULE
     ifeq ($(SOC),$(filter $(SOC), am64x))
         export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0 mpu1_0
     else
-        export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+        export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvspi_$(SOC)_CORELIST))
     endif
 
     ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
@@ -483,43 +484,31 @@ export spi_EXAMPLE_LIST
 
 
 # SPI slave Test app
-
-define MCSPI_Slave_TestApp_RULE
-
-    export MCSPI_Slave_TestApp_$(1)_COMP_LIST = MCSPI_Slave_TestApp_$(1)
-    export MCSPI_Slave_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-    export MCSPI_Slave_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-    export MCSPI_Slave_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Slave_TestApp_$(1)_CORE_DEPENDENCY = no
-    export MCSPI_Slave_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
-
-    MCSPI_Slave_TestApp_$(1)_PKG_LIST = MCSPI_Slave_TestApp_$(1)
-    MCSPI_Slave_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_TestApp_$(1)_PATH)
-    export MCSPI_Slave_TestApp_$(1)_BOARDLIST = $(drvspi_BOARDLIST)
-
-    export MCSPI_Slave_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
-
-    ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
-        export MCSPI_Slave_TestApp_$(1)_SBL_APPIMAGEGEN = yes
-    endif
-
-    ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
-            spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
-        endif
-    else
-        ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
-        endif
-    endif
-endef
-
-MCSPI_Slave_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Slave_TestApp_RULE,$(curos)))
-$(eval ${MCSPI_Slave_TestApp_MACRO_LIST})
-
-export spi_EXAMPLE_LIST
-
+MCSPI_Slave_TestApp_COMP_LIST = MCSPI_Slave_TestApp
+export MCSPI_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Slave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+MCSPI_Slave_TestApp_BOARD_DEPENDENCY = yes
+MCSPI_Slave_TestApp_CORE_DEPENDENCY = no
+MCSPI_Slave_TestApp_XDC_CONFIGURO = yes
+MCSPI_Slave_TestApp_MAKEFILE = -f makefile
+export MCSPI_Slave_TestApp_COMP_LIST
+export MCSPI_Slave_TestApp_BOARD_DEPENDENCY
+export MCSPI_Slave_TestApp_CORE_DEPENDENCY
+export MCSPI_Slave_TestApp_XDC_CONFIGURO
+export MCSPI_Slave_TestApp_MAKEFILE
+MCSPI_Slave_TestApp_PKG_LIST = MCSPI_Slave_TestApp
+MCSPI_Slave_TestApp_INCLUDE = $(MCSPI_Slave_TestApp_PATH)
+MCSPI_Slave_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
+export MCSPI_Slave_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+MCSPI_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
+else
+MCSPI_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
+endif
+export MCSPI_Slave_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+export MCSPI_Slave_TestApp_SBL_APPIMAGEGEN = yes
+endif
 
 # SPI master DMA Test app
 MCSPI_Master_Dma_TestApp_COMP_LIST = MCSPI_Master_Dma_TestApp
