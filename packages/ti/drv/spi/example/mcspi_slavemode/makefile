@@ -69,9 +69,12 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
             # Slave uses local linker command file to avoid code/data memory conflict with master application
             ifeq ($(BUILD_OS_TYPE), baremetal)
                 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu.lds
-            else
+            endif
+            ifeq ($(BUILD_OS_TYPE), tirtos)
                 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_sysbios.lds
-
+            endif
+            ifeq ($(BUILD_OS_TYPE), freertos)
+                EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_freertos.lds
             endif
         endif
     endif
@@ -85,18 +88,18 @@ endif
 # DMA enabled build
 ifeq ($(DMA), enable)
 
-    #Name of the directory created under packages/ti/binary/
-    APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)_Dma_TestApp_$(BUILD_OS_TYPE)
+    MCSPI_DMA_MODE_INFIX = _Dma
     COMP_LIST_COMMON += spi_dma 
     CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 else
-
-    #Name of the directory created under packages/ti/binary/
-    APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)_TestApp_$(BUILD_OS_TYPE)
-
+    MCSPI_DMA_MODE_INFIX =
     COMP_LIST_COMMON += spi
     CFLAGS_SPI_DMA    =
 endif
+
+
+#Name of the directory created under packages/ti/binary/
+APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)$(MCSPI_DMA_MODE_INFIX)_TestApp_$(BUILD_OS_TYPE)
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
 CFLAGS_SPI_MS    += -Dj7200_evm=j7200_evm
