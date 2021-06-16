@@ -73,6 +73,7 @@ static uint8_t  gAppTskStackMain[4 * 1024] __attribute__((aligned(32)));
 
 #define OSAL_DEFAULT_PRIORITY   (~((uint32_t) 0U))
 
+#define TEST_ADCBUF_EDMA_CHANNEL            (16U)
 
 /* ========================================================================== */
 /*                            Structures                                      */
@@ -1121,11 +1122,11 @@ void Test_ADCBUFInitTask(void* arg0, void* arg1)
             {
                 edmaTransComplete = false;
                 /* Trigger DMA copy */
-                Test_ADCBUFConfigEdma(EdmaHandle, EDMA_DSS_TPCC_A_EVT_FREE_0,
+                Test_ADCBUFConfigEdma(EdmaHandle, TEST_ADCBUF_EDMA_CHANNEL,
                                       (uint32_t *)srcMemAddr, (uint32_t *)dstMemAddr,
                                       16 * numSamples, 1, 1, EDMA_NUM_DMA_CHANNELS);
 
-                EDMA_startDmaTransfer(EdmaHandle, EDMA_DSS_TPCC_A_EVT_FREE_0);
+                EDMA_startDmaTransfer(EdmaHandle, TEST_ADCBUF_EDMA_CHANNEL);
 
                 /* Polling transfer completion */
                 while(edmaTransComplete == false)

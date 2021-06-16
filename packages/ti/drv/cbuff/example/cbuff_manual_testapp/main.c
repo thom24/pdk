@@ -142,8 +142,8 @@ volatile int8_t gInstanceId = EDMA_DRV_INST_DSS_A;
  {
      /* EDMA Channel Identifier, Shadow Link Channel Identifier */
      {  EDMA_DSS_TPCC_A_EVT_CBUFF_DMA_REQ0,  65 },
-     {  EDMA_DSS_TPCC_A_EVT_FREE_0,   66 },
-     {  EDMA_DSS_TPCC_A_EVT_FREE_1,   67 }
+     {  16,   66 },
+     {  17,   67 }
  };
 
 
