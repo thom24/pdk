@@ -353,7 +353,7 @@ MCSPI_Baremetal_Master_TestApp_COMP_LIST = MCSPI_Baremetal_Master_TestApp
 export MCSPI_Baremetal_Master_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Master_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Master_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Master_TestApp_CORE_DEPENDENCY = no
+MCSPI_Baremetal_Master_TestApp_CORE_DEPENDENCY = yes
 MCSPI_Baremetal_Master_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 export MCSPI_Baremetal_Master_TestApp_COMP_LIST
 export MCSPI_Baremetal_Master_TestApp_BOARD_DEPENDENCY
@@ -378,7 +378,7 @@ MCSPI_Baremetal_Slave_TestApp_COMP_LIST = MCSPI_Baremetal_Slave_TestApp
 export MCSPI_Baremetal_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY = no
+MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 export MCSPI_Baremetal_Slave_TestApp_COMP_LIST
 export MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY
@@ -399,7 +399,7 @@ MCSPI_Baremetal_Master_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_Master_Dma_TestAp
 export MCSPI_Baremetal_Master_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Master_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY = no
+MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY = yes
 MCSPI_Baremetal_Master_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
 export MCSPI_Baremetal_Master_Dma_TestApp_COMP_LIST
 export MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY
@@ -424,7 +424,7 @@ MCSPI_Baremetal_Slave_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_Slave_Dma_TestApp
 export MCSPI_Baremetal_Slave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY = no
+MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
 export MCSPI_Baremetal_Slave_Dma_TestApp_COMP_LIST
 export MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY
@@ -447,9 +447,9 @@ define MCSPI_Master_TestApp_RULE
     export MCSPI_Master_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
     export MCSPI_Master_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
     export MCSPI_Master_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Master_TestApp_$(1)_CORE_DEPENDENCY = no
+    export MCSPI_Master_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Master_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MCSPI_Master_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+    export MCSPI_Master_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Master_TestApp_$(1)_PKG_LIST = MCSPI_Master_TestApp_$(1)
     MCSPI_Master_TestApp_$(1)_INCLUDE = $(MCSPI_Master_TestApp_$(1)_PATH)
@@ -489,9 +489,9 @@ define MCSPI_Slave_TestApp_RULE
     export MCSPI_Slave_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
     export MCSPI_Slave_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
     export MCSPI_Slave_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Slave_TestApp_$(1)_CORE_DEPENDENCY = no
+    export MCSPI_Slave_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Slave_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+    export MCSPI_Slave_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Slave_TestApp_$(1)_PKG_LIST = MCSPI_Slave_TestApp_$(1)
     MCSPI_Slave_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_TestApp_$(1)_PATH)
@@ -527,9 +527,9 @@ define MCSPI_Master_Dma_TestApp_RULE
     export MCSPI_Master_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
     export MCSPI_Master_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
     export MCSPI_Master_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Master_Dma_TestApp_$(1)_CORE_DEPENDENCY = no
+    export MCSPI_Master_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Master_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Master_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+    export MCSPI_Master_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Master_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Master_Dma_TestApp_$(1)
     MCSPI_Master_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Master_Dma_TestApp_$(1)_PATH)
@@ -568,9 +568,9 @@ define MCSPI_Slave_Dma_TestApp_RULE
     export MCSPI_Slave_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
     export MCSPI_Slave_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
     export MCSPI_Slave_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Slave_Dma_TestApp_$(1)_CORE_DEPENDENCY = no
+    export MCSPI_Slave_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Slave_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+    export MCSPI_Slave_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Slave_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Slave_Dma_TestApp_$(1)
     MCSPI_Slave_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_Dma_TestApp_$(1)_PATH)
@@ -897,7 +897,7 @@ export QSPI_Flash_TestApp_$(1)_RELPATH = ti/drv/spi/test/qspi_flash
 export QSPI_Flash_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 export QSPI_Flash_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export QSPI_Flash_TestApp_$(1)_CORE_DEPENDENCY = yes
-export QSPI_Flash_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export QSPI_Flash_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export QSPI_Flash_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 export QSPI_Flash_TestApp_$(1)_PKG_LIST = QSPI_Flash_TestApp_$(1)
 export QSPI_Flash_TestApp_$(1)_INCLUDE = $(QSPI_Flash_TestApp_$(1)_PATH)
@@ -942,7 +942,7 @@ export QSPI_Flash_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/test/qspi_flash
 export QSPI_Flash_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 export QSPI_Flash_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export QSPI_Flash_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
-export QSPI_Flash_Dma_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
+export QSPI_Flash_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export QSPI_Flash_Dma_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) DMA=enable
 export QSPI_Flash_Dma_TestApp_$(1)_PKG_LIST = QSPI_Flash_Dma_TestApp_$(1)
 export QSPI_Flash_Dma_TestApp_$(1)_INCLUDE = $(QSPI_Flash_Dma_TestApp_$(1)_PATH)
