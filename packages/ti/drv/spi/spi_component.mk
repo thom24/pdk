@@ -483,6 +483,7 @@ export spi_EXAMPLE_LIST
 
 
 # SPI slave Test app
+
 define MCSPI_Slave_TestApp_RULE
 
     export MCSPI_Slave_TestApp_$(1)_COMP_LIST = MCSPI_Slave_TestApp_$(1)
@@ -521,83 +522,54 @@ export spi_EXAMPLE_LIST
 
 
 # SPI master DMA Test app
-define MCSPI_Master_Dma_TestApp_RULE
-
-    export MCSPI_Master_Dma_TestApp_$(1)_COMP_LIST = MCSPI_Master_Dma_TestApp_$(1)
-    export MCSPI_Master_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-    export MCSPI_Master_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-    export MCSPI_Master_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Master_Dma_TestApp_$(1)_CORE_DEPENDENCY = no
-    export MCSPI_Master_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Master_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
-
-    MCSPI_Master_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Master_Dma_TestApp_$(1)
-    MCSPI_Master_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Master_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Master_Dma_TestApp_$(1)_BOARDLIST = $(drvspi_BOARDLIST)
-    ifeq ($(SOC),$(filter $(SOC), am64x))
-        export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0 mpu1_0
-    else
-        export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
-        export MCSPI_Master_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
-    endif
-
-    ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
-            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
-        endif
-    else
-        ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
-        endif
-    endif
-endef
-
-MCSPI_Master_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Master_Dma_TestApp_RULE,$(curos)))
-$(eval ${MCSPI_Master_Dma_TestApp_MACRO_LIST})
-
-export spi_EXAMPLE_LIST
-
+MCSPI_Master_Dma_TestApp_COMP_LIST = MCSPI_Master_Dma_TestApp
+export MCSPI_Master_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Master_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+MCSPI_Master_Dma_TestApp_BOARD_DEPENDENCY = yes
+MCSPI_Master_Dma_TestApp_CORE_DEPENDENCY = no
+MCSPI_Master_Dma_TestApp_XDC_CONFIGURO = yes
+MCSPI_Master_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
+export MCSPI_Master_Dma_TestApp_COMP_LIST
+export MCSPI_Master_Dma_TestApp_BOARD_DEPENDENCY
+export MCSPI_Master_Dma_TestApp_CORE_DEPENDENCY
+export MCSPI_Master_Dma_TestApp_XDC_CONFIGURO
+export MCSPI_Master_Dma_TestApp_MAKEFILE
+MCSPI_Master_Dma_TestApp_PKG_LIST = MCSPI_Master_Dma_TestApp
+MCSPI_Master_Dma_TestApp_INCLUDE = $(MCSPI_Master_Dma_TestApp_PATH)
+MCSPI_Master_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
+export MCSPI_Master_Dma_TestApp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), am64x))
+MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
+else
+MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
+endif
+export MCSPI_Master_Dma_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+export MCSPI_Master_Dma_TestApp_SBL_APPIMAGEGEN = yes
+endif
 
 # SPI slave DMA Test app
-define MCSPI_Slave_Dma_TestApp_RULE
-
-    export MCSPI_Slave_Dma_TestApp_$(1)_COMP_LIST = MCSPI_Slave_Dma_TestApp_$(1)
-    export MCSPI_Slave_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-    export MCSPI_Slave_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-    export MCSPI_Slave_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Slave_Dma_TestApp_$(1)_CORE_DEPENDENCY = no
-    export MCSPI_Slave_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
-
-    MCSPI_Slave_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Slave_Dma_TestApp_$(1)
-    MCSPI_Slave_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Slave_Dma_TestApp_$(1)_BOARDLIST = $(drvspi_BOARDLIST)
-
-    export MCSPI_Slave_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
-
-    ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
-        export MCSPI_Slave_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
-    endif
-
-    ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
-            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
-        endif
-    else
-        ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
-        endif
-    endif
-endef
-
-MCSPI_Slave_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Slave_Dma_TestApp_RULE,$(curos)))
-$(eval ${MCSPI_Slave_Dma_TestApp_MACRO_LIST})
-
-export spi_EXAMPLE_LIST
-
+MCSPI_Slave_Dma_TestApp_COMP_LIST = MCSPI_Slave_Dma_TestApp
+export MCSPI_Slave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Slave_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+MCSPI_Slave_Dma_TestApp_BOARD_DEPENDENCY = yes
+MCSPI_Slave_Dma_TestApp_CORE_DEPENDENCY = no
+MCSPI_Slave_Dma_TestApp_XDC_CONFIGURO = yes
+MCSPI_Slave_Dma_TestApp_MAKEFILE = -f makefile DMA=enable
+export MCSPI_Slave_Dma_TestApp_COMP_LIST
+export MCSPI_Slave_Dma_TestApp_BOARD_DEPENDENCY
+export MCSPI_Slave_Dma_TestApp_CORE_DEPENDENCY
+export MCSPI_Slave_Dma_TestApp_XDC_CONFIGURO
+export MCSPI_Slave_Dma_TestApp_MAKEFILE
+MCSPI_Slave_Dma_TestApp_PKG_LIST = MCSPI_Slave_Dma_TestApp
+MCSPI_Slave_Dma_TestApp_INCLUDE = $(MCSPI_Slave_Dma_TestApp_PATH)
+MCSPI_Slave_Dma_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
+export MCSPI_Slave_Dma_TestApp_BOARDLIST
+MCSPI_Slave_Dma_TestApp_$(SOC)_CORELIST = mpu1_0
+export MCSPI_Slave_Dma_TestApp_$(SOC)_CORELIST
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
+export MCSPI_Slave_Dma_TestApp_SBL_APPIMAGEGEN = yes
+endif
 
 # OSPI baremetal Flash Test app
 OSPI_Baremetal_Flash_TestApp_COMP_LIST = OSPI_Baremetal_Flash_TestApp
