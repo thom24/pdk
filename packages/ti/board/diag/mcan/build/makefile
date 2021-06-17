@@ -70,6 +70,10 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 
+ifeq ($(BOARD), $(filter $(BOARD), awr294x_evm))
+COMP_LIST_COMMON += mibspi_dma
+endif
+
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)

@@ -50,6 +50,16 @@
 
 #include "mcan_test.h"
 
+#if defined(SOC_AWR294X)
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include <ti/drv/mibspi/MIBSPI.h>
+#include <ti/drv/mibspi/soc/MIBSPI_soc.h>
+#include <ti/drv/edma/edma.h>
+#endif
+
 MCAN_TxBufElement  txMsg;
 MCAN_RxBufElement  rxMsg;
 
@@ -105,6 +115,174 @@ BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
 
 #if defined(SOC_AWR294X)
 extern GPIO_v2_Config GPIO_v2_config;
+EDMA_Handle gDmaHandle;
+
+/**
+ * \brief   Function to read PMIC register
+ *
+ * \param   handle    [IN]  - SPI Handle
+ * \param   regOffset [IN]  - Register offset
+ *
+ * \return  uint8_t Register Value
+ *
+ */
+static uint8_t BoardDiag_mcanReadPmicReg(MIBSPI_Handle handle, uint8_t regOffset)
+{
+    uint8_t tx[4];
+    uint8_t rx[4];
+    MIBSPI_Transaction transaction;
+
+    memset(&transaction, 0, sizeof(transaction));
+
+    /* Configure Data Transfer */
+    transaction.count = 3;
+    transaction.txBuf = tx;
+    transaction.rxBuf = rx;
+    transaction.slaveIndex = 0;
+    tx[0] = regOffset;
+    tx[1] = 0x10;
+    tx[2] = 0;
+    /* Start Data Transfer */
+    MIBSPI_transfer(handle, &transaction);
+
+    return rx[2];
+}
+
+/**
+ * \brief   Function to write PMIC register
+ *
+ * \param   handle  [IN]  - SPI Handle
+ * \param   regAddr [IN]  - Register Address
+ * \param   val     [IN]  - Register Value
+ *
+ */
+static void BoardDiag_mcanWritePmicReg(MIBSPI_Handle handle, uint8_t regAddr, uint8_t val)
+{
+    uint8_t tx[4];
+    MIBSPI_Transaction transaction;
+
+    memset(&transaction, 0, sizeof(transaction));
+
+    /* Configure Data Transfer */
+    transaction.count = 3;
+    transaction.txBuf = tx;
+    transaction.rxBuf = NULL;
+    transaction.slaveIndex = 0;
+    tx[0] = regAddr;
+    tx[1] = 0;
+    tx[2] = val;
+
+    CacheP_wbInv((void *) tx, 3);
+    /* Start Data Transfer */
+    MIBSPI_transfer(handle, &transaction);
+}
+
+/**
+ * \brief   Function to open edma
+ *
+ * \param   devInstance  [IN]  - SPI Instance
+ *
+ */
+static int32_t BoardDiag_mcanEdmaOpen(uint8_t devInstance)
+{
+    EDMA_instanceInfo_t instanceInfo;
+    int32_t errorCode;
+    MibSpi_HwCfg cfg;
+    int32_t retVal = 0;
+
+    retVal = MIBSPI_socGetInitCfg((enum MibSpi_InstanceId)devInstance, &cfg);
+
+    gDmaHandle = EDMA_getHandle(cfg.edmaCCId, &instanceInfo);
+    if(gDmaHandle == NULL)
+    {
+        EDMA3CCInitParams 	initParam;
+
+        EDMA3CCInitParams_init(&initParam);
+        initParam.initParamSet = TRUE;
+        if (EDMA_init(cfg.edmaCCId, &initParam) != EDMA_NO_ERROR)
+        {
+            printf("EDMA_init failed \n");
+            return -1;
+        }
+        /* Open DMA driver instance 0 for SPI test */
+        gDmaHandle = EDMA_open(cfg.edmaCCId, &errorCode, &instanceInfo);
+    }
+
+    if(gDmaHandle == NULL)
+    {
+        printf("Open DMA driver failed with error=%d\n", retVal);
+        return -1;
+    }
+
+    return 0;
+}
+
+/**
+ * \brief   Function to configure CAN STB pin through PMIC
+ *
+ * \param   devInstance  [IN]  - SPI Instance
+ *
+ */
+int32_t BoardDiag_mcanConfigSTB(uint8_t devInstance)
+{
+    MIBSPI_Params     params;
+    MIBSPI_Handle     handle;
+    uint8_t           regAddr;
+    uint8_t           regValue;
+
+    if(BoardDiag_mcanEdmaOpen(devInstance))
+    {
+        UART_printf("DMA Open Failied\n");
+        return NULL;
+    }
+
+    /* Initialize the SPI */
+    MIBSPI_init();
+
+    /* Setup the default SPI Parameters */
+    MIBSPI_Params_init(&params);
+
+    /* Disble DMA */
+    params.dmaEnable = 1;
+    params.dmaHandle = gDmaHandle;
+
+    /* Set SPI in master mode */
+    params.mode = MIBSPI_MASTER;
+    params.u.masterParams.bitRate = 1000000U;
+    params.pinMode = MIBSPI_PINMODE_4PIN_CS;
+    params.dataSize = 8U;
+    params.frameFormat = MIBSPI_POL0_PHA1;
+    params.csHold = 1;
+
+    params.u.masterParams.numSlaves = 1U;
+    params.u.masterParams.t2cDelay  = 0x5,                   /* t2cDelay */
+    params.u.masterParams.c2tDelay  = 0x5,                /* c2tDelay */
+    params.u.masterParams.wDelay    = 0,                   /* wDelay */
+    params.u.masterParams.slaveProf[0].chipSelect = 0U;
+    params.u.masterParams.slaveProf[0].ramBufLen = MIBSPI_RAM_MAX_ELEM;
+    params.u.masterParams.slaveProf[0].dmaReqLine = 0U;
+
+    /* Open the SPI Instance for MibSpi */
+    handle = MIBSPI_open((enum MibSpi_InstanceId)devInstance, &params);
+
+    regAddr = 0x3D;
+    regValue = BoardDiag_mcanReadPmicReg(handle, regAddr);
+
+    regValue = regValue | 0x1;
+    BOARD_delay(10000);
+    BoardDiag_mcanWritePmicReg(handle, regAddr, regValue);
+
+    regValue = BoardDiag_mcanReadPmicReg(handle, regAddr);
+    if((regValue & 0x1) != 0x1)
+    {
+        MIBSPI_close(handle);
+        return -1;
+    }
+
+    MIBSPI_close(handle);
+    return 0;
+}
+
 #endif
 
 /**
@@ -1199,9 +1377,22 @@ int main(void)
     }
 
 #if defined(SOC_AWR294X)
+    /* Configure CAN Enable pin */
     GPIO_v2_updateConfig(&GPIO_v2_config);
     GPIO_init();
     GPIO_write(GPIO_v2_config.pinConfigs[0].pinIndex, 1);
+
+    /* Configure CAN STB pin */
+    retVal = BoardDiag_mcanConfigSTB(MIBSPI_INST_ID_MSS_SPIB);
+    if(retVal != 0)
+    {
+        UART_printf("CAN STB Pin Configurations Failed!!\n");
+        return retVal;
+    }
+    else
+    {
+        UART_printf("CAN STB Pin Configurations Successful!\n");
+    }
 #endif
 
     retVal = BoardDiag_mcanTest();
