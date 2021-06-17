@@ -1075,6 +1075,11 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                     timeout = I2C_v1_waitForPin(handle,
                                                 I2C_INT_ADRR_READY_ACESS,
                                                 &timeout);
+                    /* Read status again to make sure there are no errors
+                     * after register access is available and data is written */
+                    errStat = I2CMasterIntRawStatusEx(hwAttrs->baseAddr,
+                                    I2C_INT_ARBITRATION_LOST | I2C_INT_NO_ACK |
+                                    I2C_INT_ACCESS_ERROR);
                 }
 
                 if ((errStat & I2C_INT_ARBITRATION_LOST) == I2C_INT_ARBITRATION_LOST)
@@ -1204,6 +1209,11 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                     timeout = I2C_v1_waitForPin(handle,
                                                 I2C_INT_ADRR_READY_ACESS,
                                                 &timeout);
+                    /* Read status again to make sure there are no errors
+                     * after register access is available and data is read */
+                    errStat = I2CMasterIntRawStatusEx(hwAttrs->baseAddr,
+                                    I2C_INT_ARBITRATION_LOST | I2C_INT_NO_ACK |
+                                    I2C_INT_ACCESS_ERROR);
                 }
 
                 if ((errStat & I2C_INT_ARBITRATION_LOST) == I2C_INT_ARBITRATION_LOST)
