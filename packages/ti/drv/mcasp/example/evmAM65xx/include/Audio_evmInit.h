@@ -49,7 +49,10 @@
 #ifndef _AUDIO_EVMINIT_H_
 #define _AUDIO_EVMINIT_H_
 
+#if defined (USE_BIOS)
 #include <xdc/std.h>
+#endif
+
 #include <ti/board/board.h>
 
 #ifdef __cplusplus

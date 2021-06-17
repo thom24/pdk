@@ -52,8 +52,6 @@
 #ifndef _MCASP_TUNE_H_
 #define _MCASP_TUNE_H_
 
-#include <xdc/std.h>
-
 
 #define MCASP_DEBUG_UNDEFINED 0
 

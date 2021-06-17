@@ -1,6 +1,11 @@
 #ifndef MCASP_OSAL_H
 #define MCASP_OSAL_H
 
+#if defined (USE_BIOS)
+#include <xdc/std.h>
+#endif /* USE BIOS */
+
+#include <ti/osal/osal.h>
 
 #include <ti/osal/osal.h>
 

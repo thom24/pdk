@@ -49,16 +49,19 @@
 #ifndef _MCASP_CFG_H_
 #define _MCASP_CFG_H_
 
-#include <xdc/std.h>
 #include <string.h>
+
+#if defined (USE_BIOS)
+#include <xdc/std.h>
 #include <xdc/runtime/Log.h>
 #include <ti/sysbios/knl/Task.h>
 #include <ti/sysbios/io/GIO.h>
 #include <ti/sysbios/BIOS.h>
 #include <xdc/runtime/System.h>
+#include <ti/sysbios/io/IOM.h>
+#endif
 
 #include <mcasp_drv.h>
-#include <ti/sysbios/io/IOM.h>
 #include <Aic31.h>
 
 #include <ti/csl/soc.h>

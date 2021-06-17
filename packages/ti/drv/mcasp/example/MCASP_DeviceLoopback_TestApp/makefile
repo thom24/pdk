@@ -2,12 +2,41 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 export DISABLE_RECURSE_DEPS
 
-ifeq ($(SMP), enable)
-    #Name of the directory created under packages/ti/binary/
-    APP_NAME = MCASP_DeviceLoopback_SMP_TestApp
-else
-    #Name of the directory created under packages/ti/binary/
-    APP_NAME = MCASP_DeviceLoopback_TestApp
+APP_NAME = MCASP_DeviceLoopback_TestApp_$(BUILD_OS_TYPE)
+
+#TI RTOS Specifics
+ifeq ($(BUILD_OS_TYPE), tirtos)
+
+    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
+
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+        ifeq ($(CORE),$(filter $(CORE), mpu1_0))
+            # Enable XDC build for application by providing XDC CFG File per core
+            XDC_CFG_FILE_$(CORE) = ../evmAM65xx/a53/mcaspUnitTest_a53.cfg
+        endif
+
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+            # Enable XDC build for application by providing XDC CFG File per core
+            XDC_CFG_FILE_$(CORE) = ../evmAM65xx/r5/mcaspUnitTest_r5.cfg
+        endif
+    else
+        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+        XDC_CFG_UPDATE_$(CORE) = ../$(SOC)/mcasp_extra_config.xs
+    endif
+
+    INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
+
+    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
+
+endif
+
+#FreeRTOS Specifics
+ifeq ($(BUILD_OS_TYPE), freertos)
+
+    CFLAGS_OS_DEFINES = -DFREERTOS -DRTOS_ENV
+    INCLUDE_EXTERNAL_INTERFACES = freertos pdk
+    COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+
 endif
 
 SRCDIR = ../src ../../
@@ -15,11 +44,7 @@ INCDIR = ../src ../include ../../
 
 SRCS_COMMON = audioSample_io.c audioSample_main.c deviceloopback.c audio_evmInit.c mcasp_cfg.c mcasp_debug.c
 
-# List all the external components/interfaces, whose interface header files
-# need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 
-COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 COMP_LIST_COMMON += mcasp
 
 CFLAGS_MCASP_UT = -DMCASP_MASTER -DDEVICE_LOOPBACK
@@ -30,21 +55,10 @@ PACKAGE_SRCS_COMMON = . ../src ../include
 CFLAGS_MCASP_UT += -DMCASP_ENABLE_DEBUG_LOG
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-  # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-  LOCAL_APP_NAME = MCASP_DeviceLoopback_$(BOARD)_$(CORE)TestApp
 
   SRCDIR += ../evmAM65xx/src
   INCDIR += ../evmAM65xx/include
 
-  ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-    # Enable XDC build for application by providing XDC CFG File per core
-    XDC_CFG_FILE_$(CORE) = ../evmAM65xx/a53/mcaspUnitTest_a53.cfg
-  endif
-
-  ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-  # Enable XDC build for application by providing XDC CFG File per core
-  XDC_CFG_FILE_$(CORE) = ../evmAM65xx/r5/mcaspUnitTest_r5.cfg
-  endif
   PACKAGE_SRCS_COMMON += ../evmAM65xx
 endif
 
@@ -52,9 +66,6 @@ ifeq ($(SOC), $(filter $(SOC), j721e))
   SRCDIR += ../j721e/src
   INCDIR += ../j721e/include
 
-  # Enable XDC build for application by providing XDC CFG File per core
-  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-  XDC_CFG_UPDATE_$(CORE) = ../j721e/mcasp_extra_config.xs
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
@@ -62,13 +73,10 @@ ifeq ($(SOC), $(filter $(SOC), j7200))
   SRCDIR += ../j7200/src
   INCDIR += ../j7200/include
 
-  # Enable XDC build for application by providing XDC CFG File per core
-  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-  XDC_CFG_UPDATE_$(CORE) = ../j7200/mcasp_extra_config.xs
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MCASP_UT)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MCASP_UT) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

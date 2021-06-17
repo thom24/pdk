@@ -39,15 +39,18 @@
  */
 
 
+#if defined (USE_BIOS)
 /* XDCtools Header files */
 #include <xdc/std.h>
 #include <xdc/runtime/System.h>
+/* BIOS Header files */
+#include <ti/sysbios/BIOS.h>
+#endif /* USE BIOS */
+
 #include <stdio.h>
 #include <string.h>
 
 
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
 #include <ti/csl/hw_types.h>
 /* TI-RTOS Header files */
 #include <ti/drv/uart/UART.h>

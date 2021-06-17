@@ -53,12 +53,17 @@
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
 #define SW_I2C
+
+#if defined (USE_BIOS)
 #include <xdc/std.h>
 #include <ti/sysbios/io/IOM.h>
-#include <assert.h>
-#include <string.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/io/GIO.h>
+#endif
+
+#include <assert.h>
+#include <string.h>
+
 
 #ifndef SW_I2C
 #include <i2c/include/I2c.h>
@@ -198,26 +203,6 @@ static int32_t aic31SelectInputSource(Aic31_Object    *instHandle,
 
 static int32_t aic31SelectOutputDest(Aic31_Object    *instHandle,
                                    Ptr              destOption);
-
-
-/**
- * \brief IOM function pointer table.
- *
- *        This variables is the array of function pointers of all the IOM
- *        functions implemented by the codec driver.
- *
- */
-
-const IOM_Fxns Aic31_IOMFXNS =
-{
-    &aic31MdBindDev,
-    &aic31MdUnBindDev,
-    &aic31MdControlChan,
-    &aic31MdCreateChan,
-    &aic31MdDeleteChan,
-    &aic31MdSubmitChan,
-};
-
 
 
 /* ========================================================================== */

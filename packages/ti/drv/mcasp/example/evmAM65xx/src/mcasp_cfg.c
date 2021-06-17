@@ -51,6 +51,7 @@
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
 
+#if defined (USE_BIOS)
 #include <xdc/std.h>
 #include <ti/sysbios/io/IOM.h>
 #include <xdc/runtime/Memory.h>
@@ -61,6 +62,8 @@
 #include <xdc/runtime/System.h>
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Semaphore.h>
+#endif
+
 #include <mcasp_drv.h>
 #include <mcasp_cfg.h>
 #include <mcasp_tune.h>

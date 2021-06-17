@@ -50,7 +50,6 @@
  *
  */
 
-#include <xdc/std.h>
 #include <stdio.h>
 #define SW_I2C
 #ifndef SW_I2C

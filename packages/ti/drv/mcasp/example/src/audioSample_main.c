@@ -51,14 +51,20 @@
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
 
-#include <xdc/std.h>
 #include <string.h>
+
+#if defined (USE_BIOS)
+#include <xdc/std.h>
 #include <xdc/runtime/Error.h>
 #include <xdc/runtime/Log.h>
 #include <xdc/runtime/System.h>
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Semaphore.h>
 #include <ti/sysbios/knl/Task.h>
+#endif /* USE BIOS */
+
+#include "mcasp_osal.h"
+
 #include <mcasp_drv.h>
 #ifdef AIC_CODEC
 #include <Aic31.h>

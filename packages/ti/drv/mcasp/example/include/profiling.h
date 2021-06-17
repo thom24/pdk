@@ -51,7 +51,6 @@
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
 
-#include <xdc/std.h>
 #include "mcasp_osal.h"
 #include "ICodec.h"
 #include "mcasp_cfg.h"

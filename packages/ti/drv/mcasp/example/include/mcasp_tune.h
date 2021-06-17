@@ -52,7 +52,6 @@
 #ifndef _MCASP_TUNE_H_
 #define _MCASP_TUNE_H_
 
-#include <xdc/std.h>
 #include "mcasp_osal.h"
 #include "mcasp_cfg.h"
 

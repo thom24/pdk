@@ -45,9 +45,11 @@
 #ifndef _AIC31_H_
 #define _AIC31_H_
 
+#if defined (USE_BIOS)
 #include <xdc/std.h>
 #include <ti/sysbios/io/IOM.h>
 #include <ICodec.h>
+#endif
 
 #ifdef __cplusplus
 extern "C" {

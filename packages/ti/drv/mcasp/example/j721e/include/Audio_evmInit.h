@@ -49,7 +49,6 @@
 #ifndef _AUDIO_EVMINIT_H_
 #define _AUDIO_EVMINIT_H_
 
-#include <xdc/std.h>
 #include <ti/board/board.h>
 
 #ifdef __cplusplus

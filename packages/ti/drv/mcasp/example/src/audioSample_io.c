@@ -51,6 +51,7 @@
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
 
+#if defined (USE_BIOS)
 #include <xdc/std.h>
 #include <ti/sysbios/io/IOM.h>
 #include <xdc/runtime/Memory.h>
@@ -61,6 +62,11 @@
 #include <xdc/runtime/System.h>
 #include <ti/sysbios/BIOS.h>
 #include <ti/sysbios/knl/Semaphore.h>
+#include <ti/sysbios/knl/Task.h>
+#include <ti/sysbios/hal/Cache.h>
+#include <ti/sysbios/family/c64p/Hwi.h>
+#endif /* USE BIOS */
+
 #include <mcasp_drv.h>
 #ifdef _TMS320C6X
 #include <ti/csl/csl_chip.h>
@@ -107,9 +113,6 @@
 #ifdef AUDIO_EQ_DEMO
   #include "audioEQ.h"
 #endif
-
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/hal/Cache.h>
 
 /* ========================================================================== */
 /*                          IMPORTED VARIABLES                                */
@@ -571,8 +574,6 @@ static Void createStreams()
  */
 MCASP_Packet rxFrame[NUM_APP_BUFS_QUEUE_ENTRIES];
 MCASP_Packet txFrame[NUM_APP_BUFS_QUEUE_ENTRIES];
-
-#include <ti/sysbios/family/c64p/Hwi.h>
 
 Hwi_Handle myHwi;
 

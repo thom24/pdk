@@ -60,8 +60,6 @@
 #ifndef ICodec_
 #define ICodec_
 
-#include <xdc/std.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif

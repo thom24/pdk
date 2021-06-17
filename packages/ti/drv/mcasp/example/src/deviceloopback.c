@@ -51,12 +51,15 @@
 /*                            INCLUDE FILES                                   */
 /* ========================================================================== */
 
+#if defined (USE_BIOS)
 #include <xdc/std.h>
 #include <xdc/runtime/Memory.h>
-#include <ti/osal/osal.h>
 #include <ti/sysbios/heaps/HeapMem.h>
 #include <xdc/runtime/IHeap.h>
 #include <xdc/runtime/Error.h>
+#endif /* USE BIOS */
+
+#include <ti/osal/osal.h>
 
 #include "deviceloopback.h"
 
