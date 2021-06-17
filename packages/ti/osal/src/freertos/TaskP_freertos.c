@@ -104,14 +104,17 @@ void TaskP_compileTime_SizeChk(void)
 void TaskP_Function (void *arg)
 {
     TaskP_freertos *handle = (TaskP_freertos *)(arg);
-    TaskP_Handle hTask;
 
     /* Call the application function. */
     (*handle->taskfxn)(handle->arg0, handle->arg1);
-
-    hTask = handle;
-    /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
-    TaskP_delete(&hTask);
+    
+    /* Task Fxn completed execution.
+     * Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
+    while (TRUE)
+    {
+        vTaskSuspend(NULL);
+    }
+    
 }
 
 /*
