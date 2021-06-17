@@ -284,8 +284,7 @@ define MMCSD_TestApp_RULE
     endif
 
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
-        MMCSD_TestApp_$(1)_$(SOC)_SBL_APPIMAGEGEN = yes
-        export MMCSD_TestApp_$(1)_$(SOC)_SBL_APPIMAGEGEN
+        export MMCSD_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
