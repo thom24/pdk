@@ -173,7 +173,6 @@ void ping_main(void *args)
             SemaphoreP_pend(gPingSem, SemaphoreP_WAIT_FOREVER);
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
-        curTime *= 10;
 
         FREERTOS_log("\r\n");
         FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
@@ -189,7 +188,6 @@ void ping_main(void *args)
             ulTaskNotifyTake( pdTRUE, portMAX_DELAY); /* wait for pong to signal */
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
-        curTime *= 10;
 
         FREERTOS_log("\r\n");
         FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
@@ -217,7 +215,6 @@ void ping_main(void *args)
             SemaphoreP_pend(gPingSem, SemaphoreP_WAIT_FOREVER);
         }
         curTime = uiPortGetRunTimeCounterValue() - curTime;
-        curTime *= 10;
 
         hwiStatus = HwiP_delete(hHwi);
         DebugP_assert(hwiStatus == HwiP_OK);

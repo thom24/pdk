@@ -214,7 +214,6 @@ void test_taskSwitchWithSemaphore(void)
         xSemaphoreTake(gPingSem, portMAX_DELAY); /* wait for pong to signal */
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
         FREERTOS_log("\r\n");
         FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
@@ -236,7 +235,6 @@ void test_taskSwitchWithTaskNotify(void)
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY); /* wait for pong to signal */
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
         FREERTOS_log("\r\n");
         FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
@@ -257,7 +255,6 @@ void test_taskYeild(void)
         taskYIELD();
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
     FREERTOS_log("\r\n");
     FREERTOS_log("execution time for task yields = %d ms\r\n", (uint32_t)(curTime/1000));
@@ -291,7 +288,6 @@ void test_taskToIsrUsingSemaphoreAndNoTaskSwitch(void)
         xSemaphoreTake(gPingSem, portMAX_DELAY); /* wait for ISR to signal */
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
@@ -327,7 +323,6 @@ void test_taskToIsrUsingTaskNotifyAndNoTaskSwitch(void)
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY); /* wait for ISR to signal */
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
@@ -362,7 +357,6 @@ void test_taskToIsrUsingSemaphoreAndWithTaskSwitch(void)
         xSemaphoreTake(gPingSem, portMAX_DELAY); /* wait for ISR to signal */
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
@@ -397,7 +391,6 @@ void test_taskToIsrUsingTaskNotifyAndWithTaskSwitch(void)
         ulTaskNotifyTake(pdTRUE, portMAX_DELAY); /* wait for ISR to signal */
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
     hwiStatus = HwiP_delete(hHwi);
     DebugP_assert(hwiStatus == HwiP_OK);
@@ -430,7 +423,6 @@ void test_taskSwitchWithFloatOperations(void)
         xSemaphoreTake(gPingSem, portMAX_DELAY); /* wait for pong to signal */
     }
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
 
     FREERTOS_log("\r\n");
     FREERTOS_log("execution time for task switches = %d ms\r\n", (uint32_t)(curTime/1000));
@@ -452,7 +444,6 @@ void test_taskDelay(void)
     vTaskDelay(delay1 / portTICK_PERIOD_MS);
     vTaskDelay(delay2 / portTICK_PERIOD_MS);
     curTime = uiPortGetRunTimeCounterValue() - curTime;
-    curTime *= 10;
     TEST_ASSERT_UINT32_WITHIN(portTICK_PERIOD_MS * 1000, (delay1 + delay2) * 1000, (uint32_t)curTime);
 }
 

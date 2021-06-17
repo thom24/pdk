@@ -398,7 +398,7 @@ static uint64_t prvPortReadPmuCounter(void)
 }
 
 
-/* return current counter value of high speed counter in units of 10's of usecs */
+/* return current counter value of high speed counter in usecs */
 uint32_t uiPortGetRunTimeCounterValue()
 {
     uint64_t timeInUsecs;
@@ -410,11 +410,14 @@ uint32_t uiPortGetRunTimeCounterValue()
 
     /* note, there is no overflow protection for this 32b value in FreeRTOS
      *
-     * Dividing by 10 to reduce the resolution and avoid overflow for longer duration
-     * This will overflow after
-     * ((0x100000000/1000000)/(60*60))*10 hours ~ 12 hrs
+     * This value will overflow in
+     * ((0xFFFFFFFF)/(1000000*60)) minutes ~ 71 minutes
+     *
+     * We call LoadP_update() in idle loop (from vApplicationIdleHook) to accumlate the task load into a 64b value.
+     * The implementation of LoadP_update() is in osal/src/freertos/LoadP_freertos.c
+     * 
      */
-    return (uint32_t)(timeInUsecs/10);
+    return (uint32_t)(timeInUsecs);
 }
 
 /* This is used to make sure we are using the FreeRTOS API from within a valid interrupt priority level
