@@ -166,7 +166,7 @@ extern I2C_config_list I2C_config;
 /* LP8762 Register value */
 #define LP8762_PMIC_SPI_CS                 (0x0U)
 #define LP8762_PMICID_REG                  (0x01U)
-#define LP8762_PMIC_REG                    (0x31U)
+#define LP8762_PMIC_REG                    (0x3AU)
 #define LP8762_PMIC_VOLTAGE_VAL            (0xADU)
 
 /**********************************************************************
@@ -632,12 +632,11 @@ void *Board_PmicInit(uint8_t devInstance)
 
     /* Set SPI in master mode */
     params.mode = MIBSPI_MASTER;
-    //params->u.masterParams = MIBSPI_defaultMasterParams;
     params.u.masterParams.bitRate = 1000000U;
     params.pinMode = MIBSPI_PINMODE_4PIN_CS;
     params.dataSize = 8U;
     params.frameFormat = MIBSPI_POL0_PHA1;
-    //params.csHold = 1;
+    params.csHold = 1;
 
     params.u.masterParams.numSlaves = 1U;
     params.u.masterParams.t2cDelay  = 0x5,                   /* t2cDelay */
@@ -739,19 +738,28 @@ int pmic_test()
             val = pPmicData->pmicVoltVal;
 #endif
             UART_printf("Testing PMIC module... \n");
-            //UART_printf("PMIC ID = 0x%08x\n", getPmicId(handle, pPmicData));
             numPmic--;
-            
-            UART_printf("Enabling MCAN PHY\n");
 
             regVal = 0x3D;
-            val    = 0x1;
+            voltage = readPmicVoltage(handle, pPmicData->slaveSelect, regVal);
+            UART_printf("GPIO OUTPUT register Default Value = 0x%x\n", voltage);
+
+            UART_printf("Setting GPIO1 Output to High\n");
+            val    = voltage | 0x1;
             BOARD_delay(10000);
             writePmicReg(handle, pPmicData, regVal, val);
 
             voltage = readPmicVoltage(handle, pPmicData->slaveSelect, regVal);
-            UART_printf("GPIO OUTPUT Reg Value = 0x%x\n", voltage);
-            
+            UART_printf("GPIO OUTPUT register Updated Value = 0x%x\n", voltage);
+            if((voltage & 0x1) == 0x1)
+            {
+                UART_printf("Setting GPIO1 Output to High Successful!\n");
+            }
+            else
+            {
+                UART_printf("Setting GPIO1 Output to High Failed!!\n");
+            }
+
 #if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
             voltage = readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg);
             UART_printf("Initial PMIC voltage = 0x%x\n", voltage);
