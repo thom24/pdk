@@ -117,6 +117,10 @@ extern "C" {
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
 #if defined (BUILD_MCU)
+#if defined (BUILD_MCU1_0)
+/* Required to be MCU_TIMER0 for SBL build on HS device (okay for GP also) */
+#define OSAL_ARCH_TIMER_INST_FOR_TS (0)
+#else
 inline int32_t TimerP_getPreferredDefInst(void)
 {
     int32_t instVal;
@@ -137,6 +141,8 @@ inline int32_t TimerP_getPreferredDefInst(void)
 }
 #define OSAL_ARCH_TIMER_INST_FOR_TS (TimerP_getPreferredDefInst())
 /**< Returns the instance of timers required for given instance */
+#endif /* if defined (BUILD_MCU1_0) */
+
 #else
 #define OSAL_ARCH_TIMER_INST_FOR_TS (2)
 /**< Default timer for MPU */
