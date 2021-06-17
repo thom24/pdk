@@ -965,7 +965,7 @@ export board_diag_uart_MAKEFILE
 board_diag_uart_PKG_LIST = board_diag_uart
 board_diag_uart_INCLUDE = $(board_diag_uart_PATH)
 board_diag_uart_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm awr294x_evm
-ifeq ($(SOC),$(filter $(SOC), tpr12))
+ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 board_diag_uart_$(SOC)_CORELIST = mcu1_0 c66xdsp_1
 else
 board_diag_uart_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
