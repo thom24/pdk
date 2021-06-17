@@ -99,7 +99,7 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 # The components included here are built and will be part of sbl
 ############################
 
-ifeq ($(SOC),$(filter $(SOC), j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
   sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi sbl_lib_ospi_hlos sbl_lib_uart sbl_lib_cust
   sbl_LIB_LIST += sbl_lib_ospi_nondma_hlos
 else
@@ -122,7 +122,7 @@ endif
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
   sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_uart_img
 else
   ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
@@ -1564,7 +1564,7 @@ export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
 export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
 export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_hs_SBL_IMAGEGEN = yes
-ifneq ($(SOC),$(filter $(SOC), am64x j7200 tpr12 awr294x))
+ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_cust_img_hs
 endif
 

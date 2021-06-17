@@ -42,7 +42,7 @@ drvsciclient_RTOS_LIST           = $(DEFAULT_RTOS_LIST)
 # The components included here are built and will be part of sciclient lib
 ############################
 sciclient_LIB_LIST = sciclient
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
 sciclient_LIB_LIST += sciclient_hs
 endif
 
