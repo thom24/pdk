@@ -16,14 +16,16 @@ param
 $SCRIPT_DIR = split-path -parent $MyInvocation.MyCommand.Definition
 
 if ( $BIN.length -eq  0 ) {
-		$WORK_DIR = [io.path]::GetFileNameWithoutExtension($ELF)
+		$BASE_PATH = $(split-path -Path $ELF)
+		$WORK_FOLDER = [io.path]::GetFileNameWithoutExtension($ELF)
 } else {
-		$WORK_DIR = [io.path]::GetFileNameWithoutExtension($BIN)
+		$BASE_PATH = $(split-path -Path $BIN)
+		$WORK_FOLDER = [io.path]::GetFileNameWithoutExtension($BIN)
 }
 
 #create working dir from input file
 #to allow parallel makes
-$WORK_DIR="$SCRIPT_DIR\$WORK_DIR"
+$WORK_DIR="$BASE_PATH\$WORK_FOLDER"
 New-Item -ItemType Directory -Force -Path $WORK_DIR
 
 #variables
@@ -33,7 +35,7 @@ $CERT="$WORK_DIR\$CERT_SIGN" + '-cert.bin'
 $RAND_KEY="$WORK_DIR\eckey.pem"
 $VALID_CERT_SIGNS=@('R5', 'DMSC_I', 'DMSC_O')
 $OBJCOPY="$Env:TOOLCHAIN_PATH_A53" + '\bin\aarch64-none-elf-objcopy'
-$X509_TEMPPLATE="$SCRIPT_DIR\x509template.txt"
+$X509_TEMPLATE="$SCRIPT_DIR\x509template.txt"
 $VALID_R5_BOOTCORE_OPTS=@("EFUSE_DEFAULT", "SPLIT MODE")
 
 # setup default output path if not specified
@@ -44,7 +46,7 @@ if ( $OUTPUT.length -eq  0 ) {
 #check if openssl is present
 Write-Host "Checking for OpenSSL..."
 try { Invoke-Expression "openssl version" }
-catch { Write-Host "Not found! Please install OpenSSL" 
+catch { Write-Host "Not found! Please install OpenSSL"
     exit 1
 }
 
@@ -151,9 +153,9 @@ function gen_cert() {
 	}
 	else
 	{
-		$X509_TEMPPLATE="$SCRIPT_DIR\x509template_boardcfg.txt"
+		$X509_TEMPLATE="$SCRIPT_DIR\x509template_boardcfg.txt"
 	}
-	$SSL_CONF_FILE = (Get-Content -Raw $X509_TEMPPLATE) | ForEach-Object {
+	$SSL_CONF_FILE = (Get-Content -Raw $X509_TEMPLATE) | ForEach-Object {
 				$_.replace("TEST_IMAGE_LENGTH", "$BIN_SIZE").
 				replace("TEST_IMAGE_SHA_OID", "$SHA_OID").
 				replace("TEST_IMAGE_SHA_VAL", "$SHA_VAL").
