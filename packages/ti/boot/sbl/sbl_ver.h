@@ -39,11 +39,11 @@
  * format:
  *  0xAABBCCDD -> Arch (AA); API Changes (BB); Major (CC); Minor (DD)
  */
-#define SBL_VERSION_ID                     (0x01000A00)
+#define SBL_VERSION_ID                     (0x01000A01)
 
 /**
  * @brief   This is the version string which describes the SBL Version
  */
-#define SBL_VERSION_STR                    "SBL Revision: 01.00.10.00"
+#define SBL_VERSION_STR                    "SBL Revision: 01.00.10.01"
 
 #endif
