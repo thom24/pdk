@@ -47,6 +47,9 @@
 #include <task.h>
 
 TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
+uint32_t TaskP_getTaskId(TaskP_Handle handle);
+extern void LoadP_addTask(TaskP_Handle handle, uint32_t tskId);
+extern void LoadP_removeTask(uint32_t tskId);
 
 /**
  * \brief Value to be used for lowest priority task 
@@ -68,6 +71,7 @@ typedef void (* TaskP_mainFunction_t)( void *arg0, void *arg1);
  */
 typedef struct TaskP_freertos_s {
     bool                    used;
+    uint32_t                tskId;
     StaticTask_t            *taskObj;
     TaskHandle_t            taskHndl;
     TaskP_mainFunction_t    taskfxn;
@@ -160,6 +164,7 @@ TaskP_Handle TaskP_create(void *taskfxn, const TaskP_Params *params)
     {
         /* Grab the memory */
         handle = (TaskP_freertos *) &taskPool[i];
+        handle->tskId = i;
     }
 
     if (handle == NULL_PTR) {
@@ -204,6 +209,7 @@ TaskP_Handle TaskP_create(void *taskfxn, const TaskP_Params *params)
         }
         else
         {
+            LoadP_addTask((TaskP_Handle)handle, handle->tskId);
             ret_handle = ((TaskP_Handle)handle);
         }
     }
@@ -233,18 +239,8 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
                         "So there will be resource leak\n");
         }
 
-        /* Before deleting the FreeRTOS Task, Check if Load measuremnent is started.
-         * If yes, pass the TaskP_Handle to the responsible Load API.
-         * This load API will check if the task was registered for load measurement
-         * and update the load if registered. */
-        extern bool gLoadP_startLoadCalc;
-        if(gLoadP_startLoadCalc)
-        {
-            extern void Load_updateDeleteTaskLoad(TaskP_Handle taskHandle);
-            Load_updateDeleteTaskLoad(hTask);
-        }
-        
         vTaskDelete(task->taskHndl);
+        LoadP_removeTask(task->tskId);
 
         key = HwiP_disable();
         /* In FreeRTOS, task is deleted in the idle task.
@@ -374,6 +370,16 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
     DebugP_assert((taskHandle->used != FALSE));
 
     return (taskHandle->taskHndl);
+}
+
+uint32_t TaskP_getTaskId(TaskP_Handle handle)
+{
+    TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
+
+    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert((taskHandle->used != FALSE));
+
+    return (taskHandle->tskId);
 }
 
 void OS_init( void )

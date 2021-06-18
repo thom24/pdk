@@ -1325,6 +1325,9 @@ bool OSAL_event_test()
     return true;
 }
 
+#endif /* #if !defined(BARE_METAL) && !defined (SAFERTOS) */
+
+#if defined(FREERTOS)
 /*
  *  ======== Load test function ========
  */
@@ -1359,32 +1362,21 @@ bool OSAL_load_test()
     semPrms.mode = SemaphoreP_Mode_COUNTING;
     hDoneSem = SemaphoreP_create(0U, &semPrms);
 
-    /* Register current task for load measurement */
-    status += LoadP_registerTask(TaskP_self(), "OSAL_load_test main task");
+    /* Reset Load measurement */
+    LoadP_reset();
 
-    /* Start Load measurement */
-    LoadP_start();
-
-    /* Create tasks and register for load measurement */
+    /* Create tasks */
     for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
     {
         TaskP_Params_init(&taskParams);
-        taskParams.priority     = OSAL_LOAD_TEST_TASK_PRIO;
+        taskParams.priority     = OSAL_LOAD_TEST_TASK_PRIO;   
+        taskParams.name         = (uint8_t *)taskNameStr[i];
         taskParams.stack        = &gAppTskStackLoadTask[i];
         taskParams.stacksize    = APP_TSK_STACK_MAIN;
         taskParams.arg0         = (uint32_t *) &gWait[i];
         taskParams.arg1         = hDoneSem;
         gWait[i]                = 1;
         hLoadTestTask[i] = TaskP_create(loadTestFxn, &taskParams);
-
-        status += LoadP_registerTask(hLoadTestTask[i], taskNameStr[i]);
-    }
-    if(LoadP_OK != status)
-    {
-        OSAL_log("Failed to register tasks for load measurement \n");
-        /* Stop Load measurement and report failure*/
-        LoadP_stop();
-        return false;
     }
 
     /* ==============================================================================
@@ -1414,9 +1406,6 @@ bool OSAL_load_test()
         TaskP_sleepInMsecs(idleTimeInMsec);
     }
 
-    /* Stop Load Measurement */
-    LoadP_stop();
-
     hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS] = TaskP_self();
     /* Query Load stats for each task and print % load */  
     for(i = 0U; i <= OSAL_LOAD_TEST_NUM_TASKS; i++)
@@ -1443,53 +1432,20 @@ bool OSAL_load_test()
     cpuLoad = LoadP_getCPULoad();
     OSAL_log("\n    CPU Load = %d%% \n", cpuLoad);
 
-    /* Un-register tasks from load measurement */
-    for(i = 0U; i <= OSAL_LOAD_TEST_NUM_TASKS; i++)
+    /* Delete tasks */
+    for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
     {
-        status += LoadP_unRegisterTask(hLoadTestTask[i]);
-    }
-    if(LoadP_OK != status)
-    {
-        OSAL_log("Failed to un-register tasks for load measurement \n");
-        return false;
+        TaskP_delete(hLoadTestTask[i]);
     }
 
     /* Delete Semaphore */
     SemaphoreP_delete(hDoneSem);
     hDoneSem = NULL;
 
-    /* ===========================
-     *  LoadP API's Negative test 
-     * ===========================*/
-    status = LoadP_getTaskLoad(TaskP_self(),&loadStatsTask[0]);
-    if(LoadP_OK == status)
-    {
-        OSAL_log("LoadP_getTaskLoad doesn't returned failure for an unregistered task \n");
-        return false;
-    }
-    status = LoadP_unRegisterTask(TaskP_self());
-    if(LoadP_OK == status)
-    {
-        OSAL_log("LoadP_unRegisterTask doesn't returned failure for an unregistered task \n");
-        return false;
-    }
-    status = LoadP_registerTask(NULL,"Invalid Task Handle test :P");
-    if(LoadP_OK == status)
-    {
-        OSAL_log("LoadP_registerTask doesn't returned failure when no task handle passed \n");
-        return false;
-    }
-    status = LoadP_registerTask(TaskP_self(),NULL);
-    if(LoadP_OK == status)
-    {
-        OSAL_log("LoadP_registerTask doesn't returned failure for NULL task name \n");
-        return false;
-    }
-
     return true;
 }
 
-#endif
+#endif /* #if defined(FREERTOS) */
 
 
 #if defined(USE_BIOS)
@@ -1917,7 +1873,9 @@ void osal_test(void *arg0, void *arg1)
         OSAL_log("\n Event tests have failed. \n");
         testFail = true;
     }
-    
+#endif /* #if !defined(BARE_METAL) && !defined (SAFERTOS) */
+
+#if defined(FREERTOS)    
     OSAL_log(" \n OSAL Load Test Starting...\n Takes about 10 seconds ...\n\n"); 
     if(OSAL_load_test() == true)
     {
@@ -1928,7 +1886,7 @@ void osal_test(void *arg0, void *arg1)
         OSAL_log("\n Load tests have failed. \n");
         testFail = true;
     }
-#endif
+#endif /* #if defined(FREERTOS) */
 
 #if ENABLE_DEBUG_LOG_TEST
     if(OSAL_log_test() == true)

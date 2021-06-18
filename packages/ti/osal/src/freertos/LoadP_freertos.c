@@ -67,16 +67,13 @@ typedef struct LoadP_taskLoadObj_s
 {
     bool                used;
     TaskP_Handle        pTsk;
-    bool                taskDeleted;
-    char                name[LOADP_STATS_TASK_NAME_MAX];
     uint64_t            threadTime;
     uint32_t            lastUpdate_threadTime;
 } LoadP_taskLoadObj;
 
-
 typedef struct LoadP_freertos_s
 {   
-    LoadP_taskLoadObj taskLoadObj[LOADP_STATS_TASK_MAX];
+    LoadP_taskLoadObj taskLoadObj[OSAL_FREERTOS_CONFIGNUM_TASK];
     uint64_t          idlTskTime;
     uint64_t          totalTime;
     uint32_t          lastUpdate_idlTskTime;
@@ -87,9 +84,11 @@ typedef struct LoadP_freertos_s
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static void Load_updateTaskLoad(LoadP_taskLoadObj *pHndl, bool init, bool delete);
-static void Load_init(void);
+static uint32_t LoadP_calcCounterDiff(uint32_t cur, uint32_t last);
+void LoadP_addTask(TaskP_Handle handle, uint32_t tskId);
+void LoadP_removeTask(uint32_t tskId);
 extern TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
+extern uint32_t TaskP_getTaskId(TaskP_Handle handle);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -97,150 +96,60 @@ extern TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
 
 static LoadP_freertos   gLoadP_freertos;
 static bool             gLoadP_initDone = FALSE;
-bool                    gLoadP_startLoadCalc = FALSE;
-
-uint32_t    gLoadP_taskRegCnt = 0U , gLoadP_taskRegPeak = 0U;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-LoadP_Status LoadP_registerTask(TaskP_Handle taskHandle, const char *name)
+void LoadP_reset(void)
 {
-    LoadP_Status        ret_val = LoadP_FAILURE; 
-    LoadP_taskLoadObj   *pHndl = (LoadP_taskLoadObj *)NULL_PTR;
     uint32_t            i;
+    LoadP_taskLoadObj   *pHndl;
     uintptr_t           key;
 
-    if((taskHandle != NULL_PTR) && (name != NULL_PTR))
-    {      
-        key = HwiP_disable();
-
-        if(!gLoadP_initDone)
-        {
-            (void)memset( (void *)&gLoadP_freertos,0,sizeof(gLoadP_freertos));
-            gLoadP_initDone = TRUE;
-        }
-
-        for (i = 0; i < LOADP_STATS_TASK_MAX; i++)
-        {
-            pHndl = &gLoadP_freertos.taskLoadObj[i];
-
-            if (pHndl->used == FALSE)
-            {
-                pHndl->used        = TRUE;
-                pHndl->pTsk        = taskHandle;
-                pHndl->taskDeleted = FALSE;
-                Load_updateTaskLoad(pHndl, TRUE, FALSE); 
-                strncpy(pHndl->name, name, LOADP_STATS_TASK_NAME_MAX);
-                pHndl->name[LOADP_STATS_TASK_NAME_MAX-1]=0;
-
-                /* Update statistics */
-                gLoadP_taskRegCnt++;
-                if (gLoadP_taskRegCnt > gLoadP_taskRegPeak)
-                {
-                    gLoadP_taskRegPeak = gLoadP_taskRegCnt;
-                }
-
-                ret_val = LoadP_OK;
-
-                break;
-            }
-        }
-
-        HwiP_restore(key);
-    }
-
-    return ret_val;
-}
-
-LoadP_Status LoadP_unRegisterTask(TaskP_Handle taskHandle)
-{
-    uintptr_t           key;
-    LoadP_Status        ret_val = LoadP_FAILURE;
-    uint32_t            i;
-    LoadP_taskLoadObj   *pHndl = (LoadP_taskLoadObj *)NULL_PTR;
-
-    if(taskHandle != NULL_PTR)
-    {
-        key = HwiP_disable();
-
-        for (i = 0; i < LOADP_STATS_TASK_MAX; i++)
-        {
-            pHndl = &gLoadP_freertos.taskLoadObj[i];
-
-            if ((pHndl->used == TRUE) && (pHndl->pTsk == taskHandle))
-            {
-                pHndl->used = FALSE;
-
-                /* Found the osal load object to delete */
-                if (gLoadP_taskRegCnt > 0U)
-                {
-                    gLoadP_taskRegCnt--;
-                }
-                
-                ret_val = LoadP_OK;
-            }
-        }
-
-        HwiP_restore(key);
-    }
-
-    return ret_val;
-}
-
-void LoadP_start(void)
-{
-    uintptr_t    key;
-    
-    if(!gLoadP_initDone)
-    {
-        (void)memset( (void *)&gLoadP_freertos,0,sizeof(gLoadP_freertos));
-        gLoadP_initDone = TRUE;
-    }
-    
-    Load_init();
-    
     key = HwiP_disable();
-    gLoadP_startLoadCalc = TRUE;
+
+    gLoadP_freertos.idlTskTime = 0U;
+    gLoadP_freertos.totalTime = 0U;
+
+    for (i = 0; i < OSAL_FREERTOS_CONFIGNUM_TASK; i++)
+    {
+        pHndl = &gLoadP_freertos.taskLoadObj[i];
+
+        if (pHndl->used == TRUE)
+        {
+            pHndl->threadTime = 0U;
+        }
+    }
+
     HwiP_restore(key);
 
-}
-
-void LoadP_stop(void)
-{
-    uintptr_t    key;
-
-    LoadP_update();
-
-    key = HwiP_disable();
-    gLoadP_startLoadCalc = FALSE;
-    HwiP_restore(key);
+    return;
 }
 
 LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stats)
 {
-    uint32_t            i;
     LoadP_taskLoadObj   *pHndl;
     LoadP_Status        ret_val = LoadP_FAILURE;
+    TaskStatus_t        tskStat;
+    uint32_t            tskId;
 
-    if(stats != NULL_PTR)
+    if((stats != NULL_PTR) && (taskHandle != NULL_PTR))
     {
         LoadP_update();
-        for (i = 0; i < LOADP_STATS_TASK_MAX; i++)
+
+        tskId = TaskP_getTaskId(taskHandle);
+
+        pHndl = &gLoadP_freertos.taskLoadObj[tskId];
+
+        if ((pHndl->used == TRUE) && (pHndl->pTsk == taskHandle))
         {
-            pHndl = &gLoadP_freertos.taskLoadObj[i];
-
-            if ((pHndl->used == TRUE) && (pHndl->pTsk == taskHandle))
-            {
-                stats->threadTime  = pHndl->threadTime;
-                stats->totalTime   = gLoadP_freertos.totalTime;
-                stats->percentLoad = (uint32_t)(pHndl->threadTime / (gLoadP_freertos.totalTime/(uint64_t)100U));
-                strncpy(stats->name, pHndl->name, LOADP_STATS_TASK_NAME_MAX);
-                stats->name[LOADP_STATS_TASK_NAME_MAX-1]=0;
-
-                ret_val = LoadP_OK;
-            }
+            vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk), &tskStat, pdFALSE, eRunning);
+            stats->threadTime  = pHndl->threadTime;
+            stats->totalTime   = gLoadP_freertos.totalTime;
+            stats->percentLoad = (uint32_t)(pHndl->threadTime / (gLoadP_freertos.totalTime/(uint64_t)100U));
+            stats->name        = tskStat.pcTaskName;
+            ret_val = LoadP_OK;
         }
     }
 
@@ -261,125 +170,115 @@ void LoadP_update(void)
     uint32_t            curTime;
     uint32_t            delta;
     LoadP_taskLoadObj   *pHndl;
-    uintptr_t           key;
+    uintptr_t           key;    
+    TaskStatus_t        tskStat;
 
-    if(gLoadP_startLoadCalc)
+    key = HwiP_disable();
+    
+    if(!gLoadP_initDone)
     {
-        key = HwiP_disable();
+        (void)memset( (void *)&gLoadP_freertos,0,sizeof(gLoadP_freertos));
+        gLoadP_initDone = TRUE;
+    }
 
-        curTime = (uint32_t)ulTaskGetIdleRunTimeCounter();
-        delta = curTime - gLoadP_freertos.lastUpdate_idlTskTime;
-        gLoadP_freertos.lastUpdate_idlTskTime = curTime;
+    /* Idle Task Update */
+    curTime = (uint32_t)ulTaskGetIdleRunTimeCounter();
+    delta = LoadP_calcCounterDiff(curTime, gLoadP_freertos.lastUpdate_idlTskTime);
+    gLoadP_freertos.lastUpdate_idlTskTime = curTime;
 
-        gLoadP_freertos.idlTskTime += delta;
-        
-        curTime = (uint32_t)uiPortGetRunTimeCounterValue();
-        delta = curTime - gLoadP_freertos.lastUpdate_totalTime;
-        gLoadP_freertos.lastUpdate_totalTime = curTime;
+    gLoadP_freertos.idlTskTime += delta;
+    
+    /* Total Time Update */
+    curTime = (uint32_t)uiPortGetRunTimeCounterValue();
+    delta = LoadP_calcCounterDiff(curTime, gLoadP_freertos.lastUpdate_totalTime);
+    gLoadP_freertos.lastUpdate_totalTime = curTime;
 
-        gLoadP_freertos.totalTime += delta;
+    gLoadP_freertos.totalTime += delta;
 
-        HwiP_restore(key);
+    /* All tasks Update */
+    for (i = 0; i < OSAL_FREERTOS_CONFIGNUM_TASK; i++)
+    {
+        pHndl = &gLoadP_freertos.taskLoadObj[i];
 
-        for (i = 0; i < LOADP_STATS_TASK_MAX; i++)
+        if ((pHndl->used == TRUE) && (pHndl->pTsk != NULL_PTR))
         {
-            pHndl = &gLoadP_freertos.taskLoadObj[i];
+            vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk),
+                          &tskStat,
+                          pdFALSE,
+                          eRunning  );
 
-            if ((pHndl->used == TRUE) && (pHndl->pTsk != NULL_PTR))
-            {
-                Load_updateTaskLoad(pHndl, FALSE, FALSE);
-            }
+            delta = LoadP_calcCounterDiff(tskStat.ulRunTimeCounter, pHndl->lastUpdate_threadTime);
+            pHndl->lastUpdate_threadTime = tskStat.ulRunTimeCounter;
+
+            pHndl->threadTime += delta;
+            
         }
     }
+    
+    HwiP_restore(key);
 
     return;
 }
 
 /* ========================================================================================================================== */
 
-void Load_init(void)
+static uint32_t LoadP_calcCounterDiff(uint32_t cur, uint32_t last)
 {
-    uint32_t            i;
-    LoadP_taskLoadObj   *pHndl;
-    uintptr_t           key;
+    uint32_t delta;
 
-    key = HwiP_disable();
-
-    gLoadP_freertos.idlTskTime = 0U;
-    gLoadP_freertos.lastUpdate_idlTskTime = (uint32_t) ulTaskGetIdleRunTimeCounter();
-
-    gLoadP_freertos.totalTime = 0U;
-    gLoadP_freertos.lastUpdate_totalTime = (uint32_t) uiPortGetRunTimeCounterValue();
-
-    HwiP_restore(key);
-
-    for (i = 0; i < LOADP_STATS_TASK_MAX; i++)
+    if(cur >= last)
     {
-        pHndl = &gLoadP_freertos.taskLoadObj[i];
-
-        if ((pHndl->used == TRUE) && (pHndl->pTsk != NULL_PTR))
-        {
-            Load_updateTaskLoad(pHndl, TRUE, FALSE); 
-        }
+        delta = cur - last;
     }
-
-    return;
+    else
+    {
+        delta = ( 0xFFFFFFFF - last ) + cur;
+    }
+    return delta;
 }
 
-void Load_updateTaskLoad(LoadP_taskLoadObj *pHndl, bool init, bool delete)
+void LoadP_addTask(TaskP_Handle handle, uint32_t tskId)
 {
-    TaskStatus_t    tskStat;
-    uint32_t        delta;
-    uintptr_t       key;
+    LoadP_taskLoadObj   *pHndl = &gLoadP_freertos.taskLoadObj[tskId];
     
-    if(!pHndl->taskDeleted)
+    if(!gLoadP_initDone)
     {
-        key = HwiP_disable();
-
-        vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk),
-                    &tskStat,
-                    pdFALSE,
-                    eRunning  );
-        if(init)
-        {
-            pHndl->threadTime = 0U;
-        }
-        else
-        {
-            delta =  tskStat.ulRunTimeCounter - pHndl->lastUpdate_threadTime;
-            pHndl->threadTime += delta;
-        }
-        pHndl->lastUpdate_threadTime = tskStat.ulRunTimeCounter;
-        
-        if(delete)
-        {
-            pHndl->taskDeleted = TRUE;
-        }
-
-        HwiP_restore(key);
+        (void)memset( (void *)&gLoadP_freertos,0,sizeof(gLoadP_freertos));
+        gLoadP_initDone = TRUE;
     }
+
+    pHndl->used                  = TRUE;
+    pHndl->pTsk                  = handle;
+    pHndl->threadTime            = 0U;
+    pHndl->lastUpdate_threadTime = 0U;
+
 }
 
-/* Load_updateDeleteTaskLoad Internal API is used to update the load of a task just before deleting.
- * This function gets invoked from TaskP_delete() API, if Load measuremnent is started.
- * This function will check if the task was registered for load measurement
- * and update the load if registered. Also sets the the taskDeleted flag in LoadP_taskLoadObj.
- * This is necessary because, once the task is deleted,
- * TaskP_getFreertosHandle can't return the TaskHandle_t
- * and it won't be possible to get the task stats with vTaskGetInfo API */
-void Load_updateDeleteTaskLoad(TaskP_Handle taskHandle)
+void LoadP_removeTask(uint32_t tskId)
 {
-    uint32_t            i;
-    LoadP_taskLoadObj   *pHndl;
-    
-    for (i = 0; i < LOADP_STATS_TASK_MAX; i++)
-    {
-        pHndl = &gLoadP_freertos.taskLoadObj[i];
+    LoadP_taskLoadObj   *pHndl = &gLoadP_freertos.taskLoadObj[tskId];
 
-        if ((pHndl->used == TRUE) && (pHndl->pTsk == taskHandle))
-        {
-            Load_updateTaskLoad(pHndl, FALSE, TRUE);
-        }
-    }
+    pHndl->used = FALSE; 
 }
 
+void vApplicationLoadHook()
+{
+    static uint32_t t0          = 0U; /* Last check time */
+    static uint32_t timeElapsed = 0U; /* Elapsed time until last update */
+    
+    uint32_t t1     = uiPortGetRunTimeCounterValue(); /* Current time */
+    uint32_t delta  = t1 - t0;
+
+    t0 = t1; /* Update last check time */
+
+    /* Accumulate elapsed time until last update */
+    timeElapsed += delta;
+
+    /* Check for window */
+    if((timeElapsed) > (uint32_t)configLOAD_WINDOW_IN_MS)
+    {
+        /* Update load and reset elapsed time */
+        LoadP_update();
+        timeElapsed = 0;
+    }
+}

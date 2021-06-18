@@ -619,41 +619,13 @@ void _system_post_cinit(void)
     osalArch_Init(&cfg);
 }
 
-#if (configLOAD_UPDATE_IN_IDLE==1)
-uint32_t t0          = 0U; /* Last check time */
-uint32_t timeElapsed = 0U; /* Elapsed time until last update */
-#endif
-
-#if (configUSE_IDLE_HOOK==1)
+/* This function is called when configUSE_IDLE_HOOK is 1 in FreeRTOSConfig.h */
 void vApplicationIdleHook( void )
 {
-    #if (configLOAD_UPDATE_IN_IDLE==1)
+#if (configLOAD_UPDATE_IN_IDLE==1)
+    void vApplicationLoadHook();
 
-        extern bool gLoadP_startLoadCalc; /* Global variable indicating load measurement status */
-        extern void LoadP_update(void); /* Function to update load */
-
-        /* Check for window and update load, only when Load measurement started */
-        if(gLoadP_startLoadCalc)
-        {
-            uint32_t t1     = uiPortGetRunTimeCounterValue(); /* Current time */
-            uint32_t delta  = t1 - t0;
-
-            t0 = t1; /* Update last check time */
-
-            /* Accumulate elapsed time until last update */
-            timeElapsed += delta;
-
-            /* Check for window */
-            /* uiPortGetRunTimeCounterValue return counter value in units of 10's of usecs,
-             * Hence divide window by 10 */
-            if((timeElapsed) > (uint32_t)(configLOAD_WINDOW_IN_MS / 10U))
-            {
-                /* Update load and reset elapsed time */
-                LoadP_update();
-                timeElapsed = 0;
-            }
-        }
-
-    #endif
-}
+    vApplicationLoadHook();
 #endif
+
+}

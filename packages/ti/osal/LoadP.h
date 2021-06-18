@@ -58,12 +58,6 @@ extern "C" {
 #include <stddef.h>
 #include <ti/osal/TaskP.h>
 
-/** \brief Max size of task name string */
-#define LOADP_STATS_TASK_NAME_MAX (32U)
-
-/** \brief Max number of tasks whose information can be retrived */
-#define LOADP_STATS_TASK_MAX (20U)
-
 /*!
  *  @brief    Status codes for LoadP APIs
  */
@@ -80,58 +74,23 @@ typedef enum LoadP_Status_e
  */
 typedef struct LoadP_Stats_s
 {
-    char         name[LOADP_STATS_TASK_NAME_MAX];    /*!< Registered thread name */
-    uint64_t     threadTime;                         /*!< Runtime for the thread */
-    uint64_t     totalTime;                          /*!< Total Runtime */
-    uint32_t     percentLoad;                        /*!< Percentage load of the thread */
+    const char  *name;          /**< Name of the task */
+    uint64_t     threadTime;    /*!< Runtime for the thread */
+    uint64_t     totalTime;     /*!< Total Runtime */
+    uint32_t     percentLoad;   /*!< Percentage load of the thread */
 } LoadP_Stats;
 
 /*!
- *  @brief  Function to register a task for load measurement
- *  
- *  @param  taskHandle [in] A TaskP_Handle returned from \ref TaskP_create,
- *                          to be registered for task load measurement
- *  @param  name       [in] Task Name to be stored along with Load stats
- * 
- *  @return Status of the function
- *    - LoadP_OK: Registered the task for load measurement
- *    - LoadP_FAILURE: Failed to Register the task for load measurement
- */
-extern LoadP_Status LoadP_registerTask(TaskP_Handle taskHandle, const char *name);
-
-/*!
- *  @brief  Function to un-register a task from load measurement
- *  
- *  @param  taskHandle [in] A TaskP_Handle returned from \ref TaskP_create,
- *                          to be un-registered from task load measurement
- * 
- *  @return Status of the function
- *    - LoadP_OK: Un-registered the task from load measurement
- *    - LoadP_FAILURE: Failed to Un-register the task from load measurement
- */
-extern LoadP_Status LoadP_unRegisterTask(TaskP_Handle taskHandle);
-
-/*!
- *  @brief  Function to start load measurement
+ *  @brief  Function to Reset load statistics
  *
- *          This starts the CPU load measurement and that for all the registered 
- *          tasks with \ref LoadP_registerTask
+ *          Until load statistics is reset the load statistics keep getting accumulated.
  */
-extern void LoadP_start(void);
-
-/*!
- *  @brief  Function to stop load measurement
- *
- *          This ends the CPU load measurement and that for all the registered 
- *          tasks with \ref LoadP_registerTask.
- */
-extern void LoadP_stop(void);
+extern void LoadP_reset(void);
 
 /*!
  *  @brief  Function to get task load statistics
  *        
  *  @param  taskHandle [in]  A TaskP_Handle returned from \ref TaskP_create
- *                           and registered for load measurement using \ref LoadP_registerTask
  *  @param  stats      [out] Returned Task Load stats  
  * 
  *  @return Status of the function
@@ -148,20 +107,14 @@ extern LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stat
 extern uint32_t LoadP_getCPULoad(void);
 
 /*!
- *  @brief  Callback Fxn to be executed post Load Update
+ *  @brief  Update load statistics
  *          
- *          In case of TI-RTOS, This function is to be called by SYSBIOS 
- *          API Load_update for each update cycle.
- *          User can set this function as the 'Load.postUpdate'
- *          in the cfg file, when 'Load.updateInIdle' is enabled.
- *          For example,
- *         
- *              var Load = xdc.useModule('ti.sysbios.utils.Load');
- *              
- *              Load.taskEnabled  = true;
- *              Load.updateInIdle = true;
- *              Load.windowInMs   = 500;
- *              Load.postUpdate   = '&LoadP_update';
+ *          This updates task load statistics for all tasks created with TaskP_create().
+ *          Also updates idle task load/CPU Load.
+ *
+ *          This function is called, every "configLOAD_WINDOW_IN_MS" msecs within the IDLE task.
+ *          It is important that idle task get to run atleast once every "configLOAD_WINDOW_IN_MS" msecs
+ *          for the load statistics to be correct
  *          
  *          In case of FreeRTOS, FreeRTOSConfig.h enables update in idle
  *          and idle task calls this API.
@@ -169,8 +122,6 @@ extern uint32_t LoadP_getCPULoad(void);
  * 
  *              #define configLOAD_UPDATE_IN_IDLE   (1)
  *              #define configLOAD_WINDOW_IN_MS     (500)
- *          
- *          This function is not intended to be invoked by user.
  */
 extern void LoadP_update(void);
 
