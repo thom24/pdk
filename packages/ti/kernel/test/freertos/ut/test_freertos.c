@@ -475,7 +475,8 @@ void ping_main(void *args)
 
     if (Unity.TestFailures == 0)
     {
-        FREERTOS_log("All Tests PASSED\n");
+        FREERTOS_log("\r\n");
+        FREERTOS_log("All tests have passed!!\r\n");
     }
     /* One MUST not return out of a FreeRTOS task instead one MUST call vTaskDelete */
     vTaskDelete(NULL);
