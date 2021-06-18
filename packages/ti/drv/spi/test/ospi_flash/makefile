@@ -1,38 +1,40 @@
 # Makefile for SPI unit test app
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE = baremetal
+SRCDIR += . src
+INCDIR += . src
+
+ifeq ($(BUILD_OS_TYPE), baremetal)
 CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP) 
+COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
-SRCDIR += . src
-SRCS_COMMON += main_ospi_flash_test.c 
+SRCS_COMMON += main_ospi_flash_test.c
 ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx))
     ifeq ($(CACHE), enable)
         ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
-            SRCS_COMMON += ./$(SOC)/cached/baremetal_mpu_config.c
+            SRCS_COMMON += ./$(SOC)/cached/mpu_config.c
         endif
     else
         ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
-            SRCS_COMMON += ./$(SOC)/non_cached/baremetal_mpu_config.c
+            SRCS_COMMON += ./$(SOC)/non_cached/mpu_config.c
         endif
     endif
 endif
 OSPI_OS_TESTPREFIX=_Baremetal
-else
-BUILD_OS_TYPE = tirtos
-CFLAGS_OS_DEFINES = -DUSE_BIOS
-EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP) 
-OSPI_OS_TESTPREFIX=
+OSPI_OS_TESTPOSTFIX=
+endif
 
-SRCDIR += . src
+ifeq ($(BUILD_OS_TYPE),tirtos)
+CFLAGS_OS_DEFINES = -DUSE_BIOS -DOSPI_TESTAPP_RTOS -DOSPI_TESTAPP_TIRTOS
+EXTERNAL_INTERFACES = bios xdc
+COMP_LIST_COMMON += $(PDK_COMMON_TIRTOS_COMP)
+OSPI_OS_TESTPREFIX=
+OSPI_OS_TESTPOSTFIX=_tirtos
+
 SRCS_COMMON += main_ospi_flash_test.c
-INCDIR = . src
 
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
@@ -51,99 +53,74 @@ ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x))
         XDC_CFG_FILE_$(CORE) = ./$(SOC)/non_cached/sysbios_$(ISA).cfg
     endif
 endif
+endif
+
+ifeq ($(BUILD_OS_TYPE),freertos)
+  CFLAGS_OS_DEFINES = -DFREERTOS -DOSPI_TESTAPP_RTOS
+  EXTERNAL_INTERFACES += freertos
+  COMP_LIST_COMMON += $(PDK_COMMON_FREERTOS_COMP)
+
+  OSPI_OS_TESTPREFIX=
+  OSPI_OS_TESTPOSTFIX=_freertos
+
+  SRCS_COMMON += main_ospi_flash_test.c
+
+  ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx))
+    ifeq ($(CACHE), enable)
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+            SRCS_COMMON += ./$(SOC)/cached/mpu_config.c
+        endif
+    else
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+            SRCS_COMMON += ./$(SOC)/non_cached/mpu_config.c
+        endif
+    endif
+  endif
 
 endif
 
-
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
+INCLUDE_EXTERNAL_INTERFACES += pdk $(EXTERNAL_INTERFACES)
 
 ifeq ($(CACHE), enable)
     ifeq ($(DMA), enable)
-        ifeq ($(SMP), enable)
-            #Name of the directory created under packages/ti/binary/
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_Cache_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_Cache_TestApp
-            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_Cache_TestApp_$(CORE)
-            endif
-
-        else
-            #Name of the directory created under packages/ti/binary/
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_Cache_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_Cache_$(BOARD)_$(CORE)TestApp
-            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_Cache_TestApp_$(CORE)
-            endif
-        endif
-
-    COMP_LIST_COMMON += spi_dma
-    #COMP_LIST_COMMON += spi_dma_profile
-    CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE 
+        #Name of the directory created under packages/ti/binary/
+        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_Cache_TestApp$(OSPI_OS_TESTPOSTFIX)
+        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+        COMP_LIST_COMMON += spi_dma
+        #COMP_LIST_COMMON += spi_dma_profile
+        CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
     else
-        ifeq ($(SMP), enable)
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_SMP_Cache_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)_SMP_Cache_TestApp
-        else
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Cache_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Cache_$(BOARD)_$(CORE)TestApp
-        endif
-
-    COMP_LIST_COMMON += spi 
-    #COMP_LIST_COMMON += spi_profile
-    CFLAGS_SPI_DMA    =
+        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Cache_TestApp$(OSPI_OS_TESTPOSTFIX)
+        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+        COMP_LIST_COMMON += spi
+        #COMP_LIST_COMMON += spi_profile
+        CFLAGS_SPI_DMA    =
     endif
 CFLAGS_SPI_CACHE    = -DSPI_CACHE_ENABLE
 else
     ifeq ($(DMA), enable)
-        ifeq ($(SMP), enable)
-            #Name of the directory created under packages/ti/binary/
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)_SMP_TestApp
-            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_SMP_TestApp_$(CORE)
-            endif
-
-        else
-            #Name of the directory created under packages/ti/binary/
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_$(BOARD)_$(CORE)TestApp
-            ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-                LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp_$(CORE)
-            endif
-        endif
-
-    COMP_LIST_COMMON += spi_dma
-    #COMP_LIST_COMMON += spi_dma_profile
-    CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE 
+        #Name of the directory created under packages/ti/binary/
+        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_Dma_TestApp$(OSPI_OS_TESTPOSTFIX)
+        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
+        COMP_LIST_COMMON += spi_dma
+        #COMP_LIST_COMMON += spi_dma_profile
+        CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
     else
-        ifeq ($(SMP), enable)
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_SMP_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)_SMP_TestApp
-        else
-            APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_TestApp
-            # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-            LOCAL_APP_NAME =  OSPI$(OSPI_OS_TESTPREFIX)_Flash_$(BOARD)_$(CORE)TestApp
-        endif
+        APP_NAME = OSPI$(OSPI_OS_TESTPREFIX)_Flash_TestApp$(OSPI_OS_TESTPOSTFIX)
+        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 
-    COMP_LIST_COMMON += spi 
+    COMP_LIST_COMMON += spi
     #COMP_LIST_COMMON += spi_profile
     CFLAGS_SPI_DMA    =
     endif
-CFLAGS_SPI_CACHE    = 
+CFLAGS_SPI_CACHE    =
 endif
 
 PACKAGE_SRCS_COMMON = .
 PACKAGE_SRCS_COMMON += ../src/SPI_log.h ../src/SPI_log.c
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_SPI_DMA) $(CFLAGS_OS_DEFINES) $(CFLAGS_SPI_CACHE)
+CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(CFLAGS_SPI_DMA) $(CFLAGS_OS_DEFINES) $(CFLAGS_SPI_CACHE)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

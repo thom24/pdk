@@ -1,13 +1,5 @@
-/**
- *  \file   main_ospi_flash_test.c
- *
- *  \brief  Test application main file. This application will write and read
- *          the data to/from OSPI NOR flash through Board flash interface.
- *
- */
-
 /*
- * Copyright (C) 2017 - 2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017 - 2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,23 +31,28 @@
  *
  */
 
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Error.h>
+/**
+ *  \file   main_ospi_flash_test.c
+ *
+ *  \brief  Test application main file. This application will write and read
+ *          the data to/from OSPI NOR flash through Board flash interface.
+ *
+ */
+#include <stdint.h>
 #include <stdio.h>
 
-/* BIOS Header files */
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/BIOS.h>
+#if defined(OSPI_TESTAPP_RTOS)
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
+#if defined(OSPI_TESTAPP_TIRTOS)
 #include <ti/sysbios/utils/Load.h>
+#endif
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 #if defined (__aarch64__)
 #include <ti/sysbios/family/arm/v8a/Mmu.h>
 #endif
 #endif
-#endif /* #ifdef USE_BIOS */
+#endif /* #if defined(OSPI_TESTAPP_RTOS) */
 
 /* TI-RTOS Header files */
 #include <ti/drv/spi/SPI.h>
@@ -175,7 +172,7 @@ bool VerifyData(uint8_t *expData,
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_RTOS)
 /* Test application stack */
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
@@ -327,7 +324,7 @@ int32_t Ospi_udma_deinit(void)
 }
 #endif
 
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_RTOS)
 
 #if defined(BUILD_MPU) || defined (__C7100__)
 extern void Osal_initMmuDefault(void);
@@ -768,7 +765,7 @@ static bool OSPI_flash_test(void *arg)
     uint64_t          elapsedTime; /* elapsed time in usec */
     float             xferRate;
     uint32_t          xferRateInt;
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_TIRTOS)
     uint32_t          cpuLoad;
 #endif
 #endif
@@ -892,7 +889,7 @@ static bool OSPI_flash_test(void *arg)
         }
     }
 #ifdef OSPI_PROFILE
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_TIRTOS)
     Load_reset( );
 #endif
     /* Get start time stamp for the write performance measurement */
@@ -921,7 +918,7 @@ static bool OSPI_flash_test(void *arg)
 
 #ifdef OSPI_PROFILE
     elapsedTime = TimerP_getTimeInUsecs() - startTime;
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_TIRTOS)
     Load_update( );
     cpuLoad = Load_getCPULoad();
 #endif
@@ -929,7 +926,7 @@ static bool OSPI_flash_test(void *arg)
     xferRate = (float) (((float) (testLen * 8)) / elapsedTime) * 1000U;
     xferRateInt = (uint32_t)xferRate;
     SPI_log("\n Board_flashWrite %d bytes at transfer rate %d Kbps \n", testLen, xferRateInt);
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_TIRTOS)
     SPI_log("\n Board_flashWrite CPU load %d%% \n", cpuLoad);
 #endif
 #endif
@@ -988,7 +985,7 @@ static bool OSPI_flash_test(void *arg)
         elapsedPhyTuningTime = TimerP_getTimeInUsecs() - startPhyTuningTime;
         SPI_log("\n PHY tuning + 4 byte read took %d us \n", (uint32_t)elapsedPhyTuningTime);
     }
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_TIRTOS)
     Load_reset( );
 #endif
     /* Get start time stamp for the read performance measurement */
@@ -1016,7 +1013,7 @@ static bool OSPI_flash_test(void *arg)
 
 #ifdef OSPI_PROFILE
     elapsedTime = TimerP_getTimeInUsecs() - startTime;
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_TIRTOS)
     Load_update( );
     cpuLoad = Load_getCPULoad();
 #endif
@@ -1024,7 +1021,7 @@ static bool OSPI_flash_test(void *arg)
     xferRate = (float) (((float) (testLen * 8)) / elapsedTime);
     xferRateInt = (uint32_t)xferRate;
     SPI_log("\n Board_flashRead %d bytes at transfer rate %d Mbps \n", testLen, xferRateInt);
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_TIRTOS)
     SPI_log("\n Board_flashRead CPU load %d%% \n", cpuLoad);
 #endif
 #endif
@@ -1096,8 +1093,8 @@ OSPI_Tests Ospi_tests[] =
 /*
  *  ======== test function ========
  */
-#ifdef USE_BIOS
-void spi_test(UArg arg0, UArg arg1)
+#if defined(OSPI_TESTAPP_RTOS)
+void spi_test(void* arg0, void* arg1)
 #else
 void spi_test()
 #endif
@@ -1156,10 +1153,9 @@ int main(void)
 {
     /* Call board init functions */
     Board_initCfg boardCfg;
-#ifdef USE_BIOS
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+#if defined(OSPI_TESTAPP_RTOS)
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 #endif
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_MODULE_CLOCK |
@@ -1171,23 +1167,23 @@ int main(void)
 
     Board_init(boardCfg);
 
-#ifdef USE_BIOS
+#if defined(OSPI_TESTAPP_RTOS)
 
-	Error_init(&eb);
+	OS_init();
     /* Initialize the task params */
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */
     taskParams.priority     = 2;
     taskParams.stack        = gAppTskStackMain;
-    taskParams.stackSize    = sizeof (gAppTskStackMain);
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
     /* Start BIOS */
-	task = Task_create(spi_test, &taskParams, &eb);
+	task = TaskP_create(spi_test, &taskParams);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        UART_printf("TaskP_create() failed!\n");
+        OS_stop();
     }
-    BIOS_start();
+    OS_start();
 #else
     spi_test();
 #endif
