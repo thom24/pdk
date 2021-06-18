@@ -69,17 +69,21 @@
 
 #include <stdint.h>
 
-#ifdef __TI_ARM_V7R4__
-#include <ti/sysbios/hal/Cache.h>
-#endif
+#include <stdint.h>
+#include <stdio.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
+
 #ifdef __ARM_ARCH_7A__
 #include <ti/sysbios/family/arm/a15/Cache.h>
 #include <ti/sysbios/family/arm/a15/Mmu.h>
+#endif
+
 #if defined(SOC_K2G)
 #include <ti/csl/cslr_msmc.h>
 #define COHERENT  /* Cache ops unnecessary */
 #endif
-#endif
+
 #if defined(SOC_AM65XX) && defined(BUILD_MPU)
 #define COHERENT  /* Cache ops unnecessary */
 #endif
@@ -249,7 +253,7 @@ void cache_invalidate (void *ptr, int size)
 #elif defined(__ARM_ARCH_7A__) || defined(__TI_ARM_V7R4__)
 #ifndef COHERENT
   /*  while bios could have been used on c66 that device chose csl */
-  Cache_inv (ptr, size, Cache_Type_ALLD, TRUE);
+  CacheP_Inv (ptr, size);
 #endif
 #else
 /* #error dont know how to invalidate the cache */
@@ -271,12 +275,12 @@ void cache_writeback (void *ptr, int size)
 #elif defined(__ARM_ARCH_7A__)
 #ifndef COHERENT
   /*  while bios could have been used on c66 that device chose csl */
-  Cache_wb (ptr, size, Cache_Type_ALLD, TRUE);
+  CacheP_wb (ptr, size);
 #endif
 #elif defined(__arch64__) || defined(__TI_ARM_V7R4__)
 #ifndef COHERENT
   /*  while bios could have been used on c66 that device chose csl */
-  Cache_wb (ptr, size, Cache_Type_ALLD, TRUE);
+  CacheP_wb (ptr, size);
 #endif
   CSL_archMemoryFence();
 #else
@@ -2584,15 +2588,18 @@ PCIE_logPrintf ("Failed to pass token \n");
   Console_printf ("Test passed.\n");
 #endif
 
-  BIOS_exit(0);
+  OS_stop();
 
 }
 
 int main() {
-  Task_Params params;
-  Task_Params_init (&params);
-  params.stackSize = 36864; /* 32768; */
-  Task_create((Task_FuncPtr) pcie, &params, NULL);
+  TaskP_Params params;
+
+  OS_init();
+
+  TaskP_Params_init (&params);
+  params.stacksize = 36864; /* 32768; */
+  TaskP_create((void *) pcie, &params);
 
 #ifdef __ARM_ARCH_7A__
   {
@@ -2681,7 +2688,9 @@ int main() {
 #endif
 
 #endif
-  BIOS_start();
+
+  OS_start();    /* does not return */
+
   return 0;
 }
 

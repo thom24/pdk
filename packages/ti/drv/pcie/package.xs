@@ -42,7 +42,7 @@ function getLibs(prog)
         profilingTag = ".profiling"
     }
     name = this.$name + profilingTag + ".a" + suffix;
-    
+
     /* Read LIBDIR variable */
     var lib = java.lang.System.getenv("LIBDIR");
 
@@ -57,7 +57,6 @@ function getLibs(prog)
     /* Device types supported */
     var socTypes = [
                        'am65xx',
-                       'j721e',
                        'k2k',
                        'k2h',
                        'k2l',
@@ -76,7 +75,7 @@ function getLibs(prog)
         if (socType.equals(soc))
         {
             lib = lib + "/" + soc;
-            name = this.$name + profilingTag + ".a" + suffix;	 
+            name = this.$name + profilingTag + ".a" + suffix;
             break;
         }
     }
@@ -104,7 +103,7 @@ function getLibs(prog)
             lib = lib + "/" + profile;
             break;
         }
-    }	
+    }
 
     /* Get library name with path */
     lib = lib + "/" + name;
@@ -121,7 +120,7 @@ function getLibs(prog)
  *  ======== package.close ========
  */
 function close()
-{    
+{
     if (xdc.om.$name != 'cfg') {
         return;
     }

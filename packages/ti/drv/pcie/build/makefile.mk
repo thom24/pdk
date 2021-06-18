@@ -35,7 +35,7 @@ include $(PDK_PCIE_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = pcie
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x k2h k2k k2l k2e k2g c6678 c6657 am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x k2h k2k k2l k2e k2g c6678 c6657 am65xx))
 SRCDIR += soc/$(SOC)/src
 INCDIR += soc
 # Common source files across all platforms and cores
@@ -45,8 +45,8 @@ endif
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk edma
-                      
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x k2h k2k k2l k2e k2g c6678 c6657 am65xx j721e))
+
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x k2h k2k k2l k2e k2g c6678 c6657 am65xx))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/pcie_soc.h
 endif
 

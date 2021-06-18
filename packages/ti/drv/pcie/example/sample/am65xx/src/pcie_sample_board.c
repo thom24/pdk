@@ -260,11 +260,11 @@ void PlatformPCIESSSerdesConfig(int32_t serdes, int32_t iface)
     }
 #if defined(am65xx_evm)
     CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 7, 4, 0x1); //Right CML, one lane case
-#else 
-#if defined(am65xx_idk)    
+#else
+#if defined(am65xx_idk)
     CSL_FINSR(*(volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES1_CTRL), 7, 4, 0x4); //Left CML, two lane case
-#endif    
-#endif    
+#endif
+#endif
 
     sciStatus = Sciclient_pmSetModuleClkParent (
                   TISCI_DEV_SERDES1,
@@ -487,4 +487,3 @@ void PlatformGetInts (uint32_t *msis, uint32_t *intx, uint32_t *unknowns)
 #endif
 
 /* Nothing past this point */
-

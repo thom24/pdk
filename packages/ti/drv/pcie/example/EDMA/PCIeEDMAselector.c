@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2013-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,11 +32,16 @@
  *
  */
 
-#include <xdc/std.h>
 #include <stdio.h>
 #include <string.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/BIOS.h>
+#include <stdint.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
+
+#if defined (__aarch64__)
+/* XDCtools Header files */
+#include <xdc/std.h>
+#endif
 
 #include "PCIeEDMA.h"
 

@@ -86,24 +86,10 @@
  */
 #define PCIE_TEST_APP_TRPD_SIZE         ((sizeof(CSL_UdmapTR15) * 2U) + 4U)
 
-#if defined (__aarch64__)
-/* Timestamp for A53 core */
-#if defined (PCIE_SMP_ENABLE)
-#include <ti/sysbios/timers/dmtimer/TimestampProvider.h>
-#else
-#include <ti/sysbios/family/arm/v8a/TimestampProvider.h>
-#endif
-#define TIMESTAMP_GETFREQ(x)    TimestampProvider_getFreq(x)
-#define TIMESTAMP_GET32()       TimestampProvider_get32()
-#else
-/* Timestamp for R5F core */
-#include <xdc/runtime/Timestamp.h>
-#define TIMESTAMP_GETFREQ(x)    Timestamp_getFreq(x)
-#define TIMESTAMP_GET32()       Timestamp_get32()
-#endif
+#define TIMESTAMP_GET32()       CycleprofilerP_getTimeStamp()
 
 #ifdef QOS
-#define LOGSIZE                 4096 
+#define LOGSIZE                 4096
 uint32_t readLatency[LOGSIZE] __attribute__ ((aligned (64)));
 #ifdef __TI_ARM_V7R4__
 #pragma DATA_SECTION(readLatency, ".statBuf")
@@ -241,10 +227,10 @@ int32_t pcieUdmaTest (void *pcieWindow, uint32_t windowSize)
 
     if(UDMA_SOK == retVal)
     {
-#ifndef QOS 
+#ifndef QOS
         retVal = pcieUdmaLoop(chHandle, gSrcBuf, pcieWindow, windowSize);
 #else
-        /* PCIE VC0 read */  
+        /* PCIE VC0 read */
         retVal = pcieUdmaLoop(chHandle, pcieWindow, (void *)lowPriAddr[0], windowSize);
 #endif
         if(UDMA_SOK != retVal)
@@ -336,7 +322,7 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
     float       speed;
 #else
     uint32_t    loop = 0;
-#endif    
+#endif
     /* Update TR packet descriptor */
     pcieUdmaTrpdInit(chHandle, tprdMem, destBuf, srcBuf, length);
 
@@ -349,7 +335,7 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
         PCIE_logPrintf("[Error] Channel queue failed!!\n");
     }
 
-#ifndef QOS 
+#ifndef QOS
     if(UDMA_SOK == retVal)
     {
         /* Wait for return descriptor in completion ring - this marks the
@@ -376,7 +362,7 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
         asm (" cpsid if ");
 #endif
         /* The PCIE VC3 read with CPU is performed in the gap of UDMA transfer
-           The total read duration needs to be shorter than the gap */ 
+           The total read duration needs to be shorter than the gap */
         while(loop < LOGSIZE) {
             t_read = TIMESTAMP_GET32();
             BARRIER
@@ -385,12 +371,12 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
             t_read = TIMESTAMP_GET32() - t_read - t_overhead;
             readLatency[loop++] = t_read;
         }
-#if defined (__TI_ARM_V7R4__)        
+#if defined (__TI_ARM_V7R4__)
         asm (" cpsie if ");
-#endif        
+#endif
         /* Wait for return descriptor in completion ring - this marks the
          * transfer completion */
-         
+
         SemaphoreP_pend(gUdmaAppDoneSem, SemaphoreP_WAIT_FOREVER);
 
         /* Response received in completion queue */

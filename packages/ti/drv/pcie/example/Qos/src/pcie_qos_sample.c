@@ -69,9 +69,6 @@
 
 #include <stdint.h>
 
-#ifdef __TI_ARM_V7R4__
-#include <ti/sysbios/hal/Cache.h>
-#endif
 #ifdef __aarch64__
 #define COHERENT  /* Cache ops unnecessary */
 #endif
@@ -163,7 +160,7 @@ void cache_invalidate (void *ptr, int size)
 #if defined(__TI_ARM_V7R4__)
 #ifndef COHERENT
   /*  while bios could have been used on c66 that device chose csl */
-  Cache_inv (ptr, size, Cache_Type_ALLD, TRUE);
+  CacheP_Inv (ptr, size);
 #endif
 #else
 /* #error dont know how to invalidate the cache */
@@ -175,7 +172,7 @@ void cache_writeback (void *ptr, int size)
 #if defined(__arch64__) || defined(__TI_ARM_V7R4__)
 #ifndef COHERENT
   /*  while bios could have been used on c66 that device chose csl */
-  Cache_wb (ptr, size, Cache_Type_ALLD, TRUE);
+  CacheP_wb (ptr, size);
 #endif
   CSL_archMemoryFence();
 #else
@@ -1370,15 +1367,18 @@ void pcie (void)
 
   PCIE_logPrintf ("Test passed.\n");
 
-  BIOS_exit(0);
+  OS_stop();
 
 }
 
 int main() {
-  Task_Params params;
-  Task_Params_init (&params);
-  params.stackSize = 36864; //32768;
-  Task_create((Task_FuncPtr) pcie, &params, NULL);
+  TaskP_Params params;
+
+  OS_init();
+
+  TaskP_Params_init (&params);
+  params.stacksize = 36864; //32768;
+  TaskP_create((void *) pcie, &params);
 
   Board_initCfg boardCfg;
   boardCfg = BOARD_INIT_UNLOCK_MMR
@@ -1390,7 +1390,8 @@ int main() {
     ;
   Board_init(boardCfg);
 
-  BIOS_start();
+  OS_start();    /* does not return */
+
   return 0;
 }
 

@@ -68,7 +68,7 @@ ifeq ($(pcie_component_make_include), )
 
 # under other list
 drvpcie_BOARDLIST       = am65xx_evm am65xx_idk
-drvpcie_SOCLIST         = am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am65xx j721e
+drvpcie_SOCLIST         = am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am65xx
 drvpcie_am574x_CORELIST = c66x a15_0 ipu1_0
 drvpcie_am572x_CORELIST = c66x a15_0 ipu1_0
 drvpcie_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -81,7 +81,13 @@ drvpcie_c6678_CORELIST  = c66x
 drvpcie_c6657_CORELIST  = c66x
 
 drvpcie_am65xx_CORELIST = mpu1_0 mcu1_0
-drvpcie_j721e_CORELIST = mpu1_0 mcu1_0
+
+drvpcie_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
+define DRV_DRVPCIE_RTOS_BOARDLIST_RULE
+drvpcie_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
+endef
+DRV_DRVPCIE_RTOS_BOARDLIST_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LIST), $(call DRV_DRVPCIE_RTOS_BOARDLIST_RULE,$(curos)))
+$(eval ${DRV_DRVPCIE_RTOS_BOARDLIST_MACRO_LIST})
 
 ############################
 # pcie package
@@ -90,19 +96,6 @@ drvpcie_j721e_CORELIST = mpu1_0 mcu1_0
 ############################
 pcie_LIB_LIST = pcie pcie_profile pcie_indp pcie_profile_indp
 drvpcie_LIB_LIST = $(pcie_LIB_LIST)
-
-############################
-# pcie examples
-# List of examples under pcie
-# All the tests mentioned in list are built when test target is called
-# List below all examples for allowed values
-############################
-ifeq ($(SOC), j721e)
-pcie_EXAMPLE_LIST = PCIE_sample_ExampleProject
-else
-pcie_EXAMPLE_LIST = PCIE_sample_ExampleProject PCIE_Qos_ExampleProject PCIE_sample_SMP_ExampleProject
-endif
-drvpcie_EXAMPLE_LIST = $(pcie_EXAMPLE_LIST)
 
 #
 # PCIE Modules
@@ -218,62 +211,62 @@ export pcie_profile_indp_$(SOC)_CORELIST
 #
 
 # PCIE basic example app
-PCIE_sample_ExampleProject_COMP_LIST = PCIE_sample_ExampleProject
-PCIE_sample_ExampleProject_RELPATH = ti/drv/pcie/example/sample
-PCIE_sample_ExampleProject_PATH = $(PDK_PCIE_COMP_PATH)/example/sample
-PCIE_sample_ExampleProject_BOARD_DEPENDENCY = yes
-PCIE_sample_ExampleProject_CORE_DEPENDENCY = no
-PCIE_sample_ExampleProject_XDC_CONFIGURO = yes
-export PCIE_sample_ExampleProject_COMP_LIST
-export PCIE_sample_ExampleProject_BOARD_DEPENDENCY
-export PCIE_sample_ExampleProject_CORE_DEPENDENCY
-export PCIE_sample_ExampleProject_XDC_CONFIGURO
-PCIE_sample_ExampleProject_PKG_LIST = PCIE_sample_ExampleProject
-PCIE_sample_ExampleProject_INCLUDE = $(PCIE_sample_ExampleProject_PATH)
-PCIE_sample_ExampleProject_BOARDLIST = $(drvpcie_BOARDLIST)
-export PCIE_sample_ExampleProject_BOARDLIST
-PCIE_sample_ExampleProject_$(SOC)_CORELIST = $(drvpcie_$(SOC)_CORELIST)
-export PCIE_sample_ExampleProject_$(SOC)_CORELIST
-export PCIE_sample_ExampleProject_SBL_APPIMAGEGEN = yes
+define PCIE_SAMPLE_EXAMPLEPROJECT_RULE
+
+export PCIE_sample_ExampleProject_$(1)_COMP_LIST = PCIE_sample_ExampleProject_$(1)
+PCIE_sample_ExampleProject_$(1)_RELPATH = ti/drv/pcie/example/sample
+PCIE_sample_ExampleProject_$(1)_PATH = $(PDK_PCIE_COMP_PATH)/example/sample
+export PCIE_sample_ExampleProject_$(1)_BOARD_DEPENDENCY = yes
+export PCIE_sample_ExampleProject_$(1)_CORE_DEPENDENCY = no
+export PCIE_sample_ExampleProject_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export PCIE_sample_ExampleProject_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+PCIE_sample_ExampleProject_$(1)_PKG_LIST = PCIE_sample_ExampleProject_$(1)
+PCIE_sample_ExampleProject_$(1)_INCLUDE = $(PCIE_sample_ExampleProject_$(1)_PATH)
+export PCIE_sample_ExampleProject_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvpcie_BOARDLIST))
+export PCIE_sample_ExampleProject_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvpcie_$(SOC)_CORELIST))
+export PCIE_sample_ExampleProject_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+pcie_EXAMPLE_LIST += PCIE_sample_ExampleProject_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+pcie_EXAMPLE_LIST += PCIE_sample_ExampleProject_$(1)
+endif
+endif
+
+endef
+
+PCIE_SAMPLE_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LIST), $(call PCIE_SAMPLE_EXAMPLEPROJECT_RULE,$(curos)))
+
+$(eval ${PCIE_SAMPLE_EXAMPLEPROJECT_MACRO_LIST})
 
 # PCIE Qos basic example app
-PCIE_Qos_ExampleProject_COMP_LIST = PCIE_Qos_ExampleProject
-PCIE_Qos_ExampleProject_RELPATH = ti/drv/pcie/example/Qos
-PCIE_Qos_ExampleProject_PATH = $(PDK_PCIE_COMP_PATH)/example/Qos
-PCIE_Qos_ExampleProject_BOARD_DEPENDENCY = yes
-PCIE_Qos_ExampleProject_CORE_DEPENDENCY = no
-PCIE_Qos_ExampleProject_XDC_CONFIGURO = yes
-export PCIE_Qos_ExampleProject_COMP_LIST
-export PCIE_Qos_ExampleProject_BOARD_DEPENDENCY
-export PCIE_Qos_ExampleProject_CORE_DEPENDENCY
-export PCIE_Qos_ExampleProject_XDC_CONFIGURO
-PCIE_Qos_ExampleProject_PKG_LIST = PCIE_Qos_ExampleProject
-PCIE_Qos_ExampleProject_INCLUDE = $(PCIE_Qos_ExampleProject_PATH)
-PCIE_Qos_ExampleProject_BOARDLIST = $(drvpcie_BOARDLIST)
-export PCIE_Qos_ExampleProject_BOARDLIST
-PCIE_Qos_ExampleProject_$(SOC)_CORELIST = $(drvpcie_$(SOC)_CORELIST)
-export PCIE_Qos_ExampleProject_$(SOC)_CORELIST
-export PCIE_Qos_ExampleProject_SBL_APPIMAGEGEN = yes
+define PCIE_QOS__SAMPLE_EXAMPLEPROJECT_RULE
 
-# PCIE basic example app with SMP enabled
-PCIE_sample_SMP_ExampleProject_COMP_LIST = PCIE_sample_SMP_ExampleProject
-PCIE_sample_SMP_ExampleProject_RELPATH = ti/drv/pcie/example/sample
-PCIE_sample_SMP_ExampleProject_PATH = $(PDK_PCIE_COMP_PATH)/example/sample
-PCIE_sample_SMP_ExampleProject_MAKEFILE = -f makefile SMP=enable
-PCIE_sample_SMP_ExampleProject_BOARD_DEPENDENCY = yes
-PCIE_sample_SMP_ExampleProject_CORE_DEPENDENCY = no
-PCIE_sample_SMP_ExampleProject_XDC_CONFIGURO = yes
-export PCIE_sample_SMP_ExampleProject_COMP_LIST
-export PCIE_sample_SMP_ExampleProject_BOARD_DEPENDENCY
-export PCIE_sample_SMP_ExampleProject_CORE_DEPENDENCY
-export PCIE_sample_SMP_ExampleProject_XDC_CONFIGURO
-PCIE_sample_SMP_ExampleProject_PKG_LIST = PCIE_sample_SMP_ExampleProject
-PCIE_sample_SMP_ExampleProject_INCLUDE = $(PCIE_sample_SMP_ExampleProject_PATH)
-PCIE_sample_SMP_ExampleProject_BOARDLIST = $(drvpcie_BOARDLIST)
-export PCIE_sample_SMP_ExampleProject_BOARDLIST
-PCIE_sample_SMP_ExampleProject_$(SOC)_CORELIST = $(drvpcie_$(SOC)_CORELIST)
-export PCIE_sample_SMP_ExampleProject_$(SOC)_CORELIST
-export PCIE_sample_SMP_ExampleProject_SBL_APPIMAGEGEN = yes
+export PCIE_Qos_ExampleProject_$(1)_COMP_LIST = PCIE_Qos_ExampleProject_$(1)
+PCIE_Qos_ExampleProject_$(1)_RELPATH = tti/drv/pcie/example/Qos
+PCIE_Qos_ExampleProject_$(1)_PATH = $(PDK_PCIE_COMP_PATH)/example/Qos
+export PCIE_Qos_ExampleProject_$(1)_BOARD_DEPENDENCY = yes
+export PCIE_Qos_ExampleProject_$(1)_CORE_DEPENDENCY = no
+export PCIE_Qos_ExampleProject_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export PCIE_Qos_ExampleProject_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+PCIE_Qos_ExampleProject_$(1)_PKG_LIST = PCIE_Qos_ExampleProject_$(1)
+PCIE_Qos_ExampleProject_$(1)_INCLUDE = $(PCIE_Qos_ExampleProject_$(1)_PATH)
+export PCIE_Qos_ExampleProject_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvpcie_BOARDLIST))
+export PCIE_Qos_ExampleProject_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvpcie_$(SOC)_CORELIST))
+export PCIE_Qos_ExampleProject_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+pcie_EXAMPLE_LIST += PCIE_Qos_ExampleProject_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+pcie_EXAMPLE_LIST += PCIE_Qos_ExampleProject_$(1)
+endif
+endif
+
+endef
+
+PCIE_QOS__SAMPLE_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LIST), $(call PCIE_QOS__SAMPLE_EXAMPLEPROJECT_RULE,$(curos)))
+
+$(eval ${PCIE_QOS__SAMPLE_EXAMPLEPROJECT_MACRO_LIST})
 
 export drvpcie_LIB_LIST
 export pcie_LIB_LIST
@@ -281,4 +274,12 @@ export pcie_EXAMPLE_LIST
 export drvpcie_EXAMPLE_LIST
 
 pcie_component_make_include := 1
+
+############################
+# pcie examples
+# List of examples under pcie
+# All the tests mentioned in list are built when test target is called
+# List below all examples for allowed values
+############################
+
 endif
