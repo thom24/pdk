@@ -472,11 +472,11 @@ define MCSPI_Master_TestApp_RULE
 
     ifneq ($(1),$(filter $(1), safertos))
         ifeq ($(1),$(filter $(1), freertos tirtos))
-            spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
+#            spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
         endif
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
+#            spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
         endif
     endif
 endef
@@ -511,11 +511,11 @@ define MCSPI_Slave_TestApp_RULE
 
     ifneq ($(1),$(filter $(1), safertos))
         ifeq ($(1),$(filter $(1), freertos tirtos))
-            spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
+#            spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
         endif
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
+#           spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
         endif
     endif
 endef
@@ -552,11 +552,11 @@ define MCSPI_Master_Dma_TestApp_RULE
 
     ifneq ($(1),$(filter $(1), safertos))
         ifeq ($(1),$(filter $(1), freertos tirtos))
-            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
+#            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
         endif
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
+#            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
         endif
     endif
 endef
@@ -590,11 +590,11 @@ define MCSPI_Slave_Dma_TestApp_RULE
 
     ifneq ($(1),$(filter $(1), safertos))
         ifeq ($(1),$(filter $(1), freertos tirtos))
-            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
+#            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
         endif
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
+#            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
         endif
     endif
 endef
@@ -938,7 +938,7 @@ QSPI_Flash_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvqspi_RTOS_LIST),$(call
 
 $(eval ${QSPI_Flash_Dma_TestApp_MACRO_LIST})
 
-# QSPI dma File Flash Write Test app. 
+# QSPI dma File Flash Write Test app.
 # This app allows us to write files to flash device using CCS.
 # This is temporary till we got correct uniflash support in TPR12.
 QSPI_FileFlashWrite_Dma_TestApp_COMP_LIST = QSPI_FileFlashWrite_Dma_TestApp
