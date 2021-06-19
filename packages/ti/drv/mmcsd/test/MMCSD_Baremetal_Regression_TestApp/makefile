@@ -10,7 +10,9 @@ BUILD_OS_TYPE = baremetal
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_Baremetal_Regression_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_Baremetal_Regression_$(BOARD)_$(CORE)TestApp
+ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+    LOCAL_APP_NAME = MMCSD_Baremetal_Regression_$(BOARD)_$(CORE)TestApp
+endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 SRCDIR = ../src ../../
@@ -27,9 +29,9 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
-SRCS_COMMON += main.c  
+SRCS_COMMON += main.c
 CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED -DMMCSD_REGRESSION_TEST -DMMCSD_TEST_FATFS_BENCHMARK_ENABLED
-#CFLAGS_MMCSD_UT += -DMMCSD_TEST_DDR_DISABLED 
+#CFLAGS_MMCSD_UT += -DMMCSD_TEST_DDR_DISABLED
 
 #CFLAGS_MMCSD_UT += -DSTRESS_PATTERN_RANDOM_SMH_TEST_ENABLE
 #SRCS_COMMON += stress_test_pattern.c
@@ -53,7 +55,7 @@ LNKFLAGS_LOCAL_a8host += --entry Entry
 LNKFLAGS_LOCAL_a9host += --entry Entry
 LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
 
-# CFLAGS_MMCSD_UT += -DIO_CONSOLE 
+# CFLAGS_MMCSD_UT += -DIO_CONSOLE
 # am65xx build
 ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
 CFLAGS_MMCSD_UT    += -DsimAM6x

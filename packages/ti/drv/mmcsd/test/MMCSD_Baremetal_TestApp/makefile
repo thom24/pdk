@@ -10,7 +10,9 @@ export DISABLE_RECURSE_DEPS
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_Baremetal_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_Baremetal_$(BOARD)_$(CORE)TestApp
+ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+    LOCAL_APP_NAME = MMCSD_Baremetal_$(BOARD)_$(CORE)TestApp
+endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
     LOCAL_APP_NAME =  MMCSD_Baremetal_TestApp_$(CORE)

@@ -10,7 +10,9 @@ export DISABLE_RECURSE_DEPS
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_Baremetal_EMMC_TestProject
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_Baremetal_EMMC_$(BOARD)_$(CORE)TestProject
+ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+    LOCAL_APP_NAME = MMCSD_Baremetal_EMMC_$(BOARD)_$(CORE)TestProject
+endif
 
 BUILD_OS_TYPE = baremetal
 
@@ -27,7 +29,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = pdk csl_arch
 
 # List all the components required by the application
-COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)  
+COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
 COMP_LIST_COMMON += mmcsd
 COMP_LIST_c66x = csl_intc
 COMP_LIST_a15_0   = csl_init

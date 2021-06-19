@@ -4,7 +4,7 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 ifeq ($(BUILD_OS_TYPE),baremetal)
 CFLAGS_OS_DEFINES = -DBAREMETAL
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
-COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP) 
+COMP_LIST_COMMON  = $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
@@ -73,33 +73,16 @@ endif
 
 # DMA enabled build
 ifeq ($(DMA), enable)
-    ifeq ($(SMP), enable)
-        #Name of the directory created under packages/ti/binary/
-        APP_NAME = UART$(UART_OS_TYPE_PREFIX)_DMA_SMP_TestApp$(UART_OS_TYPE_POSTFIX)
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  UART$(UART_OS_TYPE_PREFIX)_DMA_$(BOARD)_$(CORE)_SMP_TestApp$(UART_OS_TYPE_POSTFIX)
-	else
-        #Name of the directory created under packages/ti/binary/
-        APP_NAME = UART$(UART_OS_TYPE_PREFIX)_DMA_TestApp$(UART_OS_TYPE_POSTFIX)
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  UART$(UART_OS_TYPE_PREFIX)_DMA_$(BOARD)_$(CORE)TestApp$(UART_OS_TYPE_POSTFIX)
-    endif
+    #Name of the directory created under packages/ti/binary/
+    APP_NAME = UART$(UART_OS_TYPE_PREFIX)_DMA_TestApp$(UART_OS_TYPE_POSTFIX)
     COMP_LIST_COMMON := $(filter-out uart,$(COMP_LIST_COMMON))
-    COMP_LIST_COMMON   += uart_dma 
-    #COMP_LIST_COMMON   += uart_dma_profile 
+    COMP_LIST_COMMON   += uart_dma
+    #COMP_LIST_COMMON   += uart_dma_profile
     CFLAGS_UART_DMA    = -DUART_DMA_ENABLE
 else
-    ifeq ($(SMP), enable)
-        #Name of the directory created under packages/ti/binary/
-        APP_NAME = UART$(UART_OS_TYPE_PREFIX)_SMP_TestApp$(UART_OS_TYPE_POSTFIX)
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  UART$(UART_OS_TYPE_PREFIX)_$(BOARD)_$(CORE)_SMP_TestApp$(UART_OS_TYPE_POSTFIX)
-    else
-        #Name of the directory created under packages/ti/binary/
-        APP_NAME = UART$(UART_OS_TYPE_PREFIX)_TestApp$(UART_OS_TYPE_POSTFIX)
-        # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-        LOCAL_APP_NAME =  UART$(UART_OS_TYPE_PREFIX)_$(BOARD)_$(CORE)TestApp$(UART_OS_TYPE_POSTFIX)
-    endif
+    #Name of the directory created under packages/ti/binary/
+    APP_NAME = UART$(UART_OS_TYPE_PREFIX)_TestApp$(UART_OS_TYPE_POSTFIX)
+    # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
 
     #COMP_LIST_COMMON   += uart_profile
     CFLAGS_UART_DMA    =

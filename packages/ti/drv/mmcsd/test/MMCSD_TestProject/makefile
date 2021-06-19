@@ -10,8 +10,9 @@ export DISABLE_RECURSE_DEPS
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_TestProject
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-LOCAL_APP_NAME = MMCSD_$(BOARD)_$(CORE)TestProject
-
+ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+    LOCAL_APP_NAME = MMCSD_$(BOARD)_$(CORE)TestProject
+endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 SRCDIR = ../src ../../
