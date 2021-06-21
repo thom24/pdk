@@ -77,6 +77,7 @@ typedef struct TaskP_freertos_s {
     TaskP_mainFunction_t    taskfxn;
     void                    *arg0;
     void                    *arg1;
+    bool                    terminated;
 } TaskP_freertos;
 
 /* task obj is too large to keep in structure. So keep it in global array. */
@@ -108,9 +109,10 @@ void TaskP_Function (void *arg)
     /* Call the application function. */
     (*handle->taskfxn)(handle->arg0, handle->arg1);
     
-    /* Task Fxn completed execution.
-     * Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
-    while (TRUE)
+    /* Task Fxn completed execution. */
+    handle->terminated = TRUE;
+    /* Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
+    while (handle->terminated)
     {
         vTaskSuspend(NULL);
     }
@@ -189,6 +191,7 @@ TaskP_Handle TaskP_create(void *taskfxn, const TaskP_Params *params)
         handle->taskfxn = (TaskP_mainFunction_t)(taskfxn);
         handle->arg0 = params->arg0;
         handle->arg1 = params->arg1;
+        handle->terminated = FALSE;
 
         handle->taskHndl = xTaskCreateStatic((TaskFunction_t)TaskP_Function, /* Pointer to the function that implements the task. */
                                       (char *)params->name,              /* Text name for the task.  This is to facilitate debugging only. */
@@ -354,13 +357,13 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert((handle != NULL_PTR));
-    if(eTaskGetState(taskHandle->taskHndl) != eDeleted)
+    if((TRUE == taskHandle->terminated) || (eTaskGetState(taskHandle->taskHndl) == eDeleted))
     {
-        isTaskTerminated = 0;
+        isTaskTerminated = 1;
     }
     else
     {
-        isTaskTerminated = 1;
+        isTaskTerminated = 0;
     }
     return isTaskTerminated;
 }
