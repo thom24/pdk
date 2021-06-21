@@ -82,7 +82,7 @@ void GblErrRcv(Mcasp_errCbStatus errCbStat);
 /* ========================================================================== */
 
 
-extern HeapMem_Handle myHeap;
+extern HeapP_Handle myHeap;
 
 /* ========================================================================== */
 /*                          McASP Init config                                 */

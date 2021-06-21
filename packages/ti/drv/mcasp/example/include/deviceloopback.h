@@ -131,7 +131,7 @@ typedef struct {
 } serInfo_t;
 /* Events to be pushed in to the event queue */
 typedef struct {
-  Osal_Queue_Elem link;
+  QueueP_Elem link;
   uint32_t serIndex;
   uint32_t tsIndex;
   uint32_t dir;
@@ -145,7 +145,7 @@ typedef struct {
 typedef struct {
     serInfo_t serInfo[MAX_NUM_SERIALIZERS];
 } dlbTestInfo_t;
-extern Error_Block eb;
+
 /* Configures the loopback type based upon the MCASP configuration */
 void config_deviceloopback(uint32_t frame_size_in_bytes_tx,uint32_t frame_size_in_bytes_rx);
 void deviceloopback_process_samples(void *buf, uint32_t len_in_bytes, int dir);

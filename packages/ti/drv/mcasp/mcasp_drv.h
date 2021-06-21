@@ -520,7 +520,7 @@ typedef struct Mcasp_PktAddrPayload_s {
  *          Doubly linked list for queue elements.
  *          Required for Mcasp_IOBuf structure.
  */
-typedef Osal_Queue_Elem Mcasp_QueueElem;
+typedef QueueP_Elem Mcasp_QueueElem;
     
 /**
  *  \brief  McASP frame object params

@@ -142,11 +142,11 @@ Aic31_HwInfo Aic31_deviceInstInfo[AIC31_NUM_INSTANCES];
                     String              name,
                     Int                 mode,
                     Ptr                 chanParams,
-                    IOM_TiomCallback    cbFxn,
+                    mcasp_type_IOM_TiomCallback    cbFxn,
                     Ptr                 cbArg
                     );
  Int aic31MdDeleteChan(Ptr chanp);
- Int aic31MdSubmitChan(Ptr chanp, IOM_Packet *ioPacket);
+ Int aic31MdSubmitChan(Ptr chanp, mcasp_type_mcasp_type_IOM_Packet *ioPacket);
  Int aic31MdControlChan(Ptr chanp, Uns cmd, Ptr cmdArgs);
 
 
@@ -189,7 +189,7 @@ static int32_t aic31DeinitAdc(Aic31_Object   *instHandle);
 
 static int32_t aic31DeinitDac(Aic31_Object   *instHandle);
 
-static Void aic31CallBack (Ptr semHandle, IOM_Packet * ioPacket);
+static Void aic31CallBack (Ptr semHandle, mcasp_type_mcasp_type_IOM_Packet * ioPacket);
 #endif /* SW_I2C */
 
 static Bool aic31RegWriteBf(Aic31_Object *instHandle,
@@ -405,7 +405,7 @@ Void Aic31_init(Void)
                              String           name,
                              Int              mode,
                              Ptr              chanParams,
-                             IOM_TiomCallback cbFxn,
+                             mcasp_type_IOM_TiomCallback cbFxn,
                              Ptr              cbArg)
 {
     Aic31_Object           *instHandle   = NULL;
@@ -981,7 +981,7 @@ Void Aic31_init(Void)
  *
  * \return    IOM_ERROR  - error as not implemeted.
  */
- Int aic31MdSubmitChan(Ptr chanp, IOM_Packet *ioPacket)
+ Int aic31MdSubmitChan(Ptr chanp, mcasp_type_IOM_Packet *ioPacket)
 {
     /* to remove compiler warning                                             */
     if (NULL != chanp)
@@ -1470,7 +1470,7 @@ static Bool aic31I2cWrite(Aic31_Object    *instHandle,
     uint8_t             *regData;    /* Pointer to array of register write data */
 #ifndef SW_I2C
     uint8_t              data[2];    /* Temporary data                          */
-    IOM_Packet         ioPacket;
+    mcasp_type_IOM_Packet         ioPacket;
     I2c_DataParam      dataBuffer;
     int32_t              result = IOM_EBADARGS; /* Result */
     IOM_Fxns           *iomFxns;     
@@ -1498,7 +1498,7 @@ static Bool aic31I2cWrite(Aic31_Object    *instHandle,
         dataBuffer.bufLen    = 2u;
         dataBuffer.flags     = I2c_DEFAULT_WRITE;
 
-        memset(&ioPacket,0x00,sizeof(IOM_Packet));
+        memset(&ioPacket,0x00,sizeof(mcasp_type_IOM_Packet));
 
         ioPacket.addr   = &dataBuffer;
         ioPacket.size   = 2u;
@@ -1639,7 +1639,7 @@ static Bool aic31I2cRead(Aic31_Object         *instHandle,
 #ifndef SW_I2C
     uint8_t                data[10]; /* Temporary data                          */
     I2c_DataParam        dataBuffer;
-    IOM_Packet           ioPacket;
+    mcasp_type_IOM_Packet           ioPacket;
     int32_t                status = IOM_COMPLETED;
     IOM_Fxns             *iomFxns;     
 #endif /* SW_I2C */
@@ -1673,7 +1673,7 @@ static Bool aic31I2cRead(Aic31_Object         *instHandle,
         dataBuffer.bufLen    = 1u;
         dataBuffer.flags     = I2c_WRITE | I2c_MASTER | I2c_START;
 
-        memset(&ioPacket,0x00,sizeof(IOM_Packet));
+        memset(&ioPacket,0x00,sizeof(mcasp_type_IOM_Packet));
 
         ioPacket.addr   = &dataBuffer;
         ioPacket.size   = 2u;
@@ -2184,7 +2184,7 @@ static int32_t aic31MuteConfig(Aic31_Object    *instHandle,
  * \return  none
  *
  */
-static Void aic31CallBack (Ptr semHandle, IOM_Packet * ioPacket)
+static Void aic31CallBack (Ptr semHandle, mcasp_type_IOM_Packet * ioPacket)
 {
     assert((NULL != semHandle) && (NULL != ioPacket));
 

@@ -118,7 +118,7 @@
 /*                          IMPORTED VARIABLES                                */
 /* ========================================================================== */
 
-extern const ti_sysbios_heaps_HeapMem_Handle myHeap;
+extern HeapP_Handle myHeap;
 
 #define max(x,y) ( ((x) > (y))?(x):(y) )
 /* ========================================================================== */
@@ -174,8 +174,8 @@ Ptr  hAicChannel;
 #endif
 
 /* Function prototype */
-static Void createStreams();
-static Void prime();
+static void createStreams();
+static void prime();
 
 Ptr rxbuf[NUM_BUFS];
 Ptr txbuf[NUM_BUFS];
@@ -203,12 +203,12 @@ Ptr hMcaspTxChan;
 Ptr hMcaspRxChan;
 
 volatile int RxFlag=0,TxFlag=0;
-Semaphore_Handle semR,semT;
-Semaphore_Params params;
+SemaphoreP_Handle semR,semT;
+SemaphoreP_Params params;
 int mcaspApiTest = FALSE;
 
 typedef struct McASP_App_Buffer_s {
-	Osal_Queue_Elem  link;
+	QueueP_Elem  link;
 	uintptr_t *buf;
 	uint32_t index;
 }McASP_App_BufferInfo_t;
@@ -219,8 +219,8 @@ typedef enum {
  APP_BUFFER_TX=1
 }McASP_App_Buffer_Direction_e;
 
-Osal_Queue_Elem McASP_App_Buffer_FreeList[2];
-Osal_Queue_Elem McASP_App_Buffer_TransitList[2];
+QueueP_Handle McASP_App_Buffer_FreeList[2];
+QueueP_Handle McASP_App_Buffer_TransitList[2];
 
 McASP_App_BufferInfo_t McASP_App_bufs[2][NUM_APP_BUFS_QUEUE_ENTRIES];
 
@@ -233,11 +233,23 @@ uint8_t mcaspFrame_rx_index=0;
 void McASP_App_BufferInfo_Init()
 {
     uint32_t i,bufno;
-	Osal_Queue_construct(&McASP_App_Buffer_FreeList[APP_BUFFER_RX], (void *)NULL);
-	Osal_Queue_construct(&McASP_App_Buffer_TransitList[APP_BUFFER_RX], (void *)NULL);
+    QueueP_Params  qPrms;
 
-	Osal_Queue_construct(&McASP_App_Buffer_FreeList[APP_BUFFER_TX], (void *)NULL);
-	Osal_Queue_construct(&McASP_App_Buffer_TransitList[APP_BUFFER_TX], (void *)NULL);
+    McASP_App_Buffer_FreeList[APP_BUFFER_RX] = NULL;
+    McASP_App_Buffer_TransitList[APP_BUFFER_RX] = NULL;
+    McASP_App_Buffer_FreeList[APP_BUFFER_TX] = NULL;
+    McASP_App_Buffer_TransitList[APP_BUFFER_TX] = NULL;
+    QueueP_Params_init(&qPrms);
+
+    McASP_App_Buffer_FreeList[APP_BUFFER_RX] = QueueP_create(&qPrms);
+    assert(NULL != McASP_App_Buffer_FreeList[APP_BUFFER_RX]);
+    McASP_App_Buffer_TransitList[APP_BUFFER_RX] = QueueP_create(&qPrms);
+    assert(NULL != McASP_App_Buffer_TransitList[APP_BUFFER_RX]);
+
+    McASP_App_Buffer_FreeList[APP_BUFFER_TX] = QueueP_create(&qPrms);
+    assert(NULL != McASP_App_Buffer_FreeList[APP_BUFFER_TX]);
+    McASP_App_Buffer_TransitList[APP_BUFFER_TX] = QueueP_create(&qPrms);
+    assert(NULL != McASP_App_Buffer_TransitList[APP_BUFFER_TX]);
 
     /* Put buffers in the queue */
 	for(i=0;i<test_prime_count;i++) {
@@ -247,39 +259,44 @@ void McASP_App_BufferInfo_Init()
 	                                       buffers tx/rxBufs[NUM_BUFS]are to be re-used. */
 	    McASP_App_bufs[APP_BUFFER_RX][i].buf = rxbuf[bufno];
 	    McASP_App_bufs[APP_BUFFER_RX][i].index = bufno;
-        Osal_Queue_put((Osal_Queue_handle(&McASP_App_Buffer_FreeList[APP_BUFFER_RX])),(Osal_Queue_Elem *)&McASP_App_bufs[APP_BUFFER_RX][i]);
+        assert(QueueP_FAILURE !=
+                            QueueP_put(McASP_App_Buffer_FreeList[APP_BUFFER_RX],
+                            (void *) &McASP_App_bufs[APP_BUFFER_RX][i]));
 
 	    McASP_App_bufs[APP_BUFFER_TX][i].buf = txbuf[bufno];
 	    McASP_App_bufs[APP_BUFFER_TX][i].index = bufno;
-        Osal_Queue_put((Osal_Queue_handle(&McASP_App_Buffer_FreeList[APP_BUFFER_TX])),(Osal_Queue_Elem *)&McASP_App_bufs[APP_BUFFER_TX][i]);
+        assert(QueueP_FAILURE !=
+                        QueueP_put(McASP_App_Buffer_FreeList[APP_BUFFER_TX],
+                        (void *) &McASP_App_bufs[APP_BUFFER_TX][i]));
 	}
 }
 /* Pop a buffer not in use */
 McASP_App_BufferInfo_t * McASP_App_Buffers_PopFree(McASP_App_Buffer_Direction_e dir)
 {
-  McASP_App_BufferInfo_t *ptr;
-  ptr = Osal_Queue_get(&McASP_App_Buffer_FreeList[dir]);
-  if(ptr!=NULL) {
-    Osal_Queue_put((Osal_Queue_handle(&McASP_App_Buffer_TransitList[dir])),(Osal_Queue_Elem *)ptr);
-  }
-  return(ptr);
+    McASP_App_BufferInfo_t *ptr;
+    ptr = (McASP_App_BufferInfo_t *) QueueP_get(McASP_App_Buffer_FreeList[dir]);
+    if((QueueP_Handle) ptr != McASP_App_Buffer_FreeList[dir]) {
+        assert(QueueP_FAILURE !=
+                    QueueP_put(McASP_App_Buffer_TransitList[dir],(void *)ptr));
+    }
+    return(ptr);
 }
 
 /* Get from the transit list */
 McASP_App_BufferInfo_t * McASP_App_Buffers_PopTransitBuf(McASP_App_Buffer_Direction_e dir)
 {
-  McASP_App_BufferInfo_t *ptr;
-  ptr = Osal_Queue_get(&McASP_App_Buffer_TransitList[dir]);
-  return(ptr);
+    McASP_App_BufferInfo_t *ptr;
+    ptr = (McASP_App_BufferInfo_t *)
+                                QueueP_get(McASP_App_Buffer_TransitList[dir]);
+
+    return(ptr);
 }
 /* Release to free list */
 void McASP_App_Buffers_Release(McASP_App_BufferInfo_t *bufQueueEntry,McASP_App_Buffer_Direction_e dir)
 {
-  Osal_Queue_put((Osal_Queue_handle(&McASP_App_Buffer_FreeList[dir])),(Osal_Queue_Elem *)bufQueueEntry);
+    assert(QueueP_FAILURE !=
+            QueueP_put(McASP_App_Buffer_FreeList[dir],(void *)bufQueueEntry));
 }
-
-
-Error_Block eb;
 
 int mcaspControlChanTest(void * mcaspChan);
 
@@ -360,7 +377,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
         McASP_App_Buffers_Release(bufInfo_transit,APP_BUFFER_RX);
 
 	    /* post semaphore */
-	    Semaphore_post(semR);
+	    SemaphoreP_postFromISR(semR);
 
 	} else if(ioBuf->cmd == MCASP_WRITE)
 		{
@@ -385,7 +402,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
           McASP_App_Buffers_Release(bufInfo_transit,APP_BUFFER_TX);
 
 		  /* post semaphore */
-		  Semaphore_post(semT);
+		  SemaphoreP_post(semT);
 		} else {
   		  MCASP_log("Callback: Spurious packet ! Buff addr = %p with size %d",ioBuf->addr,ioBuf->size);
 #ifdef MCASP_ENABLE_DEBUG_LOG
@@ -467,7 +484,7 @@ void ErrorWatchDogRoutine()
      This function also creates the codec channels (if any)
 */
 /**************************************************************************************/
-static Void createStreams()
+static void createStreams()
 {
 	int status;
 
@@ -494,7 +511,7 @@ static Void createStreams()
 			(IOM_COMPLETED != status))
 	{
 		MCASP_log("AIC Create Channel Failed\n");
-		BIOS_exit(0);
+		assert(FALSE);
 	}
 #endif
 
@@ -517,7 +534,7 @@ static Void createStreams()
 	if((status != MCASP_COMPLETED) || (hMcaspTxChan == NULL))
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Tx Failed\n");
-		BIOS_exit(0);
+		assert(FALSE);
 	}
 
 #ifdef MCASP_ENABLE_DEBUG_LOG
@@ -532,7 +549,7 @@ static Void createStreams()
 	if((status != MCASP_COMPLETED) || (hMcaspRxChan == NULL))
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Rx Failed\n");
-		BIOS_exit(0);
+		assert(FALSE);
 	}
 #ifdef MCASP_ENABLE_DEBUG_LOG
     mcaspDebugLog(DEBUG_APP_AFTER_RX_CREATECHAN, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED,MCASP_DEBUG_UNDEFINED);
@@ -551,7 +568,7 @@ static Void createStreams()
 		remName,
 		mode,
 		(Ptr)(&AIC31_config),
-		(IOM_TiomCallback)&mcaspAppCallback,
+		(mcasp_type_IOM_TiomCallback)&mcaspAppCallback,
 		NULL);
 
 	if ((NULL == hAicChannel) &&
@@ -575,13 +592,12 @@ static Void createStreams()
 MCASP_Packet rxFrame[NUM_APP_BUFS_QUEUE_ENTRIES];
 MCASP_Packet txFrame[NUM_APP_BUFS_QUEUE_ENTRIES];
 
-Hwi_Handle myHwi;
 
-static Void prime()
+
+static void prime()
 {
-	Error_Block  eb;
     int32_t        count = 0, status;
-    IHeap_Handle iheap;
+
     uint32_t tx_bytes_per_sample=(mcasp_chanparam[1].wordWidth/8);
     uint32_t rx_bytes_per_sample=(mcasp_chanparam[0].wordWidth/8);
     /* This represents the actual  number of bytes being transferred by the
@@ -591,13 +607,13 @@ static Void prime()
     uint32_t rx_frame_size = BUFLEN*mcasp_chanparam[0].noOfSerRequested*rx_bytes_per_sample;
     McASP_App_BufferInfo_t *appBuf_ptr;
 
-    iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
-    Error_init(&eb);
+
+
 
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < (NUM_BUFS ); count ++)
     {
-        rxbuf[count] = Memory_calloc(iheap, rx_frame_size,BUFALIGN, &eb);
+        rxbuf[count] = HeapP_alloc(myHeap, rx_frame_size);
         if(NULL == rxbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
@@ -607,11 +623,12 @@ static Void prime()
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < test_num_bufs; count ++)
     {
-        txbuf[count] = Memory_calloc(iheap, tx_frame_size,BUFALIGN, &eb);
+        txbuf[count] = HeapP_alloc(myHeap, tx_frame_size);
         if(NULL == txbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
         }
+        memset(txbuf[count],0x00,tx_frame_size);
     }
 
 #ifdef MCASP_ENABLE_DEBUG_LOG
@@ -621,7 +638,7 @@ static Void prime()
     McASP_App_BufferInfo_Init();
 
 #ifdef AUDIO_EQ_DEMO
-    audioEQ_allocate_bufs(iheap,rx_frame_size,BUFALIGN);
+    audioEQ_allocate_bufs(myHeap,rx_frame_size,BUFALIGN);
 #endif
     for(count = 0; count < test_prime_count; count ++)
     {
@@ -851,7 +868,7 @@ int total_frames_sent=0;
 
 
 
-Void Audio_echo_Task()
+void Audio_echo_Task()
 {
     Mcasp_HwInfo hwInfo;
     volatile int32_t status = 0;
@@ -925,11 +942,11 @@ Void Audio_echo_Task()
 #endif
 
 	/* 2. SEM Initializations */
-    Semaphore_Params_init(&params);
+    SemaphoreP_Params_init(&params);
 
 	/* Create semaphores to wait for buffer reclaiming */
-    semR = Semaphore_create(0, &params, &eb);
-    semT = Semaphore_create(0, &params, &eb);
+    semR = SemaphoreP_create(0, &params);
+    semT = SemaphoreP_create(0, &params);
 
 	/* 3. McASP Initializations */
 	/* Initialize McASP Tx and Rx parameters */
@@ -1015,7 +1032,7 @@ Void Audio_echo_Task()
      * and because we need data from Rx before submitting to the Tx stream, we
      * wait indefinitely for both to complete.
      */
-    semTimeout = BIOS_WAIT_FOREVER;
+    semTimeout = SemaphoreP_WAIT_FOREVER;
 #endif
 
     i32Count = 0;
@@ -1030,23 +1047,23 @@ Void Audio_echo_Task()
 #if defined(DEVICE_LOOPBACK)
     	dlb_process_events();
 #endif
-        rxSemStatus = Semaphore_pend(semR, semTimeout);
-        txSemStatus = Semaphore_pend(semT, semTimeout);
+        rxSemStatus = SemaphoreP_pend(semR, semTimeout);
+        txSemStatus = SemaphoreP_pend(semT, semTimeout);
 
-        if(rxSemStatus == TRUE)
+        if(rxSemStatus == SemaphoreP_OK)
         {
             /* Reclaim full buffer from the input stream if ready */
             appBuf_ptr_rx = McASP_App_Buffers_PopFree(APP_BUFFER_RX);
             grxFrameIndexCount = appBuf_ptr_rx->index;
 
-            Cache_inv((void *)((uint8_t *)appBuf_ptr_rx->buf),rx_frame_size,Cache_Type_ALL, TRUE);
+            CacheP_Inv((void *)((uint8_t *)appBuf_ptr_rx->buf),rx_frame_size);
 #ifdef MCASP_ENABLE_DEBUG_LOG
             memcpy(&mcaspFrames_rx[mcaspFrame_rx_index][0],appBuf_ptr_rx->buf,rx_frame_size);
             mcaspFrame_rx_index++;
 #endif
         }
 
-        if(txSemStatus == TRUE)
+        if(txSemStatus == SemaphoreP_OK)
         {
             /* Reclaim full buffer from the output stream if ready */
             appBuf_ptr_tx = McASP_App_Buffers_PopFree(APP_BUFFER_TX);
@@ -1085,17 +1102,17 @@ Void Audio_echo_Task()
         /* If we didn't reclaim any packets, sleep for small amount of time
          * and try again later.
          */
-        if (rxSemStatus == FALSE && txSemStatus == FALSE)
-            Task_sleep(1);
+        if (rxSemStatus != SemaphoreP_OK && txSemStatus != SemaphoreP_OK)
+            TaskP_sleep(1);
 
         /* If we have already handled the specified number of frames, don't try
          * to submit anymore to the stream.  Setting the status to FALSE will
          * prevent this from happening.
          */
         if (rx_frames == NUM_TEST_FRAMES)
-            rxSemStatus = FALSE;
+            rxSemStatus = SemaphoreP_FAILURE;
         if (tx_frames == NUM_TEST_FRAMES)
-            txSemStatus = FALSE;
+            txSemStatus = SemaphoreP_FAILURE;
 
         if (++timeout > 1000)
         {
@@ -1111,7 +1128,7 @@ Void Audio_echo_Task()
 #endif
 
         /******************************* Sample Processing End ***************************/
-        if(rxSemStatus == TRUE)
+        if(rxSemStatus == SemaphoreP_OK)
         {
 #if defined(DEVICE_LOOPBACK)
              /* If we have received a buffer and haven't hit the test limit,
@@ -1139,7 +1156,7 @@ Void Audio_echo_Task()
 #endif
         }
 
-        if(txSemStatus == TRUE)
+        if(txSemStatus == SemaphoreP_OK)
         {
 #if defined(DEVICE_LOOPBACK)
             /* If we have reclaimed a tx buffer and haven't hit the test
@@ -1148,7 +1165,7 @@ Void Audio_echo_Task()
             deviceloopback_process_samples(appBuf_ptr_tx->buf,tx_frame_size, TX);
             tx_frames++;
 #endif
-            Cache_wbInv((void *)((uint8_t *)appBuf_ptr_tx->buf),tx_frame_size,Cache_Type_ALL, TRUE);
+            CacheP_wbInv((void *)((uint8_t *)appBuf_ptr_tx->buf),tx_frame_size);
 
 #if defined(AUDIO_DC_DIGITAL_TEST)
             pDitPayload->addr = (uint32_t *)getGlobalAddr((uintptr_t)appBuf_ptr_tx->buf);
@@ -1213,7 +1230,7 @@ Void Audio_echo_Task()
              * Please note that the test may not recover from this state. */
             bool dlbMode=FALSE; /* Forcefully disable */
             Mcasp_localSubmitIoctl(hMcaspTxChan,Mcasp_IOCTL_SET_DLB_MODE,&dlbMode,NULL);
-            Task_sleep(1000);
+            TaskP_sleep(1000);
             /* The test should be hung by now after "Total 100 frames sent" */
 
         }
@@ -1229,14 +1246,23 @@ Void Audio_echo_Task()
 #endif
 
 		{
-			IHeap_Handle iheap;
 
-			iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
-			Error_init(&eb);
+
+
+
 			for(i32Count = 0; i32Count < (test_num_bufs); i32Count ++)
 				{
-					Memory_free(iheap,rxbuf[i32Count],rx_frame_size);
-					Memory_free(iheap,txbuf[i32Count],tx_frame_size);
+                    if (NULL != rxbuf[i32Count])
+                    {
+                        HeapP_free(myHeap,rxbuf[i32Count],rx_frame_size);
+                        rxbuf[i32Count] = NULL;
+                    }
+
+                    if (NULL != txbuf[i32Count])
+                    {
+                        HeapP_free(myHeap,txbuf[i32Count],tx_frame_size);
+                        txbuf[i32Count] = NULL;
+                    }
 				}
 		}
 	  /* Display profiling results */
@@ -1265,7 +1291,7 @@ Void Audio_echo_Task()
     Sciclient_deinit();
 #endif
 
-    BIOS_exit(0);
+
 }
 
 /*

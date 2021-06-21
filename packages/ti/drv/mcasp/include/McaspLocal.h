@@ -523,10 +523,10 @@ typedef struct Mcasp_ChannelObj_s
     void *                    cbArg;
     /**<  Callback Function argument                                          */
 
-    Mcasp_QueueElem                queueReqList;
+    QueueP_Handle             queueReqList;
     /**<  Queue containing the pending requests received from application.    */
 
-    Mcasp_QueueElem                queueFloatingList;
+    QueueP_Handle             queueFloatingList;
     /**<  list to manage floating packets in DMA                              */
 
     uint32_t frSyncCtl;
@@ -608,10 +608,10 @@ typedef struct Mcasp_ChannelObj_s
      * cpu interrupt thread and is used in UDMA completion thread for         *
      * updating the error code in IOP                                         */
 
-      NAVSS_TR_Params     trParams;
-      Mcasp_QueueElem                queueFreeDesc;
-      Mcasp_QueueElem                queueTransitDesc;
-      Mcasp_descQueueEntry_t         freeDescMem[MCASP_NUM_FREE_DESCS];
+      NAVSS_TR_Params           trParams;
+      QueueP_Handle             queueFreeDesc;
+      QueueP_Handle             queueTransitDesc;
+      Mcasp_descQueueEntry_t    freeDescMem[MCASP_NUM_FREE_DESCS];
       void   *dmaCallback;
 #endif
 

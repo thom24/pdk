@@ -100,7 +100,7 @@ drvmcasp_LIB_LIST = $(mcasp_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_DeviceLoopback_TestApp MCASP_DeviceLoopback_Regression_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
+mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
 #
 # MCASP Modules
 #
@@ -190,17 +190,17 @@ endif
 define MCASP_DeviceLoopback_TestApp_RULE
 
     export MCASP_DeviceLoopback_TestApp_$(1)_COMP_LIST = MCASP_DeviceLoopback_TestApp_$(1)
-    export MCASP_DeviceLoopback_TestApp_$(1)_RELPATH = ti/drv/mcasp/example/MCASP_DeviceLoopback_TestApp
+    export MCASP_DeviceLoopback_TestApp_$(1)_RELPATH = ti/drv/mcasp/example/MCASP_DeviceLoopback_TestApp_$(1)
     export MCASP_DeviceLoopback_TestApp_$(1)_PATH = $(PDK_MCASP_COMP_PATH)/example/MCASP_DeviceLoopback_TestApp
     export MCASP_DeviceLoopback_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCASP_DeviceLoopback_TestApp_$(1)_CORE_DEPENDENCY = no
+    export MCASP_DeviceLoopback_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCASP_DeviceLoopback_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
     export MCASP_DeviceLoopback_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
 
     MCASP_DeviceLoopback_TestApp_$(1)_PKG_LIST = MCASP_DeviceLoopback_TestApp_$(1)
     MCASP_DeviceLoopback_TestApp_$(1)_INCLUDE = $(MCASP_DeviceLoopback_TestApp_$(1)_PATH)
     export MCASP_DeviceLoopback_TestApp_$(1)_BOARDLIST = $(drvmcasp_BOARDLIST)
-    export MCASP_DeviceLoopback_TestApp_$(1)_$(SOC)_CORELIST = $(drvmcasp_$(SOC)_CORELIST)
+    export MCASP_DeviceLoopback_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmcasp_$(SOC)_CORELIST))
 
     ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
         export MCASP_DeviceLoopback_TestApp_$(1)_SBL_APPIMAGEGEN = yes

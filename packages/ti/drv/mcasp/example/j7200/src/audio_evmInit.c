@@ -51,6 +51,12 @@
  */
 
 #include <stdio.h>
+#if defined (USE_BIOS)
+#include <xdc/std.h>
+#endif /* USE BIOS */
+
+#include "mcasp_osal.h"
+
 #define SW_I2C
 #ifndef SW_I2C
 #include <i2c/include/I2c.h>
@@ -66,7 +72,6 @@
 #include <ti/board/board.h>
 #include <ti/board/src/j7200_evm/include/board_control.h>
 #include <ti/board/src/j7200_evm/include/board_utils.h>
-#include <ti/board/src/j7200_evm/include/board_pinmux.h>
 
 /* I2C Driver Header Files */
 #include <ti/drv/i2c/I2C.h>

@@ -79,6 +79,21 @@
 
 #include <ti/drv/mcasp/soc/mcasp_soc.h>
 
+#define MCASP_AUD_SAMPLE_HEAP_SIZE  (200000U)
+/**< McASP buffers */
+#define MCASP_APP_TASK_STACK_SIZE   (16U * 1024U)
+/**< Application stack size */
+
+/* ========================================================================== */
+/*                                Globals                                     */
+/* ========================================================================== */
+/* Application heap for McASP buffers*/
+uint8_t mcaspEgAppHeap[MCASP_AUD_SAMPLE_HEAP_SIZE] __attribute__((aligned(128)));
+/* Heap handle */
+HeapP_Handle myHeap;
+/* Application task stack */
+uint8_t gAppTskStackMain[MCASP_APP_TASK_STACK_SIZE] __attribute__((aligned(128)));
+
 #if defined(BUILD_MPU) || defined (__C7100__)
 extern void Osal_initMmuDefault(void);
 Void InitMmu()
@@ -116,6 +131,19 @@ extern void Audio_echo_Task(void);
  */
 int main(Void)
 {
+    HeapP_Params params;
+    TaskP_Params tskParms;
+
+    OS_init();
+
+    myHeap = NULL;
+    HeapP_Params_init(&params);
+
+    params.buf = (void *) &mcaspEgAppHeap[0U];
+    params.size = MCASP_AUD_SAMPLE_HEAP_SIZE;
+
+    myHeap = HeapP_create (&params);
+
     /* enable the pinmux & PSC-enable for the mcasp device    */
     configureAudio();
 
@@ -130,9 +158,17 @@ int main(Void)
 #if defined(AIC_CODEC)
     Aic31_init();
 #endif
-    Log_info0("\r\nAudio Sample Main\n");
 
-    BIOS_start();
+    /* create task here */
+    TaskP_Params_init(&tskParms);
+    tskParms.priority   = 5;
+    tskParms.stack      = gAppTskStackMain;
+    tskParms.stacksize  = MCASP_APP_TASK_STACK_SIZE;
+
+    if ((TaskP_Handle)NULL != TaskP_create(Audio_echo_Task, &tskParms))
+    {
+        OS_start();
+    }
 
     return 0;
 }

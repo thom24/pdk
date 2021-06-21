@@ -48,8 +48,9 @@
 #if defined (USE_BIOS)
 #include <xdc/std.h>
 #include <ti/sysbios/io/IOM.h>
-#include <ICodec.h>
 #endif
+
+#include <ICodec.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -153,7 +154,7 @@ extern const Aic31_Params Aic31_PARAMS;
  *
  *  Driver function table to be used by applications.
  */
-extern const IOM_Fxns Aic31_IOMFXNS;
+extern const mcasp_type_IOM_Fxns Aic31_IOMFXNS;
 
 /**
  *  \brief    Initializes Aic31 instances which are statically allocated
@@ -162,7 +163,7 @@ extern const IOM_Fxns Aic31_IOMFXNS;
  *  setting initFxn for that particular UDEV instance or by calling this
  *  function as part of user specific initFxn.
  */
-Void Aic31_init(Void);
+void Aic31_init(void);
  
  
  Int aic31MdBindDev(Ptr *devp, Int devId, Ptr devParams);
@@ -173,11 +174,11 @@ Void Aic31_init(Void);
                     String              name,
                     Int                 mode,
                     Ptr                 chanParams,
-                    IOM_TiomCallback    cbFxn,
+                    mcasp_type_IOM_TiomCallback    cbFxn,
                     Ptr                 cbArg
                     );
  Int aic31MdDeleteChan(Ptr chanp);
- Int aic31MdSubmitChan(Ptr chanp, IOM_Packet *ioPacket);
+ Int aic31MdSubmitChan(Ptr chanp, mcasp_type_IOM_Packet *ioPacket);
  Int aic31MdControlChan(Ptr chanp, Uns cmd, Ptr cmdArgs);
 
 #ifdef __cplusplus

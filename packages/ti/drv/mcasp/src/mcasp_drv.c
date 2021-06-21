@@ -321,7 +321,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
     int32_t           status     = MCASP_COMPLETED;
     uint32_t          count      = 0;
     uint32_t          key        = 0;
-    /* Swi_Params      swiParams  = {0}; */
+    QueueP_Params  qPrms;
 
     if (NULL == devParams)
     {
@@ -390,8 +390,14 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         instHandle->XmtObj.devHandle = instHandle;
         instHandle->XmtObj.cbFxn = NULL;
         instHandle->XmtObj.cbArg = NULL;
-        Osal_Queue_construct(&(instHandle->XmtObj.queueReqList), (void *)NULL);
-        Osal_Queue_construct(&(instHandle->XmtObj.queueFloatingList), (void *)NULL);
+        instHandle->XmtObj.queueReqList = NULL;
+        QueueP_Params_init(&qPrms);
+        instHandle->XmtObj.queueReqList = QueueP_create(&qPrms);
+        assert(NULL != instHandle->XmtObj.queueReqList);
+        instHandle->XmtObj.queueFloatingList = NULL;
+        QueueP_Params_init(&qPrms);
+        instHandle->XmtObj.queueFloatingList = QueueP_create(&qPrms);
+        assert(NULL != instHandle->XmtObj.queueFloatingList);
         instHandle->XmtObj.noOfSerAllocated = 0;
         instHandle->XmtObj.channelOpMode = Mcasp_ChanMode_XMT_DIT;
         instHandle->XmtObj.isDmaDriven = (Bool)TRUE;
@@ -436,8 +442,14 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         instHandle->RcvObj.devHandle = instHandle;
         instHandle->RcvObj.cbFxn  = NULL;
         instHandle->RcvObj.cbArg  = NULL;
-        Osal_Queue_construct(&(instHandle->RcvObj.queueReqList), (void *) NULL);
-        Osal_Queue_construct(&(instHandle->RcvObj.queueFloatingList), (void *) NULL);
+        instHandle->RcvObj.queueReqList = NULL;
+        QueueP_Params_init(&qPrms);
+        instHandle->RcvObj.queueReqList = QueueP_create(&qPrms);
+        assert(NULL != instHandle->RcvObj.queueReqList);
+        instHandle->RcvObj.queueFloatingList = NULL;
+        QueueP_Params_init(&qPrms);
+        instHandle->RcvObj.queueFloatingList = QueueP_create(&qPrms);
+        assert(NULL != instHandle->RcvObj.queueFloatingList);
         instHandle->RcvObj.noOfSerAllocated = 0;
         instHandle->RcvObj.channelOpMode = Mcasp_ChanMode_RCV;
         instHandle->RcvObj.isDmaDriven = (Bool)TRUE;
@@ -1937,12 +1949,12 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
         if (((int32_t)TRUE) == chanHandle->isDmaDriven)
         {
             /* Empty the floating queue.                                      */
-            while (((int32_t)TRUE) != Osal_Queue_empty((&(chanHandle->queueFloatingList))))
+            while (QueueP_NOTEMPTY == QueueP_isEmpty(chanHandle->queueFloatingList))
             {
                 ioPacket = (MCASP_Packet *)  \
-                                Osal_Queue_get((&(chanHandle->queueFloatingList)));
+                                QueueP_get(chanHandle->queueFloatingList);
 
-                if (NULL == ioPacket)
+                if (chanHandle->queueFloatingList == (QueueP_Handle) ioPacket)
                 {
                     status = MCASP_EBADIO;
                     /* Ideally control should not come here                   */
@@ -1991,11 +2003,11 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
             }
         }
         /* Empty the pendQUE queue.                                           */
-        while (((int32_t)TRUE) != Osal_Queue_empty((&(chanHandle->queueReqList))))
+        while (QueueP_NOTEMPTY == QueueP_isEmpty(chanHandle->queueReqList))
         {
-            ioPacket = (MCASP_Packet *)Osal_Queue_get((&(chanHandle->queueReqList)));
+            ioPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueReqList);
 
-            if (NULL != ioPacket)
+            if (chanHandle->queueReqList != (QueueP_Handle) ioPacket)
             {
                 /* set packet status equal to MCASP_ABORTED                     */
                 ioPacket->status = MCASP_ABORTED;
@@ -2973,7 +2985,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
     {
         /* complete the receive IOP now                                       */
 	    hwiKey = HwiP_disable();
-        if (((int32_t)TRUE) == Osal_Queue_empty((&(chanHandle->queueFloatingList))))
+        if (QueueP_EMPTY == QueueP_isEmpty(chanHandle->queueFloatingList))
         {
             /* This cannot happen, if it happens then it is a sprurios one    */
 		    HwiP_restore(hwiKey);
@@ -2982,7 +2994,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
         else
         {
             /* Get the packet from the top of the queue (atomic operation)        */
-            chanHandle->tempPacket = (MCASP_Packet *) Osal_Queue_get((&(chanHandle->queueFloatingList)));
+            chanHandle->tempPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueFloatingList);
 
             /* end the critical section                                           */
 		    HwiP_restore(hwiKey);
@@ -3528,7 +3540,7 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
             /* Already enough requests are in active queue.Hence load in to   *
              * the pending queue                                              */
             chanHandle->submitCount++;
-            Osal_Queue_put((Osal_Queue_handle(&(chanHandle->queueReqList))),(Osal_Queue_Elem *)ioPacket);
+            assert(QueueP_FAILURE != QueueP_put(chanHandle->queueReqList, (void *)ioPacket));
 
             /* restore the interrupts                                         */
             HwiP_restore(hwiKey);
@@ -3537,7 +3549,7 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
         {
             /* Process this packet immediately as active queue is empty       */
             chanHandle->submitCount++;
-            Osal_Queue_put((Osal_Queue_handle(&(chanHandle->queueFloatingList))),(Osal_Queue_Elem *)ioPacket);
+            assert(QueueP_FAILURE != QueueP_put(chanHandle->queueFloatingList,(void *)ioPacket));
 
             /* restore the interrupts                                         */
             HwiP_restore(hwiKey);
@@ -5256,7 +5268,7 @@ int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
         else
         {
             /* Look for new request to be processed                           */
-            if (((int32_t)TRUE) == Osal_Queue_empty((&(chanHandle->queueReqList))))
+            if (QueueP_EMPTY == QueueP_isEmpty(chanHandle->queueReqList))
             {
                 /* we dont have any packet in queue stop xmt/rct sm before    *
                  * giving error                                               */
@@ -5285,9 +5297,9 @@ int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
             {
                 status = Mcasp_STATUS_VALID;
 
-                chanHandle->dataPacket = (MCASP_Packet*)Osal_Queue_get((&(chanHandle->queueReqList)));
+                chanHandle->dataPacket = (MCASP_Packet*)QueueP_get(chanHandle->queueReqList);
 
-                if (NULL != chanHandle->dataPacket)
+                if (chanHandle->queueReqList != (QueueP_Handle) chanHandle->dataPacket)
                 {
                     /* we have a valid packet to process next                 */
 
@@ -5306,9 +5318,9 @@ int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
                         /* Additional to assigning the important parameters as*
                          * above for DMA mode , we will have max 2 packets    *
                          * floating and hence we use a active queue to manage */
-                        Osal_Queue_put(
-                                Osal_Queue_handle(&(chanHandle->queueFloatingList)),
-                            (Osal_Queue_Elem*)chanHandle->dataPacket);
+                        assert(QueueP_FAILURE !=
+                                    QueueP_put(chanHandle->queueFloatingList,
+                                    (void *)chanHandle->dataPacket));
                     }
                 }
             } /* Request List queue Empty is TRUE if loop */
@@ -5593,7 +5605,7 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
     Mcasp_clearDmaErrors(chanHandle);
 
     /* complete the IOP now and call the callback to the stream               */
-    chanHandle->tempPacket = (MCASP_Packet *) Osal_Queue_get((&(chanHandle->queueFloatingList)));
+    chanHandle->tempPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueFloatingList);
 
     /* Decrement the submit count for the IOpackets                           */
     chanHandle->submitCount--;
@@ -5643,7 +5655,7 @@ int32_t Mcasp_loadPendedIops(Mcasp_ChannelObj *chanHandle)
         /* start the critical section                                         */
         hwiKey = HwiP_disable();
 
-        if (((int32_t)TRUE) == Osal_Queue_empty((&chanHandle->queueReqList)))
+        if (QueueP_EMPTY == QueueP_isEmpty(chanHandle->queueReqList))
         {
             break;
         }
@@ -5653,10 +5665,12 @@ int32_t Mcasp_loadPendedIops(Mcasp_ChannelObj *chanHandle)
 
             /* get the packet out of the pending queue and load it to the     *
              * active Queue                                                   */
-            ioPacket = (MCASP_Packet *) Osal_Queue_get((&(chanHandle->queueReqList)));
+            ioPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueReqList);
+            assert(chanHandle->queueReqList != (QueueP_Handle) ioPacket);
 
             /* put the packet in to the active queue                          */
-            Osal_Queue_put(Osal_Queue_handle(&(chanHandle->queueFloatingList)),(Osal_Queue_Elem *)ioPacket);
+            assert(QueueP_FAILURE !=
+                    QueueP_put(chanHandle->queueFloatingList,(void *)ioPacket));
     
             /* load the packet to the edma                                    */
             Mcasp_localLoadPktToDma(chanHandle,ioPacket);
@@ -5795,7 +5809,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
          * programmed                                                         */
         instHandle->devState = Mcasp_DriverState_PWRM_SUSPEND;
 
-        if (TRUE == Osal_Queue_empty((&chanHandle->queueFloatingList)))
+        if (QueueP_EMPTY == QueueP_isEmpty(chanHandle->queueFloatingList))
         {
             /* stop the current channel IO processing                         */
             Mcasp_disableDMA(chanHandle);
@@ -5862,8 +5876,8 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
             Mcasp_clearDmaErrors(chanHandle);
         }
 
-        if ((TRUE == Osal_Queue_empty((&instHandle->XmtObj.queueFloatingList))) &&
-            (TRUE == Osal_Queue_empty((&instHandle->RcvObj.queueFloatingList))))
+        if ((QueueP_EMPTY == QueueP_isEmpty(instHandle->XmtObj.queueFloatingList)) &&
+            (QueueP_EMPTY == QueueP_isEmpty(instHandle->RcvObj.queueFloatingList)))
         {
             /* if both the channels are inactive then reset the io suspend    */
             instHandle->pwrmInfo.ioSuspend = FALSE;
@@ -6064,8 +6078,8 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
 
     hwiKey = HwiP_disable();
 
-    if ((TRUE == Osal_Queue_empty((&instHandle->XmtObj.queueFloatingList))) &&
-        (TRUE == Osal_Queue_empty((&instHandle->RcvObj.queueFloatingList))))
+    if ((QueueP_EMPTY == QueueP_isEmpty(instHandle->XmtObj.queueFloatingList)) &&
+        (QueueP_EMPTY == QueueP_isEmpty(instHandle->RcvObj.queueFloatingList)))
     {
         /* No IOP is pending currently. we can return the status of the       *
          * notify call as sucess                                              */

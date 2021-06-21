@@ -51,6 +51,12 @@
  */
 
 #include <stdio.h>
+#if defined (USE_BIOS)
+#include <xdc/std.h>
+#endif /* USE BIOS */
+
+#include "mcasp_osal.h"
+
 #define SW_I2C
 #ifndef SW_I2C
 #include <i2c/include/I2c.h>

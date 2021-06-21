@@ -17,7 +17,7 @@ INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
 COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
 COMP_LIST_COMMON += mcasp
 
-CFLAGS_MCASP_UT = -DMCASP_MASTER
+CFLAGS_MCASP_UT = -DMCASP_MASTER -DUSE_BIOS -DRTOS_ENV
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
   # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>

@@ -51,7 +51,7 @@
 #include <string.h>
 
 
-#include <ti/csl/hw_types.h>
+#include <ti/csl/tistdtypes.h>
 /* TI-RTOS Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>

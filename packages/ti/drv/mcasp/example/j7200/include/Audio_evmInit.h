@@ -56,8 +56,8 @@ extern "C"
 {
 #endif
 
-Void configureAudio(Void);
-Void audioUserI2cInit(Void);
+void configureAudio(void);
+void audioUserI2cInit(void);
 
 
 #ifdef __cplusplus

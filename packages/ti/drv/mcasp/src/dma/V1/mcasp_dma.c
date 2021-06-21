@@ -398,10 +398,12 @@ int32_t Mcasp_submitUdmaPkt(Mcasp_ChannelHandle chanHandle)
     {
        /* Update host packet descriptor */
        Mcasp_descQueueEntry_t *descQueueEntry=NULL;
-       descQueueEntry = (Mcasp_descQueueEntry_t *)Osal_Queue_get((&(chanHandle->queueFreeDesc)));
-       pHpdMem = (uint8_t *) descQueueEntry->descMem;
-       Osal_Queue_put((Osal_Queue_handle(&(chanHandle->queueTransitDesc))),(Osal_Queue_Elem *)descQueueEntry);
+       descQueueEntry = (Mcasp_descQueueEntry_t *) QueueP_get(chanHandle->queueFreeDesc);
+       assert((QueueP_Handle) descQueueEntry != chanHandle->queueFreeDesc);
 
+       pHpdMem = (uint8_t *) descQueueEntry->descMem;
+       assert(QueueP_FAILURE != QueueP_put(chanHandle->queueTransitDesc,
+                                                    (void *) descQueueEntry));
         if(pHpdMem!=NULL) {
 			
 			if(pDmaInfo->descType == CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR) {
@@ -603,9 +605,13 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
        Mcasp_descQueueEntry_t *descQueueEntry=NULL;
        
        /* Get a queue entry from the transit descriptor */
-       descQueueEntry = (Mcasp_descQueueEntry_t *)Osal_Queue_get((&(chanHandle->queueTransitDesc)));
+       descQueueEntry = (Mcasp_descQueueEntry_t *)
+                                    QueueP_get(chanHandle->queueTransitDesc);
+       assert((QueueP_Handle) descQueueEntry != chanHandle->queueTransitDesc);
+
        descQueueEntry->descMem = (void *)(uintptr_t )pDesc;
-       Osal_Queue_put((Osal_Queue_handle(&(chanHandle->queueFreeDesc))),(Osal_Queue_Elem *)descQueueEntry);
+       assert(QueueP_FAILURE != QueueP_put(chanHandle->queueFreeDesc,
+                                                    (void *) descQueueEntry));
 
      }
 
@@ -1178,9 +1184,17 @@ void Mcasp_initChanDmaObj(Mcasp_ChannelHandle chanHandle)
     int           i;
     Mcasp_Object *instHandle = (Mcasp_Object *) chanHandle->devHandle;
     void **trpdMem;
+    QueueP_Params  qPrms;
 
-    Osal_Queue_construct(&(chanHandle->queueFreeDesc), (void *)NULL);
-    Osal_Queue_construct(&(chanHandle->queueTransitDesc), (void *)NULL);
+    chanHandle->queueFreeDesc = NULL;
+    chanHandle->queueTransitDesc = NULL;
+
+    QueueP_Params_init(&qPrms);
+
+    chanHandle->queueFreeDesc = QueueP_create(&qPrms);
+    assert(NULL != chanHandle->queueFreeDesc);
+    chanHandle->queueTransitDesc = QueueP_create(&qPrms);
+    assert(NULL != chanHandle->queueTransitDesc);
 
     if (chanHandle->mode == MCASP_INPUT)
     {
@@ -1193,8 +1207,8 @@ void Mcasp_initChanDmaObj(Mcasp_ChannelHandle chanHandle)
     for(i = 0; i < MCASP_NUM_FREE_DESCS; i++)
     {
         chanHandle->freeDescMem[i].descMem = trpdMem[i];
-        Osal_Queue_put((Osal_Queue_handle(&(chanHandle->queueFreeDesc))),
-                       (Osal_Queue_Elem *)(&chanHandle->freeDescMem[i]));
+        assert(QueueP_FAILURE != QueueP_put(chanHandle->queueFreeDesc,
+                                        (void *) &chanHandle->freeDescMem[i]));
     }
 
     /* Number of pending transfers controlled by application and matches the

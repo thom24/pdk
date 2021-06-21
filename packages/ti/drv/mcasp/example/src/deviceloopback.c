@@ -63,15 +63,15 @@
 
 #include "deviceloopback.h"
 
-extern const ti_sysbios_heaps_HeapMem_Handle myHeap;
+extern HeapP_Handle myHeap;
 
 /* The Serializer/timeslot information, one for each direction TX/RX */
 dlbTestInfo_t dlbTestInfo[2];
 rampSynchState_e rampRxSynchState = RX_LOOPBACK_NOT_SYNCHED;
 rampSynchState_e rampRxSynchStatePrev = RX_LOOPBACK_NOT_SYNCHED;
-IHeap_Handle iheap;
+
 /* Queue for events */
-Osal_Queue_Elem dlbEventsQueue;
+QueueP_Handle dlbEventsQueue;
 /******************************************************************************************
  * Print the events from the events queue.
  */
@@ -79,12 +79,11 @@ void dlb_process_events()
 {
    dlbEvent_t *dlbEvent;
    /* Go through the events queue and print the status changes */
-   while (((int32_t)TRUE) != Osal_Queue_empty((&dlbEventsQueue)))
+   while (QueueP_NOTEMPTY == QueueP_isEmpty(dlbEventsQueue))
    {
-       dlbEvent = (dlbEvent_t *)  \
-                            Osal_Queue_get((&dlbEventsQueue));
+       dlbEvent = (dlbEvent_t *) QueueP_get(dlbEventsQueue);
 
-       if (NULL == dlbEvent)
+       if (dlbEventsQueue == (QueueP_Handle) dlbEvent)
        {
          /* Ideally control should not come here                   */
          break;
@@ -117,7 +116,7 @@ void dlb_process_events()
             break;
       }
 
-      Memory_free(iheap,dlbEvent,sizeof(dlbEvent_t));
+      HeapP_free(myHeap,dlbEvent,sizeof(dlbEvent_t));
     }
 
 }
@@ -184,17 +183,16 @@ void initialize_dlbTestInfo(uint32_t frame_size_in_bytes_tx, uint32_t frame_size
     uint32_t ser;
     uint32_t dir;
     uint32_t frameSizeBytesDir[2];
+    QueueP_Params  qPrms;
 
-    Error_Block  eb;
-	
     frameSizeBytesDir[0]=frame_size_in_bytes_rx;
     frameSizeBytesDir[1]=frame_size_in_bytes_tx;
 
-	iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
-	Error_init(&eb);
-
-	/* Create a queue of events */
-	Osal_Queue_construct(&dlbEventsQueue,(void *)NULL);
+    /* Create a queue of events */
+    dlbEventsQueue  = NULL;
+    QueueP_Params_init(&qPrms);
+    dlbEventsQueue = QueueP_create(&qPrms);
+    assert(NULL != dlbEventsQueue);
 
     /* Initialize for Tx and Rx */
 	for(dir=0;dir<2;dir++)
@@ -226,18 +224,26 @@ void initialize_dlbTestInfo(uint32_t frame_size_in_bytes_tx, uint32_t frame_size
                tsInfoPtr->index = timeslot;
 
                /* Allocate the unpacked buffer. Each 'word' will be represented in 32 bit words in the unpacked buffer */
-               tsInfoPtr->buf = Memory_calloc(iheap,samples_per_timeslot_words*4,4,&eb);
+               tsInfoPtr->buf = HeapP_alloc(myHeap,samples_per_timeslot_words*4);
 
                if(NULL == tsInfoPtr->buf)
                {
                   MCASP_log("\r\nMEM_calloc failed for unpacked buffers for serializer (%d) and timeslot (%d).\n",ser, timeslot);
                }
+               else
+               {
+                   memset(tsInfoPtr->buf,0x00,samples_per_timeslot_words*4);
+               }
 
-               tsInfoPtr->sample_word_offsets = Memory_calloc(iheap,samples_per_timeslot_words*4,4,&eb);
-			   
+               tsInfoPtr->sample_word_offsets = HeapP_alloc(myHeap,samples_per_timeslot_words*4);
+
                if(NULL == tsInfoPtr->sample_word_offsets)
                {
                   MCASP_log("\r\nMEM_calloc failed for word offsets buffers for serializer (%d) and timeslot (%d).\n",ser, timeslot);
+               }
+               else
+               {
+                   memset(tsInfoPtr->sample_word_offsets,0x00,samples_per_timeslot_words*4);
                }
 
                tsInfoPtr->buf_num_samples = samples_per_timeslot_words;
@@ -408,7 +414,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
    uint32_t ser,timeslot,index;
    Mcasp_ChanParams * chanParams =   &mcasp_chanparam[dir];
    uint32_t num_serializers = chanParams->noOfSerRequested;
-   Error_Block eb;
+
    /* Go to each serializer and insert the ramp patter, per timeslot buffer.
     i.e Each timeslot will have its own ramp */
    for(ser = 0; ser < num_serializers; ser++)
@@ -475,7 +481,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
   	                  /* Push the event in to the event queue */
   	                  {
   	                      dlbEvent_t *dlbEvent;
-  	                      dlbEvent = (dlbEvent_t *)Memory_calloc(iheap,sizeof(dlbEvent_t),4,&eb);
+                          dlbEvent = (dlbEvent_t *) HeapP_alloc(myHeap, sizeof(dlbEvent_t));
 
                           if(dlbEvent)
                           {
@@ -486,7 +492,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
   	                        dlbEvent->sample_no=index;
                             dlbEvent->serIndex=serInfoPtr->index;
                             dlbEvent->tsIndex=timeslot;
-                            Osal_Queue_put((Osal_Queue_handle(&dlbEventsQueue)),(Osal_Queue_Elem *)dlbEvent);
+                            assert(QueueP_FAILURE != QueueP_put(dlbEventsQueue,(void *)dlbEvent));
                           }
                           else
                           {
@@ -499,7 +505,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
  	                    /* Push the event in to the event queue */
  	                      {
  	                          dlbEvent_t *dlbEvent;
- 	                          dlbEvent = (dlbEvent_t *)Memory_calloc(iheap,sizeof(dlbEvent_t),4,&eb);
+                              dlbEvent = (dlbEvent_t *) HeapP_alloc(myHeap, sizeof(dlbEvent_t));
 
  	                          if(dlbEvent)
  	                          {
@@ -510,7 +516,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
  	                            dlbEvent->sample_no=index;
  	                            dlbEvent->serIndex=serInfoPtr->index;
  	                            dlbEvent->tsIndex=timeslot;
- 	                            Osal_Queue_put((Osal_Queue_handle(&dlbEventsQueue)),(Osal_Queue_Elem *)dlbEvent);
+ 	                            assert(QueueP_FAILURE != QueueP_put(dlbEventsQueue,(void *)dlbEvent));
  	                          }
  	                          else
  	                          {
@@ -530,7 +536,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
                     {
                       {
                           dlbEvent_t *dlbEvent;
-                          dlbEvent = (dlbEvent_t *)Memory_calloc(iheap,sizeof(dlbEvent_t),4,&eb);
+                          dlbEvent = (dlbEvent_t *) HeapP_alloc(myHeap, sizeof(dlbEvent_t));
 
                           if(dlbEvent!=NULL) {
                             dlbEvent->statusChange=LOST_SYNC_SER_TS_MISMATCH;
@@ -540,7 +546,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
                             dlbEvent->sample_no=index;
                             dlbEvent->serIndex=serInfoPtr->index;
                             dlbEvent->tsIndex=timeslot;
-                            Osal_Queue_put((Osal_Queue_handle(&dlbEventsQueue)),(Osal_Queue_Elem *)dlbEvent);
+                            assert(QueueP_FAILURE != QueueP_put(dlbEventsQueue,(void *)dlbEvent));
                          } else {
                              MCASP_log("\n ERROR! Memory creation failed for Event\n");
                          }

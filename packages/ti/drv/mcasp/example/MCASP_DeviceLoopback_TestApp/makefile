@@ -1,6 +1,9 @@
 # Makefile for McASP device loopback unit test app
+ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
-export DISABLE_RECURSE_DEPS
+else
+include $(RULES_MAKE)
+endif
 
 APP_NAME = MCASP_DeviceLoopback_TestApp_$(BUILD_OS_TYPE)
 
@@ -9,18 +12,11 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
 
     CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
 
-    ifeq ($(SOC),$(filter $(SOC), am65xx))
-        ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-            # Enable XDC build for application by providing XDC CFG File per core
-            XDC_CFG_FILE_$(CORE) = ../evmAM65xx/a53/mcaspUnitTest_a53.cfg
-        endif
+    # Enable XDC build for application by providing XDC CFG File per core
+    XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
-        ifeq ($(CORE),$(filter $(CORE), mcu1_0))
-            # Enable XDC build for application by providing XDC CFG File per core
-            XDC_CFG_FILE_$(CORE) = ../evmAM65xx/r5/mcaspUnitTest_r5.cfg
-        endif
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200))
     else
-        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
         XDC_CFG_UPDATE_$(CORE) = ../$(SOC)/mcasp_extra_config.xs
     endif
 

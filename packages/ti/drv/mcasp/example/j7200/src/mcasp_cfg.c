@@ -65,6 +65,8 @@
 #include <ti/sysbios/knl/Semaphore.h>
 #endif
 
+#include "mcasp_osal.h"
+
 #include <mcasp_drv.h>
 #include <mcasp_cfg.h>
 #include <mcasp_tune.h>
@@ -81,7 +83,7 @@ void GblErrRcv(Mcasp_errCbStatus errCbStat);
 /* ========================================================================== */
 
 
-extern HeapMem_Handle myHeap;
+extern HeapP_Handle myHeap;
 
 /* ========================================================================== */
 /*                          McASP Init config                                 */

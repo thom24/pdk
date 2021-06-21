@@ -110,7 +110,7 @@
 /*                          IMPORTED VARIABLES                                */
 /* ========================================================================== */
 
-extern const ti_sysbios_heaps_HeapMem_Handle myHeap;
+extern HeapP_Handle myHeap;
 #define max(x,y) ( ((x) > (y))?(x):(y) )
 /* ========================================================================== */
 /*                          MACRO DEFINITIONS                                 */
@@ -483,7 +483,7 @@ static Void prime()
 {
 	Error_Block  eb;
     int32_t        count = 0, status;
-    IHeap_Handle iheap;
+
     uint32_t tx_bytes_per_sample=(mcasp_chanparam[1].wordWidth/8);
     uint32_t rx_bytes_per_sample=(mcasp_chanparam[0].wordWidth/8);
     /* This represents the actual  number of bytes being transferred by the
@@ -493,13 +493,13 @@ static Void prime()
     uint32_t rx_frame_size = BUFLEN*mcasp_chanparam[0].noOfSerRequested*rx_bytes_per_sample;
     McASP_App_BufferInfo_t *appBuf_ptr;
 
-    iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
-    Error_init(&eb);
+
+
 
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < (NUM_BUFS ); count ++)
     {
-        rxbuf[count] = Memory_calloc(iheap, rx_frame_size,BUFALIGN, &eb);
+        rxbuf[count] = HeapP_alloc(myHeap, rx_frame_size,BUFALIGN);
         if(NULL == rxbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
@@ -509,11 +509,12 @@ static Void prime()
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < test_num_bufs; count ++)
     {
-        txbuf[count] = Memory_calloc(iheap, tx_frame_size,BUFALIGN, &eb);
+        txbuf[count] = HeapP_alloc(myHeap, tx_frame_size);
         if(NULL == txbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
         }
+        memset(txbuf[count],0x00,tx_frame_size);
     }
 #ifdef MCASP_ENABLE_DEBUG_LOG
     memset(mcaspFrames_rx,0xBB,sizeof(mcaspFrames_rx));
@@ -1042,14 +1043,22 @@ Void Audio_echo_Task()
     	status = mcaspUnBindDev(hMcaspDev);
 
 		{
-			IHeap_Handle iheap;
 
-			iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
-			Error_init(&eb);
+
+
+
 			for(i32Count = 0; i32Count < (test_num_bufs); i32Count ++)
 				{
-					Memory_free(iheap,rxbuf[i32Count],rx_frame_size);
-					Memory_free(iheap,txbuf[i32Count],tx_frame_size);
+                    if (NULL != rxbuf[i32Count])
+                    {
+                        HeapP_free(myHeap,rxbuf[i32Count],rx_frame_size);
+                        rxbuf[i32Count] = NULL;
+                    }
+                    if (NULL != txbuf[i32Count])
+                    {
+                        HeapP_free(myHeap,txbuf[i32Count],tx_frame_size);
+                        txbuf[i32Count] = NULL;
+                    }
 				}
 		}
 	  /* Display profiling results */
