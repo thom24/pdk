@@ -365,6 +365,18 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
     return isTaskTerminated;
 }
 
+uint32_t TaskP_disable(void)
+{
+    vTaskSuspendAll();
+
+    return 0;
+}
+
+void TaskP_restore(uint32_t key)
+{
+    xTaskResumeAll();
+}
+
 TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
 {
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;

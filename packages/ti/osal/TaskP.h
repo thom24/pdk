@@ -177,6 +177,25 @@ extern void TaskP_yield(void);
  */
 extern uint32_t TaskP_isTerminated(TaskP_Handle handle);
 
+/*!
+ *  @brief  Disable the task scheduler.
+ *
+ * Control Task scheduling. This disables all other Tasks from running until ::TaskP_restore is called.
+ * Interrupts can still run.
+ *
+ *  @return key for use with restore
+ */
+extern uint32_t TaskP_disable(void);
+
+/*!
+ *  @brief  Restore Task scheduling state
+ *
+ *  Resumes the scheduler after it was disabled using a call to ::TaskP_disable.
+ *
+ *  @param key  key to restore previous Task scheduler state
+ */
+extern void TaskP_restore(uint32_t key);
+
 #ifdef __cplusplus
 }
 #endif

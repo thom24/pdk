@@ -156,6 +156,16 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
     return isTaskTerminated;
 }
 
+uint32_t TaskP_disable(void)
+{
+    return((uint32_t)Task_disable());
+}
+
+void TaskP_restore(uint32_t key)
+{
+    Task_restore(key);
+}
+
 void OS_init( void )
 {
 
