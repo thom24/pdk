@@ -30,7 +30,7 @@ BOARD_LIST_am64x = am64x_evm am64x_svb
 BOARD_LIST_j721e = j721e_evm
 BOARD_LIST_j7200 = j7200_evm
 BOARD_LIST_j721s2 = j721s2_evm
-BOARD_LIST_tpr12 = tpr12_evm tpr12_qt
+BOARD_LIST_tpr12 = tpr12_evm
 BOARD_LIST_awr294x = awr294x_evm
 
 # LIST of cores for each SOC
