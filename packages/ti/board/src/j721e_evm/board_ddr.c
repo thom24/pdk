@@ -372,7 +372,6 @@ static Board_STATUS emif_ConfigureECC(void)
     Board_STATUS   status    = BOARD_SOK;
     int32_t        cslResult = CSL_PASS;
     CSL_EmifConfig emifCfg;
-    uintptr_t      memPtr;
 
     BOARD_DEBUG_LOG("\r\n Configuring ECC");
 
@@ -397,15 +396,10 @@ static Board_STATUS emif_ConfigureECC(void)
     /* Prime the memory */
     if ( status == BOARD_SOK )
     {
-        /* Prime memory with known pattern */
-        for (memPtr = BOARD_DDR_START_ADDR; memPtr < BOARD_DDR_ECC_END_ADDR; memPtr += 4)
-        {
-            *((volatile uint32_t *) memPtr) = memPtr;
-        }
-
-        /* Make sure the write is complete by writeback */
-        CacheP_wbInv((const void *)BOARD_DDR_START_ADDR, BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR);
-
+        status = BOARD_udmaPrimeDDR((void *)BOARD_DDR_START_ADDR, BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR+1U);
+    }
+    if ( status == BOARD_SOK )
+    {
         /* Clears ECC errors */
         CSL_emifClearAllECCErrors((CSL_emif_sscfgRegs *)CSL_COMPUTE_CLUSTER0_SS_CFG_BASE);
     }

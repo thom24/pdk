@@ -197,6 +197,20 @@ Board_STATUS Board_PLLInit(uint32_t modId, uint32_t clkId, uint64_t clkRate);
 Board_STATUS Board_DDRInit(Bool eccEnable);
 
 /**
+ *
+ * \brief DDR4 Prime with UDMA Function
+ *
+ * Prime DDR memory using UDMA for ECC 
+ * 
+ * \param   startAddr [in] Base Address 
+ * \param   size      [in] Size in bytes
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS BOARD_udmaPrimeDDR(void *startAddr, uint32_t size);
+
+/**
  * \brief clock Initialization function for MCU domain
  *
  * Enables different power domains and peripheral clocks of the MCU.
