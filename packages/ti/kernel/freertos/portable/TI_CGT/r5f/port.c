@@ -535,7 +535,7 @@ BaseType_t xPortInIsrContext()
 /*---------------------------------------------------------------------------*/
 /* __TI_default_system_post_cinit indicates that the default                 */
 
-void _system_post_cinit(void)
+__attribute__((weak)) void _system_post_cinit(void)
 {
     osalArch_Config_t cfg;
 
