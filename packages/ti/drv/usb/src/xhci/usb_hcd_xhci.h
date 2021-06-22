@@ -97,6 +97,12 @@ extern "C" {
 #define TRB_TO_SLOT_ID(p)           (((p) & (0xffU << 24)) >> 24)
 #define SLOT_ID_FOR_TRB(p)          (((p) & 0xffU) << 24)
 
+/*clear feture arguments*/
+#define SET_CLR_FEATURE_ENDPOINT_HALT             (0x0)
+#define SET_CLR_FEATURE_DEVICE_REMOTE_WAKEUP      (0x1)
+#define SET_CLR_FEATURE_TEST_MODE                 (0x2)
+#define SET_CLR_FEATURE_DEVICE_ENDPOINT           (0x0)
+
 #define CSZ_1                       1 /*In Aegis HCCPARAMS CSZ is 1 */
 
 #define USB3_ENUM_RETRY_CNT_MAX     (10U)

@@ -2,7 +2,7 @@
 /**
  * usblib.h - Main header file for the USB Library.
  *  ============================================================
- *  Copyright (c) Texas Instruments Incorporated 2018 - 2019
+ *  Copyright (c) Texas Instruments Incorporated 2018 - 2021
  * 
  *  Redistribution and use in source and binary forms, with or without 
  *  modification, are permitted provided that the following conditions 
@@ -1043,6 +1043,11 @@ typedef struct
      *! a class.
      */
     tUSBDeviceHandler pfnDeviceHandler;
+
+    /*
+     *! This callback is made when a USB Endpoint event is detected.
+     */
+    tUSBIntHandler pfnEndpt0EventHandler;
 }
 tCustomHandlers;
 
@@ -1229,6 +1234,12 @@ typedef struct DeviceInfo
     /* pointer to gadget Obj that contains DCD data. This field would eventually
        replace pvInstance */
     void *pGadgetObj;
+
+    /*
+     *! A pointer to the device qualifier for this device.
+    */
+    const uint8_t *pDeviceQualifier;
+
 }
 tDeviceInfo;
 

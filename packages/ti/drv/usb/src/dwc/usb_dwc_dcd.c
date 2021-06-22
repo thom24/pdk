@@ -4,7 +4,7 @@
  *  \brief DWC3 device controller driver. This is the lowest layer driver
  *         which interacts directly with the hardware.
  *
- *  \copyright Copyright (C) 2013-2016 Texas Instruments Incorporated -
+ *  \copyright Copyright (C) 2013-2021 Texas Instruments Incorporated -
  *             http://www.ti.com/
  */
 
@@ -235,7 +235,8 @@ void usbDwcDcdSetConfiguration(usbDwcDcdDevice_t *dwc3);
 /*                            Global Variables                                */
 /* ========================================================================== */
 #define ALIGNED_SIZE    (32U)
-
+#define	TRB_BLOCK_NUM	(8)
+#define	TRB_ENDBLOCK_NUM	(TRB_BLOCK_NUM - 1)
 /** \brief usb endpoint command parameters */
 static usbDwcDcdDEpCmdParms_t dEpCmdParm __attribute__ ((aligned (ALIGNED_SIZE)));
 
@@ -243,7 +244,7 @@ static usbDwcDcdDEpCmdParms_t dEpCmdParm __attribute__ ((aligned (ALIGNED_SIZE))
 static usbDEpTrb_t ctrlDataTrb __attribute__ ((aligned (ALIGNED_SIZE)));
 
 /** \brief TRB for control status commands */
-static usbDEpTrb_t ctrlStatusTrb __attribute__ ((aligned (ALIGNED_SIZE)));
+static usbDEpTrb_t ctrlStatusTrb[TRB_BLOCK_NUM] __attribute__ ((aligned (ALIGNED_SIZE)));
 
 /** \brief TRB for bulk in transfers */
 static usbDEpTrb_t bulkInTrb __attribute__ ((aligned (ALIGNED_SIZE)));
@@ -649,6 +650,7 @@ void usbDwcDcdRunDEpCmd(usbDwcDcdDevice_t *dwc3,
 {
     /* Temporary variables*/
     uint32_t dEpCmd = 0U, pollCmdAct = 0U;
+    uint32_t timeout = USB_DCD_DWC_CMD_POLL_TIMEOUT;
 
     /* Set the command type to be issued */
     HW_SET_FIELD(dEpCmd, DWC_USB_DEPCMD_0_CMDTYP, pDEpCmdType);
@@ -688,6 +690,14 @@ void usbDwcDcdRunDEpCmd(usbDwcDcdDevice_t *dwc3,
          * endpoint for which the command was issued.
          */
         pollCmdAct = HW_RD_FIELD32(dwc3->baseAddr + DWC_USB_DEPCMD_0(phEpId + 1), DWC_USB_DEPCMD_0_CMDACT);
+
+        if(timeout == 0)
+        {
+		    HW_SET_FIELD(dEpCmd, DWC_USB_DEPCMD_0_CMDACT, DWC_USB_DEPCMD_0_CMDACT_DONE);
+		    HW_WR_REG32(dwc3->baseAddr + DWC_USB_DEPCMD_0(phEpId + 1), dEpCmd);
+        }
+        timeout--;
+
     } while(DWC_USB_DEPCMD_0_CMDACT_DONE != pollCmdAct);
 
     /* If output command status pointer is valid */
@@ -927,18 +937,32 @@ void usbDwcDcdEp0EvntHandler(usbDwcDcdDevice_t *dwc3, usbDwcDcdEvnt_t *usbDwcDcd
             {
                 case USB_DWC_DCD_EP0_STATE_STATUS3_IN:
                     /* Prepare a control status 3 TRB for OUT transfer */
+
+                    memset(&ctrlStatusTrb[0], 0, sizeof(ctrlStatusTrb));
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].bufPtrLow = (uint32_t)&ctrlStatusTrb[0];
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].bufPtrHigh = (uint32_t)0;
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].trbCtrl = USB_DWC_DCD_TRB_CTRL_LINK;
+					usb_osalCacheWbInv(&ctrlStatusTrb[TRB_ENDBLOCK_NUM], sizeof(usbDEpTrb_t));
+
                     usbDwcDcdRunXferSingle(dwc3,
                        0U,      /* phEpId */
-                       &ctrlStatusTrb,
+                       &ctrlStatusTrb[0],
                        NULL,    /* pBuff */
                        0U,      /* buffSize */
                        USB_DWC_DCD_TRB_CTRL_STATUS3);
                     break;
                 case USB_DWC_DCD_EP0_STATE_STATUS3_OUT:
                     /* Prepare a control status 3 TRB for IN transfer */
+
+                    memset(&ctrlStatusTrb[0], 0, sizeof(ctrlStatusTrb));
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].bufPtrLow = (uint32_t)&ctrlStatusTrb[0];
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].bufPtrHigh = (uint32_t)0;
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].trbCtrl = USB_DWC_DCD_TRB_CTRL_LINK;
+					usb_osalCacheWbInv(&ctrlStatusTrb[TRB_ENDBLOCK_NUM], sizeof(usbDEpTrb_t));
+
                     usbDwcDcdRunXferSingle(dwc3,
                            1U,  /* phEpId */
-                           &ctrlStatusTrb,
+                           &ctrlStatusTrb[0],
                            NULL,/* pBuff */
                            0U,  /* buffSize */
                            USB_DWC_DCD_TRB_CTRL_STATUS3);
@@ -964,9 +988,16 @@ void usbDwcDcdEp0EvntHandler(usbDwcDcdDevice_t *dwc3, usbDwcDcdEvnt_t *usbDwcDcd
                     dwc3->deviceNewAddrValidFlag = 0U;
                     }
                     /* Prepare a control status 2 TRB */
+
+                    memset(&ctrlStatusTrb[0], 0, sizeof(ctrlStatusTrb));
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].bufPtrLow = (uint32_t)&ctrlStatusTrb[0];
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].bufPtrHigh = (uint32_t)0;
+					ctrlStatusTrb[TRB_ENDBLOCK_NUM].trbCtrl = USB_DWC_DCD_TRB_CTRL_LINK;
+					usb_osalCacheWbInv(&ctrlStatusTrb[TRB_ENDBLOCK_NUM], sizeof(usbDEpTrb_t));
+
                     usbDwcDcdRunXferSingle(dwc3,
                            1U,
-                           &ctrlStatusTrb,
+                           &ctrlStatusTrb[0],
                            NULL,
                            0U,
                            USB_DWC_DCD_TRB_CTRL_STATUS2);
@@ -1028,9 +1059,10 @@ void usbDwcDcdEpEvntHandler(usbDwcDcdDevice_t *dwc3, usbDwcDcdEvnt_t *usbDwcDcdE
     uint8_t               phyEpNo = 0;
     uint8_t               epNum;
 
-    debug_printf("%s:%d. evntType=%d. \n", 
+    debug_printf("%s:%d. evntType=%d. phEpNum=%d\n",
                 __FUNCTION__, __LINE__,
-                usbDwcDcdEvnt->dEpEvnt.evntType
+                usbDwcDcdEvnt->dEpEvnt.evntType,
+                usbDwcDcdEvnt->dEpEvnt.phEpNum
                 );
 
     phyEpNo = usbDwcDcdEvnt->dEpEvnt.phEpNum;
@@ -1128,6 +1160,13 @@ void usbDwcDcdSetEpStall(usbDwcDcdDevice_t *dwc3, uint32_t phEpId, uint32_t flag
     }
     else if(FALSE == flag)
     {
+        /* Set transfer end */
+        usbDwcDcdRunDEpCmd(dwc3,
+                       phEpId,
+                       USB_D_EP_CMD_ENDXFER,
+                       NULL,
+                       -1,
+                       NULL);
         /* Clear stall */
         usbDwcDcdRunDEpCmd(dwc3,
                        phEpId,

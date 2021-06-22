@@ -7,7 +7,7 @@
  */
 
 /**
- *  Copyright (c) Texas Instruments Incorporated 2015-2019
+ *  Copyright (c) Texas Instruments Incorporated 2015-2021
  * 
  *  Redistribution and use in source and binary forms, with or without 
  *  modification, are permitted provided that the following conditions 
@@ -156,6 +156,9 @@ typedef struct usbDescriptor
     /**< pointer to Gadget's String descriptor.*/
     uint32_t numStringDesc;
     /**< Number of string descriptors */
+    usbDeviceQual_t     *pDeviceQual;
+    /**< pointer to device qualifier of the Gadget.*/
+    uint32_t maxPacketSize;
 }usbDescriptor_t;
 
 /**
@@ -529,6 +532,9 @@ typedef struct usbDevCoreCallback
     uint32_t (*pFnDevGenericIntrHandler)(struct usbGadgetObj *pGadgetObject,
     usbGenericEvent_t endptEvent);
     /**< Call back function which handles Events on all endpoints except EP0.*/
+    uint32_t (*pfnEndpt0EventHandler)( struct usbGadgetObj * pGadgetObject);
+    /**< Call back function which handles endpoint event on receiving a bus
+         Ep0event.*/
 } usbDevCoreCallback_t;
 /**
  * \brief Dcd driver actions
@@ -678,6 +684,10 @@ typedef struct usbGadgetObj
      * Depending on SOC, this buffer might need to be in 
      * a non-cache area */
     uint8_t* gadgetBufferPtr;
+
+    /* temporary buffers for incoming or outgoing used in req */
+    uint8_t buffer[512];
+
 
 } usbGadgetObj_t;
 

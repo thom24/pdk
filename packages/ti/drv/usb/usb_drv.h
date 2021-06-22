@@ -147,6 +147,8 @@ typedef void        (*USB_InitFxn)           (USB_Handle handle);
 typedef USB_Handle  (*USB_OpenFxn)           (USB_Handle handle,
                                              USB_Params *params);
 
+typedef void  (*USB_CloseFxn)          (USB_Handle handle);
+
 
 /*!
  *  @brief      A function pointer to a driver specific implementation of
@@ -169,6 +171,7 @@ typedef void        (*USB_IsrHandlerFxn)     (USB_Handle handle, USB_Params* arg
 typedef struct USB_FxnTable {
     /*! Function to open the specified peripheral */
     USB_OpenFxn            openFxn;
+    USB_CloseFxn           closeFxn;
 
     /* interrupt Enabler for IP specified interrupts */
     USB_IrqConfigFxn       irqConfigFxn;
@@ -227,6 +230,21 @@ typedef struct USB_Config {
  *  @sa     USB_close
  */
 extern USB_Handle USB_open(unsigned int index, USB_Params *params);
+
+/*!
+ *  @brief  Function to de-initialize a given USB peripheral specified by the
+ *          particular handle.
+ *
+ *  @pre
+ *
+ *  @param  handle        usb handle from usb_open
+ *
+ *  @return A USB_Handle on success or a NULL on an error or if it has been
+ *          already opened
+ *
+ *  @sa     USB_close
+ */
+extern void USB_close(USB_Handle handle);
 
 /*!
  *  @brief  Function to setup peripheral internal IRQ settings.

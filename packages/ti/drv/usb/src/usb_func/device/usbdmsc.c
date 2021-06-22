@@ -236,6 +236,8 @@ USBDSCSIReadCapacities(const tUSBDMSCDevice *psDevice, void * pUsbGadgetObj);
 
 static void
 USBDSCSIInquiry(const tUSBDMSCDevice *psDevice, void * pUsbGadgetObj);
+
+static void HandleReset(void *pvInstance);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -406,12 +408,13 @@ tDeviceInfo g_sMSCDeviceInfo =
         ConfigChangeHandler,/* pfnConfigChange - Config change */
         0,                  /* pfnDataReceived - Data received */
         0,                  /* Data Sent back call back */
-        0,                  /* pfnResetHandler - Reset handler */
+        HandleReset,        /* pfnResetHandler - Reset handler */
         0,                  /* pfnSuspendHandler - Suspend handler */
         0,                  /* pfnResumeHandler - Resume handler */
         HandleDisconnect,   /* pfnDisconnectHandler - Disconnect handler */
         HandleEndpoints,    /* pfnEndpointHandler - Endpoint handler */
-        HandleDevice        /* pfnDevicehandler - Device Handler */
+        HandleDevice,       /* pfnDevicehandler - Device Handler */
+        0                   /* pfnEndpt0EventHandler - Endpoint event handler*/
     },
     g_pMSCDeviceDescriptor,
     g_pMSCConfigDescriptors,
@@ -532,6 +535,7 @@ USBDMSCCompositeInit(void * pUsbGadgetObj, tUSBDMSCDevice *psDevice)
     
     return((void *)psDevice);
 }
+
 #if 0
 void
 USBDMSCTerm(void *pvInstance)
@@ -1767,5 +1771,23 @@ USBDSCSICommand(const tUSBDMSCDevice *psDevice, tMSCCBW *pSCSICBW,
         USBDSCSISendStatus(psDevice, pUsbGadgetObj);
     }
     return(ulRetCode);
+}
+
+/**************************************************************************** 
+* This function is called by the USB device stack whenever the device is 
+* reset by the USB host
+*****************************************************************************/
+static void HandleReset(void *pvInstance)
+{
+    tMSCInstance *psInst;
+
+    debug_printf("%s:%d. \n", __FUNCTION__, __LINE__ );
+
+    psInst = ((tUSBDMSCDevice *)pvInstance)->psPrivateData;
+    psInst->ucInterface = 0;
+    psInst->ucOUTEndpoint = DATA_OUT_ENDPOINT;
+    psInst->ucINEndpoint = DATA_IN_ENDPOINT;
+    psInst->ucSCSIState = STATE_SCSI_IDLE;
+
 }
 

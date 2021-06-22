@@ -48,6 +48,9 @@
 #include "UsbDefs.h"
 #include "usb_dwc.h"
 
+#include "types.h"
+#include "hw_types.h"
+
 #include "usblib.h"
 #include "usbhost.h"
 #include "usb_osal.h"
@@ -78,6 +81,7 @@ USB_MEM_S           g_usb_global __attribute__ ((section (".bss:extMemNonCache:u
 
 /* USB_dwc functions */
 USB_Handle   USB_open_dwc(USB_Handle handle, USB_Params *params);
+void         USB_close_dwc(USB_Handle handle);
 void         USB_irqConfig_dwc(USB_Handle handle, USB_Params* params);
 void         USB_irqCore_dwc(USB_Handle handle, USB_Params* params);
 void         USB_irqMisc_dwc(USB_Handle handle, USB_Params* params);
@@ -101,8 +105,8 @@ void usbClockCfg(uint32_t portNumber);
 
 /* regular prototypes */
 static void setupDwcDevMsc(USB_Params* params);
+static void exitDwcDev(USB_Params* params);
 static void setupDwcHostMsc(USB_Params* params);
-
 /*
  *  ======== USB_open_dwc ========
  */
@@ -153,6 +157,38 @@ USB_Handle USB_open_dwc(USB_Handle handle, USB_Params *params)
     }
 
     return handle;
+}
+
+/*
+ *  ======== USB_close_dwc ========
+ */
+void USB_close_dwc(USB_Handle handle)
+{
+    switch (handle->usbParams->usbMode)
+    {
+        case USB_HOST_MSC_MODE:
+            /*yet to implement*/
+        break;
+
+        case USB_DEVICE_MSC_MODE:
+        case USB_DEVICE_BULK_MODE:
+        case USB_DEVICE_CDC_MODE:
+            exitDwcDev(handle->usbParams);
+        break;
+
+        default:
+            break;
+    }
+
+    /* initialize semaphores for the driver to use
+       Currently only USB generic bulk transport demo uses semaphore
+    */
+    usb_osalDeleteBlockingLock(handle->usbParams->readSem);
+    usb_osalDeleteBlockingLock(handle->usbParams->writeSem);
+
+    /* mark used */
+    handle->isOpened = 0;
+    handle = NULL;
 }
 
 void USB_irqConfig_dwc(USB_Handle handle, USB_Params* params)
@@ -374,4 +410,24 @@ static void setupDwcHostMsc(USB_Params* params)
 
 }
 
+/*
+ *  ======== exit MSC dev  ========
+ */
+void exitDwcDev(USB_Params* params)
+{
+    tDeviceInfo* ptDeviceInfo;
+    usbDwcDcdDevice_t* dwc3;
 
+    dwc3 = &g_usb_global.drv_instances[params->instanceNo].dwc3;
+    ptDeviceInfo = (tDeviceInfo*)dwc3->pDcdCore->ptDeviceInfo;
+
+    HW_WR_FIELD32(dwc3->baseAddr + DWC_USB_DCTL, DWC_USB_DCTL_RUNSTOP, DWC_USB_DCTL_RUNSTOP_STOP);
+    HW_WR_FIELD32(dwc3->baseAddr + DWC_USB_DCTL,
+                  DWC_USB_DCTL_CSFTRST,
+                  DWC_USB_DCTL_CSFTRST_RESET);
+
+    ptDeviceInfo->sCallbacks.pfnDisconnectHandler(ptDeviceInfo->pvInstance);
+    /* clear the memory */
+    memset(&g_usb_global.drv_instances[params->instanceNo], 0, sizeof(dwc_instance_u));
+
+}

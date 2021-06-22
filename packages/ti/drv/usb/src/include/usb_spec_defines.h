@@ -322,6 +322,31 @@ typedef struct usbDeviceDesc
 } USB_STACK_PACKED usbDeviceDesc_t;
 
 
+/** \brief Structure defining USB Device Qualifier.*/
+typedef struct usbDeviceQual
+{
+    uint8_t     bLength;
+    /**< Descriptor Length.*/
+    uint8_t     bDescriptorType;
+    /**< Descriptor Type.*/
+    uint16_t    bcdUSB;
+    /**<   USB Specification version.*/
+    uint8_t     bDeviceClass;
+    /**< Each interface specifies its own class information .*/
+    uint8_t     bDeviceSubClass;
+    /**< Each interface specifies its own Subclass information .*/
+    uint8_t     bDeviceProtocol;
+    /**< Device Protocol .*/
+    uint8_t     bMaxPacketSize;
+    /**< Maximum packet size for endpoint zero.*/
+    uint8_t     bNumConfigurations;
+    /**< possible configurations .*/
+    uint8_t     bReserved;
+    /**< reserved */
+
+} USB_STACK_PACKED usbDeviceQual_t;
+
+
 /** \brief Structure defining USB Configuration Descriptor.*/
 typedef struct usbConfigDesc
 {

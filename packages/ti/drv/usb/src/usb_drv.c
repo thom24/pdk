@@ -62,6 +62,13 @@ USB_Handle USB_open(unsigned int index, USB_Params *params)
     return (handle->fxnTablePtr->openFxn(handle, params));
 }
 
+/*
+ *  ======== USB_close ========
+ */
+void USB_close(USB_Handle handle)
+{
+    handle->fxnTablePtr->closeFxn(handle);
+}
 
 /*
  *  ======== USB_irqConfig ========

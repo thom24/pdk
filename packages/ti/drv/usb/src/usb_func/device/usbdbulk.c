@@ -2,7 +2,7 @@
  * 
  * usbdbulk.c - USB bulk device class driver.
  *
- * Copyright (c) 2008-2018 Texas Instruments Incorporated. 
+ * Copyright (c) 2008-2021 Texas Instruments Incorporated. 
  ******************************************************************************/
 /*
  *  Redistribution and use in source and binary forms, with or without
@@ -96,6 +96,23 @@ uint8_t g_pBulkDeviceDescriptor[] =
     1,                          /* Manufacturer string identifier. */
     2,                          /* Product string identifier. */
     3,                          /* Product serial number. */
+    1                           /* Number of configurations. */
+};
+
+/****************************************************************************** */
+/* Device Qualifier.  This is stored in RAM to allow several fields to be */
+/* changed at runtime based on the client's requirements. */
+/****************************************************************************** */
+uint8_t g_pBulkDeviceQualifier[] =
+{
+    10,                         /* Size of this structure. */
+    USB_DTYPE_DEVICE_QUAL, /* Type of this structure. */
+    USBShort(0x200),            /* USB version 2.0, hosts assume */
+                                /* high-speed - see USB 2.0 spec 9.2.6.6) */
+    USB_CLASS_VEND_SPECIFIC,    /* USB Device Class */
+    0,                          /* USB Device Sub-class */
+    0,                          /* USB Device protocol */
+    64,                         /* Maximum packet size for default pipe. */
     1                           /* Number of configurations. */
 };
 
@@ -240,7 +257,7 @@ static void HandleResume(void *pvInstance);
 static void HandleDevice(void *pvInstance, uint32_t ulRequest,
                          void *pvRequestData);
 static void HandleReset(void *pvInstance);
-
+static void HandleEp0Event(void *pvInstance);
 /****************************************************************************** */
 /* The device information structure for the USB serial device. */
 /****************************************************************************** */
@@ -259,7 +276,8 @@ tDeviceInfo g_sBulkDeviceInfo =
         HandleResume,          /* pfnResumeHandler */
         HandleDisconnect,      /* pfnDisconnectHandler */
         HandleEndpoints,       /* pfnEndpointHandler */
-        HandleDevice           /* pfnDevicehandler. */
+        HandleDevice,          /* pfnDevicehandler. */
+        HandleEp0Event         /* pfnEndpt0EventHandler */
     },                         /* sCallbacks */
 
     g_pBulkDeviceDescriptor,
@@ -267,7 +285,8 @@ tDeviceInfo g_sBulkDeviceInfo =
     0,                         /* Will be completed during USBDBulkInit(). */
     0,                         /* Will be completed during USBDBulkInit(). */
     0,                         /* pvInstance */
-    0                          /* pGadgetObj */
+    0,                         /* pGadgetObj */
+    g_pBulkDeviceQualifier,
 };
 
 
@@ -554,9 +573,13 @@ HandleDisconnect(void *pvInstance)
                                     USB_EVENT_DISCONNECTED, 0, (void *)0);
     }
 
- 
+
+    psInst->usLastRxSize = 0;
+    psInst->usLastTxSize = 0;
+    psInst->ucInterface = 0;
     /* Remember that we are no longer connected. */
     psInst->bConnected = FALSE;
+
 }
 
 /****************************************************************************** */
@@ -606,6 +629,50 @@ HandleResume(void *pvInstance)
 }
 
 /**************************************************************************** 
+* This function is called by the USB device stack whenever the device endpoint
+* is reset by the USB host
+*****************************************************************************/
+static void
+HandleEp0Event(void *pvInstance)
+{
+    tBulkInstance *psInst;
+    const tUSBDBulkDevice *psDevice;
+
+    debug_printf("%s:%d. \n", __FUNCTION__, __LINE__ );
+
+    ASSERT(pvInstance != 0);
+
+    /* Create a device instance pointer. */
+    psDevice = (const tUSBDBulkDevice *)pvInstance;
+
+    /* Get a pointer to our instance data. */
+    psInst = psDevice->psPrivateBulkData;
+
+    /* cancel the previous semaphores if they are pended */
+
+    if(psInst->eBulkRxState == BULK_STATE_WAIT_DATA)
+    {
+        usb_osalPostLock(psInst->readSem);
+        psInst->eBulkRxState = BULK_STATE_UNCONFIGURED;
+    }
+    if(psInst->eBulkTxState == BULK_STATE_WAIT_DATA)
+    {
+        usb_osalPostLock(psInst->writeSem);
+        psInst->eBulkTxState = BULK_STATE_UNCONFIGURED;
+    }
+
+    /* clear the transfer size */
+    psInst->usLastRxSize = 0;
+    psInst->usLastTxSize = 0;
+    psInst->ucInterface = 0;
+
+    psInst->ucOUTEndpoint = DATA_OUT_ENDPOINT;
+    psInst->ucINEndpoint = DATA_IN_ENDPOINT;
+    psInst->eBulkRxState = BULK_STATE_IDLE;
+    psInst->eBulkTxState = BULK_STATE_IDLE;
+}
+
+/****************************************************************************
 * This function is called by the USB device stack whenever the device is 
 * reset by the USB host
 *****************************************************************************/
@@ -634,12 +701,17 @@ static void HandleReset(void *pvInstance)
      * is still called, though it's a little delayed. 
      */
     HandleDisconnect(pvInstance);
- 
-#endif
-
+#else
     /* clear the transfer size */
     psInst->usLastRxSize = 0;
     psInst->usLastTxSize = 0;
+    psInst->ucInterface = 0;
+#endif
+
+    psInst->ucOUTEndpoint = DATA_OUT_ENDPOINT;
+    psInst->ucINEndpoint = DATA_IN_ENDPOINT;
+    psInst->eBulkRxState = BULK_STATE_IDLE;
+    psInst->eBulkTxState = BULK_STATE_IDLE;
 }
 
 /****************************************************************************** 
@@ -780,6 +852,10 @@ USBDBulkCompositeInit(void* pUsbGadgetObj, tUSBDBulkDevice *psDevice, USB_Params
     pGadgetObj->pDesc.pDeviceDesc = (usbDeviceDesc_t *)psInst->
                                                 psDevInfo->pDeviceDescriptor;
 
+    /* Device qualifier */
+    pGadgetObj->pDesc.pDeviceQual = (usbDeviceQual_t *)psInst->
+                                                psDevInfo->pDeviceQualifier;
+
     pGadgetObj->pDesc.ppConfigDesc = psInst->psDevInfo->ppConfigDescriptors;
     pGadgetObj->pDesc.ppStringDesc = (uint8_t**)psDevice->ppStringDescriptors;
     pGadgetObj->pDesc.numStringDesc = psDevice->ulNumStringDescriptors;
@@ -906,6 +982,8 @@ int32_t USBD_bulkWrite(USB_Handle handle, uint8_t* buffer, uint32_t dataSize)
     tUSBDBulkDevice* pusbBulkDevice;
     tBulkInstance *psInst;
     int32_t retSize = 0;
+    int32_t tempSize = 0;
+    int32_t maxSize = 0;
     
     struct usbGadgetObj* pGadgetObj;
 
@@ -915,10 +993,29 @@ int32_t USBD_bulkWrite(USB_Handle handle, uint8_t* buffer, uint32_t dataSize)
     
     /* Setup request for the lower layer IN transfer */
     pGadgetObj = (struct usbGadgetObj*)psInst->psDevInfo->pGadgetObj;
+    maxSize = pGadgetObj->pDesc.maxPacketSize;
 
     if (psInst->eBulkTxState == BULK_STATE_IDLE)
     {
-        if ((dataSize <= DATA_IN_EP_MAX_SIZE) && (dataSize > 0))
+        tempSize = dataSize;
+        while (tempSize > maxSize)
+        {
+            psInst->eBulkTxState = BULK_STATE_WAIT_DATA;
+
+            usbSetupEpReq(pGadgetObj,
+                    psInst->ucINEndpoint,    /* IN EP # */
+                    (uint32_t*)buffer,
+                    USB_TOKEN_TYPE_IN,
+                    maxSize,
+                    USB_TRANSFER_TYPE_BULK);
+
+            usb_osalPendLock(psInst->writeSem, SemaphoreP_WAIT_FOREVER);
+
+            retSize += psInst->usLastTxSize;
+        }
+
+        /* send last packet */
+        if ((tempSize <= maxSize) && (tempSize > 0))
         {
             psInst->eBulkTxState = BULK_STATE_WAIT_DATA;
 
@@ -926,16 +1023,12 @@ int32_t USBD_bulkWrite(USB_Handle handle, uint8_t* buffer, uint32_t dataSize)
                     psInst->ucINEndpoint,   /* IN EP # */
                     (uint32_t*)buffer,
                     USB_TOKEN_TYPE_IN,
-                    dataSize,
+                    tempSize,
                     USB_TRANSFER_TYPE_BULK);
 
             usb_osalPendLock(psInst->writeSem, SemaphoreP_WAIT_FOREVER);
 
-            retSize = psInst->usLastTxSize;
-        }
-        else
-        {
-            retSize = 0;
+            retSize += psInst->usLastTxSize;
         }
     }
     else

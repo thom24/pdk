@@ -520,7 +520,8 @@ tDeviceInfo g_sCDCSerDeviceInfo =
         HandleResume,          /* pfnResumeHandler */
         HandleDisconnect,      /* pfnDisconnectHandler */
         HandleEndpoints,       /* pfnEndpointHandler */
-        HandleDevice           /* pfnDevicehandler. */
+        HandleDevice,          /* pfnDevicehandler. */
+        0                      /* pfnEndpt0EventHandler */
     },                         /* sCallbacks */
     
     g_pCDCSerDeviceDescriptor, /* pDeviceDescriptor */

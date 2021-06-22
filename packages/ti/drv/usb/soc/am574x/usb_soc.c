@@ -44,6 +44,7 @@
 
 /* USB_dwc functions */
 USB_Handle   USB_open_dwc(USB_Handle handle, USB_Params *params);
+void         USB_close_dwc(USB_Handle handle);
 void         USB_irqConfig_dwc(USB_Handle handle, USB_Params* params);
 void         USB_irqCore_dwc(USB_Handle handle, USB_Params* params);
 void         USB_irqMisc_dwc(USB_Handle handle, USB_Params* params);
@@ -51,6 +52,7 @@ void         USB_irqMisc_dwc(USB_Handle handle, USB_Params* params);
 /* USB interface function table for USB_dwc (Synopsys) implementation */
 const USB_FxnTable USB_FxnTable_dwc = {
     &USB_open_dwc,
+    &USB_close_dwc,
     &USB_irqConfig_dwc,
     &USB_irqCore_dwc,
     &USB_irqMisc_dwc

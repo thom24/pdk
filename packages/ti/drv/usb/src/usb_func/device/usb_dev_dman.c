@@ -8,7 +8,7 @@
  *
  */
 /**
- *  Copyright (c) Texas Instruments Incorporated 2015-2019
+ *  Copyright (c) Texas Instruments Incorporated 2015-2021
  * 
  *  Redistribution and use in source and binary forms, with or without 
  *  modification, are permitted provided that the following conditions 
@@ -57,6 +57,7 @@
 #include "usbdevice.h"
 #include "musb.h"
 #include "usb_musb_dcd.h"
+#include "usb_dwc_dcd.h"
 
 /* ========================================================================== */
 /*                                Macros                                      */
@@ -74,6 +75,12 @@
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
 static void USBDGetStatus(usbGadgetObj_t *pUsbGadgetObj,
+                          usbSetupPkt_t * pSetup);
+
+static void USBDClearFeature(usbGadgetObj_t *pUsbGadgetObj,
+                          usbSetupPkt_t * pSetup);
+
+static void USBDSetFeature(usbGadgetObj_t *pUsbGadgetObj,
                           usbSetupPkt_t * pSetup);
 
 static void USBDSetAddress(usbGadgetObj_t *pUsbGadgetObj,
@@ -102,9 +109,9 @@ static void USBDevSetupDispatcher( usbGadgetObj_t *pUsbGadgetObj,
 static const pFnStdRequest gUsbStdReqTable[] =
 {
     USBDGetStatus, /*USBDGetStatus*/
-    0, /*USBDClearFeature*/
+    USBDClearFeature, /*USBDClearFeature*/
     0,
-    0, /*USBDSetFeature*/
+    USBDSetFeature, /*USBDSetFeature*/
     0,
     USBDSetAddress, /* USBDSetAddress */
     USBDGetDescriptor,/* USBDGetDescriptor */
@@ -365,13 +372,139 @@ usbSetupPkt_t * pSetup )
     }
 }
 
+/*
+This function handles the GET_STATUS standard USB request.
+*/
+static void USBDGetStatus(usbGadgetObj_t *pUsbGadgetObj,
+                          usbSetupPkt_t * pSetup)
+{
+    uint16_t data = 0;
+    usbDevRequest_t* req;
+    uint32_t epNum = 0;
 
+    req = &(pUsbGadgetObj->requestbuf[epNum]);
+ 
+    debug_printf("%s:%d\n", __FUNCTION__, __LINE__);
+    /* Determine which type of status was requested */
+    switch(pSetup->bmRequestType & USB_RTYPE_RECIPIENT_M)
+    {
+        case USB_RTYPE_ENDPOINT:
+            /* TODO Check logic on how to return this status for endpoints */
+            data = 0;
+            break;
+        default:
+            /* Set endpoint stall */
+            break;
+    }
+    
+    pUsbGadgetObj->gadgetBufferPtr[0] = data;
+
+    /* Setup the request and send the USB status */
+    req->deviceAddress = pUsbGadgetObj->deviceAddress;
+    req->pbuf = pUsbGadgetObj->gadgetBufferPtr;
+    req->length = 2U;
+    req->zeroLengthPacket = 0U;
+    req->status = DEV_REQ_STATUS_SUBMIT;
+    req->actualLength = 0U;
+    req->deviceEndptInfo.endpointType = USB_TRANSFER_TYPE_CONTROL;
+    req->deviceEndptInfo.endpointDirection = USB_TOKEN_TYPE_IN;
+    req->reqComplete = usbEp0reqComplete;
+
+    pUsbGadgetObj->dcd.dcdActions.pFnEndpt0Req (&(pUsbGadgetObj->dcd), req);
+
+}
+
+/*
+ * This function handles the CLEAR_FEATURE standard USB request.
+ */
+static void USBDClearFeature(usbGadgetObj_t *pUsbGadgetObj,
+                             usbSetupPkt_t * pSetup)
+{
+    tDeviceInfo* ptDeviceInfo;
+    usbDevRequest_t* req;
+    usbDwcDcdDevice_t *dwc3 = (usbDwcDcdDevice_t *)(pUsbGadgetObj->dcd.privateData);
+    uint32_t epNum = (pSetup->wIndex & 0x1F);
+    uint32_t phEpNum = 0;
+
+    if(epNum != 0)
+    {
+        /* Get the physical endpoint number to execute the EP CMD */
+        phEpNum = dwc3->ep_to_phyep[epNum];
+    }
+
+    req = &(pUsbGadgetObj->requestbuf[0]);
+    debug_printf("%s:%d\n", __FUNCTION__, __LINE__);
+    req->deviceAddress = pUsbGadgetObj->deviceAddress;
+    req->pbuf = NULL;
+    req->length = 0U;
+    req->zeroLengthPacket = 1U;
+    req->status = DEV_REQ_STATUS_SUBMIT;
+    req->actualLength = 0U;
+    req->deviceEndptInfo.endpointType = USB_TRANSFER_TYPE_CONTROL;
+    req->deviceEndptInfo.endpointDirection = USB_TOKEN_TYPE_IN;
+    req->reqComplete = usbEp0reqComplete;
+    pUsbGadgetObj->dcd.dcdActions.pFnEndpt0Req(&(pUsbGadgetObj->dcd), req);
+
+    /*
+     * Clear EP stall
+     * Only EP_STALL_CLEAR request is supported for Clear Feature
+     */
+    if(pSetup->wValue == USB_FEATURE_EP_HALT)
+    {
+        usbDwcDcdSetEpStall(dwc3, phEpNum, FALSE);
+        /* Invoke a callback function if it is set.
+           Class and application specific configurations can be handled in this function */
+        ptDeviceInfo = (tDeviceInfo*)dwc3->pDcdCore->ptDeviceInfo;
+        if (ptDeviceInfo->sCallbacks.pfnEndpt0EventHandler)
+        {
+            ptDeviceInfo->sCallbacks.pfnEndpt0EventHandler(ptDeviceInfo->pvInstance);
+        }
+    }
+}
+
+/*
+ * This function handles the SET_FEATURE standard USB request.
+*/
+static void USBDSetFeature(usbGadgetObj_t *pUsbGadgetObj,
+                           usbSetupPkt_t * pSetup)
+{
+    usbDevRequest_t* req;
+    usbDwcDcdDevice_t *dwc3 = (usbDwcDcdDevice_t *)(pUsbGadgetObj->dcd.privateData);
+    uint32_t epNum = (pSetup->wIndex & 0x1F);
+    uint32_t phEpNum = 0;
+
+    if(epNum != 0)
+    {
+        /* Get the physical endpoint number to execute the EP CMD */
+        phEpNum = dwc3->ep_to_phyep[epNum];
+    }
+
+    req = &(pUsbGadgetObj->requestbuf[0]);
+    debug_printf("%s:%d\n", __FUNCTION__, __LINE__);
+    req->deviceAddress = pUsbGadgetObj->deviceAddress;
+    req->pbuf = NULL;
+    req->length = 0U;
+    req->zeroLengthPacket = 1U;
+    req->status = DEV_REQ_STATUS_SUBMIT;
+    req->actualLength = 0U;
+    req->deviceEndptInfo.endpointType = USB_TRANSFER_TYPE_CONTROL;
+    req->deviceEndptInfo.endpointDirection = USB_TOKEN_TYPE_IN;
+    req->reqComplete = usbEp0reqComplete;
+    pUsbGadgetObj->dcd.dcdActions.pFnEndpt0Req(&(pUsbGadgetObj->dcd), req);
+
+    /*
+     * Stalling endpoint for EP_HALT request
+     * Only EP_HALT request is supported for Set Feature
+     */
+    if(pSetup->wValue == USB_FEATURE_EP_HALT)
+    {
+        usbDwcDcdSetEpStall(dwc3, phEpNum, TRUE);
+    }
+}
 
 /*
 This function handles the SET_ADDRESS standard USB request.
 */
-
-
 static void USBDSetAddress(usbGadgetObj_t *pUsbGadgetObj,
                            usbSetupPkt_t * pSetup )
 {
@@ -392,6 +525,8 @@ static void USBDSetAddress(usbGadgetObj_t *pUsbGadgetObj,
     req->deviceEndptInfo.endpointDirection = USB_TOKEN_TYPE_IN;
 
     req->deviceAddress = pSetup->wValue;
+    
+    req->reqComplete = usbEp0reqComplete;
     pUsbGadgetObj->deviceAddress = pSetup->wValue;
 
     debug_printf("%s:%d. Addr = 0x%x\n", __FUNCTION__, __LINE__, req->deviceAddress);
@@ -457,9 +592,33 @@ static void USBDGetDescriptor(struct usbGadgetObj *pUsbGadgetObj,
             req->reqComplete = usbEp0reqComplete;
 
             pUsbGadgetObj->dcd.dcdActions.pFnEndpt0Req(&(pUsbGadgetObj->dcd), req);
+			pUsbGadgetObj->pDesc.maxPacketSize = 512;
             break;
         }
 
+
+        /*This request was for a device qualifier.*/
+        case USB_DESC_TYPE_DEVICE_QUALIFIER:
+        {
+            debug_printf("%s:%d. Get Device Qualifier\n", __FUNCTION__, __LINE__);
+            if (pUsbGadgetObj->pDesc.pDeviceQual!=NULL)
+            {
+                /*Return the externally provided device descriptor.*/
+                req->deviceAddress = pUsbGadgetObj->deviceAddress;
+                req->pbuf = (uint32_t *) pUsbGadgetObj->pDesc.pDeviceQual;
+                req->length = (uint32_t ) pUsbGadgetObj->pDesc.pDeviceQual->bLength;
+                req->zeroLengthPacket = 0U;
+                req->status = DEV_REQ_STATUS_SUBMIT;
+                req->actualLength = 0U;
+                req->deviceEndptInfo.endpointType = USB_TRANSFER_TYPE_CONTROL;
+                req->deviceEndptInfo.endpointDirection = USB_TOKEN_TYPE_IN;
+                req->reqComplete = usbEp0reqComplete;
+
+                pUsbGadgetObj->dcd.dcdActions.pFnEndpt0Req(&(pUsbGadgetObj->dcd), req);
+				pUsbGadgetObj->pDesc.maxPacketSize = 64;
+            }
+            break;
+        }
         /*This request was for a configuration descriptor.*/
         case USB_DESC_TYPE_CONFIGURATION:
         {
@@ -539,7 +698,9 @@ static void USBDGetDescriptor(struct usbGadgetObj *pUsbGadgetObj,
             }
             if (loop == numLang)
             {
-               /* Stall the endpoint as some error has occured */
+               /*Stall the endpoint as some error has occured
+               usbDwcDcdDevice_t *dwc3 = (usbDwcDcdDevice_t *)(pUsbGadgetObj->dcd.privateData);
+               usbDwcDcdSetEpStall(dwc3, epNum, TRUE);*/
             }
 
             /* Length is in byte 0 of the string descriptor */
@@ -576,52 +737,7 @@ static void USBDGetDescriptor(struct usbGadgetObj *pUsbGadgetObj,
 }
 
 
-static void USBDGetStatus(usbGadgetObj_t *pUsbGadgetObj,
-                          usbSetupPkt_t * pSetup)
-{
-    uint16_t data = 0;
-    usbDevRequest_t* req;
-    uint32_t epNum = 0;
 
-    req = &(pUsbGadgetObj->requestbuf[epNum]);
- 
-    debug_printf("%s:%d\n", __FUNCTION__, __LINE__);
-    /* Determine which type of status was requested */
-    switch(pSetup->bmRequestType & USB_RTYPE_RECIPIENT_M)
-    {
-        case USB_RTYPE_DEVICE:
-            /* Return the current status for the device */
-            /* TODO Check how this status is to be stored and where */
-            data = 0;
-            break;
-        case USB_RTYPE_INTERFACE:
-            data = 0;
-            break;
-        case USB_RTYPE_ENDPOINT:
-            /* TODO Check logic on how to return this status for endpoints */
-            data = 0;
-            break;
-        default:
-            /* Set endpoint stall */
-            break;
-    }
-    
-    pUsbGadgetObj->gadgetBufferPtr[0] = data;
-
-    /* Setup the request and send the USB status */
-    req->deviceAddress = pUsbGadgetObj->deviceAddress;
-    req->pbuf = pUsbGadgetObj->gadgetBufferPtr;
-    req->length = 2U;
-    req->zeroLengthPacket = 0U;
-    req->status = DEV_REQ_STATUS_SUBMIT;
-    req->actualLength = 0U;
-    req->deviceEndptInfo.endpointType = USB_TRANSFER_TYPE_CONTROL;
-    req->deviceEndptInfo.endpointDirection = USB_TOKEN_TYPE_IN;
-    req->reqComplete = usbEp0reqComplete;
-
-    pUsbGadgetObj->dcd.dcdActions.pFnEndpt0Req (&(pUsbGadgetObj->dcd), req);
-
-}
 
 
 static void USBDSetConfiguration(usbGadgetObj_t *pUsbGadgetObj,

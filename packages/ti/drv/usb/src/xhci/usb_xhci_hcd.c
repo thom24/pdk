@@ -4,7 +4,7 @@
  *  \brief    Provides APIs for the USB xHCI module in host mode. This acts as 
 *             the HAL layer that accesses the hardware.
  *
- *  \copyright Copyright (C) 2013-2019 Texas Instruments Incorporated -
+ *  \copyright Copyright (C) 2013-2021 Texas Instruments Incorporated -
  *             http://www.ti.com/ 
  */
 
@@ -61,7 +61,6 @@
 
 #include "usb_wrapper.h"
 
-
 /*Function Declarations */
 
 void     USB_Host_Init(uint32_t instanceNumber);
@@ -72,7 +71,45 @@ uint32_t USBHostConfigureEndpoint(uint32_t instanceNumber,
                                   uint16_t uNAKPollInterval,
                                   uint32_t TransferRing,
                                   uint8_t  EPType);
+/**
+ * \brief USB HOST CLEAR_FEATURE
+ *
+ * This function is used to issue the CLEAR_FEATURE by the host.
+ *
+ * \param   instanceNumber  [IN]  usb instance number.
+ *
+ * \param   uEndPoint       [IN]  respective endpoint(IN/OUT)
+ *                                SET_CLR_FEATURE_DEVICE_ENDPOINT
+ *
+ * \param   uFeature        [IN]  SET_CLR_FEATURE_ENDPOINT_HALT
+ *                                SET_CLR_FEATURE_DEVICE_REMOTE_WAKEUP
+ *                                SET_CLR_FEATURE_TEST_MODE
+ *
+ * \return  NO_ERROR in case of success or appropriate error code.
+ */
+uint32_t USBHostClearFeature(uint32_t instanceNumber,
+                             uint8_t uEndPoint,
+                             uint16_t uFeature);
 
+/**
+ * \brief USB HOST SET_FEATURE
+ *
+ * This function is used to issue the SET_FEATURE by the host.
+ *
+ * \param   instanceNumber  [IN]  usb instance number.
+ *
+ * \param   uEndPoint       [IN]  respective endpoint(IN/OUT)
+ *                                SET_CLR_FEATURE_DEVICE_ENDPOINT
+ *
+ * \param   uFeature        [IN]  SET_CLR_FEATURE_ENDPOINT_HALT
+ *                                SET_CLR_FEATURE_DEVICE_REMOTE_WAKEUP
+ *                                SET_CLR_FEATURE_TEST_MODE
+ *
+ * \return  NO_ERROR in case of success or appropriate error code.
+ */
+uint32_t USBHostSetFeature(uint32_t instanceNumber,
+                           uint8_t uEndPoint,
+                           uint16_t uFeature);
 uint32_t USBHostGetDeviceDescriptor(uint32_t instanceNumber, uint8_t uAddress);
 uint32_t USBHostSetAddress(uint8_t uAddress);
 uint32_t USBHostSetConfiguration(uint32_t instanceNumber);
@@ -2036,33 +2073,185 @@ uint32_t xhci_enum(uint32_t instanceNumber)
     return NO_ERROR;
 }
 
-#if 0
-uint32_t USBHostClearFeature(uint8_t uEndPoint,uint16_t uFeature)
+uint32_t USBHostClearFeature(uint32_t instanceNumber, uint8_t uEndPoint,uint16_t uFeature)
 {
-    /*Setup Stge */
-        ep0Ring[ctrlRingIdx].control_trb.bmRequestType = USB_RTYPE_DIR_OUT|USB_RTYPE_STANDARD|USB_RTYPE_ENDPOINT;
-        ep0Ring[ctrlRingIdx].control_trb.bRequest = USB_BREQUEST_CLEAR_FEATURE;
-        ep0Ring[ctrlRingIdx].control_trb.wValue = uFeature;
-        ep0Ring[ctrlRingIdx].control_trb.wIndex = uEndPoint;
-        if(uEndPoint == uBulkINEPNum)
-        {
-            ep0Ring[ctrlRingIdx].control_trb.wIndex |= 0x80;
-        }
-        ep0Ring[ctrlRingIdx].control_trb.wLength = 0;
-        ep0Ring[ctrlRingIdx].control_trb.transfer_len = 8;
-        ep0Ring[ctrlRingIdx].control_trb.flags = TRB_TYPE(TRB_SETUP)|TRB_IDT|TRB_CYCLE;
-        ctrlRingIdx_INC;
-    
-        /*status Stage */
-        ep0Ring[ctrlRingIdx].normal_trb.bufferlo= 0; /*Data Buffer Pointer Zero for uint32_t stage */
-        ep0Ring[ctrlRingIdx].normal_trb.bufferhi=0;
-        ep0Ring[ctrlRingIdx].normal_trb.transfer_len = 0;
-        ep0Ring[ctrlRingIdx].normal_trb.flags = TRB_TYPE(TRB_uint32_t)|TRB_CYCLE|TRB_IOC;
-        ctrlRingIdx_INC;
-        DWC_USB3_DB_1(XhciRegBaseAddr(instanceNumber))= DB_VALUE(0,0);
+    uint32_t compCode = 0;
+    uint32_t baseAddr = 0;
+    uint32_t rc = 0;
+    uint32_t     ctrlRingIdx = 0;
+    XHCI_DATA_S* xhciData = 0;
+    union xhci_transfer_event* ep0Ring;
 
+
+    xhciData    = &g_usb_global.drv_instances[instanceNumber].xhciData;
+    ctrlRingIdx = (xhciData->byCtrlTransferRingIndex % (EP0_TRANSFER_RING_SIZE -1));
+    baseAddr    = XhciRegBaseAddr(instanceNumber);
+    ep0Ring     = xhciData->EP0_Transfer_Ring;
+
+    if(uFeature == SET_CLR_FEATURE_ENDPOINT_HALT)
+    {
+        if(uEndPoint == xhciData->uBulkINEPNum)
+        {
+            uEndPoint |= 0x80;
+        }
+    }
+
+    /*Setup Stge */
+    ep0Ring[ctrlRingIdx].control_trb.bmRequestType = USB_RTYPE_DIR_OUT|USB_RTYPE_STANDARD;
+    if((uFeature == SET_CLR_FEATURE_DEVICE_REMOTE_WAKEUP) || (uFeature == SET_CLR_FEATURE_TEST_MODE))
+    {
+        ep0Ring[ctrlRingIdx].control_trb.bmRequestType |= USB_RTYPE_DEVICE;
+        ep0Ring[ctrlRingIdx].control_trb.wIndex = SET_CLR_FEATURE_DEVICE_ENDPOINT;
+    }
+    else if(uFeature == SET_CLR_FEATURE_ENDPOINT_HALT)
+    {
+        ep0Ring[ctrlRingIdx].control_trb.bmRequestType |= USB_RTYPE_ENDPOINT;
+        ep0Ring[ctrlRingIdx].control_trb.wIndex = uEndPoint;
+    }
+    ep0Ring[ctrlRingIdx].control_trb.bRequest = USB_BREQUEST_CLEAR_FEATURE;
+    ep0Ring[ctrlRingIdx].control_trb.wValue = uFeature;
+    ep0Ring[ctrlRingIdx].control_trb.wLength = 0;
+    ep0Ring[ctrlRingIdx].control_trb.transfer_len = 8;
+    ep0Ring[ctrlRingIdx].control_trb.flags = TRB_TYPE(TRB_SETUP)|TRB_IDT|TRB_CYCLE;
+    xhciData->byCtrlTransferRingIndex++;
+    ctrlRingIdx = (xhciData->byCtrlTransferRingIndex % (EP0_TRANSFER_RING_SIZE -1));
+    
+    /*No Data Stage */
+    /*status Stage */
+    ep0Ring[ctrlRingIdx].normal_trb.bufferlo= 0; /*Data Buffer Pointer Zero for uint32_t stage */
+    ep0Ring[ctrlRingIdx].normal_trb.bufferhi=0;
+    ep0Ring[ctrlRingIdx].normal_trb.transfer_len = 0;
+    ep0Ring[ctrlRingIdx].normal_trb.flags = TRB_TYPE(TRB_T_STATUS)|TRB_CYCLE|TRB_IOC;
+
+    xhciData->byCtrlTransferRingIndex++;
+    ctrlRingIdx = (xhciData->byCtrlTransferRingIndex % (EP0_TRANSFER_RING_SIZE -1));
+
+    HW_WR_REG32(baseAddr + DWC_USB_DB(2), DB_VALUE(0,0));
+
+    /*Wait for Pending interrupt */
+    xhciData->expectingTrbType = TRB_TRANSFER;
+    xhci_wait_for_event(baseAddr);
+
+    if(TRB_FIELD_TO_TYPE(xhciData->PtrEvent->trb_slotid) == TRB_TRANSFER)
+    {
+        compCode = Command_Completion_Handler(instanceNumber);
+        if ((COMP_SUCCESS != compCode) && (COMP_SHORT_PACKET != compCode))
+        {
+            return (ERR_USB_HOST_GET_DEV_DESC | compCode); /*TODO: proper error code*/
+        }
+    }
+    else if (TRB_FIELD_TO_TYPE(xhciData->PtrEvent->trb_slotid) == TRB_PSC)
+    {
+        debug_printf("%d. unexpected PSC ptrEvent=0x%x\n",
+                    __LINE__, xhciData->PtrEvent);
+
+        rc = xhci_handle_psc_event(instanceNumber, xhciData->PtrEvent);
+
+        if (rc != NO_ERROR)
+        {
+            return rc;
+        }
+    }
+    else
+    {
+        return ERR_USB_HOST_UNEXPECTED_TRB_TYPE;
+    }
+
+    /* finish waiting for response from XHCI */
+    xhciData->expectingTrbType = 0;
+
+    return NO_ERROR;
 }
-#endif
+
+uint32_t USBHostSetFeature(uint32_t instanceNumber, uint8_t uEndPoint,uint16_t uFeature)
+{
+    uint32_t compCode = 0;
+    uint32_t baseAddr = 0;
+    uint32_t rc = 0;
+    uint32_t     ctrlRingIdx = 0;
+    XHCI_DATA_S* xhciData = 0;
+    union xhci_transfer_event* ep0Ring;
+
+
+    xhciData    = &g_usb_global.drv_instances[instanceNumber].xhciData;
+    ctrlRingIdx = (xhciData->byCtrlTransferRingIndex % (EP0_TRANSFER_RING_SIZE -1));
+    baseAddr    = XhciRegBaseAddr(instanceNumber);
+    ep0Ring     = xhciData->EP0_Transfer_Ring;
+
+    if(uFeature == SET_CLR_FEATURE_ENDPOINT_HALT)
+    {
+        if(uEndPoint == xhciData->uBulkINEPNum)
+        {
+            uEndPoint |= 0x80;
+        }
+    }
+
+    /*Setup Stge */
+    ep0Ring[ctrlRingIdx].control_trb.bmRequestType = USB_RTYPE_DIR_OUT|USB_RTYPE_STANDARD;
+    if((uFeature == SET_CLR_FEATURE_DEVICE_REMOTE_WAKEUP) || (uFeature == SET_CLR_FEATURE_TEST_MODE))
+    {
+        ep0Ring[ctrlRingIdx].control_trb.bmRequestType |= USB_RTYPE_DEVICE;
+        ep0Ring[ctrlRingIdx].control_trb.wIndex = SET_CLR_FEATURE_DEVICE_ENDPOINT;
+    }
+    else if(uFeature == SET_CLR_FEATURE_ENDPOINT_HALT)
+    {
+        ep0Ring[ctrlRingIdx].control_trb.bmRequestType |= USB_RTYPE_ENDPOINT;
+        ep0Ring[ctrlRingIdx].control_trb.wIndex = uEndPoint;
+    }
+    ep0Ring[ctrlRingIdx].control_trb.bRequest = USB_BREQUEST_SET_FEATURE;
+    ep0Ring[ctrlRingIdx].control_trb.wValue = uFeature;
+    ep0Ring[ctrlRingIdx].control_trb.wLength = 0;
+    ep0Ring[ctrlRingIdx].control_trb.transfer_len = 8;
+    ep0Ring[ctrlRingIdx].control_trb.flags = TRB_TYPE(TRB_SETUP)|TRB_IDT|TRB_CYCLE;
+    xhciData->byCtrlTransferRingIndex++;
+    ctrlRingIdx = (xhciData->byCtrlTransferRingIndex % (EP0_TRANSFER_RING_SIZE -1));
+    
+    /*No Data Stage */
+    /*status Stage */
+    ep0Ring[ctrlRingIdx].normal_trb.bufferlo= 0; /*Data Buffer Pointer Zero for uint32_t stage */
+    ep0Ring[ctrlRingIdx].normal_trb.bufferhi=0;
+    ep0Ring[ctrlRingIdx].normal_trb.transfer_len = 0;
+    ep0Ring[ctrlRingIdx].normal_trb.flags = TRB_TYPE(TRB_T_STATUS)|TRB_CYCLE|TRB_IOC;
+
+    xhciData->byCtrlTransferRingIndex++;
+    ctrlRingIdx = (xhciData->byCtrlTransferRingIndex % (EP0_TRANSFER_RING_SIZE -1));
+
+    HW_WR_REG32(baseAddr + DWC_USB_DB(2), DB_VALUE(0,0));
+
+    /*Wait for Pending interrupt */
+    xhciData->expectingTrbType = TRB_TRANSFER;
+    xhci_wait_for_event(baseAddr);
+
+    if(TRB_FIELD_TO_TYPE(xhciData->PtrEvent->trb_slotid) == TRB_TRANSFER)
+    {
+        compCode = Command_Completion_Handler(instanceNumber);
+        if ((COMP_SUCCESS != compCode) && (COMP_SHORT_PACKET != compCode))
+        {
+            return (ERR_USB_HOST_GET_DEV_DESC | compCode); /*TODO: proper error code*/
+        }
+    }
+    else if (TRB_FIELD_TO_TYPE(xhciData->PtrEvent->trb_slotid) == TRB_PSC)
+    {
+        debug_printf("%d. unexpected PSC ptrEvent=0x%x\n",
+                    __LINE__, xhciData->PtrEvent);
+
+        rc = xhci_handle_psc_event(instanceNumber, xhciData->PtrEvent);
+
+        if (rc != NO_ERROR)
+        {
+            return rc;
+        }
+    }
+    else
+    {
+        return ERR_USB_HOST_UNEXPECTED_TRB_TYPE;
+    }
+
+    /* finish waiting for response from XHCI */
+    xhciData->expectingTrbType = 0;
+
+    return NO_ERROR;
+}
 
 void usb_set_wrapper(uint32_t instanceNumber)
 {

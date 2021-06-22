@@ -68,6 +68,13 @@ extern "C" {
  * \brief Macro to contain the maximum number of elements in  a buffer
  */
 #define USB_DCD_DWC_EVNT_BUF_MAX    (32U)
+
+/**
+ * \brief Macro to define the command poll timeout
+ */
+#define USB_DCD_DWC_CMD_POLL_TIMEOUT    (500U)
+
+
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
@@ -363,6 +370,17 @@ uint32_t USBDwcDcdEpReq( usbDcd_t * pDcdObject,
  *  \param baseAddr Baseaddress of USB wrapper register
  */
 void usbDwcDcdEnableWrapperIntr(uint32_t baseAddr);
+
+/**
+ * \brief This function sets or clear endpoint stall.
+ *
+ * \param dwc3 pointer to the dwc3 device object
+ * \param phEpId Physical endpoint number for which the stall has to be
+ *        set or cleared.
+ * \param flag - TRUE - set stall
+ *        flag - FLASE - clear stall
+ */
+void usbDwcDcdSetEpStall(usbDwcDcdDevice_t *dwc3, uint32_t phEpId, uint32_t flag);
 
 #ifdef __cplusplus
 }
