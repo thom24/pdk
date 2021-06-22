@@ -148,6 +148,9 @@ typedef struct I2C_v0_Object_s {
 
 } I2C_v0_Object;
 
+
+void I2C_socInitHwCfg(I2C_Handle handle);
+
 /* Invalid Intc Mux number, intc Mux not used if assigned INVALID_INTC_MUX_NUM */
 #define INVALID_INTC_MUX_NUM      0xffff
 

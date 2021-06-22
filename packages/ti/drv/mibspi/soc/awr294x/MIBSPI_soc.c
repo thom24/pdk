@@ -396,3 +396,15 @@ void MIBSPI_socMemInit(enum MibSpi_InstanceId mibspiInstanceId)
     }
     return;
 }
+
+void MIBSPI_socInit(void)
+{
+    uint32_t i;
+
+    for (i = 0; i< MIBSPI_UTILS_ARRAYSIZE(gMibspiHwCfg); i++)
+    {
+        /* Update the input clock frequency. */
+        gMibspiHwCfg[i].clockSrcFreq = CSL_SocGetSysclkFreq();
+    }
+    return;
+}

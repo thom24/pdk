@@ -89,12 +89,6 @@
 #define  RCM_DEVICE_PKG_TYPE_R5_FREQ_ETS        (SBL_FREQ_MHZ2HZ(300U))
 #define  RCM_DEVICE_PKG_TYPE_SYSCLK_FREQ_ETS    (RCM_DEVICE_PKG_TYPE_R5_FREQ_ETS / 2U)
 
-typedef enum RcmEfusePkgType_e
-{
-    RCM_EFUSE_DEVICE_PKG_TYPE_LOP, /* 0b011 */ 
-    RCM_EFUSE_DEVICE_PKG_TYPE_ETS /* 0b010 */
-} RcmEfusePkgType;
-
 typedef enum RcmXtalFreqId_e
 {
     RCM_XTAL_FREQID_CLK_40MHZ,
@@ -5289,6 +5283,14 @@ void SBL_RcmGetDeviceFrequency(Rcm_DeviceFreqConfig *deviceFreqEfuseCfg)
     *deviceFreqEfuseCfg = Rcm_DeviceFreqConfigTbl[deviceTypeEfuse];
 }
 
+void SBL_RcmGetPackageType(RcmEfusePkgType *deviceTypeEfuse)
+{
+    CSL_top_ctrlRegs* ptrTopCtrlRegs;
+
+    ptrTopCtrlRegs = CSL_TopCtrl_getBaseAddress ();
+
+    *deviceTypeEfuse = CSL_TopCtrl_readDeviceTypeEfuse (ptrTopCtrlRegs);
+}
 
 void SBL_rcmConfigEthMacIf(void)
 {

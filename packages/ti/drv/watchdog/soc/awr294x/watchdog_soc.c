@@ -269,3 +269,19 @@ int32_t Watchdog_socSetInitCfg(uint32_t index, const Watchdog_HwAttrs *cfg)
 
     return ret;
 }
+
+void Watchdog_socInit(Watchdog_Handle handle)
+{
+    Watchdog_Config*        ptrWatchdogConfig;
+    Watchdog_HwAttrs*       ptrHwCfg;
+
+    /* Get the Watchdog Configuration: */
+    ptrWatchdogConfig = (Watchdog_Config*)handle;
+    /* Get the hardware configuration: */
+    ptrHwCfg = (Watchdog_HwAttrs*)ptrWatchdogConfig->hwAttrs;
+
+    /* Update the RTI clock frequency based on the efuse dev type. */
+    ptrHwCfg->rtiClkFrequency = CSL_SocGetSysclkFreq();
+
+    return;
+}

@@ -331,3 +331,8 @@ void UART_socInit(void)
 {
 }
 #endif
+
+void UART_socInitHwCfg(UART_Handle handle)
+{
+    return;
+}

@@ -331,3 +331,19 @@ void UART_socInit(void)
 {
 }
 #endif
+
+void UART_socInitHwCfg(UART_Handle handle)
+{
+    UART_Config*             ptrUARTConfig;
+    UartSci_HwCfg*           ptrHwCfg;
+
+    /* Get the UART Configuration: */
+    ptrUARTConfig = (UART_Config*)handle;
+    /* Get the hardware configuration: */
+    ptrHwCfg = (UartSci_HwCfg*)ptrUARTConfig->hwAttrs;
+
+    /* Update the input frequency based on efuse. */
+    ptrHwCfg->swCfg.clockFrequency = CSL_SocGetSysclkFreq();
+
+    return;
+}

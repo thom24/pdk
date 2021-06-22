@@ -568,3 +568,7 @@ void MIBSPI_socMemInit(enum MibSpi_InstanceId mibspiInstanceId)
     return;
 }
 
+void MIBSPI_socInit(void)
+{
+    return;
+}

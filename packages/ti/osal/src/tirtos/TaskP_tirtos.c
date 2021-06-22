@@ -38,6 +38,7 @@
 #include "TaskP.h"
 #include <xdc/runtime/Memory.h>
 #include <xdc/runtime/Error.h>
+#include <xdc/runtime/Types.h>
 #include <ti/osal/src/tirtos/tirtos_config.h>
 /*
  *  ======== TaskP_create ========
@@ -168,7 +169,24 @@ void TaskP_restore(uint32_t key)
 
 void OS_init( void )
 {
+#if defined (SOC_AWR294X)
+    /* For AWR294x the soc frequency needs to be set at runtime,
+     * based on package Type. Hence adding soc specific code here.
+     */
+    Types_FreqHz freq;
+    Osal_HwAttrs hwAttrs;
+    uint32_t ctrlBitMap = 0;
 
+    freq.hi = 0;
+    freq.lo = CSL_SocGetCpuFreq();
+    BIOS_setCpuFreq (&freq);
+
+    /* Update the CPU Frequency in Hw attr structure. */
+    hwAttrs.cpuFreqKHz = CSL_SocGetCpuFreq() / 1000U;
+    ctrlBitMap |= OSAL_HWATTR_SET_CPU_FREQ;
+
+    Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
+#endif
 }
 
 void OS_start(void)

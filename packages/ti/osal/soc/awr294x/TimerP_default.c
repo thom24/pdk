@@ -127,7 +127,7 @@ int32_t TimerP_getDefaultFreqLo(uint32_t timerId)
     (void)timerId;
 
     /* return the same default frequency for all timer Ids */
-    return(TIMERP_TIMER_FREQ_LO);
+    return(CSL_SocGetSysclkFreq());
 }
 
 /* Returns the default frquency higher 32 bits */

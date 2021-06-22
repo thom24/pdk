@@ -440,7 +440,7 @@ int main()
         Rcm_PllHsDivOutConfig hsDivCfg;
         Rcm_Return retVal;
         Rcm_DeviceFreqConfig deviceFreqEfuseCfg;
-        
+
 
         SBL_ADD_PROFILE_POINT;
         SBL_log(SBL_LOG_MAX, "Initiating BSS Boot  ...");
@@ -454,7 +454,7 @@ int main()
                                    RCM_PLL_HSDIV_OUTPUT_ENABLE_2 | 
                                    RCM_PLL_HSDIV_OUTPUT_ENABLE_3);
         /* RCM_PLL_HSDIV_OUTPUT_IDX0 to 400/300 based on e-fuse */
-        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0] = SBL_FREQ_MHZ2HZ(400U);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0] = deviceFreqEfuseCfg.r5FreqHz;
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(400U);
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2] = SBL_FREQ_MHZ2HZ(240U);
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX3] = SBL_FREQ_MHZ2HZ(200U);
@@ -477,14 +477,14 @@ int main()
                                    RCM_PLL_HSDIV_OUTPUT_ENABLE_2);
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0] = SBL_FREQ_MHZ2HZ(360U);
         /* RCM_PLL_HSDIV_OUTPUT_IDX1 to 450/360 based on e-fuse */
-        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(450U);
+        hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = deviceFreqEfuseCfg.dspFreqHz;
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2] = SBL_FREQ_MHZ2HZ(200U);
         SBL_RcmApllHSDivConfig(RCM_APLLID_1P8G, &hsDivCfg);
         retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1, 
                            Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
 
-        SBL_RcmSetCR5SysClock(SBL_MCU1_CPU0_FREQ_HZ, SBL_SYSCLK_FREQ_HZ);
+        SBL_RcmSetCR5SysClock(deviceFreqEfuseCfg.r5FreqHz, deviceFreqEfuseCfg.sysClkFreqHz);
 
         SBL_moduleClockInit(Rcm_ModuleClkInitStage_POST_APLL_SWITCH);
         /* Switch RSS Clock Src to Rcm_RssClkSrcId_DPLL_PER_HSDIV0_CLKOUT1_MUXED and output freq should be 200 Mhz*/

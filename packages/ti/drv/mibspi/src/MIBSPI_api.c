@@ -170,7 +170,8 @@ void MIBSPI_init(void)
         MIBSPI_osalSemParamsInit(&semParams);
         semParams.mode = SemaphoreP_Mode_BINARY;
         mibspiMutex = MIBSPI_osalCreateBlockingLock(1U, &semParams);
-    
+
+        MIBSPI_socInit();
         MibspiUtils_init();
     }
 }

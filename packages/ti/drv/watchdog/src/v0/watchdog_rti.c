@@ -298,6 +298,7 @@ static int32_t WatchdogRTI_control(Watchdog_Handle handle, uint32_t cmd, void *a
  */
 static void WatchdogRTI_init(Watchdog_Handle handle)
 {
+    Watchdog_socInit(handle);
     return;
 }
 

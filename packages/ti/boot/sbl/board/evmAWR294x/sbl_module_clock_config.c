@@ -49,7 +49,7 @@ typedef struct Sbl_ModuleClockConfig_s
     uint32_t freqHz;
 } Sbl_ModuleClockConfig;
 
-static const Sbl_ModuleClockConfig SBLModuleClockCfgTbl_postApllSwitch[] =
+static const Sbl_ModuleClockConfig SBLModuleClockCfgTbl_PkgTypeLop_postApllSwitch[] =
 {
     {
         .peripheralId = Rcm_PeripheralId_MSS_MCANA,
@@ -138,6 +138,94 @@ static const Sbl_ModuleClockConfig SBLModuleClockCfgTbl_postApllSwitch[] =
     },
 };
 
+static const Sbl_ModuleClockConfig SBLModuleClockCfgTbl_PkgTypeEts_postApllSwitch[] =
+{
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_MCANA,
+        .clkSource    = Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2,
+        .freqHz       = SBL_MCANA_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_MCANB,
+        .clkSource    = Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2,
+        .freqHz       = SBL_MCANB_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_RTIA,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_RTIA_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_RTIB,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_RTIB_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_RTIC,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_RTIC_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_WDT,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_WDT_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_QSPI,
+        .clkSource    = Rcm_PeripheralClockSource_DPLL_DSP_HSDIV0_CLKOUT2,
+        .freqHz       = SBL_QSPI_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_SPIA,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_SPIA_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_SPIB,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_SPIB_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_I2C,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_I2C_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_SCIA,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_SCIA_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_SCIB,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_MSS_SCIB_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_MSS_CPSW,
+        .clkSource    = Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2,
+        .freqHz       = SBL_CPSW_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_DSS_RTIA,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_DSS_RTIA_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_DSS_RTIB,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_DSS_RTIB_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_DSS_WDT,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_DSS_WDT_SYS150_FREQ_HZ,
+    },
+    {
+        .peripheralId = Rcm_PeripheralId_DSS_SCIA,
+        .clkSource    = Rcm_PeripheralClockSource_SYS_CLK,
+        .freqHz       = SBL_DSS_SCIA_SYS150_FREQ_HZ,
+    },
+};
 
 static const Sbl_ModuleClockConfig SBLModuleClockCfgTbl_SysClk200_preApllSwitch[] =
 {
@@ -325,8 +413,19 @@ static void SBL_getModuleClockInitTbl(Rcm_ModuleClkInitStage initStage,
 {
     if (Rcm_ModuleClkInitStage_POST_APLL_SWITCH == initStage)
     {
-        *tbl = &SBLModuleClockCfgTbl_postApllSwitch[0];
-        *numEntries = SBL_UTILS_ARRAYSIZE(SBLModuleClockCfgTbl_postApllSwitch);
+        RcmEfusePkgType pkgType;
+
+        SBL_RcmGetPackageType(&pkgType);
+        if (pkgType ==RCM_EFUSE_DEVICE_PKG_TYPE_LOP)
+        {
+            *tbl = &SBLModuleClockCfgTbl_PkgTypeLop_postApllSwitch[0];
+            *numEntries = SBL_UTILS_ARRAYSIZE(SBLModuleClockCfgTbl_PkgTypeLop_postApllSwitch);
+        }
+        else
+        {
+            *tbl = &SBLModuleClockCfgTbl_PkgTypeEts_postApllSwitch[0];
+            *numEntries = SBL_UTILS_ARRAYSIZE(SBLModuleClockCfgTbl_PkgTypeEts_postApllSwitch);
+        }
     }
     else
     {

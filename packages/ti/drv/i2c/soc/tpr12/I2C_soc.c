@@ -268,3 +268,8 @@ void I2C_socInit(void)
 {
 }
 #endif
+
+void I2C_socInitHwCfg(I2C_Handle handle)
+{
+    return;
+}

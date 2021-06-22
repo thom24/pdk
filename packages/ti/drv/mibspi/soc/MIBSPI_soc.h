@@ -77,6 +77,11 @@ extern "C" {
  */
 int32_t MIBSPI_socGetInitCfg(enum MibSpi_InstanceId id, MibSpi_HwCfg *cfg);
 
+/*!
+ *  @brief  Soc specific init function
+ *
+ */
+void MIBSPI_socInit(void);
 
 #ifdef __cplusplus
 }

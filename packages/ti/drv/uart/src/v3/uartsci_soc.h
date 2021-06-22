@@ -180,6 +180,8 @@ struct UartSci_SwCfg_t
     uint32_t                    enableInterrupt;
 };
 
+void UART_socInitHwCfg(UART_Handle handle);
+
 /**
 @}
 */

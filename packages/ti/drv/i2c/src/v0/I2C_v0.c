@@ -552,6 +552,7 @@ static void I2C_init_v0(I2C_Handle handle)
     {
         /* Mark the object as available */
         ((I2C_v0_Object *)(handle->object))->isOpen = (bool)false;
+        I2C_socInitHwCfg(handle);
     }
 }
 

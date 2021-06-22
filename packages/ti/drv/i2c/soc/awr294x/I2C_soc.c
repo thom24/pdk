@@ -169,3 +169,10 @@ void I2C_socInit(void)
 {
 }
 #endif
+
+void I2C_socInitHwCfg(I2C_Handle handle)
+{
+    I2C_HwAttrs *hwAttrs = NULL;
+    hwAttrs = (I2C_HwAttrs *)handle->hwAttrs;
+    hwAttrs->funcClk = CSL_SocGetSysclkFreq();
+}

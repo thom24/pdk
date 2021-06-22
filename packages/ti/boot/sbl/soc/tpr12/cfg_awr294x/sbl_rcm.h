@@ -375,6 +375,12 @@ typedef struct Rcm_DeviceFreqConfig_s
     uint32_t           sysClkFreqHz;
 } Rcm_DeviceFreqConfig;
 
+typedef enum RcmEfusePkgType_e
+{
+    RCM_EFUSE_DEVICE_PKG_TYPE_LOP, /* 0b011 */
+    RCM_EFUSE_DEVICE_PKG_TYPE_ETS /* 0b010 */
+} RcmEfusePkgType;
+
 
 /**************************************************************************
  ************************* Extern Declarations ****************************
@@ -435,6 +441,7 @@ extern void SBL_RcmBSSR4Unhalt(void);
 extern void SBL_RcmWaitBSSBootComplete(void);
 extern void SBL_RcmGetEfuseBootFrequency(Rcm_EfuseBootFreqConfig *bootFreqEfuseCfg);
 extern void SBL_RcmGetDeviceFrequency(Rcm_DeviceFreqConfig *deviceFreqEfuseCfg);
+extern void SBL_RcmGetPackageType(RcmEfusePkgType *deviceTypeEfuse);
 extern void SBL_RcmCoreApllHSDivConfig(Rcm_PllHsDivOutConfig *hsDivCfg);
 extern void SBL_rcmConfigEthMacIf(void);
 

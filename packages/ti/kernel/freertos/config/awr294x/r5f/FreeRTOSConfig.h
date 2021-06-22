@@ -41,6 +41,7 @@
 #ifdef BUILD_MCU1_1
 #include "FreeRTOSConfig_mcu1_1.h"
 #endif
+#include <ti/csl/soc.h>
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -69,8 +70,8 @@
 #define configUSE_MALLOC_FAILED_HOOK            (0)
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      (0)
 #define configUSE_TICK_HOOK                     (0)
-#define configCPU_CLOCK_HZ                      (400 * 1000 * 1000)
-#define configSYSTICK_CLOCK_HZ                  (200 * 1000 * 1000)
+#define configCPU_CLOCK_HZ                      (CSL_SocGetCpuFreq())
+#define configSYSTICK_CLOCK_HZ                  (CSL_SocGetSysclkFreq())
 #define configTICK_RATE_HZ                      (1000)
 #define configMAX_PRIORITIES                    (16)
 #define configMINIMAL_STACK_SIZE                (1024) /* in units of configSTACK_DEPTH_TYPE, not bytes */

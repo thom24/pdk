@@ -2772,6 +2772,7 @@ exit:
 static void
 UartSci_init(UART_Handle handle)
 {
+    UART_socInitHwCfg(handle);
     return;
 }
 

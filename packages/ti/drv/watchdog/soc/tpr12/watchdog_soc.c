@@ -270,3 +270,7 @@ int32_t Watchdog_socSetInitCfg(uint32_t index, const Watchdog_HwAttrs *cfg)
     return ret;
 }
 
+void Watchdog_socInit(Watchdog_Handle handle)
+{
+    return;
+}
