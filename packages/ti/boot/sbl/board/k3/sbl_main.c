@@ -490,6 +490,11 @@ int main()
     SBL_log(SBL_LOG_MAX, "Initializing GTC ...");
     volatile uint32_t *gtcRegister = (uint32_t *) CSL_GTC0_GTC_CFG1_BASE;
     *gtcRegister = *gtcRegister | CSL_GTC_CFG1_CNTCR_EN_MASK | CSL_GTC_CFG1_CNTCR_HDBG_MASK;
+
+#if defined(SOC_J721E) || defined(SOC_J7200)
+    /* Configure external Ethernet PHY and pinmux */
+    SBL_ConfigureEthernet();
+#endif
 #endif
 
     SBL_log(SBL_LOG_MAX, "Begin parsing user application\n");

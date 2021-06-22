@@ -833,6 +833,9 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 void SBL_RAT_Config(sblRatCfgInfo_t *remap_list);
 void SBL_SocEarlyInit(uint32_t isBuildHs);
 void SBL_SocLateInit(void);
+#if defined(SOC_J721E) || defined(SOC_J7200)
+void SBL_ConfigureEthernet(void);
+#endif
 uint32_t sblAtcmSize(void);
 uint32_t sblBtcmSize(void);
 #endif

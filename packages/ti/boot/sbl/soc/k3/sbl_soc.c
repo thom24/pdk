@@ -44,6 +44,14 @@
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/board/board.h>
 #include <ti/board/src/devices/board_devices.h>
+#if defined(SOC_J721E)
+#include <ti/board/src/j721e_evm/include/board_control.h>
+#include <ti/board/src/j721e_evm/include/board_ethernet_config.h>
+#endif
+#if defined(SOC_J7200)
+#include <ti/board/src/j7200_evm/include/board_control.h>
+#include <ti/board/src/j7200_evm/include/board_ethernet_config.h>
+#endif
 
 #if SBL_USE_DMA
 #include "sbl_dma.h"
@@ -512,6 +520,57 @@ void SBL_SetupPmicCfg(sblCfgPmic_t *pmicVoltCfg, uint32_t opp)
 
     SBL_ADD_PROFILE_POINT;
 }
+
+#if defined(SOC_J721E) || defined(SOC_J7200)
+void SBL_ConfigureEthernet(void)
+{
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
+    Board_STATUS status = BOARD_SOK;
+    bool gesiDetected = false;
+
+    gesiDetected = Board_detectBoard(BOARD_ID_GESI);
+
+#if defined(SOC_J721E)
+    /* Ethernet config: set proper board muxes for Eth. firmware */
+    /* Set IO Expander to use RMII on GESI board */
+    if (gesiDetected)
+    {
+        status = Board_control(BOARD_CTRL_CMD_SET_RMII_DATA_MUX, NULL);
+    }
+    if (status != BOARD_SOK)
+    {
+        SBL_log(SBL_LOG_ERR,"Board_control failed to configure RMII pins\r\n");
+    }
+#endif
+
+    /* Enable CPSW9G MDIO mux */
+    if (gesiDetected)
+    {
+        status = Board_control(BOARD_CTRL_CMD_SET_GESI_CPSW_MDIO_MUX, NULL);
+    }
+    if (status != BOARD_SOK)
+    {
+        SBL_log(SBL_LOG_ERR,"Board_control failed to configure CPSW9G MDIO mux\r\n");
+    }
+
+    if (Board_detectBoard(BOARD_ID_ENET))
+    {
+        /* Release PHY reset */
+        status = Board_cpswEnetExpPhyReset(0U);
+        if (status != BOARD_SOK)
+        {
+            SBL_log(SBL_LOG_ERR,"Board_cpswEnetExpPhyReset failed to reset the ENET PHY\r\n");
+        }
+        /* Release the COMA_MODE pin */
+        status = Board_cpswEnetExpComaModeCfg(0U);
+        if (status != BOARD_SOK)
+        {
+            SBL_log(SBL_LOG_ERR,"Board_cpswEnetExpComaModeCfg failed to release COMA_MODE pin\r\n");
+        }
+    }
+#endif
+}
+#endif
 
 /**********************************************************************
  ******************* SoC Specific Initilization ***********************
