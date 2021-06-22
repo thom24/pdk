@@ -76,13 +76,17 @@
   #include "deviceloopback.h"
 #endif
 
+
+/* Test application stack size, 1 MB */
+#define APP_HEAP_MEM_SIZE         (1024 * 1024)
+/* Test application stack */
+static uint8_t gHeapMem[APP_HEAP_MEM_SIZE];
 /* ========================================================================== */
 /*                          IMPORTED VARIABLES                                */
 /* ========================================================================== */
 
 
 extern EDMA3_DRV_Handle hEdma;
-extern HeapMem_Handle myHeap;
 /* ========================================================================== */
 /*                          MACRO DEFINITIONS                                 */
 /* ========================================================================== */
@@ -386,7 +390,8 @@ Hwi_Handle myHwi;
 static void prime()
 {
     int32_t        count = 0, status;
-    IHeap_Handle iheap;
+    HeapP_Params params;
+    HeapP_Handle iheap;
     uint32_t tx_bytes_per_sample=(mcasp_chanparam[1].wordWidth/8);
     uint32_t rx_bytes_per_sample=(mcasp_chanparam[0].wordWidth/8);
     /* This represents the actual  number of bytes being transferred by the
@@ -395,12 +400,15 @@ static void prime()
     uint32_t tx_frame_size = BUFLEN*TX_NUM_SERIALIZER*tx_bytes_per_sample;
     uint32_t rx_frame_size = BUFLEN*RX_NUM_SERIALIZER*rx_bytes_per_sample;
 
-    iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
+    HeapP_Params_init(&params);
+    params.buf = 200000U;
+    params.size = gHeapMem;
+    iheap = HeapP_create(params);
 
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < (NUM_BUFS ); count ++)
     {
-        rxbuf[count] = Memory_calloc(iheap, rx_frame_size,BUFALIGN);
+        rxbuf[count] = HeapP_alloc(iheap, rx_frame_size);
         if(NULL == rxbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
@@ -410,7 +418,7 @@ static void prime()
     /* Allocate buffers for the SIO buffer exchanges                          */
     for(count = 0; count < (NUM_BUFS); count ++)
     {
-        txbuf[count] = Memory_calloc(iheap, tx_frame_size,BUFALIGN);
+        txbuf[count] = HeapP_alloc(iheap, tx_frame_size);
         if(NULL == txbuf[count])
         {
             MCASP_log("\r\nMEM_calloc failed.\n");
@@ -696,8 +704,8 @@ void Audio_echo_Task()
 			iheap = HeapMem_Handle_to_xdc_runtime_IHeap(myHeap);
 			for(i32Count = 0; i32Count < (NUM_BUFS); i32Count ++)
 				{
-					Memory_free(iheap,rxbuf[i32Count],rx_frame_size);
-					Memory_free(iheap,txbuf[i32Count],tx_frame_size);
+					HeapP_free(iheap,rxbuf[i32Count],rx_frame_size);
+					HeapP_free(iheap,txbuf[i32Count],tx_frame_size);
 				}
 		}
 	  /* Display profiling results */

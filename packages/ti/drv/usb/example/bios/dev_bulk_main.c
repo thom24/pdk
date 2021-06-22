@@ -121,6 +121,11 @@ uint8_t g_bulkRxBuffer[MAX_TRANSFER_SIZE] __attribute__ ((aligned (CACHE_LINE_SI
 #define COMMAND_STATUS_UPDATE   0x00000002
 #define COMMAND_PACKET_SENT     0x00000004
 
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (0x4000U)
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
+
 /* internal status of the bulk connection */
 typedef enum
 {
@@ -571,7 +576,8 @@ int main(void)
     OS_init();
 
     TaskP_Params_init(&tskParams);
-    tskParams.stacksize = 0x4000;
+    tskParams.stack     = gTskStackMain;
+    tskParams.stacksize = sizeof(gTskStackMain);
     task = TaskP_create(taskFxn, &tskParams);
     if (task == NULL) {
         consolePrintf("TaskP_create() failed!\n");

@@ -114,6 +114,11 @@ dstBuf_t dstBuf; // for dstBuf
 #define PCIE_EXAMPLE_BUF_EMPTY 0
 #define PCIE_EXAMPLE_BUF_FULL  1
 
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (36864U)
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
+
 /* Does not need to be aligned (even for cache) since it is only accessed locally */
 uint32_t srcBuf[PCIE_BUFSIZE_APP];
 
@@ -1377,7 +1382,8 @@ int main() {
   OS_init();
 
   TaskP_Params_init (&params);
-  params.stacksize = 36864; //32768;
+  params.stack     = gTskStackMain;
+  params.stacksize = sizeof(gTskStackMain);
   TaskP_create((void *) pcie, &params);
 
   Board_initCfg boardCfg;

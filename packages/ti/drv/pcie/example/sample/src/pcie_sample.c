@@ -176,6 +176,11 @@ __attribute__((aligned(0x01000))) /* GCC way of aligning */
 #define PCIE_EXAMPLE_BUF_EMPTY 0
 #define PCIE_EXAMPLE_BUF_FULL  1
 
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (36864U)
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
+
 #define KICK0 0x68EF3490ull
 #define KICK1 0xD172BC5Aull
 
@@ -2598,7 +2603,8 @@ int main() {
   OS_init();
 
   TaskP_Params_init (&params);
-  params.stacksize = 36864; /* 32768; */
+  params.stack     = gTskStackMain;
+  params.stacksize = sizeof(gTskStackMain);
   TaskP_create((void *) pcie, &params);
 
 #ifdef __ARM_ARCH_7A__

@@ -73,7 +73,10 @@
 /* ========================================================================== */
 /*                           MACRO DEFINTIONS                                 */
 /* ========================================================================== */
-
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (0x1c00U)
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
 
 
 
@@ -126,11 +129,12 @@ int main(void)
     OS_init();
 
     TaskP_Params_init(&taskParams);
-    taskParams.stacksize = 0x1c00;
+    taskParams.stack     = gTskStackMain;
+    taskParams.stacksize = sizeof(gTskStackMain);
     taskParams.priority = 2;
     task = TaskP_create(Audio_echo_Task, &taskParams, &eb);
     if (task == NULL) {
-        System_printf("TaskP_create() failed!\n");
+        printf("TaskP_create() failed!\n");
         OS_stop();
     }
 

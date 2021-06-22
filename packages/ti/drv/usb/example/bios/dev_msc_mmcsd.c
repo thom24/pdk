@@ -123,6 +123,8 @@
 #define GPIO_PIN_VAL_LOW     (0U)
 #define GPIO_PIN_VAL_HIGH    (1U)
 
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (0x4000U)
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
@@ -137,6 +139,8 @@ static void hwiDmaHandler(void * arg);
 #ifdef USB_DEVICE_EMMC
 static void EmmcsReset(void);
 #endif
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -314,10 +318,10 @@ void taskFxn(void * a0, void * a1)
 #endif
 
         /* Main while loop. All USB dev events are handled in this task context */
-        events = EventP_pend(hEvents,
-                            EventP_Id_NONE,
-                            USB_INTERRUPT_EVNT + USB_DMA_INTERRUPT_EVNT,
-                            BIOS_WAIT_FOREVER);
+        events = EventP_wait(hEvents,
+                            (USB_INTERRUPT_EVNT + USB_DMA_INTERRUPT_EVNT),
+                            EventP_WaitMode_ANY,
+                            EventP_WAIT_FOREVER);
 
         /* calling the main event handler */
         if (events & USB_INTERRUPT_EVNT)
@@ -429,15 +433,16 @@ int main(void)
     hEvents = EventP_create(NULL);
     if (hEvents == NULL)
     {
-        System_printf("EventP_create() failed!\n");
+        printf("EventP_create() failed!\n");
         OS_stop();
     }
 
     TaskP_Params_init(&tskParams);
-    tskParams.stacksize = 0x4000;
+    tskParams.stack     = gTskStackMain;
+    tskParams.stacksize = sizeof(gTskStackMain);
     task = TaskP_create(taskFxn, &tskParams);
     if (task == NULL) {
-        System_printf("TaskP_create() failed!\n");
+        printf("TaskP_create() failed!\n");
         OS_stop();
     }
 

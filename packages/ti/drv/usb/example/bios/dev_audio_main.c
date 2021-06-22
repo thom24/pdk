@@ -80,6 +80,8 @@
 #define USB_DEV_INSTANCE                     1
 #endif
 
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (0x1f00U)
 /* ========================================================================== */
 /*                 Global Variables                                           */
 /* ========================================================================== */
@@ -87,6 +89,8 @@ SemaphoreP_Handle hSemEventHandler = NULL;
 uint32_t gs_Volume = 0;
 Bool gusVolumeMute = TRUE;
 
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
@@ -264,11 +268,12 @@ int usb_main(void)
     OS_init();
 
     TaskP_Params_init(&taskParams);
-    taskParams.stacksize = 0x1f00;
+    taskParams.stack = gTskStackMain;
+    taskParams.stacksize = sizeof(gTskStackMain);
     taskParams.priority = 1;
-    task = TaskP_create(taskFxn, NULL);
+    task = TaskP_create(taskFxn, &taskParams);
     if (task == NULL) {
-        System_printf("TaskP_create() failed!\n");
+        printf("TaskP_create() failed!\n");
         OS_stop();
     }
 

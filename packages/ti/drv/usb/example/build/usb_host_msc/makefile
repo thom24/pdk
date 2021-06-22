@@ -49,7 +49,7 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
     endif
 
     ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-        EXTERNAL_LNKCMD_FILE_LOCAL = $(pdk_PATH)/ti/drv/usb/example/build/$(SOC)/linker_$(ISA).lds
+        EXTERNAL_LNKCMD_FILE_LOCAL = $(pdk_PATH)/ti/drv/usb/example/build/$(SOC)/linker_a53.lds
     endif
 
     USB_OS_TESTPREFIX=

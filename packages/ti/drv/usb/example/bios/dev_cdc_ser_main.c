@@ -105,11 +105,15 @@
 #define USB_DEV_INSTANCE                     1
 #endif
 
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (0x4000U)
 //*****************************************************************************
 //
 // Variables tracking transmit and receive counts.
 //
 //*****************************************************************************
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
 
 //*****************************************************************************
 //
@@ -573,10 +577,11 @@ int main(void)
     OS_init();
 
     TaskP_Params_init(&tskParams);
-    tskParams.stacksize = 0x4000;
+    tskParams.stack     = gTskStackMain;
+    tskParams.stacksize = sizeof(gTskStackMain);
     task = TaskP_create(taskFxn, &tskParams);
     if (task == NULL) {
-        System_printf("TaskP_create() failed!\n");
+        printf("TaskP_create() failed!\n");
         OS_stop();
     }
 

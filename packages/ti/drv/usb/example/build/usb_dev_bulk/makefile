@@ -46,10 +46,6 @@ ifeq ($(BUILD_OS_TYPE), freertos)
         EXTERNAL_LNKCMD_FILE_LOCAL = $(pdk_PATH)/ti/drv/usb/example/build/$(SOC)/linker_r5_freertos.lds
     endif
 
-    ifeq ($(CORE),$(filter $(CORE), mpu1_0))
-        EXTERNAL_LNKCMD_FILE_LOCAL = $(pdk_PATH)/ti/drv/usb/example/build/$(SOC)/linker_$(ISA).lds
-    endif
-
     USB_OS_TESTPOSTFIX=_freertos
 endif
 

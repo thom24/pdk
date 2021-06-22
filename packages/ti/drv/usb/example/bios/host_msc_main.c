@@ -73,6 +73,12 @@
 * The instance data for the MSC driver.
 *
 *****************************************************************************/
+/* Test application stack size */
+#define APP_TSK_STACK_MAIN         (0x2000U)
+
+/* Test application stack */
+static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
+
 tUSBHMSCInstance* g_ulMSCInstance = 0;
 
 
@@ -486,7 +492,8 @@ int main(void)
     OS_init();
 
     TaskP_Params_init(&params);
-    params.stacksize = 0x2000;
+    params.stack     = gTskStackMain;
+    params.stacksize = sizeof(gTskStackMain);
     task = TaskP_create(taskFxn, &params);
     if (task == NULL) {
         consolePrintf("TaskP_create() failed!\n");
