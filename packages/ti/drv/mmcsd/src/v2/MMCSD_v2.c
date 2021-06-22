@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2017-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -51,6 +51,8 @@
 #include <ti/drv/mmcsd/src/v2/MMCSD_v2_lld.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
 #include <ti/drv/mmcsd/src/MMCSD_osal.h>
+
+
 
 #define MMCSD_log                UART_printf
 
@@ -813,6 +815,12 @@ static MMCSD_Error MMCSD_v2_close(MMCSD_Handle handle)
         object = (MMCSD_v2_Object *)((MMCSD_Config *) handle)->object;
         hwAttrs = (MMCSD_v2_HwAttrs const *)((MMCSD_Config *) handle)->hwAttrs;
 
+        ret = MMCSD_socPhyConfigure((MMCSD_v2_HwAttrs const *)hwAttrs, MODE_DEFAULT, 0, 0);
+        if(ret != MMCSD_OK)
+        {
+            MMCSD_DEBUG_TRAP
+        }
+
         if(0U != hwAttrs->enableInterrupt)
         {
            /* Release the interrupt path */
@@ -1399,8 +1407,29 @@ static MMCSD_Error MMCSD_v2_initSd(MMCSD_Handle handle)
 						   MMCSD_DEBUG_TRAP
 					   }
 
+                        HSMMCSDUhsModeSet(hwAttrs->baseAddr,MMC_AC12_UHSMS_SDR12);
+                        HSMMCSDHSModeSet(hwAttrs->baseAddr,MMC_HCTL_HSPE_NORMALSPEED);
 
-                        HSMMCSDSDClockEnable(hwAttrs->baseAddr); /* Enable clock to SD card */
+                        /* Set the initialization frequency */
+                        status = HSMMCSDBusFreqSet(hwAttrs->baseAddr, hwAttrs->inputClk,hwAttrs->outputClk, FALSE);
+
+                        Osal_delay(10);
+                        if(status !=STW_SOK) {
+                        MMCSD_DEBUG_TRAP
+                        }
+
+                        /* PHY configurae */
+                        MMCSD_socPhyDisableDLL((MMCSD_v2_HwAttrs const *)hwAttrs);
+
+                        Osal_delay(50);
+
+                        /* Configure the Phy accordignly */
+                        ret = MMCSD_socPhyConfigure((MMCSD_v2_HwAttrs const *)hwAttrs, MODE_SDR12, 25000000U, 0);
+                        if(ret != MMCSD_OK)
+                        {
+                            MMCSD_DEBUG_TRAP
+                        }
+
 					    /* Wait for 1 ms */
 					    Osal_delay(1);
 
@@ -1766,6 +1795,7 @@ static MMCSD_Error MMCSD_switch_card_speed(MMCSD_Handle handle,uint32_t cmd16_gr
 	    {
 		   tranSpeed = MMCSD_TRANSPEED_SDR50;
   		   uhsMode=MMC_AC12_UHSMS_SDR50;
+		   sdr104_tuning_required=TRUE;
 		   clk_freq=100000000U; /* 100MHz for SDR50  */
 		   phy_freq=100000000U;
   		   phy_mode = MODE_SDR50;
@@ -1774,6 +1804,7 @@ static MMCSD_Error MMCSD_switch_card_speed(MMCSD_Handle handle,uint32_t cmd16_gr
 		{
 		   tranSpeed = MMCSD_TRANSPEED_DDR50;
   		   uhsMode=MMC_AC12_UHSMS_DDR50;
+		   sdr104_tuning_required=TRUE;
 		   clk_freq=50000000U; /* 50MHz for DDR50  */
 		   phy_freq=50000000U;
 		   phy_mode=MODE_DDR50;
@@ -1837,9 +1868,9 @@ static MMCSD_Error MMCSD_switch_card_speed(MMCSD_Handle handle,uint32_t cmd16_gr
 		  /* Set the UHS mode accordingly */
 		  if(uhsMode!=0xffff) {
 		    HSMMCSDUhsModeSet(hwAttrs->baseAddr,uhsMode);
+            /* SDR50 is rising edge */
             if( (uhsMode==MMC_AC12_UHSMS_SDR12) || 
-                (uhsMode==MMC_AC12_UHSMS_SDR25) ||
-                (uhsMode==MMC_AC12_UHSMS_SDR50) )
+                (uhsMode==MMC_AC12_UHSMS_SDR25) )
             {
 		      /* For non-high speed modes the data should be on the falling edge */
 			  HSMMCSDHSModeSet(hwAttrs->baseAddr,MMC_HCTL_HSPE_NORMALSPEED);
