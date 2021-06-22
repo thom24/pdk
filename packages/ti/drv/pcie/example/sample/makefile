@@ -44,7 +44,6 @@ ifeq ($(BUILD_OS_TYPE),freertos)
     PCIE_OS_TESTPOSTFIX=_freertos
 endif
 
-PACKAGE_SRCS_COMMON += .
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 #Name of the directory created under packages/ti/binary/
@@ -55,6 +54,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
     INCDIR += . src am65xx/src udma
     # Common source files across all platforms and cores
     SRCS_COMMON += pcie_sample.c pcie_sample_board.c pcie_udma.c
+    PACKAGE_SRCS_COMMON += .
 endif
 
 COMP_LIST_COMMON += pcie
