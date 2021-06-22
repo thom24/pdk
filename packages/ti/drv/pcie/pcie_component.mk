@@ -96,7 +96,7 @@ $(eval ${DRV_DRVPCIE_RTOS_BOARDLIST_MACRO_LIST})
 ############################
 pcie_LIB_LIST = pcie pcie_profile pcie_indp pcie_profile_indp
 drvpcie_LIB_LIST = $(pcie_LIB_LIST)
-
+pcie_EXAMPLE_LIST =
 #
 # PCIE Modules
 #
@@ -268,18 +268,13 @@ PCIE_QOS__SAMPLE_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LI
 
 $(eval ${PCIE_QOS__SAMPLE_EXAMPLEPROJECT_MACRO_LIST})
 
+drvpcie_EXAMPLE_LIST = $(pcie_EXAMPLE_LIST)
+
 export drvpcie_LIB_LIST
 export pcie_LIB_LIST
 export pcie_EXAMPLE_LIST
 export drvpcie_EXAMPLE_LIST
 
 pcie_component_make_include := 1
-
-############################
-# pcie examples
-# List of examples under pcie
-# All the tests mentioned in list are built when test target is called
-# List below all examples for allowed values
-############################
 
 endif

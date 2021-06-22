@@ -105,14 +105,12 @@ drvusb_LIB_LIST = $(usb_LIB_LIST)
 # The app names in the EXAMPLE_LIST need to match with the APP_NAME in the example makefiles
 # in ti/drv/usb/example/build
 ############################
-
+usb_EXAMPLE_LIST =
 ifeq ($(SOC),$(filter $(SOC), am65xx ))
     usb_EXAMPLE_LIST += USB_Baremetal_HostMsc_TestApp USB_Baremetal_DevMsc_TestApp USB_Baremetal_HostMsc_usb30_TestApp
 endif
 
 usb_EXAMPLE_LIST += USB_HostMsc_usb30_TestApp
-
-drvusb_EXAMPLE_LIST = $(usb_EXAMPLE_LIST)
 
 #
 # USB Modules
@@ -420,6 +418,9 @@ export USB_Baremetal_HostMsc_usb30_TestApp_INCLUDE
 export USB_Baremetal_HostMsc_usb30_TestApp_BOARDLIST
 export USB_Baremetal_HostMsc_usb30_TestApp_$(SOC)_CORELIST
 export USB_Baremetal_HostMsc_usb30_TestApp_MAKEFILE
+
+
+drvusb_EXAMPLE_LIST = $(usb_EXAMPLE_LIST)
 
 export drvusb_LIB_LIST
 export usb_LIB_LIST
