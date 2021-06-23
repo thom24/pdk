@@ -56,6 +56,15 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
     # Enable XDC build for application by providing XDC CFG File per core
     XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/usb/example/bios/$(SOC)/usb_$(SOC)_evm.cfg
 
+    #using USB local linker file instead of ti/build for customization
+    ifeq ($(CORE),$(filter $(CORE), mcu1_0))
+        EXTERNAL_LNKCMD_FILE_LOCAL = $(pdk_PATH)/ti/drv/usb/example/build/$(SOC)/linker_r5_sysbios.lds
+    endif
+
+    ifeq ($(CORE),$(filter $(CORE), mpu1_0))
+        EXTERNAL_LNKCMD_FILE_LOCAL = $(pdk_PATH)/ti/drv/usb/example/build/$(SOC)/linker_$(ISA).lds
+    endif
+
     USB_OS_TESTPREFIX=
     USB_OS_TESTPOSTFIX=_tirtos
 endif

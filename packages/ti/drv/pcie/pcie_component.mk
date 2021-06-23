@@ -243,7 +243,7 @@ $(eval ${PCIE_SAMPLE_EXAMPLEPROJECT_MACRO_LIST})
 define PCIE_QOS__SAMPLE_EXAMPLEPROJECT_RULE
 
 export PCIE_Qos_ExampleProject_$(1)_COMP_LIST = PCIE_Qos_ExampleProject_$(1)
-PCIE_Qos_ExampleProject_$(1)_RELPATH = tti/drv/pcie/example/Qos
+PCIE_Qos_ExampleProject_$(1)_RELPATH = ti/drv/pcie/example/Qos
 PCIE_Qos_ExampleProject_$(1)_PATH = $(PDK_PCIE_COMP_PATH)/example/Qos
 export PCIE_Qos_ExampleProject_$(1)_BOARD_DEPENDENCY = yes
 export PCIE_Qos_ExampleProject_$(1)_CORE_DEPENDENCY = no

@@ -43,7 +43,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
     INCDIR += . src ../sample/$(SOC)/src ../sample/udma
     # Common source files across all platforms and cores
     SRCS_COMMON += pcie_qos_sample.c pcie_sample_board.c pcie_udma.c
-    PACKAGE_SRCS_COMMON = .
+    PACKAGE_SRCS_COMMON += .
 endif
 
 # List all the components required by the application
