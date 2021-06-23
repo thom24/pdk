@@ -1325,6 +1325,121 @@ bool OSAL_event_test()
     return true;
 }
 
+/*
+ *  ======== Mutex test function ========
+ */
+#define OSAL_MUTEX_TEST_ITERATIONS  (10U)
+#define OSAL_MUTEX_TEST_TASK_PRIO   (1U)
+#define OSAL_MUTEX_TEST_NUM_TASKS   (5U)
+
+static uint8_t  gAppTskStackMutexTask[OSAL_MUTEX_TEST_NUM_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+
+uint32_t gCnt = 0U;
+bool gMutexTestStatus = TRUE;
+
+void mutexTestFxn(MutexP_Handle mutexHandle, SemaphoreP_Handle hDoneSem)
+{
+    uint32_t        idx;
+    uint32_t        temp;
+    MutexP_Status   status = MutexP_OK;
+
+    for(idx = 0U; idx < OSAL_MUTEX_TEST_ITERATIONS; idx++)
+    {
+        status = MutexP_lock(mutexHandle, MutexP_WAIT_FOREVER);
+        if(MutexP_OK != status)
+        {
+            OSAL_log("Failed to lock mutex \n");
+            gMutexTestStatus = FALSE;
+        }
+
+        temp = ++gCnt;
+        {
+            /* Force a task switch to verify mutex lock effect */
+            TaskP_yield();
+        }
+        gCnt = temp;
+
+        status = MutexP_unlock(mutexHandle);
+        if(MutexP_OK != status)
+        {
+            OSAL_log("Failed to unlock mutex \n");
+            gMutexTestStatus = FALSE;
+        }
+    }
+    
+    SemaphoreP_post(hDoneSem);
+}
+bool OSAL_mutex_test()
+{
+    TaskP_Params        taskParams;
+    TaskP_Handle        hMutexTestTask[OSAL_MUTEX_TEST_ITERATIONS];
+    SemaphoreP_Params   semPrms;
+    SemaphoreP_Handle   hDoneSem;
+    MutexP_Status       status = MutexP_OK;
+    uint32_t            i; 
+    
+    MutexP_Object mutexObj;
+    MutexP_Handle mutexHandle;
+
+    mutexHandle = MutexP_create(&mutexObj);
+    if (mutexHandle == NULL_PTR)
+    {
+        OSAL_log("Failed to create mutex \n");
+        return false;
+    }
+
+    /* Create semaphore to signal completion of mutex tasks */
+    SemaphoreP_Params_init(&semPrms);
+    semPrms.mode = SemaphoreP_Mode_COUNTING;
+    hDoneSem = SemaphoreP_create(0U, &semPrms);
+
+    /* Create tasks */
+    for(i = 0U; i < OSAL_MUTEX_TEST_NUM_TASKS; i++)
+    {
+        TaskP_Params_init(&taskParams);
+        taskParams.priority     = OSAL_MUTEX_TEST_TASK_PRIO; 
+        taskParams.stack        = &gAppTskStackMutexTask[i];
+        taskParams.stacksize    = APP_TSK_STACK_MAIN;
+        taskParams.arg0         = mutexHandle;
+        taskParams.arg1         = hDoneSem;
+        hMutexTestTask[i] = TaskP_create(mutexTestFxn, &taskParams);
+    }
+
+    /* Wait for tasks completion */
+    for(i = 0U; i < OSAL_MUTEX_TEST_NUM_TASKS; i++)
+    {
+        SemaphoreP_pend(hDoneSem, SemaphoreP_WAIT_FOREVER);
+    }
+
+    if(gCnt != (OSAL_MUTEX_TEST_NUM_TASKS * OSAL_MUTEX_TEST_ITERATIONS))
+    {
+        OSAL_log("Mutex Lock Test Failed.\n Expected Count = %d. Actual Count = %d. \n",
+                    (uint32_t)(OSAL_MUTEX_TEST_NUM_TASKS * OSAL_MUTEX_TEST_ITERATIONS),
+                    (uint32_t)gCnt);
+        gMutexTestStatus = FALSE;
+    }
+    
+    Osal_delay(OSAL_DELAY_TIME);
+    /* Delete tasks */
+    for(i = 0U; i < OSAL_MUTEX_TEST_NUM_TASKS; i++)
+    {
+        TaskP_delete(hMutexTestTask[i]);
+    }
+
+    /* Delete Semaphore */
+    SemaphoreP_delete(hDoneSem);
+    hDoneSem = NULL;
+
+    status = MutexP_delete(mutexHandle);
+    if(MutexP_OK != status)
+    {
+        OSAL_log("Failed to delete mutex \n");
+        gMutexTestStatus = FALSE;
+    }
+
+    return gMutexTestStatus;
+}
+
 #endif /* #if !defined(BARE_METAL) && !defined (SAFERTOS) */
 
 #if defined(FREERTOS)
@@ -1853,7 +1968,7 @@ void osal_test(void *arg0, void *arg1)
 #endif
 
 #if !defined(BARE_METAL) && !defined (SAFERTOS)
-    /* No QueueP test for Baremetal */
+    /* No QueueP,EventP,MutexP tests for Baremetal */
     if(OSAL_queue_test() == true)
     {
         OSAL_log("\n Queue tests have passed. \n");
@@ -1871,6 +1986,16 @@ void osal_test(void *arg0, void *arg1)
     else
     {
         OSAL_log("\n Event tests have failed. \n");
+        testFail = true;
+    }
+
+    if(OSAL_mutex_test() == true)
+    {
+        OSAL_log("\n Mutex tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n Mutex tests have failed. \n");
         testFail = true;
     }
 #endif /* #if !defined(BARE_METAL) && !defined (SAFERTOS) */

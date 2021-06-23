@@ -104,7 +104,7 @@ typedef struct MutexP_Object_s {
  *
  *  @param  mutexObj  Pointer to the mutex object
  *
- *  @return S A MutexP_Handle on success or a NULL on an error
+ *  @return  A MutexP_Handle on success or a NULL on an error
  */
 extern MutexP_Handle MutexP_create(MutexP_Object *mutexObj);
 
@@ -125,8 +125,8 @@ extern MutexP_Status MutexP_delete(MutexP_Handle handle);
  *  @param  handle  A MutexP_Handle returned from MutexP_create
  *
  *  @return Status of the functions
- *    - MutexP_OK: Deleted the mutex instance
- *    - MutexP_FAILURE: Failed to start the mutex instance
+ *    - MutexP_OK: Unlocked the mutex
+ *    - MutexP_FAILURE: Failed to unlock the mutex
  */
 extern MutexP_Status MutexP_unlock(MutexP_Handle handle);
 
@@ -139,21 +139,12 @@ extern MutexP_Status MutexP_unlock(MutexP_Handle handle);
  *                  the mutex.
  *
  *  @return Status of the functions
- *    - MutexP_OK: Deleted the mutex instance
- *    - MutexP_TIMEOUT: Timed out pending on message
- *    - MutexP_FAILURE: Failed to stop the mutex instance
+ *    - MutexP_OK: Locked the mutex
+ *    - MutexP_TIMEOUT: Timed out waiting for a mutex unlock
+ *    - MutexP_FAILURE: Failed to lock the mutex
  */
 extern MutexP_Status MutexP_lock(MutexP_Handle handle,
                                  uint32_t timeout);
-
-/*!
- *  @brief  Function to return the count of the pending messages
- *
- *  @param  handle  A MutexP_Handle returned from MutexP_create
- *
- *  @return The count of the pending messages
- */
-extern int32_t MutexP_getNumPendingMsgs(MutexP_Handle handle);
 
 #ifdef __cplusplus
 }
