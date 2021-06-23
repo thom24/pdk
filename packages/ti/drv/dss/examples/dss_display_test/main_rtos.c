@@ -44,6 +44,7 @@
 #include <stdio.h>
 #include "ti/osal/osal.h"
 #include "ti/osal/TaskP.h"
+#include "ti/osal/LoadP.h"
 
 #include <ti/board/board.h>
 #include <ti/drv/dss/examples/utils/app_utils.h>
@@ -91,14 +92,23 @@ int main(void)
 {
     TaskP_Handle task;
     TaskP_Params taskParams;
+#if defined(FREERTOS)
+    LoadP_Status status = LoadP_OK;
+    LoadP_Stats loadStatsTask;
+    uint32_t cpuLoad;
+#endif
 
     OS_init();
 
+#if defined(FREERTOS)
+    /* Reset Load measurement */
+    LoadP_reset();
+#endif
     /* Initialize the task params */
     TaskP_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */
-    taskParams.priority = 2;
-    taskParams.stack = gDispAppTskStackMain;
+    taskParams.priority  = 2;
+    taskParams.stack     = gDispAppTskStackMain;
     taskParams.stacksize = sizeof(gDispAppTskStackMain);
 
     task = TaskP_create(taskFxn, &taskParams);
@@ -106,6 +116,24 @@ int main(void)
     {
         OS_stop();
     }
+
+#if defined(FREERTOS)
+    /* Get task loads */
+    status += LoadP_getTaskLoad(task, &loadStatsTask);
+
+    if(loadStatsTask.percentLoad > 0U)
+    {
+        printf("\nDisplay Test Task - Load: %d%% \n", loadStatsTask.percentLoad);
+    }
+    else
+    {
+        printf("\nDisplay Test Task - Load: < 1% \n");
+    }
+
+    /* Query CPU Load */
+    cpuLoad = LoadP_getCPULoad();
+    printf("\n CPU Load = %d%% \n", cpuLoad);
+#endif
 
     OS_start();    /* does not return */
 

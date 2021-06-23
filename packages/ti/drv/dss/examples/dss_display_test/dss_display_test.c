@@ -123,9 +123,7 @@ static int32_t DispApp_pipeCbFxn(Fvid2_Handle handle, void *appData);
 /* ========================================================================== */
 
 DispApp_Obj gDispApp_Obj;
-#if defined(DSS_TESTAPP_TIRTOS)
 uint32_t gTestStopTime, gTestStartTime;
-#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -137,6 +135,7 @@ uint32_t gTestStopTime, gTestStartTime;
 int32_t Dss_displayTest(void)
 {
     int32_t retVal = FVID2_SOK;
+
     DispApp_init(&gDispApp_Obj);
 
     App_print("DSS display application started...\r\n");
@@ -162,12 +161,12 @@ int32_t Dss_displayTest(void)
     Utils_prfLoadPrintAll(TRUE, 0);
     Utils_prfLoadCalcReset();
     Utils_prfLoadUnRegister(TaskP_self());
+#endif
+
     App_print("Number of frames = %d, elapsed msec = %d, fps = %0.2f\n",
             DISP_APP_RUN_COUNT,
             gTestStopTime - gTestStartTime,
             (float)((float)DISP_APP_RUN_COUNT / ((gTestStopTime - gTestStartTime)/1000.0)));
-
-#endif
 
     DispApp_deInit(&gDispApp_Obj);
 
@@ -279,9 +278,7 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
         }
     }
 
-#if defined(DSS_TESTAPP_TIRTOS)
-    gTestStartTime = AppUtils_getCurTimeInMsec();
-#endif
+    gTestStartTime = (TimerP_getTimeInUsecs() / 1000U);
 
     while(loopCount++ < DISP_APP_RUN_COUNT)
     {
@@ -327,9 +324,7 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
         }
     }
 
-#if defined(DSS_TESTAPP_TIRTOS)
-    gTestStopTime = AppUtils_getCurTimeInMsec();
-#endif
+    gTestStopTime = (TimerP_getTimeInUsecs() / 1000U);
 
     if(FVID2_SOK == retVal)
     {
