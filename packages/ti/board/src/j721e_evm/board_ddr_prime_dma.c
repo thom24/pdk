@@ -139,7 +139,8 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
                                    uint8_t *pTrpdMem,
                                    const void *startAddr, 
                                    uint32_t totalSize,
-                                   uint32_t bufSize);
+                                   const void *srcAddr,
+                                   uint32_t srcBufSize);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -160,6 +161,8 @@ uint8_t gBoardTxRingMem[BOARD_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_C
 uint8_t gBoardTxCompRingMem[BOARD_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 uint8_t gBoardTxTdCompRingMem[BOARD_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 uint8_t gBoardUdmaTrpdMem[BOARD_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+
+uint32_t gBoardUdmaPrimeSrcBuffer[BOARD_DDR_PRIME_BUFFER_NUM_BYTES/4U] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
 /* Semaphore to indicate priming completion */
 static SemaphoreP_Handle gBoardUdmaDDRPrimeDoneSem = NULL;
@@ -219,23 +222,23 @@ int32_t BOARD_udmaPrime(Udma_ChHandle chHandle, const void *startAddr, uint32_t 
     int32_t         retVal = UDMA_SOK;
     uint32_t       *pTrResp, trRespStatus;
     uint64_t        pDesc = 0;
-    uintptr_t       memPtr = (uintptr_t)startAddr;
+    uint32_t       *srcBuf = &gBoardUdmaPrimeSrcBuffer[0U];
     uint8_t        *trpdMem = &gBoardUdmaTrpdMem[0U];
+    uintptr_t       memPtr;
     uint32_t        offset;
     uint32_t        numTR;
     
-    /* Init Buffer / Prime the first BOARD_DDR_PRIME_BUFFER_NUM_BYTES without using DMA.
-     * The same will be used as source buffer to prime the rest of the DDR region using DMA. */
+    /* Init Src Buffer */
     for (offset = 0U; offset < BOARD_DDR_PRIME_BUFFER_NUM_BYTES; offset += 4)
     {
-        *((volatile uint32_t *) memPtr) = 0xA5A5A5A5;
-        memPtr+= 4;
+        *((volatile uint32_t *) srcBuf) = 0xA5A5A5A5;
+        srcBuf++;
     }
     /* Writeback buffer */
-    CacheP_wb(startAddr, BOARD_DDR_PRIME_BUFFER_NUM_BYTES);
+    CacheP_wb(&gBoardUdmaPrimeSrcBuffer[0U], BOARD_DDR_PRIME_BUFFER_NUM_BYTES);
 
     /* Update TRPD and get no. of TR's used */
-    numTR = BOARD_udmaTrpdinit(chHandle, trpdMem, startAddr, size, BOARD_DDR_PRIME_BUFFER_NUM_BYTES);
+    numTR = BOARD_udmaTrpdinit(chHandle, trpdMem, startAddr, size, &gBoardUdmaPrimeSrcBuffer[0U], BOARD_DDR_PRIME_BUFFER_NUM_BYTES);
 
     /* Submit TRPD to channel */
     retVal = Udma_ringQueueRaw(
@@ -549,7 +552,8 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
                                    uint8_t *pTrpdMem,
                                    const void *startAddr, 
                                    uint32_t totalSize,
-                                   uint32_t bufSize)
+                                   const void *srcAddr,
+                                   uint32_t srcBufSize)
 {
     CSL_UdmapCppi5TRPD  *pTrpd  = (CSL_UdmapCppi5TRPD *) pTrpdMem;
     CSL_UdmapTR15       *pTr    = (CSL_UdmapTR15 *)(pTrpdMem + sizeof(CSL_UdmapTR15));
@@ -561,11 +565,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     uint16_t icnt[BOARD_MAX_TR][4] = {0};
     uint32_t addrOffset[BOARD_MAX_TR] = {0};
 
-    uint64_t srcAddr      = (uint64_t) startAddr;
-    uint64_t destAddr     = srcAddr + bufSize;
-    uint32_t transferSize = totalSize - bufSize;
-
-    uint32_t remainder    = transferSize/bufSize;
+    uint32_t remainder    = totalSize/srcBufSize;
     uint32_t residue      = remainder & (BOARD_UDMA_ICNT_SPLIT_SIZE - 1U);
 
     /* Calculate number of TR's */
@@ -586,25 +586,25 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     
     if (remainder < BOARD_UDMA_ICNT_SPLIT_SIZE)
     {
-        icnt[0][0] = (uint16_t)bufSize;
+        icnt[0][0] = (uint16_t)srcBufSize;
         icnt[0][1] = (uint16_t)remainder;
         icnt[0][2] = (uint16_t)1U;
         icnt[0][3] = (uint16_t)1U;
     }
     else
     {
-        icnt[0][0] = (uint16_t)bufSize;
+        icnt[0][0] = (uint16_t)srcBufSize;
         icnt[0][1] = (uint16_t)BOARD_UDMA_ICNT_SPLIT_SIZE;
         icnt[0][2] = (uint16_t)(remainder / BOARD_UDMA_ICNT_SPLIT_SIZE);
         icnt[0][3] = (uint16_t)1U;
     }
     if (numTR > 1)
     {
-        icnt[1][0] = (uint16_t)bufSize;
+        icnt[1][0] = (uint16_t)srcBufSize;
         icnt[1][1] = (uint16_t)residue;
         icnt[1][2] = (uint16_t)1U;
         icnt[1][3] = (uint16_t)1U;
-        addrOffset[1] = bufSize * (remainder - residue);
+        addrOffset[1] = srcBufSize * (remainder - residue);
     }
 
     /* Make TRPD */
@@ -633,7 +633,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
         pTr->dim1     = 0U;
         pTr->dim2     = 0U;
         pTr->dim3     = 0U;
-        pTr->addr     = srcAddr;
+        pTr->addr     = (uint64_t)srcAddr;
         pTr->fmtflags = 0x00000000U;        /* Linear addressing, 1 byte per elem.
                                             Replace with CSL-FL API */
         pTr->dicnt0   = icnt[trIdx][0];
@@ -643,7 +643,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
         pTr->ddim1    = pTr->dicnt0;
         pTr->ddim2    = (pTr->dicnt0 * pTr->dicnt1);
         pTr->ddim3    = (pTr->dicnt0 * pTr->dicnt1 * pTr->dicnt2);
-        pTr->daddr    = destAddr + addrOffset[trIdx];
+        pTr->daddr    = (uint64_t)startAddr + addrOffset[trIdx];
 
         pTr ++;
     }
