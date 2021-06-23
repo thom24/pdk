@@ -1481,6 +1481,16 @@ int32_t RPMessage_recvNb(RPMessage_Handle handle, void* data, uint16_t *len,
             payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
             if ((NULL != payload) && (payload != (RPMessage_MsgElem *)&obj->queue))
             {
+                if(NULL != pOsalPrms->lockMutex)
+                {
+                    /* This is to avoid semaphore count overflow, in cases where
+                     * RPMessage_recvNb() is used in non-baremetal scenario.
+                     * Because in non-baremetal case whenever a new message is received,
+                     * RPMessage_enqueMsg internal API will post the semaphore (call unlockMutex)
+                     * This may cause overflow and hence call lockMutex with timeout zero.
+                     */
+                    pOsalPrms->lockMutex(obj->semHandle, SemaphoreP_NO_WAIT);
+                }
                 /* Now, copy payload to client and free our internal msg */
                 memcpy(data, payload->data, payload->len);
                 *len = (uint16_t)(payload->len);
