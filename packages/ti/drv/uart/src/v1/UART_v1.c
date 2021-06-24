@@ -715,8 +715,8 @@ static bool UART_getWLenStbFlag(UART_LEN dataLength, UART_STOP stopBits, uint32_
 static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
 {
     uintptr_t           key;
-    UART_V1_Object     *object = (UART_V1_Object*)handle->object;
-    UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
+    UART_V1_Object     *object;
+    UART_HwAttrs const *hwAttrs;
     SemaphoreP_Params   semParams;
     uint32_t            divisorValue;
     uint32_t            txTrigLevel;
@@ -728,32 +728,45 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
     UART_Handle         retHandle = handle;
     char                semRdName[] = "read";
     char                semWrName[] = "write";
-
-    /* If params are NULL use defaults. */
-    if (params == NULL) {
-        if(NULL != object)
+    
+    if(handle != NULL)
+    {
+        object = (UART_V1_Object*)handle->object;
+        hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
+    }
+    if(NULL == object)
+    {
+        retHandle = NULL;
+    }
+    
+    if (retHandle != NULL)
+    {
+        /* If params are NULL use defaults. */
+        if (params == NULL) 
         {
             UART_Params_init(&object->params);
         }
-    }
-    else {
-        /* Save UART parameters. */
-        object->params = *params;
-    }
+        else 
+        {
+            /* Save UART parameters. */
+            object->params = *params;
+        }
 
-    /* Disable preemption while checking if the UART is open. */
-    key = UART_osalHardwareIntDisable();
+        /* Disable preemption while checking if the UART is open. */
+        key = UART_osalHardwareIntDisable();
 
-    /* Check if the UART is open already with the base addr. */
-    if(object->isOpen == TRUE) {
-        UART_osalHardwareIntRestore(key);
-       UART_drv_log1("UART:(0x%x) already in use.", hwAttrs->baseAddr);
+        /* Check if the UART is open already with the base addr. */
+        if(object->isOpen == TRUE) 
+        {
+            UART_osalHardwareIntRestore(key);
+            UART_drv_log1("UART:(0x%x) already in use.", hwAttrs->baseAddr);
 
-       retHandle = NULL;
+            retHandle = NULL;
+        }
     }
 
     /* UART is open by setting base addr */
-    else
+    if (retHandle != NULL)
     {
         object->isOpen = TRUE;
         UART_osalHardwareIntRestore(key);
@@ -911,7 +924,7 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
         }
 
         /* Configure the HW flow control */
-        if ((retHandle != NULL) && (object != NULL))
+        if (retHandle != NULL)
         {
             if (object->params.flowControlType == UART_FC_HW)
             {
