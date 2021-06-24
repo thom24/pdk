@@ -1656,6 +1656,7 @@ Ipc_Object *getIpcObjInst(uint32_t instId)
 
 int32_t Ipc_init(Ipc_InitPrms *cfg)
 {
+    Ipc_OsalPrms *pOsalPrms;
     int32_t retVal = IPC_EINVALID_PARAMS;
 
     memset(&gIpcObject, 0, sizeof(gIpcObject));
@@ -1690,19 +1691,21 @@ int32_t Ipc_init(Ipc_InitPrms *cfg)
 #if defined (IPC_CFG_PRINT_ENABLE)
     if (IPC_SOK == retVal)
     {   
-        if ((NULL != cfg->osalPrms.createMutex) && 
-            (NULL != cfg->osalPrms.deleteMutex) &&
-            (NULL != cfg->osalPrms.lockMutex) &&
-            (NULL != cfg->osalPrms.unlockMutex))
+        pOsalPrms = &gIpcObject.initPrms.osalPrms;
+        
+        if ((NULL != pOsalPrms->createMutex) && 
+            (NULL != pOsalPrms->deleteMutex) &&
+            (NULL != pOsalPrms->lockMutex) &&
+            (NULL != pOsalPrms->unlockMutex))
         {
-            gIpcObject.printLock = gIpcObject.initPrms.osalPrms.createMutex();
+            gIpcObject.printLock = pOsalPrms->createMutex();
             if(NULL == gIpcObject.printLock)
             {
                 retVal = IPC_EALLOC;
             }
             else
             {
-                gIpcObject.initPrms.osalPrms.unlockMutex(gIpcObject.printLock);
+                pOsalPrms->unlockMutex(gIpcObject.printLock);
             }
         }
     }
