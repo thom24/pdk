@@ -67,7 +67,7 @@ static MutexP_tiRtos gOsalMutexPTiRtosPool[OSAL_TIRTOS_CONFIGNUM_MUTEX];
 
 MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 {
-    MutexP_Handle ret_handle = NULL;
+    MutexP_Handle ret_handle = NULL_PTR;
     MutexP_tiRtos *handle = (MutexP_tiRtos *) NULL_PTR;
     GateMutexPri_Params mutexParams;
     uint32_t i;
@@ -75,57 +75,55 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
     MutexP_tiRtos *mutexPool;
     uint32_t maxMutex;
 
-    if (mutexObj == NULL)
+    if (mutexObj != NULL_PTR)
     {
-        return NULL;
-    }
+        /* Pick up the internal static memory block */
+        mutexPool = (MutexP_tiRtos *) &gOsalMutexPTiRtosPool[0];
+        maxMutex  = OSAL_TIRTOS_CONFIGNUM_MUTEX;
 
-    /* Pick up the internal static memory block */
-    mutexPool = (MutexP_tiRtos *) &gOsalMutexPTiRtosPool[0];
-    maxMutex  = OSAL_TIRTOS_CONFIGNUM_MUTEX;
-
-    if(gOsalMutexAllocCnt==0U) 
-    {
-        (void)memset((void *)gOsalMutexPTiRtosPool,0,sizeof(gOsalMutexPTiRtosPool));
-    }
-
-    key = HwiP_disable();
-
-    for (i = 0; i < maxMutex; i++)
-    {
-        if (mutexPool[i].used == FALSE)
+        if(gOsalMutexAllocCnt==0U) 
         {
-            mutexPool[i].used = TRUE;
-            /* Update statistics */
-            gOsalMutexAllocCnt++;
-            if (gOsalMutexAllocCnt > gOsalMutexPeak)
-            {
-                gOsalMutexPeak = gOsalMutexAllocCnt;
-            }
-            break;
+            (void)memset((void *)gOsalMutexPTiRtosPool,0,sizeof(gOsalMutexPTiRtosPool));
         }
-    }
-    HwiP_restore(key);
 
-    if (i < maxMutex)
-    {
-        /* Grab the memory */
-        handle = (MutexP_tiRtos *) &mutexPool[i];
-    }
+        key = HwiP_disable();
 
-    if (handle == NULL_PTR) {
-        ret_handle = NULL_PTR;
-    }
-    else
-    {
-        GateMutexPri_Params_init(&mutexParams);
+        for (i = 0; i < maxMutex; i++)
+        {
+            if (mutexPool[i].used == FALSE)
+            {
+                mutexPool[i].used = TRUE;
+                /* Update statistics */
+                gOsalMutexAllocCnt++;
+                if (gOsalMutexAllocCnt > gOsalMutexPeak)
+                {
+                    gOsalMutexPeak = gOsalMutexAllocCnt;
+                }
+                break;
+            }
+        }
+        HwiP_restore(key);
 
-        GateMutexPri_construct(&handle->mutexStruct, &mutexParams);
-        handle->mutexHandle = GateMutexPri_handle(&handle->mutexStruct);
+        if (i < maxMutex)
+        {
+            /* Grab the memory */
+            handle = (MutexP_tiRtos *) &mutexPool[i];
+        }
 
-        mutexObj->object = (void *)handle;
-        mutexObj->key = 0;
-        ret_handle = (MutexP_Handle)mutexObj;
+        if (handle == NULL_PTR) {
+            ret_handle = NULL_PTR;
+        }
+        else
+        {
+            GateMutexPri_Params_init(&mutexParams);
+
+            GateMutexPri_construct(&handle->mutexStruct, &mutexParams);
+            handle->mutexHandle = GateMutexPri_handle(&handle->mutexStruct);
+
+            mutexObj->object = (void *)handle;
+            mutexObj->key = 0;
+            ret_handle = (MutexP_Handle)mutexObj;
+        }
     }
 
     return ret_handle;
@@ -133,30 +131,31 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
 MutexP_Status MutexP_delete(MutexP_Handle handle)
 {
-    MUTEXOSAL_Assert(handle == NULL_PTR);
 
-    uintptr_t   key;
-    MutexP_Status ret = MutexP_OK;
-    MutexP_Object *mutexObj = (MutexP_Object *)handle;
-    MutexP_tiRtos *mutex = (MutexP_tiRtos *)mutexObj->object;
+    uintptr_t   key;    
+    MutexP_Status ret = MutexP_FAILURE;
+    MutexP_Object *mutexObj;
+    MutexP_tiRtos *mutex;
 
-    if ((mutex != NULL_PTR) && (mutex->used == TRUE))
+    if (handle != NULL_PTR)
     {
-        GateMutexPri_destruct(&mutex->mutexStruct);
+        mutexObj = (MutexP_Object *)handle;
+        mutex = (MutexP_tiRtos *)mutexObj->object;
 
-        key = HwiP_disable();
-        mutex->used = FALSE;
-        /* Found the osal semaphore object to delete */
-        if (gOsalMutexAllocCnt > 0U)
+        if ((mutex != NULL_PTR) && (mutex->used == TRUE))
         {
-            gOsalMutexAllocCnt--;
+            GateMutexPri_destruct(&mutex->mutexStruct);
+
+            key = HwiP_disable();
+            mutex->used = FALSE;
+            /* Found the osal semaphore object to delete */
+            if (gOsalMutexAllocCnt > 0U)
+            {
+                gOsalMutexAllocCnt--;
+            }
+            HwiP_restore(key);
+            ret = MutexP_OK;
         }
-        HwiP_restore(key);
-        ret = MutexP_OK;
-    }
-    else
-    {
-       ret = MutexP_FAILURE;
     }
     return ret;
 }
@@ -164,41 +163,41 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
 MutexP_Status MutexP_lock(MutexP_Handle handle,
                           uint32_t timeout)
 {
-    MUTEXOSAL_Assert(handle == NULL_PTR);
+    MutexP_Status ret = MutexP_FAILURE;
+    MutexP_Object *mutexObj;
+    MutexP_tiRtos *mutex;
 
-    MutexP_Status ret = MutexP_OK;
-    MutexP_Object *mutexObj = (MutexP_Object *)handle;
-    MutexP_tiRtos *mutex = (MutexP_tiRtos *)mutexObj->object;
+    if (handle != NULL_PTR)
+    {
+        mutexObj = (MutexP_Object *)handle;
+        mutex = (MutexP_tiRtos *)mutexObj->object;
 
-    if ((mutex != NULL_PTR) && (mutex->used == TRUE))
-    {
-        mutexObj->key = GateMutexPri_enter(mutex->mutexHandle);
-        ret = MutexP_OK;
-    }
-    else
-    {
-       ret = MutexP_FAILURE;
+        if ((mutex != NULL_PTR) && (mutex->used == TRUE))
+        {
+            /* Note: timeout is not used */
+            mutexObj->key = GateMutexPri_enter(mutex->mutexHandle);
+            ret = MutexP_OK;
+        }
     }
     return ret;
 }
 
 MutexP_Status MutexP_unlock(MutexP_Handle handle)
 {
-    MUTEXOSAL_Assert(handle == NULL_PTR);
+    MutexP_Status ret = MutexP_FAILURE;
+    MutexP_Object *mutexObj;
+    MutexP_tiRtos *mutex;
 
-    MutexP_Status ret = MutexP_OK;
-    MutexP_Object *mutexObj = (MutexP_Object *)handle;
-    MutexP_tiRtos *mutex = (MutexP_tiRtos *)mutexObj->object;
-    /* Note: timeout is not use */
+    if (handle != NULL_PTR)
+    {
+        mutexObj = (MutexP_Object *)handle;
+        mutex = (MutexP_tiRtos *)mutexObj->object;
 
-    if ((mutex != NULL_PTR) && (mutex->used == TRUE))
-    {
-        GateMutexPri_leave(mutex->mutexHandle, mutexObj->key);
-        ret = MutexP_OK;
-    }
-    else
-    {
-       ret = MutexP_FAILURE;
+        if ((mutex != NULL_PTR) && (mutex->used == TRUE))
+        {
+            GateMutexPri_leave(mutex->mutexHandle, mutexObj->key);
+            ret = MutexP_OK;
+        }
     }
     return ret;
 }

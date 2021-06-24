@@ -72,7 +72,7 @@ void ClockP_timerCallbackFunction(TimerHandle_t xTimer)
 {
     ClockP_freertos *pTimer = (ClockP_freertos *)pvTimerGetTimerID(xTimer);
 
-    if(pTimer->callback && pTimer != NULL_PTR)
+    if(pTimer != NULL_PTR && pTimer->callback)
     {
         pTimer->callback(pTimer->arg);
     }

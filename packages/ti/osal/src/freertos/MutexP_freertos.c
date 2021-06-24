@@ -65,7 +65,8 @@ static MutexP_freertos gOsalMutexPFreeRtosPool[OSAL_FREERTOS_CONFIGNUM_MUTEX];
 MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 {
     MutexP_Handle ret_handle = NULL;
-    MutexP_freertos *handle, * mutexPool;
+    MutexP_freertos *handle = (MutexP_freertos *) NULL_PTR;
+    MutexP_freertos *mutexPool;
     uint32_t i;
     uintptr_t key;
     uint32_t maxMutex;

@@ -82,7 +82,7 @@ void HeapP_Params_init(HeapP_Params *params)
  */
 HeapP_Handle HeapP_create(const HeapP_Params *params)
 {
-    HeapP_Handle     ret_handle; 
+    HeapP_Handle     ret_handle = NULL_PTR; 
     HeapP_tiRtos     *handle = (HeapP_tiRtos *) NULL_PTR;
     HeapP_tiRtos     *heapPool;
     uint32_t         i;
@@ -90,57 +90,56 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
     uint32_t         maxHeap;
     HeapMem_Params   heapMemPrm;
 
-    HEAPOSAL_Assert(params == NULL_PTR);
-    HEAPOSAL_Assert(params->buf == NULL_PTR);
-    HEAPOSAL_Assert(params->size == 0U);
-
-    /* Pick up the internal static memory block */
-    heapPool       = (HeapP_tiRtos *) &gOsalHeapPTiRtosPool[0];
-    maxHeap        = OSAL_TIRTOS_CONFIGNUM_HEAP;
-    
-    if(gOsalHeapAllocCnt==0U) 
+    if ((params != NULL_PTR) && (params->buf != NULL_PTR) && (params->size != 0U))
     {
-        (void)memset( (void *)gOsalHeapPTiRtosPool,0,sizeof(gOsalHeapPTiRtosPool));
-    }
+        /* Pick up the internal static memory block */
+        heapPool       = (HeapP_tiRtos *) &gOsalHeapPTiRtosPool[0];
+        maxHeap        = OSAL_TIRTOS_CONFIGNUM_HEAP;
+        
+        if(gOsalHeapAllocCnt==0U) 
+        {
+            (void)memset( (void *)gOsalHeapPTiRtosPool,0,sizeof(gOsalHeapPTiRtosPool));
+        }
 
-    key = HwiP_disable();
+        key = HwiP_disable();
 
-     for (i = 0; i < maxHeap; i++)
-     {
-         if (heapPool[i].used == FALSE)
-         {
-             heapPool[i].used = TRUE;
-             /* Update statistics */
-             gOsalHeapAllocCnt++;
-             if (gOsalHeapAllocCnt > gOsalHeapPeak)
-             {
-                 gOsalHeapPeak = gOsalHeapAllocCnt;
-             }
-             break;
-         }
-     }
-    HwiP_restore(key);
+        for (i = 0; i < maxHeap; i++)
+        {
+            if (heapPool[i].used == FALSE)
+            {
+                heapPool[i].used = TRUE;
+                /* Update statistics */
+                gOsalHeapAllocCnt++;
+                if (gOsalHeapAllocCnt > gOsalHeapPeak)
+                {
+                    gOsalHeapPeak = gOsalHeapAllocCnt;
+                }
+                break;
+            }
+        }
+        HwiP_restore(key);
 
-    if (i < maxHeap)
-    {
-        /* Grab the memory */
-        handle = (HeapP_tiRtos *) &heapPool[i];
-    }
+        if (i < maxHeap)
+        {
+            /* Grab the memory */
+            handle = (HeapP_tiRtos *) &heapPool[i];
+        }
 
-    if (handle == NULL_PTR) {
-        ret_handle = NULL_PTR;
-    }
-    else
-    {
-        HeapMem_Params_init(&heapMemPrm);
-        heapMemPrm.buf           = params->buf;
-        heapMemPrm.size          = params->size;
-        heapMemPrm.minBlockAlign = HeapP_BYTE_ALIGNMENT;
+        if (handle == NULL_PTR) {
+            ret_handle = NULL_PTR;
+        }
+        else
+        {
+            HeapMem_Params_init(&heapMemPrm);
+            heapMemPrm.buf           = params->buf;
+            heapMemPrm.size          = params->size;
+            heapMemPrm.minBlockAlign = HeapP_BYTE_ALIGNMENT;
 
-        HeapMem_construct(&handle->heapStruct, &heapMemPrm);
-        handle->heapHandle = HeapMem_handle(&handle->heapStruct);
+            HeapMem_construct(&handle->heapStruct, &heapMemPrm);
+            handle->heapHandle = HeapMem_handle(&handle->heapStruct);
 
-        ret_handle = ((HeapP_Handle)handle);
+            ret_handle = ((HeapP_Handle)handle);
+        }
     }
 
     return ret_handle;

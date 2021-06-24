@@ -59,7 +59,7 @@ void ClockP_Params_init(ClockP_Params *params)
 ClockP_Handle ClockP_create(void *clockfxn,
                             const ClockP_Params *params)
 {
-    Clock_Handle clockHandle;
+    Clock_Handle clockHandle = NULL_PTR;
     Clock_Params clockParams;
     Error_Block  *pErrBlk = (Error_Block *) NULL_PTR;
 
@@ -78,14 +78,14 @@ ClockP_Handle ClockP_create(void *clockfxn,
         }
         clockParams.arg = (xdc_UArg)params->arg;
         pErrBlk = (Error_Block *) params->pErrBlk;
-    }
 
-    if (pErrBlk !=  NULL_PTR)
-    {
-        Error_init(pErrBlk);
-    }
+        if (pErrBlk !=  NULL_PTR)
+        {
+            Error_init(pErrBlk);
+        }
 
-    clockHandle = Clock_create((Clock_FuncPtr)clockfxn, params->period, &clockParams, pErrBlk);
+        clockHandle = Clock_create((Clock_FuncPtr)clockfxn, params->period, &clockParams, pErrBlk);
+    }
 
     return ((ClockP_Handle)clockHandle);
 }

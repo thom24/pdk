@@ -58,7 +58,7 @@ void MailboxP_Params_init(MailboxP_Params *params)
 
 MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 {
-    Mailbox_Handle mboxHandle;
+    Mailbox_Handle mboxHandle = NULL_PTR;
     Mailbox_Params mboxParams;
     Error_Block  *pErrBlk = (Error_Block *) NULL_PTR;
 
@@ -74,14 +74,14 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
         {
             mboxParams.buf = (Ptr)params->buf;
         }
-    }
 
-    if (pErrBlk !=  NULL_PTR)
-    {
-        Error_init(pErrBlk);
-    }
+        if (pErrBlk !=  NULL_PTR)
+        {
+            Error_init(pErrBlk);
+        }
 
-    mboxHandle = Mailbox_create(params->size, params->count, &mboxParams, pErrBlk);
+        mboxHandle = Mailbox_create(params->size, params->count, &mboxParams, pErrBlk);
+    }
 
     return ((MailboxP_Handle)mboxHandle);
 }
