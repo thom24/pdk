@@ -90,7 +90,6 @@ function updateScriptVars()
 {
     //Open a debug session
     dsMCU1_0 = debugServer.openSession( ".*MCU_Cortex_R5_0" );
-    dsMCU1_1 = debugServer.openSession( ".*MCU_Cortex_R5_1" );
     dsDMSC_0 = debugServer.openSession( ".*DMSC_Cortex_M3_0" );
 }
 
@@ -153,12 +152,6 @@ function connectTargets()
         // Halt the R5F and re-run.
         dsMCU1_0.target.halt();
     }
-    // Reset the MCU R5F Core 1, to ensure the ATCM/BTCM config takes effect
-    print("Connecting to MCU R5 1 0");
-    dsMCU1_1.target.connect();
-    print("Reset MCU R5 10, to ensure TCMs configurations take effect");
-    dsMCU1_1.target.reset();
-
     // Reset the R5F to be in clean state.
     dsMCU1_0.target.reset();
     print("Running the board configuration initialization from R5!");
@@ -185,8 +178,6 @@ function disconnectTargets()
     updateScriptVars();
     // Reset the R5F to be in clean state.
     dsMCU1_0.target.reset();
-    dsMCU1_1.target.disconnect();
-
     // Disconnect targets
     dsDMSC_0.target.disconnect();
 }
