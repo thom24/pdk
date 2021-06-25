@@ -35,6 +35,7 @@
 #define TI_FREERTOS_CONFIG_H
 
 #include <ti/osal/DebugP.h>
+#include <ti/osal/TimerP.h>
 #ifdef BUILD_C66X_1
 #include "FreeRTOSConfig_c66xdsp_1.h"
 #endif
@@ -172,6 +173,7 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define configHWI_TASK_STACK_DEPTH                                        (4096)
 #define configTIMER_ID                                                    (0)
 #define configTIMER_INT_NUM                                               (15)
+#define configTIMER_EVENT_ID                                              (TimerP_USE_DEFAULT)
 
 #define portCONFIGURE_CACHE_LIP_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
 #define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)

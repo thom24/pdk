@@ -35,9 +35,11 @@
 #define TI_FREERTOS_CONFIG_H
 
 #include <ti/osal/DebugP.h>
-#include <ti/osal/TimerP.h>
 #ifdef BUILD_C66X_1
 #include "FreeRTOSConfig_c66xdsp_1.h"
+#endif
+#ifdef BUILD_C66X_2
+#include "FreeRTOSConfig_c66xdsp_2.h"
 #endif
 
 /*-----------------------------------------------------------
@@ -67,8 +69,8 @@
 #define configUSE_MALLOC_FAILED_HOOK            (0)
 #define configUSE_DAEMON_TASK_STARTUP_HOOK      (0)
 #define configUSE_TICK_HOOK                     (0)
-#define configCPU_CLOCK_HZ                      (450 * 1000 * 1000)
-#define configSYSTICK_CLOCK_HZ                  (200 * 1000 * 1000)
+#define configCPU_CLOCK_HZ                      (1350 * 1000 * 1000)
+#define configSYSTICK_CLOCK_HZ                  (19200000)
 #define configTICK_RATE_HZ                      (1000)
 #define configMAX_PRIORITIES                    (16)
 #define configMINIMAL_STACK_SIZE                (1024) /* in units of configSTACK_DEPTH_TYPE, not bytes */
@@ -171,9 +173,6 @@ uint32_t uiPortGetRunTimeCounterValue();
 
 /* Size of ISR Stack in c66x */
 #define configHWI_TASK_STACK_DEPTH                                        (4096)
-#define configTIMER_ID                                                    (0)
-#define configTIMER_INT_NUM                                               (15)
-#define configTIMER_EVENT_ID                                              (TimerP_USE_DEFAULT)
 
 #define portCONFIGURE_CACHE_LIP_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
 #define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)

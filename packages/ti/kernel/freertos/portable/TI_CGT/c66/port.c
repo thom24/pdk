@@ -286,6 +286,7 @@ static void prvPortInitTickTimer(void)
     timerParams.periodType = TimerP_PeriodType_MICROSECS;
     timerParams.period     = (portTICK_PERIOD_MS * 1000);
     timerParams.intNum     = configTIMER_INT_NUM;
+    timerParams.eventId    = configTIMER_EVENT_ID;
 
     pTickTimerHandle = TimerP_create(configTIMER_ID, &prvPorttimerTickIsr, &timerParams);
 
