@@ -246,36 +246,6 @@ UDMA_MEMCPY_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call 
 # Evaluate the macro list to generate 'UDMA memcpy test app' make rule for all rtos_types
 $(eval ${UDMA_MEMCPY_TESTAPP_MACRO_LIST})
 
-
-# RTOS UDMA memcpy test apps with SMP enabled
-define UDMA_MEMCPY_SMP_TESTAPP_RULE
-
-export udma_memcpy_smp_testapp_$(1)_COMP_LIST = udma_memcpy_smp_testapp_$(1)
-udma_memcpy_smp_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_memcpy_test
-udma_memcpy_smp_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_memcpy_test
-export udma_memcpy_smp_testapp_$(1)_BOARD_DEPENDENCY = yes
-export udma_memcpy_smp_testapp_$(1)_CORE_DEPENDENCY = yes
-export udma_memcpy_smp_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
-export udma_memcpy_smp_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) SMP=enable
-udma_memcpy_smp_testapp_$(1)_PKG_LIST = udma_memcpy_smp_testapp_$(1)
-udma_memcpy_smp_testapp_$(1)_INCLUDE = $(udma_memcpy_smp_testapp_$(1)_PATH)
-export udma_memcpy_smp_testapp_$(1)_BOARDLIST =  $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_idk )
-export udma_memcpy_smp_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
-export udma_memcpy_smp_testapp_$(1)_SBL_APPIMAGEGEN = yes
-ifneq ($(1),$(filter $(1), safertos))
-udma_EXAMPLE_LIST += udma_memcpy_smp_testapp_$(1)
-else
-ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-udma_EXAMPLE_LIST += udma_memcpy_smp_testapp_$(1)
-endif
-endif
-
-endef
-
-UDMA_MEMCPY_SMP_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_MEMCPY_SMP_TESTAPP_RULE,$(curos)))
-
-$(eval ${UDMA_MEMCPY_SMP_TESTAPP_MACRO_LIST})
-
 # UDMA memcpy baremetal test app
 export udma_baremetal_memcpy_testapp_COMP_LIST = udma_baremetal_memcpy_testapp
 udma_baremetal_memcpy_testapp_RELPATH = ti/drv/udma/examples/udma_memcpy_test
