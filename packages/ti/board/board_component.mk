@@ -96,6 +96,8 @@ board_lib_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 board_lib_tpr12_CORELIST  = mcu1_0 c66xdsp_1
 board_lib_awr294x_CORELIST  = mcu1_0 c66xdsp_1
 
+board_RTOS_LIST = $(DEFAULT_RTOS_LIST)
+
 
 ############################
 # board package
@@ -148,35 +150,40 @@ export board_$(SOC)_CORELIST
 # BOARD Examples
 #
 
-# Board DDR thermal monitor test app
-board_ddr_thermal_test_app_COMP_LIST = board_ddr_thermal_test_app
-board_ddr_thermal_test_app_RELPATH = ti/board/examples/ddr_thermal_test_app
-board_ddr_thermal_test_app_PATH = $(PDK_BOARD_COMP_PATH)/examples/ddr_thermal_test_app
-board_ddr_thermal_test_app_BOARD_DEPENDENCY = yes
-board_ddr_thermal_test_app_CORE_DEPENDENCY = yes
-board_ddr_thermal_test_app_MAKEFILE = -f makefile
-board_ddr_thermal_test_app_XDC_CONFIGURO = yes
-export board_ddr_thermal_test_app_COMP_LIST
-export board_ddr_thermal_test_app_BOARD_DEPENDENCY
-export board_ddr_thermal_test_app_CORE_DEPENDENCY
-export board_ddr_thermal_test_app_MAKEFILE
-export board_ddr_thermal_test_app_XDC_CONFIGURO
-board_ddr_thermal_test_app_PKG_LIST = board_ddr_thermal_test_app
-board_ddr_thermal_test_app_INCLUDE = $(board_ddr_thermal_test_app_PATH)
-board_ddr_thermal_test_app_BOARDLIST = j721e_evm j7200_evm
-export board_ddr_thermal_test_app_BOARDLIST
+# Board RTOS DDR thermal monitor test apps
+define BOARD_DDR_THERMAL_TEST_APP_RULE
+
+export board_ddr_thermal_test_app_$(1)_COMP_LIST = board_ddr_thermal_test_app_$(1)
+board_ddr_thermal_test_app_$(1)_RELPATH = ti/board/examples/ddr_thermal_test_app
+board_ddr_thermal_test_app_$(1)_PATH = $(PDK_BOARD_COMP_PATH)/examples/ddr_thermal_test_app
+export board_ddr_thermal_test_app_$(1)_BOARD_DEPENDENCY = yes
+export board_ddr_thermal_test_app_$(1)_CORE_DEPENDENCY = yes
+export board_ddr_thermal_test_app_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export board_ddr_thermal_test_app_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+board_ddr_thermal_test_app_$(1)_PKG_LIST = board_ddr_thermal_test_app_$(1)
+board_ddr_thermal_test_app_$(1)_INCLUDE = $(board_ddr_thermal_test_app_$(1)_PATH)
+export board_ddr_thermal_test_app_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm)
 ifeq ($(SOC),$(filter $(SOC), j721e))
-board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+export board_ddr_thermal_test_app_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1)
 else
-board_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+export board_ddr_thermal_test_app_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 endif
-export board_ddr_thermal_test_app_$(SOC)_CORELIST
-board_ddr_thermal_test_app_SBL_APPIMAGEGEN = yes
-export board_ddr_thermal_test_app_SBL_APPIMAGEGEN
+export board_ddr_thermal_test_app_$(1)_SBL_APPIMAGEGEN = yes
 
 # Packaged for below board_EXAMPLE
-board_EXAMPLE_LIST += board_ddr_thermal_test_app
+ifneq ($(1),$(filter $(1), safertos))
+board_EXAMPLE_LIST += board_ddr_thermal_test_app_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+board_EXAMPLE_LIST += board_ddr_thermal_test_app_$(1)
+endif
+endif
 
+endef
+
+BOARD_DDR_THERMAL_TEST_APP_MACRO_LIST := $(foreach curos, $(board_RTOS_LIST), $(call BOARD_DDR_THERMAL_TEST_APP_RULE,$(curos)))
+
+$(eval ${BOARD_DDR_THERMAL_TEST_APP_MACRO_LIST})
 
 # Board baremetal DDR thermal monitor test app
 board_baremetal_ddr_thermal_test_app_COMP_LIST = board_baremetal_ddr_thermal_test_app
@@ -184,19 +191,19 @@ board_baremetal_ddr_thermal_test_app_RELPATH = ti/board/examples/ddr_thermal_tes
 board_baremetal_ddr_thermal_test_app_PATH = $(PDK_BOARD_COMP_PATH)/examples/ddr_thermal_test_app
 board_baremetal_ddr_thermal_test_app_BOARD_DEPENDENCY = yes
 board_baremetal_ddr_thermal_test_app_CORE_DEPENDENCY = yes
-board_baremetal_ddr_thermal_test_app_MAKEFILE = -f makefile IS_BAREMETAL=yes
+board_baremetal_ddr_thermal_test_app_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 board_baremetal_ddr_thermal_test_app_XDC_CONFIGURO = yes
 export board_baremetal_ddr_thermal_test_app_COMP_LIST
 export board_baremetal_ddr_thermal_test_app_BOARD_DEPENDENCY
 export board_baremetal_ddr_thermal_test_app_CORE_DEPENDENCY
 export board_baremetal_ddr_thermal_test_app_MAKEFILE
 export board_baremetal_ddr_thermal_test_app_XDC_CONFIGURO
-board_baremetal_ddr_thermal_test_app_PKG_LIST = board_ddr_thermal_test_app
+board_baremetal_ddr_thermal_test_app_PKG_LIST = board_baremetal_ddr_thermal_test_app
 board_baremetal_ddr_thermal_test_app_INCLUDE = $(board_baremetal_ddr_thermal_test_app_PATH)
 board_baremetal_ddr_thermal_test_app_BOARDLIST = j721e_evm j7200_evm
 export board_baremetal_ddr_thermal_test_app_BOARDLIST
 board_baremetal_ddr_thermal_test_app_$(SOC)_CORELIST = mcu1_0
-export board_ddr_thermal_test_app_$(SOC)_CORELIST
+export board_baremetal_ddr_thermal_test_app_$(SOC)_CORELIST
 board_baremetal_ddr_thermal_test_app_SBL_APPIMAGEGEN = yes
 export board_baremetal_ddr_thermal_test_app_SBL_APPIMAGEGEN
 

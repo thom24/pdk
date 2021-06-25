@@ -35,20 +35,18 @@
  */
 #include <stdint.h>
 
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/knl/Task.h>
-#endif /* #ifdef USE_BIOS */
+#include <ti/osal/osal.h>
+#include <ti/osal/TaskP.h>
 
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/board/board.h>
+
+#ifndef BAREMETAL
+#define APP_TSK_STACK_MAIN              (24U * 1024U)
+/* Test application stack */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif /* #ifndef BAREMETAL */
 
 void Test_DDRTempMonitorCallback(Board_DDRTempEventType DDRTempEventType)
 {
@@ -84,19 +82,19 @@ void Test_DDRTempMonitorCallback(Board_DDRTempEventType DDRTempEventType)
             break;
     }
 }
-#ifdef USE_BIOS
+#ifndef BAREMETAL
 /*
  *  ======== taskFxn ========
  */
-Void taskFxn(UArg a0, UArg a1)
+void taskFxn(void* a0, void* a1)
 #else
 int main(void)
-#endif /* #ifdef USE_BIOS */
+#endif /* #ifndef BAREMETAL */
 {
     int32_t       retVal = 0;
     Board_STATUS  boardStatus;
     char inputChar;
-#ifndef USE_BIOS
+#ifdef BAREMETAL
     Board_initCfg boardCfg;
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG
@@ -107,7 +105,7 @@ int main(void)
         retVal = -1;
         UART_printf("[Error] Board init failed!!\n");
     }
-#endif /* USE_BIOS */
+#endif /* BAREMETAL */
     if (retVal == 0)
     {
         boardStatus = Board_DDRTempMonitoringInit(&Test_DDRTempMonitorCallback);
@@ -133,21 +131,20 @@ int main(void)
         } while(inputChar != 'q');
     }
 
-#ifdef USE_BIOS
+#ifndef BAREMETAL
     return;
 #else
     return retVal;
-#endif /* USE_BIOS */
+#endif /* BAREMETAL */
 }
-#ifdef USE_BIOS
+#ifndef BAREMETAL
 /*
  *  ======== main ========
  */
-Int main()
+int main()
 {
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
     Board_initCfg boardCfg;
     Board_STATUS  boardStatus;
@@ -161,21 +158,23 @@ Int main()
         return(-1);
     }
 
-    Error_init(&eb);
+    OS_init();
 
     /* Initialize the task params */
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
 
     /* Set the task priority higher than the default priority (1) */
-    taskParams.priority = 2;
-    taskParams.stackSize = 0x6000;
+    taskParams.priority     = 2;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    task = Task_create(taskFxn, &taskParams, &eb);
-    if (task == NULL) {
-
-        BIOS_exit(0);
+    task = TaskP_create(taskFxn, &taskParams);
+    if(NULL == task)
+    {
+        OS_stop();
     }
-        BIOS_start();    /* does not return */
+    OS_start();    /* does not return */
+
     return(0);
 }
 #endif /* USE_BIOS */

@@ -4,21 +4,26 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 
-ifeq ($(IS_BAREMETAL),yes)
+ifeq ($(BUILD_OS_TYPE),baremetal)
 APP_NAME = board_baremetal_ddr_thermal_test_app
 else
-APP_NAME = board_ddr_thermal_test_app
+APP_NAME = board_ddr_thermal_test_app_$(BUILD_OS_TYPE)
 endif
 
-ifeq ($(IS_BAREMETAL),yes)
-BUILD_OS_TYPE       = baremetal
-COMP_LIST_COMMON    = $(PDK_COMMON_BAREMETAL_COMP)
-else
-BUILD_OS_TYPE = tirtos
-CFLAGS_OS_DEFINES = -DUSE_BIOS
-EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
+ifeq ($(BUILD_OS_TYPE),baremetal)
+  COMP_LIST_COMMON    = $(PDK_COMMON_BAREMETAL_COMP)
+  CFLAGS_OS_DEFINES   = -DBAREMETAL
+endif
+ifeq ($(BUILD_OS_TYPE),tirtos)
+  CFLAGS_OS_DEFINES = -DUSE_BIOS
+  EXTERNAL_INTERFACES = bios xdc
+  COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
+endif
+ifeq ($(BUILD_OS_TYPE),freertos)
+  CFLAGS_OS_DEFINES = -DFREERTOS
+  EXTERNAL_INTERFACES = freertos
+  COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
 endif
 SRCDIR = src
 INCDIR = inc
@@ -26,7 +31,6 @@ INCDIR = inc
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
-INCLUDE_INTERNAL_INTERFACES =
 
 ifneq ($(CSL_BUILD),$(filter $(CSL_BUILD), CSL))
   COMP_LIST_COMMON := $(filter-out csl,$(COMP_LIST_COMMON))
