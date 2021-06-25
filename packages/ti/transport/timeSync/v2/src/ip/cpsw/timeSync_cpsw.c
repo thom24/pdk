@@ -1496,7 +1496,7 @@ static void TimeSync_getSeqId(uint16_t *seqId,
     }
 
     *seqId = *(uint16_t *)(frame + offset);
-    *seqId = ntohs(*seqId);
+    *seqId = Enet_ntohs(*seqId);
 }
 
 static int32_t TimeSync_configPps(Enet_Type enetType)
