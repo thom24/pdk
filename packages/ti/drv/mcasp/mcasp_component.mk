@@ -190,7 +190,7 @@ endif
 define MCASP_DeviceLoopback_TestApp_RULE
 
     export MCASP_DeviceLoopback_TestApp_$(1)_COMP_LIST = MCASP_DeviceLoopback_TestApp_$(1)
-    export MCASP_DeviceLoopback_TestApp_$(1)_RELPATH = ti/drv/mcasp/example/MCASP_DeviceLoopback_TestApp_$(1)
+    export MCASP_DeviceLoopback_TestApp_$(1)_RELPATH = ti/drv/mcasp/example/MCASP_DeviceLoopback_TestApp
     export MCASP_DeviceLoopback_TestApp_$(1)_PATH = $(PDK_MCASP_COMP_PATH)/example/MCASP_DeviceLoopback_TestApp
     export MCASP_DeviceLoopback_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCASP_DeviceLoopback_TestApp_$(1)_CORE_DEPENDENCY = yes
