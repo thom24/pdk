@@ -1330,7 +1330,11 @@ bool OSAL_event_test()
  */
 #define OSAL_MUTEX_TEST_ITERATIONS  (10U)
 #define OSAL_MUTEX_TEST_TASK_PRIO   (1U)
+#if defined(SOC_TPR12) || defined (SOC_AWR294X)
+#define OSAL_MUTEX_TEST_NUM_TASKS   (2U)
+#else
 #define OSAL_MUTEX_TEST_NUM_TASKS   (5U)
+#endif
 
 static uint8_t  gAppTskStackMutexTask[OSAL_MUTEX_TEST_NUM_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 
