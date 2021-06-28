@@ -203,7 +203,7 @@ int32_t SBL_udmaInit(Udma_DrvHandle drvHndl)
     return (retVal);
 }
 
-uint8_t SBL_udmaInitDone(void)
+uint8_t SBL_isUdmaInitDone(void)
 {
     return (gSblUdmaObj.initDone);
 }
@@ -224,6 +224,7 @@ void SBL_udmaDeInit(void)
     {
         SBL_log(SBL_LOG_ERR, "[DMA] UDMA App deinit failed!!\n");
     }
+    udmaObj->initDone = FALSE;
 }
 
 int32_t SBL_udmaReadData(void *dstAddr, void *srcAddr, uint32_t length)

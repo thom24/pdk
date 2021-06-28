@@ -419,7 +419,7 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
             /* caller with image load address          */
             #if defined(SOC_J721E) && SBL_USE_DMA
             SBL_udmaSeekMem(NULL, 0);
-            if(SBL_udmaInitDone())
+            if(SBL_isUdmaInitDone())
             {
                 SBL_SetMulticoreImageImgReadfxn((void *)SBL_udmaReadData, (void *)SBL_udmaSeekMem);
             }
