@@ -339,7 +339,10 @@ typedef uint32_t Board_initCfg;
    Use this flag only from the applications which are not running from SDRAM/DDR
 */
 #define BOARD_INIT_EMIF_PINMUX          (1 << 21U)
-/* Applies only to devices with DDR ECC support */
+/* Applies only to devices with DDR ECC support.
+   BOARD_DDR_ENABLE_DDR_MEM_PRIME macro in board_cfg.h should be enabled
+   to prime the DDR Memory for ECC.
+*/
 #define BOARD_INIT_DDR_ECC              (1 << 22U)
 /* Initializes SerDes module */
 #define BOARD_INIT_SERDES_PHY           (1 << 23U)

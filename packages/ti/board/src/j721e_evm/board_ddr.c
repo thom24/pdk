@@ -394,10 +394,14 @@ static Board_STATUS emif_ConfigureECC(void)
     }
 
     /* Prime the memory */
+#ifdef BOARD_DDR_ENABLE_DDR_MEM_PRIME
     if ( status == BOARD_SOK )
     {
         status = BOARD_udmaPrimeDDR((void *)BOARD_DDR_START_ADDR, BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR+1U);
     }
+#else
+    BOARD_DEBUG_LOG("\r\n DDR Memory is not primed (BOARD_DDR_ENABLE_DDR_MEM_PRIME is disabled)");
+#endif
     if ( status == BOARD_SOK )
     {
         /* Clears ECC errors */

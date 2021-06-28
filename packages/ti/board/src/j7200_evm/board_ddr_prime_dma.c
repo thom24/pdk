@@ -68,6 +68,8 @@
 
 #include "board_ddr.h"
 
+#ifdef BOARD_DDR_ENABLE_DDR_MEM_PRIME
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -657,4 +659,5 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     return (numTR);
 }
 
+#endif /* #ifdef BOARD_DDR_ENABLE_DDR_MEM_PRIME */
 

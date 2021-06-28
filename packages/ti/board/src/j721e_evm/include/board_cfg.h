@@ -59,6 +59,8 @@ extern "C" {
 #define BOARD_DDR_END_ADDR                              (0xFFFFFFFFU)
 /* Note with ECC enabled, all memory is not usable: 1/8 memory used for inline ECC */
 #define BOARD_DDR_ECC_END_ADDR                          (0xF1FFFFFFU)
+/* Enable/Disable DDR Memory Prime for ECC. Define the following macro to enable. */ 
+#undef BOARD_DDR_ENABLE_DDR_MEM_PRIME
 
 /* UART LLD instance number for primary UART port */
 #define BOARD_UART_INSTANCE                             (0U)
