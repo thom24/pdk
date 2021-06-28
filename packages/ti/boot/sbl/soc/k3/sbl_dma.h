@@ -58,6 +58,8 @@ int32_t SBL_udmaInit(Udma_DrvHandle drvHndl);
 
 void SBL_udmaDeInit(void);
 
+uint8_t SBL_udmaInitDone(void);
+
 int32_t SBL_udmaReadData(void *dstAddr, void *srcAddr, uint32_t length);
 
 void SBL_udmaSeekMem(void *srcAddr, uint32_t location);

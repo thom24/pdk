@@ -128,6 +128,7 @@ typedef struct
 
 typedef struct
 {
+    uint8_t                 initDone;
     Udma_DrvHandle          drvHandle;
     Sbl_UdmaChObj           chObj;
 } Sbl_UdmaObj;
@@ -195,10 +196,16 @@ int32_t SBL_udmaInit(Udma_DrvHandle drvHndl)
     }
     else
     {
+        udmaObj->initDone = TRUE;
         retVal = 0;
     }
 
     return (retVal);
+}
+
+uint8_t SBL_udmaInitDone(void)
+{
+    return (gSblUdmaObj.initDone);
 }
 
 void SBL_udmaDeInit(void)
