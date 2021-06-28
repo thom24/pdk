@@ -58,7 +58,7 @@ void MailboxP_Params_init(MailboxP_Params *params)
 
 MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 {
-    Mailbox_Handle mboxHandle = NULL_PTR;
+    Mailbox_Handle mboxHandle = (Mailbox_Handle) NULL_PTR;
     Mailbox_Params mboxParams;
     Error_Block  *pErrBlk = (Error_Block *) NULL_PTR;
 

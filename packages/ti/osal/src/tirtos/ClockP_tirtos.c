@@ -59,7 +59,7 @@ void ClockP_Params_init(ClockP_Params *params)
 ClockP_Handle ClockP_create(void *clockfxn,
                             const ClockP_Params *params)
 {
-    Clock_Handle clockHandle = NULL_PTR;
+    Clock_Handle clockHandle = (Clock_Handle) NULL_PTR;
     Clock_Params clockParams;
     Error_Block  *pErrBlk = (Error_Block *) NULL_PTR;
 
