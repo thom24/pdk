@@ -715,7 +715,7 @@ static bool UART_getWLenStbFlag(UART_LEN dataLength, UART_STOP stopBits, uint32_
 static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
 {
     uintptr_t           key;
-    UART_V1_Object     *object;
+    UART_V1_Object     *object = (UART_V1_Object *)NULL;
     UART_HwAttrs const *hwAttrs;
     SemaphoreP_Params   semParams;
     uint32_t            divisorValue;
