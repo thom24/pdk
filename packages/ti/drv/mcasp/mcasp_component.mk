@@ -100,7 +100,7 @@ drvmcasp_LIB_LIST = $(mcasp_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
+# mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
 #
 # MCASP Modules
 #
@@ -208,11 +208,11 @@ endif
 
 ifneq ($(1),$(filter $(1), safertos))
 ifeq ($(1),$(filter $(1), freertos tirtos))
-mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
+# mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
 endif
 else
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
+# mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
 endif
 endif
 
@@ -290,9 +290,9 @@ endif
 
 export drvmcasp_LIB_LIST
 export mcasp_LIB_LIST
-export mcasp_EXAMPLE_LIST
+#export mcasp_EXAMPLE_LIST
 
-drvmcasp_EXAMPLE_LIST = $(mcasp_EXAMPLE_LIST)
-export drvmcasp_EXAMPLE_LIST
+#drvmcasp_EXAMPLE_LIST = $(mcasp_EXAMPLE_LIST)
+# export drvmcasp_EXAMPLE_LIST
 mcasp_component_make_include := 1
 endif
