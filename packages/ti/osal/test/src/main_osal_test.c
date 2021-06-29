@@ -63,12 +63,12 @@
 /* include for both tirtos, safertos and freertos. */
 #include <ti/osal/TaskP.h>
 #include <ti/osal/EventP.h>
-#include <ti/osal/LoadP.h>
 #endif
 
 #if defined (FREERTOS)
 #include "FreeRTOS.h"
 #include <ti/osal/MemoryP.h>
+#include <ti/osal/LoadP.h>
 #endif
 
 #if defined (SAFERTOS)
