@@ -320,25 +320,25 @@ static void BoardDiag_printFrame(EthFrame *frame,
     UART_printf("Src addr : ");
     BoardDiag_printMacAddr(&frame->hdr.srcMac[0]);
 
-    if (frame->hdr.etherType == htons(ETHERTYPE_VLAN_TAG))
+    if (frame->hdr.etherType == Enet_htons(ETHERTYPE_VLAN_TAG))
     {
         EthVlanFrame *vlanFrame = (EthVlanFrame *)frame;
 
         UART_printf("TPID     : 0x%04x\n", 
-                    ntohs(vlanFrame->hdr.tpid) & 0xFFFFU);
+                    Enet_ntohs(vlanFrame->hdr.tpid) & 0xFFFFU);
         UART_printf("Priority : %d\n",
-                    (ntohs(vlanFrame->hdr.tci) & 0xFFFFU) >> 13);
+                    (Enet_ntohs(vlanFrame->hdr.tci) & 0xFFFFU) >> 13);
         UART_printf("VLAN Id  : %d\n",
-                    ntohs(vlanFrame->hdr.tci) & 0xFFFU);
+                    Enet_ntohs(vlanFrame->hdr.tci) & 0xFFFU);
         UART_printf("EtherType: 0x%04x\n",
-                    ntohs(vlanFrame->hdr.etherType) & 0xFFFFU);
+                    Enet_ntohs(vlanFrame->hdr.etherType) & 0xFFFFU);
         payload = vlanFrame->payload;
         len    -= ETH_VLAN_TAG_LEN;
     }
     else
     {
         UART_printf("EtherType: 0x%04x\n", 
-                    ntohs(frame->hdr.etherType) & 0xFFFFU);
+                    Enet_ntohs(frame->hdr.etherType) & 0xFFFFU);
         payload = frame->payload;
     }
 
@@ -497,7 +497,7 @@ static int32_t BoardDiag_cpswPktRxTx(void)
                 memcpy(frame->hdr.dstMac, bcastAddr, ENET_MAC_ADDR_LEN);
                 memcpy(frame->hdr.srcMac, &gEnetLpbk.hostMacAddr[0U],
                         ENET_MAC_ADDR_LEN);
-                frame->hdr.etherType = htons(ETHERTYPE_EXPERIMENTAL1);
+                frame->hdr.etherType = Enet_htons(ETHERTYPE_EXPERIMENTAL1);
                 memset(&frame->payload[0U], (uint8_t)(0xA5 + pktCnt),
                         BOARD_DIAG_ENETLPBK_TEST_PKT_LEN);
                 pktInfo->userBufLen = BOARD_DIAG_ENETLPBK_TEST_PKT_LEN +
