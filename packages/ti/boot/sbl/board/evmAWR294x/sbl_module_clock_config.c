@@ -113,7 +113,7 @@ static const Sbl_ModuleClockConfig SBLModuleClockCfgTbl_PkgTypeLop_postApllSwitc
     },
     {
         .peripheralId = Rcm_PeripheralId_MSS_CPSW,
-        .clkSource    = Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2,
+        .clkSource    = Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1,
         .freqHz       = SBL_CPSW_FREQ_HZ,
     },
     {
@@ -202,7 +202,7 @@ static const Sbl_ModuleClockConfig SBLModuleClockCfgTbl_PkgTypeEts_postApllSwitc
     },
     {
         .peripheralId = Rcm_PeripheralId_MSS_CPSW,
-        .clkSource    = Rcm_PeripheralClockSource_DPLL_CORE_HSDIV0_CLKOUT2,
+        .clkSource    = Rcm_PeripheralClockSource_DPLL_PER_HSDIV0_CLKOUT1,
         .freqHz       = SBL_CPSW_FREQ_HZ,
     },
     {
