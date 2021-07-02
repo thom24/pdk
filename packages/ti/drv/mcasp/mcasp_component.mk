@@ -83,7 +83,7 @@ drvmcasp_omapl138_CORELIST = c674x arm9_0
 drvmcasp_am65xx_CORELIST     = mpu1_0 mcu1_0
 drvmcasp_j721e_CORELIST     = mpu1_0 mcu1_0 mcu2_0 c66xdsp_1 c66xdsp_2
 drvmcasp_j7200_CORELIST     = mpu1_0 mcu1_0 mcu2_0
-drvmcasp_RTOS_LIST          = tirtos freertos
+drvmcasp_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
 
 ############################
 # mcasp package
@@ -100,7 +100,7 @@ drvmcasp_LIB_LIST = $(mcasp_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-# mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
+mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
 #
 # MCASP Modules
 #
@@ -185,7 +185,7 @@ MCASP_AudioLoopback_TestApp_SBL_APPIMAGEGEN = yes
 export MCASP_AudioLoopback_TestApp_SBL_APPIMAGEGEN
 endif
 
-# McASP device loopback
+# McASP device loopback RTOS Apps
 
 define MCASP_DeviceLoopback_TestApp_RULE
 
@@ -195,11 +195,11 @@ export MCASP_DeviceLoopback_TestApp_$(1)_PATH = $(PDK_MCASP_COMP_PATH)/example/M
 export MCASP_DeviceLoopback_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export MCASP_DeviceLoopback_TestApp_$(1)_CORE_DEPENDENCY = yes
 export MCASP_DeviceLoopback_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-export MCASP_DeviceLoopback_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
+export MCASP_DeviceLoopback_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
 MCASP_DeviceLoopback_TestApp_$(1)_PKG_LIST = MCASP_DeviceLoopback_TestApp_$(1)
 MCASP_DeviceLoopback_TestApp_$(1)_INCLUDE = $(MCASP_DeviceLoopback_TestApp_$(1)_PATH)
-export MCASP_DeviceLoopback_TestApp_$(1)_BOARDLIST = $(drvmcasp_BOARDLIST)
+export MCASP_DeviceLoopback_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmcasp_BOARDLIST))
 export MCASP_DeviceLoopback_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmcasp_$(SOC)_CORELIST))
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
@@ -207,18 +207,17 @@ export MCASP_DeviceLoopback_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 endif
 
 ifneq ($(1),$(filter $(1), safertos))
-ifeq ($(1),$(filter $(1), freertos tirtos))
-# mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
-endif
+mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
 else
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-# mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
+mcasp_EXAMPLE_LIST += MCASP_DeviceLoopback_TestApp_$(1)
 endif
 endif
 
 endef
 
 MCASP_DeviceLoopback_TestApp_MACRO_LIST := $(foreach curos,$(drvmcasp_RTOS_LIST),$(call MCASP_DeviceLoopback_TestApp_RULE,$(curos)))
+
 $(eval ${MCASP_DeviceLoopback_TestApp_MACRO_LIST})
 
 
@@ -290,9 +289,9 @@ endif
 
 export drvmcasp_LIB_LIST
 export mcasp_LIB_LIST
-#export mcasp_EXAMPLE_LIST
+export mcasp_EXAMPLE_LIST
 
-#drvmcasp_EXAMPLE_LIST = $(mcasp_EXAMPLE_LIST)
-# export drvmcasp_EXAMPLE_LIST
+drvmcasp_EXAMPLE_LIST = $(mcasp_EXAMPLE_LIST)
+export drvmcasp_EXAMPLE_LIST
 mcasp_component_make_include := 1
 endif

@@ -68,7 +68,7 @@ ifeq ($(spi_component_make_include), )
 
 drvqspi_RTOS_LIST      = tirtos freertos
 drvqspi_BOARDLIST      = tpr12_evm awr294x_evm
-drvspi_RTOS_LIST       = tirtos freertos
+drvspi_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x
 drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
@@ -135,10 +135,10 @@ drvspi_FIRM_LIST = $(spi_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-#spi_EXAMPLE_LIST = drv_mcspi_loopback_app
-#spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
-#spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
-spi_EXAMPLE_LIST = OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_Dma_TestApp OSPI_Baremetal_Flash_Cache_TestApp  OSPI_Baremetal_Flash_Dma_Cache_TestApp OSPI_Flash_Cache_TestApp OSPI_Flash_Dma_Cache_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
+spi_EXAMPLE_LIST = drv_mcspi_loopback_app
+spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
+spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
+spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_Dma_TestApp OSPI_Baremetal_Flash_Cache_TestApp  OSPI_Baremetal_Flash_Dma_Cache_TestApp OSPI_Flash_Cache_TestApp OSPI_Flash_Dma_Cache_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
 
 #
 # SPI Modules
@@ -446,7 +446,7 @@ ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
 export MCSPI_Baremetal_Slave_Dma_TestApp_SBL_APPIMAGEGEN = yes
 endif
 
-# SPI master Test app
+# SPI master RTOS Test apps
 define MCSPI_Master_TestApp_RULE
 
     export MCSPI_Master_TestApp_$(1)_COMP_LIST = MCSPI_Master_TestApp_$(1)
@@ -455,13 +455,13 @@ define MCSPI_Master_TestApp_RULE
     export MCSPI_Master_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Master_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Master_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MCSPI_Master_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+    export MCSPI_Master_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Master_TestApp_$(1)_PKG_LIST = MCSPI_Master_TestApp_$(1)
     MCSPI_Master_TestApp_$(1)_INCLUDE = $(MCSPI_Master_TestApp_$(1)_PATH)
-    export MCSPI_Master_TestApp_$(1)_BOARDLIST = $(drvspi_BOARDLIST)
+    export MCSPI_Master_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
     ifeq ($(SOC),$(filter $(SOC), am64x))
-        export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0 mpu1_0
+        export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mpu1_0)
     else
         export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
     endif
@@ -471,24 +471,21 @@ define MCSPI_Master_TestApp_RULE
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
-#            spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
-        endif
+        spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-#            spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
+           spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
         endif
     endif
+
 endef
 
 MCSPI_Master_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Master_TestApp_RULE,$(curos)))
+
 $(eval ${MCSPI_Master_TestApp_MACRO_LIST})
 
-export spi_EXAMPLE_LIST
 
-
-
-# SPI slave Test app
+# SPI slave RTOS Test apps
 define MCSPI_Slave_TestApp_RULE
 
     export MCSPI_Slave_TestApp_$(1)_COMP_LIST = MCSPI_Slave_TestApp_$(1)
@@ -497,11 +494,11 @@ define MCSPI_Slave_TestApp_RULE
     export MCSPI_Slave_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Slave_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Slave_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+    export MCSPI_Slave_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Slave_TestApp_$(1)_PKG_LIST = MCSPI_Slave_TestApp_$(1)
     MCSPI_Slave_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_TestApp_$(1)_PATH)
-    export MCSPI_Slave_TestApp_$(1)_BOARDLIST = $(drvspi_BOARDLIST)
+    export MCSPI_Slave_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
 
     export MCSPI_Slave_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
 
@@ -510,23 +507,20 @@ define MCSPI_Slave_TestApp_RULE
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
-#            spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
-        endif
+        spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-#           spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
+          spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
         endif
     endif
 endef
 
 MCSPI_Slave_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Slave_TestApp_RULE,$(curos)))
+
 $(eval ${MCSPI_Slave_TestApp_MACRO_LIST})
 
-export spi_EXAMPLE_LIST
 
-
-# SPI master DMA Test app
+# SPI master DMA RTOS Test apps
 define MCSPI_Master_Dma_TestApp_RULE
 
     export MCSPI_Master_Dma_TestApp_$(1)_COMP_LIST = MCSPI_Master_Dma_TestApp_$(1)
@@ -535,13 +529,13 @@ define MCSPI_Master_Dma_TestApp_RULE
     export MCSPI_Master_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Master_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Master_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Master_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+    export MCSPI_Master_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Master_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Master_Dma_TestApp_$(1)
     MCSPI_Master_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Master_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Master_Dma_TestApp_$(1)_BOARDLIST = $(drvspi_BOARDLIST)
+    export MCSPI_Master_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
     ifeq ($(SOC),$(filter $(SOC), am64x))
-        export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0 mpu1_0
+        export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mpu1_0)
     else
         export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
     endif
@@ -551,23 +545,20 @@ define MCSPI_Master_Dma_TestApp_RULE
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
-#            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
-        endif
+        spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-#            spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
+           spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
         endif
     endif
 endef
 
 MCSPI_Master_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Master_Dma_TestApp_RULE,$(curos)))
+
 $(eval ${MCSPI_Master_Dma_TestApp_MACRO_LIST})
 
-export spi_EXAMPLE_LIST
 
-
-# SPI slave DMA Test app
+# SPI slave DMA RTOS Test apps
 define MCSPI_Slave_Dma_TestApp_RULE
 
     export MCSPI_Slave_Dma_TestApp_$(1)_COMP_LIST = MCSPI_Slave_Dma_TestApp_$(1)
@@ -576,11 +567,11 @@ define MCSPI_Slave_Dma_TestApp_RULE
     export MCSPI_Slave_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Slave_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Slave_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+    export MCSPI_Slave_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Slave_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Slave_Dma_TestApp_$(1)
     MCSPI_Slave_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Slave_Dma_TestApp_$(1)_BOARDLIST = $(drvspi_BOARDLIST)
+    export MCSPI_Slave_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
 
     export MCSPI_Slave_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
 
@@ -589,20 +580,18 @@ define MCSPI_Slave_Dma_TestApp_RULE
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
-#            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
-        endif
+        spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-#            spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
+           spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
         endif
     endif
 endef
 
 MCSPI_Slave_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Slave_Dma_TestApp_RULE,$(curos)))
+
 $(eval ${MCSPI_Slave_Dma_TestApp_MACRO_LIST})
 
-export spi_EXAMPLE_LIST
 
 # OSPI baremetal Flash Test app
 OSPI_Baremetal_Flash_TestApp_COMP_LIST = OSPI_Baremetal_Flash_TestApp
