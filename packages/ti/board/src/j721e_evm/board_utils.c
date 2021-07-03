@@ -119,6 +119,7 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  * \n                      BOARD_ID_ENET(0x5) - Quad ENET expansion
  * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
  * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
+ * \n                      BOARD_ID_CP(0x8) - CP Board
  *
  * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
@@ -132,7 +133,7 @@ bool Board_detectBoard(uint32_t boardID)
     Board_STATUS status;
     bool bDet = FALSE;
 
-    if(boardID <= BOARD_ID_SOM)
+    if(boardID <= BOARD_ID_CP)
     {
         status = Board_getBoardData(&info, boardID);
         if(status == 0)

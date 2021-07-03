@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -57,10 +57,12 @@
 #include "board_ethernet_config.h"
 #include "board_utils.h"
 #include "board_serdes_cfg.h"
+#include "board_pinmux.h"
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/drv/sciclient/sciserver.h>
 
 static bool gBoardSysInitDone = 0;
+static bool gIsEVMBoard = FALSE;
 
 /**
  * \brief  Board global initializations
@@ -119,6 +121,25 @@ static Board_STATUS Board_sysDeinit(void)
     }
 
     return status;
+}
+
+/**
+ * \brief  Function to detect the J721E EVM
+ *
+ * \return  TRUE if J721E EVM is detected, else FALSE
+ *
+ */
+static bool Board_detectEVM(void)
+{
+    bool bDet = FALSE;
+
+    /* Enable Wakeup I2C pinmux for board ID EEPROM access */
+    Board_wkupI2cPinmuxConfig();
+
+    /* Check for J721E EVM CP board */
+    bDet = Board_detectBoard(BOARD_ID_CP);
+
+    return bDet;
 }
 
 /**
@@ -196,6 +217,20 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if(!gBoardSysInitDone)
     {
         Board_sysInit();
+    }
+
+    if(gIsEVMBoard == FALSE)
+    {
+        /* 
+         * Check for the board and return error if the board is not EVM.
+         * This check is added to avoid unintentional calls to board init
+         * from the HW platforms other than J721E EVM.
+         */
+        gIsEVMBoard = Board_detectEVM();
+        if(gIsEVMBoard != TRUE)
+        {
+            return BOARD_FAIL;
+        }
     }
 
     if (cfg & BOARD_INIT_UNLOCK_MMR)
