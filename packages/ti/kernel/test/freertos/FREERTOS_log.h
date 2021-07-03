@@ -54,23 +54,19 @@ extern "C" {
 #endif
 
 #if defined(UART_CONSOLE)
-    #if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
-        #define FREERTOS_log                printf
-    #else
-        /* UART Header files */
-        #include <ti/drv/uart/UART.h>
-        #include <ti/drv/uart/UART_stdio.h>
-        /**********************************************************************
-         ************************** Global Variables **************************
-         **********************************************************************/
-        extern void UART_printf(const char *pcString, ...);
-        extern void ConsoleUtilsInit(void);
+    /* UART Header files */
+    #include <ti/drv/uart/UART.h>
+    #include <ti/drv/uart/UART_stdio.h>
+    /**********************************************************************
+     ************************** Global Variables **************************
+        **********************************************************************/
+    extern void UART_printf(const char *pcString, ...);
+    extern void ConsoleUtilsInit(void);
 
-        /**********************************************************************
-         ************************** Macros ************************************
-         **********************************************************************/
-        #define FREERTOS_log                UART_printf
-    #endif
+    /**********************************************************************
+     ************************** Macros ************************************
+        **********************************************************************/
+    #define FREERTOS_log                UART_printf
 #else
     #if defined(EMPTY_OSAL_LOG)
         static void dummy_printf(const char *pcString, ...)

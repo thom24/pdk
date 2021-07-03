@@ -110,6 +110,18 @@
         #define PING_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_0)
         #define PONG_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_1)
     #endif
+    #ifdef BUILD_C66X_1
+        #define PING_INT_NUM           (8u)
+        #define PING_EVT_ID            (CSLR_C66SS0_CORE0_C66_EVENT_IN_SYNC_C66SS0_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (9u)
+        #define PONG_EVT_ID            (CSLR_C66SS0_CORE0_C66_EVENT_IN_SYNC_C66SS0_INTROUTER0_OUTL_1)
+    #endif
+    #ifdef BUILD_C66X_2
+        #define PING_INT_NUM           (8u)
+        #define PING_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (9u)
+        #define PONG_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_1)
+    #endif
 #endif
 
 #ifdef SOC_J7200
@@ -202,7 +214,7 @@ static void pong_isr_4(uintptr_t arg)
 void test_taskSwitchWithSemaphore(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
 
     FREERTOS_log("\r\n");
     FREERTOS_log("[FreeRTOS] ping task ... start !!!\r\n");
@@ -225,7 +237,7 @@ void test_taskSwitchWithSemaphore(void)
 void test_taskSwitchWithTaskNotify(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
 
     count = NUM_TASK_SWITCHES;
     curTime = uiPortGetRunTimeCounterValue();
@@ -246,7 +258,7 @@ void test_taskSwitchWithTaskNotify(void)
 void test_taskYeild(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
 
     count = NUM_TASK_SWITCHES;
     curTime = uiPortGetRunTimeCounterValue();
@@ -266,14 +278,14 @@ void test_taskYeild(void)
 void test_taskToIsrUsingSemaphoreAndNoTaskSwitch(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
     HwiP_Params hwiParams;
     HwiP_Handle hHwi;
     HwiP_Status hwiStatus;
 
     HwiP_Params_init(&hwiParams);
 /* Need to configure event Id for c66x due to eventCombiner */
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
     hwiParams.evtId = PING_EVT_ID;
 #endif
     hHwi = HwiP_create(PING_INT_NUM, ping_isr_1, &hwiParams);
@@ -302,13 +314,13 @@ void test_taskToIsrUsingSemaphoreAndNoTaskSwitch(void)
 void test_taskToIsrUsingTaskNotifyAndNoTaskSwitch(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
     HwiP_Params hwiParams;
     HwiP_Handle hHwi;
     HwiP_Status hwiStatus;
 
     HwiP_Params_init(&hwiParams);
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
     hwiParams.evtId = PING_EVT_ID;
 #endif
     hHwi = HwiP_create(PING_INT_NUM, ping_isr_3, &hwiParams);
@@ -337,13 +349,13 @@ void test_taskToIsrUsingTaskNotifyAndNoTaskSwitch(void)
 void test_taskToIsrUsingSemaphoreAndWithTaskSwitch(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
     HwiP_Params hwiParams;
     HwiP_Handle hHwi;
     HwiP_Status hwiStatus;
 
     HwiP_Params_init(&hwiParams);
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
     hwiParams.evtId = PING_EVT_ID;
 #endif
     hHwi = HwiP_create(PING_INT_NUM, ping_isr_2, &hwiParams);
@@ -371,13 +383,13 @@ void test_taskToIsrUsingSemaphoreAndWithTaskSwitch(void)
 void test_taskToIsrUsingTaskNotifyAndWithTaskSwitch(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
     HwiP_Params hwiParams;
     HwiP_Handle hHwi;
     HwiP_Status hwiStatus;
 
     HwiP_Params_init(&hwiParams);
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
     hwiParams.evtId = PING_EVT_ID;
 #endif
     hHwi = HwiP_create(PING_INT_NUM, ping_isr_4, &hwiParams);
@@ -405,7 +417,7 @@ void test_taskToIsrUsingTaskNotifyAndWithTaskSwitch(void)
 void test_taskSwitchWithFloatOperations(void)
 {
     uint32_t count; /* loop `count` times */
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
     double f;
 
     /* Any task that uses the floating point unit MUST call portTASK_USES_FLOATING_POINT()
@@ -436,7 +448,7 @@ void test_taskSwitchWithFloatOperations(void)
 */
 void test_taskDelay(void)
 {
-    uint64_t curTime;
+    volatile uint64_t curTime; /* time in units of usecs */
     uint32_t delay1 = 100, delay2 = 110; /* in msecs */
 
     curTime = uiPortGetRunTimeCounterValue();
@@ -496,7 +508,7 @@ void pong_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
         hwiParams.evtId = PONG_EVT_ID;
 #endif
         hHwi = HwiP_create(PONG_INT_NUM, pong_isr_2, &hwiParams);
@@ -517,7 +529,7 @@ void pong_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
         hwiParams.evtId = PONG_EVT_ID;
 #endif
         hHwi = HwiP_create(PONG_INT_NUM, pong_isr_4, &hwiParams);

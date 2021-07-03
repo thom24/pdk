@@ -94,7 +94,7 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
     #ifdef BUILD_MCU1_1
         #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
         #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
-#endif
+    #endif
     #ifdef BUILD_MCU2_0
         #define PING_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_0)
         #define PONG_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_1)
@@ -110,6 +110,18 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
     #ifdef BUILD_MCU3_1
         #define PING_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_0)
         #define PONG_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_1)
+    #endif
+    #ifdef BUILD_C66X_1
+        #define PING_INT_NUM           (8u)
+        #define PING_EVT_ID            (CSLR_C66SS0_CORE0_C66_EVENT_IN_SYNC_C66SS0_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (9u)
+        #define PONG_EVT_ID            (CSLR_C66SS0_CORE0_C66_EVENT_IN_SYNC_C66SS0_INTROUTER0_OUTL_1)
+    #endif
+    #ifdef BUILD_C66X_2
+        #define PING_INT_NUM           (8u)
+        #define PING_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (9u)
+        #define PONG_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_1)
     #endif
 #endif
 
@@ -160,7 +172,7 @@ static void pong_isr(uintptr_t arg)
 void ping_main(void *args)
 {
     uint32_t count; /* loop `count` times */
-    volatile uint64_t curTime; /* time in units of 10's of usecs */
+    volatile uint64_t curTime; /* time in units of usecs */
 
     FREERTOS_log("\r\n");
     FREERTOS_log("[FreeRTOS] ping task ... start !!!\r\n");
@@ -200,7 +212,7 @@ void ping_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
         hwiParams.evtId = PING_EVT_ID;
 #endif
         hHwi = HwiP_create(PING_INT_NUM, ping_isr, &hwiParams);
@@ -257,7 +269,7 @@ void pong_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#ifdef BUILD_C66X_1
+#ifdef _TMS320C6X
         hwiParams.evtId = PONG_EVT_ID;
 #endif
         hHwi = HwiP_create(PONG_INT_NUM, pong_isr, &hwiParams);

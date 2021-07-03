@@ -120,12 +120,10 @@
 #include <ti/osal/DebugP.h>
 #include <ti/osal/HwiP.h>
 
-
-
 #include <ti/csl/soc.h>
+#include <FREERTOS_log.h>
 
 /* Constants. */
-#define LINE_BREAK    "\r\n"
 
 /* Thread priorties, MUST be <= sched_get_priority_max( SCHED_OTHER ) */
 #define WORKER_THREAD_PRI           (3u)
@@ -204,7 +202,7 @@ static void * prvWorkerThread( void * pvArgs )
 {
     WorkerThreadResources_t pArgList = *( WorkerThreadResources_t * ) pvArgs;
 
-    DebugP_log2( "Worker mqueue #[%d] - start %s", ( int ) pArgList.xInboxID, (uintptr_t)LINE_BREAK );
+    FREERTOS_log( "Worker mqueue #[%d] - start \r\n", ( int ) pArgList.xInboxID );
 
     struct timespec xReceiveTimeout = { 0 };
 
@@ -230,11 +228,11 @@ static void * prvWorkerThread( void * pvArgs )
                 case eWORKER_CTRL_MSG_CONTINUE:
                     /* Task branch, currently only prints message to screen. */
                     /* Could perform tasks here. Could also notify dispatcher upon completion, if desired. */
-                    DebugP_log2( "Worker thread #[%d] -- Received eWORKER_CTRL_MSG_CONTINUE %s", ( int ) pArgList.pxID, (uintptr_t)LINE_BREAK );
+                    FREERTOS_log( "Worker thread #[%d] -- Received eWORKER_CTRL_MSG_CONTINUE \r\n", ( int ) pArgList.pxID );
                     break;
 
                 case eWORKER_CTRL_MSG_EXIT:
-                    DebugP_log2( "Worker thread #[%d] -- Finished. Exit now. %s", ( int ) pArgList.pxID, (uintptr_t)LINE_BREAK );
+                    FREERTOS_log( "Worker thread #[%d] -- Finished. Exit now. \r\n", ( int ) pArgList.pxID );
 
                     return NULL;
 
@@ -259,7 +257,7 @@ static void * prvDispatcherThread( void * pvArgs )
 {
     DispatcherThreadResources_t pArgList = *( DispatcherThreadResources_t * ) pvArgs;
 
-    DebugP_log1( "Dispatcher thread - start %s", (uintptr_t)LINE_BREAK );
+    FREERTOS_log( "Dispatcher thread - start \r\n" );
 
     struct timespec xSendTimeout = { 0 };
 
@@ -278,7 +276,7 @@ static void * prvDispatcherThread( void * pvArgs )
         clock_gettime( CLOCK_REALTIME, &xSendTimeout );
         xSendTimeout.tv_sec += MQUEUE_TIMEOUT_SECONDS;
 
-        DebugP_log3( "Dispatcher iteration #[%d] -- Sending msg to worker mqueue #[%d]. %s", i, ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ], (uintptr_t)LINE_BREAK );
+        FREERTOS_log( "Dispatcher iteration #[%d] -- Sending msg to worker mqueue #[%d]. \r\n", i, ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ] );
 
         xMessageSize = mq_timedsend( pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ],
                                      pcSendBuffer,
@@ -291,8 +289,8 @@ static void * prvDispatcherThread( void * pvArgs )
             /* This error is acceptable in our setup.
              * Since inbox for each thread fits only one message.
              * In reality, balance inbox size, message arrival rate, and message drop rate. */
-            DebugP_log3( "An acceptable failure -- dispatcher failed to send eWORKER_CTRL_MSG_CONTINUE to outbox ID: %x. errno %d %s",
-                    ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ], errno, (uintptr_t)LINE_BREAK );
+            FREERTOS_log( "An acceptable failure -- dispatcher failed to send eWORKER_CTRL_MSG_CONTINUE to outbox ID: %x. errno %d \r\n",
+                    ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ], errno );
         }
     }
 
@@ -301,7 +299,7 @@ static void * prvDispatcherThread( void * pvArgs )
 
     for( i = 0; i < MQUEUE_NUMBER_OF_WORKERS; i++ )
     {
-        DebugP_log3( "Dispatcher [%d] -- Sending eWORKER_CTRL_MSG_EXIT to worker thread #[%d]. %s", i, ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ], (uintptr_t)LINE_BREAK );
+        FREERTOS_log( "Dispatcher [%d] -- Sending eWORKER_CTRL_MSG_EXIT to worker thread #[%d]. \r\n", i, ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ] );
 
         /* This is a blocking call, to guarantee worker thread exits. */
         xMessageSize = mq_send( pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ],
@@ -362,7 +360,7 @@ void posix_demo_main( void *pvParameters )
 
         if( pxWorkers[ i ].xInboxID == ( mqd_t ) -1 )
         {
-            DebugP_log1( "Invalid inbox (mqueue) for worker. %s", (uintptr_t)LINE_BREAK );
+            FREERTOS_log( "Invalid inbox (mqueue) for worker. \r\n" );
             iStatus = DEMO_ERROR;
             break;
         }
@@ -432,12 +430,12 @@ void posix_demo_main( void *pvParameters )
     /* Have something on console. */
     if( iStatus == 0 )
     {
-        DebugP_log1( "All tests have passed!! %s", (uintptr_t)LINE_BREAK );
+        FREERTOS_log( "All tests have passed!! \r\n" );
     }
     else
     {
-        DebugP_log1( "Queues did not get initialized properly. Did not run demo. %s", (uintptr_t)LINE_BREAK );
-        DebugP_log1( "Some tests have failed!! %s", (uintptr_t)LINE_BREAK );
+        FREERTOS_log( "Queues did not get initialized properly. Did not run demo. \r\n" );
+        FREERTOS_log( "Some tests have failed!! \r\n" );
     }
 
     /* Dont close drivers to keep the UART driver open for console */

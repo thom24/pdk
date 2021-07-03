@@ -14,7 +14,8 @@ CFLAGS_TEST_DEFINES =
 
 
 SRCDIR = .
-INCDIR =  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
+INCDIR = ../
+INCDIR +=  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/dpl/common
@@ -41,7 +42,7 @@ APPEND_LNKCMD_FILE = ../build/$(SOC)/linker_$(ISA).cmd
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = .
+PACKAGE_SRCS_COMMON = .  ../FREERTOS_log.h
 SRCS_COMMON += main.c posix_demo.c
 
 ifeq ($(ISA),$(filter $(ISA), c66))
