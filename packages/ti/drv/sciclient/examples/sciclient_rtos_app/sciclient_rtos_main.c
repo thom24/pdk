@@ -42,13 +42,6 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#if defined (__C7100__)
-#include <xdc/std.h>
-#include <xdc/runtime/Error.h>
-#include <xdc/runtime/System.h>
-#include <ti/sysbios/family/c7x/Mmu.h>
-#endif
-
 #include <stdint.h>
 #include <string.h>
 #include <ti/csl/tistdtypes.h>
@@ -63,8 +56,14 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-
-/* None */
+/* Test application stack size */
+#if defined (__C7100__)
+/* Temp workaround to avoid assertion failure: A_stackSizeTooSmall : Task stack size must be >= 16KB.
+  * until the Bug PDK-7605 is resolved */
+#define APP_TSK_STACK_MAIN              (16U * 1024U)
+#else
+#define APP_TSK_STACK_MAIN              (8U * 1024U)
+#endif
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
@@ -76,6 +75,7 @@
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
 
+void mainTsk(void* arg0, void* arg1);
 void GetRevisionTest1(void* arg0, void *arg1);
 void GetRevisionTest2(void* arg0, void *arg1);
 
@@ -94,7 +94,17 @@ void App_sciclientC66xIntrConfig(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+/* Test application stack */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+
+/* Test application stack */
+static uint8_t  gAppTskStackRevTest1[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+static uint8_t  gAppTskStackRevTest2[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+
 int32_t tsk1Pass = CSL_EFAIL, tsk2Pass = CSL_EFAIL;
+
+SemaphoreP_Handle semTest1;
+SemaphoreP_Handle semTest2;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -106,34 +116,21 @@ void appReset(void)
 
 int main(void)
 {
-    TaskP_Handle task1,task2;
-    TaskP_Params taskParams1,taskParams2;
-
-    App_SciclientC7xPreInit();
-
-    uint32_t    retVal = CSL_PASS;
+    TaskP_Handle taskHdl;
+    TaskP_Params taskParams;
+    int32_t    retVal = CSL_PASS;
 
     OS_init();
 
-    TaskP_Params_init(&taskParams1);
-    TaskP_Params_init(&taskParams2);
-    taskParams1.priority = 14;
-    taskParams2.priority = 15;
+    TaskP_Params_init(&taskParams);
+    taskParams.priority = 14;
+    taskParams.stack = gAppTskStackMain;
+    taskParams.stacksize = sizeof (gAppTskStackMain);
 
-    App_sciclientConsoleInit();
-    App_sciclientC66xIntrConfig();
-
-    task1 = TaskP_create(GetRevisionTest1, &taskParams1);
-    if (task1 == NULL)
+    taskHdl = TaskP_create(mainTsk, &taskParams);
+    if (taskHdl == NULL)
     {
-        App_sciclientPrintf("Task_create() GetRevisionTest1 failed!\n");
-        OS_stop();
-    }
-
-    task2 = TaskP_create(GetRevisionTest2, &taskParams2);
-    if (task2 == NULL)
-    {
-        App_sciclientPrintf("Task_create() GetRevisionTest2 failed!\n");
+        App_sciclientPrintf("Task_create() mainTsk failed!\n");
         OS_stop();
     }
 
@@ -143,10 +140,72 @@ int main(void)
     return retVal;
 }
 
+void mainTsk(void* arg0, void* arg1)
+{
+    TaskP_Handle task1,task2;
+    TaskP_Params taskParams1,taskParams2;
+    SemaphoreP_Params       params;
+
+    App_SciclientC7xPreInit();
+
+    SemaphoreP_Params_init(&params);
+    params.mode = SemaphoreP_Mode_BINARY;
+    semTest1 = SemaphoreP_create(0U, &params);
+    if (NULL == semTest1)
+    {
+        App_sciclientPrintf ("SemaphoreP_create() semTest1 Failed \n");
+    }
+
+    SemaphoreP_Params_init(&params);
+    params.mode = SemaphoreP_Mode_BINARY;
+    semTest2 = SemaphoreP_create(0U, &params);
+    if (NULL == semTest2)
+    {
+        App_sciclientPrintf ("SemaphoreP_create() semTest2 Failed \n");
+    }
+
+    TaskP_Params_init(&taskParams1);
+    taskParams1.priority = 14;
+    taskParams1.stack = gAppTskStackRevTest1;
+    taskParams1.stacksize = sizeof (gAppTskStackRevTest1);
+
+    TaskP_Params_init(&taskParams2);
+    taskParams2.stack = gAppTskStackRevTest2;
+    taskParams2.stacksize = sizeof (gAppTskStackRevTest2);
+    taskParams2.priority = 15;
+
+    App_sciclientConsoleInit();
+    App_sciclientC66xIntrConfig();
+
+    task1 = TaskP_create(GetRevisionTest1, &taskParams1);
+    if (task1 == NULL)
+    {
+        App_sciclientPrintf("Task_create() GetRevisionTest1 failed!\n");
+    }
+
+    task2 = TaskP_create(GetRevisionTest2, &taskParams2);
+    if (task2 == NULL)
+    {
+        App_sciclientPrintf("Task_create() GetRevisionTest2 failed!\n");
+    }
+
+    SemaphoreP_pend(semTest1, SemaphoreP_WAIT_FOREVER);
+    SemaphoreP_pend(semTest2, SemaphoreP_WAIT_FOREVER);
+
+    if ((tsk1Pass == CSL_PASS) && (tsk2Pass == CSL_PASS))
+    {
+        App_sciclientPrintf("All tests have passed \n");
+    }
+    else
+    {
+        App_sciclientPrintf("Some Tests have failed \n");
+    }
+
+}
+
 void GetRevisionTest1(void* arg0, void* arg1)
 {
     int32_t status = CSL_PASS;
-    volatile uint32_t loopForever = 1U;
     Sciclient_ConfigPrms_t        config =
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
@@ -170,7 +229,9 @@ void GetRevisionTest1(void* arg0, void* arg1)
         sizeof (response)
     };
 
+
     App_sciclientPrintf("SCIClient RTOS Test App1\n\n");
+
     status = Sciclient_init(&config);
     if (status == CSL_PASS)
     {
@@ -213,21 +274,13 @@ void GetRevisionTest1(void* arg0, void* arg1)
     {
         tsk1Pass = CSL_EFAIL;
     }
-    if ((tsk1Pass == CSL_PASS) && (tsk2Pass == CSL_PASS))
-    {
-        App_sciclientPrintf("All tests have passed \n");
-    }
-    if (tsk1Pass != CSL_PASS)
-    {
-        App_sciclientPrintf("Some Tests have failed \n");
-    }
-    while (loopForever) {;}
+
+    SemaphoreP_post(semTest1);
 }
 
 void GetRevisionTest2(void* arg0, void*  arg1)
 {
     int32_t status = CSL_PASS;
-    volatile uint32_t loopForever = 1U;
     Sciclient_ConfigPrms_t        config =
     {
         SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
@@ -252,6 +305,7 @@ void GetRevisionTest2(void* arg0, void*  arg1)
     };
 
     App_sciclientPrintf("SCIClient RTOS Test App2\n\n");
+
     status = Sciclient_init(&config);
     if (status == CSL_PASS)
     {
@@ -283,6 +337,7 @@ void GetRevisionTest2(void* arg0, void*  arg1)
                               " DMSC Firmware Get Version failed \n");
         }
     }
+
     if (status == CSL_PASS)
     {
         status = Sciclient_deinit();
@@ -295,15 +350,8 @@ void GetRevisionTest2(void* arg0, void*  arg1)
     {
         tsk2Pass = CSL_EFAIL;
     }
-    if ((tsk1Pass == CSL_PASS) && (tsk2Pass == CSL_PASS))
-    {
-        App_sciclientPrintf("All tests have passed \n");
-    }
-    if (tsk2Pass != CSL_PASS)
-    {
-        App_sciclientPrintf("Some Tests have failed \n");
-    }
-    while (loopForever) {;}
+
+    SemaphoreP_post(semTest2);
 }
 
 #if defined(BUILD_MPU) || defined (__C7100__)
