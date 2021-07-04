@@ -574,14 +574,7 @@ int32_t Sciclient_fw_test(
         p = (uint32_t*)fail_start_address;
         while (p < (uint32_t*) fail_end_address)
         {
-            *p = (uint32_t)p; // This should fail
-            CacheP_wbInv((const void*)p, 4);
             volatile uint32_t value = *p;
-            if (value == (uint32_t)p)
-            {
-                r = CSL_EFAIL;
-                break;
-            }
             p++;
         }
         if (gAbortRecieved == (fail_end_address + 1 - fail_start_address)/4U)
