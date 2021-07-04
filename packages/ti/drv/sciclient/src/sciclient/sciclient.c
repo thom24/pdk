@@ -870,6 +870,30 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         Osal_ClearInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
         Osal_EnableInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
         #else
+
+        #if defined (__C7100__)
+        {
+            CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+            CSL_ClecEventConfig evtCfg;
+            evtCfg.secureClaimEnable = 0;
+            evtCfg.evtSendEnable = 1;
+            evtCfg.rtMap = 0x3C;
+            evtCfg.extEvtNum = 0x0;
+            evtCfg.c7xEvtNum = gSciclientMap[contextId].respIntrNum;
+            /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
+             * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+             * to the event number which is shared between GIC and CLEC.
+             */ 
+            if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
+            {
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
+            }
+            else
+            {
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+            }
+        }
+        #endif
         Osal_ClearInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
         Osal_EnableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
         #endif
@@ -1028,6 +1052,30 @@ static void Sciclient_ISR(uintptr_t arg)
             Osal_DisableInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
             #else
             Osal_DisableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
+            #if defined (__C7100__)
+            {
+                CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+                CSL_ClecEventConfig evtCfg;
+                evtCfg.secureClaimEnable = 0;
+                evtCfg.evtSendEnable = 0;
+                evtCfg.rtMap = 0x3C;
+                evtCfg.extEvtNum = 0x0;
+                evtCfg.c7xEvtNum = gSciclientMap[contextId].respIntrNum;
+                /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
+                 * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+                 * to the event number which is shared between GIC and CLEC.
+                 */
+                if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
+                {
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
+                }
+                else
+                {
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                }
+            }
+            Osal_ClearInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
+            #endif
             #endif
         }
         else
