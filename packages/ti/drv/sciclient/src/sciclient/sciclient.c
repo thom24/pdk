@@ -431,10 +431,12 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
 #if defined(_TMS320C6X)
         if (pCfgPrms != NULL)
         {
+            gSciclientHandle.c66xRatRegion = pCfgPrms->c66xRatRegion;
             status = Sciclient_C66xRatMap(pCfgPrms->c66xRatRegion);
         }
         else
         {
+            gSciclientHandle.c66xRatRegion = SCICLIENT_RAT_ENTRY_DEFAULT;
             status = Sciclient_C66xRatMap(SCICLIENT_RAT_ENTRY_DEFAULT);
         }
 #endif
@@ -882,6 +884,11 @@ int32_t Sciclient_deinit(void)
     uint32_t contextId;
     uint32_t doDeInit = 0;
     uintptr_t key = HwiP_disable();
+
+#if defined(_TMS320C6X)
+    CSL_ratRegs *pC66xRatRegs = (CSL_ratRegs *)CSL_C66_COREPAC_C66_RATCFG_BASE;
+#endif
+
     if (gSciclientHandle.initCount == 1U)
     {
         gSciclientHandle.initCount--;
@@ -922,6 +929,9 @@ int32_t Sciclient_deinit(void)
                 }
             }
         }
+#if defined(_TMS320C6X)
+        CSL_ratDisableRegionTranslation(pC66xRatRegs, gSciclientHandle.c66xRatRegion);
+#endif
     }
     return status;
 }

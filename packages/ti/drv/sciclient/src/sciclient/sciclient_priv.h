@@ -170,6 +170,10 @@ typedef struct
     uint32_t              rmBoardConfigComplete;
     /**< Status flag indicating RM Board config went through successfully */
 #endif
+#if defined(_TMS320C6X)
+    uint32_t              c66xRatRegion;
+    /**< rat configuration region to de-init the same */
+#endif
 } Sciclient_ServiceHandle_t;
 
 
