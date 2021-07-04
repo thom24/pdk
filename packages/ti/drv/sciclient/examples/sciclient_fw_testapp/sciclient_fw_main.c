@@ -138,7 +138,7 @@ static uint8_t  gAppTskStackMain[16*1024] __attribute__((aligned(8192)));;
  *       - 8KB chunk for the stack area is used for interrupt handling in this task context
  */
 
-uint32_t gAbortRecieved = 0U;
+volatile uint32_t gAbortRecieved = 0U;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -571,11 +571,12 @@ int32_t Sciclient_fw_test(
     {
         App_sciclientPrintf( "\n5. Reading content from Region 2 to make sure the address is not accesible.");
         /* Access memory region to make sure unable to read and write */
-        p = (uint32_t*)fail_start_address;
-        while (p < (uint32_t*) fail_end_address)
+        volatile uint32_t* pointer = (volatile uint32_t*)fail_start_address;
+        volatile uint32_t value = 0U;
+        uint32_t i = 0U;
+        for (i = 0U; i < (fail_end_address + 1 - fail_start_address)/4U; i++)
         {
-            volatile uint32_t value = *p;
-            p++;
+            value += *(pointer + i);
         }
         if (gAbortRecieved == (fail_end_address + 1 - fail_start_address)/4U)
         {
