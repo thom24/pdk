@@ -315,6 +315,16 @@ static uint8_t gUdmaRxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((align
 
 static SPI_dmaInfo gUdmaInfo;
 
+#endif
+
+#if defined (RTOS_ENV)
+/** \brief Application stack size */
+#define APP_TSK_STACK_MAIN              (0x4000U)
+/** \brief Task stack */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
+
+#if defined (SPI_DMA_ENABLE)
 Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg)
 {
     int32_t         retVal = UDMA_SOK;
@@ -490,15 +500,15 @@ static EDMA3_RM_Handle MCSPIApp_edmaInit(void)
 #endif
     gEdmaHandle = (EDMA3_RM_Handle)edma3init(edma3Id, &edmaResult);
 
-#ifdef USE_BIOS
+#if defined (RTOS_ENV)
     if (edmaResult != EDMA3_DRV_SOK)
     {
         /* Report EDMA Error */
-        System_printf("\nEDMA driver initialization FAIL\n");
+        printf("\nEDMA driver initialization FAIL\n");
     }
     else
     {
-        System_printf("\nEDMA driver initialization PASS.\n");
+        printf("\nEDMA driver initialization PASS.\n");
     }
 #endif
     return(gEdmaHandle);
@@ -1245,7 +1255,7 @@ static bool SPI_test_xfer_error(void *arg)
          * master sleep for 1 second after each transfer
          * to sync with slave transfer
          */
-#ifdef USE_BIOS
+#if defined (RTOS_ENV)
         Task_sleep(1000);
 #else
 #endif
@@ -1524,8 +1534,8 @@ SPI_Tests Spi_tests_slave[] =
  *  ready for master. Slave SPI sends a message to master
  *  while receiving message from master.
  */
-#ifdef USE_BIOS
-Void slaveTaskFxn (UArg arg0, UArg arg1)
+#if defined (RTOS_ENV)
+void slaveTaskFxn (void *arg0, void *arg1)
 #else
 void slaveTaskFxn()
 #endif
@@ -1595,8 +1605,8 @@ void slaveTaskFxn()
  *  Master SPI sends a message to slave and
  *  receives message from slave.
  */
-#ifdef USE_BIOS
-Void masterTaskFxn (UArg arg0, UArg arg1)
+#if defined (RTOS_ENV)
+void masterTaskFxn (void *arg0, void *arg1)
 #else
 void masterTaskFxn()
 #endif
@@ -1605,21 +1615,27 @@ void masterTaskFxn()
     bool      testFail = false;
     SPI_Tests *test;
 
-    SPI_log("Starting SPI Master test. \n");
+#if defined (USE_BIOS)
+    SPI_log("Starting SPI Master test, in TI RTOS environment \n");
+#elif defined (FREERTOS)
+    SPI_log("Starting SPI Master test, in FreeRTOS environment \n");
+#else
+    SPI_log("Starting SPI Master test, in no OS environment \n");
+#endif
 
 #if defined (SOC_J721E) || defined (SOC_J7200)
     while ( *((volatile uint32_t *)(MCSPI_SYNC_ADDR)) != 0x12341234U)
     {
-#ifdef USE_BIOS
-        Task_yield();
+#if defined (RTOS_ENV)
+        TaskP_yield();
 #endif
         /* wait for slave to start. */
         CacheP_Inv((void *)MCSPI_SYNC_ADDR, 4);
     }
-#ifdef USE_BIOS
+#if defined (RTOS_ENV)
     /* Add small delay after the sync.
      * for the slave to be ready before master initiates transfer. */
-    Task_sleep(1000);
+    TaskP_sleepInMsecs(1000);
 #endif
 #endif
 
@@ -1667,8 +1683,7 @@ void masterTaskFxn()
     {
     }
 }
-
-#if (defined (USE_BIOS)  && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if ((defined (USE_BIOS) || defined (FREERTOS)) && (defined (SOC_J721E) || defined (SOC_J7200)))
 #if defined (BUILD_MCU1_0)
 void MCSPI_setupSciServer(void)
 {
@@ -1678,10 +1693,8 @@ void MCSPI_setupSciServer(void)
 
     ret = Sciserver_tirtosInitPrms_Init(&appPrms);
 
-    appPrms.taskPriority[SCISERVER_TASK_USER_LO] =
-                                            4;
-    appPrms.taskPriority[SCISERVER_TASK_USER_HI] =
-                                            5;
+    appPrms.taskPriority[SCISERVER_TASK_USER_LO] = 4;
+    appPrms.taskPriority[SCISERVER_TASK_USER_HI] = 5;
 
     if (ret == CSL_PASS)
     {
@@ -1690,11 +1703,11 @@ void MCSPI_setupSciServer(void)
 
     if (ret == CSL_PASS)
     {
-        System_printf("Starting Sciserver..... PASSED\n");
+        printf("Starting Sciserver..... PASSED\n");
     }
     else
     {
-        System_printf("Starting Sciserver..... FAILED\n");
+        printf("Starting Sciserver..... FAILED\n");
     }
 
     return;
@@ -1710,7 +1723,7 @@ void MCSPI_initSciclient()
     ret = Sciclient_configPrmsInit(&config);
     if (ret != CSL_PASS)
     {
-        System_printf("Sciclient_configPrmsInit Failed\n");
+        printf("Sciclient_configPrmsInit Failed\n");
     }
 
 #if defined (BUILD_MCU1_0)
@@ -1721,7 +1734,7 @@ void MCSPI_initSciclient()
             &config.inPmPrms, &config.inRmPrms);
         if (ret != CSL_PASS)
         {
-            System_printf("Sciclient_boardCfgParseHeader Failed\n");
+            printf("Sciclient_boardCfgParseHeader Failed\n");
         }
     }
 #endif
@@ -1731,7 +1744,7 @@ void MCSPI_initSciclient()
         ret = Sciclient_init(&config);
         if (ret != CSL_PASS)
         {
-            System_printf("Sciclient_init Failed\n");
+            printf("Sciclient_init Failed\n");
         }
     }
 }
@@ -1756,36 +1769,36 @@ int main(void)
     Board_IDInfo  id;
 #endif
 
-#ifdef USE_BIOS
+#if defined (RTOS_ENV)
 #if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
-    Task_Handle task;
-    Error_Block eb;
-    Task_Params taskParams;
+    TaskP_Handle task;
+    TaskP_Params taskParams;
 
-    Error_init(&eb);
+    OS_init();
 
     /* Initialize the task params */
-    Task_Params_init(&taskParams);
+    TaskP_Params_init(&taskParams);
 
     /* Set the task priority higher than the default priority (1) */
     taskParams.priority = 2;
-    taskParams.stackSize = 0x4000;
+    taskParams.stack        = gAppTskStackMain;
+    taskParams.stacksize    = sizeof (gAppTskStackMain);
 
 #if defined (MCSPI_SLAVE_TASK)
-    task = Task_create(slaveTaskFxn, &taskParams, &eb);
+    task = TaskP_create(slaveTaskFxn, &taskParams);
 #elif defined (MCSPI_MASTER_TASK)
-    task = Task_create(masterTaskFxn, &taskParams, &eb);
+    task = TaskP_create(masterTaskFxn, &taskParams);
 #endif /* Task type */
 
     if (task == NULL)
     {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        printf("TaskP_create() failed!\n");
+        return (0);
     }
 #endif /* Soc type */
 #endif /* #ifdef USE_BIOS */
 
-#if (defined (USE_BIOS)  && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if ((defined (USE_BIOS) || defined (FREERTOS)) && (defined (SOC_J721E) || defined (SOC_J7200)))
 #if defined (BUILD_MCU1_0)
     MCSPI_setupSciServer();
 #endif
@@ -1883,9 +1896,9 @@ int main(void)
     }
 #endif
 
-#ifdef USE_BIOS
+#if defined (RTOS_ENV)
     /* Start BIOS */
-    BIOS_start();
+    OS_start();
 #else
 #ifdef MCSPI_MASTER_TASK
     masterTaskFxn();
