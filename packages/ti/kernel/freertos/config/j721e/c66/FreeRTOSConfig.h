@@ -174,9 +174,14 @@ uint32_t uiPortGetRunTimeCounterValue();
 /* Size of ISR Stack in c66x */
 #define configHWI_TASK_STACK_DEPTH                                        (4096)
 
-#define portCONFIGURE_CACHE_LIP_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
-#define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
-#define portCONFIGURE_CACHE_L2_SIZE                                       (DSPICFG_CACHE_SIZE_L2_DISABLED)
+#define portCONFIGURE_CACHE_LIP_SIZE                                      (DSPICFG_CACHE_SIZE_L1_32K)
+#define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_32K)
+#define portCONFIGURE_CACHE_L2_SIZE                                       (DSPICFG_CACHE_SIZE_L2_32K)
+
+/* Start and Size of DDR space */
+/* Used to Enable cache for all DDR space - 0x80000000 to 0xFFFFFFFF (2GB space) */
+#define portCONFIGURE_DDR_START     (0x80000000U)
+#define portCONFIGURE_DDR_SIZE      (0x80000000U)
 
 /* 
  * This is not a FreeRTOS defined config and is defined by TI to enable

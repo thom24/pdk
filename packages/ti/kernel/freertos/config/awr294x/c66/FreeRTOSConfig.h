@@ -179,6 +179,10 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_16K)
 #define portCONFIGURE_CACHE_L2_SIZE                                       (DSPICFG_CACHE_SIZE_L2_DISABLED)
 
+/* Start and Size of DDR space */
+#define portCONFIGURE_DDR_START     (0x0U)
+#define portCONFIGURE_DDR_SIZE      (0x0U)
+
 /* 
  * This is not a FreeRTOS defined config and is defined by TI to enable
  * load update in idle task 
