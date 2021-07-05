@@ -64,6 +64,7 @@
 #include <ti/osal/DebugP.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
+#include <ti/csl/csl_tsc.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 
 /* Let the user override the pre-loading of the initial LR with the address of
@@ -376,7 +377,7 @@ void vPortConfigTimerForRunTimeStats()
 /* return current counter value of high speed counter in units of usecs */
 uint32_t uiPortGetRunTimeCounterValue()
 {
-    uint64_t ts = ((uint64_t)TSCL | ((uint64_t) TSCH << 32U));
+    uint64_t ts = CSL_tscRead();
     uint64_t timeInUsecs;
 
     timeInUsecs = (ts * 1000000) / configCPU_CLOCK_HZ;
