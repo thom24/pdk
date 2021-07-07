@@ -68,7 +68,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,                    /* chNum */
         MCSPI_SINGLE_CH,                    /* chMode */
         (bool)true,                         /* enableIntr */
-        48000000,                           /* inputClkFreq */
+        50000000,                           /* inputClkFreq */
         MCSPI_INITDLY_0,                    /* initDelay */
         MCSPI_RX_TX_FIFO_SIZE,              /* rxTrigLvl */
         MCSPI_RX_TX_FIFO_SIZE,              /* txTrigLvl */
@@ -128,7 +128,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -188,7 +188,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -248,7 +248,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -303,7 +303,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -358,7 +358,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -413,7 +413,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -468,7 +468,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_MAIN_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -922,12 +922,12 @@ int32_t OSPI_socInit(void)
         {
             ospiInitCfg[1].intrNum = CSLR_MCU_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
-    } 
+    }
     else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) /* Main R5 SS0*/
     {
         /* Configure the Main SS OSPI instances for Main SS Pulsar R5 . R5FSS'n'_CORE'n' */
         /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
-        if(r5CpuInfo.cpuID == 0U) 
+        if(r5CpuInfo.cpuID == 0U)
         {
             ospiInitCfg[0].intrNum = CSLR_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
         }
@@ -945,12 +945,12 @@ int32_t OSPI_socInit(void)
             ospiInitCfg[1].intrNum = CSLR_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
     }
-    else 
+    else
     {
         ret = -1;
     }
 #endif
-    return (ret);    
+    return (ret);
 }
 
 /**

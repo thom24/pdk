@@ -65,7 +65,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         MCSPI_CHANNEL_0,                    /* chNum */
         MCSPI_SINGLE_CH,                    /* chMode */
         (bool)true,                         /* enableIntr */
-        48000000,                           /* inputClkFreq */
+        50000000,                           /* inputClkFreq */
         MCSPI_INITDLY_0,                    /* initDelay */
         MCSPI_RX_TX_FIFO_SIZE,              /* rxTrigLvl */
         MCSPI_RX_TX_FIFO_SIZE,              /* txTrigLvl */
@@ -125,7 +125,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -185,7 +185,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -245,7 +245,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -300,7 +300,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         MCSPI_CHANNEL_0,
         MCSPI_SINGLE_CH,
         (bool)true,
-        48000000,
+        50000000,
         MCSPI_INITDLY_0,
         MCSPI_RX_TX_FIFO_SIZE,
         MCSPI_RX_TX_FIFO_SIZE,
@@ -848,17 +848,17 @@ int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
         {
             src_id = TISCI_DEV_MCU_FSS0_OSPI_1;
         }
-        
+
         if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)         /* MAIN R5 SS0 */
         {
             req.type = TISCI_DEV_R5FSS0_INTROUTER0;
             if(r5CpuInfo.cpuID == 0U)
             {
-                dst_id = TISCI_DEV_R5FSS0_CORE0;    /* Main R5 -SS0 - CPU0 */ 
+                dst_id = TISCI_DEV_R5FSS0_CORE0;    /* Main R5 -SS0 - CPU0 */
             }
             else
             {
-                dst_id = TISCI_DEV_R5FSS0_CORE1;    /* Main R5 -SS0 - CPU1*/                 
+                dst_id = TISCI_DEV_R5FSS0_CORE1;    /* Main R5 -SS0 - CPU1*/
             }
         }
         else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)    /* MAIN R5 SS1 */
@@ -866,15 +866,15 @@ int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
             req.type = TISCI_DEV_R5FSS1_INTROUTER0;
             if(r5CpuInfo.cpuID == 0U)
             {
-                dst_id = TISCI_DEV_R5FSS1_CORE0;    /* Main R5 -SS1 - CPU0 */ 
+                dst_id = TISCI_DEV_R5FSS1_CORE0;    /* Main R5 -SS1 - CPU0 */
             }
             else
             {
-                dst_id = TISCI_DEV_R5FSS1_CORE1;    /* Main R5 -SS1 - CPU1*/                 
+                dst_id = TISCI_DEV_R5FSS1_CORE1;    /* Main R5 -SS1 - CPU1*/
             }
         }
 
-        if(setIntrPath) 
+        if(setIntrPath)
         {
             req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
