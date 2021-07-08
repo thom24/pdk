@@ -373,6 +373,7 @@ export sciclient_fw_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_COR
 export sciclient_fw_testapp_$(1)_SBL_APPIMAGEGEN = yes
 export sciclient_fw_testapp_$(1)_SBL_IMAGEGEN = no
 export sciclient_fw_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export sciclient_fw_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 ifneq ($(1),$(filter $(1), safertos))
 sciclient_EXAMPLE_LIST += sciclient_fw_testapp_$(1)
 else
