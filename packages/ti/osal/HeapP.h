@@ -37,7 +37,7 @@
  *  @{
  */
 /*! ============================================================================
- *  @file       HeaP.h
+ *  @file       HeapP.h
  *
  *  @brief      Heap management module for the RTOS Porting Interface.
   *
@@ -122,14 +122,14 @@ extern HeapP_Handle HeapP_create(const HeapP_Params *params);
 /*!
  * @brief Delete the user defined heap
  *
- * @param heap      [in] Heap handle
+ * @param handle    [in] Heap handle
  */
 extern HeapP_Status HeapP_delete(HeapP_Handle handle);
 
 /*!
  * @brief Alloc memory from user defined heap
  *
- * @param heap      [in] Heap handle
+ * @param handle    [in] Heap handle
  * @param allocSize [in] Size of memory to allocate
  *
  * \return pointer to allcoated memory
@@ -140,7 +140,7 @@ extern void *HeapP_alloc(HeapP_Handle handle, uint32_t allocSize);
 /*!
  * @brief Free memory from user defined heap
  *
- * @param heap      [in] Heap handle
+ * @param handle    [in] Heap handle
  * @param ptr       [in] Pointer to memory allocated using \ref HeapP_alloc
  * @param size      [in] Size of the block of memory to free
  *
@@ -150,8 +150,8 @@ extern HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size);
 /*!
  * @brief Get detailed heap statistics
  *
- * @param heap      [in] Heap handle
- * @param pHeapStats [out] Returned heap statistics
+ * @param handle    [in] Heap handle
+ * @param stats     [out] Returned heap statistics
  */
 extern HeapP_Status HeapP_getHeapStats(HeapP_Handle handle, HeapP_MemStats *stats);
 
