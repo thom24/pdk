@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -255,19 +255,6 @@ Board_STATUS Board_pinmuxConfig (void);
  *
  */
 void Board_uartTxPinmuxConfig(void);
-
-/**
- * \brief  Function to configure Wakeup I2C pinmux
- *
- * This function enbales basic pinmux configuration
- * required for Wakeup I2C access.
- *
- * \param   void
- *
- * \return  None
- *
- */
-void Board_wkupI2cPinmuxConfig(void);
 
 #ifdef __cplusplus
 }

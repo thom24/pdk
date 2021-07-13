@@ -578,47 +578,12 @@ Board_STATUS Board_pinmuxConfigWkup (void)
     return status;
 }
 
-/**
- * \brief  Board UART Tx pinmuxing enable function
- *
- * Enables pinmux for the UART Tx pin of the default UART instance used
- * by ROM/SBL.
- *
- * \param   void
- *
- * \return  void
- *
- */
 void Board_uartTxPinmuxConfig(void)
 {
     /* Unlock partition lock kick */
-    HW_WR_REG32(BOARD_PADCONFIG_LOCK_KICK_ADDR, BOARD_KICK0_UNLOCK_VAL);
-    HW_WR_REG32((BOARD_PADCONFIG_LOCK_KICK_ADDR + 4U), BOARD_KICK1_UNLOCK_VAL);
+    HW_WR_REG32(BOARD_MCU_UART_TX_LOCK_KICK_ADDR, BOARD_KICK0_UNLOCK_VAL);
+    HW_WR_REG32(BOARD_MCU_UART_TX_LOCK_KICK_ADDR + 4U, BOARD_KICK1_UNLOCK_VAL);
 
     /* Configure pinmux for UART Tx pin */
     HW_WR_REG32(BOARD_MCU_UART_TX_PINMUX_ADDR, BOARD_MCU_UART_TX_PINMUX_VAL);
-}
-
-/**
- * \brief  Function to configure Wakeup I2C pinmux
- *
- * This function enbales basic pinmux configuration
- * required for Wakeup I2C access.
- *
- * \param   void
- *
- * \return  None
- *
- */
-void Board_wkupI2cPinmuxConfig(void)
-{
-    /* Unlock partition lock kick */
-    HW_WR_REG32(BOARD_PADCONFIG_LOCK_KICK_ADDR, BOARD_KICK0_UNLOCK_VAL);
-    HW_WR_REG32((BOARD_PADCONFIG_LOCK_KICK_ADDR + 4U), BOARD_KICK1_UNLOCK_VAL);
-
-    /* Configure pinmux for Wake-up I2C pins */
-    Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP, PIN_WKUP_I2C0_SCL,
-                       BOARD_WKUP_I2C_PINMUX_VAL);
-    Board_pinmuxSetReg(BOARD_SOC_DOMAIN_WKUP, PIN_WKUP_I2C0_SDA,
-                       BOARD_WKUP_I2C_PINMUX_VAL);
 }
