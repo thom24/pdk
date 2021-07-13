@@ -529,15 +529,9 @@ void setup_main_r5f_qos(void)
     }
 }
 
-static void J721E_SetupQoS(uint32_t isBuildHs)
+static void J721E_SetupQoS()
 {
-    /* Workaround to unblock HS device boot
-     * setup_navss_nb() causes problem with load of TIFS
-     * So, we comment out the following. */
-    if(isBuildHs != TRUE)
-    {
-        setup_navss_nb();
-    }
+    setup_navss_nb();
     setup_c66_qos();
     /* Workaround to unblock PDK-8359 .
      * setup_main_r5f_qos() results in crashing the UDMA DRU examples on
@@ -553,10 +547,10 @@ static void J721E_SetupQoS(uint32_t isBuildHs)
 #endif
 
 /* This function is to be called from other apps (e.g., mcusw boot app) to set QoS settings */
-void SBL_SetQoS(uint32_t isBuildHs)
+void SBL_SetQoS()
 {
 #if defined(SOC_J721E)
-    J721E_SetupQoS(isBuildHs);
+    J721E_SetupQoS();
 #endif
 }
 

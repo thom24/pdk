@@ -786,6 +786,10 @@ void SBL_SocLateInit(void)
 
     J721E_SetupLeoPmicAvs(SBL_OPP_NOM);
 
+#if !defined(SBL_ENABLE_DEV_GRP_MCU) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
+    SBL_SetQoS();
+#endif
+
     SBL_ADD_PROFILE_POINT;
 }
 
@@ -822,9 +826,6 @@ void SBL_SocEarlyInit(uint32_t isBuildHs)
 {
     J721E_SetupLvCmosDriveStrength();
     J721E_UART_InitPwrClk();
-#if !defined(SBL_ENABLE_DEV_GRP_MCU) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
-    SBL_SetQoS(isBuildHs);
-#endif
 }
 
 #endif
