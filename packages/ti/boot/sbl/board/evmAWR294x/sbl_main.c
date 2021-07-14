@@ -322,7 +322,7 @@ int main()
     DebugP_assert(boardStatus == BOARD_SOK);
 
     /* Any SoC specific Init. */
-    SBL_SocEarlyInit(FALSE);
+    SBL_SocEarlyInit();
 
     if (SBL_LOG_LEVEL > SBL_LOG_ERR)
     {
@@ -381,7 +381,7 @@ int main()
 
         SBL_log(SBL_LOG_MAX, "Initlialzing PLLs ...");
         SBL_ADD_PROFILE_POINT;
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2, 
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2,
                                     Rcm_HSDIVClkOutMuxClockSource_DPLL_CORE_HSDIV0_CLKOUT2_PreMux);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
 
@@ -390,17 +390,17 @@ int main()
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(450U);
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2] = SBL_FREQ_MHZ2HZ(450U);
         SBL_RcmDspDpllConfig(RCM_PLL_FOUT_FREQID_CLK_900MHZ, &hsDivCfg);
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1, 
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1,
                            Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT1_PreMux);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2, 
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2,
                            Rcm_HSDIVClkOutMuxClockSource_DPLL_DSP_HSDIV0_CLKOUT2_PreMux);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
 
         hsDivCfg.hsdivOutEnMask = RCM_PLL_HSDIV_OUTPUT_ENABLE_1;
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = SBL_FREQ_MHZ2HZ(200U);
         SBL_RcmPerDpllConfig(RCM_PLL_FOUT_FREQID_CLK_800MHZ, &hsDivCfg);
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1, 
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1,
                            Rcm_HSDIVClkOutMuxClockSource_DPLL_PER_HSDIV0_CLKOUT1_PreMux);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
         SBL_log(SBL_LOG_MAX, "done.\n");
@@ -451,7 +451,7 @@ int main()
         SBL_RcmGetDeviceFrequency(&deviceFreqEfuseCfg);
         hsDivCfg.hsdivOutEnMask = (RCM_PLL_HSDIV_OUTPUT_ENABLE_0 |
                                    RCM_PLL_HSDIV_OUTPUT_ENABLE_1 |
-                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_2 | 
+                                   RCM_PLL_HSDIV_OUTPUT_ENABLE_2 |
                                    RCM_PLL_HSDIV_OUTPUT_ENABLE_3);
         /* RCM_PLL_HSDIV_OUTPUT_IDX0 to 400/300 based on e-fuse */
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX0] = deviceFreqEfuseCfg.r5FreqHz;
@@ -460,14 +460,14 @@ int main()
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX3] = SBL_FREQ_MHZ2HZ(200U);
         SBL_RcmApllHSDivConfig(RCM_APLLID_1P2G, &hsDivCfg);
 
-   
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2, 
+
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_CORE_OUT2,
                            Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT0);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2, 
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT2,
                            Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT2);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1, 
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_PER_OUT1,
                            Rcm_HSDIVClkOutMuxClockSource_APLL_1p2G_HSDIV0_CLKOUT3);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
 
@@ -480,7 +480,7 @@ int main()
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX1] = deviceFreqEfuseCfg.dspFreqHz;
         hsDivCfg.hsDivOutFreqHz[RCM_PLL_HSDIV_OUTPUT_IDX2] = SBL_FREQ_MHZ2HZ(200U);
         SBL_RcmApllHSDivConfig(RCM_APLLID_1P8G, &hsDivCfg);
-        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1, 
+        retVal = SBL_RcmSetHSDivMux(Rcm_HSDIVClkOutMuxId_DPLL_DSP_OUT1,
                            Rcm_HSDIVClkOutMuxClockSource_APLL_1p8G_HSDIV0_CLKOUT1);
         DebugP_assert(retVal == Rcm_Return_SUCCESS);
 

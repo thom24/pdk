@@ -93,7 +93,7 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-void SBL_SocEarlyInit(uint32_t isBuildHs);
+void SBL_SocEarlyInit();
 void SBL_SocLateInit(void);
 extern void SBL_moduleClockInit(void);
 

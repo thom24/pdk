@@ -323,7 +323,7 @@ int main()
     DebugP_assert(boardStatus == BOARD_SOK);
 
     /* Any SoC specific Init. */
-    SBL_SocEarlyInit(FALSE);
+    SBL_SocEarlyInit();
 
     if (SBL_LOG_LEVEL > SBL_LOG_ERR)
     {
