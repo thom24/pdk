@@ -600,6 +600,21 @@ export board_diag_icssgEmac_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_icssgEmac_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += board_diag_icssgEmac
 
+# icssg_enet
+export board_diag_icssgEnet_COMP_LIST = board_diag_icssgEnet
+board_diag_icssgEnet_RELPATH = ti/board/diag/icssg_enet/build
+board_diag_icssgEnet_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/icssg_enet/build
+board_diag_icssgEnet_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_icssgEnet_MAKEFILE = -f makefile
+export board_diag_icssgEnet_BOARD_DEPENDENCY = yes
+export board_diag_icssgEnet_CORE_DEPENDENCY = yes
+board_diag_icssgEnet_PKG_LIST = board_diag_icssgEnet
+board_diag_icssgEnet_INCLUDE = $(board_diag_icssgEnet_PATH)
+board_diag_icssgEnet_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_icssgEnet_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_icssgEnet_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_icssgEnet
+
 # icssg_led
 export board_diag_icssgLed_COMP_LIST = board_diag_icssgLed
 board_diag_icssgLed_RELPATH = ti/board/diag/icssg_led/build

@@ -1,4 +1,4 @@
-# Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2020-2021 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -62,10 +62,11 @@ INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(B
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = board csl csl_init osal_nonos uart gpio emac i2c
+COMP_LIST_COMMON = board csl csl_init osal_nonos uart gpio i2c
 ifeq ($(SOC), $(filter $(SOC), am65xx))
 COMP_LIST_COMMON += sciclient udma pruss
 endif
+COMP_LIST_COMMON += enet enetsoc enetphy enet_example_utils_baremetal pm_lib enet_cfgserver
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src makefile
@@ -80,13 +81,13 @@ SRCS_COMMON += icssg_emac_test.c diag_common_cfg.c emac_fw_config_dual_mac.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-EXTERNAL_LNKCMD_FILE_LOCAL = am65xx_idk/linker_$(CORE).lds
 endif
+
+EXTERNAL_LNKCMD_FILE_LOCAL = am65xx_idk/linker.lds
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)
 

@@ -1,298 +1,155 @@
 /******************************************************************************
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
- *
- *  Redistribution and use in source and binary forms, with or without
- *  modification, are permitted provided that the following conditions
- *  are met:
- *
- *    Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- *    Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the
- *    distribution.
- *
- *    Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- *  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- *  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- *  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- *  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- *  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- *  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- *  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- *  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- *  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- *  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- *****************************************************************************/
+* Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions
+* are met:
+*
+* Redistributions of source code must retain the above copyright
+* notice, this list of conditions and the following disclaimer.
+*
+* Redistributions in binary form must reproduce the above copyright
+* notice, this list of conditions and the following disclaimer in the
+* documentation and/or other materials provided with the
+* distribution.
+*
+* Neither the name of Texas Instruments Incorporated nor the names of
+* its contributors may be used to endorse or promote products derived
+* from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+* "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+* LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+* A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+* OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+* SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+* LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+* DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+* THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+* OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+*****************************************************************************/
 
 /**
  *  \file   icssg_emac_test.h
  *
- *  \brief  This file contains all Local definitions for ICSSG EMAC diag
- *  application.
+ *  \brief  This file contains all Local definitions for ICSSG Ethernet test
+ *          application.
  *
  */
 
-#ifndef __ICSSG_EMAC_TEST_H__
-#define __ICSSG_EMAC_TEST_H__
-
-/* CSL Header files */
-#include <string.h>
-#include <ti/csl/soc.h>
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
-#include <ti/board/board.h>
-#include <ti/drv/udma/udma.h>
-#include "diag_common_cfg.h"
-#include "board_cfg.h"
-
-/* EMAC Driver Header File. */
-#include <ti/drv/emac/emac_drv.h>
-#include <ti/drv/emac/soc/emac_soc_v5.h>
-#include <ti/drv/emac/src/v5/emac_drv_v5.h>
-
-/* PRUSS Driver Header File. */
-#include <ti/drv/pruss/pruicss.h>
-#include <ti/drv/pruss/soc/pruicss_v1.h>
-
-/* ICSSG EMAC firmware header files PG2.0 */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE0_bin.h>      /* PDSPcode */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE0_bin.h>        /* PDSP2code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RX_PRU_SLICE1_bin.h>      /* PDSP3code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/RTU0_SLICE1_bin.h>        /* PDSP4code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE0_bin.h>      /* PDSP5code */
-#include <ti/drv/emac/firmware/icss_dualmac/bin_pg2/TX_PRU_SLICE1_bin.h>      /* PDSP6code */
-
-/* EMAC firmware config header files */
-#include <ti/drv/emac/firmware/icss_dualmac/config/emac_fw_config_dual_mac.h>
+#ifndef __CPSW_ETH_TEST_H__
+#define __CPSW_ETH_TEST_H__
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-extern void BOARD_delay(uint32_t usecs);
+#include <stdint.h>
+#include <string.h>
+#include <assert.h>
 
-#define EMAC_TEST_APP_WITHOUT_DDR  (TRUE)
+#include <ti/drv/uart/UART.h>
+#include <ti/drv/uart/UART_stdio.h>
 
-/**********************************************************************
- ************************** LOCAL Definitions *************************
- **********************************************************************/
-#define BOARD_DIAG_ICSS_EMAC_MAX_PORTS_PER_INSTANCE     ((uint32_t)2U)
-#define BOARD_DIAG_ICSS_EMAC_MAX_INTANCES               ((uint32_t)3U)
-#define BOARD_DIAG_ICSS_EMAC_MAX_PORTS                  ((BOARD_DIAG_ICSS_EMAC_MAX_INTANCES)*(BOARD_DIAG_ICSS_EMAC_MAX_PORTS_PER_INSTANCE))
+#include <ti/board/board.h>
+#include "diag_common_cfg.h"
 
-#define BOARD_DIAG_ICSS_EMAC_LINK_TIMEOUT_COUNT               (1000U)
-
-/* Ring definitions */
-#define BOARD_DIAG_ICSS_EMAC_RING_TRCNT                      (128U)   /* Number of ring entries */
-/* Size (in bytes) of each ring entry (for 48-bit packet descriptor ptr) */
-#define BOARD_DIAG_ICSS_EMAC_RING_TRSIZE                     (8U)
-#define BOARD_DIAG_ICSS_EMAC_UDMAP_DESC_SIZE                 (128U)
-#define BOARD_DIAG_ICSS_EMAC_CACHE_LINESZ                    (128U)
-
-#define BOARD_DIAG_ICSS_EMAC_MAX_CHANS_PER_PORT              (1)
-
-#ifdef DIAG_STRESS_TEST
-#define BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT         (10240U)
+#if defined(am65xx_evm)
+#include <ti/board/src/am65xx_evm/include/board_ethernet_config.h>
 #else
-#define BOARD_DIAG_ICSS_EMAC_PKT_SEND_COUNT         (5U)
+#include <ti/board/src/am65xx_idk/include/board_ethernet_config.h>
 #endif
 
-/* DO NOT CHANGE test_pkt UNLESS BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE IS UPDATED */
-#define BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE          (128U)
+#include <ti/drv/enet/enet.h>
+#include <ti/drv/enet/include/core/enet_dma.h>
+#include <ti/drv/enet/include/per/cpsw.h>
 
-#define BOARD_DIAG_ICSS_EMAC_NUM_HOST_DESC          (128U)
+#include <ti/drv/enet/examples/utils/include/enet_apputils.h>
+#include <ti/drv/enet/examples/utils/include/enet_appmemutils.h>
+#include <ti/drv/enet/examples/utils/include/enet_appmemutils_cfg.h>
+#include <ti/drv/enet/examples/utils/include/enet_appboardutils.h>
+#include <ti/drv/enet/examples/utils/include/enet_apputils_rtos.h>
+#include <ti/drv/enet/examples/utils/include/enet_board_am65xevm.h>
 
-/**
- * @brief  Number of channels configured by a core on one port
- */
-#define BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE     (1U)
+/* Loopback test iteration count */
+#define BOARD_DIAG_ENETLPBK_NUM_ITERATION          (1U)
+/* Loopback test Number of packets count */
+#define BOARD_DIAG_ENETLPBK_TEST_PKT_NUM           (20U)
+/* Loopback test packet length */
+#define BOARD_DIAG_ENETLPBK_TEST_PKT_LEN           (500U)
+/* Status check */
+#define BOARD_DIAG_SUCCESS                          (0U)
 
-/**
- * @brief  Number of EMAC MAC addresses configured per channel
- */
-#define BOARD_DIAG_ICSS_EMAC_NUM_MACADDRS_PER_CHAN  (1U)
-/**
- * @brief  Max EMAC packet size in bytes initialized for the driver
- */
-#define BOARD_DIAG_ICSS_EMAC_INIT_PKT_SIZE          (128U)
-
-/**
- * @brief  Max packet size in bytes used in the application,
- *         align to 128 byte cache line size
- */
-#define BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE           (128U)
-
-/**
- * @brief  Total packet buffer size in bytes per core
- *
- */
-#define BOARD_DIAG_ICSS_EMAC_TOTAL_PKTBUF_SIZE      (BOARD_DIAG_ICSS_EMAC_MAX_PORTS*BOARD_DIAG_ICSSG_EMAC_MAX_PKTS* \
-                                                    BOARD_DIAG_ICSS_EMAC_MAX_PKT_SIZE)
-
-/**
- * @brief  Max number of packets in the application free packet queue
- *
- */
-#define BOARD_DIAG_ICSSG_EMAC_MAX_PKTS              ((BOARD_DIAG_ICSS_EMAC_MAX_PORTS*BOARD_DIAG_ICSS_EMAC_TEST_PKT_SIZE))
-
-/**
- * @brief  Max number of packet descriptors per port initialized
- *         for driver managed RX queue
- */
-#define BOARD_DIAG_ICSS_EMAC_INIT_RX_PKTS           (8*BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE)
-
-/**
- * @brief  Max number of packet descriptors per port initialized
- *         for driver managed TX queue
- */
-#define BOARD_DIAG_ICSS_EMAC_INIT_TX_PKTS           (BOARD_DIAG_ICSSG_EMAC_MAX_PKTS-BOARD_DIAG_ICSS_EMAC_INIT_RX_PKTS)
-
-/* Number of TX packet descriptor */
-#define BOARD_DIAG_ICSS_EMAC_TX_PKT_DESC_COUNT          (8U)
-
-/* Number of RX packet descriptor */
-#define BOARD_DIAG_ICSS_EMAC_RX_PKT_DESC_COUNT          (8U)
-
-#define BOARD_DIAG_ICSS_EMAC_REG_DUMP_MAX    (16U)
-
-#define BOARD_DIAG_ICSSEMAC_TEST_TIMEOUT   (100U)
-#define TX_BUFF_POOL_SIZE (0X1800U)
-#define TX_BUFF_POOL_TOTAL_DUAL_MAC (TX_BUFF_POOL_SIZE + 0x80U) * 8U
-#define TX_BUFF_POOL_NUM (16U)
-
-#define BOARD_ICSS_EMAC_APP_BOARDID_ADDR   (0x52U)
-#define BOARD_ICSS_MAX_PORTS_IDK           (4U)
-
-
-
-#ifndef EMAC_TEST_APP_WITHOUT_DDR
-#define EMAC_TEST_MAX_CHANS_PER_PORT 4
-#define EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT 9
-#else
-#define EMAC_TEST_MAX_CHANS_PER_PORT 1
-#define EMAC_TEST_MAX_SUB_RX_CHANS_PER_PORT 3
-#endif
-
-#ifdef EMAC_TEST_APP_WITHOUT_DDR
-#define EMAC_TEST_APP_RING_ENTRIES      (32)
-#else
-#define EMAC_TEST_APP_RING_ENTRIES      (128)
-#endif
-/* Size (in bytes) of each ring entry (Size of pointer - 64-bit) */
-
-#define EMAC_TEST_APP_RING_ENTRY_SIZE   (sizeof(uint64_t))
-/* Total ring memory */
-
-#define EMAC_TEST_APP_RING_MEM_SIZE     (EMAC_TEST_APP_RING_ENTRIES * EMAC_TEST_APP_RING_ENTRY_SIZE)
-
-#define EMAC_ICSSG_DUAL_MAC_FW_BUFER_POOL_SIZE_PG2 0X14000 // 8 BUFFER POOLS EACH 0X2000 BYTES PLUS 0X4000 BYTES FOR RX Q CONTEXT info
-#define EMAC_ICSSG_BUFFER_POOL_SIZE_PG2 0x2000u
-#define EMAC_ICSSG_MAX_NUM_BUFFER_POOLS_PG2 8u
-
-
-typedef struct BOARD_DIAG_MDIO_INFO_tag
+extern void EnetAppUtils_timerInit(void);
+/** 
+  * @brief Enet device object structure 
+  *
+  */
+typedef struct BoardDiag_EnetLpbkObj_s
 {
-    uint32_t mdioBaseAddrs;
-    uint8_t  phyAddrs;
-    uint16_t strapst1;
-    uint16_t strapst2;
-} BOARD_DIAG_MDIO_INFO_T;
+    /* Enet handle */
+    Enet_Handle hEnet;
+    /* CPSW instance type */
+    Enet_Type enetType;
+    /* Instant Id */
+    uint32_t instId;
+    /* Core Id */
+    uint32_t coreId;
+    /* Core Key */
+    uint32_t coreKey;
+    /* Board Id */
+    uint32_t boardId;
+    /* MAC port number */
+    Enet_MacPort macPort;
+    /* MAC mode (defined in board library) */
+    emac_mode macMode;
+    /* CPSW driver handle */
+    EnetDma_RxChHandle hRxCh;
+
+    EnetDma_PktQ rxFreeQ;
+    EnetDma_PktQ rxReadyQ;
+    EnetDma_TxChHandle hTxCh;
+    /* TX DMA packet info memory */
+    EnetDma_PktQ txFreePktInfoQ;
+
+    /* UDMA driver handle */
+    Udma_DrvHandle hUdmaDrv;
+    uint32_t rxFlowIdx;
+    uint32_t rxStartFlowIdx;
+    /* Tx channel number */
+    uint32_t txChNum;
+    /* Host mac address */
+    uint8_t hostMacAddr[ENET_MAC_ADDR_LEN];
+
+    /* Test config params */
+    /* external LoopBack enable */
+    bool testExtLoopback;
+    /* PHY loopback */
+    bool testPhyLoopback;
+    /* Print received Ethernet frames */
+    bool printFrame;
+
+    /* Packet transmission */
+    uint32_t totalTxCnt;
+
+    /* Packet reception */
+    uint32_t totalRxCnt;
+
+} BoardDiag_EnetLpbkObj_t;
 
 /**
- * @brief
- *  Application Queue Data Structure
- */
-typedef struct BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_tag
-{
-    uint32_t            Count;
-    /**< Number of packets in queue */
-    EMAC_PKT_DESC_T*  pHead;
-    /**< Pointer to the first packet */
-    EMAC_PKT_DESC_T*  pTail;
-    /**< Pointer to the last packet */
-} BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T;
-
-/**
- * @brief
- *  Core specific EMAC port control block
+ *  \brief    This function runs CPSW2G ethernet test
  *
- * @details
- *  Maintains the EMAC port control information of a core
- */
-typedef struct BOARD_DIAG_ICSSG_EMAC_EMAC_PCB_tag
-{
-    Uint32                          emac_state;
-    /**< EMAC Port state */
-    Uint32                          phy_addr;
-    /**< Physical layer transceiver address mapped to the EMAC port */
-    EMAC_PKT_DESC_T                 pkt_desc[BOARD_DIAG_ICSSG_EMAC_MAX_PKTS];
-    /**< Pre-allocated/initialized packet descriptiors for both free queue and RX queues */
-    BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T                 freeQueue;
-    /**< Free packet descriptor queue, one queue per channel */
-    BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T                 rxQueue[BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE];
-    /**< Received packet descriptor queue, one queue per channel */
-    EMAC_MAC_ADDR_T                 mac_addr[BOARD_DIAG_ICSS_EMAC_NUM_CHANS_PER_CORE][BOARD_DIAG_ICSS_EMAC_NUM_MACADDRS_PER_CHAN];
-    /**< MAC address for all the channels */
-
-} BOARD_DIAG_ICSSG_EMAC_EMAC_PCB_T;
-
-/**
- * @brief
- *  EMAC Master Control Block
+ *  \return   int8_t
+ *               0 - in case of success
+ *              -1 - in case of failure.
  *
- * @details
- *  Maintains the EMAC control information and error statistics.
  */
-typedef struct BOARD_DIAG_ICSSG_EMAC_MCB_V2_tag
-{
-    uint32_t                             core_num;
-    EMAC_PKT_DESC_T                      pkt_desc[BOARD_DIAG_ICSSG_EMAC_MAX_PKTS];
-    /**< Pre-allocated/initialized packet descriptiors for both free queue and RX queues */
-    BOARD_DIAG_ICSSG_EMAC_PKT_QUEUE_T    freeQueue;
-    /**< EMAC port control block */
-} BOARD_DIAG_ICSSG_EMAC_MCB_V2_T;
-
-typedef struct BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_tag {
-    const uint32_t *pru;
-    uint32_t pru_size;
-    const uint32_t *rtu;
-    uint32_t rtu_size;
-    const uint32_t *txpru;
-    uint32_t txpru_size;
-} BOARD_DIAG_ICSSG_EMAC_PRUICSS_FW_T;
-
-/**
- * \brief  ICSSG emac test function
- *
- * This function executes emac diagnostic test
- *
- * \return  int8_t
- *              0  - in case of success
- *              1  - in case of failure
- */
-int8_t BoardDiag_IcssgEmacTest(void);
-
-/**
-* \brief  ICSSG emac test function
-*
-* This function executes emac diagnostic test with interposer card
-*
-* \return  int8_t
-*              0  - in case of success
-*              1  - in case of failure
-*/
-int8_t BoardDiag_IcssgEmacTestInterposer(void);
+int8_t BoardDiag_cpswEthRunTest(void);
 
 #ifdef __cplusplus
 }
-#endif /* __cplusplus */
-
-#endif /* __ICSSG_EMAC_TEST_H__ */
-
+#endif
+#endif /* __CPSW_ETH_TEST_H__ */
