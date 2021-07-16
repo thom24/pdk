@@ -268,6 +268,75 @@ PCIE_QOS__SAMPLE_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LI
 
 $(eval ${PCIE_QOS__SAMPLE_EXAMPLEPROJECT_MACRO_LIST})
 
+# PCIE SSD example app
+<<<<<<< HEAD
+define PCIE_SSD_EXAMPLEPROJECT_RULE
+
+export PCIE_ssd_ExampleProject_$(1)_COMP_LIST = PCIE_ssd_ExampleProject_$(1)
+PCIE_ssd_ExampleProject_$(1)_RELPATH = ti/drv/pcie/example/ssd
+PCIE_ssd_ExampleProject_$(1)_PATH = $(PDK_PCIE_COMP_PATH)/example/ssd
+export PCIE_ssd_ExampleProject_$(1)_BOARD_DEPENDENCY = yes
+export PCIE_ssd_ExampleProject_$(1)_CORE_DEPENDENCY = no
+export PCIE_ssd_ExampleProject_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export PCIE_ssd_ExampleProject_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+PCIE_ssd_ExampleProject_$(1)_PKG_LIST = PCIE_ssd_ExampleProject_$(1)
+PCIE_ssd_ExampleProject_$(1)_INCLUDE = $(PCIE_ssd_ExampleProject_$(1)_PATH)
+<<<<<<< HEAD
+<<<<<<< HEAD
+export PCIE_ssd_ExampleProject_$(1)_BOARDLIST = am65xx_idk
+export PCIE_ssd_ExampleProject_$(1)_$(SOC)_CORELIST = mpu1_0
+=======
+export PCIE_ssd_ExampleProject_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvpcie_BOARDLIST))
+export PCIE_ssd_ExampleProject_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvpcie_$(SOC)_CORELIST))
+>>>>>>> cc7d9980b (PDK-9352: Added PCIe SSD examples for AM65x)
+=======
+export PCIE_ssd_ExampleProject_$(1)_BOARDLIST = am65xx_idk
+export PCIE_ssd_ExampleProject_$(1)_$(SOC)_CORELIST = mpu1_0
+>>>>>>> 3fda8cd5c (Updating as per the review comments)
+export PCIE_ssd_ExampleProject_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+pcie_EXAMPLE_LIST += PCIE_ssd_ExampleProject_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+pcie_EXAMPLE_LIST += PCIE_ssd_ExampleProject_$(1)
+endif
+endif
+
+endef
+
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+PCIE_SSD_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LIST) baremetal, $(call PCIE_SSD_EXAMPLEPROJECT_RULE,$(curos)))
+=======
+PCIE_SSD_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LIST), $(call PCIE_SSD_EXAMPLEPROJECT_RULE,$(curos)))
+>>>>>>> cc7d9980b (PDK-9352: Added PCIe SSD examples for AM65x)
+=======
+PCIE_SSD_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LIST) baremetal, $(call PCIE_SSD_EXAMPLEPROJECT_RULE,$(curos)))
+>>>>>>> 57bdc7c55 (PDK-9352: PCIE SSD support for mpu core on am65xx)
+=======
+PCIE_SSD_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, $(drvpcie_RTOS_LIST) baremetal, $(call PCIE_SSD_EXAMPLEPROJECT_RULE,$(curos)))
+=======
+PCIE_SSD_EXAMPLEPROJECT_MACRO_LIST := $(foreach curos, baremetal, $(call PCIE_SSD_EXAMPLEPROJECT_RULE,$(curos)))
+>>>>>>> 3c4b2cebf (PDK-9352: PCIE SSD support for am65xx)
+>>>>>>> 6ab8527e5 (PDK-9352: PCIE SSD Example)
+
+$(eval ${PCIE_SSD_EXAMPLEPROJECT_MACRO_LIST})
+=======
+export PCIE_ssd_ExampleProject_COMP_LIST = PCIE_ssd_ExampleProject
+PCIE_ssd_ExampleProject_RELPATH = ti/drv/pcie/example/ssd
+PCIE_ssd_ExampleProject_PATH = $(PDK_PCIE_COMP_PATH)/example/ssd
+export PCIE_ssd_ExampleProject_BOARD_DEPENDENCY = yes
+export PCIE_ssd_ExampleProject_CORE_DEPENDENCY = no
+export PCIE_ssd_ExampleProject_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+PCIE_ssd_ExampleProject_PKG_LIST = PCIE_ssd_ExampleProject
+PCIE_ssd_ExampleProject_INCLUDE = $(PCIE_ssd_ExampleProject_PATH)
+export PCIE_ssd_ExampleProject_BOARDLIST = am65xx_idk
+export PCIE_ssd_ExampleProject_$(SOC)_CORELIST = mpu1_0
+export PCIE_ssd_ExampleProject_SBL_APPIMAGEGEN = yes
+pcie_EXAMPLE_LIST += PCIE_ssd_ExampleProject
+>>>>>>> 6deb7e263 (PDK-9352: PCIE SSD Support for am65xx)
+
 drvpcie_EXAMPLE_LIST = $(pcie_EXAMPLE_LIST)
 
 export drvpcie_LIB_LIST

@@ -36,7 +36,9 @@
  * @file pcie_example_board.h
  *
  */
-#if defined (QOS)
+#if defined (SSD)
+#include "pcie_ssd.h"
+#elif defined (QOS)
 #include "pcie_qos_sample.h"
 #else
 #include "pcie_sample.h"
@@ -61,6 +63,7 @@
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 
+#if defined (USE_BIOS)
 #if defined (__aarch64__)
 /* XDCtools Header files */
 #include <xdc/std.h>
@@ -119,6 +122,7 @@ void InitMmu(void)
     while(1);
   }
 }
+#endif
 #endif
 
 #define KICK0 0x68EF3490ull
