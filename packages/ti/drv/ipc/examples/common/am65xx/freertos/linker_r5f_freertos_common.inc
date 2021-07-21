@@ -103,7 +103,7 @@ SECTIONS
     .resource_table          : 
     {
         __RESOURCE_TABLE = .;
-    }                                           > __CORE_EXT_DATA
+    }                                           > __CORE_EXT_DATA_BASE
 
     .tracebuf                : {} align(1024)   > __CORE_EXT_DATA
 

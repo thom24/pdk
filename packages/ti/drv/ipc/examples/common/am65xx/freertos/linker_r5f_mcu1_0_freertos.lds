@@ -1,6 +1,9 @@
+#include "memory_map_defines.inc"
+
 #define __VECS                  OCMRAM_MCU1_0_VECS
 #define __BOOT                  OCMRAM_MCU1_0
 #define __CORE_IPC_DATA         MCU1_0_IPC_DATA
+#define __CORE_EXT_DATA_BASE    MCU1_0_EXT_DATA_BASE
 #define __CORE_EXT_DATA         MCU1_0_EXT_DATA
 #define __CORE_R5F_MEM_TEXT     MCU1_0_MEM_TEXT
 #define __CORE_R5F_MEM_DATA     MCU1_0_MEM_DATA
