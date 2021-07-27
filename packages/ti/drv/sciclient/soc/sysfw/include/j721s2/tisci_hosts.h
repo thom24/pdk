@@ -49,7 +49,7 @@
  *
  * Host IDs for J721S2 device
  *
- * Data version: 210416_144042
+ * Data version: 210528_144358
  *
  */
 #ifndef TISCI_HOSTS_H
@@ -57,8 +57,6 @@
 
 /** TIFS(Secure): Security Controller */
 #define TISCI_HOST_ID_TIFS (0U)
-/** HSM(Secure): HSM Controller */
-#define TISCI_HOST_ID_HSM (1U)
 /** DM(Non Secure): Device Management */
 #define TISCI_HOST_ID_DM (254U)
 /** MCU_0_R5_0(Non Secure): Cortex R5 context 0 on MCU island */
@@ -109,6 +107,8 @@
 #define TISCI_HOST_ID_DM2TIFS (250U)
 /** TIFS2DM(Non Secure): TIFS to DM communication */
 #define TISCI_HOST_ID_TIFS2DM (251U)
+/** HSM(Secure): HSM Controller */
+#define TISCI_HOST_ID_HSM (253U)
 
 /**
  * Host catch all. Used in board configuration resource assignments to define

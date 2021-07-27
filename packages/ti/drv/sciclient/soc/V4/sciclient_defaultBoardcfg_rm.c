@@ -77,7 +77,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
         },
     },
     .resasg_entries = {
-        {
+		{
 			.type = TISCI_RESASG_UTYPE(TISCI_DEV_MAIN2MCU_LVL_INTRTR0, TISCI_RESASG_SUBTYPE_IR_OUTPUT),
 			.start_resource = 0U,
 			.num_resource = 64U,
@@ -205,13 +205,13 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
 		},
 		{
 			.type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_GP),
-			.start_resource = 378U,
-			.num_resource = 596U,
+			.start_resource = 426U,
+			.num_resource = 548U,
 			.host_id = TISCI_HOST_ID_MCU_0_R5_0,
 		},
 		{
 			.type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_RX),
-			.start_resource = 299U,
+			.start_resource = 347U,
 			.num_resource = 79U,
 			.host_id = TISCI_HOST_ID_MCU_0_R5_0,
 		},
@@ -224,18 +224,18 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
 		{
 			.type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_TX_EXT),
 			.start_resource = 85U,
-			.num_resource = 208U,
+			.num_resource = 256U,
 			.host_id = TISCI_HOST_ID_MCU_0_R5_0,
 		},
 		{
 			.type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_RX_H),
-			.start_resource = 295U,
+			.start_resource = 343U,
 			.num_resource = 4U,
 			.host_id = TISCI_HOST_ID_MCU_0_R5_0,
 		},
 		{
 			.type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_RX_UH),
-			.start_resource = 293U,
+			.start_resource = 341U,
 			.num_resource = 2U,
 			.host_id = TISCI_HOST_ID_MCU_0_R5_0,
 		},
@@ -314,7 +314,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
 		{
 			.type = TISCI_RESASG_UTYPE(TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
 			.start_resource = 85U,
-			.num_resource = 208U,
+			.num_resource = 256U,
 			.host_id = TISCI_HOST_ID_MCU_0_R5_0,
 		},
 		{
@@ -629,6 +629,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
 			.num_resource = 4096U,
 			.host_id = TISCI_HOST_ID_MCU_0_R5_0,
 		},
-    }
+	}
 };
 #endif

@@ -1477,16 +1477,16 @@ const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_12_19_to_MCU_NAVSS0_UDM
 	.rid = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0,
 	.rbase = 4,
 };
-const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_CLEC0_soc_events_in_960_975 = {
+const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_960_975 = {
 	.lbase = 16,
 	.len = 16,
-	.rid = TISCI_DEV_CLEC0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 960,
 };
-const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_GIC500SS0_spi_928_943 = {
+const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_GIC500SS_spi_928_943 = {
 	.lbase = 16,
 	.len = 16,
-	.rid = TISCI_DEV_GIC500SS0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 928,
 };
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS0_CORE0_intr_488_503 = {
@@ -1522,8 +1522,8 @@ const struct Sciclient_rmIrqIf * const tisci_if_WKUP_GPIOMUX_INTRTR0[] = {
 	&WKUP_GPIOMUX_INTRTR0_outp_8_15_to_WKUP_ESM0_esm_pls_event1_128_135,
 	&WKUP_GPIOMUX_INTRTR0_outp_8_15_to_WKUP_ESM0_esm_pls_event2_136_143,
 	&WKUP_GPIOMUX_INTRTR0_outp_12_19_to_MCU_NAVSS0_UDMASS_INTA_0_intaggr_levi_pend_4_11,
-	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_CLEC0_soc_events_in_960_975,
-	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_GIC500SS0_spi_928_943,
+	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_960_975,
+	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_GIC500SS_spi_928_943,
 	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS0_CORE0_intr_488_503,
 	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS0_CORE1_intr_488_503,
 	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS1_CORE0_intr_488_503,
@@ -1721,16 +1721,16 @@ const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_0_15_to_R5FSS1_CORE1_intr_39
 	.rid = TISCI_DEV_R5FSS1_CORE1,
 	.rbase = 396,
 };
-const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_CLEC0_soc_events_in_392_447 = {
+const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_392_447 = {
 	.lbase = 8,
 	.len = 56,
-	.rid = TISCI_DEV_CLEC0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 392,
 };
-const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_GIC500SS0_spi_360_415 = {
+const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_360_415 = {
 	.lbase = 8,
 	.len = 56,
-	.rid = TISCI_DEV_GIC500SS0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 360,
 };
 const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_16_31_to_NAVSS0_UDMASS_INTA_0_intaggr_levi_pend_116_131 = {
@@ -1752,8 +1752,8 @@ const struct Sciclient_rmIrqIf * const tisci_if_GPIOMUX_INTRTR0[] = {
 	&GPIOMUX_INTRTR0_outp_0_15_to_R5FSS1_CORE0_intr_396_411,
 	&GPIOMUX_INTRTR0_outp_16_31_to_R5FSS1_CORE1_intr_176_191,
 	&GPIOMUX_INTRTR0_outp_0_15_to_R5FSS1_CORE1_intr_396_411,
-	&GPIOMUX_INTRTR0_outp_8_63_to_CLEC0_soc_events_in_392_447,
-	&GPIOMUX_INTRTR0_outp_8_63_to_GIC500SS0_spi_360_415,
+	&GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_392_447,
+	&GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_360_415,
 	&GPIOMUX_INTRTR0_outp_16_31_to_NAVSS0_UDMASS_INTA_0_intaggr_levi_pend_116_131,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_GPIOMUX_INTRTR0 = {
@@ -1763,16 +1763,16 @@ static const struct Sciclient_rmIrqNode tisci_irq_GPIOMUX_INTRTR0 = {
 };
 
 /* Start of CMPEVENT_INTRTR0 interface definition */
-const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_CLEC0_soc_events_in_544_547 = {
+const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_544_547 = {
 	.lbase = 0,
 	.len = 4,
-	.rid = TISCI_DEV_CLEC0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 544,
 };
-const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_GIC500SS0_spi_512_515 = {
+const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_GIC500SS_spi_512_515 = {
 	.lbase = 0,
 	.len = 4,
-	.rid = TISCI_DEV_GIC500SS0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 512,
 };
 const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_4_7_to_MAIN2MCU_PLS_INTRTR0_in_96_99 = {
@@ -1812,8 +1812,8 @@ const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_12_15_to_NAVSS0_UDMASS_INTA
 	.rbase = 108,
 };
 const struct Sciclient_rmIrqIf * const tisci_if_CMPEVENT_INTRTR0[] = {
-	&CMPEVENT_INTRTR0_outp_0_3_to_CLEC0_soc_events_in_544_547,
-	&CMPEVENT_INTRTR0_outp_0_3_to_GIC500SS0_spi_512_515,
+	&CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_544_547,
+	&CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_GIC500SS_spi_512_515,
 	&CMPEVENT_INTRTR0_outp_4_7_to_MAIN2MCU_PLS_INTRTR0_in_96_99,
 	&CMPEVENT_INTRTR0_outp_8_11_to_R5FSS0_CORE0_intr_326_329,
 	&CMPEVENT_INTRTR0_outp_8_11_to_R5FSS0_CORE1_intr_326_329,
@@ -2803,40 +2803,40 @@ static const struct Sciclient_rmIrqNode tisci_irq_NAVSS0_CPTS_0 = {
 };
 
 /* Start of NAVSS0_INTR_0 interface definition */
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_CLEC0_soc_events_in_64_127 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_64_127 = {
 	.lbase = 0,
 	.len = 64,
-	.rid = TISCI_DEV_CLEC0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 64,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_CLEC0_soc_events_in_448_511 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_448_511 = {
 	.lbase = 64,
 	.len = 64,
-	.rid = TISCI_DEV_CLEC0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 448,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_CLEC0_soc_events_in_672_735 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_672_735 = {
 	.lbase = 128,
 	.len = 64,
-	.rid = TISCI_DEV_CLEC0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 672,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_GIC500SS0_spi_32_95 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_32_95 = {
 	.lbase = 0,
 	.len = 64,
-	.rid = TISCI_DEV_GIC500SS0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 32,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_GIC500SS0_spi_416_479 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_GIC500SS_spi_416_479 = {
 	.lbase = 64,
 	.len = 64,
-	.rid = TISCI_DEV_GIC500SS0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 416,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_GIC500SS0_spi_640_703 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_GIC500SS_spi_640_703 = {
 	.lbase = 128,
 	.len = 64,
-	.rid = TISCI_DEV_GIC500SS0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 640,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_192_223_to_R5FSS0_CORE0_intr_224_255 = {
@@ -2888,12 +2888,12 @@ const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_408_439_to_VUSR_DUAL0_v1_
 	.rbase = 32,
 };
 const struct Sciclient_rmIrqIf * const tisci_if_NAVSS0_INTR_0[] = {
-	&NAVSS0_INTR_0_outl_intr_0_63_to_CLEC0_soc_events_in_64_127,
-	&NAVSS0_INTR_0_outl_intr_64_127_to_CLEC0_soc_events_in_448_511,
-	&NAVSS0_INTR_0_outl_intr_128_191_to_CLEC0_soc_events_in_672_735,
-	&NAVSS0_INTR_0_outl_intr_0_63_to_GIC500SS0_spi_32_95,
-	&NAVSS0_INTR_0_outl_intr_64_127_to_GIC500SS0_spi_416_479,
-	&NAVSS0_INTR_0_outl_intr_128_191_to_GIC500SS0_spi_640_703,
+	&NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_64_127,
+	&NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_448_511,
+	&NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_672_735,
+	&NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_32_95,
+	&NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_GIC500SS_spi_416_479,
+	&NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_GIC500SS_spi_640_703,
 	&NAVSS0_INTR_0_outl_intr_192_223_to_R5FSS0_CORE0_intr_224_255,
 	&NAVSS0_INTR_0_outl_intr_224_255_to_R5FSS0_CORE1_intr_224_255,
 	&NAVSS0_INTR_0_outl_intr_256_287_to_R5FSS1_CORE0_intr_224_255,
@@ -3813,16 +3813,16 @@ static const struct Sciclient_rmIrqNode tisci_irq_SA2_UL0 = {
 };
 
 /* Start of MCU_SA3_SS0_INTAGGR_0 interface definition */
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_CLEC0_soc_events_in_896_903 = {
+const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_896_903 = {
 	.lbase = 0,
 	.len = 8,
-	.rid = TISCI_DEV_CLEC0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 896,
 };
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_GIC500SS0_spi_864_871 = {
+const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_GIC500SS_spi_864_871 = {
 	.lbase = 0,
 	.len = 8,
-	.rid = TISCI_DEV_GIC500SS0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 864,
 };
 const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE0_intr_88_95 = {
@@ -3874,8 +3874,8 @@ const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_4_5_to_R5FSS1
 	.rbase = 148,
 };
 const struct Sciclient_rmIrqIf * const tisci_if_MCU_SA3_SS0_INTAGGR_0[] = {
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_CLEC0_soc_events_in_896_903,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_GIC500SS0_spi_864_871,
+	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_896_903,
+	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_GIC500SS_spi_864_871,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE0_intr_88_95,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE1_intr_88_95,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_WKUP_TIFS0_nvic_80_87,
