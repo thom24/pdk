@@ -321,13 +321,29 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
-#if defined(SBL_OCM_MAIN_DOMAIN_RAT)
+#if defined(SOC_J721E)
     {
-        /* Region 9 configuration: 1MB Virtually Mapped Main OCMRAM */
+        /* Region 9 configuration: 512KB Main OCMRAM - no need for mapping */
         .regionId         = 9U,
         .enable           = 1U,
+        .baseAddr         = 0x03600000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_512KB,
+        .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
+        .exeNeverControl  = 0U,
+        .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
+        .shareable        = 0U,
+        .cacheable        = (uint32_t)TRUE,
+        .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
+        .memAttr          = 0U,
+    },
+#endif
+#if defined(SBL_OCM_MAIN_DOMAIN_RAT)
+    {
+        /* Region 10 configuration: 512KB Virtually Mapped Main OCMRAM */
+        .regionId         = 10U,
+        .enable           = 1U,
         .baseAddr         = 0xD0000000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_1MB,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_512KB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
