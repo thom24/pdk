@@ -18,21 +18,21 @@
 --retain="*(.statBuf)"
 
 --fill_value=0
---stack_size=0x4000
+--stack_size=0x15000
 --heap_size=0x8000
 --entry_point=_freertosresetvectors
 
--stack  0x4000  /* SOFTWARE STACK SIZE */
+-stack  0x10000  /* SOFTWARE STACK SIZE */
 -heap   0x8000  /* HEAP AREA SIZE      */
 
 /*-------------------------------------------*/
 /*       Stack Sizes for various modes       */
 /*-------------------------------------------*/
-__IRQ_STACK_SIZE   = 0x1000;
+__IRQ_STACK_SIZE   = 0x4000;
 __FIQ_STACK_SIZE   = 0x0100;
 __ABORT_STACK_SIZE = 0x0100;
 __UND_STACK_SIZE   = 0x0100;
-__SVC_STACK_SIZE   = 0x0100;
+__SVC_STACK_SIZE   = 0x4000;
 
 /*--------------------------------------------------------------------------*/
 /*                               Memory Map                                 */
