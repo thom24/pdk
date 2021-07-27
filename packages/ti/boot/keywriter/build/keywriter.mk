@@ -34,11 +34,11 @@ COMP_LIST_COMMON             = pmic sciclient_direct board uart osal_nonos csl c
 CFLAGS_LOCAL_COMMON          = $(PDK_CFLAGS)
 
 SRCS_COMMON                 += main.c
-SRCS_COMMON                 += soc/$(SOC)/pmic_example.c
+SRCS_COMMON                 += soc/common/pmic_example.c
 SRCS_COMMON                 += soc/$(SOC)/keywriter_utils.c
 SRCS_ASM_COMMON             += init.asm
 
-EXTERNAL_LNKCMD_FILE_LOCAL   = $(PDK_KEYWR_COMP_PATH)/soc/$(SOC)/linker.lds
+EXTERNAL_LNKCMD_FILE_LOCAL   = $(PDK_KEYWR_COMP_PATH)/soc/common/linker.lds
 
 export R5_STARTUP_MODE      := SPLIT_MODE
 
