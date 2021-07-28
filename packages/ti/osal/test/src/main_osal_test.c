@@ -123,8 +123,49 @@ void ErrorHandler(Error_Block *eb)
 #endif
 
 #if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
-/* To set C66 timer interrupts on J7ES VLAB */
+/* To set C66 timer interrupts on J7ES */
 void C66xTimerInterruptInit(void);
+#if defined(SOC_J721E)
+/* To set C66 timer interrupts on J7ES */
+    #if defined (BUILD_C66X_1)
+        #define OSAL_TEST_CORE_TISCI_ID         (TISCI_DEV_C66SS0_CORE0)
+    #endif
+    #if defined (BUILD_C66X_2)
+        #define OSAL_TEST_CORE_TISCI_ID         (TISCI_DEV_C66SS1_CORE0)
+    #endif
+    /* DMTimers used by OS */ 
+    #if defined(USE_BIOS)
+        /* On C66x builds we define OS timer tick in the configuration file to
+        * trigger event #21 for C66x_1 and #20 for C66x_2. 
+        * Map DMTimer 0 interrupt to these events.
+        */
+        #define OSAL_TEST_OS_TIMER_TISCI_ID         (TISCI_DEV_TIMER0)
+        #define OSAL_TEST_OS_TIMER_INT_NUM          (14U)
+        #if defined (BUILD_C66X_1)
+            #define OSAL_TEST_OS_TIMER_EVENT_NUM    (21U)
+        #endif
+        #if defined (BUILD_C66X_2)
+            #define OSAL_TEST_OS_TIMER_EVENT_NUM    (20U)
+        #endif
+    #endif
+    #if defined(FREERTOS)
+        #define OSAL_TEST_OS_TIMER_INT_NUM          (configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
+        #define OSAL_TEST_OS_TIMER_EVENT_NUM        (configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
+        /* In FreeRTOSConfig.h we use DMTimer0 for C66x_1 and DMTimer1 for C66x_2 */
+        #if defined (BUILD_C66X_1)
+            #define OSAL_TEST_OS_TIMER_TISCI_ID     (TISCI_DEV_TIMER0)
+        #endif
+        #if defined (BUILD_C66X_2)
+            #define OSAL_TEST_OS_TIMER_TISCI_ID     (TISCI_DEV_TIMER1)
+        #endif
+    #endif
+    /* DMTimers used for OSAL Timer Test */ 
+    /* The Event 20/21 is used for DMTimer0/1 by SysBIOS/FreeRTOS by default, 
+     * so we need to use a different one here */
+    #define OSAL_TEST_TIMER_TISCI_ID                (TISCI_DEV_TIMER2)
+    #define OSAL_TEST_TIMER_EVENT_NUM               (22U)
+    #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_TEST_OS_TIMER_INT_NUM + 1U)
+#endif
 #endif
 
 #ifdef BUILD_C7X_1
@@ -585,6 +626,14 @@ bool OSAL_timer_test()
 #endif
 #endif
 #endif
+#if defined(SOC_J721E)
+#if defined(FREERTOS)
+#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
+    id                  = OSAL_TEST_TIMER_ID;
+#endif
+#endif
+#endif
+
     volatile      int32_t i;
     uint32_t      prevCount, ctrlBitmap = OSAL_HWATTR_SET_OSALDELAY_TIMER_BASE ;
     bool          ret = true;
@@ -635,19 +684,11 @@ bool OSAL_timer_test()
     timerParams.periodType = TimerP_PeriodType_MICROSECS;
     timerParams.period     = OSAL_TEST_TIMER_PERIOD;
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
-#if defined(BUILD_C66X_1)
-    /* the Eevnt 21 is used for DMTimer0 by SYS/BIOS by default, so we need to use a different one here for DMTimer2 */
-	timerParams.eventId    = 22;
-    /* the Interrupt 14 is used for DMTimer0 by SYS/BIOS by default, so we need to use a different one here for DMTimer2 */
-    timerParams.intNum     = 15;
-    OSAL_log("\n set intNum=%d, id=%d,  \n", timerParams.intNum, id);
-#endif
-#if defined(BUILD_C66X_2)
-    /* the Eevnt 20 is used for DMTimer0 by SYS/BIOS by default, so we need to use a different one here for DMTimer2 */
-	timerParams.eventId    = 22;
-    /* the Interrupt 14 is used for DMTimer0 by SYS/BIOS by default, so we need to use a different one here for DMTimer2 */
-    timerParams.intNum     = 15;
+#if defined(SOC_J721E) || defined(SOC_J721S2)
+#if defined(_TMS320C6X)
+	timerParams.eventId    = OSAL_TEST_TIMER_EVENT_NUM;
+    timerParams.intNum     = OSAL_TEST_TIMER_INT_NUM;
+    OSAL_log("\n set intNum=%d, eventId=%d, id=%d,  \n", timerParams.intNum, timerParams.eventId, id);
 #endif
 
 #if defined(BUILD_C7X_1)
@@ -656,13 +697,9 @@ bool OSAL_timer_test()
 #endif
 #endif
 
-#if !defined(SOC_J721E) || !defined(SOC_J7200)
 #if defined(_TMS320C6X)
 #if defined(SOC_TPR12) || defined(SOC_AWR294X)
     timerParams.intNum     = 16;
-#else
-    timerParams.intNum     = 15;
-#endif
     OSAL_log("\n set intNum=%d, id=%d,  \n", timerParams.intNum, id);
 #endif
 #endif
@@ -1820,7 +1857,7 @@ void osal_test(void *arg0, void *arg1)
 #endif
 
 #if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
-/* To set C66 timer interrupts on J7ES VLAB */
+/* To set C66 timer interrupts on J7ES */
     C66xTimerInterruptInit();
 #endif
 
@@ -2101,29 +2138,21 @@ void C7x_ConfigureTimerOutput()
 #endif
 
 #if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
-/* To set C66 timer interrupts on J7ES VLAB */
+/* To set C66 timer interrupts on J7ES */
 void C66xTimerInterruptInit(void)
 {
+    /* Map DMTimer interrupt to C6xx events through DMSC RM API. */
 #if defined (_TMS320C6X) && !defined(SOC_TPR12) && !defined (SOC_AWR294X)
+    /* DMTimers used by OS */ 
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
     struct tisci_msg_rm_irq_set_resp    rmIrqResp;
 
-    /* On C66x builds we define OS timer tick in the configuration file to
-     * trigger event #21 for C66x_1 and #20 for C66x_2. Map
-     * DMTimer 0 interrupt to these events through DMSC RM API.
-     */
     rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                       TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
+    rmIrqReq.src_id                 = OSAL_TEST_OS_TIMER_TISCI_ID;
     rmIrqReq.src_index              = 0U;
-#if defined (BUILD_C66X_1)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
-    rmIrqReq.dst_host_irq           = 21U;
-#endif
-#if defined (BUILD_C66X_2)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
-    rmIrqReq.dst_host_irq           = 20U;
-#endif
+    rmIrqReq.dst_id                 = OSAL_TEST_CORE_TISCI_ID;
+    rmIrqReq.dst_host_irq           = OSAL_TEST_OS_TIMER_EVENT_NUM;
     /* Unused params */
     rmIrqReq.global_event           = 0U;
     rmIrqReq.ia_id                  = 0U;
@@ -2133,23 +2162,13 @@ void C66xTimerInterruptInit(void)
 
     Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    /* On C66x builds we define OS timer tick in the configuration file to
-     * trigger event #22 for C66x_1 and #22 for C66x_2. Map
-     * DMTimer 0 interrupt to these events through DMSC RM API.
-     */
+    /* DMTimers used for OSAL Timer Test  */ 
     rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                       TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER2;
+    rmIrqReq.src_id                 = OSAL_TEST_TIMER_TISCI_ID;
     rmIrqReq.src_index              = 0U;
-#if defined (BUILD_C66X_1)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
-    rmIrqReq.dst_host_irq           = 22U;
-#endif
-#if defined (BUILD_C66X_2)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
-    rmIrqReq.dst_host_irq           = 22U;
-#endif
-
+    rmIrqReq.dst_id                 = OSAL_TEST_CORE_TISCI_ID;
+    rmIrqReq.dst_host_irq           = OSAL_TEST_TIMER_EVENT_NUM;
     /* Unused params */
     rmIrqReq.global_event           = 0U;
     rmIrqReq.ia_id                  = 0U;
