@@ -39,7 +39,7 @@
 #define SOC_J721S2_COMM_MEMORY_H
 
 /** Number of unique memories on the SoC */
-#define COMM_MEMORY_INSTANCE_COUNT (3U)
+#define COMM_MEMORY_INSTANCE_COUNT (2U)
 
 /**
  * msmc_sram: MSMC SRAM of 4MB
@@ -50,11 +50,6 @@
  * communication usage
  */
 #define J721S2_SPROXY_MEM_IDX_MCU_SPROXY_SRAM (1U)
-/**
- * dmss_sproxy_sram: Local DMSS SRAM memory dedicated for SPROXY/RA
- * communication usage
- */
-#define J721S2_SPROXY_MEM_IDX_DMSS_SPROXY_SRAM (2U)
 
 
 #endif /* SOC_J721S2_COMM_MEMORY_H */

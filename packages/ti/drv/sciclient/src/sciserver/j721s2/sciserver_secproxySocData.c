@@ -84,21 +84,4 @@ const struct Sciserver_SecureProxy gSciserverSecureProxyInstances
 		.buffer_idx = J721S2_SPROXY_MEM_IDX_MCU_SPROXY_SRAM,
 		.buffer_neg_offset = 0x00001680U,
 	},
-	/*
-	 * [2] J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0: Secure proxy instance:
-	 * MCU_SA3_SS0_SEC_PROXY_0 linked to RA inst: MCU_SA3_SS0_RINGACC_0
-	 */
-	[J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0] = {
-		.baseaddr_cfg_rt = 0x44880000ULL,
-		.baseaddr_cfg_scfg = 0x44860000ULL,
-		.baseaddr_src_target_data = 0x43600000ULL,
-		.sproxy_target_hl = 0x00400000ULL,
-		.sproxy_ring_index_base = 0U,
-		.sproxy_ring_index_max = 5U,
-		.num_threads = 16U,
-		.devgrp = SOC_DEVGRP_J721S2_DMSC_INTERNAL,
-		.ra_idx = J721S2_RA_IDX_MCU_SA3_SS0_RINGACC_0,
-		.buffer_idx = J721S2_SPROXY_MEM_IDX_DMSS_SPROXY_SRAM,
-		.buffer_neg_offset = 0x00000400U,
-	},
 };

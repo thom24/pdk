@@ -99,7 +99,7 @@ static const Sciserver_hwiData sciserver_hwi_list[] = {
         .irq_num =
             CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_6,
         .hw_msg_queue_id =
-            J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR077_CONF051,
+            J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR078_CONF045,
         .hw_msg_buffer = user_hi_msg_buffer,
         .semaphore_id = SCISERVER_SEMAPHORE_USER_HI,
         .user_msg_data = &user_hi_msg_data,
@@ -109,7 +109,7 @@ static const Sciserver_hwiData sciserver_hwi_list[] = {
         .irq_num =
             CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_7,
         .hw_msg_queue_id =
-            J721S2_NAVSS0_SEC_PROXY_0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR137_CONF006,
+            J721S2_NAVSS0_SEC_PROXY_0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR140_CONF003,
         .hw_msg_buffer = user_hi_main_msg_buffer,
         .semaphore_id = SCISERVER_SEMAPHORE_USER_HI,
         .user_msg_data = &user_hi_main_msg_data,
@@ -119,7 +119,7 @@ static const Sciserver_hwiData sciserver_hwi_list[] = {
         .irq_num =
             CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_8,
         .hw_msg_queue_id = 
-            J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR076_CONF052,
+            J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR077_CONF046,
         .hw_msg_buffer = user_lo_msg_buffer,
         .semaphore_id = SCISERVER_SEMAPHORE_USER_LO,
         .user_msg_data = &user_lo_msg_data,
@@ -129,7 +129,7 @@ static const Sciserver_hwiData sciserver_hwi_list[] = {
         .irq_num =
             CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_9,
         .hw_msg_queue_id = 
-            J721S2_NAVSS0_SEC_PROXY_0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR136_CONF007,
+            J721S2_NAVSS0_SEC_PROXY_0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR139_CONF004,
         .hw_msg_buffer = user_lo_main_msg_buffer,
         .semaphore_id = SCISERVER_SEMAPHORE_USER_LO,
         .user_msg_data = &user_lo_main_msg_data,

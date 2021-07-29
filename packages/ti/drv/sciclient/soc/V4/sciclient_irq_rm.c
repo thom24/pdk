@@ -1536,12 +1536,6 @@ static const struct Sciclient_rmIrqNode tisci_irq_WKUP_GPIOMUX_INTRTR0 = {
 };
 
 /* Start of J7AEP_GPU_BXS464_WRAP0 interface definition */
-const struct Sciclient_rmIrqIf J7AEP_GPU_BXS464_WRAP0_os_irq_1_4_to_MAIN2MCU_LVL_INTRTR0_in_312_315 = {
-	.lbase = 1,
-	.len = 4,
-	.rid = TISCI_DEV_MAIN2MCU_LVL_INTRTR0,
-	.rbase = 312,
-};
 const struct Sciclient_rmIrqIf J7AEP_GPU_BXS464_WRAP0_gpu_pwrctrl_req_0_0_to_MAIN2MCU_LVL_INTRTR0_in_316_316 = {
 	.lbase = 0,
 	.len = 1,
@@ -1549,13 +1543,28 @@ const struct Sciclient_rmIrqIf J7AEP_GPU_BXS464_WRAP0_gpu_pwrctrl_req_0_0_to_MAI
 	.rbase = 316,
 };
 const struct Sciclient_rmIrqIf * const tisci_if_J7AEP_GPU_BXS464_WRAP0[] = {
-	&J7AEP_GPU_BXS464_WRAP0_os_irq_1_4_to_MAIN2MCU_LVL_INTRTR0_in_312_315,
 	&J7AEP_GPU_BXS464_WRAP0_gpu_pwrctrl_req_0_0_to_MAIN2MCU_LVL_INTRTR0_in_316_316,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_J7AEP_GPU_BXS464_WRAP0 = {
 	.id = TISCI_DEV_J7AEP_GPU_BXS464_WRAP0,
-	.n_if = 2,
+	.n_if = 1,
 	.p_if = &tisci_if_J7AEP_GPU_BXS464_WRAP0[0],
+};
+
+/* Start of J7AEP_GPU_BXS464_WRAP0_COMMON_0 interface definition */
+const struct Sciclient_rmIrqIf J7AEP_GPU_BXS464_WRAP0_COMMON_0_os_irq_0_3_to_MAIN2MCU_LVL_INTRTR0_in_312_315 = {
+	.lbase = 0,
+	.len = 4,
+	.rid = TISCI_DEV_MAIN2MCU_LVL_INTRTR0,
+	.rbase = 312,
+};
+const struct Sciclient_rmIrqIf * const tisci_if_J7AEP_GPU_BXS464_WRAP0_COMMON_0[] = {
+	&J7AEP_GPU_BXS464_WRAP0_COMMON_0_os_irq_0_3_to_MAIN2MCU_LVL_INTRTR0_in_312_315,
+};
+static const struct Sciclient_rmIrqNode tisci_irq_J7AEP_GPU_BXS464_WRAP0_COMMON_0 = {
+	.id = TISCI_DEV_J7AEP_GPU_BXS464_WRAP0_COMMON_0,
+	.n_if = 1,
+	.p_if = &tisci_if_J7AEP_GPU_BXS464_WRAP0_COMMON_0[0],
 };
 
 /* Start of DDR0 interface definition */
@@ -4321,6 +4330,7 @@ const struct Sciclient_rmIrqNode *const gRmIrqTree[] = {
 	&tisci_irq_TIMESYNC_INTRTR0,
 	&tisci_irq_WKUP_GPIOMUX_INTRTR0,
 	&tisci_irq_J7AEP_GPU_BXS464_WRAP0,
+	&tisci_irq_J7AEP_GPU_BXS464_WRAP0_COMMON_0,
 	&tisci_irq_DDR0,
 	&tisci_irq_DDR1,
 	&tisci_irq_UART0,
