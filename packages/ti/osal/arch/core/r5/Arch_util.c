@@ -83,7 +83,7 @@ void OsalArch_compileTime_SizeChk(void)
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #else
 /* TI compiler */
-#pragma diag_suppress 179
+#pragma clang diagnostic warning "-Wunused"
 #endif
     OSAL_COMPILE_TIME_SIZE_CHECK ((uint32_t)sizeof(HwiP_nonOs),OSAL_NONOS_HWIP_SIZE_BYTES);
 #if defined(__GNUC__) && !defined(__ti__)
@@ -96,7 +96,7 @@ static bool gTimestampFirstTime = (bool)true;
 static bool gHwiInitialized = (bool)false;
 static CSL_vimRegs *gVimRegs;
 
-static TimeStamp_Struct gTimeStamp = {NULL,NULL};
+static TimeStamp_Struct gTimeStamp = {(uint32_t)NULL,(uint32_t)NULL};
 static HwiP_Handle      gHwiPHandle;
 
 /* This function enables the interrupt for a given interrupt number */

@@ -43,6 +43,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <string.h>
 
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 

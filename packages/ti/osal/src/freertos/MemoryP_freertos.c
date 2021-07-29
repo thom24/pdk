@@ -93,7 +93,7 @@ void* MemoryP_ctrlAlloc(uint32_t size, uint8_t alignment)
         }
     }
     memoryTrackAddress = (MemoryTrack_t *)((uintptr_t)allocAddress - sizeof(MemoryTrack_t));
-    DebugP_assert(memoryTrackAddress >= origAllocAddress);
+    DebugP_assert((void *)memoryTrackAddress >= origAllocAddress);
     memoryTrackAddress->allocKey = 0xDEADBEEF;
     memoryTrackAddress->origAllocAddress = origAllocAddress;
     memoryTrackAddress->origAllocSize = size + alignment + sizeof(MemoryTrack_t);

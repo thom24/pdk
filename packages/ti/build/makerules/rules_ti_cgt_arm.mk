@@ -49,17 +49,18 @@ CGT_ISA_PATH_PRFX = $(CGT_ISA)
 endif
 
 CODEGEN_INCLUDE = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/include
-CC = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/armcl
-AR = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/armar
-LNK = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/armcl
-STRP = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/armstrip
-SIZE = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/armofd
+CC = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmclang
+AR = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmar
+LNK = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmclang
+STRP = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmstrip
+SIZE = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmsize
 
 # Derive a part of RTS Library name based on ENDIAN: little/big
 ifeq ($(ENDIAN),little)
-  RTSLIB_ENDIAN = le
+  RTSLIB_ENDIAN = EL
+
 else
-  RTSLIB_ENDIAN = be
+  RTSLIB_ENDIAN = EB
 endif
 
 # Derive compiler switch and part of RTS Library name based on FORMAT: COFF/ELF
@@ -72,35 +73,35 @@ ifeq ($(FORMAT),ELF)
   RTSLIB_FORMAT = eabi
 endif
 
-LNKFLAGS_INTERNAL_COMMON += -O4
-LNKFLAGS_INTERNAL_COMMON += --run_linker
+LNKFLAGS_INTERNAL_COMMON += -Xlinker -o4
 
+SUPRESS_WARNINGS_FLAG = -Wno-extra -Wno-exceptions -ferror-limit=100 -Wno-parentheses-equality -Wno-unused-command-line-argument -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function -Wno-inconsistent-missing-override -Wno-address-of-packed-member -Wno-self-assign -Wno-ignored-attributes -Wno-bitfield-constant-conversion -Wno-unused-const-variable -Wno-unused-variable -Wno-format-security -Wno-excess-initializers -Wno-sometimes-uninitialized -Wno-empty-body -Wno-extern-initializer -Wno-absolute-value -Wno-missing-braces -Wno-ti-macros -Wno-pointer-sign -Wno-macro-redefined -Wno-main-return-type
 
 # Internal CFLAGS - normally doesn't change
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
-  CFLAGS_INTERNAL = -c -qq -pdsw225 --endian=$(ENDIAN) -mv7$(CGT_ISA) --abi=$(CSWITCH_FORMAT) -eo.$(OBJEXT) -ea.$(ASMEXT) --symdebug:dwarf --embed_inline_assembly
+  CFLAGS_INTERNAL = -c -Wall -Werror $(SUPRESS_WARNINGS_FLAG) -$(RTSLIB_ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT) -g -mfloat-abi=hard
   ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-    CFLAGS_INTERNAL += --float_support=vfpv3d16
-    # Enabling thumb2 mode 
-    CFLAGS_INTERNAL += --code_state=16
+    CFLAGS_INTERNAL += -mfpu=vfpv3-d16 -mcpu=cortex-r5 -march=armv7-r
+    # Enabling thumb2 mode
+    CFLAGS_INTERNAL +=
   else
-    CFLAGS_INTERNAL += --float_support=vfplib
+    CFLAGS_INTERNAL += -mfpu=vfplib
   endif
 else ifeq ($(CGT_ISA), Arm9)
-  CFLAGS_INTERNAL = -c -qq -pdsw225 --endian=$(ENDIAN) -mv5e --float_support=vfplib --abi=$(CSWITCH_FORMAT) -eo.$(OBJEXT) -ea.$(ASMEXT) --symdebug:dwarf --embed_inline_assembly
+  CFLAGS_INTERNAL = -c -Wall -Werror $(SUPRESS_WARNINGS_FLAG) --endian=$(ENDIAN) -mv5e --float_support=vfplib -eo.$(OBJEXT) -ea.$(ASMEXT) -g
 endif
 
 # Reset the CFLAGS_INTERNAL flag for M4F
 ifeq ($(CGT_ISA), M4F)
-  CFLAGS_INTERNAL = -c -qq -pdsw225 --endian=$(ENDIAN) -mv7M4 --abi=$(CSWITCH_FORMAT) -eo.$(OBJEXT) -ea.$(ASMEXT) --symdebug:dwarf --embed_inline_assembly
-  CFLAGS_INTERNAL += --float_support=FPv4SPD16
+  CFLAGS_INTERNAL = -mcpu=cortex-m4 -c -Wall -Werror $(SUPRESS_WARNINGS_FLAG) --endian=$(ENDIAN) -mv7M4 -eo.$(OBJEXT) -ea.$(ASMEXT) -g
+  CFLAGS_INTERNAL += -mfpu=fpv4-sp-d16
 endif
 
 ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
-  CFLAGS_INTERNAL += --emit_warnings_as_errors
-  LNKFLAGS_INTERNAL_COMMON += --emit_warnings_as_errors
+  CFLAGS_INTERNAL += -Werror
+  LNKFLAGS_INTERNAL_COMMON += -Xlinker -Werror
 endif
-CFLAGS_DIROPTS = -fr=$(OBJDIR) -fs=$(OBJDIR)
+CFLAGS_DIROPTS = -c
 
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA),R5))
 
@@ -114,7 +115,7 @@ endif
  EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
  else
  EXTERNAL_LNKCMD_FILE = $(CONFIG_BLD_LNK_r5f)
- endif 
+ endif
 else
  XDC_TARGET_NAME=$(CGT_ISA)
 endif
@@ -127,7 +128,7 @@ ifeq ($(CGT_ISA),$(filter $(CGT_ISA),M4F))
  EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
  else
  EXTERNAL_LNKCMD_FILE = $(CONFIG_BLD_LNK_m4f)
- endif 
+ endif
 endif
 
 XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
@@ -150,11 +151,11 @@ ifeq ($(BUILD_PROFILE_$(CORE)), debug)
 endif
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
-   LNKFLAGS_INTERNAL_BUILD_PROFILE = -qq --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
+   LNKFLAGS_INTERNAL_BUILD_PROFILE = $(LNKFLAGS_GLOBAL_$(CORE))
    ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-     CFLAGS_INTERNAL += -ms -O4 -s
+     CFLAGS_INTERNAL += -O3 -s
    else
-     CFLAGS_INTERNAL += -ms -O4 -op0 -os --optimize_with_debug --inline_recursion_limit=20
+     CFLAGS_INTERNAL += -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
    endif
    CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
    ifndef MODULE_NAME
@@ -162,17 +163,17 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
    endif
  endif
  ifeq ($(CGT_ISA), Arm9)
-        LNKFLAGS_INTERNAL_BUILD_PROFILE = -qq --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
-        CFLAGS_INTERNAL += -ms -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
+        LNKFLAGS_INTERNAL_BUILD_PROFILE = --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
+        CFLAGS_INTERNAL += -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
 	CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
 	ifndef MODULE_NAME
 	  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
 	endif
  endif
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4F))
-	# LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--float_support=FPv4SPD16 --endian=$(ENDIAN) -mv7M4 --abi=$(CSWITCH_FORMAT) -qq -pdsw225 $(CFLAGS_GLOBAL_$(CORE)) -oe --symdebug:dwarf -ms -op2 -O3 -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on
-     LNKFLAGS_INTERNAL_BUILD_PROFILE = -qq --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
-	 CFLAGS_INTERNAL += -ms -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
+	# LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--float_support=FPv4SPD16 --endian=$(ENDIAN) -mv7M4 -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function $(CFLAGS_GLOBAL_$(CORE)) -oe -g -op2 -O3 -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on
+     LNKFLAGS_INTERNAL_BUILD_PROFILE = --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
+	 CFLAGS_INTERNAL += -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
  endif
 endif
 
@@ -201,7 +202,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 endif
 
 # Decide the compile mode
-COMPILEMODE = -fc
+COMPILEMODE = -x c
 ifeq ($(CPLUSPLUS_BUILD), yes)
   COMPILEMODE = -fg
 endif
@@ -210,19 +211,20 @@ endif
 # The first $(CC) generates the dependency make files for each of the objects
 # The second $(CC) compiles the source to generate object
 $(OBJ_PATHS): $(OBJDIR)/%.$(OBJEXT): %.c $(GEN_FILE) | $(OBJDIR) $(DEPDIR)
-	$(ECHO) \# Compiling $(PRINT_MESSAGE): $<
+	$(ECHO) \# Compiling $(PRINT_MESSAGE):$<
 	$(MKDIR) -p $(dir $@)
-	$(CC) -ppd=$(DEPFILE).P $(_CFLAGS) $(INCLUDES) -fr=$(dir $@) -fs=$(dir $@) $(COMPILEMODE) $<
-	$(CC) $(_CFLAGS) $(INCLUDES) -fr=$(dir $@) -fs=$(dir $@) $(COMPILEMODE) $<
+	$(CC) -MMD $(_CFLAGS) $(INCLUDES) -c $(COMPILEMODE) $<
+	$(CC) $(_CFLAGS) $(INCLUDES) -c $(COMPILEMODE) $< -o $@
+   
 
 #TODO: Check ASMFLAGS if really required
-ASMFLAGS = -me -g --code_state=16 --diag_warning=225
+ASMFLAGS = -me -g -mthumb --diag_warning=225
 
 # Object file creation
 $(OBJ_PATHS_ASM): $(OBJDIR)/%.$(OBJEXT): %.asm $(GEN_FILE) | $(OBJDIR) $(DEPDIR)
 	$(ECHO) \# Compiling $(PRINT_MESSAGE): $<
-	$(CC) -ppd=$(DEPFILE).P $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fa $<
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fa $<
+	$(CC) -MMD $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -x ti-asm $<
+	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -x ti-asm $< -o $@
 
 $(PACKAGE_PATHS): $(PACKAGEDIR)/%: %
 	$(ECHO) \# Copying to $(PACKAGE_RELPATH)/$($(APP_NAME)$(MODULE_NAME)_RELPATH)/$<
@@ -230,7 +232,7 @@ $(PACKAGE_PATHS): $(PACKAGEDIR)/%: %
 	$(CP) --parents -rf $< $(PACKAGE_ROOT)/$($(APP_NAME)$(MODULE_NAME)_RELPATH)
 
 # Archive flags - normally doesn't change
-ARFLAGS = rq
+ARFLAGS = rc
 
 # Archive/library file creation
 $(LIBDIR)/$(LIBNAME).$(LIBEXT) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(GEN_FILE) | $(LIBDIR)
@@ -248,26 +250,25 @@ $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size: $(LIBDIR)/$(LIBNAME).$(LIBEXT)
 	$(RM)   $@temp
 
 # Linker options and rules
-LNKFLAGS_INTERNAL_COMMON += -w -q -u _c_int00
+LNKFLAGS_INTERNAL_COMMON += -Xlinker -q -Xlinker -u -Xlinker _c_int00
 
 ifeq ($(BOARD),$(filter $(BOARD), qtJ7))
-  LNKFLAGS_INTERNAL_COMMON += -cr --ram_model
+  LNKFLAGS_INTERNAL_COMMON += -Xlinker -cr -Xlinker --ram_model
 else
-  LNKFLAGS_INTERNAL_COMMON += -c
+  LNKFLAGS_INTERNAL_COMMON += -Xlinker -c
 endif
 
 ifeq ($(CGT_ISA), R5)
-  LNKFLAGS_INTERNAL_COMMON += -mv7R5
+  LNKFLAGS_INTERNAL_COMMON += -Xlinker -mcpu=cortex-r5 -Xlinker -march=armv7-r
   #--diag_suppress=10063 supresses 'warning: entry point other than _c_int00 specified'
-  LNKFLAGS_INTERNAL_COMMON += --diag_suppress=10063
 else
 ifeq ($(CGT_ISA), M4F)
-  LNKFLAGS_INTERNAL_COMMON +=
+  LNKFLAGS_INTERNAL_COMMON += -Xlinker --mcpu=cortex-m4
 else
 ifeq ($(CGT_ISA), Arm9)
   LNKFLAGS_INTERNAL_COMMON +=
 else
-  LNKFLAGS_INTERNAL_COMMON += --silicon_version=7$(CGT_ISA)
+  LNKFLAGS_INTERNAL_COMMON += -Xlinker --silicon_version=7$(CGT_ISA)
 endif
 endif
 endif
@@ -299,13 +300,14 @@ else
   NUM_PROCS = $(shell grep -c ^processor /proc/cpuinfo)
 endif
 
-ifneq ($(findstring mcu,$(CORE)),)
-RTSLIB_NAME = rtsv7R4_T_le_v3D16_eabi.lib
-BUILD_LIB_ONCE = $(CGT_PATH)/lib/$(RTSLIB_NAME)
-$(BUILD_LIB_ONCE):
-	$(ECHO) \# $@ not found, building  $@ ...
-	$(CGT_PATH)/lib/mklib --pattern=$(RTSLIB_NAME) --parallel=$(NUM_PROCS) --compiler_bin_dir=$(CGT_PATH)/bin
-endif
+# Commenting this out as these are already available with compiler
+#ifneq ($(findstring mcu,$(CORE)),)
+#RTSLIB_NAME = rtsv7R4_T_le_v3D16_eabi.lib
+#BUILD_LIB_ONCE = $(CGT_PATH)/lib/$(RTSLIB_NAME)
+#$(BUILD_LIB_ONCE):
+#	$(ECHO) \# $@ not found, building  $@ ...
+#	$(CGT_PATH)/lib/mklib --pattern=$(RTSLIB_NAME) --parallel=$(NUM_PROCS) --compiler_bin_dir=$(CGT_PATH)/bin
+#endif
 
 ifneq ($(XDC_CFG_FILE_$(CORE)),)
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE) $(OBJDIR)/$(CFG_COBJ_XDC) $(BUILD_LIB_ONCE)
@@ -321,12 +323,12 @@ endif
 ifneq ($(XDC_CFG_FILE_$(CORE)),)
 	$(CP) $(OBJDIR)/$(CFG_COBJ_XDC) $(CONFIGURO_DIR)/package/cfg
   ifeq ($(BUILD_PROFILE_$(CORE)),whole_program_debug)
-	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJDIR)/$(CFG_COBJ_XDC) $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -o $@ -m $@.map $(LNK_LIBS) $(RTSLIB_PATH)
+	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJDIR)/$(CFG_COBJ_XDC) $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -o $@ -Xlinker -map_file=$@.map $(LNK_LIBS) $(RTSLIB_PATH)
   else
 	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -o $@ -m $@.map $(LNK_LIBS) $(RTSLIB_PATH)
   endif
 else
-	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -o $@ -m $@.map $(LNK_LIBS) $(RTSLIB_PATH)
+	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) -Xlinker $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -Xlinker --map_file=$@.map -Xlinker --output_file=$@ $(LNK_LIBS) $(RTSLIB_PATH)
 endif
 	$(ECHO) \#
 	$(ECHO) \# $@ created.
@@ -386,8 +388,8 @@ ifneq ($(XDC_CFG_FILE_$(CORE)),)
   ifndef MODULE_NAME
 $(OBJDIR)/$(CFG_COBJ_XDC) : $(CFG_C_XDC)
 	$(ECHO) \# Compiling generated $(CFG_COBJ_XDC)
-	$(CC) -ppd=$(DEPFILE).P $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fc $(CFG_C_XDC)
-	$(CC) $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -fc $(CFG_C_XDC)
+	$(CC) -M $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -x c $(CFG_C_XDC)
+	$(CC) $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -x c $(CFG_C_XDC)
   endif
 endif
 

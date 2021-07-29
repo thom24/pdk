@@ -32,7 +32,7 @@
  */
 
 #ifndef SBL_ERR_TRAP_H
-#define SBL_ERR_TRAP_H_
+#define SBL_ERR_TRAP_H
 
 /* ========================================================================== */
 /*                             Include Files                                  */

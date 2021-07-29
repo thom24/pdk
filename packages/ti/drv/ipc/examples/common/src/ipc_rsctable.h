@@ -81,9 +81,14 @@ extern "C" {
 
 const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section (".resource_table"), aligned (4096))) = 
 {
-    1U,                   /* we're the first version that implements this */
-    NUM_ENTRIES,         /* number of entries in the table */
-    0U, 0U,                /* reserved, must be zero */
+    {
+        1U,                   /* we're the first version that implements this */
+        NUM_ENTRIES,         /* number of entries in the table */
+        {
+            0U, 
+            0U,                /* reserved, must be zero */
+        }
+    },
 
     /* offsets to entries */
     {

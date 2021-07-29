@@ -133,8 +133,7 @@ UFP_flashConfig UPF_flashFxnPtr[FLASH_DEVICE_MAX] = {
 };
 
 #if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
-#pragma DATA_SECTION(gSysFirmware, ".firmware")
-uint32_t gSysFirmware[1];
+uint32_t gSysFirmware[1] __attribute((section(".firmware")));
 #endif
 
 /* ========================================================================== */

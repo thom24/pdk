@@ -582,7 +582,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
         ret = BoardDiag_set_calibration(handle,
                                         inaDevice[index].slaveAddr,
                                         inaDevice[index].inaCalParams.currentLsb,
-                                        inaDevice[index].inaCalParams.maxRShunt,
+                                        (uint8_t)inaDevice[index].inaCalParams.maxRShunt,
                                         inaDevice[index].inaCalParams.calibrartion);
         if(ret != 0)
         {

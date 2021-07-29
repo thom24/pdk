@@ -48,7 +48,7 @@
  * Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
  */
 #ifndef KEYWRITER_H
-#define KEYWRTIER_H
+#define KEYWRITER_H
 
 /**
  *

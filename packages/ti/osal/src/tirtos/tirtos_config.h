@@ -62,7 +62,7 @@ extern "C" {
 #else
 #ifdef _TMS320C6X
 #include <ti/sysbios/family/c64p/Hwi.h>
-#elif defined(__TI_ARM_V7R4__)
+#elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') 
 #include <ti/sysbios/family/arm/v7r/keystone3/Hwi.h>
 #else
 #include <ti/sysbios/hal/Hwi.h>

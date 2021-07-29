@@ -122,6 +122,7 @@ SECTIONS
     .startupData 	: {} palign(8) 		> MCU2_R5F0_TCMB0, type = NOINIT
     .text	: {} palign(8)		> MCU2_0_DDR_SPACE
     .const   	: {} palign(8) 		> MCU2_0_DDR_SPACE
+    .rodata   	: {} palign(8) 		> MCU2_0_DDR_SPACE
     .cinit   	: {} palign(8) 		> MCU2_0_DDR_SPACE
     .pinit   	: {} palign(8) 		> MCU2_0_DDR_SPACE
     .bss     	: {} align(4)  		> MCU2_0_DDR_SPACE

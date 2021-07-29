@@ -150,7 +150,7 @@ typedef struct HwiP_Params_s {
     uint32_t   enableIntr; /*!< When set to TRUE, interrupt is enabled after the create
                                 otherwise interrupt is disabled after HwiP_Create */
     uint32_t   evtId;     /*!< Event Id associated */
-#if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     uint32_t   triggerSensitivity; /*!< Set an interrupt's trigger sensitivity for 
                                         ARM cortex-A Generic Interrupt Controller(GIC)
                                         v2.0 specific implementations as @ref OSAL_armGicTrigType_t 

@@ -41,7 +41,7 @@
 #include <ti/osal/src/nonos/Nonos_config.h>
 
 /* This information is derived from sysbios timer implmentation for multiple SoCs */
-#if defined (__TI_ARM_V7R4__)
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') 
 TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
   /* Timer ID 0 */
   {

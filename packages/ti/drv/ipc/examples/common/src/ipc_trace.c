@@ -50,11 +50,13 @@
 #include "ipc_trace.h"
 
 #if defined(BUILD_MCU)
-#pragma DATA_SECTION(Ipc_traceBuffer, ".tracebuf");
-#endif
+char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE] __attribute__((section(".tracebuf")));
+static __attribute__((section(".tracebuf"))) uint32_t gTraceBufIndex = 0U;
+#else
 char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
-
 static uint32_t gTraceBufIndex = 0U;
+#endif
+
 
 int32_t Ipc_Trace_printf(const char *format, ...)
 {

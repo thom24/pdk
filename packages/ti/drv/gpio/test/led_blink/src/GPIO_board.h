@@ -220,7 +220,7 @@ extern "C" {
    Driver defines the macros for each of the GPIO pins of the SoC.
    The application needs to pass these macros for each of the GPIO APIs as the
    index value. */
-#if defined (__TI_ARM_V7R4__)
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') /* R5F */
 /* tpr12: Use MSS GIO port 0 pin 1 and pin 2 for testing on QT.
           MSS GIO port 0 pin1 and pin2 are connected to PADAC and PADAZ.
           These are internally connected to TB_GIO port 0 pin 0 and 1.
@@ -242,7 +242,7 @@ extern "C" {
    Driver defines the macros for each of the GPIO pins of the SoC.
    The application needs to pass these macros for each of the GPIO APIs as the
    index value. */
-#if defined (__TI_ARM_V7R4__)
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') /* R5F */
 /* tpr12: Use MSS GIO port 0 pin 1 and pin 2 for testing on QT.
           MSS GIO port 0 pin1 and pin2 are connected to PADAC and PADAZ.
           These are internally connected to TB_GIO port 0 pin 0 and 1.

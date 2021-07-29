@@ -250,7 +250,7 @@ int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType)
     int32_t c;
 	uint16_t len = 0;
 	uint16_t i, bufsz;
-	uint8_t retry;
+	uint16_t retry;
     uint32_t retrans = MAXRETRANS + 1;
     int8_t ret;
 	unsigned char xbuff[1030]; /* 1024 for XModem 1k + 3 head chars + 2 crc + nul */
@@ -397,7 +397,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
 	uint16_t len = 0;
     uint32_t offset = 0;
     uint16_t i, bufsz;
-	uint8_t retry;
+	uint16_t retry;
     uint32_t retrans = MAXRETRANS + 1;
     int8_t ret;
 	unsigned char xbuff[1030]; /* 1024 for XModem 1k + 3 head chars + 2 crc + nul */
@@ -742,7 +742,7 @@ uint32_t UFP_xModemFirmwareReceive(unsigned char *dest, uint32_t destsz)
     uint32_t len = 0;
     int32_t c;
     uint16_t i, bufsz;
-    uint8_t retry;
+    uint16_t retry;
     uint32_t retrans = MAXRETRANS+1;
     unsigned char xbuff[1030]; /* 1024 for XModem 1k + 3 head chars + 2 crc + nul */
     unsigned char *p;

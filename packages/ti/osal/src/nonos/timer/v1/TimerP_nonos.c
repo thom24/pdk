@@ -583,7 +583,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
       interruptRegParams.corepacConfig.name=(char *) NULL_PTR;
       interruptRegParams.corepacConfig.isrRoutine=TimerP_dmTimerStub;
 
-#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') )
 #if defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
       interruptRegParams.corepacConfig.triggerSensitivity =  (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL;
       interruptRegParams.corepacConfig.priority = 0x20U;

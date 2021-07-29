@@ -144,6 +144,7 @@ SECTIONS
     .startupData 	: {} palign(8) 		> MCU_ATCM, type = NOINIT
     .text	: {} palign(8)		> MCU3_1_DDR_SPACE
     .const   	: {} palign(8) 		> MCU3_1_DDR_SPACE
+    .rodata   	: {} palign(8) 		> MCU3_1_DDR_SPACE
     .cinit   	: {} palign(8) 		> MCU3_1_DDR_SPACE
     .pinit   	: {} palign(8) 		> MCU3_1_DDR_SPACE
     .bss     	: {} align(4)  		> MCU3_1_DDR_SPACE

@@ -87,12 +87,12 @@ typedef struct hwi_struct {
   uint32_t                          intNum;
   CSL_ArmGicIntrParams_t            gicParams;
 } Hwi_Struct;
-#elif defined (__TI_ARM_V7R4__)
+#elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') 
 #include <ti/csl/arch/csl_arch.h>
 typedef struct hwi_struct {
     uint32_t                      intNum;
 } Hwi_Struct;
-#elif defined (__TI_ARM_V7M4__) || defined(__TI_ARM_V5__)
+#elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32)
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/soc.h>
 #if	defined(__TI_ARM_V7M4__) && !defined(BUILD_M4F)

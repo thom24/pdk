@@ -88,7 +88,7 @@ void TaskP_compileTime_SizeChk( void )
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #else
 /* TI compiler */
-#pragma diag_suppress 179
+#pragma clang diagnostic warning "-Wunused"
 #endif
     OSAL_COMPILE_TIME_SIZE_CHECK ( ( uint32_t )sizeof( TaskP_SafeRTOS ),OSAL_SAFERTOS_TASKP_SIZE_BYTES );
 #if defined( __GNUC__ ) && !defined( __ti__ )

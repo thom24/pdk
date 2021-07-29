@@ -58,14 +58,11 @@ extern sblProfileInfo_t sblProfileLog[MAX_PROFILE_LOG_ENTRIES];
 extern uint32_t sblProfileLogIndx;
 extern uint32_t sblProfileLogOvrFlw;
 
-#pragma DATA_SECTION(sblProfileLogAddr, ".sbl_profile_info")
-volatile sblProfileInfo_t * sblProfileLogAddr;
+volatile sblProfileInfo_t * sblProfileLogAddr __attribute__((section(".sbl_profile_info")));
 
-#pragma DATA_SECTION(sblProfileLogIndxAddr, ".sbl_profile_info")
-volatile uint32_t *sblProfileLogIndxAddr;
+volatile uint32_t *sblProfileLogIndxAddr __attribute__((section(".sbl_profile_info")));
 
-#pragma DATA_SECTION(sblProfileLogOvrFlwAddr, ".sbl_profile_info")
-volatile uint32_t *sblProfileLogOvrFlwAddr;
+volatile uint32_t *sblProfileLogOvrFlwAddr __attribute__((section(".sbl_profile_info")));
 
 sblEntryPoint_t k3xx_evmEntry;
 #if defined(SOC_AM64X)
@@ -507,7 +504,7 @@ int main()
     {
         /* Try booting all MAIN domain cores except the Cortex-A cores */
         if (k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR)
-            SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
+            SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
     }
 
     Board_releaseResource(BOARD_RESOURCE_MODULE_CLOCK);
@@ -517,7 +514,7 @@ int main()
     {
         /* Try booting all cores other than the cluster running the SBL */
         if (k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR)
-            SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
+            SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
     }
 #endif
 

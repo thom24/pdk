@@ -802,7 +802,7 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
             interruptRegParams.corepacConfig.arg=(uintptr_t)handle;
             interruptRegParams.corepacConfig.name=NULL;
             interruptRegParams.corepacConfig.isrRoutine=UART_v1_hwiIntFxn;
-#ifdef __TI_ARM_V7R4__
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') /* R5F */
             interruptRegParams.corepacConfig.priority=0x8U;
 #else
 #ifdef __C7100__

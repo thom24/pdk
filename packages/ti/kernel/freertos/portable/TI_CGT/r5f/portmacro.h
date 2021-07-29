@@ -64,6 +64,7 @@
     #endif
 
 #include <ti/osal/HwiP.h>
+#include <arm_acle.h>
 
 /*-----------------------------------------------------------
  * Port specific definitions.

@@ -30,6 +30,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  */
+#include <string.h>
 #include <ti/csl/tistdtypes.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
@@ -42,13 +43,8 @@
 #include <sbl_err_trap.h>
 #include <sbl_sci_client.h>
 
-#ifdef __cplusplus
-#pragma DATA_SECTION(".firmware")
-#else
-#pragma WEAK (SBL_ReadSysfwImage)
-#pragma DATA_SECTION(gSciclient_firmware, ".firmware")
-#endif
-uint32_t gSciclient_firmware[1];
+extern int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes);
+uint32_t __attribute__((section(".firmware"))) gSciclient_firmware[1];
 
 #if SCICLIENT_FIRMWARE_SIZE_IN_BYTES > SBL_SYSFW_MAX_SIZE
 #error "SYSFW too large...update SBL_SYSFW_MAX_SIZE"

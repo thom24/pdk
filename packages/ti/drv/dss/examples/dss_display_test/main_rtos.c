@@ -127,7 +127,7 @@ int main(void)
     }
     else
     {
-        printf("\nDisplay Test Task - Load: < 1% \n");
+        printf("\nDisplay Test Task - Load: < 1%% \n");
     }
 
     /* Query CPU Load */

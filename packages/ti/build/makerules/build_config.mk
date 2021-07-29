@@ -160,8 +160,8 @@ CFLAGS_GLOBAL_tpr12_qt      += -DSIM_BUILD
 
 # MCU Cores
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 m4f_0))
-  CFLAGS_GLOBAL_$(CORE) = -g -ms -DMAKEFILE_BUILD
-  LNKFLAGS_GLOBAL_$(CORE) = -x --zero_init=on
+  CFLAGS_GLOBAL_$(CORE) = -g -DMAKEFILE_BUILD
+  LNKFLAGS_GLOBAL_$(CORE) = -Xlinker -x -Xlinker --zero_init=on
 endif
 
 # MPU Cores
@@ -171,27 +171,27 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))
 endif
 
 # ipu1_0 - Benelli - Core 1 (Cortex-M4)
-CFLAGS_GLOBAL_ipu1_0 = -g -ms -DMAKEFILE_BUILD
+CFLAGS_GLOBAL_ipu1_0 = -g -DMAKEFILE_BUILD
 LNKFLAGS_GLOBAL_ipu1_0 = -x --zero_init=on
 
 # m4f_0 - Cortex M4F
-CFLAGS_GLOBAL_m4f_0 = -g -ms -DMAKEFILE_BUILD
+CFLAGS_GLOBAL_m4f_0 = -g -DMAKEFILE_BUILD
 LNKFLAGS_GLOBAL_m4f_0 = -x --zero_init=on
 
 # ipu1_1 - Benneli - Core 0 (Cortex-M4)
-CFLAGS_GLOBAL_ipu1_1 = -g -ms -DMAKEFILE_BUILD
+CFLAGS_GLOBAL_ipu1_1 = -g -DMAKEFILE_BUILD
 LNKFLAGS_GLOBAL_ipu1_1 = -x --zero_init=on
 
 # ipu2_0 - Benelli - Core 1 (Cortex-M4)
-CFLAGS_GLOBAL_ipu2_0 = -g -ms -DMAKEFILE_BUILD
+CFLAGS_GLOBAL_ipu2_0 = -g -DMAKEFILE_BUILD
 LNKFLAGS_GLOBAL_ipu2_0 = -x --zero_init=on
 
 # ipu2_1 - Benneli - Core 0 (Cortex-M4)
-CFLAGS_GLOBAL_ipu2_1 = -g -ms -DMAKEFILE_BUILD
+CFLAGS_GLOBAL_ipu2_1 = -g -DMAKEFILE_BUILD
 LNKFLAGS_GLOBAL_ipu2_1 = -x --zero_init=on
 
 # m3 - (Cortex-M3)
-CFLAGS_GLOBAL_m3 = -g -ms -DMAKEFILE_BUILD
+CFLAGS_GLOBAL_m3 = -g -DMAKEFILE_BUILD
 LNKFLAGS_GLOBAL_m3 = -x --zero_init=on
 
 # arp32_1 - EVE

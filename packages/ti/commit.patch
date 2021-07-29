@@ -1,0 +1,622 @@
+commit 63829f8ef9a2766a234dfd77eaa83c24e8ff50cc
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Oct 13 20:20:20 2021 +0530
+
+    [TI Clang Migration][Build Fix]
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 8f936d0adda4887698dbe00390dc2e75312b72fe
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Oct 12 18:39:57 2021 +0530
+
+    [TI Clang Migration][Build Fix]Fixed warning while compiling assembly file
+    
+    - Enabled sci-server testapp for both debug and release mode
+    - Updated sci-server testapp linker command file
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 8182e12510296db792b2b817018760f7fd7d0afc
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Mon Oct 11 20:32:49 2021 +0530
+
+    [TI Clang Migration][Build Fix]Disabled Sci-server testapp for debug build to unblock Jenkins
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 9c7c8b82ba7d123d0e281d6c31e8ff41ef5f7231
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Mon Oct 11 20:31:17 2021 +0530
+
+    [TI Clang Migration][Build options]Updated build option after aligning with Compiler team
+    
+    - Added '-O1' option for debug build
+    - Checked in new ccs init and sci-server testapp bins
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 5321c7b16bebb2ff9adfb3a6aba8d9421d01e48c
+Author: Misael Lopez Cruz <misael.lopez@ti.com>
+Date:   Thu Oct 7 12:25:50 2021 -0500
+
+    [TI Clang Migration] Re-enable lwIP in makefile
+    
+    Signed-off-by: Misael Lopez Cruz <misael.lopez@ti.com>
+
+commit c9eff352053c35400fa13cae7e544c66b801bee1
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Oct 6 23:23:39 2021 +0530
+
+    [TI Clang Migration][Sci-client]Fixed issue with sci-server testApp
+    
+    - Fixed miss-aligned caused due to misplaced sections 'OCMC_RAM_X509_HEADER1' and 'OCMC_RAM_X509_HEADER2'
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit e88fafc1948fa109690c620079998433748f80bd
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Oct 6 23:22:10 2021 +0530
+
+    [TI Clang Migration][Link Warnings Fixed]warning: entry-point symbol other than "_c_int00" specified:
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 1097fe682fc57abe8cf5ce404943f157f26774a3
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Oct 6 23:20:12 2021 +0530
+
+    [TI Clang Migration][Compile Warnings Fixed]Removed '.asmfunc' and '.endasmfunc' to fix compiler warnings
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 7527994d85dfae33c0b13e28f545bcdb7ecbefdb
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Oct 5 17:47:08 2021 +0530
+
+    [TI Clang Migration][SafeRTOS]Disabled build for safeRTOS
+    
+    - This is not ported yet by WHIS team
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit a767a48d0a18271d9b7c2725e7d8b22e566b6b57
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Fri Oct 1 13:53:47 2021 +0530
+
+    [TI Clang Migration][Fixed Review Comments][IPC]
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit f20808b2800225d8628b397e3649265c5e05f9da
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Fri Oct 1 08:32:52 2021 +0530
+
+    [TI Clang Migration][IPC]Porting + Build Fix
+    
+    - Re-enabled freeRTOS for TIRTOS as this is supported on other cores
+    - Fixed IPC multi-core app build
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 42c4390f55cd8e6a20f08083547c64b81ca30ecb
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 16:20:49 2021 +0530
+
+    [TI Clang Migration][Build]Porting + Build Fix
+    
+    - Switched from '-O3' to '-Oz' optimization level to reduce code size
+    - Some applications on mcu1_0 were not able to fit into OCMCRAM due to increase in code size because of '-O3'
+    - Added option to chose between '-O3' and '-Oz'
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit d4c3c1748c77f46d69e92239aadb5e19c9418149
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:37:31 2021 +0530
+
+    [AM65xx][TI Clang Migration][SBL]Minot Linker Command update
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 654515b1b92e220a6e0f8b508a853406a2767a11
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:34:10 2021 +0530
+
+    [AM65xx][TI Clang Migration][EMAC]Disabled EMAC as it is only supported on TIRTOS
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit a0c9294bb117a3ed95a63085a5a3b17cd2846781
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:32:43 2021 +0530
+
+    [AM65xx][TI Clang Migration][NIMU]Disabled NIMU as it is only supported on TIRTOS
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit eb88453ac51859591e02ec53f299efc13db07836
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:25:29 2021 +0530
+
+    [AM65xx][TI Clang Migration][FREERTOS]Porting + Build Fix
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit c16543ea6bdb745cb499353ce3ff32f5d43d2e67
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:24:36 2021 +0530
+
+    [AM65xx][TI Clang Migration][Diag/SDR]Porting + Build Fix
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 3700ec4e94a7214b95e1018a66b721d9d418154e
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:23:50 2021 +0530
+
+    [J7200][TI Clang Migration][SBL]One minor linker command file change
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 4510f832778e495eb4fab6a5b40b579e7d8bc52b
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:21:31 2021 +0530
+
+    [AM65xx][TI Clang Migration][USB]Porting + Build Fix
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 14c42b66ec61be68154f69b6db4139216297d6b3
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:19:41 2021 +0530
+
+    [AM65xx][TI Clang Migration][PCIe]Porting + Build Fix
+    
+    - Removed <module>_profile libs due to PDK utils issue
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit c328b6e5afb5e534596517b786be53a4fb6d05f9
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 30 15:15:43 2021 +0530
+
+    [AM65xx][TI Clang Migration][Board]Porting + Build Fix
+    
+    - Disabled EMAC related Diag tests
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 6868b9f6de37d56c7dab6b1d697f74ae837be374
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 29 12:45:50 2021 +0530
+
+    [J7200][TI Clang Migration][IPC]Porting + Build Fix
+    
+    - Updated for TIRTOS apps build
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 77df47c5ca0992098e4d192a7f678a4ae3ceb1eb
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 29 12:44:23 2021 +0530
+
+    [J7200][TI Clang Migration][LWIP/EMAC]Porting + Build Fix
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 33ddc0d214f8f55c9e5ebdeaf2f7cab7c517af5e
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 29 12:42:38 2021 +0530
+
+    [J7200][TI Clang Migration][Build]Porting + Build Fix
+    
+    - Disabled mcu2_0 and mcu2_1 cores for TIRTOS/SYSBIOS
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit e570ba3f57697de6059e53246f294cd151ab6f35
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 29 12:41:27 2021 +0530
+
+    [J7200][TI Clang Migration][PCIe]Porting + Build Fix
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 06707f11dfda5af220ee96b4ebb4924458800270
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 29 12:25:54 2021 +0530
+
+    [J7200][TI Clang Migration][Board]Porting + Build Fix
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 157d32524ae63f521abd059020f6b40c7e94b047
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 23 16:30:45 2021 +0530
+
+    [TI Clang Migration][Sci-client]Build Fix
+    
+    - Linker command file changes
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit cd48f5371de1bb6a465a9cd51ee981945d160a99
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 23 16:29:15 2021 +0530
+
+    [TI Clang Migration][Sci-client]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit e4bcc95c26fa6166f4dfc8d5712df0addbed4cdd
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 23 16:26:28 2021 +0530
+
+    [TI Clang Migration][SBL]Porting to Clang patch-4
+    
+    - Fixed mcu1_0, mcu1_1 builds: increased MSMC3 memory size
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 4ea94c04e9b4c82a89c6cb2c7568431ab7d721ec
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 23 16:25:25 2021 +0530
+
+    [TI Clang Migration][SBL]Porting to Clang patch-3
+    
+    - Fixed mcu1_0, mcu1_1 builds
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit c863c1020ba91927aa08297053bc86a348c96490
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 23 16:21:03 2021 +0530
+
+    [TI Clang Migration][Keywriter]
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 450301eb77b021909c2024caa78668faa7446d85
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Thu Sep 23 16:19:34 2021 +0530
+
+    [Keywriter]Disabled application for TI Clang Migration, for build fix
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 09e2b3322ccf1425f51b1188dc9fe3464d9e950c
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:29:00 2021 +0530
+
+    [TI Clang Migration][Sci-client]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 3fe25dc6ecaf2e95965949851dec0d8d4a4615ee
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:25:51 2021 +0530
+
+    [TI Clang Migration]Porting to Clang
+    
+    - Added '*.d' and '*.o' for ignoring these compiler generated files
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit bda595e741d406266ea927bb2d19313346359d64
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:24:29 2021 +0530
+
+    [TI Clang Migration][PDK Utils]Disabled PDK Utils based libs/apps
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 7e1cb051c07df0f7bfb8462a1e3a320ffefd89b1
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:23:08 2021 +0530
+
+    [TI Clang Migration][PDK Utils][Transport]Disabled PDK Utils based libs/apps
+    - Disabled NIMU as it is only built for TIRTOS
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit bae28a2773a63d7cb41c91c7824964d162211af7
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:22:01 2021 +0530
+
+    [TI Clang Migration][Transport]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 59c896eb9e5b7785f61f211901b91ed356e1e35c
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:19:59 2021 +0530
+
+    [TI Clang Migration][PDK Utils][OSAL]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    - disabling mcu build for TIRTOS
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 5be24ce0571308dd9e7b48d91d5247396a0416d5
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:18:55 2021 +0530
+
+    [TI Clang Migration][OSAL]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit e5b86ebac2dda8fb179b37f775e6b131d875319f
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:17:21 2021 +0530
+
+    [TI Clang Migration][FreeRTOS]Disabled C99 build as it does not supprot 'asm()'
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 093c340e172d671928c2124c597e37b90b9710ce
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:14:40 2021 +0530
+
+    [TI Clang Migration][PDK Utils][FATFS]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 48d1d96ed1a9d64103fddb7312a5cb7f6ee7ce95
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:12:24 2021 +0530
+
+    [TI Clang Migration][FATFS]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 8b030fc4033834252a827142751beaa6152da9cb
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:10:01 2021 +0530
+
+    [PDK-9552][TI CLANG Migration] R5 Drivers Updates and Testing: UDMA
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit b0488dd5f2223ce6fa521cba09078abbaf1b7498
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:08:40 2021 +0530
+
+    [TI Clang Migration][PDK Utils][UART]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 1f08e9621f6691d06d8f31fadb573bfae2ea8f6d
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:08:06 2021 +0530
+
+    [PDK-9554][TI CLANG Migration] R5 Drivers Updates and Testing: UART
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 7de025b55bc2b009c492b93c64b376e6ab325904
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:06:45 2021 +0530
+
+    [TI Clang Migration][PDK Utils][SPI]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit c925225e79d57d8f9c0cf37946cbc7e6df681bd7
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Wed Sep 22 00:06:00 2021 +0530
+
+    [PDK-9556][TI CLANG Migration] R5 Drivers Updates and Testing: SPI
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 971674400ff1df3331fb00b1c897f3b8f56bb1bd
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:57:35 2021 +0530
+
+    [TI Clang Migration][Sci-Sclient]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 7f6bad56a1604f90b25a56ae7c926676d4768bc7
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:54:33 2021 +0530
+
+    [TI Clang Migration][PDK Utils][PRUSS]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 660662568dc0b2c2b8dc68e29c60196794779d01
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:53:30 2021 +0530
+
+    [TI Clang Migration][PDK Utils][MMCSD]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 738df0c1cce9ecf7697ee7454402e54bbcd2f261
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:52:37 2021 +0530
+
+    [PDK-9554][TI CLANG Migration] R5 Drivers Updates and Testing: MMCSD
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 0dd70107235bc713774887efbbec0db2096d7c65
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:50:10 2021 +0530
+
+    [TI Clang Migration][PDK Utils][McASP]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 1ac33d82c55da50e53e00a06bbdb7b8d04bd0ade
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:49:18 2021 +0530
+
+    [TI Clang Migration][McASP]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 025f02b3865f8fb7226d09fef999a1b364f2f520
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:46:58 2021 +0530
+
+    [TI Clang Migration][PDK Utils][EMAC]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit be3ca97c01283d9ba52aba27aa1fbc909281a8bd
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:45:09 2021 +0530
+
+    [TI Clang Migration][PDK Utils][DSS]Disabled PDK Utils based libs/apps
+    
+    - disabling this as entry/exit hook arguments are not supported by clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 0e5cef91bd595e235bdb76ed50b9ce119f8bffaf
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:42:52 2021 +0530
+
+    [TI Clang Migration][DIAG/SDR]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit cd89fbc9ba5d5529565b1cfa40a45a3fffb5c21e
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:40:04 2021 +0530
+
+    [TI Clang Migration][Build]Disabled mcu core for TIRTOS build
+    
+    - Disabled NIMU as it is only built for TIRTOS
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit a6aad1e0d7a4100d5ae79271f8a7c91aca18ab40
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:38:42 2021 +0530
+
+    [TI Clang Migration][Build]Added options for additional warning suppression
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 4914486c04650235c5a2328d4213676f6bd0fd82
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:36:10 2021 +0530
+
+    [TI Clang Migration][SBL]Porting to Clang patch-2
+    
+    - Increased memory section size for SBL OCM section, took the extra space from reserved 'OCMRAM_SBL_RESERVED_CUST_BOOT' section
+    - check if this is OK?
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 653d7b6ba14319f89b7b679809b468c9cca72c6b
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:33:56 2021 +0530
+
+    [TI Clang Migration][SBL]Porting to Clang
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 53ed046f625855db7e441566de63c42399b19662
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Tue Sep 21 23:30:39 2021 +0530
+
+    [TI Clang Migration][Board]Porting to Clang
+    
+    - increased OCMC memory size to 1MB for J721E for /packages/ti/board/utils/uniflash/target/soc/k3/linker_j7.cmd
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 938ce270cdca7e8cf93e25ae7ce51cb55fb63dad
+Author: Vivek Dhande <a0132295@ti.com>
+Date:   Mon Sep 6 09:51:44 2021 +0530
+
+    [PDK-9555][TI CLANG Migration] R5 Drivers Updates and Testing: IPC, VISS, LDC, NF, SDE, MSC, DOF: Patch-1
+    
+    - IPC driver changes
+    - Additional warnings ignored
+    
+    Signed-off-by: Vivek Dhande <a0132295@ti.com>
+
+commit 96b8ee392a91e9e8c6bb76dfdf1e7753f2a35dcd
+Author: Aditya Wadhwa <a0485151@ti.com>
+Date:   Tue Oct 12 12:49:41 2021 +0530
+
+    LPM: Add docs/ folder
+    
+    Signed-off-by: Aditya Wadhwa <a0485151@ti.com>
+
+commit 5025b2132186db8462a771f295355a47d334eff4
+Author: Parth Nagpal <x1080849@ti.com>
+Date:   Tue Oct 5 17:02:18 2021 +0530
+
+    Changing sbl_component.mk as per comment
+
+commit efe7eb5872b91fe719edfa6e91cac2212e13ffba
+Author: Parth Nagpal <x1080849@ti.com>
+Date:   Tue Sep 14 19:24:17 2021 +0530
+
+    sbl_cust_img not booting mcu1_1
+    Issue is fixed by removing SBL_SKIP_MCU_RESET flag
+    
+    Signed-off-by: Parth Nagpal <x1080849@ti.com>
+    
+    Changes for turning off rti module
+    RTI module turned off for AM65xx when SBL_SKIP_MCU_RESET is defined
+    
+    Signed-off-by: Parth Nagpal <x1080849@ti.com>
+
+commit 05ef6eeab18b883f44d291474be20aa057c82e6e
+Author: Potluri Krishna <x1082264@ti.com>
+Date:   Wed Oct 13 15:39:36 2021 +0530
+
+    updating the core list to mcu1_0 for enet icssg diag test
+
+commit 25e1a62dafa7f38a09704789bef11fe60c34a725
+Author: Ankur <a0132173@ti.com>
+Date:   Wed Oct 13 09:39:30 2021 +0530
+
+    Diabling enetIcssg due to build error
+    
+    Signed-off-by: Ankur <a0132173@ti.com>
+
+commit 20182042ce1edd30be56e8b25dda11264c92ec2d
+Author: Potluri Krishna <x1082264@ti.com>
+Date:   Tue Oct 12 21:43:52 2021 +0530
+
+    updating the size of tx and rx frames inside memset
+
+commit de0fd2fa5bd56af6ada782d62390650687f4c11c
+Author: Ankur <a0132173@ti.com>
+Date:   Tue Oct 12 01:33:41 2021 +0530
+
+    Diable LPM due to build issue
+    
+    Signed-off-by: Ankur <a0132173@ti.com>
+
+commit 35dbaf1a1adb46aa807b96960bafecbd24ec5e4d
+Author: Aditya Wadhwa <a0485151@ti.com>
+Date:   Mon Oct 11 22:23:33 2021 +0530
+
+    LPM: Function and variable name fixes
+    
+    Signed-off-by: Aditya Wadhwa <a0485151@ti.com>

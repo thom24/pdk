@@ -61,7 +61,7 @@
 #else
 #ifdef _TMS320C6X
 #include <ti/sysbios/family/c64p/Hwi.h>
-#elif defined(__TI_ARM_V7R4__)
+#elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') 
 #include <ti/sysbios/family/arm/v7r/keystone3/Hwi.h>
 #else
 #include <ti/sysbios/hal/Hwi.h>
@@ -100,7 +100,7 @@ void HwiP_compileTime_SizeChk(void)
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #else
 /* TI compiler */
-#pragma diag_suppress 179
+#pragma clang diagnostic warning "-Wunused"
 #endif
     OSAL_COMPILE_TIME_SIZE_CHECK ((uint32_t)sizeof(HwiP_tiRtos),OSAL_TIRTOS_HWIP_SIZE_BYTES);
 #if defined(__GNUC__) && !defined(__ti__)
@@ -241,7 +241,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
             }
 #endif
 #endif
-#if defined (__TI_ARM_V7R4__)
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') 
             /* Set the trigger type */
             if ((params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL) ||
                 (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL) ||
@@ -352,7 +352,7 @@ void HwiP_Params_init(HwiP_Params *params)
     params->priority = HWIP_USE_DEFAULT_PRIORITY;
     params->evtId    = 0;
     params->enableIntr = TRUE;
-#if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || defined (__TI_ARM_V7R4__) || defined(gnu_targets_arm_A15F) || defined(gnu_targets_arm_A9F)
+#if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') ) || defined(gnu_targets_arm_A15F) || defined(gnu_targets_arm_A9F)
     params->triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL;
 #endif
 

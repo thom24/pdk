@@ -57,7 +57,7 @@ extern "C" {
 #define  TIMERP_TIMER_FREQ_LO   ((int32_t) 25000000)
 #define  TIMERP_TIMER_FREQ_HI   ((int32_t) 0)
 
-#if defined (__TI_ARM_V7R4__)
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') 
   #define TimerP_numTimerDevices        ((uint32_t) 4 )
   #define TIMERP_ANY_MASK               ((uint32_t) 0x000F)
   #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x000F))

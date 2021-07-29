@@ -52,8 +52,6 @@ extern BoardDiag_CsirxDispObj gDispObj;
 
 BoardDiag_CsirxObj gCsirxObj;
 /* Memory buffer to hold data */
-#pragma DATA_SECTION(gFrms, ".data_buffer")
-#pragma DATA_ALIGN(gFrms, 128)
 static uint8_t gFrmDropBuf[(BOARD_DIAG_CSIRX_FRAME_WIDTH * BOARD_DIAG_CSIRX_FRAME_BPP)] __attribute__(( aligned(128), section(".data_buffer")));
 uint8_t gFrms[(BOARD_DIAG_CSIRX_FRAMES_PER_CH * BOARD_DIAG_CSIRX_MAX_CH)][BOARD_DIAG_CSIRX_FRAME_SIZE] __attribute__(( aligned(128), section(".data_buffer")));
 
@@ -150,7 +148,7 @@ static int8_t BoardDiag_csirxDeinit(BoardDiag_CsirxObj *csirxObj)
     /* Disable Error Events */
     retVal = Fvid2_control(csirxObj->drvHandle,
                            IOCTL_CSIRX_UNREGISTER_EVENT,
-                           CSIRX_EVENT_GROUP_ERROR,
+                           (void *)CSIRX_EVENT_GROUP_ERROR,
                            NULL);
     if(retVal != FVID2_SOK)
     {

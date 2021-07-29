@@ -537,7 +537,7 @@ static void GPIO_setConfig_v0(uint32_t idx, GPIO_PinConfig pinConfig)
 #if defined (__aarch64__)
                     interruptRegParams.corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE; /* interrupt edge triggered */
 #endif
-#if defined (__TI_ARM_V7R4__)
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') /* R5F */
                     interruptRegParams.corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
                     /* Configure SOC interrupt path if any */

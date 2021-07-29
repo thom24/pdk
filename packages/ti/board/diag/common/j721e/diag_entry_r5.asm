@@ -70,13 +70,13 @@
         .asg	__TI_auto_init, AUTO_INIT_RTN
         .asg	_args_main,   ARGS_MAIN_RTN
         .asg	exit,         EXIT_RTN
-        .asg    main_func_sp, MAIN_FUNC_SP
+        .asg    __stack, MAIN_FUNC_SP
    .else ; COFF TI ARM9 ABI
         .asg	__system_pre_init, PRE_INIT_RTN
         .asg	__TI_auto_init, AUTO_INIT_RTN ; NOTE does not use COFF prefix
         .asg	__args_main,   ARGS_MAIN_RTN
         .asg	_exit,         EXIT_RTN
-        .asg    _main_func_sp, MAIN_FUNC_SP
+        .asg    ___stack, MAIN_FUNC_SP
    .endif
 
    .if .TMS470_16BIS

@@ -53,7 +53,7 @@ uint32_t CycleprofilerP_getTimeStamp(void)
 }
 #endif
 
-#if defined(__ARM_ARCH_7A__) || defined(__TI_ARM_V7R4__)
+#if defined(__ARM_ARCH_7A__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') )
 #include <ti/sysbios/family/arm/v7a/Pmu.h>
 void CycleprofilerP_init(void)
 {

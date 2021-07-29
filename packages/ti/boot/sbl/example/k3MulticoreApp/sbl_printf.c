@@ -32,51 +32,51 @@
  */
 
 #ifdef BUILD_MCU1_0
-    #pragma CODE_SECTION(sbl_putc, ".sbl_mcu_1_0_resetvector")
-    #pragma CODE_SECTION(sbl_puts, ".sbl_mcu_1_0_resetvector")
-    #pragma CODE_SECTION(sbl_putbyte, ".sbl_mcu_1_0_resetvector")
-    #pragma CODE_SECTION(sbl_putui, ".sbl_mcu_1_0_resetvector")
-    #pragma CODE_SECTION(sbl_putsui, ".sbl_mcu_1_0_resetvector")
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_1_0_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_1_0_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_1_0_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_1_0_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_1_0_resetvector")));
 #endif
 
 #ifdef BUILD_MCU1_1
-    #pragma CODE_SECTION(sbl_putc, ".sbl_mcu_1_1_resetvector")
-    #pragma CODE_SECTION(sbl_puts, ".sbl_mcu_1_1_resetvector")
-    #pragma CODE_SECTION(sbl_putbyte, ".sbl_mcu_1_1_resetvector")
-    #pragma CODE_SECTION(sbl_putui, ".sbl_mcu_1_1_resetvector")
-    #pragma CODE_SECTION(sbl_putsui, ".sbl_mcu_1_1_resetvector")
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_1_1_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_1_1_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_1_1_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_1_1_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_1_1_resetvector")));
 #endif
 
 #ifdef BUILD_MCU2_0
-    #pragma CODE_SECTION(sbl_putc, ".sbl_mcu_2_0_resetvector")
-    #pragma CODE_SECTION(sbl_puts, ".sbl_mcu_2_0_resetvector")
-    #pragma CODE_SECTION(sbl_putbyte, ".sbl_mcu_2_0_resetvector")
-    #pragma CODE_SECTION(sbl_putui, ".sbl_mcu_2_0_resetvector")
-    #pragma CODE_SECTION(sbl_putsui, ".sbl_mcu_2_0_resetvector")
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_2_0_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_2_0_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_2_0_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_2_0_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_2_0_resetvector")));
 #endif
 
 #ifdef BUILD_MCU2_1
-    #pragma CODE_SECTION(sbl_putc, ".sbl_mcu_2_1_resetvector")
-    #pragma CODE_SECTION(sbl_puts, ".sbl_mcu_2_1_resetvector")
-    #pragma CODE_SECTION(sbl_putbyte, ".sbl_mcu_2_1_resetvector")
-    #pragma CODE_SECTION(sbl_putui, ".sbl_mcu_2_1_resetvector")
-    #pragma CODE_SECTION(sbl_putsui, ".sbl_mcu_2_1_resetvector")
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_2_1_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_2_1_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_2_1_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_2_1_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_2_1_resetvector")));
 #endif
 
 #ifdef BUILD_MCU3_0
-    #pragma CODE_SECTION(sbl_putc, ".sbl_mcu_3_0_resetvector")
-    #pragma CODE_SECTION(sbl_puts, ".sbl_mcu_3_0_resetvector")
-    #pragma CODE_SECTION(sbl_putbyte, ".sbl_mcu_3_0_resetvector")
-    #pragma CODE_SECTION(sbl_putui, ".sbl_mcu_3_0_resetvector")
-    #pragma CODE_SECTION(sbl_putsui, ".sbl_mcu_3_0_resetvector")
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_3_0_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_3_0_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_3_0_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_3_0_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_3_0_resetvector")));
 #endif
 
 #ifdef BUILD_MCU3_1
-    #pragma CODE_SECTION(sbl_putc, ".sbl_mcu_3_1_resetvector")
-    #pragma CODE_SECTION(sbl_puts, ".sbl_mcu_3_1_resetvector")
-    #pragma CODE_SECTION(sbl_putbyte, ".sbl_mcu_3_1_resetvector")
-    #pragma CODE_SECTION(sbl_putui, ".sbl_mcu_3_1_resetvector")
-    #pragma CODE_SECTION(sbl_putsui, ".sbl_mcu_3_1_resetvector")
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_3_1_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_3_1_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_3_1_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_3_1_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_3_1_resetvector")));
 #endif
 
 #ifdef BUILD_MPU1_0

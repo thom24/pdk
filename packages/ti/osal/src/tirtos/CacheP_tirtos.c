@@ -37,7 +37,7 @@
 #include <ti/sysbios/BIOS.h>
 #if defined (_TMS320C6X) && !(defined (SOC_OMAPL137) || defined (SOC_OMAPL138))
 #include <ti/sysbios/family/c66/Cache.h>
-#elif defined (__TI_ARM_V7M4__)
+#elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32)
 #include <ti/sysbios/hal/unicache/Cache.h>
 #else
 #include <ti/sysbios/hal/Cache.h>

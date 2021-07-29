@@ -29,7 +29,8 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-#pragma SET_CODE_SECTION(".xip_entry")
+__attribute__((section(".xip_entry"))) void xip_stub_c(void);
+
 void xip_stub_c(void)
 {
     return;

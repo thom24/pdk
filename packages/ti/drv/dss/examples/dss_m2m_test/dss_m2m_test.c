@@ -86,13 +86,6 @@ extern void App_wait(uint32_t wait_in_ms);
 M2MApp_AppObj gM2MAppObj;
 uint32_t gTestStopTime, gTestStartTime;
 
-#ifdef __cplusplus
-#pragma DATA_SECTION(".data_buffer")
-#pragma DATA_ALIGN(128)
-#else
-#pragma DATA_SECTION(gOutFrms, ".data_buffer")
-#pragma DATA_ALIGN(gOutFrms, 128)
-#endif  /* #ifdef __cplusplus */
 /* This buffer will be used to store RGB or Y */
 static uint8_t gOutFrms[(APP_DSS_M2M_CH_NUM * APP_DSS_M2M_DSS_PIPE_NUM)][(APP_DSS_M2M_OUT_FRAME_PITCH * APP_DSS_M2M_OUT_FRAME_HEIGHT)] __attribute__(( aligned(128), section(".data_buffer")));
 /* This buffer will be used to store UV */

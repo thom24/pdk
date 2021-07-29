@@ -85,7 +85,6 @@ int main(void)
 	UART_printf("*               FPD LIB TEST                *\n");
 	UART_printf("*********************************************\n");
 #if defined(j721e_evm)
-    while ((userInput != 1) || (userInput != 2))
     {
         UART_printf("\n1.FPD DSI (ds90ub941 & ds90ub924)\n");
         UART_printf  ("2.FPD TUNER (ds90ub926 & ds90ub925)\n");

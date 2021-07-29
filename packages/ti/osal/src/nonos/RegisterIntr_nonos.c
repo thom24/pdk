@@ -69,7 +69,7 @@ void Osal_RegisterInterrupt_initParams(OsalRegisterIntrParams_t *interruptRegPar
       interruptRegParams->corepacConfig.triggerSensitivity = 0x3; /* interrupt edge triggered */
 #endif
 
-#if defined(__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') )
       interruptRegParams->corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL; /* interrupt level triggered */
 #endif
       /* SOC Mux Config */
@@ -104,7 +104,7 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
       hwiInputParams.priority = interruptRegParams->corepacConfig.priority;
       hwiInputParams.evtId = (uint32_t)interruptRegParams->corepacConfig.corepacEventNum;
       hwiInputParams.enableIntr = interruptRegParams->corepacConfig.enableIntr;
-#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') )
       hwiInputParams.triggerSensitivity = interruptRegParams->corepacConfig.triggerSensitivity;
 #endif
 
@@ -219,7 +219,7 @@ OsalInterruptRetCode_e Osal_RegisterInterruptDirect(OsalRegisterIntrParams_t *in
     hwiInputParams.priority = interruptRegParams->corepacConfig.priority;
     hwiInputParams.evtId = (uint32_t)interruptRegParams->corepacConfig.corepacEventNum;
     hwiInputParams.enableIntr = interruptRegParams->corepacConfig.enableIntr;
-#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') )
     hwiInputParams.triggerSensitivity = interruptRegParams->corepacConfig.triggerSensitivity;
 #endif
 

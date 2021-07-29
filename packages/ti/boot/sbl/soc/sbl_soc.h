@@ -32,7 +32,7 @@
  */
 
 #ifndef SBL_SOC_H
-#define SBL_SOC_H_
+#define SBL_SOC_H
 
 /* ========================================================================== */
 /*                             Include Files                                  */
