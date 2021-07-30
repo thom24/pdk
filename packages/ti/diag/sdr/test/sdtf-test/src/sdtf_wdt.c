@@ -52,6 +52,13 @@
 #include "sdtf_profile.h"
 #include <sdtf_core.h>
 
+/* define the unlock and lock values */
+#define KICK0_UNLOCK_VAL 0x68EF3490
+#define KICK1_UNLOCK_VAL 0xD172BC5A
+#define KICK_LOCK_VAL    0x00000000
+
+#define CSL2PTR (uint32_t *)(uintptr_t)
+
 typedef enum rtiClockSource
 {
     RTI_CLOCK_SOURCE_HFOSC0_CLKOUT = 0U,
@@ -115,6 +122,51 @@ static void RTIInterruptConfig()
     return;
 }
 #endif
+static uint32_t MMR_unlock_one(uint32_t * kick0, uint32_t * kick1)
+{
+    /* initialize the status variable */
+    uint32_t status = 1;
+
+    /* if either of the kick lock registers are locked */
+    if (!(*kick0 & 0x1) | !(*kick1 & 0x1))
+    {
+        /* unlock the partition by writing the unlock values to the kick lock registers */
+        *kick0 = KICK0_UNLOCK_VAL;
+        *kick1 = KICK1_UNLOCK_VAL;
+    }
+
+    /* check to see if either of the kick registers are unlocked. */
+    if (!(*kick0 & 0x1))
+    {
+        status = 0;
+    }
+
+    /* return the status to the calling program */
+    return status;
+
+}
+
+static uint32_t MMR_lock_one(uint32_t * kick0, uint32_t * kick1)
+{
+    /* create status return variable */
+    uint32_t status = 1;
+
+    /* check to see if either of the kick registers are unlocked. */
+    if ((*kick0 & 0x1))
+    {
+        /* write the kick lock value to the kick lock registers to lock the partition */
+        *kick0 = KICK_LOCK_VAL;
+        *kick1 = KICK_LOCK_VAL;
+    }
+
+    /* check to see if either of the kick registers are still unlocked. */
+    if ((*kick0 & 0x1))
+    {
+        status = 0;
+    }
+    /* return success or failure */
+    return status;
+}
 
 int32_t SDTF_WDT_init(void)
 {
@@ -137,12 +189,25 @@ int32_t SDTF_WDT_init(void)
     /* Calculate Reload value */
     preloadValue = (uint32_t)SDTF_RTI_CLOCK_SOURCE_32KHZ*(uint32_t)SDTF_RTI_DWWD_TIMEOUT_VALUE;
 
+     /* Unlock the 2nd partition */
+    (void)MMR_unlock_one(
+            CSL2PTR ( CSL_MCU_CTRL_MMR0_CFG0_BASE
+                    + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK0),
+            CSL2PTR ( CSL_MCU_CTRL_MMR0_CFG0_BASE
+                    + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK1));
+
     /* Select RTI module clock source */
     hwRegPtr = (uint32_t *) (CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL);
     regValue = (RTI_CLOCK_SOURCE_32KHZ << CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL_CLK_SEL_SHIFT);
     hwRegPtr[0] = (hwRegPtr[0]
                   & (~CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL_CLK_SEL_MASK))
                   | regValue;
+
+    (void)MMR_lock_one(
+            CSL2PTR ( CSL_CTRL_MMR0_CFG0_BASE
+                    + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK0),
+            CSL2PTR ( CSL_CTRL_MMR0_CFG0_BASE
+                    + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK1));
 
     /* Read back to check if the value is set */
     if ((hwRegPtr[0] & CSL_MCU_CTRL_MMR_CFG0_MCU_RTI1_CLKSEL_CLK_SEL_MASK)
