@@ -51,8 +51,9 @@ MEMORY
 
 SECTIONS
 {    
-    .hwi_vect: {. = align(32); } > 0x00800000
-    .text:csl_entry:{} > L2SRAM
+    .hwi_vect: {. = align(32); } > 0x80000000
+    .text:csl_entry:{} > DDR0
+    .text:_c_int00      load >  DDR0 ALIGN(0x10000)
     .text:              load >  DDR0
     .stack:             load >  DDR0
     GROUP:              load >  DDR0
