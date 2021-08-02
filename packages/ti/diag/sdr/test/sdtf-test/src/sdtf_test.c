@@ -235,35 +235,33 @@ int32_t SDTF_runPeriodicTests(void)
 
         SDTF_profileBegin(SDTF_PROFILE_PERIODIC);
         /* -------------- Periodic Test start ------------------------- */
-        {
-            /* Run test for ECC */
-            SDR_ECC_InjectErrorConfig_t injectErrorConfig;
+
+        /* Run test for ECC */
+        SDR_ECC_InjectErrorConfig_t injectErrorConfig;
 
             /* Note the address is relative to start of ram */
-            injectErrorConfig.pErrMem = (uint32_t *)(0x00);
+        injectErrorConfig.pErrMem = (uint32_t *)(0x00);
 
-            /* Run one shot test for ATCM 1 bit error */
-            injectErrorConfig.flipBitMask = 0x10;
-            result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
-                                           SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
-                                           SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
-                                           &injectErrorConfig,
-                                           100000);
+        /* Run one shot test for ATCM 1 bit error */
+        injectErrorConfig.flipBitMask = 0x10;
+        result = SDR_ECC_selfTest(SDR_ECC_MEMTYPE_MCU_R5F0_CORE,
+                                        SDR_ECC_R5F_MEM_SUBTYPE_ATCM0_BANK0_VECTOR_ID,
+                                        SDR_INJECT_ECC_ERROR_FORCING_1BIT_ONCE,
+                                        &injectErrorConfig,
+                                        100000);
 
 
-            if (result != SDR_PASS ) {
-                SDTF_printf("\n ATCM Single bit error at pErrMem 0x%p test failed",
-                            injectErrorConfig.pErrMem);
-                return -1;
-             }
+        if (result != SDR_PASS ) {
+            SDTF_printf("\n ATCM Single bit error at pErrMem 0x%p test failed",
+                        injectErrorConfig.pErrMem);
+            return -1;
         }
-        {
-             /* Run esm test 1*/
-             result = SDR_ESM_selfTest(SDR_ESM_INSTANCE_MCU,1000);
-             if (result != SDR_PASS ) {
-                 SDTF_printf("\n ESM self test 1 failed");
-                 return -1;
-             }
+
+        /* Run esm test 1*/
+        result = SDR_ESM_selfTest(SDR_ESM_INSTANCE_MCU,1000);
+        if (result != SDR_PASS ) {
+            SDTF_printf("\n ESM self test 1 failed");
+            return -1;
         }
 
         /* -------------- Periodic Tests end ------------------------- */
@@ -300,7 +298,7 @@ int32_t SDTF_runPeriodicTests(void)
 /* Number of commands run by the "run_all" command
  * Note: This should match number of entries in the tables below
  */
-#define SDTF_NUM_RUNALL_TEST_COMMANDS (41u)
+#define SDTF_NUM_RUNALL_TEST_COMMANDS (36u)
 
 /* Other commands not covered by run_all */
 #define SDTF_NUM_OTHER_TEST_COMMANDS (0u)
@@ -376,12 +374,12 @@ SDTF_commandList_t SDTF_commandList[SDTF_MAX_COMMANDS] =
     { "cbass_2bitselftest",          SDTF_runECC2BitCBASSSelfTest },
 #endif
 #ifdef SOC_AM65XX
-    { "ccm_selftest",                SDTF_runCCMSelfTest },
-    { "ccm_selftest_polarityinvert", SDTF_runCCMSelfTestErrorForce },
+/*     { "ccm_selftest",                SDTF_runCCMSelfTest },
+    { "ccm_selftest_errorforce",     SDTF_runCCMSelfTestErrorForce },
     { "ccm_vimselftest",             SDTF_runCCMVIMSelfTest },
-    { "ccm_inactivityselftest",      SDTF_runCCMInactivitySelfTest },
+    { "ccm_inactivityselftest",      SDTF_runCCMInactivitySelfTest }, */
     { "ccm_inject",                  SDTF_runCCMInjectError },
-    { "ccm_selftest_errorforce",     SDTF_runCCMSelftestPolarityInvert },
+    /* { "ccm_selftest_polarityinvert",     SDTF_runCCMSelftestPolarityInvert }, */
 #endif
     /* This needs to be last as it is destructive */
     { "ecc2_vimramdedvector",        SDTF_runECC2BitVIMRAMDEDvector },
