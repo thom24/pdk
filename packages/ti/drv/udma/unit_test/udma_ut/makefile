@@ -94,7 +94,7 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
   EXTERNAL_LNKCMD_FILE_LOCAL = rtos/$(SOC)/linker_$(CORE).lds
 endif
 ifeq ($(BUILD_OS_TYPE), freertos)
-  APPEND_LNKCMD_FILE = rtos/linker_append.cmd
+  APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
 endif
 
 # Core/SoC/platform specific source files and CFLAGS
