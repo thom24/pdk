@@ -43,7 +43,7 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
       COMP_LIST_COMMON += sciserver_tirtos
     endif
   endif
-  SRCS_COMMON += main_tirtos.c ipc_testsetup.c
+  SRCS_COMMON += main_rtos.c ipc_testsetup.c
   SRCS_COMMON += ipc_utils.c
   CFLAGS_LOCAL_COMMON += -DSYSBIOS
   INCLUDE_EXTERNAL_INTERFACES += xdc bios
@@ -86,7 +86,7 @@ ifeq ($(BUILD_OS_TYPE), freertos)
       COMP_LIST_COMMON += sciserver_tirtos
     endif
   endif
-  SRCS_COMMON += main_tirtos.c ipc_testsetup.c
+  SRCS_COMMON += main_rtos.c ipc_testsetup.c
   SRCS_COMMON += ipc_trace.c
   CFLAGS_LOCAL_COMMON += -DFREERTOS
   INCLUDE_EXTERNAL_INTERFACES += freertos
@@ -96,7 +96,9 @@ ifeq ($(BUILD_OS_TYPE), freertos)
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds
   APPEND_LNKCMD_FILE += $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/memory_map_ddr.cmd
   ifeq ($(ECHO_TEST_BTCM), 1)
+    ifeq ($(ISA), r5f)
       EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_btcm_$(BUILD_OS_TYPE).lds
+    endif
   endif
 endif
 

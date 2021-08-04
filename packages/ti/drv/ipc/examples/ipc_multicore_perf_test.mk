@@ -10,7 +10,7 @@ SRCDIR      += $(PDK_IPC_COMP_PATH)/examples/ipc_perf_test
 
 # Local name of IPC test app
 RPRC_PREFIX = ipc_perf_test
-# FreeRTOS is currently supported only on R5F cores.
+# FreeRTOS is currently supported only on R5F/C66x cores.
 # So for multicore performance test, use tirtos binary on other cores
 define BIN_PATH_PREFIX_RULE
 

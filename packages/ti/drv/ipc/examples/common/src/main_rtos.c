@@ -248,7 +248,7 @@ int main(void)
 
 
 
-#if defined ECHO_TEST_BTCM && defined FREERTOS
+#if defined ECHO_TEST_BTCM && defined FREERTOS && defined BUILD_MCU
     /* Relocate FreeRTOS Reset Vectors from BTCM*/
     void _freertosresetvectors (void);  
     memcpy((void *)0x0, (void *)_freertosresetvectors, 0x40);

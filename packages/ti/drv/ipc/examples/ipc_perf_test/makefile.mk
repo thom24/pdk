@@ -14,7 +14,7 @@ ifeq ($(SOC), am64x)
   COMP_LIST_COMMON += mailbox
 endif
 
-SRCS_COMMON += main_tirtos.c
+SRCS_COMMON += main_rtos.c
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   ifeq ($(CORE),mcu1_0)
     COMP_LIST_COMMON += sciserver_tirtos
