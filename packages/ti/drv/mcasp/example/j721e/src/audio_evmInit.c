@@ -141,7 +141,6 @@ void C66x_intrConfig(void)
 
     irqSetReq.valid_params = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                              TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    irqSetReq.src_id = TISCI_DEV_TIMER0;
 
     /* src_index 0 for TIMER0 is intr_pend signal */
     irqSetReq.src_index = 0;
@@ -152,9 +151,11 @@ void C66x_intrConfig(void)
 #if defined (BUILD_C66X_1)
     irqSetReq.dst_host_irq = 21;
     irqSetReq.dst_id = TISCI_DEV_C66SS0_CORE0;
+    irqSetReq.src_id = TISCI_DEV_TIMER0;
 #elif defined (BUILD_C66X_2)
     irqSetReq.dst_host_irq = 20;
     irqSetReq.dst_id = TISCI_DEV_C66SS1_CORE0;
+    irqSetReq.src_id = TISCI_DEV_TIMER1;
 #endif
 
     ret = Sciclient_rmIrqSet(&irqSetReq, &irqSetResp, SCICLIENT_SERVICE_WAIT_FOREVER);

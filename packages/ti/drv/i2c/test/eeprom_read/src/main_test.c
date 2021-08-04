@@ -270,13 +270,10 @@ bool Board_initI2C(void)
     int32_t                              retVal;
     struct tisci_msg_rm_irq_set_req      rmIrqReq;
     struct tisci_msg_rm_irq_set_resp     rmIrqResp;
-    uint16_t                             dst_id;
-    uint16_t                             dst_host_irq;
 
     /* Set up C66x interrupt router for DMTimer0 */
     memset (&rmIrqReq, 0, sizeof(rmIrqReq));
     rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-    rmIrqReq.src_id = TISCI_DEV_TIMER0;
     rmIrqReq.src_index = 0; /* set to 0 for non-event based interrupt */
 
     /* Set the destination interrupt */
@@ -286,18 +283,17 @@ bool Board_initI2C(void)
     if (CSL_chipReadDNUM() == 0U)
     {
         /* Set the destination for core0 */
-       dst_id = TISCI_DEV_C66SS0_CORE0;
-       /* rmIrqReq.dst_host_irq has to match the DMTimer.timerSettings[0].eventId defined in sysbios_c66.cfg */
-       dst_host_irq = 21U;
+        rmIrqReq.dst_id          = TISCI_DEV_C66SS0_CORE0;
+        rmIrqReq.dst_host_irq    = 21U;
+        rmIrqReq.src_id          = TISCI_DEV_TIMER0;
     }
     else
     {
         /* Set the destination for core1 */
-       dst_id = TISCI_DEV_C66SS1_CORE0;
-       dst_host_irq = 20U;
+        rmIrqReq.dst_id          = TISCI_DEV_C66SS1_CORE0;
+        rmIrqReq.dst_host_irq    = 20U;
+        rmIrqReq.src_id          = TISCI_DEV_TIMER1;
     }
-    rmIrqReq.dst_id       = dst_id;
-    rmIrqReq.dst_host_irq = dst_host_irq; /* DMSC dest event, input to C66x INTC  */
 
     /* Config event */
     retVal = Sciclient_rmIrqSet(

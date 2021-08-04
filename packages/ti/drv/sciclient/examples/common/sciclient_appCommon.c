@@ -623,15 +623,16 @@ void App_sciclientC66xIntrConfig(void)
      */
     rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                       TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
     rmIrqReq.src_index              = 0U;
 #if defined (BUILD_C66X_1)
     rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
     rmIrqReq.dst_host_irq           = 21U;
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
 #endif
 #if defined (BUILD_C66X_2)
     rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
     rmIrqReq.dst_host_irq           = 20U;
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER1;
 #endif
     /* Unused params */
     rmIrqReq.global_event           = 0U;

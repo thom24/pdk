@@ -499,33 +499,27 @@ bool Board_initUART(void)
     int32_t                               retVal;
     struct tisci_msg_rm_irq_set_req      rmIrqReq;
     struct tisci_msg_rm_irq_set_resp     rmIrqResp;
-    int32_t                              dst_id;
-
-#if defined (BUILD_DSP_1)
-    dst_id = TISCI_DEV_C66SS0_CORE0;
-#endif
-#if defined (BUILD_DSP_2)
-    dst_id = TISCI_DEV_C66SS1_CORE0;
-#endif
 
     /* Set up C66x interrupt router for DMTimer0 */
     memset (&rmIrqReq, 0, sizeof(rmIrqReq));
     rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-    rmIrqReq.src_id = TISCI_DEV_TIMER0;
     rmIrqReq.src_index = 0; /* set to 0 for non-event based interrupt */
 
     /* Set the destination interrupt */
     rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
     rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
 
-    /* Set the destination based on the core */
-    rmIrqReq.dst_id       = dst_id;
-/* rmIrqReq.dst_host_irq has to match the DMTimer.timerSettings[0].eventId defined in sysbios_c66.cfg */
 #if defined (BUILD_DSP_1)
+    /* Set the destination based on the core */
+    rmIrqReq.dst_id       = TISCI_DEV_C66SS0_CORE0;
     rmIrqReq.dst_host_irq = 21; /* DMSC dest event, input to C66x INTC  */
+    rmIrqReq.src_id       = TISCI_DEV_TIMER0;
 #endif
 #if defined (BUILD_DSP_2)
+    /* Set the destination based on the core */
+    rmIrqReq.dst_id       = TISCI_DEV_C66SS1_CORE0;
     rmIrqReq.dst_host_irq = 20; /* DMSC dest event, input to C66x INTC  */
+    rmIrqReq.src_id       = TISCI_DEV_TIMER1;
 #endif
 
     /* Config event */

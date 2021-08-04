@@ -129,9 +129,11 @@ void C66xTimerInterruptInit(void);
 /* To set C66 timer interrupts on J7ES */
     #if defined (BUILD_C66X_1)
         #define OSAL_TEST_CORE_TISCI_ID         (TISCI_DEV_C66SS0_CORE0)
+        #define OSAL_TEST_OS_TIMER_TISCI_ID     (TISCI_DEV_TIMER0)
     #endif
     #if defined (BUILD_C66X_2)
         #define OSAL_TEST_CORE_TISCI_ID         (TISCI_DEV_C66SS1_CORE0)
+        #define OSAL_TEST_OS_TIMER_TISCI_ID     (TISCI_DEV_TIMER1)
     #endif
     /* DMTimers used by OS */ 
     #if defined(USE_BIOS)
@@ -139,7 +141,6 @@ void C66xTimerInterruptInit(void);
         * trigger event #21 for C66x_1 and #20 for C66x_2. 
         * Map DMTimer 0 interrupt to these events.
         */
-        #define OSAL_TEST_OS_TIMER_TISCI_ID         (TISCI_DEV_TIMER0)
         #define OSAL_TEST_OS_TIMER_INT_NUM          (14U)
         #if defined (BUILD_C66X_1)
             #define OSAL_TEST_OS_TIMER_EVENT_NUM    (21U)
@@ -151,13 +152,6 @@ void C66xTimerInterruptInit(void);
     #if defined(FREERTOS)
         #define OSAL_TEST_OS_TIMER_INT_NUM          (configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
         #define OSAL_TEST_OS_TIMER_EVENT_NUM        (configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
-        /* In FreeRTOSConfig.h we use DMTimer0 for C66x_1 and DMTimer1 for C66x_2 */
-        #if defined (BUILD_C66X_1)
-            #define OSAL_TEST_OS_TIMER_TISCI_ID     (TISCI_DEV_TIMER0)
-        #endif
-        #if defined (BUILD_C66X_2)
-            #define OSAL_TEST_OS_TIMER_TISCI_ID     (TISCI_DEV_TIMER1)
-        #endif
     #endif
     /* DMTimers used for OSAL Timer Test */ 
     /* The Event 20/21 is used for DMTimer0/1 by SysBIOS/FreeRTOS by default, 
