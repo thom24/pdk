@@ -69,7 +69,8 @@ MEMORY
     /* Space where Sciserver App will run */
     OCMC_RAM_SCISERVER (RWIX)       : ORIGIN = 0x41C82000 , LENGTH = 0x60000
     /* X509 Header to be left behind by CCS Init for Sciserver to read */
-    OCMC_RAM_X509_HEADER (RWIX)     : ORIGIN = 0x41cffb00 , LENGTH = 0x500
+    OCMC_RAM_X509_HEADER1 (RWIX)     : ORIGIN = 0x41cffb00 , LENGTH = 0x500 /* covers header for J7200/J721E */
+    OCMC_RAM_X509_HEADER2 (RWIX)     : ORIGIN = 0x41cfdb00 , LENGTH = 0x500 /* covers header for J721S2 */
 
 }  /* end of MEMORY */
 

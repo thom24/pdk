@@ -85,9 +85,6 @@
 #endif
 
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
-/** \brief Aligned address at which the X509 header is placed. */
-#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00U)
-
 /** \brief Aligned address at which the Board Config header is placed. */
 #define SCISERVER_BOARDCONFIG_HEADER_ADDR (0x41c80000U)
 

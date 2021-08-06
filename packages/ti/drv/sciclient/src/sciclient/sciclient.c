@@ -62,8 +62,6 @@
 /** Indicate that this message is marked secure */
 #define TISCI_MSG_FLAG_MASK    (TISCI_BIT(0) | TISCI_BIT(1))
 
-#define SCICLIENT_COMMON_X509_HEADER_ADDR (0x41cffb00)
-
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

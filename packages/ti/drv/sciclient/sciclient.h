@@ -273,6 +273,18 @@ typedef uint8_t devgrp_t;
 
 #endif
 
+/** Aligned address at which the X509 header is placed. */
+#if defined(SOC_J721E) || defined(SOC_J7200)
+#define SCICLIENT_COMMON_X509_HEADER_ADDR (0x41cffb00)
+#elif defined(SOC_J721S2)
+#define SCICLIENT_COMMON_X509_HEADER_ADDR (0x41cfdb00)
+#else
+#define SCICLIENT_COMMON_X509_HEADER_ADDR (0x41cffb00)
+#endif
+
+#define SCISERVER_COMMON_X509_HEADER_ADDR \
+    SCICLIENT_COMMON_X509_HEADER_ADDR
+
 /**
  * Maximum number of devgrps that are supported by SYSFW.
  * Derived from the above definitions

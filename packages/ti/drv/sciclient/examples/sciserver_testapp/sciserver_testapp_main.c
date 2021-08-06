@@ -52,8 +52,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/** \brief Aligned address at which the X509 header is placed. */
-#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00)
+/* None */
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
