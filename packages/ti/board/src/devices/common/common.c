@@ -156,46 +156,55 @@ Board_STATUS Board_i2c16BitRegWr(void *handle,
 
     I2C_Transaction transaction;
 
-    I2C_Handle i2cHandle = (I2C_Handle)handle;
-
-    /* Initializes the I2C transaction structure with default values */
-    I2C_transactionInit(&transaction);
-
-    transaction.slaveAddress = slaveAddr;
-    transaction.writeBuf     = &tx[0];
-    transaction.writeCount   = (numOfBytes + 2);
-    transaction.readBuf      = NULL;
-    transaction.readCount    = 0;
-    transaction.timeout      = i2cTimeout;
-
-    /* 16-bit regAddr data to be sent */
-    if(byteOrdSel == BOARD_I2C_REG_ADDR_MSB_FIRST)
+    if(numOfBytes > 4u)
     {
-        tx[0] = (uint8_t)((regAddr & 0xFF00) >> 8);
-        tx[1] = (uint8_t)(regAddr & 0x00FF);
-    }
-    else
-    {
-        tx[0] = (uint8_t)(regAddr & 0x00FF);
-        tx[1] = (uint8_t)((regAddr & 0xFF00) >> 8);
+        ret = BOARD_INVALID_PARAM;
     }
 
-    txPtr = &tx[2];
-    /* regData to be sent */
-    while(numOfBytes)
+    if(BOARD_SOK == ret)
     {
-        *txPtr = *regData;
-        txPtr++;
-        regData++;
-        numOfBytes--;
-    }
+        I2C_Handle i2cHandle = (I2C_Handle)handle;
 
-    ret = I2C_transfer(i2cHandle, &transaction);
-    if(ret != I2C_STS_SUCCESS)
-    {
-        BOARD_DEVICES_ERR_LOG("Failing while writing data by returning - %d\n\r", ret);
-        ret = -1;
-        return ret;
+        /* Initializes the I2C transaction structure with default values */
+        I2C_transactionInit(&transaction);
+
+        transaction.slaveAddress = slaveAddr;
+        transaction.writeBuf     = &tx[0];
+        transaction.writeCount   = (numOfBytes + 2);
+        transaction.readBuf      = NULL;
+        transaction.readCount    = 0;
+        transaction.timeout      = i2cTimeout;
+
+        /* 16-bit regAddr data to be sent */
+        if(byteOrdSel == BOARD_I2C_REG_ADDR_MSB_FIRST)
+        {
+            tx[0] = (uint8_t)((regAddr & 0xFF00) >> 8);
+            tx[1] = (uint8_t)(regAddr & 0x00FF);
+        }
+        else
+        {
+            tx[0] = (uint8_t)(regAddr & 0x00FF);
+            tx[1] = (uint8_t)((regAddr & 0xFF00) >> 8);
+        }
+
+        txPtr = &tx[2];
+        /* regData to be sent */
+        while(numOfBytes)
+        {
+            *txPtr = *regData;
+            txPtr++;
+            regData++;
+            numOfBytes--;
+        }
+
+        ret = I2C_transfer(i2cHandle, &transaction);
+        if(ret != I2C_STS_SUCCESS)
+        {
+            BOARD_DEVICES_ERR_LOG(
+                    "Failing while writing data by returning - %d\n\r", ret);
+            ret = -1;
+            return ret;
+        }
     }
 
     return BOARD_SOK;
@@ -412,7 +421,7 @@ Board_STATUS Board_i2c10bit16bitRegWr(void *handle,
     /* MSB of 16-bit data should be sent first followed by the LSB */
     tx[0] = (uint8_t)((regAddr & 0xFF00) >> 8);
     tx[1] = (uint8_t)(regAddr & 0x00FF);
-    
+
     /* MSB of 16-bit data should be sent first followed by the LSB */
     tx[2] = (uint8_t)((regData & 0xFF00) >> 8);
     tx[3] = (uint8_t)(regData & 0x00FF);
