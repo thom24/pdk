@@ -275,6 +275,42 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
         /** testType **/
         (APP_SCICLIENT_TEST_TYPE_SANITY)
     }
+#elif defined(ENABLE_MSG_FWD)
+    {
+        /** enableTest **/
+        TEST_ENABLE,
+
+        /** testCaseId **/
+        6U,
+
+        /** *reqId **/
+        "PDK:10418",
+
+        /** *testCaseName **/
+        "SCICLIENT TIFS2DM Message Forwarding Test",
+
+        /** *userInfo **/
+        "None",
+
+        /** *disableReason **/
+        "None",
+
+        /** *passFailCriteria **/
+        "Sciclient gets ACK and the DEV ID 0 state info, after sending get device\
+         state message on a secure queue (to TIFS and then DM) without any error.",
+
+        /** cpuID **/
+        APP_SCICLIENT_R5F,
+
+        /** sciclientConfigParams **/
+        {},
+
+        /** printEnable **/
+        PRINT_ENABLE,
+
+        /** testType **/
+        (APP_SCICLIENT_TEST_TYPE_SANITY)
+    }
 #endif
 };
 

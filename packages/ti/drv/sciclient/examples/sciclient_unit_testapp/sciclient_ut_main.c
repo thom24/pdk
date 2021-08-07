@@ -89,6 +89,8 @@ static int32_t App_msmcQueryTest(void);
 #endif
 #if defined(SOC_AM65XX)
 static int32_t App_rmGetResourceRange(void);
+#elif defined(ENABLE_MSG_FWD)
+static int32_t App_tifs2dmMsgForwardingTest(void);
 #endif
 
 /* ========================================================================== */
@@ -193,6 +195,10 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #if defined (SOC_AM65XX)
         case 6:
             testParams->testResult = App_rmGetResourceRange();
+            break;
+#elif defined(ENABLE_MSG_FWD)
+        case 6:
+            testParams->testResult = App_tifs2dmMsgForwardingTest();
             break;
 #endif
         default:
@@ -674,6 +680,85 @@ static int32_t App_rmGetResourceRange(void)
         }
     }
     
+    if (status == CSL_PASS)
+    {
+        status = Sciclient_deinit();
+    }
+    return status;
+}
+#elif defined(ENABLE_MSG_FWD)
+static int32_t App_tifs2dmMsgForwardingTest(void)
+{
+    int32_t status = CSL_EFAIL;
+    Sciclient_ConfigPrms_t        config =
+    {
+        SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
+        NULL,
+        1 /* isSecure = 1 to test passing message on secure channel */
+    };
+
+    App_sciclientPrintf(" Starting TIFS2DM msg forwarding test (from secure queue)\n");
+
+    struct tisci_msg_get_device_req request;
+    request.id = 0x1; /* Use DEV ID of 1 as a device to check state (any DEV ID will do) */
+    const Sciclient_ReqPrm_t        reqPrm =
+    {
+        TISCI_MSG_GET_DEVICE,
+        TISCI_MSG_FLAG_AOP,
+        (uint8_t *) &request,
+        sizeof(request),
+        SCICLIENT_SERVICE_WAIT_FOREVER
+    };
+
+    struct tisci_msg_get_device_resp response;
+    Sciclient_RespPrm_t              respPrm =
+    {
+        0,
+        (uint8_t *) &response,
+        sizeof(response)
+    };
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
+
+    status = Sciclient_init(&config);
+    if (status == CSL_PASS)
+    {
+        status = Sciclient_service(&reqPrm, &respPrm);
+        if (CSL_PASS == status)
+        {
+            if ((respPrm.flags & TISCI_MSG_FLAG_ACK) == TISCI_MSG_FLAG_ACK)
+            {
+                status = CSL_PASS;
+                App_sciclientPrintf(
+                                  " Device ID 0 - Context Loss Count: %d\n",
+                                  (uint32_t *) response.context_loss_count);
+                App_sciclientPrintf(
+                                  "             - Resets: %d\n",
+                                  (uint32_t *) response.resets);
+                App_sciclientPrintf(
+                                  "             - Programmed state: %d\n",
+                                  (uint8_t *) response.programmed_state);
+                App_sciclientPrintf(
+                                  "             - Current state: %d\n",
+                                  (uint8_t *) response.current_state);
+            }
+            else
+            {
+                App_sciclientPrintf(
+                                  " Device ID 0 - Get device state failed \n");
+            }
+        }
+        else
+        {
+            App_sciclientPrintf(
+                              " Device ID 0 - Get device state failed \n");
+        }
+    }
     if (status == CSL_PASS)
     {
         status = Sciclient_deinit();

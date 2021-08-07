@@ -28,6 +28,11 @@ COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES = freertos
 endif
 
+# SoCs which use split DM / TIFS can enable tests that use msg forwarding
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+SCICLIENT_UT_CFLAGS = -DENABLE_MSG_FWD
+endif
+
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
@@ -36,7 +41,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
 SRCS_COMMON = sciclient_ut_main.c \
               sciclient_appCommon.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SCICLIENT_UT_CFLAGS)
 PACKAGE_SRCS_COMMON = . ../common
 
 # Core/SoC/platform specific source files and CFLAGS
