@@ -91,41 +91,6 @@ void usbCoreIntrHandler(void* pUsbParam)
 #endif
 }
 
-#if (defined(SOC_AM65XX) && defined(BUILD_MCU))
-static void usb_configIntRouter(uint32_t portNum)
-{
-    CSL_IntrRouterCfg  intrRouterCfg;
-    uint32_t           outIntrNum;
-
-    /* Initialize Main to MCU Interrupt Router conifg structure */
-    intrRouterCfg.pIntrRouterRegs = (CSL_intr_router_cfgRegs *)(uintptr_t)
-                                       (CSL_MAIN2MCU_LVL_INTRTR0_CFG_BASE);
-
-    intrRouterCfg.pIntdRegs       = (CSL_intr_router_intd_cfgRegs *)(uintptr_t)NULL;
-
-    /* number of input ints */
-    intrRouterCfg.numInputIntrs   = MAIN2MCU_LVL_INTRTR0_NUM_INTPUT_INTRS;
-
-    /* number of output ints */
-    intrRouterCfg.numOutputIntrs  = MAIN2MCU_LVL_INTRTR0_NUM_OUTPUT_INTRS;
-
-    /*
-     * Route USB int to MAIN2MCU int router output.
-     * USB example codes running on R5 (MCU) core registers MAIN2MCU int router
-     * output as USB MCU interrupt
-     */
-    if (portNum == 0)
-    {
-        outIntrNum = SYS_INT_USB0 - CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_0;
-        CSL_intrRouterCfgMux(&intrRouterCfg, MAIN2MCU_USB0_INT, outIntrNum);
-    }
-    else
-    {
-        outIntrNum = SYS_INT_USB1 - CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_0;
-        CSL_intrRouterCfgMux(&intrRouterCfg, MAIN2MCU_USB1_INT, outIntrNum);
-    }
-}
-#endif
 
 /**
  *  \brief    Used to register interrupt for USB device
@@ -159,7 +124,7 @@ static void usbdIntrConfig(USB_Handle usbHandle, USB_Params* usbDevParams)
     usb_osalHwiParamsInit(&hwiInputParams);
 
     /* Construct Hwi object for this USB interrupts. */
-	hwiInputParams.name = NULL;
+    hwiInputParams.name = NULL;
     hwiInputParams.arg  = (uintptr_t)usbDevParams;
     hwiInputParams.priority = 0x10U;
     hwiInputParams.evtId = 0;
@@ -184,7 +149,7 @@ static void usbdIntrConfig(USB_Handle usbHandle, USB_Params* usbDevParams)
 
 #if (defined(SOC_AM65XX) && defined(BUILD_MCU))
     /* configure the interrupt router for MCU (R5) build */
-    usb_configIntRouter(usbDevParams->instanceNo);
+    usb_configIntRouter(usbDevParams->instanceNo, TRUE);
 #endif
 
     /* Interrupt handler has been installed, enable required interrupts */
@@ -326,7 +291,7 @@ int8_t BoardDiag_run_usbDevice_test(void)
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_UART_STDIO;
+    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
 #endif
 
     status = Board_init(boardCfg);
@@ -416,7 +381,7 @@ int main()
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_UART_STDIO;
+    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
 #endif
 
     status = Board_init(boardCfg);
