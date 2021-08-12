@@ -418,13 +418,14 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
             /* neeeds to access the boot media. Update */
             /* caller with image load address          */
             #if defined(SOC_J721E) && SBL_USE_DMA
-            SBL_udmaSeekMem(NULL, 0);
             if(SBL_isUdmaInitDone())
             {
+                SBL_udmaSeekMem(NULL, 0);
                 SBL_SetMulticoreImageImgReadfxn((void *)SBL_udmaReadData, (void *)SBL_udmaSeekMem);
             }
             else
             {
+                SBL_SeekMem(NULL, 0);
                 SBL_SetMulticoreImageImgReadfxn((void *)SBL_ReadMem, (void *)SBL_SeekMem);
             }
             #else
