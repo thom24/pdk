@@ -157,8 +157,6 @@ extern EDMA3_RM_GblConfigParams sampleEdma3GblCfgParams[];
 #include <ti/drv/sciclient/sciclient.h>
 #if defined (BUILD_MCU1_0)
 #include <ti/drv/sciclient/sciserver_tirtos.h>
-/* Aligned address at which the X509 header is placed */
-#define SCISERVER_COMMON_X509_HEADER_ADDR (0x41cffb00)
 #endif
 #endif
 
