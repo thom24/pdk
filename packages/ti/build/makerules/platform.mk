@@ -314,8 +314,8 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))
 endif
 
 ifeq ($(CORE),$(filter $(CORE), qnx_mpu1_0))
-  ISA = qnx-a72
-  ISA_EXT = qnx-a72
+  ISA = qnx_a72
+  ISA_EXT = qnx_a72
   ARCH = armv8a
 endif
 
@@ -617,7 +617,7 @@ ifeq ($(ISA),a72)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
 endif
 
-ifeq ($(ISA),qnx-a72)
+ifeq ($(ISA),qnx_a72)
   ENDIAN_EXT = fg
   FORMAT_EXT =
 
@@ -628,12 +628,12 @@ ifeq ($(ISA),qnx-a72)
   endif
 
   # Define the file extensions
-  OBJEXT = o$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
+  OBJEXT = o$(FORMAT_EXT)a72$(ENDIAN_EXT)
   OBJEXT_BIOS = o$(FORMAT_EXT)a72$(ENDIAN_EXT)
   PEXT_BIOS = p$(FORMAT_EXT)a72$(ENDIAN_EXT)
-  LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
+  LIBEXT = a$(FORMAT_EXT)a72$(ENDIAN_EXT)
+  EXEEXT = x$(FORMAT_EXT)a72$(ENDIAN_EXT)
+  ASMEXT = s$(FORMAT_EXT)a72$(ENDIAN_EXT)
 endif
 
 ifeq ($(ISA),m3)

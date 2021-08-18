@@ -30,9 +30,9 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# Filename: rules_a72-qnx.mk
+# Filename: rules_qnx_a72.mk
 #
-# Make rules for A72-QNX - This file has all the common rules and defines required
+# Make rules for QNX-A72 - This file has all the common rules and defines required
 #                     for Cortex-A72 ISA when building for QNX
 #
 # This file needs to change when:
@@ -42,10 +42,10 @@
 
 # Set compiler/archiver/linker commands and include paths
 CODEGEN_INCLUDE = $(TOOLCHAIN_PATH_QNX_A72)/arm-none-eabi/include
-CC = $(TOOLCHAIN_PATH_QNX_A72)/aarch64-unknown-nto-qnx7.0.0-gcc
-AR = $(TOOLCHAIN_PATH_QNX_A72)/aarch64-unknown-nto-qnx7.0.0-ar
-LNK = $(TOOLCHAIN_PATH_QNX_A72)/aarch64-unknown-nto-qnx7.0.0-gcc
-SIZE = $(TOOLCHAIN_PATH_QNX_A72)/aarch64-unknown-nto-qnx7.0.0-size
+CC = $(TOOLCHAIN_PATH_QNX_A72)/$(QNX_CROSS_COMPILER_TOOL)gcc
+AR = $(TOOLCHAIN_PATH_QNX_A72)/$(QNX_CROSS_COMPILER_TOOL)ar
+LNK = $(TOOLCHAIN_PATH_QNX_A72)/$(QNX_CROSS_COMPILER_TOOL)gcc
+SIZE = $(TOOLCHAIN_PATH_QNX_A72)/$(QNX_CROSS_COMPILER_TOOL)size
 
 # Derive a part of RTS Library name based on ENDIAN: little/big
 ifeq ($(ENDIAN),little)
@@ -62,7 +62,7 @@ endif
 
 # Internal CFLAGS - normally doesn't change
 CFLAGS_INTERNAL = -Wimplicit -Wall -Wunused -Wunknown-pragmas -ffunction-sections -fdata-sections -c -mcpu=cortex-a72+fp+simd -g -mabi=lp64 -mstrict-align -std=gnu99 -fms-extensions
-CFLAGS_INTERNAL += -mfix-cortex-a53-835769 -mfix-cortex-a53-843419
+CFLAGS_INTERNAL += -mfix-cortex-a53-835769 -mfix-cortex-a53-843419 -fPIC -fshort-enums
 ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   CFLAGS_INTERNAL += -Werror
   LNKFLAGS_INTERNAL_COMMON += -Werror
@@ -148,12 +148,12 @@ _LNKFLAGS = $(LNKFLAGS_INTERNAL_COMMON) $(LNKFLAGS_INTERNAL_BUILD_PROFILE) $(LNK
 RTSLIB_PATH =
 
 LIB_PATHS += $(APP_LIBS_$(CORE))
-LIB_PATHS += $(EXT_LIB_a72-qnx_0)
+LIB_PATHS += $(EXT_LIB_qnx_a72_0)
 LIB_PATHS += $(EXT_LIB_PATHS)
 LIB_PATHS += $(RTSLIB_PATH)
 
 LNKCMD_PREFIX = -Wl,-T,
-LINKER1 = $(addprefix $(LNKCMD_PREFIX), $(CONFIG_BLD_LNK_a72-qnx))
+LINKER1 = $(addprefix $(LNKCMD_PREFIX), $(CONFIG_BLD_LNK_qnx_a72))
 
 ifneq ($(LNKCMD_FILE),)
 LINKER2 = $(addprefix $(LNKCMD_PREFIX), $(LNKCMD_FILE))
@@ -199,7 +199,7 @@ endif
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) $(LIB_PATHS) $(LNKCMD_FILE)
 	$(ECHO) \# Linking into $(EXE_NAME)...
 	$(ECHO) \#
-	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) $(LINKER1) $(LINKER2) $(LINKER_APPEND) $(LNK_LIBS) -Wl,--build-id=none -Wl,-Map=$@.map -o $@ $(EXT_LIB_a72-qnx_0) $(EXT_LIB_PATHS)  -Wl,--start-group $(LIB_PATHS) -Wl,--end-group
+	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) $(LINKER1) $(LINKER2) $(LINKER_APPEND) $(LNK_LIBS) -Wl,--build-id=none -Wl,-Map=$@.map -o $@ $(EXT_LIB_qnx_a72_0) $(EXT_LIB_PATHS)  -Wl,--start-group $(LIB_PATHS) -Wl,--end-group
 	$(ECHO) \#
 	$(ECHO) \# $@ created.
 	$(ECHO) \#
