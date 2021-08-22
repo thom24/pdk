@@ -161,7 +161,7 @@ void mainTask(void* arg0, void* arg1)
     (void)arg1;
 
     volatile uint32_t loopForever = 1U;
-    
+
     App_sciclientParser();
 
     while(loopForever);
@@ -249,7 +249,7 @@ int32_t App_getRevisionTestPol(void)
     {
         status = Sciclient_deinit();
     }
-    
+
     status = Sciclient_init(&config);
 
     if (status == CSL_PASS)
@@ -322,7 +322,7 @@ int32_t App_getRevisionTestIntr(void)
     {
         status = Sciclient_deinit();
     }
-    
+
     status = Sciclient_init(&config);
     if (status == CSL_PASS)
     {
@@ -637,7 +637,7 @@ static int32_t App_rmGetResourceRange(void)
         status = Sciclient_deinit();
     }
     status = Sciclient_init(&config);
-    
+
     for (i = 0U; i < sizeof (gAppSciclientTstParams)/sizeof (struct appSciclientRmGetRangeTest); i++)
     {
         struct tisci_msg_rm_get_resource_range_resp res;
@@ -679,7 +679,7 @@ static int32_t App_rmGetResourceRange(void)
             }
         }
     }
-    
+
     if (status == CSL_PASS)
     {
         status = Sciclient_deinit();
@@ -736,16 +736,16 @@ static int32_t App_tifs2dmMsgForwardingTest(void)
                 status = CSL_PASS;
                 App_sciclientPrintf(
                                   " Device ID 0 - Context Loss Count: %d\n",
-                                  (uint32_t *) response.context_loss_count);
+                                  response.context_loss_count);
                 App_sciclientPrintf(
                                   "             - Resets: %d\n",
-                                  (uint32_t *) response.resets);
+                                  response.resets);
                 App_sciclientPrintf(
                                   "             - Programmed state: %d\n",
-                                  (uint8_t *) response.programmed_state);
+                                  response.programmed_state);
                 App_sciclientPrintf(
                                   "             - Current state: %d\n",
-                                  (uint8_t *) response.current_state);
+                                  response.current_state);
             }
             else
             {
