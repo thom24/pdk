@@ -6,6 +6,7 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 ifeq ($(BUILD_OS_TYPE), baremetal)
 
     MCSPI_OS_TESTPREFIX=_Baremetal
+    MCSPI_OS_TESTPOSTFIX=
     CFLAGS_OS_DEFINES = -DBARE_METAL
     LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
     COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
@@ -19,6 +20,7 @@ endif
 ifeq ($(BUILD_OS_TYPE), tirtos)
 
     MCSPI_OS_TESTPREFIX=
+    MCSPI_OS_TESTPOSTFIX=_tirtos
     CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
     EXTERNAL_INTERFACES = xdc bios
     COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
@@ -36,6 +38,7 @@ endif
 ifeq ($(BUILD_OS_TYPE), freertos)
 
     MCSPI_OS_TESTPREFIX=
+    MCSPI_OS_TESTPOSTFIX=_freertos
     CFLAGS_OS_DEFINES = -DFREERTOS -DRTOS_ENV
     EXTERNAL_INTERFACES = freertos
     COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
@@ -54,7 +57,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
     ifeq ($(CORE), mpu1_0)
-        # Slave running on mpu1_0 core 
+        # Slave running on mpu1_0 core
         CFLAGS_SPI_MS     = -DMCSPI_SLAVE_TASK
         APP_MASTER_SLAVE  = Slave
         ifeq ($(SOC),$(filter $(SOC), am65xx))
@@ -84,7 +87,7 @@ endif
 ifeq ($(DMA), enable)
 
     MCSPI_DMA_MODE_INFIX = _Dma
-    COMP_LIST_COMMON += spi_dma 
+    COMP_LIST_COMMON += spi_dma
     CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 else
     MCSPI_DMA_MODE_INFIX =
@@ -94,7 +97,7 @@ endif
 
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)$(MCSPI_DMA_MODE_INFIX)_TestApp_$(BUILD_OS_TYPE)
+APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)$(MCSPI_DMA_MODE_INFIX)_TestApp$(MCSPI_OS_TESTPOSTFIX)
 
 ifeq ($(SOC),$(filter $(SOC), am64x))
 CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK -Dam64x_evm=am64x_evm

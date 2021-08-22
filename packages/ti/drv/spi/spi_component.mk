@@ -356,7 +356,7 @@ export drv_mcspi_loopback_app_$(SOC)_CORELIST
 
 # SPI baremetal master Test app
 MCSPI_Baremetal_Master_TestApp_COMP_LIST = MCSPI_Baremetal_Master_TestApp
-export MCSPI_Baremetal_Master_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Baremetal_Master_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Master_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Master_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Master_TestApp_CORE_DEPENDENCY = yes
@@ -381,7 +381,7 @@ endif
 
 # SPI baremetal slave Test app
 MCSPI_Baremetal_Slave_TestApp_COMP_LIST = MCSPI_Baremetal_Slave_TestApp
-export MCSPI_Baremetal_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Baremetal_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY = yes
@@ -402,7 +402,7 @@ endif
 
 # SPI baremetal master Test app
 MCSPI_Baremetal_Master_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_Master_Dma_TestApp
-export MCSPI_Baremetal_Master_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Baremetal_Master_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Master_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY = yes
@@ -427,7 +427,7 @@ endif
 
 # SPI baremetal slave Test app
 MCSPI_Baremetal_Slave_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_Slave_Dma_TestApp
-export MCSPI_Baremetal_Slave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+MCSPI_Baremetal_Slave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY = yes
 MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY = yes
