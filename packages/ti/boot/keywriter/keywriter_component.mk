@@ -67,7 +67,7 @@
 ifeq ($(keywriter_component_make_include), )
 keywriter_BOARDLIST = j721e_evm
 keywriter_SOCLIST = j721e
-keywriter_j721e_CORELIST := mcu1_0 
+keywriter_j721e_CORELIST := mcu1_0
 j721e_LASTCORE := $(word $(words $(keywriter_j721e_CORELIST)), $(keywriter_j721e_CORELIST))
 
 ############################
@@ -85,7 +85,7 @@ j721e_LASTCORE := $(word $(words $(keywriter_j721e_CORELIST)), $(keywriter_j721e
 
 # KEYWRITER Image
 export keywriter_img_COMP_LIST        = keywriter_img
-export keywriter_img_RELPATH          = ti/boot/keywriter
+export keywriter_img_RELPATH          = ti/boot/keywriter/build
 export keywriter_img_CUSTOM_BINPATH   = $(PDK_KEYWR_COMP_PATH)/binary/$(SOC)
 export keywriter_img_PATH             = $(PDK_KEYWR_COMP_PATH)/build
 export keywriter_img_MAKEFILE         = -f$(PDK_KEYWR_COMP_PATH)/build/keywriter.mk
@@ -99,7 +99,7 @@ export keywriter_img_BOARDLIST        = j721e_evm
 export keywriter_img_$(SOC)_CORELIST  = mcu1_0
 export keywriter_img_KEYWR_IMAGEGEN   = yes
 
-keywriter_EXAMPLE_LIST                = keywriter_img
+keywriter_EXAMPLE_LIST               += keywriter_img
 ###########END BOOT PERF KNOBS#############
 
 # KEYWRITER not supported for any profile
@@ -108,7 +108,7 @@ ifneq ($(BUILD_PROFILE), release)
 keywriter_LIB_LIST =
 keywriter_EXAMPLE_LIST =
 KEYWR_CFLAGS =
-endif 
+endif
 
 export keywriter_LIB_LIST
 export keywriter_EXAMPLE_LIST
