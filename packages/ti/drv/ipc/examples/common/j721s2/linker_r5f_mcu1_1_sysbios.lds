@@ -1,22 +1,4 @@
-/*----------------------------------------------------------------------------*/
-/* File: linker_r5f_mcu1_1_sysbios.lds                                        */
-/* Description:			  					      */
-/*    Link command file for J71S2 MCU1_1 view				      */
-/*	  TI ARM Compiler version 15.12.3 LTS or later			      */
-/*                                                                            */
-/* (c) Texas Instruments 2021, All rights reserved.                           */
-/*----------------------------------------------------------------------------*/
-/*  History:								      */
-/*    Aug 26th, 2016 Original version .......................... Loc Truong   */
-/*    Aug 01th, 2017 new TCM mem map  .......................... Loc Truong   */
-/*    Nov 07th, 2017 Changes for R5F Init Code.................. Vivek Dhande */
-/*    Sep 17th, 2018 Added DDR sections for IPC................. J. Bergsagel */
-/*    Sep 26th, 2018 Extra mem sections for IPC resource table.. J. Bergsagel */
-/*    Nov 06th, 2018 Linker command file for MCU1_1............. J. Bergsagel */
-/*    Apr 23th, 2019 Changes for R5F startup Code............... Vivek Dhande */
-/*----------------------------------------------------------------------------*/
-/* Linker Settings                                                            */
-/* Standard linker options						      */
+/* Linker Settings */
 --retain="*(.bootCode)"
 --retain="*(.startupCode)"
 --retain="*(.startupData)"
@@ -52,9 +34,19 @@
 #define MCU2_1_R5F_MEM_DATA_BASE (MCU2_1_ALLOCATED_START + 0x00300000)
 #define MCU2_1_DDR_SPACE_BASE    (MCU2_1_ALLOCATED_START + 0x00400000)
 
+#define MCU3_0_ALLOCATED_START   DDR0_ALLOCATED_START + 0x04000000
+#define MCU3_0_EXT_DATA_BASE     (MCU3_0_ALLOCATED_START + 0x00100000)
+#define MCU3_0_R5F_MEM_TEXT_BASE (MCU3_0_ALLOCATED_START + 0x00200000)
+#define MCU3_0_R5F_MEM_DATA_BASE (MCU3_0_ALLOCATED_START + 0x00300000)
+#define MCU3_0_DDR_SPACE_BASE    (MCU3_0_ALLOCATED_START + 0x00400000)
+
+#define MCU3_1_ALLOCATED_START   DDR0_ALLOCATED_START + 0x05000000
+#define MCU3_1_EXT_DATA_BASE     (MCU3_1_ALLOCATED_START + 0x00100000)
+#define MCU3_1_R5F_MEM_TEXT_BASE (MCU3_1_ALLOCATED_START + 0x00200000)
+#define MCU3_1_R5F_MEM_DATA_BASE (MCU3_1_ALLOCATED_START + 0x00300000)
+#define MCU3_1_DDR_SPACE_BASE    (MCU3_1_ALLOCATED_START + 0x00400000)
+
 #define ATCM_START 0x00000000
-#define OCMRAM_MCU1_0_START 0x41cfe000
-#define OCMRAM_MCU1_1_START 0x41cff000
 
 -e __VECS_ENTRY_POINT
 
@@ -69,10 +61,6 @@ MEMORY
     /* MCU1_R5F_1 SoC view  */
     MCU1_R5F1_ATCM (RWIX)  	: origin=0x41400000 length=0x8000
     MCU1_R5F1_BTCM (RWIX) 	: origin=0x41410000 length=0x8000
-
-    /* MCUSS RAM - Start towards the end to avoid Bootloader usage of the SRAM */
-    OCMRAM_MCU1_0 (RWIX)        : origin=OCMRAM_MCU1_0_START length=0x1000
-    OCMRAM_MCU1_1 (RWIX)        : origin=OCMRAM_MCU1_1_START length=0x1000
 
     DDR0_RESERVED    (RWIX)  	: origin=0x80000000 length=0x20000000	  	/* 512MB */
     MCU1_0_IPC_DATA (RWIX)	: origin=DDR0_ALLOCATED_START     length=0x00100000	/*   1MB */
@@ -95,8 +83,18 @@ MEMORY
     MCU2_1_R5F_MEM_TEXT (RWIX)	: origin=MCU2_1_R5F_MEM_TEXT_BASE length=0x00100000	/*   1MB */
     MCU2_1_R5F_MEM_DATA (RWIX)	: origin=MCU2_1_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
     MCU2_1_DDR_SPACE (RWIX)	: origin=MCU2_1_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
+    MCU3_0_IPC_DATA (RWIX)	: origin=MCU3_0_ALLOCATED_START   length=0x00100000	/*   1MB */
+    MCU3_0_EXT_DATA  (RWIX)	: origin=MCU3_0_EXT_DATA_BASE     length=0x00100000	/*   1MB */
+    MCU3_0_R5F_MEM_TEXT (RWIX)	: origin=MCU3_0_R5F_MEM_TEXT_BASE length=0x00100000	/*   1MB */
+    MCU3_0_R5F_MEM_DATA (RWIX)	: origin=MCU3_0_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
+    MCU3_0_DDR_SPACE (RWIX)	: origin=MCU3_0_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
+    MCU3_1_IPC_DATA (RWIX)	: origin=MCU3_1_ALLOCATED_START   length=0x00100000	/*   1MB */
+    MCU3_1_EXT_DATA  (RWIX)	: origin=MCU3_1_EXT_DATA_BASE     length=0x00100000	/*   1MB */
+    MCU3_1_R5F_MEM_TEXT (RWIX)	: origin=MCU3_1_R5F_MEM_TEXT_BASE length=0x00100000	/*   1MB */
+    MCU3_1_R5F_MEM_DATA (RWIX)	: origin=MCU3_1_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
+    MCU3_1_DDR_SPACE (RWIX)	: origin=MCU3_1_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
 
-    SHARED_DDR_SPACE (RWIX)	: origin=0xAA000000 length=0x01C00000           /*  28MB */
+    SHARED_DDR_SPACE (RWIX)	: origin=0xA8000000 length=0x01C00000           /*  28MB */
 
 }  /* end of MEMORY */
 

@@ -34,7 +34,7 @@
 /**
  *  \ingroup DRV_IPC_MODULE
  *  \defgroup DRV_IPC_SOC_MODULE IPC SoC Config
- *            This is IPC documentation specific to J7 SoC
+ *            This is IPC documentation specific to J721S2 SoC
  *
  *  @{
  */
@@ -42,7 +42,7 @@
 /**
  *  \file ipc_soc.h
  *
- *  \brief IPC Low Level Driver J7 SOC specific file.
+ *  \brief IPC Low Level Driver J721S2 SOC specific file.
  */
 #ifndef IPC_SOC_V3_H_
 #define IPC_SOC_V3_H_
@@ -56,6 +56,7 @@ extern "C" {
 /**
  * \brief VRing Buffer Size required for all core
  * combinations.
+ * TBD: This number can be smaller, if needed, for # cores on J721S2
  */
 #define IPC_VRING_BUFFER_SIZE   (0x1C00000U)
 

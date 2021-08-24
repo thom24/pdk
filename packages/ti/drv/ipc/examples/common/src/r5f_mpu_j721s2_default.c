@@ -63,7 +63,12 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .regionId         = 1U,
         .enable           = 1U,
         .baseAddr         = 0x0U,
+#if defined(BUILD_MCU1_0) || defined(BUILD_MCU2_0) || defined(BUILD_MCU3_0)
+        /* Use 64KB, for Core 0, to cover Lock-step mode where TCMs are combined */
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_64KB,
+#elif defined(BUILD_MCU1_1) || defined(BUILD_MCU2_1) || defined(BUILD_MCU3_1)
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_32KB,
+#endif
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
@@ -87,7 +92,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 3 configuration: 4 MB MCMS3 RAM */
+        /* Region 3 configuration: 4 MB MSMC3 RAM */
         .regionId         = 3U,
         .enable           = 1U,
         .baseAddr         = 0x70000000,
@@ -127,7 +132,12 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .regionId         = 5U,
         .enable           = 1U,
         .baseAddr         = 0x41010000,
+#if defined(BUILD_MCU1_0) || defined(BUILD_MCU2_0) || defined(BUILD_MCU3_0)
+        /* Use 64KB, for Core 0, to cover Lock-step mode where TCMs are combined */
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_64KB,
+#elif defined(BUILD_MCU1_1) || defined(BUILD_MCU2_1) || defined(BUILD_MCU3_1)
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_32KB,
+#endif
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
@@ -180,7 +190,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* Region 8 configuration: Ring buffer */
         .regionId         = 8U,
         .enable           = 1U,
-        .baseAddr         = 0xAA000000,
+        .baseAddr         = 0xA8000000,
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_32MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 1U,

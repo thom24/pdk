@@ -361,8 +361,12 @@ static void IpcInitMmu(Bool isSecure)
     attrs.attrIndx = Mmu_AttrIndx_MAIR7;
     (void)Mmu_map(0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure); /* DDR */
     (void)Mmu_map(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure); /* DDR */
+#if defined(SOC_J721S2)
+    (void)Mmu_map(0x70000000U, 0x70000000U, 0x00400000U, &attrs, isSecure); /* MSMC - 4MB */
+#elif defined(SOC_J721E)
     (void)Mmu_map(0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure); /* MSMC - 8MB */
-    (void)Mmu_map(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, isSecure); /* OCMC - 512KB */
+#endif
+    (void)Mmu_map(0x41C00000U, 0x41C00000U, 0x00100000U, &attrs, isSecure); /* OCMC - 1MB */
 
     /*
      * DDR range 0xA0000000 - 0xAA000000 : Used as RAM by multiple
@@ -370,11 +374,16 @@ static void IpcInitMmu(Bool isSecure)
      * IPC VRing Buffer - uncached
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    (void)Mmu_map(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure);
 #if defined(SOC_J721S2)
-    (void)Mmu_map(0xA6000000U, 0xA6000000U, 0x00100000U, &attrs, isSecure);
-#else
-    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, isSecure);
+    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x02000000U, &attrs, isSecure); /* VRING DDR */
+#  if defined(BUILD_C7X_1)
+    (void)Mmu_map(0xA6000000U, 0xA6000000U, 0x00100000U, &attrs, isSecure); /* C7X_1 DDR */
+#  elif defined(BUILD_C7X_2)
+    (void)Mmu_map(0xA7000000U, 0xA7000000U, 0x00100000U, &attrs, isSecure); /* C7X_2 DDR */
+#  endif
+#elif defined(SOC_J721E)
+    (void)Mmu_map(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure); /* VRING DDR */
+    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, isSecure); /* C7X_1 DDR */
 #endif
 
     return;

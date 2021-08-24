@@ -1,21 +1,4 @@
-/*----------------------------------------------------------------------------*/
-/* File: linker_r5f_mcu3_0_sysbios.lds                                         */
-/* Description:                                                               */
-/*    Linker command file for DRA8 MCU 3 view                                 */
-/*	  TI ARM Compiler version 16.9.6 LTS or later                         */
-/*                                                                            */
-/*    Platform: VLAB                                                          */
-/* (c) Texas Instruments 2021, All rights reserved.                           */
-/*----------------------------------------------------------------------------*/
-/*  History:                                                                  */
-/*    Oct 12th, 2018 Original version .......................... Suman Anna   */
-/*    Nov 06th, 2018 Corrections to TCM addresses for MCU3_0.... J. Bergsagel */
-/*    Nov 07th, 2018 Split up OCMRAM_MCU for split-mode R5Fs.... J. Bergsagel */
-/*    Feb 21st, 2019 Use R5F BTCM memory for boot vectors........J. Bergsagel */
-/*    Apr 23th, 2019 Changes for R5F startup Code............... Vivek Dhande */
-/*----------------------------------------------------------------------------*/
-/* Linker Settings                                                            */
-/* Standard linker options                                                    */
+/* Linker Settings */
 --retain="*(.bootCode)"
 --retain="*(.startupCode)"
 --retain="*(.startupData)"
@@ -113,7 +96,7 @@ MEMORY
     MCU3_1_R5F_MEM_DATA (RWIX)	: origin=MCU3_1_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
     MCU3_1_DDR_SPACE (RWIX)	: origin=MCU3_1_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
 
-    SHARED_DDR_SPACE (RWIX)	: origin=0xAA000000               length=0x01C00000     /*  28MB */
+    SHARED_DDR_SPACE (RWIX)	: origin=0xA8000000               length=0x01C00000     /*  28MB */
 
 }  /* end of MEMORY */
 

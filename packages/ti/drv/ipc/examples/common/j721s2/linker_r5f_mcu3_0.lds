@@ -63,8 +63,6 @@ __SVC_STACK_SIZE = 0x1000;
 #define MCU3_1_DDR_SPACE_BASE    (MCU3_1_ALLOCATED_START + 0x00400000)
 
 #define ATCM_START 0x00000000
-#define OCMRAM_MCU1_0_START 0x41cfe000
-#define OCMRAM_MCU1_1_START 0x41cff000
 
 /* Memory Map */
 MEMORY
@@ -83,12 +81,12 @@ MEMORY
     /* MCU0 share locations */
     OCMRAM  (RWIX)          : origin=0x41C00100 length=0x80000 - 0x1100      /* ~510KB */
 
-    /* j721s2 MCMS3 locations */
+    /* j721s2 MSMC3 locations */
     /* j721s2 Reserved Memory for ARM Trusted Firmware */
     MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
     MSMC3   (RWIX)          : origin=0x70040000 length=0x3B0000        /* 4MB - 320KB */
     /* j721s2 Reserved Memory for DMSC Firmware */
-    MSMC3_DMSC_FW  (RWIX)   : origin=0x707F0000 length=0x10000         /* 64KB */
+    MSMC3_DMSC_FW  (RWIX)   : origin=0x703F0000 length=0x10000         /* 64KB */
 
     DDR0_RESERVED    (RWIX)  	: origin=0x80000000 length=0x20000000	  	/* 512MB */
     MCU1_0_IPC_DATA (RWIX)	: origin=DDR0_ALLOCATED_START     length=0x00100000	/*   1MB */

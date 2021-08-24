@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,11 +40,11 @@
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
  * | 0  | 0x00000000   | 4GB  | T  | uncacheable, Shareable                    | F  | RW at PL 1 & PL 2   | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 1  | 0 (local TCM)| 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 1  | 0 (local TCM)| 64K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 2  | 0x41000000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 2  | 0x41000000   | 64K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
- * | 3  | 0x41010000   | 32K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
+ * | 3  | 0x41010000   | 64K  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
  * |----|--------------|------|----|-------------------------------------------|----|---------------------|------|
  * | 4  | 0x41C00000   | 1MB  | T  | Write-Back, Write-Allocate, Non-Shareable | F  | RW at PL 1          | 0x0  |
  *  -------------------------------------------------------------------------------------------------------------
@@ -52,7 +52,7 @@
  *  -------------------------------------------------------------------------------------------------------------
  * | 6  | 0x80000000   | 2GB  | T  | DDR - Strongly Ordered, Shareable         | F  | RW at PL 1 & PL 3   | 0x0  |
  *  -------------------------------------------------------------------------------------------------------------
- * | 7  | 0xAA000000   | 32MB | T  | DDR (VRing Buffer) - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
+ * | 7  | 0xA8000000   | 32MB | T  | DDR (VRing Buffer) - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
  *  -------------------------------------------------------------------------------------------------------------
  * | 8  | 0xA0000000   | 2MB  | T  | Linux VRing Buffer - Uncacheble           | F  | RW at PL 1 & PL 3   | 0x0  |
  * |-------------------------------------------------------------------------------------------------------------|
@@ -94,7 +94,7 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(1, 0x00000000, MPU.RegionSize_32K, attrs);
+MPU.setRegionMeta(1, 0x00000000, MPU.RegionSize_64K, attrs);
 
 /* This entry covers ATCM if mapped to 0x41000000 */
 attrs.enable = true;
@@ -105,7 +105,7 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(2, 0x41000000, MPU.RegionSize_32K, attrs);
+MPU.setRegionMeta(2, 0x41000000, MPU.RegionSize_64K, attrs);
 
 /* This entry covers BTCM if mapped to 0x41010000 */
 attrs.enable = true;
@@ -116,7 +116,7 @@ attrs.noExecute = false;
 attrs.accPerm = 1;          /* RW at PL1 */
 attrs.tex = 1;
 attrs.subregionDisableMask = 0x0;
-MPU.setRegionMeta(3, 0x41010000, MPU.RegionSize_32K, attrs);
+MPU.setRegionMeta(3, 0x41010000, MPU.RegionSize_64K, attrs);
 
 /* This entry covers RAM0 */
 attrs.enable = true;
@@ -195,4 +195,4 @@ attrs.noExecute = true;
 attrs.accPerm = 3;          /* RW at PL1 */
 attrs.tex = 0;
 attrs.subregionDisableMask = 0;
-MPU.setRegionMeta(8, 0xAA000000, MPU.RegionSize_32M, attrs);
+MPU.setRegionMeta(8, 0xA8000000, MPU.RegionSize_32M, attrs);

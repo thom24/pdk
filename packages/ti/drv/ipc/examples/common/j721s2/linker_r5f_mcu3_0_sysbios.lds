@@ -1,20 +1,4 @@
-/*----------------------------------------------------------------------------*/
-/* File: linker_r5f_mcu3_0_sysbios.lds                                         */
-/* Description:                                                               */
-/*    Linker command file for DRA8 MCU 3 view                                 */
-/*	  TI ARM Compiler version 16.9.6 LTS or later                         */
-/*                                                                            */
-/*    Platform: VLAB                                                          */
-/* (c) Texas Instruments 2021, All rights reserved.                           */
-/*----------------------------------------------------------------------------*/
-/*  History:                                                                  */
-/*    Oct 12th, 2018 Original version .......................... Suman Anna   */
-/*    Nov 06th, 2018 Corrections to TCM addresses for MCU3_0.... J. Bergsagel */
-/*    Nov 07th, 2018 Split up OCMRAM_MCU for split-mode R5Fs.... J. Bergsagel */
-/*    Apr 23th, 2019 Changes for R5F startup Code............... Vivek Dhande */
-/*----------------------------------------------------------------------------*/
-/* Linker Settings                                                            */
-/* Standard linker options                                                    */
+/* Linker Settings */
 --retain="*(.bootCode)"
 --retain="*(.startupCode)"
 --retain="*(.startupData)"
@@ -78,14 +62,6 @@ MEMORY
     MCU3_R5F0_ATCM (RWIX)  	: origin=0x05e00000 length=0x8000
     MCU3_R5F0_BTCM (RWIX) 	: origin=0x05e10000 length=0x8000
 
-    /* MCUSS RAM */
-    OCMRAM_MCU1_0 (RWIX)        : origin=0x41c29caa length=0x14cd5
-    OCMRAM_MCU1_1 (RWIX)        : origin=0x41c3e97f length=0x14cd5
-    OCMRAM_MCU2_0 (RWIX)        : origin=0x41c53654 length=0x14cd5
-    OCMRAM_MCU2_1 (RWIX)        : origin=0x41c68329 length=0x14cd5
-    OCMRAM_MCU3_0 (RWIX)        : origin=0x41c7cffe length=0x14cd5
-    OCMRAM_MCU3_1 (RWIX)        : origin=0x41c91cd3 length=0x14cd5
-
     DDR0_RESERVED    (RWIX)  	: origin=0x80000000               length=0x20000000 	/* 512MB */
     MCU1_0_IPC_DATA (RWIX)	: origin=DDR0_ALLOCATED_START     length=0x00100000	/*   1MB */
     MCU1_0_EXT_DATA  (RWIX)	: origin=MCU1_0_EXT_DATA_BASE     length=0x00100000	/*   1MB */
@@ -118,7 +94,7 @@ MEMORY
     MCU3_1_R5F_MEM_DATA (RWIX)	: origin=MCU3_1_R5F_MEM_DATA_BASE length=0x00100000	/*   1MB */
     MCU3_1_DDR_SPACE (RWIX)	: origin=MCU3_1_DDR_SPACE_BASE    length=0x00C00000	/*  12MB */
 
-    SHARED_DDR_SPACE (RWIX)	: origin=0xAA000000               length=0x01C00000     /*  28MB */
+    SHARED_DDR_SPACE (RWIX)	: origin=0xA8000000               length=0x01C00000     /*  28MB */
 
 }  /* end of MEMORY */
 

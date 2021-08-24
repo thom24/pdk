@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2021
+ *  Copyright (c) Texas Instruments Incorporated 2021
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -66,6 +66,8 @@
 #define NAVSS_INTRTR_INPUT_MAILBOX11_USER0  (392U)
 
 #define MAILBOX_REG_SIZE                    (0x200)
+
+#define IPC_INTERRUPT_OFFSET                (5U)
 
 /**
  * \brief Main NavSS512 - Mailbox input line
@@ -252,9 +254,9 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    0U,    3U, 11U}, {    0U,    3U, 10U} },  /* A72-vm0 */
         { {    0U,    3U,  6U}, {    0U,    3U,  7U} },  /* mcu-r5f0 */
         { {    0U,    3U,  8U}, {    0U,    3U,  9U} },  /* mcu-r5f1 */
-	{ {    1U,    3U,  6U}, {    1U,    3U,  7U} },  /* main-r5f0 */
+        { {    1U,    3U,  6U}, {    1U,    3U,  7U} },  /* main-r5f0 */
         { {    1U,    3U,  8U}, {    1U,    3U,  9U} },  /* main-r5f1 */
-	{ {    2U,    3U,  6U}, {    2U,    3U,  7U} },  /* main-r5f2 */
+        { {    2U,    3U,  6U}, {    2U,    3U,  7U} },  /* main-r5f2 */
         { {    2U,    3U,  8U}, {    2U,    3U,  9U} },  /* main-r5f3 */
         { {    4U,    3U,  6U}, {    4U,    3U,  7U} },  /* C7x-1 */
         { {    4U,    3U,  8U}, {    4U,    3U,  9U} },  /* C7x-2 */
@@ -371,9 +373,9 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
          * used by UDMA and middle one's are used by other modules like CPSW9G so
          * we are using last 5 as a safe option.
          */
-        if(range >= 5)
+        if(range >= IPC_INTERRUPT_OFFSET)
         {
-            offset = 5;
+            offset = IPC_INTERRUPT_OFFSET;
         }
         else
         {
