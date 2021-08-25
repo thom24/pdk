@@ -42,7 +42,10 @@ endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_COMMON += \
-    port_Hwi.c
+    queue_register.c \
+    mpuArm.c \
+    mpuAPI.c \
+    portmpu.c
 endif
 
 #ISA specific assembly files
@@ -56,8 +59,7 @@ endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_ASM_COMMON := \
-    portASM.asm \
-    port_Hwi_handlers_asm.asm
+    portasm.asm
 endif
 
 
