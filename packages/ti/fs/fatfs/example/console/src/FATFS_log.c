@@ -1,5 +1,5 @@
 /**
- *  \file   I2C_log.c
+ *  \file   FATFS_log.c
  *
  *  \brief  This file contains the uart console print specific functions and
  *          macros.
@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-21 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,17 +39,13 @@
  *
  */
 
-
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include "ti/osal/osal.h"
 
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <ti/sysbios/family/arm/a15/Cache.h>
 #include <ti/csl/hw_types.h>
-/* TI-RTOS Header files */
+/* RTOS Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/csl/soc.h>

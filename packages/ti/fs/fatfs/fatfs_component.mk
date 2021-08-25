@@ -66,6 +66,11 @@
 #
 ifeq ($(fatfs_component_make_include), )
 
+# List with various rtos_types(such as tirtos(sysbios),freertos,safertos) to build RTOS apps. 
+# Use the Default List defined in 'ti/build/makerules/component.mk'
+# This list will be used to generate RTOS app make rule for each rtos_type.
+drvfatfs_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
+
 # under other list
 drvfatfs_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
 drvfatfs_SOCLIST           = am574x am572x am571x am437x am335x dra72x dra75x dra78x k2g omapl137 omapl138 am65xx j721e j7200 am64x
@@ -84,6 +89,23 @@ drvfatfs_am65xx_CORELIST   = mpu1_0 mcu1_0
 drvfatfs_j721e_CORELIST   = $(DEFAULT_j721e_CORELIST)
 drvfatfs_j7200_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvfatfs_am64x_CORELIST   = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+
+# Define the rule to generate FATFS Drivers BOARDLIST for each rtos_type
+# Default BOARDLIST for each rtos_type is defined in 'ti/build/makerules/component.mk'
+# The following rule filters out FATFS Drivers BOARDLIST for each rtos_type.
+# Here $(1) refers tot the first argument passed to the rule.
+# In this case it is $(curos), each instance in "drvfatfs_RTOS_LIST" (ie, tirtos/freertos/safertos..)
+define DRV_FATFS_BOARDLIST_RULE
+
+drvfatfs_$(1)_BOARDLIST     = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvfatfs_BOARDLIST))
+
+endef
+
+# Define the macro list with rules of all rtos_types
+DRV_FATFS_BOARDLIST_MACRO_LIST := $(foreach curos, $(drvfatfs_RTOS_LIST), $(call DRV_FATFS_BOARDLIST_RULE,$(curos)))
+
+# Evaluate the macro list to generate BOARDLIST for all rtos_types
+$(eval ${DRV_FATFS_BOARDLIST_MACRO_LIST})
 
 ############################
 # uart package
@@ -153,50 +175,38 @@ fatfs_profile_indp_$(SOC)_CORELIST = $(drvfatfs_$(SOC)_CORELIST)
 export fatfs_profile_indp_$(SOC)_CORELIST
 
 # EMMC Readwrite test
-FATFS_Console_TestApp_COMP_LIST = FATFS_Console_TestApp
-FATFS_Console_TestApp_RELPATH = ti/fs/fatfs/example/console
-FATFS_Console_TestApp_PATH = $(PDK_FATFS_COMP_PATH)/example/console
-FATFS_Console_TestApp_BOARD_DEPENDENCY = yes
-FATFS_Console_TestApp_CORE_DEPENDENCY = no
-FATFS_Console_TestApp_XDC_CONFIGURO = yes
-export FATFS_Console_TestApp_COMP_LIST
-export FATFS_Console_TestApp_BOARD_DEPENDENCY
-export FATFS_Console_TestApp_CORE_DEPENDENCY
-export FATFS_Console_TestApp_XDC_CONFIGURO
-FATFS_Console_TestApp_PKG_LIST = FATFS_Console_TestApp
-FATFS_Console_TestApp_INCLUDE = $(FATFS_Console_TestApp_PATH)
-FATFS_Console_TestApp_BOARDLIST = $(drvfatfs_BOARDLIST)
-export FATFS_Console_TestApp_BOARDLIST
-FATFS_Console_TestApp_$(SOC)_CORELIST = $(drvfatfs_$(SOC)_CORELIST)
-export FATFS_Console_TestApp_$(SOC)_CORELIST
+# RTOS FATFS Console test apps
+define FATFS_CONSOLE_TESTAPP_RULE
+
+export FATFS_Console_TestApp_$(1)_COMP_LIST = FATFS_Console_TestApp_$(1)
+FATFS_Console_TestApp_$(1)_RELPATH = ti/fs/fatfs/example/console
+FATFS_Console_TestApp_$(1)_PATH = $(PDK_FATFS_COMP_PATH)/example/console
+export FATFS_Console_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export FATFS_Console_TestApp_$(1)_BOARD_DEPENDENCY = yes
+export FATFS_Console_TestApp_$(1)_CORE_DEPENDENCY = no
+export FATFS_Console_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+FATFS_Console_TestApp_$(1)_PKG_LIST = FATFS_Console_TestApp_$(1)
+FATFS_Console_TestApp_$(1)_INCLUDE = $(FATFS_Console_TestApp_$(1)_PATH)
+export FATFS_Console_TestApp_$(1)_BOARDLIST = $(drvfatfs_$(1)_BOARDLIST)
+export FATFS_Console_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvfatfs_$(SOC)_CORELIST))
 
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
-  FATFS_Console_TestApp_SBL_APPIMAGEGEN = yes
-  export FATFS_Console_TestApp_SBL_APPIMAGEGEN
+  export FATFS_Console_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 endif
 
-fatfs_EXAMPLE_LIST += FATFS_Console_TestApp
+ifneq ($(1),$(filter $(1), safertos))
+fatfs_EXAMPLE_LIST += FATFS_Console_TestApp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+fatfs_EXAMPLE_LIST += FATFS_Console_TestApp_$(1)
+endif
+endif
 
-# EMMC Readwrite test with SMP enabled
-FATFS_Console_SMP_TestApp_COMP_LIST = FATFS_Console_SMP_TestApp
-FATFS_Console_SMP_TestApp_RELPATH = ti/fs/fatfs/example/console
-FATFS_Console_SMP_TestApp_PATH = $(PDK_FATFS_COMP_PATH)/example/console
-FATFS_Console_SMP_TestApp_MAKEFILE = -f makefile SMP=enable
-FATFS_Console_SMP_TestApp_BOARD_DEPENDENCY = yes
-FATFS_Console_SMP_TestApp_CORE_DEPENDENCY = no
-FATFS_Console_SMP_TestApp_XDC_CONFIGURO = yes
-export FATFS_Console_SMP_TestApp_COMP_LIST
-export FATFS_Console_SMP_TestApp_BOARD_DEPENDENCY
-export FATFS_Console_SMP_TestApp_CORE_DEPENDENCY
-export FATFS_Console_SMP_TestApp_XDC_CONFIGURO
-FATFS_Console_SMP_TestApp_PKG_LIST = FATFS_Console_SMP_TestApp
-FATFS_Console_SMP_TestApp_INCLUDE = $(FATFS_Console_SMP_TestApp_PATH)
-FATFS_Console_SMP_TestApp_BOARDLIST = am65xx_idk
-export FATFS_Console_SMP_TestApp_BOARDLIST
-FATFS_Console_SMP_TestApp_$(SOC)_CORELIST = mpu1_0
-export FATFS_Console_SMP_TestApp_$(SOC)_CORELIST
+endef
 
-fatfs_EXAMPLE_LIST += FATFS_Console_SMP_TestApp
+FATFS_CONSOLE_TESTAPP_MACRO_LIST := $(foreach curos, $(drvfatfs_RTOS_LIST), $(call FATFS_CONSOLE_TESTAPP_RULE,$(curos)))
+
+$(eval ${FATFS_CONSOLE_TESTAPP_MACRO_LIST})
 
 export drvfatfs_LIB_LIST
 export fatfs_LIB_LIST

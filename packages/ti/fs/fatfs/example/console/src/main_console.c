@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2014-2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-21 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -39,26 +39,19 @@
  *
  */
 
-
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include <ti/sysbios/knl/Task.h>
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
 
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
-
-/* TI-RTOS Header files */
+/* RTOS Header files */
 #include <ti/csl/cslr_device.h>
 #include "FATFS_log.h"
 #include <ti/fs/fatfs/diskio.h>
 #include <ti/fs/fatfs/FATFS.h>
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/fs/fatfs/example/console/src/fs_shell_app_utils.h>
-
 #include <ti/board/board.h>
 
 /* GPIO is used to check the pin (SDCD) whether the SD Card is inserted
@@ -107,6 +100,8 @@ static int16_t mainMenu();
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+#define APP_TSK_STACK_MAIN (16U * 1024U)
+static uint8_t gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 
 #ifdef MULTI_PARTITION
 extern PARTITION VolToPart[];
@@ -262,7 +257,7 @@ void AppGpioCallbackFxn(void);
 /*
  *  ======== test function ========
  */
-void fatfs_console(UArg arg0, UArg arg1)
+void fatfs_console(void* a0, void* a1)
 {
 #ifdef MULTI_PARTITION
     int16_t option = 0;
@@ -364,8 +359,8 @@ void InitMmu(void)
  */
 int main(void)
 {
-	Task_Handle task;
-	Error_Block eb;
+	TaskP_Handle task;
+	TaskP_Params taskParams;
     /* Call board init functions */
     Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO | BOARD_INIT_MODULE_CLOCK;
@@ -377,15 +372,19 @@ int main(void)
 
     Board_init(boardCfg);
 
-    Error_init(&eb);
-    task = Task_create(fatfs_console, NULL, &eb);
+    OS_init();
+
+    TaskP_Params_init(&taskParams);
+    taskParams.stack = gAppTskStackMain;
+    taskParams.stacksize = sizeof (gAppTskStackMain);
+
+    task = TaskP_create(fatfs_console, &taskParams);
     if (task == NULL) {
-        System_printf("Task_create() failed!\n");
-        BIOS_exit(0);
+        OS_stop();
     }
 
-    /* Start BIOS */
-    BIOS_start();
+    /* Start OS */
+    OS_start(); /* does not return */
 
     return (0);
 }
