@@ -297,8 +297,10 @@ static TimerP_Status TimerP_dmTimerDeviceCfg(TimerP_Struct *timer, uint32_t base
      (void)TIMERReset(baseAddr);
     }
 
+    /* Soft Reset(if required) is already issued. Now Set 'emulation mode' and 'idle mode' in TIOCP_CFG. */
     HW_WR_REG32(baseAddr + TIMER_TIOCP_CFG,
-                 (~(uint32_t)TIMER_TIOCP_CFG_SOFTRESET_SOFTRESET_VALUE_1));
+                 (timer->tiocpCfg & (~(uint32_t)TIMER_TIOCP_CFG_SOFTRESET_SOFTRESET_VALUE_1)));
+  
 
     /*xfer 'posted' setting if not current */
     tsicr = HW_RD_REG32(baseAddr + TIMER_TSICR);
