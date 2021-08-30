@@ -62,6 +62,7 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/DebugP.h>
+#include <ti/osal/CacheP.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/csl_tsc.h>
@@ -565,30 +566,6 @@ void vPortAssertIfInISR()
     configASSERT( !xPortInIsrContext() );
 }
 
-void vPortCacheSetMAR(uint32_t baseAddr, uint32_t byteSize, uint32_t attributeMask)
-{
-    uint32_t maxAddr;
-    uint32_t firstMar, lastMar;
-    uint32_t marNum;
-
-    if(byteSize > 0U)
-    {
-        /* calculate the maximum address */
-        maxAddr = baseAddr + byteSize - 1;
-
-        /* range of MAR's that need to be modified */
-        firstMar = baseAddr >> 24;
-        lastMar = maxAddr >> 24;
-
-        /* loop through the number of MAR registers affecting the address range */
-        for (marNum = firstMar; marNum <= lastMar; marNum++) 
-        { 
-            /* set the MAR registers to the specified value */
-            DSPICFGSetMAR(SOC_DSP_ICFG_BASE, marNum << 24, attributeMask);
-        }
-    }
-}
-
 void vPortCacheConfig(void)
 {
     DSPICFGCacheEnable(SOC_DSP_ICFG_BASE,
@@ -602,9 +579,9 @@ void vPortCacheConfig(void)
                     portCONFIGURE_CACHE_L2_SIZE);
 
     /* Enable cache for all DDR space */
-    vPortCacheSetMAR(portCONFIGURE_DDR_START, 
-                     portCONFIGURE_DDR_SIZE, 
-                     DSPICFG_MAR_PC);
+    CacheP_setMar((void *)portCONFIGURE_DDR_START, 
+                  (uint32_t)portCONFIGURE_DDR_SIZE, 
+                  CacheP_Mar_ENABLE);
 }
 
 /*****************************************************************************/
