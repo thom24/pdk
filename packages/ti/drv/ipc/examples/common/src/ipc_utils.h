@@ -48,6 +48,7 @@ void SetManualBreak();
 void sysIdleLoop(void);
 void traceBuf_cacheWb(void);
 void traceBuf_cacheWb_Exception();
+void ipc_cacheMarInit(void);
 
 #ifdef __cplusplus
 }

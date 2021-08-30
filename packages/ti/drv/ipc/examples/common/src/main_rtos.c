@@ -304,6 +304,10 @@ static void taskFxn(void* a0, void* a1)
     ipc_timerInterruptInit();
 #endif
 
+#if defined (_TMS320C6X) && defined FREERTOS
+    ipc_cacheMarInit();
+#endif
+
 #ifdef IPC_NEGATIVE_TEST
     Ipc_echo_neg_test();
 #else
