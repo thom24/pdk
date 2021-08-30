@@ -68,15 +68,36 @@
 #define MCU3_1_MEM_TEXT_BASE     MCU3_1_EXT_DATA_BASE     + EXT_DATA_SIZE
 #define MCU3_1_MEM_DATA_BASE     MCU3_1_MEM_TEXT_BASE     + MEM_TEXT_SIZE
 #define MCU3_1_DDR_SPACE_BASE    MCU3_1_MEM_DATA_BASE     + MEM_DATA_SIZE
+/*------------------------------------------------------------------------/
+ * NOTE: C66x Cores IPC_DATA is swapped each other, for proper caching!! *           
+ * This is to overcome the limitation - "16 MB" being the minimum cache  *
+ * block size in C66x. Requirement is to disable cache for IPC_DATA only * 
+ * i.e, the "first 1 MB" allocated for a core.                           *
+ * To handle this,                                                       *
+ * - C66x_1 marks "C66x2_ALLOCATED_START" + 16 MB as Cache Disabled.     *
+ * - Places C66x1_IPC_DATA in "C66x2_ALLOCATED_START" + 1 MB             *
+ *   - which is un-cached region from C66x_1's perspective               *
+ * - Places rest of the core sections (EXT_DATA/MEM_TEXT/MEM_DATA/DDR)   *
+ *   in its own dedicated regions.                                       *
+ *   - i.e. starting from C66x1_ALLOCATED_START + 1 MB                   *
+ *   - which remains "cached" region from C66x_1's perspective           *
+ * Vice versa for C66x_2                                                 *
+ * - C66x_2 marks "C66x1_ALLOCATED_START" + 16 MB as Cache Disabled.     *
+ * - Places C66x2_IPC_DATA in "C66x1_ALLOCATED_START" + 1 MB             *
+ *   - which is un-cached region from C66x_2's perspective               *
+ * - Places rest of the core sections (EXT_DATA/MEM_TEXT/MEM_DATA/DDR)   *
+ *   in its own dedicated regions.                                       *
+ *   - i.e. starting from C66x1_ALLOCATED_START + 1 MB                   *
+ *   - which remains "cached" region from C66x_1's perspective           */
 /*--------------------------- C66x DSP CORE1 ----------------------------*/
-#define C66x1_IPC_DATA_BASE      C66x1_ALLOCATED_START
-#define C66x1_EXT_DATA_BASE      C66x1_IPC_DATA_BASE      + IPC_DATA_SIZE
+#define C66x1_IPC_DATA_BASE      C66x2_ALLOCATED_START /* Swapped for proper caching */
+#define C66x1_EXT_DATA_BASE      C66x1_ALLOCATED_START    + IPC_DATA_SIZE
 #define C66x1_MEM_TEXT_BASE      C66x1_EXT_DATA_BASE      + EXT_DATA_SIZE
 #define C66x1_MEM_DATA_BASE      C66x1_MEM_TEXT_BASE      + MEM_TEXT_SIZE
 #define C66x1_DDR_SPACE_BASE     C66x1_MEM_DATA_BASE      + MEM_DATA_SIZE
 /*--------------------------- C66x DSP CORE2 ----------------------------*/
-#define C66x2_IPC_DATA_BASE      C66x2_ALLOCATED_START
-#define C66x2_EXT_DATA_BASE      C66x2_IPC_DATA_BASE      + IPC_DATA_SIZE
+#define C66x2_IPC_DATA_BASE      C66x1_ALLOCATED_START /* Swapped for proper caching */
+#define C66x2_EXT_DATA_BASE      C66x2_ALLOCATED_START    + IPC_DATA_SIZE
 #define C66x2_MEM_TEXT_BASE      C66x2_EXT_DATA_BASE      + EXT_DATA_SIZE
 #define C66x2_MEM_DATA_BASE      C66x2_MEM_TEXT_BASE      + MEM_TEXT_SIZE
 #define C66x2_DDR_SPACE_BASE     C66x2_MEM_DATA_BASE      + MEM_DATA_SIZE
