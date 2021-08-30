@@ -192,6 +192,27 @@ uint32_t Ipc_appIsPrintSupported(void)
     return (retVal);
 }
 
+#if defined (__C7100__)
+/* To set C71 timer interrupts */
+void Ipc_appC7xIntrConfig(void)
+{
+    CSL_ClecEventConfig   cfgClec;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+
+    uint32_t input         = 1248; /* Used for Timer Interrupt */
+    uint32_t corepackEvent = 14;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
+}
+#endif
+
 void Ipc_appC66xIntrConfig(void)
 {
 #if defined (_TMS320C6X)
@@ -204,15 +225,16 @@ void Ipc_appC66xIntrConfig(void)
      */
     rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                       TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
     rmIrqReq.src_index              = 0U;
 #if defined (BUILD_C66X_1)
     rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
     rmIrqReq.dst_host_irq           = 21U;
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
 #endif
 #if defined (BUILD_C66X_2)
     rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
     rmIrqReq.dst_host_irq           = 20U;
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER1;
 #endif
     /* Unused params */
     rmIrqReq.global_event           = 0U;

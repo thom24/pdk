@@ -91,6 +91,7 @@
 
 static void taskFxn(void* a0, void* a1);
 extern int32_t Ipc_perf_test(void);
+extern void ipc_cacheMarInit(void);
 /* Initialize SCI Server, to process RM/PM Requests by other cores */
 void Ipc_setupSciServer(void);
 
@@ -151,6 +152,18 @@ int main(void)
 
     /* Initialize SCI Client Server */
     Ipc_setupSciServer();
+
+#if defined (__C7100__) 
+    Ipc_appC7xIntrConfig();
+#endif
+
+#if  defined (_TMS320C6X)
+    Ipc_appC66xIntrConfig();
+#endif
+
+#if defined (_TMS320C6X) && defined FREERTOS
+    ipc_cacheMarInit();
+#endif
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;

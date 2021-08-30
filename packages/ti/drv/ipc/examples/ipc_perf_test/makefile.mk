@@ -14,7 +14,7 @@ ifeq ($(SOC), am64x)
   COMP_LIST_COMMON += mailbox
 endif
 
-SRCS_COMMON += main_rtos.c
+SRCS_COMMON += main.c
 ifeq ($(SOC),$(filter $(SOC), j721e j7200))
   ifeq ($(CORE),mcu1_0)
     COMP_LIST_COMMON += sciserver_tirtos
@@ -56,6 +56,10 @@ ifeq ($(BUILD_OS_TYPE), freertos)
   SRCS_COMMON += ipc_trace.c
   ifeq ($(ISA), r5f)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
+  endif
+  ifeq ($(ISA), c66)
+    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    SRCS_COMMON += c66_cache_mar.c
   endif
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds
   APPEND_LNKCMD_FILE += $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/memory_map_ddr.cmd
