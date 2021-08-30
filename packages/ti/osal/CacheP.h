@@ -74,6 +74,14 @@ typedef uint32_t Osal_CacheP_isCoherent;
 /* @} */
 
 /*!
+ *  @brief    MAR register setting type definition
+ */
+typedef enum CacheP_Mar_e {
+    CacheP_Mar_DISABLE,  /*!<  The Permit Copy bit of MAR register is disabled */
+    CacheP_Mar_ENABLE    /*!<  The Permit Copy bit of MAR register is enabled */
+} CacheP_Mar;
+
+/*!
  *  @brief  Function to write back cache lines
  *
  *  @param  addr  Start address of the cache line/s
@@ -128,6 +136,32 @@ void CacheP_fenceCpu2Dma(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent i
  *
  */
 void CacheP_fenceDma2Cpu(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent isCoherent);
+
+/*!
+ *  @brief Set MAR attribute for a memory range
+ *  
+ *  [C66x Only] The API will set the MAR attribute for the range,
+ *  start_addr = floor(baseAddr, 16MB) .. end_addr = ceil(baseAddr+size, 16MB)
+ *
+ *  @param baseAddr  Region start address. Recommended to be 16MB aligned
+ * 
+ *  @param size  Region size in bytes. Recommended to be multiple of 16MB aligned
+ * 
+ *  @param value   value for setting MAR register @ref CacheP_Mar
+ */
+void CacheP_setMar(void *baseAddr, uint32_t size, uint32_t value);
+
+/*!
+ *  @brief Get MAR attribute for a region of 16MB
+ *
+ * [C66x Only] The API will return the MAR attribute of the region with start addr as
+ *    start_addr = floor(baseAddr, 16MB)
+ *
+ *  @param baseAddr  region start address, recommended to be 16MB aligned
+ *
+ *  @return MAR attribute for this 16MB region
+ */
+uint32_t CacheP_getMar(void *baseAddr);
 
 #ifdef __cplusplus
 }

@@ -37,8 +37,11 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/CacheP.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
+
+#define MAR                     ((volatile uint32_t *) (SOC_DSP_ICFG_BASE + DSP_MAR(0)))
 
 void CacheP_wb(const void * addr, int32_t size)
 {
@@ -88,4 +91,41 @@ void CacheP_Inv(const void * addr, int32_t size)
   }
 }
 
+void CacheP_setMar(void *baseAddr, uint32_t size, uint32_t value)
+{
+    uint32_t maxAddr;
+    uint32_t firstMar, lastMar;
+    uint32_t marNum;
+    volatile uint32_t *marBase = MAR;
 
+    /* calculate the maximum address */
+    maxAddr = ((uint32_t) baseAddr) + (size - 1U);
+
+    /* range of MAR's that need to be modified */
+    firstMar = ((uint32_t) baseAddr) >> 24U;
+    lastMar = ((uint32_t) maxAddr) >> 24U;
+
+    /* write back invalidate all cached entries */
+    CACHE_wbInvAllL2(CACHE_WAIT);
+
+    /* loop through the number of MAR registers affecting the address range */
+    for(marNum = firstMar; marNum <= lastMar; marNum++)
+    {
+        /* set the MAR registers to the specified value */
+        marBase[marNum] = value;
+    }
+}
+
+uint32_t CacheP_getMar(void *baseAddr)
+{
+    uint32_t marNum;
+    volatile uint32_t *marBase = MAR;
+
+    /* MAR register number can be obtained by right shifting the
+     * base address by 24 bits (upper 8 bits correspond to the MAR number) */
+    marNum = ((uint32_t) baseAddr) >> 24U;
+
+    /* return the value of the MAR register */
+    return (marBase[marNum]);
+
+}
