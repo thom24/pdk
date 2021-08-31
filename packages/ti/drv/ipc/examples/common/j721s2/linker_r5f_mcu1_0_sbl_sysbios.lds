@@ -64,7 +64,7 @@ MEMORY
 
     /* MCUSS RAM - Start towards the end to avoid Bootloader usage of the SRAM */
     OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41c80000 length=0x2000
-    OCMC_RAM (RWIX)             : origin=0x41c82000 length=0x7DB00
+    OCMC_RAM (RWIX)             : origin=0x41c82000 length=0x7BB00
     OCMC_RAM_X509_HEADER (RWIX) : origin=0x41cfdb00 length=0x500
 
     DDR0_RESERVED    (RWIX)  	: origin=0x80000000 length=0x20000000	  	/* 512MB */

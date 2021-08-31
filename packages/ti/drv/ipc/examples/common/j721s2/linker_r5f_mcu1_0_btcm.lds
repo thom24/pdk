@@ -81,7 +81,7 @@ MEMORY
 
     /* MCU0 share locations */
     OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41c80000 length=0x2000
-    OCMC_RAM (RWIX)             : origin=0x41c82000 length=0x7DB00
+    OCMC_RAM (RWIX)             : origin=0x41c82000 length=0x7BB00
     OCMC_RAM_X509_HEADER (RWIX) : origin=0x41cfdb00 length=0x500
 
     /* j721s2 MSMC3 locations */
