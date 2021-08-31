@@ -60,7 +60,7 @@
 /* ========================================================================== */
 #define MAXCALLBACKS           IPC_MAX_PROCS
 
-#define MSGBUFFERSIZE          512U
+#define MSGBUFFERSIZE          (IPC_MAX_DATA_PAYLOAD + sizeof(RPMessage_MsgElem))
 #define SERVICENAMELEN         32U
 #define HEAPALIGNMENT          8U
 

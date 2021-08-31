@@ -74,6 +74,11 @@ extern "C" {
 #define  IPC_VRING_SIZE                 (0x20000U)
 
 /**
+ * \brief  Max data payload with rpmsg transport with enqueueing of Rx messages.
+ */
+#define IPC_MAX_DATA_PAYLOAD            (496U)
+
+/**
  * \brief Max size of Name Entry
  */
 #define  IPC_MAX_NAME_ENTRY             (100u)
