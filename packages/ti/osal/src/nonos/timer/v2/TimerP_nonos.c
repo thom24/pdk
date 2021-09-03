@@ -732,4 +732,61 @@ uint64_t TimerP_getTimeInUsecs(void)
 
     return ((cur_ts*1000u)/freq);
 }
+
+/* Get timer reload count */
+uint32_t TimerP_getReloadCount(TimerP_Handle handle)
+{
+  uint32_t      reloadCnt = 0U;
+  uint32_t      rticomp;
+  TimerP_Struct *timer = (TimerP_Struct *) handle;
+  uint32_t      baseAddr = TimerP_getTimerBaseAddr(timer->id);
+
+  if (baseAddr != 0U) 
+  {
+    if ((timer->id & 0x01U) != 0U) 
+    {
+      rticomp = RTITmrCompareGet(baseAddr, RTI_TMR_CNT_BLK_INDEX_1);
+    }
+    else 
+    {
+      rticomp = RTITmrCompareGet(baseAddr, RTI_TMR_CNT_BLK_INDEX_0);
+    }
+  } 
+
+  /* return 0xFFFFFFFF - value, since this is the expected format to calculate current time */
+  reloadCnt = 0xFFFFFFFFU - (rticomp) - 1UL;
+
+  return (reloadCnt);
+}
+
+/* Get timer current count */
+uint32_t TimerP_getCount(TimerP_Handle handle)
+{
+  uint32_t      count = 0U;
+  rtiTmrCnts_t  rtiCnts;
+  uint32_t      rticomp;
+  TimerP_Struct *timer = (TimerP_Struct *) handle;
+  uint32_t      baseAddr = TimerP_getTimerBaseAddr(timer->id);
+
+  if (baseAddr != 0U) 
+  {
+    if ((timer->id & 0x01U) != 0U) 
+    {
+      (void)RTITmrCounterGet(baseAddr, RTI_TMR_CNT_BLK_INDEX_1, &rtiCnts);
+      rticomp = RTITmrCompareGet(baseAddr, RTI_TMR_CNT_BLK_INDEX_1);
+    }
+    else 
+    {
+      (void)RTITmrCounterGet(baseAddr, RTI_TMR_CNT_BLK_INDEX_0, &rtiCnts);
+      rticomp = RTITmrCompareGet(baseAddr, RTI_TMR_CNT_BLK_INDEX_0);
+    }
+  } 
+
+  /* return 0xFFFFFFFF - value, since this is the expected format to calculate current time */
+  count = 0xFFFFFFFFU - (rticomp - rtiCnts.frc) - 1UL;
+
+  return (count);
+
+}
+
 /* This file implements the RTI timer osal functions on devices */

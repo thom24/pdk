@@ -957,4 +957,36 @@ uint64_t TimerP_getTimeInUsecs(void)
     #endif
     return (curTime);
 }
-/* This file implements the DM timer osal functions on AM devices */
+
+/* Get timer reload count */
+uint32_t TimerP_getReloadCount(TimerP_Handle handle)
+{
+  uint32_t      reloadCnt = 0U;
+  TimerP_Struct *timer = (TimerP_Struct *) handle;
+  uint32_t      baseAddr = TimerP_getTimerBaseAddr(timer->timerId);
+
+  if (baseAddr != 0U) 
+  {
+    (void)TIMERReloadGet2(baseAddr, &reloadCnt);
+  } 
+
+  return (reloadCnt);
+}
+
+/* Get timer current count */
+uint32_t TimerP_getCount(TimerP_Handle handle)
+{
+  uint32_t      count = 0U;
+  TimerP_Struct *timer = (TimerP_Struct *) handle;
+  uint32_t      baseAddr = TimerP_getTimerBaseAddr(timer->timerId);
+
+  if (baseAddr != 0U) 
+  {
+    (void)TIMERCounterGet2(baseAddr, &count);
+  } 
+
+  return (count);
+
+}
+
+/* This file implements the DM timer osal functions on K3 devices */

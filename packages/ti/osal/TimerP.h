@@ -297,6 +297,24 @@ extern TimerP_Status TimerP_ClearInterrupt(TimerP_Handle timerHandle);
  */
 extern uint64_t TimerP_getTimeInUsecs(void);
 
+/**
+ *  @brief Get timer reload count
+ *
+ *  @param  timerHandle  A TimerP_Handle returned from ::TimerP_create
+ *
+ *  @return Reload count value
+ */
+extern uint32_t TimerP_getReloadCount(TimerP_Handle timerHandle);
+
+/**
+ *  @brief Get timer current count
+ *
+ *  @param  timerHandle  A TimerP_Handle returned from ::TimerP_create
+ *
+ *  @return Current timer count value
+ */
+uint32_t TimerP_getCount(TimerP_Handle timerHandle);
+
 #ifdef __cplusplus
 }
 #endif
