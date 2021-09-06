@@ -115,11 +115,25 @@ uint32_t ulPortInterruptNesting = 0UL;
 uint32_t ulPortSchedularRunning = pdFALSE;
 
 /*
+ * Run Time Timer Control Structure. 
+ */
+typedef struct xRUN_TIME_TIMER_CONTROL 
+{
+    uint64_t        uxTicks;
+    TimerP_Handle   pxTimerHandle;
+    uint32_t        ulUSecPerTick;
+    uint32_t        ulTimerReloadCnt; 
+} RunTimeTimerControl_t;
+
+RunTimeTimerControl_t   gTimerCntrl;
+
+/*
  * Starts the first task executing.  This function is necessarily written in
  * assembly code so is implemented in portASM.s.
  */
 extern void vPortRestoreTaskContext( void );
-static uint64_t prvPortReadPmuCounter(void);
+
+uint64_t uxPortGetTimeInUsec(void);
     
 static void prvTaskExitError( void )
 {
@@ -205,13 +219,13 @@ StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
     return pxTopOfStack;
 }
 
-TimerP_Handle pTickTimerHandle = NULL;
-uint64_t portLastTimerTS;
 static void prvPorttimerTickIsr(uintptr_t args)
 {
     void vPortTimerTickHandler();
 
-    portLastTimerTS = prvPortReadPmuCounter();
+    /* increment the systick counter */
+    gTimerCntrl.uxTicks++;
+
     vPortTimerTickHandler();
 }
 
@@ -219,6 +233,7 @@ static void prvPortInitTickTimer(void)
 {
 
     TimerP_Params timerParams;
+    TimerP_Handle pTickTimerHandle;
 
     TimerP_Params_init(&timerParams);
     timerParams.runMode    = TimerP_RunMode_CONTINUOUS;
@@ -231,12 +246,17 @@ static void prvPortInitTickTimer(void)
     /* don't expect the handle to be null */
     DebugP_assert (pTickTimerHandle != NULL);
 
+    /* init internal data structure */
+    gTimerCntrl.uxTicks             = 0;
+    gTimerCntrl.ulUSecPerTick       = (portTICK_PERIOD_MS * 1000);
+    gTimerCntrl.ulTimerReloadCnt    = TimerP_getReloadCount(pTickTimerHandle);
+    gTimerCntrl.pxTimerHandle       = pTickTimerHandle;
 }
 
 static void prvPortStartTickTimer(void)
 {
     TimerP_Status status;
-    status = TimerP_start(pTickTimerHandle);
+    status = TimerP_start(gTimerCntrl.pxTimerHandle);
 
     /* don't expect the handle to be null */
     DebugP_assert (status == TimerP_OK);
@@ -364,49 +384,16 @@ void vPortExitCritical( void )
     }
 }
 
-static uint32_t gTimeStampOverFlowCount = 0;
-
 /* initialize high resolution timer for CPU and task load calculation */
 void vPortConfigTimerForRunTimeStats()
 {
-    CSL_armR5PmuEnableAllCntrs(1);    /* Set/clear PMCR E-bit */
-    CSL_armR5PmuResetCntrs();         /* Set PMCR P-bit */
-    CSL_armR5PmuResetCycleCnt();      /* Set PMCR C-bit */
-    CSL_armR5PmuEnableCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, 1);     /* Set PMCNTENSET for event */
-    CSL_armR5PmuClearCntrOverflowStatus(0x80000007);
-    gTimeStampOverFlowCount = 0;
+    /* Timer is initialized by prvPortInitTickTimer before the schedular is started */
 }
-
-static uint64_t prvPortReadPmuCounter(void)
-{
-    uint32_t tsLo;
-    uint32_t ovsrStatus;
-    uint64_t ts;
-
-    tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
-    ovsrStatus = (CSL_armR5PmuReadCntrOverflowStatus() & (0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
-
-    if (ovsrStatus != 0)
-    {
-        tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
-        gTimeStampOverFlowCount++;
-        CSL_armR5PmuClearCntrOverflowStatus((0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
-    }
-    ts = ((uint64_t)tsLo | ((uint64_t) gTimeStampOverFlowCount << 32U));
-
-    return ts;
-}
-
 
 /* return current counter value of high speed counter in usecs */
 uint32_t uiPortGetRunTimeCounterValue()
 {
-    uint64_t timeInUsecs;
-    uint64_t ts;
-
-    ts = prvPortReadPmuCounter();
-    timeInUsecs = (ts * 1000000) / configCPU_CLOCK_HZ;
-
+    uint64_t uxTimeInUsecs = uxPortGetTimeInUsec();
 
     /* note, there is no overflow protection for this 32b value in FreeRTOS
      *
@@ -417,11 +404,34 @@ uint32_t uiPortGetRunTimeCounterValue()
      * The implementation of LoadP_update() is in osal/src/freertos/LoadP_freertos.c
      * 
      */
-    return (uint32_t)(timeInUsecs);
+    return (uint32_t)(uxTimeInUsecs);
+}
+
+/* Get the current time in microseconds. */
+uint64_t uxPortGetTimeInUsec()
+{
+    uint64_t uxTimeInUsecs;
+    uint32_t ulTimerCount;
+    uint64_t uxTicks1;
+    uint64_t uxTicks2;
+
+    do {
+        uxTicks1 = gTimerCntrl.uxTicks;
+        ulTimerCount = TimerP_getCount(gTimerCntrl.pxTimerHandle);
+        uxTicks2 = gTimerCntrl.uxTicks;
+    } while (uxTicks1 != uxTicks2);
+
+    /* Get the current time in microseconds */
+    uxTimeInUsecs = uxTicks2 * (uint64_t)gTimerCntrl.ulUSecPerTick
+                        + (uint64_t) ( /* convert timer count to usecs */
+                            (uint64_t)(ulTimerCount - gTimerCntrl.ulTimerReloadCnt)*gTimerCntrl.ulUSecPerTick/(0xFFFFFFFFu - gTimerCntrl.ulTimerReloadCnt)
+                            );
+
+    return (uxTimeInUsecs);
 }
 
 /* This is used to make sure we are using the FreeRTOS API from within a valid interrupt priority level
- * In our R%F port this means IRQ.
+ * In our R5F port this means IRQ.
  * i.e FreeRTOS API should not be called from FIQ, however right now we dont enforce it by checking
  * if we are in FIQ when this API is called.
  */
