@@ -60,85 +60,18 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
-
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
-
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
-
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* LPM_PMIC_H_ */
+#ifndef _MX_MMR_MAPPING_H
+#define _MX_MMR_MAPPING_H
+#include <ti/drv/lpm/include/io_retention/mmr_common.h>
+#define WKUP_CTRL_CORE_PASS_DONE_SET0             WKUP_CTRL_DV_REG0_SET 
+#define WKUP_CTRL_CORE_PASS_DONE_CLR0             WKUP_CTRL_DV_REG0_CLR
+#define WKUP_CTRL_ACTIVE_CORES                    WKUP_CTRL_DV_REG32 
+#define WKUP_CTRL_DBG_FEATURE0                    WKUP_CTRL_DV_REG33
+#define WKUP_CTRL_DBG_FEATURE1                    WKUP_CTRL_DV_REG34 
+#define WKUP_CTRL_DBG_FEATURE2                    WKUP_CTRL_DV_REG35 
+#define WKUP_CTRL_DBG_FEATURE3                    WKUP_CTRL_DV_REG36 
+#define WKUP_CTRL_CORE_DEBUG0                     WKUP_CTRL_DV_REG0 
+#define WKUP_CTRL_CORE_DEBUG1                     WKUP_CTRL_DV_REG38 
+#define WKUP_CTRL_CORE_DEBUG2                     WKUP_CTRL_DV_REG39 
+#define WKUP_CTRL_CORE_DEBUG3                     WKUP_CTRL_DV_REG40 
+#endif 

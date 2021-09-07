@@ -127,6 +127,21 @@ export lpm_example_$(1)_SBL_APPIMAGEGEN = yes
 
 lpm_EXAMPLE_LIST += lpm_example_$(1)
 
+
+export io_retention_$(1)_COMP_LIST = io_retention_$(1)
+io_retention_$(1)_RELPATH = ti/lpm/examples/io_retention
+io_retention_$(1)_PATH = $(PDK_LPM_COMP_PATH)/examples/io_retention
+export io_retention_$(1)_BOARD_DEPENDENCY = yes
+export io_retention_$(1)_CORE_DEPENDENCY = yes
+export io_retention_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+io_retention_$(1)_PKG_LIST = io_retention_$(1)
+io_retention_$(1)_INCLUDE = $(io_retention_$(1)_PATH)
+export io_retention_$(1)_BOARDLIST = j7200_evm
+export io_retention_$(1)_$(SOC)_CORELIST = mcu1_0
+export io_retention_$(1)_SBL_APPIMAGEGEN = yes
+
+lpm_EXAMPLE_LIST += io_retention_$(1)
+
 endef
 
 define LPM_BOARDLIST_RULE

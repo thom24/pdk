@@ -60,85 +60,55 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
+#ifndef _DVDBG_REGS_H_
+#define _DVDBG_REGS_H_
 
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
+#if 0 
+#define	por_err_cnt	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST0))
+#define	por_progress0	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST1))
+#define	por_progress1	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST2))
+#define	por_progress2	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST3))
+#define	por_debug0	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST4))
+#define	por_debug1	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST5))
+#define	por_debug2	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST6))
+#define	por_debug3	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_PORRST7))
+#define	rst_err_cnt	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST0))
+#define	rst_progress0	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST1))
+#define	rst_progress1	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST2))
+#define	rst_progress2	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST3))
+#define	rst_debug0	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST4))
+#define	rst_debug1	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST5))
+#define	rst_debug2	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST6))
+#define	rst_debug3	(*mkptr(mmr0_cfg_base,MMR_TEST_DEBUG_ALLRST7))
+#endif 
 
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
+#include <ti/drv/lpm/include/io_retention/wkup_ctrl_mmr.h>
 
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
-#ifdef __cplusplus
-}
+#define	por_err_cnt		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG48))
+#define	por_progress0	(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG49))
+#define	por_progress1	(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG50))
+#define	por_progress2	(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG51))
+#define	por_debug0		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG52))
+#define	por_debug1		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG53))
+#define	por_debug2		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG54))
+#define	por_debug3		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG55))
+#define	rst_err_cnt		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG16))
+#define	rst_progress0	(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG17))
+#define	rst_progress1	(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG18))
+#define	rst_progress2	(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG19))
+#define	rst_debug0		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG20))
+#define	rst_debug1		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG21))
+#define	rst_debug2		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG22))
+#define	rst_debug3		(*mkptr(mmr0_cfg_base,WKUP_CTRL_DV_REG23))
 #endif
 
-#endif /* LPM_PMIC_H_ */
+#define  err_cnt	rst_err_cnt
+#define  progress0      rst_progress0
+#define  progress1      rst_progress1
+#define  progress2      rst_progress2
+#define  debug0		rst_debug0
+#define  debug1		rst_debug1
+#define  debug2		rst_debug2
+#define  debug3		rst_debug3
+
+#define  INIT_ERR_CNT  err_cnt = 0;

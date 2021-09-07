@@ -164,6 +164,7 @@ static void MainApp_TaskFxn(void* a0, void* a1)
 
     Lpm_bootAppInit();
     Lpm_pmicInit();
+    AppUtils_Printf(MSG_NORMAL, "\nPMIC initialization done.\r\n");
 
     for(i=0; i<numBoots; i++)
     {
@@ -218,7 +219,6 @@ int32_t SetupSciServer(void)
     /* Sciclient needs to be initialized before Sciserver. Sciserver depends on
      * Sciclient API to execute message forwarding */
     ret = Sciclient_configPrmsInit(&clientPrms);
-    //clientPrms.opModeFlag = SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT;
 
     if (ret == CSL_PASS)
     {

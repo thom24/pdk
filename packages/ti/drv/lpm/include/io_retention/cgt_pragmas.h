@@ -60,85 +60,111 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
-
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
-
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
-
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
+#ifndef __CGTPRAGMAS_H
+#define __CGTPRAGMAS_H
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
+/* Symbol alignment */
 
-/* None */
+#ifdef TITOOLS
+    #define EMIT_PRAGMA_DATA_ALIGN                      #pragma DATA_ALIGN
+    #define DO_PRAGMA_ALIGN(_symbol, _alignment)        EMIT_PRAGMA_DATA_ALIGN( _symbol, _alignment )
+#elif defined(RVCT)
+    #define DO_PRAGMA_ALIGN(_symbol, _alignment)        __align(_alignment)
+#elif defined(GCC)
+    #define DO_PRAGMA_ALIGN(_symbol, _alignment)        __attribute__ ((aligned (_alignment)))
+#else
+    #define DO_PRAGMA_ALIGN(_symbol, _alignment)        __attribute__ ((aligned (_alignment)))
+#endif
 
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
 
-/* None */
+/* Code Section */
+#ifdef TITOOLS
+    #define EMIT_PRAGMA_CODE_SECTION(x)                 _Pragma(#x)
+    #define DO_PRAGMA_CODE_SECTION(_symbol,_section)    EMIT_PRAGMA_CODE_SECTION(CODE_SECTION( _symbol, _section ))
+#elif defined(RVCT)
+    #define DO_PRAGMA_CODE_SECTION(_symbol,_section)    __attribute__ ((section (_section)))
+#elif defined(GCC)
+    #define DO_PRAGMA_CODE_SECTION(_symbol,_section)    __attribute__ ((section (_section)))
+#else
+    #define DO_PRAGMA_CODE_SECTION(_symbol,_section)    __attribute__ ((section (_section)))
+#endif
 
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
 
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
+/* Data Section */
+#ifdef TITOOLS
+    #define EMIT_PRAGMA_DATA_SECTION(x)                 _Pragma(#x)
+    #define DO_PRAGMA_DATA_SECTION(_symbol,_section)    EMIT_PRAGMA_DATA_SECTION(DATA_SECTION( _symbol, _section ))
+#elif defined(RVCT)
+    #define DO_PRAGMA_DATA_SECTION(_symbol,_section)    __attribute__ ((section (_section)))
+#elif defined(GCC)
+    #define DO_PRAGMA_DATA_SECTION(_symbol,_section)    __attribute__ ((section (_section)))
+#else
+    #define DO_PRAGMA_DATA_SECTION(_symbol,_section)    __attribute__ ((section (_section)))
+#endif
 
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
 
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
+/* Inline */
+#ifdef RVCT
+    #define INLINE  __inline
+#elif defined(TITOOLS)
+    #define INLINE  inline
+#elif defined(GCC)
+    #define INLINE  inline
+#else
+    #define INLINE inline
+#endif
+
+#ifdef RVCT
+    #define ALWAYS_INLINE  
+#elif defined(TITOOLS)
+    #define ALWAYS_INLINE  __attribute__ ((always_inline))
+#elif defined(GCC)
+    #define ALWAYS_INLINE  __attribute__ ((always_inline))
+#else
+    #define ALWAYS_INLINE  __attribute__ ((always_inline))
+#endif  /* RVCT */
+
+
+/* Optimize */
+
+#ifdef RVCT
+    #define OPTIMIZE(LEVEL) 
+#elif defined(TITOOLS)
+    #define OPTIMIZE(LEVEL)
+#elif defined(GCC)
+    #define OPTIMIZE(LEVEL) __attribute__ ((optimize(LEVEL)))
+#else
+    #define OPTIMIZE(LEVEL)
+#endif
+
+
+
+/* Embedded Assembly */
+
+#ifdef RVCT
+    #define ASSEMBLY    asm
+#elif defined(GCC)
+    #define ASSEMBLY    __asm
+#elif defined(TITOOLS)
+    #define ASSEMBLY    asm
+#else
+    #define ASSEMBLY    asm
+#endif
+
+#define  CONCAT2(a, b) XCAT2(a, b)
+#define  XCAT2(a, b)   a ## b
+#define  CONCAT3(a, b, c) XCAT3(a, b, c)
+#define  XCAT3(a, b, c)   a ## b ## c
 
 #ifdef __cplusplus
 }
 #endif
+#endif	/* __CGTPRAGMAS_H */
 
-#endif /* LPM_PMIC_H_ */
+/* EOF */
+

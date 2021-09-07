@@ -60,85 +60,40 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
+/**********************************************************************
+*                File Description
+*=======================================================================
+*
+*   File Name           :   io_instance.h
+*
+*   Author              :   x0025106
+*
+*   Mail		:   x0025106@ti.com
+*
+*   Description         :   Instance definition w.r.t System Interrupt modules
+***********************************************************************/
 
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
+#ifndef _IO_INSTANCE_H_
+#define _IO_INSTANCE_H_
 
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
+#include <ti/drv/lpm/include/io_retention/psc_vars.h>
 
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
+#ifndef IO_DINUM
+  #define IO_DINUM DINUM
 #endif
 
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
 
-/* None */
+#if IO_DINUM == 0 || IO_DINUM == 1
 
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
+    #define dmsc_ssr0_base dmsc0_ssr0_base
+    #define dmsc_ssr1_base dmsc0_ssr1_base
 
-/* None */
+#else
+   
+    #error "Invalid DINUM for IO instance"
 
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
-#ifdef __cplusplus
-}
 #endif
 
-#endif /* LPM_PMIC_H_ */
+
+
+#endif /* _IO_INSTANCE_H_ */ 

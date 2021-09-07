@@ -60,85 +60,74 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
+#ifndef _IO_H_
+#define _IO_H_
 
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
+/* Defines IO DINUMs and reg_info struct */
+#include <ti/drv/lpm/include/io_retention/dev_info.h>
+#include <ti/drv/lpm/include/io_retention/io_instance.h>
 
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
+/* Declares (main|wkup)_ctrl_mmr_io_padconfig_reg and register macros */
+#include <ti/drv/lpm/include/io_retention/wkup_ctrl_mmr.h>
+#include <ti/drv/lpm/include/io_retention/main_ctrl_mmr.h>
+#include <ti/drv/lpm/include/io_retention/io_padconfig_mmr.h>
 
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
+/* Array size utilities */
+#define IO_ARR_SIZE(arr,type) sizeof(arr)/sizeof(type)
 
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
+#define CNT_WKUP_PADCFG IO_ARR_SIZE(wkup_ctrl_mmr_io_padconfig_reg,struct reg_info)
+#define CNT_MAIN_PADCFG IO_ARR_SIZE(main_ctrl_mmr_io_padconfig_reg,struct reg_info)
+
+/* MMRs */
+#define WKUP_CTRL_MMR_BASE mmr0_cfg_base
+#define MAIN_CTRL_MMR_BASE mmr2_cfg_base
+
+/* Padconfig translation macros */
+#define IO_WKUP_PADCFG2OFFSET(i) mmr0_cfg_base+i*0x04
+#define IO_MAIN_PADCFG2OFFSET(i) mmr2_cfg_base+i*0x04
+#define IO_WKUP_INDEX2OFFSET(i) wkup_ctrl_mmr_io_padconfig_reg[i].offset
+#define IO_MAIN_INDEX2OFFSET(i) main_ctrl_mmr_io_padconfig_reg[i].offset
+#define IO_WKUP_OFFSET2PADCFG(i) (i-WKUP_CTRL_PADCONFIG0)/0x04
+#define IO_MAIN_OFFSET2PADCFG(i) (i-MAIN_CTRL_PADCONFIG0)/0x04
+#define IO_WKUP_INDEX2PADCFG(i) IO_WKUP_OFFSET2PADCFG(IO_WKUP_INDEX2OFFSET(i))
+#define IO_MAIN_INDEX2PADCFG(i) IO_MAIN_OFFSET2PADCFG(IO_MAIN_INDEX2OFFSET(i))
+
+/* Various padconfig definitions */
+#define WKUP_GPIO0_PADCONFIG_MMR      48
+#define WKUP_GPIO1_PADCONFIG_MMR      49
+#define WKUP_GPIO2_PADCONFIG_MMR      50
+#define WKUP_GPIO3_PADCONFIG_MMR      51
+#define WKUP_GPIO12_PADCONFIG_MMR     60
+#define WKUP_GPIO13_PADCONFIG_MMR     61
+#define WKUP_GPIO14_PADCONFIG_MMR     62
+#define WKUP_GPIO15_PADCONFIG_MMR     63
+#define MCU_SAFETY_ERR_PADCONFIG_MMR  69
+#define MCU_RESETZ_PADCONFIG_MMR      70
+#define MCU_RESETSTATZ_PADCONFIG_MMR  71
+/*#define MCU_PORZ_OUT_PADCONFIG_MMR    71 */
+#define TRSTN_PADCONFIG_MMR           74
+#define EMU0_PADCONFIG_MMR            75
+#define EMU1_PADCONFIG_MMR            76
+
+#define EXTINTN_PADCONFIG_MMR          0
+#define SOC_SAFETY_ERR_PADCONFIG_MMR  68
+#define MAIN_RESETZ_PADCONFIG_MMR     93
+#define MAIN_PORZ_PADCONFIG_MMR       94
+#define RESETSTATZ_PADCONFIG_MMR      66
+
+#define SOC_ERROR_PADCFG MAIN_CTRL_PADCONFIG68
+#define MCU_ERROR_PADCFG WKUP_CTRL_PADCONFIG69
+
+/*#define RESETZ_REQ_PADCONFIG_MMR     158 */
+/*#define PORZ_PADCONFIG_MMR           159 */
+
+/* my error codes to use in testcase assertions */
+typedef enum {
+  IO_FINAL_DATA_MISMATCH  = 0xf0000100u,  /*/< data comparison failed at the end of the testcase. */
+  IO_CSLR_MMR_TEST        = 0xf1000000u,  /*/< generic cslr_mmr_test failure. See mmr_test failure codes for real reason. */
+  IO_REG_MISMATCH         = 0xf3000000u,  /*/< register mismatch error in mmr tests */
+  IO_INVALID_INSTANCE     = 0xf3000100u,  /*/< invalid instance requested in instance_select function */
+} io_fail_code_t;
+
+
 #endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* LPM_PMIC_H_ */

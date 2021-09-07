@@ -60,85 +60,28 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
+#ifndef _IO_PM_FUNCTIONS_H_
+#define _IO_PM_FUNCTIONS_H_
 
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
+#include <ti/drv/lpm/include/io_retention/wkup_ctrl_mmr.h>
 
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
+#define DMSC_CM_PMCTRL_IO 0x084    /* Many test cases has this variable, hence duplicating it. */
 
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
+#define DMSC_CM_PMCTRL_IO_0 0x084
+#define DMSC_CM_PMCTRL_IO_1 0x088
+#define DMSC_CM_WKUP_EN_0   0x180
+#define DMSC_CM_WKUP_EN_1   0x184
+#define DMSC_CM_WKUP_EN_2   0x188
 
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
+#define DMSC_SWAKEUP_0_INT     0x0
+#define DMSC_SWAKEUP_1_INT     0x1
+
+
+#define io_timeout  150
+
+int wkup_io_pm_seq (void);
+int main_io_pm_seq (void);
+int exit_wkup_io (void);
+int exit_main_io (void);
+
 #endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* LPM_PMIC_H_ */

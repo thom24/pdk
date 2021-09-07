@@ -60,85 +60,80 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
+#ifndef _CONSTANT_H_
+#define _CONSTANT_H_
 
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
 
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
+#include <stdint.h>
+#include <stdbool.h>
+#include <ti/drv/lpm/include/io_retention/glb_defines.h>
 
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
+#ifdef SOC_J7200
+#define DEVICE_NAME j7vcl_core
+#else
+#define DEVICE_NAME j7_core
 #endif
 
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
+#define PASS  		1
+#define FAIL  		0
+#define EPIC_FAIL       2
 
-/* None */
+#define newton_core	(0xFFFF3000)
+#define fleming_core	(0xFFFF3001)
+#define maxwell_core    (0xFFFF3002)
+#define j7_core		(0xFFFF3003) 
+#define pascal_core     (0xFFFF3004)
+#define j7vcl_core      (0xFFFF3005)
 
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
-#ifdef __cplusplus
-}
+#if DEVICE_NAME == fleming_core
+#define C7X_CNUM_START	0
+#define M3_CNUM_START	2
+#define R5F_CNUM_START	3
+#define A53_CNUM_START	9
+#elif DEVICE_NAME == newton_core
+#define C7X_CNUM_START	0
+#define M3_CNUM_START	2
+#define R5F_CNUM_START	3
+#elif DEVICE_NAME == j7_core
+#define M3_CNUM_START	0
+#define R5F_CNUM_START	1
+#define A72_CNUM_START  10	
+#define C7X_CNUM_START	12
+#define C66X_CNUM_START	13
+#elif DEVICE_NAME == maxwell_core
+#define M3_CNUM_START	0
+#define R5F_CNUM_START	1
+#define A53_CNUM_START	4
+#elif DEVICE_NAME == pascal_core
+#define M3_CNUM_START   0 /* 1 M3 */
+#define R5F_CNUM_START  1 /* 2 pulsars (3 cores each) 6 cores */
+#define A53_CNUM_START  7 /* 1 corepac (2 cores each) 2 cores */
+#elif DEVICE_NAME == j7vcl_core
+#define M3_CNUM_START   0 /* 1 M3 */
+#define R5F_CNUM_START  1 /* 2 pulsars (3 cores each) 6 cores */
+#define A72_CNUM_START  7 /* 1 corepac (2 cores each) 2 cores */
+#define C7X_CNUM_START	-1 /* No c7x but we need this define for testcase reuse */
+#define C66X_CNUM_START	-1 /* No c66x but we need this define for testcase reuse */
 #endif
 
-#endif /* LPM_PMIC_H_ */
+#if DEVICE_NAME == fleming_core
+    #define CORE_COUNT      13
+#elif DEVICE_NAME == newton_core
+    #define CORE_COUNT      9
+#elif DEVICE_NAME == maxwell_core
+    #define CORE_COUNT      8
+#elif DEVICE_NAME == j7_core
+    #define CORE_COUNT      15
+#elif DEVICE_NAME == pascal_core
+    #define CORE_COUNT      9
+#elif DEVICE_NAME == j7vcl_core
+    #define CORE_COUNT      9
+#else
+    #error "Unknown DEVICE_NAME"  DEVICE_NAME
+#endif
+
+#define DDR3 	0
+#define DDR4	1
+#define LPDDR4 	2
+
+#endif

@@ -60,85 +60,18 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
+#ifndef BASE_ADDRESS_H
+#define BASE_ADDRESS_H
 
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
+#include <ti/drv/lpm/include/io_retention/constants.h>
 
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
-
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
+#if DEVICE_NAME == j7_core
+    #include <ti/drv/lpm/include/j7_missing_base_address.h>
+    #include <ti/drv/lpm/include/j7_base_address.h>
+#elif DEVICE_NAME == j7vcl_core
+    #include <ti/drv/lpm/include/io_retention/j7vcl_base_address.h>
+#else
+    #error "Unknown DEVICE_NAME"  DEVICE_NAME
 #endif
 
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
-#ifdef __cplusplus
-}
 #endif
-
-#endif /* LPM_PMIC_H_ */

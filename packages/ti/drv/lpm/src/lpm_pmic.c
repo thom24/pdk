@@ -164,6 +164,8 @@ static uint32_t Lpm_mcuToActiveSwitch(void);
 static void Lpm_vtmMaxOutrgAlertDisableForTmpSens1to4();
 static void Lpm_swResetMainDomain(void);
 static void Lpm_pmicStateChangeActiveToMCUOnly(void);
+void Lpm_pmicStateChangeActiveToIORetention(void);
+
 #if defined(PMIC_USE_DRV)
 static int32_t Lpm_initPMIC(void);
 #else
@@ -1776,7 +1778,6 @@ static void Lpm_boardConfigurationForMainDomain(void)
     Board_init(cfg);
 }
 
-#if !defined(PMIC_USE_DRV)
 static void Lpm_setupI2CTransfer(I2C_Handle handle,  uint32_t slaveAddr,
                       uint8_t *writeData, uint32_t numWriteBytes,
                       uint8_t *readData,  uint32_t numReadBytes)
@@ -1796,7 +1797,6 @@ static void Lpm_setupI2CTransfer(I2C_Handle handle,  uint32_t slaveAddr,
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "\n Data Transfer failed. \n");
     }
 }
-#endif
 
 static int32_t Lpm_enableMCU2MAINBridges(void)
 {
@@ -2171,7 +2171,85 @@ static void Lpm_pmicStateChangeActiveToMCUOnly(void)
 
     return;
 }
+
+volatile uint32_t loopPMICStateChangeActiveToIORetention = 0;
+void Lpm_pmicStateChangeActiveToIORetention(void)
+{
+    /* Write 0x02 to FSM_NSLEEP_TRIGGERS register 
+       This should happen before clearing the interrupts */
+
+    /* If you clear the interrupts before you write the NSLEEP bits,
+     * it will transition to S2R state.
+     * This is because as soon as you write NSLEEP2 to 0x0,
+     * the trigger is present to move to S2R state.
+     * By setting the NSLEEP bits before you clear the interrupts,
+     * you can configure both NSLEEP bits before the PMIC reacts to the change.
+     */
+
+    uint8_t dataToSlave[2];
+
+    if(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE)
+    {
+        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
+                        "Connect CCS and change the loopPMICStateChangeActiveToIORetention to 0x0!!!!\n");
+        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
+                        "This will disconnect the JTAG interface too and you can only see the MCU running from UART prints!!!!\n");
+    }
+
+    while(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE);
+
+    /* Change FSM_NSLEEP_TRIGGERS */
+    dataToSlave[0] = 0x86;
+    dataToSlave[1] = 0x03;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
+
+    /* Clear INT_STARTUP */
+    dataToSlave[0] = 0x65;
+    dataToSlave[1] = 0x02;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_STARTUP = 0x%x\n", dataToSlave[1]);
+
+    /* Configure GPIO4_CONF */
+    dataToSlave[0] = 0x34;
+    dataToSlave[1] = 0xc0;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write GPIO4_CONF = 0x%x\n", dataToSlave[1]);
+
+    /* Configure INT_GPIO1_8 (enable GPIO4 interrupt) */
+    dataToSlave[0] = 0x64;
+    dataToSlave[1] = 0x08;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_GPIO1_8 = 0x%x\n", dataToSlave[1]);
+
+    /* Configure MASK_GPIO1_8_FALL (configure GPIO4 falling edge interrupt) */
+    dataToSlave[0] = 0x4F;
+    dataToSlave[1] = 0xF7;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write MASK_GPIO1_8_FALL = 0x%x\n", dataToSlave[1]);
+
+    /* Change FSM_I2C_TRIGGERS */
+    dataToSlave[0] = 0x85;
+    dataToSlave[1] = 0x40;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_I2C_TRIGGERS = 0x%x\n", dataToSlave[1]);
+
+    /* Change FSM_I2C_TRIGGERS - PMICB */
+    dataToSlave[0] = 0x85;
+    dataToSlave[1] = 0x40;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x4C, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
+
+    /* Change FSM_NSLEEP_TRIGGERS */
+    dataToSlave[0] = 0x86;
+    dataToSlave[1] = 0x00;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
+
+    return;
+}
 #endif
+
 
 #if defined(PMIC_USE_DRV)
 Pmic_CoreHandle_t *pPmicCoreHandle = NULL;
@@ -2322,6 +2400,7 @@ static void Lpm_pmicStateChangeMCUOnlyToActive(void)
 
     return;
 }
+
 #endif
 
 static uint32_t Lpm_activeToMcuSwitch()
@@ -2351,13 +2430,26 @@ static uint32_t Lpm_activeToMcuSwitch()
     return 0;
 }
 
+
+uint32_t Lpm_activeToIoRetSwitch()
+{
+
+    /* Change PMIC state from ACTIVE to IO Retention */
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
+                    "PMIC STATE CHANGE: ACTIVE -> IO Retention\n");
+    Lpm_pmicStateChangeActiveToIORetention();
+
+
+    return 0;
+}
+
 uint32_t Lpm_pmicInit()
 {
     uint32_t pmicStatus = 0;
 #if defined(PMIC_USE_DRV)
     pmicStatus = Lpm_initPMIC();
 #else
-    pmicStatus = Lpm_i2CInitPMIC();
+    pmicStatus = Lpm_i2cInitPMIC();
 #endif
     if(0 != pmicStatus)
     {

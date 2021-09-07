@@ -60,85 +60,43 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
+
+/*!
+ *  \file
+ *  \brief Functions header file for RAT related functions.
+ */
+#ifndef RAT_FUNCTIONS_H_
+#define RAT_FUNCTIONS_H_
+
+#include <stdint.h>
+#include <stdbool.h>
+#include <ti/drv/lpm/include/io_retention/cgt_pragmas.h>
+
+/*!
+ *  \brief Configure a RAT translation region.
+ *  \returns PASS if everything worked properly. FAIL if it did not.
  *
- *  @{
- */
-
-/**
- *  \file lpm_pmic.h
+ *  \sa CSL_ratConfigRegionTranslation
  *
- *  \brief LPM PMIC related parameters and API.
- */
-
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
-
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
+ *  \code
+ *  map 0x9000_0000 to 0x9000_1000 => 0x57_0000_0000 to 0x57_0000_1000
+ *  set_rat_region(rat_base, 8, 0x00000057u, 0x90000000u, 0x00000000u, 12);
+ *  \endcode
  *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
+ *  \b Notes:
+ *  - On M3, the RAT window starts @ 0x6000_0000 through 0xdfff_ffff.
+ *    - This means the 'addr' parameter must be within this window.
+ *  - On R5, the entire 32 bit address space can be remapped. Try to use the upper 2GB address space for that mapping so that you don't mask off access to peripherals in the lower 2GB address space.
+ *    - E.g. Remap in the 0x8000_0000 through 0xffff_ffff address space.
  */
-uint32_t Lpm_pmicApp(void);
+uint32_t set_rat_region(
+    uintptr_t rat_base,     /*< [in] RAT base address. Note: A base2core() conversion is done on this value before use. */
+    uint32_t  id,           /*< [in] RAT region ID to use. */
+    uint32_t  upper,        /*< [in] Upper 16 bits of the RAT output translated address. */
+    uint32_t  addr,         /*< [in] Local 32 bit base address of the region. */
+    uint32_t  xlate,        /*< [in] Lower 32 bits of the RAT output translated address. */
+    uint32_t  region_width  /*< [in] Region width in bits of the translation window. */
+    );
 
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
+#endif  /* RAT_FUNCTIONS_H_ */
 
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* LPM_PMIC_H_ */

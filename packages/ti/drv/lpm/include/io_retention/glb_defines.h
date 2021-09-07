@@ -60,85 +60,63 @@
 *
 */
 
-/**
- *  \ingroup DRV_LPM_MODULE
- *  \defgroup DRV_LPM_PMIC_MODULE LPM Driver PMIC API
- *            This is LPM driver PMIC related configuration parameters and
- *            API
- *
- *  @{
- */
+#ifndef _GLOBAL_DEFINE_H
+#define _GLOBAL_DEFINE_H
 
-/**
- *  \file lpm_pmic.h
- *
- *  \brief LPM PMIC related parameters and API.
- */
-
-#ifndef LPM_PMIC_H_
-#define LPM_PMIC_H_
-
-/* ========================================================================== */
-/*                             Include Files                                  */
-/* ========================================================================== */
-
-#include <stdio.h>
-#include <ti/csl/cslr_gtc.h>
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#endif
-#include <ti/drv/sciclient/sciserver.h>
+#include <stdint.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
+#define RD_MEM_8(addr)	         *mkptr8((addr),0)	 
+#define WR_MEM_8(addr, data)     *mkptr8((addr),0) = (data)
 
-/* ========================================================================== */
-/*                         Structures and Enums                               */
-/* ========================================================================== */
+#define RD_MEM_16(addr)	         *mkptr16((addr),0)	 
+#define WR_MEM_16(addr, data)	 *mkptr16((addr),0) = (data)
 
-/* None */
+#define RD_MEM_32(addr)	         *mkptr((addr),0)	 
+#define WR_MEM_32(addr, data)	 *mkptr((addr),0) = (data)
 
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
+#define RD_MEM_64(addr)	         *mkptr64((addr),0)	 
+#define WR_MEM_64(addr, data)	 *mkptr64((addr),0) = (data)
+ 
+#define BOOL           bool
 
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/**
- *  \brief Intializes the PMIC driver
- */
-uint32_t Lpm_pmicInit(void);
-
-/**
- *  \brief Puts the SoC in MCU Only mode and then brings it back to Active mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_pmicApp(void);
-
-/**
- *  \brief Puts the SoC in IO Retention mode
- *
- *  \return Implementation specific return codes. Negative values indicate
- *          unsuccessful operations.
- */
-uint32_t Lpm_activeToIoRetSwitch(void);
-
+#define FLOAT 		float
+#define DOUBLE 		double
+#define Ptr 		void *
+#define UWORD8 		uint8_t
+#define WORD8 		int8_t
+#define UWORD16 	uint16_t
+#define WORD16 		int16_t
+#define UWORD32 	uint32_t
+#define WORD32 		int32_t
+#define UWORD64 	uint64_t
+#define WORD64 		int64_t
+#define Int 		int32_t
+#define Char 		int8_t
+#define String 		int8_t * 
+#define Uint32 		uint32_t
+#define Uint16 		uint16_t
+#define Uint8 		uint8_t
+#define Int32 		int32_t
+#define Int16 		int16_t
+#define Int8 		int8_t
+#define REG_UWORD8  	volatile uint8_t
+#define REG_WORD8   	volatile int8_t
+#define REG_UWORD16 	volatile uint16_t
+#define REG_WORD16 	volatile int16_t
+#define REG_UWORD32 	volatile uint32_t
+#define REG_WORD32 	volatile int32_t
+#define REG_UWORD64 	volatile uint64_t
+#define REG_WORD64 	volatile int64_t
+	
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* LPM_PMIC_H_ */
+#endif	/* _GLOBAL_DEFINE_H */
+
+
