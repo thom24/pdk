@@ -562,4 +562,5 @@ void vApplicationIdleHook( void )
     vApplicationLoadHook();
 #endif
 
+    asm ( " WFI " );
 }
