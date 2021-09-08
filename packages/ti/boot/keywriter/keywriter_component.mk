@@ -68,7 +68,6 @@ ifeq ($(keywriter_component_make_include), )
 keywriter_BOARDLIST = j721e_evm
 keywriter_SOCLIST = j721e
 keywriter_j721e_CORELIST := mcu1_0
-j721e_LASTCORE := $(word $(words $(keywriter_j721e_CORELIST)), $(keywriter_j721e_CORELIST))
 
 ############################
 # keywriter package
