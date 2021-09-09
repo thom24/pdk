@@ -10,6 +10,7 @@ endif
 APP_NAME = ipc_echo_testb_$(BUILD_OS_TYPE)
 
 SRCDIR = . ../ ../../common/src
+INCDIR = ../../common/$(SOC)/$(BUILD_OS_TYPE)/
 SRCS_COMMON = ipc_echo_test.c
 
 ECHO_TEST_BTCM = 1

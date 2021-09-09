@@ -2,7 +2,7 @@
 # This file is the makefile for building IPC example app for TI RTOS
 #
 SRCDIR += . ../common/src
-INCDIR =
+INCDIR +=
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
