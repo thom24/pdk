@@ -72,6 +72,12 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
 #endif
+#if defined (BUILD_C7X_1)
+     (uint32_t)CSL_TIMER0_CFG_BASE,                                /* Main domain's DM Timer base address */
+     (int32_t)0xe,                                                 /* intNum */
+     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0, /* eventId 0x4e0 */
+#endif
+
   },
   /* Timer ID 1 */
   {
@@ -90,6 +96,11 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (uint32_t)CSL_TIMER1_CFG_BASE,
      TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
+#endif
+#if defined (BUILD_C7X_1)
+     (uint32_t)CSL_TIMER1_CFG_BASE,                                /* Main domain's DM Timer base address */
+     (int32_t)0xf,                                                 /* intNum */
+     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0, /* eventId 0x4e1 */
 #endif
   },
   /* Timer ID 2 */
@@ -110,6 +121,11 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
 #endif
+#if defined (BUILD_C7X_1)
+     (uint32_t)CSL_TIMER2_CFG_BASE,                                /* Main domain's DM Timer base address */
+     (int32_t)0x10,                                                 /* intNum */
+     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0, /* eventId 0x4e2 */
+#endif
   },
   /* Timer ID 3 */
   {
@@ -128,6 +144,11 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (uint32_t)CSL_TIMER3_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
+#endif
+#if defined (BUILD_C7X_1)
+     (uint32_t)CSL_TIMER3_CFG_BASE,                                /* Main domain's DM Timer base address */
+     (int32_t)0x11,                                                 /* intNum */
+     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER3_INTR_PEND_0, /* eventId 0x4e3 */
 #endif
   },
   /* Timer ID 4 */

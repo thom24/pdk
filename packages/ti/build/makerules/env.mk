@@ -319,6 +319,9 @@ ifeq ($(BUILD_OS_TYPE),freertos)
     ifeq ($(CONFIG_BLD_XDC_c66),)
         CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
     endif
+    ifeq ($(CONFIG_BLD_XDC_c7x),)
+        CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x_freertos.cmd
+    endif
   endif
   ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
     ifeq ($(CONFIG_BLD_XDC_r5f),)

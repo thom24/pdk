@@ -45,7 +45,7 @@
 CODEGEN_INCLUDE = $(C7X_GEN_INSTALL_PATH)/include
 CC = $(C7X_GEN_INSTALL_PATH)/bin/cl7x
 AR = $(C7X_GEN_INSTALL_PATH)/bin/ar7x
-LNK = $(C7X_GEN_INSTALL_PATH)/bin/lnk7x
+LNK = $(C7X_GEN_INSTALL_PATH)/bin/cl7x --silicon_version=7100 -z
 STRP = $(C7X_GEN_INSTALL_PATH)/bin/strip7x
 SIZE = $(C7X_GEN_INSTALL_PATH)/bin/ofd7x
 
@@ -127,6 +127,11 @@ CFLAGS_NEW_DIROPTS = -fr=$(CFG_C_NEW_XDC) -fs=$(CFG_C_NEW_XDC)
 # to suppress this warning
 #
 LNKFLAGS_INTERNAL_COMMON += --diag_suppress=10063
+
+#C7x should be in RAM model so that constants are set at load time and not
+#extracted from cinit post Cinit . This is because early boot routines like
+#MMu_init depends on constants being set and they are executed before cinit
+LNKFLAGS_INTERNAL_COMMON += --ram_model
 
 #########XDC Config File for DSP##########
 
@@ -220,7 +225,7 @@ $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size: $(LIBDIR)/$(LIBNAME).$(LIBEXT)
 	$(RM)   $@temp
 
 # Linker options and rules
-LNKFLAGS_INTERNAL_COMMON += --warn_sections -q -e=_c_int00 --silicon_version=7100 -c
+LNKFLAGS_INTERNAL_COMMON += --warn_sections -q
 
 # Assemble Linker flags from all other LNKFLAGS definitions
 _LNKFLAGS = $(LNKFLAGS_INTERNAL_COMMON) $(LNKFLAGS_INTERNAL_BUILD_PROFILE) $(LNKFLAGS_GLOBAL_$(CORE)) $(LNKFLAGS_LOCAL_COMMON) $(LNKFLAGS_LOCAL_$(CORE))

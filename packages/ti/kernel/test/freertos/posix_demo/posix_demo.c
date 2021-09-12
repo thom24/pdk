@@ -130,8 +130,8 @@
 #define DISPATCHER_THREAD_PRI       (3u)
 
 /* Thread stack size, stack memory is allocated from  FreeRTOS heap, which in our case is the malloc() heap */
-#define WORKER_THREAD_STACK_SIZE      (4*1024u)
-#define DISPATCHER_THREAD_STACK_SIZE  (4*1024u)
+#define WORKER_THREAD_STACK_SIZE      (32*1024u)
+#define DISPATCHER_THREAD_STACK_SIZE  (32*1024u)
 
 /**
  * @brief Control messages.
@@ -197,12 +197,16 @@ typedef struct DispatcherThreadResources
 /**@} */
 
 /*-----------------------------------------------------------*/
+#ifdef BUILD_C7X_1
+void    Osal_appC7xPreInit(void);
+void    C7x_ConfigureTimerOutput(void);
+#endif
 
 static void * prvWorkerThread( void * pvArgs )
 {
     WorkerThreadResources_t pArgList = *( WorkerThreadResources_t * ) pvArgs;
 
-    FREERTOS_log( "Worker mqueue #[%d] - start \r\n", ( int ) pArgList.xInboxID );
+    FREERTOS_log( "Worker mqueue #[%p] - start \r\n",  pArgList.xInboxID );
 
     struct timespec xReceiveTimeout = { 0 };
 
@@ -228,11 +232,11 @@ static void * prvWorkerThread( void * pvArgs )
                 case eWORKER_CTRL_MSG_CONTINUE:
                     /* Task branch, currently only prints message to screen. */
                     /* Could perform tasks here. Could also notify dispatcher upon completion, if desired. */
-                    FREERTOS_log( "Worker thread #[%d] -- Received eWORKER_CTRL_MSG_CONTINUE \r\n", ( int ) pArgList.pxID );
+                    FREERTOS_log( "Worker thread #[%p] -- Received eWORKER_CTRL_MSG_CONTINUE \r\n", pArgList.pxID );
                     break;
 
                 case eWORKER_CTRL_MSG_EXIT:
-                    FREERTOS_log( "Worker thread #[%d] -- Finished. Exit now. \r\n", ( int ) pArgList.pxID );
+                    FREERTOS_log( "Worker thread #[%p] -- Finished. Exit now. \r\n",  pArgList.pxID );
 
                     return NULL;
 
@@ -276,7 +280,7 @@ static void * prvDispatcherThread( void * pvArgs )
         clock_gettime( CLOCK_REALTIME, &xSendTimeout );
         xSendTimeout.tv_sec += MQUEUE_TIMEOUT_SECONDS;
 
-        FREERTOS_log( "Dispatcher iteration #[%d] -- Sending msg to worker mqueue #[%d]. \r\n", i, ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ] );
+        FREERTOS_log( "Dispatcher iteration #[%p] -- Sending msg to worker mqueue #[%d]. \r\n", i, pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ] );
 
         xMessageSize = mq_timedsend( pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ],
                                      pcSendBuffer,
@@ -289,8 +293,8 @@ static void * prvDispatcherThread( void * pvArgs )
             /* This error is acceptable in our setup.
              * Since inbox for each thread fits only one message.
              * In reality, balance inbox size, message arrival rate, and message drop rate. */
-            FREERTOS_log( "An acceptable failure -- dispatcher failed to send eWORKER_CTRL_MSG_CONTINUE to outbox ID: %x. errno %d \r\n",
-                    ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ], errno );
+            FREERTOS_log( "An acceptable failure -- dispatcher failed to send eWORKER_CTRL_MSG_CONTINUE to outbox ID: %p. errno %d \r\n",
+                     pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ], errno );
         }
     }
 
@@ -299,7 +303,7 @@ static void * prvDispatcherThread( void * pvArgs )
 
     for( i = 0; i < MQUEUE_NUMBER_OF_WORKERS; i++ )
     {
-        FREERTOS_log( "Dispatcher [%d] -- Sending eWORKER_CTRL_MSG_EXIT to worker thread #[%d]. \r\n", i, ( int ) pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ] );
+        FREERTOS_log( "Dispatcher [%p] -- Sending eWORKER_CTRL_MSG_EXIT to worker thread #[%d]. \r\n", i, pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ] );
 
         /* This is a blocking call, to guarantee worker thread exits. */
         xMessageSize = mq_send( pArgList.pOutboxID[ i % MQUEUE_NUMBER_OF_WORKERS ],
@@ -323,6 +327,10 @@ void posix_demo_main( void *pvParameters )
 
 	/* Remove warnings about unused parameters. */
     ( void ) pvParameters;
+#ifdef BUILD_C7X_1
+    Osal_appC7xPreInit();
+    C7x_ConfigureTimerOutput();
+#endif
 
     /* Handles of the threads and related resources. */
     DispatcherThreadResources_t pxDispatcher = { 0 };
@@ -441,3 +449,79 @@ void posix_demo_main( void *pvParameters )
     /* Dont close drivers to keep the UART driver open for console */
     /* Drivers_close(); */
 }
+
+#if defined (__C7100__)
+extern void Osal_initMmuDefault(void);
+#include <ti/csl/csl_clec.h>
+
+void InitMmu(void)
+{
+    Osal_initMmuDefault();
+}
+
+
+void Osal_appC7xPreInit(void)
+{
+
+    CSL_ClecEventConfig cfgClec;
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    uint32_t            i, maxInputs = 2048U;
+
+    /* make secure claim bit to FALSE so that after we switch to non-secure mode
+     * we can program the CLEC MMRs
+     */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = FALSE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
+    cfgClec.extEvtNum         = 0U;
+    cfgClec.c7xEvtNum         = 0U;
+    for(i = 0U; i < maxInputs; i++)
+    {
+        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+    }
+
+    return;
+}
+
+
+void C7x_ConfigureTimerOutput()
+{
+    CSL_ClecEventConfig   cfgClec;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+
+    uint32_t input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+    uint32_t corepackEvent = 14;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+
+    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+    corepackEvent = 15;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+
+    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+    corepackEvent = 16;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+
+}
+
+#endif

@@ -2,7 +2,13 @@
 SRCDIR = . src/freertos src/nonos arch/core
 INCDIR = . src/freertos src/nonos arch/core
 
-SRCS_COMMON += HwiP_nonos.c SwiP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c
+ifeq ($(ISA),$(filter $(ISA), c7x))
+SRCS_COMMON += HwiP_freertos_c7x.c CacheP_freertos_c7x.c
+else
+SRCS_COMMON += HwiP_nonos.c
+endif
+
+SRCS_COMMON += SwiP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c
 SRCS_COMMON += SemaphoreP_freertos.c TaskP_freertos.c MemoryP_freertos.c Utils_freertos.c
 SRCS_COMMON += ClockP_freertos.c MailboxP_freertos.c MutexP_freertos.c QueueP_freertos.c
 SRCS_COMMON += HeapP_freertos.c HeapP_freertos_internal.c EventP_freertos.c LoadP_freertos.c
@@ -46,4 +52,15 @@ ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))
   SRCS_COMMON += CacheP_nonos.c Arch_util.c EventCombinerP_nonos.c
   PACKAGE_SRCS_COMMON += arch/core/c6x src/nonos/EventCombinerP_nonos.c
 endif
+
+ifeq ($(ISA),$(filter $(ISA),c7x))
+  SRCS_COMMON += freertos_mmu.c
+endif
+
+ifeq ($(SOC),$(filter $(SOC), j721e))
+  PACKAGE_SRCS_COMMON += soc/$(SOC)/freertos_mmu.c
+  PACKAGE_SRCS_COMMON += src/freertos/CacheP_freertos_c7x.c
+  PACKAGE_SRCS_COMMON += src/freertos/HwiP_freertos_c7x.c
+endif
+
 

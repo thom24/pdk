@@ -65,7 +65,7 @@ int main()
 
     TaskP_Params_init(&taskParams);
     taskParams.name = "freertos_main";
-    taskParams.stacksize = MAIN_TASK_SIZE;
+    taskParams.stacksize = sizeof(gMainTaskStack);
     taskParams.stack = gMainTaskStack;
     taskParams.priority = MAIN_TASK_PRI;
     taskParams.arg0 = NULL;

@@ -122,6 +122,10 @@
         #define PONG_INT_NUM           (9u)
         #define PONG_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_1)
     #endif
+    #ifdef BUILD_C7X_1
+        #define PING_INT_NUM           (15u)
+        #define PONG_INT_NUM           (16u)
+    #endif
 #endif
 
 #ifdef SOC_J7200
@@ -146,10 +150,10 @@
 #define PING_TASK_PRI (2u)
 #define PONG_TASK_PRI (3u)
 
-#define PING_TASK_SIZE (16384u)
+#define PING_TASK_SIZE (32*1024u)
 StackType_t gPingTaskStack[PING_TASK_SIZE] __attribute__((aligned(32)));
 
-#define PONG_TASK_SIZE (16384u)
+#define PONG_TASK_SIZE (32*1024u)
 StackType_t gPongTaskStack[PONG_TASK_SIZE] __attribute__((aligned(32)));
 
 StaticTask_t gPingTaskObj;
@@ -162,50 +166,73 @@ StaticSemaphore_t gPongSemObj;
 TaskHandle_t gPongTask;
 SemaphoreHandle_t gPongSem;
 
+#ifdef BUILD_C7X_1
+void    Osal_appC7xPreInit(void);
+void    C7x_ConfigureTimerOutput(void);
+uint8_t srcBuf[1024];
+uint8_t dstBuf[1024];
+#endif
+
+uint32_t ping_isr_1_count = 0;
 static void ping_isr_1(uintptr_t arg)
 {
     BaseType_t doTaskSwitch = 0;
 
+    ping_isr_1_count++;
     xSemaphoreGiveFromISR(gPingSem, &doTaskSwitch); /* wake up ping task */
+    #ifdef BUILD_C7X_1
+    /* For C7x do memcpy in ISR to confirm Vector registers are restored correctly from ISR */
+    memcpy(dstBuf, srcBuf, sizeof(dstBuf));
+    #endif
     portYIELD_FROM_ISR(doTaskSwitch);
 }
 
+uint32_t ping_isr_2_count = 0;
 static void ping_isr_2(uintptr_t arg)
 {
     BaseType_t doTaskSwitch = 0;
 
+    ping_isr_2_count++;
     xSemaphoreGiveFromISR(gPongSem, &doTaskSwitch); /* wake up pong task */
     portYIELD_FROM_ISR(doTaskSwitch);
 }
 
+uint32_t ping_isr_3_count = 0;
 static void ping_isr_3(uintptr_t arg)
 {
     BaseType_t doTaskSwitch = 0;
 
+    ping_isr_3_count++;
     vTaskNotifyGiveFromISR(gPingTask, &doTaskSwitch); /* wake up ping task */
     portYIELD_FROM_ISR(doTaskSwitch);
 }
 
+uint32_t ping_isr_4_count = 0;
 static void ping_isr_4(uintptr_t arg)
 {
     BaseType_t doTaskSwitch = 0;
 
+    ping_isr_4_count++;
     vTaskNotifyGiveFromISR(gPongTask, &doTaskSwitch); /* wake up pong task */
     portYIELD_FROM_ISR(doTaskSwitch);
 }
 
+uint32_t pong_isr_2_count = 0;
 static void pong_isr_2(uintptr_t arg)
 {
     BaseType_t doTaskSwitch = 0;
 
+    pong_isr_2_count++;
     xSemaphoreGiveFromISR(gPingSem, &doTaskSwitch); /* wake up ping task */
     portYIELD_FROM_ISR(doTaskSwitch);
 }
 
+uint32_t pong_isr_4_count = 0;
 static void pong_isr_4(uintptr_t arg)
 {
     BaseType_t doTaskSwitch = 0;
 
+    pong_isr_4_count++;
     vTaskNotifyGiveFromISR(gPingTask, &doTaskSwitch); /* wake up ping task */
     portYIELD_FROM_ISR(doTaskSwitch);
 }
@@ -293,6 +320,7 @@ void test_taskToIsrUsingSemaphoreAndNoTaskSwitch(void)
 
 
     count = NUM_TASK_SWITCHES;
+    ping_isr_1_count = 0;
     curTime = uiPortGetRunTimeCounterValue();
     while (count--)
     {
@@ -306,7 +334,7 @@ void test_taskToIsrUsingSemaphoreAndNoTaskSwitch(void)
 
     FREERTOS_log("\r\n");
     FREERTOS_log("execution time for task - ISR - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
-    FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES);
+    FREERTOS_log("number of task switches = %d, num ISRs = %d \r\n", (uint32_t)NUM_TASK_SWITCHES, ping_isr_1_count);
     FREERTOS_log("time per task - ISR - task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
 }
 
@@ -328,6 +356,7 @@ void test_taskToIsrUsingTaskNotifyAndNoTaskSwitch(void)
 
 
     count = NUM_TASK_SWITCHES;
+    ping_isr_3_count = 0;
     curTime = uiPortGetRunTimeCounterValue();
     while (count--)
     {
@@ -341,7 +370,7 @@ void test_taskToIsrUsingTaskNotifyAndNoTaskSwitch(void)
 
     FREERTOS_log("\r\n");
     FREERTOS_log("execution time for task - ISR - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
-    FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES);
+    FREERTOS_log("number of task switches = %d , num ISR = %d\r\n", (uint32_t)NUM_TASK_SWITCHES, ping_isr_3_count);
     FREERTOS_log("time per task - ISR - task switch (direct-to-task notification give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES)));
 }
 
@@ -362,6 +391,7 @@ void test_taskToIsrUsingSemaphoreAndWithTaskSwitch(void)
     DebugP_assert(hHwi != NULL);
 
     count = NUM_TASK_SWITCHES;
+    ping_isr_2_count = 0;
     curTime = uiPortGetRunTimeCounterValue();
     while (count--)
     {
@@ -375,7 +405,7 @@ void test_taskToIsrUsingSemaphoreAndWithTaskSwitch(void)
 
     FREERTOS_log("\r\n");
     FREERTOS_log("execution time for task - ISR - task - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
-    FREERTOS_log("number of ISRs = %d \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
+    FREERTOS_log("number of ISRs = %d.Ping ISR Count:%d, Pong ISR Count:%d  \r\n", (uint32_t)NUM_TASK_SWITCHES * 2, ping_isr_2_count, pong_isr_2_count);
     FREERTOS_log("time per task - ISR - task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (2 * NUM_TASK_SWITCHES)));
 }
 
@@ -396,6 +426,7 @@ void test_taskToIsrUsingTaskNotifyAndWithTaskSwitch(void)
     DebugP_assert(hHwi != NULL);
 
     count = NUM_TASK_SWITCHES;
+    ping_isr_4_count = 0;
     curTime = uiPortGetRunTimeCounterValue();
     while (count--)
     {
@@ -410,6 +441,7 @@ void test_taskToIsrUsingTaskNotifyAndWithTaskSwitch(void)
     FREERTOS_log("\r\n");
     FREERTOS_log("execution time for task - ISR - task switches = %d ms\r\n", (uint32_t)(curTime/1000));
     FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
+    FREERTOS_log("number of isrs = %d,%d \r\n", ping_isr_4_count, pong_isr_4_count);
     FREERTOS_log("time per task - ISR - task switch (direct-to-task notification give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES * 2)));
 }
 
@@ -449,7 +481,7 @@ void test_taskSwitchWithFloatOperations(void)
 void test_taskDelay(void)
 {
     volatile uint64_t curTime; /* time in units of usecs */
-    uint32_t delay1 = 100, delay2 = 110; /* in msecs */
+    uint32_t delay1 = 30 * 1000, delay2 = 30 * 1000; /* in msecs */
 
     curTime = uiPortGetRunTimeCounterValue();
     /* convert to ticks before pass to vTaskDelay */
@@ -515,6 +547,7 @@ void pong_main(void *args)
         DebugP_assert(hHwi != NULL);
 
         count = NUM_TASK_SWITCHES;
+        pong_isr_2_count = 0;
         while (count--)
         {
             xSemaphoreTake(gPongSem, portMAX_DELAY); /* wait for ISR to signal */
@@ -536,6 +569,7 @@ void pong_main(void *args)
         DebugP_assert(hHwi != NULL);
 
         count = NUM_TASK_SWITCHES;
+        pong_isr_4_count = 0;
         while (count--)
         {
             ulTaskNotifyTake(pdTRUE, portMAX_DELAY); /* wait for ISR to signal */
@@ -580,6 +614,11 @@ void test_freertos_main(void *args)
     /* Open drivers to open the UART driver for console */
     //Drivers_open();
 
+#ifdef BUILD_C7X_1
+    Osal_appC7xPreInit();
+    C7x_ConfigureTimerOutput();
+#endif
+
     /* first create the semaphores */
     gPingSem = xSemaphoreCreateBinaryStatic(&gPingSemObj);
     configASSERT(gPingSem != NULL);
@@ -608,3 +647,79 @@ void test_freertos_main(void *args)
     /* Dont close drivers to keep the UART driver open for console */
     /* Drivers_close(); */
 }
+
+#if defined (__C7100__)
+extern void Osal_initMmuDefault(void);
+#include <ti/csl/csl_clec.h>
+
+void InitMmu(void)
+{
+    Osal_initMmuDefault();
+}
+
+
+void Osal_appC7xPreInit(void)
+{
+
+    CSL_ClecEventConfig cfgClec;
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    uint32_t            i, maxInputs = 2048U;
+
+    /* make secure claim bit to FALSE so that after we switch to non-secure mode
+     * we can program the CLEC MMRs
+     */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = FALSE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
+    cfgClec.extEvtNum         = 0U;
+    cfgClec.c7xEvtNum         = 0U;
+    for(i = 0U; i < maxInputs; i++)
+    {
+        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+    }
+
+    return;
+}
+
+
+void C7x_ConfigureTimerOutput()
+{
+    CSL_ClecEventConfig   cfgClec;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+
+    uint32_t input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+    uint32_t corepackEvent = 14;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+
+    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+    corepackEvent = 15;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+
+    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+    corepackEvent = 16;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+
+}
+
+#endif

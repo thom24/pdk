@@ -52,12 +52,17 @@
 #include "ipc_utils.h"
 #include <ti/csl/csl_types.h>
 #if defined (__C7100__)
-#include <ti/sysbios/family/c7x/Hwi.h>
-#include <ti/sysbios/family/c7x/Mmu.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
+
+#if (defined (FREERTOS))
+#include <ti/kernel/freertos/portable/TI_CGT/c7x/Hwi.h>
+#include <ti/kernel/freertos/portable/TI_CGT/c7x/Mmu.h>
+#else
+#include <ti/sysbios/family/c7x/Hwi.h>
 #include <ti/sysbios/family/c7x/Mmu.h>
+#endif
 #endif
 
 #include <ti/drv/sciclient/sciclient.h>

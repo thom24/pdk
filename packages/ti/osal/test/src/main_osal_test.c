@@ -187,7 +187,7 @@ TimerP_Handle handle;
 #if defined (__C7100__)
 /* Temp workaround to avoid assertion failure: A_stackSizeTooSmall : Task stack size must be >= 16KB.
   * until the Bug PDK-7605 is resolved */
-#define APP_TSK_STACK_MAIN              (32U * 1024U)
+#define APP_TSK_STACK_MAIN              (64U * 1024U)
 #else
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 #endif
@@ -1033,10 +1033,23 @@ bool OSAL_cache_test()
 uint8_t semPMemBlock[SEMP_BLOCK_SIZE];
 uint8_t hwiPMemBlock[HWIP_BLOCK_SIZE];
 #else
+#if defined (FREERTOS)
+#define SEMP_BLOCK_SIZE (OSAL_TEST_NUM_EXT_SEMAPHORES * OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES)
+#if defined (__C7100__)
+#define HWIP_BLOCK_SIZE (OSAL_TEST_NUM_EXT_HWIPS * OSAL_FREERTOS_HWIP_C7X_SIZE_BYTES)
+#else
+#define HWIP_BLOCK_SIZE (OSAL_TEST_NUM_EXT_HWIPS * OSAL_NONOS_HWIP_SIZE_BYTES)
+#endif
+uint8_t semPMemBlock[SEMP_BLOCK_SIZE]
+__attribute__ ((aligned(64)));
+uint8_t hwiPMemBlock[HWIP_BLOCK_SIZE]
+__attribute__ ((aligned(64)));
+#else
 #define SEMP_BLOCK_SIZE (OSAL_TEST_NUM_EXT_SEMAPHORES * OSAL_TIRTOS_SEMAPHOREP_SIZE_BYTES)
 #define HWIP_BLOCK_SIZE (OSAL_TEST_NUM_EXT_HWIPS * OSAL_TIRTOS_HWIP_SIZE_BYTES)
 uint8_t semPMemBlock[SEMP_BLOCK_SIZE];
 uint8_t hwiPMemBlock[HWIP_BLOCK_SIZE];
+#endif
 #endif
 
 static void myIsr(void)
@@ -1462,7 +1475,7 @@ bool OSAL_mutex_test()
     /* Delete tasks */
     for(i = 0U; i < OSAL_MUTEX_TEST_NUM_TASKS; i++)
     {
-        TaskP_delete(hMutexTestTask[i]);
+        TaskP_delete(&hMutexTestTask[i]);
     }
 
     /* Delete Semaphore */
@@ -1639,11 +1652,11 @@ bool OSAL_load_test()
     /* Delete tasks and signal semaphores */
     for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
     {
-        TaskP_delete(hLoadTestTask[i]);
+        TaskP_delete(&hLoadTestTask[i]);
         SemaphoreP_delete(hTaskSignalSem[i]);
     }
     /* Delete Print Task */
-    TaskP_delete(hPrintTask);
+    TaskP_delete(&hPrintTask);
 
     /* Delete Semaphore */
     SemaphoreP_delete(hDoneSem);
@@ -2152,7 +2165,6 @@ void sysIdleLoop(void)
    __asm(" IDLE");
 }
 
-#include <ti/sysbios/family/c7x/Hwi.h>
 #include <ti/csl/csl_clec.h>
 void C7x_ConfigureTimerOutput()
 {

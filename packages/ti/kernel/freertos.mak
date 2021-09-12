@@ -19,6 +19,33 @@ INCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include \
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
+ifeq ($(ISA),$(filter $(ISA), c7x))
+SRCS_COMMON += \
+            boot.c                        \
+            Mmu.c                         \
+            Cache.c                       \
+            Hwi.c                         \
+            IntrinsicsSupport.c           \
+            TaskSupport.c                 \
+            Exception.c                   \
+            TimestampProvider.c           \
+            Startup.c                     \
+            Mmu_table.c                   \
+            c7x_module_config.c
+endif
+
+ifeq ($(ISA),$(filter $(ISA), c7x))
+SRCS_ASM_COMMON :=       \
+    Cache_asm.asm        \
+    Clobber_asm.asm      \
+    Exception_asm.asm    \
+    Hwi_asm.asm          \
+    Hwi_asm_switch.asm   \
+    Hwi_disp_always.asm  \
+    Mmu_asm.asm          \
+    TaskSupport_asm.asm
+endif
+
 SRCS_COMMON += \
     timers.c \
     queue.c \
@@ -60,7 +87,12 @@ SRCS_ASM_COMMON := \
 endif
 
 
+
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+ifeq ($(ISA),$(filter $(ISA), c7x))
+CFLAGS_LOCAL_COMMON += -DHwi_bootToNonSecure__D=true
+CFLAGS_LOCAL_COMMON += -DException_vectors__D
+endif
 
 PACKAGE_SRCS_COMMON = freertos.mak freertos_component.mk makefile
 PACKAGE_SRCS_COMMON += freertos

@@ -116,7 +116,7 @@ DEFAULT_CORELIST_EXCLUDE_CORES_freertos += mpu1_0
 endif
 ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
 # FreeRTOS is not currently supported on J7 c66x/c7x cores
-DEFAULT_CORELIST_EXCLUDE_CORES_freertos += c7x_1 c7x_2 c7x-hostemu
+DEFAULT_CORELIST_EXCLUDE_CORES_freertos += c7x_2 c7x-hostemu
 endif
 else
 #FreeRTOS is not supported on other SOCs

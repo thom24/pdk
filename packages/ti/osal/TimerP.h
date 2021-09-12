@@ -188,7 +188,7 @@ typedef struct TimerP_Params_s {
     TimerP_Timer64Half timerHalf; /*!< timer half for 64bit timer */
 
     int32_t  intNum;      /*!< Hwi Interrupt number to be used by Timer */
-#if defined (_TMS320C6X)
+#if (defined (_TMS320C6X) || defined (__C7100__))
     int32_t  eventId;     /*!< Hwi event Id to be used by the Timer */
 #endif
     void*    arg;         /*!< Argument passed into the timer function. */
