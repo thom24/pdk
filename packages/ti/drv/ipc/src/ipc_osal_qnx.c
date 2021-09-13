@@ -253,18 +253,43 @@ static void Ipc_qnxSemDestroy(void *handle)
 
 static int32_t Ipc_qnxSemWait(void *handle, uint32_t timeout)
 {
+    int ret = 0;
     int32_t rtnVal = IPC_SOK;
+    struct timespec ts;
+    int timeout_ns = timeout*1000;
 
     if(handle != NULL)
     {
-        if(EOK == sem_wait((sem_t *)handle))
+        if (timeout == IPC_RPMESSAGE_TIMEOUT_FOREVER)
         {
-            rtnVal = IPC_SOK;
+            ret = sem_wait((sem_t *)handle);
         }
         else
         {
-            rtnVal = IPC_EFAIL;
+            clock_gettime(CLOCK_REALTIME, &ts);
+            ts.tv_sec += (timeout_ns)/1000000000;
+            ts.tv_nsec += timeout_ns%1000000000;
+
+            ret = sem_timedwait((sem_t *)handle, &ts);
         }
+        if (ret < 0) {
+            if (errno == ETIMEDOUT)
+            {
+                    rtnVal = IPC_ETIMEOUT;
+            }
+            else
+            {
+                    rtnVal = IPC_EFAIL;
+            }
+        }
+        else
+        {
+            rtnVal = IPC_SOK;
+        }
+    }
+    else
+    {
+        rtnVal = IPC_EBADARGS;
     }
 
     return rtnVal;
