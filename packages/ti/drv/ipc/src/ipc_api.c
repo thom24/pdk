@@ -275,7 +275,9 @@ int32_t RPMessageParams_init(RPMessage_Params *params)
 
 uint32_t RPMessage_getMessageBufferSize(void)
 {
-    return MSGBUFFERSIZE;
+    uint32_t msgBufSize = MSGBUFFERSIZE;
+    msgBufSize = ((msgBufSize + HEAPALIGNMENT-1) & ~(HEAPALIGNMENT-1));
+    return msgBufSize;
 }
 
 uint32_t RPMessage_getObjMemRequired(void)

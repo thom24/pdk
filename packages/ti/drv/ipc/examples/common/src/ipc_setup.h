@@ -57,7 +57,7 @@ extern "C" {
 #define IPC_RPMESSAGE_OBJ_SIZE  256U
 
 /* this should be >= RPMessage_getMessageBufferSize() */
-#define IPC_RPMESSAGE_MSG_BUFFER_SIZE  (496U + 28U)
+#define IPC_RPMESSAGE_MSG_BUFFER_SIZE  (496U + 32U)
 
 #define RPMSG_DATA_SIZE         (256U*IPC_RPMESSAGE_MSG_BUFFER_SIZE + IPC_RPMESSAGE_OBJ_SIZE)
 #define VQ_BUF_SIZE             2048U
