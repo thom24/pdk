@@ -381,7 +381,8 @@ void SBL_SciClientInit(void)
 #endif
 
 
-#if !defined(SBL_SKIP_MCU_RESET)
+
+#if !defined(SBL_SKIP_MCU_RESET) || defined(SOC_AM65XX)
     /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -393,6 +394,7 @@ void SBL_SciClientInit(void)
     Sciclient_pmSetModuleState(SBL_DEV_ID_MCU_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 #endif
 #endif
+
 
 
 #endif
