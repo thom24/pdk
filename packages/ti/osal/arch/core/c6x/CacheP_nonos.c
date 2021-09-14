@@ -55,88 +55,49 @@
 /* #define CACHEP_ATOMIC_BLOCK_SIZE    (CACHE_L2_LINESIZE) */
 #define CACHEP_ATOMIC_BLOCK_SIZE    (0U)
 
+/* Defines the prototype of the CSL Cache Ops Function */
+typedef void (* CacheP_Function_t)( const void* blockPtr, uint32_t byteCnt, CACHE_Wait wait);
+
+static void CacheP_block(const void * addr, int32_t size, CacheP_Function_t fxnPtr);
+
 void CacheP_wb(const void * addr, int32_t size)
 {
-  uintptr_t alignedAddr = (uintptr_t)addr & ~((uintptr_t)0x3u);
-  uint32_t alignedSize =   (uint32_t)size + (uint32_t)((uintptr_t)addr - (uintptr_t)alignedAddr);
-  uintptr_t block_addr=alignedAddr;
-  int32_t size_remaining=(int32_t)alignedSize;
-  uint32_t bytes_count;
-  uint32_t incCnt;
-  
-  /* determine the increment count */
-  if(CACHEP_ATOMIC_BLOCK_SIZE)
-  {
-      incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
-  }
-  else
-  {
-      /* convert words to bytes */
-      incCnt = MAXWC * sizeof(uint32_t);
-  }
-
-  while(size_remaining > 0) {
-    bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt:(uint32_t)size_remaining;
-	CACHE_wbL2((void *)block_addr,bytes_count,CACHE_WAIT);
-	size_remaining-=(int32_t)incCnt;
-	block_addr+=incCnt;
-  }
+    /*
+     * Writes back the range of memory within the specified starting address
+     * and byte count.  The range of addresses operated on gets quantized to
+     * whole cache lines in each cache.  There is no effect on L1P cache.
+     * All cache lines within the range are left valid in L1D cache and the data
+     * within the range in L1D cache will be written back to L2 or external.
+     * All cache lines within the range are left valid in L2 cache and the data
+     * within the range in L2 cache will be written back to external
+     */
+    CacheP_block(addr, size, (CacheP_Function_t)CACHE_wbL2);
 }
 
 void CacheP_wbInv(const void * addr, int32_t size)
 {
-  uintptr_t alignedAddr = (uintptr_t)addr & ~((uintptr_t)0x3u);
-  uint32_t alignedSize =   (uint32_t)size + (uint32_t)((uintptr_t)addr - (uintptr_t)alignedAddr);
-  uintptr_t block_addr=alignedAddr;
-  int32_t size_remaining=(int32_t)alignedSize;
-  uint32_t bytes_count;
-  uint32_t incCnt;
-  
-  /* determine the increment count */
-  if(CACHEP_ATOMIC_BLOCK_SIZE)
-  {
-      incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
-  }
-  else
-  {
-      /* convert words to bytes */
-      incCnt = MAXWC * sizeof(uint32_t);
-  }
-  
-  while(size_remaining > 0) {
-    bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt:(uint32_t)size_remaining;
-	CACHE_wbInvL2((void *)block_addr,bytes_count,CACHE_WAIT);
-	size_remaining-=(int32_t)incCnt;
-	block_addr+=incCnt;
-  }
+    /*
+     * Writes back and invalidates the range of memory within the specified
+     * starting address and byte count. The range of addresses operated on gets
+     * quantized to whole cache lines in each cache. All cache lines within range
+     * are invalidated in L1P cache. All cache lines within the range are
+     * written back to L2 or external and then invalidated in L1D cache
+     * All cache lines within the range are written back to external and then
+     * invalidated in L2 cache.
+     */
+    CacheP_block(addr, size, (CacheP_Function_t)CACHE_wbInvL2);
 }
 
 void CacheP_Inv(const void * addr, int32_t size)
 {
-  uintptr_t alignedAddr = (uintptr_t)addr & ~((uintptr_t)0x3u);
-  uint32_t alignedSize =   (uint32_t)size + (uint32_t)((uintptr_t)addr - (uintptr_t)alignedAddr);
-  uintptr_t block_addr=alignedAddr;
-  int32_t size_remaining=(int32_t)alignedSize;
-  uint32_t bytes_count;
-  uint32_t incCnt;
-  
-  /* determine the increment count */
-  if(CACHEP_ATOMIC_BLOCK_SIZE)
-  {
-      incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
-  }
-  else
-  {
-      /* convert words to bytes */
-      incCnt = MAXWC * sizeof(uint32_t);
-  }
-  
-  while(size_remaining > 0) {
-    bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt:(uint32_t)size_remaining;
-    CACHE_invL2((void *)block_addr,bytes_count,CACHE_WAIT);
-    size_remaining-=(int32_t)incCnt;
-    block_addr+=incCnt;
-  }
+    /*
+     * Invalidate the range of memory within the specified starting address and
+     * byte count. The range of addresses operated on gets quantized to whole
+     * cache lines in each cache. All cache lines in range are invalidated in L1P
+     * cache. All cache lines in range are invalidated in L1D cache.
+     * All cache lines in range are invalidated in L2 cache
+     */
+    CacheP_block(addr, size, (CacheP_Function_t)CACHE_invL2);
 }
 
 void CacheP_setMar(void *baseAddr, uint32_t size, uint32_t value)
@@ -176,4 +137,36 @@ uint32_t CacheP_getMar(void *baseAddr)
     /* return the value of the MAR register */
     return (marBase[marNum]);
 
+}
+
+static void CacheP_block(const void * addr, int32_t size, CacheP_Function_t fxnPtr)
+{
+    uintptr_t alignedAddr     = (uintptr_t)addr & ~((uintptr_t)0x3u);
+    uint32_t  alignedSize     = (uint32_t)size + (uint32_t)((uintptr_t)addr - (uintptr_t)alignedAddr);
+    uintptr_t block_addr      = alignedAddr;
+    int32_t   size_remaining  = (int32_t)alignedSize;
+    uint32_t  bytes_count;
+    uint32_t  incCnt;
+    
+    /* determine the increment count */
+    if(CACHEP_ATOMIC_BLOCK_SIZE)
+    {
+        incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
+    }
+    else
+    {
+        /* convert words to bytes */
+        incCnt = MAXWC * sizeof(uint32_t);
+    }
+
+    while(size_remaining > 0) 
+    {
+        bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt: (uint32_t)size_remaining;
+
+        fxnPtr((void *)block_addr, bytes_count, CACHE_WAIT);
+
+        size_remaining -= (int32_t)incCnt;
+        block_addr     += incCnt; 
+    }
+    
 }
