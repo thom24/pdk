@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== HwiP_tirtos.c ========
+ *  ======== CacheP_nonos.c ========
  */
 
 
@@ -43,6 +43,18 @@
 
 #define MAR                     ((volatile uint32_t *) (SOC_DSP_ICFG_BASE + DSP_MAR(0)))
 
+/* Max word count per cache operations */
+#define MAXWC                   (0xFF00U)
+
+/* Following parameter CACHEP_ATOMIC_BLOCK_SIZE is used to break up 
+ * large blocks into multiple small blocks which are done atomically.  
+ * Each block of the specified size waits for the cache operation to 
+ * finish before starting the next block. 
+ * Setting this size to 0, means the cache operations are not done atomically.
+ */
+/* #define CACHEP_ATOMIC_BLOCK_SIZE    (CACHE_L2_LINESIZE) */
+#define CACHEP_ATOMIC_BLOCK_SIZE    (0U)
+
 void CacheP_wb(const void * addr, int32_t size)
 {
   uintptr_t alignedAddr = (uintptr_t)addr & ~((uintptr_t)0x3u);
@@ -50,12 +62,24 @@ void CacheP_wb(const void * addr, int32_t size)
   uintptr_t block_addr=alignedAddr;
   int32_t size_remaining=(int32_t)alignedSize;
   uint32_t bytes_count;
+  uint32_t incCnt;
   
+  /* determine the increment count */
+  if(CACHEP_ATOMIC_BLOCK_SIZE)
+  {
+      incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
+  }
+  else
+  {
+      /* convert words to bytes */
+      incCnt = MAXWC * sizeof(uint32_t);
+  }
+
   while(size_remaining > 0) {
-    bytes_count = ((uint32_t)size_remaining > CACHE_L2_LINESIZE )? CACHE_L2_LINESIZE:(uint32_t)size_remaining;
+    bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt:(uint32_t)size_remaining;
 	CACHE_wbL2((void *)block_addr,bytes_count,CACHE_WAIT);
-	size_remaining-=(int32_t)CACHE_L2_LINESIZE;
-	block_addr+=CACHE_L2_LINESIZE;
+	size_remaining-=(int32_t)incCnt;
+	block_addr+=incCnt;
   }
 }
 
@@ -66,12 +90,24 @@ void CacheP_wbInv(const void * addr, int32_t size)
   uintptr_t block_addr=alignedAddr;
   int32_t size_remaining=(int32_t)alignedSize;
   uint32_t bytes_count;
+  uint32_t incCnt;
+  
+  /* determine the increment count */
+  if(CACHEP_ATOMIC_BLOCK_SIZE)
+  {
+      incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
+  }
+  else
+  {
+      /* convert words to bytes */
+      incCnt = MAXWC * sizeof(uint32_t);
+  }
   
   while(size_remaining > 0) {
-    bytes_count = ((uint32_t)size_remaining > CACHE_L2_LINESIZE )? CACHE_L2_LINESIZE:(uint32_t)size_remaining;
+    bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt:(uint32_t)size_remaining;
 	CACHE_wbInvL2((void *)block_addr,bytes_count,CACHE_WAIT);
-	size_remaining-=(int32_t)CACHE_L2_LINESIZE;
-	block_addr+=CACHE_L2_LINESIZE;
+	size_remaining-=(int32_t)incCnt;
+	block_addr+=incCnt;
   }
 }
 
@@ -82,12 +118,24 @@ void CacheP_Inv(const void * addr, int32_t size)
   uintptr_t block_addr=alignedAddr;
   int32_t size_remaining=(int32_t)alignedSize;
   uint32_t bytes_count;
+  uint32_t incCnt;
+  
+  /* determine the increment count */
+  if(CACHEP_ATOMIC_BLOCK_SIZE)
+  {
+      incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
+  }
+  else
+  {
+      /* convert words to bytes */
+      incCnt = MAXWC * sizeof(uint32_t);
+  }
   
   while(size_remaining > 0) {
-    bytes_count = ((uint32_t)size_remaining > CACHE_L2_LINESIZE )? CACHE_L2_LINESIZE:(uint32_t)size_remaining;
+    bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt:(uint32_t)size_remaining;
     CACHE_invL2((void *)block_addr,bytes_count,CACHE_WAIT);
-    size_remaining-=(int32_t)CACHE_L2_LINESIZE;
-    block_addr+=CACHE_L2_LINESIZE;
+    size_remaining-=(int32_t)incCnt;
+    block_addr+=incCnt;
   }
 }
 
