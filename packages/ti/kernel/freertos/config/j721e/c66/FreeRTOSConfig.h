@@ -176,7 +176,7 @@ uint32_t uiPortGetRunTimeCounterValue();
 
 #define portCONFIGURE_CACHE_LIP_SIZE                                      (DSPICFG_CACHE_SIZE_L1_32K)
 #define portCONFIGURE_CACHE_LID_SIZE                                      (DSPICFG_CACHE_SIZE_L1_32K)
-#define portCONFIGURE_CACHE_L2_SIZE                                       (DSPICFG_CACHE_SIZE_L2_32K)
+#define portCONFIGURE_CACHE_L2_SIZE                                       (DSPICFG_CACHE_SIZE_L2_64K)
 
 /* Start and Size of DDR space */
 /* Used to Enable cache for all DDR space - 0x80000000 to 0xFFFFFFFF (2GB space) */
