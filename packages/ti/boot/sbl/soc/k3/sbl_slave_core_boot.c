@@ -774,6 +774,9 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
             }
 
+            /* Release MCU1_0 before jumping to application */
+            SBL_ReleaseCore(core_id - 1, TISCI_MSG_FLAG_AOP);
+
             /* Start the App - Branch to start of ATCM (0x0) */
             ((void(*)(void))0x0)();
 #else
