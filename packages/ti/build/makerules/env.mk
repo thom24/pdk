@@ -193,6 +193,9 @@ ifneq ($(PDK_BOARD_UTILS_ROOT_PATH), $(pdk_PATH))
 endif
 
 #Below applicable only for K3 devices
+ifneq ($(PDK_LPM_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(PDK_LPM_ROOT_PATH)
+endif
 ifneq ($(PDK_UDMA_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_UDMA_ROOT_PATH)
 endif
