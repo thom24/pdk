@@ -1,5 +1,5 @@
 /******************************************************************************
- * FILE PURPOSE: Build description for the UDMA LLD Package
+ * FILE PURPOSE: Build description for the LPM Package
  ******************************************************************************
  * FILE NAME: package.bld
  *
@@ -13,7 +13,3 @@
 /* Generate Settings.xdc */
 var tplt = xdc.loadTemplate("./Settings.xdc.xdt");
 tplt.genFile("./Settings.xdc",lpmReleaseVersion);
-
-/* Generate paver.h */
-var tplt = xdc.loadTemplate("./udmaver.h.xdt");
-tplt.genFile("./udmaver.h", lpmReleaseVersion);

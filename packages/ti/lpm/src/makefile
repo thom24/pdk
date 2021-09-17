@@ -36,7 +36,7 @@ INCDIR += $(PDK_INSTALL_PATH)/ti/board/src/flash/nor
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
-INCLUDE_INTERNAL_INTERFACES = board sbl_lib_cust udma spi_dma pmic
+INCLUDE_INTERNAL_INTERFACES = board sbl_lib_cust spi pmic ipc
 COMP_LIST_COMMON = 
 
 PACKAGE_SRCS_COMMON = lpm.h makefile .gitignore $(SRCDIR)
@@ -46,7 +46,7 @@ PACKAGE_SRCS_COMMON += include/lpm_ipc.h
 PACKAGE_SRCS_COMMON += include/print_utils.h
 PACKAGE_SRCS_COMMON += soc/$(SOC)/boot_core_defs.h
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
-PACKAGE_SRCS_COMMON += Settings.xdc.xdt udmaver.h udmaver.h.xdt
+PACKAGE_SRCS_COMMON += Settings.xdc.xdt
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += lpm_boot.c
@@ -74,7 +74,7 @@ INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/config
 SRCS_COMMON += unity_config.c unity.c
 SRCS_COMMON += pmic_ut_common.c pmic_fsm.c pmic_irq_status.c pmic_io.c pmic_core.c pmic_esm.c pmic_rtc.c pmic_gpio.c pmic_gpio_lp8764x.c pmic_gpio_tps6594x.c pmic_irq_lp8764x.c pmic_irq_tps6594x.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DUNITY_INCLUDE_CONFIG_V2_H -DA72_LINUX_OS -DA72_LINUX_OS_IPC_ATTACH -DSBL_LOG_LEVEL=1
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DUNITY_INCLUDE_CONFIG_V2_H -DLINUX_OS -DA72_LINUX_OS -DA72_LINUX_OS_IPC_ATTACH -DSBL_LOG_LEVEL=3 -DBOOT_OSPI -DMPU1_HLOS_BOOT_ENABLED
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

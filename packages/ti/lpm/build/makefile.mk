@@ -159,7 +159,7 @@ endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
-INCLUDE_EXTERNAL_INTERFACES = pdk edma
+INCLUDE_EXTERNAL_INTERFACES = pdk
 
 
 # List all the internal submodules whose interface header files

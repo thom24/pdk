@@ -27,11 +27,12 @@ endif
 ifeq ($(BUILD_OS_TYPE), freertos)
   COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
   INCLUDE_EXTERNAL_INTERFACES += freertos
-  SRCS_COMMON = main_rtos.c
+  SRCS_COMMON = main_rtos.c overrides/$(SOC)/$(CORE)/r5_mpu_freertos.c
+  EXTERNAL_LNKCMD_FILE_LOCAL = overrides/$(SOC)/$(CORE)/linker_r5_freertos.lds
 endif
 
 # List all the specific components required by the application
-COMP_LIST_COMMON += sciserver_tirtos
+COMP_LIST_COMMON += sciserver_tirtos ipc sbl_lib_cust spi
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .

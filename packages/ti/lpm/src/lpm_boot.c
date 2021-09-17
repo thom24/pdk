@@ -106,6 +106,11 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
+/* PM Lib */
+#include <ti/drv/pm/include/pm_types.h>
+#include <ti/drv/pm/include/dmsc/pmlib_sysconfig.h>
+#include <ti/drv/pm/include/dmsc/pmlib_clkrate.h>
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -128,6 +133,7 @@
 
 #define MCU_TIMER_PTV       2
 #define MCU_TIMER_CLOCK     (CLK_200M_RC_DEFAULT_FREQ / (2 << MCU_TIMER_PTV))
+#define MCU_TIMER_LOAD_VAL	      0
 
 #define writel(x,y)               (*((uint64_t *)(y))=(x))
 #define readl(x)                  (*((uint64_t *)(x)))
@@ -199,6 +205,15 @@ typedef struct
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+#if defined(BOOT_OSPI)
+/* Offset into app image that is being processed */
+static uint32_t xipMemBase = 0x50000000;
+
+static OSPI_v0_HwAttrs ospi_cfg;
+
+static void *boardHandle = NULL;
+#endif
+
 sblEntryPoint_t k3xx_evmEntry;
 SBL_incomingBootData_S sblInBootData __attribute__ ((section (".sblbootbuff")));
 
@@ -267,6 +282,62 @@ extern uint32_t         *sblProfileLogOvrFlwAddr;
 /* ========================================================================== */
 
 #define SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0 (0x01U)
+
+/*
+ * Start a counter
+ */
+int32_t mcu_timer_init(void)
+{
+    int32_t  retVal = 0;
+    uint32_t timerId;
+    uint32_t timerClkSet;
+    uint64_t rcvdClkRate;
+    uint64_t desiredClkRate;
+
+    timerId        = TISCI_DEV_MCU_TIMER2;
+    timerClkSet    = TISCI_DEV_MCU_TIMER2_TIMER_TCLK_CLK;
+    desiredClkRate = (uint64_t)CLK_200M_RC_DEFAULT_FREQ;
+    /* Set MCU Timer 2 to desiredClkRate (clock rates defined in mcu_timer_freq.h) */
+    if (PM_SUCCESS != PMLIBClkRateSet(timerId, timerClkSet,
+                                      desiredClkRate))
+    {
+        AppUtils_Printf(MSG_NORMAL,
+                        "Could not set the clock source !!!\n");
+        retVal = -1;
+    }
+    /* Check that Timer 2 clock is set to correct value */
+    if (PM_SUCCESS != PMLIBClkRateGet(timerId, timerClkSet,
+                                      &rcvdClkRate))
+    {
+        AppUtils_Printf(MSG_NORMAL,
+                        "Could not get the Timer 2 clock source rate !!!\n");
+        retVal = -1;
+    }
+    else
+    {
+        if (rcvdClkRate != desiredClkRate)
+        {
+            AppUtils_Printf(MSG_NORMAL,
+                            "Timer 2 source rate of %jd does not match %jd !!!\n",
+                            rcvdClkRate,
+                            desiredClkRate);
+            retVal = -1;
+        }
+    }
+
+    if (retVal == 0)
+    {
+        /* configure timer for posted writes */
+        writel(TSICR_POST, &timer_base->tsicr);
+        /* start the counter ticking up, reload value on overflow */
+        writel(MCU_TIMER_LOAD_VAL, &timer_base->tldr);
+        /* enable timer */
+        writel((MCU_TIMER_PTV << 2) | TCLR_PRE | TCLR_AR | TCLR_ST,
+               &timer_base->tclr);
+    }
+
+	return retVal;
+}
 
 /*
  * Get timestamp in microseconds

@@ -99,14 +99,6 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-#if defined(VTM_OPS_ENABLED)
-#define WKUP_VTM_TMPSENS_CTRL_1        (0x42050320)
-#define WKUP_VTM_TMPSENS_CTRL_2        (0x42050340)
-#define WKUP_VTM_TMPSENS_CTRL_3        (0x42050360)
-#define WKUP_VTM_TMPSENS_CTRL_4        (0x42050380)
-
-#define MAXT_OUTRG_EN_SHIFT            (11U)
-#endif
 
 #define DDR_TEST_ADDRESS               (0xA0000000)
 #define MSMC_TEST_ADDRESS              (0x70000000)
@@ -520,108 +512,16 @@ void BringBackMAINDomain(void)
     return;
 }
 
-#if defined (PMIC_OPS_ENABLED) && !defined(PMIC_USE_DRV)
-void PMICStateChangeMCUOnlyToActive(void)
-{
-    uint8_t dataToSlave[2];
-    uint8_t dataFromSlave[2];
-
-    /* Read INT_TOP */
-    dataToSlave[0] = 0x5A;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "INT_TOP = 0x%x\n", dataFromSlave[0]);
-
-    /* Mask NSLEEP2 and NSLEEP1 bits */
-    dataToSlave[0] = 0x7D;
-    dataToSlave[1] = 0xC0;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "Write CONFIG_1 = 0x%x\n", dataToSlave[1]);
-
-    /* Change FSM_NS-LEEP_TRIGGERS */
-    dataToSlave[0] = 0x86;
-    dataToSlave[1] = 0x03;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
-
-    /* Un-Mask NSLEEP2 and 1 bit */
-    dataToSlave[0] = 0x7D;
-    dataToSlave[1] = 0x00;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "Write CONFIG_1 = 0x%x\n", dataToSlave[1]);
-
-    /* Buffer time to change state */
-    TaskP_sleep(100);
-
-    /* Read FSM_NSLEEP_TRIGGERS */
-    dataToSlave[0] = 0x86;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
-
-    /*************** You should now back in ACTIVE mode ****************/
-
-    return;
-}
-#endif
-
-#if defined(VTM_OPS_ENABLED)
-void VtmMaxOutrgAlertDisableForTmpSens1to4()
-{
-    uint32_t vtmRegVal;
-
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "Disabling MAXT_OUTRG_EN for TMPSENS1:4 in MAIN domain!\n");
-
-    /* TMPSENS1 */
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_1);
-    /* un-set 11th bit MAXT_OUTRG_EN */
-    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
-    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_1, vtmRegVal);
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_1);
-
-    /* TMPSENS2 */
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_2);
-    /* un-set 11th bit MAXT_OUTRG_EN */
-    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
-    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_2, vtmRegVal);
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_2);
-
-    /* TMPSENS3 */
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_3);
-    /* un-set 11th bit MAXT_OUTRG_EN */
-    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
-    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_3, vtmRegVal);
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_3);
-
-    /* TMPSENS4 */
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_4);
-    /* un-set 11th bit MAXT_OUTRG_EN */
-    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
-    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_4, vtmRegVal);
-    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_4);
-
-    return;
-}
-#endif
-
 /* Bring back main_domain */
 uint32_t McuToActiveSwitch(void)
 {
     uint32_t MAIN_VDOM_CTRL = 0x43018070;
-#if defined(PMIC_OPS_ENABLED)
+
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "PMIC STATE CHANGE: MCU ONLY -> ACTIVE...\n");
     PMICStateChangeMCUOnlyToActive();
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "PMIC STATE CHANGE: MCU ONLY -> ACTIVE...Done\n");
-#else
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "Skipping PMIC state change from MCU ONLY to ACTIVE!!\n");
-#endif
 
     /* Disabling MAIN domain deep sleep isolation */
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
@@ -679,7 +579,6 @@ void SwResetMainDomain(void)
     }
 }
 
-#if defined (PMIC_OPS_ENABLED) && defined(PMIC_USE_DRV)
 Pmic_CoreHandle_t *pPmicCoreHandle = NULL;
 
 /*!
@@ -835,154 +734,8 @@ void PMICStateChangeMCUOnlyToActive(void)
 
     return;
 }
-#endif
 
-#if defined (PMIC_OPS_ENABLED) && !defined(PMIC_USE_DRV)
-void I2CInitPMIC(void)
-{
-    I2C_Params i2cParams;
 
-    /* Initialize i2c core instances */
-    I2C_init();
-    uint8_t i2c_instance = 0U;
-    uint32_t baseAddr = CSL_WKUP_I2C0_CFG_BASE;
-
-    I2C_HwAttrs i2cCfg;
-    I2C_socGetInitCfg(i2c_instance, &i2cCfg);
-    i2cCfg.baseAddr   = baseAddr;
-    i2cCfg.enableIntr = 0U;
-    I2C_socSetInitCfg(i2c_instance, &i2cCfg);
-
-    /* Configured i2cParams.bitRate with standard I2C_100kHz */
-    I2C_Params_init(&i2cParams);
-    pmicI2cHandle = I2C_open(i2c_instance, &i2cParams);
-    if(NULL == pmicI2cHandle)
-    {
-        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"ERROR: I2C_open failed!\n");
-        while(1);
-    }
-}
-#endif
-
-#if defined (PMIC_OPS_ENABLED) && !defined(PMIC_USE_DRV)
-volatile uint32_t loopPMICStateChangeActiveToMCUOnly = 0;
-void PMICStateChangeActiveToMCUOnly(void)
-{
-    /* Init i2c interface */
-    I2CInitPMIC();
-
-    /* Write 0x02 to FSM_NSLEEP_TRIGGERS register 
-       This should happen before clearing the interrupts */
-
-    /* If you clear the interrupts before you write the NSLEEP bits,
-     * it will transition to S2R state.
-     * This is because as soon as you write NSLEEP2 to 0x0,
-     * the trigger is present to move to S2R state.
-     * By setting the NSLEEP bits before you clear the interrupts,
-     * you can configure both NSLEEP bits before the PMIC reacts to the change.
-     */
-
-    uint8_t dataToSlave[2];
-    uint8_t dataFromSlave[2];
-
-    if(loopPMICStateChangeActiveToMCUOnly == 0xFEEDFACE)
-    {
-        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                        "Connect CCS and change the loopPMICStateChangeActiveToMCUOnly to 0x0!!!!\n");
-        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                        "This will disconnect the JTAG interface too and you can only see the MCU running from UART prints!!!!\n");
-    }
-
-    while(loopPMICStateChangeActiveToMCUOnly == 0xFEEDFACE);
-
-    /* Read INT_TOP */
-    dataToSlave[0] = 0x5A;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_TOP = 0x%x\n", dataFromSlave[0]);
-
-    /* Read INT_STARTUP */
-    dataToSlave[0] = 0x65;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_STARTUP = 0x%x\n", dataFromSlave[0]);
-
-    /* Read INT_GPIO */
-    dataToSlave[0] = 0x63;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_GPIO = 0x%x\n", dataFromSlave[0]);
-
-    /* Read INT_GPIO1_8 */
-    dataToSlave[0] = 0x64;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_GPIO1_8 = 0x%x\n", dataFromSlave[0]);
-
-    /* Read FSM_NSLEEP_TRIGGERS */
-    dataToSlave[0] = 0x86;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
-
-    /**** Start changing states ****/
-
-    /* Change FSM_NSLEEP_TRIGGERS */
-    dataToSlave[0] = 0x86;
-    dataToSlave[1] = 0x02;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
-
-    /* Read FSM_NSLEEP_TRIGGERS */
-    dataToSlave[0] = 0x86;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
-
-    /* Clear INT_STARTUP */
-    dataToSlave[0] = 0x65;
-    dataToSlave[1] = 0x02;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_STARTUP = 0x%x\n", dataToSlave[1]);
-
-    /* Read INT_TOP */
-    dataToSlave[0] = 0x5A;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_TOP = 0x%x\n", dataFromSlave[0]);
-
-    /* Clear INT_GPIO1_8 */
-    dataToSlave[0] = 0x64;
-    dataToSlave[1] = 0xC8;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_STARTUP = 0x%x\n", dataToSlave[1]);
-
-    /* Read INT_GPIO */
-    dataToSlave[0] = 0x63;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_GPIO = 0x%x\n", dataFromSlave[0]);
-
-    /* Read INT_TOP */
-    dataToSlave[0] = 0x5A;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_TOP = 0x%x\n", dataFromSlave[0]);
-
-    /* Clear INT_GPIO */
-    dataToSlave[0] = 0x63;
-    dataToSlave[1] = 0x02;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_GPIO = 0x%x\n", dataToSlave[1]);
-
-    /* Read INT_TOP */
-    dataToSlave[0] = 0x5A;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Final Read INT_TOP = 0x%x\n", dataFromSlave[0]);
-
-    /* Read FSM_NSLEEP_TRIGGERS */
-    dataToSlave[0] = 0x86;
-    SetupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Final Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
-
-    /*************** You should now be in MCU only mode ****************/
-
-    return;
-}
-#endif
-
-#if defined (PMIC_OPS_ENABLED)
 uint32_t ActiveToMcuSwitch()
 {
     uint32_t MAIN_VDOM_CTRL = 0x43018070;
@@ -996,7 +749,6 @@ uint32_t ActiveToMcuSwitch()
                     "Enabling MAIN domain deep sleep isolation...\n");
     CSL_REG32_WR(MAIN_VDOM_CTRL, 0x1);
 
-#if defined (PMIC_OPS_ENABLED)
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "PMIC STATE CHANGE: ACTIVE -> MCU ONLY...\n");
 
@@ -1007,10 +759,6 @@ uint32_t ActiveToMcuSwitch()
     PMICStateChangeActiveToMCUOnly();
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "PMIC STATE CHANGE: ACTIVE -> MCU ONLY...Done\n");
-#else
-    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                    "Skipping PMIC state change from ACTIVE to MCU ONLY!!\n");
-#endif
 
     return 0;
 }
@@ -1020,13 +768,6 @@ uint32_t McuOnly_App()
 {
     uint32_t status = 0;
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Inside MCU ONLY task!\n");
-
-#if defined(VTM_OPS_ENABLED)
-    /* Before entering MCU_ONLY mode we need to disable all VTM temp sensors in
-       the MAIN domain - VTM_TMPSENS1-4 */
-    /* Disabling the VTM MAXT_OUTRG_ALERT_THR */
-    VtmMaxOutrgAlertDisableForTmpSens1to4();
-#endif
 
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "STATE INFO :: CURRENTLY IN ACTIVE MODE!\n");
@@ -1086,4 +827,3 @@ uint32_t McuOnly_App()
 
     return status;
 }
-#endif
