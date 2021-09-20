@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2020 Texas Instruments Incorporated
+* Copyright (c) 2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -61,13 +61,13 @@
 */
 
 /**
- *  \file     mcu_timer_multicore.h
+ *  \file     lpm_boot.h
  *
  *  \brief    This header provides profiling timer setup functions.
  */
 
-#ifndef __MCU_TIMER_MULTICORE__
-#define __MCU_TIMER_MULTICORE__
+#ifndef LPM_BOOT_H_
+#define LPM_BOOT_H_
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -78,4 +78,4 @@ int32_t  mcu_timer_init(void);
 uint64_t get_usec_timestamp(void);
 int32_t Boot_App();
 
-#endif /* __MCU_TIMER_MULTICORE__ */
+#endif /* LPM_BOOT_H_ */

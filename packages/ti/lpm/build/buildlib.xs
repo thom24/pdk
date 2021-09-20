@@ -7,7 +7,7 @@
  *  This file contains common routines that are used by the various board
  *  components.
  *
- * Copyright (C) 2014-2015, Texas Instruments, Inc.
+ * Copyright (C) 2021, Texas Instruments, Inc.
  *****************************************************************************/
 
 /**************************************************************************

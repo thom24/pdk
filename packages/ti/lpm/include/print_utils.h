@@ -61,14 +61,14 @@
 */
 
 /**
- *  \file     app_utils.h
+ *  \file     print_utils.h
  *
  *  \brief    This file contains common utility functions
  *
  */
 
-#ifndef APP_UTILS_H_
-#define APP_UTILS_H_
+#ifndef PRINT_UTILS_H_
+#define PRINT_UTILS_H_
 
 /* ========================================================================== */
 /*                             Include Files                                  */
@@ -149,4 +149,4 @@ void AppUtils_Printf(uint32_t type, const char *pcString, ...);
 }
 #endif
 
-#endif /* APP_UTILS_H_ */
+#endif /* PRINT_UTILS_H_ */

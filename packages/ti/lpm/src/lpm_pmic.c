@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2020 Texas Instruments Incorporated
+* Copyright (c) 2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -60,7 +60,7 @@
 *
 */
 /**
- *  \file     mcu_only_app.c
+ *  \file     lpm_pmic.c
  *
  *  \brief    This file implements switching the SoCs state from ACTIVE to
  *            MCU ONLY mode and then from MCU ONLY to ACTIVE mode.
@@ -70,7 +70,6 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-//#include "Std_Types.h"
 #include <stdio.h>
 
 #include <ti/csl/cslr_gtc.h>
@@ -86,9 +85,6 @@
 #include <ti/board/src/j7200_evm/include/board_control.h>
 #endif
 
-//#include "boot_cfg.h"
-//#include "app_utils.h"
-//#include "mcu_timer_multicore.h"
 #include <ti/drv/sciclient/sciserver.h>
 
 #include "lpm_ipc.h"
@@ -99,6 +95,12 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+#define WKUP_VTM_TMPSENS_CTRL_1        (0x42050320)
+#define WKUP_VTM_TMPSENS_CTRL_2        (0x42050340)
+#define WKUP_VTM_TMPSENS_CTRL_3        (0x42050360)
+#define WKUP_VTM_TMPSENS_CTRL_4        (0x42050380)
+
+#define MAXT_OUTRG_EN_SHIFT            (11U)
 
 #define DDR_TEST_ADDRESS               (0xA0000000)
 #define MSMC_TEST_ADDRESS              (0x70000000)
@@ -512,6 +514,44 @@ void BringBackMAINDomain(void)
     return;
 }
 
+void VtmMaxOutrgAlertDisableForTmpSens1to4()
+{
+    uint32_t vtmRegVal;
+
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
+                    "Disabling MAXT_OUTRG_EN for TMPSENS1:4 in MAIN domain!\n");
+
+    /* TMPSENS1 */
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_1);
+    /* un-set 11th bit MAXT_OUTRG_EN */
+    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
+    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_1, vtmRegVal);
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_1);
+
+    /* TMPSENS2 */
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_2);
+    /* un-set 11th bit MAXT_OUTRG_EN */
+    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
+    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_2, vtmRegVal);
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_2);
+
+    /* TMPSENS3 */
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_3);
+    /* un-set 11th bit MAXT_OUTRG_EN */
+    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
+    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_3, vtmRegVal);
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_3);
+
+    /* TMPSENS4 */
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_4);
+    /* un-set 11th bit MAXT_OUTRG_EN */
+    vtmRegVal &= (~(1 << MAXT_OUTRG_EN_SHIFT));
+    HW_WR_REG32(WKUP_VTM_TMPSENS_CTRL_4, vtmRegVal);
+    vtmRegVal = HW_RD_REG32(WKUP_VTM_TMPSENS_CTRL_4);
+
+    return;
+}
+
 /* Bring back main_domain */
 uint32_t McuToActiveSwitch(void)
 {
@@ -768,6 +808,11 @@ uint32_t McuOnly_App()
 {
     uint32_t status = 0;
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Inside MCU ONLY task!\n");
+
+    /* Before entering MCU_ONLY mode we need to disable all VTM temp sensors in
+       the MAIN domain - VTM_TMPSENS1-4 */
+    /* Disabling the VTM MAXT_OUTRG_ALERT_THR */
+    VtmMaxOutrgAlertDisableForTmpSens1to4();
 
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "STATE INFO :: CURRENTLY IN ACTIVE MODE!\n");

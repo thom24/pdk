@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Texas Instruments Incorporated
+ * Copyright (c) 2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,14 +31,14 @@
  */
 
 /*
- *  \file ipc_setup.h
+ *  \file lpm_ipc.h
  *
  *  \brief Define the macros and functions for common IPC test
  *
  */
 
-#ifndef IPC_SETUP_H_
-#define IPC_SETUP_H_
+#ifndef LPM_IPC_H_
+#define LPM_IPC_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -68,4 +68,4 @@ void rpmsg_exit_responseTask();
 }
 #endif
 
-#endif /* IPC_SETUP_H_ */
+#endif /* LPM_IPC_H_ */

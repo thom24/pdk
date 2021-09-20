@@ -5,12 +5,7 @@
 /*	  TI ARM Compiler version 15.12.3 LTS or later							  */
 /*                                                                            */
 /*    Platform: QT                                                            */
-/* (c) Texas Instruments 2017, All rights reserved.                           */
-/*----------------------------------------------------------------------------*/
-/*  History:								      */
-/*    Aug 26th, 2016 Original version .......................... Loc Truong   */
-/*    Aug 01th, 2017 new TCM mem map  .......................... Loc Truong   */
-/*    Nov 07th, 2017 Changes for R5F Init Code.................. Vivek Dhande */
+/* (c) Texas Instruments 2021, All rights reserved.                           */
 /*----------------------------------------------------------------------------*/
 /* Linker Settings                                                            */
 /* Standard linker options													  */

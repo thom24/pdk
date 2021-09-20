@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ * Copyright (c) 2021 Texas Instruments Incorporated
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@
  */
 
 /**
- *  \file ipc_testsetup.c
+ *  \file lpm_ipc.c
  *
  *  \brief IPC  example code
  *  

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2020 Texas Instruments Incorporated
+* Copyright (c) 2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -60,7 +60,7 @@
 *
 */
 /**
- *  \file     boot.c
+ *  \file     lpm_boot.c
  *
  *  \brief    This file implements booting of main domain core applications
  */
@@ -69,7 +69,6 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-//#include "Std_Types.h"
 #include <stdio.h>
 
 #include <ti/boot/sbl/src/rprc/sbl_rprc_parse.h>

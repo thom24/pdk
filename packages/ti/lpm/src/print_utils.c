@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2019 Texas Instruments Incorporated
+* Copyright (c) 2021 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -61,7 +61,7 @@
 */
 
 /**
- *  \file     app_utils.c
+ *  \file     print_utils.c
  *
  *  \brief    Implements the common utility functions
  *
