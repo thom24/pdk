@@ -118,7 +118,7 @@ $(eval ${DRV_OSPI_RTOS_BOARDLIST_MACRO_LIST})
 # List of components included under spi lib
 # The components included here are built and will be part of spi lib
 ############################
-spi_LIB_LIST = spi spi_dma spi_profile spi_dma_profile spi_indp spi_profile_indp
+spi_LIB_LIST = spi spi_dma spi_indp
 drvspi_LIB_LIST = $(spi_LIB_LIST)
 
 ############################

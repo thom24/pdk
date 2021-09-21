@@ -91,7 +91,7 @@ drvmcasp_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
 # The components included here are built and will be part of mcasp lib
 ############################
 
-mcasp_LIB_LIST = mcasp mcasp_indp mcasp_profile mcasp_profile_indp
+mcasp_LIB_LIST = mcasp mcasp_indp
 drvmcasp_LIB_LIST = $(mcasp_LIB_LIST)
 
 ############################
@@ -100,7 +100,8 @@ drvmcasp_LIB_LIST = $(mcasp_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
+#mcasp_EXAMPLE_LIST = MCASP_AudioLoopback_TestApp MCASP_AudioDCAnalogLoopback_TestApp MCASP_AudioDCDigitalLoopback_TestApp
+mcasp_EXAMPLE_LIST = 
 #
 # MCASP Modules
 #

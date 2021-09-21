@@ -470,7 +470,7 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
             Osal_RegisterInterrupt_initParams(&interruptRegParams);
 
             interruptRegParams.corepacConfig.name=NULL;
-#ifdef __TI_ARM_V7R5__
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') && defined(__ARM_FEATURE_IDIV))
             interruptRegParams.corepacConfig.priority=0x8U;
 #else
             interruptRegParams.corepacConfig.priority=0x20U;
@@ -849,7 +849,7 @@ static int32_t OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
             }
         }
     }
-#if defined (__aarch64__) || defined (__TI_ARM_V7R4__)
+#if defined (__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     CSL_archMemoryFence();
 #endif
 

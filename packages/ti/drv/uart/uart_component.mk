@@ -118,7 +118,7 @@ $(eval ${DRV_UART_RTOS_BOARDLIST_MACRO_LIST})
 # List of components included under uart lib
 # The components included here are built and will be part of uart lib
 ############################
-uart_LIB_LIST = uart uart_dma uart_profile uart_dma_profile uart_indp uart_profile_indp uart_console
+uart_LIB_LIST = uart uart_dma uart_indp uart_console
 drvuart_LIB_LIST = $(uart_LIB_LIST)
 
 ############################

@@ -48,7 +48,7 @@ ifeq ($(CORE),mpu1_0)
     LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
 endif
 ifeq ($(CORE), mcu1_0)
-    LNKFLAGS_LOCAL_mcu1_0 += --entry_point=_sciclientTestResetVectors
+    LNKFLAGS_LOCAL_mcu1_0 += -Xlinker --entry_point=_sciclientTestResetVectors
 endif
 
 # Core/SoC/platform specific source files and CFLAGS

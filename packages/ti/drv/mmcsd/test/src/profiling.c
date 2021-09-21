@@ -57,7 +57,7 @@ profile_Context_t profile_Context;
 char uart_print_string[64];
 void profile_initPerfCounters()
 {
-#if defined(__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
        extern volatile uint32_t *CACHE_SCTM_CTCR_WOT_j;
        extern volatile uint32_t *CACHE_SCTM_CTCNTL;
        extern volatile uint32_t *CACHE_SCTM_CTCNTR_k;
@@ -128,7 +128,7 @@ static uint32_t readTime32(void)
 
 #if defined (_TMS320C6X)
     timeVal = TSCL;
-#elif defined (__TI_ARM_V7M4__)
+#elif ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
     timeVal = *CACHE_SCTM_CTCNTR_k;
 //    MMCSD_log("Timeval=%u\n",*CACHE_SCTM_CTCNTR_k);
 #elif defined(BUILD_MPU)

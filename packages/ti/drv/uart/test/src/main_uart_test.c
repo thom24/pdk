@@ -548,7 +548,7 @@ bool Board_initUART(void)
         UART_socSetInitCfg(uartTestInstance + 1, &cfg);
 #endif
 
-#if defined(__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32))
         UART_HwAttrs cfg;
 
         /*
@@ -598,7 +598,7 @@ bool Board_initUART(void)
         UART_socSetInitCfg(uartTestInstance + 1, &cfg);
 #endif
 
-#if defined(__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32))
         /*
          * AM57x IPU does not have a default Xbar connection for UART 4
          * interrupt, need to use a reserved IRQ Xbar instance for Xbar interrupt
@@ -2427,7 +2427,7 @@ void UART_miCallback(UART_Handle handle, void *buf, size_t count)
  *  The test function for UART read/write on multiple instances
  *  in loopback mode
  */
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#if (defined(_TMS320C6X) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32)))
 #pragma DATA_ALIGN (MiRxBuf, UART_TEST_CACHE_LINE_SIZE)
 char MiRxBuf[UART_TEST_NUM_INSTS][UART_TEST_CACHE_LINE_SIZE];
 #pragma DATA_ALIGN (MiTxBuf, UART_TEST_CACHE_LINE_SIZE)
@@ -2770,7 +2770,7 @@ void UART_populateBuffer (char* ptrBuffer, uint32_t size)
  *  @retval
  *      Error   -   <0
  */
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#if (defined(_TMS320C6X) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32)))
 #pragma DATA_ALIGN (uartDataBuf, UART_TEST_CACHE_LINE_SIZE)
 char uartDataBuf[0x2000];
 #else

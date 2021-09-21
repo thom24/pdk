@@ -98,7 +98,7 @@ void MCSPI_Board_crossbarInit(void) {
                           CSL_XBAR_MCSPI3_IRQ);
 #endif
 
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
     /* Configure xbar connect for MCSPI3: IPU1_IRQ_60 (reserved) mapped to MCSPI3 intr */
     CSL_xbarIrqConfigure (CSL_XBAR_IRQ_CPU_ID_IPU1,
                           CSL_XBAR_INST_IPU1_IRQ_60, /* should match with M4 intNum in hwAttr */

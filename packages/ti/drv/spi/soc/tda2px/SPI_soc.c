@@ -48,7 +48,7 @@
 SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
 {
     {
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         SOC_MCSPI1_BASE,
         57,
 #endif
@@ -97,7 +97,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         false
     },
     {
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         SOC_MCSPI2_BASE,
         58,
 #endif
@@ -146,7 +146,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         false
     },
     {
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         SOC_MCSPI3_BASE,
         25,
 #endif
@@ -195,7 +195,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         false
     },
     {
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         SOC_MCSPI4_BASE,
         10,
 #endif

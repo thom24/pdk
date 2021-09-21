@@ -89,7 +89,7 @@ drvemac_j721e_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 # List of components included under emac lib
 # The components included here are built and will be part of emac lib
 ############################
-emac_LIB_LIST = emac emac_indp emac_profile emac_profile_indp
+emac_LIB_LIST = emac emac_indp
 drvemac_LIB_LIST = $(emac_LIB_LIST)
 
 ############################
@@ -98,7 +98,8 @@ drvemac_LIB_LIST = $(emac_LIB_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all test apps for allowed values
 ############################
-emac_EXAMPLE_LIST = Emac_Icssg_TestApp Emac_Cpsw_TestApp Emac_Cpsw_Smp_TestApp Emac_Icssg_WithoutDDR_TestApp
+#emac_EXAMPLE_LIST = Emac_Icssg_TestApp Emac_Cpsw_TestApp Emac_Cpsw_Smp_TestApp Emac_Icssg_WithoutDDR_TestApp
+emac_EXAMPLE_LIST = Emac_Icssg_TestApp Emac_Cpsw_Smp_TestApp Emac_Icssg_WithoutDDR_TestApp
 drvemac_EXAMPLE_LIST = $(emac_EXAMPLE_LIST)
 
 #

@@ -65,7 +65,7 @@ extern "C" {
 #define UTILS_MEM_HEAP_SIZE_DDR         (64U * MB)
 #define UTILS_MEM_HEAP_SIZE_OSPI        (16U * MB)
 
-#if defined (__TI_ARM_V7R4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
 /* R5 OCMC (MSRAM) */
 #define UTILS_MEM_HEAP_SIZE_INTERNAL    (32U * KB)
 #else

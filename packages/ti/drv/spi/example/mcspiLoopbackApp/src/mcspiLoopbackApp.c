@@ -207,7 +207,7 @@ void padConfig_prcmEnable()
     HW_WR_REG32(SOC_CORE_PAD_IO_REGISTERS_BASE+CTRL_CORE_PAD_IO_SPI1_D1,0x00040000);
 
     /* IPU1 crossbar */
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
     CSL_xbarIrqConfigure(CSL_XBAR_IRQ_CPU_ID_IPU1, CSL_XBAR_INST_IPU1_IRQ_44, CSL_XBAR_UART1_IRQ);
 #elif defined(_TMS320C6X)
     CSL_xbarIrqConfigure(CSL_XBAR_IRQ_CPU_ID_DSP1, CSL_XBAR_INST_DSP1_IRQ_44, CSL_XBAR_UART1_IRQ);

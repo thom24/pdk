@@ -106,7 +106,7 @@ extern void  MCSPI_Board_crossbarInit(void);
 #endif
 
 #if defined(SOC_AM574x) || defined(SOC_AM572x) || defined (SOC_AM571x)
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
 #define DELAY_VALUE       (100U)
 #else
 #define DELAY_VALUE       (1000U)

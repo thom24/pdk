@@ -48,7 +48,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
 {
     {
         SOC_MCSPI1_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         57,
 #elif defined(_TMS320C6X)
         OSAL_REGINT_INTVEC_EVENT_COMBINER,
@@ -100,7 +100,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
     },
     {
         SOC_MCSPI2_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         58,
 #elif defined(_TMS320C6X)
         OSAL_REGINT_INTVEC_EVENT_COMBINER,
@@ -152,7 +152,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
     },
     {
         SOC_MCSPI3_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         48,
 #elif defined(_TMS320C6X)
         OSAL_REGINT_INTVEC_EVENT_COMBINER,
@@ -204,7 +204,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
     },
     {
         SOC_MCSPI4_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         49,
 #elif defined(_TMS320C6X)
         OSAL_REGINT_INTVEC_EVENT_COMBINER,
@@ -266,7 +266,7 @@ QSPI_HwAttrs qspiInitCfg[CSL_QSPI_PER_CNT] =
         SOC_QSPI_ADDRSP0_BASE,  /* register baseAddr */
         SOC_QSPI_ADDRSP1_BASE,  /* memMappedBaseAddr */
         96000000,               /* Input frequency */
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         62U,
 #elif defined(_TMS320C6X)
         OSAL_REGINT_INTVEC_EVENT_COMBINER,

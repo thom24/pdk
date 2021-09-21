@@ -129,7 +129,7 @@ extern void Audio_echo_Task(void);
  *  \param  None
  *  \return None
  */
-int main(Void)
+int main(void)
 {
     HeapP_Params params;
     TaskP_Params tskParms;

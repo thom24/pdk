@@ -84,7 +84,7 @@ drvpruss_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 ipu1_0
 # List of components included under uart lib
 # The components included here are built and will be part of uart lib
 ############################
-pruss_LIB_LIST = pruss pruss_indp pruss_profile pruss_profile_indp
+pruss_LIB_LIST = pruss pruss_indp
 drvpruss_LIB_LIST = $(pruss_LIB_LIST)
 
 pruss_FIRM_LIST = pruss_sorte_slave pruss_sorte_master

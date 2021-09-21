@@ -187,15 +187,6 @@ typedef struct
 extern const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM];
 /* @} */
 
-/** Board Configuration array */
-extern const uint32_t gSciclient_boardCfgLow[(SCICLIENT_BOARDCFG_SIZE_IN_BYTES+3U)/4U];
-/** Board Configuration - RM array */
-extern const uint32_t gSciclient_boardCfgLow_rm[(SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES+3U)/4U];
-/** Board Configuration - Security array */
-extern const uint32_t gSciclient_boardCfgLow_sec[(SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES+3U)/4U];
-/** Board Configuration - PM array */
-extern const uint32_t gSciclient_boardCfgLow_pm[(SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES+3U)/4U];
-
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */

@@ -148,7 +148,7 @@ void Board_initSPI(void)
 }
 
 #ifdef SPI_DMA_ENABLE
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#if (defined(_TMS320C6X) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M')))
 #pragma DATA_ALIGN (txBuf, 128)
 uint8_t txBuf[128];
 #pragma DATA_ALIGN (rxBuf, 128)

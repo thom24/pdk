@@ -93,7 +93,7 @@ drvmmcsd_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
 # List of components included under mmcsd lib
 # The components included here are built and will be part of mmcsd lib
 ############################
-mmcsd_LIB_LIST = mmcsd mmcsd_dma mmcsd_profile mmcsd_dma_profile mmcsd_indp mmcsd_profile_indp
+mmcsd_LIB_LIST = mmcsd mmcsd_dma mmcsd_indp
 drvmmcsd_LIB_LIST = $(mmcsd_LIB_LIST)
 mmcsd_EXAMPLE_LIST =
 #

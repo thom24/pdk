@@ -146,7 +146,7 @@ static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32))
 #endif
 
 /* Buffer containing the known data that needs to be written to flash */
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#if (defined(_TMS320C6X) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M')))
 #pragma DATA_ALIGN (txBuf, 128)
 uint32_t txBuf[QSPI_TEST_LENGTH_BUFLEN];
 #pragma DATA_ALIGN (rxBuf, 128)

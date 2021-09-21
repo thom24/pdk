@@ -140,7 +140,7 @@ $(OBJDIR)/$(1).$(OBJEXT) : $(2).c
 ifeq ($(CORE), mcu1_0)
 	@echo "Build Board Configuration Obj Files"
 	$(MKDIR) -p $(OBJDIR)
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -DBUILD_MCU1_0 -fc $(2).c
+	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -DBUILD_MCU1_0 -x c $(2).c -o $(OBJDIR)/$(notdir $(2)).$(OBJEXT)
 endif
 
 # Copy the raw binary into an intermediate file (will get deleted by make)

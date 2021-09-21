@@ -77,6 +77,7 @@ SECTIONS
         .text.boot   : palign(8)
     }                                    > DDR0
     .const           : {} palign(8)      > DDR0
+    .rodata          : {} palign(8)      > DDR0
     .cinit           : {} palign(8)      > DDR0
     .bss             : {} align(4)       > DDR0
     .far             : {} align(4)       > DDR0

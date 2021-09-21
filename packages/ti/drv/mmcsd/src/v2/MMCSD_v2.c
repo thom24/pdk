@@ -476,7 +476,7 @@ typedef struct {
 } adma2_desc_t;
 
 adma2_desc_t adma2_desc;
-#if defined(__ARM_ARCH_7A__) || defined(__aarch64__) || defined(__TI_ARM_V7R4__)
+#if defined(__ARM_ARCH_7A__) || defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
 __attribute__((aligned(SOC_CACHELINE_SIZE))) // GCC way of aligning
 #endif
 
@@ -1070,24 +1070,9 @@ static MMCSD_Error MMCSD_v2_open(MMCSD_Handle handle, MMCSD_Params params)
     return (ret);
 }
 /* Data buffer for message transmission, it is not stack allocated to allow cache aligning */
-#if defined(__GNUC__) && !defined(__ti__)
-CSL_SET_DALIGN(256)  /* GCC way of aligning */
-#else
-CSL_SET_DALIGN(dataBuffer, 256)
-#endif
-static uint8_t                     dataBuffer[512];
+static uint8_t dataBuffer[512] __attribute__((aligned(256)));
 
-#if defined(__GNUC__) && !defined(__ti__)
-CSL_SET_DALIGN(256)            /* GCC way of aligning */
-#else
-CSL_SET_DALIGN(cmd6_response_buf, 256)
-#endif
-static uint8_t                     cmd6_response_buf[512];
-
-
-
-
-
+static uint8_t cmd6_response_buf[512] __attribute__((aligned(256)));
 
 /*
  *  ======== MMCSD_v2_initSd ========

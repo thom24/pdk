@@ -439,7 +439,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
         {
             status = MCASP_EBADARGS;
         }
-        else if ((NULL == &instHandle->RcvObj) && (NULL == &instHandle->XmtObj))
+        else if ((NULL == (void *)&instHandle->RcvObj) && (NULL == (void*)&instHandle->XmtObj))
         {
             status = MCASP_EBADMODE;
         }

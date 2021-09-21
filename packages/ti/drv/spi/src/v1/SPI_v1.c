@@ -1230,7 +1230,7 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                 Osal_RegisterInterrupt_initParams(&interruptRegParams);             
 
                 interruptRegParams.corepacConfig.name=NULL;
-    #ifdef __TI_ARM_V7R4__
+    #if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
                 interruptRegParams.corepacConfig.priority=0x8U;
     #else
                 interruptRegParams.corepacConfig.priority=0x20U;

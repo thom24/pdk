@@ -51,7 +51,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
 {
     {
         SOC_MCSPI1_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         57,
 #elif defined (__ARM_ARCH_7A__)
         97,
@@ -105,7 +105,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
     },
     {
         SOC_MCSPI2_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         58,
 #elif defined (__ARM_ARCH_7A__)
         98,
@@ -159,7 +159,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
     },
     {
         SOC_MCSPI3_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         25,
 #elif defined (__ARM_ARCH_7A__)
         123,
@@ -213,7 +213,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
     },
     {
         SOC_MCSPI4_BASE,
-#if defined (__TI_ARM_V7M4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M'))
         10,
 #elif defined (__ARM_ARCH_7A__)
         80,

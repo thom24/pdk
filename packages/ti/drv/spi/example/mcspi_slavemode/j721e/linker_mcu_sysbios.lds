@@ -41,6 +41,7 @@ SECTIONS
     .bss        : {} align(8)    > DDR0
     .far        : {} align(8)    > DDR0
     .const      : {} palign(8)   > DDR0
+    .rodata     : {} palign(8)   > DDR0
     .data       : {} palign(128) > DDR0
     .sysmem     : {} align(8)    > DDR0
     .stack      : {} align(4)    > DDR0

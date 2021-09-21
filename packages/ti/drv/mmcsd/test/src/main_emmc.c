@@ -246,7 +246,7 @@ MMCSD_Handle handle = NULL;
 uint8_t tx[MMCSD_TEST_MAX_BUFSIZE] __attribute__((aligned(DATA_BUF_ALIGN))) __attribute__((section (".benchmark_buffer")));
 uint8_t rx[MMCSD_TEST_MAX_BUFSIZE] __attribute__((aligned(DATA_BUF_ALIGN))) __attribute__((section (".benchmark_buffer")));
 
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#if (defined(_TMS320C6X) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M')))
 #pragma DATA_ALIGN(tx, DATA_BUF_ALIGN)
 #pragma DATA_ALIGN(rx, DATA_BUF_ALIGN)
 #endif

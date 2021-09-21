@@ -394,7 +394,7 @@ int32_t MCSPI_udma_deinit(void)
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__))
+#if (defined(_TMS320C6X) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M')))
 #pragma DATA_ALIGN (masterRxBuffer, 128)
 unsigned char masterRxBuffer[128];
 #pragma DATA_ALIGN (slaveRxBuffer, 128)
@@ -1844,7 +1844,7 @@ int main(void)
 #endif
 
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
-#if defined (__TI_ARM_V7R4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     /* Configure the MCU SPI0_D1 pinmux, since it is not set by default in board */
     HW_WR_REG32((WKUP_PINMUX_REG_BASE + MCU_SPI0_D1_PADCFG_OFFSET), PIN_MODE(0) | \
                 ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION)));
