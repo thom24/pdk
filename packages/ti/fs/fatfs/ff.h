@@ -114,7 +114,7 @@ typedef struct {
 	DWORD	winsect;		/* Current sector appearing in the win[] */
 
 #if defined(__GNUC__) || defined(gcc) || \
-    defined(__aarch64__) || defined (__TI_ARM_V7R4__) || defined(__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__) || defined (__TI_ARM_V5__)
+    defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R')) || defined(__ARM_ARCH_7A__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32))
     BYTE    win[_MAX_SS] __attribute__ ((aligned (128U)));  /* Disk access window for Directory, 
                                                             FAT (and file data at tiny cfg) */
 #else
@@ -184,7 +184,7 @@ typedef struct {
 #if !_FS_TINY
     /* File private data read/write window */
 #if defined(__GNUC__) || defined(gcc) || \
-    defined(__aarch64__) || defined (__TI_ARM_V7R4__) || defined(__ARM_ARCH_7A__) || defined (__TI_ARM_V7M4__) || defined (__TI_ARM_V5__)
+    defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R')) || defined(__ARM_ARCH_7A__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32))
     BYTE    buf[_MAX_SS] __attribute__ ((aligned (128U)));
 #else
     BYTE    buf[_MAX_SS];

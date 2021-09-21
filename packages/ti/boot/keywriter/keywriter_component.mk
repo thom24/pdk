@@ -99,7 +99,7 @@ export keywriter_img_BOARDLIST        = j721e_evm j7200_evm
 export keywriter_img_$(SOC)_CORELIST  = mcu1_0
 export keywriter_img_KEYWR_IMAGEGEN   = yes
 
-keywriter_EXAMPLE_LIST                = keywriter_img
+keywriter_EXAMPLE_LIST                = 
 ###########END BOOT PERF KNOBS#############
 
 # KEYWRITER not supported for any profile

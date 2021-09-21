@@ -94,7 +94,7 @@ drvprofiling_am64x_CORELIST  = mpu1_0 mcu1_0
 # List of components included under profiling lib
 # The components included here are built and will be part of profiling lib
 ############################
-profiling_LIB_LIST = profiling
+#profiling_LIB_LIST = profiling
 drvprofiling_LIB_LIST = $(profiling_LIB_LIST)
 
 #
@@ -132,5 +132,5 @@ export drvprofiling_LIB_LIST
 export profiling_LIB_LIST
 export profiling_EXAMPLE_LIST
 
-profiling_component_make_include := 1
+profiling_component_make_include := 0
 endif

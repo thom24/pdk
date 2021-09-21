@@ -88,6 +88,7 @@ SECTIONS
     .keywriter_profile_info       : {} palign(8)                                > RESET_VECTORS  (HIGH)
     .text                         : {} palign(8)                                > OCMRAM_Keywriter
     .const                        : {} palign(8)                                > OCMRAM_Keywriter
+    .rodata                       : {} palign(8)                                > OCMRAM_Keywriter
     .const.devgroup.MCU_WAKEUP    : {} align(4)                                 > OCMRAM_Keywriter
     .const.devgroup.MAIN          : {} align(4)                                 > OCMRAM_Keywriter
     .const.devgroup.DMSC_INTERNAL : {} align(4)                                 > OCMRAM_Keywriter

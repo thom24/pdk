@@ -15,3 +15,5 @@ timeSync/docs/doxygen/html
 timeSync/example/src/bios/ccsProjects/*/src/
 lwip/lwip-stack
 lwip/lwip-contrib
+*.d
+*.o

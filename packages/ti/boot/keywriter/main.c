@@ -44,8 +44,7 @@
 extern uint32_t keywr_end;
 
 /* These two macros define size, and hex code of system firmware Key writer binary */
-#pragma DATA_SECTION(gSciclient_firmware,".data:kw_firmware");
-uint32_t gSciclient_firmware[(TIFS_KEYWRITER_BIN_SIZE_IN_BYTES+3)/4] = TIFS_KEYWRITER_BIN;
+uint32_t __attribute((section(".data:kw_firmware"))) gSciclient_firmware[(TIFS_KEYWRITER_BIN_SIZE_IN_BYTES+3)/4] = TIFS_KEYWRITER_BIN;
 
 Sciclient_BoardCfgPrms_t sblBoardCfgPrms = {0};
 Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms = {0};

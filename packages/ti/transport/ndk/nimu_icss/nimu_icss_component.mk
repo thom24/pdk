@@ -83,7 +83,7 @@ drvnimu_icss_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 # List of components included under nimu_icss transport lib
 # The components included here are built and will be part of nimu_icss transport lib
 ############################
-nimu_icss_LIB_LIST = nimu_icss_indp nimu_icss_profile_indp
+nimu_icss_LIB_LIST = nimu_icss_indp 
 drvnimu_icss_LIB_LIST = $(nimu_icss_LIB_LIST)
 
 #

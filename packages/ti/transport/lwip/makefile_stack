@@ -51,7 +51,8 @@ ifeq ($(BUILD_OS_TYPE),tirtos)
 endif
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(LWIP_STACK_CFLAGS)
-CFLAGS_LOCAL_COMMON += --display_error_number
+# this is default supported in CLANG so no need to mention
+CFLAGS_LOCAL_COMMON += -fdiagnostics-show-option
 
 # Common source files and CFLAGS across all platforms and cores
 # Exclude files that give warning while compiling using ti_cgt_arm compiler
@@ -68,11 +69,8 @@ ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   #--diag_suppress=2142
   #--diag_suppress=552
     
-  CFLAGS_LOCAL_COMMON += --diag_remark=112
   #LWIP_SRCS_EXCLUDE := snmp_msg.c
-  CFLAGS_LOCAL_COMMON += --diag_remark=303
   #LWIP_SRCS_EXCLUDE += http_client.c
-  CFLAGS_LOCAL_COMMON += --diag_remark=551
   #LWIP_SRCS_EXCLUDE += mdns.c
 endif
 
@@ -88,9 +86,6 @@ ifeq ($(CPLUSPLUS_BUILD), yes)
     #--diag_suppress=2142
     #--diag_suppress=552
     
-    CFLAGS_LOCAL_COMMON += --diag_remark=552
-    CFLAGS_LOCAL_COMMON += --diag_remark=179
-
     #LWIP_SRCS_EXCLUDE += snmp_mib2_icmp.c
     #LWIP_SRCS_EXCLUDE += snmp_mib2_interfaces.c
     #LWIP_SRCS_EXCLUDE += snmp_mib2_ip.c

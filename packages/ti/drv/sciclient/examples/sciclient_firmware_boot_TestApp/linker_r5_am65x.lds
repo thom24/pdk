@@ -80,6 +80,7 @@ SECTIONS
     .startupCode 	          : {} palign(8)     > OCMRAM_sciclientTest
     .startupData 	          : {} palign(8)     > OCMRAM_sciclientTest, type = NOINIT
     .text                         : {} palign(8)     > OCMRAM_sciclientTest
+    .rodata                       : {} palign(8)     > OCMRAM_sciclientTest
     .const                        : {} palign(8)     > OCMRAM_sciclientTest
     .const.devgroup.MCU_WAKEUP    : {} align(4)      > OCMRAM_sciclientTest
     .const.devgroup.MAIN          : {} align(4)      > OCMRAM_sciclientTest

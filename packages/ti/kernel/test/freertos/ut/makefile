@@ -53,7 +53,8 @@ SRCS_COMMON += unity_config.c unity.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
 CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
-CFLAGS_LOCAL_COMMON += --c99
+#disabling C99 as 'asm()' is not available in C99
+#CFLAGS_LOCAL_COMMON += -std=c99
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =

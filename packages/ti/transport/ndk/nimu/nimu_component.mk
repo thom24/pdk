@@ -95,7 +95,7 @@ drvnimu_j721e_CORELIST = mcu1_0 mpu1_0
 # List of components included under uart lib
 # The components included here are built and will be part of nimu lib
 ############################
-nimu_LIB_LIST = nimu nimu_profile nimu_icssg nimu_icssg_profile  
+nimu_LIB_LIST = nimu nimu_icssg  
 drvnimu_LIB_LIST = $(nimu_LIB_LIST)
 
 #
@@ -121,8 +121,6 @@ export nimu_COMP_LIST
 export nimu_BOARD_DEPENDENCY
 export nimu_CORE_DEPENDENCY
 export nimu_SOC_DEPENDENCY
-nimu_PKG_LIST = nimu
-export nimu_PKG_LIST
 nimu_INCLUDE = $(nimu_PATH)
 nimu_SOCLIST = $(drvnimu_SOCLIST)
 export nimu_SOCLIST
@@ -179,8 +177,6 @@ export nimu_icssg_COMP_LIST
 export nimu_icssg_BOARD_DEPENDENCY
 export nimu_icssg_CORE_DEPENDENCY
 export nimu_icssg_SOC_DEPENDENCY
-nimu_icssg_PKG_LIST = nimu_icssg
-export nimu_icssg_PKG_LIST
 nimu_icssg_INCLUDE = $(nimu_PATH)
 nimu_icssg_SOCLIST = am65xx
 export nimu_icssg_SOCLIST
@@ -218,7 +214,7 @@ nimu_icssg_profile_$(SOC)_CORELIST = $(drvnimu_$(SOC)_CORELIST)
 export nimu_icssg_profile_$(SOC)_CORELIST
 
 # NIMU examples
-nimu_EXAMPLE_LIST = NIMU_Cpsw_ExampleApp NIMU_Cpsw_SMP_ExampleApp NIMU_FtpCpsw_ExampleApp NIMU_Icssg_ExampleApp NIMU_FtpIcssg_ExampleApp
+nimu_EXAMPLE_LIST = 
 drvnimu_EXAMPLE_LIST = $(nimu_EXAMPLE_LIST)
 
 NIMU_Cpsw_ExampleApp_COMP_LIST = NIMU_Cpsw_ExampleApp
@@ -316,5 +312,5 @@ export nimu_LIB_LIST
 export nimu_EXAMPLE_LIST
 export drvnimu_EXAMPLE_LIST
 
-nimu_component_make_include := 1
+nimu_component_make_include := 0
 endif

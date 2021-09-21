@@ -95,7 +95,8 @@ SRCS_COMMON += socket_examples.c
 SRCS_COMMON += rtp.c
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(LWIP_CONTRIB_CFLAGS)
-CFLAGS_LOCAL_COMMON += --display_error_number
+# this is default supported in CLANG so no need to mention
+CFLAGS_LOCAL_COMMON += -fdiagnostics-show-option
 
 # Common source files and CFLAGS across all platforms and cores
 # Exclude files that give warning while compiling using ti_cgt_arm compiler
@@ -114,7 +115,6 @@ ifeq ($(CPLUSPLUS_BUILD), yes)
     #--diag_suppress=2142
     #--diag_suppress=552
     
-    CFLAGS_LOCAL_COMMON += --diag_remark=552
     #LWIPCONTRIB_SRCS_EXCLUDE += rtp.c
   endif
 endif

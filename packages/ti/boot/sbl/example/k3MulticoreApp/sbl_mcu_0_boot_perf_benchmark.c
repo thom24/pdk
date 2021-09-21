@@ -47,12 +47,9 @@
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
-#pragma DATA_SECTION(sblPerfTestBoardCfg, ".sysfw_data_cfg_board")
-struct tisci_boardcfg sblPerfTestBoardCfg;
-#pragma DATA_SECTION(sblPerfTestBoardCfg_rm, ".sysfw_data_cfg_board_rm")
-struct sblTest_local_rm_boardcfg sblPerfTestBoardCfg_rm;
-#pragma DATA_SECTION(sblPerfTestBoardCfg_sec, ".sysfw_data_cfg_board_sec")
-struct tisci_boardcfg_sec sblPerfTestBoardCfg_sec;
+struct tisci_boardcfg sblPerfTestBoardCfg __attribute((section(".sysfw_data_cfg_board")));
+struct sblTest_local_rm_boardcfg sblPerfTestBoardCfg_rm __attribute((section(".sysfw_data_cfg_board_rm")));
+struct tisci_boardcfg_sec sblPerfTestBoardCfg_sec __attribute((section(".sysfw_data_cfg_board_sec")));
 
 /**********************************************************************
  ************************** Internal functions ************************
@@ -382,7 +379,7 @@ int32_t main()
             {
                 sprintf(sbl_test_str,"Now Try disabling the following one by one in %s to reduce a little more boot time.\r\n", comp_mk);sbl_puts(sbl_test_str);
                 sbl_puts("SBL_ENABLE_PLL (big impact to boot time), SBL_ENABLE_DDR (must be disabled if SBL_ENABLE_PLL is disable), SBL_ENABLE_CLOCKS(least imapct).\r\n");
-                sbl_puts("Please remember to assess impact of removing PLL init, DDR init (does your app need DDR?) and clock init (does your app use PHYs??) on your app. \r\n");
+                sbl_puts("Please remember to assess impact of removing PLL init, DDR init (does your app need DDR?) and clock init (does your app use PHYs\?\?) on your app. \r\n");
                 sbl_puts("As a last resort, enable (uncomment) SBL_SKIP_BRD_CFG_PM\r\n");
                 sbl_puts("Once enabled, all SBL UART logs will be garbled. Remember to call Sciclient_boardCfgPm from the app to get Uart_printf to work.\r\n");
             }

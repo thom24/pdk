@@ -365,7 +365,7 @@ int main(void)
     Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO | BOARD_INIT_MODULE_CLOCK;
 
-#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200)||defined (SOC_AM64X)) &&  defined(__TI_ARM_V7R4__)
+#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200)||defined (SOC_AM64X)) &&  ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     /* Clear it until the issue is resolved */
     boardCfg &= ~(BOARD_INIT_MODULE_CLOCK);
 #endif

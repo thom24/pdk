@@ -178,7 +178,7 @@ int main()
         /* Try booting all cores */
         if (proc_id_list[core_id] != 0xBAD00000)
         {
-            SBL_SlaveCoreBoot(core_id, NULL, &sblSmpTestEntry, SBL_REQUEST_CORE);
+            SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &sblSmpTestEntry, SBL_REQUEST_CORE);
             UART_printf("No of Cortex-A core(s) running: ");
             CSL_armR5CacheInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int));
             UART_printf("%d\r\n", *(MPU_POKE_MEM_ADDR));
@@ -241,7 +241,7 @@ int main()
             memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, 0x8000);
 
             /* Restart the core */
-            SBL_SlaveCoreBoot(core_id, NULL, &sblSmpTestEntry, SBL_REQUEST_CORE);
+            SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &sblSmpTestEntry, SBL_REQUEST_CORE);
             UART_printf("No of Cortex-R core(s) running: ");
             CSL_armR5CacheInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int));
             UART_printf("%d\r\n", *(MPU_POKE_MEM_ADDR));

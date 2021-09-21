@@ -112,7 +112,7 @@ $(eval ${DRV_FATFS_BOARDLIST_MACRO_LIST})
 # List of components included under uart lib
 # The components included here are built and will be part of uart lib
 ############################
-fatfs_LIB_LIST = fatfs_indp fatfs_multi_indp fatfs_profile_indp
+fatfs_LIB_LIST = fatfs_indp fatfs_multi_indp
 drvfatfs_LIB_LIST = $(fatfs_LIB_LIST)
 fatfs_EXAMPLE_LIST = 
 

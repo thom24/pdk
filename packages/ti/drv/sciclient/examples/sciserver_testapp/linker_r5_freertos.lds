@@ -88,6 +88,7 @@ SECTIONS
         .text.boot      : palign(8)
     }                                > OCMC_RAM_SCISERVER
     .const          : {} palign(8)   > OCMC_RAM_SCISERVER
+    .rodata         : {} palign(8)   > OCMC_RAM_SCISERVER
     .cinit          : {} palign(8)   > OCMC_RAM_SCISERVER
     .bss            : {} align(4)    > OCMC_RAM_SCISERVER
     .far            : {} align(4)    > OCMC_RAM_SCISERVER

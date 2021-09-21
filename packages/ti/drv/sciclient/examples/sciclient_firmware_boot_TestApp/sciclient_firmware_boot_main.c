@@ -66,9 +66,7 @@ volatile static uint64_t time_usecs[5] = { 0 };
 
 volatile uint32_t loop = 1U;
 
-#pragma DATA_SECTION(gSciclient_firmware, ".firmware")
-
-uint32_t gSciclient_firmware[(SCICLIENT_FIRMWARE_SIZE_IN_BYTES + 3)/4] = SCICLIENT_FIRMWARE;
+uint32_t gSciclient_firmware[(SCICLIENT_FIRMWARE_SIZE_IN_BYTES + 3)/4] __attribute__((section(".firmware"))) = SCICLIENT_FIRMWARE;
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
