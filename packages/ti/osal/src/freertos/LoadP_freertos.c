@@ -85,6 +85,7 @@ typedef struct LoadP_freertos_s
 /* ========================================================================== */
 
 static uint32_t LoadP_calcCounterDiff(uint32_t cur, uint32_t last);
+static uint32_t LoadP_calcPercentLoad(uint64_t threadTime, uint64_t totalTime);
 void LoadP_addTask(TaskP_Handle handle, uint32_t tskId);
 void LoadP_removeTask(uint32_t tskId);
 extern TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
@@ -105,9 +106,8 @@ void LoadP_reset(void)
 {
     uint32_t            i;
     LoadP_taskLoadObj   *pHndl;
-    uintptr_t           key;
 
-    key = HwiP_disable();
+    vTaskSuspendAll();
 
     gLoadP_freertos.idlTskTime = 0U;
     gLoadP_freertos.totalTime = 0U;
@@ -121,8 +121,7 @@ void LoadP_reset(void)
             pHndl->threadTime = 0U;
         }
     }
-
-    HwiP_restore(key);
+    xTaskResumeAll();
 
     return;
 }
@@ -136,6 +135,8 @@ LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stats)
 
     if((stats != NULL_PTR) && (taskHandle != NULL_PTR))
     {
+        vTaskSuspendAll();
+
         LoadP_update();
 
         tskId = TaskP_getTaskId(taskHandle);
@@ -147,10 +148,12 @@ LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stats)
             vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk), &tskStat, pdFALSE, eRunning);
             stats->threadTime  = pHndl->threadTime;
             stats->totalTime   = gLoadP_freertos.totalTime;
-            stats->percentLoad = (uint32_t)(pHndl->threadTime / (gLoadP_freertos.totalTime/(uint64_t)100U));
+            stats->percentLoad = LoadP_calcPercentLoad(pHndl->threadTime, gLoadP_freertos.totalTime);
             stats->name        = tskStat.pcTaskName;
             ret_val = LoadP_OK;
         }
+        
+        xTaskResumeAll();
     }
 
     return ret_val;
@@ -158,9 +161,17 @@ LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stats)
 
 uint32_t LoadP_getCPULoad(void)
 {
+    uint32_t cpuLoad;
+
     LoadP_update();
 
-    return ((uint32_t) 100U - (uint32_t) (gLoadP_freertos.idlTskTime / (gLoadP_freertos.totalTime/(uint64_t)100U)));;
+    vTaskSuspendAll();
+
+    cpuLoad = 100 - LoadP_calcPercentLoad(gLoadP_freertos.idlTskTime, gLoadP_freertos.totalTime);
+
+    xTaskResumeAll();
+
+    return cpuLoad;
 }
 
 
@@ -170,10 +181,9 @@ void LoadP_update(void)
     uint32_t            curTime;
     uint32_t            delta;
     LoadP_taskLoadObj   *pHndl;
-    uintptr_t           key;    
     TaskStatus_t        tskStat;
 
-    key = HwiP_disable();
+    vTaskSuspendAll();
     
     if(!gLoadP_initDone)
     {
@@ -215,7 +225,7 @@ void LoadP_update(void)
         }
     }
     
-    HwiP_restore(key);
+    xTaskResumeAll();
 
     return;
 }
@@ -236,6 +246,21 @@ static uint32_t LoadP_calcCounterDiff(uint32_t cur, uint32_t last)
     }
     return delta;
 }
+
+static uint32_t LoadP_calcPercentLoad(uint64_t threadTime, uint64_t totalTime)
+{
+    uint32_t percentLoad;
+
+    percentLoad = (uint32_t)(threadTime  / (totalTime / 100));
+
+    if( percentLoad > 100)
+    {
+        percentLoad = 100;
+    }
+
+    return percentLoad;
+}
+
 
 void LoadP_addTask(TaskP_Handle handle, uint32_t tskId)
 {
