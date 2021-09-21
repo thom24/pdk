@@ -628,7 +628,7 @@ keywr_imagegen: $(SBL_BIN_FILE)
 	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $(EXE_NAME) $(SBL_BIN_PATH)
 	$(ECHO) \# Appending certificate to keywriter binary file.
 	$(CAT) $(KEYWRITER_APP_DIR)/x509cert/final_certificate.bin >> $(SBL_BIN_PATH)
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif

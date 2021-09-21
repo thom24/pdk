@@ -65,9 +65,10 @@
 #                             to be compiled in the application build stage.
 #
 ifeq ($(keywriter_component_make_include), )
-keywriter_BOARDLIST = j721e_evm
-keywriter_SOCLIST = j721e
+keywriter_BOARDLIST = j721e_evm j7200_evm
+keywriter_SOCLIST = j721e j7200
 keywriter_j721e_CORELIST := mcu1_0
+keywriter_j7200_CORELIST := mcu1_0
 
 ############################
 # keywriter package
@@ -94,7 +95,7 @@ export keywriter_img_SOC_DEPENDENCY   = yes
 export keywriter_img_CORE_DEPENDENCY  = yes
 export keywriter_img_PKG_LIST         = sbl
 export keywriter_img_INCLUDE          = $(keywriter_img_PATH)
-export keywriter_img_BOARDLIST        = j721e_evm
+export keywriter_img_BOARDLIST        = j721e_evm j7200_evm
 export keywriter_img_$(SOC)_CORELIST  = mcu1_0
 export keywriter_img_KEYWR_IMAGEGEN   = yes
 
