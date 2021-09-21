@@ -1488,28 +1488,90 @@ bool OSAL_mutex_test()
 #define OSAL_LOAD_TEST_TASK_PRIO      (1U)
 #define OSAL_LOAD_TEST_NUM_TASKS      (3U)
 
-static uint8_t  gAppTskStackLoadTask[OSAL_LOAD_TEST_NUM_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+static uint8_t  gAppTskStackLoadTask[OSAL_LOAD_TEST_NUM_TASKS+1][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 
-static volatile uint32_t gWait[OSAL_LOAD_TEST_NUM_TASKS];
+TaskP_Handle hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS+1];
 
-void loadTestFxn(volatile uint32_t *wait, SemaphoreP_Handle hDoneSem)
+static bool loadPrint()
 {
-    while(*wait);
+    uint32_t            i; 
+    LoadP_Status        status = LoadP_OK;
+    LoadP_Stats         loadStatsTask[OSAL_LOAD_TEST_NUM_TASKS+1];
+    uint32_t            cpuLoad;
 
-    SemaphoreP_post(hDoneSem);
+    /* Query Load stats for each task and print % load */  
+    for(i = 0U; i <= OSAL_LOAD_TEST_NUM_TASKS; i++)
+    {
+        status += LoadP_getTaskLoad(hLoadTestTask[i], &loadStatsTask[i]);
+
+        if(loadStatsTask[i].percentLoad > 0U)
+        {
+            OSAL_log("    %s - Load = %d%% \n", loadStatsTask[i].name, loadStatsTask[i].percentLoad);
+        }
+        else
+        {   
+            /* Load less than 1%, Try to get fractional part */
+            OSAL_log("    %s - Load = 0.000%d%% \n", loadStatsTask[i].name, loadStatsTask[i].threadTime/(loadStatsTask[i].totalTime/(100*1000)));
+        }
+    }
+    if(LoadP_OK != status)
+    {
+        OSAL_log("Failed to get tasks load measurement \n");
+        return false;
+    }
+
+    /* Query CPU Load */
+    cpuLoad = LoadP_getCPULoad();
+    OSAL_log("\n    CPU Load = %d%% \n\n", cpuLoad);
+
+    return true;
+}
+
+static void loadPrintFxn(SemaphoreP_Handle hDoneSem)
+{
+    uint32_t    printIntervalInMs = 500;
+
+    while(1)
+    {
+        TaskP_sleepInMsecs(printIntervalInMs);
+        
+        /* Check for signal to exit */
+        if(SemaphoreP_OK == SemaphoreP_pend(hDoneSem, SemaphoreP_NO_WAIT))
+        {
+            break;
+        }
+        
+        OSAL_log("** Intermediate Load Stats ** \n");
+        loadPrint();
+    }
+}
+
+void loadTestFxn(SemaphoreP_Handle hSignalSem)
+{
+    /* Wait for signal to start */
+    SemaphoreP_pend(hSignalSem, SemaphoreP_WAIT_FOREVER);
+
+    while(1)
+    {
+        /* Check for signal to exit */
+        if(SemaphoreP_OK == SemaphoreP_pend(hSignalSem, SemaphoreP_NO_WAIT))
+        {
+            break;
+        }
+    };
+
 }
 
 bool OSAL_load_test()
 {
     TaskP_Params        taskParams;
-    TaskP_Handle        hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS+1];
     SemaphoreP_Params   semPrms;
     SemaphoreP_Handle   hDoneSem;
-    LoadP_Status        status = LoadP_OK;
-    LoadP_Stats         loadStatsTask[OSAL_LOAD_TEST_NUM_TASKS+1];
-    uint32_t            cpuLoad;
+    SemaphoreP_Handle   hTaskSignalSem[OSAL_LOAD_TEST_NUM_TASKS];
+    TaskP_Handle        hPrintTask;
     uint32_t            i; 
     char *taskNameStr[] = { "Task A", "Task B", "Task C"};
+    bool status         = true;
 
     /* Create semaphore to signal completion of load tasks */
     SemaphoreP_Params_init(&semPrms);
@@ -1519,19 +1581,30 @@ bool OSAL_load_test()
     /* Reset Load measurement */
     LoadP_reset();
 
-    /* Create tasks */
+    /* Create tasks and signal semaphores*/
     for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
     {
+        SemaphoreP_Params_init(&semPrms);
+        semPrms.mode = SemaphoreP_Mode_COUNTING;
+        hTaskSignalSem[i] = SemaphoreP_create(0U, &semPrms);
+        
         TaskP_Params_init(&taskParams);
         taskParams.priority     = OSAL_LOAD_TEST_TASK_PRIO;   
         taskParams.name         = (uint8_t *)taskNameStr[i];
         taskParams.stack        = &gAppTskStackLoadTask[i];
         taskParams.stacksize    = APP_TSK_STACK_MAIN;
-        taskParams.arg0         = (uint32_t *) &gWait[i];
-        taskParams.arg1         = hDoneSem;
-        gWait[i]                = 1;
+        taskParams.arg0         = hTaskSignalSem[i];
         hLoadTestTask[i] = TaskP_create(loadTestFxn, &taskParams);
     }
+    hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS] = TaskP_self();
+
+    /* Create print task, to print the load in regular intervals */
+    TaskP_Params_init(&taskParams);
+    taskParams.priority     = OSAL_LOAD_TEST_TASK_PRIO + 2U;   
+    taskParams.stack        = &gAppTskStackLoadTask[i];
+    taskParams.stacksize    = APP_TSK_STACK_MAIN;
+    taskParams.arg0         = hDoneSem;
+    hPrintTask = TaskP_create(loadPrintFxn, &taskParams); 
 
     /* ==============================================================================
      * Stay in while loop of Task A for ~2s, (Expected Task Load:......2s/7s = ~28%)
@@ -1547,56 +1620,36 @@ bool OSAL_load_test()
         
         for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
         {
+            /* Signal start */
+            SemaphoreP_post(hTaskSignalSem[i]);
+            /* Spin in Task 'i' */
             TaskP_sleepInMsecs(waitTimeInMsec[i]);
-            gWait[i] = 0;
-        }
-
-        /* Wait for tasks completion */
-        for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
-        {
-            SemaphoreP_pend(hDoneSem, SemaphoreP_WAIT_FOREVER);
+            /* Signal exit */
+            SemaphoreP_post(hTaskSignalSem[i]);
         }
 
         TaskP_sleepInMsecs(idleTimeInMsec);
     }
 
-    hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS] = TaskP_self();
-    /* Query Load stats for each task and print % load */  
-    for(i = 0U; i <= OSAL_LOAD_TEST_NUM_TASKS; i++)
-    {
-        status += LoadP_getTaskLoad(hLoadTestTask[i], &loadStatsTask[i]);
+    SemaphoreP_post(hDoneSem);
 
-        if(loadStatsTask[i].percentLoad > 0U)
-        {
-            OSAL_log("    %s - Load = %d%% \n", loadStatsTask[i].name, loadStatsTask[i].percentLoad);
-        }
-        else
-        {   
-            /* Load less than 1%, Try to get fractional part */
-            OSAL_log("\n    %s - Load = 0.000%d%% \n", loadStatsTask[i].name, loadStatsTask[i].threadTime/(loadStatsTask[i].totalTime/(100*1000)));
-        }
-    }
-    if(LoadP_OK != status)
-    {
-        OSAL_log("Failed to get tasks load measurement \n");
-        return false;
-    }
+    OSAL_log("*************** FINAL LOAD STATS ************* \n");
+    status = loadPrint();
 
-    /* Query CPU Load */
-    cpuLoad = LoadP_getCPULoad();
-    OSAL_log("\n    CPU Load = %d%% \n", cpuLoad);
-
-    /* Delete tasks */
+    /* Delete tasks and signal semaphores */
     for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
     {
         TaskP_delete(hLoadTestTask[i]);
+        SemaphoreP_delete(hTaskSignalSem[i]);
     }
+    /* Delete Print Task */
+    TaskP_delete(hPrintTask);
 
     /* Delete Semaphore */
     SemaphoreP_delete(hDoneSem);
     hDoneSem = NULL;
 
-    return true;
+    return status;
 }
 
 #endif /* #if defined(FREERTOS) */
