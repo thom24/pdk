@@ -87,13 +87,6 @@
 #include "pcie_udma.h"
 #endif
 
-#if defined (__TI_ARM_V7R4__)
-#pragma DATA_SECTION(dstBuf, ".dstBufSec")
-/* Cache coherence: Align must be a multiple of cache line size (32 bytes) to operate with cache enabled. */
-/* Aligning to 256 bytes because the PCIe inbound offset register masks the last 8bits of the buffer address  */
-#pragma DATA_ALIGN(dstBuf, 256) // TI way of aligning
-#endif
-
 /* last element in the buffer is a marker that indicates the buffer status: full/empty */
 #define PCIE_EXAMPLE_MAX_CACHE_LINE_SIZE 128
 #define PCIE_EXAMPLE_UINT32_SIZE           4 /* preprocessor #if requires a real constant, not a sizeof() */
@@ -109,7 +102,13 @@ typedef struct dstBuf_s {
   uint8_t padding[PCIE_EXAMPLE_DSTBUF_PAD];
 #endif
 } dstBuf_t;
-dstBuf_t dstBuf; // for dstBuf
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
+/* Cache coherence: Align must be a multiple of cache line size (32 bytes) to operate with cache enabled. */
+/* Aligning to 256 bytes because the PCIe inbound offset register masks the last 8bits of the buffer address  */
+__attribute((section(".dstBufSec"))) __attribute__((aligned(256))) dstBuf_t dstBuf; // for dstBuf
+#else
+ dstBuf_t dstBuf; // for dstBuf
+#endif
 
 #define PCIE_EXAMPLE_BUF_EMPTY 0
 #define PCIE_EXAMPLE_BUF_FULL  1

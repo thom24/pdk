@@ -123,18 +123,6 @@
 #include "pcie_udma.h"
 #endif
 
-#if (defined(_TMS320C6X) || defined (__TI_ARM_V7M4__)) || defined (__TI_ARM_V7R4__)
-/* Cache coherence: Align must be a multiple of cache line size (L2=128 bytes, L1=64 bytes) to operate with cache enabled. */
-/* Aligning to 256 bytes because the PCIe inbound offset register masks the last 8bits of the buffer address  */
-#ifdef SOC_J721E
-#pragma DATA_SECTION(dstBuf, ".far:dstBufSec")
-#pragma DATA_ALIGN(dstBuf, 0x1000) /* TI way of aligning */
-#else
-#pragma DATA_SECTION(dstBuf, ".dstBufSec")
-#pragma DATA_ALIGN(dstBuf, 256) /* TI way of aligning */
-#endif
-#endif
-
 /* last element in the buffer is a marker that indicates the buffer status: full/empty */
 #ifdef SOC_J721E
 #define PCIE_EXAMPLE_MAX_CACHE_LINE_SIZE 0x1000
@@ -160,7 +148,15 @@ typedef struct dstBuf_s {
   edmaPktBenchBuf_t edmaPktBenchBuf;
 #endif
 } dstBuf_t;
-dstBuf_t dstBuf
+#if (defined(_TMS320C6X) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32)) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R')))
+/* Cache coherence: Align must be a multiple of cache line size (L2=128 bytes, L1=64 bytes) to operate with cache enabled. */
+/* Aligning to 256 bytes because the PCIe inbound offset register masks the last 8bits of the buffer address  */
+#ifdef SOC_J721E
+__attribute((section(".far:dstBufSec"))) __attribute__((aligned(4096))) dstBuf_t dstBuf
+#else
+__attribute((section(".dstBufSec"))) __attribute__((aligned(256))) dstBuf_t dstBuf
+#endif
+#endif
 #if defined(BUILD_MPU) || defined(__ARM_ARCH_7A__)
 #ifdef SOC_J721E
 __attribute__((aligned(0x1000), section(".bss:dstBufSec"))) /* GCC way of aligning */

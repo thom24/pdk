@@ -36,6 +36,10 @@ else
 CONFIG_BLD_LNK_r5f = linker_r5.lds
 endif
 
+ifeq ($(CORE), mcu1_0)
+    LNKFLAGS_LOCAL_mcu1_0 += -Xlinker --entry_point=_c_int00
+endif
+
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<coqre/SoC/platform-name> =

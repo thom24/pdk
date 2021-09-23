@@ -113,6 +113,10 @@ DEFAULT_CORELIST_EXCLUDE_CORES_freertos += mpu1_0
 # Excluding R5 cores from build for TIRTOS as this won't be supported for TI ARM CLANG Toolchain
 DEFAULT_CORELIST_EXCLUDE_CORES_tirtos += mcu1_0 mcu1_1
 endif
+ifeq ($(SOC),$(filter $(SOC), j7200))
+# Excluding R5 cores from build for TIRTOS as this won't be supported for TI ARM CLANG Toolchain
+DEFAULT_CORELIST_EXCLUDE_CORES_tirtos += mcu2_0 mcu2_1
+endif
 ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
 # FreeRTOS is not currently supported on J7 c66x/c7x cores
 DEFAULT_CORELIST_EXCLUDE_CORES_freertos += c7x_2 c7x-hostemu

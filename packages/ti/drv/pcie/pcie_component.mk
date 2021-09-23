@@ -94,7 +94,7 @@ $(eval ${DRV_DRVPCIE_RTOS_BOARDLIST_MACRO_LIST})
 # List of components included under pcie lib
 # The components included here are built and will be part of pcie lib
 ############################
-pcie_LIB_LIST = pcie pcie_profile pcie_indp pcie_profile_indp
+pcie_LIB_LIST = pcie pcie_indp
 drvpcie_LIB_LIST = $(pcie_LIB_LIST)
 pcie_EXAMPLE_LIST =
 #

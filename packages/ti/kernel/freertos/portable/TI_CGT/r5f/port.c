@@ -56,6 +56,7 @@
  *  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include <stdint.h>
+#include <string.h>
 #include <stdio.h>
 #include <FreeRTOS.h>
 #include <task.h>

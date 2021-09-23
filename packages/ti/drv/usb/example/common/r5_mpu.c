@@ -45,8 +45,7 @@
 void USB_armR5EnableMPUandCache(void);
 
 /*  Declarations    */
-#pragma WEAK(__mpu_init)
-void __mpu_init(void);
+__attribute__((weak)) void __mpu_init(void);
 
 static void _enable_mpu()
 {

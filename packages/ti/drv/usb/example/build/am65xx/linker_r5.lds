@@ -92,6 +92,7 @@ SECTIONS
     .startupData   : {} palign(8)      > MSMC3, type = NOINIT
     .text    	: {} palign(8) 		> MSMC3
     .const   	: {} palign(8) 		> MSMC3
+    .rodata   	: {} palign(8) 		> MSMC3
     .cinit   	: {} palign(8) 		> MSMC3
     .pinit   	: {} palign(8) 		> MSMC3
     .bss     	: {} align(4)  		> MSMC3

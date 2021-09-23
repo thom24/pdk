@@ -73,6 +73,7 @@ SECTIONS
     .text    	: {} palign(8) 		> DIAG_COMMON
     diagData   : {} palign(8)      > DIAG_DATA
     .const   	: {} palign(8) 		> DIAG_DATA
+    .rodata  	: {} palign(8) 		> DIAG_DATA
     .cinit   	: {} palign(8) 		> DIAG_DATA
     .pinit   	: {} palign(8) 		> DIAG_DATA
     .bss     	: {} align(4)  		> DIAG_DATA

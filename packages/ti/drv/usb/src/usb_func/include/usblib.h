@@ -105,6 +105,9 @@ extern "C"
 #endif
 #elif defined(_TMS320C6X)
 #define USBLIB_PACKED __attribute__ ((packed))
+/* TI ARM Clang compiler */
+#elif defined(__clang__)
+#define USBLIB_PACKED __attribute__((packed))
 #else
 #error Unrecognized COMPILER!
 #endif
@@ -206,8 +209,7 @@ typedef struct
      */
     uint16_t wLength;
 
-}
-USBLIB_PACKED tUSBRequest;
+} USBLIB_PACKED tUSBRequest;
 
 /******************************************************************************
  *
@@ -327,8 +329,7 @@ typedef struct
      *! to identify an endpoint descriptor.
      */
     uint8_t bDescriptorType;
-}
-USBLIB_PACKED tDescriptorHeader;
+}USBLIB_PACKED tDescriptorHeader;
 
 /******************************************************************************
  *
@@ -416,8 +417,7 @@ typedef struct
      *! the device offers.
      */
     uint8_t bNumConfigurations;
-}
-USBLIB_PACKED tDeviceDescriptor;
+}USBLIB_PACKED tDeviceDescriptor;
 
 /******************************************************************************
  *
@@ -528,8 +528,7 @@ typedef struct
      *! Reserved for future use.  Must be set to zero.
      */
     uint8_t bReserved;
-}
-USBLIB_PACKED tDeviceQualifierDescriptor;
+}USBLIB_PACKED tDeviceQualifierDescriptor;
 
 /******************************************************************************
  *
@@ -587,8 +586,7 @@ typedef struct
      *! in units of 2mA so, for example, 100 represents 200mA.
      */
     uint8_t bMaxPower;
-}
-USBLIB_PACKED tConfigDescriptor;
+}USBLIB_PACKED tConfigDescriptor;
 
 /******************************************************************************
  *
@@ -660,8 +658,7 @@ typedef struct
      *! The index of a string descriptor describing this interface.
      */
     uint8_t iInterface;
-}
-USBLIB_PACKED tInterfaceDescriptor;
+}USBLIB_PACKED tInterfaceDescriptor;
 
 /******************************************************************************
  *
@@ -710,8 +707,7 @@ typedef struct
      *! micro frames depending upon the operating speed.
      */
     uint8_t bInterval;
-}
-USBLIB_PACKED tEndpointDescriptor;
+}USBLIB_PACKED tEndpointDescriptor;
 
 /******************************************************************************
  *
@@ -781,8 +777,7 @@ typedef struct
      *! be updated accordingly.
      */
     uint16_t wLANGID[1];
-}
-USBLIB_PACKED tString0Descriptor;
+}USBLIB_PACKED tString0Descriptor;
 
 /******************************************************************************
  *
@@ -811,8 +806,7 @@ typedef struct
      *! from the value in the bLength field.
      */
     uint8_t bString;
-}
-USBLIB_PACKED tStringDescriptor;
+}USBLIB_PACKED tStringDescriptor;
 
 /******************************************************************************
  *
@@ -1048,8 +1042,7 @@ typedef struct
      *! This callback is made when a USB Endpoint event is detected.
      */
     tUSBIntHandler pfnEndpt0EventHandler;
-}
-tCustomHandlers;
+}tCustomHandlers;
 
 /******************************************************************************
  *
@@ -1084,8 +1077,7 @@ typedef struct
      *! configures the endpoint using a call to USBDevEndpointConfigSet().
      */
     uint16_t usEPFlags;
-}
-tFIFOEntry;
+}tFIFOEntry;
 
 /******************************************************************************
  *
@@ -1113,8 +1105,7 @@ typedef struct
      *! corresponds to endpoint 1, index 1 to endpoint 2, etc.
      */
     tFIFOEntry sOut[USBLIB_NUM_EP - 1];
-}
-tFIFOConfig;
+}tFIFOConfig;
 
 /******************************************************************************
  *
@@ -1136,8 +1127,7 @@ typedef struct
      *! USB descriptors which form part of a larger configuration descriptor.
      */
     const uint8_t *pucData;
-}
-tConfigSection;
+}tConfigSection;
 
 /******************************************************************************
  *
@@ -1165,8 +1155,7 @@ typedef struct
      *! be concatenated to form the configuration descriptor.
      */
     const tConfigSection * const *psSections;
-}
-tConfigHeader;
+}tConfigHeader;
 
 /******************************************************************************
  *
@@ -1240,8 +1229,7 @@ typedef struct DeviceInfo
     */
     const uint8_t *pDeviceQualifier;
 
-}
-tDeviceInfo;
+}tDeviceInfo;
 
 /******************************************************************************
  *
@@ -1785,8 +1773,7 @@ typedef struct
      *! object can use for workspace.
      */
     void *pvWorkspace;
-}
-tUSBBuffer;
+}tUSBBuffer;
 
 /******************************************************************************
  *
@@ -1815,8 +1802,7 @@ typedef struct
      *! The ring buffer.
      */
     uint8_t *pucBuf;
-}
-tUSBRingBufObject;
+}tUSBRingBufObject;
 
 typedef struct
 {

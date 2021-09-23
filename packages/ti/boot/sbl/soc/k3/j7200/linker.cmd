@@ -72,6 +72,7 @@ SECTIONS
     .sbl_profile_info             : {} palign(8)     > RESET_VECTORS  (HIGH)
     .text                         : {} palign(8)     > OCMRAM_SBL
     .const                        : {} palign(8)     > OCMRAM_SBL
+    .rodata                       : {} palign(8)     > OCMRAM_SBL
     .const.devgroup.MCU_WAKEUP    : {} align(4)      > OCMRAM_SBL
     .const.devgroup.MAIN          : {} align(4)      > OCMRAM_SBL
     .const.devgroup.DMSC_INTERNAL : {} align(4)      > OCMRAM_SBL

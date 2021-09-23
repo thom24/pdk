@@ -70,6 +70,7 @@ SECTIONS
     .text    	: {} palign(8) 		> DIAG_FRAMEWORK
     diagData   : {} palign(8)      > DIAG_FRAMEWORK
     .const   	: {} palign(8) 		> DIAG_FRAMEWORK
+    .rodata  	: {} palign(8) 		> DIAG_FRAMEWORK
     .cinit   	: {} palign(8) 		> DIAG_FRAMEWORK
     .pinit   	: {} palign(8) 		> DIAG_FRAMEWORK
     .bss     	: {} align(4)  		> DIAG_FRAMEWORK

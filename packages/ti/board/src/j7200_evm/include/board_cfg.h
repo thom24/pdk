@@ -201,7 +201,7 @@ extern "C" {
 #define BOARD_I2C_DOMAIN_INSTANCE_MAX                   (2U)
 
 /* SoC domain used by UART module */
-#if defined (__TI_ARM_V7R5__)
+#if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') && defined(__ARM_FEATURE_IDIV)
 #define BOARD_UART_SOC_DOMAIN                           (BOARD_SOC_DOMAIN_MCU)
 #else
 #define BOARD_UART_SOC_DOMAIN                           (BOARD_SOC_DOMAIN_MAIN)

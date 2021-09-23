@@ -101,6 +101,7 @@ SECTIONS
         .text.boot           : palign(8)
     }                                       > MSMC3
     .const   	: {} palign(8) 		> MSMC3
+    .rodata   	: {} palign(8) 		> MSMC3
     .cinit   	: {} palign(8) 		> MSMC3
     .pinit   	: {} palign(8) 		> MSMC3
 

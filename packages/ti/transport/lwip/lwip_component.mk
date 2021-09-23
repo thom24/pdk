@@ -135,10 +135,10 @@ lwipcontrib_$(1)_INCLUDE = $(PDK_LWIP_COMP_PATH)/lwip-contrib
 export lwipcontrib_$(1)_SOCLIST = $(drvlwip_SOCLIST)
 export lwipcontrib_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvlwip_$(SOC)_CORELIST))
 ifneq ($(1),$(filter $(1), safertos))
-lwip_LIB_LIST += lwipcontrib_$(1)
+#lwip_LIB_LIST += lwipcontrib_$(1)
 else
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-lwip_LIB_LIST += lwipcontrib_$(1)
+#lwip_LIB_LIST += lwipcontrib_$(1)
 endif
 endif
 endef
@@ -165,10 +165,10 @@ lwipstack_$(1)_INCLUDE = $(PDK_LWIP_COMP_PATH)/lwip-stack/src/include
 export lwipstack_$(1)_SOCLIST = $(drvlwip_SOCLIST)
 export lwipstack_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvlwip_$(SOC)_CORELIST))
 ifneq ($(1),$(filter $(1), safertos))
-lwip_LIB_LIST += lwipstack_$(1)
+#lwip_LIB_LIST += lwipstack_$(1)
 else
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-lwip_LIB_LIST += lwipstack_$(1)
+#lwip_LIB_LIST += lwipstack_$(1)
 endif
 endif
 

@@ -67,7 +67,7 @@
 #define BARRIER     asm volatile("    DMB SY");
 #endif
 
-#if defined (__TI_ARM_V7R4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
 /* Barrier function */
 #define BARRIER     __asm volatile("   DMB   ");
 #endif

@@ -446,7 +446,7 @@ export ipc_multicore_perf_test_$(1)_DEPENDS_ON=ipc_perf_test_$(1)
 ipc_multicore_perf_test_$(1)_PKG_LIST = ipc_multicore_perf_test_$(1)
 ipc_multicore_perf_test_$(1)_INCLUDE = $(ipc_multicore_perf_test_$(1)_PATH)
 export ipc_multicore_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
-export ipc_multicore_perf_test_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
+export ipc_multicore_perf_test_$(1)_$(SOC)_CORELIST := $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_LASTCORE))
 export ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
 ifneq ($(1),$(filter $(1), safertos))
 ipc_DUP_EXAMPLE_LIST += ipc_multicore_perf_test_$(1)

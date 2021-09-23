@@ -83,7 +83,7 @@ drvicss_emac_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 # List of components included under icss_emac lib
 # The components included here are built and will be part of icss_emac lib
 ############################
-icss_emac_LIB_LIST = icss_emac icss_emac_indp icss_emac_profile icss_emac_profile_indp
+icss_emac_LIB_LIST = icss_emac icss_emac_indp
 drvicss_emac_LIB_LIST = $(icss_emac_LIB_LIST)
 
 icss_emac_FIRM_LIST = icss_dualemac icss_switch icss_stp_switch

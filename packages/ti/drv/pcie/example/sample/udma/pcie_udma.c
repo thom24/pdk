@@ -90,12 +90,13 @@
 
 #ifdef QOS
 #define LOGSIZE                 4096
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
+uint32_t readLatency[LOGSIZE] __attribute((section(".statBuf"))) __attribute__ ((aligned (64)));
+#else
 uint32_t readLatency[LOGSIZE] __attribute__ ((aligned (64)));
-#ifdef __TI_ARM_V7R4__
-#pragma DATA_SECTION(readLatency, ".statBuf")
+#endif
 #endif
 extern const uint32_t lowPriAddr[3];
-#endif
 uint32_t loop_counter = 0;
 uint32_t t_overhead;
 
@@ -358,7 +359,7 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
 #else
     if(UDMA_SOK == retVal)
     {
-#if defined (__TI_ARM_V7R4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
         asm (" cpsid if ");
 #endif
         /* The PCIE VC3 read with CPU is performed in the gap of UDMA transfer
@@ -371,7 +372,7 @@ static int32_t pcieUdmaOneCopy (Udma_ChHandle chHandle,
             t_read = TIMESTAMP_GET32() - t_read - t_overhead;
             readLatency[loop++] = t_read;
         }
-#if defined (__TI_ARM_V7R4__)
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
         asm (" cpsie if ");
 #endif
         /* Wait for return descriptor in completion ring - this marks the

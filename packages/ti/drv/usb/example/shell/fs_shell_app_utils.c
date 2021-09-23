@@ -327,6 +327,9 @@ static FIL gFsShellAppUtilsReadFileObj;
 #elif defined(gcc) || defined(_TMS320C6X) || defined(__aarch64__)
 static FIL gFsShellAppUtilsReadFileObj  __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
 
+#elif defined(__clang__)
+static FIL gFsShellAppUtilsReadFileObj  __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
+
 #else
 #error "Unsupported Compiler. \r\n"
 
@@ -347,6 +350,9 @@ static FIL gFsShellAppUtilsWriteFileObj;
 #elif defined(gcc) || defined(_TMS320C6X) || defined(__aarch64__)
 static FIL gFsShellAppUtilsWriteFileObj  __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
 
+#elif defined(__clang__)
+static FIL gFsShellAppUtilsWriteFileObj  __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
+
 #else
 #error "Unsupported Compiler. \r\n"
 
@@ -365,6 +371,10 @@ static char gFsShellAppUtilsTempPath[FS_SHELL_APP_UTILS_PATH_BUF_SIZE];
 static char gFsShellAppUtilsTempPath[FS_SHELL_APP_UTILS_PATH_BUF_SIZE];
 
 #elif defined(gcc) || defined(_TMS320C6X) || defined(__aarch64__)
+static char gFsShellAppUtilsTempPath[FS_SHELL_APP_UTILS_PATH_BUF_SIZE]
+                      __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
+
+#elif defined(__clang__)
 static char gFsShellAppUtilsTempPath[FS_SHELL_APP_UTILS_PATH_BUF_SIZE]
                       __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
 
@@ -389,6 +399,11 @@ static char gFsShellAppUtilsCwd[FS_SHELL_APP_UTILS_PATH_BUF_SIZE];
 static char gFsShellAppUtilsCwd[FS_SHELL_APP_UTILS_PATH_BUF_SIZE]
                              __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
 
+                             
+#elif defined(__clang__)
+static char gFsShellAppUtilsCwd[FS_SHELL_APP_UTILS_PATH_BUF_SIZE]
+                             __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
+
 #else
 #error "Unsupported Compiler. \r\n"
 
@@ -407,6 +422,10 @@ static char gFsShellAppUtilsDataBuf[FS_SHELL_APP_UTILS_DATA_BUF_SIZE];
 static char gFsShellAppUtilsDataBuf[FS_SHELL_APP_UTILS_DATA_BUF_SIZE];
 
 #elif defined(gcc) || defined(_TMS320C6X) || defined(__aarch64__)
+static char gFsShellAppUtilsDataBuf[FS_SHELL_APP_UTILS_DATA_BUF_SIZE]
+                             __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
+
+#elif defined(__clang__)
 static char gFsShellAppUtilsDataBuf[FS_SHELL_APP_UTILS_DATA_BUF_SIZE]
                              __attribute__ ((aligned (SOC_CACHELINE_SIZE)));
 

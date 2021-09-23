@@ -62,6 +62,7 @@ SECTIONS
     .sbl_profile_info     : {} palign(8)                            > RESET_VECTORS  (HIGH)
     .text    	          : {} palign(8)                            > OCMRAM_SBL
     .const   	          : {} palign(8)                            > OCMRAM_SBL
+    .rodata   	          : {} palign(8)                            > OCMRAM_SBL
     .cinit                : {} palign(8)                            > OCMRAM_SBL
     .pinit                : {} palign(8)                            > OCMRAM_SBL
     .boardcfg_data	  : {} palign(128)                          > OCMRAM_SBL

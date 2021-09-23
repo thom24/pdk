@@ -58,10 +58,10 @@ MEMORY
 
     /* MCU0 memory used for sciclientTest. Available to app for dynamic use ~160KB */
     /* RBL uses 0x41C58000 and beyond. sciclientTest, at load cannot cross this */
-    OCMRAM_sciclientTest    (RWIX)   : origin=0x41C00200 length=0x50000-0x200
+    OCMRAM_sciclientTest    (RWIX)   : origin=0x41C00200 length=0x80000-0x200
 
     /* Used by sciclientTest at runtime to load SYSFW. Available to app for dynamic use */
-    OCMRAM_sciclientTest_SYSFW (RWIX): origin=0x41C50000 length=0x41000
+    OCMRAM_sciclientTest_SYSFW (RWIX): origin=0x41C80000 length=0x41000
 
     /* Sciserver App space - This is not used */
 
@@ -93,20 +93,20 @@ SECTIONS
     .bss.devgroup.MCU_WAKEUP      : {} align(4)      > MCU0_R5F_TCMB0
     .bss.devgroup.DMSC_INTERNAL   : {} align(4)      > MCU0_R5F_TCMB0
     .sysmem                       : {}               > MCU0_R5F_TCMB0
-    .stack                        : {} align(4)      > MCU0_R5F_TCMB0  (HIGH)
-    .irqStack                     : {. = . + __IRQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMB0  (HIGH)
+    .stack                        : {} align(4)      > MCU0_R5F_TCMA  (HIGH)
+    .irqStack                     : {. = . + __IRQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
                             RUN_START(__IRQ_STACK_START)
                             RUN_END(__IRQ_STACK_END)
-    .fiqStack             : {. = . + __FIQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMB0  (HIGH)
+    .fiqStack             : {. = . + __FIQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
                             RUN_START(__FIQ_STACK_START)
                             RUN_END(__FIQ_STACK_END)
-    .abortStack           : {. = . + __ABORT_STACK_SIZE;} align(4)  > MCU0_R5F_TCMB0  (HIGH)
+    .abortStack           : {. = . + __ABORT_STACK_SIZE;} align(4)  > MCU0_R5F_TCMA  (HIGH)
                             RUN_START(__ABORT_STACK_START)
                             RUN_END(__ABORT_STACK_END)
-    .undStack             : {. = . + __UND_STACK_SIZE;} align(4)    > MCU0_R5F_TCMB0  (HIGH)
+    .undStack             : {. = . + __UND_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
                             RUN_START(__UND_STACK_START)
                             RUN_END(__UND_STACK_END)
-    .svcStac              : {. = . + __SVC_STACK_SIZE;} align(4)    > MCU0_R5F_TCMB0  (HIGH)
+    .svcStac              : {. = . + __SVC_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
                             RUN_START(__SVC_STACK_START)
                             RUN_END(__SVC_STACK_END)
     .firmware             : {} palign(8)                            > OCMRAM_sciclientTest_SYSFW

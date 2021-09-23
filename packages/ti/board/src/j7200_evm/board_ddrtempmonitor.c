@@ -50,23 +50,13 @@ typedef struct Board_DDRThermalMgmtInstance_s
     uint16_t           devIdIr;
 } Board_DDRThermalMgmtInstance_t;
 
-#ifdef __cplusplus
-#pragma DATA_SECTION(".data:BOARD_DDR_thermalManagement");
-#else
-#pragma DATA_SECTION(gBoard_DDRThermalMgmtInstance, ".data:BOARD_DDR_thermalManagement");
-#endif
-static Board_DDRThermalMgmtInstance_t gBoard_DDRThermalMgmtInstance;
+__attribute((section(".data:BOARD_DDR_thermalManagement"))) static Board_DDRThermalMgmtInstance_t gBoard_DDRThermalMgmtInstance;
 
 /* Local defines */
 #define BOARD_SCICLIENT_RESP_TIMEOUT 1000000
 
-#ifdef __cplusplus
-#pragma DATA_SECTION(".const:BOARD_DDR_thermalManagement");
-#else
-#pragma DATA_SECTION(gRefreshRateMultFactor, ".const:BOARD_DDR_thermalManagement");
-#endif
 /* Multiplication factors assumes scaling by 8 */
-static const uint32_t gRefreshRateMultFactor[BOARD_MAX_TEMP_CHECK_REFRESH_RATE_VALUE+1] =
+__attribute((section(".const:BOARD_DDR_thermalManagement"))) static const uint32_t gRefreshRateMultFactor[BOARD_MAX_TEMP_CHECK_REFRESH_RATE_VALUE+1] =
 {
     32U,  /* 4 x */
     32U,  /* 4 x */
@@ -77,26 +67,15 @@ static const uint32_t gRefreshRateMultFactor[BOARD_MAX_TEMP_CHECK_REFRESH_RATE_V
     2U,   /* 0.25 x with derating */
     2U,   /* 0.25 x with derating */
 };
-#ifdef __cplusplus
-#pragma DATA_SECTION(".const:BOARD_DDR_thermalManagement");
-#else
-#pragma DATA_SECTION(gBoardDDRFSPNum, ".const:BOARD_DDR_thermalManagement");
-#endif
 
-static const LPDDR4_CtlFspNum gBoardDDRFSPNum[LPDDR4_FSP_2+1] =
+__attribute((section(".const:BOARD_DDR_thermalManagement"))) static const LPDDR4_CtlFspNum gBoardDDRFSPNum[LPDDR4_FSP_2+1] =
 {
     LPDDR4_FSP_0,
     LPDDR4_FSP_1,
     LPDDR4_FSP_2,
 };
 
-#ifdef __cplusplus
-#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
-#else
-#pragma CODE_SECTION(Board_updateRefreshRate, ".text:BOARD_DDR_thermalManagement");
-#endif
-
-void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultFactor)
+__attribute((section(".text:BOARD_DDR_thermalManagement"))) void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultFactor)
 {
     uint32_t refreshRate;
     uint32_t trasMax;
@@ -116,13 +95,7 @@ void Board_updateRefreshRate(const LPDDR4_CtlFspNum fsNum, uint32_t refreshMultF
     }
 }
 
-#ifdef __cplusplus
-#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
-#else
-#pragma CODE_SECTION(Board_DDRSetDevId, ".text:BOARD_DDR_thermalManagement");
-#endif
-
-static void Board_DDRSetDevId()
+__attribute((section(".text:BOARD_DDR_thermalManagement"))) static void Board_DDRSetDevId()
 { 
     CSL_ArmR5CPUInfo info;
 
@@ -150,13 +123,7 @@ static void Board_DDRSetDevId()
     return;
 }
 
-#ifdef __cplusplus
-#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
-#else
-#pragma CODE_SECTION(Board_DDRGetIntNum, ".text:BOARD_DDR_thermalManagement");
-#endif
-
-static Board_STATUS Board_DDRGetIntNum(uint16_t *coreInterruptIdx)
+__attribute((section(".text:BOARD_DDR_thermalManagement"))) static Board_STATUS Board_DDRGetIntNum(uint16_t *coreInterruptIdx)
 {
     Board_STATUS    status = BOARD_SOK;
     uint16_t        irIntrIdx;
@@ -221,13 +188,7 @@ static Board_STATUS Board_DDRGetIntNum(uint16_t *coreInterruptIdx)
     return status;
 }
 
-#ifdef __cplusplus
-#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
-#else
-#pragma CODE_SECTION(Board_updateAllRefreshRate, ".text:BOARD_DDR_thermalManagement");
-#endif
-
-void Board_updateAllRefreshRate(uint32_t refreshMultFactor)
+__attribute((section(".text:BOARD_DDR_thermalManagement"))) void Board_updateAllRefreshRate(uint32_t refreshMultFactor)
 {
 
     Board_updateRefreshRate(LPDDR4_FSP_0, refreshMultFactor);
@@ -235,11 +196,6 @@ void Board_updateAllRefreshRate(uint32_t refreshMultFactor)
     Board_updateRefreshRate(LPDDR4_FSP_2, refreshMultFactor);
 }
 
-#ifdef __cplusplus
-#pragma CODE_SECTION(".text:BOARD_DDR_thermalManagement");
-#else
-#pragma CODE_SECTION(Board_DDRInterruptHandler, ".text:BOARD_DDR_thermalManagement");
-#endif
 /**
  * \brief Interrupt handler for DDR events
  *
@@ -248,7 +204,7 @@ void Board_updateAllRefreshRate(uint32_t refreshMultFactor)
  * \return  BOARD_SOK in case of success or appropriate error code
  *
  */
-void Board_DDRInterruptHandler(uintptr_t arg)
+__attribute((section(".text:BOARD_DDR_thermalManagement"))) void Board_DDRInterruptHandler(uintptr_t arg)
 {
     bool     irqStatus;
     uint32_t regValue;
