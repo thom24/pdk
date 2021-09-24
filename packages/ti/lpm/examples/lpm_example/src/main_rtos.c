@@ -142,6 +142,8 @@ SemaphoreP_Handle ipcSyncSemHandle;
 SemaphoreP_Params ipcSyncSemParams;
 /**< Sync semaphore for IPC task */
 
+volatile uint32_t mcuOnlyAppDoneOnce = 0;
+
 /* ========================================================================== */
 /*                            External Variables                              */
 /* ========================================================================== */
@@ -257,6 +259,7 @@ static void McuOnlyApp_TaskFxn(void* a0, void* a1)
     bootTaskParams.stack          = BootApp_TaskStack;
     bootTaskParams.stacksize      = sizeof (BootApp_TaskStack);
 
+    mcuOnlyAppDoneOnce = 1;
     bootTask = TaskP_create(BootApp_TaskFxn, &bootTaskParams);
     if (NULL == bootTask)
     {
@@ -287,7 +290,6 @@ static void McuOnlyApp_TaskFxn(void* a0, void* a1)
         //AppUtils_Printf(MSG_NORMAL, "\nIPC Task Sync semaphore creation failed\r\n");
         OS_stop();
     }
-
     return;
 }
 
@@ -313,9 +315,14 @@ static void BootApp_TaskFxn(void* a0, void* a1)
     TaskP_sleep(1000);
     AppUtils_Printf(MSG_NORMAL, "responder task should have exited\n");
 
+    if (mcuOnlyAppDoneOnce)
+    {
+        McuOnly_App();
+        Boot_App();
+    }
+
     /* Post a semaphore to start the MCU ONLY task */
     SemaphoreP_post(mcuOnlySyncSemHandle);
-
     return;
 }
 
@@ -334,7 +341,6 @@ static void IpcApp_TaskFxn(void* a0, void* a1)
     TaskP_sleep(5*1000);
     /* Post a semaphore to start the IPC task */
     SemaphoreP_post(ipcSyncSemHandle);
-
     return;
 }
 
