@@ -60,7 +60,7 @@ extern "C" {
 
 /* MAIN CTRL base address + offset to beginning of PAD CONFIG  section */
 #define MAIN_PMUX_CTRL	(CSL_CTRL_MMR0_CFG0_BASE + 0x1C000)
- 
+
 /* WKUP CTRL base address + offset to beginning of PAD CONFIG section */
 #define WKUP_PMUX_CTRL	(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x1C000)
 
@@ -84,6 +84,25 @@ extern "C" {
  *
  */
 void Board_pinMuxSetMode(uint32_t offset, uint32_t mode);
+
+/**
+ * \brief  Board pinmuxing update function
+ *
+ * Provides the option to configure/update the pinmux.
+ * This function can be used to change the pinmux set by
+ * Board_init by default.
+ *
+ * \param   pinmuxData [IN]  Pinmux data structure
+ * \param   domain     [IN]  SoC domain for pinmux
+ *  \n                        BOARD_SOC_MAIN_DOMAIN - Main domain
+ *  \n                        BOARD_SOC_WKUP_DOMAIN - Wakeup domain
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+int32_t Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
+                                 uint32_t domain);
+
 
 /**
  * \brief  Board UART Tx pinmuxing enable function
