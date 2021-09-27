@@ -1,7 +1,7 @@
 /**
  *  \file   keywriter_utils.h
  *
- *  \brief  Supporting file for j721e soc specific keywriter.c
+ *  \brief  Supporting file for j7200 soc specific keywriter.c
  *
  */
 
