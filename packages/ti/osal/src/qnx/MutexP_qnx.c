@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2021, Texas Instruments Incorporated
+ * Copyright (c) 2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,16 +31,16 @@
  */
 
 /*
- *  ======== SemaphoreP_qnx.c ========
+ *  ======== MutexP_qnx.c ========
  */
-#include <ti/osal/SemaphoreP.h>
+#include <ti/osal/MutexP.h>
 #include <ti/osal/osal.h>
 
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <semaphore.h>
+#include <pthread.h>
 #include <fcntl.h>
 #include <time.h>
 #include <errno.h>
@@ -48,68 +48,57 @@
 
 
 /*
- *  ======== SemaphoreP_create ========
+ *  ======== MutexP_create ========
  */
-SemaphoreP_Handle SemaphoreP_create(uint32_t count,
-                                    const SemaphoreP_Params *params)
+MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 {
-    sem_t *handle;
-    int oflag;
+    pthread_mutex_t *mutexHandle = (pthread_mutex_t *)calloc(1, sizeof(pthread_mutex_t));
 
-    /* Assign a name if one is not specified */
-    if(params->name == NULL)
+    if (mutexHandle != NULL)
     {
-        oflag = O_ANON;
+        if (EOK == pthread_mutex_init((pthread_mutex_t *) mutexHandle, NULL))
+        {
+            return ((MutexP_Handle) mutexHandle);
+        }
+        else
+        {
+            DebugP_log1("pthread_mutex_init for QNX Failed - errno-%d", errno);
+            return (NULL);
+        }
     }
     else
     {
-        oflag = O_CREAT;
+        DebugP_log0("MutexP_create for QNX Failed due to calloc");
+        return (NULL);
     }
-
-    /* Creates a COUNTING named semaphore */
-    handle = sem_open(params->name, oflag, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, count);
-    if (handle == SEM_FAILED)
-    {
-        DebugP_log1("sem_open for QNX Failed - errno-%d", errno);
-        return NULL;
-    }
-    return ((SemaphoreP_Handle)handle);
 }
 
 
 /*
- *  ======== SemaphoreP_delete ========
+ *  ======== MutexP_delete ========
  */
-SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
+MutexP_Status MutexP_delete(MutexP_Handle handle)
 {
     OSAL_Assert(handle == NULL);
 
     int ret;
 
-    ret = sem_close((sem_t *)handle);
+    ret = pthread_mutex_destroy((pthread_mutex_t *)handle);
     if (ret < 0) {
-        DebugP_log1("sem_close for QNX Failed - errno-%d", errno);
-        return SemaphoreP_FAILURE;
+        DebugP_log1("pthread_mutex_destroy for QNX Failed - errno-%d", errno);
+        return MutexP_FAILURE;
     }
 
-    return (SemaphoreP_OK);
+    free(handle);
+    handle = NULL;
+
+    return (MutexP_OK);
 }
 
 /*
- *  ======== SemaphoreP_Params_init ========
+ *  ======== MutexP_lock ========
  */
-void SemaphoreP_Params_init(SemaphoreP_Params *params)
-{
-    OSAL_Assert((params == NULL));
-
-    params->mode = SemaphoreP_Mode_COUNTING;
-    params->name = NULL;
-}
-
-/*
- *  ======== SemaphoreP_pend ========
- */
-SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
+MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
 {
     OSAL_Assert(handle == NULL);
 
@@ -117,57 +106,41 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
     struct timespec ts;
     int timeout_ns = timeout*1000000;
 
-    if (timeout == SemaphoreP_WAIT_FOREVER) {
-        ret = sem_wait((sem_t *)handle);
+    if (timeout == MutexP_WAIT_FOREVER) {
+        ret = pthread_mutex_lock((pthread_mutex_t *)handle);
     } else {
         clock_gettime(CLOCK_REALTIME, &ts);
         ts.tv_sec += (timeout_ns)/1000000000;
         ts.tv_nsec += timeout_ns%1000000000;
 
-        ret = sem_timedwait((sem_t *)handle, &ts);
+        ret = pthread_mutex_timedlock((pthread_mutex_t *)handle, &ts);
     }
     if (ret < 0) {
         if (errno == ETIMEDOUT) {
-                return (SemaphoreP_TIMEOUT);
+            return (MutexP_TIMEOUT);
         } else {
-                return (SemaphoreP_FAILURE);
+            return (MutexP_FAILURE);
         }
     }
 
-    return (SemaphoreP_OK);
+    return (MutexP_OK);
 }
 
 /*
- *  ======== SemaphoreP_post ========
+ *  ======== MutexP_unlock ========
  */
-SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
+MutexP_Status MutexP_unlock(MutexP_Handle handle)
 {
     OSAL_Assert(handle == NULL);
 
     int ret;
 
-    ret = sem_post((sem_t *)handle);
+    ret = pthread_mutex_unlock((pthread_mutex_t *)handle);
     if (ret < 0) {
-        return (SemaphoreP_FAILURE);
+        return (MutexP_FAILURE);
     }
 
-    return (SemaphoreP_OK);
-}
-
-/*
- *  ======== SemaphoreP_postFromClock ========
- */
-SemaphoreP_Status SemaphoreP_postFromClock(SemaphoreP_Handle handle)
-{
-    return (SemaphoreP_post(handle));
-}
-
-/*
- *  ======== SemaphoreP_postFromISR ========
- */
-SemaphoreP_Status SemaphoreP_postFromISR(SemaphoreP_Handle handle)
-{
-    return (SemaphoreP_post(handle));
+    return (MutexP_OK);
 }
 
 /* Nothing past this point */
