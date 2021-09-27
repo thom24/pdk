@@ -58,8 +58,6 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
         j++;
     }
 
-    fprintf(stderr, "\r\n Converting binary file [%s] to C array \r\n", inName );
-
     fin = fopen( inName, "rb");
     if(fin==NULL)
     {
@@ -145,7 +143,6 @@ filename, arrName, csize, arrName);
     csize=0;
     while(bytes) {
         bytes = fread(buffer, 1, chunkSize, fin );
-    fprintf(stderr, ".");
     for(i=0;i<bytes;i=i+4) {
       if((i%4) == 0)
         printf(" ");
@@ -173,7 +170,6 @@ filename, arrName, csize, arrName);
     }
     printf("\\\n} /* %d bytes */", csize );
     printf("\n");
-    fprintf(stderr, " Done. (%d bytes)\r\n", size);
 
     if(csize!=size)
     {
