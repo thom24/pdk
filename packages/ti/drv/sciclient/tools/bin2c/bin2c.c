@@ -38,15 +38,29 @@
 #include "util.h"
 #include <stdint.h>
 #include <ctype.h>
+#include <string.h>
 
 #define MAX_BUFFER_SIZE (1*KB*KB)
 
 uint8_t buffer[MAX_BUFFER_SIZE];
 
+uint8_t* get_file_name_from_path(uint8_t *fpath) {
+	uint32_t i = 0;
+	for(i = strlen(fpath) - 1; i >= 0; i--)  
+	{
+		/* '\' character for windows environment */
+		if ((fpath[i] == '/') || (fpath[i] == '\\'))
+		{
+			return &fpath[i+1];
+		}
+	}
+	return fpath;
+}
+
 STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
     STATUS status=E_PASS;
     uint32_t bytes=1, size, i, csize;
-    FILE* fin;
+    FILE* fin, *fout;
     uint32_t  chunkSize = MAX_BUFFER_SIZE;
 
     /* Ensure arrName is upper case */
@@ -58,9 +72,14 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
         j++;
     }
 
+	/* Print a non-error type message to stdout */
+	fprintf(stdout, "\r\n Converting binary file [%s] to C array \r\n", inName );
+
     fin = fopen( inName, "rb");
+	fout = fopen( filename, "w");
     if(fin==NULL)
     {
+		/* Print errors to stderr */
         fprintf(stderr, "\r\n ERROR: Input file [%s] not found \r\n", inName);
         status = E_DEVICE;
         goto error_stop;
@@ -68,8 +87,8 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
     fseek(fin, 0, SEEK_END); /* seek to end of file */
     csize = ftell(fin); /* get current file pointer */
     fseek(fin, 0, SEEK_SET); /* seek back to beginning of file */
-    printf("/*\
-\n *  Copyright (C) 2018 Texas Instruments Incorporated\
+    fprintf(fout, "/*\
+\n *  Copyright (C) 2021 Texas Instruments Incorporated\
 \n *\
 \n *  Redistribution and use in source and binary forms, with or without\
 \n *  modification, are permitted provided that the following conditions\
@@ -137,56 +156,62 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
 \n/* ========================================================================== */\
 \n\
 \n#define %s {",
-filename, arrName, csize, arrName);
+get_file_name_from_path(filename), arrName, csize, arrName);
 
     size=0;
     csize=0;
     while(bytes) {
-        bytes = fread(buffer, 1, chunkSize, fin );
-    for(i=0;i<bytes;i=i+4) {
-      if((i%4) == 0)
-        printf(" ");
-      if((i%16)==0)
-        printf("\\\n");
-      if((i+3)<bytes)
-        {printf("    0x%02x", buffer[i+3]);csize++;}
-      else
-        printf("    0x00");
-      if((i+2)<bytes)
-        {printf("%02x", buffer[i+2]);csize++;}
-      else
-        printf("00");
-      if((i+1)<bytes)
-        {printf("%02x", buffer[i+1]);csize++;}
-      else
-        printf("00");
-      printf("%02xU", buffer[i]);
-      csize++;
+		bytes = fread(buffer, 1, chunkSize, fin );
+		/* Print a non-error type message to stdout */
+		fprintf(stdout, ".");
+		for(i=0;i<bytes;i=i+4) {
+			if((i%4) == 0)
+				fprintf(fout, " ");
+			if((i%16)==0)
+				fprintf(fout, "\\\n");
+			if((i+3)<bytes)
+			{fprintf(fout, "    0x%02x", buffer[i+3]);csize++;}
+			else
+				fprintf(fout, "    0x00");
+			if((i+2)<bytes)
+			{fprintf(fout, "%02x", buffer[i+2]);csize++;}
+			else
+				fprintf(fout, "00");
+			if((i+1)<bytes)
+			{fprintf(fout, "%02x", buffer[i+1]);csize++;}
+			else
+				fprintf(fout, "00");
+			fprintf(fout, "%02xU", buffer[i]);
+			csize++;
 
-      if(i<(bytes-4))
-        printf(",");
+			if(i<(bytes-4))
+				fprintf(fout, ",");
+		}
+		size +=bytes;
     }
-        size +=bytes;
-    }
-    printf("\\\n} /* %d bytes */", csize );
-    printf("\n");
+    fprintf(fout, "\\\n} /* %d bytes */", csize );
+    fprintf(fout, "\n");
+	/* Print a non-error type message to stdout */
+    fprintf(stdout, " Done. (%d bytes)\r\n", size);
 
     if(csize!=size)
     {
+		/* Print errors to stderr */
         fprintf(stderr, "\n ERROR: Check output file (byte diff %d)", size-csize);
     }
 error_stop:
     fclose(fin);
+	fclose(fout);
 
     return status;
 }
 
 void main(int argc, char **argv) {
 
-  if(argc!=4) {
-    printf("\r\n USAGE: bin2c <binary file name> <c file name> <array name>\n" );
-    exit(0);
-  }
+	if(argc!=4) {
+		printf("\r\n USAGE: bin2c <binary file name> <c file name> <array name>\n" );
+		exit(0);
+	}
 
-  bin2c(argv[1], argv[2], argv[3]);
+	bin2c(argv[1], argv[2], argv[3]);
 }

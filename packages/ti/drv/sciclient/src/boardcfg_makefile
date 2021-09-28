@@ -184,7 +184,7 @@ ifeq ($(CORE), mcu1_0)
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(BIN2C_GEN)
 endif
-	$(BIN2C_GEN) $(OBJDIR)/$(1).bin$(SGN_EXT) $(1).h $(subst default,,$(notdir $(2))) > $(CFG_DIR)/$(1).h
+	$(BIN2C_GEN) $(OBJDIR)/$(1).bin$(SGN_EXT) $(CFG_DIR)/$(1).h $(subst default,,$(notdir $(2)))
 endif
 endef
 
