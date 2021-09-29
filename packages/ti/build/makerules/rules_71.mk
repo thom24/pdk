@@ -111,7 +111,7 @@ endif
 #########
 
 # Internal CFLAGS - normally doesn't change
-CFLAGS_INTERNAL = -mv7100 $(CSWITCH_FORMAT) -q -mo -pden -pds=238 -pds=880 -pds1110 --program_level_compile --endian=$(ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT)
+CFLAGS_INTERNAL = -mv7100 $(CSWITCH_FORMAT) -q -mo -pden -pds=238 -pds=880 -pds1110 --endian=$(ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT)
 ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   CFLAGS_INTERNAL += --emit_warnings_as_errors
   LNKFLAGS_INTERNAL_COMMON += --emit_warnings_as_errors
