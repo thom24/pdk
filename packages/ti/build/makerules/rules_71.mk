@@ -252,6 +252,9 @@ $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE) $(CFG_C_
 	$(CP) $(CONFIGURO_DIR)/package/cfg/*.rov.xs $(BINDIR)
 else
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE)
+ifeq ($(BUILD_OS_TYPE), freertos)
+	$(CP) $(pdk_PATH)/ti/kernel/freertos/rov/syscfg_c.rov.xs $(BINDIR)
+endif
 endif
 	$(ECHO) \# Linking into $(EXE_NAME)...
 	$(ECHO) \#
