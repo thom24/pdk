@@ -50,7 +50,7 @@
 	.global SDTF_UTILS_TCMEnable
 
 SDTF_UTILS_TCMEnable:
-	.asmfunc
+	
     ;Enable ATCM @0x0
     MRC     p15, #0, r0, c9, c1, #1
     BFC     r0, #12, #20
@@ -69,4 +69,4 @@ SDTF_UTILS_TCMEnable:
 
 sdtf_btcm_base .word 0x41010000
 
-	.endasmfunc
+	

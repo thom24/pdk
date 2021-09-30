@@ -42,7 +42,7 @@
 	.global _ufpTcmEn
 
 _ufpTcmEn:
-	.asmfunc
+	
     ;Enable ATCM @0x0
     MRC     p15, #0, r0, c9, c1, #1
     BFC     r0, #12, #20
@@ -61,7 +61,7 @@ _ufpTcmEn:
 
 ufp_btcm_base .word 0x41010000
 
-	.endasmfunc
+	
 
 
 ;****************************************************************************
@@ -71,7 +71,7 @@ ufp_btcm_base .word 0x41010000
 	.global ufpAtcmSize
 
 ufpAtcmSize:
-	.asmfunc
+	
     mrc     p15, #0, r0, c9, c1, #1     ;; Read ATCM region Register
     and     r0, r0, #0xFF               ;; Extract  ATCM region Register
     lsr     r0, r0, #0x2                ;; Extract  ATCM region Register
@@ -80,7 +80,7 @@ ufpAtcmSize:
 
     BX      lr
 
-	.endasmfunc
+	
 
 ;****************************************************************************
 ; UFP Read BTCM Size Register
@@ -89,7 +89,7 @@ ufpAtcmSize:
 	.global ufpBtcmSize
 
 ufpBtcmSize:
-	.asmfunc
+	
     mrc     p15, #0, r0, c9, c1, #0      ;; Read BTCM region Register
     and     r0, r0, #0xFF                ;; Extract  BTCM region Register
     lsr     r0, r0, #0x2                 ;; Extract  BTCM region Register
@@ -98,7 +98,7 @@ ufpBtcmSize:
 
     BX      lr
 
-	.endasmfunc
+	
 
 
 ;****************************************************************************
@@ -123,8 +123,8 @@ const_uint8_ptr_to_void_ptr:
 uint64_to_uint32:
 uint64_to_int32:
 
-	.asmfunc
+	
 
 	BX	lr	
-	.endasmfunc
+	
 

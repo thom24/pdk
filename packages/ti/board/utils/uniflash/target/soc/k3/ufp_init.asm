@@ -42,7 +42,7 @@
 	.global _ufpResetVectors
 
 _ufpResetVectors:
-	.asmfunc
+	
 	LDR pc, ufpEntry ; Reset
 	B _ufpLoopForever ; Undefined Instruction
 	B _ufpLoopForever ; SVC call
@@ -53,7 +53,7 @@ _ufpResetVectors:
 	B _ufpLoopForever ; FIQ
 
 ufpEntry	.long _ufpEntry
-	.endasmfunc
+	
 
 ;****************************************************************************
 ; UFP Entry
@@ -66,7 +66,7 @@ _c_int00_addr		.long _c_int00
 _ufpTcmEnAddr		.long _ufpTcmEn
 
 _ufpEntry:
-	.asmfunc
+	
 
 	MRC	p15, #0, r1, c0, c0, #5
 	BFC	r1, #8, #24
@@ -87,7 +87,7 @@ _ufpLoopForever:
 	WFI
 	B	_ufpLoopForever
 
-	.endasmfunc
+	
 
 _ufpTestStackTop:
 	.space 64

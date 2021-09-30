@@ -312,5 +312,5 @@ export nimu_LIB_LIST
 export nimu_EXAMPLE_LIST
 export drvnimu_EXAMPLE_LIST
 
-nimu_component_make_include := 0
+nimu_component_make_include := 1
 endif

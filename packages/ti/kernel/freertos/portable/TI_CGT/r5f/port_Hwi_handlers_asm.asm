@@ -56,7 +56,7 @@
 	.global	_freertosresetvectors
     .sect   ".freertosrstvectors"
 _freertosresetvectors:
-    .asmfunc
+    
         LDR pc, c_int00_addr        ; Reset
         LDR pc, undefInst_addr      ; Undefined Instruction
         LDR pc, swi_addr            ; Software interrupt
@@ -65,7 +65,7 @@ _freertosresetvectors:
         LDR pc, rsvd_addr           ; rsvd
         LDR pc, irq_addr            ; IRQ
         LDR pc, fiq_addr            ; FIQ
-    .endasmfunc
+    
 
 
 c_int00_addr .long _c_int00

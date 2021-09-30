@@ -50,6 +50,7 @@ ifneq ($(BUILD_OS_TYPE), qnx)
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
 sciclient_LIB_LIST += rm_pm_hal
 sciclient_LIB_LIST += sciserver_tirtos
+sciclient_LIB_LIST += sciserver_freertos
 sciclient_LIB_LIST += sciserver_baremetal
 sciclient_LIB_LIST += sciclient_direct
 sciclient_LIB_LIST += sciclient_direct_hs
@@ -163,7 +164,7 @@ export sciserver_$(1)_PKG_LIST = sciserver_$(1)
 export sciserver_$(1)_INCLUDE = $(sciserver_PATH)
 export sciserver_$(1)_SOCLIST = $(filter $(DEFAULT_SOCLIST_$(1)), j721e j7200 j721s2)
 export sciserver_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm j721s2_evm)
-export sciserver_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+export sciserver_$(1)_$(SOC)_CORELIST = mcu1_0
 
 endef
 

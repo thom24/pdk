@@ -39,7 +39,7 @@
 	.global _xip_stub
 	.global _c_int00
 	.ref	xip_stub_c
-	.asmfunc
+	
 
 
 _c_int00:
@@ -53,5 +53,5 @@ _xipLoopForever:
 
 _xip_stub_c_addr .long xip_stub_c
 
-	.endasmfunc
+	
 

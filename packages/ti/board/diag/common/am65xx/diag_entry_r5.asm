@@ -120,7 +120,7 @@ __stack:.usect	".stack", 0, 4
 ;***************************************************************
 ;* FUNCTION DEF: _c_int00
 ;***************************************************************
-_c_int00: .asmfunc stack_usage(0)
+_c_int00:  
 
     PUSH {r1}   ;Store the context of diag framework
     MOV r10, sp
@@ -349,16 +349,16 @@ bypass_auto_init:
 	;* DONE, LOOP FOREVER
         ;*------------------------------------------------------
 L1:     B	L1
-	.endasmfunc
+	
 
 ;***************************************************************
 ;* FUNCTION DEF: HF
 ;***************************************************************
 		.global HF
 
-HF:     .asmfunc stack_usage(0)
+HF:      
 L2:     B   L2
-		.endasmfunc
+		
 
    .else           ; !.TMS470_16BIS
 
@@ -391,7 +391,7 @@ __stack:.usect  ".stack", 0, 4
 ;***************************************************************
 ;* FUNCTION DEF: _c_int00
 ;***************************************************************
-_c_int00: .asmfunc stack_usage(0)
+_c_int00:  
 
         PUSH {r1}   ;Store the context of diag framework
         MOV r10, sp
@@ -595,15 +595,15 @@ bypass_auto_init:
         ;* DONE, LOOP FOREVER
         ;*------------------------------------------------------
 L1:     B       L1
-        .endasmfunc
+        
 
 ;***************************************************************
 ;* FUNCTION DEF: HF
 ;***************************************************************
 		.global HF
-HF:     .asmfunc stack_usage(0)
+HF:      
 L2:     B   L2
-		.endasmfunc
+		
 
    .endif    ; !.TMS470_16BIS
 
@@ -658,9 +658,9 @@ _stkchk_called:
 ;****************************************************************************
     .global	_cslRsvdHandler
 _cslRsvdHandler:
-    .asmfunc
+    
      b   _cslRsvdHandler
-    .endasmfunc
+    
 ;****************************************************************************
 ; Setup Reset Vectors always in ARM mode
 ;****************************************************************************
@@ -668,7 +668,7 @@ _cslRsvdHandler:
 	.global	_resetvectors
     .sect   ".rstvectors"
 _resetvectors:
-    .asmfunc
+    
         LDR pc, c_int00_addr        ; Reset
         LDR pc, undefInst_addr      ; Undefined Instruction
         LDR pc, swi_addr            ; Software interrupt
@@ -677,7 +677,7 @@ _resetvectors:
         LDR pc, rsvd_addr            ; rsvd
         LDR pc, irq_addr             ; IRQ
         LDR pc, fiq_addr             ; FIQ
-    .endasmfunc
+    
 
 
 c_int00_addr .long _c_int00

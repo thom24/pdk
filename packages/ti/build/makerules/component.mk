@@ -741,16 +741,16 @@ ifneq ($(timeSync_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
-#-include $(PDK_NIMU_COMP_PATH)/nimu_component.mk
-#ifneq ($(nimu_LIB_LIST),)
-#  pdk_LIB_LIST += $(nimu_LIB_LIST)
-#endif
-#ifneq ($(nimu_APP_LIB_LIST),)
-#  pdk_APP_LIB_LIST += $(nimu_APP_LIB_LIST)
-#endif
-#ifneq ($(nimu_EXAMPLE_LIST),)
-#  pdk_EXAMPLE_LIST += $(nimu_EXAMPLE_LIST)
-#endif
+-include $(PDK_NIMU_COMP_PATH)/nimu_component.mk
+ifneq ($(nimu_LIB_LIST),)
+  pdk_LIB_LIST += $(nimu_LIB_LIST)
+endif
+ifneq ($(nimu_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(nimu_APP_LIB_LIST)
+endif
+ifneq ($(nimu_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(nimu_EXAMPLE_LIST)
+endif
 
 # - used to ignore include if component not present
 -include $(PDK_FATFS_COMP_PATH)/fatfs_component.mk

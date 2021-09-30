@@ -114,6 +114,7 @@ SECTIONS
     .startupData   : {} palign(8)      > MCU0_R5F_TCMA, type = NOINIT
     .text          : {} palign(8)      > MCU2_0_DDR_SPACE
     .const         : {} palign(8)      > MCU2_0_DDR_SPACE
+    .rodata        : {} palign(8)      > MCU2_0_DDR_SPACE
     .cinit         : {} palign(8)      > MCU2_0_DDR_SPACE
     .pinit         : {} palign(8)      > MCU2_0_DDR_SPACE
     .bss           : {} align(4)       > MCU2_0_DDR_SPACE

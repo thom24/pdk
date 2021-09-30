@@ -37,11 +37,11 @@
 	.if $$isdefed("SBL_SKIP_MCU_RESET")
 	.arm
 	.global __mpu_init
-	.asmfunc
+	
 	
 __mpu_init:
 	BX	lr
 
-	.endasmfunc
+	
 	.endif
 

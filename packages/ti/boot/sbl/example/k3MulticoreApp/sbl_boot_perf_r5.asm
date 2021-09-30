@@ -37,36 +37,36 @@
 	.arm
 	.sect   ".imgPad_0"
 	.global _boot_perf_app_pad_0
-	.asmfunc
+	
 _boot_perf_app_pad_0:
 	.space 0x40000
-	.endasmfunc
+	
 
 	.sect   ".imgPad_1"
 	.global _boot_perf_app_pad_1
-	.asmfunc
+	
 _boot_perf_app_pad_1:
 	.space 0x40000
-	.endasmfunc
+	
 
 	.sect   ".imgPad_2"
 	.global _boot_perf_app_pad_2
-	.asmfunc
+	
 _boot_perf_app_pad_2:
 	.space 0x40000
-	.endasmfunc
+	
 
 	.sect   ".imgPad_3"
 	.global _boot_perf_app_pad_3
-	.asmfunc
+	
 _boot_perf_app_pad_3:
 	.space 0x40000
-	.endasmfunc
+	
 
 	.sect   ".text"
 	.global _boot_perf_app_pad_4
-	.asmfunc
+	
 _boot_perf_app_pad_4:
 	.space 0x30000
-	.endasmfunc
+	
 

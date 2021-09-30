@@ -68,7 +68,9 @@ ifeq ($(safertos_component_make_include), )
 
 safertos_BOARDLIST       = tpr12_evm awr294x_evm j721e_evm
 safertos_SOCLIST         = tpr12 awr294x j721e
-safertos_j721e_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+# TODO: Disabling for Clang as this is not migrated yet
+#safertos_j721e_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+safertos_j721e_CORELIST  =
 safertos_tpr12_CORELIST  = c66xdsp_1
 safertos_awr294x_CORELIST  = c66xdsp_1
 

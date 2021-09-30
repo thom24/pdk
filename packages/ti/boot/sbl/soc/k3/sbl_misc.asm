@@ -42,7 +42,7 @@
 	.global SBL_SysFwLoad
 
 SBL_SysFwLoad:
-	.asmfunc
+	
     PLD     [r1]
     PUSH    {r3-r12, lr}
     ADD     lr, r1, r2
@@ -56,7 +56,7 @@ sysfw_cpy_loop:
 
     POP     {r3-r12, lr}
     BX      lr
-	.endasmfunc
+	
 
 ;****************************************************************************
 ; SBL Error Loop
@@ -64,9 +64,9 @@ sysfw_cpy_loop:
 	.sect   ".text"
 	.global SblErrLoop
 SblErrLoop:
-	.asmfunc
+	
 	B	SblErrLoop
-	.endasmfunc
+	
 
 ;****************************************************************************
 ; SBL Read ATCM Region Register
@@ -75,7 +75,7 @@ SblErrLoop:
 	.global _sblTcmEn
 
 _sblTcmEn:
-	.asmfunc
+	
     ;Enable ATCM @0x0
     MRC     p15, #0, r0, c9, c1, #1
     BFC     r0, #12, #20
@@ -94,7 +94,7 @@ _sblTcmEn:
 
 sbl_btcm_base .word 0x41010000
 
-	.endasmfunc
+	
 
 
 ;****************************************************************************
@@ -104,7 +104,7 @@ sbl_btcm_base .word 0x41010000
 	.global sblAtcmSize
 
 sblAtcmSize:
-	.asmfunc
+	
     mrc     p15, #0, r0, c9, c1, #1     ;; Read ATCM region Register
     and     r0, r0, #0xFF               ;; Extract  ATCM region Register
     lsr     r0, r0, #0x2                ;; Extract  ATCM region Register
@@ -113,7 +113,7 @@ sblAtcmSize:
 
     BX      lr
 
-	.endasmfunc
+	
 
 ;****************************************************************************
 ; SBL Read BTCM Size Register
@@ -122,7 +122,7 @@ sblAtcmSize:
 	.global sblBtcmSize
 
 sblBtcmSize:
-	.asmfunc
+	
     mrc     p15, #0, r0, c9, c1, #0      ;; Read BTCM region Register
     and     r0, r0, #0xFF                ;; Extract  BTCM region Register
     lsr     r0, r0, #0x2                 ;; Extract  BTCM region Register
@@ -131,7 +131,7 @@ sblBtcmSize:
 
     BX      lr
 
-	.endasmfunc
+	
 
 
 ;****************************************************************************
@@ -156,8 +156,8 @@ const_uint8_ptr_to_void_ptr:
 uint64_to_uint32:
 uint64_to_int32:
 
-	.asmfunc
+	
 
 	BX	lr	
-	.endasmfunc
+	
 

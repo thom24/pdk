@@ -45,7 +45,7 @@
 
     .global utilsCopyVecs2ATcm
 utilsCopyVecs2ATcm:
-        .asmfunc
+        
         push    {lr}                    ; Remmember the caller
         mrc     p15, #0, r0, c9, c1, #1 ; read ATCM Region Register
         tst     r0, #1
@@ -105,6 +105,6 @@ exit:
 
 sbl_btcm_base .word 0x41010000
 
-        .endasmfunc
+        
 
         .end

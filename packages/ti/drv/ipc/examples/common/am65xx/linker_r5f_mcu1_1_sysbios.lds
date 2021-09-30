@@ -84,6 +84,7 @@ SECTIONS
     .text:xdc_runtime_Startup_reset__I : {} palign(8) > MCU_ATCM
     .text	: {} palign(8)	    	> MCU1_1_DDR_SPACE
     .const   	: {} palign(8) 		> MCU1_1_DDR_SPACE
+    .rodata   	: {} palign(8) 		> MCU1_1_DDR_SPACE
     .cinit   	: {} palign(8) 		> MCU1_1_DDR_SPACE
     .pinit   	: {} palign(8) 		> MCU1_1_DDR_SPACE
     .bss     	: {} align(4)  		> MCU1_1_DDR_SPACE

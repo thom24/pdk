@@ -79,8 +79,8 @@ SECTIONS
     .startupCode 	          : {} palign(8)     > OCMRAM_sciclientTest
     .startupData 	          : {} palign(8)     > OCMRAM_sciclientTest, type = NOINIT
     .text                         : {} palign(8)     > OCMRAM_sciclientTest
-    .rodata                       : {} palign(8)     > OCMRAM_sciclientTest
     .const                        : {} palign(8)     > OCMRAM_sciclientTest
+    .rodata                       : {} palign(8)     > OCMRAM_sciclientTest
     .const.devgroup.MCU_WAKEUP    : {} align(4)      > OCMRAM_sciclientTest
     .const.devgroup.MAIN          : {} align(4)      > OCMRAM_sciclientTest
     .const.devgroup.DMSC_INTERNAL : {} align(4)      > OCMRAM_sciclientTest
@@ -93,20 +93,20 @@ SECTIONS
     .bss.devgroup.MCU_WAKEUP      : {} align(4)      > MCU0_R5F_TCMB0
     .bss.devgroup.DMSC_INTERNAL   : {} align(4)      > MCU0_R5F_TCMB0
     .sysmem                       : {}               > MCU0_R5F_TCMB0
-    .stack                        : {} align(4)      > MCU0_R5F_TCMA  (HIGH)
-    .irqStack                     : {. = . + __IRQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
+    .stack                        : {} align(4)      > OCMRAM_sciclientTest  (HIGH)
+    .irqStack                     : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)
                             RUN_START(__IRQ_STACK_START)
                             RUN_END(__IRQ_STACK_END)
-    .fiqStack             : {. = . + __FIQ_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
+    .fiqStack             : {. = . + __FIQ_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)
                             RUN_START(__FIQ_STACK_START)
                             RUN_END(__FIQ_STACK_END)
-    .abortStack           : {. = . + __ABORT_STACK_SIZE;} align(4)  > MCU0_R5F_TCMA  (HIGH)
+    .abortStack           : {. = . + __ABORT_STACK_SIZE;} align(4)  > OCMRAM_sciclientTest  (HIGH)
                             RUN_START(__ABORT_STACK_START)
                             RUN_END(__ABORT_STACK_END)
-    .undStack             : {. = . + __UND_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
+    .undStack             : {. = . + __UND_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)
                             RUN_START(__UND_STACK_START)
                             RUN_END(__UND_STACK_END)
-    .svcStac              : {. = . + __SVC_STACK_SIZE;} align(4)    > MCU0_R5F_TCMA  (HIGH)
+    .svcStac              : {. = . + __SVC_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)
                             RUN_START(__SVC_STACK_START)
                             RUN_END(__SVC_STACK_END)
     .firmware             : {} palign(8)                            > OCMRAM_sciclientTest_SYSFW

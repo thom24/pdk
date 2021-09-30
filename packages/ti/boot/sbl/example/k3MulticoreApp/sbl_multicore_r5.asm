@@ -42,7 +42,7 @@
 
 	.global _c_int00
 	.global _sblTestResetVectors
-	.asmfunc
+	
 
 _c_int00:
 _sblTestResetVectors: LDR pc, sblTestEntry ; Entry
@@ -62,10 +62,10 @@ sblDabortLoop	.long _sblDabortLoop
 sblHypLoop	.long _sblHypLoop
 sblIrqLoop	.long _sblIrqLoop
 sblFiqLoop	.long _sblFiqLoop
-	.endasmfunc
+	
 
 	.global _sblTestEntry
-	.asmfunc
+	
 _sblTestEntry:
 
 	; Setup stack
@@ -95,5 +95,5 @@ _sblTestStackTop:
 	.space 512
 _sblTestStackBase:
 
-	.endasmfunc
+	
 

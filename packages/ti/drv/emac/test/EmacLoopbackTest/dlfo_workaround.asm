@@ -42,14 +42,14 @@
     .global AsmWriteActlr
 
 AsmReadActlr:
-    .asmfunc
+    
     MRC p15, #0, r0, c1, c0, #1
     BX      lr
-    .endasmfunc
+    
 
 AsmWriteActlr:
-    .asmfunc
+    
     MCR p15, #0, r0, c1, c0, #1
     BX      lr
-    .endasmfunc
+    
 

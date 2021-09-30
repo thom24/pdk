@@ -100,7 +100,12 @@ void HwiP_compileTime_SizeChk(void)
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #else
 /* TI compiler */
-#pragma clang diagnostic warning "-Wunused"
+#if defined(__clang__)
+/* Clang compiler*/
+#pragma clang diagnostic ignored "-Wunused-variable"
+#else
+#pragma diag_suppress 179
+#endif
 #endif
     OSAL_COMPILE_TIME_SIZE_CHECK ((uint32_t)sizeof(HwiP_tiRtos),OSAL_TIRTOS_HWIP_SIZE_BYTES);
 #if defined(__GNUC__) && !defined(__ti__)

@@ -99,6 +99,7 @@ SECTIONS
 
     .text	: {} palign(8)	    	> MCU1_0_DDR_SPACE
     .const   	: {} palign(8) 		> MCU1_0_DDR_SPACE
+    .rodata   	: {} palign(8) 		> MCU1_0_DDR_SPACE
     .cinit   	: {} palign(8) 		> MCU1_0_DDR_SPACE
     .pinit   	: {} palign(8) 		> MCU1_0_DDR_SPACE
     .bss     	: {} align(4)  		> MCU1_0_DDR_SPACE

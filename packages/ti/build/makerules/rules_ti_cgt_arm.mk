@@ -73,7 +73,17 @@ ifeq ($(FORMAT),ELF)
   RTSLIB_FORMAT = eabi
 endif
 
-LNKFLAGS_INTERNAL_COMMON += -Xlinker -o4
+# OPTIMIZATION can take two values i.e. CODE and PERFORMANCE
+# This is parameter is only valid for release mode and not for debug mode
+# CODE is recommended for optimizing code size 
+# PERFORMANCE is recommended for optimizing performance, but it is likely to increase compiler generated code size
+ifeq ($(OPTIMIZATION),PERFORMANCE)
+  OPT_LEVEL = -O3
+else
+  OPT_LEVEL = -Oz
+endif
+
+LNKFLAGS_INTERNAL_COMMON +=
 
 SUPRESS_WARNINGS_FLAG = -Wno-extra -Wno-exceptions -ferror-limit=100 -Wno-parentheses-equality -Wno-unused-command-line-argument -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function -Wno-inconsistent-missing-override -Wno-address-of-packed-member -Wno-self-assign -Wno-ignored-attributes -Wno-bitfield-constant-conversion -Wno-unused-const-variable -Wno-unused-variable -Wno-format-security -Wno-excess-initializers -Wno-sometimes-uninitialized -Wno-empty-body -Wno-extern-initializer -Wno-absolute-value -Wno-missing-braces -Wno-ti-macros -Wno-pointer-sign -Wno-macro-redefined -Wno-main-return-type
 
@@ -99,7 +109,7 @@ endif
 
 ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   CFLAGS_INTERNAL += -Werror
-  LNKFLAGS_INTERNAL_COMMON += -Xlinker -Werror
+  LNKFLAGS_INTERNAL_COMMON += -Werror
 endif
 CFLAGS_DIROPTS = -c
 
@@ -143,7 +153,7 @@ endif
 ifeq ($(BUILD_PROFILE_$(CORE)), debug)
  LNKFLAGS_INTERNAL_BUILD_PROFILE =
  CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_debug
- CFLAGS_INTERNAL += -D_DEBUG_=1
+ CFLAGS_INTERNAL += -D_DEBUG_=1 -O1
  ifndef MODULE_NAME
   CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
  endif
@@ -153,9 +163,9 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
    LNKFLAGS_INTERNAL_BUILD_PROFILE = $(LNKFLAGS_GLOBAL_$(CORE))
    ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-     CFLAGS_INTERNAL += -O3 -s
+     CFLAGS_INTERNAL += $(OPT_LEVEL) -s
    else
-     CFLAGS_INTERNAL += -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
+     CFLAGS_INTERNAL += $(OPT_LEVEL) -op0 -os --optimize_with_debug --inline_recursion_limit=20
    endif
    CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
    ifndef MODULE_NAME
@@ -164,16 +174,16 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
  endif
  ifeq ($(CGT_ISA), Arm9)
         LNKFLAGS_INTERNAL_BUILD_PROFILE = --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
-        CFLAGS_INTERNAL += -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
+        CFLAGS_INTERNAL += -oe $(OPT_LEVEL) -op0 -os --optimize_with_debug --inline_recursion_limit=20
 	CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
 	ifndef MODULE_NAME
 	  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
 	endif
  endif
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4F))
-	# LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--float_support=FPv4SPD16 --endian=$(ENDIAN) -mv7M4 -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function $(CFLAGS_GLOBAL_$(CORE)) -oe -g -op2 -O3 -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on
+	# LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--float_support=FPv4SPD16 --endian=$(ENDIAN) -mv7M4 -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function $(CFLAGS_GLOBAL_$(CORE)) -oe -g -op2 $(OPT_LEVEL) -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on
      LNKFLAGS_INTERNAL_BUILD_PROFILE = --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
-	 CFLAGS_INTERNAL += -oe -O3 -op0 -os --optimize_with_debug --inline_recursion_limit=20
+	 CFLAGS_INTERNAL += -oe $(OPT_LEVEL) -op0 -os --optimize_with_debug --inline_recursion_limit=20
  endif
 endif
 
@@ -250,7 +260,11 @@ $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size: $(LIBDIR)/$(LIBNAME).$(LIBEXT)
 	$(RM)   $@temp
 
 # Linker options and rules
-LNKFLAGS_INTERNAL_COMMON += -Xlinker -q -Xlinker -u -Xlinker _c_int00
+LNKFLAGS_INTERNAL_COMMON += -Xlinker -q -Xlinker -u -Xlinker _c_int00 -Xlinker --display_error_number
+# Supress warning for "entry-point symbol other than "_c_int00" specified"
+LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10063-D 
+# Supress warning for "no matching section"
+LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10068-D
 
 ifeq ($(BOARD),$(filter $(BOARD), qtJ7))
   LNKFLAGS_INTERNAL_COMMON += -Xlinker -cr -Xlinker --ram_model
@@ -259,16 +273,16 @@ else
 endif
 
 ifeq ($(CGT_ISA), R5)
-  LNKFLAGS_INTERNAL_COMMON += -Xlinker -mcpu=cortex-r5 -Xlinker -march=armv7-r
+  LNKFLAGS_INTERNAL_COMMON += -mcpu=cortex-r5 -march=armv7-r
   #--diag_suppress=10063 supresses 'warning: entry point other than _c_int00 specified'
 else
 ifeq ($(CGT_ISA), M4F)
-  LNKFLAGS_INTERNAL_COMMON += -Xlinker --mcpu=cortex-m4
+  LNKFLAGS_INTERNAL_COMMON += --mcpu=cortex-m4
 else
 ifeq ($(CGT_ISA), Arm9)
   LNKFLAGS_INTERNAL_COMMON +=
 else
-  LNKFLAGS_INTERNAL_COMMON += -Xlinker --silicon_version=7$(CGT_ISA)
+  LNKFLAGS_INTERNAL_COMMON += --silicon_version=7$(CGT_ISA)
 endif
 endif
 endif

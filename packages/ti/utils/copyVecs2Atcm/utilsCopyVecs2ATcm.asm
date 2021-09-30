@@ -42,7 +42,7 @@
 
     .global utilsCopyVecs2ATcm
 utilsCopyVecs2ATcm:
-        .asmfunc
+        
         mrc     p15, #0, r0, c9, c1, #1 ; read ATCM Region Register
         tst     r0, #1
         beq     exit                    ; do nothing if ATCM disabled
@@ -58,6 +58,6 @@ loop:
         bgt     loop
 exit:
         bx      lr
-        .endasmfunc
+        
 
         .end

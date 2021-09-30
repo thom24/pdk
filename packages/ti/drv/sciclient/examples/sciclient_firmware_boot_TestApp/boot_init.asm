@@ -42,7 +42,7 @@
     .global _sciclientTestResetVectors
 
 _sciclientTestResetVectors:
-    .asmfunc
+    
     LDR pc, sciclientTestEntry ; Reset
     B _sciclientTestLoopForever ; Undefined Instruction
     B _sciclientTestLoopForever ; SVC call
@@ -53,7 +53,7 @@ _sciclientTestResetVectors:
     B _sciclientTestLoopForever ; FIQ
 
 sciclientTestEntry    .long _sciclientTestEntry
-    .endasmfunc
+    
 
 ;****************************************************************************
 ; sciclientTest Entry
@@ -65,7 +65,7 @@ _c_int00_addr        .long _c_int00
 _sciclientTestAtcmEnAddr        .long _sciclientTestAtcmEn
 
 _sciclientTestEntry:
-    .asmfunc
+    
 
     LDR   r0, _btcm_start                 ; Start address of BTCM
     LDR   r1, _btcm_end                   ; End address of BTCM
@@ -89,7 +89,7 @@ _sciclientTestLoopForever:
     WFI
     B    _sciclientTestLoopForever
 
-    .endasmfunc
+    
 
 _btcm_start:
     .word 0x41010000
@@ -107,11 +107,11 @@ _sciclientTestTestStackBase:
     .global _sciclientTestAtcmEn
 
 _sciclientTestAtcmEn:
-    .asmfunc
+    
     MRC     p15, #0, r0, c9, c1, #1
     ORR     r0, r0, #0x1
     MCR     p15, #0, r0, c9, c1, #1
     BX      lr
-    .endasmfunc
+    
     
 

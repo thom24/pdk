@@ -83,7 +83,7 @@ void OsalArch_compileTime_SizeChk(void)
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #else
 /* TI compiler */
-#pragma clang diagnostic warning "-Wunused"
+#pragma clang diagnostic ignored "-Wunused-variable"
 #endif
     OSAL_COMPILE_TIME_SIZE_CHECK ((uint32_t)sizeof(HwiP_nonOs),OSAL_NONOS_HWIP_SIZE_BYTES);
 #if defined(__GNUC__) && !defined(__ti__)

@@ -42,7 +42,7 @@
 
     .global ipcCopyVecs2Exc
 ipcCopyVecs2Exc:
-        .asmfunc
+        
         movw    r0, ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors
         movt    r0, ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors
         mov     r1, #0                  ; Exeception Handler address
@@ -54,6 +54,6 @@ loop:
         bgt     loop
 exit:
         bx      lr
-        .endasmfunc
+        
 
         .end

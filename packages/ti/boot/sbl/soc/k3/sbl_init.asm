@@ -42,7 +42,7 @@
 	.global _sblResetVectors
 
 _sblResetVectors:
-	.asmfunc
+	
 	LDR pc, sblEntry ; Reset
 	B _sblLoopForever ; Undefined Instruction
 	B _sblLoopForever ; SVC call
@@ -53,7 +53,7 @@ _sblResetVectors:
 	B _sblLoopForever ; FIQ
 
 sblEntry	.long _sblEntry
-	.endasmfunc
+	
 
 ;****************************************************************************
 ; SBL Entry
@@ -68,7 +68,7 @@ SBL_init_profile_addr	.long SBL_init_profile
 _sblTcmEnAddr		.long _sblTcmEn
 
 _sblEntry:
-	.asmfunc
+	
 
 	MRC	p15, #0, r1, c0, c0, #5
 	BFC	r1, #8, #24
@@ -92,7 +92,7 @@ _sblLoopForever:
 	WFI
 	B	_sblLoopForever
 
-	.endasmfunc
+	
 
 _sblTestStackTop:
 	.space 64

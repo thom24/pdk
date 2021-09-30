@@ -140,29 +140,29 @@ portRESTORE_CONTEXT .macro
         .global vPortRestoreTaskContext
         .sect ".text.hwi"
         .arm
-vPortRestoreTaskContext .asmfunc
+vPortRestoreTaskContext 
         ;  Switch to system mode.
         CPS     #SYS_MODE
         portRESTORE_CONTEXT
-        .endasmfunc
+        
 
 ;  FUNCTION DEF: void HwiP_svc_handler(void)
         .global HwiP_svc_handler
         .sect ".text.hwi"
         .arm
-HwiP_svc_handler: .asmfunc
+HwiP_svc_handler: 
         ;  Save the context of the current task and select a new task to run.
         portSAVE_CONTEXT
         LDR     R0, vTaskSwitchContextConst
         BLX     R0
         portRESTORE_CONTEXT
-        .endasmfunc
+        
 
 ;  FUNCTION DEF: void HwiP_irq_handler(void)
         .global HwiP_irq_handler
         .sect ".text.hwi"
         .arm
-HwiP_irq_handler: .asmfunc
+HwiP_irq_handler: 
 	;  Return to the interrupted instruction.
 	SUB		lr, lr, #4
 
@@ -218,7 +218,7 @@ HwiP_irq_handler: .asmfunc
 	LDR	r0, [r1]
 	CMP	r0, #0
 	BNE	switch_before_exit
-        .endasmfunc
+        
 
 exit_without_switch:
 	;  No context switch.  Restore used registers, LR_irq and SPSR before
@@ -260,7 +260,7 @@ switch_before_exit:
         .global HwiP_data_abort_handler
         .sect ".text.hwi"
         .arm
-HwiP_data_abort_handler: .asmfunc
+HwiP_data_abort_handler: 
 	;  Return to the instruction following the interrupted.
 	SUB		lr, lr, #4
 
@@ -282,7 +282,7 @@ HwiP_data_abort_handler: .asmfunc
 	MSR	SPSR_cxsf, LR
 	POP	{LR}
 	MOVS	PC, LR
-        .endasmfunc
+        
 
 ulPortYieldRequiredAddr: .word ulPortYieldRequired
 pxCurrentTCBConst: .word pxCurrentTCB
