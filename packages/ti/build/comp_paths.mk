@@ -114,7 +114,7 @@ export PDK_SDR_COMP_PATH = $(pdk_PATH)/ti/diag/sdr
 PDK_DIAG_EX_ROOT_PATH ?= $(pdk_PATH)
 export PDK_DIAG_EX_COMP_PATH = $(pdk_PATH)/ti/diag/examples
 PDK_LPM_ROOT_PATH ?= $(pdk_PATH)
-export PDK_LPM_COMP_PATH = $(PDK_LPM_ROOT_PATH)/ti/lpm
+export PDK_LPM_COMP_PATH = $(PDK_LPM_ROOT_PATH)/ti/drv/lpm
 
 #Below applicable only for TPR12 devices
 PDK_CRC_ROOT_PATH ?= $(pdk_PATH)

@@ -354,26 +354,6 @@ uint64_t get_usec_timestamp(void)
 	return output;
 }
 
-static int32_t ReleaseMCUR5(void)
-{
-    int32_t  status   = CSL_EFAIL;
-
-#if defined(UART_PRINT_DEBUG)
-    AppUtils_Printf(MSG_NORMAL,
-                    "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n",
-                    SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0);
-#else
-    SBL_log(SBL_LOG_MAX,
-            "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n",
-            SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0);
-#endif
-    status = Sciclient_procBootReleaseProcessor(SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0,
-                                                TISCI_MSG_FLAG_AOP,
-                                                SCICLIENT_SERVICE_WAIT_FOREVER);
-
-    return (status);
-}
-
 //#if defined(BOOTAPP_MAINDOMAIN_BOARD_SETUP)
 /*        This function uses the Global Timebase Counter (GTC)
  *        Important: the GTC clock is different than the ARM PMU clock.
@@ -1270,12 +1250,6 @@ int32_t Boot_App()
             time_boot_stage_finish[j] = get_usec_timestamp();
 #endif
         } /* if (retVal == CSL_PASS) */        
-        if(j == NUM_BOOT_STAGES-2)
-        {
-            AppUtils_Printf(MSG_NORMAL,
-                        "Calling ReleaseMCUR5().......!!!!\n");
-            ReleaseMCUR5();
-        }
         if(j == NUM_BOOT_STAGES-1)
         {
             AppUtils_Printf(MSG_NORMAL,
