@@ -74,7 +74,7 @@ pcieMode_e PcieModeGbl;
  */
 static void BoardDiag_configurePcieDeviceType(uint32_t pcie_index, uint32_t device_type)
 {
-    uint32_t get_value;
+    volatile uint32_t get_value;
     // configure pcie as a specific device type
     *((uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x324)) = 0x00000001;
     *((uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0xa4c + 0x4 * pcie_index)) = 0x00000101;
@@ -350,7 +350,7 @@ int8_t BoardDiag_pcieTest(void)
     uint32_t pcieInstance;
     uint32_t link_up_done = 0x0;
     uint32_t link_state = 0x0;
-	uint32_t data_arrived = 0;
+	volatile uint32_t data_arrived = 0;
     uint8_t pcieModeResponse;
     uint32_t linkSpeed;
 
