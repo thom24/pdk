@@ -1,6 +1,6 @@
 /*
  * FreeRTOS Kernel V10.4.1
- * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * Copyright (C) 2021 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -268,9 +268,14 @@ StackType_t *pxPortInitialiseStack(StackType_t * pxTopOfStack, StackType_t * pxE
 
 
 TimerP_Handle pTickTimerHandle = NULL;
+#define C7X_DUAL_TIMER_BUG_HACK (1)
+#define C7X_LOG_TIMER_INT_DELTA (1)
+
+#if (C7X_LOG_TIMER_INT_DELTA == 1)
 uint64_t gTscISRLog[1024];
 uint64_t gTscISRLogIdx = 0;
-#define C7X_DUAL_TIMER_BUG_HACK (1)
+#endif
+
 
 static void prvPorttimerTickIsr(uintptr_t args)
 {
@@ -284,8 +289,10 @@ static void prvPorttimerTickIsr(uintptr_t args)
         return;
     }
 #endif
+#if (C7X_LOG_TIMER_INT_DELTA == 1)
     gTscISRLog[gTscISRLogIdx % (sizeof(gTscISRLog)/sizeof(gTscISRLog[0]))] = __TSC;
     gTscISRLogIdx++;
+#endif
 
     vPortTimerTickHandler();
 }
@@ -581,7 +588,7 @@ void vApplicationIdleHook( void )
 #if (configLOAD_UPDATE_IN_IDLE==1)
     void vApplicationLoadHook();
 
-    //vApplicationLoadHook();
+    vApplicationLoadHook();
 #endif
 
 }

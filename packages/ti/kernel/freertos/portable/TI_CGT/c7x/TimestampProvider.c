@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2016-2018, Texas Instruments Incorporated
+ * Copyright (c) 2016-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,6 +52,9 @@ uint32_t TimestampProvider_get32()
     return (uint32_t)__TSC;
 }
 
+#define C7X_ENABLE_TSC_CALIBRATION (1)
+
+#if (C7X_ENABLE_TSC_CALIBRATION == 1)
 #define NOP5         do {          \
                          asm(" NOP "); \
                          asm(" NOP "); \
@@ -92,11 +95,16 @@ uint32_t TimestampProvider_get32()
                   } while(0)
 
 uint64_t gTscDeltaCalib = 0;
+
+#endif /* #if (C7X_ENABLE_TSC_CALIBRATION == 1) */
+
+
 /*
  *  ======== TimestampProvider_Module_startup ========
  */
 void TimestampProvider_Module_startup( void )
 {
+#if (C7X_ENABLE_TSC_CALIBRATION == 1)
    uint64_t startTime,endTime,i;
    /*
     * Part of runtime. Called during first pass.
@@ -110,6 +118,7 @@ void TimestampProvider_Module_startup( void )
    }
    endTime = __TSC;
    gTscDeltaCalib = endTime - startTime;
+#endif
    return;
 }
 

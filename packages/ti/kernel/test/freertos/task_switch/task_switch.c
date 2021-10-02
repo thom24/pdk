@@ -223,7 +223,7 @@ void ping_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#ifdef _TMS320C6X
+#if (defined(_TMS320C6X) || defined (__C7100__))
         hwiParams.evtId = PING_EVT_ID;
 #endif
         hHwi = HwiP_create(PING_INT_NUM, ping_isr, &hwiParams);
@@ -280,7 +280,7 @@ void pong_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#ifdef _TMS320C6X
+#if (defined(_TMS320C6X) || defined (__C7100__))
         hwiParams.evtId = PONG_EVT_ID;
 #endif
         hHwi = HwiP_create(PONG_INT_NUM, pong_isr, &hwiParams);

@@ -164,7 +164,7 @@
 #define INCLUDE_xTaskGetIdleTaskHandle      (1)
 #define INCLUDE_vTaskPrioritySet            (1)
 
-/* Size of ISR Stack in c66x */
+/* Size of ISR Stack in c7x */
 #define configHWI_TASK_STACK_DEPTH          (64 * 1024)
 
 

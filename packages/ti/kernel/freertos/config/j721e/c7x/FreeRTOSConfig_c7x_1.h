@@ -49,4 +49,4 @@
 #define configTIMER_ID                                                    (0)
 #define configTIMER_INT_NUM                                               (14)
 #define configTIMER_EVENT_ID                                              (21)
-#endif /* TI_FREERTOS_C66XDSP_1_CONFIG_H */
+#endif /* TI_FREERTOS_C7X_1_CONFIG_H */
