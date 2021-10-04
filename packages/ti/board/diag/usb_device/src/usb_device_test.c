@@ -291,7 +291,7 @@ int8_t BoardDiag_run_usbDevice_test(void)
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
+    boardCfg = BOARD_INIT_UART_STDIO;
 #endif
 
     status = Board_init(boardCfg);
@@ -381,7 +381,7 @@ int main()
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 #else
-    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
+    boardCfg = BOARD_INIT_UART_STDIO;
 #endif
 
     status = Board_init(boardCfg);
