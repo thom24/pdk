@@ -168,12 +168,12 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         /* Pick up the internal static memory block */
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
-        
-        if(gHwiInitialized==(bool)false) 
+
+        if(gHwiInitialized==(bool)false)
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
-          gHwiInitialized = (bool)true; 
+          gHwiInitialized = (bool)true;
         }
     }
 
@@ -265,21 +265,22 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
 
         hwi_handle->intNum = (uint32_t)interruptNum;
 
-        /* Registering the Interrupt Service Routine(ISR). */
-        Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
-
         /* Set the priority to default priority if priority is set un-initialized */
-        if (params->priority == HWIP_USE_DEFAULT_PRIORITY)
+        if ((params->priority > CSL_VIM_PRI_INT_VAL_MAX) ||
+            (params->priority == HWIP_USE_DEFAULT_PRIORITY))
         {
             priority = (uint16_t)HWIP_R5F_DEFAULT_PRIORITY;
-        } 
+        }
         else
         {
-			priority = (uint16_t)params->priority;
-		}
+            priority = (uint16_t)params->priority;
+        }
 
         /* Setting the priority for the UART interrupt in INTC. */
         Intc_IntPrioritySet((uint16_t)interruptNum, priority, 0);
+
+        /* Registering the Interrupt Service Routine(ISR). */
+        Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
 
         /* Enabling the interrupt if configured */
         if (params->enableIntr == 1U)
@@ -293,7 +294,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             Intc_IntDisable((uint16_t)interruptNum);
         }
     }
-  } 
+  }
     return ((HwiP_Handle) (retHandle) );
 
 }
