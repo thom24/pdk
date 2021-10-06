@@ -76,6 +76,8 @@
 /* Function prototypes */
 int32_t  mcu_timer_init(void);
 uint64_t get_usec_timestamp(void);
-int32_t Boot_App();
+int32_t Boot_App(void);
+void Boot_AppInit(void);
+void Boot_AppDeInit(void);
 
 #endif /* LPM_BOOT_H_ */

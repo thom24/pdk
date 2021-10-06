@@ -16,14 +16,6 @@ INCDIR = ../../include
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-ifeq ($(BUILD_OS_TYPE), tirtos)
-  COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-  INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  SRCS_COMMON = main_rtos.c
-  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-  EXTERNAL_LNKCMD_FILE_LOCAL = overrides/$(SOC)/$(CORE)/linker_r5_sysbios.lds
-  XDC_CFG_FILE_$(CORE) = overrides/$(SOC)/$(CORE)/sysbios_$(ISA).cfg
-endif
 ifeq ($(BUILD_OS_TYPE), freertos)
   COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
   INCLUDE_EXTERNAL_INTERFACES += freertos

@@ -77,12 +77,9 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 
-#include "lpm_ipc.h"
-#include "lpm_boot.h"
-#include "lpm_pmic.h"
-#include "print_utils.h"
-
 #include <ti/drv/sciclient/sciserver_tirtos.h>
+
+#include <ti/drv/lpm/lpm.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -91,12 +88,7 @@
 /* Test application stack size */
 #define APP_TASK_STACK                  (10U * 1024U)
 /**< Stack required for the stack */
-#define BOOT_DEMO_TASK_NAME             ("BOOT MAIN DOMAIN")
-#define MCU_ONLY_DEMO_TASK_NAME             ("MCU ONLY TASK")
-/**< Task names */
-#define BOOT_TASK_PRIORITY              (2)
-#define MCU_ONLY_TASK_PRIORITY          (5)
-#define IPC_TASK_PRIORITY               (3)
+#define MAIN_APP_TASK_PRIORITY          (2)
 /**< Task Priority Levels */
 
 /* ========================================================================== */
@@ -108,41 +100,20 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-static void BootApp_TaskFxn(void* a0, void* a1);
 
-static void McuOnlyApp_TaskFxn(void* a0, void* a1);
+static void MainApp_TaskFxn(void* a0, void* a1);
 extern uint32_t McuOnly_App();
-
-static void IpcApp_TaskFxn(void* a0, void* a1);
 extern int32_t Ipc_echo_test();
-
 int32_t SetupSciServer(void);
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-TaskP_Handle bootTask;
-TaskP_Params bootTaskParams;
-static uint8_t BootApp_TaskStack[APP_TASK_STACK] __attribute__((aligned(32)));
-/**< Stack for the Boot task */
-
-TaskP_Handle mcuOnlyTask;
-TaskP_Params mcuOnlyTaskParams;
-static uint8_t McuOnly_TaskStack[APP_TASK_STACK] __attribute__((aligned(32)));
-/**< Stack for the MCU Only task */
-SemaphoreP_Handle mcuOnlySyncSemHandle;
-SemaphoreP_Params mcuOnlySyncSemParams;
-/**< Sync semaphore for MCU ONLY task */
-
-TaskP_Handle ipcTask;
-TaskP_Params ipcTaskParams;
-static uint8_t IpcApp_TaskStack[APP_TASK_STACK] __attribute__((aligned(32)));
-/**< Stack for the IPC task */
-SemaphoreP_Handle ipcSyncSemHandle;
-SemaphoreP_Params ipcSyncSemParams;
-/**< Sync semaphore for IPC task */
-
-volatile uint32_t mcuOnlyAppDoneOnce = 0;
+TaskP_Handle mainAppTask;
+TaskP_Params mainAppTaskParams;
+static uint8_t MainApp_TaskStack[APP_TASK_STACK] __attribute__((aligned(32)));
+/**< Stack for the Main task */
 
 /* ========================================================================== */
 /*                            External Variables                              */
@@ -172,61 +143,14 @@ int main(void)
     AppUtils_Printf(MSG_NORMAL, "\nMCU R5F App started at %d usecs\r\n", (uint32_t)get_usec_timestamp());
 
     /* Initialize the task params */
-    TaskP_Params_init(&bootTaskParams);
-    //bootTaskParams.instance->name = BOOT_DEMO_TASK_NAME;
-    bootTaskParams.priority       = BOOT_TASK_PRIORITY;
-    bootTaskParams.stack          = BootApp_TaskStack;
-    bootTaskParams.stacksize      = sizeof (BootApp_TaskStack);
+    TaskP_Params_init(&mainAppTaskParams);
+    mainAppTaskParams.priority       = MAIN_APP_TASK_PRIORITY;
+    mainAppTaskParams.stack          = MainApp_TaskStack;
+    mainAppTaskParams.stacksize      = sizeof (MainApp_TaskStack);
 
-    bootTask = TaskP_create(BootApp_TaskFxn, &bootTaskParams);
-    if (NULL == bootTask)
+    mainAppTask = TaskP_create(MainApp_TaskFxn, &mainAppTaskParams);
+    if (NULL == mainAppTask)
     {
-        //AppUtils_Printf(MSG_NORMAL, "\nBoot Task creation failed\r\n");
-        OS_stop();
-    }
-
-    /* Initialize the task params */
-    TaskP_Params_init(&mcuOnlyTaskParams);
-    //mcuOnlyTaskParams.instance->name = MCU_ONLY_DEMO_TASK_NAME;
-    mcuOnlyTaskParams.priority       = MCU_ONLY_TASK_PRIORITY;
-    mcuOnlyTaskParams.stack          = McuOnly_TaskStack;
-    mcuOnlyTaskParams.stacksize      = sizeof (McuOnly_TaskStack);
-
-    mcuOnlyTask = TaskP_create(McuOnlyApp_TaskFxn, &mcuOnlyTaskParams);
-    if (NULL == mcuOnlyTask)
-    {
-        //AppUtils_Printf(MSG_NORMAL, "\nMCU Only Task creation failed\r\n");
-        OS_stop();
-    }
-
-    SemaphoreP_Params_init(&mcuOnlySyncSemParams);
-    //mcuOnlySyncSemParams.instance->name = "mcuOnlySyncSem";
-    mcuOnlySyncSemHandle = SemaphoreP_create(0, &mcuOnlySyncSemParams);
-    if (NULL == mcuOnlySyncSemHandle)
-    {
-        //AppUtils_Printf(MSG_NORMAL, "\nMCU Only Task Sync semaphore creation failed\r\n");
-        OS_stop();
-    }
-
-    /* Initialize the task params */
-    TaskP_Params_init(&ipcTaskParams);
-    ipcTaskParams.priority       = IPC_TASK_PRIORITY;
-    ipcTaskParams.stack          = IpcApp_TaskStack;
-    ipcTaskParams.stacksize      = sizeof (IpcApp_TaskStack);
-
-    ipcTask = TaskP_create(IpcApp_TaskFxn, &ipcTaskParams);
-    if (NULL == ipcTask)
-    {
-        //AppUtils_Printf(MSG_NORMAL, "\nIPC Task creation failed\r\n");
-        OS_stop();
-    }
-
-    SemaphoreP_Params_init(&ipcSyncSemParams);
-    //ipcSyncSemParams.instance->name = "mcuOnlySyncSem";
-    ipcSyncSemHandle = SemaphoreP_create(0, &ipcSyncSemParams);
-    if (NULL == ipcSyncSemHandle)
-    {
-        //AppUtils_Printf(MSG_NORMAL, "\nIPC Task Sync semaphore creation failed\r\n");
         OS_stop();
     }
 
@@ -235,112 +159,53 @@ int main(void)
     return(0);
 }
 
-static void McuOnlyApp_TaskFxn(void* a0, void* a1)
-{
-    uint64_t timeMcuOnlyAppStart, timeMcuOnlyAppFinish;
-
-    AppUtils_Printf(MSG_NORMAL, "Waiting for Boot Task to complete...\n");
-    SemaphoreP_pend(mcuOnlySyncSemHandle, osal_WAIT_FOREVER);
-    AppUtils_Printf(MSG_NORMAL, "Boot Task to completed!\n");
-
-    timeMcuOnlyAppStart = get_usec_timestamp();
-    McuOnly_App();
-    timeMcuOnlyAppFinish = get_usec_timestamp();
-
-    AppUtils_Printf(MSG_NORMAL, "\nMCU Only Task started at %d usecs and finished at %d usecs\r\n",
-                    (uint32_t)timeMcuOnlyAppStart,
-                    (uint32_t)timeMcuOnlyAppFinish);
-
-    TaskP_delete(&bootTask);
-    /* Initialize the task params */
-    TaskP_Params_init(&bootTaskParams);
-    //bootTaskParams.instance->name = BOOT_DEMO_TASK_NAME;
-    bootTaskParams.priority       = BOOT_TASK_PRIORITY;
-    bootTaskParams.stack          = BootApp_TaskStack;
-    bootTaskParams.stacksize      = sizeof (BootApp_TaskStack);
-
-    mcuOnlyAppDoneOnce = 1;
-    bootTask = TaskP_create(BootApp_TaskFxn, &bootTaskParams);
-    if (NULL == bootTask)
-    {
-        //AppUtils_Printf(MSG_NORMAL, "\nBoot Task re-creation failed\r\n");
-        OS_stop();
-    }
-
-    TaskP_delete(&ipcTask);
-    /* Initialize the task params */
-    TaskP_Params_init(&ipcTaskParams);
-    ipcTaskParams.priority       = IPC_TASK_PRIORITY;
-    ipcTaskParams.stack          = IpcApp_TaskStack;
-    ipcTaskParams.stacksize      = sizeof (IpcApp_TaskStack);
-
-    ipcTask = TaskP_create(IpcApp_TaskFxn, &ipcTaskParams);
-    if (NULL == ipcTask)
-    {
-        //AppUtils_Printf(MSG_NORMAL, "\nIPC Task re-creation failed\r\n");
-        OS_stop();
-    }
-
-    SemaphoreP_delete(ipcSyncSemHandle);
-    SemaphoreP_Params_init(&ipcSyncSemParams);
-    //ipcSyncSemParams.instance->name = "mcuOnlySyncSem";
-    ipcSyncSemHandle = SemaphoreP_create(0, &ipcSyncSemParams);
-    if (NULL == ipcSyncSemHandle)
-    {
-        //AppUtils_Printf(MSG_NORMAL, "\nIPC Task Sync semaphore creation failed\r\n");
-        OS_stop();
-    }
-    return;
-}
-
-static void BootApp_TaskFxn(void* a0, void* a1)
-{
-    uint64_t timeBootAppStart, timeBootAppFinish;
-
-    AppUtils_Printf(MSG_NORMAL, "Waiting for IPC Task to complete...\n");
-    SemaphoreP_pend(ipcSyncSemHandle, osal_WAIT_FOREVER);
-    AppUtils_Printf(MSG_NORMAL, "IPC Task to completed!\n");
-
-    timeBootAppStart = get_usec_timestamp();
-    Boot_App();
-    timeBootAppFinish = get_usec_timestamp();
-
-    AppUtils_Printf(MSG_NORMAL, "\nMCU Boot Task started at %d usecs and finished at %d usecs\r\n",
-                    (uint32_t)timeBootAppStart,
-                    (uint32_t)timeBootAppFinish);
-
-    TaskP_sleep(1000);
-    AppUtils_Printf(MSG_NORMAL, "Calling rpmsg_exit_responseTask\n");
-    rpmsg_exit_responseTask();
-    TaskP_sleep(1000);
-    AppUtils_Printf(MSG_NORMAL, "responder task should have exited\n");
-
-    if (mcuOnlyAppDoneOnce)
-    {
-        McuOnly_App();
-        Boot_App();
-    }
-
-    /* Post a semaphore to start the MCU ONLY task */
-    SemaphoreP_post(mcuOnlySyncSemHandle);
-    return;
-}
-
-static void IpcApp_TaskFxn(void* a0, void* a1)
+static void MainApp_TaskFxn(void* a0, void* a1)
 {
     uint64_t timeIPCStart, timeIPCFinish;
+    uint64_t timeBootAppStart, timeBootAppFinish;
+    uint64_t timeMcuOnlyAppStart, timeMcuOnlyAppFinish;
+    uint32_t i, numBoots=5;
 
-    timeIPCStart = get_usec_timestamp();
-    Ipc_echo_test();
-    timeIPCFinish = get_usec_timestamp();
+    Boot_AppInit();
+    McuOnly_AppInit();
 
-    AppUtils_Printf(MSG_NORMAL, "\nIPC Task started at %d usecs and finished at %d usecs\r\n",
-                    (uint32_t)timeIPCStart,
-                    (uint32_t)timeIPCFinish);
+    for(i=0; i<numBoots; i++)
+    {
+        timeIPCStart = get_usec_timestamp();
+        Ipc_echo_test();
+        timeIPCFinish = get_usec_timestamp();
 
-    TaskP_sleep(5*1000);
-    /* Post a semaphore to start the IPC task */
-    SemaphoreP_post(ipcSyncSemHandle);
+        AppUtils_Printf(MSG_NORMAL, "\nIPC Task started at %d usecs and finished at %d usecs\r\n",
+                        (uint32_t)timeIPCStart,
+                        (uint32_t)timeIPCFinish);
+
+        TaskP_sleep(5*1000);
+
+        timeBootAppStart = get_usec_timestamp();
+        Boot_App();
+        timeBootAppFinish = get_usec_timestamp();
+
+        AppUtils_Printf(MSG_NORMAL, "\nMCU Boot Task started at %d usecs and finished at %d usecs\r\n",
+                        (uint32_t)timeBootAppStart,
+                        (uint32_t)timeBootAppFinish);
+
+        TaskP_sleep(1000);
+        AppUtils_Printf(MSG_NORMAL, "Calling rpmsg_exit_responseTask\n");
+        rpmsg_exit_responseTask();
+        TaskP_sleep(1000);
+        AppUtils_Printf(MSG_NORMAL, "responder task should have exited\n");
+
+        timeMcuOnlyAppStart = get_usec_timestamp();
+        McuOnly_App();
+        timeMcuOnlyAppFinish = get_usec_timestamp();
+
+        AppUtils_Printf(MSG_NORMAL, "\nMCU Only Task started at %d usecs and finished at %d usecs\r\n",
+                        (uint32_t)timeMcuOnlyAppStart,
+                        (uint32_t)timeMcuOnlyAppFinish);
+    }
+
+    Boot_AppDeInit();
+
     return;
 }
 

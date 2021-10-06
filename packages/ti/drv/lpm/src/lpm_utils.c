@@ -59,94 +59,44 @@
 * OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 */
+
 /**
- *  \file     boot_core_defs.h
+ *  \file     lpm_utils.c
  *
- *  \brief    Header file for slave boot core definitions
+ *  \brief    Implements the common utility functions
  *
  */
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
-#include <ti/boot/sbl/src/mmcsd/sbl_mmcsd.h>
-#if defined(SOC_J721E)
-#include <ti/drv/lpm/soc/j721e/boot_stage_defs.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/drv/lpm/soc/j7200/boot_stage_defs.h>
-#endif
+#include <stdlib.h>
+#include <ti/drv/lpm/include/lpm_utils.h>
+#include <ti/drv/uart/UART_stdio.h>
+#include <ti/drv/uart/UART.h>
 
 /* ========================================================================== */
-/*                           Macros & Typedefs                                */
+/*                          Function Implementation                           */
 /* ========================================================================== */
+/**
+ *  \brief Printf utility
+ *
+ */
+void AppUtils_Printf (uint32_t type,const char *pcString, ...)
+{
+    static char printBuffer[APP_UTILS_PRINT_MAX_STRING_SIZE];
+    va_list arguments;
 
-/* Maximum number of boot cores per boot stage */
-#define MAX_CORES_PER_STAGE 5
+    /* Start the varargs processing. */
+    va_start(arguments, pcString);
+    vsnprintf (printBuffer, sizeof(printBuffer), pcString, arguments);
 
-#define MAX_APPIMAGE_NAME_LEN   (16)
+    if (type >= APP_UTILS_PRINT_MSG_LEVEL)
+    {
+        UART_printf("%s",printBuffer);
+    }
+/* End the varargs processing. */
+va_end(arguments);
 
-/* Macros representing the offset where the App Image has to be written/Read from
-   the OSPI Flash.
-*/
-#define OSPI_OFFSET_SI               (0x2E0000U)
-#define OSPI_OFFSET_SYSFW            (0x80000U)
-
-/* Location of ATF/OPTEE - used for both Linux and QNX */
-#define OSPI_OFFSET_A72IMG1          (0x1C0000U)
-/* Location of Kernel for Linux or IFS for QNX */
-#define OSPI_OFFSET_A72IMG2          (0x7C0000U)
-/* Location of DTB for Linux */
-#define OSPI_OFFSET_A72IMG3          (0x1EC0000U)
-
-#define MAIN_DOMAIN_APPS_FLASH_ADDR  (0x1FC0000U)
-#define MAIN_DOMAIN_APPS_FLASH_ADDR2 (0x27C0000U)
-#define MAIN_DOMAIN_APPS_FLASH_ADDR3 (0x37C0000U)
-
-/* Location Address used as flag to indicate loading of
- * all HLOS appimages for OSPI */
-#define MAIN_DOMAIN_HLOS             (0x1)
-/* Name indicating that appimages for HLOS should be
- * loaded from MMCSD filesystem */
-#define MAIN_DOMAIN_HLOS_NAME        "hlos"
-
-/* Important RAM address macros */
-#define ATF_START_RAM_ADDR          (0x70000000)
-
-/* this whole structure fits inside sblbootbuff segment in memory */
-#define SBL_MAX_BOOT_BUFF_SIZE      (0x4000000-0x10)
-
-/* ========================================================================== */
-/*                          External Dependencies                             */
-/* ========================================================================== */
-/* Definition of available Main Domain cores that can be booted
- * by the sample application for J721E SOC */
-extern const sblSlaveCoreInfo_t sbl_late_slave_core_info[];
-
-extern const sblSlaveCoreInfo_t sbl_late_slave_core_stages_info[NUM_BOOT_STAGES]
-                                                               [MAX_CORES_PER_STAGE];
-
-extern const uint32_t ospi_main_domain_flash_rtos_images[NUM_BOOT_STAGES];
-
-extern TCHAR mmcsd_main_domain_rtos_image_name[NUM_BOOT_STAGES]
-                                              [MAX_APPIMAGE_NAME_LEN];
-
-/* Number of Main Domain cores that can be booted by the
- * sample application for J721E SOC */
-extern uint8_t num_slave_cpus;
-
-/* Defines boot order for the first stage of the Main Domain
- * boot sequence for J721E SOC */
-extern cpu_core_id_t boot_order_first_stage[];
-
-/* Defines boot order for the second stage of the Main Domain
- * boot sequence for J721E SOC */
-extern cpu_core_id_t boot_order_second_stage[];
-
-/* Points to boot order arrays for each of the boot stages */
-extern cpu_core_id_t *boot_array_stage[];
-
-/* Defines number of cores booted in each stage */
-extern uint8_t num_cores_per_boot_stage[];
-
+    return;
+}

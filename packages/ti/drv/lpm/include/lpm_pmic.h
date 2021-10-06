@@ -75,5 +75,6 @@
 
 /* Function prototypes */
 uint32_t McuOnly_App(void);
+void McuOnly_AppInit(void);
 
 #endif /* LPM_PMIC_H_ */

@@ -87,8 +87,8 @@
 
 #include <ti/drv/sciclient/sciserver.h>
 
-#include "lpm_ipc.h"
-#include "print_utils.h"
+#include <ti/drv/lpm/include/lpm_ipc.h>
+#include <ti/drv/lpm/include/lpm_utils.h>
 
 #include <ti/drv/pmic/test/common/pmic_ut_common.h>
 
@@ -138,8 +138,6 @@ struct bootApp_local_rm_boardcfg bootAppBoardCfg_rm;
 #pragma DATA_SECTION(bootAppBoardCfg_sec, ".sysfw_data_cfg_board_sec")
 struct tisci_boardcfg_sec bootAppBoardCfg_sec;
 
-extern uint32_t reloadedBootApp;
-
 /* ========================================================================== */
 /*              Internal Function Declarations                                */
 /* ========================================================================== */
@@ -151,7 +149,11 @@ uint32_t McuToActiveSwitch(void);
 void VtmMaxOutrgAlertDisableForTmpSens1to4();
 void SwResetMainDomain(void);
 void PMICStateChangeActiveToMCUOnly(void);
+#if defined(PMIC_USE_DRV)
+int32_t initPMIC(void);
+#else
 void I2CInitPMIC(void);
+#endif
 void PMICStateChangeMCUOnlyToActive(void);
 void BringBackMAINDomain(void);
 int32_t EnableMCU2MAINBridges(void);
@@ -619,6 +621,7 @@ void SwResetMainDomain(void)
     }
 }
 
+#if !defined(PMIC_USE_DRV)
 void PMICStateChangeMCUOnlyToActive(void)
 {
     uint8_t dataToSlave[2];
@@ -665,7 +668,6 @@ void PMICStateChangeMCUOnlyToActive(void)
     return;
 }
 
-extern volatile uint32_t mcuOnlyAppDoneOnce;
 void I2CInitPMIC(void)
 {
     I2C_Params i2cParams;
@@ -694,12 +696,6 @@ void I2CInitPMIC(void)
 volatile uint32_t loopPMICStateChangeActiveToMCUOnly = 0;
 void PMICStateChangeActiveToMCUOnly(void)
 {
-    if(!mcuOnlyAppDoneOnce)
-    {
-        /* Init i2c interface */
-        I2CInitPMIC();
-    }
-
     /* Write 0x02 to FSM_NSLEEP_TRIGGERS register 
        This should happen before clearing the interrupts */
 
@@ -809,8 +805,9 @@ void PMICStateChangeActiveToMCUOnly(void)
 
     return;
 }
+#endif
 
-#if 0
+#if defined(PMIC_USE_DRV)
 Pmic_CoreHandle_t *pPmicCoreHandle = NULL;
 
 /*!
@@ -873,21 +870,10 @@ int32_t initPMIC(void)
     return status;
 }
 
-extern volatile uint32_t mcuOnlyAppDoneOnce;
 void PMICStateChangeActiveToMCUOnly(void)
 {
     int32_t pmicStatus = PMIC_ST_SUCCESS;
     uint8_t pmicState  = PMIC_FSM_MCU_ONLY_STATE;
-
-    /* Init pmic interface */
-    if(!mcuOnlyAppDoneOnce)
-    {
-        pmicStatus = initPMIC();
-        if(PMIC_ST_SUCCESS != pmicStatus)
-        {
-            AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"initPMIC failed!\n");
-        }
-    }
 
     pmicStatus = Pmic_fsmSetNsleepSignalMask(pPmicCoreHandle,
                                          PMIC_NSLEEP1_SIGNAL,
@@ -999,6 +985,21 @@ uint32_t ActiveToMcuSwitch()
     return 0;
 }
 
+void McuOnly_AppInit(void)
+{
+#if defined(PMIC_USE_DRV)
+    int32_t pmicStatus = PMIC_ST_SUCCESS;
+    pmicStatus = initPMIC();
+    if(PMIC_ST_SUCCESS != pmicStatus)
+    {
+        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"initPMIC failed!\n");
+    }
+#else
+    /* Init i2c interface */
+    I2CInitPMIC();
+#endif
+}
+
 /* MCU Only task */
 uint32_t McuOnly_App()
 {
@@ -1063,8 +1064,6 @@ uint32_t McuOnly_App()
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "LED LD5 should be ON\n");
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "Expected values in ACTIVE mode:\nTP133: HIGH\nTP134: HIGH\n");
-
-    reloadedBootApp = 1;
 
     return status;
 }

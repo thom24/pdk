@@ -49,7 +49,8 @@
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#include "lpm_ipc.h"
+#include <ti/drv/lpm/include/lpm_ipc.h>
+#include <ti/drv/lpm/include/ipc_rsctable.h>
 
 /* OSAL Header files */
 #include <ti/osal/osal.h>
@@ -58,8 +59,6 @@
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/ipcver.h>
 #include <ti/osal/osal.h>
-
-#include "ipc_rsctable.h"
 
 #define MSGSIZE  256U
 #define SERVICE_PING   "ti.ipc4.ping-pong"

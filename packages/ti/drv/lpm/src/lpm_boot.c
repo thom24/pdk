@@ -94,13 +94,14 @@
 #include <ti/board/src/flash/include/board_flash.h>
 #if defined(SOC_J721E)
 #include <ti/board/src/j721e_evm/include/board_control.h>
+#include <ti/drv/lpm/soc/j721e/boot_core_defs.h>
 #endif
 #if defined(SOC_J7200)
 #include <ti/board/src/j7200_evm/include/board_control.h>
+#include <ti/drv/lpm/soc/j7200/boot_core_defs.h>
 #endif
 
-#include "boot_core_defs.h"
-#include "print_utils.h"
+#include <ti/drv/lpm/include/lpm_utils.h>
 
 #include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
@@ -1007,7 +1008,7 @@ static int32_t ReleaseStageCores(uint8_t stageNum)
     return (status);
 }
 
-static void AppSetup(void)
+void Boot_AppInit(void)
 {
 #if defined(SOC_J721E)
     Board_STATUS status;
@@ -1026,9 +1027,18 @@ static void AppSetup(void)
         AppUtils_Printf(MSG_NORMAL,"Board_control failed to configure CPSW9G MDIO mux\n");
     }
 #endif
+
+    MainDomainBootSetup();
+    SBL_SPI_init();
+    SBL_ospiInit(&boardHandle);
 }
 
-uint32_t reloadedBootApp = 0;
+void Boot_AppDeInit(void)
+{
+    SBL_ospiClose(&boardHandle);
+    OSPILeaveConfigSPI();
+}
+
 /* Main Boot task */
 int32_t Boot_App()
 {
@@ -1063,23 +1073,6 @@ int32_t Boot_App()
 #endif
 
     time_boot_app_start = get_usec_timestamp();
-
-#if defined(BOOT_OSPI)
-
-    MainDomainBootSetup();
-
-    if(!reloadedBootApp)
-    {
-        SBL_SPI_init();
-        SBL_ospiInit(&boardHandle);
-    }
-#endif
-
-    /* Configuration of items needed by apps on some cores, before they boot */
-    if(!reloadedBootApp)
-    {
-        AppSetup();
-    }
 
 #if defined(BOOT_MMCSD)
 
@@ -1269,11 +1262,6 @@ int32_t Boot_App()
 #endif
 
 #if defined(BOOT_OSPI)
-    if(reloadedBootApp)
-    {
-        SBL_ospiClose(&boardHandle);
-        OSPILeaveConfigSPI();
-    }
 #endif
 
     /* Delay print out of boot log to avoid prints by other tasks */

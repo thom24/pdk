@@ -61,19 +61,19 @@
 */
 
 /**
- *  \file     print_utils.h
+ *  \file     lpm_utils.h
  *
  *  \brief    This file contains common utility functions
  *
  */
 
-#ifndef PRINT_UTILS_H_
-#define PRINT_UTILS_H_
+#ifndef LPM_UTILS_H_
+#define LPM_UTILS_H_
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-#include "stdio.h"
+#include <stdio.h>
 #include <ti/csl/soc.h>
 
 #if defined (SOC_J721E)
@@ -149,4 +149,4 @@ void AppUtils_Printf(uint32_t type, const char *pcString, ...);
 }
 #endif
 
-#endif /* PRINT_UTILS_H_ */
+#endif /* LPM_UTILS_H_ */

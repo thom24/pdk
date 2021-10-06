@@ -62,7 +62,7 @@ extern "C" {
 #endif
 
 int32_t Ipc_echo_test(void);
-void rpmsg_exit_responseTask();
+void rpmsg_exit_responseTask(void);
 
 #ifdef __cplusplus
 }

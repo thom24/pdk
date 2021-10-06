@@ -70,7 +70,7 @@
 /* ========================================================================== */
 #include <ti/boot/sbl/src/rprc/sbl_rprc_parse.h>
 #include <ti/boot/sbl/soc/k3/sbl_soc_cfg.h>
-#include <ti/drv/lpm/soc/j721e/boot_core_defs.h>
+#include <ti/drv/lpm/soc/j7200/boot_core_defs.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
