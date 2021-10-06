@@ -39,7 +39,7 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 # Board diag parameters which can be controlled outside this makefile
-DIAGNAME ?= icssgEnet
+DIAGNAME ?= enetIcssg
 PROFILE ?= release
 TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
@@ -77,7 +77,7 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += icssg_enet_test.c diag_common_cfg.c emac_fw_config_dual_mac.c
+SRCS_COMMON += enet_icssg_test.c diag_common_cfg.c emac_fw_config_dual_mac.c
 
 BOARD_DIAG_CFLAGS += -DENET_ENABLE_ICSSG
 export ENET_ENABLE_ICSSG=yes

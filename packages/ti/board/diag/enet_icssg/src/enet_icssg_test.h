@@ -31,7 +31,7 @@
  */
 
  /*!
- * \file  enet_test.h
+ * \file  enet_icssg_test.h
  *
  * \brief This file contains the type definitions and helper macros for ICSSG
  *        TimeSync.

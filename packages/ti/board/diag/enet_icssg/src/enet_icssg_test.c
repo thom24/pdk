@@ -31,7 +31,7 @@
  */
 
  /*!
- * \file  icssg_enet_test.c
+ * \file  enet_icssg_test.c
  *
  * \brief This file contains the implementation of the Enet lld with icssg example.
  */
@@ -40,7 +40,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include "icssg_enet_test.h"
+#include "enet_icssg_test.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
