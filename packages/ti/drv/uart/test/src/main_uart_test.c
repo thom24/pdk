@@ -1121,7 +1121,7 @@ static bool UART_test_simultaneous_rw(bool dmaMode)
         addrEchoPrompt = (uintptr_t)echoPrompt;
     }
 
-    memset(scanPrompt, 0, sizeof(scanPrompt));
+    memset((void *)scanPrompt, 0, sizeof(scanPrompt));
     if (dmaMode)
     {
     	CacheP_wbInv((void *)(uintptr_t)addrScanPrompt, (int32_t)sizeof(scanPrompt));
