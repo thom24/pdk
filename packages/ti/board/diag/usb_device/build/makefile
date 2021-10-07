@@ -54,7 +54,7 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
-SRCDIR = ../src ../../common/$(SOC) ./$(BOARD)
+SRCDIR = ../src ../../common/$(SOC) ./$(BOARD) ../../../../drv/usb/example/common
 INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC) ../../../../csl ../../../../drv/usb ../../../../drv/usb/src/include ../../../../drv/usb/src/usb_func/include ../../../../drv/usb/example/common
 
 # List all the external components/interfaces, whose interface header files
@@ -71,7 +71,7 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += usb_device_test.c usb_msc_structs.c usb_osal.c usbdmscglue.c ramdiskutils.c timer.c diag_common_cfg.c
+SRCS_COMMON += usb_device_test.c usb_msc_structs.c usb_osal.c usbdmscglue.c ramdiskutils.c timer.c diag_common_cfg.c intRouter.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm

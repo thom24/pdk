@@ -56,6 +56,7 @@
 
 #include "timer.h"
 #include "ti/drv/usb/example/common/hardware.h"
+#include "ti/drv/usb/example/common/intRouter.h"
 
 #include "usb_osal.h"
 #include "usb_drv.h"
