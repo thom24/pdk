@@ -1303,12 +1303,13 @@ export PDK_CFLAGS
 export PDK_LNKFLAGS
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
-  PDK_COMMON_COMP = csl uart i2c udma gpio pmic pm_lib lpm
+  PDK_COMMON_COMP = csl uart i2c udma gpio pmic pm_lib
   ifneq ($(CORE),$(filter $(CORE), c7x-hostemu))
     PDK_COMMON_COMP += board
   endif
   ifeq ($(CORE),mcu1_0)
     PDK_COMMON_COMP += sciclient_direct rm_pm_hal
+    PDK_COMMON_COMP += lpm
   else
     PDK_COMMON_COMP += sciclient
   endif

@@ -207,7 +207,7 @@ int Hwi_postInit (Hwi_Object *hwi)
 
     if (hwi->priority < 1 || hwi->priority > 7) {
 
-        return (-1);
+        hwi->priority = Hwi_DEFAULT_INT_PRIORITY;
     }
 
     Hwi_setPriority(hwi->intNum, hwi->priority);

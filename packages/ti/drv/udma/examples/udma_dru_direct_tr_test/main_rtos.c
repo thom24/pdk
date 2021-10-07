@@ -89,8 +89,6 @@ int main(void)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
-    Udma_appC7xPreInit();
-
     OS_init();
 
     /* Initialize the task params */

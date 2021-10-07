@@ -89,8 +89,6 @@ int main(void)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
-    Udma_appC7xPreInit();
-
     /* OS_init for scheduler init is required for 'SafeRTOS'.
      * This should be called before any other OS calls (like Task creation, OS_start, etc..)
      * Dummy implementation for FreeRTOS and TI-RTOS */

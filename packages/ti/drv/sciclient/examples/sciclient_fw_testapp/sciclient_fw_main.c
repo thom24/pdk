@@ -130,10 +130,10 @@ void Sciclient_fw_abort_C_handler();
 /* ========================================================================== */
 
 static volatile int32_t gTestStatus;
-static uint8_t  gAppTskStackMain[16*1024] __attribute__((aligned(8192)));;
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));;
 /* IMPORTANT NOTE: For C7x,
  * - stack size and stack ptr MUST be 8KB aligned
- * - AND min stack size MUST be 16KB
+ * - AND min stack size MUST be 32KB
  * - AND stack assigned for task context is "size - 8KB"
  *       - 8KB chunk for the stack area is used for interrupt handling in this task context
  */

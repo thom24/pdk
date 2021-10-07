@@ -383,38 +383,6 @@ void Udma_appC66xIntrConfig(void)
     return;
 }
 
-void Udma_appC7xPreInit(void)
-{
-#if defined (__C7100__)
-    CSL_ClecEventConfig cfgClec;
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t            i, maxInputs = 2048U;
-
-    /* make secure claim bit to FALSE so that after we switch to non-secure mode
-     * we can program the CLEC MMRs
-     */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-    }
-
-    i = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992;  /* Used for Timer Interrupt */
-    /* Configure CLEC for DMTimer0, SYS/BIOS uses interrupt 14 for DMTimer0 by default */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = 14;
-    CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-#endif
-
-    return;
-}
 
 uint32_t Udma_appIsUdmapStatsSupported(void)
 {

@@ -151,16 +151,6 @@ uint32_t Udma_appIsPrintSupported(void);
  */
 void Udma_appC66xIntrConfig(void);
 
-/**
- *  \brief C7x pre-init function.
- *  Should be called in TI-RTOS main before calling any CLEC or SCICLIENT calls
- *
- *  This switches C7x to non-secure mode, this is needed so that coherency
- *  between A72 (which runs in non-secure mode) and C7x can be effective.
- *  Since SCICLIENT uses non-secure thread, all application should be switched
- *  to non-secure mode as well.
- */
-void Udma_appC7xPreInit(void);
 
 /**
  *  \brief Returns if UDMA IP statistics is supported in the SoC

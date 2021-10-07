@@ -98,10 +98,10 @@ static int32_t App_tifs2dmMsgForwardingTest(void);
 /* ========================================================================== */
 
 static volatile int32_t gTestStatus;
-static uint8_t  gAppTskStackMain[16*1024] __attribute__((aligned(8192)));;
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));;
 /* IMPORTANT NOTE: For C7x,
  * - stack size and stack ptr MUST be 8KB aligned
- * - AND min stack size MUST be 16KB
+ * - AND min stack size MUST be 32KB
  * - AND stack assigned for task context is "size - 8KB"
  *       - 8KB chunk for the stack area is used for interrupt handling in this task context
  */
@@ -115,28 +115,7 @@ int main(void)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
-    App_SciclientC7xPreInit();
-
     uint32_t retVal = CSL_PASS;
-    #if defined (__C7100__)
-    /* 256 CLEC interrupt number mapped to interrupt number 14 from BIOS for
-     * timer.
-     */
-    {
-        CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-        CSL_ClecEventConfig evtCfg;
-        evtCfg.secureClaimEnable = 0;
-        evtCfg.evtSendEnable = 1;
-        evtCfg.rtMap = 0x3C;
-        evtCfg.extEvtNum = 0x0;
-        evtCfg.c7xEvtNum = 14;
-        /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
-        * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
-        * to the event number which is shared between GIC and CLEC.
-        */
-        CSL_clecConfigEvent(regs, 256 + 992, &evtCfg);
-    }
-    #endif
 
     OS_init();
 

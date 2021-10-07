@@ -97,7 +97,6 @@
 #define UART_NO_FIFO
 #endif
 
-void Uart_appC7xPreInit(void);
 
 /* Define the UART test interface */
 typedef struct UART_Tests_s
@@ -479,21 +478,6 @@ bool Board_initUART(void)
 /* For SYSBIOS only */
 #ifndef BAREMETAL
 #if defined (SOC_J721E)
-/* set up C7x CLEC for DMTimer0 */
-#if defined (BUILD_C7X_1)
-    CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-
-    /* Configure CLEC for DMTimer0, SYS/BIOS uses interrupt 14 for DMTimer0 by default */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = 14;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-#endif /* for C7X cores */
-
 /* set up C66x Interrupt Router for DMTimer0 for C66x */
 #if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
     int32_t                               retVal;
@@ -3306,8 +3290,6 @@ Int main()
 {
     TaskP_Params taskParams;
 
-	Uart_appC7xPreInit();
-
     if (Board_initUART() == false)
     {
         printf("\nBoard_initUART failed!\n");
@@ -3499,27 +3481,3 @@ void InitMmu(void)
 }
 #endif
 
-void Uart_appC7xPreInit(void)
-{
-#if defined (__C7100__) && !defined (SOC_J7200)
-    CSL_ClecEventConfig cfgClec;
-	CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-
-    uint32_t            i, maxInputs = 2048U;
-
-    /* make secure claim bit to FALSE so that after we switch to non-secure mode
-     * we can program the CLEC MMRs
-     */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-    }
-#endif
-
-    return;
-}

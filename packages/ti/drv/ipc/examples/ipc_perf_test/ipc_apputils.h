@@ -152,11 +152,6 @@ uint32_t Ipc_appIsPrintSupported(void);
 void Ipc_appC66xIntrConfig(void);
 
 /**
- *  \brief Setup C7x timer interrupt as required by OS
- */
-void Ipc_appC7xIntrConfig(void);
-
-/**
  * brief Get timestamp in micro-second
  *
  * \returns timestamp

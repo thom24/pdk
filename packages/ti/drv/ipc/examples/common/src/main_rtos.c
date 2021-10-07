@@ -182,27 +182,7 @@ void ipc_boardInit()
 }
 #endif
 
-#if defined (__C7100__)
-/* To set C71 timer interrupts */
-void ipc_timerInterruptInit(void)
-{
-    CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
-    uint32_t input         = 1248; /* Used for Timer Interrupt */
-    uint32_t corepackEvent = 14;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
-    Hwi_setPriority(corepackEvent, 1);
-}
-#endif
 
 #if defined (_TMS320C6X)
 /* To set C66 timer interrupts */
@@ -305,7 +285,7 @@ static void taskFxn(void* a0, void* a1)
     ipc_boardInit();
 #endif
 
-#if defined (__C7100__) ||  defined (_TMS320C6X)
+#if defined (_TMS320C6X)
     ipc_timerInterruptInit();
 #endif
 
@@ -321,29 +301,6 @@ static void taskFxn(void* a0, void* a1)
 }
 
 #if defined(__C7100__)
-/* The C7x CLEC should be programmed to allow config/re config either in secure
- * OR non secure mode. This function configures all inputs to given level
- *
- * Instance is hard-coded for J721e only
- *
- */
-void IpcCfgClecAccessCtrl (Bool onlyInSecure)
-{
-    CSL_ClecEventConfig cfgClec;
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t            i, maxInputs = 2048U;
-
-    cfgClec.secureClaimEnable = onlyInSecure;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-    }
-}
-
 static void IpcInitMmu(Bool isSecure)
 {
     Mmu_MapAttrs    attrs;
@@ -403,8 +360,6 @@ void InitMmu(void)
     IpcInitMmu(FALSE);
     IpcInitMmu(TRUE);
 
-    /* Setup CLEC access/configure in non-secure mode */
-    IpcCfgClecAccessCtrl(FALSE);
 }
 #endif
 

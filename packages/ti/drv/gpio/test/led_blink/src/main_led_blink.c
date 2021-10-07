@@ -105,7 +105,6 @@ void AppDelay(unsigned int delayVal);
 /* Callback function */
 void AppGpioCallbackFxn(void);
 
-void Gpio_appC7xPreInit(void);
 
 #if defined(idkAM574x) || defined(idkAM572x) || defined(idkAM571x)
 /* GPIO clock and pinmux configurations */
@@ -343,21 +342,6 @@ static void Board_initGPIO(void)
 /* For SYSBIOS only */
 #ifndef BAREMETAL
 #if defined (SOC_J721E)
-/* set up C7x CLEC for DMTimer0 */
-#if defined (BUILD_C7X_1)
-    CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-
-    /* Configure CLEC for DMTimer0, SYS/BIOS uses interrupt 14 for DMTimer0 by default */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = 14;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-#endif /* for C7X cores */
-
 /* set up C66x Interrupt Router for DMTimer0 for C66x */
 #if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
     int32_t                              retVal;
@@ -530,7 +514,6 @@ int main()
 int main(void)
 {
     /* Call board init functions */
-    Gpio_appC7xPreInit();
     Board_initGPIO();
 
 #if defined(idkAM574x) || defined(idkAM572x) || defined(idkAM571x)
@@ -603,27 +586,3 @@ void InitMmu(void)
 }
 #endif
 
-void Gpio_appC7xPreInit(void)
-{
-#if defined (__C7100__)
-    CSL_ClecEventConfig cfgClec;
-	CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-
-    uint32_t            i, maxInputs = 2048U;
-
-    /* make secure claim bit to FALSE so that after we switch to non-secure mode
-     * we can program the CLEC MMRs
-     */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-    }
-#endif
-
-    return;
-}

@@ -104,8 +104,6 @@ int main(void)
     copy_in(&_data_run_time_load_section);
 #endif /* RUN_TIME_RELOCATION_DEMO */
 
-    Udma_appC7xPreInit();
-
     OS_init();
 
     /* Initialize the task params */

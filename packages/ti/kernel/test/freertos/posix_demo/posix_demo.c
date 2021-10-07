@@ -197,10 +197,6 @@ typedef struct DispatcherThreadResources
 /**@} */
 
 /*-----------------------------------------------------------*/
-#ifdef BUILD_C7X_1
-void    Osal_appC7xPreInit(void);
-void    C7x_ConfigureTimerOutput(void);
-#endif
 
 static void * prvWorkerThread( void * pvArgs )
 {
@@ -327,10 +323,6 @@ void posix_demo_main( void *pvParameters )
 
 	/* Remove warnings about unused parameters. */
     ( void ) pvParameters;
-#ifdef BUILD_C7X_1
-    Osal_appC7xPreInit();
-    C7x_ConfigureTimerOutput();
-#endif
 
     /* Handles of the threads and related resources. */
     DispatcherThreadResources_t pxDispatcher = { 0 };
@@ -459,69 +451,5 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 
-
-void Osal_appC7xPreInit(void)
-{
-
-    CSL_ClecEventConfig cfgClec;
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t            i, maxInputs = 2048U;
-
-    /* make secure claim bit to FALSE so that after we switch to non-secure mode
-     * we can program the CLEC MMRs
-     */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-    }
-
-    return;
-}
-
-
-void C7x_ConfigureTimerOutput()
-{
-    CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-
-    uint32_t input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-    uint32_t corepackEvent = 14;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-
-    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-    corepackEvent = 15;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-
-    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-    corepackEvent = 16;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-
-}
 
 #endif

@@ -57,19 +57,19 @@
  */
 #include <stdint.h>
 #include <stdio.h>
-//#include <c6x_migration.h>    /* for legacy C6x intrinsics */
 #include <c7x.h>    /* for C7x intrinsics */
 #include <FreeRTOS.h>
 #include <task.h>
 #include <ti/osal/osal.h>
 #include <ti/osal/HwiP.h>
 #include <ti/osal/DebugP.h>
-//#include <ti/osal/src/nonos/Nonos_config.h>
 #include "Hwi.h"
 #include "TimestampProvider.h"
 #include "TaskSupport.h"
 #include "Cache.h"
-
+#include <ti/csl/soc.h>
+#include <ti/csl/csl_clec.h>
+#include <ti/osal/src/nonos/Nonos_config.h>
 
 /* Let the user override the pre-loading of the initial LR with the address of
  * prvTaskExitError() in case is messes up unwinding of the stack in the
@@ -268,7 +268,7 @@ StackType_t *pxPortInitialiseStack(StackType_t * pxTopOfStack, StackType_t * pxE
 
 
 TimerP_Handle pTickTimerHandle = NULL;
-#define C7X_DUAL_TIMER_BUG_HACK (1)
+//#define C7X_DUAL_TIMER_BUG_HACK (0)
 #define C7X_LOG_TIMER_INT_DELTA (1)
 
 #if (C7X_LOG_TIMER_INT_DELTA == 1)
@@ -297,11 +297,29 @@ static void prvPorttimerTickIsr(uintptr_t args)
     vPortTimerTickHandler();
 }
 
+static void prvPortInitTimerCLECCfg(uint32_t timerId, uint32_t timerIntNum)
+{
+    CSL_ClecEventConfig   cfgClec;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    uint32_t input         = gDmTimerPInfoTbl[timerId].eventId;
+    uint32_t corepackEvent = timerIntNum;
+
+    /* Configure CLEC */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = corepackEvent;
+    CSL_clecClearEvent(clecBaseAddr, input);
+    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+}
+
 static void prvPortInitTickTimer(void)
 {
-
     TimerP_Params timerParams;
 
+    prvPortInitTimerCLECCfg(configTIMER_ID, configTIMER_INT_NUM);
     TimerP_Params_init(&timerParams);
     timerParams.runMode    = TimerP_RunMode_CONTINUOUS;
     timerParams.startMode  = TimerP_StartMode_USER;

@@ -70,7 +70,8 @@ int main()
 
     c66xIntrConfig();
 
-	/* This task is created at highest priority, it should create more tasks and then delete itself */
+
+    /* This task is created at highest priority, it should create more tasks and then delete itself */
     gMainTask = xTaskCreateStatic( frertos_main,   /* Pointer to the function that implements the task. */
                                   "freertos_main", /* Text name for the task.  This is to facilitate debugging only. */
                                   MAIN_TASK_SIZE,  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
@@ -129,3 +130,5 @@ void c66xIntrConfig(void)
 
     return;
 }
+
+

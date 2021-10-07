@@ -192,26 +192,7 @@ uint32_t Ipc_appIsPrintSupported(void)
     return (retVal);
 }
 
-#if defined (__C7100__)
-/* To set C71 timer interrupts */
-void Ipc_appC7xIntrConfig(void)
-{
-    CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
-    uint32_t input         = 1248; /* Used for Timer Interrupt */
-    uint32_t corepackEvent = 14;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
-}
-#endif
 
 void Ipc_appC66xIntrConfig(void)
 {

@@ -223,8 +223,6 @@ uint32_t App_sciclientGetNum();
 
 void App_sciclientConsoleInit();
 
-void App_SciclientC7xPreInit(void);
-
 uint32_t   App_sciclientGetNumTests(void);
 
 uint32_t App_sciclientConsolePuts(char *pTxBuffer,

@@ -47,6 +47,10 @@ TaskP_Handle gMainTask;
 
 void task_switch_main(void *args);
 void c66xIntrConfig(void);
+#ifdef BUILD_C7X_1
+void    Osal_appC7xPreInit(void);
+void    C7x_ConfigureTimerOutput(void);
+#endif
 
 int main()
 {
@@ -62,6 +66,10 @@ int main()
     DebugP_assert(status == BOARD_SOK);
 
     c66xIntrConfig();
+#if (defined(BUILD_C7X_1) && defined(USE_BIOS))
+    Osal_appC7xPreInit();
+    C7x_ConfigureTimerOutput();
+#endif
 
     TaskP_Params_init(&taskParams);
     taskParams.name = "freertos_main";

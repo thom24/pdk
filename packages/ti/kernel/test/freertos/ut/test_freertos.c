@@ -123,8 +123,8 @@
         #define PONG_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_1)
     #endif
     #ifdef BUILD_C7X_1
-        #define PING_INT_NUM           (15u)
-        #define PONG_INT_NUM           (16u)
+        #define PING_INT_NUM           (14u)
+        #define PONG_INT_NUM           (15u)
     #endif
 #endif
 
@@ -614,11 +614,6 @@ void test_freertos_main(void *args)
     /* Open drivers to open the UART driver for console */
     //Drivers_open();
 
-#ifdef BUILD_C7X_1
-    Osal_appC7xPreInit();
-    C7x_ConfigureTimerOutput();
-#endif
-
     /* first create the semaphores */
     gPingSem = xSemaphoreCreateBinaryStatic(&gPingSemObj);
     configASSERT(gPingSem != NULL);
@@ -657,69 +652,5 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 
-
-void Osal_appC7xPreInit(void)
-{
-
-    CSL_ClecEventConfig cfgClec;
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t            i, maxInputs = 2048U;
-
-    /* make secure claim bit to FALSE so that after we switch to non-secure mode
-     * we can program the CLEC MMRs
-     */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-    }
-
-    return;
-}
-
-
-void C7x_ConfigureTimerOutput()
-{
-    CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-
-    uint32_t input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-    uint32_t corepackEvent = 14;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-
-    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-    corepackEvent = 15;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-
-    input         = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
-    corepackEvent = 16;
-
-    /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
-    cfgClec.c7xEvtNum         = corepackEvent;
-    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
-
-}
 
 #endif

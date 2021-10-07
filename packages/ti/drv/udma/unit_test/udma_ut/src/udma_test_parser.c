@@ -50,7 +50,7 @@
 /* ========================================================================== */
 
 /* Test application stack size */
-#define APP_TSK_STACK_MAIN              (16U * 1024U)
+#define APP_TSK_STACK_MAIN              (32U * 1024U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */

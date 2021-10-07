@@ -40,6 +40,14 @@
 #include <xdc/runtime/Error.h>
 #include <xdc/runtime/Types.h>
 #include <ti/osal/src/tirtos/tirtos_config.h>
+
+#if defined (SOC_J721E) && defined (__C7100__)
+
+static void OS_clecInit(void);
+static void OS_clecOSTimerIntEnable(void);
+
+#endif
+
 /*
  *  ======== TaskP_create ========
  */
@@ -187,7 +195,81 @@ void OS_init( void )
 
     Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
 #endif
+#if defined (SOC_J721E) && defined (__C7100__)
+    OS_clecInit();
+    OS_clecOSTimerIntEnable();
+#endif
 }
+
+/* CLEC configuration is required for C7x and has to be done
+ * for event interrupts to be routed to C7x core. It should be
+ * done before interrupts are enabled and events are enabled
+ * else we may miss events
+ */
+#if defined (SOC_J721E) && defined (__C7100__)
+
+#include <ti/csl/soc.h>
+#include <ti/csl/csl_clec.h>
+static void OS_clecInit(void)
+{
+    CSL_ClecEventConfig cfgClec;
+	CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+
+    uint32_t            i, maxInputs = 2048U;
+
+    /* make secure claim bit to FALSE so that after we switch to non-secure mode
+     * we can program the CLEC MMRs
+     */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = FALSE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
+    cfgClec.extEvtNum         = 0U;
+    cfgClec.c7xEvtNum         = 0U;
+    for(i = 0U; i < maxInputs; i++)
+    {
+        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+    }
+}
+
+#include <ti/sysbios/knl/Clock.h>
+#include <ti/sysbios/timers/dmtimer/Timer.h>
+
+static void OS_clecOSTimerIntEnable(void)
+{
+    CSL_ClecEventConfig   cfgClec;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    uint32_t input;
+
+    /* Configure CLEC for DMTimer0, SYS/BIOS uses interrupt 14 for DMTimer0 by default */
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.extEvtNum         = 0;
+    cfgClec.c7xEvtNum         = Timer_getIntNum(Timer_getHandle(Clock_timerId));
+    switch(cfgClec.c7xEvtNum)
+    {
+        case 0xe:
+            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            break;
+        case 0xf:
+            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            break;
+        case 0x10:
+            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            break;
+        case 0x11:
+            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER3_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            break;
+        default:
+            /* unknown interrupt number */
+            DebugP_assert(FALSE);
+    }
+    CSL_clecClearEvent(clecBaseAddr, input);
+    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
+    CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+}
+
+#endif /* if defined (SOC_J721E) && defined (__C7100__) */
 
 void OS_start(void)
 {
