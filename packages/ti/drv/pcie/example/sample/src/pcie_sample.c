@@ -2206,9 +2206,6 @@ void pcie (void)
   if (hEdma==NULL) PCIE_logPrintf("ERROR: EDMA handle not initialized!\n");
 #endif
 
-#ifndef IO_CONSOLE
-  Console_printf ("IO_CONSOLE not defined.  Most output will go to UART\n");
-#endif
 
   PCIE_logPrintf ("**********************************************\n");
   PCIE_logPrintf ("*             PCIe Test Start                *\n");
@@ -2589,9 +2586,6 @@ PCIE_logPrintf ("Failed to pass token \n");
   }
 #endif
   PCIE_logPrintf ("Test passed.\n");
-#ifndef IO_CONSOLE
-  Console_printf ("Test passed.\n");
-#endif
 
   OS_stop();
 
