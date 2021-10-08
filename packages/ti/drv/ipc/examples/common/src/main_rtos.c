@@ -56,6 +56,8 @@
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
 
+#include <ti/osal/soc/osal_soc.h>
+
 #if (defined (FREERTOS))
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Hwi.h>
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Mmu.h>
@@ -359,6 +361,7 @@ void InitMmu(void)
 {
     IpcInitMmu(FALSE);
     IpcInitMmu(TRUE);
+    OsalCfgClecAccessCtrl(false);
 
 }
 #endif

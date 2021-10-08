@@ -1309,7 +1309,6 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
   endif
   ifeq ($(CORE),mcu1_0)
     PDK_COMMON_COMP += sciclient_direct rm_pm_hal
-    PDK_COMMON_COMP += lpm
   else
     PDK_COMMON_COMP += sciclient
   endif

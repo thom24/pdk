@@ -43,7 +43,6 @@
 
 #if defined (SOC_J721E) && defined (__C7100__)
 
-static void OS_clecInit(void);
 static void OS_clecOSTimerIntEnable(void);
 
 #endif
@@ -196,7 +195,6 @@ void OS_init( void )
     Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
 #endif
 #if defined (SOC_J721E) && defined (__C7100__)
-    OS_clecInit();
     OS_clecOSTimerIntEnable();
 #endif
 }
@@ -210,26 +208,6 @@ void OS_init( void )
 
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_clec.h>
-static void OS_clecInit(void)
-{
-    CSL_ClecEventConfig cfgClec;
-	CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-
-    uint32_t            i, maxInputs = 2048U;
-
-    /* make secure claim bit to FALSE so that after we switch to non-secure mode
-     * we can program the CLEC MMRs
-     */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
-    }
-}
 
 #include <ti/sysbios/knl/Clock.h>
 #include <ti/sysbios/timers/dmtimer/Timer.h>
