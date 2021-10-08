@@ -102,6 +102,9 @@
 /** \brief Command to configure for data write. */
 #define MMCSD_CMDRSP_WRITE          (BIT(8U))
 
+/** \brief Command to configure for Read or Write interrupt */
+#define MMCSD_CMDREQ_WR_RD          (BIT(31U))
+
 /** \brief SD voltage enumeration as per VHS field, after the CHECK PATTERN FIELD */
 #define MMCSD_VOLT_2P7_3P6          (0x000100U)
 #define MMCSD_VOLT_LOW_RANGE        (0x000200U)
@@ -372,7 +375,17 @@
 #define MMCSD_ECSD_STROBE_SUPPORT_ENHANCED_DIS    (0U)
 #define MMCSD_ECSD_STROBE_SUPPORT_ENHANCED_EN    (1U)
 
-
+#define	HS_MMCSD_INTR_ALL_ERR	(\
+	HS_MMCSD_INTR_ADMAERROR |\
+	HS_MMCSD_INTR_ACMDERR |\
+	HS_MMCSD_INTR_DATABITERR |\
+	HS_MMCSD_INTR_DATACRCERR |\
+	HS_MMCSD_INTR_DATATIMEOUT |\
+	HS_MMCSD_INTR_CMDINDXERR |\
+	HS_MMCSD_INTR_CMDBITERR |\
+	HS_MMCSD_INTR_CMDCRCERR |\
+	HS_MMCSD_INTR_CMDTIMEOUT\
+)
 
 volatile uint32_t mmcsd_emuwait_trap=1;
 
@@ -450,12 +463,14 @@ static MMCSD_Error MMCSD_v2_setBusFreq(MMCSD_Handle handle, const uint32_t *busF
 static MMCSD_Error MMCSD_v2_getBusWidth(MMCSD_Handle handle, uint32_t *busWidth);
 static MMCSD_Error MMCSD_v2_getBusFreq(MMCSD_Handle handle, uint32_t *busFreq);
 static MMCSD_Error MMCSD_v2_getMediaParams(MMCSD_Handle handle, MMCSD_mediaParams *params);
+static MMCSD_Error MMCSD_v2_getErrorStatus(MMCSD_Handle handle, uint32_t *errorStat);
 void MMCSD_v2_hwiFxn(uintptr_t arg);
 static void MMCSD_v2_cmdStatusFxn(uintptr_t arg);
 static void MMCSD_v2_xferStatusFxn(uintptr_t arg);
 
 static MMCSD_Error mmcsd_tuning_procedure(MMCSD_Handle handle);
 static void MMCSD_v2_xferStatusFxn_CMD19(uintptr_t arg);
+static void MMCSD_v2_controllerReset(MMCSD_v2_Object *,MMCSD_v2_HwAttrs const *);
 static MMCSD_Error MMCSD_switch_card_speed(MMCSD_Handle handle,uint32_t cmd16_grp1_fn);
 /* Delay function */
 static void delay(uint32_t delayValue);
@@ -611,6 +626,7 @@ static MMCSD_Error MMCSD_v2_write(MMCSD_Handle handle,
     MMCSD_Error                 ret = MMCSD_ERR;
     uint32_t                    key;
     uint32_t                    address = 0U;
+    uint32_t                    isrErr = MMCSD_ISR_RET_OK;
     MMCSD_v2_Object            *object = NULL;
     MMCSD_v2_Transaction        transaction;
 
@@ -660,7 +676,7 @@ static MMCSD_Error MMCSD_v2_write(MMCSD_Handle handle,
             address = block * object->blockSize;
         }
 
-        transaction.flags = MMCSD_CMDRSP_WRITE | MMCSD_CMDRSP_DATA;
+        transaction.flags = MMCSD_CMDRSP_WRITE | MMCSD_CMDRSP_DATA | MMCSD_CMDREQ_WR_RD;
         transaction.arg = address;
         transaction.blockCount = numBlks;
         transaction.blockSize = object->blockSize;
@@ -677,6 +693,7 @@ static MMCSD_Error MMCSD_v2_write(MMCSD_Handle handle,
         }
 
         ret = MMCSD_v2_transfer(handle, &transaction);
+		isrErr = object->intStatusErr;
     } else {
 		MMCSD_DEBUG_TRAP
 	}	
@@ -694,7 +711,10 @@ static MMCSD_Error MMCSD_v2_write(MMCSD_Handle handle,
             ret = MMCSD_v2_transfer(handle, &transaction);
         }
     }
-
+    if ((ret != MMCSD_OK) || (isrErr != MMCSD_ISR_RET_OK))
+    {
+	    ret = MMCSD_ERR;
+	}
     return (ret);
 }
 
@@ -709,6 +729,7 @@ static MMCSD_Error MMCSD_v2_read(MMCSD_Handle handle,
     MMCSD_Error                 ret = MMCSD_ERR;
     uint32_t                    key;
     uint32_t                    address = 0U;
+    uint32_t                    isrErr = MMCSD_ISR_RET_OK;
     MMCSD_v2_Object            *object = NULL;
     MMCSD_v2_Transaction        transaction;
 
@@ -759,7 +780,7 @@ static MMCSD_Error MMCSD_v2_read(MMCSD_Handle handle,
             address = block * object->blockSize;
         }
 
-        transaction.flags = MMCSD_CMDRSP_READ | MMCSD_CMDRSP_DATA;
+        transaction.flags = MMCSD_CMDRSP_READ | MMCSD_CMDRSP_DATA | MMCSD_CMDREQ_WR_RD;
         transaction.arg = address;
         transaction.blockCount = numBlks;
         transaction.blockSize = object->blockSize;
@@ -775,6 +796,7 @@ static MMCSD_Error MMCSD_v2_read(MMCSD_Handle handle,
         }
 
         ret = MMCSD_v2_transfer(handle, &transaction);
+		isrErr = object->intStatusErr;
     } else {
 		MMCSD_DEBUG_TRAP
 	}	
@@ -791,6 +813,10 @@ static MMCSD_Error MMCSD_v2_read(MMCSD_Handle handle,
             transaction.arg = 0U;
             ret = MMCSD_v2_transfer(handle, &transaction);
         }
+    }
+    if ((ret != MMCSD_OK) || (isrErr != MMCSD_ISR_RET_OK))
+    {
+	    ret = MMCSD_ERR;
     }
     return (ret);
 }
@@ -1543,6 +1569,7 @@ static MMCSD_Error MMCSD_v2_initSd(MMCSD_Handle handle)
 
                 if(MMCSD_OK == ret)
                 {
+					object->blockCount = (object->blockCount * object->blockSize) / 512U;
                     object->blockSize = 512U;
                 }
             }
@@ -2725,6 +2752,7 @@ static MMCSD_Error MMCSD_v2_transfer(MMCSD_Handle handle,
     MMCSD_v2_Object        *object = NULL;
     MMCSD_v2_HwAttrs const *hwAttrs = NULL;
     uint32_t params;
+	volatile uint32_t        status = 0U;
 
     if ((handle != NULL) && (transaction != NULL))
     {
@@ -2746,6 +2774,8 @@ static MMCSD_Error MMCSD_v2_transfer(MMCSD_Handle handle,
 
     if(MMCSD_OK == ret)
     {
+        object->intStatusErr = MMCSD_ISR_RET_OK;
+
         /* Configure the command type to be executed from the command flags */
         if (transaction->flags & MMCSD_CMDRSP_STOP)
         {
@@ -2862,7 +2892,8 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
 
             HSMMCSDIntrStatusEnable(hwAttrs->baseAddr,
                 (HS_MMCSD_INTR_CMDCOMP | HS_MMCSD_INTR_CMDTIMEOUT |
-                 HS_MMCSD_INTR_DATATIMEOUT | HS_MMCSD_INTR_TRNFCOMP | 0x17ff0000));
+                 HS_MMCSD_INTR_DATATIMEOUT | HS_MMCSD_INTR_TRNFCOMP | 0x17ff0000 |
+                 HS_MMCSD_INTR_ALL_ERR));
 
             if(0U != hwAttrs->enableInterrupt)
             {
@@ -2971,6 +3002,12 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                        "MMCSD:(%p) Command transaction completed\n", hwAttrs->baseAddr);
 #endif
 
+            if ((transaction->flags & MMCSD_CMDREQ_WR_RD) != 0)
+			{
+	         HSMMCSDIntrStatusDisable(hwAttrs->baseAddr,
+	                (HS_MMCSD_INTR_CMDBITERR | HS_MMCSD_INTR_CMDCRCERR |
+	                 HS_MMCSD_INTR_DATABITERR | HS_MMCSD_INTR_DATACRCERR) );
+			}
 
             if( object->manualTuning && object->cmdError && ( (cmdObj.cmd.cmdId==MMCSD_CMD(19U)) || (cmdObj.cmd.cmdId==MMCSD_CMD(21U)) ) )  
 		    {				   
@@ -3134,7 +3171,7 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
             cmdObj.enableDma = 0;
 
             HSMMCSDIntrStatusEnable(hwAttrs->baseAddr,
-                (HS_MMCSD_INTR_CMDCOMP | HS_MMCSD_INTR_CMDTIMEOUT));
+                (HS_MMCSD_INTR_CMDCOMP | HS_MMCSD_INTR_ALL_ERR));
 
             if(0U != hwAttrs->enableInterrupt)
             {
@@ -3192,20 +3229,33 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
                 object->cmdComp = 0;
 #ifdef LOG_EN
                 MMCSD_drv_log4(Diags_USER1,
-                        "MMCSD:(%p) Command Execution Failed\n", hwAttrs->baseAddr);
+                        "MMCSD:(%p) Command Execution successfull\n", hwAttrs->baseAddr);
 #endif
             }
 
-            /* Command execution fail */
-            if (1 == object->cmdTimeout)
+        /* Data transfer fail or  Command execution fail */
+        if ((1 == object->xferTimeout) || (1 == object->cmdTimeout))
+        {
+            if (1 == object->xferTimeout)
             {
                 ret = MMCSD_ERR;
+                 object->xferTimeout = 0;
+#ifdef LOG_EN
+                 MMCSD_drv_log4(Diags_USER1,
+                         "MMCSD:(%p) Data Transfer Failed", hwAttrs->baseAddr);
+#endif
+            }
+            else
+            {
+               ret = MMCSD_ERR;
                 object->cmdTimeout = 0;
 #ifdef LOG_EN
                 MMCSD_drv_log4(Diags_USER1,
-                        "MMCSD:(%p) Command Execution Failed\n", hwAttrs->baseAddr);
+                        "MMCSD:(%p) Command Execution Failed", hwAttrs->baseAddr);
 #endif
             }
+                MMCSD_v2_controllerReset(object, (MMCSD_v2_HwAttrs *)hwAttrs);
+        }
 
             /* Git response for command sent to MMC device */
             HSMMCSDResponseGet(hwAttrs->baseAddr, transaction->response);
@@ -3271,6 +3321,11 @@ static MMCSD_Error MMCSD_v2_control(MMCSD_Handle handle, uint32_t cmd, const voi
                 break;
             }
 
+			case MMCSD_CMD_GETERRORSTATUS:
+			{
+				ret = MMCSD_v2_getErrorStatus(handle, (uint32_t *)arg);
+				break;
+			}
             default:
             ret = MMCSD_UNDEFINEDCMD;
             break;
@@ -3493,6 +3548,37 @@ static MMCSD_Error MMCSD_v2_getMediaParams(MMCSD_Handle handle, MMCSD_mediaParam
         params->size = object->size;
 
         ret = MMCSD_OK;
+    }
+    return(ret);
+}
+
+/*
+ *  ======== MMCSD_v2_getErrorStatus ========
+ */
+/*!
+ *  @brief      A function returns a error status for the command timeout
+ *              or data transfer timeout.
+ */
+static MMCSD_Error MMCSD_v2_getErrorStatus(MMCSD_Handle handle, uint32_t *errorStat)
+{
+    MMCSD_Error                 ret = MMCSD_ERR;
+    MMCSD_v2_Object            *object = NULL;
+
+    /* Input parameter validation */
+    if(handle != NULL)
+    {
+      /* Get the pointer to the object and hwAttrs */
+      object = (MMCSD_v2_Object *)((MMCSD_Config *) handle)->object;
+      if(object != NULL)
+      {
+          if ((MMCSD_CARD_SD == object->cardType) ||
+		    (MMCSD_CARD_MMC == object->cardType) ||
+			(MMCSD_CARD_EMMC == object->cardType))
+          {
+              *errorStat = object->intStatusErr;
+              ret = MMCSD_OK;
+          }
+      }
     }
     return(ret);
 }
@@ -3730,6 +3816,7 @@ static void MMCSD_v2_cmdStatusFxn(uintptr_t arg)
     {
         
 		object->cmdError = 1;
+		object->intStatusErr = MMCSD_ISR_RET_SDSTS;
 		
 		if (errStatus & HS_MMCSD_INTR_CMDTIMEOUT)
         {
@@ -4035,5 +4122,54 @@ static void delay(uint32_t delayValue)
     volatile uint32_t delay1 = delayValue*10000U;
     while (delay1--) {}
 }
+/*
+ *  ======== MMCSD_v2_controllerReset ========
+ */
+static void MMCSD_v2_controllerReset(MMCSD_v2_Object *object, MMCSD_v2_HwAttrs const *hwAttrs)
+{
+    volatile int32_t            status = CSL_ESYS_FAIL;
+    MMCSD_v2_IodelayParams      iodelayParams = {MMCSD_CARD_SD, MMCSD_TRANSPEED_25MBPS, MMCSD_VOLTAGE_ANY, MMCSD_LOOPBACK_ANY};
 
+    MMCSD_Error           ret = MMCSD_OK;
+
+    if (MMCSD_OK == ret)
+    {
+        /* Lines Reset */
+        HSMMCSDLinesReset(hwAttrs->baseAddr, HS_MMCSD_ALL_RESET);
+
+        /* Set the bus width */
+        HSMMCSDBusWidthSet(hwAttrs->baseAddr, HS_MMCSD_BUS_WIDTH_1BIT);
+
+        /* Set the bus voltage */
+		if(hwAttrs->supportedBusVoltages & MMCSD_BUS_VOLTAGE_3_0V) {
+           HSMMCSDBusVoltSet(hwAttrs->baseAddr, HS_MMCSD_BUS_VOLT_3P0); /* Default */
+		} else  if(hwAttrs->supportedBusVoltages & MMCSD_BUS_VOLTAGE_1_8V) {
+           HSMMCSDBusVoltSet(hwAttrs->baseAddr, HS_MMCSD_BUS_VOLT_1P8);
+        }
+        /* Bus power on */
+        status = ((int32_t)(HSMMCSDBusPower(hwAttrs->baseAddr, MMC_HCTL_SDBP_PWRON)));
+		object->switched_to_v18=FALSE;
+        if (STW_SOK != status)
+        {
+            ret = MMCSD_ERR;
+        }
+    }
+
+    if (MMCSD_OK == ret)
+    {
+        /* Set the initialization frequency */
+        status = HSMMCSDBusFreqSet(hwAttrs->baseAddr, hwAttrs->inputClk,
+            hwAttrs->outputClk, FALSE);
+        if(NULL != hwAttrs->iodelayFxn)
+        {
+            iodelayParams.transferSpeed = MMCSD_TRANSPEED_25MBPS;
+            hwAttrs->iodelayFxn(hwAttrs->instNum, &iodelayParams);
+        }
+
+        if (STW_SOK != status)
+        {
+            ret = MMCSD_ERR;
+        }
+    }
+}
 
