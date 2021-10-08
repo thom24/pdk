@@ -262,7 +262,6 @@ const sblSlaveCoreInfo_t sbl_late_slave_core_stages_info[NUM_BOOT_STAGES][MAX_CO
 };
 
 
-#if defined(BOOT_OSPI)
 const uint32_t ospi_main_domain_flash_rtos_images[NUM_BOOT_STAGES] = {
     MAIN_DOMAIN_APPS_FLASH_ADDR,
     /* Load remaining cores before MPU/HLOS to avoid contention for control of Flash */
@@ -273,19 +272,6 @@ const uint32_t ospi_main_domain_flash_rtos_images[NUM_BOOT_STAGES] = {
     MAIN_DOMAIN_APPS_FLASH_ADDR3
 #endif
 };
-#endif
-#if defined(BOOT_MMCSD)
-TCHAR mmcsd_main_domain_rtos_image_name[NUM_BOOT_STAGES][MAX_APPIMAGE_NAME_LEN] = {
-    "0:/lateapp1",
-    /* Load remaining cores before MPU/HLOS to avoid contention for control of SD card */
-    "0:/lateapp2",
-#if defined(MPU1_HLOS_BOOT_ENABLED) || defined(MPU1_HLOS_BOOT_ONLY_ENABLED)
-    MAIN_DOMAIN_HLOS_NAME,
-#else
-    "0:/lateapp3",
-#endif
-};
-#endif
 
 /* Number of Main Domain cores that can be booted by the
  * sample application for J721E SOC */

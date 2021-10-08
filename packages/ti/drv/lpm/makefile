@@ -40,7 +40,7 @@ COMP = lpm_lib
 
 lib_$(COMP)_BUILD_DEPENDENCY = soc
 
-$(COMP)_DOXYGEN_SUPPORT = no
+$(COMP)_DOXYGEN_SUPPORT = yes
 
 include $(PDK_INSTALL_PATH)/ti/build/comp_top.mk
 

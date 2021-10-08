@@ -42,50 +42,71 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <stdio.h>
-#include <stdint.h>
-#include <string.h>
-#include <stdarg.h>
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
-
 #include <ti/drv/lpm/include/lpm_ipc.h>
-#include <ti/drv/lpm/include/ipc_rsctable.h>
+#include <ti/drv/lpm/src/lpm_ipc_rsctable.h>
 
-/* OSAL Header files */
-#include <ti/osal/osal.h>
-#include <ti/osal/TaskP.h>
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
 
-#include <ti/drv/ipc/ipc.h>
-#include <ti/drv/ipc/ipcver.h>
-#include <ti/osal/osal.h>
+#define MSGSIZE                 256U
+#define SERVICE_PING            "ti.ipc4.ping-pong"
+#define ENDPT_PING              13U
+#define SERVICE_CHRDEV          "rpmsg_chrdev"
+#define ENDPT_CHRDEV            14U
+#define NUMMSGS                 10000 /* number of message sent per task */
 
-#define MSGSIZE  256U
-#define SERVICE_PING   "ti.ipc4.ping-pong"
-#define ENDPT_PING     13U
-#define SERVICE_CHRDEV "rpmsg_chrdev"
-#define ENDPT_CHRDEV   14U
-#if defined(SIM_BUILD)
-#define NUMMSGS  1000
+/* this should be >= RPMessage_getObjMemRequired() */
+#define IPC_RPMESSAGE_OBJ_SIZE  256U
+
+#define RPMSG_DATA_SIZE        (256U*512U + IPC_RPMESSAGE_OBJ_SIZE)
+#define VQ_BUF_SIZE             2048U
+
+/* Vring start address for each device */
+#if defined (SOC_J7200)
+#define VRING_BASE_ADDRESS      0xA4000000U
 #else
-#define NUMMSGS  10000 /* number of message sent per task */
+#define VRING_BASE_ADDRESS      0xAA000000U
 #endif
-//#define NUMMSGS  1000000   /* number of message sent per task */
 
-typedef struct Ipc_TestParams_s
+typedef struct Lpm_ipcTestParams_s
 {
     uint32_t endPt;
     char     name[32];
-} Ipc_TestParams;
+} Lpm_ipcTestParams;
 
-Ipc_TestParams service_ping = { ENDPT_PING, SERVICE_PING };
-Ipc_TestParams service_chrdev = { ENDPT_CHRDEV, SERVICE_CHRDEV };
+Lpm_ipcTestParams service_ping = { ENDPT_PING, SERVICE_PING };
+Lpm_ipcTestParams service_chrdev = { ENDPT_CHRDEV, SERVICE_CHRDEV };
 
 #if defined (SOC_J721E)
     #define CORE_IN_TEST 8
 #elif defined (SOC_J7200)
     #define CORE_IN_TEST 3
 #endif
+
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
+
+#define IPC_SETUP_TASK_PRI                  (3)
+/**< Priority for sender and receiver tasks */
+
+/* ========================================================================== */
+/*                         Structure Declarations                             */
+/* ========================================================================== */
+
+/* None */
+
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+
+/* None */
+
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
+
 
 uint8_t g_taskStackBuf[(CORE_IN_TEST+3)*IPC_TASK_STACKSIZE]
 __attribute__ ((section(".bss:taskStackSection")))
@@ -126,29 +147,9 @@ char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
 uint8_t gOcmcShadowRscTable[0x8C];
 uint8_t *pOcmcShadowRscTable = gOcmcShadowRscTable;
 
-/* ========================================================================== */
-/*                           Macros & Typedefs                                */
-/* ========================================================================== */
-
-#define IPC_SETUP_TASK_PRI                  (3)
-/**< Priority for sender and receiver tasks */
-
-/* ========================================================================== */
-/*                         Structure Declarations                             */
-/* ========================================================================== */
-
-/* None */
-
-/* ========================================================================== */
-/*                          Function Declarations                             */
-/* ========================================================================== */
-
-/* ========================================================================== */
-/*                            Global Variables                                */
-/* ========================================================================== */
-
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
 static uint32_t		RecvEndPt = 0;
+RPMessage_Handle  g_ResponderHandleLinux;
 #endif
 
 //#define DEBUG_PRINT
@@ -156,11 +157,11 @@ static uint32_t		RecvEndPt = 0;
 volatile uint32_t g_exitRespTsk = 0x0U;
 RPMessage_Handle  g_ResponderHandleRTOS;
 
-#if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
-RPMessage_Handle  g_ResponderHandleLinux;
-#endif
+/* ========================================================================== */
+/*                          Function Definitions                              */
+/* ========================================================================== */
 
-void rpmsg_exit_responseTask()
+void Lpm_ipcExitResponseTask()
 {
     g_exitRespTsk = 0x1U;
 #ifdef DEBUG_PRINT
@@ -183,7 +184,7 @@ void rpmsg_exit_responseTask()
  * This "Task" waits for a "ping" message from any processor
  * then replies with a "pong" message.
  */
-void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
+void Lpm_ipcResponderFxn(uint32_t *arg0, uint32_t *arg1)
 {
     RPMessage_Params    params;
     RPMessage_Handle  g_ResponderHandle;
@@ -319,7 +320,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
     return;
 }
 
-void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
+void Lpm_ipcSenderFxn(uint32_t *arg0, uint32_t *arg1)
 {
     RPMessage_Handle    handle;
     RPMessage_Params    params;
@@ -460,7 +461,7 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
  *
  */
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
-void rpmsg_vdevMonitorFxn(void* arg0, void* arg1)
+void Lpm_ipcVdevMonitorFxn(void* arg0, void* arg1)
 {
     int32_t status;
 
@@ -522,7 +523,7 @@ void rpmsg_vdevMonitorFxn(void* arg0, void* arg1)
 }
 #endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)*/
 
-static void IpcTestPrint(const char *str)
+static void Lpm_ipcAppPrintf(const char *str)
 {
     UART_printf("%s", str);
 
@@ -530,7 +531,7 @@ static void IpcTestPrint(const char *str)
 }
 
 volatile uint32_t loop_ipcEcho = 0x0;
-int32_t Ipc_echo_test(void)
+int32_t Lpm_ipcEchoApp(void)
 {
     uint32_t          t; 
     TaskP_Params      params;
@@ -570,7 +571,7 @@ int32_t Ipc_echo_test(void)
         /* Initialize params with defaults */
         IpcInitPrms_init(0U, &initPrms);
         
-        initPrms.printFxn = &IpcTestPrint;
+        initPrms.printFxn = &Lpm_ipcAppPrintf;
 
         retVal += Ipc_init(&initPrms);
         if(retVal != IPC_SOK)
@@ -653,10 +654,10 @@ int32_t Ipc_echo_test(void)
                         params.stacksize  = IPC_TASK_STACKSIZE;
                         params.arg0       = (uint32_t *)&service_ping.endPt;
                         params.arg1       = (uint32_t *)&service_ping.name[0];
-                        TaskP_create(rpmsg_responderFxn, &params);
+                        TaskP_create(Lpm_ipcResponderFxn, &params);
 
                     #ifdef DEBUG_PRINT
-                        UART_printf("rpmsg_responderFxn for ENDPT_PING created!\n");
+                        UART_printf("Lpm_ipcResponderFxn for ENDPT_PING created!\n");
                     #endif
                         TaskP_sleep(1000);
 
@@ -668,9 +669,9 @@ int32_t Ipc_echo_test(void)
                         params.stacksize  = IPC_TASK_STACKSIZE;
                         params.arg0       = (uint32_t *)&service_chrdev.endPt;
                         params.arg1       = (uint32_t *)&service_chrdev.name[0];
-                        TaskP_create(rpmsg_responderFxn, &params);
+                        TaskP_create(Lpm_ipcResponderFxn, &params);
                     #ifdef DEBUG_PRINT
-                        UART_printf("rpmsg_responderFxn for ENDPT_CHRDEV created!\n");
+                        UART_printf("Lpm_ipcResponderFxn for ENDPT_CHRDEV created!\n");
                     #endif
                         TaskP_sleep(1000);
                     #endif
@@ -694,7 +695,7 @@ int32_t Ipc_echo_test(void)
                             params.stacksize = IPC_TASK_STACKSIZE;
                             params.arg0      = (uint32_t *)&pRemoteProcArray[t];
                             params.arg1      = (uint32_t *)&gSendTaskBufIdx[t];
-                            TaskP_create(rpmsg_senderFxn, &params);
+                            TaskP_create(Lpm_ipcSenderFxn, &params);
 
                         }
 
@@ -705,7 +706,7 @@ int32_t Ipc_echo_test(void)
                         params.stack     = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
                         params.stacksize = IPC_TASK_STACKSIZE;
                         params.arg0 = 0;
-                        TaskP_create(rpmsg_vdevMonitorFxn, &params);
+                        TaskP_create(Lpm_ipcVdevMonitorFxn, &params);
                     #endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH) */
                     }
                 }

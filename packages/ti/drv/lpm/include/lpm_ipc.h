@@ -30,39 +30,61 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/*
+/**
+ *  \ingroup DRV_LPM_MODULE
+ *  \defgroup DRV_LPM_IPC_MODULE LPM Driver IPC API
+ *            This is LPM driver IPC related configuration parameters and
+ *            API
+ *
+ *  @{
+ */
+
+/**
  *  \file lpm_ipc.h
  *
- *  \brief Define the macros and functions for common IPC test
- *
+ *  \brief LPM IPC related parameters and API.
  */
 
 #ifndef LPM_IPC_H_
 #define LPM_IPC_H_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* ========================================================================== */
+/*                             Include Files                                  */
+/* ========================================================================== */
 
-/* this should be >= RPMessage_getObjMemRequired() */
-#define IPC_RPMESSAGE_OBJ_SIZE  256U
+#include <stdio.h>
+#include <stdint.h>
+#include <string.h>
+#include <stdarg.h>
+#include <ti/drv/uart/UART.h>
+#include <ti/drv/uart/UART_stdio.h>
+#include <ti/osal/osal.h>
+#include <ti/osal/TaskP.h>
+#include <ti/drv/ipc/ipc.h>
+#include <ti/drv/ipc/ipcver.h>
 
-#define RPMSG_DATA_SIZE         (256U*512U + IPC_RPMESSAGE_OBJ_SIZE)
-#define VQ_BUF_SIZE             2048U
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
 
-/* Vring start address for each device */
-#ifdef SOC_AM65XX
-#define VRING_BASE_ADDRESS      0xA2000000U
-#elif defined (SOC_J7200)
-#define VRING_BASE_ADDRESS      0xA4000000U
-#elif defined (SOC_AM64X)
-#define VRING_BASE_ADDRESS      0xA5000000U
-#else
-#define VRING_BASE_ADDRESS      0xAA000000U
-#endif
+/* None */
 
-int32_t Ipc_echo_test(void);
-void rpmsg_exit_responseTask(void);
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+
+/**
+ *  \brief Starts the sender and receiver tasks for IPC with RTOS and Linux
+ *
+ *  \return Implementation specific return codes. Negative values indicate
+ *          unsuccessful operations.
+ */
+int32_t Lpm_ipcEchoApp(void);
+
+/**
+ *  \brief De initializes the IPC driver and deletes the tasks
+ */
+void Lpm_ipcExitResponseTask(void);
 
 #ifdef __cplusplus
 }

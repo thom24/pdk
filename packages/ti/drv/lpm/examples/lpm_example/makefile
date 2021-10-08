@@ -10,7 +10,7 @@ endif
 APP_NAME = lpm_example_$(BUILD_OS_TYPE)
 
 SRCDIR = src
-INCDIR = ../../include
+INCDIR = 
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
@@ -24,7 +24,7 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 endif
 
 # List all the specific components required by the application
-COMP_LIST_COMMON += sciserver_tirtos ipc sbl_lib_cust spi
+COMP_LIST_COMMON += sciserver_tirtos ipc sbl_lib_cust spi lpm
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .

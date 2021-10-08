@@ -102,8 +102,6 @@
 /* ========================================================================== */
 
 static void MainApp_TaskFxn(void* a0, void* a1);
-extern uint32_t McuOnly_App();
-extern int32_t Ipc_echo_test();
 int32_t SetupSciServer(void);
 
 /* ========================================================================== */
@@ -138,9 +136,7 @@ int main(void)
         OS_stop();
     }
 
-    mcu_timer_init();
-
-    AppUtils_Printf(MSG_NORMAL, "\nMCU R5F App started at %d usecs\r\n", (uint32_t)get_usec_timestamp());
+    AppUtils_Printf(MSG_NORMAL, "\nMCU R5F App started at %d usecs\r\n", (uint32_t)TimerP_getTimeInUsecs());
 
     /* Initialize the task params */
     TaskP_Params_init(&mainAppTaskParams);
@@ -166,14 +162,14 @@ static void MainApp_TaskFxn(void* a0, void* a1)
     uint64_t timeMcuOnlyAppStart, timeMcuOnlyAppFinish;
     uint32_t i, numBoots=5;
 
-    Boot_AppInit();
-    McuOnly_AppInit();
+    Lpm_bootAppInit();
+    Lpm_pmicInit();
 
     for(i=0; i<numBoots; i++)
     {
-        timeIPCStart = get_usec_timestamp();
-        Ipc_echo_test();
-        timeIPCFinish = get_usec_timestamp();
+        timeIPCStart = TimerP_getTimeInUsecs();
+        Lpm_ipcEchoApp();
+        timeIPCFinish = TimerP_getTimeInUsecs();
 
         AppUtils_Printf(MSG_NORMAL, "\nIPC Task started at %d usecs and finished at %d usecs\r\n",
                         (uint32_t)timeIPCStart,
@@ -181,9 +177,9 @@ static void MainApp_TaskFxn(void* a0, void* a1)
 
         TaskP_sleep(5*1000);
 
-        timeBootAppStart = get_usec_timestamp();
-        Boot_App();
-        timeBootAppFinish = get_usec_timestamp();
+        timeBootAppStart = TimerP_getTimeInUsecs();
+        Lpm_bootApp();
+        timeBootAppFinish = TimerP_getTimeInUsecs();
 
         AppUtils_Printf(MSG_NORMAL, "\nMCU Boot Task started at %d usecs and finished at %d usecs\r\n",
                         (uint32_t)timeBootAppStart,
@@ -191,20 +187,20 @@ static void MainApp_TaskFxn(void* a0, void* a1)
 
         TaskP_sleep(1000);
         AppUtils_Printf(MSG_NORMAL, "Calling rpmsg_exit_responseTask\n");
-        rpmsg_exit_responseTask();
+        Lpm_ipcExitResponseTask();
         TaskP_sleep(1000);
         AppUtils_Printf(MSG_NORMAL, "responder task should have exited\n");
 
-        timeMcuOnlyAppStart = get_usec_timestamp();
-        McuOnly_App();
-        timeMcuOnlyAppFinish = get_usec_timestamp();
+        timeMcuOnlyAppStart = TimerP_getTimeInUsecs();
+        Lpm_pmicApp();
+        timeMcuOnlyAppFinish = TimerP_getTimeInUsecs();
 
         AppUtils_Printf(MSG_NORMAL, "\nMCU Only Task started at %d usecs and finished at %d usecs\r\n",
                         (uint32_t)timeMcuOnlyAppStart,
                         (uint32_t)timeMcuOnlyAppFinish);
     }
 
-    Boot_AppDeInit();
+    Lpm_bootAppDeInit();
 
     return;
 }

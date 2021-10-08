@@ -71,7 +71,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 #include <stdlib.h>
-#include <ti/drv/lpm/include/lpm_utils.h>
+#include <ti/drv/lpm/src/lpm_utils.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/uart/UART.h>
 

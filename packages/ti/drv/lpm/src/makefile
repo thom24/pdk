@@ -9,12 +9,12 @@ endif
 
 MODULE_NAME = lpm
 
-SRCDIR = src soc/$(SOC)
-SRCDIR += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/common
-INCDIR = include soc/$(SOC)
+SRCDIR  = src
+SRCDIR += soc/$(SOC)
+INCDIR = 
+#INCDIR = include soc/$(SOC)
 INCDIR += $(PDK_SBL_COMP_PATH)/soc/k3
 INCDIR += $(PDK_INSTALL_PATH)/ti/drv/pmic/include
-INCDIR += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/common
 INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/config
 
 # List all the external components/interfaces, whose interface header files
@@ -23,24 +23,23 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 INCLUDE_INTERNAL_INTERFACES = board sbl_lib_cust spi pmic ipc
 COMP_LIST_COMMON = 
 
-PACKAGE_SRCS_COMMON = lpm.h makefile $(SRCDIR)
+PACKAGE_SRCS_COMMON = lpm.h makefile .gitignore docs $(SRCDIR)
 PACKAGE_SRCS_COMMON += include/lpm_boot.h
 PACKAGE_SRCS_COMMON += include/lpm_pmic.h
 PACKAGE_SRCS_COMMON += include/lpm_ipc.h
-PACKAGE_SRCS_COMMON += include/lpm_utils.h
+PACKAGE_SRCS_COMMON += src/lpm_utils.h
 PACKAGE_SRCS_COMMON += soc/$(SOC)/boot_core_defs.h
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc.xdt
 
 # Common source files and CFLAGS across all platforms and cores
-SRCS_COMMON += lpm_boot.c
+SRCS_COMMON  = lpm_boot.c
 SRCS_COMMON += lpm_pmic.c
 SRCS_COMMON += lpm_ipc.c
 SRCS_COMMON += lpm_utils.c
-SRCS_COMMON += soc/$(SOC)/boot_core_defs.c
-SRCS_COMMON += pmic_ut_common.c
+SRCS_COMMON += boot_core_defs.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DUNITY_INCLUDE_CONFIG_V2_H -DLINUX_OS -DA72_LINUX_OS -DA72_LINUX_OS_IPC_ATTACH -DSBL_LOG_LEVEL=3 -DBOOT_OSPI -DMPU1_HLOS_BOOT_ENABLED -DPMIC_USE_DRV
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DUNITY_INCLUDE_CONFIG_V2_H -DLINUX_OS -DA72_LINUX_OS -DA72_LINUX_OS_IPC_ATTACH -DSBL_LOG_LEVEL=3 -DMPU1_HLOS_BOOT_ENABLED -DPMIC_USE_DRV
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

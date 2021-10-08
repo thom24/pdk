@@ -69,51 +69,14 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <stdio.h>
-
+#include <ti/drv/lpm/include/lpm_boot.h>
 #include <ti/boot/sbl/src/rprc/sbl_rprc_parse.h>
-#include <ti/boot/sbl/src/mmcsd/sbl_mmcsd.h>
 #include <ti/boot/sbl/src/ospi/sbl_ospi.h>
-#include <ti/boot/sbl/soc/sbl_soc.h>
-#include <ti/boot/sbl/soc/k3/sbl_slave_core_boot.h>
-#include <ti/boot/sbl/soc/k3/sbl_profile.h>
-#include <ti/boot/sbl/soc/k3/sbl_soc_cfg.h>
-#include <ti/boot/sbl/soc/k3/sbl_qos.h>
-#include <ti/boot/sbl/soc/k3/sbl_log.h>
-#include <ti/boot/sbl/soc/k3/sbl_qos.h>
-
-#include <ti/csl/cslr_gtc.h>
-
-#include <ti/drv/mmcsd/MMCSD.h>
-#include <ti/drv/mmcsd/soc/MMCSD_soc.h>
-#include <ti/drv/mmcsd/src/MMCSD_osal.h>
-
-#include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/board.h>
-#include <ti/board/board_cfg.h>
-#include <ti/board/src/flash/include/board_flash.h>
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_control.h>
-#include <ti/drv/lpm/soc/j721e/boot_core_defs.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_control.h>
-#include <ti/drv/lpm/soc/j7200/boot_core_defs.h>
-#endif
-
-#include <ti/drv/lpm/include/lpm_utils.h>
-
-#include <ti/osal/osal.h>
-#include <ti/osal/TaskP.h>
-
-/* PM Lib */
-#include <ti/drv/pm/include/pm_types.h>
-#include <ti/drv/pm/include/dmsc/pmlib_sysconfig.h>
-#include <ti/drv/pm/include/dmsc/pmlib_clkrate.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
 #define TCLR_ST			(0x1 << 0)
 #define TCLR_AR			(0x1 << 1)
 #define TCLR_PRE		(0x1 << 5)
@@ -138,113 +101,31 @@
 #define writel(x,y)               (*((uint64_t *)(y))=(x))
 #define readl(x)                  (*((uint64_t *)(x)))
 
-/* Enables SBL logs */
-/* #define SBL_BOOTLOG_OUTPUT_ENABLED */
-
-#if !defined(SOC_J721E) && !defined(SOC_J7200)
-/* Performs Sciclient board setup for DEVGRP_01 */
-#define BOOTAPP_MAINDOMAIN_BOARD_SETUP
-#endif
-
-/* Includes timestamps for OSPI memcpy's.
- * Should only be defined for OSPI build */
-/* #define PROFILE_OSPI_READS_ENABLED */
-
-/* Includes printout of Boot Stage core requests and image copies */
-/* #define GATHER_STAGE_DETAILS */
-
-/* NOTE: Secure boot is not yet supported on J721E */
-/* #define SECURE_BOOT */
+#define LPM_SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0 (0x01U)
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-#if defined(BOOTAPP_MAINDOMAIN_BOARD_SETUP)
-struct bootApp_boardcfg_rm_resasg
-{
-    struct tisci_boardcfg_substructure_header subhdr;
-    uint16_t                    resasg_entries_size;
-    uint16_t                    reserved;
-} __attribute__((__packed__));
-
-struct bootApp_boardcfg_rm
-{
-    struct tisci_boardcfg_abi_rev     rev;
-    struct tisci_boardcfg_rm_host_cfg host_cfg;
-    struct bootApp_boardcfg_rm_resasg resasg;
-} __attribute__((__packed__));
-
-struct bootApp_local_rm_boardcfg
-{
-    struct bootApp_boardcfg_rm            rm_boardcfg;
-    struct tisci_boardcfg_rm_resasg_entry resasg_entries[TISCI_RESASG_ENTRIES_MAX];
-};
-
-#pragma DATA_SECTION(bootAppBoardCfg, ".sysfw_data_cfg_board")
-struct tisci_boardcfg bootAppBoardCfg;
-#pragma DATA_SECTION(bootAppBoardCfg_rm, ".sysfw_data_cfg_board_rm")
-struct bootApp_local_rm_boardcfg bootAppBoardCfg_rm;
-#pragma DATA_SECTION(bootAppBoardCfg_sec, ".sysfw_data_cfg_board_sec")
-struct tisci_boardcfg_sec bootAppBoardCfg_sec;
-#endif /* BOOTAPP_MAINDOMAIN_BOARD_SETUP */
-
-typedef struct
-{
-    uint8_t     sbl_boot_buff[SBL_MAX_BOOT_BUFF_SIZE+1];
-    uint32_t    sbl_boot_size;
-    uint32_t    sbl_boot_buff_idx;
-} SBL_incomingBootData_S;
+/* None */
 
 /* ========================================================================== */
-/*              Internal Function Declarations                                */
+/*                       Function Declarations                                */
 /* ========================================================================== */
 
+/* None */
 
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#if defined(BOOT_OSPI)
 /* Offset into app image that is being processed */
 static uint32_t xipMemBase = 0x50000000;
-
 static OSPI_v0_HwAttrs ospi_cfg;
-
 static void *boardHandle = NULL;
-#endif
 
 sblEntryPoint_t k3xx_evmEntry;
-SBL_incomingBootData_S sblInBootData __attribute__ ((section (".sblbootbuff")));
-
-struct mcu_timer {
-	uint32_t tidr;		/* 0x00 r */
-	uint8_t  res1[0xc];
-	uint32_t tiocp_cfg;		/* 0x10 rw */
-	uint8_t  res2[0xc];
-	uint32_t teoir;		/* 0x20 rw */
-	uint32_t tisr_raw;		/* 0x24 r */
-	uint32_t tisr;		/* 0x28 rw */
-	uint32_t tier;		/* 0x2c rw */
-	uint32_t ticr;		/* 0x30 rw */
-	uint32_t twer;		/* 0x34 rw */
-	uint32_t tclr;		/* 0x38 rw */
-	uint32_t tcrr;		/* 0x3c rw */
-	uint32_t tldr;		/* 0x40 rw */
-	uint32_t ttgr;		/* 0x44 rw */
-	uint32_t twps;		/* 0x48 r */
-	uint32_t tmar;		/* 0x4c rw */
-	uint32_t tcar1;		/* 0x50 r */
-	uint32_t tsicr;		/* 0x54 rw */
-	uint32_t tcar2;		/* 0x58 r */
-	uint32_t tpir;		/* 0x5c rw */
-	uint32_t tnir;		/* 0x60 rw */
-	uint32_t tcvr;		/* 0x64 rw */
-	uint32_t tocr;		/* 0x68 rw */
-	uint32_t towr; 		/* 0x6c rw */
-};
-
-static struct mcu_timer *timer_base = (struct mcu_timer *)MCU_PROFILING_TIMER_BASE;
+Lpm_SblIncomingBootData gLpmSblInBootData __attribute__ ((section (".sblbootbuff")));
 
 /* ========================================================================== */
 /*                            External Variables                              */
@@ -281,81 +162,6 @@ extern uint32_t         *sblProfileLogOvrFlwAddr;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-#define SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0 (0x01U)
-
-/*
- * Start a counter
- */
-int32_t mcu_timer_init(void)
-{
-    int32_t  retVal = 0;
-    uint32_t timerId;
-    uint32_t timerClkSet;
-    uint64_t rcvdClkRate;
-    uint64_t desiredClkRate;
-
-    timerId        = TISCI_DEV_MCU_TIMER2;
-    timerClkSet    = TISCI_DEV_MCU_TIMER2_TIMER_TCLK_CLK;
-    desiredClkRate = (uint64_t)CLK_200M_RC_DEFAULT_FREQ;
-    /* Set MCU Timer 2 to desiredClkRate (clock rates defined in mcu_timer_freq.h) */
-    if (PM_SUCCESS != PMLIBClkRateSet(timerId, timerClkSet,
-                                      desiredClkRate))
-    {
-        AppUtils_Printf(MSG_NORMAL,
-                        "Could not set the clock source !!!\n");
-        retVal = -1;
-    }
-    /* Check that Timer 2 clock is set to correct value */
-    if (PM_SUCCESS != PMLIBClkRateGet(timerId, timerClkSet,
-                                      &rcvdClkRate))
-    {
-        AppUtils_Printf(MSG_NORMAL,
-                        "Could not get the Timer 2 clock source rate !!!\n");
-        retVal = -1;
-    }
-    else
-    {
-        if (rcvdClkRate != desiredClkRate)
-        {
-            AppUtils_Printf(MSG_NORMAL,
-                            "Timer 2 source rate of %jd does not match %jd !!!\n",
-                            rcvdClkRate,
-                            desiredClkRate);
-            retVal = -1;
-        }
-    }
-
-    if (retVal == 0)
-    {
-        /* configure timer for posted writes */
-        writel(TSICR_POST, &timer_base->tsicr);
-        /* start the counter ticking up, reload value on overflow */
-        writel(MCU_TIMER_LOAD_VAL, &timer_base->tldr);
-        /* enable timer */
-        writel((MCU_TIMER_PTV << 2) | TCLR_PRE | TCLR_AR | TCLR_ST,
-               &timer_base->tclr);
-    }
-
-	return retVal;
-}
-
-/*
- * Get timestamp in microseconds
- */
-uint64_t get_usec_timestamp(void)
-{
-	uint64_t timestamp;
-    uint64_t output;
-	unsigned long count = readl(&timer_base->tcrr);
-
-	/* Use correct multiplier to get resulting timestamp in microseconds */
-	timestamp = (uint64_t)count * 1000000ULL;
-    output = timestamp/MCU_TIMER_CLOCK;
-
-	return output;
-}
-
-//#if defined(BOOTAPP_MAINDOMAIN_BOARD_SETUP)
 /*        This function uses the Global Timebase Counter (GTC)
  *        Important: the GTC clock is different than the ARM PMU clock.
  *                Function assumes input clock has already been set.
@@ -364,36 +170,30 @@ uint64_t get_usec_timestamp(void)
  *        For Jacinto 7 SoCs this register requires a SECURE WRITE so it only works
  *        if A53/A72 is in EL3 state.
  */
-static void CSL_initGTC(void)
+static void Lpm_initGTC(void)
 {
-    //volatile uint32_t *gtcRegister = (uint32_t *) CSL_GTC0_GTC_CFG1_BASE;
-    /* Enable GTC */
-    //*gtcRegister = *gtcRegister | CSL_GTC_CFG1_CNTCR_EN_MASK | CSL_GTC_CFG1_CNTCR_HDBG_MASK;
-
     CSL_REG32_WR(CSL_GTC0_GTC_CFG1_BASE + CSL_GTC_CFG1_CNTCR, 0x1);
     CSL_REG32_WR(CSL_GTC0_GTC_CFG1_BASE + CSL_GTC_CFG1_CNTFID0, 200000000);
 }
-//#endif
 
 #if defined(MPU1_HLOS_BOOT_ENABLED) || defined(MPU1_HLOS_BOOT_ONLY_ENABLED)
 /* Function to clean the MCU R5 cache for a given start address and given memory size */
-void Mcu_DCacheClean(void *addr, uint32_t size)
+void Lpm_mcuDCacheClean(void *addr, uint32_t size)
 {
     /* Invalidate by MVA */
     CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size));
 }
 #endif
 
-#if defined(BOOT_OSPI)
 #    if defined(PROFILE_OSPI_READS_ENABLED)
 uint64 total_memcpy_time = 0;
 uint64 total_memcpy_size = 0;
 #    endif
 
 /* read of block of data from buffer */
-int32_t XIP_ReadMem(void    *buff,
-                    void    *srcOffsetAddr,
-                    uint32_t size)
+static int32_t Lpm_xipReadMem(void    *buff,
+                              void    *srcOffsetAddr,
+                              uint32_t size)
 {
 #    if defined(PROFILE_OSPI_READS_ENABLED)
     uint64 memcpy_start;
@@ -425,12 +225,12 @@ int32_t XIP_ReadMem(void    *buff,
 }
 
 /* move the buffer pointer */
-void XIP_SeekMem(void *srcAddr, uint32_t location)
+static void Lpm_xipSeekMem(void *srcAddr, uint32_t location)
 {
     *((uint32_t *) srcAddr) = location;
 }
 
-static int32_t OSPIBootImageLate(sblEntryPoint_t *pEntry, uint32_t imageOffset)
+static int32_t Lpm_ospiBootImageLate(sblEntryPoint_t *pEntry, uint32_t imageOffset)
 {
     int32_t retVal = E_FAIL;
 
@@ -450,8 +250,8 @@ static int32_t OSPIBootImageLate(sblEntryPoint_t *pEntry, uint32_t imageOffset)
     fp_readData = &SBL_OSPI_ReadSectors;
     fp_seek     = &SBL_OSPI_seek;
     #else
-    fp_readData = &XIP_ReadMem;
-    fp_seek     = &XIP_SeekMem;
+    fp_readData = &Lpm_xipReadMem;
+    fp_seek     = &Lpm_xipSeekMem;
     #endif
 
     retVal = SBL_MulticoreImageParse((void *) &offset,
@@ -496,7 +296,7 @@ static int32_t OSPIBootImageLate(sblEntryPoint_t *pEntry, uint32_t imageOffset)
 
 /* Boot all the OSPI images defined in the array */
 
-static int32_t OSPIBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
+static int32_t Lpm_ospiBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
 {
     int32_t status = E_FAIL;
 
@@ -506,7 +306,7 @@ static int32_t OSPIBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
         {
 #    if !defined(MPU1_HLOS_BOOT_ONLY_ENABLED)
             /* non-HLOS image */
-            status = OSPIBootImageLate(&k3xx_evmEntry, address);
+            status = Lpm_ospiBootImageLate(&k3xx_evmEntry, address);
 #    else
             status = E_PASS;
 #    endif
@@ -515,7 +315,7 @@ static int32_t OSPIBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
         else
         {
             /* Load the HLOS appimages */
-            status = OSPIBootImageLate(&k3xx_evmEntry, OSPI_OFFSET_A72IMG1);
+            status = Lpm_ospiBootImageLate(&k3xx_evmEntry, OSPI_OFFSET_A72IMG1);
             if (status != E_PASS)
             {
                 AppUtils_Printf(MSG_NORMAL,
@@ -523,7 +323,7 @@ static int32_t OSPIBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
             }
             else
             {
-                status = OSPIBootImageLate(&k3xx_evmEntry, OSPI_OFFSET_A72IMG2);
+                status = Lpm_ospiBootImageLate(&k3xx_evmEntry, OSPI_OFFSET_A72IMG2);
                 if (status != E_PASS)
                 {
                     AppUtils_Printf(MSG_NORMAL,
@@ -532,7 +332,7 @@ static int32_t OSPIBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
 #        if defined(LINUX_OS)
                 else
                 {
-                    status = OSPIBootImageLate(&k3xx_evmEntry, OSPI_OFFSET_A72IMG3);
+                    status = Lpm_ospiBootImageLate(&k3xx_evmEntry, OSPI_OFFSET_A72IMG3);
                     if (status != E_PASS)
                         AppUtils_Printf(MSG_NORMAL,
                                         "Error parsing A72 appimage #3 for HLOS boot\n");
@@ -552,7 +352,7 @@ static int32_t OSPIBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
     return status;
 }
 
-int32_t OSPILeaveConfigSPI()
+static int32_t Lpm_ospiLeaveConfigSPI()
 {
     int32_t retVal = E_PASS;
     Board_flashHandle h;
@@ -597,196 +397,9 @@ int32_t OSPILeaveConfigSPI()
 
     return(retVal);
 }
-#endif /* defined(BOOT_OSPI) */
 
-#if defined(BOOT_MMCSD)
-
-static int32_t MMCBootImageInit()
-{
-    int32_t retVal = E_PASS;
-    MMCSD_v2_HwAttrs hwAttrsConfig;
-
-    if (MMCSD_socGetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig) != 0)
-    {
-        UART_printf("\nUnable to get config.Exiting. TEST FAILED.\r\n");
-        retVal = E_FAIL;
-    }
-
-    hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
-    hwAttrsConfig.configSocIntrPath=NULL;
-
-    if (MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig) != 0)
-    {
-        UART_printf("\nUnable to set config.Exiting. TEST FAILED.\r\n");
-        retVal = E_FAIL;
-    }
-
-    /* Initialization of the driver. */
-    FATFS_init();
-
-    /* MMCSD FATFS initialization */
-    FATFS_open(0U, NULL, &sbl_fatfsHandle);
-
-    return (retVal);
-}
-
-static void MMCBootImageDeInit()
-{
-    FATFS_close(sbl_fatfsHandle);
-    sbl_fatfsHandle = NULL;
-}
-
-static int32_t MMCBootImageLate(sblEntryPoint_t *pEntry,
-                                TCHAR *fileName)
-{
-    int32_t  retVal = E_PASS;
-    FIL      fp     = {0};
-    FRESULT  fresult;
-
-#    ifdef SECURE_BOOT
-    uint32_t authenticated = 0;
-    uint32_t srcAddr       = 0;
-    uint32_t imgOffset     = 0;
-#    endif
-
-    fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
-    if (fresult != FR_OK)
-    {
-        UART_printf("\n SD Boot - File open fails \n");
-        retVal = E_FAIL;
-    }
-    else
-    {
-#    ifndef SECURE_BOOT
-#        if defined(UART_PRINT_DEBUG)
-        UART_printf("\n MMCBootImageLate: fp 0x 0x%x, fileName is %s\n",
-                    (unsigned int)((void *) &fp),
-                    fileName);
-#        endif
-        fp_readData = &SBL_FileRead;
-        fp_seek     = &SBL_FileSeek;
-
-        retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry,
-                                         SBL_SKIP_BOOT_AFTER_COPY);
-
-#        if defined(UART_PRINT_DEBUG)
-        UART_printf("\n Called SBL_MulticoreImageParse, status = %d\n", retVal);
-#        endif
-#    else
-        fp_readData = &SBL_MemRead;
-        fp_seek     = &SBL_MemSeek;
-        /* handling secure boot image */
-        if (E_PASS == SBL_loadMMCSDBootFile(&fp))
-        {
-            /* successfully loading boot image */
-            /* authentiate it */
-            authenticated = SBL_authentication(sblInBootData.sbl_boot_buff);
-            if (authenticated == 0)
-            {
-                /* fails authentiation */
-                UART_printf("\n SD Boot - fail authentication\n");
-
-                retVal = E_FAIL;
-            }
-            else
-            {
-                /* need to skip the TOC headers */
-                imgOffset = ((uint32_t*)sblInBootData.sbl_boot_buff)[0];
-                srcAddr = (uint32_t)(sblInBootData.sbl_boot_buff) + imgOffset;
-                retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry,
-                                                 SBL_SKIP_BOOT_AFTER_COPY);
-            }
-        }
-        else
-        {
-            UART_printf("\n SD sec Boot - incorrect image\n");
-
-            retVal = E_FAIL;
-        }
-#    endif
-
-        f_close(&fp);
-    }
-
-#    ifdef SECURE_BOOT
-    /* install RAM Secure Kernel to overwrite DSP secure server*/
-    UART_printf("\n Starting Secure Kernel on DSP...\n");
-    SBL_startSK();
-#    endif
-
-    return retVal;
-}
-
-static int32_t MMCSDBootStageImage(sblEntryPoint_t *pEntry, TCHAR *fileName)
-{
-    int32_t status      = E_FAIL;
-#    if defined(MPU1_HLOS_BOOT_ENABLED) || defined(MPU1_HLOS_BOOT_ONLY_ENABLED)
-    TCHAR  *fileNameAtf = "0:/atf_optee.appimage";
-#        ifdef QNX_OS
-    TCHAR  *fileHLOS    = "0:/ifs_qnx.appimage";
-#        else
-    TCHAR  *fileNameDtb = "0:/tidtb_linux.appimage";
-    TCHAR  *fileHLOS    = "0:/tikernelimage_linux.appimage";
-#        endif
-#    endif
-
-    if ((NULL != fileName) && (NULL != pEntry))
-    {
-        if (strcmp(fileName, MAIN_DOMAIN_HLOS_NAME) != 0)
-        {
-#    if !defined(MPU1_HLOS_BOOT_ONLY_ENABLED)
-            /* non-HLOS image */
-            status = MMCBootImageLate(&k3xx_evmEntry, fileName);
-#    else
-            status = E_PASS;
-#    endif
-        }
-#    if defined(MPU1_HLOS_BOOT_ENABLED) || defined(MPU1_HLOS_BOOT_ONLY_ENABLED)
-        else
-        {
-            /* Read & Parse images for MPU1 HLOS boot from other files */
-            status = MMCBootImageLate(&k3xx_evmEntry, fileNameAtf);
-            if (status != CSL_PASS)
-            {
-                AppUtils_Printf(MSG_NORMAL,
-                                "Error copying and parsing A72 appimage #1 for HLOS boot\n");
-            }
-            else
-            {
-                status = MMCBootImageLate(&k3xx_evmEntry, fileHLOS);
-                if (status != CSL_PASS)
-                {
-                    AppUtils_Printf(MSG_NORMAL,
-                                    "Error copying and parsing A72 appimage #2 for HLOS boot\n");
-                }
-#        if defined(LINUX_OS)
-                else
-                {
-                    status = MMCBootImageLate(&k3xx_evmEntry, fileNameDtb);
-                    if (status != CSL_PASS)
-                    {
-                        AppUtils_Printf(MSG_NORMAL,
-                                        "Error copying and parsing A72 appimage #3 for HLOS boot\n");
-                    }
-                }
-#        endif
-            }
-            if (status == CSL_PASS)
-            {
-                /* Set the A72 entry point at the ATF address */
-                (&k3xx_evmEntry)->CpuEntryPoint[MPU1_CPU0_ID] = ATF_START_RAM_ADDR;
-                Mcu_DCacheClean((void *)0x70000000, 0x20000);
-            }
-        } /* if (address == MAIN_DOMAIN_HLOS) */
-#    endif /* #if defined(MPU1_HLOS_BOOT_ENABLED)*/
-    } /* if ((NULL != fileName) && (NULL != pEntry)) */
-
-    return status;
-}
-#endif /* defined(BOOT_MMCSD) */
-
-#if defined(SBL_BOOTLOG_OUTPUT_ENABLED)
-static void BOOT_PERF_TEST_printSblProfileLog(sblProfileInfo_t *sblProfileLog,
+#if defined(LPM_BOOTLOG_OUTPUT_ENABLED)
+static void LPM_printSblProfileLog(sblProfileInfo_t *sblProfileLog,
                                               uint32_t sblProfileLogIndx,
                                               uint32_t sblProfileLogOvrFlw)
 {
@@ -848,10 +461,7 @@ static void BOOT_PERF_TEST_printSblProfileLog(sblProfileInfo_t *sblProfileLog,
 }
 #endif
 
-
-#if defined(BOOT_OSPI)
-
-static void MainDomainBootSetup(void)
+static void Lpm_mainDomainBootSetup(void)
 {
 #    if defined(BOOTAPP_MAINDOMAIN_BOARD_SETUP)
     int32_t retVal;
@@ -918,16 +528,15 @@ static void MainDomainBootSetup(void)
     fp_readData = &SBL_OSPI_ReadSectors;
     fp_seek     = &SBL_OSPI_seek;
 #    else
-    fp_readData = &XIP_ReadMem;
-    fp_seek     = &XIP_SeekMem;
+    fp_readData = &Lpm_xipReadMem;
+    fp_seek     = &Lpm_xipSeekMem;
 #    endif
 
     return;
 }
-#endif /* #if defined(BOOT_OSPI) */
 
 /* Local functions common between OSPI and MMCSD functionality */
-static int32_t RequestStageCores(uint8_t stageNum)
+static int32_t Lpm_requestStageCores(uint8_t stageNum)
 {
     uint32_t i;
     int32_t  status = CSL_EFAIL;
@@ -967,7 +576,7 @@ static int32_t RequestStageCores(uint8_t stageNum)
     return (status);
 }
 
-static int32_t ReleaseStageCores(uint8_t stageNum)
+static int32_t Lpm_releaseStageCores(uint8_t stageNum)
 {
     uint32_t i;
     int32_t  status   = CSL_EFAIL;
@@ -1008,7 +617,7 @@ static int32_t ReleaseStageCores(uint8_t stageNum)
     return (status);
 }
 
-void Boot_AppInit(void)
+void Lpm_bootAppInit(void)
 {
 #if defined(SOC_J721E)
     Board_STATUS status;
@@ -1028,26 +637,20 @@ void Boot_AppInit(void)
     }
 #endif
 
-    MainDomainBootSetup();
+    Lpm_mainDomainBootSetup();
     SBL_SPI_init();
     SBL_ospiInit(&boardHandle);
 }
 
-void Boot_AppDeInit(void)
+void Lpm_bootAppDeInit(void)
 {
     SBL_ospiClose(&boardHandle);
-    OSPILeaveConfigSPI();
+    Lpm_ospiLeaveConfigSPI();
 }
 
 /* Main Boot task */
-int32_t Boot_App()
+int32_t Lpm_bootApp()
 {
-#if defined(BIST_TASK_ENABLED)
-    SemaphoreP_Params bistSemParams;
-    SemaphoreP_Handle bistSemHandle;
-    TaskP_Params      bistParams;
-    TaskP_Handle      bistTask;
-#endif
     int32_t        retVal;
     cpu_core_id_t  core_id;
     cpu_core_id_t  booted_core_ids[DSP2_C7X_ID];
@@ -1065,61 +668,15 @@ int32_t Boot_App()
 #endif
     uint64_t       time_boot_core_finish[DSP2_C7X_ID];
 
-#if defined(BOOT_OSPI)
 #    if defined(PROFILE_OSPI_READS_ENABLED)
     uint64_t stage_memcpy_time[NUM_BOOT_STAGES];
     uint64_t stage_memcpy_size[NUM_BOOT_STAGES];
 #    endif
-#endif
 
-    time_boot_app_start = get_usec_timestamp();
+    time_boot_app_start = TimerP_getTimeInUsecs();
 
-#if defined(BOOT_MMCSD)
-
-    retVal = MMCBootImageInit();
-    if (retVal != CSL_PASS)
-    {
-        AppUtils_Printf(MSG_NORMAL,
-                        "Failure during MMCBootImageInit\n\n");
-    }
-#endif
-#if defined(BIST_TASK_ENABLED)
-    SemaphoreP_Params_init(&bistSemParams);
-
-    //bistSemParams.instance->name = "bistSem";
-    bistSemHandle = SemaphoreP_create(0, &bistSemParams);
-
-    if (NULL != bistSemHandle)
-    {
-        TaskP_Params_init(&bistParams);
-        bistParams.priority   = BIST_TASK_PRIORITY;
-        bistParams.stack      = Bist_TaskStack;
-        bistParams.stacksize  = sizeof (Bist_TaskStack);
-        bistParams.arg0       = (void*)bistSemHandle;
-
-        /* Start the BIST task.  This task is defined in bist.c, and it controls what BIST
-         * sections are run for each stage. Before each boot stage is run in boot.c, it waits
-         * for the semaphore from the BIST task before proceeding with its booting.
-         * Care should be taken to ensure that desired BIST sections are defined in
-         * soc/<SOC Device>/bist_core_defs.c, and the BIST definition for each stage matches
-         * the desired Main Domain boot cores chosen in soc/<SOC Device>/boot_core_defs.c.
-         * It is important to note for each boot stage, the associate BIST sections are first
-         * run/checked prior to the boot stage beginning. */
-        bistTask              = TaskP_create(bist_TaskFxn, &bistParams);
-
-        if (NULL == bistTask)
-        {
-#    if defined(UART_ENABLED)
-            AppUtils_Printf(MSG_NORMAL, "\nBIST Task creation failed\r\n");
-#    endif
-        }
-    }
-#endif
-
-//#if defined(BOOTAPP_MAINDOMAIN_BOARD_SETUP)
     /* Initialize GTC required by Cortex-Axx */
-    CSL_initGTC();
-//#endif
+    Lpm_initGTC();
 
     /* Initialize the entry point array to 0. */
     for (core_id = MPU1_CPU0_ID; core_id < NUM_CORES; core_id ++)
@@ -1127,17 +684,11 @@ int32_t Boot_App()
 
     for (j = 0; j < NUM_BOOT_STAGES; j++)
     {
-#if defined(BIST_TASK_ENABLED)
-        if ((NULL != bistSemHandle) && (NULL != bistTask))
-        {
-            SemaphoreP_pend(bistSemHandle, osal_WAIT_FOREVER);
-        }
-#endif
 #if defined(GATHER_STAGE_DETAILS)
         time_request_all_cores_start[j] = get_usec_timestamp();
 #endif
 
-        retVal = RequestStageCores(j);
+        retVal = Lpm_requestStageCores(j);
 
 #if defined(GATHER_STAGE_DETAILS)
         time_request_all_cores_end[j] = get_usec_timestamp();
@@ -1148,7 +699,7 @@ int32_t Boot_App()
             AppUtils_Printf(MSG_NORMAL,
                             "Failed to request all late cores in Stage %d\n\n",
                             j);
-            ReleaseStageCores(j);
+            Lpm_releaseStageCores(j);
         } else
         {
 #if defined(UART_PRINT_DEBUG)
@@ -1161,24 +712,14 @@ int32_t Boot_App()
             time_boot_image_late_start[j] = get_usec_timestamp();
 #endif
 
-#if defined(BOOT_MMCSD)
-            retVal = MMCSDBootStageImage(&k3xx_evmEntry,
-                                         mmcsd_main_domain_rtos_image_name[j]);
-#    if defined(GATHER_STAGE_DETAILS)
-            time_boot_image_late_end[j] = get_usec_timestamp();
-#    endif
-
-#endif
-
-#if defined(BOOT_OSPI)
 #    if defined(PROFILE_OSPI_READS_ENABLED)
             /* Reset the global variable for memcpy time and size */
             total_memcpy_time = 0;
             total_memcpy_size = 0;
 #    endif
 
-            retVal = OSPIBootStageImage(&k3xx_evmEntry,
-                                        ospi_main_domain_flash_rtos_images[j]);
+            retVal = Lpm_ospiBootStageImage(&k3xx_evmEntry,
+                                            ospi_main_domain_flash_rtos_images[j]);
 
 #    if defined(PROFILE_OSPI_READS_ENABLED)
             /* Save global variable for memcpy time and size, which has been
@@ -1186,7 +727,6 @@ int32_t Boot_App()
             stage_memcpy_time[j] = total_memcpy_time;
             stage_memcpy_size[j] = total_memcpy_size;
 #    endif
-#endif
 #if defined(GATHER_STAGE_DETAILS)
             time_boot_image_late_end[j] = get_usec_timestamp();
 #endif
@@ -1206,7 +746,7 @@ int32_t Boot_App()
                                 "Failure during image copy and parsing\n\n");
             } else
             {
-                retVal = ReleaseStageCores(j);
+                retVal = Lpm_releaseStageCores(j);
                 if (retVal != CSL_PASS)
                 {
                     AppUtils_Printf(MSG_NORMAL,
@@ -1235,7 +775,7 @@ int32_t Boot_App()
                                     core_id, k3xx_evmEntry.CpuEntryPoint[core_id]);
 #endif
                     booted_core_ids[num_booted_cores] = core_id;
-                    time_boot_core_finish[num_booted_cores] = get_usec_timestamp();
+                    time_boot_core_finish[num_booted_cores] = TimerP_getTimeInUsecs();
                     num_booted_cores++;
                 }
             }
@@ -1256,13 +796,6 @@ int32_t Boot_App()
             TaskP_sleep(10*1000);
         }        
     } /* for (j = 0; j < NUM_BOOT_STAGES; j++) */
-
-#if defined(BOOT_MMCSD)
-    MMCBootImageDeInit();
-#endif
-
-#if defined(BOOT_OSPI)
-#endif
 
     /* Delay print out of boot log to avoid prints by other tasks */
     TaskP_sleep(4000);
@@ -1317,8 +850,8 @@ int32_t Boot_App()
                         "Boot App: Failure occurred in boot sequence\n");
     }
 
-#if defined(SBL_BOOTLOG_OUTPUT_ENABLED)
-    BOOT_PERF_TEST_printSblProfileLog(sblProfileLogAddr,
+#if defined(LPM_BOOTLOG_OUTPUT_ENABLED)
+    LPM_printSblProfileLog(sblProfileLogAddr,
                                       *sblProfileLogIndxAddr,
                                       *sblProfileLogOvrFlwAddr);
 #endif

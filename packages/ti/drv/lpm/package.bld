@@ -12,4 +12,8 @@
 
 /* Generate Settings.xdc */
 var tplt = xdc.loadTemplate("./Settings.xdc.xdt");
-tplt.genFile("./Settings.xdc",lpmReleaseVersion);
+tplt.genFile("./Settings.xdc",lpmDriverReleaseVersion);
+
+/* Generate paver.h */
+var tplt = xdc.loadTemplate("./lpmver.h.xdt");
+tplt.genFile("./lpmver.h",lpmDriverReleaseVersion);

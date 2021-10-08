@@ -32,9 +32,23 @@
  */
 
 /**
- *  @file   lpm.h
+ *  \defgroup DRV_LPM_MODULE LPM Driver
  *
- *  @brief  The lpm Library is a thin utility for low power management
+ *  @{
+ */
+/* @} */
+
+/**
+ *  \ingroup DRV_LPM_MODULE
+ *  \defgroup DRV_LPM_API_MODULE LPM Driver API
+ *
+ *  @{
+ */
+
+/**
+ *  \file lpm.h
+ *
+ *  \brief LPM Driver API/interface file.
  *
  */
 
@@ -51,7 +65,6 @@
 #include <ti/drv/lpm/include/lpm_ipc.h>
 #include <ti/drv/lpm/include/lpm_boot.h>
 #include <ti/drv/lpm/include/lpm_pmic.h>
-#include <ti/drv/lpm/include/lpm_utils.h>
 
 #ifdef __cplusplus
 extern "C" {
