@@ -236,19 +236,19 @@ Pmic_CoreHandle_t *pPmicCoreHandleI2C = NULL;
  *          Should be OS specific locking varaible to
  *          use OS locking system for PMIC
  */
-static SemaphoreP_Handle pmic_Sem = NULL;
-uint8_t startup_type = 0U;
-uint8_t enableBenchMark = 0U;
-uint8_t enableFaultInjectionRead = 0U;
-uint8_t enableFaultInjectionWrite = 0U;
-uint8_t readCount = 0U;
-uint8_t writeCount = 0U;
-uint8_t skipReadCount = 0U;
-uint8_t skipWriteCount = 0U;
+static SemaphoreP_Handle gLpmPmicSem = NULL;
+uint8_t gLpmStartupType = 0U;
+uint8_t gLpmEnableBenchMark = 0U;
+uint8_t gLpmEnableFaultInjectionRead = 0U;
+uint8_t gLpmEnableFaultInjectionWrite = 0U;
+uint8_t gLpmReadCount = 0U;
+uint8_t gLpmWriteCount = 0U;
+uint8_t gLpmSkipReadCount = 0U;
+uint8_t gLpmSkipWriteCount = 0U;
 int32_t gCrcTestFlag_J721E = PMIC_STATUS_CRC_INIT_VAL;
 int32_t gCrcTestFlag_J7VCL = PMIC_STATUS_CRC_INIT_VAL;
 /* CRC8 Table with polynomial value:0x7 */
-uint8_t crc8_tlb[] =
+uint8_t gLpmCrc8Tlb[] =
 {
     0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15,
     0x38, 0x3f, 0x36, 0x31, 0x24, 0x23, 0x2a, 0x2d,
@@ -284,7 +284,7 @@ uint8_t crc8_tlb[] =
     0xe6, 0xe1, 0xe8, 0xef, 0xfa, 0xfd, 0xf4, 0xf3
 };
 #else
-I2C_Handle pmicI2cHandle  = NULL;
+I2C_Handle gLpmPmicI2cHandle  = NULL;
 #endif
 
 /* ========================================================================== */
@@ -320,10 +320,10 @@ static int32_t Lpm_pmicI2cLldIntfRelease(void **pCommHandle)
  */
 static void Lpm_pmicOsalSemaphoreDeInit(void)
 {
-    if(pmic_Sem)
+    if(gLpmPmicSem)
     {
-        SemaphoreP_delete(pmic_Sem);
-        pmic_Sem = NULL;
+        SemaphoreP_delete(gLpmPmicSem);
+        gLpmPmicSem = NULL;
     }
 }
 
@@ -658,7 +658,7 @@ static void Lpm_pmicOsalSemaphoreInit(void)
     /* Create call back semaphore */
     SemaphoreP_Params_init(&pmic_SemParams);
     pmic_SemParams.mode = SemaphoreP_Mode_BINARY;
-    pmic_Sem = SemaphoreP_create(1U, &pmic_SemParams);
+    gLpmPmicSem = SemaphoreP_create(1U, &pmic_SemParams);
 }
 
 
@@ -733,7 +733,7 @@ static int32_t Lpm_pmicI2cDevices(Pmic_CoreHandle_t  *pPmicCorehandle,
  * \brief   Get PMIC StartUp Interrupt Type.
  *          This function deciphers all interrupts and find startup type.
  */
-static uint32_t get_startup_type(Pmic_CoreHandle_t *pPmicCoreHandle)
+static uint32_t Lpm_pmicGetStartupType(Pmic_CoreHandle_t *pPmicCoreHandle)
 {
     Pmic_IrqStatus_t errStat  = {0U};
     int32_t pmicStatus        = 0;
@@ -743,7 +743,7 @@ static uint32_t get_startup_type(Pmic_CoreHandle_t *pPmicCoreHandle)
     switch(pPmicCoreHandle->pmicDeviceType)
     {
         case PMIC_DEV_LEO_TPS6594X:
-            switch(startup_type)
+            switch(gLpmStartupType)
             {
                 case PMIC_ENABLE_STARTUP_TYPE:
                     if((0 == pmicStatus) &&
@@ -775,7 +775,7 @@ static uint32_t get_startup_type(Pmic_CoreHandle_t *pPmicCoreHandle)
             }
             break;
         case PMIC_DEV_HERA_LP8764X:
-            switch(startup_type)
+            switch(gLpmStartupType)
             {
                 case PMIC_ENABLE_STARTUP_TYPE:
                     if((0 == pmicStatus) &&
@@ -800,7 +800,7 @@ static uint32_t get_startup_type(Pmic_CoreHandle_t *pPmicCoreHandle)
             break;
     }
 
-    startup_type = type;
+    gLpmStartupType = type;
 
     return pmicStatus;
 }
@@ -809,16 +809,16 @@ static uint32_t get_startup_type(Pmic_CoreHandle_t *pPmicCoreHandle)
  * \brief   PMIC Interrupt decipher and clear function
  *          This function deciphers all interrupts and clears the status
  */
-static int32_t Pmic_intrClr(Pmic_CoreHandle_t *pmicHandle)
+static int32_t Lpm_pmiIntrClr(Pmic_CoreHandle_t *pmicHandle)
 {
     int32_t pmicStatus = 0;
     Pmic_CoreHandle_t handle  = *(Pmic_CoreHandle_t *)pmicHandle;
     Pmic_IrqStatus_t errStat  = {0U};
     uint8_t irqNum;
 
-    if(startup_type != 0U)
+    if(gLpmStartupType != 0U)
     {
-        pmicStatus = get_startup_type(pmicHandle);
+        pmicStatus = Lpm_pmicGetStartupType(pmicHandle);
     }
 
     if(0 == pmicStatus)
@@ -871,7 +871,7 @@ static int32_t Pmic_intrClr(Pmic_CoreHandle_t *pmicHandle)
 /*!
  * \brief    : Prints time taken for a given Valid string and returns delta.
  */
-static uint64_t print_timeTakenInUsecs(uint64_t t1, const char *str)
+static uint64_t Lpm_pmicPrintTimeTakenInUsecs(uint64_t t1, const char *str)
 {
     uint64_t t2 = 0;
     uint64_t delta = 0;
@@ -941,13 +941,13 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
             pmicConfigData->validParams |= PMIC_CFG_COMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
             pmicConfigData->instType = PMIC_MAIN_INST;
-            if(true == enableBenchMark)
+            if(true == gLpmEnableBenchMark)
             {
                 uint64_t t1 = 0;
-                t1 = print_timeTakenInUsecs(0U, NULL);
+                t1 = Lpm_pmicPrintTimeTakenInUsecs(0U, NULL);
                 /* Get PMIC core Handle for Main Instance */
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
-                delta = print_timeTakenInUsecs(t1, NULL);
+                delta = Lpm_pmicPrintTimeTakenInUsecs(t1, NULL);
                 AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"--------------------------------------\n");
                 AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"Time taken for %50s: %6d usec\n",
                             "Pmic_init API for single instance",
@@ -1035,7 +1035,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
 
         if(0 == pmicStatus)
         {
-            pmicStatus = Pmic_intrClr(pmicHandle);
+            pmicStatus = Lpm_pmiIntrClr(pmicHandle);
         }
 
         if(0 == pmicStatus)
@@ -1075,13 +1075,13 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
             pmicConfigData->validParams |= PMIC_CFG_COMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
             pmicConfigData->instType = PMIC_MAIN_INST;
-            if(true == enableBenchMark)
+            if(true == gLpmEnableBenchMark)
             {
                 uint64_t t1 = 0;
-                t1 = print_timeTakenInUsecs(0U, NULL);
+                t1 = Lpm_pmicPrintTimeTakenInUsecs(0U, NULL);
                 /* Get PMIC core Handle for Main Instance */
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
-                delta = print_timeTakenInUsecs(t1, NULL);
+                delta = Lpm_pmicPrintTimeTakenInUsecs(t1, NULL);
             }
             else
             {
@@ -1155,7 +1155,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
 
         if(0 == pmicStatus)
         {
-            pmicStatus = Pmic_intrClr(pmicHandle);
+            pmicStatus = Lpm_pmiIntrClr(pmicHandle);
         }
 
         if(0 == pmicStatus)
@@ -1184,13 +1184,13 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
             pmicConfigData->validParams |= PMIC_CFG_QACOMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
             pmicConfigData->instType = PMIC_QA_INST;
-            if(true == enableBenchMark)
+            if(true == gLpmEnableBenchMark)
             {
                 uint64_t t1 = 0;
-                t1 = print_timeTakenInUsecs(0U, NULL);
+                t1 = Lpm_pmicPrintTimeTakenInUsecs(0U, NULL);
                 /* Get PMIC core Handle for QA Instances */
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
-                delta += print_timeTakenInUsecs(t1, NULL);
+                delta += Lpm_pmicPrintTimeTakenInUsecs(t1, NULL);
                 AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"--------------------------------------\n");
                 AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"Time taken for %50s: %6d usec\n",
                             "Pmic_init API for Dual instance",
@@ -1307,7 +1307,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
 
         if(0 == pmicStatus)
         {
-            pmicStatus = Pmic_intrClr(pmicHandle);
+            pmicStatus = Lpm_pmiIntrClr(pmicHandle);
         }
     }
 
@@ -1330,7 +1330,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
 static void Lpm_pmicCriticalSectionStartFn(void)
 {
 
-    if(SemaphoreP_OK != SemaphoreP_pend(pmic_Sem,
+    if(SemaphoreP_OK != SemaphoreP_pend(gLpmPmicSem,
                                         SemaphoreP_WAIT_FOREVER))
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"%s(): Invalid Semaphore Handle\n", __func__);
@@ -1344,7 +1344,7 @@ static void Lpm_pmicCriticalSectionStartFn(void)
  */
 static void Lpm_pmicCriticalSectionStopFn(void)
 {
-    if(SemaphoreP_OK != SemaphoreP_post(pmic_Sem))
+    if(SemaphoreP_OK != SemaphoreP_post(gLpmPmicSem))
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"%s(): Invalid Semaphore Handle\n", __func__);
     }
@@ -1426,7 +1426,7 @@ static int32_t Lpm_pmicRegRead(Pmic_CoreHandle_t  *pmicCorehandle,
                  Lpm_pmicSpiStubRead(pmicCorehandle, pBuf, bufLen))
         {
             /* For Fault Injection Tests */
-            if(1U == enableFaultInjectionRead)
+            if(1U == gLpmEnableFaultInjectionRead)
             {
                 return -1;
             }
@@ -1437,8 +1437,8 @@ static int32_t Lpm_pmicRegRead(Pmic_CoreHandle_t  *pmicCorehandle,
 
 
     /* Added for Branch Coverage */
-    readCount++;
-    if((1U == enableFaultInjectionRead) && (skipReadCount == readCount))
+    gLpmReadCount++;
+    if((1U == gLpmEnableFaultInjectionRead) && (gLpmSkipReadCount == gLpmReadCount))
     {
         return -1;
     }
@@ -1527,7 +1527,7 @@ static int32_t Lpm_pmicRegWrite(Pmic_CoreHandle_t  *pmicCorehandle,
                    Lpm_pmicSpiWrite(pmicCorehandle, pBuf, bufLen))
         {
             /* For Fault Injection Tests */
-            if(1U == enableFaultInjectionWrite)
+            if(1U == gLpmEnableFaultInjectionWrite)
             {
                 return -1;
             }
@@ -1537,8 +1537,8 @@ static int32_t Lpm_pmicRegWrite(Pmic_CoreHandle_t  *pmicCorehandle,
     }
 
     /* Added for Branch Coverage */
-    writeCount++;
-    if((1U == enableFaultInjectionWrite) && (skipWriteCount == writeCount))
+    gLpmWriteCount++;
+    if((1U == gLpmEnableFaultInjectionWrite) && (gLpmSkipWriteCount == gLpmWriteCount))
     {
         return -1;
     }
@@ -1559,7 +1559,7 @@ static int32_t Lpm_pmicGetCrc8Val(uint8_t *data, uint8_t len)
 
     for(i = 0; i < len; i++)
     {
-        crc = crc8_tlb[data[i] ^ crc];
+        crc = gLpmCrc8Tlb[data[i] ^ crc];
     }
 
     return crc;
@@ -1995,28 +1995,28 @@ static void Lpm_pmicStateChangeMCUOnlyToActive(void)
 
     /* Read INT_TOP */
     dataToSlave[0] = 0x5A;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "INT_TOP = 0x%x\n", dataFromSlave[0]);
 
     /* Mask NSLEEP2 and NSLEEP1 bits */
     dataToSlave[0] = 0x7D;
     dataToSlave[1] = 0xC0;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "Write CONFIG_1 = 0x%x\n", dataToSlave[1]);
 
     /* Change FSM_NS-LEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
     dataToSlave[1] = 0x03;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
 
     /* Un-Mask NSLEEP2 and 1 bit */
     dataToSlave[0] = 0x7D;
     dataToSlave[1] = 0x00;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "Write CONFIG_1 = 0x%x\n", dataToSlave[1]);
 
@@ -2025,7 +2025,7 @@ static void Lpm_pmicStateChangeMCUOnlyToActive(void)
 
     /* Read FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
 
@@ -2052,8 +2052,8 @@ static int32_t Lpm_i2cInitPMIC(void)
 
     /* Configured i2cParams.bitRate with standard I2C_100kHz */
     I2C_Params_init(&i2cParams);
-    pmicI2cHandle = I2C_open(i2c_instance, &i2cParams);
-    if(NULL == pmicI2cHandle)
+    gLpmPmicI2cHandle = I2C_open(i2c_instance, &i2cParams);
+    if(NULL == gLpmPmicI2cHandle)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"ERROR: I2C_open failed!\n");
         retVal = -1;
@@ -2091,27 +2091,27 @@ static void Lpm_pmicStateChangeActiveToMCUOnly(void)
 
     /* Read INT_TOP */
     dataToSlave[0] = 0x5A;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_TOP = 0x%x\n", dataFromSlave[0]);
 
     /* Read INT_STARTUP */
     dataToSlave[0] = 0x65;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_STARTUP = 0x%x\n", dataFromSlave[0]);
 
     /* Read INT_GPIO */
     dataToSlave[0] = 0x63;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_GPIO = 0x%x\n", dataFromSlave[0]);
 
     /* Read INT_GPIO1_8 */
     dataToSlave[0] = 0x64;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_GPIO1_8 = 0x%x\n", dataFromSlave[0]);
 
     /* Read FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
 
     /**** Start changing states ****/
@@ -2119,55 +2119,55 @@ static void Lpm_pmicStateChangeActiveToMCUOnly(void)
     /* Change FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
     dataToSlave[1] = 0x02;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
 
     /* Read FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
 
     /* Clear INT_STARTUP */
     dataToSlave[0] = 0x65;
     dataToSlave[1] = 0x02;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_STARTUP = 0x%x\n", dataToSlave[1]);
 
     /* Read INT_TOP */
     dataToSlave[0] = 0x5A;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_TOP = 0x%x\n", dataFromSlave[0]);
 
     /* Clear INT_GPIO1_8 */
     dataToSlave[0] = 0x64;
     dataToSlave[1] = 0xC8;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_STARTUP = 0x%x\n", dataToSlave[1]);
 
     /* Read INT_GPIO */
     dataToSlave[0] = 0x63;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_GPIO = 0x%x\n", dataFromSlave[0]);
 
     /* Read INT_TOP */
     dataToSlave[0] = 0x5A;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "INT_TOP = 0x%x\n", dataFromSlave[0]);
 
     /* Clear INT_GPIO */
     dataToSlave[0] = 0x63;
     dataToSlave[1] = 0x02;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_GPIO = 0x%x\n", dataToSlave[1]);
 
     /* Read INT_TOP */
     dataToSlave[0] = 0x5A;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Final Read INT_TOP = 0x%x\n", dataFromSlave[0]);
 
     /* Read FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
-    Lpm_setupI2CTransfer(pmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Final Read FSM_NSLEEP_TRIGGERS = 0x%x\n", dataFromSlave[0]);
 
     /*************** You should now be in MCU only mode ****************/
