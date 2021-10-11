@@ -96,7 +96,8 @@ lpm_PKG_LIST = lpm
 lpm_INCLUDE = $(lpm_PATH)
 export lpm_SOCLIST = j721e j7200
 export lpm_$(SOC)_CORELIST = mcu1_0
-lpm_LIB_LIST = lpm
+#lpm_LIB_LIST = lpm
+lpm_LIB_LIST =
 
 ############################
 # lpm examples
@@ -125,7 +126,7 @@ export lpm_example_$(1)_BOARDLIST = j721e_evm j7200_evm
 export lpm_example_$(1)_$(SOC)_CORELIST = mcu1_0
 export lpm_example_$(1)_SBL_APPIMAGEGEN = yes
 
-lpm_EXAMPLE_LIST += lpm_example_$(1)
+#lpm_EXAMPLE_LIST += lpm_example_$(1)
 
 endef
 
