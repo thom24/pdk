@@ -21,6 +21,9 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 include $(PDK_INSTALL_PATH)/ti/drv/sciclient/src/rm_pm_hal_build.mk
 SRCS_COMMON = $(foreach f, $(obj-y), $(subst .o,.c,$(f)))
 
+SRCDIR += src/priv/osal
+SRCS_COMMON +=  osal_glue.c
+
 ifeq ($(CONFIG_TRACE),y)
 
 SRCDIR += src/priv/trace
