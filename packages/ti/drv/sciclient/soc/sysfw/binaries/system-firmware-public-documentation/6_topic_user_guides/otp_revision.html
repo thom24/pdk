@@ -78,7 +78,7 @@
             
             
               <div class="version">
-                21.05.00
+                21.09.00
               </div>
             
           
@@ -214,8 +214,8 @@ Security (HS) devices.</p>
 <p class="first admonition-title">Important</p>
 <p class="last"><a class="reference internal" href="../2_tisci_msgs/security/otp_revision.html#sec-api-rd-swrev-otp"><span class="std std-ref">TISCI_MSG_READ_SWREV</span></a> currently supports
 SWREV Secure Boardconfig only. Reading SWREV (SBL, SYSFW) has to be done
-from the Secure MMR registers, refer to
-<a class="reference internal" href="../2_tisci_msgs/security/extended_otp.html#sec-api-ext-otp-read-otp-mmr"><span class="std std-ref">TISCI_MSG_READ_OTP_MMR</span></a></p>
+from the Security Manager registers, with offset for
+<code class="docutils literal"><span class="pre">SECMGR_SWRV_STATUS_REG_y</span></code> register.</p>
 </div>
 <p>Refer <a class="reference internal" href="../2_tisci_msgs/security/otp_revision.html"><span class="doc">OTP Revision Read/Write Message Description</span></a> for more details on the
 message structure.</p>
@@ -271,27 +271,44 @@ significant <code class="docutils literal"><span class="pre">1</span></code> is 
 </div>
 </div>
 <div class="section" id="swrev-sbl-sysfw-decode-logic">
-<h2>SWREV SBL, SYSFW Decode Logic<a class="headerlink" href="#swrev-sbl-sysfw-decode-logic" title="Permalink to this headline">¶</a></h2>
+<span id="sysfw-pub-swrev-decode-logic"></span><h2>SWREV SBL, SYSFW Decode Logic<a class="headerlink" href="#swrev-sbl-sysfw-decode-logic" title="Permalink to this headline">¶</a></h2>
 <p>SWREV SBL and SWREV SYSFW are clubbed together, and programmed into efuses.</p>
 <p>Reading from Secure MMRs would result in an array of uint32_t, of size 6.</p>
 <img alt="../_images/swrev_sbl_sysfw_format.png" src="../_images/swrev_sbl_sysfw_format.png" />
 <p>Following logic can be used to decode the SWREV values from MMRs.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Leverage Double Redundancy */</span>
-<span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">|=</span> <span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span>
-<span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">|=</span> <span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span>
-<span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">|=</span> <span class="n">row</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="cm">/* Leverage Double Redundancy */</span><span class="w"></span>
+<span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">row</span><span class="p">[</span><span class="mi">3</span><span class="p">];</span><span class="w"></span>
+<span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">row</span><span class="p">[</span><span class="mi">4</span><span class="p">];</span><span class="w"></span>
+<span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">|=</span><span class="w"> </span><span class="n">row</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span><span class="w"></span>
 
-<span class="k">if</span><span class="p">(</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
-    <span class="n">swrev_sbl</span> <span class="o">=</span> <span class="mi">32</span> <span class="o">-</span> <span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span>
-<span class="p">}</span><span class="k">else</span> <span class="p">{</span>
-    <span class="n">swrev_sbl</span> <span class="o">=</span> <span class="mi">32</span> <span class="o">+</span> <span class="mi">32</span> <span class="o">-</span> <span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0xFFFF</span><span class="p">);</span>
-<span class="p">}</span>
+<span class="k">if</span><span class="p">(</span><span class="w"> </span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xFFFF</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">swrev_sbl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span><span class="w"></span>
+<span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">swrev_sbl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xFFFF</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 
-<span class="k">if</span><span class="p">(</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span> <span class="p">{</span>
-    <span class="n">swrev_sysfw</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">-</span> <span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&amp;</span> <span class="mh">0xFFFF0000</span><span class="p">);</span>
-<span class="p">}</span><span class="k">else</span> <span class="p">{</span>
-    <span class="n">swrev_sysfw</span> <span class="o">=</span> <span class="mi">16</span> <span class="o">+</span> <span class="mi">32</span> <span class="o">-</span> <span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span>
-<span class="p">}</span>
+<span class="k">if</span><span class="p">(</span><span class="w"> </span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">swrev_sysfw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="mh">0xFFFF0000</span><span class="p">);</span><span class="w"></span>
+<span class="p">}</span><span class="k">else</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="n">swrev_sysfw</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">__clz</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]);</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<p><code class="docutils literal"><span class="pre">__clz</span></code> is a function to count leading zeros. It is a compiler intrinsic
+function, but the following code snippet also gives the same result</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">count_leading_zeros</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">bit_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="n">lz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="n">bit_count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">*</span><span class="mi">8</span><span class="p">;</span><span class="w"></span>
+
+<span class="w">    </span><span class="cm">/* Left shift until Most significant bit doesn become 1 */</span><span class="w"></span>
+<span class="w">    </span><span class="k">while</span><span class="p">(</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">bit_count</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)))</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
+<span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;&lt;=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"></span>
+<span class="w">        </span><span class="n">lz</span><span class="o">++</span><span class="p">;</span><span class="w"></span>
+<span class="w">    </span><span class="p">}</span><span class="w"></span>
+
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">lz</span><span class="p">;</span><span class="w"></span>
+<span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
 </div>
@@ -404,7 +421,7 @@ message</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'21.05.00',
+            VERSION:'21.09.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

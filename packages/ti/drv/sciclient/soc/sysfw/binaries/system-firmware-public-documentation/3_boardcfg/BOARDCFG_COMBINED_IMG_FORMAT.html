@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                21.05.00
+                21.09.00
               </div>
             
           
@@ -111,7 +111,10 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Board Configuration with ROM Combined Image format</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#board-configuration-passing-without-rom-combined-image-format">Board configuration passing without ROM Combined image format</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#board-configuration-passing-with-rom-combined-image-format">Board configuration passing with ROM Combined image format</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#board-configuration-passing-with-rom-combined-image-format">Board configuration passing with ROM Combined image format</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#boardconfig-data-for-combined-boot-flow">Boardconfig data for combined boot flow</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -250,7 +253,7 @@ configuration</td>
 developer needs to call is as below:</p>
 <p><em>STEP 1</em>: Load the firmware using ROM APIs during boot.</p>
 <div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from R5 to M3 */</span>
+<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from R5 to M3 */</span><span class="w"></span>
 <span class="cp">#define ROM_MSG_R5_TO_M3_M3FW                    (0x8105U)</span>
 </pre></div>
 </td></tr></table></div>
@@ -263,11 +266,11 @@ authentication and/or decryption of the System Firmware by ROM.</p>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from M3 to R5 */</span>
+<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from M3 to R5 */</span><span class="w"></span>
 <span class="cp">#define ROM_MSG_M3_TO_R5_M3FW_RESULT             (0x8805U)</span>
-<span class="cm">/** Firmware Load Command response Authorization Passed */</span>
+<span class="cm">/** Firmware Load Command response Authorization Passed */</span><span class="w"></span>
 <span class="cp">#define ROM_MSG_CERT_AUTH_PASS                   (0x555555U)</span>
-<span class="cm">/** Firmware Load Command response Authorization Failed */</span>
+<span class="cm">/** Firmware Load Command response Authorization Failed */</span><span class="w"></span>
 <span class="cp">#define ROM_MSG_CERT_AUTH_FAIL                   (0xffffffU)</span>
 </pre></div>
 </td></tr></table></div>
@@ -435,20 +438,181 @@ passed board configuration to System Firmware.</p>
 <span class="cm"> *</span>
 <span class="cm"> * \def EXTBOOT_BOARDCFG_NUM_FIELDS</span>
 <span class="cm"> * Number of fields in extended boot status</span>
-<span class="cm"> */</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_PRESENT                BIT(0)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_VALID                  BIT(1)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_PRESENT       BIT(2)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_VALID         BIT(3)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_PM_PRESENT             BIT(4)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_PM_VALID               BIT(5)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_RM_PRESENT             BIT(6)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_RM_VALID               BIT(7)</span>
- <span class="cp">#define EXTBOOT_PRESENT                         BIT(8)</span>
- <span class="cp">#define EXTBOOT_VALID                           BIT(9)</span>
- <span class="cp">#define EXTBOOT_BOARDCFG_NUM_FIELDS             (10)</span>
+<span class="cm"> */</span><span class="w"></span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_PRESENT                BIT(0)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_VALID                  BIT(1)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_PRESENT       BIT(2)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_VALID         BIT(3)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_PM_PRESENT             BIT(4)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_PM_VALID               BIT(5)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_RM_PRESENT             BIT(6)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_RM_VALID               BIT(7)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_PRESENT                         BIT(8)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_VALID                           BIT(9)</span>
+<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_NUM_FIELDS             (10)</span>
 </pre></div>
 </td></tr></table></div>
+<div class="section" id="boardconfig-data-for-combined-boot-flow">
+<h3>Boardconfig data for combined boot flow<a class="headerlink" href="#boardconfig-data-for-combined-boot-flow" title="Permalink to this headline">¶</a></h3>
+<p>Boot ROM populates a <code class="docutils literal"><span class="pre">extboot_x509_table</span></code> structure in DMSC Internal memory,
+this data structure contains information about sbl image, sysfw image,
+sysfw inner certificate (specific to HS devices), sbl_data and sysfw_data.
+<code class="docutils literal"><span class="pre">sysfw_data</span></code> (compType 0x11) is captured in a structutre <code class="docutils literal"><span class="pre">extboot_x509_comp</span></code>.</p>
+<p><code class="docutils literal"><span class="pre">boardcfg_desc_table</span></code> is the strucutre for boardconfig data in combined
+boot flow. This has information on number of boardcfg descriptors, boardcfg swrev,
+and descriptors (<code class="docutils literal"><span class="pre">extboot_boardcfg_desc</span></code>) for individual boardconfigs such as
+core, security, rm and pm.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li><code class="docutils literal"><span class="pre">boardcfg_desc_table</span></code> must be formatted and prepared by the integrator
+and used as the input for <code class="docutils literal"><span class="pre">sysfw_data</span></code> (compType 0x11).</li>
+<li>boardcfg data itself does not need the certificate when part of
+<code class="docutils literal"><span class="pre">sysfw_data</span></code> component since it will be authenticated by ROM when
+booting the image, but for any boardcfg that is sent over TISCI that TIFS
+will still need to authenticate.</li>
+</ul>
+</div>
+<div class="figure">
+<img alt="../_images/ext_boot_info_boardcfg_struct.png" src="../_images/ext_boot_info_boardcfg_struct.png" />
+</div>
+<p><p><strong>struct extboot_x509_table</strong></p>
+<p>Component information table populated by ROM.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="13%" />
+<col width="27%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>magic_word</td>
+<td>u8</td>
+<td>Magic word for extended boot</td>
+</tr>
+<tr class="row-odd"><td>num_comps</td>
+<td>u32</td>
+<td>Number of components present in extended boot info table</td>
+</tr>
+<tr class="row-even"><td>comps</td>
+<td>struct extboot_x509_comp</td>
+<td>Information for each component</td>
+</tr>
+</tbody>
+</table>
+</p>
+<p><p><strong>struct extboot_x509_comp</strong></p>
+<p>Component information populated by ROM. The combined image has multiple components. ROM populates this information for each component.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="14%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>comp_type</td>
+<td>u32</td>
+<td>Type of component</td>
+</tr>
+<tr class="row-odd"><td>boot_core</td>
+<td>u32</td>
+<td>Core that loads or runs image</td>
+</tr>
+<tr class="row-even"><td>comp_opts</td>
+<td>u32</td>
+<td>Component options. Not used for now.</td>
+</tr>
+<tr class="row-odd"><td>dest_addr</td>
+<td>u64</td>
+<td>Image destination address</td>
+</tr>
+<tr class="row-even"><td>comp_size</td>
+<td>u32</td>
+<td>Size of the component in bytes</td>
+</tr>
+</tbody>
+</table>
+</p>
+<p><p><strong>struct boardcfg_desc_table</strong></p>
+<p>Boardcfg descriptor table provided by system integrator</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="34%" />
+<col width="51%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>num_elems</td>
+<td>u8</td>
+<td>Number of elements in board config table.</td>
+</tr>
+<tr class="row-odd"><td>sw_rev</td>
+<td>u8</td>
+<td>SW revision populated by system integrator.</td>
+</tr>
+<tr class="row-even"><td>descs</td>
+<td>struct extboot_boardcfg_desc</td>
+<td>Array of board config descriptors</td>
+</tr>
+</tbody>
+</table>
+</p>
+<p><p><strong>struct extboot_boardcfg_desc</strong></p>
+<p>Describes the board config data</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="7%" />
+<col width="4%" />
+<col width="89%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>type</td>
+<td>u16</td>
+<td>Type of board config data. This should map to corresponding TISCI message type. For example, a PM boardcfg should have a descriptor type TISCI_MSG_BOARD_CONFIG_PM.</td>
+</tr>
+<tr class="row-odd"><td>offset</td>
+<td>u16</td>
+<td>Offset for board config data from beginning of SYSFW data binary blob</td>
+</tr>
+<tr class="row-even"><td>size</td>
+<td>u16</td>
+<td>Size of board config data</td>
+</tr>
+<tr class="row-odd"><td>devgrp</td>
+<td>u8</td>
+<td>Device group to be used by SYSFW for automatic board config processing</td>
+</tr>
+<tr class="row-even"><td>reserved</td>
+<td>u8</td>
+<td>Reserved field. Not to be used.</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
 </div>
 </div>
 
@@ -493,7 +657,7 @@ passed board configuration to System Firmware.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'21.05.00',
+            VERSION:'21.09.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

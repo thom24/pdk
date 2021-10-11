@@ -184,3 +184,36 @@ This value is bit wise encoded to reflect the status of the board configuration:
      #define EXTBOOT_VALID                           BIT(9)
      #define EXTBOOT_BOARDCFG_NUM_FIELDS             (10)
 
+Boardconfig data for combined boot flow
+---------------------------------------
+
+Boot ROM populates a ``extboot_x509_table`` structure in DMSC Internal memory,
+this data structure contains information about sbl image, sysfw image, 
+sysfw inner certificate (specific to HS devices), sbl_data and sysfw_data.
+``sysfw_data`` (compType 0x11) is captured in a structutre ``extboot_x509_comp``.
+
+``boardcfg_desc_table`` is the strucutre for boardconfig data in combined 
+boot flow. This has information on number of boardcfg descriptors, boardcfg swrev, 
+and descriptors (``extboot_boardcfg_desc``) for individual boardconfigs such as 
+core, security, rm and pm.
+
+.. note::
+
+    * ``boardcfg_desc_table`` must be formatted and prepared by the integrator 
+      and used as the input for ``sysfw_data`` (compType 0x11).
+
+    * boardcfg data itself does not need the certificate when part of 
+      ``sysfw_data`` component since it will be authenticated by ROM when 
+      booting the image, but for any boardcfg that is sent over TISCI that TIFS 
+      will still need to authenticate.
+
+.. figure:: ../img/ext_boot_info_boardcfg_struct.png
+
+.. sysfwapistruct:: extboot_x509_table
+
+.. sysfwapistruct:: extboot_x509_comp
+
+.. sysfwapistruct:: boardcfg_desc_table
+
+.. sysfwapistruct:: extboot_boardcfg_desc
+

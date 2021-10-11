@@ -8,7 +8,7 @@
             "higher_bit": 21,
             "lower_bit": 16
         },
-        "detect_regex": "^0x[0-9A-Z]+$",
+        "detect_regex": "^0x[0-9A-Za-z]+$",
         "domain": {
             "higher_bit": 31,
             "lower_bit": 29

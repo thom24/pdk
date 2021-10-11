@@ -55,6 +55,15 @@ The following X509 extensions are supported by |sysfw|.
 +--------------------------------------+-------------------------------------------------+-----------------------+
 | :ref:`sysfw_hs_bcfg_ext`             | HS Boardcfg extension                           | 1.3.6.1.4.1.294.1.36  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
+
+Keywriter extensions
+====================
+
+The following X509 extensions are supported by Keywriter.
+
++--------------------------------------+-------------------------------------------------+-----------------------+
+| Extension Name                       |     Purpose                                     |     OID               |
++======================================+=================================================+=======================+
 | :ref:`keywr_enc_aes_ext`             | Keywriter Encrypted AES extension               | 1.3.6.1.4.1.294.1.64  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
 | :ref:`keywr_enc_smpk_sign_aes_ext`   | Keywriter Encrypted SMPK Signed AES extension   | 1.3.6.1.4.1.294.1.65  |
@@ -65,21 +74,29 @@ The following X509 extensions are supported by |sysfw|.
 +--------------------------------------+-------------------------------------------------+-----------------------+
 | :ref:`keywr_aes_enc_smek`            | Keywriter AES Encrypted SMEK                    | 1.3.6.1.4.1.294.1.68  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
-| :ref:`keywr_aes_enc_smpk_opt`        | Keywriter AES Encrypted SMPK Options            | 1.3.6.1.4.1.294.1.69  |
+| :ref:`keywr_mpk_opt`                 | Keywriter MPK Options                           | 1.3.6.1.4.1.294.1.69  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
 | :ref:`keywr_aes_enc_bmpkh`           | Keywriter AES Encrypted BMPKH                   | 1.3.6.1.4.1.294.1.70  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
 | :ref:`keywr_aes_enc_bmek`            | Keywriter AES Encrypted BMEK                    | 1.3.6.1.4.1.294.1.71  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
-| :ref:`keywr_aes_enc_bmpk_opt`        | Keywriter AES Encrypted BMPK Options            | 1.3.6.1.4.1.294.1.72  |
+| :ref:`keywr_mek_opt`                 | Keywriter MEK Options                           | 1.3.6.1.4.1.294.1.72  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
-| :ref:`keywr_aes_enc_user_otp`        | Keywriter AES Encrypted user OTP                | 1.3.6.1.4.1.294.1.73  |
+| :ref:`keywr_aes_enc_ext_otp`         | Keywriter AES Encrypted extended OTP            | 1.3.6.1.4.1.294.1.73  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
-| :ref:`keywr_aes_enc_keyrev`          | Keywriter AES Encrypted key revision            | 1.3.6.1.4.1.294.1.74  |
+| :ref:`keywr_keyrev`                  | Keywriter key revision                          | 1.3.6.1.4.1.294.1.74  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
-| :ref:`keywr_aes_enc_swrev`           | Keywriter AES Encrypted software revision       | 1.3.6.1.4.1.294.1.75  |
+| :ref:`keywr_msv`                     | Keywriter MSV                                   | 1.3.6.1.4.1.294.1.76  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
-| :ref:`keywr_aes_enc_msv`             | Keywriter AES Encrypted MSV                     | 1.3.6.1.4.1.294.1.76  |
+| :ref:`keywr_keycnt`                  | Keywriter key count                             | 1.3.6.1.4.1.294.1.77  |
++--------------------------------------+-------------------------------------------------+-----------------------+
+| :ref:`keywr_swrev_sysfw`             | Keywriter software revision SYSFW               | 1.3.6.1.4.1.294.1.78  |
++--------------------------------------+-------------------------------------------------+-----------------------+
+| :ref:`keywr_swrev_sbl`               | Keywriter software revision SBL                 | 1.3.6.1.4.1.294.1.79  |
++--------------------------------------+-------------------------------------------------+-----------------------+
+| :ref:`keywr_swrev_sec_bcfg`          | Keywriter software revision SEC BCFG            | 1.3.6.1.4.1.294.1.80  |
++--------------------------------------+-------------------------------------------------+-----------------------+
+| :ref:`keywr_version`                 | Keywriter version                               | 1.3.6.1.4.1.294.1.81  |
 +--------------------------------------+-------------------------------------------------+-----------------------+
 
 .. _sysfw_boot_ext:
@@ -492,10 +509,10 @@ Populating the certificate fields
 
 .. _keywr_enc_aes_ext:
 
-|sysfw| Keywriter Encrypted AES extension
+Keywriter: Encrypted AES extension
 -------------------------------------------------
 
-This extension has the information about TIFEK(public) encrypted AES-256 key (random key,
+This extension contains information about the TIFEK(public) encrypted AES-256 key (random key,
 chosen by customer for keywriter). It is identified by the OID **1.3.6.1.4.1.294.1.64**. 
 The structure of the fields is shown below in ASN.1 notation.
 
@@ -517,10 +534,10 @@ The structure of the fields is shown below in ASN.1 notation.
 
 .. _keywr_enc_smpk_sign_aes_ext:
 
-|sysfw| Keywriter Encrypted SMPK Signed AES extension  
+Keywriter: Encrypted SMPK Signed AES extension  
 -------------------------------------------------------
 
-This extension has the information about TIFEK(public) encrypted, SMPK(priv) signed 
+This extension contains information about the TIFEK(public) encrypted, SMPK(priv) signed 
 AES-256 key (random key, chosen by customer for keywriter). It is identified by the 
 OID **1.3.6.1.4.1.294.1.65**. The structure of the fields is shown below in ASN.1 notation.
 
@@ -542,10 +559,10 @@ OID **1.3.6.1.4.1.294.1.65**. The structure of the fields is shown below in ASN.
 
 .. _keywr_enc_bmpk_sign_aes_ext:
 
-|sysfw| Keywriter Encrypted BMPK Signed AES extension   
+Keywriter: Encrypted BMPK Signed AES extension   
 ------------------------------------------------------
 
-This extension has the information about TIFEK(public) encrypted, BMPK(priv) signed AES-256 key (random key,
+This extension contains information about the TIFEK(public) encrypted, BMPK(priv) signed AES-256 key (random key,
 chosen by customer for keywriter). It is identified by the OID **1.3.6.1.4.1.294.1.66**. 
 The structure of the fields is shown below in ASN.1 notation.
 
@@ -567,10 +584,10 @@ The structure of the fields is shown below in ASN.1 notation.
 
 .. _keywr_aes_enc_smpkh:
 
-|sysfw| Keywriter AES Encrypted SMPKH                   
+Keywriter: AES Encrypted SMPKH                   
 ------------------------------------------------------
 
-This extension has the information about AES-256 key encrypted SMPKH (SHA-512 used for hashing). 
+This extension contains information about the AES-256 key encrypted SMPKH (SHA-512 hashed SMPK Public key). 
 It is identified by the OID **1.3.6.1.4.1.294.1.67**
 The structure of the fields is shown below in ASN.1 notation.
 
@@ -581,7 +598,8 @@ The structure of the fields is shown below in ASN.1 notation.
       val OCTET STRING,     -- AES-256 key encrypted SMPKH (SHA-512 used for hashing)
       iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
       rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size 
+      size INTEGER,         -- size 
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
@@ -591,15 +609,67 @@ The structure of the fields is shown below in ASN.1 notation.
       u8 iv[16];
       u8 rs[32];
       u32 size;
+      u32 action_flags;
    };
 
+.. _keywr_action_flags:
+
+Keywriter: Action Flags
+^^^^^^^^^^^^^^^^^^^^^^^
+
+These are ``YES/NO`` flags which are set for each keywriter extension.
+
+.. list-table:: 
+    :header-rows: 1
+    :widths: 10 10 80
+
+    * - Flag
+      - Description
+      - Details
+    * - WP
+      - Write Protect  
+      - Uses TIFS fault tolerant value ``0x5A`` to enable, ``0xA5`` to disable.
+        When enabled, OTP keywriter will write protect the key
+    * - RP
+      - Read Protect  
+      - Uses TIFS fault tolerant value ``0x5A`` to enable, ``0xA5`` to disable.
+        When enabled, OTP keywriter will read protect the key
+    * - OVRD
+      - Override
+      - Uses TIFS fault tolerant value ``0x5A`` to enable, ``0xA5`` to disable.
+        If the efuse rows corresponding to the key are not WP, then enabling the
+        OVRD flag would attempt to program the efuse rows. 
+        Depending on the value, efuse programming may succeed or fail.
+
+        Ex: efuse row has data 0x11 (no WP), and OVRD is enabled. If the new 
+        value is 0x33, then it will be programmed.
+        In case the new value is 0x22, it will fail since there would be an 
+        attempt to reset the bits at index 0 and 8.
+    * - ACTIVE
+      - Active/Inactive flag
+      - Uses TIFS fault tolerant value ``0x5A`` to enable, ``0xA5`` to disable.
+        When enabled, OTP keywriter will program the key value, else would skip
+        programming the key
+
+.. note::
+
+    WP, RP, OVRD are invalid in case of :ref:`keywr_aes_enc_ext_otp`, 
+    a special ``wprp`` field is used to write protect/read protect each ext otp
+    row.
+
+.. note::
+    
+    In case of :ref:`keywr_swrev_sysfw` and :ref:`keywr_swrev_sysfw` WP, RP, 
+    OVRD should be same, since these two swrev fields are clubbed together.
+
+    Refer :ref:`sysfw_pub_swrev_decode_logic`.
 
 .. _keywr_aes_enc_smek:
 
-|sysfw| Keywriter AES Encrypted SMEK                    
+Keywriter: AES Encrypted SMEK                    
 ------------------------------------------------------
 
-This extension has the information about AES-256 key encrypted SMEK.
+This extension contains information about the AES-256 key encrypted SMEK.
 It is identified by the OID **1.3.6.1.4.1.294.1.68**
 The structure of the fields is shown below in ASN.1 notation.
 
@@ -610,7 +680,8 @@ The structure of the fields is shown below in ASN.1 notation.
       val OCTET STRING,     -- AES-256 key encrypted SMEK
       iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
       rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size 
+      size INTEGER,         -- size 
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
@@ -620,44 +691,44 @@ The structure of the fields is shown below in ASN.1 notation.
       u8 iv[16];
       u8 rs[32];
       u32 size;
+      u32 action_flags;
    };
 
 
-.. _keywr_aes_enc_smpk_opt:
+.. _keywr_mpk_opt:
 
-|sysfw| Keywriter AES Encrypted SMPK Options            
-------------------------------------------------------
+Keywriter: MPK Options            
+-----------------------------
 
-This extension has the information about AES-256 key encrypted SMPK Options
+.. note::
+
+    This extension is currently not supported, and reserved for future.
+
+This extension contains information about the MPK Options
 It is identified by the OID **1.3.6.1.4.1.294.1.69**
 The structure of the fields is shown below in ASN.1 notation.
-This is not currently supported by OTP Keywriter
 
 ::
 
-   KEYWR-AES-ENC-SMPK-OPT := SEQUENCE
+   KEYWR-MPK-OPT := SEQUENCE
    {
-      val OCTET STRING,     -- AES-256 key encrypted SMPK Options
-      iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
-      rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size
+      val OCTET STRING,     -- MPK Options
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
 
-   struct keywr_aes_enc_smpk_opt {
+   struct keywr_mpk_opt {
       u8 val[64];
-      u8 iv[16];
-      u8 rs[32];
-      u32 size;
+      u32 action_flags;
    };
 
 .. _keywr_aes_enc_bmpkh:
 
-|sysfw| Keywriter AES Encrypted BMPKH                   
+Keywriter: AES Encrypted BMPKH                   
 ------------------------------------------------------
 
-This extension has the information about AES-256 key encrypted BMPKH (SHA-512 used for hashing). 
+This extension contains information about AES-256 key encrypted BMPKH (SHA-512 hashed BMPK Public key). 
 It is identified by the OID **1.3.6.1.4.1.294.1.70**
 The structure of the fields is shown below in ASN.1 notation.
 
@@ -668,7 +739,8 @@ The structure of the fields is shown below in ASN.1 notation.
       val OCTET STRING,     -- AES-256 key encrypted BMPKH (SHA-512 used for hashing)
       iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
       rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size 
+      size INTEGER,         -- size 
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
@@ -678,15 +750,16 @@ The structure of the fields is shown below in ASN.1 notation.
       u8 iv[16];
       u8 rs[32];
       u32 size;
+      u32 action_flags;
    };
 
 
 .. _keywr_aes_enc_bmek:
 
-|sysfw| Keywriter AES Encrypted BMEK                    
+Keywriter: AES Encrypted BMEK                    
 ------------------------------------------------------
 
-This extension has the information about AES-256 key encrypted BMEK. 
+This extension contains information about the AES-256 key encrypted BMEK. 
 It is identified by the OID **1.3.6.1.4.1.294.1.71**
 The structure of the fields is shown below in ASN.1 notation.
 
@@ -697,7 +770,8 @@ The structure of the fields is shown below in ASN.1 notation.
       val OCTET STRING,     -- AES-256 key encrypted BMEK
       iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
       rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size 
+      size INTEGER,         -- size 
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
@@ -707,157 +781,245 @@ The structure of the fields is shown below in ASN.1 notation.
       u8 iv[16];
       u8 rs[32];
       u32 size;
+      u32 action_flags;
    };
 
 
-.. _keywr_aes_enc_bmpk_opt:
+.. _keywr_mek_opt:
 
-|sysfw| Keywriter AES Encrypted BMPK Options            
+Keywriter: MEK Options            
 ------------------------------------------------------
 
-This extension has the information about AES-256 key encrypted BMPK Options
-It is identified by the OID **1.3.6.1.4.1.294.1.72**
+.. note::
+
+    This extension is currently not supported, and reserved for future.
+
+This extension contains information about the MEK Options,
+it is identified by the OID **1.3.6.1.4.1.294.1.72**
 The structure of the fields is shown below in ASN.1 notation.
-This is not currently supported by OTP Keywriter
 
 ::
 
-   KEYWR-AES-ENC-BMPK-OPT := SEQUENCE
+   KEYWR-MEK-OPT := SEQUENCE
    {
-      val OCTET STRING,     -- AES-256 key encrypted SMPK Options
-      iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
-      rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size
+      val OCTET STRING,     -- MEK Options
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
 
-   struct keywr_aes_enc_bmpk_opt {
+   struct keywr_mek_opt {
       u8 val[64];
-      u8 iv[16];
-      u8 rs[32];
-      u32 size;
+      u32 action_flags;
    };
 
 
-.. _keywr_aes_enc_user_otp:
+.. _keywr_aes_enc_ext_otp:
 
-|sysfw| Keywriter AES Encrypted user OTP                
+Keywriter: AES Encrypted extended OTP                
 ------------------------------------------------------
 
-This extension has the information about AES-256 key encrypted extended OTP
+.. note::
+
+    This extension is currently not supported, and reserved for future.
+
+This extension contains information about the AES-256 key encrypted extended OTP values.
 It is identified by the OID **1.3.6.1.4.1.294.1.73**
 The structure of the fields is shown below in ASN.1 notation.
-This is not currently supported by OTP Keywriter
 
 ::
 
-   KEYWR-AES-ENC-USER-OTP := SEQUENCE
+   KEYWR-AES-ENC-EXT-OTP := SEQUENCE
    {
-      val OCTET STRING,      -- Extended OTP in octet string format
+      val OCTET STRING,     -- Extended OTP in octet string format
       iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
       rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER              -- size
+      wprp OCTET STRING,    -- Write Protect(64 bits) | Read Protect(64 bits) each bit
+                               represents each efuse row.
+      index INTEGER,        -- Starting index to write ext otp value
+      size INTEGER,         -- size of ext_otp value 
+      action_flags INTEGER  -- ~ | ~ | ~ | ACTIVE
    }
 
 .. code-block:: c
 
-   struct keywr_aes_enc_user_otp {
+   struct keywr_aes_enc_ext_otp {
       u8 val[64];
       u8 iv[16];
       u8 rs[32];
+      u8 wprp[16];
+      u32 index;
       u32 size;
+      u32 action_flags;
    };
 
 
-.. _keywr_aes_enc_keyrev:
+.. _keywr_keyrev:
 
-|sysfw| Keywriter AES Encrypted key revision            
-------------------------------------------------------
+Keywriter: key revision            
+------------------------------
 
-This extension has the information about AES-256 key encrypted Keyrevision.
+This extension contains information about the Keyrevision field.
 By default, keyrevision should be set to 1. If it is set to 2, BMPK and BMEK will be used 
 instead of SMPK and SMEK. It is identified by the OID **1.3.6.1.4.1.294.1.74**. 
 The structure of the fields is shown below in ASN.1 notation.
-This is not currently supported by OTP Keywriter
 
 ::
 
-   KEYWR-AES-ENC-KEYREV := SEQUENCE
+   KEYWR-KEYREV := SEQUENCE
    {
-      val OCTET STRING,     -- AES-256 key encrypted Keyrev
-      iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
-      rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size 
+      val OCTET STRING,     -- Keyrev
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
 
-   struct keywr_aes_enc_keyrev {
+   struct keywr_keyrev {
       u8 val[64];
-      u8 iv[16];
-      u8 rs[32];
-      u32 size;
+      u32 action_flags;
    };
 
+.. _keywr_msv:
 
-.. _keywr_aes_enc_swrev:
-
-|sysfw| Keywriter AES Encrypted software revision       
+Keywriter: MSV                     
 ------------------------------------------------------
 
-This extension has the information about AES-256 key encrypted Software revision.
-It is identified by the OID **1.3.6.1.4.1.294.1.75**
-The structure of the fields is shown below in ASN.1 notation.
-This is not currently supported by OTP Keywriter
-
-::
-
-   KEYWR-AES-ENC-SWREV := SEQUENCE
-   {
-      val OCTET STRING,     -- AES-256 key encrypted Keyrev
-      iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
-      rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size 
-   }
-
-.. code-block:: c
-
-   struct keywr_aes_enc_swrev {
-      u8 val[64];
-      u8 iv[16];
-      u8 rs[32];
-      u32 size;
-   };
-
-
-.. _keywr_aes_enc_msv:
-
-|sysfw| Keywriter AES Encrypted MSV                     
-------------------------------------------------------
-
-This extension has the information about AES-256 key encrypted MSV
+This extension contains information about the MSV.
 It is identified by the OID **1.3.6.1.4.1.294.1.76**
 The structure of the fields is shown below in ASN.1 notation.
-This is not currently supported by OTP Keywriter
 
 ::
 
-   KEYWR-AES-ENC-MSV := SEQUENCE
+   KEYWR-MSV := SEQUENCE
    {
-      val OCTET STRING,     -- AES-256 key encrypted MSV
-      iv  OCTET STRING,     -- Intitial Value used in AES-256-CBC encryption, 128 bits
-      rs  OCTET STRING,     -- Random String used in AES-256-CBC encryption, 256 bits
-      size INTEGER          -- size 
+      val OCTET STRING,     -- MSV
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
    }
 
 .. code-block:: c
 
-   struct keywr_aes_enc_msv {
+   struct keywr_msv {
       u8 val[64];
-      u8 iv[16];
-      u8 rs[32];
-      u32 size;
+      u32 action_flags;
+   };
+
+.. _keywr_keycnt:
+
+Keywriter: key count          
+------------------------------
+
+This extension contains information about the Key count field.
+It is identified by the OID **1.3.6.1.4.1.294.1.77**. 
+The structure of the fields is shown below in ASN.1 notation.
+
+::
+
+   KEYWR-KEYCNT := SEQUENCE
+   {
+      val OCTET STRING,     -- Key count
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
+   }
+
+.. code-block:: c
+
+   struct keywr_keycnt {
+      u8 val[64];
+      u32 action_flags;
+   };
+
+
+.. _keywr_swrev_sysfw:
+
+Keywriter: software revision SYSFW
+------------------------------------------------------
+
+This extension contains information about the Software revision value for SYSFW.
+It is identified by the OID **1.3.6.1.4.1.294.1.78**
+The structure of the fields is shown below in ASN.1 notation.
+
+::
+
+   KEYWR-SWREV-SYSFW := SEQUENCE
+   {
+      val OCTET STRING,     -- SWREV SYSFW
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
+   }
+
+.. code-block:: c
+
+   struct keywr_swrev_sysfw {
+      u8 val[64];
+      u32 action_flags;
+   };
+
+.. _keywr_swrev_sbl:
+
+Keywriter: software revision SBL     
+------------------------------------------------------
+
+This extension contains information about the Software revision value for SBL.
+It is identified by the OID **1.3.6.1.4.1.294.1.79**
+The structure of the fields is shown below in ASN.1 notation.
+
+::
+
+   KEYWR-SWREV-SBL := SEQUENCE
+   {
+      val OCTET STRING,     -- SWREV SBL
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
+   }
+
+.. code-block:: c
+
+   struct keywr_swrev_sbl {
+      u8 val[64];
+      u32 action_flags;
+   };
+
+.. _keywr_swrev_sec_bcfg:
+
+Keywriter: software revision sec boardconfig   
+------------------------------------------------------
+
+This extension contains information about the Software revision value for the Secure Boardconfig.
+It is identified by the OID **1.3.6.1.4.1.294.1.80**
+The structure of the fields is shown below in ASN.1 notation.
+
+::
+
+   KEYWR-SWREV-SEC-BCFG := SEQUENCE
+   {
+      val OCTET STRING,     -- SWREV SEC BCFG
+      action_flags INTEGER  -- WP | RP | OVRD | ACTIVE
+   }
+
+.. code-block:: c
+
+   struct keywr_swrev_sec_bcfg {
+      u8 val[64];
+      u32 action_flags;
+   };
+
+.. _keywr_version:
+
+Keywriter: version   
+------------------------------------------------------
+
+This extension contains information about the Keywriter version.
+It is identified by the OID **1.3.6.1.4.1.294.1.81**
+The structure of the fields is shown below in ASN.1 notation.
+
+::
+
+   KEYWR-VERSION := SEQUENCE
+   {
+      val OCTET STRING,     -- SWREV SEC BCFG
+   }
+
+.. code-block:: c
+
+   struct keywr_version {
+      u8 val[64];
    };
 
 .. _sysfw_x509_template_example:
@@ -964,3 +1126,7 @@ Sample x509 template
     boardcfgHash    =  FORMAT:HEX,OCT:BCFG_HASH
 
 
+Keywriter: Sample x509 template
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The OTP Keywriter x509 template can be found :ref:`here <sysfw_pub_keywr_cert_format>`.

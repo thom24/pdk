@@ -27,10 +27,8 @@ Related TISCI Messages
     
     :ref:`TISCI_MSG_READ_SWREV <sec-api-rd-swrev-otp>` currently supports
     SWREV Secure Boardconfig only. Reading SWREV (SBL, SYSFW) has to be done 
-    from the Secure MMR registers, refer to 
-    :ref:`TISCI_MSG_READ_OTP_MMR <sec-api-ext-otp-read-otp-mmr>`
-
-    
+    from the Security Manager registers, with offset for 
+    ``SECMGR_SWRV_STATUS_REG_y`` register.
 
 Refer :doc:`../2_tisci_msgs/security/otp_revision` for more details on the
 message structure.
@@ -77,6 +75,8 @@ in its binary representation.
     ``0b 0000 0000 0000 0000 0000 0000 0000 0100``. The position of the most 
     significant ``1`` is the SWREV value.
 
+.. _sysfw_pub_swrev_decode_logic:
+
 SWREV SBL, SYSFW Decode Logic
 =============================
 
@@ -105,6 +105,25 @@ Following logic can be used to decode the SWREV values from MMRs.
         swrev_sysfw = 16 - __clz(row[1] & 0xFFFF0000);
     }else {
         swrev_sysfw = 16 + 32 - __clz(row[2]);
+    }
+
+``__clz`` is a function to count leading zeros. It is a compiler intrinsic 
+function, but the following code snippet also gives the same result
+
+.. code-block:: c
+
+    uint32_t count_leading_zeros(uint32_t x) {
+        uint32_t bit_count = 0, lz = 0;
+
+        bit_count = sizeof(x)*8;
+
+        /* Left shift until Most significant bit doesn become 1 */
+        while( (x & (1 << (bit_count - 1))) != 0) {
+            x <<= 1;
+            lz++;
+        }
+
+        return lz;
     }
 
 Dual Signed Certificate for writing KEYREV

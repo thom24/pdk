@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                21.05.00
+                21.09.00
               </div>
             
           
@@ -341,7 +341,7 @@ ways.</p>
 <p>If the board configuration allows a wild card jtag unlock i.e. skipping the
 SOC UID match, you can set the SOC UID to a 256 bit all zeros string.
 See example below.</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">debugUID</span> <span class="o">=</span> <span class="nl">FORMAT</span><span class="p">:</span><span class="n">HEX</span><span class="p">,</span><span class="nl">OCT</span><span class="p">:</span><span class="mo">0000000000000000000000000000000000000000000000000000000000000000</span>
+<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">debugUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nl">FORMAT</span><span class="p">:</span><span class="n">HEX</span><span class="p">,</span><span class="nl">OCT</span><span class="p">:</span><span class="mo">0000000000000000000000000000000000000000000000000000000000000000</span><span class="w"></span>
 </pre></div>
 </div>
 </li>
@@ -406,7 +406,7 @@ If non-secure debug needs to be enabled for the following four cores on AM65x,</
 </tbody>
 </table>
 <p>the <code class="docutils literal"><span class="pre">coreDbgEn</span></code> field is populated by concatenating the processor ID’s.</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgEn</span> <span class="o">=</span> <span class="nl">INTEGER</span><span class="p">:</span><span class="mh">0x20210102</span>
+<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nl">INTEGER</span><span class="p">:</span><span class="mh">0x20210102</span><span class="w"></span>
 </pre></div>
 </div>
 </li>
@@ -441,7 +441,7 @@ If secure debug needs to be enabled for the following two cores on AM65x,</p>
 </tbody>
 </table>
 <p>the <code class="docutils literal"><span class="pre">coreSecDbgEn</span></code> field is populated by concatenating the processor ID’s.</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgSecEn</span> <span class="o">=</span> <span class="nl">INTEGER</span><span class="p">:</span><span class="mh">0x2223</span>
+<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgSecEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nl">INTEGER</span><span class="p">:</span><span class="mh">0x2223</span><span class="w"></span>
 </pre></div>
 </div>
 </li>
@@ -749,7 +749,7 @@ to unlock the jtag port by using a special host id. Please refer to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'21.05.00',
+            VERSION:'21.09.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
