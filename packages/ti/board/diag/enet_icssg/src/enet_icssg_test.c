@@ -1329,8 +1329,8 @@ static uint32_t BoardDiag_EnetIg_Transmit(EnetIg_PerCtxt *txPerCtxt, EnetIg_PerC
         /* Dequeue one free TX Eth packet */
         txPktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetIg.txFreePktInfoQ);
 
-        memset(gEnetIg.txFrame, 0, sizeof(gEnetIg.txFrame));
-        memset(gEnetIg.rxFrame, 0, sizeof(gEnetIg.rxFrame));
+        memset(gEnetIg.txFrame, 0, BOARD_DIAG_ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader));
+        memset(gEnetIg.rxFrame, 0, BOARD_DIAG_ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader));
 
         while (NULL != txPktInfo)
         {
