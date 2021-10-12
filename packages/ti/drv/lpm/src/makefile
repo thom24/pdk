@@ -30,7 +30,7 @@ PACKAGE_SRCS_COMMON += include/lpm_ipc.h
 PACKAGE_SRCS_COMMON += src/lpm_utils.h
 PACKAGE_SRCS_COMMON += soc/$(SOC)/boot_core_defs.h
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
-PACKAGE_SRCS_COMMON += Settings.xdc.xdt
+PACKAGE_SRCS_COMMON += Settings.xdc.xdt lpmver.h lpmver.h.xdt
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON  = lpm_boot.c
