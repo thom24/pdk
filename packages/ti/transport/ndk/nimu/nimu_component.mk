@@ -95,7 +95,7 @@ drvnimu_j721e_CORELIST = mcu1_0 mpu1_0
 # List of components included under uart lib
 # The components included here are built and will be part of nimu lib
 ############################
-nimu_LIB_LIST = nimu nimu_icssg  
+nimu_LIB_LIST = nimu nimu_profile nimu_icssg nimu_icssg_profile  
 drvnimu_LIB_LIST = $(nimu_LIB_LIST)
 
 #
@@ -121,6 +121,8 @@ export nimu_COMP_LIST
 export nimu_BOARD_DEPENDENCY
 export nimu_CORE_DEPENDENCY
 export nimu_SOC_DEPENDENCY
+nimu_PKG_LIST = nimu
+export nimu_PKG_LIST
 nimu_INCLUDE = $(nimu_PATH)
 nimu_SOCLIST = $(drvnimu_SOCLIST)
 export nimu_SOCLIST
@@ -177,6 +179,8 @@ export nimu_icssg_COMP_LIST
 export nimu_icssg_BOARD_DEPENDENCY
 export nimu_icssg_CORE_DEPENDENCY
 export nimu_icssg_SOC_DEPENDENCY
+nimu_icssg_PKG_LIST = nimu_icssg
+export nimu_icssg_PKG_LIST
 nimu_icssg_INCLUDE = $(nimu_PATH)
 nimu_icssg_SOCLIST = am65xx
 export nimu_icssg_SOCLIST
@@ -214,7 +218,7 @@ nimu_icssg_profile_$(SOC)_CORELIST = $(drvnimu_$(SOC)_CORELIST)
 export nimu_icssg_profile_$(SOC)_CORELIST
 
 # NIMU examples
-nimu_EXAMPLE_LIST = 
+nimu_EXAMPLE_LIST = NIMU_Cpsw_ExampleApp NIMU_Cpsw_SMP_ExampleApp NIMU_FtpCpsw_ExampleApp NIMU_Icssg_ExampleApp NIMU_FtpIcssg_ExampleApp
 drvnimu_EXAMPLE_LIST = $(nimu_EXAMPLE_LIST)
 
 NIMU_Cpsw_ExampleApp_COMP_LIST = NIMU_Cpsw_ExampleApp
@@ -223,6 +227,8 @@ NIMU_Cpsw_ExampleApp_PATH = $(PDK_NIMU_COMP_PATH)/example
 NIMU_Cpsw_ExampleApp_BOARD_DEPENDENCY = yes
 NIMU_Cpsw_ExampleApp_CORE_DEPENDENCY = no
 NIMU_Cpsw_ExampleApp_XDC_CONFIGURO = yes
+NIMU_Cpsw_ExampleApp_SBL_APPIMAGEGEN = yes
+export NIMU_Cpsw_ExampleApp_SBL_APPIMAGEGEN
 export NIMU_Cpsw_ExampleApp_COMP_LIST
 export NIMU_Cpsw_ExampleApp_BOARD_DEPENDENCY
 export NIMU_Cpsw_ExampleApp_CORE_DEPENDENCY
@@ -241,6 +247,8 @@ NIMU_Cpsw_SMP_ExampleApp_PATH = $(PDK_NIMU_COMP_PATH)/example
 NIMU_Cpsw_SMP_ExampleApp_BOARD_DEPENDENCY = yes
 NIMU_Cpsw_SMP_ExampleApp_CORE_DEPENDENCY = no
 NIMU_Cpsw_SMP_ExampleApp_XDC_CONFIGURO = yes
+NIMU_Cpsw_SMP_ExampleApp_SBL_APPIMAGEGEN = yes
+export NIMU_Cpsw_SMP_ExampleApp_SBL_APPIMAGEGEN
 export NIMU_Cpsw_SMP_ExampleApp_COMP_LIST
 export NIMU_Cpsw_SMP_ExampleApp_BOARD_DEPENDENCY
 export NIMU_Cpsw_SMP_ExampleApp_CORE_DEPENDENCY
@@ -260,6 +268,8 @@ NIMU_FtpCpsw_ExampleApp_BOARD_DEPENDENCY = yes
 NIMU_FtpCpsw_ExampleApp_CORE_DEPENDENCY = no
 NIMU_FtpCpsw_ExampleApp_XDC_CONFIGURO = yes
 NIMU_FtpCpsw_ExampleApp_MAKEFILE = -f $(SOC)/cpsw/makefile  XDC_DISABLE_THUMB_MODE=yes
+NIMU_FtpCpsw_ExampleApp_SBL_APPIMAGEGEN = yes
+export NIMU_FtpCpsw_ExampleApp_SBL_APPIMAGEGEN
 export NIMU_FtpCpsw_ExampleApp_COMP_LIST
 export NIMU_FtpCpsw_ExampleApp_BOARD_DEPENDENCY
 export NIMU_FtpCpsw_ExampleApp_CORE_DEPENDENCY
@@ -277,6 +287,8 @@ NIMU_Icssg_ExampleApp_PATH = $(PDK_NIMU_COMP_PATH)/example
 NIMU_Icssg_ExampleApp_BOARD_DEPENDENCY = yes
 NIMU_Icssg_ExampleApp_CORE_DEPENDENCY = no
 NIMU_Icssg_ExampleApp_XDC_CONFIGURO = yes
+NIMU_Icssg_ExampleApp_SBL_APPIMAGEGEN = yes
+export NIMU_Icssg_ExampleApp_SBL_APPIMAGEGEN
 export NIMU_Icssg_ExampleApp_COMP_LIST
 export NIMU_Icssg_ExampleApp_BOARD_DEPENDENCY
 export NIMU_Icssg_ExampleApp_CORE_DEPENDENCY
@@ -296,6 +308,8 @@ NIMU_FtpIcssg_ExampleApp_BOARD_DEPENDENCY = yes
 NIMU_FtpIcssg_ExampleApp_CORE_DEPENDENCY = no
 NIMU_FtpIcssg_ExampleApp_XDC_CONFIGURO = yes
 NIMU_FtpIcssg_ExampleApp_MAKEFILE = -f $(SOC)/icssg/makefile XDC_DISABLE_THUMB_MODE=yes
+NIMU_FtpIcssg_ExampleApp_SBL_APPIMAGEGEN = yes
+export NIMU_FtpIcssg_ExampleApp_SBL_APPIMAGEGEN
 export NIMU_FtpIcssg_ExampleApp_COMP_LIST
 export NIMU_FtpIcssg_ExampleApp_BOARD_DEPENDENCY
 export NIMU_FtpIcssg_ExampleApp_CORE_DEPENDENCY

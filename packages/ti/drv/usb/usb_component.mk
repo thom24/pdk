@@ -239,6 +239,7 @@ USB_HostMsc_TestApp_$(1)_PKG_LIST = USB_HostMsc_TestApp_$(1)
 USB_HostMsc_TestApp_$(1)_INCLUDE = $(USB_HostMsc_TestApp_$(1)_PATH)
 export USB_HostMsc_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvusb_BOARDLIST))
 export USB_HostMsc_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+export USB_HostMsc_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 usb_EXAMPLE_LIST += USB_HostMsc_TestApp_$(1)
 else
@@ -267,6 +268,7 @@ USB_DevMsc_TestApp_$(1)_PKG_LIST = USB_DevMsc_TestApp_$(1)
 USB_DevMsc_TestApp_$(1)_INCLUDE = $(USB_DevMsc_TestApp_$(1)_PATH)
 export USB_DevMsc_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvusb_BOARDLIST))
 export USB_DevMsc_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+export USB_DevMsc_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 usb_EXAMPLE_LIST += USB_DevMsc_TestApp_$(1)
 else
@@ -295,6 +297,7 @@ USB_DevBulk_TestApp_$(1)_PKG_LIST = USB_DevBulk_TestApp_$(1)
 USB_DevBulk_TestApp_$(1)_INCLUDE = $(USB_DevBulk_TestApp_$(1)_PATH)
 export USB_DevBulk_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvusb_BOARDLIST))
 export USB_DevBulk_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+export USB_DevBulk_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 usb_EXAMPLE_LIST += USB_DevBulk_TestApp_$(1)
 else
@@ -322,6 +325,7 @@ USB_Baremetal_HostMsc_TestApp_PKG_LIST = USB_Baremetal_HostMsc_TestApp
 USB_Baremetal_HostMsc_TestApp_INCLUDE = $(USB_Baremetal_HostMsc_TestApp_PATH)
 USB_Baremetal_HostMsc_TestApp_BOARDLIST = $(drvusb_BOARDLIST)
 USB_Baremetal_HostMsc_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
+USB_Baremetal_HostMsc_TestApp_SBL_APPIMAGEGEN = yes
 
 export USB_Baremetal_HostMsc_TestApp_COMP_LIST
 export USB_Baremetal_HostMsc_TestApp_RELPATH
@@ -334,6 +338,7 @@ export USB_Baremetal_HostMsc_TestApp_INCLUDE
 export USB_Baremetal_HostMsc_TestApp_BOARDLIST
 export USB_Baremetal_HostMsc_TestApp_$(SOC)_CORELIST
 export USB_Baremetal_HostMsc_TestApp_MAKEFILE
+export USB_Baremetal_HostMsc_TestApp_SBL_APPIMAGEGEN
 
 # Bare metal USB dev MSC example
 USB_Baremetal_DevMsc_TestApp_COMP_LIST = USB_Baremetal_DevMsc_TestApp
@@ -347,6 +352,7 @@ USB_Baremetal_DevMsc_TestApp_PKG_LIST = USB_Baremetal_DevMsc_TestApp
 USB_Baremetal_DevMsc_TestApp_INCLUDE = $(USB_Baremetal_DevMsc_TestApp_PATH)
 USB_Baremetal_DevMsc_TestApp_BOARDLIST = $(drvusb_BOARDLIST)
 USB_Baremetal_DevMsc_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
+USB_Baremetal_DevMsc_TestApp_SBL_APPIMAGEGEN = yes
 
 export USB_Baremetal_DevMsc_TestApp_COMP_LIST
 export USB_Baremetal_DevMsc_TestApp_RELPATH
@@ -358,7 +364,7 @@ export USB_Baremetal_DevMsc_TestApp_PKG_LIST
 export USB_Baremetal_DevMsc_TestApp_INCLUDE
 export USB_Baremetal_DevMsc_TestApp_BOARDLIST
 export USB_Baremetal_DevMsc_TestApp_$(SOC)_CORELIST
-
+export USB_Baremetal_DevMsc_TestApp_SBL_APPIMAGEGEN
 
 
 # USB3.0 USB host project - RTOS
@@ -377,6 +383,7 @@ USB_HostMsc_usb30_TestApp_$(1)_PKG_LIST = USB_HostMsc_usb30_TestApp_$(1)
 USB_HostMsc_usb30_TestApp_$(1)_INCLUDE = $(USB_HostMsc_usb30_TestApp_$(1)_PATH)
 export USB_HostMsc_usb30_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_evm)
 export USB_HostMsc_usb30_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvusb_$(SOC)_CORELIST))
+export USB_HostMsc_usb30_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 usb_EXAMPLE_LIST += USB_HostMsc_usb30_TestApp_$(1)
 else
@@ -406,6 +413,7 @@ USB_Baremetal_HostMsc_usb30_TestApp_PKG_LIST = USB_Baremetal_HostMsc_usb30_TestA
 USB_Baremetal_HostMsc_usb30_TestApp_INCLUDE = $(USB_Baremetal_HostMsc_usb30_TestApp_PATH)
 USB_Baremetal_HostMsc_usb30_TestApp_BOARDLIST = am65xx_evm
 USB_Baremetal_HostMsc_usb30_TestApp_$(SOC)_CORELIST = $(drvusb_$(SOC)_CORELIST)
+USB_Baremetal_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN = yes
 
 export USB_Baremetal_HostMsc_usb30_TestApp_COMP_LIST
 export USB_Baremetal_HostMsc_usb30_TestApp_RELPATH
@@ -418,7 +426,7 @@ export USB_Baremetal_HostMsc_usb30_TestApp_INCLUDE
 export USB_Baremetal_HostMsc_usb30_TestApp_BOARDLIST
 export USB_Baremetal_HostMsc_usb30_TestApp_$(SOC)_CORELIST
 export USB_Baremetal_HostMsc_usb30_TestApp_MAKEFILE
-
+export USB_Baremetal_HostMsc_usb30_TestApp_SBL_APPIMAGEGEN
 
 drvusb_EXAMPLE_LIST = $(usb_EXAMPLE_LIST)
 
