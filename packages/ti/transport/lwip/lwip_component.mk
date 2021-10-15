@@ -177,5 +177,36 @@ endef
 lwipstack_MACRO_LIST := $(foreach curos,$(drvlwip_RTOS_LIST),$(call lwipstack_RULE,$(curos)))
 $(eval ${lwipstack_MACRO_LIST})
 
+#
+# LwIP port library
+#
+define lwipport_RULE
+
+export lwipport_$(1)_COMP_LIST = lwipport_$(1)
+lwipport_$(1)_RELPATH = ti/transport/lwip/lwip-port
+lwipport_$(1)_PATH = $(PDK_LWIP_COMP_PATH)/lwip-port
+export lwipport_$(1)_LIBNAME = lwipport_$(1)
+export lwipport_$(1)_LIBPATH = $(PDK_LWIP_COMP_PATH)/lwip-port/lib/$(1)
+export lwipport_$(1)_OBJPATH = ti/transport/lwip/lwip-port/$(1)
+export lwipport_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export lwipport_$(1)_BOARD_DEPENDENCY = no
+export lwipport_$(1)_CORE_DEPENDENCY = no
+lwipport_$(1)_PKG_LIST = lwipport_$(1)
+lwipport_$(1)_INCLUDE = $(PDK_LWIP_COMP_PATH)/lwip-port/$(1)/include
+export lwipport_$(1)_SOCLIST = $(drvlwip_SOCLIST)
+export lwipport_$(1)_$(SOC)_CORELIST = $(drvlwip_$(SOC)_CORELIST)
+ifeq ($(1),$(filter $(1), freertos))
+lwip_LIB_LIST += lwipport_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+lwip_LIB_LIST += lwipport_$(1)
+endif
+endif
+
+endef
+
+lwipport_MACRO_LIST := $(foreach curos,$(drvlwip_RTOS_LIST),$(call lwipport_RULE,$(curos)))
+$(eval ${lwipport_MACRO_LIST})
+
 lwip_component_make_include := 1
 endif

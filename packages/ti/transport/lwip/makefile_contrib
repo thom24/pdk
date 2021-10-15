@@ -46,11 +46,7 @@ PACKAGE_SRCS_COMMON = .
 PACKAGE_SRCS_COMMON += ../makefile_contrib
 
 INCDIR =
-INCDIR += $(LWIP_STACK_DIR)/src/include
 INCDIR += $(LWIP_CONTRIB_DIR)
-
-INCDIR += $(PDK_ENET_COMP_PATH)/lwipif/ports/$(BUILD_OS_TYPE)/include
-INCDIR += $(PDK_ENET_COMP_PATH)/lwipif/ports/$(BUILD_OS_TYPE)/include/arch
 
 ifeq ($(BUILD_OS_TYPE),freertos)
   LWIP_CONTRIB_CFLAGS += -DFREERTOS
@@ -58,8 +54,6 @@ endif
 ifeq ($(BUILD_OS_TYPE),tirtos)
   INCDIR += $(bios_PATH)/packages/ti/posix/ccs
 endif
-
-INCDIR += $(LWIP_INSTALL_PATH)/src/include
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -69,6 +63,9 @@ endif
 ifeq ($(BUILD_OS_TYPE),tirtos)
   INCLUDE_EXTERNAL_INTERFACES = pdk xdc osal bios
 endif
+
+INCLUDE_INTERNAL_INTERFACES += lwipstack_$(BUILD_OS_TYPE)
+INCLUDE_INTERNAL_INTERFACES += lwipport_$(BUILD_OS_TYPE)
 
 SRCS_COMMON += fs_example.c
 SRCS_COMMON += ssi_example.c

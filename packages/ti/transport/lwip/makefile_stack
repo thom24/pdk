@@ -10,6 +10,7 @@ endif
 MODULE_NAME = lwipstack_$(BUILD_OS_TYPE)
 
 LWIPDIR = $(PDK_LWIP_COMP_PATH)/lwip-stack/src
+LWIPPORT = $(PDK_LWIP_COMP_PATH)/lwip-port
 
 include $(LWIPDIR)/Filelists.mk
 
@@ -34,9 +35,6 @@ SRCDIR += $(LWIPDIR)/apps/altcp_tls
 
 INCDIR = src/include
 
-INCDIR += $(PDK_ENET_COMP_PATH)/lwipif/ports/$(BUILD_OS_TYPE)/include
-INCDIR += $(PDK_ENET_COMP_PATH)/lwipif/ports/$(BUILD_OS_TYPE)/include/arch
-
 ifeq ($(BUILD_OS_TYPE),freertos)
   LWIP_STACK_CFLAGS += -DFREERTOS
 endif
@@ -49,6 +47,8 @@ endif
 ifeq ($(BUILD_OS_TYPE),tirtos)
   INCLUDE_EXTERNAL_INTERFACES = pdk xdc osal bios
 endif
+
+INCLUDE_INTERNAL_INTERFACES += lwipport_$(BUILD_OS_TYPE)
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(LWIP_STACK_CFLAGS)
 # this is default supported in CLANG so no need to mention
