@@ -324,6 +324,12 @@ ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2))
  ISA = c7x
  ISA_EXT = 71
  ARCH = c71
+ ifeq ($(SOC),$(filter $(SOC), j721e)) 
+  SI_VER = 7100
+ endif
+ ifeq ($(SOC),$(filter $(SOC), j721s2)) 
+  SI_VER = 7120
+ endif
 endif
 
 # C7x DSP
@@ -331,6 +337,12 @@ ifeq ($(CORE),$(filter $(CORE), c7x-hostemu))
  ISA = c7x-hostemu
  ISA_EXT = c7x-hostemu
  ARCH = c7x
+ ifeq ($(SOC),$(filter $(SOC), j721e)) 
+  SI_VER = 7100
+ endif
+ ifeq ($(SOC),$(filter $(SOC), j721s2)) 
+  SI_VER = 7120
+ endif
 endif
 
 # DSP for tda2xx/tda2px/am572x/tda2ex/dra72x/dra75x/am571x/tda3xx/dra78x/k2h/k2k/k2l/k2e/c6657/c6678/am574x/tpr12/awr294x

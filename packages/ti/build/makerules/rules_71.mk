@@ -45,7 +45,7 @@
 CODEGEN_INCLUDE = $(C7X_GEN_INSTALL_PATH)/include
 CC = $(C7X_GEN_INSTALL_PATH)/bin/cl7x
 AR = $(C7X_GEN_INSTALL_PATH)/bin/ar7x
-LNK = $(C7X_GEN_INSTALL_PATH)/bin/cl7x --silicon_version=7100 -z
+LNK = $(C7X_GEN_INSTALL_PATH)/bin/cl7x --silicon_version=$(SI_VER) -z
 STRP = $(C7X_GEN_INSTALL_PATH)/bin/strip7x
 SIZE = $(C7X_GEN_INSTALL_PATH)/bin/ofd7x
 
@@ -111,10 +111,13 @@ endif
 #########
 
 # Internal CFLAGS - normally doesn't change
-CFLAGS_INTERNAL = -mv7100 $(CSWITCH_FORMAT) -q -mo -pden -pds=238 -pds=880 -pds1110 --endian=$(ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT)
+CFLAGS_INTERNAL = -mv$(SI_VER) $(CSWITCH_FORMAT) -q -mo -pden -pds=238 -pds=880 -pds1110 --endian=$(ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT)
 ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   CFLAGS_INTERNAL += --emit_warnings_as_errors
   LNKFLAGS_INTERNAL_COMMON += --emit_warnings_as_errors
+endif
+ifeq ($(SI_VER), 7100)
+  CFLAGS_INTERNAL += --silicon_errata_i2117
 endif
 CFLAGS_DIROPTS = -fr=$(OBJDIR) -fs=$(OBJDIR)
 CFLAGS_NEW_DIROPTS = -fr=$(CFG_C_NEW_XDC) -fs=$(CFG_C_NEW_XDC)
