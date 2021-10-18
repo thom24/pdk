@@ -31,6 +31,7 @@
  */
 
 #include "sbl_amp_multicore_sections.h"
+#include "sbl_print.h"
 
 int sblTestmain(void)
 {

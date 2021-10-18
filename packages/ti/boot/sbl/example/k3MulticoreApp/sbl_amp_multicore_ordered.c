@@ -31,6 +31,7 @@
  */
 
 #include "sbl_amp_multicore_sections.h"
+#include "sbl_print.h"
 
 void sbl_puts_itoa(unsigned int num) {
     volatile char *putsBuffer = (volatile char *)PUTS_BUFFER;

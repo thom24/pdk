@@ -31,6 +31,8 @@
  *
  */
 
+#include "sbl_print.h"
+
 #ifdef BUILD_MCU1_0
     void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_1_0_resetvector")));
     void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_1_0_resetvector")));

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,52 +30,33 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "sbl_amp_multicore_sections.h"
-#include "sbl_print.h"
+/**
+*  \file sbl_print.h
+*
+*  \brief
+*/
 
-int sblTestmain(void)
-{
-    volatile int *pokeMemAddr = (volatile int *)POKE_MEM_ADDR;
-    volatile int *bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
-    volatile int boot_delay = BOOT_DELAY, num_cores_booted = 0;
+#ifndef SBL_PRINT_H_
+#define SBL_PRINT_H_
 
-    // if we have run before, someone
-    // reset the system, dont print message
-    if (*pokeMemAddr != 0xC0DEBABE)
-    {
-        while (boot_delay--);
-        sbl_puts(CORE_NAME);
-        sbl_puts(" running\n\r");
-        // log completion
-        *pokeMemAddr = 0xC0DEBABE;
-    }
+/* ========================================================================== */
+/*                             Include Files                                  */
+/* ========================================================================== */
+/* None */
 
-    // Check if all cores have run by checking flags
-    // left in MSMC by each cores testcase
-    while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1)
-    {
-        if (*bootFlagAddr == 0xC0DEBABE)
-        {
-            num_cores_booted++;
-        }
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
+/* None */
 
-        bootFlagAddr += 0x800;
-    }
+/* ========================================================================== */
+/*                         Structure Declarations                             */
+/* ========================================================================== */
 
-    if (num_cores_booted == SBL_AMP_TEST_NUM_BOOT_CORES)
-    {
-        sbl_puts(CORE_NAME);
-        sbl_puts(" reports: All tests have passed\n\r");
 
-        // Clean up pokemem flags for the next run
-        for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
-             bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1;
-             bootFlagAddr += 0x800)
-        {
-            *bootFlagAddr = 0xFEEDFACE;
-        }
-    }
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+void sbl_puts(char *str);
 
-    return 0XFEEDFACE;
-}
-
+#endif /*SBL_PRINT_H_*/
