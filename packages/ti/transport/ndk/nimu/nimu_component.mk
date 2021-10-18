@@ -67,8 +67,8 @@
 ifeq ($(nimu_component_make_include), )
 
 # under other list
-drvnimu_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm
-drvnimu_SOCLIST         = dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x dra78x omapl137 omapl138 am65xx j721e
+drvnimu_BOARDLIST       = 
+drvnimu_SOCLIST         = dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x dra78x omapl137 omapl138
 drvnimu_dra72x_CORELIST = a15_0 ipu1_0
 drvnimu_dra75x_CORELIST = a15_0 ipu1_0
 drvnimu_am574x_CORELIST = c66x a15_0 ipu1_0

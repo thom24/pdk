@@ -67,8 +67,8 @@
 ifeq ($(emac_component_make_include), )
 
 # under other list
-drvemac_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm
-drvemac_SOCLIST         = am574x am572x am571x am437x am335x k2g dra72x dra75x dra78x omapl137 omapl138 c6657 am65xx j721e
+drvemac_BOARDLIST       = 
+drvemac_SOCLIST         = am574x am572x am571x am437x am335x k2g dra72x dra75x dra78x omapl137 omapl138 c6657
 drvemac_am574x_CORELIST = c66x a15_0 ipu1_0
 drvemac_am572x_CORELIST = c66x a15_0 ipu1_0
 drvemac_am571x_CORELIST = c66x a15_0 ipu1_0
