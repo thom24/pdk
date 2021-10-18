@@ -122,7 +122,7 @@ export lpm_example_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 lpm_example_$(1)_PKG_LIST = lpm_example_$(1)
 lpm_example_$(1)_INCLUDE = $(lpm_example_$(1)_PATH)
 export lpm_example_$(1)_BOARDLIST = j721e_evm j7200_evm
-export lpm_example_$(1)_$(SOC)_CORELIST = mcu1_0
+export lpm_example_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(lpm_$(SOC)_CORELIST))
 export lpm_example_$(1)_SBL_APPIMAGEGEN = yes
 
 lpm_EXAMPLE_LIST += lpm_example_$(1)

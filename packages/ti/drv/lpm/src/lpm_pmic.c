@@ -150,12 +150,9 @@ struct bootApp_local_rm_boardcfg
     struct tisci_boardcfg_rm_resasg_entry resasg_entries[TISCI_RESASG_ENTRIES_MAX];
 };
 
-#pragma DATA_SECTION(bootAppBoardCfg, ".sysfw_data_cfg_board")
-struct tisci_boardcfg bootAppBoardCfg;
-#pragma DATA_SECTION(bootAppBoardCfg_rm, ".sysfw_data_cfg_board_rm")
-struct bootApp_local_rm_boardcfg bootAppBoardCfg_rm;
-#pragma DATA_SECTION(bootAppBoardCfg_sec, ".sysfw_data_cfg_board_sec")
-struct tisci_boardcfg_sec bootAppBoardCfg_sec;
+__attribute((section(".sysfw_data_cfg_board"))) struct tisci_boardcfg bootAppBoardCfg;
+__attribute((section(".sysfw_data_cfg_board_rm"))) struct bootApp_local_rm_boardcfg bootAppBoardCfg_rm;
+__attribute((section(".sysfw_data_cfg_board_sec"))) struct tisci_boardcfg_sec bootAppBoardCfg_sec;
 
 /* ========================================================================== */
 /*              Internal Function Declarations                                */

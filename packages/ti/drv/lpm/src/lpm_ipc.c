@@ -141,8 +141,7 @@ uint32_t gSendTaskBufIdx[IPC_MAX_PROCS] = {0};
 
 uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 
-#pragma DATA_SECTION(Ipc_traceBuffer, ".tracebuf")
-char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
+__attribute((section(".tracebuf"))) char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
 
 uint8_t gOcmcShadowRscTable[0x8C];
 uint8_t *pOcmcShadowRscTable = gOcmcShadowRscTable;

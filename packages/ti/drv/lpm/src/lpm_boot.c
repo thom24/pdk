@@ -300,7 +300,7 @@ static int32_t Lpm_ospiBootStageImage(sblEntryPoint_t *pEntry, uint32_t address)
 {
     int32_t status = E_FAIL;
 
-    if ((NULL != address) && (NULL != pEntry))
+    if (((uint32_t)NULL != address) && ((sblEntryPoint_t *)NULL != pEntry))
     {
         if (address != MAIN_DOMAIN_HLOS)
         {
@@ -767,7 +767,7 @@ int32_t Lpm_bootApp()
                 if ((k3xx_evmEntry.CpuEntryPoint[core_id] != SBL_INVALID_ENTRY_ADDR) &&
                     ((core_id != MCU1_CPU1_ID) && (core_id != MCU1_CPU0_ID)))
                 {
-                    SBL_SlaveCoreBoot(core_id, NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
+                    SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
                     TaskP_sleep(1*1000);
 #if defined(UART_PRINT_DEBUG)
                     AppUtils_Printf(MSG_NORMAL,

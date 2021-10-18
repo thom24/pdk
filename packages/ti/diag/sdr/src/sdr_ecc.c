@@ -133,7 +133,6 @@ static SDR_Result SDR_ECC_searchMemEntryTable(SDR_ECC_MemSubType memSubType,
                                               SDR_MemConfig_t *pMemConfig);
 
 #ifdef SOC_J721E
-#pragma DATA_SECTION(mappedEccRegs, ".my_aggr_reg");
 /* Note that this example provide a single instance of mappedEccRegs (which is RAT-mapped
  * ECC aggregator configuration registers that lie in larger address space than the 32-bit
  * address space on the MCU.  If more ECC aggregator registers need to be mapped, additional
@@ -142,7 +141,7 @@ static SDR_Result SDR_ECC_searchMemEntryTable(SDR_ECC_MemSubType memSubType,
  * The expectation is that this mapping will be retained in perpetuity because in order to obtain
  * information about the ECC errors, the ECC Aggregator configuration registers require to be
  * visible from the MCU. */
-CSL_ecc_aggrRegs mappedEccRegs;
+__attribute((section(".my_aggr_reg"))) CSL_ecc_aggrRegs mappedEccRegs;
 #endif
 
 /** ============================================================================*
