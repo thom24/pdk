@@ -87,6 +87,10 @@ LNKFLAGS_INTERNAL_COMMON +=
 
 SUPRESS_WARNINGS_FLAG = -Wno-extra -Wno-exceptions -ferror-limit=100 -Wno-parentheses-equality -Wno-unused-command-line-argument -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function -Wno-inconsistent-missing-override -Wno-address-of-packed-member -Wno-self-assign -Wno-ignored-attributes -Wno-bitfield-constant-conversion -Wno-unused-const-variable -Wno-unused-variable -Wno-format-security -Wno-excess-initializers -Wno-sometimes-uninitialized -Wno-empty-body -Wno-extern-initializer -Wno-absolute-value -Wno-missing-braces -Wno-ti-macros -Wno-pointer-sign -Wno-macro-redefined -Wno-main-return-type
 
+ifeq ($(CPLUSPLUS_BUILD), yes)
+  SUPRESS_WARNINGS_FLAG += -Wno-c99-designator -Wno-extern-c-compat
+endif
+
 # Internal CFLAGS - normally doesn't change
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
   CFLAGS_INTERNAL = -c -Wall -Werror $(SUPRESS_WARNINGS_FLAG) -$(RTSLIB_ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT) -g -mfloat-abi=hard
@@ -214,7 +218,7 @@ endif
 # Decide the compile mode
 COMPILEMODE = -x c
 ifeq ($(CPLUSPLUS_BUILD), yes)
-  COMPILEMODE = -fg
+  COMPILEMODE = -x c++
 endif
 
 # Object file creation
@@ -265,6 +269,8 @@ LNKFLAGS_INTERNAL_COMMON += -Xlinker -q -Xlinker -u -Xlinker _c_int00 -Xlinker -
 LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10063-D 
 # Supress warning for "no matching section"
 LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10068-D
+# Supress warning for " LOAD placement ignored for "":  object is uninitialized"
+LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10083-D
 
 ifeq ($(BOARD),$(filter $(BOARD), qtJ7))
   LNKFLAGS_INTERNAL_COMMON += -Xlinker -cr -Xlinker --ram_model

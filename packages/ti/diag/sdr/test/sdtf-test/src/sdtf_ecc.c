@@ -49,10 +49,7 @@
 void SDTF_readVIMRAM(uint32_t offset);
 int32_t SDTF_ECC_waitDEDTrigger(uint64_t timeCount);
 
-void SDTF_ECC_dummyFunction(void);
-
-
-#pragma CODE_SECTION (SDTF_ECC_dummyFunction, ".sdtf_ecc_testcodesection");
+__attribute__((section(".sdtf_ecc_testcodesection"))) void SDTF_ECC_dummyFunction(void);
 
 void SDTF_ECC_dummyFunction(void)
 {

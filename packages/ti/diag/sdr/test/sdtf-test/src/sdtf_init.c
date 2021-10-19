@@ -36,6 +36,7 @@
  */
 
 #include <stdint.h>
+#include <string.h>
 #include <sdr_common.h>
 #include <sdr_esm.h>
 #include <sdr_ccm.h>
@@ -623,12 +624,7 @@ void SDR_CCM_applicationCallbackFunction(SDR_CCM_MonitorType monitorType,
 /* Note the following DED vector handler need to be declared with the attribute of interrupt
  * so that the appropriate return is implemented correctly
  */
-#ifdef __cplusplus
-#pragma CODE_STATE (32)
-#else
-#pragma CODE_STATE (SDTF_VIMDEDInterruptHandler,32)
-#endif  /* #ifdef __cplusplus */
-__attribute__((interrupt))     void SDTF_VIMDEDInterruptHandler(void);
+__attribute__((interrupt)) __attribute__((target("arm"))) void SDTF_VIMDEDInterruptHandler(void);
 /*********************************************************************
 * @fn      SDTF_VIMDEDInterruptHandler
 *

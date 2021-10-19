@@ -85,6 +85,6 @@ void SDTF_profileEnd(uint32_t profileNumber);
 uint32_t SDTF_profileDelta(uint32_t profileNumber);
 
 extern void SDTF_profileTimerInit(void);
-extern inline uint32_t SDTF_profileTimerRead(void);
+extern uint32_t SDTF_profileTimerRead(void);
 
 #endif /* _INCLUDE_SDTF_PROFILE_H_ */

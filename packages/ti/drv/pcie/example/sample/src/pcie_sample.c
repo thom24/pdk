@@ -152,9 +152,9 @@ typedef struct dstBuf_s {
 /* Cache coherence: Align must be a multiple of cache line size (L2=128 bytes, L1=64 bytes) to operate with cache enabled. */
 /* Aligning to 256 bytes because the PCIe inbound offset register masks the last 8bits of the buffer address  */
 #ifdef SOC_J721E
-__attribute((section(".far:dstBufSec"))) __attribute__((aligned(4096))) dstBuf_t dstBuf
+__attribute((section(".far:dstBufSec"))) __attribute__((aligned(4096))) dstBuf_t dstBuf;
 #else
-__attribute((section(".dstBufSec"))) __attribute__((aligned(256))) dstBuf_t dstBuf
+__attribute((section(".dstBufSec"))) __attribute__((aligned(256))) dstBuf_t dstBuf;
 #endif
 #endif
 #if defined(BUILD_MPU) || defined(__ARM_ARCH_7A__)
@@ -167,7 +167,7 @@ __attribute__((aligned(256), section(".bss:dstBufSec"))) /* GCC way of aligning 
 #if defined(SOC_J721E) && defined(BUILD_MPU)
 __attribute__((aligned(0x01000))) /* GCC way of aligning */
 #endif
-; /* for dstBuf */
+dstBuf_t dstBuf; /* for dstBuf */
 
 #define PCIE_EXAMPLE_BUF_EMPTY 0
 #define PCIE_EXAMPLE_BUF_FULL  1
