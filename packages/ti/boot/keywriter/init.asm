@@ -42,7 +42,6 @@
 	.global _keywriterResetVectors
 
 _keywriterResetVectors:
-	.asmfunc
 	LDR pc, keywriterEntry ; Reset
 	B KeywrErrLoop ; Undefined Instruction
 	B KeywrErrLoop ; SVC call
@@ -53,7 +52,6 @@ _keywriterResetVectors:
 	B KeywrErrLoop ; FIQ
 
 keywriterEntry	.long _keywriterEntry
-	.endasmfunc
 
 ;****************************************************************************
 ; Keywriter Entry
@@ -65,7 +63,6 @@ keywriterEntry	.long _keywriterEntry
 _c_int00_addr		.long _c_int00
 
 _keywriterEntry:
-	.asmfunc
 
 	MRC	p15, #0, r1, c0, c0, #5
 	BFC	r1, #8, #24
@@ -78,8 +75,6 @@ _keywriterEntry:
 KeywrErrLoop:
 	WFI
 	B	KeywrErrLoop
-
-	.endasmfunc
 
 ; Certificate will be appended to keywriter binary, 
 ; keywr_end provides a way to get the address of the certificate
