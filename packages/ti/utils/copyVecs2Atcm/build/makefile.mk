@@ -49,7 +49,12 @@ endif
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-PACKAGE_SRCS_COMMON = makefile copyvecs_component.mk build utilsCopyVecs2ATcm.asm
+PACKAGE_SRCS_COMMON = makefile copyvecs_component.mk build
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+  PACKAGE_SRCS_COMMON += utilsEnableTcmCopyVecs2ATcm.asm
+else
+  PACKAGE_SRCS_COMMON += utilsCopyVecs2ATcm.asm
+endif
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )
