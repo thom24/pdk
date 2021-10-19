@@ -67,8 +67,8 @@
 ifeq ($(nimu_icss_component_make_include), )
 
 # under other list
-drvnimu_icss_BOARDLIST       = 
-drvnimu_icss_SOCLIST         = am335x am437x am574x am572x am571x k2g am65xx am64x
+drvnimu_icss_BOARDLIST       =
+drvnimu_icss_SOCLIST         = am335x am437x am574x am572x am571x k2g am64x
 drvnimu_icss_am574x_CORELIST = c66x a15_0 ipu1_0
 drvnimu_icss_am572x_CORELIST = c66x a15_0 ipu1_0
 drvnimu_icss_am571x_CORELIST = c66x a15_0 ipu1_0
@@ -83,8 +83,8 @@ drvnimu_icss_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 # List of components included under nimu_icss transport lib
 # The components included here are built and will be part of nimu_icss transport lib
 ############################
-#nimu_icss_LIB_LIST = nimu_icss_indp 
-nimu_icss_LIB_LIST =  
+#nimu_icss_LIB_LIST = nimu_icss_indp
+nimu_icss_LIB_LIST =
 drvnimu_icss_LIB_LIST = $(nimu_icss_LIB_LIST)
 
 #
