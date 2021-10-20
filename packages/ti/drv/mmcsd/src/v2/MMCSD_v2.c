@@ -2752,7 +2752,6 @@ static MMCSD_Error MMCSD_v2_transfer(MMCSD_Handle handle,
     MMCSD_v2_Object        *object = NULL;
     MMCSD_v2_HwAttrs const *hwAttrs = NULL;
     uint32_t params;
-	volatile uint32_t        status = 0U;
 
     if ((handle != NULL) && (transaction != NULL))
     {
@@ -3233,37 +3232,36 @@ cmdObj.cmd.xferType = (transaction->flags & MMCSD_CMDRSP_READ) ? \
 #endif
             }
 
+            /* Get response for command sent to MMC device */
+            HSMMCSDResponseGet(hwAttrs->baseAddr, transaction->response);
+
+            /* Release the lock for this particular MMCSD handle */
+            MMCSD_osalPostLock(object->commandMutex);
+        }
+
         /* Data transfer fail or  Command execution fail */
         if ((1 == object->xferTimeout) || (1 == object->cmdTimeout))
         {
             if (1 == object->xferTimeout)
             {
                 ret = MMCSD_ERR;
-                 object->xferTimeout = 0;
+                object->xferTimeout = 0;
 #ifdef LOG_EN
-                 MMCSD_drv_log4(Diags_USER1,
-                         "MMCSD:(%p) Data Transfer Failed", hwAttrs->baseAddr);
+                MMCSD_drv_log4(Diags_USER1,
+                     "MMCSD:(%p) Data Transfer Failed", hwAttrs->baseAddr);
 #endif
             }
             else
             {
-               ret = MMCSD_ERR;
+                ret = MMCSD_ERR;
                 object->cmdTimeout = 0;
 #ifdef LOG_EN
                 MMCSD_drv_log4(Diags_USER1,
-                        "MMCSD:(%p) Command Execution Failed", hwAttrs->baseAddr);
+                    "MMCSD:(%p) Command Execution Failed", hwAttrs->baseAddr);
 #endif
             }
-                MMCSD_v2_controllerReset(object, (MMCSD_v2_HwAttrs *)hwAttrs);
+            MMCSD_v2_controllerReset(object, (MMCSD_v2_HwAttrs *)hwAttrs);
         }
-
-            /* Git response for command sent to MMC device */
-            HSMMCSDResponseGet(hwAttrs->baseAddr, transaction->response);
-
-            /* Release the lock for this particular MMCSD handle */
-            MMCSD_osalPostLock(object->commandMutex);
-        }
-    
     }
     /* Return the transaction status */
     return (ret);
