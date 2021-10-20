@@ -145,11 +145,10 @@ dss_app_utils_sysbios_PKG_LIST = dss_app_utils_sysbios
 dss_app_utils_sysbios_INCLUDE = $(dss_app_utils_sysbios_PATH)
 dss_app_utils_sysbios_SOCLIST = $(drvdss_SOCLIST)
 export dss_app_utils_sysbios_SOCLIST
-dss_app_utils_sysbios_$(SOC)_CORELIST = $(drvdss_$(SOC)_CORELIST)
+dss_app_utils_sysbios_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvdss_$(SOC)_CORELIST))
 export dss_app_utils_sysbios_$(SOC)_CORELIST
 
-#dss_APP_LIB_LIST += dss_app_utils dss_app_utils_sysbios
-dss_APP_LIB_LIST += dss_app_utils
+dss_APP_LIB_LIST += dss_app_utils dss_app_utils_sysbios
 
 #
 # DSS Examples

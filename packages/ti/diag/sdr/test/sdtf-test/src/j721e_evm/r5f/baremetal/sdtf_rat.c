@@ -46,9 +46,7 @@
 /* Choosing unused address space */
 #define SDTF_RAT_SELF_TEST_TRANSLATE_BASE  (0x10000000U)
 
-#pragma DATA_SECTION (SDTF_RATTestArray, ".sdtf_rat_testsection");
-#pragma DATA_ALIGN (SDTF_RATTestArray, 32);
-uint32_t SDTF_RATTestArray[8];
+__attribute((section(".sdtf_rat_testsection"))) __attribute__((aligned(32))) uint32_t SDTF_RATTestArray[8];
 
 #define SDTF_RAT_REGION_INDEX 0
 
