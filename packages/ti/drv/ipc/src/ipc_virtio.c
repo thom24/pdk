@@ -188,7 +188,13 @@ static void*    vqBaseAddr = NULL;
 static uint32_t vqSizeLeft = 0U;
 static void*    rscTable   = NULL;
 
-static Ipc_TranslationTable  vrTranslationTable;
+static Ipc_TranslationTable  vrTranslationTable =
+{
+    /* initialize number of translation entry explicitly to zero at build time.
+    * this is needed for c7x where in RAM model static globals are not zero initialized by default.
+    */
+    .count = 0
+};
 
 void* Ipc_allocVirtio()
 {
