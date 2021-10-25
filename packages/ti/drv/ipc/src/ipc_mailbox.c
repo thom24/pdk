@@ -388,6 +388,8 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
                     /* Register Mailbox interrupt now... */
                     if (retVal == IPC_SOK)
                     {
+                        /* disable the mailbox interrupt (from previous runs) */
+                        Ipc_mailboxDisable(baseAddr, userId, queueId);
                         pObj->interruptHandle = pOsal->registerIntr(
                                 &cfg,Ipc_mailboxInternalCallback,
                                 (uintptr_t)mbox);
