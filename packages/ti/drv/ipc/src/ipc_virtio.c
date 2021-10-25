@@ -99,6 +99,8 @@ typedef struct Ipc_NotifyIdEntry_s
 } Ipc_NotifyIdEntry;
 
 int32_t  virtio_cnt = 0;
+static uint32_t g_vqItemCnt = 0;
+extern uint32_t g_ipc_mBoxCnt;
 
 /**
  *  \brief Used for defining the size of the virtqueue registry
@@ -376,6 +378,10 @@ int32_t Ipc_initVirtIO(Ipc_VirtIoParams *vqParam)
     {
         /* Initialize the global queue registry */
         memset(queueRegistry, 0, sizeof(queueRegistry));
+
+        virtio_cnt = 0;
+        g_vqItemCnt = 0;
+        g_ipc_mBoxCnt = 0;
 
         vqBaseAddr = (void*)vqParam->vqObjBaseAddr;
         vqSizeLeft = vqParam->vqBufSize;
@@ -751,7 +757,6 @@ static struct VirtioIPC_Vqdev
     uint32_t procId;
 } g_vqTable[MAX_VQ_PAIRS];
 
-static uint32_t g_vqItemCnt = 0;
 
 /**
  *  \brief VirtioIPC_getVirtQueues :
