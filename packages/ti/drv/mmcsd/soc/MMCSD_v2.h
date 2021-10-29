@@ -161,8 +161,11 @@ typedef enum {
 /** \brief  Get media (SD/eMMC/MMC) parameters */
 #define MMCSD_CMD_GETMEDIAPARAMS        (MMCSD_CMD_RESERVED + 4U)
 
+/** \brief  Get Error status for read and write */
+#define MMCSD_CMD_GETERRORSTATUS     (MMCSD_CMD_RESERVED + 5U)
+
 /** \brief  Set boot partition of eMMC */
-#define MMCSD_CMD_ENABLEBOOTPARTITION   (MMCSD_CMD_RESERVED + 5U)
+#define MMCSD_CMD_ENABLEBOOTPARTITION   (MMCSD_CMD_RESERVED + 6U)
 /* MMC function table pointer */
 extern const MMCSD_FxnTable MMCSD_v2_FxnTable;
 
@@ -171,6 +174,12 @@ extern const MMCSD_FxnTable MMCSD_v2_FxnTable;
 
 /** \brief  Invalid Mux In/Out event num */
 #define MMCSD_INVALID_MUX_EVENTNUM      (-1)
+
+/** \brief  MMCSD ISR return OK */
+#define MMCSD_ISR_RET_OK      (0x00000000U)
+
+/** \brief  MMCSD ISR return SD status error  */
+#define MMCSD_ISR_RET_SDSTS   (0x00000004U)
 
 /*!
  *  @brief  MMC runtime IO delay configration
@@ -303,6 +312,7 @@ typedef struct MMCSD_v2_Object_s {
     uint32_t               edmaLinkChId;
     uint32_t               Txtcc;
 	bool                   manualTuning;     /*! flag to enable Manual tuning. Disabled by default */
+    uint32_t               intStatusErr;       /*! interrupt status error */
 } MMCSD_v2_Object;
 
 typedef enum {
