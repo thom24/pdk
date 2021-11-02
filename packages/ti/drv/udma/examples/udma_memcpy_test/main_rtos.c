@@ -78,7 +78,11 @@ extern int32_t Udma_memcpyTest(void);
 /* ========================================================================== */
 
 /* Test application stack */
-static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN))) = { 0 };
+#else
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */

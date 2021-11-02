@@ -98,7 +98,11 @@ static int32_t App_tifs2dmMsgForwardingTest(void);
 /* ========================================================================== */
 
 static volatile int32_t gTestStatus;
-static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));;
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(32*1024))) = { 0 };
+#else
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));
+#endif
 /* IMPORTANT NOTE: For C7x,
  * - stack size and stack ptr MUST be 8KB aligned
  * - AND min stack size MUST be 32KB
@@ -119,7 +123,9 @@ int main(void)
 
     OS_init();
 
+    memset( gAppTskStackMain, 0xFF, sizeof( gAppTskStackMain ) );
     TaskP_Params_init(&taskParams);
+    taskParams.priority =2;
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
     task = TaskP_create(mainTask, &taskParams);

@@ -92,6 +92,7 @@ typedef  void *MailboxP_Handle;
  *
  *  Structure that contains the parameters are passed into ::MailboxP_create
  *  when creating a MailboxP instance.
+ *  NOTE : bufsize in SafeRTOS should have  additional portQUEUE_OVERHEAD_BYTES.
  */
 typedef struct MailboxP_Params_s
 {

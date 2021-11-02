@@ -124,13 +124,23 @@ void Ipc_setupSciServer(void);
 /* ========================================================================== */
 
 /* Test application stack */
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN]
+__attribute__ ((aligned(APP_TSK_STACK_MAIN)));
+#else
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN]
 __attribute__ ((aligned(8192)));
+#endif
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
 /* Sciserver Init TAsk stack */
+#if defined(SAFERTOS)
+static uint8_t  gSciserverInitTskStack[APP_SCISERVER_INIT_TSK_STACK]
+__attribute__ ((aligned(APP_SCISERVER_INIT_TSK_STACK)));
+#else
 static uint8_t  gSciserverInitTskStack[APP_SCISERVER_INIT_TSK_STACK]
 __attribute__ ((aligned(8192)));
+#endif
 #endif
 
 /* ========================================================================== */
@@ -240,6 +250,12 @@ int main(void)
     /* Relocate FreeRTOS Reset Vectors from BTCM*/
     void _freertosresetvectors (void);  
     memcpy((void *)0x0, (void *)_freertosresetvectors, 0x40);
+#endif
+
+#if defined ECHO_TEST_BTCM && defined SAFERTOS && defined BUILD_MCU
+    /* Relocate FreeRTOS Reset Vectors from BTCM*/
+    void _safeRTOSrstvectors (void);
+    memcpy((void *)0x0, (void *)_safeRTOSrstvectors, 0x40);
 #endif
 
     OS_init();

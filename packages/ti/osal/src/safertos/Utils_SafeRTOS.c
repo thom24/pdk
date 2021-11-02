@@ -61,6 +61,8 @@
 uint32_t  gOsalSemAllocCnt   = 0U, gOsalSemPeak = 0U;
 uint32_t  gOsalTimerAllocCnt = 0U, gOsalTimerPeak = 0U;
 uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak = 0U;
+uint32_t  gOsalMutexAllocCnt = 0U, gOsalMutexPeak = 0U;
+uint32_t  gOsalHeapAllocCnt   = 0U, gOsalHeapPeak = 0U;
 #ifndef OSAL_CPU_FREQ_KHZ_DEFAULT
 #define OSAL_CPU_FREQ_KHZ_DEFAULT ( 400000 )
 #endif
@@ -255,6 +257,21 @@ int32_t Osal_getStaticMemStatus( Osal_StaticMemStatus *pMemStat )
     }
 
     return ( retVal );
+}
+
+extern portBaseType xPortIsISRMode( void );
+/*
+ * Returns true if the current core is in ISR context; low prio ISR, med prio ISR or timer tick ISR. High prio ISRs
+ * aren't detected here, but they normally cannot call C code, so that should not be an issue anyway.
+ */
+portBaseType xPortInIsrContext()
+{
+    portBaseType inISR = true;
+    if( pdFALSE == xPortIsISRMode() )
+    {
+        inISR =  false;
+    }
+    return inISR;
 }
 
 /* Nothing past this point */

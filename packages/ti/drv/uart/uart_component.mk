@@ -434,7 +434,7 @@ export UART_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
 export UART_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 UART_TestApp_$(1)_PKG_LIST = UART_TestApp_$(1)
 UART_TestApp_$(1)_INCLUDE = $(UART_TestApp_$(1)_PATH)
-export UART_TestApp_$(1)_BOARDLIST = $(drvuart_$(1)_BOARDLIST)
+export UART_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvuart_BOARDLIST))
 ifeq ($(SOC),$(filter $(SOC), am64x))
 export UART_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else
@@ -453,7 +453,7 @@ endif
 
 endef
 
-UART_TESTAPP_MACRO_LIST := $(foreach curos,$(drvuart_RTOS_LIST),$(call UART_TESTAPP_RULE,$(curos)))
+UART_TESTAPP_MACRO_LIST := $(foreach curos,$(drvuart_RTOS_LIST) safertos,$(call UART_TESTAPP_RULE,$(curos)))
 
 $(eval ${UART_TESTAPP_MACRO_LIST})
 

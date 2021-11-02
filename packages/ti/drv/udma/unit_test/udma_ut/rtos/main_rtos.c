@@ -75,7 +75,11 @@ void taskFxn(void *a0, void *a1);
 /* ========================================================================== */
 
 /* Test application stack */
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
+#else
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */

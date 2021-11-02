@@ -691,7 +691,7 @@ endif
 
 endef
 
-OSPI_FLASH_TESTAPP_MACRO_LIST := $(foreach curos, $(ospi_RTOS_LIST), $(call OSPI_FLASH_TESTAPP_RULE,$(curos)))
+OSPI_FLASH_TESTAPP_MACRO_LIST := $(foreach curos, $(ospi_RTOS_LIST) safertos, $(call OSPI_FLASH_TESTAPP_RULE,$(curos)))
 
 $(eval ${OSPI_FLASH_TESTAPP_MACRO_LIST})
 

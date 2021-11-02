@@ -92,8 +92,11 @@ uint8_t mcaspEgAppHeap[MCASP_AUD_SAMPLE_HEAP_SIZE] __attribute__((aligned(128)))
 /* Heap handle */
 HeapP_Handle myHeap;
 /* Application task stack */
+#if defined(SAFERTOS)
+uint8_t gAppTskStackMain[MCASP_APP_TASK_STACK_SIZE] __attribute__((aligned(MCASP_APP_TASK_STACK_SIZE)));
+#else
 uint8_t gAppTskStackMain[MCASP_APP_TASK_STACK_SIZE] __attribute__((aligned(128)));
-
+#endif
 #if defined(BUILD_MPU) || defined (__C7100__)
 extern void Osal_initMmuDefault(void);
 Void InitMmu()

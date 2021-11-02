@@ -344,6 +344,11 @@ ifeq ($(BUILD_OS_TYPE),safertos)
         CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_safertos.cmd
     endif
   endif
+  ifeq ($(SOC),$(filter $(SOC), j721e))
+    ifeq ($(CONFIG_BLD_XDC_r5f),)
+        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_safertos.lds
+    endif
+  endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),baremetal)

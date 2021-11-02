@@ -62,6 +62,7 @@ endif
 INCLUDE_EXTERNAL_INTERFACES = pdk safertos
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON += -DSAFERTOS
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

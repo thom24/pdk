@@ -5,12 +5,12 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = safertos
 
-SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/portable/TI_CGT/$(ISA)
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS
+SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/portable/005_Code_Composer/199_TI_CR5/
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/
 
-INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/config/$(SOC)/$(ISA)
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS/include \
-          ${SAFERTOS_KERNEL_INSTALL_PATH}/portable/TI_CGT/$(ISA)
+INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/config/
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/include \
+          ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/portable/005_Code_Composer/199_TI_CR5/
 
 
 # List all the external components/interfaces, whose interface header files
@@ -42,7 +42,6 @@ endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_COMMON += \
-    queue_register.c \
     mpuArm.c \
     mpuAPI.c \
     portmpu.c
@@ -58,14 +57,15 @@ SRCS_ASM_COMMON := \
 endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
-SRCS_ASM_COMMON := \
-    portasm.asm
+SRCS_S_COMMON := \
+    portasm.S
 endif
 
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 PACKAGE_SRCS_COMMON = safertos.mak safertos_component.mk
+PACKAGE_SRCS_COMMON += ../test/safertos/task_switch
 
 #include posix support files if present
 -include safertos_posix.mak

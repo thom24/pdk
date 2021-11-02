@@ -44,6 +44,14 @@ ifeq ($(BUILD_OS_TYPE), freertos)
   INCLUDE_EXTERNAL_INTERFACES += freertos
   SRCS_COMMON = main_rtos.c
 endif
+
+ifeq ($(BUILD_OS_TYPE), safertos)
+  CFLAGS_OS_DEFINES = -DSAFERTOS
+  COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
+  INCLUDE_EXTERNAL_INTERFACES += safertos
+  SRCS_COMMON = main_rtos.c
+endif
+
 # List all the specific components required by the application
 COMP_LIST_COMMON += udma_apputils
 
@@ -73,7 +81,7 @@ else
   SRCS_COMMON += utils_prf_baremetal.c utils_mem_baremetal.c
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(UDMAUT_CFLAGS) 
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(UDMAUT_CFLAGS) $(CFLAGS_OS_DEFINES)
 ifeq ($(UDMA_UT_MANUAL_ENTRY), yes)
   CFLAGS_LOCAL_COMMON += -DUDMA_UT_ENABLE_MANUAL_ENTRY
 endif
@@ -94,6 +102,9 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
   EXTERNAL_LNKCMD_FILE_LOCAL = rtos/$(SOC)/linker_$(CORE).lds
 endif
 ifeq ($(BUILD_OS_TYPE), freertos)
+  APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
+endif
+ifeq ($(BUILD_OS_TYPE), safertos)
   APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
 endif
 

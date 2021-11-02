@@ -130,7 +130,11 @@ void Sciclient_fw_abort_C_handler();
 /* ========================================================================== */
 
 static volatile int32_t gTestStatus;
-static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));;
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(32*1024)));
+#else
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));
+#endif
 /* IMPORTANT NOTE: For C7x,
  * - stack size and stack ptr MUST be 8KB aligned
  * - AND min stack size MUST be 32KB
@@ -159,7 +163,7 @@ int main(void)
     CacheP_wbInv((const void*)&ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors, 0x60);
 #endif
 #endif
-#if defined (FREERTOS) && defined (BUILD_MCU)
+#if defined (FREERTOS) || defined (SAFERTOS) && defined (BUILD_MCU)
     /* Register exception handler */
     /* This is needed for data abort which should occur during writing to firewalled region */
     CSL_R5ExptnHandlers sciclientR5ExptnHandlers;

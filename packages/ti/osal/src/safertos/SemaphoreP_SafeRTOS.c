@@ -44,6 +44,8 @@
 
 #include <SafeRTOS_API.h>
 
+extern portBaseType xPortInIsrContext( void );
+
 extern uint32_t  gOsalSemAllocCnt, gOsalSemPeak;
 
 /*!
@@ -251,11 +253,14 @@ SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
     SemaphoreP_Status ret = SemaphoreP_OK;
     SemaphoreP_safertos *semaphore = ( SemaphoreP_safertos * )handle;
 
+    /*
+     * NOTE : there is no delete Semaphore API in safertos.
+     * We just memset the memory to zero.
+     */
     if( ( semaphore != NULL_PTR ) && ( semaphore->used==TRUE ) )
     {
-        /* vSemaphoreDelete( semaphore->semHndl ); */
         memset(&semaphore->semObj, 0, sizeof(semaphore->semObj));
-		semaphore->semHndl = NULL;
+        semaphore->semHndl = NULL;
         key = HwiP_disable(  );
         semaphore->used = FALSE;
         /* Found the osal semaphore object to delete */
@@ -270,6 +275,7 @@ SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
     {
        ret = SemaphoreP_FAILURE;
     }
+
     return ( ret );
 }
 
@@ -298,7 +304,6 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
     DebugP_assert( ( handle != NULL_PTR ) );
-
     if(  xPortInIsrContext(  )  )
     {
         portBaseType xHigherPriorityTaskWoken = 0;

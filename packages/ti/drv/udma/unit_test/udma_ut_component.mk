@@ -65,7 +65,7 @@ export udma_unit_testapp_$(1)_CORE_DEPENDENCY = yes
 export udma_unit_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 udma_unit_testapp_$(1)_PKG_LIST = udma_unit_testapp_$(1)
 udma_unit_testapp_$(1)_INCLUDE = $(udma_unit_testapp_$(1)_PATH)
-export udma_unit_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_unit_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvudma_BOARDLIST))
 export udma_unit_testapp_$(1)_$(SOC)_CORELIST =  $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_ut_$(SOC)_CORELIST))
 export udma_unit_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
@@ -78,7 +78,7 @@ endif
 
 endef
 
-UDMA_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_UNIT_TESTAPP_RULE,$(curos)))
+UDMA_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST) safertos, $(call UDMA_UNIT_TESTAPP_RULE,$(curos)))
 
 $(eval ${UDMA_UNIT_TESTAPP_MACRO_LIST})
 

@@ -217,7 +217,7 @@ endif
 
 endef
 
-MCASP_DeviceLoopback_TestApp_MACRO_LIST := $(foreach curos,$(drvmcasp_RTOS_LIST),$(call MCASP_DeviceLoopback_TestApp_RULE,$(curos)))
+MCASP_DeviceLoopback_TestApp_MACRO_LIST := $(foreach curos,$(drvmcasp_RTOS_LIST) safertos,$(call MCASP_DeviceLoopback_TestApp_RULE,$(curos)))
 
 $(eval ${MCASP_DeviceLoopback_TestApp_MACRO_LIST})
 

@@ -94,12 +94,21 @@ void App_sciclientC66xIntrConfig(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+#if defined(SAFERTOS)
 /* Test application stack */
-static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
 
 /* Test application stack */
-static uint8_t  gAppTskStackRevTest1[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
-static uint8_t  gAppTskStackRevTest2[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+static uint8_t  gAppTskStackRevTest1[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
+static uint8_t  gAppTskStackRevTest2[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
+#else
+/* Test application stack */
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+
+/* Test application stack */
+static uint8_t  gAppTskStackRevTest1[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+static uint8_t  gAppTskStackRevTest2[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 
 int32_t tsk1Pass = CSL_EFAIL, tsk2Pass = CSL_EFAIL;
 

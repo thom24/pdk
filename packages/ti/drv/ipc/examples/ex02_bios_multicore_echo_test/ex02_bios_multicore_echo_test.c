@@ -89,8 +89,12 @@
  * C7x cfg has 256k default heap, so no need to put task_stack on global
  */
 #if !defined(BUILD_C7X_1) && !defined(BUILD_C7X_2)
-
+#if defined(SAFERTOS)
+uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE]
+__attribute__ ((aligned(IPC_TASK_STACKSIZE)));
+#else
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
+#endif
 
 #else
 

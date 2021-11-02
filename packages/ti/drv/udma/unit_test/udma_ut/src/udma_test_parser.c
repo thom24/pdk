@@ -99,7 +99,11 @@ static uint32_t udmaTestGetTestId(UdmaTestObj *testObj, uint32_t tcType);
 
 #if !defined (UDMA_UT_BAREMETAL)
 /* Task stack */
-static uint8_t  gUdmaParserTskStack[UDMA_TEST_MAX_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+#if defined(SAFERTOS)
+static uint8_t  gUdmaParserTskStack[UDMA_TEST_MAX_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
+#else
+static uint8_t  gUdmaParserTskStack[UDMA_TEST_MAX_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 #endif
 
 /* UDMA UT object. */

@@ -35,6 +35,13 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 
 endif
 
+#Safertos Specifics
+ifeq ($(BUILD_OS_TYPE), safertos)
+    CFLAGS_OS_DEFINES = -DSAFERTOS -DRTOS_ENV
+    INCLUDE_EXTERNAL_INTERFACES = safertos pdk
+    COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
+endif
+
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 

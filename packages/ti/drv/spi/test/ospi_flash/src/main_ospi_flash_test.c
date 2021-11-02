@@ -175,7 +175,11 @@ bool VerifyData(uint8_t *expData,
 #if defined(OSPI_TESTAPP_RTOS)
 /* Test application stack */
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
-static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));;
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
+#else
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 #endif
 
 /* Buffer containing the known data that needs to be written to flash */
@@ -1103,6 +1107,16 @@ void spi_test()
     bool        testFail = false;
     OSPI_Tests *test;
 
+#if defined(SAFERTOS)
+    /* Call board init functions */
+    Board_initCfg boardCfg;
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+        BOARD_INIT_MODULE_CLOCK |
+        BOARD_INIT_UART_STDIO;
+
+    Board_init(boardCfg);
+#endif
+
     /* Init SPI driver */
     SPI_init();
 
@@ -1165,7 +1179,9 @@ int main(void)
     boardCfg |= BOARD_INIT_PLL;
 #endif
 
+#if !defined(SAFERTOS)
     Board_init(boardCfg);
+#endif
 
 #if defined(OSPI_TESTAPP_RTOS)
 

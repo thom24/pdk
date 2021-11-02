@@ -68,9 +68,7 @@ ifeq ($(safertos_component_make_include), )
 
 safertos_BOARDLIST       = tpr12_evm awr294x_evm j721e_evm
 safertos_SOCLIST         = tpr12 awr294x j721e
-# TODO: Disabling for Clang as this is not migrated yet
-#safertos_j721e_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-safertos_j721e_CORELIST  =
+safertos_j721e_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 safertos_tpr12_CORELIST  = c66xdsp_1
 safertos_awr294x_CORELIST  = c66xdsp_1
 
@@ -96,9 +94,9 @@ ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 ifeq ($(SOC),$(filter $(SOC), $(safertos_SOCLIST)))
 safertos_EXAMPLE_LIST =  safertos_test_task_switch
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e))
-safertos_EXAMPLE_LIST +=  safertos_demo
-endif
+#ifeq ($(SOC),$(filter $(SOC), j721e))
+#safertos_EXAMPLE_LIST +=  safertos_demo
+#endif
 endif
 
 #
@@ -126,9 +124,9 @@ export safertos_CORE_DEPENDENCY
 export safertos_SOC_DEPENDENCY
 safertos_PKG_LIST = safertos
 export safertos_PKG_LIST
-safertos_INCLUDE =  ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS/include
-safertos_INCLUDE += $(SAFERTOS_KERNEL_INSTALL_PATH)/portable/TI_CGT/$(ISA)
-safertos_INCLUDE += $(SAFERTOS_KERNEL_INSTALL_PATH)/config/$(SOC)/$(ISA)
+safertos_INCLUDE =  ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/include
+safertos_INCLUDE += $(SAFERTOS_KERNEL_INSTALL_PATH)/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/portable/005_Code_Composer/199_TI_CR5/
+safertos_INCLUDE += $(SAFERTOS_KERNEL_INSTALL_PATH)/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/config/
 export safertos_SOCLIST
 export safertos_$(SOC)_CORELIST
 
@@ -141,8 +139,8 @@ export safertos_$(SOC)_CORELIST
 
 # safertos rtos task switch test app
 safertos_test_task_switch_COMP_LIST = safertos_test_task_switch
-safertos_test_task_switch_RELPATH = test/safertos/task_switch
-safertos_test_task_switch_PATH = $(SAFERTOS_KERNEL_INSTALL_PATH)/test/safertos/task_switch
+safertos_test_task_switch_RELPATH = ti/kernel/safertos
+safertos_test_task_switch_PATH = $(PDK_FREERTOS_COMP_PATH)/test/safertos/task_switch
 safertos_test_task_switch_BOARD_DEPENDENCY = yes
 safertos_test_task_switch_CORE_DEPENDENCY = no
 safertos_test_task_switch_XDC_CONFIGURO = no
@@ -161,25 +159,25 @@ safertos_test_task_switch_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
 export safertos_test_task_switch_$(SOC)_CORELIST
 
 # safertos demo
-safertos_demo_COMP_LIST = safertos_demo
-safertos_demo_RELPATH = test/safertos/safertos_demo
-safertos_demo_PATH = $(SAFERTOS_KERNEL_INSTALL_PATH)/test/safertos/safertos_demo
-safertos_demo_BOARD_DEPENDENCY = yes
-safertos_demo_CORE_DEPENDENCY = no
-safertos_demo_XDC_CONFIGURO = no
-safertos_demo_MAKEFILE = -f makefile BAREMETAL=yes
-export safertos_demo_COMP_LIST
-export safertos_demo_BOARD_DEPENDENCY
-export safertos_demo_CORE_DEPENDENCY
-export safertos_demo_XDC_CONFIGURO
-export safertos_demo_MAKEFILE
-safertos_demo_PKG_LIST = safertos_demo
-export safertos_demo_PKG_LIST
-safertos_demo_INCLUDE = $(safertos_demo_PATH)
-safertos_demo_BOARDLIST = j721e_evm
-export safertos_demo_BOARDLIST
-safertos_demo_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
-export safertos_demo_$(SOC)_CORELIST
+#$safertos_demo_COMP_LIST = safertos_demo
+#safertos_demo_RELPATH = test/safertos/safertos_demo
+#safertos_demo_PATH = $(SAFERTOS_KERNEL_INSTALL_PATH)/test/safertos/safertos_demo
+#safertos_demo_BOARD_DEPENDENCY = yes
+#safertos_demo_CORE_DEPENDENCY = no
+#safertos_demo_XDC_CONFIGURO = no
+#safertos_demo_MAKEFILE = -f makefile BAREMETAL=yes
+#export safertos_demo_COMP_LIST
+#export safertos_demo_BOARD_DEPENDENCY
+#export safertos_demo_CORE_DEPENDENCY
+#export safertos_demo_XDC_CONFIGURO
+#export safertos_demo_MAKEFILE
+#safertos_demo_PKG_LIST = safertos_demo
+#export safertos_demo_PKG_LIST
+#safertos_demo_INCLUDE = $(safertos_demo_PATH)
+#safertos_demo_BOARDLIST = j721e_evm
+#export safertos_demo_BOARDLIST
+#safertos_demo_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
+#export safertos_demo_$(SOC)_CORELIST
 
 export safertos_LIB_LIST
 export safertos_EXAMPLE_LIST

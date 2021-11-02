@@ -210,10 +210,12 @@ $(PACKAGEDIR) :
 # Assemble list of source file names
 SRCS = $(SRCS_COMMON) $(SRCS_$(CORE)) $(SRCS_$(SOC))
 SRCS_ASM = $(SRCS_ASM_COMMON) $(SRCS_ASM_$(CORE)) $(SRCS_ASM_$(SOC))
+SRCS_S = $(SRCS_S_COMMON) $(SRCS_S_$(CORE)) $(SRCS_S_$(SOC))
 
 ifneq ($(SOC),$(BOARD))
 SRCS += $(SRCS_$(BOARD))
 SRCS_ASM += $(SRCS_ASM_$(BOARD))
+SRCS_S += $(SRCS_S_$(BOARD))
 endif #ifneq ($(SOC,$(BOARD))
 
 PACKAGE_SRCS = $(PACKAGE_SRCS_COMMON)
@@ -250,6 +252,9 @@ OBJ_PATHS = $(patsubst %.c, $(OBJDIR)/%.$(OBJEXT), $(SRCS))
 
 # Change the extension from ASM to $(OBJEXT) and also add path
 OBJ_PATHS_ASM = $(patsubst %.asm, $(OBJDIR)/%.$(OBJEXT), $(SRCS_ASM))
+
+# Change the extension from S to $(OBJEXT) and also add path
+OBJ_PATHS_S = $(patsubst %.S, $(OBJDIR)/%.$(OBJEXT), $(SRCS_S))
 
 PACKAGE_PATHS = $(patsubst %, $(PACKAGEDIR)/%, $(PACKAGE_SRCS))
 

@@ -1000,7 +1000,11 @@ Err:
 #else
 #define APP_TSK_STACK_WRITE              (8U * 1024U)
 #endif /* #if defined (__C7100__) */
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(APP_TSK_STACK_WRITE)));
+#else
 static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(32)));
+#endif
 /* Use a global variable to sync the read task and the write task */
 volatile bool taskSyncFlag;
 void UART_simultaneous_rw_write(void *a0, void *a1)
@@ -3282,7 +3286,11 @@ int main(void)
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 #endif
 
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
+#else
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 /*
  *  ======== main ========
  */

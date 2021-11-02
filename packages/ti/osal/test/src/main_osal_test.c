@@ -195,7 +195,11 @@ TimerP_Handle handle;
 /* No task support for Bare metal */
 #else
 /* Test application stack */
-static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( APP_TSK_STACK_MAIN ))) = { 0 };
+#else
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( 32 )));
+#endif
 #endif
 
 /*
@@ -1189,6 +1193,7 @@ bool OSAL_semaphore_test()
         return false;
     }
 
+    /* SemaphoreP_delete is not available in Safertos */
     if (SemaphoreP_delete(handle1) != SemaphoreP_OK)
     {
         return false;
@@ -1202,7 +1207,7 @@ bool OSAL_semaphore_test()
     return true;
 }
 
-#if !defined(BARE_METAL) && !defined (SAFERTOS)
+#if !defined(BARE_METAL)
 
 /*
  *  ======== Queue test function ========
@@ -1383,7 +1388,11 @@ bool OSAL_event_test()
 #define OSAL_MUTEX_TEST_NUM_TASKS   (5U)
 #endif
 
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMutexTask[OSAL_MUTEX_TEST_NUM_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
+#else
 static uint8_t  gAppTskStackMutexTask[OSAL_MUTEX_TEST_NUM_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+#endif
 
 uint32_t gCnt = 0U;
 bool gMutexTestStatus = TRUE;
@@ -1420,6 +1429,7 @@ void mutexTestFxn(MutexP_Handle mutexHandle, SemaphoreP_Handle hDoneSem)
     
     SemaphoreP_post(hDoneSem);
 }
+
 bool OSAL_mutex_test()
 {
     TaskP_Params        taskParams;
@@ -1448,6 +1458,7 @@ bool OSAL_mutex_test()
     for(i = 0U; i < OSAL_MUTEX_TEST_NUM_TASKS; i++)
     {
         TaskP_Params_init(&taskParams);
+        memset( &gAppTskStackMutexTask[i], 0xFF, sizeof( gAppTskStackMutexTask[i] ) );
         taskParams.priority     = OSAL_MUTEX_TEST_TASK_PRIO; 
         taskParams.stack        = &gAppTskStackMutexTask[i];
         taskParams.stacksize    = APP_TSK_STACK_MAIN;
@@ -2070,7 +2081,7 @@ void osal_test(void *arg0, void *arg1)
     }
 #endif
 
-#if !defined(BARE_METAL) && !defined (SAFERTOS)
+#if !defined(BARE_METAL)
     /* No QueueP,EventP,MutexP tests for Baremetal */
     if(OSAL_queue_test() == true)
     {
@@ -2271,6 +2282,7 @@ int main(void)
     Error_Block  eb;
 #endif
     OS_init();
+    memset( gAppTskStackMain, 0xFF, sizeof( gAppTskStackMain ) );
     TaskP_Params_init(&taskParams);
     taskParams.priority =2;
     taskParams.stack        = gAppTskStackMain;

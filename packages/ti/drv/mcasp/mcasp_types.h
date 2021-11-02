@@ -68,7 +68,7 @@
 
 #endif
 
-#ifdef FREERTOS
+#if defined(FREERTOS) || defined(SAFERTOS)
 
 #define mcasp_type_Ptr void *
 

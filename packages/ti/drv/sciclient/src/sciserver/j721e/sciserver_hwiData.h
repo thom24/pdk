@@ -54,7 +54,7 @@
  * Task stacks are also static memory blocks so the size must be
  * defined below.
  */
-#define SCISERVER_TASK_STACK_SIZE         (2536)
+#define SCISERVER_TASK_STACK_SIZE         (4U * 1024U)
 
 /** Buffers to be used by user space */
 static uint32_t user_hi_msg_buffer[SCISERVER_HW_QUEUE_SIZE];
@@ -71,8 +71,8 @@ static Sciserver_msgData user_hi_main_msg_data;
 static Sciserver_msgData user_lo_main_msg_data;
 
 /* Task stack memory regions */
-static uint8_t user_hi_task_stack[SCISERVER_TASK_STACK_SIZE];
-static uint8_t user_lo_task_stack[SCISERVER_TASK_STACK_SIZE];
+static uint8_t user_hi_task_stack[SCISERVER_TASK_STACK_SIZE]__attribute__ ((aligned(SCISERVER_TASK_STACK_SIZE)));
+static uint8_t user_lo_task_stack[SCISERVER_TASK_STACK_SIZE]__attribute__ ((aligned(SCISERVER_TASK_STACK_SIZE)));
 
 static uint32_t *const user_hi_msg_buffer_list[SCISERVER_SECPROXY_INSTANCE_COUNT] = {
     user_hi_msg_buffer,

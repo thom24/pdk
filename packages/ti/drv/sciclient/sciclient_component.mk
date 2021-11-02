@@ -282,7 +282,7 @@ endif
 
 endef
 
-SCICLIENT_RTOS_APP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCICLIENT_RTOS_APP_RULE,$(curos)))
+SCICLIENT_RTOS_APP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST) safertos, $(call SCICLIENT_RTOS_APP_RULE,$(curos)))
 
 $(eval ${SCICLIENT_RTOS_APP_MACRO_LIST})
 
@@ -322,7 +322,7 @@ endif
 
 endef
 
-SCICLIENT_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCICLIENT_UNIT_TESTAPP_RULE,$(curos)))
+SCICLIENT_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST) safertos, $(call SCICLIENT_UNIT_TESTAPP_RULE,$(curos)))
 
 $(eval ${SCICLIENT_UNIT_TESTAPP_MACRO_LIST})
 
@@ -347,13 +347,15 @@ ifneq ($(1),$(filter $(1), safertos))
 sciclient_EXAMPLE_LIST += sciserver_testapp_$(1)
 else
 ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifeq ($(BUILD_PROFILE), release)
+# Only supporting release build for SafeRTOS, since debug binaries won't fit in available memory.
 sciclient_EXAMPLE_LIST += sciserver_testapp_$(1)
 endif
 endif
-
+endif
 endef
 
-SCISERVER_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCISERVER_TESTAPP_RULE,$(curos)))
+SCISERVER_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST) safertos, $(call SCISERVER_TESTAPP_RULE,$(curos)))
 
 $(eval ${SCISERVER_TESTAPP_MACRO_LIST})
 

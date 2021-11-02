@@ -27,6 +27,13 @@ ifeq ($(BUILD_OS_TYPE), freertos)
   SRCS_COMMON = main_rtos.c
 endif
 
+ifeq ($(BUILD_OS_TYPE), safertos)
+  CFLAGS_OS_DEFINES = -DSAFERTOS
+  COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
+  INCLUDE_EXTERNAL_INTERFACES += safertos
+  SRCS_COMMON = main_rtos.c
+endif
+
 # List all the specific components required by the application
 COMP_LIST_COMMON += udma_apputils
 
@@ -34,7 +41,7 @@ COMP_LIST_COMMON += udma_apputils
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += udma_memcpy_test.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

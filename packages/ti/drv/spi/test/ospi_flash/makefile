@@ -79,6 +79,30 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 
 endif
 
+ifeq ($(BUILD_OS_TYPE),safertos)
+  CFLAGS_OS_DEFINES = -DSAFERTOS -DOSPI_TESTAPP_RTOS
+  EXTERNAL_INTERFACES += safertos
+  COMP_LIST_COMMON += $(PDK_COMMON_SAFERTOS_COMP)
+
+  OSPI_OS_TESTPREFIX=
+  OSPI_OS_TESTPOSTFIX=_safertos
+
+  SRCS_COMMON += main_ospi_flash_test.c
+
+  ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx))
+    ifeq ($(CACHE), enable)
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+            SRCS_COMMON += ./$(SOC)/cached/mpu_safertos_config.c
+        endif
+    else
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+            SRCS_COMMON += ./$(SOC)/non_cached/mpu_safertos_config.c
+        endif
+    endif
+  endif
+
+endif
+
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES += pdk $(EXTERNAL_INTERFACES)

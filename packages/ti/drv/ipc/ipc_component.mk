@@ -291,7 +291,7 @@ endif
 endif
 endef
 
-EX02_BIOS_MULTICORE_ECHO_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call EX02_BIOS_MULTICORE_ECHO_TEST_RULE,$(curos)))
+EX02_BIOS_MULTICORE_ECHO_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST) safertos, $(call EX02_BIOS_MULTICORE_ECHO_TEST_RULE,$(curos)))
 
 $(eval ${EX02_BIOS_MULTICORE_ECHO_TEST_MACRO_LIST})
 

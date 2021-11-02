@@ -72,6 +72,7 @@ typedef struct TaskP_SafeRTOS_s {
     TaskP_mainFunction_t    taskfxn;
     void                    *arg0;
     void                    *arg1;
+    bool                    terminated;
 } TaskP_SafeRTOS;
 
 /* global pool of statically allocated task pools */
@@ -109,9 +110,13 @@ void TaskP_Function ( void *arg )
     /* Call the application function. */
     ( *handle->taskfxn )( handle->arg0, handle->arg1 );
 
-    hTask = handle;
-    /* One MUST not return out of a SafeRTOS task instead one MUST call vTaskDelete */
-    TaskP_delete( &hTask );
+    /* Task Fxn completed execution. */
+    handle->terminated = TRUE;
+    /* Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
+    while (handle->terminated)
+    {
+        xTaskSuspend(NULL);
+    }
 }
 
 /*
@@ -132,7 +137,6 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
     DebugP_assert( ( params->stack != NULL_PTR ) );
     /* Check if the OS_init is done. */
     DebugP_assert( ( gSaftRtosInitDone == TRUE ) );
-
     /* Pick up the internal static memory block */
     taskPool        = ( TaskP_SafeRTOS * ) &gOsalTaskPSafeRTOSPool[0];
     maxTasks        = OSAL_SAFERTOS_CONFIGNUM_TASK;
@@ -191,17 +195,27 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
         /* The structure passed to xTaskCreate(  ) to create the check task. */
          xTaskParameters xTaskPParams =
          {
-             ( pdTASK_CODE )&TaskP_Function,  /* The function that implements the task being created. */
-             ( portCharType* )params->name,   /* The name of the task being created. The kernel does not use this itself, its just to assist debugging. */
-             &handle->taskObj,               /* TCB for the task. */
+             ( pdTASK_CODE )&TaskP_Function,/* The function that implements the task being created. */
+             ( portCharType* )params->name, /* The name of the task being created. The kernel does not use this itself, its just to assist debugging. */
+             &handle->taskObj,              /* TCB for the task. */
              (portInt8Type *)params->stack,                 /* The buffer allocated for use as the task stack. */
              params->stacksize,             /* The size of the buffer allocated for use as the task stack - note this is in BYTES! */
              handle,                        /* The task parameter. */
              taskPriority,                  /* The priority to assigned to the task being created. */
-             NULL                          	/* Thread Local Storage not used. */
+             NULL,
+#if defined (BUILD_MCU)
+             pdFALSE,                            /* Check task does not use the FPU. */
+             {                                   /* MPU task parameters. */
+                 params->taskPrivilege,          /* Check task is privileged. */
+                 {
+                     { NULL, 0U, 0U, 0U },       /* No additional region definitions are required. */
+                     { NULL, 0U, 0U, 0U },
+                 }
+             }
+#endif
          };
 
-        /* Create the check task. */
+         /* Create the check task. */
         xCreateResult = xTaskCreate(&xTaskPParams,      /* The structure containing the task parameters created at the start of this function. */
                                     &handle->taskHndl); /* This parameter can be used to receive a handle to the created task, but is not used in this case. */
 
@@ -289,6 +303,8 @@ void TaskP_Params_init( TaskP_Params *params )
     params->priority = ( TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST ) / 2;
     params->arg0 = NULL;
     params->arg1 = NULL;
+    /* By default task will be privileged task, until set by the user */
+    params->taskPrivilege = mpuPRIVILEGED_TASK;
 }
 
 void TaskP_sleep( uint32_t timeout )

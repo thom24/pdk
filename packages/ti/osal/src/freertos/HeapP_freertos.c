@@ -44,8 +44,17 @@
 #include <ti/osal/soc/osal_soc.h>
 #include <ti/osal/src/freertos/HeapP_freertos_internal.h>
 
+#if defined (FREERTOS)
 #include <FreeRTOS.h>
 #include <task.h>
+#endif
+#if defined (SAFERTOS)
+#include "SafeRTOS.h"
+#include "task.h"
+/*Replace with safertos API's */
+#define vTaskSuspendAll vTaskSuspendScheduler
+#define xTaskResumeAll xTaskResumeScheduler
+#endif
 
 extern uint32_t  gOsalHeapAllocCnt, gOsalHeapPeak;
 

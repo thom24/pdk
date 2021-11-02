@@ -223,7 +223,7 @@ export udma_memcpy_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)),
 export udma_memcpy_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 udma_memcpy_testapp_$(1)_PKG_LIST = udma_memcpy_testapp_$(1)
 udma_memcpy_testapp_$(1)_INCLUDE = $(udma_memcpy_testapp_$(1)_PATH)
-export udma_memcpy_testapp_$(1)_BOARDLIST = $(drvudma_$(1)_BOARDLIST)
+export udma_memcpy_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvudma_BOARDLIST))
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1)
 else
@@ -241,7 +241,7 @@ endif
 endef
 
 # Define the macro list with 'UDMA memcpy test app' rule of all rtos_types
-UDMA_MEMCPY_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_MEMCPY_TESTAPP_RULE,$(curos)))
+UDMA_MEMCPY_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST) safertos, $(call UDMA_MEMCPY_TESTAPP_RULE,$(curos)))
 
 # Evaluate the macro list to generate 'UDMA memcpy test app' make rule for all rtos_types
 $(eval ${UDMA_MEMCPY_TESTAPP_MACRO_LIST})

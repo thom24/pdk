@@ -112,6 +112,9 @@ extern "C" {
 #define OSAL_FREERTOS_MAX_HEAPP_PER_SOC      ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
+#define OSAL_SAFERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 360U)
+#define OSAL_SAFERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 160U)
+
 #define OSAL_ARCH_TIMER_INST_FOR_TS         (TimerP_ANY)
 /**< Default timer instance for timer */
 
