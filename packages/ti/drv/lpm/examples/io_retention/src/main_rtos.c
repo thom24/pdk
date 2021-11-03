@@ -114,15 +114,69 @@ void ACT_30_10_a ();
 #define TPS65941_PMIC_REG                 (0x14U)
 #define TPS65941_PMIC_VOLTAGE_VAL         (0xAAU)
 
+/*  */
+#define COLD_BOOT (0x0)
+#define IO_RETENTION_BOOT (0x1)
+uint32_t global_boot_mode_status = COLD_BOOT;
+
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
+
+int run_full_boot_app()
+{
+    uint64_t timeIPCStart, timeIPCFinish;
+    uint64_t timeBootAppStart, timeBootAppFinish;
+    uint64_t timeMcuOnlyAppStart, timeMcuOnlyAppFinish;
+    uint32_t i, numBoots=5;
+
+    Lpm_bootAppInit();
+    AppUtils_Printf(MSG_NORMAL, "\nPMIC initialization done.\r\n");
+
+    for(i=0; i<numBoots; i++)
+    {
+        timeIPCStart = TimerP_getTimeInUsecs();
+        Lpm_ipcEchoApp();
+        timeIPCFinish = TimerP_getTimeInUsecs();
+
+        AppUtils_Printf(MSG_NORMAL, "\nIPC Task started at %d usecs and finished at %d usecs\r\n",
+                        (uint32_t)timeIPCStart,
+                        (uint32_t)timeIPCFinish);
+
+        TaskP_sleep(5*1000);
+
+        timeBootAppStart = TimerP_getTimeInUsecs();
+        Lpm_bootApp();
+        timeBootAppFinish = TimerP_getTimeInUsecs();
+
+        AppUtils_Printf(MSG_NORMAL, "\nMCU Boot Task started at %d usecs and finished at %d usecs\r\n",
+                        (uint32_t)timeBootAppStart,
+                        (uint32_t)timeBootAppFinish);
+
+        TaskP_sleep(1000);
+        AppUtils_Printf(MSG_NORMAL, "Calling rpmsg_exit_responseTask\n");
+        Lpm_ipcExitResponseTask();
+        TaskP_sleep(1000);
+        AppUtils_Printf(MSG_NORMAL, "responder task should have exited\n");
+
+        timeMcuOnlyAppStart = TimerP_getTimeInUsecs();
+        Lpm_pmicApp();
+        timeMcuOnlyAppFinish = TimerP_getTimeInUsecs();
+
+        AppUtils_Printf(MSG_NORMAL, "\nMCU Only Task started at %d usecs and finished at %d usecs\r\n",
+                        (uint32_t)timeMcuOnlyAppStart,
+                        (uint32_t)timeMcuOnlyAppFinish);
+    }
+    Lpm_bootAppDeInit();
+    return 0;
+}
 
 int BoardDiag_pmic_test()
 {
     int ret = 0;
     Board_IDInfo_v2 info = {0};
     int32_t stat = BOARD_SOK;
+
 
     Board_setI2cInitConfig(&boardI2cInitCfg);
     stat = Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
@@ -136,9 +190,19 @@ int BoardDiag_pmic_test()
 
         ACT_30_10_a ();
         Lpm_pmicInit();
+        switch (global_boot_mode_status)
+        {
+            case COLD_BOOT:
+                Lpm_activeToIoRetSwitch();
+                break;
+            case IO_RETENTION_BOOT:
+                run_full_boot_app();
+                break;
+            default:
+                Lpm_activeToIoRetSwitch();
+                break;
 
-        Lpm_activeToIoRetSwitch();
-
+        }
     }
     return ret;
 }
@@ -152,6 +216,11 @@ int main_io_pm_seq (void)
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c024 - PADCONF0 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c024));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c02c - PADCONF1 0x%x\n",  *mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c124 - PMIC_WAKE 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c124));
+    if (*mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c) & 0x40000000)
+    {
+        UART_printf("Booting from IO Retention!\n");
+        global_boot_mode_status = IO_RETENTION_BOOT;
+    }
 
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)));
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)));
@@ -241,6 +310,7 @@ int main_io_pm_seq (void)
 
 void ACT_30_10_a ()
 {
+
     uint32_t daisy_chain = main_io_pm_seq();
     if (daisy_chain == 0){
       err_cnt++;
