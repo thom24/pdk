@@ -264,7 +264,7 @@ $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size: $(LIBDIR)/$(LIBNAME).$(LIBEXT)
 	$(RM)   $@temp
 
 # Linker options and rules
-LNKFLAGS_INTERNAL_COMMON += -Xlinker -q -Xlinker -u -Xlinker _c_int00 -Xlinker --display_error_number
+LNKFLAGS_INTERNAL_COMMON += -Xlinker -q -Xlinker -u -Xlinker _c_int00 -Xlinker --display_error_number -Xlinker --use_memcpy=fast -Xlinker --use_memset=fast
 # Supress warning for "entry-point symbol other than "_c_int00" specified"
 LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10063-D 
 # Supress warning for "no matching section"

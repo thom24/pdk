@@ -41,10 +41,13 @@ MEMORY
 
     /* MCU0 memory used for Uniflash programmer. Available to app for dynamic use ~160KB */
     /* RBL uses 0x41C58000 and beyond. UFP, at load cannot cross this */
-    OCMRAM     (RWIX)   : origin=0x41C00200 length=0xD8000-0x200
+    OCMRAM     (RWIX)   : origin=0x41C00200 length=0x58000-0x200
 
     /* Used by UFP at runtime to load SYSFW. Available to app for dynamic use */
-    OCMRAM_SYSFW (RWIX)   : origin=0x41CD8000 length=0x41000
+    OCMRAM_SYSFW (RWIX)   : origin=0x41C58000 length=0x41000
+    
+    /* RBL uses 0x41C58000 and beyond. UFP, at load cannot cross this */
+    OCMRAM_REMAINING (RWIX)   : origin=0x41C99000 length=0x67000
 
 }  /* end of MEMORY */
 
@@ -60,8 +63,8 @@ SECTIONS
     .startupCode 	      : {} palign(8)                     		> OCMRAM
     .startupData 	      : {} palign(8)                     		> OCMRAM, type = NOINIT
     .text    	          : {} palign(8)                            > OCMRAM
-    .const   	          : {} palign(8)                            > OCMRAM
-    .rodata  	          : {} palign(8)                            > OCMRAM
+    .const   	          : {} palign(8)                            > OCMRAM_REMAINING
+    .rodata  	          : {} palign(8)                            > OCMRAM_REMAINING
     .cinit                : {} palign(8)                            > OCMRAM
     .pinit                : {} palign(8)                            > OCMRAM
     .boardcfg_data	      : {} palign(128)                          > OCMRAM
