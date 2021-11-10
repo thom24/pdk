@@ -397,6 +397,8 @@ void Ipc_setupSciServer(void)
 
     Sciserver_TirtosCfgPrms_t appPrms;
     int32_t ret = CSL_PASS;
+    char *version_str = NULL;
+    char *rmpmhal_version_str = NULL;
 
     ret = Sciserver_tirtosInitPrms_Init(&appPrms);
 
@@ -409,6 +411,12 @@ void Ipc_setupSciServer(void)
     {
         ret = Sciserver_tirtosInit(&appPrms);
     }
+
+    version_str = Sciserver_getVersionStr();
+    rmpmhal_version_str = Sciserver_getRmPmHalVersionStr();
+    App_printf("DM Built On: %s %s\n", __DATE__, __TIME__);
+    App_printf("Sciserver Version: %s\n", version_str);
+    App_printf("RM_PM_HAL Version: %s\n", rmpmhal_version_str);
 
     if (ret == CSL_PASS)
     {

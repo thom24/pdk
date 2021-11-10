@@ -289,6 +289,18 @@ typedef struct {
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
+/** \brief Sciserver Get Version String Function
+ *  \param None
+ *  \return string with Sciserver version info
+ */
+char * Sciserver_getVersionStr();
+
+/** \brief Sciserver Get RM_PM_HAL Version String Function
+ *  \param None
+ *  \return string with RM_PM_HAL version info
+ */
+char * Sciserver_getRmPmHalVersionStr();
+
 /** \brief Sciserver Initialization Function.
  *  \param pPrms        Configuration Parameters for Sciserver.
  *                      Refer #Sciserver_CfgPrms_t.

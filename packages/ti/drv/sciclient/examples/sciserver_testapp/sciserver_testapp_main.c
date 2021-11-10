@@ -81,6 +81,8 @@ int main(void)
     int32_t ret = CSL_PASS;
     Sciclient_ConfigPrms_t clientPrms;
     Sciserver_TirtosCfgPrms_t appPrms;
+    char *version_str = NULL;
+    char *rmpmhal_version_str = NULL;
 
     OS_init();
 
@@ -116,7 +118,12 @@ int main(void)
         App_sciclientConsoleInit();
     }
 
-   App_sciclientPrintf("Sciserver Built On: %s %s\n", __DATE__, __TIME__);
+    version_str = Sciserver_getVersionStr();
+    rmpmhal_version_str = Sciserver_getRmPmHalVersionStr();
+
+    App_sciclientPrintf("Sciserver Testapp Built On: %s %s\n", __DATE__, __TIME__);
+    App_sciclientPrintf("Sciserver Version: %s\n", version_str);
+    App_sciclientPrintf("RM_PM_HAL Version: %s\n", rmpmhal_version_str);
     if (ret == CSL_PASS)
     {
        App_sciclientPrintf("Starting Sciserver..... PASSED\n");

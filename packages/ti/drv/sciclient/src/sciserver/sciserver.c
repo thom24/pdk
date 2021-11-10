@@ -49,6 +49,8 @@
 #include <sciserver_secproxyTransfer.h>
 #include <sciserver_hwiData.h>
 #include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
+#include <ti/drv/sciclient/src/version/sciserver_version.h>
+#include <ti/drv/sciclient/src/version/rmpmhal_version.h>
 #include <ti/drv/uart/UART_stdio.h>
 
 /* Set VERBOSE to 1 for trace information on message routing */
@@ -59,6 +61,18 @@
 #else
 #define Sciserver_printf(...)
 #endif
+
+/**
+ * sciserver_stringify - Turn expression into a string literal
+ * @expr: any C expression
+ *
+ * Example:
+ *      #define PRINT_COND_IF_FALSE(cond) \
+ *              ((cond) || printf("%s is SFALSE!", sciserver_stringify(cond)))
+ */
+#define sciserver_stringify(expr)   sciserver_stringify_1(expr)
+/* Double-indirection required to stringify expansions */
+#define sciserver_stringify_1(expr) #expr
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -95,6 +109,12 @@ static void Sciserver_SetMsgHostId(uint32_t *msg, uint8_t hostId);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
+const char sciserver_version_str[] = SCISERVER_MAJOR_VERSION_NAME "." sciserver_stringify(SCISERVER_SUBVERSION) \
+                                   "." sciserver_stringify(SCISERVER_PATCHVERSION) \
+                                   SCISERVER_SCMVERSION;
+
+const char rmpmhal_version_str[] = RMPMHAL_SCMVERSION;
+
 /** Global state of the Sciserver */
 static Sciserver_InternalState_t gSciserverState = {
     SCISERVER_CTRL_CMD_HALT,
@@ -106,6 +126,16 @@ static Sciserver_InternalState_t gSciserverState = {
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
+
+char * Sciserver_getVersionStr(void)
+{
+    return (char *) sciserver_version_str;
+}
+
+char * Sciserver_getRmPmHalVersionStr(void)
+{
+    return (char *) rmpmhal_version_str;
+}
 
 int32_t Sciserver_initPrms_Init(Sciserver_CfgPrms_t *pPrms)
 {
