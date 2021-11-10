@@ -170,7 +170,7 @@ export sciserver_baremetal_OBJPATH = ti/drv/sciserver_baremetal
 export sciserver_baremetal_LIBNAME = sciserver_baremetal
 export sciserver_baremetal_PATH = $(PDK_SCICLIENT_COMP_PATH)
 export sciserver_baremetal_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-export sciserver_baremetal_MAKEFILE = -fsrc/sciserver_makefile BUILD_OS_TYPE=baremetal
+export sciserver_baremetal_MAKEFILE = -fsrc/sciserver_makefile IS_BAREMETAL=yes
 export sciserver_baremetal_BOARD_DEPENDENCY = no
 export sciserver_baremetal_CORE_DEPENDENCY = yes
 export sciserver_baremetal_PKG_LIST = sciserver_baremetal

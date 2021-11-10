@@ -7,7 +7,12 @@ else
 include $(RULES_MAKE)
 endif
 
-MODULE_NAME = sciserver_$(BUILD_OS_TYPE)
+LIB_POSTFIX = tirtos
+ifeq ($(IS_BAREMETAL),yes)
+LIB_POSTFIX = baremetal
+endif
+
+MODULE_NAME = sciserver_$(LIB_POSTFIX)
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
   SCISERVER_SOCVER = V1
@@ -46,7 +51,7 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     SRCS_COMMON += sciserver_dmTxRoutingData.c
 # Keep the sciclient.c the first file in this list. This is used to trigger
 # the generation of the header files from the firmware binary file.
-ifneq ($(BUILD_OS_TYPE), baremetal)
+ifneq ($(IS_BAREMETAL),yes)
     SRCS_COMMON += sciserver_tirtos.c
 endif
 endif
