@@ -149,28 +149,20 @@ export sciclient_direct_hs_SOCLIST = j721e j7200 j721s2
 export sciclient_direct_hs_BOARDLIST = j721e_evm j7200_evm j721s2_evm
 export sciclient_direct_hs_$(SOC)_CORELIST = mcu1_0
 
-define SCISERVER_RTOS_LIB_RULE
-
-export sciserver_$(1)_COMP_LIST = sciserver_$(1)
-export sciserver_$(1)_RELPATH = ti/drv/sciserver_$(1)
-export sciserver_$(1)_OBJPATH = ti/drv/sciserver_$(1)
-export sciserver_$(1)_LIBNAME = sciserver_$(1)
-export sciserver_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)
-export sciserver_$(1)_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
-export sciserver_$(1)_MAKEFILE = -fsrc/sciserver_makefile BUILD_OS_TYPE=$(1)
-export sciserver_$(1)_BOARD_DEPENDENCY = no
-export sciserver_$(1)_CORE_DEPENDENCY = yes
-export sciserver_$(1)_PKG_LIST = sciserver_$(1)
-export sciserver_$(1)_INCLUDE = $(sciserver_PATH)
-export sciserver_$(1)_SOCLIST = $(filter $(DEFAULT_SOCLIST_$(1)), j721e j7200 j721s2)
-export sciserver_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm j721s2_evm)
-export sciserver_$(1)_$(SOC)_CORELIST = mcu1_0
-
-endef
-
-SCISERVER_RTOS_LIB_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCISERVER_RTOS_LIB_RULE,$(curos)))
-
-$(eval ${SCISERVER_RTOS_LIB_MACRO_LIST})
+export sciserver_tirtos_COMP_LIST = sciserver_tirtos
+export sciserver_tirtos_RELPATH = ti/drv/sciserver_tirtos
+export sciserver_tirtos_OBJPATH = ti/drv/sciserver_tirtos
+export sciserver_tirtos_LIBNAME = sciserver_tirtos
+export sciserver_tirtos_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciserver_tirtos_LIBPATH = $(PDK_SCICLIENT_COMP_PATH)/lib
+export sciserver_tirtos_MAKEFILE = -fsrc/sciserver_makefile
+export sciserver_tirtos_BOARD_DEPENDENCY = no
+export sciserver_tirtos_CORE_DEPENDENCY = yes
+export sciserver_tirtos_PKG_LIST = sciserver_tirtos
+export sciserver_tirtos_INCLUDE = $(sciserver_PATH)
+export sciserver_tirtos_SOCLIST = j721e j7200 j721s2
+export sciserver_tirtos_BOARDLIST = j721e_evm j7200_evm j721s2_evm
+export sciserver_tirtos_$(SOC)_CORELIST = mcu1_0
 
 export sciserver_baremetal_COMP_LIST = sciserver_baremetal
 export sciserver_baremetal_RELPATH = ti/drv/sciserver_baremetal
