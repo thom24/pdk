@@ -137,7 +137,7 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue)
 {
     uint32_t cpsr = CSL_armR5GetCpsrRegVal();
 
-    DebugP_assert((cpsr & 0xC0) != 0xC0);
+    DebugP_assert((cpsr & 0xC0) == 0xC0);
 
     Intc_SystemRestore(restoreValue);
 }
