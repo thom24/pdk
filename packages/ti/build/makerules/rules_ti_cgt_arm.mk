@@ -227,9 +227,8 @@ endif
 $(OBJ_PATHS): $(OBJDIR)/%.$(OBJEXT): %.c $(GEN_FILE) | $(OBJDIR) $(DEPDIR)
 	$(ECHO) \# Compiling $(PRINT_MESSAGE):$<
 	$(MKDIR) -p $(dir $@)
-	$(CC) -MMD $(_CFLAGS) $(INCLUDES) -c $(COMPILEMODE) $< -o $@
+	$(CC) -MMD $(_CFLAGS) $(INCLUDES) -c $(COMPILEMODE) $< -o $@ -MF $(DEPFILE).d
 	$(CC) $(_CFLAGS) $(INCLUDES) -c $(COMPILEMODE) $< -o $@
-	$(MV) $(subst .$(OBJEXT),.d,$@) $(DEPDIR)/
    
 
 #TODO: Check ASMFLAGS if really required
