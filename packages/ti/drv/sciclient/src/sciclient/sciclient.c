@@ -493,32 +493,35 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
             gSciclientHandle.isSecureMode = 0U;
         }
 #if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
-        if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
+        if (pCfgPrms != NULL)
         {
-            /* Run pm_init */
-            if (status == CSL_PASS)
+            if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
             {
-                status = Sciclient_boardCfgPm(&pCfgPrms->inPmPrms);
+                /* Run pm_init */
                 if (status == CSL_PASS)
                 {
-                    gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_PASS;
+                    status = Sciclient_boardCfgPm(&pCfgPrms->inPmPrms);
+                    if (status == CSL_PASS)
+                    {
+                        gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_PASS;
+                    }
+                    else
+                    {
+                        gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                    }
                 }
-                else
-                {
-                    gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_FAIL;
-                }
-            }
-            /* Run rm_init */
-            if (status == CSL_PASS)
-            {
-                status = Sciclient_boardCfgRm(&pCfgPrms->inRmPrms);
+                /* Run rm_init */
                 if (status == CSL_PASS)
                 {
-                    gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_PASS;
-                }
-                else
-                {
-                    gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                    status = Sciclient_boardCfgRm(&pCfgPrms->inRmPrms);
+                    if (status == CSL_PASS)
+                    {
+                        gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_PASS;
+                    }
+                    else
+                    {
+                        gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                    }
                 }
             }
         }
