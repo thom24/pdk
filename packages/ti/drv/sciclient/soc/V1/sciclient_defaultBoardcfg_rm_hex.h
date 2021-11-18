@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018 Texas Instruments Incorporated
+ *  Copyright (C) 2021 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -135,7 +135,7 @@
     0x34c20002U,     0x014c002aU,     0x34c20002U,     0x014e0015U, \
     0x34c20008U,     0x0156001aU,     0x34c20002U,     0x0158001cU, \
     0x34c20004U,     0x015c0023U,     0x34c20001U,     0x015d0025U, \
-    0x34c2001cU,     0x0179000cU,     0x34c20014U,     0x018d000dU, \
+    0x34c2002fU,     0x018c000cU,     0x34c20001U,     0x018d000dU, \
     0x34c20004U,     0x01910028U,     0x34c20004U,     0x0195002aU, \
     0x34c20004U,     0x01990015U,     0x34c20008U,     0x01a1001aU, \
     0x34c20006U,     0x01a7001cU,     0x34c20010U,     0x01b70023U, \
@@ -145,7 +145,7 @@
     0x34c30002U,     0x0020002aU,     0x34c30002U,     0x00220015U, \
     0x34c30008U,     0x002a001aU,     0x34c30002U,     0x002c001cU, \
     0x34c30004U,     0x00300023U,     0x34c30001U,     0x00310025U, \
-    0x34c3001cU,     0x004d000cU,     0x34c30014U,     0x0061000dU, \
+    0x34c3002fU,     0x0060000cU,     0x34c30001U,     0x0061000dU, \
     0x34c30004U,     0x00650028U,     0x34c30004U,     0x0069002aU, \
     0x34c30004U,     0x006d0015U,     0x34c30008U,     0x0075001aU, \
     0x34c30006U,     0x007b001cU,     0x34c3000aU,     0x00850023U, \
@@ -178,7 +178,7 @@
     0x350a0002U,     0x0020002aU,     0x350a0002U,     0x00220015U, \
     0x350a0008U,     0x002a001aU,     0x350a0002U,     0x002c001cU, \
     0x350a0004U,     0x00300023U,     0x350a0001U,     0x00310025U, \
-    0x350a001cU,     0x004d000cU,     0x350a0014U,     0x0061000dU, \
+    0x350a002fU,     0x0060000cU,     0x350a0001U,     0x0061000dU, \
     0x350a0004U,     0x00650028U,     0x350a0004U,     0x0069002aU, \
     0x350a0004U,     0x006d0015U,     0x350a0008U,     0x0075001aU, \
     0x350a0006U,     0x007b001cU,     0x350a0010U,     0x008b0023U, \
@@ -192,8 +192,8 @@
     0x350d0002U,     0x001e0028U,     0x350d0002U,     0x0020002aU, \
     0x350d0002U,     0x00220015U,     0x350d0008U,     0x002a001aU, \
     0x350d0002U,     0x002c001cU,     0x350d0004U,     0x00300023U, \
-    0x350d0001U,     0x00310025U,     0x350d001cU,     0x004d000cU, \
-    0x350d0014U,     0x0061000dU,     0x350d0004U,     0x00650028U, \
+    0x350d0001U,     0x00310025U,     0x350d002fU,     0x0060000cU, \
+    0x350d0001U,     0x0061000dU,     0x350d0004U,     0x00650028U, \
     0x350d0004U,     0x0069002aU,     0x350d0004U,     0x006d0015U, \
     0x350d0008U,     0x0075001aU,     0x350d0006U,     0x007b001cU, \
     0x350d000aU,     0x00850023U,     0x350d0006U,     0x008b0025U, \

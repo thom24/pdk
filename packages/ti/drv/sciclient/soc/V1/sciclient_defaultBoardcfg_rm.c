@@ -2,7 +2,7 @@
  * K3 System Firmware Resource Management Configuration Data
  * Auto generated from K3 Resource Partitioning tool
  *
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -707,15 +707,15 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
-            .num_resource = 28,
+            .num_resource = 47,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_RX),
             .start_resource = 349,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
-            .num_resource = 20,
+            .num_resource = 1,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_RX),
-            .start_resource = 377,
+            .start_resource = 396,
             .host_id = TISCI_HOST_ID_A72_3,
         },
         {
@@ -827,15 +827,15 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
-            .num_resource = 28,
+            .num_resource = 47,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_TX),
             .start_resource = 49,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
-            .num_resource = 20,
+            .num_resource = 1,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_RINGACC_0, TISCI_RESASG_SUBTYPE_RA_UDMAP_TX),
-            .start_resource = 77,
+            .start_resource = 96,
             .host_id = TISCI_HOST_ID_A72_3,
         },
         {
@@ -1223,15 +1223,15 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
-            .num_resource = 28,
+            .num_resource = 47,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_RX_CHAN),
             .start_resource = 49,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
-            .num_resource = 20,
+            .num_resource = 1,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_RX_CHAN),
-            .start_resource = 77,
+            .start_resource = 96,
             .host_id = TISCI_HOST_ID_A72_3,
         },
         {
@@ -1397,15 +1397,15 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
-            .num_resource = 28,
+            .num_resource = 47,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_CHAN),
             .start_resource = 49,
             .host_id = TISCI_HOST_ID_A72_2,
         },
         {
-            .num_resource = 20,
+            .num_resource = 1,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_CHAN),
-            .start_resource = 77,
+            .start_resource = 96,
             .host_id = TISCI_HOST_ID_A72_3,
         },
         {
