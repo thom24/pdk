@@ -40,6 +40,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
+#include <ti/osal/osal.h>
 #include "enet_icssg_test.h"
 
 /* ========================================================================== */
@@ -155,6 +156,10 @@ int main(void)
     }
 
     EnetIg_PortSelect();
+
+    /* Allocating memory to the tx and rx frames */
+    gEnetIg.txFrame = malloc(BOARD_DIAG_ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader));
+    gEnetIg.rxFrame = malloc(BOARD_DIAG_ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader));
 
     for (gEnetIg.loopCnt = 0U; gEnetIg.loopCnt < gEnetLpbk_IterationCount; gEnetIg.loopCnt++)
     {

@@ -598,8 +598,7 @@ board_diag_enetIcssg_INCLUDE = $(board_diag_enetIcssg_PATH)
 board_diag_enetIcssg_BOARDLIST = am65xx_evm am65xx_idk
 export board_diag_enetIcssg_$(SOC)_CORELIST = mcu1_0
 export board_diag_enetIcssg_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-# Need to disable this as EMAC-LLD is also disbaled
-#board_diag_EXAMPLE_LIST += board_diag_enetIcssg
+board_diag_EXAMPLE_LIST += board_diag_enetIcssg
 
 # icssg_led
 export board_diag_icssgLed_COMP_LIST = board_diag_icssgLed
