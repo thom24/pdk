@@ -37,9 +37,11 @@
 #         For J721E             : ./firmwareHeaderGen.sh j721e
 #         For J721E-HS          : ./firmwareHeaderGen.sh j721e-hs
 #         For J721E-HS (ES1.1)  : ./firmwareHeaderGen.sh j721e_sr1_1-hs
+#         For J721E-HS Prime    : ./firmwareHeaderGen.sh j721e-hsp
 #         For AM64x             : ./firmwareHeaderGen.sh am64x
 #         For J7200             : ./firmwareHeaderGen.sh j7200
 #         For J7200-HS          : ./firmwareHeaderGen.sh j7200-hs
+#         For J7200-HS Prime    : ./firmwareHeaderGen.sh j7200-hsp
 #         For J721S2            : ./firmwareHeaderGen.sh j721s2-zebu
 export RM=rm
 export MV=mv
@@ -88,6 +90,13 @@ if [[ $FW_SOC == *"hs"* ]]; then
   FW_SOC_TYPE=-hs-enc
   FW_SOC=${FW_SOC%-hs}
   BIN_EXT=-hs-enc
+fi
+
+if [[ $FW_SOC == *"hsp"* ]]; then
+  FW_SOC_TYPE=-hs
+  FW_SOC=${FW_SOC%-hsp}
+  BIN_EXT=-hsp
+  IS_PRIME=y
 fi
 
 if [[ $FW_SOC == *"vlab"* ]]; then
@@ -174,6 +183,24 @@ export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
+if [ "$IS_PRIME" = "y" ]; then
+    # HS Prime devices rely on customer-built/signed TIFS image
+    if [ -z "$TIFS_DIR" ]; then
+        echo "Error - did not set TIFS directory"
+        exit 1
+    fi
+    if [ ! -d $TIFS_DIR ]; then
+        echo "Error: specified TIFS directory does not exist"
+        exit 1
+    fi
+
+    export FIRMWARE_SILICON=$TIFS_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYPE.bin
+    if [ ! -f $FIRMWARE_SILICON ]; then
+        echo "Error: TIFS binary $FIRMWARE_SILICON does not exist"
+        exit 1
+    fi
+fi
+
 # SBL_CERT_GEN may already be depending on how this is called
 export SBL_CERT_GEN="${SBL_CERT_GEN:-$ROOTDIR/ti/build/makerules/x509CertificateGen.sh}"
 
@@ -193,20 +220,28 @@ cd -
 $CHMOD a+x $SBL_CERT_GEN
 $CHMOD a+x $BIN2C_GEN
 
-if [[ $FW_SOC == *"gp"* || $FW_SOC_TYPE == *"gp"* ]]; then
-$ECHO "Generating the Header file for " $FIRMWARE_SILICON
-export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/rom_degenerateKey.pem
-$SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
+if [ "$IS_PRIME" = "y" ]; then
+    # Only single-signed firmware, no outer certificate for 
+    $ECHO "Generating firmware certificate for " $FIRMWARE_SILICON
+    export FIRMWARE_CERT_KEY=$ROOTDIR/ti/build/makerules/k3_dev_mpk.pem
+    export FIRMWARE_ENC_KEY=$ROOTDIR/ti/build/makerules/k3_dev_mek.txt
+    $SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l $SYSFW_LOAD_ADDR -k $FIRMWARE_CERT_KEY -y ENCRYPT -e $FIRMWARE_ENC_KEY
+    #$SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l $SYSFW_LOAD_ADDR -k $FIRMWARE_CERT_KEY
 else
-$ECHO "Generating outer certificate for " $SYSFW_SE_INNER_CERT
-export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/k3_dev_mpk.pem
-$SBL_CERT_GEN -b $SYSFW_SE_INNER_CERT -o $SYSFW_SE_CUST_CERT -c DMSC_O -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
+    if [[ $FW_SOC == *"gp"* || $FW_SOC_TYPE == *"gp"* ]]; then
+    $ECHO "Generating the Header file for " $FIRMWARE_SILICON
+    export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/rom_degenerateKey.pem
+    $SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
+    else
+    $ECHO "Generating outer certificate for " $SYSFW_SE_INNER_CERT
+    export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/k3_dev_mpk.pem
+    $SBL_CERT_GEN -b $SYSFW_SE_INNER_CERT -o $SYSFW_SE_CUST_CERT -c DMSC_O -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
 
-$ECHO "Generating the Header file for " $FIRMWARE_SILICON
-$CAT $SYSFW_SE_CUST_CERT $FIRMWARE_SILICON > $SYSFW_SE_SIGNED
-$RM -f $SYSFW_SE_CUST_CERT
+    $ECHO "Generating the Header file for " $FIRMWARE_SILICON
+    $CAT $SYSFW_SE_CUST_CERT $FIRMWARE_SILICON > $SYSFW_SE_SIGNED
+    $RM -f $SYSFW_SE_CUST_CERT
+    fi
 fi
-
 $ECHO "Generating the Header file for the soc in the folder"
 $BIN2C_GEN $SYSFW_SE_SIGNED $SCI_CLIENT_OUT_SOC_DIR/$SCICLIENT_FIRMWARE_HEADER SCICLIENT_FIRMWARE 
 

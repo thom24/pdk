@@ -116,7 +116,7 @@ image_encrypt() {
 	truncate -s %16 enc_tmp.bin
 	xxd -r -p $ENC_RS enc_rs.bin
 	cat enc_tmp.bin  enc_rs.bin > enc_bin_rs.bin
-	ENC_BIN=$CERT_SIGN"-ENC-"$BIN
+	ENC_BIN=$CERT_SIGN"-ENC-"$(basename $BIN)
 	echo "$ENC_BIN"
 	if [ "$IMG_ENC" == "ENCRYPT" ];then
 		openssl aes-256-cbc -e -K `cat $ENC_KEY` -iv $ENC_IV_VAL -in enc_bin_rs.bin -out $ENC_BIN -nopad
