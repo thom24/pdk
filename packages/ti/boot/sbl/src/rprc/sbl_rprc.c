@@ -71,6 +71,10 @@ extern void SBL_DCacheClean(void *addr, uint32_t size);
 #endif
 #endif
 
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && defined(SOC_J721S2))
+extern int32_t SBL_OSPI_ReadSectors(void *dstAddr, void *srcOffsetAddr, uint32_t length);
+#endif
+
 /* read of block of data from buffer */
 int32_t SBL_ReadMem(void       *buff,
                     void       *srcAddr,
@@ -786,8 +790,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocAtcmAddr[] =
     {
-#if defined(SOC_AM64X)
-    /* Use SoC level address of MCU1_0 ATCM for non-CPU writes to this TCM. Works for CPU copying as well. */
+#if defined(SOC_AM64X) || (SBL_USE_DMA && defined(SOC_J721S2))
+    /* Use SoC level address of MCU1_0 ATCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_ATCM_BASE_ADDR_SOC,
 #else
     SBL_MCU_ATCM_BASE,
@@ -801,8 +805,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocBtcmAddr[] =
     {
-#if defined(SOC_AM64X)
-    /* Use SoC level address of MCU1_0 BTCM for non-CPU writes to this TCM. Works for CPU copying as well. */
+#if defined(SOC_AM64X) || (SBL_USE_DMA && defined(SOC_J721S2))
+    /* Use SoC level address of MCU1_0 BTCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_BTCM_BASE_ADDR_SOC,
 #else
     SBL_MCU_BTCM_BASE,
@@ -873,6 +877,37 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
             switch (CoreId)
             {
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && defined(SOC_J721S2))
+                /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
+                case MCU1_CPU0_ID:
+                    /* Only do TCM addr remapping for MCU1_0 if using UDMA for transfers from OSPI to local TCMs */
+                    if (fp_readData == SBL_OSPI_ReadSectors)
+                    {
+                        /*Remap TCM address from R5 local to SoC memory map*/
+                        if (section.addr < (SBL_MCU_ATCM_BASE + SBL_MCU_ATCM_SIZE))
+                        {
+                            /* Get offset into ATCM */
+                            SBL_log(SBL_LOG_MAX, "Translating coreid %d local ATCM addr 0x%x to ", CoreId, section.addr);
+                            section.addr = section.addr - SBL_MCU_ATCM_BASE;
+                            section.addr = SocAtcmAddr[CoreId - MCU1_CPU0_ID] + section.addr;
+                            SBL_log(SBL_LOG_MAX, "SoC MCU ATCM addr 0x%x\n", section.addr);
+                        }
+                        else if ((section.addr >= SBL_MCU_BTCM_BASE) &&
+                                 (section.addr < (SBL_MCU_BTCM_BASE + SBL_MCU_BTCM_SIZE)))
+                        {
+                            /* Get offset into BTCM */
+                            SBL_log(SBL_LOG_MAX, "Translating coreid %d local BTCM addr 0x%x to ", CoreId, section.addr);
+                            section.addr = section.addr - SBL_MCU_BTCM_BASE;
+                            section.addr = SocBtcmAddr[CoreId - MCU1_CPU0_ID] + section.addr;
+                            SBL_log(SBL_LOG_MAX, "SoC MCU BTCM addr 0x%x\n", section.addr);
+                        }
+                        else
+                        {
+                            /* To remove MISRA C error */
+                        }
+                    }
+                    break;
+#endif
 #if defined(SOC_AM64X)
                 /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
                 case MCU1_CPU0_ID:
