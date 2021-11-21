@@ -98,7 +98,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
     }
 
     /* Copy user buffers into a local copy, TODO should not be necessary */
-    tisci_msg_t tisci_msg;
+    tisci_msg_t tisci_msg = {0};
 
 
     /* Fill out request */

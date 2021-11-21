@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -77,8 +77,8 @@ int32_t Sciclient_otpProcessKeyCfg(uint32_t *otpKeyCfgAddr,
                                            uint32_t timeout, uint32_t *debug_response)
 {
     int32_t retVal = CSL_PASS;
-    Sciclient_ReqPrm_t reqParam ;
-    Sciclient_RespPrm_t respParam ;
+    Sciclient_ReqPrm_t reqParam = {0};
+    Sciclient_RespPrm_t respParam = {0};
     struct tisci_msg_keywriter_req request ;
     struct tisci_msg_keywriter_resp response ;
 

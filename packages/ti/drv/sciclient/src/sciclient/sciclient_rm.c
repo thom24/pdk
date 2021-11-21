@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -86,7 +86,7 @@ int32_t Sciclient_rmGetResourceRange(
                 uint32_t timeout)
 {
     int32_t r = CSL_PASS;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     struct tisci_msg_rm_get_resource_range_req req_copy;
     sciReq.messageType    = TISCI_MSG_RM_GET_RESOURCE_RANGE;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
@@ -94,7 +94,7 @@ int32_t Sciclient_rmGetResourceRange(
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -165,14 +165,14 @@ int32_t Sciclient_rmIrqSetRaw(const struct tisci_msg_rm_irq_set_req *req,
                               uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_IRQ_SET;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -192,14 +192,14 @@ int32_t Sciclient_rmIrqReleaseRaw(const struct tisci_msg_rm_irq_release_req *req
 {
     int32_t r;
 
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_IRQ_RELEASE;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     struct tisci_msg_rm_irq_release_resp resp;
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *)&resp;
@@ -219,14 +219,14 @@ int32_t Sciclient_rmRingCfg(const struct tisci_msg_rm_ring_cfg_req *req,
                             uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_RING_CFG;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -245,14 +245,14 @@ int32_t Sciclient_rmRingMonCfg(const struct tisci_msg_rm_ring_mon_cfg_req *req,
                                uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_RING_MON_CFG;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -272,14 +272,14 @@ int32_t Sciclient_rmUdmapGcfgCfg(
             uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_UDMAP_GCFG_CFG;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -301,14 +301,14 @@ int32_t Sciclient_rmUdmapTxChCfg(
             uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_UDMAP_TX_CH_CFG;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -329,14 +329,14 @@ int32_t Sciclient_rmUdmapRxChCfg(
             uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_UDMAP_RX_CH_CFG;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -358,14 +358,14 @@ int32_t Sciclient_rmUdmapFlowCfg(
             uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_UDMAP_FLOW_CFG;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -387,14 +387,14 @@ int32_t Sciclient_rmUdmapFlowSizeThreshCfg(
             uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_UDMAP_FLOW_SIZE_THRESH_CFG;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -414,14 +414,14 @@ int32_t Sciclient_rmPsilPair(const struct tisci_msg_rm_psil_pair_req *req,
                              uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_PSIL_PAIR;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     struct tisci_msg_rm_psil_pair_resp resp;
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t*)&resp;
@@ -440,14 +440,14 @@ int32_t Sciclient_rmPsilUnpair(const struct tisci_msg_rm_psil_unpair_req *req,
                                uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_PSIL_UNPAIR;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     struct tisci_msg_rm_psil_unpair_resp resp;
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *)&resp;
@@ -467,14 +467,14 @@ int32_t Sciclient_rmPsilRead(const struct tisci_msg_rm_psil_read_req *req,
                              uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_PSIL_READ;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *) resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);
@@ -492,14 +492,14 @@ int32_t Sciclient_rmPsilWrite(const struct tisci_msg_rm_psil_write_req *req,
                               uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_RM_PSIL_WRITE;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     struct tisci_msg_rm_psil_write_resp resp;
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t*)&resp;
@@ -517,14 +517,14 @@ int32_t Sciclient_rmPsilWrite(const struct tisci_msg_rm_psil_write_req *req,
 int32_t Sciclient_rmSetProxyCfg(const struct tisci_msg_rm_proxy_cfg_req *req, uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq ;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType = TISCI_MSG_RM_PROXY_CFG;
     sciReq.flags       = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof(*req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp ;
+    Sciclient_RespPrm_t sciResp = {0};
     struct tisci_msg_rm_proxy_cfg_resp resp;
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t*)&resp;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2019, Texas Instruments Incorporated
+ * Copyright (c) 2018-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,14 +76,14 @@ int32_t Sciclient_msmcQuery(const struct tisci_query_msmc_req *req,
                             uint32_t timeout)
 {
     int32_t r;
-    Sciclient_ReqPrm_t sciReq;
+    Sciclient_ReqPrm_t sciReq = {0};
     sciReq.messageType    = TISCI_MSG_QUERY_MSMC;
     sciReq.flags          = TISCI_MSG_FLAG_AOP;
     sciReq.pReqPayload    = (const uint8_t *) req;
     sciReq.reqPayloadSize = (uint32_t) sizeof (struct tisci_query_msmc_req);
     sciReq.timeout        = timeout;
 
-    Sciclient_RespPrm_t sciResp;
+    Sciclient_RespPrm_t sciResp = {0};
     sciResp.flags           = 0;
     sciResp.pRespPayload    = (uint8_t *)resp;
     sciResp.respPayloadSize = (uint32_t) sizeof(*resp);

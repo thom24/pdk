@@ -368,8 +368,8 @@ int32_t Sciserver_ProcessFullMessage(uint32_t *msg_recv,
     int32_t respMsgSize)
 {
     int32_t ret = CSL_EFAIL;
-    Sciclient_ReqPrm_t reqPrm;
-    Sciclient_RespPrm_t respPrm;
+    Sciclient_ReqPrm_t reqPrm = {0};
+    Sciclient_RespPrm_t respPrm = {0};
     struct tisci_header *hdr = (struct tisci_header *) msg_recv;
     uint8_t reqSeq;
     uint32_t reqMsgBuffer[14] = {0};
