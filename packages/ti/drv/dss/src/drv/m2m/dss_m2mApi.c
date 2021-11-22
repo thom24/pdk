@@ -667,7 +667,6 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
     {
         retVal = FVID2_EBADARGS;
     }
-    cookie = HwiP_disable();
     if (FVID2_SOK == retVal)
     {
         virtContext = (DssM2MDrv_VirtContext *)handle;
@@ -703,6 +702,8 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
         /* Take the instance semaphore */
         (void) SemaphoreP_pend(instObj->commonObjRef->lockSem, semTimeout);
     }
+
+    cookie = HwiP_disable();
     /* Steps 1 to 5 */
     if (FVID2_SOK == retVal)
     {
@@ -808,13 +809,13 @@ int32_t Dss_m2mProcessRequest(Fdrv_Handle handle,
 
         }
     }
+    HwiP_restore(cookie);
 
     if ((NULL != instObj) && (NULL != instObj->commonObjRef->lockSem))
     {
         /* Post the instance semaphore */
         (void) SemaphoreP_post(instObj->commonObjRef->lockSem);
     }
-    HwiP_restore(cookie);
 
     return retVal;
 }
@@ -842,7 +843,6 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
     {
         retVal = FVID2_EBADARGS;
     }
-    cookie = HwiP_disable();
     if (FVID2_SOK == retVal)
     {
         virtContext = (DssM2MDrv_VirtContext *)handle;
@@ -878,6 +878,8 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
         /* Take the instance semaphore */
         (void) SemaphoreP_pend(instObj->commonObjRef->lockSem, semTimeout);
     }
+
+    cookie = HwiP_disable();
     /* Steps 1 to 5 */
     if (FVID2_SOK == retVal)
     {
@@ -917,13 +919,13 @@ int32_t Dss_m2mGetProcessedRequest(Fdrv_Handle handle,
             retVal = FVID2_ENO_MORE_BUFFERS;
         }
     }
+    HwiP_restore(cookie);
 
     if ((NULL != instObj) && (NULL != instObj->commonObjRef->lockSem))
     {
         /* Post the instance semaphore */
         (void) SemaphoreP_post(instObj->commonObjRef->lockSem);
     }
-    HwiP_restore(cookie);
 
     return retVal;
 }
@@ -1008,7 +1010,7 @@ int32_t Dss_m2mControl(Fdrv_Handle handle,
                             "UNSUPPORTED_CMD: IOCTL not supported\r\n");
                 retVal = FVID2_EUNSUPPORTED_CMD;
             }
-			break;
+            break;
         }
     }
 
