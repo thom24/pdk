@@ -136,7 +136,6 @@ uint32_t Lpm_pmicApp(void);
  *          unsuccessful operations.
  */
 uint32_t Lpm_activeToIoRetSwitch(void);
-
 #ifdef __cplusplus
 }
 #endif

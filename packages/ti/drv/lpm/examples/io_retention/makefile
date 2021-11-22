@@ -48,7 +48,7 @@ endif
 APP_NAME = io_retention_$(BUILD_OS_TYPE)
 
 SRCDIR = src ../../../../board/diag/common/${SOC}/
-INCDIR = ../../include ../../include/io_retention ../../../../board/src/${BOARD}/include ../../../../board/diag/common/${SOC}/
+INCDIR = ../../include ../../include/io_retention ../../../../board/src/${BOARD}/include ../../../../board/diag/common/${SOC}/ 
 
 
 # List all the external components/interfaces, whose interface header files
@@ -57,12 +57,12 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP) lpm sciserver_tirtos ipc sbl_lib_cust spi
 INCLUDE_EXTERNAL_INTERFACES += freertos board
-SRCS_COMMON = main_rtos.c overrides/$(SOC)/$(CORE)/r5_mpu_freertos.c
+SRCS_COMMON = main_rtos.c overrides/$(SOC)/$(CORE)/r5_mpu_freertos.c ../../../gpio/test/led_blink/${SOC}/GPIO_board.c
 EXTERNAL_LNKCMD_FILE_LOCAL = overrides/$(SOC)/$(CORE)/linker_r5_freertos.lds
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
-SRCS_COMMON +=
+SRCS_COMMON += 
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDEVICE_NAME=j7vcl_core 
 

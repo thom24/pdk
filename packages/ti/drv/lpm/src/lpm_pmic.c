@@ -2433,12 +2433,10 @@ static uint32_t Lpm_activeToMcuSwitch()
 
 uint32_t Lpm_activeToIoRetSwitch()
 {
-
     /* Change PMIC state from ACTIVE to IO Retention */
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                     "PMIC STATE CHANGE: ACTIVE -> IO Retention\n");
     Lpm_pmicStateChangeActiveToIORetention();
-
 
     return 0;
 }

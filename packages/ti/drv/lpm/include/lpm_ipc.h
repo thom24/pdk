@@ -86,12 +86,6 @@ int32_t Lpm_ipcEchoApp(void);
  */
 void Lpm_ipcExitResponseTask(void);
 
-/**
- *  \brief Switches PMIC from active mode to IO retention mode
- */
-uint32_t Lpm_activeToIoRetSwitch();
-
-
 #ifdef __cplusplus
 }
 #endif

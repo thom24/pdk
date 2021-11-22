@@ -60,6 +60,13 @@
 *
 */
 
+/* FreeRTOS Header files */
+#include <ti/osal/osal.h>
+#include <ti/osal/src/nonos/Nonos_config.h>
+#include <ti/osal/TaskP.h>
+#include <ti/osal/HwiP.h>
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -71,7 +78,14 @@
 #include <lpm_mmr_functions.h>
 #include <ti/drv/lpm/include/lpm_pmic.h>
 #include <ti/drv/lpm/lpm.h>
+#include <ti/drv/gpio/src/v0/GPIO_v0.h>
+#include <ti/drv/gpio/soc/GPIO_soc.h>
+#include <ti/drv/gpio/GPIO.h>
+#include <ti/board/board.h>
 
+extern GPIO_v0_Config GPIO_v0_config;
+
+#include <ti/drv/sciclient/sciserver_tirtos.h>
 
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
@@ -97,12 +111,25 @@
 Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
 #endif
 
+/* Test application stack size */
+#define APP_TASK_STACK                  (20U * 1024U)
+/**< Stack required for the stack */
+#define MAIN_APP_TASK_PRIORITY          (2)
+
 /*********************************  *************************************
  ************************** Internal functions ************************
  **********************************************************************/
 int main_io_pm_seq (void);
-void ACT_30_10_a ();
- 
+void configure_can_uart_lock_dmsc();
+int32_t SetupSciServer(void);
+
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
+
+TaskP_Handle mainAppTask;
+TaskP_Params mainAppTaskParams;
+static uint8_t MainApp_TaskStack[APP_TASK_STACK] __attribute__((aligned(32)));
 
 /* Board specific definitions */
 #define I2C_INSTANCE                       (0U)
@@ -119,93 +146,89 @@ void ACT_30_10_a ();
 #define IO_RETENTION_BOOT (0x1)
 uint32_t global_boot_mode_status = COLD_BOOT;
 
-/**********************************************************************
- ************************** Global Variables **************************
- **********************************************************************/
 
-int run_full_boot_app()
-{
-    uint64_t timeIPCStart, timeIPCFinish;
-    uint64_t timeBootAppStart, timeBootAppFinish;
-    uint64_t timeMcuOnlyAppStart, timeMcuOnlyAppFinish;
-    uint32_t i, numBoots=5;
-
-    Lpm_bootAppInit();
-    AppUtils_Printf(MSG_NORMAL, "\nPMIC initialization done.\r\n");
-
-    for(i=0; i<numBoots; i++)
-    {
-        timeIPCStart = TimerP_getTimeInUsecs();
-        Lpm_ipcEchoApp();
-        timeIPCFinish = TimerP_getTimeInUsecs();
-
-        AppUtils_Printf(MSG_NORMAL, "\nIPC Task started at %d usecs and finished at %d usecs\r\n",
-                        (uint32_t)timeIPCStart,
-                        (uint32_t)timeIPCFinish);
-
-        TaskP_sleep(5*1000);
-
-        timeBootAppStart = TimerP_getTimeInUsecs();
-        Lpm_bootApp();
-        timeBootAppFinish = TimerP_getTimeInUsecs();
-
-        AppUtils_Printf(MSG_NORMAL, "\nMCU Boot Task started at %d usecs and finished at %d usecs\r\n",
-                        (uint32_t)timeBootAppStart,
-                        (uint32_t)timeBootAppFinish);
-
-        TaskP_sleep(1000);
-        AppUtils_Printf(MSG_NORMAL, "Calling rpmsg_exit_responseTask\n");
-        Lpm_ipcExitResponseTask();
-        TaskP_sleep(1000);
-        AppUtils_Printf(MSG_NORMAL, "responder task should have exited\n");
-
-        timeMcuOnlyAppStart = TimerP_getTimeInUsecs();
-        Lpm_pmicApp();
-        timeMcuOnlyAppFinish = TimerP_getTimeInUsecs();
-
-        AppUtils_Printf(MSG_NORMAL, "\nMCU Only Task started at %d usecs and finished at %d usecs\r\n",
-                        (uint32_t)timeMcuOnlyAppStart,
-                        (uint32_t)timeMcuOnlyAppFinish);
-    }
-    Lpm_bootAppDeInit();
-    return 0;
-}
-
-int BoardDiag_pmic_test()
+int io_retention_main()
 {
     int ret = 0;
     Board_IDInfo_v2 info = {0};
     int32_t stat = BOARD_SOK;
-
+    int c;
+    int done = 0;
 
     Board_setI2cInitConfig(&boardI2cInitCfg);
     stat = Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
+
     if(stat == BOARD_INVALID_PARAM)
     {
         stat = BOARD_SOK;
     }
 
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C120) = 0x0C018007;
+
+
     if(stat == BOARD_SOK)
     {
 
-        ACT_30_10_a ();
         Lpm_pmicInit();
-        switch (global_boot_mode_status)
-        {
-            case COLD_BOOT:
-                Lpm_activeToIoRetSwitch();
-                break;
-            case IO_RETENTION_BOOT:
-                run_full_boot_app();
-                break;
-            default:
-                Lpm_activeToIoRetSwitch();
-                break;
+        AppUtils_Printf(MSG_NORMAL, "Press 1 to switch to IO Retention\n");
+        AppUtils_Printf(MSG_NORMAL, "Input: ");
 
+        while(!done)
+        {
+            UART_scanFmt("%d", &c);
+
+            switch (c)
+            {
+                case 1:
+                    configure_can_uart_lock_dmsc();
+                    Lpm_activeToIoRetSwitch();
+                    done = 0xFF;
+                    break;
+                default:
+                    AppUtils_Printf(MSG_NORMAL, "Invalid option - please enter 1 to go to IO retention mode\n");
+                    AppUtils_Printf(MSG_NORMAL, "Input: ");
+                    break;
+            }
         }
     }
     return ret;
 }
+
+
+void disable_isolation_bit_and_unlock()
+{
+    unsigned int read_data = 0;
+    int i = 0;
+    int cnt = 0;
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
+
+    mmr_unlock(mmr0_cfg_base, 6);
+    mmr_unlock(mmr2_cfg_base, 7);
+
+    UART_printf("DMSC_CM_PMCTRL_IO_1 0x%x\n", read_data);
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
+
+    /* disable isolation bit */
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
+    for(i=0; i<io_timeout; i++);
+
+    UART_printf("Polling for IO Status bit\n");
+    while(read_data & 0x2000000)
+    {
+        read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
+        *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
+        for(i=0; i<io_timeout; i++);
+        if (cnt == 1000)
+        {
+            UART_printf(".");
+        }
+    }
+    UART_printf("Polling complete - out of isolation mode\n");
+    UART_printf("DMSC_CM_PMCTRL_IO_1 after clearing isolation bit: 0x%x\n", read_data);
+}
+
 
 /*----------------------------------------------------------------------------------------------------------*
  * MAIN IO PM daisy chain deepsleep + isolation entry sequence                                              *
@@ -216,11 +239,7 @@ int main_io_pm_seq (void)
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c024 - PADCONF0 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c024));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c02c - PADCONF1 0x%x\n",  *mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c124 - PMIC_WAKE 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c124));
-    if (*mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c) & 0x40000000)
-    {
-        UART_printf("Booting from IO Retention!\n");
-        global_boot_mode_status = IO_RETENTION_BOOT;
-    }
+
 
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)));
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)));
@@ -251,31 +270,6 @@ int main_io_pm_seq (void)
     read_data = *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL);
     UART_printf("WKUP_CTRL_DEEPSLEEP_CTRL 0x%x\n", read_data);
     *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL) |= 0x100;
-
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
-    UART_printf("DMSC_CM_PMCTRL_IO_1 0x%x\n", read_data);
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
-
-    /* disable isolation bit */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
-    for(i=0; i<io_timeout; i++);
-
-    UART_printf("Polling for IO Status bit\n");
-    int cnt = 0;
-    while(read_data & 0x2000000)
-    {
-        read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
-        *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
-        for(i=0; i<io_timeout; i++);
-        if (cnt == 1000)
-        {
-            UART_printf(".");
-        }
-    }
-    UART_printf("Polling complete - out of isolation mode\n");
-    UART_printf("DMSC_CM_PMCTRL_IO_1 after clearing isolation bit: 0x%x\n", read_data);
 
 #ifndef IGNORE_MAIN_IO_PADCONFIG
     /* Enable Wakeup_enable (J7VCL Power Mngmt Spec: ACT-25-04) */
@@ -308,7 +302,7 @@ int main_io_pm_seq (void)
 }
 
 
-void ACT_30_10_a ()
+void configure_can_uart_lock_dmsc()
 {
 
     uint32_t daisy_chain = main_io_pm_seq();
@@ -342,32 +336,100 @@ void ACT_30_10_a ()
 }
 
 
+static void MainApp_TaskFxn(void* a0, void* a1)
+{
+    /* make sure that DMSC isolation bit is turned off
+       and that mmrs are unlocked. If this is not the
+       case, code will not execute correctly on other
+       cores */
+    disable_isolation_bit_and_unlock();
+	/* execute overall application*/
+    io_retention_main();
+}
+
+
 /*
  *  ======== main ========
  */
 int main(void)
 {
+    int32_t ret = CSL_PASS;
     Board_initCfg boardCfg;
-#ifdef PDK_RAW_BOOT
-    boardCfg = BOARD_INIT_PINMUX_CONFIG | 
-        BOARD_INIT_UART_STDIO;
-#else
-    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
-#endif
+    boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK;
     Board_init(boardCfg);
 
-    mmr_unlock(mmr0_cfg_base, 6);
-    mmr_unlock(mmr2_cfg_base, 7);
+    if (*mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c) & 0x40000000)
+    {
+        global_boot_mode_status = IO_RETENTION_BOOT;
+    }
+    else
+    {
+        global_boot_mode_status = COLD_BOOT;
+    }
 
-	return BoardDiag_pmic_test();
+    /* GPIO early response for timing reasons */
+    if (global_boot_mode_status == IO_RETENTION_BOOT)
+    {
+        GPIO_init();
+        GPIO_write(PIN_WKUP_GPIO0_77, 1);
+    }
+
+    OS_init();
+
+    /* Initialize SCI Client Server */
+    Sciclient_init(NULL_PTR);
+    ret = SetupSciServer();
+    if(ret != CSL_PASS)
+    {
+        OS_stop();
+    }
+
+    /* Initialize the task params */
+    TaskP_Params_init(&mainAppTaskParams);
+    mainAppTaskParams.priority       = MAIN_APP_TASK_PRIORITY;
+    mainAppTaskParams.stack          = MainApp_TaskStack;
+    mainAppTaskParams.stacksize      = sizeof (MainApp_TaskStack);
+
+    mainAppTask = TaskP_create(MainApp_TaskFxn, &mainAppTaskParams);
+
+    OS_start();
+
+    return 0;
 }
 
-void AppDelay(uint32_t delayVal)
+
+int32_t SetupSciServer(void)
 {
-	uint32_t cnt = 0;
-    while(cnt < delayVal)
+
+    Sciserver_TirtosCfgPrms_t appPrms;
+    Sciclient_ConfigPrms_t clientPrms;
+    int32_t ret = CSL_PASS;
+
+    appPrms.taskPriority[SCISERVER_TASK_USER_LO] = 6;
+    appPrms.taskPriority[SCISERVER_TASK_USER_HI] = 7;
+
+    /* Sciclient needs to be initialized before Sciserver. Sciserver depends on
+     * Sciclient API to execute message forwarding */
+    ret = Sciclient_configPrmsInit(&clientPrms);
+
+    if (ret == CSL_PASS)
     {
-		asm("");
-        cnt++;
+        ret = Sciclient_init(&clientPrms);
     }
+
+    if (ret == CSL_PASS)
+    {
+        ret = Sciserver_tirtosInit(&appPrms);
+    }
+
+    if (ret == CSL_PASS)
+    {
+        AppUtils_Printf(MSG_NORMAL, "Starting Sciserver..... PASSED\n");
+    }
+    else
+    {
+        AppUtils_Printf(MSG_NORMAL, "Starting Sciserver..... FAILED\n");
+    }
+
+    return ret;
 }

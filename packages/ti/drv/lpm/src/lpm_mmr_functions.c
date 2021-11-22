@@ -300,7 +300,7 @@ void lockAllPartitions(unsigned int base){
 }
 
 uint32_t getPartitionNum(unsigned int base, unsigned int offset){
-	uint32_t result = -1;
+	uint32_t result = (unsigned int) -1;
 	
 	if(base == mmr0_cfg_base || base == mmr1_cfg_base || base == mmr2_cfg_base){
 		result = offset/0x4000;
