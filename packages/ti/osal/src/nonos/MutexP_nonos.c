@@ -68,6 +68,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
 MutexP_Status MutexP_delete(MutexP_Handle handle)
 {
+    OSAL_Assert((handle == NULL_PTR));
     SemaphoreP_Handle semHandle = NULL;
     MutexP_Object *mutexObj = (MutexP_Object *)handle;
 
@@ -78,6 +79,7 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
 
 MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
 {
+    OSAL_Assert((handle == NULL_PTR));
     SemaphoreP_Handle semHandle = NULL;
     MutexP_Object *mutexObj = (MutexP_Object *)handle;
 
@@ -88,6 +90,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
 
 MutexP_Status MutexP_unlock(MutexP_Handle handle)
 {
+    OSAL_Assert((handle == NULL_PTR));
     SemaphoreP_Handle semHandle = NULL;
     MutexP_Object *mutexObj = (MutexP_Object *)handle;
 
