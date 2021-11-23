@@ -246,4 +246,32 @@ void TimerP_updateDefaultInfoTbl(void)
     return;
 }
 
+int32_t TimerP_getPreferredDefInst(void)
+{
+    int32_t instVal;
+    CSL_ArmR5CPUInfo info;
+    CSL_armR5GetCpuID(&info);
+
+    if (((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId) &&
+        (CSL_ARM_R5_CPU_ID_0 == info.cpuID))
+    {
+        /* Required to be MCU_TIMER0 for SBL build on HS device (okay for GP also) */
+        instVal = 0;
+    }
+    else
+    {
+        /* Main domain R5F only */
+        instVal = 4;
+        if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1 == info.grpId)
+        {
+            instVal = 6;
+        }
+        if (CSL_ARM_R5_CPU_ID_1 == info.cpuID)
+        {
+            instVal++;
+        }
+    }
+    return (instVal);
+}
+
 /* Nothing past this point */

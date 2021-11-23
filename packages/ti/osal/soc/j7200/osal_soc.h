@@ -74,8 +74,6 @@ extern "C" {
 #define TIMERP_ANY_MASK         ((uint32_t) 0x1FFFFF)
 /**< Any available */
 #define TIMERP_AVAILABLE_MASK   ((uint32_t)(0x1FFFFF))
-/**< Which instances are available */
-#define TIMERP_INST_4_TS        (TimerP_getPreferredDefInst)
 
 
 
@@ -117,32 +115,9 @@ extern "C" {
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
 #if defined (BUILD_MCU)
-#if defined (BUILD_MCU1_0)
-/* Required to be MCU_TIMER0 for SBL build on HS device (okay for GP also) */
-#define OSAL_ARCH_TIMER_INST_FOR_TS (0)
-#else
-inline int32_t TimerP_getPreferredDefInst(void)
-{
-    int32_t instVal;
-    CSL_ArmR5CPUInfo info;
-    CSL_armR5GetCpuID(&info);
-
-    /* Main domain R5F only */
-    instVal = 4;
-    if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1 == info.grpId)
-    {
-        instVal = 6;
-    }
-    if (CSL_ARM_R5_CPU_ID_1 == info.cpuID)
-    {
-        instVal++;
-    }
-    return (instVal);
-}
+int32_t TimerP_getPreferredDefInst(void);
 #define OSAL_ARCH_TIMER_INST_FOR_TS (TimerP_getPreferredDefInst())
 /**< Returns the instance of timers required for given instance */
-#endif /* if defined (BUILD_MCU1_0) */
-
 #else
 #define OSAL_ARCH_TIMER_INST_FOR_TS (2)
 /**< Default timer for MPU */
