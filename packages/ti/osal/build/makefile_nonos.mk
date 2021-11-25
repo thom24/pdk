@@ -99,7 +99,7 @@ ifeq ($(SOC),$(filter $(SOC), am64x))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 dra72x dra75x dra78x am571x am572x am574x am437x am335x omapl137 omapl138 c6747 am65xx j721e j7200 am64x tpr12 awr294x j721s2))
-SRCS_COMMON += TimerP_nonos.c delay.c
+SRCS_COMMON += TimerP_nonos.c delay.c MutexP_nonos.c
 endif
 
 

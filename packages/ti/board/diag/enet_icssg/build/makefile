@@ -54,8 +54,8 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 
-SRCDIR = ../src ../../common/$(SOC) ../../../../drv/emac/firmware/icss_dualmac/config
-INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC) ../../../../drv/emac/firmware/icss_dualmac/config
+SRCDIR = ../src ../../common/$(SOC)
+INCDIR = ../../../../board ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC)
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -78,7 +78,7 @@ PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 PACKAGE_SRCS_COMMON += ../../../../drv/emac/firmware/icss_dualmac/config/
 
-SRCS_COMMON += enet_icssg_test.c diag_common_cfg.c emac_fw_config_dual_mac.c
+SRCS_COMMON += enet_icssg_test.c diag_common_cfg.c
 
 BOARD_DIAG_CFLAGS += -DENET_ENABLE_ICSSG
 export ENET_ENABLE_ICSSG=yes
