@@ -586,19 +586,19 @@ export board_diag_hyperbus_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 board_diag_EXAMPLE_LIST += board_diag_hyperbus
 
 # enet_icssg
-# export board_diag_enetIcssg_COMP_LIST = board_diag_enetIcssg
-# board_diag_enetIcssg_RELPATH = ti/board/diag/enet_icssg/build
-# board_diag_enetIcssg_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/enet_icssg/build
-# board_diag_enetIcssg_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
-# export board_diag_enetIcssg_MAKEFILE = -f makefile
-# export board_diag_enetIcssg_BOARD_DEPENDENCY = yes
-# export board_diag_enetIcssg_CORE_DEPENDENCY = yes
-# board_diag_enetIcssg_PKG_LIST = board_diag_enetIcssg
-# board_diag_enetIcssg_INCLUDE = $(board_diag_enetIcssg_PATH)
-# board_diag_enetIcssg_BOARDLIST = am65xx_evm am65xx_idk
-# export board_diag_enetIcssg_$(SOC)_CORELIST = mcu1_0
-# export board_diag_enetIcssg_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-# board_diag_EXAMPLE_LIST += board_diag_enetIcssg
+export board_diag_enetIcssg_COMP_LIST = board_diag_enetIcssg
+board_diag_enetIcssg_RELPATH = ti/board/diag/enet_icssg/build
+board_diag_enetIcssg_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/enet_icssg/build
+board_diag_enetIcssg_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+export board_diag_enetIcssg_MAKEFILE = -f makefile
+export board_diag_enetIcssg_BOARD_DEPENDENCY = yes
+export board_diag_enetIcssg_CORE_DEPENDENCY = yes
+board_diag_enetIcssg_PKG_LIST = board_diag_enetIcssg
+board_diag_enetIcssg_INCLUDE = $(board_diag_enetIcssg_PATH)
+board_diag_enetIcssg_BOARDLIST = am65xx_evm am65xx_idk
+export board_diag_enetIcssg_$(SOC)_CORELIST = mcu1_0
+export board_diag_enetIcssg_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+board_diag_EXAMPLE_LIST += board_diag_enetIcssg
 
 # icssg_led
 export board_diag_icssgLed_COMP_LIST = board_diag_icssgLed

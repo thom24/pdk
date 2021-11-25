@@ -2,13 +2,13 @@
 SRCDIR = . src/nonos arch/core
 INCDIR = . src/nonos arch/core
 
-SRCS_COMMON += HwiP_nonos.c SwiP_nonos.c Utils_nonos.c SemaphoreP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c
+SRCS_COMMON += HwiP_nonos.c SwiP_nonos.c Utils_nonos.c SemaphoreP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c MutexP_nonos.c
 
 PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h \
                       TimerP.h RegisterIntr.h EventCombinerP.h CycleprofilerP.h CacheP.h DebugP.h soc/osal_soc.h soc/$(SOC) \
                       src/nonos/Nonos_config.h src/nonos/HwiP_nonos.c src/nonos/SwiP_nonos.c src/nonos/CycleprofilerP_nonos.c \
                       src/nonos/RegisterIntr_nonos.c src/nonos/SemaphoreP_nonos.c src/nonos/Utils_nonos.c src/nonos/DebugP_nonos.c \
-                      src/src_common_nonos.mk src/Module.xs \
+                      src/nonos/MutexP_nonos.c src/src_common_nonos.mk src/Module.xs \
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
                       build \
                       config_mk.bld osalver.h osalver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt

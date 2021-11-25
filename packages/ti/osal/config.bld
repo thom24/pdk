@@ -126,6 +126,7 @@ var osTypes = {
                   "src/nonos/Utils_nonos.c",
                   "src/nonos/SemaphoreP_nonos.c",
                   "src/nonos/CacheP_nonos.c"
+                  "src/nonos/MutexP_nonos.c"
                  ],        
     }
 };

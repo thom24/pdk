@@ -76,7 +76,6 @@ endif
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
-PACKAGE_SRCS_COMMON += ../../../../drv/emac/firmware/icss_dualmac/config/
 
 SRCS_COMMON += enet_icssg_test.c diag_common_cfg.c
 
