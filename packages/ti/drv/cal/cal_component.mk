@@ -151,9 +151,9 @@ export cal_capture_testapp_CORE_DEPENDENCY
 export cal_capture_testapp_XDC_CONFIGURO
 cal_capture_testapp_PKG_LIST = cal_capture_testapp
 cal_capture_testapp_INCLUDE = $(cal_capture_testapp_PATH)
-cal_capture_testapp_BOARDLIST = am65xx_evm
+cal_capture_testapp_BOARDLIST = $(filter $(DEFAULT_$(SOC)_BOARDLIST_tirtos), am65xx_evm)
 export cal_capture_testapp_BOARDLIST
-cal_capture_testapp_$(SOC)_CORELIST = $(drvcal_$(SOC)_CORELIST)
+cal_capture_testapp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvcal_$(SOC)_CORELIST))
 export cal_capture_testapp_$(SOC)_CORELIST
 cal_EXAMPLE_LIST += cal_capture_testapp
 
@@ -187,9 +187,9 @@ export cal_loopback_testapp_CORE_DEPENDENCY
 export cal_loopback_testapp_XDC_CONFIGURO
 cal_loopback_testapp_PKG_LIST = cal_loopback_testapp
 cal_loopback_testapp_INCLUDE = $(cal_loopback_testapp_PATH)
-cal_loopback_testapp_BOARDLIST = $(drvcal_BOARDLIST)
+cal_loopback_testapp_BOARDLIST = $(filter $(DEFAULT_$(SOC)_BOARDLIST_tirtos), $(drvcal_BOARDLIST))
 export cal_loopback_testapp_BOARDLIST
-cal_loopback_testapp_$(SOC)_CORELIST = $(drvcal_$(SOC)_CORELIST)
+cal_loopback_testapp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvcal_$(SOC)_CORELIST))
 export cal_loopback_testapp_$(SOC)_CORELIST
 cal_EXAMPLE_LIST += cal_loopback_testapp
 
