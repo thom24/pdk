@@ -98,6 +98,8 @@ drvspi_am65xx_CORELIST = mpu1_0 mcu1_0
 drvspi_am65xx_CORELIST_CACHE = mcu1_0
 drvspi_j721e_CORELIST  = $(DEFAULT_j721e_CORELIST)
 drvspi_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721e_CORELIST_DMA  = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721e_CORELIST_DMA_CACHE  = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvspi_j721e_CORELISTARM_CACHE  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvspi_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvspi_j7200_CORELIST_CACHE     = mcu1_0 mcu1_1 mcu2_0 mcu2_1
@@ -221,7 +223,11 @@ export spi_dma_PKG_LIST
 spi_dma_INCLUDE = $(spi_dma_PATH)
 spi_dma_SOCLIST = $(drvspi_dma_SOCLIST)
 export spi_dma_SOCLIST
+ifeq ($(SOC),$(filter $(SOC), j721e))
+spi_dma_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_DMA)
+else
 spi_dma_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
 export spi_dma_$(SOC)_CORELIST
 
 # SPI PROFILING SOC LIB
@@ -299,7 +305,11 @@ spi_dma_profile_PKG_LIST = spi_dma_profile
 spi_dma_profile_INCLUDE = $(spi_dma_profile_PATH)
 spi_dma_profile_SOCLIST = $(drvspi_SOCLISTLIM)
 export spi_dma_profile_SOCLIST
+ifeq ($(SOC),$(filter $(SOC), j721e))
+spi_dma_profile_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_DMA)
+else
 spi_dma_profile_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
 export spi_dma_profile_$(SOC)_CORELIST
 
 #
@@ -635,10 +645,14 @@ OSPI_Baremetal_Flash_Dma_TestApp_PKG_LIST = OSPI_Baremetal_Flash_Dma_TestApp
 OSPI_Baremetal_Flash_Dma_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_Dma_TestApp_PATH)
 OSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Baremetal_Flash_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
 OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM)
 else
+ifeq ($(SOC),$(filter $(SOC), j721e))
+OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_DMA)
+else
 OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
+endif
 endif
 export OSPI_Baremetal_Flash_Dma_TestApp_$(SOC)_CORELIST
 
@@ -694,10 +708,14 @@ export OSPI_Flash_Dma_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) DMA
 OSPI_Flash_Dma_TestApp_$(1)_PKG_LIST = OSPI_Flash_Dma_TestApp_$(1)
 OSPI_Flash_Dma_TestApp_$(1)_INCLUDE = $(OSPI_Flash_Dma_TestApp_$(1)_PATH)
 export OSPI_Flash_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST) )
-ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
 OSPI_Flash_Dma_TestApp_$(1)_$(SOC)_CORELIST =  $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvspi_$(SOC)_CORELISTARM))
 else
+ifeq ($(SOC),$(filter $(SOC), j721e))
+OSPI_Flash_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvspi_$(SOC)_CORELIST_DMA))
+else
 OSPI_Flash_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvspi_$(SOC)_CORELIST))
+endif
 endif
 export OSPI_Flash_Dma_TestApp_$(1)_$(SOC)_CORELIST
 export OSPI_Flash_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
@@ -757,10 +775,14 @@ OSPI_Baremetal_Flash_Dma_Cache_TestApp_PKG_LIST = OSPI_Baremetal_Flash_Dma_Cache
 OSPI_Baremetal_Flash_Dma_Cache_TestApp_INCLUDE = $(OSPI_Baremetal_Flash_Dma_Cache_TestApp_PATH)
 OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export OSPI_Baremetal_Flash_Dma_Cache_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
 OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELISTARM_CACHE)
 else
+ifeq ($(SOC),$(filter $(SOC), j721e))
+OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_DMA_CACHE)
+else
 OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_CACHE)
+endif
 endif
 export OSPI_Baremetal_Flash_Dma_Cache_TestApp_$(SOC)_CORELIST
 
@@ -816,10 +838,14 @@ export OSPI_Flash_Dma_Cache_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(
 OSPI_Flash_Dma_Cache_TestApp_$(1)_PKG_LIST = OSPI_Flash_Dma_Cache_TestApp_$(1)
 OSPI_Flash_Dma_Cache_TestApp_$(1)_INCLUDE = $(OSPI_Flash_Dma_Cache_TestApp_$(1)_PATH)
 export OSPI_Flash_Dma_Cache_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST) )
-ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
 OSPI_Flash_Dma_Cache_TestApp_$(1)_$(SOC)_CORELIST =  $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvspi_$(SOC)_CORELISTARM))
 else
+ifeq ($(SOC),$(filter $(SOC), j721e))
+OSPI_Flash_Dma_Cache_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvspi_$(SOC)_CORELIST_DMA_CACHE))
+else
 OSPI_Flash_Dma_Cache_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvspi_$(SOC)_CORELIST))
+endif
 endif
 export OSPI_Flash_Dma_Cache_TestApp_$(1)_$(SOC)_CORELIST
 export OSPI_Flash_Dma_Cache_TestApp_$(1)_SBL_APPIMAGEGEN = yes
