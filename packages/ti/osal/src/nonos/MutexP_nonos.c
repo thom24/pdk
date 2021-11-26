@@ -74,7 +74,7 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
 
     semHandle = (void *)mutexObj->object;
 
-    return SemaphoreP_delete(semHandle);
+    return (MutexP_Status)SemaphoreP_delete(semHandle);
 }
 
 MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
@@ -85,7 +85,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
 
     semHandle = (void *)mutexObj->object;
 
-    return SemaphoreP_pend(semHandle, timeout);
+    return (MutexP_Status)SemaphoreP_pend(semHandle, timeout);
 }
 
 MutexP_Status MutexP_unlock(MutexP_Handle handle)
@@ -96,7 +96,7 @@ MutexP_Status MutexP_unlock(MutexP_Handle handle)
 
     semHandle = (void *)mutexObj->object;
 
-    return SemaphoreP_post(semHandle);
+    return (MutexP_Status)SemaphoreP_post(semHandle);
 }
 
 
