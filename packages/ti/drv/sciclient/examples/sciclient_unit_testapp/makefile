@@ -28,9 +28,11 @@ COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES = freertos
 endif
 
-# SoCs which use split DM / TIFS can enable tests that use msg forwarding
+# SoCs which use split DM / TIFS can enable tests that use msg forwarding (mcu1_0 UT only)
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
-SCICLIENT_UT_CFLAGS = -DENABLE_MSG_FWD
+  ifeq ($(CORE), mcu1_0)
+    SCICLIENT_UT_CFLAGS = -DENABLE_MSG_FWD
+  endif
 endif
 
 # List all the external components/interfaces, whose interface header files
