@@ -130,7 +130,6 @@ SECTIONS
     }                           > MCU0_R5F_TCMB0
     .text    	: {} palign(8) 		> OCMC_RAM
     .const   	: {} palign(8) 		> OCMC_RAM
-    .rodata   	: {} palign(8) 		> OCMC_RAM
     .cinit   	: {} palign(8) 		> OCMC_RAM
     .pinit   	: {} palign(8) 		> OCMC_RAM
 
