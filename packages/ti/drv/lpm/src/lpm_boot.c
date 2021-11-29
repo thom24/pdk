@@ -787,7 +787,7 @@ int32_t Lpm_bootApp()
         {
             AppUtils_Printf(MSG_NORMAL,
                         "Sleeping for 30 seconds after each stage\n");
-            TaskP_sleep(2*60*1000);
+            TaskP_sleep(30*1000);
         }
         else
         {

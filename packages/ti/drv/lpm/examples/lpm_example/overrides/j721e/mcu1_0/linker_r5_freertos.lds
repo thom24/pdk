@@ -99,7 +99,7 @@ MEMORY
     MCU1_0_DDR_EXT_SPACE (RWIX)     : origin=MCU1_0_EXT_DATA_BASE length=EXT_DATA_SIZE       /* 12MB */
     MCU1_0_DDR_MEM_SPACE (RWIX)     : origin=MCU1_0_MEM_DATA_BASE length=DDR_SPACE_SIZE       /* 12MB */
 
-    RESERVED (X)            : origin=0x41C3E000 length=0x2000
+    //RESERVED (X)            : origin=0x41C3E000 length=0x2000
     /* Refer the user guide for details on persistence of these sections */
     //OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41C80000 length=0x2000
     //OCMC_RAM_SCISERVER (RWIX)   : origin=0x41C82000 length=0x60000
@@ -110,6 +110,7 @@ MEMORY
     OCMC_RAM_BOARD_CFG (RWIX)   : origin=0x41C80000 length=0x2000
     OCMC_RAM (RWIX)             : origin=0x41C82000 length=0x7DA00
     OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFFB00 length=0x500
+    OCMC_RAM_SBL_RUNTIME (RWIX) : origin=0x41C00000 length=0x80000
 
 }  /* end of MEMORY */
 
@@ -130,6 +131,7 @@ SECTIONS
     }                           > MCU0_R5F_TCMB0
     .text    	: {} palign(8) 		> OCMC_RAM
     .const   	: {} palign(8) 		> OCMC_RAM
+    .rodata     : {} palign(8)         > OCMC_RAM
     .cinit   	: {} palign(8) 		> OCMC_RAM
     .pinit   	: {} palign(8) 		> OCMC_RAM
 
@@ -142,7 +144,7 @@ SECTIONS
     }                                           > MCU1_0_EXT_DATA_BASE
     .tracebuf                : {} align(1024)   > MCU1_0_DDR_EXT_SPACE
 
-    .bss     	: {} align(4)  	> OCMC_RAM
+    .bss     	: {} align(4)  	> OCMC_RAM_SBL_RUNTIME
     .far     	: {} align(4)  	> MCU0_R5F_TCMB0
     .data    	: {} palign(128) 	> OCMC_RAM
     .data_buffer: {} palign(128) 	> MCU0_R5F_TCMB0
