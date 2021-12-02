@@ -143,6 +143,7 @@ extern "C" {
 
 /* Print buffer character limit for prints- UART or CCS Console */
 #define DISP_APP_PRINT_BUFFER_SIZE                   ((uint32_t)4000)
+#define PRINT_TASK_LOAD                              (0)
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

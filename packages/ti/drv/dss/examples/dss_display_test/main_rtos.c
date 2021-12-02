@@ -117,7 +117,7 @@ int main(void)
         OS_stop();
     }
 
-#if defined(FREERTOS)
+#if (PRINT_TASK_LOAD==1)
     /* Get task loads */
     status += LoadP_getTaskLoad(task, &loadStatsTask);
 
