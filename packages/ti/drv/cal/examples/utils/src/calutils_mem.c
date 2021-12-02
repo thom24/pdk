@@ -42,16 +42,7 @@
 /* ========================================================================== */
 
 #include <string.h>
-#if defined (BARE_METAL)
 #include <stdlib.h>
-#else
-#include <xdc/std.h>
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Memory.h>
-#include <xdc/runtime/IHeap.h>
-#include <ti/sysbios/heaps/HeapMem.h>
-#endif
 #include <ti/osal/osal.h>
 #include <calutils.h>
 

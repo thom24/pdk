@@ -86,29 +86,29 @@ export cal_SOCLIST
 cal_$(SOC)_CORELIST = $(drvcal_$(SOC)_CORELIST)
 export cal_$(SOC)_CORELIST
 
-cal_app_utils_COMP_LIST = cal_app_utils
-cal_app_utils_RELPATH = ti/drv/cal/examples/utils
-cal_app_utils_PATH = $(PDK_CAL_COMP_PATH)/examples/utils
-cal_app_utils_LIBNAME = cal_app_utils
-cal_app_utils_LIBPATH = $(PDK_CAL_COMP_PATH)/lib
-cal_app_utils_MAKEFILE = -fmakefile
-export cal_app_utils_LIBNAME
-export cal_app_utils_LIBPATH
-export cal_app_utils_MAKEFILE
-cal_app_utils_OBJPATH = $(cal_app_utils_RELPATH)
-export cal_app_utils_OBJPATH
-cal_app_utils_BOARD_DEPENDENCY = yes
-cal_app_utils_CORE_DEPENDENCY = yes
-export cal_app_utils_COMP_LIST
-export cal_app_utils_BOARD_DEPENDENCY
-export cal_app_utils_CORE_DEPENDENCY
-cal_app_utils_PKG_LIST = cal_app_utils
-cal_app_utils_INCLUDE = $(cal_app_utils_PATH)
-cal_app_utils_BOARDLIST = $(drvcal_BOARDLIST)
-export cal_app_utils_BOARDLIST
-cal_app_utils_$(SOC)_CORELIST = $(drvcal_$(SOC)_CORELIST)
-export cal_app_utils_$(SOC)_CORELIST
-cal_APP_LIB_LIST += cal_app_utils
+#cal_app_utils_COMP_LIST = cal_app_utils
+#cal_app_utils_RELPATH = ti/drv/cal/examples/utils
+#cal_app_utils_PATH = $(PDK_CAL_COMP_PATH)/examples/utils
+#cal_app_utils_LIBNAME = cal_app_utils
+#cal_app_utils_LIBPATH = $(PDK_CAL_COMP_PATH)/lib
+#cal_app_utils_MAKEFILE = -fmakefile
+#export cal_app_utils_LIBNAME
+#export cal_app_utils_LIBPATH
+#export cal_app_utils_MAKEFILE
+#cal_app_utils_OBJPATH = $(cal_app_utils_RELPATH)
+#export cal_app_utils_OBJPATH
+#cal_app_utils_BOARD_DEPENDENCY = yes
+#cal_app_utils_CORE_DEPENDENCY = yes
+#export cal_app_utils_COMP_LIST
+#export cal_app_utils_BOARD_DEPENDENCY
+#export cal_app_utils_CORE_DEPENDENCY
+#cal_app_utils_PKG_LIST = cal_app_utils
+#cal_app_utils_INCLUDE = $(cal_app_utils_PATH)
+#cal_app_utils_BOARDLIST = $(drvcal_BOARDLIST)
+#export cal_app_utils_BOARDLIST
+#cal_app_utils_$(SOC)_CORELIST = $(drvcal_$(SOC)_CORELIST)
+#export cal_app_utils_$(SOC)_CORELIST
+#cal_APP_LIB_LIST += cal_app_utils
 
 cal_app_utils_baremetal_COMP_LIST = cal_app_utils_baremetal
 cal_app_utils_baremetal_RELPATH = ti/drv/cal/examples/utils
@@ -138,24 +138,24 @@ cal_APP_LIB_LIST += cal_app_utils_baremetal
 # CAL Examples
 #
 
-cal_capture_testapp_COMP_LIST = cal_capture_testapp
-cal_capture_testapp_RELPATH = ti/drv/cal/examples/cal_capture_test
-cal_capture_testapp_PATH = $(PDK_CAL_COMP_PATH)/examples/cal_capture_test
-cal_capture_testapp_MAKEFILE = -fmakefile
-cal_capture_testapp_BOARD_DEPENDENCY = yes
-cal_capture_testapp_CORE_DEPENDENCY = yes
-cal_capture_testapp_XDC_CONFIGURO = yes
-export cal_capture_testapp_COMP_LIST
-export cal_capture_testapp_BOARD_DEPENDENCY
-export cal_capture_testapp_CORE_DEPENDENCY
-export cal_capture_testapp_XDC_CONFIGURO
-cal_capture_testapp_PKG_LIST = cal_capture_testapp
-cal_capture_testapp_INCLUDE = $(cal_capture_testapp_PATH)
-cal_capture_testapp_BOARDLIST = $(filter $(DEFAULT_$(SOC)_BOARDLIST_tirtos), am65xx_evm)
-export cal_capture_testapp_BOARDLIST
-cal_capture_testapp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvcal_$(SOC)_CORELIST))
-export cal_capture_testapp_$(SOC)_CORELIST
-cal_EXAMPLE_LIST += cal_capture_testapp
+#cal_capture_testapp_COMP_LIST = cal_capture_testapp
+#cal_capture_testapp_RELPATH = ti/drv/cal/examples/cal_capture_test
+#cal_capture_testapp_PATH = $(PDK_CAL_COMP_PATH)/examples/cal_capture_test
+#cal_capture_testapp_MAKEFILE = -fmakefile
+#cal_capture_testapp_BOARD_DEPENDENCY = yes
+#cal_capture_testapp_CORE_DEPENDENCY = yes
+#cal_capture_testapp_XDC_CONFIGURO = yes
+#export cal_capture_testapp_COMP_LIST
+#export cal_capture_testapp_BOARD_DEPENDENCY
+#export cal_capture_testapp_CORE_DEPENDENCY
+#export cal_capture_testapp_XDC_CONFIGURO
+#cal_capture_testapp_PKG_LIST = cal_capture_testapp
+#cal_capture_testapp_INCLUDE = $(cal_capture_testapp_PATH)
+#cal_capture_testapp_BOARDLIST = $(filter $(DEFAULT_$(SOC)_BOARDLIST_tirtos), am65xx_evm)
+#export cal_capture_testapp_BOARDLIST
+#cal_capture_testapp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvcal_$(SOC)_CORELIST))
+#export cal_capture_testapp_$(SOC)_CORELIST
+#cal_EXAMPLE_LIST += cal_capture_testapp
 
 cal_baremetal_capture_testapp_COMP_LIST = cal_baremetal_capture_testapp
 cal_baremetal_capture_testapp_RELPATH = ti/drv/cal/examples/cal_capture_test
@@ -174,24 +174,24 @@ cal_baremetal_capture_testapp_$(SOC)_CORELIST = $(drvcal_$(SOC)_CORELIST)
 export cal_baremetal_capture_testapp_$(SOC)_CORELIST
 cal_EXAMPLE_LIST += cal_baremetal_capture_testapp
 
-cal_loopback_testapp_COMP_LIST = cal_loopback_testapp
-cal_loopback_testapp_RELPATH = ti/drv/cal/examples/cal_loopback_test
-cal_loopback_testapp_PATH = $(PDK_CAL_COMP_PATH)/examples/cal_loopback_test
-cal_loopback_testapp_MAKEFILE = -fmakefile
-cal_loopback_testapp_BOARD_DEPENDENCY = yes
-cal_loopback_testapp_CORE_DEPENDENCY = yes
-cal_loopback_testapp_XDC_CONFIGURO = yes
-export cal_loopback_testapp_COMP_LIST
-export cal_loopback_testapp_BOARD_DEPENDENCY
-export cal_loopback_testapp_CORE_DEPENDENCY
-export cal_loopback_testapp_XDC_CONFIGURO
-cal_loopback_testapp_PKG_LIST = cal_loopback_testapp
-cal_loopback_testapp_INCLUDE = $(cal_loopback_testapp_PATH)
-cal_loopback_testapp_BOARDLIST = $(filter $(DEFAULT_$(SOC)_BOARDLIST_tirtos), $(drvcal_BOARDLIST))
-export cal_loopback_testapp_BOARDLIST
-cal_loopback_testapp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvcal_$(SOC)_CORELIST))
-export cal_loopback_testapp_$(SOC)_CORELIST
-cal_EXAMPLE_LIST += cal_loopback_testapp
+#cal_loopback_testapp_COMP_LIST = cal_loopback_testapp
+#cal_loopback_testapp_RELPATH = ti/drv/cal/examples/cal_loopback_test
+#cal_loopback_testapp_PATH = $(PDK_CAL_COMP_PATH)/examples/cal_loopback_test
+#cal_loopback_testapp_MAKEFILE = -fmakefile
+#cal_loopback_testapp_BOARD_DEPENDENCY = yes
+#cal_loopback_testapp_CORE_DEPENDENCY = yes
+#cal_loopback_testapp_XDC_CONFIGURO = yes
+#export cal_loopback_testapp_COMP_LIST
+#export cal_loopback_testapp_BOARD_DEPENDENCY
+#export cal_loopback_testapp_CORE_DEPENDENCY
+#export cal_loopback_testapp_XDC_CONFIGURO
+#cal_loopback_testapp_PKG_LIST = cal_loopback_testapp
+#cal_loopback_testapp_INCLUDE = $(cal_loopback_testapp_PATH)
+#cal_loopback_testapp_BOARDLIST = $(filter $(DEFAULT_$(SOC)_BOARDLIST_tirtos), $(drvcal_BOARDLIST))
+#export cal_loopback_testapp_BOARDLIST
+#cal_loopback_testapp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvcal_$(SOC)_CORELIST))
+#export cal_loopback_testapp_$(SOC)_CORELIST
+#cal_EXAMPLE_LIST += cal_loopback_testapp
 
 cal_baremetal_loopback_testapp_COMP_LIST = cal_baremetal_loopback_testapp
 cal_baremetal_loopback_testapp_RELPATH = ti/drv/cal/examples/cal_loopback_test
