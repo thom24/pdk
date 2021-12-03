@@ -69,6 +69,7 @@ SECTIONS
     .startupData 	: {} palign(8) 		> MSMC3_MCU1_CPU0, type = NOINIT
     .text    	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .const   	: {} palign(8) 		> MSMC3_MCU1_CPU0
+    .rodata   	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .cinit   	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .pinit   	: {} palign(8) 		> MSMC3_MCU1_CPU0
     .bss     	: {} align(4)  		> MSMC3_MCU1_CPU0

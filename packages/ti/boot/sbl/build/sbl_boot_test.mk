@@ -31,6 +31,7 @@ SRCS_COMMON += sbl_amp_multicore.c sbl_printf.c
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
   SRCS_ASM_COMMON = sbl_multicore_r5.asm
   EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mcuAmplinker.lds
+  APPEND_LNKCMD_FILE = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mcuAmplinker_$(CORE).lds
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))

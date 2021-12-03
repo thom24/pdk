@@ -21,12 +21,7 @@ MEMORY
 
 SECTIONS
 {
-    .sbl_mcu_1_0_resetvector 	: {} palign(8) 		> MSMC3_MCU1_CPU0
-    .sbl_mcu_1_1_resetvector 	: {} palign(8) 		> MSMC3_MCU1_CPU1
-    .sbl_mcu_2_0_resetvector 	: {} palign(8) 		> MSMC3_MCU2_CPU0
-    .sbl_mcu_2_1_resetvector 	: {} palign(8) 		> MSMC3_MCU2_CPU1
     .sbl_mpu_1_0_resetvector 	: {} palign(8) 		> MSMC3_MPU1_CPU0
     .sbl_mpu_1_1_resetvector 	: {} palign(8) 		> MSMC3_MPU1_CPU1
-
 }
 

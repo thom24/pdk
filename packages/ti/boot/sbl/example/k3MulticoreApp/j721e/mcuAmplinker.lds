@@ -27,22 +27,19 @@ MEMORY
     MSMC3_MPU2_CPU1	: origin=0x7002A000 length=0x2000			/* 8KB */
 }
 
+
+
 SECTIONS
 {
-    .sbl_mcu_1_0_resetvector 	: {} palign(8) 		> MSMC3_MCU1_CPU0
-    .sbl_mcu_1_1_resetvector 	: {} palign(8) 		> MSMC3_MCU1_CPU1
-    .sbl_mcu_2_0_resetvector 	: {} palign(8) 		> MSMC3_MCU2_CPU0
-    .sbl_mcu_2_1_resetvector 	: {} palign(8) 		> MSMC3_MCU2_CPU1
-    .sbl_mcu_3_0_resetvector 	: {} palign(8) 		> MSMC3_MCU3_CPU0
-    .sbl_mcu_3_1_resetvector 	: {} palign(8) 		> MSMC3_MCU3_CPU1
-    .sbl_c66x_0_resetvector     : {} palign(8) 		> MSMC3_DSP1_C66X
-    .sbl_c66x_1_resetvector     : {} palign(8) 		> MSMC3_DSP2_C66X
-    .sbl_c7x_0_resetvector      : {} palign(8) 		> MSMC3_DSP1_C7X
-    .sbl_c7x_1_resetvector      : {} palign(8) 		> MSMC3_DSP2_C7X
-    .sbl_mpu_1_0_resetvector 	: {} palign(8) 		> MSMC3_MPU1_CPU0
-    .sbl_mpu_1_1_resetvector 	: {} palign(8) 		> MSMC3_MPU1_CPU1
-    .sbl_mpu_2_0_resetvector 	: {} palign(8) 		> MSMC3_MPU2_CPU0
-    .sbl_mpu_2_1_resetvector 	: {} palign(8) 		> MSMC3_MPU2_CPU1
-
+    .sbl_c66x_0_resetvector     : {} palign(8)                 > MSMC3_DSP1_C66X
+    .sbl_c66x_1_resetvector     : {} palign(8)                 > MSMC3_DSP2_C66X
+    .sbl_c7x_0_resetvector      : {} palign(8)                 > MSMC3_DSP1_C7X
+    .sbl_c7x_1_resetvector      : {} palign(8)                 > MSMC3_DSP2_C7X
+    .sbl_mpu_1_0_resetvector   : {} palign(8)          > MSMC3_MPU1_CPU0
+    .sbl_mpu_1_1_resetvector   : {} palign(8)          > MSMC3_MPU1_CPU1
+    .sbl_mpu_2_0_resetvector   : {} palign(8)          > MSMC3_MPU2_CPU0
+    .sbl_mpu_2_1_resetvector   : {} palign(8)          > MSMC3_MPU2_CPU1
 }
+
+
 

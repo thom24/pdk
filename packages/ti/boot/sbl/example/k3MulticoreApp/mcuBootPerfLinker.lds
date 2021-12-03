@@ -93,6 +93,7 @@ SECTIONS
     .sbl_mcu_1_0_resetvector : {} palign(8) > MSMC3_H
     .text    	: {} palign(8) 		> MSMC3_H
     .const   	: {} palign(8) 		> MSMC3_H
+    .rodata   	: {} palign(8) 		> MSMC3_H
     .cinit   	: {} palign(8) 		> MSMC3_H
     .pinit   	: {} palign(8) 		> MSMC3_H
     .bss     	: {} align(4)  		> MSMC3_H

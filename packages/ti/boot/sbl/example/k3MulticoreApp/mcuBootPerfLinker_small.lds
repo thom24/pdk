@@ -85,6 +85,7 @@ SECTIONS
     .sbl_mcu_1_0_resetvector : {} palign(8) > OCMRAM_BOOT_PERF
     .text    	: {} palign(8) 		> OCMRAM_BOOT_PERF
     .const   	: {} palign(8) 		> OCMRAM_BOOT_PERF
+    .rodata   	: {} palign(8) 		> OCMRAM_BOOT_PERF
     .cinit   	: {} palign(8) 		> OCMRAM_BOOT_PERF
     .pinit   	: {} palign(8) 		> OCMRAM_BOOT_PERF
     .bss     	: {} align(4)  		> OCMRAM_BOOT_PERF
