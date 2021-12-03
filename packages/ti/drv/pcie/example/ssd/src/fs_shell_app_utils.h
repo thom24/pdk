@@ -1,13 +1,5 @@
 /**
-<<<<<<< HEAD
-<<<<<<< HEAD
  *  \file  fs_shell_app_utils.h
-=======
- *  \file  app_utils_fs_shell.h
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
- *  \file  fs_shell_app_utils.h
->>>>>>> 3fda8cd5c (Updating as per the review comments)
  *
  *  \brief This file provides structure, api, variable and macro required to
  *         use user interface example utils.
@@ -47,18 +39,8 @@
  *
  */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 #ifndef _FS_SHELL_APP_UTILS_H_
 #define _FS_SHELL_APP_UTILS_H_
-=======
-#ifndef APP_UTILS_FS_SHELL_H_
-#define APP_UTILS_FS_SHELL_H_
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
-#ifndef _FS_SHELL_APP_UTILS_H_
-#define _FS_SHELL_APP_UTILS_H_
->>>>>>> 3fda8cd5c (Updating as per the review comments)
 
 /* ========================================================================== */
 /*                             Include Files                                  */

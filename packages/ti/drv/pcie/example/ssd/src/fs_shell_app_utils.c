@@ -43,29 +43,13 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
 #include <string.h>
 #include <stdio.h>
 
 #include <ti/drv/pcie/example/ssd/src/pcie_ssd.h>
 #include <ti/drv/pcie/example/ssd/src/fs_shell_app_utils.h>
-<<<<<<< HEAD
 #include <ti/csl/tistdtypes.h>
 
-=======
-#include "pcie_ssd.h"
-#include "fs_shell_app_utils.h"
-#include <ti/csl/tistdtypes.h>
-#include "string.h"
-#include "stdio.h"
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
-#include <ti/csl/tistdtypes.h>
-
->>>>>>> ad03eb174 (Updated the files as per previous comments)
 #include <ti/csl/csl_error.h>
 #include <ti/fs/fatfs/ff.h>
 
@@ -381,19 +365,7 @@ int32_t FSShellAppUtilsProcess(void)
             {
                 if(FR_OK == f_opendir(&gFsShellAppUtilsDirObj, gFsShellAppUtilsCwd))
                 {
-<<<<<<< HEAD
-<<<<<<< HEAD
                     inputCharIdx = 0U;
-=======
-                    //scanf("%s", gFsShellAppUtilsRxBuf);
-                    //UART_gets(gFsShellAppUtilsRxBuf, 80U);
-                    //gets(gFsShellAppUtilsRxBuf);
-                    //fflush(stdin);
-		    inputCharIdx = 0U;
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
-                    inputCharIdx = 0U;
->>>>>>> ad03eb174 (Updated the files as per previous comments)
 
                     do
                     {
@@ -518,61 +490,30 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
     int32_t argc;
     uint32_t findArg = TRUE;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
    /*
     * Initialize the argument counter, and point to the beginning of the
     * command line string.
     */
-<<<<<<< HEAD
-=======
-    /*
-	 * Initialize the argument counter, and point to the beginning of the
-     * command line string.
-	 */
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
     argc = 0U;
     pChar = pCmdLine;
 
     /* Advance through the command line until a zero character is found. */
     while(*pChar)
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
        /*
         * If there is a space, then replace it with a zero, and set the flag
         * to search for the next argument.
         */
-<<<<<<< HEAD
-=======
-        /*
-		 * If there is a space, then replace it with a zero, and set the flag
-         * to search for the next argument.
-		 */
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
         if(*pChar == ' ')
         {
             *pChar = 0;
             findArg = TRUE;
         }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
        /*
         * Otherwise it is not a space, so it must be a character that is part
         * of an argument.
         */
-<<<<<<< HEAD
         else
         {
            /*
@@ -586,35 +527,6 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
                 * reached, then save the pointer to the start of this new arg
                 * in the argv array, and increment the count of args, argc.
                 */
-=======
-        /*
-         * Otherwise it is not a space, so it must be a character that is part
-         * of an argument.
-		 */
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
-        else
-        {
-           /*
-            * If findArg is set, then that means we are looking for the start
-            * of the next argument.
-            */
-            if(TRUE == findArg)
-            {
-<<<<<<< HEAD
-                /*
-				 * As long as the maximum number of arguments has not been
-                 * reached, then save the pointer to the start of this new arg
-                 * in the argv array, and increment the count of args, argc.
-				 */
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
-               /*
-                * As long as the maximum number of arguments has not been
-                * reached, then save the pointer to the start of this new arg
-                * in the argv array, and increment the count of args, argc.
-                */
->>>>>>> ad03eb174 (Updated the files as per previous comments)
                 if(argc < FSSHELLAPPUTILS_CMDLINE_MAX_ARGS)
                 {
                     argv[argc] = pChar;
@@ -623,23 +535,10 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
                     retStatus = CSL_SOK;
                 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
                /*
                 * The maximum number of arguments has been reached so return
                 * the error.
                 */
-<<<<<<< HEAD
-=======
-                /*
-				 * The maximum number of arguments has been reached so return
-                 * the error.
-				 */
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
                 else
                 {
                     PCIE_logPrintf("Too many arguments for command processor!\n");
@@ -656,15 +555,10 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
     /* If one or more arguments was found, then process the command. */
     if((CSL_SOK == retStatus) && (0U != argc))
     {
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
        /*
         * Search through the command table until a null command string is
         * found, which marks the end of the table.
         */
-<<<<<<< HEAD
         while(pCmdList->pCmd)
         {
            /*
@@ -672,28 +566,6 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
             * the function for this command, passing the command line
             * arguments.
             */
-=======
-        /*
-		 * Search through the command table until a null command string is
-         * found, which marks the end of the table.
-		 */
-        while(pCmdList->pCmd)
-        {
-            /*
-			 * If this command entry command string matches argv[0], then call
-             * the function for this command, passing the command line
-             * arguments.
-			 */
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
-        while(pCmdList->pCmd)
-        {
-           /*
-            * If this command entry command string matches argv[0], then call
-            * the function for this command, passing the command line
-            * arguments.
-            */
->>>>>>> ad03eb174 (Updated the files as per previous comments)
             if(!strcmp((const char *)argv[0], (const char *)pCmdList->pCmd))
             {
                 retStatus = pCmdList->pfnCmd(argc, (char **)argv);
@@ -704,23 +576,10 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
         }
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
    /*
     * Fall through to here means that no matching command was found, so return
     * an error.
     */
-<<<<<<< HEAD
-=======
-    /*
-	 * Fall through to here means that no matching command was found, so return
-     * an error.
-	 */
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
     return retStatus;
 }
 
@@ -1135,10 +994,6 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
         while(usBytesRead == (sizeof(gFsShellAppUtilsDataBuf) - 1));
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
     /*
      * Close the Read file.
      * If there was an error writing, then print a newline and return the
@@ -1150,7 +1005,6 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
 
         if(fresultRead != FR_OK)
         {
-<<<<<<< HEAD
             PCIE_logPrintf("Fail to close read file !!!!\n");
             retStat = CSL_ESYS_FAIL;
         }
@@ -1171,46 +1025,6 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
             retStat = CSL_ESYS_FAIL;
         }
     }
-=======
-	/*
-	 * Close the Read file.
-	 * If there was an error writing, then print a newline and return the
-	 * error to the user.
-	 */
-	if(TRUE == flagRead)
-	{
-		fresultRead = f_close(&gFsShellAppUtilsReadFileObj);
-
-		if(fresultRead != FR_OK)
-		{
-=======
->>>>>>> ad03eb174 (Updated the files as per previous comments)
-            PCIE_logPrintf("Fail to close read file !!!!\n");
-            retStat = CSL_ESYS_FAIL;
-        }
-    }
-
-    /*
-     * Close the Write file.
-     * If there was an error writing, then print a newline and return the
-     * error to the user.
-     */
-    if(TRUE == flagWrite)
-    {
-        fresultWrite = f_close(&gFsShellAppUtilsWriteFileObj);
-
-        if(fresultWrite != FR_OK)
-        {
-            PCIE_logPrintf("Fail to close write file !!!!\n");
-            retStat = CSL_ESYS_FAIL;
-<<<<<<< HEAD
-		}
-	}
->>>>>>> f0102448a (PCIE SSD Example code)
-=======
-        }
-    }
->>>>>>> ad03eb174 (Updated the files as per previous comments)
 
     /* Return success. */
     return retStat;
