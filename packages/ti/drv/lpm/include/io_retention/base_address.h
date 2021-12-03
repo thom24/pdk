@@ -66,8 +66,8 @@
 #include <ti/drv/lpm/include/io_retention/constants.h>
 
 #if DEVICE_NAME == j7_core
-    #include <ti/drv/lpm/include/j7_missing_base_address.h>
-    #include <ti/drv/lpm/include/j7_base_address.h>
+    #include <ti/drv/lpm/include/io_retention/j7_missing_base_address.h>
+    #include <ti/drv/lpm/include/io_retention/j7_base_address.h>
 #elif DEVICE_NAME == j7vcl_core
     #include <ti/drv/lpm/include/io_retention/j7vcl_base_address.h>
 #else

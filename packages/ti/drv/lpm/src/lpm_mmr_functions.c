@@ -113,7 +113,7 @@ int32_t SOC_unlock( uint32_t lockNum )
     return 0;
 }
 
-bool mmr_isLocked(
+bool Lpm_mmr_isLocked(
     uintptr_t base,
     uint32_t  partition
     )
@@ -131,11 +131,11 @@ bool mmr_isLocked(
  *  void test_main (void)
  *  {
  *    uint32_t partition = 7;
- *    mmr_unlock(mmr0_cfg_base, partition);
+ *    Lpm_mmr_unlock(mmr0_cfg_base, partition);
  *  }
  *  \endcode
  */
-void mmr_unlock (
+void Lpm_mmr_unlock (
     uintptr_t base,     /*!< physical base address of the mmr to unlock */
     uint32_t partition  /*!< which partition to unlock */
     )
@@ -144,7 +144,7 @@ void mmr_unlock (
   /* translate the base address */
   volatile uint32_t * lock = mkptr(base, partition * 0x4000 + MMR_LOCK0_KICK0);
 
-  if (!mmr_isLocked( base, partition ) ) {
+  if (!Lpm_mmr_isLocked( base, partition ) ) {
     /* return if already unlocked */
     return;
   } else {
@@ -165,11 +165,11 @@ void mmr_unlock (
  *  void test_main (void)
  *  {
  *    uint32_t partition = 5;
- *    mmr_lock(mmr1_cfg_base, partition);
+ *    Lpm_mmr_lock(mmr1_cfg_base, partition);
  *  }
  *  \endcode
  */
-void mmr_lock (
+void Lpm_mmr_lock (
     uintptr_t base,     /*!< physical base address of the mmr to target */
     uint32_t partition  /*!< which partition to lock */
     )
@@ -185,7 +185,7 @@ void mmr_lock (
 
 #define show_exp_val (*mkptr(mmr2_cfg_base, MMR_TEST_DEBUG_ALLRST1)= exp_val)
 
-void unlock(unsigned int unlock_num, unsigned int base ) {
+void Lpm_unlock(unsigned int unlock_num, unsigned int base ) {
   unsigned int const_lock_start_addr, partitionOffset, kick1_val, kick0_val;
   if(base == mmr0_cfg_base || base == mmr1_cfg_base || base == mmr2_cfg_base){
 	const_lock_start_addr = 0x01008;
@@ -205,13 +205,13 @@ void unlock(unsigned int unlock_num, unsigned int base ) {
   *mkptr(base,(const_lock_start_addr+partitionOffset*unlock_num+0x00004)) = kick1_val;
 }
 
-void pllmmr_unlock(unsigned int unlock_num, unsigned int base) {
+void Lpm_pll_mmr_unlock(unsigned int unlock_num, unsigned int base) {
   unsigned int const_lock_start_addr = 0x00010;
   *mkptr(base,(const_lock_start_addr+0x01000*unlock_num))         = MMR_PLL0_KICK0_UNLOCK_VAL;
   *mkptr(base,(const_lock_start_addr+0x01000*unlock_num+0x00004)) = MMR_PLL0_KICK1_UNLOCK_VAL;
 }
 
-void lock( unsigned int lock_num, unsigned int base) {
+void Lpm_lock( unsigned int lock_num, unsigned int base) {
   unsigned int const_lock_start_addr, partitionOffset;
   if(base == mmr0_cfg_base || base == mmr1_cfg_base || base == mmr2_cfg_base){
 	const_lock_start_addr = 0x01008;
@@ -245,7 +245,7 @@ void lockAllBut(unsigned int base, uint32_t unlockPart){
 		default: 
 			numPartitions = 0; 
 	}
-	unlock(unlockPart, base); 
+	Lpm_unlock(unlockPart, base); 
 
 	for(i = 0; i <= numPartitions; i++){
 		if ((base == mmr0_cfg_base && i == 4) || (base == mmr0_cfg_base && i == 5)) 
@@ -258,13 +258,13 @@ void lockAllBut(unsigned int base, uint32_t unlockPart){
 		}
 		if ((i == unlockPart) || (base == secmmr0_cfgr0_base) || (base == secmmr0_cfgr2_base) || (base == secmmr1_cfgr0_base) || (base == secmmr1_cfgr2_base))
       continue;  
-		lock(i, base); 
+		Lpm_lock(i, base); 
 	}
 }
 
 
 // @ needs to be changed in different projects
-void lockAllPartitions(unsigned int base){
+void Lpm_lockAllPartitions(unsigned int base){
 	unsigned int numPartitions, i; 
 	switch(base){
 		case pllmmr0_cfg_base:
@@ -295,11 +295,11 @@ void lockAllPartitions(unsigned int base){
         continue; 
 		}
 
-		lock(i, base); 
+		Lpm_lock(i, base); 
 	}
 }
 
-uint32_t getPartitionNum(unsigned int base, unsigned int offset){
+uint32_t Lpm_getPartitionNum(unsigned int base, unsigned int offset){
 	uint32_t result = (unsigned int) -1;
 	
 	if(base == mmr0_cfg_base || base == mmr1_cfg_base || base == mmr2_cfg_base){
@@ -333,7 +333,7 @@ void unlockAllBut(unsigned int base, uint32_t lockPart){
 			numPartitions = 0; 
 	}
 
-	lock(lockPart, base);
+	Lpm_lock(lockPart, base);
 	for(i = 0; i <= numPartitions; i++){
 		if ((base == mmr0_cfg_base && i == 4) || (base == mmr0_cfg_base && i == 5)) 
       continue;
@@ -345,12 +345,12 @@ void unlockAllBut(unsigned int base, uint32_t lockPart){
 		}
 
 		if(lockPart == i ) continue;  
-		unlock(i, base); 
+		Lpm_unlock(i, base); 
 	}
 }
 
 // @ needs to be changed in different projects
-void unlockAllPartitions(unsigned int base){
+void Lpm_unlockAllPartitions(unsigned int base){
 	unsigned int numPartitions, i; 
 	switch(base){
 		case pllmmr0_cfg_base:
@@ -380,11 +380,11 @@ void unlockAllPartitions(unsigned int base){
 			if ((i == 5) || (i == 6) || (i == 9) || (i == 10) || (i == 11) || (i == 13))
         continue; 
 		}
-		unlock(i, base); 
+		Lpm_unlock(i, base); 
 	}
 }
 
-void pllmmr_lock(unsigned int lock_num, unsigned int base) {
+void Lpm_pll_mmr_lock(unsigned int lock_num, unsigned int base) {
   unsigned int const_lock_start_addr = 0x00010;
   *mkptr(base,(const_lock_start_addr+0x01000*lock_num+0x00004)) = 0;
 }

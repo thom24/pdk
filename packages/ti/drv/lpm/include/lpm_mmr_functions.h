@@ -65,18 +65,8 @@
  *  \brief MMR related functions
  */
 
-#ifndef _MMR_FUNCTIONS_H_
-#define _MMR_FUNCTIONS_H_
-
-#define WKUP_CTRL_MMR mmr0_cfg_base
-#define MCU_CTRL_MMR mmr1_cfg_base
-#define MAIN_CTRL_MMR mmr2_cfg_base
-#define MCU_PLL_MMR pllmmr0_cfg_base
-#define MAIN_PLL_MMR pllmmr1_cfg_base 
-#define MCU_SEC_MMR_0 secmmr0_cfgr0_base
-#define MCU_SEC_MMR_1 secmmr0_cfgr2_base
-#define MAIN_SEC_MMR_0 secmmr1_cfgr0_base
-#define MAIN_SEC_MMR_1 secmmr1_cfgr2_base
+#ifndef _LPM_MMR_FUNCTIONS_H_
+#define _LPM_MMR_FUNCTIONS_H_
 
 #include <ti/drv/lpm/include/io_retention/soc_functions.h>
 #include <ti/drv/lpm/include/io_retention/mmr_common.h>
@@ -92,11 +82,11 @@
  *  void test_main (void)
  *  {
  *    uint32_t partition = 7;
- *    mmr_unlock(mmr0_cfg_base, partition);
+ *    Lpm_mmr_unlock(mmr0_cfg_base, partition);
  *  }
  *  \endcode
  */
-void mmr_unlock (
+void Lpm_mmr_unlock (
     uintptr_t base,     /*!< base address of the mmr to unlock */
     uint32_t partition  /*!< which partition to unlock */
     );
@@ -109,11 +99,11 @@ void mmr_unlock (
  *  void test_main (void)
  *  {
  *    uint32_t partition = 5;
- *    mmr_lock(mmr1_cfg_base, partition);
+ *    Lpm_mmr_lock(mmr1_cfg_base, partition);
  *  }
  *  \endcode
  */
-void mmr_lock (
+void Lpm_mmr_lock (
     uintptr_t base,     /*!< base address of the mmr to target */
     uint32_t partition  /*!< which partition to lock */
     );
@@ -129,11 +119,11 @@ void mmr_lock (
  *  {
  *    uint32_t partition = 5;
  *    bool isLocked;
- *    isLocked = mmr_isLocked(mmr1_cfg_base, partition);
+ *    isLocked = Lpm_mmr_isLocked(mmr1_cfg_base, partition);
  *  }
  *  \endcode
  */
-bool mmr_isLocked (
+bool Lpm_mmr_isLocked (
     uintptr_t base,     /*!< physical base address of the mmr to target */
     uint32_t partition  /*!< which partition to test for lock */
     );
@@ -144,7 +134,7 @@ bool mmr_isLocked (
  *  \code
  *  void test_main (void)
  *  {
- *  	int partitionNum = getPartitionNum(MAIN_CTRL_MMR, MAIN_CTRL_INTR_EN_CLR);
+ *  	int partitionNum = Lpm_getPartitionNum(MAIN_CTRL_MMR, MAIN_CTRL_INTR_EN_CLR);
  *		unlock(partitionNum, base);   
  *  }
  *  \endcode
@@ -152,7 +142,7 @@ bool mmr_isLocked (
  * @param offset the offset of the register.
  * @return the partition which the register belongs to 
  */
-uint32_t getPartitionNum(unsigned int base, unsigned int offset);
+uint32_t Lpm_getPartitionNum(unsigned int base, unsigned int offset);
 
 /** @brief Unlock partition unlock_num at MMR with base address base
  *
@@ -170,7 +160,7 @@ uint32_t getPartitionNum(unsigned int base, unsigned int offset);
  *  @param base the base address of the MMR.
  *  @return Void.
  */
-void unlock(unsigned int unlock_num, unsigned int base );
+void Lpm_unlock(unsigned int unlock_num, unsigned int base );
 
 /** @brief lock partition lock_num at MMR with base address base
  *
@@ -187,7 +177,7 @@ void unlock(unsigned int unlock_num, unsigned int base );
  *  @param base the base address of the MMR.
  *  @return Void.
  */
-void lock( unsigned int lock_num, unsigned int base);
+void Lpm_lock( unsigned int lock_num, unsigned int base);
 
 /*!
  *  \ lock all the partitions at a MMR
@@ -203,7 +193,7 @@ void lock( unsigned int lock_num, unsigned int base);
  *  }
  *  \endcode
  */
-void lockAllPartitions(
+void Lpm_lockAllPartitions(
 	unsigned int base /*!< base address of the MMR to lock */
 	);
 
@@ -221,7 +211,7 @@ void lockAllPartitions(
  *  }
  *  \endcode
  */
-void unlockAllPartitions(
+void Lpm_unlockAllPartitions(
 	unsigned int base /*!< base address of the MMR to unlock */
 );
 
