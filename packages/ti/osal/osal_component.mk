@@ -119,9 +119,9 @@ libosal_freertos_j721s2_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 # The components included here are built and will be part of osal lib
 ############################
 osal_LIB_LIST = osal_nonos osal_nonos_indp
-ifeq ($(BUILD_OS_TYPE),tirtos)
-osal_LIB_LIST += osal_tirtos osal_tirtos_indp
-endif
+# ifeq ($(BUILD_OS_TYPE),tirtos)
+# osal_LIB_LIST += osal_tirtos osal_tirtos_indp
+# endif
 osal_LIB_LIST += osal_freertos
 ifeq ($(SOC),$(filter $(SOC), $(libosal_safertos_SOCLIST)))
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
@@ -236,58 +236,58 @@ osal_nonos_indp_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
 export osal_nonos_indp_$(SOC)_CORELIST
 
 # OSAL TIRTOS LIB
-osal_tirtos_COMP_LIST = osal_tirtos
-osal_tirtos_RELPATH = ti/osal
-osal_tirtos_PATH = $(PDK_OSAL_COMP_PATH)
-osal_tirtos_LIBNAME = ti.osal
-export osal_tirtos_LIBNAME
-osal_tirtos_LIBPATH = $(osal_tirtos_PATH)/lib/tirtos
-export osal_tirtos_LIBPATH
-osal_tirtos_OBJPATH = $(osal_tirtos_RELPATH)/osal_tirtos
-export osal_tirtos_OBJPATH
-osal_tirtos_MAKEFILE = -f build/makefile_tirtos.mk
-export osal_tirtos_MAKEFILE
-osal_tirtos_PLATFORM_DEPENDENCY = no
-osal_tirtos_CORE_DEPENDENCY = no
-osal_tirtos_SOC_DEPENDENCY = yes
-export osal_tirtos_COMP_LIST
-export osal_tirtos_PLATFORM_DEPENDENCY
-export osal_tirtos_CORE_DEPENDENCY
-export osal_tirtos_SOC_DEPENDENCY
-osal_tirtos_PKG_LIST = osal_tirtos
-export osal_tirtos_PKG_LIST
-osal_tirtos_INCLUDE = $(osal_tirtos_PATH)
-osal_tirtos_SOCLIST = $(libosal_SOCLIST)
-export osal_tirtos_SOCLIST
-osal_tirtos_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(libosal_$(SOC)_CORELIST))
-export osal_tirtos_$(SOC)_CORELIST
+# osal_tirtos_COMP_LIST = osal_tirtos
+# osal_tirtos_RELPATH = ti/osal
+# osal_tirtos_PATH = $(PDK_OSAL_COMP_PATH)
+# osal_tirtos_LIBNAME = ti.osal
+# export osal_tirtos_LIBNAME
+# osal_tirtos_LIBPATH = $(osal_tirtos_PATH)/lib/tirtos
+# export osal_tirtos_LIBPATH
+# osal_tirtos_OBJPATH = $(osal_tirtos_RELPATH)/osal_tirtos
+# export osal_tirtos_OBJPATH
+# osal_tirtos_MAKEFILE = -f build/makefile_tirtos.mk
+# export osal_tirtos_MAKEFILE
+# osal_tirtos_PLATFORM_DEPENDENCY = no
+# osal_tirtos_CORE_DEPENDENCY = no
+# osal_tirtos_SOC_DEPENDENCY = yes
+# export osal_tirtos_COMP_LIST
+# export osal_tirtos_PLATFORM_DEPENDENCY
+# export osal_tirtos_CORE_DEPENDENCY
+# export osal_tirtos_SOC_DEPENDENCY
+# osal_tirtos_PKG_LIST = osal_tirtos
+# export osal_tirtos_PKG_LIST
+# osal_tirtos_INCLUDE = $(osal_tirtos_PATH)
+# osal_tirtos_SOCLIST = $(libosal_tirtos_SOCLIST)
+# export osal_tirtos_SOCLIST
+# osal_tirtos_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(libosal_$(SOC)_CORELIST))
+# export osal_tirtos_$(SOC)_CORELIST
 
 # OSAL TIRTOS DEVICE INDEPENDENT
-osal_tirtos_indp_COMP_LIST = osal_tirtos_indp
-osal_tirtos_indp_RELPATH = ti/osal
-osal_tirtos_indp_PATH = $(PDK_OSAL_COMP_PATH)
-osal_tirtos_indp_LIBNAME = ti.osal
-export osal_tirtos_indp_LIBNAME
-osal_tirtos_indp_LIBPATH = $(osal_tirtos_indp_PATH)/lib/tirtos
-export osal_tirtos_indp_LIBPATH
-osal_tirtos_indp_OBJPATH = $(osal_tirtos_indp_RELPATH)/osal_tirtos_indp
-export osal_tirtos_indp_OBJPATH
-osal_tirtos_indp_MAKEFILE = -f build/makefile_tirtos_indp.mk
-export osal_tirtos_indp_MAKEFILE
-osal_tirtos_indp_PLATFORM_DEPENDENCY = no
-osal_tirtos_indp_CORE_DEPENDENCY = no
-osal_tirtos_indp_SOC_DEPENDENCY = no
-export osal_tirtos_indp_COMP_LIST
-export osal_tirtos_indp_PLATFORM_DEPENDENCY
-export osal_tirtos_indp_CORE_DEPENDENCY
-export osal_tirtos_indp_SOC_DEPENDENCY
-osal_tirtos_indp_PKG_LIST = osal_tirtos_indp
-export osal_tirtos_indp_PKG_LIST
-osal_tirtos_indp_INCLUDE = $(osal_tirtos_indp_PATH)
-osal_tirtos_indp_SOCLIST = 
-export osal_tirtos_indp_SOCLIST
-osal_tirtos_indp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(libosal_$(SOC)_CORELIST))
-export osal_tirtos_indp_$(SOC)_CORELIST
+# osal_tirtos_indp_COMP_LIST = osal_tirtos_indp
+# osal_tirtos_indp_RELPATH = ti/osal
+# osal_tirtos_indp_PATH = $(PDK_OSAL_COMP_PATH)
+# osal_tirtos_indp_LIBNAME = ti.osal
+# export osal_tirtos_indp_LIBNAME
+# osal_tirtos_indp_LIBPATH = $(osal_tirtos_indp_PATH)/lib/tirtos
+# export osal_tirtos_indp_LIBPATH
+# osal_tirtos_indp_OBJPATH = $(osal_tirtos_indp_RELPATH)/osal_tirtos_indp
+# export osal_tirtos_indp_OBJPATH
+# osal_tirtos_indp_MAKEFILE = -f build/makefile_tirtos_indp.mk
+# export osal_tirtos_indp_MAKEFILE
+# osal_tirtos_indp_PLATFORM_DEPENDENCY = no
+# osal_tirtos_indp_CORE_DEPENDENCY = no
+# osal_tirtos_indp_SOC_DEPENDENCY = no
+# export osal_tirtos_indp_COMP_LIST
+# export osal_tirtos_indp_PLATFORM_DEPENDENCY
+# export osal_tirtos_indp_CORE_DEPENDENCY
+# export osal_tirtos_indp_SOC_DEPENDENCY
+# osal_tirtos_indp_PKG_LIST = osal_tirtos_indp
+# export osal_tirtos_indp_PKG_LIST
+# osal_tirtos_indp_INCLUDE = $(osal_tirtos_indp_PATH)
+# osal_tirtos_indp_SOCLIST =
+# export osal_tirtos_indp_SOCLIST
+# osal_tirtos_indp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(libosal_$(SOC)_CORELIST))
+# export osal_tirtos_indp_$(SOC)_CORELIST
 
 # OSAL FREE RTOS LIB
 osal_freertos_COMP_LIST = osal_freertos
