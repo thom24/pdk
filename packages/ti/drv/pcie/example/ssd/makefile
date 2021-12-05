@@ -18,7 +18,7 @@ INCDIR = . src ../sample/$(SOC)/src
 SRCS_COMMON += nvme.c pcie_ssd.c pcie_sample_board.c fs_shell_app_utils.c fatfs_pcie_interface.c
 PACKAGE_SRCS_COMMON = .
 
-COMP_LIST_COMMON += fatfs_indp pcie gpio
+COMP_LIST_COMMON += fatfs_indp pcie
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )
