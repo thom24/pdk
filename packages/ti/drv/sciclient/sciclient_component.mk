@@ -191,6 +191,17 @@ export sciclient_boardcfg_BOARDLIST = $(sciclient_BOARDLIST)
 export sciclient_boardcfg_$(SOC)_CORELIST = mcu1_0
 export sciclient_boardcfg_LIBNAME = sciclient_boardcfg
 
+export sciclient_UTILS_LIST += sciclient_boardcfg_hs
+export sciclient_boardcfg_hs_COMP_LIST = sciclient_boardcfg_hs
+export sciclient_boardcfg_hs_RELPATH = ti/drv/sciclient
+export sciclient_boardcfg_hs_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciclient_boardcfg_hs_MAKEFILE = -fsrc/boardcfg_makefile BUILD_HS=yes
+export sciclient_boardcfg_hs_BOARD_DEPENDENCY = yes
+export sciclient_boardcfg_hs_CORE_DEPENDENCY = yes
+export sciclient_boardcfg_hs_BOARDLIST = $(sciclient_BOARDLIST)
+export sciclient_boardcfg_hs_$(SOC)_CORELIST = mcu1_0
+export sciclient_boardcfg_hs_LIBNAME = sciclient_boardcfg_hs
+
 export rm_pm_hal_COMP_LIST = rm_pm_hal
 export rm_pm_hal_RELPATH = ti/drv/sciclient/src/rm_pm_hal
 export rm_pm_hal_OBJPATH = ti/drv/sciclient/src/rm_pm_hal

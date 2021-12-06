@@ -101,7 +101,12 @@ endif
 VALIDATOR_JSON := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_rules.json
 VALIDATOR_SCRIPT := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_validator.py
 
-APP_NAME=sciclient_boardcfg
+HS_SUFFIX=
+ifeq ($(BUILD_HS),yes)
+HS_SUFFIX=_hs
+endif
+
+APP_NAME=sciclient_boardcfg$(HS_SUFFIX)
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -118,7 +123,7 @@ HEXFILES := $(foreach file, \
 
 # Append the proper hex-file targets to "all" to guarantee they are
 # .. generated if missing/a board configuration file has been changed
-.PHONY: sciclient_boardcfg $(HEXFILES)
+.PHONY: sciclient_boardcfg$(HS_SUFFIX) $(HEXFILES)
 
 $(APP_NAME): $(HEXFILES)
 
