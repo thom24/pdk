@@ -275,7 +275,7 @@ export sciclient_rtos_app_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), 
 ifneq ($(1),$(filter $(1), safertos))
 sciclient_EXAMPLE_LIST += sciclient_rtos_app_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 sciclient_EXAMPLE_LIST += sciclient_rtos_app_$(1)
 endif
 endif
@@ -315,7 +315,7 @@ export sciclient_unit_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1
 ifneq ($(1),$(filter $(1), safertos))
 sciclient_EXAMPLE_LIST += sciclient_unit_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 sciclient_EXAMPLE_LIST += sciclient_unit_testapp_$(1)
 endif
 endif
@@ -346,7 +346,7 @@ export sciserver_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), y
 ifneq ($(1),$(filter $(1), safertos))
 sciclient_EXAMPLE_LIST += sciserver_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 ifeq ($(BUILD_PROFILE), release)
 # Only supporting release build for SafeRTOS, since debug binaries won't fit in available memory.
 sciclient_EXAMPLE_LIST += sciserver_testapp_$(1)
@@ -378,7 +378,7 @@ export sciclient_fw_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1))
 ifneq ($(1),$(filter $(1), safertos))
 sciclient_EXAMPLE_LIST += sciclient_fw_testapp_$(1)
 else
-ifneq ($(wildcard $(PDK_SAFERTOS_COMP_PATH)),)
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 sciclient_EXAMPLE_LIST += sciclient_fw_testapp_$(1)
 endif
 endif
