@@ -319,12 +319,14 @@ void vPortTimerTickHandler()
 
 void vPortTaskUsesFPU( void )
 {
+    uint32_t ulInitialFPSCR = 0;
+
     /* A task is registering the fact that it needs an FPU context.  Set the
      * FPU flag (which is saved as part of the task context). */
     ulPortTaskHasFPUContext = pdTRUE;
 
     /* Initialise the floating point status register. */
-    asm ( " FMXR 	FPSCR, R0");
+    __asm__ volatile ( "FMXR 	FPSCR, %0" ::"r" ( ulInitialFPSCR ) : "memory" );
 }
 
 void vPortEnterCritical( void )
