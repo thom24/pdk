@@ -1247,7 +1247,7 @@ sbl_EXAMPLE_LIST += sbl_boot_xip_test
 endif
 sbl_boot_xip_test_SBL_APPIMAGEGEN = yes
 sbl_boot_xip_test_SBL_APP_BINIMAGEGEN = yes
-sbl_boot_xip_test_SBL_APP_BIN_SECTIONS = --only-section .rstvectors --only-section .sbl_mcu_1_0_resetvector
+sbl_boot_xip_test_SBL_APP_BIN_SECTIONS = --only-section .rstvectors --only-section .sbl_mcu_1_0_resetvector --only-section .text --only-section .rodata
 export sbl_boot_xip_test_SBL_APPIMAGEGEN
 export sbl_boot_xip_test_SBL_APP_BINIMAGEGEN
 export sbl_boot_xip_test_SBL_APP_BIN_SECTIONS
