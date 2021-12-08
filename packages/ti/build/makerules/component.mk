@@ -88,7 +88,7 @@ endif
 DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE_LIST_$(SOC)))
 
 # The below defines various RTOS types
-DEFAULT_RTOS_LIST = tirtos freertos
+DEFAULT_RTOS_LIST = freertos
 
 # The below defines the DEFAULT_SOCLIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
 # Disable SYSBIOS(TI-RTOS)
