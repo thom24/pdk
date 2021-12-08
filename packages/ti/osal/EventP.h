@@ -262,20 +262,6 @@ extern uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
                             uint8_t waitMode, uint32_t timeout);
 
 /*!
- *  @brief  Function for Event Pend
- *  [NOTE: This will be obsolete in next release. Please migrate to new API EventP_wait()]
- *  [NOTE: SYSBIOS only]
- *
- *  @param handle  EventP handle.created via EventP_create API
- *  @param andMask return from pend() when ALL of these events have occurred
- *  @param orMask  return from pend() when ANY of these events have occurred
- *  @param timeout return from pend() after this many system time units
- *  @return All consumed events or zero if timeout
- */
-extern uint32_t EventP_pend(EventP_Handle handle, uint32_t andMask,
-                            uint32_t orMask, uint32_t timeout);
-
-/*!
  *  @brief  Function for Event Post.
  *
  *  @param handle  A EventP_Handle returned from EventP_create.
