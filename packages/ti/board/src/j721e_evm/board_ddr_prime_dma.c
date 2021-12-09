@@ -62,6 +62,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/osal.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/udma/udma.h>
@@ -343,13 +344,18 @@ static int32_t BOARD_udmaInit(Udma_DrvHandle drvHandle)
     int32_t         retVal;
     Udma_InitPrms   initPrms;
     uint32_t        instId;
+    uint32_t        socDomain;
 
     /* Use MCU NAVSS for MCU domain cores. Rest cores all uses Main NAVSS */
-#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
-    instId = UDMA_INST_ID_MCU_0;
-#else
-    instId = UDMA_INST_ID_MAIN_0;
-#endif
+    socDomain = Board_getSocDomain();
+    if(socDomain == BOARD_SOC_DOMAIN_MCU)
+    {
+        instId = UDMA_INST_ID_MCU_0;
+    }
+    else
+    {
+        instId = UDMA_INST_ID_MAIN_0;
+    }
 
     /* UDMA driver init */
     retVal = UdmaInitPrms_init(instId, &initPrms);

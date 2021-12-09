@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -40,6 +40,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <ti/csl/arch/csl_arch.h>
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
 #include "board_internal.h"
@@ -461,20 +462,16 @@ Board_STATUS Board_setInitParams(Board_initParams_t *initParams)
  */
 uint32_t Board_getSocDomain(void)
 {
-    uint32_t socDomain;
+    uint32_t socDomain = BOARD_SOC_DOMAIN_MAIN;
 
-#if defined (BUILD_MPU1_0)
-    socDomain = BOARD_SOC_DOMAIN_MAIN;
-#elif defined (BUILD_MCU2_0) || defined (BUILD_MCU2_1) || defined (BUILD_MCU3_0) || defined (BUILD_MCU3_1)
-    socDomain = BOARD_SOC_DOMAIN_MAIN;
-#elif defined (BUILD_C7X_1)
-    socDomain = BOARD_SOC_DOMAIN_MAIN;
-#elif defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
-    socDomain = BOARD_SOC_DOMAIN_MAIN;
-#elif defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
-    socDomain = BOARD_SOC_DOMAIN_MCU;
-#else
-    #error "Unsupported core id"
+#ifdef BUILD_MCU
+    CSL_ArmR5CPUInfo info;
+
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        socDomain = BOARD_SOC_DOMAIN_MCU;
+    }
 #endif
 
   return socDomain;
