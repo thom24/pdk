@@ -100,6 +100,8 @@ extern int32_t SPI_socSetInitCfg(uint32_t index, const SPI_v0_HWAttrs *cfg);
 #if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
 extern int32_t SPI_socGetInitCfg(uint32_t idx, SPI_v1_HWAttrs *cfg);
 extern int32_t SPI_socSetInitCfg(uint32_t idx, const SPI_v1_HWAttrs *cfg);
+extern int32_t MCSPI_socInit(void);
+extern int32_t MCSPI_configSocIntrPath(uint32_t instance, void *hwAttrs_ptr, bool setIntrPath);
 #endif
 
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)

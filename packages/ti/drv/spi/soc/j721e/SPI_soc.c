@@ -237,7 +237,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCSPI3_INTR_SPI_0,
 #else
         /* mcu domain */
-        0,
+        (uint32_t)CSL_MCSPI3_CFG_BASE,
         0,
 #endif
         0,
@@ -292,7 +292,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCSPI4_INTR_SPI_0,
 #else
         /* mcu domain */
-        0,
+        (uint32_t)CSL_MCSPI4_CFG_BASE,
         0,
 #endif
         0,
@@ -934,6 +934,217 @@ int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
         {
             src_index = hwAttrs->eventId;               /* Index coming from the peripheral */
             dst_host_irq = hwAttrs->intrNum;            /* By default it is set for MCU R5 */
+
+            rmIrqRelease.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID;
+            rmIrqRelease.valid_params          |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+            rmIrqRelease.src_id                 = src_id;
+            rmIrqRelease.global_event           = 0U;
+            rmIrqRelease.src_index              = src_index;
+            rmIrqRelease.dst_id                 = dst_id;
+            rmIrqRelease.dst_host_irq           = dst_host_irq;
+            rmIrqRelease.ia_id                  = 0U;
+            rmIrqRelease.vint                   = 0U;
+            rmIrqRelease.vint_status_bit_index  = 0U;
+            rmIrqRelease.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+            retVal                              = Sciclient_rmIrqRelease(&rmIrqRelease,
+                                                                         SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+    }
+#endif
+    return(retVal);
+}
+
+/**
+ * \brief  This API update the default SoC level of configurations
+ *         based on the core and domain
+ *
+ *         spiInitCfg table configures MCSPI instances by
+ *         default for MCU R5 0, MCSPI_socInit() is called to
+ *         overwrite the defaut configurations
+ *
+ * \param  none
+ *
+ * \return           0 success: -1: error
+ *
+ */
+int32_t MCSPI_socInit(void)
+{
+    int32_t ret = 0;
+#if defined(BUILD_MCU)
+    CSL_ArmR5CPUInfo r5CpuInfo;
+
+    CSL_armR5GetCpuID(&r5CpuInfo);
+
+    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)             /* MCU R5 */
+    {
+        /* No change required */
+    }
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)         /* MAIN R5 SS0 */
+    {
+        spiInitCfg[0].intNum = CSLR_R5FSS0_INTROUTER0_IN_MCU_MCSPI0_INTR_SPI_0;
+        spiInitCfg[1].intNum = CSLR_R5FSS0_INTROUTER0_IN_MCU_MCSPI1_INTR_SPI_0;
+        spiInitCfg[2].intNum = CSLR_R5FSS0_INTROUTER0_IN_MCU_MCSPI2_INTR_SPI_0;
+        spiInitCfg[3].intNum = CSLR_R5FSS0_INTROUTER0_IN_MCSPI3_INTR_SPI_0;
+        spiInitCfg[4].intNum = CSLR_R5FSS0_INTROUTER0_IN_MCSPI4_INTR_SPI_0;
+    }
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)         /* MAIN R5 SS1 */
+    {
+        spiInitCfg[0].intNum = CSLR_R5FSS1_INTROUTER0_IN_MCU_MCSPI0_INTR_SPI_0;
+        spiInitCfg[1].intNum = CSLR_R5FSS1_INTROUTER0_IN_MCU_MCSPI1_INTR_SPI_0;
+        spiInitCfg[2].intNum = CSLR_R5FSS1_INTROUTER0_IN_MCU_MCSPI2_INTR_SPI_0;
+        spiInitCfg[3].intNum = CSLR_R5FSS1_INTROUTER0_IN_MCSPI3_INTR_SPI_0;
+        spiInitCfg[4].intNum = CSLR_R5FSS1_INTROUTER0_IN_MCSPI4_INTR_SPI_0;
+    }
+    else
+    {
+        ret = -1;
+    }
+#endif
+    return (ret);
+}
+
+/**
+ * \brief  This function will configure the interrupt path to the destination CPU
+ *         using DMSC firmware via sciclient. if setIntrPath is set to TRUE,
+ *         a path is set, else the interrupt path is released
+ *
+ * \param  instance    MCSPI Instance
+ * \param  hwAttrs_ptr Pointer to hardware attributes
+ * \param  setIntrPath Set or release interrupt
+ *
+ * \return           0 success: -1: error
+ *
+ */
+int32_t MCSPI_configSocIntrPath(uint32_t instance, void *hwAttrs_ptr, bool setIntrPath)
+{
+    int32_t retVal = 0;
+#if defined(BUILD_MCU)
+    CSL_ArmR5CPUInfo r5CpuInfo;
+    SPI_v1_HWAttrs *hwAttrs = (SPI_v1_HWAttrs*)(hwAttrs_ptr);
+    struct tisci_msg_rm_irq_set_req  rmIrqReq = {0};
+    struct tisci_msg_rm_irq_set_resp rmIrqResp = {0};
+    struct tisci_msg_rm_irq_release_req rmIrqRelease = {0};
+    struct tisci_msg_rm_get_resource_range_resp res = {0};
+    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    uint16_t src_id,src_index,dst_id = 0U,dst_host_irq;
+    uint16_t intNum, intRangeNum;
+
+    CSL_armR5GetCpuID(&r5CpuInfo);
+
+    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)             /* MCU R5 */
+    {
+        /* No routing required */
+    }
+    else
+    {
+        if(instance==0)
+        {
+            src_id = TISCI_DEV_MCU_MCSPI0;
+        }
+        else if(instance==1)
+        {
+            src_id = TISCI_DEV_MCU_MCSPI1;
+        }
+        else if(instance==2)
+        {
+            src_id = TISCI_DEV_MCU_MCSPI2;
+        }
+        else if(instance==3)
+        {
+            src_id = TISCI_DEV_MCSPI3;
+        }
+        else
+        {
+            src_id = TISCI_DEV_MCSPI4;
+        }
+
+        if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)         /* MAIN R5 SS0 */
+        {
+            req.type = TISCI_DEV_R5FSS0_INTROUTER0;
+            req.subtype = TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+            if(r5CpuInfo.cpuID == 0U)
+            {
+                dst_id = TISCI_DEV_R5FSS0_CORE0;    /* Main R5 -SS0 - CPU0 */
+            }
+            else
+            {
+                dst_id = TISCI_DEV_R5FSS0_CORE1;    /* Main R5 -SS0 - CPU1*/
+            }
+        }
+        else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)    /* MAIN R5 SS1 */
+        {
+            req.type = TISCI_DEV_R5FSS1_INTROUTER0;
+            req.subtype = TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+            if(r5CpuInfo.cpuID == 0U)
+            {
+                dst_id = TISCI_DEV_R5FSS1_CORE0;    /* Main R5 -SS1 - CPU0 */
+            }
+            else
+            {
+                dst_id = TISCI_DEV_R5FSS1_CORE1;    /* Main R5 -SS1 - CPU1*/
+            }
+        }
+
+        if(setIntrPath)
+        {
+            req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+            /* Get interrupt number range */
+            retVal = Sciclient_rmGetResourceRange(&req,
+                                                &res,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+
+            if (CSL_PASS != retVal || res.range_num == 0)
+            {
+                /* Try with HOST_ID_ALL */
+                req.secondary_host = TISCI_HOST_ID_ALL;
+                retVal = Sciclient_rmGetResourceRange(&req,
+                                                    &res,
+                                                    SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+            if (CSL_PASS == retVal)
+            {
+                intRangeNum = res.range_num;
+                if (intRangeNum == 0)
+                {
+                    retVal = -1;
+                }
+            }
+            if (CSL_PASS == retVal)
+            {
+                /* Translation must happen after this offset */
+                retVal = Sciclient_rmIrqTranslateIrOutput(req.type,
+                                                        res.range_start,
+                                                        dst_id,
+                                                        &intNum);
+            }
+
+            if (CSL_PASS == retVal)
+            {
+                hwAttrs->intNum = intNum;
+                src_index = hwAttrs->eventId;               /* Index coming from the peripheral */
+                dst_host_irq = hwAttrs->intNum;            /* By default it is set for MCU R5 */
+
+                rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID;
+                rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+                rmIrqReq.src_id                 = src_id;
+                rmIrqReq.global_event           = 0U;
+                rmIrqReq.src_index              = src_index;
+                rmIrqReq.dst_id                 = dst_id;
+                rmIrqReq.dst_host_irq           = dst_host_irq;
+                rmIrqReq.ia_id                  = 0U;
+                rmIrqReq.vint                   = 0U;
+                rmIrqReq.vint_status_bit_index  = 0U;
+                rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+                retVal                          = Sciclient_rmIrqSet(&rmIrqReq,
+                                                                     &rmIrqResp,
+                                                                     SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+        }
+        else
+        {
+            src_index = hwAttrs->eventId;               /* Index coming from the peripheral */
+            dst_host_irq = hwAttrs->intNum;            /* By default it is set for MCU R5 */
 
             rmIrqRelease.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID;
             rmIrqRelease.valid_params          |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;

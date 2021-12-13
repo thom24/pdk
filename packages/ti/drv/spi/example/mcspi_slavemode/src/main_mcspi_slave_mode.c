@@ -83,19 +83,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#ifdef USE_BIOS
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/hal/Hwi.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#include <xdc/runtime/Error.h>
-#endif /* #ifdef USE_BIOS */
-
 /* CSL Header files */
 #ifdef _TMS320C6X
 #include <ti/csl/csl_chip.h>
@@ -116,6 +103,14 @@
 #endif
 
 #include <ti/board/board.h>
+
+#if defined(SOC_J721E)
+#include <ti/board/src/j721e_evm/include/board_utils.h>
+#elif defined(SOC_J7200)
+#include <ti/board/src/j7200_evm/include/board_utils.h>
+#elif defined(SOC_AM64X)
+#include <ti/board/src/am64x_evm/include/board_utils.h>
+#endif
 
 #ifdef SOC_AM65XX
 #include <ti/csl/soc/am65xx/src/cslr_soc_baseaddress.h>
@@ -323,6 +318,12 @@ static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32))
 #endif
 
 #if defined (SPI_DMA_ENABLE)
+static void App_print(const char *str)
+{
+    UART_printf("%s", str);
+    return;
+}
+
 Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg)
 {
     int32_t         retVal = UDMA_SOK;
@@ -335,13 +336,15 @@ Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg)
 #if defined(SOC_AM64X)
         instId = UDMA_INST_ID_PKTDMA_0;
 #else
-#if defined (__aarch64__)
-        instId = UDMA_INST_ID_MAIN_0;
-#else
+        /* Use MCU NAVSS for MCU domain cores. Rest cores all uses Main NAVSS */
+#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
         instId = UDMA_INST_ID_MCU_0;
+#else
+        instId = UDMA_INST_ID_MAIN_0;
 #endif
 #endif
         UdmaInitPrms_init(instId, &initPrms);
+        initPrms.printFxn = &App_print;
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
         if(UDMA_SOK == retVal)
         {
@@ -572,6 +575,20 @@ static void SPI_initConfigDefault(SPI_HWAttrs *cfg, uint32_t chn)
 /*
  *  ======== SPI init config ========
  */
+static void SPI_deInitConfig(uint32_t instance, SPI_Tests *test)
+{
+    SPI_HWAttrs spi_cfg;
+
+    /* Get the default SPI init configurations */
+    SPI_socGetInitCfg(instance, &spi_cfg);
+
+    /* Release interrupt path */
+    MCSPI_configSocIntrPath(instance, &spi_cfg, FALSE);
+}
+
+/*
+ *  ======== SPI init config ========
+ */
 static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, bool multiChn)
 {
     SPI_HWAttrs spi_cfg;
@@ -579,6 +596,11 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
     bool        pollMode = test->pollMode;
 #ifdef SPI_DMA_ENABLE
     bool        dmaMode = test->dmaMode;
+#endif
+
+#if defined (BUILD_MCU)
+    /* Change interrupt number based on core */
+    MCSPI_socInit();
 #endif
 
     /* Get the default SPI init configurations */
@@ -708,6 +730,21 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
 #endif
     }
 
+#if (defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_AM64X))
+    if(spi_cfg.enableIntr)
+    {
+        /* Set interrupt path */
+        if(MCSPI_configSocIntrPath(instance, &spi_cfg, TRUE) != CSL_PASS)
+        {
+            SPI_log("\n Set interrupt path failed!\n");
+        }
+        else
+        {
+            SPI_log("\n The interrupt path has been set with interrupt number %d\n", spi_cfg.intNum);
+        }
+    }
+#endif
+
     /* Set the SPI init configurations */
     SPI_socSetInitCfg(instance, &spi_cfg);
 }
@@ -799,15 +836,22 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     memset(masterRxBuffer, 0, sizeof(masterRxBuffer));
     memset(slaveRxBuffer, 0, sizeof(slaveRxBuffer));
 #ifdef SPI_DMA_ENABLE
-#if !defined (__aarch64__) || defined (SOC_AM64X)
-    if (dmaMode)
+    if ((master == true) && (dmaMode == true))
     {
         CacheP_wbInv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
         CacheP_wbInv((void *)addrSlaveRxBuf, (int32_t)sizeof(slaveRxBuffer));
         CacheP_wbInv((void *)addrCancelTxBuff, (int32_t)sizeof(cancelTxBuff));
         CacheP_wbInv((void *)addrCancelRxBuff, (int32_t)sizeof(cancelRxBuff));
     }
-#endif
+    if ((master == false) && (dmaMode == true))
+    {
+        CacheP_wbInv((void *)addrMasterTxBuf, (int32_t)sizeof(masterTxBuffer));
+        CacheP_wbInv((void *)addrSlaveTxBuf, (int32_t)sizeof(slaveTxBuffer));
+        CacheP_wbInv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
+        CacheP_wbInv((void *)addrSlaveRxBuf, (int32_t)sizeof(slaveRxBuffer));
+        CacheP_wbInv((void *)addrCancelTxBuff, (int32_t)sizeof(cancelTxBuff));
+        CacheP_wbInv((void *)addrCancelRxBuff, (int32_t)sizeof(cancelRxBuff));
+    }
 #endif
 
     testLen = xferLen;
@@ -1166,6 +1210,8 @@ static bool SPI_test_single_channel(void *arg)
                     SPI_close(spi);
                 }
             }
+
+        SPI_deInitConfig(instance, test);
 	} /* End of for loop */
 
 Err:
@@ -1263,6 +1309,7 @@ static bool SPI_test_xfer_error(void *arg)
         {
             SPI_close(spi);
         }
+        SPI_deInitConfig(instance, test);
     }
     else
     {
@@ -1413,6 +1460,8 @@ Err:
             cbSem[chn] = NULL;
         }
     }
+
+    SPI_deInitConfig(instance, test);
 
     return (ret);
 }
@@ -1613,10 +1662,8 @@ void masterTaskFxn()
     bool      testFail = false;
     SPI_Tests *test;
 
-#if defined (USE_BIOS)
-    SPI_log("Starting SPI Master test, in TI RTOS environment \n");
-#elif defined (FREERTOS)
-    SPI_log("Starting SPI Master test, in FreeRTOS environment \n");
+#if defined (RTOS_ENV)
+    SPI_log("Starting SPI Master test, in RTOS environment \n");
 #else
     SPI_log("Starting SPI Master test, in no OS environment \n");
 #endif
@@ -1681,7 +1728,7 @@ void masterTaskFxn()
     {
     }
 }
-#if ((defined (USE_BIOS) || defined (FREERTOS)) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (RTOS_ENV) && (defined (SOC_J721E) || defined (SOC_J7200)))
 #if defined (BUILD_MCU1_0)
 void MCSPI_setupSciServer(void)
 {
@@ -1794,9 +1841,9 @@ int main(void)
         return (0);
     }
 #endif /* Soc type */
-#endif /* #ifdef USE_BIOS */
+#endif /* #ifdef RTOS_ENV */
 
-#if ((defined (USE_BIOS) || defined (FREERTOS)) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (RTOS_ENV) && (defined (SOC_J721E) || defined (SOC_J7200)))
 #if defined (BUILD_MCU1_0)
     MCSPI_setupSciServer();
 #endif
@@ -1804,27 +1851,18 @@ int main(void)
     MCSPI_initSciclient();
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
-/*
- * For AM65XX/J721E/J7200, master and slave apps are
- * running on the same SoC, master is running on
- * MCU core and slave is running on MPU core,
- * pinmux only need to be initialized once in board
- */
-#if defined(BUILD_MPU)
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_MODULE_CLOCK |
-               BOARD_INIT_UART_STDIO;
-#else
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_MODULE_CLOCK |
-               BOARD_INIT_UART_STDIO;
+#if defined(BUILD_MCU2_1)
+    Board_initParams_t initParams;
+    Board_getInitParams(&initParams);
+    /* Slave app on MCU2_1 prints to MAIN UART 2 */
+    initParams.uartInst      = 2;
+    initParams.uartSocDomain = BOARD_SOC_DOMAIN_MAIN;
+    Board_setInitParams(&initParams);
 #endif
-#else
+
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_MODULE_CLOCK  |
                BOARD_INIT_UART_STDIO;
-#endif
     boardStatus = Board_init(boardCfg);
     if (boardStatus != BOARD_SOK)
     {
@@ -1832,14 +1870,6 @@ int main(void)
     }
 
 #if defined(SOC_AM64X)
-    boardCfg = BOARD_INIT_PINMUX_CONFIG |
-               BOARD_INIT_MODULE_CLOCK |
-               BOARD_INIT_UART_STDIO;
-    boardStatus = Board_init(boardCfg);
-    if (boardStatus != BOARD_SOK)
-    {
-        return (0);
-    }
     loopBackTest = true;
 #endif
 

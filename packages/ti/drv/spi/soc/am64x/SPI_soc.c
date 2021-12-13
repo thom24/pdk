@@ -866,3 +866,89 @@ int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
     /* Routing of interrupts not required for this SOC */
     return(ret);
 }
+
+/**
+ * \brief  This API update the default SoC level of configurations
+ *         based on the core and domain
+ *
+ *         spiInitCfg table configures MCSPI instances by
+ *         default for MCU R5 0, MCSPI_socInit() is called to
+ *         overwrite the defaut configurations
+ *
+ * \param  none
+ *
+ * \return           0 success: -1: error
+ *
+ */
+int32_t MCSPI_socInit(void)
+{
+    int32_t ret = 0;
+#if defined(BUILD_MCU)
+    CSL_ArmR5CPUInfo r5CpuInfo;
+
+    CSL_armR5GetCpuID(&r5CpuInfo);
+
+    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)             /* MCU R5 */
+    {
+        /* No change required */
+    }
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)         /* MAIN R5 SS0 */
+    {
+        if(r5CpuInfo.cpuID == 0U)                                           /* Main R5 -SS0 - CPU0 */
+        {
+            spiInitCfg[0].intNum = CSLR_R5FSS0_CORE0_INTR_MCU_MCSPI0_INTR_SPI_0;
+            spiInitCfg[1].intNum = CSLR_R5FSS0_CORE0_INTR_MCU_MCSPI1_INTR_SPI_0;
+            spiInitCfg[3].intNum = CSLR_R5FSS0_CORE0_INTR_MCSPI3_INTR_SPI_0;
+            spiInitCfg[4].intNum = CSLR_R5FSS0_CORE0_INTR_MCSPI4_INTR_SPI_0;
+        }
+        else                                                                /* Main R5 -SS0 - CPU1*/
+        {
+            spiInitCfg[0].intNum = CSLR_R5FSS0_CORE1_INTR_MCU_MCSPI0_INTR_SPI_0;
+            spiInitCfg[1].intNum = CSLR_R5FSS0_CORE1_INTR_MCU_MCSPI1_INTR_SPI_0;
+            spiInitCfg[3].intNum = CSLR_R5FSS0_CORE1_INTR_MCSPI3_INTR_SPI_0;
+            spiInitCfg[4].intNum = CSLR_R5FSS0_CORE1_INTR_MCSPI4_INTR_SPI_0;
+        }
+    }
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)         /* MAIN R5 SS1 */
+    {
+        if(r5CpuInfo.cpuID == 0U)                                           /* Main R5 -SS1 - CPU0 */
+        {
+            spiInitCfg[0].intNum = CSLR_R5FSS1_CORE0_INTR_MCU_MCSPI0_INTR_SPI_0;
+            spiInitCfg[1].intNum = CSLR_R5FSS1_CORE0_INTR_MCU_MCSPI1_INTR_SPI_0;
+            spiInitCfg[3].intNum = CSLR_R5FSS1_CORE0_INTR_MCSPI3_INTR_SPI_0;
+            spiInitCfg[4].intNum = CSLR_R5FSS1_CORE0_INTR_MCSPI4_INTR_SPI_0;
+        }
+        else                                                                /* Main R5 -SS1 - CPU1*/
+        {
+            spiInitCfg[0].intNum = CSLR_R5FSS1_CORE1_INTR_MCU_MCSPI0_INTR_SPI_0;
+            spiInitCfg[1].intNum = CSLR_R5FSS1_CORE1_INTR_MCU_MCSPI1_INTR_SPI_0;
+            spiInitCfg[3].intNum = CSLR_R5FSS1_CORE1_INTR_MCSPI3_INTR_SPI_0;
+            spiInitCfg[4].intNum = CSLR_R5FSS1_CORE1_INTR_MCSPI4_INTR_SPI_0;
+        }
+    }
+    else
+    {
+        ret = -1;
+    }
+#endif
+    return (ret);
+}
+
+/**
+ * \brief  This function will configure the interrupt path to the destination CPU
+ *         using DMSC firmware via sciclient. if setIntrPath is set to TRUE,
+ *         a path is set, else the interrupt path is released
+ *
+ * \param  instance    MCSPI Instance
+ * \param  hwAttrs_ptr Pointer to hardware attributes
+ * \param  setIntrPath Set or release interrupt
+ *
+ * \return           0 success: -1: error
+ *
+ */
+int32_t MCSPI_configSocIntrPath(uint32_t instance, void *hwAttrs_ptr, bool setIntrPath)
+{
+    int32_t ret = 0;
+    /* Routing of interrupts not required for this SOC */
+    return(ret);
+}

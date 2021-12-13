@@ -66,7 +66,7 @@
 #
 ifeq ($(spi_component_make_include), )
 
-drvqspi_RTOS_LIST      = tirtos freertos
+drvqspi_RTOS_LIST      = freertos
 drvqspi_BOARDLIST      = tpr12_evm awr294x_evm
 drvspi_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
@@ -379,10 +379,10 @@ MCSPI_Baremetal_Master_TestApp_PKG_LIST = MCSPI_Baremetal_Master_TestApp
 MCSPI_Baremetal_Master_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_TestApp_PATH)
 MCSPI_Baremetal_Master_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Baremetal_Master_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am64x))
-MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0 m4f_0
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
 else
-MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_1
+MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu2_0
 endif
 export MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
@@ -402,9 +402,13 @@ export MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY
 export MCSPI_Baremetal_Slave_TestApp_MAKEFILE
 MCSPI_Baremetal_Slave_TestApp_PKG_LIST = MCSPI_Baremetal_Slave_TestApp
 MCSPI_Baremetal_Slave_TestApp_INCLUDE = $(MCSPI_Baremetal_Slave_TestApp_PATH)
-MCSPI_Baremetal_Slave_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
+MCSPI_Baremetal_Slave_TestApp_BOARDLIST = j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk
 export MCSPI_Baremetal_Slave_TestApp_BOARDLIST
-MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mpu1_0
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mcu1_1
+else
+MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mcu2_1
+endif
 export MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
 export MCSPI_Baremetal_Slave_TestApp_SBL_APPIMAGEGEN = yes
@@ -425,10 +429,10 @@ MCSPI_Baremetal_Master_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_Master_Dma_TestApp
 MCSPI_Baremetal_Master_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_Dma_TestApp_PATH)
 MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
 export MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am64x))
-MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
 else
-MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_1
+MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu2_0
 endif
 export MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
@@ -448,9 +452,13 @@ export MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY
 export MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE
 MCSPI_Baremetal_Slave_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_Slave_Dma_TestApp
 MCSPI_Baremetal_Slave_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_Slave_Dma_TestApp_PATH)
-MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm
+MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST = j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk
 export MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST
-MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST = mpu1_0
+ifeq ($(SOC),$(filter $(SOC), am65xx))
+MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST = mcu1_1
+else
+MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST = mcu2_1
+endif
 export MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200))
 export MCSPI_Baremetal_Slave_Dma_TestApp_SBL_APPIMAGEGEN = yes
@@ -465,18 +473,18 @@ define MCSPI_Master_TestApp_RULE
     export MCSPI_Master_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Master_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Master_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MCSPI_Master_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Master_TestApp_$(1)_PKG_LIST = MCSPI_Master_TestApp_$(1)
     MCSPI_Master_TestApp_$(1)_INCLUDE = $(MCSPI_Master_TestApp_$(1)_PATH)
-    export MCSPI_Master_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
-    ifeq ($(SOC),$(filter $(SOC), am64x))
-        export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mpu1_0)
+    export MCSPI_Master_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk)
+
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+    export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0
     else
-        export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+    export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = mcu2_0
     endif
 
-    ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x am65xx))
         export MCSPI_Master_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
@@ -504,15 +512,18 @@ define MCSPI_Slave_TestApp_RULE
     export MCSPI_Slave_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Slave_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Slave_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Slave_TestApp_$(1)_PKG_LIST = MCSPI_Slave_TestApp_$(1)
     MCSPI_Slave_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_TestApp_$(1)_PATH)
-    export MCSPI_Slave_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
+    export MCSPI_Slave_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk)
 
-    export MCSPI_Slave_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+    export MCSPI_Slave_TestApp_$(1)_$(SOC)_CORELIST = mcu1_1
+    else
+    export MCSPI_Slave_TestApp_$(1)_$(SOC)_CORELIST = mcu2_1
+    endif
 
-    ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x am65xx))
         export MCSPI_Slave_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
@@ -539,18 +550,18 @@ define MCSPI_Master_Dma_TestApp_RULE
     export MCSPI_Master_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Master_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Master_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Master_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Master_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Master_Dma_TestApp_$(1)
     MCSPI_Master_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Master_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Master_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
-    ifeq ($(SOC),$(filter $(SOC), am64x))
-        export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mpu1_0)
+    export MCSPI_Master_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk)
+
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+    export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0
     else
-        export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+    export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu2_0
     endif
 
-    ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x am65xx))
         export MCSPI_Master_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
@@ -577,15 +588,18 @@ define MCSPI_Slave_Dma_TestApp_RULE
     export MCSPI_Slave_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MCSPI_Slave_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MCSPI_Slave_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
-    export MCSPI_Slave_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 
     MCSPI_Slave_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Slave_Dma_TestApp_$(1)
     MCSPI_Slave_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Slave_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
+    export MCSPI_Slave_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk)
 
-    export MCSPI_Slave_Dma_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0)
+    ifeq ($(SOC),$(filter $(SOC), am65xx))
+    export MCSPI_Slave_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu1_1
+    else
+    export MCSPI_Slave_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu2_1
+    endif
 
-    ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x am65xx))
         export MCSPI_Slave_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
@@ -669,7 +683,6 @@ OSPI_Flash_TestApp_$(1)_RELPATH = ti/drv/spi/test/ospi_flash
 OSPI_Flash_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
 export OSPI_Flash_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export OSPI_Flash_TestApp_$(1)_CORE_DEPENDENCY = no
-export OSPI_Flash_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export OSPI_Flash_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 OSPI_Flash_TestApp_$(1)_PKG_LIST = OSPI_Flash_TestApp_$(1)
 OSPI_Flash_TestApp_$(1)_INCLUDE = $(OSPI_Flash_TestApp_$(1)_PATH)
@@ -703,7 +716,6 @@ OSPI_Flash_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/test/ospi_flash
 OSPI_Flash_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
 export OSPI_Flash_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export OSPI_Flash_Dma_TestApp_$(1)_CORE_DEPENDENCY = no
-export OSPI_Flash_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export OSPI_Flash_Dma_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) DMA=enable
 OSPI_Flash_Dma_TestApp_$(1)_PKG_LIST = OSPI_Flash_Dma_TestApp_$(1)
 OSPI_Flash_Dma_TestApp_$(1)_INCLUDE = $(OSPI_Flash_Dma_TestApp_$(1)_PATH)
@@ -799,7 +811,6 @@ OSPI_Flash_Cache_TestApp_$(1)_RELPATH = ti/drv/spi/test/ospi_flash
 OSPI_Flash_Cache_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
 export OSPI_Flash_Cache_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export OSPI_Flash_Cache_TestApp_$(1)_CORE_DEPENDENCY = no
-export OSPI_Flash_Cache_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export OSPI_Flash_Cache_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) CACHE=enable
 OSPI_Flash_Cache_TestApp_$(1)_PKG_LIST = OSPI_Flash_Cache_TestApp_$(1)
 OSPI_Flash_Cache_TestApp_$(1)_INCLUDE = $(OSPI_Flash_Cache_TestApp_$(1)_PATH)
@@ -833,7 +844,6 @@ OSPI_Flash_Dma_Cache_TestApp_$(1)_RELPATH = ti/drv/spi/test/ospi_flash
 OSPI_Flash_Dma_Cache_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/ospi_flash
 export OSPI_Flash_Dma_Cache_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export OSPI_Flash_Dma_Cache_TestApp_$(1)_CORE_DEPENDENCY = no
-export OSPI_Flash_Dma_Cache_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export OSPI_Flash_Dma_Cache_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) DMA=enable CACHE=enable
 OSPI_Flash_Dma_Cache_TestApp_$(1)_PKG_LIST = OSPI_Flash_Dma_Cache_TestApp_$(1)
 OSPI_Flash_Dma_Cache_TestApp_$(1)_INCLUDE = $(OSPI_Flash_Dma_Cache_TestApp_$(1)_PATH)
@@ -887,7 +897,6 @@ export QSPI_Flash_TestApp_$(1)_RELPATH = ti/drv/spi/test/qspi_flash
 export QSPI_Flash_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 export QSPI_Flash_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export QSPI_Flash_TestApp_$(1)_CORE_DEPENDENCY = yes
-export QSPI_Flash_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export QSPI_Flash_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 export QSPI_Flash_TestApp_$(1)_PKG_LIST = QSPI_Flash_TestApp_$(1)
 export QSPI_Flash_TestApp_$(1)_INCLUDE = $(QSPI_Flash_TestApp_$(1)_PATH)
@@ -932,7 +941,6 @@ export QSPI_Flash_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/test/qspi_flash
 export QSPI_Flash_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/test/qspi_flash
 export QSPI_Flash_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export QSPI_Flash_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
-export QSPI_Flash_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 export QSPI_Flash_Dma_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1) DMA=enable
 export QSPI_Flash_Dma_TestApp_$(1)_PKG_LIST = QSPI_Flash_Dma_TestApp_$(1)
 export QSPI_Flash_Dma_TestApp_$(1)_INCLUDE = $(QSPI_Flash_Dma_TestApp_$(1)_PATH)

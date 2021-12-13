@@ -16,24 +16,6 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
 
 endif
 
-#TI RTOS Specifics
-ifeq ($(BUILD_OS_TYPE), tirtos)
-
-    MCSPI_OS_TESTPREFIX=
-    MCSPI_OS_TESTPOSTFIX=_tirtos
-    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
-    EXTERNAL_INTERFACES = xdc bios
-    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-
-    ifeq ($(SOC),$(filter $(SOC), am65xx))
-        XDC_CFG_FILE_mpu1_0 = ./am65xx/mcspiMasterSlaveTest_a53.cfg
-        XDC_CFG_FILE_mcu1_0 = ./am65xx/mcspiMasterSlaveTest_r5.cfg
-    else
-        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-    endif
-
-endif
-
 #FreeRTOS Specifics
 ifeq ($(BUILD_OS_TYPE), freertos)
 
@@ -56,36 +38,28 @@ SRCS_COMMON += main_mcspi_slave_mode.c SPI_log.c
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
-    ifeq ($(CORE), mpu1_0)
-        # Slave running on mpu1_0 core
+    ifeq ($(CORE), mcu2_1)
+        # Slave running on mcu2_1 core
         CFLAGS_SPI_MS     = -DMCSPI_SLAVE_TASK
         APP_MASTER_SLAVE  = Slave
-        ifeq ($(SOC),$(filter $(SOC), am65xx))
-        # Slave uses local linker command file to avoid code/data memory conflict with master application
-            EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/am65xx/linker_mpu.lds
-        endif
-    else
-        # Master running on mcu1_0 core, use the common linker command file in build
-        CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK
-        APP_MASTER_SLAVE  = Master
         ifeq ($(SOC),$(filter $(SOC), j721e j7200))
             # Slave uses local linker command file to avoid code/data memory conflict with master application
             ifeq ($(BUILD_OS_TYPE), baremetal)
                 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu.lds
             endif
-            ifeq ($(BUILD_OS_TYPE), tirtos)
-                EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_sysbios.lds
-            endif
             ifeq ($(BUILD_OS_TYPE), freertos)
                 EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_freertos.lds
             endif
         endif
+    else
+        # Master running on mcu2_0 core, use the common linker command file in build
+        CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK
+        APP_MASTER_SLAVE  = Master
     endif
 endif
 
 # DMA enabled build
 ifeq ($(DMA), enable)
-
     MCSPI_DMA_MODE_INFIX = _Dma
     COMP_LIST_COMMON += spi_dma
     CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
