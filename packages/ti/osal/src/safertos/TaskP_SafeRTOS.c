@@ -78,7 +78,7 @@ typedef struct TaskP_SafeRTOS_s {
 /* global pool of statically allocated task pools */
 static TaskP_SafeRTOS gOsalTaskPSafeRTOSPool[OSAL_SAFERTOS_CONFIGNUM_TASK];
 
-uint32_t  gOsalTaskAllocCnt, gOsalTaskPeak;
+uint32_t  gOsalTaskAllocCnt = 0U, gOsalTaskPeak = 0U;
 
 extern uint32_t gSaftRtosInitDone;
 

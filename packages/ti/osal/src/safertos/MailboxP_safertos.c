@@ -46,7 +46,7 @@
 #include <SafeRTOS_API.h>
 #include "queue.h"
 
-uint32_t  gOsalMailboxAllocCnt, gOsalMailboxPeak;
+uint32_t  gOsalMailboxAllocCnt = 0U, gOsalMailboxPeak = 0U;
 
 extern portBaseType xPortInIsrContext( void );
 /*!

@@ -43,7 +43,7 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/soc/osal_soc.h>
 
-uint32_t  gOsalQueueAllocCnt, gOsalQueuePeak;
+uint32_t  gOsalQueueAllocCnt = 0U, gOsalQueuePeak = 0U;
 
 /*!
  *  @brief  FreeRTOS Queue element

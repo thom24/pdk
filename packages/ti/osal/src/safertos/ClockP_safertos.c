@@ -67,7 +67,7 @@ typedef struct ClockP_safertos_s
 /* global pool of statically allocated clock pools */
 static ClockP_safertos gOsalClockPSafeRtosPool[OSAL_FREERTOS_CONFIGNUM_CLOCK];
 
-uint32_t gOsalClockAllocCnt, gOsalClockPeak;
+uint32_t gOsalClockAllocCnt = 0U, gOsalClockPeak = 0U;
 
 void ClockP_timerCallbackFunction(timerHandleType xTimer)
 {

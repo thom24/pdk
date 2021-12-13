@@ -85,7 +85,7 @@ static StaticTask_t   gOsalFreertosTaskObjPool[OSAL_FREERTOS_CONFIGNUM_TASK];
 /* global pool of statically allocated task pools */
 static TaskP_freertos gOsalTaskPfreertosPool[OSAL_FREERTOS_CONFIGNUM_TASK];
 
-uint32_t  gOsalTaskAllocCnt, gOsalTaskPeak;
+uint32_t  gOsalTaskAllocCnt = 0U, gOsalTaskPeak = 0U;
 
 void TaskP_compileTime_SizeChk(void)
 {

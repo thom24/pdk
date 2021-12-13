@@ -46,7 +46,7 @@
 #include <FreeRTOS.h>
 #include <event_groups.h>
 
-uint32_t  gOsalEventAllocCnt, gOsalEventPeak;
+uint32_t  gOsalEventAllocCnt = 0U, gOsalEventPeak = 0U;
 
 /*!
  *  @brief    EventP_freertos structure

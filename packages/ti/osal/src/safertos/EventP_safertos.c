@@ -48,7 +48,7 @@
 
 extern portBaseType xPortInIsrContext( void );
 
-uint32_t  gOsalEventAllocCnt, gOsalEventPeak;
+uint32_t  gOsalEventAllocCnt = 0U, gOsalEventPeak = 0U;
 
 /*!
  *  @brief    EventP_safertos structure
