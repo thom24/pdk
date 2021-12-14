@@ -39,9 +39,9 @@
 ; UFP Read ATCM Region Register
 ;****************************************************************************
 	.sect   ".text"
-	.global _ufpTcmEn
+	.global ufpTcmEn
 
-_ufpTcmEn:
+ufpTcmEn:
 	
     ;Enable ATCM @0x0
     MRC     p15, #0, r0, c9, c1, #1
@@ -98,7 +98,26 @@ ufpBtcmSize:
 
     BX      lr
 
-	
+    .sect   ".utilsCopyVecsToAtcm"
+    .global _resetvectors
+
+    .global utilsCopyVecs2ATcm
+utilsCopyVecs2ATcm:
+        mrc     p15, #0, r0, c9, c1, #1 ; read ATCM Region Register
+        tst     r0, #1
+        beq     exit                    ; do nothing if ATCM disabled
+
+        movw    r0, _resetvectors
+        movt    r0, _resetvectors
+        mov     r1, #0                  ; ATCM address
+        mov	r2, #64			; 256 bytes
+loop:
+        ldr	r3, [r0], #4
+        str     r3, [r1], #4
+        subs    r2, r2, #4
+        bgt     loop
+exit:
+        bx      lr
 
 
 ;****************************************************************************

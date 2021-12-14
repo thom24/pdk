@@ -137,6 +137,10 @@ ifeq ($(BOARD), $(filter $(BOARD), am64x_evm))
 SRCS_ASM_COMMON += ufp_init.asm ufp_misc.asm
 endif
 
+ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm))
+SRCS_ASM_COMMON += ufp_misc.asm
+endif
+
 ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
 SRCS_COMMON += qspi.c
 EXTERNAL_LNKCMD_FILE_LOCAL = $(UNIFLASH_BASE_DIR)/soc/$(SOC)/linker.cmd
