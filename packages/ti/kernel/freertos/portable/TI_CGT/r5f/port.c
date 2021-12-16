@@ -557,7 +557,7 @@ __attribute__((weak)) void _system_post_cinit(void)
 }
 
 /* This function is called when configUSE_IDLE_HOOK is 1 in FreeRTOSConfig.h */
-void vApplicationIdleHook( void )
+__attribute__((weak)) void vApplicationIdleHook( void )
 {
 #if (configLOAD_UPDATE_IN_IDLE==1)
     void vApplicationLoadHook();
