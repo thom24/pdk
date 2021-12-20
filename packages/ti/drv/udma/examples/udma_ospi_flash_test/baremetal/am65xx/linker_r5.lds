@@ -61,6 +61,7 @@ SECTIONS
     .startupData    : {} palign(8)      > MSMC3, type = NOINIT
     .text    	    : {} palign(8) 		> OCMRAM
     .const   	    : {} palign(8) 		> OCMRAM
+    .rodata  	    : {} palign(8) 		> OCMRAM
     .cinit   	    : {} palign(8) 		> OCMRAM
     .pinit   	    : {} palign(8) 		> OCMRAM
     .bss     	    : {} align(4)  		> OCMRAM
