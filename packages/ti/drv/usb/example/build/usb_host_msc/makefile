@@ -73,6 +73,8 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 #using USB local linker file instead of ti/build for customization
     ifeq ($(CORE),$(filter $(CORE), mcu1_0))
         EXTERNAL_LNKCMD_FILE_LOCAL = $(pdk_PATH)/ti/drv/usb/example/build/$(SOC)/linker_r5_freertos.lds
+        SRCS_COMMON += r5_mpu.c
+        SRCS_ASM_COMMON += usb_arm_r5.asm
     endif
 
     ifeq ($(CORE),$(filter $(CORE), mpu1_0))
@@ -103,6 +105,7 @@ SRCDIR += $(PDK_INSTALL_PATH)/ti/drv/usb/example/common
 
 INCDIR = . src
 INCDIR += $(PDK_INSTALL_PATH)/ti/csl
+INCDIR += $(PDK_INSTALL_PATH)/ti/csl/arch/r5
 INCDIR += $(PDK_INSTALL_PATH)/ti/drv/usb
 INCDIR += $(PDK_INSTALL_PATH)/ti/drv/usb/example/usb_host/msc
 INCDIR += $(PDK_INSTALL_PATH)/ti/drv/usb/src/usb_func/include

@@ -77,8 +77,8 @@
 #endif
 
 #if defined (SOC_AM65XX) || defined (SOC_AM65xx)
-#define TIMER1                      1
-#define TIMER_ID                    TIMER1
+#define TIMER2                      2
+#define TIMER_ID                    TIMER2
 #endif
 
 #if defined (SOC_J721E)
