@@ -120,7 +120,9 @@ Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
  ************************** Internal functions ************************
  **********************************************************************/
 int main_io_pm_seq (void);
-void configure_can_uart_lock_dmsc();
+void main_configure_can_uart_lock_dmsc();
+void wkup_configure_can_uart_lock_dmsc();
+
 int32_t SetupSciServer(void);
 
 /* ========================================================================== */
@@ -170,7 +172,8 @@ int io_retention_main()
     {
 
         Lpm_pmicInit();
-        AppUtils_Printf(MSG_NORMAL, "Press 1 to switch to IO Retention\n");
+        AppUtils_Printf(MSG_NORMAL, "Press 1 to switch to MAIN IO Retention\n");
+        AppUtils_Printf(MSG_NORMAL, "Press 2 to switch to MCU IO Retention\n");
         AppUtils_Printf(MSG_NORMAL, "Input: ");
 
         while(!done)
@@ -180,7 +183,12 @@ int io_retention_main()
             switch (c)
             {
                 case 1:
-                    configure_can_uart_lock_dmsc();
+                    main_configure_can_uart_lock_dmsc();
+                    Lpm_activeToIoRetSwitch();
+                    done = 0xFF;
+                    break;
+                case 2:
+                    wkup_configure_can_uart_lock_dmsc();
                     Lpm_activeToIoRetSwitch();
                     done = 0xFF;
                     break;
@@ -210,25 +218,32 @@ void disable_isolation_bit_and_unlock()
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)));
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)));
 
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
 
     Lpm_mmr_unlock(mmr0_cfg_base, 6);
     Lpm_mmr_unlock(mmr2_cfg_base, 7);
 
-    UART_printf("DMSC_CM_PMCTRL_IO_1 0x%x\n", read_data);
+    UART_printf("DMSC_CM_PMCTRL_IO_0 0x%x\n", read_data);
+
+    /* unlock MCU canuart */
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555555;
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
+
+    /* unlock MAIN canuart */
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
 
     /* disable isolation bit */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0)) = read_data & ~(0b1 << 24);
     for(i=0; i<io_timeout; i++);
 
     UART_printf("Polling for IO Status bit\n");
     while(read_data & 0x2000000)
     {
-        read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
-        *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
+        read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
+        *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0)) = read_data & ~(0b1 << 24);
         for(i=0; i<io_timeout; i++);
         if (cnt == 1000)
         {
@@ -236,7 +251,7 @@ void disable_isolation_bit_and_unlock()
         }
     }
     UART_printf("Polling complete - out of isolation mode\n");
-    UART_printf("DMSC_CM_PMCTRL_IO_1 after clearing isolation bit: 0x%x\n", read_data);
+    UART_printf("DMSC_CM_PMCTRL_IO_0 after clearing isolation bit: 0x%x\n", read_data);
 }
 
 
@@ -258,6 +273,7 @@ int main_io_pm_seq (void)
 
     /* Configure PMIC_WAKE */
     *mkptr(MAIN_CTRL_MMR_BASE, 0x1c124) = 0x38038000;
+
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c020 - PADCONF0 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c020));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c024 - PADCONF0 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c024));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c02c - PADCONF1 0x%x\n",  *mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c));
@@ -278,7 +294,7 @@ int main_io_pm_seq (void)
 
 #ifndef IGNORE_MAIN_IO_PADCONFIG
     /* Enable Wakeup_enable (J7VCL Power Mngmt Spec: ACT-25-04) */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
     UART_printf("DMSC_CM_PMCTRL_IO_1 0x%x\n", read_data);
 
     *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1 )) = read_data | 0x10000;
@@ -306,8 +322,107 @@ int main_io_pm_seq (void)
 
 }
 
+int wkup_io_pm_seq (void)
+{
+    unsigned int read_data = 0;
+    volatile unsigned int i = 0; /* Make sure below for loop is not optimized */
 
-void configure_can_uart_lock_dmsc()
+    /* Configure WKUP_GPIO0_80 */
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1c180) = 0x20050000;
+    /* Configure PMIC_WAKE1 */
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1c190) = 0x38038000;
+
+    /* Configure I2C Pins */
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C100) = 0x00840000;
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C104) = 0x00840000;
+
+
+    UART_printf("WKUP_CTRL_MMR_BASE+0x1c180 - PADCONF0 0x%x\n", *mkptr(WKUP_CTRL_MMR_BASE, 0x1c180));
+    UART_printf("WKUP_CTRL_MMR_BASE+0x1c190 - PADCONF0 0x%x\n", *mkptr(WKUP_CTRL_MMR_BASE, 0x1c190));
+    sleep(10000);
+
+    /* Unlock DMSC reg */
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)) = 0x8a6b7cda;
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)) = 0x823caef9;
+    /* Enable fw_ctrl_out[0] (J7VCL Power Mngmt Spec: ACT-25-13) */
+    read_data = *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_FW_CTRL_OUT0_SET));
+    UART_printf("DMSC_CM_FW_CTRL_OUT0_SET 0x%x\n", read_data);
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_FW_CTRL_OUT0_SET)) = 0x1;
+    read_data = *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL);
+    UART_printf("WKUP_CTRL_DEEPSLEEP_CTRL 0x%x\n", read_data);
+    *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL) |= 0x1;
+#ifndef IGNORE_MAIN_IO_PADCONFIG
+    /* Enable Wakeup_enable (J7VCL Power Mngmt Spec: ACT-25-14) */
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
+    UART_printf("DMSC_CM_PMCTRL_IO_1 0x%x\n", read_data);
+
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0 )) = read_data | 0x10000;
+#endif
+
+    /* Enable ISOIN (J7VCL Power Mngmt Spec: ACT-25-15) */
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
+    UART_printf("DMSC_CM_PMCTRL_IO_1 0x%x\n", read_data);
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0)) = read_data | 0x1000000;
+
+    UART_printf("%s,%d\n",__func__,__LINE__);
+    for(i=0; i<io_timeout; i++);    /* Wait for 10us */
+
+    UART_printf("%s,%d\n",__func__,__LINE__);
+    /* Check ISOIN status */
+    read_data = *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
+
+    UART_printf("%s,%d\n",__func__,__LINE__);
+    if (!(read_data & 0x03000000)) {
+    UART_printf("%s,%d\n",__func__,__LINE__);
+       return 0;    /* DMSC IO PM seq. failed. */
+    }
+
+    if (err_cnt == 0) {
+    UART_printf("%s,%d\n",__func__,__LINE__);
+        return 1;   /* DMSC IO PM seq. passed. */
+    } else {
+    UART_printf("%s,%d\n",__func__,__LINE__);
+        return 0;
+    }
+
+}
+
+void wkup_configure_can_uart_lock_dmsc()
+{
+
+    uint32_t daisy_chain = wkup_io_pm_seq();
+    UART_printf("%s,%d\n",__func__,__LINE__);
+    if (daisy_chain == 0){
+      err_cnt++;
+    }
+    /* Load the Magic word */
+    UART_printf("WKUP_CTRL_MCU_GEN_WAKE_CTRL 0x%x\n", *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL));
+
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
+    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555555;
+
+    /* Ensure MW is seen in status register */
+    UART_printf("WKUP_CTRL_MCU_GEN_WAKE_STAT0 0x%x\n", *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_STAT0));
+
+    debug1 = *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_STAT0);
+    if (debug1 != 0x55555555)
+        err_cnt++;
+
+    /* Ensure MW is seen in status register */
+    UART_printf("WKUP_CTRL_MCU_GEN_WAKE_STAT1 0x%x\n", *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_STAT1));
+
+    debug1 = *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_STAT1);
+    if (debug1 != 0x1)
+        err_cnt++;
+
+    debug1 = 0x3010B;
+    /* re-lock DMSC reg */
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)) = 0x0;
+    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)) = 0x0;
+}
+
+
+void main_configure_can_uart_lock_dmsc()
 {
 
     uint32_t daisy_chain = main_io_pm_seq();
@@ -315,7 +430,7 @@ void configure_can_uart_lock_dmsc()
       err_cnt++;
     }
     /* Load the Magic word */
-    UART_printf("WKUP_CTRL_CANUART_WAKE_CTRL 0x%x\n", *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL));
+    UART_printf("WKUP_CTRL_MCU_GEN_WAKE_CTRL 0x%x\n", *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL));
 
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
