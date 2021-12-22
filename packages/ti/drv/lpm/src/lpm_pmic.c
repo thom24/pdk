@@ -2173,30 +2173,9 @@ static void Lpm_pmicStateChangeActiveToMCUOnly(void)
 }
 
 volatile uint32_t loopPMICStateChangeActiveToIORetention = 0;
-void Lpm_pmicStateChangeActiveToIORetention(void)
+void Lpm_mostlyConfigureIORetention(void)
 {
-    /* Write 0x02 to FSM_NSLEEP_TRIGGERS register 
-       This should happen before clearing the interrupts */
-
-    /* If you clear the interrupts before you write the NSLEEP bits,
-     * it will transition to S2R state.
-     * This is because as soon as you write NSLEEP2 to 0x0,
-     * the trigger is present to move to S2R state.
-     * By setting the NSLEEP bits before you clear the interrupts,
-     * you can configure both NSLEEP bits before the PMIC reacts to the change.
-     */
-
     uint8_t dataToSlave[2];
-
-    if(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE)
-    {
-        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                        "Connect CCS and change the loopPMICStateChangeActiveToIORetention to 0x0!!!!\n");
-        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
-                        "This will disconnect the JTAG interface too and you can only see the MCU running from UART prints!!!!\n");
-    }
-
-    while(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE);
 
     /* Change FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
@@ -2233,6 +2212,32 @@ void Lpm_pmicStateChangeActiveToIORetention(void)
     dataToSlave[1] = 0x40;
     Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_I2C_TRIGGERS = 0x%x\n", dataToSlave[1]);
+}
+
+void Lpm_pmicStateChangeActiveToIORetention(void)
+{
+    /* Write 0x02 to FSM_NSLEEP_TRIGGERS register 
+       This should happen before clearing the interrupts */
+
+    /* If you clear the interrupts before you write the NSLEEP bits,
+     * it will transition to S2R state.
+     * This is because as soon as you write NSLEEP2 to 0x0,
+     * the trigger is present to move to S2R state.
+     * By setting the NSLEEP bits before you clear the interrupts,
+     * you can configure both NSLEEP bits before the PMIC reacts to the change.
+     */
+
+    uint8_t dataToSlave[2];
+
+    if(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE)
+    {
+        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
+                        "Connect CCS and change the loopPMICStateChangeActiveToIORetention to 0x0!!!!\n");
+        AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
+                        "This will disconnect the JTAG interface too and you can only see the MCU running from UART prints!!!!\n");
+    }
+
+    while(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE);
 
     /* Change FSM_I2C_TRIGGERS - PMICB */
     dataToSlave[0] = 0x85;

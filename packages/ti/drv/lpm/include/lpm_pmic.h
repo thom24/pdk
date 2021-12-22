@@ -136,6 +136,15 @@ uint32_t Lpm_pmicApp(void);
  *          unsuccessful operations.
  */
 uint32_t Lpm_activeToIoRetSwitch(void);
+
+/**
+ *  \brief Runs all I2C commands before the actual cutdown to IO retention mode 
+ *
+ *  \return Implementation specific return codes. Negative values indicate
+ *          unsuccessful operations.
+ */
+void Lpm_mostlyConfigureIORetention(void);
+
 #ifdef __cplusplus
 }
 #endif
