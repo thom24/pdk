@@ -311,7 +311,7 @@ int main_io_pm_seq (void)
 
 #ifndef IGNORE_MAIN_IO_PADCONFIG
     /* Enable Wakeup_enable (J7VCL Power Mngmt Spec: ACT-25-04) */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
     UART_printf("DMSC_CM_PMCTRL_IO_1 0x%x\n", read_data);
 
     *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1 )) = read_data | 0x10000;
@@ -349,9 +349,18 @@ int wkup_io_pm_seq (void)
     /* Configure PMIC_WAKE1 */
     *mkptr(WKUP_CTRL_MMR_BASE, 0x1c190) = 0x38038000;
 
-    /* Configure I2C Pins */
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C100) = 0x20840000;
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C104) = 0x20840000;
+    /* Bypass IO Isolation for I2C Pins */
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C100) = 0x00840000;
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C104) = 0x00840000;
+
+    /* Bypass IO Isolation for UART Pins so that we can print after entering IO Isolation */
+    /* REMOVE THIS IF YOU WOULD LIKE TO WAKEUP FROM THE UART PINS */
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0E8) = 0x00840000;
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0EC) = 0x00840000;
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0F0) = 0x00840000;
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0F4) = 0x00840000;
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0F8) = 0x00840000;
+    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0FC) = 0x00840000;
 
 
     UART_printf("WKUP_CTRL_MMR_BASE+0x1c180 - PADCONF0 0x%x\n", *mkptr(WKUP_CTRL_MMR_BASE, 0x1c180));
@@ -450,7 +459,7 @@ void main_configure_can_uart_lock_dmsc()
       err_cnt++;
     }
     /* Load the Magic word */
-    UART_printf("WKUP_CTRL_MCU_GEN_WAKE_CTRL 0x%x\n", *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL));
+    UART_printf("WKUP_CTRL_CANUART_WAKE_CTRL 0x%x\n", *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL));
 
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
