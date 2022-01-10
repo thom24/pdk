@@ -165,6 +165,7 @@ int io_retention_main()
         stat = BOARD_SOK;
     }
 
+    /* WKUP GPIO 77 (TP for benchmarking) */
     *mkptr(WKUP_CTRL_MMR_BASE, 0x1C120) = 0x0C018007;
 
 
@@ -209,37 +210,36 @@ void disable_isolation_bit_and_unlock()
     int i = 0;
     int cnt = 0;
 
+    /* Wakeup events register on bit 30 of PADCONFS - check that bit to see where the wakeup event occurred */
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c020 - PADCONF0 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c020));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c024 - PADCONF0 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c024));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c02c - PADCONF1 0x%x\n",  *mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c));
     UART_printf("MAIN_CTRL_MMR_BASE+0x1c124 - PMIC_WAKE 0x%x\n", *mkptr(MAIN_CTRL_MMR_BASE, 0x1c124));
 
-
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)));
     UART_printf("dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1) 0x%x set to 0x%x\n", dmsc_ssr0_base+(DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1), *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)));
 
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
 
+    /* Unlock MMRs */
     Lpm_mmr_unlock(mmr0_cfg_base, 6);
+    Lpm_mmr_unlock(mmr0_cfg_base, 7);
     Lpm_mmr_unlock(mmr2_cfg_base, 7);
 
     UART_printf("DMSC_CM_PMCTRL_IO_0 0x%x\n", read_data);
 
-    /* unlock MCU canuart */
+    /* exit MCU canuart io retention with magic word - won't have any affect if already out of io retention */
     *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555555;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
 
-    /* unlock MAIN canuart */
+    /* exit MAIN canuart io retention with magic word - won't have any affect if already out of io retention */
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
     *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
 
-    /* Disable MCU isolation bit */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0)) = read_data & ~(0b1 << 24);
-    for(i=0; i<io_timeout; i++);
-
+    /* Disable MCU isolation bit if it is active */
     UART_printf("Polling for MCU IO Status bit\n");
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
     while(read_data & 0x2000000)
     {
         read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
@@ -251,11 +251,9 @@ void disable_isolation_bit_and_unlock()
         }
     }
 
-    /* Disable MAIN isolation bit */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
-    for(i=0; i<io_timeout; i++);
-
+    /* Disable MAIN isolation bit if it is active */
     UART_printf("Polling for MAIN IO Status bit\n");
+    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
     while(read_data & 0x2000000)
     {
         read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
