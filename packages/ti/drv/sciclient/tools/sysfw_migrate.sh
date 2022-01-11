@@ -177,14 +177,10 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_ccs_init BOARD=j721e_evm
     make -j -s sciserver_testapp_freertos_clean BOARD=j721e_evm
     make -j -s sciserver_testapp_freertos BOARD=j721e_evm
-    make -j -s sciserver_testapp_tirtos_clean BOARD=j721e_evm
-    make -j -s sciserver_testapp_tirtos BOARD=j721e_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721e/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721e/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721e/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j721e/sciserver_testapp_tirtos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j721e/sciserver_testapp_tirtos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-
+    
     # AM65xx
     make -j -s allclean
     make -j -s sciclient_boardcfg BOARD=am65xx_evm
@@ -209,24 +205,20 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_ccs_init BOARD=j7200_evm
     make -j -s sciserver_testapp_freertos_clean BOARD=j7200_evm
     make -j -s sciserver_testapp_freertos BOARD=j7200_evm
-    make -j -s sciserver_testapp_tirtos_clean BOARD=j7200_evm
-    make -j -s sciserver_testapp_tirtos BOARD=j7200_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j7200/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j7200/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j7200/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j7200/sciserver_testapp_tirtos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j7200/sciserver_testapp_tirtos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
-
+    
     # J721S2
     # make -j -s allclean
     # make -j -s sciclient_boardcfg BOARD=j721s2_evm
     # make -j -s sciclient_ccs_init_clean BOARD=j721s2_evm
     # make -j -s sciclient_ccs_init BOARD=j721s2_evm
-    # make -j -s sciserver_testapp_tirtos_clean BOARD=j721s2_evm
-    # make -j -s sciserver_testapp_tirtos BOARD=j721s2_evm
+    # make -j -s sciserver_testapp_freertos_clean BOARD=j721s2_evm
+    # make -j -s sciserver_testapp_freertos BOARD=j721s2_evm
     # $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721s2/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
-    # $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
-    # $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
+    # $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
+    # $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
 
     cd -
 fi
