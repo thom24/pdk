@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                21.09.01
+                22.01.00
               </div>
             
           
@@ -132,6 +132,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#retrieveing-soc-uid">Retrieveing SOC UID</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#retrieving-the-soc-uid-over-jtag">Retrieving the SOC UID over JTAG</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#retrieving-the-soc-uid-over-uart">Retrieving the SOC UID over UART</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#retrieving-the-soc-uid-via-tisci">Retrieving the SOC UID via TISCI</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#controlling-debug-via-board-configuration">Controlling Debug via Board Configuration</a></li>
@@ -215,9 +216,10 @@
 <li><a class="reference internal" href="#retrieveing-soc-uid" id="id13">Retrieveing SOC UID</a><ul>
 <li><a class="reference internal" href="#retrieving-the-soc-uid-over-jtag" id="id14">Retrieving the SOC UID over JTAG</a></li>
 <li><a class="reference internal" href="#retrieving-the-soc-uid-over-uart" id="id15">Retrieving the SOC UID over UART</a></li>
+<li><a class="reference internal" href="#retrieving-the-soc-uid-via-tisci" id="id16">Retrieving the SOC UID via TISCI</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#controlling-debug-via-board-configuration" id="id16">Controlling Debug via Board Configuration</a></li>
+<li><a class="reference internal" href="#controlling-debug-via-board-configuration" id="id17">Controlling Debug via Board Configuration</a></li>
 </ul>
 </div>
 <div class="section" id="introduction">
@@ -613,20 +615,13 @@ $ ./dbgauth -c ~/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat <span class="se">\</span>
         -m <span class="m">3</span>
 Using board config file:
 /home/user/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat
-UID <span class="nb">read</span> succesful:
-UID<span class="o">[</span><span class="m">0</span><span class="o">]</span> <span class="o">=</span> 0x7ab1b240
-UID<span class="o">[</span><span class="m">1</span><span class="o">]</span> <span class="o">=</span> 0xd5757a1f
-UID<span class="o">[</span><span class="m">2</span><span class="o">]</span> <span class="o">=</span> 0xb2f32fdf
-UID<span class="o">[</span><span class="m">3</span><span class="o">]</span> <span class="o">=</span> 0x6b39376e
-UID<span class="o">[</span><span class="m">4</span><span class="o">]</span> <span class="o">=</span> 0xe7fd2e93
-UID<span class="o">[</span><span class="m">5</span><span class="o">]</span> <span class="o">=</span> 0xea4b1a7b
-UID<span class="o">[</span><span class="m">6</span><span class="o">]</span> <span class="o">=</span> 0xe24bbc52
-UID<span class="o">[</span><span class="m">7</span><span class="o">]</span> <span class="o">=</span> 0x926de2c6
+
+<span class="nv">UID</span> <span class="o">=</span> c89491b8edad0fb3a5f201ec4caff17bcde0ed5ac845b17da14e0749da22d4cb
 </pre></div>
 </div>
 <p>The retrieved UID can be populated into the debug certificate in the below manner.</p>
 <blockquote>
-<div><div class="highlight-none"><div class="highlight"><pre><span></span>debugUID = FORMAT:HEX,OCT:07ab1b2400d5757a1f0b2f32fdf06b39376e0e7fd2e930ea4b1a7b0e24bbc520926de2c6
+<div><div class="highlight-none"><div class="highlight"><pre><span></span>debugUID = FORMAT:HEX,OCT:c89491b8edad0fb3a5f201ec4caff17bcde0ed5ac845b17da14e0749da22d4cb
 </pre></div>
 </div>
 </div></blockquote>
@@ -637,7 +632,7 @@ UID<span class="o">[</span><span class="m">7</span><span class="o">]</span> <spa
 the SOC ID on the boot UART. The last 32 bytes i.e. 64 characters before the
 start of the UART boot character ‘CC’ contain the SOC ID.</p>
 <div class="highlight-none"><div class="highlight"><pre><span></span>02000000011a00006a37657300000000
-00000000454d53450200010002000100
+00000000485353450200010002000100
 02a6000001000200cffc17b20bcbf96a
 8c712e8d732b48c3e09ac6c0951013ce
 a93e069d2ccdac95420cca9c5f637a80
@@ -646,26 +641,42 @@ a93e069d2ccdac95420cca9c5f637a80
 c47d9ca8d1aae57b8e8784a12f636b2b
 760d7d98a18f189760dfd0f23e2b0cb1
 0ec7edc7c6edac3d9bdfefe0eddc3fff
-7fe9ad875195527d40b2b17a1f7a75d5
-df2ff3b26e37396b932efde77b1a4bea
-52bc4be2c6e26d92
+7fe9ad875195527dc89491b8edad0fb3
+a5f201ec4caff17bcde0ed5ac845b17d
+a14e0749da22d4cb
 CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 </pre></div>
 </div>
 <p>The above shows the UART output formatted to 32 characters per line.
 The characters corresponding to SOC data are</p>
-<div class="highlight-none"><div class="highlight"><pre><span></span>                40b2b17a1f7a75d5
-df2ff3b26e37396b932efde77b1a4bea
-52bc4be2c6e26d92
+<div class="highlight-none"><div class="highlight"><pre><span></span>                c89491b8edad0fb3
+a5f201ec4caff17bcde0ed5ac845b17d
+a14e0749da22d4cb
+</pre></div>
+</div>
+</div>
+<div class="section" id="retrieving-the-soc-uid-via-tisci">
+<h3><a class="toc-backref" href="#id16">Retrieving the SOC UID via TISCI</a><a class="headerlink" href="#retrieving-the-soc-uid-via-tisci" title="Permalink to this headline">¶</a></h3>
+<p>The <a class="reference internal" href="../2_tisci_msgs/security/runtime_debug.html#get-soc-uid"><span class="std std-ref">TISCI_MSG_GET_SOC_UID</span></a> API can be used to retrieve the
+SOC UID to print for reference:</p>
+<div class="highlight-none"><div class="highlight"><pre><span></span>SOC_UID[0] = 0xB89194C8
+SOC_UID[1] = 0xB30FADED
+SOC_UID[2] = 0xEC01F2A5
+SOC_UID[3] = 0x7BF1AF4C
+SOC_UID[4] = 0x5AEDE0CD
+SOC_UID[5] = 0x7DB145C8
+SOC_UID[6] = 0x49074EA1
+SOC_UID[7] = 0xCBD422DA
 </pre></div>
 </div>
 <p>Please note that the data is formatted in little endian fashion and
 bytes inside individual words need to be reordered before populating
-the debugUID field in the certificate.</p>
+the debugUID field in the certificate. Alternative is to cast the response
+payload to a byte array before printing to view the values in byte order.</p>
 </div>
 </div>
 <div class="section" id="controlling-debug-via-board-configuration">
-<h2><a class="toc-backref" href="#id16">Controlling Debug via Board Configuration</a><a class="headerlink" href="#controlling-debug-via-board-configuration" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id17">Controlling Debug via Board Configuration</a><a class="headerlink" href="#controlling-debug-via-board-configuration" title="Permalink to this headline">¶</a></h2>
 <p>Security board configuration allows the user to control the JTAG unlock process. See
 <a class="reference internal" href="../3_boardcfg/BOARDCFG_SEC.html#pub-boardcfg-secure-debug-unlock"><span class="std std-ref">Secure Debug Unlock</span></a> for the data structure definition.</p>
 <ol class="arabic">
@@ -727,7 +738,7 @@ to unlock the jtag port by using a special host id. Please refer to
 
   <div role="contentinfo">
     <p>
-      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2021</a>, Texas Instruments Incorporated. All rights reserved. <br>
+      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2022</a>, Texas Instruments Incorporated. All rights reserved. <br>
       <a href="http://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="http://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="http://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="http://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
 
     </p>
@@ -749,7 +760,7 @@ to unlock the jtag port by using a special host id. Please refer to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'21.09.01',
+            VERSION:'22.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

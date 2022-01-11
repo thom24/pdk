@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                21.09.01
+                22.01.00
               </div>
             
           
@@ -120,6 +120,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#normal-runtime-operation">Normal runtime operation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#triggering-security-handover">Triggering security handover</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#post-security-handover">Post Security handover</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mcusram-bank-7-resource-usage-after-security-handover">MCUSRAM Bank 7 Resource usage after security handover</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="secure_debug.html">Secure Debug User Guide</a></li>
@@ -187,10 +188,11 @@ some portion of DMSC internal memory. Security code also maintains control of
 the security configuration region on the device from 0x45000000 to 0x45FFFFFF.
 After the system initialization and all runtime security operations are
 complete, a designated host on the system can trigger security handover
-operation. After the security handover is complete, the memory used by security
-code in MCUSRAM bank 7 is wiped and released to the system. Of all security
-functionality, only processor boot control functionality is left running out of
-DMSC IRAM. Control of system firewalls not protecting any secrets is handed over
+operation. After the security handover is complete, the part of memory used by security
+code in MCUSRAM bank 7 is wiped and released to the system and part of memory
+is retained for the firmware (Refer <a class="reference internal" href="#mcusram-resource-usage"><span class="std std-ref">MCUSRAM Bank 7 Resource usage after security handover</span></a>).
+Of all security functionality, only processor boot control functionality is left running
+out of DMSC IRAM. Control of system firewalls not protecting any secrets is handed over
 to a designated host.</p>
 <p>This document describes the steps that need to be performed for security handover.
 This document must be read along side</p>
@@ -310,6 +312,89 @@ handover as they internally invoke ISC configuration API.</p>
 security handover as they internally invoke ISC configuration API.</p>
 </div>
 </div>
+<div class="section" id="mcusram-bank-7-resource-usage-after-security-handover">
+<span id="mcusram-resource-usage"></span><h2>MCUSRAM Bank 7 Resource usage after security handover<a class="headerlink" href="#mcusram-bank-7-resource-usage-after-security-handover" title="Permalink to this headline">¶</a></h2>
+<p>Post security handover, firmware uses last 48KB memory of MCUSRAM Bank 7. The rest of
+the MCUSRAM bank 7 memory will be available for application use. MCUSRAM bank 7 is
+protected by regions of firewall ID 24, and the below table shows firewall 24 reserved/locked
+regions for System Firmware after security handover.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="30%" />
+<col width="25%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Firewall ID</th>
+<th class="head">Region</th>
+<th class="head">Start Address</th>
+<th class="head">End Address</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>24</td>
+<td>1</td>
+<td>0x44077000</td>
+<td>0x44079FFF</td>
+</tr>
+<tr class="row-odd"><td>24</td>
+<td>2</td>
+<td>0x44074000</td>
+<td>0x44076FFF</td>
+</tr>
+<tr class="row-even"><td>24</td>
+<td>6</td>
+<td>0x4407C000</td>
+<td>0x4407FFFF</td>
+</tr>
+<tr class="row-odd"><td>24</td>
+<td>7</td>
+<td>0x701FC000</td>
+<td>0x701FFFFF</td>
+</tr>
+</tbody>
+</table>
+<p>The below table shows which firewall 24 regions are open to all users
+after security handover and can be reconfigured by application as necessary.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="22%" />
+<col width="30%" />
+<col width="25%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Firewall ID</th>
+<th class="head">Region</th>
+<th class="head">Start Address</th>
+<th class="head">End Address</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>24</td>
+<td>0</td>
+<td>0x701E0000</td>
+<td>0x701FCFFF</td>
+</tr>
+<tr class="row-odd"><td>24</td>
+<td>3</td>
+<td>0x44060000</td>
+<td>0x44073FFF</td>
+</tr>
+<tr class="row-even"><td>24</td>
+<td>5</td>
+<td>0x701C0000</td>
+<td>0x701DFFFF</td>
+</tr>
+</tbody>
+</table>
+<ul class="simple">
+<li>Region 4 is disabled and can be configured by the application.</li>
+<li>The last 48KB of MCUSRAM Bank 7 is unavailable for application use.</li>
+<li>Regions 0,3,4,5 of Firewall 24 can be reconfigured by the application as needed.</li>
+</ul>
+</div>
 </div>
 
 
@@ -331,7 +416,7 @@ security handover as they internally invoke ISC configuration API.</p>
 
   <div role="contentinfo">
     <p>
-      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2021</a>, Texas Instruments Incorporated. All rights reserved. <br>
+      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2022</a>, Texas Instruments Incorporated. All rights reserved. <br>
       <a href="http://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="http://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="http://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="http://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
 
     </p>
@@ -353,7 +438,7 @@ security handover as they internally invoke ISC configuration API.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'21.09.01',
+            VERSION:'22.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

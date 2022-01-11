@@ -392,21 +392,14 @@ assuming that ccs version is ``ccs1010``.
             -m 3
     Using board config file:
     /home/user/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat
-    UID read succesful:
-    UID[0] = 0x7ab1b240
-    UID[1] = 0xd5757a1f
-    UID[2] = 0xb2f32fdf
-    UID[3] = 0x6b39376e
-    UID[4] = 0xe7fd2e93
-    UID[5] = 0xea4b1a7b
-    UID[6] = 0xe24bbc52
-    UID[7] = 0x926de2c6
+
+    UID = c89491b8edad0fb3a5f201ec4caff17bcde0ed5ac845b17da14e0749da22d4cb
 
 The retrieved UID can be populated into the debug certificate in the below manner.
 
    .. code-block:: none
 
-      debugUID = FORMAT:HEX,OCT:07ab1b2400d5757a1f0b2f32fdf06b39376e0e7fd2e930ea4b1a7b0e24bbc520926de2c6
+      debugUID = FORMAT:HEX,OCT:c89491b8edad0fb3a5f201ec4caff17bcde0ed5ac845b17da14e0749da22d4cb
 
 
 .. _sysfw_pub_sec_dbg_ug_soc_uid_over_uart:
@@ -421,7 +414,7 @@ start of the UART boot character 'CC' contain the SOC ID.
 .. code-block:: none
 
     02000000011a00006a37657300000000
-    00000000454d53450200010002000100
+    00000000485353450200010002000100
     02a6000001000200cffc17b20bcbf96a
     8c712e8d732b48c3e09ac6c0951013ce
     a93e069d2ccdac95420cca9c5f637a80
@@ -430,9 +423,9 @@ start of the UART boot character 'CC' contain the SOC ID.
     c47d9ca8d1aae57b8e8784a12f636b2b
     760d7d98a18f189760dfd0f23e2b0cb1
     0ec7edc7c6edac3d9bdfefe0eddc3fff
-    7fe9ad875195527d40b2b17a1f7a75d5
-    df2ff3b26e37396b932efde77b1a4bea
-    52bc4be2c6e26d92
+    7fe9ad875195527dc89491b8edad0fb3
+    a5f201ec4caff17bcde0ed5ac845b17d
+    a14e0749da22d4cb
     CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC
 
 The above shows the UART output formatted to 32 characters per line.
@@ -440,13 +433,31 @@ The characters corresponding to SOC data are
 
 .. code-block:: none
 
-                    40b2b17a1f7a75d5
-    df2ff3b26e37396b932efde77b1a4bea
-    52bc4be2c6e26d92
+                    c89491b8edad0fb3
+    a5f201ec4caff17bcde0ed5ac845b17d
+    a14e0749da22d4cb
+
+Retrieving the SOC UID via TISCI 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :ref:`TISCI_MSG_GET_SOC_UID <get-soc-uid>` API can be used to retrieve the
+SOC UID to print for reference:
+
+.. code-block:: none
+
+   SOC_UID[0] = 0xB89194C8
+   SOC_UID[1] = 0xB30FADED
+   SOC_UID[2] = 0xEC01F2A5
+   SOC_UID[3] = 0x7BF1AF4C
+   SOC_UID[4] = 0x5AEDE0CD
+   SOC_UID[5] = 0x7DB145C8
+   SOC_UID[6] = 0x49074EA1
+   SOC_UID[7] = 0xCBD422DA
 
 Please note that the data is formatted in little endian fashion and
 bytes inside individual words need to be reordered before populating
-the debugUID field in the certificate.
+the debugUID field in the certificate. Alternative is to cast the response
+payload to a byte array before printing to view the values in byte order.
 
 Controlling Debug via Board Configuration
 -----------------------------------------
