@@ -1,5 +1,7 @@
 lib/*
 docs/doxygen/html/
+src/version/rmpmhal_version.h
+src/version/sciserver_version.h
 .dlls
 .executables
 .xdcenv.mak
