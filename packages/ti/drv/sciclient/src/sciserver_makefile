@@ -90,11 +90,11 @@ include $(MAKERULEDIR)/common.mk
 
 gen_version_includes:
 	@$(ECHO) \# Check and update: src/version/rmpmhal_version.h
-	@src/version/generate_rmpmhal_ver.sh $(RMPMHAL_SCMVERSION) > src/version/rmpmhal_version.h.tmp
-	@if cmp -s src/version/rmpmhal_version.h src/version/rmpmhal_version.h.tmp; then rm src/version/rmpmhal_version.h.tmp; else mv src/version/rmpmhal_version.h.tmp src/version/rmpmhal_version.h; fi
+	@src/version/generate_rmpmhal_ver.sh $(RMPMHAL_SCMVERSION) > src/version/$(MODULE_NAME)-rmpmhal_version.h.tmp
+	@if cmp -s src/version/rmpmhal_version.h src/version/$(MODULE_NAME)-rmpmhal_version.h.tmp; then rm src/version/$(MODULE_NAME)-rmpmhal_version.h.tmp; else mv src/version/$(MODULE_NAME)-rmpmhal_version.h.tmp src/version/rmpmhal_version.h; fi
 	@$(ECHO) \# Check and update: src/version/sciserver_version.h
-	@src/version/generate_sciserver_ver.sh $(SCISERVER_SUBVERSION) $(SCISERVER_PATCHVERSION) $(SCISERVER_MAJOR_VERSION_NAME) $(SCISERVER_SCMVERSION) > src/version/sciserver_version.h.tmp
-	@if cmp -s src/version/sciserver_version.h src/version/sciserver_version.h.tmp; then rm src/version/sciserver_version.h.tmp; else mv src/version/sciserver_version.h.tmp src/version/sciserver_version.h; fi
+	@src/version/generate_sciserver_ver.sh $(SCISERVER_SUBVERSION) $(SCISERVER_PATCHVERSION) $(SCISERVER_MAJOR_VERSION_NAME) $(SCISERVER_SCMVERSION) > src/version/$(MODULE_NAME)-sciserver_version.h.tmp
+	@if cmp -s src/version/sciserver_version.h src/version/$(MODULE_NAME)-sciserver_version.h.tmp; then rm src/version/$(MODULE_NAME)-sciserver_version.h.tmp; else mv src/version/$(MODULE_NAME)-sciserver_version.h.tmp src/version/sciserver_version.h; fi
 
 # OBJs and libraries are built by using rule defined in rules_<target>.mk
 #     and need not be explicitly specified here
