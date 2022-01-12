@@ -104,9 +104,9 @@ if [ $SOC == am65xx ] || [ $SOC == j721e ] || [ $SOC == am64x ]; then
     export CORE_ID=""
     #Refer to SBL document for core ID value (0, or 4 bellow).
     if [ "$PROCESSOR" == "mpu" ]; then
-        export CORE_ID=4
-    elif [ "$PROCESSOR" == "mcu" ]; then
         export CORE_ID=0
+    elif [ "$PROCESSOR" == "mcu" ]; then
+        export CORE_ID=4
     elif [ "$PROCESSOR" == "mpu1_0" ]; then
         export CORE_ID=0
     elif [ "$PROCESSOR" == "mpu1_1" ]; then
