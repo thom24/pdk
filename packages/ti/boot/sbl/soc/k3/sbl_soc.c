@@ -547,7 +547,7 @@ void SBL_ConfigureEthernet(void)
     }
     if (status != BOARD_SOK)
     {
-        SBL_log(SBL_LOG_ERR,"Board_control failed to configure RMII pins\r\n");
+        SBL_log(SBL_LOG_MAX,"Board_control failed to configure RMII pins\r\n");
     }
 #endif
 
@@ -558,7 +558,7 @@ void SBL_ConfigureEthernet(void)
     }
     if (status != BOARD_SOK)
     {
-        SBL_log(SBL_LOG_ERR,"Board_control failed to configure CPSW9G MDIO mux\r\n");
+        SBL_log(SBL_LOG_MAX,"Board_control failed to configure CPSW9G MDIO mux\r\n");
     }
 
     if (Board_detectBoard(BOARD_ID_ENET))
@@ -567,13 +567,13 @@ void SBL_ConfigureEthernet(void)
         status = Board_cpswEnetExpPhyReset(0U);
         if (status != BOARD_SOK)
         {
-            SBL_log(SBL_LOG_ERR,"Board_cpswEnetExpPhyReset failed to reset the ENET PHY\r\n");
+            SBL_log(SBL_LOG_MAX,"Board_cpswEnetExpPhyReset failed to reset the ENET PHY\r\n");
         }
         /* Release the COMA_MODE pin */
         status = Board_cpswEnetExpComaModeCfg(0U);
         if (status != BOARD_SOK)
         {
-            SBL_log(SBL_LOG_ERR,"Board_cpswEnetExpComaModeCfg failed to release COMA_MODE pin\r\n");
+            SBL_log(SBL_LOG_MAX,"Board_cpswEnetExpComaModeCfg failed to release COMA_MODE pin\r\n");
         }
     }
 #endif
