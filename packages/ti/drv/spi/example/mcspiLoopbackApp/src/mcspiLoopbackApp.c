@@ -92,6 +92,7 @@
 #endif
 
 #define MCSPI_INSTANCE 0
+#define MCSPI_DOMAIN   SPI_MCSPI_DOMAIN_MCU
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -234,7 +235,7 @@ void spi_initConfig(void)
     SPI_v1_HWAttrs spi_cfg;
 
     /* Get the default UART init configurations */
-    SPI_socGetInitCfg(MCSPI_INSTANCE, &spi_cfg);
+    SPI_socGetInitCfg(MCSPI_DOMAIN, MCSPI_INSTANCE, &spi_cfg);
 
     /* Modify the default SPI configurations if necessary */
     spi_cfg.chnCfg[spi_cfg.chNum].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_4;

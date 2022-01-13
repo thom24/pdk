@@ -214,13 +214,14 @@ void MCSPI_callback3(MCSPI_Handle handle, SPI_Transaction *transaction)
 static void SPI_initConfig(uint32_t instance, SPI_Tests *test, bool multiChn)
 {
     SPI_HWAttrs spi_cfg;
+    uint32_t domain = SPI_MCSPI_DOMAIN_MCU;
     bool        pollMode = test->pollMode;
 #ifdef SPI_DMA_ENABLE
     bool        dmaMode = test->dmaMode;
 #endif
 
     /* Get the default SPI init configurations */
-    SPI_socGetInitCfg(instance, &spi_cfg);
+    SPI_socGetInitCfg(domain, instance, &spi_cfg);
 
     /*
      * Set blocking mode (dma mode or non-dma interrupt mode)
@@ -267,7 +268,7 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, bool multiChn)
 #endif
 
     /* Set the SPI init configurations */
-    SPI_socSetInitCfg(instance, &spi_cfg);
+    SPI_socSetInitCfg(domain, instance, &spi_cfg);
 }
 
 /*

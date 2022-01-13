@@ -73,6 +73,7 @@
  **********************************************************************/
 
 #define MCSPI_INSTANCE      (1U)
+#define MCSPI_DOMAIN        (SPI_MCSPI_DOMAIN_MCU)
 
 /**********************************************************************
  ************************** Internal functions ************************
@@ -97,7 +98,7 @@ void spi_test(UArg arg0, UArg arg1)
     SPI_HWAttrs spi_cfg;
 
     /* Get the default SPI init configurations */
-    SPI_socGetInitCfg(MCSPI_INSTANCE - 1, &spi_cfg);
+    SPI_socGetInitCfg(MCSPI_DOMAIN, MCSPI_INSTANCE - 1, &spi_cfg);
     spi_cfg.chNum = 0;
     spi_cfg.enableIntr = false;
     spi_cfg.rxTrigLvl = 1;
@@ -106,7 +107,7 @@ void spi_test(UArg arg0, UArg arg1)
     spi_cfg.dmaMode = true;
 
     /* Set the SPI init configurations */
-    SPI_socSetInitCfg(MCSPI_INSTANCE - 1, &spi_cfg);
+    SPI_socSetInitCfg(MCSPI_DOMAIN, MCSPI_INSTANCE - 1, &spi_cfg);
 
     /* Init SPI driver */
     SPI_init();

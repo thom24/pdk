@@ -53,282 +53,397 @@
 #endif
 
 /* SPI configuration structure */
-SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_PER_CNT] =
+SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
 {
+    /* MCU Domain MCSPI INstances */
     {
-#if defined (__aarch64__)
-        /* main domain */
-        CSL_MCSPI0_CFG_BASE,                /* baseAddr */
-        CSL_GIC0_INTR_MCSPI0_BUS_INTR_SPI,  /* intNum */
-#else
-        /* mcu domain */
-        CSL_MCU_MCSPI0_CFG_BASE,
-        CSL_MCU0_INTR_MCSPI0_INTR_SPI,
-#endif
-        0,                                  /* eventId */
-        SPI_PINMODE_4_PIN,                  /* pinMode */
-        MCSPI_CHANNEL_0,                    /* chNum */
-        MCSPI_SINGLE_CH,                    /* chMode */
-        true,                               /* enableIntr */
-        48000000,                           /* inputClkFreq */
-        MCSPI_INITDLY_0,                    /* initDelay */
-        MCSPI_RX_TX_FIFO_SIZE,              /* rxTrigLvl */
-        MCSPI_RX_TX_FIFO_SIZE,              /* txTrigLvl */
         {
+            CSL_MCU_MCSPI0_CFG_BASE,
+            CSL_MCU0_INTR_MCSPI0_INTR_SPI,
+            0,                                  /* eventId */
+            SPI_PINMODE_4_PIN,                  /* pinMode */
+            MCSPI_CHANNEL_0,                    /* chNum */
+            MCSPI_SINGLE_CH,                    /* chMode */
+            true,                               /* enableIntr */
+            48000000,                           /* inputClkFreq */
+            MCSPI_INITDLY_0,                    /* initDelay */
+            MCSPI_RX_TX_FIFO_SIZE,              /* rxTrigLvl */
+            MCSPI_RX_TX_FIFO_SIZE,              /* txTrigLvl */
             {
-                MCSPI_CS_POL_LOW,                  /* csPolarity */
-                MCSPI_DATA_LINE_COMM_MODE_7,       /* dataLineCommMode */
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,   /* tcs */
-                MCSPI_TX_RX_MODE,                  /* trMode */
+                {
+                    MCSPI_CS_POL_LOW,                  /* csPolarity */
+                    MCSPI_DATA_LINE_COMM_MODE_7,       /* dataLineCommMode */
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,   /* tcs */
+                    MCSPI_TX_RX_MODE,                  /* trMode */
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
             },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
+            SPI_PDMA_RX_THREAD_BASE,            /* rxDmaEventNumber */
+            SPI_PDMA_TX_THREAD_BASE,            /* txDmaEventNumber */
+            0,                                  /* edmaTxTCC */
+            0,                                  /* edmaRxTCC */
+            0,                                  /* edmaTxTC */
+            0,                                  /* edmaRxTC */
+            NULL,                               /* edmaHandle */
+            false,                              /* dmaMode */
+            NULL                                /* dmaInfo */
         },
-        SPI_PDMA_RX_THREAD_BASE,            /* rxDmaEventNumber */
-        SPI_PDMA_TX_THREAD_BASE,            /* txDmaEventNumber */
-        0,                                  /* edmaTxTCC */
-        0,                                  /* edmaRxTCC */
-        0,                                  /* edmaTxTC */
-        0,                                  /* edmaRxTC */
-        NULL,                               /* edmaHandle */
-        false,                              /* dmaMode */
-        NULL                                /* dmaInfo */
+        {
+            CSL_MCU_MCSPI1_CFG_BASE,
+            CSL_MCU0_INTR_MCSPI1_INTR_SPI,
+            0,
+            SPI_PINMODE_4_PIN,
+            MCSPI_CHANNEL_0,
+            MCSPI_SINGLE_CH,
+            true,
+            48000000,
+            MCSPI_INITDLY_0,
+            MCSPI_RX_TX_FIFO_SIZE,
+            MCSPI_RX_TX_FIFO_SIZE,
+            {
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+            },
+            SPI_PDMA_RX_THREAD_BASE + 4,
+            SPI_PDMA_TX_THREAD_BASE + 4,
+            0,
+            0,
+            0,
+            0,
+            NULL,
+            false,
+            NULL
+        },
+        {
+            CSL_MCU_MCSPI2_CFG_BASE,
+            CSL_MCU0_INTR_MCSPI2_INTR_SPI,
+            0,
+            SPI_PINMODE_4_PIN,
+            MCSPI_CHANNEL_0,
+            MCSPI_SINGLE_CH,
+            true,
+            48000000,
+            MCSPI_INITDLY_0,
+            MCSPI_RX_TX_FIFO_SIZE,
+            MCSPI_RX_TX_FIFO_SIZE,
+            {
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+            },
+            SPI_PDMA_RX_THREAD_BASE + 8,
+            SPI_PDMA_TX_THREAD_BASE + 8,
+            0,
+            0,
+            0,
+            0,
+            NULL,
+            false,
+            NULL
+        },
     },
+    /* MAIN Domain MCSPI Instances */
     {
-#if defined (__aarch64__)
-        /* main domain */
-        CSL_MCSPI1_CFG_BASE,
-        CSL_GIC0_INTR_MCSPI1_BUS_INTR_SPI,
-#else
-        /* mcu domain */
-        CSL_MCU_MCSPI1_CFG_BASE,
-        CSL_MCU0_INTR_MCSPI1_INTR_SPI,
-#endif
-        0,
-        SPI_PINMODE_4_PIN,
-        MCSPI_CHANNEL_0,
-        MCSPI_SINGLE_CH,
-        true,
-        48000000,
-        MCSPI_INITDLY_0,
-        MCSPI_RX_TX_FIFO_SIZE,
-        MCSPI_RX_TX_FIFO_SIZE,
         {
+            CSL_MCSPI0_CFG_BASE,                /* baseAddr */
+            CSL_GIC0_INTR_MCSPI0_BUS_INTR_SPI,  /* intNum */
+            0,                                  /* eventId */
+            SPI_PINMODE_4_PIN,                  /* pinMode */
+            MCSPI_CHANNEL_0,                    /* chNum */
+            MCSPI_SINGLE_CH,                    /* chMode */
+            true,                               /* enableIntr */
+            48000000,                           /* inputClkFreq */
+            MCSPI_INITDLY_0,                    /* initDelay */
+            MCSPI_RX_TX_FIFO_SIZE,              /* rxTrigLvl */
+            MCSPI_RX_TX_FIFO_SIZE,              /* txTrigLvl */
             {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
+                {
+                    MCSPI_CS_POL_LOW,                  /* csPolarity */
+                    MCSPI_DATA_LINE_COMM_MODE_7,       /* dataLineCommMode */
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,   /* tcs */
+                    MCSPI_TX_RX_MODE,                  /* trMode */
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
             },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
+            SPI_PDMA_RX_THREAD_BASE,            /* rxDmaEventNumber */
+            SPI_PDMA_TX_THREAD_BASE,            /* txDmaEventNumber */
+            0,                                  /* edmaTxTCC */
+            0,                                  /* edmaRxTCC */
+            0,                                  /* edmaTxTC */
+            0,                                  /* edmaRxTC */
+            NULL,                               /* edmaHandle */
+            false,                              /* dmaMode */
+            NULL                                /* dmaInfo */
         },
-        SPI_PDMA_RX_THREAD_BASE + 4,
-        SPI_PDMA_TX_THREAD_BASE + 4,
-        0,
-        0,
-        0,
-        0,
-        NULL,
-        false,
-        NULL
-    },
-    {
-#if defined (__aarch64__)
-        /* main domain */
-        CSL_MCSPI2_CFG_BASE,
-        CSL_GIC0_INTR_MCSPI2_BUS_INTR_SPI,
-#else
-        /* mcu domain */
-        CSL_MCU_MCSPI2_CFG_BASE,
-        CSL_MCU0_INTR_MCSPI2_INTR_SPI,
-#endif
-        0,
-        SPI_PINMODE_4_PIN,
-        MCSPI_CHANNEL_0,
-        MCSPI_SINGLE_CH,
-        true,
-        48000000,
-        MCSPI_INITDLY_0,
-        MCSPI_RX_TX_FIFO_SIZE,
-        MCSPI_RX_TX_FIFO_SIZE,
         {
+            CSL_MCSPI1_CFG_BASE,
+            CSL_GIC0_INTR_MCSPI1_BUS_INTR_SPI,
+            0,
+            SPI_PINMODE_4_PIN,
+            MCSPI_CHANNEL_0,
+            MCSPI_SINGLE_CH,
+            true,
+            48000000,
+            MCSPI_INITDLY_0,
+            MCSPI_RX_TX_FIFO_SIZE,
+            MCSPI_RX_TX_FIFO_SIZE,
             {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
             },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
+            SPI_PDMA_RX_THREAD_BASE + 4,
+            SPI_PDMA_TX_THREAD_BASE + 4,
+            0,
+            0,
+            0,
+            0,
+            NULL,
+            false,
+            NULL
         },
-        SPI_PDMA_RX_THREAD_BASE + 8,
-        SPI_PDMA_TX_THREAD_BASE + 8,
-        0,
-        0,
-        0,
-        0,
-        NULL,
-        false,
-        NULL
-    },
-    {
-#if defined (__aarch64__)
-        /* main domain */
-        CSL_MCSPI3_CFG_BASE,
-        CSL_GIC0_INTR_MCSPI3_BUS_INTR_SPI,
-#else
-        /* mcu domain */
-        CSL_MCSPI3_CFG_BASE,
-        0,
-#endif
-        0,
-        SPI_PINMODE_4_PIN,
-        MCSPI_CHANNEL_0,
-        MCSPI_SINGLE_CH,
-        true,
-        48000000,
-        MCSPI_INITDLY_0,
-        MCSPI_RX_TX_FIFO_SIZE,
-        MCSPI_RX_TX_FIFO_SIZE,
         {
+            CSL_MCSPI2_CFG_BASE,
+            CSL_GIC0_INTR_MCSPI2_BUS_INTR_SPI,
+            0,
+            SPI_PINMODE_4_PIN,
+            MCSPI_CHANNEL_0,
+            MCSPI_SINGLE_CH,
+            true,
+            48000000,
+            MCSPI_INITDLY_0,
+            MCSPI_RX_TX_FIFO_SIZE,
+            MCSPI_RX_TX_FIFO_SIZE,
             {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
             },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
+            SPI_PDMA_RX_THREAD_BASE + 8,
+            SPI_PDMA_TX_THREAD_BASE + 8,
+            0,
+            0,
+            0,
+            0,
+            NULL,
+            false,
+            NULL
         },
-        SPI_PDMA_RX_THREAD_BASE + 12,
-        SPI_PDMA_TX_THREAD_BASE + 12,
-        0,
-        0,
-        0,
-        0,
-        NULL,
-        false,
-        NULL
-    },
-    {
-#if defined (__aarch64__)
-        /* main domain */
-        CSL_MCSPI4_CFG_BASE,
-        CSL_GIC0_INTR_MCSPI4_BUS_INTR_SPI,
-#else
-        /* mcu domain */
-        CSL_MCSPI4_CFG_BASE,
-        0,
-#endif
-        0,
-        SPI_PINMODE_4_PIN,
-        MCSPI_CHANNEL_0,
-        MCSPI_SINGLE_CH,
-        true,
-        48000000,
-        MCSPI_INITDLY_0,
-        MCSPI_RX_TX_FIFO_SIZE,
-        MCSPI_RX_TX_FIFO_SIZE,
         {
+            CSL_MCSPI3_CFG_BASE,
+            CSL_GIC0_INTR_MCSPI3_BUS_INTR_SPI,
+            0,
+            SPI_PINMODE_4_PIN,
+            MCSPI_CHANNEL_0,
+            MCSPI_SINGLE_CH,
+            true,
+            48000000,
+            MCSPI_INITDLY_0,
+            MCSPI_RX_TX_FIFO_SIZE,
+            MCSPI_RX_TX_FIFO_SIZE,
             {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
             },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
-            {
-                MCSPI_CS_POL_LOW,
-                MCSPI_DATA_LINE_COMM_MODE_7,
-                MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
-                MCSPI_TX_RX_MODE,
-            },
+            SPI_PDMA_RX_THREAD_BASE + 12,
+            SPI_PDMA_TX_THREAD_BASE + 12,
+            0,
+            0,
+            0,
+            0,
+            NULL,
+            false,
+            NULL
         },
-        SPI_PDMA_RX_THREAD_BASE + 16,
-        SPI_PDMA_TX_THREAD_BASE + 16,
-        0,
-        0,
-        0,
-        0,
-        NULL,
-        false,
-        NULL
+        {
+            CSL_MCSPI4_CFG_BASE,
+            CSL_GIC0_INTR_MCSPI4_BUS_INTR_SPI,
+            0,
+            SPI_PINMODE_4_PIN,
+            MCSPI_CHANNEL_0,
+            MCSPI_SINGLE_CH,
+            true,
+            48000000,
+            MCSPI_INITDLY_0,
+            MCSPI_RX_TX_FIFO_SIZE,
+            MCSPI_RX_TX_FIFO_SIZE,
+            {
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+                {
+                    MCSPI_CS_POL_LOW,
+                    MCSPI_DATA_LINE_COMM_MODE_7,
+                    MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
+                    MCSPI_TX_RX_MODE,
+                },
+            },
+            SPI_PDMA_RX_THREAD_BASE + 16,
+            SPI_PDMA_TX_THREAD_BASE + 16,
+            0,
+            0,
+            0,
+            0,
+            NULL,
+            false,
+            NULL
+        },
     },
 };
 
@@ -428,27 +543,27 @@ CSL_PUBLIC_CONST SPI_config_list SPI_config = {
     {
         &SPI_FxnTable_v1,
         &SpiObjects[0],
-        &spiInitCfg[0]
+        &spiInitCfg[0][0]
     },
     {
         &SPI_FxnTable_v1,
         &SpiObjects[1],
-        &spiInitCfg[1]
+        &spiInitCfg[0][1]
     },
     {
         &SPI_FxnTable_v1,
         &SpiObjects[2],
-        &spiInitCfg[2]
+        &spiInitCfg[0][2]
     },
     {
         &SPI_FxnTable_v1,
         &SpiObjects[3],
-        &spiInitCfg[3]
+        &spiInitCfg[0][3]
     },
     {
         &SPI_FxnTable_v1,
         &SpiObjects[4],
-        &spiInitCfg[4]
+        &spiInitCfg[0][4]
     },
     {
         &OSPI_FxnTable_v0,
@@ -597,19 +712,20 @@ MCSPI_config_list MCSPI_config = {
 /**
  * \brief  This API gets the SoC level of SPI intial configuration
  *
+ * \param  domain    SPI instance domain.
  * \param  idx       SPI instance index.
  * \param  cfg       Pointer to SPI SOC initial config.
  *
  * \return 0 success: -1: error
  *
  */
-int32_t SPI_socGetInitCfg(uint32_t idx, SPI_v1_HWAttrs *cfg)
+int32_t SPI_socGetInitCfg(uint32_t domain, uint32_t idx, SPI_v1_HWAttrs *cfg)
 {
     int32_t ret = 0;
 
     if (idx < CSL_MCSPI_PER_CNT)
     {
-        *cfg = spiInitCfg[idx];
+        *cfg = spiInitCfg[domain][idx];
     }
     else
     {
@@ -621,19 +737,20 @@ int32_t SPI_socGetInitCfg(uint32_t idx, SPI_v1_HWAttrs *cfg)
 /**
  * \brief  This API sets the SoC level of SPI intial configuration
  *
+ * \param  domain    SPI instance domain.
  * \param  idx       SPI instance index.
  * \param  cfg       Pointer to SPI SOC initial config.
  *
  * \return           0 success: -1: error
  *
  */
-int32_t SPI_socSetInitCfg(uint32_t idx, const SPI_v1_HWAttrs *cfg)
+int32_t SPI_socSetInitCfg(uint32_t domain, uint32_t idx, const SPI_v1_HWAttrs *cfg)
 {
     int32_t ret = 0;
 
     if (idx < CSL_MCSPI_PER_CNT)
     {
-        spiInitCfg[idx] = *cfg;
+        spiInitCfg[domain][idx] = *cfg;
     }
     else
     {

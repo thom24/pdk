@@ -63,6 +63,7 @@
 #endif
 #if defined (SOC_AM65XX)
 #define MCSPI_INSTANCE         (1U)
+#define MCSPI_DOMAIN           (SPI_MCSPI_DOMAIN_MCU)
 #endif
 
 /* GPIO pin value definitions */
@@ -133,6 +134,7 @@ int spi_test()
     int index;
     char p = 'r';
     SPI_v1_HWAttrs  spiCfg;
+    uint32_t domain = SPI_MCSPI_DOMAIN_MCU;
 
     /* Buffer containing the known data that needs to be written to flash */
     uint8_t txBuf[1U];
@@ -145,12 +147,12 @@ int spi_test()
 
     for (index=0; index<CSL_MCSPI_PER_CNT; index++)
     {
-         SPI_socGetInitCfg(index, &spiCfg);
+         SPI_socGetInitCfg(domain, index, &spiCfg);
          spiCfg.enableIntr = false;
 #if defined(SOC_AM65XX)
          spiCfg.chNum      = 1;
 #endif
-         SPI_socSetInitCfg(index, &spiCfg);
+         SPI_socSetInitCfg(domain, index, &spiCfg);
     }
 
 #if !defined(SOC_AM65XX)
@@ -494,12 +496,12 @@ void enableMAINSPI()
 {
     SPI_v1_HWAttrs  spiCfg;
 
-    SPI_socGetInitCfg((MCSPI_INSTANCE-1), &spiCfg);
+    SPI_socGetInitCfg(MCSPI_DOMAIN, (MCSPI_INSTANCE-1), &spiCfg);
 
     spiCfg.baseAddr = CSL_MCSPI0_CFG_BASE;
     spiCfg.enableIntr = 0;
 
-    SPI_socSetInitCfg((MCSPI_INSTANCE-1), &spiCfg);
+    SPI_socSetInitCfg(MCSPI_DOMAIN, (MCSPI_INSTANCE-1), &spiCfg);
 }
 #endif
 #endif

@@ -50,7 +50,7 @@ extern "C" {
 
 #include <flash_programmer.h>
 
-#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
+#if (defined(SOC_TPR12) || defined(SOC_AWR294X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM65XX))
 #define DATA_BUFF_LEN           (2*1024U)
 #else
 #define DATA_BUFF_LEN           (4*1024U)

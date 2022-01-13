@@ -575,12 +575,12 @@ static void SPI_initConfigDefault(SPI_HWAttrs *cfg, uint32_t chn)
 /*
  *  ======== SPI init config ========
  */
-static void SPI_deInitConfig(uint32_t instance, SPI_Tests *test)
+static void SPI_deInitConfig(uint32_t domain, uint32_t instance, SPI_Tests *test)
 {
     SPI_HWAttrs spi_cfg;
 
     /* Get the default SPI init configurations */
-    SPI_socGetInitCfg(instance, &spi_cfg);
+    SPI_socGetInitCfg(domain, instance, &spi_cfg);
 
     /* Release interrupt path */
     MCSPI_configSocIntrPath(instance, &spi_cfg, FALSE);
@@ -589,7 +589,7 @@ static void SPI_deInitConfig(uint32_t instance, SPI_Tests *test)
 /*
  *  ======== SPI init config ========
  */
-static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, bool multiChn)
+static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, uint32_t chn, bool multiChn)
 {
     SPI_HWAttrs spi_cfg;
     int32_t     testId = test->testId;
@@ -604,7 +604,7 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
 #endif
 
     /* Get the default SPI init configurations */
-    SPI_socGetInitCfg(instance, &spi_cfg);
+    SPI_socGetInitCfg(domain, instance, &spi_cfg);
 
 #ifdef MCSPI_MULT_CHANNEL
     SPI_initConfigDefault(&spi_cfg, chn);
@@ -746,7 +746,7 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, uint32_t chn, boo
 #endif
 
     /* Set the SPI init configurations */
-    SPI_socSetInitCfg(instance, &spi_cfg);
+    SPI_socSetInitCfg(domain, instance, &spi_cfg);
 }
 
 bool SPI_verify_data(unsigned char *data1, unsigned char *data2, uint32_t length)
@@ -1072,11 +1072,46 @@ static uint32_t SPI_test_get_instance (uint32_t testId, bool master)
     return (instance);
 }
 
+static uint32_t SPI_test_get_domain (uint32_t testId, bool master)
+{
+    uint32_t domain;
+
+    /*
+     * For AM65XX/J721E/J7200 SoC, master/slave test is set up to use
+     * McSPI 2 on the MCU domain for master and McSPI 4 on the
+     * Main domain for slave, for loopback test it uses default
+     * board McSPI instance
+     */
+    if (testId < SPI_TEST_ID_LOOPBACK)
+    {
+        if (master == true)
+        {
+            domain = SPI_MCSPI_DOMAIN_MCU;
+        }
+        else
+        {
+            domain = SPI_MCSPI_DOMAIN_MAIN;
+        }
+        if ((testId == SPI_TEST_ID_TIMEOUT) ||
+            (testId == SPI_TEST_ID_TIMEOUT_POLL))
+        {
+            /*
+             * Timeout test is done in slave mode,
+             * on the McSPI 2 on MCU domain
+             */
+            domain = SPI_MCSPI_DOMAIN_MCU;
+        }
+
+    }
+
+    return (domain);
+}
+
 static bool SPI_test_single_channel(void *arg)
 {
     SPI_Handle        spi;
     SPI_Params        spiParams;
-    uint32_t          instance, i, modeIndex, SPI_modeIndex, xferLen, num_xfers;
+    uint32_t          instance, i, modeIndex, SPI_modeIndex, xferLen, num_xfers, domain;
     bool              ret = false;
     SPI_Tests        *test = (SPI_Tests *)arg;
     int32_t           testId = test->testId;
@@ -1113,7 +1148,8 @@ static bool SPI_test_single_channel(void *arg)
     {
         ret = false;
         instance = SPI_test_get_instance(testId, master);
-        SPI_initConfig(instance, test, MCSPI_TEST_CHN, false);
+        domain   = SPI_test_get_domain(testId, master);
+        SPI_initConfig(domain, instance, test, MCSPI_TEST_CHN, false);
 
         /* Initialize SPI handle */
         SPI_Params_init(&spiParams);
@@ -1211,7 +1247,7 @@ static bool SPI_test_single_channel(void *arg)
                 }
             }
 
-        SPI_deInitConfig(instance, test);
+        SPI_deInitConfig(domain, instance, test);
 	} /* End of for loop */
 
 Err:
@@ -1237,6 +1273,7 @@ static bool SPI_test_xfer_error(void *arg)
     SPI_Handle        spi;
     SPI_Params        spiParams;
     bool              transferOK;
+    uint32_t          domain;
     uint32_t          instance;
     SPI_Tests        *test = (SPI_Tests *)arg;
     bool              master = test->master;
@@ -1247,8 +1284,9 @@ static bool SPI_test_xfer_error(void *arg)
     if (master == true)
     {
         ret = false;
+        domain = 0;
         instance = 2;
-        SPI_initConfig(instance, test, MCSPI_TEST_CHN, false);
+        SPI_initConfig(domain, instance, test, MCSPI_TEST_CHN, false);
 
         /* Initialize SPI handle */
         SPI_Params_init(&spiParams);
@@ -1309,7 +1347,7 @@ static bool SPI_test_xfer_error(void *arg)
         {
             SPI_close(spi);
         }
-        SPI_deInitConfig(instance, test);
+        SPI_deInitConfig(domain, instance, test);
     }
     else
     {
@@ -1327,7 +1365,7 @@ static bool SPI_test_multi_channel(void *arg)
 {
     MCSPI_Handle      spi[MCSPI_MAX_NUM_CHN];
     MCSPI_Params      spiParams;
-    uint32_t          instance, i;
+    uint32_t          instance, i, domain;
     bool              ret = false;
     uint32_t          chn, maxNumChn, testChn;
     MCSPI_CallbackFxn cbFxn[MCSPI_MAX_NUM_CHN] = {MCSPI_callback0, MCSPI_callback1, MCSPI_callback2, MCSPI_callback3};
@@ -1345,8 +1383,9 @@ static bool SPI_test_multi_channel(void *arg)
     }
 
     instance = SPI_test_get_instance(testId, master);
+    domain   = SPI_test_get_domain(testId, master);
     testChn = MCSPI_TEST_CHN;
-    SPI_initConfig(instance, test, testChn, false);
+    SPI_initConfig(domain, instance, test, testChn, false);
 
     /* Initialize SPI handle */
     MCSPI_Params_init(&spiParams);
@@ -1461,7 +1500,7 @@ Err:
         }
     }
 
-    SPI_deInitConfig(instance, test);
+    SPI_deInitConfig(domain, instance, test);
 
     return (ret);
 }
@@ -1916,10 +1955,10 @@ int main(void)
          * configure the input clock for all the available instances */
         for (instance = 0; instance < CSL_SPI_CNT; instance++)
         {
-            SPI_socGetInitCfg(instance, &spi_cfg);
+            SPI_socGetInitCfg(domain, instance, &spi_cfg);
             /* Update the I2C functional clock based on CPU clock - 1G or 600MHz */
             spi_cfg.inputClkFreq = socInfo.sysClock/SPI_MODULE_CLOCK_DIVIDER;
-            SPI_socSetInitCfg(instance, &spi_cfg);
+            SPI_socSetInitCfg(domain, instance, &spi_cfg);
         }
     }
 #endif
