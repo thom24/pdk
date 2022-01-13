@@ -38,7 +38,7 @@ SDK_INSTALL_PATH ?= $(abspath ../../../../)
 TOOLS_INSTALL_PATH ?= $(SDK_INSTALL_PATH)
 
 #Default BUILD_OS_TYPE (tirtos/baremetal/qnx/freertos)
-export BUILD_OS_TYPE ?= tirtos
+export BUILD_OS_TYPE ?= freertos
 
 ifeq ($(BUILD_OS_TYPE), qnx)
 #PDK under different folder for QNX
