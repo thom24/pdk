@@ -257,6 +257,7 @@ static usbDwcDcdEvnt_t usbEvnt[USB_DCD_DWC_EVNT_BUF_MAX] __attribute__ ((aligned
 
 /** \brief Control data buffer */
 static uint32_t usbCtrlDataBuf[32U] __attribute__ ((aligned (ALIGNED_SIZE)));
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -1142,6 +1143,8 @@ void usbDwcDcdDevEvntHandler(usbDwcDcdDevice_t *dwc3, usbDwcDcdEvnt_t *usbDwcDcd
 
 void usbDwcDcdSetEpStall(usbDwcDcdDevice_t *dwc3, uint32_t phEpId, uint32_t flag)
 {
+    uint32_t XferIndex = 0;
+
     if(TRUE == flag)
     {
         /* Set endpoint stall */
@@ -1160,12 +1163,31 @@ void usbDwcDcdSetEpStall(usbDwcDcdDevice_t *dwc3, uint32_t phEpId, uint32_t flag
     }
     else if(FALSE == flag)
     {
-        /* Set transfer end */
+		/* START TRANSFER indicates that a Transfer Descriptor (TD), that is, a list
+           of TRBs that comprise one or more transfers which is ready to be processed.
+           If we dont set any arguements with TD Address for the START TRANSFER, the pointer
+           which has to point the Transfer Descriptor (TD) for the new START ponits to the
+           TRB's being used by the last transfer.
+           So, we are initiating one more start transfer(without any arguement) to the same
+           endpoint used, to fetch the actual index used in the previous transfer */
+
+		usbDwcDcdRunDEpCmd(dwc3,
+                       phEpId,
+                       USB_D_EP_CMD_STRTXFER,
+                       NULL,
+                       -1,
+                       NULL);
+
+        /* Reading the resource index value upon the start transfer */
+	    XferIndex = HW_RD_REG32(dwc3->baseAddr + DWC_USB_DEPCMD_0(phEpId + 1));
+		XferIndex = ((XferIndex >> 16) & (0x7F));
+
+        /* End transfer */
         usbDwcDcdRunDEpCmd(dwc3,
                        phEpId,
                        USB_D_EP_CMD_ENDXFER,
                        NULL,
-                       -1,
+                       XferIndex,
                        NULL);
         /* Clear stall */
         usbDwcDcdRunDEpCmd(dwc3,
