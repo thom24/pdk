@@ -45,6 +45,9 @@
 
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Hwi.h>
 
+#include <FreeRTOS.h>
+#include <task.h>
+
 #define OSAL_FREERTOS_C7X_CONFIGNUM_HWI                 (64U)
 
 #ifndef OSAL_TARGET_PROC_MASK_DEFAULT
@@ -266,9 +269,17 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
  */
 uintptr_t HwiP_disable(void)
 {
-    uintptr_t key;
+    uintptr_t key = (uintptr_t)NULL_PTR;
 
-    key = Hwi_disable();
+    if(( xPortInIsrContext() ) || 
+       ( xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED ))
+    {
+        key = Hwi_disable();
+    }
+    else
+    {
+        portENTER_CRITICAL();
+    }
 
     return (key);
 }
@@ -332,5 +343,15 @@ int32_t HwiP_post(uint32_t interruptNum)
  */
 void HwiP_restore(uintptr_t key)
 {
-    (void)Hwi_restore((uint32_t)key);
+    if(( xPortInIsrContext() ) || 
+       ( xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED ))
+    {
+        (void)Hwi_restore((uint32_t)key);
+    }
+    else
+    {
+        portEXIT_CRITICAL();
+    }
+
+    return;
 }
