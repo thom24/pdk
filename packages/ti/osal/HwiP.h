@@ -210,7 +210,9 @@ extern HwiP_Status HwiP_delete(HwiP_Handle hwiPhandle);
 /*!
  *  @brief  Function to disable interrupts to enter a critical region
  *
- *  This function can be called multiple times, but must unwound in the reverse
+ *  This function can be called multiple times.
+ * 
+ *  For Non-OS case, it must unwound in the reverse
  *  order. For example
  *  @code
  *  uintptr_t key1, key2;
@@ -219,6 +221,10 @@ extern HwiP_Status HwiP_delete(HwiP_Handle hwiPhandle);
  *  HwiP_restore(key2);
  *  HwiP_restore(key1);
  *  @endcode
+ * 
+ *  For FreeRTOS case, after the schedular had started the kernel keeps 
+ *  track of critical nesting count.
+ *  So here the return key will be NULL.
  *
  *  @return A key that must be passed to HwiP_restore to re-enable interrupts.
  */

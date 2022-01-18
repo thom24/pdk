@@ -364,7 +364,9 @@ void vPortEnterCritical( void )
 
 void vPortExitCritical( void )
 {
-    /* if( ulCriticalNesting > portNO_CRITICAL_NESTING ) */
+    /* Make sure critical nesting count is non zero */
+    DebugP_assert( ulCriticalNesting > portNO_CRITICAL_NESTING );
+
     {
         /* Decrement the nesting count as the critical section is being
          * exited. */
