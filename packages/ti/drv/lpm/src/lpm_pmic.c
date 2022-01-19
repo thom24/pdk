@@ -2239,6 +2239,42 @@ void Lpm_pmicStateChangeActiveToIORetention(void)
 
     while(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE);
 
+   /* Change FSM_NSLEEP_TRIGGERS */
+    dataToSlave[0] = 0x86;
+    dataToSlave[1] = 0x03;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
+
+    /* Clear INT_STARTUP */
+    dataToSlave[0] = 0x65;
+    dataToSlave[1] = 0x02;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_STARTUP = 0x%x\n", dataToSlave[1]);
+
+    /* Configure GPIO4_CONF */
+    dataToSlave[0] = 0x34;
+    dataToSlave[1] = 0xc0;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write GPIO4_CONF = 0x%x\n", dataToSlave[1]);
+
+    /* Configure INT_GPIO1_8 (enable GPIO4 interrupt) */
+    dataToSlave[0] = 0x64;
+    dataToSlave[1] = 0x08;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write INT_GPIO1_8 = 0x%x\n", dataToSlave[1]);
+
+    /* Configure MASK_GPIO1_8_FALL (configure GPIO4 falling edge interrupt) */
+    dataToSlave[0] = 0x4F;
+    dataToSlave[1] = 0xF7;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write MASK_GPIO1_8_FALL = 0x%x\n", dataToSlave[1]);
+
+    /* Change FSM_I2C_TRIGGERS */
+    dataToSlave[0] = 0x85;
+    dataToSlave[1] = 0x40;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_I2C_TRIGGERS = 0x%x\n", dataToSlave[1]);
+
     /* Change FSM_I2C_TRIGGERS - PMICB */
     dataToSlave[0] = 0x85;
     dataToSlave[1] = 0x40;
