@@ -183,3 +183,17 @@ Board_STATUS Board_serdesCfgQsgmii(void)
 
     return BOARD_SOK;
 }
+
+int32_t Board_serdesCfgStatus(void)
+{
+    CSL_SerdesStatus serdesStatus;
+    int32_t ret = FALSE;
+
+    serdesStatus = CSL_serdesConfigStatus(CSL_SERDES_10G1_BASE);
+    if (serdesStatus == CSL_SERDES_STATUS_PLL_LOCKED)
+    {
+        ret = TRUE;
+    }
+
+    return ret;
+}

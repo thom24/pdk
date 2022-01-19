@@ -91,6 +91,16 @@ Board_STATUS Board_serdesCfgSgmii(void);
  */
 Board_STATUS Board_serdesCfgQsgmii(void);
 
+/**
+ *  \brief Query SerDes configuration status
+ *
+ *  The function gets the configuration status of Torrent SerDes module.
+ *
+ *  \retval TRUE    SerDes1 is configured
+ *  \retval FALSE   SerDes1 is not configured
+ */
+int32_t Board_serdesCfgStatus(void);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
