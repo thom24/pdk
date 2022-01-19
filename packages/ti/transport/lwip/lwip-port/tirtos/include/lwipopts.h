@@ -47,12 +47,6 @@
 #define LWIP_IGMP                  LWIP_IPV4
 #define LWIP_ICMP                  LWIP_IPV4
 
-#define LWIP_SNMP                  LWIP_UDP
-#define MIB2_STATS                 LWIP_SNMP
-#ifdef LWIP_HAVE_MBEDTLS
-#define LWIP_SNMP_V3               (LWIP_SNMP)
-#endif
-
 #define LWIP_DNS                   LWIP_UDP
 #define LWIP_MDNS_RESPONDER        LWIP_UDP
 
@@ -79,7 +73,6 @@
 
 #ifdef LWIP_DEBUG
 
-#define MEM_STATS				   1
 #define LWIP_DBG_MIN_LEVEL         0
 #define PPP_DEBUG                  LWIP_DBG_OFF
 #define MEM_DEBUG                  LWIP_DBG_OFF
@@ -303,6 +296,13 @@ a lot of data that needs to be copied, this should be set high. */
 #define MEMP_STATS              1
 #define PBUF_STATS              1
 #define SYS_STATS               1
+
+#define LWIP_SNMP               LWIP_UDP
+#define MIB2_STATS              LWIP_SNMP
+#ifdef LWIP_HAVE_MBEDTLS
+#define LWIP_SNMP_V3            (LWIP_SNMP)
+#endif
+
 #endif /* LWIP_STATS */
 
 /* ---------- NETBIOS options ---------- */
