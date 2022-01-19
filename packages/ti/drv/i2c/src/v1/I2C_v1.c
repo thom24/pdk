@@ -344,7 +344,7 @@ static void I2C_v1_hwiFxnMaster(I2C_Handle handle)
 	            if ((stat & I2C_INT_RECV_READY) != 0U)
 	            {
 	                /* Save the received data */
-	                if (object->readBufIdx > 0U)
+	                if (object->readBufIdx > (uint8_t *)0U)
 	                {
 	                    *(object->readBufIdx) = I2CMasterDataGet(hwAttrs->baseAddr);
 	                    object->readBufIdx++;

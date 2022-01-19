@@ -48,7 +48,7 @@ else
 CGT_ISA_PATH_PRFX = $(CGT_ISA)
 endif
 
-CODEGEN_INCLUDE = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/include
+CODEGEN_INCLUDE = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/include/c
 CC = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmclang
 AR = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmar
 LNK = $(TOOLCHAIN_PATH_$(CGT_ISA_PATH_PRFX))/bin/tiarmclang
@@ -88,7 +88,7 @@ LNKFLAGS_INTERNAL_COMMON +=
 SUPRESS_WARNINGS_FLAG = -Wno-extra -Wno-exceptions -ferror-limit=100 -Wno-parentheses-equality -Wno-unused-command-line-argument -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function -Wno-inconsistent-missing-override -Wno-address-of-packed-member -Wno-self-assign -Wno-ignored-attributes -Wno-bitfield-constant-conversion -Wno-unused-const-variable -Wno-unused-variable -Wno-format-security -Wno-excess-initializers -Wno-sometimes-uninitialized -Wno-empty-body -Wno-extern-initializer -Wno-absolute-value -Wno-missing-braces -Wno-ti-macros -Wno-pointer-sign -Wno-macro-redefined -Wno-main-return-type
 
 ifeq ($(CPLUSPLUS_BUILD), yes)
-  SUPRESS_WARNINGS_FLAG += -Wno-c99-designator -Wno-extern-c-compat
+  SUPRESS_WARNINGS_FLAG += -Wno-c99-designator -Wno-extern-c-compat -Wno-c++11-narrowing -Wno-reorder-init-list -Wno-deprecated-register -Wno-writable-strings -Wno-enum-compare -Wno-reserved-user-defined-literal
 endif
 
 # Internal CFLAGS - normally doesn't change
@@ -115,6 +115,11 @@ ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
   CFLAGS_INTERNAL += -Werror
   LNKFLAGS_INTERNAL_COMMON += -Werror
 endif
+
+ifeq ($(CPLUSPLUS_BUILD), yes)
+ CFLAGS_INTERNAL += -nostdlibinc 
+endif
+
 CFLAGS_DIROPTS = -c
 
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA),R5))

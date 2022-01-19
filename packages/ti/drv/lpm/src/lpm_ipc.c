@@ -653,7 +653,7 @@ int32_t Lpm_ipcEchoApp(void)
                         params.stacksize  = IPC_TASK_STACKSIZE;
                         params.arg0       = (uint32_t *)&service_ping.endPt;
                         params.arg1       = (uint32_t *)&service_ping.name[0];
-                        TaskP_create(Lpm_ipcResponderFxn, &params);
+                        TaskP_create((void*)Lpm_ipcResponderFxn, &params);
 
                     #ifdef DEBUG_PRINT
                         UART_printf("Lpm_ipcResponderFxn for ENDPT_PING created!\n");
@@ -668,7 +668,7 @@ int32_t Lpm_ipcEchoApp(void)
                         params.stacksize  = IPC_TASK_STACKSIZE;
                         params.arg0       = (uint32_t *)&service_chrdev.endPt;
                         params.arg1       = (uint32_t *)&service_chrdev.name[0];
-                        TaskP_create(Lpm_ipcResponderFxn, &params);
+                        TaskP_create((void*)Lpm_ipcResponderFxn, &params);
                     #ifdef DEBUG_PRINT
                         UART_printf("Lpm_ipcResponderFxn for ENDPT_CHRDEV created!\n");
                     #endif
@@ -694,7 +694,7 @@ int32_t Lpm_ipcEchoApp(void)
                             params.stacksize = IPC_TASK_STACKSIZE;
                             params.arg0      = (uint32_t *)&pRemoteProcArray[t];
                             params.arg1      = (uint32_t *)&gSendTaskBufIdx[t];
-                            TaskP_create(Lpm_ipcSenderFxn, &params);
+                            TaskP_create((void*)Lpm_ipcSenderFxn, &params);
 
                         }
 
@@ -705,7 +705,7 @@ int32_t Lpm_ipcEchoApp(void)
                         params.stack     = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
                         params.stacksize = IPC_TASK_STACKSIZE;
                         params.arg0 = 0;
-                        TaskP_create(Lpm_ipcVdevMonitorFxn, &params);
+                        TaskP_create((void*)Lpm_ipcVdevMonitorFxn, &params);
                     #endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH) */
                     }
                 }

@@ -183,7 +183,7 @@ ClockP_Handle ClockP_create(void *clockfxn,
         /* pvObjec */
         xTimerInitParameters.pvObject           = NULL;
 
-        xCreateResult = xTimerCreate(&xTimerInitParameters, pTimer->timerHndl);
+        xCreateResult = xTimerCreate(&xTimerInitParameters, &pTimer->timerHndl);
 
         if(xCreateResult != pdPASS)
         {

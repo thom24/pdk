@@ -322,7 +322,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     taskParams.arg0 = (void *)hTimeSyncPtp;
     taskParams.stack = &gTimeSyncPtp_processTxNotifyTaskStackBuf[0];
     taskParams.stacksize = TIMESYNC_PTP_TX_NOTIFY_TASK_STACKSIZE;
-    hTimeSyncPtp->pktTxNotifyTask = TaskP_create(TimeSyncPtp_processTxNotifyTask,
+    hTimeSyncPtp->pktTxNotifyTask = TaskP_create((void*)TimeSyncPtp_processTxNotifyTask,
                                                  &taskParams);
 
     if (hTimeSyncPtp->pktTxNotifyTask == NULL)
@@ -336,7 +336,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     taskParams.arg0 = (void *)hTimeSyncPtp;
     taskParams.stack = &gTimeSyncPtp_processRxNotifyTaskStackBuf[0];
     taskParams.stacksize = TIMESYNC_PTP_RX_NOTIFY_TASK_STACKSIZE;
-    hTimeSyncPtp->pktRxNotifyTask = TaskP_create(TimeSyncPtp_processRxNotifyTask,
+    hTimeSyncPtp->pktRxNotifyTask = TaskP_create((void*)TimeSyncPtp_processRxNotifyTask,
                                                  &taskParams);
 
     if (hTimeSyncPtp->pktRxNotifyTask == NULL)
@@ -351,7 +351,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
         taskParams.arg0 = (void *)hTimeSyncPtp;
         taskParams.stack = &gTimeSyncPtp_pdelayReqSendTaskStackBuf[0];
         taskParams.stacksize = TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE;
-        hTimeSyncPtp->pDelayReqSendTask = TaskP_create(TimeSyncPtp_pdelayReqSendTask,
+        hTimeSyncPtp->pDelayReqSendTask = TaskP_create((void*)TimeSyncPtp_pdelayReqSendTask,
                                                        &taskParams);
 
         if (hTimeSyncPtp->pDelayReqSendTask == NULL)
@@ -367,7 +367,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
         taskParams.arg0 = (void *)hTimeSyncPtp;
         taskParams.stack = &gTimeSyncPtp_delayReqSendTaskStackBuf[0];
         taskParams.stacksize = TIMESYNC_PTP_DELAY_REQ_SEND_TASK_STACKSIZE;
-        hTimeSyncPtp->delayReqSendTask = TaskP_create(TimeSyncPtp_delayReqSendTask,
+        hTimeSyncPtp->delayReqSendTask = TaskP_create((void*)TimeSyncPtp_delayReqSendTask,
                                                       &taskParams);
 
         if (hTimeSyncPtp->delayReqSendTask == NULL)
@@ -389,7 +389,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
             taskParams.arg1 = (void *)&gPortNum[portNum];
             taskParams.stack = &gTimeSyncPtp_txTsTaskStackBuf[portNum][0];
             taskParams.stacksize = TIMESYNC_PTP_TX_TS_TASK_STACKSIZE;
-            hTimeSyncPtp->txTsTask[portNum] = TaskP_create(TimeSyncPtp_txTsTask,
+            hTimeSyncPtp->txTsTask[portNum] = TaskP_create((void*)TimeSyncPtp_txTsTask,
                                                            &taskParams);
             if (hTimeSyncPtp->txTsTask[portNum] == NULL)
             {
@@ -409,7 +409,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     taskParams.arg0 = (void *)hTimeSyncPtp;
     taskParams.stack = &gTimeSyncPtp_syncTxTaskStackBuf[0];
     taskParams.stacksize = TIMESYNC_PTP_SYNC_TASK_STACKSIZE;
-    hTimeSyncPtp->syncTxTask = TaskP_create(TimeSyncPtp_syncTxTask,
+    hTimeSyncPtp->syncTxTask = TaskP_create((void*)TimeSyncPtp_syncTxTask,
                                             &taskParams);
 
     if (hTimeSyncPtp->syncTxTask == NULL)
@@ -423,7 +423,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     taskParams.arg0 = (void *)hTimeSyncPtp;
     taskParams.stack = &gTimeSyncPtp_announceTxTaskStackBuf[0];
     taskParams.stacksize = TIMESYNC_PTP_ANNOUNCE_TASK_STACKSIZE;
-    hTimeSyncPtp->announceTxTask = TaskP_create(TimeSyncPtp_announceTxTask,
+    hTimeSyncPtp->announceTxTask = TaskP_create((void*)TimeSyncPtp_announceTxTask,
                                                 &taskParams);
 
     if (hTimeSyncPtp->announceTxTask == NULL)
@@ -437,7 +437,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     taskParams.arg0 = (void *)hTimeSyncPtp;
     taskParams.stack = &gTimeSyncPtp_nRTTaskStackBuf[0];
     taskParams.stacksize = TIMESYNC_PTP_NRT_TASK_STACKSIZE;
-    hTimeSyncPtp->nRTTask = TaskP_create(TimeSyncPtp_nRTTask,
+    hTimeSyncPtp->nRTTask = TaskP_create((void*)TimeSyncPtp_nRTTask,
                                          &taskParams);
 
     if (hTimeSyncPtp->nRTTask == NULL)
@@ -451,7 +451,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
     taskParams.arg0 = (void *)hTimeSyncPtp;
     taskParams.stack = &gTimeSyncPtp_backgroundTaskStackBuf[0];
     taskParams.stacksize = TIMESYNC_PTP_BACKGROUND_TASK_STACKSIZE;
-    hTimeSyncPtp->backgroundTask = TaskP_create(TimeSyncPtp_backgroundTask,
+    hTimeSyncPtp->backgroundTask = TaskP_create((void*)TimeSyncPtp_backgroundTask,
                                                 &taskParams);
 
     if (hTimeSyncPtp->backgroundTask == NULL)
@@ -467,7 +467,7 @@ int8_t TimeSyncPtp_createPtpTasks(TimeSyncPtp_Handle hTimeSyncPtp)
         taskParams.arg0 = (void *)hTimeSyncPtp;
         taskParams.stack = &gTimeSyncPtp_ppsTaskStackBuf[0];
         taskParams.stacksize = TIMESYNC_PTP_PPS_TASK_STACKSIZE;
-        hTimeSyncPtp->ppsTask = TaskP_create(TimeSyncPtp_ppsTask,
+        hTimeSyncPtp->ppsTask = TaskP_create((void*)TimeSyncPtp_ppsTask,
                                              &taskParams);
 
         if (hTimeSyncPtp->ppsTask == NULL)

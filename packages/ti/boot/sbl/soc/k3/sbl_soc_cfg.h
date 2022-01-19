@@ -378,15 +378,15 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 
 #define SBL_MPU1_CPU1_FREQ_HZ       (2000000000)
 
-#define SBL_PROC_ID_MPU2_CPU0       (0xBAD00000)
-#define SBL_DEV_ID_MPU2_CPU0        (0xBAD00000)
-#define SBL_CLK_ID_MPU2_CPU0        (0xBAD00000)
-#define SBL_MPU2_CPU0_FREQ_HZ       (0xBAD00000)
+#define SBL_PROC_ID_MPU2_CPU0       (0xBAD0)
+#define SBL_DEV_ID_MPU2_CPU0        (0xBAD0)
+#define SBL_CLK_ID_MPU2_CPU0        (0xBAD0)
+#define SBL_MPU2_CPU0_FREQ_HZ       (0xBAD0)
 
-#define SBL_PROC_ID_MPU2_CPU1       (0xBAD00000)
-#define SBL_DEV_ID_MPU2_CPU1        (0xBAD00000)
-#define SBL_CLK_ID_MPU2_CPU1        (0xBAD00000)
-#define SBL_MPU2_CPU1_FREQ_HZ       (0xBAD00000)
+#define SBL_PROC_ID_MPU2_CPU1       (0xBAD0)
+#define SBL_DEV_ID_MPU2_CPU1        (0xBAD0)
+#define SBL_CLK_ID_MPU2_CPU1        (0xBAD0)
+#define SBL_MPU2_CPU1_FREQ_HZ       (0xBAD0)
 
 #define SBL_PROC_ID_MCU1_CPU0       (SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0)
 #define SBL_DEV_ID_MCU1_CPU0        (TISCI_DEV_MCU_R5FSS0_CORE0)
@@ -433,15 +433,15 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_DSP1_C7X         (TISCI_DEV_C71SS0_C7X_CLK)
 #define SBL_DSP1_C7X_FREQ_HZ        (1000000000)
 
-#define SBL_PROC_ID_DSP2_C7X        (0xBAD00000)
-#define SBL_DEV_ID_DSP2_C7X         (0xBAD00000)
-#define SBL_CLK_ID_DSP2_C7X         (0xBAD00000)
-#define SBL_DSP2_C7X_FREQ_HZ        (0xBAD00000)
+#define SBL_PROC_ID_DSP2_C7X        (0xBAD0)
+#define SBL_DEV_ID_DSP2_C7X         (0xBAD0)
+#define SBL_CLK_ID_DSP2_C7X         (0xBAD0)
+#define SBL_DSP2_C7X_FREQ_HZ        (0xBAD0)
 
-#define SBL_PROC_ID_M4F_CPU0        (0xBAD00000)
-#define SBL_DEV_ID_M4F_CPU0         (0xBAD00000)
-#define SBL_CLK_ID_M4F_CPU0         (0xBAD00000)
-#define SBL_M4F_CPU0_FREQ_HZ        (0xBAD00000)
+#define SBL_PROC_ID_M4F_CPU0        (0xBAD0)
+#define SBL_DEV_ID_M4F_CPU0         (0xBAD0)
+#define SBL_CLK_ID_M4F_CPU0         (0xBAD0)
+#define SBL_M4F_CPU0_FREQ_HZ        (0xBAD0)
 
 #if defined (SBL_ENABLE_DEV_GRP_MCU)
 #define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)

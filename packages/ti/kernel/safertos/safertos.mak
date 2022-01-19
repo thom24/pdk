@@ -24,14 +24,14 @@ SRCS_COMMON += \
 	runtimestats.c \
 	semaphore.c \
     timers.c \
-    queue.c \
     list.c \
     port.c
 
 # SafeRTOS task does not compile in CPP build. Skip it for CPP build
 ifneq ($(CPLUSPLUS_BUILD), yes)
 SRCS_COMMON += \
-    task.c
+    task.c \
+    queue.c
 endif
 
 #ISA specific C files

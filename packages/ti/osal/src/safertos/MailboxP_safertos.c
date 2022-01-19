@@ -136,7 +136,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
                                 (portUnsignedBaseType)params->bufsize,
                                 (portUnsignedBaseType)params->count,
                                 (portUnsignedBaseType)params->size,
-                                handle->mailboxHndl);
+                                &handle->mailboxHndl);
         if(xCreateResult != pdPASS)
         {
             /* If there was an error reset the mailbox object and return NULL. */
