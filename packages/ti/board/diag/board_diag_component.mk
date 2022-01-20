@@ -613,7 +613,7 @@ board_diag_icssgLed_INCLUDE = $(board_diag_icssgLed_PATH)
 board_diag_icssgLed_BOARDLIST = am65xx_idk
 export board_diag_icssgLed_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_icssgLed_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
-#board_diag_EXAMPLE_LIST += board_diag_icssgLed
+board_diag_EXAMPLE_LIST += board_diag_icssgLed
 
 # lcd
 export board_diag_lcd_COMP_LIST = board_diag_lcd
