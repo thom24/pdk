@@ -134,7 +134,7 @@ export gpio_OBJPATH
 gpio_MAKEFILE = -f build/makefile.mk
 export gpio_MAKEFILE
 gpio_BOARD_DEPENDENCY = no
-gpio_CORE_DEPENDENCY = yes
+gpio_CORE_DEPENDENCY = no
 gpio_SOC_DEPENDENCY = yes
 export gpio_COMP_LIST
 export gpio_BOARD_DEPENDENCY
