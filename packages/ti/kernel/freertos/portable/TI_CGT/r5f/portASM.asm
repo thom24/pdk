@@ -127,6 +127,9 @@ portRESTORE_CONTEXT .macro
         POP     {R1}
         STR     R1, [R0]
 
+        ; reset local monitor, this is needed for atomics which use LDREX, STREX to work properly
+        CLREX
+
         ;  Restore all system mode registers other than the SP (which is already
         ;  being used).
         POP     {R0-R12, R14}
@@ -185,6 +188,12 @@ HwiP_irq_handler:
 	ADD	r4, r1, #1
 	STR	r4, [r3]
 
+	;  Save the floating point context
+	FMRX  R0, FPSCR
+	VPUSH {D0-D15}
+	; VPUSH {D16-D31} 
+	PUSH  {R0}
+
 	;  Ensure bit 2 of the stack pointer is clear.  r2 holds the bit 2 value for
 	;  future use.  _RB_ Is this ever needed provided the start of the stack is
 	;  alligned on an 8-byte boundary? 
@@ -203,6 +212,12 @@ HwiP_irq_handler:
 	CPSID	i
 	DSB
 	ISB
+
+	;  Restore the floating point context
+	POP   {R0}
+	; VPOP {D16-D31}
+	VPOP  {D0-D15}
+	VMSR  FPSCR, R0
 
 	;  Restore the old nesting count.
 	STR	r1, [r3]

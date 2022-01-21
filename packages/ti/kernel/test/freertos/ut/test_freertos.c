@@ -217,6 +217,16 @@ static void ping_isr_4(uintptr_t arg)
     portYIELD_FROM_ISR(doTaskSwitch);
 }
 
+double gFloat = 10.0;
+static void ping_isr_5(uintptr_t arg)
+{
+    BaseType_t doTaskSwitch = 0;
+
+    gFloat = gFloat + 0.1;
+    xSemaphoreGiveFromISR(gPingSem, &doTaskSwitch); /* wake up ping task */
+    portYIELD_FROM_ISR(doTaskSwitch);
+}
+
 uint32_t pong_isr_2_count = 0;
 static void pong_isr_2(uintptr_t arg)
 {
@@ -498,6 +508,40 @@ void test_taskSwitchWithFloatOperations(void)
     TEST_ASSERT_EQUAL_DOUBLE(e, f);
 }
 
+/* switch between ping tasks and ISR and do float operations in between */
+void test_taskToIsrWithFloatOperations(void)
+{
+    uint32_t count; /* loop `count` times */
+    double f;
+    HwiP_Params hwiParams;
+    HwiP_Handle hHwi;
+    HwiP_Status hwiStatus;
+
+    HwiP_Params_init(&hwiParams);
+#ifdef _TMS320C6X
+    hwiParams.evtId = PING_EVT_ID;
+#endif
+    hHwi = HwiP_create(PING_INT_NUM, ping_isr_5, &hwiParams);
+    DebugP_assert(hHwi != NULL);
+
+    f = 0.0;
+    count = NUM_TASK_SWITCHES;
+    double e = (NUM_TASK_SWITCHES / 100);
+    while (count--)
+    {
+        f = f + 0.01;
+        HwiP_post(PING_INT_NUM);
+        xSemaphoreTake(gPingSem, portMAX_DELAY); /* wait for ISR to signal */
+    }
+
+    hwiStatus = HwiP_delete(hHwi);
+    DebugP_assert(hwiStatus == HwiP_OK);
+    
+    TEST_ASSERT_DOUBLE_WITHIN(0.01, e, f);
+    FREERTOS_log("\r\n");
+    FREERTOS_log("test_taskToIsrWithFloatOperations PASSED \r\n");
+}
+
 /* wait some msecs, this is just to show how delay API can be used, 
 * there is no need to delay before deleting the task 
 */
@@ -527,7 +571,8 @@ void ping_main(void *args)
     RUN_TEST(test_taskToIsrUsingSemaphoreAndWithTaskSwitch, 6, NULL);
     RUN_TEST(test_taskToIsrUsingTaskNotifyAndWithTaskSwitch, 7, NULL);
     RUN_TEST(test_taskSwitchWithFloatOperations, 8, NULL);
-    RUN_TEST(test_taskDelay, 9, NULL);
+    RUN_TEST(test_taskToIsrWithFloatOperations, 9, NULL);
+    RUN_TEST(test_taskDelay, 10, NULL);
 
     UNITY_END();
 
