@@ -473,6 +473,29 @@ void test_taskSwitchWithFloatOperations(void)
     FREERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES * 2);
     FREERTOS_log("time per task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime * 1000 / (NUM_TASK_SWITCHES * 2)));
     TEST_ASSERT_UINT32_WITHIN(1, (NUM_TASK_SWITCHES / 100), (uint32_t)f);
+
+    f = 1.07;
+    count = 10;
+    double e = f;
+    xSemaphoreGive(gPongSem); /* signal pong to start */
+    /* pong (higher priority task) sleeps for 1ms and do some floating opearion in a while loop.
+     * Following pow() calculation takes places in b/w when pong sleeps */
+    while (count--)
+    {
+        f = pow(f,1.02);
+    }
+    xSemaphoreGive(gPongSem); /* signal pong to stop */
+    /* This will cause pong (higher priority task) to exit from while loop */
+    count = 10; /* pong task is completed now */ 
+    while (count--)
+    {
+        e = pow(e,1.02);
+    }
+
+    FREERTOS_log("\r\n");
+    FREERTOS_log("value after pow() computed b/w task switch = %d.%d \r\n", (uint32_t)f, (uint32_t)((f-(uint32_t)f)*100000));
+    FREERTOS_log("expected value = %d.%d \r\n", (uint32_t)e, (uint32_t)((e-(uint32_t)e)*100000));
+    TEST_ASSERT_EQUAL_DOUBLE(e, f);
 }
 
 /* wait some msecs, this is just to show how delay API can be used, 
@@ -594,6 +617,18 @@ void pong_main(void *args)
             f = f + 0.1;
             xSemaphoreTake(gPongSem, portMAX_DELAY); /* wait for ping to signal */
             xSemaphoreGive(gPingSem);                /* wakeup ping task */
+        }
+
+        f = 2.3;
+        xSemaphoreTake(gPongSem, portMAX_DELAY); /* wait for ping to signal */
+        while (1)
+        {
+            vTaskDelay(1);
+            f = pow(f, 1.3);
+            if(xSemaphoreTake(gPongSem, 0)) /* check if ping signalled to stop */
+            {
+                break;
+            }
         }
     }
 

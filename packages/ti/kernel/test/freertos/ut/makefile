@@ -52,7 +52,7 @@ INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/t
 SRCS_COMMON += unity_config.c unity.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
-CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H
+CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H -DUNITY_INCLUDE_DOUBLE
 
 #disabling C99 as 'asm()' is not available in C99
 #ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
