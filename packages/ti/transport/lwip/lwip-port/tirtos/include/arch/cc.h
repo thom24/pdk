@@ -35,6 +35,10 @@
 /* std.h functions required */
 #include <xdc/std.h>
 
+/* Disable lwIP's private definition of 'struct timeval' */
+#define LWIP_TIMEVAL_PRIVATE 0
+#include <sys/select.h>
+
 /* Define byte order of the system */
 #define BYTE_ORDER LITTLE_ENDIAN
 
