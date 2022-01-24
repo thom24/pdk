@@ -77,12 +77,18 @@ static void App_clkRateSet(uint32_t moduleId,
                            uint32_t clkId,
                            uint64_t clkRateHz);
 #endif
+#if defined(FREERTOS)
+void App_printLoad(void);
+#endif
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
 
 /* Test application stack */
 static uint8_t gDispAppTskStackMain[DISP_APP_TSK_STACK_MAIN];
+/* Task handle */
+TaskP_Handle gTask;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -90,20 +96,11 @@ static uint8_t gDispAppTskStackMain[DISP_APP_TSK_STACK_MAIN];
 
 int main(void)
 {
-    TaskP_Handle task;
     TaskP_Params taskParams;
-#if defined(FREERTOS)
-    LoadP_Status status = LoadP_OK;
-    LoadP_Stats loadStatsTask;
-    uint32_t cpuLoad;
-#endif
+
 
     OS_init();
 
-#if defined(FREERTOS)
-    /* Reset Load measurement */
-    LoadP_reset();
-#endif
     /* Initialize the task params */
     TaskP_Params_init(&taskParams);
     /* Set the task priority higher than the default priority (1) */
@@ -111,30 +108,11 @@ int main(void)
     taskParams.stack     = gDispAppTskStackMain;
     taskParams.stacksize = sizeof(gDispAppTskStackMain);
 
-    task = TaskP_create(taskFxn, &taskParams);
-    if(NULL == task)
+    gTask = TaskP_create(taskFxn, &taskParams);
+    if(NULL == gTask)
     {
         OS_stop();
     }
-
-#if (PRINT_TASK_LOAD==1)
-    /* Get task loads */
-    status += LoadP_getTaskLoad(task, &loadStatsTask);
-
-    if(loadStatsTask.percentLoad > 0U)
-    {
-        printf("\nDisplay Test Task - Load: %d%% \n", loadStatsTask.percentLoad);
-    }
-    else
-    {
-        printf("\nDisplay Test Task - Load: < 1%% \n");
-    }
-
-    /* Query CPU Load */
-    cpuLoad = LoadP_getCPULoad();
-    printf("\n CPU Load = %d%% \n", cpuLoad);
-#endif
-
     OS_start();    /* does not return */
 
     return(0);
@@ -145,6 +123,9 @@ static void taskFxn(void* a0, void* a1)
     int32_t retVal = CSL_PASS;
 #if(1U == DISP_APP_TEST_MULTISYNC)
     uint32_t regVal;
+#endif
+#if defined(FREERTOS)
+    LoadP_reset();
 #endif
     Board_initCfg boardCfg;
     App_utilsLcdCfgParams lcdParams;
@@ -254,25 +235,51 @@ static void taskFxn(void* a0, void* a1)
 #endif
     if (retVal == CSL_PASS)
     {
+        App_print("Before calling Dss_displayTest\n");
+        App_printLoad();
         Dss_displayTest();
     }
-
+    App_print("After calling Dss_displayTest\n");
+    App_printLoad();
     return;
 }
 
 #if defined(BUILD_MPU) || defined (__C7100__)
 extern void Osal_initMmuDefault(void);
+
 void InitMmu(void)
 {
     Osal_initMmuDefault();
 }
 #endif
 
-
 void App_wait(uint32_t wait_in_ms)
 {
     TaskP_sleep(wait_in_ms);
 }
+
+#if defined(FREERTOS)
+void App_printLoad(void)
+{
+    LoadP_Status status = LoadP_OK;
+    LoadP_Stats loadStatsTask;
+    uint32_t cpuLoad;
+
+    /* Query CPU Load */
+    cpuLoad = LoadP_getCPULoad();
+    App_print("CPU Load is %d percent \n", cpuLoad);
+    /* Get task loads */
+    status += LoadP_getTaskLoad(gTask, &loadStatsTask);
+    if(loadStatsTask.percentLoad > 0U)
+    {
+        App_print("Task Load is: %d percent \n", loadStatsTask.percentLoad);
+    }
+    else
+    {
+        App_print("Task Load is: < 1 percent \n");
+    }
+}
+#endif
 
 #if(1U == DISP_APP_TEST_OVERLAY_VP_4)
 static void App_clkRateSet(uint32_t moduleId,
