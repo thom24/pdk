@@ -408,6 +408,17 @@ The following table shows the enumeration of values for **debug_priv_level**:
 |                   |       | level only                                            |
 +-------------------+-------+-------------------------------------------------------+
 
+.. note::
+
+    * In case of ``DEBUG_DISABLE`` and ``DEBUG_PRESERVE``, ``debug_core_sel`` and
+      ``sec_debug_core_sel`` won't have any relevance.
+
+    * The SoC reset enables both invasive and non-invasive debug for all
+      non secure cores, so the non secure cores not listed in ``debug_core_sel``
+      also will be open for debug, in a case where ``debug_priv_level`` is set
+      as one of ``DEBUG_PUBLIC``, ``DEBUG_PUBLIC_USER``, ``DEBUG_FULL``, or
+      ``DEBUG_SECURE_USER``.
+
 For an example, please refer to the section ``[ debug ]`` in :ref:`sysfw_x509_template_example`.
 
 .. _sysfw_hs_bcfg_ext:

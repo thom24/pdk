@@ -122,8 +122,11 @@ Yes. Programming overlapping firewalls is supported.
 
 The above two checks are to prevent undefined behaviour as per hardware specification.
 
-3. Same host must own both the foreground and background region in case of an overlap.
-   This check prevents one host from using a foreground region to override
+3. Same host must own both the foreground and background region in case of an overlap. 
+   If any of the overlapping regions is owned by ``none`` (unowned/wildcard region) following rules apply:  
+   - Unowned foreground region cannot overlap with owned background region. 
+   - Unowned background region can overlap with foreground region owned by any host. 
+   These checks prevent one host from using a foreground region to override
    firewall configuration performed by another host
 
 Before programming overlapping firewall regions, please claim ownership of both the

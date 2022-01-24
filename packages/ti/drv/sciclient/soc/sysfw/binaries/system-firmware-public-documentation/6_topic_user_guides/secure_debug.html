@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.00
+                22.01.01
               </div>
             
           
@@ -412,6 +412,16 @@ If non-secure debug needs to be enabled for the following four cores on AM65x,</
 </pre></div>
 </div>
 </li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The SoC reset enables both invasive and non-invasive debug for all
+non secure cores, so the non secure cores not listed in <code class="docutils literal"><span class="pre">coreDbgEn</span></code>
+also will be open for debug, in a case where <code class="docutils literal"><span class="pre">debugType</span></code> is set
+as one of <code class="docutils literal"><span class="pre">DEBUG_PUBLIC</span></code>, <code class="docutils literal"><span class="pre">DEBUG_PUBLIC_USER</span></code>, <code class="docutils literal"><span class="pre">DEBUG_FULL</span></code>, or
+<code class="docutils literal"><span class="pre">DEBUG_SECURE_USER</span></code>.</p>
+</div>
+<ol class="arabic" start="4">
 <li><p class="first">The <code class="docutils literal"><span class="pre">coreDbgSecEn</span></code> lists the ID’s of processors for which secure debug is enabled.
 The processor ID’s can be obtained from the SOC specific information in this documentation.
 Processor ID’s are encoded as a string of hexadecimal values.
@@ -760,7 +770,7 @@ to unlock the jtag port by using a special host id. Please refer to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'22.01.00',
+            VERSION:'22.01.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

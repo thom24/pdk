@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.00
+                22.01.01
               </div>
             
           
@@ -670,6 +670,18 @@ level only</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ul class="last simple">
+<li>In case of <code class="docutils literal"><span class="pre">DEBUG_DISABLE</span></code> and <code class="docutils literal"><span class="pre">DEBUG_PRESERVE</span></code>, <code class="docutils literal"><span class="pre">debug_core_sel</span></code> and
+<code class="docutils literal"><span class="pre">sec_debug_core_sel</span></code> won’t have any relevance.</li>
+<li>The SoC reset enables both invasive and non-invasive debug for all
+non secure cores, so the non secure cores not listed in <code class="docutils literal"><span class="pre">debug_core_sel</span></code>
+also will be open for debug, in a case where <code class="docutils literal"><span class="pre">debug_priv_level</span></code> is set
+as one of <code class="docutils literal"><span class="pre">DEBUG_PUBLIC</span></code>, <code class="docutils literal"><span class="pre">DEBUG_PUBLIC_USER</span></code>, <code class="docutils literal"><span class="pre">DEBUG_FULL</span></code>, or
+<code class="docutils literal"><span class="pre">DEBUG_SECURE_USER</span></code>.</li>
+</ul>
+</div>
 <p>For an example, please refer to the section <code class="docutils literal"><span class="pre">[</span> <span class="pre">debug</span> <span class="pre">]</span></code> in <a class="reference internal" href="#sysfw-x509-template-example"><span class="std std-ref">Sample x509 template</span></a>.</p>
 </div>
 <div class="section" id="sysfw-hs-board-configuration-extension">
@@ -1343,7 +1355,7 @@ Image integrity (<code class="docutils literal"><span class="pre">sysfw_image_in
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.00',
+            VERSION:'22.01.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

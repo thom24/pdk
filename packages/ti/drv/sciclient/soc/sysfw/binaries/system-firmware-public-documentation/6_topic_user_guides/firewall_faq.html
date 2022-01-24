@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.00
+                22.01.01
               </div>
             
           
@@ -296,7 +296,10 @@ System Firmware performs additional checks when overlapping firewall regions are
 <p>The above two checks are to prevent undefined behaviour as per hardware specification.</p>
 <ol class="arabic simple" start="3">
 <li>Same host must own both the foreground and background region in case of an overlap.
-This check prevents one host from using a foreground region to override
+If any of the overlapping regions is owned by <code class="docutils literal"><span class="pre">none</span></code> (unowned/wildcard region) following rules apply:
+- Unowned foreground region cannot overlap with owned background region.
+- Unowned background region can overlap with foreground region owned by any host.
+These checks prevent one host from using a foreground region to override
 firewall configuration performed by another host</li>
 </ol>
 <p>Before programming overlapping firewall regions, please claim ownership of both the
@@ -394,7 +397,7 @@ will result in a firewall exception.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'22.01.00',
+            VERSION:'22.01.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

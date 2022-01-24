@@ -185,6 +185,14 @@ Debug Extension
 
       coreDbgEn = INTEGER:0x20210102
 
+.. note::
+
+    The SoC reset enables both invasive and non-invasive debug for all
+    non secure cores, so the non secure cores not listed in ``coreDbgEn``
+    also will be open for debug, in a case where ``debugType`` is set
+    as one of ``DEBUG_PUBLIC``, ``DEBUG_PUBLIC_USER``, ``DEBUG_FULL``, or
+    ``DEBUG_SECURE_USER``.
+
 4. The ``coreDbgSecEn`` lists the ID's of processors for which secure debug is enabled.
    The processor ID's can be obtained from the SOC specific information in this documentation.
    Processor ID's are encoded as a string of hexadecimal values.
