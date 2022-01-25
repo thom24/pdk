@@ -1285,9 +1285,9 @@ void Fvid2_duplicateFrameList(Fvid2_FrameList *dest, const Fvid2_FrameList *src)
     uint32_t frmCnt;
 
     /* Check for NULL pointers */
-    OSAL_Assert(NULL_PTR == dest);
-    OSAL_Assert(NULL_PTR == src);
-    OSAL_Assert(src->numFrames >= FVID2_MAX_FRAME_PTR);
+    OSAL_Assert(NULL_PTR != dest);
+    OSAL_Assert(NULL_PTR != src);
+    OSAL_Assert(src->numFrames <= FVID2_MAX_FRAME_PTR);
 
     dest->numFrames  = src->numFrames;
     dest->drvData    = src->drvData;
