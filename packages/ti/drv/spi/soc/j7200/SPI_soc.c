@@ -897,7 +897,7 @@ int32_t OSPI_socInit(void)
 {
     int32_t ret = 0;
 #if defined (BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 
@@ -988,7 +988,7 @@ int32_t MCSPI_socInit(void)
 {
     int32_t ret = 0;
 #if defined(BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 

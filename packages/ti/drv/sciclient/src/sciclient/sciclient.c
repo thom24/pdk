@@ -211,7 +211,7 @@ int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
     if(NULL != pCfgPrms)
     {
 #if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
-        Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
+        Sciclient_DefaultBoardCfgInfo_t boardCfgInfo = {0};
 
         /* populate the default board configuration */
         ret = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);

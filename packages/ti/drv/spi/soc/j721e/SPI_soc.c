@@ -729,7 +729,7 @@ int32_t OSPI_socInit(void)
 {
     int32_t ret = 0;
 #if defined (BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 
@@ -822,7 +822,7 @@ int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
 {
     int32_t retVal = 0;
 #if defined(BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
     OSPI_v0_HwAttrs *hwAttrs = (OSPI_v0_HwAttrs*)(hwAttrs_ptr);
     struct tisci_msg_rm_irq_set_req  rmIrqReq = {0};
     struct tisci_msg_rm_irq_set_resp rmIrqResp = {0};
@@ -971,7 +971,7 @@ int32_t MCSPI_socInit(void)
 {
     int32_t ret = 0;
 #if defined(BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 
@@ -1019,7 +1019,7 @@ int32_t MCSPI_configSocIntrPath(uint32_t instance, void *hwAttrs_ptr, bool setIn
 {
     int32_t retVal = 0;
 #if defined(BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
     SPI_v1_HWAttrs *hwAttrs = (SPI_v1_HWAttrs*)(hwAttrs_ptr);
     struct tisci_msg_rm_irq_set_req  rmIrqReq = {0};
     struct tisci_msg_rm_irq_set_resp rmIrqResp = {0};
