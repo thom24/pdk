@@ -308,6 +308,11 @@ Board_STATUS Board_init(Board_initCfg cfg)
     if (ret != BOARD_SOK)
         return ret;
 
+    if (cfg & BOARD_INIT_SERDES_PHY)
+        ret = Board_serdesCfg();
+    if (ret != BOARD_SOK)
+        return ret;
+
     return ret;
 }
 

@@ -1327,6 +1327,10 @@ SBL_CFLAGS += -DSBL_ENABLE_PLL
 SBL_CFLAGS += -DSBL_ENABLE_CLOCKS
 SBL_CFLAGS += -DSBL_ENABLE_DDR
 
+ifeq ($(SOC), $(filter $(SOC), j721e))
+SBL_CFLAGS += -DSBL_ENABLE_SERDES
+endif
+
 ############################################
 # DISABLING the options above this caption
 # improves boot time at the cost of moving

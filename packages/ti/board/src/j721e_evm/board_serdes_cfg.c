@@ -125,17 +125,13 @@ static Board_STATUS Board_CfgQsgmii(void)
     serdesLane0EnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
     serdesLane0EnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT;
     serdesLane0EnableParams.linkRate          = CSL_SERDES_LINK_RATE_5G;
-    serdesLane0EnableParams.numLanes          = 0x2;
-    serdesLane0EnableParams.laneMask          = 0x3;
+    serdesLane0EnableParams.numLanes          = 1;
+    serdesLane0EnableParams.laneMask          = 0x2;
     serdesLane0EnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLane0EnableParams.phyType           = CSL_SERDES_PHY_TYPE_QSGMII;
     serdesLane0EnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
     serdesLane0EnableParams.phyInstanceNum    = SERDES_LANE_SELECT_CPSW;
-    serdesLane0EnableParams.pcieGenType        = CSL_SERDES_PCIE_GEN4;
-
-    serdesLane0EnableParams.laneCtrlRate[0]   = CSL_SERDES_LANE_FULL_RATE;
-    serdesLane0EnableParams.loopbackMode[0]   = CSL_SERDES_LOOPBACK_DISABLED;
-
+    serdesLane0EnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
     serdesLane0EnableParams.laneCtrlRate[1]   = CSL_SERDES_LANE_FULL_RATE;
     serdesLane0EnableParams.loopbackMode[1]   = CSL_SERDES_LOOPBACK_DISABLED;
 
@@ -160,8 +156,6 @@ static Board_STATUS Board_CfgQsgmii(void)
     {
         return BOARD_FAIL;
     }
-    /* Assert PHY reset and disable all lanes */
-    CSL_serdesDisablePllAndLanes(serdesLane0EnableParams.baseAddr, serdesLane0EnableParams.numLanes, serdesLane0EnableParams.laneMask);
 
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&serdesLane0EnableParams);
@@ -174,6 +168,188 @@ static Board_STATUS Board_CfgQsgmii(void)
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&serdesLane0EnableParams);
     if (laneRetVal != 0)
+    {
+        return BOARD_FAIL;
+    }
+
+    return BOARD_SOK;
+}
+
+static Board_STATUS Board_CfgSierra0Clks(void)
+{
+    uint64_t clkRateHz = 100000000U, clkRateRead = 0U;
+    uint32_t moduleId  = TISCI_DEV_SERDES_16G0;
+    int32_t i, result;
+    uint32_t clkID[] = { TISCI_DEV_SERDES_16G0_CORE_REF1_CLK,
+                         TISCI_DEV_SERDES_16G0_CORE_REF_CLK };
+    uint32_t parentID[] = { TISCI_DEV_SERDES_16G0_CORE_REF1_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT4_CLK,
+                            TISCI_DEV_SERDES_16G0_CORE_REF_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT4_CLK };
+
+    for(i=0; i< sizeof(clkID)/sizeof(clkID[0]); i++)
+    {
+        /* Disable the clock */
+        result = Sciclient_pmModuleClkRequest(moduleId,
+                                              clkID[i],
+                                              TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ,
+                                              0U,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (result != CSL_SERDES_NO_ERR)
+        {
+            return BOARD_FAIL;
+        }
+
+        /* Set the parent */
+        result = Sciclient_pmSetModuleClkParent(moduleId,
+                                                clkID[i],
+                                                parentID[i],
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+
+        if (result != CSL_SERDES_NO_ERR)
+        {
+            return BOARD_FAIL;
+        }
+
+        /* Set the clock at the desirable frequency */
+        result = Sciclient_pmSetModuleClkFreq(moduleId,
+                                              clkID[i],
+                                              clkRateHz,
+                                              TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+
+        if (result != CSL_SERDES_NO_ERR)
+        {
+            return BOARD_FAIL;
+        }
+
+        /* Confirm if clock is set */
+        clkRateRead = 0U;
+        result = Sciclient_pmGetModuleClkFreq(moduleId,
+                                              clkID[i],
+                                              &clkRateRead,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+
+        if ((result != CSL_SERDES_NO_ERR) || (clkRateRead != clkRateHz))
+        {
+            return BOARD_FAIL;
+        }
+    }
+
+    /* Set module to ON state */
+    result = Sciclient_pmSetModuleState(moduleId,
+                                        TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                        (TISCI_MSG_FLAG_AOP | TISCI_MSG_FLAG_DEVICE_RESET_ISO),
+                                        SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Reset if changed state to enabled */
+    result = Sciclient_pmSetModuleRst(moduleId,
+                                      0x0U /*resetBit*/,
+                                      SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+
+    return BOARD_SOK;
+}
+
+static Board_STATUS Board_CfgMultilinkPcieQsgmii(void)
+{
+    CSL_SerdesResult result;
+    CSL_SerdesMultilink multiLinkId = CSL_SERDES_PCIe_QSGMII_MULTILINK;
+    CSL_SerdesInstance serdesInstanceId = CSL_SIERRA_SERDES0;
+    CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
+    CSL_SerdesLaneEnableParams serdesLane0EnableParams;
+    CSL_SerdesLaneEnableParams serdesLane1EnableParams;
+
+    memset(&serdesLane0EnableParams, 0, sizeof(serdesLane0EnableParams));
+    memset(&serdesLane1EnableParams, 0, sizeof(serdesLane1EnableParams));
+
+    /* PCIe Config */
+    serdesLane0EnableParams.serdesInstance    = CSL_SIERRA_SERDES0;
+    serdesLane0EnableParams.baseAddr          = CSL_SERDES_16G0_BASE;
+    serdesLane0EnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
+    serdesLane0EnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT;
+    serdesLane0EnableParams.linkRate          = CSL_SERDES_LINK_RATE_5G;
+    serdesLane0EnableParams.numLanes          = 1U;
+    serdesLane0EnableParams.laneMask          = 0x1U;
+    serdesLane0EnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
+    serdesLane0EnableParams.phyType           = CSL_SERDES_PHY_TYPE_PCIe;
+    serdesLane0EnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
+    serdesLane0EnableParams.phyInstanceNum    = SERDES_PCIE_PHY_INST_NUM;
+    serdesLane0EnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
+    serdesLane0EnableParams.laneCtrlRate[0]   = CSL_SERDES_LANE_FULL_RATE;
+    serdesLane0EnableParams.loopbackMode[0]   = CSL_SERDES_LOOPBACK_DISABLED;
+
+    /* QSGMII Config */
+    serdesLane1EnableParams.serdesInstance    = CSL_SIERRA_SERDES0;
+    serdesLane1EnableParams.baseAddr          = CSL_SERDES_16G0_BASE;
+    serdesLane1EnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
+    serdesLane1EnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT;
+    serdesLane1EnableParams.linkRate          = CSL_SERDES_LINK_RATE_5G;
+    serdesLane1EnableParams.numLanes          = 1U;
+    serdesLane1EnableParams.laneMask          = 0x2U;
+    serdesLane1EnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
+    serdesLane1EnableParams.phyType           = CSL_SERDES_PHY_TYPE_QSGMII;
+    serdesLane1EnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
+    serdesLane1EnableParams.phyInstanceNum    = SERDES_LANE_SELECT_CPSW;
+    serdesLane1EnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
+    serdesLane1EnableParams.laneCtrlRate[1]   = CSL_SERDES_LANE_FULL_RATE;
+    serdesLane1EnableParams.loopbackMode[1]   = CSL_SERDES_LOOPBACK_DISABLED;
+
+    CSL_serdesPorReset(CSL_SERDES_16G0_BASE);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number for PCIe */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       serdesLane0EnableParams.phyType,
+                       serdesLane0EnableParams.phyInstanceNum,
+                       serdesLane0EnableParams.serdesInstance,
+                       PCIE0_LANE_NUM);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number for QSGMII */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       serdesLane1EnableParams.phyType,
+                       serdesLane1EnableParams.phyInstanceNum,
+                       serdesLane1EnableParams.serdesInstance,
+                       SGMII_LANE_NUM);
+
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 CSL_SERDES_16G0_BASE,
+                                 CSL_SERDES_REF_CLOCK_100M,
+                                 CSL_SERDES_REF_CLOCK_INT,
+                                 CSL_SIERRA_SERDES0,
+                                 0U /* unused */);
+
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Load the Serdes Config File */
+    result = CSL_serdesMultiLinkInit(multiLinkId,
+                                     serdesInstanceId,
+                                     &serdesLane0EnableParams,
+                                     &serdesLane1EnableParams);
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Enable PCIe lane */
+    laneRetVal = CSL_serdesLaneEnable(&serdesLane0EnableParams);
+    if (laneRetVal != CSL_SERDES_LANE_ENABLE_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Enable QSGMII lane */
+    laneRetVal = CSL_serdesLaneEnable(&serdesLane1EnableParams);
+    if (laneRetVal != CSL_SERDES_LANE_ENABLE_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -237,4 +413,33 @@ int32_t Board_serdesCfgStatus(void)
     }
 
     return ret;
+}
+
+/**
+ *  \brief serdes configurations
+ *
+ *  The function configures the serdes for multi-link on Sierra0: PCIe and QSGMII
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_serdesCfg(void)
+{
+    Board_STATUS ret;
+
+    /* Configure SERDES clocks */
+    ret = Board_CfgSierra0Clks();
+    if(ret != BOARD_SOK)
+    {
+        return ret;
+    }
+
+    /* SERDES0 Initializations */
+    ret = Board_CfgMultilinkPcieQsgmii();
+    if(ret != BOARD_SOK)
+    {
+        return ret;
+    }
+
+    return BOARD_SOK;
 }

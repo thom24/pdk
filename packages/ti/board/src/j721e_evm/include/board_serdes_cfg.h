@@ -53,6 +53,8 @@
 #include <ti/csl/csl_serdes_pcie.h>
 #include <ti/csl/cslr_pcie.h>
 #include <ti/csl/csl_serdes_ethernet.h>
+#include <ti/csl/csl_serdes_multilink.h>
+#include <ti/drv/sciclient/sciclient.h>
 
 #include <ti/board/board.h>
 #include <ti/board/src/j721e_evm/include/board_internal.h>
@@ -75,6 +77,8 @@ extern "C" {
 
 /* Select SERDES lane functionality. 0 value means CPSW SGMII/QSGMII. */
 #define SERDES_LANE_SELECT_CPSW     (0U)
+
+#define SERDES_PCIE_PHY_INST_NUM    (0U)
 
 /**
  *  \brief serdes configurations for Sierra 1 in SGMII mode
