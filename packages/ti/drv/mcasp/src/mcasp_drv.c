@@ -2007,7 +2007,8 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
         {
             ioPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueReqList);
 
-            if (chanHandle->queueReqList != (QueueP_Handle) ioPacket)
+            if ((chanHandle->queueReqList != (QueueP_Handle) ioPacket) &&
+                (NULL != ioPacket))
             {
                 /* set packet status equal to MCASP_ABORTED                     */
                 ioPacket->status = MCASP_ABORTED;
@@ -5299,7 +5300,8 @@ int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
 
                 chanHandle->dataPacket = (MCASP_Packet*)QueueP_get(chanHandle->queueReqList);
 
-                if (chanHandle->queueReqList != (QueueP_Handle) chanHandle->dataPacket)
+                if ((chanHandle->queueReqList != (QueueP_Handle) chanHandle->dataPacket) &&
+                    (NULL != chanHandle->dataPacket));
                 {
                     /* we have a valid packet to process next                 */
 
@@ -5606,6 +5608,7 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
 
     /* complete the IOP now and call the callback to the stream               */
     chanHandle->tempPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueFloatingList);
+    assert(chanHandle->tempPacket != NULL);
 
     /* Decrement the submit count for the IOpackets                           */
     chanHandle->submitCount--;
