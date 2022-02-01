@@ -506,7 +506,7 @@ static void SDR_ESM_interruptHandler (uint32_t esmInstBaseAddr,
 {
     uint32_t intSrc1, intSrc2;
     esmGroupIntrStatus_t localEsmGroupIntrStatus;
-    SDR_ESM_IntType esmIntType;
+    SDR_ESM_IntType esmIntType = SDR_ESM_INT_TYPE_LO;
 
     if (esmIntrPriorityLvlType == ESM_INTR_PRIORITY_LEVEL_HIGH) {
         esmIntType = SDR_ESM_INT_TYPE_HI;

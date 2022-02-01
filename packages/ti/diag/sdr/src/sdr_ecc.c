@@ -3,7 +3,7 @@
  *
  * Software Diagnostics Reference module for ECC
  *
- *  Copyright (c) Texas Instruments Incorporated 2018-2020
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -267,8 +267,8 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
                                        uint32_t errorAddr)
 {
     CSL_ecc_aggrRegs *eccAggrRegs;
-    CSL_Ecc_AggrEccRamErrorStatusInfo eccErrorStatusWrap;
-    CSL_Ecc_AggrEDCInterconnectErrorStatusInfo eccErrorStatusInterconn;
+    CSL_Ecc_AggrEccRamErrorStatusInfo eccErrorStatusWrap = {0};
+    CSL_Ecc_AggrEDCInterconnectErrorStatusInfo eccErrorStatusInterconn = {0};
     uint8_t bitErrCnt;
     uint32_t ramId=0;
     uint32_t ramIdType=0;
@@ -278,8 +278,8 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
     uint32_t i;
     uint64_t bitErrorOffset, bitErrorGroup;
     bool eventFound = ((bool)false);
-    bool eventFound1;
-    int32_t cslResult;
+    bool eventFound1 = ((bool)false);;
+    int32_t cslResult = -1;
     uint32_t selfTestErrorSrc;
 
     SDR_ECC_getAggrBaseAddr(eccMemType, &eccAggrRegs);
@@ -886,8 +886,8 @@ SDR_Result SDR_ECC_selfTest(SDR_ECC_MemType eccMemType,
     uint32_t ramId, ramIdType;
     uint32_t retVal2;
     uint32_t *testLocationAddress;
-    SDR_MemConfig_t memConfig;
-    SDR_GrpChkConfig_t grpChkConfig;
+    SDR_MemConfig_t memConfig = {0};
+    SDR_GrpChkConfig_t grpChkConfig = {0};
 
     if (pECCErrorConfig == NULL) {
         retVal = SDR_BADARGS;
@@ -1043,9 +1043,9 @@ SDR_Result SDR_ECC_injectError(SDR_ECC_MemType eccMemType,
     uint32_t errAddrOffset;
     CSL_Ecc_AggrEDCInterconnectErrorInfo eccErrInjInfo;
     CSL_ecc_aggrRegs *eccAggrRegs;
-    uint32_t ramId, ramIdType;
+    uint32_t ramId, ramIdType = 0;
     SDR_Result retVal = SDR_PASS;
-    int32_t cslRetval;
+    int32_t cslRetval = CSL_EFAIL;
     SDR_MemConfig_t memConfig;
     SDR_GrpChkConfig_t grpChkConfig;
 
