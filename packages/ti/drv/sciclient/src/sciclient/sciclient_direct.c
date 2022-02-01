@@ -185,7 +185,7 @@ typedef struct {
 /* ========================================================================== */
 
 static int32_t board_config_pm_handler(uint32_t *msg_recv);
-static uint16_t boardcfgRmFindCertSize(uint32_t *msg);
+__attribute__((optnone)) static uint16_t boardcfgRmFindCertSize(uint32_t *msg);
 static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize);
 
 /* ========================================================================== */
@@ -584,7 +584,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
     return ret;
 }
 
-static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
+__attribute__((optnone)) static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
 {
     uint16_t cert_len = 0;
     uint8_t *cert_len_ptr = (uint8_t *)&cert_len;
