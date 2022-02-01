@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -129,7 +129,7 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  */
 bool Board_detectBoard(uint32_t boardID)
 {
-    Board_IDInfo_v2 info;
+    Board_IDInfo_v2 info = {0};
     Board_STATUS status;
     bool bDet = FALSE;
 
@@ -168,7 +168,7 @@ bool Board_detectBoard(uint32_t boardID)
  */
 bool Board_isAlpha(uint32_t boardID)
 {
-    Board_IDInfo_v2 info;
+    Board_IDInfo_v2 info = {0};
     Board_STATUS status;
     bool alphaBoard = FALSE;
 
@@ -201,7 +201,7 @@ bool Board_isAlpha(uint32_t boardID)
 */
 int32_t Board_detectEnetCard(void)
 {
-    Board_IDInfo_v2 info;
+    Board_IDInfo_v2 info = {0};
     Board_STATUS status;
     int8_t ret = 0;
 
@@ -273,7 +273,7 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
                                uint32_t macBufSize,
                                uint32_t *macAddrCnt)
 {
-    Board_IDInfo_v2 info;
+    Board_IDInfo_v2 info = {0};
     Board_STATUS status;
     uint8_t macCount = 0;
 
@@ -334,7 +334,7 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
 Board_STATUS Board_readMacAddrCount(uint32_t boardID,
                                     uint32_t *macAddrCnt)
 {
-    Board_IDInfo_v2 info;
+    Board_IDInfo_v2 info = {0};
     Board_STATUS status;
 
     if((boardID <= BOARD_ID_SOM) && (macAddrCnt != NULL))
@@ -527,7 +527,7 @@ uint32_t Board_getSocDomain(void)
     uint32_t socDomain = BOARD_SOC_DOMAIN_MAIN;
 
 #ifdef BUILD_MCU
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
     if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)

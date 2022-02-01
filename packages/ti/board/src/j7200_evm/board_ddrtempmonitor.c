@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -97,7 +97,7 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) void Board_updateRef
 
 __attribute((section(".text:BOARD_DDR_thermalManagement"))) static void Board_DDRSetDevId()
 { 
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
     if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
