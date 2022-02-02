@@ -66,46 +66,20 @@
 #include <ti/osal/TaskP.h>
 #include <ti/osal/HwiP.h>
 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <io.h>
-#include <j7vcl_base_address.h>
-#include <dmsc.h>
 #include <dmsc_cm.h>
-#include <io_pm_functions.h>
+#include <dev_info.h>
 #include <lpm_mmr_functions.h>
 #include <ti/drv/lpm/include/lpm_pmic.h>
 #include <ti/drv/lpm/lpm.h>
-#include <ti/drv/gpio/src/v0/GPIO_v0.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/board/board.h>
-
-extern GPIO_v0_Config GPIO_v0_config;
 
 #include <ti/drv/sciclient/sciserver_tirtos.h>
-
-#include <ti/drv/i2c/I2C.h>
-#include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART_stdio.h>
 
-#include "board.h"
-#include <ti/board/src/j7200_evm/include/board_cfg.h>
-#if (defined(SOC_J721E) || defined(SOC_J7200))
-#include "board_utils.h"
-#endif
-
-#if (defined(SOC_J721E) || defined(SOC_J7200))
-#include "diag_common_cfg.h"
 #include <ti/csl/soc.h>
-#endif
+#include <ti/csl/src/ip/pmmc/V0/cslr_pmmc_control.h>
 
-#define PMIC_DEV_HERA_LP8764X  (1U)
-#define PMIC_INTF_SINGLE_I2C   (0U)
-#define BOARD_DIAG_LP8764X_PMICB_VOLTAGE_VAL     (1700U) /* 1.7V */
-
+#include <ti/drv/lpm/include/io_retention/dev_info.h>
 
 #if (defined(SOC_J721E) || defined(SOC_J7200))
 Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
@@ -115,6 +89,7 @@ Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
 #define APP_TASK_STACK                  (20U * 1024U)
 /**< Stack required for the stack */
 #define MAIN_APP_TASK_PRIORITY          (2)
+
 
 /*********************************  *************************************
  ************************** Internal functions ************************
@@ -132,18 +107,12 @@ int32_t SetupSciServer(void);
 TaskP_Handle mainAppTask;
 TaskP_Params mainAppTaskParams;
 static uint8_t MainApp_TaskStack[APP_TASK_STACK] __attribute__((aligned(32)));
+extern GPIO_v0_Config GPIO_v0_config;
 
 /* Board specific definitions */
-#define I2C_INSTANCE                       (0U)
-#define BOARD_NAME_LENGTH                  (16)
+#define io_timeout  150
 
-/* TPS65941 Register value */
-#define TPS65941_PMICA_I2C_SLAVE_ADDR     (0x48U)
-#define TPS65941_PMICID_REG               (0x01U)
-#define TPS65941_PMIC_REG                 (0x14U)
-#define TPS65941_PMIC_VOLTAGE_VAL         (0xAAU)
-
-/*  */
+/* Boot defines */
 #define COLD_BOOT (0x0)
 #define IO_RETENTION_BOOT (0x1)
 uint32_t global_boot_mode_status = COLD_BOOT;
@@ -166,7 +135,7 @@ int io_retention_main()
     }
 
     /* WKUP GPIO 77 (TP for benchmarking) */
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C120) = 0x0C018007;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C120) = 0x0C018007;
 
 
     if(stat == BOARD_SOK)
@@ -218,40 +187,44 @@ void disable_isolation_bit_and_unlock()
     int cnt = 0;
 
     /* Check to see if wakeup events occurred on various pins */
-    if (*mkptr(MAIN_CTRL_MMR_BASE, 0x1c020) & (0b1 << 30))
+    if (*mkptr(MAIN_CTRL_BASE, 0x1c020) & (0b1 << 30))
     {  
         UART_printf("Wakeup occured on MAIN_MCAN0_TX pin\n");
     }
-    if (*mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c) & (0b1 << 30))
+    if (*mkptr(MAIN_CTRL_BASE, 0x1c02c) & (0b1 << 30))
     {  
         UART_printf("Wakeup occured on MAIN_MCAN1_TX pin\n");
     }
-    if (*mkptr(WKUP_CTRL_MMR_BASE, 0x1C0D0) & (0b1 << 30))
+    if (*mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0B8) & (0b1 << 30))
+    {
+        UART_printf("Wakeup occured on MCU_MCAN0_TX pin\n");
+    }
+    if (*mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0D0) & (0b1 << 30))
     {
         UART_printf("Wakeup occured on MCU_MCAN1_TX pin\n");
     }
 
     /* Unlock MMRs */
-    Lpm_mmr_unlock(mmr0_cfg_base, 6);
-    Lpm_mmr_unlock(mmr0_cfg_base, 7);
-    Lpm_mmr_unlock(mmr2_cfg_base, 7);
+    Lpm_mmr_unlock(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 6);
+    Lpm_mmr_unlock(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 7);
+    Lpm_mmr_unlock(MAIN_CTRL_BASE, 7);
 
     /* exit MCU canuart io retention with magic word - won't have any affect if already out of io retention */
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555555;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL) = 0x55555554;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL) = 0x55555555;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL) = 0x55555554;
 
     /* exit MAIN canuart io retention with magic word - won't have any affect if already out of io retention */
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL) = 0x55555554;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL) = 0x55555555;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL) = 0x55555554;
 
     /* Disable MCU isolation bit if it is active */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
+    read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO);
     while(read_data & 0x2000000)
     {
-        read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
-        *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0)) = read_data & ~(0b1 << 24);
+        read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO);
+        *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO) = read_data & ~(0b1 << 24);
         for(i=0; i<io_timeout; i++);
         if (cnt == 1000)
         {
@@ -260,11 +233,11 @@ void disable_isolation_bit_and_unlock()
     }
 
     /* Disable MAIN isolation bit if it is active */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
+    read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR);
     while(read_data & 0x2000000)
     {
-        read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
-        *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data & ~(0b1 << 24);
+        read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR);
+        *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR) = read_data & ~(0b1 << 24);
         for(i=0; i<io_timeout; i++);
         if (cnt == 1000)
         {
@@ -286,37 +259,34 @@ int main_io_pm_seq (void)
     volatile unsigned int i = 0; /* Make sure below for loop is not optimized */
 
     /* Configure MCAN0 PADCONF */
-    *mkptr(MAIN_CTRL_MMR_BASE, 0x1c020) = 0x20050000;
-    // *mkptr(MAIN_CTRL_MMR_BASE, 0x1c024) = 0x20050000;
+    *mkptr(MAIN_CTRL_BASE, 0x1c020) = 0x20050000;
 
     /* Configure MCAN1 PADCONF */
-    *mkptr(MAIN_CTRL_MMR_BASE, 0x1c02c) = 0x20050000;
+    *mkptr(MAIN_CTRL_BASE, 0x1c02c) = 0x20050000;
 
     /* Configure PMIC_WAKE */
-    *mkptr(MAIN_CTRL_MMR_BASE, 0x1c124) = 0x38038000;
+    *mkptr(MAIN_CTRL_BASE, 0x1c124) = 0x38038000;
 
     /* Unlock DMSC reg */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)) = 0x8a6b7cda;
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)) = 0x823caef9;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK0) = 0x8a6b7cda;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK1) = 0x823caef9;
 
     /* Enable fw_ctrl_out[0] */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_FW_CTRL_OUT0_SET)) = 0x2;
-    read_data = *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL);
-    *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL) |= 0x100;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_FW_CTRL_OUT0_SET) |= 0x2;
+    read_data = *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_DEEPSLEEP_CTRL);
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_DEEPSLEEP_CTRL) = read_data | 0x100;
 
-#ifndef IGNORE_MAIN_IO_PADCONFIG
     /* Enable Wakeup_enable */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1 )) = read_data | 0x10000;
-#endif
+    read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR);
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR) = read_data | 0x10000;
 
     /* Enable ISOIN */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) = read_data | 0x1000000;
+    read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR);
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR) = read_data | 0x1000000;
     for(i=0; i<io_timeout; i++);    /* Wait for 10us */
 
     /* Check ISOIN status */
-    read_data = *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1));
+    read_data = *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR);
 
     return 1;
 
@@ -328,53 +298,59 @@ int wkup_io_pm_seq (void)
     volatile unsigned int i = 0; /* Make sure below for loop is not optimized */
 
     /* CONFIGURE MCU_MCAN0_TX with internal pull up resistor */
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0B8) = 0x20060000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0B8) = 0x20060000;
 
     /* CONFIGURE MCU_MCAN1_TX with internal pull up resistor */
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0D0) = 0x20060000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0D0) = 0x20060000;
+
     /* Configure PMIC_WAKE1 */
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1c190) = 0x38038000;
- 
-    UART_printf("PADCONFIG52 (0x4301c0d0) immediately after pad value is set : 0x%x\n", *mkptr(WKUP_CTRL_MMR_BASE, 0x1c0d0));
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1c190) = 0x38038000;
+
+    UART_printf("MCAN1_TX (0x4301C0D0) immediately after pad value is set : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0D0));
+    UART_printf("MCAN0_TX (0x4301C0B8) immediately after pad value is set : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0B8));
 
 /* Enable to check that wakeup events are being received */
 #if 0
     AppUtils_Printf(MSG_NORMAL, "Trigger the interrupt and then press enter : ");
     int c;
     UART_scanFmt("%d", &c);
-    UART_printf("PADCONFIG52 (0x4301c0d0) immediately after manual trigger : 0x%x\n", *mkptr(WKUP_CTRL_MMR_BASE, 0x1c0d0));
+    UART_printf("PADCONFIG52 (0x4301c0d0) immediately after manual trigger : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1c0d0));
+    UART_printf("MCAN1_TX (0x4301c0d0) immediately after manual trigger : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0D0));
+    UART_printf("MCAN0_TX (0x4301C0B8) immediately after manual trigger  : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0B8));
 #endif
+
     /* Bypass IO Isolation for I2C Pins */
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C100) = 0x00840000;
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C104) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C100) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C104) = 0x00840000;
 
     /* Bypass IO Isolation for UART Pins so that we can print after entering IO Isolation */
     /* REMOVE THIS IF YOU WOULD LIKE TO WAKEUP FROM THE UART PINS */
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0E8) = 0x00840000;
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0EC) = 0x00840000;
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0F0) = 0x00840000;
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0F4) = 0x00840000;
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0F8) = 0x00840000;
-    *mkptr(WKUP_CTRL_MMR_BASE, 0x1C0FC) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0E8) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0EC) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0F0) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0F4) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0F8) = 0x00840000;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0FC) = 0x00840000;
+
 
     /* Unlock DMSC reg */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)) = 0x8a6b7cda;
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)) = 0x823caef9;
-    /* Enable fw_ctrl_out[0] */
-    read_data = *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_FW_CTRL_OUT0_SET));
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_FW_CTRL_OUT0_SET)) = 0x1;
-    read_data = *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL);
-    *mkptr(WKUP_CTRL_MMR_BASE, WKUP_CTRL_DEEPSLEEP_CTRL) |= 0x1;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK0) = 0x8a6b7cda;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK1) = 0x823caef9;
 
-#ifndef IGNORE_MAIN_IO_PADCONFIG
+    /* Enable fw_ctrl_out[0] */
+    read_data = *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_FW_CTRL_OUT0_SET);
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_FW_CTRL_OUT0_SET) = read_data | 0x1;
+
+    read_data = *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_DEEPSLEEP_CTRL);
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_DEEPSLEEP_CTRL) = read_data | 0x1;
+
     /* Enable Wakeup_enable */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0 )) = read_data | 0x10000;
-#endif
+    read_data = *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO);
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO) = read_data | 0x10000;
 
     /* Enable ISOIN */
-    read_data =  *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0));
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0)) = read_data | 0x1000000 | (0x1 << 6);
+    read_data = *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO);
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO) = read_data | 0x1000000 | (0x1 << 6);
 
     for(i=0; i<io_timeout; i++);    /* Wait for 10us */
     
@@ -387,16 +363,16 @@ void wkup_configure_can_uart_lock_dmsc()
     uint32_t daisy_chain = wkup_io_pm_seq();
 
     /* Load the Magic Word */
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555554;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_MCU_GEN_WAKE_CTRL) = 0x55555555;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL) = 0x55555554;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL) = 0x55555555;
 
     /* re-lock DMSC reg */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)) = 0x0;
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)) = 0x0;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK0) = 0x0;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK1) = 0x0;
 
 /* Pause before entering the low power mode and check the PADCONF values*/
 #if 0
-    UART_printf("PADCONFIG52 (0x4301c0d0) immediately after entering IO retention : 0x%x\n", *mkptr(WKUP_CTRL_MMR_BASE, 0x1c0d0));
+    UART_printf("PADCONFIG52 (0x4301c0d0) immediately after entering IO retention : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1c0d0);
     AppUtils_Printf(MSG_NORMAL, "Press enter key to send I2C commands to PMIC to enter low power mode... ");
     int c;
     UART_scanFmt("%d", &c);
@@ -407,16 +383,14 @@ void wkup_configure_can_uart_lock_dmsc()
 void main_configure_can_uart_lock_dmsc()
 {
     uint32_t daisy_chain = main_io_pm_seq();
-    if (daisy_chain == 0){
-      err_cnt++;
-    }
+
     /* Load the Magic word */
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555554;
-    *mkptr(mmr0_cfg_base, WKUP_CTRL_CANUART_WAKE_CTRL) = 0x55555555;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL) = 0x55555554;
+    *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL) = 0x55555555;
 
     /* re-lock DMSC reg */
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK0)) = 0x0;
-    *mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_LOCK0_KICK1)) = 0x0;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK0) = 0x0;
+    *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK1) = 0x0;
 }
 
 
@@ -439,18 +413,20 @@ int main(void)
 {
     int32_t ret = CSL_PASS;
     Board_initCfg boardCfg;
+    int i;
     boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_MODULE_CLOCK;
     Board_init(boardCfg);
 
-    if ((*mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_0)) & 0x2000000) ||
-        (*mkptr(dmsc_ssr0_base, (DMSC_PWR_CTRL_OFFSET + DMSC_CM_PMCTRL_IO_1)) & 0x2000000))
+    if ((*mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO) & 0x2000000) ||
+        (*mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR) & 0x2000000))
     {
         global_boot_mode_status = IO_RETENTION_BOOT;
-        UART_printf("Booting back up from IO Retention\n");
+        UART_printf("\n\nBOOT STATUS : Booting back up from IO Retention\n");
     }
     else
     {
         global_boot_mode_status = COLD_BOOT;
+        UART_printf("\n\nBOOT STATUS : Cold Boot\n");
     }
 
     /* GPIO early response for timing reasons */
@@ -459,9 +435,9 @@ int main(void)
         GPIO_init();
         {
             GPIO_write(PIN_WKUP_GPIO0_77, 1);
-            sleep(10000);
+            for(i=0; i<10000; i++);
             GPIO_write(PIN_WKUP_GPIO0_77, 0);
-            sleep(10000);
+            for(i=0; i<10000; i++);
         }
     }
 

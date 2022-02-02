@@ -69,7 +69,7 @@
 #define DMSC_CM_LOCK0_KICK0                     0x020
 #define DMSC_CM_LOCK0_KICK1                     0x024
 #define DMSC_CM_FW_CTRL_OUT0                    0x040
-#define DMSC_CM_FW_CTRL_OUT0_SET                0x044
+#define DMSC_CM_FW_CTRL_OUT0_SET                0x44
 #define DMSC_CM_FW_CTRL_OUT0_CLR                0x048
 #define DMSC_CM_FW_STS_IN0                      0x04C
 #define DMSC_CM_FW_CTRL_OUT1                    0x050

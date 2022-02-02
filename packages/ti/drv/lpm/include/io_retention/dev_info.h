@@ -70,7 +70,6 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include <ti/drv/lpm/include/io_retention/dvdbg_regs.h>
 #include <ti/drv/lpm/include/io_retention/cgt_pragmas.h>
 
 /*!

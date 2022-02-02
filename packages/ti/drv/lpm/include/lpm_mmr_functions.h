@@ -68,11 +68,10 @@
 #ifndef _LPM_MMR_FUNCTIONS_H_
 #define _LPM_MMR_FUNCTIONS_H_
 
-#include <ti/drv/lpm/include/io_retention/soc_functions.h>
-#include <ti/drv/lpm/include/io_retention/mmr_common.h>
-#include <ti/drv/lpm/include/io_retention/cgt_pragmas.h>
+#include <ti/csl/soc.h>
 #include <stdint.h>
 #include <stdbool.h>
+#define MAIN_CTRL_BASE  0x00100000U
 
 /*!
  *  \brief Function to unlock a partition within an MMR block.
@@ -107,114 +106,5 @@ void Lpm_mmr_lock (
     uintptr_t base,     /*!< base address of the mmr to target */
     uint32_t partition  /*!< which partition to lock */
     );
-
-/*!
- *  \brief Function to return the partition lock status
- *
- *  \return True for locked, false for unlocked
- *
- *  \b Example
- *  \code
- *  void test_main (void)
- *  {
- *    uint32_t partition = 5;
- *    bool isLocked;
- *    isLocked = Lpm_mmr_isLocked(mmr1_cfg_base, partition);
- *  }
- *  \endcode
- */
-bool Lpm_mmr_isLocked (
-    uintptr_t base,     /*!< physical base address of the mmr to target */
-    uint32_t partition  /*!< which partition to test for lock */
-    );
-
-/**
- * @brief return the partition which the offset belongs to.
- *  \b Example
- *  \code
- *  void test_main (void)
- *  {
- *  	int partitionNum = Lpm_getPartitionNum(MAIN_CTRL_MMR, MAIN_CTRL_INTR_EN_CLR);
- *		unlock(partitionNum, base);   
- *  }
- *  \endcode
- * @param base the base address of the register.
- * @param offset the offset of the register.
- * @return the partition which the register belongs to 
- */
-uint32_t Lpm_getPartitionNum(unsigned int base, unsigned int offset);
-
-/** @brief Unlock partition unlock_num at MMR with base address base
- *
- *  \b Example
- *  \code
- *  void test_main (void)
- *  {
- *  	int partitionNum = 0;
- *		unlock(partitionNum, base);   
- *    
- *  }
- *  \endcode
- *
- *  @param unlock_num The partition that is required to be unlocked.
- *  @param base the base address of the MMR.
- *  @return Void.
- */
-void Lpm_unlock(unsigned int unlock_num, unsigned int base );
-
-/** @brief lock partition lock_num at MMR with base address base
- *
- *  \b Example
- *  \code
- *  void test_main (void)
- *  {
- *  	int partitionNum = 0;
- *		lock(partitionNum, base);   
- *    
- *  }
- *  \endcode
- *  @param lock_num The partition that is required to be locked.
- *  @param base the base address of the MMR.
- *  @return Void.
- */
-void Lpm_lock( unsigned int lock_num, unsigned int base);
-
-/*!
- *  \ lock all the partitions at a MMR
- *
- *  \return void 
- *
- *  \b Example
- *  \code
- *  void test_main (void)
- *  {
- *  	lockAllPartitions(MAIN_CTRL_MMR);     
- *    
- *  }
- *  \endcode
- */
-void Lpm_lockAllPartitions(
-	unsigned int base /*!< base address of the MMR to lock */
-	);
-
-/*!
- *  \ unlock all the partitions at a MMR
- *
- *  \return void 
- *
- *  \b Example
- *  \code
- *  void test_main (void)
- *  {
- *  	unlockAllPartitions(MAIN_CTRL_MMR);     
- *    
- *  }
- *  \endcode
- */
-void Lpm_unlockAllPartitions(
-	unsigned int base /*!< base address of the MMR to unlock */
-);
-
-
 
 #endif
