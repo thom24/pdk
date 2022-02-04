@@ -65,11 +65,11 @@ SECTIONS
     .text    	          : {} palign(8)                            > OCMRAM
     .const   	          : {} palign(8)                            > OCMRAM_REMAINING
     .rodata  	          : {} palign(8)                            > OCMRAM_REMAINING
-    .cinit                : {} palign(8)                            > OCMRAM
+    .cinit                : {} palign(8)                            > OCMRAM_REMAINING
     .pinit                : {} palign(8)                            > OCMRAM
     .boardcfg_data	      : {} palign(128)                          > OCMRAM
 
-    .data                 : {} palign(128)                          > OCMRAM
+    .data                 : {} palign(128)                          > OCMRAM_REMAINING
     .const.devgroup.MCU_WAKEUP    : {} align(4)      > OCMRAM
     .const.devgroup.MAIN          : {} align(4)      > OCMRAM
     .const.devgroup.DMSC_INTERNAL : {} align(4)      > OCMRAM
