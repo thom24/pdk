@@ -73,7 +73,7 @@ extern "C"
 #define RPRC_RESOURCE       0
 #define RPRC_BOOTADDR       5
 
-#define MAX_INPUT_FILES 10
+#define MAX_INPUT_FILES 16
 #define META_HDR_MAGIC_STR 0x5254534D /* MSTR in ascii */
 #define META_HDR_MAGIC_END 0x444E454D /* MEND in ascii */
 

@@ -60,7 +60,7 @@
 * LOCAL VARIABLES DECLARATIONS
 * =============================================================================
 */
-#define MAX_INPUT_FILES 10
+#define MAX_INPUT_FILES 16
 #define debug_print(x) printf(x)
 
 typedef struct _meta_header_start_
