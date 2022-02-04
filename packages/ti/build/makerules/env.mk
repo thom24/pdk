@@ -294,12 +294,7 @@ CAT	= $(UTILSPATH)cat
 EMAKE = emake --emake-emulation=gmake --emake-gen-subbuild-db=1 --emake-annodetail=waiting
 
 ifeq ($(OS),Windows_NT)
-#if XDCTOOLS present use xdctools' gmake, else use the one available in the system
-  ifneq ($(xdc_PATH),)
-    MAKE = $(xdc_PATH)/gmake
-  else
-    MAKE = gmake
-  endif
+  MAKE = gmake
 else
   MAKE = make
 endif
