@@ -40,14 +40,15 @@ MEMORY
 	RESET_VECTORS (X)  			: origin=0x41C00100 length=0x100
 
     /* MCU0 memory used for Uniflash programmer. Available to app for dynamic use ~160KB */
-    /* RBL uses 0x41C58000 and beyond. UFP, at load cannot cross this */
-    OCMRAM     (RWIX)   : origin=0x41C00200 length=0x58000-0x200
+    /* RBL uses 0x41CC0000 and beyond. UFP, at load cannot cross this */
+    OCMRAM    (RWIX)   : origin=0x41C00200 length=0x80000-0x200
 
-    /* Used by UFP at runtime to load SYSFW. Available to app for dynamic use */
-    OCMRAM_SYSFW (RWIX)   : origin=0x41C58000 length=0x41000
-    
-    /* RBL uses 0x41C58000 and beyond. UFP, at load cannot cross this */
-    OCMRAM_REMAINING (RWIX)   : origin=0x41C99000 length=0x67000
+    /* Used by SBL at runtime to load SYSFW. Available to app for dynamic use
+     * Populate the SCISERVER Board configuration paramters at 0x41C80000
+     * after SYSFW is done.
+     * Location of all board configurations: 0x41c80040 after SYSFW is done.
+     */
+    OCMRAM_SYSFW (RWIX)   : origin=0x41C80000 length=0x40000
 
 }  /* end of MEMORY */
 
@@ -63,13 +64,13 @@ SECTIONS
     .startupCode 	      : {} palign(8)                     		> OCMRAM
     .startupData 	      : {} palign(8)                     		> OCMRAM, type = NOINIT
     .text    	          : {} palign(8)                            > OCMRAM
-    .const   	          : {} palign(8)                            > OCMRAM_REMAINING
-    .rodata  	          : {} palign(8)                            > OCMRAM_REMAINING
-    .cinit                : {} palign(8)                            > OCMRAM_REMAINING
+    .const   	          : {} palign(8)                            > OCMRAM
+    .rodata  	          : {} palign(8)                            > OCMRAM
+    .cinit                : {} palign(8)                            > OCMRAM
     .pinit                : {} palign(8)                            > OCMRAM
     .boardcfg_data	      : {} palign(128)                          > OCMRAM
 
-    .data                 : {} palign(128)                          > OCMRAM_REMAINING
+    .data                 : {} palign(128)                          > OCMRAM
     .const.devgroup.MCU_WAKEUP    : {} align(4)      > OCMRAM
     .const.devgroup.MAIN          : {} align(4)      > OCMRAM
     .const.devgroup.DMSC_INTERNAL : {} align(4)      > OCMRAM
