@@ -35,14 +35,11 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 
-#if defined (j7200_evm) 
+#if (defined (j7200_evm) || defined (j721e_evm))
 /* SPI entry offset is at index 5 of SPI config array */
 #define SPI_CONFIG_OFFSET     (5U)
-#elif defined (am64x_evm) || defined(am64x_svb)
-/* SPI entry offset is at index 7 of SPI config array */
+#elif defined (am64x_evm) || defined (am64x_svb)
 #define SPI_CONFIG_OFFSET     (7U)
-#else
-#define SPI_CONFIG_OFFSET     CSL_MCSPI_PER_CNT
 #endif
 
 static NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params);
