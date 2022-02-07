@@ -182,7 +182,7 @@ a lot of data that needs to be copied, this should be set high. */
 /* The following four are used only with the sequential API and can be
    set to 0 if the application only will use the raw API. */
 /* MEMP_NUM_NETBUF: the number of struct netbufs. */
-#define MEMP_NUM_NETBUF         2
+#define MEMP_NUM_NETBUF         64
 /* MEMP_NUM_NETCONN: the number of struct netconns. */
 #define MEMP_NUM_NETCONN        10
 /* MEMP_NUM_TCPIP_MSG_*: the number of struct tcpip_msg, which is used
@@ -318,7 +318,7 @@ a lot of data that needs to be copied, this should be set high. */
 #define LWIP_UDPLITE            LWIP_UDP
 #define UDP_TTL                 255
 
-#define DEFAULT_UDP_RECVMBOX_SIZE (MEMP_NUM_TCP_SEG)
+#define DEFAULT_UDP_RECVMBOX_SIZE 320
 
 /* ---------- RAW options ---------- */
 #define LWIP_RAW                1
