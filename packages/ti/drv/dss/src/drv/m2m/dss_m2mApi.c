@@ -1399,7 +1399,7 @@ static int32_t Dss_m2mDrvIoctlStop(DssM2MDrv_VirtContext *context)
 static int32_t Dss_m2mDrvIoctlSetWbPipeParams(DssM2MDrv_VirtContext *context,
                                        const Dss_WbPipeCfgParams *pipeCfg)
 {
-    int32_t retVal = FVID2_SOK;
+    int32_t retVal = FVID2_SOK, retVal2 = CSL_PASS;
 
     /* check for parameters */
     if (NULL == pipeCfg)
@@ -1413,6 +1413,16 @@ static int32_t Dss_m2mDrvIoctlSetWbPipeParams(DssM2MDrv_VirtContext *context,
             /* Only M2M mode is supported in this driver */
             retVal = FVID2_EBADARGS;
             GT_0trace(DssTrace, GT_ERR, "Only M2M mode supported!!\r\n");
+        }
+
+        if (FVID2_SOK == retVal)
+        {
+            retVal2 = CSL_dssWbPipeCheckFmt(pipeCfg->pipeCfg.outFmt.dataFormat);
+            if (CSL_PASS != retVal2)
+            {
+                GT_0trace(DssTrace, GT_ERR, "Given destination Fvid2_format not supported!!\r\n");
+                retVal = FVID2_EBADARGS;
+            }
         }
 
         if (FVID2_SOK == retVal)
