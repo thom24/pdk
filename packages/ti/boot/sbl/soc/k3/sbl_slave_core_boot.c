@@ -232,7 +232,7 @@ static void SBL_RequestCore(cpu_core_id_t core_id)
     }
 #endif
 
-    if (proc_id != 0xBAD00000)
+    if (proc_id != SBL_INVALID_ID)
     {
         SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootRequestProcessor, ProcId 0x%x... \n", proc_id);
 
@@ -283,7 +283,7 @@ static void SBL_ReleaseCore (cpu_core_id_t core_id, uint32_t reqFlag)
     }
 #endif
 
-    if(proc_id != 0xBAD00000)
+    if(proc_id != SBL_INVALID_ID)
     {
         SBL_log(SBL_LOG_MAX, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n", proc_id);
         status = Sciclient_procBootReleaseProcessor(proc_id, reqFlag, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -626,12 +626,12 @@ void SBL_SetupCoreMem(uint32_t core_id)
             break;
         case MPU_SMP_ID:
             /* Enable SMP on all MPU clusters. Enable SMP only if cluster is present */
-            if (SBL_DEV_ID_MPU_CLUSTER0 != 0xBAD00000)
+            if (SBL_DEV_ID_MPU_CLUSTER0 != SBL_INVALID_ID)
             {
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", SBL_DEV_ID_MPU_CLUSTER0);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MPU_CLUSTER0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-            if (SBL_DEV_ID_MPU_CLUSTER1 != 0xBAD00000)
+            if (SBL_DEV_ID_MPU_CLUSTER1 != SBL_INVALID_ID)
             {
                 SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", SBL_DEV_ID_MPU_CLUSTER1);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MPU_CLUSTER1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);

@@ -544,7 +544,7 @@ static int32_t Lpm_requestStageCores(uint8_t stageNum)
 
     for (i = 0; i < MAX_CORES_PER_STAGE; i++)
     {
-        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != 0xBAD00000)
+        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != SBL_INVALID_ID)
         {
 #if defined(UART_PRINT_DEBUG)
             AppUtils_Printf(MSG_NORMAL,
@@ -584,7 +584,7 @@ static int32_t Lpm_releaseStageCores(uint8_t stageNum)
 
     for (i = 0; i < MAX_CORES_PER_STAGE; i++)
     {
-        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != 0xBAD00000)
+        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != SBL_INVALID_ID)
         {
 #if defined(UART_PRINT_DEBUG)
             AppUtils_Printf(MSG_NORMAL,

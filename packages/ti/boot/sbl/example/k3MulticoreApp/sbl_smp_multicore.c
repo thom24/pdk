@@ -82,7 +82,7 @@ static unsigned int getCoreEntry(int32_t proc_id)
     int32_t status = CSL_EFAIL;
     struct tisci_msg_proc_get_status_resp cpuStatus;
 
-    if (proc_id == 0xBAD00000)
+    if (proc_id == SBL_INVALID_ID)
     {
         return SBL_INVALID_ENTRY_ADDR;
     }
@@ -176,7 +176,7 @@ int main()
     for (core_id = MPU1_CPU0_ID; core_id <= MPU2_CPU1_ID; core_id ++)
     {
         /* Try booting all cores */
-        if (proc_id_list[core_id] != 0xBAD00000)
+        if (proc_id_list[core_id] != SBL_INVALID_ID)
         {
             SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &sblSmpTestEntry, SBL_REQUEST_CORE);
             UART_printf("No of Cortex-A core(s) running: ");
@@ -187,7 +187,7 @@ int main()
     for (core_id = MCU2_CPU0_ID; core_id <= MCU3_CPU1_ID; core_id += 2)
     {
         /* Try booting all cores */
-        if (proc_id_list[core_id] != 0xBAD00000)
+        if (proc_id_list[core_id] != SBL_INVALID_ID)
         {
             const int32_t dev_id_list [] =
             {

@@ -80,6 +80,7 @@ typedef uint32_t cpu_core_id_t;
 #define SBL_DONT_REQUEST_CORE           (0U)
 #define SBL_REQUEST_CORE                (1U)
 
+#define SBL_INVALID_ID                  (0x0BAD0000)
 
 /* Structure holding the entry address of the applications for different cores. */
 typedef struct sblEntryPoint
