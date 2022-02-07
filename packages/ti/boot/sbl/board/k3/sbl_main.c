@@ -493,9 +493,9 @@ int main()
 #endif
 
 #if defined(SBL_ENABLE_SERDES)
-    SBL_log(SBL_LOG_MIN, "Initlialzing SERDES ...");
+    SBL_log(SBL_LOG_MAX, "Initlialzing SERDES ...");
     Board_init(BOARD_INIT_SERDES_PHY);
-    SBL_log(SBL_LOG_MIN, "done.\n");
+    SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
 #if !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
