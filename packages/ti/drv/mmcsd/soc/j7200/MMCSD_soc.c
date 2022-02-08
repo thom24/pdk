@@ -198,7 +198,7 @@ uint32_t MMCSD_soc_l2_global_addr (uint32_t addr)
 MMCSD_Error MMCSD_socInit(void)
 {
     uint32_t         i;
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
     MMCSD_Error ret=MMCSD_OK;
 
     CSL_armR5GetCpuID(&r5CpuInfo);
@@ -262,7 +262,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
    MMCSD_Error ret=MMCSD_OK;
    /* Only mcu R5f requires routing of interrupts */
 #if defined(BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
     int32_t retVal;
     MMCSD_v2_HwAttrs const *hwAttrs = (MMCSD_v2_HwAttrs const *)(hwAttrs_ptr);
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
