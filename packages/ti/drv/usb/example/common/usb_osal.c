@@ -59,7 +59,7 @@
 
 /* temporary OSAL implementation */
 
-void vconsolePrint(const char* fmt, va_list argp)
+__attribute__((optnone)) void vconsolePrint(const char* fmt, va_list argp)
 {
 #define MAX_LEN 300
 

@@ -48,8 +48,6 @@
 #include "fs_shell_app_utils.h"
 #include "usb_osal.h"
 
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -828,7 +826,7 @@ int32_t FSShellAppUtilsCmdLs(int32_t argc, char *argv[])
              * Print the entry information on a single line with formatting to show
              * the attributes, date, time, size, and name.
              */
-            UART_printf("%c%c%c%c%c %u/%02u/%02u %02u:%02u %9uB  %s\n",
+            consolePrintf("%c%c%c%c%c %u/%02u/%02u %02u:%02u %9uB  %s\n",
                                (gFsShellAppUtilsFileInfo.fattrib & AM_DIR) ? 'D' : '-',
                                (gFsShellAppUtilsFileInfo.fattrib & AM_RDO) ? 'R' : '-',
                                (gFsShellAppUtilsFileInfo.fattrib & AM_HID) ? 'H' : '-',
