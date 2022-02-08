@@ -400,24 +400,36 @@ int32_t Mcasp_submitUdmaPkt(Mcasp_ChannelHandle chanHandle)
        Mcasp_descQueueEntry_t *descQueueEntry=NULL;
        descQueueEntry = (Mcasp_descQueueEntry_t *) QueueP_get(chanHandle->queueFreeDesc);
        assert((QueueP_Handle) descQueueEntry != chanHandle->queueFreeDesc);
-       assert(descQueueEntry != NULL);
-
-       pHpdMem = (uint8_t *) descQueueEntry->descMem;
-       assert(QueueP_FAILURE != QueueP_put(chanHandle->queueTransitDesc,
-                                                    (void *) descQueueEntry));
-        if(pHpdMem!=NULL) {
-			
-			if(pDmaInfo->descType == CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR) {
-				Mcasp_udmaTrpdInit(chanHandle, udmaChanHandle, pHpdMem, buffer, size);
-		     } else {
-                Mcasp_udmaHpdInit(udmaChanHandle, pHpdMem, buffer, size);
-			 }
-        } else {
-		   MCASP_DEBUG_ERR_TRAP
-	    }
-       /* Submit TRPD to channel */
-       retVal = Udma_ringQueueRaw(Udma_chGetFqRingHandle(udmaChanHandle), (uint64_t)pHpdMem);
-    } else {
+       if(descQueueEntry != NULL)
+       {
+            pHpdMem = (uint8_t *) descQueueEntry->descMem;
+            assert(QueueP_FAILURE != QueueP_put(chanHandle->queueTransitDesc,
+                                                            (void *) descQueueEntry));
+            if(pHpdMem!=NULL) 
+            {    
+                if(pDmaInfo->descType == CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR) 
+                {
+                    Mcasp_udmaTrpdInit(chanHandle, udmaChanHandle, pHpdMem, buffer, size);
+                } 
+                else 
+                {
+                    Mcasp_udmaHpdInit(udmaChanHandle, pHpdMem, buffer, size);
+                }
+            } 
+            else 
+            {
+                MCASP_DEBUG_ERR_TRAP
+            }
+            /* Submit TRPD to channel */
+            retVal = Udma_ringQueueRaw(Udma_chGetFqRingHandle(udmaChanHandle), (uint64_t)pHpdMem);
+       } 
+       else 
+       {
+	       MCASP_DEBUG_ERR_TRAP
+       } 
+    }
+    else 
+    {
 		MCASP_DEBUG_ERR_TRAP
 	}
 
@@ -609,12 +621,12 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
        descQueueEntry = (Mcasp_descQueueEntry_t *)
                                     QueueP_get(chanHandle->queueTransitDesc);
        assert((QueueP_Handle) descQueueEntry != chanHandle->queueTransitDesc);
-       assert(descQueueEntry != NULL);
-
-       descQueueEntry->descMem = (void *)(uintptr_t )pDesc;
-       assert(QueueP_FAILURE != QueueP_put(chanHandle->queueFreeDesc,
+       if (descQueueEntry != NULL);
+       {
+            descQueueEntry->descMem = (void *)(uintptr_t )pDesc;
+            assert(QueueP_FAILURE != QueueP_put(chanHandle->queueFreeDesc,
                                                     (void *) descQueueEntry));
-
+       }
      }
 
      if ((UDMA_SOK == status) && (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION))

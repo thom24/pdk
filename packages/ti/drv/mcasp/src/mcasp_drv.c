@@ -1954,7 +1954,8 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
                 ioPacket = (MCASP_Packet *)  \
                                 QueueP_get(chanHandle->queueFloatingList);
 
-                if (chanHandle->queueFloatingList == (QueueP_Handle) ioPacket)
+                if ((chanHandle->queueFloatingList == (QueueP_Handle) ioPacket) ||
+                     (NULL == ioPacket))
                 {
                     status = MCASP_EBADIO;
                     /* Ideally control should not come here                   */
@@ -2999,6 +3000,11 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
 
             /* end the critical section                                           */
 		    HwiP_restore(hwiKey);
+
+            if (chanHandle->tempPacket == NULL)
+            {
+                break;
+            }
 
             instHandle = (Mcasp_Object *)chanHandle->devHandle;
             if(NULL != instHandle)
@@ -5301,7 +5307,7 @@ int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
                 chanHandle->dataPacket = (MCASP_Packet*)QueueP_get(chanHandle->queueReqList);
 
                 if ((chanHandle->queueReqList != (QueueP_Handle) chanHandle->dataPacket) &&
-                    (NULL != chanHandle->dataPacket));
+                    (NULL != chanHandle->dataPacket))
                 {
                     /* we have a valid packet to process next                 */
 
@@ -5608,24 +5614,25 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
 
     /* complete the IOP now and call the callback to the stream               */
     chanHandle->tempPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueFloatingList);
-    assert(chanHandle->tempPacket != NULL);
-
-    /* Decrement the submit count for the IOpackets                           */
-    chanHandle->submitCount--;
-
-    chanHandle->isTempPacketValid = (Bool)TRUE;
-    chanHandle->tempPacket->status = chanHandle->currentPacketErrorStatus;
-
-    Mcasp_localCompleteCurrentIo(chanHandle);
-
-#if defined (BIOS_PWRM_ENABLE) && !defined (Mcasp_LOOPJOB_ENABLED)
-    /* check if the driver is waiting to go to sleep or process DVFS event    *
-     * (only if the application has requested PWRM support)                   */
-    if (TRUE == instHandle->pscPwrmEnable)
+    if(chanHandle->tempPacket != NULL);
     {
-        Mcasp_localHandlePwrmEvent(instHandle,chanHandle);
+        /* Decrement the submit count for the IOpackets                           */
+        chanHandle->submitCount--;
+
+        chanHandle->isTempPacketValid = (Bool)TRUE;
+        chanHandle->tempPacket->status = chanHandle->currentPacketErrorStatus;
+
+        Mcasp_localCompleteCurrentIo(chanHandle);
+
+    #if defined (BIOS_PWRM_ENABLE) && !defined (Mcasp_LOOPJOB_ENABLED)
+        /* check if the driver is waiting to go to sleep or process DVFS event    *
+        * (only if the application has requested PWRM support)                   */
+        if (TRUE == instHandle->pscPwrmEnable)
+        {
+            Mcasp_localHandlePwrmEvent(instHandle,chanHandle);
+        }
+    #endif /* #ifdef BIOS_PWRM_ENABLE  */
     }
-#endif /* #ifdef BIOS_PWRM_ENABLE  */
   }
 }
 
@@ -5670,6 +5677,11 @@ int32_t Mcasp_loadPendedIops(Mcasp_ChannelObj *chanHandle)
              * active Queue                                                   */
             ioPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueReqList);
             assert(chanHandle->queueReqList != (QueueP_Handle) ioPacket);
+            if (NULL == ioPacket)
+            {
+                status = MCASP_EBADIO;
+                break;
+            }
 
             /* put the packet in to the active queue                          */
             assert(QueueP_FAILURE !=
