@@ -207,7 +207,8 @@ TimeSyncPtp_Handle TimeSyncPtp_init(TimeSyncPtp_Config *ptpConfig)
     /* Reset PTP object and close HAL if initialization failed */
     if (status != TIMESYNC_OK)
     {
-        if (hTimeSyncPtp->timeSyncHandle != NULL)
+        if ((hTimeSyncPtp != NULL) &&
+            (hTimeSyncPtp->timeSyncHandle != NULL))
         {
             TimeSync_close(hTimeSyncPtp->timeSyncHandle);
         }
