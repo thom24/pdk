@@ -5,7 +5,6 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = timeSync
 
-ifneq ($(SOC),$(filter $(SOC), j721e j7200 am65xx))
 ifeq ($(SOC),$(filter $(SOC), am574x am572x am571x am335x am437x k2g))
   SRCDIR = src
   INCDIR = . ../include .. $(EDMA3LLD_BIOS6_INSTALLDIR)/packages
@@ -29,9 +28,8 @@ CFLAGS_LOCAL_a15_0  = -mno-unaligned-access
 CFLAGS_LOCAL_a8host = -mno-unaligned-access
 CFLAGS_LOCAL_a9host = -mno-unaligned-access
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TIMESYNC_ICSS_CFLAGS)
-endif
 
-PACKAGE_SRCS_COMMON = timeSync_component.mk makefile include docs src build v2
+PACKAGE_SRCS_COMMON = timeSync_component.mk makefile include docs src build
 PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt timeSync_ver.h timeSync_ver.h.xdt
 
 # Core/SoC/platform specific source files and CFLAGS
