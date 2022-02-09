@@ -5614,7 +5614,7 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
 
     /* complete the IOP now and call the callback to the stream               */
     chanHandle->tempPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueFloatingList);
-    if(chanHandle->tempPacket != NULL);
+    if(chanHandle->tempPacket != NULL)
     {
         /* Decrement the submit count for the IOpackets                           */
         chanHandle->submitCount--;

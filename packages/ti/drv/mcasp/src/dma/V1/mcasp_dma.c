@@ -621,7 +621,7 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
        descQueueEntry = (Mcasp_descQueueEntry_t *)
                                     QueueP_get(chanHandle->queueTransitDesc);
        assert((QueueP_Handle) descQueueEntry != chanHandle->queueTransitDesc);
-       if (descQueueEntry != NULL);
+       if (descQueueEntry != NULL)
        {
             descQueueEntry->descMem = (void *)(uintptr_t )pDesc;
             assert(QueueP_FAILURE != QueueP_put(chanHandle->queueFreeDesc,
