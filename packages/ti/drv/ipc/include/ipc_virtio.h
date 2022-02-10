@@ -135,6 +135,16 @@ uint8_t Ipc_isRemoteReady(uint16_t procId);
  */
 int32_t Ipc_lateVirtioCreate(uint16_t procId);
 
+/**
+ * \brief Check if a remote Virtio has been created
+ *
+ * \param remoteId  [IN] Id of remote processor
+ *
+ * \return  1 if virtio exists for the given remote proc
+ *          0 if virtio does not exist for the given remote proc
+ */
+uint8_t Ipc_isRemoteVirtioCreated(uint32_t remoteId);
+
 #ifdef __cplusplus
 }
 #endif
