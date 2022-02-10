@@ -58,8 +58,11 @@
 
 
 /* temporary OSAL implementation */
-
+#ifdef BUILD_MCU
 __attribute__((optnone)) void vconsolePrint(const char* fmt, va_list argp)
+#else
+void vconsolePrint(const char* fmt, va_list argp)
+#endif
 {
 #define MAX_LEN 300
 
