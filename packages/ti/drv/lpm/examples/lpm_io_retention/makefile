@@ -45,7 +45,7 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = io_retention_$(BUILD_OS_TYPE)
+APP_NAME = lpm_io_retention_$(BUILD_OS_TYPE)
 
 SRCDIR = src ../../../../board/diag/common/${SOC}/
 INCDIR = ../../include ../../include/io_retention ../../../../board/src/${BOARD}/include ../../../../board/diag/common/${SOC}/ 
