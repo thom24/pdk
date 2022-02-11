@@ -66,7 +66,7 @@
  *----------------------------------------------------------*/
 
 /* Keep below as 1 if the most optmized task switching latency is needed.
- * This disables tracing, logging, assert and other error checks.
+ * This disables tracing, logging, FPU context, assert and other error checks.
  * So unless every last cycle of task switching is important leave this as 0.
  * 
  * This is not a FreeRTOS defined config and is defined by TI to quickly switch
@@ -181,6 +181,16 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define INCLUDE_xTaskGetIdleTaskHandle   (1)
 #define INCLUDE_vTaskPrioritySet         (1)
 
+/* 
+ * This is not a FreeRTOS defined config and is defined by TI to create
+ * tasks with a floating point context. In this case save/restore of 
+ * R5F FPU Registers will be performed during each task switch.
+ */
+#if (configOPTIMIZE_FOR_LATENCY==0)
+#define configFLOATING_POINT_CONTEXT     (1)
+#else
+#define configFLOATING_POINT_CONTEXT     (0)
+#endif
 /* 
  * This is not a FreeRTOS defined config and is defined by TI to enable
  * copy of _freertosresetvectors to ATCM 

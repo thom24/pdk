@@ -171,6 +171,16 @@ uint32_t uiPortGetRunTimeCounterValue();
 #define INCLUDE_vTaskPrioritySet            (1)
 
 /* 
+ * This is not a FreeRTOS defined config and is defined by TI to create
+ * tasks with a floating point context. In this case save/restore of 
+ * R5F FPU Registers will be performed during each task switch.
+ */
+#if (configOPTIMIZE_FOR_LATENCY==0)
+#define configFLOATING_POINT_CONTEXT     (1)
+#else
+#define configFLOATING_POINT_CONTEXT     (0)
+#endif
+/* 
  * This is not a FreeRTOS defined config and is defined by TI to enable
  * copy of _freertosresetvectors to ATCM 
  */

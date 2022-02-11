@@ -82,6 +82,8 @@
 #define portTHUMB_MODE_BIT               ( ( StackType_t ) 0x20 )
 #define portINTERRUPT_ENABLE_BIT         ( 0x80UL )
 #define portTHUMB_MODE_ADDRESS           ( 0x01UL )
+#define portINITIAL_FPSR                 ( ( StackType_t ) 0x0 )
+#define portNUM_FPU_REGS                 ( 32U )
 
 /* A critical section is exited when the critical section nesting count reaches
  * this value. */
@@ -93,6 +95,11 @@
  * does not have an FPU context, or any other value if the task does have an FPU
  * context. */
 #define portNO_FLOATING_POINT_CONTEXT    ( ( StackType_t ) 0 )
+
+/* Tasks are created with a floating point context. A variable is stored as
+ * part of the tasks context that holds portFLOATING_POINT_CONTEXT if the task
+ * have an FPU context. */
+#define portFLOATING_POINT_CONTEXT       ( ( StackType_t ) 1 )
 
 /* A variable is used to keep track of the critical section nesting.  This
  * variable has to be stored as part of the task context and must be initialised to
@@ -212,10 +219,27 @@ StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
     *pxTopOfStack = portNO_CRITICAL_NESTING;
     pxTopOfStack--;
 
+#if (configFLOATING_POINT_CONTEXT==0)
     /* The task will start without a floating point context.  A task that uses
      * the floating point hardware must call vPortTaskUsesFPU() before executing
      * any floating point instructions. */
     *pxTopOfStack = portNO_FLOATING_POINT_CONTEXT;
+#else
+    /* The task will start with a floating point context. */
+
+    *pxTopOfStack = portINITIAL_FPSR;
+    pxTopOfStack--;
+
+    /* Next all the FPU bank registers S0 to S31 */
+    uint32_t ulNumFpuReg = portNUM_FPU_REGS;
+    while ( ulNumFpuReg -- )
+    {
+        *pxTopOfStack = ( StackType_t ) 0x00000000;     /* S0 to S31 */
+        pxTopOfStack--;
+    }
+
+    *pxTopOfStack = portFLOATING_POINT_CONTEXT;
+#endif
 
     return pxTopOfStack;
 }
@@ -319,6 +343,7 @@ void vPortTimerTickHandler()
 
 void vPortTaskUsesFPU( void )
 {
+#if (configFLOATING_POINT_CONTEXT==0)
     uint32_t ulInitialFPSCR = 0;
 
     /* A task is registering the fact that it needs an FPU context.  Set the
@@ -327,6 +352,7 @@ void vPortTaskUsesFPU( void )
 
     /* Initialise the floating point status register. */
     __asm__ volatile ( "FMXR 	FPSCR, %0" ::"r" ( ulInitialFPSCR ) : "memory" );
+#endif
 }
 
 void vPortEnterCritical( void )

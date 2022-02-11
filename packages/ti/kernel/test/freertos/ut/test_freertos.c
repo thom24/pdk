@@ -462,10 +462,13 @@ void test_taskSwitchWithFloatOperations(void)
     volatile uint64_t curTime; /* time in units of usecs */
     double f;
 
-    /* Any task that uses the floating point unit MUST call portTASK_USES_FLOATING_POINT()
-        * before any floating point instructions are executed. 
-        */
+#if (configFLOATING_POINT_CONTEXT==0)
+    /* When configFLOATING_POINT_CONTEXT = 0 ,Any task that uses the floating point unit 
+     * MUST call portTASK_USES_FLOATING_POINT()
+     * before any floating point instructions are executed. 
+     */
     portTASK_USES_FLOATING_POINT();
+#endif
 
     f = 0.0;
     count = NUM_TASK_SWITCHES;
@@ -649,10 +652,13 @@ void pong_main(void *args)
     { /* switch between ping and pong tasks and do float operations in between */
         double f;
 
-        /* Any task that uses the floating point unit MUST call portTASK_USES_FLOATING_POINT()
+    #if (configFLOATING_POINT_CONTEXT==0)
+        /* When configFLOATING_POINT_CONTEXT = 0 ,Any task that uses the floating point unit 
+         * MUST call portTASK_USES_FLOATING_POINT()
          * before any floating point instructions are executed. 
          */
         portTASK_USES_FLOATING_POINT();
+    #endif
 
         f = 10.0;
 

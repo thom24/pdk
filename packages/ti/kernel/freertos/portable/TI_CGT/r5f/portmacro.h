@@ -119,8 +119,10 @@
     #define portTASK_FUNCTION_PROTO( vFunction, pvParameters )    void vFunction( void * pvParameters )
     #define portTASK_FUNCTION( vFunction, pvParameters )          void vFunction( void * pvParameters )
 
-/* Any task that uses the floating point unit MUST call vPortTaskUsesFPU()
- * before any floating point instructions are executed. */
+/* When configFLOATING_POINT_CONTEXT = 0, Any task that uses the floating point unit MUST call vPortTaskUsesFPU()
+ * before any floating point instructions are executed. 
+ * When configFLOATING_POINT_CONTEXT = 1, All tasks are created with a floating point context. In this case
+ * vPortTaskUsesFPU() API dosen't have any effect. */
     extern void vPortTaskUsesFPU( void );
     #define portTASK_USES_FLOATING_POINT()    vPortTaskUsesFPU()
 
