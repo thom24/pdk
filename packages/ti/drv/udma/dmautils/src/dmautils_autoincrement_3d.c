@@ -734,14 +734,17 @@ static void DmaUtilsAutoInc3d_printf(void * autoIncrementContext, int traceLevel
   DmaUtilsAutoInc3d_Context * dmautilsContext = (DmaUtilsAutoInc3d_Context *)autoIncrementContext;
   va_list args;
 
-  if ( dmautilsContext->initParams.DmaUtilsVprintf != NULL )
+  if(dmautilsContext != NULL)
   {
-      if ( traceLevel < dmautilsContext->initParams.traceLogLevel)
-      {
-          va_start(args, format);
-          dmautilsContext->initParams.DmaUtilsVprintf(format, args);
-          va_end(args);
-      }
+    if ( dmautilsContext->initParams.DmaUtilsVprintf != NULL )
+    {
+        if ( traceLevel < dmautilsContext->initParams.traceLogLevel)
+        {
+            va_start(args, format);
+            dmautilsContext->initParams.DmaUtilsVprintf(format, args);
+            va_end(args);
+        }
+    }
   }
 }
 
