@@ -176,7 +176,8 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
     {
         if (params == NULL_PTR)
         {
-            iStat = Hwi_construct(&handle->hwi, interruptNum, (Hwi_FuncPtr)hwiFxn, (Hwi_Params *) NULL_PTR);
+            Hwi_Params_init(&hwiParams);
+            iStat = Hwi_construct(&handle->hwi, interruptNum, (Hwi_FuncPtr)hwiFxn, &hwiParams);
         }
         else
         {

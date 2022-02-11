@@ -296,7 +296,7 @@ portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAccess)
 
 portBaseType xConfigureMPU()
 {
-    portBaseType xInitSchedResult;
+    portBaseType xInitSchedResult = pdPASS;
     uint32_t loopCnt;
     xMPU_CONFIG_PARAMETERS *xMPUconfig;
     xMPU_CONFIG_ACCESS     *xMPUconfigAccess;
