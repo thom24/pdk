@@ -144,7 +144,7 @@ SDR_Result SDR_MPU_selfTest(const SDR_MPU_memConfig_t *pMemConfig,
                             uint32_t             loopCount)
 {
     SDR_Result retVal = SDR_FAIL;
-    uint32_t   waitForEver = 1U, loopCnt = loopCount;
+    uint32_t   loopCnt = loopCount;
 
     /* Reset self test flag */
     gSDR_MPUSelfTest.mpuSelfTestState = SDR_MPU_SELF_TEST_FLAG_NONE;
@@ -179,14 +179,9 @@ SDR_Result SDR_MPU_selfTest(const SDR_MPU_memConfig_t *pMemConfig,
                 }
             }
        } else { /* Wait forever configuration */
-            while (waitForEver != 0U)  {
-                /* If exception is triggered, self test is successful */
-                if (gSDR_MPUSelfTest.mpuSelfTestState == SDR_MPU_SELF_TEST_FLAG_TRIGGERED)
-                {
-                    retVal = SDR_PASS;
-                    break;
-                }
-           }
+            while (gSDR_MPUSelfTest.mpuSelfTestState != SDR_MPU_SELF_TEST_FLAG_TRIGGERED);
+           /* If exception is triggered, self test is successful */
+           retVal = SDR_PASS;
        }
        /* Remove the MPU entry for the fault trigger */
        SDR_MPUCfgRemoveRegion(pMemConfig);

@@ -269,16 +269,17 @@ static void SDR_ECC_handleEccAggrEvent (SDR_ECC_MemType eccMemType, uint32_t err
     CSL_ecc_aggrRegs *eccAggrRegs;
     CSL_Ecc_AggrEccRamErrorStatusInfo eccErrorStatusWrap = {0};
     CSL_Ecc_AggrEDCInterconnectErrorStatusInfo eccErrorStatusInterconn = {0};
-    uint8_t bitErrCnt;
+    uint8_t bitErrCnt = 0;
     uint32_t ramId=0;
     uint32_t ramIdType=0;
     SDR_Result retVal;
     SDR_ECC_MemSubType memSubType;
     SDR_MemConfig_t memConfig;
     uint32_t i;
-    uint64_t bitErrorOffset, bitErrorGroup;
+    uint64_t bitErrorOffset = 0;
+    uint64_t bitErrorGroup = 0;
     bool eventFound = ((bool)false);
-    bool eventFound1 = ((bool)false);;
+    bool eventFound1 = ((bool)false);
     int32_t cslResult = -1;
     uint32_t selfTestErrorSrc;
 
@@ -536,6 +537,7 @@ static void SDR_ECC_ESMCallBackFunction_MCU (uint32_t errorSrc, uint32_t errorAd
                     eccMemType  = SDR_ECC_MEMTYPE_MCU_R5F1_CORE;
                     break;
 
+#ifdef SOC_J721E
                 case SDR_ESM_ECC_PARAM_MCU_CBASS_SEC_ERROR:
                     intrSrcType = CSL_ECC_AGGR_INTR_SRC_SINGLE_BIT;
                     eccMemType  = SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0;
@@ -545,6 +547,7 @@ static void SDR_ECC_ESMCallBackFunction_MCU (uint32_t errorSrc, uint32_t errorAd
                     intrSrcType = CSL_ECC_AGGR_INTR_SRC_DOUBLE_BIT;
                     eccMemType  = SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0;
                     break;
+#endif
             }
 
             /* Handle ECC Aggregator event */
@@ -1570,7 +1573,7 @@ static SDR_Result SDR_ECC_getEDCCheckerGroupConfig(SDR_ECC_MemType eccMemType,
         /* Get EDC checker configuration from table */
         if (eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) {
             if((memSubType == SDR_ECC_R5F_MEM_SUBTYPE_VBUSM2AXI_EDC_VECTOR_ID)
-               && (chkGrp <= SDR_PULSAR_CPU_RAM_ID_VBUSM2_AXI_EDC_VECTOR_GRP_MAX_ENTRIES)) {
+               && (chkGrp < SDR_PULSAR_CPU_RAM_ID_VBUSM2_AXI_EDC_VECTOR_GRP_MAX_ENTRIES)) {
                 *grpChkConfig = SDR_ECC_ramIdVbusM2AxiEdcVectorGrpEntries[chkGrp];
             } else
             {
@@ -1616,18 +1619,30 @@ static SDR_Result SDR_ECC_getAggrBaseAddr(SDR_ECC_MemType eccMemType, CSL_ecc_ag
 {
     SDR_Result retVal = SDR_PASS;
 
+#ifdef SOC_AM65XX
+    if ((eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) 
+        || (eccMemType == SDR_ECC_MEMTYPE_MCU_PSRAM0)){
+        /* Note in the SDR_ECC_aggrBaseAddressTable only the above are
+         * supported currently
+         */
+        *pEccAggr = SDR_ECC_aggrBaseAddressTable[eccMemType];
+    }
+#endif
+
+#ifdef SOC_J721E
     if ((eccMemType == SDR_ECC_MEMTYPE_MCU_R5F0_CORE) 
         || (eccMemType == SDR_ECC_MEMTYPE_MCU_CBASS_ECC_AGGR0)){
         /* Note in the SDR_ECC_aggrBaseAddressTable only the above are
          * supported currently
          */
         *pEccAggr = SDR_ECC_aggrBaseAddressTable[eccMemType];
-#ifdef SOC_J721E
+
     } else if (eccMemType >= SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0) {
         *pEccAggr = SDR_ECC_aggrHighBaseAddressTableTrans[eccMemType - \
                                        SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0];
+    }
 #endif
-    } else {
+    else {
         retVal = SDR_FAIL;
     }
 

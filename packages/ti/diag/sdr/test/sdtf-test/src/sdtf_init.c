@@ -493,7 +493,7 @@ int32_t SDTF_init (void)
         if (result != SDR_PASS) {
              /* print error and quit */
               SDTF_printf("SDTF_init: Error initializing ECC memory: retValue = %d\n", retValue);
-             retValue = -1;;
+             retValue = -1;
          } else {
              SDTF_printf("\nSDTF_init: ECC Memory init complete \n");
          }
