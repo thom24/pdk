@@ -67,7 +67,7 @@ Pciev2_LocalObj pciev2LocalObj =
 static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode_e mode); /*for misra warning*/
 static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode_e mode)
 {
-  uint32_t get_value;
+  uint32_t get_value = 0;
   uint32_t regVal;
 
   switch (mode)
