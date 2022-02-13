@@ -1011,7 +1011,8 @@ int32_t USBD_bulkWrite(USB_Handle handle, uint8_t* buffer, uint32_t dataSize)
 
             usb_osalPendLock(psInst->writeSem, SemaphoreP_WAIT_FOREVER);
 
-            retSize += psInst->usLastTxSize;
+            retSize  += psInst->usLastTxSize;
+            tempSize -= maxSize;
         }
 
         /* send last packet */
