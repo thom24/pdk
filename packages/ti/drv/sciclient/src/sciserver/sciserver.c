@@ -272,6 +272,8 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
     int32_t respMsgSize;
     /* the response message pointer */
     uint32_t *respMsg = NULL;
+    /* TISCI flags of the received message  */
+    uint32_t  tisci_flags;
 
     for (i = 0; i < SCISERVER_SECPROXY_INSTANCE_COUNT; i++)
     {
@@ -290,6 +292,8 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
 
     if (utd->state->state == SCISERVER_TASK_PROCESSING_USER_MSG)
     {
+        struct tisci_header * hdr = (struct tisci_header *)  utd->hw_msg_buffer_list[utd->state->current_buffer_idx];
+        tisci_flags = hdr->flags;
         ret = Sciserver_UserProcessMsg(
                 utd->hw_msg_buffer_list[utd->state->current_buffer_idx],
                 &respMsgSize,
@@ -310,8 +314,10 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
              * so the host verification on TIFS can succeed */
             Sciserver_SetMsgHostId(respMsg, TISCI_HOST_ID_DM);
         }
-
-        ret = Sciserver_TisciMsgResponse(respHost, respMsg, respMsgSize);
+        /* Check AOP flag before sending a respone back */
+        if(tisci_flags & TISCI_MSG_FLAG_AOP){
+            ret = Sciserver_TisciMsgResponse(respHost, respMsg, respMsgSize);
+        }
 
         if (ret == CSL_PASS)
         {
