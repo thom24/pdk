@@ -84,7 +84,7 @@ lpm_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 
 # lpm LIB
 lpm_COMP_LIST = lpm
-lpm_RELPATH = ti/lpm
+lpm_RELPATH = ti/drv/lpm
 lpm_PATH = $(PDK_LPM_COMP_PATH)
 export lpm_LIBNAME = lpm
 export lpm_LIBPATH = $(lpm_PATH)/lib
