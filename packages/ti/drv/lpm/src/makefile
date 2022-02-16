@@ -23,7 +23,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 INCLUDE_INTERNAL_INTERFACES = board sbl_lib_cust spi pmic ipc
 COMP_LIST_COMMON = 
 
-PACKAGE_SRCS_COMMON = lpm.h makefile .gitignore docs $(SRCDIR)
+PACKAGE_SRCS_COMMON = lpm.h lpm_component.mk makefile .gitignore docs $(SRCDIR)
 PACKAGE_SRCS_COMMON += include/lpm_boot.h
 PACKAGE_SRCS_COMMON += include/lpm_pmic.h
 PACKAGE_SRCS_COMMON += include/lpm_ipc.h
