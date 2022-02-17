@@ -114,7 +114,7 @@ lpm_EXAMPLE_LIST =
 define LPM_EXAMPLE_RULE
 
 export lpm_example_$(1)_COMP_LIST = lpm_example_$(1)
-lpm_example_$(1)_RELPATH = ti/lpm/examples/lpm_example
+lpm_example_$(1)_RELPATH = ti/drv/lpm/examples/lpm_example
 lpm_example_$(1)_PATH = $(PDK_LPM_COMP_PATH)/examples/lpm_example
 export lpm_example_$(1)_BOARD_DEPENDENCY = yes
 export lpm_example_$(1)_CORE_DEPENDENCY = yes
@@ -129,7 +129,7 @@ lpm_EXAMPLE_LIST += lpm_example_$(1)
 
 
 export lpm_io_retention_$(1)_COMP_LIST = lpm_io_retention_$(1)
-lpm_io_retention_$(1)_RELPATH = ti/lpm/examples/lpm_io_retention
+lpm_io_retention_$(1)_RELPATH = ti/drv/lpm/examples/lpm_io_retention
 lpm_io_retention_$(1)_PATH = $(PDK_LPM_COMP_PATH)/examples/lpm_io_retention
 export lpm_io_retention_$(1)_BOARD_DEPENDENCY = yes
 export lpm_io_retention_$(1)_CORE_DEPENDENCY = yes
