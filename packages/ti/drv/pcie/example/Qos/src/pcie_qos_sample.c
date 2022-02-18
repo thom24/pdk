@@ -122,7 +122,7 @@ static uint8_t gTskStackMain[APP_TSK_STACK_MAIN];
 uint32_t srcBuf[PCIE_BUFSIZE_APP];
 
 /* Address used for low priority traffic buffer starting address, currently placed in DDR, make sure it is not used */
-const uint32_t lowPriAddr[3] = {0x80000000, 0x81000000, 0x82000000};
+const uint32_t lowPriAddr[3] = {0x81000000, 0x82000000, 0x83000000};
 
 /* PCIE RC IATU table */
 const uint32_t obRCcfg[] = {
