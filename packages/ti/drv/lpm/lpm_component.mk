@@ -152,6 +152,10 @@ LPM_EXAMPLE_MACRO_LIST := $(foreach curos, $(lpm_RTOS_LIST), $(call LPM_EXAMPLE_
 
 $(eval ${LPM_EXAMPLE_MACRO_LIST})
 
+ifneq ($(BUILD_PROFILE), release)
+lpm_EXAMPLE_LIST =
+endif
+
 export lpm_LIB_LIST
 export lpm_EXAMPLE_LIST
 
