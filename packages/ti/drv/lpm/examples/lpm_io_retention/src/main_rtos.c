@@ -77,7 +77,7 @@
 #include <ti/drv/uart/UART_stdio.h>
 
 #include <ti/csl/soc.h>
-#include <ti/csl/src/ip/pmmc/V0/cslr_pmmc_control.h>
+#include <ti/csl/cslr_pmmc.h>
 
 #include <ti/drv/lpm/include/io_retention/dev_info.h>
 
