@@ -2480,7 +2480,7 @@ void pcie (void)
        receive data back from EP */
 
     do {
-      cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
+      CacheP_Inv ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(dstBuf.buf[PCIE_BUFSIZE_APP] != PCIE_EXAMPLE_BUF_FULL);
 
 
@@ -2523,7 +2523,7 @@ PCIE_logPrintf ("Failed to pass token \n");
 
     /* EP waits for the data received from RC */
     do {
-      cache_invalidate ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
+      CacheP_Inv ((void *)dstBuf.buf, PCIE_EXAMPLE_DSTBUF_BYTES);
     } while(dstBuf.buf[PCIE_BUFSIZE_APP] != PCIE_EXAMPLE_BUF_FULL);
 
     PCIE_logPrintf ("End Point received data.\n");

@@ -86,6 +86,7 @@ SECTIONS
 
     .bss                     : {} align(8)   > DDR0
     .far                     : {} align(8)   > DDR0
+    .rodata                  : {} align(8)   > DDR0
     .data                    : {} palign(128)> DDR0
     .boardcfg_data           : {} palign(128)> DDR0
     .sysmem                  : {} align(8)   > DDR0
