@@ -89,11 +89,10 @@ static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0xa4c + 0x4 * index)) = 0x00000101;
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x120)) = 0x00000200;
 
-  get_value = ~0x00000000;
-  while (get_value != 0x00000000)
+  do
   {
     get_value = *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x128));
-  }
+  } while (get_value != 0x00000000);
 
   *devParams->pcieSSModeAddr = regVal;
 
@@ -102,11 +101,10 @@ static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0xa4c + 0x4 * index)) = 0x00000103;
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x120)) = 0x00000200;
 
-  get_value = ~0x00000000;
-  while (get_value != 0x00000000)
+  do
   {
     get_value = *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x128));
-  }
+  } while (get_value != 0x00000000);
 } /* pcie_set_mode */
 
 /*****************************************************************************
