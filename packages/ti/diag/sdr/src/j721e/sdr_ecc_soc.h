@@ -287,7 +287,7 @@ const SDR_MemConfig_t SDR_ECC_mcuArmssMemEntries[SDR_PULSAR_CPU_WRAPPER_RAM_IDS_
 
 /* Max entries based on max mem type */
 #define SDR_ECC_AGGREGATOR_MAX_ENTRIES (SDR_ECC_AGGREGATOR_MAX_LOW_ENTRIES + \
-                                        SDR_ECC_AGGREGATOR_MAX_HIGH_ENTRIES)
+                                        SDR_ECC_AGGREGATOR_MAX_HIGH_ENTRIES + 1)
 
 /** -----------------------------------------------------------------------------------
  * @brief This structure holds the base addresses for each memory subtype in MCU domain

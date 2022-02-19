@@ -1637,7 +1637,8 @@ static SDR_Result SDR_ECC_getAggrBaseAddr(SDR_ECC_MemType eccMemType, CSL_ecc_ag
          */
         *pEccAggr = SDR_ECC_aggrBaseAddressTable[eccMemType];
 
-    } else if (eccMemType >= SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0) {
+    } else if ((eccMemType >= SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0) && 
+               (eccMemType <= SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR2)) {
         *pEccAggr = SDR_ECC_aggrHighBaseAddressTableTrans[eccMemType - \
                                        SDR_ECC_MEMTYPE_MAIN_MSMC_AGGR0];
     }
