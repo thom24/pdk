@@ -1202,6 +1202,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
 
     if (gTimeSyncCpswObj.timeSyncConfig.protoCfg.protocol == TIMESYNC_PROT_IEEE_802_3)
     {
+        memset(&setPolicerEntryInArgs, 0, sizeof (setPolicerEntryInArgs));
         setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_MACDST;
         setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.portNum = 0U;
         setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.addr.vlanId = 0U;
@@ -1223,6 +1224,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
                                status);
         }
 
+        memset(&setPolicerEntryInArgs, 0, sizeof (setPolicerEntryInArgs));
         setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_MACDST;
         setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.portNum = 0U;
         setPolicerEntryInArgs.policerMatch.dstMacAddrInfo.addr.vlanId = 0U;
@@ -1246,6 +1248,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
     }
     else if (gTimeSyncCpswObj.timeSyncConfig.protoCfg.protocol == TIMESYNC_PROT_UDP_IPV4)
     {
+        memset(&setPolicerEntryInArgs, 0, sizeof (setPolicerEntryInArgs));
         setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_IPDST;
         setPolicerEntryInArgs.policerMatch.dstIpInfo.ipAddrType = CPSW_ALE_IPADDR_CLASSIFIER_IPV4;
         memcpy(&setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.ipv4Addr[0U],
@@ -1267,6 +1270,7 @@ static int32_t TimeSync_setCpswAleClassifier(void)
                                "TimeSync_setCpswAleClassifier() failed CPSW_ALE_IOCTL_SET_POLICER: %d\n", status);
         }
 
+        memset(&setPolicerEntryInArgs, 0, sizeof (setPolicerEntryInArgs));
         setPolicerEntryInArgs.policerMatch.policerMatchEnMask = CPSW_ALE_POLICER_MATCH_IPDST;
         setPolicerEntryInArgs.policerMatch.dstIpInfo.ipAddrType = CPSW_ALE_IPADDR_CLASSIFIER_IPV4;
         memcpy(&setPolicerEntryInArgs.policerMatch.dstIpInfo.ipv4Info.ipv4Addr[0U],
