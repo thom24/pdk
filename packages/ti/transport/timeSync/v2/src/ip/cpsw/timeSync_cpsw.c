@@ -519,7 +519,7 @@ int32_t TimeSync_adjTimeSlowComp(TimeSync_Handle timeSyncHandle,
 
     if (timeSyncHandle != NULL)
     {
-        adjTsInArgs.adjValInNsecs   = adjOffset;
+        adjTsInArgs.adjValInNsecs   = (-1 * adjOffset);
         adjTsInArgs.intervalInNsecs = interval;
 
         ENET_IOCTL_SET_IN_ARGS(&prms, &adjTsInArgs);
