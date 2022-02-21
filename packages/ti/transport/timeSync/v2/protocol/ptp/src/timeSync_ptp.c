@@ -361,23 +361,26 @@ void TimeSyncPtp_processRxNotifyTask(void *arg)
             {
                 SemaphoreP_pend(hTimeSyncPtp->pktRxSemHandle, SemaphoreP_WAIT_FOREVER);
 
-                status = TimeSync_getPtpFrame(hTimeSyncPtp->timeSyncHandle,
-                                              &rxFrame[0U],
-                                              &size,
-                                              &rxPort);
-                if (status == TIMESYNC_OK)
+                do
                 {
-                    dstMacId = rxFrame;
+                    status = TimeSync_getPtpFrame(hTimeSyncPtp->timeSyncHandle,
+                                                  &rxFrame[0U],
+                                                  &size,
+                                                  &rxPort);
+                    if (status == TIMESYNC_OK)
+                    {
+                        dstMacId = rxFrame;
 
-                    if (TIMESYNC_COMPARE_MAC(dstMacId, timeSyncMAC))
-                    {
-                        TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 0);
+                        if (TIMESYNC_COMPARE_MAC(dstMacId, timeSyncMAC))
+                        {
+                            TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 0);
+                        }
+                        else if (TIMESYNC_COMPARE_MAC(dstMacId, linkLocalMAC))
+                        {
+                            TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 1);
+                        }
                     }
-                    else if (TIMESYNC_COMPARE_MAC(dstMacId, linkLocalMAC))
-                    {
-                        TimeSyncPtp_processPtpFrame(hTimeSyncPtp, rxFrame, rxPort, size, 1);
-                    }
-                }
+                } while (status == TIMESYNC_OK);
             }
         }
     }
