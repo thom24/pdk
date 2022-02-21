@@ -66,6 +66,8 @@
 #include <ti/osal/TaskP.h>
 #include <ti/osal/HwiP.h>
 
+#include <ti/csl/soc.h>
+#include <ti/csl/cslr_pmmc.h>
 #include <dmsc_cm.h>
 #include <dev_info.h>
 #include <lpm_mmr_functions.h>
@@ -75,9 +77,6 @@
 
 #include <ti/drv/sciclient/sciserver_tirtos.h>
 #include <ti/drv/uart/UART_stdio.h>
-
-#include <ti/csl/soc.h>
-#include <ti/csl/cslr_pmmc.h>
 
 #include <ti/drv/lpm/include/io_retention/dev_info.h>
 
