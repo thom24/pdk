@@ -151,6 +151,10 @@ static void taskFxn(void* a0, void* a1)
     #else
         lcdParams.outType  = (uint32_t)APP_OUTPUT_HDMI;
         lcdParams.pixelClk = (uint64_t)148500000ULL;
+        if(DISP_APP_USE_TEST_PARAMS == DISP_APP_BGR24)
+        {
+            lcdParams.pixelClk = (uint64_t)74250000u;
+        }
         App_configureLCD(lcdParams);
         #if (1U == DISP_APP_TEST_MULTISYNC)
             /* HSYNC mode 14 <- VP0 HSYNC */
