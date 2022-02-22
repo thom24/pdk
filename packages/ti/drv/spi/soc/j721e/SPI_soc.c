@@ -700,12 +700,12 @@ CSL_PUBLIC_CONST SPI_config_list SPI_config = {
     {
         &SPI_FxnTable_v1,
         &SpiObjects[3],
-        &spiInitCfg[0][3]
+        &spiInitCfg[1][3]
     },
     {
         &SPI_FxnTable_v1,
         &SpiObjects[4],
-        &spiInitCfg[0][4]
+        &spiInitCfg[1][4]
     },
     {
         &OSPI_FxnTable_v0,
