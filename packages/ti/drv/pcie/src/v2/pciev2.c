@@ -45,6 +45,7 @@
 #include <ti/drv/pcie/src/v2/pcieloc.h>
 
 #include <ti/csl/soc.h>
+#include <ti/csl/hw_types.h>
 
 #include <string.h>
 
@@ -67,7 +68,6 @@ Pciev2_LocalObj pciev2LocalObj =
 static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode_e mode); /*for misra warning*/
 static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode_e mode)
 {
-  uint32_t get_value = 0;
   uint32_t regVal;
 
   switch (mode)
@@ -89,10 +89,7 @@ static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0xa4c + 0x4 * index)) = 0x00000101;
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x120)) = 0x00000200;
 
-  do
-  {
-    get_value = *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x128));
-  } while (get_value != 0x00000000);
+  while (HW_RD_REG32(CSL_PSC0_BASE + 0x128) != 0x0);
 
   *devParams->pcieSSModeAddr = regVal;
 
@@ -101,10 +98,8 @@ static void pcie_set_mode (Pciev2_DevParams *devParams, uint32_t index, pcieMode
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0xa4c + 0x4 * index)) = 0x00000103;
   *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x120)) = 0x00000200;
 
-  do
-  {
-    get_value = *((volatile uint32_t *) (uintptr_t)(CSL_PSC0_BASE + 0x128));
-  } while (get_value != 0x00000000);
+  while (HW_RD_REG32(CSL_PSC0_BASE + 0x128) != 0x0);
+
 } /* pcie_set_mode */
 
 /*****************************************************************************
