@@ -150,105 +150,10 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 };
 #endif /* MPU Build */
 
-
-/******************************************************************************
- *  MAIN Domain R5F
- ******************************************************************************/
-#if defined (BUILD_MCU)
-#if (defined (BUILD_MCU2_0) || defined (BUILD_MCU2_1))
-/* I2C configuration structure */
-I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
-{
-    {
-        /* default configuration for I2C instance and MPU core on Main domain*/
-        (uint32_t)CSL_I2C0_CFG_BASE,        /* baseAddr */
-        CSLR_R5FSS0_CORE0_INTR_I2C0_POINTRPEND_0,  /* intNum */
-        0,                                  /* eventId */
-        I2C_INPUT_CLK,
-        (bool)true,
-        {
-            /* default own slave addresses */
-            0x70, 0x0, 0x0, 0x0
-        },
-        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
-    },
-    {
-        (uint32_t)CSL_I2C1_CFG_BASE,
-        CSLR_R5FSS0_CORE0_INTR_I2C1_POINTRPEND_0,
-        0,
-        I2C_INPUT_CLK,
-        (bool)true,
-        {
-            0x71, 0x0, 0x0, 0x0
-        },
-        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
-    },
-    {
-        (uint32_t)CSL_I2C2_CFG_BASE,
-        CSLR_R5FSS0_CORE0_INTR_I2C2_POINTRPEND_0,
-        0,
-        I2C_INPUT_CLK,
-        (bool)true,
-        {
-            0x72, 0x0, 0x0, 0x0
-        },
-        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
-    },
-    {
-        (uint32_t)CSL_I2C3_CFG_BASE,
-        CSLR_R5FSS0_CORE0_INTR_I2C3_POINTRPEND_0,
-        0,
-        I2C_INPUT_CLK,
-        (bool)true,
-        {
-            0x73, 0x0, 0x0, 0x0
-        },
-        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
-    },
-    {
-        (uint32_t)CSL_I2C4_CFG_BASE,
-        CSLR_R5FSS0_CORE0_INTR_I2C4_POINTRPEND_0,
-        0,
-        I2C_INPUT_CLK,
-        (bool)true,
-        {
-            0x74, 0x0, 0x0, 0x0
-        },
-        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
-    },
-    {
-        (uint32_t)CSL_I2C5_CFG_BASE,
-        CSLR_R5FSS0_CORE0_INTR_I2C5_POINTRPEND_0,
-        0,
-        I2C_INPUT_CLK,
-        (bool)true,
-        {
-            0x75, 0x0, 0x0, 0x0
-        },
-        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
-    },
-    {
-        (uint32_t)CSL_I2C6_CFG_BASE,
-        CSLR_R5FSS0_CORE0_INTR_I2C6_POINTRPEND_0,
-        0,
-        I2C_INPUT_CLK,
-        (bool)true,
-        {
-            0x76, 0x0, 0x0, 0x0
-        },
-        (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
-    },
-};
-#endif /* Main Domain R5F */
-#endif /* Main Domain MCU Build */
-
 /******************************************************************************
  *  MCU Domain R5F
  ******************************************************************************/
 #if defined (BUILD_MCU)
-
-#if (defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1))
-
 /* I2C configuration structure */
 I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 {
@@ -337,7 +242,6 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         (I2C_socCfgIntrPathFxn)NULL         /* No routing of ints required */
     },
 };
-#endif /* MCU Domain R5F */
 #endif /* MCU Build */
 
 
@@ -466,7 +370,28 @@ int32_t I2C_socSetInitCfg(uint32_t index, const I2C_HwAttrs *cfg)
 void I2C_socInit(void);
 void I2C_socInit(void)
 {
-    return;
+    uint32_t         i;
+    CSL_ArmR5CPUInfo info;
+
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        /* Pulsar R5 core is on the Main domain */
+        for (i = 0; i < I2C_HWIP_MAX_CNT; i++)
+        {
+            /* Configure the Main SS UART instances for Main SS Pulsar R5 */
+            i2cInitCfg[i].baseAddr = (uint32_t)CSL_I2C0_CFG_BASE + (0x10000U * i);
+
+            if (i < 2U)
+            {
+                i2cInitCfg[i].intNum = CSLR_R5FSS0_CORE0_INTR_I2C0_POINTRPEND_0 + i;
+            }
+            else
+            {
+                i2cInitCfg[i].intNum = CSLR_R5FSS0_CORE0_INTR_I2C2_POINTRPEND_0 + (i - 2U);
+            }
+        }
+    }
 }
 #endif
 
