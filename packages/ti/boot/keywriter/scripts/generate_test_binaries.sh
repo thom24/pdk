@@ -18,7 +18,7 @@ fi
 
 declare -A commands
 commands[1]="./gen_keywr_cert.sh --msv 0xC0FFE -t ti_fek_public.pem"
-commands[2]="./gen_keywr_cert.sh -t ti_fek_public.pem --sr-sbl 3 --sr-sysfw 4 "
+commands[2]="./gen_keywr_cert.sh -t ti_fek_public.pem --sr-sbl 3 --sr-sysfw 1 "
 commands[3]="./gen_keywr_cert.sh -t ti_fek_public.pem --sr-bcfg 5"
 commands[4,1]="./construct_ext_otp_data.sh -extotp 0x80000001 -indx 0 -size 32"
 commands[4,2]="./gen_keywr_cert.sh -t ti_fek_public.pem --ext-otp ext_otp_data.bin --ext-otp-indx 0 --ext-otp-size 32 "
