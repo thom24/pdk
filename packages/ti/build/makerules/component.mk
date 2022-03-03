@@ -294,6 +294,9 @@ endif
 ifneq ($(keywriter_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(keywriter_EXAMPLE_LIST)
 endif
+ifneq ($(keywriter_UTILS_LIST),)
+  pdk_UTILS_LIST += $(keywriter_UTILS_LIST)
+endif
 
 # - used to ignore include if component not present
 -include $(PDK_SBL_AUTO_COMP_PATH)/sbl_auto_component.mk

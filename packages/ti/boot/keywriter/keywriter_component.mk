@@ -100,6 +100,20 @@ export keywriter_img_$(SOC)_CORELIST  = mcu1_0
 export keywriter_img_KEYWR_IMAGEGEN   = yes
 
 keywriter_EXAMPLE_LIST                = keywriter_img
+
+# KEYWRITER Test image generation
+export keywriter_UTILS_LIST = keywriter_cfg_test_gen
+export keywriter_cfg_test_gen_COMP_LIST = keywriter_cfg_test_gen
+export keywriter_cfg_test_gen_RELPATH = $(PDK_KEYWR_COMP_PATH)/scripts
+export keywriter_cfg_test_gen_PATH = $(PDK_KEYWR_COMP_PATH)
+export keywriter_cfg_test_gen_MAKEFILE = -f scripts/keywriter_cfg_test_gen.mk
+export keywriter_cfg_test_gen_BOARD_DEPENDENCY = yes
+export keywriter_cfg_test_gen_CORE_DEPENDENCY = yes
+export keywriter_cfg_test_gen_BOARDLIST = j721e_evm j7200_evm
+export keywriter_cfg_test_gen_$(SOC)_CORELIST  = mcu1_0
+export keywriter_cfg_test_gen_CORELIST = j721e j7200
+export keywriter_cfg_test_gen_LIBNAME = keywriter_cfg_test_gen
+
 ###########END BOOT PERF KNOBS#############
 
 # KEYWRITER not supported for any profile
