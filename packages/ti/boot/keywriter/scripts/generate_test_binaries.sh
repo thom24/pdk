@@ -7,6 +7,10 @@ if [ ! -d $PDK_KEYWR_COMP_PATH/scripts/keys ]; then
 	./gen_keywr_cert.sh -g
 fi
 
+echo "Copy known dummy keys to be used for the test cases"
+cp $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem $PDK_INSTALL_PATH/ti/boot/keywriter/scripts/keys/smpk.pem
+xxd -p -r $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mek.txt > $PDK_INSTALL_PATH/ti/boot/keywriter/scripts/keys/smek.key
+
 if [ ! -f $PDK_KEYWR_COMP_PATH/scripts/ti_fek_public.pem ]; then
 	echo "ERR: ti_fek_public.pem doesn't exist"
 	exit
