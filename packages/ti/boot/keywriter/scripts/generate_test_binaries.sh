@@ -36,6 +36,9 @@ commands[12]="/gen_keywr_cert.sh -t ti_fek_public.pem --msv 0x000F --msv-ovrd "
 commands[13]="/gen_keywr_cert.sh -t ti_fek_public.pem --msv 0x00FF --msv-ovrd --msv-wp "
 commands[14]="/gen_keywr_cert.sh -t ti_fek_public.pem --msv 0x0FFF --msv-ovrd "
 
+echo "make keywriter_img (initial)"
+make keywriter_img &>> $OUTPUT/initial_make.log
+
 for i in $(seq 1 14)
 do
 	echo "# Generating Binary No. ${i}"
