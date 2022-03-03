@@ -1,14 +1,13 @@
-PDK="/ti/jacinto/workarea/pdk/packages/ti"
-OUTPUT="/tmp/keywriter_binaries"
+OUTPUT="$PDK_KEYWR_COMP_PATH/binary/${SOC}/test_images"
 
 mkdir -p $OUTPUT
 
-if [ ! -d $PDK/boot/keywriter/scripts/keys ]; then
-	cd $PDK/boot/keywriter/scripts
+if [ ! -d $PDK_KEYWR_COMP_PATH/scripts/keys ]; then
+	cd $PDK_KEYWR_COMP_PATH/scripts
 	./gen_keywr_cert.sh -g
 fi
 
-if [ ! -f $PDK/boot/keywriter/scripts/ti_fek_public.pem ]; then
+if [ ! -f $PDK_KEYWR_COMP_PATH/scripts/ti_fek_public.pem ]; then
 	echo "ERR: ti_fek_public.pem doesn't exist"
 	exit
 fi
@@ -36,26 +35,26 @@ commands[14]="/gen_keywr_cert.sh -t ti_fek_public.pem --msv 0x0FFF --msv-ovrd "
 for i in $(seq 1 14)
 do
 	echo "# Generating Binary No. ${i}"
-	cd $PDK/boot/keywriter/scripts
+	cd $PDK_KEYWR_COMP_PATH/scripts
 	case "$i" in
 		"4"|"5")
 			echo " ${commands[$i,1]}"
-			${commands[$i,1]} &> $OUTPUT/kw${i}.log
+			${commands[$i,1]} &> $OUTPUT/kw_test${i}.log
 			echo " ${commands[$i,2]}"
-			${commands[$i,2]} &>> $OUTPUT/kw${i}.log
+			${commands[$i,2]} &>> $OUTPUT/kw_test${i}.log
 			;;
 		*)
 			echo " ${commands[$i]}"
-			${commands[$i]} &> $OUTPUT/kw${i}.log
+			${commands[$i]} &> $OUTPUT/kw_test${i}.log
 			;;
 	esac
 
-	cp $PDK/boot/keywriter/x509cert/final_certificate.bin $OUTPUT/cert-kw${i}.bin
-	cd $PDK/build
-	echo " make keywriter_img -sj4"
-	make keywriter_img -sj4 &>> $OUTPUT/kw${i}.log
-	cp $PDK/boot/keywriter/binary/j721e/keywriter_img_j721e_release.tiimage $OUTPUT/kw${i}.tiimage
-	cp $PDK/boot/keywriter/binary/j721e/keywriter_img_j721e_release.xer5f $OUTPUT/kw${i}.xer5f
+	cp $PDK_KEYWR_COMP_PATH/x509cert/final_certificate.bin $OUTPUT/cert-kw_test${i}.bin
+	cd $PDK_INSTALL_PATH/ti/build
+	echo " make keywriter_img with TC ${i}"
+	make keywriter_img &>> $OUTPUT/kw_test${i}.log
+	cp $PDK_KEYWR_COMP_PATH/binary/${SOC}/keywriter_img_${SOC}_release.tiimage $OUTPUT/kw_test${i}.tiimage
+	cp $PDK_KEYWR_COMP_PATH/binary/${SOC}/keywriter_img_${SOC}_release.xer5f $OUTPUT/kw_test${i}.xer5f
 
 	echo "# Done!"
 done
