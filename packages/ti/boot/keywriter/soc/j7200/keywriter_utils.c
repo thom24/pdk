@@ -40,8 +40,6 @@
 
 #include "keywriter_utils.h"
 
-#define CONFIG_j7200_BRING_UP_EVM
-
 #ifdef CONFIG_j7200_BRING_UP_EVM
 static void keywr_leo_pmicb_set_params(Pmic_CoreCfg_t* pmicConfigData)
 {
