@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2021-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -40,83 +40,85 @@
 
 #include "keywriter_utils.h"
 
-static void keywr_leo_pmicb_set_params(Pmic_CoreCfg_t* pmicConfigData)
+static void keywr_leo_pmicb_set_params(Pmic_CoreCfg_t *pmicConfigData)
 {
     /* Fill parameters to pmicConfigData */
-    pmicConfigData->pmicDeviceType       = PMIC_DEV_LEO_TPS6594X;
-    pmicConfigData->validParams         |= PMIC_CFG_DEVICE_TYPE_VALID_SHIFT;
+    pmicConfigData->pmicDeviceType      = PMIC_DEV_LEO_TPS6594X;
+    pmicConfigData->validParams        |= PMIC_CFG_DEVICE_TYPE_VALID_SHIFT;
 
-    pmicConfigData->commMode             = PMIC_INTF_SINGLE_I2C;
-    pmicConfigData->validParams         |= PMIC_CFG_COMM_MODE_VALID_SHIFT;
+    pmicConfigData->commMode            = PMIC_INTF_SINGLE_I2C;
+    pmicConfigData->validParams        |= PMIC_CFG_COMM_MODE_VALID_SHIFT;
 
-    pmicConfigData->slaveAddr            = J721E_LEO_PMICB_SLAVE_ADDR;
-    pmicConfigData->validParams         |= PMIC_CFG_SLAVEADDR_VALID_SHIFT;
+    pmicConfigData->slaveAddr           = J721E_LEO_PMICB_SLAVE_ADDR;
+    pmicConfigData->validParams        |= PMIC_CFG_SLAVEADDR_VALID_SHIFT;
 
-    pmicConfigData->qaSlaveAddr          = J721E_LEO_PMICB_WDG_SLAVE_ADDR;
-    pmicConfigData->validParams         |= PMIC_CFG_QASLAVEADDR_VALID_SHIFT;
+    pmicConfigData->qaSlaveAddr         = J721E_LEO_PMICB_WDG_SLAVE_ADDR;
+    pmicConfigData->validParams        |= PMIC_CFG_QASLAVEADDR_VALID_SHIFT;
 
-    pmicConfigData->pFnPmicCommIoRead    = test_pmic_regRead;
-    pmicConfigData->validParams         |= PMIC_CFG_COMM_IO_RD_VALID_SHIFT;
+    pmicConfigData->pFnPmicCommIoRead   = test_pmic_regRead;
+    pmicConfigData->validParams        |= PMIC_CFG_COMM_IO_RD_VALID_SHIFT;
 
-    pmicConfigData->pFnPmicCommIoWrite   = test_pmic_regWrite;
-    pmicConfigData->validParams         |= PMIC_CFG_COMM_IO_WR_VALID_SHIFT;
+    pmicConfigData->pFnPmicCommIoWrite  = test_pmic_regWrite;
+    pmicConfigData->validParams        |= PMIC_CFG_COMM_IO_WR_VALID_SHIFT;
 
-    pmicConfigData->pFnPmicCritSecStart  = test_pmic_criticalSectionStartFn;
-    pmicConfigData->validParams         |= PMIC_CFG_CRITSEC_START_VALID_SHIFT;
+    pmicConfigData->pFnPmicCritSecStart = test_pmic_criticalSectionStartFn;
+    pmicConfigData->validParams        |= PMIC_CFG_CRITSEC_START_VALID_SHIFT;
 
-    pmicConfigData->pFnPmicCritSecStop   = test_pmic_criticalSectionStopFn;
-    pmicConfigData->validParams         |= PMIC_CFG_CRITSEC_STOP_VALID_SHIFT;
+    pmicConfigData->pFnPmicCritSecStop  = test_pmic_criticalSectionStopFn;
+    pmicConfigData->validParams        |= PMIC_CFG_CRITSEC_STOP_VALID_SHIFT;
 }
-
 
 void OTP_VppEn(void)
 {
-	uint16_t pmic_device_info;
-	uint16_t pwrRsrc;
-	int32_t status, pmicStatus;
-	Pmic_CoreHandle_t *pPmicCoreHandle  = NULL;
-    Pmic_CoreCfg_t pmicb_cfg            = {0U};
-	Pmic_PowerResourceCfg_t powerCfg_rd =
-    {
+    uint16_t pmic_device_info;
+    uint16_t pwrRsrc;
+    int32_t status, pmicStatus;
+    Pmic_CoreHandle_t *pPmicCoreHandle  = NULL;
+    Pmic_CoreCfg_t pmicb_cfg = {0U};
+    Pmic_PowerResourceCfg_t powerCfg_rd = {
         PMIC_CFG_REGULATOR_VMON_VOLTAGE_SET_VALID_SHIFT,
     };
-    Pmic_PowerResourceCfg_t pPowerCfg   =
-    {
+    Pmic_PowerResourceCfg_t pPowerCfg = {
         PMIC_CFG_REGULATOR_VMON_VOLTAGE_SET_VALID_SHIFT,
     };
 
+    UART_printf("OTP_VppEn\n");
 
-	UART_printf("OTP_VppEn\n");
+    pmic_device_info = J721E_LEO_PMICB_DEVICE;
+    (void)pmic_device_info;
+    keywr_leo_pmicb_set_params(&pmicb_cfg);
 
-	pmic_device_info = J721E_LEO_PMICB_DEVICE;
-	(void)pmic_device_info;
-	keywr_leo_pmicb_set_params(&pmicb_cfg);
+    status = test_pmic_appInit(&pPmicCoreHandle, &pmicb_cfg);
 
-	status = test_pmic_appInit(&pPmicCoreHandle, &pmicb_cfg);
-	
-	if(PMIC_ST_SUCCESS == status){
-		/*  Set Power Resource as LDO3 */
-	   	pwrRsrc = PMIC_TPS6594X_REGULATOR_LDO3;
-		pmicStatus = Pmic_powerGetPwrResourceCfg(pPmicCoreHandle,
+    if (PMIC_ST_SUCCESS == status)
+    {
+        /*  Set Power Resource as LDO3 */
+        pwrRsrc    = PMIC_TPS6594X_REGULATOR_LDO3;
+        pmicStatus = Pmic_powerGetPwrResourceCfg(pPmicCoreHandle,
                                                  pwrRsrc,
                                                  &powerCfg_rd);
-        if(PMIC_ST_SUCCESS != pmicStatus){
-			UART_printf("Pmic_powerGetPwrResourceCfg ret: %d\n", pmicStatus);
-		}
+
+        if (PMIC_ST_SUCCESS != pmicStatus)
+        {
+            UART_printf("Pmic_powerGetPwrResourceCfg ret: %d\n", pmicStatus);
+        }
 
         pPowerCfg.voltage_mV = KEYWRITER_VPP_VOLT_mV;
 
-		UART_printf("volate_mV: %u\n", pPowerCfg.voltage_mV);
+        UART_printf("volate_mV: %u\n", pPowerCfg.voltage_mV);
 
         pmicStatus = Pmic_powerSetPwrResourceCfg(pPmicCoreHandle,
                                                  pwrRsrc,
                                                  pPowerCfg);
-		if(PMIC_ST_SUCCESS != pmicStatus){
-			UART_printf("Pmic_powerSetPwrResourceCfg ret: %d\n", pmicStatus);
-		}
-	}
 
-	if((pPmicCoreHandle != NULL) && (PMIC_ST_SUCCESS == status)){
-		test_pmic_appDeInit(pPmicCoreHandle);
-	}
+        if (PMIC_ST_SUCCESS != pmicStatus)
+        {
+            UART_printf("Pmic_powerSetPwrResourceCfg ret: %d\n", pmicStatus);
+        }
+    }
+
+    if ((pPmicCoreHandle != NULL) && (PMIC_ST_SUCCESS == status))
+    {
+        test_pmic_appDeInit(pPmicCoreHandle);
+    }
 }

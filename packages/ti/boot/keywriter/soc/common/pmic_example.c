@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,7 +42,6 @@
 #include <string.h>
 #include <pmic.h>
 
-
 /* CSL Header files */
 #include <ti/csl/csl_types.h>
 #include <ti/csl/soc.h>
@@ -81,18 +80,17 @@
 /* Pointer holds the pPmicCoreHandle for I2C */
 Pmic_CoreHandle_t *pPmicCoreHandleI2C = NULL;
 
-uint8_t startup_type = 0U;
+uint8_t startup_type    = 0U;
 uint8_t enableBenchMark = 0U;
-uint8_t enableFaultInjectionRead = 0U;
+uint8_t enableFaultInjectionRead  = 0U;
 uint8_t enableFaultInjectionWrite = 0U;
-uint8_t readCount = 0U;
-uint8_t writeCount = 0U;
-uint8_t skipReadCount = 0U;
+uint8_t readCount      = 0U;
+uint8_t writeCount     = 0U;
+uint8_t skipReadCount  = 0U;
 uint8_t skipWriteCount = 0U;
 
 /* CRC8 Table with polynomial value:0x7 */
-uint8_t crc8_tlb[] =
-{
+uint8_t crc8_tlb[] = {
     0x00, 0x07, 0x0e, 0x09, 0x1c, 0x1b, 0x12, 0x15,
     0x38, 0x3f, 0x36, 0x31, 0x24, 0x23, 0x2a, 0x2d,
     0x70, 0x77, 0x7e, 0x79, 0x6c, 0x6b, 0x62, 0x65,
@@ -137,14 +135,13 @@ static SemaphoreP_Handle pmic_Sem = NULL;
 /*!
  * \brief   GPIO Driver board specific pin configuration structure
  */
-GPIO_PinConfig gpioPinConfigs[] =
-{
+GPIO_PinConfig gpioPinConfigs[] = {
 #if defined(SOC_J721E)
     /* Input pin with interrupt enabled */
     GPIO_DEVICE_CONFIG(J7_WAKEUP_GPIO0_PORT_NUM, J7_WAKEUP_GPIO0_9_PIN_NUM) |
     GPIO_CFG_IN_INT_FALLING | GPIO_CFG_INPUT
 #endif
-# if defined(SOC_J7200)
+#if defined(SOC_J7200)
     /* Input pin with interrupt enabled */
     GPIO_DEVICE_CONFIG(J7_WAKEUP_GPIO0_PORT_NUM, J7_WAKEUP_GPIO0_84_PIN_NUM) |
     GPIO_CFG_IN_INT_FALLING | GPIO_CFG_INPUT
@@ -154,16 +151,14 @@ GPIO_PinConfig gpioPinConfigs[] =
 /*!
  * \brief   GPIO Driver call back functions
  */
-GPIO_CallbackFxn gpioCallbackFunctions[] =
-{
+GPIO_CallbackFxn gpioCallbackFunctions[] = {
     NULL
 };
 
 /*!
  * \brief   GPIO Driver configuration structure
  */
-GPIO_v0_Config GPIO_v0_config =
-{
+GPIO_v0_Config GPIO_v0_config = {
     gpioPinConfigs,
     gpioCallbackFunctions,
     sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
@@ -205,7 +200,7 @@ static int32_t test_pmic_getcrc8Val(uint8_t *data, uint8_t len)
     uint8_t crc = 0xFFU;
     uint8_t i;
 
-    for(i = 0; i < len; i++)
+    for (i = 0; i < len; i++)
     {
         crc = crc8_tlb[data[i] ^ crc];
     }
@@ -243,7 +238,7 @@ static int32_t test_pmic_spi_stubInit(Pmic_CoreCfg_t  *pPmicConfigData)
     pmicConfigDataI2c.validParams        |= PMIC_CFG_COMM_IO_WR_VALID_SHIFT;
 
     pmicConfigDataI2c.pFnPmicCritSecStart =
-                                          pPmicConfigData->pFnPmicCritSecStart;
+        pPmicConfigData->pFnPmicCritSecStart;
     pmicConfigDataI2c.validParams        |= PMIC_CFG_CRITSEC_START_VALID_SHIFT;
 
     pmicConfigDataI2c.pFnPmicCritSecStop  = pPmicConfigData->pFnPmicCritSecStop;
@@ -255,7 +250,7 @@ static int32_t test_pmic_spi_stubInit(Pmic_CoreCfg_t  *pPmicConfigData)
      */
     pmicStatus = test_pmic_appInit(&pPmicCoreHandleI2C, &pmicConfigDataI2c);
 
-    if(PMIC_ST_SUCCESS == pmicStatus)
+    if (PMIC_ST_SUCCESS == pmicStatus)
     {
         /*
          * Update Valid Communication Handle to make SPI stub
@@ -264,6 +259,7 @@ static int32_t test_pmic_spi_stubInit(Pmic_CoreCfg_t  *pPmicConfigData)
         pPmicConfigData->pCommHandle  = pPmicCoreHandleI2C->pCommHandle;
         pPmicConfigData->validParams |= PMIC_CFG_COMM_HANDLE_VALID_SHIFT;
     }
+
     return pmicStatus;
 }
 
@@ -274,12 +270,13 @@ static int32_t test_pmic_spi_stubDeinit(void **pCommHandle)
 {
     test_pmic_appDeInit(pPmicCoreHandleI2C);
 
-    if(NULL == (I2C_Handle)*pCommHandle)
+    if (NULL == (I2C_Handle) * pCommHandle)
     {
         return PMIC_ST_ERR_NULL_PARAM;
     }
 
     *pCommHandle = NULL;
+
     return PMIC_ST_SUCCESS;
 }
 
@@ -288,27 +285,27 @@ static int32_t test_pmic_spi_stubDeinit(void **pCommHandle)
  *         using I2C interface
  */
 int32_t test_pmic_spi_stubRead(Pmic_CoreHandle_t  *pPmicCorehandle,
-                           uint8_t            *pBuf,
-                           uint8_t             bufLen)
+                               uint8_t            *pBuf,
+                               uint8_t             bufLen)
 {
     int32_t pmicStatus = 0;
-    uint8_t instType = 0U;
-    uint16_t regAddr = 0U;
-    bool wdgopn = 0;
-    uint8_t rxBuf[4U] = {0U};
+    uint8_t instType   = 0U;
+    uint16_t regAddr   = 0U;
+    bool wdgopn        = 0;
+    uint8_t rxBuf[4U]  = {0U};
 
     /* Check for WatchDog Operation */
-    if(0U != (pBuf[1U] & (0x04 << 5U)))
+    if (0U != (pBuf[1U] & (0x04 << 5U)))
     {
         wdgopn = true;
     }
 
     /* Update register Address from spi buffer */
     regAddr = (uint16_t)pBuf[0U];
-    bufLen = 1U;
+    bufLen  = 1U;
 
     /* Find Instance type from wdg operation */
-    if(true == wdgopn)
+    if (true == wdgopn)
     {
         instType = PMIC_QA_INST;
     }
@@ -318,7 +315,7 @@ int32_t test_pmic_spi_stubRead(Pmic_CoreHandle_t  *pPmicCorehandle,
     }
 
     /* Increase buffer lenth 1 more to get CRC, if CRC is Enabled */
-    if(true == pPmicCorehandle->crcEnable)
+    if (true == pPmicCorehandle->crcEnable)
     {
         bufLen++;
     }
@@ -334,7 +331,7 @@ int32_t test_pmic_spi_stubRead(Pmic_CoreHandle_t  *pPmicCorehandle,
     pBuf[2U] = rxBuf[0U];
 
     /* Updating the Recieved CRC to SPI Buffer */
-    if(true == pPmicCorehandle->crcEnable)
+    if (true == pPmicCorehandle->crcEnable)
     {
         pBuf[3U] = test_pmic_getcrc8Val(pBuf, 3U);
     }
@@ -351,22 +348,22 @@ int32_t test_pmic_spi_write(Pmic_CoreHandle_t  *pPmicCorehandle,
                             uint8_t             bufLen)
 {
     int32_t  pmicStatus = 0;
-    uint8_t  instType = 0U;
-    bool     wdgopn = 0;
-    uint16_t regAddr = 0U;
-    uint8_t  txBuf[4U] = {0U};
+    uint8_t  instType   = 0U;
+    bool     wdgopn     = 0;
+    uint16_t regAddr    = 0U;
+    uint8_t  txBuf[4U]  = {0U};
 
     /* Update register Address from spi buffer */
     regAddr = (uint16_t)pBuf[0U];
 
     /* Check for WatchDog Operation */
-    if(0U != (pBuf[1U] & (0x04 << 5U)))
+    if (0U != (pBuf[1U] & (0x04 << 5U)))
     {
         wdgopn = true;
     }
 
     /* Find Instance type from wdg operation */
-    if(true == wdgopn)
+    if (true == wdgopn)
     {
         instType = PMIC_QA_INST;
     }
@@ -377,13 +374,14 @@ int32_t test_pmic_spi_write(Pmic_CoreHandle_t  *pPmicCorehandle,
 
     /* Updating the SPI Buffer Reg Value to I2C Buffer */
     txBuf[0U] = pBuf[2U];
-    bufLen = 1U;
+    bufLen    = 1U;
 
-    /* Updating the Recieved CRC to SPI Buffer */
-    if(true == pPmicCorehandle->crcEnable)
+    /* Updating the Received CRC to SPI Buffer */
+    if (true == pPmicCorehandle->crcEnable)
     {
         uint8_t crcbuf[4U] = {0U};
-        if(true == wdgopn)
+
+        if (true == wdgopn)
         {
             crcbuf[0U] = pPmicCoreHandleI2C->qaSlaveAddr << 1U;
         }
@@ -391,9 +389,10 @@ int32_t test_pmic_spi_write(Pmic_CoreHandle_t  *pPmicCorehandle,
         {
             crcbuf[0U] = pPmicCoreHandleI2C->slaveAddr << 1U;
         }
+
         crcbuf[1U] = regAddr;
         crcbuf[2U] = pBuf[2U];
-        txBuf[1U] = test_pmic_getcrc8Val(crcbuf, 3U);
+        txBuf[1U]  = test_pmic_getcrc8Val(crcbuf, 3U);
         bufLen++;
     }
 
@@ -417,53 +416,58 @@ static int32_t test_pmic_i2c_devices(Pmic_CoreHandle_t  *pPmicCorehandle,
     uint16_t slaveAddr;
     I2C_Handle i2cHandle;
 
-    if(PMIC_INTF_SINGLE_I2C == pPmicCorehandle->commMode)
+    if (PMIC_INTF_SINGLE_I2C == pPmicCorehandle->commMode)
     {
         i2cHandle = pPmicCorehandle->pCommHandle;
         /* For Main PAGE SLAVE ID */
         slaveAddr = pPmicCorehandle->slaveAddr;
-        if(I2C_STATUS_SUCCESS ==
-                      I2C_control(i2cHandle, I2C_CMD_PROBE, &slaveAddr))
+
+        if (I2C_STATUS_SUCCESS ==
+            I2C_control(i2cHandle, I2C_CMD_PROBE, &slaveAddr))
         {
             pmic_log("I2C%d: Passed for address 0x%X !!! \r\n",
-                               instType, slaveAddr);
+                     instType, slaveAddr);
         }
         else
         {
             status = PMIC_ST_ERR_I2C_COMM_FAIL;
         }
+
         /* For WD PAGE SLAVE ID */
         slaveAddr = pPmicCorehandle->qaSlaveAddr;
-        if(I2C_STATUS_SUCCESS ==
-                      I2C_control(i2cHandle, I2C_CMD_PROBE, &slaveAddr))
+
+        if (I2C_STATUS_SUCCESS ==
+            I2C_control(i2cHandle, I2C_CMD_PROBE, &slaveAddr))
         {
             pmic_log("I2C%d: Passed for address 0x%X !!! \r\n",
-                               instType, slaveAddr);
+                     instType, slaveAddr);
         }
         else
         {
             status = PMIC_ST_ERR_I2C_COMM_FAIL;
         }
     }
-    if(PMIC_INTF_DUAL_I2C == pPmicCorehandle->commMode)
+
+    if (PMIC_INTF_DUAL_I2C == pPmicCorehandle->commMode)
     {
         /* Main I2c BUS */
-        if(PMIC_MAIN_INST == instType)
+        if (PMIC_MAIN_INST == instType)
         {
             slaveAddr = pPmicCorehandle->slaveAddr;
             i2cHandle = pPmicCorehandle->pCommHandle;
         }
         /* For WDG QA I2C BUS */
-        else if(PMIC_QA_INST == instType)
+        else if (PMIC_QA_INST == instType)
         {
             slaveAddr = pPmicCorehandle->qaSlaveAddr;
             i2cHandle = pPmicCorehandle->pQACommHandle;
         }
-        if(I2C_STATUS_SUCCESS ==
-                      I2C_control(i2cHandle, I2C_CMD_PROBE, &slaveAddr))
+
+        if (I2C_STATUS_SUCCESS ==
+            I2C_control(i2cHandle, I2C_CMD_PROBE, &slaveAddr))
         {
             pmic_log("I2C%d: Passed for address 0x%X !!! \r\n",
-                               instType, slaveAddr);
+                     instType, slaveAddr);
         }
         else
         {
@@ -487,14 +491,14 @@ static int32_t test_pmic_i2c_lld_intf_setup(Pmic_CoreCfg_t  *pPmicConfigData,
                                             uint8_t          instType)
 {
     I2C_Params i2cParams;
-    I2C_Handle i2cHandle  = NULL;
-    uint8_t i2c_instance  = 0U;
+    I2C_Handle i2cHandle = NULL;
+    uint8_t i2c_instance = 0U;
 
     pmic_log("%s(): %d: %s I2C Setup...\n", __func__, __LINE__,
-             (instType == PMIC_MAIN_INST)? "PMIC_MAIN_INST": "PMIC_QA_INST");
+             (instType == PMIC_MAIN_INST) ? "PMIC_MAIN_INST" : "PMIC_QA_INST");
 
     /* Main I2c BUS */
-    if(instType == PMIC_MAIN_INST)
+    if (instType == PMIC_MAIN_INST)
     {
         /* Initialize i2c core instances */
         I2C_init();
@@ -503,7 +507,7 @@ static int32_t test_pmic_i2c_lld_intf_setup(Pmic_CoreCfg_t  *pPmicConfigData,
         test_pmic_setConfigI2C(i2c_instance, CSL_WKUP_I2C0_CFG_BASE);
     }
     /* For WDG QA I2C BUS */
-    else if(PMIC_QA_INST == instType)
+    else if (PMIC_QA_INST == instType)
     {
         i2c_instance = 1U;
         test_pmic_setConfigI2C(i2c_instance, CSL_MCU_I2C0_CFG_BASE);
@@ -513,24 +517,27 @@ static int32_t test_pmic_i2c_lld_intf_setup(Pmic_CoreCfg_t  *pPmicConfigData,
     I2C_Params_init(&i2cParams);
 
     i2cHandle = I2C_open(i2c_instance, &i2cParams);
-    if(NULL == i2cHandle)
+
+    if (NULL == i2cHandle)
     {
         pmic_log("I2C_open is failed!!!\n");
+
         return PMIC_ST_ERR_COMM_INTF_INIT_FAIL;
     }
 
     /* Main I2c BUS */
-    if(instType == PMIC_MAIN_INST)
+    if (instType == PMIC_MAIN_INST)
     {
         pPmicConfigData->pCommHandle = i2cHandle;
     }
     /* For WDOG QA I2C BUS */
-    else if(PMIC_QA_INST == instType)
+    else if (PMIC_QA_INST == instType)
     {
         pPmicConfigData->pQACommHandle = i2cHandle;
     }
 
     pmic_log("%s(): %d: done...\n", __func__, __LINE__);
+
     return PMIC_ST_SUCCESS;
 }
 
@@ -548,21 +555,22 @@ static int32_t test_pmic_leo_dual_i2c_pin_setup(Pmic_CoreHandle_t *pPmicHandle)
     int32_t pmicStatus     = PMIC_ST_SUCCESS;
     Pmic_GpioCfg_t gpioCfg = {0U};
 
-    gpioCfg.validParams      = PMIC_GPIO_CFG_PINFUNC_VALID_SHIFT |
-                               PMIC_GPIO_CFG_OD_VALID_SHIFT;
+    gpioCfg.validParams = PMIC_GPIO_CFG_PINFUNC_VALID_SHIFT |
+                          PMIC_GPIO_CFG_OD_VALID_SHIFT;
 
     pmicStatus = Pmic_gpioGetConfiguration(pPmicHandle,
                                            PMIC_TPS6594X_GPIO1_PIN,
                                            &gpioCfg);
 
-    if(PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
+    if (PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
     {
-       if(gpioCfg.pinFunc == PMIC_TPS6594X_GPIO_PINFUNC_GPIO1_SCL_I2C2_CS_SPI)
-       {
-           gpioCfg.pinFunc = PMIC_TPS6594X_GPIO_PINFUNC_GPIO;
-       }
+        if (gpioCfg.pinFunc == PMIC_TPS6594X_GPIO_PINFUNC_GPIO1_SCL_I2C2_CS_SPI)
+        {
+            gpioCfg.pinFunc = PMIC_TPS6594X_GPIO_PINFUNC_GPIO;
+        }
     }
-    if(PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
+
+    if (PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
     {
         gpioCfg.outputSignalType = PMIC_GPIO_OPEN_DRAIN_OUTPUT;
         gpioCfg.pinFunc = PMIC_TPS6594X_GPIO_PINFUNC_GPIO1_SCL_I2C2_CS_SPI;
@@ -574,23 +582,26 @@ static int32_t test_pmic_leo_dual_i2c_pin_setup(Pmic_CoreHandle_t *pPmicHandle)
 
     gpioCfg.validParams = PMIC_GPIO_CFG_PINFUNC_VALID_SHIFT |
                           PMIC_GPIO_CFG_OD_VALID_SHIFT;
-    if(PMIC_ST_SUCCESS == pmicStatus)
+
+    if (PMIC_ST_SUCCESS == pmicStatus)
     {
         pmicStatus = Pmic_gpioGetConfiguration(pPmicHandle,
                                                PMIC_TPS6594X_GPIO2_PIN,
                                                &gpioCfg);
     }
-    if(PMIC_ST_SUCCESS == pmicStatus)
+
+    if (PMIC_ST_SUCCESS == pmicStatus)
     {
-        if(PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
+        if (PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
         {
-            if(gpioCfg.pinFunc ==
-               PMIC_TPS6594X_GPIO_PINFUNC_GPIO2_SDA_I2C2_SDO_SPI)
+            if (gpioCfg.pinFunc ==
+                PMIC_TPS6594X_GPIO_PINFUNC_GPIO2_SDA_I2C2_SDO_SPI)
             {
                 gpioCfg.pinFunc = PMIC_TPS6594X_GPIO_PINFUNC_GPIO;
             }
         }
-        if(PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
+
+        if (PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
         {
             gpioCfg.outputSignalType = PMIC_GPIO_OPEN_DRAIN_OUTPUT;
             gpioCfg.pinFunc = PMIC_TPS6594X_GPIO_PINFUNC_GPIO2_SDA_I2C2_SDO_SPI;
@@ -618,21 +629,22 @@ static int32_t test_pmic_hera_dual_i2c_pin_setup(Pmic_CoreHandle_t *pPmicHandle)
     int32_t pmicStatus     = PMIC_ST_SUCCESS;
     Pmic_GpioCfg_t gpioCfg = {0U};
 
-    gpioCfg.validParams      = PMIC_GPIO_CFG_PINFUNC_VALID_SHIFT |
-                               PMIC_GPIO_CFG_OD_VALID_SHIFT;
+    gpioCfg.validParams = PMIC_GPIO_CFG_PINFUNC_VALID_SHIFT |
+                          PMIC_GPIO_CFG_OD_VALID_SHIFT;
 
     pmicStatus = Pmic_gpioGetConfiguration(pPmicHandle,
                                            PMIC_LP8764X_GPIO2_PIN,
                                            &gpioCfg);
 
-    if(PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
+    if (PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
     {
-       if(gpioCfg.pinFunc == PMIC_LP8764X_GPIO_PINFUNC_GPIO2_SCL_I2C2)
-       {
-           gpioCfg.pinFunc = PMIC_LP8764X_GPIO_PINFUNC_GPIO;
-       }
+        if (gpioCfg.pinFunc == PMIC_LP8764X_GPIO_PINFUNC_GPIO2_SCL_I2C2)
+        {
+            gpioCfg.pinFunc = PMIC_LP8764X_GPIO_PINFUNC_GPIO;
+        }
     }
-    if(PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
+
+    if (PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
     {
         gpioCfg.pinFunc = PMIC_LP8764X_GPIO_PINFUNC_GPIO2_SCL_I2C2;
         gpioCfg.outputSignalType = PMIC_GPIO_OPEN_DRAIN_OUTPUT;
@@ -644,22 +656,25 @@ static int32_t test_pmic_hera_dual_i2c_pin_setup(Pmic_CoreHandle_t *pPmicHandle)
 
     gpioCfg.validParams = PMIC_GPIO_CFG_PINFUNC_VALID_SHIFT |
                           PMIC_GPIO_CFG_OD_VALID_SHIFT;
-    if(PMIC_ST_SUCCESS == pmicStatus)
+
+    if (PMIC_ST_SUCCESS == pmicStatus)
     {
         pmicStatus = Pmic_gpioGetConfiguration(pPmicHandle,
                                                PMIC_LP8764X_GPIO3_PIN,
                                                &gpioCfg);
     }
-    if(PMIC_ST_SUCCESS == pmicStatus)
+
+    if (PMIC_ST_SUCCESS == pmicStatus)
     {
-        if(PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
+        if (PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
         {
-            if(gpioCfg.pinFunc == PMIC_LP8764X_GPIO_PINFUNC_GPIO3_SDA_I2C2)
+            if (gpioCfg.pinFunc == PMIC_LP8764X_GPIO_PINFUNC_GPIO3_SDA_I2C2)
             {
                 gpioCfg.pinFunc = PMIC_LP8764X_GPIO_PINFUNC_GPIO;
             }
         }
-        if(PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
+
+        if (PMIC_INTF_DUAL_I2C == pPmicHandle->commMode)
         {
             gpioCfg.pinFunc = PMIC_LP8764X_GPIO_PINFUNC_GPIO3_SDA_I2C2;
             gpioCfg.outputSignalType = PMIC_GPIO_OPEN_DRAIN_OUTPUT;
@@ -683,12 +698,12 @@ static int32_t test_pmic_hera_dual_i2c_pin_setup(Pmic_CoreHandle_t *pPmicHandle)
  */
 static int32_t test_pmic_i2c_lld_intf_release(void **pCommHandle)
 {
-    if(NULL == (I2C_Handle)*pCommHandle)
+    if (NULL == (I2C_Handle) * pCommHandle)
     {
         return PMIC_ST_ERR_NULL_PARAM;
     }
 
-    I2C_close((I2C_Handle)*pCommHandle);
+    I2C_close((I2C_Handle) * pCommHandle);
 
     *pCommHandle = NULL;
 
@@ -714,10 +729,10 @@ int32_t test_pmic_regRead(Pmic_CoreHandle_t  *pmicCorehandle,
                           uint8_t            *pBuf,
                           uint8_t             bufLen)
 {
-    int8_t ret     = 0U;
+    int8_t ret = 0U;
 
-    if((PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode) ||
-       (PMIC_INTF_DUAL_I2C   == pmicCorehandle->commMode))
+    if ((PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode) ||
+        (PMIC_INTF_DUAL_I2C   == pmicCorehandle->commMode))
     {
         I2C_Transaction transaction;
         I2C_transactionInit(&transaction);
@@ -729,47 +744,51 @@ int32_t test_pmic_regRead(Pmic_CoreHandle_t  *pmicCorehandle,
         transaction.writeCount = 1U;
 
         /* Main I2c BUS */
-        if(PMIC_MAIN_INST == instType)
+        if (PMIC_MAIN_INST == instType)
         {
             transaction.slaveAddress = pmicCorehandle->slaveAddr;
             ret = I2C_transfer((I2C_Handle)pmicCorehandle->pCommHandle,
-                                &transaction);
-            if(ret != I2C_STS_SUCCESS)
+                               &transaction);
+
+            if (ret != I2C_STS_SUCCESS)
             {
                 return PMIC_ST_ERR_I2C_COMM_FAIL;
             }
         }
 
         /* For WDOG QA I2C BUS */
-        if(PMIC_QA_INST == instType)
+        if (PMIC_QA_INST == instType)
         {
             transaction.slaveAddress = pmicCorehandle->qaSlaveAddr;
-            if(PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode)
+
+            if (PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode)
             {
                 ret = I2C_transfer((I2C_Handle)
                                    pmicCorehandle->pCommHandle,
                                    &transaction);
             }
-            if(PMIC_INTF_DUAL_I2C == pmicCorehandle->commMode)
+
+            if (PMIC_INTF_DUAL_I2C == pmicCorehandle->commMode)
             {
                 ret = I2C_transfer((I2C_Handle)
                                    pmicCorehandle->pQACommHandle,
                                    &transaction);
             }
-            if(ret != I2C_STS_SUCCESS)
+
+            if (ret != I2C_STS_SUCCESS)
             {
                 return PMIC_ST_ERR_I2C_COMM_FAIL;
             }
         }
     }
 
-    if(PMIC_INTF_SPI == pmicCorehandle->commMode)
+    if (PMIC_INTF_SPI == pmicCorehandle->commMode)
     {
-        if(PMIC_ST_SUCCESS !=
-                 test_pmic_spi_stubRead(pmicCorehandle, pBuf, bufLen))
+        if (PMIC_ST_SUCCESS !=
+            test_pmic_spi_stubRead(pmicCorehandle, pBuf, bufLen))
         {
             /* For Fault Injection Tests */
-            if(1U == enableFaultInjectionRead)
+            if (1U == enableFaultInjectionRead)
             {
                 return PMIC_ST_ERR_I2C_COMM_FAIL;
             }
@@ -778,10 +797,10 @@ int32_t test_pmic_regRead(Pmic_CoreHandle_t  *pmicCorehandle,
         }
     }
 
-
     /* Added for Branch Coverage */
     readCount++;
-    if((1U == enableFaultInjectionRead) && (skipReadCount == readCount))
+
+    if ((1U == enableFaultInjectionRead) && (skipReadCount == readCount))
     {
         return PMIC_ST_ERR_I2C_COMM_FAIL;
     }
@@ -810,8 +829,8 @@ int32_t test_pmic_regWrite(Pmic_CoreHandle_t  *pmicCorehandle,
 {
     int8_t  ret = 0U;
 
-    if((PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode) ||
-       (PMIC_INTF_DUAL_I2C   == pmicCorehandle->commMode))
+    if ((PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode) ||
+        (PMIC_INTF_DUAL_I2C   == pmicCorehandle->commMode))
     {
         I2C_Transaction transaction;
 
@@ -823,11 +842,12 @@ int32_t test_pmic_regWrite(Pmic_CoreHandle_t  *pmicCorehandle,
         /* Initializes the I2C transaction structure with default values */
         I2C_transactionInit(&transaction);
 
-        if(PMIC_MAIN_INST == instType)
+        if (PMIC_MAIN_INST == instType)
         {
             transaction.slaveAddress = pmicCorehandle->slaveAddr;
         }
-        if(PMIC_QA_INST == instType)
+
+        if (PMIC_QA_INST == instType)
         {
             transaction.slaveAddress = pmicCorehandle->qaSlaveAddr;
         }
@@ -836,51 +856,54 @@ int32_t test_pmic_regWrite(Pmic_CoreHandle_t  *pmicCorehandle,
         memcpy(&dataBuff[1U], pBuf, bufLen);
 
         /* Control Byte followed by write bit */
-        transaction.writeBuf     = dataBuff;
-        transaction.writeCount   = bufLen + 1U;
-        transaction.readCount    = 0U;
-        transaction.readBuf      = NULL;
+        transaction.writeBuf   = dataBuff;
+        transaction.writeCount = bufLen + 1U;
+        transaction.readCount  = 0U;
+        transaction.readBuf    = NULL;
 
         /* Main I2c BUS */
-        if(PMIC_MAIN_INST == instType)
+        if (PMIC_MAIN_INST == instType)
         {
             ret = I2C_transfer((I2C_Handle)pmicCorehandle->pCommHandle,
-                                &transaction);
-            if(ret != I2C_STS_SUCCESS)
+                               &transaction);
+
+            if (ret != I2C_STS_SUCCESS)
             {
                 return PMIC_ST_ERR_I2C_COMM_FAIL;
             }
         }
 
         /* For WDOG QA I2C BUS */
-        if(PMIC_QA_INST == instType)
+        if (PMIC_QA_INST == instType)
         {
-            if(PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode)
+            if (PMIC_INTF_SINGLE_I2C == pmicCorehandle->commMode)
             {
                 ret = I2C_transfer((I2C_Handle)
                                    pmicCorehandle->pCommHandle,
                                    &transaction);
             }
-            if(PMIC_INTF_DUAL_I2C == pmicCorehandle->commMode)
+
+            if (PMIC_INTF_DUAL_I2C == pmicCorehandle->commMode)
             {
                 ret = I2C_transfer((I2C_Handle)
                                    pmicCorehandle->pQACommHandle,
                                    &transaction);
             }
-            if(ret != I2C_STS_SUCCESS)
+
+            if (ret != I2C_STS_SUCCESS)
             {
                 return PMIC_ST_ERR_I2C_COMM_FAIL;
             }
         }
     }
 
-    if(PMIC_INTF_SPI == pmicCorehandle->commMode)
+    if (PMIC_INTF_SPI == pmicCorehandle->commMode)
     {
-        if(PMIC_ST_SUCCESS !=
-                   test_pmic_spi_write(pmicCorehandle, pBuf, bufLen))
+        if (PMIC_ST_SUCCESS !=
+            test_pmic_spi_write(pmicCorehandle, pBuf, bufLen))
         {
             /* For Fault Injection Tests */
-            if(1U == enableFaultInjectionWrite)
+            if (1U == enableFaultInjectionWrite)
             {
                 return PMIC_ST_ERR_I2C_COMM_FAIL;
             }
@@ -891,11 +914,11 @@ int32_t test_pmic_regWrite(Pmic_CoreHandle_t  *pmicCorehandle,
 
     /* Added for Branch Coverage */
     writeCount++;
-    if((1U == enableFaultInjectionWrite) && (skipWriteCount == writeCount))
+
+    if ((1U == enableFaultInjectionWrite) && (skipWriteCount == writeCount))
     {
         return PMIC_ST_ERR_I2C_COMM_FAIL;
     }
-
 
     return PMIC_ST_SUCCESS;
 }
@@ -955,7 +978,7 @@ static void test_pmic_osalSemaphoreInit(void)
  */
 static void test_pmic_osalSemaphoreDeInit(void)
 {
-    if(pmic_Sem)
+    if (pmic_Sem)
     {
         SemaphoreP_delete(pmic_Sem);
         pmic_Sem = NULL;
@@ -969,9 +992,8 @@ static void test_pmic_osalSemaphoreDeInit(void)
  */
 void test_pmic_criticalSectionStartFn(void)
 {
-
-    if(SemaphoreP_OK != SemaphoreP_pend(pmic_Sem,
-                                        SemaphoreP_WAIT_FOREVER))
+    if (SemaphoreP_OK != SemaphoreP_pend(pmic_Sem,
+                                         SemaphoreP_WAIT_FOREVER))
     {
         pmic_log("%s(): Invalid Semaphore Handle\n", __func__);
     }
@@ -984,7 +1006,7 @@ void test_pmic_criticalSectionStartFn(void)
  */
 void test_pmic_criticalSectionStopFn(void)
 {
-    if(SemaphoreP_OK != SemaphoreP_post(pmic_Sem))
+    if (SemaphoreP_OK != SemaphoreP_post(pmic_Sem))
     {
         pmic_log("%s(): Invalid Semaphore Handle\n", __func__);
     }
@@ -996,68 +1018,91 @@ void test_pmic_criticalSectionStopFn(void)
  */
 static uint32_t get_startup_type(Pmic_CoreHandle_t *pPmicCoreHandle)
 {
-    Pmic_IrqStatus_t errStat  = {0U};
-    int32_t pmicStatus        = PMIC_ST_SUCCESS;
+    Pmic_IrqStatus_t errStat = {0U};
+    int32_t pmicStatus       = PMIC_ST_SUCCESS;
     uint8_t type = 0U;
 
     pmicStatus = Pmic_irqGetErrStatus(pPmicCoreHandle, &errStat, false);
-    switch(pPmicCoreHandle->pmicDeviceType)
+
+    switch (pPmicCoreHandle->pmicDeviceType)
     {
         case PMIC_DEV_LEO_TPS6594X:
-            switch(startup_type)
+
+            switch (startup_type)
             {
                 case PMIC_ENABLE_STARTUP_TYPE:
-                    if((PMIC_ST_SUCCESS == pmicStatus) &&
-                       ((errStat.intStatus[PMIC_TPS6594X_ENABLE_INT/32U] &
-                        (1U << (PMIC_TPS6594X_ENABLE_INT % 32U))) != 0U))
+
+                    if ((PMIC_ST_SUCCESS == pmicStatus) &&
+                        ((errStat.intStatus[PMIC_TPS6594X_ENABLE_INT / 32U] &
+                          (1U << (PMIC_TPS6594X_ENABLE_INT % 32U))) != 0U))
                     {
                         type = PMIC_ENABLE_STARTUP_TYPE;
                     }
+
                     break;
+
                 case PMIC_NPWRON_STARTUP_TYPE:
-                    if((PMIC_ST_SUCCESS == pmicStatus) &&
-                       ((errStat.intStatus[PMIC_TPS6594X_NPWRON_START_INT/32U] &
-                        (1U << (PMIC_TPS6594X_NPWRON_START_INT % 32U))) != 0U))
+
+                    if ((PMIC_ST_SUCCESS == pmicStatus) &&
+                        ((errStat.intStatus[PMIC_TPS6594X_NPWRON_START_INT /
+                                            32U] &
+                          (1U << (PMIC_TPS6594X_NPWRON_START_INT % 32U))) !=
+                         0U))
                     {
                         type = PMIC_NPWRON_STARTUP_TYPE;
                     }
+
                     break;
+
                 case PMIC_FSD_STARTUP_TYPE:
-                    if((PMIC_ST_SUCCESS == pmicStatus) &&
-                       ((errStat.intStatus[PMIC_TPS6594X_FSD_INT/32U] &
-                        (1U << (PMIC_TPS6594X_FSD_INT % 32U))) != 0U))
+
+                    if ((PMIC_ST_SUCCESS == pmicStatus) &&
+                        ((errStat.intStatus[PMIC_TPS6594X_FSD_INT / 32U] &
+                          (1U << (PMIC_TPS6594X_FSD_INT % 32U))) != 0U))
                     {
                         type = PMIC_FSD_STARTUP_TYPE;
                     }
+
                     break;
-                default:
-                        type = 0U;
-                    break;
-            }
-            break;
-        case PMIC_DEV_HERA_LP8764X:
-            switch(startup_type)
-            {
-                case PMIC_ENABLE_STARTUP_TYPE:
-                    if((PMIC_ST_SUCCESS == pmicStatus) &&
-                       ((errStat.intStatus[PMIC_LP8764X_ENABLE_INT/32U] &
-                        (1U << (PMIC_LP8764X_ENABLE_INT % 32U))) != 0U))
-                    {
-                        type = PMIC_ENABLE_STARTUP_TYPE;
-                    }
-                    break;
-                case PMIC_FSD_STARTUP_TYPE:
-                    if((PMIC_ST_SUCCESS == pmicStatus) &&
-                       ((errStat.intStatus[PMIC_LP8764X_FSD_INT/32U] &
-                        (1U << (PMIC_LP8764X_FSD_INT % 32U))) != 0U))
-                    {
-                        type = PMIC_FSD_STARTUP_TYPE;
-                    }
-                    break;
+
                 default:
                     type = 0U;
                     break;
             }
+
+            break;
+
+        case PMIC_DEV_HERA_LP8764X:
+
+            switch (startup_type)
+            {
+                case PMIC_ENABLE_STARTUP_TYPE:
+
+                    if ((PMIC_ST_SUCCESS == pmicStatus) &&
+                        ((errStat.intStatus[PMIC_LP8764X_ENABLE_INT / 32U] &
+                          (1U << (PMIC_LP8764X_ENABLE_INT % 32U))) != 0U))
+                    {
+                        type = PMIC_ENABLE_STARTUP_TYPE;
+                    }
+
+                    break;
+
+                case PMIC_FSD_STARTUP_TYPE:
+
+                    if ((PMIC_ST_SUCCESS == pmicStatus) &&
+                        ((errStat.intStatus[PMIC_LP8764X_FSD_INT / 32U] &
+                          (1U << (PMIC_LP8764X_FSD_INT % 32U))) != 0U))
+                    {
+                        type = PMIC_FSD_STARTUP_TYPE;
+                    }
+
+                    break;
+
+                default:
+                    type = 0U;
+                    break;
+            }
+
             break;
     }
 
@@ -1065,26 +1110,29 @@ static uint32_t get_startup_type(Pmic_CoreHandle_t *pPmicCoreHandle)
 
     return pmicStatus;
 }
+
 /*!
  * \brief   PMIC Interrupt decipher and clear function
  *          This function deciphers all interrupts and clears the status
  */
 static int32_t Pmic_intrClr(Pmic_CoreHandle_t *pmicHandle)
 {
-    int32_t pmicStatus = PMIC_ST_SUCCESS;
-    Pmic_CoreHandle_t handle  = *(Pmic_CoreHandle_t *)pmicHandle;
-    Pmic_IrqStatus_t errStat  = {0U};
+    int32_t pmicStatus       = PMIC_ST_SUCCESS;
+    Pmic_CoreHandle_t handle = *(Pmic_CoreHandle_t *)pmicHandle;
+    Pmic_IrqStatus_t errStat = {0U};
 
-    if(startup_type != 0U)
+    if (startup_type != 0U)
     {
         pmicStatus = get_startup_type(pmicHandle);
     }
-    if(PMIC_ST_SUCCESS == pmicStatus)
+
+    if (PMIC_ST_SUCCESS == pmicStatus)
     {
         pmicStatus = Pmic_irqGetErrStatus(&handle, &errStat, true);
         {
             int i = 0;
-            for(i=0;i<4; i++)
+
+            for (i = 0; i < 4; i++)
             {
                 pmic_log("INT STAT[%d]: 0x%08x\n", i, errStat.intStatus[i]);
             }
@@ -1092,6 +1140,7 @@ static int32_t Pmic_intrClr(Pmic_CoreHandle_t *pmicHandle)
     }
 
     pmic_log("\r\n");
+
     return pmicStatus;
 }
 
@@ -1112,52 +1161,57 @@ int32_t test_pmic_appInit(Pmic_CoreHandle_t **pmicCoreHandle,
     /* Initialize Pmic Semaphore */
     test_pmic_osalSemaphoreInit();
 
-    if(pmicCoreHandle == NULL)
+    if (pmicCoreHandle == NULL)
     {
         pmic_log("Invalid PMIC core Handle Reference\n");
+
         return PMIC_ST_ERR_INV_HANDLE;
     }
 
-    if(pmicConfigData == NULL)
+    if (pmicConfigData == NULL)
     {
         pmic_log("Invalid PMIC config Data - NULL \n");
+
         return PMIC_ST_ERR_NULL_PARAM;
     }
 
-
     /* Allocate memory for PMIC core Handle */
     pmicHandle = malloc(sizeof(Pmic_CoreHandle_t));
-    if(pmicHandle == NULL)
+
+    if (pmicHandle == NULL)
     {
         pmic_log("Failed to allocate memory to pmicHandle\n");
+
         return PMIC_ST_ERR_INV_HANDLE;
     }
 
     memset(pmicHandle, 0, sizeof(Pmic_CoreHandle_t));
 
     /* For single I2C Instance */
-    if(PMIC_INTF_SINGLE_I2C == pmicConfigData->commMode)
+    if (PMIC_INTF_SINGLE_I2C == pmicConfigData->commMode)
     {
         uint64_t delta = 0;
         /* Get PMIC valid Main I2C Instance */
         pmicStatus = test_pmic_i2c_lld_intf_setup(pmicConfigData,
                                                   PMIC_MAIN_INST);
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             pmicConfigData->validParams |= PMIC_CFG_COMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
-            pmicConfigData->instType = PMIC_MAIN_INST;
-            if(true == enableBenchMark)
+            pmicConfigData->instType     = PMIC_MAIN_INST;
+
+            if (true == enableBenchMark)
             {
                 uint64_t t1 = 0;
-                t1 = print_timeTakenInUsecs(0U, NULL);
+                t1         = print_timeTakenInUsecs(0U, NULL);
                 /* Get PMIC core Handle for Main Instance */
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
-                delta = print_timeTakenInUsecs(t1, NULL);
+                delta      = print_timeTakenInUsecs(t1, NULL);
                 pmic_log("--------------------------------------\n");
                 pmic_log("Time taken for %50s: %6d usec\n",
-                            "Pmic_init API for single instance",
-                            (uint32_t)delta);
+                         "Pmic_init API for single instance",
+                         (uint32_t)delta);
                 pmic_log("--------------------------------------\n");
             }
             else
@@ -1170,126 +1224,137 @@ int32_t test_pmic_appInit(Pmic_CoreHandle_t **pmicCoreHandle,
              * Check for Warning message due to Invalid Device ID.
              * And continue the application with WARNING message.
              */
-            if(PMIC_ST_WARN_INV_DEVICE_ID == pmicStatus)
+            if (PMIC_ST_WARN_INV_DEVICE_ID == pmicStatus)
             {
                 pmic_log("\n*** WARNING: Found Invalid DEVICE ID ***\n\n");
                 pmicStatus = PMIC_ST_SUCCESS;
             }
         }
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Probe connected PMIC device on given i2c Instance */
             test_pmic_i2c_devices(pmicHandle, PMIC_MAIN_INST);
         }
-        if(PMIC_DEV_LEO_TPS6594X == pmicHandle->pmicDeviceType)
+
+        if (PMIC_DEV_LEO_TPS6594X == pmicHandle->pmicDeviceType)
         {
             /* Check and De-select I2C2 PINFUNC for GPIO-1 and GPIO-2 */
             pmicStatus = test_pmic_leo_dual_i2c_pin_setup(pmicHandle);
         }
-        if(PMIC_DEV_HERA_LP8764X == pmicHandle->pmicDeviceType)
+
+        if (PMIC_DEV_HERA_LP8764X == pmicHandle->pmicDeviceType)
         {
             /* Check and De-select I2C2 PINFUNC for GPIO-2 and GPIO-3 */
             pmicStatus = test_pmic_hera_dual_i2c_pin_setup(pmicHandle);
         }
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Setup nSLEEP signals */
             pmicStatus = Pmic_fsmDeviceOnRequest(pmicHandle);
         }
 
-        if(PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             pmicStatus = Pmic_intrClr(pmicHandle);
         }
     }
     /* For DUAL I2C Instance */
-    else if(PMIC_INTF_DUAL_I2C == pmicConfigData->commMode)
+    else if (PMIC_INTF_DUAL_I2C == pmicConfigData->commMode)
     {
         uint64_t delta = 0;
         /* Get PMIC valid Main I2C Instance */
         pmicStatus = test_pmic_i2c_lld_intf_setup(pmicConfigData,
                                                   PMIC_MAIN_INST);
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             pmicConfigData->validParams |= PMIC_CFG_COMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
-            pmicConfigData->instType = PMIC_MAIN_INST;
-            if(true == enableBenchMark)
+            pmicConfigData->instType     = PMIC_MAIN_INST;
+
+            if (true == enableBenchMark)
             {
                 uint64_t t1 = 0;
-                t1 = print_timeTakenInUsecs(0U, NULL);
+                t1         = print_timeTakenInUsecs(0U, NULL);
                 /* Get PMIC core Handle for Main Instance */
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
-                delta = print_timeTakenInUsecs(t1, NULL);
+                delta      = print_timeTakenInUsecs(t1, NULL);
             }
             else
             {
                 /* Get PMIC core Handle for Main Instance */
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
             }
+
             /*
              * Check for Warning message due to Invalid Device ID.
              * And continue the application with WARNING message.
              */
-            if(PMIC_ST_WARN_INV_DEVICE_ID == pmicStatus)
+            if (PMIC_ST_WARN_INV_DEVICE_ID == pmicStatus)
             {
                 pmic_log("\n*** WARNING: Found Invalid DEVICE ID ***\n\n");
                 pmicStatus = PMIC_ST_SUCCESS;
             }
         }
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Probe connected PMIC device on given i2c Instance */
             test_pmic_i2c_devices(pmicHandle, PMIC_MAIN_INST);
         }
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Setup nSLEEP signals */
             pmicStatus = Pmic_fsmDeviceOnRequest(pmicHandle);
         }
 
-        if(PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             pmicStatus = Pmic_intrClr(pmicHandle);
         }
 
-        if(PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
-            if(PMIC_DEV_LEO_TPS6594X == pmicHandle->pmicDeviceType)
+            if (PMIC_DEV_LEO_TPS6594X == pmicHandle->pmicDeviceType)
             {
                 /* Setup leo pmic Dual I2C functionality to GPIO-1 & GPIO-2 */
                 pmicStatus = test_pmic_leo_dual_i2c_pin_setup(pmicHandle);
             }
-            if(PMIC_DEV_HERA_LP8764X == pmicHandle->pmicDeviceType)
+
+            if (PMIC_DEV_HERA_LP8764X == pmicHandle->pmicDeviceType)
             {
                 /* Setup hera pmic Dual I2C functionality to GPIO-2 & GPIO-3 */
                 pmicStatus = test_pmic_hera_dual_i2c_pin_setup(pmicHandle);
             }
         }
 
-        if(PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Get PMIC valid QA I2C Instance */
             pmicStatus = test_pmic_i2c_lld_intf_setup(pmicConfigData,
                                                       PMIC_QA_INST);
         }
 
-        if(PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             pmicConfigData->validParams |= PMIC_CFG_QACOMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
-            pmicConfigData->instType = PMIC_QA_INST;
-            if(true == enableBenchMark)
+            pmicConfigData->instType     = PMIC_QA_INST;
+
+            if (true == enableBenchMark)
             {
                 uint64_t t1 = 0;
-                t1 = print_timeTakenInUsecs(0U, NULL);
+                t1         = print_timeTakenInUsecs(0U, NULL);
                 /* Get PMIC core Handle for QA Instances */
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
-                delta += print_timeTakenInUsecs(t1, NULL);
+                delta     += print_timeTakenInUsecs(t1, NULL);
                 pmic_log("--------------------------------------\n");
                 pmic_log("Time taken for %50s: %6d usec\n",
-                            "Pmic_init API for Dual instance",
-                            (uint32_t)delta);
+                         "Pmic_init API for Dual instance",
+                         (uint32_t)delta);
                 pmic_log("--------------------------------------\n");
             }
             else
@@ -1298,49 +1363,52 @@ int32_t test_pmic_appInit(Pmic_CoreHandle_t **pmicCoreHandle,
                 pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
             }
         }
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Probe connected PMIC device on given i2c Instance */
             test_pmic_i2c_devices(pmicHandle, PMIC_QA_INST);
         }
     }
     /* For SPI Instance */
-    else if(PMIC_INTF_SPI  == pmicConfigData->commMode)
+    else if (PMIC_INTF_SPI  == pmicConfigData->commMode)
     {
         /* Get PMIC valid Main SPI Communication Handle */
         pmicStatus = test_pmic_spi_lld_intf_setup(pmicConfigData);
-        if(PMIC_ST_SUCCESS == pmicStatus)
+
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Update MAIN instance type to pmicConfigData for SPI */
             pmicConfigData->instType = PMIC_MAIN_INST;
             pmicStatus = Pmic_init(pmicConfigData, pmicHandle);
+
             /*
              * Check for Warning message due to Invalid Device ID.
              * And continue the application with WARNING message.
              */
-            if(PMIC_ST_WARN_INV_DEVICE_ID == pmicStatus)
+            if (PMIC_ST_WARN_INV_DEVICE_ID == pmicStatus)
             {
                 pmic_log("\n*** WARNING: Found Invalid DEVICE ID ***\n\n");
                 pmicStatus = PMIC_ST_SUCCESS;
             }
         }
 
-        if(PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             /* Setup nSLEEP signals */
             pmicStatus = Pmic_fsmDeviceOnRequest(pmicHandle);
         }
 
-        if(PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus)
         {
             pmicStatus = Pmic_intrClr(pmicHandle);
         }
     }
 
-    if(PMIC_ST_SUCCESS != pmicStatus)
+    if (PMIC_ST_SUCCESS != pmicStatus)
     {
         pmic_log("%s(): %d: FAILED with status: %d\n",
-                            __func__, __LINE__,  pmicStatus);
+                 __func__, __LINE__,  pmicStatus);
     }
 
     *pmicCoreHandle = pmicHandle;
@@ -1350,16 +1418,16 @@ int32_t test_pmic_appInit(Pmic_CoreHandle_t **pmicCoreHandle,
 
 void test_pmic_appDeInit(Pmic_CoreHandle_t *pmicCoreHandle)
 {
-    if(PMIC_INTF_SINGLE_I2C == pmicCoreHandle->commMode)
+    if (PMIC_INTF_SINGLE_I2C == pmicCoreHandle->commMode)
     {
         test_pmic_i2c_lld_intf_release(&pmicCoreHandle->pCommHandle);
     }
-    else if(PMIC_INTF_DUAL_I2C == pmicCoreHandle->commMode)
+    else if (PMIC_INTF_DUAL_I2C == pmicCoreHandle->commMode)
     {
         test_pmic_i2c_lld_intf_release(&pmicCoreHandle->pCommHandle);
         test_pmic_i2c_lld_intf_release(&pmicCoreHandle->pQACommHandle);
     }
-    else if(PMIC_INTF_SPI  == pmicCoreHandle->commMode)
+    else if (PMIC_INTF_SPI  == pmicCoreHandle->commMode)
     {
         test_pmic_spi_lld_intf_release(&pmicCoreHandle->pCommHandle);
     }
@@ -1391,55 +1459,64 @@ void tearDown(void)
 /*!
  * \brief   GPIO Interrupt Router Configuration
  */
-void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtrOutIntNum, GPIO_v0_HwAttrs *cfg)
+void GPIO_configIntRouter(uint32_t portNum,
+                          uint32_t pinNum,
+                          uint32_t gpioIntRtrOutIntNum,
+                          GPIO_v0_HwAttrs *cfg)
 {
     GPIO_IntCfg       *intCfg;
     uint32_t           bankNum;
 
-    intCfg = cfg->intCfg;
+    intCfg        = cfg->intCfg;
 
     cfg->baseAddr = CSL_WKUP_GPIO0_BASE;
 
-    bankNum = pinNum/16; /* Each GPIO bank has 16 pins */
+    bankNum       = pinNum / 16; /* Each GPIO bank has 16 pins */
 
     /* WKUP GPIO int router input interrupt is the GPIO bank interrupt */
 #if defined (SOC_J721E)
 #if defined (BUILD_MCU1_0)
-    intCfg[pinNum].intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0 + bankNum;
+    intCfg[pinNum].intNum =
+        CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0 + bankNum;
 #elif defined (BUILD_MCU1_1)
-    intCfg[pinNum].intNum = CSLR_MCU_R5FSS0_CORE1_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_6 + bankNum;
+    intCfg[pinNum].intNum =
+        CSLR_MCU_R5FSS0_CORE1_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_6 + bankNum;
 #elif defined (BUILD_MCU2_0)
-    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_0
-                            + bankNum;
-pmic_log("intCfg[pinNum].intNum: %d\n", intCfg[pinNum].intNum);
+    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_0 +
+                            bankNum;
+    pmic_log("intCfg[pinNum].intNum: %d\n", intCfg[pinNum].intNum);
 #elif defined (BUILD_MCU2_1)
-    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_1
-                            + bankNum;
+    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE1_INTR_R5FSS0_INTROUTER0_OUTL_1 +
+                            bankNum;
 #elif defined (BUILD_MCU3_0)
-    intCfg[pinNum].intNum = CSLR_R5FSS1_CORE0_INTR_R5FSS1_INTROUTER0_OUTL_0
-                            + bankNum;
+    intCfg[pinNum].intNum = CSLR_R5FSS1_CORE0_INTR_R5FSS1_INTROUTER0_OUTL_0 +
+                            bankNum;
 #elif defined (BUILD_MCU3_1)
-    intCfg[pinNum].intNum = CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_1
-                            + bankNum;
+    intCfg[pinNum].intNum = CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_1 +
+                            bankNum;
 #endif
 #elif defined (SOC_J7200)
 #if defined (BUILD_MCU1_0)
-    intCfg[pinNum].intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0 + bankNum;
+    intCfg[pinNum].intNum =
+        CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0 + bankNum;
 #elif defined (BUILD_MCU1_1)
-intCfg[pinNum].intNum = CSLR_MCU_R5FSS0_CORE1_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_3 + bankNum;
+    intCfg[pinNum].intNum =
+        CSLR_MCU_R5FSS0_CORE1_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_3 + bankNum;
 #elif defined (BUILD_MCU2_0)
     /* Added dummy intNum. Need to correct intNum to MCU2_0 */
-    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_16
-                            + bankNum;
+    intCfg[pinNum].intNum =
+        CSLR_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_16 +
+        bankNum;
 #elif defined (BUILD_MCU2_1)
     /* Added dummy intNum. Need to correct intNum to MCU2_1 */
-    intCfg[pinNum].intNum = CSLR_R5FSS0_CORE1_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_16
-                            + bankNum;
+    intCfg[pinNum].intNum =
+        CSLR_R5FSS0_CORE1_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_16 +
+        bankNum;
 #endif
 #endif
 
-    intCfg[pinNum].intcMuxNum = INVALID_INTC_MUX_NUM;
-    intCfg[pinNum].intcMuxInEvent = 0;
+    intCfg[pinNum].intcMuxNum      = INVALID_INTC_MUX_NUM;
+    intCfg[pinNum].intcMuxInEvent  = 0;
     intCfg[pinNum].intcMuxOutEvent = 0;
 }
 
@@ -1472,10 +1549,16 @@ void App_initGPIO(GPIO_CallbackFxn callback)
     gpio_cfg.baseAddr = CSL_WKUP_GPIO0_BASE;
 
 #if defined(SOC_J721E)
-    GPIO_configIntRouter(J7_WAKEUP_GPIO0_PORT_NUM, J7_WAKEUP_GPIO0_9_PIN_NUM, 0, &gpio_cfg);
+    GPIO_configIntRouter(J7_WAKEUP_GPIO0_PORT_NUM,
+                         J7_WAKEUP_GPIO0_9_PIN_NUM,
+                         0,
+                         &gpio_cfg);
 #endif
-# if defined(SOC_J7200)
-    GPIO_configIntRouter(J7_WAKEUP_GPIO0_PORT_NUM, J7_WAKEUP_GPIO0_84_PIN_NUM, 0, &gpio_cfg);
+#if defined(SOC_J7200)
+    GPIO_configIntRouter(J7_WAKEUP_GPIO0_PORT_NUM,
+                         J7_WAKEUP_GPIO0_84_PIN_NUM,
+                         0,
+                         &gpio_cfg);
 #endif
 
     /* Set as the default GPIO init configurations */
@@ -1494,24 +1577,24 @@ void InitMmu(void)
 {
     Osal_initMmuDefault();
 }
+
 #endif
 
-static uint32_t test_pmic_get_unity_testcase_index(
-                                             uint32_t         testId,
-                                             Pmic_Ut_Tests_t *pTest,
-                                             uint32_t         num_testcases)
+static uint32_t test_pmic_get_unity_testcase_index(uint32_t         testId,
+                                                   Pmic_Ut_Tests_t *pTest,
+                                                   uint32_t         num_testcases)
 {
     uint32_t i;
     int32_t status = PMIC_ST_SUCCESS;
 
-    for (i = 0U; ; i++)
+    for (i = 0U;; i++)
     {
-        if(pTest->testId == testId)
+        if (pTest->testId == testId)
         {
             pTest->testValid = true;
             break;
         }
-        else if(i >= num_testcases)
+        else if (i >= num_testcases)
         {
             status = PMIC_ST_ERR_FAIL;
             /* Print test Result */
@@ -1520,6 +1603,7 @@ static uint32_t test_pmic_get_unity_testcase_index(
                                       status,
                                       "Invalid Test ID");
         }
+
         pTest++;
     }
 
@@ -1554,11 +1638,11 @@ static void pmic_testResultUpdate(uint32_t testId,
 {
     uint32_t idx = 0U;
 
-    while(idx < num_testcases)
+    while (idx < num_testcases)
     {
-        if(pTest[idx].testId == testId)
+        if (pTest[idx].testId == testId)
         {
-            pTest[idx].testValid = true;
+            pTest[idx].testValid  = true;
             pTest[idx].testResult = result;
         }
 
@@ -1589,9 +1673,9 @@ void pmic_testResult_init(Pmic_Ut_Tests_t *pTest, uint32_t num_testcases)
 {
     uint32_t idx = 0;
 
-    for(idx = 0; idx < num_testcases; idx++)
+    for (idx = 0; idx < num_testcases; idx++)
     {
-        pTest[idx].testValid = false;
+        pTest[idx].testValid  = false;
         pTest[idx].testResult = PMIC_TEST_RESULT_FAIL;
     }
 }
@@ -1601,25 +1685,25 @@ void pmic_updateTestResults(Pmic_Ut_Tests_t *pTest, uint32_t num_testcases)
     uint32_t idx = 0;
 
     /* Print test Result */
-    for(idx = 0; idx < num_testcases; idx++)
+    for (idx = 0; idx < num_testcases; idx++)
     {
-        if(true == pTest[idx].testValid)
+        if (true == pTest[idx].testValid)
         {
-            if(true == pTest[idx].finalTestValid)
+            if (true == pTest[idx].finalTestValid)
             {
-                if((PMIC_TEST_RESULT_FAIL == pTest[idx].testResult) ||
-                   (PMIC_TEST_RESULT_FAIL == pTest[idx].finalTestResult))
+                if ((PMIC_TEST_RESULT_FAIL == pTest[idx].testResult) ||
+                    (PMIC_TEST_RESULT_FAIL == pTest[idx].finalTestResult))
                 {
                     pTest[idx].finalTestResult = PMIC_TEST_RESULT_FAIL;
                 }
-                else if(PMIC_TEST_RESULT_PASS == pTest[idx].testResult)
+                else if (PMIC_TEST_RESULT_PASS == pTest[idx].testResult)
                 {
                     pTest[idx].finalTestResult = pTest[idx].testResult;
                 }
             }
             else
             {
-                pTest[idx].finalTestValid = pTest[idx].testValid;
+                pTest[idx].finalTestValid  = pTest[idx].testValid;
                 pTest[idx].finalTestResult = pTest[idx].testResult;
             }
         }
@@ -1628,11 +1712,11 @@ void pmic_updateTestResults(Pmic_Ut_Tests_t *pTest, uint32_t num_testcases)
 
 void pmic_printTestResult(Pmic_Ut_Tests_t *pTest, uint32_t num_testcases)
 {
-    uint32_t idx = 0;
-    uint8_t testResult = 0;
+    uint32_t idx        = 0;
+    uint8_t testResult  = 0;
     char *result_str[3] = {"FAIL", "PASS", "IGNORE"};
-    uint32_t testCnt = 0;
-    uint32_t failCnt = 0;
+    uint32_t testCnt    = 0;
+    uint32_t failCnt    = 0;
 
     pmic_log("\n\r");
 
@@ -1640,29 +1724,32 @@ void pmic_printTestResult(Pmic_Ut_Tests_t *pTest, uint32_t num_testcases)
     pmic_log("-----------------------\n\n");
 
     /* Print test Result */
-    for(idx = 0; idx < num_testcases; idx++)
+    for (idx = 0; idx < num_testcases; idx++)
     {
-        if(true == pTest[idx].finalTestValid)
+        if (true == pTest[idx].finalTestValid)
         {
             testResult = pTest[idx].finalTestResult;
-            if(PMIC_TEST_RESULT_FAIL == pTest[idx].finalTestResult)
+
+            if (PMIC_TEST_RESULT_FAIL == pTest[idx].finalTestResult)
             {
                 failCnt++;
             }
-            else if(PMIC_TEST_RESULT_IGNORE == pTest[idx].finalTestResult)
+            else if (PMIC_TEST_RESULT_IGNORE == pTest[idx].finalTestResult)
             {
                 continue;
             }
+
             testCnt++;
             pmic_log("|TEST RESULT|%s|%d|\n",
-                                  result_str[testResult], pTest[idx].testId);
+                     result_str[testResult], pTest[idx].testId);
         }
     }
 
     pmic_log("-----------------------\n");
     pmic_log("%d Tests %d Failures\n",
-                         testCnt, failCnt);
-    if(0U == failCnt)
+             testCnt, failCnt);
+
+    if (0U == failCnt)
     {
         pmic_log("All tests have passed\n");
     }
@@ -1670,7 +1757,6 @@ void pmic_printTestResult(Pmic_Ut_Tests_t *pTest, uint32_t num_testcases)
     {
         pmic_log("Few tests are Failed\n");
     }
-
 }
 
 /*!
@@ -1678,13 +1764,13 @@ void pmic_printTestResult(Pmic_Ut_Tests_t *pTest, uint32_t num_testcases)
  */
 uint64_t print_timeTakenInUsecs(uint64_t t1, const char *str)
 {
-    uint64_t t2 = 0; 
+    uint64_t t2    = 0;
     uint64_t delta = 0;
 
-    t2 = TimerP_getTimeInUsecs();
+    t2    = TimerP_getTimeInUsecs();
     delta = t2 - t1;
 
-    if(NULL != str)
+    if (NULL != str)
     {
         pmic_log("Time taken for %50s: %6d usec\n", str, (uint32_t)delta);
     }
@@ -1717,6 +1803,6 @@ void pmic_print_banner(const char *str)
 #elif defined(SOC_J7200)
              "J7VCL_EVM",
 #endif
-              __TIME__,
-              __DATE__);
+             __TIME__,
+             __DATE__);
 }
