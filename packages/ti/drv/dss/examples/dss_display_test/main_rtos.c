@@ -142,7 +142,7 @@ static void taskFxn(void* a0, void* a1)
 #else
     #if (1U == DISP_APP_TEST_DSI)
         lcdParams.outType  = (uint32_t)APP_OUTPUT_DSI;
-        lcdParams.pixelClk = (uint64_t)74250000u;
+        lcdParams.pixelClk = (uint64_t)36000000u;
         App_configureLCD(lcdParams);
     #elif (1U == DISP_APP_TEST_EDP)
         lcdParams.outType  = (uint32_t)APP_OUTPUT_EDP;
@@ -207,14 +207,23 @@ static void taskFxn(void* a0, void* a1)
                                    TISCI_MSG_FLAG_AOP,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_DSI0,
-                                   TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
-                                   TISCI_MSG_FLAG_AOP,
-                                   SCICLIENT_SERVICE_WAIT_FOREVER);
+#if (1U == DISP_APP_TEST_EDP)    
     retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_EDP0,
                                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                    TISCI_MSG_FLAG_AOP,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif                                   
+#if (1U == DISP_APP_TEST_DSI)
+    retVal += Sciclient_pmSetModuleState(TISCI_DEV_DPHY_TX0,
+                                TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                TISCI_MSG_FLAG_AOP,
+                                SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_DSI0,
+                                TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                TISCI_MSG_FLAG_AOP,
+                                SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
 #endif
 #if(1U == DISP_APP_TEST_OVERLAY_VP_4)
     uint64_t clkFreq = 0U;

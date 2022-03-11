@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -54,11 +54,16 @@
 #if defined (SOC_J721E)
 #include <ti/board/src/j721e_evm/include/board_i2c_io_exp.h>
 #endif
+#if defined (SOC_J721S2)
+#include <ti/board/src/j721s2_evm/include/board_control.h>
+#endif
 #include <dss_display_test.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
+#define DISP_APP_I2C_TIMEOUT 1000U
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -81,6 +86,40 @@ int32_t DispApp_InitI2c(DispApp_Obj *appObj);
 
 I2C_Handle gI2cHandle = NULL;
 
+/* Bridge configuration array for 800x600 resolution.
+ * Tupples represent {Address, Value}.
+ */
+uint8_t gI2cDsiBridgeCfg[][2] = {
+    {0xFF, 0x7},
+    {0x16, 0x1},
+    {0xFF, 0x0},
+    {0x0A, 0x2},
+    {0x10, 0x36},
+    {0x12, 0x2B},
+    {0x13, 0x2B},
+    {0x94, 0x20},
+    {0x0D, 0x1},
+    {0x5A, 0x4},
+    {0x93, 0x10},
+    {0x96, 0x0A},
+    {0x20, 0x20},
+    {0x21, 0x03},
+    {0x22, 0x0},
+    {0x23, 0x0},
+    {0x24, 0x58},
+    {0x25, 0x02},
+    {0x2C, 0x48},
+    {0x2D, 0x00},
+    {0x30, 0x02},
+    {0x31, 0x00},
+    {0x34, 0x80},
+    {0x36, 0x16},
+    {0x38, 0x18},
+    {0x3A, 0x01},
+    {0x5B, 0x0},
+    {0x3C, 0x02},
+    {0x5A, 0x0C},
+};
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -193,6 +232,30 @@ int32_t DispApp_SetBoardMux()
     return (FVID2_SOK);
 }
 
+void DispApp_ErrorRegRead(void)
+{
+    int i=0;
+    uint8_t readVal;
+    I2C_Params i2cParams;
+    I2C_Handle i2cHandle = NULL;
+    I2C_init();
+    I2C_Params_init(&i2cParams);
+    i2cHandle = I2C_open(4, &i2cParams);
+
+    /* Bridge status registers range from address 0xF0 to 0xFF. */
+    printf("\n-----------STARTING REGISTER DUMP-----------\n");
+    for(i = 0xF0; i < 0xFF; i++)
+    {
+        Board_i2c8BitRegRd(i2cHandle,
+        0x2c,
+        i & 0xFF,
+        &readVal,
+        1,
+        DISP_APP_I2C_TIMEOUT);
+        printf("Data at 0x%x is 0x%x...\n", i, readVal);
+    }
+}
+
 int32_t DispApp_InitI2c(DispApp_Obj *appObj)
 {
     int32_t status = FVID2_SOK;
@@ -227,6 +290,102 @@ int32_t DispApp_InitI2c(DispApp_Obj *appObj)
         App_print("\nI2C Open failed!\n");
         status = FVID2_EFAIL;
     }
+#elif defined (SOC_J721S2)
+    uint32_t i=0;
+    I2C_Params i2cParams;
+    I2C_Handle i2cHandle = NULL;
+
+    /* Enable the DSI to eDP bridge. */
+    Board_control(BOARD_CTRL_CMD_ENABLE_DSI2DP_BRIDGE, NULL);
+    Osal_delay(1000);
+    App_print("DSI to EDP bridge is enabled...\n");
+
+    /* Do the i2c driver init */
+    I2C_init();
+
+    /* Initializes the I2C Parameters */
+    I2C_Params_init(&i2cParams);
+    i2cHandle = I2C_open(4, &i2cParams);
+    if(i2cHandle == NULL)
+    {
+        printf("\nI2C Open failed!\n");
+        return -1;
+    }
+
+    uint8_t readVal;
+    for(i=0; i<sizeof(gI2cDsiBridgeCfg)/sizeof(gI2cDsiBridgeCfg[0]); i++)
+    {
+        /* Read the value at bridge address. */
+        Board_i2c8BitRegRd(i2cHandle,
+                            0x2c,
+                            gI2cDsiBridgeCfg[i][0] & 0xFF,
+                            &readVal,
+                            1,
+                            DISP_APP_I2C_TIMEOUT);
+        Osal_delay(100);
+        printf("Before Write operation, data at 0x%x is 0x%x...\n",gI2cDsiBridgeCfg[i][0], readVal);
+        printf("Writing at 0x%x the value of 0x%x...\n", gI2cDsiBridgeCfg[i][0], gI2cDsiBridgeCfg[i][1]);
+
+        /* Write the required value at bridge address to configure the bridge.. */
+        Board_i2c8BitRegWr(i2cHandle,
+                            0x2c,
+                            gI2cDsiBridgeCfg[i][0] & 0xFF,
+                            &(gI2cDsiBridgeCfg[i][1]),
+                            1,
+                            DISP_APP_I2C_TIMEOUT);
+        Osal_delay(100);
+
+        /* Read back the value after writing at bridge address. */
+        Board_i2c8BitRegRd(i2cHandle,
+                            0x2c,
+                            gI2cDsiBridgeCfg[i][0] & 0xFF,
+                            &readVal,
+                            1,
+                            DISP_APP_I2C_TIMEOUT);
+        Osal_delay(100);
+        printf("After Write operation, data at 0x%x is 0x%x...\n\n",gI2cDsiBridgeCfg[i][0], readVal);
+
+        /* Wait untill the DP_PLL has been locked. */
+        if(gI2cDsiBridgeCfg[i][0] == 0x0d)
+        {
+            Board_i2c8BitRegRd(i2cHandle,
+                            0x2c,
+                            0x0a,
+                            &readVal,
+                            1,
+                            DISP_APP_I2C_TIMEOUT);
+            while( (readVal & 0x80) == 0x00){
+                Board_i2c8BitRegRd(i2cHandle,
+                            0x2c,
+                            0x0a,
+                            &readVal,
+                            1,
+                            DISP_APP_I2C_TIMEOUT);
+            }
+        }
+
+        /* Main link should not be off. So keep waiting as long as the main links are off. */
+        if(gI2cDsiBridgeCfg[i][0] == 0x96)
+        {
+            Board_i2c8BitRegRd(i2cHandle,
+                            0x2c,
+                            0x96,
+                            &readVal,
+                            1,
+                            DISP_APP_I2C_TIMEOUT);
+            while( (readVal) == 0x00){
+                Board_i2c8BitRegRd(i2cHandle,
+                            0x2c,
+                            0x96,
+                            &readVal,
+                            1,
+                            DISP_APP_I2C_TIMEOUT);
+            }
+        }
+    }
+    
+    I2C_close(i2cHandle);
+    status = FVID2_SOK;
 #endif
     return (status);
 }
@@ -234,7 +393,6 @@ int32_t DispApp_InitI2c(DispApp_Obj *appObj)
 int32_t DispApp_SetDsiSerdesCfg(DispApp_Obj *appObj)
 {
     int32_t status = FVID2_SOK;
-#if defined (SOC_J721E)
     uint32_t cnt, clientAddr;
 
     status = DispApp_SetBoardMux();
@@ -244,6 +402,7 @@ int32_t DispApp_SetDsiSerdesCfg(DispApp_Obj *appObj)
         status = DispApp_InitI2c(appObj);
     }
 
+#if defined (SOC_J721E)
     if (FVID2_SOK == status)
     {
         for (cnt = 0; cnt < sizeof(serdesConfig)/4; cnt ++)

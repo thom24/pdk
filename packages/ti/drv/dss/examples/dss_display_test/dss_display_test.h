@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -119,7 +119,7 @@ extern "C" {
 
 #define DISP_APP_TEST_MULTISYNC           (0U)
 
-/**< Enable DSI output, configures DSI for 1280x800 resolution and
+/**< Enable DSI output, configures DSI for 800x600 resolution and
  *   uses LCD AUO display for displaying YUV422 image */
 #define DISP_APP_TEST_DSI                 (0U)
 
@@ -128,8 +128,8 @@ extern "C" {
 #define DISP_APP_LCD_WIDTH              (1280U)
 #define DISP_APP_LCD_HEIGHT             (800U)
 #elif (1u == DISP_APP_TEST_DSI)
-#define DISP_APP_LCD_WIDTH              (1280U)
-#define DISP_APP_LCD_HEIGHT             (800U)
+#define DISP_APP_LCD_WIDTH              (800U)
+#define DISP_APP_LCD_HEIGHT             (600U)
 #elif (DISP_APP_USE_TEST_PARAMS == DISP_APP_BGR24)
 #define DISP_APP_LCD_WIDTH              (1280U)
 #define DISP_APP_LCD_HEIGHT             (720U)
@@ -264,6 +264,7 @@ typedef struct
     Dss_DctrlOldiParams oldiParams;
     /**< OLDI Params */
 #endif
+    Dss_DctrlDsiParams dsiPrms;
 } DispApp_Obj;
 
 /* ========================================================================== */
@@ -278,6 +279,7 @@ int32_t DispApp_SetDsiSerdesCfg(DispApp_Obj *appObj);
 /* ========================================================================== */
 
 void App_print(const char *format, ...);
+void DispApp_ErrorRegRead(void);
 
 /* ========================================================================== */
 /*                              Global Variables                              */
@@ -1391,12 +1393,20 @@ static const DispApp_TestParams gDispAppTestParams=
     /* X Position */
     {
         0U,
+#if (1==DISP_APP_TEST_DSI)
+        0U
+#else
         1440U
+#endif
     },
     /* Y position */
     {
         0U,
+#if (1==DISP_APP_TEST_DSI)
+        0U
+#else
         720U
+#endif
     },
 #endif
 #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)

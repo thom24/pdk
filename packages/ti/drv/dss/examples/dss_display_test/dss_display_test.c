@@ -146,7 +146,8 @@ int32_t Dss_displayTest(void)
 #endif
 
 #if (1U == DISP_APP_TEST_DSI)
-    retVal = DispApp_SetDsiSerdesCfg(&gDispApp_Obj);
+    gDispApp_Obj.dsiPrms.numOfLanes = 2;
+    gDispApp_Obj.dsiPrms.laneSpeedInKbps = 432000;
 
     if (FVID2_SOK == retVal)
     {
@@ -260,6 +261,9 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
     /* Create driver */
     DispApp_create(appObj);
 
+#if (1==DISP_APP_TEST_DSI)
+    DispApp_SetDsiSerdesCfg(&gDispApp_Obj);
+#endif
     App_print("Starting display ... !!!\r\n");
     App_print("Display in progress ... DO NOT HALT !!!\r\n");
 
@@ -275,6 +279,9 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
             break;
         }
     }
+#if (1==DISP_APP_TEST_DSI) && (defined (SOC_J721S2) || defined (SOC_J784S4))
+    DispApp_ErrorRegRead();
+#endif
 
     gTestStartTime = (TimerP_getTimeInUsecs() / 1000U);
 
@@ -461,19 +468,21 @@ static void DispApp_create(DispApp_Obj *appObj)
     vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_CUSTOM;
     vpParams->lcdOpTimingCfg.mInfo.width = DISP_APP_LCD_WIDTH;
     vpParams->lcdOpTimingCfg.mInfo.height = DISP_APP_LCD_HEIGHT;
-    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 74250000U;
-    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch =110U;
-    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 220U;
-    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 40U;
-    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 5U;
-    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 20U;
-    vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 5U;
+    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 36000000U;
+    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 24U;
+    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 128U;
+    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 72U;
+    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 1U;
+    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 22U;
+    vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 2U;
 
     vpParams->lcdPolarityCfg.pixelClkPolarity = FVID2_EDGE_POL_RISING;
 #endif
+#if (1==DISP_APP_TEST_EDP)
     retVal = Fvid2_control(appObj->dctrlHandle, IOCTL_DSS_DCTRL_IS_DP_CONNECTED, &dpConnectedCmdArg, NULL);
     if ((FVID2_SOK == retVal) && (TRUE == dpConnectedCmdArg))
     {
+#endif
         DispApp_configDctrl(appObj);
         for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
         {
@@ -538,11 +547,13 @@ static void DispApp_create(DispApp_Obj *appObj)
         {
             App_print("Display create complete!!\r\n");
         }
+#if(1U==DISP_APP_TEST_EDP)     
     }
     else
     {
         printf("The display cable is not connected!!\n");
     }
+#endif  
     return;
 }
 
