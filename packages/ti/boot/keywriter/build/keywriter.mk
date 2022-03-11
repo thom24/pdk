@@ -20,8 +20,8 @@ INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/common
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/power_test
 INCDIR                      += $(KEYWRITER_APP_DIR)/soc/$(SOC)
 
-PACKAGE_SRCS_COMMON          = . ../binaries ../boardcfgs ../scripts ../soc
-PACKAGE_SRCS_COMMON         += ../tifs_bin ../x509cert ../init.asm ../main.c
+PACKAGE_SRCS_COMMON          = . ../boardcfgs/$(SOC) ../scripts ../soc/common ../soc/$(SOC)
+PACKAGE_SRCS_COMMON         += ../tifs_bin/$(SOC) ../x509cert ../init.asm ../main.c
 PACKAGE_SRCS_COMMON         += ../keywriter_component.mk ../main.h
 
 # List all the external components/interfaces, whose interface header files
