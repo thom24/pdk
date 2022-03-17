@@ -631,6 +631,8 @@ void vApplicationIdleHook( void )
 
 int _system_pre_init(void)
 {
+    /* WA for K3_OPEN_SI-457 */
+    __sa_set_cr(0, __sa_get_cr(1));
     return 1;
 }
 
