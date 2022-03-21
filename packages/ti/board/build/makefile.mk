@@ -173,6 +173,7 @@ PACKAGE_SRCS_COMMON += Settings.xdc.xdt utils.xs
 ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm))
 PACKAGE_SRCS_COMMON += src/board.c src/boardStub.c src/Module.xs
 PACKAGE_SRCS_COMMON += src/src_files_lld.mk src/src_files_starterware.mk
+PACKAGE_SRCS_COMMON += diag/common/$(SOC)
 else
 PACKAGE_SRCS_COMMON += src
 endif
