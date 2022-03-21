@@ -47,7 +47,6 @@ extern "C" {
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
 
 #if defined(SOC_AM65XX)
-#include <ti/board/diag/common/am65xx/diag_common_cfg.h>
 #include <ti/board/src/evmKeystone3/include/board_i2c_io_exp.h>
 #endif
 

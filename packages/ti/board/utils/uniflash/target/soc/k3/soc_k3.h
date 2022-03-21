@@ -48,7 +48,6 @@ extern "C" {
 
 #include <ti/board/board.h>
 #include <ti/csl/soc.h>
-#include <diag_common_cfg.h>
 
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/src/ip/rat/V0/csl_rat.h>

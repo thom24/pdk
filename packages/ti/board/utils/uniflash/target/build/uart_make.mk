@@ -38,11 +38,9 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-# Board diag parameters which can be controlled outside this makefile
+# Uniflash parameters which can be controlled outside this makefile
 UNIFLASH ?= uart
 PROFILE ?= release
-TESTMODE ?= FUNCTIONAL_TEST
-MODENAME ?=
 BOARD_UTILS_CFLAGS ?=
 
 HS_SUFFIX=
@@ -69,12 +67,8 @@ SRCDIR = $(UNIFLASH_BASE_DIR)/src
 INCDIR = $(PDK_BOARD_COMP_PATH) $(UNIFLASH_BASE_DIR)/src $(UNIFLASH_BASE_DIR)/include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/include $(PDK_BOARD_COMP_PATH)/src/$(BOARD) $(PDK_BOARD_COMP_PATH)/src/flash $(PDK_CSL_COMP_PATH)
 
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm))
-  SRCDIR += $(UNIFLASH_BASE_DIR)/soc/k3 $(UNIFLASH_BASE_DIR)/src/ospi $(UNIFLASH_BASE_DIR)/src/qspi $(UNIFLASH_BASE_DIR)/src/hyperflash $(UNIFLASH_BASE_DIR)/src/emmc $(PDK_BOARD_COMP_PATH)/diag/common/$(SOC)
-  INCDIR += $(UNIFLASH_BASE_DIR)/soc/k3 $(UNIFLASH_BASE_DIR)/src/ospi $(UNIFLASH_BASE_DIR)/src/qspi $(UNIFLASH_BASE_DIR)/src/hyperflash $(UNIFLASH_BASE_DIR)/src/emmc $(PDK_BOARD_COMP_PATH)/diag/common/$(SOC)
-  ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
-    SRCDIR += $(PDK_BOARD_COMP_PATH)/diag/common/am65xx
-    INCDIR += $(PDK_BOARD_COMP_PATH)/diag/common/am65xx
-  endif
+  SRCDIR += $(UNIFLASH_BASE_DIR)/soc/k3 $(UNIFLASH_BASE_DIR)/src/ospi $(UNIFLASH_BASE_DIR)/src/qspi $(UNIFLASH_BASE_DIR)/src/hyperflash $(UNIFLASH_BASE_DIR)/src/emmc
+  INCDIR += $(UNIFLASH_BASE_DIR)/soc/k3 $(UNIFLASH_BASE_DIR)/src/ospi $(UNIFLASH_BASE_DIR)/src/qspi $(UNIFLASH_BASE_DIR)/src/hyperflash $(UNIFLASH_BASE_DIR)/src/emmc
 endif
 
 ifeq ($(BOARD), $(filter $(BOARD), tpr12_evm awr294x_evm))
