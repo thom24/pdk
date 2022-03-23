@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+ * Copyright (C) 2012-2022 Cadence Design Systems, Inc.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -33,24 +33,26 @@
  ******************************************************************************
  */
 
+/* parasoft-begin-suppress METRICS-36-3 "A function should not be called from more than 5 different functions",  DRV-3823 */
+
 #include "dp_sd0801_if.h"
 #include "dp_sd0801_priv.h"
 #include "dp_sd0801_sanity.h"
 #include "dp_regs.h"
+
+#include "dp_sd0801_cfg.h"
 
 #include "cdn_log.h"
 
 #include "dp_sd0801_internal.h"
 #include "dp_sd0801_spec.h"
 
-typedef struct phyRegValue_t
-{
+typedef struct phyRegValue_t {
     uint32_t addr;
     uint16_t val;
 } phyRegValue;
 
-typedef enum
-{
+typedef enum {
     POWERSTATE_A0 = 0U,
     /* Powerstate A1 is unused */
     POWERSTATE_A2 = 2U,
@@ -79,315 +81,123 @@ bool isPhySupported(const DP_SD0801_PrivateData* pD)
     return retVal;
 }
 
-#ifdef REF_CLK_19_2MHz
+/**
+ * Used to convert number of lanes to bit-field indicator
+ */
+static uint8_t getLaneCfg(uint8_t mLane, uint8_t laneCount) {
 
-#define TxRcvdetStTmrVal 0x0780 /* Avoids MISRA C violation. */
+    uint8_t laneCfg = 0U;
+
+    if ((laneCount <= DP_SD0801_MAX_LANE_COUNT) && (laneCount > 0U)) {
+        laneCfg = (uint8_t)((1U << (laneCount)) - 1U);
+    }
+
+    /* laneCfg for non-zero mLane */
+    if (mLane < DP_SD0801_MAX_LANE_COUNT) {
+        laneCfg = laneCfg << mLane;
+    }
+    return laneCfg;
+}
+
+/** Returns base address of common PLL register space */
+static inline uint32_t getPllCmnM0Base(DP_SD0801_Pll pll) {
+    uint32_t pllBase = (pll == DP_SD0801_PLL_0) ? CMN_PLL0_MODE0_BASE : CMN_PLL1_MODE0_BASE;
+    return pllBase;
+}
+
+/** Returns base address of diagnostic PLL register space */
+static inline uint32_t getPllPdiagM0Base(DP_SD0801_Pll pll) {
+    uint32_t pllBase = (pll == DP_SD0801_PLL_0) ? CMN_PLL0_PDIAG_MODE0_BASE : CMN_PLL1_PDIAG_MODE0_BASE;
+    return pllBase;
+}
+
+static void configurePhyPmaPllPdiagCmnCfg(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll) {
+
+    /* PLL diagnostic regs */
+    static const phyRegValue PhyPmaPllPdiagCmnCfg[] = {
+        {.addr = CMN_PDIAG_PLL_CP_PADJ_M0_OFFSET, .val = CMN_PDIAG_PLL_CP_PADJ_M0_VAL},
+        {.addr = CMN_PDIAG_PLL_CP_IADJ_M0_OFFSET, .val = CMN_PDIAG_PLL_CP_IADJ_M0_VAL},
+        {.addr = CMN_PDIAG_PLL_FILT_PADJ_M0_OFFSET, .val = CMN_PDIAG_PLL_FILT_PADJ_M0_VAL}
+    };
+
+    uint32_t i, regCount;
+
+    uint32_t pllPdiagBase = getPllPdiagM0Base(pll);
+
+    /* Write common values to PLL diag registers, for both (PLL 0/1) */
+    regCount = (uint32_t)sizeof(PhyPmaPllPdiagCmnCfg) / (uint32_t)sizeof(phyRegValue);
+
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllPdiagBase + PhyPmaPllPdiagCmnCfg[i].addr), PhyPmaPllPdiagCmnCfg[i].val);
+    }
+}
+
+static void configurePhyPmaPllCmnCfg(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll) {
+
+    /* PLL settings for all VCO rates */
+    static const phyRegValue PhyPmaPllCmnCfg[] = {
+        {.addr = CMN_PLL_DSM_DIAG_M0_OFFSET, .val = CMN_PLL_DSM_DIAG_M0_VAL},
+        {.addr = CMN_PLL_VCOCAL_INIT_TMR_OFFSET, .val = CMN_PLL_VCOCAL_INIT_TMR_VAL},
+        {.addr = CMN_PLL_VCOCAL_ITER_TMR_OFFSET, .val = CMN_PLL_VCOCAL_ITER_TMR_VAL},
+        {.addr = CMN_PLL_VCOCAL_REFTIM_START_OFFSET, .val = CMN_PLL_VCOCAL_REFTIM_START_VAL},
+        {.addr = CMN_PLL_VCOCAL_TCTRL_OFFSET, .val = CMN_PLL_VCOCAL_TCTRL_VAL}
+    };
+
+    uint32_t i, regCount;
+
+    uint32_t pllBase = getPllCmnM0Base(pll);
+
+    /* Write common values to PLL register, for both (PLL 0/1) */
+    regCount = (uint32_t)sizeof(PhyPmaPllCmnCfg) / (uint32_t)sizeof(phyRegValue);
+
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllBase + PhyPmaPllCmnCfg[i].addr), PhyPmaPllCmnCfg[i].val);
+    }
+
+    configurePhyPmaPllPdiagCmnCfg(pD, pll);
+}
 
 /* parasoft-begin-suppress METRICS-39-3 "The value of VOCF metric for a function should not be higher than 4, DRV-3852" */
 static void configurePhyPmaCmnCfg(const DP_SD0801_PrivateData* pD)
 {
-    /* Configuring for 19.2 MHz reference clock */
     /* Values of registers to write are taken from sd0801 PHY programming guide. */
-    static const phyRegValue PhyPmaCmnCfg19[] = {
-        /* Refclock Registers */
-        {.addr = CMN_SSM_BIAS_TMR, .val = 0x0014},
-        {.addr = CMN_PLLSM0_PLLPRE_TMR, .val = 0x0027},
-        {.addr = CMN_PLLSM0_PLLLOCK_TMR, .val = 0x00A1},
-        {.addr = CMN_PLLSM1_PLLPRE_TMR, .val = 0x0027},
-        {.addr = CMN_PLLSM1_PLLLOCK_TMR, .val = 0x00A1},
-        {.addr = CMN_BGCAL_INIT_TMR, .val = 0x0060},
-        {.addr = CMN_BGCAL_ITER_TMR, .val = 0x0060},
-        {.addr = CMN_IBCAL_INIT_TMR, .val = 0x0014},
-        {.addr = CMN_TXPUCAL_INIT_TMR, .val = 0x0018},
-        {.addr = CMN_TXPUCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_TXPDCAL_INIT_TMR, .val = 0x0018},
-        {.addr = CMN_TXPDCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_RXCAL_INIT_TMR, .val = 0x0240},
-        {.addr = CMN_RXCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_SD_CAL_INIT_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_ITER_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_REFTIM_START, .val = 0x000B},
-        {.addr = CMN_SD_CAL_PLLCNT_START, .val = 0x0137},
-        /* PLL Registers */
-        {.addr = CMN_PDIAG_PLL0_CP_PADJ_M0, .val = 0x0509},
-        {.addr = CMN_PDIAG_PLL0_CP_IADJ_M0, .val = 0x0F00},
-        {.addr = CMN_PDIAG_PLL0_FILT_PADJ_M0, .val = 0x0F08},
-        {.addr = CMN_PLL0_DSM_DIAG_M0, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_INIT_TMR, .val = 0x00C0},
-        {.addr = CMN_PLL0_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_REFTIM_START, .val = 0x0260},
-        {.addr = CMN_PLL0_VCOCAL_TCTRL, .val = 0x0003},
-#ifdef HAVE_CMN_PLL1
-        {.addr = CMN_PDIAG_PLL1_CP_PADJ_M0, .val = 0x0509},
-        {.addr = CMN_PDIAG_PLL1_CP_IADJ_M0, .val = 0x0F00},
-        {.addr = CMN_PDIAG_PLL1_FILT_PADJ_M0, .val = 0x0F08},
-        {.addr = CMN_PLL1_DSM_DIAG_M0, .val = 0x0004},
-        {.addr = CMN_PLL1_VCOCAL_INIT_TMR, .val = 0x00C0},
-        {.addr = CMN_PLL1_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL1_VCOCAL_REFTIM_START, .val = 0x0260},
-        {.addr = CMN_PLL1_VCOCAL_TCTRL, .val = 0x0003},
-#endif
+    static const phyRegValue PhyPmaCmnCfg[] = {
+        /* Startup state machine registers */
+        {.addr = CMN_SSM_BIAS_TMR, .val = CMN_SSM_BIAS_TMR_VAL},
+        /* PLL 0 control state machine registers */
+        {.addr = CMN_PLLSM0_PLLPRE_TMR, .val = CMN_PLLSM0_PLLPRE_TMR_VAL},
+        {.addr = CMN_PLLSM0_PLLLOCK_TMR, .val = CMN_PLLSM0_PLLLOCK_TMR_VAL},
+        /* PLL 1 control state machine registers */
+        {.addr = CMN_PLLSM1_PLLPRE_TMR, .val = CMN_PLLSM1_PLLPRE_TMR_VAL},
+        {.addr = CMN_PLLSM1_PLLLOCK_TMR, .val = CMN_PLLSM1_PLLLOCK_TMR_VAL},
+        /* Bandgap calibration registers */
+        {.addr = CMN_BGCAL_INIT_TMR, .val = CMN_BGCAL_INIT_TMR_VAL},
+        {.addr = CMN_BGCAL_ITER_TMR, .val = CMN_BGCAL_ITER_TMR_VAL},
+        /* External bias current calibration registers */
+        {.addr = CMN_IBCAL_INIT_TMR, .val = CMN_IBCAL_INIT_TMR_VAL},
+        /* Resistor calibration registers */
+        {.addr = CMN_TXPUCAL_INIT_TMR, .val = CMN_TXPUCAL_INIT_TMR_VAL},
+        {.addr = CMN_TXPUCAL_ITER_TMR, .val = CMN_TXPUCAL_ITER_TMR_VAL},
+        {.addr = CMN_TXPDCAL_INIT_TMR, .val = CMN_TXPDCAL_INIT_TMR_VAL},
+        {.addr = CMN_TXPDCAL_ITER_TMR, .val = CMN_TXPDCAL_ITER_TMR_VAL},
+        {.addr = CMN_RXCAL_INIT_TMR, .val = CMN_RXCAL_INIT_TMR_VAL},
+        {.addr = CMN_RXCAL_ITER_TMR, .val = CMN_RXCAL_ITER_TMR_VAL},
+        /* Signal detect clock calibration registers */
+        {.addr = CMN_SD_CAL_INIT_TMR, .val = CMN_SD_CAL_INIT_TMR_VAL},
+        {.addr = CMN_SD_CAL_ITER_TMR, .val = CMN_SD_CAL_ITER_TMR_VAL},
+        {.addr = CMN_SD_CAL_REFTIM_START, .val = CMN_SD_CAL_REFTIM_START_VAL},
+        {.addr = CMN_SD_CAL_PLLCNT_START, .val = CMN_SD_CAL_PLLCNT_START_VAL}
     };
+
     uint32_t i, regCount;
-    regCount = (uint32_t)sizeof(PhyPmaCmnCfg19) / (uint32_t)sizeof(phyRegValue);
-    for (i = 0; i < regCount; i++)
-    {
-        afeWrite(pD, PhyPmaCmnCfg19[i].addr, PhyPmaCmnCfg19[i].val);
+    regCount = (uint32_t)sizeof(PhyPmaCmnCfg) / (uint32_t)sizeof(phyRegValue);
+
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, PhyPmaCmnCfg[i].addr, PhyPmaCmnCfg[i].val);
     }
+
 }
 /* parasoft-end-suppress METRICS-39-3 */
-
-#elif defined REF_CLK_20MHz
-
-#define TxRcvdetStTmrVal 0x07D0
-
-/* parasoft-begin-suppress METRICS-39-3 "The value of VOCF metric for a function should not be higher than 4, DRV-3852" */
-static void configurePhyPmaCmnCfg(const DP_SD0801_PrivateData* pD)
-{
-    /* Configuring for 20 MHz reference clock */
-    /* Values of registers to write are taken from sd0801 PHY programming guide. */
-    static const phyRegValue PhyPmaCmnCfg20[] = {
-        /* Refclock Registers */
-        {.addr = CMN_SSM_BIAS_TMR, .val = 0x0014},
-        {.addr = CMN_PLLSM0_PLLPRE_TMR, .val = 0x0028},
-        {.addr = CMN_PLLSM0_PLLLOCK_TMR, .val = 0x00A8},
-        {.addr = CMN_PLLSM1_PLLPRE_TMR, .val = 0x0028},
-        {.addr = CMN_PLLSM1_PLLLOCK_TMR, .val = 0x00A8},
-        {.addr = CMN_BGCAL_INIT_TMR, .val = 0x0064},
-        {.addr = CMN_BGCAL_ITER_TMR, .val = 0x0064},
-        {.addr = CMN_IBCAL_INIT_TMR, .val = 0x0014},
-        {.addr = CMN_TXPUCAL_INIT_TMR, .val = 0x0018},
-        {.addr = CMN_TXPUCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_TXPDCAL_INIT_TMR, .val = 0x0018},
-        {.addr = CMN_TXPDCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_RXCAL_INIT_TMR, .val = 0x0258},
-        {.addr = CMN_RXCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_SD_CAL_INIT_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_ITER_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_REFTIM_START, .val = 0x000B},
-        {.addr = CMN_SD_CAL_PLLCNT_START, .val = 0x012B},
-        /* PLL Registers */
-        {.addr = CMN_PDIAG_PLL0_CP_PADJ_M0, .val = 0x0509},
-        {.addr = CMN_PDIAG_PLL0_CP_IADJ_M0, .val = 0x0F00},
-        {.addr = CMN_PDIAG_PLL0_FILT_PADJ_M0, .val = 0x0F08},
-        {.addr = CMN_PLL0_DSM_DIAG_M0, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_INIT_TMR, .val = 0x00C8},
-        {.addr = CMN_PLL0_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL1_VCOCAL_INIT_TMR, .val = 0x00C8},
-        {.addr = CMN_PLL1_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_REFTIM_START, .val = 0x0279},
-        {.addr = CMN_PLL0_VCOCAL_TCTRL, .val = 0x0003},
-    };
-    uint32_t i, regCount;
-    regCount = (uint32_t)sizeof(PhyPmaCmnCfg20) / (uint32_t)sizeof(phyRegValue);
-    for (i = 0; i < regCount; i++)
-    {
-        afeWrite(pD, PhyPmaCmnCfg20[i].addr, PhyPmaCmnCfg20[i].val);
-    }
-}
-/* parasoft-end-suppress METRICS-39-3 */
-
-#elif defined REF_CLK_24MHz
-
-#define TxRcvdetStTmrVal 0x0960
-
-/* parasoft-begin-suppress METRICS-39-3 "The value of VOCF metric for a function should not be higher than 4, DRV-3852" */
-static void configurePhyPmaCmnCfg(const DP_SD0801_PrivateData* pD)
-{
-    /* Configuring for 24 MHz reference clock */
-    /* Values of registers to write are taken from sd0801 PHY programming guide. */
-    static const phyRegValue PhyPmaCmnCfg24[] = {
-        /* Refclock Registers */
-        {.addr = CMN_SSM_BIAS_TMR, .val = 0x0018},
-        {.addr = CMN_PLLSM0_PLLPRE_TMR, .val = 0x0030},
-        {.addr = CMN_PLLSM0_PLLLOCK_TMR, .val = 0x00C9},
-        {.addr = CMN_PLLSM1_PLLPRE_TMR, .val = 0x0030},
-        {.addr = CMN_PLLSM1_PLLLOCK_TMR, .val = 0x00C9},
-        {.addr = CMN_BGCAL_INIT_TMR, .val = 0x0078},
-        {.addr = CMN_BGCAL_ITER_TMR, .val = 0x0078},
-        {.addr = CMN_IBCAL_INIT_TMR, .val = 0x0018},
-        {.addr = CMN_TXPUCAL_INIT_TMR, .val = 0x001D},
-        {.addr = CMN_TXPUCAL_ITER_TMR, .val = 0x0006},
-        {.addr = CMN_TXPDCAL_INIT_TMR, .val = 0x001D},
-        {.addr = CMN_TXPDCAL_ITER_TMR, .val = 0x0006},
-        {.addr = CMN_RXCAL_INIT_TMR, .val = 0x02D0},
-        {.addr = CMN_RXCAL_ITER_TMR, .val = 0x0006},
-        {.addr = CMN_SD_CAL_INIT_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_ITER_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_REFTIM_START, .val = 0x000E},
-        {.addr = CMN_SD_CAL_PLLCNT_START, .val = 0x0137},
-        /* PLL Registers */
-        {.addr = CMN_PDIAG_PLL0_CP_PADJ_M0, .val = 0x0509},
-        {.addr = CMN_PDIAG_PLL0_CP_IADJ_M0, .val = 0x0F00},
-        {.addr = CMN_PDIAG_PLL0_FILT_PADJ_M0, .val = 0x0F08},
-        {.addr = CMN_PLL0_DSM_DIAG_M0, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_INIT_TMR, .val = 0x00F0},
-        {.addr = CMN_PLL0_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL1_VCOCAL_INIT_TMR, .val = 0x00F0},
-        {.addr = CMN_PLL1_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_REFTIM_START, .val = 0x02F8},
-        {.addr = CMN_PLL0_VCOCAL_TCTRL, .val = 0x0003},
-    };
-    uint32_t i, regCount;
-    regCount = (uint32_t)sizeof(PhyPmaCmnCfg24) / (uint32_t)sizeof(phyRegValue);
-    for (i = 0; i < regCount; i++)
-    {
-        afeWrite(pD, PhyPmaCmnCfg24[i].addr, PhyPmaCmnCfg24[i].val);
-    }
-}
-/* parasoft-end-suppress METRICS-39-3 */
-
-#elif defined REF_CLK_26MHz
-
-#define TxRcvdetStTmrVal 0x0A28
-
-/* parasoft-begin-suppress METRICS-39-3 "The value of VOCF metric for a function should not be higher than 4, DRV-3852" */
-static void configurePhyPmaCmnCfg(const DP_SD0801_PrivateData* pD)
-{
-    /* Configuring for 26 MHz reference clock */
-    /* Values of registers to write are taken from sd0801 PHY programming guide. */
-    static const phyRegValue PhyPmaCmnCfg26[] = {
-        /* Refclock Registers */
-        {.addr = CMN_SSM_BIAS_TMR, .val = 0x001A},
-        {.addr = CMN_PLLSM0_PLLPRE_TMR, .val = 0x0034},
-        {.addr = CMN_PLLSM0_PLLLOCK_TMR, .val = 0x00DA},
-        {.addr = CMN_PLLSM1_PLLPRE_TMR, .val = 0x0034},
-        {.addr = CMN_PLLSM1_PLLLOCK_TMR, .val = 0x00DA},
-        {.addr = CMN_BGCAL_INIT_TMR, .val = 0x0082},
-        {.addr = CMN_BGCAL_ITER_TMR, .val = 0x0082},
-        {.addr = CMN_IBCAL_INIT_TMR, .val = 0x001A},
-        {.addr = CMN_TXPUCAL_INIT_TMR, .val = 0x0020},
-        {.addr = CMN_TXPUCAL_ITER_TMR, .val = 0x0007},
-        {.addr = CMN_TXPDCAL_INIT_TMR, .val = 0x0020},
-        {.addr = CMN_TXPDCAL_ITER_TMR, .val = 0x0007},
-        {.addr = CMN_RXCAL_INIT_TMR, .val = 0x030C},
-        {.addr = CMN_RXCAL_ITER_TMR, .val = 0x0007},
-        {.addr = CMN_SD_CAL_INIT_TMR, .val = 0x0003},
-        {.addr = CMN_SD_CAL_ITER_TMR, .val = 0x0003},
-        {.addr = CMN_SD_CAL_REFTIM_START, .val = 0x000F},
-        {.addr = CMN_SD_CAL_PLLCNT_START, .val = 0x0132},
-        /* PLL Registers */
-        {.addr = CMN_PDIAG_PLL0_CP_PADJ_M0, .val = 0x0509},
-        {.addr = CMN_PDIAG_PLL0_CP_IADJ_M0, .val = 0x0F00},
-        {.addr = CMN_PDIAG_PLL0_FILT_PADJ_M0, .val = 0x0F08},
-        {.addr = CMN_PLL0_DSM_DIAG_M0, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_INIT_TMR, .val = 0x0104},
-        {.addr = CMN_PLL0_VCOCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_PLL1_VCOCAL_INIT_TMR, .val = 0x0104},
-        {.addr = CMN_PLL1_VCOCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_PLL0_VCOCAL_REFTIM_START, .val = 0x0337},
-        {.addr = CMN_PLL0_VCOCAL_TCTRL, .val = 0x0003},
-    };
-    uint32_t i, regCount;
-    regCount = (uint32_t)sizeof(PhyPmaCmnCfg26) / (uint32_t)sizeof(phyRegValue);
-    for (i = 0; i < regCount; i++)
-    {
-        afeWrite(pD, PhyPmaCmnCfg26[i].addr, PhyPmaCmnCfg26[i].val);
-    }
-}
-/* parasoft-end-suppress METRICS-39-3 */
-
-#elif defined REF_CLK_27MHz
-
-#define TxRcvdetStTmrVal 0x0A8C
-
-/* parasoft-begin-suppress METRICS-39-3 "The value of VOCF metric for a function should not be higher than 4, DRV-3852" */
-static void configurePhyPmaCmnCfg(const DP_SD0801_PrivateData* pD)
-{
-    /* Configuring for 27 MHz reference clock */
-    /* Values of registers to write are taken from sd0801 PHY programming guide. */
-    static const phyRegValue PhyPmaCmnCfg27[] = {
-        /* Refclock Registers */
-        {.addr = CMN_SSM_BIAS_TMR, .val = 0x001B},
-        {.addr = CMN_PLLSM0_PLLPRE_TMR, .val = 0x0036},
-        {.addr = CMN_PLLSM0_PLLLOCK_TMR, .val = 0x00E2},
-        {.addr = CMN_PLLSM1_PLLPRE_TMR, .val = 0x0036},
-        {.addr = CMN_PLLSM1_PLLLOCK_TMR, .val = 0x00E2},
-        {.addr = CMN_BGCAL_INIT_TMR, .val = 0x0087},
-        {.addr = CMN_BGCAL_ITER_TMR, .val = 0x0087},
-        {.addr = CMN_IBCAL_INIT_TMR, .val = 0x001B},
-        {.addr = CMN_TXPUCAL_INIT_TMR, .val = 0x0021},
-        {.addr = CMN_TXPUCAL_ITER_TMR, .val = 0x0007},
-        {.addr = CMN_TXPDCAL_INIT_TMR, .val = 0x0021},
-        {.addr = CMN_TXPDCAL_ITER_TMR, .val = 0x0007},
-        {.addr = CMN_RXCAL_INIT_TMR, .val = 0x032A},
-        {.addr = CMN_RXCAL_ITER_TMR, .val = 0x0007},
-        {.addr = CMN_SD_CAL_INIT_TMR, .val = 0x0003},
-        {.addr = CMN_SD_CAL_ITER_TMR, .val = 0x0003},
-        {.addr = CMN_SD_CAL_REFTIM_START, .val = 0x0010},
-        {.addr = CMN_SD_CAL_PLLCNT_START, .val = 0x0139},
-        /* PLL Registers */
-        {.addr = CMN_PDIAG_PLL0_CP_PADJ_M0, .val = 0x0509},
-        {.addr = CMN_PDIAG_PLL0_CP_IADJ_M0, .val = 0x0F00},
-        {.addr = CMN_PDIAG_PLL0_FILT_PADJ_M0, .val = 0x0F08},
-        {.addr = CMN_PLL0_DSM_DIAG_M0, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_INIT_TMR, .val = 0x010E},
-        {.addr = CMN_PLL0_VCOCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_PLL1_VCOCAL_INIT_TMR, .val = 0x010E},
-        {.addr = CMN_PLL1_VCOCAL_ITER_TMR, .val = 0x0005},
-        {.addr = CMN_PLL0_VCOCAL_REFTIM_START, .val = 0x0357},
-        {.addr = CMN_PLL0_VCOCAL_TCTRL, .val = 0x0003},
-    };
-    uint32_t i, regCount;
-    regCount = (uint32_t)sizeof(PhyPmaCmnCfg27) / (uint32_t)sizeof(phyRegValue);
-    for (i = 0; i < regCount; i++)
-    {
-        afeWrite(pD, PhyPmaCmnCfg27[i].addr, PhyPmaCmnCfg27[i].val);
-    }
-}
-/* parasoft-end-suppress METRICS-39-3 */
-
-#else /* 25 MHz - default */
-
-#define TxRcvdetStTmrVal 0x09C4
-
-/* parasoft-begin-suppress METRICS-39-3 "The value of VOCF metric for a function should not be higher than 4, DRV-3852" */
-static void configurePhyPmaCmnCfg(const DP_SD0801_PrivateData* pD)
-{
-    /* Configuring for 25 MHz reference clock */
-    /* Values of registers to write are taken from sd0801 PHY programming guide. */
-    static const phyRegValue PhyPmaCmnCfg25[] = {
-        /* Refclock Registers */
-        {.addr = CMN_SSM_BIAS_TMR, .val = 0x0019},
-        {.addr = CMN_PLLSM0_PLLPRE_TMR, .val = 0x0032},
-        {.addr = CMN_PLLSM0_PLLLOCK_TMR, .val = 0x00D1},
-        {.addr = CMN_PLLSM1_PLLPRE_TMR, .val = 0x0032},
-        {.addr = CMN_PLLSM1_PLLLOCK_TMR, .val = 0x00D1},
-        {.addr = CMN_BGCAL_INIT_TMR, .val = 0x007D},
-        {.addr = CMN_BGCAL_ITER_TMR, .val = 0x007D},
-        {.addr = CMN_IBCAL_INIT_TMR, .val = 0x0019},
-        {.addr = CMN_TXPUCAL_INIT_TMR, .val = 0x001E},
-        {.addr = CMN_TXPUCAL_ITER_TMR, .val = 0x0006},
-        {.addr = CMN_TXPDCAL_INIT_TMR, .val = 0x001E},
-        {.addr = CMN_TXPDCAL_ITER_TMR, .val = 0x0006},
-        {.addr = CMN_RXCAL_INIT_TMR, .val = 0x02EE},
-        {.addr = CMN_RXCAL_ITER_TMR, .val = 0x0006},
-        {.addr = CMN_SD_CAL_INIT_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_ITER_TMR, .val = 0x0002},
-        {.addr = CMN_SD_CAL_REFTIM_START, .val = 0x000E},
-        {.addr = CMN_SD_CAL_PLLCNT_START, .val = 0x012B},
-        /* PLL Registers */
-        {.addr = CMN_PDIAG_PLL0_CP_PADJ_M0, .val = 0x0509},
-        {.addr = CMN_PDIAG_PLL0_CP_IADJ_M0, .val = 0x0F00},
-        {.addr = CMN_PDIAG_PLL0_FILT_PADJ_M0, .val = 0x0F08},
-        {.addr = CMN_PLL0_DSM_DIAG_M0, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_INIT_TMR, .val = 0x00FA},
-        {.addr = CMN_PLL0_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL1_VCOCAL_INIT_TMR, .val = 0x00FA},
-        {.addr = CMN_PLL1_VCOCAL_ITER_TMR, .val = 0x0004},
-        {.addr = CMN_PLL0_VCOCAL_REFTIM_START, .val = 0x0317},
-        {.addr = CMN_PLL0_VCOCAL_TCTRL, .val = 0x0003},
-    };
-    uint32_t i, regCount;
-    regCount = (uint32_t)sizeof(PhyPmaCmnCfg25) / (uint32_t)sizeof(phyRegValue);
-    for (i = 0; i < regCount; i++)
-    {
-        afeWrite(pD, PhyPmaCmnCfg25[i].addr, PhyPmaCmnCfg25[i].val);
-    }
-}
-/* parasoft-end-suppress METRICS-39-3 */
-
-#endif /* refclock */
 
 /**
  * This driver supports only DPTX.
@@ -400,7 +210,6 @@ static void disableRx(const DP_SD0801_PrivateData* pD, uint32_t laneOffset)
         RX_PSC_A2,
         RX_PSC_A3,
         RX_PSC_CAL,
-
         RX_REE_GCSM1_CTRL,
         RX_REE_GCSM2_CTRL,
         RX_REE_PERGCSM_CTRL
@@ -422,8 +231,8 @@ static void configurePhyPmaLnDpCfg(const DP_SD0801_PrivateData* pD, uint8_t lane
     /* Bits 9 and 10 of address indicate lane number. */
     const uint32_t laneOffset = (i << 9);
 
-#ifdef TxRcvdetStTmrVal
-    const uint16_t rcvdetVal = (uint16_t)TxRcvdetStTmrVal;
+#ifdef TX_RCVDET_ST_TMR_VAL
+    const uint16_t rcvdetVal = (uint16_t)TX_RCVDET_ST_TMR_VAL;
     /* Per lane, refclock-dependent receiver detection setting. */
     afeWrite(pD, (uint32_t)(TX_RCVDET_ST_TMR | laneOffset), rcvdetVal);
 #endif /* for reflock of 100 MHz, use reset value */
@@ -431,15 +240,15 @@ static void configurePhyPmaLnDpCfg(const DP_SD0801_PrivateData* pD, uint8_t lane
     /* Writing Tx/Rx Power State Controllers Registers */
 
     /* 2.8.3 Display Port / Embedded Display Port */
-    afeWrite(pD, (uint32_t)(TX_PSC_A0 | laneOffset), 0x00FBU);
-    afeWrite(pD, (uint32_t)(TX_PSC_A2 | laneOffset), 0x04AAU);
-    afeWrite(pD, (uint32_t)(TX_PSC_A3 | laneOffset), 0x04AAU);
+    afeWrite(pD, (uint32_t)(TX_PSC_A0 | laneOffset), TX_PSC_A0_VAL);
+    afeWrite(pD, (uint32_t)(TX_PSC_A2 | laneOffset), TX_PSC_A2_VAL);
+    afeWrite(pD, (uint32_t)(TX_PSC_A3 | laneOffset), TX_PSC_A3_VAL);
 
     disableRx(pD, laneOffset);
 
-    afeWrite(pD, (uint32_t)(XCVR_DIAG_BIDI_CTRL | laneOffset), 0x000F);
-    afeWrite(pD, (uint32_t)(XCVR_DIAG_PLLDRC_CTRL | laneOffset), 0x0001U);
-    afeWrite(pD, (uint32_t)(XCVR_DIAG_HSCLK_SEL | laneOffset), 0x0000U);
+    afeWrite(pD, (uint32_t)(XCVR_DIAG_BIDI_CTRL | laneOffset), XCVR_DIAG_BIDI_CTRL_VAL);
+    afeWrite(pD, (uint32_t)(XCVR_DIAG_PLLDRC_CTRL | laneOffset), XCVR_DIAG_PLLDRC_CTRL_VAL);
+    afeWrite(pD, (uint32_t)(XCVR_DIAG_HSCLK_SEL | laneOffset), XCVR_DIAG_HSCLK_SEL_VAL);
 }
 
 static void configurePhyPmaDpCfg(const DP_SD0801_PrivateData* pD, uint8_t linkCfg)
@@ -447,6 +256,10 @@ static void configurePhyPmaDpCfg(const DP_SD0801_PrivateData* pD, uint8_t linkCf
     uint8_t i;
     /* PMA cmn configuration */
     configurePhyPmaCmnCfg(pD);
+
+    /* PLL common configuration for both PLL's (1 link is used) */
+    configurePhyPmaPllCmnCfg(pD, DP_SD0801_PLL_0);
+    configurePhyPmaPllCmnCfg(pD, DP_SD0801_PLL_1);
 
     /* PMA lane configuration to deal with multi-link operation */
     for (i = 0; i < 4U; i++) {
@@ -494,642 +307,239 @@ static ENUM_VCO_FREQ getVcoFreq(DP_SD0801_LinkRate linkRate)
     return retVal;
 }
 
-#ifdef REF_CLK_19_2MHz
-
-/**
- * Set registers responsible for enabling and configuring SSC, with second and
- * third register values provided by parameters.
- */
-static void enableSsc(const DP_SD0801_PrivateData* pD, uint16_t ctrl2Val, uint16_t ctrl3Val)
+static void enableSsc(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll, const uint16_t ctrlVal[4])
 {
-    afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0001); /* Enable SSC */
-    afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, ctrl2Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, ctrl3Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0003);
+    /* Ssc registers offsets */
+    static const uint16_t sscRegs[] = {
+        CMN_PLL_SS_CTRL1_M0_OFFSET,
+        CMN_PLL_SS_CTRL2_M0_OFFSET,
+        CMN_PLL_SS_CTRL3_M0_OFFSET,
+        CMN_PLL_SS_CTRL4_M0_OFFSET
+    };
 
-#ifdef HAVE_CMN_PLL1
-    afeWrite(pD, CMN_PLL1_SS_CTRL1_M0, 0x0001); /*  Enable SSC */
-    afeWrite(pD, CMN_PLL1_SS_CTRL2_M0, ctrl2Val);
-    afeWrite(pD, CMN_PLL1_SS_CTRL3_M0, ctrl3Val);
-    afeWrite(pD, CMN_PLL1_SS_CTRL4_M0, 0x0003);
-#endif
-}
+    uint32_t i;
+    uint32_t regCount = (uint32_t)sizeof(sscRegs) / (uint32_t)sizeof(uint16_t);
 
-static void configurePhyPmaCmnVcoCfg10_8(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 10.8GHz -- 19.2MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0119);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x4000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00BC);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0012);
+    /* Choose base for correct PLL */
+    uint32_t pllBase = getPllCmnM0Base(pll);
 
-#ifdef HAVE_CMN_PLL1
-    afeWrite(pD, CMN_PLL1_INTDIV_M0, 0x0119);
-    afeWrite(pD, CMN_PLL1_FRACDIVL_M0, 0x4000);
-    afeWrite(pD, CMN_PLL1_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL1_HIGH_THR_M0, 0x00BC);
-    afeWrite(pD, CMN_PDIAG_PLL1_CTRL_M0, 0x0012);
-#endif
-
-    if (ssc)
-    {
-        enableSsc(pD, 0x033A, 0x006A); /* values specific for VCO. */
+    /* Configure ssc */
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllBase + sscRegs[i]), ctrlVal[i]);
     }
 }
 
-static void configurePhyPmaCmnVcoCfg9_72(const DP_SD0801_PrivateData* pD, bool ssc)
+static void configurePhyPmaCmnVcoCfg10_8(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll, bool ssc)
 {
-    /* Setting VCO for 9.72GHz -- 19.2MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x01FA);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x4000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x0152);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
+    /* Settings for VCO equals 10.8GHz */
 
-#ifdef HAVE_CMN_PLL1
-    afeWrite(pD, CMN_PLL1_INTDIV_M0, 0x01FA);
-    afeWrite(pD, CMN_PLL1_FRACDIVL_M0, 0x4000);
-    afeWrite(pD, CMN_PLL1_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL1_HIGH_THR_M0, 0x0152);
-    afeWrite(pD, CMN_PDIAG_PLL1_CTRL_M0, 0x0002);
-#endif
+    static const uint16_t sscCfg10p8[] = {
+        CMN_PLL_SS_CTRL1_M0_VCO_10p8_VAL,
+        CMN_PLL_SS_CTRL2_M0_VCO_10p8_VAL,
+        CMN_PLL_SS_CTRL3_M0_VCO_10p8_VAL,
+        CMN_PLL_SS_CTRL4_M0_VCO_10p8_VAL
+    };
 
-    if (ssc)
-    {
-        enableSsc(pD, 0x05DD, 0x0069); /* values specific for VCO. */
+    static const phyRegValue pllCmnCfg10p8[] = {
+        {.addr = CMN_PLL_INTDIV_M0_OFFSET, .val = CMN_PLL_INTDIV_M0_10p8_VAL},
+        {.addr = CMN_PLL_FRACDIVL_M0_OFFSET, .val = CMN_PLL_FRACDIVL_M0_10p8_VAL},
+        {.addr = CMN_PLL_FRACDIVH_M0_OFFSET, .val = CMN_PLL_FRACDIVH_M0_10p8_VAL},
+        {.addr = CMN_PLL_HIGH_THR_M0_OFFSET, .val = CMN_PLL_HIGH_THR_M0_10p8_VAL},
+    };
+
+    uint32_t i;
+    uint32_t regCount = (uint32_t)sizeof(pllCmnCfg10p8) / (uint32_t)sizeof(phyRegValue);
+
+    uint32_t pllBase = getPllCmnM0Base(pll);
+    uint32_t pllPdiagBase = getPllPdiagM0Base(pll);
+
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllBase + pllCmnCfg10p8[i].addr), pllCmnCfg10p8[i].val);
+    }
+
+    /* Write value to PLL PDIAG register */
+    afeWrite(pD, (pllPdiagBase + CMN_PDIAG_PLL_CTRL_M0_OFFSET), CMN_PDIAG_PLL_CTRL_M0_10p8_VAL);
+
+    if (ssc) {
+        enableSsc(pD, pll, sscCfg10p8); /* values specific for VCO. */
     }
 }
 
-static void configurePhyPmaCmnVcoCfg8_64(const DP_SD0801_PrivateData* pD, bool ssc)
+static void configurePhyPmaCmnVcoCfg9_72(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll, bool ssc)
 {
-    /* Setting VCO for 8.64GHz -- 19.2MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x01C2);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x012C);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
+    /* Settings for VCO equals 9.72GHz */
 
-#ifdef HAVE_CMN_PLL1
-    afeWrite(pD, CMN_PLL1_INTDIV_M0, 0x01C2);
-    afeWrite(pD, CMN_PLL1_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL1_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL1_HIGH_THR_M0, 0x012C);
-    afeWrite(pD, CMN_PDIAG_PLL1_CTRL_M0, 0x0002);
-#endif
+    static const uint16_t sscCfg9p72[] = {
+        CMN_PLL_SS_CTRL1_M0_VCO_9p72_VAL,
+        CMN_PLL_SS_CTRL2_M0_VCO_9p72_VAL,
+        CMN_PLL_SS_CTRL3_M0_VCO_9p72_VAL,
+        CMN_PLL_SS_CTRL4_M0_VCO_9p72_VAL
+    };
 
-    if (ssc)
-    {
-        enableSsc(pD, 0x0536, 0x0069); /* values specific for VCO. */
+    static const phyRegValue pllCmnCfg9p72[] = {
+        {.addr = CMN_PLL_INTDIV_M0_OFFSET, .val = CMN_PLL_INTDIV_M0_9p72_VAL},
+        {.addr = CMN_PLL_FRACDIVL_M0_OFFSET, .val = CMN_PLL_FRACDIVL_M0_9p72_VAL},
+        {.addr = CMN_PLL_FRACDIVH_M0_OFFSET, .val = CMN_PLL_FRACDIVH_M0_9p72_VAL},
+        {.addr = CMN_PLL_HIGH_THR_M0_OFFSET, .val = CMN_PLL_HIGH_THR_M0_9p72_VAL},
+    };
+
+    uint32_t i;
+    uint32_t regCount = (uint32_t)sizeof(pllCmnCfg9p72) / (uint32_t)sizeof(phyRegValue);
+
+    uint32_t pllBase = getPllCmnM0Base(pll);
+    uint32_t pllPdiagBase = getPllPdiagM0Base(pll);
+
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllBase + pllCmnCfg9p72[i].addr), pllCmnCfg9p72[i].val);
+    }
+
+    /* Write value to PLL PDIAG register */
+    afeWrite(pD, (pllPdiagBase + CMN_PDIAG_PLL_CTRL_M0_OFFSET), CMN_PDIAG_PLL_CTRL_M0_9p72_VAL);
+
+    if (ssc) {
+        enableSsc(pD, pll, sscCfg9p72); /* values specific for VCO. */
+    }
+
+}
+
+static void configurePhyPmaCmnVcoCfg8_64(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll, bool ssc)
+{
+    static const uint16_t sscCfg8p64[] = {
+        CMN_PLL_SS_CTRL1_M0_VCO_8p64_VAL,
+        CMN_PLL_SS_CTRL2_M0_VCO_8p64_VAL,
+        CMN_PLL_SS_CTRL3_M0_VCO_8p64_VAL,
+        CMN_PLL_SS_CTRL4_M0_VCO_8p64_VAL
+    };
+
+    static const phyRegValue pllCmnCfg8p64[] = {
+        {.addr = CMN_PLL_INTDIV_M0_OFFSET, .val = CMN_PLL_INTDIV_M0_8p64_VAL},
+        {.addr = CMN_PLL_FRACDIVL_M0_OFFSET, .val = CMN_PLL_FRACDIVL_M0_8p64_VAL},
+        {.addr = CMN_PLL_FRACDIVH_M0_OFFSET, .val = CMN_PLL_FRACDIVH_M0_8p64_VAL},
+        {.addr = CMN_PLL_HIGH_THR_M0_OFFSET, .val = CMN_PLL_HIGH_THR_M0_8p64_VAL}
+    };
+
+    uint32_t i;
+    uint32_t regCount = (uint32_t)sizeof(pllCmnCfg8p64) / (uint32_t)sizeof(phyRegValue);
+
+    uint32_t pllBase = getPllCmnM0Base(pll);
+    uint32_t pllPdiagBase = getPllPdiagM0Base(pll);
+
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllBase + pllCmnCfg8p64[i].addr), pllCmnCfg8p64[i].val);
+    }
+
+    /* Write value to PLL PDIAG register */
+    afeWrite(pD, (pllPdiagBase + CMN_PDIAG_PLL_CTRL_M0_OFFSET), CMN_PDIAG_PLL_CTRL_M0_8p64_VAL);
+
+    if (ssc) {
+        enableSsc(pD, pll, sscCfg8p64); /* values specific for VCO. */
     }
 }
 
-static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, bool ssc)
+static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll, bool ssc)
 {
-    /* Setting VCO for 8.1GHz -- 19.2MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x01A5);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0xE000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x011A);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
+    static const uint16_t sscCfg8p1[] = {
+        CMN_PLL_SS_CTRL1_M0_VCO_8p1_VAL,
+        CMN_PLL_SS_CTRL2_M0_VCO_8p1_VAL,
+        CMN_PLL_SS_CTRL3_M0_VCO_8p1_VAL,
+        CMN_PLL_SS_CTRL4_M0_VCO_8p1_VAL
+    };
 
-#ifdef HAVE_CMN_PLL1
-    /*  Setting VCO for 8.1GHz -- 19.2MHz */
-    afeWrite(pD, CMN_PLL1_INTDIV_M0, 0x01A5);
-    afeWrite(pD, CMN_PLL1_FRACDIVL_M0, 0xE000);
-    afeWrite(pD, CMN_PLL1_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL1_HIGH_THR_M0, 0x011A);
-    afeWrite(pD, CMN_PDIAG_PLL1_CTRL_M0, 0x0002);
-#endif
+    static const phyRegValue pllCmnCfg8p1[] = {
+        {.addr = CMN_PLL_INTDIV_M0_OFFSET, .val = CMN_PLL_INTDIV_M0_8p1_VAL},
+        {.addr = CMN_PLL_FRACDIVL_M0_OFFSET, .val = CMN_PLL_FRACDIVL_M0_8p1_VAL},
+        {.addr = CMN_PLL_FRACDIVH_M0_OFFSET, .val = CMN_PLL_FRACDIVH_M0_8p1_VAL},
+        {.addr = CMN_PLL_HIGH_THR_M0_OFFSET, .val = CMN_PLL_HIGH_THR_M0_8p1_VAL},
+    };
 
-    if (ssc)
-    {
-        enableSsc(pD, 0x04A5, 0x006A); /* values specific for VCO. */
+    uint32_t i;
+    uint32_t regCount = (uint32_t)sizeof(pllCmnCfg8p1) / (uint32_t)sizeof(phyRegValue);
+
+    uint32_t pllBase = getPllCmnM0Base(pll);
+    uint32_t pllPdiagBase = getPllPdiagM0Base(pll);
+
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllBase + pllCmnCfg8p1[i].addr), pllCmnCfg8p1[i].val);
     }
+
+    /* Write value to PLL PDIAG register */
+    afeWrite(pD, (pllPdiagBase + CMN_PDIAG_PLL_CTRL_M0_OFFSET), CMN_PDIAG_PLL_CTRL_M0_8p1_VAL);
+
+    if (ssc) {
+        enableSsc(pD, pll, sscCfg8p1); /* values specific for VCO. */
+    }
+
 }
 
-static void configurePhyPmaCmnVcoCommon(const DP_SD0801_PrivateData* pD, bool ssc)
+static void configurePhyPmaCmnVcoCommon(const DP_SD0801_PrivateData* pD, DP_SD0801_Pll pll, bool ssc)
 {
-    /* Settings common for all VCOs - 19.2 MHz */
-    if (ssc)
-    {
-        /* Settings for SSC enabled. */
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x025E);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0005);
+    /* Values used to disable ssc */
+    static const uint16_t sscCfg[] = {
+        CMM_PLL_SS_CTRL1_M0_NO_SSC_VAL,
+        CMM_PLL_SS_CTRL2_M0_NO_SSC_VAL,
+        CMM_PLL_SS_CTRL3_M0_NO_SSC_VAL,
+        CMM_PLL_SS_CTRL4_M0_NO_SSC_VAL
+    };
+
+    /* Configuration in case if ssc is not used */
+    static const phyRegValue noSscPllCmnCfg[] = {
+        {.addr = CMN_PLL_VCOCAL_PLLCNT_START_OFFSET, .val = CMN_PLL_VCOCAL_PLLCNT_START_NO_SSC_VAL},
+        {.addr = CMN_PLL_LOCK_PLLCNT_START_OFFSET, .val = CMN_PLL_LOCK_PLLCNT_START_NO_SSC_VAL},
+        {.addr = CMN_PLL_LOCK_PLLCNT_THR_OFFSET, .val = CMN_PLL_LOCK_PLLCNT_THR_NO_SSC_VAL},
+    };
+
+    /* Configuration in case if ssc is used */
+    static const phyRegValue sscPllCmnCfg[] = {
+        {.addr = CMN_PLL_VCOCAL_PLLCNT_START_OFFSET, .val = CMN_PLL_VCOCAL_PLLCNT_START_SSC_VAL},
+        {.addr = CMN_PLL_LOCK_PLLCNT_START_OFFSET, .val = CMN_PLL_LOCK_PLLCNT_START_SSC_VAL},
+        {.addr = CMN_PLL_LOCK_PLLCNT_THR_OFFSET, .val = CMN_PLL_LOCK_PLLCNT_THR_SSC_VAL},
+    };
+
+    uint8_t i;
+    uint32_t pllBase = getPllCmnM0Base(pll);
+
+    const uint32_t regCount = (uint32_t)sizeof(sscPllCmnCfg) / (uint32_t)(sizeof(phyRegValue));
+
+    const phyRegValue* pllCmnCfg;
+
+    if (ssc) {
+        pllCmnCfg = sscPllCmnCfg;
     } else {
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0260);
-        /* Set reset register values to disable SSC. */
-        afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0002); /* Disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0003);
-    }
-
-    afeWrite(pD, CMN_PLL0_LOCK_REFCNT_START, 0x0099);
-    afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x0099);
-
-#ifdef HAVE_CMN_PLL1
-    /*  Settings common for all VCOs - 19.2 MHz */
-    if (ssc)
-    {
-        /*  Settings for SSC enabled. */
-        afeWrite(pD, CMN_PLL1_VCOCAL_PLLCNT_START, 0x025E);
-        afeWrite(pD, CMN_PLL1_LOCK_PLLCNT_THR, 0x0005);
-    } else {
-        afeWrite(pD, CMN_PLL1_VCOCAL_PLLCNT_START, 0x0260);
-        /*  Set reset register values to disable SSC. */
-        afeWrite(pD, CMN_PLL1_SS_CTRL1_M0, 0x0002); /*  Disable SSC */
-        afeWrite(pD, CMN_PLL1_SS_CTRL2_M0, 0x0000);
-        afeWrite(pD, CMN_PLL1_SS_CTRL3_M0, 0x0000);
-        afeWrite(pD, CMN_PLL1_SS_CTRL4_M0, 0x0000);
-        afeWrite(pD, CMN_PLL1_LOCK_PLLCNT_THR, 0x0003);
-    }
-
-    afeWrite(pD, CMN_PLL1_LOCK_REFCNT_START, 0x0099);
-    afeWrite(pD, CMN_PLL1_LOCK_PLLCNT_START, 0x0099);
-#endif
-}
-
-#elif defined REF_CLK_20MHz
-
-/**
- * Set registers responsible for enabling and configuring SSC, with second and
- * third register values provided by parameters.
- */
-static void enableSsc(const DP_SD0801_PrivateData* pD, uint16_t ctrl2Val, uint16_t ctrl3Val)
-{
-    afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0001); /* Enable SSC */
-    afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, ctrl2Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, ctrl3Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0003);
-}
-
-static void configurePhyPmaCmnVcoCfg10_8(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 10.8GHz -- 20MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x010E);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00B4);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0012);
-    if (ssc)
-    {
-        enableSsc(pD, 0x05F8, 0x006E); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg9_72(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 9.72GHz -- 20MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x01E6);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x0144);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
-    if (ssc)
-    {
-        enableSsc(pD, 0x0553, 0x006F); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_64(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.64GHz -- 20MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x01B0);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x0120);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
-    if (ssc)
-    {
-        enableSsc(pD, 0x04DD, 0x006C); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.1GHz -- 20MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0195);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x010E);
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
-    if (ssc)
-    {
-        enableSsc(pD, 0x047A, 0x006E); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCommon(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Settings common for all VCOs - 20 MHz */
-    if (ssc)
-    {
-        /* Settings for SSC enabled. */
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0277);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0005);
-    } else {
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0279);
+        pllCmnCfg = noSscPllCmnCfg;
         /* Set reset register values to disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0002); /* Disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0003);
+        enableSsc(pD, pll, sscCfg);
     }
 
-    afeWrite(pD, CMN_PLL0_LOCK_REFCNT_START, 0x009F);
-    afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x009F);
-}
-
-#elif defined REF_CLK_24MHz
-
-/**
- * Set registers responsible for enabling and configuring SSC, with second and
- * third register values provided by parameters.
- */
-static void enableSsc(const DP_SD0801_PrivateData* pD, uint16_t ctrl2Val, uint16_t ctrl3Val)
-{
-    afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0001); /* Enable SSC */
-    afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, ctrl2Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, ctrl3Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0003);
-}
-
-static void configurePhyPmaCmnVcoCfg10_8(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 10.8GHz -- 24MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x01C2);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x012C);
-    if (ssc)
-    {
-        enableSsc(pD, 0x044F, 0x007F); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg9_72(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 9.72GHz -- 24MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0195);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x010E);
-    if (ssc)
-    {
-        enableSsc(pD, 0x0401, 0x007B); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_64(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.64GHz -- 24MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0168);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00F0);
-
-    if (ssc)
-    {
-        enableSsc(pD, 0x038F, 0x007B); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.1GHz -- 24MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0151);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x8000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00E2);
-    if (ssc)
-    {
-        enableSsc(pD, 0x0342, 0x007E); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCommon(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Settings common for all VCOs - 24 MHz */
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
-
-    if (ssc)
-    {
-        /* Settings for SSC enabled. */
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x02F6);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0005);
-    } else {
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x02F8);
-        /* Set reset register values to disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0002); /* Disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0003);
+    for (i = 0U; i < regCount; i++) {
+        afeWrite(pD, (pllBase + pllCmnCfg[i].addr), pllCmnCfg[i].val);
     }
 
-    afeWrite(pD, CMN_PLL0_LOCK_REFCNT_START, 0x00BF);
-    afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x00BF);
-
+    afeWrite(pD, (pllBase + CMN_PLL_LOCK_REFCNT_START_OFFSET), CMN_PLL_LOCK_REFCNT_START_VAL);
 }
-
-#elif defined REF_CLK_26MHz
-
-/**
- * Set registers responsible for enabling and configuring SSC, with second and
- * third register values provided by parameters.
- */
-static void enableSsc(const DP_SD0801_PrivateData* pD, uint16_t ctrl2Val, uint16_t ctrl3Val)
-{
-    afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0001); /* Enable SSC */
-    afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, ctrl2Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, ctrl3Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0004);
-}
-
-static void configurePhyPmaCmnVcoCfg10_8(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 10.8GHz -- 26MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x019F);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x6276);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x0115);
-    if (ssc)
-    {
-        enableSsc(pD, 0x04C4, 0x006A); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg9_72(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 9.72GHz -- 26MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0175);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0xD89E);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00FA);
-    if (ssc)
-    {
-        enableSsc(pD, 0x044A, 0x006A); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_64(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.64GHz -- 26MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x014C);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x4EC5);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00DE);
-    if (ssc)
-    {
-        enableSsc(pD, 0x03D0, 0x006A); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.1GHz -- 26MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0137);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x89D9);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00D0);
-    if (ssc)
-    {
-        enableSsc(pD, 0x0382, 0x006C); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCommon(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Settings common for all VCOs - 26 MHz */
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
-
-    if (ssc)
-    {
-        /* Settings for SSC enabled. */
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0335);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x00CE);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0005);
-    } else {
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0337);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x00CF);
-        /* Set reset register values to disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0002); /* Disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0003);
-    }
-
-    afeWrite(pD, CMN_PLL0_LOCK_REFCNT_START, 0x00CF);
-}
-
-#elif defined REF_CLK_27MHz
-
-/**
- * Set registers responsible for enabling and configuring SSC, with second and
- * third register values provided by parameters.
- */
-static void enableSsc(const DP_SD0801_PrivateData* pD, uint16_t ctrl2Val, uint16_t ctrl3Val)
-{
-    afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0001); /* Enable SSC */
-    afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, ctrl2Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, ctrl3Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0004);
-}
-
-static void configurePhyPmaCmnVcoCfg10_8(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 10.8GHz -- 27MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0190);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x010C);
-    if (ssc)
-    {
-        enableSsc(pD, 0x046C, 0x006E); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg9_72(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 9.72GHz -- 27MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0168);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00F0);
-    if (ssc)
-    {
-        enableSsc(pD, 0x0404, 0x006D); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_64(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.64GHz -- 27MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0140);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00D6);
-    if (ssc)
-    {
-        enableSsc(pD, 0x03A3, 0x006B); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.1GHz -- 27MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x012C);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00C8);
-    if (ssc)
-    {
-        enableSsc(pD, 0x0351, 0x006E); /* values specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCommon(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Settings common for all VCOs - 27 MHz */
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
-
-    if (ssc)
-    {
-        /* Settings for SSC enabled. */
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0355);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x00D6);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0005);
-    } else {
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0357);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x00D7);
-        /* Set reset register values to disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0002); /* Disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0003);
-    }
-
-    afeWrite(pD, CMN_PLL0_LOCK_REFCNT_START, 0x00D7);
-}
-
-#else /* 25 MHz - default */
-
-/**
- * Set registers responsible for enabling and configuring SSC, with second
- * register value provided by a parameter.
- */
-static void enableSsc(const DP_SD0801_PrivateData* pD, uint16_t ctrl2Val)
-{
-    afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0001); /* Enable SSC */
-    afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, ctrl2Val);
-    afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, 0x007F);
-    afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0003);
-}
-
-static void configurePhyPmaCmnVcoCfg10_8(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 10.8GHz -- 25MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x01B0);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x0120);
-    if (ssc)
-    {
-        enableSsc(pD, 0x0423); /* value specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg9_72(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 9.72GHz -- 25MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0184);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0xCCCD);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x0104);
-    if (ssc)
-    {
-        enableSsc(pD, 0x03B9); /* value specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_64(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.64GHz -- 25MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0159);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x999A);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00E8);
-    if (ssc)
-    {
-        enableSsc(pD, 0x034F); /* value specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCfg8_1(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Setting VCO for 8.1GHz -- 25MHz */
-    afeWrite(pD, CMN_PLL0_INTDIV_M0, 0x0144);
-    afeWrite(pD, CMN_PLL0_FRACDIVL_M0, 0x0000);
-    afeWrite(pD, CMN_PLL0_FRACDIVH_M0, 0x0002);
-    afeWrite(pD, CMN_PLL0_HIGH_THR_M0, 0x00D8);
-    if (ssc)
-    {
-        enableSsc(pD, 0x031A); /* value specific for VCO. */
-    }
-}
-
-static void configurePhyPmaCmnVcoCommon(const DP_SD0801_PrivateData* pD, bool ssc)
-{
-    /* Settings common for all VCOs - 25 MHz */
-    afeWrite(pD, CMN_PDIAG_PLL0_CTRL_M0, 0x0002);
-
-    if (ssc)
-    {
-        /* Settings for SSC enabled. */
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0315);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0005);
-    } else {
-        afeWrite(pD, CMN_PLL0_VCOCAL_PLLCNT_START, 0x0317);
-        /* Set reset register values to disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL1_M0, 0x0002); /* Disable SSC */
-        afeWrite(pD, CMN_PLL0_SS_CTRL2_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL3_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_SS_CTRL4_M0, 0x0000);
-        afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_THR, 0x0003);
-    }
-
-    afeWrite(pD, CMN_PLL0_LOCK_REFCNT_START, 0x00C7);
-    afeWrite(pD, CMN_PLL0_LOCK_PLLCNT_START, 0x00C7);
-}
-
-#endif /* refclock */
 
 /* Configure PLL for requested VCO frequency. */
-static void configurePhyPmaCmnVcoCfg(const DP_SD0801_PrivateData* pD, ENUM_VCO_FREQ vco_freq, bool ssc)
+static void configurePhyPmaCmnVcoCfg(const DP_SD0801_PrivateData* pD, DP_SD0801_LinkRate linkRate, DP_SD0801_Pll pll, bool ssc)
 {
+    const ENUM_VCO_FREQ vco_freq = getVcoFreq(linkRate);
+
     /* Perform register writes specific to VCO frequency. */
     switch (vco_freq)
     {
     case VCO_10GHz8_refclk:
-        configurePhyPmaCmnVcoCfg10_8(pD, ssc);
+        configurePhyPmaCmnVcoCfg10_8(pD, pll, ssc);
         break;
     case VCO_9GHz72_refclk:
-        configurePhyPmaCmnVcoCfg9_72(pD, ssc);
+        configurePhyPmaCmnVcoCfg9_72(pD, pll, ssc);
         break;
     case VCO_8GHz64_refclk:
-        configurePhyPmaCmnVcoCfg8_64(pD, ssc);
+        configurePhyPmaCmnVcoCfg8_64(pD, pll, ssc);
         break;
     default:
-        configurePhyPmaCmnVcoCfg8_1(pD, ssc);
+        configurePhyPmaCmnVcoCfg8_1(pD, pll, ssc);
         break;
     }
     /* Write register values common for all VCO frequencies. */
-    configurePhyPmaCmnVcoCommon(pD, ssc);
+    configurePhyPmaCmnVcoCommon(pD, pll, ssc);
 }
 
 static bool isPllSet(uint8_t pllBits, uint8_t pllIdx)
@@ -1152,35 +562,35 @@ static uint16_t getClkSelM0Val(DP_SD0801_LinkRate linkRate)
     {
     /* Rate: 1.62G */
     case (DP_SD0801_LINK_RATE_1_62):
-        clkSelM0Val = 0x0F01;
+        clkSelM0Val = CMN_PDIAG_PLL_CLK_SEL_M0_1p62_VAL;
         break;
     /* Rate: 2.16G */
     case (DP_SD0801_LINK_RATE_2_16):
-        clkSelM0Val = 0x0701;
+        clkSelM0Val = CMN_PDIAG_PLL_CLK_SEL_M0_2p16_VAL;
         break;
     /* Rate: 2.43G */
     case (DP_SD0801_LINK_RATE_2_43):
-        clkSelM0Val =  0x0701;
+        clkSelM0Val =  CMN_PDIAG_PLL_CLK_SEL_M0_2p43_VAL;
         break;
     /* Rate: 2.7G */
     case (DP_SD0801_LINK_RATE_2_70):
-        clkSelM0Val =  0x0701;
+        clkSelM0Val =  CMN_PDIAG_PLL_CLK_SEL_M0_2p70_VAL;
         break;
     /* Rate: 3.24G */
     case (DP_SD0801_LINK_RATE_3_24):
-        clkSelM0Val =  0x0B00;
+        clkSelM0Val =  CMN_PDIAG_PLL_CLK_SEL_M0_3p24_VAL;
         break;
     /* Rate: 4.32G */
     case (DP_SD0801_LINK_RATE_4_32):
-        clkSelM0Val =  0x0301;
+        clkSelM0Val =  CMN_PDIAG_PLL_CLK_SEL_M0_4p32_VAL;
         break;
     /* Rate: 5.4G */
     case (DP_SD0801_LINK_RATE_5_40):
-        clkSelM0Val =  0x0301;
+        clkSelM0Val =  CMN_PDIAG_PLL_CLK_SEL_M0_5p40_VAL;
         break;
     /* Rate: 8.1G */
     default:
-        clkSelM0Val =  0x0200;
+        clkSelM0Val =  CMN_PDIAG_PLL_CLK_SEL_M0_8p10_VAL;
         break;
     }
 
@@ -1196,42 +606,42 @@ static uint16_t getHsclkDivVal(DP_SD0801_LinkRate linkRate)
     /* ******* Writing XCVR_DIAG_HSCLK_DIV Register for Lane %d ******* */
     /* Rate: 1.62G */
     case (DP_SD0801_LINK_RATE_1_62):
-        hsclkDivVal = 0x0002U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_1p62_VAL;
         break;
     /* Rate: 2.16G */
     case (DP_SD0801_LINK_RATE_2_16):
-        hsclkDivVal = 0x0001U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_2p16_VAL;
         break;
     /* Rate: 2.43G */
     case (DP_SD0801_LINK_RATE_2_43):
-        hsclkDivVal = 0x0001U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_2p43_VAL;
         break;
     /* Rate: 2.7G */
     case (DP_SD0801_LINK_RATE_2_70):
-        hsclkDivVal = 0x0001U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_2p70_VAL;
         break;
     /* Rate: 3.24G */
     case (DP_SD0801_LINK_RATE_3_24):
-        hsclkDivVal = 0x0002U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_3p24_VAL;
         break;
     /* Rate: 4.32G */
     case (DP_SD0801_LINK_RATE_4_32):
-        hsclkDivVal = 0x0000U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_4p32_VAL;
         break;
     /* Rate: 5.4G */
     case (DP_SD0801_LINK_RATE_5_40):
-        hsclkDivVal = 0x0000U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_5p40_VAL;
         break;
     /* Rate: 8.1G */
     default:
-        hsclkDivVal = 0x0000U;
+        hsclkDivVal = XCVR_DIAG_HSCLK_DIV_8p10_VAL;
         break;
     }
 
     return hsclkDivVal;
 }
 
-static void configurePhyPmaCmnDpRate(const DP_SD0801_PrivateData* pD, uint8_t linkCfg, DP_SD0801_LinkRate dp_rate, uint8_t dp_pll)
+static void configurePhyPmaCmnDpRate(const DP_SD0801_PrivateData* pD, uint8_t linkCfg, DP_SD0801_LinkRate dp_rate, uint8_t dpPll)
 {
     uint16_t hsclkDivVal = getHsclkDivVal(dp_rate);
     /* uint32_t used for consistency with bitwise operations. */
@@ -1242,11 +652,11 @@ static void configurePhyPmaCmnDpRate(const DP_SD0801_PrivateData* pD, uint8_t li
     afeWrite(pD, PHY_PLL_CFG, 0x0000);
 
     /* Configure appropriate PLL (0 / 1) */
-    if (isPllSet(dp_pll, 0)) {
-        afeWrite(pD, CMN_PDIAG_PLL0_CLK_SEL_M0, getClkSelM0Val(dp_rate));
+    if (isPllSet(dpPll, 0)) {
+        afeWrite(pD, (CMN_PLL0_PDIAG_MODE0_BASE + CMN_PDIAG_PLL_CLK_SEL_M0_OFFSET), getClkSelM0Val(dp_rate));
     }
-    if (isPllSet(dp_pll, 1)) {
-        afeWrite(pD, CMN_PDIAG_PLL1_CLK_SEL_M0, getClkSelM0Val(dp_rate));
+    if (isPllSet(dpPll, 1)) {
+        afeWrite(pD, (CMN_PLL1_PDIAG_MODE0_BASE + CMN_PDIAG_PLL_CLK_SEL_M0_OFFSET), getClkSelM0Val(dp_rate));
     }
 
     /* PMA lane configuration to deal with multi-link operation */
@@ -1314,33 +724,48 @@ static void setPowerA0(const DP_SD0801_PrivateData* pD, uint8_t laneCount)
     CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PMA_PLLCLK_EN_p, pllclkEn);
 }
 
-uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD0801_LinkRate linkRate)
+uint32_t DP_SD0801_RegisterCb(DP_SD0801_PrivateData* pD, const DP_SD0801_Callbacks* callbacks) {
+
+    uint32_t retVal;
+
+    retVal = DP_SD0801_RegisterCbSF(pD, callbacks);
+
+    if (retVal == CDN_EOK) {
+        /* Save callbacks references */
+        pD->callbacks = *callbacks;
+    }
+
+    return retVal;
+}
+
+uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_SD0801_LinkRate linkRate)
 {
     uint32_t regTmp;
-    uint8_t lane_cfg = 0U;
-#ifdef HAVE_CMN_PLL1
-    uint8_t dp_pll = 3;
+    uint8_t laneCfg = 0U;
+    uint8_t mLaneDp = 0U;
+    uint8_t dpLaneCfg = 0U;
+#ifdef IS_DEMO_TB
+    uint8_t dpPll = (uint8_t)DP_SD0801_PLL_0;
 #else
-    uint8_t dp_pll = 1;
+    /* For a single DP link, only PLL0 is used. But at POR, both PLLs must be programmed in the same way */
+    uint8_t dpPll = 0x3U; /* (DP_SD0801_PLL_0 | DP_SD0801_PLL_1) */
 #endif
     uint32_t retVal = CDN_EOK;
 
-    retVal = DP_SD0801_PhyInitSF(pD);
+    retVal = DP_SD0801_PhyInitSF(pD, mLane, laneCount, linkRate);
 
     if (CDN_EOK == retVal)
     {
-        if ((laneCount <= 4U) && (laneCount >  0U))
-        {
-            lane_cfg = (uint8_t)((1U << (laneCount)) - 1U);
-        }
+        laneCfg = getLaneCfg(mLane, laneCount);
+        dpLaneCfg = getLaneCfg(mLaneDp, laneCount);
 
         /* PHY PMA registers configuration function */
-        configurePhyPmaDpCfg(pD, lane_cfg);
+        configurePhyPmaDpCfg(pD, laneCfg);
 
         setPowerA0(pD, laneCount);
 
         /* release phy_l0*_reset_n and pma_tx_elec_idle_ln_* based on used laneCount */
-        regTmp = ((0x000FU & ~(uint32_t)lane_cfg) << 4U) | (0x000FU & (uint32_t)lane_cfg);
+        regTmp = ((0x000FU & ~(uint32_t)dpLaneCfg) << 4U) | (0x000FU & (uint32_t)dpLaneCfg);
         CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PHY_RESET_p, regTmp);
 
         /* release pma_xcvr_pllclk_en_ln_*, only for the master lane */
@@ -1348,10 +773,14 @@ uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD08
 
         /* PHY PMA registers configuration functions */
         /* Set SSC disabled on init, can be enabled on link rate change. */
-        configurePhyPmaCmnVcoCfg(pD, getVcoFreq(linkRate), false);
-        configurePhyPmaCmnDpRate(pD, lane_cfg,linkRate, dp_pll);
+        /* If 1 link is used both PLL's should be confiured as same */
+        configurePhyPmaCmnVcoCfg(pD, linkRate, DP_SD0801_PLL_0, false);
+        configurePhyPmaCmnVcoCfg(pD, linkRate, DP_SD0801_PLL_1, false);
+
+        configurePhyPmaCmnDpRate(pD, laneCfg, linkRate, dpPll);
 
         pD->linkState.linkRate  = linkRate;
+        pD->linkState.mLane = mLane;
         pD->linkState.laneCount = laneCount;
     }
 
@@ -1514,19 +943,21 @@ uint32_t DP_SD0801_ConfigLane(DP_SD0801_PrivateData* pD, uint8_t lane, const DP_
     uint8_t preEmphasis;
     uint16_t regTmp;
     DP_SD0801_VoltageCoefficients* coeffs;
-    /* Bits 9 and 10 of address indicate lane number. */
-    const uint32_t laneOffset = ((uint32_t)lane << 9);
-    uint32_t DiagAcyaAddr = (TX_DIAG_ACYA | laneOffset);
 
     retVal = DP_SD0801_ConfigLaneSF(pD, linkState);
     if (CDN_EOK == retVal) {
+
+        uint8_t laneNew = pD->linkState.mLane + lane;
+        /* Bits 9 and 10 of address indicate lane number. */
+        const uint32_t laneOffset = ((uint32_t)laneNew << 9);
+        uint32_t DiagAcyaAddr = (TX_DIAG_ACYA | laneOffset);
 
         voltageSwing = linkState->voltageSwing[lane];
         preEmphasis = linkState->preEmphasis[lane];
 
         /* Store new settings in pD. */
-        pD->linkState.voltageSwing[lane] = voltageSwing;
-        pD->linkState.preEmphasis[lane] = preEmphasis;
+        pD->linkState.voltageSwing[laneNew] = voltageSwing;
+        pD->linkState.preEmphasis[laneNew] = preEmphasis;
 
         /* Write register bit TX_DIAG_ACYA[0] to 1'b1 to freeze the current state of the analog TX driver. */
         regTmp = afeRead(pD, DiagAcyaAddr);
@@ -1568,15 +999,19 @@ static void setPllEnable(const DP_SD0801_PrivateData* pD, uint8_t laneCount, boo
     {
     /* lane 0 */
     case (0x0001):
-        pllRegBits = 0x00000001U;
+        pllRegBits = DP__DP_REGS__PMA_PLLCLK_EN_P__PMA_XCVR_PLLCLK_EN_LN_0_MASK;
         break;
     /* lanes 0-1 */
     case (0x0002):
-        pllRegBits = 0x00000003U;
+        pllRegBits = DP__DP_REGS__PMA_PLLCLK_EN_P__PMA_XCVR_PLLCLK_EN_LN_0_MASK
+                     | DP__DP_REGS__PMA_PLLCLK_EN_P__PMA_XCVR_PLLCLK_EN_LN_1_MASK;
         break;
     /* lanes 0-3, all */
     default:
-        pllRegBits = 0x0000000FU;
+        pllRegBits = DP__DP_REGS__PMA_PLLCLK_EN_P__PMA_XCVR_PLLCLK_EN_LN_0_MASK
+                     | DP__DP_REGS__PMA_PLLCLK_EN_P__PMA_XCVR_PLLCLK_EN_LN_1_MASK
+                     | DP__DP_REGS__PMA_PLLCLK_EN_P__PMA_XCVR_PLLCLK_EN_LN_2_MASK
+                     | DP__DP_REGS__PMA_PLLCLK_EN_P__PMA_XCVR_PLLCLK_EN_LN_3_MASK;
         break;
     }
 
@@ -1618,7 +1053,10 @@ static void reconfigureLinkRate(const DP_SD0801_PrivateData* pD, DP_SD0801_LinkR
     }
     CPS_DelayNs(200);
     /* DP Rate Change - VCO Output setting */
-    configurePhyPmaCmnVcoCfg(pD, getVcoFreq(linkRate), ssc);
+    /* used 1 link, then both should be set as same */
+    configurePhyPmaCmnVcoCfg(pD, linkRate, DP_SD0801_PLL_0, ssc);
+    configurePhyPmaCmnVcoCfg(pD, linkRate, DP_SD0801_PLL_1, ssc);
+
     configurePhyPmaCmnDpRate(pD, linkCfg, linkRate, dpPll);
 
     /* Enable the cmn_pll0_en */
@@ -1648,24 +1086,23 @@ uint32_t DP_SD0801_SetLinkRate(DP_SD0801_PrivateData* pD, const DP_SD0801_LinkSt
 
     uint32_t retVal;
     uint8_t linkCfg = 0U;
-    uint8_t dpPll = 1; /* TBD how to set */
+    uint8_t dpPll = (uint8_t)DP_SD0801_PLL_0; /* TBD how to set */
 
     retVal = DP_SD0801_SetLinkRateSF(pD, linkState);
+
     if (CDN_EOK == retVal) {
 
         const uint8_t laneCount = linkState->laneCount;
         const DP_SD0801_LinkRate linkRate = linkState->linkRate;
         const bool ssc = linkState->ssc;
+        uint8_t mLane = pD->linkState.mLane;
 
         /* Store new settings in pD. */
         pD->linkState.linkRate = linkRate;
         pD->linkState.laneCount = laneCount;
         pD->linkState.ssc = ssc;
 
-        if ((laneCount <= 4U) && (laneCount >  0U))
-        {
-            linkCfg = (uint8_t)((1U << (laneCount)) - 1U);
-        }
+        linkCfg = getLaneCfg(mLane, laneCount);
 
         setPowerState(pD, POWERSTATE_A3, laneCount);
 
@@ -1704,34 +1141,32 @@ static void setPhyIdleBits(uint32_t *regTmp, uint8_t laneCount)
 /**
  * Assert lane reset (Active low) on lane 0, among disabled lanes.
  */
-static void resetLane0(const DP_SD0801_PrivateData* pD, uint8_t linkCfg)
+static void resetLane0(const DP_SD0801_PrivateData* pD, uint8_t dpLaneCfg)
 {
     uint32_t regTmp;
 
     /* Assert lane reset low so that unused lanes remain in reset and powered down when re-enable the link */
     regTmp = CPS_REG_READ(&pD->regBaseDp->dp_regs.PHY_RESET_p);
-    CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PHY_RESET_p, ((regTmp & 0x0000FFF0U) | (0x0000000EU & (uint32_t)linkCfg)));
+    CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PHY_RESET_p, ((regTmp & 0x0000FFF0U) | (0x0000000EU & (uint32_t)dpLaneCfg)));
 }
 
 static void startupLanes(const DP_SD0801_PrivateData* pD, uint8_t laneCount)
 {
     uint32_t regTmp;
-    uint8_t linkCfg = 0U;
+    uint8_t mLaneDp = 0U;
+    uint8_t dpLaneCfg = 0U;
 
-    if ((laneCount <= 4U) && (laneCount >  0U))
-    {
-        linkCfg = (uint8_t)((1U << (laneCount)) - 1U);
-    }
+    dpLaneCfg = getLaneCfg(mLaneDp, laneCount);
 
     /* Assert lane reset (Active low) on lane 0, among disabled lanes. */
-    resetLane0(pD, linkCfg);
+    resetLane0(pD, dpLaneCfg);
 
     /* Set lanes into power state A0 */
     setPowerA0(pD, laneCount);
 
     /* release phy_l0*_reset_n based on used laneCount */
     regTmp = CPS_REG_READ(&pD->regBaseDp->dp_regs.PHY_RESET_p);
-    CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PHY_RESET_p, ((regTmp & 0x0000FFF0U) | (0x0000000FU & (uint32_t)linkCfg)));
+    CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PHY_RESET_p, ((regTmp & 0x0000FFF0U) | (0x0000000FU & (uint32_t)dpLaneCfg)));
 }
 
 /**
@@ -1802,21 +1237,21 @@ uint32_t DP_SD0801_GetDefaultCoeffs(const DP_SD0801_PrivateData*   pD,
 
      /* voltage swing 1, pre-emphasis 0->3 */
      {{.DiagTxDrv = 0x0003, .MgnfsMult = 0x001F, .CpostMult = 0x0000},
-        {.DiagTxDrv = 0x0003, .MgnfsMult = 0x0013, .CpostMult = 0x0012},
-        {.DiagTxDrv = 0x0003, .MgnfsMult = 0x0000, .CpostMult = 0x001F},
-        {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF}},
+      {.DiagTxDrv = 0x0003, .MgnfsMult = 0x0013, .CpostMult = 0x0012},
+      {.DiagTxDrv = 0x0003, .MgnfsMult = 0x0000, .CpostMult = 0x001F},
+      {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF}},
 
      /* voltage swing 2, pre-emphasis 0->3 */
      {{.DiagTxDrv = 0x0003, .MgnfsMult = 0x0013, .CpostMult = 0x0000},
-        {.DiagTxDrv = 0x0003, .MgnfsMult = 0x0000, .CpostMult = 0x0013},
-        {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF},
-        {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF}},
+      {.DiagTxDrv = 0x0003, .MgnfsMult = 0x0000, .CpostMult = 0x0013},
+      {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF},
+      {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF}},
 
      /* voltage swing 3, pre-emphasis 0->3 */
      {{.DiagTxDrv = 0x0003, .MgnfsMult = 0x0000, .CpostMult = 0x0000},
-        {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF},
-        {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF},
-        {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF}}};
+      {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF},
+      {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF},
+      {.DiagTxDrv = 0xFFFF, .MgnfsMult = 0xFFFF, .CpostMult = 0xFFFF}}};
 
     uint32_t retVal;
     retVal = DP_SD0801_GetDefaultCoeffsSF(pD, voltageSwing, preEmphasis, coefficients);
@@ -1834,3 +1269,4 @@ uint32_t DP_SD0801_GetDefaultCoeffs(const DP_SD0801_PrivateData*   pD,
 }
 
 /* parasoft-end-suppress METRICS-39-3 */
+/* parasoft-end-suppress METRICS-36-3 */

@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+ * Copyright (C) 2012-2022 Cadence Design Systems, Inc.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -47,14 +47,14 @@ bool isPhySupported(const DP_SD0801_PrivateData* pD)
     return true;
 }
 
-uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD0801_LinkRate linkRate)
+uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_SD0801_LinkRate linkRate)
 {
     /* Internal reg Addr 2 controls line for link rate. */
     /* B16 (0x8----) enables control from regs - otherwise dummy phy is */
     /* controlled by state on the lines. */
     uint32_t retVal;
 
-    retVal = DP_SD0801_PhyInitSF(pD);
+    retVal = DP_SD0801_PhyInitSF(pD, mLane, laneCount, linkRate);
 
     if (CDN_EOK == retVal)
     {
@@ -107,12 +107,17 @@ uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD08
         /* Release PHY reset */
         DP_SD0801_PhySetReset(pD, false);
 
+        pD->linkState.mLane = mLane;
         pD->linkState.linkRate  = linkRate;
         pD->linkState.laneCount = laneCount;
 
     }
 
     return retVal;
+}
+
+uint32_t DP_SD0801_RegisterCb(DP_SD0801_PrivateData* pD, const DP_SD0801_Callbacks* callbacks) {
+    return DP_SD0801_RegisterCbSF(pD, callbacks);
 }
 
 /**

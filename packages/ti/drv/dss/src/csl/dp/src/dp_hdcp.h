@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+ * Copyright (C) 2012-2022 Cadence Design Systems, Inc.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -58,9 +58,9 @@ typedef enum
 } HDCP_TRNAS_MAILBOX_MSG_ID;
 /** @} */ /*  */
 
-/* //////////////////////////////////////////////////////////////// */
-/* HDCP ports mail box messages */
-/* //////////////////////////////////////////////////////////////// */
+/*****************************************************************
+* HDCP ports mail box messages
+*****************************************************************/
 typedef enum
 {
     HDCP_GENERAL_SET_LC_128 = 0,

@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+* Copyright (C) 2012-2022 Cadence Design Systems, Inc.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
@@ -126,6 +126,25 @@ uint32_t DP_SD0801_ConfigSF(const DP_SD0801_Config *obj)
 }
 
 /**
+ * Function to validate struct Callbacks
+ *
+ * @param[in] obj pointer to struct to be verified
+ * @returns 0 for valid
+ * @returns CDN_EINVAL for invalid
+ */
+uint32_t DP_SD0801_CallbacksSF(const DP_SD0801_Callbacks *obj)
+{
+    uint32_t ret = 0;
+
+    if (obj == NULL)
+    {
+        ret = CDN_EINVAL;
+    }
+
+    return ret;
+}
+
+/**
  * Function to validate struct PrivateData
  *
  * @param[in] obj pointer to struct to be verified
@@ -239,16 +258,26 @@ uint32_t DP_SD0801_SanityFunction3(const DP_SD0801_PrivateData* pD)
  * A common function to check the validity of API functions with
  * following parameter types
  * @param[in] pD Driver state info specific to this instance.
+ * @param[in] mLane Master lane number of a link.
+ * @param[in] laneCount Number of lanes to initialize PHY with.
  * @param[in] linkRate Link rate to initialize PHY with.
  * @return 0 success
  * @return CDN_EINVAL invalid parameters
  */
-uint32_t DP_SD0801_SanityFunction4(const DP_SD0801_PrivateData* pD, const DP_SD0801_LinkRate linkRate)
+uint32_t DP_SD0801_SanityFunction4(const DP_SD0801_PrivateData* pD, const uint8_t mLane, const uint8_t laneCount, const DP_SD0801_LinkRate linkRate)
 {
     /* Declaring return variable */
     uint32_t ret = 0;
 
     if (DP_SD0801_PrivateDataSF(pD) == CDN_EINVAL)
+    {
+        ret = CDN_EINVAL;
+    }
+    else if (mLane > (DP_SD0801_MAX_LANE_COUNT - 1U))
+    {
+        ret = CDN_EINVAL;
+    }
+    else if ((laneCount < (1U)) || (laneCount > (DP_SD0801_MAX_LANE_COUNT)))
     {
         ret = CDN_EINVAL;
     }
@@ -411,6 +440,38 @@ uint32_t DP_SD0801_SanityFunction15(const DP_SD0801_PrivateData* pD, const DP_SD
         ret = CDN_EINVAL;
     }
     else if (DP_SD0801_PrivateDataSF(pD) == CDN_EINVAL)
+    {
+        ret = CDN_EINVAL;
+    }
+    else
+    {
+        /*
+         * All 'if ... else if' constructs shall be terminated with an 'else' statement
+         * (MISRA2012-RULE-15_7-3)
+         */
+    }
+
+    return ret;
+}
+
+/**
+ * A common function to check the validity of API functions with
+ * following parameter types
+ * @param[in] pD Driver state info specific to this instance.
+ * @param[in] callbacks Structure with defined callbacks
+ * @return 0 success
+ * @return CDN_EINVAL invalid parameters
+ */
+uint32_t DP_SD0801_SanityFunction16(const DP_SD0801_PrivateData* pD, const DP_SD0801_Callbacks* callbacks)
+{
+    /* Declaring return variable */
+    uint32_t ret = 0;
+
+    if (DP_SD0801_PrivateDataSF(pD) == CDN_EINVAL)
+    {
+        ret = CDN_EINVAL;
+    }
+    else if (DP_SD0801_CallbacksSF(callbacks) == CDN_EINVAL)
     {
         ret = CDN_EINVAL;
     }

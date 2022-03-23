@@ -778,6 +778,7 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
     if(FVID2_SOK == retVal)
     {
         dpApiRet = DP_ConfigurePhyStartUp(pObj->dpPrivData,
+                0,
                 pObj->srcCaps.laneCount,
                 pObj->srcCaps.maxLinkRate);
         if(CDN_EOK != dpApiRet)

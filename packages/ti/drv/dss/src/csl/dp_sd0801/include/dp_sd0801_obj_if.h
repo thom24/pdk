@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+* Copyright (C) 2012-2022 Cadence Design Systems, Inc.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
@@ -87,23 +87,25 @@ typedef struct DP_SD0801_OBJ_s
      * way to bring up PHY, instead of manual initialization. AUX channel
      * still has to be initialized separately.
      * @param[in] pD Driver state info specific to this instance.
+     * @param[in] mLane Master lane number of a link.
      * @param[in] laneCount Number of lanes to initialize PHY with.
      * @param[in] linkRate Link rate to initialize PHY with.
      * @return CDN_EOK success
      * @return CDN_EINVAL If pD is NULL or parameters are invalid.
      */
-    uint32_t (*phyStartUp)(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
+    uint32_t (*phyStartUp)(DP_SD0801_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
 
     /**
      * Part of manual DP PHY Main Link initialization. Performs
      * operations to be done before releasing PHY reset.
      * @param[in] pD Driver state info specific to this instance.
+     * @param[in] mLane Master lane number of a link.
      * @param[in] laneCount Number of lanes to initialize PHY with.
      * @param[in] linkRate Link rate to initialize PHY with.
      * @return CDN_EOK success
      * @return CDN_EINVAL If pD is NULL or parameters are invalid.
      */
-    uint32_t (*PhyInit)(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
+    uint32_t (*PhyInit)(DP_SD0801_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
 
     /**
      * Part of manual DP PHY Main Link initialization. Assert or release
@@ -222,6 +224,15 @@ typedef struct DP_SD0801_OBJ_s
      * @return CDN_EINVAL If pD or linkState pointer is NULL.
      */
     uint32_t (*readLinkStat)(const DP_SD0801_PrivateData* pD, DP_SD0801_LinkState* linkState);
+
+    /**
+     * Register external functions in driver PrivateData
+     * @param[in] pD Driver state info specific to this instance.
+     * @param[in] callbacks Structure with defined callbacks
+     * @return CDN_EOK success
+     * @return CDN_EINVAL If pD or Callbacks pointer is NULL.
+     */
+    uint32_t (*registerCb)(DP_SD0801_PrivateData* pD, const DP_SD0801_Callbacks* callbacks);
 
 } DP_SD0801_OBJ;
 

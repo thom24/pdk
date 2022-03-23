@@ -226,7 +226,7 @@ extern void CPS_MemoryBarrierRead(void);
  */
 extern void CPS_ExtPhyReset(bool reset);
 
-
+extern void CPS_ExtPhyReset(bool reset);
 /* parasoft-end-suppress METRICS-36-3 */
 /* parasoft-end-suppress MISRA2012-RULE-8_6-2 */
 

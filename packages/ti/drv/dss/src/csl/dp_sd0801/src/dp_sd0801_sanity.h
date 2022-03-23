@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+* Copyright (C) 2012-2022 Cadence Design Systems, Inc.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
@@ -54,6 +54,7 @@
 #include "cdn_stdtypes.h"
 #include "dp_sd0801_if.h"
 
+uint32_t DP_SD0801_CallbacksSF(const DP_SD0801_Callbacks *obj);
 uint32_t DP_SD0801_ConfigSF(const DP_SD0801_Config *obj);
 uint32_t DP_SD0801_LinkStateSF(const DP_SD0801_LinkState *obj);
 uint32_t DP_SD0801_PrivateDataSF(const DP_SD0801_PrivateData *obj);
@@ -62,17 +63,18 @@ uint32_t DP_SD0801_VoltageCoefficientSF(const DP_SD0801_VoltageCoefficients *obj
 uint32_t DP_SD0801_SanityFunction1(const DP_SD0801_Config* config, const uint32_t* memReq);
 uint32_t DP_SD0801_SanityFunction2(const DP_SD0801_PrivateData* pD, const DP_SD0801_Config* config);
 uint32_t DP_SD0801_SanityFunction3(const DP_SD0801_PrivateData* pD);
-uint32_t DP_SD0801_SanityFunction4(const DP_SD0801_PrivateData* pD, const DP_SD0801_LinkRate linkRate);
+uint32_t DP_SD0801_SanityFunction4(const DP_SD0801_PrivateData* pD, const uint8_t mLane, const uint8_t laneCount, const DP_SD0801_LinkRate linkRate);
 uint32_t DP_SD0801_SanityFunction9(const DP_SD0801_PrivateData* pD, const DP_SD0801_LinkState* linkState);
 uint32_t DP_SD0801_SanityFunction12(const DP_SD0801_PrivateData* pD, const uint8_t voltageSwing, const uint8_t preEmphasis, const DP_SD0801_VoltageCoefficients* coefficients);
 uint32_t DP_SD0801_SanityFunction14(const DP_SD0801_PrivateData* pD, const uint8_t voltageSwing, const uint8_t preEmphasis, const DP_SD0801_VoltageCoefficients* coefficients);
 uint32_t DP_SD0801_SanityFunction15(const DP_SD0801_PrivateData* pD, const DP_SD0801_LinkState* linkState);
+uint32_t DP_SD0801_SanityFunction16(const DP_SD0801_PrivateData* pD, const DP_SD0801_Callbacks* callbacks);
 
 #define DP_SD0801_ProbeSF DP_SD0801_SanityFunction1
 #define DP_SD0801_InitSF DP_SD0801_SanityFunction2
 #define DP_SD0801_ConfigurePhyAuxCtrSF DP_SD0801_SanityFunction3
 #define DP_SD0801_PhyStartUpSF DP_SD0801_SanityFunction4
-#define DP_SD0801_PhyInitSF DP_SD0801_SanityFunction3
+#define DP_SD0801_PhyInitSF DP_SD0801_SanityFunction4
 #define DP_SD0801_PhySetResetSF DP_SD0801_SanityFunction3
 #define DP_SD0801_WaitPmaCmnReadySF DP_SD0801_SanityFunction3
 #define DP_SD0801_PhyRunSF DP_SD0801_SanityFunction3
@@ -83,6 +85,7 @@ uint32_t DP_SD0801_SanityFunction15(const DP_SD0801_PrivateData* pD, const DP_SD
 #define DP_SD0801_GetCoefficientsSF DP_SD0801_SanityFunction12
 #define DP_SD0801_SetCoefficientsSF DP_SD0801_SanityFunction14
 #define DP_SD0801_ReadLinkStatSF DP_SD0801_SanityFunction15
+#define DP_SD0801_RegisterCbSF DP_SD0801_SanityFunction16
 
 #endif  /* DP_SD0801_SANITY_H */
 

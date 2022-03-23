@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+ * Copyright (C) 2012-2022 Cadence Design Systems, Inc.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -713,7 +713,7 @@ uint32_t DP_DscSoftwareReset(DP_PrivateData* pD)
 
     if (CDN_EOK == retVal) {
         regTransfer.addr = offsetof(MHDP_ApbRegs, mhdp_apb_regs.mhdp_vif_ctrl[0].DSC_CTRL_p);
-        /* Might need a timeout// */
+        /* Might need a timeout */
         do {
             retVal = DP_ReadRegister(pD, &regTransfer);
             if (CDN_EOK != retVal) {
@@ -743,7 +743,7 @@ uint32_t DP_DscRegistersUpdate(DP_PrivateData* pD, uint8_t streamId)
     }
 
     if (CDN_EOK == retVal) {
-        /* Might need a timeout// */
+        /* Might need a timeout */
         do {
             retVal = DP_ReadRegister(pD, &regTransfer);
             if (CDN_EOK != retVal) {

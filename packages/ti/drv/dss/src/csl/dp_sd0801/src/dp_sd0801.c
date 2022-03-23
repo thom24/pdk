@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+ * Copyright (C) 2012-2022 Cadence Design Systems, Inc.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -109,6 +109,19 @@ uint32_t DP_SD0801_Probe(const DP_SD0801_Config* config, uint32_t* memReq)
     return retVal;
 }
 
+/** Cleanup external functions callbacks.
+ *  Extra function and strcuture used to avoid problems with code insturmentalization
+ *  @param[in] callbacks, pointer to callbacks reference strucutre
+ */
+static void disableCallbacks(DP_SD0801_Callbacks* callbacks) {
+
+    const DP_SD0801_Callbacks cb = {
+        .extPhyReset = NULL
+    };
+
+    *callbacks = cb;
+}
+
 uint32_t DP_SD0801_Init(DP_SD0801_PrivateData* pD, const DP_SD0801_Config* config)
 {
     uint32_t retVal;
@@ -120,6 +133,7 @@ uint32_t DP_SD0801_Init(DP_SD0801_PrivateData* pD, const DP_SD0801_Config* confi
         /* Assign addresses of register bases from configuration. */
         pD->regBase = config->regBase;
         pD->regBaseDp = config->regBaseDp;
+        pD->linkState.mLane = 0; /* Default master lane. */
         pD->linkState.laneCount = 0; /* Indicates uninitialized PHY driver. */
         pD->linkState.linkRate = DP_SD0801_LINK_RATE_1_62;
         for (i = 0; i < 4U; i++)
@@ -127,6 +141,10 @@ uint32_t DP_SD0801_Init(DP_SD0801_PrivateData* pD, const DP_SD0801_Config* confi
             pD->linkState.voltageSwing[i] = 0;
             pD->linkState.preEmphasis[i] = 0;
         }
+
+        /* disable external functions */
+        disableCallbacks(&pD->callbacks);
+
         /* put default voltage coefficients to Private Data (may be modified later). */
         retVal = fillDefaultCoefficients(pD);
     }
@@ -158,8 +176,11 @@ uint32_t DP_SD0801_PhySetReset(const DP_SD0801_PrivateData* pD, bool reset)
         regTmp = CPS_FLD_WRITE(DP__DP_REGS__PHY_RESET_P, PHY_RESET, regTmp, (reset ? 0 : 1));
         CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PHY_RESET_p, regTmp);
 
-        CPS_ExtPhyReset(reset);
+        if (pD->callbacks.extPhyReset != NULL) {
+            pD->callbacks.extPhyReset(reset);
+        }
     }
+    CPS_ExtPhyReset(reset);
     return retVal;
 }
 
@@ -229,15 +250,15 @@ uint32_t DP_SD0801_ReadLinkStat(const DP_SD0801_PrivateData* pD, DP_SD0801_LinkS
 /**
  * Automatically initialize and configure DP Main Link on PHY.
  */
-uint32_t DP_SD0801_PhyStartUp(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD0801_LinkRate linkRate)
+uint32_t DP_SD0801_PhyStartUp(DP_SD0801_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_SD0801_LinkRate linkRate)
 {
     uint32_t retVal;
 
-    retVal = DP_SD0801_PhyStartUpSF(pD, linkRate);
+    retVal = DP_SD0801_PhyStartUpSF(pD, mLane, laneCount, linkRate);
 
     if (CDN_EOK == retVal) {
         /* Perform operations to be done before releasing reset. */
-        retVal = DP_SD0801_PhyInit(pD, laneCount, linkRate);
+        retVal = DP_SD0801_PhyInit(pD, mLane, laneCount, linkRate);
     }
 
     if (CDN_EOK == retVal) {

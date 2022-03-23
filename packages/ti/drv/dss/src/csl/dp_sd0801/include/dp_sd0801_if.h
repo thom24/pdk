@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+* Copyright (C) 2012-2022 Cadence Design Systems, Inc.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
@@ -79,6 +79,7 @@
 typedef struct DP_SD0801_VoltageCoefficients_s DP_SD0801_VoltageCoefficients;
 typedef struct DP_SD0801_LinkState_s DP_SD0801_LinkState;
 typedef struct DP_SD0801_Config_s DP_SD0801_Config;
+typedef struct DP_SD0801_Callbacks_s DP_SD0801_Callbacks;
 
 typedef struct DP_SD0801_PrivateData_s DP_SD0801_PrivateData;
 
@@ -122,6 +123,21 @@ typedef enum
     /** Two controllers are used with PHY. */
     DP_SD0801_DUAL_CONTROLLER = 0x02U
 } DP_SD0801_ControllersPerPhy;
+
+/** Selects used PLL */
+typedef enum
+{
+    /** PLL0 used/configured */
+    DP_SD0801_PLL_0 = 0x01U,
+    /** PLL1 used/configured */
+    DP_SD0801_PLL_1 = 0x02U
+} DP_SD0801_Pll;
+
+/**********************************************************************
+* Callbacks
+**********************************************************************/
+/** Do extra operations for PHY reset with specified environment */
+typedef void (*DP_SD0801_CbExtPhyReset)(bool resetEnable);
 
 /**
  *  @}
@@ -170,23 +186,25 @@ uint32_t DP_SD0801_ConfigurePhyAuxCtrl(const DP_SD0801_PrivateData* pD);
  * way to bring up PHY, instead of manual initialization. AUX channel
  * still has to be initialized separately.
  * @param[in] pD Driver state info specific to this instance.
+ * @param[in] mLane Master lane number of a link.
  * @param[in] laneCount Number of lanes to initialize PHY with.
  * @param[in] linkRate Link rate to initialize PHY with.
  * @return CDN_EOK success
  * @return CDN_EINVAL If pD is NULL or parameters are invalid.
  */
-uint32_t DP_SD0801_PhyStartUp(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
+uint32_t DP_SD0801_PhyStartUp(DP_SD0801_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
 
 /**
  * Part of manual DP PHY Main Link initialization. Performs operations
  * to be done before releasing PHY reset.
  * @param[in] pD Driver state info specific to this instance.
+ * @param[in] mLane Master lane number of a link.
  * @param[in] laneCount Number of lanes to initialize PHY with.
  * @param[in] linkRate Link rate to initialize PHY with.
  * @return CDN_EOK success
  * @return CDN_EINVAL If pD is NULL or parameters are invalid.
  */
-uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
+uint32_t DP_SD0801_PhyInit(DP_SD0801_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_SD0801_LinkRate linkRate);
 
 /**
  * Part of manual DP PHY Main Link initialization. Assert or release
@@ -304,6 +322,15 @@ uint32_t DP_SD0801_SetCoefficients(DP_SD0801_PrivateData* pD, uint8_t voltageSwi
  * @return CDN_EINVAL If pD or linkState pointer is NULL.
  */
 uint32_t DP_SD0801_ReadLinkStat(const DP_SD0801_PrivateData* pD, DP_SD0801_LinkState* linkState);
+
+/**
+ * Register external functions in driver PrivateData
+ * @param[in] pD Driver state info specific to this instance.
+ * @param[in] callbacks Structure with defined callbacks
+ * @return CDN_EOK success
+ * @return CDN_EINVAL If pD or Callbacks pointer is NULL.
+ */
+uint32_t DP_SD0801_RegisterCb(DP_SD0801_PrivateData* pD, const DP_SD0801_Callbacks* callbacks);
 
 /**
  *  @}

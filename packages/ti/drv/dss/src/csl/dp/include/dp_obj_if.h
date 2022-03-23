@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+* Copyright (C) 2012-2022 Cadence Design Systems, Inc.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
@@ -358,12 +358,13 @@ typedef struct DP_OBJ_s
      * still has to be initialized separately. alternatively, respective
      * PHY driver's function may be called instead.
      * @param[in] pD Driver state info specific to this instance.
+     * @param[in] mLane Master lane number of a link.
      * @param[in] laneCount Number of lanes to initialize PHY with.
      * @param[in] linkRate Link rate to initialize PHY with.
      * @return CDN_EOK success
      * @return CDN_EINVAL If pD is NULL or parameters are invalid.
      */
-    uint32_t (*configurePhyStartUp)(DP_PrivateData* pD, uint8_t laneCount, DP_LinkRate linkRate);
+    uint32_t (*configurePhyStartUp)(DP_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_LinkRate linkRate);
 
     /**
      * Sends request for reading EDID from sink device. DP_checkResponse

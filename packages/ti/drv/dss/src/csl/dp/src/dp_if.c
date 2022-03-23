@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+ * Copyright (C) 2012-2022 Cadence Design Systems, Inc.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -34,7 +34,7 @@
  */
 
 /* parasoft-begin-suppress METRICS-36-3 "Function called from more than 5 different functions, DRV-3823" */
-/* parasoft-begin-suppress METRICS-41 "Number of comments per block" */
+/* parasoft-begin-suppress METRICS-41 "Number of comments per block", DRV-3849*/
 
 #include "dp_structs_if.h"
 #include "dp_priv.h"
@@ -538,108 +538,102 @@ static float64_t calculateTargetAverageSlots(const DP_PrivateData* pD,
     return targetAverageSlots;
 }
 
-static uint32_t calcSdpBlockVblank(const DP_PrivateData* pD,
-                                   uint8_t               streamId,
-                                   float64_t             targAvgSlots)
+typedef enum {
+    /* Analyze lines in vertical direction */
+    VERTICAL,
+    /* Analyze lines in horizontal direction */
+    HORIZONTAL
+} Direction_t;
+
+static uint32_t getNumberOfBlankLines(const DP_PrivateData* pD, uint8_t streamId, Direction_t direction)
 {
-    const uint32_t vblankCyclesMax = 65535U; /* 16 bits */
+    uint32_t blankLines = pD->videoParameters[streamId].vicParams.hTotal;
 
-    float64_t vblankCycles;
-    uint8_t laneCountCalc; /* Number of lanes, used for calculations. */
+    if (direction == HORIZONTAL) {
+        blankLines -= pD->videoParameters[streamId].vicParams.hActive;
+    }
 
+    return blankLines;
+}
+
+static inline uint32_t getMaxSdpCycles(Direction_t direction)
+{
+    return (direction == VERTICAL) ? DP_MAX_SDP_VBLANK_CYCLES_TO_BLOCK : DP_MAX_SDP_HBLANK_CYCLES_TO_BLOCK;
+}
+
+static float64_t adjustForLanesNumber(float64_t blankCycles, uint32_t laneCount)
+{
+    float64_t temp = (float64_t)laneCount / (float64_t)DP_MAX_NUMBER_OF_LANES;
+    return floor(blankCycles * temp);
+}
+
+static float64_t adjustSafetyMarigin(float64_t blankCyclesFlt, uint32_t laneCount, bool isMst)
+{
+    /* Set safety marigin as 90% of base value*/
+    const float64_t safety_margin = 0.9;
+    float64_t margin;
+
+    /* Apply safety margin. */
+    float64_t blankCyclesWithMargin = blankCyclesFlt * safety_margin;
+
+    if (isMst) {
+        margin = 9.0;
+    } else {
+        blankCyclesWithMargin = nearbyint(blankCyclesWithMargin);
+        margin = nearbyint(36.0 / ((float64_t)laneCount + 1.0)) + 1.0;
+    }
+
+    if (blankCyclesWithMargin > margin) {
+        blankCyclesWithMargin -= margin;
+    } else {
+        blankCyclesWithMargin = 0.0;
+    }
+
+    return blankCyclesWithMargin;
+}
+
+static uint32_t calcSdpBlock(const DP_PrivateData* pD,
+                             uint8_t               streamId,
+                             float64_t             targAvgSlots,
+                             Direction_t           direction)
+{
     const uint8_t laneCount = pD->linkState.laneCount;
-    const uint32_t vTotal = pD->videoParameters[streamId].vicParams.vTotal;
+
+    const uint32_t blankLines = getNumberOfBlankLines(pD, streamId, direction);
+
+    float64_t blankCyclesFlt;
+    uint32_t blankCyclesUint;
+
+    const uint32_t maxCyclesNum = getMaxSdpCycles(direction);
+
     const uint32_t symbolRate = (uint32_t)getSymbolRate(pD->linkState.linkRate);
     const float64_t pixelClock = pD->videoParameters[streamId].vicParams.pxlFreq;
 
-    /* For MST, calculate like there are always 4 lanes. */
-    laneCountCalc = (!pD->mstEnabled) ? laneCount : 4U;
-
     /* Calculate number of data_clk cycles. */
-    uint32_t init = (vTotal * symbolRate) / 2U;
-    vblankCycles = (float64_t)init / pixelClock;
-    vblankCycles = floor(vblankCycles);
+    blankCyclesFlt = (float64_t)blankLines;
+    blankCyclesFlt *= nearbyint((float64_t)symbolRate / 2.0);
+    blankCyclesFlt /= nearbyint(pixelClock);
+    blankCyclesFlt = nearbyint(blankCyclesFlt);
 
     if (pD->mstEnabled) {
         /* Quantize to slot allocation */
-        vblankCycles *= (targAvgSlots / 64.0);
-        vblankCycles = floor(vblankCycles);
-    }
-
-    /* Apply safety margin. */
-    vblankCycles = (vblankCycles * 90.0) / 100.0;
-    vblankCycles = floor(vblankCycles);
-
-    float64_t marigin = (36.0 / (float64_t)laneCountCalc) + 1.0;
-    if (vblankCycles > marigin) {
-        vblankCycles -= marigin;
-        vblankCycles = floor(vblankCycles);
-    } else {
-        vblankCycles = 0.0;
-    }
-
-    if (pD->mstEnabled) {
+        blankCyclesFlt *= (targAvgSlots / 64.0);
         /* Adjust for actual number of lanes */
-        vblankCycles *= ((float64_t)laneCount / 4.0);
-        vblankCycles = floor(vblankCycles);
+        blankCyclesFlt = adjustForLanesNumber(blankCyclesFlt, laneCount);
     }
 
-    if ((uint32_t)vblankCycles > vblankCyclesMax) {
-        vblankCycles = (float64_t)vblankCyclesMax;
+    blankCyclesFlt = adjustSafetyMarigin(blankCyclesFlt, laneCount, pD->mstEnabled);
+
+    blankCyclesUint = (uint32_t)nearbyint(blankCyclesFlt);
+
+    if (blankCyclesUint > maxCyclesNum) {
+        blankCyclesUint = maxCyclesNum;
     }
 
-    return (uint32_t)vblankCycles;
-}
+    vDbgMsg(DBG_GEN_MSG, DBG_FYI,
+            "CyclesNum: %u, Dir: %u\n", blankCyclesUint, direction);
 
-static uint32_t calcSdpBlockHblank(const DP_PrivateData* pD,
-                                   uint8_t               streamId,
-                                   float64_t             targAvgSlots)
-{
-    const uint16_t hblankCyclesMax = 32767U; /* 15 bits */
-    float64_t hblankCycles;
-    uint8_t laneCountCalc; /* Number of lanes, used for calculations. */
-
-    const uint8_t laneCount = pD->linkState.laneCount;
-    const uint32_t hTotal = pD->videoParameters[streamId].vicParams.hTotal;
-    const uint32_t hActive = pD->videoParameters[streamId].vicParams.hActive;
-    const uint16_t symbolRate = getSymbolRate(pD->linkState.linkRate);
-    const float64_t pixelClock = pD->videoParameters[streamId].vicParams.pxlFreq;
-
-    /* For MST, calculate like there are always 4 lanes. */
-    laneCountCalc = (!pD->mstEnabled) ? laneCount : 4U;
-    uint32_t init = ((hTotal - hActive) * (uint32_t)symbolRate) / 2U;
-    hblankCycles = (float64_t)init / pixelClock;
-    hblankCycles = floor(hblankCycles);
-
-    if (pD->mstEnabled) {
-        /* Quantize to slot allocation */
-        hblankCycles *= (targAvgSlots / 64.0);
-        hblankCycles = floor(hblankCycles);
-    }
-
-    /* Apply safety margin. */
-    hblankCycles = (hblankCycles * 90.0) / 100.0;
-    hblankCycles = floor(hblankCycles);
-
-    float64_t marigin = (36.0 / (float64_t)laneCountCalc) + 1.0;
-    if (hblankCycles > marigin) {
-        hblankCycles -= marigin;
-        hblankCycles = floor(hblankCycles);
-    } else {
-        hblankCycles = 0.0;
-    }
-
-    if (pD->mstEnabled) {
-        /* Adjust for actual number of lanes */
-        hblankCycles *= ((float64_t)laneCount / 4.0);
-        hblankCycles = floor(hblankCycles);
-    }
-
-    if ((uint32_t)hblankCycles > hblankCyclesMax) {
-        hblankCycles = (float64_t)hblankCyclesMax;
-    }
-
-    return (uint32_t)hblankCycles;
+    return blankCyclesUint;
 }
 
 static uint32_t calcByteCount(const DP_PrivateData* pD,
@@ -1227,8 +1221,8 @@ static uint32_t configureSdpBlocking(DP_PrivateData* pD, uint8_t streamId, bool 
         targAvgSlots = calculateTargetAverageSlots(pD, streamId, fecEnabled);
     }
 
-    vblankSdpCycles = calcSdpBlockVblank(pD, streamId, targAvgSlots);
-    hblankSdpCycles = calcSdpBlockHblank(pD, streamId, targAvgSlots);
+    vblankSdpCycles = calcSdpBlock(pD, streamId, targAvgSlots, VERTICAL);
+    hblankSdpCycles = calcSdpBlock(pD, streamId, targAvgSlots, HORIZONTAL);
 
     regTransfer.addr = offsetof(MHDP_ApbRegs, mhdp_apb_regs.mhdp_dptx_stream[0].DP_BLOCK_SDP_p);
     regTransfer.addr += streamId * (uint32_t)sizeof(pD->regBase->mhdp_apb_regs.mhdp_dptx_stream[0]);
@@ -2310,7 +2304,6 @@ uint32_t DP_Start(DP_PrivateData* pD)
     if (CDN_EOK == retVal) {
         /* Disable the mailbox interrupt. Else it will keep interrupting */
         CPS_REG_WRITE(&pD->regBase->mhdp_apb_regs.MAILBOX_INT_MASK_p, ~(0U));
-
         reg  = CPS_FLD_WRITE(MHDP__MHDP_APB_REGS__APB_INT_MASK_P, APB_MAILBOX_INTR_MASK, 0U, 0U)
                | CPS_FLD_WRITE(MHDP__MHDP_APB_REGS__APB_INT_MASK_P, APB_SW_INTR_MASK, 0U, 0U)
                | CPS_FLD_WRITE(MHDP__MHDP_APB_REGS__APB_INT_MASK_P, APB_PIF_INTR_MASK, 0U, 0U)
@@ -2639,14 +2632,14 @@ uint32_t DP_ConfigurePhyAuxCtrl(const DP_PrivateData* pD)
     return retVal;
 }
 
-uint32_t DP_ConfigurePhyStartUp(DP_PrivateData* pD, uint8_t laneCount, DP_LinkRate linkRate)
+uint32_t DP_ConfigurePhyStartUp(DP_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_LinkRate linkRate)
 {
     uint32_t retVal;
 
     retVal = DP_ConfigurePhyStartUpSF(pD, linkRate);
 
     if (CDN_EOK == retVal) {
-        retVal = DP_SD0801_PhyStartUp(pD->phyPd, laneCount, toLinkRateSd(linkRate));
+        retVal = DP_SD0801_PhyStartUp(pD->phyPd, mLane, laneCount, toLinkRateSd(linkRate));
     }
 
     return retVal;
@@ -2943,7 +2936,7 @@ static uint32_t DP_ReadDpcdInternal(DP_PrivateData*  pD,
     {
         retVal = DP_GetDpcdReadResponse(pD, transfer);
     }
-
+    
     return retVal;
 }
 
@@ -3563,7 +3556,7 @@ uint32_t DP_FillVideoFormat(DP_VideoFormatParams* vicParams, DP_VicModes vicMode
         {129U, 1536U, 1152U, 384U, 120U, 72U, 192U, 68.19661458, 911U, 870U, 41.0, 10U, 3U, 28U, 74.85907199, 104.75, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_HIGH, DP_SP_ACTIVE_HIGH, 8U, 0U},
         {130U, 2200, 1920, 280, 44, 88, 148, 66.587,  1125, 1080, 45, 5, 4, 36, 59.93, 148.5, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_HIGH, DP_SP_ACTIVE_HIGH, 8, 0},
         {131U, 2720, 2560, 160, 32, 48, 80, 88.787,  1481, 1440, 41, 5, 3, 33, 59.95, 240, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_HIGH, DP_SP_ACTIVE_HIGH, 8, 0},
-        {132U, 4000, 3840, 160, 32, 48, 80, 133.313, 2222, 2160, 62, 5, 3, 54, 59.99, 533.25, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_HIGH, DP_SP_ACTIVE_HIGH, 8, 0},	
+        {132U, 4000, 3840, 160, 32, 48, 80, 133.313, 2222, 2160, 62, 5, 3, 54, 59.99, 533.25, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_HIGH, DP_SP_ACTIVE_HIGH, 8, 0},
         {0U, 5500U, 5120U, 380U, 88U, 164U, 128U, 135.0, 2250U, 2160U, 90.0, 10U, 8U, 72U, 60.0, 742.50, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_HIGH, DP_SP_ACTIVE_HIGH, 8U, 0U},
         {1U, 800U, 640U, 160U, 96U, 16U, 48U, 31.469, 36U, 20U, 16.0, 2U, 3U, 11U, 59.94, 25.18, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_LOW, DP_SP_ACTIVE_LOW, 8U, 0U},
         {2U, 858U, 720U, 138U, 62U, 16U, 60U, 31.469, 36U, 20U, 16.0, 2U, 3U, 11U, 59.94, 27.00, DP_SM_PROGRESSIVE, DP_SP_ACTIVE_LOW, DP_SP_ACTIVE_LOW, 8U, 0U},

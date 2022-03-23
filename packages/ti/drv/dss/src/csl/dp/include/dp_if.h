@@ -1,5 +1,5 @@
 /**********************************************************************
-* Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+* Copyright (C) 2012-2022 Cadence Design Systems, Inc.
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions
 * are met:
@@ -62,9 +62,6 @@
 /** Max. possible amount of DPCD bytes to write/read using a single request. */
 #define DP_MAX_DPCD_TRANSFER_SIZE 1014U
 
-/** Max. possible DPCD read retries before bailing out */
-#define DP_MAX_DPCD_READ_RETRIES 3U
-
 /**
  * Max. possible amount of bytes to write/read using I2C-over-AUX using a
  * single request.
@@ -86,6 +83,12 @@
 
 /** maximum number of SDP packets per stream */
 #define DP_MAX_NUMBER_OF_SDPS (16U)
+
+/** Maximum number of cycles after BS during vertical blank lines after SDP scheduling will be blocked */
+#define DP_MAX_SDP_VBLANK_CYCLES_TO_BLOCK 65535U
+
+/** Maximum number of cycles after BS during horizontal blank lines after SDP scheduling will be blocked */
+#define DP_MAX_SDP_HBLANK_CYCLES_TO_BLOCK 32767U
 
 /** maximum number of streams in MST mode */
 #define DP_MAX_NUMBER_OF_STREAMS (4U)
@@ -117,7 +120,7 @@
 #define DP_HDCP_SEED_LENGTH (32U)
 
 #define DP_MAX_NUMBER_OF_LANES (4U)
-
+#define DP_MAX_DPCD_READ_RETRIES 3U
 /**
  *  @}
  */
@@ -1012,12 +1015,13 @@ uint32_t DP_ConfigurePhyAuxCtrl(const DP_PrivateData* pD);
  * still has to be initialized separately. alternatively, respective
  * PHY driver's function may be called instead.
  * @param[in] pD Driver state info specific to this instance.
+ * @param[in] mLane Master lane number of a link.
  * @param[in] laneCount Number of lanes to initialize PHY with.
  * @param[in] linkRate Link rate to initialize PHY with.
  * @return CDN_EOK success
  * @return CDN_EINVAL If pD is NULL or parameters are invalid.
  */
-uint32_t DP_ConfigurePhyStartUp(DP_PrivateData* pD, uint8_t laneCount, DP_LinkRate linkRate);
+uint32_t DP_ConfigurePhyStartUp(DP_PrivateData* pD, uint8_t mLane, uint8_t laneCount, DP_LinkRate linkRate);
 
 /**
  * Sends request for reading EDID from sink device. DP_checkResponse
@@ -1093,7 +1097,7 @@ uint32_t DP_GetSinkCapabilities(DP_PrivateData* pD, DP_SinkDeviceCapabilities* c
  * @return CDN_EOK success
  * @return CDN_EINVAL If pD or customPattern is NULL.
  */
-uint32_t DP_SetCustomPattern(DP_PrivateData * pD, uint8_t customPattern[10]);
+uint32_t DP_SetCustomPattern(DP_PrivateData* pD, uint8_t customPattern[10]);
 
 /**
  * Transmit (or stop transmitting) selected test pattern at requested
@@ -1681,7 +1685,7 @@ uint32_t DP_SendHdcp2RecvIdRequest(DP_PrivateData* pD);
  * @return CDN_ENOEXEC Wrong Module or Operation ID was received in response form FW.
  * @return CDN_EINVAL If pD or address of 'id' array is NULL.
  */
-uint32_t DP_GetHdcp2RecvIdResponse(DP_PrivateData * pD, uint8_t id[5]);
+uint32_t DP_GetHdcp2RecvIdResponse(DP_PrivateData* pD, uint8_t id[5]);
 
 /**
  * Get Receiver ID, which should looked up in storage, to get pairing
@@ -1692,7 +1696,7 @@ uint32_t DP_GetHdcp2RecvIdResponse(DP_PrivateData * pD, uint8_t id[5]);
  * @return CDN_ENOEXEC Wrong Module or Operation ID was received in response form FW.
  * @return CDN_EINVAL If pD or address of 'id' array is NULL.
  */
-uint32_t DP_GetHdcp2RecvId(DP_PrivateData * pD, uint8_t id[5]);
+uint32_t DP_GetHdcp2RecvId(DP_PrivateData* pD, uint8_t id[5]);
 
 /**
  * Send request for pairing data (receiver ID and associated

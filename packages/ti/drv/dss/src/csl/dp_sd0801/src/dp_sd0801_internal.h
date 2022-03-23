@@ -1,6 +1,6 @@
 /******************************************************************************
  *
- * Copyright (C) 2012-2019 Cadence Design Systems, Inc.
+ * Copyright (C) 2012-2022 Cadence Design Systems, Inc.
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -33,8 +33,8 @@
  ******************************************************************************
  */
 
-#ifndef DP_SD0801_INERNAL_H
-#define DP_SD0801_INERNAL_H
+#ifndef DP_SD0801_INTERNAL_H
+#define DP_SD0801_INTERNAL_H
 
 /* parasoft-begin-suppress METRICS-36-3 "Function called from more than 5 different functions, DRV-3823" */
 
@@ -44,4 +44,4 @@ void afeWriteChanged(const DP_SD0801_PrivateData* pD, uint32_t offset, uint16_t 
 
 /* parasoft-end-suppress METRICS-36-3 */
 
-#endif /* DP_SD0801_INERNAL_H */
+#endif /* DP_SD0801_INTERNAL_H */
