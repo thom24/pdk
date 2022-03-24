@@ -94,21 +94,34 @@ extern "C" {
 #define    MAIN_NAVSS_MAILBOX_INPUTINTR_MAX    (440U)
 #define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512U)
 
-/* Refer to J7ES interrupt mapping table */
+/* Refer to J7ES interrupt mapping table and BoardCfg Resource allocation */
+/* Note: In case of IPC_SUPPORT_SCICLIENT this is not actually used, since 
+ * the range is returned from the BoardCfg */
 #ifndef QNX_OS
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (182U)
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET         (726U)
 #else
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (112U)
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET         (496U)
 #endif
 #define    NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET           (400U)
+#define    NAVSS512_MCU1R5F0_INPUT_MAILBOX_VIM_OFFSET       (376U)
 #define    NAVSS512_MCU1R5F1_INPUT_MAILBOX_OFFSET           (404U)
+#define    NAVSS512_MCU1R5F1_INPUT_MAILBOX_VIM_OFFSET       (380U)
 #define    NAVSS512_MCU2R5F0_INPUT_MAILBOX_OFFSET           (216U)
+#define    NAVSS512_MCU2R5F0_INPUT_MAILBOX_VIM_OFFSET       (248U)
 #define    NAVSS512_MCU2R5F1_INPUT_MAILBOX_OFFSET           (248U)
+#define    NAVSS512_MCU2R5F1_INPUT_MAILBOX_VIM_OFFSET       (248U)
 #define    NAVSS512_MCU3R5F0_INPUT_MAILBOX_OFFSET           (280U)
+#define    NAVSS512_MCU3R5F0_INPUT_MAILBOX_VIM_OFFSET       (248U)
 #define    NAVSS512_MCU3R5F1_INPUT_MAILBOX_OFFSET           (312U)
-#define    NAVSS512_C66X1_INPUT_MAILBOX_OFFSET              (344U)  /* C66x_intrRouter_0 : 96 */
-#define    NAVSS512_C66X2_INPUT_MAILBOX_OFFSET              (376U)  /* C66x_intrRouter_1 : 96 */
+#define    NAVSS512_MCU3R5F1_INPUT_MAILBOX_VIM_OFFSET       (248U)
+#define    NAVSS512_C66X1_INPUT_MAILBOX_OFFSET              (344U)
+#define    NAVSS512_C66X1_INPUT_MAILBOX_VIM_OFFSET          (97U)  /* C66x_intrRouter_0 */
+#define    NAVSS512_C66X2_INPUT_MAILBOX_OFFSET              (376U)
+#define    NAVSS512_C66X2_INPUT_MAILBOX_VIM_OFFSET          (97U)  /* C66x_intrRouter_1 */
 #define    NAVSS512_C7X1_INPUT_MAILBOX_OFFSET               (188U)
+#define    NAVSS512_C7X1_INPUT_MAILBOX_VIM_OFFSET           (732U)
 
 #define IPC_MCU_NAVSS0_INTR0_CFG_BASE    (CSL_NAVSS_MAIN_INTR_ROUTER_CFG_REGS_0_BASE)
 
@@ -130,22 +143,21 @@ extern "C" {
 #define   C66X2_MBINTR_OUTPUT_BASE    (96U)
 #define   C66X2_MBINTR_OFFSET         (84U)
 
-/* Request Sciclient for available resource in group2 NavSS
- * For C7x, DMSC does not configure or map CLEC router
+/* For C7x, DMSC does not configure or map CLEC router
  * it must be done by C7x software.
- * StartEvent = 672 (CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_128)
- * ClecEvent  = 1664 corresponds to 672
  */
 #define   C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
 
-/* Base NAVSS event from group 2 */
-#define   IPC_C7X_COMPUTE_CLUSTER_OFFSET  (CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_128)
-
-/* CLEC event corresponding to Base NAVSS event */
-#define   C7X1_CLEC_BASE_GR2_NAVSS        (1664U)
+/* CLEC Offset = 992:- soc_events_in #32 is connected to CLEC event #1024 */
+#define   C7X_CLEC_OFFSET                 (1024 - 32)
 
 /* User selected IRQ number */
-#define   C7X1_MBINTR_OFFSET              (2U)
+/* Start of C7x events associated to CLEC that IPC Driver will manage */
+/* Events  0 - 15  : left for other drivers, Timer Interrupts etc.
+ * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
+ * Events 48 - 58  : managed by UDMA for routing various UDMA events to C7x  
+ * Events 59 - 63  : managed by IPC for routing various Mailbox events to C7x */ 
+#define   IPC_C7X_MBINTR_OFFSET            (59U)
 
 /* ========================================================================== */
 /*                             Include Files                                  */
@@ -171,12 +183,12 @@ extern "C" {
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
+#if defined(BUILD_C66X)
 void Ipc_configC66xIntrRouter(uint32_t input);
 #endif
 
-#if defined(BUILD_C7X_1)
-void Ipc_configClecRouter(uint32_t coreEvent);
+#if defined(BUILD_C7X)
+uint32_t Ipc_configClecRouter(uint32_t coreEvent, uint32_t coreEventBase);
 #endif
 
 #ifdef IPC_SUPPORT_SCICLIENT
@@ -184,9 +196,9 @@ int32_t Ipc_sciclientIrqRelease(uint16_t remoteId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber);
 int32_t Ipc_sciclientIrqSet(uint16_t remoteId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber);
-#endif
 int32_t Ipc_getIntNumRange(uint32_t coreIndex, uint16_t *rangeStartP,
         uint16_t *rangeNumP);
+#endif
  
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

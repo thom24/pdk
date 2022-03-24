@@ -448,6 +448,8 @@ ipc_multicore_perf_test_$(1)_INCLUDE = $(ipc_multicore_perf_test_$(1)_PATH)
 export ipc_multicore_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
 export ipc_multicore_perf_test_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
+ifneq ($(SOC),$(filter $(SOC), j721s2))
+#Temp disable multicore image gen for J721S2 since SBL_CORE_ID_c7x_2 is not yet supported 
 ifneq ($(1),$(filter $(1), safertos))
 ipc_DUP_EXAMPLE_LIST += ipc_multicore_perf_test_$(1)
 else
@@ -455,6 +457,8 @@ ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 ipc_DUP_EXAMPLE_LIST += ipc_multicore_perf_test_$(1)
 endif
 endif
+endif
+
 endef
 
 IPC_MULTICORE_PERF_TEST_MACRO_LIST := $(foreach curos, $(filter-out tirtos, $(drvipc_RTOS_LIST)), $(call IPC_MULTICORE_PERF_TEST_RULE,$(curos)))

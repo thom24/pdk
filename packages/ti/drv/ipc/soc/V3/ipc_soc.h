@@ -78,41 +78,56 @@ extern "C" {
 #define    MAIN_NAVSS_MAILBOX_INPUTINTR_MAX    (440U)
 #define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512U)
 
-/* Refer to J721S2 interrupt mapping table */
+/* Refer to J721S2 interrupt mapping table and BoardCfg Resource allocation */
+/* Note: In case of IPC_SUPPORT_SCICLIENT this is not actually used, since 
+ * the range is returned from the BoardCfg */
 #ifndef QNX_OS
-#define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (182U)
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (105U)
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET         (457U)
 #else
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (112U)
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET         (464U)
 #endif
 #define    NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET           (400U)
+#define    NAVSS512_MCU1R5F0_INPUT_MAILBOX_VIM_OFFSET       (376U)
 #define    NAVSS512_MCU1R5F1_INPUT_MAILBOX_OFFSET           (404U)
-#define    NAVSS512_MCU2R5F0_INPUT_MAILBOX_OFFSET           (216U)
-#define    NAVSS512_MCU2R5F1_INPUT_MAILBOX_OFFSET           (248U)
-#define    NAVSS512_MCU3R5F0_INPUT_MAILBOX_OFFSET           (280U)
-#define    NAVSS512_MCU3R5F1_INPUT_MAILBOX_OFFSET           (312U)
-#define    NAVSS512_C7X1_INPUT_MAILBOX_OFFSET               (188U)
-#define    NAVSS512_C7X2_INPUT_MAILBOX_OFFSET               (0U) /* TBD: placeholder for actual final value */
+#define    NAVSS512_MCU1R5F1_INPUT_MAILBOX_VIM_OFFSET       (380U)
+#define    NAVSS512_MCU2R5F0_INPUT_MAILBOX_OFFSET           (219U)
+#define    NAVSS512_MCU2R5F0_INPUT_MAILBOX_VIM_OFFSET       (251U)
+#define    NAVSS512_MCU2R5F1_INPUT_MAILBOX_OFFSET           (251U)
+#define    NAVSS512_MCU2R5F1_INPUT_MAILBOX_VIM_OFFSET       (251U)
+#define    NAVSS512_MCU3R5F0_INPUT_MAILBOX_OFFSET           (283U)
+#define    NAVSS512_MCU3R5F0_INPUT_MAILBOX_VIM_OFFSET       (251U)
+#define    NAVSS512_MCU3R5F1_INPUT_MAILBOX_OFFSET           (315U)
+#define    NAVSS512_MCU3R5F1_INPUT_MAILBOX_VIM_OFFSET       (251U)
+#define    NAVSS512_C7X1_INPUT_MAILBOX_OFFSET               (158U)
+#define    NAVSS512_C7X1_INPUT_MAILBOX_VIM_OFFSET           (702U)
+#define    NAVSS512_C7X2_INPUT_MAILBOX_OFFSET               (179U)
+#define    NAVSS512_C7X2_INPUT_MAILBOX_VIM_OFFSET           (723U)
 
 #define IPC_MCU_NAVSS0_INTR0_CFG_BASE    (CSL_NAVSS0_INTR0_INTR_ROUTER_CFG_BASE)
 
-/* Request Sciclient for available resource in group2 NavSS
- * For C7x, DMSC does not configure or map CLEC router
+/* For C7x, DMSC does not configure or map CLEC router
  * it must be done by C7x software.
- * StartEvent = 672 (CSLR_GIC500SS0_SPI_NAVSS0_INTR_0_OUTL_INTR_128)
- * ClecEvent  = 1664 corresponds to 672
  */
 #define   C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
 
-/* Base NAVSS event from group 2 */
-#define   IPC_C7X_COMPUTE_CLUSTER_OFFSET  (CSLR_GIC500SS0_SPI_NAVSS0_INT_0_OUTL_INTR_128)
-
-/* CLEC event corresponding to Base NAVSS event */
-#define   C7X1_CLEC_BASE_GR2_NAVSS        (1664U)
-#define   C7X2_CLEC_BASE_GR2_NAVSS        (0U) /* TBD: placeholder for actual final value */
+/* CLEC Offset = 992:- soc_events_in #32 is connected to CLEC event #1024 */
+/* CLEC is shared b/w both the C7x cores and the offset can be common.
+ * ClecEvent # will be different for c7x_1 and c7x_2 since the 
+ * range is returned from BardCfg based on core specific allocation */
+#define   C7X_CLEC_OFFSET                 (1024 - 32)
 
 /* User selected IRQ number */
-#define   C7X1_MBINTR_OFFSET              (2U)
-#define   C7X2_MBINTR_OFFSET              (2U) /* TBD: placeholder for actual final value */
+/* Start of C7x events associated to CLEC that IPC Driver will manage */
+/* Events  0 - 15  : left for other drivers, Timer Interrupts etc.
+ * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
+ * Events 48 - 58  : managed by UDMA for routing various UDMA events to C7x  
+ * Events 59 - 63  : managed by IPC for routing various Mailbox events to C7x */ 
+/* Even though same CLEC is shared b/w two C7x cores, CLEC can broadcast the
+ * event to any C7x core and CPU IRQ is core specific.
+ * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */ 
+#define   IPC_C7X_MBINTR_OFFSET            (59U)
 
 /* ========================================================================== */
 /*                             Include Files                                  */
@@ -138,8 +153,8 @@ extern "C" {
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-#if defined(BUILD_C7X_1) || defined(BUILD_C7X_2)
-void Ipc_configClecRouter(uint32_t coreEvent);
+#if defined(BUILD_C7X)
+uint32_t Ipc_configClecRouter(uint32_t coreEvent, uint32_t coreEventBase);
 #endif
 
 #ifdef IPC_SUPPORT_SCICLIENT
@@ -147,9 +162,9 @@ int32_t Ipc_sciclientIrqRelease(uint16_t remoteId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber);
 int32_t Ipc_sciclientIrqSet(uint16_t remoteId, uint32_t clusterId,
         uint32_t userId, uint32_t intNumber);
-#endif
 int32_t Ipc_getIntNumRange(uint32_t coreIndex, uint16_t *rangeStartP,
         uint16_t *rangeNumP);
+#endif
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

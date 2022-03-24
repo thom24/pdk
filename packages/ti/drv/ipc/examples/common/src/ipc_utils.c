@@ -62,13 +62,11 @@ void SetManualBreak()
 
 void sysIdleLoop(void)
 {
-#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
+#if defined(BUILD_C66X)
     __asm(" IDLE");
-#elif defined(BUILD_C7X_1)
+#elif defined(BUILD_C7X)
     __asm(" IDLE");
-#elif defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1) || \
-      defined(BUILD_MCU2_0) || defined(BUILD_MCU2_1) || \
-      defined(BUILD_MCU3_0) || defined(BUILD_MCU3_1)
+#elif defined(BUILD_MCU)
    asm(" wfi");
 #endif
 }

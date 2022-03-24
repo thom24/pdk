@@ -116,6 +116,7 @@ typedef struct Ipc_MbConfig_s
     uint32_t   eventId;
     uint32_t   inputIntrNum;
     uint32_t   outputIntrNum;
+    uint32_t   eventIdBase;
 }Ipc_MbConfig;
 
 /**

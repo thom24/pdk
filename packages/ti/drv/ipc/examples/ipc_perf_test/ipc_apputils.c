@@ -44,10 +44,6 @@
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/sciclient/sciclient.h>
 #include "ipc_apputils.h"
-#if defined (__C7100__)
-#include <ti/csl/csl_clec.h>
-#include <ti/csl/arch/csl_arch.h>
-#endif
 #include <ti/osal/osal.h>
 #include <ti/drv/ipc/include/ipc_config.h>
 /* ========================================================================== */
@@ -119,7 +115,7 @@ uint64_t Ipc_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appData
     uint64_t    phyAddr;
 
     phyAddr = (uint64_t) virtAddr;
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+#if defined (BUILD_C66X)
     /* Convert local L2RAM address to global space */
     if((phyAddr >= CSL_C66_COREPAC_L2_BASE) &&
        (phyAddr < (CSL_C66_COREPAC_L2_BASE + CSL_C66_COREPAC_L2_SIZE)))
@@ -142,7 +138,7 @@ void *Ipc_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
 {
     void       *virtAddr;
 
-#if defined (__aarch64__) || defined (__C7100__)
+#if defined (__aarch64__) || defined (BUILD_C7X)
     virtAddr = (void *) phyAddr;
 #else
     uint32_t temp;
@@ -193,7 +189,6 @@ uint32_t Ipc_appIsPrintSupported(void)
 }
 
 
-
 void Ipc_appC66xIntrConfig(void)
 {
 #if defined (_TMS320C6X)
@@ -237,13 +232,11 @@ uint64_t Ipc_getTimeInUsec(void)
 
 void sysIdleLoop(void)
 {
-#if defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
+#if defined(BUILD_C66X)
     __asm(" IDLE");
-#elif defined(BUILD_C7X_1)
+#elif defined(BUILD_C7X)
     __asm(" IDLE");
-#elif defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1) || \
-      defined(BUILD_MCU2_0) || defined(BUILD_MCU2_1) || \
-      defined(BUILD_MCU3_0) || defined(BUILD_MCU3_1)
+#elif defined(BUILD_MCU)
    asm(" wfi");
 #endif
 }

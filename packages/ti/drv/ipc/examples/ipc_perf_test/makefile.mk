@@ -15,7 +15,7 @@ ifeq ($(SOC), am64x)
 endif
 
 SRCS_COMMON += main.c
-ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
   ifeq ($(CORE),mcu1_0)
     COMP_LIST_COMMON += sciserver_tirtos
   endif
@@ -28,7 +28,7 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
   # Enable XDC build for application by providing XDC CFG File per core
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x j721s2))
     XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
     ifeq ($(ISA), r5f)
       XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg

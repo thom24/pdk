@@ -99,9 +99,9 @@ const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section 
     /* rpmsg vdev entry */
     {
         TYPE_VDEV, VIRTIO_ID_RPMSG, 0U,
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+#if defined (BUILD_C66X)
         RPMSG_C66_DSP_FEATURES, 0U, 0U, 0U, 2U, { 0U, 0U },
-#elif defined (BUILD_C7X_1)
+#elif defined (BUILD_C7X)
         RPMSG_C7X_DSP_FEATURES, 0U, 0U, 0U, 2U, { 0U, 0U },
 #else
         RPMSG_R5F_C0_FEATURES, 0U, 0U, 0U, 2U, { 0U, 0U },
@@ -136,13 +136,16 @@ const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section 
 #elif defined (BUILD_C7X_1)
     { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ0_SIZE, 1U, 0U },
     { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ1_SIZE, 2U, 0U },
+#elif defined (BUILD_C7X_2)
+    { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ0_SIZE, 1U, 0U },
+    { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ1_SIZE, 2U, 0U },
 #else
     { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ0_SIZE, 1U, 0U },
     { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ1_SIZE, 2U, 0U },
 #endif
 
     {
-#ifdef BUILD_C7X_1
+#ifdef BUILD_C7X
         (TRACE_INTS_VER1 | TYPE_TRACE), TRACEBUFADDR, IPC_TRACE_BUFFER_MAX_SIZE, 0, "trace:r5f0",
 #else
         (TRACE_INTS_VER0 | TYPE_TRACE), TRACEBUFADDR, IPC_TRACE_BUFFER_MAX_SIZE, 0, "trace:r5f0",

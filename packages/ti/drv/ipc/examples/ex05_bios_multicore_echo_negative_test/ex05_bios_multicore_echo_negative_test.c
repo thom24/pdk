@@ -79,6 +79,8 @@
 #define CORE_IN_TEST            5
 #elif defined (SOC_J721S2)
 #define CORE_IN_TEST            8
+#else
+#error "Invalid SOC"
 #endif
 
 /*
@@ -86,7 +88,7 @@
  * enough for 9 task_stack, so creating task_stack on global.
  * C7x cfg has 256k default heap, so no need to put task_stack on global
  */
-#if !defined(BUILD_C7X_1) && !defined(BUILD_C7X_2)
+#if !defined(BUILD_C7X)
 
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
 
@@ -249,7 +251,9 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_C7X_2;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1
+#endif
 };
 #endif
 

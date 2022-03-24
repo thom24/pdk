@@ -198,7 +198,7 @@ uint32_t remoteProc[] =
 #if defined (SOC_J721E)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J721S2)
-    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C66X_1, IPC_C7X_1, IPC_C7X_2
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C7X_1, IPC_C7X_2
 #endif
 };
 #endif
@@ -235,7 +235,9 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_C7X_2;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1
+#endif
 };
 #endif
 
@@ -243,7 +245,9 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_M4F_0;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_AM64X)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#endif
 };
 #endif
 

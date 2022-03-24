@@ -34,7 +34,7 @@
 /**
  *  \file ipc_soc.c
  *
- *  \brief File containing the IPC driver - soc specific implementation.
+ *  \brief File containing the IPC driver - J7 soc specific implementation.
  *
  */
 
@@ -392,23 +392,25 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     uint16_t   proc_irq        = 0;
 
     /*
-     * static variable to used to store the base for first
-     * mailbox interrupt register. In subsequent call, it uses
-     * the offset of intrCnt from base
+     * static variable used to store the base and count of
+     * Interrupt Router o/p # allocated for the core.
+     * In subsequent call, it uses the offset of intrCnt from base
      */
     static uint16_t   start    = 0;
     static uint16_t   range    = 0;
     uint16_t   offset   = 0;
 
+#ifdef IPC_SUPPORT_SCICLIENT
     /* Get available CorePack IRQ number from DMSC */
     if( (start == 0) && (range == 0))
     {
+        /* Query the Interrupt Router o/p # alloacted for the core. */
         retVal = Ipc_getIntNumRange(selfId, &start, &range);
     }
 
     if((retVal == IPC_SOK) && (range >= 1))
     {
-        /* Allocate the last 5  interrupts for IPC. Note that the IR allocation is
+        /* Allocate the last 5 interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is
          * used by UDMA and middle one's are used by other modules like CPSW9G so
          * we are using last 5 as a safe option.
@@ -421,10 +423,10 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
         {
             offset = range;
         }
-        vimEventBaseNum = (start + range) - offset;
+        outIntrBaseNum = (start + range) - offset;
 
         /* Translation must happen after this offset */
-        retVal = Ipc_sciclientIrqTranslate((uint16_t)selfId, vimEventBaseNum,
+        retVal = Ipc_sciclientIrqTranslate((uint16_t)selfId, outIntrBaseNum,
                                            &proc_irq);
         if (CSL_PASS == retVal)
         {
@@ -436,46 +438,62 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     {
         retVal = IPC_EFAIL;
     }
+#endif
 
+#ifndef IPC_SUPPORT_SCICLIENT
+    /* In case of IPC_SUPPORT_SCICLIENT, 'outIntrBaseNum' is derived from the range returned
+     * from BoardCfg and 'vimEventBaseNum' is decoded from 'outIntrBaseNum'*/
     switch(selfId)
     {
         case IPC_MPU1_0:
-            outIntrBaseNum = NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_MCU1_0:
-            outIntrBaseNum = NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_MCU1R5F0_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_MCU1_1:
-            outIntrBaseNum = NAVSS512_MCU1R5F1_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_MCU1R5F1_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_MCU1R5F1_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_MCU2_0:
-            outIntrBaseNum = NAVSS512_MCU2R5F0_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_MCU2R5F0_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_MCU2R5F0_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_MCU2_1:
-            outIntrBaseNum = NAVSS512_MCU2R5F1_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_MCU2R5F1_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_MCU2R5F1_INPUT_MAILBOX_VIM_OFFSET;
             break;
 #if defined (SOC_J721E)
         case IPC_MCU3_0:
-            outIntrBaseNum = NAVSS512_MCU3R5F0_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_MCU3R5F0_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_MCU3R5F0_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_MCU3_1:
-            outIntrBaseNum = NAVSS512_MCU3R5F1_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_MCU3R5F1_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_MCU3R5F1_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_C66X_1:
-            outIntrBaseNum = NAVSS512_C66X1_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_C66X1_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_C66X1_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_C66X_2:
-            outIntrBaseNum = NAVSS512_C66X2_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_C66X2_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_C66X2_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_C7X_1:
-            outIntrBaseNum = NAVSS512_C7X1_INPUT_MAILBOX_OFFSET;
+            outIntrBaseNum  = NAVSS512_C7X1_INPUT_MAILBOX_OFFSET;
+            vimEventBaseNum = NAVSS512_C7X1_INPUT_MAILBOX_VIM_OFFSET;
             break;
 #endif
         default:
             break;
     }
+#endif
     cfg->outputIntrNum = outIntrBaseNum + intrCnt;
     cfg->eventId       = vimEventBaseNum + intrCnt;
+    cfg->eventIdBase   = vimEventBaseNum;
 
     return retVal;
 }
@@ -509,7 +527,7 @@ const char* Ipc_getCoreName(uint32_t procId)
     return p;
 }
 
-#if  defined(BUILD_C66X_1) || defined(BUILD_C66X_2)
+#if  defined(BUILD_C66X)
 void Ipc_configC66xIntrRouter(uint32_t input)
 {
     volatile uint32_t *intr_router = (volatile uint32_t *)IPC_C66X_INTR_VA_BASE;
@@ -558,18 +576,17 @@ void Ipc_configC66xIntrRouter(uint32_t input)
 }
 #endif
 
-#if defined(BUILD_C7X_1)
-void Ipc_configClecRouter(uint32_t corePackEvent)
+#if defined(BUILD_C7X)
+uint32_t Ipc_configClecRouter(uint32_t corePackEvent, uint32_t corePackEventBase)
 {
     uint32_t              input;
     CSL_ClecEventConfig   cfgClec;
     CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)C7X_CLEC_BASE_ADDR;
     uint32_t              corepackIrq;
 
-    corepackIrq = (corePackEvent - IPC_C7X_COMPUTE_CLUSTER_OFFSET) +
-            C7X1_MBINTR_OFFSET;
+    corepackIrq = (corePackEvent - corePackEventBase) + IPC_C7X_MBINTR_OFFSET;
 
-    input = C7X1_CLEC_BASE_GR2_NAVSS + corepackIrq;
+    input = corePackEvent + C7X_CLEC_OFFSET;
 
     /* Configure CLEC */
     cfgClec.secureClaimEnable = FALSE;
@@ -578,6 +595,8 @@ void Ipc_configClecRouter(uint32_t corePackEvent)
     cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = corepackIrq;
     CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
+
+    return corepackIrq;
 }
 #endif
 
@@ -678,11 +697,7 @@ int32_t Ipc_sciclientIrqRelease(uint16_t coreId, uint32_t clusterId,
     rmIrqRel.src_id         = map_src_id[clusterId];
     rmIrqRel.src_index      = (uint16_t)userId;
     rmIrqRel.dst_id         = (uint16_t)map_dst_id[coreId];
-#if defined(BUILD_C7X_1)
-    rmIrqRel.dst_host_irq   = (uint16_t)(intNumber +  C7X1_MBINTR_OFFSET);
-#else
     rmIrqRel.dst_host_irq   = (uint16_t)intNumber;
-#endif
     rmIrqRel.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     retVal = Sciclient_rmIrqRelease(&rmIrqRel, IPC_SCICLIENT_TIMEOUT);
@@ -707,11 +722,7 @@ int32_t Ipc_sciclientIrqSet(uint16_t coreId, uint32_t clusterId,
     rmIrqReq.src_id         = map_src_id[clusterId];
     rmIrqReq.src_index      = (uint16_t)userId;
     rmIrqReq.dst_id         = (uint16_t)map_dst_id[coreId];
-#if defined(BUILD_C7X_1)
-    rmIrqReq.dst_host_irq   = (uint16_t)(intNumber +  C7X1_MBINTR_OFFSET);
-#else
     rmIrqReq.dst_host_irq   = (uint16_t)intNumber;
-#endif
     rmIrqReq.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     /* Config event */
@@ -795,7 +806,7 @@ uint32_t Ipc_isCacheCoherent(void)
 {
     uint32_t isCacheCoherent;
 
-#if defined (BUILD_MPU1_0) || defined (BUILD_C7X_1)
+#if defined (BUILD_MPU1_0) || defined (BUILD_C7X)
     isCacheCoherent = TRUE;
 #else
     isCacheCoherent = FALSE;

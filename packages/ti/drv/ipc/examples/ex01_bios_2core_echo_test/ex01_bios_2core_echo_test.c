@@ -69,18 +69,14 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#if defined (SOC_AM65XX)
 #define CORE_IN_TEST            2
-#else
-#define CORE_IN_TEST            2
-#endif
 
 /*
  * In the cfg file of R5F, C66x, default heap is 48K which is not
  * enough for 9 task_stack, so creating task_stack on global.
  * C7x cfg has 256k default heap, so no need to put task_stack on global
  */
-#if !defined(BUILD_C7X_1) && !defined(BUILD_C7X_2)
+#if !defined(BUILD_C7X)
 
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
 

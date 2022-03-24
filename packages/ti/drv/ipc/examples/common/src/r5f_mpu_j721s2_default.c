@@ -78,11 +78,11 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 2 configuration: 512 KB OCMC RAM */
+        /* Region 2 configuration: 1 MB OCMC RAM */
         .regionId         = 2U,
         .enable           = 1U,
         .baseAddr         = 0x41C00000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_512KB,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_1MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,

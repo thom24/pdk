@@ -34,9 +34,9 @@
 /**
  *  \file ex02_bios_multicore_echo_test.c
  *
- *  \brief Multi-core (BIOS-to-BIOS) IPC echo test application performing basic echo 
+ *  \brief Multi-core (BIOS-to-BIOS) IPC echo test application performing basic echo
  *  communication using the IPC driver
- *  
+ *
  */
 
 /* ========================================================================== */
@@ -78,7 +78,7 @@
 #elif defined (SOC_AM64X)
 #define CORE_IN_TEST            5
 #elif defined (SOC_J721S2)
-#define                         8
+#define CORE_IN_TEST            8
 #else
 #error "Invalid SOC"
 #endif
@@ -88,11 +88,13 @@
  * enough for 9 task_stack, so creating task_stack on global.
  * C7x cfg has 256k default heap, so no need to put task_stack on global
  */
-#if !defined(BUILD_C7X_1) && !defined(BUILD_C7X_2)
+
+#if !defined(BUILD_C7X)
 #if defined(SAFERTOS)
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE]
 __attribute__ ((aligned(IPC_TASK_STACKSIZE)));
 #else
+
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
 #endif
 
@@ -263,7 +265,9 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_C7X_2;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1
+#endif
 };
 #endif
 
@@ -271,7 +275,9 @@ uint32_t remoteProc[] =
 uint32_t selfProcId = IPC_M4F_0;
 uint32_t remoteProc[] =
 {
+#if defined (SOC_AM64X)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#endif
 };
 #endif
 

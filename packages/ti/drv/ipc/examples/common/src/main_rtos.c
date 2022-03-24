@@ -52,7 +52,7 @@
 
 #include "ipc_utils.h"
 #include <ti/csl/csl_types.h>
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
@@ -72,6 +72,7 @@
 #include <ti/board/board.h>
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
+#include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
 #include <ti/drv/sciclient/sciserver_tirtos.h>
 #endif
 
@@ -140,6 +141,8 @@ __attribute__ ((aligned(APP_SCISERVER_INIT_TSK_STACK)));
 #else
 static uint8_t  gSciserverInitTskStack[APP_SCISERVER_INIT_TSK_STACK]
 __attribute__ ((aligned(8192)));
+
+extern Sciclient_ServiceHandle_t gSciclientHandle;
 #endif
 #endif
 
@@ -180,6 +183,16 @@ void ipc_initSciclient()
         {
             App_printf("Sciclient_init Failed\n");
         }
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
+        if (gSciclientHandle.rmBoardConfigComplete == SCICLIENT_FT_PASS)
+        {
+            App_printf("Sciclient_boardCfgRm init Passed\n");
+        }
+        else
+        {
+            App_printf("Sciclient_boardCfgRm init FAILED!\n");
+        }
+#endif
     }
 }
 
@@ -194,8 +207,6 @@ void ipc_boardInit()
 
 }
 #endif
-
-
 
 #if defined (_TMS320C6X)
 /* To set C66 timer interrupts */
@@ -319,61 +330,7 @@ static void taskFxn(void* a0, void* a1)
 #endif
 }
 
-#if defined(__C7100__)
-static void IpcInitMmu(Bool isSecure)
-{
-    Mmu_MapAttrs    attrs;
-
-    Mmu_initMapAttrs(&attrs);
-    attrs.attrIndx = Mmu_AttrIndx_MAIR0;
-
-    if(TRUE == isSecure)
-    {
-        attrs.ns = 0;
-    }
-    else
-    {
-        attrs.ns = 1;
-    }
-
-    /* Register region */
-    (void)Mmu_map(0x00000000U, 0x00000000U, 0x20000000U, &attrs, isSecure);
-    (void)Mmu_map(0x20000000U, 0x20000000U, 0x20000000U, &attrs, isSecure);
-    (void)Mmu_map(0x40000000U, 0x40000000U, 0x20000000U, &attrs, isSecure);
-    (void)Mmu_map(0x60000000U, 0x60000000U, 0x10000000U, &attrs, isSecure);
-    (void)Mmu_map(0x78000000U, 0x78000000U, 0x08000000U, &attrs, isSecure); /* CLEC */
-
-    attrs.attrIndx = Mmu_AttrIndx_MAIR7;
-    (void)Mmu_map(0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure); /* DDR */
-    (void)Mmu_map(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure); /* DDR */
-#if defined(SOC_J721S2)
-    (void)Mmu_map(0x70000000U, 0x70000000U, 0x00400000U, &attrs, isSecure); /* MSMC - 4MB */
-#elif defined(SOC_J721E)
-    (void)Mmu_map(0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure); /* MSMC - 8MB */
-#endif
-    (void)Mmu_map(0x41C00000U, 0x41C00000U, 0x00100000U, &attrs, isSecure); /* OCMC - 1MB */
-
-    /*
-     * DDR range 0xA0000000 - 0xAA000000 : Used as RAM by multiple
-     * remote cores, no need to mmp_map this range.
-     * IPC VRing Buffer - uncached
-     */
-    attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-#if defined(SOC_J721S2)
-    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x02000000U, &attrs, isSecure); /* VRING DDR */
-#  if defined(BUILD_C7X_1)
-    (void)Mmu_map(0xA6000000U, 0xA6000000U, 0x00100000U, &attrs, isSecure); /* C7X_1 DDR */
-#  elif defined(BUILD_C7X_2)
-    (void)Mmu_map(0xA7000000U, 0xA7000000U, 0x00100000U, &attrs, isSecure); /* C7X_2 DDR */
-#  endif
-#elif defined(SOC_J721E)
-    (void)Mmu_map(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure); /* VRING DDR */
-    (void)Mmu_map(0xA8000000U, 0xA8000000U, 0x00100000U, &attrs, isSecure); /* C7X_1 DDR */
-#endif
-
-    return;
-}
-
+#if defined(BUILD_C7X)
 void InitMmu(void)
 {
     IpcInitMmu(FALSE);

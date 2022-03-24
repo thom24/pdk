@@ -43,6 +43,9 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
       COMP_LIST_COMMON += sciserver_tirtos
     endif
   endif
+  ifeq ($(ISA), c7x)
+    SRCS_COMMON += c7x_mmu.c
+  endif
   SRCS_COMMON += main_rtos.c ipc_testsetup.c
   SRCS_COMMON += ipc_utils.c
   CFLAGS_LOCAL_COMMON += -DSYSBIOS
@@ -82,7 +85,7 @@ endif
 ifeq ($(BUILD_OS_TYPE), freertos)
   COMP_LIST_COMMON =  $(PDK_COMMON_FREERTOS_COMP)
   COMP_LIST_COMMON += ipc
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     ifeq ($(CORE),mcu1_0)
       COMP_LIST_COMMON += sciserver_tirtos
     endif
@@ -97,6 +100,10 @@ ifeq ($(BUILD_OS_TYPE), freertos)
   ifeq ($(ISA), c66)
     INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
     SRCS_COMMON += c66_cache_mar.c
+  endif
+  ifeq ($(ISA), c7x)
+    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    SRCS_COMMON += c7x_mmu.c
   endif
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds
   APPEND_LNKCMD_FILE += $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/memory_map_ddr.cmd

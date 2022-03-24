@@ -60,20 +60,9 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
 /* Number of cores used in the test */
-#if defined (SOC_AM65XX)
-#define CORE_IN_TEST            3
-#elif defined (SOC_J721E)
-#define CORE_IN_TEST            10
-#elif defined (SOC_J7200)
-#define CORE_IN_TEST            5
-#elif defined (SOC_AM64X)
-#define CORE_IN_TEST            6
-#elif defined (SOC_J721S2)
-#define CORE_IN_TEST            9
-#else
-#error "Invalid SOC"
-#endif
+#define CORE_IN_TEST            2
 
 #define NUM_RESPONDER_TASKS     2
 

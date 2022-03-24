@@ -163,7 +163,7 @@ void Mailbox_Poll_TaskExit()
     g_pollTaskExit = TRUE;
 }
 
-#if defined(BUILD_C7X_1) && !defined(MAILBOX_INTERRUPT_MODE)
+#if defined(BUILD_C7X) && !defined(MAILBOX_INTERRUPT_MODE)
 static uint8_t g_pollTaskStack[IPC_TASK_STACKSIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(8192)))
@@ -176,7 +176,7 @@ void StartmailboxPollingTask()
 
     TaskP_Params_init(&param);
     param.priority = 2;
-#if defined(BUILD_C7X_1) && !defined(MAILBOX_INTERRUPT_MODE)
+#if defined(BUILD_C7X) && !defined(MAILBOX_INTERRUPT_MODE)
     param.stack = g_pollTaskStack;
 #endif
     param.stacksize = IPC_TASK_STACKSIZE;

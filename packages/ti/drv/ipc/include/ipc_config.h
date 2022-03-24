@@ -83,7 +83,7 @@ extern "C" {
  */
 #define  IPC_MAX_NAME_ENTRY             (100u)
 
-#if defined(BUILD_C7X_1) || defined(BUILD_C7X_2)
+#if defined(BUILD_C7X)
 #define  IPC_TASK_STACKSIZE  0x8000U
 #else
 #define  IPC_TASK_STACKSIZE  0x2000U
