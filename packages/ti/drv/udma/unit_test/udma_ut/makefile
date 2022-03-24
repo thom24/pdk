@@ -51,7 +51,6 @@ ifeq ($(BUILD_OS_TYPE), safertos)
   INCLUDE_EXTERNAL_INTERFACES += safertos
   SRCS_COMMON = main_rtos.c
 endif
-
 # List all the specific components required by the application
 COMP_LIST_COMMON += udma_apputils
 
@@ -107,7 +106,6 @@ endif
 ifeq ($(BUILD_OS_TYPE), safertos)
   APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
 endif
-
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =

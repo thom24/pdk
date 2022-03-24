@@ -33,7 +33,7 @@
 /**
  *  \file udma_soc.h
  *
- *  \brief UDMA Low Level Driver J721E SOC specific file.
+ *  \brief UDMA Low Level Driver J721S2 SOC specific file.
  */
 
 #ifndef UDMA_SOC_H_
@@ -53,6 +53,9 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+
+/* Macro to find maximum of given values */
+#define UDMA_MAX(X,Y)  (X>Y ? X:Y)
 /**
  *  \anchor Udma_InstanceIdSoc
  *  \name UDMA Instance ID specific to SOC
@@ -65,10 +68,12 @@ extern "C" {
 #define UDMA_INST_ID_MAIN_0             (UDMA_INST_ID_0)
 /** \brief MCU NAVSS UDMA instance */
 #define UDMA_INST_ID_MCU_0              (UDMA_INST_ID_1)
+/** \brief BCDMA instance */
+#define UDMA_INST_ID_BCDMA_0            (UDMA_INST_ID_2)
 /** \brief Start of UDMA instance */
 #define UDMA_INST_ID_START              (UDMA_INST_ID_0)
 /** \brief Maximum number of UDMA instance */
-#define UDMA_INST_ID_MAX                (UDMA_INST_ID_1)
+#define UDMA_INST_ID_MAX                (UDMA_INST_ID_2)
 /** \brief Total number of UDMA instances */
 #define UDMA_NUM_INST_ID                (UDMA_INST_ID_MAX - UDMA_INST_ID_START + 1U)
 /* @} */
@@ -85,16 +90,16 @@ extern "C" {
 #define UDMA_SOC_CFG_UDMAP_PRESENT               (1U)
 
 /** \brief Flag to indicate BCDMA module is present or not in the SOC*/
-#define UDMA_SOC_CFG_BCDMA_PRESENT               (0U) 
+#define UDMA_SOC_CFG_BCDMA_PRESENT               (1U) 
 
 /** \brief Flag to indicate PKTDMA module is present or not in the SOC*/
 #define UDMA_SOC_CFG_PKTDMA_PRESENT              (0U) 
 	
 /** \brief Flag to indicate Proxy is present or not in the SOC*/
-#define UDMA_SOC_CFG_PROXY_PRESENT               (1U)
+#define UDMA_SOC_CFG_PROXY_PRESENT               (1U) 
 	
 /** \brief Flag to indicate Interrupt Router is present or not in the SOC*/
-#define UDMA_SOC_CFG_INTR_ROUTER_PRESENT         (1U)  
+#define UDMA_SOC_CFG_INTR_ROUTER_PRESENT         (1U) 
 
 /** \brief Flag to indicate Clec is present or not in the SOC*/
 #define UDMA_SOC_CFG_CLEC_PRESENT                (1U) 
@@ -103,7 +108,7 @@ extern "C" {
 #define UDMA_SOC_CFG_RA_NORMAL_PRESENT           (1U) 
 
 /** \brief Flag to indicate LCDMA RA is present or not in the SOC*/
-#define UDMA_SOC_CFG_RA_LCDMA_PRESENT            (0U)
+#define UDMA_SOC_CFG_RA_LCDMA_PRESENT            (1U)
 
 /** \brief Flag to indicate Ring Monitor is present or not in the SOC*/
 #define UDMA_SOC_CFG_RING_MON_PRESENT            (1U)
@@ -153,7 +158,7 @@ extern "C" {
  *
  *  @{
  */
-/* No mapped TX channels/rings in J721E */
+/* No mapped TX channels/rings in J721S2 */
 /* @} */
 
 /** \brief Number of Mapped RX Group */
@@ -166,7 +171,7 @@ extern "C" {
  *
  *  @{
  */
-/* No mapped RX channels/rings in J721E */
+/* No mapped RX channels/rings in J721S2 */
 /* @} */
 
 /** \brief Number of UTC instance */
@@ -185,7 +190,6 @@ extern "C" {
 #define UDMA_UTC_ID_VPAC_TC1            (UDMA_UTC_ID2)
 #define UDMA_UTC_ID_DMPAC_TC0           (UDMA_UTC_ID3)
 /* @} */
-
 /** \brief External start channel of DRU0 UTC */
 #define UDMA_UTC_START_CH_DRU0              (0U)
 /** \brief Number of channels present in DRU0 UTC */
@@ -194,21 +198,24 @@ extern "C" {
 #define UDMA_UTC_START_THREAD_ID_DRU0       (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
 
 /** \brief External start channel of VPAC TC0 UTC */
-#define UDMA_UTC_START_CH_VPAC_TC0          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+#define UDMA_UTC_START_CH_VPAC_TC0          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_OFFSET \
+                                            - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
 /** \brief Number of channels present in VPAC TC0 UTC */
 #define UDMA_UTC_NUM_CH_VPAC_TC0            (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_CNT)
 /** \brief Start thread ID of VPAC TC0 UTC */
 #define UDMA_UTC_START_THREAD_ID_VPAC_TC0   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILD_THREAD_OFFSET)
 
 /** \brief External start channel of VPAC TC1 UTC */
-#define UDMA_UTC_START_CH_VPAC_TC1          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+#define UDMA_UTC_START_CH_VPAC_TC1          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_OFFSET \
+                                            - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
 /** \brief Number of channels present in VPAC TC1 UTC */
 #define UDMA_UTC_NUM_CH_VPAC_TC1            (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_CNT)
 /** \brief Start thread ID of VPAC TC1 UTC */
 #define UDMA_UTC_START_THREAD_ID_VPAC_TC1   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILD_THREAD_OFFSET)
 
 /** \brief External start channel of DMPAC TC0 UTC */
-#define UDMA_UTC_START_CH_DMPAC_TC0         (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_OFFSET - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+#define UDMA_UTC_START_CH_DMPAC_TC0         (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_OFFSET \
+                                            - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
 /** \brief Number of channels present in DMPAC TC0 UTC */
 #define UDMA_UTC_NUM_CH_DMPAC_TC0           (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_CNT)
 /** \brief Start thread ID of DMPAC TC0 UTC */
@@ -233,9 +240,8 @@ extern "C" {
 #define UDMA_CORE_ID_MCU3_0             (3U)
 #define UDMA_CORE_ID_MCU3_1             (4U)
 #define UDMA_CORE_ID_C7X_1              (5U)
-#define UDMA_CORE_ID_C66X_1             (6U)
-#define UDMA_CORE_ID_C66X_2             (7U)
-#define UDMA_NUM_MAIN_CORE              (8U)
+#define UDMA_CORE_ID_C7X_2              (6U)
+#define UDMA_NUM_MAIN_CORE              (7U)
 /* MCU domain cores - Note: This should be after all main domain cores */
 #define UDMA_CORE_ID_MCU1_0             (UDMA_NUM_MAIN_CORE + 0U)
 #define UDMA_CORE_ID_MCU1_1             (UDMA_NUM_MAIN_CORE + 1U)
@@ -253,7 +259,7 @@ extern "C" {
  *   Note: Since only 3 submit register set is present, we need to share some
  *   of them across cores. This means that Direct TR from these cores can't
  *   run simultaneously.
- *   In this case C7x and C66x are provided unique ID which are more likely to
+ *   In this case C7x1 and C7x2 are provided unique ID which are more likely to
  *   use direct TR mode and other cores share the same core ID.
  *
  *  List of all DRU cores ID to use for all the CPUs present in the SOC.
@@ -266,8 +272,7 @@ extern "C" {
 #define UDMA_DRU_CORE_ID_MCU3_0         (CSL_DRU_CORE_ID_2)
 #define UDMA_DRU_CORE_ID_MCU3_1         (CSL_DRU_CORE_ID_2)
 #define UDMA_DRU_CORE_ID_C7X_1          (CSL_DRU_CORE_ID_0)
-#define UDMA_DRU_CORE_ID_C66X_1         (CSL_DRU_CORE_ID_1)
-#define UDMA_DRU_CORE_ID_C66X_2         (CSL_DRU_CORE_ID_2)
+#define UDMA_DRU_CORE_ID_C7X_2          (CSL_DRU_CORE_ID_1)
 #define UDMA_DRU_CORE_ID_MCU1_0         (CSL_DRU_CORE_ID_2)
 #define UDMA_DRU_CORE_ID_MCU1_1         (CSL_DRU_CORE_ID_2)
 /* @} */
@@ -280,38 +285,54 @@ extern "C" {
  *
  *  @{
  */
+
+/** \brief Ultra High Capacity Block Copy Channels */
+#define UDMA_RM_RES_ID_BC_UHC                   (0U)
+/** \brief High Capacity Block Copy Channels */
+#define UDMA_RM_RES_ID_BC_HC                    (1U) 
+/** \brief Normal Capacity Block Copy Channels */
+#define UDMA_RM_RES_ID_BC                       (2U)
+/* List of all UDMAP and BCDMA TX/RX Channel Resource Id's */
 /** \brief Ultra High Capacity TX and Block Copy Channels */
-#define UDMA_RM_RES_ID_TX_UHC                   (0U)
+#define UDMA_RM_RES_ID_TX_UHC                   (3U)
 /** \brief High Capacity TX and Block Copy Channels */
-#define UDMA_RM_RES_ID_TX_HC                    (1U) 
+#define UDMA_RM_RES_ID_TX_HC                    (4U)
 /** \brief Normal Capacity TX and Block Copy Channels */
-#define UDMA_RM_RES_ID_TX                       (2U) 
+#define UDMA_RM_RES_ID_TX                       (5U)
 /** \brief Ultra High Capacity RX Channels */
-#define UDMA_RM_RES_ID_RX_UHC                   (3U) 
+#define UDMA_RM_RES_ID_RX_UHC                   (6U)
 /** \brief High Capacity RX Channels */
-#define UDMA_RM_RES_ID_RX_HC                    (4U) 
+#define UDMA_RM_RES_ID_RX_HC                    (7U)
 /** \brief Normal Capacity RX Channels */
-#define UDMA_RM_RES_ID_RX                       (5U) 
-/** \brief UTC - Extended Channels (MSMC_DRU/VPAC_TC0/VPAC_TC1/DMPAC) */
-#define UDMA_RM_RES_ID_UTC                      (6U) 
-/** \brief Free Flows */
-#define UDMA_RM_RES_ID_RX_FLOW                  (7U) 
-/** \brief Free Rings */
-#define UDMA_RM_RES_ID_RING                     (8U) 
+#define UDMA_RM_RES_ID_RX                       (8U)
+
+/* List of all Resources Id's shared between all Instances */
 /** \brief Global Event */
-#define UDMA_RM_RES_ID_GLOBAL_EVENT             (9U) 
+#define UDMA_RM_RES_ID_GLOBAL_EVENT             (9U)
 /** \brief Virtual Interrupts */
-#define UDMA_RM_RES_ID_VINTR                    (10U) 
+#define UDMA_RM_RES_ID_VINTR                    (10U)
 /** \brief Interrupt Router Interrupts */
-#define UDMA_RM_RES_ID_IR_INTR                  (11U) 
+#define UDMA_RM_RES_ID_IR_INTR                  (11U)
+
+/** \brief UTC - Extended Channels (MSMC_DRU/VPAC_TC0/VPAC_TC1/DMPAC) */
+#define UDMA_RM_RES_ID_UTC                      (12U)
+/** \brief Free Flows */
+#define UDMA_RM_RES_ID_RX_FLOW                  (13U)
+/** \brief Free Rings */
+#define UDMA_RM_RES_ID_RING                     (14U)
 /** \brief Proxy */
-#define UDMA_RM_RES_ID_PROXY                    (12U) 
+#define UDMA_RM_RES_ID_PROXY                    (15U)
 /** \brief Ring Monitors */
-#define UDMA_RM_RES_ID_RING_MON                 (13U) 
+#define UDMA_RM_RES_ID_RING_MON                 (16U)
+
+/** \brief Total number of BCDMA resources */
+#define UDMA_RM_NUM_BCDMA_RES                   (12U)
 /** \brief Total number of UDMAP resources */
-#define UDMA_RM_NUM_UDMAP_RES                   (14U) 
+#define UDMA_RM_NUM_UDMAP_RES                   (17U)  
+
 /** \brief Total number of resources */
-#define UDMA_RM_NUM_RES                         (UDMA_RM_NUM_UDMAP_RES)
+#define UDMA_RM_NUM_RES                         UDMA_MAX(UDMA_RM_NUM_UDMAP_RES, UDMA_RM_NUM_BCDMA_RES)
+
 /* @} */
 
 /** \brief Total number of shared resources - 
@@ -326,8 +347,6 @@ extern "C" {
  * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
  * Events 48 - 63  : managed by UDMA for routing various UDMA events to C7x  */ 
 #define UDMA_C7X_CORE_INTR_OFFSET               (48U)
-/* Start of C66x core interrupts */
-#define UDMA_C66X_CORE_INTR_OFFSET              (32U)
 
 /**
  *  \anchor Udma_PsilCh
@@ -347,40 +366,32 @@ extern "C" {
  *  @{
  */
 #define UDMA_PSIL_CH_MAIN_SAUL0_TX          (CSL_PSILCFG_NAVSS_MAIN_SAUL0_PSILD_THREAD_OFFSET)
-#define UDMA_PSIL_CH_MAIN_ICSS_G0_TX        (CSL_PSILCFG_NAVSS_MAIN_ICSS_G0_PSILD_THREAD_OFFSET)
-#define UDMA_PSIL_CH_MAIN_ICSS_G1_TX        (CSL_PSILCFG_NAVSS_MAIN_ICSS_G1_PSILD_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_VPAC_TC0_TX       (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILD_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_VPAC_TC1_TX       (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILD_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_DMPAC_TC0_TX      (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILD_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_CSI_TX            (CSL_PSILCFG_NAVSS_MAIN_CSI_PSILD_THREAD_OFFSET)
-#define UDMA_PSIL_CH_MAIN_CPSW9_TX          (CSL_PSILCFG_NAVSS_MAIN_CPSW9_PSILD_THREAD_OFFSET)
+#define UDMA_PSIL_CH_MAIN_CPSW2_TX          (CSL_PSILCFG_NAVSS_MAIN_CPSW2_PSILD_THREAD_OFFSET)
 
 #define UDMA_PSIL_CH_MAIN_SAUL0_RX          (CSL_PSILCFG_NAVSS_MAIN_SAUL0_PSILS_THREAD_OFFSET)
-#define UDMA_PSIL_CH_MAIN_ICSS_G0_RX        (CSL_PSILCFG_NAVSS_MAIN_ICSS_G0_PSILS_THREAD_OFFSET)
-#define UDMA_PSIL_CH_MAIN_ICSS_G1_RX        (CSL_PSILCFG_NAVSS_MAIN_ICSS_G1_PSILS_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_VPAC_TC0_RX       (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_VPAC_TC1_RX       (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_DMPAC_TC0_RX      (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_OFFSET)
 #define UDMA_PSIL_CH_MAIN_CSI_RX            (CSL_PSILCFG_NAVSS_MAIN_CSI_PSILS_THREAD_OFFSET)
-#define UDMA_PSIL_CH_MAIN_CPSW9_RX          (CSL_PSILCFG_NAVSS_MAIN_CPSW9_PSILS_THREAD_OFFSET)
+#define UDMA_PSIL_CH_MAIN_CPSW2_RX          (CSL_PSILCFG_NAVSS_MAIN_CPSW2_PSILS_THREAD_OFFSET)
 
 #define UDMA_PSIL_CH_MAIN_SAUL0_TX_CNT      (CSL_PSILCFG_NAVSS_MAIN_SAUL0_PSILD_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_ICSS_G0_TX_CNT    (CSL_PSILCFG_NAVSS_MAIN_ICSS_G0_PSILD_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_ICSS_G1_TX_CNT    (CSL_PSILCFG_NAVSS_MAIN_ICSS_G1_PSILD_THREAD_CNT)
 #define UDMA_PSIL_CH_MAIN_VPAC_TC0_TX_CNT   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILD_THREAD_CNT)
 #define UDMA_PSIL_CH_MAIN_VPAC_TC1_TX_CNT   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILD_THREAD_CNT)
 #define UDMA_PSIL_CH_MAIN_DMPAC_TC0_TX_CNT  (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILD_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_VPAC_TC1_RX_CNT   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_DMPAC_TC0_RX_CNT  (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_CNT)
+#define UDMA_PSIL_CH_MAIN_CSI_TX_CNT        (CSL_PSILCFG_NAVSS_MAIN_CSI_PSILD_THREAD_CNT)
+#define UDMA_PSIL_CH_MAIN_CPSW2_TX_CNT      (CSL_PSILCFG_NAVSS_MAIN_CPSW2_PSILD_THREAD_CNT)
 
 #define UDMA_PSIL_CH_MAIN_SAUL0_RX_CNT      (CSL_PSILCFG_NAVSS_MAIN_SAUL0_PSILS_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_ICSS_G0_RX_CNT    (CSL_PSILCFG_NAVSS_MAIN_ICSS_G0_PSILS_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_ICSS_G1_RX_CNT    (CSL_PSILCFG_NAVSS_MAIN_ICSS_G1_PSILS_THREAD_CNT)
 #define UDMA_PSIL_CH_MAIN_VPAC_TC0_RX_CNT   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_CSI_TX_CNT        (CSL_PSILCFG_NAVSS_MAIN_CSI_PSILD_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_CPSW9_TX_CNT      (CSL_PSILCFG_NAVSS_MAIN_CPSW9_PSILD_THREAD_CNT)
+#define UDMA_PSIL_CH_MAIN_VPAC_TC1_RX_CNT   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_CNT)
+#define UDMA_PSIL_CH_MAIN_DMPAC_TC0_RX_CNT  (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_CNT)
 #define UDMA_PSIL_CH_MAIN_CSI_RX_CNT        (CSL_PSILCFG_NAVSS_MAIN_CSI_PSILS_THREAD_CNT)
-#define UDMA_PSIL_CH_MAIN_CPSW9_RX_CNT      (CSL_PSILCFG_NAVSS_MAIN_CPSW9_PSILS_THREAD_CNT)
+#define UDMA_PSIL_CH_MAIN_CPSW2_RX_CNT      (CSL_PSILCFG_NAVSS_MAIN_CPSW2_PSILS_THREAD_CNT)
 /* @} */
 
 /**
@@ -431,24 +442,6 @@ extern "C" {
 #define UDMA_PDMA_CH_MAIN_MCASP2_TX     (CSL_PDMA_CH_MAIN_MCASP2_CH0_TX)
 #define UDMA_PDMA_CH_MAIN_MCASP3_TX     (CSL_PDMA_CH_MAIN_MCASP3_CH0_TX)
 #define UDMA_PDMA_CH_MAIN_MCASP4_TX     (CSL_PDMA_CH_MAIN_MCASP4_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_MCASP5_TX     (CSL_PDMA_CH_MAIN_MCASP5_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_MCASP6_TX     (CSL_PDMA_CH_MAIN_MCASP6_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_MCASP7_TX     (CSL_PDMA_CH_MAIN_MCASP7_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_MCASP8_TX     (CSL_PDMA_CH_MAIN_MCASP8_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_MCASP9_TX     (CSL_PDMA_CH_MAIN_MCASP9_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_MCASP10_TX    (CSL_PDMA_CH_MAIN_MCASP10_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_MCASP11_TX    (CSL_PDMA_CH_MAIN_MCASP11_CH0_TX)
-/*
- * PDMA Main AASRC TX Channels
- */
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH0_TX (CSL_PDMA_CH_MAIN_AASRC0_CH0_TX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH1_TX (CSL_PDMA_CH_MAIN_AASRC0_CH1_TX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH2_TX (CSL_PDMA_CH_MAIN_AASRC0_CH2_TX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH3_TX (CSL_PDMA_CH_MAIN_AASRC0_CH3_TX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH4_TX (CSL_PDMA_CH_MAIN_AASRC0_CH4_TX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH5_TX (CSL_PDMA_CH_MAIN_AASRC0_CH5_TX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH6_TX (CSL_PDMA_CH_MAIN_AASRC0_CH6_TX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH7_TX (CSL_PDMA_CH_MAIN_AASRC0_CH7_TX)
 /*
  * PDMA Main UART TX Channels
  */
@@ -542,6 +535,18 @@ extern "C" {
 #define UDMA_PDMA_CH_MAIN_MCAN13_CH0_TX (CSL_PDMA_CH_MAIN_MCAN13_CH0_TX)
 #define UDMA_PDMA_CH_MAIN_MCAN13_CH1_TX (CSL_PDMA_CH_MAIN_MCAN13_CH1_TX)
 #define UDMA_PDMA_CH_MAIN_MCAN13_CH2_TX (CSL_PDMA_CH_MAIN_MCAN13_CH2_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN14_CH0_TX (CSL_PDMA_CH_MAIN_MCAN14_CH0_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN14_CH1_TX (CSL_PDMA_CH_MAIN_MCAN14_CH1_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN14_CH2_TX (CSL_PDMA_CH_MAIN_MCAN14_CH2_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN15_CH0_TX (CSL_PDMA_CH_MAIN_MCAN15_CH0_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN15_CH1_TX (CSL_PDMA_CH_MAIN_MCAN15_CH1_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN15_CH2_TX (CSL_PDMA_CH_MAIN_MCAN15_CH2_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN16_CH0_TX (CSL_PDMA_CH_MAIN_MCAN16_CH0_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN16_CH1_TX (CSL_PDMA_CH_MAIN_MCAN16_CH1_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN16_CH2_TX (CSL_PDMA_CH_MAIN_MCAN16_CH2_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN17_CH0_TX (CSL_PDMA_CH_MAIN_MCAN17_CH0_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN17_CH1_TX (CSL_PDMA_CH_MAIN_MCAN17_CH1_TX)
+#define UDMA_PDMA_CH_MAIN_MCAN17_CH2_TX (CSL_PDMA_CH_MAIN_MCAN17_CH2_TX)
 /* @} */
 
 /**
@@ -598,24 +603,6 @@ extern "C" {
 #define UDMA_PDMA_CH_MAIN_MCASP2_RX     (CSL_PDMA_CH_MAIN_MCASP2_CH0_RX)
 #define UDMA_PDMA_CH_MAIN_MCASP3_RX     (CSL_PDMA_CH_MAIN_MCASP3_CH0_RX)
 #define UDMA_PDMA_CH_MAIN_MCASP4_RX     (CSL_PDMA_CH_MAIN_MCASP4_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_MCASP5_RX     (CSL_PDMA_CH_MAIN_MCASP5_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_MCASP6_RX     (CSL_PDMA_CH_MAIN_MCASP6_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_MCASP7_RX     (CSL_PDMA_CH_MAIN_MCASP7_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_MCASP8_RX     (CSL_PDMA_CH_MAIN_MCASP8_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_MCASP9_RX     (CSL_PDMA_CH_MAIN_MCASP9_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_MCASP10_RX    (CSL_PDMA_CH_MAIN_MCASP10_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_MCASP11_RX    (CSL_PDMA_CH_MAIN_MCASP11_CH0_RX)
-/*
- * PDMA Main AASRC RX Channels
- */
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH0_RX (CSL_PDMA_CH_MAIN_AASRC0_CH0_RX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH1_RX (CSL_PDMA_CH_MAIN_AASRC0_CH1_RX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH2_RX (CSL_PDMA_CH_MAIN_AASRC0_CH2_RX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH3_RX (CSL_PDMA_CH_MAIN_AASRC0_CH3_RX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH4_RX (CSL_PDMA_CH_MAIN_AASRC0_CH4_RX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH5_RX (CSL_PDMA_CH_MAIN_AASRC0_CH5_RX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH6_RX (CSL_PDMA_CH_MAIN_AASRC0_CH6_RX)
-#define UDMA_PDMA_CH_MAIN_AASRC0_CH7_RX (CSL_PDMA_CH_MAIN_AASRC0_CH7_RX)
 /*
  * PDMA Main UART RX Channels
  */
@@ -709,6 +696,18 @@ extern "C" {
 #define UDMA_PDMA_CH_MAIN_MCAN13_CH0_RX (CSL_PDMA_CH_MAIN_MCAN13_CH0_RX)
 #define UDMA_PDMA_CH_MAIN_MCAN13_CH1_RX (CSL_PDMA_CH_MAIN_MCAN13_CH1_RX)
 #define UDMA_PDMA_CH_MAIN_MCAN13_CH2_RX (CSL_PDMA_CH_MAIN_MCAN13_CH2_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN14_CH0_RX (CSL_PDMA_CH_MAIN_MCAN14_CH0_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN14_CH1_RX (CSL_PDMA_CH_MAIN_MCAN14_CH1_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN14_CH2_RX (CSL_PDMA_CH_MAIN_MCAN14_CH2_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN15_CH0_RX (CSL_PDMA_CH_MAIN_MCAN15_CH0_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN15_CH1_RX (CSL_PDMA_CH_MAIN_MCAN15_CH1_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN15_CH2_RX (CSL_PDMA_CH_MAIN_MCAN15_CH2_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN16_CH0_RX (CSL_PDMA_CH_MAIN_MCAN16_CH0_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN16_CH1_RX (CSL_PDMA_CH_MAIN_MCAN16_CH1_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN16_CH2_RX (CSL_PDMA_CH_MAIN_MCAN16_CH2_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN17_CH0_RX (CSL_PDMA_CH_MAIN_MCAN17_CH0_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN17_CH1_RX (CSL_PDMA_CH_MAIN_MCAN17_CH1_RX)
+#define UDMA_PDMA_CH_MAIN_MCAN17_CH2_RX (CSL_PDMA_CH_MAIN_MCAN17_CH2_RX)
 /* @} */
 
 /**

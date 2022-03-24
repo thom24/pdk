@@ -47,7 +47,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 /* UART not yet supported */
 #else
 #define APPUTILS_UART_INPUT
@@ -289,7 +289,7 @@ uint32_t AppUtils_getCurTimeInMsec(void)
 {
     uint64_t curTimeMsec = 0, curTimeUsec = 0;
 
-#if defined (UDMA_UT_BAREMETAL) && defined (BUILD_C7X_1)
+#if defined (UDMA_UT_BAREMETAL) && defined (BUILD_C7X)
 	/* C7x baremetal doesnot support getting time timestamp */
 #else
     curTimeUsec = TimerP_getTimeInUsecs();

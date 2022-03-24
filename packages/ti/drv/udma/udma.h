@@ -78,10 +78,12 @@
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
 #include <ti/csl/csl_udmap.h>
 #endif
-#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+#if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
 #include <ti/csl/csl_bcdma.h>
+#if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
 #include <ti/csl/csl_pktdma.h>
 #include <ti/csl/src/ip/udmap/V0/csl_udmap_cppi5.h>
+#endif
 #endif
 #include <ti/csl/csl_intaggr.h>
 #include <ti/csl/csl_intr_router.h>
@@ -427,12 +429,11 @@ struct Udma_DrvObj
     CSL_UdmapCfg            udmapRegs;
     /**< UDMAP register configuration */ 
 #endif 
-#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
-    /*
-     * LCDMA DMSS specific instance parameters
-     */
+#if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
     CSL_BcdmaCfg             bcdmaRegs;
-    /**< BCDMA register configuration */ 
+    /**< BCDMA register configuration */
+#endif
+#if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1) 
     CSL_PktdmaCfg            pktdmaRegs; 
     /**< PKTDMA register configuration */ 
 #endif 

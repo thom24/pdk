@@ -1516,69 +1516,73 @@ uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle)
 {
     uint16_t            ringNum = UDMA_RING_INVALID;
 
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-    uint16_t            i, offset, temp;
-    uint32_t            bitPos, bitMask;
-    Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
-    drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
-
-    for(i = 0U; i < rmInitPrms->numFreeRing; i++)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
     {
-        offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
-        temp = i - (offset << 5U);
-        bitPos = (uint32_t) temp;
-        bitMask = (uint32_t) 1U << bitPos;
-        if((drvHandle->freeRingFlag[offset] & bitMask) == bitMask)
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        uint16_t            i, offset, temp;
+        uint32_t            bitPos, bitMask;
+        Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+        drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
+
+        for(i = 0U; i < rmInitPrms->numFreeRing; i++)
         {
-            drvHandle->freeRingFlag[offset] &= ~bitMask;
-            ringNum = (uint16_t)rmInitPrms->startFreeRing;  /* Add start offset */
-            ringNum += i;
-            ringNum += (uint16_t)(drvHandle->udmapRegs.txChanCnt +
-                                  drvHandle->udmapRegs.txExtUtcChanCnt +
-                                  drvHandle->udmapRegs.rxChanCnt);
-            break;
+            offset = i >> 5U;
+            Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
+            temp = i - (offset << 5U);
+            bitPos = (uint32_t) temp;
+            bitMask = (uint32_t) 1U << bitPos;
+            if((drvHandle->freeRingFlag[offset] & bitMask) == bitMask)
+            {
+                drvHandle->freeRingFlag[offset] &= ~bitMask;
+                ringNum = (uint16_t)rmInitPrms->startFreeRing;  /* Add start offset */
+                ringNum += i;
+                ringNum += (uint16_t)(drvHandle->udmapRegs.txChanCnt +
+                                    drvHandle->udmapRegs.txExtUtcChanCnt +
+                                    drvHandle->udmapRegs.rxChanCnt);
+                break;
+            }
         }
-    }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
-    drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+        drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 #endif
-
+    }
     return (ringNum);
 }
 
 void Udma_rmFreeFreeRing(uint16_t ringNum, Udma_DrvHandle drvHandle)
 {
-    
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-    uint32_t            i, offset, bitPos, bitMask;
-    Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-    uint32_t            freeRingOffset = rmInitPrms->startFreeRing +
-                                 drvHandle->udmapRegs.txChanCnt +
-                                 drvHandle->udmapRegs.txExtUtcChanCnt +
-                                 drvHandle->udmapRegs.rxChanCnt;
-
-    /* Free up only the free ring - ignore FQ rings */
-    if(ringNum >= freeRingOffset)
+    if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
     {
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
-        drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+        uint32_t            i, offset, bitPos, bitMask;
+        Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+        uint32_t            freeRingOffset = rmInitPrms->startFreeRing +
+                                    drvHandle->udmapRegs.txChanCnt +
+                                    drvHandle->udmapRegs.txExtUtcChanCnt +
+                                    drvHandle->udmapRegs.rxChanCnt;
 
-        i = ringNum - freeRingOffset;
-        offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
-        bitPos = i - (offset << 5U);
-        bitMask = (uint32_t) 1U << bitPos;
-        Udma_assert(drvHandle, (drvHandle->freeRingFlag[offset] & bitMask) == 0U);
-        drvHandle->freeRingFlag[offset] |= bitMask;
+        /* Free up only the free ring - ignore FQ rings */
+        if(ringNum >= freeRingOffset)
+        {
+            Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+            drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
-        drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
-    }
+            i = ringNum - freeRingOffset;
+            offset = i >> 5U;
+            Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
+            bitPos = i - (offset << 5U);
+            bitMask = (uint32_t) 1U << bitPos;
+            Udma_assert(drvHandle, (drvHandle->freeRingFlag[offset] & bitMask) == 0U);
+            drvHandle->freeRingFlag[offset] |= bitMask;
+
+            Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+            drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
+        }
 #endif
+    }
 
     return;
 }
@@ -1954,15 +1958,8 @@ uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum)
 {
     uint32_t    coreIntrNum = UDMA_INTR_INVALID;
 
-    if(drvHandle->instType != UDMA_INST_TYPE_NORMAL)
-    {
-        /* In case of devices like AM64x, where there are no Interrupt Routers,
-         * irIntrNum refers to coreIntrNum number itself. */
-        coreIntrNum = irIntrNum;
-    }
-    else
-    {
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+/* If Interrupt Router is present */
+#if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)
 #if defined (_TMS320C6X)
         /* For C66x Sciclient translates NAVSS IR Idx to corresponding C66 IR Idx,
          * Not the Core Interrupt Idx. */
@@ -1983,8 +1980,11 @@ uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum)
             coreIntrNum = dstId;
         }
 #endif
+#else
+        /* In case of devices like AM64x, where there are no Interrupt Routers,
+         * irIntrNum refers to coreIntrNum number itself. */
+        coreIntrNum = irIntrNum;
 #endif
-    }
 
     return (coreIntrNum);
 }
@@ -1993,15 +1993,8 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
 {
     uint32_t    irIntrNum = UDMA_INTR_INVALID;
 
-    if(drvHandle->instType != UDMA_INST_TYPE_NORMAL)
-    {
-        /* In case of devices like AM64x, where there are no Interrupt Routers,
-         * coreIntrNum refers to irIntrNum number itself. */
-        irIntrNum = coreIntrNum;
-    }
-    else
-    {
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+
+#if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)
 #if defined (_TMS320C6X)
         /* For C66x Sciclient expects C66 IR Idx to translate to NAVSS IR Idx.
          * Not the Core Interrupt Idx. */
@@ -2022,8 +2015,11 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
             irIntrNum = irId;
         } 
 #endif
+#else
+        /* In case of devices like AM64x, where there are no Interrupt Routers,
+         * coreIntrNum refers to irIntrNum number itself. */
+        irIntrNum = coreIntrNum;
 #endif
-    }
 
     return (irIntrNum);
 } 
@@ -2036,6 +2032,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
     uint32_t                                     splitResFlag[UDMA_RM_NUM_RES] = {0U};
     uint32_t numRes = 0U;
     uint32_t resIdx;
+    bool blkCopySubType = false;
 
     /* Error check */
     if(NULL_PTR == rmInitPrms)
@@ -2059,6 +2056,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         if(UDMA_INST_ID_MCU_0 == instId)
         {
             numRes      = UDMA_RM_NUM_RES;
+            blkCopySubType = false;
             /* Assign offset Params */
             numtTxCh    = CSL_NAVSS_MCU_UDMAP_NUM_TX_CHANS;    
             numRxCh     = CSL_NAVSS_MCU_UDMAP_NUM_RX_CHANS;
@@ -2067,19 +2065,24 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         else if(UDMA_INST_ID_MAIN_0 == instId)
         {
             numRes      = UDMA_RM_NUM_RES;
+            blkCopySubType = false;
             /* Assign offset Params */
             numtTxCh    = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS;    
             numRxCh     = CSL_NAVSS_MAIN_UDMAP_NUM_RX_CHANS;
             numExtCh    = CSL_NAVSS_MAIN_UDMAP_NUM_EXT_CHANS;
         }
     #endif
-    #if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+    #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
         if(UDMA_INST_ID_BCDMA_0 == instId)
         {
+            blkCopySubType = true;
             numRes = UDMA_RM_NUM_BCDMA_RES;
         }
-        else if(UDMA_INST_ID_PKTDMA_0 == instId)
+    #endif
+    #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
+        if(UDMA_INST_ID_PKTDMA_0 == instId)
         {
+            blkCopySubType = true;
             numRes = UDMA_RM_NUM_PKTDMA_RES;
         }
     #endif
@@ -2090,8 +2093,8 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
             retVal += Udma_rmGetSciclientDefaultBoardCfgRmRange(&rmDefBoardCfgPrms[resIdx], &rmDefBoardCfgResp[resIdx], &splitResFlag[resIdx]);
         }
 
-    #if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)    
-        if((UDMA_INST_ID_BCDMA_0 == instId) || (UDMA_INST_ID_PKTDMA_0 == instId))
+    #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1) || (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
+        if(blkCopySubType)
         {   
             /* Ultra High Capacity Block Copy Channels */
             rmInitPrms->startBlkCopyUhcCh   = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_UHC].rangeStart;
@@ -2131,7 +2134,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         }
     #endif
     #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)   
-        if((UDMA_INST_ID_MCU_0 == instId) || (UDMA_INST_ID_MAIN_0 == instId))
+        if(!blkCopySubType)
         {   
             /* Ultra High Capacity Block Copy and TX Channels */
             /* Primary for Block Copy Channel */
@@ -2188,9 +2191,9 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         /* Secondary for VPAC_TC0+VPAC_TC1+DMPAC Channels */
         /* Here the assumption taken to split the external channels for HWA is that,
          * all similar type of channels (VPAC_TC0/VPAC_TC1/DMPAC) will be reserved to same core */
-        uint32_t vpac0Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_NUM_CH_DRU0;
-        uint32_t vpac1Start = vpac0Start + UDMA_UTC_NUM_CH_VPAC_TC0;
-        uint32_t dmpacStart = vpac1Start + UDMA_UTC_NUM_CH_VPAC_TC1;
+        uint32_t vpac0Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC0;
+        uint32_t vpac1Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC1;
+        uint32_t dmpacStart = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_DMPAC_TC0;
 
         if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec == vpac0Start) &&
            (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac0Start + UDMA_UTC_NUM_CH_VPAC_TC0))
@@ -2277,36 +2280,29 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
                                                &rmInitPrms->numVintr);
 
         /* Interrupt Router Interrupts */
-    #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)   
-        if((UDMA_INST_ID_MCU_0 == instId) || (UDMA_INST_ID_MAIN_0 == instId))
-        {   
-            /* Shared resource - Split based on instance */
-            retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
-                                                instId,
-                                                rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
-                                                rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
-                                                &rmInitPrms->startIrIntr,
-                                                &rmInitPrms->numIrIntr);
-        }
-    #endif
-    #if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)   
-        if((UDMA_INST_ID_BCDMA_0 == instId) || (UDMA_INST_ID_PKTDMA_0 == instId))
-        {  
-            /* One to one mapping exists from Virtual Interrupts. 
-             * So translate to corresponding range.
-             * In case of devices like AM64x, where there are no Interrupt Routers,
-             * this refers to core interrupt itslef. */ 
-            retVal += Sciclient_rmIrqTranslateIaOutput(rmDefBoardCfgPrms[UDMA_RM_RES_ID_VINTR].sciclientReqType,
-                                                       rmInitPrms->startVintr,
-                                                       Udma_getCoreSciDevId(),
-                                                       (uint16_t *) &rmInitPrms->startIrIntr);
-        
-            rmInitPrms->numIrIntr                          = rmInitPrms->numVintr;             
-        }
+    #if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)   
+        /* Shared resource - Split based on instance */
+        retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
+                                            instId,
+                                            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
+                                            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
+                                            &rmInitPrms->startIrIntr,
+                                            &rmInitPrms->numIrIntr);
+    #else 
+        /* One to one mapping exists from Virtual Interrupts. 
+            * So translate to corresponding range.
+            * In case of devices like AM64x, where there are no Interrupt Routers,
+            * this refers to core interrupt itslef. */
+        retVal += Sciclient_rmIrqTranslateIaOutput(rmDefBoardCfgPrms[UDMA_RM_RES_ID_VINTR].sciclientReqType,
+                                                    rmInitPrms->startVintr,
+                                                    Udma_getCoreSciDevId(),
+                                                    (uint16_t *) &rmInitPrms->startIrIntr);
+    
+        rmInitPrms->numIrIntr                          = rmInitPrms->numVintr;             
     #endif
 
-    #if defined (__C7100__) || defined (_TMS320C6X)
-    #if defined (__C7100__)
+    #if defined (BUILD_C7X) || defined (_TMS320C6X)
+    #if defined (BUILD_C7X)
         /* Start C7x Core Interrupt */
         rmInitPrms->startC7xCoreIntr                        = UDMA_C7X_CORE_INTR_OFFSET;
     #endif
@@ -2325,7 +2321,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
                                                    &start,
                                                    &offset);
-        #if defined (__C7100__)
+        #if defined (BUILD_C7X)
             rmInitPrms->startC7xCoreIntr                   +=  offset;  
         #endif
         #if defined (_TMS320C6X)
@@ -2350,7 +2346,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         rmInitPrms->numRingMon                              = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING_MON].rangeNum;
     #endif
 
-    #if (UDMA_SOC_CFG_LCDMA_PRESENT == 1) 
+    #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1) 
         if(UDMA_INST_ID_PKTDMA_0 == instId)
         {
         #if (UDMA_NUM_MAPPED_TX_GROUP > 0)

@@ -119,16 +119,19 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
         }
 
 #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
-        if(UDMA_SOK == retVal)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            /* Setup channelized firewall for default core proxy */
-            req.valid_params = 0U;
-            req.nav_id       = drvHandle->devIdProxy;
-            req.index        = drvHandle->initPrms.rmInitPrms.proxyThreadNum;
-            retVal = Sciclient_rmSetProxyCfg(&req, UDMA_SCICLIENT_TIMEOUT);
-            if(UDMA_SOK != retVal)
+            if(UDMA_SOK == retVal)
             {
-                Udma_printf(drvHandle, "[Error] SciClient Set proxy config failed!!!\n");
+                /* Setup channelized firewall for default core proxy */
+                req.valid_params = 0U;
+                req.nav_id       = drvHandle->devIdProxy;
+                req.index        = drvHandle->initPrms.rmInitPrms.proxyThreadNum;
+                retVal = Sciclient_rmSetProxyCfg(&req, UDMA_SCICLIENT_TIMEOUT);
+                if(UDMA_SOK != retVal)
+                {
+                    Udma_printf(drvHandle, "[Error] SciClient Set proxy config failed!!!\n");
+                }
             }
         }
 #endif
@@ -229,6 +232,16 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle)
     return (retVal);
 }
 
+static inline int32_t Udma_checkInstId(int32_t instId)
+{
+    int32_t retVal = UDMA_SOK;
+    if((UDMA_INST_ID_START > instId) || (UDMA_INST_ID_MAX < instId))
+    {
+        retVal = UDMA_EINVALID_PARAMS;
+    }
+    return retVal;
+}
+
 int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
 {
     int32_t retVal = UDMA_SOK;
@@ -237,6 +250,11 @@ int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
     if(NULL_PTR == initPrms)
     {
         retVal = UDMA_EBADARGS;
+    }
+
+    if(UDMA_SOK == retVal)
+    {
+        retVal = Udma_checkInstId((int32_t)instId);
     }
 
     if(UDMA_SOK == retVal)
@@ -253,3 +271,5 @@ int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
 
     return (retVal);
 }
+
+

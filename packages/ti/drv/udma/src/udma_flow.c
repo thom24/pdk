@@ -251,33 +251,38 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
     {
         if(UDMA_MAPPED_GROUP_INVALID == flowHandle->mappedFlowGrp)
         {
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-            Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
-            drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
-
-            rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-
-            freeFlowOffset =
-                rmInitPrms->startFreeFlow + drvHandle->udmapRegs.rxChanCnt;
-                
-            Udma_assert(drvHandle, flowHandle->flowStart >= freeFlowOffset);
-            for(j = 0U; j < flowHandle->flowCnt; j++)
+            if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
             {
-                i = (flowHandle->flowStart - freeFlowOffset) + j;
-                offset = i >> 5U;
-                Udma_assert(drvHandle, offset < UDMA_RM_FREE_FLOW_ARR_SIZE);
-                bitPos = i - (offset << 5U);
-                bitMask = (uint32_t) 1U << bitPos;
-                Udma_assert(drvHandle,
-                    (drvHandle->freeFlowFlag[offset] & bitMask) == 0U);
-                drvHandle->freeFlowFlag[offset] |= bitMask;
-            }
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+                Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+                drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
-            Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
-            drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
-#else
-            retVal = UDMA_EFAIL;
+                rmInitPrms = &drvHandle->initPrms.rmInitPrms;
+
+                freeFlowOffset =
+                    rmInitPrms->startFreeFlow + drvHandle->udmapRegs.rxChanCnt;
+                    
+                Udma_assert(drvHandle, flowHandle->flowStart >= freeFlowOffset);
+                for(j = 0U; j < flowHandle->flowCnt; j++)
+                {
+                    i = (flowHandle->flowStart - freeFlowOffset) + j;
+                    offset = i >> 5U;
+                    Udma_assert(drvHandle, offset < UDMA_RM_FREE_FLOW_ARR_SIZE);
+                    bitPos = i - (offset << 5U);
+                    bitMask = (uint32_t) 1U << bitPos;
+                    Udma_assert(drvHandle,
+                        (drvHandle->freeFlowFlag[offset] & bitMask) == 0U);
+                    drvHandle->freeFlowFlag[offset] |= bitMask;
+                }
+
+                Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+                drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 #endif
+            }
+            else
+            {
+                retVal = UDMA_EFAIL;
+            }
         }
         else
         {

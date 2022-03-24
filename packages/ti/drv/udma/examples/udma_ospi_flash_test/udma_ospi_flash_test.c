@@ -91,7 +91,7 @@
 /*
  * Flash type
  */
-#if defined (SOC_J7200) || defined(SOC_AM64X)
+#if defined (SOC_J7200) || defined(SOC_AM64X) || (SOC_J721S2)
 #define FLASH_TYPE_XSPI
 #else
 #define FLASH_TYPE_OSPI
@@ -354,9 +354,6 @@ static uint8_t * gUdmaTestOspiFlashDataAddr = (uint8_t *)(OSPI_FLASH_DATA_BASE_A
 static volatile int32_t gUdmaTestResult = UDMA_SOK;
 /* Global App pass/fail flag */
 static volatile int32_t gUdmaAppResult = UDMA_SOK;
-
-/* No.of ticks taken to do a GTC Reg Read operation */
-volatile uint64_t getTicksDelay = 0; 
 
 /* UDMA OSPI Flash Tests data structure */
 App_UdmaTestObj gUdmaAppTestObj[] =
@@ -1373,7 +1370,7 @@ static void App_printPerfResults(App_UdmaObj *appObj)
     uint32_t             tCnt;
     uint32_t             triggerCnt;
     
-    appCounterObj->txTotalTicks = appCounterObj->txStopTicks - appCounterObj->txStartTicks  - getTicksDelay;
+    appCounterObj->txTotalTicks = appCounterObj->txStopTicks - appCounterObj->txStartTicks;
     appCounterObj->txElapsedTime = (appCounterObj->txTotalTicks*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
 
     App_printNum("\n OSPI Write %d", appTestObj->numBytes);
@@ -1385,7 +1382,7 @@ static void App_printPerfResults(App_UdmaObj *appObj)
         triggerCnt = UDMA_TEST_XFER_REPEAT_CNT;
         for(tCnt = 0U; tCnt < triggerCnt; tCnt++)
         {
-            appCounterObj->rxTotalTicks[tCnt] = appCounterObj->rxStopTicks[tCnt] - appCounterObj->rxStartTicks[tCnt]  - getTicksDelay;
+            appCounterObj->rxTotalTicks[tCnt] = appCounterObj->rxStopTicks[tCnt] - appCounterObj->rxStartTicks[tCnt];
             appCounterObj->rxTotalTicks[triggerCnt] += appCounterObj->rxTotalTicks[tCnt];
             appCounterObj->rxElapsedTime[tCnt] = (appCounterObj->rxTotalTicks[tCnt]*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ;
 
@@ -1449,13 +1446,6 @@ int32_t App_setGTCClk(uint32_t moduleId,
 
     /* Enable GTC */
     HW_WR_REG32(CSL_GTC0_GTC_CFG1_BASE + 0x0U, 0x1);
-
-    /* Measure and store the time spent to do a getTime operation */
-    getTicksDelay = App_getGTCTimerTicks();
-    getTicksDelay = App_getGTCTimerTicks() - getTicksDelay;
-    App_printNum("\n Time taken to read GTC Timer ticks = %d ns ",
-                 (uint32_t)((getTicksDelay*1000000000U)/(uint64_t)OSPI_FLASH_GTC_CLK_FREQ));
-    App_printNum("(%d ticks) \n", (uint32_t)getTicksDelay);
 
     return (retVal);
 }

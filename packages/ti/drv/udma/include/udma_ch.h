@@ -1166,7 +1166,7 @@ struct Udma_ChObj
     volatile CSL_udmap_txcrtRegs_chan   *pExtRtRegs;
     /**< Pointer to UDMAP External RT config register overlay */
 #endif
-#if (UDMA_SOC_CFG_LCDMA_PRESENT == 1)
+#if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
     /* Below BCDMA register overlay pointers provided for debug purpose to
      * readily view the registers */
     volatile CSL_bcdma_bccfgRegs_chan   *pBcdmaBcCfgRegs;
@@ -1181,7 +1181,8 @@ struct Udma_ChObj
     /**< Pointer to BCDMA RX config register overlay */
     volatile CSL_bcdma_rxcrtRegs_chan   *pBcdmaRxRtRegs;
     /**< Pointer to BCDMA RX RT config register overlay */
-
+#endif
+#if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
     /* Below PKTDMA register overlay pointers provided for debug purpose to
      * readily view the registers */
     volatile CSL_pktdma_txccfgRegs_chan  *pPktdmaTxCfgRegs;

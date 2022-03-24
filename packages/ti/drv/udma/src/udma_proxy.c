@@ -150,7 +150,6 @@ int32_t Udma_proxyAlloc(Udma_DrvHandle drvHandle,
 
 int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
 {
-#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)   
     int32_t         retVal = UDMA_SOK;
     Udma_DrvHandle  drvHandle;
 
@@ -177,18 +176,24 @@ int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
 
     if(UDMA_SOK == retVal)
     {
-        /* Free-up resources */
-        Udma_assert(drvHandle, proxyHandle->proxyNum != UDMA_PROXY_INVALID);
-        Udma_rmFreeProxy(proxyHandle->proxyNum, drvHandle);
-        proxyHandle->drvHandle       = (Udma_DrvHandle) NULL_PTR;
-        proxyHandle->proxyNum        = UDMA_PROXY_INVALID;
-        proxyHandle->proxyAddr       = 0U;
-        proxyHandle->proxyInitDone   = UDMA_DEINIT_DONE;
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
+        {
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
+            /* Free-up resources */
+            Udma_assert(drvHandle, proxyHandle->proxyNum != UDMA_PROXY_INVALID);
+            Udma_rmFreeProxy(proxyHandle->proxyNum, drvHandle);
+            proxyHandle->drvHandle       = (Udma_DrvHandle) NULL_PTR;
+            proxyHandle->proxyNum        = UDMA_PROXY_INVALID;
+            proxyHandle->proxyAddr       = 0U;
+            proxyHandle->proxyInitDone   = UDMA_DEINIT_DONE;
+#endif
+        }
+        else
+        {
+            retVal = UDMA_EFAIL;
+        }
     }
 
-#else
-    int32_t             retVal = UDMA_EFAIL;
-#endif
 
     return (retVal);
 }
@@ -196,7 +201,6 @@ int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
 int32_t Udma_proxyConfig(Udma_ProxyHandle proxyHandle,
                          const Udma_ProxyCfg *proxyCfg)
 {
-#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     int32_t             retVal = UDMA_SOK;
     Udma_DrvHandle      drvHandle;
     CSL_ProxyThreadCfg  threadCfg;
@@ -224,34 +228,40 @@ int32_t Udma_proxyConfig(Udma_ProxyHandle proxyHandle,
 
     if(UDMA_SOK == retVal)
     {
-        threadCfg.mode      = proxyCfg->proxyMode;
-        /* CSL expects ring size in bytes */
-        threadCfg.elSz      = ((uint32_t) 1U << (proxyCfg->elemSize + 2U));
-        threadCfg.queueNum  = (uint32_t) proxyCfg->ringNum;
-        threadCfg.errEvtNum = UDMA_EVENT_INVALID;
-        retVal = CSL_proxyCfgThread(
-                     &drvHandle->proxyCfg,
-                     drvHandle->proxyTargetNumRing,
-                     proxyHandle->proxyNum,
-                     &threadCfg);
-        if(UDMA_SOK != retVal)
+        if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
         {
-            Udma_printf(drvHandle, "[Error] Proxy config failed!!!\n");
+#if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
+            threadCfg.mode      = proxyCfg->proxyMode;
+            /* CSL expects ring size in bytes */
+            threadCfg.elSz      = ((uint32_t) 1U << (proxyCfg->elemSize + 2U));
+            threadCfg.queueNum  = (uint32_t) proxyCfg->ringNum;
+            threadCfg.errEvtNum = UDMA_EVENT_INVALID;
+            retVal = CSL_proxyCfgThread(
+                        &drvHandle->proxyCfg,
+                        drvHandle->proxyTargetNumRing,
+                        proxyHandle->proxyNum,
+                        &threadCfg);
+            if(UDMA_SOK != retVal)
+            {
+                Udma_printf(drvHandle, "[Error] Proxy config failed!!!\n");
+            }
+            else
+            {
+                proxyHandle->proxyAddr =
+                    CSL_proxyGetDataAddr(
+                        &drvHandle->proxyCfg,
+                        drvHandle->proxyTargetNumRing,
+                        proxyHandle->proxyNum,
+                        threadCfg.elSz);
+            }
+        
+#endif
         }
         else
         {
-            proxyHandle->proxyAddr =
-                CSL_proxyGetDataAddr(
-                    &drvHandle->proxyCfg,
-                    drvHandle->proxyTargetNumRing,
-                    proxyHandle->proxyNum,
-                    threadCfg.elSz);
+            retVal = UDMA_EFAIL;
         }
     }
-
-#else
-    int32_t             retVal = UDMA_EFAIL;
-#endif
 
     return (retVal);
 }

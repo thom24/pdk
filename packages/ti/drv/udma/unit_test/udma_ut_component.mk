@@ -110,7 +110,6 @@ UDMA_USER_INPUT_UNIT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST)
 
 $(eval ${UDMA_USER_INPUT_UNIT_TESTAPP_MACRO_LIST})
 
-
 export udma_ut_LIB_LIST
 export udma_ut_EXAMPLE_LIST
 

@@ -80,7 +80,7 @@ extern "C" {
 #define UDMA_RM_MAX_RX_CH                   (256U)
 #define UDMA_RM_MAX_RX_HC_CH                (32U)
 #define UDMA_RM_MAX_RX_UHC_CH               (32U)
-#define UDMA_RM_MAX_UTC_CH_PER_INST         (64U)
+#define UDMA_RM_MAX_UTC_CH_PER_INST         (96U)
 #define UDMA_RM_MAX_MAPPED_TX_CH_PER_GROUP  (32U)
 #define UDMA_RM_MAX_MAPPED_RX_CH_PER_GROUP  (32U)
 #define UDMA_RM_MAX_MAPPED_RING_PER_GROUP   (64U)

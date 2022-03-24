@@ -84,11 +84,17 @@ extern "C" {
 /** \brief Flag to indicate UDMAP module is present or not in the SOC*/
 #define UDMA_SOC_CFG_UDMAP_PRESENT               (1U) 
 
-/** \brief Flag to indicate LCDMA module is present or not in the SOC*/
-#define UDMA_SOC_CFG_LCDMA_PRESENT               (0U) 
+/** \brief Flag to indicate BCDMA module is present or not in the SOC*/
+#define UDMA_SOC_CFG_BCDMA_PRESENT               (0U) 
+
+/** \brief Flag to indicate PKTDMA module is present or not in the SOC*/
+#define UDMA_SOC_CFG_PKTDMA_PRESENT              (0U) 
 	
 /** \brief Flag to indicate Proxy is present or not in the SOC*/
 #define UDMA_SOC_CFG_PROXY_PRESENT               (1U) 
+	
+/** \brief Flag to indicate Interrupt Router is present or not in the SOC*/
+#define UDMA_SOC_CFG_INTR_ROUTER_PRESENT         (1U) 
 
 /** \brief Flag to indicate Clec is present or not in the SOC*/
 #define UDMA_SOC_CFG_CLEC_PRESENT                (1U) 
@@ -261,8 +267,10 @@ extern "C" {
 #define UDMA_RM_RES_ID_PROXY                    (12U) 
 /** \brief Ring Monitors */
 #define UDMA_RM_RES_ID_RING_MON                 (13U) 
+/** \brief Total number of UDMAP resources */
+#define UDMA_RM_NUM_UDMAP_RES                   (14U) 
 /** \brief Total number of resources */
-#define UDMA_RM_NUM_RES                         (14U) 
+#define UDMA_RM_NUM_RES                         (UDMA_RM_NUM_UDMAP_RES) 
 /* @} */
 
 /** \brief Total number of shared resources - 

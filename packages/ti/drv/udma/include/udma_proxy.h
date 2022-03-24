@@ -263,7 +263,7 @@ struct Udma_ProxyObj
 
 static inline void Udma_proxyWrite64(uintptr_t proxyAddr, uint64_t data)
 {
-#if defined (__aarch64__) || defined (__C7100__)
+#if defined (__aarch64__) || defined (BUILD_C7X)
     CSL_REG64_WR((uint64_t *) proxyAddr, data);
 #else
     /* For 32-bit cores enforce the order as the compiler may not guarantee
@@ -284,7 +284,7 @@ static inline void Udma_proxyWrite64(uintptr_t proxyAddr, uint64_t data)
 
 static inline void Udma_proxyRead64(uintptr_t proxyAddr, uint64_t *data)
 {
-#if defined (__aarch64__) || defined (__C7100__)
+#if defined (__aarch64__) || defined (BUILD_C7X)
     *data = CSL_REG64_RD((uint64_t *) proxyAddr);
 #else
     /* For 32-bit cores enforce the order as the compiler may not guarantee

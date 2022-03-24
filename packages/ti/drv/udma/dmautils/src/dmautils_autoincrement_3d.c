@@ -61,7 +61,7 @@
 #include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <c7x.h>
 #endif
 

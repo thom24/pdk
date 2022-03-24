@@ -51,6 +51,10 @@
 #include <ti/drv/udma/soc/j721e/udma_soc.h>
 #endif
 
+#if defined (SOC_J721S2)
+#include <ti/drv/udma/soc/j721s2/udma_soc.h>
+#endif
+
 #if defined (SOC_J7200)
 #include <ti/drv/udma/soc/j7200/udma_soc.h>
 #endif

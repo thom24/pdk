@@ -44,7 +44,7 @@
 #include <ti/drv/udma/udma.h>
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
 #endif
@@ -120,7 +120,7 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
     uint64_t    atcmBaseGlobal = 0U;
 
     phyAddr = (uint64_t) virtAddr;
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+#if defined (BUILD_C66X)
     /* Convert local L2RAM address to global space */
     if((phyAddr >= CSL_C66_COREPAC_L2_BASE) &&
        (phyAddr < (CSL_C66_COREPAC_L2_BASE + CSL_C66_COREPAC_L2_SIZE)))
@@ -147,7 +147,7 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
 #endif
 #endif
 
-#if defined (SOC_J721E)  || defined (SOC_J7200)
+#if defined (SOC_J721E)  || defined (SOC_J7200) || defined (SOC_J721S2)
 #if defined (BUILD_MCU1_0)
 #if defined (SOC_J721E)
     atcmSizeLocal = CSL_MCU_ARMSS_ATCM_SIZE;
@@ -230,7 +230,7 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
 {
     void       *virtAddr;
 
-#if defined (__aarch64__) || defined (__C7100__)
+#if defined (__aarch64__) || defined (BUILD_C7X)
     virtAddr = (void *) phyAddr;
 #else
     uint32_t temp;
@@ -267,7 +267,7 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
 #endif
 #endif
 
-#if defined (SOC_J721E)  || defined (SOC_J7200)
+#if defined (SOC_J721E)  || defined (SOC_J7200) || defined (SOC_J721S2)
 #if defined (BUILD_MCU1_0)
     atcmSizeGlobal = CSL_MCU_R5FSS0_CORE0_ATCM_SIZE;
     atcmBaseGlobal = CSL_MCU_R5FSS0_CORE0_ATCM_BASE;
