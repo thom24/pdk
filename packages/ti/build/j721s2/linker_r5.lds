@@ -42,13 +42,13 @@ MEMORY
     OCMC_RAM_SCISERVER (RWIX)   : origin=0x41C82000 length=0x60000
     VECTORS (X)                 : origin=0x41CE2000 length=0x1000
     RESET_VECTORS (X)           : origin=0x41CE3000 length=0x100
-    OCMC_RAM (RWIX)             : origin=0x41CE3100 length=0x1CA00
-    OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFFB00 length=0x500
+    OCMC_RAM (RWIX)             : origin=0x41CE3100 length=0x1AA00
+    OCMC_RAM_X509_HEADER (RWIX) : origin=0x41CFDB00 length=0x500
 
     /* j721s2 MCMS3 locations */
     /* j721s2 Reserved Memory for ARM Trusted Firmware */
     MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
-    MSMC3   (RWIX)          : origin=0x70040000 length=0x4B0000        /* 4MB - 320KB */
+    MSMC3   (RWIX)          : origin=0x70040000 length=0x3B0000        /* 4MB - 320KB */
     /* j721s2 Reserved Memory for DMSC Firmware */
     MSMC3_DMSC_FW  (RWIX)   : origin=0x703F0000 length=0x10000         /* 64KB */
 
@@ -68,6 +68,7 @@ SECTIONS
     .startupData   : {} palign(8)      > MSMC3, type = NOINIT
     .text          : {} palign(8)      > DDR0
     .const         : {} palign(8)      > DDR0
+    .rodata        : {} palign(8)      > DDR0
     .cinit         : {} palign(8)      > DDR0
     .pinit         : {} palign(8)      > DDR0
     .bss           : {} align(4)       > DDR0

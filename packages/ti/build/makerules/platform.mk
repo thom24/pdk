@@ -184,7 +184,7 @@ ifeq ($(BOARD),$(filter $(BOARD), j7200_sim j7200_hostemu j7200_evm))
 endif
 
 # J721S2
-ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
+ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm j721s2_hostemu))
  SOC = j721s2
  SBL_RUN_ADDRESS=0x41C00100
  SBL_DEV_ID=55

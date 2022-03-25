@@ -46,8 +46,8 @@ MEMORY
     /*- Refer user guide for details on persistence of these sections -*/
     OCMC_RAM_BOARD_CFG   (RWIX) : ORIGIN = 0x41C80000 LENGTH = 0x00002000
     OCMC_RAM_SCISERVER   (RWIX) : ORIGIN = 0x41C82000 LENGTH = 0x00060000
-    OCMC_RAM             (RWIX) : ORIGIN = 0x41CE3100 LENGTH = 0x0001CA00
-    OCMC_RAM_X509_HEADER (RWIX) : ORIGIN = 0x41CFFB00 LENGTH = 0x00000500
+    OCMC_RAM             (RWIX) : ORIGIN = 0x41CE3100 LENGTH = 0x0001AA00
+    OCMC_RAM_X509_HEADER (RWIX) : ORIGIN = 0x41CFDB00 LENGTH = 0x00000500
 
     /*========================J721S2 MCMS3 LOCATIONS ===================*/
     /*---------- J721S2 Reserved Memory for ARM Trusted Firmware -------*/
@@ -68,7 +68,7 @@ SECTIONS
     .freertosrstvectors      : {} palign(8)      > VECTORS
     .bootCode        : {} palign(8)      > OCMC_RAM
     .startupCode     : {} palign(8)      > OCMC_RAM
-    .text.hwi        : {} palign(8)      > OCMC_RAM	
+    .text.hwi        : {} palign(8)      > OCMC_RAM
     .startupData     : {} palign(8)      > OCMC_RAM, type = NOINIT
     .text            : {} palign(8)      > DDR0
     GROUP {
@@ -78,6 +78,7 @@ SECTIONS
         .text.boot   : palign(8)
     }                                    > DDR0
     .const           : {} palign(8)      > DDR0
+    .rodata          : {} palign(8)      > DDR0
     .cinit           : {} palign(8)      > DDR0
     .bss             : {} align(4)       > DDR0
     .far             : {} align(4)       > DDR0

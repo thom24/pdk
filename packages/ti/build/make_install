@@ -292,6 +292,25 @@ install-pdk-build-j721e: loc-install-pdk-build-common loc-install-pdk-build-a72 
 	install -m 0755 makerules/x509CertificateGen.ps1 $(PDK_INSTALL_DIR)/packages/ti/build/makerules
 	install -m 0755 makerules/x509template.txt $(PDK_INSTALL_DIR)/packages/ti/build/makerules
 
+install-pdk-build-j721s2: loc-install-pdk-build-common loc-install-pdk-build-a72 loc-install-pdk-build-r5f loc-install-pdk-build-c7x loc-install-pdk-build-c7x-hostemu
+	install -d $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/config_j721s2_a72.bld $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/config_j721s2_r5f.bld $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/config_j721s2_c7x.bld $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/linker_a72_mpu1_0.lds $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/linker_r5.lds $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/linker_c7x.lds $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/sbl_mcux_0_dummy_app.map $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 j721s2/sbl_mcux_0_dummy_app.rprc $(PDK_INSTALL_DIR)/packages/ti/build/j721s2
+	install -m 0755 makerules/rom_degenerateKey.pem $(PDK_INSTALL_DIR)/packages/ti/build/makerules
+	install -m 0755 makerules/k3_dev_mpk.pem $(PDK_INSTALL_DIR)/packages/ti/build/makerules
+	install -m 0755 makerules/x509CertificateGen.sh $(PDK_INSTALL_DIR)/packages/ti/build/makerules
+	install -m 0755 makerules/x509CertificateGen.ps1 $(PDK_INSTALL_DIR)/packages/ti/build/makerules
+	install -m 0755 makerules/x509template.txt $(PDK_INSTALL_DIR)/packages/ti/build/makerules
+
 install-pdk-build-j7200: loc-install-pdk-build-common loc-install-pdk-build-a72 loc-install-pdk-build-r5f loc-install-pdk-build-c7x loc-install-pdk-build-c7x-hostemu
 	install -d $(PDK_INSTALL_DIR)/packages/ti/build/j7200
 	install -m 0755 j7200/config_j7200_a72.bld $(PDK_INSTALL_DIR)/packages/ti/build/j7200
