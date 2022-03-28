@@ -1,12 +1,13 @@
 /**
- *  \file   sbl_image_copy.c
+ *  \file    sbl_mmcsd.h
  *
- *  \brief  This file contain imagecopy wrapper function.
+ *  \brief   This file contains function prototypes for MMCSD Boot functionality
+ *           of SBL.
  *
  */
 
 /*
- * Copyright (C) 2015-2016 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -38,40 +39,39 @@
  *
  */
 
+#ifndef SBL_MMCSD_H
+#define SBL_MMCSD_H
+
+/* FATFS header file */
+#include <ti/fs/fatfs/ff.h>
+#include <ti/fs/fatfs/FATFS.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+extern const FATFS_Config FATFS_config[_VOLUMES + 1];
+
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <stdint.h>
-#include "sbl_image_copy.h"
-#if defined(BOOT_QSPI)
-#include "sbl_qspi.h"
-#elif defined(BOOT_MMCSD)
-#include "sbl_mmcsd.h"
-#elif defined(BOOT_EMMC)
-#include "sbl_emmc.h"
-#elif defined(BOOT_SPI)
-#include "sbl_spi.h"
-#endif
+/*
+ *  \brief    SBL_MMCBootImage function initializes the MMCSD driver and copies
+ *            the application image from the SD card to the DDR memory and
+ *            gives control to the processor core.
+ *
+ *  \param    pointer to the structure holding the entry pointers for different
+ *            cores.
+ *
+ *  \return   error status.If error has occured it returns a non zero value.
+ *            If no error has occured then return status will be zero.
+ *
+ */
+int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry);
 
-
-int32_t SBL_ImageCopy(sblEntryPoint_t *pEntry)
-{
-    int32_t retval = 0;
-
-#if defined(BOOT_MMCSD)
-    /* MMCSD Boot Mode Image Copy function. */
-    if (SBL_MMCBootImage(pEntry) != 1U)
-#elif defined(BOOT_EMMC)
-    if (SBL_MMCBootImage(pEntry) != 1U)
-#elif defined(BOOT_QSPI)
-    if (SBL_QSPIBootImage(pEntry) != 1U)
-#elif defined(BOOT_SPI)
-    if (SBL_SPIBootImage(pEntry) != 1U)
-#endif
-    {
-        retval = -1;
-    }
-
-    return retval;
+#ifdef __cplusplus
 }
+#endif
+
+#endif

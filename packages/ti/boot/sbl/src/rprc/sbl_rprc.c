@@ -203,7 +203,6 @@ int32_t SBL_MulticoreImageParse(void *srcAddr,
     }
     return retVal;
 }
-
 void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, uint32_t bootFlag)
 {
     switch (CoreID)

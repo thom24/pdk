@@ -83,6 +83,10 @@ ifeq ($(BOOTMODE), mmcsd)
   SBL_CFLAGS += -DBOOT_MMCSD
 endif # ifeq ($(BOOTMODE), mmcsd)
 
+ifeq ($(BOOTMODE), emmc)
+  SBL_CFLAGS += -DBOOT_EMMC
+endif # ifeq ($(BOOTMODE), emmc)
+
 ifeq ($(BOOTMODE), ospi)
   SBL_CFLAGS += -DBOOT_OSPI
 endif # ifeq ($(BOOTMODE), ospi)
@@ -102,6 +106,10 @@ endif # ifeq ($(BOOTMODE), qspi)
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
   COMP_LIST_COMMON += mmcsd fatfs_indp
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
+
+ifeq ($(filter $(SBL_CFLAGS), -DBOOT_EMMC), -DBOOT_EMMC)
+  COMP_LIST_COMMON += mmcsd fatfs_indp
+endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_EMMC), -DBOOT_EMMC)
 
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_HYPERFLASH), -DBOOT_HYPERFLASH)
   COMP_LIST_COMMON += spi
