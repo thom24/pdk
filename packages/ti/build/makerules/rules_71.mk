@@ -152,10 +152,17 @@ endif
 
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
  LNKFLAGS_INTERNAL_BUILD_PROFILE =
- CFLAGS_INTERNAL += --opt_level=3 --symdebug:none
+ CFLAGS_INTERNAL += --opt_level=3
  CFLAGS_INTERNAL += -Dxdc_target_name__=C71 -D_DEBUG_=1 -Dxdc_target_types__=ti/targets/elf/std.h
  ifndef MODULE_NAME
   CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pec7x.h'
+ endif
+ ifeq ($(BUILD_OS_TYPE), safertos)
+  # SafeRTOS package uses .asmfunc and .endasmfunc directives.
+  # This will work only with --symdebug:dwarf
+  CFLAGS_INTERNAL += --symdebug:dwarf
+ else
+  CFLAGS_INTERNAL += --symdebug:none
  endif
 else
  CFLAGS_INTERNAL += --opt_level=0 --symdebug:dwarf

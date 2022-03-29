@@ -5,6 +5,8 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = safertos
 
+BUILD_OS_TYPE = safertos
+
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SAFERTOS_ISA_EXT=199_TI_CR5
 SAFERTOS_COMPILER_EXT=024_Clang
