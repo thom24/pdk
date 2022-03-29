@@ -293,6 +293,7 @@ void TaskP_Params_init(TaskP_Params *params)
         params->priority = (TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST) / 2;
         params->arg0 = NULL;
         params->arg1 = NULL;
+        params->taskPrivilege = 0U; /* Not Used */
     }
 }
 

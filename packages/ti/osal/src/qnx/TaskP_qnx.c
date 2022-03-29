@@ -96,6 +96,7 @@ void TaskP_Params_init(TaskP_Params *params)
     params->arg0 = (void *) NULL;
     params->arg1 = (void *) NULL;
     params->stack = (void *) NULL;
+    params->taskPrivilege = 0U; /* Not Used */
 }
 
 /*

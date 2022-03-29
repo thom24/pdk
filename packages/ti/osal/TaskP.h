@@ -80,9 +80,8 @@ typedef enum TaskP_Status_e
  */
 typedef  void *TaskP_Handle;
 
-#if defined(SAFERTOS)
 /*!
- *  @brief    Privilege of the task in safertos
+ *  @brief    [SafeRTOS only] Privilege of the task in safertos
  *
  *  A  TaskP_Privilege_Mode can have two values as below.
  *  mpuUNPRIVILEGED_TASK value is 0.
@@ -90,9 +89,9 @@ typedef  void *TaskP_Handle;
  */
 
 typedef unsigned long TaskP_Privilege_Mode;
-#endif
+
 /*!
- *  @brief    Basic SemaphoreP Parameters
+ *  @brief    Basic TaskP Parameters
  *
  *  Structure that contains the parameters are passed into ::TaskP_create
  *  when creating a TaskP instance.
@@ -106,9 +105,7 @@ typedef struct TaskP_Params_s
     void *arg0;          /*!< argument 0                                        */
     void *arg1;          /*!< argument 1                                        */
     void *stack;         /*!< pointer to stack memory, shall be non-null value */
-#if defined(SAFERTOS)
-    TaskP_Privilege_Mode taskPrivilege; /*!< Privilege mode of the task */
-#endif
+    TaskP_Privilege_Mode taskPrivilege; /*!< [SafeRTOS only] Privilege mode of the task */
 } TaskP_Params;
 
 /*!
