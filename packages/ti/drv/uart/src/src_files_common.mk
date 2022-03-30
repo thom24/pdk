@@ -50,7 +50,7 @@ else
   SRCS_COMMON += UART_drv.c UART_v1.c
   PACKAGE_SRCS_COMMON += src/v1 src/v1/UART_v1.h
 # For all non-TDA devices, component contains all source files in library and package
-ifneq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex tda3xx dra78x j721e j7200 am65xx am64x))
+ifneq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex tda3xx dra78x j721e j7200 am65xx am64x j721s2))
   SRCDIR += src/v0
   INCDIR += src/v0
   SRCS_COMMON += UART_v0.c

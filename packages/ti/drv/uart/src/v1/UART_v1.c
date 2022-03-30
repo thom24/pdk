@@ -805,7 +805,7 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
 #if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') /* R5F */
             interruptRegParams.corepacConfig.priority=0x8U;
 #else
-#ifdef __C7100__
+#ifdef BUILD_C7X
             interruptRegParams.corepacConfig.priority=0x01U;
 #else
             interruptRegParams.corepacConfig.priority=0x20U;

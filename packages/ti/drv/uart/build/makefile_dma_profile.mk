@@ -34,20 +34,16 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 include $(PDK_UART_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = uart_dma_profile
-
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x))
 include $(PDK_UART_COMP_PATH)/src/src_files_uart_console.mk
 endif
 
 SRCDIR += soc/$(SOC)
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
+ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657))
     SRCDIR += soc/dma/v0
 else
 ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x am437x am335x))
     SRCDIR += soc/dma/v1
-else
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    SRCDIR += soc/dma/v3
 else
     SRCDIR += soc/dma/v2
 endif
@@ -60,21 +56,16 @@ SRCS_COMMON += UART_soc.c UART_dma.c
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x))
 INCLUDE_EXTERNAL_INTERFACES += edma
-else
-INCLUDE_EXTERNAL_INTERFACES += udma
 endif
 
 PACKAGE_SRCS_COMMON += soc/$(SOC)
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
+ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657))
     PACKAGE_SRCS_COMMON += soc/dma/v0
 else
 ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x am437x am335x))
     PACKAGE_SRCS_COMMON += soc/dma/v1
-else
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    PACKAGE_SRCS_COMMON += soc/dma/v3
 else
     PACKAGE_SRCS_COMMON += soc/dma/v2
 endif
