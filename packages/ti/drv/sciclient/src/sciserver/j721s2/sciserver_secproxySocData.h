@@ -41,7 +41,7 @@
 
 
 /** Number of Secure Proxy instances */
-#define SOC_MAX_SEC_PROXY_INSTANCES (0x02U)
+#define SOC_MAX_SEC_PROXY_INSTANCES (0x03U)
 /*
  * J721S2_SPROXY_IDX_NAVSS0_SEC_PROXY_0: Secure proxy instance:
  * NAVSS0_SEC_PROXY_0 linked to RA inst: NAVSS0_RINGACC_0
@@ -52,5 +52,13 @@
  * MCU_NAVSS0_SEC_PROXY0 linked to RA inst: MCU_NAVSS0_RINGACC0
  */
 #define J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0 (0x01U)
+/*
+ * J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0: Secure proxy instance:
+ * MCU_SA3_SS0_SEC_PROXY_0 linked to RA inst: MCU_SA3_SS0_RINGACC_0
+ */
+#define J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0 (0x02U)
+
+/** Secure Proxy instance used by ROM */
+#define ROM_SEC_PROXY_IDX J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0
 
 #endif /* SOC_J721S2_SPROXY_SOC_DATA_H */

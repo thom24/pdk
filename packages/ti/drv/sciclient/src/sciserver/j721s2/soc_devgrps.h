@@ -56,9 +56,9 @@
 #define SOC_DEVGRP_J721S2_MAIN DEVGRP_01
 
 /**
- * Set of peripherals to initialize for System Firmware internal usage
+ * Set of peripherals to initialize for TIFS internal usage
  */
-#define SOC_DEVGRP_J721S2_DMSC_INTERNAL DEVGRP_DMSC
+#define SOC_DEVGRP_J721S2_TIFS_INTERNAL DEVGRP_DMSC
 
 
 #endif /* SOC_J721S2_DEVGRPS_H */

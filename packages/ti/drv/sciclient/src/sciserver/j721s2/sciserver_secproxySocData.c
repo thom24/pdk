@@ -58,14 +58,14 @@ const struct Sciserver_SecureProxy gSciserverSecureProxyInstances
 		.baseaddr_cfg_rt = 0x32400000ULL,
 		.baseaddr_cfg_scfg = 0x32800000ULL,
 		.baseaddr_src_target_data = 0x32C00000ULL,
-		.sproxy_target_hl = 0x383CE000ULL,
-		.sproxy_ring_index_base = 974U,
-		.sproxy_ring_index_max = 1023U,
-		.num_threads = 160U,
+		.sproxy_target_hl = 0x38300000ULL,
+		.sproxy_ring_index_base = 768U,
+		.sproxy_ring_index_max = 877U,
+		.num_threads = 370U,
 		.devgrp = SOC_DEVGRP_J721S2_MAIN,
 		.ra_idx = J721S2_RA_IDX_NAVSS0_RINGACC_0,
 		.buffer_idx = J721S2_SPROXY_MEM_IDX_MSMC_SRAM,
-		.buffer_neg_offset = 0x00002800U,
+		.buffer_neg_offset = 0x00005C80U,
 	},
 	/*
 	 * [1] J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0: Secure proxy instance:
@@ -79,9 +79,26 @@ const struct Sciserver_SecureProxy gSciserverSecureProxyInstances
 		.sproxy_ring_index_base = 256U,
 		.sproxy_ring_index_max = 285U,
 		.num_threads = 90U,
-		.devgrp = SOC_DEVGRP_J721S2_MCU_WAKEUP | SOC_DEVGRP_J721S2_DMSC_INTERNAL,
+		.devgrp = SOC_DEVGRP_J721S2_MCU_WAKEUP | SOC_DEVGRP_J721S2_TIFS_INTERNAL,
 		.ra_idx = J721S2_RA_IDX_MCU_NAVSS0_RINGACC0,
 		.buffer_idx = J721S2_SPROXY_MEM_IDX_MCU_SPROXY_SRAM,
 		.buffer_neg_offset = 0x00001680U,
+	},
+	/*
+	 * [2] J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0: Secure proxy instance:
+	 * MCU_SA3_SS0_SEC_PROXY_0 linked to RA inst: MCU_SA3_SS0_RINGACC_0
+	 */
+	[J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0] = {
+		.baseaddr_cfg_rt = 0x44880000ULL,
+		.baseaddr_cfg_scfg = 0x44860000ULL,
+		.baseaddr_src_target_data = 0x43600000ULL,
+		.sproxy_target_hl = 0x00400000ULL,
+		.sproxy_ring_index_base = 0U,
+		.sproxy_ring_index_max = 5U,
+		.num_threads = 16U,
+		.devgrp = SOC_DEVGRP_J721S2_TIFS_INTERNAL,
+		.ra_idx = J721S2_RA_IDX_MCU_SA3_SS0_RINGACC_0,
+		.buffer_idx = J721S2_SPROXY_MEM_IDX_DMSS_HSM_IPC_SRAM,
+		.buffer_neg_offset = 0x00000400U,
 	},
 };
