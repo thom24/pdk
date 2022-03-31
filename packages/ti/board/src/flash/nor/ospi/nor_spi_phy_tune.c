@@ -36,7 +36,7 @@
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/board/src/flash/nor/nor.h>
-#if defined (j7200_evm) || defined (am64x_evm)
+#if defined (j7200_evm) || defined (am64x_evm) || defined(j721s2_evm)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
 #else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
@@ -246,7 +246,7 @@ double NOR_spiPhyAvgVtmTemp(double vtm125){
     uint32_t statReg; /* VTM temperature sensor status register addr */
     uint32_t ctrlReg; /* VTM temperature sensor control register addr */
 
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)
     statReg = CSL_WKUP_VTM0_MMR_VBUSP_CFG1_BASE + 0x308U;
     ctrlReg = CSL_WKUP_VTM0_MMR_VBUSP_CFG2_BASE + 0x300U;
 #elif defined (SOC_AM65XX)

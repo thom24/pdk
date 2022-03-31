@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018 - 2020, Texas Instruments Incorporated
+ * Copyright (c) 2018 - 2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 
-#if (defined (j7200_evm) || defined (j721e_evm))
+#if (defined (j7200_evm) || defined (j721e_evm) || defined(j721s2_evm))
 /* SPI entry offset is at index 5 of SPI config array */
 #define SPI_CONFIG_OFFSET     (5U)
 #elif defined (am64x_evm) || defined (am64x_svb)
@@ -142,7 +142,7 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-#if defined (j721e_evm) || defined (j7200_evm) || defined (am64x_svb) || defined (am640x_svb)
+#if defined (j721e_evm) || defined (j7200_evm) || defined (am64x_svb) || defined (am640x_svb) || defined (j721s2_evm)
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
     {
@@ -222,7 +222,7 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-#if defined (j721e_evm) || defined (j7200_evm) || defined (am64x_svb) || defined (am640x_svb)
+#if defined (j721e_evm) || defined (j7200_evm) || defined (am64x_svb) || defined (am640x_svb) || defined (j721s2_evm)
     /* Send Write Enable command */
     if (Nor_qspiCmdWrite(handle, &cmdWren, 1, 0))
     {

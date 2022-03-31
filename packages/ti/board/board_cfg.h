@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2017-2020, Texas Instruments Incorporated
+ * Copyright (c) 2017-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -145,6 +145,10 @@ typedef int32_t Board_STATUS;
 
 #elif defined (j7200_evm)
 #include <ti/board/src/j7200_evm/include/board_cfg.h>
+
+#elif defined (j721s2_evm)
+#include <ti/board/src/j721s2_evm/include/board_cfg.h>
+#include <ti/board/src/j721s2_evm/include/board_pinmux.h>
 
 #elif defined (am64x_evm)
 #include <ti/board/src/am64x_evm/include/board_cfg.h>

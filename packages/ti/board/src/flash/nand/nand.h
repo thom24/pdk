@@ -54,7 +54,7 @@ extern "C" {
  *  		The handle must be used in all subsequent operations.
  *
  */
-typedef uint32_t NAND_HANDLE;
+typedef uintptr_t NAND_HANDLE;
 
 /** NAND function return status */
 #define NAND_STATUS                     int32_t
@@ -144,7 +144,7 @@ typedef enum NAND_EccAlgo
 typedef struct
 {
     /*! NAND HW interface handle */
-    uint32_t hwHandle;
+    uintptr_t hwHandle;
     /*! manufacturer ID*/
     uint32_t manufacturerId;
     /*! Manufacturers device ID */
@@ -309,6 +309,7 @@ extern NAND_STATUS NAND_write(NAND_HANDLE handle, uint32_t addr, uint32_t len, u
 extern NAND_STATUS NAND_erase(NAND_HANDLE handle, int32_t blk);
 
 extern const NAND_FxnTable Nand_gpmcFxnTable;
+extern const NAND_FxnTable Nand_ospiFxnTable;
 
 #ifdef __cplusplus
 }

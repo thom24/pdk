@@ -47,7 +47,7 @@
 #include <ti/board/src/flash/nor/nor.h>
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
-#if defined(j7200_evm) || defined(am64x_evm) || defined(am64x_svb)
+#if defined(j7200_evm) || defined(am64x_evm) || defined(am64x_svb) || defined(j721s2_evm)
 #include <ti/board/src/flash/nor/device/s28hs512t.h>
 #endif
 #include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>

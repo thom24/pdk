@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -140,6 +140,15 @@
 
 #if defined(am65xx_evm) || defined(am65xx_idk)
 #include <ti/board/src/devices/pmic/tps62363.h>
+#endif
+
+#if defined(j721s2_evm)
+#include <ti/board/src/devices/common/common.h>
+
+#include <ti/board/src/devices/audio/pcm3168A.h>
+#include <ti/board/src/devices/fpd/ds90ub953.h>
+#include <ti/board/src/devices/fpd/ds90ub960.h>
+#include <ti/board/src/devices/fpd/ds90ub9702.h>
 #endif
 
 #ifdef __cplusplus

@@ -694,12 +694,22 @@ void Board_fpdU960GetI2CAddr(uint8_t *chNum,
     //J7_TODO: Need to update to make it generic across the devices and platforms
     if (csiInst == BOARD_CSI_INST_0)
     {
+#if defined (SOC_J721S2)
+        *chNum = 5U;
+#endif
+#if defined (SOC_J721E)
         *chNum = 6U;
+#endif
         *i2cAddr = 0x3DU;
     }
     else if (csiInst == BOARD_CSI_INST_1)
     {
+#if defined (SOC_J721S2)
+        *chNum = 5U;
+#endif
+#if defined (SOC_J721E)
         *chNum = 6U;
+#endif
         *i2cAddr = 0x36U;
     }
     else

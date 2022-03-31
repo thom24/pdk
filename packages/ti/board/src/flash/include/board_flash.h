@@ -42,9 +42,9 @@ extern "C" {
 
 #if defined(BOARD_NOR_FLASH_IN)
 #include <ti/board/src/flash/nor/nor.h>
-#elif defined (BOARD_NAND_FLASH_IN)
+#endif
+#if defined (BOARD_NAND_FLASH_IN)
 #include <ti/board/src/flash/nand/nand.h>
-#else
 #endif
 
 /**
@@ -126,6 +126,7 @@ typedef int32_t Board_flash_STATUS;       /** Board Flash API return type */
 #define BOARD_FLASH_ID_MT29F8G16ABACAWP    (0x2C00U)  /* Device Id code 1 */
 #define BOARD_FLASH_ID_MT28EW256ABA        (0x227EU)  /* Device Id code 1 */
 #define BOARD_FLASH_ID_CY7C10612G          (0)
+#define BOARD_FLASH_ID_W35N01JWTBAG        (0xDC21U) /**< Winbond 1GB NAND flash */
 
 /**
  * @brief 	Board specific Flash Device Identifiers.
@@ -172,6 +173,8 @@ typedef enum {
     /**<NAND GPMC peripheral interface */
     BOARD_FLASH_NAND_EMIF16,
     /**<NAND EMIF16 peripheral interface */
+    BOARD_FLASH_NAND_OSPI,
+    /**<NAND OSPI peripheral interface */
     BOARD_FLASH_NAND_INTF_MAX
     /**<End of NAND peripheral interface */
 } Board_flashNandPeriType;
