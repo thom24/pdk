@@ -80,6 +80,14 @@ extern "C" {
 #include <ti/csl/soc/j7200/src/cslr_mcu_pll_mmr.h>
 #include <ti/csl/soc/j7200/src/cslr_wkup_ctrl_mmr.h>
 #endif
+
+#if defined (SOC_J721S2)
+#include <ti/csl/soc/j721s2/src/cslr_soc_baseaddress.h>
+#include <ti/csl/soc/j721s2/src/cslr_mcu_ctrl_mmr.h>
+#include <ti/csl/soc/j721s2/src/cslr_mcu_pll_mmr.h>
+#include <ti/csl/soc/j721s2/src/cslr_wkup_ctrl_mmr.h>
+#endif
+
 /**********************************************************************
  ************************** Macros ************************************
  **********************************************************************/
@@ -200,7 +208,7 @@ extern "C" {
 #endif
 #endif
 
-#if defined (j721e_evm) || defined (j7200_evm)
+#if defined (j721e_evm) || defined (j7200_evm) || defined (j721s2_evm)
 /* J7ES: use WAKEUP GPIO0_6 --> TP45 for testing */
 #define GPIO_LED0_PIN_NUM        BOARD_USER_LED1 /* Pin 6 */
 #define GPIO_LED0_PORT_NUM       0 /* use WAKEUP GPIO0 */

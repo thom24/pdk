@@ -529,6 +529,11 @@ static void GPIO_setConfig_v0(uint32_t idx, GPIO_PinConfig pinConfig)
 #endif
                 if(ret_flag == 0U)
                 {
+                    /* Configure SOC interrupt path if any */
+                    if(hwAttrs->socConfigIntrPath!=NULL) {
+                        ret_socIntrPath = (*hwAttrs->socConfigIntrPath)(portNum,pinNum,hwAttrs,TRUE);
+                    }
+                    
                     /* Populate the interrupt parameters */
                     interruptRegParams.corepacConfig.priority = GPIO_v0_config.intPriority;
                     interruptRegParams.corepacConfig.name=NULL;
@@ -540,10 +545,6 @@ static void GPIO_setConfig_v0(uint32_t idx, GPIO_PinConfig pinConfig)
 #if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') /* R5F */
                     interruptRegParams.corepacConfig.triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE;
 #endif
-                    /* Configure SOC interrupt path if any */
-                    if(hwAttrs->socConfigIntrPath!=NULL) {
-                        ret_socIntrPath = (*hwAttrs->socConfigIntrPath)(portNum,pinNum,hwAttrs,TRUE);
-                    }
 
                     if(ret_socIntrPath==CSL_PASS) {
                         /* Register interrupts */

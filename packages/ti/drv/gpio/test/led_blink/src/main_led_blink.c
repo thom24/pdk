@@ -59,22 +59,22 @@
 
 #include <ti/board/board.h>
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #include <ti/csl/soc.h>
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
 #include  "ti/csl/csl_chipAux.h"
 #endif
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)
 #include <ti/csl/csl_clec.h>
 #endif
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/arch/csl_arch.h>
 #endif
 
@@ -91,7 +91,7 @@
 #define APP_TSK_STACK_MAIN              (0x8000U)
 
 #if defined (USE_BIOS) || defined (FREERTOS)
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X) || defined(SOC_AM65XX)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X) || defined(SOC_AM65XX) || defined(SOC_J721S2)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
 #endif
 #endif
@@ -116,7 +116,7 @@ extern void GPIOApp_UpdateBoardInfo(void);
 extern void GPIOAppUpdateConfig(uint32_t *gpioBaseAddr, uint32_t *gpioPin);
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 /* Main domain GPIO interrupt events */
 #define MAIN_GPIO_INTRTR_GPIO0_BANK0_INT (0x000000C0) /* GPIO port 0 bank 0 interrupt event #, input to MAIN_GPIO_INTRTR */
 #define MAIN_GPIO_INTRTR_GPIO1_BANK0_INT (0x000000C8) /* GPIO port 1 bank 0 interrupt event #, input to MAIN_GPIO_INTRTR */
@@ -230,20 +230,23 @@ void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtr
 
 #endif
 
-#if defined(j721e_sim) || defined (j721e_evm) || defined (j7200_evm)
+#if defined(j721e_sim) || defined (j721e_evm) || defined (j7200_evm) || defined(j721s2_evm)
 
     /* no main domain GPIO pins directly connected to LEDs on GP EVM,
        use WKUP domain GPIO pins which connected to LEDs on base board */
     cfg->baseAddr = CSL_WKUP_GPIO0_BASE;
 
+#if !defined(j721s2_evm) 
+    /* J721S2 Sets the following by querying from BoardCfg.
+     * Ideally other SOC's as well should do the same. And the following code can be cleanup up. */
     bankNum = pinNum/16; /* Each GPIO bank has 16 pins */
 
     /* WKUP GPIO int router input interrupt is the GPIO bank interrupt */
     #if defined (BUILD_MPU)
         intCfg[pinNum].intNum = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + bankNum;
     #endif
-    #if defined (BUILD_C7X_1)
-        intCfg[pinNum].eventId = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + 992 + bankNum;	/* GPIO_CLEC_GIC_SPI_IN_EVT_OFFSET is 992 */
+    #if defined (BUILD_C7X)
+        intCfg[pinNum].eventId = CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_WKUP_GPIOMUX_INTRTR0_OUTP_16 + 992 + bankNum;	/* GPIO_CLEC_SOC_EVENTS_IN_EVT_OFFSET is 992 */
     #endif
     #if defined (BUILD_MCU)
         intCfg[pinNum].intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0 + bankNum;
@@ -251,6 +254,7 @@ void GPIO_configIntRouter(uint32_t portNum, uint32_t pinNum, uint32_t gpioIntRtr
     intCfg[pinNum].intcMuxNum = INVALID_INTC_MUX_NUM;
     intCfg[pinNum].intcMuxInEvent = 0;
     intCfg[pinNum].intcMuxOutEvent = 0;
+#endif
 #endif
 
 #if defined(am64x_evm)
@@ -283,7 +287,7 @@ static void Board_initGPIO(void)
 {
     Board_initCfg boardCfg;
 
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
     GPIO_v0_HwAttrs gpio_cfg;
 
     /* Get the default SPI init configurations */
@@ -324,18 +328,23 @@ static void Board_initGPIO(void)
 #endif
 
     /* Modify the default GPIO configurations if necessary */
-#if defined (j721e_evm)  || defined (j721e_sim) || defined (j7200_evm)
+#if defined (j721e_evm)  || defined (j721e_sim) || defined (j7200_evm) || defined(j721s2_evm)
 
 	/* change default GPIO port from MAIN GPIO0 to WAKEUP GPIO0 to access TP45 */
     gpio_cfg.baseAddr = CSL_WKUP_GPIO0_BASE;
+
+#if !defined(j721s2_evm) 
+    /* J721S2 Sets the following by querying from BoardCfg.
+     * Ideally other SOC's as well should do the same. And the following code can be cleanup up. */
 #if defined (BUILD_MPU)
 	gpio_cfg.intCfg->intNum = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16;
 #endif
 #if defined (BUILD_MCU)
 	gpio_cfg.intCfg->intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_GPIOMUX_INTRTR0_OUTP_0;
 #endif
-#if defined (BUILD_C7X_1)
-	gpio_cfg.intCfg->eventId = CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_WKUP_GPIOMUX_INTRTR0_OUTP_16 + 992;
+#if defined (BUILD_C7X)
+	gpio_cfg.intCfg->eventId = CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_WKUP_GPIOMUX_INTRTR0_OUTP_16 + 992;
+#endif
 #endif
 
 /* --- TODO: move this into the board library --- */
@@ -343,7 +352,7 @@ static void Board_initGPIO(void)
 #ifndef BAREMETAL
 #if defined (SOC_J721E)
 /* set up C66x Interrupt Router for DMTimer0 for C66x */
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
     int32_t                              retVal;
     struct tisci_msg_rm_irq_set_req      rmIrqReq;
     struct tisci_msg_rm_irq_set_resp     rmIrqResp;
@@ -486,7 +495,7 @@ int main()
         /* Trigger interrupt */
         GPIOTriggerPinInt(gpioBaseAddr, 0, gpioPin);
 #endif
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
         GPIO_toggle(USER_LED0);
 #elif defined(SOC_AM64X)
         /* In AM64x GP EVM, USER_LED0 (TEST_LED1) is connected to IO EXPANDER.
@@ -520,7 +529,7 @@ int main(void)
     AppGPIOInit();
 #endif
 
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X) || defined(SOC_AM65XX)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_AM64X) || defined(SOC_AM65XX) || defined(SOC_J721S2)
     TaskP_Params taskParams;
 
     OS_init();
@@ -569,7 +578,7 @@ void AppGpioCallbackFxn(void)
 #else
 void AppGpioCallbackFxn(void)
 {
-#if !defined(SOC_J721E) || !defined(SOC_J7200) || !defined(SOC_AM64X)
+#if !defined(SOC_J721E) || !defined(SOC_J7200) || !defined(SOC_AM64X) || defined(SOC_J721S2)
     /* Toggle LED1 */
     GPIO_toggle(USER_LED1);
     AppLoopDelay(DELAY_VALUE);
@@ -578,7 +587,7 @@ void AppGpioCallbackFxn(void)
 }
 #endif
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {

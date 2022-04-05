@@ -20,7 +20,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
 XDC_CFG_FILE_mpu1_0 = ./am65xx/gpioLedBlinkTest_a53.cfg
 XDC_CFG_FILE_mcu1_0 = ./am65xx/gpioLedBlinkTest_r5.cfg
 endif
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 tpr12 awr294x am64x))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 tpr12 awr294x am64x j721s2))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 endif
 GPIO_OS_TESTPREFIX=
@@ -44,29 +44,7 @@ INCDIR = . src
 # Common source files across all platforms and cores
 SRCS_COMMON += main_led_blink.c GPIO_board.c
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-SRCDIR += am65xx
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j721e))
-SRCDIR += j721e
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j7200))
-SRCDIR += j7200
-endif
-
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-SRCDIR += tpr12
-endif
-
-ifeq ($(SOC),$(filter $(SOC), awr294x))
-SRCDIR += awr294x
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am64x))
-SRCDIR += am64x
-endif
+SRCDIR += $(SOC)
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
