@@ -51,7 +51,7 @@ extern "C" {
 /* UART Header files */
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2)
 #include <ti/csl/soc/am572x/src/cslr_control_core_pad_io.h>
 #endif
 

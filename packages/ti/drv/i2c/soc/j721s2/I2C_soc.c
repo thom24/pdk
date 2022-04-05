@@ -1,7 +1,7 @@
 /**
- *  \file   j721e/I2C_soc.c
+ *  \file   j721s2/I2C_soc.c
  *
- *  \brief  J721E SoC specific I2C hardware attributes.
+ *  \brief  J721S2 SoC specific I2C hardware attributes.
  *
  *   This file contains the hardware attributes of I2C peripheral like
  *   base address, interrupt number etc.
@@ -442,7 +442,11 @@ void I2C_socInit(void)
                   * Main domain's I2C2-6 are routed by default through the MAIN_PULSARx
                   * Int Routers for connection to the R5 VIMs
                   */
+#if defined (SOC_J721S2)
+                  i2cInitCfg[i].intNum = CSLR_R5FSS0_CORE0_INTR_I2C2_POINTRPEND_0 + i - 2U;
+#else
                   i2cInitCfg[i].intNum = CSLR_R5FSS0_INTROUTER0_IN_I2C2_POINTRPEND_0 + i - 2U;
+#endif
             }
         }
     }
@@ -626,7 +630,7 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
     int32_t               retVal;
     I2C_HwAttrs const    *hwAttrs = (I2C_HwAttrs const *)(pHwAttrs);
     CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
 
     /* Configure CLEC for I2C0 */
     cfgClec.secureClaimEnable = FALSE;
