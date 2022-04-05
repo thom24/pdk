@@ -1,7 +1,7 @@
 /**
- *  \file    sbl_mmcsd.h
+ *  \file    sbl_emmc.h
  *
- *  \brief   This file contains function prototypes for MMCSD Boot functionality
+ *  \brief   This file contains function prototypes for EMMC Boot functionality
  *           of SBL.
  *
  */
@@ -39,8 +39,8 @@
  *
  */
 
-#ifndef SBL_MMCSD_H
-#define SBL_MMCSD_H
+#ifndef SBL_EMMC_H
+#define SBL_EMMC_H
 
 /* FATFS header file */
 #include <ti/fs/fatfs/ff.h>
@@ -68,7 +68,7 @@ extern const FATFS_Config FATFS_config[_VOLUMES + 1];
  *            If no error has occured then return status will be zero.
  *
  */
-int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry);
+int32_t SBL_EMMCBootImage(sblEntryPoint_t *pEntry);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,7 @@
 /**
- *  \file    sbl_mmcsd.c
+ *  \file    sbl_emmc.c
  *
- *  \brief   This file contains functions for MMCSD File read operations for SBL
+ *  \brief   This file contains functions for EMMC File read operations for SBL
  *
  */
 
@@ -51,7 +51,7 @@
 
 /* SBL Header files. */
 #include "sbl_rprc_parse.h"
-#include "sbl_mmcsd.h"
+#include "sbl_emmc.h"
 
 /* K3 Header files */
 #ifdef BUILD_MCU
@@ -62,10 +62,8 @@
 #include "sbl_sec.h"
 #endif
 
-#define BOOT_EMMC
-
 /**
- * \brief    SBL_FileRead function reads N bytes from SD card and
+ * \brief    SBL_FileRead function reads N bytes from EMMC and
  *           advances the cursor.
  *
  * \param     buff - Pointer to data buffer
@@ -95,7 +93,7 @@ int32_t SBL_loadMMCSDBootFile(FIL * fp);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-/* MMCSD function table for MMCSD implementation */
+/* MMCSD function table for EMMC implementation */
 FATFS_DrvFxnTable FATFS_drvFxnTable = {
     &MMCSD_close,
     &MMCSD_control,
@@ -106,7 +104,6 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 };
 
 /* FATFS configuration structure */
-#if defined(BOOT_EMMC)
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
     {
@@ -138,39 +135,6 @@ FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 #endif
     }
 };
-#else
-FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
-{
-    {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
-        1U
-#else
-        0U
-#endif
-    },
-    {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
-        0U
-#else
-        1U
-#endif
-    },
-    {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
-        0U
-#else
-        1U
-#endif
-    },
-    {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
-        0U
-#else
-        1U
-#endif
-    }
-};
-#endif
 
 /* FATFS objects */
 FATFS_Object FATFS_objects[_VOLUMES];
@@ -247,7 +211,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     if(((wkupCtrlDevstat & SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MASK) == SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD) &&
        ((mainCtrlDevstat & SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK) == SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK))
     {
-        /* MMCSD as primary bootmode */
+        /* EMMC as primary bootmode */
         /* Check MAIN CTRL MMR DEVSTAT register for Primary boot mode Bus Width */
         if((mainCtrlDevstat & SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK) == SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK)
         {
@@ -260,7 +224,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     }
     else if((mainCtrlDevstat & SBL_MAIN_DEVSTAT_BACKUP_BOOT_MASK) == SBL_MAIN_DEVSTAT_BACKUP_BOOT_MMCSD)
     {
-        /* MMCSD as backup bootmode only supports 1-bit bus width, as set by ROM code */
+        /* EMMC as backup bootmode only supports 1-bit bus width, as set by ROM code */
         hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_1BIT;
     }
     else
@@ -280,16 +244,16 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /* Initialization of the driver. */
     FATFS_init();
 
-    /* MMCSD FATFS initialization */
+    /* EMMC FATFS initialization */
     FATFS_open(0U, NULL, &sbl_fatfsHandle);
 
     fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
     if (fresult != FR_OK)
     {
 #if defined(SOC_J721E) || defined(SOC_J7200)
-        UART_printf("\n SD Boot - tifs File open fails \n");
+        UART_printf("\n EMMC Boot - tifs File open fails \n");
 #else
-        UART_printf("\n SD Boot - sysfw File open fails \n");
+        UART_printf("\n EMMC Boot - sysfw File open fails \n");
 #endif
         retVal = E_FAIL;
     }
@@ -299,9 +263,9 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         if (fresult != FR_OK)
         {
 #if defined(SOC_J721E) || defined(SOC_J7200)
-            UART_printf("\n SD Boot - tifs read fails \n");
+            UART_printf("\n EMMC Boot - tifs read fails \n");
 #else
-            UART_printf("\n SD Boot - sysfw read fails \n");
+            UART_printf("\n EMMC Boot - sysfw read fails \n");
 #endif
             retVal = E_FAIL;
         }
@@ -316,7 +280,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 }
 #endif
 
-int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
+int32_t SBL_EMMCBootImage(sblEntryPoint_t *pEntry)
 {
     int32_t retVal = E_PASS;
     const TCHAR *fileName = "0:/app";
