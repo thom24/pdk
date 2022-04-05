@@ -35,7 +35,7 @@ include $(PDK_SPI_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = spi_dma
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x am437x am335x k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2))
 SRCDIR += soc/$(SOC)
 
 ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
@@ -58,7 +58,7 @@ SRCS_COMMON += SPI_soc.c
 ifneq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 SRCS_COMMON += SPI_dma.c
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2))
 SRCS_COMMON += OSPI_dma.c
 endif
 
@@ -75,7 +75,7 @@ else
 INCLUDE_EXTERNAL_INTERFACES = pdk
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra72x dra75x tda2ex am571x am572x am574x tda3xx dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2))
 PACKAGE_SRCS_COMMON += soc/$(SOC) soc/SPI_soc.h
 ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 omapl137 omapl138))
     PACKAGE_SRCS_COMMON += soc/dma/v0

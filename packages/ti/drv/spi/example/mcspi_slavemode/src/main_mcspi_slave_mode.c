@@ -20,7 +20,7 @@
  *          2) Two consoles. One for master and another for slave.
  *          3) Run slave application binary and then master application binary.
  *
- *          For AM65xx and J721e/J7200 devices, to demonstrate the example two cores
+ *          For AM65xx and J721e/J7200/J721S2 devices, to demonstrate the example two cores
  *          on the same SoC are needed, mcu1_0 uses McSPI instance 2 on the MCU
  *          domain as the master and mpu1_0 uses  McSPI instance 4 on the Main
  *          doman as slave. These two instances are internally connected in the SoC:
@@ -110,6 +110,8 @@
 #include <ti/board/src/j7200_evm/include/board_utils.h>
 #elif defined(SOC_AM64X)
 #include <ti/board/src/am64x_evm/include/board_utils.h>
+#elif defined(SOC_J721S2)
+#include <ti/board/src/j721s2_evm/include/board_utils.h>
 #endif
 
 #ifdef SOC_AM65XX
@@ -121,12 +123,15 @@
 #elif defined(SOC_J7200)
 #include <ti/csl/soc/j7200/src/cslr_soc_baseaddress.h>
 #include <ti/csl/soc/j7200/src/cslr_wkup_ctrl_mmr.h>
+#elif defined(SOC_J721S2)
+#include <ti/csl/soc/j721s2/src/cslr_soc_baseaddress.h>
+#include <ti/csl/soc/j721s2/src/cslr_wkup_ctrl_mmr.h>
 #endif
 
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
 
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
 #include <ti/drv/udma/udma.h>
 #else
 /* EDMA3 Header files */
@@ -148,7 +153,7 @@ extern EDMA3_RM_GblConfigParams sampleEdma3GblCfgParams[];
 #endif
 #endif
 
-#if (defined (SOC_J721E) || defined (SOC_J7200))
+#if (defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2))
 #include <ti/drv/sciclient/sciclient.h>
 #if defined (BUILD_MCU1_0)
 #include <ti/drv/sciclient/sciserver_tirtos.h>
@@ -226,7 +231,7 @@ uint32_t spi_test_xfer_len[SPI_NUM_XFERS] =
 #define SPI_TEST_DATA_SIZE_16   16
 #define SPI_TEST_DATA_SIZE_32   32
 
-#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
+#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
 #define SPI_TEST_DATA_SIZE      SPI_TEST_DATA_SIZE_32
 #else
 #define SPI_TEST_DATA_SIZE      SPI_TEST_DATA_SIZE_16
@@ -243,7 +248,7 @@ uint32_t spi_test_xfer_len[SPI_NUM_XFERS] =
 #define SPI_TEST_TRIG_LVL       16
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 
 /* WKUP CTRL base address + offset to beginning of PAD CONFIG section */
 #define WKUP_PINMUX_REG_BASE            (CSL_WKUP_CTRL_MMR0_CFG0_BASE + \
@@ -266,7 +271,7 @@ uint32_t spi_test_xfer_len[SPI_NUM_XFERS] =
 #define PIN_WAKEUP_ENABLE               (0x1U << 29U)
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #ifdef SPI_DMA_ENABLE
 /*
  * Ring parameters
@@ -392,7 +397,7 @@ int32_t MCSPI_udma_deinit(void)
     return (retVal);
 }
 #endif
-#endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) */
+#endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) */
 
 /**********************************************************************
  ************************** Global Variables **************************
@@ -454,7 +459,7 @@ SemaphoreP_Handle cbSem[MCSPI_MAX_NUM_CHN] = {NULL, NULL, NULL, NULL};
 static bool loopBackTest = false;
 
 #ifdef SPI_DMA_ENABLE
-#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X))
+#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2))
 EDMA3_RM_Handle gEdmaHandle = NULL;
 
 /**
@@ -553,7 +558,7 @@ static void SPI_initConfigDefault(SPI_HWAttrs *cfg, uint32_t chn)
 {
     cfg->chNum                        = chn;
     cfg->chnCfg[chn].tcs              = MCSPI_CS_TCS_0PNT5_CLK;
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
     /* SPIDAT[1] for TX and SPIDAT[0] for RX */
     cfg->chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_1;
 #else
@@ -629,12 +634,12 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
 #if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA75x) || \
     defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || \
     defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || \
-    defined(SOC_C6678) || defined(SOC_C6657) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
+    defined(SOC_C6678) || defined(SOC_C6657) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
 #ifdef SPI_DMA_ENABLE
         if (dmaMode == true)
         {
             /* Set the DMA related init config */
-#if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
             spi_cfg.edmaHandle = (void *)MCSPIApp_udmaInit(&spi_cfg);
 #else
             spi_cfg.edmaHandle = MCSPIApp_edmaInit();
@@ -656,7 +661,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
     {
     case (SPI_TEST_ID_TX_ONLY):
         spi_cfg.chnCfg[chn].trMode = MCSPI_TX_ONLY_MODE;
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
         /* Data line 1 TX enabled, data line 0 RX enabled TX disabled */
         spi_cfg.chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_1;
 #else
@@ -667,7 +672,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
 
     case (SPI_TEST_ID_RX_ONLY):
         spi_cfg.chnCfg[chn].trMode = MCSPI_RX_ONLY_MODE;
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
     /* Data line 1 TX disabled, data line 0 RX enabled TX disabled */
         spi_cfg.chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_3;
 #else
@@ -721,7 +726,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
 
     if ((testId == SPI_TEST_ID_WORD_LEN) || (testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
     {
-#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
+#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
         /* enable loopback mode */
         spi_cfg.chnCfg[chn].dataLineCommMode = MCSPI_DATA_LINE_COMM_MODE_4;
 #else
@@ -730,7 +735,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
 #endif
     }
 
-#if (defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_AM64X))
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     if(spi_cfg.enableIntr)
     {
         /* Set interrupt path */
@@ -855,7 +860,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
 #endif
 
     testLen = xferLen;
-#if defined(SOC_AM574x) || defined(SOC_AM572x)|| defined(SOC_AM571x) || defined (SOC_DRA72x)  || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
+#if defined(SOC_AM574x) || defined(SOC_AM572x)|| defined(SOC_AM571x) || defined (SOC_DRA72x)  || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
 #ifdef SPI_DMA_ENABLE
     if (dmaMode == true)
     {
@@ -1039,9 +1044,9 @@ static uint32_t SPI_test_get_instance (uint32_t testId, bool master)
     {
         instance = (uint32_t)BOARD_MCSPI_SLAVE_INSTANCE - 1;
     }
-#if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     /*
-     * For AM65XX/J721E/J7200 SoC, master/slave test is set up to use
+     * For AM65XX/J721E/J7200/J721S2 SoC, master/slave test is set up to use
      * McSPI 2 on the MCU domain for master and McSPI 4 on the
      * Main domain for slave, for loopback test it uses default
      * board McSPI instance
@@ -1196,7 +1201,7 @@ static bool SPI_test_single_channel(void *arg)
         }
         else
         {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
             num_xfers = 1;
 #else
             num_xfers = SPI_NUM_XFERS;
@@ -1445,7 +1450,7 @@ static bool SPI_test_multi_channel(void *arg)
         }
     }
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
     for (i = 0; i < 1; i++)
 #else
     for (i = 0; i < SPI_NUM_XFERS; i++)
@@ -1547,7 +1552,7 @@ SPI_Tests Spi_tests_master[] =
 #endif
 #endif
 
-#if !defined (SOC_J721E) && !defined (SOC_J7200)
+#if !defined (SOC_J721E) && !defined (SOC_J7200) && !defined(SOC_J721S2)
 #ifdef SPI_DMA_ENABLE
     {SPI_test_single_channel, SPI_TEST_ID_WORD_LEN, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master data size test in loopback dma mode", SPI_TEST_DATA_SIZE, },
 #endif
@@ -1567,7 +1572,7 @@ SPI_Tests Spi_tests_master[] =
     {SPI_test_multi_channel, SPI_TEST_ID_INIT_DELAY, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel init delay test", SPI_TEST_INIT_DELAY, },
 #endif
 
-#endif /* Loopback not supported on j721e, j7200 */
+#endif /* Loopback not supported on j721e, j7200, j721s2 */
 
 #ifdef SPI_DMA_ENABLE
      {SPI_test_single_channel, SPI_TEST_ID_DMA_CB_CANCEL, true, false, true, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in dma callback mode", },
@@ -1610,7 +1615,7 @@ SPI_Tests Spi_tests_slave[] =
 #endif
     {NULL, },
 };
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)
 #define MCSPI_SYNC_ADDR         (0x90000000U)
 #endif
 /*
@@ -1634,7 +1639,7 @@ void slaveTaskFxn()
 
     SPI_init();
 
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)
     *((volatile uint32_t *)(MCSPI_SYNC_ADDR)) = 0x12341234U;
     CacheP_wb((void *)MCSPI_SYNC_ADDR, 4);
 #endif
@@ -1707,7 +1712,7 @@ void masterTaskFxn()
     SPI_log("Starting SPI Master test, in no OS environment \n");
 #endif
 
-#if defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)
     while ( *((volatile uint32_t *)(MCSPI_SYNC_ADDR)) != 0x12341234U)
     {
 #if defined (RTOS_ENV)
@@ -1767,7 +1772,7 @@ void masterTaskFxn()
     {
     }
 }
-#if (defined (RTOS_ENV) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (RTOS_ENV) && (defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)))
 #if defined (BUILD_MCU1_0)
 void MCSPI_setupSciServer(void)
 {
@@ -1854,7 +1859,7 @@ int main(void)
 #endif
 
 #if defined (RTOS_ENV)
-#if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X)
+#if defined(SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
@@ -1882,7 +1887,7 @@ int main(void)
 #endif /* Soc type */
 #endif /* #ifdef RTOS_ENV */
 
-#if (defined (RTOS_ENV) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (RTOS_ENV) && (defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)))
 #if defined (BUILD_MCU1_0)
     MCSPI_setupSciServer();
 #endif
@@ -1912,7 +1917,7 @@ int main(void)
     loopBackTest = true;
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     /* Configure the MCU SPI0_D1 pinmux, since it is not set by default in board */
     HW_WR_REG32((WKUP_PINMUX_REG_BASE + MCU_SPI0_D1_PADCFG_OFFSET), PIN_MODE(0) | \
@@ -1976,7 +1981,7 @@ int main(void)
     return (0);
 }
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {

@@ -47,7 +47,7 @@
 #if defined(OSPI_TESTAPP_TIRTOS)
 #include <ti/sysbios/utils/Load.h>
 #endif
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #if defined (__aarch64__)
 #include <ti/sysbios/family/arm/v8a/Mmu.h>
 #endif
@@ -66,15 +66,23 @@
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
 #if defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
+#elif defined(SOC_J721S2)
+#include <ti/board/src/flash/nor/ospi/nor_xspi.h>
+#include <ti/board/src/flash/nand/ospi/nand_ospi.h>
 #else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
+#endif
+#if defined(SOC_J721S2)
+#include <ti/csl/csl_gpio.h>
+#include <ti/drv/gpio/GPIO.h>
+#include <ti/drv/gpio/soc/GPIO_soc.h>
 #endif
 
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #include <ti/csl/cslr_fss.h>
 #include <ti/csl/csl_rat.h>
 #include <ti/csl/arch/csl_arch.h>
@@ -84,6 +92,9 @@
 #endif
 #if defined(SOC_AM64X) || defined(SOC_J7200)
 #include <ti/board/src/flash/nor/device/s28hs512t.h>
+#elif defined(SOC_J721S2)
+#include <ti/board/src/flash/nor/device/s28hs512t.h>
+#include <ti/board/src/flash/nand/device/w35n01jwtbag.h>
 #else
 #include <ti/board/src/flash/nor/device/m35xu512.h>
 #endif
@@ -109,6 +120,13 @@
 #include <ti/csl/soc/j7200/src/cslr_wkup_ctrl_mmr.h>
 #endif
 
+#if defined(SOC_J721S2)
+#include <ti/csl/soc/j721s2/src/cslr_soc_baseaddress.h>
+#include <ti/csl/soc/j721s2/src/cslr_mcu_ctrl_mmr.h>
+#include <ti/csl/soc/j721s2/src/cslr_mcu_pll_mmr.h>
+#include <ti/csl/soc/j721s2/src/cslr_wkup_ctrl_mmr.h>
+#endif
+
 #endif
 
 
@@ -119,6 +137,7 @@ typedef struct OSPI_Tests_s
     int32_t  testId;
     bool     dacMode;
     bool     dmaMode;
+    bool     norFlash;
     uint32_t clk;
     char     testDesc[80];
 
@@ -141,6 +160,13 @@ typedef struct OSPI_Tests_s
 #define OSPI_TEST_ID_DAC_DMA_166M 5   /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
 #define OSPI_TEST_ID_DAC_133M_SPI 6   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
 #define OSPI_TEST_ID_WR_TUNING    7   /* OSPI flash test in Direct Acess Controller legacy SPI mode to write tuning data */
+#define OSPI_NAND_TEST_ID_DAC_133M     8   /* OSPI flash test in Direct Acess Controller mode at 133MHz RCLK */
+#define OSPI_NAND_TEST_ID_INDAC_133M   9   /* OSPI flash test in Indirect Acess Controller mode at 133MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_DMA_133M 10   /* OSPI flash test in Direct Acess Controller DMA mode at 133MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_166M     11   /* OSPI flash test in Direct Acess Controller mode at 166MHz RCLK */
+#define OSPI_NAND_TEST_ID_INDAC_166M   12  /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_DMA_166M 13  /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_133M_SPI 14  /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
 
 /* OSPI NOR flash offset address for read/write test */
 #define TEST_ADDR_OFFSET   (0U)
@@ -156,6 +182,13 @@ typedef struct OSPI_Tests_s
 
 /* Flash offset where the PHY tuning data pattern stored */
 #define TEST_TUNE_PATTERN_OFFSET  (NOR_TUNING_DATA_OFFSET)
+
+/* Flash selection mux */
+#if defined(SOC_J721S2)
+#define OSPI_FLASH_SEL_PIN      (6U)
+#define OSPI_FLASH_SEL_NOR      (0U)
+#define OSPI_FLASH_SEL_NAND     (1U)
+#endif
 
 /**********************************************************************
  ************************** Internal functions ************************
@@ -191,7 +224,7 @@ uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((sectio
 #endif
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #ifdef SPI_DMA_ENABLE
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #else
@@ -208,7 +241,7 @@ uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((sectio
 #endif
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #ifdef SPI_DMA_ENABLE
 uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #else
@@ -216,7 +249,7 @@ uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((sectio
 #endif
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 
 #ifdef SPI_DMA_ENABLE
 /*
@@ -330,7 +363,7 @@ int32_t Ospi_udma_deinit(void)
 
 #if defined(OSPI_TESTAPP_RTOS)
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
@@ -536,7 +569,55 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
 }
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+/**
+ * \brief  OSPI mux selection function.
+ *
+ * This function selects the flash by enabling the GPIO pin which is used
+ * for selecting NOR/NAND flash interfaces by muxer.
+ *
+ */
+#if defined(SOC_J721S2)
+
+/* GPIO Driver board specific pin configuration structure */
+GPIO_PinConfig gpioPinConfigs[] = {
+	OSPI_FLASH_SEL_PIN  | GPIO_CFG_OUTPUT,
+};
+
+/* GPIO Driver call back functions */
+GPIO_CallbackFxn gpioCallbackFunctions[] = {
+    NULL,
+};
+
+/* GPIO Driver configuration structure */
+GPIO_v0_Config GPIO_v0_config = {
+    gpioPinConfigs,
+    gpioCallbackFunctions,
+    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
+    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
+    0,
+};
+
+static void OSPI_flashMux(uint32_t flashType)
+{
+    GPIO_v0_HwAttrs gpioCfg;
+    GPIO_socGetInitCfg(0, &gpioCfg);
+    gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
+    GPIO_socSetInitCfg(0, &gpioCfg);
+
+    GPIO_init();
+
+    if(flashType == OSPI_FLASH_SEL_NOR)
+    {
+        GPIO_write(0, GPIO_PIN_LOW);
+    }
+    else
+    {
+        GPIO_write(0, GPIO_PIN_HIGH);
+    }
+}
+#endif
+
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 void OSPI_configClk(uint32_t freq, bool usePHY)
 {
     OSPI_v0_HwAttrs ospi_cfg;
@@ -668,7 +749,14 @@ void OSPI_initConfig(OSPI_Tests *test)
     {
         ospi_cfg.dmaEnable = test->dmaMode;
         /* Enable PHY in DAC mode */
-        ospi_cfg.phyEnable = true;
+        if (test->norFlash)
+        {
+            ospi_cfg.phyEnable = true;
+        }
+        else
+        {
+            ospi_cfg.phyEnable = false;
+        }
         ospi_cfg.intrEnable = false;
 #ifdef SPI_DMA_ENABLE
         if (ospi_cfg.dmaEnable)
@@ -686,7 +774,7 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.dmaEnable = false;
     }
 
-    if (test->testId == OSPI_TEST_ID_DAC_133M_SPI)
+    if ((test->testId == OSPI_TEST_ID_DAC_133M_SPI) || (test->testId == OSPI_NAND_TEST_ID_DAC_133M_SPI))
     {
         /* Disable PHY in legacy SPI mode (1-1-1) */
         ospi_cfg.phyEnable = false;
@@ -706,13 +794,25 @@ void OSPI_initConfig(OSPI_Tests *test)
 
     ospi_cfg.funcClk = test->clk;
 
-    if (ospi_cfg.funcClk == OSPI_MODULE_CLK_133M)
+    if(test->norFlash)
     {
-        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA;
+        if (ospi_cfg.funcClk == OSPI_MODULE_CLK_133M)
+        {
+            ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA;
+        }
+        else
+        {
+            ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
+        }
     }
     else
     {
-        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
+        ospi_cfg.devDelays[0] = OSPI_DEV_DELAY_CSDA_A;
+        ospi_cfg.devDelays[1] = OSPI_DEV_DELAY_CSDA_A;
+        ospi_cfg.devDelays[2] = OSPI_DEV_DELAY_CSDA_A;
+        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_A;
+        ospi_cfg.blkSize = 16;
+        ospi_cfg.baudRateDiv = 6;
     }
 
     if(ospi_cfg.intrEnable)
@@ -776,6 +876,7 @@ static bool OSPI_flash_test(void *arg)
     uint32_t          startOffset;
     uint8_t          *pBuf;
     uint32_t          tuneEnable;
+    uint32_t          blockSize;
 
     if (test->testId == OSPI_TEST_ID_WR_TUNING)
     {
@@ -799,11 +900,34 @@ static bool OSPI_flash_test(void *arg)
 
     OSPI_initConfig(test);
 
-    /* Default Device, SoC's specifics overrides shall follow */
-    deviceId = BOARD_FLASH_ID_MT35XU512ABA1G12;
-
 #if defined(SOC_J7200) || defined(SOC_AM64X)
     deviceId = BOARD_FLASH_ID_S28HS512T;
+#elif defined(SOC_J721S2)
+    if(test->norFlash)
+    {
+        deviceId = BOARD_FLASH_ID_S28HS512T;
+        OSPI_flashMux(OSPI_FLASH_SEL_NOR);
+    }
+    else
+    {
+        deviceId = BOARD_FLASH_ID_W35N01JWTBAG;
+        OSPI_flashMux(OSPI_FLASH_SEL_NAND);
+    }
+#else
+    deviceId = BOARD_FLASH_ID_MT35XU512ABA1G12;
+#endif
+
+#if defined(SOC_J721S2)
+    if(test->norFlash)
+    {
+        blockSize = NOR_BLOCK_SIZE;
+    }
+    else
+    {
+        blockSize = NAND_BLOCK_SIZE;
+    }
+#else
+    blockSize = NOR_BLOCK_SIZE;
 #endif
 
 #ifdef OSPI_PROFILE
@@ -852,10 +976,17 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 #ifdef OSPI_WRITE
-#if defined(SOC_J7200) || defined(SOC_AM64X)
-    if (test->dacMode)                          /* DAC writes are not supported on Cypress xSPI Flash - Switch to INDAC mode for write as WA to PDK-7115 */
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+    if (test->norFlash && test->dacMode)                          /* DAC writes are not supported on Cypress xSPI Flash - Switch to INDAC mode for write as WA to PDK-7115 */
     {
-        SPI_log("\n The Cypress xSPI Flash does not support DAC writes, switching to INDAC mode. \n");
+        if(test->norFlash)
+        {
+            SPI_log("\n The Cypress xSPI Flash does not support DAC writes, switching to INDAC mode. \n");
+        }
+        else
+        {
+            SPI_log("\n The Winbond NAND Flash does not support DAC writes, switching to INDAC mode. \n");
+        }
         OSPI_v0_HwAttrs ospi_cfg;
         Board_flashClose(boardHandle);
     #if SPI_DMA_ENABLE
@@ -873,7 +1004,7 @@ static bool OSPI_flash_test(void *arg)
         boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
     }
 #endif
-    for (i = 0; i < testLen; i += NOR_BLOCK_SIZE)
+    for (i = 0; i < testLen; i += blockSize)
     {
         offset = startOffset + i;
         if (Board_flashOffsetToBlkPage(boardHandle, offset,
@@ -936,10 +1067,17 @@ static bool OSPI_flash_test(void *arg)
 #endif
 #endif /* OSPI_WRITE */
 
-#if defined(SOC_J7200) || defined(SOC_AM64X)
-    if (test->dacMode)                          /* DAC reads are supported - switching back to DAC mode */
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+    if (test->norFlash && test->dacMode)                          /* DAC reads are supported - switching back to DAC mode */
     {
-        SPI_log("\n The Cypress xSPI Flash supports DAC reads, switching back to DAC mode. \n");
+        if(test->norFlash)
+        {
+            SPI_log("\n The Cypress xSPI Flash supports DAC reads, switching back to DAC mode. \n");
+        }
+        else
+        {
+            SPI_log("\n The Winbond NAND Flash supports DAC reads, switching back to DAC mode. \n");
+        }
         OSPI_v0_HwAttrs ospi_cfg;
         Board_flashClose(boardHandle);
         OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -972,7 +1110,7 @@ static bool OSPI_flash_test(void *arg)
     }
 #endif
 #ifdef OSPI_PROFILE
-    if( (test->dacMode) && (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) )
+    if( (test->dacMode) && (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) && (test->testId!=OSPI_NAND_TEST_ID_DAC_133M_SPI))
     {
         uint64_t    startPhyTuningTime;
         uint64_t    elapsedPhyTuningTime;
@@ -980,11 +1118,14 @@ static bool OSPI_flash_test(void *arg)
 
         /* Dummy flash read to get just the PHY tuning time */
         startPhyTuningTime = TimerP_getTimeInUsecs();
-        if (Board_flashRead(boardHandle, 0U, &tmpRxBuf[0], 4U, (void *)(&readMode)))
+        if(test->norFlash)
         {
-            SPI_log("\n Dummy Board_flashRead for PHY tuning measurement failed. \n");
-            testPassed = false;
-            goto err;
+            if (Board_flashRead(boardHandle, 0U, &tmpRxBuf[0], 4U, (void *)(&readMode)))
+            {
+                SPI_log("\n Dummy Board_flashRead for PHY tuning measurement failed. \n");
+                testPassed = false;
+                goto err;
+            }
         }
         elapsedPhyTuningTime = TimerP_getTimeInUsecs() - startPhyTuningTime;
         SPI_log("\n PHY tuning + 4 byte read took %d us \n", (uint32_t)elapsedPhyTuningTime);
@@ -1073,24 +1214,37 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
 OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING
-#if defined(SOC_J7200) || defined(SOC_AM64X)
-    /* testFunc       testID                     dacMode dmaMode clk                   testDesc */
-    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    false,  false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+    /* testFunc       testID                            dacMode dmaMode norFlash    clk                   testDesc */
+    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,           false,  false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #else
-    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,    true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,           true,   false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #endif
 #endif
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M,     true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
-    {OSPI_flash_test, OSPI_TEST_ID_INDAC_133M,   false,  false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M,            true,   false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_INDAC_133M,          false,  false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_133M, true,   true,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_133M,        true,   true,   true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
 #endif
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_166M,     true,   false,  OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
-    {OSPI_flash_test, OSPI_TEST_ID_INDAC_166M,   false,  false,  OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_166M,            true,   false,  true,       OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_INDAC_166M,          false,  false,  true,       OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M, true,   true,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M,        true,   true,   true,       OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI, true,   false,  OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI,        true,   false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+#if defined(SOC_J721S2)
+    {OSPI_flash_test, OSPI_NAND_TEST_ID_INDAC_166M,     false,  false,  false,      OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
+    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_133M_SPI,   true,   false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test, OSPI_NAND_TEST_ID_INDAC_133M,     false,  false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in INDAC mode at 133MHz RCLK"},
+    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_133M,       true,   false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC mode at 133MHz RCLK"},
+#ifdef SPI_DMA_ENABLE
+    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_DMA_133M,   true,   true,   false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 133MHz RCLK"},
+#endif
+    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_166M,       true,   false,  false,      OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC mode at 166MHz RCLK"},
+#ifdef SPI_DMA_ENABLE
+    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_DMA_166M,   true,   true,   false,      OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 166MHz RCLK"},
+#endif
+#endif
     {NULL, }
 };
 
@@ -1140,7 +1294,6 @@ void spi_test()
         {
             SPI_log("\r\n %s have failed\r\n", test->testDesc);
             testFail = true;
-            break;
         }
     }
 

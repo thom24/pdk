@@ -73,7 +73,8 @@ function getLibs(prog)
                      'am64x',
                      'j7200',
                      'tpr12',
-                     'awr294x'
+                     'awr294x',
+                     'j721s2'
                    ];
 
     /* Get the SOC */

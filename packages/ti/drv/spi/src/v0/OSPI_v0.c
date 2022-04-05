@@ -55,6 +55,8 @@
 /* Set the indirect trigger address offset at a non-cached location */
 #if defined(SOC_J7200) || defined(SOC_AM64X)
     #define OSPI_INDAC_TRIG_ADDR (0x3FC0000)
+#elif defined(SOC_J721S2)
+    #define OSPI_INDAC_TRIG_ADDR (0x0)
 #else
     #define OSPI_INDAC_TRIG_ADDR (0x3FE0000)
 #endif
@@ -438,6 +440,7 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
         object->ospiMode  = (uint32_t)hwAttrs->operMode;
         object->xferLines = (uint32_t)hwAttrs->xferLines;
         object->hwi       = NULL;
+        object->extRdCmdLen = 0;
 
         /* Extract OSPI operating mode based on hwAttrs and input parameters */
         if(SPI_MODE_BLOCKING == object->ospiParams.transferMode)
@@ -862,14 +865,47 @@ static uint8_t OSPI_getDeviceStatus(SPI_Handle handle)
     OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
     OSPI_v0_Object        *object;  /* OSPI object */
     uint8_t                status = 0xff;
+    uint8_t                cmd[3];
+    uint32_t               rx_lines;
 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     object = (OSPI_v0_Object *)handle->object;
+    rx_lines = hwAttrs->xferLines;
 
-    (void)OSPI_cmdRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                       object->rdStatusCmd,
-                       &status,
-                       1);
+    if(object->extRdCmdLen)
+    {
+        if (rx_lines == OSPI_XFER_LINES_OCTAL)
+        {
+            cmd[0] = object->rdStatusCmd;
+            cmd[1] = object->rdStatusAddr;
+            cmd[2] = object->rdStatusAddr;
+            OSPI_cmdExtRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                            (uint8_t *)cmd,
+                            3,
+                            &status,
+                            1,
+                            7);
+        }
+        else
+        {
+            cmd[0] = object->rdStatusCmd;
+            cmd[1] = object->rdStatusAddr;
+            OSPI_cmdExtRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                            (uint8_t *)cmd,
+                            2,
+                            &status,
+                            1,
+                            0);
+        }
+    }
+    else
+    {
+        cmd[0] = object->rdStatusCmd;
+        OSPI_cmdRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                    (uint32_t)cmd[0],
+                    &status,
+                    1);
+    }
 
     return (status);
 }
@@ -892,7 +928,6 @@ static bool OSPI_waitDeviceReady(SPI_Handle handle, uint32_t timeOut)
         timeOutVal--;
         OSPI_delay(OSPI_CHECK_IDLE_DELAY);
     }
-
     return (retVal);
 }
 
@@ -1077,7 +1112,16 @@ static int32_t OSPI_cmd_mode_read_v0(SPI_Handle handle,
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     object  = (OSPI_v0_Object *)handle->object;
 
-    if(CSL_ospiGetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)))
+    if(object->extRdCmdLen)
+    {
+        retVal = OSPI_cmdExtRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                 (uint8_t *)cmd,
+                                 (uint32_t)object->extRdCmdLen,
+                                 (uint8_t *)transaction->rxBuf,
+                                 (uint32_t)transaction->count - object->extRdCmdLen,
+                                 (uint32_t)object->extRdDummyClks);
+    }
+    else if(CSL_ospiGetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)))
     {
         retVal = OSPI_cmdExtRead((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                  (uint8_t *)cmd,
@@ -1659,6 +1703,8 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                                    object->transferCmd,
                                    object->xferLines);
                 object->rdStatusCmd = *ctrlData;
+                ctrlData++;
+                object->rdStatusAddr = *ctrlData;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
@@ -1751,6 +1797,13 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
             case SPI_V0_CMD_EXT_RD_DUMMY_CLKS:
             {
                 object->extRdDummyClks = *ctrlData;
+                retVal = SPI_STATUS_SUCCESS;
+                break;
+            }
+
+            case SPI_V0_CMD_EXT_RD_CMD_LEN:
+            {
+                object->extRdCmdLen = *ctrlData;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
