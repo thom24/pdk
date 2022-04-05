@@ -97,7 +97,7 @@ uint8_t gAppTskStackMain[MCASP_APP_TASK_STACK_SIZE] __attribute__((aligned(MCASP
 #else
 uint8_t gAppTskStackMain[MCASP_APP_TASK_STACK_SIZE] __attribute__((aligned(128)));
 #endif
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 Void InitMmu()
 {
