@@ -85,7 +85,7 @@ typedef struct TimerP_Struct_s
   void*    arg;        /* Argument passed into the timer function. */
   uint32_t availMask;   /* Available timer mask */
   HwiP_Handle hwi;      /* Hwi handle for tickFxn */
-#if (defined (_TMS320C6X) || defined (__C7100__))
+#if (defined (_TMS320C6X) || defined (BUILD_C7X))
   uint32_t eventId;     /* Event Id for C66x */
 #endif
   int32_t  intNum;      /* Interrupt Number */
@@ -465,7 +465,7 @@ static TimerP_Status TimerP_dmTimerInitObj(TimerP_Struct *timer, TimerP_Fxn tick
      timer->intNum = gDmTimerPInfoTbl[timer->timerId].intNum;
    }
 
-#if (defined (_TMS320C6X) || defined (__C7100__))
+#if (defined (_TMS320C6X) || defined (BUILD_C7X))
    if ( params->eventId != TimerP_USE_DEFAULT) {
      timer->eventId = (uint32_t)params->eventId;
    }
@@ -595,7 +595,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
 #if defined(_TMS320C6X)
       interruptRegParams.corepacConfig.corepacEventNum=(int32_t)timer->eventId; /* Event going in to CPU */
 #endif
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
       interruptRegParams.corepacConfig.corepacEventNum=(int32_t)timer->eventId; /* Event going in to CPU */
       interruptRegParams.corepacConfig.priority = 0x1U;
 #endif

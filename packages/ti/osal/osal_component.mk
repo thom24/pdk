@@ -68,13 +68,22 @@ ifeq ($(osal_component_make_include), )
 
 libosal_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 
-libosal_BOARDLIST       = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137 lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm j721s2_evm
-libosal_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2
+libosal_BOARDLIST  = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x
+libosal_BOARDLIST += idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137
+libosal_BOARDLIST += lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm
+libosal_BOARDLIST += am64x_evm tpr12_evm tpr12_qt awr294x_evm j721s2_evm
+
+libosal_SOCLIST   = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x
+libosal_SOCLIST  += am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x
+libosal_SOCLIST  += omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2
+
 libosal_tirtos_BOARDLIST    = $(libosal_BOARDLIST)
-libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm
-libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x
-libosal_safertos_BOARDLIST  = tpr12_evm awr294x_evm j721e_evm
-libosal_safertos_SOCLIST    = tpr12 awr294x j721e
+libosal_tirtos_SOCLIST      = $(libosal_SOCLIST)
+libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm j721s2_evm
+libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x j721s2
+libosal_safertos_BOARDLIST  = tpr12_evm awr294x_evm
+libosal_safertos_SOCLIST    = tpr12 awr294x
+
 libosal_tda2xx_CORELIST = a15_0 ipu1_0
 libosal_tda2px_CORELIST = a15_0 ipu1_0
 libosal_tda2ex_CORELIST = a15_0 ipu1_0
@@ -96,22 +105,28 @@ libosal_c6678_CORELIST  = c66x
 libosal_c6657_CORELIST  = c66x
 libosal_am437x_CORELIST = a9host
 libosal_am335x_CORELIST = a8host
-libosal_am65xx_CORELIST = $(DEFAULT_am65xx_CORELIST)
-libosal_j721e_CORELIST = $(DEFAULT_j721e_CORELIST)
-libosal_j7200_CORELIST = $(DEFAULT_j7200_CORELIST)
-libosal_am64x_CORELIST = $(DEFAULT_am64x_CORELIST)
-libosal_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
+libosal_am65xx_CORELIST  = $(DEFAULT_am65xx_CORELIST)
+libosal_j721e_CORELIST   = $(DEFAULT_j721e_CORELIST)
+libosal_j7200_CORELIST   = $(DEFAULT_j7200_CORELIST)
+libosal_am64x_CORELIST   = $(DEFAULT_am64x_CORELIST)
+libosal_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 libosal_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
-libosal_j721s2_CORELIST = $(DEFAULT_j721s2_CORELIST)
-libosal_freertos_am65xx_CORELIST = mcu1_0 mcu1_1
-libosal_freertos_j721e_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
-libosal_freertos_j7200_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
-libosal_freertos_tpr12_CORELIST = $(DEFAULT_tpr12_CORELIST)
-libosal_freertos_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
-libosal_safertos_j721e_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-libosal_safertos_tpr12_CORELIST = c66xdsp_1
+libosal_j721s2_CORELIST  = $(DEFAULT_j721s2_CORELIST)
+
+ifneq ($(SOC),$(filter $(SOC), j721s2))
+libosal_tirtos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
+else
+libosal_tirtos_$(SOC)_CORELIST = $(filter-out c7x_1 c7x_2, $(libosal_$(SOC)_CORELIST))
+endif
+
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x j721s2))
+libosal_freertos_$(SOC)_CORELIST = $(filter-out mpu1_0, $(libosal_$(SOC)_CORELIST))
+else
+libosal_freertos_$(SOC)_CORELIST =
+endif
+
+libosal_safertos_tpr12_CORELIST   = c66xdsp_1
 libosal_safertos_awr294x_CORELIST = c66xdsp_1
-libosal_freertos_j721s2_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 
 ############################
 # osal package
@@ -203,7 +218,7 @@ osal_nonos_INCLUDE = $(osal_nonos_PATH)
 osal_nonos_SOCLIST = $(libosal_SOCLIST)
 export osal_nonos_SOCLIST
 osal_nonos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
 osal_nonos_$(SOC)_CORELIST += c7x-hostemu
 endif
 export osal_nonos_$(SOC)_CORELIST
@@ -230,7 +245,7 @@ export osal_nonos_indp_SOC_DEPENDENCY
 osal_nonos_indp_PKG_LIST = osal_nonos_indp
 export osal_nonos_indp_PKG_LIST
 osal_nonos_indp_INCLUDE = $(osal_nonos_indp_PATH)
-osal_nonos_indp_SOCLIST = 
+osal_nonos_indp_SOCLIST =
 export osal_nonos_indp_SOCLIST
 osal_nonos_indp_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
 export osal_nonos_indp_$(SOC)_CORELIST
@@ -259,7 +274,7 @@ export osal_nonos_indp_$(SOC)_CORELIST
 # osal_tirtos_INCLUDE = $(osal_tirtos_PATH)
 # osal_tirtos_SOCLIST = $(libosal_tirtos_SOCLIST)
 # export osal_tirtos_SOCLIST
-# osal_tirtos_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(libosal_$(SOC)_CORELIST))
+# osal_tirtos_$(SOC)_CORELIST = $(filter $(libosal_tirtos_$(SOC)_CORELIST), $(libosal_$(SOC)_CORELIST))
 # export osal_tirtos_$(SOC)_CORELIST
 
 # OSAL TIRTOS DEVICE INDEPENDENT
@@ -286,7 +301,7 @@ export osal_nonos_indp_$(SOC)_CORELIST
 # osal_tirtos_indp_INCLUDE = $(osal_tirtos_indp_PATH)
 # osal_tirtos_indp_SOCLIST =
 # export osal_tirtos_indp_SOCLIST
-# osal_tirtos_indp_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(libosal_$(SOC)_CORELIST))
+# osal_tirtos_indp_$(SOC)_CORELIST = $(filter $(libosal_tirtos_$(SOC)_CORELIST), $(libosal_$(SOC)_CORELIST))
 # export osal_tirtos_indp_$(SOC)_CORELIST
 
 # OSAL FREE RTOS LIB
@@ -358,7 +373,7 @@ OSAL_Baremetal_TestApp_PKG_LIST = OSAL_Baremetal_TestApp
 OSAL_Baremetal_TestApp_INCLUDE = $(OSAL_Baremetal_TestApp_PATH)
 OSAL_Baremetal_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_Baremetal_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2))
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
 else
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = no
@@ -385,7 +400,7 @@ ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 osal_EXAMPLE_LIST += OSAL_TestApp_$(1)
 endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x j721s2))
 export OSAL_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 else
 export OSAL_TestApp_$(1)_SBL_APPIMAGEGEN = no
@@ -483,6 +498,12 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
  OSAL_TestApp_tirtos_$(SOC)_CORELIST = mpu1_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+endif
+
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+ OSAL_TestApp_tirtos_$(SOC)_CORELIST = mpu1_0
+ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
+ OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))

@@ -31,9 +31,9 @@
  */
 
 /**
- *  \file bios_mmu.c
+ *  \file freertos_mmu.c
  *
- *  \brief This has the common default MMU setting function for A72 and C7x
+ *  \brief This has the common default MMU setting function for C7x FreeRTOS
  *
  */
 
@@ -49,7 +49,7 @@
 
 #include <ti/csl/soc.h>
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
 #include "Mmu.h"
@@ -72,7 +72,7 @@
 /* ========================================================================== */
 
 void Osal_initMmuDefault(void);
-/**< Simple wrapper for SYSBIOS Mmu_map(), as the paramters for different arch
+/**< Simple wrapper for FreeRTOS port Mmu_map(), as the paramters for different arch
 		differ */
 static bool OsalMmuMap(uint64_t vaddr, uint64_t paddr, size_t size,
 						Mmu_MapAttrs *attrs, bool secure);

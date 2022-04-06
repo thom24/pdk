@@ -44,7 +44,7 @@
 
 static void osal_core_delay(uint32_t nTicks);
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 static void osal_core_delay(uint32_t nTicks)
 {
     /** Todo: Need to implement */

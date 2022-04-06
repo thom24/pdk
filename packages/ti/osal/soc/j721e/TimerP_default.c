@@ -66,16 +66,16 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0,   /* Main domain's DM Timer interrupt number */
      TIMERP_EVENT_NOT_AVAILABLE                          /* Event Id */
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      /* Default configurations for DSP core */
      (uint32_t)CSL_TIMER0_CFG_BASE,                                /* Main domain's DM Timer base address */
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
 #endif
-#if defined (BUILD_C7X_1)
+#if defined (BUILD_C7X)
      (uint32_t)CSL_TIMER0_CFG_BASE,                                /* Main domain's DM Timer base address */
      (int32_t)0xe,                                                 /* intNum */
-     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0, /* eventId 0x4e0 */
+     992U + CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0, /* eventId 0x4e0 */
 #endif
 
   },
@@ -92,15 +92,15 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER1_CFG_BASE,
      TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
 #endif
-#if defined (BUILD_C7X_1)
+#if defined (BUILD_C7X)
      (uint32_t)CSL_TIMER1_CFG_BASE,                                /* Main domain's DM Timer base address */
      (int32_t)0xf,                                                 /* intNum */
-     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0, /* eventId 0x4e1 */
+     992U + CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER1_INTR_PEND_0, /* eventId 0x4e1 */
 #endif
   },
   /* Timer ID 2 */
@@ -116,15 +116,15 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER2_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
 #endif
-#if defined (BUILD_C7X_1)
+#if defined (BUILD_C7X)
      (uint32_t)CSL_TIMER2_CFG_BASE,                                /* Main domain's DM Timer base address */
      (int32_t)0x10,                                                 /* intNum */
-     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0, /* eventId 0x4e2 */
+     992U + CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER2_INTR_PEND_0, /* eventId 0x4e2 */
 #endif
   },
   /* Timer ID 3 */
@@ -140,15 +140,15 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER3_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER3_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
 #endif
-#if defined (BUILD_C7X_1)
+#if defined (BUILD_C7X)
      (uint32_t)CSL_TIMER3_CFG_BASE,                                /* Main domain's DM Timer base address */
      (int32_t)0x11,                                                 /* intNum */
-     992U + CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER3_INTR_PEND_0, /* eventId 0x4e3 */
+     992U + CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER3_INTR_PEND_0, /* eventId 0x4e3 */
 #endif
   },
   /* Timer ID 4 */
@@ -164,7 +164,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER4_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER4_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -183,7 +183,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER5_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER5_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -202,7 +202,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER6_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER6_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -221,7 +221,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER7_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER7_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -240,7 +240,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER8_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER8_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -259,7 +259,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER9_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER9_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -278,7 +278,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER10_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER10_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -297,7 +297,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER11_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER11_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -316,7 +316,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER12_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER12_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -335,7 +335,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER13_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER13_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -354,7 +354,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER14_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER14_CFG_BASE,
     (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -373,7 +373,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER15_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER15_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -392,7 +392,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER16_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER16_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -411,7 +411,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER17_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER17_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -430,7 +430,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER18_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER18_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */
@@ -449,7 +449,7 @@ TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices] = {
      (int32_t)CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER19_INTR_PEND_0,
      TIMERP_EVENT_NOT_AVAILABLE
 #endif
-#if defined (BUILD_DSP_1) || defined (BUILD_DSP_2)
+#if defined (BUILD_C66X)
      (uint32_t)CSL_TIMER19_CFG_BASE,
      (int32_t)TIMERP_INTR_USER_CONFIGURE,                         /* User Confugure */
      TIMERP_EVENT_USER_CONFIGURE                         /* User Confugure */

@@ -227,16 +227,16 @@ static void OS_clecOSTimerIntEnable(void)
     switch(cfgClec.c7xEvtNum)
     {
         case 0xe:
-            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            input  =  CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
             break;
         case 0xf:
-            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER1_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            input  =  CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER1_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
             break;
         case 0x10:
-            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER2_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            input  =  CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER2_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
             break;
         case 0x11:
-            input  =  CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_TIMER3_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
+            input  =  CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER3_INTR_PEND_0 + 992; /* Used for Timer Interrupt */
             break;
         default:
             /* unknown interrupt number */

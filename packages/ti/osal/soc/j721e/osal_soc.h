@@ -121,7 +121,7 @@ extern "C" {
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 /* The C7x CLEC should be programmed to allow config/re config either in secure
  * OR non secure mode. This function configures all inputs to given level
  *

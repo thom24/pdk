@@ -93,7 +93,7 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/j721s2/sysbios_a72.cfg
 endif
 
-ifeq ($(CORE),$(filter $(CORE), c7x_1))
+ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/j721s2/sysbios_c7x.cfg
 EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/j721s2/linker_c7x.lds

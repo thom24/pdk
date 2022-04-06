@@ -48,7 +48,7 @@
 
 #include <ti/csl/soc.h>
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/sysbios/family/c7x/Mmu.h>
@@ -88,7 +88,7 @@ static Bool OsalMmuMap(UInt64 vaddr, UInt64 paddr, SizeT size,
 static Bool OsalMmuMap(UInt64 vaddr, UInt64 paddr, SizeT size,
 						Mmu_MapAttrs *attrs, Bool secure)
 {
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 	return (Mmu_map(vaddr, paddr, size, attrs, secure));
 #else
 	return (Mmu_map(vaddr, paddr, size, attrs));
@@ -102,7 +102,7 @@ static void OsalInitMmu(Bool isSecure)
     Mmu_initMapAttrs(&attrs);
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
-#if defined(__C7100__)
+#if defined(BUILD_C7X)
     if(TRUE == isSecure)
     {
         attrs.ns = 0;
@@ -150,7 +150,7 @@ void Osal_initMmuDefault(void)
 }
 #endif
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 
 /* The C7x CLEC should be programmed to allow config/re config either in secure
  * OR non secure mode. This function configures all inputs to given level
@@ -177,7 +177,7 @@ void OsalCfgClecAccessCtrl (Bool onlyInSecure)
 
 #endif /* */
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 void Osal_initMmuDefault(void)
 {
     OsalInitMmu(FALSE);

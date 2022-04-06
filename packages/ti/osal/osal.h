@@ -179,7 +179,7 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #define  OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 176U)
 #else
 #define  OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 96U)

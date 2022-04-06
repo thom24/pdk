@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019
+ *  Copyright (c) Texas Instruments Incorporated 2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -31,9 +31,9 @@
  */
 
 /**
- *  \file bios_mmu.c
+ *  \file freertos_mmu.c
  *
- *  \brief This has the common default MMU setting function for A72 and C7x
+ *  \brief This has the common default MMU setting function for C7x FreeRTOS
  *
  */
 
@@ -41,17 +41,18 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <xdc/std.h>
-#if defined (BUILD_MPU)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
-#endif
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdarg.h>
+#include <stddef.h>
+#include <c7x.h>
 
 #include <ti/csl/soc.h>
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
-#include <ti/sysbios/family/c7x/Mmu.h>
+#include "Mmu.h"
 #endif
 
 /* ========================================================================== */
@@ -71,10 +72,10 @@
 /* ========================================================================== */
 
 void Osal_initMmuDefault(void);
-/**< Simple wrapper for SYSBIOS Mmu_map(), as the paramters for different arch
+/**< Simple wrapper for FreeRTOS port Mmu_map(), as the paramters for different arch
 		differ */
-static Bool OsalMmuMap(UInt64 vaddr, UInt64 paddr, SizeT size,
-						Mmu_MapAttrs *attrs, Bool secure);
+static bool OsalMmuMap(uint64_t vaddr, uint64_t paddr, size_t size,
+						Mmu_MapAttrs *attrs, bool secure);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -85,25 +86,20 @@ static Bool OsalMmuMap(UInt64 vaddr, UInt64 paddr, SizeT size,
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
-static Bool OsalMmuMap(UInt64 vaddr, UInt64 paddr, SizeT size,
-						Mmu_MapAttrs *attrs, Bool secure)
+static bool OsalMmuMap(uint64_t vaddr, uint64_t paddr, size_t size,
+						Mmu_MapAttrs *attrs, bool secure)
 {
-#if defined (__C7100__)
 	return (Mmu_map(vaddr, paddr, size, attrs, secure));
-#else
-	return (Mmu_map(vaddr, paddr, size, attrs));
-#endif
 }
 
-static void OsalInitMmu(Bool isSecure)
+static void OsalInitMmu(bool isSecure)
 {
     Mmu_MapAttrs    attrs;
 
     Mmu_initMapAttrs(&attrs);
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
-#if defined(__C7100__)
-    if(TRUE == isSecure)
+    if(true == isSecure)
     {
         attrs.ns = 0;
     }
@@ -111,7 +107,6 @@ static void OsalInitMmu(Bool isSecure)
     {
         attrs.ns = 1;
     }
-#endif
 
     /* Register region */
     (void)OsalMmuMap(0x00000000U, 0x00000000U, 0x20000000U, &attrs, isSecure);
@@ -120,73 +115,69 @@ static void OsalInitMmu(Bool isSecure)
     (void)OsalMmuMap(0x60000000U, 0x60000000U, 0x10000000U, &attrs, isSecure);
     (void)OsalMmuMap(0x78000000U, 0x78000000U, 0x08000000U, &attrs, isSecure); /* CLEC */
 
-#if defined(BUILD_MPU)
-    (void)OsalMmuMap(0x400000000U, 0x400000000U, 0x400000000U, &attrs, isSecure); /* FSS0 data   */
-#endif
-
     attrs.attrIndx = Mmu_AttrIndx_MAIR7;
     (void)OsalMmuMap(0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure); /* DDR */
     (void)OsalMmuMap(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure); /* DDR */
-    (void)OsalMmuMap(0x70000000U, 0x70000000U, 0x00400000U, &attrs, isSecure); /* MSMC - 4MB */
+    (void)OsalMmuMap(0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure); /* MSMC - 8MB */
     (void)OsalMmuMap(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, isSecure); /* OCMC - 512KB */
 
     /*
-     * DDR range 0xA0000000 - 0xAA000000 : Used as RAM by multiple
+     * DDR range 0xA0000000 - 0xA8000000 : Used as RAM by multiple
      * remote cores, no need to mmp_map this range.
      * IPC VRing Buffer - uncached
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    (void)OsalMmuMap(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure);
+    (void)OsalMmuMap(0xA8000000U, 0xA8000000U, 0x02000000U, &attrs, isSecure);
 
     return;
 }
 
 
-#if defined(BUILD_MPU)
-void Osal_initMmuDefault(void)
-{
-    OsalInitMmu(FALSE);
-    return;
-}
-#endif
 
-#if defined (__C7100__)
 
 /* The C7x CLEC should be programmed to allow config/re config either in secure
  * OR non secure mode. This function configures all inputs to given level
  *
- * Instance is hard-coded for J721e only
+ * Instance is hard-coded for J721S2 only
  *
  */
-void OsalCfgClecAccessCtrl (Bool onlyInSecure)
+void OsalCfgClecAccessCtrl (bool onlyInSecure)
 {
     CSL_ClecEventConfig cfgClec;
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
     uint32_t            i, maxInputs = 2048U;
+    uint32_t            secureClaim = 0U;
 
     cfgClec.secureClaimEnable = onlyInSecure;
-    cfgClec.evtSendEnable     = FALSE;
+    cfgClec.evtSendEnable     = false;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
     cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = 0U;
     for(i = 0U; i < maxInputs; i++)
     {
-        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+        /* Since the CLEC module is shared b/w c7x_1 and c7x_2, 
+         * Before reseting the events and disabling secure claim,
+         * check if its already done by other C7x. */
+        CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);
+        if(secureClaim)
+        {
+            CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+        }
     }
 }
 
-#endif /* */
 
-#if defined (__C7100__)
+
+
 void Osal_initMmuDefault(void)
 {
-    OsalInitMmu(FALSE);
-    OsalInitMmu(TRUE);
+    OsalInitMmu(false);
+    OsalInitMmu(true);
 
     /* Setup CLEC access/configure in non-secure mode */
-    OsalCfgClecAccessCtrl(FALSE);
+    OsalCfgClecAccessCtrl(false);
 
     return;
 }
-#endif
+
 
