@@ -39,6 +39,11 @@
 #if defined (SOC_J7200)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (6)
 #endif
+#if defined (SOC_J721S2)
+#define SBL_AMP_TEST_NUM_BOOT_CORES (8)
+// Currently the amp test does not have an
+// app for c7x_0, c7x_1
+#endif
 
 #if defined (SOC_J721E)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (8)

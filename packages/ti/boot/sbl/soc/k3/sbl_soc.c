@@ -855,6 +855,30 @@ void SBL_SocLateInit(void)
 }
 #endif
 
+#if defined(SOC_J721S2)
+#include <ti/board/src/j721s2_evm/include/board_internal.h>
+
+static void J721S2_UART_InitPwrClk(void)
+{
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK0_OFFSET, SBL_UART_PLL_KICK0_UNLOCK_VAL);
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK1_OFFSET, SBL_UART_PLL_KICK1_UNLOCK_VAL);
+
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_DIV_OFFSET, SBL_UART_PLL_DIV_VAL);
+
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK0_OFFSET, SBL_UART_PLL_KICK_LOCK_VAL);
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK1_OFFSET, SBL_UART_PLL_KICK_LOCK_VAL);
+}
+
+void SBL_SocEarlyInit()
+{
+    J721S2_UART_InitPwrClk();
+}
+
+void SBL_SocLateInit(void)
+{
+}
+#endif
+
 #if defined(SOC_AM64X)
 #include <ti/board/src/am64x_evm/include/board_internal.h>
 void SBL_SocEarlyInit()

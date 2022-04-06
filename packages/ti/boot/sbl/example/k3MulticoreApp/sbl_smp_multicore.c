@@ -49,7 +49,7 @@
 #define SBL_SMP_TEST_NUM_CORES 3
 #endif
 
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
 #define SBL_SMP_TEST_NUM_CORES 4
 #endif
 

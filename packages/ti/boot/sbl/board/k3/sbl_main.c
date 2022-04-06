@@ -289,7 +289,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* Region 14 configuration (Non-cached for PHY tuning data): Covers last 256KB of EVM Flash (FSS DAT0) */
         .regionId         = 7U,
         .enable           = 1U,
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_J721S2)
         .baseAddr         = 0x53FC0000,
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_256KB,
 #else
@@ -359,7 +359,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 #endif
 int main()
 {
-#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200))
+#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
     cpu_core_id_t core_id;
 #endif
     uint32_t atcm_size;
@@ -472,7 +472,7 @@ int main()
     SBL_log(SBL_LOG_MAX, "InitlialzingClocks ...");
     SBL_ADD_PROFILE_POINT;
 #if defined(SBL_ENABLE_HLOS_BOOT)
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_AM64X)
     Board_initParams_t initParams;
     Board_getInitParams(&initParams);
     initParams.mainClkGrp = BOARD_MAIN_CLOCK_GROUP1;
@@ -520,8 +520,8 @@ int main()
     sblProfileLogIndxAddr = &sblProfileLogIndx;
     sblProfileLogOvrFlwAddr = &sblProfileLogOvrFlw;
 
-#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200))
-    /* For J721E/J7200 we have to manage all core boots at the end, to load mcu1_0 sciserver app */
+#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
+    /* For J721E/J7200/J721S2 we have to manage all core boots at the end, to load mcu1_0 sciserver app */
     for (core_id = MCU2_CPU0_ID; core_id <= SBL_LAST_CORE_ID; core_id ++)
     {
         /* Try booting all MAIN domain cores except the Cortex-A cores */

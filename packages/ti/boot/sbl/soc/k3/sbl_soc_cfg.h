@@ -51,6 +51,11 @@
 #include <ti/csl/soc/j7200/src/cslr_mcu_pll_mmr.h>
 #endif
 
+#if defined (SOC_J721S2)
+#include <ti/csl/soc/j721s2/src/cslr_wkup_ctrl_mmr.h>
+#include <ti/csl/soc/j721s2/src/cslr_mcu_pll_mmr.h>
+#endif
+
 #if defined (SOC_AM64X)
 #include <ti/csl/soc/am64x/src/cslr_mcu_pll_mmr.h>
 #endif
@@ -663,35 +668,35 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC    (CSL_R5FSS1_CORE0_BTCM_BASE)
 #define SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC    (CSL_R5FSS1_CORE1_BTCM_BASE)
 
-#define SBL_C66X_L2SRAM_BASE                (SBL_INVALID_ID)
-#define SBL_C66X_L2SRAM_SIZE                (SBL_INVALID_ID)
-#define SBL_C66X_L1DMEM_BASE                (SBL_INVALID_ID)
-#define SBL_C66X_L1DMEM_SIZE                (SBL_INVALID_ID)
+#define SBL_C66X_L2SRAM_BASE                (0xBAD00000)
+#define SBL_C66X_L2SRAM_SIZE                (0xBAD00000)
+#define SBL_C66X_L1DMEM_BASE                (0xBAD00000)
+#define SBL_C66X_L1DMEM_SIZE                (0xBAD00000)
 
-#define SBL_C66X1_L2SRAM_BASE_ADDR_SOC      (SBL_INVALID_ID)
-#define SBL_C66X2_L2SRAM_BASE_ADDR_SOC      (SBL_INVALID_ID)
+#define SBL_C66X1_L2SRAM_BASE_ADDR_SOC      (0xBAD00000)
+#define SBL_C66X2_L2SRAM_BASE_ADDR_SOC      (0xBAD00000)
 
-#define SBL_C66X1_L1DMEM_BASE_ADDR_SOC      (SBL_INVALID_ID)
-#define SBL_C66X2_L1DMEM_BASE_ADDR_SOC      (SBL_INVALID_ID)
+#define SBL_C66X1_L1DMEM_BASE_ADDR_SOC      (0xBAD00000)
+#define SBL_C66X2_L1DMEM_BASE_ADDR_SOC      (0xBAD00000)
 
-#define SBL_C7X_L2SRAM_BASE                 (SBL_INVALID_ID)
-#define SBL_C7X_L2SRAM_SIZE                 (SBL_INVALID_ID)
-#define SBL_C7X_L1DMEM_BASE                 (SBL_INVALID_ID)
-#define SBL_C7X_L1DMEM_SIZE                 (SBL_INVALID_ID)
+#define SBL_C7X_L2SRAM_BASE                 (0xBAD00000)
+#define SBL_C7X_L2SRAM_SIZE                 (0xBAD00000)
+#define SBL_C7X_L1DMEM_BASE                 (0xBAD00000)
+#define SBL_C7X_L1DMEM_SIZE                 (0xBAD00000)
 
-#define SBL_C7X1_L2SRAM_BASE_ADDR_SOC       (SBL_INVALID_ID)
-#define SBL_C7X2_L2SRAM_BASE_ADDR_SOC       (SBL_INVALID_ID)
+#define SBL_C7X1_L2SRAM_BASE_ADDR_SOC       (0xBAD00000)
+#define SBL_C7X2_L2SRAM_BASE_ADDR_SOC       (0xBAD00000)
 
-#define SBL_C7X1_L1DMEM_BASE_ADDR_SOC       (SBL_INVALID_ID)
-#define SBL_C7X2_L1DMEM_BASE_ADDR_SOC       (SBL_INVALID_ID)
+#define SBL_C7X1_L1DMEM_BASE_ADDR_SOC       (0xBAD00000)
+#define SBL_C7X2_L1DMEM_BASE_ADDR_SOC       (0xBAD00000)
 
-#define SBL_M4F_IRAM_BASE                   (SBL_INVALID_ID)
-#define SBL_M4F_IRAM_SIZE                   (SBL_INVALID_ID)
-#define SBL_M4F_DRAM_BASE                   (SBL_INVALID_ID)
-#define SBL_M4F_DRAM_SIZE                   (SBL_INVALID_ID)
+#define SBL_M4F_IRAM_BASE                   (0xBAD00000)
+#define SBL_M4F_IRAM_SIZE                   (0xBAD00000)
+#define SBL_M4F_DRAM_BASE                   (0xBAD00000)
+#define SBL_M4F_DRAM_SIZE                   (0xBAD00000)
 
-#define SBL_M4F_IRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
-#define SBL_M4F_DRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
+#define SBL_M4F_IRAM_BASE_ADDR_SOC          (0xBAD00000)
+#define SBL_M4F_DRAM_BASE_ADDR_SOC          (0xBAD00000)
 
 #define SBL_UART_PLL_BASE                   (CSL_MCU_PLL0_CFG_BASE)
 #define SBL_UART_PLL_KICK0_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0)
@@ -731,7 +736,7 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_DEV_ID_RTI1             (TISCI_DEV_MCU_RTI1)
 
 #define SBL_DEV_ID_MPU_CLUSTER0     (TISCI_DEV_A72SS0)
-#define SBL_DEV_ID_MPU_CLUSTER1     (SBL_INVALID_ID)
+#define SBL_DEV_ID_MPU_CLUSTER1     (0xBAD00000)
 
 #define SBL_PROC_ID_MPU1_CPU0       (SCICLIENT_PROC_ID_A72SS0_CORE0)
 #define SBL_DEV_ID_MPU1_CPU0        (TISCI_DEV_A72SS0_CORE0)
@@ -744,15 +749,15 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 
 #define SBL_MPU1_CPU1_FREQ_HZ       (2000000000)
 
-#define SBL_PROC_ID_MPU2_CPU0       (SBL_INVALID_ID)
-#define SBL_DEV_ID_MPU2_CPU0        (SBL_INVALID_ID)
-#define SBL_CLK_ID_MPU2_CPU0        (SBL_INVALID_ID)
-#define SBL_MPU2_CPU0_FREQ_HZ       (SBL_INVALID_ID)
+#define SBL_PROC_ID_MPU2_CPU0       (0xBAD00000)
+#define SBL_DEV_ID_MPU2_CPU0        (0xBAD00000)
+#define SBL_CLK_ID_MPU2_CPU0        (0xBAD00000)
+#define SBL_MPU2_CPU0_FREQ_HZ       (0xBAD00000)
 
-#define SBL_PROC_ID_MPU2_CPU1       (SBL_INVALID_ID)
-#define SBL_DEV_ID_MPU2_CPU1        (SBL_INVALID_ID)
-#define SBL_CLK_ID_MPU2_CPU1        (SBL_INVALID_ID)
-#define SBL_MPU2_CPU1_FREQ_HZ       (SBL_INVALID_ID)
+#define SBL_PROC_ID_MPU2_CPU1       (0xBAD00000)
+#define SBL_DEV_ID_MPU2_CPU1        (0xBAD00000)
+#define SBL_CLK_ID_MPU2_CPU1        (0xBAD00000)
+#define SBL_MPU2_CPU1_FREQ_HZ       (0xBAD00000)
 
 #define SBL_PROC_ID_MCU1_CPU0       (SCICLIENT_PROC_ID_MCU_R5FSS0_CORE0)
 #define SBL_DEV_ID_MCU1_CPU0        (TISCI_DEV_MCU_R5FSS0_CORE0)
@@ -784,15 +789,15 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_MCU3_CPU1        (TISCI_DEV_R5FSS1_CORE1_CPU_CLK)
 #define SBL_MCU3_CPU1_FREQ_HZ       (1000000000)
 
-#define SBL_PROC_ID_DSP1_C66X       (SBL_INVALID_ID)
-#define SBL_DEV_ID_DSP1_C66X        (SBL_INVALID_ID)
-#define SBL_CLK_ID_DSP1_C66X        (SBL_INVALID_ID)
-#define SBL_DSP1_C66X_FREQ_HZ       (SBL_INVALID_ID)
+#define SBL_PROC_ID_DSP1_C66X       (0xBAD00000)
+#define SBL_DEV_ID_DSP1_C66X        (0xBAD00000)
+#define SBL_CLK_ID_DSP1_C66X        (0xBAD00000)
+#define SBL_DSP1_C66X_FREQ_HZ       (0xBAD00000)
 
-#define SBL_PROC_ID_DSP2_C66X       (SBL_INVALID_ID)
-#define SBL_DEV_ID_DSP2_C66X        (SBL_INVALID_ID)
-#define SBL_CLK_ID_DSP2_C66X        (SBL_INVALID_ID)
-#define SBL_DSP2_C66X_FREQ_HZ       (SBL_INVALID_ID)
+#define SBL_PROC_ID_DSP2_C66X       (0xBAD00000)
+#define SBL_DEV_ID_DSP2_C66X        (0xBAD00000)
+#define SBL_CLK_ID_DSP2_C66X        (0xBAD00000)
+#define SBL_DSP2_C66X_FREQ_HZ       (0xBAD00000)
 
 #define SBL_PROC_ID_DSP1_C7X        (SCICLIENT_PROC_ID_COMPUTE_CLUSTER0_C71SS0_0)
 #define SBL_DEV_ID_DSP1_C7X         (TISCI_DEV_COMPUTE_CLUSTER0_C71SS0_0)
@@ -804,10 +809,10 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_DSP2_C7X         (TISCI_DEV_COMPUTE_CLUSTER0_C71SS1_0_C7X_CLK)
 #define SBL_DSP2_C7X_FREQ_HZ        (1000000000)
 
-#define SBL_PROC_ID_M4F_CPU0        (SBL_INVALID_ID)
-#define SBL_DEV_ID_M4F_CPU0         (SBL_INVALID_ID)
-#define SBL_CLK_ID_M4F_CPU0         (SBL_INVALID_ID)
-#define SBL_M4F_CPU0_FREQ_HZ        (SBL_INVALID_ID)
+#define SBL_PROC_ID_M4F_CPU0        (0xBAD00000)
+#define SBL_DEV_ID_M4F_CPU0         (0xBAD00000)
+#define SBL_CLK_ID_M4F_CPU0         (0xBAD00000)
+#define SBL_M4F_CPU0_FREQ_HZ        (0xBAD00000)
 
 #if defined (SBL_ENABLE_DEV_GRP_MCU)
 #define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)

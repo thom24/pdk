@@ -130,21 +130,42 @@
 
 #endif
 
-const uint32_t gKeywr_boardCfgLow[(KEYWR_BOARDCFG_SIZE_IN_BYTES + 3U) / 4U]
-__attribute__((aligned(128), section(".boardcfg_data"))) =
-    KEYWR_BOARDCFG;
-const uint32_t gKeywr_boardCfgLow_rm[(KEYWR_BOARDCFG_RM_SIZE_IN_BYTES + 3U) /
-                                     4U]
-__attribute__((aligned(128), section(".boardcfg_data"))) =
-    KEYWR_BOARDCFG_RM;
-const uint32_t gKeywr_boardCfgLow_sec[(KEYWR_BOARDCFG_SECURITY_SIZE_IN_BYTES +
-                                       3U) / 4U]
-__attribute__((aligned(128), section(".boardcfg_data"))) =
-    KEYWR_BOARDCFG_SECURITY;
-const uint32_t gKeywr_boardCfgLow_pm[(KEYWR_BOARDCFG_PM_SIZE_IN_BYTES + 3U) /
-                                     4U]
-__attribute__((aligned(128), section(".boardcfg_data"))) =
-    KEYWR_BOARDCFG_PM;
+#if defined (SOC_J7200)
+
+#define MCU_UART_TXD_MUX_ADDR     		(BOARD_WKUP_PMUX_CTRL_ADDR + PIN_WKUP_GPIO0_12)
+#define WKUP_UART_TXD_MUX_ADDR    		(BOARD_WKUP_PMUX_CTRL_ADDR + PIN_WKUP_UART0_TXD)
+
+#define PIN_INPUT					  	(PIN_INPUT_ENABLE | PIN_PULL_DISABLE)
+#define PIN_OUTPUT					  	(PIN_PULL_DISABLE)
+
+#define BOARD_UART_INSTANCE             (0U)
+#define SBL_ROM_UART_MODULE_INPUT_CLK   (48000000U)
+#define SBL_SYSFW_UART_MODULE_INPUT_CLK (96000000U)
+#define MCU_FSS0_S0_FWID 				(1036)
+#define MCU_FSS0_S0_FW_REGIONS 			(8)
+
+#define BOARD_WKUP_PMUX_CTRL_ADDR		(CSL_WKUP_CTRL_MMR0_CFG0_BASE + 0x1C000)
+#define CTRLMMR_LOCK_KICK0_UNLOCK_VAL 	(0x68ef3490)
+#define CTRLMMR_LOCK_KICK1_UNLOCK_VAL	(0xd172bc5a)
+#define WKUP_CTRL_BASE					(0x43000000)
+#define CTRL_MMR0_PARTITION_SIZE		(0x4000)
+#define CTRLMMR_LOCK_KICK0				(0x01008)
+#define CTRLMMR_LOCK_KICK1				(0x0100c)
+
+#endif
+
+const uint32_t gKeywr_boardCfgLow[(KEYWR_BOARDCFG_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG;
+const uint32_t gKeywr_boardCfgLow_rm[(KEYWR_BOARDCFG_RM_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG_RM;
+const uint32_t gKeywr_boardCfgLow_sec[(KEYWR_BOARDCFG_SECURITY_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG_SECURITY;
+const uint32_t gKeywr_boardCfgLow_pm[(KEYWR_BOARDCFG_PM_SIZE_IN_BYTES+3U)/4U]
+    __attribute__(( aligned(128), section(".boardcfg_data") ))
+    = KEYWR_BOARDCFG_PM;
 
 /**
  * \brief  CSL Reset Vectors

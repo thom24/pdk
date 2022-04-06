@@ -527,7 +527,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
 
-#if defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
             /* Only need to set mem_init disable bit for MCU1_0 or MCU2_0 (for each cluster) */
             if ((core_id == MCU1_CPU0_ID) || (core_id == MCU2_CPU0_ID))
             {
@@ -842,7 +842,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /**
              * Notify SYSFW that the SBL is relinquishing the MCU cluster running the SBL
              */
-#if !defined(SOC_J721E) && !defined(SOC_J7200)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2)
             if (requestCoresFlag == SBL_REQUEST_CORE)
             {
                 Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -871,7 +871,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             }
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
             /* Notifying SYSFW that the SBL is relinquishing the MCU cluster running the SBL */
             /* This is done at the end as the PM set module state relies on the fact the SBL is the owner of MCU1_0 and MCU1_1 */
             if (requestCoresFlag == SBL_REQUEST_CORE)

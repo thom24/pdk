@@ -49,7 +49,7 @@ SRCS_ASM_COMMON = sbl_smp_r5.asm
 ifeq ($(filter $(SBL_CFLAGS), -DSBL_ENABLE_DEV_GRP_MCU), -DSBL_ENABLE_DEV_GRP_MCU)
   EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/mcuBootPerfLinker_small.lds
 else
-  ifeq ($(SOC),$(filter $(SOC), j7200 am65xx))
+  ifeq ($(SOC),$(filter $(SOC), j7200 j721s2 am65xx))
     EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/mcuBootPerfLinker_small.lds
   else
     SRCS_ASM_COMMON += sbl_boot_perf_r5.asm

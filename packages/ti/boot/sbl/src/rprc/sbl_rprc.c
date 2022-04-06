@@ -65,13 +65,13 @@ static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
 /******************************************************************************
  ***                     SBL Multicore RPRC parse functions                 ***
 *******************************************************************************/
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_AM64X)
 #if defined(BUILD_MCU1_0)
 extern void SBL_DCacheClean(void *addr, uint32_t size);
 #endif
 #endif
 
-#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && defined(SOC_J721S2))
 extern int32_t SBL_OSPI_ReadSectors(void *dstAddr, void *srcOffsetAddr, uint32_t length);
 #endif
 
@@ -208,7 +208,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
 {
     switch (CoreID)
     {
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_AM64X)
         case ONLY_LOAD_ID:
             /* Only loading, ignore entry point*/
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
@@ -768,7 +768,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 }
 #endif
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_AM64X)
 /* */
 
 __attribute__((weak)) void SBL_SetupCoreMem(uint32_t CoreID);
@@ -790,7 +790,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocAtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if defined(SOC_AM64X) || (SBL_USE_DMA && defined(SOC_J721S2))
     /* Use SoC level address of MCU1_0 ATCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_ATCM_BASE_ADDR_SOC,
 #else
@@ -805,7 +805,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocBtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if defined(SOC_AM64X) || (SBL_USE_DMA && defined(SOC_J721S2))
     /* Use SoC level address of MCU1_0 BTCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_BTCM_BASE_ADDR_SOC,
 #else
@@ -877,7 +877,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
             switch (CoreId)
             {
-#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && defined(SOC_J721S2))
                 /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
                 case MCU1_CPU0_ID:
                     /* Only do TCM addr remapping for MCU1_0 if using UDMA for transfers from OSPI to local TCMs */
