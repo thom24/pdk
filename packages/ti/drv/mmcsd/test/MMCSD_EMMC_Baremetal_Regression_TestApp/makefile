@@ -10,7 +10,7 @@ BUILD_OS_TYPE = baremetal
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_EMMC_Baremetal_Regression_TestApp
 # Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2))
     LOCAL_APP_NAME = MMCSD_EMMC_Baremetal_Regression_$(BOARD)_$(CORE)TestApp
 endif
 
@@ -25,7 +25,7 @@ CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED -DMMCSD_REGRESSION_TEST
 
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x j721s2))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores

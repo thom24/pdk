@@ -54,7 +54,7 @@ extern "C" {
 #endif
 
 #if defined(UART_CONSOLE)
-    #if defined(SOC_J721E)&&(defined(BUILD_C66X_1)||defined(BUILD_C66X_2)||defined(BUILD_C7X_1))
+    #if defined(SOC_J721E)&&(defined(BUILD_C66X)||defined(BUILD_C7X))
         #define CBUFF_log                printf
     #else
         /* UART Header files */

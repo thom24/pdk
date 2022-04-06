@@ -84,7 +84,7 @@
 #endif
 
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2)
 #define GPIO_ENABLED 1
 #endif
 
@@ -95,7 +95,7 @@
 
 #include "profiling.h"
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #endif
 /**********************************************************************
@@ -134,7 +134,7 @@ uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*256),(1024*512),(1024*102
 uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*32)};
 #endif
 
-#if defined (SOC_OMAPL137) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined (SOC_OMAPL137) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #define MMCSD_INSTANCE_EMMC    (0U)
 #else
 #define MMCSD_INSTANCE_EMMC    (1U)
@@ -205,7 +205,7 @@ GPIO_v1_Config GPIO_v1_config = {
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2)
 typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 #endif
 
@@ -216,7 +216,7 @@ typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 static int32_t fillMmcPageData(uint8_t *buf, int32_t length, uint8_t flag,uint32_t *rampBase);
 
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2)
 static void EmmcsReset(void);
 /* Delay function */
 #endif
@@ -252,7 +252,7 @@ uint8_t rx[MMCSD_TEST_MAX_BUFSIZE] __attribute__((aligned(DATA_BUF_ALIGN))) __at
 #endif
 #ifndef BARE_METAL
 
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)) && (defined(BUILD_MPU) || defined (__C7100__))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
@@ -310,7 +310,7 @@ Void InitMmu()
         goto mmu_exit;
     }
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     ret=Mmu_map(0x01800000, 0x01800000, 0x00200000, &attrs); /* gicv3       */
 
     if(ret==false) {
@@ -667,7 +667,7 @@ mmcsdTestMMCProfile_t * mmcsdTestProfiles[] = {
 	&EMMCProfiles_HS_SDR,
 	&EMMCProfiles_HS_DDR,
 	&EMMCProfiles_HS200,
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J721S2)
     /* HS400 mode for AM65x has been descoped for AM65x & J721E */
 	&EMMCProfiles_HS400,
 #endif
@@ -874,7 +874,7 @@ int32_t mmcsd_regression_seek_testID()
 
 #if defined (SOC_OMAPL137)
 MMCSD_v0_HwAttrs           hwAttrsConfigDefault;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 MMCSD_v2_HwAttrs           hwAttrsConfigDefault;
 #else
 MMCSD_v1_HwAttrs hwAttrsConfigDefault;
@@ -900,7 +900,7 @@ void mmcsd_test(void *arg0, void *arg1)
 
 #if defined (SOC_OMAPL137)
     MMCSD_v0_HwAttrs           hwAttrsConfig;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
     MMCSD_v2_HwAttrs           hwAttrsConfig;
 #else
     MMCSD_v1_HwAttrs hwAttrsConfig;
@@ -1001,7 +1001,7 @@ void mmcsd_test(void *arg0, void *arg1)
       hwAttrsConfig.supportedBusVoltages = testProfilePtr->busVoltage;
       /* Set the bus width */
       hwAttrsConfig.supportedBusWidth = testProfilePtr->busWidth;
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
       /* Set the Mode parameters */
       hwAttrsConfig.supportedModes = testProfilePtr->mode;
 #endif
@@ -1047,7 +1047,7 @@ void mmcsd_test(void *arg0, void *arg1)
          return;
  	}
 
-#if !defined(SOC_OMAPL137) && !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
+#if !defined(SOC_OMAPL137) && !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2)
     GPIO_init();
 
     EmmcsReset();
