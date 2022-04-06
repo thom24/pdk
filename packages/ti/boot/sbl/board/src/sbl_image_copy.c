@@ -63,7 +63,7 @@ int32_t SBL_ImageCopy(sblEntryPoint_t *pEntry)
     /* MMCSD Boot Mode Image Copy function. */
     if (SBL_MMCBootImage(pEntry) != 1U)
 #elif defined(BOOT_EMMC)
-    if (SBL_EMMCBootImage(pEntry) != 1U)
+    if (SBL_eMMCBootImage(pEntry) != 1U)
 #elif defined(BOOT_QSPI)
     if (SBL_QSPIBootImage(pEntry) != 1U)
 #elif defined(BOOT_SPI)

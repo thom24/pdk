@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -68,7 +68,7 @@ extern const FATFS_Config FATFS_config[_VOLUMES + 1];
  *            If no error has occured then return status will be zero.
  *
  */
-int32_t SBL_EMMCBootImage(sblEntryPoint_t *pEntry);
+int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry);
 
 #ifdef __cplusplus
 }
