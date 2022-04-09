@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -961,7 +961,8 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
     {
         Dss_DctrlDsiParams dsiPrms;
 
-        dsiPrms.numOfLanes = 2u;
+        dsiPrms.numOfLanes = appObj->dsiPrms.numOfLanes;
+        dsiPrms.laneSpeedInKbps = appObj->dsiPrms.laneSpeedInKbps;
 
         retVal = Fvid2_control(
             appObj->dctrlHandle,

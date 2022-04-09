@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -610,6 +610,12 @@ typedef struct
     /**< DSI Instance ID, currently note used */
     uint32_t numOfLanes;
     /**< Number of outputs lanes for DSI output, max 4 */
+    uint32_t laneSpeedInKbps;
+    /**< Exact DPHY lane speed from the selected speed band in Megabits per sec.
+     *   This parameter is set to default value during init time.
+     *   If updated in the application after init, newly set value will be used
+     *   for DPHY clock configurations.
+     */
 } Dss_DctrlDsiParams;
 
 /* ========================================================================== */

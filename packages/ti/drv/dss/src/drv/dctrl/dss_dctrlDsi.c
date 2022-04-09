@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -50,6 +50,8 @@
 #include <ti/drv/dss/src/csl/dsi/csl_dsi.h>
 #include <ti/drv/dss/src/csl/dphy/csl_dphy.h>
 #include <dss_soc_priv.h>
+#include <ti/drv/sciclient/sciclient.h>
+#include <ti/drv/pm/pmlib.h>
 
 
 /* ========================================================================== */
@@ -69,7 +71,6 @@
 #define DPHYTX0_CORE_BASE                   (CSL_DPHY_TX0_BASE)
 /* Base Address of DSI Wrapper */
 #define DSITX2_WRAP_REGS_BASE               (CSL_DSS_DSI0_DSI_WRAP_MMR_VBUSP_CFG_DSI_WRAP_BASE)
-
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -100,7 +101,22 @@ typedef struct
 
 } Dss_DctrlDSIDrvObj;
 
-
+/**
+ *  struct Dsitx_DphyRangeData
+ *
+ *  \brief This structure holds information about DSI Tx Range. Typically used
+ *         for DPHY programming.
+ *
+ */
+typedef struct
+{
+    uint32_t rangeMin;
+    /**< Lower boundary of the range */
+    uint32_t rangeMax;
+    /**< Hogher boundary of the range */
+    uint32_t progVal;
+    /**< Value to be programmed for given range */
+} Dsitx_DphyRangeData;
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -128,6 +144,184 @@ extern "C" {
 
 static Dss_DctrlDSIDrvObj gDssDctrlDsiDrvObj;
 
+/* This contains information of the PLL input divider value for DPHY
+   rangeMin and rangeMax is in KHz */
+
+static Dsitx_DphyRangeData gDsiTxIpDivInfo[] =
+{
+    {
+        .rangeMin = 9600U,
+        .rangeMax = 19200U,
+        .progVal  = 1U,
+    },
+    {
+        .rangeMin = 19200U,
+        .rangeMax = 38400U,
+        .progVal  = 2U,
+    },
+    {
+        .rangeMin = 38400U,
+        .rangeMax = 76800U,
+        .progVal  = 4U,
+    },
+    {
+        .rangeMin = 76800U,
+        .rangeMax = 150000U,
+        .progVal  = 8U,
+    },
+};
+
+/* This contains information of the PLL output divider value for DPHY
+   rangeMin and rangeMax is in Mbps */
+static Dsitx_DphyRangeData gDsiTxOpDivInfo[] =
+{
+    {
+        .rangeMin = 1250U,
+        .rangeMax = 2500U,
+        .progVal  = 1U,
+    },
+    {
+        .rangeMin = 630U,
+        .rangeMax = 1240U,
+        .progVal  = 2U,
+    },
+    {
+        .rangeMin = 320U,
+        .rangeMax = 620U,
+        .progVal  = 4U,
+    },
+    {
+        .rangeMin = 160U,
+        .rangeMax = 310U,
+        .progVal  = 8U,
+    },
+    {
+        .rangeMin = 80U,
+        .rangeMax = 150U,
+        .progVal  = 16U,
+    },
+};
+
+/* This contains information of the PLL output divider value for DPHY
+   rangeMin and rangeMax is in Mbps */
+static Dsitx_DphyRangeData gDsiTxLaneSpeedBandInfo[] =
+{
+    {
+        .rangeMin = 80U,
+        .rangeMax = 100U,
+        .progVal  = 0x0,
+    },
+    {
+        .rangeMin = 100U,
+        .rangeMax = 120U,
+        .progVal  = 0x1,
+    },
+    {
+        .rangeMin = 120U,
+        .rangeMax = 160U,
+        .progVal  = 0x2,
+    },
+    {
+        .rangeMin = 160U,
+        .rangeMax = 200U,
+        .progVal  = 0x3,
+    },
+    {
+        .rangeMin = 200U,
+        .rangeMax = 240U,
+        .progVal  = 0x4,
+    },
+    {
+        .rangeMin = 240U,
+        .rangeMax = 320U,
+        .progVal  = 0x5,
+    },
+    {
+        .rangeMin = 320U,
+        .rangeMax = 390U,
+        .progVal  = 0x6,
+    },
+    {
+        .rangeMin = 390U,
+        .rangeMax = 450U,
+        .progVal  = 0x7,
+    },
+    {
+        .rangeMin = 450U,
+        .rangeMax = 510U,
+        .progVal  = 0x8,
+    },
+    {
+        .rangeMin = 510U,
+        .rangeMax = 560U,
+        .progVal  = 0x9,
+    },
+    {
+        .rangeMin = 560U,
+        .rangeMax = 640U,
+        .progVal  = 0xA,
+    },
+    {
+        .rangeMin = 640U,
+        .rangeMax = 690U,
+        .progVal  = 0xB,
+    },
+    {
+        .rangeMin = 690U,
+        .rangeMax = 770U,
+        .progVal  = 0xC,
+    },
+    {
+        .rangeMin = 770U,
+        .rangeMax = 870U,
+        .progVal  = 0xD,
+    },
+    {
+        .rangeMin = 870U,
+        .rangeMax = 950U,
+        .progVal  = 0xE,
+    },
+    {
+        .rangeMin = 950U,
+        .rangeMax = 1000U,
+        .progVal  = 0xF,
+    },
+    {
+        .rangeMin = 1000U,
+        .rangeMax = 1200U,
+        .progVal  = 0x10,
+    },
+    {
+        .rangeMin = 1200U,
+        .rangeMax = 1400U,
+        .progVal  = 0x11,
+    },
+    {
+        .rangeMin = 1400U,
+        .rangeMax = 1600U,
+        .progVal  = 0x12,
+    },
+    {
+        .rangeMin = 1600U,
+        .rangeMax = 1800U,
+        .progVal  = 0x13,
+    },
+    {
+        .rangeMin = 1800U,
+        .rangeMax = 2000U,
+        .progVal  = 0x14,
+    },
+    {
+        .rangeMin = 2000U,
+        .rangeMax = 2200U,
+        .progVal  = 0x15,
+    },
+    {
+        .rangeMin = 2200U,
+        .rangeMax = 2500U,
+        .progVal  = 0x16,
+    },
+};
 
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */
@@ -155,7 +349,7 @@ static int32_t dssDctrlEnableDsiLinkAndPath(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlEnableDsiLink(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlEnableDsiDatapath(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlWaitForLaneReady(Dss_DctrlDSIDrvObj *dsiObj);
-
+static int32_t dssdctrlCalcDsiParams(Dss_DctrlDSIDrvObj *dsiObj, const Dss_DctrlDsiParams *dsiPrms);
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -197,6 +391,8 @@ int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
 
     dsiObj->cfgDsiTx.numOfLanes = dsiPrms->numOfLanes;
     dsiObj->privDsiTx.numOfLanes = dsiPrms->numOfLanes;
+
+    status = dssdctrlCalcDsiParams(dsiObj, dsiPrms);
 
     /* Checks to see if the configuration (num of lanes) is valid */
     status = DSITX_Probe(&dsiObj->cfgDsiTx, &dsiObj->sysReqDsiTx);
@@ -293,6 +489,107 @@ int32_t Dss_dctrlDrvEnableVideoDSI(Dss_DctrlDrvInfo *drvInfo,
 /* ========================================================================== */
 /*                  Internal/Private Function Definitions                     */
 /* ========================================================================== */
+
+static int32_t dssdctrlCalcDsiParams(Dss_DctrlDSIDrvObj *dsiObj, const Dss_DctrlDsiParams *dsiPrms)
+{
+    int32_t retVal = FVID2_SOK;
+    uint32_t min, max;
+    uint32_t idx = 0U;
+    uint64_t tempResult, refClkKHz;
+
+    /* Get speed band for given lane speed */
+    for (idx = 0U ;
+         idx < (sizeof(gDsiTxLaneSpeedBandInfo) / sizeof(Dsitx_DphyRangeData));
+         idx++)
+    {
+        min = gDsiTxLaneSpeedBandInfo[idx].rangeMin * 1000;
+        max = gDsiTxLaneSpeedBandInfo[idx].rangeMax * 1000;
+        if ((dsiPrms->laneSpeedInKbps >= min) &&
+            (dsiPrms->laneSpeedInKbps <= max))
+        {
+            break;
+        }
+
+    }
+    if (idx < (sizeof(gDsiTxLaneSpeedBandInfo) / sizeof(Dsitx_DphyRangeData)))
+    {
+        dsiObj->dphyTxRate = (gDsiTxLaneSpeedBandInfo[idx].progVal) |
+            (gDsiTxLaneSpeedBandInfo[idx].progVal << 5);
+    }
+    else
+    {
+        retVal = FVID2_EFAIL;
+    }
+
+    if (retVal == FVID2_SOK)
+    {
+        PMLIBClkRateGet(TISCI_DEV_DPHY_TX0,
+                    TISCI_DEV_DPHY_TX0_DPHY_REF_CLK,
+                    &refClkKHz);
+        refClkKHz = refClkKHz/1000;
+        /* Calculate DPHY ipdiv - PLL input divider */
+        if (retVal == FVID2_SOK)
+        {
+            for (idx = 0U ;
+                 idx < (sizeof(gDsiTxIpDivInfo) / sizeof(Dsitx_DphyRangeData));
+                 idx++)
+            {
+                if ((refClkKHz >= gDsiTxIpDivInfo[idx].rangeMin) &&
+                    (refClkKHz < gDsiTxIpDivInfo[idx].rangeMax))
+                {
+                    break;
+                }
+            }
+            if (idx < (sizeof(gDsiTxIpDivInfo) / sizeof(Dsitx_DphyRangeData)))
+            {
+                dsiObj->dphyTxIpDiv = gDsiTxIpDivInfo[idx].progVal;
+            }
+            else
+            {
+                retVal = FVID2_EFAIL;
+            }
+        }
+
+        /* Calculate DPHY opdiv - PLL output divider */
+        if (retVal == FVID2_SOK)
+        {
+            for (idx = 0U ;
+                 idx < (sizeof(gDsiTxOpDivInfo) / sizeof(Dsitx_DphyRangeData));
+                 idx++)
+            {
+                min = gDsiTxOpDivInfo[idx].rangeMin * 1000;
+                max = gDsiTxOpDivInfo[idx].rangeMax * 1000;
+                if ((dsiPrms->laneSpeedInKbps >= min) &&
+                    (dsiPrms->laneSpeedInKbps <= max))
+                {
+                    break;
+                }
+            }
+            if (idx < (sizeof(gDsiTxOpDivInfo) / sizeof(Dsitx_DphyRangeData)))
+            {
+                dsiObj->dphyTxOpDiv = gDsiTxOpDivInfo[idx].progVal;
+            }
+            else
+            {
+                retVal = FVID2_EFAIL;
+            }
+        }
+
+        /* Calculate DPHY fbdiv - PLL feedback divider */
+        if (retVal == FVID2_SOK)
+        {
+            tempResult = (((uint64_t)dsiPrms->laneSpeedInKbps) *
+                          ((uint64_t)2U) *
+                          ((uint64_t)dsiObj->dphyTxIpDiv) *
+                          ((uint64_t)dsiObj->dphyTxOpDiv));
+            tempResult /= (uint64_t)refClkKHz;
+
+            dsiObj->dphyTxFbDiv = (uint32_t)tempResult;
+        }
+    }
+
+    return retVal;
+}
 
 static void dssDctrlSetDSIInCtrlMod()
 {
