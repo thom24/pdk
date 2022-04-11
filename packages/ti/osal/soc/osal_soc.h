@@ -92,6 +92,8 @@
 #include <ti/osal/soc/awr294x/osal_soc.h>
 #elif defined (SOC_J721S2)
 #include <ti/osal/soc/j721s2/osal_soc.h>
+#elif defined (SOC_J784S4)
+#include <ti/osal/soc/j784s4/osal_soc.h>
 #else
 /* No known Soc is defined, have below defaults */
 /* Max number of semaphores for NonOs */

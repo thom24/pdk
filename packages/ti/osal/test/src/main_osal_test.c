@@ -41,7 +41,7 @@
 #if defined(USE_BIOS)
 /* XDCtools Header files */
 #include <xdc/std.h>
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 // workaround for A72 does not supported in SYS/BIOS yet
 #if defined (BUILD_C7X)
 #ifndef BARE_METAL
@@ -86,7 +86,7 @@
 
 #include "OSAL_board.h"
 
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 /**********************************************************************
@@ -193,7 +193,7 @@ void C7x_ConfigureTimerOutput(void);
 #endif
 
 #undef  ENABLE_GET_TIME_TEST
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM572x) || defined(SOC_K2G) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_J7200)|| defined(SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM572x) || defined(SOC_K2G) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_J7200)|| defined(SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)
 #define ENABLE_GET_TIME_TEST     1
 #endif
 
@@ -270,7 +270,7 @@ void Board_initOSAL(void)
  */
 volatile   uint64_t gTestlocalTimeout = 0x300000U;
 
-#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2)) && (!defined(BUILD_C66X))&&(!defined(BUILD_C7X))
+#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)) && (!defined(BUILD_C66X))&&(!defined(BUILD_C7X))
 #define INT_NUM_IRQ 32
 #define LOOP_CNT    100
 volatile uint64_t gFlagIRQ = 0;
@@ -350,7 +350,7 @@ bool  OSAL_core_hwi_test()
 bool OSAL_hwi_test()
 {
   bool pass = true;
-#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2)) && (!defined(BUILD_C66X))&&(!defined(BUILD_C7X))
+#if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)) && (!defined(BUILD_C66X))&&(!defined(BUILD_C7X))
   pass = OSAL_core_hwi_test();
 #endif
   return pass;
@@ -433,7 +433,7 @@ UT_Timer_Type_t  timer_type =             UT_Timer_TIMER64;
     #define OSAL_TEST_TIMER_ID                (4U)
     #define OSAL_TEST_TIMER_PERIOD            (5000U)
   #endif
-#elif defined(SOC_J721E)
+#elif (defined(SOC_J721E) || defined(SOC_J721S2) || defined(SOC_J784S4))
   UT_Timer_Type_t  timer_type    =          UT_Timer_DMTIMER;
   #if defined (BUILD_MCU1_0)
     #define OSAL_TEST_TIMER_ID                (2U)
@@ -716,7 +716,7 @@ bool OSAL_timer_test()
     timerParams.periodType = TimerP_PeriodType_MICROSECS;
     timerParams.period     = OSAL_TEST_TIMER_PERIOD;
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #if defined(_TMS320C6X)
 	timerParams.eventId    = OSAL_TEST_TIMER_EVENT_NUM;
     timerParams.intNum     = OSAL_TEST_TIMER_INT_NUM;
@@ -2301,7 +2301,7 @@ int main(void)
      * For AM65XX TPR12 and J7 the common RTSC cfg file is used and hence there is
      * no test application specific task is created in teh RTSC cfg file
      */
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X)|| defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X)|| defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
     TaskP_Params taskParams;
 
 #if defined(USE_BIOS)

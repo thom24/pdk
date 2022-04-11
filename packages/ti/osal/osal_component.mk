@@ -71,11 +71,11 @@ libosal_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 libosal_BOARDLIST  = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x
 libosal_BOARDLIST += idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137
 libosal_BOARDLIST += lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm
-libosal_BOARDLIST += am64x_evm tpr12_evm tpr12_qt awr294x_evm j721s2_evm
+libosal_BOARDLIST += am64x_evm tpr12_evm tpr12_qt awr294x_evm j721s2_evm j784s4_evm
 
 libosal_SOCLIST   = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x
 libosal_SOCLIST  += am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x
-libosal_SOCLIST  += omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2
+libosal_SOCLIST  += omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4
 
 libosal_tirtos_BOARDLIST    = $(libosal_BOARDLIST)
 libosal_tirtos_SOCLIST      = $(libosal_SOCLIST)
@@ -112,6 +112,7 @@ libosal_am64x_CORELIST   = $(DEFAULT_am64x_CORELIST)
 libosal_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
 libosal_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 libosal_j721s2_CORELIST  = $(DEFAULT_j721s2_CORELIST)
+libosal_j784s4_CORELIST = $(DEFAULT_j784s4_CORELIST)
 
 ifneq ($(SOC),$(filter $(SOC), j721s2))
 libosal_tirtos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
@@ -119,7 +120,7 @@ else
 libosal_tirtos_$(SOC)_CORELIST = $(filter-out c7x_1 c7x_2, $(libosal_$(SOC)_CORELIST))
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x j721s2 j784s4))
 libosal_freertos_$(SOC)_CORELIST = $(filter-out mpu%, $(libosal_$(SOC)_CORELIST))
 else
 libosal_freertos_$(SOC)_CORELIST =
@@ -504,6 +505,11 @@ ifeq ($(SOC),$(filter $(SOC), j721s2))
  OSAL_TestApp_tirtos_$(SOC)_CORELIST = mpu1_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
+endif
+
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
+ OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
 endif
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))

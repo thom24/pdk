@@ -29,7 +29,7 @@ ifeq ($(MANUAL_CACHE_TEST),YES)
   CFLAGS_LOCAL_COMMON += -DMANUAL_CACHE_TEST
 endif
 
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 am571x am572x am574x am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2))
+ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 am571x am572x am574x am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4))
   CFLAGS_LOCAL_COMMON += -DENABLE_TIMER_TEST
 endif
 

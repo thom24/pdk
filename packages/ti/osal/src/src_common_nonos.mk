@@ -14,7 +14,7 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       config_mk.bld osalver.h osalver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
 
-ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x am335x am437x k2h k2k k2e k2l k2g c6678 c6657 omapl137 omapl138 am65xx j721e am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC),am571x am572x am574x am335x am437x k2h k2k k2e k2l k2g c6678 c6657 omapl137 omapl138 am65xx j721e am64x j721s2 j784s4))
   SRCDIR      += soc/$(SOC)
   SRCS_COMMON += TimerP_default.c CycleprofilerP_nonos.c
 endif

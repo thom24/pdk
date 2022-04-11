@@ -7,7 +7,7 @@ APP_NAME = OSAL_TestApp_$(BUILD_OS_TYPE)
 
 PACKAGE_SRCS_COMMON = . ../src
 
-ifeq ($(SOC),$(filter $(SOC), am64x am65xx j721e j7200 tpr12 awr294x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am64x am65xx j721e j7200 tpr12 awr294x j721s2 j784s4))
 SRCDIR = . ../src ../
 INCDIR = . ../src ../
 # Common source files across all platforms and cores
@@ -44,7 +44,7 @@ XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/j721e/sysbios_a72.cfg
 endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am64x j721e j721s2))
+ifeq ($(SOC),$(filter $(SOC), am64x j721e j721s2 j784s4))
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu1_1 mcu3_1 ))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_r5f.cfg
@@ -114,6 +114,12 @@ endif
 
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+ifeq ($(CORE),$(filter $(CORE), c7x_1))
+  EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/j784s4/linker_c7x.lds
+endif
+endif
+
 ifeq ($(BUILD_OS_TYPE),freertos)
 CFLAGS_OS_DEFINES = -DFREERTOS
 EXTERNAL_INTERFACES = freertos
@@ -126,7 +132,7 @@ EXTERNAL_INTERFACES = safertos
 COMP_LIST_COMMON    = $(PDK_COMMON_SAFERTOS_COMP)
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4))
   CFLAGS_OSAL_UT += -DENABLE_TIMER_TEST
 endif
 
