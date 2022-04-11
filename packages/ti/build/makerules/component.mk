@@ -81,7 +81,7 @@ include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 DEFAULT_CORELIST_EXCLUDE_CORES = $(CORE_LIST_PRU)
 
 # For J7 cores, mpu1_1 is not a part of default core list
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1
 endif
 
@@ -94,7 +94,7 @@ DEFAULT_RTOS_LIST = freertos
 # Disable SYSBIOS(TI-RTOS)
 # DEFAULT_SOCLIST_tirtos   = $(SOC_LIST_CATALOG) $(SOC_LIST_INFOTAINMENT) $(SOC_LIST_J6_TDA)
 DEFAULT_SOCLIST_tirtos   =
-DEFAULT_SOCLIST_freertos = am65xx j721e j7200 awr294x j721s2
+DEFAULT_SOCLIST_freertos = am65xx j721e j7200 awr294x j721s2 j784s4
 DEFAULT_SOCLIST_safertos = tpr12 awr294x j721e
 
 # The below defines the DEFAULT_BOARDLIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
@@ -108,9 +108,10 @@ DEFAULT_BOARDLIST_safertos = tpr12_evm awr294x_evm j721e_evm
 # This is derived from the DEFAULT_$(SOC)_CORELIST defined above.
 # DEFAULT_$(SOC)_CORELIST_<rtos_type> is a subset of all the cores and is used for building components for the particular 'rtos_type'.
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 am65xx tpr12 awr294x))
+
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4 am65xx tpr12 awr294x))
 DEFAULT_CORELIST_EXCLUDE_CORES_freertos =
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 am65xx))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4 am65xx))
 # FreeRTOS is not supported on mpu core
 DEFAULT_CORELIST_EXCLUDE_CORES_freertos += mpu1_0
 endif
@@ -1341,6 +1342,15 @@ ifeq ($(SOC),$(filter $(SOC), j721s2))
   endif
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+  PDK_COMMON_COMP = csl
+  ifeq ($(CORE),mcu1_0)
+    PDK_COMMON_COMP += sciclient_direct rm_pm_hal
+  else
+    PDK_COMMON_COMP += sciclient
+  endif
+endif
+
 ifeq ($(SOC),$(filter $(SOC), am65xx))
   PDK_COMMON_COMP = csl uart i2c board gpio pm_lib
   ifeq ($(CORE),$(filter $(CORE), mpu1_0 mcu1_0 mcu1_1))
@@ -1398,7 +1408,7 @@ else
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4 tpr12 awr294x))
   PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos
   PDK_COMMON_FREERTOS_COMP += freertos
   PDK_COMMON_SAFERTOS_COMP = $(PDK_COMMON_COMP) osal_safertos

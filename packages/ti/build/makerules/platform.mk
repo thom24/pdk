@@ -190,6 +190,13 @@ ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm j721s2_hostemu))
  SBL_DEV_ID=55
 endif
 
+# J784S4
+ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm))
+ SOC = j784s4
+ SBL_RUN_ADDRESS=0x41C00100
+ SBL_DEV_ID=55
+endif
+
 # AM64X
 ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
  SOC = am64x
@@ -306,7 +313,7 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))
     ISA_EXT = a53
     ARCH = armv8a
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2))
+  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2 j784s4))
     ISA = a72
     ISA_EXT = a72
     ARCH = armv8a
@@ -330,6 +337,9 @@ ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2))
  ifeq ($(SOC),$(filter $(SOC), j721s2)) 
   SI_VER = 7120
  endif
+ ifeq ($(SOC),$(filter $(SOC), j784s4)) 
+  SI_VER = 7120
+ endif
 endif
 
 # C7x DSP
@@ -341,6 +351,9 @@ ifeq ($(CORE),$(filter $(CORE), c7x-hostemu))
   SI_VER = 7100
  endif
  ifeq ($(SOC),$(filter $(SOC), j721s2)) 
+  SI_VER = 7120
+ endif
+ ifeq ($(SOC),$(filter $(SOC), j784s4)) 
   SI_VER = 7120
  endif
 endif
@@ -933,7 +946,7 @@ ifeq ($(SOC),$(filter $(SOC), tda3xx dra78x))
   SBL_CORE_ID_arp32_1 = 8
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
   SBL_CORE_ID_mpu1_0 = 0
   SBL_CORE_ID_mpu1_1 = 1
   SBL_CORE_ID_mpu2_0 = 2

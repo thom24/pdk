@@ -75,7 +75,7 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), evmAM572x idkAM572x idkAM571x idkAM574x))
   CORE ?= a15_0
 endif
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_sim am65xx_evm am65xx_idk j721e_sim j721e_vhwazebu j721e_qt j721e_evm j7200_evm j7200_sim j721s2_evm am64x_evm am64x_svb))
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_sim am65xx_evm am65xx_idk j721e_sim j721e_vhwazebu j721e_qt j721e_evm j7200_evm j7200_sim j721s2_evm am64x_evm am64x_svb j784s4_evm))
   CORE ?= mcu1_0
 endif
 ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki))
@@ -102,6 +102,7 @@ export TREAT_WARNINGS_AS_ERROR ?= yes
 BOARD_LIST_J7_TDA = j721e_sim j721e_hostemu j721e_ccqt j721e_loki j721e_qt j721e_vhwazebu j721e_evm
 BOARD_LIST_J7_TDA += j7200_sim j7200_hostemu j7200_evm
 BOARD_LIST_J7_TDA += j721s2_evm j721s2_hostemu
+BOARD_LIST_J7_TDA += j784s4_evm
 BOARD_LIST_J7_TDA += am65xx_sim am65xx_evm am65xx_idk
 export BOARD_LIST_J7_TDA
 

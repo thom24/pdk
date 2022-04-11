@@ -135,6 +135,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM -fr binaries/am64
     $RM -fr binaries/j7200
     $RM -fr binaries/j721s2
+    $RM -fr binaries/j784s4
     $RM -fr binaries/memory
     $RM -fr binaries/ti-sci-firmware-j721e-gp.bin
     $RM -fr docs/BUILD.md
@@ -221,6 +222,17 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
 
+    J784S4
+    make -j -s allclean
+    make -j -s sciclient_boardcfg BOARD=j784s4_evm
+    make -j -s sciclient_ccs_init_clean BOARD=j784s4_evm
+    make -j -s sciclient_ccs_init BOARD=j784s4_evm
+    make -j -s sciserver_testapp_freertos_clean BOARD=j784s4_evm
+    make -j -s sciserver_testapp_freertos BOARD=j784s4_evm
+    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721s2/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
+
     cd -
 fi
 
@@ -242,6 +254,7 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
     ./firmwareHeaderGen.sh j7200_sr2-hs
     ./firmwareHeaderGen.sh j721s2
     ./firmwareHeaderGen.sh j721s2-hs
+    ./firmwareHeaderGen.sh j784s4-zebu
 
 fi
 

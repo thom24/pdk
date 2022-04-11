@@ -479,7 +479,7 @@ else
 endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
 SBL_BIN_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).bin
 SBL_TIIMAGE_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).tiimage
 else
@@ -517,7 +517,7 @@ endif
 # Not required when running apps on MCU 10.
 # Please refer the user guide for more details on sciclient server
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   ifneq ($(BUILD_OS_TYPE),baremetal)
     MULTI_CORE_APP_PARAMS = $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/drv/sciclient/tools/ccsLoadDmsc/$(SOC)/sciserver_testapp_$(BUILD_OS_TYPE)_mcu1_0_release.rprc
   else
@@ -551,7 +551,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
 endif
 
 #In case of j721e, j7200, j721s2 mcu 10 would always host the server. So removing dummy app for mcu 10
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   ifeq ($(CORE),$(filter $(CORE), mcu2_1))
   MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu2_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
   endif
@@ -672,7 +672,7 @@ ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd qspi qspi_sd emmc))
 	$(MV) $(SBL_TIIMAGE_PATH) $(SBL_MLO_PATH)
   endif
 endif
-else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2))
+else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
@@ -692,7 +692,7 @@ endif
 ifeq ($(BUILD_HS),yes)
 $(SBL_IMAGE_PATH_SIGNED): $(SBL_IMAGE_PATH)
   # K3 build does not support the "secure_sign_sbl" target
-  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200 j721s2))
+  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
 	$(MAKE) secure_sign_sbl
   endif
 endif
@@ -770,7 +770,7 @@ ifeq ($(SOC),$(filter $(SOC), tda3xx))
 	$(SBL_CRC_IMAGE_GEN) $@ $(SBL_APPIMAGE_PATH_BE) >> $(SBL_STDOUT_FILE)
   endif
 else
- ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2))
+ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
    ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
    endif

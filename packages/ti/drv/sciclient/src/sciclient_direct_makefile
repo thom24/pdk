@@ -33,6 +33,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721s2))
   SCICLIENT_SOCVER = V4
 endif
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+  SCICLIENT_SOCVER = V6
+endif
 
 SRCDIR += soc/$(SCICLIENT_SOCVER)
 INCDIR += soc/$(SCICLIENT_SOCVER)
@@ -42,7 +45,7 @@ INCDIR += soc/$(SCICLIENT_SOCVER)
 INCLUDE_EXTERNAL_INTERFACES = pdk osal
 
 # Common source files and CFLAGS across all platforms and cores
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 am64x))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4 am64x))
 # Keep the sciclient.c the first file in this list. This is used to trigger
 # the generation of the header files from the firware binary file.
 SRCS_COMMON  = sciclient.c
@@ -64,7 +67,7 @@ SRCS_COMMON += sciclient_keywriter.c
 endif
 
 #Use CSL implementation to bypass DMSC
-# ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+# ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 # SRCS_COMMON = sciclient_rm_csl.c sciclient_dummy.c
 # endif
 

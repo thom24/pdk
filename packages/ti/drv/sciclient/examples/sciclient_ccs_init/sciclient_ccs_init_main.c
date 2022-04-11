@@ -80,11 +80,11 @@
 #define SCICLIENT_CCS_DEVGRP1 (DEVGRP_01)
 #endif
 
-#if defined (SOC_AM64X) || defined (SOC_J721S2)
+#if defined (SOC_AM64X) || defined (SOC_J721S2) || defined (SOC_J784S4)
 #define SCICLIENT_CCS_DEVGRP0 (DEVGRP_ALL)
 #endif
 
-#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
 /** \brief Aligned address at which the Board Config header is placed. */
 #define SCISERVER_BOARDCONFIG_HEADER_ADDR (0x41c80000U)
 
@@ -122,7 +122,7 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
          */
 #if defined (SOC_AM64X)
         .main_isolation_hostid = TISCI_HOST_ID_MAIN_0_R5_0,
-#elif defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
+#elif defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
         .main_isolation_hostid = TISCI_HOST_ID_MCU_0_R5_1,
 #else
         .main_isolation_hostid = TISCI_HOST_ID_R5_1,
@@ -394,6 +394,11 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr)
         if (CSL_PASS == status)
         {
             printf("PASSED\n");
+#if defined (SOC_J784S4)
+            /* TEMP HACK: trigger deferred PM init w/ dummy request */
+            Sciclient_pmSetModuleRst(0xffffffffU, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
+            printf("!! Completed PM deferred init!!\n");
+#endif
         }
         else
         {

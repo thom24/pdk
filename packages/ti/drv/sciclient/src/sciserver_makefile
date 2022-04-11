@@ -23,6 +23,9 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721s2))
   SCISERVER_SOCVER = V4
 endif
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+  SCISERVER_SOCVER = V6
+endif
 
 # Leave RMPMHAL_SCMVERSION blank if you want a script to generate it from git tag/commit
 RMPMHAL_SCMVERSION ?=
@@ -57,7 +60,7 @@ INCDIR += src/rm_pm_hal/rm
 INCLUDE_EXTERNAL_INTERFACES = pdk osal
 
 # Common source files and CFLAGS across all platforms and cores
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     SRCS_COMMON  = sciserver.c
     SRCS_COMMON += sciserver_secproxyTransfer.c
     SRCS_COMMON += sciserver_secproxyRoutingDescription.c

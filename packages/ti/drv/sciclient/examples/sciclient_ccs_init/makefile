@@ -15,7 +15,7 @@ INCDIR = .
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk osal_nonos board
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 INCLUDE_EXTERNAL_INTERFACES += sciclient_direct
 else
 INCLUDE_EXTERNAL_INTERFACES += sciclient

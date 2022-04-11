@@ -44,7 +44,7 @@ endif
   NDK_VERSION=3_61_01_01
   NS_VERSION=2_60_01_06
 
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm am64x_evm am64x_svb tpr12_qt tpr12_evm awr294x_evm))
+ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm am64x_evm am64x_svb tpr12_qt tpr12_evm awr294x_evm j784s4_evm))
   NDK_VERSION=3_80_00_19
   NS_VERSION=2_80_00_17
 endif

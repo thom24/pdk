@@ -64,6 +64,15 @@ CONFIG_RM_RA_DMSS_RING=y
 CONFIG_UDMAP_BCDMA=y
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+CONFIG_SOC_FOLDER_STRING="j784s4"
+CONFIG_CLK_PLL_16FFT_FRACF_CALIBRATION=y
+CONFIG_PSC_PD_MAX_COUNT_64=y
+CONFIG_INTERRUPT_AGGREGATOR_UNMAPPED_EVENTS=y
+CONFIG_RM_RA_DMSS_RING=y
+CONFIG_UDMAP_BCDMA=y
+endif
+
 # SoC Specific source files
 ifeq ($(SOC),$(filter $(SOC), j721e))
   SCICLIENT_SOCVER = V1
@@ -73,6 +82,9 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
 endif
 ifeq ($(SOC),$(filter $(SOC), j721s2))
   SCICLIENT_SOCVER = V4
+endif
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+  SCICLIENT_SOCVER = V6
 endif
 
 TARGET_SOC = $(shell echo $(CONFIG_SOC_FOLDER_STRING))

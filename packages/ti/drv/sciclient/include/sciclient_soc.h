@@ -73,6 +73,12 @@
 #include <ti/drv/sciclient/soc/V4/sciclient_firmware_V4.h>
 #endif
 
+#if defined (SOC_J784S4)
+#include <ti/drv/sciclient/soc/sysfw/include/j784s4/tisci_resasg_types.h>
+#include <ti/drv/sciclient/soc/V6/sciclient_fmwMsgParams.h>
+#include <ti/drv/sciclient/soc/V6/sciclient_firmware_V6-zebu.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
