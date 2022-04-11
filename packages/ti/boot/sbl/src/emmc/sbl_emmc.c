@@ -93,7 +93,7 @@ int32_t SBL_loadMMCSDBootFile(FIL * fp);
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-/* MMCSD function table for eMMC implementation */
+/* FATFS function table for eMMC implementation */
 FATFS_DrvFxnTable FATFS_drvFxnTable = {
     &MMCSD_close,
     &MMCSD_control,
@@ -173,7 +173,7 @@ extern MMCSD_v1_HwAttrs MMCSDInitCfg[];
 
 #if defined(SOC_J721E) || defined(SOC_J7200)
 #define SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MASK      (0x78U)
-#define SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD     (0x0U)
+#define SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD     (0x1U)
 #define SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK (0x20U)
 #define SBL_MAIN_DEVSTAT_BACKUP_BOOT_MASK       (0xEU)
 #define SBL_MAIN_DEVSTAT_BACKUP_BOOT_MMCSD      (0xAU)
@@ -301,7 +301,7 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
     /* Initialization of the driver. */
     FATFS_init();
 
-    /* MMCSD FATFS initialization */
+    /* eMMC FATFS initialization */
     FATFS_open(0U, NULL, &sbl_fatfsHandle);
 
     fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
