@@ -88,10 +88,10 @@ SECTIONS
     .pinit                        : {} palign(8)     > OCMRAM_sciclientTest
     .data                         : {} palign(128)   > OCMRAM_sciclientTest
     .boardcfg_data                : {} palign(128)   > OCMRAM_sciclientTest
-    .bss                          : {} align(4)      > MCU0_R5F_TCMB0
-    .bss.devgroup.MAIN            : {} align(4)      > MCU0_R5F_TCMB0
-    .bss.devgroup.MCU_WAKEUP      : {} align(4)      > MCU0_R5F_TCMB0
-    .bss.devgroup.DMSC_INTERNAL   : {} align(4)      > MCU0_R5F_TCMB0
+    .bss                          : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.MAIN            : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.MCU_WAKEUP      : {} align(4)      > OCMRAM_sciclientTest
+    .bss.devgroup.DMSC_INTERNAL   : {} align(4)      > OCMRAM_sciclientTest
     .sysmem                       : {}               > MCU0_R5F_TCMB0
     .stack                        : {} align(4)      > OCMRAM_sciclientTest  (HIGH)
     .irqStack                     : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMRAM_sciclientTest  (HIGH)

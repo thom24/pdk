@@ -110,6 +110,9 @@ extern CSL_intaggr_l2gRegs      gHost_intaggr_l2gRegs;
 extern CSL_intaggr_mcastRegs    gHost_intaggr_mcastRegs;
 extern CSL_intaggr_gcntcfgRegs  gHost_intaggr_gcntcfgRegs;
 extern CSL_intaggr_gcntrtiRegs  gHost_intaggr_gcntrtiRegs;
+#ifdef CSL_INTAGGR_UNMAP_UNMAP_MAP_MAPIDX_MASK
+extern CSL_intaggr_unmapRegs    gHost_intaggr_unmapRegs;
+#endif
 extern CSL_intr_router_cfgRegs  gHost_intr_router_cfgRegs;
 #endif
 
@@ -171,6 +174,9 @@ static SciUdmaRmObj gSciUdmaRmObjMain =
         &gHost_intaggr_mcastRegs,
         &gHost_intaggr_gcntcfgRegs,
         &gHost_intaggr_gcntrtiRegs,
+#ifdef CSL_INTAGGR_UNMAP_UNMAP_MAP_MAPIDX_MASK
+        &gHost_intaggr_unmapRegs,
+#endif
         4608U,
         256U,
         4U,
@@ -220,6 +226,9 @@ static SciUdmaRmObj gSciUdmaRmObjMcu =
         &gHost_intaggr_mcastRegs,
         &gHost_intaggr_gcntcfgRegs,
         &gHost_intaggr_gcntrtiRegs,
+#ifdef CSL_INTAGGR_UNMAP_UNMAP_MAP_MAPIDX_MASK
+        &gHost_intaggr_unmapRegs,
+#endif
         1536,
         256U,
         4U,
@@ -454,8 +463,13 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
     }
 
     /* Program IA/VINT */
+#if defined (SOC_J721S2)
+    if((TISCI_DEV_NAVSS0_UDMASS_INTA_0 == req->ia_id) ||
+       (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
+#else
     if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
+#endif
     {
         if((TISCI_MSG_VALUE_RM_IA_ID_VALID & req->valid_params) &&
            (TISCI_MSG_VALUE_RM_VINT_VALID & req->valid_params) &&
@@ -494,25 +508,37 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program GIC IR */
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
         {
+#if defined (SOC_J721S2)
+            if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_63)
+#else
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_63)
+#endif
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_0;
+#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
+#endif
             }
             else
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_64;
+#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_64;
+#endif
                 irOffset += 64U;
             }
 
             CSL_intrRouterCfgMux(&rmObj->irRegs, req->vint, irOffset);
         }
 
+        //TODO: Hack till proper core support in TISCI
+#if defined (BUILD_C66X)
         /* Program C66x IR */
         if((TISCI_DEV_C66SS0 == req->dst_id) ||
            (TISCI_DEV_C66SS1 == req->dst_id))
         {
-            //TODO: Hack till proper core support in TISCI
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
             CSL_IntrRouterCfg       c66xIrRegs;
             uint32_t                c66xIrOffset;
 
@@ -538,8 +564,8 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
             c66xIrOffset = (req->dst_host_irq - CSLR_C66_COREPAC1_C66_EVENT_IN_C66_1_INTROUTER0_OUTL_54) + 54;
 #endif
             CSL_intrRouterCfgMux(&c66xIrRegs, 0, c66xIrOffset);
-#endif  /* (BUILD_C66X_1) || (BUILD_C66X_2) */
         }
+#endif  /* (BUILD_C66X_1) || (BUILD_C66X_2) */
 
         /* Program MCU1 IR */
         if((TISCI_DEV_MCU_R5FSS0_CORE0 == req->dst_id) ||
@@ -555,9 +581,17 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU2_0 IR */
         if(TISCI_DEV_R5FSS0_CORE0 == req->dst_id)
         {
+#if defined (SOC_J721S2)
+            if(req->dst_host_irq >= (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_192 - 192))
+#else
             if(req->dst_host_irq >= (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_192 - 192))
+#endif
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_192 - 192);
+#else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_192 - 192);
+#endif
                 CSL_intrRouterCfgMux(&rmObj->irRegs, req->vint, irOffset);
             }
         }
@@ -565,9 +599,17 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU2_1 IR */
         if(TISCI_DEV_R5FSS0_CORE1 == req->dst_id)
         {
+#if defined (SOC_J721S2)
+            if(req->dst_host_irq > (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_224 - 224))
+#else
             if(req->dst_host_irq > (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_224 - 224))
+#endif
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_224 - 224);
+#else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_224 - 224);
+#endif
                 CSL_intrRouterCfgMux(&rmObj->irRegs, req->vint, irOffset);
             }
         }
@@ -575,9 +617,17 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU3_0 IR */
         if(TISCI_DEV_R5FSS1_CORE0 == req->dst_id)
         {
+#if defined (SOC_J721S2)
+            if(req->dst_host_irq >= (CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_256 - 256))
+#else
             if(req->dst_host_irq >= (CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_256 - 256))
+#endif
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_224 - 256);
+#else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_224 - 256);
+#endif
                 CSL_intrRouterCfgMux(&rmObj->irRegs, req->vint, irOffset);
             }
         }
@@ -585,15 +635,27 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU3_1 IR */
         if(TISCI_DEV_R5FSS1_CORE1 == req->dst_id)
         {
+#if defined (SOC_J721S2)
+            if(req->dst_host_irq >= (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_288 - 288))
+#else
             if(req->dst_host_irq >= (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_288 - 288))
+#endif
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_288 - 288);
+#else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_288 - 288);
+#endif
                 CSL_intrRouterCfgMux(&rmObj->irRegs, req->vint, irOffset);
             }
         }
 
         /* Program NAVSS IR, used for IPC/Mailbox */
+#if defined (SOC_J721S2)
+        if( TISCI_DEV_NAVSS0_INTR_0 == req->dst_id)
+#else
         if( TISCI_DEV_NAVSS0_INTR_ROUTER_0 == req->dst_id)
+#endif
         {
             irOffset = req->dst_host_irq;
             CSL_intrRouterCfgMux(&rmObj->irRegs, req->vint, irOffset);
@@ -710,8 +772,13 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
     }
 
     /* Disable IA/VINT */
+#if defined (SOC_J721S2)
+    if((TISCI_DEV_NAVSS0_UDMASS_INTA_0 == req->ia_id) ||
+       (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
+#else
     if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
+#endif
     {
         if((TISCI_MSG_VALUE_RM_IA_ID_VALID & req->valid_params) &&
            (TISCI_MSG_VALUE_RM_VINT_VALID & req->valid_params) &&
@@ -745,28 +812,40 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
             rmObj = &gSciUdmaRmObjMcu;
         }
 
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || (SOC_J721S2)
         /* Reset GIC IR */
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
         {
+#if defined (SOC_J721S2)
+            if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_63)
+#else
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_63)
+#endif
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_0;
+#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
+#endif
             }
             else
             {
+#if defined (SOC_J721S2)
+                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_64;
+#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_64;
+#endif
                 irOffset += 64U;
             }
 
             CSL_intrRouterCfgMux(&rmObj->irRegs, 0U, irOffset);
         }
 
+#if defined (BUILD_C66X)
         /* Reset MCU IR */
         if((TISCI_DEV_C66SS0 == req->dst_id) ||
            (TISCI_DEV_C66SS1 == req->dst_id))
         {
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
             CSL_IntrRouterCfg       c66xIrRegs;
             uint32_t                c66xIrOffset;
 
@@ -792,31 +871,36 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
             c66xIrOffset = (req->dst_host_irq - CSLR_C66_COREPAC1_C66_EVENT_IN_C66_1_INTROUTER0_OUTL_54) + 54;
 #endif
             CSL_intrRouterCfgMux(&c66xIrRegs, 0U, c66xIrOffset);
+        }
 #else
-            //TODO: Hack till proper core support in TISCI
-            if(req->dst_host_irq >= CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_192)
-            {
-#if defined (BUILD_MCU2_0) || defined (BUILD_MCU2_1)
-                irOffset = req->dst_host_irq - 32U;
-                if(TISCI_DEV_MCU_R5FSS0_CORE1 == req->dst_id)
-                {
-                    irOffset = req->dst_host_irq;
-                }
+        //TODO: Hack till proper core support in TISCI
+#if defined (SOC_J721S2)
+        if(req->dst_host_irq >= CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_192)
 #else
-                irOffset = req->dst_host_irq + 32U;
-                if(TISCI_DEV_MCU_R5FSS0_CORE1 == req->dst_id)
-                {
-                    irOffset = req->dst_host_irq + 64U;
-                }
+        if(req->dst_host_irq >= CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_192)
 #endif
-            }
-            else
+        {
+#if defined (BUILD_MCU2_0) || defined (BUILD_MCU2_1)
+            irOffset = req->dst_host_irq - 32U;
+            if(TISCI_DEV_MCU_R5FSS0_CORE1 == req->dst_id)
             {
-                irOffset = req->dst_host_irq - CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
+                irOffset = req->dst_host_irq;
             }
-            CSL_intrRouterCfgMux(&rmObj->irRegs, 0U, irOffset);
+#else
+            irOffset = req->dst_host_irq + 32U;
+            if(TISCI_DEV_MCU_R5FSS0_CORE1 == req->dst_id)
+            {
+                irOffset = req->dst_host_irq + 64U;
+            }
 #endif
         }
+        else
+        {
+            irOffset = req->dst_host_irq - CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
+        }
+        CSL_intrRouterCfgMux(&rmObj->irRegs, 0U, irOffset);
+#endif
+
 #else
         /* Reset GIC IR */
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)

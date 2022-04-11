@@ -210,15 +210,19 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j7200/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
     
     # J721S2
-    # make -j -s allclean
-    # make -j -s sciclient_boardcfg BOARD=j721s2_evm
-    # make -j -s sciclient_ccs_init_clean BOARD=j721s2_evm
-    # make -j -s sciclient_ccs_init BOARD=j721s2_evm
-    # make -j -s sciserver_testapp_freertos_clean BOARD=j721s2_evm
-    # make -j -s sciserver_testapp_freertos BOARD=j721s2_evm
-    # $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721s2/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
-    # $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
-    # $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
+    make -j -s allclean
+    make -j -s sciclient_boardcfg BOARD=j721s2_evm
+    make -j -s sciclient_ccs_init_clean BOARD=j721s2_evm
+    make -j -s sciclient_ccs_init BOARD=j721s2_evm
+    make -j -s sciserver_testapp_freertos_clean BOARD=j721s2_evm
+    make -j -s sciserver_testapp_freertos BOARD=j721s2_evm
+    make -j -s sciserver_testapp_tirtos_clean BOARD=j721s2_evm
+    make -j -s sciserver_testapp_tirtos BOARD=j721s2_evm
+    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721s2/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_tirtos/bin/j721s2/sciserver_testapp_tirtos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
 
     cd -
 fi
@@ -238,7 +242,8 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
     ./firmwareHeaderGen.sh am64x
     ./firmwareHeaderGen.sh j7200
     ./firmwareHeaderGen.sh j7200-hs
-    # ./firmwareHeaderGen.sh j721s2-zebu
+    ./firmwareHeaderGen.sh j721s2
+    ./firmwareHeaderGen.sh j721s2-zebu
 
 fi
 

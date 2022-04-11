@@ -52,7 +52,7 @@
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/board/board.h>
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
 #include <ti/csl/arch/csl_arch.h>
 #endif
@@ -165,19 +165,6 @@ uint32_t autoRunEnable = (uint32_t) FALSE;
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
-
-#if defined(SOC_J721S2)
-/* HACK: until UART driver is added for J721S2 */
-void UART_printf_dummy(const char *pstr, ...)
-{
-}
-
-/* HACK: until Board library is added for J721S2 */
-Board_STATUS Board_init(Board_initCfg cfg)
-{
-    return BOARD_SOK;
-}
-#endif
 
 int32_t App_sciclientParser(void)
 {

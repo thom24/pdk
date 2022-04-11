@@ -1127,7 +1127,7 @@ static uint32_t * Sciclient_getIrAddr (uint32_t addr, uint32_t i)
 #else
     int_ctrl_reg = (uint32_t *)(addr + Sciclient_rmIrIntControlReg(i));
 #endif
-#if defined (BUILD_C66X_1) || defined (BUILD_C66X_2)
+#if defined (BUILD_C66X)
     /* This corresponds to the IR registers for which the RAT is configured */
     if (((uint32_t)int_ctrl_reg >= CSL_C66SS0_INTROUTER0_INTR_ROUTER_CFG_BASE) && 
         ((uint32_t)int_ctrl_reg < (CSL_C66SS1_INTROUTER0_INTR_ROUTER_CFG_BASE + 

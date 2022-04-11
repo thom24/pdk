@@ -139,9 +139,9 @@ static uint32_t gSciclient_writeInProgress = 0U;
  */
 static struct tisci_sec_header gSciclient_secHeader;
 
-/** \brief This structure contains configuration parameters for
+/** \brief Pointer to structure that contains configuration parameters for
 *       the sec_proxy IP */
-extern CSL_SecProxyCfg gSciclient_secProxyCfg;
+extern CSL_SecProxyCfg *pSciclient_secProxyCfg;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -353,10 +353,10 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
             {
                 OsalRegisterIntrParams_t    intrPrms;
                 rxThread = gSciclientMap[contextId].respThreadId;
-                CSL_secProxyGetDataAddr(&gSciclient_secProxyCfg, rxThread, 0U);
+                CSL_secProxyGetDataAddr(pSciclient_secProxyCfg, rxThread, 0U);
                 /* Get the Max Message Size */
                 gSciclient_maxMsgSizeBytes =
-                        CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
+                        CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
                         CSL_SEC_PROXY_RSVD_MSG_BYTES;
                 Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
                 Osal_RegisterInterrupt_initParams(&intrPrms);
@@ -378,9 +378,9 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 intrPrms.corepacConfig.corepacEventNum  = 0;
                 intrPrms.corepacConfig.intVecNum        = (int32_t) gSciclientMap[contextId].respIntrNum;
                 #endif
-                #if defined (__C7100__)
+                #if defined (BUILD_C7X)
                 {
-                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                     CSL_ClecEventConfig evtCfg;
                     evtCfg.secureClaimEnable = 0;
                     evtCfg.evtSendEnable = 1;
@@ -391,7 +391,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
                      * to the event number which is shared between GIC and CLEC.
                      */
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
                     intrPrms.corepacConfig.priority = 1U;
                 }
                 #endif
@@ -417,10 +417,10 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
             {
                 OsalRegisterIntrParams_t    intrPrms;
                 rxThread = gSciclientMap[contextId].respThreadId;
-                CSL_secProxyGetDataAddr(&gSciclient_secProxyCfg, rxThread, 0U);
+                CSL_secProxyGetDataAddr(pSciclient_secProxyCfg, rxThread, 0U);
                 /* Get the Max Message Size */
                 gSciclient_maxMsgSizeBytes =
-                        CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
+                        CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
                         CSL_SEC_PROXY_RSVD_MSG_BYTES;
                 Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
                 Osal_RegisterInterrupt_initParams(&intrPrms);
@@ -442,9 +442,9 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 intrPrms.corepacConfig.corepacEventNum  = 0;
                 intrPrms.corepacConfig.intVecNum        = (int32_t) gSciclientMap[contextId].respIntrNum;
                 #endif
-                #if defined (__C7100__)
+                #if defined (BUILD_C7X)
                 {
-                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                     CSL_ClecEventConfig evtCfg;
                     evtCfg.secureClaimEnable = 0;
                     evtCfg.evtSendEnable = 1;
@@ -455,7 +455,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
                      * to the event number which is shared between GIC and CLEC.
                      */
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
                     intrPrms.corepacConfig.priority = 1U;
                 }
                 #endif
@@ -627,7 +627,7 @@ int32_t Sciclient_serviceGetThreadIds (const Sciclient_ReqPrm_t *pReqPrm,
         gSciclient_secHeader.rsvd = (uint16_t)0;
         /* Get the Max Message Size */
         gSciclient_maxMsgSizeBytes =
-                CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
+                CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
                 CSL_SEC_PROXY_RSVD_MSG_BYTES;
     }
     else
@@ -848,7 +848,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
 
         timeToWait = pReqPrm->timeout;
         pLocalRespHdr = (struct tisci_header *)(CSL_secProxyGetDataAddr(
-            &gSciclient_secProxyCfg, rxThread, 0U)
+            pSciclient_secProxyCfg, rxThread, 0U)
             + ((uintptr_t) gSecHeaderSizeWords * (uintptr_t) 4U));
         /* Verify thread status before reading/writing */
         status = Sciclient_verifyThread(rxThread);
@@ -971,9 +971,9 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         Osal_EnableInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
         #else
 
-        #if defined (__C7100__)
+        #if defined (BUILD_C7X)
         {
-            CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+            CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
             CSL_ClecEventConfig evtCfg;
             evtCfg.secureClaimEnable = 0;
             evtCfg.evtSendEnable = 1;
@@ -986,11 +986,11 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
              */ 
             if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
             {
-                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
             }
             else
             {
-                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
             }
         }
         #endif
@@ -1142,7 +1142,7 @@ static void Sciclient_ISR(uintptr_t arg)
         }
         volatile Sciclient_RomFirmwareLoadHdr_t *pLocalRespHdr =
                 (struct tisci_header *)(CSL_secProxyGetDataAddr(
-                                                &gSciclient_secProxyCfg,rxThread,0U)
+                                                pSciclient_secProxyCfg,rxThread,0U)
                                         + ((uintptr_t) gSecHeaderSizeWords * (uintptr_t) 4U));
         uint8_t seqId = pLocalRespHdr->seq;
         if ((gSciclientHandle.semStatus[seqId] == SemaphoreP_OK) && (seqId != 0U))
@@ -1153,9 +1153,9 @@ static void Sciclient_ISR(uintptr_t arg)
             #else
 #ifndef QNX_OS
             Osal_DisableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
-            #if defined (__C7100__)
+            #if defined (BUILD_C7X)
             {
-                CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+                CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                 CSL_ClecEventConfig evtCfg;
                 evtCfg.secureClaimEnable = 0;
                 evtCfg.evtSendEnable = 0;
@@ -1168,11 +1168,11 @@ static void Sciclient_ISR(uintptr_t arg)
                  */
                 if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
                 {
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
                 }
                 else
                 {
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
                 }
             }
             Osal_ClearInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);

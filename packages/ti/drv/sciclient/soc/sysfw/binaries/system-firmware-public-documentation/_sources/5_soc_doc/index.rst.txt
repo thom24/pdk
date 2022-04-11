@@ -118,3 +118,24 @@ J7200
    j7200/processors
    j7200/firewalls
    j7200/soc_devgrps
+
+======
+J721S2
+======
+
+.. toctree::
+   :maxdepth: 1
+
+   j721s2/hosts
+   j721s2/devices
+   j721s2/clocks
+   j721s2/pll_data
+   j721s2/resasg_types
+   j721s2/interrupt_cfg
+   j721s2/ra_cfg
+   j721s2/dma_cfg
+   j721s2/psil_cfg
+   j721s2/proxy_cfg
+   j721s2/sec_proxy
+   j721s2/processors
+   j721s2/soc_devgrps

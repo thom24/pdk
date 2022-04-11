@@ -57,8 +57,8 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 /* Test application stack size */
-#if defined (__C7100__)
-/* Temp workaround to avoid assertion failure: A_stackSizeTooSmall : Task stack size must be >= 32KB.
+#if defined (BUILD_C7X)
+/* Temp workaround to avoid assertion failure: A_stackSizeTooSmall : Task stack size must be >= 16KB.
   * until the Bug PDK-7605 is resolved */
 #define APP_TSK_STACK_MAIN              (32U * 1024U)
 #else
@@ -361,7 +361,7 @@ void GetRevisionTest2(void* arg0, void*  arg1)
     SemaphoreP_post(semTest2);
 }
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {

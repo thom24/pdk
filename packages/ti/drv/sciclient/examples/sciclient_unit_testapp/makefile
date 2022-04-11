@@ -28,13 +28,6 @@ COMP_LIST_COMMON  = $(PDK_COMMON_FREERTOS_COMP)
 EXTERNAL_INTERFACES = freertos
 endif
 
-ifeq ($(BUILD_OS_TYPE),safertos)
-CFLAGS_OS_DEFINES = -DSAFERTOS
-# List all the components required by the application
-COMP_LIST_COMMON  = $(PDK_COMMON_SAFERTOS_COMP)
-EXTERNAL_INTERFACES = safertos
-endif
-
 # SoCs which use split DM / TIFS can enable tests that use msg forwarding (mcu1_0 UT only)
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
   ifeq ($(CORE), mcu1_0)

@@ -70,7 +70,7 @@
 #if defined (SOC_J721S2)
 #include <ti/drv/sciclient/soc/sysfw/include/j721s2/tisci_resasg_types.h>
 #include <ti/drv/sciclient/soc/V4/sciclient_fmwMsgParams.h>
-#include <ti/drv/sciclient/soc/V4/sciclient_firmware_V4-zebu.h>
+#include <ti/drv/sciclient/soc/V4/sciclient_firmware_V4.h>
 #endif
 
 #ifdef __cplusplus

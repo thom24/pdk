@@ -88,12 +88,8 @@ extern "C" {
 #define PRINT_RESULTS               ('g')
 #define PARSER_QUIT                 ('q')
 /* @} */
-#if defined(SOC_J721S2)
-/* HACK: until UART driver is added for J721S2 */
-#define App_sciclientPrintf printf
-#else
+
 #define App_sciclientPrintf UART_printf
-#endif
 
 #define App_sciclientGetChar UART_getc
 

@@ -49,6 +49,23 @@
 /** \brief This structure contains configuration parameters for
 *       the sec_proxy IP */
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
+
+#if defined (CONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY)
+CSL_SecProxyCfg gSciclient_secProxyCfg_rom =
+{
+    (CSL_sec_proxyRegs *)       CSL_MCU_SA3_SS0_IPCSS_SEC_PROXY_CFG_MMRS_BASE,
+    /*< pSecProxyRegs */
+    (CSL_sec_proxy_scfgRegs *)  CSL_MCU_SA3_SS0_IPCSS_SEC_PROXY_CFG_SCFG_BASE,
+    /*< pSecProxyScfgRegs */
+    (CSL_sec_proxy_rtRegs *)    CSL_MCU_SA3_SS0_IPCSS_SEC_PROXY_CFG_RT_BASE,
+    /*< pSecProxyRtRegs */
+    (uint64_t)                  CSL_MCU_SA3_SS0_SEC_PROXY_SRC_TARGET_DATA_BASE,
+    /*< proxyTargetAddr */
+    0
+    /*< maxMsgSize */
+};
+#endif
+
 CSL_SecProxyCfg gSciclient_secProxyCfg =
 {
     (CSL_sec_proxyRegs *)       CSL_MCU_NAVSS0_SEC_PROXY0_CFG_BASE,

@@ -33,7 +33,7 @@
 //
 //File Name: launch_j721s2.js
 //Description:
-//   Launch the DMSC firmware and board configuration from R5F.
+//   Launch the TIFS firmware and board configuration from R5F.
 //
 //Usage:
 //
@@ -62,10 +62,10 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 pathSciclient = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j721s2/"
 ccs_init_elf_file = pathSciclient+"sciclient_ccs_init_mcu1_0_release.xer5f";
 loadSciserverFlag = 1;
-sciserver_elf_file = pathSciclient+"sciserver_testapp_tirtos_mcu1_0_release.xer5f";
+sciserver_elf_file = pathSciclient+"sciserver_testapp_freertos_mcu1_0_release.xer5f";
 
-//path to sysfw bin
-sysfw_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-j721s2-gp-zebu.bin"
+//path to tifs bin
+tifs_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-j721s2-gp.bin"
 
 //<!!!!!! EDIT THIS !!!!!>
 
@@ -104,17 +104,17 @@ function connectTargets()
     dsDMSC_0.memory.writeWord(0, 0x61000000, 0xE59FF004); /* ldr        pc, [pc, #4] */
     dsDMSC_0.memory.writeWord(0, 0x61000004, 0x38);       /* Address 0x38 */
     dsDMSC_0.memory.writeWord(0, 0x61000038, 0xEAFFFFFE) /* b          #0x38 */
-    print("Loading DMSC Firmware ... " + sysfw_bin);
-    // Load the DMSC firmware
-    dsDMSC_0.memory.loadRaw(0, 0x40000, sysfw_bin, 32, false);
-    print("DMSC Firmware Load Done...");
+    print("Loading TIFS Firmware ... " + tifs_bin);
+    // Load the TIFS firmware
+    dsDMSC_0.memory.loadRaw(0, 0x40000, tifs_bin, 32, false);
+    print("TIFS Firmware Load Done...");
     // Set Stack pointer and Program Counter
     stackPointer = dsDMSC_0.memory.readWord(0, 0x40000);
     progCounter = dsDMSC_0.memory.readWord(0, 0x40004);
     dsDMSC_0.memory.writeRegister("SP", stackPointer);
     dsDMSC_0.memory.writeRegister("PC", progCounter);
-    print( "DMSC Firmware run starting now...");
-    // Run the DMSC firmware
+    print( "TIFS Firmware run starting now...");
+    // Run the TIFS firmware
     dsDMSC_0.target.runAsynch();
     print("Connecting to MCU Cortex_R5_0!");
 

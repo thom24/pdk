@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2021 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -49,7 +49,7 @@
  *
  * Resource Assignment Subtype definitions
  *
- * Data version: 210528_144358
+ * Data version: 210712_144506
  *
  */
 #ifndef TISCI_RESASG_TYPES_H
@@ -86,7 +86,6 @@
 #define TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_GEVT (0x000BU)
 #define TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_MEVT (0x000CU)
 #define TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_SEVT (0x000DU)
-#define TISCI_RESASG_SUBTYPE_GLOBAL_EVENT_LEVT (0x000EU)
 #define TISCI_RESASG_SUBTYPE_IA_BCDMA_TX_CHAN_ERROR_OES (0x000FU)
 #define TISCI_RESASG_SUBTYPE_IA_BCDMA_TX_CHAN_DATA_COMPLETION_OES (0x0010U)
 #define TISCI_RESASG_SUBTYPE_IA_BCDMA_TX_CHAN_RING_COMPLETION_OES (0x0011U)
@@ -100,7 +99,7 @@
 #define TISCI_RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_COMPLETION_OES (0x0019U)
 #define TISCI_RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_STARVATION_OES (0x001AU)
 #define TISCI_RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_FIREWALL_OES (0x001BU)
-#define TISCI_RESASG_SUBTYPES_IA_CNT (0x0012U)
+#define TISCI_RESASG_SUBTYPES_IA_CNT (0x0011U)
 
 /**
  * IR subtypes definitions

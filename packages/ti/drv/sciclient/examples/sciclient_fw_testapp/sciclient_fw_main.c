@@ -77,6 +77,14 @@
 #define NONSEC_USER_CACHEABLE_MASK (0x00004000U)
 #define NONSEC_USER_DEBUG_MASK (0x00008000U)
 
+#if defined (SOC_J721S2)
+#define MCU_1_0_PRIVID (96)
+#define MCU_SRAM_FWL_ID (1050)
+#define MSMC_SRAM_FWL_ID (4760)
+#define DRAM_FWL_ID (1280)
+#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_1)
+#endif
+
 #if defined (SOC_J721E)
 #define MCU_1_0_PRIVID (96)
 #define MCU_SRAM_FWL_ID (1050)
@@ -130,11 +138,7 @@ void Sciclient_fw_abort_C_handler();
 /* ========================================================================== */
 
 static volatile int32_t gTestStatus;
-#if defined(SAFERTOS)
-static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(32*1024)));
-#else
-static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));
-#endif
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));;
 /* IMPORTANT NOTE: For C7x,
  * - stack size and stack ptr MUST be 8KB aligned
  * - AND min stack size MUST be 32KB
@@ -156,7 +160,7 @@ int main(void)
 #if defined (SOC_J721E)
 #if defined (USE_BIOS)
     extern const UInt32 ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors[];
-    memcpy((void*)CSL_MCU_ARMSS_ATCM_BASE, 
+    memcpy((void*)CSL_MCU_ARMSS_ATCM_BASE,
            (void*) &ti_sysbios_family_arm_v7r_keystone3_Hwi_vectors,
            0x60);
     CacheP_wbInv((const void*)CSL_MCU_ARMSS_ATCM_BASE, 0x60);
@@ -225,7 +229,7 @@ void mainTask(void *arg0, void* arg1)
 
     if (r == CSL_PASS)
     {
-        r = Sciclient_firewallBackground(); 
+        r = Sciclient_firewallBackground();
     }
     /* Firwalling MCU SRAM */
     if (r == CSL_PASS)
@@ -299,11 +303,11 @@ void mainTask(void *arg0, void* arg1)
     /* Firewalling DDR */
     if (CSL_PASS == r) {
         /*
-         * From MCU domain or UDMA coming from MCU domain – 
-         * There are two options. 
-         * a.Interdomain firewall from MCU to DDR can be 
+         * From MCU domain or UDMA coming from MCU domain –
+         * There are two options.
+         * a.Interdomain firewall from MCU to DDR can be
          * configured to filter accesses. – J721E ID DRAM_FWL_ID |  AM65xx DRAM_FWL_ID
-         * b.Northbridge firewall between NAVSS and Compute cluster can 
+         * b.Northbridge firewall between NAVSS and Compute cluster can
          * be configured. – J721E ID 4762, 4763 | AM65xx 4450
          * The below example shows option a.
          */
@@ -331,8 +335,8 @@ void mainTask(void *arg0, void* arg1)
                               "\nDRAM Tests have FAILED.\n");
         }
     }
-    
-    
+
+
     if (CSL_PASS == r)
     {
         App_sciclientPrintf(
@@ -356,13 +360,13 @@ int32_t Sciclient_firewallBackground()
     int32_t ret = CSL_PASS;
     uint32_t fwl_id;
     const uint32_t perm_for_access =
-            SEC_SUPV_WRITE_MASK | SEC_SUPV_READ_MASK | 
+            SEC_SUPV_WRITE_MASK | SEC_SUPV_READ_MASK |
             SEC_SUPV_CACHEABLE_MASK | SEC_SUPV_DEBUG_MASK |
-            SEC_USER_WRITE_MASK | SEC_USER_READ_MASK | 
+            SEC_USER_WRITE_MASK | SEC_USER_READ_MASK |
             SEC_USER_CACHEABLE_MASK | SEC_USER_DEBUG_MASK |
-            NONSEC_SUPV_WRITE_MASK | NONSEC_SUPV_READ_MASK | 
+            NONSEC_SUPV_WRITE_MASK | NONSEC_SUPV_READ_MASK |
             NONSEC_SUPV_CACHEABLE_MASK | NONSEC_SUPV_DEBUG_MASK |
-            NONSEC_USER_WRITE_MASK | NONSEC_USER_READ_MASK | 
+            NONSEC_USER_WRITE_MASK | NONSEC_USER_READ_MASK |
             NONSEC_USER_CACHEABLE_MASK | NONSEC_USER_DEBUG_MASK;
     uint32_t timeout = 0xFFFFFFFFU;
     struct tisci_msg_fwl_change_owner_info_req req = {
@@ -372,7 +376,7 @@ int32_t Sciclient_firewallBackground()
         };
     struct tisci_msg_fwl_change_owner_info_resp resp = {0};
     struct tisci_msg_fwl_set_firewall_region_resp resp_fw_set_pass = {0};
-    struct tisci_msg_fwl_set_firewall_region_req req_fw_set_pass = { 
+    struct tisci_msg_fwl_set_firewall_region_req req_fw_set_pass = {
         .fwl_id = (uint16_t)0,
         .region = (uint16_t) 0,
         .n_permission_regs = (uint32_t) 3,
@@ -395,11 +399,11 @@ int32_t Sciclient_firewallBackground()
     req_fw_set_pass.permissions[1] = 0;
     req_fw_set_pass.permissions[2] = 0;
     req_fw_set_pass.control = 0x10A;
-    
+
     req.fwl_id = fwl_id;
     req.region = 1;
     ret = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
-    
+
     if (ret == CSL_PASS)
     {
         req.fwl_id = fwl_id;
@@ -436,7 +440,7 @@ int32_t Sciclient_firewallBackground()
         req_fw_set_pass.permissions[1] = 0;
         req_fw_set_pass.permissions[2] = 0;
         req_fw_set_pass.control = 0x10A;
- 
+
         ret = Sciclient_firewallChangeOwnerInfo(&req, &resp, timeout);
         if (ret == CSL_PASS)
         {
@@ -449,7 +453,7 @@ int32_t Sciclient_firewallBackground()
 
 volatile uint32_t *p;
 /**
- * \brief This function will first set up the firewalls to access a region of 
+ * \brief This function will first set up the firewalls to access a region of
  *        memory and not have any access to another region of memory. Once set
  *        the CPU would try to write a known pattern to the region of memory
  *        and check it is able to write and read back to the region where it
@@ -467,7 +471,7 @@ volatile uint32_t *p;
  *                           reading patterns.
  * \param failTest           Bool Flag to run the test of writing and
  *                           reading patterns.
- * 
+ *
  * \return CSL_PASS/CSL_EFAIL based on the status of the test run.
  */
 int32_t Sciclient_fw_test(
@@ -478,16 +482,16 @@ int32_t Sciclient_fw_test(
         uint32_t fail_end_address,
         uint32_t hostId,
         uint32_t privId, uint32_t passTest, uint32_t failTest)
-{   
+{
     int32_t r = CSL_PASS;
     const uint32_t perm_for_access =
-            SEC_SUPV_WRITE_MASK | SEC_SUPV_READ_MASK | 
+            SEC_SUPV_WRITE_MASK | SEC_SUPV_READ_MASK |
             SEC_SUPV_CACHEABLE_MASK | SEC_SUPV_DEBUG_MASK |
-            SEC_USER_WRITE_MASK | SEC_USER_READ_MASK | 
+            SEC_USER_WRITE_MASK | SEC_USER_READ_MASK |
             SEC_USER_CACHEABLE_MASK | SEC_USER_DEBUG_MASK |
-            NONSEC_SUPV_WRITE_MASK | NONSEC_SUPV_READ_MASK | 
+            NONSEC_SUPV_WRITE_MASK | NONSEC_SUPV_READ_MASK |
             NONSEC_SUPV_CACHEABLE_MASK | NONSEC_SUPV_DEBUG_MASK |
-            NONSEC_USER_WRITE_MASK | NONSEC_USER_READ_MASK | 
+            NONSEC_USER_WRITE_MASK | NONSEC_USER_READ_MASK |
             NONSEC_USER_CACHEABLE_MASK | NONSEC_USER_DEBUG_MASK;
     const uint32_t perm_for_no_access = 0;
     uint32_t timeout = 0xFFFFFFFFU;
@@ -497,7 +501,7 @@ int32_t Sciclient_fw_test(
         .owner_index = (uint8_t) hostId
         };
     struct tisci_msg_fwl_change_owner_info_resp resp = {0};
-    struct tisci_msg_fwl_set_firewall_region_req req_fw_set_pass = { 
+    struct tisci_msg_fwl_set_firewall_region_req req_fw_set_pass = {
         .fwl_id = (uint16_t)fwl_id,
         .region = (uint16_t) 1,
         .n_permission_regs = (uint32_t) 1,
@@ -506,7 +510,7 @@ int32_t Sciclient_fw_test(
         .start_address = pass_start_address,
         .end_address = pass_end_address
         };
-    struct tisci_msg_fwl_set_firewall_region_req req_fw_set_fail = { 
+    struct tisci_msg_fwl_set_firewall_region_req req_fw_set_fail = {
         .fwl_id = (uint16_t)fwl_id,
         .region = (uint16_t) 2,
         .n_permission_regs = (uint32_t) 1,
@@ -516,7 +520,7 @@ int32_t Sciclient_fw_test(
         .end_address = fail_end_address
         };
     struct tisci_msg_fwl_set_firewall_region_resp resp_fw_set = {0};
-    
+
     gAbortRecieved = 0U;
     App_sciclientPrintf( "\nTesting Firewalls:");
     App_sciclientPrintf( "\n1. Changing the Firewall Owner for region 1.");

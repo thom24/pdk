@@ -55,7 +55,7 @@
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
 
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_ut_tests.h>
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
 #endif
 
@@ -98,11 +98,7 @@ static int32_t App_tifs2dmMsgForwardingTest(void);
 /* ========================================================================== */
 
 static volatile int32_t gTestStatus;
-#if defined(SAFERTOS)
-static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(32*1024))) = { 0 };
-#else
-static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));
-#endif
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));;
 /* IMPORTANT NOTE: For C7x,
  * - stack size and stack ptr MUST be 8KB aligned
  * - AND min stack size MUST be 32KB
@@ -752,7 +748,7 @@ static int32_t App_tifs2dmMsgForwardingTest(void)
 }
 #endif
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {

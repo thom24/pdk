@@ -267,7 +267,7 @@ int32_t Sciclient_rmGetResourceRange(
     resp->range_start_sec = 5U;
     resp->range_num_sec   = 5U;
 
-#if defined (BUILD_C7X_1)
+#if defined (BUILD_C7X)
     if(TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN == req->subtype)
     {
         /* Return 16 DRU Channels for c7x-host-emu */

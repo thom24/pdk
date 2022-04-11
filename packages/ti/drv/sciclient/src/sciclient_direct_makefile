@@ -69,7 +69,7 @@ endif
 # endif
 
 #Bypass DMSC for host emulation and Loki build
-ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j721e_loki))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j721e_loki j721s2_hostemu))
  SRCS_COMMON = sciclient_rm_csl.c sciclient_dummy.c
 endif
 
@@ -77,6 +77,13 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SCICLIENT_CFLAGS)
 
 ifeq ($(BUILD_HS),yes)
 CFLAGS_LOCAL_COMMON += -DBUILD_HS
+endif
+
+#SoCs in which the TIFS ROM uses another sec_proxy instance for TIFS firmware loading
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+  ifeq ($(CORE), mcu1_0)
+    CFLAGS_LOCAL_COMMON += -DCONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY
+  endif
 endif
 
 include $(PDK_INSTALL_PATH)/ti/drv/sciclient/src/rm_pm_hal_build.mk

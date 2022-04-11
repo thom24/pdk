@@ -71,6 +71,19 @@
  */
 extern CSL_SecProxyCfg gSciclient_secProxyCfg;
 
+/** \brief Pointer to structure that contains configuration parameters for
+ *         the sec_proxy IP
+ */
+CSL_SecProxyCfg *pSciclient_secProxyCfg = &gSciclient_secProxyCfg;
+
+#if defined (CONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY)
+/** \brief This structure contains configuration parameters for
+ *         the alternate sec_proxy IP used by ROM for firmware
+ *         loading only
+ */
+extern CSL_SecProxyCfg gSciclient_secProxyCfg_rom;
+#endif
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -84,13 +97,17 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
     Sciclient_RomFirmwareLoadHdr_t header      = {0};
     Sciclient_RomFirmwareLoadPayload_t payload = {0};
     uint32_t secHeaderSizeWords = sizeof(struct tisci_sec_header)/sizeof(uint32_t);
-
-    volatile Sciclient_RomFirmwareLoadHdr_t *pLocalRespHdr =
-        (Sciclient_RomFirmwareLoadHdr_t *)CSL_secProxyGetDataAddr
-                                        (&gSciclient_secProxyCfg, rxThread, 0U);
+    volatile Sciclient_RomFirmwareLoadHdr_t *pLocalRespHdr;
     uint8_t  payloadSize = sizeof (Sciclient_RomFirmwareLoadPayload_t) /
                            sizeof (uint8_t);
-    gSciclient_maxMsgSizeBytes = CSL_secProxyGetMaxMsgSize(&gSciclient_secProxyCfg) -
+#if defined (CONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY)
+    /* Switch pointer to struct with alternate sproxy cfg used by ROM for firmware loading */
+    pSciclient_secProxyCfg = &gSciclient_secProxyCfg_rom;
+#endif
+    /* Update pLocalRespHdr and maxMsgSizeBytes vars, which are dependent on pointer selected above */
+    pLocalRespHdr = (Sciclient_RomFirmwareLoadHdr_t *)CSL_secProxyGetDataAddr
+                                        (pSciclient_secProxyCfg, rxThread, 0U);
+    gSciclient_maxMsgSizeBytes = CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
                                 CSL_SEC_PROXY_RSVD_MSG_BYTES;
 
     /* Construct header */
@@ -158,7 +175,7 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
         /* CHECKING FOR TISCI_MSG_BOOT_NOTIFICATION from DMSC*/
         pLocalRespHdr =
         (Sciclient_RomFirmwareLoadHdr_t *)(CSL_secProxyGetDataAddr(
-                                            &gSciclient_secProxyCfg, rxThread, 0U)
+                                            pSciclient_secProxyCfg, rxThread, 0U)
                                             + ((uintptr_t) secHeaderSizeWords * (uintptr_t) 4U));
         if (status == CSL_PASS)
         {
@@ -182,6 +199,12 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
             (void) Sciclient_readThread32(rxThread,
                             (uint8_t)((gSciclient_maxMsgSizeBytes/4U)-1U));
         }
+#if defined (CONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY)
+        /* Switch pointer back to regular sproxy cfg struct used after Boot Notification msg received */
+        pSciclient_secProxyCfg = &gSciclient_secProxyCfg;
+        gSciclient_maxMsgSizeBytes = CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
+                                CSL_SEC_PROXY_RSVD_MSG_BYTES;
+#endif
     }
     else
     {
