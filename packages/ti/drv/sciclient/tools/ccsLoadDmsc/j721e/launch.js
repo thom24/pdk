@@ -47,8 +47,11 @@
 
 
 //<!!!!!! EDIT THIS !!!!!>
-// Set this to 0, if using 'tirtos' instead of 'freertos'
+// Set this to 1, if using 'FreeRTOS'
 isFreertos = 1;  
+// Set this to 1, if using 'SafeRTOS'
+isSafertos = 0;  
+
 // Set this to 1 to allow loading the GEL files directly from the ccxml file.
 disableGelLoad = 0;
 // Set to 1 to use the firmware with Firewalls.
@@ -69,10 +72,10 @@ if(isFreertos == 1)
     //Path to FreeRTOS sciserver
     sciserver_elf_file = pathSciclient+"sciserver_testapp_freertos_mcu1_0_release.xer5f";
 }
-else
+else if(isSafertos == 1)
 {
-    //Path to TIRTOS sciserver
-    sciserver_elf_file = pathSciclient+"sciserver_testapp_tirtos_mcu1_0_release.xer5f";
+    //Path to SafeRTOS sciserver
+    sciserver_elf_file = pathSciclient+"sciserver_testapp_safertos_mcu1_0_release.xer5f";
 }
 
 //path to sysfw bin
