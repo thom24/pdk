@@ -39,6 +39,9 @@
 #ifdef BUILD_C7X_1
 #include "FreeRTOSConfig_c7x_1.h"
 #endif
+#ifdef BUILD_C7X_2
+#include "FreeRTOSConfig_c7x_2.h"
+#endif
 
 /*-----------------------------------------------------------
  * Application specific definitions.
@@ -175,7 +178,7 @@
 #define portCONFIGURE_DDR_SIZE      (0x80000000U)
 
 /* Compute Cluster CLEC Register Base Address */
-#define portCOMPUTE_CLUSTER_CLEC_BASE   (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
+#define portCOMPUTE_CLUSTER_CLEC_BASE   (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
 
 /* 
  * This is not a FreeRTOS defined config and is defined by TI to enable

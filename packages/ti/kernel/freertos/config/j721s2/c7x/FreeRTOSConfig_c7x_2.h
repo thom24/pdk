@@ -31,8 +31,8 @@
  */
 
 
-#ifndef TI_FREERTOS_C7X_1_CONFIG_H
-#define TI_FREERTOS_C7X_1_CONFIG_H
+#ifndef TI_FREERTOS_C7X_2_CONFIG_H
+#define TI_FREERTOS_C7X_2_CONFIG_H
 
 
 /*-----------------------------------------------------------
@@ -46,10 +46,21 @@
  * FreeRTOS REFERENCE MANUAL.
  *----------------------------------------------------------*/
 
-#define configTIMER_ID                                                    (2)
-#define configTIMER_INT_NUM                                               (16)
+/* -- Default DMTimer allocations for various cores in j721s2 ---*/
+/* c7x_1  - DMTimer 0
+ * c7x_2  - DMTimer 1 
+ * mcu2_0 - DMTimer 2
+ * mcu2_1 - DMTimer 3
+ * mcu3_0 - DMTimer 4
+ * mcu3_1 - DMTimer 5
+ * mcu1_0 - MCU DMTimer 1
+ * mcu1_1 - MCU DMTimer 2
+ */  
+
+#define configTIMER_ID                                                    (1)
+#define configTIMER_INT_NUM                                               (15)
 
 /* Compute Cluster CLEC route map */
-#define portCOMPUTE_CLUSTER_CLEC_RTMAP                                    (CSL_CLEC_RTMAP_CPU_4)
+#define portCOMPUTE_CLUSTER_CLEC_RTMAP                                    (CSL_CLEC_RTMAP_CPU_5)
 
-#endif /* TI_FREERTOS_C7X_1_CONFIG_H */
+#endif /* TI_FREERTOS_C7X_2_CONFIG_H */

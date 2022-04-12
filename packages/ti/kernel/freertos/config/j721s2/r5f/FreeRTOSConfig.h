@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2021 Texas Instruments Incorporated
+ *  Copyright (C) 2021 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -35,9 +35,23 @@
 #define TI_FREERTOS_CONFIG_H
 
 #include <ti/osal/DebugP.h>
-#include <ti/csl/soc.h>
-#ifdef BUILD_C7X_1
-#include "FreeRTOSConfig_c7x_1.h"
+#ifdef BUILD_MCU1_0
+#include "FreeRTOSConfig_mcu1_0.h"
+#endif
+#ifdef BUILD_MCU1_1
+#include "FreeRTOSConfig_mcu1_1.h"
+#endif
+#ifdef BUILD_MCU2_0
+#include "FreeRTOSConfig_mcu2_0.h"
+#endif
+#ifdef BUILD_MCU2_1
+#include "FreeRTOSConfig_mcu2_1.h"
+#endif
+#ifdef BUILD_MCU3_0
+#include "FreeRTOSConfig_mcu3_0.h"
+#endif
+#ifdef BUILD_MCU3_1
+#include "FreeRTOSConfig_mcu3_1.h"
 #endif
 
 /*-----------------------------------------------------------
@@ -52,7 +66,7 @@
  *----------------------------------------------------------*/
 
 /* Keep below as 1 if the most optmized task switching latency is needed.
- * This disables tracing, logging, assert and other error checks.
+ * This disables tracing, logging, FPU context, assert and other error checks.
  * So unless every last cycle of task switching is important leave this as 0.
  * 
  * This is not a FreeRTOS defined config and is defined by TI to quickly switch
@@ -60,8 +74,8 @@
  */
 #define configOPTIMIZE_FOR_LATENCY              (0)
 
-#define configUSE_PREEMPTION                    (1)
-#define configUSE_PORT_OPTIMISED_TASK_SELECTION (1)
+#define configUSE_PREEMPTION					(1)
+#define configUSE_PORT_OPTIMISED_TASK_SELECTION	(1)
 #define configUSE_TICKLESS_IDLE                 (0)
 #define configUSE_IDLE_HOOK                     (0)
 #define configUSE_MALLOC_FAILED_HOOK            (0)
@@ -113,7 +127,7 @@
                                                      *      uint32_t *pulIdleTaskStackSize );
                                                      */ 
 #define configSUPPORT_DYNAMIC_ALLOCATION        (1)
-#define configTOTAL_HEAP_SIZE                   (32*1024*6) /* not used when heap_3.c is the selected heap */
+#define configTOTAL_HEAP_SIZE                   (64*1024) /* not used when heap_3.c is the selected heap */
 #define configAPPLICATION_ALLOCATED_HEAP        (0)    
 
 /* run-time stats config */
@@ -122,6 +136,10 @@
 #else
 #define configGENERATE_RUN_TIME_STATS           (0)
 #endif
+void vPortConfigTimerForRunTimeStats();
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS() vPortConfigTimerForRunTimeStats()
+uint32_t uiPortGetRunTimeCounterValue();
+#define portGET_RUN_TIME_COUNTER_VALUE()        uiPortGetRunTimeCounterValue()
 
 /* co-routine related config */
 #define configUSE_CO_ROUTINES                   (0)
@@ -138,7 +156,7 @@
 #define configMAX_API_CALL_INTERRUPT_PRIORITY   (configMAX_SYSCALL_INTERRUPT_PRIORITY)
 
 #if (configOPTIMIZE_FOR_LATENCY==0)
-#define configASSERT(x)                        DebugP_assert( (x))
+#define configASSERT(x)                        DebugP_assert( (uint32_t)(x))
 #endif
 
 /* MPU aware FreeRTOS, not supported as TI */
@@ -158,25 +176,27 @@
 #define INCLUDE_vTaskSuspend        (1)
 #define INCLUDE_xTimerDelete        (1)
 #define INCLUDE_vSemaphoreDelete    (1)
-#define INCLUDE_xTaskAbortDelay     (1)
-#define INCLUDE_xTaskGetCurrentTaskHandle   (1)
-#define INCLUDE_xEventGroupSetBitFromISR    (1)
-#define INCLUDE_xTimerPendFunctionCall      (1)
-#define INCLUDE_xTaskGetIdleTaskHandle      (1)
-#define INCLUDE_vTaskPrioritySet            (1)
+#define INCLUDE_xEventGroupSetBitFromISR (1)
+#define INCLUDE_xTimerPendFunctionCall   (1)
+#define INCLUDE_xTaskGetIdleTaskHandle   (1)
+#define INCLUDE_vTaskPrioritySet         (1)
 
-/* Size of ISR Stack in c7x */
-#define configHWI_TASK_STACK_DEPTH          (64 * 1024)
-
-
-/* Start and Size of DDR space */
-/* Used to Enable cache for all DDR space - 0x80000000 to 0xFFFFFFFF (2GB space) */
-#define portCONFIGURE_DDR_START     (0x80000000U)
-#define portCONFIGURE_DDR_SIZE      (0x80000000U)
-
-/* Compute Cluster CLEC Register Base Address */
-#define portCOMPUTE_CLUSTER_CLEC_BASE   (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
-
+/* 
+ * This is not a FreeRTOS defined config and is defined by TI to create
+ * tasks with a floating point context. In this case save/restore of 
+ * R5F FPU Registers will be performed during each task switch.
+ */
+#if (configOPTIMIZE_FOR_LATENCY==0)
+#define configFLOATING_POINT_CONTEXT     (1)
+#else
+#define configFLOATING_POINT_CONTEXT     (0)
+#endif
+/* 
+ * This is not a FreeRTOS defined config and is defined by TI to enable
+ * copy of _freertosresetvectors to ATCM 
+ */
+#define configCOPY_RESET_VECTORS    (0)
+#define configMCU_ATCM_BASE         (0x0U)
 /* 
  * This is not a FreeRTOS defined config and is defined by TI to enable
  * load update in idle task 

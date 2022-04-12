@@ -46,7 +46,6 @@
 TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
 
 
-
 /*
  * IMPORTANT NOTES:
  *
@@ -152,6 +151,45 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
     #endif
 #endif
 
+#ifdef SOC_J721S2
+    #ifdef BUILD_MCU1_0
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU1_1
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU2_0
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU2_1
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU3_0
+        #define PING_INT_NUM           (CSLR_R5FSS1_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS1_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU3_1
+        #define PING_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_C7X_1
+        #define PING_INT_NUM           (16U)
+        #define PING_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER2_INTR_PEND_0 + 992)
+        #define PONG_INT_NUM           (17U)
+        #define PONG_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER3_INTR_PEND_0 + 992)
+    #endif
+    #ifdef BUILD_C7X_2
+        #define PING_INT_NUM           (18U)
+        #define PING_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER4_INTR_PEND_0 + 992)
+        #define PONG_INT_NUM           (19U)
+        #define PONG_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER5_INTR_PEND_0 + 992)
+    #endif
+#endif
+
 #define PING_TASK_PRI  (2u)
 #define PONG_TASK_PRI  (3u)
 
@@ -220,7 +258,7 @@ void ping_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#if (defined(_TMS320C6X) || defined (__C7100__))
+#if (defined(_TMS320C6X) || defined (BUILD_C7X))
         hwiParams.evtId = PING_EVT_ID;
 #endif
         hHwi = HwiP_create(PING_INT_NUM, ping_isr, &hwiParams);
@@ -277,7 +315,7 @@ void pong_main(void *args)
         HwiP_Status hwiStatus;
 
         HwiP_Params_init(&hwiParams);
-#if (defined(_TMS320C6X) || defined (__C7100__))
+#if (defined(_TMS320C6X) || defined (BUILD_C7X))
         hwiParams.evtId = PONG_EVT_ID;
 #endif
         hHwi = HwiP_create(PONG_INT_NUM, pong_isr, &hwiParams);
@@ -298,6 +336,7 @@ void task_switch_main(void *args)
 {
     SemaphoreP_Params semParams;
     TaskP_Params      taskParams;
+
 
     /* Open drivers to open the UART driver for console */
     //Drivers_open();
@@ -334,7 +373,7 @@ void task_switch_main(void *args)
     /* Drivers_close(); */
 }
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 #include <ti/csl/csl_clec.h>
 

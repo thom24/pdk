@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2021 Texas Instruments Incorporated
+ *  Copyright (C) 2021 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -31,8 +31,8 @@
  */
 
 
-#ifndef TI_FREERTOS_C7X_1_CONFIG_H
-#define TI_FREERTOS_C7X_1_CONFIG_H
+#ifndef TI_FREERTOS_MCU1_1_CONFIG_H
+#define TI_FREERTOS_MCU1_1_CONFIG_H
 
 
 /*-----------------------------------------------------------
@@ -46,10 +46,16 @@
  * FreeRTOS REFERENCE MANUAL.
  *----------------------------------------------------------*/
 
+/* -- Default DMTimer allocations for various cores in j721s2 ---*/
+/* c7x_1  - DMTimer 0
+ * c7x_2  - DMTimer 1 
+ * mcu2_0 - DMTimer 2
+ * mcu2_1 - DMTimer 3
+ * mcu3_0 - DMTimer 4
+ * mcu3_1 - DMTimer 5
+ * mcu1_0 - MCU DMTimer 1
+ * mcu1_1 - MCU DMTimer 2
+ */  
+
 #define configTIMER_ID                                                    (2)
-#define configTIMER_INT_NUM                                               (16)
-
-/* Compute Cluster CLEC route map */
-#define portCOMPUTE_CLUSTER_CLEC_RTMAP                                    (CSL_CLEC_RTMAP_CPU_4)
-
-#endif /* TI_FREERTOS_C7X_1_CONFIG_H */
+#endif /* TI_FREERTOS_MCU1_1_CONFIG_H */

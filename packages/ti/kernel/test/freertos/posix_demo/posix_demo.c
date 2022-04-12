@@ -324,6 +324,7 @@ void posix_demo_main( void *pvParameters )
 	/* Remove warnings about unused parameters. */
     ( void ) pvParameters;
 
+
     /* Handles of the threads and related resources. */
     DispatcherThreadResources_t pxDispatcher = { 0 };
     WorkerThreadResources_t pxWorkers[ MQUEUE_NUMBER_OF_WORKERS ] = { { 0 } };
@@ -442,7 +443,7 @@ void posix_demo_main( void *pvParameters )
     /* Drivers_close(); */
 }
 
-#if defined (__C7100__)
+#if defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 #include <ti/csl/csl_clec.h>
 
