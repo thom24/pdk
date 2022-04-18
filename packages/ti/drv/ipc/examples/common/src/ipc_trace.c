@@ -49,6 +49,9 @@
 
 #include "ipc_trace.h"
 
+#include <ti/drv/uart/UART.h>
+#include <ti/drv/uart/UART_stdio.h> 
+
 #if defined(BUILD_MCU)
 char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE] __attribute__((section(".tracebuf")));
 static __attribute__((section(".tracebuf"))) uint32_t gTraceBufIndex = 0U;
@@ -67,7 +70,9 @@ int32_t Ipc_Trace_printf(const char *format, ...)
     va_start(args, format);
     vsprintf(buffer, format, args);
     va_end(args);
-
+#if defined(BUILD_MCU1_0)
+    UART_printf("%s\n",buffer);
+#endif
     for (i = 0; i < strlen(buffer); i++)
     {
         Ipc_traceBuffer[gTraceBufIndex++] = buffer[i];

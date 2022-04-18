@@ -293,6 +293,9 @@ static void taskFxn(void* a0, void* a1)
 
     /* Initialize SCI Client - It must be called before board init */
     ipc_initSciclient();
+#if !defined(A72_LINUX_OS)
+    ipc_boardInit();
+#endif
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
     TaskP_Handle sciserverInitTask;
@@ -309,10 +312,6 @@ static void taskFxn(void* a0, void* a1)
     {
         OS_stop();
     }
-#endif
-
-#if !defined(A72_LINUX_OS)
-    ipc_boardInit();
 #endif
 
 #if defined (_TMS320C6X)

@@ -7,9 +7,9 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = ex02_baremetal_multicore_echo_test
+APP_NAME = ipc_baremetal_echo_test
 
-SRCS_COMMON = ex02_baremetal_multicore_echo_test.c
+SRCS_COMMON = ipc_baremetal_echo_test.c
 BUILD_OS_TYPE = baremetal
 
 include ../common/makefile.mk

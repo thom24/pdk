@@ -51,6 +51,7 @@
 /* OSAL Header files */
 #include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
+#include <ti/osal/EventP.h>
 
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/ipcver.h>
@@ -107,6 +108,10 @@ uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 #define IPC_SETUP_TASK_PRI                  (3)
 /**< Priority for sender and receiver tasks */
 
+#if defined(BUILD_MCU1_0)
+/**< Checker  Task stack size */
+#define APP_CHECKER_TSK_STACK        (32U * 1024U)
+#endif
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
@@ -116,10 +121,21 @@ uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-
+#if defined(BUILD_MCU1_0)
+static uint32_t geteventID(uint32_t coreID);
+static void ipc_checker_task();
+#endif
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
+#if defined(BUILD_MCU1_0)
+/*Declaration  the Event variables*/
+EventP_Handle   gEventhandle;
+
+static uint8_t  gCheckerTskStack[APP_CHECKER_TSK_STACK]
+__attribute__ ((aligned(APP_CHECKER_TSK_STACK)));
+
+#endif
 
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH)
 static uint32_t		RecvEndPt = 0;
@@ -128,6 +144,9 @@ static uint32_t		RecvEndPt = 0;
 //#define DEBUG_PRINT
 
 bool g_exitRespTsk = 0;
+/* ========================================================================== */
+/*                          Function Definitions                              */
+/* ========================================================================== */
 
 void rpmsg_exit_responseTask()
 {
@@ -138,6 +157,7 @@ void rpmsg_exit_responseTask()
  * This "Task" waits for a "ping" message from any processor
  * then replies with a "pong" message.
  */
+
 void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
 {
     RPMessage_Handle    handle;
@@ -350,11 +370,22 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
             //        Ipc_mpGetSelfName(), Ipc_mpGetName(dstProc), i);
         }
     }
-
+    
     App_printf("%s <--> %s, Ping- %d, pong - %d completed\n",
             Ipc_mpGetSelfName(),
             Ipc_mpGetName(dstProc),
             cntPing, cntPong);
+#if defined(BUILD_MCU1_0)
+    if (cntPing !=NUMMSGS || cntPong !=NUMMSGS )
+    {
+        App_printf("ERROR !! Ping/Pong iteration between the core mcu1_0 and %s is not %d \nPing is %d , Pong is %d\n",Ipc_mpGetName(dstProc),NUMMSGS,cntPing, cntPong);
+        App_printf("Some Test has failed\n");
+    }
+    else
+    {
+        EventP_post(gEventhandle,geteventID(dstProc));
+    } 
+#endif
 
     /* Delete the RPMesg object now */
     RPMessage_delete(&handle);
@@ -457,7 +488,21 @@ int32_t Ipc_echo_test(void)
     vqParam.vringBufSize  = IPC_VRING_BUFFER_SIZE;
     vqParam.timeoutCnt    = 100;  /* Wait for counts */
     Ipc_initVirtIO(&vqParam);
+ 
+#if defined (BUILD_MCU1_0)
+    EventP_Params      eventParams;
+    TaskP_Params      taskParams;
 
+    EventP_Params_init(&eventParams);    
+
+    gEventhandle = EventP_create(&eventParams);
+
+    TaskP_Params_init(&taskParams);
+    taskParams.priority   = 4;
+    taskParams.stack      = &gCheckerTskStack;
+    taskParams.stacksize  = APP_CHECKER_TSK_STACK;
+    TaskP_create(ipc_checker_task, &taskParams);    
+#endif
     /* Step 3: Initialize RPMessage */
     RPMessage_Params cntrlParam;
 
@@ -526,3 +571,69 @@ int32_t Ipc_echo_test(void)
 
     return 1;
 }
+
+#if defined(BUILD_MCU1_0)
+
+static void ipc_checker_task()
+{
+    uint32_t        retEventMask;
+    uint32_t        eventMask = 0x0;
+    for(int i=0;i<gNumRemoteProc;i++)
+    {
+        eventMask+=geteventID(pRemoteProcArray[i]);
+    }
+
+    retEventMask = EventP_wait(gEventhandle, eventMask, EventP_WaitMode_ALL, EventP_WAIT_FOREVER);
+    if((retEventMask & eventMask) == eventMask)
+    {
+        App_printf("All Test has Passed\n");
+        EventP_delete(&gEventhandle);
+    } 
+}
+
+static uint32_t geteventID(uint32_t coreID)
+{
+    uint32_t retVal=EventP_ID_NONE;
+    switch(coreID)
+    {
+        case 0:
+            retVal=EventP_ID_00;
+            break;
+        case 1:
+            retVal=EventP_ID_01;
+            break;
+        case 2:
+            retVal=EventP_ID_02;
+            break;
+        case 3:
+            retVal=EventP_ID_03;
+            break;
+        case 4:
+            retVal=EventP_ID_04;
+            break;
+        case 5:
+            retVal=EventP_ID_05;
+            break;
+        case 6:
+            retVal=EventP_ID_06;
+            break;
+        case 7:
+            retVal=EventP_ID_07;
+            break;
+        case 8:
+            retVal=EventP_ID_08;
+            break;
+        case 9:
+            retVal=EventP_ID_09;
+            break;
+        case 10:
+            retVal=EventP_ID_10;
+            break;
+        case 11:
+            retVal=EventP_ID_11;
+            break;
+
+    }
+    return retVal;
+}
+#endif

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2020
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,9 @@
  */
 
 /**
- *  \file ex02_bios_multicore_echo_test.c
+ *  \file ipc_baremetal_echo_test.c
  *
- *  \brief Multi-core (BIOS-to-BIOS) IPC echo test application performing basic echo
+ *  \brief Multi-core (nonos-to-nonos) IPC echo test application performing basic echo
  *  communication using the IPC driver
  *
  */
@@ -70,46 +70,17 @@
 /* ========================================================================== */
 
 #if defined (SOC_AM65XX)
-#define CORE_IN_TEST            2
+#define CORE_IN_TEST            3
 #elif defined (SOC_J721E)
-#define CORE_IN_TEST            9
+#define CORE_IN_TEST            10
 #elif defined (SOC_J7200)
-#define CORE_IN_TEST            4
-#elif defined (SOC_AM64X)
 #define CORE_IN_TEST            5
+#elif defined (SOC_AM64X)
+#define CORE_IN_TEST            6
 #elif defined (SOC_J721S2)
-#define CORE_IN_TEST            8
+#define CORE_IN_TEST            9
 #else
 #error "Invalid SOC"
-#endif
-
-/*
- * In the cfg file of R5F, C66x, default heap is 48K which is not
- * enough for 9 task_stack, so creating task_stack on global.
- * C7x cfg has 256k default heap, so no need to put task_stack on global
- */
-
-#if !defined(BUILD_C7X)
-#if defined(SAFERTOS)
-uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE]
-__attribute__ ((aligned(IPC_TASK_STACKSIZE)));
-#else
-
-uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
-#endif
-
-#else
-
-/* IMPORTANT NOTE: For C7x,
- * - stack size and stack ptr MUST be 8KB aligned
- * - AND min stack size MUST be 16KB
- * - AND stack assigned for task context is "size - 8KB"
-*       - 8KB chunk for the stack area is used for interrupt handling in this task context
-*/
-uint8_t g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE]
-__attribute__ ((section(".bss:taskStackSection")))
-__attribute__ ((aligned(8192)))
-    ;
 #endif
 
 uint8_t  gCntrlBuf[RPMSG_DATA_SIZE] __attribute__ ((section("ipc_data_buffer"), aligned (8)));
@@ -118,7 +89,6 @@ uint8_t  g_sendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ip
 uint8_t  g_rspBuf[RPMSG_DATA_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 
 uint8_t *pCntrlBuf = gCntrlBuf;
-uint8_t *pTaskBuf = g_taskStackBuf;
 uint8_t *pSendTaskBuf = g_sendBuf;
 uint8_t *pRecvTaskBuf = g_rspBuf;
 uint8_t *pSysVqBuf = sysVqBuf;
@@ -284,3 +254,13 @@ uint32_t remoteProc[] =
 uint32_t *pRemoteProcArray = remoteProc;
 uint32_t  gNumRemoteProc = sizeof(remoteProc)/sizeof(uint32_t);
 
+RPMessage_Handle gHandleArray[CORE_IN_TEST];
+uint32_t         gEndptArray[CORE_IN_TEST];
+uint32_t         gCntPing[CORE_IN_TEST];
+uint32_t         gCntPong[CORE_IN_TEST];
+
+
+RPMessage_Handle *pHandleArray = gHandleArray;
+uint32_t *pEndptArray = gEndptArray;
+uint32_t *pCntPing = gCntPing;
+uint32_t *pCntPong = gCntPong;

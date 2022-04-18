@@ -7,11 +7,11 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = ex02_bios_multicore_echo_testb_$(BUILD_OS_TYPE)
+APP_NAME = ipc_rtos_echo_testb_$(BUILD_OS_TYPE)
 
 SRCDIR = ../ ../../common/src ../../echo_test/echo_test_btcm
 INCDIR = ../../common/$(SOC)/$(BUILD_OS_TYPE)/
-SRCS_COMMON = ex02_bios_multicore_echo_test.c
+SRCS_COMMON = ipc_rtos_echo_test.c
 
 ECHO_TEST_BTCM = 1
 CFLAGS_LOCAL_COMMON = -DECHO_TEST_BTCM
