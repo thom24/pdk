@@ -36,18 +36,14 @@
  * \brief DM Tx Routing Data
  */
 
-#include <lib/io.h>
-#include <lib/container_of.h>
-#include <types/short_types.h>
 #include <hosts.h>
-#include <sec_proxy_config_data.h>
-
-#include "../../secure_proxy_routing_description.h"
+#include <sciserver_secproxyConfigData.h>
+#include <sciserver_secproxyRoutingDescription.h>
 
 /** Maximum Host Entries */
 #define J784S4_CONFIG_MAX (0xFFU)
 
-const u16 sproxy_route_data_count = J784S4_CONFIG_MAX;
+const uint16_t sproxy_route_data_count = J784S4_CONFIG_MAX;
 
 const struct sproxy_host_tx_thread_data sproxy_route_data[J784S4_CONFIG_MAX] = {
 	/*

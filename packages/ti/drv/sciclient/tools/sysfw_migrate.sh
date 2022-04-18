@@ -229,9 +229,9 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_ccs_init BOARD=j784s4_evm
     make -j -s sciserver_testapp_freertos_clean BOARD=j784s4_evm
     make -j -s sciserver_testapp_freertos BOARD=j784s4_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721s2/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
+    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j784s4/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j784s4/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j784s4/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
 
     cd -
 fi

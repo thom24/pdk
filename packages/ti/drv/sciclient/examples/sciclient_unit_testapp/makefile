@@ -36,7 +36,7 @@ EXTERNAL_INTERFACES = safertos
 endif
 
 # SoCs which use split DM / TIFS can enable tests that use msg forwarding (mcu1_0 UT only)
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   ifeq ($(CORE), mcu1_0)
     SCICLIENT_UT_CFLAGS = -DENABLE_MSG_FWD
   endif

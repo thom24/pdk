@@ -114,7 +114,7 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
     header.type = SCICLIENT_ROM_MSG_R5_TO_M3_M3FW;
 #if defined (SOC_AM64X)
     header.host = TISCI_HOST_ID_MAIN_0_R5_0;
-#elif defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
+#elif defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     header.host = TISCI_HOST_ID_MCU_0_R5_1;;
 #else
     header.host = TISCI_HOST_ID_R5_1;

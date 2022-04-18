@@ -36,19 +36,16 @@
  * \brief Private include file for secure proxy configuration
  */
 
-#include <lib/io.h>
-#include <lib/container_of.h>
+#include <stdint.h>
 #include <types/errno.h>
-#include <types/short_types.h>
-#include <comm_memory_soc.h>
+#include "sciserver_commMemorySoc.h"
 #include <hosts.h>
-#include <sec_proxy_config_data.h>
-#include <ring_acel_config_data.h>
+#include "sciserver_secproxyConfigData.h"
+#include "sciserver_ringAcelConfigData.h"
 
-#include "ring_accelerator.h"
-#include "secure_proxy_description.h"
-#include "sec_proxy_soc_data.h"
-#include "ring_acel_soc_data.h"
+#include "sciserver_secproxyDescription.h"
+#include "sciserver_secproxySocData.h"
+#include "sciserver_ringAcelSocData.h"
 
 /** SAFE_EVENT Does NOT generate an IRQ or an event onto ETL */
 #define SOC_SAFE_EVENT (0xFFFFU)
@@ -56,9 +53,9 @@
 const u16 soc_secure_proxy_tx_dm_config_idx = J784S4_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_HIGH_PRIORITY_THR027_CONF174;
 const u16 soc_secure_proxy_rx_dm_config_idx = J784S4_MCU_NAVSS0_SEC_PROXY0_RX_TIFS2DM_RESPONSE_THR026_CONF081;
 
-const u16 soc_secure_proxy_tx_configurations_num = SOC_MAX_SPT_TX_CONFIG_INSTANCES;
+const uint16_t Sciserver_SecureProxyTxConfigNum = SOC_MAX_SPT_TX_CONFIG_INSTANCES;
 
-const struct secure_proxy_tx_thread_config soc_secure_proxy_tx_configurations[SOC_MAX_SPT_TX_CONFIG_INSTANCES] = {
+const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigurations[SOC_MAX_SPT_TX_CONFIG_INSTANCES] = {
 	[J784S4_NAVSS0_SEC_PROXY_0_TX_TIFS_SEC_A72_0_NOTIFY_TX_THR366_CONF000] = {
 		.host_id = HOST_ID_TIFS,
 		.thread_id = 366U,
@@ -1681,9 +1678,9 @@ const struct secure_proxy_tx_thread_config soc_secure_proxy_tx_configurations[SO
 	},
 };
 
-const u16 soc_secure_proxy_rx_configurations_num = SOC_MAX_SPT_RX_CONFIG_INSTANCES;
+const uint16_t gSciserverSecureProxyRxConfigNum = SOC_MAX_SPT_RX_CONFIG_INSTANCES;
 
-const struct secure_proxy_rx_thread_config soc_secure_proxy_rx_configurations[SOC_MAX_SPT_RX_CONFIG_INSTANCES] = {
+const struct Sciserver_SecureProxyRxThreadConfig gSciserverSecureProxyRxConfigurations[SOC_MAX_SPT_RX_CONFIG_INSTANCES] = {
 	[J784S4_NAVSS0_SEC_PROXY_0_RX_TIFS_SEC_HIGH_PRIORITY_RX_THR369_CONF000] = {
 		.host_id = HOST_ID_TIFS,
 		.thread_id = 369U,

@@ -51,7 +51,7 @@
 uint8_t vint_usage_count_NAVSS0_MODSS_INTA_0[64] = {0};
 uint8_t vint_usage_count_NAVSS0_MODSS_INTA_1[64] = {0};
 uint8_t vint_usage_count_NAVSS0_UDMASS_INTA_0[256] = {0};
-uint8_t vint_usage_count_MCU_NAVSS0_INTA_0[256] = {0};
+uint8_t vint_usage_count_MCU_NAVSS0_UDMASS_INTA_0[256] = {0};
 uint8_t vint_usage_count_MCU_SA3_SS0_INTAGGR_0[8] = {0};
 static struct Sciclient_rmIaUsedMapping rom_usage_MCU_NAVSS0_UDMASS_INTA_0[5U] = {
     {
@@ -117,7 +117,7 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .sevt_offset        = 16384u,
         .n_sevt             = 1536u,
         .n_vint             = 256,
-        .vint_usage_count   = &vint_usage_count_MCU_NAVSS0_INTA_0[0],
+        .vint_usage_count   = &vint_usage_count_MCU_NAVSS0_UDMASS_INTA_0[0],
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
         .rom_usage          = &rom_usage_MCU_NAVSS0_UDMASS_INTA_0[0U],
         .n_rom_usage        = 5,
@@ -163,7 +163,7 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
         .n_outp         = 64u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
         .rom_usage      = &rom_usage_MAIN2MCU_LVL_INTRTR0[0U],
-        .n_rom_usage    = 2,
+        .n_rom_usage    = 1,
     },
     {
         .dev_id         = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
@@ -213,7 +213,7 @@ struct Sciclient_rmIrInst gRmIrInstances[SCICLIENT_RM_IR_NUM_INST] =
     {
         .dev_id         = TISCI_DEV_NAVSS0_INTR_0,
         .cfg            = 0x310e0000,
-        .n_inp          = 442u,
+        .n_inp          = 490u,
         .n_outp         = 512u,
         .inp0_mapping   = SCICLIENT_RM_IR_MAPPING_FREE,
         .rom_usage      = NULL,
@@ -1260,27 +1260,13 @@ const struct Sciclient_rmIrqIf MAIN2MCU_LVL_INTRTR0_outl_0_63_to_MCU_R5FSS0_CORE
 	.rid = TISCI_DEV_MCU_R5FSS0_CORE1,
 	.rbase = 160,
 };
-const struct Sciclient_rmIrqIf MAIN2MCU_LVL_INTRTR0_outl_56_63_to_WKUP_TIFS0_nvic_64_71 = {
-	.lbase = 56,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_TIFS0,
-	.rbase = 64,
-};
-const struct Sciclient_rmIrqIf MAIN2MCU_LVL_INTRTR0_outl_56_63_to_WKUP_HSM0_nvic_64_71 = {
-	.lbase = 56,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_HSM0,
-	.rbase = 64,
-};
 const struct Sciclient_rmIrqIf * const tisci_if_MAIN2MCU_LVL_INTRTR0[] = {
 	&MAIN2MCU_LVL_INTRTR0_outl_0_63_to_MCU_R5FSS0_CORE0_intr_160_223,
 	&MAIN2MCU_LVL_INTRTR0_outl_0_63_to_MCU_R5FSS0_CORE1_intr_160_223,
-	&MAIN2MCU_LVL_INTRTR0_outl_56_63_to_WKUP_TIFS0_nvic_64_71,
-	&MAIN2MCU_LVL_INTRTR0_outl_56_63_to_WKUP_HSM0_nvic_64_71,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MAIN2MCU_LVL_INTRTR0 = {
 	.id = TISCI_DEV_MAIN2MCU_LVL_INTRTR0,
-	.n_if = 4,
+	.n_if = 2,
 	.p_if = &tisci_if_MAIN2MCU_LVL_INTRTR0[0],
 };
 
@@ -1297,27 +1283,13 @@ const struct Sciclient_rmIrqIf MAIN2MCU_PLS_INTRTR0_outp_0_47_to_MCU_R5FSS0_CORE
 	.rid = TISCI_DEV_MCU_R5FSS0_CORE1,
 	.rbase = 224,
 };
-const struct Sciclient_rmIrqIf MAIN2MCU_PLS_INTRTR0_outp_40_47_to_WKUP_TIFS0_nvic_72_79 = {
-	.lbase = 40,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_TIFS0,
-	.rbase = 72,
-};
-const struct Sciclient_rmIrqIf MAIN2MCU_PLS_INTRTR0_outp_40_47_to_WKUP_HSM0_nvic_72_79 = {
-	.lbase = 40,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_HSM0,
-	.rbase = 72,
-};
 const struct Sciclient_rmIrqIf * const tisci_if_MAIN2MCU_PLS_INTRTR0[] = {
 	&MAIN2MCU_PLS_INTRTR0_outp_0_47_to_MCU_R5FSS0_CORE0_intr_224_271,
 	&MAIN2MCU_PLS_INTRTR0_outp_0_47_to_MCU_R5FSS0_CORE1_intr_224_271,
-	&MAIN2MCU_PLS_INTRTR0_outp_40_47_to_WKUP_TIFS0_nvic_72_79,
-	&MAIN2MCU_PLS_INTRTR0_outp_40_47_to_WKUP_HSM0_nvic_72_79,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MAIN2MCU_PLS_INTRTR0 = {
 	.id = TISCI_DEV_MAIN2MCU_PLS_INTRTR0,
-	.n_if = 4,
+	.n_if = 2,
 	.p_if = &tisci_if_MAIN2MCU_PLS_INTRTR0[0],
 };
 
@@ -1441,18 +1413,6 @@ const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_0_15_to_MCU_R5FSS0_CORE
 	.rid = TISCI_DEV_MCU_R5FSS0_CORE1,
 	.rbase = 124,
 };
-const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_0_11_to_WKUP_TIFS0_nvic_184_195 = {
-	.lbase = 0,
-	.len = 12,
-	.rid = TISCI_DEV_WKUP_TIFS0,
-	.rbase = 184,
-};
-const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_0_11_to_WKUP_HSM0_nvic_184_195 = {
-	.lbase = 0,
-	.len = 12,
-	.rid = TISCI_DEV_WKUP_HSM0,
-	.rbase = 184,
-};
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_8_15_to_WKUP_ESM0_esm_pls_event0_120_127 = {
 	.lbase = 8,
 	.len = 8,
@@ -1477,17 +1437,17 @@ const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_12_19_to_MCU_NAVSS0_UDM
 	.rid = TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0,
 	.rbase = 4,
 };
-const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_960_975 = {
+const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_960_975 = {
 	.lbase = 16,
 	.len = 16,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
 	.rbase = 960,
 };
-const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_GIC500SS_spi_928_943 = {
+const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_960_975 = {
 	.lbase = 16,
 	.len = 16,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 928,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rbase = 960,
 };
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS0_CORE0_intr_488_503 = {
 	.lbase = 16,
@@ -1516,14 +1476,12 @@ const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS1_CORE1_i
 const struct Sciclient_rmIrqIf * const tisci_if_WKUP_GPIOMUX_INTRTR0[] = {
 	&WKUP_GPIOMUX_INTRTR0_outp_0_15_to_MCU_R5FSS0_CORE0_intr_124_139,
 	&WKUP_GPIOMUX_INTRTR0_outp_0_15_to_MCU_R5FSS0_CORE1_intr_124_139,
-	&WKUP_GPIOMUX_INTRTR0_outp_0_11_to_WKUP_TIFS0_nvic_184_195,
-	&WKUP_GPIOMUX_INTRTR0_outp_0_11_to_WKUP_HSM0_nvic_184_195,
 	&WKUP_GPIOMUX_INTRTR0_outp_8_15_to_WKUP_ESM0_esm_pls_event0_120_127,
 	&WKUP_GPIOMUX_INTRTR0_outp_8_15_to_WKUP_ESM0_esm_pls_event1_128_135,
 	&WKUP_GPIOMUX_INTRTR0_outp_8_15_to_WKUP_ESM0_esm_pls_event2_136_143,
 	&WKUP_GPIOMUX_INTRTR0_outp_12_19_to_MCU_NAVSS0_UDMASS_INTA_0_intaggr_levi_pend_4_11,
-	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_960_975,
-	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER0_GIC500SS_spi_928_943,
+	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_960_975,
+	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_960_975,
 	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS0_CORE0_intr_488_503,
 	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS0_CORE1_intr_488_503,
 	&WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS1_CORE0_intr_488_503,
@@ -1531,7 +1489,7 @@ const struct Sciclient_rmIrqIf * const tisci_if_WKUP_GPIOMUX_INTRTR0[] = {
 };
 static const struct Sciclient_rmIrqNode tisci_irq_WKUP_GPIOMUX_INTRTR0 = {
 	.id = TISCI_DEV_WKUP_GPIOMUX_INTRTR0,
-	.n_if = 14,
+	.n_if = 12,
 	.p_if = &tisci_if_WKUP_GPIOMUX_INTRTR0[0],
 };
 
@@ -1551,20 +1509,20 @@ static const struct Sciclient_rmIrqNode tisci_irq_J7AEP_GPU_BXS464_WRAP0 = {
 	.p_if = &tisci_if_J7AEP_GPU_BXS464_WRAP0[0],
 };
 
-/* Start of J7AEP_GPU_BXS464_WRAP0_COMMON_0 interface definition */
-const struct Sciclient_rmIrqIf J7AEP_GPU_BXS464_WRAP0_COMMON_0_os_irq_0_3_to_MAIN2MCU_LVL_INTRTR0_in_312_315 = {
+/* Start of J7AEP_GPU_BXS464_WRAP0_GPU_SS_0 interface definition */
+const struct Sciclient_rmIrqIf J7AEP_GPU_BXS464_WRAP0_GPU_SS_0_os_irq_0_3_to_MAIN2MCU_LVL_INTRTR0_in_312_315 = {
 	.lbase = 0,
 	.len = 4,
 	.rid = TISCI_DEV_MAIN2MCU_LVL_INTRTR0,
 	.rbase = 312,
 };
-const struct Sciclient_rmIrqIf * const tisci_if_J7AEP_GPU_BXS464_WRAP0_COMMON_0[] = {
-	&J7AEP_GPU_BXS464_WRAP0_COMMON_0_os_irq_0_3_to_MAIN2MCU_LVL_INTRTR0_in_312_315,
+const struct Sciclient_rmIrqIf * const tisci_if_J7AEP_GPU_BXS464_WRAP0_GPU_SS_0[] = {
+	&J7AEP_GPU_BXS464_WRAP0_GPU_SS_0_os_irq_0_3_to_MAIN2MCU_LVL_INTRTR0_in_312_315,
 };
-static const struct Sciclient_rmIrqNode tisci_irq_J7AEP_GPU_BXS464_WRAP0_COMMON_0 = {
-	.id = TISCI_DEV_J7AEP_GPU_BXS464_WRAP0_COMMON_0,
+static const struct Sciclient_rmIrqNode tisci_irq_J7AEP_GPU_BXS464_WRAP0_GPU_SS_0 = {
+	.id = TISCI_DEV_J7AEP_GPU_BXS464_WRAP0_GPU_SS_0,
 	.n_if = 1,
-	.p_if = &tisci_if_J7AEP_GPU_BXS464_WRAP0_COMMON_0[0],
+	.p_if = &tisci_if_J7AEP_GPU_BXS464_WRAP0_GPU_SS_0[0],
 };
 
 /* Start of DDR0 interface definition */
@@ -1730,17 +1688,17 @@ const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_0_15_to_R5FSS1_CORE1_intr_39
 	.rid = TISCI_DEV_R5FSS1_CORE1,
 	.rbase = 396,
 };
-const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_392_447 = {
+const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_392_447 = {
 	.lbase = 8,
 	.len = 56,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
 	.rbase = 392,
 };
-const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_360_415 = {
+const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_392_447 = {
 	.lbase = 8,
 	.len = 56,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 360,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rbase = 392,
 };
 const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_16_31_to_NAVSS0_UDMASS_INTA_0_intaggr_levi_pend_116_131 = {
 	.lbase = 16,
@@ -1761,8 +1719,8 @@ const struct Sciclient_rmIrqIf * const tisci_if_GPIOMUX_INTRTR0[] = {
 	&GPIOMUX_INTRTR0_outp_0_15_to_R5FSS1_CORE0_intr_396_411,
 	&GPIOMUX_INTRTR0_outp_16_31_to_R5FSS1_CORE1_intr_176_191,
 	&GPIOMUX_INTRTR0_outp_0_15_to_R5FSS1_CORE1_intr_396_411,
-	&GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_392_447,
-	&GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_360_415,
+	&GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_392_447,
+	&GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_392_447,
 	&GPIOMUX_INTRTR0_outp_16_31_to_NAVSS0_UDMASS_INTA_0_intaggr_levi_pend_116_131,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_GPIOMUX_INTRTR0 = {
@@ -1772,17 +1730,17 @@ static const struct Sciclient_rmIrqNode tisci_irq_GPIOMUX_INTRTR0 = {
 };
 
 /* Start of CMPEVENT_INTRTR0 interface definition */
-const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_544_547 = {
+const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_544_547 = {
 	.lbase = 0,
 	.len = 4,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
 	.rbase = 544,
 };
-const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_GIC500SS_spi_512_515 = {
+const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_544_547 = {
 	.lbase = 0,
 	.len = 4,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 512,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rbase = 544,
 };
 const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_4_7_to_MAIN2MCU_PLS_INTRTR0_in_96_99 = {
 	.lbase = 4,
@@ -1821,8 +1779,8 @@ const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_12_15_to_NAVSS0_UDMASS_INTA
 	.rbase = 108,
 };
 const struct Sciclient_rmIrqIf * const tisci_if_CMPEVENT_INTRTR0[] = {
-	&CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_544_547,
-	&CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER0_GIC500SS_spi_512_515,
+	&CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_544_547,
+	&CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_544_547,
 	&CMPEVENT_INTRTR0_outp_4_7_to_MAIN2MCU_PLS_INTRTR0_in_96_99,
 	&CMPEVENT_INTRTR0_outp_8_11_to_R5FSS0_CORE0_intr_326_329,
 	&CMPEVENT_INTRTR0_outp_8_11_to_R5FSS0_CORE1_intr_326_329,
@@ -2073,20 +2031,20 @@ static const struct Sciclient_rmIrqNode tisci_irq_EPWM5 = {
 	.p_if = &tisci_if_EPWM5[0],
 };
 
-/* Start of K3_VPU_WAVE521CL0 interface definition */
-const struct Sciclient_rmIrqIf K3_VPU_WAVE521CL0_vpu_wave521cl_intr_0_0_to_MAIN2MCU_LVL_INTRTR0_in_263_263 = {
+/* Start of CODEC0 interface definition */
+const struct Sciclient_rmIrqIf CODEC0_vpu_wave521cl_intr_0_0_to_MAIN2MCU_LVL_INTRTR0_in_263_263 = {
 	.lbase = 0,
 	.len = 1,
 	.rid = TISCI_DEV_MAIN2MCU_LVL_INTRTR0,
 	.rbase = 263,
 };
-const struct Sciclient_rmIrqIf * const tisci_if_K3_VPU_WAVE521CL0[] = {
-	&K3_VPU_WAVE521CL0_vpu_wave521cl_intr_0_0_to_MAIN2MCU_LVL_INTRTR0_in_263_263,
+const struct Sciclient_rmIrqIf * const tisci_if_CODEC0[] = {
+	&CODEC0_vpu_wave521cl_intr_0_0_to_MAIN2MCU_LVL_INTRTR0_in_263_263,
 };
-static const struct Sciclient_rmIrqNode tisci_irq_K3_VPU_WAVE521CL0 = {
-	.id = TISCI_DEV_K3_VPU_WAVE521CL0,
+static const struct Sciclient_rmIrqNode tisci_irq_CODEC0 = {
+	.id = TISCI_DEV_CODEC0,
 	.n_if = 1,
-	.p_if = &tisci_if_K3_VPU_WAVE521CL0[0],
+	.p_if = &tisci_if_CODEC0[0],
 };
 
 /* Start of MCAN0 interface definition */
@@ -2812,41 +2770,41 @@ static const struct Sciclient_rmIrqNode tisci_irq_NAVSS0_CPTS_0 = {
 };
 
 /* Start of NAVSS0_INTR_0 interface definition */
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_64_127 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_64_127 = {
 	.lbase = 0,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
 	.rbase = 64,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_448_511 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_448_511 = {
 	.lbase = 64,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
 	.rbase = 448,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_672_735 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_672_735 = {
 	.lbase = 128,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
 	.rbase = 672,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_32_95 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_64_127 = {
 	.lbase = 0,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 32,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rbase = 64,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_GIC500SS_spi_416_479 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_448_511 = {
 	.lbase = 64,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 416,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rbase = 448,
 };
-const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_GIC500SS_spi_640_703 = {
+const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_672_735 = {
 	.lbase = 128,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 640,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rbase = 672,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_192_223_to_R5FSS0_CORE0_intr_224_255 = {
 	.lbase = 192,
@@ -2897,12 +2855,12 @@ const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_408_439_to_VUSR_DUAL0_v1_
 	.rbase = 32,
 };
 const struct Sciclient_rmIrqIf * const tisci_if_NAVSS0_INTR_0[] = {
-	&NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_64_127,
-	&NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_448_511,
-	&NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_672_735,
-	&NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER0_GIC500SS_spi_32_95,
-	&NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER0_GIC500SS_spi_416_479,
-	&NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER0_GIC500SS_spi_640_703,
+	&NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_64_127,
+	&NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_448_511,
+	&NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_672_735,
+	&NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_64_127,
+	&NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_448_511,
+	&NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_672_735,
 	&NAVSS0_INTR_0_outl_intr_192_223_to_R5FSS0_CORE0_intr_224_255,
 	&NAVSS0_INTR_0_outl_intr_224_255_to_R5FSS0_CORE1_intr_224_255,
 	&NAVSS0_INTR_0_outl_intr_256_287_to_R5FSS1_CORE0_intr_224_255,
@@ -3587,30 +3545,6 @@ const struct Sciclient_rmIrqIf MCU_NAVSS0_INTR_ROUTER_0_outl_intr_0_23_to_MCU_R5
 	.rid = TISCI_DEV_MCU_R5FSS0_CORE0,
 	.rbase = 64,
 };
-const struct Sciclient_rmIrqIf MCU_NAVSS0_INTR_ROUTER_0_outl_intr_24_31_to_WKUP_TIFS0_nvic_48_55 = {
-	.lbase = 24,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_TIFS0,
-	.rbase = 48,
-};
-const struct Sciclient_rmIrqIf MCU_NAVSS0_INTR_ROUTER_0_outl_intr_56_63_to_WKUP_TIFS0_nvic_56_63 = {
-	.lbase = 56,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_TIFS0,
-	.rbase = 56,
-};
-const struct Sciclient_rmIrqIf MCU_NAVSS0_INTR_ROUTER_0_outl_intr_24_31_to_WKUP_HSM0_nvic_48_55 = {
-	.lbase = 24,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_HSM0,
-	.rbase = 48,
-};
-const struct Sciclient_rmIrqIf MCU_NAVSS0_INTR_ROUTER_0_outl_intr_56_63_to_WKUP_HSM0_nvic_56_63 = {
-	.lbase = 56,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_HSM0,
-	.rbase = 56,
-};
 const struct Sciclient_rmIrqIf MCU_NAVSS0_INTR_ROUTER_0_outl_intr_32_55_to_MCU_R5FSS0_CORE1_intr_64_87 = {
 	.lbase = 32,
 	.len = 24,
@@ -3619,15 +3553,11 @@ const struct Sciclient_rmIrqIf MCU_NAVSS0_INTR_ROUTER_0_outl_intr_32_55_to_MCU_R
 };
 const struct Sciclient_rmIrqIf * const tisci_if_MCU_NAVSS0_INTR_ROUTER_0[] = {
 	&MCU_NAVSS0_INTR_ROUTER_0_outl_intr_0_23_to_MCU_R5FSS0_CORE0_intr_64_87,
-	&MCU_NAVSS0_INTR_ROUTER_0_outl_intr_24_31_to_WKUP_TIFS0_nvic_48_55,
-	&MCU_NAVSS0_INTR_ROUTER_0_outl_intr_56_63_to_WKUP_TIFS0_nvic_56_63,
-	&MCU_NAVSS0_INTR_ROUTER_0_outl_intr_24_31_to_WKUP_HSM0_nvic_48_55,
-	&MCU_NAVSS0_INTR_ROUTER_0_outl_intr_56_63_to_WKUP_HSM0_nvic_56_63,
 	&MCU_NAVSS0_INTR_ROUTER_0_outl_intr_32_55_to_MCU_R5FSS0_CORE1_intr_64_87,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MCU_NAVSS0_INTR_ROUTER_0 = {
 	.id = TISCI_DEV_MCU_NAVSS0_INTR_ROUTER_0,
-	.n_if = 6,
+	.n_if = 2,
 	.p_if = &tisci_if_MCU_NAVSS0_INTR_ROUTER_0[0],
 };
 
@@ -3822,17 +3752,17 @@ static const struct Sciclient_rmIrqNode tisci_irq_SA2_UL0 = {
 };
 
 /* Start of MCU_SA3_SS0_INTAGGR_0 interface definition */
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_896_903 = {
+const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_896_903 = {
 	.lbase = 0,
 	.len = 8,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
 	.rbase = 896,
 };
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_GIC500SS_spi_864_871 = {
+const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_896_903 = {
 	.lbase = 0,
 	.len = 8,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 864,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rbase = 896,
 };
 const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE0_intr_88_95 = {
 	.lbase = 0,
@@ -3845,18 +3775,6 @@ const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5
 	.len = 8,
 	.rid = TISCI_DEV_MCU_R5FSS0_CORE1,
 	.rbase = 88,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_WKUP_TIFS0_nvic_80_87 = {
-	.lbase = 0,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_TIFS0,
-	.rbase = 80,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_WKUP_HSM0_nvic_80_87 = {
-	.lbase = 0,
-	.len = 8,
-	.rid = TISCI_DEV_WKUP_HSM0,
-	.rbase = 80,
 };
 const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_2_3_to_R5FSS0_CORE0_intr_148_149 = {
 	.lbase = 2,
@@ -3883,12 +3801,10 @@ const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_4_5_to_R5FSS1
 	.rbase = 148,
 };
 const struct Sciclient_rmIrqIf * const tisci_if_MCU_SA3_SS0_INTAGGR_0[] = {
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_896_903,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_GIC500SS_spi_864_871,
+	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_896_903,
+	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_896_903,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE0_intr_88_95,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE1_intr_88_95,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_WKUP_TIFS0_nvic_80_87,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_WKUP_HSM0_nvic_80_87,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_2_3_to_R5FSS0_CORE0_intr_148_149,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_2_3_to_R5FSS0_CORE1_intr_148_149,
 	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_4_5_to_R5FSS1_CORE0_intr_148_149,
@@ -3896,7 +3812,7 @@ const struct Sciclient_rmIrqIf * const tisci_if_MCU_SA3_SS0_INTAGGR_0[] = {
 };
 static const struct Sciclient_rmIrqNode tisci_irq_MCU_SA3_SS0_INTAGGR_0 = {
 	.id = TISCI_DEV_MCU_SA3_SS0_INTAGGR_0,
-	.n_if = 10,
+	.n_if = 8,
 	.p_if = &tisci_if_MCU_SA3_SS0_INTAGGR_0[0],
 };
 
@@ -4330,7 +4246,7 @@ const struct Sciclient_rmIrqNode *const gRmIrqTree[] = {
 	&tisci_irq_TIMESYNC_INTRTR0,
 	&tisci_irq_WKUP_GPIOMUX_INTRTR0,
 	&tisci_irq_J7AEP_GPU_BXS464_WRAP0,
-	&tisci_irq_J7AEP_GPU_BXS464_WRAP0_COMMON_0,
+	&tisci_irq_J7AEP_GPU_BXS464_WRAP0_GPU_SS_0,
 	&tisci_irq_DDR0,
 	&tisci_irq_DDR1,
 	&tisci_irq_UART0,
@@ -4346,7 +4262,7 @@ const struct Sciclient_rmIrqNode *const gRmIrqTree[] = {
 	&tisci_irq_EPWM3,
 	&tisci_irq_EPWM4,
 	&tisci_irq_EPWM5,
-	&tisci_irq_K3_VPU_WAVE521CL0,
+	&tisci_irq_CODEC0,
 	&tisci_irq_MCAN0,
 	&tisci_irq_MCAN1,
 	&tisci_irq_MCAN2,

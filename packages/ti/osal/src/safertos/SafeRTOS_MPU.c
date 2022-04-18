@@ -146,7 +146,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         },
         /* Size is 512KB */
         .ulRegionSize           = (512U * 1024U),
-#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
         /* Size is 1MB */
         .ulRegionSize           = (1024U * 1024U),
 #endif
@@ -180,7 +180,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         .ulRegionSize           = (1U * 1024U * 1024U),
 #endif
 
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
         /* Size is 4MB */
         .ulRegionSize           = (4U * 1024U * 1024U),
 #endif

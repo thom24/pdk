@@ -74,6 +74,10 @@
 #include <ti/drv/sciclient/soc/V4/sciclient_defaultBoardcfg.h>
 #endif
 
+#if defined (SOC_J784S4)
+#include <ti/drv/sciclient/soc/V6/sciclient_defaultBoardcfg.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -164,7 +168,7 @@ typedef struct
     /**< Variable to check whether Core context is secure/non-secure. This has
      * to be given by the user via configParams. Default value is 0.
      */
-#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
+#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined (SOC_J784S4))
     uint32_t              pmBoardConfigComplete;
     /**< Status flag indicating PM Board config went through successfully */
     uint32_t              rmBoardConfigComplete;

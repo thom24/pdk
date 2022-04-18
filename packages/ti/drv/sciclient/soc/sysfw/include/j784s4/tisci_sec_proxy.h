@@ -52,1054 +52,1054 @@
  * Data version: 220401_082741
  *
  */
-#ifndef J784S4_SEC_PROXY_H
-#define J784S4_SEC_PROXY_H
+#ifndef J784S4_TISCI_SEC_PROXY_H
+#define J784S4_TISCI_SEC_PROXY_H
 
 /*
  * Secure Proxy configurations for MCU_0_R5_0 host
  */
 
 /** Thread ID macro for MCU_0_R5_0 notify */
-#define SEC_PROXY_MCU_0_R5_0_READ_NOTIFY_THREAD_ID (0U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_READ_NOTIFY_THREAD_ID (0U)
 /** Num messages macro for MCU_0_R5_0 notify */
-#define SEC_PROXY_MCU_0_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MCU_0_R5_0 response */
-#define SEC_PROXY_MCU_0_R5_0_READ_RESPONSE_THREAD_ID (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_READ_RESPONSE_THREAD_ID (1U)
 /** Num messages macro for MCU_0_R5_0 response */
-#define SEC_PROXY_MCU_0_R5_0_READ_RESPONSE_NUM_MESSAGES (20U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_READ_RESPONSE_NUM_MESSAGES (20U)
 
 /** Thread ID macro for MCU_0_R5_0 high_priority */
-#define SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (2U)
 /** Num messages macro for MCU_0_R5_0 high_priority */
-#define SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_0 low_priority */
-#define SEC_PROXY_MCU_0_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (3U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (3U)
 /** Num messages macro for MCU_0_R5_0 low_priority */
-#define SEC_PROXY_MCU_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_0 notify_resp */
-#define SEC_PROXY_MCU_0_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (4U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (4U)
 /** Num messages macro for MCU_0_R5_0 notify_resp */
-#define SEC_PROXY_MCU_0_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MCU_0_R5_1 host
  */
 
 /** Thread ID macro for MCU_0_R5_1 notify */
-#define SEC_PROXY_MCU_0_R5_1_READ_NOTIFY_THREAD_ID (5U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_READ_NOTIFY_THREAD_ID (5U)
 /** Num messages macro for MCU_0_R5_1 notify */
-#define SEC_PROXY_MCU_0_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MCU_0_R5_1 response */
-#define SEC_PROXY_MCU_0_R5_1_READ_RESPONSE_THREAD_ID (6U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_READ_RESPONSE_THREAD_ID (6U)
 /** Num messages macro for MCU_0_R5_1 response */
-#define SEC_PROXY_MCU_0_R5_1_READ_RESPONSE_NUM_MESSAGES (20U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_READ_RESPONSE_NUM_MESSAGES (20U)
 
 /** Thread ID macro for MCU_0_R5_1 high_priority */
-#define SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (7U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (7U)
 /** Num messages macro for MCU_0_R5_1 high_priority */
-#define SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_1 low_priority */
-#define SEC_PROXY_MCU_0_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (8U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (8U)
 /** Num messages macro for MCU_0_R5_1 low_priority */
-#define SEC_PROXY_MCU_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for MCU_0_R5_1 notify_resp */
-#define SEC_PROXY_MCU_0_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (9U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (9U)
 /** Num messages macro for MCU_0_R5_1 notify_resp */
-#define SEC_PROXY_MCU_0_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MCU_0_R5_2 host
  */
 
 /** Thread ID macro for MCU_0_R5_2 notify */
-#define SEC_PROXY_MCU_0_R5_2_READ_NOTIFY_THREAD_ID (10U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_READ_NOTIFY_THREAD_ID (10U)
 /** Num messages macro for MCU_0_R5_2 notify */
-#define SEC_PROXY_MCU_0_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MCU_0_R5_2 response */
-#define SEC_PROXY_MCU_0_R5_2_READ_RESPONSE_THREAD_ID (11U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_READ_RESPONSE_THREAD_ID (11U)
 /** Num messages macro for MCU_0_R5_2 response */
-#define SEC_PROXY_MCU_0_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MCU_0_R5_2 high_priority */
-#define SEC_PROXY_MCU_0_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (12U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (12U)
 /** Num messages macro for MCU_0_R5_2 high_priority */
-#define SEC_PROXY_MCU_0_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MCU_0_R5_2 low_priority */
-#define SEC_PROXY_MCU_0_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (13U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (13U)
 /** Num messages macro for MCU_0_R5_2 low_priority */
-#define SEC_PROXY_MCU_0_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MCU_0_R5_2 notify_resp */
-#define SEC_PROXY_MCU_0_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (14U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (14U)
 /** Num messages macro for MCU_0_R5_2 notify_resp */
-#define SEC_PROXY_MCU_0_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for MCU_0_R5_3 host
  */
 
 /** Thread ID macro for MCU_0_R5_3 notify */
-#define SEC_PROXY_MCU_0_R5_3_READ_NOTIFY_THREAD_ID (15U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_READ_NOTIFY_THREAD_ID (15U)
 /** Num messages macro for MCU_0_R5_3 notify */
-#define SEC_PROXY_MCU_0_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MCU_0_R5_3 response */
-#define SEC_PROXY_MCU_0_R5_3_READ_RESPONSE_THREAD_ID (16U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_READ_RESPONSE_THREAD_ID (16U)
 /** Num messages macro for MCU_0_R5_3 response */
-#define SEC_PROXY_MCU_0_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MCU_0_R5_3 high_priority */
-#define SEC_PROXY_MCU_0_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (17U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (17U)
 /** Num messages macro for MCU_0_R5_3 high_priority */
-#define SEC_PROXY_MCU_0_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MCU_0_R5_3 low_priority */
-#define SEC_PROXY_MCU_0_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (18U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (18U)
 /** Num messages macro for MCU_0_R5_3 low_priority */
-#define SEC_PROXY_MCU_0_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MCU_0_R5_3 notify_resp */
-#define SEC_PROXY_MCU_0_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (19U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (19U)
 /** Num messages macro for MCU_0_R5_3 notify_resp */
-#define SEC_PROXY_MCU_0_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MCU_0_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for A72_0 host
  */
 
 /** Thread ID macro for A72_0 notify */
-#define SEC_PROXY_A72_0_READ_NOTIFY_THREAD_ID (0U)
+#define TISCI_SEC_PROXY_A72_0_READ_NOTIFY_THREAD_ID (0U)
 /** Num messages macro for A72_0 notify */
-#define SEC_PROXY_A72_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_0 response */
-#define SEC_PROXY_A72_0_READ_RESPONSE_THREAD_ID (1U)
+#define TISCI_SEC_PROXY_A72_0_READ_RESPONSE_THREAD_ID (1U)
 /** Num messages macro for A72_0 response */
-#define SEC_PROXY_A72_0_READ_RESPONSE_NUM_MESSAGES (30U)
+#define TISCI_SEC_PROXY_A72_0_READ_RESPONSE_NUM_MESSAGES (30U)
 
 /** Thread ID macro for A72_0 high_priority */
-#define SEC_PROXY_A72_0_WRITE_HIGH_PRIORITY_THREAD_ID (2U)
+#define TISCI_SEC_PROXY_A72_0_WRITE_HIGH_PRIORITY_THREAD_ID (2U)
 /** Num messages macro for A72_0 high_priority */
-#define SEC_PROXY_A72_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
+#define TISCI_SEC_PROXY_A72_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for A72_0 low_priority */
-#define SEC_PROXY_A72_0_WRITE_LOW_PRIORITY_THREAD_ID (3U)
+#define TISCI_SEC_PROXY_A72_0_WRITE_LOW_PRIORITY_THREAD_ID (3U)
 /** Num messages macro for A72_0 low_priority */
-#define SEC_PROXY_A72_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
+#define TISCI_SEC_PROXY_A72_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
 
 /** Thread ID macro for A72_0 notify_resp */
-#define SEC_PROXY_A72_0_WRITE_NOTIFY_RESP_THREAD_ID (4U)
+#define TISCI_SEC_PROXY_A72_0_WRITE_NOTIFY_RESP_THREAD_ID (4U)
 /** Num messages macro for A72_0 notify_resp */
-#define SEC_PROXY_A72_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for A72_1 host
  */
 
 /** Thread ID macro for A72_1 notify */
-#define SEC_PROXY_A72_1_READ_NOTIFY_THREAD_ID (5U)
+#define TISCI_SEC_PROXY_A72_1_READ_NOTIFY_THREAD_ID (5U)
 /** Num messages macro for A72_1 notify */
-#define SEC_PROXY_A72_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_1 response */
-#define SEC_PROXY_A72_1_READ_RESPONSE_THREAD_ID (6U)
+#define TISCI_SEC_PROXY_A72_1_READ_RESPONSE_THREAD_ID (6U)
 /** Num messages macro for A72_1 response */
-#define SEC_PROXY_A72_1_READ_RESPONSE_NUM_MESSAGES (30U)
+#define TISCI_SEC_PROXY_A72_1_READ_RESPONSE_NUM_MESSAGES (30U)
 
 /** Thread ID macro for A72_1 high_priority */
-#define SEC_PROXY_A72_1_WRITE_HIGH_PRIORITY_THREAD_ID (7U)
+#define TISCI_SEC_PROXY_A72_1_WRITE_HIGH_PRIORITY_THREAD_ID (7U)
 /** Num messages macro for A72_1 high_priority */
-#define SEC_PROXY_A72_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
+#define TISCI_SEC_PROXY_A72_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (10U)
 
 /** Thread ID macro for A72_1 low_priority */
-#define SEC_PROXY_A72_1_WRITE_LOW_PRIORITY_THREAD_ID (8U)
+#define TISCI_SEC_PROXY_A72_1_WRITE_LOW_PRIORITY_THREAD_ID (8U)
 /** Num messages macro for A72_1 low_priority */
-#define SEC_PROXY_A72_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
+#define TISCI_SEC_PROXY_A72_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
 
 /** Thread ID macro for A72_1 notify_resp */
-#define SEC_PROXY_A72_1_WRITE_NOTIFY_RESP_THREAD_ID (9U)
+#define TISCI_SEC_PROXY_A72_1_WRITE_NOTIFY_RESP_THREAD_ID (9U)
 /** Num messages macro for A72_1 notify_resp */
-#define SEC_PROXY_A72_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for A72_2 host
  */
 
 /** Thread ID macro for A72_2 notify */
-#define SEC_PROXY_A72_2_READ_NOTIFY_THREAD_ID (10U)
+#define TISCI_SEC_PROXY_A72_2_READ_NOTIFY_THREAD_ID (10U)
 /** Num messages macro for A72_2 notify */
-#define SEC_PROXY_A72_2_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_2_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_2 response */
-#define SEC_PROXY_A72_2_READ_RESPONSE_THREAD_ID (11U)
+#define TISCI_SEC_PROXY_A72_2_READ_RESPONSE_THREAD_ID (11U)
 /** Num messages macro for A72_2 response */
-#define SEC_PROXY_A72_2_READ_RESPONSE_NUM_MESSAGES (22U)
+#define TISCI_SEC_PROXY_A72_2_READ_RESPONSE_NUM_MESSAGES (22U)
 
 /** Thread ID macro for A72_2 high_priority */
-#define SEC_PROXY_A72_2_WRITE_HIGH_PRIORITY_THREAD_ID (12U)
+#define TISCI_SEC_PROXY_A72_2_WRITE_HIGH_PRIORITY_THREAD_ID (12U)
 /** Num messages macro for A72_2 high_priority */
-#define SEC_PROXY_A72_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_2 low_priority */
-#define SEC_PROXY_A72_2_WRITE_LOW_PRIORITY_THREAD_ID (13U)
+#define TISCI_SEC_PROXY_A72_2_WRITE_LOW_PRIORITY_THREAD_ID (13U)
 /** Num messages macro for A72_2 low_priority */
-#define SEC_PROXY_A72_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
+#define TISCI_SEC_PROXY_A72_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
 
 /** Thread ID macro for A72_2 notify_resp */
-#define SEC_PROXY_A72_2_WRITE_NOTIFY_RESP_THREAD_ID (14U)
+#define TISCI_SEC_PROXY_A72_2_WRITE_NOTIFY_RESP_THREAD_ID (14U)
 /** Num messages macro for A72_2 notify_resp */
-#define SEC_PROXY_A72_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for A72_3 host
  */
 
 /** Thread ID macro for A72_3 notify */
-#define SEC_PROXY_A72_3_READ_NOTIFY_THREAD_ID (15U)
+#define TISCI_SEC_PROXY_A72_3_READ_NOTIFY_THREAD_ID (15U)
 /** Num messages macro for A72_3 notify */
-#define SEC_PROXY_A72_3_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_3_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_3 response */
-#define SEC_PROXY_A72_3_READ_RESPONSE_THREAD_ID (16U)
+#define TISCI_SEC_PROXY_A72_3_READ_RESPONSE_THREAD_ID (16U)
 /** Num messages macro for A72_3 response */
-#define SEC_PROXY_A72_3_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_A72_3_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for A72_3 high_priority */
-#define SEC_PROXY_A72_3_WRITE_HIGH_PRIORITY_THREAD_ID (17U)
+#define TISCI_SEC_PROXY_A72_3_WRITE_HIGH_PRIORITY_THREAD_ID (17U)
 /** Num messages macro for A72_3 high_priority */
-#define SEC_PROXY_A72_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_3 low_priority */
-#define SEC_PROXY_A72_3_WRITE_LOW_PRIORITY_THREAD_ID (18U)
+#define TISCI_SEC_PROXY_A72_3_WRITE_LOW_PRIORITY_THREAD_ID (18U)
 /** Num messages macro for A72_3 low_priority */
-#define SEC_PROXY_A72_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_A72_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for A72_3 notify_resp */
-#define SEC_PROXY_A72_3_WRITE_NOTIFY_RESP_THREAD_ID (19U)
+#define TISCI_SEC_PROXY_A72_3_WRITE_NOTIFY_RESP_THREAD_ID (19U)
 /** Num messages macro for A72_3 notify_resp */
-#define SEC_PROXY_A72_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for A72_4 host
  */
 
 /** Thread ID macro for A72_4 notify */
-#define SEC_PROXY_A72_4_READ_NOTIFY_THREAD_ID (20U)
+#define TISCI_SEC_PROXY_A72_4_READ_NOTIFY_THREAD_ID (20U)
 /** Num messages macro for A72_4 notify */
-#define SEC_PROXY_A72_4_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_4_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_4 response */
-#define SEC_PROXY_A72_4_READ_RESPONSE_THREAD_ID (21U)
+#define TISCI_SEC_PROXY_A72_4_READ_RESPONSE_THREAD_ID (21U)
 /** Num messages macro for A72_4 response */
-#define SEC_PROXY_A72_4_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_A72_4_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for A72_4 high_priority */
-#define SEC_PROXY_A72_4_WRITE_HIGH_PRIORITY_THREAD_ID (22U)
+#define TISCI_SEC_PROXY_A72_4_WRITE_HIGH_PRIORITY_THREAD_ID (22U)
 /** Num messages macro for A72_4 high_priority */
-#define SEC_PROXY_A72_4_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_4_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_4 low_priority */
-#define SEC_PROXY_A72_4_WRITE_LOW_PRIORITY_THREAD_ID (23U)
+#define TISCI_SEC_PROXY_A72_4_WRITE_LOW_PRIORITY_THREAD_ID (23U)
 /** Num messages macro for A72_4 low_priority */
-#define SEC_PROXY_A72_4_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_A72_4_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for A72_4 notify_resp */
-#define SEC_PROXY_A72_4_WRITE_NOTIFY_RESP_THREAD_ID (24U)
+#define TISCI_SEC_PROXY_A72_4_WRITE_NOTIFY_RESP_THREAD_ID (24U)
 /** Num messages macro for A72_4 notify_resp */
-#define SEC_PROXY_A72_4_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_4_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for A72_5 host
  */
 
 /** Thread ID macro for A72_5 notify */
-#define SEC_PROXY_A72_5_READ_NOTIFY_THREAD_ID (25U)
+#define TISCI_SEC_PROXY_A72_5_READ_NOTIFY_THREAD_ID (25U)
 /** Num messages macro for A72_5 notify */
-#define SEC_PROXY_A72_5_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_5_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_5 response */
-#define SEC_PROXY_A72_5_READ_RESPONSE_THREAD_ID (26U)
+#define TISCI_SEC_PROXY_A72_5_READ_RESPONSE_THREAD_ID (26U)
 /** Num messages macro for A72_5 response */
-#define SEC_PROXY_A72_5_READ_RESPONSE_NUM_MESSAGES (22U)
+#define TISCI_SEC_PROXY_A72_5_READ_RESPONSE_NUM_MESSAGES (22U)
 
 /** Thread ID macro for A72_5 high_priority */
-#define SEC_PROXY_A72_5_WRITE_HIGH_PRIORITY_THREAD_ID (27U)
+#define TISCI_SEC_PROXY_A72_5_WRITE_HIGH_PRIORITY_THREAD_ID (27U)
 /** Num messages macro for A72_5 high_priority */
-#define SEC_PROXY_A72_5_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_5_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_5 low_priority */
-#define SEC_PROXY_A72_5_WRITE_LOW_PRIORITY_THREAD_ID (28U)
+#define TISCI_SEC_PROXY_A72_5_WRITE_LOW_PRIORITY_THREAD_ID (28U)
 /** Num messages macro for A72_5 low_priority */
-#define SEC_PROXY_A72_5_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
+#define TISCI_SEC_PROXY_A72_5_WRITE_LOW_PRIORITY_NUM_MESSAGES (20U)
 
 /** Thread ID macro for A72_5 notify_resp */
-#define SEC_PROXY_A72_5_WRITE_NOTIFY_RESP_THREAD_ID (29U)
+#define TISCI_SEC_PROXY_A72_5_WRITE_NOTIFY_RESP_THREAD_ID (29U)
 /** Num messages macro for A72_5 notify_resp */
-#define SEC_PROXY_A72_5_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_5_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for A72_6 host
  */
 
 /** Thread ID macro for A72_6 notify */
-#define SEC_PROXY_A72_6_READ_NOTIFY_THREAD_ID (30U)
+#define TISCI_SEC_PROXY_A72_6_READ_NOTIFY_THREAD_ID (30U)
 /** Num messages macro for A72_6 notify */
-#define SEC_PROXY_A72_6_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_6_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_6 response */
-#define SEC_PROXY_A72_6_READ_RESPONSE_THREAD_ID (31U)
+#define TISCI_SEC_PROXY_A72_6_READ_RESPONSE_THREAD_ID (31U)
 /** Num messages macro for A72_6 response */
-#define SEC_PROXY_A72_6_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_A72_6_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for A72_6 high_priority */
-#define SEC_PROXY_A72_6_WRITE_HIGH_PRIORITY_THREAD_ID (32U)
+#define TISCI_SEC_PROXY_A72_6_WRITE_HIGH_PRIORITY_THREAD_ID (32U)
 /** Num messages macro for A72_6 high_priority */
-#define SEC_PROXY_A72_6_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_6_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_6 low_priority */
-#define SEC_PROXY_A72_6_WRITE_LOW_PRIORITY_THREAD_ID (33U)
+#define TISCI_SEC_PROXY_A72_6_WRITE_LOW_PRIORITY_THREAD_ID (33U)
 /** Num messages macro for A72_6 low_priority */
-#define SEC_PROXY_A72_6_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_A72_6_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for A72_6 notify_resp */
-#define SEC_PROXY_A72_6_WRITE_NOTIFY_RESP_THREAD_ID (34U)
+#define TISCI_SEC_PROXY_A72_6_WRITE_NOTIFY_RESP_THREAD_ID (34U)
 /** Num messages macro for A72_6 notify_resp */
-#define SEC_PROXY_A72_6_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_6_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for A72_7 host
  */
 
 /** Thread ID macro for A72_7 notify */
-#define SEC_PROXY_A72_7_READ_NOTIFY_THREAD_ID (35U)
+#define TISCI_SEC_PROXY_A72_7_READ_NOTIFY_THREAD_ID (35U)
 /** Num messages macro for A72_7 notify */
-#define SEC_PROXY_A72_7_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_7_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_7 response */
-#define SEC_PROXY_A72_7_READ_RESPONSE_THREAD_ID (36U)
+#define TISCI_SEC_PROXY_A72_7_READ_RESPONSE_THREAD_ID (36U)
 /** Num messages macro for A72_7 response */
-#define SEC_PROXY_A72_7_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_A72_7_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for A72_7 high_priority */
-#define SEC_PROXY_A72_7_WRITE_HIGH_PRIORITY_THREAD_ID (37U)
+#define TISCI_SEC_PROXY_A72_7_WRITE_HIGH_PRIORITY_THREAD_ID (37U)
 /** Num messages macro for A72_7 high_priority */
-#define SEC_PROXY_A72_7_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_7_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for A72_7 low_priority */
-#define SEC_PROXY_A72_7_WRITE_LOW_PRIORITY_THREAD_ID (38U)
+#define TISCI_SEC_PROXY_A72_7_WRITE_LOW_PRIORITY_THREAD_ID (38U)
 /** Num messages macro for A72_7 low_priority */
-#define SEC_PROXY_A72_7_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_A72_7_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for A72_7 notify_resp */
-#define SEC_PROXY_A72_7_WRITE_NOTIFY_RESP_THREAD_ID (39U)
+#define TISCI_SEC_PROXY_A72_7_WRITE_NOTIFY_RESP_THREAD_ID (39U)
 /** Num messages macro for A72_7 notify_resp */
-#define SEC_PROXY_A72_7_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_A72_7_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_0_0 host
  */
 
 /** Thread ID macro for C7X_0_0 notify */
-#define SEC_PROXY_C7X_0_0_READ_NOTIFY_THREAD_ID (40U)
+#define TISCI_SEC_PROXY_C7X_0_0_READ_NOTIFY_THREAD_ID (40U)
 /** Num messages macro for C7X_0_0 notify */
-#define SEC_PROXY_C7X_0_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_0_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_0_0 response */
-#define SEC_PROXY_C7X_0_0_READ_RESPONSE_THREAD_ID (41U)
+#define TISCI_SEC_PROXY_C7X_0_0_READ_RESPONSE_THREAD_ID (41U)
 /** Num messages macro for C7X_0_0 response */
-#define SEC_PROXY_C7X_0_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_0_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_0_0 high_priority */
-#define SEC_PROXY_C7X_0_0_WRITE_HIGH_PRIORITY_THREAD_ID (42U)
+#define TISCI_SEC_PROXY_C7X_0_0_WRITE_HIGH_PRIORITY_THREAD_ID (42U)
 /** Num messages macro for C7X_0_0 high_priority */
-#define SEC_PROXY_C7X_0_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_0_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_0_0 low_priority */
-#define SEC_PROXY_C7X_0_0_WRITE_LOW_PRIORITY_THREAD_ID (43U)
+#define TISCI_SEC_PROXY_C7X_0_0_WRITE_LOW_PRIORITY_THREAD_ID (43U)
 /** Num messages macro for C7X_0_0 low_priority */
-#define SEC_PROXY_C7X_0_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_0_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_0_0 notify_resp */
-#define SEC_PROXY_C7X_0_0_WRITE_NOTIFY_RESP_THREAD_ID (44U)
+#define TISCI_SEC_PROXY_C7X_0_0_WRITE_NOTIFY_RESP_THREAD_ID (44U)
 /** Num messages macro for C7X_0_0 notify_resp */
-#define SEC_PROXY_C7X_0_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_0_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_0_1 host
  */
 
 /** Thread ID macro for C7X_0_1 notify */
-#define SEC_PROXY_C7X_0_1_READ_NOTIFY_THREAD_ID (45U)
+#define TISCI_SEC_PROXY_C7X_0_1_READ_NOTIFY_THREAD_ID (45U)
 /** Num messages macro for C7X_0_1 notify */
-#define SEC_PROXY_C7X_0_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_0_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_0_1 response */
-#define SEC_PROXY_C7X_0_1_READ_RESPONSE_THREAD_ID (46U)
+#define TISCI_SEC_PROXY_C7X_0_1_READ_RESPONSE_THREAD_ID (46U)
 /** Num messages macro for C7X_0_1 response */
-#define SEC_PROXY_C7X_0_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_0_1_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_0_1 high_priority */
-#define SEC_PROXY_C7X_0_1_WRITE_HIGH_PRIORITY_THREAD_ID (47U)
+#define TISCI_SEC_PROXY_C7X_0_1_WRITE_HIGH_PRIORITY_THREAD_ID (47U)
 /** Num messages macro for C7X_0_1 high_priority */
-#define SEC_PROXY_C7X_0_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_0_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_0_1 low_priority */
-#define SEC_PROXY_C7X_0_1_WRITE_LOW_PRIORITY_THREAD_ID (48U)
+#define TISCI_SEC_PROXY_C7X_0_1_WRITE_LOW_PRIORITY_THREAD_ID (48U)
 /** Num messages macro for C7X_0_1 low_priority */
-#define SEC_PROXY_C7X_0_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_0_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_0_1 notify_resp */
-#define SEC_PROXY_C7X_0_1_WRITE_NOTIFY_RESP_THREAD_ID (49U)
+#define TISCI_SEC_PROXY_C7X_0_1_WRITE_NOTIFY_RESP_THREAD_ID (49U)
 /** Num messages macro for C7X_0_1 notify_resp */
-#define SEC_PROXY_C7X_0_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_0_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_1_0 host
  */
 
 /** Thread ID macro for C7X_1_0 notify */
-#define SEC_PROXY_C7X_1_0_READ_NOTIFY_THREAD_ID (50U)
+#define TISCI_SEC_PROXY_C7X_1_0_READ_NOTIFY_THREAD_ID (50U)
 /** Num messages macro for C7X_1_0 notify */
-#define SEC_PROXY_C7X_1_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_1_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_1_0 response */
-#define SEC_PROXY_C7X_1_0_READ_RESPONSE_THREAD_ID (51U)
+#define TISCI_SEC_PROXY_C7X_1_0_READ_RESPONSE_THREAD_ID (51U)
 /** Num messages macro for C7X_1_0 response */
-#define SEC_PROXY_C7X_1_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_1_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_1_0 high_priority */
-#define SEC_PROXY_C7X_1_0_WRITE_HIGH_PRIORITY_THREAD_ID (52U)
+#define TISCI_SEC_PROXY_C7X_1_0_WRITE_HIGH_PRIORITY_THREAD_ID (52U)
 /** Num messages macro for C7X_1_0 high_priority */
-#define SEC_PROXY_C7X_1_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_1_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_1_0 low_priority */
-#define SEC_PROXY_C7X_1_0_WRITE_LOW_PRIORITY_THREAD_ID (53U)
+#define TISCI_SEC_PROXY_C7X_1_0_WRITE_LOW_PRIORITY_THREAD_ID (53U)
 /** Num messages macro for C7X_1_0 low_priority */
-#define SEC_PROXY_C7X_1_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_1_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_1_0 notify_resp */
-#define SEC_PROXY_C7X_1_0_WRITE_NOTIFY_RESP_THREAD_ID (54U)
+#define TISCI_SEC_PROXY_C7X_1_0_WRITE_NOTIFY_RESP_THREAD_ID (54U)
 /** Num messages macro for C7X_1_0 notify_resp */
-#define SEC_PROXY_C7X_1_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_1_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_1_1 host
  */
 
 /** Thread ID macro for C7X_1_1 notify */
-#define SEC_PROXY_C7X_1_1_READ_NOTIFY_THREAD_ID (55U)
+#define TISCI_SEC_PROXY_C7X_1_1_READ_NOTIFY_THREAD_ID (55U)
 /** Num messages macro for C7X_1_1 notify */
-#define SEC_PROXY_C7X_1_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_1_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_1_1 response */
-#define SEC_PROXY_C7X_1_1_READ_RESPONSE_THREAD_ID (56U)
+#define TISCI_SEC_PROXY_C7X_1_1_READ_RESPONSE_THREAD_ID (56U)
 /** Num messages macro for C7X_1_1 response */
-#define SEC_PROXY_C7X_1_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_1_1_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_1_1 high_priority */
-#define SEC_PROXY_C7X_1_1_WRITE_HIGH_PRIORITY_THREAD_ID (57U)
+#define TISCI_SEC_PROXY_C7X_1_1_WRITE_HIGH_PRIORITY_THREAD_ID (57U)
 /** Num messages macro for C7X_1_1 high_priority */
-#define SEC_PROXY_C7X_1_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_1_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_1_1 low_priority */
-#define SEC_PROXY_C7X_1_1_WRITE_LOW_PRIORITY_THREAD_ID (58U)
+#define TISCI_SEC_PROXY_C7X_1_1_WRITE_LOW_PRIORITY_THREAD_ID (58U)
 /** Num messages macro for C7X_1_1 low_priority */
-#define SEC_PROXY_C7X_1_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_1_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_1_1 notify_resp */
-#define SEC_PROXY_C7X_1_1_WRITE_NOTIFY_RESP_THREAD_ID (59U)
+#define TISCI_SEC_PROXY_C7X_1_1_WRITE_NOTIFY_RESP_THREAD_ID (59U)
 /** Num messages macro for C7X_1_1 notify_resp */
-#define SEC_PROXY_C7X_1_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_1_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_2_0 host
  */
 
 /** Thread ID macro for C7X_2_0 notify */
-#define SEC_PROXY_C7X_2_0_READ_NOTIFY_THREAD_ID (60U)
+#define TISCI_SEC_PROXY_C7X_2_0_READ_NOTIFY_THREAD_ID (60U)
 /** Num messages macro for C7X_2_0 notify */
-#define SEC_PROXY_C7X_2_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_2_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_2_0 response */
-#define SEC_PROXY_C7X_2_0_READ_RESPONSE_THREAD_ID (61U)
+#define TISCI_SEC_PROXY_C7X_2_0_READ_RESPONSE_THREAD_ID (61U)
 /** Num messages macro for C7X_2_0 response */
-#define SEC_PROXY_C7X_2_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_2_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_2_0 high_priority */
-#define SEC_PROXY_C7X_2_0_WRITE_HIGH_PRIORITY_THREAD_ID (62U)
+#define TISCI_SEC_PROXY_C7X_2_0_WRITE_HIGH_PRIORITY_THREAD_ID (62U)
 /** Num messages macro for C7X_2_0 high_priority */
-#define SEC_PROXY_C7X_2_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_2_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_2_0 low_priority */
-#define SEC_PROXY_C7X_2_0_WRITE_LOW_PRIORITY_THREAD_ID (63U)
+#define TISCI_SEC_PROXY_C7X_2_0_WRITE_LOW_PRIORITY_THREAD_ID (63U)
 /** Num messages macro for C7X_2_0 low_priority */
-#define SEC_PROXY_C7X_2_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_2_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_2_0 notify_resp */
-#define SEC_PROXY_C7X_2_0_WRITE_NOTIFY_RESP_THREAD_ID (64U)
+#define TISCI_SEC_PROXY_C7X_2_0_WRITE_NOTIFY_RESP_THREAD_ID (64U)
 /** Num messages macro for C7X_2_0 notify_resp */
-#define SEC_PROXY_C7X_2_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_2_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_2_1 host
  */
 
 /** Thread ID macro for C7X_2_1 notify */
-#define SEC_PROXY_C7X_2_1_READ_NOTIFY_THREAD_ID (65U)
+#define TISCI_SEC_PROXY_C7X_2_1_READ_NOTIFY_THREAD_ID (65U)
 /** Num messages macro for C7X_2_1 notify */
-#define SEC_PROXY_C7X_2_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_2_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_2_1 response */
-#define SEC_PROXY_C7X_2_1_READ_RESPONSE_THREAD_ID (66U)
+#define TISCI_SEC_PROXY_C7X_2_1_READ_RESPONSE_THREAD_ID (66U)
 /** Num messages macro for C7X_2_1 response */
-#define SEC_PROXY_C7X_2_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_2_1_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_2_1 high_priority */
-#define SEC_PROXY_C7X_2_1_WRITE_HIGH_PRIORITY_THREAD_ID (67U)
+#define TISCI_SEC_PROXY_C7X_2_1_WRITE_HIGH_PRIORITY_THREAD_ID (67U)
 /** Num messages macro for C7X_2_1 high_priority */
-#define SEC_PROXY_C7X_2_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_2_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_2_1 low_priority */
-#define SEC_PROXY_C7X_2_1_WRITE_LOW_PRIORITY_THREAD_ID (68U)
+#define TISCI_SEC_PROXY_C7X_2_1_WRITE_LOW_PRIORITY_THREAD_ID (68U)
 /** Num messages macro for C7X_2_1 low_priority */
-#define SEC_PROXY_C7X_2_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_2_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_2_1 notify_resp */
-#define SEC_PROXY_C7X_2_1_WRITE_NOTIFY_RESP_THREAD_ID (69U)
+#define TISCI_SEC_PROXY_C7X_2_1_WRITE_NOTIFY_RESP_THREAD_ID (69U)
 /** Num messages macro for C7X_2_1 notify_resp */
-#define SEC_PROXY_C7X_2_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_2_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_3_0 host
  */
 
 /** Thread ID macro for C7X_3_0 notify */
-#define SEC_PROXY_C7X_3_0_READ_NOTIFY_THREAD_ID (70U)
+#define TISCI_SEC_PROXY_C7X_3_0_READ_NOTIFY_THREAD_ID (70U)
 /** Num messages macro for C7X_3_0 notify */
-#define SEC_PROXY_C7X_3_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_3_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_3_0 response */
-#define SEC_PROXY_C7X_3_0_READ_RESPONSE_THREAD_ID (71U)
+#define TISCI_SEC_PROXY_C7X_3_0_READ_RESPONSE_THREAD_ID (71U)
 /** Num messages macro for C7X_3_0 response */
-#define SEC_PROXY_C7X_3_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_3_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_3_0 high_priority */
-#define SEC_PROXY_C7X_3_0_WRITE_HIGH_PRIORITY_THREAD_ID (72U)
+#define TISCI_SEC_PROXY_C7X_3_0_WRITE_HIGH_PRIORITY_THREAD_ID (72U)
 /** Num messages macro for C7X_3_0 high_priority */
-#define SEC_PROXY_C7X_3_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_3_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_3_0 low_priority */
-#define SEC_PROXY_C7X_3_0_WRITE_LOW_PRIORITY_THREAD_ID (73U)
+#define TISCI_SEC_PROXY_C7X_3_0_WRITE_LOW_PRIORITY_THREAD_ID (73U)
 /** Num messages macro for C7X_3_0 low_priority */
-#define SEC_PROXY_C7X_3_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_3_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_3_0 notify_resp */
-#define SEC_PROXY_C7X_3_0_WRITE_NOTIFY_RESP_THREAD_ID (74U)
+#define TISCI_SEC_PROXY_C7X_3_0_WRITE_NOTIFY_RESP_THREAD_ID (74U)
 /** Num messages macro for C7X_3_0 notify_resp */
-#define SEC_PROXY_C7X_3_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_3_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for C7X_3_1 host
  */
 
 /** Thread ID macro for C7X_3_1 notify */
-#define SEC_PROXY_C7X_3_1_READ_NOTIFY_THREAD_ID (75U)
+#define TISCI_SEC_PROXY_C7X_3_1_READ_NOTIFY_THREAD_ID (75U)
 /** Num messages macro for C7X_3_1 notify */
-#define SEC_PROXY_C7X_3_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_3_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_3_1 response */
-#define SEC_PROXY_C7X_3_1_READ_RESPONSE_THREAD_ID (76U)
+#define TISCI_SEC_PROXY_C7X_3_1_READ_RESPONSE_THREAD_ID (76U)
 /** Num messages macro for C7X_3_1 response */
-#define SEC_PROXY_C7X_3_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_C7X_3_1_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for C7X_3_1 high_priority */
-#define SEC_PROXY_C7X_3_1_WRITE_HIGH_PRIORITY_THREAD_ID (77U)
+#define TISCI_SEC_PROXY_C7X_3_1_WRITE_HIGH_PRIORITY_THREAD_ID (77U)
 /** Num messages macro for C7X_3_1 high_priority */
-#define SEC_PROXY_C7X_3_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_3_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for C7X_3_1 low_priority */
-#define SEC_PROXY_C7X_3_1_WRITE_LOW_PRIORITY_THREAD_ID (78U)
+#define TISCI_SEC_PROXY_C7X_3_1_WRITE_LOW_PRIORITY_THREAD_ID (78U)
 /** Num messages macro for C7X_3_1 low_priority */
-#define SEC_PROXY_C7X_3_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_C7X_3_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for C7X_3_1 notify_resp */
-#define SEC_PROXY_C7X_3_1_WRITE_NOTIFY_RESP_THREAD_ID (79U)
+#define TISCI_SEC_PROXY_C7X_3_1_WRITE_NOTIFY_RESP_THREAD_ID (79U)
 /** Num messages macro for C7X_3_1 notify_resp */
-#define SEC_PROXY_C7X_3_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_C7X_3_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for GPU_0 host
  */
 
 /** Thread ID macro for GPU_0 notify */
-#define SEC_PROXY_GPU_0_READ_NOTIFY_THREAD_ID (80U)
+#define TISCI_SEC_PROXY_GPU_0_READ_NOTIFY_THREAD_ID (80U)
 /** Num messages macro for GPU_0 notify */
-#define SEC_PROXY_GPU_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_GPU_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for GPU_0 response */
-#define SEC_PROXY_GPU_0_READ_RESPONSE_THREAD_ID (81U)
+#define TISCI_SEC_PROXY_GPU_0_READ_RESPONSE_THREAD_ID (81U)
 /** Num messages macro for GPU_0 response */
-#define SEC_PROXY_GPU_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_GPU_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for GPU_0 high_priority */
-#define SEC_PROXY_GPU_0_WRITE_HIGH_PRIORITY_THREAD_ID (82U)
+#define TISCI_SEC_PROXY_GPU_0_WRITE_HIGH_PRIORITY_THREAD_ID (82U)
 /** Num messages macro for GPU_0 high_priority */
-#define SEC_PROXY_GPU_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_GPU_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for GPU_0 low_priority */
-#define SEC_PROXY_GPU_0_WRITE_LOW_PRIORITY_THREAD_ID (83U)
+#define TISCI_SEC_PROXY_GPU_0_WRITE_LOW_PRIORITY_THREAD_ID (83U)
 /** Num messages macro for GPU_0 low_priority */
-#define SEC_PROXY_GPU_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_GPU_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for GPU_0 notify_resp */
-#define SEC_PROXY_GPU_0_WRITE_NOTIFY_RESP_THREAD_ID (84U)
+#define TISCI_SEC_PROXY_GPU_0_WRITE_NOTIFY_RESP_THREAD_ID (84U)
 /** Num messages macro for GPU_0 notify_resp */
-#define SEC_PROXY_GPU_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_GPU_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MAIN_0_R5_0 host
  */
 
 /** Thread ID macro for MAIN_0_R5_0 notify */
-#define SEC_PROXY_MAIN_0_R5_0_READ_NOTIFY_THREAD_ID (85U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_READ_NOTIFY_THREAD_ID (85U)
 /** Num messages macro for MAIN_0_R5_0 notify */
-#define SEC_PROXY_MAIN_0_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_0_R5_0 response */
-#define SEC_PROXY_MAIN_0_R5_0_READ_RESPONSE_THREAD_ID (86U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_READ_RESPONSE_THREAD_ID (86U)
 /** Num messages macro for MAIN_0_R5_0 response */
-#define SEC_PROXY_MAIN_0_R5_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for MAIN_0_R5_0 high_priority */
-#define SEC_PROXY_MAIN_0_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (87U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (87U)
 /** Num messages macro for MAIN_0_R5_0 high_priority */
-#define SEC_PROXY_MAIN_0_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_0_R5_0 low_priority */
-#define SEC_PROXY_MAIN_0_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (88U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (88U)
 /** Num messages macro for MAIN_0_R5_0 low_priority */
-#define SEC_PROXY_MAIN_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for MAIN_0_R5_0 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (89U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (89U)
 /** Num messages macro for MAIN_0_R5_0 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MAIN_0_R5_1 host
  */
 
 /** Thread ID macro for MAIN_0_R5_1 notify */
-#define SEC_PROXY_MAIN_0_R5_1_READ_NOTIFY_THREAD_ID (90U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_READ_NOTIFY_THREAD_ID (90U)
 /** Num messages macro for MAIN_0_R5_1 notify */
-#define SEC_PROXY_MAIN_0_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_0_R5_1 response */
-#define SEC_PROXY_MAIN_0_R5_1_READ_RESPONSE_THREAD_ID (91U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_READ_RESPONSE_THREAD_ID (91U)
 /** Num messages macro for MAIN_0_R5_1 response */
-#define SEC_PROXY_MAIN_0_R5_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for MAIN_0_R5_1 high_priority */
-#define SEC_PROXY_MAIN_0_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (92U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (92U)
 /** Num messages macro for MAIN_0_R5_1 high_priority */
-#define SEC_PROXY_MAIN_0_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_0_R5_1 low_priority */
-#define SEC_PROXY_MAIN_0_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (93U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (93U)
 /** Num messages macro for MAIN_0_R5_1 low_priority */
-#define SEC_PROXY_MAIN_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for MAIN_0_R5_1 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (94U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (94U)
 /** Num messages macro for MAIN_0_R5_1 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MAIN_0_R5_2 host
  */
 
 /** Thread ID macro for MAIN_0_R5_2 notify */
-#define SEC_PROXY_MAIN_0_R5_2_READ_NOTIFY_THREAD_ID (95U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_READ_NOTIFY_THREAD_ID (95U)
 /** Num messages macro for MAIN_0_R5_2 notify */
-#define SEC_PROXY_MAIN_0_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_0_R5_2 response */
-#define SEC_PROXY_MAIN_0_R5_2_READ_RESPONSE_THREAD_ID (96U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_READ_RESPONSE_THREAD_ID (96U)
 /** Num messages macro for MAIN_0_R5_2 response */
-#define SEC_PROXY_MAIN_0_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_0_R5_2 high_priority */
-#define SEC_PROXY_MAIN_0_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (97U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (97U)
 /** Num messages macro for MAIN_0_R5_2 high_priority */
-#define SEC_PROXY_MAIN_0_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_0_R5_2 low_priority */
-#define SEC_PROXY_MAIN_0_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (98U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (98U)
 /** Num messages macro for MAIN_0_R5_2 low_priority */
-#define SEC_PROXY_MAIN_0_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_0_R5_2 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (99U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (99U)
 /** Num messages macro for MAIN_0_R5_2 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for MAIN_0_R5_3 host
  */
 
 /** Thread ID macro for MAIN_0_R5_3 notify */
-#define SEC_PROXY_MAIN_0_R5_3_READ_NOTIFY_THREAD_ID (100U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_READ_NOTIFY_THREAD_ID (100U)
 /** Num messages macro for MAIN_0_R5_3 notify */
-#define SEC_PROXY_MAIN_0_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_0_R5_3 response */
-#define SEC_PROXY_MAIN_0_R5_3_READ_RESPONSE_THREAD_ID (101U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_READ_RESPONSE_THREAD_ID (101U)
 /** Num messages macro for MAIN_0_R5_3 response */
-#define SEC_PROXY_MAIN_0_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_0_R5_3 high_priority */
-#define SEC_PROXY_MAIN_0_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (102U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (102U)
 /** Num messages macro for MAIN_0_R5_3 high_priority */
-#define SEC_PROXY_MAIN_0_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_0_R5_3 low_priority */
-#define SEC_PROXY_MAIN_0_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (103U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (103U)
 /** Num messages macro for MAIN_0_R5_3 low_priority */
-#define SEC_PROXY_MAIN_0_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_0_R5_3 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (104U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (104U)
 /** Num messages macro for MAIN_0_R5_3 notify_resp */
-#define SEC_PROXY_MAIN_0_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_0_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for MAIN_1_R5_0 host
  */
 
 /** Thread ID macro for MAIN_1_R5_0 notify */
-#define SEC_PROXY_MAIN_1_R5_0_READ_NOTIFY_THREAD_ID (105U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_READ_NOTIFY_THREAD_ID (105U)
 /** Num messages macro for MAIN_1_R5_0 notify */
-#define SEC_PROXY_MAIN_1_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_1_R5_0 response */
-#define SEC_PROXY_MAIN_1_R5_0_READ_RESPONSE_THREAD_ID (106U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_READ_RESPONSE_THREAD_ID (106U)
 /** Num messages macro for MAIN_1_R5_0 response */
-#define SEC_PROXY_MAIN_1_R5_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for MAIN_1_R5_0 high_priority */
-#define SEC_PROXY_MAIN_1_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (107U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (107U)
 /** Num messages macro for MAIN_1_R5_0 high_priority */
-#define SEC_PROXY_MAIN_1_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_1_R5_0 low_priority */
-#define SEC_PROXY_MAIN_1_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (108U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (108U)
 /** Num messages macro for MAIN_1_R5_0 low_priority */
-#define SEC_PROXY_MAIN_1_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for MAIN_1_R5_0 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (109U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (109U)
 /** Num messages macro for MAIN_1_R5_0 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MAIN_1_R5_1 host
  */
 
 /** Thread ID macro for MAIN_1_R5_1 notify */
-#define SEC_PROXY_MAIN_1_R5_1_READ_NOTIFY_THREAD_ID (110U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_READ_NOTIFY_THREAD_ID (110U)
 /** Num messages macro for MAIN_1_R5_1 notify */
-#define SEC_PROXY_MAIN_1_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_1_R5_1 response */
-#define SEC_PROXY_MAIN_1_R5_1_READ_RESPONSE_THREAD_ID (111U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_READ_RESPONSE_THREAD_ID (111U)
 /** Num messages macro for MAIN_1_R5_1 response */
-#define SEC_PROXY_MAIN_1_R5_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for MAIN_1_R5_1 high_priority */
-#define SEC_PROXY_MAIN_1_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (112U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (112U)
 /** Num messages macro for MAIN_1_R5_1 high_priority */
-#define SEC_PROXY_MAIN_1_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_1_R5_1 low_priority */
-#define SEC_PROXY_MAIN_1_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (113U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (113U)
 /** Num messages macro for MAIN_1_R5_1 low_priority */
-#define SEC_PROXY_MAIN_1_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for MAIN_1_R5_1 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (114U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (114U)
 /** Num messages macro for MAIN_1_R5_1 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MAIN_1_R5_2 host
  */
 
 /** Thread ID macro for MAIN_1_R5_2 notify */
-#define SEC_PROXY_MAIN_1_R5_2_READ_NOTIFY_THREAD_ID (115U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_READ_NOTIFY_THREAD_ID (115U)
 /** Num messages macro for MAIN_1_R5_2 notify */
-#define SEC_PROXY_MAIN_1_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_1_R5_2 response */
-#define SEC_PROXY_MAIN_1_R5_2_READ_RESPONSE_THREAD_ID (116U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_READ_RESPONSE_THREAD_ID (116U)
 /** Num messages macro for MAIN_1_R5_2 response */
-#define SEC_PROXY_MAIN_1_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_1_R5_2 high_priority */
-#define SEC_PROXY_MAIN_1_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (117U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (117U)
 /** Num messages macro for MAIN_1_R5_2 high_priority */
-#define SEC_PROXY_MAIN_1_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_1_R5_2 low_priority */
-#define SEC_PROXY_MAIN_1_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (118U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (118U)
 /** Num messages macro for MAIN_1_R5_2 low_priority */
-#define SEC_PROXY_MAIN_1_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_1_R5_2 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (119U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (119U)
 /** Num messages macro for MAIN_1_R5_2 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for MAIN_1_R5_3 host
  */
 
 /** Thread ID macro for MAIN_1_R5_3 notify */
-#define SEC_PROXY_MAIN_1_R5_3_READ_NOTIFY_THREAD_ID (120U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_READ_NOTIFY_THREAD_ID (120U)
 /** Num messages macro for MAIN_1_R5_3 notify */
-#define SEC_PROXY_MAIN_1_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_1_R5_3 response */
-#define SEC_PROXY_MAIN_1_R5_3_READ_RESPONSE_THREAD_ID (121U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_READ_RESPONSE_THREAD_ID (121U)
 /** Num messages macro for MAIN_1_R5_3 response */
-#define SEC_PROXY_MAIN_1_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_1_R5_3 high_priority */
-#define SEC_PROXY_MAIN_1_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (122U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (122U)
 /** Num messages macro for MAIN_1_R5_3 high_priority */
-#define SEC_PROXY_MAIN_1_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_1_R5_3 low_priority */
-#define SEC_PROXY_MAIN_1_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (123U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (123U)
 /** Num messages macro for MAIN_1_R5_3 low_priority */
-#define SEC_PROXY_MAIN_1_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_1_R5_3 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (124U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (124U)
 /** Num messages macro for MAIN_1_R5_3 notify_resp */
-#define SEC_PROXY_MAIN_1_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_1_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for MAIN_2_R5_0 host
  */
 
 /** Thread ID macro for MAIN_2_R5_0 notify */
-#define SEC_PROXY_MAIN_2_R5_0_READ_NOTIFY_THREAD_ID (125U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_READ_NOTIFY_THREAD_ID (125U)
 /** Num messages macro for MAIN_2_R5_0 notify */
-#define SEC_PROXY_MAIN_2_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_2_R5_0 response */
-#define SEC_PROXY_MAIN_2_R5_0_READ_RESPONSE_THREAD_ID (126U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_READ_RESPONSE_THREAD_ID (126U)
 /** Num messages macro for MAIN_2_R5_0 response */
-#define SEC_PROXY_MAIN_2_R5_0_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for MAIN_2_R5_0 high_priority */
-#define SEC_PROXY_MAIN_2_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (127U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_WRITE_HIGH_PRIORITY_THREAD_ID (127U)
 /** Num messages macro for MAIN_2_R5_0 high_priority */
-#define SEC_PROXY_MAIN_2_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_2_R5_0 low_priority */
-#define SEC_PROXY_MAIN_2_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (128U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_WRITE_LOW_PRIORITY_THREAD_ID (128U)
 /** Num messages macro for MAIN_2_R5_0 low_priority */
-#define SEC_PROXY_MAIN_2_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for MAIN_2_R5_0 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (129U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_WRITE_NOTIFY_RESP_THREAD_ID (129U)
 /** Num messages macro for MAIN_2_R5_0 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_0_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MAIN_2_R5_1 host
  */
 
 /** Thread ID macro for MAIN_2_R5_1 notify */
-#define SEC_PROXY_MAIN_2_R5_1_READ_NOTIFY_THREAD_ID (130U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_READ_NOTIFY_THREAD_ID (130U)
 /** Num messages macro for MAIN_2_R5_1 notify */
-#define SEC_PROXY_MAIN_2_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_2_R5_1 response */
-#define SEC_PROXY_MAIN_2_R5_1_READ_RESPONSE_THREAD_ID (131U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_READ_RESPONSE_THREAD_ID (131U)
 /** Num messages macro for MAIN_2_R5_1 response */
-#define SEC_PROXY_MAIN_2_R5_1_READ_RESPONSE_NUM_MESSAGES (7U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_READ_RESPONSE_NUM_MESSAGES (7U)
 
 /** Thread ID macro for MAIN_2_R5_1 high_priority */
-#define SEC_PROXY_MAIN_2_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (132U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_WRITE_HIGH_PRIORITY_THREAD_ID (132U)
 /** Num messages macro for MAIN_2_R5_1 high_priority */
-#define SEC_PROXY_MAIN_2_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_2_R5_1 low_priority */
-#define SEC_PROXY_MAIN_2_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (133U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_WRITE_LOW_PRIORITY_THREAD_ID (133U)
 /** Num messages macro for MAIN_2_R5_1 low_priority */
-#define SEC_PROXY_MAIN_2_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_WRITE_LOW_PRIORITY_NUM_MESSAGES (5U)
 
 /** Thread ID macro for MAIN_2_R5_1 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (134U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_WRITE_NOTIFY_RESP_THREAD_ID (134U)
 /** Num messages macro for MAIN_2_R5_1 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_1_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for MAIN_2_R5_2 host
  */
 
 /** Thread ID macro for MAIN_2_R5_2 notify */
-#define SEC_PROXY_MAIN_2_R5_2_READ_NOTIFY_THREAD_ID (135U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_READ_NOTIFY_THREAD_ID (135U)
 /** Num messages macro for MAIN_2_R5_2 notify */
-#define SEC_PROXY_MAIN_2_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_2_R5_2 response */
-#define SEC_PROXY_MAIN_2_R5_2_READ_RESPONSE_THREAD_ID (136U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_READ_RESPONSE_THREAD_ID (136U)
 /** Num messages macro for MAIN_2_R5_2 response */
-#define SEC_PROXY_MAIN_2_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_2_R5_2 high_priority */
-#define SEC_PROXY_MAIN_2_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (137U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_WRITE_HIGH_PRIORITY_THREAD_ID (137U)
 /** Num messages macro for MAIN_2_R5_2 high_priority */
-#define SEC_PROXY_MAIN_2_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_2_R5_2 low_priority */
-#define SEC_PROXY_MAIN_2_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (138U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_WRITE_LOW_PRIORITY_THREAD_ID (138U)
 /** Num messages macro for MAIN_2_R5_2 low_priority */
-#define SEC_PROXY_MAIN_2_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_2_R5_2 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (139U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_WRITE_NOTIFY_RESP_THREAD_ID (139U)
 /** Num messages macro for MAIN_2_R5_2 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_2_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for MAIN_2_R5_3 host
  */
 
 /** Thread ID macro for MAIN_2_R5_3 notify */
-#define SEC_PROXY_MAIN_2_R5_3_READ_NOTIFY_THREAD_ID (140U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_READ_NOTIFY_THREAD_ID (140U)
 /** Num messages macro for MAIN_2_R5_3 notify */
-#define SEC_PROXY_MAIN_2_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_2_R5_3 response */
-#define SEC_PROXY_MAIN_2_R5_3_READ_RESPONSE_THREAD_ID (141U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_READ_RESPONSE_THREAD_ID (141U)
 /** Num messages macro for MAIN_2_R5_3 response */
-#define SEC_PROXY_MAIN_2_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for MAIN_2_R5_3 high_priority */
-#define SEC_PROXY_MAIN_2_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (142U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_WRITE_HIGH_PRIORITY_THREAD_ID (142U)
 /** Num messages macro for MAIN_2_R5_3 high_priority */
-#define SEC_PROXY_MAIN_2_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_2_R5_3 low_priority */
-#define SEC_PROXY_MAIN_2_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (143U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_WRITE_LOW_PRIORITY_THREAD_ID (143U)
 /** Num messages macro for MAIN_2_R5_3 low_priority */
-#define SEC_PROXY_MAIN_2_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for MAIN_2_R5_3 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (144U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_WRITE_NOTIFY_RESP_THREAD_ID (144U)
 /** Num messages macro for MAIN_2_R5_3 notify_resp */
-#define SEC_PROXY_MAIN_2_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_MAIN_2_R5_3_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 /*
  * Secure Proxy configurations for DM2TIFS host
  */
 
 /** Thread ID macro for DM2TIFS notify */
-#define SEC_PROXY_DM2TIFS_READ_NOTIFY_THREAD_ID (20U)
+#define TISCI_SEC_PROXY_DM2TIFS_READ_NOTIFY_THREAD_ID (20U)
 /** Num messages macro for DM2TIFS notify */
-#define SEC_PROXY_DM2TIFS_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_DM2TIFS_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for DM2TIFS response */
-#define SEC_PROXY_DM2TIFS_READ_RESPONSE_THREAD_ID (21U)
+#define TISCI_SEC_PROXY_DM2TIFS_READ_RESPONSE_THREAD_ID (21U)
 /** Num messages macro for DM2TIFS response */
-#define SEC_PROXY_DM2TIFS_READ_RESPONSE_NUM_MESSAGES (4U)
+#define TISCI_SEC_PROXY_DM2TIFS_READ_RESPONSE_NUM_MESSAGES (4U)
 
 /** Thread ID macro for DM2TIFS high_priority */
-#define SEC_PROXY_DM2TIFS_WRITE_HIGH_PRIORITY_THREAD_ID (22U)
+#define TISCI_SEC_PROXY_DM2TIFS_WRITE_HIGH_PRIORITY_THREAD_ID (22U)
 /** Num messages macro for DM2TIFS high_priority */
-#define SEC_PROXY_DM2TIFS_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_DM2TIFS_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for DM2TIFS low_priority */
-#define SEC_PROXY_DM2TIFS_WRITE_LOW_PRIORITY_THREAD_ID (23U)
+#define TISCI_SEC_PROXY_DM2TIFS_WRITE_LOW_PRIORITY_THREAD_ID (23U)
 /** Num messages macro for DM2TIFS low_priority */
-#define SEC_PROXY_DM2TIFS_WRITE_LOW_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_DM2TIFS_WRITE_LOW_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for DM2TIFS notify_resp */
-#define SEC_PROXY_DM2TIFS_WRITE_NOTIFY_RESP_THREAD_ID (24U)
+#define TISCI_SEC_PROXY_DM2TIFS_WRITE_NOTIFY_RESP_THREAD_ID (24U)
 /** Num messages macro for DM2TIFS notify_resp */
-#define SEC_PROXY_DM2TIFS_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_DM2TIFS_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for TIFS2DM host
  */
 
 /** Thread ID macro for TIFS2DM notify */
-#define SEC_PROXY_TIFS2DM_READ_NOTIFY_THREAD_ID (25U)
+#define TISCI_SEC_PROXY_TIFS2DM_READ_NOTIFY_THREAD_ID (25U)
 /** Num messages macro for TIFS2DM notify */
-#define SEC_PROXY_TIFS2DM_READ_NOTIFY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_TIFS2DM_READ_NOTIFY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for TIFS2DM response */
-#define SEC_PROXY_TIFS2DM_READ_RESPONSE_THREAD_ID (26U)
+#define TISCI_SEC_PROXY_TIFS2DM_READ_RESPONSE_THREAD_ID (26U)
 /** Num messages macro for TIFS2DM response */
-#define SEC_PROXY_TIFS2DM_READ_RESPONSE_NUM_MESSAGES (4U)
+#define TISCI_SEC_PROXY_TIFS2DM_READ_RESPONSE_NUM_MESSAGES (4U)
 
 /** Thread ID macro for TIFS2DM high_priority */
-#define SEC_PROXY_TIFS2DM_WRITE_HIGH_PRIORITY_THREAD_ID (27U)
+#define TISCI_SEC_PROXY_TIFS2DM_WRITE_HIGH_PRIORITY_THREAD_ID (27U)
 /** Num messages macro for TIFS2DM high_priority */
-#define SEC_PROXY_TIFS2DM_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_TIFS2DM_WRITE_HIGH_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for TIFS2DM low_priority */
-#define SEC_PROXY_TIFS2DM_WRITE_LOW_PRIORITY_THREAD_ID (28U)
+#define TISCI_SEC_PROXY_TIFS2DM_WRITE_LOW_PRIORITY_THREAD_ID (28U)
 /** Num messages macro for TIFS2DM low_priority */
-#define SEC_PROXY_TIFS2DM_WRITE_LOW_PRIORITY_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_TIFS2DM_WRITE_LOW_PRIORITY_NUM_MESSAGES (2U)
 
 /** Thread ID macro for TIFS2DM notify_resp */
-#define SEC_PROXY_TIFS2DM_WRITE_NOTIFY_RESP_THREAD_ID (29U)
+#define TISCI_SEC_PROXY_TIFS2DM_WRITE_NOTIFY_RESP_THREAD_ID (29U)
 /** Num messages macro for TIFS2DM notify_resp */
-#define SEC_PROXY_TIFS2DM_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_TIFS2DM_WRITE_NOTIFY_RESP_NUM_MESSAGES (2U)
 
 /*
  * Secure Proxy configurations for HSM host
  */
 
 /** Thread ID macro for HSM notify */
-#define SEC_PROXY_HSM_READ_NOTIFY_THREAD_ID (30U)
+#define TISCI_SEC_PROXY_HSM_READ_NOTIFY_THREAD_ID (30U)
 /** Num messages macro for HSM notify */
-#define SEC_PROXY_HSM_READ_NOTIFY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_HSM_READ_NOTIFY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for HSM response */
-#define SEC_PROXY_HSM_READ_RESPONSE_THREAD_ID (31U)
+#define TISCI_SEC_PROXY_HSM_READ_RESPONSE_THREAD_ID (31U)
 /** Num messages macro for HSM response */
-#define SEC_PROXY_HSM_READ_RESPONSE_NUM_MESSAGES (2U)
+#define TISCI_SEC_PROXY_HSM_READ_RESPONSE_NUM_MESSAGES (2U)
 
 /** Thread ID macro for HSM high_priority */
-#define SEC_PROXY_HSM_WRITE_HIGH_PRIORITY_THREAD_ID (32U)
+#define TISCI_SEC_PROXY_HSM_WRITE_HIGH_PRIORITY_THREAD_ID (32U)
 /** Num messages macro for HSM high_priority */
-#define SEC_PROXY_HSM_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_HSM_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for HSM low_priority */
-#define SEC_PROXY_HSM_WRITE_LOW_PRIORITY_THREAD_ID (33U)
+#define TISCI_SEC_PROXY_HSM_WRITE_LOW_PRIORITY_THREAD_ID (33U)
 /** Num messages macro for HSM low_priority */
-#define SEC_PROXY_HSM_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_HSM_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
 
 /** Thread ID macro for HSM notify_resp */
-#define SEC_PROXY_HSM_WRITE_NOTIFY_RESP_THREAD_ID (34U)
+#define TISCI_SEC_PROXY_HSM_WRITE_NOTIFY_RESP_THREAD_ID (34U)
 /** Num messages macro for HSM notify_resp */
-#define SEC_PROXY_HSM_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_HSM_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
 
 
-#endif /* J784S4_SEC_PROXY_H */
+#endif /* J784S4_TISCI_SEC_PROXY_H */
 
 /* @} */
