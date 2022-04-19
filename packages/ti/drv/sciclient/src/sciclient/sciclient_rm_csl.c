@@ -565,7 +565,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 #endif
             CSL_intrRouterCfgMux(&c66xIrRegs, 0, c66xIrOffset);
         }
-#endif  /* (BUILD_C66X_1) || (BUILD_C66X_2) */
+#endif  /* (BUILD_C66X) */
 
         /* Program MCU1 IR */
         if((TISCI_DEV_MCU_R5FSS0_CORE0 == req->dst_id) ||

@@ -138,7 +138,11 @@ void Sciclient_fw_abort_C_handler();
 /* ========================================================================== */
 
 static volatile int32_t gTestStatus;
-static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));;
+#if defined(SAFERTOS)
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(32*1024)));
+#else
+static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));
+#endif
 /* IMPORTANT NOTE: For C7x,
  * - stack size and stack ptr MUST be 8KB aligned
  * - AND min stack size MUST be 32KB

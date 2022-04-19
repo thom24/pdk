@@ -71,6 +71,9 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
         arrName[j] = (uint8_t)toupper(ch);
         j++;
     }
+    
+    /* Print a non-error type message to stdout */
+   	fprintf(stdout, "\r\n Converting binary file [%s] to C array \r\n", inName );
 
     fin = fopen( inName, "rb");
 	fout = fopen( filename, "w");
@@ -158,34 +161,38 @@ get_file_name_from_path(filename), arrName, csize, arrName);
     size=0;
     csize=0;
     while(bytes) {
-        bytes = fread(buffer, 1, chunkSize, fin );
-    for(i=0;i<bytes;i=i+4) {
-      if((i%4) == 0)
-        printf(" ");
-      if((i%16)==0)
-        printf("\\\n");
-      if((i+3)<bytes)
-        {printf("    0x%02x", buffer[i+3]);csize++;}
-      else
-        printf("    0x00");
-      if((i+2)<bytes)
-        {printf("%02x", buffer[i+2]);csize++;}
-      else
-        printf("00");
-      if((i+1)<bytes)
-        {printf("%02x", buffer[i+1]);csize++;}
-      else
-        printf("00");
-      printf("%02xU", buffer[i]);
-      csize++;
+      bytes = fread(buffer, 1, chunkSize, fin );
+      /* Print a non-error type message to stdout */
+      fprintf(stdout, ".");
+      for(i=0;i<bytes;i=i+4) {
+        if((i%4) == 0)
+          fprintf(fout, " ");
+        if((i%16)==0)
+          fprintf(fout, "\\\n");
+        if((i+3)<bytes)
+        {fprintf(fout, "    0x%02x", buffer[i+3]);csize++;}
+        else
+          fprintf(fout, "    0x00");
+        if((i+2)<bytes)
+        {fprintf(fout, "%02x", buffer[i+2]);csize++;}
+        else
+          fprintf(fout, "00");
+        if((i+1)<bytes)
+        {fprintf(fout, "%02x", buffer[i+1]);csize++;}
+        else
+          fprintf(fout, "00");
+        fprintf(fout, "%02xU", buffer[i]);
+        csize++;
 
-			if(i<(bytes-4))
-				fprintf(fout, ",");
-		}
-		size +=bytes;
+        if(i<(bytes-4))
+          fprintf(fout, ",");
+      }
+      size +=bytes;
     }
-    printf("\\\n} /* %d bytes */", csize );
-    printf("\n");
+    fprintf(fout, "\\\n} /* %d bytes */", csize );
+    fprintf(fout, "\n");
+	  /* Print a non-error type message to stdout */
+    fprintf(stdout, " Done. (%d bytes)\r\n", size);
 
     if(csize!=size)
     {

@@ -58,7 +58,7 @@
 /* ========================================================================== */
 /* Test application stack size */
 #if defined (BUILD_C7X)
-/* Temp workaround to avoid assertion failure: A_stackSizeTooSmall : Task stack size must be >= 16KB.
+/* Temp workaround to avoid assertion failure: A_stackSizeTooSmall : Task stack size must be >= 32KB.
   * until the Bug PDK-7605 is resolved */
 #define APP_TSK_STACK_MAIN              (32U * 1024U)
 #else
