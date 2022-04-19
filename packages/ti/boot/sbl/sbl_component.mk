@@ -107,10 +107,10 @@ else
     sbl_LIB_LIST = sbl_lib_uart
     sbl_LIB_LIST += sbl_lib_qspi sbl_lib_qspi_nondma
   else
-    sbl_LIB_LIST = sbl_lib_emmc sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
     sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
-    sbl_LIB_LIST += sbl_lib_emmc_hs sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs sbl_lib_cust_hs
+    sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs sbl_lib_cust_hs
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos_hs sbl_lib_ospi_hlos_hs sbl_lib_hyperflash_hlos_hs
     sbl_LIB_LIST += sbl_lib_ospi_nondma_hs sbl_lib_ospi_nondma_hlos_hs
   endif
@@ -129,11 +129,12 @@ else
     sbl_EXAMPLE_LIST = sbl_uart_img sbl_qspi_img
   else
     sbl_EXAMPLE_LIST = sbl_uart_img
-    sbl_EXAMPLE_LIST += sbl_emmc_img sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
-    sbl_EXAMPLE_LIST += sbl_emmc_img_hs sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
     sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
   endif
 endif
+
 
 #
 # SBL Modules
@@ -242,58 +243,6 @@ export sbl_lib_mmcsd_hlos_hs_SOCLIST
 export sbl_lib_mmcsd_hlos_hs_BOARDLIST
 sbl_lib_mmcsd_hlos_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_mmcsd_hlos_hs_$(SOC)_CORELIST
-
-# SBL EMMC LIB 
-sbl_lib_emmc_COMP_LIST = sbl_lib_emmc
-sbl_lib_emmc_RELPATH = ti/boot/sbl
-export sbl_lib_emmc_OBJPATH = ti/boot/sbl/emmc
-sbl_lib_emmc_LIBNAME = sbl_lib_emmc
-sbl_lib_emmc_PATH = $(PDK_SBL_COMP_PATH)
-sbl_lib_emmc_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/emmc
-sbl_lib_emmc_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=emmc SBL_USE_DMA=yes
-export sbl_lib_emmc_MAKEFILE
-export sbl_lib_emmc_LIBNAME
-export sbl_lib_emmc_LIBPATH
-sbl_lib_emmc_BOARD_DEPENDENCY = yes
-sbl_lib_emmc_SOC_DEPENDENCY = yes
-sbl_lib_emmc_CORE_DEPENDENCY = no
-export sbl_lib_emmc_COMP_LIST
-export sbl_lib_emmc_BOARD_DEPENDENCY
-export sbl_lib_emmc_CORE_DEPENDENCY
-sbl_lib_emmc_PKG_LIST = sbl_lib_emmc
-sbl_lib_emmc_INCLUDE = $(sbl_lib_emmc_PATH)
-sbl_lib_emmc_SOCLIST = $(sbl_SOCLIST)
-sbl_lib_emmc_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_lib_emmc_SOCLIST
-export sbl_lib_emmc_BOARDLIST
-sbl_lib_emmc_$(SOC)_CORELIST = mcu1_0
-export sbl_lib_emmc_$(SOC)_CORELIST
-
-# SBL EMMC LIB - HS build variant 
-sbl_lib_emmc_hs_COMP_LIST = sbl_lib_emmc_hs
-sbl_lib_emmc_hs_RELPATH = ti/boot/sbl
-export sbl_lib_emmc_hs_OBJPATH = ti/boot/sbl/emmc_hs
-sbl_lib_emmc_hs_LIBNAME = sbl_lib_emmc_hs
-sbl_lib_emmc_hs_PATH = $(PDK_SBL_COMP_PATH)
-sbl_lib_emmc_hs_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/emmc_hs
-sbl_lib_emmc_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=emmc SBL_USE_DMA=yes BUILD_HS=yes
-export sbl_lib_emmc_hs_MAKEFILE
-export sbl_lib_emmc_hs_LIBNAME
-export sbl_lib_emmc_hs_LIBPATH
-sbl_lib_emmc_hs_BOARD_DEPENDENCY = yes
-sbl_lib_emmc_hs_SOC_DEPENDENCY = yes
-sbl_lib_emmc_hs_CORE_DEPENDENCY = no
-export sbl_lib_emmc_hs_COMP_LIST
-export sbl_lib_emmc_hs_BOARD_DEPENDENCY
-export sbl_lib_emmc_hs_CORE_DEPENDENCY
-sbl_lib_emmc_hs_PKG_LIST = sbl_lib_emmc_hs
-sbl_lib_emmc_hs_INCLUDE = $(sbl_lib_emmc_hs_PATH)
-sbl_lib_mmcsd_hs_SOCLIST = $(sbl_SOCLIST)
-sbl_lib_mmcsd_hs_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_lib_emmc_hs_SOCLIST
-export sbl_lib_emmc_hs_BOARDLIST
-sbl_lib_emmc_hs_$(SOC)_CORELIST = mcu1_0
-export sbl_lib_emmc_hs_$(SOC)_CORELIST
 
 # SBL OSPI LIB
 sbl_lib_ospi_COMP_LIST = sbl_lib_ospi
@@ -762,52 +711,6 @@ sbl_mmcsd_img_hlos_hs_INCLUDE = $(sbl_mmcsd_img_hlos_hs_PATH)
 export sbl_mmcsd_img_hlos_hs_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_mmcsd_img_hlos_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_mmcsd_img_hlos_hs_SBL_IMAGEGEN = yes
-
-# SBL EMMC Image  
-sbl_emmc_img_COMP_LIST = sbl_emmc_img
-sbl_emmc_img_RELPATH = ti/boot/sbl/board/k3
-sbl_emmc_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/emmc/bin
-sbl_emmc_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-sbl_emmc_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=emmc SBL_USE_DMA=yes BUILD_HS=no
-export sbl_emmc_img_MAKEFILE
-export sbl_emmc_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
-sbl_emmc_img_BOARD_DEPENDENCY = yes
-sbl_emmc_img_SOC_DEPENDENCY = yes
-sbl_emmc_img_CORE_DEPENDENCY = no
-export sbl_emmc_img_COMP_LIST
-export sbl_emmc_img_BOARD_DEPENDENCY
-export sbl_emmc_img_SOC_DEPENDENCY
-export sbl_emmc_img_CORE_DEPENDENCY
-sbl_emmc_img_PKG_LIST = sbl
-sbl_emmc_img_INCLUDE = $(sbl_emmc_img_PATH)
-sbl_emmc_img_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_emmc_img_BOARDLIST
-sbl_emmc_img_$(SOC)_CORELIST = mcu1_0
-export sbl_emmc_img_$(SOC)_CORELIST
-sbl_emmc_img_SBL_IMAGEGEN = yes
-export sbl_emmc_img_SBL_IMAGEGEN
-
-# SBL EMMC Image - For HS build  
-export sbl_emmc_img_hs_COMP_LIST = sbl_emmc_img_hs
-sbl_emmc_img_hs_RELPATH = ti/boot/sbl/board/k3
-sbl_emmc_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/emmc/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_emmc_img_hs_PATH = $(PDK_SBL_COMP_PATH)/build
-export sbl_emmc_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=emmc SBL_USE_DMA=yes BUILD_HS=yes
-export sbl_emmc_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
-export sbl_emmc_img_hs_BOARD_DEPENDENCY = yes
-export sbl_emmc_img_hs_SOC_DEPENDENCY = yes
-export sbl_emmc_img_hs_CORE_DEPENDENCY = no
-sbl_emmc_img_hs_PKG_LIST = sbl
-sbl_emmc_img_hs_INCLUDE = $(sbl_mmcsd_img_hs_PATH)
-export sbl_emmc_img_hs_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_emmc_img_hs_$(SOC)_CORELIST = mcu1_0
-export sbl_emmc_img_hs_SBL_IMAGEGEN = yes
 
 
 # SBL OSPI Image

@@ -104,6 +104,39 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 };
 
 /* FATFS configuration structure */
+#if defined(BOOT_EMMC)
+FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
+{
+    {
+#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
+        0U
+#else
+        1U
+#endif
+    },
+    {
+#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
+        0U
+#else
+        1U
+#endif
+    },
+    {
+#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
+        0U
+#else
+        1U
+#endif
+    },
+    {
+#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm)
+        0U
+#else
+        1U
+#endif
+    }
+};
+#else
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
     {
@@ -135,6 +168,7 @@ FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 #endif
     }
 };
+#endif
 
 /* FATFS objects */
 FATFS_Object FATFS_objects[_VOLUMES];
