@@ -1016,9 +1016,9 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             {
                 #if defined (SOC_J721S2)
                 CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
-                #endif
-                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
                 #else
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                #endif
             }
         }
         #endif
@@ -1210,9 +1210,9 @@ static void Sciclient_ISR(uintptr_t arg)
                 {
                     #if defined (SOC_J721S2)
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
-                    #endif
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
                     #else
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                    #endif
                 }
             }
             Osal_ClearInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
