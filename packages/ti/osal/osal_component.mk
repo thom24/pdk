@@ -120,7 +120,7 @@ libosal_tirtos_$(SOC)_CORELIST = $(filter-out c7x_1 c7x_2, $(libosal_$(SOC)_CORE
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x j721s2))
-libosal_freertos_$(SOC)_CORELIST = $(filter-out mpu1_0 mpu1_1, $(libosal_$(SOC)_CORELIST))
+libosal_freertos_$(SOC)_CORELIST = $(filter-out mpu%, $(libosal_$(SOC)_CORELIST))
 else
 libosal_freertos_$(SOC)_CORELIST =
 endif
