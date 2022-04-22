@@ -102,7 +102,6 @@ static void Board_DDRChangeFreqAck(void)
     uint32_t reqType;
     uint32_t regVal;
     volatile uint32_t counter;
-    volatile uint32_t counter2;
     volatile uint32_t temp = 0;
 
     temp = temp;  /* To suppress compiler warning */
@@ -144,39 +143,13 @@ static void Board_DDRChangeFreqAck(void)
             BOARD_DEBUG_LOG("Invalid Request Type\n");
         }
 
-        counter2 = 0;
-        while(counter2 < 200)
-        {
-            temp = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
-
+        /* Acknowledge frequency change request */
         HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x1);
-
-        counter2 = 0;
-        while(counter2 < 10)
-        {
-            temp = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
 
         while((HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR) & 0x80) == 0x80);
 
-        counter2 = 0;
-        while(counter2 < 10)
-        {
-            temp = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
-
+        /* Clear frequency change request acknowledge */
         HW_WR_REG32(BOARD_DDR_FSP_CLKCHNG_ACK_ADDR, 0x0);
-
-        counter2 = 0;
-        while(counter2 < 10)
-        {
-            temp= HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR);
-            counter2++;
-        }
     }
 
     BOARD_DEBUG_LOG("--->>> Frequency Change request handshake is completed... <<<---\n");
