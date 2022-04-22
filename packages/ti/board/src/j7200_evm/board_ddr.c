@@ -33,10 +33,19 @@
 #include <string.h>
 #include "board_ddr.h"
 #include "board_ddrRegInit.h"
+#include "board_ddrRegInit_v1.h"
 
 /* Global variables */
 static LPDDR4_Config gBoardDdrCfg;
 static LPDDR4_PrivateData gBoardDdrPd;
+
+static uint32_t gBoardDdrCfgVer = 0;
+
+static Board_ddrCfgParams_t gBoardDdrCfgPrms[BOARD_DDR_CONFIG_MAX] =
+{
+    {DDRSS_PLL_FHS_CNT, DDRSS_PLL_FREQUENCY_0, DDRSS_PLL_FREQUENCY_1, DDRSS_PLL_FREQUENCY_2},
+    {DDRSS_PLL_FHS_CNT_V1, DDRSS_PLL_FREQUENCY_0_V1, DDRSS_PLL_FREQUENCY_1_V1, DDRSS_PLL_FREQUENCY_2_V1}
+};
 
 /* Local function prototypes */
 static int32_t emif_ConfigureECC(void);
@@ -99,7 +108,7 @@ static void Board_DDRChangeFreqAck(void)
     temp = temp;  /* To suppress compiler warning */
     BOARD_DEBUG_LOG("--->>> LPDDR4 Initialization is in progress ... <<<---\n");
 
-    for(counter = 0; counter < DDRSS_PLL_FHS_CNT; counter++)
+    for(counter = 0; counter < gBoardDdrCfgPrms[gBoardDdrCfgVer].fhsCnt; counter++)
     {
         /* wait for freq change request */
         regVal = HW_RD_REG32(BOARD_DDR_FSP_CLKCHNG_REQ_ADDR) & 0x80;
@@ -116,16 +125,16 @@ static void Board_DDRChangeFreqAck(void)
 
         if(reqType == 1)
         {
-            Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_1);
+            Board_DDRSetPLLClock(gBoardDdrCfgPrms[gBoardDdrCfgVer].frequency1);
         }
         else if(reqType == 2)
         {
-            Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_2);
+            Board_DDRSetPLLClock(gBoardDdrCfgPrms[gBoardDdrCfgVer].frequency2);
         }
         else if(reqType == 0)
         {
 #ifndef BOARD_DDR_ENABLE_PLL_BYPASS
-            Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_0);
+            Board_DDRSetPLLClock(gBoardDdrCfgPrms[gBoardDdrCfgVer].frequency0);
 #else
             Board_DDRSetPLLExtBypass();
 #endif
@@ -288,6 +297,46 @@ static Board_STATUS Board_DDRHWRegInit(void)
 }
 
 /**
+ * \brief   DDR registers initialization function v1
+ *
+ * This function configures the DDR with optimized configurations
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+static Board_STATUS Board_DDRHWRegInit_v1(void)
+{
+    uint32_t status = 0U;
+
+    status = LPDDR4_WriteCtlConfig(&gBoardDdrPd,
+                                   DDRSS_ctlReg_v1,
+                                   DDRSS_ctlRegNum_v1,
+                                   (uint16_t)DDRSS_CTL_REG_INIT_COUNT_V1);
+    if (!status)
+    {
+        status = LPDDR4_WritePhyIndepConfig(&gBoardDdrPd,
+                                            DDRSS_phyIndepReg_v1,
+                                            DDRSS_phyIndepRegNum_v1,
+                                            (uint16_t)DDRSS_PHY_INDEP_REG_INIT_COUNT_V1);
+    }
+
+    if (!status)
+    {
+        status = LPDDR4_WritePhyConfig(&gBoardDdrPd,
+                                       DDRSS_phyReg_v1,
+                                       DDRSS_phyRegNum_v1,
+                                       (uint16_t)DDRSS_PHY_REG_INIT_COUNT_V1);
+    }
+
+    if (status)
+    {
+        BOARD_DEBUG_LOG(" ERROR: Board_DDRHWRegInit_v1 failed!!\n");
+        return BOARD_FAIL;
+    }
+
+    return BOARD_SOK;
+}
+
+/**
  * \brief   DDR start function
  *
  * \return  BOARD_SOK in case of success or appropriate error code
@@ -392,17 +441,32 @@ static Board_STATUS emif_ConfigureECC(void)
 Board_STATUS Board_DDRInit(Bool eccEnable)
 {
     Board_STATUS status = BOARD_SOK;
+    uint32_t designRev = 0U;
+    uint32_t ftFpc1Rev = 0U;
+
 
     /* Unlock the PLL register access for DDR clock bypass */
     HW_WR_REG32(BOARD_PLL12_LOCK0, KICK0_UNLOCK);
     HW_WR_REG32(BOARD_PLL12_LOCK1, KICK1_UNLOCK);
+
+    /* Read the SoC design and FT FPC1 revisions to pick the right DDR configuration */
+    designRev = HW_RD_REG32(BOARD_SOC_DIE_ID0);
+    designRev = (designRev & BOARD_SOC_DESIGN_REV_MASK) >> BOARD_SOC_DESIGN_REV_SHIFT;
+    ftFpc1Rev = HW_RD_REG32(BOARD_SOC_DIE_ID1);
+    ftFpc1Rev = (ftFpc1Rev & BOARD_SOC_FT_FPC1_REV_MASK) >> BOARD_SOC_FT_FPC1_REV_SHIFT;
+    if((designRev >= 1) ||
+       (ftFpc1Rev >= 7))
+    {
+        /* New device substrate which can use Optimized DDR configurations */
+        gBoardDdrCfgVer = 1;
+    }
 
 #ifdef BOARD_DDR_ENABLE_PLL_BYPASS
     /* Bypass PLL while configuring the DDR */
     Board_DDRSetPLLExtBypass();
 #else
     /* Set to Boot Frequency(F0) while configuring the DDR */
-    Board_DDRSetPLLClock(DDRSS_PLL_FREQUENCY_0);
+    Board_DDRSetPLLClock(gBoardDdrCfgPrms[gBoardDdrCfgVer].frequency0);
 #endif
 
     /* Partition5 lockkey0 */
@@ -422,10 +486,22 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
         return status;
     }
 
-    status = Board_DDRHWRegInit();
-    if(status != BOARD_SOK)
+    if(gBoardDdrCfgVer == 1)
     {
-        return status;
+        /* New device substrate which can use Optimized DDR configurations */
+        status = Board_DDRHWRegInit_v1();
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
+    }
+    else
+    {
+        status = Board_DDRHWRegInit();
+        if(status != BOARD_SOK)
+        {
+            return status;
+        }
     }
 
     status = Board_DDRStart();

@@ -77,6 +77,23 @@ extern "C" {
 #define BOARD_MAX_TEMP_CHECK_REFRESH_RATE_VALUE           (7U)
 #define BOARD_TEMP_CHECK_REFRESH_RATE_VALUE_0_25_DERATING (6U)
 
+#define BOARD_DDR_CONFIG_MAX             (2U)
+
+/**
+ * \brief Structure to configure the DDR parameters
+ */
+typedef struct Board_ddrCfgParams_s
+{
+    /** FHS loop count */
+    uint32_t fhsCnt;
+    /** PLL frequency0 */
+    uint32_t frequency0;
+    /** PLL frequency1 */
+    uint32_t frequency1;
+    /** PLL frequency2 */
+    uint32_t frequency2;
+} Board_ddrCfgParams_t;
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
