@@ -790,7 +790,7 @@ MCSPI_config_list MCSPI_config = {
  * \return 0 success: -1: error
  *
  */
-int32_t SPI_socGetInitCfg(uint32_t idx, SPI_v1_HWAttrs *cfg)
+int32_t SPI_socGetInitCfg(uint32_t domain, uint32_t idx, SPI_v1_HWAttrs *cfg)
 {
     int32_t ret = 0;
 
@@ -814,7 +814,7 @@ int32_t SPI_socGetInitCfg(uint32_t idx, SPI_v1_HWAttrs *cfg)
  * \return           0 success: -1: error
  *
  */
-int32_t SPI_socSetInitCfg(uint32_t idx, const SPI_v1_HWAttrs *cfg)
+int32_t SPI_socSetInitCfg(uint32_t domain, uint32_t idx, const SPI_v1_HWAttrs *cfg)
 {
     int32_t ret = 0;
 
