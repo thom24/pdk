@@ -934,7 +934,7 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
     Udma_ChHandle       chHandle;
     Udma_RingHandle     ringHandle;
 #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
-    Udma_RingMonHandle  monHandle = NULL_PTR;
+    Udma_RingMonHandle  monHandle;
 #endif
     Udma_EventPrms     *eventPrms;
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
