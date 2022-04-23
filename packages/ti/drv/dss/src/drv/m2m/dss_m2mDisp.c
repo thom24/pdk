@@ -286,7 +286,7 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
                     CSL_dssVidPipeSetAlphaConfig(instObj->pipeRegs[context->pipeId[pipeIdx]],
                                 (const CSL_DssVidPipeAlphaCfg *)(&instCfg->cfgParams.alphaCfg));
 
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
                     CSL_dssVidPipeSetCropConfig(instObj->pipeRegs[context->pipeId[pipeIdx]],
                             (const Fvid2_EdgeCropConfig *)(&instCfg->cfgParams.cropParams.cropCfg),
                             instCfg->cfgParams.cropParams.cropEnable);

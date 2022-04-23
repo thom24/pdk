@@ -50,6 +50,9 @@ SRCS_COMMON += dss_display_test.c
 ifeq ($(BOARD),j721e_evm)
 SRCS_COMMON += dss_display_dsi_cfg.c
 endif
+ifeq ($(BOARD),j721s2_evm)
+SRCS_COMMON += dss_display_dsi_cfg.c
+endif
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(DSS_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS

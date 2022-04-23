@@ -13,3 +13,9 @@ SRCDIR += src/drv/m2m
 PACKAGE_SRCS_COMMON += src/drv/m2m
 include src/drv/m2m/src_files_m2m.mk
 endif
+
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+SRCDIR += src/drv/m2m
+PACKAGE_SRCS_COMMON += src/drv/m2m
+include src/drv/m2m/src_files_m2m.mk
+endif

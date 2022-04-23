@@ -113,6 +113,25 @@ int main(void)
     {
         OS_stop();
     }
+
+#if defined(FREERTOS)
+    /* Get task loads */
+    status += LoadP_getTaskLoad(task, &loadStatsTask);
+
+    if(loadStatsTask.percentLoad > 0U)
+    {
+        printf("\nDisplay Test Task - Load: %d%% \n", loadStatsTask.percentLoad);
+    }
+    else
+    {
+        printf("\nDisplay Test Task - Load: < 1%% \n");
+    }
+
+    /* Query CPU Load */
+    cpuLoad = LoadP_getCPULoad();
+    printf("\n CPU Load = %d%% \n", cpuLoad);
+#endif
+
     OS_start();    /* does not return */
 
     return(0);
@@ -147,6 +166,10 @@ static void taskFxn(void* a0, void* a1)
     #elif (1U == DISP_APP_TEST_EDP)
         lcdParams.outType  = (uint32_t)APP_OUTPUT_EDP;
         lcdParams.pixelClk = (uint64_t)148500000ULL;
+        if(DISP_APP_USE_TEST_PARAMS == DISP_APP_BGR24)
+        {
+            lcdParams.pixelClk = (uint64_t)74250000u;
+        }
         App_configureLCD(lcdParams);
     #else
         lcdParams.outType  = (uint32_t)APP_OUTPUT_HDMI;
@@ -202,7 +225,7 @@ static void taskFxn(void* a0, void* a1)
                                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                    TISCI_MSG_FLAG_AOP,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
     retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_DSI0,
                                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                    TISCI_MSG_FLAG_AOP,
@@ -248,7 +271,7 @@ static void taskFxn(void* a0, void* a1)
     return;
 }
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 
 void InitMmu(void)

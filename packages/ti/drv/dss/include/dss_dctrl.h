@@ -348,6 +348,12 @@ typedef void (*Dss_DctrlLineNumCbFxn)(uint32_t vpId, void *appData);
  */
 #define IOCTL_DSS_DCTRL_SET_DSI_PARAMS       (DSS_DCTRL_IOCTL_BASE + 0x0FU)
 
+/**
+ * \brief Command to detect if the DP cable is connected or not.
+ *
+ * \return  FVID2_SOK if successful, else suitable error code
+ */
+#define IOCTL_DSS_DCTRL_IS_DP_CONNECTED      (DSS_DCTRL_IOCTL_BASE + 0x10U)
 /* @} */
 
 /* ========================================================================== */

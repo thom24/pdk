@@ -211,7 +211,7 @@ int32_t Dss_dctrlDrvCreateEdgeList(Dss_DctrlDrvGraphObj *graphObj,
 
 void Dss_dctrlDrvFreeEdgeList(Dss_DctrlDrvGraphObj *graphObj);
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined (SOC_J721S2)
 int32_t Dss_dctrlDrvDisableVideoDP(void);
 int32_t Dss_dctrlDrvEnableVideoDP(const Fvid2_ModeInfo *mInfo,
                                   uint32_t hsyncPolarity,
@@ -220,8 +220,8 @@ int32_t Dss_dctrlDrvEnableVideoDP(const Fvid2_ModeInfo *mInfo,
 int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported);
 int32_t Dss_dctrlDrvProcessHpdDp(uint32_t hpdState);
 int32_t Dss_dctrlDrvRegisterHpdCb(const Dss_DctrlDpHpdCbParams *cbParams);
+int32_t Dss_dctrlDrvDetectDp(void);
 #endif
-
 void Dss_dctrlDrvInitDSI();
 int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
     const Dss_DctrlDsiParams *dsPrms);

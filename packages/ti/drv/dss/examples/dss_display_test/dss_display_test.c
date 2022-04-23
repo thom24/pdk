@@ -203,8 +203,10 @@ static void DispApp_init(DispApp_Obj *appObj)
     appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_SAFETY] = 55U;
     appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_SECURITY] = 57U;
 #endif
-#if defined (SOC_J721E)
+#if defined (SOC_J721S2)
     appObj->initParams.socParams.dpInitParams.isHpdSupported = FALSE;
+#elif defined (SOC_J721E)
+    appObj->initParams.socParams.dpInitParams.isHpdSupported = TRUE;
 #endif
     Dss_init(&appObj->initParams);
 
@@ -343,7 +345,7 @@ static void DispApp_create(DispApp_Obj *appObj)
     Dss_DctrlVpParams *vpParams;
     Dss_DctrlAdvVpParams *advVpParams;
     DispApp_InstObj *instObj;
-
+    int32_t dpConnectedCmdArg;
     DispApp_initParams(appObj);
     vpParams = &appObj->vpParams;
     advVpParams = &appObj->advVpParams;
@@ -473,73 +475,78 @@ static void DispApp_create(DispApp_Obj *appObj)
 
     vpParams->lcdPolarityCfg.pixelClkPolarity = FVID2_EDGE_POL_RISING;
 #endif
-
-    DispApp_configDctrl(appObj);
-
-    for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
+    retVal = Fvid2_control(appObj->dctrlHandle, IOCTL_DSS_DCTRL_IS_DP_CONNECTED, &dpConnectedCmdArg, NULL);
+    if ((FVID2_SOK == retVal) && (TRUE == dpConnectedCmdArg))
     {
-        instObj = &appObj->instObj[instCnt];
-        SemaphoreP_Params_init(&semParams);
-        semParams.mode = SemaphoreP_Mode_BINARY;
-        instObj->syncSem = SemaphoreP_create(0U, &semParams);
-        instObj->drvHandle = Fvid2_create(
-            DSS_DISP_DRV_ID,
-            instObj->instId,
-            &instObj->createParams,
-            &instObj->createStatus,
-            &instObj->cbParams);
-        if((NULL == instObj->drvHandle) ||
-           (instObj->createStatus.retVal != FVID2_SOK))
+        DispApp_configDctrl(appObj);
+        for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
         {
-            App_print("Display Create Failed!!!\r\n");
-            retVal = instObj->createStatus.retVal;
+            instObj = &appObj->instObj[instCnt];
+            SemaphoreP_Params_init(&semParams);
+            semParams.mode = SemaphoreP_Mode_BINARY;
+            instObj->syncSem = SemaphoreP_create(0U, &semParams);
+            instObj->drvHandle = Fvid2_create(
+                DSS_DISP_DRV_ID,
+                instObj->instId,
+                &instObj->createParams,
+                &instObj->createStatus,
+                &instObj->cbParams);
+            if((NULL == instObj->drvHandle) ||
+            (instObj->createStatus.retVal != FVID2_SOK))
+            {
+                App_print("Display Create Failed!!!\r\n");
+                retVal = instObj->createStatus.retVal;
+            }
+
+            if(FVID2_SOK == retVal)
+            {
+                retVal = Fvid2_control(
+                    instObj->drvHandle,
+                    IOCTL_DSS_DISP_SET_DSS_PARAMS,
+                    &instObj->dispParams,
+                    NULL);
+                if(retVal != FVID2_SOK)
+                {
+                    App_print("DSS Set Params IOCTL Failed!!!\r\n");
+                }
+            }
+            if(FVID2_SOK == retVal)
+            {
+                retVal = Fvid2_control(
+                    instObj->drvHandle,
+                    IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS,
+                    &instObj->mflagParams,
+                    NULL);
+                if(retVal != FVID2_SOK)
+                {
+                    App_print("DSS Set Mflag Params IOCTL Failed!!!\r\n");
+                }
+            }
+
+            if(FVID2_SOK == retVal)
+            {
+                retVal = DispApp_allocAndQueueFrames(appObj, instObj);
+                if(retVal != FVID2_SOK)
+                {
+                    App_print("Display Alloc and Queue Failed!!!\r\n");
+                }
+            }
+
+            if(FVID2_SOK != retVal)
+            {
+                break;
+            }
         }
 
         if(FVID2_SOK == retVal)
         {
-            retVal = Fvid2_control(
-                instObj->drvHandle,
-                IOCTL_DSS_DISP_SET_DSS_PARAMS,
-                &instObj->dispParams,
-                NULL);
-            if(retVal != FVID2_SOK)
-            {
-                App_print("DSS Set Params IOCTL Failed!!!\r\n");
-            }
-        }
-        if(FVID2_SOK == retVal)
-        {
-            retVal = Fvid2_control(
-                instObj->drvHandle,
-                IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS,
-                &instObj->mflagParams,
-                NULL);
-            if(retVal != FVID2_SOK)
-            {
-                App_print("DSS Set Mflag Params IOCTL Failed!!!\r\n");
-            }
-        }
-
-        if(FVID2_SOK == retVal)
-        {
-            retVal = DispApp_allocAndQueueFrames(appObj, instObj);
-            if(retVal != FVID2_SOK)
-            {
-                App_print("Display Alloc and Queue Failed!!!\r\n");
-            }
-        }
-
-        if(FVID2_SOK != retVal)
-        {
-            break;
+            App_print("Display create complete!!\r\n");
         }
     }
-
-    if(FVID2_SOK == retVal)
+    else
     {
-        App_print("Display create complete!!\r\n");
+        printf("The display cable is not connected!!\n");
     }
-
     return;
 }
 

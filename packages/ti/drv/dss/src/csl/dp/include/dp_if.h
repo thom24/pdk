@@ -120,6 +120,7 @@
 #define DP_HDCP_SEED_LENGTH (32U)
 
 #define DP_MAX_NUMBER_OF_LANES (4U)
+
 #define DP_MAX_DPCD_READ_RETRIES 3U
 /**
  *  @}

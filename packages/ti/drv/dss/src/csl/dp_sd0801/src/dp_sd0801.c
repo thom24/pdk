@@ -175,12 +175,11 @@ uint32_t DP_SD0801_PhySetReset(const DP_SD0801_PrivateData* pD, bool reset)
         regTmp = CPS_REG_READ(&pD->regBaseDp->dp_regs.PHY_RESET_p);
         regTmp = CPS_FLD_WRITE(DP__DP_REGS__PHY_RESET_P, PHY_RESET, regTmp, (reset ? 0 : 1));
         CPS_REG_WRITE(&pD->regBaseDp->dp_regs.PHY_RESET_p, regTmp);
-
+        CPS_ExtPhyReset(reset);
         if (pD->callbacks.extPhyReset != NULL) {
             pD->callbacks.extPhyReset(reset);
         }
     }
-    CPS_ExtPhyReset(reset);
     return retVal;
 }
 

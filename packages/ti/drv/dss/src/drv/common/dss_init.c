@@ -47,7 +47,7 @@
 #include <ti/drv/dss/src/drv/common/dss_evtMgr.h>
 #include <ti/drv/dss/src/drv/dctrl/dss_dctrlDrv.h>
 #include <ti/drv/dss/src/drv/disp/dss_dispDrv.h>
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
 #include <ti/drv/dss/src/drv/m2m/dss_m2mDrv.h>
 #endif
 
@@ -137,13 +137,13 @@ int32_t Dss_init(const Dss_InitParams *initParams)
             }
         }
 
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined (SOC_J721S2)
         dctrlInitParams.dpInitParams.isAvailable = initParams->socParams.dpInitParams.isAvailable;
         dctrlInitParams.dpInitParams.isHpdSupported = initParams->socParams.dpInitParams.isHpdSupported;
 #endif
 
         dctrlInitParams.dsiInitParams.isAvailable = FALSE;
-#if defined(SOC_J721E)
+#if defined(SOC_J721E) || defined (SOC_J721S2)
         dctrlInitParams.dsiInitParams.isAvailable =
             initParams->socParams.dsiInitParams.isAvailable;
 #endif
@@ -167,7 +167,7 @@ int32_t Dss_init(const Dss_InitParams *initParams)
         }
         retVal += Dss_dispDrvInit(numInst, dispInitParams);
     }
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
     if(FVID2_SOK == retVal)
     {
         /* Initialize display M2M driver */
@@ -182,7 +182,7 @@ int32_t Dss_deInit(void)
 {
     int32_t retVal = FVID2_SOK;
 
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
     retVal += Dss_m2mDrvDeInit();
 #endif
     retVal += Dss_dispDrvDeInit();

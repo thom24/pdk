@@ -299,7 +299,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
     }
 #endif
 
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
     uint32_t regVal2;
 
     /* Select DPI0 connection */

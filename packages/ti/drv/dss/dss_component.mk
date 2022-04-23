@@ -34,13 +34,15 @@
 #
 ifeq ($(dss_component_make_include), )
 
-drvdss_SOCLIST         = am65xx j721e
-drvdss_BOARDLIST       = am65xx_evm j721e_evm
+drvdss_SOCLIST         = am65xx j721e j721s2
+drvdss_BOARDLIST       = am65xx_evm j721e_evm j721s2_evm
 drvdss_am65xx_CORELIST = mpu1_0
 drvdss_j721e_CORELIST  = mcu2_0
-drvdssm2m_SOCLIST         = j721e
-drvdssm2m_BOARDLIST       = j721e_evm
+drvdss_j721s2_CORELIST  = mcu2_0
+drvdssm2m_SOCLIST         = j721e j721s2
+drvdssm2m_BOARDLIST       = j721e_evm j721s2_evm
 drvdssm2m_j721e_CORELIST  = mcu2_0
+drvdssm2m_j721s2_CORELIST  = mcu2_0
 drvdss_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 
 define DRV_DSS_RTOS_BOARDLIST_RULE
@@ -229,7 +231,7 @@ export dss_baremetal_display_testapp_BOARDLIST
 dss_baremetal_display_testapp_$(SOC)_CORELIST = $(drvdss_$(SOC)_CORELIST)
 export dss_baremetal_display_testapp_$(SOC)_CORELIST
 dss_EXAMPLE_LIST += dss_baremetal_display_testapp
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j721s2))
 dss_baremetal_display_testapp_SBL_APPIMAGEGEN = yes
 export dss_baremetal_display_testapp_SBL_APPIMAGEGEN
 endif

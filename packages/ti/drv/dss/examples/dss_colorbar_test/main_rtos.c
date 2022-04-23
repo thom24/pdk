@@ -141,7 +141,7 @@ static void taskFxn(void* a0, void* a1)
                                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                    TISCI_MSG_FLAG_AOP,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J721S2)
     retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_DSI0,
                                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                    TISCI_MSG_FLAG_AOP,
@@ -159,7 +159,7 @@ static void taskFxn(void* a0, void* a1)
     return;
 }
 
-#if defined(BUILD_MPU) || defined (__C7100__)
+#if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
