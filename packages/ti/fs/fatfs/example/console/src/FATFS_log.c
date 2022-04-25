@@ -81,7 +81,7 @@ void ConsoleUtilsInit(void)
  *  ======== Board_initUART ========
  */
 void Board_initUART(void) {
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) 
           HW_WR_REG32((SOC_CORE_PAD_IO_REGISTERS_BASE + CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD),
             (CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD_UART1_RXD_INPUTENABLE_MASK |
                     CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD_UART1_RXD_SLEWCONTROL_MASK |

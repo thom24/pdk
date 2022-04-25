@@ -120,7 +120,7 @@ typedef struct {
 #else
     BYTE    win[_MAX_SS];  /* Disk access window for Directory,
                               FAT (and file data at tiny cfg) */
-#if !(defined(_TMS320C6X) || defined(__C7100__))
+#if !(defined(_TMS320C6X) || defined(BUILD_C7X))
     #warning this win buffer needs to be cache-line aligned
 #endif
 

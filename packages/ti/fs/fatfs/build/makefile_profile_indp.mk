@@ -39,7 +39,7 @@ MODULE_NAME = fatfs_profile_indp
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x))
+ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2))
 INCLUDE_EXTERNAL_INTERFACES += edma
 endif
 

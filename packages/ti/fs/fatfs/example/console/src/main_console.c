@@ -59,7 +59,7 @@
  * SDCD. Hence this feature , i.e using GPIO to check the SD card insert
  * is disabled. Same is the case with J7 and Simulator (J7). Here the demo
  * assumes that the SD card is inserted */
-#if !(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SIMULATOR) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if !(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SIMULATOR) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2))
 #define FATFS_GPIO_ENABLED 1
 
 #ifndef SIMULATOR
@@ -132,7 +132,7 @@ GPIO_CallbackFxn gpioCallbackFunctions[] = {
     NULL,
 };
 
-#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200)||defined (SOC_AM64X))
+#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200)||defined (SOC_AM64X) || defined(SOC_J721S2))
 GPIO_v0_Config GPIO_v0_config = {
     gpioPinConfigs,
     gpioCallbackFunctions,
@@ -165,7 +165,7 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 /* FATFS configuration structure */
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
     {  /* MMC1 is SD card  for AM65xx GP EVM */
         1U
     },
@@ -344,7 +344,7 @@ void fatfs_console(void* a0, void* a1)
 
 
 #ifndef BARE_METAL
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X)) && (defined(BUILD_MPU) || defined (__C7100__))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
@@ -365,7 +365,7 @@ int main(void)
     Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO | BOARD_INIT_MODULE_CLOCK;
 
-#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200)||defined (SOC_AM64X)) &&  ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
+#if (defined(SOC_AM65XX)||defined(SOC_J721E)||defined (SOC_J7200)||defined (SOC_AM64X) || defined(SOC_J721S2)) &&  ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     /* Clear it until the issue is resolved */
     boardCfg &= ~(BOARD_INIT_MODULE_CLOCK);
 #endif
