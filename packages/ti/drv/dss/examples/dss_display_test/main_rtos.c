@@ -113,25 +113,6 @@ int main(void)
     {
         OS_stop();
     }
-
-#if defined(FREERTOS)
-    /* Get task loads */
-    status += LoadP_getTaskLoad(task, &loadStatsTask);
-
-    if(loadStatsTask.percentLoad > 0U)
-    {
-        printf("\nDisplay Test Task - Load: %d%% \n", loadStatsTask.percentLoad);
-    }
-    else
-    {
-        printf("\nDisplay Test Task - Load: < 1%% \n");
-    }
-
-    /* Query CPU Load */
-    cpuLoad = LoadP_getCPULoad();
-    printf("\n CPU Load = %d%% \n", cpuLoad);
-#endif
-
     OS_start();    /* does not return */
 
     return(0);
