@@ -1173,6 +1173,16 @@ ifeq ($(CORE),mcu3_1)
   PDK_LNKFLAGS += --define=BUILD_MCU3_1 --define=BUILD_MCU
 endif
 
+ifeq ($(CORE),mcu4_0)
+  PDK_CFLAGS += -DBUILD_MCU4_0 -DBUILD_MCU
+  PDK_LNKFLAGS += --define=BUILD_MCU4_0 --define=BUILD_MCU
+endif
+
+ifeq ($(CORE),mcu4_1)
+  PDK_CFLAGS += -DBUILD_MCU4_1 -DBUILD_MCU
+  PDK_LNKFLAGS += --define=BUILD_MCU4_1 --define=BUILD_MCU
+endif
+
 ifeq ($(CORE),mpu1_0)
   PDK_CFLAGS += -DBUILD_MPU1_0 -DBUILD_MPU
   PDK_LNKFLAGS += --define=BUILD_MPU1_0 --define=BUILD_MPU

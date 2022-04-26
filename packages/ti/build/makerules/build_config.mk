@@ -162,7 +162,7 @@ CFLAGS_GLOBAL_tpr12_qt      += -DSIM_BUILD
 #
 
 # MCU Cores
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 m4f_0))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 m4f_0))
   CFLAGS_GLOBAL_$(CORE) = -g -DMAKEFILE_BUILD
   LNKFLAGS_GLOBAL_$(CORE) = -Xlinker -x -Xlinker --zero_init=on
 endif

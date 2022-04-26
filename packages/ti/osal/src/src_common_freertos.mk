@@ -34,7 +34,7 @@ ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
   SRCS_COMMON += TimerP_default.c CycleprofilerP_nonos.c
 endif
 
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1))
   SRCDIR += arch/core/r5
   SRCS_COMMON += CacheP_nonos.c Arch_util.c
   SRCS_ASM_COMMON += TimestampProvider_asm.asm

@@ -45,7 +45,7 @@ endif
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am64x j721e j721s2 j784s4))
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu1_1 mcu3_1 ))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu1_1 mcu3_1 mcu4_0 mcu4_1))
 # Enable XDC build for application by providing XDC CFG File per core
 XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_r5f.cfg
 EXTERNAL_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/linker_r5.lds

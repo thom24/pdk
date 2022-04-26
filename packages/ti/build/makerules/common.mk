@@ -43,7 +43,7 @@
 # Include make paths and options for all supported targets/boards
 #
 
-.PHONY : all clean gendirs c7x_1 c66x c66xdsp_1 c66xdsp_2 ipu1_0 ipu1_1 ipu2_0 ipu2_1 m3 host a15_0 a8host a9host arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1 c7x-hostemu qnx_mpu1_0 m4f_0 clean_appimagerprc sbl_appimagerprc
+.PHONY : all clean gendirs c7x_1 c66x c66xdsp_1 c66xdsp_2 ipu1_0 ipu1_1 ipu2_0 ipu2_1 m3 host a15_0 a8host a9host arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1 c7x-hostemu qnx_mpu1_0 m4f_0 clean_appimagerprc sbl_appimagerprc
 
 all : $(CORE)
 

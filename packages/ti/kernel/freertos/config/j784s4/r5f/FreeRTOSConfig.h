@@ -53,6 +53,12 @@
 #ifdef BUILD_MCU3_1
 #include "FreeRTOSConfig_mcu3_1.h"
 #endif
+#ifdef BUILD_MCU4_0
+#include "FreeRTOSConfig_mcu4_0.h"
+#endif
+#ifdef BUILD_MCU4_1
+#include "FreeRTOSConfig_mcu4_1.h"
+#endif
 
 /*-----------------------------------------------------------
  * Application specific definitions.
