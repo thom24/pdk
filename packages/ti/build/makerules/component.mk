@@ -354,28 +354,28 @@ ifneq ($(lpm_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
-# -include $(PDK_ENET_COMP_PATH)/enet_component.mk
-# ifneq ($(enet_LIB_LIST),)
-#   pdk_LIB_LIST += $(enet_LIB_LIST)
-# endif
-# ifneq ($(enet_APP_LIB_LIST),)
-#   pdk_APP_LIB_LIST += $(enet_APP_LIB_LIST)
-# endif
-# ifneq ($(enet_EXAMPLE_LIST),)
-#   pdk_EXAMPLE_LIST += $(enet_EXAMPLE_LIST)
-# endif
+-include $(PDK_ENET_COMP_PATH)/enet_component.mk
+ifneq ($(enet_LIB_LIST),)
+  pdk_LIB_LIST += $(enet_LIB_LIST)
+endif
+ifneq ($(enet_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(enet_APP_LIB_LIST)
+endif
+ifneq ($(enet_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(enet_EXAMPLE_LIST)
+endif
 
 # - used to ignore include if component not present
-# -include $(PDK_LWIP_COMP_PATH)/lwip_component.mk
-# ifneq ($(lwip_LIB_LIST),)
-#   pdk_LIB_LIST += $(lwip_LIB_LIST)
-# endif
-# ifneq ($(lwip_APP_LIB_LIST),)
-#   pdk_APP_LIB_LIST += $(lwip_APP_LIB_LIST)
-# endif
-# ifneq ($(lwip_EXAMPLE_LIST),)
-#   pdk_EXAMPLE_LIST += $(lwip_EXAMPLE_LIST)
-# endif
+-include $(PDK_LWIP_COMP_PATH)/lwip_component.mk
+ifneq ($(lwip_LIB_LIST),)
+  pdk_LIB_LIST += $(lwip_LIB_LIST)
+endif
+ifneq ($(lwip_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(lwip_APP_LIB_LIST)
+endif
+ifneq ($(lwip_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(lwip_EXAMPLE_LIST)
+endif
 
 # - used to ignore include if component not present
 -include $(PDK_CSIRX_COMP_PATH)/csirx_component.mk
