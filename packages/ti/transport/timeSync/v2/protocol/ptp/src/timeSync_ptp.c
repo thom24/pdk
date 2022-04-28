@@ -94,6 +94,7 @@ void TimeSyncPtp_setDefaultPtpConfig(TimeSyncPtp_Config *ptpConfig)
     /* SoC configuration */
     ptpConfig->socConfig.socVersion = TIMESYNC_SOC_UNKNOWN;
     ptpConfig->socConfig.ipVersion  = TIMESYNC_IP_VER_UNKNOWN;
+    ptpConfig->socConfig.instId     = 0U;
 
     /* VLAN configuration */
     ptpConfig->vlanCfg.vlanType = TIMESYNC_VLAN_TYPE_NONE;

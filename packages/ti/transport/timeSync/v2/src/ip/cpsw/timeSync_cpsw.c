@@ -210,7 +210,7 @@ static void TimeSync_getMsgId(uint8_t *msgId,
 static void TimeSync_getSeqId(uint16_t *seqId,
                               uint8_t *frame);
 
-static int32_t TimeSync_configPps(Enet_Type enetType);
+static int32_t TimeSync_configPps(Enet_Type enetType, uint32_t instId);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -404,7 +404,7 @@ TimeSync_Handle TimeSync_open(TimeSync_Config *timeSyncConfig)
 
         if (status == TIMESYNC_OK)
         {
-            status = TimeSync_configPps(gTimeSyncCpswObj.enetType);
+            status = TimeSync_configPps(gTimeSyncCpswObj.enetType, gTimeSyncCpswObj.instId);
             if (status != TIMESYNC_OK)
             {
                 EnetAppUtils_print("Failed to configure PPS generation: %d\n", status);
@@ -1503,7 +1503,7 @@ static void TimeSync_getSeqId(uint16_t *seqId,
     *seqId = Enet_ntohs(*seqId);
 }
 
-static int32_t TimeSync_configPps(Enet_Type enetType)
+static int32_t TimeSync_configPps(Enet_Type enetType, uint32_t instId)
 {
     int32_t status = TIMESYNC_OK;
     Enet_IoctlPrms prms;
@@ -1522,12 +1522,14 @@ static int32_t TimeSync_configPps(Enet_Type enetType)
     if (enetType == ENET_CPSW_2G)
     {
         status = EnetAppUtils_setTimeSyncRouter(gTimeSyncCpswObj.enetType,
+                                                instId,
                                                 CSLR_TIMESYNC_INTRTR0_IN_MCU_CPSW0_CPTS_GENF0_0,
                                                 CSLR_TIMESYNC_INTRTR0_OUTL_MCU_CPSW0_CPTS_HW3_PUSH_0);
     }
     else
     {
         status = EnetAppUtils_setTimeSyncRouter(gTimeSyncCpswObj.enetType,
+                                                instId,
                                                 CSLR_TIMESYNC_INTRTR0_IN_CPSW0_CPTS_GENF0_0,
                                                 CSLR_TIMESYNC_INTRTR0_OUTL_CPSW0_CPTS_HW1_PUSH_0);
     }
