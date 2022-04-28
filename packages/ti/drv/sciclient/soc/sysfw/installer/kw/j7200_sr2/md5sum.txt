@@ -1,2 +1,0 @@
-2f61ef534417985a4ddb6ffdd369d341  OTP_KEYWRITER_ADD_ON_j7200_sr2_v2022.01-windows-installer.exe
-9eab1b2bd75e4a9f9efe2d5545fd58d7  OTP_KEYWRITER_ADD_ON_j7200_sr2_v2022.01-linux-installer.run
