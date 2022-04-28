@@ -675,8 +675,11 @@ void UART_callback2(UART_Handle handle, UART_Transaction *transaction)
 
 #if !(defined(SOC_TPR12) || defined (SOC_AWR294X))
 
+#if defined(SOC_J721S2) || defined(SOC_J721E) || defined(SOC_J7200)
+#define UART_NUM_TRIG_LVL           (2U)
+#else
 #define UART_NUM_TRIG_LVL           (4U)
-
+#endif
 /*
  *  ======== UART_initConfigTrgLvl ========
  */
@@ -870,16 +873,12 @@ static bool UART_test_fifo_trglvl(bool dmaMode)
     {
         UART_TXTRIGLVL_8,
         UART_TXTRIGLVL_16,
-        UART_TXTRIGLVL_32,
-        UART_TXTRIGLVL_56
     };
 
     UART_RxTrigLvl rxTrgLvl[UART_NUM_TRIG_LVL] =
     {
         UART_RXTRIGLVL_8,
         UART_RXTRIGLVL_16,
-        UART_RXTRIGLVL_56,
-        UART_RXTRIGLVL_60
     };
 #else
     uint32_t txTrgLvl[UART_NUM_TRIG_LVL] =
@@ -3126,7 +3125,9 @@ UART_Tests Uart_tests[] =
     {UART_test_profile_tx, false, UART_TEST_ID_PROF_TX, "\r\n UART non-DMA/DMA Blocking/Polling transmit profiling"},
 #endif
 #ifdef UART_DMA_ENABLE
+#if !(defined(SOC_J721S2) || defined(SOC_J721E) || defined(SOC_J7200)) /* disabling UT 22 till PDK-11221 errata is fixed */
     {UART_test_loopback_data, true, UART_TEST_ID_DMA_LB_DATA, "\r\n UART DMA read write test with loopback"},
+#endif
 #endif
     {UART_test_loopback_data, false, UART_TEST_ID_LB_DATA, "\r\n UART non-DMA read write test with loopback"},
     {NULL, }
