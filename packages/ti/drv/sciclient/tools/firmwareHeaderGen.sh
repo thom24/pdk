@@ -41,6 +41,7 @@
 #         For AM64x             : ./firmwareHeaderGen.sh am64x
 #         For J7200             : ./firmwareHeaderGen.sh j7200
 #         For J7200-HS          : ./firmwareHeaderGen.sh j7200-hs
+#         For J7200-HS (ES2.0)  : ./firmwareHeaderGen.sh j7200_sr2-hs
 #         For J7200-HS Prime    : ./firmwareHeaderGen.sh j7200-hsp
 #         For J721S2            : ./firmwareHeaderGen.sh j721s2
 export RM=rm
@@ -160,6 +161,16 @@ export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYP
 export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
 export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/tifs$BIN_EXT.bin
 export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert.bin
+export SYSFW_LOAD_ADDR=0x40000
+fi
+
+if [ "$FW_SOC" = "j7200_sr2" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V2
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V2_sr2$BIN_EXT.h
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/tifs_sr2$BIN_EXT.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert_sr2.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
