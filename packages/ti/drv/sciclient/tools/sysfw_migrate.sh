@@ -182,20 +182,20 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721e/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
     
     # AM65xx
-    make -j -s allclean
-    make -j -s sciclient_boardcfg BOARD=am65xx_evm
-    make -j -s sciclient_boardcfg BOARD=am65xx_evm BUILD_HS=yes
-    make -j -s sciclient_ccs_init_clean BOARD=am65xx_evm
-    make -j -s sciclient_ccs_init BOARD=am65xx_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am65xx/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am65xx/
+    # make -j -s allclean
+    # make -j -s sciclient_boardcfg BOARD=am65xx_evm
+    # make -j -s sciclient_boardcfg BOARD=am65xx_evm BUILD_HS=yes
+    # make -j -s sciclient_ccs_init_clean BOARD=am65xx_evm
+    # make -j -s sciclient_ccs_init BOARD=am65xx_evm
+    # $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am65xx/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am65xx/
 
     # AM64xx
-    make -j -s allclean
-    make -j -s sciclient_boardcfg BOARD=am64x_evm
-    make -j -s sciclient_boardcfg BOARD=am64x_evm BUILD_HS=yes
-    make -j -s sciclient_ccs_init_clean BOARD=am64x_evm
-    make -j -s sciclient_ccs_init BOARD=am64x_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am64x/
+    # make -j -s allclean
+    # make -j -s sciclient_boardcfg BOARD=am64x_evm
+    # make -j -s sciclient_boardcfg BOARD=am64x_evm BUILD_HS=yes
+    # make -j -s sciclient_ccs_init_clean BOARD=am64x_evm
+    # make -j -s sciclient_ccs_init BOARD=am64x_evm
+    # $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am64x/
 
     # J7200
     make -j -s allclean
@@ -229,14 +229,14 @@ fi
 if [ "$SKIP_GEN_BIN" != "YES" ];  then
 
     cd $ROOTDIR/ti/drv/sciclient/tools/
-    ./firmwareHeaderGen.sh am65x
-    ./firmwareHeaderGen.sh am65x-hs
-    ./firmwareHeaderGen.sh am65x_sr2
-    ./firmwareHeaderGen.sh am65x_sr2-hs
+    # ./firmwareHeaderGen.sh am65x
+    # ./firmwareHeaderGen.sh am65x-hs
+    # ./firmwareHeaderGen.sh am65x_sr2
+    # ./firmwareHeaderGen.sh am65x_sr2-hs
     ./firmwareHeaderGen.sh j721e
     ./firmwareHeaderGen.sh j721e-hs
     ./firmwareHeaderGen.sh j721e_sr1_1-hs
-    ./firmwareHeaderGen.sh am64x
+    # ./firmwareHeaderGen.sh am64x
     ./firmwareHeaderGen.sh j7200
     ./firmwareHeaderGen.sh j7200-hs
     ./firmwareHeaderGen.sh j7200_sr2-hs
@@ -250,7 +250,22 @@ fi
 if [ "$SKIP_COMMIT" != "YES" ]; then
     $ECHO "Commit changes to PDK"
     cd $SCRIPT_DIR
-    git add $SCI_CLIENT_DIR/soc/sysfw
+    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/scripts
+    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/system-firmware-public-documentation/
+    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/sysfw-trace*
+    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721e*
+    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j7200*
+    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721s2*
+    git add $SCI_CLIENT_DIR/soc/sysfw/include/j721e
+    git add $SCI_CLIENT_DIR/soc/sysfw/include/j7200
+    git add $SCI_CLIENT_DIR/soc/sysfw/include/j721s2
+    git add $SCI_CLIENT_DIR/soc/sysfw/include/tisci
+    git add $SCI_CLIENT_DIR/soc/V1
+    git add $SCI_CLIENT_DIR/soc/V2
+    git add $SCI_CLIENT_DIR/soc/V4
+    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e
+    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200
+    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2
     git commit -m "Migrating to SYSFW version $RELEASE_TAG"
 fi
 
