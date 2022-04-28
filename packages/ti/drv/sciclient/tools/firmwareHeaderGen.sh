@@ -44,6 +44,7 @@
 #         For J7200-HS (ES2.0)  : ./firmwareHeaderGen.sh j7200_sr2-hs
 #         For J7200-HS Prime    : ./firmwareHeaderGen.sh j7200-hsp
 #         For J721S2            : ./firmwareHeaderGen.sh j721s2
+#         For J721S2-HS         : ./firmwareHeaderGen.sh j721s2-hs
 export RM=rm
 export MV=mv
 export MAKE=gcc

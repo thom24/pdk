@@ -212,6 +212,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     # J721S2
     make -j -s allclean
     make -j -s sciclient_boardcfg BOARD=j721s2_evm
+    make -j -s sciclient_boardcfg BOARD=j721s2_evm BUILD_HS=yes
     make -j -s sciclient_ccs_init_clean BOARD=j721s2_evm
     make -j -s sciclient_ccs_init BOARD=j721s2_evm
     make -j -s sciserver_testapp_freertos_clean BOARD=j721s2_evm
@@ -239,7 +240,8 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
     ./firmwareHeaderGen.sh j7200
     ./firmwareHeaderGen.sh j7200-hs
     ./firmwareHeaderGen.sh j7200_sr2-hs
-    # ./firmwareHeaderGen.sh j721s2-zebu
+    ./firmwareHeaderGen.sh j721s2
+    ./firmwareHeaderGen.sh j721s2-hs
 
 fi
 
