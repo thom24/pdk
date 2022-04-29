@@ -69,7 +69,7 @@ ifeq ($(lwip_component_make_include), )
 # List with various rtos_types (such as tirtos(sysbios),freertos,safertos) to build RTOS apps.
 # Use the Default List defined in 'ti/build/makerules/component.mk'
 # This list will be used to generate RTOS app make rule for each rtos_type.
-drvlwip_RTOS_LIST       = tirtos freertos
+drvlwip_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 
 drvlwip_SOCLIST         = am65xx j721e j7200 j721s2 tpr12 awr294x
 drvlwip_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm tpr12_evm awr294x_evm
