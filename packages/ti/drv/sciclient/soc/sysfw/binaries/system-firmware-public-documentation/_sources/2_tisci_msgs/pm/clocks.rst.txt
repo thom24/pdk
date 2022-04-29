@@ -406,8 +406,8 @@ Power Management Clock Frequency Configuration without Multiplexers
 An example sequence for setting the clock frequency for a given module is as given below.
 The input to this code snippet is as below:
 
-- ``device_id``: Refer to the :doc:`../../5_soc_doc/am6x/devices`
-- ``clk_id``: Refer to the :doc:`../../5_soc_doc/am6x/clocks`. Choose the Ids which are marked "Input Clock".
+- ``device_id``: Refer to the :doc:`../../5_soc_doc/am65x/devices`
+- ``clk_id``: Refer to the :doc:`../../5_soc_doc/am65x/clocks`. Choose the Ids which are marked "Input Clock".
 - ``min_hz``: Minimum Frequency which should be set for this clock.
 - ``freq_hz``: Target Frequency which should be set for this clock.
 - ``max_hz``: Maximum Frequency which should be set for this clock.
@@ -613,8 +613,8 @@ Power Management Clock Frequency Configuration Example with Mux programming
 An example pseudo sequence for setting the clock frequency while searching for the
 right multiplexer parent is as below:
 
-- ``device_id``: Refer to the :doc:`../../5_soc_doc/am6x/devices`
-- ``clk_id``: Refer to the :doc:`../../5_soc_doc/am6x/clocks`. Choose the Ids which are marked "Input Clock".
+- ``device_id``: Refer to the :doc:`../../5_soc_doc/am65x/devices`
+- ``clk_id``: Refer to the :doc:`../../5_soc_doc/am65x/clocks`. Choose the Ids which are marked "Input Clock".
 - ``min_hz``: Minimum Frequency which should be set for this clock.
 - ``freq_hz``: Target Frequency which should be set for this clock.
 - ``max_hz``: Maximum Frequency which should be set for this clock.

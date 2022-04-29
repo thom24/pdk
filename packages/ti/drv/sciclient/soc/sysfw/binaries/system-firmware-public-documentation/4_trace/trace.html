@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#trace-layer-overview">Trace Layer Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#trace-configuration">Trace Configuration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#trace-memory-buffer-location">Trace Memory Buffer Location</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#trace-uart-allocation">Trace UART Allocation</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#trace-debug-data-format">Trace Debug Data Format</a><ul>
@@ -257,13 +258,57 @@ about the location and size can be found below.</p>
 <td>0x44083000</td>
 <td>0x1000</td>
 </tr>
-<tr class="row-even"><td>am64x</td>
+<tr class="row-even"><td>AM64x</td>
 <td>0x44043000</td>
 <td>0x0FE0</td>
 </tr>
 <tr class="row-odd"><td>J7200</td>
 <td>0x44083000</td>
 <td>0x1000</td>
+</tr>
+<tr class="row-even"><td>AM62x</td>
+<td>0x4405F000</td>
+<td>0x1000</td>
+</tr>
+<tr class="row-odd"><td>J721S2</td>
+<td>0x4406A000</td>
+<td>0x1000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="trace-uart-allocation">
+<span id="pub-trace-uart-allocation"></span><h3>Trace UART Allocation<a class="headerlink" href="#trace-uart-allocation" title="Permalink to this headline">¶</a></h3>
+<p>The table below shows the UART instances used for routing TIFS trace messages
+over the UART.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="38%" />
+<col width="62%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">SoC</th>
+<th class="head">UART Instance</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AM65x</td>
+<td>WKUP UART0</td>
+</tr>
+<tr class="row-odd"><td>J721e</td>
+<td>WKUP UART0</td>
+</tr>
+<tr class="row-even"><td>AM64x</td>
+<td>MAIN UART1</td>
+</tr>
+<tr class="row-odd"><td>J7200</td>
+<td>WKUP UART0</td>
+</tr>
+<tr class="row-even"><td>AM62x</td>
+<td>MAIN UART1</td>
+</tr>
+<tr class="row-odd"><td>J721S2</td>
+<td>WKUP UART0</td>
 </tr>
 </tbody>
 </table>
@@ -1846,7 +1891,14 @@ action bit set</td>
 [19:14]   - Powerdomain ID
 [2:0]     - Priv Position information</td>
 </tr>
-<tr class="row-odd"><td>PM_INIT</td>
+<tr class="row-odd"><td>SET_MODULE_RESET</td>
+<td>23</td>
+<td>Set module Reset</td>
+<td>[21:20]   - PSC ID
+[19:14]   - Powerdomain ID
+[0]       - Enable (1) / Disable (0)</td>
+</tr>
+<tr class="row-even"><td>PM_INIT</td>
 <td>32</td>
 <td>Power Management Init</td>
 <td>[20]      - Power Init result
@@ -1854,24 +1906,24 @@ action bit set</td>
 [18:16]   - Index of start module
 [15:0]    - Error value</td>
 </tr>
-<tr class="row-even"><td>PM_DEV_INIT</td>
+<tr class="row-odd"><td>PM_DEV_INIT</td>
 <td>33</td>
 <td>Power Management device init</td>
 <td>[21:12]   - Device ID
 [11:0]    - Error value</td>
 </tr>
-<tr class="row-odd"><td>PM_SYS_RESET</td>
+<tr class="row-even"><td>PM_SYS_RESET</td>
 <td>34</td>
-<td>Reset of entire system or a domain</td>
+<td>Power Management system reset</td>
 <td>[21:14]   - Domain
 [13:0]    - Error value</td>
 </tr>
-<tr class="row-even"><td>FAIL (modifier)</td>
+<tr class="row-odd"><td>FAIL (modifier)</td>
 <td>0x40</td>
 <td>Action failed when action bit set</td>
 <td>N/A</td>
 </tr>
-<tr class="row-odd"><td>EXCLUSIVE_BUSY</td>
+<tr class="row-even"><td>EXCLUSIVE_BUSY</td>
 <td>123</td>
 <td>Other hosts have enabled the device
 which exclusive access has been
@@ -1880,24 +1932,24 @@ requested</td>
 [11:6]    - Requesting host ID
 [5:0]     - One of other host IDs</td>
 </tr>
-<tr class="row-even"><td>EXCLUSIVE_DEVICE</td>
+<tr class="row-odd"><td>EXCLUSIVE_DEVICE</td>
 <td>124</td>
 <td>Another host has exclusive access
 to the requested device</td>
 <td>[21:8]    - Device ID
 [7:0]     - Requesting host ID</td>
 </tr>
-<tr class="row-odd"><td>INVALID_STATE</td>
+<tr class="row-even"><td>INVALID_STATE</td>
 <td>125</td>
 <td>API attempted to set invalid state</td>
 <td>Target state</td>
 </tr>
-<tr class="row-even"><td>BAD_DEVICE</td>
+<tr class="row-odd"><td>BAD_DEVICE</td>
 <td>126</td>
 <td>API received bad device ID</td>
 <td>Device ID</td>
 </tr>
-<tr class="row-odd"><td>GENERIC_DEBUG</td>
+<tr class="row-even"><td>GENERIC_DEBUG</td>
 <td>127</td>
 <td>Generic Debug Message</td>
 <td>Any use.</td>
@@ -1950,7 +2002,7 @@ to the requested device</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

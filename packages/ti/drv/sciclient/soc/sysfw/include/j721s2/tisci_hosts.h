@@ -49,7 +49,7 @@
  *
  * Host IDs for J721S2 device
  *
- * Data version: 210712_144506
+ * Data version: 220323_094332
  *
  */
 #ifndef TISCI_HOSTS_H

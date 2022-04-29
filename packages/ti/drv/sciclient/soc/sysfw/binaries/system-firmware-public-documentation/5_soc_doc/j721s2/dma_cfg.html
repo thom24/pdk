@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721s2">J721S2</a><ul class="current">
@@ -129,6 +130,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">J721S2 Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">J721S2 Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721S2 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721S2 Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721S2 Device Group descriptions</a></li>
 </ul>
 </li>
@@ -298,10 +300,10 @@ detected.</p>
 <td>0 to 1</td>
 </tr>
 <tr class="row-odd"><td>TX_HCHAN</td>
-<td>2 to 5</td>
+<td>2 to 3</td>
 </tr>
 <tr class="row-even"><td>TX_CHAN</td>
-<td>6 to 84</td>
+<td>4 to 84</td>
 </tr>
 <tr class="row-odd"><td>TX_ECHAN</td>
 <td>85 to 340</td>
@@ -323,10 +325,10 @@ detected.</p>
 <td>0 to 1</td>
 </tr>
 <tr class="row-odd"><td>RX_HCHAN</td>
-<td>2 to 5</td>
+<td>2 to 3</td>
 </tr>
 <tr class="row-even"><td>RX_CHAN</td>
-<td>6 to 81</td>
+<td>4 to 81</td>
 </tr>
 </tbody>
 </table>
@@ -443,6 +445,9 @@ use case configurations.  The configurable flows can be delegated using
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>0 to 0</td>
 </tr>
+<tr class="row-odd"><td>SAUL_TX_1_CHAN</td>
+<td>1 to 1</td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
@@ -464,6 +469,12 @@ use case configurations.  The configurable flows can be delegated using
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>1 to 1</td>
 </tr>
+<tr class="row-even"><td>SAUL_RX_2_CHAN</td>
+<td>2 to 2</td>
+</tr>
+<tr class="row-odd"><td>SAUL_RX_3_CHAN</td>
+<td>3 to 3</td>
+</tr>
 </tbody>
 </table>
 <table border="1" class="docutils">
@@ -481,13 +492,21 @@ use case configurations.  The configurable flows can be delegated using
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>0 to 7</td>
 </tr>
-<tr class="row-odd"><td>SAUL_RX_0_CHAN
-(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
+<tr class="row-odd"><td>SAUL_TX_1_CHAN</td>
 <td>8 to 15</td>
 </tr>
 <tr class="row-even"><td>SAUL_RX_1_CHAN
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>16 to 23</td>
+</tr>
+<tr class="row-odd"><td>SAUL_RX_0_CHAN</td>
+<td>16 to 23</td>
+</tr>
+<tr class="row-even"><td>SAUL_RX_2_CHAN</td>
+<td>24 to 31</td>
+</tr>
+<tr class="row-odd"><td>SAUL_RX_3_CHAN</td>
+<td>24 to 31</td>
 </tr>
 </tbody>
 </table>
@@ -535,7 +554,7 @@ use case configurations.  The configurable flows can be delegated using
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

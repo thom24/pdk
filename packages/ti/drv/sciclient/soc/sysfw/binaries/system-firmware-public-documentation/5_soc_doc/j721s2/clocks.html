@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721s2">J721S2</a><ul class="current">
@@ -128,6 +129,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">J721S2 Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">J721S2 Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721S2 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721S2 Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721S2 Device Group descriptions</a></li>
 </ul>
 </li>
@@ -230,9 +232,9 @@ These do have chapters in this document associated with them, however, these wou
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="24%" />
-<col width="50%" />
-<col width="26%" />
+<col width="18%" />
+<col width="61%" />
+<col width="21%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -252,6 +254,10 @@ These do have chapters in this document associated with them, however, these wou
 <tr class="row-even"><td>2</td>
 <td>DEV_A72SS0_PLL_CTRL_CLK</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>DEV_A72SS0_A72_DIVH_CLK8_OBSCLK_OUT_CLK</td>
+<td>Output clock</td>
 </tr>
 </tbody>
 </table>
@@ -310,7 +316,27 @@ These do have chapters in this document associated with them, however, these wou
 </div>
 <div class="section" id="clocks-for-aggr-atb0-device">
 <span id="soc-doc-j721s2-public-clks-aggr-atb0"></span><h3>Clocks for AGGR_ATB0 Device<a class="headerlink" href="#clocks-for-aggr-atb0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_AGGR_ATB0</span></a> (ID = 134)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="25%" />
+<col width="48%" />
+<col width="27%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_AGGR_ATB0_DBG_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="clocks-for-atl0-device">
 <span id="soc-doc-j721s2-public-clks-atl0"></span><h3>Clocks for ATL0 Device<a class="headerlink" href="#clocks-for-atl0-device" title="Permalink to this headline">¶</a></h3>
@@ -845,49 +871,49 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_BOARD0_I2C4_SCL_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>3</td>
-<td>DEV_BOARD0_DDR0_CKP_OUT</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>4</td>
+<tr class="row-even"><td>4</td>
 <td>DEV_BOARD0_CSI0_TXCLKN_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>5</td>
+<tr class="row-odd"><td>5</td>
 <td>DEV_BOARD0_CSI0_RXCLKP_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>6</td>
+<tr class="row-even"><td>6</td>
 <td>DEV_BOARD0_HYP0_TXPMCLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>7</td>
+<tr class="row-odd"><td>7</td>
 <td>DEV_BOARD0_MCAN1_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>8</td>
+<tr class="row-even"><td>8</td>
 <td>DEV_BOARD0_MCAN17_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>9</td>
+<tr class="row-odd"><td>9</td>
 <td>DEV_BOARD0_MMC1_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>10</td>
+<tr class="row-even"><td>10</td>
 <td>DEV_BOARD0_MCU_OBSCLK0_IN</td>
 <td>Input muxed clock</td>
 </tr>
-<tr class="row-even"><td>11</td>
+<tr class="row-odd"><td>11</td>
 <td>DEV_BOARD0_MCU_OBSCLK0_IN_PARENT_MCU_OBSCLK_DIV_OUT0</td>
 <td>Parent input clock option to DEV_BOARD0_MCU_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>12</td>
+<tr class="row-even"><td>12</td>
 <td>DEV_BOARD0_MCU_OBSCLK0_IN_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
 <td>Parent input clock option to DEV_BOARD0_MCU_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>43</td>
+<tr class="row-odd"><td>43</td>
 <td>DEV_BOARD0_I2C0_SCL_IN</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-even"><td>44</td>
+<td>DEV_BOARD0_SPI7_CLK_OUT</td>
+<td>Output clock</td>
 </tr>
 <tr class="row-odd"><td>45</td>
 <td>DEV_BOARD0_MCU_CPTS0_RFT_CLK_OUT</td>
@@ -937,113 +963,113 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_BOARD0_I2C6_SCL_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>59</td>
+<tr class="row-odd"><td>58</td>
+<td>DEV_BOARD0_MCU_SPI0_CLK_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>59</td>
 <td>DEV_BOARD0_OBSCLK1_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>60</td>
+<tr class="row-odd"><td>60</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>61</td>
+<tr class="row-even"><td>61</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>62</td>
+<tr class="row-odd"><td>62</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT1_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>63</td>
+<tr class="row-even"><td>63</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>64</td>
+<tr class="row-odd"><td>64</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>65</td>
+<tr class="row-even"><td>65</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV1_16FFT_MAIN_5_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>66</td>
+<tr class="row-odd"><td>66</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV0_16FFT_MAIN_6_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>67</td>
+<tr class="row-even"><td>67</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV0_16FFT_MAIN_26_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>72</td>
+<tr class="row-odd"><td>72</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV0_16FFT_MAIN_12_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>73</td>
+<tr class="row-even"><td>73</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_OBSCLK1_MUX_OUT0</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>74</td>
+<tr class="row-odd"><td>74</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV2_16FFT_MAIN_14_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>76</td>
+<tr class="row-even"><td>76</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>77</td>
+<tr class="row-odd"><td>77</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>79</td>
+<tr class="row-even"><td>79</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV1_16FFT_MAIN_19_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>85</td>
+<tr class="row-odd"><td>85</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV1_16FFT_MAIN_25_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>86</td>
+<tr class="row-even"><td>86</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>87</td>
+<tr class="row-odd"><td>87</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>88</td>
+<tr class="row-even"><td>88</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>89</td>
+<tr class="row-odd"><td>89</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT0_CLK_DUP0</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>90</td>
+<tr class="row-even"><td>90</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>91</td>
+<tr class="row-odd"><td>91</td>
 <td>DEV_BOARD0_OBSCLK1_IN_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>92</td>
+<tr class="row-even"><td>92</td>
 <td>DEV_BOARD0_MCU_OSPI1_LBCLKO_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>93</td>
+<tr class="row-odd"><td>93</td>
 <td>DEV_BOARD0_MCASP3_ACLKX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>95</td>
+<tr class="row-even"><td>95</td>
 <td>DEV_BOARD0_MCASP2_AFSR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>96</td>
+<tr class="row-odd"><td>96</td>
 <td>DEV_BOARD0_TRC_CLK_IN</td>
 <td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>98</td>
-<td>DEV_BOARD0_DDR1_CKP_OUT</td>
-<td>Output clock</td>
 </tr>
 <tr class="row-even"><td>100</td>
 <td>DEV_BOARD0_CSI1_RXCLKN_OUT</td>
@@ -1057,36 +1083,44 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_BOARD0_MCU_OSPI0_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>104</td>
-<td>DEV_BOARD0_DDR0_CKP_IN</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>105</td>
+<tr class="row-odd"><td>105</td>
 <td>DEV_BOARD0_GPMC0_FCLK_MUX_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>106</td>
+<tr class="row-even"><td>106</td>
 <td>DEV_BOARD0_MCU_SPI0_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>108</td>
+<tr class="row-odd"><td>108</td>
 <td>DEV_BOARD0_MCU_RGMII1_RXC_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>109</td>
+<tr class="row-even"><td>109</td>
 <td>DEV_BOARD0_MCASP0_AFSR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>110</td>
+<tr class="row-odd"><td>110</td>
 <td>DEV_BOARD0_CSI1_RXCLKP_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>111</td>
+<tr class="row-even"><td>111</td>
 <td>DEV_BOARD0_MCU_SYSCLKOUT0_IN</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-odd"><td>112</td>
+<td>DEV_BOARD0_SPI5_CLK_OUT</td>
+<td>Output clock</td>
+</tr>
 <tr class="row-even"><td>113</td>
 <td>DEV_BOARD0_MCU_RMII1_REF_CLK_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>114</td>
+<td>DEV_BOARD0_SPI0_CLK_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>116</td>
+<td>DEV_BOARD0_SPI6_CLK_OUT</td>
 <td>Output clock</td>
 </tr>
 <tr class="row-odd"><td>117</td>
@@ -1125,109 +1159,109 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_BOARD0_MCASP3_AFSX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>130</td>
+<tr class="row-even"><td>129</td>
+<td>DEV_BOARD0_MCU_SPI1_CLK_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>130</td>
 <td>DEV_BOARD0_SERDES0_REFCLK_P_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>131</td>
+<tr class="row-even"><td>131</td>
 <td>DEV_BOARD0_SERDES0_REFCLK_P_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>132</td>
+<tr class="row-odd"><td>132</td>
 <td>DEV_BOARD0_MCASP1_ACLKR_IN</td>
 <td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>133</td>
-<td>DEV_BOARD0_DDR1_CKN_OUT</td>
-<td>Output clock</td>
 </tr>
 <tr class="row-even"><td>134</td>
 <td>DEV_BOARD0_MCASP1_AFSX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>136</td>
+<tr class="row-odd"><td>135</td>
+<td>DEV_BOARD0_SPI1_CLK_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>136</td>
 <td>DEV_BOARD0_I2C3_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>137</td>
+<tr class="row-odd"><td>137</td>
 <td>DEV_BOARD0_MCU_I2C0_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>138</td>
+<tr class="row-even"><td>138</td>
 <td>DEV_BOARD0_HYP1_TXPMCLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>139</td>
+<tr class="row-odd"><td>139</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 <td>Input muxed clock</td>
 </tr>
-<tr class="row-odd"><td>140</td>
+<tr class="row-even"><td>140</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>141</td>
+<tr class="row-odd"><td>141</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_1_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>142</td>
+<tr class="row-even"><td>142</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_2_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>143</td>
+<tr class="row-odd"><td>143</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_3_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>144</td>
+<tr class="row-even"><td>144</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_4_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>152</td>
+<tr class="row-odd"><td>152</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>153</td>
+<tr class="row-even"><td>153</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_1_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>154</td>
+<tr class="row-odd"><td>154</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_2_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>155</td>
+<tr class="row-even"><td>155</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_3_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>156</td>
+<tr class="row-odd"><td>156</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_MCASP_MAIN_4_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>164</td>
+<tr class="row-even"><td>164</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>165</td>
+<tr class="row-odd"><td>165</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT_1</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>166</td>
+<tr class="row-even"><td>166</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT_2</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>167</td>
+<tr class="row-odd"><td>167</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT_3</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>168</td>
+<tr class="row-even"><td>168</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK0_IN_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>173</td>
+<tr class="row-odd"><td>173</td>
 <td>DEV_BOARD0_MCASP2_ACLKX_OUT</td>
 <td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>174</td>
-<td>DEV_BOARD0_DDR1_CKP_IN</td>
-<td>Input clock</td>
 </tr>
 <tr class="row-even"><td>175</td>
 <td>DEV_BOARD0_MMC1_CLKLB_OUT</td>
@@ -1309,40 +1343,32 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_BOARD0_MCASP2_ACLKR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>197</td>
-<td>DEV_BOARD0_DDR0_CKN_IN</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>198</td>
+<tr class="row-even"><td>198</td>
 <td>DEV_BOARD0_HFOSC1_CLK_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>199</td>
+<tr class="row-odd"><td>199</td>
 <td>DEV_BOARD0_MCASP1_ACLKR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>200</td>
+<tr class="row-even"><td>200</td>
 <td>DEV_BOARD0_MCAN4_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>201</td>
+<tr class="row-odd"><td>201</td>
 <td>DEV_BOARD0_MCASP4_ACLKX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>202</td>
+<tr class="row-even"><td>202</td>
 <td>DEV_BOARD0_CSI1_TXCLKP_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>203</td>
+<tr class="row-odd"><td>203</td>
 <td>DEV_BOARD0_MCASP3_AFSR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>204</td>
+<tr class="row-even"><td>204</td>
 <td>DEV_BOARD0_LED_CLK_OUT</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-even"><td>205</td>
-<td>DEV_BOARD0_DDR0_CKN_OUT</td>
 <td>Output clock</td>
 </tr>
 <tr class="row-odd"><td>206</td>
@@ -1353,423 +1379,427 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_BOARD0_MCU_MDIO0_MDC_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>208</td>
-<td>DEV_BOARD0_DDR1_CKN_IN</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>209</td>
+<tr class="row-odd"><td>209</td>
 <td>DEV_BOARD0_MCASP4_ACLKR_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>210</td>
+<tr class="row-even"><td>210</td>
 <td>DEV_BOARD0_I2C2_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>212</td>
+<tr class="row-odd"><td>212</td>
 <td>DEV_BOARD0_SPI1_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>213</td>
+<tr class="row-even"><td>213</td>
 <td>DEV_BOARD0_HYP1_RXPMCLK_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>214</td>
+<tr class="row-odd"><td>214</td>
 <td>DEV_BOARD0_MCU_HYPERBUS0_CK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>215</td>
+<tr class="row-even"><td>215</td>
 <td>DEV_BOARD0_MCASP2_AFSX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>216</td>
+<tr class="row-odd"><td>216</td>
 <td>DEV_BOARD0_MCASP3_ACLKR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>217</td>
+<tr class="row-even"><td>217</td>
 <td>DEV_BOARD0_MCAN15_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>218</td>
+<tr class="row-odd"><td>218</td>
 <td>DEV_BOARD0_SPI0_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>219</td>
+<tr class="row-even"><td>219</td>
 <td>DEV_BOARD0_MCAN12_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>220</td>
+<tr class="row-odd"><td>220</td>
 <td>DEV_BOARD0_MCASP2_ACLKR_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>221</td>
+<tr class="row-even"><td>221</td>
 <td>DEV_BOARD0_MCU_CLKOUT0_IN</td>
 <td>Input muxed clock</td>
 </tr>
-<tr class="row-even"><td>222</td>
+<tr class="row-odd"><td>222</td>
 <td>DEV_BOARD0_MCU_CLKOUT0_IN_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT0_CLK5</td>
 <td>Parent input clock option to DEV_BOARD0_MCU_CLKOUT0_IN</td>
 </tr>
-<tr class="row-odd"><td>223</td>
+<tr class="row-even"><td>223</td>
 <td>DEV_BOARD0_MCU_CLKOUT0_IN_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT0_CLK10</td>
 <td>Parent input clock option to DEV_BOARD0_MCU_CLKOUT0_IN</td>
 </tr>
-<tr class="row-even"><td>224</td>
+<tr class="row-odd"><td>224</td>
 <td>DEV_BOARD0_MCU_OSPI1_DQS_OUT</td>
 <td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>225</td>
-<td>DEV_BOARD0_MMC0_CLK_IN</td>
-<td>Input clock</td>
 </tr>
 <tr class="row-even"><td>226</td>
 <td>DEV_BOARD0_CSI0_RXCLKN_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>228</td>
+<tr class="row-odd"><td>227</td>
+<td>DEV_BOARD0_TCK_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>228</td>
 <td>DEV_BOARD0_CSI1_TXCLKN_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>229</td>
+<tr class="row-odd"><td>229</td>
 <td>DEV_BOARD0_MCU_MCAN0_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>230</td>
+<tr class="row-even"><td>230</td>
 <td>DEV_BOARD0_MCASP4_AFSR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>231</td>
+<tr class="row-odd"><td>231</td>
 <td>DEV_BOARD0_MCU_HYPERBUS0_CKN_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>232</td>
+<tr class="row-even"><td>232</td>
 <td>DEV_BOARD0_MCASP4_ACLKR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>233</td>
+<tr class="row-odd"><td>233</td>
 <td>DEV_BOARD0_MCAN11_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>234</td>
+<tr class="row-even"><td>234</td>
 <td>DEV_BOARD0_I2C5_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>235</td>
+<tr class="row-odd"><td>235</td>
 <td>DEV_BOARD0_MCU_I2C1_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>236</td>
+<tr class="row-even"><td>236</td>
 <td>DEV_BOARD0_I2C0_SCL_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>237</td>
+<tr class="row-odd"><td>237</td>
 <td>DEV_BOARD0_MCAN6_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>238</td>
+<tr class="row-even"><td>238</td>
 <td>DEV_BOARD0_MCU_I3C0_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>239</td>
+<tr class="row-odd"><td>239</td>
 <td>DEV_BOARD0_MMC1_CLK_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>240</td>
+<tr class="row-even"><td>240</td>
 <td>DEV_BOARD0_VOUT0_EXTPCLKIN_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>241</td>
+<tr class="row-odd"><td>241</td>
 <td>DEV_BOARD0_EXT_REFCLK1_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>242</td>
+<tr class="row-even"><td>242</td>
 <td>DEV_BOARD0_I2C5_SCL_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>243</td>
+<tr class="row-odd"><td>243</td>
 <td>DEV_BOARD0_MCAN16_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>244</td>
+<tr class="row-even"><td>244</td>
 <td>DEV_BOARD0_MCU_RGMII1_TXC_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>245</td>
+<tr class="row-odd"><td>245</td>
 <td>DEV_BOARD0_MCASP4_ACLKX_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>246</td>
+<tr class="row-even"><td>246</td>
 <td>DEV_BOARD0_GPMC0_CLKOUT_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>247</td>
+<tr class="row-odd"><td>247</td>
 <td>DEV_BOARD0_GPMC0_CLK_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>248</td>
+<tr class="row-even"><td>248</td>
 <td>DEV_BOARD0_I2C6_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>249</td>
+<tr class="row-odd"><td>249</td>
 <td>DEV_BOARD0_I2C4_SCL_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>250</td>
+<tr class="row-even"><td>250</td>
 <td>DEV_BOARD0_SERDES0_REFCLK_N_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>251</td>
+<tr class="row-odd"><td>251</td>
 <td>DEV_BOARD0_OBSCLK0_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>252</td>
+<tr class="row-even"><td>252</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>253</td>
+<tr class="row-odd"><td>253</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>254</td>
+<tr class="row-even"><td>254</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT1_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>255</td>
+<tr class="row-odd"><td>255</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>256</td>
+<tr class="row-even"><td>256</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>257</td>
+<tr class="row-odd"><td>257</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV1_16FFT_MAIN_5_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>258</td>
+<tr class="row-even"><td>258</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV0_16FFT_MAIN_6_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>259</td>
+<tr class="row-odd"><td>259</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV0_16FFT_MAIN_26_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>264</td>
+<tr class="row-even"><td>264</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV0_16FFT_MAIN_12_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>265</td>
+<tr class="row-odd"><td>265</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_OBSCLK1_MUX_OUT0</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>266</td>
+<tr class="row-even"><td>266</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV2_16FFT_MAIN_14_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>268</td>
+<tr class="row-odd"><td>268</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>269</td>
+<tr class="row-even"><td>269</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>271</td>
+<tr class="row-odd"><td>271</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV1_16FFT_MAIN_19_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>277</td>
+<tr class="row-even"><td>277</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV1_16FFT_MAIN_25_HSDIVOUT0_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>278</td>
+<tr class="row-odd"><td>278</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>279</td>
+<tr class="row-even"><td>279</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>280</td>
+<tr class="row-odd"><td>280</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>281</td>
+<tr class="row-even"><td>281</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT0_CLK_DUP0</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>282</td>
+<tr class="row-odd"><td>282</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-odd"><td>283</td>
+<tr class="row-even"><td>283</td>
 <td>DEV_BOARD0_OBSCLK0_IN_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
 <td>Parent input clock option to DEV_BOARD0_OBSCLK0_IN</td>
 </tr>
-<tr class="row-even"><td>284</td>
+<tr class="row-odd"><td>284</td>
 <td>DEV_BOARD0_MCAN2_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>285</td>
+<tr class="row-even"><td>285</td>
 <td>DEV_BOARD0_MCASP2_ACLKX_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>287</td>
+<tr class="row-odd"><td>287</td>
 <td>DEV_BOARD0_MCU_EXT_REFCLK0_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>288</td>
+<tr class="row-even"><td>288</td>
 <td>DEV_BOARD0_MCASP1_ACLKX_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>289</td>
+<td>DEV_BOARD0_SPI2_CLK_OUT</td>
 <td>Output clock</td>
 </tr>
 <tr class="row-even"><td>290</td>
 <td>DEV_BOARD0_HYP0_RXFLCLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>292</td>
+<tr class="row-odd"><td>291</td>
+<td>DEV_BOARD0_SPI3_CLK_OUT</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>292</td>
 <td>DEV_BOARD0_MCASP1_AFSR_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>293</td>
+<tr class="row-odd"><td>293</td>
 <td>DEV_BOARD0_I2C2_SCL_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>294</td>
+<tr class="row-even"><td>294</td>
 <td>DEV_BOARD0_MCAN10_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>295</td>
+<tr class="row-odd"><td>295</td>
 <td>DEV_BOARD0_MCAN5_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>296</td>
+<tr class="row-even"><td>296</td>
 <td>DEV_BOARD0_MCU_I3C0_SCL_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>297</td>
+<tr class="row-odd"><td>297</td>
 <td>DEV_BOARD0_MCU_MCAN1_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>299</td>
+<tr class="row-even"><td>299</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 <td>Input muxed clock</td>
 </tr>
-<tr class="row-even"><td>300</td>
+<tr class="row-odd"><td>300</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>301</td>
+<tr class="row-even"><td>301</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_1_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>302</td>
+<tr class="row-odd"><td>302</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_2_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>303</td>
+<tr class="row-even"><td>303</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_3_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>304</td>
+<tr class="row-odd"><td>304</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_4_MCASP_AHCLKR_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>312</td>
+<tr class="row-even"><td>312</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_0_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>313</td>
+<tr class="row-odd"><td>313</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_1_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>314</td>
+<tr class="row-even"><td>314</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_2_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>315</td>
+<tr class="row-odd"><td>315</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_3_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>316</td>
+<tr class="row-even"><td>316</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_MCASP_MAIN_4_MCASP_AHCLKX_POUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>324</td>
+<tr class="row-odd"><td>324</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>325</td>
+<tr class="row-even"><td>325</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT_1</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>326</td>
+<tr class="row-odd"><td>326</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT_2</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>327</td>
+<tr class="row-even"><td>327</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_ATL_MAIN_0_ATL_IO_PORT_ATCLK_OUT_3</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-even"><td>328</td>
+<tr class="row-odd"><td>328</td>
 <td>DEV_BOARD0_AUDIO_EXT_REFCLK1_IN_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
 <td>Parent input clock option to DEV_BOARD0_AUDIO_EXT_REFCLK1_IN</td>
 </tr>
-<tr class="row-odd"><td>333</td>
+<tr class="row-even"><td>333</td>
 <td>DEV_BOARD0_HYP1_TXFLCLK_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>334</td>
+<tr class="row-odd"><td>334</td>
 <td>DEV_BOARD0_SPI5_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>335</td>
+<tr class="row-even"><td>335</td>
 <td>DEV_BOARD0_I2C3_SCL_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>336</td>
+<tr class="row-odd"><td>336</td>
 <td>DEV_BOARD0_MCAN8_RX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>338</td>
+<tr class="row-even"><td>338</td>
 <td>DEV_BOARD0_RGMII1_RXC_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>339</td>
+<tr class="row-odd"><td>339</td>
 <td>DEV_BOARD0_SERDES0_REFCLK_N_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>340</td>
+<tr class="row-even"><td>340</td>
 <td>DEV_BOARD0_CSI0_TXCLKP_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>341</td>
+<tr class="row-odd"><td>341</td>
 <td>DEV_BOARD0_SPI7_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>342</td>
+<tr class="row-even"><td>342</td>
 <td>DEV_BOARD0_RGMII1_TXC_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>343</td>
+<tr class="row-odd"><td>343</td>
 <td>DEV_BOARD0_HYP1_RXFLCLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>344</td>
+<tr class="row-even"><td>344</td>
 <td>DEV_BOARD0_MDIO1_MDC_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>345</td>
+<tr class="row-odd"><td>345</td>
 <td>DEV_BOARD0_SPI2_CLK_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>346</td>
+<tr class="row-even"><td>346</td>
 <td>DEV_BOARD0_DSI0_TXCLKP_IN</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>347</td>
+<tr class="row-odd"><td>347</td>
 <td>DEV_BOARD0_MCASP4_AFSX_OUT</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>352</td>
+<tr class="row-even"><td>352</td>
 <td>DEV_BOARD0_VOUT0_PCLK_IN</td>
 <td>Input clock</td>
 </tr>
@@ -1808,6 +1838,42 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-codec0-device">
+<span id="soc-doc-j721s2-public-clks-codec0"></span><h3>Clocks for CODEC0 Device<a class="headerlink" href="#clocks-for-codec0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_CODEC0</span></a> (ID = 179)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="24%" />
+<col width="50%" />
+<col width="26%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_CODEC0_VPU_PCLK_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_CODEC0_VPU_BCLK_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_CODEC0_VPU_CCLK_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_CODEC0_VPU_ACLK_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-compute-cluster0-device">
 <span id="soc-doc-j721s2-public-clks-compute-cluster0"></span><h3>Clocks for COMPUTE_CLUSTER0 Device<a class="headerlink" href="#clocks-for-compute-cluster0-device" title="Permalink to this headline">¶</a></h3>
 <p><strong>This device has no defined clocks.</strong></p>
@@ -1818,9 +1884,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="19%" />
-<col width="61%" />
-<col width="20%" />
+<col width="14%" />
+<col width="70%" />
+<col width="16%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -1832,6 +1898,14 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-even"><td>0</td>
 <td>DEV_COMPUTE_CLUSTER0_C71SS0_0_C7X_CLK</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_COMPUTE_CLUSTER0_C71SS0_0_PLL_CTRL_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>3</td>
+<td>DEV_COMPUTE_CLUSTER0_C71SS0_0_C7X_DIVH_CLK4_OBSCLK_OUT_CLK</td>
+<td>Output clock</td>
 </tr>
 </tbody>
 </table>
@@ -1850,9 +1924,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
+<col width="17%" />
+<col width="64%" />
 <col width="19%" />
-<col width="61%" />
-<col width="20%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -1865,6 +1939,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_COMPUTE_CLUSTER0_C71SS1_0_C7X_CLK</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_COMPUTE_CLUSTER0_C71SS1_0_PLL_CTRL_CLK</td>
+<td>Input clock</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -1874,27 +1952,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-compute-cluster0-cfg-wrap-0-device">
 <span id="soc-doc-j721s2-public-clks-compute-cluster0-cfg-wrap-0"></span><h3>Clocks for COMPUTE_CLUSTER0_CFG_WRAP_0 Device<a class="headerlink" href="#clocks-for-compute-cluster0-cfg-wrap-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_COMPUTE_CLUSTER0_CFG_WRAP_0</span></a> (ID = 13)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="18%" />
-<col width="63%" />
-<col width="19%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_COMPUTE_CLUSTER0_CFG_WRAP_0_CLK4_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
+<p><strong>This device has no defined clocks.</strong></p>
 </div>
 <div class="section" id="clocks-for-compute-cluster0-clec-device">
 <span id="soc-doc-j721s2-public-clks-compute-cluster0-clec"></span><h3>Clocks for COMPUTE_CLUSTER0_CLEC Device<a class="headerlink" href="#clocks-for-compute-cluster0-clec-device" title="Permalink to this headline">¶</a></h3>
@@ -1913,8 +1971,8 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_COMPUTE_CLUSTER0_CLEC_CLK4_CLK</td>
+<tr class="row-even"><td>1</td>
+<td>DEV_COMPUTE_CLUSTER0_CLEC_CLK1_CLK</td>
 <td>Input clock</td>
 </tr>
 </tbody>
@@ -1937,7 +1995,11 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>2</td>
+<tr class="row-even"><td>1</td>
+<td>DEV_COMPUTE_CLUSTER0_CORE_CORE_CLK1_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>2</td>
 <td>DEV_COMPUTE_CLUSTER0_CORE_CORE_PSIL_LEAF_CLK</td>
 <td>Input clock</td>
 </tr>
@@ -1982,13 +2044,17 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-compute-cluster0-dmsc-wrap-0-device">
 <span id="soc-doc-j721s2-public-clks-compute-cluster0-dmsc-wrap-0"></span><h3>Clocks for COMPUTE_CLUSTER0_DMSC_WRAP_0 Device<a class="headerlink" href="#clocks-for-compute-cluster0-dmsc-wrap-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_COMPUTE_CLUSTER0_DMSC_WRAP_0</span></a> (ID = 24)</p>
+<p><strong>This device has no defined clocks.</strong></p>
+</div>
+<div class="section" id="clocks-for-compute-cluster0-en-msmc-domain-0-device">
+<span id="soc-doc-j721s2-public-clks-compute-cluster0-en-msmc-domain-0"></span><h3>Clocks for COMPUTE_CLUSTER0_EN_MSMC_DOMAIN_0 Device<a class="headerlink" href="#clocks-for-compute-cluster0-en-msmc-domain-0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_COMPUTE_CLUSTER0_EN_MSMC_DOMAIN_0</span></a> (ID = 25)</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
+<col width="15%" />
+<col width="68%" />
 <col width="17%" />
-<col width="65%" />
-<col width="18%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -1998,15 +2064,11 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td>DEV_COMPUTE_CLUSTER0_DMSC_WRAP_0_CLK4_CLK_CLK</td>
+<td>DEV_COMPUTE_CLUSTER0_EN_MSMC_DOMAIN_0_MSMC_CLK1_CLK</td>
 <td>Input clock</td>
 </tr>
 </tbody>
 </table>
-</div>
-<div class="section" id="clocks-for-compute-cluster0-en-msmc-domain-0-device">
-<span id="soc-doc-j721s2-public-clks-compute-cluster0-en-msmc-domain-0"></span><h3>Clocks for COMPUTE_CLUSTER0_EN_MSMC_DOMAIN_0 Device<a class="headerlink" href="#clocks-for-compute-cluster0-en-msmc-domain-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
 </div>
 <div class="section" id="clocks-for-compute-cluster0-gic500ss-device">
 <span id="soc-doc-j721s2-public-clks-compute-cluster0-gic500ss"></span><h3>Clocks for COMPUTE_CLUSTER0_GIC500SS Device<a class="headerlink" href="#clocks-for-compute-cluster0-gic500ss-device" title="Permalink to this headline">¶</a></h3>
@@ -2049,15 +2111,11 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_COMPUTE_CLUSTER0_PBIST_WRAP_0_DIVH_CLK4_CLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>3</td>
+<tr class="row-even"><td>3</td>
 <td>DEV_COMPUTE_CLUSTER0_PBIST_WRAP_0_DIVP_CLK1_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>4</td>
+<tr class="row-odd"><td>4</td>
 <td>DEV_COMPUTE_CLUSTER0_PBIST_WRAP_0_DIVH_CLK2_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
@@ -2328,15 +2386,15 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="clocks-for-csi-rx-if0-device">
-<span id="soc-doc-j721s2-public-clks-csi-rx-if0"></span><h3>Clocks for CSI_RX_IF0 Device<a class="headerlink" href="#clocks-for-csi-rx-if0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_CSI_RX_IF0</span></a> (ID = 38)</p>
+<div class="section" id="clocks-for-csi-psilss0-device">
+<span id="soc-doc-j721s2-public-clks-csi-psilss0"></span><h3>Clocks for CSI_PSILSS0 Device<a class="headerlink" href="#clocks-for-csi-psilss0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_CSI_PSILSS0</span></a> (ID = 136)</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="56%" />
-<col width="23%" />
+<col width="24%" />
+<col width="51%" />
+<col width="25%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -2345,19 +2403,47 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>1</td>
+<tr class="row-even"><td>0</td>
+<td>DEV_CSI_PSILSS0_MAIN_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-csi-rx-if0-device">
+<span id="soc-doc-j721s2-public-clks-csi-rx-if0"></span><h3>Clocks for CSI_RX_IF0 Device<a class="headerlink" href="#clocks-for-csi-rx-if0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_CSI_RX_IF0</span></a> (ID = 38)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="58%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_CSI_RX_IF0_PPI_D_RX_ULPS_ESC</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
 <td>DEV_CSI_RX_IF0_VBUS_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>2</td>
+<tr class="row-even"><td>2</td>
 <td>DEV_CSI_RX_IF0_PPI_RX_BYTE_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>3</td>
+<tr class="row-odd"><td>3</td>
 <td>DEV_CSI_RX_IF0_MAIN_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>4</td>
+<tr class="row-even"><td>4</td>
 <td>DEV_CSI_RX_IF0_VP_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
@@ -2370,9 +2456,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="56%" />
-<col width="23%" />
+<col width="20%" />
+<col width="58%" />
+<col width="22%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -2381,19 +2467,23 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>1</td>
+<tr class="row-even"><td>0</td>
+<td>DEV_CSI_RX_IF1_PPI_D_RX_ULPS_ESC</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
 <td>DEV_CSI_RX_IF1_VBUS_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>2</td>
+<tr class="row-even"><td>2</td>
 <td>DEV_CSI_RX_IF1_PPI_RX_BYTE_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>3</td>
+<tr class="row-odd"><td>3</td>
 <td>DEV_CSI_RX_IF1_MAIN_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>4</td>
+<tr class="row-even"><td>4</td>
 <td>DEV_CSI_RX_IF1_VP_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
@@ -3154,9 +3244,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="22%" />
-<col width="52%" />
-<col width="26%" />
+<col width="23%" />
+<col width="53%" />
+<col width="25%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -3177,22 +3267,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_DDR0_PLL_CTRL_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>3</td>
-<td>DEV_DDR0_DDRSS_IO_CK_N</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>3</td>
-<td>DEV_DDR0_DDRSS_IO_CK_N</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>5</td>
-<td>DEV_DDR0_DDRSS_IO_CK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>5</td>
-<td>DEV_DDR0_DDRSS_IO_CK</td>
-<td>Output clock</td>
-</tr>
 <tr class="row-odd"><td>7</td>
 <td>DEV_DDR0_DDRSS_CFG_CLK</td>
 <td>Input clock</td>
@@ -3206,9 +3280,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="22%" />
-<col width="52%" />
-<col width="26%" />
+<col width="23%" />
+<col width="53%" />
+<col width="25%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -3228,22 +3302,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-even"><td>2</td>
 <td>DEV_DDR1_PLL_CTRL_CLK</td>
 <td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>3</td>
-<td>DEV_DDR1_DDRSS_IO_CK_N</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>3</td>
-<td>DEV_DDR1_DDRSS_IO_CK_N</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>5</td>
-<td>DEV_DDR1_DDRSS_IO_CK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>5</td>
-<td>DEV_DDR1_DDRSS_IO_CK</td>
-<td>Output clock</td>
 </tr>
 <tr class="row-odd"><td>7</td>
 <td>DEV_DDR1_DDRSS_CFG_CLK</td>
@@ -3285,6 +3343,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_DEBUGSS_WRAP0_TREXPT_CLK</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-even"><td>41</td>
+<td>DEV_DEBUGSS_WRAP0_JTAG_TCK</td>
+<td>Input clock</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -3314,55 +3376,35 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-dmpac0-device">
 <span id="soc-doc-j721s2-public-clks-dmpac0"></span><h3>Clocks for DMPAC0 Device<a class="headerlink" href="#clocks-for-dmpac0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_DMPAC0</span></a> (ID = 58)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="39%" />
+<col width="32%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_DMPAC0_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="clocks-for-dmpac0-ctset-0-device">
 <span id="soc-doc-j721s2-public-clks-dmpac0-ctset-0"></span><h3>Clocks for DMPAC0_CTSET_0 Device<a class="headerlink" href="#clocks-for-dmpac0-ctset-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_DMPAC0_CTSET_0</span></a> (ID = 59)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="49%" />
-<col width="27%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_DMPAC0_CTSET_0_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
+<p><strong>This device has no defined clocks.</strong></p>
 </div>
 <div class="section" id="clocks-for-dmpac0-intd-0-device">
 <span id="soc-doc-j721s2-public-clks-dmpac0-intd-0"></span><h3>Clocks for DMPAC0_INTD_0 Device<a class="headerlink" href="#clocks-for-dmpac0-intd-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_DMPAC0_INTD_0</span></a> (ID = 60)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="25%" />
-<col width="48%" />
-<col width="27%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_DMPAC0_INTD_0_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
+<p><strong>This device has no defined clocks.</strong></p>
 </div>
 <div class="section" id="clocks-for-dmpac0-sde-0-device">
 <span id="soc-doc-j721s2-public-clks-dmpac0-sde-0"></span><h3>Clocks for DMPAC0_SDE_0 Device<a class="headerlink" href="#clocks-for-dmpac0-sde-0-device" title="Permalink to this headline">¶</a></h3>
@@ -3388,6 +3430,54 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-dmpac0-utc-0-device">
+<span id="soc-doc-j721s2-public-clks-dmpac0-utc-0"></span><h3>Clocks for DMPAC0_UTC_0 Device<a class="headerlink" href="#clocks-for-dmpac0-utc-0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_DMPAC0_UTC_0</span></a> (ID = 374)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="56%" />
+<col width="23%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_DMPAC0_UTC_0_PSIL_LEAF_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-dmpac-vpac-psilss0-device">
+<span id="soc-doc-j721s2-public-clks-dmpac-vpac-psilss0"></span><h3>Clocks for DMPAC_VPAC_PSILSS0 Device<a class="headerlink" href="#clocks-for-dmpac-vpac-psilss0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_DMPAC_VPAC_PSILSS0</span></a> (ID = 140)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="57%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_DMPAC_VPAC_PSILSS0_MAIN_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-dphy-rx0-device">
 <span id="soc-doc-j721s2-public-clks-dphy-rx0"></span><h3>Clocks for DPHY_RX0 Device<a class="headerlink" href="#clocks-for-dphy-rx0-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_DPHY_RX0</span></a> (ID = 152)</p>
@@ -3395,8 +3485,8 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="21%" />
-<col width="54%" />
-<col width="25%" />
+<col width="55%" />
+<col width="24%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -3421,6 +3511,14 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_DPHY_RX0_IO_RX_CL_L_P</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_DPHY_RX0_JTAG_TCK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>DEV_DPHY_RX0_PPI_D_RX_ULPS_ESC</td>
+<td>Output clock</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -3431,8 +3529,8 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="21%" />
-<col width="54%" />
-<col width="25%" />
+<col width="55%" />
+<col width="24%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -3456,6 +3554,14 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>3</td>
 <td>DEV_DPHY_RX1_IO_RX_CL_L_P</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_DPHY_RX1_JTAG_TCK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>DEV_DPHY_RX1_PPI_D_RX_ULPS_ESC</td>
+<td>Output clock</td>
 </tr>
 </tbody>
 </table>
@@ -3517,19 +3623,23 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_DPHY_TX0_DPHY_REF_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT4_CLK</td>
 <td>Parent input clock option to DEV_DPHY_TX0_DPHY_REF_CLK</td>
 </tr>
-<tr class="row-even"><td>20</td>
+<tr class="row-even"><td>19</td>
+<td>DEV_DPHY_TX0_TAP_TCK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>20</td>
 <td>DEV_DPHY_TX0_CK_P</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>22</td>
+<tr class="row-even"><td>22</td>
 <td>DEV_DPHY_TX0_IP1_PPI_M_TXCLKESC_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>23</td>
+<tr class="row-odd"><td>23</td>
 <td>DEV_DPHY_TX0_IP1_PPI_M_RXCLKESC_CLK</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>24</td>
+<tr class="row-even"><td>24</td>
 <td>DEV_DPHY_TX0_IP2_PPI_M_TXCLKESC_CLK</td>
 <td>Input clock</td>
 </tr>
@@ -3593,15 +3703,19 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_DPHY_TX1_DPHY_REF_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT4_CLK</td>
 <td>Parent input clock option to DEV_DPHY_TX1_DPHY_REF_CLK</td>
 </tr>
-<tr class="row-even"><td>20</td>
+<tr class="row-even"><td>19</td>
+<td>DEV_DPHY_TX1_TAP_TCK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>20</td>
 <td>DEV_DPHY_TX1_CK_P</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>22</td>
+<tr class="row-even"><td>22</td>
 <td>DEV_DPHY_TX1_IP1_PPI_M_TXCLKESC_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-even"><td>23</td>
+<tr class="row-odd"><td>23</td>
 <td>DEV_DPHY_TX1_IP1_PPI_M_RXCLKESC_CLK</td>
 <td>Output clock</td>
 </tr>
@@ -3626,108 +3740,128 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
-<td>Input muxed clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT1_CLK</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
-</tr>
-<tr class="row-even"><td>2</td>
-<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT1_CLK</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
-</tr>
-<tr class="row-odd"><td>3</td>
-<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT1_CLK_DUP0</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
-</tr>
-<tr class="row-even"><td>4</td>
-<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
-</tr>
-<tr class="row-odd"><td>5</td>
-<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0_DUP0</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
-</tr>
-<tr class="row-even"><td>11</td>
 <td>DEV_DSS0_DSS_FUNC_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>13</td>
-<td>DEV_DSS0_DSS_INST0_DPI_1_OUT_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-even"><td>17</td>
-<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
-<td>Input muxed clock</td>
-</tr>
-<tr class="row-odd"><td>18</td>
-<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
-</tr>
-<tr class="row-even"><td>19</td>
-<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
-</tr>
-<tr class="row-odd"><td>20</td>
-<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0_DUP0</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
-</tr>
-<tr class="row-even"><td>21</td>
-<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
-</tr>
-<tr class="row-odd"><td>26</td>
-<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
-<td>Input muxed clock</td>
-</tr>
-<tr class="row-even"><td>27</td>
-<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
-</tr>
-<tr class="row-odd"><td>28</td>
-<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
-</tr>
-<tr class="row-even"><td>29</td>
-<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
-</tr>
-<tr class="row-odd"><td>35</td>
-<td>DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK</td>
-<td>Input muxed clock</td>
-</tr>
-<tr class="row-even"><td>36</td>
-<td>DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK</td>
-</tr>
-<tr class="row-odd"><td>37</td>
-<td>DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_DPI_1_PCLK_SEL_OUT0</td>
-<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK</td>
-</tr>
-<tr class="row-even"><td>44</td>
-<td>DEV_DSS0_DSS_INST0_DPI_0_OUT_2X_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>45</td>
-<td>DEV_DSS0_DSS_INST0_DPI_0_OUT_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-even"><td>47</td>
+<tr class="row-odd"><td>1</td>
 <td>DEV_DSS0_DSS_INST0_DPI_0_IN_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>50</td>
+<tr class="row-even"><td>2</td>
+<td>DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_DPI_1_PCLK_SEL_OUT0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0_DUP0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
+</tr>
+<tr class="row-odd"><td>17</td>
+<td>DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>18</td>
+<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>19</td>
+<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT1_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>20</td>
+<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT1_CLK</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
+</tr>
+<tr class="row-odd"><td>21</td>
+<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT1_CLK_DUP0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>22</td>
+<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
+</tr>
+<tr class="row-odd"><td>23</td>
+<td>DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0_DUP0</td>
+<td>Parent input clock option to DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK</td>
+</tr>
+<tr class="row-even"><td>24</td>
+<td>DEV_DSS0_DSS_INST0_PARA_1_OUT_CLK</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>25</td>
+<td>DEV_DSS0_DSS_INST0_PARA_3_OUT_CLK</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>26</td>
+<td>DEV_DSS0_DSS_INST0_DPI_0_OUT_CLK</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>27</td>
+<td>DEV_DSS0_DSS_INST0_DPI_1_OUT_CLK</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>28</td>
 <td>DEV_DSS0_DSS_INST0_DPI_2_OUT_CLK</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-even"><td>51</td>
+<tr class="row-odd"><td>29</td>
 <td>DEV_DSS0_DSS_INST0_DPI_3_OUT_CLK</td>
 <td>Output clock</td>
 </tr>
-<tr class="row-odd"><td>52</td>
-<td>DEV_DSS0_DSS_INST0_DPI_2_IN_CLK</td>
-<td>Input clock</td>
+<tr class="row-even"><td>30</td>
+<td>DEV_DSS0_DSS_INST0_DPI_0_OUT_2X_CLK</td>
+<td>Output clock</td>
 </tr>
 </tbody>
 </table>
@@ -4844,6 +4978,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <span id="soc-doc-j721s2-public-clks-j7aep-gpu-bxs464-wrap0-dft-embed-pbist-0"></span><h3>Clocks for J7AEP_GPU_BXS464_WRAP0_DFT_EMBED_PBIST_0 Device<a class="headerlink" href="#clocks-for-j7aep-gpu-bxs464-wrap0-dft-embed-pbist-0-device" title="Permalink to this headline">¶</a></h3>
 <p><strong>This device has no defined clocks.</strong></p>
 </div>
+<div class="section" id="clocks-for-j7aep-gpu-bxs464-wrap0-gpucore-0-device">
+<span id="soc-doc-j721s2-public-clks-j7aep-gpu-bxs464-wrap0-gpucore-0"></span><h3>Clocks for J7AEP_GPU_BXS464_WRAP0_GPUCORE_0 Device<a class="headerlink" href="#clocks-for-j7aep-gpu-bxs464-wrap0-gpucore-0-device" title="Permalink to this headline">¶</a></h3>
+<p><strong>This device has no defined clocks.</strong></p>
+</div>
 <div class="section" id="clocks-for-j7aep-gpu-bxs464-wrap0-gpu-ss-0-device">
 <span id="soc-doc-j721s2-public-clks-j7aep-gpu-bxs464-wrap0-gpu-ss-0"></span><h3>Clocks for J7AEP_GPU_BXS464_WRAP0_GPU_SS_0 Device<a class="headerlink" href="#clocks-for-j7aep-gpu-bxs464-wrap0-gpu-ss-0-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AEP_GPU_BXS464_WRAP0_GPU_SS_0</span></a> (ID = 130)</p>
@@ -4874,29 +5012,13 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-j7am-32-64-atb-funnel0-device">
 <span id="soc-doc-j721s2-public-clks-j7am-32-64-atb-funnel0"></span><h3>Clocks for J7AM_32_64_ATB_FUNNEL0 Device<a class="headerlink" href="#clocks-for-j7am-32-64-atb-funnel0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-j7am-32-64-atb-funnel1-device">
-<span id="soc-doc-j721s2-public-clks-j7am-32-64-atb-funnel1"></span><h3>Clocks for J7AM_32_64_ATB_FUNNEL1 Device<a class="headerlink" href="#clocks-for-j7am-32-64-atb-funnel1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-j7am-32-64-atb-funnel2-device">
-<span id="soc-doc-j721s2-public-clks-j7am-32-64-atb-funnel2"></span><h3>Clocks for J7AM_32_64_ATB_FUNNEL2 Device<a class="headerlink" href="#clocks-for-j7am-32-64-atb-funnel2-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-j7am-bolt-pgd0-device">
-<span id="soc-doc-j721s2-public-clks-j7am-bolt-pgd0"></span><h3>Clocks for J7AM_BOLT_PGD0 Device<a class="headerlink" href="#clocks-for-j7am-bolt-pgd0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-j7am-csi-psilss0-device">
-<span id="soc-doc-j721s2-public-clks-j7am-csi-psilss0"></span><h3>Clocks for J7AM_CSI_PSILSS0 Device<a class="headerlink" href="#clocks-for-j7am-csi-psilss0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_CSI_PSILSS0</span></a> (ID = 136)</p>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_32_64_ATB_FUNNEL0</span></a> (ID = 131)</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
+<col width="20%" />
+<col width="59%" />
 <col width="21%" />
-<col width="55%" />
-<col width="23%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -4906,15 +5028,135 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td>DEV_J7AM_CSI_PSILSS0_MAIN_CLK</td>
+<td>DEV_J7AM_32_64_ATB_FUNNEL0_DBG_CLK</td>
 <td>Input clock</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="section" id="clocks-for-j7am-dmpac-vpac-psilss0-device">
-<span id="soc-doc-j721s2-public-clks-j7am-dmpac-vpac-psilss0"></span><h3>Clocks for J7AM_DMPAC_VPAC_PSILSS0 Device<a class="headerlink" href="#clocks-for-j7am-dmpac-vpac-psilss0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_DMPAC_VPAC_PSILSS0</span></a> (ID = 140)</p>
+<div class="section" id="clocks-for-j7am-32-64-atb-funnel1-device">
+<span id="soc-doc-j721s2-public-clks-j7am-32-64-atb-funnel1"></span><h3>Clocks for J7AM_32_64_ATB_FUNNEL1 Device<a class="headerlink" href="#clocks-for-j7am-32-64-atb-funnel1-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_32_64_ATB_FUNNEL1</span></a> (ID = 132)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="59%" />
+<col width="21%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_J7AM_32_64_ATB_FUNNEL1_DBG_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-j7am-32-64-atb-funnel2-device">
+<span id="soc-doc-j721s2-public-clks-j7am-32-64-atb-funnel2"></span><h3>Clocks for J7AM_32_64_ATB_FUNNEL2 Device<a class="headerlink" href="#clocks-for-j7am-32-64-atb-funnel2-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_32_64_ATB_FUNNEL2</span></a> (ID = 133)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="59%" />
+<col width="21%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_J7AM_32_64_ATB_FUNNEL2_DBG_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-j7am-bolt-pgd0-device">
+<span id="soc-doc-j721s2-public-clks-j7am-bolt-pgd0"></span><h3>Clocks for J7AM_BOLT_PGD0 Device<a class="headerlink" href="#clocks-for-j7am-bolt-pgd0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_BOLT_PGD0</span></a> (ID = 135)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="58%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_J7AM_BOLT_PGD0_WKUP_OSC0_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-j7am-hwa-atb-funnel0-device">
+<span id="soc-doc-j721s2-public-clks-j7am-hwa-atb-funnel0"></span><h3>Clocks for J7AM_HWA_ATB_FUNNEL0 Device<a class="headerlink" href="#clocks-for-j7am-hwa-atb-funnel0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_HWA_ATB_FUNNEL0</span></a> (ID = 141)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="58%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_J7AM_HWA_ATB_FUNNEL0_DBG_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-j7am-main-16ff0-device">
+<span id="soc-doc-j721s2-public-clks-j7am-main-16ff0"></span><h3>Clocks for J7AM_MAIN_16FF0 Device<a class="headerlink" href="#clocks-for-j7am-main-16ff0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_MAIN_16FF0</span></a> (ID = 142)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="20%" />
+<col width="58%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_J7AM_MAIN_16FF0_WKUP_OSC0_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-j7am-pulsar-atb-funnel0-device">
+<span id="soc-doc-j721s2-public-clks-j7am-pulsar-atb-funnel0"></span><h3>Clocks for J7AM_PULSAR_ATB_FUNNEL0 Device<a class="headerlink" href="#clocks-for-j7am-pulsar-atb-funnel0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_PULSAR_ATB_FUNNEL0</span></a> (ID = 144)</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -4930,79 +5172,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td>DEV_J7AM_DMPAC_VPAC_PSILSS0_MAIN_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-j7am-hwa-atb-funnel0-device">
-<span id="soc-doc-j721s2-public-clks-j7am-hwa-atb-funnel0"></span><h3>Clocks for J7AM_HWA_ATB_FUNNEL0 Device<a class="headerlink" href="#clocks-for-j7am-hwa-atb-funnel0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-j7am-main-16ff0-device">
-<span id="soc-doc-j721s2-public-clks-j7am-main-16ff0"></span><h3>Clocks for J7AM_MAIN_16FF0 Device<a class="headerlink" href="#clocks-for-j7am-main-16ff0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-j7am-pulsar-atb-funnel0-device">
-<span id="soc-doc-j721s2-public-clks-j7am-pulsar-atb-funnel0"></span><h3>Clocks for J7AM_PULSAR_ATB_FUNNEL0 Device<a class="headerlink" href="#clocks-for-j7am-pulsar-atb-funnel0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-j7am-sa2-cpsw-psilss0-device">
-<span id="soc-doc-j721s2-public-clks-j7am-sa2-cpsw-psilss0"></span><h3>Clocks for J7AM_SA2_CPSW_PSILSS0 Device<a class="headerlink" href="#clocks-for-j7am-sa2-cpsw-psilss0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_J7AM_SA2_CPSW_PSILSS0</span></a> (ID = 145)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="59%" />
-<col width="21%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_J7AM_SA2_CPSW_PSILSS0_MAIN_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-k3-vpu-wave521cl0-device">
-<span id="soc-doc-j721s2-public-clks-k3-vpu-wave521cl0"></span><h3>Clocks for K3_VPU_WAVE521CL0 Device<a class="headerlink" href="#clocks-for-k3-vpu-wave521cl0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_K3_VPU_WAVE521CL0</span></a> (ID = 179)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="59%" />
-<col width="21%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_K3_VPU_WAVE521CL0_VPU_PCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_K3_VPU_WAVE521CL0_VPU_BCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>2</td>
-<td>DEV_K3_VPU_WAVE521CL0_VPU_CCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>3</td>
-<td>DEV_K3_VPU_WAVE521CL0_VPU_ACLK_CLK</td>
+<td>DEV_J7AM_PULSAR_ATB_FUNNEL0_DBG_CLK</td>
 <td>Input clock</td>
 </tr>
 </tbody>
@@ -6738,9 +6908,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="51%" />
-<col width="26%" />
+<col width="9%" />
+<col width="47%" />
+<col width="44%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -6761,6 +6931,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_MCSPI0_CLKSPIREF_CLK</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCSPI0_IO_CLKSPII_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCSPI0_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI0_CLK_OUT</td>
+<td>Parent input clock option to DEV_MCSPI0_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCSPI0_IO_CLKSPII_CLK_PARENT_SPI_MAIN_0_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCSPI0_IO_CLKSPII_CLK</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -6770,9 +6952,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="51%" />
-<col width="26%" />
+<col width="9%" />
+<col width="47%" />
+<col width="44%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -6793,6 +6975,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_MCSPI1_CLKSPIREF_CLK</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCSPI1_IO_CLKSPII_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCSPI1_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI1_CLK_OUT</td>
+<td>Parent input clock option to DEV_MCSPI1_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCSPI1_IO_CLKSPII_CLK_PARENT_SPI_MAIN_1_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCSPI1_IO_CLKSPII_CLK</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -6802,9 +6996,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="51%" />
-<col width="26%" />
+<col width="9%" />
+<col width="47%" />
+<col width="44%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -6824,6 +7018,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-even"><td>2</td>
 <td>DEV_MCSPI2_CLKSPIREF_CLK</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCSPI2_IO_CLKSPII_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCSPI2_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI2_CLK_OUT</td>
+<td>Parent input clock option to DEV_MCSPI2_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCSPI2_IO_CLKSPII_CLK_PARENT_SPI_MAIN_2_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCSPI2_IO_CLKSPII_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -6863,6 +7069,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>4</td>
 <td>DEV_MCSPI3_IO_CLKSPII_CLK_PARENT_SPI_MAIN_3_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCSPI3_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCSPI3_IO_CLKSPII_CLK_PARENT_SPI3_CLK_LPBK_MUX_OUT0</td>
 <td>Parent input clock option to DEV_MCSPI3_IO_CLKSPII_CLK</td>
 </tr>
 </tbody>
@@ -6910,9 +7120,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="51%" />
-<col width="26%" />
+<col width="9%" />
+<col width="47%" />
+<col width="44%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -6933,6 +7143,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_MCSPI5_CLKSPIREF_CLK</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCSPI5_IO_CLKSPII_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCSPI5_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI5_CLK_OUT</td>
+<td>Parent input clock option to DEV_MCSPI5_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCSPI5_IO_CLKSPII_CLK_PARENT_SPI_MAIN_5_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCSPI5_IO_CLKSPII_CLK</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -6942,9 +7164,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="51%" />
-<col width="26%" />
+<col width="9%" />
+<col width="47%" />
+<col width="44%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -6965,6 +7187,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_MCSPI6_CLKSPIREF_CLK</td>
 <td>Input clock</td>
 </tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCSPI6_IO_CLKSPII_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCSPI6_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI6_CLK_OUT</td>
+<td>Parent input clock option to DEV_MCSPI6_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCSPI6_IO_CLKSPII_CLK_PARENT_SPI_MAIN_6_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCSPI6_IO_CLKSPII_CLK</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -6974,9 +7208,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="23%" />
-<col width="51%" />
-<col width="26%" />
+<col width="9%" />
+<col width="47%" />
+<col width="44%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -6996,6 +7230,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-even"><td>2</td>
 <td>DEV_MCSPI7_CLKSPIREF_CLK</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCSPI7_IO_CLKSPII_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCSPI7_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI7_CLK_OUT</td>
+<td>Parent input clock option to DEV_MCSPI7_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCSPI7_IO_CLKSPII_CLK_PARENT_SPI_MAIN_7_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCSPI7_IO_CLKSPII_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -7914,9 +8160,9 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="21%" />
-<col width="54%" />
-<col width="25%" />
+<col width="9%" />
+<col width="47%" />
+<col width="44%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -7936,6 +8182,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-even"><td>2</td>
 <td>DEV_MCU_MCSPI0_CLKSPIREF_CLK</td>
 <td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCU_MCSPI0_IO_CLKSPII_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_MCSPI0_IO_CLKSPII_CLK_PARENT_BOARD_0_MCU_SPI0_CLK_OUT</td>
+<td>Parent input clock option to DEV_MCU_MCSPI0_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCU_MCSPI0_IO_CLKSPII_CLK_PARENT_SPI_MCU_0_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCU_MCSPI0_IO_CLKSPII_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -7975,6 +8233,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-even"><td>4</td>
 <td>DEV_MCU_MCSPI1_IO_CLKSPII_CLK_PARENT_SPI_MAIN_3_IO_CLKSPIO_CLK</td>
+<td>Parent input clock option to DEV_MCU_MCSPI1_IO_CLKSPII_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCU_MCSPI1_IO_CLKSPII_CLK_PARENT_MCU_SPI1_CLK_LPBK_MUX_OUT0</td>
 <td>Parent input clock option to DEV_MCU_MCSPI1_IO_CLKSPII_CLK</td>
 </tr>
 </tbody>
@@ -8342,39 +8604,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-mcu-r5fss0-device">
 <span id="soc-doc-j721s2-public-clks-mcu-r5fss0"></span><h3>Clocks for MCU_R5FSS0 Device<a class="headerlink" href="#clocks-for-mcu-r5fss0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_MCU_R5FSS0</span></a> (ID = 283)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="8%" />
-<col width="53%" />
-<col width="39%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_MCU_R5FSS0_INTERFACE0_PHASE</td>
-<td>Input muxed clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_MCU_R5FSS0_INTERFACE0_PHASE_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK3</td>
-<td>Parent input clock option to DEV_MCU_R5FSS0_INTERFACE0_PHASE</td>
-</tr>
-<tr class="row-even"><td>3</td>
-<td>DEV_MCU_R5FSS0_INTERFACE1_PHASE</td>
-<td>Input muxed clock</td>
-</tr>
-<tr class="row-odd"><td>4</td>
-<td>DEV_MCU_R5FSS0_INTERFACE1_PHASE_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK3</td>
-<td>Parent input clock option to DEV_MCU_R5FSS0_INTERFACE1_PHASE</td>
-</tr>
-</tbody>
-</table>
+<p><strong>This device has no defined clocks.</strong></p>
 </div>
 <div class="section" id="clocks-for-mcu-r5fss0-core0-device">
 <span id="soc-doc-j721s2-public-clks-mcu-r5fss0-core0"></span><h3>Clocks for MCU_R5FSS0_CORE0 Device<a class="headerlink" href="#clocks-for-mcu-r5fss0-core0-device" title="Permalink to this headline">¶</a></h3>
@@ -8407,6 +8637,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-odd"><td>3</td>
 <td>DEV_MCU_R5FSS0_CORE0_INTERFACE_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_R5FSS0_CORE0_INTERFACE_PHASE</td>
 <td>Input clock</td>
 </tr>
 </tbody>
@@ -8443,6 +8677,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-odd"><td>3</td>
 <td>DEV_MCU_R5FSS0_CORE1_INTERFACE_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_R5FSS0_CORE1_INTERFACE_PHASE</td>
 <td>Input clock</td>
 </tr>
 </tbody>
@@ -8698,7 +8936,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>Parent input clock option to DEV_MCU_TIMER0_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>3</td>
-<td>DEV_MCU_TIMER0_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK6</td>
+<td>DEV_MCU_TIMER0_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
 <td>Parent input clock option to DEV_MCU_TIMER0_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-even"><td>4</td>
@@ -8798,7 +9036,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>Parent input clock option to DEV_MCU_TIMER2_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>3</td>
-<td>DEV_MCU_TIMER2_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK6</td>
+<td>DEV_MCU_TIMER2_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
 <td>Parent input clock option to DEV_MCU_TIMER2_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-even"><td>4</td>
@@ -8898,7 +9136,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>Parent input clock option to DEV_MCU_TIMER4_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>3</td>
-<td>DEV_MCU_TIMER4_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK6</td>
+<td>DEV_MCU_TIMER4_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
 <td>Parent input clock option to DEV_MCU_TIMER4_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-even"><td>4</td>
@@ -8998,7 +9236,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>Parent input clock option to DEV_MCU_TIMER6_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>3</td>
-<td>DEV_MCU_TIMER6_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK6</td>
+<td>DEV_MCU_TIMER6_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
 <td>Parent input clock option to DEV_MCU_TIMER6_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-even"><td>4</td>
@@ -9098,7 +9336,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>Parent input clock option to DEV_MCU_TIMER8_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-odd"><td>3</td>
-<td>DEV_MCU_TIMER8_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK6</td>
+<td>DEV_MCU_TIMER8_TIMER_TCLK_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
 <td>Parent input clock option to DEV_MCU_TIMER8_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-even"><td>4</td>
@@ -9240,14 +9478,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-even"><td>5</td>
 <td>DEV_MMCSD0_EMMCSS_XIN_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT2_CLK</td>
 <td>Parent input clock option to DEV_MMCSD0_EMMCSS_XIN_CLK</td>
-</tr>
-<tr class="row-odd"><td>6</td>
-<td>DEV_MMCSD0_EMMCSS_IO_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>6</td>
-<td>DEV_MMCSD0_EMMCSS_IO_CLK</td>
-<td>Output clock</td>
 </tr>
 <tr class="row-odd"><td>7</td>
 <td>DEV_MMCSD0_EMMCSS_VBUS_CLK</td>
@@ -10486,7 +10716,27 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-pbist11-device">
 <span id="soc-doc-j721s2-public-clks-pbist11"></span><h3>Clocks for PBIST11 Device<a class="headerlink" href="#clocks-for-pbist11-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_PBIST11</span></a> (ID = 168)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="47%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>4</td>
+<td>DEV_PBIST11_CLK7_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="clocks-for-pbist2-device">
 <span id="soc-doc-j721s2-public-clks-pbist2"></span><h3>Clocks for PBIST2 Device<a class="headerlink" href="#clocks-for-pbist2-device" title="Permalink to this headline">¶</a></h3>
@@ -10798,31 +11048,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-r5fss0-device">
 <span id="soc-doc-j721s2-public-clks-r5fss0"></span><h3>Clocks for R5FSS0 Device<a class="headerlink" href="#clocks-for-r5fss0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_R5FSS0</span></a> (ID = 277)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="22%" />
-<col width="54%" />
-<col width="24%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_R5FSS0_INTERFACE0_PHASE</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_R5FSS0_INTERFACE1_PHASE</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
+<p><strong>This device has no defined clocks.</strong></p>
 </div>
 <div class="section" id="clocks-for-r5fss0-core0-device">
 <span id="soc-doc-j721s2-public-clks-r5fss0-core0"></span><h3>Clocks for R5FSS0_CORE0 Device<a class="headerlink" href="#clocks-for-r5fss0-core0-device" title="Permalink to this headline">¶</a></h3>
@@ -10882,31 +11108,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-r5fss1-device">
 <span id="soc-doc-j721s2-public-clks-r5fss1"></span><h3>Clocks for R5FSS1 Device<a class="headerlink" href="#clocks-for-r5fss1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_R5FSS1</span></a> (ID = 278)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="22%" />
-<col width="54%" />
-<col width="24%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_R5FSS1_INTERFACE0_PHASE</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_R5FSS1_INTERFACE1_PHASE</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
+<p><strong>This device has no defined clocks.</strong></p>
 </div>
 <div class="section" id="clocks-for-r5fss1-core0-device">
 <span id="soc-doc-j721s2-public-clks-r5fss1-core0"></span><h3>Clocks for R5FSS1_CORE0 Device<a class="headerlink" href="#clocks-for-r5fss1-core0-device" title="Permalink to this headline">¶</a></h3>
@@ -11504,6 +11706,34 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-sa2-cpsw-psilss0-device">
+<span id="soc-doc-j721s2-public-clks-sa2-cpsw-psilss0"></span><h3>Clocks for SA2_CPSW_PSILSS0 Device<a class="headerlink" href="#clocks-for-sa2-cpsw-psilss0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_SA2_CPSW_PSILSS0</span></a> (ID = 145)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="21%" />
+<col width="57%" />
+<col width="22%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_SA2_CPSW_PSILSS0_MAIN_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_SA2_CPSW_PSILSS0_MAIN_2_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-sa2-ul0-device">
 <span id="soc-doc-j721s2-public-clks-sa2-ul0"></span><h3>Clocks for SA2_UL0 Device<a class="headerlink" href="#clocks-for-sa2-ul0-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_SA2_UL0</span></a> (ID = 297)</p>
@@ -11944,6 +12174,10 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>108</td>
 <td>DEV_SERDES_10G0_IP4_LN3_TXMCLK</td>
 <td>Output clock</td>
+</tr>
+<tr class="row-even"><td>130</td>
+<td>DEV_SERDES_10G0_TAP_TCK</td>
+<td>Input clock</td>
 </tr>
 </tbody>
 </table>
@@ -12554,7 +12788,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>Input muxed clock</td>
 </tr>
 <tr class="row-odd"><td>2</td>
-<td>DEV_TIMER17_TIMER_TCLK_CLK_PARENT_MAIN_TIMER_CLKSEL_OUT17</td>
+<td>DEV_TIMER17_TIMER_TCLK_CLK_PARENT_MAIN_TIMER17_AFS_EN_OUT0</td>
 <td>Parent input clock option to DEV_TIMER17_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-even"><td>3</td>
@@ -12630,7 +12864,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>Input muxed clock</td>
 </tr>
 <tr class="row-odd"><td>2</td>
-<td>DEV_TIMER19_TIMER_TCLK_CLK_PARENT_MAIN_TIMER_CLKSEL_OUT19</td>
+<td>DEV_TIMER19_TIMER_TCLK_CLK_PARENT_MAIN_TIMER19_AFS_EN_OUT0</td>
 <td>Parent input clock option to DEV_TIMER19_TIMER_TCLK_CLK</td>
 </tr>
 <tr class="row-even"><td>3</td>
@@ -13561,15 +13795,19 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_USB0_BUF_CLK</td>
 <td>Input clock</td>
 </tr>
-<tr class="row-odd"><td>26</td>
+<tr class="row-odd"><td>25</td>
+<td>DEV_USB0_USB2_TAP_TCK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>26</td>
 <td>DEV_USB0_PIPE_TXMCLK</td>
 <td>Input muxed clock</td>
 </tr>
-<tr class="row-even"><td>27</td>
+<tr class="row-odd"><td>27</td>
 <td>DEV_USB0_PIPE_TXMCLK_PARENT_WIZ16B8M4CT2_MAIN_0_IP3_LN3_TXMCLK</td>
 <td>Parent input clock option to DEV_USB0_PIPE_TXMCLK</td>
 </tr>
-<tr class="row-odd"><td>28</td>
+<tr class="row-even"><td>28</td>
 <td>DEV_USB0_PIPE_TXMCLK_PARENT_WIZ16B8M4CT2_MAIN_0_IP3_LN1_TXMCLK</td>
 <td>Parent input clock option to DEV_USB0_PIPE_TXMCLK</td>
 </tr>
@@ -13578,7 +13816,55 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </div>
 <div class="section" id="clocks-for-vpac0-device">
 <span id="soc-doc-j721s2-public-clks-vpac0"></span><h3>Clocks for VPAC0 Device<a class="headerlink" href="#clocks-for-vpac0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_VPAC0</span></a> (ID = 361)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="50%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_VPAC0_LDC0_CLK_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_VPAC0_NF_CLK_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_VPAC0_MAIN_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_VPAC0_MAIN_CLK_PARENT_HSDIV1_16FFT_MAIN_25_HSDIVOUT1_CLK</td>
+<td>Parent input clock option to DEV_VPAC0_MAIN_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_VPAC0_MAIN_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT1_CLK</td>
+<td>Parent input clock option to DEV_VPAC0_MAIN_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_VPAC0_VISS0_CLK_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_VPAC0_PSIL_LEAF_CLK</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_VPAC0_MSC_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="clocks-for-vusr-dual0-device">
 <span id="soc-doc-j721s2-public-clks-vusr-dual0"></span><h3>Clocks for VUSR_DUAL0 Device<a class="headerlink" href="#clocks-for-vusr-dual0-device" title="Permalink to this headline">¶</a></h3>
@@ -13860,30 +14146,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="clocks-for-wkup-hsm0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-hsm0"></span><h3>Clocks for WKUP_HSM0 Device<a class="headerlink" href="#clocks-for-wkup-hsm0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_HSM0</span></a> (ID = 306)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="25%" />
-<col width="48%" />
-<col width="27%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>1</td>
-<td>DEV_WKUP_HSM0_DAP_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="clocks-for-wkup-i2c0-device">
 <span id="soc-doc-j721s2-public-clks-wkup-i2c0"></span><h3>Clocks for WKUP_I2C0 Device<a class="headerlink" href="#clocks-for-wkup-i2c0-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_I2C0</span></a> (ID = 223)</p>
@@ -14016,482 +14278,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <span id="soc-doc-j721s2-public-clks-wkup-sms0"></span><h3>Clocks for WKUP_SMS0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-device" title="Permalink to this headline">¶</a></h3>
 <p><strong>This device has no defined clocks.</strong></p>
 </div>
-<div class="section" id="clocks-for-wkup-sms0-aeseip38t-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-aeseip38t-0"></span><h3>Clocks for WKUP_SMS0_AESEIP38T_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-aeseip38t-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_AESEIP38T_0</span></a> (ID = 304)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="59%" />
-<col width="21%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_AESEIP38T_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-cortex-m4f-ss-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-cortex-m4f-ss-0"></span><h3>Clocks for WKUP_SMS0_CORTEX_M4F_SS_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-cortex-m4f-ss-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-cortex-m4f-ss-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-cortex-m4f-ss-1"></span><h3>Clocks for WKUP_SMS0_CORTEX_M4F_SS_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-cortex-m4f-ss-1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-cti-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-cti-0"></span><h3>Clocks for WKUP_SMS0_CTI_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-cti-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-cti-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-cti-1"></span><h3>Clocks for WKUP_SMS0_CTI_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-cti-1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-dbg-auth-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-dbg-auth-0"></span><h3>Clocks for WKUP_SMS0_DBG_AUTH_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-dbg-auth-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_DBG_AUTH_0</span></a> (ID = 311)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_DBG_AUTH_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-dmtimer-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-dmtimer-0"></span><h3>Clocks for WKUP_SMS0_DMTIMER_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-dmtimer-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-dmtimer-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-dmtimer-1"></span><h3>Clocks for WKUP_SMS0_DMTIMER_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-dmtimer-1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-dmtimer-2-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-dmtimer-2"></span><h3>Clocks for WKUP_SMS0_DMTIMER_2 Device<a class="headerlink" href="#clocks-for-wkup-sms0-dmtimer-2-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-dmtimer-3-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-dmtimer-3"></span><h3>Clocks for WKUP_SMS0_DMTIMER_3 Device<a class="headerlink" href="#clocks-for-wkup-sms0-dmtimer-3-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-dwt-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-dwt-0"></span><h3>Clocks for WKUP_SMS0_DWT_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-dwt-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-dwt-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-dwt-1"></span><h3>Clocks for WKUP_SMS0_DWT_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-dwt-1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-fbp-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-fbp-0"></span><h3>Clocks for WKUP_SMS0_FBP_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-fbp-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-fbp-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-fbp-1"></span><h3>Clocks for WKUP_SMS0_FBP_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-fbp-1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-fwmgr-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-fwmgr-0"></span><h3>Clocks for WKUP_SMS0_FWMGR_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-fwmgr-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_FWMGR_0</span></a> (ID = 320)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="21%" />
-<col width="56%" />
-<col width="23%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_FWMGR_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-hsm-sram-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-hsm-sram-0"></span><h3>Clocks for WKUP_SMS0_HSM_SRAM_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-hsm-sram-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_HSM_SRAM_0</span></a> (ID = 321)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_HSM_SRAM_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-hsm-sram-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-hsm-sram-1"></span><h3>Clocks for WKUP_SMS0_HSM_SRAM_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-hsm-sram-1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_HSM_SRAM_1</span></a> (ID = 322)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_HSM_SRAM_1_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-itm-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-itm-0"></span><h3>Clocks for WKUP_SMS0_ITM_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-itm-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-itm-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-itm-1"></span><h3>Clocks for WKUP_SMS0_ITM_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-itm-1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-pwrctrl-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-pwrctrl-0"></span><h3>Clocks for WKUP_SMS0_PWRCTRL_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-pwrctrl-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_PWRCTRL_0</span></a> (ID = 325)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_PWRCTRL_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-rat-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-rat-0"></span><h3>Clocks for WKUP_SMS0_RAT_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-rat-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_RAT_0</span></a> (ID = 326)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="22%" />
-<col width="55%" />
-<col width="24%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_RAT_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-rat-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-rat-1"></span><h3>Clocks for WKUP_SMS0_RAT_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-rat-1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_RAT_1</span></a> (ID = 327)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="22%" />
-<col width="55%" />
-<col width="24%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_RAT_1_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-rom-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-rom-0"></span><h3>Clocks for WKUP_SMS0_ROM_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-rom-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-rti-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-rti-0"></span><h3>Clocks for WKUP_SMS0_RTI_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-rti-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_RTI_0</span></a> (ID = 329)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="22%" />
-<col width="55%" />
-<col width="24%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_RTI_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-rti-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-rti-1"></span><h3>Clocks for WKUP_SMS0_RTI_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-rti-1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_RTI_1</span></a> (ID = 330)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="22%" />
-<col width="55%" />
-<col width="24%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_RTI_1_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-scs-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-scs-0"></span><h3>Clocks for WKUP_SMS0_SCS_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-scs-0-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-scs-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-scs-1"></span><h3>Clocks for WKUP_SMS0_SCS_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-scs-1-device" title="Permalink to this headline">¶</a></h3>
-<p><strong>This device has no defined clocks.</strong></p>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-secctrl-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-secctrl-0"></span><h3>Clocks for WKUP_SMS0_SECCTRL_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-secctrl-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_SECCTRL_0</span></a> (ID = 334)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_SECCTRL_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-sec-mgr-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-sec-mgr-0"></span><h3>Clocks for WKUP_SMS0_SEC_MGR_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-sec-mgr-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_SEC_MGR_0</span></a> (ID = 333)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>1</td>
-<td>DEV_WKUP_SMS0_SEC_MGR_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-tifs-sram-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-tifs-sram-0"></span><h3>Clocks for WKUP_SMS0_TIFS_SRAM_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-tifs-sram-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_TIFS_SRAM_0</span></a> (ID = 335)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="59%" />
-<col width="21%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_TIFS_SRAM_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-tifs-sram-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-tifs-sram-1"></span><h3>Clocks for WKUP_SMS0_TIFS_SRAM_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-tifs-sram-1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_TIFS_SRAM_1</span></a> (ID = 336)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="59%" />
-<col width="21%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_TIFS_SRAM_1_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-wdtctrl-0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-wdtctrl-0"></span><h3>Clocks for WKUP_SMS0_WDTCTRL_0 Device<a class="headerlink" href="#clocks-for-wkup-sms0-wdtctrl-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_WDTCTRL_0</span></a> (ID = 337)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_WDTCTRL_0_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-sms0-wdtctrl-1-device">
-<span id="soc-doc-j721s2-public-clks-wkup-sms0-wdtctrl-1"></span><h3>Clocks for WKUP_SMS0_WDTCTRL_1 Device<a class="headerlink" href="#clocks-for-wkup-sms0-wdtctrl-1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_SMS0_WDTCTRL_1</span></a> (ID = 338)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="58%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_WKUP_SMS0_WDTCTRL_1_VBUS_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-wkup-tifs0-device">
-<span id="soc-doc-j721s2-public-clks-wkup-tifs0"></span><h3>Clocks for WKUP_TIFS0 Device<a class="headerlink" href="#clocks-for-wkup-tifs0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_TIFS0</span></a> (ID = 305)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="49%" />
-<col width="27%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>1</td>
-<td>DEV_WKUP_TIFS0_DAP_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="clocks-for-wkup-uart0-device">
 <span id="soc-doc-j721s2-public-clks-wkup-uart0"></span><h3>Clocks for WKUP_UART0 Device<a class="headerlink" href="#clocks-for-wkup-uart0-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_WKUP_UART0</span></a> (ID = 359)</p>
@@ -14604,7 +14390,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -32,6 +32,7 @@ Power Management (PM)
    pm/devices
    pm/clocks
    pm/sysreset
+   pm/lpm
 
 .. _rm_messages:
 

@@ -136,7 +136,7 @@ transmit or receive messages. The format is as follows:
     :exclude-members: payload
 
 The ``host`` field must contain a value from the
-:doc:`Valid SoC Host ID List <../../5_soc_doc/am6x/hosts>`
+:doc:`Valid SoC Host ID List <../../5_soc_doc/am65x/hosts>`
 that corresponds to the host actually sending the message as identified. 
 
 The ``seq`` field is a sequence number that will be returned back to the user

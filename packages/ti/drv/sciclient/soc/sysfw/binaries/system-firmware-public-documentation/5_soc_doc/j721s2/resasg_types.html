@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721s2">J721S2</a><ul class="current">
@@ -127,6 +128,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">J721S2 Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">J721S2 Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721S2 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721S2 Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721S2 Device Group descriptions</a></li>
 </ul>
 </li>
@@ -184,7 +186,7 @@
 <p>This chapter provides information of Board Configuration resource assignment
 type IDs that are permitted in the J721S2 SoC.  The resource type IDs represent
 J721S2 resources ranges assignable to SoC processing entities (or PEs).</p>
-<p><strong>WARNING</strong>: System Firmware RM currently supports a maximum of 900 RM board
+<p><strong>WARNING</strong>: System Firmware RM currently supports a maximum of 980 RM board
 configuration resource assignment ranges on the J721S2 SoC.  Sending more
 entries than the maximum will result in the RM board configuration being NACK’d</p>
 <table border="1" class="docutils">
@@ -401,25 +403,33 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0x01</td>
 <td>0x40C1</td>
 <td>423</td>
-<td>551</td>
+<td>345</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>&#160;</td>
+<td>878</td>
+<td>146</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
 <td>0x02</td>
 <td>0x40C2</td>
-<td>347</td>
-<td>76</td>
+<td>345</td>
+<td>78</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
 <td>0x03</td>
 <td>0x40C3</td>
-<td>6</td>
-<td>79</td>
+<td>4</td>
+<td>81</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_EXT</td>
 <td>0x04</td>
@@ -427,15 +437,15 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>85</td>
 <td>256</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
 <td>0x05</td>
 <td>0x40C5</td>
 <td>343</td>
-<td>4</td>
+<td>2</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX_UH</td>
 <td>0x06</td>
@@ -443,15 +453,15 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>341</td>
 <td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
 <td>0x07</td>
 <td>0x40C7</td>
 <td>2</td>
-<td>4</td>
+<td>2</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_UH</td>
 <td>0x08</td>
@@ -459,7 +469,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_VIRTID</td>
 <td>0x0A</td>
@@ -467,7 +477,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>4096</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_MONITORS</td>
 <td>0x0B</td>
@@ -475,7 +485,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>32</td>
 </tr>
-<tr class="row-odd"><td>J721S2_DEV_NAVSS0_UDMAP_0</td>
+<tr class="row-even"><td>J721S2_DEV_NAVSS0_UDMAP_0</td>
 <td>0x107</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
 <td>0x00</td>
@@ -483,7 +493,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>82</td>
 <td>142</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
 <td>0x01</td>
@@ -491,7 +501,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
 <td>0x02</td>
@@ -499,7 +509,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>49152</td>
 <td>1024</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
 <td>0x03</td>
@@ -507,23 +517,23 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
 <td>0x0A</td>
 <td>0x41CA</td>
-<td>6</td>
-<td>76</td>
+<td>4</td>
+<td>78</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
 <td>0x0B</td>
 <td>0x41CB</td>
 <td>2</td>
-<td>4</td>
+<td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_UHCHAN</td>
 <td>0x0C</td>
@@ -531,15 +541,15 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>2</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
 <td>0x0D</td>
 <td>0x41CD</td>
-<td>6</td>
-<td>79</td>
+<td>4</td>
+<td>81</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_ECHAN</td>
 <td>0x0E</td>
@@ -547,15 +557,15 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>85</td>
 <td>256</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
 <td>0x0F</td>
 <td>0x41CF</td>
 <td>2</td>
-<td>4</td>
+<td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_UHCHAN</td>
 <td>0x10</td>
@@ -563,7 +573,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>2</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_NAVSS0_UDMASS_INTA_0</td>
+<tr class="row-odd"><td>J721S2_DEV_NAVSS0_UDMASS_INTA_0</td>
 <td>0x109</td>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
@@ -571,7 +581,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>34</td>
 <td>222</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
@@ -579,7 +589,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>34</td>
 <td>4574</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_BCDMA_TX_CHAN_ERROR_OES</td>
 <td>0x0F</td>
@@ -587,7 +597,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>1536</td>
 <td>16</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_BCDMA_TX_CHAN_DATA_COMPLETION_OES</td>
 <td>0x10</td>
@@ -595,7 +605,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>2048</td>
 <td>16</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_BCDMA_TX_CHAN_RING_COMPLETION_OES</td>
 <td>0x11</td>
@@ -603,7 +613,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>2560</td>
 <td>16</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_BCDMA_RX_CHAN_ERROR_OES</td>
 <td>0x12</td>
@@ -611,7 +621,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>3072</td>
 <td>32</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_BCDMA_RX_CHAN_DATA_COMPLETION_OES</td>
 <td>0x13</td>
@@ -619,7 +629,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>3584</td>
 <td>32</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_BCDMA_RX_CHAN_RING_COMPLETION_OES</td>
 <td>0x14</td>
@@ -627,7 +637,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>4096</td>
 <td>32</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>0x10C</td>
 <td>RESASG_SUBTYPE_IR_OUTPUT</td>
 <td>0x00</td>
@@ -635,7 +645,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>12</td>
 <td>12</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
 <td>&#160;</td>
@@ -643,7 +653,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>36</td>
 <td>28</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_PROXY0</td>
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_PROXY0</td>
 <td>0x10F</td>
 <td>RESASG_SUBTYPE_PROXY_PROXIES</td>
 <td>0x00</td>
@@ -651,7 +661,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>1</td>
 <td>63</td>
 </tr>
-<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_RINGACC0</td>
+<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_RINGACC0</td>
 <td>0x110</td>
 <td>RESASG_SUBTYPE_RA_ERROR_OES</td>
 <td>0x00</td>
@@ -659,7 +669,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_GP</td>
 <td>0x01</td>
@@ -667,7 +677,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>96</td>
 <td>156</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX</td>
 <td>0x02</td>
@@ -675,7 +685,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>50</td>
 <td>43</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX</td>
 <td>0x03</td>
@@ -683,7 +693,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>2</td>
 <td>44</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_RX_H</td>
 <td>0x05</td>
@@ -691,7 +701,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>48</td>
 <td>2</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_UDMAP_TX_H</td>
 <td>0x07</td>
@@ -699,7 +709,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_VIRTID</td>
 <td>0x0A</td>
@@ -707,7 +717,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>4096</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_MONITORS</td>
 <td>0x0B</td>
@@ -715,7 +725,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>32</td>
 </tr>
-<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_UDMAP_0</td>
+<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_UDMAP_0</td>
 <td>0x111</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_FLOW_COMMON</td>
 <td>0x00</td>
@@ -723,7 +733,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>48</td>
 <td>48</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_INVALID_FLOW_OES</td>
 <td>0x01</td>
@@ -731,7 +741,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_TRIGGER</td>
 <td>0x02</td>
@@ -739,7 +749,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>56320</td>
 <td>256</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
 <td>0x03</td>
@@ -747,7 +757,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_CHAN</td>
 <td>0x0A</td>
@@ -755,7 +765,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>2</td>
 <td>43</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_RX_HCHAN</td>
 <td>0x0B</td>
@@ -763,7 +773,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_CHAN</td>
 <td>0x0D</td>
@@ -771,7 +781,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>2</td>
 <td>44</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_UDMAP_TX_HCHAN</td>
 <td>0x0F</td>
@@ -779,7 +789,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>2</td>
 </tr>
-<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_UDMASS_INTA_0</td>
+<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_UDMASS_INTA_0</td>
 <td>0x113</td>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
@@ -787,7 +797,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>22</td>
 <td>234</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
@@ -795,7 +805,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>16406</td>
 <td>1514</td>
 </tr>
-<tr class="row-odd"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0</td>
+<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0</td>
 <td>0x12C</td>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
@@ -803,7 +813,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>8</td>
 <td>0</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
@@ -811,7 +821,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>100</td>
 <td>0</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_TIMERMGR_EVT_OES</td>
 <td>0x15</td>
@@ -819,7 +829,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1024</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_PKTDMA_TX_CHAN_ERROR_OES</td>
 <td>0x16</td>
@@ -827,15 +837,15 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>4096</td>
 <td>2</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_PKTDMA_TX_FLOW_COMPLETION_OES</td>
 <td>0x17</td>
 <td>0x4B17</td>
 <td>4608</td>
-<td>8</td>
+<td>16</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_PKTDMA_RX_CHAN_ERROR_OES</td>
 <td>0x18</td>
@@ -843,7 +853,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>5120</td>
 <td>4</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_COMPLETION_OES</td>
 <td>0x19</td>
@@ -851,7 +861,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>5632</td>
 <td>16</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_STARVATION_OES</td>
 <td>0x1A</td>
@@ -859,7 +869,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>6144</td>
 <td>16</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_FIREWALL_OES</td>
 <td>0x1B</td>
@@ -867,7 +877,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>6656</td>
 <td>16</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_PKTDMA_0</td>
+<tr class="row-odd"><td>J721S2_DEV_MCU_SA3_SS0_PKTDMA_0</td>
 <td>0x12D</td>
 <td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
 <td>0x03</td>
@@ -875,7 +885,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_TX_0_CHAN</td>
 <td>0x12</td>
@@ -883,13 +893,21 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>8</td>
 <td>0</td>
 </tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_TX_1_CHAN</td>
+<td>0x13</td>
+<td>0x4B53</td>
+<td>8</td>
+<td>8</td>
+</tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_0_CHAN</td>
 <td>0x18</td>
 <td>0x4B58</td>
 <td>16</td>
-<td>0</td>
+<td>8</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
@@ -901,6 +919,22 @@ entries than the maximum will result in the RM board configuration being NACK’
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_2_CHAN</td>
+<td>0x1A</td>
+<td>0x4B5A</td>
+<td>24</td>
+<td>8</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_3_CHAN</td>
+<td>0x1B</td>
+<td>0x4B5B</td>
+<td>24</td>
+<td>8</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
 <td>RESASG_SUBTYPE_PKTDMA_SAUL_TX_0_CHAN</td>
 <td>0x25</td>
 <td>0x4B65</td>
@@ -909,13 +943,21 @@ entries than the maximum will result in the RM board configuration being NACK’
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_SAUL_TX_1_CHAN</td>
+<td>0x26</td>
+<td>0x4B66</td>
+<td>1</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
 <td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_0_CHAN</td>
 <td>0x2D</td>
 <td>0x4B6D</td>
 <td>1</td>
 <td>0</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_0_CHAN</td>
 <td>0x2E</td>
@@ -923,7 +965,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>8</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
+<tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_1_CHAN</td>
 <td>0x2F</td>
@@ -931,15 +973,47 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>2</td>
 <td>0</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_1_CHAN</td>
 <td>0x30</td>
 <td>0x4B70</td>
+<td>0</td>
+<td>8</td>
+</tr>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_2_CHAN</td>
+<td>0x31</td>
+<td>0x4B71</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_2_CHAN</td>
+<td>0x32</td>
+<td>0x4B72</td>
 <td>8</td>
 <td>8</td>
 </tr>
-<tr class="row-odd"><td>J721S2_DEV_MCU_SA3_SS0_RINGACC_0</td>
+<tr class="row-even"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_3_CHAN</td>
+<td>0x33</td>
+<td>0x4B73</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr class="row-odd"><td>&#160;</td>
+<td>&#160;</td>
+<td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_3_CHAN</td>
+<td>0x34</td>
+<td>0x4B74</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_RINGACC_0</td>
 <td>0x12E</td>
 <td>RESASG_SUBTYPE_RA_ERROR_OES</td>
 <td>0x00</td>
@@ -947,7 +1021,7 @@ entries than the maximum will result in the RM board configuration being NACK’
 <td>0</td>
 <td>1</td>
 </tr>
-<tr class="row-even"><td>&#160;</td>
+<tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
 <td>RESASG_SUBTYPE_RA_VIRTID</td>
 <td>0x0A</td>
@@ -1001,7 +1075,7 @@ entries than the maximum will result in the RM board configuration being NACK’
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

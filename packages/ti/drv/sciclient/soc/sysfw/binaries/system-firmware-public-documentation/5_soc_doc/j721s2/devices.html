@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721s2">J721S2</a><ul class="current">
@@ -128,6 +129,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">J721S2 Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">J721S2 Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721S2 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721S2 Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721S2 Device Group descriptions</a></li>
 </ul>
 </li>
@@ -604,7 +606,7 @@ management of a particular SoC subsystem.</p>
 <td>J721S2_DEV_J7AM_BOLT_PGD0</td>
 </tr>
 <tr class="row-even"><td>136</td>
-<td>J721S2_DEV_J7AM_CSI_PSILSS0</td>
+<td>J721S2_DEV_CSI_PSILSS0</td>
 </tr>
 <tr class="row-odd"><td>137</td>
 <td>J721S2_DEV_DEBUGSUSPENDRTR0</td>
@@ -616,7 +618,7 @@ management of a particular SoC subsystem.</p>
 <td>J721S2_DEV_DDR1</td>
 </tr>
 <tr class="row-even"><td>140</td>
-<td>J721S2_DEV_J7AM_DMPAC_VPAC_PSILSS0</td>
+<td>J721S2_DEV_DMPAC_VPAC_PSILSS0</td>
 </tr>
 <tr class="row-odd"><td>141</td>
 <td>J721S2_DEV_J7AM_HWA_ATB_FUNNEL0</td>
@@ -631,7 +633,7 @@ management of a particular SoC subsystem.</p>
 <td>J721S2_DEV_J7AM_PULSAR_ATB_FUNNEL0</td>
 </tr>
 <tr class="row-odd"><td>145</td>
-<td>J721S2_DEV_J7AM_SA2_CPSW_PSILSS0</td>
+<td>J721S2_DEV_SA2_CPSW_PSILSS0</td>
 </tr>
 <tr class="row-even"><td>146</td>
 <td>J721S2_DEV_UART0</td>
@@ -730,7 +732,7 @@ management of a particular SoC subsystem.</p>
 <td>J721S2_DEV_MCU_PBIST2</td>
 </tr>
 <tr class="row-even"><td>179</td>
-<td>J721S2_DEV_K3_VPU_WAVE521CL0</td>
+<td>J721S2_DEV_CODEC0</td>
 </tr>
 <tr class="row-odd"><td>180</td>
 <td>J721S2_DEV_WKUP_VTM0</td>
@@ -1089,212 +1091,113 @@ management of a particular SoC subsystem.</p>
 <tr class="row-odd"><td>303</td>
 <td>J721S2_DEV_MCU_SA3_SS0_SA_UL_0</td>
 </tr>
-<tr class="row-even"><td>304</td>
-<td>J721S2_DEV_WKUP_SMS0_AESEIP38T_0</td>
-</tr>
-<tr class="row-odd"><td>305</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-</tr>
-<tr class="row-even"><td>306</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-</tr>
-<tr class="row-odd"><td>307</td>
-<td>J721S2_DEV_WKUP_SMS0_CORTEX_M4F_SS_0</td>
-</tr>
-<tr class="row-even"><td>308</td>
-<td>J721S2_DEV_WKUP_SMS0_CORTEX_M4F_SS_1</td>
-</tr>
-<tr class="row-odd"><td>309</td>
-<td>J721S2_DEV_WKUP_SMS0_CTI_0</td>
-</tr>
-<tr class="row-even"><td>310</td>
-<td>J721S2_DEV_WKUP_SMS0_CTI_1</td>
-</tr>
-<tr class="row-odd"><td>311</td>
-<td>J721S2_DEV_WKUP_SMS0_DBG_AUTH_0</td>
-</tr>
-<tr class="row-even"><td>312</td>
-<td>J721S2_DEV_WKUP_SMS0_DMTIMER_0</td>
-</tr>
-<tr class="row-odd"><td>313</td>
-<td>J721S2_DEV_WKUP_SMS0_DMTIMER_1</td>
-</tr>
-<tr class="row-even"><td>314</td>
-<td>J721S2_DEV_WKUP_SMS0_DMTIMER_2</td>
-</tr>
-<tr class="row-odd"><td>315</td>
-<td>J721S2_DEV_WKUP_SMS0_DMTIMER_3</td>
-</tr>
-<tr class="row-even"><td>316</td>
-<td>J721S2_DEV_WKUP_SMS0_DWT_0</td>
-</tr>
-<tr class="row-odd"><td>317</td>
-<td>J721S2_DEV_WKUP_SMS0_DWT_1</td>
-</tr>
-<tr class="row-even"><td>318</td>
-<td>J721S2_DEV_WKUP_SMS0_FBP_0</td>
-</tr>
-<tr class="row-odd"><td>319</td>
-<td>J721S2_DEV_WKUP_SMS0_FBP_1</td>
-</tr>
-<tr class="row-even"><td>320</td>
-<td>J721S2_DEV_WKUP_SMS0_FWMGR_0</td>
-</tr>
-<tr class="row-odd"><td>321</td>
-<td>J721S2_DEV_WKUP_SMS0_HSM_SRAM_0</td>
-</tr>
-<tr class="row-even"><td>322</td>
-<td>J721S2_DEV_WKUP_SMS0_HSM_SRAM_1</td>
-</tr>
-<tr class="row-odd"><td>323</td>
-<td>J721S2_DEV_WKUP_SMS0_ITM_0</td>
-</tr>
-<tr class="row-even"><td>324</td>
-<td>J721S2_DEV_WKUP_SMS0_ITM_1</td>
-</tr>
-<tr class="row-odd"><td>325</td>
-<td>J721S2_DEV_WKUP_SMS0_PWRCTRL_0</td>
-</tr>
-<tr class="row-even"><td>326</td>
-<td>J721S2_DEV_WKUP_SMS0_RAT_0</td>
-</tr>
-<tr class="row-odd"><td>327</td>
-<td>J721S2_DEV_WKUP_SMS0_RAT_1</td>
-</tr>
-<tr class="row-even"><td>328</td>
-<td>J721S2_DEV_WKUP_SMS0_ROM_0</td>
-</tr>
-<tr class="row-odd"><td>329</td>
-<td>J721S2_DEV_WKUP_SMS0_RTI_0</td>
-</tr>
-<tr class="row-even"><td>330</td>
-<td>J721S2_DEV_WKUP_SMS0_RTI_1</td>
-</tr>
-<tr class="row-odd"><td>331</td>
-<td>J721S2_DEV_WKUP_SMS0_SCS_0</td>
-</tr>
-<tr class="row-even"><td>332</td>
-<td>J721S2_DEV_WKUP_SMS0_SCS_1</td>
-</tr>
-<tr class="row-odd"><td>333</td>
-<td>J721S2_DEV_WKUP_SMS0_SEC_MGR_0</td>
-</tr>
-<tr class="row-even"><td>334</td>
-<td>J721S2_DEV_WKUP_SMS0_SECCTRL_0</td>
-</tr>
-<tr class="row-odd"><td>335</td>
-<td>J721S2_DEV_WKUP_SMS0_TIFS_SRAM_0</td>
-</tr>
-<tr class="row-even"><td>336</td>
-<td>J721S2_DEV_WKUP_SMS0_TIFS_SRAM_1</td>
-</tr>
-<tr class="row-odd"><td>337</td>
-<td>J721S2_DEV_WKUP_SMS0_WDTCTRL_0</td>
-</tr>
-<tr class="row-even"><td>338</td>
-<td>J721S2_DEV_WKUP_SMS0_WDTCTRL_1</td>
-</tr>
-<tr class="row-odd"><td>339</td>
+<tr class="row-even"><td>339</td>
 <td>J721S2_DEV_MCSPI0</td>
 </tr>
-<tr class="row-even"><td>340</td>
+<tr class="row-odd"><td>340</td>
 <td>J721S2_DEV_MCSPI1</td>
 </tr>
-<tr class="row-odd"><td>341</td>
+<tr class="row-even"><td>341</td>
 <td>J721S2_DEV_MCSPI2</td>
 </tr>
-<tr class="row-even"><td>342</td>
+<tr class="row-odd"><td>342</td>
 <td>J721S2_DEV_MCSPI3</td>
 </tr>
-<tr class="row-odd"><td>343</td>
+<tr class="row-even"><td>343</td>
 <td>J721S2_DEV_MCSPI4</td>
 </tr>
-<tr class="row-even"><td>344</td>
+<tr class="row-odd"><td>344</td>
 <td>J721S2_DEV_MCSPI5</td>
 </tr>
-<tr class="row-odd"><td>345</td>
+<tr class="row-even"><td>345</td>
 <td>J721S2_DEV_MCSPI6</td>
 </tr>
-<tr class="row-even"><td>346</td>
+<tr class="row-odd"><td>346</td>
 <td>J721S2_DEV_MCSPI7</td>
 </tr>
-<tr class="row-odd"><td>347</td>
+<tr class="row-even"><td>347</td>
 <td>J721S2_DEV_MCU_MCSPI0</td>
 </tr>
-<tr class="row-even"><td>348</td>
+<tr class="row-odd"><td>348</td>
 <td>J721S2_DEV_MCU_MCSPI1</td>
 </tr>
-<tr class="row-odd"><td>349</td>
+<tr class="row-even"><td>349</td>
 <td>J721S2_DEV_MCU_MCSPI2</td>
 </tr>
-<tr class="row-even"><td>350</td>
+<tr class="row-odd"><td>350</td>
 <td>J721S2_DEV_UART1</td>
 </tr>
-<tr class="row-odd"><td>351</td>
+<tr class="row-even"><td>351</td>
 <td>J721S2_DEV_UART2</td>
 </tr>
-<tr class="row-even"><td>352</td>
+<tr class="row-odd"><td>352</td>
 <td>J721S2_DEV_UART3</td>
 </tr>
-<tr class="row-odd"><td>353</td>
+<tr class="row-even"><td>353</td>
 <td>J721S2_DEV_UART4</td>
 </tr>
-<tr class="row-even"><td>354</td>
+<tr class="row-odd"><td>354</td>
 <td>J721S2_DEV_UART5</td>
 </tr>
-<tr class="row-odd"><td>355</td>
+<tr class="row-even"><td>355</td>
 <td>J721S2_DEV_UART6</td>
 </tr>
-<tr class="row-even"><td>356</td>
+<tr class="row-odd"><td>356</td>
 <td>J721S2_DEV_UART7</td>
 </tr>
-<tr class="row-odd"><td>357</td>
+<tr class="row-even"><td>357</td>
 <td>J721S2_DEV_UART8</td>
 </tr>
-<tr class="row-even"><td>358</td>
+<tr class="row-odd"><td>358</td>
 <td>J721S2_DEV_UART9</td>
 </tr>
-<tr class="row-odd"><td>359</td>
+<tr class="row-even"><td>359</td>
 <td>J721S2_DEV_WKUP_UART0</td>
 </tr>
-<tr class="row-even"><td>360</td>
+<tr class="row-odd"><td>360</td>
 <td>J721S2_DEV_USB0</td>
 </tr>
-<tr class="row-odd"><td>361</td>
+<tr class="row-even"><td>361</td>
 <td>J721S2_DEV_VPAC0</td>
 </tr>
-<tr class="row-even"><td>362</td>
+<tr class="row-odd"><td>362</td>
 <td>J721S2_DEV_VUSR_DUAL0</td>
 </tr>
-<tr class="row-odd"><td>363</td>
+<tr class="row-even"><td>363</td>
 <td>J721S2_DEV_DPHY_TX0</td>
 </tr>
-<tr class="row-even"><td>364</td>
+<tr class="row-odd"><td>364</td>
 <td>J721S2_DEV_DPHY_TX1</td>
 </tr>
-<tr class="row-odd"><td>365</td>
+<tr class="row-even"><td>365</td>
 <td>J721S2_DEV_SERDES_10G0</td>
 </tr>
-<tr class="row-even"><td>366</td>
+<tr class="row-odd"><td>366</td>
 <td>J721S2_DEV_WKUPMCU2MAIN_VD</td>
 </tr>
-<tr class="row-odd"><td>367</td>
+<tr class="row-even"><td>367</td>
 <td>J721S2_DEV_FFI_MAIN_AC_CBASS_VD</td>
 </tr>
-<tr class="row-even"><td>368</td>
+<tr class="row-odd"><td>368</td>
 <td>J721S2_DEV_FFI_MAIN_AC_QM_CBASS_VD</td>
 </tr>
-<tr class="row-odd"><td>369</td>
+<tr class="row-even"><td>369</td>
 <td>J721S2_DEV_FFI_MAIN_HC_CBASS_VD</td>
 </tr>
-<tr class="row-even"><td>370</td>
+<tr class="row-odd"><td>370</td>
 <td>J721S2_DEV_FFI_MAIN_INFRA_CBASS_VD</td>
 </tr>
-<tr class="row-odd"><td>371</td>
+<tr class="row-even"><td>371</td>
 <td>J721S2_DEV_FFI_MAIN_IP_CBASS_VD</td>
 </tr>
-<tr class="row-even"><td>372</td>
+<tr class="row-odd"><td>372</td>
 <td>J721S2_DEV_FFI_MAIN_RC_CBASS_VD</td>
+</tr>
+<tr class="row-even"><td>373</td>
+<td>J721S2_DEV_J7AEP_GPU_BXS464_WRAP0_GPUCORE_0</td>
+</tr>
+<tr class="row-odd"><td>374</td>
+<td>J721S2_DEV_DMPAC0_UTC_0</td>
 </tr>
 </tbody>
 </table>
@@ -1342,7 +1245,7 @@ management of a particular SoC subsystem.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

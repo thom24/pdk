@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.00
+                08.04.00
               </div>
             
           
@@ -130,6 +130,7 @@
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM64X Device Group descriptions</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721s2">J721S2</a></li>
@@ -232,9 +233,9 @@ These do have chapters in this document associated with them, however, these wou
 <p>Following is a mapping of Clocks IDs to function:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="18%" />
-<col width="61%" />
 <col width="21%" />
+<col width="56%" />
+<col width="23%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Clock ID</th>
@@ -250,10 +251,6 @@ These do have chapters in this document associated with them, however, these wou
 <tr class="row-odd"><td>1</td>
 <td>DEV_A53SS0_PLL_CTRL_CLK</td>
 <td>Input clock</td>
-</tr>
-<tr class="row-even"><td>2</td>
-<td>DEV_A53SS0_A53_DIVH_CLK4_OBSCLK_OUT_CLK</td>
-<td>Output clock</td>
 </tr>
 </tbody>
 </table>
@@ -838,6 +835,18 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>109</td>
 <td>DEV_BOARD0_TCK_OUT</td>
 <td>Output clock</td>
+</tr>
+<tr class="row-even"><td>123</td>
+<td>DEV_BOARD0_CLKOUT0_IN</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>124</td>
+<td>DEV_BOARD0_CLKOUT0_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT4_CLK5</td>
+<td>Parent input clock option to DEV_BOARD0_CLKOUT0_IN</td>
+</tr>
+<tr class="row-even"><td>125</td>
+<td>DEV_BOARD0_CLKOUT0_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT4_CLK10</td>
+<td>Parent input clock option to DEV_BOARD0_CLKOUT0_IN</td>
 </tr>
 </tbody>
 </table>
@@ -1773,62 +1782,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
 <td>DEV_DMASS0_PKTDMA_0_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-dmass0-psilcfg-0-device">
-<span id="soc-doc-am64x-public-clks-dmass0-psilcfg-0"></span><h3>Clocks for DMASS0_PSILCFG_0 Device<a class="headerlink" href="#clocks-for-dmass0-psilcfg-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_DMASS0_PSILCFG_0</span></a> (ID = 31)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="51%" />
-<col width="25%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_DMASS0_PSILCFG_0_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-dmass0-psilss-0-device">
-<span id="soc-doc-am64x-public-clks-dmass0-psilss-0"></span><h3>Clocks for DMASS0_PSILSS_0 Device<a class="headerlink" href="#clocks-for-dmass0-psilss-0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_DMASS0_PSILSS_0</span></a> (ID = 32)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="20%" />
-<col width="59%" />
-<col width="21%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_DMASS0_PSILSS_0_PDMA_MAIN0_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_DMASS0_PSILSS_0_PDMA_MAIN1_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>2</td>
-<td>DEV_DMASS0_PSILSS_0_VD2CLK</td>
 <td>Input clock</td>
 </tr>
 </tbody>
@@ -3506,6 +3459,30 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <span id="soc-doc-am64x-public-clks-mcu-m4fss0"></span><h3>Clocks for MCU_M4FSS0 Device<a class="headerlink" href="#clocks-for-mcu-m4fss0-device" title="Permalink to this headline">¶</a></h3>
 <p><strong>This device has no defined clocks.</strong></p>
 </div>
+<div class="section" id="clocks-for-mcu-m4fss0-cbass-0-device">
+<span id="soc-doc-am64x-public-clks-mcu-m4fss0-cbass-0"></span><h3>Clocks for MCU_M4FSS0_CBASS_0 Device<a class="headerlink" href="#clocks-for-mcu-m4fss0-cbass-0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MCU_M4FSS0_CBASS_0</span></a> (ID = 8)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="23%" />
+<col width="53%" />
+<col width="25%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_MCU_M4FSS0_CBASS_0_CLK</td>
+<td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-mcu-m4fss0-core0-device">
 <span id="soc-doc-am64x-public-clks-mcu-m4fss0-core0"></span><h3>Clocks for MCU_M4FSS0_CORE0 Device<a class="headerlink" href="#clocks-for-mcu-m4fss0-core0-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MCU_M4FSS0_CORE0</span></a> (ID = 9)</p>
@@ -4150,174 +4127,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="clocks-for-msram-256k0-device">
-<span id="soc-doc-am64x-public-clks-msram-256k0"></span><h3>Clocks for MSRAM_256K0 Device<a class="headerlink" href="#clocks-for-msram-256k0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MSRAM_256K0</span></a> (ID = 108)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="51%" />
-<col width="25%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_MSRAM_256K0_CCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_MSRAM_256K0_VCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-msram-256k1-device">
-<span id="soc-doc-am64x-public-clks-msram-256k1"></span><h3>Clocks for MSRAM_256K1 Device<a class="headerlink" href="#clocks-for-msram-256k1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MSRAM_256K1</span></a> (ID = 109)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="51%" />
-<col width="25%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_MSRAM_256K1_CCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_MSRAM_256K1_VCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-msram-256k2-device">
-<span id="soc-doc-am64x-public-clks-msram-256k2"></span><h3>Clocks for MSRAM_256K2 Device<a class="headerlink" href="#clocks-for-msram-256k2-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MSRAM_256K2</span></a> (ID = 110)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="51%" />
-<col width="25%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_MSRAM_256K2_CCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_MSRAM_256K2_VCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-msram-256k3-device">
-<span id="soc-doc-am64x-public-clks-msram-256k3"></span><h3>Clocks for MSRAM_256K3 Device<a class="headerlink" href="#clocks-for-msram-256k3-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MSRAM_256K3</span></a> (ID = 111)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="51%" />
-<col width="25%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_MSRAM_256K3_CCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_MSRAM_256K3_VCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-msram-256k4-device">
-<span id="soc-doc-am64x-public-clks-msram-256k4"></span><h3>Clocks for MSRAM_256K4 Device<a class="headerlink" href="#clocks-for-msram-256k4-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MSRAM_256K4</span></a> (ID = 112)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="51%" />
-<col width="25%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_MSRAM_256K4_CCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_MSRAM_256K4_VCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-msram-256k5-device">
-<span id="soc-doc-am64x-public-clks-msram-256k5"></span><h3>Clocks for MSRAM_256K5 Device<a class="headerlink" href="#clocks-for-msram-256k5-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_MSRAM_256K5</span></a> (ID = 113)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="24%" />
-<col width="51%" />
-<col width="25%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_MSRAM_256K5_CCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_MSRAM_256K5_VCLK_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="clocks-for-pbist0-device">
 <span id="soc-doc-am64x-public-clks-pbist0"></span><h3>Clocks for PBIST0 Device<a class="headerlink" href="#clocks-for-pbist0-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_PBIST0</span></a> (ID = 163)</p>
@@ -4493,138 +4302,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-odd"><td>16</td>
 <td>DEV_PCIE0_PCIE_LANE0_TXCLK</td>
-<td>Output clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-postdiv1-16fft1-device">
-<span id="soc-doc-am64x-public-clks-postdiv1-16fft1"></span><h3>Clocks for POSTDIV1_16FFT1 Device<a class="headerlink" href="#clocks-for-postdiv1-16fft1-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_POSTDIV1_16FFT1</span></a> (ID = 115)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="18%" />
-<col width="60%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_POSTDIV1_16FFT1_FREF_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_POSTDIV1_16FFT1_POSTDIV_CLKIN_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>2</td>
-<td>DEV_POSTDIV1_16FFT1_HSDIVOUT5_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>3</td>
-<td>DEV_POSTDIV1_16FFT1_HSDIVOUT6_CLK</td>
-<td>Output clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-postdiv4-16ff0-device">
-<span id="soc-doc-am64x-public-clks-postdiv4-16ff0"></span><h3>Clocks for POSTDIV4_16FF0 Device<a class="headerlink" href="#clocks-for-postdiv4-16ff0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_POSTDIV4_16FF0</span></a> (ID = 116)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="19%" />
-<col width="59%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_POSTDIV4_16FF0_FREF_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_POSTDIV4_16FF0_POSTDIV_CLKIN_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>2</td>
-<td>DEV_POSTDIV4_16FF0_HSDIVOUT5_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>3</td>
-<td>DEV_POSTDIV4_16FF0_HSDIVOUT6_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-even"><td>4</td>
-<td>DEV_POSTDIV4_16FF0_HSDIVOUT7_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>5</td>
-<td>DEV_POSTDIV4_16FF0_HSDIVOUT8_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-even"><td>6</td>
-<td>DEV_POSTDIV4_16FF0_HSDIVOUT9_CLK</td>
-<td>Output clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-postdiv4-16ff2-device">
-<span id="soc-doc-am64x-public-clks-postdiv4-16ff2"></span><h3>Clocks for POSTDIV4_16FF2 Device<a class="headerlink" href="#clocks-for-postdiv4-16ff2-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_POSTDIV4_16FF2</span></a> (ID = 117)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="19%" />
-<col width="59%" />
-<col width="22%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_POSTDIV4_16FF2_FREF_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-odd"><td>1</td>
-<td>DEV_POSTDIV4_16FF2_POSTDIV_CLKIN_CLK</td>
-<td>Input clock</td>
-</tr>
-<tr class="row-even"><td>2</td>
-<td>DEV_POSTDIV4_16FF2_HSDIVOUT5_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>3</td>
-<td>DEV_POSTDIV4_16FF2_HSDIVOUT6_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-even"><td>4</td>
-<td>DEV_POSTDIV4_16FF2_HSDIVOUT7_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-odd"><td>5</td>
-<td>DEV_POSTDIV4_16FF2_HSDIVOUT8_CLK</td>
-<td>Output clock</td>
-</tr>
-<tr class="row-even"><td>6</td>
-<td>DEV_POSTDIV4_16FF2_HSDIVOUT9_CLK</td>
 <td>Output clock</td>
 </tr>
 </tbody>
@@ -4885,30 +4562,6 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tr>
 <tr class="row-odd"><td>1</td>
 <td>DEV_PSC0_SLOW_CLK</td>
-<td>Input clock</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div class="section" id="clocks-for-psramecc0-device">
-<span id="soc-doc-am64x-public-clks-psramecc0"></span><h3>Clocks for PSRAMECC0 Device<a class="headerlink" href="#clocks-for-psramecc0-device" title="Permalink to this headline">¶</a></h3>
-<p>Device: <a class="reference internal" href="devices.html#soc-doc-am64x-public-devices-desc-device-list"><span class="std std-ref">AM64X_DEV_PSRAMECC0</span></a> (ID = 118)</p>
-<p>Following is a mapping of Clocks IDs to function:</p>
-<table border="1" class="docutils">
-<colgroup>
-<col width="25%" />
-<col width="48%" />
-<col width="27%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Clock ID</th>
-<th class="head">Name</th>
-<th class="head">Function</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>0</td>
-<td>DEV_PSRAMECC0_CLK_CLK</td>
 <td>Input clock</td>
 </tr>
 </tbody>
@@ -7078,7 +6731,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.00',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

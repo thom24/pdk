@@ -155,6 +155,13 @@ For an example, please refer to the section ``[ sysfw_boot_seq ]`` in :ref:`sysf
         [ boot_seq ]
         bootCore = INTEGER:0x20
 
+
+.. note::
+
+    ``bootCore`` can be picked up from 
+    :doc:`SOC Family Specific Documentation <../../5_soc_doc/index>` > SOC Processor Descriptions > 
+    Enumeration of Processor IDs
+
 2. ``configFlags_set``
 
   - This is a 32 bit field that indicates core specific flags that need

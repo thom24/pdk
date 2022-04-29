@@ -253,12 +253,15 @@ struct tisci_boardcfg_dkek {
  * \param subhdr Magic and size for integrity check
  * \param auth_resource_owner ID of the host allowed to acquire/release the
  *                            authentication resources
+ * \param enable_saul_psil_global_config_writes Flag for allowing pairing requests
+ *                                              from PSIL. Set to 0x5A to enable
  * \param rsvd Reserved
  */
 struct tisci_boardcfg_sa2ul_cfg {
     struct tisci_boardcfg_substructure_header    subhdr;
     uint8_t                    auth_resource_owner;
-    uint8_t                    rsvd[3];
+    uint8_t                    enable_saul_psil_global_config_writes;
+    uint8_t                    rsvd[2];
 };
 
 

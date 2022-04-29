@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721s2">J721S2</a><ul class="current">
@@ -129,6 +130,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">J721S2 Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">J721S2 Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721S2 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721S2 Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721S2 Device Group descriptions</a></li>
 </ul>
 </li>
@@ -270,10 +272,10 @@ detected.</p>
 <td>0 to 1</td>
 </tr>
 <tr class="row-odd"><td>UDMAP_TX_H</td>
-<td>2 to 5</td>
+<td>2 to 3</td>
 </tr>
 <tr class="row-even"><td>UDMAP_TX</td>
-<td>6 to 84</td>
+<td>4 to 84</td>
 </tr>
 <tr class="row-odd"><td>UDMAP_TX_EXT</td>
 <td>85 to 340</td>
@@ -282,13 +284,16 @@ detected.</p>
 <td>341 to 342</td>
 </tr>
 <tr class="row-odd"><td>UDMAP_RX_H</td>
-<td>343 to 346</td>
+<td>343 to 344</td>
 </tr>
 <tr class="row-even"><td>UDMAP_RX</td>
-<td>347 to 422</td>
+<td>345 to 422</td>
 </tr>
 <tr class="row-odd"><td>GP</td>
-<td>423 to 973</td>
+<td>423 to 767</td>
+</tr>
+<tr class="row-even"><td>GP</td>
+<td>878 to 1023</td>
 </tr>
 </tbody>
 </table>
@@ -381,13 +386,21 @@ detected.</p>
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>0 to 7</td>
 </tr>
-<tr class="row-odd"><td>SAUL_RX_0_CHAN
-(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
+<tr class="row-odd"><td>SAUL_TX_1_CHAN</td>
 <td>8 to 15</td>
 </tr>
 <tr class="row-even"><td>SAUL_RX_1_CHAN
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>16 to 23</td>
+</tr>
+<tr class="row-odd"><td>SAUL_RX_0_CHAN</td>
+<td>16 to 23</td>
+</tr>
+<tr class="row-even"><td>SAUL_RX_2_CHAN</td>
+<td>24 to 31</td>
+</tr>
+<tr class="row-odd"><td>SAUL_RX_3_CHAN</td>
+<td>24 to 31</td>
 </tr>
 </tbody>
 </table>
@@ -453,7 +466,7 @@ detected.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

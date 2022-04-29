@@ -17,7 +17,7 @@ The system remains in ROM configured PLL and clock configuration till this
 message is invoked. On invoking this call, the OFC associated with the
 SoC is configured. This implies that many of PLLs and clock tree will
 get reconfigured. The OFC settings set by the PM board configuration is as given in 
-:doc:`../5_soc_doc/am6x/pll_data`. Since the device is capable of deriving the
+:doc:`../5_soc_doc/am65x/pll_data`. Since the device is capable of deriving the
 clock from different supported input HFOSC frequencies, |sysfw| reads the DEVSTAT
 to identify the HFOSC frequency and programs the PLLs and Dividers according to the 
 input HFOSC to derive the Original Frequency Combination (OFC). The OFC is a fixed

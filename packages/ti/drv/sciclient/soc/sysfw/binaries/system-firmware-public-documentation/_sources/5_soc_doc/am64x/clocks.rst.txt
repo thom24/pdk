@@ -58,15 +58,13 @@ Device: :ref:`AM64X_DEV_A53SS0 <soc_doc_am64x_public_devices_desc_device_list>` 
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+-----------------------------------------+--------------+
-|   Clock ID | Name                                    | Function     |
-+============+=========================================+==============+
-|          0 | DEV_A53SS0_COREPAC_ARM_CLK_CLK          | Input clock  |
-+------------+-----------------------------------------+--------------+
-|          1 | DEV_A53SS0_PLL_CTRL_CLK                 | Input clock  |
-+------------+-----------------------------------------+--------------+
-|          2 | DEV_A53SS0_A53_DIVH_CLK4_OBSCLK_OUT_CLK | Output clock |
-+------------+-----------------------------------------+--------------+
++------------+--------------------------------+-------------+
+|   Clock ID | Name                           | Function    |
++============+================================+=============+
+|          0 | DEV_A53SS0_COREPAC_ARM_CLK_CLK | Input clock |
++------------+--------------------------------+-------------+
+|          1 | DEV_A53SS0_PLL_CTRL_CLK        | Input clock |
++------------+--------------------------------+-------------+
 
 .. _soc_doc_am64x_public_clks_a53ss0_core_0:
 
@@ -382,6 +380,12 @@ Following is a mapping of Clocks IDs to function:
 |        108 | DEV_BOARD0_SPI4_CLK_OUT                                                  | Output clock                                              |
 +------------+--------------------------------------------------------------------------+-----------------------------------------------------------+
 |        109 | DEV_BOARD0_TCK_OUT                                                       | Output clock                                              |
++------------+--------------------------------------------------------------------------+-----------------------------------------------------------+
+|        123 | DEV_BOARD0_CLKOUT0_IN                                                    | Input muxed clock                                         |
++------------+--------------------------------------------------------------------------+-----------------------------------------------------------+
+|        124 | DEV_BOARD0_CLKOUT0_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT4_CLK5          | Parent input clock option to DEV_BOARD0_CLKOUT0_IN        |
++------------+--------------------------------------------------------------------------+-----------------------------------------------------------+
+|        125 | DEV_BOARD0_CLKOUT0_IN_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT4_CLK10         | Parent input clock option to DEV_BOARD0_CLKOUT0_IN        |
 +------------+--------------------------------------------------------------------------+-----------------------------------------------------------+
 
 .. _soc_doc_am64x_public_clks_cmp_event_introuter0:
@@ -945,42 +949,6 @@ Following is a mapping of Clocks IDs to function:
 +============+=========================+=============+
 |          0 | DEV_DMASS0_PKTDMA_0_CLK | Input clock |
 +------------+-------------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_dmass0_psilcfg_0:
-
-
-Clocks for DMASS0_PSILCFG_0 Device
-----------------------------------
-
-Device: :ref:`AM64X_DEV_DMASS0_PSILCFG_0 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 31)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------+-------------+
-|   Clock ID | Name                     | Function    |
-+============+==========================+=============+
-|          0 | DEV_DMASS0_PSILCFG_0_CLK | Input clock |
-+------------+--------------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_dmass0_psilss_0:
-
-
-Clocks for DMASS0_PSILSS_0 Device
----------------------------------
-
-Device: :ref:`AM64X_DEV_DMASS0_PSILSS_0 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 32)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+------------------------------------+-------------+
-|   Clock ID | Name                               | Function    |
-+============+====================================+=============+
-|          0 | DEV_DMASS0_PSILSS_0_PDMA_MAIN0_CLK | Input clock |
-+------------+------------------------------------+-------------+
-|          1 | DEV_DMASS0_PSILSS_0_PDMA_MAIN1_CLK | Input clock |
-+------------+------------------------------------+-------------+
-|          2 | DEV_DMASS0_PSILSS_0_VD2CLK         | Input clock |
-+------------+------------------------------------+-------------+
 
 .. _soc_doc_am64x_public_clks_dmass0_ringacc_0:
 
@@ -2064,6 +2032,22 @@ Clocks for MCU_M4FSS0 Device
 
 **This device has no defined clocks.**
 
+.. _soc_doc_am64x_public_clks_mcu_m4fss0_cbass_0:
+
+
+Clocks for MCU_M4FSS0_CBASS_0 Device
+------------------------------------
+
+Device: :ref:`AM64X_DEV_MCU_M4FSS0_CBASS_0 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 8)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+----------------------------+-------------+
+|   Clock ID | Name                       | Function    |
++============+============================+=============+
+|          0 | DEV_MCU_M4FSS0_CBASS_0_CLK | Input clock |
++------------+----------------------------+-------------+
+
 .. _soc_doc_am64x_public_clks_mcu_m4fss0_core0:
 
 
@@ -2446,114 +2430,6 @@ Following is a mapping of Clocks IDs to function:
 |          7 | DEV_MMCSD1_EMMCSDSS_IO_CLK_O                                           | Output clock                                              |
 +------------+------------------------------------------------------------------------+-----------------------------------------------------------+
 
-.. _soc_doc_am64x_public_clks_msram_256k0:
-
-
-Clocks for MSRAM_256K0 Device
------------------------------
-
-Device: :ref:`AM64X_DEV_MSRAM_256K0 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 108)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------+-------------+
-|   Clock ID | Name                     | Function    |
-+============+==========================+=============+
-|          0 | DEV_MSRAM_256K0_CCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-|          1 | DEV_MSRAM_256K0_VCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_msram_256k1:
-
-
-Clocks for MSRAM_256K1 Device
------------------------------
-
-Device: :ref:`AM64X_DEV_MSRAM_256K1 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 109)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------+-------------+
-|   Clock ID | Name                     | Function    |
-+============+==========================+=============+
-|          0 | DEV_MSRAM_256K1_CCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-|          1 | DEV_MSRAM_256K1_VCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_msram_256k2:
-
-
-Clocks for MSRAM_256K2 Device
------------------------------
-
-Device: :ref:`AM64X_DEV_MSRAM_256K2 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 110)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------+-------------+
-|   Clock ID | Name                     | Function    |
-+============+==========================+=============+
-|          0 | DEV_MSRAM_256K2_CCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-|          1 | DEV_MSRAM_256K2_VCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_msram_256k3:
-
-
-Clocks for MSRAM_256K3 Device
------------------------------
-
-Device: :ref:`AM64X_DEV_MSRAM_256K3 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 111)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------+-------------+
-|   Clock ID | Name                     | Function    |
-+============+==========================+=============+
-|          0 | DEV_MSRAM_256K3_CCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-|          1 | DEV_MSRAM_256K3_VCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_msram_256k4:
-
-
-Clocks for MSRAM_256K4 Device
------------------------------
-
-Device: :ref:`AM64X_DEV_MSRAM_256K4 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 112)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------+-------------+
-|   Clock ID | Name                     | Function    |
-+============+==========================+=============+
-|          0 | DEV_MSRAM_256K4_CCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-|          1 | DEV_MSRAM_256K4_VCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_msram_256k5:
-
-
-Clocks for MSRAM_256K5 Device
------------------------------
-
-Device: :ref:`AM64X_DEV_MSRAM_256K5 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 113)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------+-------------+
-|   Clock ID | Name                     | Function    |
-+============+==========================+=============+
-|          0 | DEV_MSRAM_256K5_CCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-|          1 | DEV_MSRAM_256K5_VCLK_CLK | Input clock |
-+------------+--------------------------+-------------+
-
 .. _soc_doc_am64x_public_clks_pbist0:
 
 
@@ -2663,84 +2539,6 @@ Following is a mapping of Clocks IDs to function:
 +------------+------------------------------------------------------------------------+-----------------------------------------------------------+
 |         16 | DEV_PCIE0_PCIE_LANE0_TXCLK                                             | Output clock                                              |
 +------------+------------------------------------------------------------------------+-----------------------------------------------------------+
-
-.. _soc_doc_am64x_public_clks_postdiv1_16fft1:
-
-
-Clocks for POSTDIV1_16FFT1 Device
----------------------------------
-
-Device: :ref:`AM64X_DEV_POSTDIV1_16FFT1 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 115)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+---------------------------------------+--------------+
-|   Clock ID | Name                                  | Function     |
-+============+=======================================+==============+
-|          0 | DEV_POSTDIV1_16FFT1_FREF_CLK          | Input clock  |
-+------------+---------------------------------------+--------------+
-|          1 | DEV_POSTDIV1_16FFT1_POSTDIV_CLKIN_CLK | Input clock  |
-+------------+---------------------------------------+--------------+
-|          2 | DEV_POSTDIV1_16FFT1_HSDIVOUT5_CLK     | Output clock |
-+------------+---------------------------------------+--------------+
-|          3 | DEV_POSTDIV1_16FFT1_HSDIVOUT6_CLK     | Output clock |
-+------------+---------------------------------------+--------------+
-
-.. _soc_doc_am64x_public_clks_postdiv4_16ff0:
-
-
-Clocks for POSTDIV4_16FF0 Device
---------------------------------
-
-Device: :ref:`AM64X_DEV_POSTDIV4_16FF0 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 116)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------------------+--------------+
-|   Clock ID | Name                                 | Function     |
-+============+======================================+==============+
-|          0 | DEV_POSTDIV4_16FF0_FREF_CLK          | Input clock  |
-+------------+--------------------------------------+--------------+
-|          1 | DEV_POSTDIV4_16FF0_POSTDIV_CLKIN_CLK | Input clock  |
-+------------+--------------------------------------+--------------+
-|          2 | DEV_POSTDIV4_16FF0_HSDIVOUT5_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          3 | DEV_POSTDIV4_16FF0_HSDIVOUT6_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          4 | DEV_POSTDIV4_16FF0_HSDIVOUT7_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          5 | DEV_POSTDIV4_16FF0_HSDIVOUT8_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          6 | DEV_POSTDIV4_16FF0_HSDIVOUT9_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-
-.. _soc_doc_am64x_public_clks_postdiv4_16ff2:
-
-
-Clocks for POSTDIV4_16FF2 Device
---------------------------------
-
-Device: :ref:`AM64X_DEV_POSTDIV4_16FF2 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 117)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------------------+--------------+
-|   Clock ID | Name                                 | Function     |
-+============+======================================+==============+
-|          0 | DEV_POSTDIV4_16FF2_FREF_CLK          | Input clock  |
-+------------+--------------------------------------+--------------+
-|          1 | DEV_POSTDIV4_16FF2_POSTDIV_CLKIN_CLK | Input clock  |
-+------------+--------------------------------------+--------------+
-|          2 | DEV_POSTDIV4_16FF2_HSDIVOUT5_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          3 | DEV_POSTDIV4_16FF2_HSDIVOUT6_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          4 | DEV_POSTDIV4_16FF2_HSDIVOUT7_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          5 | DEV_POSTDIV4_16FF2_HSDIVOUT8_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
-|          6 | DEV_POSTDIV4_16FF2_HSDIVOUT9_CLK     | Output clock |
-+------------+--------------------------------------+--------------+
 
 .. _soc_doc_am64x_public_clks_pru_icssg0:
 
@@ -2883,22 +2681,6 @@ Following is a mapping of Clocks IDs to function:
 +------------+-------------------+-------------+
 |          1 | DEV_PSC0_SLOW_CLK | Input clock |
 +------------+-------------------+-------------+
-
-.. _soc_doc_am64x_public_clks_psramecc0:
-
-
-Clocks for PSRAMECC0 Device
----------------------------
-
-Device: :ref:`AM64X_DEV_PSRAMECC0 <soc_doc_am64x_public_devices_desc_device_list>` (ID = 118)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+-----------------------+-------------+
-|   Clock ID | Name                  | Function    |
-+============+=======================+=============+
-|          0 | DEV_PSRAMECC0_CLK_CLK | Input clock |
-+------------+-----------------------+-------------+
 
 .. _soc_doc_am64x_public_clks_r5fss0:
 

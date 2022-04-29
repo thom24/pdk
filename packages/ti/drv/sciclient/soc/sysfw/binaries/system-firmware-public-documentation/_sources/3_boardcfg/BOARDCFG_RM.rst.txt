@@ -536,7 +536,7 @@ Therefore, resource reservation is required for host processor interrupt
 controller IRQs.
 
 The unique types used to identify interrupt management reserved resources are
-found in :doc:`Enumeration of Resource Type IDs <../5_soc_doc/am6x/resasg_types>`.
+found in :doc:`Enumeration of Resource Type IDs <../5_soc_doc/am65x/resasg_types>`.
 
 
 Resource Management Initialization after receiving board configuration

@@ -50,6 +50,12 @@ devices.
    | DRA82X, TDA4X  |   DMSC (M3 based)       | DMSC (M3 based)         |  Library on MCU R5* |
    |                |                         |                         |                     |
    +----------------+-------------------------+-------------------------+---------------------+
+   | TDA4VLX        |   SMS (M4 based)        |  SMS (M4 based)         |  Library on MCU R5* |
+   |                |                         |                         |                     |
+   +----------------+-------------------------+-------------------------+---------------------+
+   | AM62X          |   SMS (M4 based)        |  SMS (M4 based)         |  Library on DM R5*  |
+   |                |                         |                         |                     |
+   +----------------+-------------------------+-------------------------+---------------------+
 
 
 Note, the TI provided software does not allow for a given SoC to support both HSM and non

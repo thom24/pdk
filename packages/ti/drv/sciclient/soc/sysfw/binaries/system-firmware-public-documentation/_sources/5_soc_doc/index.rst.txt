@@ -11,22 +11,22 @@ AM65x SR1
 .. toctree::
    :maxdepth: 1
 
-   am6x/hosts
-   am6x/devices
-   am6x/clocks
-   am6x/pll_data
-   am6x/resasg_types
-   am6x/interrupt_cfg
-   am6x/ra_cfg
-   am6x/dma_cfg
-   am6x/psil_cfg
-   am6x/proxy_cfg
-   am6x/sec_proxy
-   am6x/processors
-   am6x/runtime_keystore
-   am6x/firewalls
-   am6x/soc_devgrps
-   am6x/extended_otp
+   am65x/hosts
+   am65x/devices
+   am65x/clocks
+   am65x/pll_data
+   am65x/resasg_types
+   am65x/interrupt_cfg
+   am65x/ra_cfg
+   am65x/dma_cfg
+   am65x/psil_cfg
+   am65x/proxy_cfg
+   am65x/sec_proxy
+   am65x/processors
+   am65x/runtime_keystore
+   am65x/firewalls
+   am65x/soc_devgrps
+   am65x/extended_otp
 
 =========
 AM65x SR2
@@ -73,6 +73,27 @@ AM64x
    am64x/runtime_keystore
    am64x/firewalls
    am64x/soc_devgrps
+
+=====
+AM62x
+=====
+
+.. toctree::
+   :maxdepth: 1
+
+   am62x/hosts
+   am62x/devices
+   am62x/clocks
+   am62x/pll_data
+   am62x/resasg_types
+   am62x/interrupt_cfg
+   am62x/ra_cfg
+   am62x/dma_cfg
+   am62x/psil_cfg
+   am62x/proxy_cfg
+   am62x/sec_proxy
+   am62x/processors
+   am62x/soc_devgrps
 
 =====
 J721E
@@ -138,4 +159,5 @@ J721S2
    j721s2/proxy_cfg
    j721s2/sec_proxy
    j721s2/processors
+   j721s2/firewalls
    j721s2/soc_devgrps

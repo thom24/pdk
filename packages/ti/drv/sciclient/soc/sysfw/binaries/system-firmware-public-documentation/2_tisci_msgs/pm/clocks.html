@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -121,6 +121,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="sysreset.html">TISCI PM System Reset API Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="lpm.html">TISCI PM Low Power Mode API Documentation</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#resource-management-rm">Resource Management (RM)</a></li>
@@ -1188,8 +1189,8 @@ configuring internal dividers / multipliers as required.</p>
 <p>An example sequence for setting the clock frequency for a given module is as given below.
 The input to this code snippet is as below:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
-<li><code class="docutils literal"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
+<li><code class="docutils literal"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am65x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
+<li><code class="docutils literal"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am65x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
 <li><code class="docutils literal"><span class="pre">min_hz</span></code>: Minimum Frequency which should be set for this clock.</li>
 <li><code class="docutils literal"><span class="pre">freq_hz</span></code>: Target Frequency which should be set for this clock.</li>
 <li><code class="docutils literal"><span class="pre">max_hz</span></code>: Maximum Frequency which should be set for this clock.</li>
@@ -1389,8 +1390,8 @@ The input to this code snippet is as below:</p>
 <p>An example pseudo sequence for setting the clock frequency while searching for the
 right multiplexer parent is as below:</p>
 <ul class="simple">
-<li><code class="docutils literal"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
-<li><code class="docutils literal"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am6x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
+<li><code class="docutils literal"><span class="pre">device_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am65x/devices.html"><span class="doc">AM6 Devices Descriptions</span></a></li>
+<li><code class="docutils literal"><span class="pre">clk_id</span></code>: Refer to the <a class="reference internal" href="../../5_soc_doc/am65x/clocks.html"><span class="doc">AM6 Clock Identifiers</span></a>. Choose the Ids which are marked “Input Clock”.</li>
 <li><code class="docutils literal"><span class="pre">min_hz</span></code>: Minimum Frequency which should be set for this clock.</li>
 <li><code class="docutils literal"><span class="pre">freq_hz</span></code>: Target Frequency which should be set for this clock.</li>
 <li><code class="docutils literal"><span class="pre">max_hz</span></code>: Maximum Frequency which should be set for this clock.</li>
@@ -1540,7 +1541,7 @@ right multiplexer parent is as below:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

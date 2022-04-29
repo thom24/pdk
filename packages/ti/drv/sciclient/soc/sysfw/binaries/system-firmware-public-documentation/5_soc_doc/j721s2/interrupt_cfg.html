@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -109,6 +109,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#j721s2">J721S2</a><ul class="current">
@@ -153,6 +154,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">J721S2 Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">J721S2 Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">J721S2 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">J721S2 Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">J721S2 Device Group descriptions</a></li>
 </ul>
 </li>
@@ -2127,7 +2129,7 @@ detected.</p>
 <tr class="row-odd"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
 <td>263</td>
-<td>J721S2_DEV_K3_VPU_WAVE521CL0</td>
+<td>J721S2_DEV_CODEC0</td>
 <td>vpu_wave521cl_intr</td>
 <td>0</td>
 </tr>
@@ -3354,20 +3356,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
-<td>56</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>64</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>64</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
 <td>57</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -3379,20 +3367,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>217</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
-<td>57</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>65</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>65</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
@@ -3410,20 +3384,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
-<td>58</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>66</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>66</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
 <td>59</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -3435,20 +3395,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>219</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
-<td>59</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>67</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>67</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
@@ -3466,20 +3412,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
-<td>60</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>68</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>68</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
 <td>61</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -3491,20 +3423,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>221</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
-<td>61</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>69</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>69</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
@@ -3522,20 +3440,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
 <td>121</td>
-<td>62</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>70</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>70</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
 <td>63</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -3547,20 +3451,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>223</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_LVL_INTRTR0</td>
-<td>121</td>
-<td>63</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>71</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>71</td>
 </tr>
 </tbody>
 </table>
@@ -4984,20 +4874,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
 <td>122</td>
-<td>40</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>72</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>72</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
 <td>41</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -5009,20 +4885,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>265</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
-<td>41</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>73</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>73</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
 <td>122</td>
@@ -5040,20 +4902,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
 <td>122</td>
-<td>42</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>74</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>74</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
 <td>43</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -5065,20 +4913,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>267</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
-<td>43</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>75</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>75</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
 <td>122</td>
@@ -5096,20 +4930,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
 <td>122</td>
-<td>44</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>76</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>76</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
 <td>45</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -5121,20 +4941,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>269</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
-<td>45</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>77</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>77</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
 <td>122</td>
@@ -5152,20 +4958,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
 <td>122</td>
-<td>46</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>78</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>78</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
 <td>47</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -5177,20 +4969,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>271</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MAIN2MCU_PLS_INTRTR0</td>
-<td>122</td>
-<td>47</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>79</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>79</td>
 </tr>
 </tbody>
 </table>
@@ -6900,20 +6678,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
-<td>0</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>184</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>184</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
 <td>1</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -6925,20 +6689,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>125</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>1</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>185</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>185</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
@@ -6956,20 +6706,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
-<td>2</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>186</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>186</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
 <td>3</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -6981,20 +6717,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>127</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>3</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>187</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>187</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
@@ -7012,20 +6734,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
-<td>4</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>188</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>188</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
 <td>5</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -7037,20 +6745,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>129</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>5</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>189</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>189</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
@@ -7068,20 +6762,6 @@ detected.</p>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
-<td>6</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>190</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>190</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
 <td>7</td>
 <td>J721S2_DEV_MCU_R5FSS0_CORE0</td>
 <td>intr</td>
@@ -7093,20 +6773,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>131</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>7</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>191</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>191</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
@@ -7143,20 +6809,6 @@ detected.</p>
 <td>intr</td>
 <td>132</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>192</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>8</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>192</td>
-</tr>
 <tr class="row-odd"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
 <td>9</td>
@@ -7191,20 +6843,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>133</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>193</td>
-</tr>
-<tr class="row-odd"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>9</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>193</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
@@ -7241,20 +6879,6 @@ detected.</p>
 <td>intr</td>
 <td>134</td>
 </tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>194</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>10</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>194</td>
-</tr>
 <tr class="row-odd"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
 <td>11</td>
@@ -7289,20 +6913,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>135</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>195</td>
-</tr>
-<tr class="row-odd"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
-<td>125</td>
-<td>11</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>195</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_WKUP_GPIOMUX_INTRTR0</td>
 <td>125</td>
@@ -22941,121 +22551,65 @@ detected.</p>
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>24</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>48</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>48</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>25</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>49</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>49</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>26</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>50</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>50</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>27</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>51</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>51</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>28</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>52</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>52</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>29</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>53</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>53</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>30</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>54</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>54</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>268</td>
 <td>31</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>55</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>55</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0
 (<strong>Reserved by System Firmware</strong>)</td>
@@ -23232,114 +22786,58 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>56</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>56</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>56</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>57</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>57</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>57</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>58</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>58</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>58</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>59</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>59</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>59</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>60</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>60</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>60</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>61</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>61</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>61</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>62</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>62</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>62</td>
 </tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
+<tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_INTR_ROUTER_0</td>
 <td>268</td>
 <td>63</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>63</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
+<td>Not Connected</td>
 <td>&#160;</td>
 <td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>63</td>
 </tr>
 </tbody>
 </table>
@@ -28147,21 +27645,6 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>300</td>
-<td>0</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>80</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>80</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
 <td>1</td>
 <td>J721S2_DEV_COMPUTE_CLUSTER0_CLEC</td>
 <td>soc_events_in</td>
@@ -28188,21 +27671,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>89</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
-<td>1</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>81</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>81</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
 (<strong>Reserved by System Firmware</strong>)</td>
@@ -28252,21 +27720,6 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>300</td>
-<td>2</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>82</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>82</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
 <td>3</td>
 <td>J721S2_DEV_COMPUTE_CLUSTER0_CLEC</td>
 <td>soc_events_in</td>
@@ -28312,21 +27765,6 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>300</td>
-<td>3</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>83</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>83</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
 <td>4</td>
 <td>J721S2_DEV_COMPUTE_CLUSTER0_CLEC</td>
 <td>soc_events_in</td>
@@ -28368,21 +27806,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>92</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
-<td>4</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>84</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>84</td>
 </tr>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
 (<strong>Reserved by System Firmware</strong>)</td>
@@ -28432,21 +27855,6 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>300</td>
-<td>5</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>85</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>85</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
 <td>6</td>
 <td>J721S2_DEV_COMPUTE_CLUSTER0_CLEC</td>
 <td>soc_events_in</td>
@@ -28477,21 +27885,6 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
 (<strong>Reserved by System Firmware</strong>)</td>
 <td>300</td>
-<td>6</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>86</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>86</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
 <td>7</td>
 <td>J721S2_DEV_COMPUTE_CLUSTER0_CLEC</td>
 <td>soc_events_in</td>
@@ -28518,21 +27911,6 @@ detected.</p>
 <td>J721S2_DEV_MCU_R5FSS0_CORE1</td>
 <td>intr</td>
 <td>95</td>
-</tr>
-<tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>300</td>
-<td>7</td>
-<td>J721S2_DEV_WKUP_TIFS0</td>
-<td>nvic</td>
-<td>87</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J721S2_DEV_WKUP_HSM0</td>
-<td>nvic</td>
-<td>87</td>
 </tr>
 </tbody>
 </table>
@@ -28635,7 +28013,7 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_NAVSS0_RINGACC_0</td>
 <td>259</td>
 <td>Ring events</td>
-<td>0 to 973</td>
+<td>0 to 913</td>
 </tr>
 <tr class="row-odd"><td>J721S2_DEV_MCU_NAVSS0_RINGACC0</td>
 <td>272</td>
@@ -28765,7 +28143,7 @@ detected.</p>
 <tr class="row-even"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0</td>
 <td>300</td>
 <td>MCU_SA3_SS0_INTAGGR_0 mapped pktdma_tx_flow_completion events</td>
-<td>4608 to 4615</td>
+<td>4608 to 4623</td>
 </tr>
 <tr class="row-odd"><td>J721S2_DEV_MCU_SA3_SS0_INTAGGR_0</td>
 <td>300</td>
@@ -28833,7 +28211,7 @@ detected.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -229,7 +229,7 @@ Information on firewalls is provided in the chapter “System Interconnect” an
 <p>Privilege ID’s of the various initiators are described in the public SOC documentation
 <a class="reference internal" href="../5_soc_doc/index.html"><span class="doc">Chapter 5: SoC Family Specific Documentation</span></a> under “&lt;SOC&gt; Firewall Descriptions”.
 As an example for AM65X devices, this is listed under
-<a class="reference internal" href="../5_soc_doc/am6x/firewalls.html#soc-doc-am6-public-fwl-desc-priv-id-list"><span class="std std-ref">AM65x List of priv ids</span></a>.</p>
+<a class="reference internal" href="../5_soc_doc/am65x/firewalls.html#soc-doc-am6-public-fwl-desc-priv-id-list"><span class="std std-ref">AM65x List of priv ids</span></a>.</p>
 <p>The values to program in the permission bits and the control registers
 can be found from the below section in the TRM.</p>
 <p>“System Interconnect” -&gt; “System Interconnect Registers” -&gt; “Firewall Region Registers”</p>
@@ -248,8 +248,8 @@ These firewalls are marked as owned by <code class="docutils literal"><span clas
 <p>The list of firewalls owned/initialized by System Firmware are listed for AM65X SR1
 devices at</p>
 <ul class="simple">
-<li><a class="reference internal" href="../5_soc_doc/am6x/firewalls.html#soc-doc-am6-public-fwl-desc-region-fwl-list"><span class="std std-ref">AM65x Standard region-based slave firewall configuration</span></a></li>
-<li><a class="reference internal" href="../5_soc_doc/am6x/firewalls.html#soc-doc-am6-public-fwl-desc-channel-fwl-list"><span class="std std-ref">AM65x Channelized slave firewall configuration</span></a></li>
+<li><a class="reference internal" href="../5_soc_doc/am65x/firewalls.html#soc-doc-am6-public-fwl-desc-region-fwl-list"><span class="std std-ref">AM65x Standard region-based slave firewall configuration</span></a></li>
+<li><a class="reference internal" href="../5_soc_doc/am65x/firewalls.html#soc-doc-am6-public-fwl-desc-channel-fwl-list"><span class="std std-ref">AM65x Channelized slave firewall configuration</span></a></li>
 </ul>
 </div>
 <div class="section" id="what-is-firewall-ownership">
@@ -280,10 +280,10 @@ in the TISCI message arguments.</p>
 between different entities on the device.
 Some of the entities can be on the same core.
 e.g. privileged software and unprivileged software running on the same core.
-See <a class="reference internal" href="../5_soc_doc/am6x/hosts.html#soc-doc-am6-public-host-desc-intro"><span class="std std-ref">AM65X Host IDs</span></a>.</p>
+See <a class="reference internal" href="../5_soc_doc/am65x/hosts.html#soc-doc-am6-public-host-desc-intro"><span class="std std-ref">AM65X Host IDs</span></a>.</p>
 <p>Priv ID is a hardware concept. Every transaction on the interconnect has various
 attributes including but not limited to Priv ID, user/privileged, secure/non
-secure. Each host maps to a Priv ID. See <a class="reference internal" href="../5_soc_doc/am6x/firewalls.html#soc-doc-am6-public-fwl-desc-priv-id-list"><span class="std std-ref">AM65x List of priv ids</span></a> for the mapping.</p>
+secure. Each host maps to a Priv ID. See <a class="reference internal" href="../5_soc_doc/am65x/firewalls.html#soc-doc-am6-public-fwl-desc-priv-id-list"><span class="std std-ref">AM65x List of priv ids</span></a> for the mapping.</p>
 </div>
 <div class="section" id="is-programming-overlapping-firewalls-supported">
 <h2><a class="toc-backref" href="#id9">Is programming overlapping firewalls supported ?</a><a class="headerlink" href="#is-programming-overlapping-firewalls-supported" title="Permalink to this headline">¶</a></h2>
@@ -397,7 +397,7 @@ will result in a firewall exception.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

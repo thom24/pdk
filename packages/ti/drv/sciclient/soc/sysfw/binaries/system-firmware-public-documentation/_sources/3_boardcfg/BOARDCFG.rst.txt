@@ -273,12 +273,14 @@ boardcfg_dbg_dst_ports
 +-----------------+--------+-------------------------------------+
 |       Bit       | Value  |             Definition              |
 +=================+========+=====================================+
-| TRACE_DST_UART0 | 0x0001 | Traces to UART0 in wakeupss enabled |
+| TRACE_DST_UART0 | 0x0001 | Traces to UART enabled              |
 +-----------------+--------+-------------------------------------+
 | TRACE_DST_ITM   | 0x0004 | Traces to ITM (JTAG) enabled        |
 +-----------------+--------+-------------------------------------+
 | TRACE_DST_MEM   | 0x0008 | Traces to memory buffer enabled     |
 +-----------------+--------+-------------------------------------+
+
+For information on UART instance used for a specific SoC refer to :ref:`pub_trace_uart_allocation`
 
 .. _pub_boardcfg_dbg_src:
 

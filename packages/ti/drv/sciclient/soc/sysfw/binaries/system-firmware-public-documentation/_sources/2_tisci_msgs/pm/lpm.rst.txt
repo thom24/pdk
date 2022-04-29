@@ -1,0 +1,100 @@
+=========================================
+TISCI PM Low Power Mode API Documentation
+=========================================
+.. note::
+
+  This document is only applicable to AM62 device.
+
+Introduction
+============
+
+This document describes the TISCI API for entering different low power modes
+supported by the SOC.
+
+Supported low power modes
+-------------------------
+
+.. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP
+.. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_MCU_ONLY
+.. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_STANDBY
+
+Device configuration and control APIs
+-------------------------------------
+
++------------------+--------------------------------------------+
+| TISCI Message ID |             Message Name                   |
++==================+============================================+
+| 0x0300           | :ref:`pm_lpm_msg_prepare_sleep`            |
++------------------+--------------------------------------------+
+| 0x0301           | :ref:`pm_lpm_msg_enter_sleep`              |
++------------------+--------------------------------------------+
+
+
+.. _pm_lpm_msg_prepare_sleep:
+
+TISCI_MSG_PREPARE_SLEEP
+=======================
+
+Objective
+----------
+
+Prepare the SOC for entering into a low power mode.
+
+Usage
+-----
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | No     |
++------------------------+--------+
+
+
+
+TISCI Message ID
+----------------
+
+.. sysfwapimacro:: TISCI_MSG_PREPARE_SLEEP
+
+Message Data Structures
+-----------------------
+
+.. sysfwapistruct:: tisci_msg_prepare_sleep_req
+
+.. sysfwapistruct:: tisci_msg_prepare_sleep_resp
+
+.. _pm_lpm_msg_enter_sleep:
+
+TISCI_MSG_ENTER_SLEEP
+=====================
+
+Objective
+----------
+
+Enter into a low power mode.
+
+.. note::
+  Before calling the TISCI_MSG_ENTER_SLEEP, TISCI_MSG_PREPARE_SLEEP should be
+  called to prepare for the low power mode.
+
+Usage
+-----
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | Yes    |
++------------------------+--------+
+
+TISCI Message ID
+----------------
+
+.. sysfwapimacro:: TISCI_MSG_ENTER_SLEEP
+
+Message Data Structures
+-----------------------
+
+.. sysfwapistruct:: tisci_msg_enter_sleep_req
+
+.. sysfwapistruct:: tisci_msg_enter_sleep_resp
+

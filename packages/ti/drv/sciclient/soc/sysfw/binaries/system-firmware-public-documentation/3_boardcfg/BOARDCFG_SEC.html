@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                22.01.01
+                08.04.00
               </div>
             
           
@@ -114,7 +114,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#host-hierarchy">Host Hierarchy</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#extended-otp-array-configuration">Extended OTP array configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#derived-kek-management">Derived KEK Management</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#reserved-entry">Reserved Entry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sa2ul-configuration">SA2UL Configuration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#secure-debug-unlock">Secure Debug Unlock</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#security-handover">Security Handover</a></li>
 </ul>
@@ -349,11 +349,11 @@ boardcfg structure does..</p>
 <td><a class="reference internal" href="#pub-boardcfg-dkek-config"><span class="std std-ref">Derived KEK Management</span></a></td>
 <td>DKEK access configuration</td>
 </tr>
-<tr class="row-odd"><td>reserved_cfg_entry</td>
-<td><a class="reference internal" href="#pub-boardcfg-reserved-entry"><span class="std std-ref">Reserved Entry</span></a></td>
-<td>Reserved configuration entry</td>
+<tr class="row-odd"><td>sa2ul_config</td>
+<td><a class="reference internal" href="#pub-boardcfg-sa2ul-config"><span class="std std-ref">SA2UL Configuration</span></a></td>
+<td>SA2UL access configuration</td>
 </tr>
-<tr class="row-even"><td>reserved_cfg_entry</td>
+<tr class="row-even"><td>sec_dbg_config</td>
 <td><a class="reference internal" href="#pub-boardcfg-secure-debug-unlock"><span class="std std-ref">Secure Debug Unlock</span></a></td>
 <td>Secure debug unlock configuration</td>
 </tr>
@@ -616,14 +616,14 @@ hosts.</p>
 </table>
 <p>The magic number to be populated in the <code class="docutils literal"><span class="pre">subhdr</span></code> is <code class="docutils literal"><span class="pre">0x5170</span></code>.</p>
 </div>
-<div class="section" id="reserved-entry">
-<span id="pub-boardcfg-reserved-entry"></span><h3>Reserved Entry<a class="headerlink" href="#reserved-entry" title="Permalink to this headline">¶</a></h3>
-<p>The below entry is reserved for future use.</p>
+<div class="section" id="sa2ul-configuration">
+<span id="pub-boardcfg-sa2ul-config"></span><h3>SA2UL Configuration<a class="headerlink" href="#sa2ul-configuration" title="Permalink to this headline">¶</a></h3>
+<p>The below entry controls the SAUL configuration on the SOC.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="16%" />
-<col width="31%" />
-<col width="54%" />
+<col width="32%" />
+<col width="23%" />
+<col width="45%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Element</th>
@@ -636,8 +636,20 @@ hosts.</p>
 <td><a class="reference internal" href="BOARDCFG.html#pub-boardcfg-subhdr"><span class="std std-ref">boardcfg substructure header</span></a></td>
 <td>Magic and size for integrity check</td>
 </tr>
+<tr class="row-odd"><td>auth_resource_owner</td>
+<td>u8</td>
+<td><p class="first">ID of the host allowed to acquire/release the
+authentication resources</p>
+<p class="last">This feature is not currently supported</p>
+</td>
+</tr>
+<tr class="row-even"><td>enable_saul_psil_global_config_writes</td>
+<td>ftbool</td>
+<td>Flag for allowing pairing requests from PSIL.
+Set to 0x5A to enable</td>
+</tr>
 <tr class="row-odd"><td>rsvd</td>
-<td>u8[4]</td>
+<td>u8[2]</td>
 <td>Reserved for future use. Set to 0</td>
 </tr>
 </tbody>
@@ -813,7 +825,7 @@ be transferred</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'22.01.01',
+            VERSION:'08.04.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

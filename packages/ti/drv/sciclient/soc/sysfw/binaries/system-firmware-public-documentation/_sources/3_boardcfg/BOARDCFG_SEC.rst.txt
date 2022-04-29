@@ -106,9 +106,9 @@ boardcfg structure does..
 +--------------------+----------------------------------------------+-----------------------------------------------------------+
 | dkek_config        | :ref:`pub_boardcfg_dkek_config`              | DKEK access configuration                                 |
 +--------------------+----------------------------------------------+-----------------------------------------------------------+
-| reserved_cfg_entry | :ref:`pub_boardcfg_reserved_entry`           | Reserved configuration entry                              |
+| sa2ul_config       | :ref:`pub_boardcfg_sa2ul_config`             | SA2UL access configuration                                |
 +--------------------+----------------------------------------------+-----------------------------------------------------------+
-| reserved_cfg_entry | :ref:`pub_boardcfg_secure_debug_unlock`      | Secure debug unlock configuration                         |
+| sec_dbg_config     | :ref:`pub_boardcfg_secure_debug_unlock`      | Secure debug unlock configuration                         |
 +--------------------+----------------------------------------------+-----------------------------------------------------------+
 
 .. _pub_boardcfg_proc_acl:
@@ -272,20 +272,28 @@ Please also refer to the below documents to understand the usage of the board co
 
 The magic number to be populated in the ``subhdr`` is ``0x5170``.
 
-.. _pub_boardcfg_reserved_entry:
+.. _pub_boardcfg_sa2ul_config:
 
-Reserved Entry
---------------
+SA2UL Configuration
+-------------------
 
-The below entry is reserved for future use.
+The below entry controls the SAUL configuration on the SOC.
 
-+---------------------+-----------------------------------------+------------------------------------------------------------------------+
-|     Element         |              Type                       |            Description                                                 |
-+=====================+=========================================+========================================================================+
-| subhdr              | :ref:`pub_boardcfg_subhdr`              | Magic and size for integrity check                                     |
-+---------------------+-----------------------------------------+------------------------------------------------------------------------+
-| rsvd                | u8[4]                                   | Reserved for future use. Set to 0                                      |
-+---------------------+-----------------------------------------+------------------------------------------------------------------------+
++---------------------------------------+----------------------------+------------------------------------------------------+
+|     Element                           |            Type            |            Description                               |
++=======================================+============================+======================================================+
+| subhdr                                | :ref:`pub_boardcfg_subhdr` | Magic and size for integrity check                   |
++---------------------------------------+----------------------------+------------------------------------------------------+
+| auth_resource_owner                   | u8                         | ID of the host allowed to acquire/release the        |
+|                                       |                            | authentication resources                             |
+|                                       |                            |                                                      |
+|                                       |                            | This feature is not currently supported              |
++---------------------------------------+----------------------------+------------------------------------------------------+
+| enable_saul_psil_global_config_writes | ftbool                     | Flag for allowing pairing requests from PSIL.        |
+|                                       |                            | Set to 0x5A to enable                                |
++---------------------------------------+----------------------------+------------------------------------------------------+
+| rsvd                                  | u8[2]                      | Reserved for future use. Set to 0                    |
++---------------------------------------+----------------------------+------------------------------------------------------+
 
 The magic number to be populated in the ``subhdr`` is ``0x23BE``.
 

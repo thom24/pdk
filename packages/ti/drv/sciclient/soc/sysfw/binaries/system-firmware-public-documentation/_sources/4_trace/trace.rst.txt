@@ -70,10 +70,38 @@ about the location and size can be found below.
 +-----------+------------------+-----------+
 | J721e     | 0x44083000       | 0x1000    |
 +-----------+------------------+-----------+
-| am64x     | 0x44043000       | 0x0FE0    |
+| AM64x     | 0x44043000       | 0x0FE0    |
 +-----------+------------------+-----------+
 | J7200     | 0x44083000       | 0x1000    |
 +-----------+------------------+-----------+
+| AM62x     | 0x4405F000       | 0x1000    |
++-----------+------------------+-----------+
+| J721S2    | 0x4406A000       | 0x1000    |
++-----------+------------------+-----------+
+
+.. _pub_trace_uart_allocation:
+
+Trace UART Allocation
+---------------------
+
+The table below shows the UART instances used for routing TIFS trace messages
+over the UART.
+
++-----------+------------------+
+| SoC       | UART Instance    |
++===========+==================+
+| AM65x     | WKUP UART0       |
++-----------+------------------+
+| J721e     | WKUP UART0       |
++-----------+------------------+
+| AM64x     | MAIN UART1       |
++-----------+------------------+
+| J7200     | WKUP UART0       |
++-----------+------------------+
+| AM62x     | MAIN UART1       |
++-----------+------------------+
+| J721S2    | WKUP UART0       |
++-----------+------------------+
 
 Trace Debug Data Format
 =======================
@@ -793,6 +821,10 @@ Power Management Action IDs
 |                     |       |                                        | [19:14]   - Powerdomain ID             |
 |                     |       |                                        | [2:0]     - Priv Position information  |
 +---------------------+-------+----------------------------------------+----------------------------------------+
+| SET_MODULE_RESET    | 23    | Set module Reset                       | [21:20]   - PSC ID                     |
+|                     |       |                                        | [19:14]   - Powerdomain ID             |
+|                     |       |                                        | [0]       - Enable (1) / Disable (0)   |
++---------------------+-------+----------------------------------------+----------------------------------------+
 | PM_INIT             | 32    | Power Management Init                  | [20]      - Power Init result          |
 |                     |       |                                        | [19]      - Modules defer result       |
 |                     |       |                                        | [18:16]   - Index of start module      |
@@ -801,7 +833,7 @@ Power Management Action IDs
 | PM_DEV_INIT         | 33    | Power Management device init           | [21:12]   - Device ID                  |
 |                     |       |                                        | [11:0]    - Error value                |
 +---------------------+-------+----------------------------------------+----------------------------------------+
-| PM_SYS_RESET        | 34    | Reset of entire system or a domain     | [21:14]   - Domain                     |
+| PM_SYS_RESET        | 34    | Power Management system reset          | [21:14]   - Domain                     |
 |                     |       |                                        | [13:0]    - Error value                |
 +---------------------+-------+----------------------------------------+----------------------------------------+
 | FAIL (modifier)     | 0x40  | Action failed when action bit set      | N/A                                    |
