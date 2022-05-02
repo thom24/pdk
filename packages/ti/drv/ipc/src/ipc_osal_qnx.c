@@ -297,10 +297,6 @@ static int32_t Ipc_qnxSemWait(void *handle, uint32_t timeout)
     {
         rtnVal = IPC_EBADARGS;
     }
-    else
-    {
-        rtnVal = IPC_EBADARGS;
-    }
 
     return rtnVal;
 }
