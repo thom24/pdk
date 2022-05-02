@@ -270,22 +270,22 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
     }
 
     /* If using QNX at runtime need to remap addresses to be virtual */
-    gSciclient_secProxyCfg.pSecProxyRegs     = (CSL_sec_proxyRegs *)
+    pSciclient_secProxyCfg->pSecProxyRegs     = (CSL_sec_proxyRegs *)
         mmap_device_memory(0, CSL_NAVSS0_SEC_PROXY0_CFG_MMRS_SIZE, PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, CSL_NAVSS0_SEC_PROXY0_CFG_MMRS_BASE);
-    gSciclient_secProxyCfg.pSecProxyScfgRegs = (CSL_sec_proxy_scfgRegs *)
+    pSciclient_secProxyCfg->pSecProxyScfgRegs = (CSL_sec_proxy_scfgRegs *)
         mmap_device_memory(0, CSL_NAVSS0_SEC_PROXY0_CFG_SCFG_SIZE, PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, CSL_NAVSS0_SEC_PROXY0_CFG_SCFG_BASE);
-    gSciclient_secProxyCfg.pSecProxyRtRegs   = (CSL_sec_proxy_rtRegs *)
+    pSciclient_secProxyCfg->pSecProxyRtRegs   = (CSL_sec_proxy_rtRegs *)
         mmap_device_memory(0, CSL_NAVSS0_SEC_PROXY0_CFG_RT_SIZE, PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, CSL_NAVSS0_SEC_PROXY0_CFG_RT_BASE);
-    gSciclient_secProxyCfg.proxyTargetAddr   =  (uint64_t)
+    pSciclient_secProxyCfg->proxyTargetAddr   =  (uint64_t)
         mmap_device_io(CSL_NAVSS0_SEC_PROXY0_SRC_TARGET_DATA_SIZE, CSL_NAVSS0_SEC_PROXY0_SRC_TARGET_DATA_BASE);
 
-    if((gSciclient_secProxyCfg.pSecProxyRegs == MAP_FAILED) ||
-      (gSciclient_secProxyCfg.pSecProxyScfgRegs == MAP_FAILED) ||
-      (gSciclient_secProxyCfg.pSecProxyRtRegs == MAP_FAILED)) {
+    if((pSciclient_secProxyCfg->pSecProxyRegs == MAP_FAILED) ||
+      (pSciclient_secProxyCfg->pSecProxyScfgRegs == MAP_FAILED) ||
+      (pSciclient_secProxyCfg->pSecProxyRtRegs == MAP_FAILED)) {
         printf("%s: Failed to map device memory\n",__FUNCTION__);
         status = CSL_EBADARGS;
     }
-    if( gSciclient_secProxyCfg.proxyTargetAddr == MAP_DEVICE_FAILED) {
+    if(pSciclient_secProxyCfg->proxyTargetAddr == MAP_DEVICE_FAILED) {
         printf("%s: Failed to map device io  memory\n",__FUNCTION__);
         status = CSL_EBADARGS;
     }
