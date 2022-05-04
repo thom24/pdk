@@ -38,6 +38,7 @@ INCDIR	+= $(PDK_SBL_COMP_PATH)/src/rprc
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/ospi
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/hyperflash
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/mmcsd
+INCDIR	+= $(PDK_SBL_COMP_PATH)/src/emmc
 INCDIR	+= $(PDK_SBL_COMP_PATH)/src/uart
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 INCDIR	+= $(PDK_SBL_COMP_PATH)/soc/tpr12
@@ -52,6 +53,7 @@ SRCDIR	+= $(PDK_SBL_COMP_PATH)/src/rprc
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/ospi
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/hyperflash
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/mmcsd
+SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/emmc
 SRCDIR	+=$(PDK_SBL_COMP_PATH)/src/uart
 
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
@@ -133,6 +135,10 @@ ifeq ($(BOOTMODE), mmcsd)
   SBL_CFLAGS += -DBOOT_MMCSD
 endif # ifeq ($(BOOTMODE), mmcsd)
 
+ifeq ($(BOOTMODE), emmc)
+  SBL_CFLAGS += -DBOOT_EMMC
+endif # ifeq ($(BOOTMODE), emmc)
+
 ifeq ($(BOOTMODE), ospi)
   SBL_CFLAGS += -DBOOT_OSPI
 endif # ifeq ($(BOOTMODE), ospi)
@@ -152,6 +158,10 @@ endif # ifeq ($(BOOTMODE), qspi)
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
   SRCS_COMMON += sbl_mmcsd.c
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_MMCSD), -DBOOT_MMCSD)
+
+ifeq ($(filter $(SBL_CFLAGS), -DBOOT_EMMC), -DBOOT_EMMC)
+  SRCS_COMMON += sbl_emmc.c
+endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_EMMC), -DBOOT_EMMC)
 
 ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
   SRCS_COMMON += sbl_ospi.c

@@ -582,7 +582,7 @@ endif
 SBL_IMAGE_PATH=$(SBL_BIN_PATH)
 SBL_IMAGE_PATH_SIGNED=$(SBL_BIN_PATH_SIGNED)
 SECURE_IMAGE_TYPE=X-LOADER
-ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd))
+ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd emmc))
   SBL_IMAGE_PATH=$(SBL_MLO_PATH)
   SBL_IMAGE_PATH_SIGNED=$(SBL_MLO_PATH_SIGNED)
   SECURE_IMAGE_TYPE=MLO
@@ -597,7 +597,7 @@ SBL_STDOUT_FILE2=$(BINDIR)/temp_stderr.txt
 ifeq ($(BOOTMODE),$(filter $(BOOTMODE), qspi qspi_sd))
   SBL_ENDIAN=BE
 endif
-ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd))
+ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd emmc))
   SBL_ENDIAN=LE
 endif
 SBL_MCU_STARTUP_MODE=EFUSE_DEFAULT
@@ -647,7 +647,7 @@ endif
 
 $(SBL_IMAGE_PATH): $(SBL_BIN_FILE)
 ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px tda3xx dra78x))
-ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd qspi qspi_sd))
+ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd qspi qspi_sd emmc))
 	$(CHMOD) a+x $(SBL_TIIMAGE)
 #For HS build don't append GP Header at the top of SBL
   ifeq ($(BUILD_HS),yes)
@@ -665,7 +665,7 @@ ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd qspi qspi_sd))
       endif
     endif
   endif
-  ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd))
+  ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd emmc))
     ifneq ($(BUILD_PROFILE_$(CORE)),release)
 	$(MKDIR) -p $(BINDIR)/$(BUILD_PROFILE_$(CORE))
     endif
