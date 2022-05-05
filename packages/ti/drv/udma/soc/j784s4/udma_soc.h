@@ -188,7 +188,9 @@ extern "C" {
 #define UDMA_UTC_ID_MSMC_DRU0           (UDMA_UTC_ID0)
 #define UDMA_UTC_ID_VPAC_TC0            (UDMA_UTC_ID1)
 #define UDMA_UTC_ID_VPAC_TC1            (UDMA_UTC_ID2)
-#define UDMA_UTC_ID_DMPAC_TC0           (UDMA_UTC_ID3)
+#define UDMA_UTC_ID_VPAC1_TC0           (UDMA_UTC_ID3)
+#define UDMA_UTC_ID_VPAC1_TC1           (UDMA_UTC_ID4)
+#define UDMA_UTC_ID_DMPAC_TC0           (UDMA_UTC_ID5)
 /* @} */
 /** \brief External start channel of DRU0 UTC */
 #define UDMA_UTC_START_CH_DRU0              (0U)
@@ -212,6 +214,22 @@ extern "C" {
 #define UDMA_UTC_NUM_CH_VPAC_TC1            (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILS_THREAD_CNT)
 /** \brief Start thread ID of VPAC TC1 UTC */
 #define UDMA_UTC_START_THREAD_ID_VPAC_TC1   (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC1_CC_PSILD_THREAD_OFFSET)
+
+/** \brief External start channel of VPAC1 TC0 UTC */
+#define UDMA_UTC_START_CH_VPAC1_TC0          (CSL_PSILCFG_NAVSS_MAIN_VPAC1_TC0_CC_PSILS_THREAD_OFFSET \
+                                            - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+/** \brief Number of channels present in VPAC1 TC0 UTC */
+#define UDMA_UTC_NUM_CH_VPAC1_TC0            (CSL_PSILCFG_NAVSS_MAIN_VPAC1_TC0_CC_PSILS_THREAD_CNT)
+/** \brief Start thread ID of VPAC1 TC0 UTC */
+#define UDMA_UTC_START_THREAD_ID_VPAC1_TC0   (CSL_PSILCFG_NAVSS_MAIN_VPAC1_TC0_CC_PSILD_THREAD_OFFSET)
+
+/** \brief External start channel of VPAC1 TC1 UTC */
+#define UDMA_UTC_START_CH_VPAC1_TC1          (CSL_PSILCFG_NAVSS_MAIN_VPAC1_TC1_CC_PSILS_THREAD_OFFSET \
+                                            - CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_OFFSET)
+/** \brief Number of channels present in VPAC TC1 UTC */
+#define UDMA_UTC_NUM_CH_VPAC1_TC1            (CSL_PSILCFG_NAVSS_MAIN_VPAC1_TC1_CC_PSILS_THREAD_CNT)
+/** \brief Start thread ID of VPAC1 TC1 UTC */
+#define UDMA_UTC_START_THREAD_ID_VPAC1_TC1   (CSL_PSILCFG_NAVSS_MAIN_VPAC1_TC1_CC_PSILD_THREAD_OFFSET)
 
 /** \brief External start channel of DMPAC TC0 UTC */
 #define UDMA_UTC_START_CH_DMPAC_TC0         (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_OFFSET \

@@ -146,6 +146,8 @@ typedef struct Udma_RingMonObj *        Udma_RingMonHandle;
 #define UDMA_UTC_ID1                    (1U)
 #define UDMA_UTC_ID2                    (2U)
 #define UDMA_UTC_ID3                    (3U)
+#define UDMA_UTC_ID4                    (4U)
+#define UDMA_UTC_ID5                    (5U)
 /* @} */
 
 /**
