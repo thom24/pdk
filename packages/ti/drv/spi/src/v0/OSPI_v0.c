@@ -642,9 +642,15 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
                                        OSPI_INDAC_TRIG_ADDR);
             }
 
+        #if defined(SOC_J721E)
+            /* Enable write completion auto polling */
+            CSL_ospiSetWrCompAutoPolling((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                         CSL_OSPI_WRITE_COMP_AUTO_POLLING_DISABLE);
+        #else
             /* Disable write completion auto polling */
             CSL_ospiSetWrCompAutoPolling((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                          CSL_OSPI_WRITE_COMP_AUTO_POLLING_ENABLE);
+        #endif
 
             /* Set SRAM partition configuration */
             CSL_ospiSetSramPartition((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
