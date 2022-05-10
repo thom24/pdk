@@ -112,7 +112,8 @@ export keywriter_cfg_test_gen_CORE_DEPENDENCY = yes
 export keywriter_cfg_test_gen_BOARDLIST = j721e_evm j7200_evm
 export keywriter_cfg_test_gen_$(SOC)_CORELIST  = mcu1_0
 export keywriter_cfg_test_gen_CORELIST = j721e j7200
-export keywriter_cfg_test_gen_LIBNAME = keywriter_cfg_test_gen 
+export keywriter_cfg_test_gen_LIBNAME = keywriter_cfg_test_gen
+
 ###########END BOOT PERF KNOBS#############
 
 # KEYWRITER not supported for any profile
