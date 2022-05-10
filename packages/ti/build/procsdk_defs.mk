@@ -55,7 +55,7 @@ LIMIT_SOCS_am65xx    = am65xx
 LIMIT_SOCS_am65xx-hs = am65xx
 LIMIT_SOCS_am64x     = am64x
 LIMIT_SOCS_j7        = j721e j7200 j721s2 j784s4
-LIMIT_SOCS_j7-hs     = j721e
+LIMIT_SOCS_j7-hs     = j721e j7200 j721s2
 LIMIT_SOCS_tpr12     = tpr12
 LIMIT_SOCS_awr294x   = awr294x
 LIMIT_SOCS_omapl137  = omapl137
@@ -70,7 +70,7 @@ export BUILD_HS ?= no
 endif
 
 LIMIT_BOARDS_j7        = $(BOARD_LIST_j721e) $(BOARD_LIST_j7200) $(BOARD_LIST_j721s2) $(BOARD_LIST_j784s4)
-LIMIT_BOARDS_j7-hs     = $(BOARD_LIST_j721e)
+LIMIT_BOARDS_j7-hs     = $(BOARD_LIST_j721e) $(BOARD_LIST_j7200) $(BOARD_LIST_j721s2)
 LIMIT_BOARDS_am335x    = $(BOARD_LIST_am335x)
 LIMIT_BOARDS_omapl137  = $(BOARD_LIST_omapl137)
 LIMIT_BOARDS_k2l       = $(BOARD_LIST_k2l)

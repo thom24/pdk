@@ -114,6 +114,7 @@ else
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
     sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
+    sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs
   else
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
@@ -141,6 +142,7 @@ else
   else ifeq ($(SOC),$(filter $(SOC), j721s2))
     sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
     sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
   else
     sbl_EXAMPLE_LIST = sbl_uart_img
     sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
