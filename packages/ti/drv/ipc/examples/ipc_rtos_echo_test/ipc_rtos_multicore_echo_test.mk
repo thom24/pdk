@@ -25,7 +25,7 @@ CORES_IN_TEST = $(filter-out mpu1_0, $(drvipc_$(SOC)_RTOS_CORELIST))
 MULTICORE_IMG_PARAMS = $(foreach SOC_CORE_ID, $(CORES_IN_TEST), $(SBL_CORE_ID_$(SOC_CORE_ID)) $(BIN_PATH_PREFIX_$(SOC_CORE_ID))_$(SOC_CORE_ID)_$(BUILD_PROFILE_$(CORE)).rprc)
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-PACKAGE_SRCS_COMMON = . ../ipc_rtos_multicore_echo_test.mk
+PACKAGE_SRCS_COMMON = .
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
