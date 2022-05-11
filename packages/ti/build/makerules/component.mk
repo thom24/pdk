@@ -81,8 +81,13 @@ include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 DEFAULT_CORELIST_EXCLUDE_CORES = $(CORE_LIST_PRU)
 
 # For J7 cores, mpu1_1 is not a part of default core list
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
 DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1
+endif
+
+# For J784S4 mpu1_1, mpu2_0 and mpu2_1 are not a part of default core list
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1 mpu2_0 mpu2_1
 endif
 
 DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE_LIST_$(SOC)))
