@@ -39,14 +39,15 @@ ifeq ($(udma_component_make_include), )
 # This list will be used to generate RTOS app make rule for each rtos_type.
 drvudma_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 
-drvudma_SOCLIST         = am65xx j721e j7200 am64x j721s2
-drvudma_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm
+drvudma_SOCLIST         = am65xx j721e j7200 am64x j721s2 j784s4
+drvudma_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
 drvudma_dru_BOARDLIST   = am65xx_evm am65xx_idk j721e_evm j721s2_evm
 drvudma_am65xx_CORELIST = mpu1_0 mcu1_0 mcu1_1
 drvudma_j721e_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1 c7x-hostemu
 drvudma_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvudma_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvudma_j721s2_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2 c7x-hostemu
+drvudma_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
 
 # Define the rule to generate UDMA Drivers BOARDLIST for each rtos_type
 # Default BOARDLIST for each rtos_type is defined in 'ti/build/makerules/component.mk'

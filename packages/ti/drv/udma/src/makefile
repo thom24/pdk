@@ -40,16 +40,16 @@ SRCS_COMMON += udma_ring_common.c udma_proxy.c udma_flow.c udma_event.c
 SRCS_COMMON += udma_osal.c udma_utils.c
 SRCS_COMMON += udma_soc.c
 #DRU is not present in all SOC
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j721s2 j784s4))
 SRCS_COMMON += udma_dru.c
 PACKAGE_SRCS_COMMON += include/udma_dru.h
 endif
 #Normal RA is not present in all SOC
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
 SRCS_COMMON += udma_ring_normal.c
 endif
 #LCDMA RA is not present in all SOC
-ifeq ($(SOC),$(filter $(SOC), am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am64x j721s2 j784s4))
 SRCS_COMMON += udma_ring_lcdma.c
 endif
 
