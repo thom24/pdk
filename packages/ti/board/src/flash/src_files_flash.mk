@@ -120,7 +120,7 @@ PACKAGE_SRCS_COMMON += src/flash/nor/device/mt25qu512abb.h
 PACKAGE_SRCS_COMMON += src/flash/nor/device/s25fl256s.h
 endif
 
-ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
+ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm j784s4_evm))
 SRCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi
 SRCDIR += src/flash/nand src/flash/nand/device src/flash/nand/ospi
 INCDIR += src/flash/nor src/flash/nor/device src/flash/nor/ospi

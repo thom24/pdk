@@ -36,7 +36,7 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 
-#if (defined (am65xx_evm) || defined (am65xx_idk) || defined (j7200_evm) || defined (j721e_evm) || defined(j721s2_evm))
+#if (defined (am65xx_evm) || defined (am65xx_idk) || defined (j7200_evm) || defined (j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm))
 /* SPI entry offset is at index 5 of SPI config array */
 #define SPI_CONFIG_OFFSET     (5U)
 #elif defined (am64x_evm) || defined (am64x_svb)
