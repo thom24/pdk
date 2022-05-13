@@ -34,6 +34,7 @@
 #include <string.h>
 #include <inttypes.h>
 #include <ti/osal/DebugP.h>
+#include <ti/osal/TimerP.h>
 #include <ti/osal/HwiP.h>
 #include <ti/csl/soc.h>
 #include <SafeRTOS_API.h>
@@ -141,29 +142,23 @@ static xTCB xPongTaskTCB = { 0 };
 
 /* Semaphore buffers. No actual data is stored into these buffers, so the
  * buffer need only be large enough to hold the queue structure itself. */
-portInt8Type gPingSemBuf[ portQUEUE_OVERHEAD_BYTES ] __attribute__( ( aligned ( portWORD_ALIGNMENT ) ) ) = { 0 };
-portInt8Type gPongSemBuf[ portQUEUE_OVERHEAD_BYTES ] __attribute__( ( aligned ( portWORD_ALIGNMENT ) ) ) = { 0 };
+portInt8Type gPingSemBuf[ safertosapiQUEUE_OVERHEAD_BYTES ] __attribute__( ( aligned ( safertosapiWORD_ALIGNMENT ) ) ) = { 0 };
+portInt8Type gPongSemBuf[ safertosapiQUEUE_OVERHEAD_BYTES ] __attribute__( ( aligned ( safertosapiWORD_ALIGNMENT ) ) ) = { 0 };
 
 /* Semaphore Parameters. */
 static xSemaphoreHandle gPingSem = NULL;
 static xSemaphoreHandle gPongSem = NULL;
 
-extern portUInt32Type ulPortGetRunTimeCounterValue( void );
-
 static void ping_isr( uintptr_t arg )
 {
-    portBaseType doTaskSwitch = 0;
-
-    xSemaphoreGiveFromISR(gPongSem, &doTaskSwitch); /* wake up pong task */
-    portYIELD_FROM_ISR(doTaskSwitch);
+    xSemaphoreGiveFromISR(gPongSem); /* wake up pong task */
+    safertosapiYIELD_FROM_ISR();
 }
 
 static void pong_isr( uintptr_t arg )
 {
-    portBaseType doTaskSwitch = 0;
-
-    xSemaphoreGiveFromISR(gPingSem, &doTaskSwitch); /* wake up ping task */
-    portYIELD_FROM_ISR(doTaskSwitch);
+    xSemaphoreGiveFromISR(gPingSem); /* wake up ping task */
+    safertosapiYIELD_FROM_ISR();
 }
 
 void ping_main( void *args )
@@ -177,19 +172,18 @@ void ping_main( void *args )
     printf( "[SafeRTOS] ping task ... start !!!\r\n" );
     { /* switch between ping and pong tasks using semaphores */
         count = NUM_TASK_SWITCHES;
-        curTime = ulPortGetRunTimeCounterValue();
+        curTime = TimerP_getTimeInUsecs();
         while( count-- && ( pdPASS == semaphoreResult ) )
         {
             semaphoreResult = xSemaphoreGive( gPongSem );
             if( pdPASS == semaphoreResult )
             {
-                semaphoreResult = xSemaphoreTake( gPingSem, portMAX_DELAY );
+                semaphoreResult = xSemaphoreTake( gPingSem, safertosapiMAX_DELAY );
             }
         }
         DebugP_assert( pdPASS == semaphoreResult );
 
-        curTime = ulPortGetRunTimeCounterValue() - curTime;
-        curTime *= 10;
+        curTime = TimerP_getTimeInUsecs() - curTime;
 
         printf( "\r\n" );
         printf( "execution time for task switches = %" PRId64 " us\r\n", curTime );
@@ -209,15 +203,15 @@ void ping_main( void *args )
         DebugP_assert( hHwi != NULL );
 
         count = NUM_TASK_SWITCHES;
-        curTime = ulPortGetRunTimeCounterValue();
+        curTime = TimerP_getTimeInUsecs();
         while( count-- && ( pdPASS == semaphoreResult ) )
         {
             HwiP_post( PING_INT_NUM );
-            semaphoreResult = xSemaphoreTake( gPingSem, portMAX_DELAY );
+            semaphoreResult = xSemaphoreTake( gPingSem, safertosapiMAX_DELAY );
         }
         DebugP_assert( pdPASS == semaphoreResult );
 
-        curTime = ulPortGetRunTimeCounterValue() - curTime;
+        curTime = TimerP_getTimeInUsecs() - curTime;
         curTime *= 10;
 
         hwiStatus = HwiP_delete( hHwi );
@@ -255,7 +249,7 @@ void pong_main( void *args )
     count = NUM_TASK_SWITCHES;
     while( count-- && ( pdPASS == semaphoreResult ) )
     {
-        semaphoreResult = xSemaphoreTake( gPongSem, portMAX_DELAY );
+        semaphoreResult = xSemaphoreTake( gPongSem, safertosapiMAX_DELAY );
         if( pdPASS == semaphoreResult )
         {
             semaphoreResult = xSemaphoreGive( gPingSem );
@@ -278,7 +272,7 @@ void pong_main( void *args )
         count = NUM_TASK_SWITCHES;
         while( count-- && ( pdPASS == semaphoreResult ) )
         {
-            semaphoreResult = xSemaphoreTake( gPongSem, portMAX_DELAY );
+            semaphoreResult = xSemaphoreTake( gPongSem, safertosapiMAX_DELAY );
             if( pdPASS == semaphoreResult )
             {
                 HwiP_post( PONG_INT_NUM );
@@ -304,7 +298,7 @@ void task_switch_main( void *args )
     }
     else
     {
-        xStatus = xSemaphoreTake( gPingSem, portMAX_DELAY );
+        xStatus = xSemaphoreTake( gPingSem, safertosapiMAX_DELAY );
     }
     DebugP_assert(xStatus != pdFAIL);
     xSemaphoreCreateBinary( gPongSemBuf, &gPongSem );
@@ -314,7 +308,7 @@ void task_switch_main( void *args )
     }
     else
     {
-        xStatus = xSemaphoreTake( gPongSem, portMAX_DELAY );
+        xStatus = xSemaphoreTake( gPongSem, safertosapiMAX_DELAY );
     }
     DebugP_assert(xStatus != pdFAIL);
     

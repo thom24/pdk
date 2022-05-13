@@ -33,9 +33,12 @@ endif
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
-SRCS_COMMON += main.c task_switch.c SafeRTOSConfig.c aborts.c
+SRCS_COMMON += main.c task_switch.c SafeRTOSConfig.c aborts.c timerHooks.c
 
-SRCS_ASM_COMMON += utilsasm.asm
+ifeq ($(ISA),$(filter $(ISA), r5f))
+  SRCS_COMMON += SafeRTOS_startup_r5f.c SafeRTOS_Hwi_r5f.c
+  SRCS_ASM_COMMON += utilsasm_r5f.asm
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
 
