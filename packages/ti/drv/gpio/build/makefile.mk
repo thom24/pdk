@@ -35,7 +35,7 @@ include $(PDK_GPIO_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = gpio
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 awr294x am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 tpr12 awr294x am64x j721s2 j784s4))
 SRCDIR += soc/$(SOC)
 INCDIR += soc
 # Common source files across all platforms and cores
@@ -46,7 +46,7 @@ endif
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk edma
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x j721s2 j784s4))
   PACKAGE_SRCS_COMMON += soc/$(SOC)/GPIO_soc.c soc/GPIO_soc.h
 endif
 

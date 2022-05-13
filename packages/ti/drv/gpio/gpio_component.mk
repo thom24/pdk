@@ -68,10 +68,10 @@ ifeq ($(gpio_component_make_include), )
 
 drvgpio_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 # under other list
-drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm am64x_evm j721s2_evm
+drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm am64x_evm j721s2_evm j784s4_evm
 
 drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
-drvgpio_SOCLIST        += am65xx j721e j7200 j721s2 tpr12 awr294x am64x
+drvgpio_SOCLIST        += am65xx j721e j7200 j721s2 tpr12 awr294x am64x j784s4
 
 drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
 
@@ -100,6 +100,8 @@ drvgpio_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_j7200_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvgpio_j721s2_CORELIST    = $(DEFAULT_j721s2_CORELIST)
 drvgpio_j721s2_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvgpio_j784s4_CORELIST    = $(DEFAULT_j784s4_CORELIST)
+drvgpio_j784s4_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
 drvgpio_tpr12_CORELIST     = mcu1_0 c66xdsp_1
 drvgpio_awr294x_CORELIST   = mcu1_0
 drvgpio_am64x_CORELIST     = $(DEFAULT_am64x_CORELIST)
