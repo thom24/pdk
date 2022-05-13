@@ -12,4 +12,8 @@ APP_NAME = ipc_baremetal_echo_test
 SRCS_COMMON = ipc_baremetal_echo_test.c
 BUILD_OS_TYPE = baremetal
 
+ifeq ($(CORE), mcu1_0)
+    CFLAGS_LOCAL_COMMON = -DENABLE_UART_PRINT
+endif
+
 include ../common/makefile.mk

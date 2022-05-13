@@ -133,6 +133,9 @@ static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN]
 __attribute__ ((aligned(8192)));
 #endif
 
+/* Variable to check if ipc_boardInit has completed or not*/
+uint8_t  gBoardinit=0;
+
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
 /* Sciserver Init TAsk stack */
 #if defined(SAFERTOS)
@@ -186,7 +189,7 @@ void ipc_initSciclient()
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))
         if (gSciclientHandle.rmBoardConfigComplete == SCICLIENT_FT_PASS)
         {
-            App_printf("Sciclient_boardCfgRm init Passed\n");
+            App_printf("Sciclient_boardCfgRm init Passed\n");         
         }
         else
         {
@@ -295,6 +298,7 @@ static void taskFxn(void* a0, void* a1)
     ipc_initSciclient();
 #if !defined(A72_LINUX_OS)
     ipc_boardInit();
+    gBoardinit=1;
 #endif
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)))

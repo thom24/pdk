@@ -52,6 +52,9 @@
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h> 
 
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
 #if defined(BUILD_MCU)
 char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE] __attribute__((section(".tracebuf")));
 static __attribute__((section(".tracebuf"))) uint32_t gTraceBufIndex = 0U;
@@ -60,6 +63,11 @@ char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
 static uint32_t gTraceBufIndex = 0U;
 #endif
 
+extern uint8_t  gBoardinit;
+
+/* ========================================================================== */
+/*                          Function Definitions                              */
+/* ========================================================================== */
 
 int32_t Ipc_Trace_printf(const char *format, ...)
 {
@@ -70,8 +78,12 @@ int32_t Ipc_Trace_printf(const char *format, ...)
     va_start(args, format);
     vsprintf(buffer, format, args);
     va_end(args);
-#if defined(BUILD_MCU1_0)
-    UART_printf("%s\n",buffer);
+#if defined(ENABLE_UART_PRINT)
+    if(gBoardinit==1)
+    {
+        UART_printf("%s\n",buffer);
+    }
+    
 #endif
     for (i = 0; i < strlen(buffer); i++)
     {

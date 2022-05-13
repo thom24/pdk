@@ -16,5 +16,8 @@ SRCS_COMMON = ipc_rtos_echo_test.c
 ECHO_TEST_BTCM = 1
 CFLAGS_LOCAL_COMMON = -DECHO_TEST_BTCM
 
-include ../../common/makefile.mk
+ifeq ($(CORE), mcu1_0)
+    CFLAGS_LOCAL_COMMON = -DENABLE_UART_PRINT
+endif
 
+include ../../common/makefile.mk

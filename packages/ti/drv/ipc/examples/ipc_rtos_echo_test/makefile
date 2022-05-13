@@ -11,4 +11,8 @@ APP_NAME = ipc_rtos_echo_test_$(BUILD_OS_TYPE)
 
 SRCS_COMMON = ipc_rtos_echo_test.c
 
+ifeq ($(CORE), mcu1_0)
+    CFLAGS_LOCAL_COMMON = -DENABLE_UART_PRINT
+endif
+
 include ../common/makefile.mk
