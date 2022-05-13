@@ -47,7 +47,7 @@
 #if defined(OSPI_TESTAPP_TIRTOS)
 #include <ti/sysbios/utils/Load.h>
 #endif
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #if defined (__aarch64__)
 #include <ti/sysbios/family/arm/v8a/Mmu.h>
 #endif
@@ -66,13 +66,13 @@
 #include <ti/board/src/flash/nor/ospi/nor_spi_patterns.h>
 #if defined(SOC_J7200) || defined(SOC_AM64X)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
-#elif defined(SOC_J721S2)
+#elif defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
 #include <ti/board/src/flash/nand/ospi/nand_ospi.h>
 #else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
 #endif
-#if defined(SOC_J721S2)
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/csl_gpio.h>
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
@@ -82,7 +82,7 @@
 #include <ti/osal/CacheP.h>
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/cslr_fss.h>
 #include <ti/csl/csl_rat.h>
 #include <ti/csl/arch/csl_arch.h>
@@ -92,7 +92,7 @@
 #endif
 #if defined(SOC_AM64X) || defined(SOC_J7200)
 #include <ti/board/src/flash/nor/device/s28hs512t.h>
-#elif defined(SOC_J721S2)
+#elif defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/board/src/flash/nor/device/s28hs512t.h>
 #include <ti/board/src/flash/nand/device/w35n01jwtbag.h>
 #else
@@ -125,6 +125,13 @@
 #include <ti/csl/soc/j721s2/src/cslr_mcu_ctrl_mmr.h>
 #include <ti/csl/soc/j721s2/src/cslr_mcu_pll_mmr.h>
 #include <ti/csl/soc/j721s2/src/cslr_wkup_ctrl_mmr.h>
+#endif
+
+#if defined(SOC_J784S4)
+#include <ti/csl/soc/j784s4/src/cslr_soc_baseaddress.h>
+#include <ti/csl/soc/j784s4/src/cslr_mcu_ctrl_mmr.h>
+#include <ti/csl/soc/j784s4/src/cslr_mcu_pll_mmr.h>
+#include <ti/csl/soc/j784s4/src/cslr_wkup_ctrl_mmr.h>
 #endif
 
 #endif
@@ -184,10 +191,27 @@ typedef struct OSPI_Tests_s
 #define TEST_TUNE_PATTERN_OFFSET  (NOR_TUNING_DATA_OFFSET)
 
 /* Flash selection mux */
-#if defined(SOC_J721S2)
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
 #define OSPI_FLASH_SEL_PIN      (6U)
 #define OSPI_FLASH_SEL_NOR      (0U)
 #define OSPI_FLASH_SEL_NAND     (1U)
+#endif
+
+/* HACK until board library support is added */
+#if defined (SOC_J784S4)
+#define BOARD_OSPI_NOR_INSTANCE  (0U)
+#define BOARD_OSPI_NAND_INSTANCE (0U)
+
+Board_STATUS Board_init(Board_initCfg cfg)
+{
+    return BOARD_SOK;
+}
+
+extern void UART_printf(const char *pcString, ...)
+{
+    return;
+}
+
 #endif
 
 /**********************************************************************
@@ -224,7 +248,7 @@ uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((sectio
 #endif
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #ifdef SPI_DMA_ENABLE
 uint8_t txBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #else
@@ -241,7 +265,7 @@ uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((sectio
 #endif
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #ifdef SPI_DMA_ENABLE
 uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT))) __attribute__((section(".benchmark_buffer")));
 #else
@@ -249,7 +273,7 @@ uint8_t rxBuf[TEST_BUF_LEN]  __attribute__((aligned(128))) __attribute__((sectio
 #endif
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 
 #ifdef SPI_DMA_ENABLE
 /*
@@ -576,7 +600,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
  * for selecting NOR/NAND flash interfaces by muxer.
  *
  */
-#if defined(SOC_J721S2)
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
 
 /* GPIO Driver board specific pin configuration structure */
 GPIO_PinConfig gpioPinConfigs[] = {
@@ -617,7 +641,7 @@ static void OSPI_flashMux(uint32_t flashType)
 }
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 void OSPI_configClk(uint32_t freq, bool usePHY)
 {
     OSPI_v0_HwAttrs ospi_cfg;
@@ -902,7 +926,7 @@ static bool OSPI_flash_test(void *arg)
 
 #if defined(SOC_J7200) || defined(SOC_AM64X)
     deviceId = BOARD_FLASH_ID_S28HS512T;
-#elif defined(SOC_J721S2)
+#elif defined(SOC_J721S2) || defined(SOC_J784S4)
     if(test->norFlash)
     {
         deviceId = BOARD_FLASH_ID_S28HS512T;
@@ -917,7 +941,7 @@ static bool OSPI_flash_test(void *arg)
     deviceId = BOARD_FLASH_ID_MT35XU512ABA1G12;
 #endif
 
-#if defined(SOC_J721S2)
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
     if(test->norFlash)
     {
         blockSize = NOR_BLOCK_SIZE;
@@ -976,7 +1000,7 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 #ifdef OSPI_WRITE
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
     if (test->norFlash && test->dacMode)                          /* DAC writes are not supported on Cypress xSPI Flash - Switch to INDAC mode for write as WA to PDK-7115 */
     {
         if(test->norFlash)
@@ -1067,7 +1091,7 @@ static bool OSPI_flash_test(void *arg)
 #endif
 #endif /* OSPI_WRITE */
 
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
     if (test->norFlash && test->dacMode)                          /* DAC reads are supported - switching back to DAC mode */
     {
         if(test->norFlash)
@@ -1214,7 +1238,7 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
 OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
     /* testFunc       testID                            dacMode dmaMode norFlash    clk                   testDesc */
     {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,           false,  false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #else
@@ -1232,7 +1256,7 @@ OSPI_Tests Ospi_tests[] =
     {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M,        true,   true,   true,       OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
     {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI,        true,   false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
-#if defined(SOC_J721S2)
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
     {OSPI_flash_test, OSPI_NAND_TEST_ID_INDAC_166M,     false,  false,  false,      OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
     {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_133M_SPI,   true,   false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
     {OSPI_flash_test, OSPI_NAND_TEST_ID_INDAC_133M,     false,  false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in INDAC mode at 133MHz RCLK"},

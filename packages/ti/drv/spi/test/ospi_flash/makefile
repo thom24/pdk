@@ -12,7 +12,7 @@ EXTERNAL_INTERFACES =
 XDC_CFG_FILE_mpu1_0 =
 XDC_CFG_FILE_mcu1_0 =
 SRCS_COMMON += main_ospi_flash_test.c
-ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx j721s2))
+ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx j721s2 j784s4))
     ifeq ($(CACHE), enable)
         ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
             SRCS_COMMON += ./$(SOC)/cached/mpu_config.c
@@ -46,7 +46,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx))
         XDC_CFG_FILE_mcu1_0 = ./$(SOC)/non_cached/ospiFlashTest_r5.cfg
     endif
 endif
-ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x j721s2 j784s4))
     ifeq ($(CACHE), enable)
         XDC_CFG_FILE_$(CORE) = ./$(SOC)/cached/sysbios_$(ISA).cfg
     else
@@ -65,7 +65,7 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 
   SRCS_COMMON += main_ospi_flash_test.c
 
-  ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx j721s2))
+  ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx j721s2 j784s4))
     ifeq ($(CACHE), enable)
         ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
             SRCS_COMMON += ./$(SOC)/cached/mpu_config.c
@@ -89,13 +89,13 @@ ifeq ($(BUILD_OS_TYPE),safertos)
 
   SRCS_COMMON += main_ospi_flash_test.c
 
-  ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx))
+  ifeq ($(SOC),$(filter $(SOC), j7200 j721e am64x am65xx j784s4))
     ifeq ($(CACHE), enable)
-        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1))
             SRCS_COMMON += ./$(SOC)/cached/mpu_safertos_config.c
         endif
     else
-        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+        ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1))
             SRCS_COMMON += ./$(SOC)/non_cached/mpu_safertos_config.c
         endif
     endif

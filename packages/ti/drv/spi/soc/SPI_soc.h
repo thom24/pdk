@@ -54,20 +54,20 @@
 #define SPI_HWAttrs    SPI_v0_HWAttrs
 #endif
 
-#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/drv/spi/MCSPI.h>
 #include <ti/drv/spi/soc/SPI_v1.h>
 #include <ti/csl/src/ip/mcspi/V0/hw_mcspi.h>
 #include <ti/csl/src/ip/mcspi/V0/mcspi.h>
 
-#if !(defined(SOC_AM65XX) || defined(SOC_J721E)|| defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2))
+#if !(defined(SOC_AM65XX) || defined(SOC_J721E)|| defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4))
 #include <ti/drv/spi/soc/QSPI_v1.h>
 #endif
 
 #define SPI_HWAttrs    SPI_v1_HWAttrs
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/drv/spi/src/v0/OSPI_v0.h>
 #endif
 
@@ -97,14 +97,14 @@ extern int32_t SPI_socSetInitCfg(uint32_t index, const SPI_v0_HWAttrs *cfg);
 #define SPI_HWAttrs SPI_v0_HWAttrs
 #endif
 
-#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 extern int32_t SPI_socGetInitCfg(uint32_t domain, uint32_t idx, SPI_v1_HWAttrs *cfg);
 extern int32_t SPI_socSetInitCfg(uint32_t domain, uint32_t idx, const SPI_v1_HWAttrs *cfg);
 extern int32_t MCSPI_socInit(void);
 extern int32_t MCSPI_configSocIntrPath(uint32_t instance, void *hwAttrs_ptr, bool setIntrPath);
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 extern int32_t OSPI_socGetInitCfg(uint32_t idx, OSPI_v0_HwAttrs *cfg);
 extern int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg);
 extern int32_t OSPI_socInit(void);
