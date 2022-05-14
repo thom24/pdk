@@ -21,18 +21,11 @@ INCDIR += .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 INCLUDE_EXTERNAL_INTERFACES += safertos
 ifeq ($(BUILD_OS_TYPE), safertos)
-COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
-COMP_LIST_COMMON += safertos
+COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
 else
 # List all the components required by the application
 endif
 
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  EXTERNAL_LNKCMD_FILE_LOCAL = linker_core_r5.lds
-endif
-ifeq ($(ISA),$(filter $(ISA), c66 c7x))
-  EXTERNAL_LNKCMD_FILE_LOCAL = linker_core_$(ISA).cmd
-endif
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .

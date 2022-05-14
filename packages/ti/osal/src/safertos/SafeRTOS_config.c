@@ -187,6 +187,7 @@ void OS_init( void )
 
 /*---------------------------------------------------------------------------*/
 
+__attribute__((weak)) \
 void vApplicationErrorHook( portTaskHandleType xHandleOfTaskWithError,
                             portBaseType xErrorCode )
 {
@@ -201,6 +202,7 @@ void vApplicationErrorHook( portTaskHandleType xHandleOfTaskWithError,
 /*---------------------------------------------------------------------------*/
 
 /* Tick timer setup using TI PDK timers and interrupts. */
+__attribute__((weak)) \
 void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
                                          portUInt32Type ulTickRateHz )
 {

@@ -62,23 +62,14 @@
 #if defined (BUILD_MCU)
 #define configTIMER_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE_WITH_FPU )
 #define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE_WITH_FPU )
-/* The user configuration for the idle task. */
-#define configIDLE_HOOK_DATA_ADDR           ( ( void * ) &lnkIdleHookDataStartAddr )
-#define configIDLE_HOOK_DATA_SIZE           ( ( portUInt32Type ) 0x20U )
+#else
+#define configTIMER_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE )
+#define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
 #endif
 
 #if defined (BUILD_C7X)
-#define configTIMER_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE )
-#define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
-/* The user configuration for the idle task. */
-#define configIDLE_HOOK_DATA_ADDR           ( ( void * ) &lnkIdleHookDataStartAddr )
-#define configIDLE_HOOK_DATA_SIZE           ( ( portUInt32Type ) 0x20U )
 /* Yeild Interrupt Number */
 #define configC7X_YEILD_INT_NUM             ( 13U )
-#endif
-
-#if defined (BUILD_C66X)
-#define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
 #endif
 
 /*-----------------------------------------------------------------------------
@@ -151,14 +142,7 @@ portBaseType xInitializeScheduler( void )
         {
             mpuUNPRIVILEGED_TASK,           /* The idle hook will be executed in unprivileged mode. */
             {
-                {
-                    configIDLE_HOOK_DATA_ADDR,
-                    configIDLE_HOOK_DATA_SIZE,
-                    ( mpuREGION_PRIVILEGED_READ_WRITE_USER_READ_WRITE |
-                      mpuREGION_EXECUTE_NEVER |
-                      mpuREGION_INTERNAL_RAM_DEFAULT_CACHE_POLICY ),
-                    0U
-                },
+                { NULL, 0U, 0U, 0U },
                 { NULL, 0U, 0U, 0U }
             }
         },

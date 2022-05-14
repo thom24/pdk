@@ -27,8 +27,7 @@ INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects
 INCLUDE_EXTERNAL_INTERFACES = pdk
 INCLUDE_EXTERNAL_INTERFACES += safertos
 ifeq ($(BUILD_OS_TYPE), safertos)
-COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
-COMP_LIST_COMMON += safertos
+COMP_LIST_COMMON = $(PDK_COMMON_SAFERTOS_COMP)
 else
 # List all the components required by the application
 endif
