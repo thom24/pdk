@@ -37,6 +37,7 @@
 #include <ti/osal/TimerP.h>
 #include <ti/osal/HwiP.h>
 #include <ti/csl/soc.h>
+#include <SAFERTOS_log.h>
 #include <SafeRTOS_API.h>
 
 /*
@@ -168,8 +169,8 @@ void ping_main( void *args )
     portBaseType xResult = pdPASS;
     portBaseType semaphoreResult = pdPASS;
 
-    printf( "\r\n" );
-    printf( "[SafeRTOS] ping task ... start !!!\r\n" );
+    SAFERTOS_log( "\r\n" );
+    SAFERTOS_log( "[SafeRTOS] ping task ... start !!!\r\n" );
     { /* switch between ping and pong tasks using semaphores */
         count = NUM_TASK_SWITCHES;
         curTime = TimerP_getTimeInUsecs();
@@ -185,10 +186,10 @@ void ping_main( void *args )
 
         curTime = TimerP_getTimeInUsecs() - curTime;
 
-        printf( "\r\n" );
-        printf( "execution time for task switches = %" PRId64 " us\r\n", curTime );
-        printf( "number of task switches = %" PRId32 " \r\n", ( uint32_t )NUM_TASK_SWITCHES*2 );
-        printf( "time per task switch ( semaphore give/take ) = %" PRId32 " ns\r\n", ( uint32_t )( curTime*1000/( NUM_TASK_SWITCHES*2 ) ) );
+        SAFERTOS_log( "\r\n" );
+        SAFERTOS_log("execution time for task switches = %d us\r\n", (uint32_t)(curTime/1000));
+        SAFERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
+        SAFERTOS_log("time per task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
     }
     { /* switch from ping task to ISR to pong task and back to ping task using semaphores, here there is a task switch */
         HwiP_Params hwiParams;
@@ -217,10 +218,10 @@ void ping_main( void *args )
         hwiStatus = HwiP_delete( hHwi );
         DebugP_assert( hwiStatus == HwiP_OK );
 
-        printf( "\r\n" );
-        printf( "execution time for task - ISR - task - task switches = %" PRId64 " us\r\n", curTime );
-        printf( "number of ISRs = %" PRId32 " \r\n", ( uint32_t )NUM_TASK_SWITCHES*2 );
-        printf( "time per task - ISR - task switch ( semaphore give/take ) = %" PRId32 " ns\r\n", ( uint32_t )( curTime*1000/( 2*NUM_TASK_SWITCHES ) ) );
+        SAFERTOS_log( "\r\n" );
+        SAFERTOS_log("execution time for task switches = %d us\r\n", (uint32_t)(curTime/1000));
+        SAFERTOS_log("number of task switches = %d \r\n", (uint32_t)NUM_TASK_SWITCHES*2);
+        SAFERTOS_log("time per task switch (semaphore give/take) = %d ns\r\n", (uint32_t)(curTime*1000/(NUM_TASK_SWITCHES*2)));
     }
 
     /* delay some time, just to show delay works */
@@ -230,11 +231,11 @@ void ping_main( void *args )
         xResult = xTaskDelay( 101 / configTICK_RATE_MS );
         if( pdPASS == xResult )
         {
-            printf( "\r\n" );
-            printf( "[SafeRTOS] ping task ... done !!!\r\n" );
-            printf( "\r\n" );
-            printf( "All tests have passed!!\r\n" );
-            printf( "All tests have passed!!\r\n" );
+            SAFERTOS_log( "\r\n" );
+            SAFERTOS_log( "[SafeRTOS] ping task ... done !!!\r\n" );
+            SAFERTOS_log( "\r\n" );
+            SAFERTOS_log( "All tests have passed!!\r\n" );
+            SAFERTOS_log( "All tests have passed!!\r\n" );
             ( void )xTaskDelete(  NULL  );
         }
     }

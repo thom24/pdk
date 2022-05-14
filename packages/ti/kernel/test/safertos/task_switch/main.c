@@ -33,6 +33,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ti/osal/DebugP.h>
+#include <ti/board/board.h>
 #include "SafeRTOS_API.h"
 
 #define MAIN_TASK_PRI  ( 4U )
@@ -55,6 +56,16 @@ void task_switch_main( void *args );
 
 int main( void )
 {
+    Board_initCfg boardCfg;
+    Board_STATUS  status;
+        
+    boardCfg = BOARD_INIT_PINMUX_CONFIG |
+               BOARD_INIT_UART_STDIO;
+
+    status = Board_init(boardCfg);
+
+    DebugP_assert(status == BOARD_SOK);
+
     portBaseType xStatus;
 
     /* Initialise the Kernel Scheduler. */

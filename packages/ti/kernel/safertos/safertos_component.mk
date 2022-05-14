@@ -161,6 +161,7 @@ safertos_test_task_switch_BOARDLIST = $(safertos_BOARDLIST)
 export safertos_test_task_switch_BOARDLIST
 safertos_test_task_switch_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
 export safertos_test_task_switch_$(SOC)_CORELIST
+export safertos_test_task_switch_SBL_APPIMAGEGEN = yes
 
 # safertos demo
 safertos_demo_COMP_LIST = safertos_demo
