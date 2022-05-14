@@ -41,11 +41,13 @@
 /* SafeRTOS includes */
 #include "SafeRTOS_API.h"
 #include <ti/osal/SafeRTOS_MPU.h>
+#include "mpuARM.h"
 
 /*
  * This structure specifies the entries for mpu configuration to override the
  * default MPU configuration which is part of the CSL init.
  */
+__attribute__((section(".startupData"))) \
 xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
     {
         /* Region 0 configuration: complete 32 bit address space = 4Gbits add one more 2gb */
@@ -65,7 +67,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* TODO region size is 4GB, but 2GB is largest supported */
         .ulRegionSize           = portmpuLARGEST_REGION_SIZE_ACTUAL,
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
 #if 0
     {
@@ -87,7 +89,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* TODO region size is 4GB, but 2GB is largest supported */
         .ulRegionSize           = portmpuLARGEST_REGION_SIZE_ACTUAL,
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
 #endif
     {
@@ -108,7 +110,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* ulRegionSize 128B */
         .ulRegionSize           = (128U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 2 configuration: 1MB KB MCU MSRAM */
@@ -128,7 +130,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* Size is 1MB */
         .ulRegionSize           = (1024U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 3 configuration: 8 MB MCMS3 RAM */
@@ -148,7 +150,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* Size is 8MB */
         .ulRegionSize           = (8U * 1024U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 4 configuration: 2 GB DDR RAM */
@@ -168,7 +170,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* size is 2GB */
         .ulRegionSize           = portmpuLARGEST_REGION_SIZE_ACTUAL,
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 5 configuration: 32 KB BTCM */
@@ -196,7 +198,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* size is 32KB */
         .ulRegionSize           = (32U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 6 configuration: 32 KB ATCM */
@@ -216,7 +218,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* size is 32KB */
         .ulRegionSize           = (32U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 7 configuration: Covers first 64MB of EVM Flash (FSS DAT0) */
@@ -236,7 +238,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* size is 64MB */
         .ulRegionSize           = (64U * 1024U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 8 configuration: Covers last 128KB of EVM Flash (FSS DAT0) */
@@ -259,7 +261,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         /* size is 128KB */
         .ulRegionSize           = (128U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
 
 };

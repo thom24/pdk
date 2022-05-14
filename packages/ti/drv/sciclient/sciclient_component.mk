@@ -405,7 +405,7 @@ endif
 
 endef
 
-SCICLIENT_FW_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST), $(call SCICLIENT_FW_TESTAPP_RULE,$(curos)))
+SCICLIENT_FW_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST) safertos, $(call SCICLIENT_FW_TESTAPP_RULE,$(curos)))
 
 $(eval ${SCICLIENT_FW_TESTAPP_MACRO_LIST})
 

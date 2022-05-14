@@ -8,6 +8,5 @@
 #define __CORE_R5F_MEM_TEXT     MCU3_1_MEM_TEXT
 #define __CORE_R5F_MEM_DATA     MCU3_1_MEM_DATA
 #define __CORE_DDR_SPACE        MCU3_1_DDR_SPACE
-#define __CORE_MSMC_SPACE		MCU3_1_MSMC_SPACE
 
 #include "linker_r5f_safertos_common.inc"

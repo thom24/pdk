@@ -144,9 +144,8 @@ __attribute__ ((aligned(APP_SCISERVER_INIT_TSK_STACK)));
 #else
 static uint8_t  gSciserverInitTskStack[APP_SCISERVER_INIT_TSK_STACK]
 __attribute__ ((aligned(8192)));
-
-extern Sciclient_ServiceHandle_t gSciclientHandle;
 #endif
+extern Sciclient_ServiceHandle_t gSciclientHandle;
 #endif
 
 /* ========================================================================== */
