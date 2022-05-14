@@ -5,12 +5,25 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = safertos
 
-SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/portable/005_Code_Composer/199_TI_CR5/
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/
 
-INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/config/
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/include \
-          ${SAFERTOS_KERNEL_INSTALL_PATH}/SafeRTOS_Jacinto_R5_Demo/SafeRTOS/kernel/portable/005_Code_Composer/199_TI_CR5/
+ifeq ($(ISA),$(filter $(ISA), r5f))
+SAFERTOS_ISA_EXT=199_TI_CR5
+SAFERTOS_COMPILER_EXT=024_Clang
+endif
+
+SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/${SAFERTOS_ISA_EXT}
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)/$(SAFERTOS_COMPILER_EXT)
+
+INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT)
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/config
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel/include_api
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel/include_prv
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)/$(SAFERTOS_COMPILER_EXT)
 
 
 # List all the external components/interfaces, whose interface header files
@@ -19,20 +32,22 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += \
-	eventgroups.c \
-	mutex.c \
-	runtimestats.c \
-	semaphore.c \
     timers.c \
-    list.c \
-    port.c
-
-# SafeRTOS task does not compile in CPP build. Skip it for CPP build
-ifneq ($(CPLUSPLUS_BUILD), yes)
-SRCS_COMMON += \
+    evtmplx.c \
+    mutex.c \
+    streambuffer.c \
+    queue.c \
     task.c \
-    queue.c
-endif
+    eventgroups.c \
+    semaphore.c \
+    list.c \
+    apiSemaphoreWrapper.c \
+    apiTimersWrapper.c \
+    apiMutexWrapper.c \
+    apiWrapper.c \
+    apiEventGroupsWrapper.c \
+    apiStreamBufferWrapper.c \
+    apiEvtMplxWrapper.c 
 
 #ISA specific C files
 ifeq ($(ISA),$(filter $(ISA), c66))
@@ -42,9 +57,10 @@ endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_COMMON += \
-    mpuArm.c \
-    mpuAPI.c \
-    portmpu.c
+    portable.c \
+    mpuARM.c \
+    portmpu.c \
+    apiMPU.c
 endif
 
 #ISA specific assembly files

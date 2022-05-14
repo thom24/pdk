@@ -2,10 +2,13 @@
 /*     Linker Settings     */
 /*=========================*/
 
---retain="*(.rstvectors)"
 --retain="*(.bootCode)"
 --retain="*(.startupCode)"
 --retain="*(.startupData)"
+--retain="*(.intvecs)"
+--retain="*(.intc_text)"
+--retain="*(.rstvectors)"
+--retain="*(.safeRTOSrstvectors)"
 --retain="*(.irqStack)"
 --retain="*(.fiqStack)"
 --retain="*(.abortStack)"
@@ -13,6 +16,7 @@
 --retain="*(.svcStack)"
 
 --fill_value=0
+--diag_suppress=10063                   /* entry point not _c_int00 */
 --stack_size=0x4000
 --heap_size=0x8000
 --entry_point=_safeRTOSresetvectors     /* C RTS boot.asm with added SVC handler	*/
@@ -24,10 +28,10 @@
 /*       Stack Sizes for various modes       */
 /*-------------------------------------------*/
 __IRQ_STACK_SIZE   = 0x1000;
-__FIQ_STACK_SIZE   = 0x0100;
-__ABORT_STACK_SIZE = 0x0100;
-__UND_STACK_SIZE   = 0x0100;
-__SVC_STACK_SIZE   = 0x0100;
+__FIQ_STACK_SIZE   = 0x1000;
+__ABORT_STACK_SIZE = 0x1000;
+__UND_STACK_SIZE   = 0x1000;
+__SVC_STACK_SIZE   = 0x1000;
 
 /*--------------------------------------------------------------------------*/
 /*                               Memory Map                                 */
@@ -63,60 +67,61 @@ MEMORY
 
 /*----------------------------------------------------------------------------*/
 /* Section Configuration                                                      */
-
+/*----------------------------------------------------------------------------*/
 SECTIONS
 {
+/* Vector sections. */
     GROUP
     {
         .safeRTOSrstvectors                                 : {} palign(8)
         .rstvectors                                         : {} palign(8)
     } > VECTORS
-/* 'intvecs' and 'intc_text' sections shall be placed within                  */
-/* a range of +\- 16 MB                                                       */
-    .intvecs        palign(32),
-                    fill =0xffffffff {}                                     > VECTORS
-    .intc_text                                          : {} palign(8)      > VECTORS
-    .data_buffer     : {} palign(128)    > DDR0
-        /* USB or any other LLD buffer for benchmarking */
-    .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
-    .cinit  align(32) : {} > DDR0
-    
-    GROUP LOAD_START( lnkStartFlashAddress ), LOAD_END( lnkEndFlashAddress )
+
+/* Startup code sections. */
+    GROUP
     {
-	    .bootCode        : {} palign(8)
-        .startupCode     : {} palign(8)
-        .startupData     : {} palign(8) type = NOINIT
+        .bootCode                                               : {} palign( 8 )
+        .startupCode                                            : {} palign( 8 )
+        .cinit                                                  : {} align( 32 )
+        .pinit                                                  : {} align( 32 )
+        .MPU_INIT_FUNCTION                                      : {} palign( 8 )
+        .startupData                                            : {} palign( 8 ), type = NOINIT
+    } > MCU0_R5F_TCMA
 
-        .pinit  align(32) : {}
-
-        .unpriv_flash palign(32) :
-        {
-            *(.text)
-            *(.rodata)
-        }
-
-       .kernel_function palign(0x10000), LOAD_START( lnkKernelFuncStartAddr ),
-                                         LOAD_END( lnkKernelFuncEndAddr ) :
-        {
-            *(KERNEL_FUNCTION)
-        }
-    } > MSMC3
-
-    GROUP LOAD_START( lnkRamStartAddr )
+/* Code sections. */
+    GROUP LOAD_START( lnkFlashStartAddr ), LOAD_END( lnkFlashEndAddr )
     {
-        .bss                                                : {} align(4)
-        .far                                                : {} align(4)
-        .data                                               : {} palign(128)
-        .boardcfg_data                                      : {} palign(128)
-        .sysmem                                             : {}
-        .bss.devgroup*                                      : {} align(4)
-        .const.devgroup*                                    : {} align(4)
-        KERNEL_DATA palign(0x800), LOAD_START( lnkKernelDataStartAddr ),
-                                    LOAD_END( lnkKernelDataEndAddr )    : {}
+        .KERNEL_FUNCTION LOAD_START( lnkKernelFuncStartAddr ),
+                         LOAD_END( lnkKernelFuncEndAddr )       : {} palign( 0x10000 )
     } > DDR0
 
-    GROUP palign(0x10000), LOAD_END( lnkRamEndAddr )
+    .unpriv_flash palign( 0x10000 ) :
     {
+        *(.text)
+        *(.rodata)
+    } > DDR0
+
+/* Data sections. */
+    GROUP  palign( 0x10000 ), LOAD_START( lnkRamStartAddr ), LOAD_END( lnkRamEndAddr )
+    {
+        .bss                                                    : {} align( 4 )
+        .far                                                    : {} align( 4 )
+        .data                                                   : {} palign( 128 )
+        .boardcfg_data                                          : {} palign( 128 )
+        .sysmem                                                 : {}
+        .bss.devgroup*                                          : {} align( 4 )
+        .const.devgroup*                                        : {} align( 4 )
+        .KERNEL_DATA LOAD_START( lnkKernelDataStartAddr ),
+                     LOAD_END( lnkKernelDataEndAddr )           : {} palign( 0x800 )
+
+
+    /* Additional sections settings. */
+
+        .data_buffer                                            : {} palign(128)
+        /* USB or any other LLD buffer for benchmarking */
+        .benchmark_buffer (NOLOAD)                              : {} ALIGN (8)
+
+    /* Stack sections. */
         .stack  RUN_START( lnkStacksStartAddr ) : {}                            align(4)
         .irqStack                               : {. = . + __IRQ_STACK_SIZE;}   align(4)
         RUN_START(__IRQ_STACK_START)
@@ -133,5 +138,7 @@ SECTIONS
         .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4)
         RUN_START(__SVC_STACK_START)
         RUN_END(__SVC_STACK_END)
-    } > DDR0   (HIGH)
+    } > DDR0
 }
+
+/*-------------------------------- END ---------------------------------------*/
