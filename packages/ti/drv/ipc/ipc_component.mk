@@ -424,7 +424,7 @@ endif
 endif
 endef
 
-IPC_RTOS_MULTICORE_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(filter-out tirtos, $(drvipc_RTOS_LIST) safertos), $(call IPC_RTOS_MULTICORE_ECHO_TESTB_RULE,$(curos)))
+IPC_RTOS_MULTICORE_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(filter-out tirtos, $(drvipc_RTOS_LIST)), $(call IPC_RTOS_MULTICORE_ECHO_TESTB_RULE,$(curos)))
 
 $(eval ${IPC_RTOS_MULTICORE_ECHO_TESTB_MACRO_LIST})
 

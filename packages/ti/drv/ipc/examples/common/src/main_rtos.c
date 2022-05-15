@@ -62,9 +62,8 @@
 #if (defined (FREERTOS))
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Hwi.h>
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Mmu.h>
-#else
-#include <ti/sysbios/family/c7x/Hwi.h>
-#include <ti/sysbios/family/c7x/Mmu.h>
+#elif (defined (SAFERTOS))
+#include "Mmu.h"
 #endif
 #endif
 

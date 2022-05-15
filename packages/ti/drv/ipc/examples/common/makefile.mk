@@ -87,6 +87,10 @@ ifeq ($(BUILD_OS_TYPE), safertos)
     INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
     SRCS_COMMON += c66_cache_mar.c
   endif
+  ifeq ($(ISA), c7x)
+    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    SRCS_COMMON += c7x_mmu.c
+  endif
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds
   APPEND_LNKCMD_FILE += $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/memory_map_ddr.cmd
   ifeq ($(ECHO_TEST_BTCM), 1)

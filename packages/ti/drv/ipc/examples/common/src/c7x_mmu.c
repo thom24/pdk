@@ -46,8 +46,10 @@
 
 #if (defined (FREERTOS))
 #include <ti/kernel/freertos/portable/TI_CGT/c7x/Mmu.h>
-#include "memory_map_defines.inc"
+#elif (defined (SAFERTOS))
+#include "Mmu.h"
 #endif
+#include "memory_map_defines.inc"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
