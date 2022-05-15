@@ -34,16 +34,7 @@
  */
 #include <ti/osal/SemaphoreP.h>
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ti/csl/csl_types.h>
-#include <ti/osal/osal.h>
-#include <ti/osal/soc/osal_soc.h>
-
-#include <SafeRTOS_API.h>
-#include <portable.h>
+#include "SafeRTOS_priv.h"
 
 extern uint32_t  gOsalSemAllocCnt, gOsalSemPeak;
 

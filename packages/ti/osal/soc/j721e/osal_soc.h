@@ -120,6 +120,18 @@ extern "C" {
 #define OSAL_ARCH_TIMER_INST_FOR_TS         (TimerP_ANY)
 /**< Default timer instance for timer */
 
+
+
+#if defined (BUILD_MCU)
+/* Default DM Timer allocation for r5f cores in j721e   */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1 )   /*  MCU DM Timer 1  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2 )   /*  MCU DM Timer 2  */  
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 0 )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 1 )   /*  DM Timer 13  */   
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0        ( 2 )   /*  DM Timer 14  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 3 )   /*  DM Timer 15  */
+#endif
+
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
 

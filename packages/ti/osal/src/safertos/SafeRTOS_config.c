@@ -41,17 +41,10 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <stdlib.h>
-#include <stdint.h>
-#include <string.h>
-#include <ti/csl/csl_types.h>
-#include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/TimerP.h>
-#include <ti/osal/DebugP.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 
-#include "SafeRTOS_API.h"
-
+#include "SafeRTOS_priv.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -76,13 +69,17 @@
 
 
 /* ========================================================================== */
+/*                            Global Structure Definition                     */
+/* ========================================================================== */
+
+/* None */
+
+/* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
 /* Timer interrupt handler function. */
 static void prvTimerTickIsr( uintptr_t arg );
-
-extern portBaseType prvSetupHardware( void );
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -189,6 +186,8 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     TimerP_Handle pxTickTimerHandle = NULL;
     TimerP_Params xTimerParams;
 
+    Safertos_OSTimerParams xOSTimerParams;
+
     ( void ) ulTimerClockHz;
 
     TimerP_Params_init( &xTimerParams );
@@ -196,8 +195,9 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     xTimerParams.startMode  = TimerP_StartMode_USER;
     xTimerParams.periodType = TimerP_PeriodType_MICROSECS;
     xTimerParams.period     = ( 1000000UL / ulTickRateHz );
+    prvGetOSTimerParams( &xOSTimerParams );
 
-    pxTickTimerHandle = TimerP_create( configTIMER_ID,
+    pxTickTimerHandle = TimerP_create( xOSTimerParams.timerId,
                                        &prvTimerTickIsr,
                                        &xTimerParams );
 
@@ -219,4 +219,30 @@ static void prvTimerTickIsr( uintptr_t arg )
     vTaskProcessSystemTickFromISR();
 }
 
+void prvGetOSTimerParams( Safertos_OSTimerParams *params)
+{
+#if defined (BUILD_MCU)
+    CSL_ArmR5CPUInfo info;
+
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0:
+                                        OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
+    {     
+        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0:
+                                        OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
+    {    
+        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0:
+                                        OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1;
+    } 
+#endif
+}
 /*-------------------------------------------------------------------------*/

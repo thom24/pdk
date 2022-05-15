@@ -33,20 +33,11 @@
  *  ======== ClockP_safertos.c ========
  */
 
+#include "SafeRTOS_priv.h"
+
 #include <ti/osal/ClockP.h>
-
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ti/csl/csl_types.h>
-#include <ti/osal/osal.h>
-#include <ti/osal/DebugP.h>
-#include <ti/osal/soc/osal_soc.h>
-
-#include <SafeRTOS_API.h>
 #include <timers.h>
-#include <portable.h>
+
 
 /**
  * \brief Callback that is called when the clock expires

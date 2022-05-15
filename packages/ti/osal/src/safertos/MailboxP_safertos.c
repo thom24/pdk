@@ -33,19 +33,11 @@
  *  ======== MailboxP_safertos.c ========
  */
 
+#include "SafeRTOS_priv.h"
+
 #include <ti/osal/MailboxP.h>
+#include <queue.h>
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ti/csl/csl_types.h>
-#include <ti/osal/osal.h>
-#include <ti/osal/soc/osal_soc.h>
-
-#include <SafeRTOS_API.h>
-#include "queue.h"
-#include "portable.h"
 
 uint32_t  gOsalMailboxAllocCnt = 0U, gOsalMailboxPeak = 0U;
 

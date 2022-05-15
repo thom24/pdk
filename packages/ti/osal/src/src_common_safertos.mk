@@ -17,7 +17,7 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       src/freertos/QueueP_freertos.c src/freertos/HeapP_freertos_internal.h src/nonos/DebugP_nonos.c \
                       src/src_common_safertos.mk \
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
-                      build \
+                      build src/safertos/SafeRTOS_priv.h \
                       config_mk.bld osalver.h osalver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
 
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j721s2 j784s4))

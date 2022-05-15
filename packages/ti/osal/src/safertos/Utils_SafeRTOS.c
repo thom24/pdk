@@ -33,15 +33,10 @@
  *  ======== Utils_safertos.c ========
  */
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 #include <ti/osal/TaskP.h>
 
-#include "SafeRTOS_API.h"
-#include "portable.h"
+#include "SafeRTOS_priv.h"
 
 /* External Clock should be defined under osal_soc.h
  * if SOC is not supporting it, set to -1
