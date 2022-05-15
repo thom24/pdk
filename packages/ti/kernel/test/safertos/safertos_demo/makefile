@@ -15,11 +15,11 @@ SAFERTOS_DEMO_EXT_r5f=SafeRTOS_TDA4VM_R5_Demo
 SAFERTOS_DEMO_EXT_c66=SafeRTOS_TDA4VM_C66x_Demo
 SAFERTOS_DEMO_EXT_c7x=SafeRTOS_TDA4VM_C7x_Demo
 
-SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/Common/
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/source/
+SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/Common/
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/source/
 
-INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/Common/include/
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/include/
+INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/Common/include/
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/$(SAFERTOS_DEMO_EXT_$(ISA))/include/
 
 
 # List all the external components/interfaces, whose interface header files
@@ -33,13 +33,13 @@ else
 endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
-  EXTERNAL_LNKCMD_FILE_LOCAL = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_R5_Demo/linker_core_r5.lds
+  EXTERNAL_LNKCMD_FILE_LOCAL = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_R5_Demo/linker_core_r5.lds
 endif
 ifeq ($(ISA),$(filter $(ISA), c66))
-  EXTERNAL_LNKCMD_FILE_LOCAL = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C66x_Demo/linker_c66_safertos.cmd
+  EXTERNAL_LNKCMD_FILE_LOCAL = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C66x_Demo/linker_c66_safertos.cmd
 endif
 ifeq ($(ISA),$(filter $(ISA), c7x))
-  EXTERNAL_LNKCMD_FILE_LOCAL = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/linker_c7x_safertos.cmd
+  EXTERNAL_LNKCMD_FILE_LOCAL = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/linker_c7x_safertos.cmd
 endif
 
 # Common source files and CFLAGS across all platforms and cores

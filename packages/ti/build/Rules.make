@@ -135,6 +135,12 @@ export CPLUSPLUS_BUILD ?= no
 
 include $(PDK_INSTALL_PATH)/ti/build/pdk_tools_path.mk
 
+#safertos_package_path.mk will be packaged only for SOCs with SafeRTOS Build is supported.
+#Hence, include only if available 
+ifneq ($(wildcard $(PDK_INSTALL_PATH)/ti/build/safertos_package_path.mk),)
+  include $(PDK_INSTALL_PATH)/ti/build/safertos_package_path.mk
+endif
+
 #use <module>_PATH variable as makefile internally expects PATH variable this way for external component path
 export pdk_PATH := $(PDK_INSTALL_PATH)
 export bios_PATH := $(BIOS_INSTALL_PATH)

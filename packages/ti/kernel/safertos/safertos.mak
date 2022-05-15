@@ -7,41 +7,28 @@ MODULE_NAME = safertos
 
 BUILD_OS_TYPE = safertos
 
+SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/kernel
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))/$(SAFERTOS_COMPILER_EXT_$(ISA))
 ifeq ($(ISA),$(filter $(ISA), r5f))
-SAFERTOS_ISA_EXT=199_TI_CR5
-SAFERTOS_COMPILER_EXT=024_Clang
-endif
-ifeq ($(ISA),$(filter $(ISA), c66))
-SAFERTOS_ISA_EXT=201_C66x
-SAFERTOS_COMPILER_EXT=005_TI_CGT
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/${SAFERTOS_ISA_EXT_$(ISA)}
 endif
 ifeq ($(ISA),$(filter $(ISA), c7x))
-SAFERTOS_ISA_EXT=230_C7x
-SAFERTOS_COMPILER_EXT=005_TI_CGT
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/TI_c7x_Support
 endif
 
-SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)/$(SAFERTOS_COMPILER_EXT)
-ifeq ($(ISA),$(filter $(ISA), r5f))
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/${SAFERTOS_ISA_EXT}
-endif
+INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT_$(ISA))
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/config
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/kernel/include_api
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/kernel/include_prv
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))/$(SAFERTOS_COMPILER_EXT_$(ISA))
 ifeq ($(ISA),$(filter $(ISA), c7x))
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/TI_c7x_Support
-endif
-
-INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT)
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/config
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel/include_api
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel/include_prv
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)/$(SAFERTOS_COMPILER_EXT)
-ifeq ($(ISA),$(filter $(ISA), c7x))
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/NoWrapper
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/TI_c7x_Support
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/NoWrapper
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/TI_c7x_Support
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo
 endif
 
 # List all the external components/interfaces, whose interface header files
