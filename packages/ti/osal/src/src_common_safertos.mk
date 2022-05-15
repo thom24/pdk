@@ -37,18 +37,18 @@ endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1))
   SRCDIR += arch/core/r5
-  SRCS_COMMON += CacheP_nonos.c Arch_util.c SafeRTOS_aborts_r5f.c SafeRTOS_mpu_r5f.c HwiP_nonos.c
+  SRCS_COMMON += CacheP_nonos.c Arch_util.c SafeRTOS_aborts_r5f.c SafeRTOS_mpu_r5f.c HwiP_safertos.c
   SRCS_COMMON += SafeRTOS_config_r5f.c
   SRCS_ASM_COMMON += TimestampProvider_asm.asm SafeRTOS_utils_r5f.asm
   PACKAGE_SRCS_COMMON += arch/core/r5  src/safertos/SafeRTOS_utils_r5f.asm  src/safertos/SafeRTOS_aborts_r5f.c src/safertos/SafeRTOS_mpu_r5f.c
-  PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_r5f.c src/nonos/HwiP_nonos.c 
+  PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_r5f.c src/safertos/HwiP_safertos.c 
 endif
 
 ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))
   SRCDIR += arch/core/c6x
-  SRCS_COMMON += CacheP_nonos.c Arch_util.c EventCombinerP_nonos.c HwiP_nonos.c
+  SRCS_COMMON += CacheP_nonos.c Arch_util.c EventCombinerP_nonos.c HwiP_safertos.c
   SRCS_COMMON += SafeRTOS_config_c66.c
-  PACKAGE_SRCS_COMMON += arch/core/c6x src/nonos/EventCombinerP_nonos.c src/nonos/HwiP_nonos.c 
+  PACKAGE_SRCS_COMMON += arch/core/c6x src/nonos/EventCombinerP_nonos.c src/safertos/HwiP_safertos.c 
   PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_c66.c
 endif
 

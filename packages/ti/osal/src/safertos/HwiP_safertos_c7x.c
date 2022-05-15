@@ -33,17 +33,9 @@
  *  ======== HwiP_safertos_c7x.c ========
  */
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdarg.h>
-#include <stddef.h>
-
-#include <ti/osal/osal.h>
 #include <ti/osal/HwiP.h>
 
-#include <ti/kernel/freertos/portable/TI_CGT/c7x/Hwi.h>
+#include "SafeRTOS_priv.h"
 
 #define OSAL_SAFERTOS_C7X_CONFIGNUM_HWI                 (64U)
 
@@ -268,11 +260,18 @@ uintptr_t HwiP_disable(void)
 {
     uintptr_t key = (uintptr_t)NULL_PTR;
 
-    key = Hwi_disable();
+    if(( xPortInIsrContext() ) || 
+       ( ! xTaskIsSchedulerStarted() ))
+    {
+        key = Hwi_disable();
+    }
+    else
+    {
+        portENTER_CRITICAL_WITHIN_API();
+    }
 
     return (key);
 }
-
 /*
  *  ======== HwiP_disableInterrupt ========
  */
@@ -314,13 +313,20 @@ int32_t HwiP_post(uint32_t interruptNum)
        add #ifdefs appropriately to return osal_UNSUPPORTED */
 }
 
-
 /*
  *  ======== HwiP_restore ========
  */
 void HwiP_restore(uintptr_t key)
 {
-    (void)Hwi_restore((uint32_t)key);
+    if(( xPortInIsrContext() ) || 
+       ( ! xTaskIsSchedulerStarted() ))
+    {
+        (void)Hwi_restore((uint32_t)key);
+    }
+    else
+    {
+        portEXIT_CRITICAL_WITHIN_API();
+    }
 
     return;
 }
