@@ -55,7 +55,17 @@ extern "C" {
 
 #define  EXTERNAL_CLOCK_KHZ_DEFAULT       (24000)
 #define  PMU_CLOCK_KHZ_DEFAULT            (1000000U)
-#define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
+
+#if defined(BUILD_MCU)
+  #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
+#elif defined(_TMS320C6X)
+  #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1350000U)
+#elif defined(BUILD_C7X)
+  #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
+#else
+  #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
+#endif
+
 
 #if defined(TIMERP_TIMER_FREQ_LO)
 #undef   TIMERP_TIMER_FREQ_LO
@@ -134,13 +144,22 @@ extern "C" {
 
 #if defined (_TMS320C6X)
 /* Default DM Timer allocation for c66x cores in j721e   */
-#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_1        ( 0 )   /*  DM Timer 1  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_2        ( 1 )   /*  DM Timer 2  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_1        ( 0 )   /*  DM Timer 0  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_2        ( 1 )   /*  DM Timer 1  */
 
 #define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_1   ( 14 ) 
 #define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_2   ( 15 )
 #define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_1  ( 21 )
 #define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_2  ( 20 )
+#endif
+
+#if defined (BUILD_C7X)
+/* Default DM Timer allocation for c7x cores in j721e   */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 2 )   /*  DM Timer 2  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 16 )
+
+#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13 )
 #endif
 
 /* external references */

@@ -37,6 +37,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <c7x.h> 
 #include <ti/osal/src/nonos/Nonos_config.h>
 #include <ti/csl/tistdtypes.h>
 
@@ -249,4 +250,34 @@ int32_t OsalArch_postInterrupt(uint32_t intrNum)
 {
     return (-1);
 }
+
+/* Return the cycle frequency used for timeStamp */
+int32_t osalArch_TimeStampGetFreqKHz(void)
+{
+    /* TSCH/TSCL runs at CPU speed*/
+    return (gOsal_HwAttrs.cpuFreqKHz);
+}
+
+/* Osal time stamp provider implementations */
+void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
+{
+    uintptr_t  key;
+    uint64_t   cycle, cycleHi;
+    uint32_t   lo, hi;
+
+    key     = HwiP_disable();
+    cycle   = __TSC;
+    cycleHi = ((uint64_t)(cycle >> 32U));
+
+    /* get the lo and hi parts */
+    lo    = ((uint32_t)(cycle   & ((uint32_t)(0xFFFFFFFFU))));
+    hi    = ((uint32_t)(cycleHi & ((uint32_t)(0xFFFFFFFFU))));
+
+    tStamp->lo         = lo;
+    tStamp->hi         = hi;
+
+    /* restore */
+    HwiP_restore(key);
+}
+
 /* Nothing past this point */

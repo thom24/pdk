@@ -395,6 +395,10 @@ void OS_start(void)
     /* Check if the OS_init is done. */
     DebugP_assert( ( gSaftRtosInitDone == TRUE ) );
 
+#if defined (BUILD_C7X)
+    Hwi_switchFromBootStack();
+#endif
+
     xTaskStartScheduler();
 }
 

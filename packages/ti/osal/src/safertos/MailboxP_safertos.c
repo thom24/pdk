@@ -187,9 +187,12 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
     {
         if (timeout == MailboxP_WAIT_FOREVER)
         {
-            timeout = safertosapiMAX_DELAY;
+            xCreateResult = xQueueSend(mailbox->mailboxHndl, msg, safertosapiMAX_DELAY);
         }
-        xCreateResult = xQueueSend(mailbox->mailboxHndl, msg, timeout);
+        else
+        {
+            xCreateResult = xQueueSend(mailbox->mailboxHndl, msg, timeout);
+        }
     }
 
     if (xCreateResult == pdPASS)
@@ -224,9 +227,12 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
     {
         if (timeout == MailboxP_WAIT_FOREVER)
         {
-            timeout = safertosapiMAX_DELAY;
+            xCreateResult = xQueueReceive(mailbox->mailboxHndl, msg, safertosapiMAX_DELAY);
         }
-        xCreateResult = xQueueReceive(mailbox->mailboxHndl, msg, timeout);
+        else
+        {
+            xCreateResult = xQueueReceive(mailbox->mailboxHndl, msg, timeout);
+        }
     }
 
     if (xCreateResult == pdPASS)

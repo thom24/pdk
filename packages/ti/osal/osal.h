@@ -153,6 +153,15 @@ extern "C" {
 #define  OSAL_FREERTOS_HWIP_C7X_SIZE_BYTES ((uint32_t) 56U)
 
 /*********************************************************************
+ * @def OSAL_SAFERTOS_HWIP_C7X_SIZE_BYTES
+ * HwiP handle size for safertos-os c7x use case
+ * Application can use this size to provide a secondary extended
+ * memory block for hwip creation when all the memory  (internal to osal)
+ * are utilized
+ *********************************************************************/
+#define  OSAL_SAFERTOS_HWIP_C7X_SIZE_BYTES ((uint32_t) 56U)
+
+/*********************************************************************
  * @def OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES
  * Semaphorep handle size for non-os use case
  * Application can use this size to provide a secondary extended
@@ -184,7 +193,11 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
+#if defined (BUILD_C7X)
+#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 304U)
+#else
 #define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 248U)
+#endif
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_TASKP_SIZE_BYTES
@@ -194,7 +207,11 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
+#if defined (BUILD_C7X)
+#define  OSAL_SAFERTOS_TASKP_SIZE_BYTES ((uint32_t) 320U)
+#else
 #define  OSAL_SAFERTOS_TASKP_SIZE_BYTES ((uint32_t) 248U)
+#endif
 
 /**
  *  \brief This structure holds static memory status parameters of OSAL

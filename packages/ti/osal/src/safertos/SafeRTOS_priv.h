@@ -60,6 +60,10 @@ extern "C" {
 #include <SafeRTOS_API.h>
 #include <portable.h>
 
+#if defined (BUILD_C7X)
+#include "Hwi.h"
+#endif
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */

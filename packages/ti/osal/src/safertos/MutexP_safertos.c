@@ -187,10 +187,14 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
         {
             if (timeout == MutexP_WAIT_FOREVER)
             {
-                timeout = safertosapiMAX_DELAY;
+                /* Should not be called from ISR */
+                xCreateResult = xMutexTake(mutex->mutHndl, safertosapiMAX_DELAY);
             }
-            /* Should not be called from ISR */
-            xCreateResult = xMutexTake(mutex->mutHndl, timeout);
+            else
+            {
+                /* Should not be called from ISR */
+                xCreateResult = xMutexTake(mutex->mutHndl, timeout);
+            }
 
             if(xCreateResult == pdPASS)
             {

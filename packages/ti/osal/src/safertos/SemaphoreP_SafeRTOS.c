@@ -304,12 +304,12 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
     {
         if ( timeout == SemaphoreP_WAIT_FOREVER )
         {
-            timeout = safertosapiMAX_DELAY;
-        }
-        isSemTaken = xSemaphoreTake( pSemaphore->semHndl, timeout );
-        if ( timeout == SemaphoreP_WAIT_FOREVER )
-        {
+            isSemTaken = xSemaphoreTake( pSemaphore->semHndl, safertosapiMAX_DELAY );
             DebugP_assert(isSemTaken == pdPASS);
+        }
+        else
+        {
+            isSemTaken = xSemaphoreTake( pSemaphore->semHndl, timeout );
         }
     }
 

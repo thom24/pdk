@@ -72,6 +72,12 @@
 #define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
 #endif
 
+#if defined (BUILD_C7X)
+#define configTIMER_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE )
+/* The user configuration for the idle task. */
+#define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
+#endif
+
 /* ========================================================================== */
 /*                            Global Structure Definition                     */
 /* ========================================================================== */
@@ -98,8 +104,8 @@ static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__(
  * requirements are application specific. */
 static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned( configTIMER_TASK_STACK_SIZE ) ) ) = { 0 };
 #else
-static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )   = { 0 };
-static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )   = { 0 };
+static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( safertosapiSTACK_ALIGNMENT ) ) )   = { 0 };
+static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned ( safertosapiSTACK_ALIGNMENT ) ) )   = { 0 };
 #endif /* defined (BUILD_MCU) */
 
 /* The buffer for the timer command queue. */
@@ -111,6 +117,9 @@ const xPORT_INIT_PARAMETERS gSafertosPortInit =
 {
     configSYSTICK_CLOCK_HZ,             /* ulCPUClockHz */
     configTICK_RATE_HZ,                 /* ulTickRateHz */
+#if defined (BUILD_C7X)
+    OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X, /* uxYieldInterruptNumber */
+#endif
 
     /* Hook Functions */
     NULL,                               /* pvSvcHookFunction */
@@ -208,7 +217,7 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     xTimerParams.periodType = TimerP_PeriodType_MICROSECS;
     xTimerParams.period     = ( 1000000UL / ulTickRateHz );
     prvGetOSTimerParams( &xOSTimerParams );
-#if defined (BUILD_C66X)
+#if defined (BUILD_C66X) || defined (BUILD_C7X)
     xTimerParams.intNum     = xOSTimerParams.intNum;
     xTimerParams.eventId    = xOSTimerParams.eventId;
 #endif
@@ -225,15 +234,7 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     }
 }
 
-/* ========================================================================== */
-/*                       Static Function Definitions                          */
-/* ========================================================================== */
-
-static void prvTimerTickIsr( uintptr_t arg )
-{
-    ( void ) arg;
-    vTaskProcessSystemTickFromISR();
-}
+/*-------------------------------------------------------------------------*/
 
 void prvGetOSTimerParams( Safertos_OSTimerParams *params)
 {
@@ -274,6 +275,21 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1;
     } 
+#elif defined (BUILD_C7X)
+    params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_1;
+    params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1;
+    params->eventId = TimerP_USE_DEFAULT;
 #endif
 }
+
+/* ========================================================================== */
+/*                       Static Function Definitions                          */
+/* ========================================================================== */
+
+static void prvTimerTickIsr( uintptr_t arg )
+{
+    ( void ) arg;
+    vTaskProcessSystemTickFromISR();
+}
+
 /*-------------------------------------------------------------------------*/
