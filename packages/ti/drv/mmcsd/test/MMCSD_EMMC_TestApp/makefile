@@ -44,7 +44,7 @@ SRCS_COMMON += main_emmc.c profiling.c
 
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x j721s2 j784s4))
     SRCDIR = ../src ../../
     INCDIR = ../src ../include ../../
     # Common source files across all platforms and cores

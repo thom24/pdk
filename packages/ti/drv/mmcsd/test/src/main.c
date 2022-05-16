@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2014-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -82,7 +82,7 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 /* FATFS configuration structure */
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
     {  /* MMC1 is SD card  for AM65xx GP EVM */
         1U
     },
@@ -145,7 +145,7 @@ const FATFSConfigList FATFS_config = {
 #define MMCSD_DMA_ENABLED 1
 #endif
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)  && !defined(SOC_AM64X) && !defined(SOC_J721S2)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)  && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 #define GPIO_ENABLED
 #endif
 
@@ -165,7 +165,7 @@ const FATFSConfigList FATFS_config = {
 #endif
 #include "profiling.h"
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #endif
 /**********************************************************************
@@ -219,7 +219,7 @@ uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*32)};
 #define GPIO_PIN_MMC_SDCD_ACTIVE_STATE 0
 #endif
 
-#if  defined(iceK2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if  defined(iceK2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #define MMCSD_INSTANCE_SDCARD  1
 #else
   #define MMCSD_INSTANCE_SDCARD  0
@@ -285,11 +285,20 @@ GPIO_v1_Config GPIO_v1_config = {
 
 #endif
 
+/* Hack until Board library is supported */
+#if defined(SOC_J784S4)
+    MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance, MMCSD_BusVoltage_e switchVoltage)
+    {
+        return MMCSD_OK;
+    }
+#endif
+
+
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 #endif
 
@@ -332,7 +341,7 @@ uint8_t rx[MMCSD_TEST_MAX_BUFSIZE] __attribute__((aligned(DATA_BUF_ALIGN))) __at
 
 #ifndef BARE_METAL
 
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
@@ -395,7 +404,7 @@ Void InitMmu()
         goto mmu_exit;
     }
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     ret=Mmu_map(0x01800000, 0x01800000, 0x00200000, &attrs); /* gicv3       */
     if(ret==false) {
 		goto mmu_exit;
@@ -875,7 +884,7 @@ mmcsdTestSDProfile_t * mmcsdTestProfiles[] = {
 	&SDProfiles_1p8V_SDR50,
 	&SDProfiles_1p8V_DDR50,
 
-#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 	&SDProfiles_1p8V_SDR104,
 #endif
 #endif
@@ -962,7 +971,7 @@ EDMA3_RM_Handle gEdmaHandle = NULL;
 
 #if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
 MMCSD_v0_HwAttrs           hwAttrsConfigDefault;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X) || defined(SOC_J721S2)
+#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 MMCSD_v2_HwAttrs           hwAttrsConfigDefault;
 #else
 MMCSD_v1_HwAttrs hwAttrsConfigDefault;
@@ -985,7 +994,7 @@ void mmcsd_test(void *arg0, void *arg1)
 
 #if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
     MMCSD_v0_HwAttrs           hwAttrsConfig;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
     MMCSD_v2_HwAttrs           hwAttrsConfig;
 #else
     MMCSD_v1_HwAttrs           hwAttrsConfig;
@@ -1083,7 +1092,7 @@ void mmcsd_test(void *arg0, void *arg1)
 
       hwAttrsConfig.enableInterrupt = testProfilePtr->intr;
       hwAttrsConfig.supportedBusVoltages = testProfilePtr->busVoltage;
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
       hwAttrsConfig.supportedModes = testProfilePtr->mode;
       hwAttrsConfig.supportedBusWidth = testProfilePtr->busWidth;
 #endif

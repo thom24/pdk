@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 - 2019, Texas Instruments Incorporated
+# Copyright (c) 2016 - 2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -72,8 +72,8 @@ ifeq ($(fatfs_component_make_include), )
 drvfatfs_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 
 # under other list
-drvfatfs_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm
-drvfatfs_SOCLIST           = am574x am572x am571x am437x am335x dra72x dra75x dra78x k2g omapl137 omapl138 am65xx j721e j7200 am64x j721s2
+drvfatfs_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
+drvfatfs_SOCLIST           = am574x am572x am571x am437x am335x dra72x dra75x dra78x k2g omapl137 omapl138 am65xx j721e j7200 am64x j721s2 j784s4
 drvfatfs_am574x_CORELIST   = c66x a15_0 ipu1_0
 drvfatfs_am572x_CORELIST   = c66x a15_0 ipu1_0
 drvfatfs_am571x_CORELIST   = c66x a15_0 ipu1_0
@@ -90,6 +90,7 @@ drvfatfs_j721e_CORELIST    = $(DEFAULT_j721e_CORELIST)
 drvfatfs_j7200_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvfatfs_am64x_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvfatfs_j721s2_CORELIST   = $(DEFAULT_j721s2_CORELIST)
+drvfatfs_j784s4_CORELIST   = $(DEFAULT_j784s4_CORELIST)
 
 # Define the rule to generate FATFS Drivers BOARDLIST for each rtos_type
 # Default BOARDLIST for each rtos_type is defined in 'ti/build/makerules/component.mk'
@@ -191,7 +192,7 @@ FATFS_Console_TestApp_$(1)_INCLUDE = $(FATFS_Console_TestApp_$(1)_PATH)
 export FATFS_Console_TestApp_$(1)_BOARDLIST = $(drvfatfs_$(1)_BOARDLIST)
 export FATFS_Console_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvfatfs_$(SOC)_CORELIST))
 
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
   export FATFS_Console_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 endif
 

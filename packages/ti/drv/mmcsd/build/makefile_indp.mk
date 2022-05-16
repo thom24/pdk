@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016, Texas Instruments Incorporated
+# Copyright (c) 2016-2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ MODULE_NAME = mmcsd_indp
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2))
+ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
 INCLUDE_EXTERNAL_INTERFACES += edma
 endif
 

@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2019-21 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -81,7 +81,7 @@ void ConsoleUtilsInit(void)
  *  ======== Board_initUART ========
  */
 void Board_initUART(void) {
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) 
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4) 
           HW_WR_REG32((SOC_CORE_PAD_IO_REGISTERS_BASE + CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD),
             (CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD_UART1_RXD_INPUTENABLE_MASK |
                     CSL_CONTROL_CORE_PAD_IO_PAD_UART1_RXD_UART1_RXD_SLEWCONTROL_MASK |
