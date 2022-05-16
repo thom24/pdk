@@ -66,9 +66,9 @@
 #
 ifeq ($(i2c_component_make_include), )
 
-drvi2c_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm
+drvi2c_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
 drvi2c_BOARDLISTLIM    = am65xx_evm am65xx_idk am64x_evm
-drvi2c_SOCLIST         = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 j721s2 am64x tpr12 awr294x
+drvi2c_SOCLIST         = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 j721s2 j784s4 am64x tpr12 awr294x
 drvi2c_SOCLISTLIM      = am574x am572x am571x tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx am64x
 drvi2c_tda2xx_CORELIST = ipu1_0
 drvi2c_tda2px_CORELIST = ipu1_0
@@ -93,9 +93,11 @@ drvi2c_am437x_CORELIST = a9host pru_0 pru_1
 drvi2c_am335x_CORELIST = a8host pru_0 pru_1
 drvi2c_am65xx_CORELIST   = mpu1_0 mcu1_0 mcu1_1
 drvi2c_j721e_CORELIST   = $(DEFAULT_j721e_CORELIST)
-drvi2c_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvi2c_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvi2c_j721s2_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 c7x_1
 drvi2c_j721s2_CORELISTARM  = mcu1_0 mcu2_0 mcu3_0
+drvi2c_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu4_0 c7x_1
+drvi2c_j784s4_CORELISTARM  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu4_0
 drvi2c_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvi2c_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvi2c_tpr12_CORELIST  = mcu1_0 c66xdsp_1
@@ -124,7 +126,11 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+i2c_EXAMPLE_LIST =
+else
 i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
+endif
 
 #
 # I2C Modules
@@ -155,8 +161,14 @@ i2c_INCLUDE = $(i2c_PATH)
 i2c_SOCLIST = $(drvi2c_SOCLIST)
 export i2c_SOCLIST
 i2c_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
-ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
-i2c_$(SOC)_CORELIST += mcu2_1 mcu3_0 muc1_1
+ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
+i2c_$(SOC)_CORELIST += mcu2_1 mcu1_1
+endif
+ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
+i2c_$(SOC)_CORELIST += mcu3_0
+endif
+ifeq ($(SOC),$(filter $(SOC),j784s4))
+i2c_$(SOC)_CORELIST += mcu4_0
 endif
 export i2c_$(SOC)_CORELIST
 
@@ -433,7 +445,7 @@ export drv_i2c_utility_XDC_CONFIGURO
 export drv_i2c_utility_MAKEFILE
 drv_i2c_utility_PKG_LIST = drv_i2c_utility
 drv_i2c_utility_INCLUDE = $(drv_i2c_utility_PATH)
-drv_i2c_utility_BOARDLIST = j721e_evm j7200_evm j721s2_evm
+drv_i2c_utility_BOARDLIST = j721e_evm j7200_evm j721s2_evm j784s4_evm
 export drv_i2c_utility_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am65xx))
 drv_i2c_utility_$(SOC)_CORELIST = mcu1_0 mpu1_0
@@ -446,6 +458,9 @@ drv_i2c_utility_$(SOC)_CORELIST = $(drvi2c_j7200_CORELIST)
 endif
 ifeq ($(SOC),$(filter $(SOC), j721s2))
 drv_i2c_utility_$(SOC)_CORELIST = $(drvi2c_j721s2_CORELISTARM)
+endif
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+drv_i2c_utility_$(SOC)_CORELIST = $(drvi2c_j784s4_CORELISTARM)
 endif
 export drv_i2c_utility_$(SOC)_CORELIST
 
