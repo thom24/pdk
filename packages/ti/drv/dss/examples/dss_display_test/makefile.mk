@@ -47,12 +47,10 @@ COMP_LIST_COMMON += fvid2 dss
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += dss_display_test.c
-ifeq ($(BOARD),j721e_evm)
+ifeq ($(BOARD),$(filter $(BOARD), j721e_evm j721s2_evm j784s4_evm))
 SRCS_COMMON += dss_display_dsi_cfg.c
 endif
-ifeq ($(BOARD),j721s2_evm)
-SRCS_COMMON += dss_display_dsi_cfg.c
-endif
+
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) $(DSS_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS

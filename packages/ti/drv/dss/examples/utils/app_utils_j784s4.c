@@ -32,7 +32,7 @@
  */
 
 /**
- *  \file app_utils_j721e.c
+ *  \file app_utils_j784s4.c
  *
  *  \brief DSS example utility APIs for J7
  */
@@ -41,7 +41,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include <ti/board/src/j721e_evm/include/board_control.h>
+#include <ti/board/src/j784s4_evm/include/board_control.h>
 #include <ti/csl/soc/cslr_soc_ctrl_mmr.h>
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/drv/pm/pmlib.h>
@@ -86,59 +86,9 @@ void App_configureSoC(void)
 
 void App_configureLCD(App_utilsLcdCfgParams cfgParams)
 {
-    int32_t status = PM_SUCCESS;
-
-    if(APP_OUTPUT_HDMI == cfgParams.outType)
-    {
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
-                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
-                    TISCI_MSG_FLAG_AOP,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_FUNC_CLK,
-                    TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
-                    0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
-                    cfgParams.pixelClk,
-                    0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
-                    TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
-                    TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
-                    0,
-                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-        if(PM_SUCCESS == status)
-        {
-            Board_control(BOARD_CTRL_CMD_SET_HDMI_MUX, (void*) 0U);
-            Board_control(BOARD_CTRL_CMD_SET_HDMI_PD_HIGH, (void*) 0U);
-        }
-    }
-    else if (APP_OUTPUT_DSI == cfgParams.outType)
+    int32_t status = PM_SUCCESS, clockStatus;
+    uint64_t minRate, respClkRate;
+    if (APP_OUTPUT_DSI == cfgParams.outType)
     {
         if(PM_SUCCESS == status)
         {
@@ -171,7 +121,7 @@ void App_configureLCD(App_utilsLcdCfgParams cfgParams)
         {
             status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
                 TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_18_HSDIVOUT0_CLK,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_17_HSDIVOUT0_CLK,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
         }
         if (PM_SUCCESS == status)
@@ -183,11 +133,13 @@ void App_configureLCD(App_utilsLcdCfgParams cfgParams)
                 TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
         }
+    
     }
-    else
+    else if (APP_OUTPUT_EDP == cfgParams.outType)
     {
         if(PM_SUCCESS == status)
         {
+            /* Power on SerDes module. */
             status = Sciclient_pmSetModuleState(TISCI_DEV_SERDES_10G0,
                 TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                 TISCI_MSG_FLAG_AOP,
@@ -196,60 +148,81 @@ void App_configureLCD(App_utilsLcdCfgParams cfgParams)
 
         if(PM_SUCCESS == status)
         {
+            /* Power on EDP module. */
             status = Sciclient_pmSetModuleState(TISCI_DEV_DSS_EDP0,
                 TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                 TISCI_MSG_FLAG_AOP,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
         }
 
+        /* Power off DSS before configuring the clocks. */
+        status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
+                TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                TISCI_MSG_FLAG_AOP,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+        if(status == PM_SUCCESS)
+        {
+            printf("\n TISCI_DEV_DSS0 device shutdown successful !\r\n");
+        } else {
+            printf("\n TISCI_DEV_DSS0 device shutdown NOT successful !!!\r\n");
+        }
+
+        /* Checking if the required pixel clock can be set by the system firmware. */
+        minRate = cfgParams.pixelClk;
+        status = Sciclient_pmQueryModuleClkFreq(TISCI_DEV_DSS0,
+                                            TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                            minRate,
+                                            &respClkRate,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+        if(status == PM_SUCCESS)
+        {
+            printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK possible rate = %lld Hz\r\n", respClkRate);
+        } else {
+            printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK requested rate range NOT possible !!\r\n");
+        }
+        if(status == PM_SUCCESS)
+        {
+            /* Check if the clock is enabled or not. */
+            status = Sciclient_pmModuleGetClkStatus(TISCI_DEV_DSS0,
+                                                    TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                                    &clockStatus,
+                                                    SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
+
+        if ((status == PM_SUCCESS) && (respClkRate >= minRate))
+        {
+            /* Set the pixel clock. */
+            status = Sciclient_pmSetModuleClkFreq(
+                                      TISCI_DEV_DSS0,
+                                      TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                      respClkRate,
+                                      TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
+                                      SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status == PM_SUCCESS)
+            {
+                if (clockStatus == TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ)
+                {
+                    /* Enable the required clock. */
+                    status = Sciclient_pmModuleClkRequest(
+                                                        TISCI_DEV_DSS0,
+                                                        TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                                        TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
+                                                        0U,
+                                                        SCICLIENT_SERVICE_WAIT_FOREVER);
+                }
+            }
+        }
+
         if(PM_SUCCESS == status)
         {
+            printf("\nTISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_CLK is now ENABLED !\r\n");
+            /* Enable the DSS device as clock configuration has been successful. */
             status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
                 TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                 TISCI_MSG_FLAG_AOP,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_18_HSDIVOUT0_CLK,
-                SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_DPI1_EXT_CLKSEL_OUT0,
-                SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
-                SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
-                cfgParams.pixelClk,
-                0U,
-                SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if(PM_SUCCESS == status)
-        {
-            status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
-                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
-                TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
-                0U,
-                SCICLIENT_SERVICE_WAIT_FOREVER);
+        } else {
+            printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_CLK is STILL DISABLED !!!\r\n");
         }
     }
 

@@ -211,7 +211,7 @@ int32_t Dss_dctrlDrvCreateEdgeList(Dss_DctrlDrvGraphObj *graphObj,
 
 void Dss_dctrlDrvFreeEdgeList(Dss_DctrlDrvGraphObj *graphObj);
 
-#if defined(SOC_J721E) || defined (SOC_J721S2)
+#if defined(SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
 int32_t Dss_dctrlDrvDisableVideoDP(void);
 int32_t Dss_dctrlDrvEnableVideoDP(const Fvid2_ModeInfo *mInfo,
                                   uint32_t hsyncPolarity,

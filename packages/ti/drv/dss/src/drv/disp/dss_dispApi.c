@@ -1446,7 +1446,7 @@ static int32_t Dss_dispDrvSetDssParamsIoctl(Dss_DispDrvInstObj *instObj,
                     pipeRegs,
                     (const CSL_DssVidPipeAlphaCfg *)(&dispParams->alphaCfg));
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
         CSL_dssVidPipeSetCropConfig(
                 pipeRegs,
                 (const Fvid2_EdgeCropConfig *)(&dispParams->cropParams.cropCfg),

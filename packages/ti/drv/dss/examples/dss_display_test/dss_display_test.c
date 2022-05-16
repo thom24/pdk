@@ -205,7 +205,7 @@ static void DispApp_init(DispApp_Obj *appObj)
 #endif
 #if defined (SOC_J721S2)
     appObj->initParams.socParams.dpInitParams.isHpdSupported = FALSE;
-#elif defined (SOC_J721E)
+#elif defined (SOC_J721E) || defined (SOC_J784S4)
     appObj->initParams.socParams.dpInitParams.isHpdSupported = TRUE;
 #endif
     Dss_init(&appObj->initParams);

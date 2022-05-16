@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ typedef struct
     /**< Number of video ports available to driver */
     uint32_t availablePortId[CSL_DSS_VP_ID_MAX];
     /**< Id of available video ports */
-#if defined(SOC_J721E) || defined (SOC_J721S2)
+#if defined(SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     Dss_DpInitParams dpInitParams;
     /**< DP init parameters */
 #endif

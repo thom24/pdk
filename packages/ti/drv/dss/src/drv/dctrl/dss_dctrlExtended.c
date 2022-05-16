@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -66,11 +66,6 @@ typedef enum
 #define DP_PRIVATE_DATA_SIZE          (131072U)
 #define DP_PHY_PRIVATE_DATA_SIZE      (1024U)
 #define DP_INTR                       (64U)
-#if defined (SOC_J721S2)
-#define ADDR_AFE                   (0x05060000)
-#else
-#define ADDR_AFE                   (0x05050000)
-#endif
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -657,8 +652,11 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
 
     pObj->dpCfg.regBase      = (struct MHDP_ApbRegs_s *)CSL_DSS_EDP0_V2A_CORE_VP_REGS_APB_BASE;
     pObj->dpCfg.regBaseSapb  = (struct MHDP_ApbRegs_s *)CSL_DSS_EDP0_V2A_S_CORE_VP_REGS_SAPB_BASE;
-
+#if defined (SOC_J784S4)
+    pObj->dpPhyCfg.regBase   = (uint32_t*)CSL_WIZ16B8M4CT3_4_WIZ16B8M4CT3_BASE;
+#else
     pObj->dpPhyCfg.regBase   = (uint32_t*)CSL_SERDES_10G0_BASE;
+#endif
     pObj->dpPhyCfg.regBaseDp = (struct DP_Regs_s *)CSL_DSS_EDP0_V2A_CORE_VP_REGS_APB_BASE;
 
     pObj->dpFWImage.iMem     = gDctrlDpIram;
@@ -815,7 +813,7 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
 
     if(FVID2_SOK == retVal)
     {
-#if defined (SOC_J721S2)        
+#if defined (SOC_J721S2)
         dpApiRet = DP_ConfigurePhyStartUp(pObj->dpPrivData,
                 0x2,
                 pObj->srcCaps.laneCount,

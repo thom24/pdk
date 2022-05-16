@@ -48,7 +48,7 @@
 #include <ti/drv/dss/soc/V0/dss_soc.h>
 #elif defined (SOC_J721E)
 #include <ti/drv/dss/soc/V1/dss_soc.h>
-#elif defined (SOC_J721S2)
+#elif defined (SOC_J721S2) || defined (SOC_J784S4)
 #include <ti/drv/dss/soc/V2/dss_soc.h>
 #endif
 

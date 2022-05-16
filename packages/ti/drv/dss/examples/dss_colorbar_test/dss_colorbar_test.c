@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -299,7 +299,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
     }
 #endif
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     uint32_t regVal2;
 
     /* Select DPI0 connection */

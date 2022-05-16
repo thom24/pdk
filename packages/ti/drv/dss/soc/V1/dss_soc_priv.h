@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,8 @@ extern "C" {
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
+#define ADDR_AFE                   (0x05050000)
 
 /**
  *  \anchor Dss_EventGroup

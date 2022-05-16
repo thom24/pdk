@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2021
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -206,7 +206,7 @@ static void taskFxn(void* a0, void* a1)
                                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                    TISCI_MSG_FLAG_AOP,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     retVal += Sciclient_pmSetModuleState(TISCI_DEV_DSS_DSI0,
                                    TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                    TISCI_MSG_FLAG_AOP,

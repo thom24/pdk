@@ -165,7 +165,7 @@ static int32_t Dss_dctrlDrvSetOldiParamsIoctl(
                             const Dss_DctrlOldiParams *oldiParams);
 #endif
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
 static uint32_t Dss_dctrlDrvIsOutputDP(uint32_t vpId);
 static int32_t Dss_dctrlDrvSetDpHpdCbParamsIoctl(
                             Dss_DctrlDrvInstObj *instObj,
@@ -299,7 +299,7 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
         }
     }
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     if((FVID2_SOK == retVal) &&
     (TRUE == drvInitParams->dpInitParams.isAvailable))
     {
@@ -849,7 +849,7 @@ static int32_t Dss_dctrlDrvControl(Fdrv_Handle handle,
                     (const Dss_DctrlOldiParams*) cmdArgs);
                 break;
 #endif
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
             case IOCTL_DSS_DCTRL_IS_DP_CONNECTED:
                 retVal = Dss_dctrlIsDPConnectedIoctl(
                     (int32_t *) cmdArgs
@@ -1058,7 +1058,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
         }
     }
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     if(FVID2_SOK == retVal)
     {
         Dss_DctrlDrvCommonObj *pObj;
@@ -1149,7 +1149,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
             CSL_dssVpSetLcdLineNum(vpRegs, lcdOpTimingCfg->mInfo.height - 5U);
         }
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
         if ((FVID2_SOK == retVal) &&
             (TRUE == Dss_dctrlDrvIsOutputDSI(vpId)))
         {
@@ -1161,7 +1161,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
         Dss_dctrlVpEnable(vpId, TRUE);
     }
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     if((FVID2_SOK == retVal) &&
     (TRUE == Dss_dctrlDrvIsOutputDP(vpId)))
     {
@@ -1182,7 +1182,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
     return retVal;
 }
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
 static int32_t Dss_dctrlDrvProcessDpHpdIoctl(
                             Dss_DctrlDrvInstObj *instObj,
                             const uint32_t *dpProcessHpdParams)
@@ -1864,7 +1864,7 @@ static int32_t Dss_dctrlDrvStopVpIoctl(Dss_DctrlDrvInstObj *instObj,
         }
     }
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     if((FVID2_SOK == retVal) && (TRUE == Dss_dctrlDrvIsOutputDP(vpId)))
     {
         retVal = Dss_dctrlDrvDisableVideoDP();
@@ -2329,7 +2329,7 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
     }
 }
 
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
 static int32_t Dss_dctrlSetDsiParamsIoctl(Dss_DctrlDrvInstObj *instObj,
                                           const Dss_DctrlDsiParams *dsiPrms)
 {
