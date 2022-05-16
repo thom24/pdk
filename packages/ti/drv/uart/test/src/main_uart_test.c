@@ -58,15 +58,15 @@
 
 #include "UART_board.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/soc.h>
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_AM65XX) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_AM65XX) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/csl_clec.h>
 #endif
 
@@ -185,7 +185,7 @@ UART_PAR uartParity = UART_PAR_NONE;
 /* Global Variable which holds the UART Handle */
 UART_Handle     gUARTHandle = NULL;
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #ifdef UART_DMA_ENABLE
 /*
  * Ring parameters
@@ -241,7 +241,7 @@ Udma_DrvHandle UartApp_udmaInit(UART_HwAttrs *cfg)
     if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
         instId = UDMA_INST_ID_MCU_0;
 #else
@@ -300,7 +300,7 @@ int32_t UART_udma_deinit(void)
     return (retVal);
 }
 #endif
-#endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) */
+#endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4) */
 
 #if defined(SOC_AM64X) && defined(BUILD_MCU)
 int32_t UART_configClk(uint32_t freq)
@@ -390,7 +390,7 @@ static void UART_initConfig(bool dmaMode)
 #ifdef UART_DMA_ENABLE
     if (dmaMode == true)
     {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
         uart_cfg.edmaHandle = UartApp_udmaInit(&uart_cfg);
 #else
         uart_cfg.edmaHandle = UartApp_edmaInit();
@@ -675,7 +675,7 @@ void UART_callback2(UART_Handle handle, UART_Transaction *transaction)
 
 #if !(defined(SOC_TPR12) || defined (SOC_AWR294X))
 
-#if defined(SOC_J721S2) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_J721E) || defined(SOC_J7200)
 #define UART_NUM_TRIG_LVL           (2U)
 #else
 #define UART_NUM_TRIG_LVL           (4U)
@@ -703,7 +703,7 @@ static void UART_initConfigTrgLvl(uint32_t dmaMode,
 #ifdef UART_DMA_ENABLE
     if (dmaMode == true)
     {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
         uart_cfg.edmaHandle = UartApp_udmaInit(&uart_cfg);
 #else
         uart_cfg.edmaHandle = UartApp_edmaInit();
@@ -868,7 +868,7 @@ static bool UART_test_fifo_trglvl(bool dmaMode)
 {
     bool     ret = true;
     uint32_t i;
-#if defined(SOC_AM574x) || defined(SOC_AM572x)|| defined(SOC_AM571x) || defined (SOC_DRA72x)  || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335X) || defined (SOC_AM437X) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM574x) || defined(SOC_AM572x)|| defined(SOC_AM571x) || defined (SOC_DRA72x)  || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335X) || defined (SOC_AM437X) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
     UART_TxTrigLvl txTrgLvl[UART_NUM_TRIG_LVL] =
     {
         UART_TXTRIGLVL_8,
@@ -3125,7 +3125,7 @@ UART_Tests Uart_tests[] =
     {UART_test_profile_tx, false, UART_TEST_ID_PROF_TX, "\r\n UART non-DMA/DMA Blocking/Polling transmit profiling"},
 #endif
 #ifdef UART_DMA_ENABLE
-#if !(defined(SOC_J721S2) || defined(SOC_J721E) || defined(SOC_J7200)) /* disabling UT 22 till PDK-11221 errata is fixed */
+#if !(defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_J721E) || defined(SOC_J7200)) /* disabling UT 22 till PDK-11221 errata is fixed */
     {UART_test_loopback_data, true, UART_TEST_ID_DMA_LB_DATA, "\r\n UART DMA read write test with loopback"},
 #endif
 #endif
@@ -3322,7 +3322,7 @@ Int main()
 #endif /* #if !defined(BAREMETAL) */
 
 #ifdef UART_DMA_ENABLE
-#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_J721S2))
+#if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_TPR12) || defined (SOC_AWR294X) || defined(SOC_J721S2) || defined(SOC_J784S4))
 EDMA3_RM_Handle gEdmaHandle = NULL;
 
 /*

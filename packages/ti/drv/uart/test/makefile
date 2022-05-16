@@ -15,7 +15,7 @@ CFLAGS_OS_DEFINES = -DUSE_BIOS
 EXTERNAL_INTERFACES = bios xdc
 COMP_LIST_COMMON  = $(PDK_COMMON_TIRTOS_COMP)
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x tpr12 awr294x j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x tpr12 awr294x j721s2 j784s4))
   XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
 else
   XDC_CFG_FILE_mpu1_0 = ./$(SOC)/uartUnitTest_$(ISA).cfg

@@ -35,7 +35,7 @@ include $(PDK_UART_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = uart_dma
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j721s2 j7200 am64x tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j721s2 j784s4 j7200 am64x tpr12 awr294x))
 include $(PDK_UART_COMP_PATH)/src/src_files_uart_console.mk
 endif
 
