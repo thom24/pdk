@@ -439,11 +439,6 @@ Board_STATUS Board_setInitParams(Board_initParams_t *initParams)
     return BOARD_SOK;
 }
 
-extern void UART_printf(const char *pcString, ...)
-{
-    return;
-}
-
 #endif
 
 /**********************************************************************

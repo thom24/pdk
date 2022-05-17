@@ -207,11 +207,6 @@ Board_STATUS Board_init(Board_initCfg cfg)
     return BOARD_SOK;
 }
 
-extern void UART_printf(const char *pcString, ...)
-{
-    return;
-}
-
 #endif
 
 /**********************************************************************
