@@ -586,7 +586,7 @@ static void ipc_checker_task()
     retEventMask = EventP_wait(gEventhandle, eventMask, EventP_WaitMode_ALL, EventP_WAIT_FOREVER);
     if((retEventMask & eventMask) == eventMask)
     {
-        App_printf("All Test has Passed\n");
+        App_printf("All tests have passed\n");
         EventP_delete(&gEventhandle);
     } 
 }
