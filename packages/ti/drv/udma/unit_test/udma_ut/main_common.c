@@ -83,7 +83,10 @@ void taskFxn(void *a0, void *a1)
                BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
 
+#if !defined (SAFERTOS)
+    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
     Udma_appC66xIntrConfig();
+#endif
 
     SemaphoreP_Params_init(&semParams);
     semParams.mode  = SemaphoreP_Mode_BINARY;

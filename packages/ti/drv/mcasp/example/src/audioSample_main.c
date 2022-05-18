@@ -92,7 +92,8 @@ uint8_t mcaspEgAppHeap[MCASP_AUD_SAMPLE_HEAP_SIZE] __attribute__((aligned(128)))
 /* Heap handle */
 HeapP_Handle myHeap;
 /* Application task stack */
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU)
 uint8_t gAppTskStackMain[MCASP_APP_TASK_STACK_SIZE] __attribute__((aligned(MCASP_APP_TASK_STACK_SIZE)));
 #else
 uint8_t gAppTskStackMain[MCASP_APP_TASK_STACK_SIZE] __attribute__((aligned(128)));

@@ -125,7 +125,8 @@ void Ipc_setupSciServer(void);
 /* ========================================================================== */
 
 /* Test application stack */
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN]
 __attribute__ ((aligned(APP_TSK_STACK_MAIN)));
 #else
@@ -318,11 +319,16 @@ static void taskFxn(void* a0, void* a1)
 #endif
 
 #if defined (_TMS320C6X)
+#if !defined(SAFERTOS)
+    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
     ipc_timerInterruptInit();
+#endif /* !defined(SAFERTOS)  */
 #endif
 
-#if defined (_TMS320C6X) && defined FREERTOS
+#if defined (_TMS320C6X) 
+#if defined (FREERTOS) || defined (SAFERTOS)
     ipc_cacheMarInit();
+#endif
 #endif
 
 #ifdef IPC_NEGATIVE_TEST

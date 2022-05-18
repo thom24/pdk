@@ -90,11 +90,11 @@
  */
 
 #if !defined(BUILD_C7X)
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU)
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE]
 __attribute__ ((aligned(IPC_TASK_STACKSIZE)));
 #else
-
 uint8_t  g_taskStackBuf[(CORE_IN_TEST+2)*IPC_TASK_STACKSIZE];
 #endif
 

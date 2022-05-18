@@ -85,7 +85,8 @@ Board_STATUS Board_init(Board_initCfg boardCfg){return 1;}
 /* ========================================================================== */
 
 /* Test application stack */
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN))) = { 0 };
 #else
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
@@ -129,9 +130,11 @@ static void taskFxn(void* a0, void* a1)
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
-
+    
+#if !defined (SAFERTOS)
+    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
     Udma_appC66xIntrConfig();
-
+#endif /* !defined (SAFERTOS) */
     Udma_memcpyTest();
 
     return;

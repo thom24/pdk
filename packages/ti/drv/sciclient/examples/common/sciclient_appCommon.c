@@ -188,7 +188,10 @@ int32_t App_sciclientParser(void)
     App_sciclientTestParams_t *testParams;
 
     App_sciclientConsoleInit();
+#if !defined (SAFERTOS)
+    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
     App_sciclientC66xIntrConfig();
+#endif /* !defined (SAFERTOS) */
     App_sciclientResultInit();
 
     while (!done)

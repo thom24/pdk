@@ -475,11 +475,11 @@ bool Board_initUART(void)
     UART_getTestInstNum(&uartTestInstance, &boardAM570x);
 
 /* --- TODO: move this into the board library --- */
-/* For SYSBIOS only */
-#ifndef BAREMETAL
-#if defined (SOC_J721E)
+/* For FreeRTOS only */
+/*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
+#if defined (FREERTOS) 
+#if defined (SOC_J721E) && defined (BUILD_C66X)
 /* set up C66x Interrupt Router for DMTimer0 for C66x */
-#if defined (BUILD_C66X)
     int32_t                               retVal;
     struct tisci_msg_rm_irq_set_req      rmIrqReq;
     struct tisci_msg_rm_irq_set_resp     rmIrqResp;
@@ -515,9 +515,8 @@ bool Board_initUART(void)
     {
        return (false);
     }
-#endif /* for C66X cores */
-#endif /* for SOC_J721E */
-#endif /* for SYSBIOS */
+#endif /* #if defined (FREERTOS)  */
+#endif /* #if defined (SOC_J721E) && defined (BUILD_C66X) */
 /* --- TODO: move this into the board library --- */
 
 #if defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x)
@@ -999,7 +998,8 @@ Err:
 #else
 #define APP_TSK_STACK_WRITE              (8U * 1024U)
 #endif /* #if defined (BUILD_C7X) */
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(APP_TSK_STACK_WRITE)));
 #else
 static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(32)));
@@ -3286,8 +3286,8 @@ int main(void)
 #else
 #define APP_TSK_STACK_MAIN              (16U * 1024U)
 #endif
-
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU) 
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
 #else
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));

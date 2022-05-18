@@ -112,7 +112,10 @@ extern Mcasp_ChanParams mcasp_chanparam[2];
 #if defined (SOC_J721E)
 #if defined (_TMS320C6X)
 #include <c6x.h>
+#if !defined (SAFERTOS)
+/*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
 static void C66x_intrConfig();
+#endif
 #endif
 #endif
 
@@ -186,7 +189,10 @@ void configureAudio(void)
 
 #if defined (SOC_J721E)
 #if defined (_TMS320C6X)
+#if !defined (SAFERTOS)
+    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
     C66x_intrConfig();
+#endif /* !defined(SAFERTOS)  */
 #endif
 #endif
 

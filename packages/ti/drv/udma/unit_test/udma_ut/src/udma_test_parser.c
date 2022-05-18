@@ -99,7 +99,8 @@ static uint32_t udmaTestGetTestId(UdmaTestObj *testObj, uint32_t tcType);
 
 #if !defined (UDMA_UT_BAREMETAL)
 /* Task stack */
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gUdmaParserTskStack[UDMA_TEST_MAX_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
 #else
 static uint8_t  gUdmaParserTskStack[UDMA_TEST_MAX_TASKS][APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
