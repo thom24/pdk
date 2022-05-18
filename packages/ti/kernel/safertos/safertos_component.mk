@@ -68,7 +68,7 @@ ifeq ($(safertos_component_make_include), )
 
 safertos_BOARDLIST       = tpr12_evm awr294x_evm j721e_evm
 safertos_SOCLIST         = tpr12 awr294x j721e
-safertos_j721e_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2
+safertos_j721e_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 safertos_tpr12_CORELIST  = c66xdsp_1
 safertos_awr294x_CORELIST  = c66xdsp_1
 
@@ -125,12 +125,17 @@ export safertos_PKG_LIST
 safertos_ISA_EXT_r5f = 199_TI_CR5
 safertos_COMPILER_EXT_r5f = 024_Clang
 safertos_ISA_EXT_c66 = 201_C66x
-safertos_COMPILER_EXT_c66 = 005_TI_CGT 
+safertos_COMPILER_EXT_c66 = 005_TI_CGT
+safertos_ISA_EXT_c7x = 230_C7x
+safertos_COMPILER_EXT_c7x = 005_TI_CGT 
 safertos_INCLUDE =  ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/$(safertos_ISA_EXT_$(ISA))
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel/include_api
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(safertos_ISA_EXT_$(ISA))
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(safertos_ISA_EXT_$(ISA))/$(safertos_COMPILER_EXT_$(ISA))
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
+safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/NoWrapper
+safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/TI_c7x_Support
+safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel/include_prv
 safertos_INCLUDE +=  ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/config
 

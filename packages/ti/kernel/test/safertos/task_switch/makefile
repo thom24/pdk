@@ -30,20 +30,17 @@ endif
 ifeq ($(ISA),$(filter $(ISA), r5f))
   EXTERNAL_LNKCMD_FILE_LOCAL = linker_core_r5.lds
 endif
-ifeq ($(ISA),$(filter $(ISA), c66))
-  EXTERNAL_LNKCMD_FILE_LOCAL = linker_core_c66.cmd
+ifeq ($(ISA),$(filter $(ISA), c66 c7x))
+  EXTERNAL_LNKCMD_FILE_LOCAL = linker_core_$(ISA).cmd
 endif
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += main.c task_switch.c SafeRTOSConfig.c aborts.c timerHooks.c
+SRCS_COMMON += SafeRTOS_startup_$(ISA).c SafeRTOS_Hwi_$(ISA).c
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCS_COMMON += SafeRTOS_startup_r5f.c SafeRTOS_Hwi_r5f.c
   SRCS_ASM_COMMON += utilsasm_r5f.asm
-endif
-ifeq ($(ISA),$(filter $(ISA), c66))
-  SRCS_COMMON += SafeRTOS_startup_c66.c SafeRTOS_Hwi_c66.c
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)

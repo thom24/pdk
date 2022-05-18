@@ -40,6 +40,10 @@
 #include <SAFERTOS_log.h>
 #include <SafeRTOS_API.h>
 
+#if defined (BUILD_C7X)
+#include <c7x.h>    /* for C7x intrinsics */
+#endif
+
 /*
  * IMPORTANT NOTES:
  *
@@ -98,15 +102,28 @@
         #define PONG_INT_NUM           (9u)
         #define PONG_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_1)
     #endif
+    #ifdef BUILD_C7X_1
+        #define PING_INT_NUM           (14u)
+        #define PING_EVT_ID            (0x4E0)
+        #define PONG_INT_NUM           (15u)
+        #define PONG_EVT_ID            (0x4E1)
+    #endif
 #endif
 
 #define PING_TASK_PRI  ( 2u )
 #define PONG_TASK_PRI  ( 3u )
 
+
+#if !defined (BUILD_C7X)
 #define PING_TASK_SIZE ( 4096u )
+#define PONG_TASK_SIZE ( 4096u )
+#else
+#define PING_TASK_SIZE ( 16U * 1024U)
+#define PONG_TASK_SIZE ( 16U * 1024U)
+#endif
+
 static portInt8Type  gPingTaskStack[PING_TASK_SIZE] __attribute__( ( aligned( PING_TASK_SIZE ) ) );
 
-#define PONG_TASK_SIZE ( 4096u )
 static portInt8Type  gPongTaskStack[PONG_TASK_SIZE] __attribute__( ( aligned( PONG_TASK_SIZE ) ) );
 
 
@@ -134,6 +151,24 @@ static void pong_isr( uintptr_t arg )
     xSemaphoreGiveFromISR(gPingSem); /* wake up ping task */
     safertosapiYIELD_FROM_ISR();
 }
+
+#if defined (BUILD_C7X)
+/* return current counter value of high speed counter in units of 10's of usecs */
+uint32_t uiPortGetRunTimeCounterValue()
+{
+    uint64_t ts = __TSC;
+    uint64_t timeInUsecs;
+
+    timeInUsecs = (ts * 1000000) / configCPU_CLOCK_HZ;
+    /* note, there is no overflow protection for this 32b value in FreeRTOS
+     *
+     * Dividing by 10 to reduce the resolution and avoid overflow for longer duration
+     * This will overflow after
+     * ((0x100000000/1000000)/(60*60))*10 hours ~ 12 hrs
+     */
+    return (uint32_t)timeInUsecs;
+}
+#endif
 
 void ping_main( void *args )
 {

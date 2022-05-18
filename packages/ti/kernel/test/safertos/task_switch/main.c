@@ -43,9 +43,18 @@
 #include "ti/csl/src/intc/csl_intc.h"
 #endif
 
+#if defined (BUILD_C7X)
+#include "Hwi.h"
+#endif
+
 #define MAIN_TASK_PRI  ( 4U )
 
+#if !defined (BUILD_C7X)
 #define MAIN_TASK_SIZE ( 4096U )
+#else
+#define MAIN_TASK_SIZE ( 32U * 1024U)
+#endif
+
 /* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
 #if defined (BUILD_MCU)
 static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned( MAIN_TASK_SIZE ) ) );
@@ -64,7 +73,7 @@ portBaseType xInitializeScheduler( void );
 
 void task_switch_main( void *args );
 
-#if defined (BUILD_MCU)
+#if defined (BUILD_MCU) || defined (BUILD_C7X)
 portBaseType prvSetupHardware( void )
 {
     return pdPASS;  
@@ -191,6 +200,9 @@ int main( void )
     /* Everything OK? */
     if( pdPASS == xStatus )
     {
+#if defined (BUILD_C7X)
+        Hwi_switchFromBootStack();
+#endif
         /* Yes, try to start the Scheduler. */
         xStatus = xTaskStartScheduler();
     }

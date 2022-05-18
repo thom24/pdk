@@ -67,6 +67,16 @@
 #define configIDLE_HOOK_DATA_SIZE           ( ( portUInt32Type ) 0x20U )
 #endif
 
+#if defined (BUILD_C7X)
+#define configTIMER_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE )
+#define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
+/* The user configuration for the idle task. */
+#define configIDLE_HOOK_DATA_ADDR           ( ( void * ) &lnkIdleHookDataStartAddr )
+#define configIDLE_HOOK_DATA_SIZE           ( ( portUInt32Type ) 0x20U )
+/* Yeild Interrupt Number */
+#define configC7X_YEILD_INT_NUM             ( 13U )
+#endif
+
 #if defined (BUILD_C66X)
 #define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
 #endif
@@ -94,14 +104,14 @@ static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__(
  * requirements are application specific. */
 static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( configTIMER_TASK_STACK_SIZE ) ) ) = { 0 };
 #else
-static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )  = { 0 };
-static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )  = { 0 };
+static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( safertosapiSTACK_ALIGNMENT ) ) )  = { 0 };
+static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned ( safertosapiSTACK_ALIGNMENT ) ) )  = { 0 };
 #endif /* defined (BUILD_MCU) */
 
 /* The buffer for the timer command queue. */
 static portInt8Type acTimerCommandQueueBuffer[ configTIMER_CMD_QUEUE_BUFFER_SIZE ] __attribute__( ( aligned ( safertosapiWORD_ALIGNMENT ) ) ) = { 0 };
 
-#if defined (BUILD_MCU)
+#if defined (BUILD_MCU) || defined (BUILD_C7X)
 /* A linker defined symbol that gives the start address of the Idle task
  * data section. */
 extern portUInt32Type lnkIdleHookDataStartAddr;
@@ -121,7 +131,10 @@ portBaseType xInitializeScheduler( void )
     {
         configSYSTICK_CLOCK_HZ,             /* ulTimerClockHz */
         configTICK_RATE_HZ,                 /* ulTickRateHz */
-        
+#if defined (BUILD_C7X)
+    	configC7X_YEILD_INT_NUM,            /* uxYieldInterruptNumber */
+#endif
+
         /* Hook Functions */
         NULL,                               /* pvSvcHookFunction */
         

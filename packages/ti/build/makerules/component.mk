@@ -124,8 +124,8 @@ DEFAULT_CORELIST_EXCLUDE_CORES_tirtos = $(DEFAULT_$(SOC)_CORELIST)
 DEFAULT_$(SOC)_CORELIST_tirtos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES_tirtos), $(DEFAULT_$(SOC)_CORELIST))
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
-# SafeRTOS is not currently supported on J7 MPU/C7x cores
-DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mpu1_0 c7x_1 c7x-hostemu
+# SafeRTOS is not currently supported on J7 MPU/C7x-hostemu cores
+DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mpu1_0 c7x-hostemu
 else
 #SafeRTOS is not supported on other SOCs
 DEFAULT_CORELIST_EXCLUDE_CORES_safertos = $(DEFAULT_$(SOC)_CORELIST)
