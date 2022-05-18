@@ -388,7 +388,8 @@ export sciclient_fw_testapp_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/scic
 export sciclient_fw_testapp_$(1)_BOARD_DEPENDENCY = no
 export sciclient_fw_testapp_$(1)_CORE_DEPENDENCY = yes
 export sciclient_fw_testapp_$(1)_PKG_LIST = sciclient_fw_testapp_$(1)
-export sciclient_fw_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_evm j721e_evm j7200_evm j721s2_evm j784s4_evm)
+#Disable J7AHP till FW CSLR is fixed
+export sciclient_fw_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), am65xx_evm j721e_evm j7200_evm j721s2_evm)
 export sciclient_fw_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
 export sciclient_fw_testapp_$(1)_SBL_APPIMAGEGEN = yes
 export sciclient_fw_testapp_$(1)_SBL_IMAGEGEN = no
