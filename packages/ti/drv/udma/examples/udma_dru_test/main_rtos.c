@@ -73,6 +73,13 @@
 static void taskFxn(void* a0, void* a1);
 extern int32_t Udma_druTest(void);
 
+/* HACK for J7AHP until BOARD support added*/
+#if defined(SOC_J784S4)
+Board_initCfg           boardCfg;
+Board_STATUS Board_init(Board_initCfg boardCfg){return 1;}
+#endif
+/*******************************************/
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */

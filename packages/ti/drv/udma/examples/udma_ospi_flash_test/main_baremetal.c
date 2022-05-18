@@ -72,6 +72,13 @@ extern int32_t App_setGTCClk(uint32_t moduleId,
                              uint32_t clkId,
                              uint64_t clkRateHz);
 
+/* HACK for J7AHP until BOARD support added*/
+#if defined(SOC_J784S4)
+Board_initCfg           boardCfg;
+Board_STATUS Board_init(Board_initCfg boardCfg){return 1;}
+#endif
+/*******************************************/
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
