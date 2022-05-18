@@ -34,9 +34,10 @@
 #
 ifeq ($(fvid2_component_make_include), )
 
-drvfvid2_SOCLIST           = j721e j721s2 am65xx
+drvfvid2_SOCLIST           = j721e j721s2 j784s4 am65xx
 drvfvid2_j721e_CORELIST = $(DEFAULT_j721e_CORELIST)
 drvfvid2_j721s2_CORELIST = $(DEFAULT_j721s2_CORELIST)
+drvfvid2_j784s4_CORELIST = $(DEFAULT_j784s4_CORELIST)
 drvfvid2_am65xx_CORELIST   = mcu1_0 mpu1_0
 
 ############################
