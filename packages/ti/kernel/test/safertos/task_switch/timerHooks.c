@@ -69,7 +69,7 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
 {
     TimerP_Handle pxTickTimerHandle = NULL;
     TimerP_Params xTimerParams;
-
+    
     ( void ) ulTimerClockHz;
 
     TimerP_Params_init( &xTimerParams );
@@ -77,7 +77,10 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     xTimerParams.startMode  = TimerP_StartMode_USER;
     xTimerParams.periodType = TimerP_PeriodType_MICROSECS;
     xTimerParams.period     = ( 1000000UL / ulTickRateHz );
-
+#if defined (BUILD_C66X)
+    xTimerParams.intNum     = configTIMER_INT_NUM;
+    xTimerParams.eventId    = configTIMER_EVENT_ID;
+#endif
     pxTickTimerHandle = TimerP_create( configTIMER_ID,
                                        &prvTimerTickIsr,
                                        &xTimerParams );

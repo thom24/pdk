@@ -1,5 +1,5 @@
 /*
- *  Copyright ( C ) 2018-2021 Texas Instruments Incorporated
+ *  Copyright ( C ) 2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -61,26 +61,6 @@
 
 #define NUM_TASK_SWITCHES      ( 1000000u )
 
-#ifdef SOC_TPR12
-    #ifdef BUILD_MCU1_0
-        #define PING_INT_NUM           ( 236u )
-        #define PONG_INT_NUM           ( 237u )
-    #endif
-    #ifdef BUILD_C66X_1
-        #define PING_INT_NUM           ( 8u )
-        #define PING_EVT_ID            ( CSL_DSS_INTR_DSS_RTIB_0 )
-        #define PONG_INT_NUM           ( 9u )
-        #define PONG_EVT_ID            ( CSL_DSS_INTR_DSS_RTIB_1 )
-    #endif
-#endif
-
-#ifdef SOC_AM65XX
-    #if defined ( BUILD_MCU1_0 ) || defined ( BUILD_MCU1_1 )
-        #define PING_INT_NUM           ( CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_0 )
-        #define PONG_INT_NUM           ( CSL_MCU0_INTR_MAIN2MCU_LVL_INTR0_OUTL_1 )
-    #endif
-#endif
-
 #ifdef SOC_J721E
     #ifdef BUILD_MCU1_0
         #define PING_INT_NUM           ( CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0 )
@@ -106,24 +86,17 @@
         #define PING_INT_NUM           ( CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_0 )
         #define PONG_INT_NUM           ( CSLR_R5FSS1_CORE1_INTR_R5FSS1_INTROUTER0_OUTL_1 )
     #endif
-#endif
-
-#ifdef SOC_J7200
-    #ifdef BUILD_MCU1_0
-        #define PING_INT_NUM           ( CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0 )
-        #define PONG_INT_NUM           ( CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1 )
+    #ifdef BUILD_C66X_1
+        #define PING_INT_NUM           (8u)
+        #define PING_EVT_ID            (CSLR_C66SS0_CORE0_C66_EVENT_IN_SYNC_C66SS0_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (9u)
+        #define PONG_EVT_ID            (CSLR_C66SS0_CORE0_C66_EVENT_IN_SYNC_C66SS0_INTROUTER0_OUTL_1)
     #endif
-    #ifdef BUILD_MCU1_1
-        #define PING_INT_NUM           ( CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0 )
-        #define PONG_INT_NUM           ( CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1 )
-#endif
-    #ifdef BUILD_MCU2_0
-        #define PING_INT_NUM           ( CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_0 )
-        #define PONG_INT_NUM           ( CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_1 )
-    #endif
-    #ifdef BUILD_MCU2_1
-        #define PING_INT_NUM           ( CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_0 )
-        #define PONG_INT_NUM           ( CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_MSMC_EN_SOC_EVENTS_OUT_LEVEL_1 )
+    #ifdef BUILD_C66X_2
+        #define PING_INT_NUM           (8u)
+        #define PING_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_0)
+        #define PONG_INT_NUM           (9u)
+        #define PONG_EVT_ID            (CSLR_C66SS1_CORE0_C66_EVENT_IN_SYNC_C66SS1_INTROUTER0_OUTL_1)
     #endif
 #endif
 
@@ -197,7 +170,7 @@ void ping_main( void *args )
         HwiP_Status hwiStatus;
 
         HwiP_Params_init( &hwiParams );
-#ifdef BUILD_C66X_1
+#if defined (BUILD_C66X)
         hwiParams.evtId = PING_EVT_ID;
 #endif
         hHwi = HwiP_create( PING_INT_NUM, ping_isr, &hwiParams );
@@ -213,8 +186,7 @@ void ping_main( void *args )
         DebugP_assert( pdPASS == semaphoreResult );
 
         curTime = TimerP_getTimeInUsecs() - curTime;
-        curTime *= 10;
-
+        
         hwiStatus = HwiP_delete( hHwi );
         DebugP_assert( hwiStatus == HwiP_OK );
 
@@ -264,7 +236,7 @@ void pong_main( void *args )
         HwiP_Status hwiStatus;
 
         HwiP_Params_init( &hwiParams );
-#ifdef BUILD_C66X_1
+#if defined (BUILD_C66X)
         hwiParams.evtId = PONG_EVT_ID;
 #endif
         hHwi = HwiP_create( PONG_INT_NUM, pong_isr, &hwiParams );
@@ -323,6 +295,7 @@ void task_switch_main( void *args )
         NULL,                               /* Parameters */
         PONG_TASK_PRI,                      /* Priority */
         NULL,                               /* TLS object */
+#if defined (BUILD_MCU)
         pdFALSE,                            /* Check task does not use the FPU. */
          {                                  /* MPU task parameters. */
                 mpuPRIVILEGED_TASK,         /* Check task is privileged. */
@@ -331,6 +304,10 @@ void task_switch_main( void *args )
                     { NULL, 0U, 0U, 0U },
                 }
             }                               /* Port-specific task parameters */
+#endif
+#if defined (BUILD_C66X)
+        safertosapiUNPRIVILEGED_TASK,           /* The idle hook will not be executed in privileged mode. */
+#endif
     };
 
     
@@ -344,6 +321,7 @@ void task_switch_main( void *args )
         NULL,                               /* Parameters */
         PING_TASK_PRI,                      /* Priority */
         NULL,                               /* TLS object */
+#if defined (BUILD_MCU)
         pdFALSE,                            /* Check task does not use the FPU. */
          {                                  /* MPU task parameters. */
                 mpuPRIVILEGED_TASK,         /* Check task is privileged. */
@@ -352,6 +330,10 @@ void task_switch_main( void *args )
                     { NULL, 0U, 0U, 0U },
                 }
             }                               /* Port-specific task parameters */
+#endif
+#if defined (BUILD_C66X)
+        safertosapiUNPRIVILEGED_TASK,           /* The idle hook will not be executed in privileged mode. */
+#endif
     };
     
     /* Create the privileged test tasks. */

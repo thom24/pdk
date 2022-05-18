@@ -5,17 +5,22 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 MODULE_NAME = safertos
 
-
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SAFERTOS_ISA_EXT=199_TI_CR5
 SAFERTOS_COMPILER_EXT=024_Clang
 endif
+ifeq ($(ISA),$(filter $(ISA), c66))
+SAFERTOS_ISA_EXT=201_C66x
+SAFERTOS_COMPILER_EXT=005_TI_CGT
+endif
 
-SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/${SAFERTOS_ISA_EXT}
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
+SRCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
 SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel
 SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)
 SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)/$(SAFERTOS_COMPILER_EXT)
+ifeq ($(ISA),$(filter $(ISA), r5f))
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/${SAFERTOS_ISA_EXT}
+endif
 
 INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT)
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
@@ -24,7 +29,6 @@ INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kern
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/kernel/include_prv
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT)/$(SAFERTOS_COMPILER_EXT)
-
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -47,17 +51,12 @@ SRCS_COMMON += \
     apiWrapper.c \
     apiEventGroupsWrapper.c \
     apiStreamBufferWrapper.c \
-    apiEvtMplxWrapper.c 
+    apiEvtMplxWrapper.c \
+    portable.c
 
 #ISA specific C files
-ifeq ($(ISA),$(filter $(ISA), c66))
-SRCS_COMMON += \
-    port_Hwi.c
-endif
-
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_COMMON += \
-    portable.c \
     mpuARM.c \
     portmpu.c \
     apiMPU.c
@@ -66,17 +65,13 @@ endif
 #ISA specific assembly files
 ifeq ($(ISA),$(filter $(ISA), c66))
 SRCS_ASM_COMMON := \
-    port_Hwi_asm_switch.asm \
-    port_Hwi_disp_always.asm \
-    port_Hwi_intcIsrDispatch.asm \
-    port_TaskSupport_asm.asm
+	portasm.asm
 endif
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_S_COMMON := \
     portasm.S
 endif
-
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 

@@ -54,17 +54,22 @@
  * the necessary handlers have been installed. */
 #define configSTACK_CHECK_MARGIN            ( 0U )
 
-
 /* The user configuration for the timer module. */
-#define configTIMER_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE_WITH_FPU )
 #define configTIMER_TASK_PRIORITY           ( configMAX_PRIORITIES - 1U )
 #define configTIMER_CMD_QUEUE_LEN           ( 50U )
 #define configTIMER_CMD_QUEUE_BUFFER_SIZE   ( ( configTIMER_CMD_QUEUE_LEN * sizeof( timerQueueMessageType ) ) + safertosapiQUEUE_OVERHEAD_BYTES )
 
-/* The user configuration for the idle task. */
+#if defined (BUILD_MCU)
+#define configTIMER_TASK_STACK_SIZE         ( configMINIMAL_STACK_SIZE_WITH_FPU )
 #define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE_WITH_FPU )
+/* The user configuration for the idle task. */
 #define configIDLE_HOOK_DATA_ADDR           ( ( void * ) &lnkIdleHookDataStartAddr )
 #define configIDLE_HOOK_DATA_SIZE           ( ( portUInt32Type ) 0x20U )
+#endif
+
+#if defined (BUILD_C66X)
+#define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
+#endif
 
 /*-----------------------------------------------------------------------------
  * Local Prototypes
@@ -79,7 +84,8 @@ void vFiqHandler( void );
 /*-----------------------------------------------------------------------------
  * Local Variables
  *---------------------------------------------------------------------------*/
-
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined (BUILD_MCU)
 static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned ( configIDLE_TASK_STACK_SIZE ) ) ) = { 0 };
 
 /* Declare the stack for the timer task, it cannot be done in the timer
@@ -87,13 +93,19 @@ static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__(
  * functions are executed in the timer task and their complexity/stack
  * requirements are application specific. */
 static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( configTIMER_TASK_STACK_SIZE ) ) ) = { 0 };
+#else
+static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )  = { 0 };
+static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )  = { 0 };
+#endif /* defined (BUILD_MCU) */
 
 /* The buffer for the timer command queue. */
 static portInt8Type acTimerCommandQueueBuffer[ configTIMER_CMD_QUEUE_BUFFER_SIZE ] __attribute__( ( aligned ( safertosapiWORD_ALIGNMENT ) ) ) = { 0 };
 
+#if defined (BUILD_MCU)
 /* A linker defined symbol that gives the start address of the Idle task
  * data section. */
 extern portUInt32Type lnkIdleHookDataStartAddr;
+#endif
 
 /*-----------------------------------------------------------------------------
  * Routines
@@ -109,10 +121,10 @@ portBaseType xInitializeScheduler( void )
     {
         configSYSTICK_CLOCK_HZ,             /* ulTimerClockHz */
         configTICK_RATE_HZ,                 /* ulTickRateHz */
-
+        
         /* Hook Functions */
         NULL,                               /* pvSvcHookFunction */
-
+        
         /* System Stack parameters */
         configSTACK_CHECK_MARGIN,           /* uxAdditionalStackCheckMarginBytes */
 
@@ -137,6 +149,9 @@ portBaseType xInitializeScheduler( void )
                 { NULL, 0U, 0U, 0U }
             }
         },
+#endif
+#if defined (BUILD_C66X)
+    safertosapiUNPRIVILEGED_TASK,           /* The idle hook will not be executed in privileged mode. */
 #endif
         NULL,                               /* pvIdleTaskTLSObject */
 
@@ -172,12 +187,10 @@ void vApplicationErrorHook( portTaskHandleType xHandleOfTaskWithError,
     vApplicationAbort();
 }
 /*---------------------------------------------------------------------------*/
-
 #if defined (BUILD_MCU)
 void vFiqHandler( void )
 {
     while( 1 ); /* vFiqhandler not used in SAFERTOS */
 }
 #endif
-
 /*-------------------------------------------------------------------------*/

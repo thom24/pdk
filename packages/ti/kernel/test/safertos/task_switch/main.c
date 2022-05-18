@@ -36,23 +36,100 @@
 #include <ti/board/board.h>
 #include "SafeRTOS_API.h"
 
+#if defined (BUILD_C66X)
+#include "aborts.h"
+
+#include "ti/drv/sciclient/sciclient.h"
+#include "ti/csl/src/intc/csl_intc.h"
+#endif
+
 #define MAIN_TASK_PRI  ( 4U )
 
 #define MAIN_TASK_SIZE ( 4096U )
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined (BUILD_MCU)
 static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned( MAIN_TASK_SIZE ) ) );
-
+#else
+static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned(32) ) );
+#endif
 /* Declare task TCB:
  * Due to the use of the MPU background region, by default, all RAM can only
  * be accessed in privileged mode unless a specific MPU region has been setup
  * allowing unprivileged access. */
 static xTCB xMainTaskTCB = { 0 };
 
-
 /* The call to xTaskInitializeScheduler is included within a wrapper
  * initialisation function. */
 portBaseType xInitializeScheduler( void );
 
 void task_switch_main( void *args );
+
+#if defined (BUILD_MCU)
+portBaseType prvSetupHardware( void )
+{
+    return pdPASS;  
+}
+#endif
+
+#if defined (BUILD_C66X)
+extern void vPortSetInterruptVectors( void );
+/*
+ * These combinations of timers and interrupts will only
+ * work if this application is running on a single core.
+ * To run applications on both c66x cores ensure the
+ * timer/irq combinations are all different.
+ */
+portBaseType prvC66xTickInterruptConfig( void )
+{
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+
+    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
+                                      TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+    rmIrqReq.src_index              = 0U;
+#if defined (BUILD_C66X_1)
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
+    rmIrqReq.dst_host_irq           = 21U;
+#endif
+#if defined (BUILD_C66X_2)
+    rmIrqReq.src_id                 = TISCI_DEV_TIMER1;
+    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
+    rmIrqReq.dst_host_irq           = 20U;
+#endif
+    /* Unused params */
+    rmIrqReq.global_event           = 0U;
+    rmIrqReq.ia_id                  = 0U;
+    rmIrqReq.vint                   = 0U;
+    rmIrqReq.vint_status_bit_index  = 0U;
+    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    return ( ( Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER) == CSL_PASS )? pdPASS : pdFAIL );
+}
+/*-------------------------------------------------------------------------*/
+/* Hardware setup using the TI PDK libraries. */
+portBaseType prvSetupHardware( void )
+{
+    portBaseType xStatus = pdPASS;
+    int32_t ret;
+    Sciclient_ConfigPrms_t config;
+
+    Sciclient_configPrmsInit(&config);
+
+    ret = Sciclient_init(&config);
+    if( ret == 0 )
+    {
+        xStatus = pdFAIL;
+    }
+
+    xStatus = prvC66xTickInterruptConfig();
+        
+    vPortSetInterruptVectors();
+
+    return xStatus;
+}
+/*-------------------------------------------------------------------------*/
+#endif
 
 int main( void )
 {
@@ -68,8 +145,14 @@ int main( void )
 
     portBaseType xStatus;
 
+    /* Setup Board Hardware. */
+    xStatus = prvSetupHardware();
+
     /* Initialise the Kernel Scheduler. */
-    xStatus = xInitializeScheduler();
+    if( pdPASS == xStatus )
+    {
+        xStatus = xInitializeScheduler();
+    }
 
     /* Everything OK? */
     if( pdPASS == xStatus )
@@ -85,6 +168,7 @@ int main( void )
             NULL,                               /* The task parameter, not used in this case. */
             MAIN_TASK_PRI,                      /* The priority to assigned to the task being created. */
             NULL,                               /* Thread Local Storage not used. */
+#if defined (BUILD_MCU)
             pdFALSE,                            /* Check task does not use the FPU. */
             {                                   /* MPU task parameters. */
                 mpuPRIVILEGED_TASK,             /* Check task is privileged. */
@@ -93,14 +177,17 @@ int main( void )
                     { NULL, 0U, 0U, 0U },
                 }
             }
-        };
+#endif
 
+#if defined (BUILD_C66X)
+            safertosapiPRIVILEGED_TASK      /* Check task is privileged. */
+#endif
+        };
+    
         /* Create the main task. */
         xStatus = xTaskCreate( &xMainTaskParams,       /* The structure containing the task parameters created at the start of this function. */
                                     NULL );            /* This parameter can be used to receive a handle to the created task, but is not used in this case. */
-
     }
-    
     /* Everything OK? */
     if( pdPASS == xStatus )
     {
@@ -115,3 +202,4 @@ int main( void )
 
     return 0;
 }
+
