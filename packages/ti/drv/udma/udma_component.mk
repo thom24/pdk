@@ -227,7 +227,7 @@ udma_memcpy_testapp_$(1)_PKG_LIST = udma_memcpy_testapp_$(1)
 udma_memcpy_testapp_$(1)_INCLUDE = $(udma_memcpy_testapp_$(1)_PATH)
 export udma_memcpy_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvudma_BOARDLIST))
 ifeq ($(SOC),$(filter $(SOC), j784s4))
-export udma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2)
+export udma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4)
 else
 ifeq ($(SOC),$(filter $(SOC), j721s2))
 export udma_memcpy_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2)
@@ -350,10 +350,14 @@ export udma_dru_testapp_$(1)_BOARDLIST = $(drvudma_dru_$(1)_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_dru_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c66xdsp_1 c66xdsp_2 c7x_1)
 else
-ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721s2))
 export udma_dru_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c7x_1 c7x_2)
 else
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+export udma_dru_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c7x_1 c7x_2 c7x_3 c7x_4)
+else
 export udma_dru_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_$(SOC)_example_CORELIST))
+endif
 endif
 endif
 export udma_dru_testapp_$(1)_SBL_APPIMAGEGEN = yes
@@ -388,8 +392,11 @@ export udma_dru_direct_tr_testapp_$(1)_BOARDLIST = $(drvudma_dru_$(1)_BOARDLIST)
 ifeq ($(SOC),$(filter $(SOC), j721e))
 export udma_dru_direct_tr_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c66xdsp_1 c7x_1)
 else
-ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721s2))
 export udma_dru_direct_tr_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c7x_1 c7x_2)
+else
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+export udma_dru_direct_tr_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu2_0 c7x_1 c7x_2 c7x_3 c7x_4)
 else
 export udma_dru_direct_tr_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_$(SOC)_example_CORELIST))
 endif

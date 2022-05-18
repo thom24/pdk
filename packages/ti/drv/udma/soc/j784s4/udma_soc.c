@@ -277,7 +277,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     if(UDMA_INST_ID_BCDMA_0 == instId)
     {
         drvHandle->instType = UDMA_INST_TYPE_LCDMA_BCDMA;
-    	pBcdmaRegs = &drvHandle->bcdmaRegs;
+        pBcdmaRegs = &drvHandle->bcdmaRegs;
         pBcdmaRegs->pGenCfgRegs     = ((CSL_bcdma_gcfgRegs *) UDMA_NAVSS0_BCDMA0_CFG_GCFG_BASE);
         pBcdmaRegs->pTxChanCfgRegs  = ((CSL_bcdma_txccfgRegs *) UDMA_NAVSS0_BCDMA0_CFG_TCHAN_BASE);
         pBcdmaRegs->pRxChanCfgRegs  = ((CSL_bcdma_rxccfgRegs *) UDMA_NAVSS0_BCDMA0_CFG_RCHAN_BASE);
@@ -286,8 +286,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
         drvHandle->trigGemOffset    = CSL_NAVSS_GEM_MAIN_BCDMA_TRIGGER_OFFSET;
 
         /* Fill other SOC specific parameters by reading from UDMA config
-	     * registers */
-	    CSL_bcdmaGetCfg(pBcdmaRegs);
+         * registers */
+        CSL_bcdmaGetCfg(pBcdmaRegs);
 
         pUdmapRegs = &drvHandle->udmapRegs;
         memset(pUdmapRegs, 0, sizeof(*pUdmapRegs));
@@ -339,10 +339,10 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
         pLcdmaRaRegs = &drvHandle->lcdmaRaRegs;
 
-	    pLcdmaRaRegs->pRingCfgRegs   = (CSL_lcdma_ringacc_ring_cfgRegs *) UDMA_NAVSS0_BCDMA0_CFG_RING_BASE;
-	    pLcdmaRaRegs->pRingRtRegs    = (CSL_lcdma_ringacc_ringrtRegs *) UDMA_NAVSS0_BCDMA0_CFG_RINGRT_BASE;
-	    pLcdmaRaRegs->pCredRegs      = (CSL_lcdma_ringacc_credRegs *) UDMA_NAVSS0_CRED_BASE;
-	    pLcdmaRaRegs->maxRings       = CSL_NAVSS_BCDMA_NUM_BC_CHANS + CSL_NAVSS_BCDMA_NUM_TX_CHANS + CSL_NAVSS_BCDMA_NUM_RX_CHANS;
+        pLcdmaRaRegs->pRingCfgRegs   = (CSL_lcdma_ringacc_ring_cfgRegs *) UDMA_NAVSS0_BCDMA0_CFG_RING_BASE;
+        pLcdmaRaRegs->pRingRtRegs    = (CSL_lcdma_ringacc_ringrtRegs *) UDMA_NAVSS0_BCDMA0_CFG_RINGRT_BASE;
+        pLcdmaRaRegs->pCredRegs      = (CSL_lcdma_ringacc_credRegs *) UDMA_NAVSS0_CRED_BASE;
+        pLcdmaRaRegs->maxRings       = CSL_NAVSS_BCDMA_NUM_BC_CHANS + CSL_NAVSS_BCDMA_NUM_TX_CHANS + CSL_NAVSS_BCDMA_NUM_RX_CHANS;
 
         drvHandle->ringDequeueRaw           = &Udma_ringDequeueRawLcdma;
         drvHandle->ringQueueRaw             = &Udma_ringQueueRawLcdma;
@@ -468,18 +468,40 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 #if defined (BUILD_MCU3_1)
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU3_1;
 #endif
+#if defined (BUILD_MCU4_0)
+    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU4_0;
+#endif
+#if defined (BUILD_MCU4_1)
+    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_MCU4_1;
+#endif
 #if defined (BUILD_C7X_1)
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_C7X_1;
-    drvHandle->clecRtMap    = CSL_CLEC_RTMAP_CPU_4; /* CPU4 is C7x_1 in J721S2 */
-    /* CLEC interrupt number 1024 is connected to GIC interrupt number 32 in J721S2.
+    drvHandle->clecRtMap    = CSL_CLEC_RTMAP_CPU_4; /* CPU4 is C7x_1 in J784S4 */
+    /* CLEC interrupt number 1024 is connected to GIC interrupt number 32 in J784S4.
      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
      * to the event number which is shared between GIC and CLEC. */
     drvHandle->clecOffset   = 1024U - 32U;
 #endif
 #if defined (BUILD_C7X_2)
     drvHandle->druCoreId    = UDMA_DRU_CORE_ID_C7X_2;
-    drvHandle->clecRtMap    = CSL_CLEC_RTMAP_CPU_5; /* CPU5 is C7x_2 in J721S2 */
-    /* CLEC interrupt number 1024 is connected to GIC interrupt number 32 in J721S2.
+    drvHandle->clecRtMap    = CSL_CLEC_RTMAP_CPU_5; /* CPU5 is C7x_2 in J784S4 */
+    /* CLEC interrupt number 1024 is connected to GIC interrupt number 32 in J784S4.
+     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+     * to the event number which is shared between GIC and CLEC. */
+    drvHandle->clecOffset   = 1024U - 32U;
+#endif
+#if defined (BUILD_C7X_3)
+    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_C7X_3;
+    drvHandle->clecRtMap    = CSL_CLEC_RTMAP_CPU_6; /* CPU4 is C7x_1 in J784S4 */
+    /* CLEC interrupt number 1024 is connected to GIC interrupt number 32 in J784S4.
+     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+     * to the event number which is shared between GIC and CLEC. */
+    drvHandle->clecOffset   = 1024U - 32U;
+#endif
+#if defined (BUILD_C7X_4)
+    drvHandle->druCoreId    = UDMA_DRU_CORE_ID_C7X_4;
+    drvHandle->clecRtMap    = CSL_CLEC_RTMAP_CPU_7; /* CPU5 is C7x_2 in J784S4 */
+    /* CLEC interrupt number 1024 is connected to GIC interrupt number 32 in J784S4.
      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
      * to the event number which is shared between GIC and CLEC. */
     drvHandle->clecOffset   = 1024U - 32U;
@@ -604,18 +626,18 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     if(UDMA_INST_ID_BCDMA_0 == instId)
     {
         drvHandle->txChOffset           = pBcdmaRegs->bcChanCnt;
-	    drvHandle->rxChOffset   		= drvHandle->txChOffset + pBcdmaRegs->splitTxChanCnt;
+        drvHandle->rxChOffset           = drvHandle->txChOffset + pBcdmaRegs->splitTxChanCnt;
        /* The srcIdx passed to Sciclient_rmIrqset API for configuring DMA Completion/Ring events, 
         * will be ringNum + the corresponding following offset. 
         * So setting the offset as TISCI Start Idx - corresponding ringNum Offset (if any) */
         drvHandle->blkCopyRingIrqOffset = TISCI_BCDMA0_BC_RC_OES_IRQ_SRC_IDX_START;
         drvHandle->txRingIrqOffset      = TISCI_BCDMA0_TX_RC_OES_IRQ_SRC_IDX_START - drvHandle->txChOffset;
         drvHandle->rxRingIrqOffset      = TISCI_BCDMA0_RX_RC_OES_IRQ_SRC_IDX_START - drvHandle->rxChOffset;
-	    drvHandle->udmapSrcThreadOffset = CSL_PSILCFG_NAVSS_MAIN_BCDMA0_STRM_PSILS_THREAD_OFFSET; 
-	    drvHandle->udmapDestThreadOffset= CSL_PSILCFG_NAVSS_MAIN_BCDMA0_STRM_PSILD_THREAD_OFFSET;
-	    drvHandle->maxRings             = CSL_NAVSS_BCDMA_NUM_BC_CHANS + CSL_NAVSS_BCDMA_NUM_TX_CHANS + CSL_NAVSS_BCDMA_NUM_RX_CHANS;
-	    drvHandle->devIdRing            = TISCI_DEV_NAVSS0_BCDMA_0;
-	    drvHandle->devIdUdma        	= TISCI_DEV_NAVSS0_BCDMA_0;
+        drvHandle->udmapSrcThreadOffset = CSL_PSILCFG_NAVSS_MAIN_BCDMA0_STRM_PSILS_THREAD_OFFSET; 
+        drvHandle->udmapDestThreadOffset= CSL_PSILCFG_NAVSS_MAIN_BCDMA0_STRM_PSILD_THREAD_OFFSET;
+        drvHandle->maxRings             = CSL_NAVSS_BCDMA_NUM_BC_CHANS + CSL_NAVSS_BCDMA_NUM_TX_CHANS + CSL_NAVSS_BCDMA_NUM_RX_CHANS;
+        drvHandle->devIdRing            = TISCI_DEV_NAVSS0_BCDMA_0;
+        drvHandle->devIdUdma            = TISCI_DEV_NAVSS0_BCDMA_0;
        /* The srcIdx passed to Sciclient_rmIrqset API for configuring TR events, 
         * will be chNum + the corresponding following offset. 
         * So setting the offset as TISCI Start Idx - corresponding chNum Offset (if any) */
@@ -705,11 +727,23 @@ uint32_t Udma_getCoreId(void)
 #if defined (BUILD_MCU3_1)
     coreId = UDMA_CORE_ID_MCU3_1;
 #endif
+#if defined (BUILD_MCU4_0)
+    coreId = UDMA_CORE_ID_MCU4_0;
+#endif
+#if defined (BUILD_MCU4_1)
+    coreId = UDMA_CORE_ID_MCU4_1;
+#endif
 #if defined (BUILD_C7X_1)
     coreId = UDMA_CORE_ID_C7X_1;
 #endif
 #if defined (BUILD_C7X_2)
     coreId = UDMA_CORE_ID_C7X_2;
+#endif
+#if defined (BUILD_C7X_3)
+    coreId = UDMA_CORE_ID_C7X_3;
+#endif
+#if defined (BUILD_C7X_4)
+    coreId = UDMA_CORE_ID_C7X_4;
 #endif
 #if defined (BUILD_MCU1_0)
     coreId = UDMA_CORE_ID_MCU1_0;
@@ -726,7 +760,7 @@ uint16_t Udma_getCoreSciDevId(void)
     uint16_t coreSciDevId;
 
 #if defined (BUILD_MPU1_0)
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0;
 #endif
 #if defined (BUILD_MCU2_0)
     coreSciDevId = TISCI_DEV_R5FSS0_CORE0;
@@ -740,12 +774,24 @@ uint16_t Udma_getCoreSciDevId(void)
 #if defined (BUILD_MCU3_1)
     coreSciDevId = TISCI_DEV_R5FSS1_CORE1;
 #endif
+#if defined (BUILD_MCU4_0)
+    coreSciDevId = TISCI_DEV_R5FSS2_CORE0;
+#endif
+#if defined (BUILD_MCU4_1)
+    coreSciDevId = TISCI_DEV_R5FSS2_CORE1;
+#endif
+/* On J784S4 all the c7x cores interrupts are handled by clec */
 #if defined (BUILD_C7X_1)
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
 #endif
 #if defined (BUILD_C7X_2)
-    /* Used same flag as C7X_1 */
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
+#endif
+#if defined (BUILD_C7X_3)
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
+#endif
+#if defined (BUILD_C7X_4)
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
 #endif
 #if defined (BUILD_MCU1_0)
     coreSciDevId = TISCI_DEV_MCU_R5FSS0_CORE0;
