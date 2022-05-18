@@ -327,7 +327,7 @@ ifeq ($(CORE),$(filter $(CORE), qnx_mpu1_0))
 endif
 
 # C7x DSP
-ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2))
+ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2 c7x_3 c7x_4))
  ISA = c7x
  ISA_EXT = 71
  ARCH = c71
