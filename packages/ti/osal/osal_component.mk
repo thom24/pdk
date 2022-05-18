@@ -78,9 +78,9 @@ libosal_SOCLIST  += am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x
 libosal_SOCLIST  += omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4
 
 libosal_tirtos_BOARDLIST    = $(libosal_BOARDLIST)
-libosal_tirtos_SOCLIST      = $(libosal_SOCLIST)
+libosal_tirtos_SOCLIST      = $(libosal_SOCLIST) 
 libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm j721s2_evm
-libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x j721s2
+libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x j721s2 j784s4
 libosal_safertos_BOARDLIST  = tpr12_evm awr294x_evm
 libosal_safertos_SOCLIST    = tpr12 awr294x
 
