@@ -604,6 +604,10 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
         cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_4;
     #elif defined(BUILD_C7X_2)
         cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_5;
+    #elif defined(BUILD_C7X_3)
+        cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_6;
+    #elif defined(BUILD_C7X_4)
+        cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_7;
     #endif
         cfgClec.extEvtNum         = 0;
         cfgClec.c7xEvtNum         = intCfg[pinNum].intNum;
@@ -648,6 +652,13 @@ static uint16_t GPIO_socGetCoreSciId()
         devId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     TISCI_DEV_R5FSS1_CORE0:
                                         TISCI_DEV_R5FSS1_CORE1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3)
+    {
+        /* MAIN SS Pulsar R5 SS1 */
+        devId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    TISCI_DEV_R5FSS2_CORE0:
+                                        TISCI_DEV_R5FSS2_CORE1;
     }
 #elif defined (BUILD_C7X)
     devId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
