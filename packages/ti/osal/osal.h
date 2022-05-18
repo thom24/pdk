@@ -184,7 +184,7 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
-#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 136U)
+#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 248U)
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_TASKP_SIZE_BYTES

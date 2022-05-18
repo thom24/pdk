@@ -155,6 +155,10 @@ void C66xTimerInterruptInit(void);
             #define OSAL_TEST_OS_TIMER_INT_NUM          (configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
             #define OSAL_TEST_OS_TIMER_EVENT_NUM        (configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
         #endif
+        #if defined(SAFERTOS)
+            #define OSAL_TEST_OS_TIMER_INT_NUM          (configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
+            #define OSAL_TEST_OS_TIMER_EVENT_NUM        (configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
+        #endif
         /* DMTimers used for OSAL Timer Test */ 
         /* The Event 20/21 is used for DMTimer0/1 by SysBIOS/FreeRTOS by default, 
         * so we need to use a different one here */
@@ -162,7 +166,7 @@ void C66xTimerInterruptInit(void);
         #define OSAL_TEST_TIMER_EVENT_NUM               (22U)
         #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_TEST_OS_TIMER_INT_NUM + 1U)
     #endif
-
+    
 #endif
 
 #ifdef BUILD_C7X
@@ -233,7 +237,8 @@ TimerP_Handle handle;
 /* No task support for Bare metal */
 #else
 /* Test application stack */
-#if defined(SAFERTOS)
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( APP_TSK_STACK_MAIN ))) = { 0 };
 #else
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( 32 )));
@@ -2278,7 +2283,8 @@ void C66xTimerInterruptInit(void)
     /* DMTimers used by OS */ 
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
     struct tisci_msg_rm_irq_set_resp    rmIrqResp;
-
+#if !defined(SAFERTOS) 
+ /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
     rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                       TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
     rmIrqReq.src_id                 = OSAL_TEST_OS_TIMER_TISCI_ID;
@@ -2293,7 +2299,7 @@ void C66xTimerInterruptInit(void)
     rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
     Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
-
+#endif
     /* DMTimers used for OSAL Timer Test  */ 
     rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                       TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;

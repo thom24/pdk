@@ -47,5 +47,7 @@ endif
 ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))
   SRCDIR += arch/core/c6x
   SRCS_COMMON += CacheP_nonos.c Arch_util.c EventCombinerP_nonos.c
+  SRCS_COMMON += SafeRTOS_config_c66.c
   PACKAGE_SRCS_COMMON += arch/core/c6x src/nonos/EventCombinerP_nonos.c
+  PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_c66.c
 endif

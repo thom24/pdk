@@ -132,6 +132,17 @@ extern "C" {
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 3 )   /*  DM Timer 15  */
 #endif
 
+#if defined (_TMS320C6X)
+/* Default DM Timer allocation for c66x cores in j721e   */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_1        ( 0 )   /*  DM Timer 1  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_2        ( 1 )   /*  DM Timer 2  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_1   ( 14 ) 
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_2   ( 15 )
+#define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_1  ( 21 )
+#define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_2  ( 20 )
+#endif
+
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
 

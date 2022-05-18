@@ -55,6 +55,8 @@ extern "C" {
 #if defined (SOC_AM65XX) || defined (SOC_J721E)
 #if defined (BUILD_MCU1_0) || defined(BUILD_MCU1_1)
   #define OSAL_TEST_CPU_FREQ_KHZ   (400000)
+#elif defined (_TMS320C6X)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (1350000)
 #else
   #define OSAL_TEST_CPU_FREQ_KHZ   (800000)
 #endif

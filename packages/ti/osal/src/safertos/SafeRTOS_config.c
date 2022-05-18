@@ -67,6 +67,10 @@
 #define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE_WITH_FPU )
 #endif
 
+#if defined (BUILD_C66X)
+/* The user configuration for the idle task. */
+#define configIDLE_TASK_STACK_SIZE          ( configMINIMAL_STACK_SIZE )
+#endif
 
 /* ========================================================================== */
 /*                            Global Structure Definition                     */
@@ -84,7 +88,8 @@ static void prvTimerTickIsr( uintptr_t arg );
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-
+/* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
+#if defined (BUILD_MCU)
 static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned( configIDLE_TASK_STACK_SIZE ) ) ) = { 0 };
 
 /* Declare the stack for the timer task, it cannot be done in the timer
@@ -92,6 +97,10 @@ static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__(
  * functions are executed in the timer task and their complexity/stack
  * requirements are application specific. */
 static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned( configTIMER_TASK_STACK_SIZE ) ) ) = { 0 };
+#else
+static portInt8Type acTimerTaskStack[ configTIMER_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )   = { 0 };
+static portInt8Type acIdleTaskStack[ configIDLE_TASK_STACK_SIZE ] __attribute__( ( aligned ( configSTACK_ALIGNMENT ) ) )   = { 0 };
+#endif /* defined (BUILD_MCU) */
 
 /* The buffer for the timer command queue. */
 static portInt8Type acTimerCommandQueueBuffer[ configTIMER_CMD_QUEUE_BUFFER_SIZE ]  __attribute__( ( aligned ( safertosapiWORD_ALIGNMENT ) ) ) = { 0 };
@@ -121,6 +130,9 @@ const xPORT_INIT_PARAMETERS gSafertosPortInit =
             { NULL, 0U, 0U, 0U },
         }
     },
+#endif
+#if defined (BUILD_C66X)
+    safertosapiUNPRIVILEGED_TASK,       /* The idle hook will not be executed in privileged mode. */
 #endif
     NULL,                               /* pvIdleTaskTLSObject */
 
@@ -196,6 +208,10 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     xTimerParams.periodType = TimerP_PeriodType_MICROSECS;
     xTimerParams.period     = ( 1000000UL / ulTickRateHz );
     prvGetOSTimerParams( &xOSTimerParams );
+#if defined (BUILD_C66X)
+    xTimerParams.intNum     = xOSTimerParams.intNum;
+    xTimerParams.eventId    = xOSTimerParams.eventId;
+#endif
 
     pxTickTimerHandle = TimerP_create( xOSTimerParams.timerId,
                                        &prvTimerTickIsr,
@@ -221,6 +237,21 @@ static void prvTimerTickIsr( uintptr_t arg )
 
 void prvGetOSTimerParams( Safertos_OSTimerParams *params)
 {
+#if defined (BUILD_C66X)
+    if (CSL_chipReadDNUM() == 0U)
+    {   
+        params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C66X_1;
+        params->eventId = OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_1;
+        params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_1;
+    }
+    else
+    {
+        params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C66X_2;
+        params->eventId = OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_2;
+        params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_2;
+
+    }
+#endif
 #if defined (BUILD_MCU)
     CSL_ArmR5CPUInfo info;
 

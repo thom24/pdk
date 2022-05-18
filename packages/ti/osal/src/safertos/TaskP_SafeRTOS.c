@@ -295,7 +295,12 @@ void TaskP_Params_init( TaskP_Params *params )
     params->arg0 = NULL;
     params->arg1 = NULL;
     /* By default task will be privileged task, until set by the user */
+#if defined (BUILD_MCU)
     params->taskPrivilege = mpuPRIVILEGED_TASK;
+#endif
+#if defined (BUILD_C66X)
+    params->taskPrivilege = safertosapiPRIVILEGED_TASK;      /* Check task is privileged. */
+#endif
 }
 
 void TaskP_sleep( uint32_t timeout )
