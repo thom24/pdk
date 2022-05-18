@@ -95,7 +95,7 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 #include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
 include $(PDK_BOARD_COMP_PATH)/src/flash/src_files_flash.mk
 include $(PDK_BOARD_COMP_PATH)/src/devices/src_files_devices.mk
-PACKAGE_SRCS_COMMON += src/$(BOARD)
+# PACKAGE_SRCS_COMMON += src/$(BOARD)
 PACKAGE_SRCS_COMMON += src/devices
 endif
 
@@ -191,7 +191,10 @@ PACKAGE_SRCS_COMMON += Settings.xdc.xdt utils.xs
 ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_qt j721e_evm j7200_evm j721s2_evm tpr12_evm tpr12_qt awr294x_evm j784s4_evm))
 PACKAGE_SRCS_COMMON += src/board.c src/boardStub.c src/Module.xs
 PACKAGE_SRCS_COMMON += src/src_files_lld.mk src/src_files_starterware.mk
+ifneq ($(BOARD),$(filter $(BOARD), j784s4_evm))
+#Temp diable until the same is added for j784s4
 PACKAGE_SRCS_COMMON += diag/common/$(SOC)
+endif
 else
 PACKAGE_SRCS_COMMON += src
 endif
