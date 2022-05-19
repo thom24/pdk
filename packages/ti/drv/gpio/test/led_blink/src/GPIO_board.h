@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2014 - 2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014 - 2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -208,7 +208,7 @@ extern "C" {
 #endif
 #endif
 
-#if defined (j721e_evm) || defined (j7200_evm) || defined (j721s2_evm)
+#if defined (j721e_evm) || defined (j7200_evm) || defined (j721s2_evm) || defined (j784s4_evm) 
 /* J7ES: use WAKEUP GPIO0_6 --> TP45 for testing */
 #define GPIO_LED0_PIN_NUM        BOARD_USER_LED1 /* Pin 6 */
 #define GPIO_LED0_PORT_NUM       0 /* use WAKEUP GPIO0 */
