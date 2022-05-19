@@ -401,6 +401,7 @@ else
 export udma_dru_direct_tr_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvudma_$(SOC)_example_CORELIST))
 endif
 endif
+endif
 export udma_dru_direct_tr_testapp_$(1)_SBL_APPIMAGEGEN = yes
 ifneq ($(1),$(filter $(1), safertos))
 udma_EXAMPLE_LIST += udma_dru_direct_tr_testapp_$(1)
