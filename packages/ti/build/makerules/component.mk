@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2019, Texas Instruments Incorporated
+# Copyright (c) 2013-2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -1368,7 +1368,7 @@ ifeq ($(SOC),$(filter $(SOC), j721s2))
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j784s4))
-  PDK_COMMON_COMP = csl uart board gpio udma
+  PDK_COMMON_COMP = csl uart board udma i2c gpio pm_lib
   ifeq ($(CORE),mcu1_0)
     PDK_COMMON_COMP += sciclient_direct rm_pm_hal
   else
