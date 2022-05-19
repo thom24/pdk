@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 - 2018, Texas Instruments Incorporated
+# Copyright (c) 2016 - 2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -127,7 +127,7 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 # List below all examples for allowed values
 ############################
 ifeq ($(SOC),$(filter $(SOC), j784s4))
-i2c_EXAMPLE_LIST =
+i2c_EXAMPLE_LIST = drv_i2c_utility
 else
 i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
 endif
