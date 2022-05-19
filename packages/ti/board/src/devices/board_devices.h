@@ -151,6 +151,15 @@
 #include <ti/board/src/devices/fpd/ds90ub9702.h>
 #endif
 
+#if defined(j784s4_evm)
+#include <ti/board/src/devices/common/common.h>
+
+#include <ti/board/src/devices/audio/pcm3168A.h>
+#include <ti/board/src/devices/fpd/ds90ub953.h>
+#include <ti/board/src/devices/fpd/ds90ub960.h>
+#include <ti/board/src/devices/fpd/ds90ub9702.h>
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif

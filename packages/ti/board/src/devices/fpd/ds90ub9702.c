@@ -2435,7 +2435,16 @@ void Board_fpdUb9702GetI2CAddr(uint8_t hubInstance,
                                uint8_t *i2cAddr)
 {
     *domain = BOARD_SOC_DOMAIN_MAIN;
-    *chNum = 6U;
+
+#if defined (SOC_J721S2)
+        *chNum = 5U;
+#endif
+#if defined (SOC_J721E)
+        *chNum = 6U;
+#endif
+#if defined (SOC_J784S4)
+        *chNum = BOARD_CSI2RX_CTRL_I2C_INSTANCE;
+#endif
 
     if(hubInstance == BOARD_FPD_9702_CSI2_DES_HUB1)
     {

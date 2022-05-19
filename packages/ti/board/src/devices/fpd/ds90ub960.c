@@ -700,6 +700,9 @@ void Board_fpdU960GetI2CAddr(uint8_t *chNum,
 #if defined (SOC_J721E)
         *chNum = 6U;
 #endif
+#if defined (SOC_J784S4)
+        *chNum = BOARD_CSI2RX_CTRL_I2C_INSTANCE;
+#endif
         *i2cAddr = 0x3DU;
     }
     else if (csiInst == BOARD_CSI_INST_1)
@@ -709,6 +712,9 @@ void Board_fpdU960GetI2CAddr(uint8_t *chNum,
 #endif
 #if defined (SOC_J721E)
         *chNum = 6U;
+#endif
+#if defined (SOC_J784S4)
+        *chNum = BOARD_CSI2RX_CTRL_I2C_INSTANCE;
 #endif
         *i2cAddr = 0x36U;
     }

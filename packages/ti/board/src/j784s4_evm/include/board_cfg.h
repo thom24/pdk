@@ -334,6 +334,8 @@ extern "C" {
 #define BOARD_LIN3_UART_INSTANCE                         (9U)
 #define BOARD_LIN3_UART_BASE                             (CSL_UART9_BASE)
 
+#define BOARD_CSI2RX_CTRL_I2C_INSTANCE                   (0x5U)
+
 /* Default pinmux configuration of UART Tx pin used by ROM/SBL */
 #define BOARD_MCU_UART_TX_PINMUX_VAL                    (PIN_MODE(0U) | ((PIN_PULL_DISABLE) & \
                                                          (~PIN_PULL_DIRECTION & ~PIN_INPUT_ENABLE)))
