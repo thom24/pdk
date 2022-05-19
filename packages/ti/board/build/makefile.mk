@@ -92,10 +92,10 @@ endif
 
 ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm))
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-#include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
+include $(PDK_BOARD_COMP_PATH)/src/$(BOARD)/src_files_$(BOARD).mk
 include $(PDK_BOARD_COMP_PATH)/src/flash/src_files_flash.mk
 include $(PDK_BOARD_COMP_PATH)/src/devices/src_files_devices.mk
-# PACKAGE_SRCS_COMMON += src/$(BOARD)
+PACKAGE_SRCS_COMMON += src/$(BOARD)
 PACKAGE_SRCS_COMMON += src/devices
 endif
 
