@@ -380,7 +380,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 #endif
                 #if defined (BUILD_C7X)
                 {
-                    #if defined (SOC_J721S2)
+                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                     #else
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
@@ -395,7 +395,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
                      * to the event number which is shared between GIC and CLEC.
                      */
-                    #if defined (SOC_J721S2)
+                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
                     #else 
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
@@ -452,7 +452,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 #endif
                 #if defined (BUILD_C7X)
                 {
-                    #if defined (SOC_J721S2)
+                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                     #else
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
@@ -467,7 +467,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
                      * to the event number which is shared between GIC and CLEC.
                      */
-                    #if defined (SOC_J721S2)
+                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
                     #else
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
@@ -989,7 +989,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
 
         #if defined (BUILD_C7X)
         {
-            #if defined (SOC_J721S2)
+            #if defined (SOC_J721S2) || defined (SOC_J784S4)
             CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
             #else
             CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
@@ -1006,7 +1006,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
              */ 
             if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
             {
-                #if defined (SOC_J721S2) 
+                #if defined (SOC_J721S2) || defined (SOC_J784S4)
                 CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
                 #else
                 CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
@@ -1014,7 +1014,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             }
             else
             {
-                #if defined (SOC_J721S2)
+                #if defined (SOC_J721S2) || defined (SOC_J784S4)
                 CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
                 #else
                 CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
@@ -1183,7 +1183,7 @@ static void Sciclient_ISR(uintptr_t arg)
             Osal_DisableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
             #if defined (BUILD_C7X)
             {
-                #if defined (SOC_J721S2)
+                #if defined (SOC_J721S2) || defined (SOC_J784S4)
                 CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                 #else
                 CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
@@ -1200,7 +1200,7 @@ static void Sciclient_ISR(uintptr_t arg)
                  */
                 if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
                 {
-                    #if defined (SOC_J721S2) 
+                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
                     #else
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
@@ -1208,7 +1208,7 @@ static void Sciclient_ISR(uintptr_t arg)
                 }
                 else
                 {
-                    #if defined (SOC_J721S2)
+                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
                     #else
                     CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);

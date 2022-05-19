@@ -661,7 +661,7 @@ static uint16_t GPIO_socGetCoreSciId()
                                         TISCI_DEV_R5FSS2_CORE1;
     }
 #elif defined (BUILD_C7X)
-    devId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
+    devId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
 #endif
     
     return devId;
