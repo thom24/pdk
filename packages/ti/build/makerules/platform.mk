@@ -223,12 +223,6 @@ export SBL_CERT_KEY_HS=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
 export SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
 
 #
-# Package type: package_type_xdc or package_type_makefile
-#
-PDK_PACKAGE_TYPE ?= package_type_xdc
-export PDK_PACKAGE_TYPE
-
-#
 # Derive Target/ISA from CORE
 #
 
@@ -387,42 +381,10 @@ ifeq ($(CORE),a8host)
 endif
 
 #
-# Derive XDC/ISA specific settings
+# Derive ISA specific settings
 #
 
 ifeq ($(ISA),a15)
-  TARGET_XDC = gnu.targets.arm.A15F
-  ifeq ($(PLATFORM_XDC),)
-    PLATFORM_XDC = "ti.platforms.evmDRA7XX:Cortex_A15"
-
-    ifeq ($(BOARD),$(filter $(BOARD), evmAM572x))
-      PLATFORM_XDC = "ti.platforms.evmAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM572x))
-      PLATFORM_XDC = "ti.platforms.idkAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM574x))
-      PLATFORM_XDC = "ti.platforms.idkAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM571x))
-      PLATFORM_XDC = "ti.platforms.idkAM571X"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), k2h))
-        PLATFORM_XDC = "ti.platforms.evmTCI6636K2H:Cortex A.66AK2H12"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), k2k))
-        PLATFORM_XDC = "ti.platforms.evmTCI6638K2K:Cortex A.TCI6638K2K"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), k2g))
-        PLATFORM_XDC = "ti.platforms.evmTCI66AK2G02"
-    endif
-  endif
 
   ENDIAN_EXT = fg
   FORMAT_EXT =
@@ -436,47 +398,7 @@ endif
 
 ifeq ($(ISA),$(filter $(ISA), m4 m4f))
   ifeq ($(FORMAT),ELF)
-    TARGET_XDC = ti.targets.arm.elf.M4
     FORMAT_EXT = e
-  else
-    TARGET_XDC = ti.targets.arm.M4
-  endif
-  ifeq ($(PLATFORM_XDC),)
-    ifeq ($(SOC),$(filter $(SOC), dra72x dra75x tda2xx tda2px tda2ex am572x am571x am574x))
-      ifeq ($(CORE),$(filter $(CORE), ipu1_0 ipu2_0))
-        PLATFORM_XDC = "ti.platforms.evmDRA7XX"
-      else
-        PLATFORM_XDC = "ti.platforms.evmDRA7XX"
-      endif
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), evmAM572x))
-      PLATFORM_XDC = "ti.platforms.evmAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM572x))
-      PLATFORM_XDC = "ti.platforms.idkAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM571x))
-      PLATFORM_XDC = "ti.platforms.idkAM571X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM574x))
-      PLATFORM_XDC = "ti.platforms.idkAM572X"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), tda3xx dra78x))
-      ifeq ($(CORE),ipu1_0)
-        PLATFORM_XDC = "ti.platforms.evmTDA3XX:IPU_1_0"
-      else
-        PLATFORM_XDC = "ti.platforms.evmTDA3XX:IPU_1_1"
-      endif
-    endif
-
-    ifeq ($(BOARD),$(filter $(SOC), am64x_evm am64x_svb))
-      PLATFORM_XDC = "ti.platforms.cortexM:AM64X_M4F"
-    endif
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -494,57 +416,7 @@ endif
 
 ifeq ($(ISA),r5f)
   ifeq ($(FORMAT),ELF)
-    # If XDC thumb mode is disabled,choose the non-thumb target of XDC
-    ifeq ($(XDC_DISABLE_THUMB_MODE),yes)
-     TARGET_XDC = ti.targets.arm.elf.R5F
-    else
-     TARGET_XDC = ti.targets.arm.elf.R5Ft
-    endif
     FORMAT_EXT = e
-  else
-    TARGET_XDC = ti.targets.arm.R5Ft
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk am65xx_sim))
-    PLATFORM_XDC = "ti.platforms.cortexR:AM65X"
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_ccqt j721e_loki j721e_qt j721e_vhwazebu j721e_evm))
-    ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
-      PLATFORM_XDC = "ti.platforms.cortexR:J7ES_MCU"
-    else
-      PLATFORM_XDC = "ti.platforms.cortexR:J7ES_MAIN"
-    endif
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), j7200_evm j7200_sim))
-    ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
-      PLATFORM_XDC = "ti.platforms.cortexR:J7200_MCU"
-    else
-      PLATFORM_XDC = "ti.platforms.cortexR:J7200_MAIN"
-    endif
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
-    ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
-      PLATFORM_XDC = "ti.platforms.cortexR:J721S2_MCU"
-    else
-      PLATFORM_XDC = "ti.platforms.cortexR:J721S2_MAIN"
-    endif
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
-      PLATFORM_XDC = "ti.platforms.cortexR:AM64X"
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), tpr12))
-    # Use the platform define from TI RTOS but do not use the default linker command file (false)
-    PLATFORM_XDC = "ti.platforms.cortexR:TPR12:0"
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), awr294x))
-    # Use the platform define from TI RTOS but do not use the default linker command file (false)
-    PLATFORM_XDC = "ti.platforms.cortexR:AWR29XX:0"
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -555,14 +427,7 @@ ifeq ($(ISA),r5f)
 
   # Define the file extensions
   OBJEXT = o$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  # When thumb2 mode is used(default), the BIOS obj files have r5f't' extension
-  ifeq ($(XDC_DISABLE_THUMB_MODE),yes)
-    OBJEXT_BIOS = o$(FORMAT_EXT)r5f$(ENDIAN_EXT)
-    PEXT_BIOS   = p$(FORMAT_EXT)r5f$(ENDIAN_EXT)
-  else
-    OBJEXT_BIOS = o$(FORMAT_EXT)r5ft$(ENDIAN_EXT)
-    PEXT_BIOS   = p$(FORMAT_EXT)r5ft$(ENDIAN_EXT)
-  endif
+
   # Retaining the r5f extension for backward compatibility
   LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
@@ -570,24 +435,6 @@ ifeq ($(ISA),r5f)
 endif
 
 ifeq ($(ISA),a53)
-  ifeq ($(FORMAT),ELF)
-    TARGET_XDC = gnu.targets.arm.A53F
-  else
-    TARGET_XDC = gnu.targets.arm.A53F
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk))
-    PLATFORM_XDC = "ti.platforms.cortexA:AM65X"
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), am65xx_sim))
-    PLATFORM_XDC = "ti.platforms.cortexA:SIMMAXWELL"
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
-    PLATFORM_XDC = "ti.platforms.cortexA:AM64X"
-  endif
-
   ENDIAN_EXT = fg
   FORMAT_EXT =
 
@@ -605,24 +452,6 @@ ifeq ($(ISA),a53)
 endif
 
 ifeq ($(ISA),a72)
-  ifeq ($(FORMAT),ELF)
-    TARGET_XDC = gnu.targets.arm.A53F
-  else
-    TARGET_XDC = gnu.targets.arm.A53F
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_ccqt j721e_loki j721e_qt j721e_vhwazebu j721e_evm))
-    PLATFORM_XDC = "ti.platforms.cortexA:J7ES"
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), j7200_sim j7200_evm))
-    PLATFORM_XDC = "ti.platforms.cortexA:J7200"
-  endif
-
-  ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
-    PLATFORM_XDC = "ti.platforms.cortexA:J721S2"
-  endif
-
   ENDIAN_EXT = fg
   FORMAT_EXT =
 
@@ -634,9 +463,6 @@ ifeq ($(ISA),a72)
 
   # Define the file extensions
   OBJEXT = o$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  #hack till a72 is properly supported by BIOS
-  OBJEXT_BIOS = o$(FORMAT_EXT)a53$(ENDIAN_EXT)
-  PEXT_BIOS = p$(FORMAT_EXT)a53$(ENDIAN_EXT)
   LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
@@ -654,8 +480,6 @@ ifeq ($(ISA),qnx_a72)
 
   # Define the file extensions
   OBJEXT = o$(FORMAT_EXT)a72$(ENDIAN_EXT)
-  OBJEXT_BIOS = o$(FORMAT_EXT)a72$(ENDIAN_EXT)
-  PEXT_BIOS = p$(FORMAT_EXT)a72$(ENDIAN_EXT)
   LIBEXT = a$(FORMAT_EXT)a72$(ENDIAN_EXT)
   EXEEXT = x$(FORMAT_EXT)a72$(ENDIAN_EXT)
   ASMEXT = s$(FORMAT_EXT)a72$(ENDIAN_EXT)
@@ -663,10 +487,7 @@ endif
 
 ifeq ($(ISA),m3)
   ifeq ($(FORMAT),ELF)
-    TARGET_XDC = ti.targets.arm.elf.M3
     FORMAT_EXT = e
-  else
-    TARGET_XDC = ti.targets.arm.M3
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -685,22 +506,7 @@ endif
 #########C7x DSP Support############
 ifeq ($(ISA),c7x)
   ifeq ($(FORMAT),ELF)
-    TARGET_XDC = ti.targets.elf.C71
     FORMAT_EXT = e
-  else
-    TARGET_XDC = ti.targets.C7x
-  endif
-
-  ifeq ($(PLATFORM_XDC),)
-    ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_ccqt j721e_loki j721e_qt j721e_vhwazebu j721e_evm))
-      PLATFORM_XDC = "ti.platforms.tms320C7x:J7ES"
-    endif
-    ifeq ($(BOARD),$(filter $(BOARD), j7200_sim j7200_evm))
-      PLATFORM_XDC = "ti.platforms.tms320C7x:J7200"
-    endif
-    ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm))
-      PLATFORM_XDC = "ti.platforms.tms320C7x:J721S2"
-    endif
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -727,76 +533,7 @@ endif
 #########DSP Support############
 ifeq ($(ISA),c66)
   ifeq ($(FORMAT),ELF)
-    TARGET_XDC = ti.targets.elf.C66
     FORMAT_EXT = e
-  else
-    TARGET_XDC = ti.targets.C66
-  endif
-  ifeq ($(PLATFORM_XDC),)
-    ifeq ($(SOC),$(filter $(SOC), dra72x dra75x tda2xx tda2px tda2ex am571x am574x))
-      ifeq ($(CORE),c66x)
-        PLATFORM_XDC = "ti.platforms.evmDRA7XX"
-      else
-        PLATFORM_XDC = "ti.platforms.evmDRA7XX"
-      endif
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), am572x))
-      PLATFORM_XDC = "ti.platforms.evmAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), evmAM572x))
-      PLATFORM_XDC = "ti.platforms.evmAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM572x))
-      PLATFORM_XDC = "ti.platforms.idkAM572X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM571x))
-      PLATFORM_XDC = "ti.platforms.idkAM571X"
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), idkAM574x))
-      PLATFORM_XDC = "ti.platforms.idkAM572X"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), tda3xx dra78x))
-      ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2))
-        PLATFORM_XDC = "ti.platforms.evmTDA3XX"
-      else
-        PLATFORM_XDC = "ti.platforms.evmTDA3XX"
-      endif
-    endif
-
-    ifeq ($(BOARD),$(filter $(BOARD), j721e_sim j721e_ccqt j721e_loki j721e_qt j721e_vhwazebu j721e_evm))
-      PLATFORM_XDC = "ti.platforms.c6x:J7ES"
-    endif
-
-    ifeq ($(SOC),k2h)
-      PLATFORM_XDC = "ti.platforms.evmTCI6636K2H"
-    endif
-
-    ifeq ($(SOC),k2k)
-      PLATFORM_XDC = "ti.platforms.evmTCI6638K2K"
-    endif
-
-    ifeq ($(SOC),k2g)
-      PLATFORM_XDC = "ti.platforms.evmTCI66AK2G02"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), j721e))
-      PLATFORM_XDC = "ti.platforms.c6x:J7ES"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), tpr12))
-      PLATFORM_XDC = "ti.platforms.c6x:TPR12"
-    endif
-
-    ifeq ($(SOC),$(filter $(SOC), awr294x))
-      PLATFORM_XDC = "ti.platforms.c6x:AWR29XX"
-    endif
-
   endif
 
   # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
@@ -832,9 +569,6 @@ ifeq ($(ISA),arp32)
 endif
 
 ifeq ($(ISA),a8)
-  TARGET_XDC = gnu.targets.arm.A8F
-
-  PLATFORM_XDC = "ti.platforms.evmAM3359"
 
   ENDIAN_EXT = fg
   FORMAT_EXT =
@@ -858,10 +592,6 @@ ifeq ($(ISA),pru)
 endif
 
 ifeq ($(ISA),a9)
-  TARGET_XDC = gnu.targets.arm.A9F
-
-  PLATFORM_XDC = "ti.platforms.evmAM437X"
-
   ENDIAN_EXT = fg
   FORMAT_EXT =
 
@@ -873,15 +603,7 @@ ifeq ($(ISA),a9)
 endif
 
 ifeq ($(ISA),arm9)
-  TARGET_XDC = ti.targets.arm.elf.Arm9
   FORMAT_EXT =
- ifeq ($(SOC),$(filter $(SOC), omapl137))
-  PLATFORM_XDC = "ti.platforms.evmOMAPL137"
- endif
-
- ifeq ($(SOC),$(filter $(SOC), omapl138))
-  PLATFORM_XDC = "ti.platforms.evmOMAPL138"
- endif
 
   # Define the file extensions
   OBJEXT = o$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
@@ -893,22 +615,7 @@ endif
 #########DSP Support - c67xx ############
 ifeq ($(ISA),c674)
   ifeq ($(FORMAT),ELF)
-    TARGET_XDC = ti.targets.elf.C674
     FORMAT_EXT = e
-  else
-    TARGET_XDC = ti.targets.C674
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), omapl137))
-    ifeq ($(CORE),c674x)
-      PLATFORM_XDC = "ti.platforms.evmOMAPL137"
-    endif
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), omapl138))
-    ifeq ($(CORE),c674x)
-      PLATFORM_XDC = "ti.platforms.evmOMAPL138"
-    endif
   endif
 
   # Define the file extensions
