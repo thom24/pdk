@@ -31,8 +31,8 @@
  */
 
 
-#ifndef TI_FREERTOS_C7X_1_CONFIG_H
-#define TI_FREERTOS_C7X_1_CONFIG_H
+#ifndef TI_FREERTOS_C7X_4_CONFIG_H
+#define TI_FREERTOS_C7X_4_CONFIG_H
 
 
 /*-----------------------------------------------------------
@@ -50,6 +50,6 @@
 #define configTIMER_INT_NUM                                               (16)
 
 /* Compute Cluster CLEC route map */
-#define portCOMPUTE_CLUSTER_CLEC_RTMAP                                    (CSL_CLEC_RTMAP_CPU_4)
+#define portCOMPUTE_CLUSTER_CLEC_RTMAP                                    (CSL_CLEC_RTMAP_CPU_7)
 
-#endif /* TI_FREERTOS_C7X_1_CONFIG_H */
+#endif /* TI_FREERTOS_C7X_4_CONFIG_H */
