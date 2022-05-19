@@ -197,18 +197,6 @@ typedef struct OSPI_Tests_s
 #define OSPI_FLASH_SEL_NAND     (1U)
 #endif
 
-/* HACK until board library support is added */
-#if defined (SOC_J784S4)
-#define BOARD_OSPI_NOR_INSTANCE  (0U)
-#define BOARD_OSPI_NAND_INSTANCE (0U)
-
-Board_STATUS Board_init(Board_initCfg cfg)
-{
-    return BOARD_SOK;
-}
-
-#endif
-
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/

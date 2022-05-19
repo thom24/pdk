@@ -113,10 +113,7 @@
 #elif defined(SOC_J721S2)
 #include <ti/board/src/j721s2_evm/include/board_utils.h>
 #elif defined(SOC_J784S4)
-/* TO DO: uncomment this once it is added in board module */
-//#include <ti/board/src/j784s4_evm/include/board_utils.h>
-/* HACK: Until Board module is added */
-#include <ti/csl/csl_types.h>
+#include <ti/board/src/j784s4_evm/include/board_utils.h>
 #endif
 
 #ifdef SOC_AM65XX
@@ -406,40 +403,6 @@ int32_t MCSPI_udma_deinit(void)
 }
 #endif
 #endif /* #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) */
-
-/* HACK: Until board module support is added */
-#if defined(SOC_J784S4)
-
-/* McSPI instance for master and slave test */
-#define BOARD_MCSPI_MASTER_INSTANCE                     (1)
-#define BOARD_MCSPI_SLAVE_INSTANCE                      (1)
-#define BOARD_SOC_DOMAIN_MAIN                           (0)
-
-typedef struct Board_initParams_s
-{
-    uint32_t uartInst;
-    uint32_t uartSocDomain;
-    uint8_t pscMode;
-    uint8_t mainClkGrp;
-    uint8_t mcuClkGrp;
-} Board_initParams_t;
-
-Board_STATUS Board_init(Board_initCfg cfg)
-{
-    return BOARD_SOK;
-}
-
-Board_STATUS Board_getInitParams(Board_initParams_t *initParams)
-{
-    return BOARD_SOK;
-}
-
-Board_STATUS Board_setInitParams(Board_initParams_t *initParams)
-{
-    return BOARD_SOK;
-}
-
-#endif
 
 /**********************************************************************
  ************************** Global Variables **************************
