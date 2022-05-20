@@ -77,9 +77,7 @@ libosal_SOCLIST   = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x
 libosal_SOCLIST  += am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x
 libosal_SOCLIST  += omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4
 
-libosal_tirtos_BOARDLIST    = $(libosal_BOARDLIST)
-libosal_tirtos_SOCLIST      = $(libosal_SOCLIST) 
-libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm j721s2_evm
+libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm j721s2_evm j784s4_evm
 libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x j721s2 j784s4
 libosal_safertos_BOARDLIST  = tpr12_evm awr294x_evm
 libosal_safertos_SOCLIST    = tpr12 awr294x
@@ -114,12 +112,6 @@ libosal_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
 libosal_j721s2_CORELIST  = $(DEFAULT_j721s2_CORELIST)
 libosal_j784s4_CORELIST = $(DEFAULT_j784s4_CORELIST)
 
-ifneq ($(SOC),$(filter $(SOC), j721s2))
-libosal_tirtos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
-else
-libosal_tirtos_$(SOC)_CORELIST = $(filter-out c7x_1 c7x_2, $(libosal_$(SOC)_CORELIST))
-endif
-
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x j721s2 j784s4))
 libosal_freertos_$(SOC)_CORELIST = $(filter-out mpu%, $(libosal_$(SOC)_CORELIST))
 else
@@ -135,9 +127,6 @@ libosal_safertos_awr294x_CORELIST = c66xdsp_1
 # The components included here are built and will be part of osal lib
 ############################
 osal_LIB_LIST = osal_nonos osal_nonos_indp
-# ifeq ($(BUILD_OS_TYPE),tirtos)
-# osal_LIB_LIST += osal_tirtos osal_tirtos_indp
-# endif
 osal_LIB_LIST += osal_freertos
 ifeq ($(SOC),$(filter $(SOC), $(libosal_safertos_SOCLIST)))
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
@@ -251,60 +240,6 @@ export osal_nonos_indp_SOCLIST
 osal_nonos_indp_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
 export osal_nonos_indp_$(SOC)_CORELIST
 
-# OSAL TIRTOS LIB
-# osal_tirtos_COMP_LIST = osal_tirtos
-# osal_tirtos_RELPATH = ti/osal
-# osal_tirtos_PATH = $(PDK_OSAL_COMP_PATH)
-# osal_tirtos_LIBNAME = ti.osal
-# export osal_tirtos_LIBNAME
-# osal_tirtos_LIBPATH = $(osal_tirtos_PATH)/lib/tirtos
-# export osal_tirtos_LIBPATH
-# osal_tirtos_OBJPATH = $(osal_tirtos_RELPATH)/osal_tirtos
-# export osal_tirtos_OBJPATH
-# osal_tirtos_MAKEFILE = -f build/makefile_tirtos.mk
-# export osal_tirtos_MAKEFILE
-# osal_tirtos_PLATFORM_DEPENDENCY = no
-# osal_tirtos_CORE_DEPENDENCY = no
-# osal_tirtos_SOC_DEPENDENCY = yes
-# export osal_tirtos_COMP_LIST
-# export osal_tirtos_PLATFORM_DEPENDENCY
-# export osal_tirtos_CORE_DEPENDENCY
-# export osal_tirtos_SOC_DEPENDENCY
-# osal_tirtos_PKG_LIST = osal_tirtos
-# export osal_tirtos_PKG_LIST
-# osal_tirtos_INCLUDE = $(osal_tirtos_PATH)
-# osal_tirtos_SOCLIST = $(libosal_tirtos_SOCLIST)
-# export osal_tirtos_SOCLIST
-# osal_tirtos_$(SOC)_CORELIST = $(filter $(libosal_tirtos_$(SOC)_CORELIST), $(libosal_$(SOC)_CORELIST))
-# export osal_tirtos_$(SOC)_CORELIST
-
-# OSAL TIRTOS DEVICE INDEPENDENT
-# osal_tirtos_indp_COMP_LIST = osal_tirtos_indp
-# osal_tirtos_indp_RELPATH = ti/osal
-# osal_tirtos_indp_PATH = $(PDK_OSAL_COMP_PATH)
-# osal_tirtos_indp_LIBNAME = ti.osal
-# export osal_tirtos_indp_LIBNAME
-# osal_tirtos_indp_LIBPATH = $(osal_tirtos_indp_PATH)/lib/tirtos
-# export osal_tirtos_indp_LIBPATH
-# osal_tirtos_indp_OBJPATH = $(osal_tirtos_indp_RELPATH)/osal_tirtos_indp
-# export osal_tirtos_indp_OBJPATH
-# osal_tirtos_indp_MAKEFILE = -f build/makefile_tirtos_indp.mk
-# export osal_tirtos_indp_MAKEFILE
-# osal_tirtos_indp_PLATFORM_DEPENDENCY = no
-# osal_tirtos_indp_CORE_DEPENDENCY = no
-# osal_tirtos_indp_SOC_DEPENDENCY = no
-# export osal_tirtos_indp_COMP_LIST
-# export osal_tirtos_indp_PLATFORM_DEPENDENCY
-# export osal_tirtos_indp_CORE_DEPENDENCY
-# export osal_tirtos_indp_SOC_DEPENDENCY
-# osal_tirtos_indp_PKG_LIST = osal_tirtos_indp
-# export osal_tirtos_indp_PKG_LIST
-# osal_tirtos_indp_INCLUDE = $(osal_tirtos_indp_PATH)
-# osal_tirtos_indp_SOCLIST =
-# export osal_tirtos_indp_SOCLIST
-# osal_tirtos_indp_$(SOC)_CORELIST = $(filter $(libosal_tirtos_$(SOC)_CORELIST), $(libosal_$(SOC)_CORELIST))
-# export osal_tirtos_indp_$(SOC)_CORELIST
-
 # OSAL FREE RTOS LIB
 osal_freertos_COMP_LIST = osal_freertos
 osal_freertos_RELPATH = ti/osal
@@ -374,7 +309,7 @@ OSAL_Baremetal_TestApp_PKG_LIST = OSAL_Baremetal_TestApp
 OSAL_Baremetal_TestApp_INCLUDE = $(OSAL_Baremetal_TestApp_PATH)
 OSAL_Baremetal_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_Baremetal_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
 else
 OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = no
@@ -388,7 +323,6 @@ export OSAL_TestApp_$(1)_RELPATH = ti/osal/test/os_unit_test
 export OSAL_TestApp_$(1)_PATH = $(PDK_OSAL_COMP_PATH)/test/os_unit_test
 export OSAL_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export OSAL_TestApp_$(1)_CORE_DEPENDENCY = no
-export OSAL_TestApp_$(1)_XDC_CONFIGURO =  $(if $(findstring tirtos,$(1)),yes,no)
 export OSAL_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 export OSAL_TestApp_$(1)_PKG_LIST = OSAL_TestApp_$(1)
 export OSAL_TestApp_$(1)_INCLUDE = $(OSAL_TestApp_$(1)_PATH)
@@ -401,7 +335,7 @@ ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 osal_EXAMPLE_LIST += OSAL_TestApp_$(1)
 endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4))
 export OSAL_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 else
 export OSAL_TestApp_$(1)_SBL_APPIMAGEGEN = no
@@ -479,36 +413,31 @@ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = ipu1_0 c66x
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am64x))
- OSAL_TestApp_tirtos_$(SOC)_CORELIST = mcu1_0 mpu1_0 mcu2_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0 m4f_0 mcu2_0
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
- OSAL_TestApp_tirtos_$(SOC)_CORELIST = mpu1_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
- OSAL_TestApp_tirtos_$(SOC)_CORELIST = mpu1_0 c66xdsp_1 c7x_1
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
- OSAL_TestApp_tirtos_$(SOC)_CORELIST = mpu1_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721s2))
- OSAL_TestApp_tirtos_$(SOC)_CORELIST = mpu1_0
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j784s4))
- OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
+ OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu4_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
 endif
 

@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== TaskP_tirtos.c ========
+ *  ======== TaskP_safertos.c ========
  */
 #include <ti/osal/TaskP.h>
 

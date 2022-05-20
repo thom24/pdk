@@ -317,7 +317,7 @@ void HwiP_Params_init(HwiP_Params *params)
 #pragma GCC diagnostic ignored "-Wunused-variable"
 #endif
 
-//    OSAL_COMPILE_TIME_SIZE_CHECK ((uint32_t)sizeof(HwiP_freeRtos),OSAL_TIRTOS_HWIP_SIZE_BYTES);
+//    OSAL_COMPILE_TIME_SIZE_CHECK ((uint32_t)sizeof(HwiP_freeRtos),OSAL_FREERTOS_HWIP_SIZE_BYTES);
 
 #if defined(__GNUC__) && !defined(__ti__)
 #pragma GCC diagnostic pop

@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== HwiP_tirtos.c ========
+ *  ======== Utils_nonos.c ========
  */
 
 #include <stdint.h>
@@ -201,17 +201,17 @@ int32_t Osal_getStaticMemStatus(Osal_StaticMemStatus *pMemStat)
         cookie = HwiP_disable();
 
         pMemStat->peakSemObjs    = gOsalSemPeak;
-        pMemStat->numMaxSemObjs  = OSAL_TIRTOS_CONFIGNUM_SEMAPHORE;
+        pMemStat->numMaxSemObjs  = OSAL_NONOS_CONFIGNUM_SEMAPHORE;
         pMemStat->numFreeSemObjs =
             pMemStat->numMaxSemObjs - gOsalSemAllocCnt;
 
         pMemStat->peakTimerObjs    = gOsalTimerPeak;
-        pMemStat->numMaxTimerObjs  = OSAL_TIRTOS_CONFIGNUM_TIMER;
+        pMemStat->numMaxTimerObjs  = OSAL_NONOS_CONFIGNUM_TIMER;
         pMemStat->numFreeTimerObjs =
             pMemStat->numMaxTimerObjs - gOsalTimerAllocCnt;
 
         pMemStat->peakHwiObjs    = gOsalHwiPeak;
-        pMemStat->numMaxHwiObjs  = OSAL_TIRTOS_CONFIGNUM_HWI;
+        pMemStat->numMaxHwiObjs  = OSAL_NONOS_CONFIGNUM_HWI;
         pMemStat->numFreeHwiObjs =
             pMemStat->numMaxHwiObjs - gOsalHwiAllocCnt;
 

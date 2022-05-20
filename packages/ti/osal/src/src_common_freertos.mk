@@ -47,7 +47,7 @@ ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))
   PACKAGE_SRCS_COMMON += arch/core/c6x src/nonos/EventCombinerP_nonos.c
 endif
 
-ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2))
+ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2 c7x_3 c7x_4))
   SRCS_COMMON += HwiP_freertos_c7x.c CacheP_freertos_c7x.c freertos_mmu.c
   PACKAGE_SRCS_COMMON += src/freertos/CacheP_freertos_c7x.c
   PACKAGE_SRCS_COMMON += src/freertos/HwiP_freertos_c7x.c

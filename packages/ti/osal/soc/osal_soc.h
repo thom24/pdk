@@ -100,13 +100,8 @@
 #define OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
 #define OSAL_NONOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
 #define OSAL_NONOS_MAX_TIMERP_PER_SOC       ((uint32_t) 20U)
-
-/* Max number of semaphore for TIRTOS */
-#define OSAL_TIRTOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
-#define OSAL_TIRTOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
-#define OSAL_TIRTOS_MAX_TIMERP_PER_SOC       ((uint32_t) 20U)
-#define OSAL_TIRTOS_MAX_MUTEXP_PER_SOC       ((uint32_t) 20U)
-#define OSAL_TIRTOS_MAX_HEAPP_PER_SOC        ((uint32_t) 20U)
+#define OSAL_NONOS_MAX_MUTEXP_PER_SOC       ((uint32_t) 20U)
+#define OSAL_NONOS_MAX_HEAPP_PER_SOC        ((uint32_t) 20U)
 
 /* Max number of various modules for FreeRTOS */
 #define OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 80U)
@@ -121,70 +116,6 @@
 #define OSAL_FREERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
 #endif
-
-
-/*********************************************************************
- * @def OSAL_TIRTOS_CONFIGNUM_HWI
- * To satisfy AMIC110 out of box needs, defaults are reduced to 10 as below
- * If the need is more than the defaults, application would need to
- * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for HwiP
- *********************************************************************
- */
-    /* Set the number of HwiP_Handles for TIRTOS */
-#ifndef OSAL_TIRTOS_CONFIGNUM_HWI
-#define OSAL_TIRTOS_CONFIGNUM_HWI (OSAL_TIRTOS_MAX_HWIP_PER_SOC)
-#endif /* OSAL_TIRTOS_CONFIGNUM_HWI */
-
-
-/*********************************************************************
- * @def OSAL_TIRTOS_CONFIGNUM_TIMER
- * maximum number of TimerP handles that can be created by OSAL
- *********************************************************************/
-
-/* Set the number of TimerP_Handles for TIRTOS */
-#ifndef OSAL_TIRTOS_CONFIGNUM_TIMER
-#define OSAL_TIRTOS_CONFIGNUM_TIMER (OSAL_TIRTOS_MAX_TIMERP_PER_SOC)
-#endif
-
-/*********************************************************************
- * @def OSAL_TIRTOS_CONFIGNUM_SEMAPHORE
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
- * If the need is more than the defaults, application would need to
- * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for semaphores
- *********************************************************************/
-
-/* Set the number of SemaphoreP_Handles for TIRTOS */
-#ifndef OSAL_TIRTOS_CONFIGNUM_SEMAPHORE
-#define OSAL_TIRTOS_CONFIGNUM_SEMAPHORE (OSAL_TIRTOS_MAX_SEMAPHOREP_PER_SOC)
-#endif /* OSAL_TIRTOS_CONFIGNUM_SEMAPHORE */
-
-/*********************************************************************
- * @def OSAL_TIRTOS_CONFIGNUM_MUTEX
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
- * If the need is more than the defaults, application would need to
- * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for mutex
- *********************************************************************/
-
-/* Set the number of MutexP_Handles for TIRTOS */
-#ifndef OSAL_TIRTOS_CONFIGNUM_MUTEX
-#define OSAL_TIRTOS_CONFIGNUM_MUTEX (OSAL_TIRTOS_MAX_MUTEXP_PER_SOC)
-#endif /* OSAL_TIRTOS_CONFIGNUM_MUTEX */
-
-/*********************************************************************
- * @def OSAL_TIRTOS_CONFIGNUM_HEAP
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
- * If the need is more than the defaults, application would need to
- * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for mutex
- *********************************************************************/
-
-/* Set the number of HeapP_Handles for TIRTOS */
-#ifndef OSAL_TIRTOS_CONFIGNUM_HEAP
-#define OSAL_TIRTOS_CONFIGNUM_HEAP (OSAL_TIRTOS_MAX_HEAPP_PER_SOC)
-#endif /* OSAL_TIRTOS_CONFIGNUM_HEAP */
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_SEMAPHORE
@@ -289,6 +220,42 @@
 #ifndef OSAL_FREERTOS_CONFIGNUM_EVENT
 #define OSAL_FREERTOS_CONFIGNUM_EVENT (OSAL_FREERTOS_MAX_EVENTP_PER_SOC)
 #endif /* OSAL_FREERTOS_CONFIGNUM_EVENT */
+
+/*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_HWI
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 10 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for HwiP
+ *********************************************************************
+ */
+/* Set the number of HwiP_Handles */
+#ifndef OSAL_FREERTOS_CONFIGNUM_HWI
+#define OSAL_FREERTOS_CONFIGNUM_HWI (OSAL_FREERTOS_MAX_HWIP_PER_SOC)
+#endif
+
+/* Set the number of TimerP_Handles for all boards */
+#ifndef OSAL_FREERTOS_CONFIGNUM_TIMER
+#define OSAL_FREERTOS_CONFIGNUM_TIMER (OSAL_FREERTOS_MAX_TIMERP_PER_SOC)
+#endif
+
+/*********************************************************************
+ * @def OSAL_SAFERTOS_CONFIGNUM_HWI
+ * To satisfy AMIC110 out of box needs, defaults are reduced to 10 as below
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for HwiP
+ *********************************************************************
+ */
+/* Set the number of HwiP_Handles */
+#ifndef OSAL_SAFERTOS_CONFIGNUM_HWI
+#define OSAL_SAFERTOS_CONFIGNUM_HWI (OSAL_SAFERTOS_MAX_HWIP_PER_SOC)
+#endif
+
+/* Set the number of TimerP_Handles for all boards */
+#ifndef OSAL_SAFERTOS_CONFIGNUM_TIMER
+#define OSAL_SAFERTOS_CONFIGNUM_TIMER (OSAL_SAFERTOS_MAX_TIMERP_PER_SOC)
+#endif
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_CONFIGNUM_SEMAPHORE

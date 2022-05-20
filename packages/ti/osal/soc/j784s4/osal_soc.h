@@ -70,11 +70,16 @@ extern "C" {
 
 #define TimerP_numTimerDevices          ((uint32_t) 20U )
 #if defined (BUILD_MCU)
-  #define TIMERP_ANY_MASK               ((uint32_t) 0x000F)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x000F))
-#else
+  #define TIMERP_ANY_MASK               ((uint32_t) 0x03FF)
+  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x03FF))
+#endif
+#if defined (BUILD_MPU)
   #define TIMERP_ANY_MASK               ((uint32_t) 0x0FFF)
   #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x0FFF))
+#endif
+#if defined (BUILD_C7X)
+  #define TIMERP_ANY_MASK               ((uint32_t) 0x00FF)
+  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x00FF))
 #endif
 
 /* using the default timer base addresses */
@@ -94,12 +99,8 @@ extern "C" {
 #define OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
 #define OSAL_NONOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
 #define OSAL_NONOS_MAX_TIMERP_PER_SOC       (TimerP_numTimerDevices)
-
-#define OSAL_TIRTOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 360U)
-#define OSAL_TIRTOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
-#define OSAL_TIRTOS_MAX_TIMERP_PER_SOC       (TimerP_numTimerDevices)
-#define OSAL_TIRTOS_MAX_MUTEXP_PER_SOC       ((uint32_t) 20U)
-#define OSAL_TIRTOS_MAX_HEAPP_PER_SOC        ((uint32_t) 20U)
+#define OSAL_NONOS_MAX_MUTEXP_PER_SOC       ((uint32_t) 20U)
+#define OSAL_NONOS_MAX_HEAPP_PER_SOC        ((uint32_t) 20U)
 
 #define OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 360U)
 #define OSAL_FREERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
@@ -117,6 +118,16 @@ extern "C" {
 
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
+
+#if defined (BUILD_C7X)
+/* The C7x CLEC should be programmed to allow config/re config either in secure
+ * OR non secure mode. This function configures all inputs to given level
+ *
+ * Instance is hard-coded for J784S4 only
+ *
+ */
+void OsalCfgClecAccessCtrl (bool onlyInSecure);
+#endif
 
 #ifdef __cplusplus
 }

@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== HwiP_tirtos.c ========
+ *  ======== CacheP_nonos.c ========
  */
 
 

@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== MemoryP_tirtos.c ========
+ *  ======== MemoryP_freertos.c ========
  */
 #include <ti/osal/MemoryP.h>
 

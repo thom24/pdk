@@ -155,7 +155,7 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure)
     cfgClec.c7xEvtNum         = 0U;
     for(i = 0U; i < maxInputs; i++)
     {
-        /* Since the CLEC module is shared b/w c7x_1 and c7x_2, 
+        /* Since the CLEC module is shared b/w c7x_1, c7x_2, c7x_3 and c7x_4, 
          * Before reseting the events and disabling secure claim,
          * check if its already done by other C7x. */
         CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);

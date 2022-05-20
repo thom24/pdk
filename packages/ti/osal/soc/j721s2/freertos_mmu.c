@@ -179,5 +179,3 @@ void Osal_initMmuDefault(void)
 
     return;
 }
-
-

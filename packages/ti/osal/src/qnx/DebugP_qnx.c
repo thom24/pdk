@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== DebugP_tirtos.c ========
+ *  ======== DebugP_qnx.c ========
  */
 #include <stdio.h>
 #include <stdint.h>

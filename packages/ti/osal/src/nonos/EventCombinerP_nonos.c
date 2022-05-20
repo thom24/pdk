@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== EventCombinerP_tirtos.c ========
+ *  ======== EventCombinerP_nonos.c ========
  */
 #ifdef _TMS320C6X
 #include <ti/osal/osal.h>

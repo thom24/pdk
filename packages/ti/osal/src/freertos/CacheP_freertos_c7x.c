@@ -30,7 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== CacheP_tirtos.c ========
+ *  ======== CacheP_freertos.c ========
  */
 
 #include <stdint.h>

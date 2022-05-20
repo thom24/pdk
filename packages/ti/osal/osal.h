@@ -153,25 +153,6 @@ extern "C" {
 #define  OSAL_FREERTOS_HWIP_C7X_SIZE_BYTES ((uint32_t) 56U)
 
 /*********************************************************************
- * @def OSAL_TIRTOS_SEMAPHOREP_SIZE_BYTES
- * Semaphorep handle size for non-os use case
- * Application can use this size to provide a secondary extended
- * memory block for semaphore creation when all the memory  (internal to osal)
- * are utilized
- *
- *********************************************************************/
-#define  OSAL_TIRTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 96U)
-
-/*********************************************************************
- * @def OSAL_TIRTOS_HWI_SIZE_BYTES
- * HwiP handle size for non-os use case
- * Application can use this size to provide a secondary extended
- * memory block for hwip creation when all the memory  (internal to osal)
- * are utilized
- *********************************************************************/
-#define  OSAL_TIRTOS_HWIP_SIZE_BYTES (96U)
-
-/*********************************************************************
  * @def OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES
  * Semaphorep handle size for non-os use case
  * Application can use this size to provide a secondary extended
