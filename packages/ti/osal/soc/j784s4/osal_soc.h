@@ -104,11 +104,11 @@ extern "C" {
 #define OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 360U)
 #define OSAL_FREERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
 #define OSAL_FREERTOS_MAX_TIMERP_PER_SOC     (TimerP_numTimerDevices)
-#define OSAL_FREERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 160U)
 #define OSAL_FREERTOS_MAX_CLOCKP_PER_SOC     ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_MUTEXP_PER_SOC     ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
-#define OSAL_FREERTOS_MAX_QUEUEP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_FREERTOS_MAX_QUEUEP_PER_SOC     ((uint32_t) 40U)
 #define OSAL_FREERTOS_MAX_HEAPP_PER_SOC      ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
