@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -102,6 +102,20 @@ static const sblSlaveCoreInfo_t sbl_slave_core_info[] =
     SBL_CLK_ID_MPU1_CPU1,
     SBL_MPU1_CPU1_FREQ_HZ,
     },
+    /* MPU1_CPU2 info */
+    {
+    SBL_PROC_ID_MPU1_CPU2,
+    SBL_DEV_ID_MPU1_CPU2,
+    SBL_CLK_ID_MPU1_CPU2,
+    SBL_MPU1_CPU2_FREQ_HZ,
+    },
+    /* MPU1_CPU3 info */
+    {
+    SBL_PROC_ID_MPU1_CPU3,
+    SBL_DEV_ID_MPU1_CPU3,
+    SBL_CLK_ID_MPU1_CPU3,
+    SBL_MPU1_CPU3_FREQ_HZ,
+    },
     /* MPU2_CPU0 info */
     {
     SBL_PROC_ID_MPU2_CPU0,
@@ -115,6 +129,20 @@ static const sblSlaveCoreInfo_t sbl_slave_core_info[] =
     SBL_DEV_ID_MPU2_CPU1,
     SBL_CLK_ID_MPU2_CPU1,
     SBL_MPU2_CPU1_FREQ_HZ,
+    },
+    /* MPU2_CPU2 info */
+    {
+    SBL_PROC_ID_MPU2_CPU2,
+    SBL_DEV_ID_MPU2_CPU2,
+    SBL_CLK_ID_MPU2_CPU2,
+    SBL_MPU2_CPU2_FREQ_HZ,
+    },
+    /* MPU2_CPU3 info */
+    {
+    SBL_PROC_ID_MPU2_CPU3,
+    SBL_DEV_ID_MPU2_CPU3,
+    SBL_CLK_ID_MPU2_CPU3,
+    SBL_MPU2_CPU3_FREQ_HZ,
     },
     /* MCU1_CPU0 info */
     {
@@ -158,6 +186,20 @@ static const sblSlaveCoreInfo_t sbl_slave_core_info[] =
     SBL_CLK_ID_MCU3_CPU1,
     SBL_MCU3_CPU1_FREQ_HZ,
     },
+    /* MCU4_CPU0 info */
+    {
+    SBL_PROC_ID_MCU4_CPU0,
+    SBL_DEV_ID_MCU4_CPU0,
+    SBL_CLK_ID_MCU4_CPU0,
+    SBL_MCU4_CPU0_FREQ_HZ,
+    },
+    /* MCU4_CPU1 info */
+    {
+    SBL_PROC_ID_MCU4_CPU1,
+    SBL_DEV_ID_MCU4_CPU1,
+    SBL_CLK_ID_MCU4_CPU1,
+    SBL_MCU4_CPU1_FREQ_HZ,
+    },
     /* DSP1_C66X info */
     {
     SBL_PROC_ID_DSP1_C66X,
@@ -186,13 +228,20 @@ static const sblSlaveCoreInfo_t sbl_slave_core_info[] =
     SBL_CLK_ID_DSP2_C7X,
     SBL_DSP2_C7X_FREQ_HZ,
     },
-    /* M4F Core0 info*/
+    /* DSP3_C7X info */
     {
-    SBL_PROC_ID_M4F_CPU0,
-    SBL_DEV_ID_M4F_CPU0,
-    SBL_CLK_ID_M4F_CPU0,
-    SBL_M4F_CPU0_FREQ_HZ,
-    }
+    SBL_PROC_ID_DSP3_C7X,
+    SBL_DEV_ID_DSP3_C7X,
+    SBL_CLK_ID_DSP3_C7X,
+    SBL_DSP3_C7X_FREQ_HZ,
+    },
+    /* DSP4_C7X info */
+    {
+    SBL_PROC_ID_DSP4_C7X,
+    SBL_DEV_ID_DSP4_C7X,
+    SBL_CLK_ID_DSP4_C7X,
+    SBL_DSP4_C7X_FREQ_HZ,
+    },
 };
 
 static const uint32_t SblAtcmAddr[] =
@@ -202,7 +251,9 @@ SBL_MCU1_CPU1_ATCM_BASE_ADDR_SOC,
 SBL_MCU2_CPU0_ATCM_BASE_ADDR_SOC,
 SBL_MCU2_CPU1_ATCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
-SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
+SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC,
+SBL_MCU4_CPU0_ATCM_BASE_ADDR_SOC,
+SBL_MCU4_CPU1_ATCM_BASE_ADDR_SOC
 };
 
 #if !defined(SOC_AM65XX)
@@ -213,7 +264,9 @@ SBL_MCU1_CPU1_BTCM_BASE_ADDR_SOC,
 SBL_MCU2_CPU0_BTCM_BASE_ADDR_SOC,
 SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
 SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
-SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
+SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC,
+SBL_MCU4_CPU0_BTCM_BASE_ADDR_SOC,
+SBL_MCU4_CPU1_BTCM_BASE_ADDR_SOC
 };
 #endif
 /* ========================================================================== */
@@ -454,6 +507,10 @@ void SBL_SetupCoreMem(uint32_t core_id)
             runLockStep = 1;
             core_id = MCU3_CPU0_ID;
             break;
+        case MCU4_SMP_ID:
+            runLockStep = 1;
+            core_id = MCU4_CPU0_ID;
+            break;
         default:
             break;
     }
@@ -478,10 +535,15 @@ void SBL_SetupCoreMem(uint32_t core_id)
             break;
         case DSP2_C7X_ID:
             break;
+        case DSP3_C7X_ID:
+            break;
+        case DSP4_C7X_ID:
+            break;
 
         case MCU1_CPU1_ID:
         case MCU2_CPU1_ID:
         case MCU3_CPU1_ID:
+        case MCU4_CPU1_ID:
             SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode... \n", core_id-1, sbl_slave_core_info[core_id-1].tisci_proc_id);
             /* Image for second MCU core present, disable lock step for the cluster */
             SBL_ConfigMcuLockStep(SBL_DISABLE_MCU_LOCKSTEP, &(sbl_slave_core_info[core_id-1]));
@@ -490,6 +552,7 @@ void SBL_SetupCoreMem(uint32_t core_id)
         case MCU1_CPU0_ID:
         case MCU2_CPU0_ID:
         case MCU3_CPU0_ID:
+        case MCU4_CPU0_ID:
             if (!mcuModeConfigured)
             {
                 SBL_log(SBL_LOG_MAX, "Switching core id %d, proc_id 0x%x to split mode... \n", core_id, sbl_slave_core_info[core_id].tisci_proc_id);
@@ -533,9 +596,9 @@ void SBL_SetupCoreMem(uint32_t core_id)
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
 
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
             /* Only need to set mem_init disable bit for MCU1_0 or MCU2_0 (for each cluster) */
-            if ((core_id == MCU1_CPU0_ID) || (core_id == MCU2_CPU0_ID))
+            if ((core_id == MCU1_CPU0_ID) || (core_id == MCU2_CPU0_ID) || (core_id == MCU3_CPU0_ID) || (core_id == MCU4_CPU0_ID))
             {
                 SBL_log(SBL_LOG_MAX, "Disabling HW-based memory init of MCU TCMs for core %d\n", core_id);
                 proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_MEM_INIT_DIS;
@@ -597,38 +660,18 @@ void SBL_SetupCoreMem(uint32_t core_id)
         case MPU1_SMP_ID:
         case MPU1_CPU0_ID:
         case MPU1_CPU1_ID:
+        case MPU1_CPU2_ID:
+        case MPU1_CPU3_ID:
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", SBL_DEV_ID_MPU_CLUSTER0);
             Sciclient_pmSetModuleState(SBL_DEV_ID_MPU_CLUSTER0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             break;
         case MPU2_SMP_ID:
         case MPU2_CPU0_ID:
         case MPU2_CPU1_ID:
+        case MPU2_CPU2_ID:
+        case MPU2_CPU3_ID:
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", SBL_DEV_ID_MPU_CLUSTER1);
             Sciclient_pmSetModuleState(SBL_DEV_ID_MPU_CLUSTER1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            break;
-        case M4F_CPU0_ID:
-            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleState Off...FAILED \n");
-                SblErrLoop(__FILE__, __LINE__);
-            }
-            SBL_log(SBL_LOG_MAX, "Calling Sciclient_pmSetModuleRst, DevId 0x%x with RESET \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id, 1, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleRst RESET ...FAILED \n");
-                SblErrLoop(__FILE__, __LINE__);
-            }
-
-            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            status = Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleState...FAILED \n");
-                SblErrLoop(__FILE__, __LINE__);
-            }
             break;
         case MPU_SMP_ID:
             /* Enable SMP on all MPU clusters. Enable SMP only if cluster is present */
@@ -848,7 +891,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /**
              * Notify SYSFW that the SBL is relinquishing the MCU cluster running the SBL
              */
-#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
             if (requestCoresFlag == SBL_REQUEST_CORE)
             {
                 Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -877,7 +920,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             }
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
             /* Notifying SYSFW that the SBL is relinquishing the MCU cluster running the SBL */
             /* This is done at the end as the PM set module state relies on the fact the SBL is the owner of MCU1_0 and MCU1_1 */
             if (requestCoresFlag == SBL_REQUEST_CORE)
@@ -905,6 +948,8 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
         case MCU2_CPU1_ID:
         case MCU3_CPU0_ID:
         case MCU3_CPU1_ID:
+        case MCU4_CPU0_ID:
+        case MCU4_CPU1_ID:
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
                 /* Skip copy if R5 app entry point is already 0 */
@@ -920,23 +965,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                     SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
                     SblErrLoop(__FILE__, __LINE__);
                 }
-            }
-
-            /* Release core */
-            if (requestCoresFlag == SBL_REQUEST_CORE)
-            {
-                SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
-            }
-
-            SBL_ADD_PROFILE_POINT;
-            break;
-       case M4F_CPU0_ID:
-            SBL_log(SBL_LOG_MAX, "Calling Sciclient_pmSetModuleRst, ProcId 0x%x with RELEASE \n", sblSlaveCoreInfoPtr->tisci_proc_id);
-            status = Sciclient_pmSetModuleRst(sblSlaveCoreInfoPtr->tisci_dev_id, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (status != CSL_PASS)
-            {
-                SBL_log(SBL_LOG_ERR, "Sciclient_pmSetModuleRst RELEASE...FAILED \n");
-                SblErrLoop(__FILE__, __LINE__);
             }
 
             /* Release core */

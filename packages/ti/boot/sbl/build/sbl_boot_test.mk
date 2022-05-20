@@ -28,13 +28,13 @@ COMP_LIST_COMMON =
 SRCS_COMMON += sbl_amp_multicore.c sbl_printf.c
 
 # asm files and linker scripts change due to different tool chains for R5 and A53
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1))
   SRCS_ASM_COMMON = sbl_multicore_r5.asm
   EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mcuAmplinker.lds
   APPEND_LNKCMD_FILE = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mcuAmplinker_$(CORE).lds
 endif
 
-ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))
+ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3))
   SRCS_ASM_COMMON = sbl_multicore_a53.asm
   LNKCMD_FILE = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mpuAmplinker.lds
 endif

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -81,6 +81,22 @@
     void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_3_1_resetvector")));
 #endif
 
+#ifdef BUILD_MCU4_0
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_4_0_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_4_0_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_4_0_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_4_0_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_4_0_resetvector")));
+#endif
+
+#ifdef BUILD_MCU4_1
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mcu_4_1_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mcu_4_1_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mcu_4_1_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mcu_4_1_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mcu_4_1_resetvector")));
+#endif
+
 #ifdef BUILD_MPU1_0
     void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mpu_1_0_resetvector")));
     void sbl_puts(char *str)  __attribute__((section(".sbl_mpu_1_0_resetvector")));
@@ -95,6 +111,22 @@
     void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mpu_1_1_resetvector")));
     void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mpu_1_1_resetvector")));
     void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mpu_1_1_resetvector")));
+#endif
+
+#ifdef BUILD_MPU1_2
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
+#endif
+
+#ifdef BUILD_MPU1_3
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_0
@@ -112,6 +144,23 @@
     void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mpu_2_1_resetvector")));
     void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mpu_2_1_resetvector")));
 #endif
+
+#ifdef BUILD_MPU2_2
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
+#endif
+
+#ifdef BUILD_MPU2_3
+    void sbl_putc(unsigned char c)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
+    void sbl_puts(char *str)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
+    void sbl_putbyte(unsigned char b)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
+    void sbl_putui(unsigned int ul)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
+    void sbl_putsui(char *s, unsigned int ui, int crlf)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
+#endif
+
 #if defined(SOC_AM64X)
 #define UART0_ADDR	((int)0x02800000)
 #else

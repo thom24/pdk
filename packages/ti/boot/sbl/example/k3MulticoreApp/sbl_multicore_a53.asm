@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,12 +38,28 @@
 	.section   .sbl_mpu_1_1_resetvector, "ax"
 #endif
 
+#ifdef BUILD_MPU1_2
+	.section   .sbl_mpu_1_2_resetvector, "ax"
+#endif
+
+#ifdef BUILD_MPU1_3
+	.section   .sbl_mpu_1_3_resetvector, "ax"
+#endif
+
 #ifdef BUILD_MPU2_0
 	.section   .sbl_mpu_2_0_resetvector, "ax"
 #endif
 
 #ifdef BUILD_MPU2_1
 	.section   .sbl_mpu_2_1_resetvector, "ax"
+#endif
+
+#ifdef BUILD_MPU2_2
+	.section   .sbl_mpu_2_2_resetvector, "ax"
+#endif
+
+#ifdef BUILD_MPU2_3
+	.section   .sbl_mpu_2_3_resetvector, "ax"
 #endif
 
 	.global sblTestmain

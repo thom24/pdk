@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018, Texas Instruments Incorporated
+# Copyright (c) 2018-2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -66,9 +66,9 @@
 #
 ifeq ($(sbl_component_make_include), )
 
-sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
+sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm j784s4_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
 
-sbl_SOCLIST = am65xx j721e j7200 j721s2 am64x tpr12 awr294x
+sbl_SOCLIST = am65xx j721e j7200 j721s2 j784s4 am64x tpr12 awr294x
 
 am65xx_smp_CORELIST := mcu1_0 mpu1_0 mpu2_0
 sbl_am65xx_CORELIST := mcu1_0 mcu1_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1
@@ -85,6 +85,10 @@ j7200_LASTCORE := $(word $(words $(sbl_j7200_CORELIST)), $(sbl_j7200_CORELIST))
 j721s2_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
 sbl_j721s2_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
 j721s2_LASTCORE := $(word $(words $(sbl_j721s2_CORELIST)), $(sbl_j721s2_CORELIST))
+
+j784s4_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mcu4_0 mpu1_0 mpu2_0
+sbl_j784s4_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
+j784s4_LASTCORE := $(word $(words $(sbl_j784s4_CORELIST)), $(sbl_j784s4_CORELIST))
 
 am64x_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
 sbl_am64x_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
@@ -115,6 +119,10 @@ else
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
     sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
     sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs
+  else ifeq ($(SOC),$(filter $(SOC), j784s4))
+    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
+    sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
+    sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
   else
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
@@ -143,6 +151,9 @@ else
     sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
     sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
     sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
+  else ifeq ($(SOC),$(filter $(SOC), j784s4))
+    sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
+    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
   else
     sbl_EXAMPLE_LIST = sbl_uart_img
     sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
@@ -1255,7 +1266,7 @@ sbl_smp_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_smp_test_BOARDLIST
 sbl_smp_test_$(SOC)_CORELIST = $($(SOC)_smp_CORELIST)
 export sbl_smp_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2))
+ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2 j784s4))
 sbl_EXAMPLE_LIST += sbl_smp_test
 endif
 sbl_smp_test_SBL_APPIMAGEGEN = yes
@@ -1284,7 +1295,7 @@ sbl_multicore_smp_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_smp_BOARDLIST
 sbl_multicore_smp_$(SOC)_CORELIST := $($(SOC)_LASTCORE)
 export sbl_multicore_smp_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2))
+ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2 j784s4))
 sbl_EXAMPLE_LIST += sbl_multicore_smp
 endif
 sbl_multicore_smp_SBL_APPIMAGEGEN = no
@@ -1492,13 +1503,13 @@ endif
 # Example - Building Custom SBL Images
 # Build and SBl with custom flags to change
 # different build configurations
-CUST_SBL_TEST_SOCS = am65xx j721e j7200 j721s2 am64x
-CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm j721s2_evm am64x_evm
+CUST_SBL_TEST_SOCS = am65xx j721e j7200 j721s2 j784s4 am64x
+CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm j721s2_evm j784s4_evm am64x_evm
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_MCU_RESET  -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SKIP_MCU_RESET -DSBL_SKIP_BRD_CFG_PM -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
-ifeq ($(SOC),$(filter $(SOC), j7200 j721s2 am64x))
+ifeq ($(SOC),$(filter $(SOC), j7200 j721s2 j784s4 am64x))
 # NOTE: If changing to SBL_USE_DMA=1, below, then also change 'sbl_lib_cust' & 'sbl_cust_img' MAKEFILE lines further below to use 'SBL_USE_DMA=yes'
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI ${OCM_RAT_STRING}"
 else
@@ -1619,7 +1630,7 @@ export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
 export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
 export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_hs_SBL_IMAGEGEN = yes
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2))
+ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2 j784s4))
 sbl_EXAMPLE_LIST += sbl_cust_img_hs
 endif
 

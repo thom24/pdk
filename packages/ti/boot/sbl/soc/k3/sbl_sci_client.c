@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -53,12 +53,12 @@ uint32_t __attribute__((section(".firmware"))) gSciclient_firmware[1];
 #if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
 static int32_t Sciclient_setBoardConfigHeader ();
 #endif
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 /* Firewall ID for MCU_FSS0_S0 */
 #define MCU_FSS0_S0_FWID (1036)
 #define MCU_FSS0_S0_FW_REGIONS (8)
 
-#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined(SOC_J784S4)
 /** \brief Aligned address at which the Board Config header is placed. */
 #define SCISERVER_BOARDCONFIG_HEADER_ADDR (0x41c80000U)
 
@@ -175,7 +175,7 @@ void SBL_SciClientInit(void)
     status = SBL_ReadSysfwImage(&sysfw_ptr, SBL_SYSFW_MAX_SIZE);
     if (status != CSL_PASS)
     {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
         SBL_log(SBL_LOG_ERR,"TIFS read...FAILED \n");
 #else
         SBL_log(SBL_LOG_ERR,"SYSFW read...FAILED \n");
@@ -197,7 +197,7 @@ void SBL_SciClientInit(void)
     status = Sciclient_loadFirmware((const uint32_t *) sysfw_ptr);
     if (status != CSL_PASS)
     {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
         SBL_log(SBL_LOG_ERR,"TIFS load...FAILED \n");
 #else
         SBL_log(SBL_LOG_ERR,"SYSFW load...FAILED \n");
@@ -344,7 +344,7 @@ void SBL_SciClientInit(void)
             if (respPrm.flags == (uint32_t)TISCI_MSG_FLAG_ACK)
             {
                 SBL_ADD_PROFILE_POINT;
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
                 SBL_log(SBL_LOG_MIN,"TIFS  ver: %s\n", (char *) response.str);
 #else
                 SBL_log(SBL_LOG_MIN,"SYSFW  ver: %s\n", (char *) response.str);
@@ -352,7 +352,7 @@ void SBL_SciClientInit(void)
             }
             else
             {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
                 SBL_log(SBL_LOG_ERR,"TIFS Get Version failed \n");
 #else
                 SBL_log(SBL_LOG_ERR,"SYSFW Get Version failed \n");
@@ -402,7 +402,7 @@ void SBL_SciClientInit(void)
 static int32_t Sciclient_setBoardConfigHeader ()
 {
     int32_t status = CSL_PASS;
-#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined(SOC_J784S4)
     //uint32_t alignedOffset = ((SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES + 128U)/128U)*128U;
     uint32_t alignedOffset = SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES;
     Sciclient_BoardCfgPrms_t boardCfgPrms_pm =

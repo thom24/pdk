@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,6 +53,10 @@
 #define SBL_SMP_TEST_NUM_CORES 4
 #endif
 
+#if defined (SOC_J784S4)
+#define SBL_SMP_TEST_NUM_CORES 11
+#endif
+
 #ifdef BUILD_MPU
 int main()
 {
@@ -65,7 +69,7 @@ int main()
 }
 #endif
 
-#if defined (BUILD_MCU2_0)|| defined (BUILD_MCU3_0)
+#if defined (BUILD_MCU2_0) || defined (BUILD_MCU3_0) || defined (BUILD_MCU4_0)
 int main()
 {
 
@@ -131,14 +135,61 @@ int main()
     {
     SBL_PROC_ID_MPU1_CPU0,
     SBL_PROC_ID_MPU1_CPU1,
+    SBL_PROC_ID_MPU1_CPU2,
+    SBL_PROC_ID_MPU1_CPU3,
     SBL_PROC_ID_MPU2_CPU0,
     SBL_PROC_ID_MPU2_CPU1,
+    SBL_PROC_ID_MPU2_CPU2,
+    SBL_PROC_ID_MPU2_CPU3,
     SBL_PROC_ID_MCU1_CPU0,
     SBL_PROC_ID_MCU1_CPU1,
     SBL_PROC_ID_MCU2_CPU0,
     SBL_PROC_ID_MCU2_CPU1,
     SBL_PROC_ID_MCU3_CPU0,
-    SBL_PROC_ID_MCU3_CPU1
+    SBL_PROC_ID_MCU3_CPU1,
+    SBL_PROC_ID_MCU4_CPU0,
+    SBL_PROC_ID_MCU4_CPU1
+    };
+    const int32_t dev_id_list [] =
+    {
+    SBL_DEV_ID_MPU1_CPU0,
+    SBL_DEV_ID_MPU1_CPU1,
+    SBL_DEV_ID_MPU1_CPU2,
+    SBL_DEV_ID_MPU1_CPU3,
+    SBL_DEV_ID_MPU2_CPU0,
+    SBL_DEV_ID_MPU2_CPU1,
+    SBL_DEV_ID_MPU2_CPU2,
+    SBL_DEV_ID_MPU2_CPU3,
+    SBL_DEV_ID_MCU1_CPU0,
+    SBL_DEV_ID_MCU1_CPU1,
+    SBL_DEV_ID_MCU2_CPU0,
+    SBL_DEV_ID_MCU2_CPU1,
+    SBL_DEV_ID_MCU3_CPU0,
+    SBL_DEV_ID_MCU3_CPU1,
+    SBL_DEV_ID_MCU4_CPU0,
+    SBL_DEV_ID_MCU4_CPU1
+    };
+    const uint32_t SblAtcmAddr[] =
+    {
+    SBL_MCU_ATCM_BASE,
+    SBL_MCU1_CPU1_ATCM_BASE_ADDR_SOC,
+    SBL_MCU2_CPU0_ATCM_BASE_ADDR_SOC,
+    SBL_MCU2_CPU1_ATCM_BASE_ADDR_SOC,
+    SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
+    SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU0_ATCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU1_ATCM_BASE_ADDR_SOC
+    };
+    const uint32_t SblBtcmAddr[] =
+    {
+    SBL_MCU_BTCM_BASE,
+    SBL_MCU1_CPU1_BTCM_BASE_ADDR_SOC,
+    SBL_MCU2_CPU0_BTCM_BASE_ADDR_SOC,
+    SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
+    SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
+    SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU0_BTCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU1_BTCM_BASE_ADDR_SOC
     };
 
     /* Board Init UART for logging. */
@@ -146,10 +197,14 @@ int main()
     UART_printf("MPU SMP boot test\r\n");
 
     /* Get MPU SMP entry points */
-    for (core_id = MPU1_CPU0_ID; core_id < MPU2_CPU1_ID; core_id+= 2)
+    for (core_id = MPU1_CPU0_ID; core_id < MPU2_CPU3_ID; core_id += 4)
     {
         sblSmpTestEntry.CpuEntryPoint[core_id] = getCoreEntry(proc_id_list[core_id]);
         sblSmpTestEntry.CpuEntryPoint[core_id + 1] = sblSmpTestEntry.CpuEntryPoint[core_id];
+        #if defined(SOC_J784S4)
+            sblSmpTestEntry.CpuEntryPoint[core_id + 2] = sblSmpTestEntry.CpuEntryPoint[core_id];
+            sblSmpTestEntry.CpuEntryPoint[core_id + 3] = sblSmpTestEntry.CpuEntryPoint[core_id];
+        #endif
         if (sblSmpTestEntry.CpuEntryPoint[core_id] < SBL_INVALID_ENTRY_ADDR)
         {
             UART_printf("Cores %d & %d will boot from 0x%x\r\n", core_id, core_id + 1, sblSmpTestEntry.CpuEntryPoint[core_id]);
@@ -157,7 +212,7 @@ int main()
     }
 
     /* Get MCU lock step entry points */
-    for (core_id = MCU2_CPU0_ID; core_id < MCU3_CPU1_ID; core_id += 2)
+    for (core_id = MCU2_CPU0_ID; core_id < MCU4_CPU1_ID; core_id += 2)
     {
         sblSmpTestEntry.CpuEntryPoint[core_id] = getCoreEntry(proc_id_list[core_id]);
         sblSmpTestEntry.CpuEntryPoint[core_id + 1] = SBL_MCU_LOCKSTEP_ADDR ;
@@ -173,7 +228,7 @@ int main()
 
     /* SMP apps is already loaded, simply reset the cores to run it */
     UART_printf("Resetting all ARM cores now...\r\n");
-    for (core_id = MPU1_CPU0_ID; core_id <= MPU2_CPU1_ID; core_id ++)
+    for (core_id = MPU1_CPU0_ID; core_id <= MPU2_CPU3_ID; core_id ++)
     {
         /* Try booting all cores */
         if (proc_id_list[core_id] != SBL_INVALID_ID)
@@ -184,43 +239,12 @@ int main()
             UART_printf("%d\r\n", *(MPU_POKE_MEM_ADDR));
         }
     }
-    for (core_id = MCU2_CPU0_ID; core_id <= MCU3_CPU1_ID; core_id += 2)
+
+    for (core_id = MCU2_CPU0_ID; core_id <= MCU4_CPU1_ID; core_id += 2)
     {
         /* Try booting all cores */
         if (proc_id_list[core_id] != SBL_INVALID_ID)
         {
-            const int32_t dev_id_list [] =
-            {
-            SBL_DEV_ID_MPU1_CPU0,
-            SBL_DEV_ID_MPU1_CPU1,
-            SBL_DEV_ID_MPU2_CPU0,
-            SBL_DEV_ID_MPU2_CPU1,
-            SBL_DEV_ID_MCU1_CPU0,
-            SBL_DEV_ID_MCU1_CPU1,
-            SBL_DEV_ID_MCU2_CPU0,
-            SBL_DEV_ID_MCU2_CPU1,
-            SBL_DEV_ID_MCU3_CPU0,
-            SBL_DEV_ID_MCU3_CPU1
-            };
-            const uint32_t SblAtcmAddr[] =
-            {
-            SBL_MCU_ATCM_BASE,
-            SBL_MCU1_CPU1_ATCM_BASE_ADDR_SOC,
-            SBL_MCU2_CPU0_ATCM_BASE_ADDR_SOC,
-            SBL_MCU2_CPU1_ATCM_BASE_ADDR_SOC,
-            SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
-            SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
-            };
-            const uint32_t SblBtcmAddr[] =
-            {
-            SBL_MCU_BTCM_BASE,
-            SBL_MCU1_CPU1_BTCM_BASE_ADDR_SOC,
-            SBL_MCU2_CPU0_BTCM_BASE_ADDR_SOC,
-            SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
-            SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
-            SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
-            };
-
             /* Prepare the cores for going down. TCMs */
             /* will be lost, so re-init restore them */
             status = Sciclient_pmSetModuleState(dev_id_list[core_id], TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);

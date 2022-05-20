@@ -57,3 +57,13 @@
 	.if $$isdefed("BUILD_MCU3_1")
 	.sect   ".sbl_mcu_3_1_resetvector"
 	.endif
+
+	.if $$isdefed("BUILD_MCU4_0")
+	.sect   ".sbl_mcu_4_0_resetvector"
+	.endif
+
+	.if $$isdefed("BUILD_MCU4_1")
+	.sect   ".sbl_mcu_4_1_resetvector"
+	.endif
+
+

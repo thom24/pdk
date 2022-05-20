@@ -3,27 +3,38 @@ REM Define Device Id for K3 - 55
 REM Device ID & CPU ID should be in sync with SBL. Refer SBL user guide for values
 set Dev_ID=55
 
-REM MPU1_CPU0_ID = 0
-REM MPU1_CPU1_ID = 1
-REM MPU2_CPU0_ID = 2
-REM MPU2_CPU1_ID = 3
-REM MCU1_CPU0_ID = 4
-REM MCU1_CPU1_ID = 5
-REM MCU2_CPU0_ID = 6
-REM MCU2_CPU1_ID = 7
-REM MCU3_CPU0_ID = 8
-REM MCU3_CPU1_ID = 9
-REM DSP1_C66X_ID = 10
-REM DSP2_C66X_ID = 11
-REM DSP1_C7X_ID = 12
-REM DSP2_C7X_ID = 13
-REM MPU1_SMP_ID = 14
-REM MPU2_SMP_ID = 15
-REM MPU_SMP_ID = 16
-REM MCU1_SMP_ID = 17
-REM MCU2_SMP_ID = 18
-REM MCU3_SMP_ID = 19
-REM ONLY_LOAD_ID = 20
+REM MPU1_CPU0_ID         : 0
+REM MPU1_CPU1_ID         : 1
+REM MPU1_CPU2_ID         : 2
+REM MPU1_CPU3_ID         : 3
+REM MPU2_CPU0_ID         : 4
+REM MPU2_CPU1_ID         : 5
+REM MPU2_CPU2_ID         : 6
+REM MPU2_CPU3_ID         : 7
+REM MCU1_CPU0_ID         : 8
+REM MCU1_CPU1_ID         : 9
+REM MCU2_CPU0_ID         : 10
+REM MCU2_CPU1_ID         : 11
+REM MCU3_CPU0_ID         : 12
+REM MCU3_CPU1_ID         : 13
+REM MCU4_CPU0_ID         : 14
+REM MCU4_CPU1_ID         : 15
+REM DSP1_C66X_ID         : 16
+REM DSP2_C66X_ID         : 17
+REM DSP1_C7X_ID          : 18
+REM DSP2_C7X_ID          : 19
+REM DSP3_C7X_ID          : 20
+REM DSP4_C7X_ID          : 21
+REM DSP1_C7X_HOSTEMU_ID  : 22
+REM MPU1_SMP_ID          : 23
+REM MPU2_SMP_ID          : 24
+REM MPU_SMP_ID           : 25
+REM MCU1_SMP_ID          : 26
+REM MCU2_SMP_ID          : 27
+REM MCU3_SMP_ID          : 28
+REM MCU4_SMP_ID          : 29
+REM ONLY_LOAD_ID         : 30
+REM NUM_CORES            : 31
 
 if not defined TOOLS_PATH (
 set TOOLS_PATH=%PDK_INSTALL_PATH%\ti\boot\sbl\tools

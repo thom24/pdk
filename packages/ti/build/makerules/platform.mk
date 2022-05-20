@@ -593,37 +593,12 @@ ifeq ($(ISA),c674)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
-  SBL_CORE_ID_mpu1_0 = 0
-  SBL_CORE_ID_mpu1_1 = 1
-  SBL_CORE_ID_mpu2_0 = 2
-  SBL_CORE_ID_mpu2_1 = 3
-  SBL_CORE_ID_mcu1_0 = 4
-  SBL_CORE_ID_mcu1_1 = 5
-  SBL_CORE_ID_mcu2_0 = 6
-  SBL_CORE_ID_mcu2_1 = 7
-  SBL_CORE_ID_mcu3_0 = 8
-  SBL_CORE_ID_mcu3_1 = 9
-  SBL_CORE_ID_c66xdsp_1 = 10
-  SBL_CORE_ID_c66xdsp_2 = 11
-  SBL_CORE_ID_c7x_1 = 12
-  SBL_CORE_ID_c7x-hostemu = 13
-  SBL_CORE_ID_m4f_0 = 14
-  SBL_CORE_ID_mpu1_0_smp = 15
-  SBL_CORE_ID_mpu2_0_smp = 16
-  SBL_CORE_ID_mpu_smp = 17
-  SBL_CORE_ID_mcu1_0_smp = 18
-  SBL_CORE_ID_mcu2_0_smp = 19
-  SBL_CORE_ID_mcu3_0_smp = 20
-  SBL_CORE_ID_load_only = 21
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j784s4))
+ifeq ($(SOC),$(filter $(SOC), j7200 j721e j721s2 j784s4))
   SBL_CORE_ID_mpu1_0 = 0
   SBL_CORE_ID_mpu1_1 = 1
   SBL_CORE_ID_mpu1_2 = 2
   SBL_CORE_ID_mpu1_3 = 3
-  SBL_CORE_ID_mpu2_0 = 4
+  SBL_CORE_ID_mpu2_0 = 4 
   SBL_CORE_ID_mpu2_1 = 5
   SBL_CORE_ID_mpu2_2 = 6
   SBL_CORE_ID_mpu2_3 = 7
@@ -635,16 +610,16 @@ ifeq ($(SOC),$(filter $(SOC), j784s4))
   SBL_CORE_ID_mcu3_1 = 13
   SBL_CORE_ID_mcu4_0 = 14
   SBL_CORE_ID_mcu4_1 = 15
-  SBL_CORE_ID_c66xdsp_1 = 16
+  SBL_CORE_ID_c66xdsp_1 = 16 
   SBL_CORE_ID_c66xdsp_2 = 17
   SBL_CORE_ID_c7x_1 = 18
   SBL_CORE_ID_c7x_2 = 19
   SBL_CORE_ID_c7x_3 = 20
   SBL_CORE_ID_c7x_4 = 21
-  SBL_CORE_ID_m4f_0 = 22
-  SBL_CORE_ID_m4f_1 = 23
-  SBL_CORE_ID_mpu1_smp = 24
-  SBL_CORE_ID_mpu2_smp = 25
+  SBL_CORE_ID_c7x-hostemu = 22
+  SBL_CORE_ID_mpu1_smp = 23
+  SBL_CORE_ID_mpu2_smp = 24
+  SBL_CORE_ID_mpu_smp = 25
   SBL_CORE_ID_mcu1_0_smp = 26
   SBL_CORE_ID_mcu2_0_smp = 27
   SBL_CORE_ID_mcu3_0_smp = 28

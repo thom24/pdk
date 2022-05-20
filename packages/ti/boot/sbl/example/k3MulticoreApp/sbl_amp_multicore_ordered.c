@@ -92,15 +92,27 @@ int sblTestmain(void)
 
     // Check if all cores have run by checking flags
     // left in MSMC by each cores testcase
-    while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1)
-    {
-        if (*bootFlagAddr == 0xC0DEBABE)
+    #if defined(SOC_J784S4)
+        while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3)
         {
-            num_cores_booted++;
-        }
+            if (*bootFlagAddr == 0xC0DEBABE)
+            {
+                num_cores_booted++;
+            }
 
-        bootFlagAddr += 0x800;
-    }
+            bootFlagAddr += 0x400;
+        }
+    #else
+        while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1)
+        {
+            if (*bootFlagAddr == 0xC0DEBABE)
+            {
+                num_cores_booted++;
+            }
+
+            bootFlagAddr += 0x800;
+        }
+    #endif
 
     if (num_cores_booted == SBL_AMP_TEST_NUM_BOOT_CORES)
     {
@@ -108,12 +120,21 @@ int sblTestmain(void)
         sbl_puts(" reports: All tests have passed\n\r");
 
         // Clean up pokemem flags for the next run
-        for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
-             bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1;
-             bootFlagAddr += 0x800)
-        {
-            *bootFlagAddr = 0xFEEDFACE;
-        }
+        #if defined(SOC_J784S4)
+            for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
+                bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3;
+                bootFlagAddr += 0x400)
+            {
+                *bootFlagAddr = 0xFEEDFACE;
+            }
+        #else
+            for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
+                bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1;
+                bootFlagAddr += 0x800)
+            {
+                *bootFlagAddr = 0xFEEDFACE;
+            }
+        #endif
     }
 
     return 0XFEEDFACE;

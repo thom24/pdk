@@ -2,34 +2,45 @@
 
 # K3ImageGen <CoreID> <.out> [CoreID2] [.out2] ....
 # Core ID definition:
-#       MPU1_CPU0_ID : 0
-#       MPU1_CPU1_ID : 1
-#       MPU2_CPU0_ID : 2
-#       MPU2_CPU1_ID : 3
-#       MCU1_CPU0_ID : 4
-#       MCU1_CPU1_ID : 5
-#       MCU2_CPU0_ID : 6
-#       MCU2_CPU1_ID : 7
-#       MCU3_CPU0_ID : 8
-#       MCU3_CPU1_ID : 9
-#       DSP1_C66X_ID : 10
-#       DSP2_C66X_ID : 11
-#       DSP1_C7X_ID : 12
-#       DSP2_C7X_ID : 13
-#       MPU1_SMP_ID : 14
-#       MPU2_SMP_ID : 15
-#       MPU_SMP_ID : 16
-#       MCU1_SMP_ID : 17
-#       MCU2_SMP_ID : 18
-#       MCU3_SMP_ID : 19
-#       ONLY_LOAD_ID : 20
-#
+#        MPU1_CPU0_ID         : 0
+#        MPU1_CPU1_ID         : 1
+#        MPU1_CPU2_ID         : 2
+#        MPU1_CPU3_ID         : 3
+#        MPU2_CPU0_ID         : 4
+#        MPU2_CPU1_ID         : 5
+#        MPU2_CPU2_ID         : 6
+#        MPU2_CPU3_ID         : 7
+#        MCU1_CPU0_ID         : 8
+#        MCU1_CPU1_ID         : 9
+#        MCU2_CPU0_ID         : 10
+#        MCU2_CPU1_ID         : 11
+#        MCU3_CPU0_ID         : 12
+#        MCU3_CPU1_ID         : 13
+#        MCU4_CPU0_ID         : 14
+#        MCU4_CPU1_ID         : 15
+#        DSP1_C66X_ID         : 16
+#        DSP2_C66X_ID         : 17
+#        DSP1_C7X_ID          : 18
+#        DSP2_C7X_ID          : 19
+#        DSP3_C7X_ID          : 20
+#        DSP4_C7X_ID          : 21
+#        DSP1_C7X_HOSTEMU_ID  : 22
+#        MPU1_SMP_ID          : 23
+#        MPU2_SMP_ID          : 24
+#        MPU_SMP_ID           : 25
+#        MCU1_SMP_ID          : 26
+#        MCU2_SMP_ID          : 27
+#        MCU3_SMP_ID          : 28
+#        MCU4_SMP_ID          : 29
+#        ONLY_LOAD_ID         : 30
+#        NUM_CORES            : 31
+
 # Device Id for K3 is 55
 # Device ID & CPU ID should be in sync with SBL. Refer to SBL user guide for values
-#  
+ 
 # CoreID is provided by the user of the script
-#
-#
+
+
 
 export Dev_ID=55
 

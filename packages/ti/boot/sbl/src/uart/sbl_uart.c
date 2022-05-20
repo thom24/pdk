@@ -111,7 +111,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     SBL_ADD_PROFILE_POINT;
 
     SBL_uartInit(SBL_ROM_UART_MODULE_INPUT_CLK);
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) 
     SBL_log(SBL_LOG_MIN, "Waiting for tifs.bin ...\n");
 #else
     SBL_log(SBL_LOG_MIN, "Waiting for sysfw.bin ...\n");

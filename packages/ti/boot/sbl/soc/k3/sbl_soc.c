@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2018-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -872,6 +872,30 @@ static void J721S2_UART_InitPwrClk(void)
 void SBL_SocEarlyInit()
 {
     J721S2_UART_InitPwrClk();
+}
+
+void SBL_SocLateInit(void)
+{
+}
+#endif
+
+#if defined(SOC_J784S4)
+#include <ti/board/src/j784s4_evm/include/board_internal.h>
+
+static void J784S4_UART_InitPwrClk(void)
+{
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK0_OFFSET, SBL_UART_PLL_KICK0_UNLOCK_VAL);
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK1_OFFSET, SBL_UART_PLL_KICK1_UNLOCK_VAL);
+
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_DIV_OFFSET, SBL_UART_PLL_DIV_VAL);
+
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK0_OFFSET, SBL_UART_PLL_KICK_LOCK_VAL);
+    HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK1_OFFSET, SBL_UART_PLL_KICK_LOCK_VAL);
+}
+
+void SBL_SocEarlyInit()
+{
+    J784S4_UART_InitPwrClk();
 }
 
 void SBL_SocLateInit(void)

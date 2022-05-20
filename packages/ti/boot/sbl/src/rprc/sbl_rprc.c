@@ -65,13 +65,13 @@ static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
 /******************************************************************************
  ***                     SBL Multicore RPRC parse functions                 ***
 *******************************************************************************/
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
 #if defined(BUILD_MCU1_0)
 extern void SBL_DCacheClean(void *addr, uint32_t size);
 #endif
 #endif
 
-#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
 extern int32_t SBL_OSPI_ReadSectors(void *dstAddr, void *srcOffsetAddr, uint32_t length);
 #endif
 
@@ -213,28 +213,34 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
 {
     switch (CoreID)
     {
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
         case ONLY_LOAD_ID:
             /* Only loading, ignore entry point*/
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
             break;
 
-        case M4F_CPU0_ID:
-            entry=0x0; /* M4F entry point is always set to 0x0 */
 #if !defined(SBL_USE_MCU_DOMAIN_ONLY)
         case MPU1_CPU0_ID:
         case MPU1_CPU1_ID:
+        case MPU1_CPU2_ID:
+        case MPU1_CPU3_ID:
         case MPU2_CPU0_ID:
         case MPU2_CPU1_ID:
+        case MPU2_CPU2_ID:
+        case MPU2_CPU3_ID:
         case DSP1_C66X_ID:
         case DSP2_C66X_ID:
         case DSP1_C7X_ID:
         case DSP2_C7X_ID:
+        case DSP3_C7X_ID:
+        case DSP4_C7X_ID:
         case MCU2_CPU0_ID:
         case MCU2_CPU1_ID:
         case MCU3_CPU0_ID:
         case MCU3_CPU1_ID:
+        case MCU4_CPU0_ID:
+        case MCU4_CPU1_ID:
             /* All other non-bootloader cores*/
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
@@ -260,6 +266,10 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             SBL_log(SBL_LOG_MAX, "Setting SMP entry point for MPU1 @0x%x\n", entry);
             pAppEntry->CpuEntryPoint[MPU1_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MPU1_CPU1_ID] = entry;
+            #if defined(SOC_J784S4)
+                pAppEntry->CpuEntryPoint[MPU1_CPU2_ID] = entry;
+                pAppEntry->CpuEntryPoint[MPU1_CPU3_ID] = entry;
+            #endif
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
 
             /* Immediately boot these cores */
@@ -267,6 +277,10 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             {
                 SBL_SlaveCoreBoot(MPU1_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
                 SBL_SlaveCoreBoot(MPU1_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                #if defined(SOC_J784S4)
+                    SBL_SlaveCoreBoot(MPU1_CPU2_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                    SBL_SlaveCoreBoot(MPU1_CPU3_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                #endif
             }
 
             break;
@@ -275,6 +289,10 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             SBL_log(SBL_LOG_MAX, "Setting SMP entry point for MPU2 @0x%x\n", entry);
             pAppEntry->CpuEntryPoint[MPU2_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MPU2_CPU1_ID] = entry;
+            #if defined(SOC_J784S4)
+                pAppEntry->CpuEntryPoint[MPU2_CPU2_ID] = entry;
+                pAppEntry->CpuEntryPoint[MPU2_CPU3_ID] = entry;
+            #endif
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
 
             /* Immediately boot these cores */
@@ -282,6 +300,10 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             {
                 SBL_SlaveCoreBoot(MPU2_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
                 SBL_SlaveCoreBoot(MPU2_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                #if defined(SOC_J784S4)
+                    SBL_SlaveCoreBoot(MPU2_CPU2_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                    SBL_SlaveCoreBoot(MPU2_CPU3_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                #endif
             }
 
             break;
@@ -292,6 +314,12 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             pAppEntry->CpuEntryPoint[MPU1_CPU1_ID] = entry;
             pAppEntry->CpuEntryPoint[MPU2_CPU0_ID] = entry;
             pAppEntry->CpuEntryPoint[MPU2_CPU1_ID] = entry;
+            #if defined(SOC_J784S4)
+                pAppEntry->CpuEntryPoint[MPU1_CPU2_ID] = entry;
+                pAppEntry->CpuEntryPoint[MPU1_CPU3_ID] = entry;
+                pAppEntry->CpuEntryPoint[MPU2_CPU2_ID] = entry;
+                pAppEntry->CpuEntryPoint[MPU2_CPU3_ID] = entry;
+            #endif
             pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
 
             /* Immediately boot these cores */
@@ -301,6 +329,12 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
                 SBL_SlaveCoreBoot(MPU1_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
                 SBL_SlaveCoreBoot(MPU2_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
                 SBL_SlaveCoreBoot(MPU2_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                #if defined(SOC_J784S4)
+                    SBL_SlaveCoreBoot(MPU1_CPU2_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                    SBL_SlaveCoreBoot(MPU1_CPU3_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                    SBL_SlaveCoreBoot(MPU2_CPU2_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                    SBL_SlaveCoreBoot(MPU2_CPU3_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                #endif
             }
 
             break;
@@ -341,6 +375,21 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
             {
                 SBL_SlaveCoreBoot(MCU3_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
                 SBL_SlaveCoreBoot(MCU3_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+            }
+
+            break;
+        case MCU4_SMP_ID:
+            /* Cluster 4 SMP*/
+            SBL_log(SBL_LOG_MAX, "Setting Lockstep entry point for MCU3 @0x%x\n", entry);
+            pAppEntry->CpuEntryPoint[MCU4_CPU0_ID] = entry;
+            pAppEntry->CpuEntryPoint[MCU4_CPU1_ID] = SBL_MCU_LOCKSTEP_ADDR;
+            pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
+
+            /* Immediately boot these cores */
+            if (bootFlag == SBL_BOOT_AFTER_COPY)
+            {
+                SBL_SlaveCoreBoot(MCU4_CPU0_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
+                SBL_SlaveCoreBoot(MCU4_CPU1_ID, 0, pAppEntry, SBL_DONT_REQUEST_CORE);
             }
 
             break;
@@ -773,7 +822,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 }
 #endif
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
 /* */
 
 __attribute__((weak)) void SBL_SetupCoreMem(uint32_t CoreID);
@@ -795,7 +844,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocAtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
     /* Use SoC level address of MCU1_0 ATCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_ATCM_BASE_ADDR_SOC,
 #else
@@ -805,12 +854,14 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
     SBL_MCU2_CPU0_ATCM_BASE_ADDR_SOC,
     SBL_MCU2_CPU1_ATCM_BASE_ADDR_SOC,
     SBL_MCU3_CPU0_ATCM_BASE_ADDR_SOC,
-    SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC
+    SBL_MCU3_CPU1_ATCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU0_ATCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU1_ATCM_BASE_ADDR_SOC
     };
 
     const uint32_t SocBtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
     /* Use SoC level address of MCU1_0 BTCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_BTCM_BASE_ADDR_SOC,
 #else
@@ -820,7 +871,9 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
     SBL_MCU2_CPU0_BTCM_BASE_ADDR_SOC,
     SBL_MCU2_CPU1_BTCM_BASE_ADDR_SOC,
     SBL_MCU3_CPU0_BTCM_BASE_ADDR_SOC,
-    SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC
+    SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU0_BTCM_BASE_ADDR_SOC,
+    SBL_MCU4_CPU1_BTCM_BASE_ADDR_SOC
     };
 
     const uint32_t SocC66xL2SramAddr[] =
@@ -882,7 +935,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
             switch (CoreId)
             {
-#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
                 /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
                 case MCU1_CPU0_ID:
                     /* Only do TCM addr remapping for MCU1_0 if using UDMA for transfers from OSPI to local TCMs */
@@ -922,6 +975,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                 case MCU2_CPU1_ID:
                 case MCU3_CPU0_ID:
                 case MCU3_CPU1_ID:
+                case MCU4_CPU0_ID:
+                case MCU4_CPU1_ID:
                     /*Remap TCM address from R5 local to SoC memory map*/
                     if (section.addr < (SBL_MCU_ATCM_BASE + SBL_MCU_ATCM_SIZE))
                     {
@@ -973,6 +1028,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                     break;
                 case DSP1_C7X_ID:
                 case DSP2_C7X_ID:
+                case DSP3_C7X_ID:
+                case DSP4_C7X_ID:
                     /*Remap L1 & L2 address from C7x local to SoC memory map*/
                     if ((section.addr >= SBL_C7X_L2SRAM_BASE) &&
                         (section.addr < (SBL_C7X_L2SRAM_BASE + SBL_C7X_L2SRAM_SIZE)))
@@ -991,31 +1048,6 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                         section.addr = section.addr - SBL_C7X_L1DMEM_BASE;
                         section.addr = SocC7xL1DmemAddr[CoreId - DSP1_C7X_ID] + section.addr;
                         SBL_log(SBL_LOG_MAX, "SoC C7x L2DMEM addr 0x%x\n", section.addr);
-                    }
-                    else
-                    {
-                        /* To remove MISRA C error */
-                    }
-                    break;
-
-               case M4F_CPU0_ID:
-                    /*Remap IRAM & DRAM address from M4F local to SoC memory map*/
-                    if (section.addr < (SBL_M4F_IRAM_BASE + SBL_M4F_IRAM_SIZE))
-                    {
-                        /* Get offset into IRAM */
-                        SBL_log(SBL_LOG_MAX, "Translating M4F local IRAM addr 0x%x to ", section.addr);
-                        section.addr = section.addr - SBL_M4F_IRAM_BASE;
-                        section.addr = SocM4fIramAddr[CoreId - M4F_CPU0_ID] + section.addr;
-                        SBL_log(SBL_LOG_MAX, "SoC M4F IRAM addr 0x%x\n", section.addr);
-                    }
-                    else  if ((section.addr >= SBL_M4F_DRAM_BASE) &&
-                              (section.addr < (SBL_M4F_DRAM_BASE + SBL_M4F_DRAM_SIZE)))
-                    {
-                        /* Get offset into DRAM */
-                        SBL_log(SBL_LOG_MAX, "Translating M4F local DRAM addr 0x%x to ", section.addr);
-                        section.addr = section.addr - SBL_M4F_DRAM_BASE;
-                        section.addr = SocM4fDramAddr[CoreId - M4F_CPU0_ID] + section.addr;
-                        SBL_log(SBL_LOG_MAX, "SoC M4F DRAM addr 0x%x\n", section.addr);
                     }
                     else
                     {

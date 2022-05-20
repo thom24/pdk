@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,8 @@
 #include <ti/board/src/j7200_evm/include/board_utils.h>
 #elif defined(SOC_J721S2)
 #include <ti/board/src/j721s2_evm/include/board_utils.h>
+#elif defined(SOC_J784S4)
+#include <ti/board/src/j784s4_evm/include/board_utils.h>
 #endif
 #endif
 

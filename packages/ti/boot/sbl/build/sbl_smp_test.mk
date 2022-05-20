@@ -29,7 +29,7 @@ COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
 SRCS_COMMON += sbl_smp_multicore.c
 
 # asm files and linker scripts change due to different tool chains for R5 and A53
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu3_0))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu3_0 mcu4_0))
   SRCS_ASM_COMMON = sbl_smp_r5.asm
   EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(CORE)_LockStepLinker.lds
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE) mmcsd fatfs_indp spi
