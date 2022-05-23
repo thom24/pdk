@@ -32,7 +32,7 @@
  */
 
 /**
- *  \file ex05_bios_multicore_echo_negative_test.c
+ *  \file ipc_negative_test.c
  *
  *  \brief Multi-core (BIOS-to-BIOS) IPC echo test application performing basic echo 
  *  communication using the IPC driver

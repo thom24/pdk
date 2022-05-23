@@ -7,9 +7,9 @@ else
 include $(RULES_MAKE)
 endif
 
-APP_NAME = ex05_bios_multicore_echo_negative_test_$(BUILD_OS_TYPE)
+APP_NAME = ipc_negative_test_$(BUILD_OS_TYPE)
 
-SRCS_COMMON += ex05_bios_multicore_echo_negative_test.c ipc_neg_testsetup.c
+SRCS_COMMON += ipc_negative_test.c ipc_neg_testsetup.c
 
 CFLAGS_LOCAL_COMMON += -DIPC_NEGATIVE_TEST
 

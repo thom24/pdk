@@ -78,7 +78,7 @@
 
 /* This needs to be enabled only for negative test cases */
 #ifdef IPC_NEGATIVE_TEST
-#include <ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test/ipc_neg_setup.h>
+#include <ti/drv/ipc/examples/ipc_negative_test/ipc_neg_setup.h>
 #endif
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

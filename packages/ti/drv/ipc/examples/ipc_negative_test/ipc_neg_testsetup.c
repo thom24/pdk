@@ -49,7 +49,7 @@
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 #include <ti/drv/ipc/ipc.h>
 #include <ti/drv/ipc/ipcver.h>
-#include <ti/drv/ipc/examples/ex05_bios_multicore_echo_negative_test/ipc_neg_setup.h>
+#include <ti/drv/ipc/examples/ipc_negative_test/ipc_neg_setup.h>
 
 #include <ti/osal/osal.h>
 #include <ti/drv/uart/UART.h>
