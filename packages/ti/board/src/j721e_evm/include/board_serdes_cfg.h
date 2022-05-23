@@ -101,6 +101,16 @@ Board_STATUS Board_serdesCfgSgmii(void);
 Board_STATUS Board_serdesCfgQsgmii(void);
 
 /**
+ *  \brief serdes configurations for XAUI mode
+ *
+ *  The function configures the serdes module for XAUI interface
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_serdesCfgXaui(void);
+
+/**
  *  \brief Query SerDes configuration status
  *
  *  The function gets the configuration status of Sierra SerDes 0 module.

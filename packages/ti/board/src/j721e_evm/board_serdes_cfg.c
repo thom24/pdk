@@ -357,6 +357,73 @@ static Board_STATUS Board_CfgMultilinkPcieQsgmii(void)
     return BOARD_SOK;
 }
 
+static Board_STATUS Board_serdesCfgEthernetXaui(void)
+{
+    CSL_SerdesStatus status;
+    CSL_SerdesResult result;
+    CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
+    CSL_SerdesLaneEnableParams laneParams_serdes0;
+
+    memset(&laneParams_serdes0, 0, sizeof(laneParams_serdes0));
+
+    /* Serdes-0: Lane 1 (MAC Port 1) */
+    laneParams_serdes0.serdesInstance    = (CSL_SerdesInstance)SGMII_SERDES_INSTANCE;
+    laneParams_serdes0.baseAddr          = CSL_SERDES_16G0_BASE;
+    laneParams_serdes0.refClock          = CSL_SERDES_REF_CLOCK_100M;
+    laneParams_serdes0.refClkSrc         = CSL_SERDES_REF_CLOCK_INT;
+    laneParams_serdes0.numLanes          = 0x1;
+    laneParams_serdes0.laneMask          = 0x2;
+    laneParams_serdes0.SSC_mode          = CSL_SERDES_NO_SSC;
+    laneParams_serdes0.phyType           = CSL_SERDES_PHY_TYPE_XAUI;
+    laneParams_serdes0.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
+    laneParams_serdes0.phyInstanceNum    = SERDES_LANE_SELECT_CPSW;
+
+    laneParams_serdes0.laneCtrlRate[1]   = CSL_SERDES_LANE_FULL_RATE;
+    laneParams_serdes0.loopbackMode[1]   = CSL_SERDES_LOOPBACK_DISABLED;
+
+    laneParams_serdes0.pcieGenType       = CSL_SERDES_PCIE_GEN4;
+    laneParams_serdes0.linkRate          = CSL_SERDES_LINK_RATE_3p125G;
+    /* End: Serdes-0: Lane 1 (MAC Port 1) */
+
+    CSL_serdesPorReset(laneParams_serdes0.baseAddr);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       laneParams_serdes0.phyType,
+                       laneParams_serdes0.phyInstanceNum,
+                       laneParams_serdes0.serdesInstance,
+                       SGMII_LANE_NUM);
+
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 laneParams_serdes0.baseAddr,
+                                 laneParams_serdes0.refClock,
+                                 laneParams_serdes0.refClkSrc,
+                                 laneParams_serdes0.serdesInstance,
+                                 laneParams_serdes0.phyType);
+
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Load the Serdes Config File */
+    result = CSL_serdesEthernetInit(&laneParams_serdes0);
+    /* Return error if input params are invalid */
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Common Lane Enable API for lane enable, pll enable etc */
+    laneRetVal = CSL_serdesLaneEnable(&laneParams_serdes0);
+    if (laneRetVal != 0)
+    {
+        return BOARD_FAIL;
+    }
+
+    return BOARD_SOK;
+}
+
 /**
  *  \brief serdes configurations
  *
@@ -393,6 +460,28 @@ Board_STATUS Board_serdesCfgQsgmii(void)
 
     /* SERDES0 Initializations */
     ret = Board_CfgQsgmii();
+    if(ret != BOARD_SOK)
+    {
+        return ret;
+    }
+
+    return BOARD_SOK;
+}
+
+/**
+ *  \brief serdes configurations
+ *
+ *  The function configures the serdes module for XAUI interface
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_serdesCfgXaui(void)
+{
+    Board_STATUS ret;
+
+    /* SERDES0 Initializations */
+    ret = Board_serdesCfgEthernetXaui();
     if(ret != BOARD_SOK)
     {
         return ret;
