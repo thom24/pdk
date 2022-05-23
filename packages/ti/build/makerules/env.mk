@@ -341,6 +341,9 @@ ifeq ($(BUILD_OS_TYPE),baremetal)
     ifeq ($(CONFIG_BLD_XDC_a72),)
         CONFIG_BLD_LNK_a72   = $(pdk_PATH)/ti/build/$(SOC)/linker_a72_mpu1_0.lds
     endif
+    ifeq ($(CONFIG_BLD_XDC_c66),)
+        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
+    endif
   endif
 endif
 
