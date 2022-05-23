@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -62,7 +62,7 @@ extern "C" {
 #include <ti/csl/soc/j721e/src/cslr_mcu_pll_mmr.h>
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #define UFP_UART_PLL_BASE                   (CSL_MCU_PLL0_CFG_BASE)
 #define UFP_UART_PLL_KICK0_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0)
 #define UFP_UART_PLL_KICK1_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY1)
@@ -97,7 +97,7 @@ extern "C" {
 #define UFP_MAIN_DEVSTAT_ADDR      (CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_MAIN_DEVSTAT)
 #define UFP_WKUP_DEVSTAT_ADDR      (CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_WKUP_DEVSTAT)
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #define UFP_MAIN_DEVSTAT_NOBOOT_CFG     (0x1U)
 #define UFP_WKUP_DEVSTAT_NOBOOT_CFG     (0x38U)
 #define UFP_MAIN_DEVSTAT_NOBOOT_MASK    (0xEFU)

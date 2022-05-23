@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -93,7 +93,7 @@ static int32_t UFP_isNoBootEnabled(void)
 
 static void UFP_initUARTPwrClk(void)
 {
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     HW_WR_REG32(UFP_UART_PLL_BASE + UFP_UART_PLL_KICK0_OFFSET, UFP_UART_PLL_KICK0_UNLOCK_VAL);
     HW_WR_REG32(UFP_UART_PLL_BASE + UFP_UART_PLL_KICK1_OFFSET, UFP_UART_PLL_KICK1_UNLOCK_VAL);
 

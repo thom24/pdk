@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -31,8 +31,8 @@
  *
  */
 
-#ifndef _OSPI_H_
-#define _OSPI_H_
+#ifndef _OSPI_NAND_H_
+#define _OSPI_NAND_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,13 +45,8 @@ extern "C" {
 
 #include <ti/board/src/flash/include/board_flash.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
-#include <ti/board/src/flash/include/board_flash.h>
 
-#if defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm)
-#include <ti/board/src/flash/nor/ospi/nor_xspi.h>
-#else
-#include <ti/board/src/flash/nor/ospi/nor_ospi.h>
-#endif
+#include <ti/board/src/flash/nand/ospi/nand_ospi.h>
 
 #ifdef SPI_DMA_ENABLE
 #include <ti/drv/udma/udma.h>
@@ -77,22 +72,16 @@ extern "C" {
 
 #endif
 
-#if defined(SOC_AM65XX) || defined(j721e_evm)
-#define OSPI_FLASH_ID   BOARD_FLASH_ID_MT35XU512ABA1G12
-#elif defined(j7200_evm) || defined (am64x_evm) || defined(j721s2_evm)
-#define OSPI_FLASH_ID   BOARD_FLASH_ID_S28HS512T
-#else
-#define OSPI_FLASH_ID   BOARD_FLASH_ID_MT35XU256ABA1G12
-#endif
+#define OSPI_NAND_FLASH_ID   BOARD_FLASH_ID_W35N01JWTBAG
 
-#define OSPI_WR_LEN             (256U)
+#define OSPI_WR_LEN             (NAND_PAGE_SIZE)
 
 #define OSPI_FW_WRITE_DELAY     (100U)
 
-extern const UFP_fxnTable UFP_ospiFxnTable;
+extern const UFP_fxnTable UFP_ospiNandFxnTable;
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* OSPI_H_ */
+#endif /* _OSPI_NAND_H_ */

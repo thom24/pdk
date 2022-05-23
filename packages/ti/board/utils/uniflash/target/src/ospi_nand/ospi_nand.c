@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018-2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -32,9 +32,9 @@
  */
 
 /**
- *  \file    ospi.c
+ *  \file    ospi_nand.c
  *
- *  \brief   ospi flash writer API implementation.
+ *  \brief   ospi NAND flash writer API implementation.
  *
  */
 
@@ -42,7 +42,7 @@
 /*                             Include Files                                  */
 /* ========================================================================== */
 
-#include "ospi.h"
+#include "ospi_nand.h"
 
 #ifdef SPI_DMA_ENABLE
 #include <ti/osal/CacheP.h>
@@ -52,14 +52,14 @@
 /*                      Internal Function Declarations                        */
 /* ========================================================================== */
 
-static int8_t UFP_ospiInit(void);
+static int8_t UFP_ospiNandInit(void);
 
-static int8_t UFP_ospiFlashErase(uint32_t offset, uint32_t length);
+static int8_t UFP_ospiNandFlashErase(uint32_t offset, uint32_t length);
 
-static int8_t UFP_ospiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
-                                 uint32_t offset, uint32_t size);
+static int8_t UFP_ospiNandFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
+                                     uint32_t offset, uint32_t size);
 
-static int8_t UFP_ospiClose(void);
+static int8_t UFP_ospiNandClose(void);
 
 #ifdef SPI_DMA_ENABLE
 /*
@@ -78,22 +78,22 @@ static uint8_t gUdmaTprdMem[UDMA_TEST_APP_TRPD_SIZE] __attribute__((aligned(UDMA
 Board_flashHandle gOspiHandle;
 
 /* Flash programmer ospi function table */
-const UFP_fxnTable UFP_ospiFxnTable = {
-    &UFP_ospiInit,
-    &UFP_ospiFlashErase,
-    &UFP_ospiFlashImage,
-    &UFP_ospiClose
+const UFP_fxnTable UFP_ospiNandFxnTable = {
+    &UFP_ospiNandInit,
+    &UFP_ospiNandFlashErase,
+    &UFP_ospiNandFlashImage,
+    &UFP_ospiNandClose
 };
 
 #ifdef SPI_DMA_ENABLE
 /*
  * UDMA driver objects
  */
-struct Udma_DrvObj      gUdmaDrvObj;
-struct Udma_ChObj       gUdmaChObj;
-struct Udma_EventObj    gUdmaCqEventObj;
+static struct Udma_DrvObj      gUdmaDrvObj;
+static struct Udma_ChObj       gUdmaChObj;
+static struct Udma_EventObj    gUdmaCqEventObj;
 
-Udma_DrvHandle          gDrvHandle = NULL;
+static Udma_DrvHandle          gDrvHandle = NULL;
 
 static OSPI_dmaInfo gUdmaInfo;
 
@@ -121,16 +121,11 @@ static int32_t ospiUdmaInit(OSPI_v0_HwAttrs *cfg)
 
     if (gDrvHandle == NULL)
     {
-#if defined (SOC_AM64X)
-        /* Use Block Copy DMA instance for AM64x */
-        instId = UDMA_INST_ID_BCDMA_0;
-#else
         /* UDMA driver init */
 #if defined (__aarch64__)
         instId = UDMA_INST_ID_MAIN_0;
 #else
         instId = UDMA_INST_ID_MCU_0;
-#endif
 #endif
         UdmaInitPrms_init(instId, &initPrms);
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
@@ -188,7 +183,7 @@ static int32_t ospiUdmaDeinit(void)
  *					0		- in case of success
  *
  */
-static int8_t UFP_ospiClose(void)
+static int8_t UFP_ospiNandClose(void)
 {
     Board_flashClose(gOspiHandle);
 #ifdef SPI_DMA_ENABLE
@@ -209,7 +204,7 @@ static int8_t UFP_ospiClose(void)
  *	               -1		- in case of failure.
  *
  */
-static int8_t UFP_ospiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
+static int8_t UFP_ospiNandFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
 {
     uint32_t readMode;
     readMode = OSPI_FLASH_OCTAL_READ;
@@ -234,14 +229,14 @@ static int8_t UFP_ospiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
  *	               -1		- in case of failure.
  *
  */
-static int8_t UFP_ospiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
+static int8_t UFP_ospiNandFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
 {
     uint32_t startBlockNum, endBlockNum, pageNum, i;
     uint32_t writeMode;
 
     writeMode = OSPI_FLASH_OCTAL_PAGE_PROG;
 
-    if (!(offset % NOR_BLOCK_SIZE))
+    if (!(offset % NAND_BLOCK_SIZE))
     {
         /* Get starting block number */
         if (Board_flashOffsetToBlkPage(gOspiHandle, offset, &startBlockNum, &pageNum))
@@ -249,7 +244,7 @@ static int8_t UFP_ospiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
             return -1;
         }
 
-        if(length < NOR_BLOCK_SIZE)
+        if(length < NAND_BLOCK_SIZE)
         {
             endBlockNum = startBlockNum;
         }
@@ -300,7 +295,7 @@ static int8_t UFP_ospiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
  *	               -1		- in case of failure.
  *
  */
-static int8_t UFP_ospiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
+static int8_t UFP_ospiNandFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
                                  uint32_t offset, uint32_t size)
 {
 #if defined(SPI_DMA_ENABLE)
@@ -309,14 +304,13 @@ static int8_t UFP_ospiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
 #endif
 
     int8_t ret;
-    ret = UFP_ospiFlashWrite(flashAddr, offset, size);
+    ret = UFP_ospiNandFlashWrite(flashAddr, offset, size);
     if (ret != 0)
     {
         return -1;
     }
 
-    delay(OSPI_FW_WRITE_DELAY);
-    ret = UFP_ospiFlashRead(checkAddr, offset, size);
+    ret = UFP_ospiNandFlashRead(checkAddr, offset, size);
     if (ret != 0)
     {
         return -1;
@@ -340,7 +334,7 @@ static int8_t UFP_ospiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
  *					0		- in case of success
  *	               -1		- in case of failure.
  */
-static int8_t UFP_ospiFlashErase(uint32_t offset, uint32_t length)
+static int8_t UFP_ospiNandFlashErase(uint32_t offset, uint32_t length)
 {
     uint32_t startBlockNum, endBlockNum, pageNum, i;
 
@@ -352,7 +346,7 @@ static int8_t UFP_ospiFlashErase(uint32_t offset, uint32_t length)
     }
 
     /* Get ending block number */
-    endBlockNum = (offset + length)/(NOR_BLOCK_SIZE);
+    endBlockNum = (offset + length)/(NAND_BLOCK_SIZE);
 
     /* Erase blocks, to which data has to be written */
     for(i = startBlockNum; i <= endBlockNum; i++)
@@ -373,7 +367,7 @@ static int8_t UFP_ospiFlashErase(uint32_t offset, uint32_t length)
  *	               -1		- in case of failure.
  *
  */
-static int8_t UFP_ospiInit(void)
+static int8_t UFP_ospiNandInit(void)
 {
     OSPI_v0_HwAttrs ospi_cfg;
     uint32_t tuneEnable = FALSE;
@@ -389,17 +383,12 @@ static int8_t UFP_ospiInit(void)
     ospiUdmaInit(&ospi_cfg);
 #endif
 
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
-    ospi_cfg.dacEnable  = false;
-#endif
-    ospi_cfg.phyEnable  = false;
-
     /* Set the default ospi init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
 
-    /* Open the Board ospi NOR device with ospi port 0
+    /* Open the Board ospi NAND device with ospi port 0
        and use default ospi configurations */
-    gOspiHandle = Board_flashOpen(OSPI_FLASH_ID, BOARD_OSPI_INSTANCE, (void *)(&tuneEnable));
+    gOspiHandle = Board_flashOpen(OSPI_NAND_FLASH_ID, BOARD_OSPI_INSTANCE, (void *)(&tuneEnable));
 
     if (!gOspiHandle)
     {
