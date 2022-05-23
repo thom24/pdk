@@ -66,7 +66,7 @@
 #
 ifeq ($(freertos_component_make_include), )
 
-freertos_BOARDLIST       = tpr12_evm j721e_evm j7200_evm am65xx_evm am65xx_idk awr294x_evm j721s2_evm j784s4_evm
+freertos_BOARDLIST       = tpr12_evm j721e_evm j7200_evm am65xx_evm am65xx_idk awr294x_evm j721s2_evm
 freertos_SOCLIST         = tpr12 j721e j7200 am65xx awr294x j721s2 j784s4
 freertos_tpr12_CORELIST   = c66xdsp_1 mcu1_0 mcu1_1
 freertos_awr294x_CORELIST   = c66xdsp_1 mcu1_0 mcu1_1
