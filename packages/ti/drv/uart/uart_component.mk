@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017 - 2019, Texas Instruments Incorporated
+# Copyright (c) 2017 - 2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ ifeq ($(uart_component_make_include), )
 drvuart_RTOS_LIST 		= $(DEFAULT_RTOS_LIST)
 
 drvuart_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm
-drvuart_BOARDLIST      += tpr12_evm tpr12_qt awr294x_evm j721s2_evm 
+drvuart_BOARDLIST      += tpr12_evm tpr12_qt awr294x_evm j721s2_evm j784s4_evm
 
 drvuart_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra78x am574x am572x am571x dra72x
 drvuart_SOCLIST        += dra75x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137
