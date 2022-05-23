@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2019, Texas Instruments Incorporated
+# Copyright (c) 2013-2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -512,9 +512,9 @@ MULTI_CORE_APP_PARAMS_XIP = $(SBL_CORE_ID_$(CORE)) $(SBL_RPRC_XIP_PATH)
   endif
 endif
 
-# When building apps for cores other than MCU 10, MCU 10 should host sciclient
+# When building apps for cores other than MCU1_0, MCU1_0 should host sciclient
 # server.
-# Not required when running apps on MCU 10.
+# Not required when running apps on MCU1_0.
 # Please refer the user guide for more details on sciclient server
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
@@ -532,31 +532,18 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0))
   MULTI_CORE_APP_PARAMS =
 endif
 
-ifeq ($(SOC),$(filter $(SOC), awr294x))
-  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_R4) $(MMWAVE_DFP_INSTALL_PATH)/firmware/radarss/xwr2xxx_radarss_metarprc.bin
-endif
-
-#MCUx_1 cores requires a dummy application to run from MCUx_0 core
-#as MCUx_1 cores cannot be at a higher power state than MCUx_0 core
-ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
-  ifeq ($(CORE),$(filter $(CORE), mcu1_1))
-  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu1_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
-  endif
-  ifeq ($(CORE),$(filter $(CORE), mcu2_1))
-  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu2_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
-  endif
-  ifeq ($(CORE),$(filter $(CORE), mcu3_1))
-  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu3_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
-  endif
-endif
-
-#In case of j721e, j7200, j721s2 mcu 10 would always host the server. So removing dummy app for mcu 10
+# MCUx_1 cores requires a dummy application to run from MCUx_0 core
+# as MCUx_1 core cannot be at a higher power state than MCUx_0 core.
+# In case of J7 devices mcu1_0 would always host the server, so dummy app is not needed for MCU1_0
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   ifeq ($(CORE),$(filter $(CORE), mcu2_1))
   MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu2_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
   endif
   ifeq ($(CORE),$(filter $(CORE), mcu3_1))
   MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu3_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
+  endif
+  ifeq ($(CORE),$(filter $(CORE), mcu4_1))
+  MULTI_CORE_APP_PARAMS += $(SBL_CORE_ID_mcu4_0) $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sbl_mcux_0_dummy_app.rprc
   endif
 endif
 

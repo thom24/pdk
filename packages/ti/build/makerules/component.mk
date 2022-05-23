@@ -80,14 +80,12 @@ include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 # Filter out PRU cores from default cores list for building components
 DEFAULT_CORELIST_EXCLUDE_CORES = $(CORE_LIST_PRU)
 
-# For J7 cores, mpu1_1 is not a part of default core list
+# For J7 SOCs, any mpu core other than mpu1_0 is not a part of default core list
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
 DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1
 endif
-
-# For J784S4 mpu1_1, mpu2_0 and mpu2_1 are not a part of default core list
 ifeq ($(SOC),$(filter $(SOC), j784s4))
-DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1 mpu2_0 mpu2_1
+DEFAULT_CORELIST_EXCLUDE_CORES += mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
 endif
 
 DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE_LIST_$(SOC)))
@@ -95,31 +93,24 @@ DEFAULT_$(SOC)_CORELIST = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES), $(CORE
 # The below defines various RTOS types
 DEFAULT_RTOS_LIST = freertos
 
-# The below defines the DEFAULT_SOCLIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
-# Disable SYSBIOS(TI-RTOS)
-# DEFAULT_SOCLIST_tirtos   = $(SOC_LIST_CATALOG) $(SOC_LIST_INFOTAINMENT) $(SOC_LIST_J6_TDA)
+# The below defines the DEFAULT_SOCLIST_<rtos_type> for various RTOS types(freertos/safertos)
 DEFAULT_SOCLIST_tirtos   =
-DEFAULT_SOCLIST_freertos = am65xx j721e j7200 awr294x j721s2 j784s4
-DEFAULT_SOCLIST_safertos = tpr12 awr294x j721e
+DEFAULT_SOCLIST_freertos = j721e j7200 j721s2 j784s4
+DEFAULT_SOCLIST_safertos = j721e
 
-# The below defines the DEFAULT_BOARDLIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
-# Disable SYSBIOS(TI-RTOS)
-# DEFAULT_BOARDLIST_tirtos   = evmDRA72x evmDRA75x evmDRA78x evmAM572x idkAM572x idkAM571x idkAM574x $(BOARD_LIST_J6_TDA) $(BOARD_LIST_J7_TDA) $(BOARD_LIST_TPR12) am64x_evm am64x_svb
+# The below defines the DEFAULT_BOARDLIST_<rtos_type> for various RTOS types(freertos/safertos)
 DEFAULT_BOARDLIST_tirtos   =
-DEFAULT_BOARDLIST_freertos = am65xx_evm am65xx_idk j721e_evm j7200_evm tpr12_evm awr294x_evm j721s2_evm j784s4_evm
-DEFAULT_BOARDLIST_safertos = tpr12_evm awr294x_evm j721e_evm
+DEFAULT_BOARDLIST_freertos = j721e_evm j7200_evm j721s2_evm j784s4_evm
+DEFAULT_BOARDLIST_safertos = j721e_evm
 
 # The below defines the DEFAULT_$(SOC)_CORELIST_<rtos_type> for various RTOS types(tirtos/freertos/safertos)
 # This is derived from the DEFAULT_$(SOC)_CORELIST defined above.
 # DEFAULT_$(SOC)_CORELIST_<rtos_type> is a subset of all the cores and is used for building components for the particular 'rtos_type'.
 
 
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4 am65xx tpr12 awr294x))
-DEFAULT_CORELIST_EXCLUDE_CORES_freertos =
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4 am65xx))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 # FreeRTOS is not supported on mpu core
 DEFAULT_CORELIST_EXCLUDE_CORES_freertos += mpu1_0
-endif
 else
 # FreeRTOS is not supported on other SOCs
 DEFAULT_CORELIST_EXCLUDE_CORES_freertos = $(DEFAULT_$(SOC)_CORELIST)
@@ -132,15 +123,9 @@ DEFAULT_CORELIST_EXCLUDE_CORES_tirtos = $(DEFAULT_$(SOC)_CORELIST)
 
 DEFAULT_$(SOC)_CORELIST_tirtos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES_tirtos), $(DEFAULT_$(SOC)_CORELIST))
 
-ifeq ($(SOC),$(filter $(SOC), j721e tpr12 awr294x))
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-# SafeRTOS is not currently supported on mcu cores
-DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mcu1_0 mcu1_1
-endif
 ifeq ($(SOC),$(filter $(SOC), j721e))
-# SafeRTOS is not currently supported on J7 mpu/c66x/c7x cores
+# SafeRTOS is not currently supported on J7 MPU/C66x/C7x cores
 DEFAULT_CORELIST_EXCLUDE_CORES_safertos = mpu1_0 c66xdsp_1 c66xdsp_2 c7x_1 c7x-hostemu
-endif
 else
 #SafeRTOS is not supported on other SOCs
 DEFAULT_CORELIST_EXCLUDE_CORES_safertos = $(DEFAULT_$(SOC)_CORELIST)
@@ -1358,69 +1343,12 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
   PDK_COMMON_COMP = csl uart board udma i2c gpio pm_lib
   ifeq ($(CORE),mcu1_0)
     PDK_COMMON_COMP += sciclient_direct rm_pm_hal
   else
     PDK_COMMON_COMP += sciclient
-  endif
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j784s4))
-  PDK_COMMON_COMP = csl uart board udma i2c gpio pm_lib
-  ifeq ($(CORE),mcu1_0)
-    PDK_COMMON_COMP += sciclient_direct rm_pm_hal
-  else
-    PDK_COMMON_COMP += sciclient
-  endif
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-  PDK_COMMON_COMP = csl uart i2c board gpio pm_lib
-  ifeq ($(CORE),$(filter $(CORE), mpu1_0 mcu1_0 mcu1_1))
-    PDK_COMMON_COMP += sciclient udma
-  endif
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  PDK_COMMON_COMP = csl uart i2c board gpio sciclient udma
-endif
-
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-  PDK_COMMON_COMP = csl uart i2c board gpio edma
-endif
-
-ifeq ($(SOC),$(filter $(SOC), awr294x))
-  PDK_COMMON_COMP = csl uart  board  edma
-  ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1))
-    PDK_COMMON_COMP += i2c gpio
-  endif
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x))
-  PDK_COMMON_COMP = csl uart i2c board gpio pm_lib pm_hal
-endif
-
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex tda3xx))
-  PDK_COMMON_COMP = csl uart i2c board pm_lib pm_hal
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am335x am437x c6657 c6678 k2e k2g k2h k2k k2l omapl137 omapl138))
-  PDK_COMMON_COMP = csl uart i2c board gpio
-endif
-
-ifeq ($(SOC),$(filter $(SOC), c6747))
-  PDK_COMMON_COMP = csl
-endif
-
-PDK_COMMON_TIRTOS_COMP = $(PDK_COMMON_COMP) osal_tirtos
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-# Add copyvecs for socs other than tpr12 and awr294x
-else
-# Enable copy of vectors
-  ifeq ($(ISA),$(filter $(ISA), r5f))
-    PDK_COMMON_TIRTOS_COMP += copyvecs
   endif
 endif
 
@@ -1433,7 +1361,7 @@ else
   endif
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4 tpr12 awr294x))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   PDK_COMMON_FREERTOS_COMP = $(PDK_COMMON_COMP) osal_freertos
   PDK_COMMON_FREERTOS_COMP += freertos
   PDK_COMMON_SAFERTOS_COMP = $(PDK_COMMON_COMP) osal_safertos
@@ -1449,7 +1377,6 @@ else
 endif
 endif
 
-export PDK_COMMON_TIRTOS_COMP
 export PDK_COMMON_BAREMETAL_COMP
 export PDK_COMMON_FREERTOS_COMP
 export PDK_COMMON_SAFERTOS_COMP

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2019, Texas Instruments Incorporated
+# Copyright (c) 2013-2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -197,27 +197,6 @@ ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm))
  SBL_DEV_ID=55
 endif
 
-# AM64X
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
- SOC = am64x
- SBL_RUN_ADDRESS=0x70000000
- SBL_DEV_ID=55
-endif
-
-# TPR12
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
- SOC = tpr12
- SBL_RUN_ADDRESS=0x10200000
- SBL_DEV_ID=55
-endif
-
-# AWR294X
-ifeq ($(BOARD),$(filter $(BOARD), awr294x_evm))
- SOC = awr294x
- SBL_RUN_ADDRESS=0x10200000
- SBL_DEV_ID=55
-endif
-
 # SBL related macro
 export SBL_CERT_KEY_HS=$(ROOTDIR)/ti/build/makerules/k3_dev_mpk.pem
 export SBL_CERT_KEY=$(ROOTDIR)/ti/build/makerules/rom_degenerateKey.pem
@@ -301,13 +280,8 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0
 endif
 
 # MPU
-ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))
-  ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
-    ISA = a53
-    ISA_EXT = a53
-    ARCH = armv8a
-  endif
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2 j784s4))
+ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     ISA = a72
     ISA_EXT = a72
     ARCH = armv8a
@@ -328,10 +302,7 @@ ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2 c7x_3 c7x_4))
  ifeq ($(SOC),$(filter $(SOC), j721e)) 
   SI_VER = 7100
  endif
- ifeq ($(SOC),$(filter $(SOC), j721s2)) 
-  SI_VER = 7120
- endif
- ifeq ($(SOC),$(filter $(SOC), j784s4)) 
+ ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4)) 
   SI_VER = 7120
  endif
 endif
@@ -344,10 +315,7 @@ ifeq ($(CORE),$(filter $(CORE), c7x-hostemu))
  ifeq ($(SOC),$(filter $(SOC), j721e)) 
   SI_VER = 7100
  endif
- ifeq ($(SOC),$(filter $(SOC), j721s2)) 
-  SI_VER = 7120
- endif
- ifeq ($(SOC),$(filter $(SOC), j784s4)) 
+ ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4)) 
   SI_VER = 7120
  endif
 endif
@@ -625,35 +593,7 @@ ifeq ($(ISA),c674)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px tda2ex dra72x dra75x))
-  SBL_CORE_ID_a15_0 = 0
-  SBL_CORE_ID_a15_1 = 1
-  SBL_CORE_ID_ipu1_0 = 2
-  SBL_CORE_ID_ipu1_1 = 3
-  SBL_CORE_ID_ipu1 = 4
-  SBL_CORE_ID_ipu2_0 = 5
-  SBL_CORE_ID_ipu2_1 = 6
-  SBL_CORE_ID_ipu2 = 7
-  SBL_CORE_ID_c66x = 8
-  SBL_CORE_ID_c66xdsp_1 = 8
-  SBL_CORE_ID_c66xdsp_2 = 9
-  SBL_CORE_ID_arp32_1 = 10
-  SBL_CORE_ID_arp32_2 = 11
-  SBL_CORE_ID_arp32_3 = 12
-  SBL_CORE_ID_arp32_4 = 13
-endif
-
-ifeq ($(SOC),$(filter $(SOC), tda3xx dra78x))
-  SBL_CORE_ID_ipu1_0 = 2
-  SBL_CORE_ID_ipu1_1 = 3
-  SBL_CORE_ID_ipu1 = 14
-  SBL_CORE_ID_c66x = 6
-  SBL_CORE_ID_c66xdsp_1 = 6
-  SBL_CORE_ID_c66xdsp_2 = 7
-  SBL_CORE_ID_arp32_1 = 8
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
   SBL_CORE_ID_mpu1_0 = 0
   SBL_CORE_ID_mpu1_1 = 1
   SBL_CORE_ID_mpu2_0 = 2
@@ -678,18 +618,38 @@ ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
   SBL_CORE_ID_load_only = 21
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12))
-  SBL_CORE_ID_mcu1_0 = 0
-  SBL_CORE_ID_mcu1_1 = 1
-  SBL_CORE_ID_c66xdsp_1 = 2
-  SBL_CORE_ID_mcu_smp = 3
-endif
-ifeq ($(SOC),$(filter $(SOC), awr294x))
-  SBL_CORE_ID_mcu1_0 = 0
-  SBL_CORE_ID_mcu1_1 = 1
-  SBL_CORE_ID_c66xdsp_1 = 2
-  SBL_CORE_ID_R4 = 3
-  SBL_CORE_ID_mcu_smp = 4
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+  SBL_CORE_ID_mpu1_0 = 0
+  SBL_CORE_ID_mpu1_1 = 1
+  SBL_CORE_ID_mpu1_2 = 2
+  SBL_CORE_ID_mpu1_3 = 3
+  SBL_CORE_ID_mpu2_0 = 4
+  SBL_CORE_ID_mpu2_1 = 5
+  SBL_CORE_ID_mpu2_2 = 6
+  SBL_CORE_ID_mpu2_3 = 7
+  SBL_CORE_ID_mcu1_0 = 8
+  SBL_CORE_ID_mcu1_1 = 9
+  SBL_CORE_ID_mcu2_0 = 10
+  SBL_CORE_ID_mcu2_1 = 11
+  SBL_CORE_ID_mcu3_0 = 12
+  SBL_CORE_ID_mcu3_1 = 13
+  SBL_CORE_ID_mcu4_0 = 14
+  SBL_CORE_ID_mcu4_1 = 15
+  SBL_CORE_ID_c66xdsp_1 = 16
+  SBL_CORE_ID_c66xdsp_2 = 17
+  SBL_CORE_ID_c7x_1 = 18
+  SBL_CORE_ID_c7x_2 = 19
+  SBL_CORE_ID_c7x_3 = 20
+  SBL_CORE_ID_c7x_4 = 21
+  SBL_CORE_ID_m4f_0 = 22
+  SBL_CORE_ID_m4f_1 = 23
+  SBL_CORE_ID_mpu1_smp = 24
+  SBL_CORE_ID_mpu2_smp = 25
+  SBL_CORE_ID_mcu1_0_smp = 26
+  SBL_CORE_ID_mcu2_0_smp = 27
+  SBL_CORE_ID_mcu3_0_smp = 28
+  SBL_CORE_ID_mcu4_0_smp = 29
+  SBL_CORE_ID_load_only = 30
 endif
 
 export SOC

@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2019, Texas Instruments Incorporated
+# Copyright (c) 2013-2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -323,24 +323,9 @@ ifeq ($(BUILD_OS_TYPE),freertos)
         CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x_freertos.cmd
     endif
   endif
-  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_$(CORE)_freertos.lds
-    endif
-  endif
-  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
-    endif
-  endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),safertos)
-  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_safertos.cmd
-    endif
-  endif
   ifeq ($(SOC),$(filter $(SOC), j721e))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_safertos.lds
@@ -349,228 +334,14 @@ ifeq ($(BUILD_OS_TYPE),safertos)
 endif
 
 ifeq ($(BUILD_OS_TYPE),baremetal)
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e am77x j7200 j721s2 j784s4 am64x))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
     endif
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
-    ifeq ($(CONFIG_BLD_XDC_a53),)
-        CONFIG_BLD_LNK_a53   = $(pdk_PATH)/ti/build/$(SOC)/linker_a53.lds
-    endif
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am64x))
-    ifeq ($(CONFIG_BLD_XDC_m4f),)
-        CONFIG_BLD_LNK_m4f   = $(pdk_PATH)/ti/build/$(SOC)/linker_m4f.lds
-    endif
-  endif
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2 j784s4))
     ifeq ($(CONFIG_BLD_XDC_a72),)
         CONFIG_BLD_LNK_a72   = $(pdk_PATH)/ti/build/$(SOC)/linker_a72_mpu1_0.lds
     endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c7x),)
-        CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x.lds
-    endif
   endif
-  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_$(CORE).lds
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_baremetal.cmd
-    endif
-  endif
-endif
-
-ifeq ($(BUILD_OS_TYPE),tirtos)
-  #
-  # XDC specific ENV variables
-  #
-  # XDC Config.bld file (required for configuro); Derives from top-level pdk_PATH
-
-  ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_XDC_r5f   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_r5f.bld
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_$(CORE)_sysbios.lds
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_XDC_c66   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_c66.bld
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
-    endif
-  endif
-
-  ifeq ($(SOC),tda2xx)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),tda2px)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),dra75x)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/tda2xx/config_tda2xx_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),tda2ex)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/tda2ex/config_tda2ex_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/tda2ex/config_tda2ex.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/tda2ex/config_tda2ex_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),dra72x)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/tda2ex/config_tda2ex_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/tda2ex/config_tda2ex.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/tda2ex/config_tda2ex_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),tda3xx)
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4   = $(pdk_PATH)/ti/build/tda3xx/config_tda3xx.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/tda3xx/config_tda3xx_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),dra78x)
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4   = $(pdk_PATH)/ti/build/tda3xx/config_tda3xx.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/tda3xx/config_tda3xx_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),am571x)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/am571x/config_am571x_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/am571x/config_am571x.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/am571x/config_am571x_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),am572x)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/am572x/config_am572x_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/am572x/config_am572x.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/am572x/config_am572x_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),am574x)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/am574x/config_am574x_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_m4),)
-        CONFIG_BLD_XDC_m4     = $(pdk_PATH)/ti/build/am574x/config_am574x.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66     = $(pdk_PATH)/ti/build/am574x/config_am574x_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),am335x)
-    ifeq ($(CONFIG_BLD_XDC_a8),)
-     CONFIG_BLD_XDC_a8 = $(pdk_PATH)/ti/build/am335x/config_am335x_a8.bld
-    endif
-  endif
-
-  ifeq ($(SOC),am437x)
-    ifeq ($(CONFIG_BLD_XDC_a9),)
-     CONFIG_BLD_XDC_a9 = $(pdk_PATH)/ti/build/am437x/config_am437x_a9.bld
-    endif
-  endif
-
-  ifeq ($(SOC),k2g)
-    ifeq ($(CONFIG_BLD_XDC_a15),)
-     CONFIG_BLD_XDC_a15 = $(pdk_PATH)/ti/build/k2g/config_k2g_a15.bld
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-      CONFIG_BLD_XDC_c66 = $(pdk_PATH)/ti/build/k2g/config_k2g_c66.bld
-    endif
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e am77x j7200 j721s2 am64x))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_XDC_r5f   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_r5f.bld
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_sysbios.lds
-    endif
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
-    ifeq ($(CONFIG_BLD_XDC_a53),)
-        CONFIG_BLD_XDC_a53   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_a53.bld
-        CONFIG_BLD_LNK_a53   = $(pdk_PATH)/ti/build/$(SOC)/linker_a53.lds
-    endif
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 j721s2))
-    ifeq ($(CONFIG_BLD_XDC_a72),)
-        CONFIG_BLD_XDC_a72   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_a72.bld
-        CONFIG_BLD_LNK_a72   = $(pdk_PATH)/ti/build/$(SOC)/linker_a72_mpu1_0.lds
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_XDC_c66   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_c66.bld
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c7x),)
-        CONFIG_BLD_XDC_c7x   = $(pdk_PATH)/ti/build/$(SOC)/config_$(SOC)_c7x.bld
-        CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x.lds
-    endif
-  endif
-
-  XDCROOT = $(xdc_PATH)
-  XDCTOOLS = $(xdc_PATH)
-  BIOSROOT = $(bios_PATH)
-  export XDCROOT
-  export XDCTOOLS
-  export BIOSROOT
 endif
 
 CGTOOLS = $(TOOLCHAIN_PATH_M4)

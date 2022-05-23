@@ -36,7 +36,7 @@ LIMIT_CORES_tpr12     = $(CORE_LIST_tpr12)
 LIMIT_CORES_awr294x   = $(CORE_LIST_awr294x)
 # Filter out c7x-hostemu as Processor SDK does not build use it
 LIMIT_CORES_j7        = $(filter-out c7x-hostemu,$(sort $(CORE_LIST_j721e) $(CORE_LIST_j7200) $(CORE_LIST_j721s2) $(CORE_LIST_j784s4)))
-LIMIT_CORES_j7-hs     = $(filter-out c7x-hostemu,$(sort $(CORE_LIST_j721e) $(CORE_LIST_j7200) $(CORE_LIST_j721s2) $(CORE_LIST_j784s4)))
+LIMIT_CORES_j7-hs     = $(filter-out c7x-hostemu,$(sort $(CORE_LIST_j721e) $(CORE_LIST_j7200) $(CORE_LIST_j721s2)))
 
 export LIMIT_CORES ?= $(LIMIT_CORES_$(PDK_SOC))
 
