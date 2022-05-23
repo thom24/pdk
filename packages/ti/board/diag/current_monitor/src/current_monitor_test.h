@@ -59,10 +59,11 @@
 
 #include "diag_common_cfg.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #include <ti/drv/gpio/GPIO.h>
 #include "board_internal.h"
 #include "board_i2c_io_exp.h"
+#include "board_control.h"
 #endif
 
 #ifdef __cplusplus
@@ -87,6 +88,9 @@ extern "C" {
 #elif defined(SOC_J721E)
 #define NUM_OF_INA_DEVICES                (31U)
 #define TOT_INA_IN_PM1                    (15U)
+#elif defined(SOC_J721S2)
+#define NUM_OF_INA_DEVICES                (32U)
+#define TOT_INA_IN_PM1                    (16U)
 #elif defined(SOC_J7200)
 #define NUM_OF_INA_DEVICES                (32U)
 #define TOT_INA_IN_PM1                    (16U)
@@ -105,7 +109,7 @@ extern "C" {
 #define CALIBRATION_CONSTANT              (5120000U)
 #define DEFAULT_CONFIG_REG_VAL            (0x4497U)
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #define SIGNAL_LEVEL_LOW                  (0U)
 #define SIGNAL_LEVEL_HIGH                 (1U)
 #endif

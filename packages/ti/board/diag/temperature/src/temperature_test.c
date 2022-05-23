@@ -43,10 +43,10 @@
  *  using I2C interface and display it on the serial console
  *  by converting it to actual temperature reading(i.e; degree centigrade).
  *
- *  Supported SoCs: K2G, AM571x, AM572x, AM437x, AM335x, AM65xx, J721E, J7200, TPR12, AM64x, AWR294x
+ *  Supported SoCs: K2G, AM571x, AM572x, AM437x, AM335x, AM65xx, J721E, J7200, TPR12, AM64x, AWR294x, J721S2
  *
  *  Supported Platforms: evmK2G, evmAM571x, evmAM572x, idkAM437x, evmAM335x,
- *  am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm, am64x_evm & am64x_svb, awr294x_evm
+ *  am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm, am64x_evm & am64x_svb, awr294x_evm, j721s2_evm
  *
  */
 
@@ -60,7 +60,7 @@ extern I2C_config_list I2C_config;
  *  \param    delayVal            [IN]   Delay count.
  *
  */
-#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_TPR12)) || (defined(SOC_AM64X)) || (defined(SOC_AWR294X))))
+#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_TPR12)) || (defined(SOC_AM64X)) || (defined(SOC_AWR294X)) || (defined(SOC_J721S2))))
 void BoardDiag_AppDelay(uint32_t delayVal)
 {
 	uint32_t cnt = 0;
@@ -175,15 +175,15 @@ int8_t BoardDiag_run_temperature_test(void)
     I2C_Params i2cParams;
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
-#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_AM64X)))
+#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_AM64X)) || (defined(SOC_J721S2)))
     bool isBoardAlpha = FALSE;
 #endif
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_J721S2)
     isBoardAlpha = Board_isAlpha(BOARD_ID_SOM);
 #endif
 
-#if (((defined(SOC_J721E)) || (defined(SOC_J7200))) && (defined (__aarch64__)))
+#if (((defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_J721S2))) && (defined (__aarch64__)))
     /* Enabling MCU I2C */
     enableI2C(CSL_MCU_I2C0_CFG_BASE);
 #endif
@@ -199,7 +199,7 @@ int8_t BoardDiag_run_temperature_test(void)
 
     /* Initializes the I2C Parameters */
     I2C_Params_init(&i2cParams);
-#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_TPR12)) || (defined(SOC_AM64X)) || (defined(SOC_AWR294X)))
+#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_TPR12)) || (defined(SOC_AM64X)) || (defined(SOC_AWR294X)) || (defined(SOC_J721S2)))
     i2cParams.bitRate = I2C_400kHz;
 #endif
     /* Configures the I2C instance with the passed parameters*/
@@ -229,7 +229,7 @@ int8_t BoardDiag_run_temperature_test(void)
                      BoardDiag_convert_temp(temp));
     }
 
-#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_AM64X)))
+#if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_AM64X)) || (defined(SOC_J721S2)))
 
     /* Second temperature sensor will not be aailable on initial
        versions of the boards with socket */

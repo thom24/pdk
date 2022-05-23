@@ -59,7 +59,7 @@
 #include "src/am65xx_evm/am65xx_evm_pinmux.h"
 #elif defined(am65xx_idk)
 #include "src/am65xx_idk/am65xx_idk_pinmux.h"
-#elif defined(j721e_evm) || defined(j7200_evm)
+#elif defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm)
 #include "board_pinmux.h"
 #endif
 
@@ -67,7 +67,7 @@
 extern "C" {
 #endif
 
-#if defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #define NUM_OF_ADC			(1U)
 #else
 #define NUM_OF_ADC			(2U)

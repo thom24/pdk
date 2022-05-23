@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -77,7 +77,7 @@ PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += current_monitor_test.c diag_common_cfg.c
-ifeq ($(SOC), $(filter $(SOC), j721e j7200))
+ifeq ($(SOC), $(filter $(SOC), j721e j7200 j721s2))
 SRCS_COMMON += current_monitor_config.c
 PACKAGE_SRCS_COMMON += $(BOARD)
 endif

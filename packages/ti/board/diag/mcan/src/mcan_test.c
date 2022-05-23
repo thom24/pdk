@@ -42,9 +42,9 @@
  *  Operation: MCAN operational mode is set to CAN-FD. This test will need
  *  two MCAN ports.
  *
- *  Supported SoCs: AM65XX, J721E, J7200,AM64x, TPR12, AWR294X
+ *  Supported SoCs: AM65XX, J721E, J7200,AM64x, TPR12, AWR294X, J721S2
  *
- *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb, tpr12_evm, awr294x_evm
+ *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb, tpr12_evm, awr294x_evm, j721s2_evm
  *
  */
 
@@ -87,6 +87,13 @@ BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_EXP] =
  {CSL_MCAN7_MSGMEM_RAM_BASE,     7, MAIN_MCAN7_TX_INT_NUM, MAIN_MCAN7_RX_INT_NUM, MAIN_MCAN7_TS_INT_NUM},
  {CSL_MCAN8_MSGMEM_RAM_BASE,     8, MAIN_MCAN8_TX_INT_NUM, MAIN_MCAN8_RX_INT_NUM, MAIN_MCAN8_TS_INT_NUM},
  {CSL_MCAN10_MSGMEM_RAM_BASE,   10, MAIN_MCAN10_TX_INT_NUM, MAIN_MCAN10_RX_INT_NUM, MAIN_MCAN10_TS_INT_NUM}
+};
+#elif defined(j721s2_evm)
+BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_CP] =
+{{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, MCU_MCAN0_TX_INT_NUM,  MCU_MCAN0_RX_INT_NUM,  MCU_MCAN0_TS_INT_NUM},
+ {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, MCU_MCAN1_TX_INT_NUM,  MCU_MCAN1_RX_INT_NUM,  MCU_MCAN1_TS_INT_NUM},
+ {CSL_MCAN3_MSGMEM_RAM_BASE,     3, MAIN_MCAN3_TX_INT_NUM, MAIN_MCAN3_RX_INT_NUM, MAIN_MCAN3_TS_INT_NUM},
+ {CSL_MCAN5_MSGMEM_RAM_BASE,     5, MAIN_MCAN5_TX_INT_NUM, MAIN_MCAN5_RX_INT_NUM, MAIN_MCAN5_TS_INT_NUM}
 };
 #elif defined(SOC_AM64X)
 BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] =
@@ -938,7 +945,7 @@ static int8_t BoardDiag_mcanRxTest(uint8_t index)
     return testStatus;
 }
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 /**
  * \brief   This function enables the Main CAN module and transceiver by setting
  *          the Enable and STB Pins
@@ -996,7 +1003,7 @@ static void BoardDiag_mcanMainconfigs(void)
     }
 #endif
 }
-#endif  /* #if defined(SOC_J721E) || defined(SOC_J7200) */
+#endif  /* #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) */
 
 #if !defined(SOC_AM64X) && !defined(SOC_TPR12) && !defined(SOC_AWR294X)
 
@@ -1060,7 +1067,7 @@ void BoardDiag_McanMuxEnable(i2cIoExpPinNumber_t pinNum,
 static void BoardDiag_mcanEnable(void)
 {
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
 #endif
@@ -1125,6 +1132,37 @@ static void BoardDiag_mcanEnable(void)
     GPIO_write(3, 0); /* GPIO0_127 */
 #endif
 
+#if defined(j721s2_evm)
+
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = PIN_NUM_7;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to set the CP board mcan stb pin to normal mode \n");
+    }
+
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_1;
+    ioExpCfg.pinNum      = PIN_NUM_4;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+
+    Board_control(BOARD_CTRL_CMD_SET_SOM_MUX_PORTB2, NULL);
+#endif
+
     if(expBoardDetect)
     {
         UART_printf("GESI board Detected\n");
@@ -1147,7 +1185,9 @@ static void BoardDiag_mcanEnable(void)
         /* Enable GESI CAN STB pin to normal mode  */
         BoardDiag_McanMuxEnable(PIN_NUM_7, GPIO_SIGNAL_LEVEL_LOW);
         Board_control(BOARD_CTRL_CMD_SET_SOM_CAN_MUX, NULL);
-#else
+#endif
+
+#if defined(j721e_evm)
         /* GPIO0_60 */
         BoardDiag_mcanGpioConfig(CSL_GPIO0_BASE, 0);
         GPIO_write(4, 0);
@@ -1396,6 +1436,14 @@ int main(void)
 #endif
 
     retVal = BoardDiag_mcanTest();
+    if(retVal == 0)
+    {
+        UART_printf("\n MCAN Diagnostic Test Passed!\n");
+    }
+    else
+    {
+        UART_printf("\n MCAN Diagnostic Test Failed!!\n");
+    }
 
     return retVal;
 }

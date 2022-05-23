@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -61,6 +61,11 @@
 #if defined(j721e_evm)
 BoardDiagLinUartInfo_t  gBoardDiagLinInfo[BOARD_DIAG_LIN_MAX_PORTS] = {
         {BOARD_LIN_UART_INSTANCE, BOARD_LIN_UART_BASE, BOARD_DIAG_LIN_NODE_ID},
+    };
+#elif defined(j721s2_evm)
+BoardDiagLinUartInfo_t  gBoardDiagLinInfo[BOARD_DIAG_LIN_MAX_PORTS] = {
+        {BOARD_LIN1_UART_INSTANCE, BOARD_LIN1_UART_BASE, BOARD_DIAG_LIN1_NODE_ID},
+        {BOARD_LIN2_UART_INSTANCE, BOARD_LIN2_UART_BASE, BOARD_DIAG_LIN2_NODE_ID},
     };
 #else
 BoardDiagLinUartInfo_t  gBoardDiagLinInfo[BOARD_DIAG_LIN_MAX_PORTS] = {
@@ -140,6 +145,8 @@ static void BoardDiag_linEnable(void)
 #if defined(j721e_evm)
     GPIO_init();
     GPIO_write(0, 1);
+#elif defined(j721s2_evm)
+    Board_control(BOARD_CTRL_CMD_SET_SOM_MUX_PORTB2, NULL);
 #else
     /* Enable LIN IO mux */
     Board_control(BOARD_CTRL_CMD_SET_SOM_LIN_MUX, NULL);
@@ -389,7 +396,7 @@ int8_t BoardDiag_linBoard2BoardTest(void)
     return status;
 }
 
-#if defined(j7200_evm)
+#if defined(j7200_evm) || defined(j721s2_evm)
 /**
  * \brief  LIN test function
  *

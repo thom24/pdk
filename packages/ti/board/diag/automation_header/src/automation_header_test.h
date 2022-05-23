@@ -56,9 +56,10 @@
 
 #include "diag_common_cfg.h"
 
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
 #include "board_internal.h"
 #include "board_i2c_io_exp.h"
+#include "board_control.h"
 #include <ti/csl/csl_gpio.h>
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
@@ -89,6 +90,9 @@ extern "C" {
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
 #elif defined(SOC_J7200)
+#define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
+#define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
+#elif defined(SOC_J721S2)
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
 #elif defined(SOC_AM64X)

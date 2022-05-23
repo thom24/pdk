@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  Operation: This test is used to verify the external RTC interface on the
  *  board by setting and reading the time configurations.
  *
- *  Supported SoCs: AM65xx, J721E & J7200.
+ *  Supported SoCs: AM65xx, J721E, J7200, J721S2.
  * 
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, j721s2_evm.
  * 
  */
  
@@ -672,7 +672,7 @@ int main(void)
     enableMAINI2C(0, CSL_I2C0_CFG_BASE);
 #endif
 
-#if (defined(SOC_J721E) || defined(SOC_J7200)) && !defined (__aarch64__)
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */

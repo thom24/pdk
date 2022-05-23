@@ -53,7 +53,7 @@ extern "C" {
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #include <ti/csl/csl_gpio.h>

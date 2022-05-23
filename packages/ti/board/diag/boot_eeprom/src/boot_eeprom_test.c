@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2017-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2017-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -44,9 +44,9 @@
  *  and reading the same page for data verification with a max possible i2c
  *  clock speed.
  *
- *  Supported SoCs: AM65XX, J721E & J7200.
+ *  Supported SoCs: AM65XX, J721E, J7200, J721S2.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm & j7200_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, j721s2_evm
  *
  */
 
@@ -334,7 +334,7 @@ static int8_t BoardDiag_boot_eeprom_boundary_verification_test(I2C_Handle handle
     int8_t ret = 0;
     uint16_t pageAddr;
     
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
     UART_printf("\n\nVerifying Boot EEPROM First Block\n");
 #endif
     UART_printf("\nVerifying the Boot EEPROM first page...\n"); 
@@ -386,7 +386,7 @@ static int8_t BoardDiag_boot_eeprom_boundary_verification_test(I2C_Handle handle
 		UART_printf("\nClearing EEPROM last page failed\n");
 		return ret;
     }
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
     UART_printf("\n\nVerifying Boot EEPROM Second Block\n");
     UART_printf("\n\nVerifying the Boot EEPROM first page...");
 
@@ -459,7 +459,7 @@ static int8_t BoardDiag_run_boot_eeprom_test(void)
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
 
-#if ((defined(SOC_J721E) || defined(SOC_J7200)) && (defined (__aarch64__)))
+#if ((defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)) && (defined (__aarch64__)))
     /* Enabling MCU I2C */
     enableI2C(CSL_MCU_I2C0_CFG_BASE);
 #endif
@@ -486,7 +486,7 @@ static int8_t BoardDiag_run_boot_eeprom_test(void)
 		return ret;
 	}
 
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
     GPIO_v0_HwAttrs gpioCfg;
     GPIO_socGetInitCfg(0, &gpioCfg);
     gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;

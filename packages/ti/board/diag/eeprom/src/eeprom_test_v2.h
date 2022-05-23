@@ -53,7 +53,7 @@
 
 #include "board.h"
 #include "board_cfg.h"
-#if (defined(j721e_evm) || defined(j7200_evm))
+#if (defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm))
 #include "board_utils.h"
 #endif
 
@@ -107,6 +107,16 @@ extern "C" {
 #define VPS_EEPROM_SLAVE_ADDR                   (BOARD_VPS_EEPROM_SLAVE_ADDR)
 #define DDR4_EEPROM_SLAVE_ADDR                  (BOARD_DDR_DIMM_EEPROM_SLAVE_ADDR)
 #define SERDES_EEPROM_SLAVE_ADDR                (BOARD_SERDES_EEPROM_SLAVE_ADDR) // J17 in PCIe x1 SMA SERDES 1-2 SHORT
+
+#elif defined(j721s2_evm)
+#define MAX_NUM_OF_BOARDS                       (3U)
+#define STARTING_BOARD_NUM                      (2U)
+
+#define SOM_EEPROM_SLAVE_ADDR                   (0x50U)
+#define CP_EEPROM_SLAVE_ADDR                    (0x51U)
+#define EXP_CONN_EEPROM_SLAVE_ADDR              (0x52U)
+#define CSI2_EXP_EEPROM_SLAVE_ADDR              (0x52U)
+#define ENET_EXP_EEPROM_SLAVE_ADDR              (0x54U)
 
 #else  /* j721e_evm */
 #define MAX_NUM_OF_BOARDS                       (9U)

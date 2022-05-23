@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -78,7 +78,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += automation_header_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm j721s2_evm))
 SRCS_COMMON += automation_header_config.c
 PACKAGE_SRCS_COMMON += $(BOARD)
 endif

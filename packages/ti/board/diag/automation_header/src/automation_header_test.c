@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,9 +42,9 @@
  *  Operation: This test is used to read the switch positions of available
  *             boot mode switches and display it on the serial console.
  *
- *  Supported SoCs: AM65xx, J721E, J7200, AM64x.
+ *  Supported SoCs: AM65xx, J721E, J7200, AM64x, J721S2
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm, j721s2_evm
  *
  */
 
@@ -157,6 +157,52 @@ static int8_t BoardDiag_write_register(I2C_Handle handle,
     return 0;
 }
 
+#if defined(j721s2_evm)
+/**
+ * \brief   This function enables the Main CAN module and transceiver by setting
+ *          the Enable and STB Pins
+ *
+ */
+static void BoardDiag_configI2CMux(void)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status = BOARD_SOK;
+
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = PIN_NUM_1;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to enable the I2C mux selection\n");
+    }
+
+    ioExpCfg.pinNum      = PIN_NUM_2;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to enable the I2C mux selection\n");
+    }
+
+    ioExpCfg.pinNum      = PIN_NUM_3;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to enable the I2C mux selection\n");
+    }
+}
+#endif  /* #if defined(j721e_evm) */
+
 /**
  *  \brief    The function performs the automation header verification test
  *            by reading the boot mode switch's input port registers and display
@@ -263,7 +309,7 @@ static int8_t BoardDiag_run_automation_header_test(void)
         return -1;
     }
 
-#if (!(defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!(defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)))
     UART_printf("\n\rWriting the output PORT2 register value "
                 "of I2C Boot mode buffer...\n\r");
     ret = BoardDiag_write_register(handle,
@@ -355,7 +401,7 @@ static int8_t BoardDiag_run_automation_header_test(void)
 int8_t BoardDiag_automationHeaderTest(void)
 {
     int8_t ret = 0;
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     i2cIoExpSignalLevel_t signalLev = GPIO_SIGNAL_LEVEL_LOW;
     Board_I2cInitCfg_t i2cCfg;
 #endif
@@ -366,14 +412,14 @@ int8_t BoardDiag_automationHeaderTest(void)
 #if defined(j7es_som)
     enableI2C(CSL_WKUP_I2C0_CFG_BASE);
 #endif
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
     /* I2C Mux select */
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
                                   THREE_PORT_IOEXP,
                                   PORTNUM_1,
@@ -469,6 +515,12 @@ int main(void)
      * Need update HW attrs to enable MAIN I2C instance.
      */
     enableMAINI2C(2, CSL_I2C2_CFG_BASE);
+#elif (defined(SOC_J721S2) && !defined (__aarch64__))
+	enableMAINI2C(1, CSL_I2C1_CFG_BASE);
+#endif
+#if defined(j721s2_evm)
+    /* Enable the Mux for routing I2C lines */
+    BoardDiag_configI2CMux();
 #endif
 
     return BoardDiag_automationHeaderTest();

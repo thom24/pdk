@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -67,7 +67,7 @@
 #endif
 #include "diag_common_cfg.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200)|| defined(SOC_J721S2)
 #include "board_pinmux.h"
 #include "board_control.h"
 #endif
@@ -114,9 +114,16 @@ extern "C" {
 #endif
 #endif
 
-#if defined(j721e_evm) || defined(j7200_evm)
+#if defined(j721e_evm) || defined(j7200_evm)|| defined(j721s2_evm)
+
+#if defined(j721s2_evm)
+#define MCAN_MAX_PORTS_EXP    (0U)
+#define MCAN_MAX_PORTS_CP     (4U)
+#else
 #define MCAN_MAX_PORTS_EXP    (10U)
 #define MCAN_MAX_PORTS_CP     (4U)
+#endif
+
 #define BOARD_NAME_LENGTH     (12U)
 
 /* Interrupt configurations */
@@ -138,7 +145,7 @@ extern "C" {
 #define MAIN_MCAN2_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN2_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)
 #endif
 
-#if defined(j7200_evm)
+#if defined(j7200_evm) || defined (j721s2_evm)
 #define MAIN_MCAN3_TX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN3_MCANSS_MCAN_LVL_INT_0)
 #define MAIN_MCAN3_RX_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN3_MCANSS_MCAN_LVL_INT_1)
 #define MAIN_MCAN3_TS_INT_NUM   (CSLR_R5FSS0_CORE0_INTR_MCAN3_MCANSS_EXT_TS_ROLLOVER_LVL_INT_0)

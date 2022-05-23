@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,9 +42,9 @@
  *  writing a test pattern to a memory page and reading the same page for
  *  data verification.
  *
- *  Supported SoCs : AM65XX, J721E, J7200, AM64X
+ *  Supported SoCs : AM65XX, J721E, J7200, AM64X, J721S2
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb, j721s2_evm
  *
  */
 
@@ -164,7 +164,7 @@ static int32_t ospiUdmaDeinit(void)
 }
 #endif
 
-#if (defined(SOC_J7200) || defined(SOC_AM64X)) && !defined(DIAG_STRESS_TEST)
+#if (defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)) && !defined(DIAG_STRESS_TEST)
 /**
  * \brief  ospi flash read test function
  *
@@ -297,7 +297,7 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j7200_evm) || defined(SOC_AM64X)
+#if defined(j7200_evm) || defined(SOC_AM64X) || defined(SOC_J721S2)
     ospi_cfg.phyEnable  = false;
     ospi_cfg.dtrEnable  = true;
     ospi_cfg.dacEnable  = false;
@@ -531,7 +531,7 @@ static int8_t BoardDiag_ospiFlashPhyTest(void)
     BoardDiag_genPattern((uint8_t *)&rxBuf[0], TEST_DATA_LEN,
                          BOARD_DIAG_TEST_PATTERN_NULL);
 
-#if defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
     /*
      * xspi flash does not support writing the data in DAC mode.
      * Below test does only read with PHY and DAC mode enabled.
@@ -571,7 +571,7 @@ static int8_t BoardDiag_ospiFlashPhyTest(void)
  * for selecting OSPI/HYPER flash interfaces by muxer.
  *
  */
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 static void BoardDiag_ospiHyperFlashMux(void)
 {
     GPIO_v0_HwAttrs gpioCfg;
@@ -597,7 +597,7 @@ int8_t BoardDiag_OspiTest(void)
 {
     int8_t ret;
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     BoardDiag_ospiHyperFlashMux();
 #endif
 
@@ -666,7 +666,7 @@ int main(void)
                BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_UART_STDIO | BOARD_INIT_PINMUX_CONFIG;
-#if defined (SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2)
     /* Need to do PLL config through board init for proper clock input. */
     boardCfg |= BOARD_INIT_PLL;
 #endif

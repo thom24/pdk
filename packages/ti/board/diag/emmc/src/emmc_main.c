@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2014-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2021 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -50,7 +50,7 @@
 #include <ti/drv/uart/UART_stdio.h>
 
 /* GPIO Header files */
-#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)))
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #endif
@@ -63,7 +63,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM64X) || defined(SOC_J7200))
+#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM64X) || defined(SOC_J7200) || defined(SOC_J721S2))
 #include "diag_common_cfg.h"
 #endif
 
@@ -97,13 +97,13 @@
 #if (defined(SOC_AM65XX) || defined(SOC_AM64X))//AM64X_TODO: Need to cross check the modes supported by AM64x_EVM
 #define MAX_NUM_OF_MMCSD_SUPPORT_MODES  (4U)
 uint32_t emmcSupportModes[MAX_NUM_OF_MMCSD_SUPPORT_MODES] = {MMCSD_SUPPORT_MMC_HS200, MMCSD_SUPPORT_MMC_HS_DDR, MMCSD_SUPPORT_MMC_HS_SDR, MMCSD_SUPPORT_MMC_DS};
-#elif defined(SOC_J721E) || defined(SOC_J7200)
+#elif defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #define MAX_NUM_OF_MMCSD_SUPPORT_MODES  (5U)
 uint32_t emmcSupportModes[MAX_NUM_OF_MMCSD_SUPPORT_MODES] = {MMCSD_SUPPORT_MMC_HS400, MMCSD_SUPPORT_MMC_HS200, MMCSD_SUPPORT_MMC_HS_DDR, MMCSD_SUPPORT_MMC_HS_SDR, MMCSD_SUPPORT_MMC_DS};
 #endif
 
 /* GPIO pin value definitions */
-#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)))
 #define GPIO_PIN_VAL_LOW                (0U)
 #define GPIO_PIN_VAL_HIGH               (1U)
 
@@ -156,7 +156,7 @@ GPIO_v1_Config GPIO_v1_config = {
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
-#if (!(defined(EVM_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!(defined(EVM_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)))
 typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 #endif
 
@@ -239,7 +239,7 @@ static int8_t BoardDiag_socConfig(void)
  */
 static void EmmcsReset(void)
 {
-#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!(defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)))
     /* EMMC reset */
     GPIO_init();
     GPIO_write(GPIO_PIN_EMMC_RST, GPIO_PIN_VAL_LOW);
@@ -467,7 +467,7 @@ static int8_t runReadWriteTest(uint32_t startSector, uint32_t endSector)
 int8_t HSMMCSDReadWriteTest(MMCSD_Handle handle)
 {
     int8_t retVal = 0;
-#if (defined(DIAG_STRESS_TEST) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if (defined(DIAG_STRESS_TEST) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2))
     /* Media configuration such as eMMC size, blocksize, blockCount */
     uint32_t blockCount;
     MMCSD_mediaParams  mediaParams;
@@ -487,7 +487,7 @@ int8_t HSMMCSDReadWriteTest(MMCSD_Handle handle)
     retVal = runReadWriteTest(MMCSTARTSECTOR, blockCount);
 #endif
 
-#if (!defined(DIAG_STRESS_TEST) && (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)))
+#if (!defined(DIAG_STRESS_TEST) && (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)))
     /* For boundary verification, verifying last sectors */
     retVal = runReadWriteTest(blockCount - MMCTESTSECTORS - 1, blockCount - 1);
 #endif
@@ -522,7 +522,7 @@ int main(void)
     DIAG_IntrInit();
 #endif
 
-#if ((defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)) && (!defined(DIAG_STRESS_TEST)))
+#if ((defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)) && (!defined(DIAG_STRESS_TEST)))
     uint8_t index=0;
     MMCSD_v2_HwAttrs           hwAttrsConfig;
 #endif
@@ -571,7 +571,7 @@ int main(void)
 
     MMCSD_close(handle);
 
-#if ((defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)) && (!defined(DIAG_STRESS_TEST)))
+#if ((defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)) && (!defined(DIAG_STRESS_TEST)))
     for(index=0; index<MAX_NUM_OF_MMCSD_SUPPORT_MODES; index++)
     {
         if(MMCSD_socGetInitCfg(BOARD_MMCSD_EMMC_INSTANCE,&hwAttrsConfig)!=0) {

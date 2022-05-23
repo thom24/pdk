@@ -82,7 +82,7 @@ else
 SRCS_COMMON = boot_eeprom_test.c
 endif
 SRCS_COMMON += diag_common_cfg.c
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm j721s2_evm))
 SRCS_COMMON += boot_eeprom_config.c
 PACKAGE_SRCS_COMMON += $(BOARD)
 endif

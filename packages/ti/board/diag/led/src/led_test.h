@@ -46,7 +46,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#if !(defined(SOC_J721E) || defined(SOC_J7200))
+#if !(defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 #endif
@@ -57,11 +57,11 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_AWR294X))
+#if (defined(SOC_K2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_AWR294X) || defined(SOC_J721S2))
 #include "diag_common_cfg.h"
 #endif
 
-#if ((defined(SOC_AM65XX) && defined(AM65XX_BETA_BOARD)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if ((defined(SOC_AM65XX) && defined(AM65XX_BETA_BOARD)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2))
 #include <ti/drv/i2c/I2C.h>
 #include <ti/drv/i2c/soc/I2C_soc.h>
 #include "board_i2c_io_exp.h"
@@ -105,7 +105,7 @@ void AppGpioCallbackFxn(void);
  *  \param    delayValue          [IN]   Delay count.
  *
  */
-#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_AWR294X)))
+#if (!((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || defined(SOC_TPR12) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_AWR294X) || defined(SOC_J721S2)))
 void BoardDiag_AppDelay(uint32_t delayVal);
 #endif
 

@@ -43,7 +43,7 @@
 
 #include <stdlib.h>
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #include <ti/csl/csl_gpio.h>
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
@@ -54,7 +54,7 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 
 #include <ti/board/src/flash/include/board_flash.h>
-#if defined(j7200_evm) || defined (am64x_evm)
+#if defined(j7200_evm) || defined (am64x_evm) || defined(j721s2_evm)
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
 #else
 #include <ti/board/src/flash/nor/ospi/nor_ospi.h>
@@ -67,7 +67,7 @@
 extern "C" {
 #endif
 
-#if !defined(am64x_evm)
+#if !defined(am64x_evm) && !defined(j721s2_evm)
 #define UDMA_ENABLE
 #endif
 
@@ -95,11 +95,11 @@ extern "C" {
 #define UDMA_TEST_APP_TRPD_SIZE         ((sizeof(CSL_UdmapTR15) * 2U) + 4U)
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
 #define BOARD_DIAG_OSPI_HYPER_BUS_SEL_PIN     (0U)
 #endif
 
-#if defined(j7200_evm) || defined (am64x_evm) || defined(am64x_svb)
+#if defined(j7200_evm) || defined (am64x_evm) || defined(am64x_svb) || defined(j721s2_evm)
 #define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_S28HS512T)
 #else
 #define BOARD_DIAG_OSPI_FLASH_ID              (BOARD_FLASH_ID_MT35XU512ABA1G12)

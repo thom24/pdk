@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 # Board diag parameters which can be controlled outside this makefile
-DIAGNAME ?= ospi
+DIAGNAME ?= octalNand
 PROFILE ?= release
 TESTMODE ?= FUNCTIONAL_TEST
 MODENAME ?=
@@ -69,24 +69,16 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP)
-COMP_LIST_COMMON += spi_dma
-
-ifeq ($(BOARD), $(filter $(BOARD), am64x_svb))
-COMP_LIST_COMMON += gpmc
-endif
+COMP_LIST_COMMON += spi
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src makefile
+# Common source files and CFLAGS across all platforms and cores
+PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += ospi_test.c diag_common_cfg.c
-
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm j721s2_evm))
-SRCS_COMMON += ospi_mux_gpio_pin_config.c
-PACKAGE_SRCS_COMMON += $(BOARD)
-endif
+SRCS_COMMON += octal_nand_test.c diag_common_cfg.c ospi_mux_gpio_pin_config.c
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm
@@ -95,11 +87,7 @@ endif
 
 ifeq ($(CORE),$(filter $(CORE), mpu1_0))
 SRCS_ASM_COMMON += diag_entry.asm
-ifeq ($(BOARD), $(filter $(BOARD), am64x_evm am64x_svb))
-EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE)_ddr.lds
-else
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
-endif
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS)

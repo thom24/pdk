@@ -14,7 +14,7 @@ MEMORY
     MSMC3_ARM_FW   (RWIX)   : ORIGIN = 0x000070000000, LENGTH = 0x40000         /* 256KB */
     BOOTVECTOR              : ORIGIN = 0x000070040000, LENGTH = 0x1000          /* 4KB */
     BOOTVECTOR_EL3          : ORIGIN = 0x000070041000, LENGTH = 0x1000          /* 4KB */
-    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070092000, LENGTH = 0x5E000         /* 376KB */
+    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070042000, LENGTH = 0xAE000         /* 864KB */
     /* j7200 Reserved Memory for DMSC Firmware                                */
     MSMC3_DMSC_FW  (RWIX)   : ORIGIN = 0x0000700F0000, LENGTH = 0x10000         /* 64KB */
 }

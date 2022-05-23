@@ -49,7 +49,7 @@
 static uint8_t gUartTestBuf[100] = "\nTesting UART print to console at 115.2k baud rate";
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
 #include "board_i2c_io_exp.h"
 #include "diag_common_cfg.h"
 
@@ -707,6 +707,139 @@ int main(void)
 
     UART_printf("\nSoC UART4 Test Completed!\n");
 #endif
+
+    UART_printf("\nStarting MCU UART Test...\n");
+    UART_printf("\nCheck MCU UART console for the test logs\n");
+    /* Close the UART instance for SoC UART0 */
+    Board_deinit(BOARD_DEINIT_UART_STDIO);
+
+    initParams.uartInst = 0;
+    initParams.uartSocDomain = BOARD_SOC_DOMAIN_MCU;
+    Board_setInitParams(&initParams);
+    status = Board_init(BOARD_INIT_UART_STDIO);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nMCU UART Test Failed!!\n");
+        return ret;
+    }
+
+    UART_printf("\nMCU UART Test Completed!\n");
+
+    UART_printf("\nStarting Wakeup UART Test...\n");
+    UART_printf("\nCheck Wakeup UART console for the test logs\n");
+    /* Close the UART instance for MCU UART */
+    Board_deinit(BOARD_DEINIT_UART_STDIO);
+
+    initParams.uartSocDomain = BOARD_SOC_DOMAIN_WKUP;
+    Board_setInitParams(&initParams);
+
+    status = Board_init(BOARD_INIT_UART_STDIO);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nWakeup UART Test Failed!!\n");
+        return ret;
+    }
+
+    UART_printf("\nWakeup UART Test Completed!\n");
+
+    Board_deinit(BOARD_DEINIT_UART_STDIO);
+    BoardDiag_enableMAINUART();
+    UART_stdioInit(BOARD_UART_INSTANCE);
+    UART_printf("\nUART Test Completed!!\n");
+
+    return ret;
+}
+#elif (defined(SOC_J721S2))
+int main(void)
+{
+    Board_STATUS status;
+    Board_initCfg boardCfg;
+    Board_initParams_t initParams;
+    int ret;
+
+    boardCfg = BOARD_INIT_PINMUX_CONFIG;
+
+    status = Board_init(boardCfg);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    /* Verify the SoC UART0 */
+    Board_getInitParams(&initParams);
+    initParams.uartInst = BOARD_UART_INSTANCE;
+    initParams.uartSocDomain = BOARD_SOC_DOMAIN_MAIN;
+    Board_setInitParams(&initParams);
+    status = Board_init(BOARD_INIT_UART_STDIO);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nSoC UART8 Test Failed!!\n");
+        return ret;
+    }
+
+    UART_printf("\nSoC UART8 Test Completed!\n");
+
+    UART_printf("\nStarting SoC UART5 Test...\n");
+    UART_printf("\nCheck SoC UART5 console for the test logs\n");
+    /* Close the UART instance for SoC UART8 */
+    Board_deinit(BOARD_DEINIT_UART_STDIO);
+
+    initParams.uartInst = BOARD_UART5_INSTANCE;
+    Board_setInitParams(&initParams);
+    status = Board_init(BOARD_INIT_UART_STDIO);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nSoC UART5 Test Failed!!\n");
+        return ret;
+    }
+
+    UART_printf("\nSoC UART5 Test Completed!\n");
+
+    UART_printf("\nStarting SoC UART2 Test...\n");
+    UART_printf("\nCheck SoC UART2 console for the test logs\n");
+    /* Close the UART instance for SoC UART1 */
+    Board_deinit(BOARD_DEINIT_UART_STDIO);
+
+    initParams.uartInst = BOARD_UART2_INSTANCE;
+    Board_setInitParams(&initParams);
+    status = Board_init(BOARD_INIT_UART_STDIO);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nSoC UART2 Test Failed!!\n");
+        return ret;
+    }
+
+    UART_printf("\nSoC UART2 Test Completed!\n");
 
     UART_printf("\nStarting MCU UART Test...\n");
     UART_printf("\nCheck MCU UART console for the test logs\n");

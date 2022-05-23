@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2015-2020, Texas Instruments Incorporated
+ * Copyright (c) 2015-2021, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@
 
 #include "board.h"
 #include "board_cfg.h"
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2))
 #include "diag_common_cfg.h"
 #endif
 
@@ -55,15 +55,20 @@
 #define ONE									(0x00000001)
 #define MSG_FREQ							(0xFFFFFFc)
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X)
+#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_AM64X)
 #define BOARD_DDR_START_ADDR				(BOARD_DDR3_START_ADDR)
 #define BOARD_DDR_END_ADDR					(BOARD_DDR3_END_ADDR)
 #define BOARD_DDR_SIZE						(BOARD_DDR3_SIZE)
 #endif
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)) && defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)) && defined(__aarch64__)
+#if defined(SOC_J721S2)
+#define BOARD_DDR_EXT_MEM_START_ADDR        (0x900000000U)
+#define BOARD_DDR_EXT_MEM_END_ADDR          (0x9ffffffffU)
+#else
 #define BOARD_DDR_EXT_MEM_START_ADDR		(0x900000000U)
 #define BOARD_DDR_EXT_MEM_END_ADDR			(0x9ffffffffU)
+#endif
 
 #define BIT_COUNT_EXT_MEM					(64)
 
@@ -75,7 +80,7 @@ char rdBuf = 'y';
 
 #ifdef DIAG_STRESS_TEST
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)) && defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)) && defined(__aarch64__)
 /**
  * \brief  walking1s test function
  *
@@ -361,7 +366,7 @@ static inline int32_t board_memory_test (uint32_t start_address,
 }
 #else
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)) && defined(__aarch64__)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)) && defined(__aarch64__)
 /**
  * \brief  Memory test for extended access beyond 2GB
  *
@@ -567,7 +572,7 @@ int32_t board_external_memory_test(void)
     int32_t status;
     int ret;
 
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)) && defined(__aarch64__) && !defined(DIAG_COMPLIANCE_TEST)
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)) && defined(__aarch64__) && !defined(DIAG_COMPLIANCE_TEST)
     /* Printf complication due to UART_printf not supporting 64-bit */
     UART_printf("board_external_memory_test: Start address (0x%x%08x), \
            end address (0x%x%08x)\n",

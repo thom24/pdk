@@ -41,10 +41,10 @@
  *  Operation: This test display the board details by reading
  *			   Board id EEPROM
  *
- *  Supported SoCs: AM65XX, J721E, J7200, TPR12, AM64x, AWR294x
+ *  Supported SoCs: AM65XX, J721E, J7200, TPR12, AM64x, AWR294x, J721S2
  *
  *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm,
- *                       am64x_evm ,am64x_svb, awr294x_evm
+ *                       am64x_evm ,am64x_svb, awr294x_evm, j721s2_evm
  *
  */
 
@@ -111,6 +111,17 @@ Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_MAIN, false},
     {0,     BOARD_SOC_DOMAIN_MAIN, false},
     {0,     BOARD_SOC_DOMAIN_MAIN, false},
+};
+#elif defined(j721s2_evm)
+boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
+    {"SoM Board\0",                 SOM_EEPROM_SLAVE_ADDR,          true},
+    {"CP Board\0",                  CP_EEPROM_SLAVE_ADDR,           true},
+    {"GESI Board\0",                EXP_CONN_EEPROM_SLAVE_ADDR,     false}
+};
+Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false}
 };
 #else
 

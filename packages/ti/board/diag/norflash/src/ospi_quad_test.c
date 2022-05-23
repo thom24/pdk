@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,9 +42,9 @@
  *  writing a test pattern to a memory page and reading the same page for
  *  data verification. Nor flash will be using OSPI controller in quad mode.
  *
- *  Supported SoCs : J721E, AM64X
+ *  Supported SoCs : J721E, AM64X, J721S2
  *
- *  Supported Platforms: j721e_evm, am64x_svb.
+ *  Supported Platforms: j721e_evm, am64x_svb, j721s2_evm
  *
  */
 
@@ -246,7 +246,7 @@ static int8_t BoardDiag_norFlashStressTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j721e_evm) || defined(am64x_svb)
+#if defined(j721e_evm) || defined(am64x_svb) || defined(j721s2_evm)
     ospi_cfg.phyEnable  = false;
 #endif
 #if defined(am64x_svb)
@@ -353,7 +353,7 @@ static int8_t BoardDiag_norFlashTest(void)
 #else
     ospi_cfg.dmaEnable  = false;
 #endif
-#if defined(j721e_evm) || defined(am64x_svb)
+#if defined(j721e_evm) || defined(am64x_svb) || defined(j721s2_evm)
     ospi_cfg.phyEnable  = false;
 #endif
 #if defined(am64x_svb)

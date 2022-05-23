@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -54,7 +54,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if (defined(SOC_AM65XX) || defined(SOC_K2G) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
+#if (defined(SOC_AM65XX) || defined(SOC_K2G) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X) || defined(SOC_J721S2))
 #include "diag_common_cfg.h"
 #endif
 
@@ -69,7 +69,7 @@ extern "C" {
 /* Board specific definitions */
 #if defined (EVM_K2G) || defined (EVM_AM335x) || defined (EVM_AM437x)
 #define I2C_INSTANCE                  (1U)
-#elif (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X))
+#elif (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X) || defined(SOC_J721S2))
 #define I2C_INSTANCE                  (BOARD_TEMP_SENSOR_I2C_INSTANCE)
 #else
 #define I2C_INSTANCE                  (0U)
@@ -77,7 +77,7 @@ extern "C" {
 
 #if defined(evmK2G) || defined(evmAM335x) || defined(evmAM437x) || defined(evmAM571x) || defined(evmAM572x)
 #define TEMP_SLAVE_DEVICE1_ADDR       (0x48U)
-#elif (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#elif (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2))
 #define TEMP_SLAVE_DEVICE1_ADDR       BOARD_TEMP_SENSOR_I2C_SLAVE_DEVICE1_ADDR
 #define TEMP_SLAVE_DEVICE2_ADDR       BOARD_TEMP_SENSOR_I2C_SLAVE_DEVICE2_ADDR
 #elif (defined(SOC_TPR12) || defined(SOC_AWR294X))
