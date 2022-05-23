@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building IPC example app for TI RTOS
+# This file is the makefile for building IPC example app
 #
 SRCDIR += . ../common/src
 INCDIR +=
@@ -24,7 +24,7 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA), r5f)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am65xx am64x j721s2))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
     ifeq ($(ECHO_TEST_BTCM), 1)
       ifeq ($(ISA), r5f)
@@ -33,52 +33,6 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
         endif
       endif
     endif
-  endif
-endif
-ifeq ($(BUILD_OS_TYPE), tirtos)
-  COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-  COMP_LIST_COMMON += ipc 
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
-    ifeq ($(CORE),mcu1_0)
-      COMP_LIST_COMMON += sciserver_tirtos
-    endif
-  endif
-  ifeq ($(ISA), c7x)
-    SRCS_COMMON += c7x_mmu.c
-  endif
-  SRCS_COMMON += main_rtos.c ipc_testsetup.c
-  SRCS_COMMON += ipc_utils.c
-  CFLAGS_LOCAL_COMMON += -DSYSBIOS
-  INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  # Enable XDC build for application by providing XDC CFG File per core
-  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
-    XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/ipc_override.cfg
-    ifeq ($(ECHO_TEST_BTCM), 1)
-      ifeq ($(ISA), r5f)
-        ifeq ($(CORE),mcu1_0)
-	        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/sysbios_$(ISA)_btcm.cfg
-	        SRCS_ASM_COMMON += ipcCopyVecs2Exc.asm
-        else
-	        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/sysbios_$(ISA).cfg
-        endif
-	      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_btcm_sysbios.lds
-      else
-	      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
-      endif
-    else
-      ifeq ($(ISA), r5f)
-	      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/sysbios_$(ISA).cfg
-      endif
-	    EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
-    endif
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am65xx am64x))
-    XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/ipc_override.cfg
-    ifeq ($(ISA), r5f)
-      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/sysbios_$(ISA).cfg
-    endif
-    EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
   endif
 endif
 
@@ -140,10 +94,6 @@ ifeq ($(BUILD_OS_TYPE), safertos)
       EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_btcm_$(BUILD_OS_TYPE).lds
     endif
   endif
-endif
-
-ifeq ($(SOC), am64x)
-  COMP_LIST_COMMON += mailbox
 endif
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
