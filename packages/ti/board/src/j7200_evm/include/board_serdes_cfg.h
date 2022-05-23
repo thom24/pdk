@@ -92,6 +92,16 @@ Board_STATUS Board_serdesCfgSgmii(void);
 Board_STATUS Board_serdesCfgQsgmii(void);
 
 /**
+ *  \brief serdes configurations for USXGMII mode
+ *
+ *  The function configures the serdes module for USXGMII interface
+ *
+ * \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_serdesCfgUsxgmii(void);
+
+/**
  *  \brief Query SerDes configuration status
  *
  *  The function gets the configuration status of Torrent SerDes module.

@@ -140,6 +140,93 @@ static Board_STATUS Board_serdesCfgEthernet(uint32_t phyType)
     return BOARD_SOK;
 }
 
+static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
+{
+    CSL_SerdesStatus status;
+    CSL_SerdesResult result;
+    CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
+    CSL_SerdesLaneEnableParams laneParams_serdes0;
+
+    memset(&laneParams_serdes0, 0, sizeof(laneParams_serdes0));
+
+    /* Serdes-0: Lanes 2 and 3 (Ports 0 and 1 resp.) */
+    laneParams_serdes0.serdesInstance    = (CSL_SerdesInstance)CSL_TORRENT_SERDES0;
+    laneParams_serdes0.baseAddr          = CSL_SERDES_10G1_BASE;
+    laneParams_serdes0.refClock          = CSL_SERDES_REF_CLOCK_100M;
+    laneParams_serdes0.refClkSrc         = CSL_SERDES_REF_CLOCK_INT;
+    laneParams_serdes0.numLanes          = 0x1;
+    laneParams_serdes0.laneMask          = 0x4;
+    laneParams_serdes0.SSC_mode          = CSL_SERDES_NO_SSC;
+    laneParams_serdes0.phyType           = CSL_SERDES_PHY_TYPE_USXGMII;
+    laneParams_serdes0.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
+    laneParams_serdes0.phyInstanceNum    = SERDES_LANE_SELECT_CPSW;
+
+    laneParams_serdes0.laneCtrlRate[2]   = CSL_SERDES_LANE_FULL_RATE;
+    laneParams_serdes0.loopbackMode[2]   = CSL_SERDES_LOOPBACK_DISABLED;
+
+    laneParams_serdes0.laneCtrlRate[3]   = CSL_SERDES_LANE_FULL_RATE;
+    laneParams_serdes0.loopbackMode[3]   = CSL_SERDES_LOOPBACK_DISABLED;
+
+    laneParams_serdes0.pcieGenType       = CSL_SERDES_PCIE_GEN3;
+    laneParams_serdes0.linkRate          = CSL_SERDES_LINK_RATE_5p15625G;
+    /* End: Serdes-0: Lanes 2 and 3 (MAC Ports 0 and 1) */
+
+    /* Bail out early if SERDES is already configured */
+    status = CSL_serdesConfigStatus(laneParams_serdes0.baseAddr);
+    if (status == 1U)
+    {
+        return BOARD_SOK;
+    }
+
+    CSL_serdesPorReset(laneParams_serdes0.baseAddr);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       laneParams_serdes0.phyType,
+                       laneParams_serdes0.phyInstanceNum,
+                       laneParams_serdes0.serdesInstance,
+                       2);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       laneParams_serdes0.phyType,
+                       laneParams_serdes0.phyInstanceNum,
+                       laneParams_serdes0.serdesInstance,
+                       3);
+
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 laneParams_serdes0.baseAddr,
+                                 laneParams_serdes0.refClock,
+                                 laneParams_serdes0.refClkSrc,
+                                 laneParams_serdes0.serdesInstance,
+                                 laneParams_serdes0.phyType);
+
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Assert PHY reset and disable all lanes */
+    CSL_serdesDisablePllAndLanes(laneParams_serdes0.baseAddr, laneParams_serdes0.numLanes, laneParams_serdes0.laneMask);
+
+    /* Load the Serdes Config File */
+    result = CSL_serdesEthernetInit(&laneParams_serdes0);
+    /* Return error if input params are invalid */
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Common Lane Enable API for lane enable, pll enable etc */
+    laneRetVal = CSL_serdesLaneEnable(&laneParams_serdes0);
+    if (laneRetVal != 0)
+    {
+        return BOARD_FAIL;
+    }
+
+    return BOARD_SOK;
+}
+
 /**
  *  \brief serdes configurations
  *
@@ -176,6 +263,28 @@ Board_STATUS Board_serdesCfgQsgmii(void)
 
     /* SERDES0 Initializations */
     ret = Board_serdesCfgEthernet(CSL_SERDES_PHY_TYPE_QSGMII);
+    if(ret != BOARD_SOK)
+    {
+        return ret;
+    }
+
+    return BOARD_SOK;
+}
+
+/**
+ *  \brief serdes configurations
+ *
+ *  The function configures the serdes module for USXGMII interface
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_serdesCfgUsxgmii(void)
+{
+    Board_STATUS ret;
+
+    /* SERDES0 Initializations */
+    ret = Board_serdesCfgEthernetUsxgmii();
     if(ret != BOARD_SOK)
     {
         return ret;
