@@ -14,7 +14,7 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       src/safertos/SafeRTOS_config.c src/safertos/EventP_safertos.c src/safertos/MailboxP_safertos.c src/safertos/ClockP_safertos.c SafeRTOS_MPU.h \
                       src/safertos/MutexP_safertos.c src/safertos/SafeRTOS_MPU.c src/freertos/HeapP_freertos.c src/freertos/HeapP_freertos_internal.c \
                       src/freertos/QueueP_freertos.c src/freertos/HeapP_freertos_internal.h src/nonos/DebugP_nonos.c \
-                      src/src_common_safertos.mk src/Module.xs \
+                      src/src_common_safertos.mk \
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
                       build \
                       config_mk.bld osalver.h osalver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
