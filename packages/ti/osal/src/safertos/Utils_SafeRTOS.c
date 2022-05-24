@@ -40,7 +40,8 @@
 #include <ti/osal/src/nonos/Nonos_config.h>
 #include <ti/osal/TaskP.h>
 
-#include <SafeRTOS_API.h>
+#include "SafeRTOS_API.h"
+#include "portable.h"
 
 /* External Clock should be defined under osal_soc.h
  * if SOC is not supporting it, set to -1
@@ -257,21 +258,6 @@ int32_t Osal_getStaticMemStatus( Osal_StaticMemStatus *pMemStat )
     }
 
     return ( retVal );
-}
-
-extern portBaseType xPortIsISRMode( void );
-/*
- * Returns true if the current core is in ISR context; low prio ISR, med prio ISR or timer tick ISR. High prio ISRs
- * aren't detected here, but they normally cannot call C code, so that should not be an issue anyway.
- */
-portBaseType xPortInIsrContext()
-{
-    portBaseType inISR = true;
-    if( pdFALSE == xPortIsISRMode() )
-    {
-        inISR =  false;
-    }
-    return inISR;
 }
 
 /* Nothing past this point */

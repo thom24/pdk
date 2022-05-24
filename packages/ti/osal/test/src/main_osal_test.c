@@ -1852,8 +1852,10 @@ bool OSAL_log_test()
 uint64_t OSAL_get_ticks()
 {
     uint64_t ticks;
-#if  defined(FREERTOS) || defined(SAFERTOS)
+#if  defined(FREERTOS)
     ticks = (uint64_t)portGET_RUN_TIME_COUNTER_VALUE();
+#elif defined(SAFERTOS)
+    ticks = (uint64_t)TimerP_getTimeInUsecs();
 #else
     ticks = (uint64_t)Clock_getTicks();
 #endif

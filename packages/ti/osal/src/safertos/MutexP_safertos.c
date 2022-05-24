@@ -45,8 +45,7 @@
 
 #include <SafeRTOS_API.h>
 #include <mutex.h>
-
-extern portBaseType xPortInIsrContext( void );
+#include <portable.h>
 
 extern uint32_t  gOsalMutexAllocCnt, gOsalMutexPeak;
 
@@ -55,13 +54,13 @@ extern uint32_t  gOsalMutexAllocCnt, gOsalMutexPeak;
  */
 typedef struct MutexP_safertos_s {
     bool used;
-    uint64_t            mutObj[(portQUEUE_OVERHEAD_BYTES/sizeof(uint64_t) + 1)];
+    uint64_t            mutObj[(safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t) + 1)];
     xMutexHandleType    mutHndl;
     uint32_t isRecursiveMutex;
 } MutexP_safertos;
 
 /* global pool of statically allocated mutex pools */
-static MutexP_safertos gOsalMutexPSafeRtosPool[OSAL_FREERTOS_CONFIGNUM_MUTEX] __attribute__( ( aligned( 32 ) ) );;
+static MutexP_safertos gOsalMutexPSafeRtosPool[OSAL_SAFERTOS_CONFIGNUM_MUTEX] __attribute__( ( aligned( 32 ) ) );;
 
 
 MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
@@ -81,7 +80,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
     /* Pick up the internal static memory block */
     mutexPool = (MutexP_safertos *) &gOsalMutexPSafeRtosPool[0];
-    maxMutex  = OSAL_FREERTOS_CONFIGNUM_MUTEX;
+    maxMutex  = OSAL_SAFERTOS_CONFIGNUM_MUTEX;
 
     if(gOsalMutexAllocCnt==0U) 
     {
@@ -152,8 +151,7 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
     MutexP_Status ret = MutexP_OK;
     MutexP_Object *mutexObj = (MutexP_Object *)handle;
     MutexP_safertos *mutex = (MutexP_safertos *)mutexObj->object;
-    portBaseType xCreateResult;
-
+    
     /*
      * NOTE : Mutex delete is not supported in safertos.
      * We just memset and return success.
@@ -197,7 +195,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
         {
             if (timeout == MutexP_WAIT_FOREVER)
             {
-                timeout = portMAX_DELAY;
+                timeout = safertosapiMAX_DELAY;
             }
             /* Should not be called from ISR */
             xCreateResult = xMutexTake(mutex->mutHndl, timeout);

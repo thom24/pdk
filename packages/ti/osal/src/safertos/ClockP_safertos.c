@@ -46,8 +46,8 @@
 
 #include <SafeRTOS_API.h>
 #include <timers.h>
+#include <portable.h>
 
-extern portBaseType xPortInIsrContext( void );
 /**
  * \brief Callback that is called when the clock expires
  *
@@ -65,7 +65,7 @@ typedef struct ClockP_safertos_s
 } ClockP_safertos;
 
 /* global pool of statically allocated clock pools */
-static ClockP_safertos gOsalClockPSafeRtosPool[OSAL_FREERTOS_CONFIGNUM_CLOCK];
+static ClockP_safertos gOsalClockPSafeRtosPool[OSAL_SAFERTOS_CONFIGNUM_CLOCK];
 
 uint32_t gOsalClockAllocCnt = 0U, gOsalClockPeak = 0U;
 
@@ -118,7 +118,7 @@ ClockP_Handle ClockP_create(void *clockfxn,
 
     /* Pick up the internal static memory block */
     timerPool = (ClockP_safertos *) &gOsalClockPSafeRtosPool[0];
-    maxClocks  = OSAL_FREERTOS_CONFIGNUM_CLOCK; /* TODO add this macro */
+    maxClocks  = OSAL_SAFERTOS_CONFIGNUM_CLOCK;
 
     if(gOsalClockAllocCnt==0U) 
     {
@@ -202,7 +202,7 @@ ClockP_Handle ClockP_create(void *clockfxn,
         {
             if(params->startMode == ClockP_StartMode_AUTO)
             {
-                xCreateResult = xTimerStart(pTimer->timerHndl, portMAX_DELAY);
+                xCreateResult = xTimerStart(pTimer->timerHndl, safertosapiMAX_DELAY);
                 if(xCreateResult != pdPASS)
                 {
                     /* If there was an error reset the clock object and return NULL. */
@@ -235,7 +235,7 @@ ClockP_Status ClockP_delete(ClockP_Handle handle)
 
     if ((pTimer != NULL_PTR) && (pTimer->used == TRUE))
     {
-        xCreateResult = xTimerDelete(pTimer->timerHndl, portMAX_DELAY);
+        xCreateResult = xTimerDelete(pTimer->timerHndl, safertosapiMAX_DELAY);
 
         if(xCreateResult == pdPASS)
         {
@@ -274,15 +274,13 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
     {
         if( xPortInIsrContext() )
         {
-            portBaseType xHigherPriorityTaskWoken = 0;
-
             /* timeout is ignored when in ISR mode */
-            xCreateResult = xTimerStartFromISR(pTimer->timerHndl, &xHigherPriorityTaskWoken);
-            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+            xCreateResult = xTimerStartFromISR(pTimer->timerHndl);
+            safertosapiYIELD_FROM_ISR();
         }
         else
         {
-            xCreateResult = xTimerStart(pTimer->timerHndl, portMAX_DELAY);
+            xCreateResult = xTimerStart(pTimer->timerHndl, safertosapiMAX_DELAY);
         }
         if(xCreateResult == pdPASS)
         {
@@ -312,15 +310,13 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
     {
         if( xPortInIsrContext() )
         {
-            portBaseType xHigherPriorityTaskWoken = 0;
-
             /* timeout is ignored when in ISR mode */
-            xCreateResult = xTimerStopFromISR(pTimer->timerHndl, &xHigherPriorityTaskWoken);
-            portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+            xCreateResult = xTimerStopFromISR(pTimer->timerHndl);
+            safertosapiYIELD_FROM_ISR();
         }
         else
         {
-            xCreateResult = xTimerStop(pTimer->timerHndl, portMAX_DELAY);
+            xCreateResult = xTimerStop(pTimer->timerHndl, safertosapiMAX_DELAY);
         }
         if(xCreateResult == pdPASS)
         {

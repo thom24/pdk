@@ -100,8 +100,6 @@
 #define OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
 #define OSAL_NONOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
 #define OSAL_NONOS_MAX_TIMERP_PER_SOC       ((uint32_t) 20U)
-#define OSAL_NONOS_MAX_MUTEXP_PER_SOC       ((uint32_t) 20U)
-#define OSAL_NONOS_MAX_HEAPP_PER_SOC        ((uint32_t) 20U)
 
 /* Max number of various modules for FreeRTOS */
 #define OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 80U)
@@ -115,11 +113,19 @@
 #define OSAL_FREERTOS_MAX_HEAPP_PER_SOC      ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
+/* Max number of various modules for SafeRTOS */
+#define OSAL_SAFERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 80U)
+#define OSAL_SAFERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
+#define OSAL_SAFERTOS_MAX_TIMERP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_CLOCKP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_MUTEXP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 #endif
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_SEMAPHORE
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
  * API calls by setting the extended memory block for semaphores
@@ -132,10 +138,9 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_TASK
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for semaphores
+ * API calls by setting the extended memory block for tasks
  *********************************************************************/
 
 /* Set the number of SemaphoreP_Handles for FREERTOS */
@@ -145,10 +150,9 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_CLOCK
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for mutex
+ * API calls by setting the extended memory block for clock
  *********************************************************************/
 
 /* Set the number of ClockP_Handles for FREERTOS */
@@ -158,7 +162,6 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_MUTEX
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
  * API calls by setting the extended memory block for mutex
@@ -171,10 +174,9 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_MAILBOX
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for mutex
+ * API calls by setting the extended memory block for mailbox
  *********************************************************************/
 
 /* Set the number of MailboxP_Handles for FREERTOS */
@@ -184,10 +186,9 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_QUEUE
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for mutex
+ * API calls by setting the extended memory block for queue
  *********************************************************************/
 
 /* Set the number of QueueP_Handles for FREERTOS */
@@ -197,10 +198,9 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_HEAP
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for mutex
+ * API calls by setting the extended memory block for heap
  *********************************************************************/
 
 /* Set the number of HeapP_Handles for FREERTOS */
@@ -210,10 +210,9 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_EVENT
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for mutex
+ * API calls by setting the extended memory block for event
  *********************************************************************/
 
 /* Set the number of EVENTP_Handles for FREERTOS */
@@ -223,7 +222,6 @@
 
 /*********************************************************************
  * @def OSAL_FREERTOS_CONFIGNUM_HWI
- * To satisfy AMIC110 out of box needs, defaults are reduced to 10 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
  * API calls by setting the extended memory block for HwiP
@@ -234,6 +232,13 @@
 #define OSAL_FREERTOS_CONFIGNUM_HWI (OSAL_FREERTOS_MAX_HWIP_PER_SOC)
 #endif
 
+/*********************************************************************
+ * @def OSAL_FREERTOS_CONFIGNUM_TIMER
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for timer
+ *********************************************************************
+ */
 /* Set the number of TimerP_Handles for all boards */
 #ifndef OSAL_FREERTOS_CONFIGNUM_TIMER
 #define OSAL_FREERTOS_CONFIGNUM_TIMER (OSAL_FREERTOS_MAX_TIMERP_PER_SOC)
@@ -241,7 +246,6 @@
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_CONFIGNUM_HWI
- * To satisfy AMIC110 out of box needs, defaults are reduced to 10 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
  * API calls by setting the extended memory block for HwiP
@@ -252,14 +256,68 @@
 #define OSAL_SAFERTOS_CONFIGNUM_HWI (OSAL_SAFERTOS_MAX_HWIP_PER_SOC)
 #endif
 
+/*********************************************************************
+ * @def OSAL_SAFERTOS_CONFIGNUM_TIMER
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for timer
+ *********************************************************************
+ */
 /* Set the number of TimerP_Handles for all boards */
 #ifndef OSAL_SAFERTOS_CONFIGNUM_TIMER
 #define OSAL_SAFERTOS_CONFIGNUM_TIMER (OSAL_SAFERTOS_MAX_TIMERP_PER_SOC)
 #endif
 
 /*********************************************************************
+ * @def OSAL_SAFERTOS_CONFIGNUM_CLOCK
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for clock
+ *********************************************************************/
+
+/* Set the number of ClockP_Handles for SAFERTOS */
+#ifndef OSAL_SAFERTOS_CONFIGNUM_CLOCK
+#define OSAL_SAFERTOS_CONFIGNUM_CLOCK (OSAL_SAFERTOS_MAX_CLOCKP_PER_SOC)
+#endif /* OSAL_SAFERTOS_CONFIGNUM_CLOCK */
+
+/*********************************************************************
+ * @def OSAL_SAFERTOS_CONFIGNUM_EVENT
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for event
+ *********************************************************************/
+
+/* Set the number of EVENTP_Handles for SAFERTOS */
+#ifndef OSAL_SAFERTOS_CONFIGNUM_EVENT
+#define OSAL_SAFERTOS_CONFIGNUM_EVENT (OSAL_SAFERTOS_MAX_EVENTP_PER_SOC)
+#endif /* OSAL_SAFERTOS_CONFIGNUM_EVENT */
+
+/*********************************************************************
+ * @def OSAL_SAFERTOS_CONFIGNUM_MAILBOX
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for mailbox
+ *********************************************************************/
+
+/* Set the number of MailboxP_Handles for SAFERTOS */
+#ifndef OSAL_SAFERTOS_CONFIGNUM_MAILBOX
+#define OSAL_SAFERTOS_CONFIGNUM_MAILBOX (OSAL_SAFERTOS_MAX_MAILBOXP_PER_SOC)
+#endif /* OSAL_SAFERTOS_CONFIGNUM_MAILBOX */
+
+/*********************************************************************
+ * @def OSAL_SAFERTOS_CONFIGNUM_MUTEX
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for mutex
+ *********************************************************************/
+
+/* Set the number of MutexP_Handles for SAFERTOS */
+#ifndef OSAL_SAFERTOS_CONFIGNUM_MUTEX
+#define OSAL_SAFERTOS_CONFIGNUM_MUTEX (OSAL_SAFERTOS_MAX_MUTEXP_PER_SOC)
+#endif /* OSAL_SAFERTOS_CONFIGNUM_MUTEX */
+
+/*********************************************************************
  * @def OSAL_SAFERTOS_CONFIGNUM_SEMAPHORE
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
  * API calls by setting the extended memory block for semaphores
@@ -272,10 +330,9 @@
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_CONFIGNUM_TASK
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
- * API calls by setting the extended memory block for semaphores
+ * API calls by setting the extended memory block for task
  *********************************************************************/
 
 /* Set the number of SemaphoreP_Handles for SAFERTOS */
@@ -285,7 +342,6 @@
 
 /*********************************************************************
  * @def OSAL_NONOS_CONFIGNUM_HWI
- * To satisfy AMIC110 out of box needs, defaults are reduced to 10 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
  * API calls by setting the extended memory block for HwiP
@@ -296,6 +352,13 @@
 #define OSAL_NONOS_CONFIGNUM_HWI (OSAL_NONOS_MAX_HWIP_PER_SOC)
 #endif
 
+/*********************************************************************
+ * @def OSAL_NONOS_CONFIGNUM_TIMER
+ * If the need is more than the defaults, application would need to
+ * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
+ * API calls by setting the extended memory block for timer
+ *********************************************************************
+ */
 /* Set the number of TimerP_Handles for all boards */
 #ifndef OSAL_NONOS_CONFIGNUM_TIMER
 #define OSAL_NONOS_CONFIGNUM_TIMER (OSAL_NONOS_MAX_TIMERP_PER_SOC)
@@ -303,7 +366,6 @@
 
 /*********************************************************************
  * @def OSAL_NONOS_CONFIGNUM_SEMAPHORE
- * To satisfy AMIC110 out of box needs, defaults are reduced to 20 as below
  * If the need is more than the defaults, application would need to
  * suppliment the additional memory for OSAL using @ref Osal_setHwAttrs
  * API calls by setting the extended memory block for semaphores

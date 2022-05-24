@@ -316,8 +316,8 @@ void TaskP_sleepInMsecs( uint32_t timeoutInMsecs )
 {
     uint32_t ticks;
 
-    /* portTICK_PERIOD_MS is in units of msecs */
-    ticks = timeoutInMsecs / portTICK_PERIOD_MS;
+    /* configTICK_RATE_MS is in units of msecs */
+    ticks = timeoutInMsecs / configTICK_RATE_MS;
 
     ( void )xTaskDelay( ticks );
 }
@@ -364,7 +364,7 @@ TaskP_Handle TaskP_selfmacro( void )
 }
 
 void TaskP_yield( void ) {
-    taskYIELD(  );
+    safertosapiYIELD();
 }
 
 uint32_t TaskP_isTerminated( TaskP_Handle handle )
@@ -399,7 +399,7 @@ void OS_start(void)
     /* Check if the OS_init is done. */
     DebugP_assert( ( gSaftRtosInitDone == TRUE ) );
 
-    xTaskStartScheduler(pdTRUE);
+    xTaskStartScheduler();
 }
 
 void OS_stop(void)

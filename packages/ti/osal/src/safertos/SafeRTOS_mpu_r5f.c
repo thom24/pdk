@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2021 Texas Instruments Incorporated
+ *  Copyright (C) 2021-2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -31,22 +31,43 @@
  */
 
 /**
- *  \file   SafeRTOS_MPU.c
+ *  \file   SafeRTOS_mpu_r5f.c
  *
+ *  \brief The file implements the safertos R5F MPU configuration.
+ * 
  **/
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
+
 /* Generic headers */
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include <ti/csl/csl_types.h>
+
+#include <ti/osal/SafeRTOS_MPU.h>
 
 /* SafeRTOS includes */
 #include "SafeRTOS_API.h"
-#include <ti/osal/SafeRTOS_MPU.h>
+#include "mpuARM.h"
+
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
+
+/* None */
+
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+
+__attribute__((section(".startupCode"))) \
+static portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAccess);
+
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
 
 /**
  * \brief  TEX[2:0], C and B values.
@@ -55,7 +76,8 @@
  *         gMemAttr[x][1]: C bit value
  *         gMemAttr[x][2]: B bit value
  */
-static const uint32_t gMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
+__attribute__((section(".startupData"))) \
+static uint32_t gMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
 {
 /*    TEX[2:0], C,     B bits */
     {   0x0U,   0x0U,  0x0U,}, /* Strongly-ordered.*/
@@ -67,7 +89,8 @@ static const uint32_t gMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
     {   0x2U,   0x0U,  0x0U,}, /* Non-shareable Device.*/
 };
 
-xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((weak)) gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
+__attribute__((section(".startupData"))) __attribute__((weak)) \
+xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 {
     {
         /* Region 0 configuration: complete 32 bit address space = 4Gbits add one more 2gb */
@@ -87,7 +110,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         /* TODO region size is 4GB, but 2GB is largest supported */
         .ulRegionSize           = portmpuLARGEST_REGION_SIZE_ACTUAL,
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 0 configuration: second half of 2 GB */
@@ -107,7 +130,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         /* TODO region size is 4GB, but 2GB is largest supported */
         .ulRegionSize           = portmpuLARGEST_REGION_SIZE_ACTUAL,
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 1 configuration: 128 bytes memory for exception vector execution */
@@ -127,7 +150,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         /* ulRegionSize */
         .ulRegionSize           = 128U,
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 2 configuration: 1MB KB MCU MSRAM */
@@ -151,7 +174,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         .ulRegionSize           = (1024U * 1024U),
 #endif
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 3 configuration: 2 MB MCMS3 RAM */
@@ -185,7 +208,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         .ulRegionSize           = (4U * 1024U * 1024U),
 #endif
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 4 configuration: 2 GB DDR RAM */
@@ -205,7 +228,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         /* size is 2GB */
         .ulRegionSize           = portmpuLARGEST_REGION_SIZE_ACTUAL,
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 5 configuration: 32 KB BTCM */
@@ -233,7 +256,7 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         /* size is 32KB */
         .ulRegionSize           = (32U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
         /* Region 6 configuration: 32 KB ATCM */
@@ -253,14 +276,61 @@ xMPU_CONFIG_PARAMETERS __attribute__((section(".startupData"))) __attribute__((w
         /* size is 32KB */
         .ulRegionSize           = (32U * 1024U),
         /* ulSubRegionDisable */
-        .ulSubRegionDisable     = portmpuREGION_ALL_SUB_REGIONS_ENABLED,
+        .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
 };
 
-/*-----------------------------------------------------------------------------
- * Routines
- *---------------------------------------------------------------------------*/
-portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAccess)
+/* ========================================================================== */
+/*                          Function Defintions                               */
+/* ========================================================================== */
+
+__attribute__((section(".startupCode"))) portBaseType xConfigureMPU()
+{
+    portBaseType            xInitMpuResult = pdPASS;
+    xMPU_CONFIG_PARAMETERS *xMPUconfig;
+    xMPU_CONFIG_ACCESS     *xMPUconfigAccess;
+    portUInt32Type          ulRegionAccess;
+    uint32_t                loopCnt;
+
+    /* Configure MPU regions only for provided configuration */
+    for(loopCnt = 0; loopCnt < CSL_ARM_R5F_MPU_REGIONS_MAX; loopCnt++)
+    {
+        /* Check if the region is enabled */
+        if (CSL_ARM_R5_MPU_REGION_SIZE_32BYTE <= gMPUConfigParms[loopCnt].ulRegionSize)
+        {
+            ulRegionAccess = 0;
+            xMPUconfig = &gMPUConfigParms[loopCnt];
+
+            /* Update access control */
+            xMPUconfigAccess = &xMPUconfig->xRegionAccess;
+
+            ulRegionAccess = xConfigureMPUAccessCtrl(xMPUconfigAccess);
+
+            xInitMpuResult = xMPUConfigureGlobalRegion(
+                    xMPUconfig->ulRegionNumber,
+                    xMPUconfig->ulRegionBeginAddress,
+                    ulRegionAccess,
+                    xMPUconfig->ulRegionSize,
+                    xMPUconfig->ulSubRegionDisable
+                    );
+            if(pdPASS != xInitMpuResult)
+            {
+                break;
+            }
+        }
+    }
+
+    return xInitMpuResult;
+}
+
+/*---------------------------------------------------------------------------*/
+
+/* ========================================================================== */
+/*                       Static Function Definitions                          */
+/* ========================================================================== */
+
+__attribute__((section(".startupCode")))  \
+static portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAccess)
 {
     portUInt32Type accessCtrlRegVal = 0, tex;
 
@@ -294,74 +364,4 @@ portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAccess)
     return accessCtrlRegVal;
 }
 
-portBaseType xConfigureMPU()
-{
-    portBaseType xInitSchedResult = pdPASS;
-    uint32_t loopCnt;
-    xMPU_CONFIG_PARAMETERS *xMPUconfig;
-    xMPU_CONFIG_ACCESS     *xMPUconfigAccess;
-    portUInt32Type         ulRegionAccess;
-
-    /* Configure MPU regions only for provided configuration */
-    for(loopCnt = 0; loopCnt < CSL_ARM_R5F_MPU_REGIONS_MAX; loopCnt++)
-    {
-        /* Check if the region is enabled */
-        if (CSL_ARM_R5_MPU_REGION_SIZE_32BYTE <= gMPUConfigParms[loopCnt].ulRegionSize)
-        {
-            ulRegionAccess = 0;
-            xMPUconfig = &gMPUConfigParms[loopCnt];
-
-            /* Update access control */
-            xMPUconfigAccess = &xMPUconfig->xRegionAccess;
-
-            ulRegionAccess = xConfigureMPUAccessCtrl(xMPUconfigAccess);
-
-            xInitSchedResult = xMPUConfigureGlobalRegion(
-                    xMPUconfig->ulRegionNumber,
-                    xMPUconfig->ulRegionBeginAddress,
-                    ulRegionAccess,
-                    xMPUconfig->ulRegionSize,
-                    xMPUconfig->ulSubRegionDisable
-                    );
-            if(pdPASS != xInitSchedResult)
-            {
-                break;
-            }
-        }
-    }
-
-    return xInitSchedResult;
-}
-
-#if 0
-extern void vPortMPUREADRegion(portUInt32Type ulRegionNumber);
-/* Below code should be part in assembly file */
-;------------------------------------------------------------------------------
-; void vPortMPUREADRegion
-; (
-;    R0 = portUInt32Type ulRegion
-; )
-;------------------------------------------------------------------------------
-    .global vPortMPUREADRegion
-    .asmfunc
-
-vPortMPUREADRegion:
-        MCR     p15, #0, r0, c6, c2, #0
-        MRC     p15, #0, r1, c6, c1, #0
-        MRC     p15, #0, r2, c6, c1, #2
-        MRC     p15, #0, r3, c6, c1, #4
-
-        MOV     PC, LR
-
-    .endasmfunc
-
-void xReadMPURegisters()
-{
-    portUInt32Type ulRegion;
-
-    for (ulRegion = 1U ; ulRegion < 16U ; ulRegion++)
-    {
-        vPortMPUREADRegion(ulRegion);
-    }
-}
-#endif
+/*---------------------------------------------------------------------------*/

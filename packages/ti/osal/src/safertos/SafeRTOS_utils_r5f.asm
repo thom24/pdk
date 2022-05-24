@@ -43,7 +43,6 @@
 ; Constant Definitions
 ;------------------------------------------------------------------------------
 
-HIGHEST_SVC                             .equ ( 0x05 )
 
 ARM_MODE_MASK                           .equ ( 0x1F )
 ISR_MODE                               	.equ ( 0x12 )
@@ -51,10 +50,46 @@ ISR_MODE                               	.equ ( 0x12 )
 TRUE                                    .equ ( 1 )
 FALSE                                   .equ ( 0 )
 
+;------------------------------------------------------------------------------
+	.global ulGetDataFaultStatusRegister
+	.global ulGetDataFaultAddressRegister
+	.global ulGetInstructionFaultStatusRegister
+	.global ulGetInstructionFaultAddressRegister
 
-;  FUNCTION DEF: void vDataAbort(void)
+;-------------------------------------------------------------------------------
+; portUInt32Type ulGetDataFaultStatusRegister( void )
+;-------------------------------------------------------------------------------
+ulGetDataFaultStatusRegister:
+        MRC     p15, #0, r0, c5, c0, #0
+        BX      LR
+
+;-------------------------------------------------------------------------------
+; portUInt32Type ulGetDataFaultAddressRegister( void )
+;-------------------------------------------------------------------------------
+ulGetDataFaultAddressRegister:
+        MRC     p15, #0, r0, c6, c0, #0
+        BX      LR
+
+;-------------------------------------------------------------------------------
+; portUInt32Type ulGetInstructionFaultStatusRegister( void )
+;-------------------------------------------------------------------------------
+ulGetInstructionFaultStatusRegister:
+        MRC     p15, #0, r0, c5, c0, #1
+        BX      LR
+
+;-------------------------------------------------------------------------------
+; portUInt32Type ulGetInstructionFaultAddressRegister( void )
+;-------------------------------------------------------------------------------
+ulGetInstructionFaultAddressRegister:
+        MRC     p15, #0, r0, c6, c0, #2
+        BX      LR
+
+;-------------------------------------------------------------------------------
+; void vDataAbort( void )
+;-------------------------------------------------------------------------------
         .global vDataAbort
         .arm
+
 vDataAbort:
 	;  Return to the instruction following the interrupted.
 	SUB		lr, lr, #4
@@ -82,33 +117,4 @@ vDataAbort:
 vApplicationDataAbortHandlerConst: .word vDataAbort_c
 
 ;-------------------------------------------------------------------------------
-; portBaseType xPortIsISRMode( void )
-;------------------------------------------------------------------------------
-    .global xPortIsISRMode
-
-
-xPortIsISRMode:
-        MRS     R0, CPSR
-        AND     R0, R0, #ARM_MODE_MASK
-        CMP     R0, #ISR_MODE                	; Is the task running ISR?
-        MOVNE   R0, #FALSE                      ; Return false.
-        MOVEQ   R0, #TRUE                       ; Return true.
-
-        BX      LR
-
-
-
-;------------------------------------------------------------------------------
-;  void vPortSetDLFOBit( void )
-;------------------------------------------------------------------------------
-	.global vPortSetDLFOBit
-vPortSetDLFOBit:
-        PUSH    {r8}                            ; Save r8 register contents
-        MRC     p15, #0, r8, c1, c0, #1         ; Read ACTRL register into r8
-        ORR     r8, r8, #(1<<13)                ; Set DLFO bit in ACTRL register
-        MCR     p15, #0, r8, c1, c0, #1         ; Write back ACTRL register
-        POP     {r8}                            ; Restore r8 register contents
-        BX      lr
-
-    ;.size vPortSetDLFOBit, . - vPortSetDLFOBit
 

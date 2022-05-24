@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2021 Texas Instruments Incorporated
+ *  Copyright (C) 2021-2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -31,17 +31,46 @@
  */
 
 /**
- *  \file   SafeRTOS_aborts_r5.c.c
+ *  \file   SafeRTOS_aborts_r5.c
+ *
+ *  \brief The file implements safertos abort exception handlers for R5F.
  *
  **/
 
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
+
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/osal.h>
 
+#include "SafeRTOS_API.h"
+
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
+
+/* None */
+
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+
+/* Following functions are defined in SafeRTOS_utils_r5f.asm */
+portUInt32Type ulGetDataFaultStatusRegister( void );
+portUInt32Type ulGetDataFaultAddressRegister( void );
+portUInt32Type ulGetInstructionFaultStatusRegister( void );
+portUInt32Type ulGetInstructionFaultAddressRegister( void );
+
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
+
 extern CSL_R5ExptnHandlers gExptnHandlers;
+
+/* ========================================================================== */
+/*                          Function Defintions                               */
+/* ========================================================================== */
 
 void vUndefAbort(void)
 {
@@ -51,21 +80,37 @@ void vUndefAbort(void)
         ;
 }
 
+/*---------------------------------------------------------------------------*/
+
 void vPrefetchAbort(void)
 {
+    volatile portUInt32Type ulInstrFaultStatusReg;
+    volatile portUInt32Type ulInstrFaultAddressReg;
+
+    ulInstrFaultStatusReg = ulGetInstructionFaultStatusRegister();
+    ulInstrFaultAddressReg = ulGetInstructionFaultAddressRegister();
+
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
     while(loop)
         ;
 }
 
-/* Data Abort handler starts execution in HwiP_data_abort_handler, defined in SafeRTOS_abort_r5_asm.asm
- * After some initial assembly logic it then branches to this function.
- * After exiting this function it does some more assembly to return to the next instruction
- * following the one which caused the exception.
+/*---------------------------------------------------------------------------*/
+
+/* Data Abort handler starts execution in vDataAbort, defined in 
+ * SafeRTOS_utils_r5f.asm. After some initial assembly logic it then branches 
+ * to this function. After exiting this function it does some more assembly to 
+ * return to the next instruction following the one which caused the exception.
  */
 void vDataAbort_c(void)
 {
+    volatile portUInt32Type ulDataFaultStatusReg;
+    volatile portUInt32Type ulDataFaultAddressReg;
+
+    ulDataFaultStatusReg = ulGetDataFaultStatusRegister();
+    ulDataFaultAddressReg = ulGetDataFaultAddressRegister();
+
     /* Call registered call back */
     if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
     {
@@ -79,3 +124,5 @@ void vDataAbort_c(void)
             ;
     }
 }
+
+/*---------------------------------------------------------------------------*/

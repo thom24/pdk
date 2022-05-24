@@ -87,16 +87,15 @@ extern "C" {
 #define TIMER_INITIAL_COUNT             (0xFFF00000U)
 #define TIMER_RLD_COUNT                 (0xFFF00000U)
 
-/* GTC count clock for A53 */
+/* GTC count clock for A72 */
 #define  OSAL_SOC_MPU_GTC_CLK               ((int32_t) 200000)
 
-/* Max number of semaphores for NonOs */
+/* Max number of various modules for NonOs */
 #define OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
 #define OSAL_NONOS_MAX_HWIP_PER_SOC         ((uint32_t) 40U)
 #define OSAL_NONOS_MAX_TIMERP_PER_SOC       (TimerP_numTimerDevices)
-#define OSAL_NONOS_MAX_MUTEXP_PER_SOC       ((uint32_t) 20U)
-#define OSAL_NONOS_MAX_HEAPP_PER_SOC        ((uint32_t) 20U)
 
+/* Max number of various modules for FreeRTOS */
 #define OSAL_FREERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 360U)
 #define OSAL_FREERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
 #define OSAL_FREERTOS_MAX_TIMERP_PER_SOC     (TimerP_numTimerDevices)
@@ -108,9 +107,15 @@ extern "C" {
 #define OSAL_FREERTOS_MAX_HEAPP_PER_SOC      ((uint32_t) 20U)
 #define OSAL_FREERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
+/* Max number of various modules for SafeRTOS */
+#define OSAL_SAFERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
 #define OSAL_SAFERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 360U)
 #define OSAL_SAFERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 160U)
 #define OSAL_SAFERTOS_MAX_TIMERP_PER_SOC     (TimerP_numTimerDevices)
+#define OSAL_SAFERTOS_MAX_CLOCKP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_MUTEXP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
 #define OSAL_ARCH_TIMER_INST_FOR_TS         (TimerP_ANY)
 /**< Default timer instance for timer */

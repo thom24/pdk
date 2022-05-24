@@ -4,15 +4,16 @@ INCDIR = . src/safertos src/nonos arch/core src/freertos
 
 SRCS_COMMON += HwiP_nonos.c SwiP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c
 SRCS_COMMON += SemaphoreP_SafeRTOS.c TaskP_SafeRTOS.c Utils_SafeRTOS.c SafeRTOS_config.c
-SRCS_COMMON += EventP_safertos.c MailboxP_safertos.c ClockP_safertos.c MutexP_safertos.c SafeRTOS_MPU.c
+SRCS_COMMON += EventP_safertos.c MailboxP_safertos.c ClockP_safertos.c MutexP_safertos.c
 SRCS_COMMON += HeapP_freertos.c HeapP_freertos_internal.c QueueP_freertos.c
 
 PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk SemaphoreP.h \
                       TimerP.h RegisterIntr.h EventCombinerP.h CycleprofilerP.h CacheP.h DebugP.h soc/osal_soc.h soc/$(SOC) \
                       src/nonos/Nonos_config.h src/nonos/HwiP_nonos.c src/nonos/SwiP_nonos.c src/nonos/CycleprofilerP_nonos.c \
                       src/nonos/RegisterIntr_nonos.c src/safertos/SemaphoreP_SafeRTOS.c src/safertos/TaskP_SafeRTOS.c src/safertos/Utils_SafeRTOS.c \
-                      src/safertos/SafeRTOS_config.c src/safertos/EventP_safertos.c src/safertos/MailboxP_safertos.c src/safertos/ClockP_safertos.c SafeRTOS_MPU.h \
-                      src/safertos/MutexP_safertos.c src/safertos/SafeRTOS_MPU.c src/freertos/HeapP_freertos.c src/freertos/HeapP_freertos_internal.c \
+                      src/safertos/SafeRTOS_config.c src/safertos/EventP_safertos.c \
+                      src/safertos/MailboxP_safertos.c src/safertos/ClockP_safertos.c SafeRTOS_MPU.h \
+                      src/safertos/MutexP_safertos.c src/freertos/HeapP_freertos.c src/freertos/HeapP_freertos_internal.c \
                       src/freertos/QueueP_freertos.c src/freertos/HeapP_freertos_internal.h src/nonos/DebugP_nonos.c \
                       src/src_common_safertos.mk \
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
@@ -36,9 +37,11 @@ endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1))
   SRCDIR += arch/core/r5
-  SRCS_COMMON += CacheP_nonos.c Arch_util.c SafeRTOS_aborts_r5.c
-  SRCS_ASM_COMMON += TimestampProvider_asm.asm SafeRTOS_Utilsasm.asm
-  PACKAGE_SRCS_COMMON += arch/core/r5 SafeRTOS_Utilsasm.asm SafeRTOS_aborts_r5.c
+  SRCS_COMMON += CacheP_nonos.c Arch_util.c SafeRTOS_aborts_r5f.c SafeRTOS_mpu_r5f.c
+  SRCS_COMMON += SafeRTOS_config_r5f.c
+  SRCS_ASM_COMMON += TimestampProvider_asm.asm SafeRTOS_utils_r5f.asm
+  PACKAGE_SRCS_COMMON += arch/core/r5  src/safertos/SafeRTOS_utils_r5f.asm  src/safertos/SafeRTOS_aborts_r5f.c src/safertos/SafeRTOS_mpu_r5f.c
+  PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_r5f.c
 endif
 
 ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))

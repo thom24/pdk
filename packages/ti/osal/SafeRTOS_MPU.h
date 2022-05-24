@@ -93,6 +93,4 @@ typedef struct MPU_CONFIG_PARAMETERS
     portUInt32Type          ulSubRegionDisable;
 }xMPU_CONFIG_PARAMETERS;
 
-/** Function definitions */
-portBaseType xConfigureMPU();
 #endif /* SAFERTOS_MPU_H */

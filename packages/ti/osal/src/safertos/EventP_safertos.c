@@ -45,8 +45,7 @@
 
 #include <SafeRTOS_API.h>
 #include <eventgroups.h>
-
-extern portBaseType xPortInIsrContext( void );
+#include <portable.h>
 
 uint32_t  gOsalEventAllocCnt = 0U, gOsalEventPeak = 0U;
 
@@ -61,7 +60,7 @@ typedef struct EventP_safertos_s
 } EventP_safertos;
 
 /* global pool of statically allocated event pools */
-static EventP_safertos gOsalEventPSafeRtosPool[OSAL_FREERTOS_CONFIGNUM_EVENT];
+static EventP_safertos gOsalEventPSafeRtosPool[OSAL_SAFERTOS_CONFIGNUM_EVENT];
 
 /*
  *  ======== EventP_Params_init ========
@@ -88,7 +87,7 @@ EventP_Handle EventP_create(EventP_Params *params)
 
     /* Pick up the internal static memory block */
     eventPool       = (EventP_safertos *) &gOsalEventPSafeRtosPool[0];
-    maxEvent        = OSAL_FREERTOS_CONFIGNUM_EVENT;/* TODO this needs to be updated */
+    maxEvent        = OSAL_SAFERTOS_CONFIGNUM_EVENT;
     
     if(gOsalEventAllocCnt==0U)
     {
@@ -243,15 +242,12 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
     {
         if( xPortInIsrContext() )
         {   
-            portBaseType xHigherPriorityTaskWoken = pdFALSE;
-
             xCreateResult  = xEventGroupSetBitsFromISR(event->eventHndl,
-                                                 (eventBitsType)eventMask,
-                                                 &xHigherPriorityTaskWoken);
+                                                 (eventBitsType)eventMask);
 
             if(xCreateResult == pdPASS)
             {
-                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+                safertosapiYIELD_FROM_ISR();
                 ret_val = EventP_OK;
             }
             else

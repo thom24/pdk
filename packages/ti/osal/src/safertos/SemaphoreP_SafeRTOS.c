@@ -43,8 +43,7 @@
 #include <ti/osal/soc/osal_soc.h>
 
 #include <SafeRTOS_API.h>
-
-extern portBaseType xPortInIsrContext( void );
+#include <portable.h>
 
 extern uint32_t  gOsalSemAllocCnt, gOsalSemPeak;
 
@@ -53,13 +52,13 @@ extern uint32_t  gOsalSemAllocCnt, gOsalSemPeak;
  *  The order is important as the semaphore object has to be word aligned.
  */
 typedef struct SemaphoreP_safertos_s {
-    uint64_t          semObj[(portQUEUE_OVERHEAD_BYTES/sizeof(uint64_t) + 1)];
+    uint64_t          semObj[(safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t) + 1)];
     xSemaphoreHandle  semHndl;
     bool              used;
 } SemaphoreP_safertos;
 
 /* global pool of statically allocated semaphore pools */
-static SemaphoreP_safertos gOsalSemPsafertosPool[OSAL_FREERTOS_CONFIGNUM_SEMAPHORE] __attribute__( ( aligned( 32 ) ) );
+static SemaphoreP_safertos gOsalSemPsafertosPool[OSAL_SAFERTOS_CONFIGNUM_SEMAPHORE] __attribute__( ( aligned( 32 ) ) );
 
 int32_t SemaphoreP_constructBinary( SemaphoreP_safertos *handle, uint32_t initCount );
 int32_t SemaphoreP_constructCounting( SemaphoreP_safertos *handle, uint32_t initCount, uint32_t maxCount );
@@ -212,7 +211,7 @@ int32_t SemaphoreP_constructBinary( SemaphoreP_safertos *handle, uint32_t initCo
             /* SafeRTOS on BinarySemaphore create initializes semaphore with count of 1.
              * So we need to take semaphore to make count 0, if we are creating a binary semaphore with init count of 0.
              */
-            isSemTaken = xSemaphoreTake( handle->semHndl, portMAX_DELAY);
+            isSemTaken = xSemaphoreTake( handle->semHndl, safertosapiMAX_DELAY);
             DebugP_assert(isSemTaken == true);
         }
         status = SemaphoreP_OK;
@@ -306,17 +305,15 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
     DebugP_assert( ( handle != NULL_PTR ) );
     if(  xPortInIsrContext(  )  )
     {
-        portBaseType xHigherPriorityTaskWoken = 0;
-
         /* timeout is ignored when in ISR mode */
-        isSemTaken = xSemaphoreTakeFromISR( pSemaphore->semHndl, &xHigherPriorityTaskWoken );
-        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+        isSemTaken = xSemaphoreTakeFromISR( pSemaphore->semHndl);
+        safertosapiYIELD_FROM_ISR();
     }
     else
     {
         if ( timeout == SemaphoreP_WAIT_FOREVER )
         {
-            timeout = portMAX_DELAY;
+            timeout = safertosapiMAX_DELAY;
         }
         isSemTaken = xSemaphoreTake( pSemaphore->semHndl, timeout );
         if ( timeout == SemaphoreP_WAIT_FOREVER )
@@ -347,10 +344,8 @@ SemaphoreP_Status SemaphoreP_post( SemaphoreP_Handle handle )
 
     if(  xPortInIsrContext(  )  )
     {
-        portBaseType xHigherPriorityTaskWoken = 0;
-
-        xSemaphoreGiveFromISR( pSemaphore->semHndl, &xHigherPriorityTaskWoken );
-        portYIELD_FROM_ISR( xHigherPriorityTaskWoken );
+        xSemaphoreGiveFromISR( pSemaphore->semHndl);
+        safertosapiYIELD_FROM_ISR();
     }
     else
     {

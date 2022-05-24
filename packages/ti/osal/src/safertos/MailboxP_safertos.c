@@ -45,10 +45,10 @@
 
 #include <SafeRTOS_API.h>
 #include "queue.h"
+#include "portable.h"
 
 uint32_t  gOsalMailboxAllocCnt = 0U, gOsalMailboxPeak = 0U;
 
-extern portBaseType xPortInIsrContext( void );
 /*!
  *  @brief    MailboxP_safertos structure
  */
@@ -62,7 +62,7 @@ typedef struct MailboxP_safertos_s
 } MailboxP_safertos;
 
 /* global pool of statically allocated mailbox pools */
-static MailboxP_safertos gOsalMailboxPSafeRtosPool[OSAL_FREERTOS_CONFIGNUM_MAILBOX];
+static MailboxP_safertos gOsalMailboxPSafeRtosPool[OSAL_SAFERTOS_CONFIGNUM_MAILBOX];
 
 void MailboxP_Params_init(MailboxP_Params *params)
 {
@@ -94,7 +94,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
     /* Pick up the internal static memory block */
     mailboxPool       = (MailboxP_safertos *) &gOsalMailboxPSafeRtosPool[0];
-    maxMailbox        = OSAL_FREERTOS_CONFIGNUM_MAILBOX;
+    maxMailbox        = OSAL_SAFERTOS_CONFIGNUM_MAILBOX;
     
     if(gOsalMailboxAllocCnt==0U) 
     {
@@ -187,17 +187,15 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
 
     if( xPortInIsrContext() )
     {
-        portBaseType xHigherPriorityTaskWoken = 0;
-
         /* timeout is ignored when in ISR mode */
-        xCreateResult = xQueueSendFromISR(mailbox->mailboxHndl, msg, &xHigherPriorityTaskWoken);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        xCreateResult = xQueueSendFromISR(mailbox->mailboxHndl, msg);
+        safertosapiYIELD_FROM_ISR();
     }
     else
     {
         if (timeout == MailboxP_WAIT_FOREVER)
         {
-            timeout = portMAX_DELAY;
+            timeout = safertosapiMAX_DELAY;
         }
         xCreateResult = xQueueSend(mailbox->mailboxHndl, msg, timeout);
     }
@@ -226,17 +224,15 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
 
     if( xPortInIsrContext() )
     {
-        portBaseType xHigherPriorityTaskWoken = 0;
-
         /* timeout is ignored when in ISR mode */
-        xCreateResult = xQueueReceiveFromISR(mailbox->mailboxHndl, msg, &xHigherPriorityTaskWoken);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        xCreateResult = xQueueReceiveFromISR(mailbox->mailboxHndl, msg);
+        safertosapiYIELD_FROM_ISR();
     }
     else
     {
         if (timeout == MailboxP_WAIT_FOREVER)
         {
-            timeout = portMAX_DELAY;
+            timeout = safertosapiMAX_DELAY;
         }
         xCreateResult = xQueueReceive(mailbox->mailboxHndl, msg, timeout);
     }
