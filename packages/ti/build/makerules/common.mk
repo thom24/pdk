@@ -720,7 +720,12 @@ endif
 	$(ECHO) \#
 
 #SBL App image generation
+ifeq ($(SOC),j784s4)
+sbl_appimagegen:
+	$(ECHO) "SBL Image Gen not supported for J784S4."
+else
 sbl_appimagegen: $(SBL_APPIMAGE_PATH) $(SBL_APP_BINIMAGE_PATH)
+endif
 
 $(SBL_APP_BINIMAGE_PATH): $(EXE_NAME)
   ifeq ($($(APP_NAME)_SBL_APP_BINIMAGEGEN),yes)
