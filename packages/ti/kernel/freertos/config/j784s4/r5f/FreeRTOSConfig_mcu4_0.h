@@ -46,5 +46,20 @@
  * FreeRTOS REFERENCE MANUAL.
  *----------------------------------------------------------*/
 
-#define configTIMER_ID                                                    (4)
+/* -- Default DMTimer allocations for various cores in j784s4 ---*/
+/* c7x_1  - DMTimer 0
+ * c7x_2  - DMTimer 1 
+ * c7x_3  - DMTimer 2 
+ * c7x_4  - DMTimer 3 
+ * mcu2_0 - DMTimer 4
+ * mcu2_1 - DMTimer 5
+ * mcu3_0 - DMTimer 6
+ * mcu3_1 - DMTimer 7
+ * mcu4_0 - DMTimer 8
+ * mcu4_1 - DMTimer 9
+ * mcu1_0 - MCU DMTimer 1
+ * mcu1_1 - MCU DMTimer 2
+ */  
+
+#define configTIMER_ID                                                    (8)
 #endif /* TI_FREERTOS_MCU4_0_CONFIG_H */

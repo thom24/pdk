@@ -186,11 +186,16 @@ export freertos_test_ut_PKG_LIST
 freertos_test_ut_INCLUDE = $(freertos_test_ut_PATH)
 freertos_test_ut_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_ut_BOARDLIST
-ifneq ($(SOC),$(filter $(SOC), j721s2))
+ifneq ($(SOC),$(filter $(SOC), j721s2 j784s4))
 freertos_test_ut_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
+else
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+# Temporarily disable FreeRTOS test UT for J784s4 on C7x_2 c7x_3 c7x_4 cores 
+freertos_test_ut_$(SOC)_CORELIST = $(filter-out c7x_2 c7x_3 c7x_4, $(freertos_$(SOC)_CORELIST))
 else
 # Temporarily disable FreeRTOS test UT for J721S2 on C7x_2 core 
 freertos_test_ut_$(SOC)_CORELIST = $(filter-out c7x_2, $(freertos_$(SOC)_CORELIST)) 
+endif
 endif
 export freertos_test_ut_$(SOC)_CORELIST
 export freertos_test_ut_SBL_APPIMAGEGEN = yes
@@ -213,12 +218,18 @@ export freertos_test_posix_PKG_LIST
 freertos_test_posix_INCLUDE = $(freertos_test_posix_PATH)
 freertos_test_posix_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_posix_BOARDLIST
-ifneq ($(SOC),$(filter $(SOC), j721s2))
+ifneq ($(SOC),$(filter $(SOC), j721s2 j784s4))
 freertos_test_posix_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
+else
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+# Temporarily disable  FreeRTOS POSIX Demo for J784s4 on c7x_1 C7x_2 c7x_3 c7x_4 cores,
+# since UNITY related build failures are observed for these cores
+freertos_test_posix_$(SOC)_CORELIST = $(filter-out c7x_1 c7x_2 c7x_3 c7x_4, $(freertos_$(SOC)_CORELIST))
 else
 # Temp disable FreeRTOS POSIX Demo for J721S2 C7x cores, 
 # Since build failures are seen with silicon_version 7120 on C7x CGT 2.0.0A21260 
 freertos_test_posix_$(SOC)_CORELIST = $(filter-out c7x_1 c7x_2, $(freertos_$(SOC)_CORELIST)) 
+endif
 endif
 export freertos_test_posix_$(SOC)_CORELIST
 

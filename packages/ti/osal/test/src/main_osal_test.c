@@ -181,10 +181,10 @@ void C7x_ConfigureTimerOutput(void);
     #if defined(SOC_J721S2)
         #if defined(FREERTOS)
             #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
-            /* DMTimer 0/1 and Interrupt num 14/15(configTIMER_INT_NUM) 
+            /* DMTimer 0/1 and Interrupt num 14(configTIMER_INT_NUM) 
             * is used by FreeRTOS by default for C7x_1/C7x_2 respectively, 
             * so we need to use a different one here */
-            /* 15 for C7x_1 - DMTimer 1; 16 for C7x_2 - DMTimer 2 */
+            /* 15 for C7x_1 - DMTimer 1; 15 for C7x_2 - DMTimer 2 */
             #define OSAL_TEST_TIMER_INT_NUM                 (configTIMER_INT_NUM + 1U) 
             #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + configTIMER_ID + 1)
         #endif
@@ -192,11 +192,11 @@ void C7x_ConfigureTimerOutput(void);
     #if defined(SOC_J784S4)
         #if defined(FREERTOS)
             #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
-            /* DMTimer 0/1/2/3 and Interrupt num 14/15/16/17(configTIMER_INT_NUM) 
+            /* DMTimer 0/1/2/3 and Interrupt num 14(configTIMER_INT_NUM) 
             * is used by FreeRTOS by default for C7x_1/C7x_2/C7x_3/C7x_4 respectively, 
             * so we need to use a different one here */
-            /* 15 for C7x_1 - DMTimer 1; 16 for C7x_2 - DMTimer 2 */
-            /* 17 for C7x_3 - DMTimer 3; 18 for C7x_4 - DMTimer 4 */
+            /* 15 for C7x_1 - DMTimer 1; 15 for C7x_2 - DMTimer 2 */
+            /* 15 for C7x_3 - DMTimer 3; 15 for C7x_4 - DMTimer 4 */
             #define OSAL_TEST_TIMER_INT_NUM                 (configTIMER_INT_NUM + 1U) 
             #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + configTIMER_ID + 1)
         #endif

@@ -190,6 +190,65 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
     #endif
 #endif
 
+#ifdef SOC_J784S4
+    #ifdef BUILD_MCU1_0
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU1_1
+        #define PING_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0)
+        #define PONG_INT_NUM           (CSLR_MCU_R5FSS0_CORE1_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_1)
+    #endif
+    #ifdef BUILD_MCU2_0
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU2_1
+        #define PING_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS0_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU3_0
+        #define PING_INT_NUM           (CSLR_R5FSS1_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS1_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU3_1
+        #define PING_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS1_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU4_0
+        #define PING_INT_NUM           (CSLR_R5FSS2_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS2_CORE0_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_MCU4_1
+        #define PING_INT_NUM           (CSLR_R5FSS2_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_0)
+        #define PONG_INT_NUM           (CSLR_R5FSS2_CORE1_INTR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_OUT_LEVEL_1)
+    #endif
+    #ifdef BUILD_C7X_1
+        #define PING_INT_NUM           (16U)
+        #define PING_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER2_INTR_PEND_0 + 992)
+        #define PONG_INT_NUM           (17U)
+        #define PONG_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER3_INTR_PEND_0 + 992)
+    #endif
+    #ifdef BUILD_C7X_2
+        #define PING_INT_NUM           (18U)
+        #define PING_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER4_INTR_PEND_0 + 992)
+        #define PONG_INT_NUM           (19U)
+        #define PONG_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER5_INTR_PEND_0 + 992)
+    #endif
+    #ifdef BUILD_C7X_3
+        #define PING_INT_NUM           (20U)
+        #define PING_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER6_INTR_PEND_0 + 992)
+        #define PONG_INT_NUM           (21U)
+        #define PONG_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER7_INTR_PEND_0 + 992)
+    #endif
+    #ifdef BUILD_C7X_4
+        #define PING_INT_NUM           (22U)
+        #define PING_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER8_INTR_PEND_0 + 992)
+        #define PONG_INT_NUM           (23U)
+        #define PONG_EVT_ID            (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER9_INTR_PEND_0 + 992)
+    #endif
+#endif
+
 #define PING_TASK_PRI  (2u)
 #define PONG_TASK_PRI  (3u)
 
