@@ -68,27 +68,14 @@ ifeq ($(mmcsd_component_make_include), )
 
 # note SOC="devind"is not supported for DMA as it is covered
 # under other list
-drvmmcsd_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
-drvmmcsd_dma_SOCLIST     = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200 am64x j721s2 j784s4
-drvmmcsd_SOCLIST         = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200 am64x j721s2 j784s4
-drvmmcsd_dra72x_CORELIST = c66x a15_0 ipu1_0
-drvmmcsd_dra75x_CORELIST = c66x a15_0 ipu1_0
-drvmmcsd_dra78x_CORELIST = c66x ipu1_0
-drvmmcsd_am574x_CORELIST = c66x a15_0 ipu1_0
-drvmmcsd_am572x_CORELIST = c66x a15_0 ipu1_0
-drvmmcsd_am571x_CORELIST = c66x a15_0 ipu1_0
-drvmmcsd_k2g_CORELIST    = c66x a15_0
-drvmmcsd_am437x_CORELIST = a9host
-drvmmcsd_am335x_CORELIST = a8host
-drvmmcsd_omapl137_CORELIST = arm9_0 c674x
-drvmmcsd_omapl138_CORELIST = arm9_0 c674x
-drvmmcsd_am65xx_CORELIST     = mpu1_0 mcu1_0
-drvmmcsd_j721e_CORELIST     = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvmmcsd_j7200_CORELIST     = mpu1_0 mcu1_0 mcu2_0 mcu2_1
-drvmmcsd_j721s2_CORELIST    = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvmmcsd_j784s4_CORELIST    = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
-drvmmcsd_am64x_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvmmcsd_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
+drvmmcsd_BOARDLIST       = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
+drvmmcsd_dma_SOCLIST     = j721e j7200 j721s2 j784s4
+drvmmcsd_SOCLIST         = j721e j7200 j721s2 j784s4
+drvmmcsd_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvmmcsd_j7200_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1
+drvmmcsd_j721s2_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvmmcsd_j784s4_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
+drvmmcsd_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 
 ############################
 # mmcsd package

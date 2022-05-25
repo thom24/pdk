@@ -72,25 +72,12 @@ ifeq ($(fatfs_component_make_include), )
 drvfatfs_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 
 # under other list
-drvfatfs_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
-drvfatfs_SOCLIST           = am574x am572x am571x am437x am335x dra72x dra75x dra78x k2g omapl137 omapl138 am65xx j721e j7200 am64x j721s2 j784s4
-drvfatfs_am574x_CORELIST   = c66x a15_0 ipu1_0
-drvfatfs_am572x_CORELIST   = c66x a15_0 ipu1_0
-drvfatfs_am571x_CORELIST   = c66x a15_0 ipu1_0
-drvfatfs_dra72x_CORELIST   = c66x a15_0 ipu1_0
-drvfatfs_dra75x_CORELIST   = c66x a15_0 ipu1_0
-drvfatfs_dra78x_CORELIST   = c66x ipu1_0
-drvfatfs_am437x_CORELIST   = a9host
-drvfatfs_am335x_CORELIST   = a8host
-drvfatfs_k2g_CORELIST      = c66x a15_0
-drvfatfs_omapl137_CORELIST = arm9_0 c674x
-drvfatfs_omapl138_CORELIST = arm9_0 c674x
-drvfatfs_am65xx_CORELIST   = mpu1_0 mcu1_0
-drvfatfs_j721e_CORELIST    = $(DEFAULT_j721e_CORELIST)
-drvfatfs_j7200_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvfatfs_am64x_CORELIST    = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvfatfs_j721s2_CORELIST   = $(DEFAULT_j721s2_CORELIST)
-drvfatfs_j784s4_CORELIST   = $(DEFAULT_j784s4_CORELIST)
+drvfatfs_BOARDLIST       = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
+drvfatfs_SOCLIST         = j721e j7200 j721s2 j784s4
+drvfatfs_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvfatfs_j7200_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1
+drvfatfs_j721s2_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvfatfs_j784s4_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
 
 # Define the rule to generate FATFS Drivers BOARDLIST for each rtos_type
 # Default BOARDLIST for each rtos_type is defined in 'ti/build/makerules/component.mk'
