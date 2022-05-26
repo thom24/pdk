@@ -359,7 +359,6 @@ static Board_STATUS Board_CfgMultilinkPcieQsgmii(void)
 
 static Board_STATUS Board_serdesCfgEthernetXaui(void)
 {
-    CSL_SerdesStatus status;
     CSL_SerdesResult result;
     CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
     CSL_SerdesLaneEnableParams laneParams_serdes0;
