@@ -58,13 +58,13 @@ MMCSD_v2_HwAttrs MMCSDInitCfg[MMCSD_CNT] =
         CSL_MMCSD0_CTL_CFG_BASE, /* Controller Registers */
         CSL_MMCSD0_SS_CFG_BASE , /* SS Registers */
         CSL_MMCSD0_SS_CFG_BASE + 0x100 ,/* PHY  Registers */
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MMCSD0_COMMON_0_EMMCSS_INTR_0, /* Corresponds to GIC500_SPI_INT_IN_168 */
+        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MMCSD0_EMMCSS_INTR_0, /* Corresponds to GIC500_SPI_INT_IN_168 */
         0,  /* Event ID is not used */
 #else
         CSL_MMCSD0_CTL_CFG_BASE,
         CSL_MMCSD0_SS_CFG_BASE , /* SS Registers */
         CSL_MMCSD0_SS_CFG_BASE + 0x100,/* PHY  Registers */
-        CSLR_R5FSS0_CORE1_INTR_MMCSD0_COMMON_0_EMMCSS_INTR_0, /* Corresponds to MAIN_R5_CORE0
+        CSLR_R5FSS0_CORE1_INTR_MMCSD0_EMMCSS_INTR_0, /* Corresponds to MAIN_R5_CORE0
                                                                 This will update dynamically either through
                                                                 dedicated interrupt line or query from BoardCfg*/
         0,
@@ -108,7 +108,7 @@ MMCSD_v2_HwAttrs MMCSDInitCfg[MMCSD_CNT] =
         CSL_MMCSD1_CTL_CFG_BASE,
         CSL_MMCSD1_SS_CFG_BASE , /* SS Registers */
         CSL_MMCSD1_SS_CFG_BASE + 0x100,
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MMCSD1_COMMON_0_EMMCSDSS_INTR_0, /* Corresponds to MPU_IRQ_86 (32 + MPU_IRQ_86) */
+        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MMCSD1_EMMCSDSS_INTR_0, /* Corresponds to MPU_IRQ_86 (32 + MPU_IRQ_86) */
         0,
 #else
         CSL_MMCSD1_CTL_CFG_BASE,
@@ -270,13 +270,13 @@ MMCSD_Error MMCSD_socInit(void)
        /*  ********* MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' **************** */
        if(r5CpuInfo.cpuID == 0U) 
        {
-            MMCSDInitCfg[0].intNum = CSLR_R5FSS0_CORE0_INTR_MMCSD0_COMMON_0_EMMCSS_INTR_0;
-            MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE0_INTR_MMCSD1_COMMON_0_EMMCSDSS_INTR_0;
+            MMCSDInitCfg[0].intNum = CSLR_R5FSS0_CORE0_INTR_MMCSD0_EMMCSS_INTR_0;
+            MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;
        }
        else
        {
-            MMCSDInitCfg[0].intNum = CSLR_R5FSS0_CORE1_INTR_MMCSD0_COMMON_0_EMMCSS_INTR_0;
-            MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE1_INTR_MMCSD1_COMMON_0_EMMCSDSS_INTR_0;
+            MMCSDInitCfg[0].intNum = CSLR_R5FSS0_CORE1_INTR_MMCSD0_EMMCSS_INTR_0;
+            MMCSDInitCfg[1].intNum = CSLR_R5FSS0_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
        }
     } else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) /* Main R5 SS1*/
     {
@@ -284,13 +284,13 @@ MMCSD_Error MMCSD_socInit(void)
         /********** MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' *****************/
         if(r5CpuInfo.cpuID == 0U) 
         {
-            MMCSDInitCfg[0].intNum = CSLR_R5FSS1_CORE0_INTR_MMCSD0_COMMON_0_EMMCSS_INTR_0;
-            MMCSDInitCfg[1].intNum = CSLR_R5FSS1_CORE0_INTR_MMCSD1_COMMON_0_EMMCSDSS_INTR_0;   
+            MMCSDInitCfg[0].intNum = CSLR_R5FSS1_CORE0_INTR_MMCSD0_EMMCSS_INTR_0;
+            MMCSDInitCfg[1].intNum = CSLR_R5FSS1_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;   
         }
         else
         {
-            MMCSDInitCfg[0].intNum = CSLR_R5FSS1_CORE1_INTR_MMCSD0_COMMON_0_EMMCSS_INTR_0;
-            MMCSDInitCfg[1].intNum = CSLR_R5FSS1_CORE1_INTR_MMCSD1_COMMON_0_EMMCSDSS_INTR_0;
+            MMCSDInitCfg[0].intNum = CSLR_R5FSS1_CORE1_INTR_MMCSD0_EMMCSS_INTR_0;
+            MMCSDInitCfg[1].intNum = CSLR_R5FSS1_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
         }
     } else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3) /* Main R5 SS2*/
     {
@@ -298,13 +298,13 @@ MMCSD_Error MMCSD_socInit(void)
         /********** MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' *****************/
         if(r5CpuInfo.cpuID == 0U) 
         {
-            MMCSDInitCfg[0].intNum = CSLR_R5FSS2_CORE0_INTR_MMCSD0_COMMON_0_EMMCSS_INTR_0;
-            MMCSDInitCfg[1].intNum = CSLR_R5FSS2_CORE0_INTR_MMCSD1_COMMON_0_EMMCSDSS_INTR_0;   
+            MMCSDInitCfg[0].intNum = CSLR_R5FSS2_CORE0_INTR_MMCSD0_EMMCSS_INTR_0;
+            MMCSDInitCfg[1].intNum = CSLR_R5FSS2_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;   
         }
         else
         {
-            MMCSDInitCfg[0].intNum = CSLR_R5FSS2_CORE1_INTR_MMCSD0_COMMON_0_EMMCSS_INTR_0;
-            MMCSDInitCfg[1].intNum = CSLR_R5FSS2_CORE1_INTR_MMCSD1_COMMON_0_EMMCSDSS_INTR_0;
+            MMCSDInitCfg[0].intNum = CSLR_R5FSS2_CORE1_INTR_MMCSD0_EMMCSS_INTR_0;
+            MMCSDInitCfg[1].intNum = CSLR_R5FSS2_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
         }
     } else
     {
