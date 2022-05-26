@@ -68,59 +68,21 @@ ifeq ($(osal_component_make_include), )
 
 libosal_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 
-libosal_BOARDLIST  = evmAM572x evmAM335x evmAM437x iceK2G idkAM574x idkAM572x
-libosal_BOARDLIST += idkAM571x idkAM437x am65xx_evm am65xx_idk evmOMAPL137
-libosal_BOARDLIST += lcdkOMAPL138 evmK2E evmK2H evmK2K evmK2L j721e_evm j7200_evm
-libosal_BOARDLIST += am64x_evm tpr12_evm tpr12_qt awr294x_evm j721s2_evm j784s4_evm
+libosal_BOARDLIST  = j721e_evm j7200_evm j721s2_evm j784s4_evm
 
-libosal_SOCLIST   = tda2xx tda2px tda2ex tda3xx dra78x dra72x dra75x am574x
-libosal_SOCLIST  += am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x
-libosal_SOCLIST  += omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4
+libosal_SOCLIST   =  j721e j7200 j721s2 j784s4
 
-libosal_freertos_BOARDLIST  = am65xx_evm j721e_evm j7200_evm tpr12_evm awr294x_evm j721s2_evm j784s4_evm
-libosal_freertos_SOCLIST    = am65xx j721e j7200 tpr12 awr294x j721s2 j784s4
-libosal_safertos_BOARDLIST  = tpr12_evm awr294x_evm
-libosal_safertos_BOARDLIST  = tpr12_evm awr294x_evm j721e_evm
-libosal_safertos_SOCLIST    = tpr12 awr294x j721e
+libosal_freertos_BOARDLIST  = j721e_evm j7200_evm j721s2_evm j784s4_evm
+libosal_freertos_SOCLIST    = j721e j7200 j721s2 j784s4
+libosal_safertos_BOARDLIST  = j721e_evm
+libosal_safertos_SOCLIST    = j721e
 
-libosal_tda2xx_CORELIST = a15_0 ipu1_0
-libosal_tda2px_CORELIST = a15_0 ipu1_0
-libosal_tda2ex_CORELIST = a15_0 ipu1_0
-libosal_tda3xx_CORELIST = ipu1_0
-libosal_dra72x_CORELIST = c66x a15_0 ipu1_0
-libosal_dra75x_CORELIST = c66x a15_0 ipu1_0
-libosal_dra78x_CORELIST = c66x ipu1_0
-libosal_am574x_CORELIST = c66x a15_0 ipu1_0
-libosal_am572x_CORELIST = c66x a15_0 ipu1_0
-libosal_am571x_CORELIST = c66x a15_0 ipu1_0
-libosal_k2h_CORELIST    = c66x a15_0
-libosal_k2k_CORELIST    = c66x a15_0
-libosal_k2l_CORELIST    = c66x a15_0
-libosal_k2e_CORELIST    = c66x a15_0
-libosal_k2g_CORELIST    = c66x a15_0
-libosal_omapl137_CORELIST    = c674x arm9_0
-libosal_omapl138_CORELIST    = c674x arm9_0
-libosal_c6678_CORELIST  = c66x
-libosal_c6657_CORELIST  = c66x
-libosal_am437x_CORELIST = a9host
-libosal_am335x_CORELIST = a8host
-libosal_am65xx_CORELIST  = $(DEFAULT_am65xx_CORELIST)
-libosal_j721e_CORELIST   = $(DEFAULT_j721e_CORELIST)
-libosal_j7200_CORELIST   = $(DEFAULT_j7200_CORELIST)
-libosal_am64x_CORELIST   = $(DEFAULT_am64x_CORELIST)
-libosal_tpr12_CORELIST   = $(DEFAULT_tpr12_CORELIST)
-libosal_awr294x_CORELIST = $(DEFAULT_awr294x_CORELIST)
-libosal_j721s2_CORELIST  = $(DEFAULT_j721s2_CORELIST)
-libosal_j784s4_CORELIST = $(DEFAULT_j784s4_CORELIST)
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 tpr12 awr294x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), $(libosal_SOCLIST)))
+libosal_$(SOC)_CORELIST   = $(DEFAULT_$(SOC)_CORELIST)
 libosal_freertos_$(SOC)_CORELIST = $(filter-out mpu%, $(libosal_$(SOC)_CORELIST))
-else
-libosal_freertos_$(SOC)_CORELIST =
 endif
 
-libosal_safertos_tpr12_CORELIST   = c66xdsp_1
-libosal_safertos_awr294x_CORELIST = c66xdsp_1
 libosal_safertos_j721e_CORELIST   = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 
 ############################
@@ -153,31 +115,20 @@ libosal_LIB_LIST = $(osal_LIB_LIST)
 #
 
 # OSAL QNX LIB
-osal_qnx_COMP_LIST = osal_qnx
+export osal_qnx_COMP_LIST = osal_qnx
 osal_qnx_RELPATH = ti/osal
 osal_qnx_PATH = $(PDK_OSAL_COMP_PATH)
-osal_qnx_LIBNAME = ti.osal
-export osal_qnx_LIBNAME
-osal_qnx_LIBPATH = $(osal_qnx_PATH)/lib/qnx
-export osal_qnx_LIBPATH
-osal_qnx_OBJPATH = $(osal_qnx_RELPATH)/osal_qnx
-export osal_qnx_OBJPATH
-osal_qnx_MAKEFILE = -f build/makefile_qnx.mk
-export osal_qnx_MAKEFILE
-osal_qnx_PLATFORM_DEPENDENCY = no
-osal_qnx_CORE_DEPENDENCY = no
-osal_qnx_SOC_DEPENDENCY = yes
-export osal_qnx_COMP_LIST
-export osal_qnx_PLATFORM_DEPENDENCY
-export osal_qnx_CORE_DEPENDENCY
-export osal_qnx_SOC_DEPENDENCY
-osal_qnx_PKG_LIST = osal_qnx
-export osal_qnx_PKG_LIST
+export osal_qnx_LIBNAME = ti.osal
+export osal_qnx_LIBPATH = $(osal_qnx_PATH)/lib/qnx
+export osal_qnx_OBJPATH = $(osal_qnx_RELPATH)/osal_qnx
+export osal_qnx_MAKEFILE = -f build/makefile_qnx.mk
+export osal_qnx_PLATFORM_DEPENDENCY = no
+export osal_qnx_CORE_DEPENDENCY = no
+export osal_qnx_SOC_DEPENDENCY = yes
+export osal_qnx_PKG_LIST = osal_qnx
 osal_qnx_INCLUDE = $(osal_qnx_PATH)
-osal_qnx_SOCLIST = $(libosal_SOCLIST)
-export osal_qnx_SOCLIST
-osal_qnx_$(SOC)_CORELIST = qnx_mpu1_0
-export osal_qnx_$(SOC)_CORELIST
+export osal_qnx_SOCLIST = $(libosal_SOCLIST)
+export osal_qnx_$(SOC)_CORELIST = qnx_mpu1_0
 
 osal_EXAMPLE_LIST =
 
@@ -186,137 +137,70 @@ osal_EXAMPLE_LIST =
 #
 
 # OSAL NONOS LIB
-osal_nonos_COMP_LIST = osal_nonos
+export osal_nonos_COMP_LIST = osal_nonos
 osal_nonos_RELPATH = ti/osal
 osal_nonos_PATH = $(PDK_OSAL_COMP_PATH)
-osal_nonos_LIBNAME = ti.osal
-export osal_nonos_LIBNAME
-osal_nonos_LIBPATH = $(osal_nonos_PATH)/lib/nonos
-export osal_nonos_LIBPATH
-osal_nonos_OBJPATH = $(osal_nonos_RELPATH)/osal_nonos
-export osal_nonos_OBJPATH
-osal_nonos_MAKEFILE = -f build/makefile_nonos.mk
-export osal_nonos_MAKEFILE
-osal_nonos_PLATFORM_DEPENDENCY = no
-osal_nonos_CORE_DEPENDENCY = no
-osal_nonos_SOC_DEPENDENCY = yes
-export osal_nonos_COMP_LIST
-export osal_nonos_PLATFORM_DEPENDENCY
-export osal_nonos_CORE_DEPENDENCY
-export osal_nonos_SOC_DEPENDENCY
-osal_nonos_PKG_LIST = osal_nonos
-export osal_nonos_PKG_LIST
+export osal_nonos_LIBNAME = ti.osal
+export osal_nonos_LIBPATH = $(osal_nonos_PATH)/lib/nonos
+export osal_nonos_OBJPATH = $(osal_nonos_RELPATH)/osal_nonos
+export osal_nonos_MAKEFILE = -f build/makefile_nonos.mk
+export osal_nonos_PLATFORM_DEPENDENCY = no
+export osal_nonos_CORE_DEPENDENCY = no
+export osal_nonos_SOC_DEPENDENCY = yes
+export osal_nonos_PKG_LIST = osal_nonos
 osal_nonos_INCLUDE = $(osal_nonos_PATH)
-osal_nonos_SOCLIST = $(libosal_SOCLIST)
-export osal_nonos_SOCLIST
+export osal_nonos_SOCLIST = $(libosal_SOCLIST)
 osal_nonos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
 ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
 osal_nonos_$(SOC)_CORELIST += c7x-hostemu
 endif
 export osal_nonos_$(SOC)_CORELIST
 
-# OSAL NONOS LIB DEVICE INDEPENDENT
-osal_nonos_indp_COMP_LIST = osal_nonos_indp
-osal_nonos_indp_RELPATH = ti/osal
-osal_nonos_indp_PATH = $(PDK_OSAL_COMP_PATH)
-osal_nonos_indp_LIBNAME = ti.osal
-export osal_nonos_indp_LIBNAME
-osal_nonos_indp_LIBPATH = $(osal_nonos_indp_PATH)/lib/nonos
-export osal_nonos_indp_LIBPATH
-osal_nonos_indp_OBJPATH = $(osal_nonos_indp_RELPATH)/osal_nonos_indp
-export osal_nonos_indp_OBJPATH
-osal_nonos_indp_MAKEFILE = -f build/makefile_nonos_indp.mk
-export osal_nonos_indp_MAKEFILE
-osal_nonos_indp_PLATFORM_DEPENDENCY = no
-osal_nonos_indp_CORE_DEPENDENCY = no
-osal_nonos_indp_SOC_DEPENDENCY = no
-export osal_nonos_indp_COMP_LIST
-export osal_nonos_indp_PLATFORM_DEPENDENCY
-export osal_nonos_indp_CORE_DEPENDENCY
-export osal_nonos_indp_SOC_DEPENDENCY
-osal_nonos_indp_PKG_LIST = osal_nonos_indp
-export osal_nonos_indp_PKG_LIST
-osal_nonos_indp_INCLUDE = $(osal_nonos_indp_PATH)
-osal_nonos_indp_SOCLIST =
-export osal_nonos_indp_SOCLIST
-osal_nonos_indp_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
-export osal_nonos_indp_$(SOC)_CORELIST
-
 # OSAL FREE RTOS LIB
-osal_freertos_COMP_LIST = osal_freertos
+export osal_freertos_COMP_LIST = osal_freertos
 osal_freertos_RELPATH = ti/osal
 osal_freertos_PATH = $(PDK_OSAL_COMP_PATH)
-osal_freertos_LIBNAME = ti.osal
-export osal_freertos_LIBNAME
-osal_freertos_LIBPATH = $(osal_freertos_PATH)/lib/freertos
-export osal_freertos_LIBPATH
-osal_freertos_OBJPATH = $(osal_freertos_RELPATH)/osal_freertos
-export osal_freertos_OBJPATH
-osal_freertos_MAKEFILE = -f build/makefile_freertos.mk
-export osal_freertos_MAKEFILE
-osal_freertos_PLATFORM_DEPENDENCY = no
-osal_freertos_CORE_DEPENDENCY = no
-osal_freertos_SOC_DEPENDENCY = yes
-export osal_freertos_COMP_LIST
-export osal_freertos_PLATFORM_DEPENDENCY
-export osal_freertos_CORE_DEPENDENCY
-export osal_freertos_SOC_DEPENDENCY
-osal_freertos_PKG_LIST = osal_freertos
-export osal_freertos_PKG_LIST
+export osal_freertos_LIBNAME = ti.osal
+export osal_freertos_LIBPATH = $(osal_freertos_PATH)/lib/freertos
+export osal_freertos_OBJPATH = $(osal_freertos_RELPATH)/osal_freertos
+export osal_freertos_MAKEFILE = -f build/makefile_freertos.mk
+export osal_freertos_PLATFORM_DEPENDENCY = no
+export osal_freertos_CORE_DEPENDENCY = no
+export osal_freertos_SOC_DEPENDENCY = yes
+export osal_freertos_PKG_LIST = osal_freertos
 osal_freertos_INCLUDE = $(osal_freertos_PATH)
-osal_freertos_SOCLIST = $(libosal_freertos_SOCLIST)
-export osal_freertos_SOCLIST
-osal_freertos_$(SOC)_CORELIST = $(libosal_freertos_$(SOC)_CORELIST)
-export osal_freertos_$(SOC)_CORELIST
+export osal_freertos_SOCLIST = $(libosal_freertos_SOCLIST)
+export osal_freertos_$(SOC)_CORELIST = $(libosal_freertos_$(SOC)_CORELIST)
 
 # OSAL SAFE RTOS LIB
-osal_safertos_COMP_LIST = osal_safertos
+export osal_safertos_COMP_LIST = osal_safertos
 osal_safertos_RELPATH = ti/osal
 osal_safertos_PATH = $(PDK_OSAL_COMP_PATH)
-osal_safertos_LIBNAME = ti.osal
-export osal_safertos_LIBNAME
-osal_safertos_LIBPATH = $(osal_safertos_PATH)/lib/safertos
-export osal_safertos_LIBPATH
-osal_safertos_OBJPATH = $(osal_safertos_RELPATH)/osal_safertos
-export osal_safertos_OBJPATH
-osal_safertos_MAKEFILE = -f build/makefile_safertos.mk
-export osal_safertos_MAKEFILE
-osal_safertos_PLATFORM_DEPENDENCY = no
-osal_safertos_CORE_DEPENDENCY = no
-osal_safertos_SOC_DEPENDENCY = yes
-export osal_safertos_COMP_LIST
-export osal_safertos_PLATFORM_DEPENDENCY
-export osal_safertos_CORE_DEPENDENCY
-export osal_safertos_SOC_DEPENDENCY
-osal_safertos_PKG_LIST = osal_safertos
-export osal_safertos_PKG_LIST
+export osal_safertos_LIBNAME = ti.osal
+export osal_safertos_LIBPATH = $(osal_safertos_PATH)/lib/safertos
+export osal_safertos_OBJPATH = $(osal_safertos_RELPATH)/osal_safertos
+export osal_safertos_MAKEFILE = -f build/makefile_safertos.mk
+export osal_safertos_PLATFORM_DEPENDENCY = no
+export osal_safertos_CORE_DEPENDENCY = no
+export osal_safertos_SOC_DEPENDENCY = yes
+export osal_safertos_PKG_LIST = osal_safertos
 osal_safertos_INCLUDE = $(osal_safertos_PATH)
-osal_safertos_SOCLIST = $(libosal_safertos_SOCLIST)
-export osal_safertos_SOCLIST
-osal_safertos_$(SOC)_CORELIST = $(libosal_safertos_$(SOC)_CORELIST)
-export osal_safertos_$(SOC)_CORELIST
+export osal_safertos_SOCLIST = $(libosal_safertos_SOCLIST)
+export osal_safertos_$(SOC)_CORELIST = $(libosal_safertos_$(SOC)_CORELIST)
 
 #
 # OSAL Examples
 #
-OSAL_Baremetal_TestApp_COMP_LIST = OSAL_Baremetal_TestApp
+export OSAL_Baremetal_TestApp_COMP_LIST = OSAL_Baremetal_TestApp
 OSAL_Baremetal_TestApp_RELPATH = ti/osal/test/baremetal
 OSAL_Baremetal_TestApp_PATH = $(PDK_OSAL_COMP_PATH)/test/baremetal
-OSAL_Baremetal_TestApp_BOARD_DEPENDENCY = yes
-OSAL_Baremetal_TestApp_CORE_DEPENDENCY = no
-export OSAL_Baremetal_TestApp_COMP_LIST
-export OSAL_Baremetal_TestApp_BOARD_DEPENDENCY
-export OSAL_Baremetal_TestApp_CORE_DEPENDENCY
+export OSAL_Baremetal_TestApp_BOARD_DEPENDENCY = yes
+export OSAL_Baremetal_TestApp_CORE_DEPENDENCY = no
 OSAL_Baremetal_TestApp_PKG_LIST = OSAL_Baremetal_TestApp
 OSAL_Baremetal_TestApp_INCLUDE = $(OSAL_Baremetal_TestApp_PATH)
-OSAL_Baremetal_TestApp_BOARDLIST = $(libosal_BOARDLIST)
-export OSAL_Baremetal_TestApp_BOARDLIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
-OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
-else
-OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = no
-endif
-export OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN
+export OSAL_Baremetal_TestApp_BOARDLIST = $(libosal_BOARDLIST)
+export OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
+osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
 
 define OSAL_TestApp_RULE
 
@@ -337,91 +221,13 @@ ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 osal_EXAMPLE_LIST += OSAL_TestApp_$(1)
 endif
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4))
 export OSAL_TestApp_$(1)_SBL_APPIMAGEGEN = yes
-else
-export OSAL_TestApp_$(1)_SBL_APPIMAGEGEN = no
-endif
 
 endef
 
 OSAL_TestApp_MACRO_LIST := $(foreach curos,$(libosal_RTOS_LIST) safertos,$(call OSAL_TestApp_RULE,$(curos)))
 
 $(eval ${OSAL_TestApp_MACRO_LIST})
-
-#Default Core List
-OSAL_Baremetal_TestApp_$(SOC)_CORELIST = a15_0 c66x
-
-# Overwrite default core list for below SoCs
-ifeq ($(BOARD),$(filter $(BOARD), idkAM574x evmAM572x idkAM572x idkAM571x))
-OSAL_Baremetal_TestApp_$(SOC)_CORELIST = a15_0 ipu1_0 c66x
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmAM335x))
-OSAL_Baremetal_TestApp_$(SOC)_CORELIST = a8host
-endif
-
-
-ifeq ($(BOARD),$(filter $(BOARD), evmAM437x idkAM437x))
-OSAL_Baremetal_TestApp_$(SOC)_CORELIST = a9host
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmOMAPL137))
-osal_baremetal_test_$(SOC)_CORELIST = c674x arm9_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), lcdkOMAPL138))
-osal_baremetal_test_$(SOC)_CORELIST = c674x arm9_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmK2E))
-osal_baremetal_test_$(SOC)_CORELIST = c66x a15_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmK2H evmK2K))
-osal_baremetal_test_$(SOC)_CORELIST = c66x a15_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmK2L))
-osal_baremetal_test_$(SOC)_CORELIST = c66x a15_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmOMAPL137))
-osal_baremetal_test_$(SOC)_CORELIST = c674x arm9_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), lcdkOMAPL138))
-osal_baremetal_test_$(SOC)_CORELIST = c674x arm9_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmK2E))
-osal_baremetal_test_$(SOC)_CORELIST = c66x a15_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmK2H evmK2K))
-osal_baremetal_test_$(SOC)_CORELIST = c66x a15_0
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmK2L))
-osal_baremetal_test_$(SOC)_CORELIST = c66x a15_0
-endif
-
-ifeq ($(SOC),$(filter $(SOC), dra72x dra75x))
-OSAL_Baremetal_TestApp_$(SOC)_CORELIST = a15_0 ipu1_0 c66x
-endif
-
-ifeq ($(SOC),$(filter $(SOC), dra78x))
-OSAL_Baremetal_TestApp_$(SOC)_CORELIST = ipu1_0 c66x
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am64x))
- OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 mpu1_0 m4f_0 mcu2_0
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am65xx))
- OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0
- OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1
-endif
 
 ifeq ($(SOC),$(filter $(SOC), j721e))
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
@@ -444,58 +250,14 @@ ifeq ($(SOC),$(filter $(SOC), j784s4))
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
- OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mcu1_0 mcu1_1 c66xdsp_1
-endif
-
 export OSAL_Baremetal_TestApp_$(SOC)_CORELIST
-export OSAL_TestApp_$(SOC)_CORELIST
 export OSAL_freertos_TestApp_$(SOC)_CORELIST
-
-osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
-
-ifeq ($(CPLUSPLUS_BUILD), yes)
-#cpptest
-cpptest_COMP_LIST = cpptest
-cpptest_RELPATH = ti/osal/test/cpptest
-cpptest_PATH = $(PDK_OSAL_COMP_PATH)/test/cpptest
-cpptest_BOARD_DEPENDENCY = yes
-cpptest_CORE_DEPENDENCY = yes
-export cpptest_COMP_LIST
-export cpptest_BOARD_DEPENDENCY
-export cpptest_CORE_DEPENDENCY
-cpptest_PKG_LIST = cpptest
-cpptest_INCLUDE = $(cpptest_PATH)
-cpptest_BOARDLIST = $(libosal_BOARDLIST)
-export cpptest_BOARDLIST
-
-#Default Core List
-ifeq ($(BOARD),$(filter $(BOARD), evmAM335x))
-cpptest_$(SOC)_CORELIST = a8host
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmAM437x idkAM437x))
-cpptest_$(SOC)_CORELIST = a9host
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), idkAM574x evmAM572x idkAM572x idkAM571x))
-cpptest_$(SOC)_CORELIST = a15_0 ipu1_0 c66x
-endif
-
-ifeq ($(BOARD),$(filter $(BOARD), evmK2G iceK2G))
-cpptest_$(SOC)_CORELIST = c66x a15_0
-endif
-
-export cpptest_$(SOC)_CORELIST
-osal_EXAMPLE_LIST += cpptest
-endif
 
 export osal_LIB_LIST
 export libosal_LIB_LIST
 export osal_EXAMPLE_LIST
 
-libosal_EXAMPLE_LIST = $(osal_EXAMPLE_LIST)
-export libosal_EXAMPLE_LIST
+export libosal_EXAMPLE_LIST = $(osal_EXAMPLE_LIST)
 
 osal_component_make_include := 1
 endif

@@ -29,76 +29,12 @@ ifeq ($(MANUAL_CACHE_TEST),YES)
   CFLAGS_LOCAL_COMMON += -DMANUAL_CACHE_TEST
 endif
 
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 am571x am572x am574x am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   CFLAGS_LOCAL_COMMON += -DENABLE_TIMER_TEST
 endif
 
 SRCS_COMMON += main_osal_test.c
-ifeq ($(CORE),a8host)
-  # Additional Source and Include for AM335x for init/entry source files
-  SRCDIR      += $(PDK_OSAL_COMP_PATH)/test/am335x/armv7/nonos
-  INCDIR      += $(PDK_OSAL_COMP_PATH)/test/am335x/armv7/nonos
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include/hw
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include/armv7a
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include/am335x
-  SRCS_COMMON += example_utils_mmu.c mmu_arm.c app_startup.c
-  SRCS_ASM_COMMON += init.asm exceptionhandler.asm
-  #Indicate gcc compilation for starterware header files
-  CFLAGS_LOCAL_COMMON += -Dgcc
-endif
 
-ifeq ($(CORE),a9host)
-  # Additional Source and Include for AM437x for init/entry source files
-  SRCDIR += $(PDK_OSAL_COMP_PATH)/test/am437x/armv7/nonos
-  INCDIR += $(PDK_OSAL_COMP_PATH)/test/am437x/armv7/nonos
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include/hw
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include/armv7a
-  INCDIR += $(PDK_INSTALL_PATH)/ti/starterware/include/am43xx
-  SRCS_COMMON += example_utils_mmu.c mmu_arm.c app_startup.c
-  SRCS_ASM_COMMON += init.asm exceptionhandler.asm
-  #Indicate gcc compilation for starterware header files
-  CFLAGS_LOCAL_COMMON += -Dgcc
-endif
-
-
-ifeq ($(SOC),$(filter $(SOC), k2g k2e k2h k2k k2l))
-  ifeq ($(CORE),a15_0)
-   LNKCMD_FILE = $(PDK_OSAL_COMP_PATH)/test/k2g/armv7/nonos/k2g_lnk.cmd
-  endif
-else
-  ifeq ($(CORE),a15_0)
-   LNKCMD_FILE = $(PDK_CSL_COMP_PATH)/example/lnk_a15.cmd
-  endif
-endif
-
-ifeq ($(CORE),ipu1_0)
- LNKCMD_FILE = $(PDK_CSL_COMP_PATH)/example/lnk_m4.cmd
-endif
-ifeq ($(CORE),c66x)
- LNKCMD_FILE = $(PDK_CSL_COMP_PATH)/example/lnk_dsp.cmd
-endif
-
-ifeq ($(CORE),c674x)
-   LNKCMD_FILE = $(PDK_OSAL_COMP_PATH)/test/$(SOC)/c674x/nonos/lnk_c674x.cmd
-endif
-
-ifeq ($(CORE),a8host)
- LNKCMD_FILE = $(PDK_OSAL_COMP_PATH)/test/am335x/armv7/nonos/am335x_ddr.lds
-endif
-
-ifeq ($(CORE),a9host)
- LNKCMD_FILE = $(PDK_OSAL_COMP_PATH)/test/am437x/armv7/nonos/am43xx_ddr.lds
-endif
-
-ifeq ($(CORE), arm9_0)
- LNKCMD_FILE = $(PDK_OSAL_COMP_PATH)/test/$(SOC)/arm9/nonos/lnk_arm9.cmd
-endif
-
-LNKFLAGS_LOCAL_a15_0  += --entry Entry
-LNKFLAGS_LOCAL_a8host += --entry Entry
-LNKFLAGS_LOCAL_a9host += --entry Entry
 LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
 
 

@@ -18,9 +18,9 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       src/src_common_safertos.mk \
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
                       build src/safertos/SafeRTOS_priv.h \
-                      config_mk.bld osalver.h osalver.h.xdt package.bld package.xdc package.xs Settings.xdc.xdt
+                      osalver.h
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
   SRCDIR      += soc/$(SOC)
   SRCS_COMMON += TimerP_default.c
 endif
@@ -28,11 +28,6 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j7200))
   SRCDIR      += soc/$(SOC)
   SRCS_COMMON += TimerP_default_$(ISA).c
-endif
-
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-  SRCDIR      += soc/$(SOC)
-  SRCS_COMMON += TimerP_default.c CycleprofilerP_nonos.c
 endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1))

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2019, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,52 +44,10 @@
    extern "C" {
 #endif
 
-#if defined (SOC_AM572x)
-#include <ti/osal/soc/am572x/osal_soc.h>
-#elif defined (SOC_AM571x)
-#include <ti/osal/soc/am571x/osal_soc.h>
-#elif defined (SOC_AM335x)
-#include <ti/osal/soc/am335x/osal_soc.h>
-#elif defined (SOC_AM437x)
-#include <ti/osal/soc/am437x/osal_soc.h>
-#elif defined (SOC_DRA72x)
-#include <ti/osal/soc/dra72x/osal_soc.h>
-#elif defined (SOC_DRA75x)
-#include <ti/osal/soc/dra75x/osal_soc.h>
-#elif defined (SOC_DRA78x)
-#include <ti/osal/soc/dra78x/osal_soc.h>
-#elif defined (SOC_C6657)
-#include <ti/osal/soc/c6657/osal_soc.h>
-#elif defined (SOC_C6678)
-#include <ti/osal/soc/c6678/osal_soc.h>
-#elif defined (SOC_K2E)
-#include <ti/osal/soc/k2e/osal_soc.h>
-#elif defined (SOC_K2G)
-#include <ti/osal/soc/k2g/osal_soc.h>
-#elif defined (SOC_K2H)
-#include <ti/osal/soc/k2h/osal_soc.h>
-#elif defined (SOC_K2K)
-#include <ti/osal/soc/k2k/osal_soc.h>
-#elif defined (SOC_K2L)
-#include <ti/osal/soc/k2l/osal_soc.h>
-#elif defined (SOC_OMAPL137)
-#include <ti/osal/soc/omapl137/osal_soc.h>
-#elif defined (SOC_OMAPL138)
-#include <ti/osal/soc/omapl138/osal_soc.h>
-#elif defined (SOC_AM574x)
-#include <ti/osal/soc/am574x/osal_soc.h>
-#elif defined (SOC_AM65XX)
-#include <ti/osal/soc/am65xx/osal_soc.h>
-#elif defined (SOC_J721E)
+#if defined (SOC_J721E)
 #include <ti/osal/soc/j721e/osal_soc.h>
 #elif defined (SOC_J7200)
 #include <ti/osal/soc/j7200/osal_soc.h>
-#elif defined (SOC_AM64X)
-#include <ti/osal/soc/am64x/osal_soc.h>
-#elif defined (SOC_TPR12)
-#include <ti/osal/soc/tpr12/osal_soc.h>
-#elif defined (SOC_AWR294X)
-#include <ti/osal/soc/awr294x/osal_soc.h>
 #elif defined (SOC_J721S2)
 #include <ti/osal/soc/j721s2/osal_soc.h>
 #elif defined (SOC_J784S4)

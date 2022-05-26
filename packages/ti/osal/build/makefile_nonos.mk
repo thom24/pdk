@@ -35,70 +35,22 @@ include $(PDK_OSAL_COMP_PATH)/src/src_common_nonos.mk
 
 MODULE_NAME = osal_nonos
 
-MUXINTCP = src/nonos/muxintcp
 TIMER    = src/nonos/timer
-COUNTER_32K = src/nonos/counter_32k
 DELAY    = src/nonos/delay
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x am571x am572x am574x tda3xx dra78x am437x am335x am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   SRCDIR += $(TIMER)/v1
   INCDIR += $(TIMER)/v1
   PACKAGE_SRCS_COMMON += $(TIMER)/v1
 endif
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x am571x am572x am574x tda3xx dra78x am437x am335x))
-  SRCDIR += $(MUXINTCP)/v1
-  INCDIR += $(MUXINTCP)/v1
-  PACKAGE_SRCS_COMMON += $(MUXINTCP)/v1
-  SRCS_COMMON += MuxIntcP_nonos.c
-endif
 
-ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x dra72x dra75x dra78x))
-  SRCDIR += $(COUNTER_32K)/v0 $(DELAY)/v2
-  INCDIR += $(COUNTER_32K)/v0 $(DELAY)/v2
-  SRCS_COMMON += counter_32k.c
-  PACKAGE_SRCS_COMMON += $(COUNTER_32K)/v0 $(DELAY)/v2
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am335x am437x))
-  SRCDIR += $(DELAY)/v1
-  INCDIR += $(DELAY)/v1
-  PACKAGE_SRCS_COMMON += $(DELAY)/v1
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   SRCDIR += $(DELAY)/v4
   INCDIR += $(DELAY)/v4
   PACKAGE_SRCS_COMMON += $(DELAY)/v4
 endif
 
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657))
-  SRCDIR += $(MUXINTCP)/v0 $(TIMER)/v0 $(DELAY)/v0
-  INCDIR += $(MUXINTCP)/v0 $(TIMER)/v0 $(DELAY)/v0
-  PACKAGE_SRCS_COMMON += $(MUXINTCP)/v0 $(TIMER)/v0 $(DELAY)/v0
-  SRCS_COMMON += MuxIntcP_nonos.c
-endif
-ifeq ($(SOC),$(filter $(SOC), omapl137 omapl138 c6747))
-  SRCDIR += $(MUXINTCP)/v1 $(DELAY)/v3 $(TIMER)/v0
-  INCDIR += $(MUXINTCP)/v1 $(TIMER)/v0
-  PACKAGE_SRCS_COMMON += $(MUXINTCP)/v1 $(DELAY)/v3 $(TIMER)/v0
-  SRCS_COMMON += MuxIntcP_nonos.c
-endif
-
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-  SRCDIR += $(MUXINTCP)/v2 $(TIMER)/v2 $(DELAY)/v4
-  INCDIR += $(MUXINTCP)/v2 $(TIMER)/v2 $(DELAY)/v4
-  PACKAGE_SRCS_COMMON += $(MUXINTCP)/v2 $(TIMER)/v2 $(DELAY)/v4
-  SRCS_COMMON += MuxIntcP_nonos.c
-endif
-
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  SRCDIR += $(MUXINTCP)/v2
-  INCDIR += $(MUXINTCP)/v2
-  PACKAGE_SRCS_COMMON += $(MUXINTCP)/v2
-  SRCS_COMMON += MuxIntcP_nonos.c
-endif
-
-ifeq ($(SOC),$(filter $(SOC), k2h k2k k2l k2e k2g c6678 c6657 dra72x dra75x dra78x am571x am572x am574x am437x am335x omapl137 omapl138 c6747 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 SRCS_COMMON += TimerP_nonos.c delay.c
 endif
 
