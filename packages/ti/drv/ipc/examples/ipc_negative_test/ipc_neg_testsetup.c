@@ -48,7 +48,6 @@
 
 #include <ti/drv/ipc/examples/common/src/ipc_setup.h>
 #include <ti/drv/ipc/ipc.h>
-#include <ti/drv/ipc/ipcver.h>
 #include <ti/drv/ipc/examples/ipc_negative_test/ipc_neg_setup.h>
 
 #include <ti/osal/osal.h>
@@ -388,8 +387,7 @@ int32_t ipc_neg_test(uint32_t testId)
     /* Step1 : Initialize the multiproc */
     Ipc_mpSetConfig(selfProcId, numProc, pRemoteProcArray);
 
-    App_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
-            Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
+    App_printf("IPC_echo_test (core : %s) .....\r\n", Ipc_mpGetSelfName());
 
     Ipc_init(NULL);
 

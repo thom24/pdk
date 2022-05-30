@@ -54,7 +54,6 @@
 #include <ti/drv/sciclient/sciclient.h>
 
 #include <ti/drv/ipc/ipc.h>
-#include <ti/drv/ipc/ipcver.h>
 #ifndef BUILD_MPU1_0
 #if defined(SOC_AM65XX)
 #include <ti/drv/ipc/examples/common/src/ipc_am65xx_rsctable.h>
@@ -590,8 +589,7 @@ int32_t Ipc_echo_test(void)
     /* Step1 : Initialize the multiproc */
     if (IPC_SOK == Ipc_mpSetConfig(selfProcId, numProc, pRemoteProcArray))
     {
-        App_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
-                Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
+        App_printf("IPC_echo_test (core : %s) .....\r\n", Ipc_mpGetSelfName());
 
         /* Initialize params with defaults */
         IpcInitPrms_init(0U, &initPrms);

@@ -127,30 +127,7 @@ export dss_app_utils_SOCLIST
 dss_app_utils_$(SOC)_CORELIST = $(drvdss_$(SOC)_CORELIST)
 export dss_app_utils_$(SOC)_CORELIST
 
-dss_app_utils_sysbios_COMP_LIST = dss_app_utils_sysbios
-dss_app_utils_sysbios_RELPATH = ti/drv/dss/examples/utils
-dss_app_utils_sysbios_PATH = $(PDK_DSS_COMP_PATH)/examples/utils
-dss_app_utils_sysbios_LIBNAME = dss_app_utils_sysbios
-dss_app_utils_sysbios_LIBPATH = $(PDK_DSS_COMP_PATH)/lib
-dss_app_utils_sysbios_OBJPATH = $(dss_app_utils_sysbios_RELPATH)/app_utils_sysbios
-dss_app_utils_sysbios_MAKEFILE = -fmakefile_sysbios
-export dss_app_utils_sysbios_LIBNAME
-export dss_app_utils_sysbios_LIBPATH
-export dss_app_utils_sysbios_MAKEFILE
-export dss_app_utils_sysbios_OBJPATH
-dss_app_utils_sysbios_BOARD_DEPENDENCY = yes
-dss_app_utils_sysbios_CORE_DEPENDENCY = yes
-export dss_app_utils_sysbios_COMP_LIST
-export dss_app_utils_sysbios_BOARD_DEPENDENCY
-export dss_app_utils_sysbios_CORE_DEPENDENCY
-dss_app_utils_sysbios_PKG_LIST = dss_app_utils_sysbios
-dss_app_utils_sysbios_INCLUDE = $(dss_app_utils_sysbios_PATH)
-dss_app_utils_sysbios_SOCLIST = $(drvdss_SOCLIST)
-export dss_app_utils_sysbios_SOCLIST
-dss_app_utils_sysbios_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_tirtos), $(drvdss_$(SOC)_CORELIST))
-export dss_app_utils_sysbios_$(SOC)_CORELIST
-
-dss_APP_LIB_LIST += dss_app_utils dss_app_utils_sysbios
+dss_APP_LIB_LIST += dss_app_utils
 
 #
 # DSS Examples

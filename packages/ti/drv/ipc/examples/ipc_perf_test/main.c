@@ -57,7 +57,7 @@
 
 #include "ipc_apputils.h"
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J72IS2) || defined (SOC_J784S4)))
 #include <ti/drv/sciclient/sciserver_tirtos.h>
 #endif
 
@@ -116,7 +116,7 @@ void ipc_initSciclient()
     /* Now reinitialize it as default parameter */
     ret = Sciclient_configPrmsInit(&config);
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J72IS2) || defined (SOC_J784S4)))
     if (ret == CSL_PASS)
     {
         ret = Sciclient_boardCfgParseHeader(
@@ -133,7 +133,7 @@ void ipc_initSciclient()
     {
         Sciclient_init(&config);
     }
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J72IS2) || defined (SOC_J784S4)))
     else
     {
         UART_printf("Sciclient_boardCfgParseHeader Failed\n");
@@ -202,7 +202,7 @@ void InitMmu(void)
 void Ipc_setupSciServer(void)
 {
 
-#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200)))
+#if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J72IS2) || defined (SOC_J784S4)))
     Sciserver_TirtosCfgPrms_t appPrms;
     int32_t ret = CSL_PASS;
 

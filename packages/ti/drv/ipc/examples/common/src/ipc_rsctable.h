@@ -47,11 +47,8 @@ extern "C" {
 #endif
 
 #include <ti/drv/ipc/include/ipc_rsctypes.h>
-#ifdef SYSBIOS
-  #include <xdc/runtime/SysMin.h>
-#else
-  #include "ipc_trace.h"
-#endif
+#include "ipc_trace.h"
+
 
 /*
  * Sizes of the virtqueues (expressed in number of buffers supported,
@@ -69,14 +66,7 @@ extern "C" {
 #define RPMSG_C66_DSP_FEATURES  1U
 #define RPMSG_C7X_DSP_FEATURES  1U
 
-#ifdef SYSBIOS
-  #define IPC_TRACE_BUFFER_MAX_SIZE     (0x80000)
-  extern __T1_xdc_runtime_SysMin_Module_State__outbuf xdc_runtime_SysMin_Module_State_0_outbuf__A[];
-  #define TRACEBUFADDR ((uintptr_t)&xdc_runtime_SysMin_Module_State_0_outbuf__A)
-#else
-  #define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
-#endif
-
+#define TRACEBUFADDR ((uintptr_t)&Ipc_traceBuffer)
 #define RPMSG_VRING_ADDR_ANY FW_RSC_ADDR_ANY
 
 const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section (".resource_table"), aligned (4096))) = 
@@ -127,6 +117,12 @@ const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section 
 #elif defined (BUILD_MCU3_1)
     { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ0_SIZE, 1U, 0U },
     { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ1_SIZE, 2U, 0U },
+#elif defined (BUILD_MCU4_0)
+    { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ0_SIZE, 1U, 0U },
+    { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ1_SIZE, 2U, 0U },
+#elif defined (BUILD_MCU4_1)
+    { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ0_SIZE, 1U, 0U },
+    { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ1_SIZE, 2U, 0U },
 #elif defined (BUILD_C66X_1)
     { RPMSG_VRING_ADDR_ANY, 4096U, C66_RPMSG_VQ0_SIZE, 1U, 0U },
     { RPMSG_VRING_ADDR_ANY, 4096U, C66_RPMSG_VQ1_SIZE, 2U, 0U },
@@ -137,6 +133,12 @@ const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section 
     { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ0_SIZE, 1U, 0U },
     { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ1_SIZE, 2U, 0U },
 #elif defined (BUILD_C7X_2)
+    { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ0_SIZE, 1U, 0U },
+    { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ1_SIZE, 2U, 0U },
+#elif defined (BUILD_C7X_3)
+    { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ0_SIZE, 1U, 0U },
+    { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ1_SIZE, 2U, 0U },
+#elif defined (BUILD_C7X_4)
     { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ0_SIZE, 1U, 0U },
     { RPMSG_VRING_ADDR_ANY, 4096U, C7X_RPMSG_VQ1_SIZE, 2U, 0U },
 #else

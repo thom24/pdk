@@ -563,8 +563,7 @@ int32_t Lpm_ipcEchoApp(void)
     }
     else
     {
-        UART_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
-                Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
+        UART_printf("IPC_echo_test (core : %s) .....\r\n", Ipc_mpGetSelfName());
 
 
         /* Initialize params with defaults */

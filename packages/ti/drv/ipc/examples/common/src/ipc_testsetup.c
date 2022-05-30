@@ -35,7 +35,7 @@
  *  \file ipc_testsetup.c
  *
  *  \brief IPC  example code
- *  
+ *
  */
 
 /* ========================================================================== */
@@ -54,7 +54,6 @@
 #include <ti/osal/EventP.h>
 
 #include <ti/drv/ipc/ipc.h>
-#include <ti/drv/ipc/ipcver.h>
 #include <ti/osal/osal.h>
 
 #ifndef BUILD_MPU1_0
@@ -176,7 +175,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
     char                str[MSGSIZE];
 
     buf = &pRecvTaskBuf[gRecvTaskBufIdx++ * rpmsgDataSize];
-    if(buf == NULL) 
+    if(buf == NULL)
     {
         App_printf("RecvTask: buffer allocation failed\n");
         return;
@@ -188,7 +187,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
     params.bufSize = bufSize;
 
     handle = RPMessage_create(&params, &myEndPt);
-    if(!handle) 
+    if(!handle)
     {
         App_printf("RecvTask: Failed to create endpoint\n");
         return;
@@ -202,7 +201,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
 #endif
 
     status = RPMessage_announce(RPMESSAGE_ALL, myEndPt, name);
-    if(status != IPC_SOK) 
+    if(status != IPC_SOK)
     {
         App_printf("RecvTask: RPMessage_announce() for %s failed\n", name);
         return;
@@ -212,7 +211,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
     {
         status = RPMessage_recv(handle, (Ptr)str, &len, &remoteEndPt, &remoteProcId,
                 IPC_RPMESSAGE_TIMEOUT_FOREVER);
-        if(status != IPC_SOK) 
+        if(status != IPC_SOK)
         {
             App_printf("RecvTask: failed with code %d\n", status);
         }
@@ -227,12 +226,12 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
         }
 
         status = sscanf(str, "ping %d", &n);
-        if(status == 1) 
+        if(status == 1)
         {
             memset(str, 0, MSGSIZE);
             len = snprintf(str, 255, "pong %d", n);
             if(len > 255)
-            { 
+            {
                 App_printf("RecvTask: snprintf failed, len %d\n", len);
                 len = 255;
             }
@@ -252,7 +251,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
                 Ipc_mpGetName(remoteProcId));
 #endif
         status = RPMessage_send(handle, remoteProcId, remoteEndPt, myEndPt, str, len);
-        if (status != IPC_SOK) 
+        if (status != IPC_SOK)
         {
             App_printf("RecvTask: Sending msg \"%s\" len %d from %s to %s failed!!!\n",
                 str, len, Ipc_mpGetSelfName(),
@@ -275,7 +274,7 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
     uint16_t            len;
     int32_t             i;
     int32_t             status = 0;
-    char                buf[256];   
+    char                buf[256];
     uint8_t            *buf1;
 
     uint32_t            cntPing = 0;
@@ -290,7 +289,7 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
     params.buf = buf1;
     params.bufSize = rpmsgDataSize;
     handle = RPMessage_create(&params, &myEndPt);
-    if(!handle) 
+    if(!handle)
     {
         App_printf("SendTask%d: Failed to create message endpoint\n",
                 dstProc);
@@ -299,14 +298,14 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
 
     status = RPMessage_getRemoteEndPt(dstProc, SERVICE_PING, &remoteProcId,
             &remoteEndPt, SemaphoreP_WAIT_FOREVER);
-    if(dstProc != remoteProcId) 
+    if(dstProc != remoteProcId)
     {
         App_printf("SendTask%d: RPMessage_getRemoteEndPt() malfunctioned, status %d\n",
                 dstProc, status);
         return;
     }
 
-    for (i = 0; i < NUMMSGS; i++) 
+    for (i = 0; i < NUMMSGS; i++)
     {
         /* Send data to remote endPt: */
         memset(buf, 0, 256);
@@ -327,21 +326,21 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
         cntPing++;
 
         status = RPMessage_send(handle, dstProc, ENDPT_PING, myEndPt, (Ptr)buf, len);
-        if (status != IPC_SOK) 
+        if (status != IPC_SOK)
         {
-            App_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n", 
+            App_printf("SendTask%d: RPMessage_send Failed Msg-> \"%s\" from %s to %s...\n",
                 dstProc,
                 buf, Ipc_mpGetSelfName(),
                 Ipc_mpGetName(dstProc));
             break;
         }
-        
+
 
         /* wait a for a response message: */
         status = RPMessage_recv(handle, (Ptr)buf, &len, &remoteEndPt,
                 &remoteProcId, IPC_RPMESSAGE_TIMEOUT_FOREVER);
 
-        if(status != IPC_SOK) 
+        if(status != IPC_SOK)
         {
             App_printf("SendTask%d: RPMessage_recv failed with code %d\n",
                     dstProc, status);
@@ -370,7 +369,7 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
             //        Ipc_mpGetSelfName(), Ipc_mpGetName(dstProc), i);
         }
     }
-    
+
     App_printf("%s <--> %s, Ping- %d, pong - %d completed\n",
             Ipc_mpGetSelfName(),
             Ipc_mpGetName(dstProc),
@@ -384,7 +383,7 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
     else
     {
         EventP_post(gEventhandle,geteventID(dstProc));
-    } 
+    }
 #endif
 
     /* Delete the RPMesg object now */
@@ -438,7 +437,7 @@ static void IpcTestPrint(const char *str)
 
 int32_t Ipc_echo_test(void)
 {
-    uint32_t          t; 
+    uint32_t          t;
     TaskP_Params      params;
     uint32_t          numProc = gNumRemoteProc;
     Ipc_VirtIoParams  vqParam;
@@ -448,13 +447,11 @@ int32_t Ipc_echo_test(void)
     /* Step1 : Initialize the multiproc */
     Ipc_mpSetConfig(selfProcId, numProc, pRemoteProcArray);
 
-    App_printf("IPC_echo_test (core : %s) .....\r\n%s\r\n",
-            Ipc_mpGetSelfName(), IPC_DRV_VERSION_STR);
+    App_printf("IPC_echo_test (core : %s) .....\r\n", Ipc_mpGetSelfName());
 
-    
     /* Initialize params with defaults */
     IpcInitPrms_init(0U, &initPrms);
-    
+
     initPrms.printFxn = &IpcTestPrint;
 
     Ipc_init(&initPrms);
@@ -488,12 +485,12 @@ int32_t Ipc_echo_test(void)
     vqParam.vringBufSize  = IPC_VRING_BUFFER_SIZE;
     vqParam.timeoutCnt    = 100;  /* Wait for counts */
     Ipc_initVirtIO(&vqParam);
- 
+
 #if defined (BUILD_MCU1_0)
     EventP_Params      eventParams;
     TaskP_Params      taskParams;
 
-    EventP_Params_init(&eventParams);    
+    EventP_Params_init(&eventParams);
 
     gEventhandle = EventP_create(&eventParams);
 
@@ -501,7 +498,7 @@ int32_t Ipc_echo_test(void)
     taskParams.priority   = 4;
     taskParams.stack      = &gCheckerTskStack;
     taskParams.stacksize  = APP_CHECKER_TSK_STACK;
-    TaskP_create(ipc_checker_task, &taskParams);    
+    TaskP_create(ipc_checker_task, &taskParams);
 #endif
     /* Step 3: Initialize RPMessage */
     RPMessage_Params cntrlParam;
@@ -588,7 +585,7 @@ static void ipc_checker_task()
     {
         App_printf("All tests have passed\n");
         EventP_delete(&gEventhandle);
-    } 
+    }
 }
 
 static uint32_t geteventID(uint32_t coreID)

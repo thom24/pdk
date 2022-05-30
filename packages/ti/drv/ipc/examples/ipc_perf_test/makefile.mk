@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building IPC example app for TI RTOS
+# This file is the makefile for building IPC performance example app
 #
 SRCDIR = . ../common/src
 INCDIR =
@@ -10,45 +10,14 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
 COMP_LIST_COMMON = ipc
-ifeq ($(SOC), am64x)
-  COMP_LIST_COMMON += mailbox
-endif
 
 SRCS_COMMON += main.c
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   ifeq ($(CORE),mcu1_0)
     COMP_LIST_COMMON += sciserver_tirtos
   endif
 endif
 
-ifeq ($(BUILD_OS_TYPE), tirtos)
-  INCLUDE_EXTERNAL_INTERFACES += xdc bios
-  CFLAGS_LOCAL_COMMON = -DSYSBIOS
-  COMP_LIST_COMMON += $(PDK_COMMON_TIRTOS_COMP)
-  # Enable XDC build for application by providing XDC CFG File per core
-  XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x j721s2))
-    XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
-    ifeq ($(ISA), r5f)
-      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
-    endif
-    ifeq ($(CORE), mcu1_0)
-      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA)_sbl.cfg
-      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
-    else
-      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
-    endif
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am65xx))
-    XDC_CFG_UPDATE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/ipc_override_$(SOC).cfg
-    EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sysbios.lds
-    ifeq ($(ISA), r5f)
-      XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/ipc_perf_test/$(SOC)/sysbios_$(ISA).cfg
-      EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE)_sbl_sysbios.lds
-    endif
-  endif
-endif
 ifeq ($(BUILD_OS_TYPE), freertos)
   INCLUDE_EXTERNAL_INTERFACES += freertos
   CFLAGS_LOCAL_COMMON = -DFREERTOS
@@ -66,7 +35,7 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = . ../common ../../common
+PACKAGE_SRCS_COMMON = . ../common/src ../common/$(SOC)
 SRCS_COMMON += ipc_perf_test.c ipc_apputils.c ipc_test_defs.c
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)

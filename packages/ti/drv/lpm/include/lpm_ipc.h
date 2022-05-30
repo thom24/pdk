@@ -61,7 +61,6 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/TaskP.h>
 #include <ti/drv/ipc/ipc.h>
-#include <ti/drv/ipc/ipcver.h>
 
 #ifdef __cplusplus
 extern "C" {

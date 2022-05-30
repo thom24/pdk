@@ -79,6 +79,8 @@
 #define CORE_IN_TEST            5
 #elif defined (SOC_J721S2)
 #define CORE_IN_TEST            8
+#elif defined (SOC_J784S4)
+#define CORE_IN_TEST            12
 #else
 #error "Invalid SOC"
 #endif
@@ -131,6 +133,8 @@ uint32_t remoteProc[] =
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
 #elif defined (SOC_J721S2)
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -147,6 +151,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
 #elif defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -163,6 +169,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
 #elif defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -177,6 +185,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
 #elif defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -191,6 +201,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
 #elif defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -203,6 +215,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_1, IPC_C7X_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -215,6 +229,28 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C66X_1, IPC_C66X_2, IPC_C7X_1
 #elif defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_C7X_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#endif
+};
+#endif
+
+#ifdef BUILD_MCU4_0
+uint32_t selfProcId = IPC_MCU4_0;
+uint32_t remoteProc[] =
+{
+#if defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#endif
+};
+#endif
+
+#ifdef BUILD_MCU4_1
+uint32_t selfProcId = IPC_MCU4_1;
+uint32_t remoteProc[] =
+{
+#if defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -243,6 +279,8 @@ uint32_t remoteProc[] =
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2
 #elif defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_2
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
@@ -253,10 +291,31 @@ uint32_t remoteProc[] =
 {
 #if defined (SOC_J721S2)
     IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1
+#elif defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_3, IPC_C7X_4
 #endif
 };
 #endif
 
+#ifdef BUILD_C7X_3
+uint32_t selfProcId = IPC_C7X_3;
+uint32_t remoteProc[] =
+{
+#if defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_4
+#endif
+};
+#endif
+
+#ifdef BUILD_C7X_4
+uint32_t selfProcId = IPC_C7X_4;
+uint32_t remoteProc[] =
+{
+#if defined (SOC_J784S4)
+    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1, IPC_C7X_2, IPC_C7X_3
+#endif
+};
+#endif
 uint32_t *pRemoteProcArray = remoteProc;
 uint32_t  gNumRemoteProc = sizeof(remoteProc)/sizeof(uint32_t);
 

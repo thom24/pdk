@@ -94,23 +94,19 @@ uint32_t Ipc_getCoreId(void);
  */
 uint32_t Ipc_isCacheCoherent(void);
 
-/* For Maxwell Device */
-#if defined (SOC_AM65XX)
-#include <ti/drv/ipc/soc/V0/ipc_soc.h>
-#endif
-
 /* For J7ES device */
 #if defined (SOC_J721E) || defined (SOC_J7200)
 #include <ti/drv/ipc/soc/V1/ipc_soc.h>
 #endif
 
-#if defined (SOC_AM64X)
-#include <ti/drv/ipc/soc/V2/ipc_soc.h>
-#endif
-
 #if defined (SOC_J721S2)
 #include <ti/drv/ipc/soc/V3/ipc_soc.h>
 #endif
+
+#if defined (SOC_J784S4)
+#include <ti/drv/ipc/soc/V4/ipc_soc.h>
+#endif
+
 #ifdef __cplusplus
 }
 #endif

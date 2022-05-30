@@ -58,30 +58,6 @@ else
   UTILSPATH = /bin/
 endif
 
-ifeq ($(BUILD_OS_TYPE),tirtos)
-  # BIOS
-  bios_INCLUDE = $(bios_PATH)/packages
-  export bios_INCLUDE
-
-  # XDC
-  xdc_INCLUDE = $(xdc_PATH)/packages
-  export xdc_INCLUDE
-
-  # EDMA
-  edma_INCLUDE = $(edma3_lld_PATH)/packages
-  export edma_INCLUDE
-  # - used to ignore include if component not present
-  -include $(edma3_lld_PATH)/packages/component.mk
-
-  # NDK
-  ndk_INCLUDE = $(ndk_PATH)/packages
-  export ndk_INCLUDE
-
-  # NS
-  ns_INCLUDE = $(ns_PATH)/source/
-  export ns_INCLUDE
-endif
-
 #Below applicable only for TDA devices
 # Radar mmwavelink
 radarLink_INCLUDE = $(radarLink_PATH) \

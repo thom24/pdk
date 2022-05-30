@@ -79,7 +79,7 @@ export sdr_COMP_LIST
 export sdr_BOARD_DEPENDENCY
 export sdr_CORE_DEPENDENCY
 sdr_PKG_LIST = sdr
-sdr_INCLUDE = $(sdr_PATH) $(bios_INCLUDE)
+sdr_INCLUDE = $(sdr_PATH)
 sdr_SOCLIST = $(compsdr_SOCLIST)
 export sdr_SOCLIST
 sdr_$(SOC)_CORELIST = $(compsdr_$(SOC)_CORELIST)

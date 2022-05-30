@@ -9,9 +9,8 @@ MY_PROFILE=release
 
 declare -a cores_j721e=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1" "mcu3_0" "mcu3_1" "c66xdsp_1" "c66xdsp_2" "c7x_1")
 declare -a cores_j7200=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1")
-declare -a cores_am65xx=("mpu1_0" "mcu1_0" "mcu1_1")
-declare -a cores_am64x=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1" "m4f_0")
 declare -a cores_j721s2=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1" "mcu3_0" "mcu3_1" "c7x_1" "c7x_2")
+declare -a cores_j784s4=("mpu1_0" "mcu1_0" "mcu1_1" "mcu2_0" "mcu2_1" "mcu3_0" "mcu3_1" "mcu4_0" "mcu4_1" "c7x_1" "c7x_2" "c7x_3" 'c7x_4")
 
 USAGE="$0 [-a <app name : ipc_echo_test> -b <board : j721e_evm, j7200_evm, am65xx_evm, am64x_evm, j721s2_evm> -c <core> -p <build profile>]"
 
@@ -51,30 +50,20 @@ then
         done
     fi
 
-    # Iterate all cores of am65xx
-    if [ "${MY_BOARD}" = "am65xx_evm" ]
-    then
-        for i in "${cores_am65xx[@]}"
-        do
-            echo make ${MY_BLD} CORE="$i"
-            make ${MY_BLD} CORE="$i"
-        done
-    fi
-
-    # Iterate all cores of am64x
-    if [ "${MY_BOARD}" = "am64x_evm" ]
-    then
-        for i in "${cores_am64x[@]}"
-        do
-            echo make ${MY_BLD} CORE="$i"
-            make ${MY_BLD} CORE="$i"
-        done
-    fi
-
     # Iterate all cores of j721s2
     if [ "${MY_BOARD}" = "j721s2_evm" ]
     then
         for i in "${cores_j721s2[@]}"
+        do
+            echo make ${MY_APP} - ${MY_BOARD} "$i"
+            make ${MY_BLD} CORE="$i"
+        done
+    fi
+
+    # Iterate all cores of j784s4
+    if [ "${MY_BOARD}" = "j784s4_evm" ]
+    then
+        for i in "${cores_j784s4[@]}"
         do
             echo make ${MY_APP} - ${MY_BOARD} "$i"
             make ${MY_BLD} CORE="$i"

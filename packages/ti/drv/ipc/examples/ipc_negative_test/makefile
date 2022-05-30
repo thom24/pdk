@@ -10,7 +10,7 @@ endif
 APP_NAME = ipc_negative_test_$(BUILD_OS_TYPE)
 
 SRCS_COMMON += ipc_negative_test.c ipc_neg_testsetup.c
-
+PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON += -DIPC_NEGATIVE_TEST
 
 include ../common/makefile.mk

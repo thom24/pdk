@@ -9,7 +9,7 @@ INCDIR +=
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = . ../common ../../common
+PACKAGE_SRCS_COMMON += ../common/src ../common/$(SOC) ../common/makefile.mk
 
 # List all the components required by the application
 ifeq ($(BUILD_OS_TYPE), baremetal)
@@ -24,7 +24,7 @@ ifeq ($(BUILD_OS_TYPE), baremetal)
   ifeq ($(ISA), r5f)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/linker_$(ISA)_$(CORE).lds
     ifeq ($(ECHO_TEST_BTCM), 1)
       ifeq ($(ISA), r5f)
@@ -39,7 +39,7 @@ endif
 ifeq ($(BUILD_OS_TYPE), freertos)
   COMP_LIST_COMMON =  $(PDK_COMMON_FREERTOS_COMP)
   COMP_LIST_COMMON += ipc
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     ifeq ($(CORE),mcu1_0)
       COMP_LIST_COMMON += sciserver_tirtos
     endif

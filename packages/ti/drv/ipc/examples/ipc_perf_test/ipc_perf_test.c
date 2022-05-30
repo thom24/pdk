@@ -36,7 +36,7 @@
  *
  *  \brief IPC  echo sample application performing basic echo communication using
  *  IPC driver
- *  
+ *
  */
 
 /* ========================================================================== */
@@ -89,15 +89,7 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 static uint32_t remoteProc[] = {
-#if defined (SOC_AM65XX)
-#if defined(BUILD_MPU1_0)
-    IPC_MCU1_0, IPC_MCU1_1
-#elif defined(BUILD_MCU1_0)
-    IPC_MPU1_0, IPC_MCU1_1
-#elif defined(BUILD_MCU1_1)
-    IPC_MPU1_0, IPC_MCU1_0
-#endif
-#elif defined(SOC_J721E)
+#if defined(SOC_J721E)
 #if defined(BUILD_MPU1_0)
     IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
     IPC_MCU3_0, IPC_MCU3_1, IPC_C66X_1, IPC_C66X_2,
@@ -169,28 +161,64 @@ static uint32_t remoteProc[] = {
     IPC_MCU2_1, IPC_MCU3_0, IPC_MCU3_1, IPC_C7X_1
 #endif
 #elif defined(SOC_J7200)
-#if defined(BUILD_MPU1_0)
-    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
-#elif defined(BUILD_MCU1_0)
-    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#if defined(BUILD_MCU1_0)
+    IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
 #elif defined(BUILD_MCU1_1)
-    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
+    IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
 #elif defined(BUILD_MCU2_0)
-    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
 #elif defined(BUILD_MCU2_1)
-    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
 #endif
-#elif defined(SOC_AM64X)
-#if defined(BUILD_MPU1_0)
-    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
-#elif defined(BUILD_MCU1_0)
-    IPC_MPU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1
+#elif defined(SOC_J784S4)
+#if defined(BUILD_MCU1_0)
+    IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0,
+    IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #elif defined(BUILD_MCU1_1)
-    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1
+    IPC_MCU1_0, IPC_MCU2_0, IPC_MCU2_1, IPC_MCU3_0,
+    IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #elif defined(BUILD_MCU2_0)
-    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_1
+    IPC_MCU1_0, IPC_MCU2_1, IPC_MCU2_1, IPC_MCU3_0,
+    IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
 #elif defined(BUILD_MCU2_1)
-    IPC_MPU1_0, IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU3_0,
+    IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#elif defined(BUILD_MCU3_0)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#elif defined(BUILD_MCU3_1)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_0, IPC_MCU4_0, IPC_MCU4_1, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#elif defined(BUILD_MCU4_0)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_1, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#elif defined(BUILD_MCU4_1)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_C7X_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#elif defined(BUILD_C7X_1)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1,
+    IPC_C7X_2, IPC_C7X_3, IPC_C7X_4
+#elif defined(BUILD_C7X_2)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1,
+    IPC_C7X_1, IPC_C7X_3, IPC_C7X_4
+#elif defined(BUILD_C7X_3)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1,
+    IPC_C7X_1, IPC_C7X_2, IPC_C7X_4
+#elif defined(BUILD_C7X_4)
+    IPC_MCU1_0, IPC_MCU1_1, IPC_MCU2_0, IPC_MCU2_1,
+    IPC_MCU3_0, IPC_MCU3_1, IPC_MCU4_0, IPC_MCU4_1,
+    IPC_C7X_1, IPC_C7X_2, IPC_C7X_3
 #endif
 #endif
 };
@@ -258,7 +286,7 @@ int32_t Ipc_perf_test(void)
             tstcase = Ipc_getTestcase(curTestIndex);
             if( NULL != tstcase)
             {
-                /* If you are not host core or you are 
+                /* If you are not host core or you are
                  * A72, wait for the message */
                 if( (selfId != tstcase->hostCore) ||
                     ((PRINT_HOST_CORE == selfId) && (curTestIndex == 0)))
@@ -357,7 +385,7 @@ void Ipc_recvTaskFxn(uint32_t *arg0, uint32_t *arg1)
 
         if((buf[0] == IPC_PERF_TEST))
         {
-            Ipc_processPerfCmd(handle, remoteEndPt, remoteProcId, 
+            Ipc_processPerfCmd(handle, remoteEndPt, remoteProcId,
                     myEndPt, buf, len);
         }
         else if (buf[0] == IPC_PING)
@@ -400,7 +428,7 @@ RPMessage_Handle Ipc_createRpmsg(uint8_t *buf, uint32_t bufSize, uint32_t *myEnd
     params.buf            = buf;
     params.bufSize        = bufSize;
     handle = RPMessage_create(&params, myEndPt);
-    return (handle);   
+    return (handle);
 }
 
 static void IpcTestPrint(const char *str)
@@ -418,12 +446,12 @@ void Ipc_perf_test_setup(void)
     RPMessage_Params  cntrlParam;
     uint32_t          selfId  = Ipc_getCoreId();
     uint32_t          numProc = sizeof(remoteProc)/sizeof(uint32_t);
-   
+
     Ipc_mpSetConfig(selfId, numProc, remoteProc);
- 
+
     /* Initialize params with defaults */
     IpcInitPrms_init(0U, &initPrms);
-    
+
     initPrms.printFxn = &IpcTestPrint;
 
     Ipc_init(&initPrms);
@@ -443,7 +471,7 @@ void Ipc_perf_test_setup(void)
     cntrlParam.stackBuffer = ctrlStack;
     cntrlParam.stackSize   = IPC_TASK_STACKSIZE;
     RPMessage_init(&cntrlParam);
-    
+
     SemaphoreP_Params_init(&semPrms);
     semHandle = SemaphoreP_create(0U, &semPrms);
 
@@ -476,7 +504,7 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
         Ipc_sendMessage(handle, myEndPt, coreId, IPC_PING);
         status = RPMessage_getRemoteEndPt(coreId, SERVICE, &remoteProcId,
                 &remoteEndPt, osal_WAIT_FOREVER);
-        if(coreId != remoteProcId) 
+        if(coreId != remoteProcId)
         {
             App_printf("Ipc_runPerfTest (remote %d): RPMessage_getRemoteEndPt() failed %d\n",
                     coreId, status);
@@ -486,11 +514,11 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
         for(iCnt = 0U; iCnt < numCount; iCnt++)
         {
             buf[0] = IPC_PERF_TEST;
-            
+
             roundtrip_start = Ipc_getTimeInUsec();
 
             status = RPMessage_send(handle, coreId, ENDPT1, myEndPt, (Ptr)buf, bufSize);
-            if (status != IPC_SOK) 
+            if (status != IPC_SOK)
             {
                 App_printf("Ipc_runPerfTest (remote %d): rpmsg_senderFxn: RPMessage_send "
                         " failed status %d\n", coreId, status);
@@ -499,7 +527,7 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
             len = bufSize;
             status = RPMessage_recv(handle, (Ptr)buf, &len, &remoteEndPt,
                     &remoteProcId, IPC_RPMESSAGE_TIMEOUT_FOREVER);
-            if(status != IPC_SOK) 
+            if(status != IPC_SOK)
             {
                 App_printf("Ipc_runPerfTest (remote %d): RPMessage_recv failed with code %d\n",
                         coreId, status);
@@ -508,7 +536,7 @@ void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId)
         }
 
         roundtrip_delta = roundtrip_delta/numCount;
-        App_printf("Host: %s, Remote: %s, Size: %d, Roundtrip Time: %d us\n", 
+        App_printf("Host: %s, Remote: %s, Size: %d, Roundtrip Time: %d us\n",
                Ipc_mpGetSelfName(), Ipc_mpGetName(coreId), bufSize,
                (uint32_t)roundtrip_delta);
 
@@ -545,18 +573,18 @@ void Ipc_sendTestCompletedMsgCore(RPMessage_Handle handle, uint32_t srcEndPt, ui
     /*
      * opcode    - 1byte
      * size      - 4bytes
-     * FuncCode 
+     * FuncCode
      *
      * */
     bufSize = 10;
 
-    buf[0] = IPC_PERF_TEST; 
+    buf[0] = IPC_PERF_TEST;
     memcpy(&buf[1], (const void*)&payloadSize, sizeof(uint32_t));
     buf[5] = IPC_FC_PERFTEST_COMPLETED;
     memcpy(&buf[6], (const void*)&testIndex, sizeof(uint32_t));
 
     status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
-    if (status != IPC_SOK) 
+    if (status != IPC_SOK)
     {
         App_printf("Ipc_sendTestCompletedMsgCore (remote %d): "
                 " failed status %d\n", dstCoreId, status);
@@ -585,7 +613,7 @@ void Ipc_sendMessage(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t dstCor
     }
 }
 
-void Ipc_sendNewTestIndex(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t testIndex, 
+void Ipc_sendNewTestIndex(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t testIndex,
         uint32_t dstCoreId)
 {
     uint32_t   bufSize;
@@ -603,13 +631,13 @@ void Ipc_sendNewTestIndex(RPMessage_Handle handle, uint32_t srcEndPt, uint32_t t
      * */
     bufSize = 10;
 
-    buf[0] = IPC_PERF_TEST; 
+    buf[0] = IPC_PERF_TEST;
     memcpy(&buf[1], (const void*)&payloadSize, sizeof(uint32_t));
     buf[5] = IPC_FC_PERFTEST_TESTINDEX;
     memcpy(&buf[6], (const void*)&testIndex, sizeof(uint32_t));
 
     status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
-    if (status != IPC_SOK) 
+    if (status != IPC_SOK)
     {
         App_printf("Ipc_sendNewTestIndex (remote %d): RPMessage_send "
                 " failed status %d\n", dstCoreId, status);
@@ -633,7 +661,7 @@ void Ipc_sendTestResult(RPMessage_Handle handle, uint32_t srcEndPt)
      * TetResult - 128 byte max
      * */
 
-    buf[0] = IPC_PERF_TEST; 
+    buf[0] = IPC_PERF_TEST;
     buf[5] = IPC_FC_PERFTEST_TESTRESULT;
     szData = Ipc_copyRestResult(&buf[6], 250);
 
@@ -645,15 +673,15 @@ void Ipc_sendTestResult(RPMessage_Handle handle, uint32_t srcEndPt)
         bufSize = 6 + szData;
 
         status = RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, (Ptr)buf, bufSize);
-        if (status != IPC_SOK) 
+        if (status != IPC_SOK)
         {
-            App_printf("Ipc_sendTestResult: RPMessage_send failed status %d\n", 
+            App_printf("Ipc_sendTestResult: RPMessage_send failed status %d\n",
                     status);
         }
     }
 }
 
-uint32_t Ipc_processPerfCmd(RPMessage_Handle handle, uint32_t dstEndPt, uint32_t dstCoreId, 
+uint32_t Ipc_processPerfCmd(RPMessage_Handle handle, uint32_t dstEndPt, uint32_t dstCoreId,
                 uint32_t srcEndPt, uint8_t *buf, uint32_t bufSize)
 {
     uint32_t        retVal = FALSE;
@@ -666,7 +694,7 @@ uint32_t Ipc_processPerfCmd(RPMessage_Handle handle, uint32_t dstEndPt, uint32_t
         if(bufSize == 4U)
         {
             /* This is raw data for round-trip measurement */
-            if(IPC_SOK != RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt, 
+            if(IPC_SOK != RPMessage_send(handle, dstCoreId, dstEndPt, srcEndPt,
                         buf, bufSize))
             {
                 App_printf("Ipc_processPerfCmd: RPMessage_send failed\n");
@@ -728,6 +756,6 @@ void Ipc_printTestReport()
         Ipc_printPerfTestReport();
         UART_printf("\n\nPerformance Test : Completed\n");
         UART_printf("\n\nAll tests have passed. \n");
-    }    
+    }
 }
 

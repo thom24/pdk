@@ -57,7 +57,7 @@
 
 #if defined(SOC_J721S2)
     #define MSMC_SIZE   0x00400000U /* 4MB */
-#elif defined(SOC_J721E)
+#elif defined(SOC_J721E) || (SOC_J784S4)
     #define MSMC_SIZE   0x00800000U /* 8MB */
 #endif
 
@@ -114,6 +114,10 @@ void IpcInitMmu(bool isSecure)
     (void)Mmu_map(C7x_1_IPC_DATA_BASE, C7x_1_IPC_DATA_BASE, 0x00100000U, &attrs, isSecure); /* C7X_1 DDR */
 #elif defined(BUILD_C7X_2)
     (void)Mmu_map(C7x_2_IPC_DATA_BASE, C7x_2_IPC_DATA_BASE, 0x00100000U, &attrs, isSecure); /* C7X_2 DDR */
+#elif defined(BUILD_C7X_3)
+    (void)Mmu_map(C7x_3_IPC_DATA_BASE, C7x_3_IPC_DATA_BASE, 0x00100000U, &attrs, isSecure); /* C7X_3 DDR */
+#elif defined(BUILD_C7X_4)
+    (void)Mmu_map(C7x_4_IPC_DATA_BASE, C7x_4_IPC_DATA_BASE, 0x00100000U, &attrs, isSecure); /* C7X_4 DDR */
 #endif
 
     return;
