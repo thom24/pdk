@@ -434,7 +434,7 @@ static int8_t UFP_qspiInit(void)
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(SPI_OSPI_DOMAIN_MAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
     ospi_cfg.intrEnable = false;
     /* Enable quad mode */
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
@@ -443,7 +443,7 @@ static int8_t UFP_qspiInit(void)
     ospi_cfg.dtrEnable = false;
 
     /* Set the default SPI init configurations */
-    OSPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(SPI_OSPI_DOMAIN_MAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Open the Board QSPI NOR device */
     gQspiHandle = Board_flashOpen(QSPI_FLASH_ID,

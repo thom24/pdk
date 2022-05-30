@@ -166,7 +166,7 @@ void spi_test(UArg arg0, UArg arg1)
     /* spiParams.transferCallbackFxn = MCSPICallbackFxn; */
 
     /* Open QSPI driver */
-    handle = SPI_open(BOARD_MCSPI_SERIALIZER_INSTANCE, &spiParams);
+    handle = SPI_open(SPI_MCSPI_DOMAIN_MCU, BOARD_MCSPI_SERIALIZER_INSTANCE, &spiParams);
 
     /* Load data */
     LoadData();

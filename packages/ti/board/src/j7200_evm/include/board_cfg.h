@@ -258,6 +258,8 @@ extern "C" {
 #define BOARD_HPF_INSTANCE                              (0U)
 /* OSPI instance number */
 #define BOARD_OSPI_INSTANCE                             (0U)
+/* OSPI Domain number */
+#define BOARD_OSPI_DOMAIN                               (0U)
 /* Enable NOR flash driver */
 #define BOARD_NOR_FLASH_IN
 

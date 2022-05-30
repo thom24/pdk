@@ -470,7 +470,7 @@ static int8_t UFP_spiInit(void)
     SPI_Params_init(&spiParams);
 
     /* Open SPI driver */
-    gSpiHandle = SPI_open(MCSPI_INSTANCE, &spiParams);
+    gSpiHandle = SPI_open(SPI_MCSPI_DOMAIN_MCU, MCSPI_INSTANCE, &spiParams);
 
 	if (!gSpiHandle)
     {

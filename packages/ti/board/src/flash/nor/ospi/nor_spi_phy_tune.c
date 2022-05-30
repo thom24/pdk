@@ -65,25 +65,25 @@ uint32_t norSpiTuneCnt = 0;
 static NOR_PhyConfig ddrTuningPoint = {0, };
 static NOR_PhyConfig sdrTuningPoint = {0, };
 
-static void NOR_spiRdDelayConfig(SPI_Handle handle, uint32_t rdDelay)
+static void NOR_spiRdDelayConfig(OSPI_Handle handle, uint32_t rdDelay)
 {
     uint32_t data;
 
     data = rdDelay;
-    SPI_control(handle, SPI_V0_CMD_CFG_RD_DELAY, (void *)(&data));
+    OSPI_control(handle, OSPI_V0_CMD_CFG_RD_DELAY, (void *)(&data));
 }
 
-static void NOR_spiTxRxDllConfig(SPI_Handle handle, uint32_t txDLL, uint32_t rxDLL)
+static void NOR_spiTxRxDllConfig(OSPI_Handle handle, uint32_t txDLL, uint32_t rxDLL)
 {
     uint32_t data[3];
 
     data[0] = TRUE;
     data[1] = txDLL;
     data[2] = rxDLL;
-    SPI_control(handle, SPI_V0_CMD_CFG_PHY, (void *)data);
+    OSPI_control(handle, OSPI_V0_CMD_CFG_PHY, (void *)data);
 }
 
-static void NOR_spiPhyConfig(SPI_Handle handle, NOR_PhyConfig phyConfig)
+static void NOR_spiPhyConfig(OSPI_Handle handle, NOR_PhyConfig phyConfig)
 {
     NOR_spiRdDelayConfig(handle, phyConfig.rdDelay);
     NOR_spiTxRxDllConfig(handle, phyConfig.txDLL, phyConfig.rxDLL);
@@ -116,7 +116,7 @@ static NOR_STATUS NOR_spiPhyRdAttack(uintptr_t flashVectorAddr)
  * Searches txDLL down from start until the tuning basis passes.
  * Does not look at the next rdDelay setting.  Returns txDLL=128 if fail.
  */
-NOR_PhyConfig NOR_spiPhyFindTxHigh(SPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
+NOR_PhyConfig NOR_spiPhyFindTxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     NOR_STATUS             status;
@@ -147,7 +147,7 @@ NOR_PhyConfig NOR_spiPhyFindTxHigh(SPI_Handle handle, NOR_PhyConfig start, uint3
  * Searches txDLL up from start until the tuning basis passes.
  * Does not look at the next rdDelay setting.  Returns txDLL=128 if fail.
  */
-NOR_PhyConfig NOR_spiPhyFindTxLow(SPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
+NOR_PhyConfig NOR_spiPhyFindTxLow(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     NOR_STATUS             status;
@@ -179,7 +179,7 @@ NOR_PhyConfig NOR_spiPhyFindTxLow(SPI_Handle handle, NOR_PhyConfig start, uint32
  * Searches rxDLL down from start until the tuning basis passes.
  * Does not look at the next rdDelay setting.  Returns rxDLL=128 if fail.
  */
-NOR_PhyConfig NOR_spiPhyFindRxHigh(SPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
+NOR_PhyConfig NOR_spiPhyFindRxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     NOR_STATUS             status;
@@ -210,7 +210,7 @@ NOR_PhyConfig NOR_spiPhyFindRxHigh(SPI_Handle handle, NOR_PhyConfig start, uint3
  * Searches rxDLL up from start until the tuning basis passes.
  * Does not look at the next rdDelay setting. Returns rxDLL=128 if fail.
  */
-NOR_PhyConfig NOR_spiPhyFindRxLow(SPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
+NOR_PhyConfig NOR_spiPhyFindRxLow(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     NOR_STATUS             status;
@@ -282,7 +282,7 @@ double NOR_spiPhyAvgVtmTemp(double vtm125){
 }
 
 /* Fast tuning in DDR mode (DQS enabled) */
-NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
+NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
 {
     NOR_STATUS             status;
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
@@ -743,7 +743,7 @@ NOR_STATUS Nor_spiPhyDdrTune(SPI_Handle handle, uint32_t offset)
 }
 
 /* Returns the first rxDLL value which passes the tuning basis test, searching up from given txDLL,rxDLL */
-static int32_t NOR_spiPhyFindRxStart(SPI_Handle handle, int32_t txDLL, int32_t rxDLL, uint32_t offset)
+static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t rxDLL, uint32_t offset)
 {
     OSPI_v0_HwAttrs const        *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
@@ -780,7 +780,7 @@ static int32_t NOR_spiPhyFindRxStart(SPI_Handle handle, int32_t txDLL, int32_t r
  * Returns the last rxDLL value which passes the tuning basis test, searching up from given txDLL,rxDLL
  * Returns rxDLL passed into the function if failure
  */
-static int32_t NOR_spiPhyFindRxEnd(SPI_Handle handle, int32_t txDLL, int32_t rxDLL, uint32_t offset)
+static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rxDLL, uint32_t offset)
 {
     OSPI_v0_HwAttrs const        *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
@@ -818,7 +818,7 @@ static int32_t NOR_spiPhyFindRxEnd(SPI_Handle handle, int32_t txDLL, int32_t rxD
 
 
 /* Tries to find an rxDLL window at a given txDLL point. Puts start and end of the rxDLL window into the pointers */
-static NOR_STATUS NOR_spiPhyFindRxWindow(SPI_Handle handle, int32_t txDLL, int32_t *rxStart, int32_t *rxEnd, uint32_t offset)
+static NOR_STATUS NOR_spiPhyFindRxWindow(OSPI_Handle handle, int32_t txDLL, int32_t *rxStart, int32_t *rxEnd, uint32_t offset)
 {
     /* Search up from 0 to find the start of the Rx window */
     *rxStart = NOR_spiPhyFindRxStart(handle,txDLL,0,offset);
@@ -844,7 +844,7 @@ static NOR_STATUS NOR_spiPhyFindRxWindow(SPI_Handle handle, int32_t txDLL, int32
  *     3 = Failed to lock
  * if not full cycl locked, turn on the master PHY bypass mode
  */
-static void NOR_spiPhyDllObserve(SPI_Handle handle)
+static void NOR_spiPhyDllObserve(OSPI_Handle handle)
 {
     OSPI_v0_HwAttrs const        *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
@@ -897,7 +897,7 @@ static void NOR_spiPhyDllObserve(SPI_Handle handle)
  * It takes in the handle for the ospi instance it must tune.
  * Assumes Protocol is SDR, clock mode is internal loopback and PHY is in DLL Master mode.
  */
-NOR_STATUS Nor_spiPhySdrTune(SPI_Handle handle, uint32_t offset)
+NOR_STATUS Nor_spiPhySdrTune(OSPI_Handle handle, uint32_t offset)
 {
     int32_t       rdDelay1 = 0;
     int32_t       rdDelay2;
@@ -963,7 +963,7 @@ NOR_STATUS Nor_spiPhySdrTune(SPI_Handle handle, uint32_t offset)
     return NOR_PASS;
 }
 
-NOR_STATUS Nor_spiPhyTune(SPI_Handle handle, uint32_t offset)
+NOR_STATUS Nor_spiPhyTune(OSPI_Handle handle, uint32_t offset)
 {
     NOR_STATUS                    status = NOR_PASS;
     OSPI_v0_HwAttrs const        *hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;

@@ -459,6 +459,7 @@ bool spi_test_single_channel(void *arg)
     SPI_Params      spiParams;           /* SPI params structure */
     SPI_Handle      spi;                 /* SPI handle */
     uint32_t        instance;
+    uint32_t        domain;
     bool            retVal = false;      /* return value */
     SPI_Tests      *test = (SPI_Tests *)arg;
     bool            cbMode = test->cbMode;
@@ -474,6 +475,7 @@ bool spi_test_single_channel(void *arg)
     }
 
     instance = BOARD_MCSPI_SERIALIZER_INSTANCE;
+    domain = SPI_MCSPI_DOMAIN_MCU;
     SPI_initConfig(instance, test, false);
 
     /* Default SPI configuration parameters */
@@ -487,7 +489,7 @@ bool spi_test_single_channel(void *arg)
     }
 
     /* Open QSPI driver */
-    spi = SPI_open(instance, &spiParams);
+    spi = SPI_open(domain, instance, &spiParams);
 
     if (spi == NULL)
     {

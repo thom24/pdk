@@ -45,6 +45,7 @@
 #include <ti/drv/sciclient/sciclient.h>
 
 #define SPI_OSPI_PER_CNT (2U)
+#define SPI_OSPI_DOMAIN_CNT (2U)
 
 /* SPI configuration structure */
 SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
@@ -587,139 +588,199 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
 
 
 /* SPI objects */
-SPI_v1_Object SpiObjects[CSL_MCSPI_MAIN_CNT];
+SPI_v1_Object SpiObjects[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT];
 
 /* OSPI configuration structure */
-OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_PER_CNT + 1U] =
+OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_DOMAIN_CNT][SPI_OSPI_PER_CNT + 1U] =
 {
     {
-        0,                                  /* Instance Number */
-        (uintptr_t)CSL_MCU_FSS0_OSPI0_CTRL_BASE,      /* flash config register baseAddr */
-#if defined (__aarch64__)
-        (uintptr_t)CSL_MCU_FSS0_DAT_REG0_BASE,        /* OSPI data base address */
-#else
-        (uintptr_t)CSL_MCU_FSS0_DAT_REG1_BASE,
-#endif
-        OSPI_MODULE_CLOCK,                 /* Input frequency */
-#if defined(BUILD_MPU)
-      CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0,
-#else
-      CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0, /* OSPI int number for ARM GIC INTC */
-#endif
-        0,                                 /* Event ID not used for ARM INTC */
-        OSPI_OPER_MODE_CFG,                /* operMode */
-        CSL_OSPI_CS0,                      /* chipSelect */
-        CSL_OSPI_CLK_MODE_0,               /* frmFmt */
         {
-            0,                             /* default Chip Select Start of Transfer Delay */
-            0,                             /* default Chip Select End of Transfer Delay */
-            0,                             /* default Chip Select De-Assert Different Slaves Delay */
-            OSPI_DEV_DELAY_CSDA            /* default Chip Select De-Assert Delay */
+            0,                                  /* Instance Number */
+            (uintptr_t)CSL_MCU_FSS0_OSPI0_CTRL_BASE,      /* flash config register baseAddr */
+    #if defined (__aarch64__)
+            (uintptr_t)CSL_MCU_FSS0_DAT_REG0_BASE,        /* OSPI data base address */
+    #else
+            (uintptr_t)CSL_MCU_FSS0_DAT_REG1_BASE,
+    #endif
+            OSPI_MODULE_CLOCK,                 /* Input frequency */
+    #if defined(BUILD_MPU)
+        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0,
+    #else
+        CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0, /* OSPI int number for ARM GIC INTC */
+    #endif
+            0,                                 /* Event ID not used for ARM INTC */
+            OSPI_OPER_MODE_CFG,                /* operMode */
+            CSL_OSPI_CS0,                      /* chipSelect */
+            CSL_OSPI_CLK_MODE_0,               /* frmFmt */
+            {
+                0,                             /* default Chip Select Start of Transfer Delay */
+                0,                             /* default Chip Select End of Transfer Delay */
+                0,                             /* default Chip Select De-Assert Different Slaves Delay */
+                OSPI_DEV_DELAY_CSDA            /* default Chip Select De-Assert Delay */
+            },
+            256,                               /* device page size is 256 bytes  */
+            18,                                /* device block size is 2 ^ 18 = 256K bytes */
+            OSPI_XFER_LINES_OCTAL,             /* xferLines */
+            (bool)false,                       /* Interrupt mode */
+            (bool)true,                        /* Direct Access Controller mode */
+            (bool)false,                       /* DMA mode */
+            NULL,                              /* dmaInfo */
+            (bool)true,                        /* enable PHY */
+            0,                                 /* rdDataCapDelay */
+            (bool)true,                       /* enable DDR - dtrEnable*/
+            (bool)false,                       /* enable XIP */
+            10U,                               /* Chip Select Start Of Transfer delay */
+            0,                                 /* Baudrate divider. Set to a non-zero value (2 to 32)
+                                                to override default divider settings */
+            (bool)false,                       /* enable Cache */
         },
-        256,                               /* device page size is 256 bytes  */
-        18,                                /* device block size is 2 ^ 18 = 256K bytes */
-        OSPI_XFER_LINES_OCTAL,             /* xferLines */
-        (bool)false,                       /* Interrupt mode */
-        (bool)true,                        /* Direct Access Controller mode */
-        (bool)false,                       /* DMA mode */
-        NULL,                              /* dmaInfo */
-        (bool)true,                        /* enable PHY */
-        0,                                 /* rdDataCapDelay */
-        (bool)true,                       /* enable DDR - dtrEnable*/
-        (bool)false,                       /* enable XIP */
-        10U,                               /* Chip Select Start Of Transfer delay */
-        0,                                 /* Baudrate divider. Set to a non-zero value (2 to 32)
-                                              to override default divider settings */
-        (bool)false,                       /* enable Cache */
+        {
+            1,                                  /* Instance Number */
+            (uintptr_t)CSL_MCU_FSS0_OSPI1_CTRL_BASE,
+    #if defined (__aarch64__)
+            (uintptr_t)CSL_MCU_FSS0_OSPI1_R0_BASE,
+    #else
+            (uintptr_t)(CSL_MCU_FSS0_DAT_REG1_BASE + 0x08000000U),
+    #endif
+            OSPI_MODULE_CLOCK,
+    #if defined(BUILD_MPU)
+            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0,
+    #else
+            CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0,
+    #endif
+            0,
+            OSPI_OPER_MODE_CFG,
+            CSL_OSPI_CS0,
+            CSL_OSPI_CLK_MODE_0,
+            {
+                0,
+                0,
+                0,
+                OSPI_DEV_DELAY_CSDA
+            },
+            256,
+            17,
+            OSPI_XFER_LINES_OCTAL,
+            (bool)false,
+            (bool)true,
+            (bool)false,
+            NULL,
+            (bool)true,
+            0,
+            (bool)true,
+            (bool)false,
+            10U,
+            0,
+            (bool)false,
+        },
+        {
+            (uintptr_t)(0U),
+        },
     },
     {
-        1,                                  /* Instance Number */
-        (uintptr_t)CSL_MCU_FSS0_OSPI1_CTRL_BASE,
-#if defined (__aarch64__)
-        (uintptr_t)CSL_MCU_FSS0_OSPI1_R0_BASE,
-#else
-        (uintptr_t)(CSL_MCU_FSS0_DAT_REG1_BASE + 0x08000000U),
-#endif
-        OSPI_MODULE_CLOCK,
-#if defined(BUILD_MPU)
-        CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0,
-#else
-        CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0,
-#endif
-        0,
-        OSPI_OPER_MODE_CFG,
-        CSL_OSPI_CS0,
-        CSL_OSPI_CLK_MODE_0,
         {
-            0,
-            0,
-            0,
-            OSPI_DEV_DELAY_CSDA
+            (uintptr_t)(0U),
         },
-        256,
-        17,
-        OSPI_XFER_LINES_OCTAL,
-        (bool)false,
-        (bool)true,
-        (bool)false,
-        NULL,
-        (bool)true,
-        0,
-        (bool)true,
-        (bool)false,
-        10U,
-        0,
-        (bool)false,
-    },
-    {
-        (uintptr_t)(0U),
+        {
+            (uintptr_t)(0U),
+        },
+        {
+            (uintptr_t)(0U),
+        },
     }
 };
 
 /* OSPI objects */
-OSPI_v0_Object OspiObjects[SPI_OSPI_PER_CNT + 1U];
+OSPI_v0_Object OspiObjects[SPI_OSPI_DOMAIN_CNT][SPI_OSPI_PER_CNT + 1U];
 
 /* SPI configuration structure */
 CSL_PUBLIC_CONST SPI_config_list SPI_config = {
     {
-        &SPI_FxnTable_v1,
-        &SpiObjects[0],
-        &spiInitCfg[0][0]
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[0][0],
+            &spiInitCfg[0][0]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[0][1],
+            &spiInitCfg[0][1]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[0][2],
+            &spiInitCfg[0][2]
+        },
     },
     {
-        &SPI_FxnTable_v1,
-        &SpiObjects[1],
-        &spiInitCfg[0][1]
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][0],
+            &spiInitCfg[1][0]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][1],
+            &spiInitCfg[1][1]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][2],
+            &spiInitCfg[1][2]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][3],
+            &spiInitCfg[1][3]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][4],
+            &spiInitCfg[1][4]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][5],
+            &spiInitCfg[1][5]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][6],
+            &spiInitCfg[1][6]
+        },
+        {
+            &SPI_FxnTable_v1,
+            &SpiObjects[1][7],
+            &spiInitCfg[1][7]
+        },
+    },
+};
+
+/* OSPI configuration structure */
+CSL_PUBLIC_CONST OSPI_config_list OSPI_config = {
+    {
+        {
+            &OSPI_FxnTable_v0,
+            &OspiObjects[0][0],
+            &ospiInitCfg[0][0]
+        },
+        {
+            &OSPI_FxnTable_v0,
+            &OspiObjects[0][1],
+            &ospiInitCfg[0][1]
+        },
     },
     {
-        &SPI_FxnTable_v1,
-        &SpiObjects[2],
-        &spiInitCfg[0][2]
-    },
-    {
-        &SPI_FxnTable_v1,
-        &SpiObjects[3],
-        &spiInitCfg[1][3]
-    },
-    {
-        &SPI_FxnTable_v1,
-        &SpiObjects[4],
-        &spiInitCfg[1][4]
-    },
-    {
-        &OSPI_FxnTable_v0,
-        &OspiObjects[0],
-        &ospiInitCfg[0]
-    },
-    {
-        &OSPI_FxnTable_v0,
-        &OspiObjects[1],
-        &ospiInitCfg[1]
-    },
-    {
-        NULL,
-        NULL,
-        NULL
+        {
+            &OSPI_FxnTable_v0,
+            &OspiObjects[1][0],
+            &ospiInitCfg[1][0]
+        },
+        {
+            &OSPI_FxnTable_v0,
+            &OspiObjects[1][1],
+            &ospiInitCfg[1][1]
+        },
     },
 };
 
@@ -728,131 +789,178 @@ MCSPI_config_list MCSPI_config = {
     {
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[0])),
+            (SPI_Handle)(&(SPI_config[1][0])),
             0
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[0])),
+            (SPI_Handle)(&(SPI_config[1][0])),
             1
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[0])),
+            (SPI_Handle)(&(SPI_config[1][0])),
             2
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[0])),
+            (SPI_Handle)(&(SPI_config[1][0])),
             3
         },
     },
     {
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[1])),
+            (SPI_Handle)(&(SPI_config[1][1])),
             0
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[1])),
+            (SPI_Handle)(&(SPI_config[1][1])),
             1
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[1])),
+            (SPI_Handle)(&(SPI_config[1][1])),
             2
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[1])),
+            (SPI_Handle)(&(SPI_config[1][1])),
             3
         },
     },
     {
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[2])),
+            (SPI_Handle)(&(SPI_config[1][2])),
             0
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[2])),
+            (SPI_Handle)(&(SPI_config[1][2])),
             1
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[2])),
+            (SPI_Handle)(&(SPI_config[1][2])),
             2
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[2])),
+            (SPI_Handle)(&(SPI_config[1][2])),
             3
         },
     },
     {
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[3])),
+            (SPI_Handle)(&(SPI_config[1][3])),
             0
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[3])),
+            (SPI_Handle)(&(SPI_config[1][3])),
             1
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[3])),
+            (SPI_Handle)(&(SPI_config[1][3])),
             2
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[3])),
+            (SPI_Handle)(&(SPI_config[1][3])),
             3
         },
     },
     {
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[4])),
+            (SPI_Handle)(&(SPI_config[1][4])),
             0
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[4])),
+            (SPI_Handle)(&(SPI_config[1][4])),
             1
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[4])),
+            (SPI_Handle)(&(SPI_config[1][4])),
             2
         },
         {
             &MCSPI_FxnTable_v1,
-            (SPI_Handle)(&(SPI_config[4])),
+            (SPI_Handle)(&(SPI_config[1][4])),
             3
         },
     },
-    /* "pad to full predefined length of array" */
     {
-        {NULL, NULL, 0},
-        {NULL, NULL, 0},
-        {NULL, NULL, 0},
-        {NULL, NULL, 0}
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][5])),
+            0
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][5])),
+            1
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][5])),
+            2
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][5])),
+            3
+        },
     },
     {
-        {NULL, NULL, 0},
-        {NULL, NULL, 0},
-        {NULL, NULL, 0},
-        {NULL, NULL, 0}
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][6])),
+            0
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][6])),
+            1
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][6])),
+            2
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][6])),
+            3
+        },
     },
     {
-        {NULL, NULL, 0},
-        {NULL, NULL, 0},
-        {NULL, NULL, 0},
-        {NULL, NULL, 0}
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][7])),
+            0
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][7])),
+            1
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][7])),
+            2
+        },
+        {
+            &MCSPI_FxnTable_v1,
+            (SPI_Handle)(&(SPI_config[1][7])),
+            3
+        },
     }
 };
 
@@ -870,7 +978,7 @@ int32_t SPI_socGetInitCfg(uint32_t domain, uint32_t idx, SPI_v1_HWAttrs *cfg)
 {
     int32_t ret = 0;
 
-    if (idx < CSL_MCSPI_MAIN_CNT)
+    if (idx < CSL_MCSPI_PER_CNT)
     {
         *cfg = spiInitCfg[domain][idx];
     }
@@ -895,7 +1003,7 @@ int32_t SPI_socSetInitCfg(uint32_t domain, uint32_t idx, const SPI_v1_HWAttrs *c
 {
     int32_t ret = 0;
 
-    if (idx < CSL_MCSPI_MAIN_CNT)
+    if (idx < CSL_MCSPI_PER_CNT)
     {
         spiInitCfg[domain][idx] = *cfg;
     }
@@ -915,13 +1023,13 @@ int32_t SPI_socSetInitCfg(uint32_t domain, uint32_t idx, const SPI_v1_HWAttrs *c
  * \return 0 success: -1: error
  *
  */
-int32_t OSPI_socGetInitCfg(uint32_t idx, OSPI_v0_HwAttrs *cfg)
+int32_t OSPI_socGetInitCfg(uint32_t domain, uint32_t idx, OSPI_v0_HwAttrs *cfg)
 {
     int32_t ret = 0;
 
     if (idx < SPI_OSPI_PER_CNT)
     {
-        *cfg = ospiInitCfg[idx];
+        *cfg = ospiInitCfg[domain][idx];
     }
     else
     {
@@ -940,13 +1048,13 @@ int32_t OSPI_socGetInitCfg(uint32_t idx, OSPI_v0_HwAttrs *cfg)
  * \return           0 success: -1: error
  *
  */
-int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg)
+int32_t OSPI_socSetInitCfg(uint32_t domain, uint32_t idx, const OSPI_v0_HwAttrs *cfg)
 {
     int32_t ret = 0;
 
     if (idx < SPI_OSPI_PER_CNT)
     {
-        ospiInitCfg[idx] = *cfg;
+        ospiInitCfg[domain][idx] = *cfg;
     }
     else
     {
@@ -985,16 +1093,16 @@ int32_t OSPI_socInit(void)
         if(r5CpuInfo.cpuID == 0U)
         {
             /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
-            ospiInitCfg[0].intrNum = CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][0].intrNum = CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
             /* ********* OSPI-1 . intrNum = R5FSS'n'_INTRTR0 **************** */
-            ospiInitCfg[1].intrNum = CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][1].intrNum = CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
         else
         {
             /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
-            ospiInitCfg[0].intrNum = CSLR_MCU_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][0].intrNum = CSLR_MCU_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
             /* ********* OSPI-1 . intrNum = R5FSS'n'_INTRTR0 **************** */
-            ospiInitCfg[1].intrNum = CSLR_MCU_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][1].intrNum = CSLR_MCU_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
     }
     else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) /* Main R5 SS0*/
@@ -1004,16 +1112,16 @@ int32_t OSPI_socInit(void)
         if(r5CpuInfo.cpuID == 0U)
         {
             /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
-            ospiInitCfg[0].intrNum = CSLR_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][0].intrNum = CSLR_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
             /* ********* OSPI-1 . intrNum = R5FSS'n'_INTRTR0 **************** */
-            ospiInitCfg[1].intrNum = CSLR_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][1].intrNum = CSLR_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
         else
         {
             /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
-            ospiInitCfg[0].intrNum = CSLR_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][0].intrNum = CSLR_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
             /* ********* OSPI-1 . intrNum = R5FSS'n'_INTRTR0 **************** */
-            ospiInitCfg[1].intrNum = CSLR_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
+            ospiInitCfg[0][1].intrNum = CSLR_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
     }
     else

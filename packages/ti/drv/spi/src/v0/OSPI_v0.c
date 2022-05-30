@@ -62,21 +62,21 @@
 #endif
 
 /* OSPI AM57x functions */
-static void       OSPI_close_v0(SPI_Handle handle);
-static void       OSPI_init_v0(SPI_Handle handle);
-static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params);
-static bool       OSPI_transfer_v0(SPI_Handle handle,
-                                   SPI_Transaction *transaction);
-static int32_t    OSPI_primeTransfer_v0(SPI_Handle handle,
-                                        SPI_Transaction *transaction);
-static void       OSPI_transferCallback_v0(SPI_Handle handle,
-                                           SPI_Transaction *msg);
-static int32_t    OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg);
-static void       OSPI_transferCancel_v0(SPI_Handle handle);
+static void       OSPI_close_v0(OSPI_Handle handle);
+static void       OSPI_init_v0(OSPI_Handle handle);
+static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params);
+static bool       OSPI_transfer_v0(OSPI_Handle handle,
+                                   OSPI_Transaction *transaction);
+static int32_t    OSPI_primeTransfer_v0(OSPI_Handle handle,
+                                        OSPI_Transaction *transaction);
+static void       OSPI_transferCallback_v0(OSPI_Handle handle,
+                                           OSPI_Transaction *msg);
+static int32_t    OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg);
+static void       OSPI_transferCancel_v0(OSPI_Handle handle);
 static void       OSPI_hwiFxn_v0(uintptr_t arg);
-static int32_t    OSPI_waitIdle(SPI_Handle handle, uint32_t timeOut);
+static int32_t    OSPI_waitIdle(OSPI_Handle handle, uint32_t timeOut);
 static int32_t    OSPI_flashExecCmd(const CSL_ospi_flash_cfgRegs *pRegs);
-static int32_t    OSPI_read_v0(SPI_Handle handle, SPI_Transaction *transaction);
+static int32_t    OSPI_read_v0(OSPI_Handle handle, OSPI_Transaction *transaction);
 static int32_t    OSPI_cmdRead(const CSL_ospi_flash_cfgRegs *pRegs,
                                uint32_t                      cmd,
                                uint8_t                      *rxBuf,
@@ -87,7 +87,7 @@ static int32_t OSPI_cmdExtRead(const CSL_ospi_flash_cfgRegs *pRegs,
                                uint8_t                      *rxBuf,
                                uint32_t                      rxLen,
                                uint32_t                      dummyCycles);
-static int32_t    OSPI_write_v0(SPI_Handle handle, SPI_Transaction *transaction);
+static int32_t    OSPI_write_v0(OSPI_Handle handle, OSPI_Transaction *transaction);
 static int32_t    OSPI_cmdWrite(const CSL_ospi_flash_cfgRegs *pRegs,
                                 const uint8_t                *cmdBuf,
                                 uint32_t                      cmdLen,
@@ -95,21 +95,21 @@ static int32_t    OSPI_cmdWrite(const CSL_ospi_flash_cfgRegs *pRegs,
                                 uint32_t                      txLen);
 static int32_t    OSPI_waitReadSramLvl(const CSL_ospi_flash_cfgRegs *pReg,
                                        uint32_t *rdLevel);
-static int32_t    OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
-                                             SPI_Transaction *transaction);
+static int32_t    OSPI_ind_xfer_mode_read_v0(OSPI_Handle handle,
+                                             OSPI_Transaction *transaction);
 static int32_t    OSPI_waitIndWriteComplete(const CSL_ospi_flash_cfgRegs *pRegs);
 static int32_t    OSPI_waitWriteSramLvl(const CSL_ospi_flash_cfgRegs *pReg,
                                         uint32_t *sramLvl);
-static int32_t    OSPI_ind_xfer_mode_write_v0(SPI_Handle handle,
-                                              SPI_Transaction *transaction);
-static int32_t    OSPI_dac_xfer_mode_read_v0(SPI_Handle handle,
-                                             const SPI_Transaction *transaction);
-static int32_t    OSPI_dac_xfer_mode_write_v0(SPI_Handle handle,
-                                              const SPI_Transaction *transaction);
-static int32_t    OSPI_cmd_mode_write_v0(SPI_Handle handle,
-                                         const SPI_Transaction *transaction);
-static int32_t    OSPI_cmd_mode_read_v0(SPI_Handle handle,
-                                        SPI_Transaction *transaction);
+static int32_t    OSPI_ind_xfer_mode_write_v0(OSPI_Handle handle,
+                                              OSPI_Transaction *transaction);
+static int32_t    OSPI_dac_xfer_mode_read_v0(OSPI_Handle handle,
+                                             const OSPI_Transaction *transaction);
+static int32_t    OSPI_dac_xfer_mode_write_v0(OSPI_Handle handle,
+                                              const OSPI_Transaction *transaction);
+static int32_t    OSPI_cmd_mode_write_v0(OSPI_Handle handle,
+                                         const OSPI_Transaction *transaction);
+static int32_t    OSPI_cmd_mode_read_v0(OSPI_Handle handle,
+                                        OSPI_Transaction *transaction);
 
 typedef enum OSPI_intrPollMode_s
 {
@@ -121,7 +121,7 @@ typedef enum OSPI_intrPollMode_s
 
 
 /* SPI function table for OSPI AM57x implementation */
-const SPI_FxnTable OSPI_FxnTable_v0 =
+const OSPI_FxnTable OSPI_FxnTable_v0 =
 {
     &OSPI_close_v0,
     &OSPI_control_v0,
@@ -135,7 +135,7 @@ const SPI_FxnTable OSPI_FxnTable_v0 =
 /*
  *  ======== OSPI_close_v0 ========
  */
-static void OSPI_close_v0(SPI_Handle handle)
+static void OSPI_close_v0(OSPI_Handle handle)
 {
     OSPI_v0_Object        *object = NULL;
     OSPI_v0_HwAttrs const *hwAttrs = NULL;
@@ -196,8 +196,8 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
     uint32_t               sramLevel, rdBytes, wrBytes;
 
     /* Get the pointer to the object and hwAttrs */
-    object = (OSPI_v0_Object *)(((SPI_Handle)arg)->object);
-    hwAttrs = (OSPI_v0_HwAttrs const *)(((SPI_Handle)arg)->hwAttrs);
+    object = (OSPI_v0_Object *)(((OSPI_Handle)arg)->object);
+    hwAttrs = (OSPI_v0_HwAttrs const *)(((OSPI_Handle)arg)->hwAttrs);
 
     /* Read the interrupt status register */
     intrStatus = CSL_ospiIntrStatus((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
@@ -258,7 +258,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                                   CSL_OSPI_INTR_MASK_ALL);
 
                 /* Call the call back function */
-                object->ospiParams.transferCallbackFxn((SPI_Handle)arg, NULL);
+                object->ospiParams.transferCallbackFxn((OSPI_Handle)arg, NULL);
             }
             else
             {
@@ -317,7 +317,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                                   CSL_OSPI_INTR_MASK_ALL);
 
                 /* Call the call back function */
-                object->ospiParams.transferCallbackFxn((SPI_Handle)arg, NULL);
+                object->ospiParams.transferCallbackFxn((OSPI_Handle)arg, NULL);
             }
             else
             {
@@ -336,7 +336,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
 /*
  *  ======== OSPI_init_v0 ========
  */
-static void OSPI_init_v0(SPI_Handle handle)
+static void OSPI_init_v0(OSPI_Handle handle)
 {
     if (handle != NULL)
     {
@@ -356,7 +356,7 @@ static void OSPI_delay(uint32_t delay)
     }
 }
 
-static int32_t OSPI_waitIdle(SPI_Handle handle, uint32_t timeOut)
+static int32_t OSPI_waitIdle(OSPI_Handle handle, uint32_t timeOut)
 {
     OSPI_v0_HwAttrs const *hwAttrs;      /* OSPI hardware attributes */
     uint32_t               retry = 0U;
@@ -391,11 +391,11 @@ static int32_t OSPI_waitIdle(SPI_Handle handle, uint32_t timeOut)
 /*
  *  ======== OSPI_open_v0 ========
  */
-static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
+static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
 {
     SemaphoreP_Params        semParams;
     uintptr_t                key;
-    SPI_Handle               retHandle = handle;
+    OSPI_Handle               retHandle = handle;
     OSPI_v0_Object          *object = NULL;
     OSPI_v0_HwAttrs const   *hwAttrs = NULL;
 	OsalRegisterIntrParams_t interruptRegParams;
@@ -429,7 +429,7 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
         /* Store the OSPI parameters */
         if (params == NULL) {
             /* No params passed in, so use the defaults */
-            SPI_Params_init(&(object->ospiParams));
+            OSPI_Params_init(&(object->ospiParams));
         }
         else {
             /* Copy the params contents */
@@ -443,7 +443,7 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
         object->extRdCmdLen = 0;
 
         /* Extract OSPI operating mode based on hwAttrs and input parameters */
-        if(SPI_MODE_BLOCKING == object->ospiParams.transferMode)
+        if(OSPI_MODE_BLOCKING == object->ospiParams.transferMode)
         {
             if (((bool)true == hwAttrs->intrEnable) && ((bool)false == hwAttrs->dacEnable))
             {
@@ -686,8 +686,8 @@ static SPI_Handle OSPI_open_v0(SPI_Handle handle, const SPI_Params *params)
 /*
  *  ======== OSPI_primeTransfer_v0 =======
  */
-static int32_t OSPI_primeTransfer_v0(SPI_Handle handle,
-                                     SPI_Transaction *transaction)
+static int32_t OSPI_primeTransfer_v0(OSPI_Handle handle,
+                                     OSPI_Transaction *transaction)
 {
     OSPI_v0_Object        *object = NULL;
     OSPI_v0_HwAttrs const *hwAttrs = NULL;
@@ -723,7 +723,7 @@ static int32_t OSPI_primeTransfer_v0(SPI_Handle handle,
     }
     else
     {
-        transaction->status = SPI_TRANSFER_CANCELED;
+        transaction->status = OSPI_TRANSFER_CANCELED;
 		retVal = (int32_t)(-1);
     }
     return(retVal);
@@ -787,8 +787,8 @@ static int32_t OSPI_waitIndReadComplete(const CSL_ospi_flash_cfgRegs *pRegs)
     return(retVal);
 }
 
-static int32_t OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
-                                          SPI_Transaction *transaction)
+static int32_t OSPI_ind_xfer_mode_read_v0(OSPI_Handle handle,
+                                          OSPI_Transaction *transaction)
 {
     OSPI_v0_HwAttrs const *hwAttrs;      /* OSPI hardware attributes */
     OSPI_v0_Object        *object;       /* OSPI object */
@@ -835,7 +835,7 @@ static int32_t OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
             {
                 retFlag = 1U;
                 retVal = (int32_t)(-1);
-                transaction->status=SPI_TRANSFER_FAILED;
+                transaction->status=OSPI_TRANSFER_FAILED;
                 break;
             }
 
@@ -854,7 +854,7 @@ static int32_t OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
             {
                 retFlag = 1U;
                 retVal = (int32_t)(-1);
-                transaction->status=SPI_TRANSFER_FAILED;
+                transaction->status=OSPI_TRANSFER_FAILED;
             }
         }
     }
@@ -865,8 +865,8 @@ static int32_t OSPI_ind_xfer_mode_read_v0(SPI_Handle handle,
     return (retVal);
 }
 
-static uint8_t OSPI_getDeviceStatus(SPI_Handle handle);
-static uint8_t OSPI_getDeviceStatus(SPI_Handle handle)
+static uint8_t OSPI_getDeviceStatus(OSPI_Handle handle);
+static uint8_t OSPI_getDeviceStatus(OSPI_Handle handle)
 {
     OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
     OSPI_v0_Object        *object;  /* OSPI object */
@@ -916,8 +916,8 @@ static uint8_t OSPI_getDeviceStatus(SPI_Handle handle)
     return (status);
 }
 
-static bool OSPI_waitDeviceReady(SPI_Handle handle, uint32_t timeOut);
-static bool OSPI_waitDeviceReady(SPI_Handle handle, uint32_t timeOut)
+static bool OSPI_waitDeviceReady(OSPI_Handle handle, uint32_t timeOut);
+static bool OSPI_waitDeviceReady(OSPI_Handle handle, uint32_t timeOut)
 {
     bool         retVal = (bool)false;
     uint8_t      status;
@@ -937,8 +937,8 @@ static bool OSPI_waitDeviceReady(SPI_Handle handle, uint32_t timeOut)
     return (retVal);
 }
 
-static int32_t OSPI_dac_xfer_mode_read_v0(SPI_Handle handle,
-                                          const SPI_Transaction *transaction)
+static int32_t OSPI_dac_xfer_mode_read_v0(OSPI_Handle handle,
+                                          const OSPI_Transaction *transaction)
 {
     OSPI_v0_HwAttrs const *hwAttrs;      /* OSPI hardware attributes */
     uint8_t               *pSrc;         /* Source address */
@@ -1105,8 +1105,8 @@ static int32_t OSPI_cmdExtRead(const CSL_ospi_flash_cfgRegs *pRegs,
     return (retVal);
 }
 
-static int32_t OSPI_cmd_mode_read_v0(SPI_Handle handle,
-                                     SPI_Transaction *transaction)
+static int32_t OSPI_cmd_mode_read_v0(OSPI_Handle handle,
+                                     OSPI_Transaction *transaction)
 {
     OSPI_v0_HwAttrs const *hwAttrs;    /* OSPI hardware attributes */
     OSPI_v0_Object        *object;  /* OSPI object */
@@ -1148,7 +1148,7 @@ static int32_t OSPI_cmd_mode_read_v0(SPI_Handle handle,
 }
 
 
-static int32_t OSPI_read_v0(SPI_Handle handle, SPI_Transaction *transaction)
+static int32_t OSPI_read_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
 {
     OSPI_v0_Object *object;
     int32_t         retVal = (int32_t)(-1);
@@ -1169,7 +1169,7 @@ static int32_t OSPI_read_v0(SPI_Handle handle, SPI_Transaction *transaction)
     }
     else
     {
-        transaction->status=SPI_TRANSFER_CANCELED;
+        transaction->status=OSPI_TRANSFER_CANCELED;
     }
 
     return(retVal);
@@ -1234,8 +1234,8 @@ static int32_t OSPI_waitIndWriteComplete(const CSL_ospi_flash_cfgRegs *pRegs)
     return(retVal);
 }
 
-static int32_t OSPI_ind_xfer_mode_write_v0(SPI_Handle handle,
-                                           SPI_Transaction *transaction)
+static int32_t OSPI_ind_xfer_mode_write_v0(OSPI_Handle handle,
+                                           OSPI_Transaction *transaction)
 {
     OSPI_v0_HwAttrs const *hwAttrs;      /* OSPI hardware attributes */
     OSPI_v0_Object        *object;       /* OSPI object */
@@ -1275,7 +1275,7 @@ static int32_t OSPI_ind_xfer_mode_write_v0(SPI_Handle handle,
         {
             retFlag = 1U;
             retVal = (int32_t)(-1);
-            transaction->status=SPI_TRANSFER_FAILED;
+            transaction->status=OSPI_TRANSFER_FAILED;
         }
         else
         {
@@ -1314,14 +1314,14 @@ static int32_t OSPI_ind_xfer_mode_write_v0(SPI_Handle handle,
 
     if(retFlag == 1U)
     {
-        transaction->status=SPI_TRANSFER_FAILED;
+        transaction->status=OSPI_TRANSFER_FAILED;
         CSL_ospiIndWriteCancel((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
     }
     return (retVal);
 }
 
-static int32_t OSPI_dac_xfer_mode_write_v0(SPI_Handle handle,
-                                           const SPI_Transaction *transaction)
+static int32_t OSPI_dac_xfer_mode_write_v0(OSPI_Handle handle,
+                                           const OSPI_Transaction *transaction)
 {
     OSPI_v0_HwAttrs const *hwAttrs;      /* OSPI hardware attributes */
     uint8_t               *pSrc;         /* Source address */
@@ -1404,8 +1404,8 @@ static int32_t OSPI_cmdWrite(const CSL_ospi_flash_cfgRegs *pRegs,
     return (OSPI_flashExecCmd(pRegs));
 }
 
-static int32_t OSPI_cmd_mode_write_v0(SPI_Handle handle,
-                                      const SPI_Transaction *transaction)
+static int32_t OSPI_cmd_mode_write_v0(OSPI_Handle handle,
+                                      const OSPI_Transaction *transaction)
 {
     OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
     uint8_t               *txBuf;
@@ -1439,7 +1439,7 @@ static int32_t OSPI_cmd_mode_write_v0(SPI_Handle handle,
 }
 
 
-static int32_t OSPI_write_v0(SPI_Handle handle, SPI_Transaction *transaction)
+static int32_t OSPI_write_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
 {
     OSPI_v0_Object  *object;
     int32_t          retVal = (int32_t)(-1);
@@ -1461,7 +1461,7 @@ static int32_t OSPI_write_v0(SPI_Handle handle, SPI_Transaction *transaction)
     }
     else
     {
-        transaction->status=SPI_TRANSFER_CANCELED;
+        transaction->status=OSPI_TRANSFER_CANCELED;
     }
     return (retVal);
 }
@@ -1470,7 +1470,7 @@ static int32_t OSPI_write_v0(SPI_Handle handle, SPI_Transaction *transaction)
 /*
  *  ======== OSPI_transfer_v0 ========
  */
-static bool OSPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
+static bool OSPI_transfer_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
 {
     bool                   ret = (bool)false; /* return value */
     OSPI_v0_HwAttrs const *hwAttrs;     /* OSPI hardware attributes */
@@ -1491,7 +1491,7 @@ static bool OSPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
         {
             SPI_osalHardwareIntRestore(key);
             /* Transfer is in progress */
-            transaction->status = SPI_TRANSFER_CANCELED;
+            transaction->status = OSPI_TRANSFER_CANCELED;
         }
         else
         {
@@ -1549,14 +1549,14 @@ static bool OSPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
                     /* Always return true if in Asynchronous mode */
                     ret = (bool)true;
                 }
-                transaction->status = SPI_TRANSFER_COMPLETED;
+                transaction->status = OSPI_TRANSFER_COMPLETED;
                 /* Release the lock for this particular SPI handle */
 
                 (void)SPI_osalPostLock(object->mutex);
             }
             else
             {
-                transaction->status=SPI_TRANSFER_FAILED;
+                transaction->status=OSPI_TRANSFER_FAILED;
             }
 
             if (object->intrPollMode != (uint32_t)SPI_OPER_MODE_CALLBACK)
@@ -1569,7 +1569,7 @@ static bool OSPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
     {
         if (transaction != NULL)
         {
-            transaction->status = SPI_TRANSFER_CANCELED;
+            transaction->status = OSPI_TRANSFER_CANCELED;
         }
     }
 
@@ -1580,7 +1580,7 @@ static bool OSPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
 /*
  *  ======== OSPI_transferCallback_v0 ========
  */
-static void OSPI_transferCallback_v0(SPI_Handle handle, SPI_Transaction *msg)
+static void OSPI_transferCallback_v0(OSPI_Handle handle, OSPI_Transaction *msg)
 {
     OSPI_v0_Object        *object;  /* OSPI object */
 
@@ -1596,8 +1596,8 @@ static void OSPI_transferCallback_v0(SPI_Handle handle, SPI_Transaction *msg)
 
 }
 
-static int32_t OSPI_configDdr(SPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data);
-static int32_t OSPI_configDdr(SPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data)
+static int32_t OSPI_configDdr(OSPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data);
+static int32_t OSPI_configDdr(OSPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data)
 {
     OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
     int32_t                retVal;
@@ -1630,7 +1630,7 @@ static int32_t OSPI_configDdr(SPI_Handle handle, uint32_t cmd, uint32_t addr, ui
     return (retVal);
 }
 
-static int32_t OSPI_enableXip (SPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data)
+static int32_t OSPI_enableXip (OSPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data)
 {
     OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
     int32_t                retVal;
@@ -1659,8 +1659,8 @@ static int32_t OSPI_enableXip (SPI_Handle handle, uint32_t cmd, uint32_t addr, u
     return (retVal);
 }
 
-static int32_t OSPI_configDummyCycle(SPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data);
-static int32_t OSPI_configDummyCycle(SPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data)
+static int32_t OSPI_configDummyCycle(OSPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data);
+static int32_t OSPI_configDummyCycle(OSPI_Handle handle, uint32_t cmd, uint32_t addr, uint32_t data)
 {
     OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
     int32_t                retVal;
@@ -1675,7 +1675,7 @@ static int32_t OSPI_configDummyCycle(SPI_Handle handle, uint32_t cmd, uint32_t a
 /*
  *  ======== OSPI_control_v0 ========
  */
-static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
+static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg)
 {
     OSPI_v0_HwAttrs       *hwAttrs; /* OSPI hardware attributes */
     OSPI_v0_Object        *object;  /* OSPI object */
@@ -1695,7 +1695,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
 
         switch (cmd)
         {
-            case SPI_V0_CMD_XFER_OPCODE:
+            case OSPI_V0_CMD_XFER_OPCODE:
             {
                 object->transferCmd = *ctrlData;
                 ctrlData++;
@@ -1715,7 +1715,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_XFER_OPCODE_EXT:
+            case OSPI_V0_CMD_XFER_OPCODE_EXT:
             {
                 extOpcodeLo  = *ctrlData++; /* EXT_STIG_OPCODE_FLD */
                 extOpcodeLo |= (*ctrlData++ << 8); /* EXT_POLL_OPCODE_FLD */
@@ -1734,21 +1734,21 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_XFER_MODE_RW:
+            case OSPI_V0_CMD_XFER_MODE_RW:
             {
                 object->transactionType = *ctrlData;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
 
-            case SPI_V0_CMD_SET_CFG_MODE:
+            case OSPI_V0_CMD_SET_CFG_MODE:
             {
                 object->ospiMode = (uint32_t)OSPI_OPER_MODE_CFG;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
 
-            case SPI_V0_CMD_SET_XFER_MODE:
+            case OSPI_V0_CMD_SET_XFER_MODE:
             {
                 if (hwAttrs->dacEnable)
                 {
@@ -1762,7 +1762,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_SET_XFER_LINES:
+            case OSPI_V0_CMD_SET_XFER_LINES:
             {
                 uint32_t numAddrBytes;
                 object->xferLines = *ctrlData;
@@ -1793,28 +1793,28 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_RD_DUMMY_CLKS:
+            case OSPI_V0_CMD_RD_DUMMY_CLKS:
             {
                 object->rdDummyClks = *ctrlData;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
 
-            case SPI_V0_CMD_EXT_RD_DUMMY_CLKS:
+            case OSPI_V0_CMD_EXT_RD_DUMMY_CLKS:
             {
                 object->extRdDummyClks = *ctrlData;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
 
-            case SPI_V0_CMD_EXT_RD_CMD_LEN:
+            case OSPI_V0_CMD_EXT_RD_CMD_LEN:
             {
                 object->extRdCmdLen = *ctrlData;
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
 
-            case SPI_V0_CMD_CFG_PHY:
+            case OSPI_V0_CMD_CFG_PHY:
             {
                 uint32_t phyEnable = *ctrlData++;
                 if (phyEnable == TRUE)
@@ -1848,8 +1848,8 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_ENABLE_DDR:
-            case SPI_V0_CMD_ENABLE_SDR:
+            case OSPI_V0_CMD_ENABLE_DDR:
+            case OSPI_V0_CMD_ENABLE_SDR:
             {
                 nvcrCmd = *ctrlData;
                 ctrlData++;
@@ -1860,7 +1860,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_CFG_XIP:
+            case OSPI_V0_CMD_CFG_XIP:
             {
                 if (hwAttrs->xipEnable == (bool)true) {
                     nvcrCmd = *ctrlData;
@@ -1876,7 +1876,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_CFG_RD_DELAY:
+            case OSPI_V0_CMD_CFG_RD_DELAY:
             {
                 uint32_t rdDelay = *ctrlData;
                 CSL_ospiSetDataReadCapDelay((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
@@ -1885,7 +1885,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
                 break;
             }
 
-            case SPI_V0_CMD_CFG_DUMMY_CYCLE:
+            case OSPI_V0_CMD_CFG_DUMMY_CYCLE:
             {
                 nvcrCmd = *ctrlData;
                 ctrlData++;
@@ -1909,7 +1909,7 @@ static int32_t OSPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
 /*
  *  ======== OSPI_transferCancel_v0 ========
  */
-static void OSPI_transferCancel_v0(SPI_Handle handle)
+static void OSPI_transferCancel_v0(OSPI_Handle handle)
 {
     (void)handle;
     return;

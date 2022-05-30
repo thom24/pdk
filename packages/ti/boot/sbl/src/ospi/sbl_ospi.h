@@ -129,7 +129,7 @@ int32_t SBL_OSPI_ReadSectors(void *dstAddr,
 /* Sets the src address to the given offset address */
 void SBL_OSPI_seek(void *srcAddr, uint32_t location);
 
-/* Proxy function for apps to be able to use same SPI_init func, but called externally */
+/* Proxy function for apps to be able to use same OSPI_init func, but called externally */
 void SBL_SPI_init();
 #endif
 

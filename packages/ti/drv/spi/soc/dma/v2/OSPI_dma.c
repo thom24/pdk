@@ -46,11 +46,11 @@
 static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
                                uint32_t         eventType,
                                void            *appData);
-int32_t OSPI_dmaConfig(SPI_Handle handle);
-void OSPI_dmaTransfer(SPI_Handle handle, const SPI_Transaction *transaction);
-void OSPI_dmaFreeChannel(SPI_Handle handle);
+int32_t OSPI_dmaConfig(OSPI_Handle handle);
+void OSPI_dmaTransfer(OSPI_Handle handle, const OSPI_Transaction *transaction);
+void OSPI_dmaFreeChannel(OSPI_Handle handle);
 
-int32_t OSPI_dmaConfig(SPI_Handle handle)
+int32_t OSPI_dmaConfig(OSPI_Handle handle)
 {
     int32_t                retVal;
     int32_t                status;
@@ -222,7 +222,7 @@ static void OSPI_udmaTrpdInit(Udma_ChHandle   chHandle,
 
 #define OSPI_DMA_XFER_SIZE           (0x00008000U)
 #define OSPI_DMA_MAX_L0_XFER_SIZE    (0x00010000U)
-static int32_t OSPI_udmaMemcpy(SPI_Handle     handle,
+static int32_t OSPI_udmaMemcpy(OSPI_Handle     handle,
                                const void    *destBuf,
                                const void    *srcBuf,
                                uint32_t       length)
@@ -270,8 +270,8 @@ static int32_t OSPI_udmaMemcpy(SPI_Handle     handle,
     return (retVal);
 }
 
-void OSPI_dmaTransfer(SPI_Handle             handle,
-                      const SPI_Transaction *transaction)
+void OSPI_dmaTransfer(OSPI_Handle             handle,
+                      const OSPI_Transaction *transaction)
 {
     OSPI_v0_Object        *object;
     OSPI_v0_HwAttrs const *hwAttrs;
@@ -303,7 +303,7 @@ void OSPI_dmaTransfer(SPI_Handle             handle,
     }
 }
 
-void OSPI_dmaFreeChannel(SPI_Handle handle)
+void OSPI_dmaFreeChannel(OSPI_Handle handle)
 {
     OSPI_v0_HwAttrs const *hwAttrs;
     OSPI_dmaInfo          *pDmaInfo;
@@ -332,7 +332,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
                                void            *appData)
 {
     int32_t                status = UDMA_SOK;
-    SPI_Handle             handle;
+    OSPI_Handle            handle;
     OSPI_v0_Object        *object;
     OSPI_v0_HwAttrs const *hwAttrs;
     OSPI_dmaInfo          *pDmaInfo;
@@ -350,7 +350,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
     if(appData != NULL)
     {
         /* Get the pointer to the object and hwAttrs */
-        handle   = (SPI_Handle)appData;
+        handle   = (OSPI_Handle)appData;
         hwAttrs  = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
         object   = (OSPI_v0_Object *)handle->object;
         pDmaInfo = hwAttrs->dmaInfo;
@@ -367,13 +367,13 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
             if(UDMA_SOK != status)
             {
                 /* transfer completed, but dequeue error */
-                object->transaction->status = SPI_TRANSFER_FAILED;
+                object->transaction->status = OSPI_TRANSFER_FAILED;
                 object->transaction->count = 0;
                 callBack = (bool)true;
             }
             else
             {
-                object->transaction->status = SPI_TRANSFER_COMPLETED;
+                object->transaction->status = OSPI_TRANSFER_COMPLETED;
                 if((uint32_t)SPI_TRANSACTION_TYPE_READ == object->transactionType)
                 {
                     if (object->readCountIdx > OSPI_DMA_MAX_L0_XFER_SIZE)
@@ -433,7 +433,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
         }
         else
         {
-            object->transaction->status = SPI_TRANSFER_FAILED;
+            object->transaction->status = OSPI_TRANSFER_FAILED;
             object->transaction->count = 0;
             callBack = (bool)true;
         }

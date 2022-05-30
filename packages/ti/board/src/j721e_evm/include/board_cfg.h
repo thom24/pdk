@@ -140,6 +140,9 @@ extern "C" {
 /* OSPI instance number */
 #define BOARD_OSPI_INSTANCE                             (0)
 
+/* OSPI Domain number */
+#define BOARD_OSPI_DOMAIN                               (0U)
+
 /* I2C instance for External RTC */
 #define BOARD_I2C_EXT_RTC_INSTANCE                      (0U)
 

@@ -37,8 +37,8 @@
 #include <ti/csl/soc.h>
 
 #if (defined (j7200_evm) || defined (j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm))
-/* SPI entry offset is at index 5 of SPI config array */
-#define SPI_CONFIG_OFFSET     (5U)
+/* SPI entry offset is at index 0 of OSPI config array */
+#define SPI_CONFIG_OFFSET     (0U)
 #elif defined (am64x_evm) || defined (am64x_svb)
 #define SPI_CONFIG_OFFSET     (7U)
 #endif
@@ -51,9 +51,9 @@ static NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr,
                                 uint32_t len, uint8_t *buf, uint32_t mode);
 static NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t eraseCnt, bool blkErase);
 
-static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
+static NOR_STATUS Nor_qspiCmdWrite(OSPI_Handle handle, uint8_t *cmdBuf,
                                    uint32_t cmdLen, uint32_t dataLen);
-static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut);
+static NOR_STATUS Nor_qspiWaitReady(OSPI_Handle handle, uint32_t timeOut);
 
 /* NOR function table for NOR OSPI interface implementation */
 const NOR_FxnTable Nor_qspiFxnTable =
@@ -78,22 +78,22 @@ NOR_Info Nor_qspiInfo =
     NOR_SECTOR_SIZE            /* sectorSize */
 };
 
-static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
+static NOR_STATUS NOR_qspiCmdRead(OSPI_Handle handle, uint8_t *cmdBuf,
                             uint32_t cmdLen, uint8_t *rxBuf, uint32_t rxLen)
 {
-    SPI_Transaction  transaction;
+    OSPI_Transaction  transaction;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_READ;
     bool             ret;
 
     /* Update the mode and transfer type with the required values */
-    SPI_control(handle, SPI_V0_CMD_SET_CFG_MODE, NULL);
-    SPI_control(handle, SPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
+    OSPI_control(handle, OSPI_V0_CMD_SET_CFG_MODE, NULL);
+    OSPI_control(handle, OSPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
 
     transaction.txBuf = (void *)cmdBuf;
     transaction.rxBuf = (void *)rxBuf;
     transaction.count = cmdLen + rxLen;
 
-    ret = SPI_transfer(handle, &transaction);
+    ret = OSPI_transfer(handle, &transaction);
     if (ret == true)
     {
         return NOR_PASS;
@@ -104,7 +104,7 @@ static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
     }
 }
 
-static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
+static NOR_STATUS Nor_qspiReadId(OSPI_Handle handle)
 {
     NOR_STATUS  retVal;
     uint8_t     idCode[NOR_RDID_NUM_BYTES];
@@ -130,7 +130,7 @@ static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
     return (retVal);
 }
 
-static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
+static NOR_STATUS Nor_qspiEnableDDR(OSPI_Handle handle)
 {
     OSPI_v0_HwAttrs const *hwAttrs;
     NOR_STATUS       retVal = NOR_PASS;
@@ -168,9 +168,9 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
         opCode[2]   = NOR_CMD_RDSR;
 
         /* Update the read opCode, rx lines and read dummy cycles */
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+        OSPI_control(handle, OSPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+        OSPI_control(handle, OSPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+        OSPI_control(handle, OSPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
 #else
     /* Send Write Enable command */
@@ -198,9 +198,9 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
         opCode[2]   = NOR_CMD_RDSR;
 
         /* Update the read opCode, rx lines and read dummy cycles */
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+        OSPI_control(handle, OSPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+        OSPI_control(handle, OSPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+        OSPI_control(handle, OSPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
 #endif
     CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
@@ -208,7 +208,7 @@ static NOR_STATUS Nor_qspiEnableDDR(SPI_Handle handle)
     return retVal;
 }
 
-static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
+static NOR_STATUS Nor_qspiEnableSDR(OSPI_Handle handle)
 {
     OSPI_v0_HwAttrs const *hwAttrs;
     CSL_ospi_flash_cfgRegs *regAddr;
@@ -241,9 +241,9 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
         opCode[1]     = NOR_CMD_QUAD_FAST_PROG;
         opCode[2]     = NOR_CMD_RDSR;
 
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+        OSPI_control(handle, OSPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+        OSPI_control(handle, OSPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+        OSPI_control(handle, OSPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
 #else
     /* Send Write Enable command */
@@ -263,9 +263,9 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
         opCode[1]     = NOR_CMD_PAGE_PROG;
         opCode[2]     = NOR_CMD_RDSR;
 
-        SPI_control(handle, SPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
-        SPI_control(handle, SPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
-        SPI_control(handle, SPI_V0_CMD_XFER_OPCODE, (void *)opCode);
+        OSPI_control(handle, OSPI_V0_CMD_RD_DUMMY_CLKS, (void *)&dummyCycles);
+        OSPI_control(handle, OSPI_V0_CMD_SET_XFER_LINES, (void *)&rx_lines);
+        OSPI_control(handle, OSPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
 #endif
     /* Flash device requires 4-bit access for command as well in quad mode */
@@ -277,7 +277,7 @@ static NOR_STATUS Nor_qspiEnableSDR(SPI_Handle handle)
     return retVal;
 }
 
-static NOR_STATUS Nor_qspiXipEnable(SPI_Handle handle)
+static NOR_STATUS Nor_qspiXipEnable(OSPI_Handle handle)
 {
     return NOR_PASS;
 }
@@ -285,8 +285,8 @@ static NOR_STATUS Nor_qspiXipEnable(SPI_Handle handle)
 
 NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 {
-    SPI_Params      spiParams;  /* SPI params structure */
-    SPI_Handle      hwHandle;  /* SPI handle */
+    OSPI_Params      spiParams;  /* SPI params structure */
+    OSPI_Handle      hwHandle;  /* SPI handle */
     NOR_HANDLE      norHandle = 0;
     uint32_t        i = 0;
     uint32_t        delay;
@@ -299,21 +299,21 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 
     if (params)
     {
-		memcpy(&spiParams, params, sizeof(SPI_Params));
+		memcpy(&spiParams, params, sizeof(OSPI_Params));
     }
     else
     {
         /* Use default SPI config params if no params provided */
-		SPI_Params_init(&spiParams);
+		OSPI_Params_init(&spiParams);
     }
-    hwHandle = (SPI_Handle)SPI_open(portNum + SPI_CONFIG_OFFSET, &spiParams);
+    hwHandle = (OSPI_Handle)OSPI_open(SPI_OSPI_DOMAIN_MCU, portNum + SPI_CONFIG_OFFSET, &spiParams);
 
     if (hwHandle)
     {
         retVal = NOR_PASS;
         if (retVal == NOR_PASS)
         {
-            OSPI_socGetInitCfg(portNum, &ospi_cfg);
+            OSPI_socGetInitCfg(SPI_OSPI_DOMAIN_MCU, portNum, &ospi_cfg);
             if (ospi_cfg.dtrEnable == true)
             {
                 Nor_qspiEnableDDR(hwHandle);
@@ -327,7 +327,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
             {
                 /* set initial PHY DLL delay */
                 delay = 0U;
-                SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, (void *)(&delay));
+                OSPI_control(hwHandle, OSPI_V0_CMD_CFG_PHY, (void *)(&delay));
 
                 /* calibrate PHY */
                 for (i = 0; i < 128U; i++)
@@ -352,7 +352,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                     }
 
                     /* Increment DLL delay */
-                    SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, NULL);
+                    OSPI_control(hwHandle, OSPI_V0_CMD_CFG_PHY, NULL);
                 }
 
                 if (readCnt > readCntPrv)
@@ -365,13 +365,13 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 {
                     /* Find the delay in the middle working position */
                     delay = readStartPrv + (readCntPrv / 2);
-                    SPI_control(hwHandle, SPI_V0_CMD_CFG_PHY, (void *)(&delay));
+                    OSPI_control(hwHandle, OSPI_V0_CMD_CFG_PHY, (void *)(&delay));
                     Nor_qspiInfo.hwHandle = (uintptr_t)hwHandle;
                     norHandle = (NOR_HANDLE)(&Nor_qspiInfo);
                 }
                 else
                 {
-                    SPI_close(hwHandle);
+                    OSPI_close(hwHandle);
                 }
             }
             else /* ospi_cfg->phyEnable == false */
@@ -383,7 +383,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 }
                 else
                 {
-                    SPI_close(hwHandle);
+                    OSPI_close(hwHandle);
                 }
             }
 
@@ -394,7 +394,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
         }
         else /* Nor_ospiEnableDDR(hwHandle) != NOR_PASS */
         {
-            SPI_close(hwHandle);
+            OSPI_close(hwHandle);
         }
     }
 
@@ -404,37 +404,37 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 void Nor_qspiClose(NOR_HANDLE handle)
 {
     NOR_Info    *norOspiInfo;
-    SPI_Handle   spiHandle;
+    OSPI_Handle   spiHandle;
 
     if (handle)
     {
         norOspiInfo = (NOR_Info *)handle;
-        spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
+        spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
 
         if (spiHandle)
         {
-            SPI_close(spiHandle);
+            OSPI_close(spiHandle);
         }
     }
 }
 
-static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
+static NOR_STATUS Nor_qspiCmdWrite(OSPI_Handle handle, uint8_t *cmdBuf,
                                         uint32_t cmdLen, uint32_t dataLen)
 {
-    SPI_Transaction  transaction;
+    OSPI_Transaction  transaction;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_WRITE;
     bool             ret;
 
     /* Update the mode and transfer type with the required values */
-    SPI_control(handle, SPI_V0_CMD_SET_CFG_MODE, NULL);
-    SPI_control(handle, SPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
+    OSPI_control(handle, OSPI_V0_CMD_SET_CFG_MODE, NULL);
+    OSPI_control(handle, OSPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
 
     transaction.txBuf = (void *)cmdBuf; /* Buffer includes command and write data */
     transaction.count = cmdLen + dataLen;
     transaction.rxBuf = NULL;
     transaction.arg = (void *)(uintptr_t)dataLen;
 
-    ret = SPI_transfer(handle, &transaction);
+    ret = OSPI_transfer(handle, &transaction);
     if (ret == true)
     {
         return NOR_PASS;
@@ -445,7 +445,7 @@ static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
     }
 }
 
-static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
+static NOR_STATUS Nor_qspiWaitReady(OSPI_Handle handle, uint32_t timeOut)
 {
     uint8_t         status;
     uint8_t         cmd = NOR_CMD_RDSR;
@@ -477,12 +477,12 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
     return NOR_FAIL;
 }
 
-static SPI_Transaction transaction;
+static OSPI_Transaction transaction;
 NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
                         uint32_t len, uint8_t *buf, uint32_t mode)
 {
     NOR_Info        *norOspiInfo;
-    SPI_Handle       spiHandle;
+    OSPI_Handle       spiHandle;
     bool             ret;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_READ;
 
@@ -496,7 +496,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     {
         return NOR_FAIL;
     }
-    spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
+    spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
 
     /* Validate address input */
     if ((addr + len) > NOR_SIZE)
@@ -504,15 +504,15 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
         return NOR_FAIL;
     }
     /* Set transfer mode and read type */
-    SPI_control(spiHandle, SPI_V0_CMD_SET_XFER_MODE, NULL);
-    SPI_control(spiHandle, SPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
+    OSPI_control(spiHandle, OSPI_V0_CMD_SET_XFER_MODE, NULL);
+    OSPI_control(spiHandle, OSPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
 
     transaction.arg   = (void *)(uintptr_t)addr;
     transaction.txBuf = NULL;
     transaction.rxBuf = (void *)buf;
     transaction.count = len;
 
-    ret = SPI_transfer(spiHandle, &transaction);
+    ret = OSPI_transfer(spiHandle, &transaction);
     if (ret == true)
     {
         return NOR_PASS;
@@ -527,7 +527,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
                          uint8_t *buf, uint32_t mode)
 {
     NOR_Info        *norOspiInfo;
-    SPI_Handle       spiHandle;
+    OSPI_Handle       spiHandle;
     bool             ret;
     uint32_t         byteAddr;
     uint32_t         wrSize = len;
@@ -553,12 +553,12 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         return NOR_FAIL;
     }
 
-    spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
+    spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
     hwAttrs = (OSPI_v0_HwAttrs *)spiHandle->hwAttrs;
 
     /* Set the transfer mode, write op code and tx lines */
-    SPI_control(spiHandle, SPI_V0_CMD_SET_XFER_MODE, NULL);
-    SPI_control(spiHandle, SPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
+    OSPI_control(spiHandle, OSPI_V0_CMD_SET_XFER_MODE, NULL);
+    OSPI_control(spiHandle, OSPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
 
     if (hwAttrs->dacEnable )
     {
@@ -589,7 +589,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         transaction.rxBuf = NULL;
         transaction.count = chunkLen;
 
-        ret = SPI_transfer(spiHandle, &transaction);
+        ret = OSPI_transfer(spiHandle, &transaction);
         if (ret == false)
         {
             return NOR_FAIL;
@@ -609,7 +609,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     uint32_t        address = 0;
     uint8_t         cmdWren  = NOR_CMD_WREN;
     NOR_Info       *norOspiInfo;
-    SPI_Handle      spiHandle;
+    OSPI_Handle      spiHandle;
     OSPI_v0_HwAttrs const *hwAttrs;
 
     if (!handle)
@@ -622,7 +622,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     {
         return NOR_FAIL;
     }
-    spiHandle = (SPI_Handle)norOspiInfo->hwHandle;
+    spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
     hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
 
     if (erLoc == NOR_BE_SECTOR_NUM)

@@ -1188,7 +1188,7 @@ static bool SPI_test_single_channel(void *arg)
             spiParams.dataSize = test->param;
         }
 
-        spi = SPI_open(instance, &spiParams);
+        spi = SPI_open(domain, instance, &spiParams);
 
         if (spi == NULL)
         {
@@ -1301,7 +1301,7 @@ static bool SPI_test_xfer_error(void *arg)
         /* Initialize SPI handle */
         SPI_Params_init(&spiParams);
         spiParams.transferTimeout = timeout;
-        spi = SPI_open(instance, &spiParams);
+        spi = SPI_open(domain, instance, &spiParams);
 
         if (spi == NULL)
         {

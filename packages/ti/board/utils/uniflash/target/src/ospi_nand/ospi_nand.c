@@ -373,7 +373,7 @@ static int8_t UFP_ospiNandInit(void)
     uint32_t tuneEnable = FALSE;
 
     /* Get the default ospi init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Modify the default ospi configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
@@ -384,7 +384,7 @@ static int8_t UFP_ospiNandInit(void)
 #endif
 
     /* Set the default ospi init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Open the Board ospi NAND device with ospi port 0
        and use default ospi configurations */

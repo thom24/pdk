@@ -306,7 +306,7 @@ void spi_test(UArg arg0, UArg arg1)
     spi_initConfig();
 
     /* Open MCSPI instance 1 driver */
-    gSpiHandle = SPI_open(MCSPI_INSTANCE, &gSpiParams);
+    gSpiHandle = SPI_open(SPI_MCSPI_DOMAIN_MCU, MCSPI_INSTANCE, &gSpiParams);
     if(gSpiHandle == NULL)
     {
         printf("\nError opening MCSPI driver\n");

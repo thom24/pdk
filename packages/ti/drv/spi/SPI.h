@@ -81,6 +81,7 @@ extern "C" {
  * @endcode
  */
 #define SPI_CMD_RESERVED            (32U)
+#define OSPI_CMD_RESERVED           (32U)
 
 /*!
  * Common SPI_control status code reservation offset.
@@ -337,8 +338,223 @@ typedef struct SPI_Config_s {
 } SPI_Config;
 
 #define SPI_MAX_CONFIG_CNT (8U)
-typedef SPI_Config SPI_config_list[SPI_MAX_CONFIG_CNT];
+#define SPI_MAX_DOMAIN_CNT (2U)
+typedef SPI_Config SPI_config_list[SPI_MAX_DOMAIN_CNT][SPI_MAX_CONFIG_CNT];
 
+/*!
+ *  @brief      Status codes that are set by the SPI driver.
+ */
+typedef enum OSPI_Status_s {
+    OSPI_TRANSFER_COMPLETED = 0,
+    OSPI_TRANSFER_STARTED,
+    OSPI_TRANSFER_CANCELED,
+    OSPI_TRANSFER_FAILED,
+    OSPI_TRANSFER_CSN_DEASSERT,
+    OSPI_TRANSFER_TIMEOUT
+} OSPI_Status;
+
+/*!
+ *  @brief
+ *  A ::SPI_Transaction data structure is used with OSPI_transfer(). It indicates
+ *  how many ::SPI_FrameFormat frames are sent and received from the buffers
+ *  pointed to txBuf and rxBuf.
+ *  The arg variable is an user-definable argument which gets passed to the
+ *  ::SPI_CallbackFxn when the SPI driver is in ::SPI_MODE_CALLBACK.
+ */
+typedef struct OSPI_Transaction_s {
+    /* User input (write-only) fields */
+    size_t     count;      /*!< Number of frames for this transaction */
+    void      *txBuf;      /*!< void * to a buffer with data to be transmitted */
+    void      *rxBuf;      /*!< void * to a buffer to receive data */
+    void      *arg;        /*!< Argument to be passed to the callback function */
+
+    /* User output (read-only) fields */
+    OSPI_Status status;     /*!< Status code set by SPI_transfer */
+
+    /* Driver-use only fields */
+} OSPI_Transaction;
+
+/*!
+ *  @brief      A handle that is returned from a SPI_open() call.
+ */
+typedef struct OSPI_Config_s      *OSPI_Handle;
+
+/*!
+ *  @brief      The definition of a callback function used by the SPI driver
+ *              when used in ::SPI_MODE_CALLBACK
+ *
+ *  @param      OSPI_Handle          OSPI_Handle
+ *  @param      OSPI_Transaction*    OSPI_Transaction*
+ */
+typedef void       (*OSPI_CallbackFxn) (OSPI_Handle handle,
+                                        OSPI_Transaction * transaction);
+/*!
+ *  @brief
+ *  Definitions for various SPI modes of operation.
+ */
+typedef enum OSPI_Mode_s {
+    OSPI_MASTER      = 0,    /*!< SPI in master mode */
+    OSPI_SLAVE       = 1     /*!< SPI in slave mode */
+} OSPI_Mode;
+
+/*!
+ *  @brief
+ *  Definitions for various SPI data frame formats.
+ */
+typedef enum OSPI_FrameFormat_s {
+    OSPI_POL0_PHA0   = 0,    /*!< SPI mode Polarity 0 Phase 0 */
+    OSPI_POL0_PHA1   = 1,    /*!< SPI mode Polarity 0 Phase 1 */
+    OSPI_POL1_PHA0   = 2,    /*!< SPI mode Polarity 1 Phase 0 */
+    OSPI_POL1_PHA1   = 3,    /*!< SPI mode Polarity 1 Phase 1 */
+    OSPI_TI          = 4,    /*!< TI mode */
+    OSPI_MW          = 5     /*!< Micro-wire mode */
+} OSPI_FrameFormat;
+
+/*!
+ *  @brief
+ *
+ *  SPI transfer mode determines the whether the SPI controller operates
+ *  synchronously or asynchronously. In ::SPI_MODE_BLOCKING mode SPI_transfer()
+ *  blocks code execution until the SPI transaction has completed. In
+ *  ::SPI_MODE_CALLBACK OSPI_transfer() does not block code execution and instead
+ *  calls a ::SPI_CallbackFxn callback function when the transaction has
+ *  completed.
+ */
+typedef enum OSPI_TransferMode_s {
+    /*!
+     * SPI_transfer() blocks execution. This mode can only be used when called
+     * within a Task context
+     */
+    OSPI_MODE_BLOCKING,
+    /*!
+     * SPI_transfer() does not block code execution and will call a
+     * ::SPI_CallbackFxn. This mode can be used in a Task, Swi, or Hwi context.
+     */
+    OSPI_MODE_CALLBACK
+} OSPI_TransferMode;
+
+/*!
+ *  @brief OSPI Parameters
+ *
+ *  OSPI Parameters are used to with the OSPI_open() call. Default values for
+ *  these parameters are set using OSPI_Params_init().
+ *
+ *  @sa         OSPI_Params_init()
+ */
+typedef struct OSPI_Params_s {
+    OSPI_TransferMode   transferMode;       /*!< Blocking or Callback mode */
+    uint32_t            transferTimeout;    /*!< Transfer timeout in system
+                                                 ticks (Not supported with all
+                                                 implementations */
+    OSPI_CallbackFxn    transferCallbackFxn;/*!< Callback function pointer */
+    OSPI_Mode           mode;               /*!< Master or Slave mode */
+    uint32_t            bitRate;            /*!< SPI bit rate in Hz */
+    uint32_t            dataSize;           /*!< SPI data frame size in bits */
+    OSPI_FrameFormat    frameFormat;        /*!< SPI frame format */
+    void               *custom;             /*!< Custom argument used by driver
+                                                 implementation */
+} OSPI_Params;
+
+/*!
+ *  @brief      A function pointer to a driver specific implementation of
+ *              OSPI_close().
+ */
+typedef void        (*OSPI_CloseFxn)          (OSPI_Handle handle);
+
+/*!
+ *  @brief      A function pointer to a driver specific implementation of
+ *              OSPI_control().
+ */
+typedef int32_t         (*OSPI_ControlFxn)        (OSPI_Handle handle,
+                                              uint32_t cmd,
+                                              const void *arg);
+
+/*!
+ *  @brief      A function pointer to a driver specific implementation of
+ *              OSPI_init().
+ */
+typedef void        (*OSPI_InitFxn)           (OSPI_Handle handle);
+
+/*!
+ *  @brief      A function pointer to a driver specific implementation of
+ *              SPI_open().
+ */
+typedef OSPI_Handle  (*OSPI_OpenFxn)           (OSPI_Handle handle,
+                                              const OSPI_Params *params);
+
+/*!
+ *  @brief      A function pointer to a driver specific implementation of
+ *              SPI_serviceISR().
+ */
+typedef void        (*OSPI_ServiceISRFxn)     (OSPI_Handle handle);
+
+/*!
+ *  @brief      A function pointer to a driver specific implementation of
+ *              OSPI_transfer().
+ */
+typedef bool        (*OSPI_TransferFxn)       (OSPI_Handle handle,
+                                              OSPI_Transaction *transaction);
+
+/*!
+ *  @brief      A function pointer to a driver specific implementation of
+ *              OSPI_transferCancel().
+ */
+typedef void        (*OSPI_TransferCancelFxn) (OSPI_Handle handle);
+
+
+/*!
+ *  @brief      The definition of a SPI function table that contains the
+ *              required set of functions to control a specific SPI driver
+ *              implementation.
+ */
+typedef struct OSPI_FxnTable_s {
+    /*! Function to close the specified peripheral */
+    OSPI_CloseFxn            closeFxn;
+
+    /*! Function to implementation specific control function */
+    OSPI_ControlFxn          controlFxn;
+
+    /*! Function to initialize the given data object */
+    OSPI_InitFxn             spiInitFxn;
+
+    /*! Function to open the specified peripheral */
+    OSPI_OpenFxn             openFxn;
+
+    /*! Function to initiate a SPI data transfer */
+    OSPI_TransferFxn         transferFxn;
+
+    /*! Function to cancel SPI data transfer */
+    OSPI_TransferCancelFxn   transferCancelFxn;
+
+    /*! Function to service the SPI instance */
+    OSPI_ServiceISRFxn       serviceISRFxn;
+} OSPI_FxnTable;
+
+/*!
+ *  @brief OSPI Global configuration
+ *
+ *  The OSPI_Config structure contains a set of pointers used to characterize
+ *  the OSPI driver implementation.
+ *
+ *  This structure needs to be defined before calling OSPI_init() and it must
+ *  not be changed thereafter.
+ *
+ *  @sa     OSPI_init()
+ */
+typedef struct OSPI_Config_s {
+    /*! Pointer to a table of driver-specific implementations of SPI APIs */
+    OSPI_FxnTable const *fxnTablePtr;
+
+    /*! Pointer to a driver specific data object */
+    void               *object;
+
+    /*! Pointer to a driver specific hardware attributes structure */
+    void         const *hwAttrs;
+} OSPI_Config;
+
+#define OSPI_MAX_CONFIG_CNT (2U)
+#define OSPI_MAX_DOMAIN_CNT (2U)
+typedef OSPI_Config OSPI_config_list[OSPI_MAX_DOMAIN_CNT][OSPI_MAX_CONFIG_CNT];
 
 /*!
  *  @brief  Function to close a SPI peripheral specified by the SPI handle
@@ -387,6 +603,9 @@ extern void SPI_init(void);
  *
  *  @pre    SPI controller has been initialized using SPI_init()
  *
+ *  @param  domain        Logical domain number of domain where SPI IP is
+ *                        present
+ *
  *  @param  idx           Logical peripheral number for the SPI indexed into
  *                        the SPI_config table
  *
@@ -400,7 +619,119 @@ extern void SPI_init(void);
  *  @sa     SPI_init()
  *  @sa     SPI_close()
  */
-extern SPI_Handle SPI_open(uint32_t idx, SPI_Params *params);
+extern SPI_Handle SPI_open(uint32_t domain, uint32_t idx, SPI_Params *params);
+
+/*!
+ *  @brief  Function to close a OSPI peripheral specified by the OSPI handle
+ *
+ *  @pre    OSPI_open() has to be called first.
+ *
+ *  @param  handle A OSPI handle returned from OSPI_open()
+ *
+ *  @sa     OSPI_open()
+ */
+extern void OSPI_close(OSPI_Handle handle);
+
+/*!
+ *  @brief  Function performs implementation specific features on a given
+ *          OSPI_Handle.
+ *
+ *  @pre    OSPI_open() has to be called first.
+ *
+ *  @param  handle      A OSPI handle returned from OSPI_open()
+ *
+ *  @param  cmd         A command value defined by the driver specific
+ *                      implementation
+ *
+ *  @param  arg         An optional R/W (read/write) argument that is
+ *                      accompanied with cmd
+ *
+ *  @return Implementation specific return codes. Negative values indicate
+ *          unsuccessful operations.
+ *
+ *  @sa     OSPI_open()
+ */
+extern int32_t OSPI_control(OSPI_Handle handle, uint32_t cmd, void *arg);
+
+/*!
+ *  @brief  This function initializes the SPI module.
+ *
+ *  @pre    The OSPI_config structure must exist and be persistent before this
+ *          function can be called. This function must also be called before
+ *          any other OSPI driver APIs. This function call does not modify any
+ *          peripheral registers.
+ */
+extern void OSPI_init(void);
+
+/*!
+ *  @brief  This function opens a given OSPI peripheral.
+ *
+ *  @pre    OSPI controller has been initialized using OSPI_init()
+ *
+ *  @param  domain        domain where OSPI IP is located
+ * 
+ *  @param  idx           Logical peripheral number for the SPI indexed into
+ *                        the SPI_config table
+ *
+ *  @param  params        Pointer to an parameter block, if NULL it will use
+ *                        default values. All the fields in this structure are
+ *                        RO (read-only).
+ *
+ *  @return A SPI_Handle on success or a NULL on an error or if it has been
+ *          opened already.
+ *
+ *  @sa     OSPI_init()
+ *  @sa     OSPI_close()
+ */
+extern OSPI_Handle OSPI_open(uint32_t domain, uint32_t idx, OSPI_Params *params);
+
+/*!
+ *  @brief  Function to initialize the OSPI_Params struct to its defaults
+ *
+ *  @param  params      An pointer to OSPI_Params structure for
+ *                      initialization
+ *
+ *  Defaults values are:
+ *      transferMode        = OSPI_MODE_BLOCKING
+ *      transferTimeout     = OSPI_WAIT_FOREVER
+ *      transferCallbackFxn = NULL
+ *      mode                = OSPI_MASTER
+ *      bitRate             = 1000000 (Hz)
+ *      dataSize            = 8 (bits)
+ *      frameFormat         = OSPI_POL0_PHA0
+ */
+extern void OSPI_Params_init(OSPI_Params *params);
+
+/*!
+ *  @brief  Function to perform SPI transactions
+ *
+ *  If the SPI is in ::SPI_MASTER mode, it will immediately start the
+ *  transaction. If the SPI is in ::SPI_SLAVE mode, it prepares itself for a
+ *  transaction with a SPI master.
+ *
+ *  In ::OSPI_MODE_BLOCKING, OSPI_transfer will block task execution until the
+ *  transaction has completed.
+ *
+ *  In ::OSPI_MODE_CALLBACK, OSPI_transfer() does not block task execution and
+ *  calls a ::SPI_CallbackFxn. This makes the OSPI_tranfer() safe to be used
+ *  within a Task, Swi, or Hwi context. The ::SPI_Transaction structure must
+ *  stay persistent until the OSPI_transfer function has completed!
+ *
+ *  @param  handle      A OSPI_Handle
+ *
+ *  @param  spiTrans    A pointer to a SPI_Transaction. All of the fields within
+ *                      transaction except SPI_Transaction.count and
+ *                      SPI_Transaction.status are WO (write-only) unless
+ *                      otherwise noted in the driver implementations. If a
+ *                      transaction timeout has occured, SPI_Transaction.count
+ *                      will contain the number of frames that were transferred.
+ *
+ *  @return true if started successfully; else false
+ *
+ *  @sa     OSPI_open
+ *  @sa     OSPI_transferCancel
+ */
+extern bool OSPI_transfer(OSPI_Handle handle, OSPI_Transaction *spiTrans);
 
 /*!
  *  @brief  Function to initialize the SPI_Params struct to its defaults

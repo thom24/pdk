@@ -64,7 +64,7 @@ extern "C" {
  *
  *  Command code used with SPI_control()
  */
-#define SPI_V0_CMD_SET_CFG_MODE        (SPI_CMD_RESERVED + 0U)
+#define OSPI_V0_CMD_SET_CFG_MODE        (OSPI_CMD_RESERVED + 0U)
 
 
 /*
@@ -72,7 +72,7 @@ extern "C" {
  *
  *  Command code used with SPI_control()
  */
-#define SPI_V0_CMD_SET_XFER_MODE       (SPI_CMD_RESERVED + 1U)
+#define OSPI_V0_CMD_SET_XFER_MODE       (OSPI_CMD_RESERVED + 1U)
 
 /*
  *  \brief  Set direction of data flow when in memory mapped mode.
@@ -82,82 +82,82 @@ extern "C" {
  *  combination with memory mapped mode where a read or write direction is
  *  required with SPI flash memory.
  */
-#define SPI_V0_CMD_XFER_MODE_RW        (SPI_CMD_RESERVED + 2U)
+#define OSPI_V0_CMD_XFER_MODE_RW        (OSPI_CMD_RESERVED + 2U)
 
 /*
  *  \brief  Set flash specific command when in indirect transfer mode.
  *
  */
-#define SPI_V0_CMD_XFER_OPCODE         (SPI_CMD_RESERVED + 3U)
+#define OSPI_V0_CMD_XFER_OPCODE         (OSPI_CMD_RESERVED + 3U)
 
 /*
  *  \brief  Set number of lines configured for RX/TX operation.
  *
  */
-#define SPI_V0_CMD_SET_XFER_LINES      (SPI_CMD_RESERVED + 4U)
+#define OSPI_V0_CMD_SET_XFER_LINES      (OSPI_CMD_RESERVED + 4U)
 
 /*
  *  \brief  Set number of dummy clock cycles for read operation.
  *
  */
-#define SPI_V0_CMD_RD_DUMMY_CLKS       (SPI_CMD_RESERVED + 5U)
+#define OSPI_V0_CMD_RD_DUMMY_CLKS       (OSPI_CMD_RESERVED + 5U)
 
 /*
  *  \brief  Set command to configure phy.
  *
  */
-#define SPI_V0_CMD_CFG_PHY             (SPI_CMD_RESERVED + 6U)
+#define OSPI_V0_CMD_CFG_PHY             (OSPI_CMD_RESERVED + 6U)
 
 /*
  *  \brief  Set command to enable DDR mode
  *
  */
-#define SPI_V0_CMD_ENABLE_DDR          (SPI_CMD_RESERVED + 7U)
+#define OSPI_V0_CMD_ENABLE_DDR          (OSPI_CMD_RESERVED + 7U)
 
 /*
  *  \brief  Set command to enable XIP mode
  *
  */
-#define SPI_V0_CMD_CFG_XIP             (SPI_CMD_RESERVED + 8U)
+#define OSPI_V0_CMD_CFG_XIP             (OSPI_CMD_RESERVED + 8U)
 
 /*
  *  \brief  Set command to disable DDR mode
  *
  */
-#define SPI_V0_CMD_ENABLE_SDR          (SPI_CMD_RESERVED + 9U)
+#define OSPI_V0_CMD_ENABLE_SDR          (OSPI_CMD_RESERVED + 9U)
 
 /*
  *
  *  \brief  Set extended opcodes when in indirect transfer mode.
  */
-#define SPI_V0_CMD_XFER_OPCODE_EXT     (SPI_CMD_RESERVED + 10U)
+#define OSPI_V0_CMD_XFER_OPCODE_EXT     (OSPI_CMD_RESERVED + 10U)
 
 /*
  *
  *  \brief  Set extended opcode command read dummy cycles.
  */
-#define SPI_V0_CMD_EXT_RD_DUMMY_CLKS   (SPI_CMD_RESERVED + 11U)
+#define OSPI_V0_CMD_EXT_RD_DUMMY_CLKS   (OSPI_CMD_RESERVED + 11U)
 
 /*
  *
  *  \brief  Set read capture delay.
  */
-#define SPI_V0_CMD_CFG_RD_DELAY        (SPI_CMD_RESERVED + 12U)
+#define OSPI_V0_CMD_CFG_RD_DELAY        (OSPI_CMD_RESERVED + 12U)
 
 /*
  *
  *  \brief  Set dummy cycles in flash device.
  */
-#define SPI_V0_CMD_CFG_DUMMY_CYCLE     (SPI_CMD_RESERVED + 13U)
+#define OSPI_V0_CMD_CFG_DUMMY_CYCLE     (OSPI_CMD_RESERVED + 13U)
 
 /*
  *
  *  \brief  Set extended opcode command read dummy cycles.
  */
-#define SPI_V0_CMD_EXT_RD_CMD_LEN      (SPI_CMD_RESERVED + 14U)
+#define OSPI_V0_CMD_EXT_RD_CMD_LEN      (OSPI_CMD_RESERVED + 14U)
 
 /* SPI function table pointer */
-extern const SPI_FxnTable OSPI_FxnTable_v0;
+extern const OSPI_FxnTable OSPI_FxnTable_v0;
 
 /*!
  *  @brief      Type of the SPI transaction.
@@ -274,7 +274,7 @@ typedef struct OSPI_v0_Object_s {
     void             *hwi;              /* Hardware interrupt object */
     uint32_t          waitTimeout;      /* Wait time out */
 
-    SPI_Params        ospiParams;       /* input parameters */
+    OSPI_Params       ospiParams;       /* input parameters */
 
     uint32_t          transactionType;  /* Read or Write Transaction */
     uint32_t          transferCmd;      /* Transfer command */
@@ -285,8 +285,8 @@ typedef struct OSPI_v0_Object_s {
     uint32_t          extRdCmdLen;      /* command length for extended opcode command read op */
     uint32_t          intrPollMode;     /* Interrupt or polling mode */
 
-    SPI_TransferMode  transferMode;     /* Transfer mode */
-    SPI_Transaction  *transaction;      /* Transaction structure */
+    OSPI_TransferMode transferMode;     /* Transfer mode */
+    OSPI_Transaction *transaction;      /* Transaction structure */
 
     uint8_t          *writeBufIdx;      /* Internal inc. writeBuf index */
     uint32_t          writeCountIdx;    /* Internal dec. writeCounter */
@@ -301,10 +301,10 @@ typedef struct OSPI_v0_Object_s {
 } OSPI_v0_Object;
 
 #ifdef SPI_DMA_ENABLE
-extern int32_t OSPI_dmaConfig(SPI_Handle handle);
-extern void OSPI_dmaTransfer(SPI_Handle handle, const SPI_Transaction *spiTrans);
-extern void OSPI_dmaDisableChannel(SPI_Handle handle, bool txCha);
-extern void OSPI_dmaFreeChannel(SPI_Handle handle);
+extern int32_t OSPI_dmaConfig(OSPI_Handle handle);
+extern void OSPI_dmaTransfer(OSPI_Handle handle, const OSPI_Transaction *spiTrans);
+extern void OSPI_dmaDisableChannel(OSPI_Handle handle, bool txCha);
+extern void OSPI_dmaFreeChannel(OSPI_Handle handle);
 #endif
 
 extern uint32_t OSPI_getReadDataCapDelay(SPI_Handle handle);

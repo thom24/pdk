@@ -219,10 +219,10 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     SBL_ADD_PROFILE_POINT;
 
     /* Init SPI driver */
-    SPI_init();
+    OSPI_init();
 
     /* Get default OSPI cfg */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_200M;
@@ -253,7 +253,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 #endif
 
     /* Set the default SPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
@@ -299,7 +299,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
    SBL_ADD_PROFILE_POINT;
 
      /* Get default OSPI cfg */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
    if(pBuffer)
    {
@@ -340,7 +340,7 @@ void OSPI_configClk(uint32_t freq)
 #endif
 
     /* Get the default SPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     retVal = Sciclient_pmModuleClkRequest(devID[BOARD_OSPI_NOR_INSTANCE],
                                           clkID[BOARD_OSPI_NOR_INSTANCE],
@@ -385,7 +385,7 @@ void OSPI_configClk(uint32_t freq)
     }
 
 	ospi_cfg.funcClk = freq;
-    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     ospi_rclk_freq = (uint64_t)freq;
     retVal = Sciclient_pmSetModuleClkFreq(devID[BOARD_OSPI_NOR_INSTANCE],
@@ -434,7 +434,7 @@ int32_t SBL_ospiInit(void *handle)
     }
 
     /* Get default OSPI cfg */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if !defined(SBL_SKIP_BRD_CFG_PM) && !defined(SBL_SKIP_SYSFW_INIT)
     {
@@ -502,7 +502,7 @@ int32_t SBL_ospiInit(void *handle)
 #endif
 #endif
     /* Set the default SPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
@@ -655,7 +655,7 @@ int32_t SBL_ospiLeaveConfigSPI()
     SBL_ADD_PROFILE_POINT;
 
     /* Get default OSPI cfg */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
     /* Configure the flash for SPI mode */
@@ -668,7 +668,7 @@ int32_t SBL_ospiLeaveConfigSPI()
     ospi_cfg.xipEnable = false;
 
     /* Set the default SPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     SBL_ADD_PROFILE_POINT;
 
@@ -801,7 +801,7 @@ static void SBL_OSPI_Initialize(void)
 
 void SBL_SPI_init()
 {
-    SPI_init();
+    OSPI_init();
 }
 
 int32_t SBL_OSPI_ReadSectors(void *dstAddr,

@@ -210,7 +210,7 @@ void spi_test(UArg arg0, UArg arg1)
     /* Init SPI driver */
     SPI_init();
 
-    hwHandle = (SPI_Handle)SPI_open(TEST_SPI_PORT, &spiParams);
+    hwHandle = (SPI_Handle)SPI_open(SPI_MCSPI_DOMAIN_MCU, TEST_SPI_PORT, &spiParams);
 
     SPI_control(hwHandle,SPI_V0_CMD_LOOPBACK,(void *) &loop);
 

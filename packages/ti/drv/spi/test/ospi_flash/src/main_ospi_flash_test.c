@@ -650,7 +650,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
 #endif
 
     /* Get the default SPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);    
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);    
 
     retVal = Sciclient_pmModuleClkRequest(devID[BOARD_OSPI_NOR_INSTANCE],
                                           clkID[BOARD_OSPI_NOR_INSTANCE],
@@ -697,7 +697,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
     }
 	 
 	ospi_cfg.funcClk = freq;
-    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);    
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);    
 	
     ospi_rclk_freq = (uint64_t)freq;
     retVal = Sciclient_pmSetModuleClkFreq(devID[BOARD_OSPI_NOR_INSTANCE],
@@ -740,7 +740,7 @@ void OSPI_initConfig(OSPI_Tests *test)
 #endif
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #ifdef OSPI_QSPI_FLASH
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
@@ -836,7 +836,7 @@ void OSPI_initConfig(OSPI_Tests *test)
     }
 
     /* Set the default OSPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 }
 
 void OSPI_deInitConfig(OSPI_Tests *test)
@@ -844,7 +844,7 @@ void OSPI_deInitConfig(OSPI_Tests *test)
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Release interrupt path */
     OSPI_configSocIntrPath(&ospi_cfg, FALSE);
@@ -1002,12 +1002,12 @@ static bool OSPI_flash_test(void *arg)
             Ospi_udma_deinit();
         }
     #endif
-        OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
         ospi_cfg.dacEnable = false;
         ospi_cfg.phyEnable = false;
         ospi_cfg.dmaEnable = false;
         ospi_cfg.intrEnable = true;
-        OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
         boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
     }
 #endif
@@ -1087,7 +1087,7 @@ static bool OSPI_flash_test(void *arg)
         }
         OSPI_v0_HwAttrs ospi_cfg;
         Board_flashClose(boardHandle);
-        OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
         if (test->testId == OSPI_TEST_ID_DAC_133M_SPI)
         {
             /* Disable PHY in legacy SPI mode (1-1-1) */
@@ -1112,7 +1112,7 @@ static bool OSPI_flash_test(void *arg)
             Ospi_udma_init(&ospi_cfg);
         }
     #endif
-        OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
         boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
     }
 #endif
@@ -1278,8 +1278,8 @@ void spi_test()
     Board_init(boardCfg);
 #endif
 
-    /* Init SPI driver */
-    SPI_init();
+    /* Init OSPI driver */
+    OSPI_init();
 
     for (i = 0; ; i++)
     {

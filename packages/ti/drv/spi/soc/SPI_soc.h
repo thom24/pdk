@@ -105,8 +105,8 @@ extern int32_t MCSPI_configSocIntrPath(uint32_t instance, void *hwAttrs_ptr, boo
 #endif
 
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-extern int32_t OSPI_socGetInitCfg(uint32_t idx, OSPI_v0_HwAttrs *cfg);
-extern int32_t OSPI_socSetInitCfg(uint32_t idx, const OSPI_v0_HwAttrs *cfg);
+extern int32_t OSPI_socGetInitCfg(uint32_t domain, uint32_t idx, OSPI_v0_HwAttrs *cfg);
+extern int32_t OSPI_socSetInitCfg(uint32_t domain, uint32_t idx, const OSPI_v0_HwAttrs *cfg);
 extern int32_t OSPI_socInit(void);
 extern int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath);
 #define OSPI_MODULE_CLK_133M   (133333333U)
@@ -122,6 +122,9 @@ extern int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath);
 
 #define SPI_MCSPI_DOMAIN_MCU    (0U)
 #define SPI_MCSPI_DOMAIN_MAIN   (1U)
+
+#define SPI_OSPI_DOMAIN_MCU     (0U)
+#define SPI_OSPI_DOMAIN_MAIN    (1U)
 #endif
 
 

@@ -363,7 +363,7 @@ static int32_t Lpm_ospiLeaveConfigSPI()
 #endif
 
     /* Get default OSPI cfg */
-    OSPI_socGetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
     /* Configure the flash for SPI mode */
@@ -376,7 +376,7 @@ static int32_t Lpm_ospiLeaveConfigSPI()
     ospi_cfg.xipEnable = false;
 
     /* Set the default SPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
                             BOARD_OSPI_NOR_INSTANCE, NULL);

@@ -112,6 +112,9 @@ extern "C" {
 /* OSPI instance connected to OSPI NOR flash */
 #define BOARD_OSPI_NAND_INSTANCE                        (0U)
 
+/* OSPI Domain number */
+#define BOARD_OSPI_DOMAIN                               (0U)
+
 /* HyperFlash instance number */
 #define BOARD_HPF_INSTANCE                              (0)
 
