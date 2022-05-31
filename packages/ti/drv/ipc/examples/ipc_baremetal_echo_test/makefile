@@ -16,4 +16,6 @@ ifeq ($(CORE), mcu1_0)
     CFLAGS_LOCAL_COMMON = -DENABLE_UART_PRINT
 endif
 
+PACKAGE_SRCS_COMMON = .
+
 include ../common/makefile.mk
