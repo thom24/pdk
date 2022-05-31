@@ -480,7 +480,12 @@ export ipc_multicore_perf_test_$(1)_MAKEFILE =  -f$(PDK_IPC_COMP_PATH)/examples/
 export ipc_multicore_perf_test_$(1)_DEPENDS_ON=ipc_perf_test_$(1)
 ipc_multicore_perf_test_$(1)_PKG_LIST = ipc_multicore_perf_test_$(1)
 ipc_multicore_perf_test_$(1)_INCLUDE = $(ipc_multicore_perf_test_$(1)_PATH)
-export ipc_multicore_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+# Disable multicore app image gen for J7AHP
+ifeq ($(SOC), j784s4)
+export ipc_rtos_multicore_echo_test_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
+else
+export ipc_rtos_multicore_echo_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+endif
 export ipc_multicore_perf_test_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
 ifneq ($(SOC),$(filter $(SOC), j721s2))
