@@ -50,6 +50,7 @@
 
 #include <ti/drv/sciclient/sciserver.h>
 #include <ti/osal/osal.h>
+#include <lib/trace.h>
 
 #ifdef QNX_OS
 #include <ti/drv/sciclient/src/sciclient/sciclient_qnx.h>
@@ -509,6 +510,11 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
         {
             if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
             {
+                /* set debug configuration */
+                 if (status == CSL_PASS)
+                {
+                    status = Sciclient_setDebugConfig();
+                }
                 /* Run pm_init */
                 if (status == CSL_PASS)
                 {
@@ -1116,6 +1122,42 @@ int32_t Sciclient_abiCheck(void)
     }
 
     return status;
+}
+
+int32_t Sciclient_setDebugConfig()
+{
+    int32_t retVal = CSL_PASS;
+
+    struct tisci_get_trace_config_req request;
+    Sciclient_ReqPrm_t reqParam = {0};
+
+    struct tisci_get_trace_config_resp response;
+    Sciclient_RespPrm_t respParam = {0};
+
+    reqParam.messageType    = (uint16_t) TISCI_MSG_GET_TRACE_CONFIG;
+    reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof (request);
+    reqParam.timeout        = (uint32_t) SCICLIENT_SERVICE_WAIT_FOREVER;
+
+    respParam.flags           = (uint32_t) 0;   /* Populated by the API */
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof (response);
+
+    retVal = Sciclient_service(&reqParam, &respParam);
+
+    if((retVal != CSL_PASS) ||
+        ((reqParam.flags != 0U) &&
+        ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK)))
+    {
+        retVal = CSL_EFAIL;
+    }
+
+    if(retVal == CSL_PASS){
+        trace_reconfigure(response.trace_src_enables, response.trace_dst_enables);
+    }
+
+    return retVal;
 }
 
 uint32_t Sciclient_getCurrentContext(uint16_t messageType)

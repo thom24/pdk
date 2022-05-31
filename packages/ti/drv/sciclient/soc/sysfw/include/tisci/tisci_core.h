@@ -296,7 +296,7 @@ struct tisci_query_msmc_resp {
  * \param hdr TISCI header
  */
 struct tisci_get_trace_config_req {
-    struct tisci_header hdr;
+	struct tisci_header hdr;
 } __attribute__((__packed__));
 
 /**
@@ -308,9 +308,9 @@ struct tisci_get_trace_config_req {
  * \param trace_src_enables enabled source traces
  */
 struct tisci_get_trace_config_resp {
-    struct tisci_header    hdr;
-    uint16_t            trace_dst_enables;
-    uint16_t            trace_src_enables;
+	struct tisci_header	hdr;
+	uint16_t			trace_dst_enables;
+	uint16_t			trace_src_enables;
 } __attribute__((__packed__));
 
 #endif /* MESSAGES_CORE_H */
