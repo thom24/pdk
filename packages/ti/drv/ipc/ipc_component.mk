@@ -281,7 +281,7 @@ export ipc_rtos_multicore_echo_test_$(1)_MAKEFILE =  -f$(PDK_IPC_COMP_PATH)/exam
 export ipc_rtos_multicore_echo_test_$(1)_DEPENDS_ON=ipc_rtos_echo_test_$(1)
 ipc_rtos_multicore_echo_test_$(1)_PKG_LIST = ipc_rtos_multicore_echo_test_$(1)
 ipc_rtos_multicore_echo_test_$(1)_INCLUDE = $(ipc_rtos_multicore_echo_test_$(1)_PATH)
-/* Disable multicore app image gen for J7AHP */
+# Disable multicore app image gen for J7AHP
 ifeq ($(SOC), j784s4)
 export ipc_rtos_multicore_echo_test_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
 else
@@ -338,7 +338,7 @@ export ipc_baremetal_multicore_echo_test_MAKEFILE = -f$(PDK_IPC_COMP_PATH)/examp
 export ipc_baremetal_multicore_echo_test_DEPENDS_ON = ipc_baremetal_echo_test ipc_rtos_echo_test_freertos
 ipc_baremetal_multicore_echo_test_PKG_LIST = ipc_baremetal_multicore_echo_test
 ipc_baremetal_multicore_echo_test_INCLUDE = $(ipc_baremetal_multicore_echo_test_PATH)
-/* Disable multicore app image gen for J7AHP */
+# Disable multicore app image gen for J7AHP
 ifeq ($(SOC), j784s4)
 export ipc_baremetal_multicore_echo_test_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
 else
