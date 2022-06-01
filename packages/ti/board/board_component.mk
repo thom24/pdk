@@ -104,6 +104,7 @@ ifeq ($(BUILD_OS_TYPE), qnx)
 board_lib_j721e_CORELIST += qnx_mpu1_0
 board_lib_j7200_CORELIST += qnx_mpu1_0
 board_lib_j721s2_CORELIST += qnx_mpu1_0
+board_lib_j784s4_CORELIST += qnx_mpu1_0
 endif
 
 ############################
