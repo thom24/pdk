@@ -43,8 +43,6 @@ else
 INCDIR      += $(PDK_SBL_COMP_PATH)/soc/k3
 endif
 
-PACKAGE_SRCS_COMMON = .
-
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk

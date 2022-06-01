@@ -77,12 +77,12 @@ else
 CFLAGS_LOCAL_COMMON += -DSBL_USE_DMA=1
 endif
 
-PACKAGE_SRCS_COMMON  = ./build ./src ./tools
+PACKAGE_SRCS_COMMON  = ./build ./src ./tools ./board/src ./board/sbl_common_osal.c
 PACKAGE_SRCS_COMMON += ./soc/sbl_soc.h
 ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 PACKAGE_SRCS_COMMON += ./soc/tpr12
 else
-PACKAGE_SRCS_COMMON += ./soc/k3
+PACKAGE_SRCS_COMMON += ./soc/k3 ./board/k3
 endif
 
 PACKAGE_SRCS_COMMON += ./.gitignore ./sbl_component.mk ./makefile ./sbl_ver.h
