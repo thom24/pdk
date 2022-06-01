@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2015-2017 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -71,7 +71,7 @@ extern void SBL_DCacheClean(void *addr, uint32_t size);
 #endif
 #endif
 
-#if (SBL_USE_DMA && defined(BOOT_OSPI) && defined(SOC_J721S2))
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
 extern int32_t SBL_OSPI_ReadSectors(void *dstAddr, void *srcOffsetAddr, uint32_t length);
 #endif
 
@@ -151,6 +151,11 @@ int32_t SBL_MulticoreImageParse(void *srcAddr,
             if (mHdrStr.dev_id != GetDeviceId())
             {
                 UART_printf("\nWARNING: Device Id Doesnot match\r\n");
+            }
+
+            if (mHdrStr.app_img_version != 1)
+            {
+                UART_printf("\nWARNING: You are using an app image generated with older version of SDk, please generate the app image again\r\n");
             }
 
             /* Read all the Core offset addresses */
@@ -790,7 +795,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocAtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && defined(SOC_J721S2))
+#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
     /* Use SoC level address of MCU1_0 ATCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_ATCM_BASE_ADDR_SOC,
 #else
@@ -805,7 +810,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocBtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && defined(SOC_J721S2))
+#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
     /* Use SoC level address of MCU1_0 BTCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_BTCM_BASE_ADDR_SOC,
 #else
@@ -877,7 +882,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
             switch (CoreId)
             {
-#if (SBL_USE_DMA && defined(BOOT_OSPI) && defined(SOC_J721S2))
+#if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)))
                 /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
                 case MCU1_CPU0_ID:
                     /* Only do TCM addr remapping for MCU1_0 if using UDMA for transfers from OSPI to local TCMs */

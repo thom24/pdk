@@ -9,7 +9,7 @@
  *
  *  \par
  *  ============================================================================
- *  @n   (C) Copyright 2009-2016, Texas Instruments, Inc.
+ *  @n   (C) Copyright 2009-2022, Texas Instruments, Inc.
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -60,7 +60,7 @@
 * LOCAL VARIABLES DECLARATIONS
 * =============================================================================
 */
-#define MAX_INPUT_FILES 16
+#define MAX_INPUT_FILES 32
 #define debug_print(x) printf(x)
 
 typedef struct _meta_header_start_
@@ -68,7 +68,7 @@ typedef struct _meta_header_start_
     char magic_string_str[4];
     uint32_t num_files;
     uint32_t dev_id;
-    uint32_t rsvd;
+    uint32_t app_img_version;
 }meta_header_start;
 
 typedef struct _meta_header_core_
@@ -178,7 +178,7 @@ int32_t main (int32_t argc, char *argv[])
     hdr_str.num_files = num_input_files;
     hdr_str.dev_id = atoi(argv[2]);
 
-    hdr_str.rsvd = 0;
+    hdr_str.app_img_version = 1;
 
     /* Populate Meta Header Core structure */
     for (i=0; i< num_input_files; i++)

@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2015-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -131,7 +131,7 @@ typedef struct meta_header_start
     uint32_t magic_str;
     uint32_t num_files;
     uint32_t dev_id;
-    uint32_t rsvd;
+    uint32_t app_img_version;
 }meta_header_start_t;
 
 typedef struct meta_header_core
