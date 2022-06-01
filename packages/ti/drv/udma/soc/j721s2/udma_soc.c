@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2021-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -501,16 +501,18 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     /* Each UTC config */
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_MSMC_DRU0];
     utcInfo->utcId         = UDMA_UTC_ID_MSMC_DRU0;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_MSMC_DRU;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU;
-    utcInfo->startCh       = UDMA_UTC_START_CH_DRU0;
-    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU0;
-    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU0;
+    utcInfo->startCh       = UDMA_UTC_START_CH_DRU;
+    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU;
+    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU;
     utcInfo->txCredit      = 2U;
     utcInfo->druRegs       = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
     utcInfo->numQueue      = CSL_NAVSS_UTC_MSMC_DRU_QUEUE_CNT;
 
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_VPAC_TC0];
     utcInfo->utcId         = UDMA_UTC_ID_VPAC_TC0;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_VPAC_TC0;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_VPAC_TC0;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_VPAC_TC0;
@@ -521,6 +523,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_VPAC_TC1];
     utcInfo->utcId         = UDMA_UTC_ID_VPAC_TC1;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_VPAC_TC1;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_VPAC_TC1;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_VPAC_TC1;
@@ -531,6 +534,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_DMPAC_TC0];
     utcInfo->utcId         = UDMA_UTC_ID_DMPAC_TC0;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_DMPAC_TC0;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_DMPAC_TC0;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_DMPAC_TC0;

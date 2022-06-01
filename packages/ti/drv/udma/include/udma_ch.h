@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2020
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -1056,6 +1056,9 @@ typedef struct
     uint32_t                utcId;
     /**< The UTC instance ID for which this info is stored.
      *   Refer \ref Udma_UtcIdSoc macro for details. */
+    uint32_t                rmUtcId;
+    /**< The RM UTC ID for which this info is stored.
+     *   Refer \ref Udma_RmUtcIdSoc macro for details. */
     uint32_t                utcType;
     /**< The UTC type for which this info is stored.
      *   Refer \ref Udma_UtcType macro for details. */

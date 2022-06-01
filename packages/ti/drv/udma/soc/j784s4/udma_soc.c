@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -236,6 +236,10 @@ CSL_DRU_t                gHost_DRU_t;
 /** \brief DRU0 UTC baseaddress */
 /* CSL_COMPUTE_CLUSTER0_DRU0_FW_BASE flag inconsistency */
 #define UDMA_UTC_BASE_DRU0                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU0_MMR_CFG_DRU_BASE)
+#define UDMA_UTC_BASE_DRU4                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU4_MMR_CFG_DRU_BASE)
+#define UDMA_UTC_BASE_DRU5                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU5_MMR_CFG_DRU_BASE)
+#define UDMA_UTC_BASE_DRU6                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU6_MMR_CFG_DRU_BASE)
+#define UDMA_UTC_BASE_DRU7                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU7_MMR_CFG_DRU_BASE)
 /* CSL_COMPUTE_CLUSTER0_DRU0_FW_BASE flag inconsistency */                                    
 #define UDMA_COMPUTE_CLUSTER0_CLEC_REGS_BASE                    (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
 #endif
@@ -523,16 +527,77 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
     /* Each UTC config */
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_MSMC_DRU0];
     utcInfo->utcId         = UDMA_UTC_ID_MSMC_DRU0;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_MSMC_DRU;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU;
-    utcInfo->startCh       = UDMA_UTC_START_CH_DRU0;
-    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU0;
-    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU0;
+    utcInfo->startCh       = UDMA_UTC_START_CH_DRU;
+    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU;
+    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU;
     utcInfo->txCredit      = 2U;
     utcInfo->druRegs       = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
     utcInfo->numQueue      = CSL_NAVSS_UTC_MSMC_DRU_QUEUE_CNT;
 
+#if defined (BUILD_C7X)
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU4];
+    utcInfo->utcId         = UDMA_UTC_ID_C7X_MSMC_DRU4;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_MSMC_DRU;
+    utcInfo->utcType       = UDMA_UTC_TYPE_DRU;
+    utcInfo->startCh       = UDMA_UTC_START_CH_DRU;
+    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU;
+    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU;
+    utcInfo->txCredit      = 2U;
+    utcInfo->druRegs       = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU4);
+    utcInfo->numQueue      = CSL_NAVSS_UTC_MSMC_DRU4_QUEUE_CNT;
+
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU5];
+    utcInfo->utcId         = UDMA_UTC_ID_C7X_MSMC_DRU5;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_MSMC_DRU;
+    utcInfo->utcType       = UDMA_UTC_TYPE_DRU;
+    utcInfo->startCh       = UDMA_UTC_START_CH_DRU;
+    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU;
+    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU;
+    utcInfo->txCredit      = 2U;
+    utcInfo->druRegs       = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU5);
+    utcInfo->numQueue      = CSL_NAVSS_UTC_MSMC_DRU5_QUEUE_CNT;
+
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU6];
+    utcInfo->utcId         = UDMA_UTC_ID_C7X_MSMC_DRU6;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_MSMC_DRU;
+    utcInfo->utcType       = UDMA_UTC_TYPE_DRU;
+    utcInfo->startCh       = UDMA_UTC_START_CH_DRU;
+    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU;
+    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU;
+    utcInfo->txCredit      = 2U;
+    utcInfo->druRegs       = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU6);
+    utcInfo->numQueue      = CSL_NAVSS_UTC_MSMC_DRU6_QUEUE_CNT;
+
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU7];
+    utcInfo->utcId         = UDMA_UTC_ID_C7X_MSMC_DRU7;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_MSMC_DRU;
+    utcInfo->utcType       = UDMA_UTC_TYPE_DRU;
+    utcInfo->startCh       = UDMA_UTC_START_CH_DRU;
+    utcInfo->numCh         = UDMA_UTC_NUM_CH_DRU;
+    utcInfo->startThreadId = UDMA_UTC_START_THREAD_ID_DRU;
+    utcInfo->txCredit      = 2U;
+    utcInfo->druRegs       = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU7);
+    utcInfo->numQueue      = CSL_NAVSS_UTC_MSMC_DRU7_QUEUE_CNT;
+#else
+    /* These DRUs are local to C7X cores cannot be used by other cores */
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU4];
+    utcInfo->utcId         = UDMA_UTC_ID_INVALID;
+
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU5];
+    utcInfo->utcId         = UDMA_UTC_ID_INVALID;
+
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU6];
+    utcInfo->utcId         = UDMA_UTC_ID_INVALID;
+
+    utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_C7X_MSMC_DRU7];
+    utcInfo->utcId         = UDMA_UTC_ID_INVALID;
+#endif
+
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_VPAC_TC0];
     utcInfo->utcId         = UDMA_UTC_ID_VPAC_TC0;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_VPAC_TC0;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_VPAC_TC0;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_VPAC_TC0;
@@ -543,6 +608,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_VPAC_TC1];
     utcInfo->utcId         = UDMA_UTC_ID_VPAC_TC1;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_VPAC_TC1;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_VPAC_TC1;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_VPAC_TC1;
@@ -553,6 +619,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_VPAC1_TC0];
     utcInfo->utcId         = UDMA_UTC_ID_VPAC1_TC0;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_VPAC1_TC0;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_VPAC1_TC0;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_VPAC1_TC0;
@@ -563,6 +630,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_VPAC1_TC1];
     utcInfo->utcId         = UDMA_UTC_ID_VPAC1_TC1;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_VPAC1_TC1;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_VPAC1_TC1;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_VPAC1_TC1;
@@ -573,6 +641,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
 
     utcInfo = &drvHandle->utcInfo[UDMA_UTC_ID_DMPAC_TC0];
     utcInfo->utcId         = UDMA_UTC_ID_DMPAC_TC0;
+    utcInfo->rmUtcId       = UDMA_RM_UTC_ID_DMPAC_TC0;
     utcInfo->utcType       = UDMA_UTC_TYPE_DRU_VHWA;
     utcInfo->startCh       = UDMA_UTC_START_CH_DMPAC_TC0;
     utcInfo->numCh         = UDMA_UTC_NUM_CH_DMPAC_TC0;

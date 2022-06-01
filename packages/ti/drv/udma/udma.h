@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -602,7 +602,7 @@ struct Udma_DrvObj
     /**< UDMA ultra high capacity RX channel allocation flag */
     
 #if (UDMA_NUM_UTC_INSTANCE > 0)
-    uint32_t                utcChFlag[UDMA_NUM_UTC_INSTANCE][UDMA_RM_UTC_CH_ARR_SIZE];
+    uint32_t                utcChFlag[UDMA_RM_NUM_UTC_INSTANCE][UDMA_RM_UTC_CH_ARR_SIZE];
     /**< UDMA external UTC channel allocation flag */
 #endif
 #if (UDMA_NUM_MAPPED_TX_GROUP > 0)
