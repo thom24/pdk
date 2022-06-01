@@ -47,7 +47,7 @@ drvudma_j721e_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xd
 drvudma_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvudma_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvudma_j721s2_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2 c7x-hostemu
-drvudma_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
+drvudma_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4 c7x-hostemu
 
 # Define the rule to generate UDMA Drivers BOARDLIST for each rtos_type
 # Default BOARDLIST for each rtos_type is defined in 'ti/build/makerules/component.mk'
@@ -101,7 +101,7 @@ export udma_LIBNAME = udma
 export udma_LIBPATH = $(PDK_UDMA_COMP_PATH)/lib
 export udma_MAKEFILE = -fsrc/makefile
 export udma_BOARD_DEPENDENCY = no
-ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu j721s2_hostemu))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu j721s2_hostemu j784s4_hostemu))
 export udma_BOARD_DEPENDENCY = yes
 endif
 export udma_CORE_DEPENDENCY = yes
@@ -122,14 +122,14 @@ export dmautils_LIBNAME = dmautils
 export dmautils_LIBPATH = $(PDK_UDMA_COMP_PATH)/lib
 export dmautils_MAKEFILE = -fmakefile
 export dmautils_BOARD_DEPENDENCY = no
-ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu j721s2_hostemu))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki j721e_hostemu j721s2_hostemu j784s4_hostemu))
 export dmautils_BOARD_DEPENDENCY = yes
 endif
 export dmautils_CORE_DEPENDENCY = yes
 dmautils_PKG_LIST = dmautils
 dmautils_INCLUDE = $(dmautils_PATH)
-export dmautils_SOCLIST = j721e j721s2
-export dmautils_$(SOC)_CORELIST = c7x_1 c7x-hostemu
+export dmautils_SOCLIST = j721e j721s2 j784s4
+export dmautils_$(SOC)_CORELIST = c7x_1 c7x_2 c7x_3 c7x_4 c7x-hostemu
 udma_LIB_LIST += dmautils
 
 # UDMA example library

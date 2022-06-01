@@ -463,7 +463,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
     }
 
     /* Program IA/VINT */
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
     if((TISCI_DEV_NAVSS0_UDMASS_INTA_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
 #else
@@ -506,15 +506,19 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
         /* Program GIC IR */
+    #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
+    #elif defined (SOC_J784S4)
+        if(TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0 == req->dst_id)
+    #endif
         {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_63)
 #else
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_63)
 #endif
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_0;
 #else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
@@ -522,7 +526,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
             }
             else
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_64;
 #else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_64;
@@ -581,13 +585,13 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU2_0 IR */
         if(TISCI_DEV_R5FSS0_CORE0 == req->dst_id)
         {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
             if(req->dst_host_irq >= (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_192 - 192))
 #else
             if(req->dst_host_irq >= (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_192 - 192))
 #endif
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_192 - 192);
 #else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_192 - 192);
@@ -599,13 +603,13 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU2_1 IR */
         if(TISCI_DEV_R5FSS0_CORE1 == req->dst_id)
         {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
             if(req->dst_host_irq > (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_224 - 224))
 #else
             if(req->dst_host_irq > (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_224 - 224))
 #endif
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_224 - 224);
 #else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_224 - 224);
@@ -617,13 +621,13 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU3_0 IR */
         if(TISCI_DEV_R5FSS1_CORE0 == req->dst_id)
         {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
             if(req->dst_host_irq >= (CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_256 - 256))
 #else
             if(req->dst_host_irq >= (CSLR_R5FSS1_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_256 - 256))
 #endif
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_224 - 256);
 #else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS0_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_224 - 256);
@@ -635,13 +639,13 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         /* Program MCU3_1 IR */
         if(TISCI_DEV_R5FSS1_CORE1 == req->dst_id)
         {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
             if(req->dst_host_irq >= (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_288 - 288))
 #else
             if(req->dst_host_irq >= (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_288 - 288))
 #endif
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_0_OUTL_INTR_288 - 288);
 #else
                 irOffset = req->dst_host_irq - (CSLR_R5FSS1_CORE1_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_288 - 288);
@@ -651,7 +655,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
         }
 
         /* Program NAVSS IR, used for IPC/Mailbox */
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
         if( TISCI_DEV_NAVSS0_INTR_0 == req->dst_id)
 #else
         if( TISCI_DEV_NAVSS0_INTR_ROUTER_0 == req->dst_id)
@@ -772,7 +776,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
     }
 
     /* Disable IA/VINT */
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
     if((TISCI_DEV_NAVSS0_UDMASS_INTA_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
 #else
@@ -812,17 +816,21 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
             rmObj = &gSciUdmaRmObjMcu;
         }
 
-#if defined (SOC_J721E) || (SOC_J721S2)
+#if defined (SOC_J721E) || (SOC_J721S2) || (SOC_J784S4)
         /* Reset GIC IR */
+    #if defined (SOC_J721E) || (SOC_J721S2)
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
+    #elif defined (SOC_J784S4)
+        if(TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0 == req->dst_id)
+    #endif
         {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_63)
 #else
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_63)
 #endif
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_0;
 #else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
@@ -830,7 +838,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
             }
             else
             {
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_64;
 #else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_64;
@@ -874,7 +882,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
         }
 #else
         //TODO: Hack till proper core support in TISCI
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
         if(req->dst_host_irq >= CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_0_OUTL_INTR_192)
 #else
         if(req->dst_host_irq >= CSLR_R5FSS0_CORE0_INTR_NAVSS0_INTR_ROUTER_0_OUTL_INTR_192)

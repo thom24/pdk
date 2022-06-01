@@ -151,7 +151,7 @@ export osal_nonos_PKG_LIST = osal_nonos
 osal_nonos_INCLUDE = $(osal_nonos_PATH)
 export osal_nonos_SOCLIST = $(libosal_SOCLIST)
 osal_nonos_$(SOC)_CORELIST = $(libosal_$(SOC)_CORELIST)
-ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
 osal_nonos_$(SOC)_CORELIST += c7x-hostemu
 endif
 export osal_nonos_$(SOC)_CORELIST

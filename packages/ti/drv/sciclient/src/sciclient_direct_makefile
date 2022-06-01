@@ -72,7 +72,7 @@ endif
 # endif
 
 #Bypass DMSC for host emulation and Loki build
-ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j721e_loki j721s2_hostemu))
+ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j721e_loki j721s2_hostemu j784s4_hostemu))
  SRCS_COMMON = sciclient_rm_csl.c sciclient_dummy.c
 endif
 
