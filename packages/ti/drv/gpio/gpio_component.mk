@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016-2020, Texas Instruments Incorporated
+# Copyright (c) 2016-2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -244,6 +244,9 @@ else ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 else ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
     # J721S2:- There is not IR path from WKUP_GPIO to mcu3_0/mcu3_1/c7x_1/c7x_2 (no WKUP_GPIO IR allocations)
     export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
+else ifeq ($(SOC),$(filter $(SOC), j7200))
+    # J7200:- There are no IR path from WKUP_GPIO to mcu2_0/mcu2_1.
+    export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1)
 endif
 ifneq ($(1),$(filter $(1), safertos))
     gpio_EXAMPLE_LIST += GPIO_LedBlink_TestApp_$(1)

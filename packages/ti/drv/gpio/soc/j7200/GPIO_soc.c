@@ -8,7 +8,7 @@
  */
 
 /*
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019 - 2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -57,8 +57,8 @@
 /** \brief Number of gpio ports present in the soc */
 #define GPIO_NUM_PORTS                   (4U)
 
-/* CLEC input event # offset for GIC SPI */
-#define GPIO_CLEC_GIC_SPI_IN_EVT_OFFSET (1024U - 32U)
+static uint16_t GPIO_socGetCoreSciId();
+static int32_t GPIO_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *irq_range_start, uint16_t *irq_range_num);
 
 /* GPIO Pin interrupt configurations */
 GPIO_IntCfg GPIO_intCfgs[GPIO_NUM_PORTS][GPIO_NUM_PINS_PER_PORT] =
@@ -66,256 +66,130 @@ GPIO_IntCfg GPIO_intCfgs[GPIO_NUM_PORTS][GPIO_NUM_PINS_PER_PORT] =
     {
         /* GPIO port 0 pin 0 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,        /* CIC not used for GPIO pin 0 */
             0,
             0
         },
         /* GPIO port 0 pin 1 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 2 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+
+            0, /* Interrrupt Num - Query from BoardCfg */
+
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 3 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 4 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 5 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 6 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 7 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 8 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 9 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 10 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 11 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 12 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 13 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 14 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
         },
         /* GPIO port 0 pin 15 */
         {
-#if defined (BUILD_MPU)
-            /* main domain */
-            CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_GPIOMUX_INTRTR0_OUTP_8, /* main int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
-#if defined (BUILD_MCU)
-            /* mcu domain */
-            CSLR_MCU_R5FSS0_CORE0_INTR_MAIN2MCU_LVL_INTRTR0_OUTL_0,  /* main 2 mcu int router output interrupt number */
-            0, /* GPIO pin interrupt event */
-#endif
+            0, /* Interrrupt Num - Query from BoardCfg */
+            0, /* GPIO pin interrupt event - Query from BoardCfg*/
             INVALID_INTC_MUX_NUM,
             0,
             0
@@ -495,19 +369,13 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
     GPIO_IntCfg       *intCfg;
     uint32_t           bankNum;
 	int32_t retVal=CSL_PASS;
-#if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1) || defined(BUILD_MCU2_0) || defined(BUILD_MCU2_1) || defined(BUILD_MCU3_0) || defined(BUILD_MCU3_1)
-    CSL_ArmR5CPUInfo r5CpuInfo;
-#endif
-    struct tisci_msg_rm_irq_set_req     rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
-    struct tisci_msg_rm_irq_release_req rmIrqRelease;
-    uint16_t src_id = 0U, src_index = 0U, dst_id, dst_host_irq;
-
+    struct tisci_msg_rm_irq_set_req     rmIrqReq = {0};
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp = {0};
+    struct tisci_msg_rm_irq_release_req rmIrqRelease = {0};
+    
+    uint16_t ir_id = 0U, src_id = 0U, src_index = 0U, dst_id, dst_host_irq, irq_range_start, irq_range_num;
     intCfg = cfg->intCfg;
 
-#if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1) || defined(BUILD_MCU2_0) || defined(BUILD_MCU2_1) || defined(BUILD_MCU3_0) || defined(BUILD_MCU3_1)
-    CSL_armR5GetCpuID(&r5CpuInfo);
-#endif
     /* Input parameter validation */
     bankNum = pinNum/16U; /* Each GPIO bank has 16 pins */
 
@@ -516,121 +384,226 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
     {
         case (uint32_t)CSL_WKUP_GPIO0_BASE:
             src_id = TISCI_DEV_WKUP_GPIO0;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J721E_DEV_WKUP_GPIO0 */
+            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J7200_DEV_WKUP_GPIO0 */
             break;
         case (uint32_t)CSL_WKUP_GPIO1_BASE:
             src_id = TISCI_DEV_WKUP_GPIO1;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J721E_DEV_WKUP_GPIO1 */
+            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J7200_DEV_WKUP_GPIO1 */
             break;
         case (uint32_t)CSL_GPIO0_BASE:
             src_id = TISCI_DEV_GPIO0;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO0 */
+            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J7200_DEV_GPIO0 */
             break;
         case (uint32_t)CSL_GPIO2_BASE:
             src_id = TISCI_DEV_GPIO2;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO2 */
+            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J7200_DEV_GPIO2 */
             break;
         case (uint32_t)CSL_GPIO4_BASE:
             src_id = TISCI_DEV_GPIO4;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO4 */
+            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J7200_DEV_GPIO4 */
             break;
         case (uint32_t)CSL_GPIO6_BASE:
             src_id = TISCI_DEV_GPIO6;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO6 */
+            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J7200_DEV_GPIO6 */
             break;
         default:
+            retVal = CSL_EFAIL;
             break;
     }
 
-    /* GPIO uses bank interrupts. So choose the bank interrupts from bus_gpio_bank with valid values from
-     * the DMSC firmware user guide */
-#if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1)
-     if(r5CpuInfo.cpuID == 0U) {
-       dst_id = TISCI_DEV_MCU_R5FSS0_CORE0;
-       dst_host_irq = (uint16_t)intCfg[pinNum].intNum;
-     } else {
-       dst_id = TISCI_DEV_MCU_R5FSS0_CORE1;
-       dst_host_irq = (uint16_t)intCfg[pinNum].intNum;
-     }
-#elif defined(BUILD_MCU2_0) || defined(BUILD_MCU2_1)
-     if(r5CpuInfo.cpuID == 0U) {
-       dst_id = TISCI_DEV_R5FSS0_CORE0;
-       dst_host_irq = (uint16_t)intCfg[pinNum].intNum;
-     } else {
-       dst_id = TISCI_DEV_R5FSS0_CORE1;
-       dst_host_irq = (uint16_t)intCfg[pinNum].intNum;
-     }
-#elif defined(BUILD_MCU3_0) || defined(BUILD_MCU3_1)
-     if(r5CpuInfo.cpuID == 0U) {
-       dst_id = TISCI_DEV_R5FSS1_CORE0;
-       dst_host_irq = (uint16_t)intCfg[pinNum].intNum;
-     } else {
-       dst_id = TISCI_DEV_R5FSS1_CORE1;
-       dst_host_irq = (uint16_t)intCfg[pinNum].intNum;
-     }
-#elif defined(BUILD_MPU1_0) || defined(BUILD_MPU1_1)
-    dst_id = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
-    dst_host_irq = (uint16_t)intCfg[pinNum].intNum;
-#endif
+    /* Get TISCI Destination Idx for the core. */
+    dst_id = GPIO_socGetCoreSciId();
 
-    if(setIntrPath) {
-      (void)memset (&rmIrqReq,0,sizeof(rmIrqReq));
+    if(CSL_PASS == retVal)
+    {
+        /* Check if the source is a GPIO in the wakeup domain. */
+        if (TISCI_DEV_WKUP_GPIO0 == src_id || TISCI_DEV_WKUP_GPIO1 == src_id)
+        {
+            /* Wakeup GPIO is connected to single router, which routes to
+             * both MCU cores, and the MAIN cores and A72 cores as well.
+             */
+            ir_id = TISCI_DEV_WKUP_GPIOMUX_INTRTR0;
+        }
+        /* Check if the source is a GPIO in the Main domain. */
+        else
+        {
+            switch(dst_id)
+            {
+                /* Check if the interrupt is going to the MCU domain. */
+                case TISCI_DEV_MCU_R5FSS0_CORE0:
+                case TISCI_DEV_MCU_R5FSS0_CORE1:
+                    ir_id = TISCI_DEV_MAIN2MCU_PLS_INTRTR0;
+                    break;
+                /* Check if the interrupt is staying in the MAIN domain. */
+                case TISCI_DEV_R5FSS0_CORE0:
+                case TISCI_DEV_R5FSS0_CORE1:
+                case TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS:
+                    ir_id = TISCI_DEV_GPIOMUX_INTRTR0;
+                    break;
+                default:
+                    break;
 
-      rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-      rmIrqReq.src_id = src_id;
-      rmIrqReq.src_index = src_index;  /* This is the event coming out of
-      the peripheral */
-
-      /* Set the destination interrupt */
-      rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-      rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-      /* Set the destination based on the core */
-      rmIrqReq.dst_id       = dst_id;
-      rmIrqReq.dst_host_irq       = dst_host_irq;
-   } else  {
-      (void)memset (&rmIrqRelease,0,sizeof(rmIrqRelease));
-
-      rmIrqRelease.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-      rmIrqRelease.src_id = src_id;
-      rmIrqRelease.src_index = src_index;  /* This is the event coming out of the peripheral */
-
-      /* Set the destination interrupt */
-      rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-      rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-       /* Set the destination based on the core */
-       rmIrqRelease.dst_id       = dst_id;
-       rmIrqRelease.dst_host_irq = dst_host_irq;
-   }
-
-    /* Config event */
-    if(setIntrPath) {
-       if(GPIO_PinBankUsageCount[portNum][bankNum] == 0U) {
-         retVal = Sciclient_rmIrqSet(
-                    (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq,
-                     &rmIrqResp,
-                     SCICLIENT_SERVICE_WAIT_FOREVER);
-
-          if(retVal==CSL_PASS) {
-            /* Increase the bank usage count for this port */
-			GPIO_PinBankUsageCount[portNum][bankNum]++;
-		  }
-        } else {
-			/* The interrupt path is already allocated, no need to re-allocate it */
-			retVal = CSL_PASS;
-		}
-    } else {
-       retVal = Sciclient_rmIrqRelease(
-                    (const struct tisci_msg_rm_irq_release_req *)&rmIrqRelease,
-                     SCICLIENT_SERVICE_WAIT_FOREVER);
-
-        if(retVal==CSL_PASS) {
-            /* Increase the bank usage count for this port */
-  		  GPIO_PinBankUsageCount[portNum][bankNum]--;
-		}
+            }
+        }
     }
 
+    /* Get the valid range of valid interrupts based on the ir_id. */
+    retVal = GPIO_socGetIrqRange(ir_id, dst_id, &irq_range_start, &irq_range_num);
+    
+
+    if(CSL_PASS == retVal) 
+    {
+        if(bankNum <= irq_range_num)
+        {
+            dst_host_irq = irq_range_start + bankNum;
+
+            intCfg[pinNum].intNum   = dst_host_irq; /* Core Interrupt Idx - Use Range from BoardCfg */ 
+
+        }
+        else
+        {
+            retVal = CSL_EFAIL;
+        }
+    }
+
+    if(CSL_PASS == retVal) 
+    {
+        if(setIntrPath)
+        {
+            (void)memset (&rmIrqReq,0,sizeof(rmIrqReq));
+
+            rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+            rmIrqReq.src_id = src_id;
+            rmIrqReq.src_index = src_index;  /* This is the event coming out of
+            the peripheral */
+
+            /* Set the destination interrupt */
+            rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
+            rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+
+            /* Set the destination based on the core */
+            rmIrqReq.dst_id       = dst_id;
+            rmIrqReq.dst_host_irq       = dst_host_irq;
+            if(GPIO_PinBankUsageCount[portNum][bankNum] == 0U) {
+                retVal = Sciclient_rmIrqSet(
+                            (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq,
+                            &rmIrqResp,
+                            SCICLIENT_SERVICE_WAIT_FOREVER);
+
+                if(retVal==CSL_PASS) {
+                    /* Increase the bank usage count for this port */
+                    GPIO_PinBankUsageCount[portNum][bankNum]++;
+                }
+                } else {
+                    /* The interrupt path is already allocated, no need to re-allocate it */
+                    retVal = CSL_PASS;
+                }
+        }
+        else
+        {
+            (void)memset (&rmIrqRelease,0,sizeof(rmIrqRelease));
+
+            rmIrqRelease.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+            rmIrqRelease.src_id = src_id;
+            rmIrqRelease.src_index = src_index;  /* This is the event coming out of the peripheral */
+
+            /* Set the destination interrupt */
+            rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
+            rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+
+            /* Set the destination based on the core */
+            rmIrqRelease.dst_id       = dst_id;
+            rmIrqRelease.dst_host_irq = dst_host_irq;
+
+            retVal = Sciclient_rmIrqRelease(
+                            (const struct tisci_msg_rm_irq_release_req *)&rmIrqRelease,
+                            SCICLIENT_SERVICE_WAIT_FOREVER);
+
+            if(retVal==CSL_PASS)
+            {
+                /* Increase the bank usage count for this port */
+                GPIO_PinBankUsageCount[portNum][bankNum]--;
+            }
+        }
+    }
 
   return(retVal);
+}
+
+
+static uint16_t GPIO_socGetCoreSciId()
+{ 
+    uint16_t devId = 0U;
+
+#if defined (BUILD_MPU)
+    devId = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
+#elif defined (BUILD_MCU)
+    CSL_ArmR5CPUInfo info;
+
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        /* MCU SS Pulsar R5 SS */
+        devId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    TISCI_DEV_MCU_R5FSS0_CORE0:
+                                        TISCI_DEV_MCU_R5FSS0_CORE1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
+    {
+        /* MAIN SS Pulsar R5 SS0 */
+        devId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    TISCI_DEV_R5FSS0_CORE0:
+                                        TISCI_DEV_R5FSS0_CORE1;
+    }
+#endif
+    return devId;
+}
+
+static int32_t GPIO_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *irq_range_start, uint16_t *irq_range_num)
+{
+    int32_t         retVal = CSL_PASS;
+    uint16_t        irIntrIdx;
+    struct tisci_msg_rm_get_resource_range_resp res = {0};
+    struct tisci_msg_rm_get_resource_range_req  req = {0};
+
+    req.type           = ir_id;
+    req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+    req.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    res.range_num = 0;
+    res.range_start = 0;
+
+    /* Get interrupt number range */
+    retVal =  Sciclient_rmGetResourceRange(
+                &req,
+                &res,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (CSL_PASS != retVal || res.range_num == 0) {
+        /* Try with HOST_ID_ALL */
+        req.type           = ir_id;
+        req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+        req.secondary_host = TISCI_HOST_ID_ALL;
+
+        retVal = Sciclient_rmGetResourceRange(
+                &req,
+                &res,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    if ((CSL_PASS == retVal) && (res.range_num != 0))
+    {
+        *irq_range_num = res.range_num;
+        /* Translate IR Idx to Core Interrupt Idx */
+        irIntrIdx = res.range_start;
+        retVal = Sciclient_rmIrqTranslateIrOutput(ir_id,
+                                                  irIntrIdx,
+                                                  dst_id,
+                                                  irq_range_start);
+                    
+    }
+    else
+    {
+        retVal = CSL_EFAIL;
+    }
+
+    return retVal;
 }
