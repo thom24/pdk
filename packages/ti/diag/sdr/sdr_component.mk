@@ -41,11 +41,9 @@ ifeq ($(sdr_component_make_include), )
 ############################
 sdr_LIB_LIST = sdr
 
-compsdr_SOCLIST         = am65xx j721e
-compsdr_BOARDLIST       = am65xx_evm j721e_evm
+compsdr_SOCLIST         = am65xx
+compsdr_BOARDLIST       = am65xx_evm
 compsdr_am65xx_CORELIST = mcu1_0
-compsdr_j721e_CORELIST  = mcu1_0
-compsdr_j721e_APPCORELIST = mcu1_0
 compsdr_DISABLE_PARALLEL_MAKE = yes
 
 ############################
