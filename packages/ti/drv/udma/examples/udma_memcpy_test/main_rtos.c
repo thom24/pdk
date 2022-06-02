@@ -94,9 +94,7 @@ int main(void)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
-    /* OS_init for scheduler init is required for 'SafeRTOS'.
-     * This should be called before any other OS calls (like Task creation, OS_start, etc..)
-     * Dummy implementation for FreeRTOS and TI-RTOS */
+    /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
     OS_init();
 
     /* Initialize the task params */
@@ -124,10 +122,6 @@ static void taskFxn(void* a0, void* a1)
                BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
     
-#if !defined (SAFERTOS)
-    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
-    Udma_appC66xIntrConfig();
-#endif /* !defined (SAFERTOS) */
     Udma_memcpyTest();
 
     return;

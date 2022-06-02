@@ -43,6 +43,11 @@
 #include <ti/osal/DebugP.h>
 #include <ti/osal/soc/osal_soc.h>
 
+#if defined (_TMS320C6X) && defined (SOC_J721E)
+#include <ti/drv/sciclient/sciclient.h>
+#include <ti/csl/csl_chipAux.h>
+#endif
+
 #include <FreeRTOS.h>
 #include <task.h>
 
@@ -50,6 +55,7 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle);
 uint32_t TaskP_getTaskId(TaskP_Handle handle);
 extern void LoadP_addTask(TaskP_Handle handle, uint32_t tskId);
 extern void LoadP_removeTask(uint32_t tskId);
+static BaseType_t prvC66xTickInterruptConfig( void );
 
 /**
  * \brief Value to be used for lowest priority task 
@@ -422,6 +428,22 @@ void OS_init( void )
 
     Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
 #endif
+    BaseType_t xStatus = pdPASS;
+    int32_t ret;
+    Sciclient_ConfigPrms_t config;
+
+    Sciclient_configPrmsInit(&config);
+
+    ret = Sciclient_init(&config);
+    if(  ret != CSL_PASS )
+    {
+        xStatus = pdFAIL;
+    }
+    else
+    {
+        xStatus = prvC66xTickInterruptConfig();
+    }
+    DebugP_assert((xStatus == pdPASS));   
 }
 
 void OS_start(void)
@@ -434,4 +456,37 @@ void OS_stop(void)
     vTaskEndScheduler();
 }
 
+static BaseType_t prvC66xTickInterruptConfig( void )
+{
+    BaseType_t xStatus = pdPASS;
+#if defined (_TMS320C6X) && defined (SOC_J721E)
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+
+    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
+                                      TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+    rmIrqReq.src_index              = 0U;
+    if (CSL_chipReadDNUM() == 0U)
+    {
+        rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
+        rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
+        rmIrqReq.dst_host_irq           = 21U;
+    }
+    else
+    {
+        rmIrqReq.src_id                 = TISCI_DEV_TIMER1;
+        rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
+        rmIrqReq.dst_host_irq           = 20U;
+    }
+    /* Unused params */
+    rmIrqReq.global_event           = 0U;
+    rmIrqReq.ia_id                  = 0U;
+    rmIrqReq.vint                   = 0U;
+    rmIrqReq.vint_status_bit_index  = 0U;
+    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    xStatus =Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
+    return xStatus;
+}
 /* Nothing past this point */

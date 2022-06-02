@@ -347,43 +347,6 @@ uint32_t Udma_appIsPrintSupported(void)
     return (retVal);
 }
 
-void Udma_appC66xIntrConfig(void)
-{
-#if defined (_TMS320C6X)
-    struct tisci_msg_rm_irq_set_req     rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
-
-    /* On C66x builds we define OS timer tick in the configuration file to
-     * trigger event #21 for C66x_1 and #20 for C66x_2. Map
-     * DMTimer 0 interrupt to these events through DMSC RM API.
-     */
-    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
-                                      TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    rmIrqReq.src_index              = 0U;
-#if defined (BUILD_C66X_1)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
-    rmIrqReq.dst_host_irq           = 21U;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
-#endif
-#if defined (BUILD_C66X_2)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
-    rmIrqReq.dst_host_irq           = 20U;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER1;
-#endif
-    /* Unused params */
-    rmIrqReq.global_event           = 0U;
-    rmIrqReq.ia_id                  = 0U;
-    rmIrqReq.vint                   = 0U;
-    rmIrqReq.vint_status_bit_index  = 0U;
-    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-
-    Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, UDMA_SCICLIENT_TIMEOUT);
-#endif
-
-    return;
-}
-
-
 uint32_t Udma_appIsUdmapStatsSupported(void)
 {
     uint32_t retVal = TRUE;

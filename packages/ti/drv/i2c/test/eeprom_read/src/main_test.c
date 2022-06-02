@@ -63,9 +63,6 @@
 
 #if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X) || defined (SOC_J721S2) || defined (SOC_J784S4)
 #include <ti/csl/soc.h>
-#if defined (BUILD_C66X)
-#include <ti/csl/csl_chipAux.h>
-#endif
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 
@@ -244,54 +241,6 @@ bool Board_initI2C(void)
 
     /* Set the default I2C init configurations */
     I2C_socSetInitCfg(I2C_EEPROM_INSTANCE, &i2c_cfg);
-
-/* --- TODO: move this into the board library --- */
-/* For SYSBIOS only */
-#ifndef BAREMETAL 
-#if defined (SOC_J721E)
-/* set up C66x Interrupt Router for DMTimer0 for C66x */
-#if defined (BUILD_C66X)
-    int32_t                              retVal;
-    struct tisci_msg_rm_irq_set_req      rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp     rmIrqResp;
-
-    /* Set up C66x interrupt router for DMTimer0 */
-    memset (&rmIrqReq, 0, sizeof(rmIrqReq));
-    rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-    rmIrqReq.src_index = 0; /* set to 0 for non-event based interrupt */
-
-    /* Set the destination interrupt */
-    rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-    rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-    if (CSL_chipReadDNUM() == 0U)
-    {
-        /* Set the destination for core0 */
-        rmIrqReq.dst_id          = TISCI_DEV_C66SS0_CORE0;
-        rmIrqReq.dst_host_irq    = 21U;
-        rmIrqReq.src_id          = TISCI_DEV_TIMER0;
-    }
-    else
-    {
-        /* Set the destination for core1 */
-        rmIrqReq.dst_id          = TISCI_DEV_C66SS1_CORE0;
-        rmIrqReq.dst_host_irq    = 20U;
-        rmIrqReq.src_id          = TISCI_DEV_TIMER1;
-    }
-
-    /* Config event */
-    retVal = Sciclient_rmIrqSet(
-                (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq,
-                &rmIrqResp,
-                SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(0U != retVal)
-    {
-       return (false);
-    }
-#endif /* for C66X cores */
-#endif /* for SOC_J721E */
-#endif /* for SYSBIOS */
-/* --- TODO: move this into the board library --- */
 
 #if defined (idkAM571x)
     boardStatus = Board_getIDInfo(&id);
@@ -929,6 +878,7 @@ int main(void)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
+    /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
     OS_init ();
 
     /* Initialize the task params */

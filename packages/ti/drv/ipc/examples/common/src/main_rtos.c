@@ -210,48 +210,6 @@ void ipc_boardInit()
 }
 #endif
 
-#if defined (_TMS320C6X)
-/* To set C66 timer interrupts */
-void ipc_timerInterruptInit(void)
-{
-    int32_t status = 0;
-
-    struct tisci_msg_rm_irq_set_req     rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
-
-    /* On C66x builds we define OS timer tick in the configuration file to
-     * trigger event #21 for C66x_1 and #20 for C66x_2. Map
-     * DMTimer 0 interrupt to these events through DMSC RM API.
-     */
-    rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
-                                      TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-    rmIrqReq.src_index              = 0U;
-#if defined(BUILD_C66X_1)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
-    rmIrqReq.dst_host_irq           = 21U;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
-#elif defined(BUILD_C66X_2)
-    rmIrqReq.dst_id                 = TISCI_DEV_C66SS1_CORE0;
-    rmIrqReq.dst_host_irq           = 20U;
-    rmIrqReq.src_id                 = TISCI_DEV_TIMER1;
-#endif
-    /* Unused params */
-    rmIrqReq.global_event           = 0U;
-    rmIrqReq.ia_id                  = 0U;
-    rmIrqReq.vint                   = 0U;
-    rmIrqReq.vint_status_bit_index  = 0U;
-    rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-
-    status = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != 0)
-    {
-        App_printf(" ERROR: failed to setup timer interrupt !!!\n" );
-    }
-
-    return;
-}
-#endif
-
 int main(void)
 {
     TaskP_Handle task;
@@ -271,6 +229,7 @@ int main(void)
     memcpy((void *)0x0, (void *)_safeRTOSrstvectors, 0x40);
 #endif
 
+    /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
     OS_init();
 
     /* Initialize the task params */
@@ -315,13 +274,6 @@ static void taskFxn(void* a0, void* a1)
     {
         OS_stop();
     }
-#endif
-
-#if defined (_TMS320C6X)
-#if !defined(SAFERTOS)
-    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
-    ipc_timerInterruptInit();
-#endif /* !defined(SAFERTOS)  */
 #endif
 
 #if defined (_TMS320C6X) 

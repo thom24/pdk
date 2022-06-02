@@ -112,10 +112,6 @@ extern Mcasp_ChanParams mcasp_chanparam[2];
 #if defined (SOC_J721E)
 #if defined (_TMS320C6X)
 #include <c6x.h>
-#if !defined (SAFERTOS)
-/*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
-static void C66x_intrConfig();
-#endif
 #endif
 #endif
 
@@ -134,43 +130,6 @@ void IoExpanderConfig(void);
 
 void McASP_Enable(void);
 
-#if defined (SOC_J721E)
-#if defined (_TMS320C6X)
-void C66x_intrConfig(void)
-{
-    int32_t ret;
-    struct tisci_msg_rm_irq_set_req irqSetReq;
-    struct tisci_msg_rm_irq_set_resp irqSetResp;
-
-    irqSetReq.valid_params = TISCI_MSG_VALUE_RM_DST_ID_VALID |
-                             TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-    /* src_index 0 for TIMER0 is intr_pend signal */
-    irqSetReq.src_index = 0;
-
-    /* On C66x builds we define OS timer tick in the configuration file to
-     * trigger event #21 or #20 for C66x_1 or C66x_2, respectively.
-     */
-#if defined (BUILD_C66X_1)
-    irqSetReq.dst_host_irq = 21;
-    irqSetReq.dst_id = TISCI_DEV_C66SS0_CORE0;
-    irqSetReq.src_id = TISCI_DEV_TIMER0;
-#elif defined (BUILD_C66X_2)
-    irqSetReq.dst_host_irq = 20;
-    irqSetReq.dst_id = TISCI_DEV_C66SS1_CORE0;
-    irqSetReq.src_id = TISCI_DEV_TIMER1;
-#endif
-
-    ret = Sciclient_rmIrqSet(&irqSetReq, &irqSetResp, SCICLIENT_SERVICE_WAIT_FOREVER);
-
-    if (ret != CSL_PASS)
-    {
-	    MCASP_log("Irq set failed\n");
-    }
-}
-#endif
-#endif
-
 /*
  * Function to enable the pinmux for the mcasp and i2c devices in the soc.
  *
@@ -186,15 +145,6 @@ void configureAudio(void)
     {
 	    MCASP_log("Board init failed!!");
 	}
-
-#if defined (SOC_J721E)
-#if defined (_TMS320C6X)
-#if !defined (SAFERTOS)
-    /*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
-    C66x_intrConfig();
-#endif /* !defined(SAFERTOS)  */
-#endif
-#endif
 
 #if !defined (DEVICE_LOOPBACK)
     IoExpanderConfig();

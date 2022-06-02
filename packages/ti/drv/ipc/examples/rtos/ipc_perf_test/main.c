@@ -153,10 +153,6 @@ int main(void)
     /* Initialize SCI Client Server */
     Ipc_setupSciServer();
 
-#if  defined (_TMS320C6X)
-    Ipc_appC66xIntrConfig();
-#endif
-
 #if defined (_TMS320C6X) && defined FREERTOS
     ipc_cacheMarInit();
 #endif
@@ -164,7 +160,8 @@ int main(void)
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
-
+    
+    /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
     OS_init();
 
     /* Initialize the task params */

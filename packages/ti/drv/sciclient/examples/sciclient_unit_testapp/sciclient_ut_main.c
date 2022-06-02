@@ -122,6 +122,7 @@ int main(void)
 
     uint32_t retVal = CSL_PASS;
 
+    /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
     OS_init();
 
     memset( gAppTskStackMain, 0xFF, sizeof( gAppTskStackMain ) );

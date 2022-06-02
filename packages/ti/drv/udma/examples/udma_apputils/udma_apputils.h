@@ -147,12 +147,6 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData);
 uint32_t Udma_appIsPrintSupported(void);
 
 /**
- *  \brief Setup C66x timer interrupt as required by SYSBIOS
- */
-void Udma_appC66xIntrConfig(void);
-
-
-/**
  *  \brief Returns if UDMA IP statistics is supported in the SoC
  *
  *  \return TRUE if statistics is supported. Else FALSE

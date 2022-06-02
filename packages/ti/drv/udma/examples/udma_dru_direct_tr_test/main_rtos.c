@@ -89,6 +89,7 @@ int main(void)
     TaskP_Handle task;
     TaskP_Params taskParams;
 
+    /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
     OS_init();
 
     /* Initialize the task params */
@@ -115,8 +116,6 @@ static void taskFxn(void* a0, void* a1)
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
-
-    Udma_appC66xIntrConfig();
 
     Udma_druDirectTrTest();
 

@@ -147,11 +147,6 @@ void *Ipc_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData);
 uint32_t Ipc_appIsPrintSupported(void);
 
 /**
- *  \brief Setup C66x timer interrupt as required by OS
- */
-void Ipc_appC66xIntrConfig(void);
-
-/**
  * brief Get timestamp in micro-second
  *
  * \returns timestamp

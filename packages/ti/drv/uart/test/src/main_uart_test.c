@@ -39,9 +39,6 @@
 #include <string.h>
 
 /* CSL Header files */
-#if defined(_TMS320C6X)
-#include <ti/csl/csl_chip.h>
-#endif
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_types.h>
 
@@ -473,51 +470,6 @@ bool Board_initUART(void)
     }
 
     UART_getTestInstNum(&uartTestInstance, &boardAM570x);
-
-/* --- TODO: move this into the board library --- */
-/* For FreeRTOS only */
-/*  SAFERTOS already configured IR for Timer Interrupts as a part of OS_init*/
-#if defined (FREERTOS) 
-#if defined (SOC_J721E) && defined (BUILD_C66X)
-/* set up C66x Interrupt Router for DMTimer0 for C66x */
-    int32_t                               retVal;
-    struct tisci_msg_rm_irq_set_req      rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp     rmIrqResp;
-
-    /* Set up C66x interrupt router for DMTimer0 */
-    memset (&rmIrqReq, 0, sizeof(rmIrqReq));
-    rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-    rmIrqReq.src_index = 0; /* set to 0 for non-event based interrupt */
-
-    /* Set the destination interrupt */
-    rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-    rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-#if defined (BUILD_DSP_1)
-    /* Set the destination based on the core */
-    rmIrqReq.dst_id       = TISCI_DEV_C66SS0_CORE0;
-    rmIrqReq.dst_host_irq = 21; /* DMSC dest event, input to C66x INTC  */
-    rmIrqReq.src_id       = TISCI_DEV_TIMER0;
-#endif
-#if defined (BUILD_DSP_2)
-    /* Set the destination based on the core */
-    rmIrqReq.dst_id       = TISCI_DEV_C66SS1_CORE0;
-    rmIrqReq.dst_host_irq = 20; /* DMSC dest event, input to C66x INTC  */
-    rmIrqReq.src_id       = TISCI_DEV_TIMER1;
-#endif
-
-    /* Config event */
-    retVal = Sciclient_rmIrqSet(
-                (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq,
-                &rmIrqResp,
-                SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(0U != retVal)
-    {
-       return (false);
-    }
-#endif /* #if defined (FREERTOS)  */
-#endif /* #if defined (SOC_J721E) && defined (BUILD_C66X) */
-/* --- TODO: move this into the board library --- */
 
 #if defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x)
     CSL_l4per_cm_core_componentRegs *l4PerCmReg =
@@ -3305,6 +3257,7 @@ Int main()
         return(0);
     }
 
+    /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
     OS_init();
 
     /* Initialize the task params */

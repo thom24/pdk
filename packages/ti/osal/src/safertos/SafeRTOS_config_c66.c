@@ -119,8 +119,10 @@ portBaseType prvSetupHardware( void )
     {
         xStatus = pdFAIL;
     }
-
-    xStatus = prvC66xTickInterruptConfig();
+    else
+    {
+        xStatus = prvC66xTickInterruptConfig();
+    }
     DebugP_assert((xStatus == pdPASS));    
     vPortSetInterruptVectors();
 
