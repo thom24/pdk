@@ -42,8 +42,8 @@ ifeq ($(diag_ex_component_make_include), )
 ############################
 diag_ex_LIB_LIST =
 
-diag_ex_SOCLIST         = j721e
-diag_ex_BOARDLIST       = j721e_evm
+diag_ex_SOCLIST         = 
+diag_ex_BOARDLIST       = 
 diag_ex_j721e_CORELIST  = mcu1_0
 diag_ex_j721e_APPCORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu1_1 mcu2_1 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 diag_ex_j721e_LASTCORE := $(word $(words $(diag_ex_j721e_APPCORELIST)), $(diag_ex_j721e_APPCORELIST))
