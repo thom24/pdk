@@ -1,7 +1,7 @@
 #
 # This file is the makefile for building IPC example app
 #
-SRCDIR += . ../common/src
+SRCDIR += . $(IPC_COMMON_PATH)/src
 INCDIR +=
 
 # List all the external components/interfaces, whose interface header files
@@ -9,7 +9,7 @@ INCDIR +=
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON += ../common/src ../common/$(SOC) ../common/makefile.mk
+PACKAGE_SRCS_COMMON += $(IPC_COMMON_PATH)/src $(IPC_COMMON_PATH)/$(SOC) $(IPC_COMMON_PATH)/makefile.mk
 
 # List all the components required by the application
 ifeq ($(BUILD_OS_TYPE), baremetal)
@@ -52,11 +52,11 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
   ifeq ($(ISA), c66)
-    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    INCDIR += $(IPC_COMMON_PATH)/$(SOC)/$(BUILD_OS_TYPE)/
     SRCS_COMMON += c66_cache_mar.c
   endif
   ifeq ($(ISA), c7x)
-    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    INCDIR += $(IPC_COMMON_PATH)/$(SOC)/$(BUILD_OS_TYPE)/
     SRCS_COMMON += c7x_mmu.c
   endif
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds
@@ -84,11 +84,11 @@ ifeq ($(BUILD_OS_TYPE), safertos)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_safertos.c
   endif
   ifeq ($(ISA), c66)
-    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    INCDIR += $(IPC_COMMON_PATH)/$(SOC)/$(BUILD_OS_TYPE)/
     SRCS_COMMON += c66_cache_mar.c
   endif
   ifeq ($(ISA), c7x)
-    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    INCDIR += $(IPC_COMMON_PATH)/$(SOC)/$(BUILD_OS_TYPE)/
     SRCS_COMMON += c7x_mmu.c
   endif
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds

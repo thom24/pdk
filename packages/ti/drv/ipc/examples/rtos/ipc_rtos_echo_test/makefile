@@ -17,4 +17,7 @@ endif
 
 PACKAGE_SRCS_COMMON = .
 
-include ../common/makefile.mk
+#Path for including common files
+IPC_COMMON_PATH = ../../common
+
+include $(IPC_COMMON_PATH)/makefile.mk

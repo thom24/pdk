@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building IPC r5f-r5f test app for TI RTOS
+# This file is the makefile for building IPC echo testb for Linux
 #
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -9,12 +9,15 @@ endif
 
 APP_NAME = ipc_echo_testb_$(BUILD_OS_TYPE)
 
-SRCDIR = . ../ ../../common/src
-INCDIR = ../../common/$(SOC)/$(BUILD_OS_TYPE)/
+#Path for including common files
+IPC_COMMON_PATH = ../../common
+
+SRCDIR = . ../ $(IPC_COMMON_PATH)/src
+INCDIR = $(IPC_COMMON_PATH)/$(SOC)/$(BUILD_OS_TYPE)/
 SRCS_COMMON = ipc_echo_test.c
 
 ECHO_TEST_BTCM = 1
 CFLAGS_LOCAL_COMMON = -DA72_LINUX_OS  -DECHO_TEST_BTCM #-DA72_LINUX_OS_IPC_ATTACH
 
-include ../../common/makefile.mk
+include $(IPC_COMMON_PATH)/makefile.mk
 

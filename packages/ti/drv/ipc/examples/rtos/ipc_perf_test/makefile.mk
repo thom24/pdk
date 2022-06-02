@@ -1,7 +1,7 @@
 #
 # This file is the makefile for building IPC performance example app
 #
-SRCDIR = . ../common/src
+SRCDIR = . ../../common/src
 INCDIR =
 
 # List all the external components/interfaces, whose interface header files
@@ -27,7 +27,7 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 	  SRCS_COMMON += r5f_mpu_$(SOC)_default.c
   endif
   ifeq ($(ISA), c66)
-    INCDIR += ../common/$(SOC)/$(BUILD_OS_TYPE)/
+    INCDIR += ../../common/$(SOC)/$(BUILD_OS_TYPE)/
     SRCS_COMMON += c66_cache_mar.c
   endif
   EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_INSTALL_PATH)/ti/drv/ipc/examples/common/$(SOC)/$(BUILD_OS_TYPE)/linker_$(ISA)_$(CORE)_$(BUILD_OS_TYPE).lds
@@ -35,7 +35,7 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 endif
 
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = . ../common/src ../common/$(SOC)
+PACKAGE_SRCS_COMMON = . ../../common/src ../../common/$(SOC)
 SRCS_COMMON += ipc_perf_test.c ipc_apputils.c ipc_test_defs.c
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
