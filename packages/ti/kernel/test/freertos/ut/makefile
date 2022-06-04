@@ -58,7 +58,7 @@ CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H -DUNITY_INCLUDE_DOUBLE
 #ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1))
 # CFLAGS_LOCAL_COMMON += -std=c99
 #endif
-ifeq ($(CORE),$(filter $(CORE), c66xdsp_1 c66xdsp_2 c7x_1))
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1 c66xdsp_2 c7x_1 c7x_2 c7x_3 c7x_4))
  CFLAGS_LOCAL_COMMON += --c99
 endif
 # Core/SoC/platform specific source files and CFLAGS
