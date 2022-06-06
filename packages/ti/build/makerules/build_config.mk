@@ -169,7 +169,7 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0
 endif
 
 # MPU Cores
-ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu2_0 mpu2_1))
+ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3))
   CFLAGS_GLOBAL_$(CORE) = -DMAKEFILE_BUILD
   LNKFLAGS_GLOBAL_$(CORE) =
 endif

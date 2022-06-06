@@ -1183,6 +1183,16 @@ ifeq ($(CORE),mpu1_1)
   PDK_LNKFLAGS += --define=BUILD_MPU1_1 --define=BUILD_MPU
 endif
 
+ifeq ($(CORE),mpu1_2)
+  PDK_CFLAGS += -DBUILD_MPU1_2 -DBUILD_MPU
+  PDK_LNKFLAGS += --define=BUILD_MPU1_2 --define=BUILD_MPU
+endif
+
+ifeq ($(CORE),mpu1_3)
+  PDK_CFLAGS += -DBUILD_MPU1_3 -DBUILD_MPU
+  PDK_LNKFLAGS += --define=BUILD_MPU1_3 --define=BUILD_MPU
+endif
+
 ifeq ($(CORE),mpu2_0)
   PDK_CFLAGS += -DBUILD_MPU2_0 -DBUILD_MPU
   PDK_LNKFLAGS += --define=BUILD_MPU2_0 --define=BUILD_MPU
@@ -1191,6 +1201,16 @@ endif
 ifeq ($(CORE),mpu2_1)
   PDK_CFLAGS += -DBUILD_MPU2_1 -DBUILD_MPU
   PDK_LNKFLAGS += --define=BUILD_MPU2_1 --define=BUILD_MPU
+endif
+
+ifeq ($(CORE),mpu2_2)
+  PDK_CFLAGS += -DBUILD_MPU2_2 -DBUILD_MPU
+  PDK_LNKFLAGS += --define=BUILD_MPU2_2 --define=BUILD_MPU
+endif
+
+ifeq ($(CORE),mpu2_3)
+  PDK_CFLAGS += -DBUILD_MPU2_3 -DBUILD_MPU
+  PDK_LNKFLAGS += --define=BUILD_MPU2_3 --define=BUILD_MPU
 endif
 
 ifeq ($(CORE),ipu1_0)
