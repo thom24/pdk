@@ -129,6 +129,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM binaries/*.cmm
     $RM binaries/t32-qt-lsf
     $RM binaries/*hs.bin
+    $RM binaries/*hs-fs.bin
     $RM -fr binaries/am6
     $RM -fr binaries/am65x_sr2
     $RM -fr binaries/j721e
@@ -178,10 +179,14 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     make -j -s sciclient_ccs_init BOARD=j721e_evm
     make -j -s sciserver_testapp_freertos_clean BOARD=j721e_evm
     make -j -s sciserver_testapp_freertos BOARD=j721e_evm
+    make -j -s sciserver_testapp_safertos_clean BOARD=j721e_evm
+    make -j -s sciserver_testapp_safertos BOARD=j721e_evm
     $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721e/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721e/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721e/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-    
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/j721e/sciserver_testapp_safertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
+    $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/j721e/sciserver_testapp_safertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
+
     # AM65xx
     # make -j -s allclean
     # make -j -s sciclient_boardcfg BOARD=am65xx_evm
@@ -222,7 +227,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
     $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
 
-    J784S4
+    # J784S4
     make -j -s allclean
     make -j -s sciclient_boardcfg BOARD=j784s4_evm
     make -j -s sciclient_ccs_init_clean BOARD=j784s4_evm
