@@ -52,7 +52,6 @@ uint8_t vint_usage_count_NAVSS0_MODSS_INTA_0[64] = {0};
 uint8_t vint_usage_count_NAVSS0_MODSS_INTA_1[64] = {0};
 uint8_t vint_usage_count_NAVSS0_UDMASS_INTA_0[256] = {0};
 uint8_t vint_usage_count_MCU_NAVSS0_UDMASS_INTA_0[256] = {0};
-uint8_t vint_usage_count_MCU_SA3_SS0_INTAGGR_0[8] = {0};
 static struct Sciclient_rmIaUsedMapping rom_usage_MCU_NAVSS0_UDMASS_INTA_0[5U] = {
     {
         .event = 16404U,
@@ -121,17 +120,6 @@ struct Sciclient_rmIaInst gRmIaInstances[SCICLIENT_RM_IA_NUM_INST] =
         .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
         .rom_usage          = &rom_usage_MCU_NAVSS0_UDMASS_INTA_0[0U],
         .n_rom_usage        = 5,
-    },
-    {
-        .dev_id             = TISCI_DEV_MCU_SA3_SS0_INTAGGR_0,
-        .imap               = 0x44809000,
-        .sevt_offset        = 0u,
-        .n_sevt             = 100u,
-        .n_vint             = 8,
-        .vint_usage_count   = &vint_usage_count_MCU_SA3_SS0_INTAGGR_0[0],
-        .v0_b0_evt          = SCICLIENT_RM_IA_GENERIC_EVT_RESETVAL,
-        .rom_usage          = NULL,
-        .n_rom_usage        = 0U,
     }
 };
 
@@ -3751,71 +3739,6 @@ static const struct Sciclient_rmIrqNode tisci_irq_SA2_UL0 = {
 	.p_if = &tisci_if_SA2_UL0[0],
 };
 
-/* Start of MCU_SA3_SS0_INTAGGR_0 interface definition */
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_896_903 = {
-	.lbase = 0,
-	.len = 8,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
-	.rbase = 896,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_GIC500SS_spi_896_903 = {
-	.lbase = 0,
-	.len = 8,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
-	.rbase = 896,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE0_intr_88_95 = {
-	.lbase = 0,
-	.len = 8,
-	.rid = TISCI_DEV_MCU_R5FSS0_CORE0,
-	.rbase = 88,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE1_intr_88_95 = {
-	.lbase = 0,
-	.len = 8,
-	.rid = TISCI_DEV_MCU_R5FSS0_CORE1,
-	.rbase = 88,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_2_3_to_R5FSS0_CORE0_intr_148_149 = {
-	.lbase = 2,
-	.len = 2,
-	.rid = TISCI_DEV_R5FSS0_CORE0,
-	.rbase = 148,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_2_3_to_R5FSS0_CORE1_intr_148_149 = {
-	.lbase = 2,
-	.len = 2,
-	.rid = TISCI_DEV_R5FSS0_CORE1,
-	.rbase = 148,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_4_5_to_R5FSS1_CORE0_intr_148_149 = {
-	.lbase = 4,
-	.len = 2,
-	.rid = TISCI_DEV_R5FSS1_CORE0,
-	.rbase = 148,
-};
-const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_4_5_to_R5FSS1_CORE1_intr_148_149 = {
-	.lbase = 4,
-	.len = 2,
-	.rid = TISCI_DEV_R5FSS1_CORE1,
-	.rbase = 148,
-};
-const struct Sciclient_rmIrqIf * const tisci_if_MCU_SA3_SS0_INTAGGR_0[] = {
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_CLEC_soc_events_in_896_903,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER0_GIC500SS_spi_896_903,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE0_intr_88_95,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE1_intr_88_95,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_2_3_to_R5FSS0_CORE0_intr_148_149,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_2_3_to_R5FSS0_CORE1_intr_148_149,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_4_5_to_R5FSS1_CORE0_intr_148_149,
-	&MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_4_5_to_R5FSS1_CORE1_intr_148_149,
-};
-static const struct Sciclient_rmIrqNode tisci_irq_MCU_SA3_SS0_INTAGGR_0 = {
-	.id = TISCI_DEV_MCU_SA3_SS0_INTAGGR_0,
-	.n_if = 8,
-	.p_if = &tisci_if_MCU_SA3_SS0_INTAGGR_0[0],
-};
-
 /* Start of MCSPI0 interface definition */
 const struct Sciclient_rmIrqIf MCSPI0_intr_spi_0_0_to_MAIN2MCU_LVL_INTRTR0_in_48_48 = {
 	.lbase = 0,
@@ -4331,7 +4254,6 @@ const struct Sciclient_rmIrqNode *const gRmIrqTree[] = {
 	&tisci_irq_MCU_NAVSS0_UDMASS_INTA_0,
 	&tisci_irq_PCIE1,
 	&tisci_irq_SA2_UL0,
-	&tisci_irq_MCU_SA3_SS0_INTAGGR_0,
 	&tisci_irq_MCSPI0,
 	&tisci_irq_MCSPI1,
 	&tisci_irq_MCSPI2,
