@@ -75,7 +75,7 @@ extern "C" {
 #define    IPC_MPU1_1          (13U)    /**< ARM A72 - VM1 */
 #define    IPC_MAX_PROCS       (14U)    /**< Maximum Processors */
 
-#define    IPC_MAILBOX_CLUSTER_CNT              (12U)
+#define    IPC_MAILBOX_CLUSTER_CNT              (18U)
 #define    IPC_MAILBOX_USER_CNT                  (4U)
 #define    MAIN_NAVSS_MAILBOX_INPUTINTR_MAX    (440U)
 #define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512U)
@@ -87,8 +87,8 @@ extern "C" {
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (105U)
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET         (457U)
 #else
-#define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (112U)
-#define    NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET         (464U)
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (91U)
+#define    NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET         (475U)
 #endif
 #define    NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET           (400U)
 #define    NAVSS512_MCU1R5F0_INPUT_MAILBOX_VIM_OFFSET       (376U)
@@ -102,18 +102,18 @@ extern "C" {
 #define    NAVSS512_MCU3R5F0_INPUT_MAILBOX_VIM_OFFSET       (251U)
 #define    NAVSS512_MCU3R5F1_INPUT_MAILBOX_OFFSET           (315U)
 #define    NAVSS512_MCU3R5F1_INPUT_MAILBOX_VIM_OFFSET       (251U)
-#define    NAVSS512_MCU4R5F0_INPUT_MAILBOX_OFFSET           (283U)
+#define    NAVSS512_MCU4R5F0_INPUT_MAILBOX_OFFSET           (347U)
 #define    NAVSS512_MCU4R5F0_INPUT_MAILBOX_VIM_OFFSET       (251U)
-#define    NAVSS512_MCU4R5F1_INPUT_MAILBOX_OFFSET           (315U)
+#define    NAVSS512_MCU4R5F1_INPUT_MAILBOX_OFFSET           (379U)
 #define    NAVSS512_MCU4R5F1_INPUT_MAILBOX_VIM_OFFSET       (251U)
-#define    NAVSS512_C7X1_INPUT_MAILBOX_OFFSET               (158U)
-#define    NAVSS512_C7X1_INPUT_MAILBOX_VIM_OFFSET           (702U)
-#define    NAVSS512_C7X2_INPUT_MAILBOX_OFFSET               (179U)
-#define    NAVSS512_C7X2_INPUT_MAILBOX_VIM_OFFSET           (723U)
-#define    NAVSS512_C7X3_INPUT_MAILBOX_OFFSET               (179U)
-#define    NAVSS512_C7X3_INPUT_MAILBOX_VIM_OFFSET           (723U)
-#define    NAVSS512_C7X4_INPUT_MAILBOX_OFFSET               (179U)
-#define    NAVSS512_C7X4_INPUT_MAILBOX_VIM_OFFSET           (723U)
+#define    NAVSS512_C7X1_INPUT_MAILBOX_OFFSET               (126U)
+#define    NAVSS512_C7X1_INPUT_MAILBOX_VIM_OFFSET           (511U)
+#define    NAVSS512_C7X2_INPUT_MAILBOX_OFFSET               (147U)
+#define    NAVSS512_C7X2_INPUT_MAILBOX_VIM_OFFSET           (691U)
+#define    NAVSS512_C7X3_INPUT_MAILBOX_OFFSET               (159U)
+#define    NAVSS512_C7X3_INPUT_MAILBOX_VIM_OFFSET           (703U)
+#define    NAVSS512_C7X4_INPUT_MAILBOX_OFFSET               (171U)
+#define    NAVSS512_C7X4_INPUT_MAILBOX_VIM_OFFSET           (715U)
 
 #define IPC_MCU_NAVSS0_INTR0_CFG_BASE    (CSL_NAVSS0_INTR0_INTR_ROUTER_CFG_BASE)
 
@@ -123,9 +123,9 @@ extern "C" {
 #define   C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
 
 /* CLEC Offset = 992:- soc_events_in #32 is connected to CLEC event #1024 */
-/* CLEC is shared b/w both the C7x cores and the offset can be common.
- * ClecEvent # will be different for c7x_1 and c7x_2 since the 
- * range is returned from BardCfg based on core specific allocation */
+/* CLEC is shared b/w all C7x cores and the offset can be common.
+ * ClecEvent # will be different for a particular C7x since the 
+ * range is returned from BoardCfg based on core specific allocation */
 #define   C7X_CLEC_OFFSET                 (1024 - 32)
 
 /* User selected IRQ number */

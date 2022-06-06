@@ -73,7 +73,13 @@ uint32_t g_Navss512MbInput[IPC_MAILBOX_CLUSTER_CNT] =
     CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX_8_PEND_INTR_0,
     CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX_9_PEND_INTR_0,
     CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX_10_PEND_INTR_0,
-    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX_11_PEND_INTR_0
+    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX_11_PEND_INTR_0,
+    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX1_0_PEND_INTR_0,
+    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX1_1_PEND_INTR_0,
+    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX1_2_PEND_INTR_0,
+    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX1_3_PEND_INTR_0,
+    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX1_4_PEND_INTR_0,
+    CSLR_NAVSS0_INTR_0_IN_INTR_NAVSS0_MAILBOX1_5_PEND_INTR_0
 };
 
 /**
@@ -112,6 +118,12 @@ static uintptr_t g_IPC_Mailbox_BasePhyAddr[IPC_MAILBOX_CLUSTER_CNT] =
     CSL_NAVSS_MAIN_MAILBOX_REGS_9_BASE,     /* Mailbox - cluster9   */
     CSL_NAVSS_MAIN_MAILBOX_REGS_10_BASE,    /* Mailbox - cluster10  */
     CSL_NAVSS_MAIN_MAILBOX_REGS_11_BASE,    /* Mailbox - cluster11  */
+    CSL_NAVSS_MAIN_MAILBOX_REGS_12_BASE,    /* Mailbox - cluster12  */
+    CSL_NAVSS_MAIN_MAILBOX_REGS_13_BASE,    /* Mailbox - cluster13  */
+    CSL_NAVSS_MAIN_MAILBOX_REGS_14_BASE,    /* Mailbox - cluster14  */
+    CSL_NAVSS_MAIN_MAILBOX_REGS_15_BASE,    /* Mailbox - cluster15  */
+    CSL_NAVSS_MAIN_MAILBOX_REGS_16_BASE,    /* Mailbox - cluster16  */
+    CSL_NAVSS_MAIN_MAILBOX_REGS_17_BASE,    /* Mailbox - cluster17  */
 };
 
 #if defined(BUILD_MPU1_0) && defined(QNX_OS)
@@ -126,15 +138,19 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
 {
     /* Host Processor - A72-vm0	*/
     {
-        { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU, 0xFFU} },  /* Self - A72-vm0 */
+        { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,    0U} },  /* Self - A72-vm0 */
         { {    0U,    0U,  0U}, {    0U,    0U,    1U} },  /* mcu-r5f0 */
         { {    0U,    0U,  2U}, {    0U,    0U,    3U} },  /* mcu-r5f1 */
         { {    1U,    0U,  0U}, {    1U,    0U,    1U} },  /* main-r5f0 */
         { {    1U,    0U,  2U}, {    1U,    0U,    3U} },  /* main-r5f1 */
         { {    2U,    0U,  0U}, {    2U,    0U,    1U} },  /* main-r5f2 */
         { {    2U,    0U,  2U}, {    2U,    0U,    3U} },  /* main-r5f3 */
+        { {    3U,    0U,  0U}, {    3U,    0U,    1U} },  /* main-r5f4 */
+        { {    3U,    0U,  2U}, {    3U,    0U,    3U} },  /* main-r5f5 */
         { {    4U,    0U,  0U}, {    4U,    0U,    1U} },  /* C7x-1 */
         { {    4U,    0U,  2U}, {    4U,    0U,    3U} },  /* C7x-2 */
+        { {    5U,    0U,  0U}, {    5U,    0U,    1U} },  /* C7x-3 */
+        { {    5U,    0U,  2U}, {    5U,    0U,    3U} },  /* C7x-4 */
         { {    0U,    0U, 10U}, {    0U,    0U,   11U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu1_0 	*/
@@ -142,12 +158,16 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    0U,    1U,  1U }, {    0U,    1U,  0U} },  /* A72-vm0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - mcu-r5f0 */
         { {    0U,    1U,  4U }, {    0U,    1U,  5U} },  /* mcu-r5f1 */
-        { {    7U,    0U,  0U }, {    5U, 0xFFU,  2U} },  /* main-r5f0 */
-        { {    7U,    0U,  1U }, {    5U, 0xFFU, 10U} },  /* main-r5f1 */
-        { {    7U,    0U,  2U }, {    6U, 0xFFU,  2U} },  /* main-r5f2 */
-        { {    7U,    0U,  3U }, {    6U, 0xFFU, 10U} },  /* main-r5f3 */
-        { {    7U,    1U,  6U }, {    9U, 0xFFU,  4U} },  /* C7x-1 */
-        { {    7U,    1U,  7U }, {    9U, 0xFFU, 12U} },  /* C7x-2 */
+        { {   12U,    0U,  0U }, {    6U, 0xFFU,  4U} },  /* main-r5f0 */
+        { {   12U,    0U,  1U }, {    7U, 0xFFU,  4U} },  /* main-r5f1 */
+        { {   12U,    0U,  2U }, {    8U, 0xFFU,  4U} },  /* main-r5f2 */
+        { {   12U,    0U,  3U }, {    9U, 0xFFU,  4U} },  /* main-r5f3 */
+        { {   12U,    0U,  4U }, {   10U, 0xFFU,  4U} },  /* main-r5f4 */
+        { {   12U,    1U,  5U }, {   11U, 0xFFU,  4U} },  /* main-r5f5 */
+        { {   12U,    1U,  6U }, {   14U, 0xFFU,  6U} },  /* C7x-1 */
+        { {   12U,    1U,  7U }, {   15U, 0xFFU,  6U} },  /* C7x-2 */
+        { {   12U,    1U,  8U }, {   16U, 0xFFU,  6U} },  /* C7x-3 */
+        { {   12U,    1U,  9U }, {   17U, 0xFFU,  6U} },  /* C7x-4 */
         { {    0U,    1U,  7U }, {    0U,    1U,  6U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu1_1 */
@@ -155,91 +175,187 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    0U,    2U,  3U }, {    0U,    2U,  2U} },  /* A72-vm0 */
         { {    0U,    2U,  5U }, {    0U,    2U,  4U} },  /* mcu-r5f0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - mcu-r5f1 */
-        { {    7U,    2U,  8U }, {    5U, 0xFFU,  3U} },  /* main-r5f0 */
-        { {    7U,    2U,  9U }, {    5U, 0xFFU, 11U} },  /* main-r5f1 */
-        { {    7U,    2U, 10U }, {    6U, 0xFFU,  3U} },  /* main-r5f2 */
-        { {    7U,    2U, 11U }, {    6U, 0xFFU, 11U} },  /* main-r5f3 */
-        { {    7U,    3U, 14U }, {    9U, 0xFFU,  5U} },  /* C7x-1 */
-        { {    7U,    3U, 15U }, {    9U, 0xFFU, 13U} },  /* C7x-2 */
+        { {   13U,    0U,  0U }, {    6U, 0xFFU,  5U} },  /* main-r5f0 */
+        { {   13U,    0U,  1U }, {    7U, 0xFFU,  5U} },  /* main-r5f1 */
+        { {   13U,    0U,  2U }, {    8U, 0xFFU,  5U} },  /* main-r5f2 */
+        { {   13U,    0U,  3U }, {    9U, 0xFFU,  5U} },  /* main-r5f3 */
+        { {   13U,    0U,  4U }, {   10U, 0xFFU,  5U} },  /* main-r5f4 */
+        { {   13U,    1U,  5U }, {   11U, 0xFFU,  5U} },  /* main-r5f5 */
+        { {   13U,    1U,  6U }, {   14U, 0xFFU,  7U} },  /* C7x-1 */
+        { {   13U,    1U,  7U }, {   15U, 0xFFU,  7U} },  /* C7x-2 */
+        { {   13U,    1U,  8U }, {   16U, 0xFFU,  7U} },  /* C7x-3 */
+        { {   13U,    1U,  9U }, {   17U, 0xFFU,  7U} },  /* C7x-4 */
         { {    0U,    2U,  9U }, {    0U,    2U,  8U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu2_0  */
     {
         { {    1U,    1U,  1U}, {    1U,    1U, 0U} },  /* A72-vm0 */
-        { {    5U,    0U,  2U}, {    7U, 0xFFU, 0U} },  /* mcu-r5f0 */
-        { {    5U,    0U,  3U}, {    7U, 0xFFU, 8U} },  /* mcu-r5f1 */
+        { {    6U,    0U,  4U}, {   12U, 0xFFU, 0U} },  /* mcu-r5f0 */
+        { {    6U,    1U,  5U}, {   13U, 0xFFU, 0U} },  /* mcu-r5f1 */
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU, 0U} },  /* Self - main-r5f0 */
         { {    1U,    1U,  4U}, {    1U,    1U, 5U} },  /* main-r5f1 */
-        { {    5U,    0U,  0U}, {    6U, 0xFFU, 0U} },  /* main-r5f2 */
-        { {    5U,    0U,  1U}, {    6U, 0xFFU, 8U} },  /* main-r5f3 */
-        { {    5U,    1U,  6U}, {    9U, 0xFFU, 0U} },  /* C7x-1 */
-        { {    5U,    1U,  7U}, {    9U, 0xFFU, 8U} },  /* C7x-2 */
+        { {    6U,    0U,  0U}, {    8U, 0xFFU, 0U} },  /* main-r5f2 */
+        { {    6U,    0U,  1U}, {    9U, 0xFFU, 0U} },  /* main-r5f3 */
+        { {    6U,    0U,  2U}, {   10U, 0xFFU, 0U} },  /* main-r5f4 */
+        { {    6U,    0U,  3U}, {   11U, 0xFFU, 0U} },  /* main-r5f5 */
+        { {    6U,    1U,  6U}, {   14U, 0xFFU, 0U} },  /* C7x-1 */
+        { {    6U,    1U,  7U}, {   15U, 0xFFU, 0U} },  /* C7x-2 */
+        { {    6U,    1U,  8U}, {   16U, 0xFFU, 0U} },  /* C7x-3 */
+        { {    6U,    1U,  9U}, {   17U, 0xFFU, 0U} },  /* C7x-4 */
         { {    1U,    1U,  7U}, {    1U,    1U, 6U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu2_1 */
     {
         { {    1U,    2U,  3U }, {    1U,    2U, 2U} },  /* A72-vm0 */
-        { {    5U,    2U, 10U }, {    7U, 0xFFU, 1U} },  /* mcu-r5f0 */
-        { {    5U,    2U, 11U }, {    7U, 0xFFU, 9U} },  /* mcu-r5f1 */
+        { {    7U,    0U,  4U }, {   12U, 0xFFU, 1U} },  /* mcu-r5f0 */
+        { {    7U,    1U,  5U }, {   13U, 0xFFU, 1U} },  /* mcu-r5f1 */
         { {    1U,    2U,  5U }, {    1U,    2U, 4U} },  /* main-r5f0 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU, 0U} },  /* Self - main-r5f1 */
-        { {    5U,    2U,  8U }, {    6U, 0xFFU, 1U} },  /* main-r5f2 */
-        { {    5U,    2U,  9U }, {    6U, 0xFFU, 9U} },  /* main-r5f3 */
-        { {    5U,    3U, 14U }, {    9U, 0xFFU, 1U} },  /* C7x-1 */
-        { {    5U,    3U, 15U }, {    9U, 0xFFU, 9U} },  /* C7x-2 */
+        { {    7U,    0U,  0U }, {    8U, 0xFFU, 1U} },  /* main-r5f2 */
+        { {    7U,    0U,  1U }, {    9U, 0xFFU, 1U} },  /* main-r5f3 */
+        { {    7U,    0U,  2U }, {   10U, 0xFFU, 1U} },  /* main-r5f4 */
+        { {    7U,    0U,  3U }, {   11U, 0xFFU, 1U} },  /* main-r5f5 */
+        { {    7U,    1U,  6U }, {   14U, 0xFFU, 1U} },  /* C7x-1 */
+        { {    7U,    1U,  7U }, {   15U, 0xFFU, 1U} },  /* C7x-2 */
+        { {    7U,    1U,  8U }, {   16U, 0xFFU, 1U} },  /* C7x-3 */
+        { {    7U,    1U,  9U }, {   17U, 0xFFU, 1U} },  /* C7x-4 */
         { {    1U,    2U,  9U }, {    1U,    2U, 8U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu3_0 */
     {
         { {    2U,    1U,  1U }, {    2U,    1U,  0U} },  /* A72-vm0 */
-        { {    6U,    0U,  2U }, {    7U, 0xFFU,  2U} },  /* mcu-r5f0 */
-        { {    6U,    0U,  3U }, {    7U, 0xFFU, 10U} },  /* mcu-r5f1 */
-        { {    6U,    0U,  0U }, {    5U, 0xFFU,  0U} },  /* main-r5f0 */
-        { {    6U,    0U,  1U }, {    5U, 0xFFU,  8U} },  /* main-r5f1 */
+        { {    8U,    0U,  4U }, {   12U, 0xFFU,  2U} },  /* mcu-r5f0 */
+        { {    8U,    1U,  5U }, {   13U, 0xFFU,  2U} },  /* mcu-r5f1 */
+        { {    8U,    0U,  0U }, {    6U, 0xFFU,  0U} },  /* main-r5f0 */
+        { {    8U,    0U,  1U }, {    7U, 0xFFU,  0U} },  /* main-r5f1 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - main-r5f2 */
         { {    2U,    1U,  4U }, {    2U,    1U,  5U} },  /* main-r5f3 */
-        { {    6U,    1U,  6U }, {    9U, 0xFFU,  2U} },  /* C7x-1 */
-        { {    6U,    1U,  7U }, {    9U, 0xFFU, 10U} },  /* C7x-2 */
+        { {    8U,    0U,  2U }, {   10U, 0xFFU,  2U} },  /* main-r5f4 */
+        { {    8U,    0U,  3U }, {   11U, 0xFFU,  2U} },  /* main-r5f5 */
+        { {    8U,    1U,  6U }, {   14U, 0xFFU,  2U} },  /* C7x-1 */
+        { {    8U,    1U,  7U }, {   15U, 0xFFU,  2U} },  /* C7x-2 */
+        { {    8U,    1U,  8U }, {   16U, 0xFFU,  2U} },  /* C7x-3 */
+        { {    8U,    1U,  9U }, {   17U, 0xFFU,  2U} },  /* C7x-4 */
         { {    2U,    1U,  7U }, {    2U,    1U,  6U} }   /* A72-vm1 */
     },
     /* Host Processor - mcu3_1	*/
     {
         { {    2U,    2U,  3U }, {    2U,    2U,  2U} },  /* A72-vm0 */
-        { {    6U,    2U, 10U }, {    7U, 0xFFU,  3U} },  /* mcu-r5f0 */
-        { {    6U,    2U, 11U }, {    7U, 0xFFU, 11U} },  /* mcu-r5f1 */
-        { {    6U,    2U,  8U }, {    5U, 0xFFU,  1U} },  /* main-r5f0 */
-        { {    6U,    2U,  9U }, {    5U, 0xFFU,  9U} },  /* main-r5f1 */
+        { {    9U,    0U,  4U }, {   12U, 0xFFU,  3U} },  /* mcu-r5f0 */
+        { {    9U,    1U,  5U }, {   13U, 0xFFU,  3U} },  /* mcu-r5f1 */
+        { {    9U,    0U,  0U }, {    6U, 0xFFU,  1U} },  /* main-r5f0 */
+        { {    9U,    0U,  1U }, {    7U, 0xFFU,  1U} },  /* main-r5f1 */
         { {    2U,    2U,  5U }, {    2U,    2U,  4U} },  /* main-r5f2 */
         { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - main-r5f3 */
-        { {    6U,    3U, 14U }, {    9U, 0xFFU,  3U} },  /* C7x-1 */
-        { {    6U,    3U, 15U }, {    9U, 0xFFU, 11U} },  /* C7x-2 */
+        { {    9U,    0U,  2U }, {   10U, 0xFFU,  3U} },  /* main-r5f4 */
+        { {    9U,    0U,  3U }, {   11U, 0xFFU,  3U} },  /* main-r5f5 */
+        { {    9U,    1U,  6U }, {   14U, 0xFFU,  3U} },  /* C7x-1 */
+        { {    9U,    1U,  7U }, {   15U, 0xFFU,  3U} },  /* C7x-2 */
+        { {    9U,    1U,  8U }, {   16U, 0xFFU,  3U} },  /* C7x-3 */
+        { {    9U,    1U,  9U }, {   17U, 0xFFU,  3U} },  /* C7x-4 */
         { {    2U,    2U,  9U }, {    2U,    2U,  8U} }   /* A72-vm1 */
+    },
+    /* Host Processor - mcu4_0 */
+    {
+        { {    3U,    1U,  1U }, {    3U,    1U,  0U} },  /* A72-vm0 */
+        { {   10U,    0U,  4U }, {   12U, 0xFFU,  4U} },  /* mcu-r5f0 */
+        { {   10U,    1U,  5U }, {   13U, 0xFFU,  4U} },  /* mcu-r5f1 */
+        { {   10U,    0U,  0U }, {    6U, 0xFFU,  2U} },  /* main-r5f0 */
+        { {   10U,    0U,  1U }, {    7U, 0xFFU,  2U} },  /* main-r5f1 */
+        { {   10U,    0U,  2U }, {    8U, 0xFFU,  2U} },  /* main-r5f2 */
+        { {   10U,    0U,  3U }, {    9U, 0xFFU,  2U} },  /* main-r5f3 */
+        { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - main-r5f4 */
+        { {    3U,    1U,  4U }, {    3U,    1U,  5U} },  /* main-r5f5 */
+        { {   10U,    1U,  6U }, {   14U, 0xFFU,  4U} },  /* C7x-1 */
+        { {   10U,    1U,  7U }, {   15U, 0xFFU,  4U} },  /* C7x-2 */
+        { {   10U,    1U,  8U }, {   16U, 0xFFU,  4U} },  /* C7x-3 */
+        { {   10U,    1U,  9U }, {   17U, 0xFFU,  4U} },  /* C7x-4 */
+        { {    3U,    1U,  7U }, {    3U,    1U,  6U} }   /* A72-vm1 */
+    },
+    /* Host Processor - mcu4_1	*/
+    {
+        { {    3U,    2U,  3U }, {    3U,    2U,  2U} },  /* A72-vm0 */
+        { {   11U,    0U,  4U }, {   12U, 0xFFU,  5U} },  /* mcu-r5f0 */
+        { {   11U,    1U,  5U }, {   13U, 0xFFU,  5U} },  /* mcu-r5f1 */
+        { {   11U,    0U,  0U }, {    6U, 0xFFU,  3U} },  /* main-r5f0 */
+        { {   11U,    0U,  1U }, {    7U, 0xFFU,  3U} },  /* main-r5f1 */
+        { {   11U,    0U,  2U }, {    8U, 0xFFU,  3U} },  /* main-r5f2 */
+        { {   11U,    0U,  3U }, {    9U, 0xFFU,  3U} },  /* main-r5f3 */
+        { {    3U,    2U,  5U }, {    3U,    2U,  4U} },  /* main-r5f4 */
+        { { 0xFFU, 0xFFU,  0U }, { 0xFFU, 0xFFU,  0U} },  /* Self - main-r5f5 */
+        { {   11U,    1U,  6U }, {   14U, 0xFFU,  5U} },  /* C7x-1 */
+        { {   11U,    1U,  7U }, {   15U, 0xFFU,  5U} },  /* C7x-2 */
+        { {   11U,    1U,  8U }, {   16U, 0xFFU,  5U} },  /* C7x-3 */
+        { {   11U,    1U,  9U }, {   17U, 0xFFU,  5U} },  /* C7x-4 */
+        { {    3U,    2U,  9U }, {    3U,    2U,  8U} }   /* A72-vm1 */
     },
     /* Host Processor - c7x_1	*/
     {
         { {    4U,    1U,  1U}, {    4U,    1U,  0U} },  /* A72-vm0 */
-        { {    9U,    1U,  4U}, {    7U, 0xFFU,  6U} },  /* mcu-r5f0 */
-        { {    9U,    1U,  5U}, {    7U, 0xFFU, 14U} },  /* mcu-r5f1 */
-        { {    9U,    0U,  0U}, {    5U, 0xFFU,  6U} },  /* main-r5f0 */
-        { {    9U,    0U,  1U}, {    5U, 0xFFU, 14U} },  /* main-r5f1 */
-        { {    9U,    0U,  2U}, {    6U, 0xFFU,  6U} },  /* main-r5f2 */
-        { {    9U,    0U,  3U}, {    6U, 0xFFU, 14U} },  /* main-r5f3 */
+        { {   14U,    1U,  6U}, {   12U, 0xFFU,  6U} },  /* mcu-r5f0 */
+        { {   14U,    1U,  7U}, {   13U, 0xFFU,  6U} },  /* mcu-r5f1 */
+        { {   14U,    0U,  0U}, {    6U, 0xFFU,  6U} },  /* main-r5f0 */
+        { {   14U,    0U,  1U}, {    7U, 0xFFU,  6U} },  /* main-r5f1 */
+        { {   14U,    0U,  2U}, {    8U, 0xFFU,  6U} },  /* main-r5f2 */
+        { {   14U,    0U,  3U}, {    9U, 0xFFU,  6U} },  /* main-r5f3 */
+        { {   14U,    0U,  4U}, {   10U, 0xFFU,  6U} },  /* main-r5f4 */
+        { {   14U,    1U,  5U}, {   11U, 0xFFU,  6U} },  /* main-r5f5 */
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} },  /* Self - C7x-1 */
         { {    4U,    1U,  4U}, {    4U,    1U,  5U} },  /* C7x-2 */
+        { {   14U,    1U,  8U}, {   16U, 0xFFU,  8U} },  /* C7x-3 */
+        { {   14U,    1U,  9U}, {   17U, 0xFFU,  8U} },  /* C7x-4 */
         { {    4U,    1U,  7U}, {    4U,    1U,  6U} }   /* A72-vm1 */
     },
     /* Host Processor - c7x_2	*/
     {
         { {    4U,    2U,  3U}, {    4U,    2U,  2U} },  /* A72-vm0 */
-        { {    9U,    3U, 12U}, {    7U, 0xFFU,  7U} },  /* mcu-r5f0 */
-        { {    9U,    3U, 13U}, {    7U, 0xFFU, 15U} },  /* mcu-r5f1 */
-        { {    9U,    2U,  8U}, {    5U, 0xFFU,  7U} },  /* main-r5f0 */
-        { {    9U,    2U,  9U}, {    5U, 0xFFU, 15U} },  /* main-r5f1 */
-        { {    9U,    2U, 10U}, {    6U, 0xFFU,  7U} },  /* main-r5f2 */
-        { {    9U,    2U, 11U}, {    6U, 0xFFU, 15U} },  /* main-r5f3 */
+        { {   15U,    1U,  6U}, {   12U, 0xFFU,  7U} },  /* mcu-r5f0 */
+        { {   15U,    1U,  7U}, {   13U, 0xFFU,  7U} },  /* mcu-r5f1 */
+        { {   15U,    0U,  0U}, {    6U, 0xFFU,  7U} },  /* main-r5f0 */
+        { {   15U,    0U,  1U}, {    7U, 0xFFU,  7U} },  /* main-r5f1 */
+        { {   15U,    0U,  2U}, {    8U, 0xFFU,  7U} },  /* main-r5f2 */
+        { {   15U,    0U,  3U}, {    9U, 0xFFU,  7U} },  /* main-r5f3 */
+        { {   15U,    0U,  4U}, {   10U, 0xFFU,  7U} },  /* main-r5f4 */
+        { {   15U,    1U,  5U}, {   11U, 0xFFU,  7U} },  /* main-r5f5 */
         { {    4U,    2U,  5U}, {    4U,    2U,  4U} },  /* C7x-1 */
-        { { 0xFFU, 0xFFU,  0U}, {0xFFU, 0xFFU,  0U} },  /* Self - C7x-2 */
+        { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} },  /* Self - C7x-2 */
+        { {   15U,    1U,  8U}, {   16U, 0xFFU,  9U} },  /* C7x-3 */
+        { {   15U,    1U,  9U}, {   17U, 0xFFU,  9U} },  /* C7x-4 */
         { {    4U,    2U,  9U}, {    4U,    2U,  8U} }   /* A72-vm1 */
+    },
+    /* Host Processor - c7x_3	*/
+    {
+        { {    5U,    1U,  1U}, {    5U,    1U,  0U} },  /* A72-vm0 */
+        { {   16U,    1U,  6U}, {   12U, 0xFFU,  8U} },  /* mcu-r5f0 */
+        { {   16U,    1U,  7U}, {   13U, 0xFFU,  8U} },  /* mcu-r5f1 */
+        { {   16U,    0U,  0U}, {    6U, 0xFFU,  8U} },  /* main-r5f0 */
+        { {   16U,    0U,  1U}, {    7U, 0xFFU,  8U} },  /* main-r5f1 */
+        { {   16U,    0U,  2U}, {    8U, 0xFFU,  8U} },  /* main-r5f2 */
+        { {   16U,    0U,  3U}, {    9U, 0xFFU,  8U} },  /* main-r5f3 */
+        { {   16U,    0U,  4U}, {   10U, 0xFFU,  8U} },  /* main-r5f4 */
+        { {   16U,    1U,  5U}, {   11U, 0xFFU,  8U} },  /* main-r5f5 */
+        { {   16U,    1U,  8U}, {   14U, 0xFFU,  8U} },  /* C7x-1 */
+        { {   16U,    1U,  9U}, {   15U, 0xFFU,  8U} },  /* C7x-2 */
+        { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} },  /* Self - C7x-3 */
+        { {    5U,    1U,  4U}, {    5U,    1U,  5U} },  /* C7x-4 */
+        { {    5U,    1U,  7U}, {    5U,    1U,  6U} }   /* A72-vm1 */
+    },
+    /* Host Processor - c7x_4	*/
+    {
+        { {    5U,    2U,  3U}, {    5U,    2U,  2U} },  /* A72-vm0 */
+        { {   17U,    1U,  6U}, {   12U, 0xFFU,  9U} },  /* mcu-r5f0 */
+        { {   17U,    1U,  7U}, {   13U, 0xFFU,  9U} },  /* mcu-r5f1 */
+        { {   17U,    0U,  0U}, {    6U, 0xFFU,  9U} },  /* main-r5f0 */
+        { {   17U,    0U,  1U}, {    7U, 0xFFU,  9U} },  /* main-r5f1 */
+        { {   17U,    0U,  2U}, {    8U, 0xFFU,  9U} },  /* main-r5f2 */
+        { {   17U,    0U,  3U}, {    9U, 0xFFU,  9U} },  /* main-r5f3 */
+        { {   17U,    0U,  4U}, {   10U, 0xFFU,  9U} },  /* main-r5f4 */
+        { {   17U,    1U,  5U}, {   11U, 0xFFU,  9U} },  /* main-r5f5 */
+        { {   17U,    1U,  8U}, {   14U, 0xFFU,  9U} },  /* C7x-1 */
+        { {   17U,    1U,  9U}, {   15U, 0xFFU,  9U} },  /* C7x-2 */
+        { {    5U,    2U,  5U}, {    5U,    2U,  4U} },  /* C7x-3 */
+        { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} },  /* Self - C7x-4 */
+        { {    5U,    2U,  9U}, {    5U,    2U,  8U} }   /* A72-vm1 */
     },
     /* Host Processor - A72-vm1	*/
     {
@@ -250,8 +366,12 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
         { {    1U,    3U,  8U}, {    1U,    3U,  9U} },  /* main-r5f1 */
         { {    2U,    3U,  6U}, {    2U,    3U,  7U} },  /* main-r5f2 */
         { {    2U,    3U,  8U}, {    2U,    3U,  9U} },  /* main-r5f3 */
+        { {    3U,    3U,  6U}, {    3U,    3U,  7U} },  /* main-r5f4 */
+        { {    3U,    3U,  8U}, {    3U,    3U,  9U} },  /* main-r5f5 */
         { {    4U,    3U,  6U}, {    4U,    3U,  7U} },  /* C7x-1 */
         { {    4U,    3U,  8U}, {    4U,    3U,  9U} },  /* C7x-2 */
+        { {    5U,    3U,  6U}, {    5U,    3U,  7U} },  /* C7x-3 */
+        { {    5U,    3U,  8U}, {    5U,    3U,  9U} },  /* C7x-4 */
         { { 0xFFU, 0xFFU,  0U}, { 0xFFU, 0xFFU,  0U} }   /* Self - A72-vm1 */
     }
 };
@@ -400,7 +520,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     {
         case IPC_MPU1_0:
             outIntrBaseNum  = NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET;
-            vimEventBaseNum = NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET; 
+            vimEventBaseNum = NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_MCU1_0:
             outIntrBaseNum  = NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET;
@@ -498,13 +618,13 @@ uint32_t Ipc_configClecRouter(uint32_t corePackEvent, uint32_t corePackEventBase
     CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)C7X_CLEC_BASE_ADDR;
     uint32_t              corepackIrq;
 
-   /* Even though same CLEC is shared b/w two C7x cores, CLEC can broadcast the
+   /* Even though same CLEC is shared b/w all C7x cores, CLEC can broadcast the
     * event to any C7x core and CPU IRQ(corepackIrq) is core specific.
-    * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */ 
+    * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */
     corepackIrq = (corePackEvent - corePackEventBase) + IPC_C7X_MBINTR_OFFSET;
-  
+
    /* corePackEvent is derived from the NAVSS IR o/p range returned from BoardCfg,
-    * based on core specific allocation. And this is different for c7x_1 and c7x_2. 
+    * based on core specific allocation. And this is different for each C7x.
     * Hence same C7X_CLEC_OFFSET can be used for both C7x cores. */
     input = corePackEvent + C7X_CLEC_OFFSET;
 
@@ -563,12 +683,22 @@ static const uint16_t map_src_id[] =
     TISCI_DEV_NAVSS0_MAILBOX_9,
     TISCI_DEV_NAVSS0_MAILBOX_10,
     TISCI_DEV_NAVSS0_MAILBOX_11,
+    TISCI_DEV_NAVSS0_MAILBOX1_0,
+    TISCI_DEV_NAVSS0_MAILBOX1_1,
+    TISCI_DEV_NAVSS0_MAILBOX1_2,
+    TISCI_DEV_NAVSS0_MAILBOX1_3,
+    TISCI_DEV_NAVSS0_MAILBOX1_4,
+    TISCI_DEV_NAVSS0_MAILBOX1_5
 };
 
 /* Indexed list of req type */
 static const uint16_t req_type[] =
 {
     /* NOTE: This list should match the Core index */
+    TISCI_DEV_NAVSS0_INTR_0,
+    TISCI_DEV_NAVSS0_INTR_0,
+    TISCI_DEV_NAVSS0_INTR_0,
+    TISCI_DEV_NAVSS0_INTR_0,
     TISCI_DEV_NAVSS0_INTR_0,
     TISCI_DEV_NAVSS0_INTR_0,
     TISCI_DEV_NAVSS0_INTR_0,
@@ -584,6 +714,10 @@ static const uint16_t req_type[] =
 static const uint16_t req_subtype[] =
 {
     /* NOTE: This list should match the Core index */
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT,
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT,
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT,
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT,
     TISCI_RESASG_SUBTYPE_IR_OUTPUT,
     TISCI_RESASG_SUBTYPE_IR_OUTPUT,
     TISCI_RESASG_SUBTYPE_IR_OUTPUT,
