@@ -141,6 +141,7 @@ typedef struct Board_DetectCfg_s
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
+ * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
  *
@@ -161,6 +162,7 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID);
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
+ * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
  *
  * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
@@ -178,6 +180,7 @@ bool Board_detectBoard(uint32_t boardID);
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
+ * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
  *
  * \return TRUE if board revision is E2, FALSE for all other cases
  */
@@ -247,6 +250,7 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
+ * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
  *
  * \return   BOARD_SOK in case of success or appropriate error code.

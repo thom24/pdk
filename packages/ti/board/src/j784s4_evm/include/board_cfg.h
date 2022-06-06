@@ -263,9 +263,11 @@ extern "C" {
 #define BOARD_ID_SOM             (0x2U)
 /* Board detect ID for CP Board */
 #define BOARD_ID_CP              (0x3U)
+/* Board detect ID for Ethernet expansion board */
+#define BOARD_ID_ENET            (0x4U)
 
 /* Maximum number of supporting board ID */
-#define BOARD_ID_MAX_BOARDS      (0x4U)
+#define BOARD_ID_MAX_BOARDS      (0x5U)
 
 #define BOARD_EEPROM_HEADER_LENGTH                      (4U)
 #define BOARD_EEPROM_BOARD_NAME_LENGTH                  (8U)

@@ -168,3 +168,24 @@ Board_STATUS Board_ethConfigCpsw9g(void)
 {
     return BOARD_SOK;
 }
+
+/**
+ * \brief  Power down the ENET PHYs
+ * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpswEnetExpPhyReset(bool enableFlag)
+{
+    return BOARD_SOK;
+}
+
+/**
+ * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ */
+Board_STATUS Board_cpswEnetExpComaModeCfg(bool enableFlag)
+{
+    return BOARD_SOK;
+}
