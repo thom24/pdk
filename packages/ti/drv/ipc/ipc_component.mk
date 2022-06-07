@@ -428,9 +428,9 @@ ipc_baremetal_multicore_echo_test_PKG_LIST = ipc_baremetal_multicore_echo_test
 ipc_baremetal_multicore_echo_test_INCLUDE = $(ipc_baremetal_multicore_echo_test_PATH)
 # Disable multicore app image gen for J7AHP
 ifeq ($(SOC), j784s4)
-export ipc_baremetal_multicore_echo_test_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
+export ipc_baremetal_multicore_echo_test_BOARDLIST = $(filter-out j784s4_evm, $(drvipc_BOARDLIST))
 else
-export ipc_baremetal_multicore_echo_test_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ipc_baremetal_multicore_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
 endif
 export ipc_baremetal_multicore_echo_test_$(SOC)_CORELIST:= $(drvipc_$(SOC)_LASTCORE)
 export ipc_baremetal_multicore_echo_test_SBL_APPIMAGEGEN = no
@@ -449,7 +449,12 @@ export ipc_rtos_multicore_echo_testb_$(1)_MAKEFILE =  -f$(PDK_IPC_COMP_PATH)/exa
 export ipc_rtos_multicore_echo_testb_$(1)_DEPENDS_ON=ipc_rtos_echo_testb_$(1)
 ipc_rtos_multicore_echo_testb_$(1)_PKG_LIST = ipc_rtos_multicore_echo_testb_$(1)
 ipc_rtos_multicore_echo_testb_$(1)_INCLUDE = $(ipc_rtos_multicore_echo_testb_$(1)_PATH)
-export ipc_rtos_multicore_echo_testb_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(drvipc_BOARDLIST))
+# Disable multicore app image gen for J7AHP
+ifeq ($(SOC), j784s4)
+export ipc_rtos_multicore_echo_testb_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
+else
+export ipc_rtos_multicore_echo_testb_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+endif
 export ipc_rtos_multicore_echo_testb_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_rtos_multicore_echo_testb_SBL_APPIMAGEGEN = no
 ifneq ($(1),$(filter $(1), safertos))
@@ -478,9 +483,9 @@ ipc_multicore_perf_test_$(1)_PKG_LIST = ipc_multicore_perf_test_$(1)
 ipc_multicore_perf_test_$(1)_INCLUDE = $(ipc_multicore_perf_test_$(1)_PATH)
 # Disable multicore app image gen for J7AHP
 ifeq ($(SOC), j784s4)
-export ipc_rtos_multicore_echo_test_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
+export ipc_rtos_multicore_perf_test_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
 else
-export ipc_rtos_multicore_echo_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ipc_rtos_multicore_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
 endif
 export ipc_multicore_perf_test_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
