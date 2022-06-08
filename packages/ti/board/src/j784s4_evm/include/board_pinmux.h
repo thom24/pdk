@@ -46,6 +46,7 @@
 /* ========================================================================== */
 
 #include <ti/board/src/j784s4_evm/include/pinmux.h>
+#include <ti/board/src/j784s4_evm/J784S4_pinmux.h>
 #include <ti/csl/csl_types.h>
 
 #ifdef __cplusplus
