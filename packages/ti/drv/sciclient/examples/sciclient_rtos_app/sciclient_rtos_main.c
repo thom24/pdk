@@ -81,15 +81,6 @@ void GetRevisionTest2(void* arg0, void *arg1);
 
 void appReset(void);
 
-/**
- * \brief   Set the interrupt config for C66x Timer interrupts.
- *
- * \param   None.
- *
- * \return  None
- */
-void App_sciclientC66xIntrConfig(void);
-
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -182,8 +173,7 @@ void mainTsk(void* arg0, void* arg1)
     taskParams2.priority = 15;
 
     App_sciclientConsoleInit();
-    App_sciclientC66xIntrConfig();
-
+ 
     task1 = TaskP_create(GetRevisionTest1, &taskParams1);
     if (task1 == NULL)
     {
