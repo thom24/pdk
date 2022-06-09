@@ -44,10 +44,52 @@
 #include "board_internal.h"
 #include "board_utils.h"
 #include "board_cfg.h"
+#include <ti/drv/mmcsd/MMCSD.h>
+#include <ti/drv/mmcsd/soc/MMCSD_soc.h>
+
+Board_DetectCfg_t  gBoardDetCfg[BOARD_ID_MAX_BOARDS] =
+ {{BOARD_COMMON_EEPROM_I2C_INST, BOARD_GESI_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-GESI-EXP"},
+  {BOARD_CSI2_EEPROM_I2C_INST, BOARD_CSI2_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_MAIN, "J7X-FUSION2-CSI"},
+  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_ENET_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-VSC8514-ETH"},
+  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_CP_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J784S4X-EVM"}};
 
 Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
 Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE,
                                        BOARD_MAIN_CLOCK_GROUP_ALL, BOARD_MCU_CLOCK_GROUP_ALL};
+
+/**
+ *  \brief    Function to configure SD card voltage control gpio configuration.
+ *
+ *  \param    gpioValue [IN] GPIO pin value.
+ *            1 for GPIO pin high
+ *            0 for GPIO pin low
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+static void Board_sdVoltageCtrlGpioCfg(uint8_t gpioValue)
+{
+    uint32_t regVal;
+
+    /* Setting the GPIO direction to output */
+    regVal = HW_RD_REG32(CSL_GPIO0_BASE + 0x10);
+    regVal &= ~(0x01 << (BOARD_SDIO_1V8_EN_PIN_NUM % 32));
+    HW_WR_REG32((CSL_GPIO0_BASE + 0x10), regVal);
+
+    /* Setting the GPIO value */
+    regVal = HW_RD_REG32(CSL_GPIO0_BASE + 0x18);
+
+    if(gpioValue == 0)
+    {
+        regVal &= ~(0x01 << (BOARD_SDIO_1V8_EN_PIN_NUM % 32));
+        HW_WR_REG32((CSL_GPIO0_BASE + 0x18), regVal);
+    }
+    else
+    {
+        regVal |= (gpioValue << (BOARD_SDIO_1V8_EN_PIN_NUM % 32));
+        HW_WR_REG32((CSL_GPIO0_BASE + 0x18), regVal);
+    }
+}
 
 /**
  * \brief Board ID read function
@@ -56,16 +98,25 @@ Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAI
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
  *
  */
 Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
 {
-    return BOARD_SOK;
+    Board_I2cInitCfg_t i2cCfg = {0};
+    Board_STATUS status;
+
+    i2cCfg.i2cInst    = gBoardDetCfg[boardID].i2cInst;
+    i2cCfg.socDomain  = gBoardDetCfg[boardID].socDomain;
+    i2cCfg.enableIntr = false;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    status = Board_getIDInfo_v2(info, gBoardDetCfg[boardID].slaveAddr);
+
+    return status;
 }
 
 /**
@@ -80,9 +131,8 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  *
  * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
@@ -92,7 +142,25 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  */
 bool Board_detectBoard(uint32_t boardID)
 {
-    return BOARD_SOK;
+    Board_IDInfo_v2 info = {0};
+    Board_STATUS status;
+    bool bDet = FALSE;
+
+    if(boardID <= BOARD_ID_EVM)
+    {
+        status = Board_getBoardData(&info, boardID);
+        if(status == 0)
+        {
+            if(!(strncmp(info.boardInfo.boardName,
+                         gBoardDetCfg[boardID].bName,
+                         BOARD_BOARD_NAME_LEN)))
+            {
+                bDet = TRUE;
+            }
+        }
+    }
+
+    return bDet;
 }
 
 /**
@@ -101,26 +169,59 @@ bool Board_detectBoard(uint32_t boardID)
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  *
- * \return TRUE if board revision is E2, FALSE for all other cases
+ * \return TRUE if board revision is Alpha, FALSE for all other cases
  */
 bool Board_isAlpha(uint32_t boardID)
 {
-    return FALSE;
+    bool alphaBoard = FALSE;
+
+    return alphaBoard;
 }
 
 /**
  *  \brief    Function to detect ENET expansion application card type
  *
+ *  ENET expansion connector supports QSGMII and SGMII application cards.
+ *  This function detects type of the application card connected on
+ *  ENET expansion connector.
  *
  *  \return
- */
+ *            0 (BOARD_ENET_NONE)   - No board connected or invalid board ID data
+ *            1 (BOARD_ENET_QSGMII) - QSGMII board connected
+ *            2 (BOARD_ENET_SGMII)  - SGMII board connected
+ *           -1 (BOARD_ENET_UNKOWN) - Unknown board
+*/
 int32_t Board_detectEnetCard(void)
 {
-    return 0;
+    Board_IDInfo_v2 info = {0};
+    Board_STATUS status;
+    int8_t ret = 0;
+
+    status = Board_getBoardData(&info, BOARD_ID_ENET);
+    if(status == 0)
+    {
+        if((strcmp(info.boardInfo.boardName, "J7X-VSC8514-ETH")) == 0)
+        {
+            ret = BOARD_ENET_QSGMII;
+        }
+        else if((strcmp(info.boardInfo.boardName, "J7X-DP83869-ETH")) == 0)
+        {
+            ret = BOARD_ENET_SGMII;
+        }
+        else
+        {
+            ret = BOARD_ENET_UNKOWN;
+        }
+    }
+    else
+    {
+        ret = BOARD_ENET_NONE;
+    }
+
+    return ret;
 }
 
 /**
@@ -146,8 +247,8 @@ int32_t Board_detectEnetCard(void)
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  * \param  macAddrBuf[OUT] Buffer to write MAC IDs read from EEPROM
  * \param  macBufSize[IN]  Size of the macAddrBuf
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
@@ -163,7 +264,37 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
                                uint32_t macBufSize,
                                uint32_t *macAddrCnt)
 {
-    return BOARD_SOK;
+    Board_IDInfo_v2 info = {0};
+    Board_STATUS status;
+    uint8_t macCount = 0;
+
+    if((boardID <= BOARD_ID_EVM) && (macAddrBuf != NULL))
+    {
+        status = Board_getBoardData(&info, boardID);
+        if(status == 0)
+        {
+            macCount = ((info.macInfo.macControl & BOARD_MAC_COUNT_MASK)
+                          >> BOARD_MAC_COUNT_SHIFT) + 1;
+            if(macBufSize < (macCount * BOARD_MAC_ADDR_BYTES))
+            {
+                macCount = (macBufSize / BOARD_MAC_ADDR_BYTES);
+            }
+
+            memcpy(macAddrBuf, &(info.macInfo.macAddress[0]),
+                   (macCount * BOARD_MAC_ADDR_BYTES));
+        }
+    }
+    else
+    {
+        status = BOARD_INVALID_PARAM;
+    }
+
+    if(macAddrCnt != NULL)
+    {
+        *macAddrCnt = macCount;
+    }
+
+    return status;
 }
 
 /**
@@ -180,9 +311,8 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
@@ -191,7 +321,24 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
 Board_STATUS Board_readMacAddrCount(uint32_t boardID,
                                     uint32_t *macAddrCnt)
 {
-    return BOARD_SOK;
+    Board_IDInfo_v2 info = {0};
+    Board_STATUS status;
+
+    if((boardID <= BOARD_ID_EVM) && (macAddrCnt != NULL))
+    {
+        status = Board_getBoardData(&info, boardID);
+        if(status == 0)
+        {
+            *macAddrCnt = ((info.macInfo.macControl & BOARD_MAC_COUNT_MASK)
+                           >> BOARD_MAC_COUNT_SHIFT) + 1;
+        }
+    }
+    else
+    {
+        status = BOARD_INVALID_PARAM;
+    }
+
+    return status;
 }
 
 /**
@@ -210,6 +357,13 @@ Board_STATUS Board_readMacAddrCount(uint32_t boardID,
  */
 Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg)
 {
+    if(i2cCfg == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    gBoardI2cInitCfg = *i2cCfg;
+
     return BOARD_SOK;
 }
 
@@ -226,6 +380,13 @@ Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg)
  */
 Board_STATUS Board_getInitParams(Board_initParams_t *initParams)
 {
+    if(initParams == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    *initParams = gBoardInitParams;
+
     return BOARD_SOK;
 }
 
@@ -251,7 +412,51 @@ Board_STATUS Board_getInitParams(Board_initParams_t *initParams)
  */
 Board_STATUS Board_setInitParams(Board_initParams_t *initParams)
 {
+    if(initParams == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    gBoardInitParams = *initParams;
+
     return BOARD_SOK;
+}
+
+/**
+ * \brief Voltage Switching function for MMCSD
+ *
+ * Functionality: Change the voltage of the MMC CMD & DAT lines.
+ *  This function is called by the MMCSD card driver (if the driver is
+ *  configured to use this function at init time by the application) to change
+ *  the CMD & DAT voltage from 3.0V to 1.8V if a UHS-I card is found.
+ *  This function configures the PMIC controller of the board to switch the voltage
+ *
+ *  Note: This function uses non-standard board API naming and return type
+ *        to align with existing platforms.
+ *
+ * \param   instance       [IN]  Device instance
+ * \param   switchVoltage  [IN]  MMCSD IO voltage value
+ *
+ */
+MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance,
+                                       MMCSD_BusVoltage_e switchVoltage)
+{
+	MMCSD_Error mmcRetVal = MMCSD_OK;
+
+    if(switchVoltage == MMCSD_BUS_VOLTAGE_1_8V)
+    {
+       Board_sdVoltageCtrlGpioCfg(0);
+    }
+    else if(switchVoltage == MMCSD_BUS_VOLTAGE_3_3V)
+    {
+       Board_sdVoltageCtrlGpioCfg(1);
+	}
+    else
+    {
+        mmcRetVal = MMCSD_ERR;
+    }
+
+	return(mmcRetVal);
 }
 
 /**
@@ -267,7 +472,17 @@ uint32_t Board_getSocDomain(void)
 {
     uint32_t socDomain = BOARD_SOC_DOMAIN_MAIN;
 
-    return socDomain;
+#ifdef BUILD_MCU
+    CSL_ArmR5CPUInfo info;
+
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        socDomain = BOARD_SOC_DOMAIN_MCU;
+    }
+#endif
+
+  return socDomain;
 }
 
 /**
@@ -280,7 +495,7 @@ uint32_t Board_getSocDomain(void)
  */
 void Board_setRATCfg(void)
 {
-
+    /* Not used. Place holder for any future updates */
 }
 
 /**
@@ -290,7 +505,7 @@ void Board_setRATCfg(void)
  */
 void Board_restoreRATCfg(void)
 {
-
+    /* Not used. Place holder for any future updates */
 }
 
 /**
@@ -309,5 +524,13 @@ void Board_restoreRATCfg(void)
  */
 void BOARD_delay(uint32_t usecs)
 {
+    uint32_t msecs;
 
+    msecs = usecs/1000;
+    if(usecs%1000)
+    {
+        msecs += 1;
+    }
+
+    Osal_delay(msecs);
 }

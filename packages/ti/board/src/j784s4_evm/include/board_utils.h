@@ -139,9 +139,8 @@ typedef struct Board_DetectCfg_s
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
  *
@@ -160,9 +159,8 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID);
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  *
  * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
@@ -178,9 +176,8 @@ bool Board_detectBoard(uint32_t boardID);
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  *
  * \return TRUE if board revision is E2, FALSE for all other cases
  */
@@ -217,8 +214,8 @@ int32_t Board_detectEnetCard(void);
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  * \param  macAddrBuf[OUT] Buffer to write MAC IDs read from EEPROM
  * \param  macBufSize[IN]  Size of the macAddrBuf
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
@@ -248,9 +245,8 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_SOM(0x2) - SoM Board
- * \n                      BOARD_ID_CP(0x3) - CP Board
- * \n                      BOARD_ID_ENET(0x4) - Quad ENET expansion
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_EVM(0x3) - EVM Board
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
  *
  * \return   BOARD_SOK in case of success or appropriate error code.

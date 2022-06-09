@@ -285,14 +285,6 @@ GPIO_v1_Config GPIO_v1_config = {
 
 #endif
 
-/* Hack until Board library is supported */
-#if defined(SOC_J784S4)
-    MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance, MMCSD_BusVoltage_e switchVoltage)
-    {
-        return MMCSD_OK;
-    }
-#endif
-
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */

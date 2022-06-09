@@ -66,6 +66,8 @@ extern "C" {
 #define BOARD_UART1_INSTANCE                            (1U)
 /* UART LLD instance number for MAIN UART2 port */
 #define BOARD_UART2_INSTANCE                            (2U)
+/* UART LLD instance number for MAIN UART3 port */
+#define BOARD_UART3_INSTANCE                            (3U)
 /* UART LLD instance number for MAIN UART4 port */
 #define BOARD_UART4_INSTANCE                            (4U)
 /* UART LLD instance number for MAIN UART5 port */
@@ -145,7 +147,7 @@ extern "C" {
 #define BOARD_I2C_LEO_PMIC_B_WDT_ADDR                   (0x13U)
 
 /* OSPI instance number */
-#define BOARD_OSPI_INSTANCE                             (0)
+#define BOARD_OSPI_INSTANCE                             (0U)
 
 /* I2C instance for External RTC */
 #define BOARD_I2C_EXT_RTC_INSTANCE                      (0U)
@@ -163,18 +165,14 @@ extern "C" {
 #define BOARD_USER_LED2                                 (7U)
 #define BOARD_USER_LED_IOEXP_PORT                       (2U)
 
-#define BOARD_CPSW9G_EMAC_PORT_MAX                      (8)
-#define BOARD_CPSW9G_PORT_MAX                           (8)
+#define BOARD_CPSW9G_EMAC_PORT_MAX                      (8U)
+#define BOARD_CPSW9G_PORT_MAX                           (8U)
 
 /* MCU EMAC PHY MDIO address */
 #define BOARD_MCU_EMAC_PHY_ADDR                         (0U)
 
 /* MAIN EMAC PHY MDIO address */
 #define BOARD_MAIN_EMAC_PHY_ADDR                        (0U)
-
-/* HDMI IO Exp instances */
-#define BOARD_HDMI_IO_EXP_INSTANCE                      (1U)
-#define BOARD_HDMI_IO_SLAVE_ADDR                        (0x21U)
 
 /* MCU EMAC MAX REG DUMP */
 #define BOARD_MCU_EMAC_REG_DUMP_MAX                     ((16U))
@@ -259,15 +257,13 @@ extern "C" {
 #define BOARD_ID_GESI            (0x0)
 /* Board detect ID for Fusion2 */
 #define BOARD_ID_FUSION2         (0x1U)
-/* Board detect ID for dual PMIC SoM */
-#define BOARD_ID_SOM             (0x2U)
-/* Board detect ID for CP Board */
-#define BOARD_ID_CP              (0x3U)
 /* Board detect ID for Ethernet expansion board */
-#define BOARD_ID_ENET            (0x4U)
+#define BOARD_ID_ENET            (0x2U)
+/* Board detect ID for EVM */
+#define BOARD_ID_EVM             (0x3U)
 
 /* Maximum number of supporting board ID */
-#define BOARD_ID_MAX_BOARDS      (0x5U)
+#define BOARD_ID_MAX_BOARDS      (0x4U)
 
 #define BOARD_EEPROM_HEADER_LENGTH                      (4U)
 #define BOARD_EEPROM_BOARD_NAME_LENGTH                  (8U)
@@ -288,7 +284,7 @@ extern "C" {
 #define BOARD_DISPLAY_EEPROM_SLAVE_ADDR               (0x00U) //J7ES_TBD: Need to update salve addr when board design is complete
 
 #define BOARD_COMMON_EEPROM_I2C_INST                  (0)
-#define BOARD_CSI2_EEPROM_I2C_INST                    (6)
+#define BOARD_CSI2_EEPROM_I2C_INST                    (5)
 
 #define BOARD_MMC_VOLTAGESWITCH_FN      Board_mmc_voltageSwitchFxn
 
@@ -332,9 +328,6 @@ extern "C" {
 
 #define BOARD_LIN2_UART_INSTANCE                         (3U)
 #define BOARD_LIN2_UART_BASE                             (CSL_UART3_BASE)
-
-#define BOARD_LIN3_UART_INSTANCE                         (9U)
-#define BOARD_LIN3_UART_BASE                             (CSL_UART9_BASE)
 
 #define BOARD_CSI2RX_CTRL_I2C_INSTANCE                   (0x5U)
 
