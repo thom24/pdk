@@ -95,7 +95,6 @@ static void Board_DDRChangeFreqAck(uint32_t ddrInstance)
     uint32_t reqType;
     uint32_t regVal;
     volatile uint32_t counter;
-    volatile uint32_t counter2;
     volatile uint32_t temp = 0;
 
     temp = temp;  /* To suppress compiler warning */
