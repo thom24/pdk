@@ -134,6 +134,10 @@ typedef struct
 #endif
     uint32_t respIntrNum;
     /**< Response Interrupt Number. */
+#if defined (BUILD_C7X)
+    uint32_t c7xEvtIn;
+    /**< Thread ID of the notification thread(read) available for the CPU */
+#endif
 } Sciclient_MapStruct_t;
 
 /**

@@ -300,7 +300,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_0_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_0_0_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/
@@ -318,7 +322,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_0_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_0_1_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/
@@ -336,7 +344,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_1_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_1_0_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/
@@ -354,7 +366,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_1_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_1_1_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/
@@ -372,7 +388,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_2_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_2_0_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/
@@ -390,7 +410,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_2_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_2_1_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/
@@ -408,7 +432,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_3_0_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_3_0_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/
@@ -426,7 +454,11 @@ const Sciclient_MapStruct_t gSciclientMap[SCICLIENT_CONTEXT_MAX_NUM] =
         /** Thread ID of the notification thread(read) available for the CPU */
         TISCI_SEC_PROXY_C7X_3_1_READ_NOTIFY_THREAD_ID,
         /** Notification Interrupt Number.  */
-        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM
+        SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM,
+#if defined (BUILD_C7X)
+        /** CLEC Input Event Number.  */
+        SCICLIENT_C7X_3_1_CLEC_EVENT_IN
+#endif
     },
     {
         /** Context **/

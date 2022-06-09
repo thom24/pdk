@@ -380,6 +380,12 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 #endif
                 #if defined (BUILD_C7X)
                 {
+                    /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
+                     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+                     * to the event number which is shared between GIC and CLEC.
+                     */
+                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992;
+
                     #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                     #else
@@ -391,15 +397,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                     evtCfg.rtMap = 0x3C;
                     evtCfg.extEvtNum = 0x0;
                     evtCfg.c7xEvtNum = SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM;
-                    /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
-                     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
-                     * to the event number which is shared between GIC and CLEC.
-                     */
-                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
-                    #else 
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
-                    #endif
+                    CSL_clecConfigEvent(regs, evtNum, &evtCfg);
                     intrPrms.corepacConfig.priority = 1U;
                 }
                 #endif
@@ -452,6 +450,12 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                 #endif
                 #if defined (BUILD_C7X)
                 {
+                    /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
+                     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+                     * to the event number which is shared between GIC and CLEC.
+                     */
+                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992;
+
                     #if defined (SOC_J721S2) || defined (SOC_J784S4)
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
                     #else
@@ -463,15 +467,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                     evtCfg.rtMap = 0x3C;
                     evtCfg.extEvtNum = 0x0;
                     evtCfg.c7xEvtNum = SCICLIENT_C7X_SECURE_INTERRUPT_NUM;
-                    /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
-                     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
-                     * to the event number which is shared between GIC and CLEC.
-                     */
-                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
-                    #else
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
-                    #endif
+                    CSL_clecConfigEvent(regs, evtNum, &evtCfg);
                     intrPrms.corepacConfig.priority = 1U;
                 }
                 #endif
