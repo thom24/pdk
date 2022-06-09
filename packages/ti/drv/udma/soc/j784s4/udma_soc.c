@@ -103,7 +103,7 @@ CSL_intaggr_unmapRegs           gHost_intaggr_unmapRegs;
 CSL_intr_router_cfgRegs         gHost_intr_router_cfgRegs;
 CSL_CLEC_EVTRegs                gHost_clec_evtRegs;
 
-CSL_DRU_t                gHost_DRU_t;
+CSL_DRU_t                gHost_DRU_t0, gHost_DRU_t4, gHost_DRU_t5, gHost_DRU_t6, gHost_DRU_t;
 #define UDMA_MCU_NAVSS0_UDMASS_UDMAP0_CFG_GCFG_BASE         (&gHost_udmap_gcfgRegs)
 #define UDMA_MCU_NAVSS0_UDMASS_UDMAP0_CFG_RFLOW_BASE        (&gHost_udmap_rxfcfgRegs)
 #define UDMA_MCU_NAVSS0_UDMASS_UDMAP0_TCHAN_BASE            (&gHost_udmap_txccfgRegs)
@@ -168,6 +168,10 @@ CSL_DRU_t                gHost_DRU_t;
 
 /** \brief DRU0 UTC baseaddress */
 #define UDMA_UTC_BASE_DRU0              (&gHost_DRU_t)
+#define UDMA_UTC_BASE_DRU4              (&gHost_DRU_t4)
+#define UDMA_UTC_BASE_DRU5              (&gHost_DRU_t5)
+#define UDMA_UTC_BASE_DRU6              (&gHost_DRU_t6)
+#define UDMA_UTC_BASE_DRU7              (&gHost_DRU_t7)
 #define UDMA_COMPUTE_CLUSTER0_CLEC_REGS_BASE (&gHost_clec_evtRegs)
 
 #else
