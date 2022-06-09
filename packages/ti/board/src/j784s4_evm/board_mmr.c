@@ -40,6 +40,56 @@
  */
 
 #include "board_internal.h"
+#include <ti/csl/soc/j784s4/src/cslr_wkup_ctrl_mmr.h>
+
+/**
+ * \brief  Configures kick registers to lock/unlock MMR access
+ *
+ * \param   kick0    [IN]   KICK0 register address
+ * \param   kick1    [IN]   KICK1 register address
+ * \param   lockCtrl [IN]   Register lock/unlock control
+ *                          0 - Unlocks the MMR register write access
+ *                          1 - Locks the MMR register write access
+ *
+ * \return  BOARD_SOK - MMR kick register configurations successful
+ *          BOARD_FAIL - MMR kick register configurations failed
+ */
+static Board_STATUS MMR_config(uint32_t *kick0, uint32_t *kick1, uint8_t lockCtrl)
+{
+    /* Initialize the status variable */
+    Board_STATUS status = BOARD_SOK;
+
+    if(lockCtrl == 0)
+    {
+        /* If either of the kick lock registers are locked */
+        if(!(*kick0 & 0x01))
+        {
+            /* Unlock the partition by writing the unlock values to the kick lock registers */
+            *kick0 = BOARD_KICK0_UNLOCK_VAL;
+            *kick1 = BOARD_KICK1_UNLOCK_VAL;
+        }
+
+        /* Confirm both the kick registers are unlocked */
+        if(!(*kick0 & 0x01))
+        {
+            status = BOARD_FAIL;
+        }
+    }
+    else
+    {
+        /* Lock the partition by writing the lock values to the kick lock registers */
+        *kick0 = BOARD_KICK0_LOCK_VAL;
+        *kick1 = BOARD_KICK1_LOCK_VAL;
+
+        /* Confirm both the kick registers are locked */
+        if(*kick0 & 0x01)
+        {
+            status = BOARD_FAIL;
+        }
+    }
+
+    return status;
+}
 
 /**
  * \brief  Unlocks MMR registers
@@ -53,7 +103,94 @@
  */
 Board_STATUS Board_ctrlMMR(uint8_t lockCtrl)
 {
-    return BOARD_SOK;
+    Board_STATUS status = BOARD_SOK;
+    uint32_t *lock0;
+    uint32_t *lock1;
+
+    Board_setRATCfg();
+
+    /* Unlock MAIN MMR registers */
+    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK0_KICK0);
+    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK0_KICK1);
+    status = MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0);
+    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0);
+    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK3_KICK0);
+    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK3_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0);
+    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK7_KICK0);
+    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK7_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    /* Unlock wakeup MMR registers */
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK0_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK0_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK1_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK1_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK2_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK2_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK3_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK3_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK4_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK4_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK5_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK5_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK6_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK6_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK7_KICK0);
+    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK7_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    /* Unlock MCU MMR registers */
+    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK0_KICK0);
+    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK0_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK1_KICK0);
+    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK1_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK0);
+    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK3_KICK0);
+    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK3_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK4_KICK0);
+    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK4_KICK1);
+    status |= MMR_config(lock0, lock1, lockCtrl);
+
+    Board_restoreRATCfg();
+
+    return status;
 }
 
 /**
@@ -63,7 +200,11 @@ Board_STATUS Board_ctrlMMR(uint8_t lockCtrl)
  */
 Board_STATUS Board_lockMMR(void)
 {
-    return BOARD_SOK;
+    Board_STATUS status;
+
+    status = Board_ctrlMMR(1);
+
+    return status;
 }
 
 /**
@@ -73,5 +214,9 @@ Board_STATUS Board_lockMMR(void)
  */
 Board_STATUS Board_unlockMMR(void)
 {
-    return BOARD_SOK;
+    Board_STATUS status;
+
+    status = Board_ctrlMMR(0);
+
+    return status;
 }
