@@ -120,10 +120,6 @@ SECTIONS {
     ipc_data_buffer (NOLOAD) : ALIGN (32) {
     } > IPC_DATA_BUFFER_1
 
-    /* For NDK packet memory, we need to map this sections before .bss*/
-    .bss:NDK_PACKETMEM (NOLOAD) : ALIGN (128) {} > DDR_MPU1
-    .bss:NDK_MMBUFFER  (NOLOAD) : ALIGN (128) {} > DDR_MPU1
-
     .bss : {
         __bss_start__ = .;
         *(.shbss)
