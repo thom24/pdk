@@ -70,9 +70,19 @@ static bool gBoardSysInitDone = 0;
 static Board_STATUS Board_sysInit(void)
 {
     Board_STATUS status = BOARD_SOK;
+    int32_t ret;
+    Sciclient_ConfigPrms_t config;
 
     if(gBoardSysInitDone == 0)
     {
+        Sciclient_configPrmsInit(&config);
+
+        ret = Sciclient_init(&config);
+        if(ret != 0)
+        {
+            status = BOARD_FAIL;
+        }
+
         if(status == BOARD_SOK)
         {
             gBoardSysInitDone = 1;
@@ -91,9 +101,16 @@ static Board_STATUS Board_sysInit(void)
 static Board_STATUS Board_sysDeinit(void)
 {
     Board_STATUS status = BOARD_SOK;
+    int32_t ret;
 
     if(gBoardSysInitDone == 1)
     {
+        ret = Sciclient_deinit();
+        if(ret != 0)
+        {
+            status = BOARD_FAIL;
+        }
+
         if(status == BOARD_SOK)
         {
             gBoardSysInitDone = 0;
