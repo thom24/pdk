@@ -40,6 +40,9 @@
 
 #include "board_i2c_io_exp.h"
 
+I2C_Handle gIoExpI2cHandle = NULL;
+extern Board_I2cInitCfg_t gBoardI2cInitCfg;
+
 /**
  *  \brief    Reads the current configuration of direction port.
  *
@@ -61,6 +64,89 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
                                        i2cIoExpPortNumber_t portNum,
                                        uint8_t *data)
 {
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t subAddr;
+    I2C_Transaction transaction;
+
+    if(gIoExpI2cHandle == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    if (ioExpType == ONE_PORT_IOEXP)
+    {
+        subAddr = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+    }
+    else if (ioExpType == TWO_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            subAddr = BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else if (ioExpType == THREE_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_2)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    /* Initializes the I2C transaction structure with default values */
+    I2C_transactionInit(&transaction);
+
+    /*Control Byte followed by read bit */
+    transaction.slaveAddress = slaveAddr;
+    transaction.writeBuf     = &subAddr;
+    transaction.readBuf      = data;
+    transaction.writeCount   = 1;
+    transaction.readCount    = 0;
+
+    BOARD_delay(200);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
+    transaction.writeCount   = 0;
+    transaction.readCount    = 1;
+
+    BOARD_delay(20000);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -85,6 +171,89 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
                                           i2cIoExpPortNumber_t portNum,
                                           uint8_t *data)
 {
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t subAddr;
+    I2C_Transaction transaction;
+
+    if(gIoExpI2cHandle == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    if (ioExpType == ONE_PORT_IOEXP)
+    {
+        subAddr = BOARD_1PORT_IOEXP_OUTPUT_CMD;
+    }
+    else if (ioExpType == TWO_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_2PORT_IOEXP_PORT0_OUTPUT_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            subAddr = BOARD_2PORT_IOEXP_PORT1_OUTPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else if (ioExpType == THREE_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT0_OUTPUT_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT1_OUTPUT_CMD;
+        }
+        else if(portNum == PORTNUM_2)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT2_OUTPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    /* Initializes the I2C transaction structure with default values */
+    I2C_transactionInit(&transaction);
+
+    /*Control Byte followed by read bit */
+    transaction.slaveAddress = slaveAddr;
+    transaction.writeBuf     = &subAddr;
+    transaction.readBuf      = data;
+    transaction.writeCount   = 1;
+    transaction.readCount    = 0;
+
+    BOARD_delay(200);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
+    transaction.writeCount   = 0;
+    transaction.readCount    = 1;
+
+    BOARD_delay(20000);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -109,6 +278,89 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
                                          i2cIoExpPortNumber_t portNum,
                                          uint8_t *data)
 {
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t subAddr;
+    I2C_Transaction transaction;
+
+    if(gIoExpI2cHandle == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    if (ioExpType == ONE_PORT_IOEXP)
+    {
+        subAddr = BOARD_1PORT_IOEXP_INPUT_CMD;
+    }
+    else if (ioExpType == TWO_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_2PORT_IOEXP_PORT0_INPUT_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            subAddr = BOARD_2PORT_IOEXP_PORT1_INPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else if (ioExpType == THREE_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT0_INPUT_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT1_INPUT_CMD;
+        }
+        else if(portNum == PORTNUM_2)
+        {
+            subAddr = BOARD_3PORT_IOEXP_PORT2_INPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    /* Initializes the I2C transaction structure with default values */
+    I2C_transactionInit(&transaction);
+
+    /*Control Byte followed by read bit */
+    transaction.slaveAddress = slaveAddr;
+    transaction.writeBuf     = &subAddr;
+    transaction.readBuf      = data;
+    transaction.writeCount   = 1;
+    transaction.readCount    = 0;
+
+    BOARD_delay(200);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
+    transaction.writeCount   = 0;
+    transaction.readCount    = 1;
+
+    BOARD_delay(20000);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -132,6 +384,78 @@ Board_STATUS Board_i2cIoExpSetPortDirection(uint8_t slaveAddr,
                                             i2cIoExpPortNumber_t portNum,
                                             uint8_t data)
 {
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t dataBuff[2] = {0};
+    I2C_Transaction transaction;
+
+    if(gIoExpI2cHandle == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    if (ioExpType == ONE_PORT_IOEXP)
+    {
+        dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+    }
+    else if (ioExpType == TWO_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            dataBuff[0] = BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else if (ioExpType == THREE_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_2)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return -1;
+        }
+    }
+    else
+    {
+        return -1;
+    }
+
+    dataBuff[1] = data;
+
+    /* Initializes the I2C transaction structure with default values */
+    I2C_transactionInit(&transaction);
+
+    /* Control Byte followed by write bit */
+    transaction.slaveAddress = slaveAddr;
+    transaction.writeBuf     = &dataBuff;
+    transaction.writeCount   = 2;
+    transaction.readCount    = 0;
+
+    BOARD_delay(200);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -159,6 +483,87 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
                                            i2cIoExpPinNumber_t pinNum,
                                            i2cIoExpPinDirection_t direction)
 {
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t dataBuff[2] = {0};
+    uint8_t data;
+    I2C_Transaction transaction;
+
+    if(gIoExpI2cHandle == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    if (ioExpType == ONE_PORT_IOEXP)
+    {
+        dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
+    }
+    else if (ioExpType == TWO_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            dataBuff[0] = BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else if (ioExpType == THREE_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD;
+        }
+        else if(portNum == PORTNUM_2)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    Board_i2cIoExpReadDirPort(slaveAddr, ioExpType, portNum, &data);
+    if(direction == PIN_DIRECTION_OUTPUT)
+    {
+        dataBuff[1] = ((data & ~(1 << pinNum)) | (0 << pinNum));
+    }
+    else
+    {
+        dataBuff[1] = ((data & ~(1 << pinNum)) | (1 << pinNum));
+    }
+
+    /* Initializes the I2C transaction structure with default values */
+    I2C_transactionInit(&transaction);
+
+    /* Control Byte followed by write bit */
+    transaction.slaveAddress = slaveAddr;
+    transaction.writeBuf     = &dataBuff;
+    transaction.writeCount   = 2;
+    transaction.readCount    = 0;
+
+    BOARD_delay(200);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -183,6 +588,78 @@ Board_STATUS Board_i2cIoExpWritePort(uint8_t slaveAddr,
                                      i2cIoExpPortNumber_t portNum,
                                      uint8_t data)
 {
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t dataBuff[2] = {0};
+    I2C_Transaction transaction;
+
+    if(gIoExpI2cHandle == NULL)
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    if (ioExpType == ONE_PORT_IOEXP)
+    {
+        dataBuff[0] = BOARD_1PORT_IOEXP_OUTPUT_CMD;
+    }
+    else if (ioExpType == TWO_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_2PORT_IOEXP_PORT0_OUTPUT_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            dataBuff[0] = BOARD_2PORT_IOEXP_PORT1_OUTPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else if (ioExpType == THREE_PORT_IOEXP)
+    {
+        if(portNum == PORTNUM_0)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT0_OUTPUT_CMD;
+        }
+        else if(portNum == PORTNUM_1)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT1_OUTPUT_CMD;
+        }
+        else if(portNum == PORTNUM_2)
+        {
+            dataBuff[0] = BOARD_3PORT_IOEXP_PORT2_OUTPUT_CMD;
+        }
+        else
+        {
+            return BOARD_INVALID_PARAM;
+        }
+    }
+    else
+    {
+        return BOARD_INVALID_PARAM;
+    }
+
+    dataBuff[1] = data;
+
+    /* Initializes the I2C transaction structure with default values */
+    I2C_transactionInit(&transaction);
+
+    /* Control Byte followed by write bit */
+    transaction.slaveAddress = slaveAddr;
+    transaction.writeBuf     = &dataBuff;
+    transaction.writeCount   = 2;
+    transaction.readCount    = 0;
+
+    BOARD_delay(200);
+
+    ret = I2C_transfer(gIoExpI2cHandle, &transaction);
+    if(ret != I2C_STS_SUCCESS)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -211,7 +688,20 @@ Board_STATUS Board_i2cIoExpPinLevelSet(uint8_t slaveAddr,
                                        i2cIoExpPinNumber_t pinNum,
                                        i2cIoExpSignalLevel_t signalLevel)
 {
-    return BOARD_SOK;
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t dataBuff;
+    uint8_t data;
+
+    ret = Board_i2cIoExpReadOutputPort(slaveAddr, ioExpType, portNum, &data);
+    if(ret != BOARD_SOK)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
+    dataBuff = (signalLevel << pinNum);
+    data = ((data & ~(1 << pinNum)) | dataBuff);
+    return (Board_i2cIoExpWritePort(slaveAddr, ioExpType, portNum, data));
 }
 
 /**
@@ -238,6 +728,18 @@ Board_STATUS Board_i2cIoExpPinLevelGet(uint8_t slaveAddr,
                                        i2cIoExpPinNumber_t pinNum,
                                        uint8_t *signalLevel)
 {
+    Board_STATUS ret = BOARD_SOK;
+    uint8_t data;
+
+    ret = Board_i2cIoExpReadInputPort(slaveAddr, ioExpType, portNum, &data);
+    if(ret != BOARD_SOK)
+    {
+        ret = BOARD_I2C_TRANSFER_FAIL;
+        return ret;
+    }
+
+    *signalLevel = (((1 << pinNum) & (data)) >> pinNum);
+
     return BOARD_SOK;
 }
 
@@ -249,7 +751,20 @@ Board_STATUS Board_i2cIoExpPinLevelGet(uint8_t slaveAddr,
  */
 Board_STATUS Board_i2cIoExpInit(void)
 {
-    return BOARD_SOK;
+    Board_STATUS ret = BOARD_SOK;
+
+    /* If handle not opened yet, initializes i2c */
+    if (gIoExpI2cHandle == NULL)
+    {
+        gIoExpI2cHandle = Board_getI2CHandle(gBoardI2cInitCfg.socDomain,
+                                             gBoardI2cInitCfg.i2cInst);
+        if(gIoExpI2cHandle == NULL)
+        {
+            ret = BOARD_I2C_OPEN_FAIL;
+        }
+    }
+
+    return ret;
 }
 
 /**
@@ -258,5 +773,7 @@ Board_STATUS Board_i2cIoExpInit(void)
  */
 void Board_i2cIoExpDeInit(void)
 {
-
+    /* Closing the i2c IO Exp Instance */
+    Board_i2cDeInit();
+    gIoExpI2cHandle = NULL;
 }
