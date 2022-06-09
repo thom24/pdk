@@ -53,6 +53,10 @@
 extern "C" {
 #endif
 
+#define KICK0_UNLOCK    (0x68EF3490U)
+#define KICK1_UNLOCK    (0xD172BC5AU)
+#define KICK_LOCK       (0x00000000U)
+
 typedef struct Board_PllClkCfg_s
 {
     uint32_t tisciDevID;

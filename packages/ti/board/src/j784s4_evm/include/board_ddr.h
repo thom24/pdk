@@ -54,8 +54,10 @@
 extern "C" {
 #endif
 
-#define BOARD_DDR0_CTL_CFG_BASE                 (CSL_COMPUTE_CLUSTER0_CTL_CFG_BASE)
-#define BOARD_DDR1_CTL_CFG_BASE                 (CSL_COMPUTE_CLUSTER0_DDR1_1_CTL_CFG_BASE)
+#define BOARD_DDR0_CTL_CFG_BASE                 (CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS0_CTLCFG_BASE)
+#define BOARD_DDR1_CTL_CFG_BASE                 (CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS1_CTLCFG_BASE)
+#define BOARD_DDR2_CTL_CFG_BASE                 (CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS2_CTLCFG_BASE)
+#define BOARD_DDR3_CTL_CFG_BASE                 (CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS3_CTLCFG_BASE)
 
 #define BOARD_DDR_FSP_CLKCHNG_REQ_ADDR          (0x00114080U)
 #define BOARD_DDR_FSP_CLKCHNG_ACK_ADDR          (0x001140C0U)
@@ -86,7 +88,11 @@ extern "C" {
 
 #define BOARD_DDR_INSTANCE_0                    (0U)
 #define BOARD_DDR_INSTANCE_1                    (1U)
-#define BOARD_DDR_INSTANCE_MAX                  (2U)
+#define BOARD_DDR_INSTANCE_2                    (2U)
+#define BOARD_DDR_INSTANCE_3                    (3U)
+#define BOARD_DDR_INSTANCE_MAX                  (4U)
+#define BOARD_DDR_INSTANCE_START                (BOARD_DDR_INSTANCE_0)
+#define BOARD_DDR_INSTANCE_END                  (BOARD_DDR_INSTANCE_3)
 
 #define BOARD_DDR_LOCK0                         (0x115008U)
 #define BOARD_DDR_LOCK1                         (0x11500CU)
