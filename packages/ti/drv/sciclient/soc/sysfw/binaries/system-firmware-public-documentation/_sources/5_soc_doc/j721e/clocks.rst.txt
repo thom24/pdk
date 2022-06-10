@@ -7380,6 +7380,54 @@ Following is a mapping of Clocks IDs to function:
 |          0 | DEV_NAVSS0_PROXY_0_CLK_CLK | Input clock |
 +------------+----------------------------+-------------+
 
+.. _soc_doc_j721e_public_clks_navss0_pvu_0:
+
+
+Clocks for NAVSS0_PVU_0 Device
+------------------------------
+
+Device: :ref:`J721E_DEV_NAVSS0_PVU_0 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 339)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+--------------------------+-------------+
+|   Clock ID | Name                     | Function    |
++============+==========================+=============+
+|          0 | DEV_NAVSS0_PVU_0_CLK_CLK | Input clock |
++------------+--------------------------+-------------+
+
+.. _soc_doc_j721e_public_clks_navss0_pvu_1:
+
+
+Clocks for NAVSS0_PVU_1 Device
+------------------------------
+
+Device: :ref:`J721E_DEV_NAVSS0_PVU_1 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 340)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+--------------------------+-------------+
+|   Clock ID | Name                     | Function    |
++============+==========================+=============+
+|          0 | DEV_NAVSS0_PVU_1_CLK_CLK | Input clock |
++------------+--------------------------+-------------+
+
+.. _soc_doc_j721e_public_clks_navss0_pvu_2:
+
+
+Clocks for NAVSS0_PVU_2 Device
+------------------------------
+
+Device: :ref:`J721E_DEV_NAVSS0_PVU_2 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 341)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+--------------------------+-------------+
+|   Clock ID | Name                     | Function    |
++============+==========================+=============+
+|          0 | DEV_NAVSS0_PVU_2_CLK_CLK | Input clock |
++------------+--------------------------+-------------+
+
 .. _soc_doc_j721e_public_clks_navss0_ringacc_0:
 
 

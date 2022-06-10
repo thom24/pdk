@@ -5138,98 +5138,6 @@ Following is a mapping of Clocks IDs to function:
 |          5 | DEV_MCU_RTI1_RTI_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_32K_CLK   | Parent input clock option to DEV_MCU_RTI1_RTI_CLK |
 +------------+--------------------------------------------------------------------------+---------------------------------------------------+
 
-.. _soc_doc_j721s2_public_clks_mcu_sa3_ss0:
-
-
-Clocks for MCU_SA3_SS0 Device
------------------------------
-
-**This device has no defined clocks.**
-
-.. _soc_doc_j721s2_public_clks_mcu_sa3_ss0_dmss_eccaggr_0:
-
-
-Clocks for MCU_SA3_SS0_DMSS_ECCAGGR_0 Device
---------------------------------------------
-
-Device: :ref:`J721S2_DEV_MCU_SA3_SS0_DMSS_ECCAGGR_0 <soc_doc_j721s2_public_devices_desc_device_list>` (ID = 299)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+---------------------------------------+-------------+
-|   Clock ID | Name                                  | Function    |
-+============+=======================================+=============+
-|          0 | DEV_MCU_SA3_SS0_DMSS_ECCAGGR_0_X1_CLK | Input clock |
-+------------+---------------------------------------+-------------+
-
-.. _soc_doc_j721s2_public_clks_mcu_sa3_ss0_intaggr_0:
-
-
-Clocks for MCU_SA3_SS0_INTAGGR_0 Device
----------------------------------------
-
-Device: :ref:`J721S2_DEV_MCU_SA3_SS0_INTAGGR_0 <soc_doc_j721s2_public_devices_desc_device_list>` (ID = 300)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+----------------------------------+-------------+
-|   Clock ID | Name                             | Function    |
-+============+==================================+=============+
-|          0 | DEV_MCU_SA3_SS0_INTAGGR_0_X1_CLK | Input clock |
-+------------+----------------------------------+-------------+
-
-.. _soc_doc_j721s2_public_clks_mcu_sa3_ss0_pktdma_0:
-
-
-Clocks for MCU_SA3_SS0_PKTDMA_0 Device
---------------------------------------
-
-Device: :ref:`J721S2_DEV_MCU_SA3_SS0_PKTDMA_0 <soc_doc_j721s2_public_devices_desc_device_list>` (ID = 301)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+---------------------------------+-------------+
-|   Clock ID | Name                            | Function    |
-+============+=================================+=============+
-|          0 | DEV_MCU_SA3_SS0_PKTDMA_0_X1_CLK | Input clock |
-+------------+---------------------------------+-------------+
-
-.. _soc_doc_j721s2_public_clks_mcu_sa3_ss0_ringacc_0:
-
-
-Clocks for MCU_SA3_SS0_RINGACC_0 Device
----------------------------------------
-
-Device: :ref:`J721S2_DEV_MCU_SA3_SS0_RINGACC_0 <soc_doc_j721s2_public_devices_desc_device_list>` (ID = 302)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+----------------------------------+-------------+
-|   Clock ID | Name                             | Function    |
-+============+==================================+=============+
-|          0 | DEV_MCU_SA3_SS0_RINGACC_0_X1_CLK | Input clock |
-+------------+----------------------------------+-------------+
-
-.. _soc_doc_j721s2_public_clks_mcu_sa3_ss0_sa_ul_0:
-
-
-Clocks for MCU_SA3_SS0_SA_UL_0 Device
--------------------------------------
-
-Device: :ref:`J721S2_DEV_MCU_SA3_SS0_SA_UL_0 <soc_doc_j721s2_public_devices_desc_device_list>` (ID = 303)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+------------------------------------+-------------+
-|   Clock ID | Name                               | Function    |
-+============+====================================+=============+
-|          0 | DEV_MCU_SA3_SS0_SA_UL_0_PKA_IN_CLK | Input clock |
-+------------+------------------------------------+-------------+
-|          1 | DEV_MCU_SA3_SS0_SA_UL_0_X1_CLK     | Input clock |
-+------------+------------------------------------+-------------+
-|          2 | DEV_MCU_SA3_SS0_SA_UL_0_X2_CLK     | Input clock |
-+------------+------------------------------------+-------------+
-
 .. _soc_doc_j721s2_public_clks_mcu_timer0:
 
 
@@ -8367,6 +8275,22 @@ Following is a mapping of Clocks IDs to function:
 +============+===================================+=============+
 |          0 | DEV_WKUP_GPIOMUX_INTRTR0_INTR_CLK | Input clock |
 +------------+-----------------------------------+-------------+
+
+.. _soc_doc_j721s2_public_clks_wkup_hsm0:
+
+
+Clocks for WKUP_HSM0 Device
+---------------------------
+
+Device: :ref:`J721S2_DEV_WKUP_HSM0 <soc_doc_j721s2_public_devices_desc_device_list>` (ID = 304)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+-----------------------+-------------+
+|   Clock ID | Name                  | Function    |
++============+=======================+=============+
+|          0 | DEV_WKUP_HSM0_DAP_CLK | Input clock |
++------------+-----------------------+-------------+
 
 .. _soc_doc_j721s2_public_clks_wkup_i2c0:
 

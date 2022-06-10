@@ -93,6 +93,7 @@ AM62x
    am62x/proxy_cfg
    am62x/sec_proxy
    am62x/processors
+   am62x/firewalls
    am62x/soc_devgrps
 
 =====

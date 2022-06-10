@@ -97,7 +97,8 @@ Open MMR regions can be accessed as follows:
 
 * On GP devices, MMRs are open for read/write at device boot
 
-* On HS devices, MMRs are behind unowned firewall regions. Permissions can be
+* On HS devices, MMRs are behind unowned firewall regions and configured for
+  read/write access by all initiators (wildcard access). Permissions can be
   updated through :ref:`TISCI_MSG_SET_FWL_REGION <set-firewall-region>` API.
   Firewall ownership can be transitioned by :ref:`TISCI_MSG_CHANGE_FWL_OWNER
   <change-firewall-owner>` API in case the host would like to enforce stricter

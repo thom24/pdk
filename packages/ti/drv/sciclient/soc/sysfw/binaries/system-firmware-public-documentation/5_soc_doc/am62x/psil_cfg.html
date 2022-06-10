@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.00
+                08.04.01
               </div>
             
           
@@ -127,6 +127,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">AM62X Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM62X Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">AM62X Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">AM62X Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM62X Device Group descriptions</a></li>
 </ul>
 </li>
@@ -207,9 +208,6 @@ these are the valid PSI-L Proxy device IDs.</p>
 <tr class="row-even"><td>AM62X_DEV_DMASS0</td>
 <td>25</td>
 </tr>
-<tr class="row-odd"><td>AM62X_DEV_SA3_SS0</td>
-<td>65</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -224,8 +222,8 @@ another thread.</p>
 </div>
 <table border="1" class="docutils">
 <colgroup>
-<col width="66%" />
-<col width="34%" />
+<col width="55%" />
+<col width="45%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Thread Type</th>
@@ -233,150 +231,119 @@ another thread.</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>pktdma_cfg</td>
-<td>0x20 to 0x20</td>
-</tr>
-<tr class="row-odd"><td>pktdma_tx</td>
+<tr class="row-even"><td>pktdma_tx</td>
 <td>0x1000 to 0x101c</td>
 </tr>
-<tr class="row-even"><td>bcdma_tx</td>
+<tr class="row-odd"><td>bcdma_tx</td>
 <td>0x2000 to 0x2015</td>
 </tr>
-<tr class="row-odd"><td>pktdma_tx
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>0x3000 to 0x3000</td>
-</tr>
-<tr class="row-even"><td>pktdma_tx</td>
-<td>0x3001 to 0x3001</td>
-</tr>
-<tr class="row-odd"><td>pdma_main0_mcspi0_rx</td>
+<tr class="row-even"><td>pdma_main0_mcspi0_rx</td>
 <td>0x4300 to 0x4303</td>
 </tr>
-<tr class="row-even"><td>pdma_main0_mcspi1_rx</td>
+<tr class="row-odd"><td>pdma_main0_mcspi1_rx</td>
 <td>0x4304 to 0x4307</td>
 </tr>
-<tr class="row-odd"><td>pdma_main0_mcspi2_rx</td>
+<tr class="row-even"><td>pdma_main0_mcspi2_rx</td>
 <td>0x4308 to 0x430b</td>
 </tr>
-<tr class="row-even"><td>pdma_main1_uart0_rx</td>
+<tr class="row-odd"><td>pdma_main1_uart0_rx</td>
 <td>0x4400 to 0x4400</td>
 </tr>
-<tr class="row-odd"><td>pdma_main1_uart1_rx</td>
+<tr class="row-even"><td>pdma_main1_uart1_rx</td>
 <td>0x4401 to 0x4401</td>
 </tr>
-<tr class="row-even"><td>pdma_main1_uart2_rx</td>
+<tr class="row-odd"><td>pdma_main1_uart2_rx</td>
 <td>0x4402 to 0x4402</td>
 </tr>
-<tr class="row-odd"><td>pdma_main1_uart3_rx</td>
+<tr class="row-even"><td>pdma_main1_uart3_rx</td>
 <td>0x4403 to 0x4403</td>
 </tr>
-<tr class="row-even"><td>pdma_main1_uart4_rx</td>
+<tr class="row-odd"><td>pdma_main1_uart4_rx</td>
 <td>0x4404 to 0x4404</td>
 </tr>
-<tr class="row-odd"><td>pdma_main1_uart5_rx</td>
+<tr class="row-even"><td>pdma_main1_uart5_rx</td>
 <td>0x4405 to 0x4405</td>
 </tr>
-<tr class="row-even"><td>pdma_main1_uart6_rx</td>
+<tr class="row-odd"><td>pdma_main1_uart6_rx</td>
 <td>0x4406 to 0x4406</td>
 </tr>
-<tr class="row-odd"><td>pdma_main0_mcan0_rx</td>
+<tr class="row-even"><td>pdma_main0_mcan0_rx</td>
 <td>0x440c to 0x440e</td>
 </tr>
-<tr class="row-even"><td>pdma_mcasp_mcasp0_rx</td>
+<tr class="row-odd"><td>pdma_mcasp_mcasp0_rx</td>
 <td>0x4500 to 0x4500</td>
 </tr>
-<tr class="row-odd"><td>pdma_mcasp_mcasp1_rx</td>
+<tr class="row-even"><td>pdma_mcasp_mcasp1_rx</td>
 <td>0x4501 to 0x4501</td>
 </tr>
-<tr class="row-even"><td>pdma_mcasp_mcasp2_rx</td>
+<tr class="row-odd"><td>pdma_mcasp_mcasp2_rx</td>
 <td>0x4502 to 0x4502</td>
 </tr>
-<tr class="row-odd"><td>cpsw2_rx</td>
+<tr class="row-even"><td>cpsw2_rx</td>
 <td>0x4600 to 0x4600</td>
 </tr>
-<tr class="row-even"><td>csi_rx</td>
+<tr class="row-odd"><td>csi_rx</td>
 <td>0x4700 to 0x471f</td>
 </tr>
-<tr class="row-odd"><td>saul0_rx
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>0x74fc to 0x74fd</td>
-</tr>
 <tr class="row-even"><td>saul0_rx</td>
-<td>0x74fe to 0x750b</td>
-</tr>
-<tr class="row-odd"><td>saul0_rx</td>
-<td>0x7500 to 0x7503</td>
-</tr>
-<tr class="row-even"><td>pktdma_rx</td>
-<td>0x9000 to 0x9017</td>
-</tr>
-<tr class="row-odd"><td>bcdma_rx</td>
-<td>0xa000 to 0xa01b</td>
-</tr>
-<tr class="row-even"><td>pktdma_rx
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>0xb000 to 0xb001</td>
+<td>0x7504 to 0x750b</td>
 </tr>
 <tr class="row-odd"><td>pktdma_rx</td>
-<td>0xb002 to 0xb003</td>
+<td>0x9000 to 0x9017</td>
 </tr>
-<tr class="row-even"><td>pdma_main0_mcspi0_tx</td>
+<tr class="row-even"><td>bcdma_rx</td>
+<td>0xa000 to 0xa01b</td>
+</tr>
+<tr class="row-odd"><td>pdma_main0_mcspi0_tx</td>
 <td>0xc300 to 0xc303</td>
 </tr>
-<tr class="row-odd"><td>pdma_main0_mcspi1_tx</td>
+<tr class="row-even"><td>pdma_main0_mcspi1_tx</td>
 <td>0xc304 to 0xc307</td>
 </tr>
-<tr class="row-even"><td>pdma_main0_mcspi2_tx</td>
+<tr class="row-odd"><td>pdma_main0_mcspi2_tx</td>
 <td>0xc308 to 0xc30b</td>
 </tr>
-<tr class="row-odd"><td>pdma_main1_uart0_tx</td>
+<tr class="row-even"><td>pdma_main1_uart0_tx</td>
 <td>0xc400 to 0xc400</td>
 </tr>
-<tr class="row-even"><td>pdma_main1_uart1_tx</td>
+<tr class="row-odd"><td>pdma_main1_uart1_tx</td>
 <td>0xc401 to 0xc401</td>
 </tr>
-<tr class="row-odd"><td>pdma_main1_uart2_tx</td>
+<tr class="row-even"><td>pdma_main1_uart2_tx</td>
 <td>0xc402 to 0xc402</td>
 </tr>
-<tr class="row-even"><td>pdma_main1_uart3_tx</td>
+<tr class="row-odd"><td>pdma_main1_uart3_tx</td>
 <td>0xc403 to 0xc403</td>
 </tr>
-<tr class="row-odd"><td>pdma_main1_uart4_tx</td>
+<tr class="row-even"><td>pdma_main1_uart4_tx</td>
 <td>0xc404 to 0xc404</td>
 </tr>
-<tr class="row-even"><td>pdma_main1_uart5_tx</td>
+<tr class="row-odd"><td>pdma_main1_uart5_tx</td>
 <td>0xc405 to 0xc405</td>
 </tr>
-<tr class="row-odd"><td>pdma_main1_uart6_tx</td>
+<tr class="row-even"><td>pdma_main1_uart6_tx</td>
 <td>0xc406 to 0xc406</td>
 </tr>
-<tr class="row-even"><td>pdma_main0_mcan0_tx</td>
+<tr class="row-odd"><td>pdma_main0_mcan0_tx</td>
 <td>0xc40c to 0xc40e</td>
 </tr>
-<tr class="row-odd"><td>pdma_mcasp_mcasp0_tx</td>
+<tr class="row-even"><td>pdma_mcasp_mcasp0_tx</td>
 <td>0xc500 to 0xc500</td>
 </tr>
-<tr class="row-even"><td>pdma_mcasp_mcasp1_tx</td>
+<tr class="row-odd"><td>pdma_mcasp_mcasp1_tx</td>
 <td>0xc501 to 0xc501</td>
 </tr>
-<tr class="row-odd"><td>pdma_mcasp_mcasp2_tx</td>
+<tr class="row-even"><td>pdma_mcasp_mcasp2_tx</td>
 <td>0xc502 to 0xc502</td>
 </tr>
-<tr class="row-even"><td>cpsw2_tx</td>
+<tr class="row-odd"><td>cpsw2_tx</td>
 <td>0xc600 to 0xc607</td>
 </tr>
-<tr class="row-odd"><td>csi_tx</td>
+<tr class="row-even"><td>csi_tx</td>
 <td>0xc700 to 0xc71f</td>
 </tr>
-<tr class="row-even"><td>saul0_tx
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>0xf4fc to 0xf4fc</td>
-</tr>
 <tr class="row-odd"><td>saul0_tx</td>
-<td>0xf4fd to 0xf503</td>
-</tr>
-<tr class="row-even"><td>saul0_tx</td>
-<td>0xf500 to 0xf501</td>
+<td>0xf500 to 0xf503</td>
 </tr>
 </tbody>
 </table>
@@ -424,7 +391,7 @@ another thread.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.00',
+            VERSION:'08.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

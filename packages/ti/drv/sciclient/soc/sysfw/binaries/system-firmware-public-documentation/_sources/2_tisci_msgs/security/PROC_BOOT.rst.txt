@@ -680,6 +680,19 @@ C6x DSP
 ARM M4F
 ^^^^^^^
 
+.. note::
+
+        The M4 processor driver is dual purpose:
+
+        * Support for general purpose M4 CPUs found on many of the supported
+          SoCs today. 
+
+        * Support for the HSM M4 processor found in the SMS subsystem
+
+        Flags described below may only be relevant to one class of M4
+        processors and will be clarified as necessary
+
+
 .. warning::
 
 	NOTE: M4F always starts from 0x0 from internal TCM RAM. There is no
@@ -692,14 +705,22 @@ ARM M4F
 +-------------+------------+-------------------------------------------------------------------------------------------------------------+
 |  Flag Name  | Bit Offset |                                                 Description                                                 |
 +=============+============+=============================================================================================================+
-| DBG_EN      | 0          | invasive Debug                                                                                              |
+| DBG_EN      | 0          | invasive Debug for general purpose M4                                                                       |
 +-------------+------------+-------------------------------------------------------------------------------------------------------------+
-| DBG_NIDEN   | 1          | Non-invasive Debug                                                                                          |
+| DBG_NIDEN   | 1          | Non-invasive Debug for general purpose M4                                                                   |
++-------------+------------+-------------------------------------------------------------------------------------------------------------+
+| HSM_DBG_EN  | 2          | Debug enable for HSM M4                                                                                     |
 +-------------+------------+-------------------------------------------------------------------------------------------------------------+
 
 -  control_flags_1 Fields
 
-**Not supported.**
++---------------+------------+-------------------------------------------------------------------------------------------------------------+
+| Flag Name     | Bit Offset | Description                                                                                                 |
++===============+============+=============================================================================================================+
+| HSM M4 RESET  | 0          | M4F Reset control command (1- Assert Reset, 0 - Deassert Reset)                                             |
+|               |            | This particular control is applicable only for HSM M4 processors since the TIFS must act as a secure        |
+|               |            | gatekeeper for HSM reset control. This is not appicable to general purpose M4 processors.                   |
++---------------+------------+-------------------------------------------------------------------------------------------------------------+
 
 -  status_flags_1 Fields
 

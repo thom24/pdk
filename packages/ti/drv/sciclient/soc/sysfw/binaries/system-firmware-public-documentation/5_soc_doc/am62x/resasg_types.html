@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.00
+                08.04.01
               </div>
             
           
@@ -125,6 +125,7 @@
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">AM62X Proxy Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM62X Secure Proxy Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="processors.html">AM62X Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">AM62X Firewall Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM62X Device Group descriptions</a></li>
 </ul>
 </li>
@@ -185,7 +186,7 @@
 <p>This chapter provides information of Board Configuration resource assignment
 type IDs that are permitted in the AM62X SoC.  The resource type IDs represent
 AM62X resources ranges assignable to SoC processing entities (or PEs).</p>
-<p><strong>WARNING</strong>: System Firmware RM currently supports a maximum of 450 RM board
+<p><strong>WARNING</strong>: System Firmware RM currently supports a maximum of 305 RM board
 configuration resource assignment ranges on the AM62X SoC.  Sending more entries
 than the maximum will result in the RM board configuration being NACK’d</p>
 <table border="1" class="docutils">
@@ -313,8 +314,8 @@ than the maximum will result in the RM board configuration being NACK’d</p>
 <td>RESASG_SUBTYPE_IA_VINT</td>
 <td>0x0A</td>
 <td>0x070A</td>
-<td>4</td>
-<td>36</td>
+<td>5</td>
+<td>35</td>
 </tr>
 <tr class="row-odd"><td>&#160;</td>
 <td>&#160;</td>
@@ -337,8 +338,8 @@ than the maximum will result in the RM board configuration being NACK’d</p>
 <td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
 <td>0x0D</td>
 <td>0x070D</td>
-<td>12</td>
-<td>1524</td>
+<td>13</td>
+<td>1523</td>
 </tr>
 <tr class="row-even"><td>&#160;</td>
 <td>&#160;</td>
@@ -700,230 +701,6 @@ than the maximum will result in the RM board configuration being NACK’d</p>
 <td>0</td>
 <td>4096</td>
 </tr>
-<tr class="row-odd"><td>AM62X_DEV_SA3_SS0_INTAGGR_0</td>
-<td>0x043</td>
-<td>RESASG_SUBTYPE_IA_VINT</td>
-<td>0x0A</td>
-<td>0x10CA</td>
-<td>0</td>
-<td>8</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_GLOBAL_EVENT_SEVT</td>
-<td>0x0D</td>
-<td>0x10CD</td>
-<td>0</td>
-<td>100</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_TIMERMGR_EVT_OES</td>
-<td>0x0F</td>
-<td>0x10CF</td>
-<td>0</td>
-<td>1024</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_PKTDMA_TX_CHAN_ERROR_OES</td>
-<td>0x10</td>
-<td>0x10D0</td>
-<td>4096</td>
-<td>2</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_PKTDMA_TX_FLOW_COMPLETION_OES</td>
-<td>0x11</td>
-<td>0x10D1</td>
-<td>4608</td>
-<td>16</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_PKTDMA_RX_CHAN_ERROR_OES</td>
-<td>0x12</td>
-<td>0x10D2</td>
-<td>5120</td>
-<td>4</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_COMPLETION_OES</td>
-<td>0x13</td>
-<td>0x10D3</td>
-<td>5632</td>
-<td>16</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_STARVATION_OES</td>
-<td>0x14</td>
-<td>0x10D4</td>
-<td>6144</td>
-<td>16</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_IA_PKTDMA_RX_FLOW_FIREWALL_OES</td>
-<td>0x15</td>
-<td>0x10D5</td>
-<td>6656</td>
-<td>16</td>
-</tr>
-<tr class="row-even"><td>AM62X_DEV_SA3_SS0_PKTDMA_0</td>
-<td>0x044</td>
-<td>RESASG_SUBTYPE_UDMAP_GLOBAL_CONFIG</td>
-<td>0x03</td>
-<td>0x1103</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_TX_0_CHAN</td>
-<td>0x12</td>
-<td>0x1112</td>
-<td>8</td>
-<td>0</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_TX_1_CHAN</td>
-<td>0x13</td>
-<td>0x1113</td>
-<td>8</td>
-<td>8</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_0_CHAN</td>
-<td>0x18</td>
-<td>0x1118</td>
-<td>16</td>
-<td>8</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_1_CHAN</td>
-<td>0x19</td>
-<td>0x1119</td>
-<td>24</td>
-<td>0</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_2_CHAN</td>
-<td>0x1A</td>
-<td>0x111A</td>
-<td>24</td>
-<td>8</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_RING_SAUL_RX_3_CHAN</td>
-<td>0x1B</td>
-<td>0x111B</td>
-<td>24</td>
-<td>8</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_SAUL_TX_0_CHAN</td>
-<td>0x25</td>
-<td>0x1125</td>
-<td>1</td>
-<td>0</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_SAUL_TX_1_CHAN</td>
-<td>0x26</td>
-<td>0x1126</td>
-<td>1</td>
-<td>1</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_0_CHAN</td>
-<td>0x2D</td>
-<td>0x112D</td>
-<td>1</td>
-<td>0</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_0_CHAN</td>
-<td>0x2E</td>
-<td>0x112E</td>
-<td>0</td>
-<td>8</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_1_CHAN</td>
-<td>0x2F</td>
-<td>0x112F</td>
-<td>2</td>
-<td>0</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_1_CHAN</td>
-<td>0x30</td>
-<td>0x1130</td>
-<td>0</td>
-<td>8</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_2_CHAN</td>
-<td>0x31</td>
-<td>0x1131</td>
-<td>2</td>
-<td>1</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_2_CHAN</td>
-<td>0x32</td>
-<td>0x1132</td>
-<td>8</td>
-<td>8</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_SAUL_RX_3_CHAN</td>
-<td>0x33</td>
-<td>0x1133</td>
-<td>3</td>
-<td>1</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_PKTDMA_FLOW_SAUL_RX_3_CHAN</td>
-<td>0x34</td>
-<td>0x1134</td>
-<td>8</td>
-<td>8</td>
-</tr>
-<tr class="row-odd"><td>AM62X_DEV_SA3_SS0_RINGACC_0</td>
-<td>0x045</td>
-<td>RESASG_SUBTYPE_RA_ERROR_OES</td>
-<td>0x00</td>
-<td>0x1140</td>
-<td>0</td>
-<td>1</td>
-</tr>
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>RESASG_SUBTYPE_RA_VIRTID</td>
-<td>0x0A</td>
-<td>0x114A</td>
-<td>0</td>
-<td>4096</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -970,7 +747,7 @@ than the maximum will result in the RM board configuration being NACK’d</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.00',
+            VERSION:'08.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.00
+                08.04.01
               </div>
             
           
@@ -327,7 +327,8 @@ available in System Firmware</p>
 <p>Open MMR regions can be accessed as follows:</p>
 <ul class="simple">
 <li>On GP devices, MMRs are open for read/write at device boot</li>
-<li>On HS devices, MMRs are behind unowned firewall regions. Permissions can be
+<li>On HS devices, MMRs are behind unowned firewall regions and configured for
+read/write access by all initiators (wildcard access). Permissions can be
 updated through <a class="reference internal" href="../2_tisci_msgs/security/firewall_api.html#set-firewall-region"><span class="std std-ref">TISCI_MSG_SET_FWL_REGION</span></a> API.
 Firewall ownership can be transitioned by <a class="reference internal" href="../2_tisci_msgs/security/firewall_api.html#change-firewall-owner"><span class="std std-ref">TISCI_MSG_CHANGE_FWL_OWNER</span></a> API in case the host would like to enforce stricter
 control access to the module.<ul>
@@ -391,7 +392,7 @@ hosts may read the MMR.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'08.04.00',
+            VERSION:'08.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

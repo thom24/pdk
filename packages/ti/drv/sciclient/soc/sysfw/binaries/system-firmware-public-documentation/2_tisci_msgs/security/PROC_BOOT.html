@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.00
+                08.04.01
               </div>
             
           
@@ -1597,6 +1597,17 @@ we are not attempting to set</p>
 </div>
 <div class="section" id="arm-m4f">
 <h4>ARM M4F<a class="headerlink" href="#arm-m4f" title="Permalink to this headline">¶</a></h4>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>The M4 processor driver is dual purpose:</p>
+<ul class="simple">
+<li>Support for general purpose M4 CPUs found on many of the supported
+SoCs today.</li>
+<li>Support for the HSM M4 processor found in the SMS subsystem</li>
+</ul>
+<p class="last">Flags described below may only be relevant to one class of M4
+processors and will be clarified as necessary</p>
+</div>
 <div class="admonition warning">
 <p class="first admonition-title">Warning</p>
 <p class="last">NOTE: M4F always starts from 0x0 from internal TCM RAM. There is no
@@ -1622,18 +1633,42 @@ the reset to allow the processor to execute.</p>
 <tbody valign="top">
 <tr class="row-even"><td>DBG_EN</td>
 <td>0</td>
-<td>invasive Debug</td>
+<td>invasive Debug for general purpose M4</td>
 </tr>
 <tr class="row-odd"><td>DBG_NIDEN</td>
 <td>1</td>
-<td>Non-invasive Debug</td>
+<td>Non-invasive Debug for general purpose M4</td>
+</tr>
+<tr class="row-even"><td>HSM_DBG_EN</td>
+<td>2</td>
+<td>Debug enable for HSM M4</td>
 </tr>
 </tbody>
 </table>
 <ul class="simple">
 <li>control_flags_1 Fields</li>
 </ul>
-<p><strong>Not supported.</strong></p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="11%" />
+<col width="9%" />
+<col width="80%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Flag Name</th>
+<th class="head">Bit Offset</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>HSM M4 RESET</td>
+<td>0</td>
+<td>M4F Reset control command (1- Assert Reset, 0 - Deassert Reset)
+This particular control is applicable only for HSM M4 processors since the TIFS must act as a secure
+gatekeeper for HSM reset control. This is not appicable to general purpose M4 processors.</td>
+</tr>
+</tbody>
+</table>
 <ul class="simple">
 <li>status_flags_1 Fields</li>
 </ul>
@@ -1702,7 +1737,7 @@ the reset to allow the processor to execute.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.00',
+            VERSION:'08.04.01',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
