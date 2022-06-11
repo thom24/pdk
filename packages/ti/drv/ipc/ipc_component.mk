@@ -58,9 +58,9 @@ drvipc_j721s2_LASTCORE := $(word $(words $(drvipc_j721s2_CORELIST)), $(drvipc_j7
 drvipc_j721s2_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvipc_j721s2_RTOS_CORELIST = $(drvipc_j721s2_CORELIST)
 drvipc_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu4_0 mcu1_1 mcu2_1 mcu3_1 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
-drvipc_j784s4_LASTCORE := $(word $(words $(drvipc_j721s2_CORELIST)), $(drvipc_j721s2_CORELIST))
+drvipc_j784s4_LASTCORE := $(word $(words $(drvipc_j784s4_CORELIST)), $(drvipc_j784s4_CORELIST))
 drvipc_j784s4_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
-drvipc_j784s4_RTOS_CORELIST = $(drvipc_j721s2_CORELIST)
+drvipc_j784s4_RTOS_CORELIST = $(drvipc_j784s4_CORELIST)
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
 ifeq ($(BUILD_OS_TYPE), qnx)
@@ -395,12 +395,7 @@ export ipc_rtos_multicore_echo_test_$(1)_MAKEFILE =  -f$(PDK_IPC_COMP_PATH)/exam
 export ipc_rtos_multicore_echo_test_$(1)_DEPENDS_ON=ipc_rtos_echo_test_$(1)
 ipc_rtos_multicore_echo_test_$(1)_PKG_LIST = ipc_rtos_multicore_echo_test_$(1)
 ipc_rtos_multicore_echo_test_$(1)_INCLUDE = $(ipc_rtos_multicore_echo_test_$(1)_PATH)
-# Disable multicore app image gen for J7AHP
-ifeq ($(SOC), j784s4)
-export ipc_rtos_multicore_echo_test_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
-else
 export ipc_rtos_multicore_echo_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
-endif
 export ipc_rtos_multicore_echo_test_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_rtos_multicore_echo_test_SBL_APPIMAGEGEN = no
 ifneq ($(1),$(filter $(1), safertos))
@@ -426,12 +421,7 @@ export ipc_baremetal_multicore_echo_test_MAKEFILE = -f$(PDK_IPC_COMP_PATH)/examp
 export ipc_baremetal_multicore_echo_test_DEPENDS_ON = ipc_baremetal_echo_test ipc_rtos_echo_test_freertos
 ipc_baremetal_multicore_echo_test_PKG_LIST = ipc_baremetal_multicore_echo_test
 ipc_baremetal_multicore_echo_test_INCLUDE = $(ipc_baremetal_multicore_echo_test_PATH)
-# Disable multicore app image gen for J7AHP
-ifeq ($(SOC), j784s4)
-export ipc_baremetal_multicore_echo_test_BOARDLIST = $(filter-out j784s4_evm, $(drvipc_BOARDLIST))
-else
 export ipc_baremetal_multicore_echo_test_BOARDLIST = $(drvipc_BOARDLIST)
-endif
 export ipc_baremetal_multicore_echo_test_$(SOC)_CORELIST:= $(drvipc_$(SOC)_LASTCORE)
 export ipc_baremetal_multicore_echo_test_SBL_APPIMAGEGEN = no
 ipc_DUP_EXAMPLE_LIST += ipc_baremetal_multicore_echo_test
@@ -449,12 +439,7 @@ export ipc_rtos_multicore_echo_testb_$(1)_MAKEFILE =  -f$(PDK_IPC_COMP_PATH)/exa
 export ipc_rtos_multicore_echo_testb_$(1)_DEPENDS_ON=ipc_rtos_echo_testb_$(1)
 ipc_rtos_multicore_echo_testb_$(1)_PKG_LIST = ipc_rtos_multicore_echo_testb_$(1)
 ipc_rtos_multicore_echo_testb_$(1)_INCLUDE = $(ipc_rtos_multicore_echo_testb_$(1)_PATH)
-# Disable multicore app image gen for J7AHP
-ifeq ($(SOC), j784s4)
-export ipc_rtos_multicore_echo_testb_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
-else
 export ipc_rtos_multicore_echo_testb_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
-endif
 export ipc_rtos_multicore_echo_testb_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_rtos_multicore_echo_testb_SBL_APPIMAGEGEN = no
 ifneq ($(1),$(filter $(1), safertos))
@@ -481,12 +466,7 @@ export ipc_multicore_perf_test_$(1)_MAKEFILE =  -f$(PDK_IPC_COMP_PATH)/examples/
 export ipc_multicore_perf_test_$(1)_DEPENDS_ON=ipc_perf_test_$(1)
 ipc_multicore_perf_test_$(1)_PKG_LIST = ipc_multicore_perf_test_$(1)
 ipc_multicore_perf_test_$(1)_INCLUDE = $(ipc_multicore_perf_test_$(1)_PATH)
-# Disable multicore app image gen for J7AHP
-ifeq ($(SOC), j784s4)
-export ipc_rtos_multicore_perf_test_$(1)_BOARDLIST = $(filter-out j784s4_evm, $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST)))
-else
-export ipc_rtos_multicore_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
-endif
+export ipc_multicore_perf_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
 export ipc_multicore_perf_test_$(1)_$(SOC)_CORELIST := $(drvipc_$(SOC)_LASTCORE)
 export ipc_multicore_perf_test_SBL_APPIMAGEGEN = no
 ifneq ($(SOC),$(filter $(SOC), j721s2))
