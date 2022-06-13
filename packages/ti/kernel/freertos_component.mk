@@ -186,12 +186,7 @@ export freertos_test_ut_PKG_LIST
 freertos_test_ut_INCLUDE = $(freertos_test_ut_PATH)
 freertos_test_ut_BOARDLIST = $(freertos_BOARDLIST)
 export freertos_test_ut_BOARDLIST
-ifneq ($(SOC),$(filter $(SOC), j721s2))
 freertos_test_ut_$(SOC)_CORELIST = $(freertos_$(SOC)_CORELIST)
-else
-# Temporarily disable FreeRTOS test UT for J721S2 on C7x_2 core 
-freertos_test_ut_$(SOC)_CORELIST = $(filter-out c7x_2, $(freertos_$(SOC)_CORELIST))
-endif
 export freertos_test_ut_$(SOC)_CORELIST
 export freertos_test_ut_SBL_APPIMAGEGEN = yes
 
