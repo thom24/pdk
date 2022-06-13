@@ -9,5 +9,7 @@ endif
 
 APP_NAME = ipc_perf_test_$(BUILD_OS_TYPE)
 
+PACKAGE_SRCS_COMMON = .
+
 include makefile.mk
 
