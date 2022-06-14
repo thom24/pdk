@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2022
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -143,10 +143,10 @@ typedef struct
      *   Note: This cannot exceed #UDMA_RM_MAX_RX_CH */
 
 #if (UDMA_NUM_UTC_INSTANCE > 0)
-    uint32_t                startUtcCh[UDMA_RM_NUM_UTC_INSTANCE];
+    uint32_t                startUtcCh[UDMA_NUM_UTC_INSTANCE];
     /**< Start External UTC channel from which this UDMA driver instance
      *   manages */
-    uint32_t                numUtcCh[UDMA_RM_NUM_UTC_INSTANCE];
+    uint32_t                numUtcCh[UDMA_NUM_UTC_INSTANCE];
     /**< Number of External UTC channel to be managed.
      *   Note: This cannot exceed #UDMA_RM_MAX_UTC_CH_PER_INST */
 #endif

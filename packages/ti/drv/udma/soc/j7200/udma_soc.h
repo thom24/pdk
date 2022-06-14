@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2022
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -181,16 +181,7 @@ extern "C" {
  */
 /* No UTC in J7200  */
 /* @} */
-/**
- *  \anchor Udma_RmUtcIdSoc
- *  \name RM UTC ID specific to a SOC
- *
- *  List of all UTC's present in the SOC those have dedicated resources.
- *
- *  @{
- */
-#define UDMA_RM_NUM_UTC_INSTANCE           (0U)
-/* @} */
+
 /**
  *  \anchor Udma_CoreId
  *  \name Core ID specific to a SOC

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2022
+ *  Copyright (c) Texas Instruments Incorporated 2018
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -148,10 +148,6 @@ typedef struct Udma_RingMonObj *        Udma_RingMonHandle;
 #define UDMA_UTC_ID3                    (3U)
 #define UDMA_UTC_ID4                    (4U)
 #define UDMA_UTC_ID5                    (5U)
-#define UDMA_UTC_ID6                    (6U)
-#define UDMA_UTC_ID7                    (7U)
-#define UDMA_UTC_ID8                    (8U)
-#define UDMA_UTC_ID9                    (9U)
 /* @} */
 
 /**

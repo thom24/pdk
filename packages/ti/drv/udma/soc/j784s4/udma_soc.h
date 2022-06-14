@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2022
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -33,7 +33,7 @@
 /**
  *  \file udma_soc.h
  *
- *  \brief UDMA Low Level Driver J784S4 SOC specific file.
+ *  \brief UDMA Low Level Driver J721S2 SOC specific file.
  */
 
 #ifndef UDMA_SOC_H_
@@ -158,7 +158,7 @@ extern "C" {
  *
  *  @{
  */
-/* No mapped TX channels/rings in J784S4 */
+/* No mapped TX channels/rings in J721S2 */
 /* @} */
 
 /** \brief Number of Mapped RX Group */
@@ -171,7 +171,7 @@ extern "C" {
  *
  *  @{
  */
-/* No mapped RX channels/rings in J784S4 */
+/* No mapped RX channels/rings in J721S2 */
 /* @} */
 
 /** \brief Number of UTC instance */
@@ -183,45 +183,21 @@ extern "C" {
  *
  *  List of all UTC's present in the SOC.
  *
- * UDMA_UTC_ID_C7X_MSMC_DRU# are the DRUs local to C7X
- * Any cores other than C7X can use only UDMA_UTC_ID_MSMC_DRU0
- *
  *  @{
  */
 #define UDMA_UTC_ID_MSMC_DRU0           (UDMA_UTC_ID0)
-#define UDMA_UTC_ID_C7X_MSMC_DRU4       (UDMA_UTC_ID1)
-#define UDMA_UTC_ID_C7X_MSMC_DRU5       (UDMA_UTC_ID2)
-#define UDMA_UTC_ID_C7X_MSMC_DRU6       (UDMA_UTC_ID3)
-#define UDMA_UTC_ID_C7X_MSMC_DRU7       (UDMA_UTC_ID4)
-#define UDMA_UTC_ID_VPAC_TC0            (UDMA_UTC_ID5)
-#define UDMA_UTC_ID_VPAC_TC1            (UDMA_UTC_ID6)
-#define UDMA_UTC_ID_VPAC1_TC0           (UDMA_UTC_ID7)
-#define UDMA_UTC_ID_VPAC1_TC1           (UDMA_UTC_ID8)
-#define UDMA_UTC_ID_DMPAC_TC0           (UDMA_UTC_ID9)
-/* @} */
-
-/**
- *  \anchor Udma_RmUtcIdSoc
- *  \name RM UTC ID specific to a SOC
- *
- *  List of all UTC's present in the SOC those have dedicated resources.
- *
- *  @{
- */
-#define UDMA_RM_UTC_ID_MSMC_DRU            (0U)
-#define UDMA_RM_UTC_ID_VPAC_TC0            (1U)
-#define UDMA_RM_UTC_ID_VPAC_TC1            (2U)
-#define UDMA_RM_UTC_ID_VPAC1_TC0           (3U)
-#define UDMA_RM_UTC_ID_VPAC1_TC1           (4U)
-#define UDMA_RM_UTC_ID_DMPAC_TC0           (5U)
-#define UDMA_RM_NUM_UTC_INSTANCE           (6U)
+#define UDMA_UTC_ID_VPAC_TC0            (UDMA_UTC_ID1)
+#define UDMA_UTC_ID_VPAC_TC1            (UDMA_UTC_ID2)
+#define UDMA_UTC_ID_VPAC1_TC0           (UDMA_UTC_ID3)
+#define UDMA_UTC_ID_VPAC1_TC1           (UDMA_UTC_ID4)
+#define UDMA_UTC_ID_DMPAC_TC0           (UDMA_UTC_ID5)
 /* @} */
 /** \brief External start channel of DRU0 UTC */
-#define UDMA_UTC_START_CH_DRU               (0U)
+#define UDMA_UTC_START_CH_DRU0              (0U)
 /** \brief Number of channels present in DRU0 UTC */
-#define UDMA_UTC_NUM_CH_DRU                 (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
+#define UDMA_UTC_NUM_CH_DRU0                (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
 /** \brief Start thread ID of DRU0 UTC */
-#define UDMA_UTC_START_THREAD_ID_DRU        (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
+#define UDMA_UTC_START_THREAD_ID_DRU0       (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
 
 /** \brief External start channel of VPAC TC0 UTC */
 #define UDMA_UTC_START_CH_VPAC_TC0          (CSL_PSILCFG_NAVSS_MAIN_VPAC_TC0_CC_PSILS_THREAD_OFFSET \

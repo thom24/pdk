@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2022
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -91,8 +91,8 @@ int32_t Udma_rmInit(Udma_DrvHandle drvHandle)
     int32_t             retVal = UDMA_SOK;
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-#if (UDMA_RM_NUM_UTC_INSTANCE > 0)
-    uint32_t            rmUtcId;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+    uint32_t            utcId;
 #endif
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
     uint32_t            mappedGrp;
@@ -173,16 +173,16 @@ int32_t Udma_rmInit(Udma_DrvHandle drvHandle)
             bitMask = (uint32_t) 1U << bitPos;
             drvHandle->rxUhcChFlag[offset] |= bitMask;
         }
-#if (UDMA_RM_NUM_UTC_INSTANCE > 0)
-        for(rmUtcId = 0U; rmUtcId < UDMA_RM_NUM_UTC_INSTANCE; rmUtcId++)
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+        for(utcId = 0U; utcId < UDMA_NUM_UTC_INSTANCE; utcId++)
         {
-            for(i = 0U; i < rmInitPrms->numUtcCh[rmUtcId]; i++)
+            for(i = 0U; i < rmInitPrms->numUtcCh[utcId]; i++)
             {
                 offset = i >> 5U;
                 Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
                 bitPos = i - (offset << 5U);
                 bitMask = (uint32_t) 1U << bitPos;
-                drvHandle->utcChFlag[rmUtcId][offset] |= bitMask;
+                drvHandle->utcChFlag[utcId][offset] |= bitMask;
             }
         }
 #endif
@@ -290,8 +290,8 @@ int32_t Udma_rmDeinit(Udma_DrvHandle drvHandle)
 {
     int32_t             retVal = UDMA_SOK;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-#if (UDMA_RM_NUM_UTC_INSTANCE > 0)
-    uint32_t            rmUtcId;
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+    uint32_t            utcId;
 #endif
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
     uint32_t            mappedGrp;
@@ -342,13 +342,13 @@ int32_t Udma_rmDeinit(Udma_DrvHandle drvHandle)
                   &drvHandle->rxUhcChFlag[0U],
                   rmInitPrms->numRxUhcCh,
                   UDMA_RM_RX_UHC_CH_ARR_SIZE);
-#if (UDMA_RM_NUM_UTC_INSTANCE > 0)
-    for(rmUtcId = 0U; rmUtcId < UDMA_RM_NUM_UTC_INSTANCE; rmUtcId++)
+#if (UDMA_NUM_UTC_INSTANCE > 0)
+    for(utcId = 0U; utcId < UDMA_NUM_UTC_INSTANCE; utcId++)
     {
         retVal += Udma_rmCheckResLeak(
                       drvHandle,
-                      &drvHandle->utcChFlag[rmUtcId][0U],
-                      rmInitPrms->numUtcCh[rmUtcId],
+                      &drvHandle->utcChFlag[utcId][0U],
+                      rmInitPrms->numUtcCh[utcId],
                       UDMA_RM_UTC_CH_ARR_SIZE);
     }
 #endif
@@ -1123,25 +1123,25 @@ void Udma_rmFreeRxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     return;
 }
 
-#if (UDMA_RM_NUM_UTC_INSTANCE > 0)
+#if (UDMA_NUM_UTC_INSTANCE > 0)
 uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
                            Udma_DrvHandle drvHandle,
                            const Udma_UtcInstInfo *utcInfo)
 {
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     uint32_t            i, offset, bitPos, bitMask;
-    uint32_t            rmUtcId;
+    uint32_t            utcId;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
     Udma_assert(drvHandle, utcInfo != NULL_PTR);
-    rmUtcId = utcInfo->rmUtcId;
-    Udma_assert(drvHandle, rmUtcId < UDMA_RM_NUM_UTC_INSTANCE);
+    utcId = utcInfo->utcId;
+    Udma_assert(drvHandle, utcId < UDMA_NUM_UTC_INSTANCE);
     Udma_assert(drvHandle,
-        rmInitPrms->startUtcCh[rmUtcId] >= utcInfo->startCh);
+        rmInitPrms->startUtcCh[utcId] >= utcInfo->startCh);
     Udma_assert(drvHandle,
-        rmInitPrms->startUtcCh[rmUtcId] < (utcInfo->startCh + utcInfo->numCh));
+        rmInitPrms->startUtcCh[utcId] < (utcInfo->startCh + utcInfo->numCh));
     Udma_assert(drvHandle,
-        (rmInitPrms->startUtcCh[rmUtcId] + rmInitPrms->numUtcCh[rmUtcId]) <=
+        (rmInitPrms->startUtcCh[utcId] + rmInitPrms->numUtcCh[utcId]) <=
             (utcInfo->startCh + utcInfo->numCh));
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
@@ -1150,33 +1150,33 @@ uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
     if(UDMA_DMA_CH_ANY == preferredChNum)
     {
         /* Search and allocate from specific external channel pool */
-        for(i = 0U; i < rmInitPrms->numUtcCh[rmUtcId]; i++)
+        for(i = 0U; i < rmInitPrms->numUtcCh[utcId]; i++)
         {
             offset = i >> 5U;
             Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            if((drvHandle->utcChFlag[rmUtcId][offset] & bitMask) == bitMask)
+            if((drvHandle->utcChFlag[utcId][offset] & bitMask) == bitMask)
             {
-                drvHandle->utcChFlag[rmUtcId][offset] &= ~bitMask;
-                chNum = i + rmInitPrms->startUtcCh[rmUtcId];  /* Add start offset */
+                drvHandle->utcChFlag[utcId][offset] &= ~bitMask;
+                chNum = i + rmInitPrms->startUtcCh[utcId];  /* Add start offset */
                 break;
             }
         }
     }
     else
     {
-        if(preferredChNum < rmInitPrms->numUtcCh[rmUtcId])
+        if(preferredChNum < rmInitPrms->numUtcCh[utcId])
         {
             i = preferredChNum;
             offset = i >> 5U;
             Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            if((drvHandle->utcChFlag[rmUtcId][offset] & bitMask) == bitMask)
+            if((drvHandle->utcChFlag[utcId][offset] & bitMask) == bitMask)
             {
-                drvHandle->utcChFlag[rmUtcId][offset] &= ~bitMask;
-                chNum = preferredChNum + rmInitPrms->startUtcCh[rmUtcId];
+                drvHandle->utcChFlag[utcId][offset] &= ~bitMask;
+                chNum = preferredChNum + rmInitPrms->startUtcCh[utcId];
             }
         }
     }
@@ -1192,25 +1192,25 @@ void Udma_rmFreeExtCh(uint32_t chNum,
                       const Udma_UtcInstInfo *utcInfo)
 {
     uint32_t            i, offset, bitPos, bitMask;
-    uint32_t            rmUtcId;
+    uint32_t            utcId;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
     Udma_assert(drvHandle, utcInfo != NULL_PTR);
-    rmUtcId = utcInfo->rmUtcId;
+    utcId = utcInfo->utcId;
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
-    Udma_assert(drvHandle, chNum >= rmInitPrms->startUtcCh[rmUtcId]);
+    Udma_assert(drvHandle, chNum >= rmInitPrms->startUtcCh[utcId]);
     Udma_assert(drvHandle,
-        chNum < (rmInitPrms->startUtcCh[rmUtcId] + rmInitPrms->numUtcCh[rmUtcId]));
-    i = chNum - rmInitPrms->startUtcCh[rmUtcId];
+        chNum < (rmInitPrms->startUtcCh[utcId] + rmInitPrms->numUtcCh[utcId]));
+    i = chNum - rmInitPrms->startUtcCh[utcId];
     offset = i >> 5U;
     Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->utcChFlag[rmUtcId][offset] & bitMask) == 0U);
-    drvHandle->utcChFlag[rmUtcId][offset] |= bitMask;
+        (drvHandle->utcChFlag[utcId][offset] & bitMask) == 0U);
+    drvHandle->utcChFlag[utcId][offset] |= bitMask;
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
@@ -2177,17 +2177,17 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         }
     #endif
 
-    #if (UDMA_RM_NUM_UTC_INSTANCE > 0)
+    #if (UDMA_NUM_UTC_INSTANCE > 0)
         /* UTC - Extended Channels (MSMC_DRU/VPAC_TC0/VPAC_TC1/DMPAC) */
         /* Primary for MSMC_DRU Channel */
-        rmInitPrms->startUtcCh[UDMA_RM_UTC_ID_MSMC_DRU]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStart;
-        rmInitPrms->numUtcCh[UDMA_RM_UTC_ID_MSMC_DRU]         = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNum;
+        rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStart;
+        rmInitPrms->numUtcCh[UDMA_UTC_ID_MSMC_DRU0]         = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNum;
         /* Sub offset. TODO: Remove offset if feasible */
-        if(rmInitPrms->startUtcCh[UDMA_RM_UTC_ID_MSMC_DRU] >= numtTxCh)
+        if(rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0] >= numtTxCh)
         {
-            rmInitPrms->startUtcCh[UDMA_RM_UTC_ID_MSMC_DRU]  -= numtTxCh; 
+            rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0]  -= numtTxCh; 
         }
-    #if (UDMA_RM_NUM_UTC_INSTANCE > 1)
+    #if (UDMA_NUM_UTC_INSTANCE > 1)
         /* Secondary for VPAC_TC0+VPAC_TC1+DMPAC Channels */
         /* Here the assumption taken to split the external channels for HWA is that,
          * all similar type of channels (VPAC_TC0/VPAC_TC1/DMPAC) will be reserved to same core */
@@ -2198,20 +2198,20 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec == vpac0Start) &&
            (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac0Start + UDMA_UTC_NUM_CH_VPAC_TC0))
         {
-            rmInitPrms->startUtcCh[UDMA_RM_UTC_ID_VPAC_TC0]    = UDMA_UTC_START_CH_VPAC_TC0;
-            rmInitPrms->numUtcCh[UDMA_RM_UTC_ID_VPAC_TC0]      = UDMA_UTC_NUM_CH_VPAC_TC0;
+            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC_TC0]    = UDMA_UTC_START_CH_VPAC_TC0;
+            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC_TC0]      = UDMA_UTC_NUM_CH_VPAC_TC0;
         }
         if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac1Start) &&
            (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac1Start + UDMA_UTC_NUM_CH_VPAC_TC1))
         {
-            rmInitPrms->startUtcCh[UDMA_RM_UTC_ID_VPAC_TC1]    = UDMA_UTC_START_CH_VPAC_TC1;
-            rmInitPrms->numUtcCh[UDMA_RM_UTC_ID_VPAC_TC1]      = UDMA_UTC_NUM_CH_VPAC_TC1;
+            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC_TC1]    = UDMA_UTC_START_CH_VPAC_TC1;
+            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC_TC1]      = UDMA_UTC_NUM_CH_VPAC_TC1;
         }
         if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= dmpacStart) &&
            (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec == dmpacStart + UDMA_UTC_NUM_CH_DMPAC_TC0))
         {
-            rmInitPrms->startUtcCh[UDMA_RM_UTC_ID_DMPAC_TC0]   = UDMA_UTC_START_CH_DMPAC_TC0;
-            rmInitPrms->numUtcCh[UDMA_RM_UTC_ID_DMPAC_TC0]     = UDMA_UTC_NUM_CH_DMPAC_TC0;
+            rmInitPrms->startUtcCh[UDMA_UTC_ID_DMPAC_TC0]   = UDMA_UTC_START_CH_DMPAC_TC0;
+            rmInitPrms->numUtcCh[UDMA_UTC_ID_DMPAC_TC0]     = UDMA_UTC_NUM_CH_DMPAC_TC0;
         }
     #endif
     #endif

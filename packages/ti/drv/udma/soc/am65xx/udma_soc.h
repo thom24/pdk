@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2022
+ *  Copyright (c) Texas Instruments Incorporated 2018-2021
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -183,24 +183,13 @@ extern "C" {
  */
 #define UDMA_UTC_ID_MSMC_DRU0           (UDMA_UTC_ID0)
 /* @} */
-/**
- *  \anchor Udma_RmUtcIdSoc
- *  \name RM UTC ID specific to a SOC
- *
- *  List of all UTC's present in the SOC those have dedicated resources.
- *
- *  @{
- */
-#define UDMA_RM_UTC_ID_MSMC_DRU            (0U)
-#define UDMA_RM_NUM_UTC_INSTANCE           (1U)
-/* @} */
 
 /** \brief External start channel of DRU0 UTC */
-#define UDMA_UTC_START_CH_DRU           (0U)
+#define UDMA_UTC_START_CH_DRU0          (0U)
 /** \brief Number of channels present in DRU0 UTC */
-#define UDMA_UTC_NUM_CH_DRU             (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
+#define UDMA_UTC_NUM_CH_DRU0            (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILS_THREAD_CNT)
 /** \brief Start thread ID of DRU0 UTC */
-#define UDMA_UTC_START_THREAD_ID_DRU    (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
+#define UDMA_UTC_START_THREAD_ID_DRU0   (CSL_PSILCFG_NAVSS_MAIN_MSMC0_PSILD_THREAD_OFFSET)
 /** \brief DRU0 UTC baseaddress */
 #define UDMA_UTC_BASE_DRU0              (CSL_COMPUTE_CLUSTER0_DRU_BASE)
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2022
+ *  Copyright (c) Texas Instruments Incorporated 2018
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -438,27 +438,7 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
         /* Init channel parameters */
         chType = UDMA_CH_TYPE_UTC;
         UdmaChPrms_init(&chPrms, chType);
-#if defined (SOC_J784S4) && defined (BUILD_C7X)
-/*
- * In J784S4 there are additional DRUs local to C7X cores
- * All the cores except C7X cores can use only global DRU
- */
-#if   defined (BUILD_C7X_1)
-        /* Using UDMA_UTC_ID_C7X_MSMC_DRU4 by default if core is C7X_1 */
-        chPrms.utcId                = UDMA_UTC_ID_C7X_MSMC_DRU4;
-#elif defined (BUILD_C7X_2)
-        /* Using UDMA_UTC_ID_C7X_MSMC_DRU5 by default if core is C7X_2 */
-        chPrms.utcId                = UDMA_UTC_ID_C7X_MSMC_DRU5;
-#elif defined (BUILD_C7X_3)
-        /* Using UDMA_UTC_ID_C7X_MSMC_DRU6 by default if core is C7X_3 */
-        chPrms.utcId                = UDMA_UTC_ID_C7X_MSMC_DRU6;
-#elif defined (BUILD_C7X_4)
-        /* Using UDMA_UTC_ID_C7X_MSMC_DRU7 by default if core is C7X_4 */
-        chPrms.utcId                = UDMA_UTC_ID_C7X_MSMC_DRU7;
-#endif
-#else
         chPrms.utcId                = UDMA_UTC_ID_MSMC_DRU0;
-#endif
         chPrms.fqRingPrms.ringMem   = &gDruRingMem[0U];
         chPrms.cqRingPrms.ringMem   = &gDruCompRingMem[0U];
         chPrms.tdCqRingPrms.ringMem = &gDruTdCompRingMem[0U];
