@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2021
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -67,7 +67,7 @@
 /* ========================================================================== */
 
 /** \brief Main Navss defaultBoardCfg Params */
-const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_MainNavss[UDMA_RM_NUM_RES] =
+const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_MainNavss[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES] =
 {
     /* resId,                     reqType,                            reqSubtype,                                secHost */
     {UDMA_RM_RES_ID_TX_UHC,       UDMA_RM_SCI_REQ_TYPE_INVALID,       UDMA_RM_SCI_REQ_SUBTYPE_INVALID,           TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
@@ -93,7 +93,7 @@ const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_MainNavss[UDMA_RM_NUM_RES] =
 };
 
 /** \brief MCU Navss defaultBoardCfg Params */
-const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_McuNavss[UDMA_RM_NUM_RES] =
+const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_McuNavss[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES] =
 {
     /* resId,                     reqType,                            reqSubtype,                                secHost */
     {UDMA_RM_RES_ID_TX_UHC,       UDMA_RM_SCI_REQ_TYPE_INVALID,       UDMA_RM_SCI_REQ_SUBTYPE_INVALID,           TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2021
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -161,6 +161,7 @@ typedef struct
 void Udma_initDrvHandle(Udma_DrvHandle drvHandle);
 uint32_t Udma_getGlobalEventOffset(void);
 const Udma_RmDefBoardCfgPrms *Udma_rmGetDefBoardCfgPrms(uint32_t instId);
+const Udma_RmDefBoardCfgResp *Udma_rmGetLocalBoardCfgResp(uint32_t resId);
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
 int32_t Udma_getMappedChRingAttributes(Udma_DrvHandle drvHandle,
                                        uint32_t mappedGrp,

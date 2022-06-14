@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -91,7 +91,7 @@ const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_Bcdma[UDMA_RM_NUM_BCDMA_RES] =
 };
 
 /** \brief Main Navss defaultBoardCfg Params */
-const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_MainNavss[UDMA_RM_NUM_RES] =
+const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_MainNavss[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES] =
 {
     /* resId,                     reqType,                            reqSubtype,                               secHost */
     {UDMA_RM_RES_ID_BC_UHC,       UDMA_RM_SCI_REQ_TYPE_INVALID,        UDMA_RM_SCI_REQ_SUBTYPE_INVALID,           TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
@@ -120,7 +120,7 @@ const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_MainNavss[UDMA_RM_NUM_RES] =
 };
 
 /** \brief MCU Navss defaultBoardCfg Params */
-const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_McuNavss[UDMA_RM_NUM_RES] =
+const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_McuNavss[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES] =
 {
     /* resId,                     reqType,                            reqSubtype,                               secHost */
     {UDMA_RM_RES_ID_BC_UHC,       UDMA_RM_SCI_REQ_TYPE_INVALID,        UDMA_RM_SCI_REQ_SUBTYPE_INVALID,           TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST},
@@ -245,7 +245,27 @@ Udma_RmSharedResPrms gUdmaRmSharedResPrms[UDMA_RM_NUM_SHARED_RES] =
     {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  1U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
     {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  2U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
 #endif
+/* These DRUs are local to C7X cores, user need to take care of resource overlapping when they try to override default allocation */
+#if defined (BUILD_C7X)
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[C7X_1,C7X_2,C7X_3,C7X_4] */
+    {UDMA_RM_C7X_MSMC_DRU4,       0U,            0U,          UDMA_NUM_C7X_CORE,     4U, {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_C7X_MSMC_DRU5,       0U,            0U,          UDMA_NUM_C7X_CORE,     4U, {UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_C7X_MSMC_DRU6,       0U,            0U,          UDMA_NUM_C7X_CORE,     4U, {UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN} },
+    {UDMA_RM_C7X_MSMC_DRU7,       0U,            0U,          UDMA_NUM_C7X_CORE,     4U, {UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_MIN,  UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+#endif
 };
+
+/** \brief local BoardCfg resource ranges for DRUs local to C7X cores */
+#if defined (BUILD_C7X)
+const Udma_RmDefBoardCfgResp gUdmaLocalResRange[UDMA_RM_NUM_C7X_DRU] = 
+{
+    /* resId,                                   rangeStart,                  rangeNum,        rangeStartSec,        rangeNumSec */
+    {UDMA_RM_C7X_MSMC_DRU4,         UDMA_UTC_START_CH_DRU4,      UDMA_UTC_NUM_CH_DRU4,                   0U,               0U},
+    {UDMA_RM_C7X_MSMC_DRU5,         UDMA_UTC_START_CH_DRU5,      UDMA_UTC_NUM_CH_DRU5,                   0U,               0U},
+    {UDMA_RM_C7X_MSMC_DRU6,         UDMA_UTC_START_CH_DRU6,      UDMA_UTC_NUM_CH_DRU6,                   0U,               0U},
+    {UDMA_RM_C7X_MSMC_DRU7,         UDMA_UTC_START_CH_DRU7,      UDMA_UTC_NUM_CH_DRU7,                   0U,               0U}
+};
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -288,4 +308,22 @@ Udma_RmSharedResPrms *Udma_rmGetSharedResPrms(uint32_t resId)
     return (rmSharedResPrms);
 }
 
+#if defined (BUILD_C7X)
+const Udma_RmDefBoardCfgResp *Udma_rmGetLocalBoardCfgResp(uint32_t resId)
+{
+    const Udma_RmDefBoardCfgResp *ret = NULL;
+    uint32_t    i;
+
+    for (i = 0; i < UDMA_RM_NUM_C7X_DRU; i++)
+    {
+        if(resId == gUdmaLocalResRange[i].resId)
+        {
+            ret = &gUdmaLocalResRange[i];
+            break;
+        }
+    }
+
+    return ret;
+}
+#endif
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2021
+ *  Copyright (c) Texas Instruments Incorporated 2021-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -113,8 +113,14 @@ extern "C" {
 /** \brief Flag to indicate Ring Monitor is present or not in the SOC*/
 #define UDMA_SOC_CFG_RING_MON_PRESENT            (1U)
 
+/** \brief Flag to indicate VPAC1 is present or not in the SOC*/
+#define UDMA_SOC_CFG_VPAC1_PRESENT               (0U)
+
 /** \brief Flag to indicate the SOC needs ring reset workaround */
 #define UDMA_SOC_CFG_APPLY_RING_WORKAROUND       (0U)
+
+/* Flag to indicate DRU local to C7X cores is present or not in the SoC */
+#define UDMA_LOCAL_C7X_DRU_PRESENT               (0U)
 /* @} */
 
  /**
@@ -330,8 +336,8 @@ extern "C" {
 /** \brief Total number of UDMAP resources */
 #define UDMA_RM_NUM_UDMAP_RES                   (17U)  
 
-/** \brief Total number of resources */
-#define UDMA_RM_NUM_RES                         UDMA_MAX(UDMA_RM_NUM_UDMAP_RES, UDMA_RM_NUM_BCDMA_RES)
+/** \brief Total number of resources for which the range need to be queried from default BoardCfg */
+#define UDMA_RM_DEFAULT_BOARDCFG_NUM_RES                         UDMA_MAX(UDMA_RM_NUM_UDMAP_RES, UDMA_RM_NUM_BCDMA_RES)
 
 /* @} */
 

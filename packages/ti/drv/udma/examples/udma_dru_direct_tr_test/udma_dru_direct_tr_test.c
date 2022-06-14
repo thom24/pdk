@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -94,6 +94,7 @@ static int32_t App_deinit(Udma_DrvHandle drvHandle);
 
 static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle);
 static int32_t App_delete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle);
+static uint32_t App_getUtcId();
 
 static void App_udmaTrInit(Udma_ChHandle chHandle,
                            CSL_UdmapTR *pTr,
@@ -315,7 +316,7 @@ static int32_t App_init(Udma_DrvHandle drvHandle)
     }
 
     /* Init all DRU queue */
-    utcId = UDMA_UTC_ID_MSMC_DRU0;
+    utcId = App_getUtcId();
     numQueue = Udma_druGetNumQueue(drvHandle, utcId);
     if(0U == numQueue)
     {
@@ -371,7 +372,7 @@ static int32_t App_create(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle)
         /* Init channel parameters */
         chType = UDMA_CH_TYPE_UTC;
         UdmaChPrms_init(&chPrms, chType);
-        chPrms.utcId                = UDMA_UTC_ID_MSMC_DRU0;
+        chPrms.utcId                = App_getUtcId();
         /* Ring not used in direct TR submission via DRU */
         chPrms.fqRingPrms.ringMem   = NULL;
         chPrms.cqRingPrms.ringMem   = NULL;
@@ -524,4 +525,33 @@ static void App_print(const char *str)
     }
 
     return;
+}
+
+static uint32_t App_getUtcId()
+{
+    uint32_t utcId;
+
+#if defined (SOC_J784S4) && defined (BUILD_C7X)
+/*
+ * In J784S4 there are additional DRUs local to C7X cores
+ * All the cores except C7X cores can use only global DRU
+ */
+#if   defined (BUILD_C7X_1)
+        /* Using UDMA_UTC_ID_C7X_MSMC_DRU4 by default if core is C7X_1 */
+        utcId                = UDMA_UTC_ID_C7X_MSMC_DRU4;
+#elif defined (BUILD_C7X_2)
+        /* Using UDMA_UTC_ID_C7X_MSMC_DRU5 by default if core is C7X_2 */
+        utcId                = UDMA_UTC_ID_C7X_MSMC_DRU5;
+#elif defined (BUILD_C7X_3)
+        /* Using UDMA_UTC_ID_C7X_MSMC_DRU6 by default if core is C7X_3 */
+        utcId                = UDMA_UTC_ID_C7X_MSMC_DRU6;
+#elif defined (BUILD_C7X_4)
+        /* Using UDMA_UTC_ID_C7X_MSMC_DRU7 by default if core is C7X_4 */
+        utcId                = UDMA_UTC_ID_C7X_MSMC_DRU7;
+#endif
+#else
+        utcId                = UDMA_UTC_ID_MSMC_DRU0;
+#endif
+
+    return utcId;
 }

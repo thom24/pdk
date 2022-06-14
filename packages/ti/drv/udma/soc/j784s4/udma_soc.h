@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2021
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -33,7 +33,7 @@
 /**
  *  \file udma_soc.h
  *
- *  \brief UDMA Low Level Driver J721S2 SOC specific file.
+ *  \brief UDMA Low Level Driver J784S4 SOC specific file.
  */
 
 #ifndef UDMA_SOC_H_
@@ -113,8 +113,14 @@ extern "C" {
 /** \brief Flag to indicate Ring Monitor is present or not in the SOC*/
 #define UDMA_SOC_CFG_RING_MON_PRESENT            (1U)
 
+/** \brief Flag to indicate VPAC1 is present or not in the SOC*/
+#define UDMA_SOC_CFG_VPAC1_PRESENT               (1U)
+
 /** \brief Flag to indicate the SOC needs ring reset workaround */
 #define UDMA_SOC_CFG_APPLY_RING_WORKAROUND       (0U)
+
+/* Flag to indicate DRU local to C7X cores is present or not in the SoC */
+#define UDMA_LOCAL_C7X_DRU_PRESENT               (1U)
 /* @} */
 
  /**
@@ -158,7 +164,7 @@ extern "C" {
  *
  *  @{
  */
-/* No mapped TX channels/rings in J721S2 */
+/* No mapped TX channels/rings in J784S4 */
 /* @} */
 
 /** \brief Number of Mapped RX Group */
@@ -171,7 +177,7 @@ extern "C" {
  *
  *  @{
  */
-/* No mapped RX channels/rings in J721S2 */
+/* No mapped RX channels/rings in J784S4 */
 /* @} */
 
 /** \brief Number of UTC instance */
@@ -191,6 +197,14 @@ extern "C" {
 #define UDMA_UTC_ID_VPAC1_TC0           (UDMA_UTC_ID3)
 #define UDMA_UTC_ID_VPAC1_TC1           (UDMA_UTC_ID4)
 #define UDMA_UTC_ID_DMPAC_TC0           (UDMA_UTC_ID5)
+/* List of DRUs local to C7X */
+#define UDMA_UTC_ID_C7X_MSMC_DRU4       (UDMA_UTC_ID6)
+#define UDMA_UTC_ID_C7X_MSMC_DRU5       (UDMA_UTC_ID7)
+#define UDMA_UTC_ID_C7X_MSMC_DRU6       (UDMA_UTC_ID8)
+#define UDMA_UTC_ID_C7X_MSMC_DRU7       (UDMA_UTC_ID9)
+#define UDMA_LOCAL_UTC_START            (UDMA_UTC_ID_C7X_MSMC_DRU4)
+#define UDMA_LOCAL_UTC_MAX              (UDMA_UTC_ID_C7X_MSMC_DRU7)
+#define UDMA_LOCAL_UTC_NUM              (UDMA_LOCAL_UTC_MAX - UDMA_LOCAL_UTC_START + 1U)
 /* @} */
 /** \brief External start channel of DRU0 UTC */
 #define UDMA_UTC_START_CH_DRU0              (0U)
@@ -238,6 +252,23 @@ extern "C" {
 #define UDMA_UTC_NUM_CH_DMPAC_TC0           (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILS_THREAD_CNT)
 /** \brief Start thread ID of DMPAC TC0 UTC */
 #define UDMA_UTC_START_THREAD_ID_DMPAC_TC0  (CSL_PSILCFG_NAVSS_MAIN_DMPAC_TC0_CC_PSILD_THREAD_OFFSET)
+/* Channel information for local DRU channels */
+/** \brief Start channel of DRU4 UTC */
+#define UDMA_UTC_START_CH_DRU4              (0U)
+/** \brief Number of channels present in DRU4 UTC */
+#define UDMA_UTC_NUM_CH_DRU4                (32U)
+/** \brief Start channel of DRU5 UTC */
+#define UDMA_UTC_START_CH_DRU5              (0U)
+/** \brief Number of channels present in DRU5 UTC */
+#define UDMA_UTC_NUM_CH_DRU5                (32U)
+/** \brief Start channel of DRU6 UTC */
+#define UDMA_UTC_START_CH_DRU6              (0U)
+/** \brief Number of channels present in DRU6 UTC */
+#define UDMA_UTC_NUM_CH_DRU6                (32U)
+/** \brief Start channel of DRU7 UTC */
+#define UDMA_UTC_START_CH_DRU7              (0U)
+/** \brief Number of channels present in DRU7 UTC */
+#define UDMA_UTC_NUM_CH_DRU7                (32U)
 
 /**
  *  \anchor Udma_CoreId
@@ -263,6 +294,7 @@ extern "C" {
 #define UDMA_CORE_ID_C7X_2              (8U)
 #define UDMA_CORE_ID_C7X_3              (9U)
 #define UDMA_CORE_ID_C7X_4              (10U)
+#define UDMA_NUM_C7X_CORE               (UDMA_CORE_ID_C7X_4 - UDMA_CORE_ID_C7X_1 + 1U)
 #define UDMA_NUM_MAIN_CORE              (11U)
 /* MCU domain cores - Note: This should be after all main domain cores */
 #define UDMA_CORE_ID_MCU1_0             (UDMA_NUM_MAIN_CORE + 0U)
@@ -351,19 +383,41 @@ extern "C" {
 /** \brief Ring Monitors */
 #define UDMA_RM_RES_ID_RING_MON                 (16U)
 
+#if defined (BUILD_C7X)
+/* List of all DRUs local to C7X */
+/** \brief DRU4 local to C7X cluster */
+#define UDMA_RM_C7X_MSMC_DRU4                   (17U)
+/** \brief DRU5 local to C7X cluster */
+#define UDMA_RM_C7X_MSMC_DRU5                   (18U)
+/** \brief DRU6 local to C7X cluster */
+#define UDMA_RM_C7X_MSMC_DRU6                   (19U)
+/** \brief DRU7 local to C7X cluster */
+#define UDMA_RM_C7X_MSMC_DRU7                   (20U)
+/** \brief Start of local DRUs */
+#define UDMA_RM_START_C7X_DRU                   (UDMA_RM_C7X_MSMC_DRU4)
+/** \brief Total number of local DRUs */
+#define UDMA_RM_NUM_C7X_DRU                     (UDMA_RM_C7X_MSMC_DRU7 - UDMA_RM_C7X_MSMC_DRU4 + 1U)
+#endif
+
 /** \brief Total number of BCDMA resources */
 #define UDMA_RM_NUM_BCDMA_RES                   (12U)
 /** \brief Total number of UDMAP resources */
-#define UDMA_RM_NUM_UDMAP_RES                   (17U)  
+#define UDMA_RM_NUM_UDMAP_RES                   (17U)
 
-/** \brief Total number of resources */
-#define UDMA_RM_NUM_RES                         UDMA_MAX(UDMA_RM_NUM_UDMAP_RES, UDMA_RM_NUM_BCDMA_RES)
+
+/** \brief Total number of resources for which the range need to be queried from default BoardCfg */
+#define UDMA_RM_DEFAULT_BOARDCFG_NUM_RES                         UDMA_MAX(UDMA_RM_NUM_UDMAP_RES, UDMA_RM_NUM_BCDMA_RES)
 
 /* @} */
 
 /** \brief Total number of shared resources - 
  *  Free_Flows/Global_Event/IR Intr/VINT */
-#define UDMA_RM_NUM_SHARED_RES                  (4U) 
+#if defined (BUILD_C7X)
+/* Additional DRUs local to C7X */
+#define UDMA_RM_NUM_SHARED_RES                  (8U)
+#else
+#define UDMA_RM_NUM_SHARED_RES                  (4U)
+#endif 
 /** \brief Maximum no.of instances to split a shared resource. 
  *  This should be max(UDMA_NUM_CORE,UDMA_NUM_INST_ID) */
 #define UDMA_RM_SHARED_RES_MAX_INST             (UDMA_NUM_CORE)

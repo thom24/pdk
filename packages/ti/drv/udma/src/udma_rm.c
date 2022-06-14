@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018-2021
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -62,6 +62,7 @@
 
 static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrms,
                                              uint32_t  instId,
+                                             uint32_t  startInstId,
                                              uint32_t  rangeStart,
                                              uint32_t  rangeTotalNum,
                                              uint32_t *start,
@@ -2028,8 +2029,8 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
 {
     const Udma_RmDefBoardCfgPrms                *rmDefBoardCfgPrms;
     int32_t                                      retVal = UDMA_SOK;
-    Udma_RmDefBoardCfgResp                       rmDefBoardCfgResp[UDMA_RM_NUM_RES];
-    uint32_t                                     splitResFlag[UDMA_RM_NUM_RES] = {0U};
+    Udma_RmDefBoardCfgResp                       rmDefBoardCfgResp[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES];
+    uint32_t                                     splitResFlag[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES] = {0U};
     uint32_t numRes = 0U;
     uint32_t resIdx;
     bool blkCopySubType = false;
@@ -2055,7 +2056,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
 
         if(UDMA_INST_ID_MCU_0 == instId)
         {
-            numRes      = UDMA_RM_NUM_RES;
+            numRes      = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
             blkCopySubType = false;
             /* Assign offset Params */
             numtTxCh    = CSL_NAVSS_MCU_UDMAP_NUM_TX_CHANS;    
@@ -2064,7 +2065,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         }
         else if(UDMA_INST_ID_MAIN_0 == instId)
         {
-            numRes      = UDMA_RM_NUM_RES;
+            numRes      = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
             blkCopySubType = false;
             /* Assign offset Params */
             numtTxCh    = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS;    
@@ -2193,6 +2194,10 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
          * all similar type of channels (VPAC_TC0/VPAC_TC1/DMPAC) will be reserved to same core */
         uint32_t vpac0Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC0;
         uint32_t vpac1Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC1;
+    #if (UDMA_SOC_CFG_VPAC1_PRESENT == 1)
+        uint32_t vpac10Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC1_TC0;
+        uint32_t vpac11Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC1_TC1;
+    #endif
         uint32_t dmpacStart = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_DMPAC_TC0;
 
         if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec == vpac0Start) &&
@@ -2207,11 +2212,47 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
             rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC_TC1]    = UDMA_UTC_START_CH_VPAC_TC1;
             rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC_TC1]      = UDMA_UTC_NUM_CH_VPAC_TC1;
         }
+    #if (UDMA_SOC_CFG_VPAC1_PRESENT == 1)
+        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac10Start) &&
+           (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac10Start + UDMA_UTC_NUM_CH_VPAC1_TC0))
+        {
+            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC1_TC0]    = UDMA_UTC_START_CH_VPAC1_TC0;
+            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC1_TC0]      = UDMA_UTC_NUM_CH_VPAC1_TC0;
+        }
+        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac11Start) &&
+           (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac11Start + UDMA_UTC_NUM_CH_VPAC1_TC1))
+        {
+            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC1_TC1]    = UDMA_UTC_START_CH_VPAC1_TC1;
+            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC1_TC1]      = UDMA_UTC_NUM_CH_VPAC1_TC1;
+        }
+    #endif
         if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= dmpacStart) &&
            (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec == dmpacStart + UDMA_UTC_NUM_CH_DMPAC_TC0))
         {
             rmInitPrms->startUtcCh[UDMA_UTC_ID_DMPAC_TC0]   = UDMA_UTC_START_CH_DMPAC_TC0;
             rmInitPrms->numUtcCh[UDMA_UTC_ID_DMPAC_TC0]     = UDMA_UTC_NUM_CH_DMPAC_TC0;
+        }
+    #endif
+    #if defined (BUILD_C7X) && (UDMA_LOCAL_C7X_DRU_PRESENT == 1)
+        uint32_t utcId, rmId;
+        for(rmId = UDMA_RM_START_C7X_DRU ; rmId <= UDMA_RM_NUM_C7X_DRU ; rmId++)
+        {
+            /**
+             * RM ids and UTC ids for these DRUs are continuous
+             * To obtain UTC id get offset from RM id for particular DRU
+             * Add the offset to DRU Start.
+             */
+            utcId    = (rmId - UDMA_RM_START_C7X_DRU) + UDMA_LOCAL_UTC_START;
+
+            const Udma_RmDefBoardCfgResp *resp = Udma_rmGetLocalBoardCfgResp(rmId);
+
+            retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(rmId),
+                                                    Udma_getCoreId(),
+                                                    UDMA_CORE_ID_C7X_1,
+                                                    resp->rangeStart,
+                                                    resp->rangeNum,
+                                                    &rmInitPrms->startUtcCh[utcId],
+                                                    &rmInitPrms->numUtcCh[utcId]);
         }
     #endif
     #endif
@@ -2227,6 +2268,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         {
             retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_RX_FLOW),
                                                     Udma_getCoreId(),
+                                                    0U,
                                                     rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeStart,
                                                     rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeNum,
                                                     &rmInitPrms->startFreeFlow,
@@ -2252,6 +2294,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         /* Shared resource - Split based on instance */
         retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_GLOBAL_EVENT),
                                                instId,
+                                               UDMA_INST_ID_START,
                                                rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeStart,
                                                rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeNum,
                                                &rmInitPrms->startGlobalEvent,
@@ -2274,6 +2317,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         /* Shared resource - Split based on instance */
         retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_VINTR),
                                                instId,
+                                               UDMA_INST_ID_START,
                                                rmDefBoardCfgResp[UDMA_RM_RES_ID_VINTR].rangeStart,
                                                rmDefBoardCfgResp[UDMA_RM_RES_ID_VINTR].rangeNum,
                                                &rmInitPrms->startVintr,
@@ -2284,6 +2328,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         /* Shared resource - Split based on instance */
         retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
                                             instId,
+                                            UDMA_INST_ID_START,
                                             rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
                                             rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
                                             &rmInitPrms->startIrIntr,
@@ -2317,6 +2362,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
             /* Add the no. of IR Interrupts reserved for C7x/C66x in Main NAVSS Instance */  
             retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
                                                    UDMA_INST_ID_MAIN_0,
+                                                   UDMA_INST_ID_START,
                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
                                                    &start,
@@ -2537,6 +2583,7 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
 
 static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmSharedResPrms,
                                              uint32_t  instId,
+                                             uint32_t  startInstId,
                                              uint32_t  rangeStart,
                                              uint32_t  rangeTotalNum,
                                              uint32_t *start,
@@ -2624,10 +2671,10 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
             }
         }
 
-        *num = instFinalShare[instId - UDMA_INST_ID_START];
+        *num = instFinalShare[instId - startInstId];
         /* Calculate the start for requested instance */
         *start = rangeStart + startResrvCnt;
-        for(i = 0U; i < (instId - UDMA_INST_ID_START); i++)
+        for(i = 0U; i < (instId - startInstId); i++)
         {
             *start += instFinalShare[i];
         }
