@@ -92,10 +92,20 @@ extern "C" {
 /* Enables the DSI to eDP bridge */
 #define BOARD_CTRL_CMD_ENABLE_DSI2DP_BRIDGE     (4U)
 
+#define BOARD_CTRL_CMD_ENABLE_DP_PWR            (5U)
+#define BOARD_CTRL_CMD_DISABLE_DP_PWR           (6U)
+
+/* Enabling mux for MCAN rx, tx lines */
+#define BOARD_CTRL_CMD_ENABLE_MCAN_MUX          (7U)
+
+/* Enable/Disable the LIN transceiver */
+#define BOARD_CTRL_CMD_LIN_ENABLE               (8U)
+#define BOARD_CTRL_CMD_LIN_DISABLE              (9U)
+
 #define BOARD_CTRL_CMD_IO_MUX_PORTB_MASK       (0xE0U)
 #define BOARD_CTRL_CMD_IO_MUX_PORTB1_ENABLE    (0xC0U)
 #define BOARD_CTRL_CMD_IO_MUX_PORTB2_ENABLE    (0xE0U)
-#define BOARD_CTRL_CMD_IO_MUX_PORTB3_ENABLE    (0x50U)
+#define BOARD_CTRL_CMD_IO_MUX_PORTB3_ENABLE    (0x20U)
 
 /**
  * \brief Structure to configure the board I2C parameters

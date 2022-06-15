@@ -89,7 +89,7 @@ static Board_STATUS Board_setIoExpPinOutput(Board_IoExpCfg_t *cfg)
  *
  */
 static Board_STATUS Board_setIOMux(uint8_t mask,
-                                    uint8_t value)
+                                   uint8_t value)
 {
     Board_I2cInitCfg_t i2cCfg;
     Board_STATUS status;
@@ -134,7 +134,7 @@ static Board_STATUS Board_setIOMux(uint8_t mask,
 }
 
 /**
- * \brief   Configures the mux on the board to route port A to Port B1
+ * \brief   Configures the IO mux on the board to route port A to Port B1
  *
  * \return  Board_SOK in case of success or appropriate error code.
  *
@@ -150,7 +150,7 @@ static Board_STATUS Board_setIOMUXPortB1(void)
 }
 
 /**
- * \brief   Configures the mux on SoM board to route port A to Port B2
+ * \brief   Configures the IO mux on board to route port A to Port B2
  *
  * \return  Board_SOK in case of success or appropriate error code.
  *
@@ -166,7 +166,7 @@ static Board_STATUS Board_setIOMUXPortB2(void)
 }
 
 /**
- * \brief   Configures the mux on SoM board to route port A to Port B3
+ * \brief   Configures the IO mux on board to route port A to Port B3
  *
  * \return  Board_SOK in case of success or appropriate error code.
  *
@@ -211,6 +211,119 @@ static Board_STATUS Board_enableDSI2EDPBridge(void)
 }
 
 /**
+ * \brief   Controls the DP port power
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_configureDPPPower(bool enable)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status;
+    i2cIoExpSignalLevel_t signalLevel;
+    
+    if(enable == TRUE)
+    {
+        signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+    }
+    else
+    {
+        signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+    }
+
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE4_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE4_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = PIN_NUM_0;
+    ioExpCfg.signalLevel = signalLevel;
+
+    status = Board_setIoExpPinOutput(&ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        return status;
+    }
+
+    ioExpCfg.pinNum = PIN_NUM_1;
+
+    status = Board_setIoExpPinOutput(&ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        return status;
+    }
+
+    return status;
+}
+
+/**
+ * \brief   Enables the IO Mux for MCAN ports
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_configureMCANMux()
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status;
+    
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_1;
+    ioExpCfg.pinNum      = PIN_NUM_4;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_setIoExpPinOutput(&ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        return status;
+    }
+
+    return status;
+}
+
+/**
+ * \brief   Enables/Disables LIN transcievers
+ *
+ * \param   enable  [IN] LIN transciever enable/disable control param
+ *
+ * \return  Board_SOK in case of success or appropriate error code.
+ *
+ */
+static Board_STATUS Board_linConfig(bool enable)
+{
+    Board_IoExpCfg_t ioExpCfg;
+    Board_STATUS status;
+    i2cIoExpSignalLevel_t signalLevel;
+    
+    if(enable == TRUE)
+    {
+        signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+    }
+    else
+    {
+        signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+    }
+    
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = PIN_NUM_6;
+    ioExpCfg.signalLevel = signalLevel;
+
+    status = Board_setIoExpPinOutput(&ioExpCfg);
+
+    return status;
+}
+
+/**
  * \brief Board control function
  *
  * \param   cmd  [IN]  Board control command
@@ -244,6 +357,26 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
 
         case BOARD_CTRL_CMD_ENABLE_DSI2DP_BRIDGE:
             status = Board_enableDSI2EDPBridge();
+            break;
+
+        case BOARD_CTRL_CMD_ENABLE_DP_PWR:
+            status = Board_configureDPPPower(TRUE);
+            break;
+
+        case BOARD_CTRL_CMD_DISABLE_DP_PWR:
+            status = Board_configureDPPPower(FALSE);
+            break;
+
+        case BOARD_CTRL_CMD_ENABLE_MCAN_MUX:
+            status = Board_configureMCANMux();
+            break;
+
+        case BOARD_CTRL_CMD_LIN_ENABLE:
+            status = Board_linConfig(TRUE);
+            break;
+
+        case BOARD_CTRL_CMD_LIN_DISABLE:
+            status = Board_linConfig(FALSE);
             break;
 
         default:
