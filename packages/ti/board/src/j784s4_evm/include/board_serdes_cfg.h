@@ -45,11 +45,32 @@
 #define _BOARD_SERDES_CFG_H_
 
 #include <stdio.h>
+
+#include <ti/csl/soc.h>
+#include <ti/csl/hw_types.h>
+#include <ti/csl/cslr.h>
+#include <ti/csl/csl_serdes.h>
+#include <ti/csl/csl_serdes_ethernet.h>
+
 #include <ti/board/board.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#define BOARD_SERDES_SGMII_INSTANCE       (CSL_TORRENT_SERDES2)
+
+#define BOARD_SERDES_SGMII_ENET1_LANE_NUM       (2U)
+#define BOARD_SERDES_SGMII_ENET1_LANE_COUNT     (1U)
+#define BOARD_SERDES_SGMII_ENET1_LANE_MASK      (1 << BOARD_SERDES_SGMII_ENET1_LANE_NUM)
+
+#define BOARD_SERDES_SGMII_ENET2_LANE_NUM       (3U)
+#define BOARD_SERDES_SGMII_ENET2_LANE_COUNT     (1U)
+#define BOARD_SERDES_SGMII_ENET2_LANE_MASK      (1 << BOARD_SERDES_SGMII_ENET2_LANE_NUM)
+
+#define BOARD_SERDES_LANE_SELECT_CPSW           (0U)
+
+extern CSL_SerdesStatus CSL_serdesConfigStatus (uint32_t baseAddr);
 
 /**
  *  \brief serdes configurations for Sierra 1 in SGMII mode

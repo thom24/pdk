@@ -41,6 +41,206 @@
 
 #include "board_serdes_cfg.h"
 
+static Board_STATUS Board_CfgSgmii(void)
+{
+    CSL_SerdesResult result;
+    CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
+    CSL_SerdesLaneEnableParams serdesLaneEnableParams  = {0};
+
+    memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
+
+    /* SGMII Config */
+    serdesLaneEnableParams.serdesInstance    = (CSL_SerdesInstance)BOARD_SERDES_SGMII_INSTANCE;
+    serdesLaneEnableParams.baseAddr          = CSL_WIZ16B8M4CT3_2_WIZ16B8M4CT3_BASE;
+    serdesLaneEnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
+    serdesLaneEnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT0;
+    serdesLaneEnableParams.linkRate          = CSL_SERDES_LINK_RATE_1p25G;
+    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET1_LANE_COUNT;
+    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    serdesLaneEnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
+    serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_SGMII;
+    serdesLaneEnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
+    serdesLaneEnableParams.phyInstanceNum    = BOARD_SERDES_LANE_SELECT_CPSW;
+    serdesLaneEnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN3;
+
+    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
+    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
+
+    CSL_serdesPorReset(serdesLaneEnableParams.baseAddr);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       serdesLaneEnableParams.phyType,
+                       serdesLaneEnableParams.phyInstanceNum,
+                       serdesLaneEnableParams.serdesInstance,
+                       BOARD_SERDES_SGMII_ENET1_LANE_NUM);
+
+
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 serdesLaneEnableParams.baseAddr,
+                                 serdesLaneEnableParams.refClock,
+                                 serdesLaneEnableParams.refClkSrc,
+                                 serdesLaneEnableParams.serdesInstance,
+                                 serdesLaneEnableParams.phyType);
+
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+    /* Assert PHY reset and disable all lanes */
+    CSL_serdesDisablePllAndLanes(serdesLaneEnableParams.baseAddr,
+                                 serdesLaneEnableParams.numLanes,
+                                 serdesLaneEnableParams.laneMask);
+
+    /* Load the Serdes Config File */
+    result = CSL_serdesEthernetInit(&serdesLaneEnableParams);
+    /* Return error if input params are invalid */
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Common Lane Enable API for lane enable, pll enable etc */
+    laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
+    if (laneRetVal != 0)
+    {
+        return BOARD_FAIL;
+    }
+
+    return BOARD_SOK;
+}
+
+static Board_STATUS Board_CfgQsgmii(void)
+{
+    CSL_SerdesResult result;
+    CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
+    CSL_SerdesLaneEnableParams serdesLaneEnableParams  = {0};
+
+    memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
+
+    /* QSGMII Config */
+    serdesLaneEnableParams.serdesInstance    = (CSL_SerdesInstance)BOARD_SERDES_SGMII_INSTANCE;
+    serdesLaneEnableParams.baseAddr          = CSL_WIZ16B8M4CT3_2_WIZ16B8M4CT3_BASE;
+    serdesLaneEnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
+    serdesLaneEnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT0;
+    serdesLaneEnableParams.linkRate          = CSL_SERDES_LINK_RATE_5G;
+    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET1_LANE_COUNT;
+    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    serdesLaneEnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
+    serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_QSGMII;
+    serdesLaneEnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
+    serdesLaneEnableParams.phyInstanceNum    = BOARD_SERDES_LANE_SELECT_CPSW;
+    serdesLaneEnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
+
+    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
+    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
+
+    CSL_serdesPorReset(serdesLaneEnableParams.baseAddr);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       serdesLaneEnableParams.phyType,
+                       serdesLaneEnableParams.phyInstanceNum,
+                       serdesLaneEnableParams.serdesInstance,
+                       BOARD_SERDES_SGMII_ENET1_LANE_NUM);
+
+
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 serdesLaneEnableParams.baseAddr,
+                                 serdesLaneEnableParams.refClock,
+                                 serdesLaneEnableParams.refClkSrc,
+                                 serdesLaneEnableParams.serdesInstance,
+                                 serdesLaneEnableParams.phyType);
+
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Load the Serdes Config File */
+    result = CSL_serdesEthernetInit(&serdesLaneEnableParams);
+    /* Return error if input params are invalid */
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Common Lane Enable API for lane enable, pll enable etc */
+    laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
+    if (laneRetVal != 0)
+    {
+        return BOARD_FAIL;
+    }
+
+    return BOARD_SOK;
+}
+
+static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
+{
+    CSL_SerdesResult result;
+    CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
+    CSL_SerdesLaneEnableParams serdesLaneEnableParams;
+
+    memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
+
+    /* Serdes-2: Lane 1 (MAC Port 1) */
+    serdesLaneEnableParams.serdesInstance    = (CSL_SerdesInstance)BOARD_SERDES_SGMII_INSTANCE;
+    serdesLaneEnableParams.baseAddr          = CSL_WIZ16B8M4CT3_2_WIZ16B8M4CT3_BASE;
+    serdesLaneEnableParams.refClock          = CSL_SERDES_REF_CLOCK_156p25M;
+    serdesLaneEnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT0;
+    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET1_LANE_COUNT;
+    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    serdesLaneEnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
+    serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_XAUI;
+    serdesLaneEnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
+    serdesLaneEnableParams.phyInstanceNum    = BOARD_SERDES_LANE_SELECT_CPSW;
+
+    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
+    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
+
+    serdesLaneEnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
+    serdesLaneEnableParams.linkRate          = CSL_SERDES_LINK_RATE_5p15625G;
+    /* End: Serdes-2: Lane 1 (MAC Port 1) */
+
+    CSL_serdesPorReset(serdesLaneEnableParams.baseAddr);
+
+    /* Select the IP type, IP instance num, Serdes Lane Number */
+    CSL_serdesIPSelect(CSL_CTRL_MMR0_CFG0_BASE,
+                       serdesLaneEnableParams.phyType,
+                       serdesLaneEnableParams.phyInstanceNum,
+                       serdesLaneEnableParams.serdesInstance,
+                       BOARD_SERDES_SGMII_ENET1_LANE_NUM);
+
+    result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
+                                 serdesLaneEnableParams.baseAddr,
+                                 serdesLaneEnableParams.refClock,
+                                 serdesLaneEnableParams.refClkSrc,
+                                 serdesLaneEnableParams.serdesInstance,
+                                 serdesLaneEnableParams.phyType);
+
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Load the Serdes Config File */
+    result = CSL_serdesEthernetInit(&serdesLaneEnableParams);
+    /* Return error if input params are invalid */
+    if (result != CSL_SERDES_NO_ERR)
+    {
+        return BOARD_FAIL;
+    }
+
+    /* Common Lane Enable API for lane enable, pll enable etc */
+    laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
+    if (laneRetVal != 0)
+    {
+        return BOARD_FAIL;
+    }
+
+    return BOARD_SOK;
+}
+
 /**
  *  \brief serdes configurations for Sierra 1 in SGMII mode
  *
@@ -51,6 +251,15 @@
  */
 Board_STATUS Board_serdesCfgSgmii(void)
 {
+    Board_STATUS ret;
+
+    /* SGMII SERDES initializations */
+    ret = Board_CfgSgmii();
+    if(ret != BOARD_SOK)
+    {
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -64,6 +273,15 @@ Board_STATUS Board_serdesCfgSgmii(void)
  */
 Board_STATUS Board_serdesCfgQsgmii(void)
 {
+    Board_STATUS ret;
+
+    /* QSGMII SERDES initializations */
+    ret = Board_CfgQsgmii();
+    if(ret != BOARD_SOK)
+    {
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -77,6 +295,15 @@ Board_STATUS Board_serdesCfgQsgmii(void)
  */
 Board_STATUS Board_serdesCfgUsxgmii(void)
 {
+    Board_STATUS ret;
+
+    /* USXGMII SERDES initializations */
+    ret = Board_serdesCfgEthernetUsxgmii();
+    if(ret != BOARD_SOK)
+    {
+        return ret;
+    }
+
     return BOARD_SOK;
 }
 
@@ -90,5 +317,14 @@ Board_STATUS Board_serdesCfgUsxgmii(void)
  */
 int32_t Board_serdesCfgStatus(void)
 {
-    return FALSE;
+    CSL_SerdesStatus serdesStatus;
+    int32_t ret = FALSE;
+
+    serdesStatus = CSL_serdesConfigStatus(CSL_WIZ16B8M4CT3_2_WIZ16B8M4CT3_BASE);
+    if (serdesStatus == CSL_SERDES_STATUS_PLL_LOCKED)
+    {
+        ret = TRUE;
+    }
+
+    return ret;
 }
