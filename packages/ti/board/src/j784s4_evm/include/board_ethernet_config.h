@@ -49,13 +49,15 @@
 extern "C" {
 #endif
 
-#define RGMII_ID_DISABLE_MASK           (0x10)
+#define BOARD_RGMII_ID_DISABLE_MASK           (0x10U)
+#define BOARD_CPSW9G_QGMII_PORTNUM            (0U)
+#define BOARD_RGMII_ID_DISABLE_MASK           (0x10U)
 
-typedef struct Board_pruicssMdioInfo
+typedef struct Board_mdioInfo_t
 {
-    uint32_t mdioBaseAddrs;
-    uint8_t  phyAddrs;
-}Board_pruicssMdioInfo;
+    uint32_t mdioBaseAddr;
+    uint8_t  phyAddr;
+}Board_mdioInfo;
 
 /**
  * \enum emac_mode
@@ -64,13 +66,14 @@ typedef struct Board_pruicssMdioInfo
  */
 typedef enum
 {
-    GMII = 0,
-    RMII,
-    RGMII,
-    SGMII,
-    QSGMII,
-    XFI,
-    QSGMII_SUB
+    GMII       = 0,
+    RMII       = 1,
+    RGMII      = 2,
+    SGMII      = 3,
+    QSGMII     = 4,
+    USXGMII    = 5,
+    XFI        = USXGMII,
+    QSGMII_SUB = 6
 }emac_mode;
 
 /**
@@ -114,26 +117,21 @@ Board_STATUS Board_ethConfigCpsw2gMain(void);
 /**
  * \brief  Configures the CPSW2G Subsytem for RGMII mode
  *
- * \param  portNum [IN]    EMAC port number
  * \param  mode    [IN]    Mode selection for the specified port number
- *                         00 - GMII
- *                         01 - RMII
- *                         10 - RGMII
- *                         11 - SGMII
+ *                         001 - RMII
+ *                         010 - RGMII
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
 Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode);
 
 /**
- * \brief  Configures the CPSW2G Main Subsytem for RGMII and RMII mode
+ * \brief  Configures the CPSW9G Subsytem for RGMII and RMII mode
  *
+ * \param  portNum [IN]    EMAC port number
  * \param  mode    [IN]    Mode selection for the specified port number
- *                         000 - GMII
  *                         001 - RMII
  *                         010 - RGMII
- *                         011 - SGMII
- *                         100 - QSGMII
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */

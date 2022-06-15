@@ -165,8 +165,8 @@ extern "C" {
 #define BOARD_USER_LED2                                 (7U)
 #define BOARD_USER_LED_IOEXP_PORT                       (2U)
 
-#define BOARD_CPSW9G_EMAC_PORT_MAX                      (8U)
-#define BOARD_CPSW9G_PORT_MAX                           (8U)
+#define BOARD_CPSW9G_EMAC_PORT_MAX                      (4U)
+#define BOARD_CPSW9G_PORT_MAX                           (4U)
 
 /* MCU EMAC PHY MDIO address */
 #define BOARD_MCU_EMAC_PHY_ADDR                         (0U)
