@@ -207,8 +207,11 @@ export GPIO_Baremetal_LedBlink_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=bare
 GPIO_Baremetal_LedBlink_TestApp_PKG_LIST = GPIO_Baremetal_LedBlink_TestApp
 GPIO_Baremetal_LedBlink_TestApp_INCLUDE = $(GPIO_Baremetal_LedBlink_TestApp_PATH)
 export GPIO_Baremetal_LedBlink_TestApp_BOARDLIST = $(drvgpio_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x))
+ifeq ($(SOC),$(filter $(SOC), j721e am64x))
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELISTARM)
+else ifeq ($(SOC),$(filter $(SOC), j7200))
+# J7200:- There are no IR path from WKUP_GPIO to mcu2_0/mcu2_1.
+export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(filter $(drvgpio_$(SOC)_CORELISTARM), mpu1_0 mcu1_0 mcu1_1)
 else ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
 # J721S2:- There is not IR path from WKUP_GPIO to mcu3_0/mcu3_1 (no WKUP_GPIO IR allocations)
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
