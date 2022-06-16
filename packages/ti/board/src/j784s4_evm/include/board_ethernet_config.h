@@ -50,7 +50,7 @@ extern "C" {
 #endif
 
 #define BOARD_RGMII_ID_DISABLE_MASK           (0x10U)
-#define BOARD_CPSW9G_QGMII_PORTNUM            (0U)
+#define BOARD_CPSW9G_ENET1_QGMII_PORTNUM      (0U)
 #define BOARD_RGMII_ID_DISABLE_MASK           (0x10U)
 
 typedef struct Board_mdioInfo_t

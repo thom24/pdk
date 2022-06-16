@@ -529,7 +529,15 @@ Board_STATUS Board_ethConfigCpsw9g(void)
     /* Configure the CPSW9G QSGMII ports */
     for(portNum = 0; portNum < BOARD_CPSW9G_PORT_MAX; portNum++)
     {
-        if (BOARD_CPSW9G_QGMII_PORTNUM == portNum)
+        if ( 1U == portNum ||
+             5U == portNum ||
+             6U == portNum ||
+             7U == portNum )
+        {
+            /* These ports are ununsed by default board configuration */
+            continue;
+        }
+        else if (BOARD_CPSW9G_ENET1_QGMII_PORTNUM == portNum)
         {
             status = Board_cpsw9gMacModeConfig(portNum, QSGMII);
         }
