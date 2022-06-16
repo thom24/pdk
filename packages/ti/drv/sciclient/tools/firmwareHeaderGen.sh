@@ -108,9 +108,9 @@ if [[ $FW_SOC == *"vlab"* ]]; then
   BIN_EXT=-vlab
 fi
 if [[ $FW_SOC == *"zebu"* ]]; then
-  FW_SOC=${FW_SOC%-zebu}
-  FW_SOC_TYPE=-gp-zebu
-  BIN_EXT=-zebu
+  FW_SOC=${FW_SOC%-zebu-combined}
+  FW_SOC_TYPE=-gp-zebu-combined
+  BIN_EXT=-zebu-combined
 fi
 
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries

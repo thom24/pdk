@@ -509,7 +509,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
     #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
     #elif defined (SOC_J784S4)
-        if(TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0 == req->dst_id)
+        if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
     #endif
         {
 #if defined (SOC_J721S2) || defined (SOC_J784S4)
@@ -821,7 +821,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
     #if defined (SOC_J721E) || (SOC_J721S2)
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
     #elif defined (SOC_J784S4)
-        if(TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0 == req->dst_id)
+        if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
     #endif
         {
 #if defined (SOC_J721S2) || defined (SOC_J784S4)

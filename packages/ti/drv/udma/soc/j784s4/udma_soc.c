@@ -825,7 +825,7 @@ uint16_t Udma_getCoreSciDevId(void)
     uint16_t coreSciDevId;
 
 #if defined (BUILD_MPU1_0)
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
 #endif
 #if defined (BUILD_MCU2_0)
     coreSciDevId = TISCI_DEV_R5FSS0_CORE0;
@@ -847,16 +847,16 @@ uint16_t Udma_getCoreSciDevId(void)
 #endif
 /* On J784S4 all the c7x cores interrupts are handled by clec */
 #if defined (BUILD_C7X_1)
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
 #endif
 #if defined (BUILD_C7X_2)
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
 #endif
 #if defined (BUILD_C7X_3)
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
 #endif
 #if defined (BUILD_C7X_4)
-    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
+    coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
 #endif
 #if defined (BUILD_MCU1_0)
     coreSciDevId = TISCI_DEV_MCU_R5FSS0_CORE0;

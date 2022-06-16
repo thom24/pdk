@@ -627,7 +627,7 @@ static uint16_t GPIO_socGetCoreSciId()
     uint16_t devId = 0U;
 
 #if defined (BUILD_MPU)
-    devId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0;
+    devId = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
 #elif defined (BUILD_MCU)
     CSL_ArmR5CPUInfo info;
 
@@ -661,7 +661,7 @@ static uint16_t GPIO_socGetCoreSciId()
                                         TISCI_DEV_R5FSS2_CORE1;
     }
 #elif defined (BUILD_C7X)
-    devId = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0;
+    devId = TISCI_DEV_COMPUTE_CLUSTER0_CLEC;
 #endif
     
     return devId;

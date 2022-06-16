@@ -274,16 +274,20 @@ if [ "$SKIP_COMMIT" != "YES" ]; then
     git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721e*
     git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j7200*
     git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721s2*
+    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j784s4*
     git add $SCI_CLIENT_DIR/soc/sysfw/include/j721e
     git add $SCI_CLIENT_DIR/soc/sysfw/include/j7200
     git add $SCI_CLIENT_DIR/soc/sysfw/include/j721s2
+    git add $SCI_CLIENT_DIR/soc/sysfw/include/j784s4
     git add $SCI_CLIENT_DIR/soc/sysfw/include/tisci
     git add $SCI_CLIENT_DIR/soc/V1
     git add $SCI_CLIENT_DIR/soc/V2
     git add $SCI_CLIENT_DIR/soc/V4
+    git add $SCI_CLIENT_DIR/soc/V6
     git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e
     git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200
     git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2
+    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4
     git commit -m "Migrating to SYSFW version $RELEASE_TAG"
 fi
 

@@ -1440,13 +1440,13 @@ const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_12_19_to_MCU_NAVSS0_UDM
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_960_975 = {
 	.lbase = 16,
 	.len = 16,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 960,
 };
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_960_975 = {
 	.lbase = 16,
 	.len = 16,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 960,
 };
 const struct Sciclient_rmIrqIf WKUP_GPIOMUX_INTRTR0_outp_16_31_to_R5FSS0_CORE0_intr_488_503 = {
@@ -1691,13 +1691,13 @@ const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_0_15_to_R5FSS1_CORE1_intr_39
 const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_392_447 = {
 	.lbase = 8,
 	.len = 56,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 392,
 };
 const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_8_63_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_392_447 = {
 	.lbase = 8,
 	.len = 56,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 392,
 };
 const struct Sciclient_rmIrqIf GPIOMUX_INTRTR0_outp_16_31_to_NAVSS0_UDMASS_INTA_0_intaggr_levi_pend_116_131 = {
@@ -1733,13 +1733,13 @@ static const struct Sciclient_rmIrqNode tisci_irq_GPIOMUX_INTRTR0 = {
 const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_544_547 = {
 	.lbase = 0,
 	.len = 4,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 544,
 };
 const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_0_3_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_544_547 = {
 	.lbase = 0,
 	.len = 4,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 544,
 };
 const struct Sciclient_rmIrqIf CMPEVENT_INTRTR0_outp_4_7_to_MAIN2MCU_PLS_INTRTR0_in_96_99 = {
@@ -2773,37 +2773,37 @@ static const struct Sciclient_rmIrqNode tisci_irq_NAVSS0_CPTS_0 = {
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_64_127 = {
 	.lbase = 0,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 64,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_448_511 = {
 	.lbase = 64,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 448,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_672_735 = {
 	.lbase = 128,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 672,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_0_63_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_64_127 = {
 	.lbase = 0,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 64,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_64_127_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_448_511 = {
 	.lbase = 64,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 448,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_128_191_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_672_735 = {
 	.lbase = 128,
 	.len = 64,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 672,
 };
 const struct Sciclient_rmIrqIf NAVSS0_INTR_0_outl_intr_192_223_to_R5FSS0_CORE0_intr_224_255 = {
@@ -3755,13 +3755,13 @@ static const struct Sciclient_rmIrqNode tisci_irq_SA2_UL0 = {
 const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER_J7AHP0_CLEC_0_soc_events_in_896_903 = {
 	.lbase = 0,
 	.len = 8,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_CLEC_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_CLEC,
 	.rbase = 896,
 };
 const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0_spi_896_903 = {
 	.lbase = 0,
 	.len = 8,
-	.rid = TISCI_DEV_COMPUTE_CLUSTER_J7AHP0_GIC500SS_0,
+	.rid = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
 	.rbase = 896,
 };
 const struct Sciclient_rmIrqIf MCU_SA3_SS0_INTAGGR_0_intaggr_vintr_0_7_to_MCU_R5FSS0_CORE0_intr_88_95 = {
