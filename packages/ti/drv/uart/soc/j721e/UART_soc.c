@@ -4,7 +4,7 @@
  * @brief  This file defines the UART interface structure specific to J721E
  */
 /*
- * Copyright (c) 2017 - 2019, Texas Instruments Incorporated
+ * Copyright (c) 2017 - 2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -76,7 +76,9 @@
 static uint16_t UART_socGetSciSrcID(uint32_t baseAddr);
 #endif
 static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath);
-
+#if defined (BUILD_MCU)
+static int32_t UART_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *irq_range_start, uint16_t *irq_range_num);
+#endif
 /* UART configuration structure */
 UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
 {
@@ -352,7 +354,7 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_socConfigIntrPath,
         FALSE,
-        UART_MDR3_DIR_POL_0,
+           UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -690,9 +692,9 @@ void UART_socInit(void)
             {
                 /*
                  * Main domain's UART3-9 are routed by default through the MAIN_PULSARx
-                 * Int Routers for connection to the R5 VIMs
+                 * Int Routers for connection to the R5 VIMs.
+                 * Populate the intNum after making queries to the board config.
                  */
-                uartInitCfg[i].intNum = CSLR_R5FSS0_INTROUTER0_IN_UART3_USART_IRQ_0 + i - 3U;
             }
             uartInitCfg[i].frequency        = UART_INPUT_CLK_48M;
             uartInitCfg[i].rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
@@ -702,7 +704,7 @@ void UART_socInit(void)
 }
 #endif
 
-#if defined (BUILD_C66X)
+#if defined (BUILD_C66X) || defined (BUILD_MCU)
 static uint16_t UART_socGetSciSrcID(uint32_t baseAddr)
 {
     uint16_t srcID = UART_TISCI_INVALID_DEV_ID;
@@ -758,14 +760,44 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
 {
    int32_t ret = UART_SUCCESS;
 
-#if defined (BUILD_C66X)
+#if defined (BUILD_C66X) || defined (BUILD_MCU)
     int32_t                              retVal;
-    UART_HwAttrs const                  *hwAttrs = (UART_HwAttrs const *)(pHwAttrs);
+    UART_HwAttrs                         *hwAttrs = (UART_HwAttrs *)(pHwAttrs);
     struct tisci_msg_rm_irq_set_req      rmIrqReq;
     struct tisci_msg_rm_irq_set_resp     rmIrqResp;
     struct tisci_msg_rm_irq_release_req  rmIrqRelease;
-    uint16_t                             dst_id;
+    uint16_t ir_id = 0U, dst_id, irq_range_start, irq_range_num;
 
+    if (setIntrPath)
+    {
+        (void)memset (&rmIrqReq, 0, sizeof(rmIrqReq));
+        /* Set the valid params flags. */
+        rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
+        rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+        /* Set the source index. */
+        rmIrqReq.src_index = 0;
+        /* Get the Source ID. */
+        rmIrqReq.src_id = UART_socGetSciSrcID(hwAttrs->baseAddr);
+        /* Get the secondary host ID. */
+        rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+    }
+    else
+    {
+        (void)memset (&rmIrqRelease,0,sizeof(rmIrqRelease));
+        /* Set the valid params flags. */
+        rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
+        rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+        /* Set the source index. */
+        rmIrqRelease.src_index = 0;
+        /* Get the Source ID. */
+        rmIrqRelease.src_id = UART_socGetSciSrcID(hwAttrs->baseAddr);
+        /* Get the secondary host ID. */
+        rmIrqRelease.secondary_host  = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    }
+
+    /* Get the destination ID. */
+#if defined (BUILD_C66X)
     if (CSL_chipReadDNUM() == 0U)
     {
        dst_id = TISCI_DEV_C66SS0_CORE0;
@@ -774,56 +806,107 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     {
        dst_id = TISCI_DEV_C66SS1_CORE0;
     }
+#elif defined (BUILD_MCU)
+    CSL_ArmR5CPUInfo info;
 
-    /* Set up C66x interrupt router for UART */
-    if(setIntrPath)
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
     {
-        (void)memset (&rmIrqReq, 0, sizeof(rmIrqReq));
-        rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-        rmIrqReq.src_id = UART_socGetSciSrcID(hwAttrs->baseAddr);
-        rmIrqReq.src_index = 0; /* set to 0 for non-event based interrupt */
+        /* MAIN SS Pulsar R5 SS0 */
+        dst_id = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    TISCI_DEV_R5FSS0_CORE0:
+                                        TISCI_DEV_R5FSS0_CORE1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
+    {
+        /* MAIN SS Pulsar R5 SS1 */
+        dst_id = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    TISCI_DEV_R5FSS1_CORE0:
+                                        TISCI_DEV_R5FSS1_CORE1;
+    }
 
-        /* Set the destination interrupt */
-        rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-        rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-        /* Set the destination based on the core */
-        rmIrqReq.dst_id       = dst_id;
-        rmIrqReq.dst_host_irq = (uint16_t)hwAttrs->eventId; /* DMSC dest event, input to C66x INTC  */
+    if(TISCI_DEV_UART0 == rmIrqReq.src_id || TISCI_DEV_UART1 == rmIrqReq.src_id || TISCI_DEV_UART2 == rmIrqReq.src_id)
+    {
+        if (setIntrPath)
+        {
+            rmIrqReq.src_id = UART_TISCI_INVALID_DEV_ID;
+        }
+        else
+        {
+            rmIrqRelease.src_id = UART_TISCI_INVALID_DEV_ID;
+        }
     }
     else
     {
-        (void)memset (&rmIrqRelease,0,sizeof(rmIrqRelease));
-        rmIrqRelease.secondary_host  = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-        rmIrqRelease.src_id = UART_socGetSciSrcID(hwAttrs->baseAddr);
-        rmIrqRelease.src_index = 0; /* set to 0 for non-event based interrupt */
-
-        /* Set the destination interrupt */
-        rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-        rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
+        /* Get the Interrupt Router ID for UART instance 3 to 9. */
+        switch (dst_id)
+        {
+            case TISCI_DEV_R5FSS0_CORE0:
+            case TISCI_DEV_R5FSS0_CORE1:
+                ir_id = TISCI_DEV_R5FSS0_INTROUTER0;
+                break;
+            case TISCI_DEV_R5FSS1_CORE0:
+            case TISCI_DEV_R5FSS1_CORE1:
+                ir_id = TISCI_DEV_R5FSS1_INTROUTER0;
+                break;
+            default:
+                ret = UART_ERROR;
+                ir_id = 0;
+                break;
+        }
+        if (ret == UART_SUCCESS)
+        {
+            ret = UART_socGetIrqRange(ir_id, dst_id, &irq_range_start, &irq_range_num);
+        }
+    }
+#endif
+    /* Set up C66x interrupt router for UART */
+    if(setIntrPath)
+    {
+        /* Set the destination based on the core */
+        rmIrqReq.dst_id       = dst_id;
+#if defined (BUILD_MCU)
+        rmIrqReq.dst_host_irq = irq_range_start;
+#else
+        rmIrqReq.dst_host_irq = (uint16_t)hwAttrs->eventId; /* DMSC dest event, input to C66x INTC  */
+#endif
+    }
+    else
+    {
         /* Set the destination based on the core */
         rmIrqRelease.dst_id       = dst_id;
+#if defined (BUILD_MCU)
+        rmIrqRelease.dst_host_irq = irq_range_start;
+#else
         rmIrqRelease.dst_host_irq = (uint16_t)hwAttrs->eventId;
+#endif
     }
 
     /* Config event */
     if(setIntrPath)
     {
-        retVal = Sciclient_rmIrqSet(
+        if(ret == UART_SUCCESS && rmIrqReq.src_id != UART_TISCI_INVALID_DEV_ID)
+        {
+            retVal = Sciclient_rmIrqSet(
                     (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq,
                     &rmIrqResp,
                     SCICLIENT_SERVICE_WAIT_FOREVER);
-     }
+#if defined (BUILD_MCU)
+            if(retVal == CSL_PASS)
+            {
+                hwAttrs->intNum = rmIrqReq.dst_host_irq;
+            }
+#endif            
+        }
+    }
     else
     {
-        retVal = Sciclient_rmIrqRelease(
+        if(ret == UART_SUCCESS && rmIrqRelease.src_id != UART_TISCI_INVALID_DEV_ID)
+        {
+            retVal = Sciclient_rmIrqRelease(
                     (const struct tisci_msg_rm_irq_release_req *)&rmIrqRelease,
                      SCICLIENT_SERVICE_WAIT_FOREVER);
-    }
-    if((int32_t)0U != retVal)
-    {
-       ret = UART_ERROR;
+        }
     }
 #elif defined (BUILD_C7X)
     int32_t               retVal;
@@ -848,5 +931,67 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     setIntrPath = setIntrPath;
 #endif
 
+    if (retVal == CSL_PASS)
+    {
+        ret = UART_SUCCESS;
+    }
+    else
+    {
+        ret = UART_ERROR;
+    }
+
     return(ret);
 }
+
+#if defined (BUILD_MCU)
+static int32_t UART_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *irq_range_start, uint16_t *irq_range_num)
+{
+    int32_t         retVal = CSL_PASS;
+    /* Get interrupt number range */
+    uint16_t        irIntrIdx;
+    struct tisci_msg_rm_get_resource_range_resp res = {0};
+    struct tisci_msg_rm_get_resource_range_req  req = {0};
+
+    req.type           = ir_id;
+    req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+    req.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    res.range_num = 0;
+    res.range_start = 0;
+    retVal =  Sciclient_rmGetResourceRange(
+                &req,
+                &res,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (CSL_PASS != retVal || res.range_num == 0) {
+        /* Try with HOST_ID_ALL */
+        req.type           = ir_id;
+        req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+        req.secondary_host = TISCI_HOST_ID_ALL;
+
+        retVal = Sciclient_rmGetResourceRange(
+                &req,
+                &res,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    if ((CSL_PASS == retVal) && (res.range_num != 0))
+    {
+        *irq_range_num = res.range_num;
+        /* Translate IR Idx to Core Interrupt Idx */
+        irIntrIdx = res.range_start;
+        retVal = Sciclient_rmIrqTranslateIrOutput(ir_id,
+                                                  irIntrIdx,
+                                                  dst_id,
+                                                  irq_range_start);
+                    
+    }
+    if (retVal == CSL_PASS)
+    {
+        retVal = UART_SUCCESS;
+    }
+    else
+    {
+        retVal = UART_ERROR;
+    }
+    return retVal;
+}
+#endif
