@@ -68,7 +68,7 @@ extern "C" {
 #define BOARD_SERDES_SGMII_ENET2_LANE_COUNT     (1U)
 #define BOARD_SERDES_SGMII_ENET2_LANE_MASK      (1 << BOARD_SERDES_SGMII_ENET2_LANE_NUM)
 
-#define BOARD_SERDES_LANE_SELECT_CPSW           (0U)
+#define BOARD_SERDES_LANE_SELECT_CPSW           (1U)
 
 extern CSL_SerdesStatus CSL_serdesConfigStatus (uint32_t baseAddr);
 

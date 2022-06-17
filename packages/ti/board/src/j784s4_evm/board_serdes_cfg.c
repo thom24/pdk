@@ -183,24 +183,24 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
 
     memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
 
-    /* Serdes-2: Lane 1 (MAC Port 1) */
+    /* Serdes-2: Lane 3 (MAC Port 8) */
     serdesLaneEnableParams.serdesInstance    = (CSL_SerdesInstance)BOARD_SERDES_SGMII_INSTANCE;
     serdesLaneEnableParams.baseAddr          = CSL_WIZ16B8M4CT3_2_WIZ16B8M4CT3_BASE;
     serdesLaneEnableParams.refClock          = CSL_SERDES_REF_CLOCK_156p25M;
     serdesLaneEnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT0;
-    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET1_LANE_COUNT;
-    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET2_LANE_COUNT;
+    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET2_LANE_MASK;
     serdesLaneEnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
-    serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_XAUI;
+    serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_USXGMII;
     serdesLaneEnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
     serdesLaneEnableParams.phyInstanceNum    = BOARD_SERDES_LANE_SELECT_CPSW;
 
-    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
-    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
+    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET2_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
+    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET2_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
 
     serdesLaneEnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
     serdesLaneEnableParams.linkRate          = CSL_SERDES_LINK_RATE_5p15625G;
-    /* End: Serdes-2: Lane 1 (MAC Port 1) */
+    /* End: Serdes-2: Lane 3 (MAC Port 8) */
 
     CSL_serdesPorReset(serdesLaneEnableParams.baseAddr);
 
@@ -209,7 +209,7 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
                        serdesLaneEnableParams.phyType,
                        serdesLaneEnableParams.phyInstanceNum,
                        serdesLaneEnableParams.serdesInstance,
-                       BOARD_SERDES_SGMII_ENET1_LANE_NUM);
+                       BOARD_SERDES_SGMII_ENET2_LANE_NUM);
 
     result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
                                  serdesLaneEnableParams.baseAddr,
