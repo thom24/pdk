@@ -44,6 +44,8 @@ export CAT=cat
 
 ################################################################################
 # Parse CLI arguments
+RELEASE_TAG=$1
+SOC_LIST=$2
 for i in "$@"; do
 case $i in
     -sr|--skip-reset) # Skips the PDK reset and rebase step
@@ -70,20 +72,17 @@ case $i in
         $ECHO "!!!WARNING!!! - IGNORING INVALID FLAG: $1"
         shift
         ;;
-    *)  # Any positional arg will overwrite previous positional arg
-        if [ "$RELEASE_TAG" != "" ]; then
-            $ECHO "!!!WARNING!!! - OVERWRITING \$RELEASE_TAG: $RELEASE_TAG->$1"
-        fi
-        RELEASE_TAG="$1"
-        shift
-        ;;
 esac
 done
 
 # Check CLI positional args (must always include a SYSFW release tag)
 if [ "$RELEASE_TAG" == "" ]; then
-    $ECHO "Usage : sysfw_migrate.sh <release tag> [OPTIONS]"
+    $ECHO "Usage : sysfw_migrate.sh <release tag> <soc_list>(optional) [OPTIONS]"
     exit 1
+fi
+
+if [ "$SOC_LIST" == "" ]; then
+    SOC_LIST="j721e j7200 j721s2 j784s4"
 fi
 
 ################################################################################
@@ -171,72 +170,27 @@ fi
 if [ "$SKIP_BUILD" != "YES" ]; then
     cd $ROOTDIR/ti/build
 
-    # J721e
-    make -j -s allclean
-    make -j -s sciclient_boardcfg BOARD=j721e_evm
-    make -j -s sciclient_boardcfg BOARD=j721e_evm BUILD_HS=yes
-    make -j -s sciclient_ccs_init_clean BOARD=j721e_evm
-    make -j -s sciclient_ccs_init BOARD=j721e_evm
-    make -j -s sciserver_testapp_freertos_clean BOARD=j721e_evm
-    make -j -s sciserver_testapp_freertos BOARD=j721e_evm
-    make -j -s sciserver_testapp_safertos_clean BOARD=j721e_evm
-    make -j -s sciserver_testapp_safertos BOARD=j721e_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721e/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721e/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721e/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/j721e/sciserver_testapp_safertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/j721e/sciserver_testapp_safertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e/
-
-    # AM65xx
-    # make -j -s allclean
-    # make -j -s sciclient_boardcfg BOARD=am65xx_evm
-    # make -j -s sciclient_boardcfg BOARD=am65xx_evm BUILD_HS=yes
-    # make -j -s sciclient_ccs_init_clean BOARD=am65xx_evm
-    # make -j -s sciclient_ccs_init BOARD=am65xx_evm
-    # $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am65xx/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am65xx/
-
-    # AM64xx
-    # make -j -s allclean
-    # make -j -s sciclient_boardcfg BOARD=am64x_evm
-    # make -j -s sciclient_boardcfg BOARD=am64x_evm BUILD_HS=yes
-    # make -j -s sciclient_ccs_init_clean BOARD=am64x_evm
-    # make -j -s sciclient_ccs_init BOARD=am64x_evm
-    # $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/am64x/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/am64x/
-
-    # J7200
-    make -j -s allclean
-    make -j -s sciclient_boardcfg BOARD=j7200_evm
-    make -j -s sciclient_boardcfg BOARD=j7200_evm BUILD_HS=yes
-    make -j -s sciclient_ccs_init_clean BOARD=j7200_evm
-    make -j -s sciclient_ccs_init BOARD=j7200_evm
-    make -j -s sciserver_testapp_freertos_clean BOARD=j7200_evm
-    make -j -s sciserver_testapp_freertos BOARD=j7200_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j7200/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j7200/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j7200/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200/
-    
-    # J721S2
-    make -j -s allclean
-    make -j -s sciclient_boardcfg BOARD=j721s2_evm
-    make -j -s sciclient_boardcfg BOARD=j721s2_evm BUILD_HS=yes
-    make -j -s sciclient_ccs_init_clean BOARD=j721s2_evm
-    make -j -s sciclient_ccs_init BOARD=j721s2_evm
-    make -j -s sciserver_testapp_freertos_clean BOARD=j721s2_evm
-    make -j -s sciserver_testapp_freertos BOARD=j721s2_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j721s2/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j721s2/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2/
-
-    # J784S4
-    make -j -s allclean
-    make -j -s sciclient_boardcfg BOARD=j784s4_evm
-    make -j -s sciclient_ccs_init_clean BOARD=j784s4_evm
-    make -j -s sciclient_ccs_init BOARD=j784s4_evm
-    make -j -s sciserver_testapp_freertos_clean BOARD=j784s4_evm
-    make -j -s sciserver_testapp_freertos BOARD=j784s4_evm
-    $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/j784s4/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j784s4/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
-    $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/j784s4/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4/
+    for SOC in $SOC_LIST
+    do
+        make -j -s allclean
+        make -j -s sciclient_boardcfg BOARD="$SOC"_evm
+        if [ ! $SOC=="j784s4" ]; then
+            make -j -s sciclient_boardcfg BOARD="$SOC"_evm BUILD_HS=yes
+        fi
+        make -j -s sciclient_ccs_init_clean BOARD="$SOC"_evm
+        make -j -s sciclient_ccs_init BOARD="$SOC"_evm
+        make -j -s sciserver_testapp_freertos_clean BOARD="$SOC"_evm
+        make -j -s sciserver_testapp_freertos BOARD="$SOC"_evm
+        $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/"$SOC"/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
+        $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/"$SOC"/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
+        $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/"$SOC"/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
+        if [ $SOC=="j721e" ]; then
+            make -j -s sciserver_testapp_safertos_clean BOARD="$SOC"_evm
+            make -j -s sciserver_testapp_safertos BOARD="$SOC"_evm
+            $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/"$SOC"/sciserver_testapp_safertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
+            $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/"$SOC"/sciserver_testapp_safertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
+        fi
+    done
 
     cd -
 fi
@@ -246,20 +200,33 @@ fi
 if [ "$SKIP_GEN_BIN" != "YES" ];  then
 
     cd $ROOTDIR/ti/drv/sciclient/tools/
-    # ./firmwareHeaderGen.sh am65x
-    # ./firmwareHeaderGen.sh am65x-hs
-    # ./firmwareHeaderGen.sh am65x_sr2
-    # ./firmwareHeaderGen.sh am65x_sr2-hs
-    ./firmwareHeaderGen.sh j721e
-    ./firmwareHeaderGen.sh j721e-hs
-    ./firmwareHeaderGen.sh j721e_sr1_1-hs
-    # ./firmwareHeaderGen.sh am64x
-    ./firmwareHeaderGen.sh j7200
-    ./firmwareHeaderGen.sh j7200-hs
-    ./firmwareHeaderGen.sh j7200_sr2-hs
-    ./firmwareHeaderGen.sh j721s2
-    ./firmwareHeaderGen.sh j721s2-hs
-    ./firmwareHeaderGen.sh j784s4-zebu
+
+    for SOC in $SOC_LIST
+    do
+        case $SOC in
+            "j721e")
+                ./firmwareHeaderGen.sh j721e
+                ./firmwareHeaderGen.sh j721e-hs
+                ./firmwareHeaderGen.sh j721e_sr1_1-hs
+                shift
+                ;;
+            "j7200")
+                ./firmwareHeaderGen.sh j7200
+                ./firmwareHeaderGen.sh j7200-hs
+                ./firmwareHeaderGen.sh j7200_sr2-hs
+                shift
+                ;;
+            "j721s2")
+                ./firmwareHeaderGen.sh j721s2
+                ./firmwareHeaderGen.sh j721s2-hs
+                shift
+                ;;
+            "j784s4")
+                ./firmwareHeaderGen.sh j784s4-zebu
+                shift
+                ;;
+        esac
+    done
 
 fi
 
@@ -268,26 +235,44 @@ fi
 if [ "$SKIP_COMMIT" != "YES" ]; then
     $ECHO "Commit changes to PDK"
     cd $SCRIPT_DIR
-    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/scripts
     git add $SCI_CLIENT_DIR/soc/sysfw/binaries/system-firmware-public-documentation/
     git add $SCI_CLIENT_DIR/soc/sysfw/binaries/sysfw-trace*
-    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721e*
-    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j7200*
-    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721s2*
-    git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j784s4*
-    git add $SCI_CLIENT_DIR/soc/sysfw/include/j721e
-    git add $SCI_CLIENT_DIR/soc/sysfw/include/j7200
-    git add $SCI_CLIENT_DIR/soc/sysfw/include/j721s2
-    git add $SCI_CLIENT_DIR/soc/sysfw/include/j784s4
     git add $SCI_CLIENT_DIR/soc/sysfw/include/tisci
-    git add $SCI_CLIENT_DIR/soc/V1
-    git add $SCI_CLIENT_DIR/soc/V2
-    git add $SCI_CLIENT_DIR/soc/V4
-    git add $SCI_CLIENT_DIR/soc/V6
-    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e
-    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200
-    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2
-    git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4
+
+    for SOC in $SOC_LIST
+    do
+        case $SOC in
+            "j721e")
+                git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721e*
+                git add $SCI_CLIENT_DIR/soc/sysfw/include/j721e
+                git add $SCI_CLIENT_DIR/soc/V1
+                git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721e
+                shift
+                ;;
+            "j7200")
+                git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j7200*
+                git add $SCI_CLIENT_DIR/soc/sysfw/include/j7200
+                git add $SCI_CLIENT_DIR/soc/V2
+                git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j7200
+                shift
+                ;;
+            "j721s2")
+                git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j721s2*
+                git add $SCI_CLIENT_DIR/soc/sysfw/include/j721s2
+                git add $SCI_CLIENT_DIR/soc/V4
+                git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j721s2
+                shift
+                ;;
+            "j784s4")
+                git add $SCI_CLIENT_DIR/soc/sysfw/binaries/*j784s4*
+                git add $SCI_CLIENT_DIR/soc/sysfw/include/j784s4
+                git add $SCI_CLIENT_DIR/soc/V6
+                git add $SCI_CLIENT_DIR/tools/ccsLoadDmsc/j784s4
+                shift
+                ;;
+        esac
+    done
+
     git commit -m "Migrating to SYSFW version $RELEASE_TAG"
 fi
 
