@@ -499,6 +499,8 @@ struct Udma_DrvObj
     /**< IA RM ID */
     uint16_t                devIdIr;
     /**< IR RM ID */
+    uint16_t                devIdDummyEvtSrc;
+    /**< RM ID of Event Source not having OES registers */
 #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
     uint16_t                devIdProxy;
     /**< Proxy RM ID */

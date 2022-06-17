@@ -1072,7 +1072,7 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
                 /* DMSC RM doesn't program the DRU OES - program locally for now
                 * in Udma_eventProgramSteering() */
                 /* Use a SRC which doesn't need a OES programming so that DMSC will skip */
-                rmIrqReq.src_id = drvHandle->devIdIa;
+                rmIrqReq.src_id = drvHandle->devIdDummyEvtSrc;
                 rmIrqReq.src_index = 0U;                /* Not used by DMSC RM */
             }
         }
@@ -1361,7 +1361,7 @@ static int32_t Udma_eventReset(Udma_DrvHandle drvHandle,
                 /* DMSC RM doesn't program the DRU OES - program locally for now
                 * in Udma_eventProgramSteering() */
                 /* Use a SRC which doesn't need a OES programming so that DMSC will skip */
-                rmIrqReq.src_id = drvHandle->devIdIa;
+                rmIrqReq.src_id = drvHandle->devIdDummyEvtSrc;
                 rmIrqReq.src_index = 0U;                /* Not used by DMSC RM */
             }
         }

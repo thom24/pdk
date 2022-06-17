@@ -750,6 +750,8 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
             drvHandle->devIdUdma            = TISCI_DEV_NAVSS0_UDMAP_0;
             drvHandle->devIdPsil            = TISCI_DEV_NAVSS0;
         }
+        /* `TISCI_DEV_NAVSS0_TIMERMGR_0` is a part of IA Event Sources and does not contain any OES registers */
+        drvHandle->devIdDummyEvtSrc      = TISCI_DEV_NAVSS0_TIMERMGR_0;
         drvHandle->srcIdRingIrq          = drvHandle->devIdRing;
         drvHandle->blkCopyRingIrqOffset  = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START; 
         drvHandle->txRingIrqOffset       = TISCI_RINGACC0_OES_IRQ_SRC_IDX_START;
