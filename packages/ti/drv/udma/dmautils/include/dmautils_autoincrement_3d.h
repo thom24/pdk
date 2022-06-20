@@ -76,7 +76,7 @@
 
 #include <stdint.h>
 #include <stdarg.h>
-#include "ti/drv/udma/udma.h"
+#include "udma.h"
 
 #ifdef __cplusplus
 extern "C" {

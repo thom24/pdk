@@ -81,6 +81,10 @@ extern "C" {
 
 
 #define UDMA_UTC_ID_MSMC_DRU0           (0)
+#define UDMA_UTC_ID_C7X_MSMC_DRU4       (1)
+#define UDMA_UTC_ID_C7X_MSMC_DRU5       (2)
+#define UDMA_UTC_ID_C7X_MSMC_DRU6       (3)
+#define UDMA_UTC_ID_C7X_MSMC_DRU7       (4)
 #define UDMA_INST_ID_MAIN_0             (0)
 #define UDMA_DEFAULT_CH_DISABLE_TIMEOUT     (100U)
 

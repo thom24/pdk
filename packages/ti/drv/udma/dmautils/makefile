@@ -25,7 +25,7 @@ INCLUDE_EXTERNAL_INTERFACES=pdk
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += dmautils_autoincrement_3d.c
-
+SRCS_COMMON += dmautils_autoincrement_3d_hostemu.c
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(DMAUTILS_CFLAGS)
 
