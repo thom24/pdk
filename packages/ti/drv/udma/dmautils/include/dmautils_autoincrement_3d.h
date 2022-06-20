@@ -76,7 +76,8 @@
 
 #include <stdint.h>
 #include <stdarg.h>
-#include "udma.h"
+//#include "udma.h"
+#include "ti/csl/csl_types.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -88,6 +89,12 @@ extern "C" {
 /** \brief Number of TR's that can be submitted back to back channel  */
 #define DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE (1U)
 
+typedef enum{
+  DMAUTILS_SOK = CSL_PASS,
+  DMAUTILS_EFAIL = CSL_EFAIL,
+  DMAUTILS_EBADARGS = CSL_EBADARGS,
+  DMAUTILS_EINVALID_PARAMS = CSL_EINVALID_PARAMS
+} DmaUtilsAutoInc3d_ReturnType;
 
 /**
  *  @enum   DmaUtilsAutoInc3d_SyncType
@@ -305,7 +312,7 @@ typedef struct
     int32_t(*DmaUtilsVprintf)(const char * format, va_list arg);
     /** Handle to the UDMA driver to be used for the utility. If user sets
     it to NULL then utility will use a default udma driver handle */
-    Udma_DrvHandle                    udmaDrvHandle;
+    void *                    udmaDrvHandle;
 }DmaUtilsAutoInc3d_InitParam;
 
 
