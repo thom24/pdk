@@ -162,3 +162,25 @@ J721S2
    j721s2/processors
    j721s2/firewalls
    j721s2/soc_devgrps
+
+======
+J784S4
+======
+
+.. toctree::
+   :maxdepth: 1
+
+   j784s4/hosts
+   j784s4/devices
+   j784s4/clocks
+   j784s4/pll_data
+   j784s4/resasg_types
+   j784s4/interrupt_cfg
+   j784s4/ra_cfg
+   j784s4/dma_cfg
+   j784s4/psil_cfg
+   j784s4/proxy_cfg
+   j784s4/sec_proxy
+   j784s4/processors
+   j784s4/firewalls
+   j784s4/soc_devgrps

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2022 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -49,7 +49,7 @@
  *
  * Secure Proxy indices for J784S4 device
  *
- * Data version: 220401_082741
+ * Data version: 220421_082009
  *
  */
 #ifndef J784S4_TISCI_SEC_PROXY_H

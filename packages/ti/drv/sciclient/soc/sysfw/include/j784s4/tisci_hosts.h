@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2022 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -49,11 +49,11 @@
  *
  * Host IDs for J784S4 device
  *
- * Data version: 220401_082741
+ * Data version: 220421_082009
  *
  */
-#ifndef J784S4_HOSTS_H
-#define J784S4_HOSTS_H
+#ifndef TISCI_HOSTS_H
+#define TISCI_HOSTS_H
 
 /** TIFS(Secure): Security Controller */
 #define TISCI_HOST_ID_TIFS (0U)
@@ -141,6 +141,6 @@
 /** Number of unique hosts on the SoC */
 #define TISCI_HOST_ID_CNT (38U)
 
-#endif /* J784S4_HOSTS_H */
+#endif /* TISCI_HOSTS_H */
 
 /* @} */

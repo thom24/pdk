@@ -1564,6 +1564,22 @@ Following is a mapping of Clocks IDs to function:
 |          0 | DEV_GPU_WS_BW_LIMITER3_CLK_CLK | Input clock |
 +------------+--------------------------------+-------------+
 
+.. _soc_doc_am62x_public_clks_hsm0:
+
+
+Clocks for HSM0 Device
+----------------------
+
+Device: :ref:`AM62X_DEV_HSM0 <soc_doc_am62x_public_devices_desc_device_list>` (ID = 225)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+------------------+-------------+
+|   Clock ID | Name             | Function    |
++============+==================+=============+
+|          0 | DEV_HSM0_DAP_CLK | Input clock |
++------------+------------------+-------------+
+
 .. _soc_doc_am62x_public_clks_i2c0:
 
 

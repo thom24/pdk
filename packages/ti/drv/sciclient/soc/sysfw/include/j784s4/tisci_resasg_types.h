@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2022 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -49,7 +49,7 @@
  *
  * Resource Assignment Subtype definitions
  *
- * Data version: 220401_082741
+ * Data version: 220421_082009
  *
  */
 #ifndef TISCI_RESASG_TYPES_H
@@ -76,8 +76,8 @@
  */
 
 #define TISCI_RESASG_UTYPE(type, subtype) \
-	(((type << TISCI_RESASG_TYPE_SHIFT) & TISCI_RESASG_TYPE_MASK) |\
-	((subtype << TISCI_RESASG_SUBTYPE_SHIFT) & TISCI_RESASG_SUBTYPE_MASK))
+    (((type << TISCI_RESASG_TYPE_SHIFT) & TISCI_RESASG_TYPE_MASK) | \
+     ((subtype << TISCI_RESASG_SUBTYPE_SHIFT) & TISCI_RESASG_SUBTYPE_MASK))
 
 /**
  * IA subtypes definitions
