@@ -79,7 +79,7 @@
 
 
 void hostEmulation_updateTriggerCount(struct Udma_DrvObj * udmaDrvHandle,
-                                                                              volatile uint64_t *pSwTrigReg)
+      volatile uint64_t *pSwTrigReg)
 {
   uint32_t i;
   CSL_DRU_t *druRegs = udmaDrvHandle->utcInfo[0].druRegs;

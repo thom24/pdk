@@ -85,6 +85,10 @@ extern "C" {
 #define UDMA_UTC_ID_C7X_MSMC_DRU5       (2)
 #define UDMA_UTC_ID_C7X_MSMC_DRU6       (3)
 #define UDMA_UTC_ID_C7X_MSMC_DRU7       (4)
+
+/** \brief Number of UTC instance */
+#define UDMA_NUM_UTC_INSTANCE           (CSL_NAVSS_UTC_CNT)
+
 #define UDMA_INST_ID_MAIN_0             (0)
 #define UDMA_DEFAULT_CH_DISABLE_TIMEOUT     (100U)
 
@@ -340,7 +344,7 @@ struct Udma_DrvObj
 {
     uint32_t                instType;
     /**< Udma Instance Type */
-    Udma_UtcInstInfo utcInfo[1];
+    Udma_UtcInstInfo utcInfo[UDMA_NUM_UTC_INSTANCE];
     /**< DRU base address register */
     Udma_InitPrms           initPrms;
     /**< Object to store the init params. */

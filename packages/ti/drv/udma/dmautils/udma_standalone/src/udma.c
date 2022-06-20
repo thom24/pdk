@@ -43,6 +43,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "ti/drv/udma/dmautils/udma_standalone/udma.h"
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -102,7 +103,7 @@ void Udma_printf(Udma_DrvHandle drvHandle, const char *format, ...)
 int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
 {
     int32_t                             retVal = UDMA_SOK;
-
+    uint32_t  utcId;
     if((drvHandle == NULL_PTR) || (initPrms == NULL_PTR))
     {
       retVal = UDMA_EBADARGS;
@@ -113,8 +114,22 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
       (void) memset(drvHandle, 0, sizeof(*drvHandle));
       (void) memcpy(&drvHandle->initPrms, initPrms, sizeof(Udma_InitPrms));
 
-      drvHandle->utcInfo[0].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
-      drvHandle->utcInfo[0].numCh   = NUM_DUM_CHNNALES;
+      for(utcId = UDMA_UTC_ID_MSMC_DRU0 ; utcId <= UDMA_UTC_ID_C7X_MSMC_DRU7 ; utcId++)
+      {
+        if(UDMA_UTC_ID_MSMC_DRU0 == utcId)
+          drvHandle->utcInfo[utcId].druRegs = ((CSL_DRU_t *) UDMA_UTC_BASE_DRU0);
+        #if defined (SOC_J784S4)
+        if(UDMA_UTC_ID_C7X_MSMC_DRU4 == utcId)
+          drvHandle->utcInfo[utcId].druRegs = ((CSL_DRU_t *) CSL_COMPUTE_CLUSTER0_MMR_DRU4_MMR_CFG_DRU_BASE);
+        else if(UDMA_UTC_ID_C7X_MSMC_DRU5 == utcId)
+          drvHandle->utcInfo[utcId].druRegs = ((CSL_DRU_t *) CSL_COMPUTE_CLUSTER0_MMR_DRU5_MMR_CFG_DRU_BASE);
+        else if(UDMA_UTC_ID_C7X_MSMC_DRU6 == utcId)
+          drvHandle->utcInfo[utcId].druRegs = ((CSL_DRU_t *) CSL_COMPUTE_CLUSTER0_MMR_DRU6_MMR_CFG_DRU_BASE);
+        else if(UDMA_UTC_ID_C7X_MSMC_DRU7 == utcId)
+          drvHandle->utcInfo[utcId].druRegs = ((CSL_DRU_t *) CSL_COMPUTE_CLUSTER0_MMR_DRU7_MMR_CFG_DRU_BASE);
+        #endif
+        drvHandle->utcInfo[utcId].numCh   = NUM_DUM_CHNNALES;
+      }
       drvHandle->drvInitDone = UDMA_INIT_DONE;
     }
 
@@ -175,7 +190,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
 
   if ( chHandle->chPrms.chNum == UDMA_DMA_CH_ANY )
   {
-    for ( i = drvHandle->initPrms.rmInitPrms.druStartId; i < drvHandle->initPrms.rmInitPrms.druEndId; i++)
+    for ( i = drvHandle->initPrms.rmInitPrms.druStartId; i <= drvHandle->initPrms.rmInitPrms.druEndId; i++)
     {
       if ( ( drvHandle->druChannelStatus & ( 1 << i )) == 0 )
       {
@@ -190,7 +205,7 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
     }
 
 
-    if ( i == drvHandle->initPrms.rmInitPrms.druEndId )
+    if ( i > drvHandle->initPrms.rmInitPrms.druEndId )
     {
       chHandle->druChNum = UDMA_DMA_CH_INVALID;
       retVal = UDMA_EFAIL;
@@ -263,6 +278,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
                     const Udma_ChPrms *chPrms)
 {
     int32_t     retVal = UDMA_SOK, tempRetVal;
+    uint32_t    utcId = chPrms->utcId;
     uint32_t    allocDone = (uint32_t) FALSE;
 
     /* Error check */
@@ -305,7 +321,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
     if(UDMA_SOK == retVal)
     {
         chHandle->chInitDone        = UDMA_INIT_DONE;
-        chHandle->utcInfo = &drvHandle->utcInfo[0];
+        chHandle->utcInfo = &drvHandle->utcInfo[utcId];
         chHandle->pDruNrtRegs  = &chHandle->utcInfo->druRegs->CHNRT[chHandle->druChNum];
         chHandle->pDruRtRegs   = &chHandle->utcInfo->druRegs->CHRT[chHandle->druChNum];
 
@@ -550,7 +566,7 @@ void Udma_chDruSubmitTr(Udma_ChHandle chHandle, const CSL_UdmapTR *tr)
 
     utcInfo = chHandle->utcInfo;
     utcChNum = chHandle->druChNum;
-#if defined (__C7100__)
+#if defined (__C7100__) || defined (__C7120__)
     CSL_druChSubmitAtomicTr(utcInfo->druRegs, utcChNum, (__ulong8 *)  tr);
 #else
     Udma_DrvHandle          drvHandle = chHandle->drvHandle;

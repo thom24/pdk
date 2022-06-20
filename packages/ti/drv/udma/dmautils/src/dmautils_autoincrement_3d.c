@@ -59,6 +59,8 @@
 
 #include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
+#include <ti/csl/csl_clec.h>
+#include <ti/csl//arch/c7x/cslr_C7X_CPU.h>
 
 #if defined (BUILD_C7X)
 #include <c7x.h>
@@ -354,6 +356,77 @@ static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext, DmaUt
     return retVal;
 }
 
+static void getUtcInfo(uint32_t *pUtcId, uint32_t *pDru_local_event_start)
+{
+  uint32_t utcId  = 0;
+  uint32_t dru_local_event_start = 192 ;
+
+#ifndef HOST_EMULATION
+  uint64_t dnum;
+  uint8_t corePacNum;
+  /* Get the bits from bit 7 to bit 15, which represents the core pac number */
+  dnum = __DNUM;
+  corePacNum = CSL_REG64_FEXT(&dnum, C7X_CPU_DNUM_COREPACNUM);
+  switch (corePacNum)
+  {
+    case CSL_C7X_CPU_COREPACK_NUM_C7X1:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU4;
+      dru_local_event_start = 664 + (96*0); // TODO: Pick from CSL if possible
+      break;
+    case CSL_C7X_CPU_COREPACK_NUM_C7X2:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU5;
+      dru_local_event_start = 664 + (96*1) ; // TODO: Pick from CSL if possible
+      break;
+    case CSL_C7X_CPU_COREPACK_NUM_C7X3:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU6;
+      dru_local_event_start = 664 + (96*2); // TODO: Pick from CSL if possible
+      break;
+    case CSL_C7X_CPU_COREPACK_NUM_C7X4:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU7;
+      dru_local_event_start = 664 + (96*3); // TODO: Pick from CSL if possible
+      break;
+    default:
+      utcId = UDMA_UTC_ID_MSMC_DRU0;
+      dru_local_event_start = 192; // TODO: Pick from CSL if possible
+  }
+#endif
+  if(pUtcId) *pUtcId = utcId ;
+  if(pDru_local_event_start) *pDru_local_event_start = dru_local_event_start ;
+  return ;
+}
+
+//:TODO: Check if this function can be included in CSL
+static int32_t get_clecConfigEvent(CSL_CLEC_EVTRegs *pRegs,
+                            uint32_t evtNum,
+                            CSL_ClecEventConfig *evtCfg)
+{
+    int32_t     retVal = CSL_PASS;
+    uint32_t    regVal;
+
+    if((NULL == pRegs) ||
+       (NULL == evtCfg) ||
+       (evtNum >= CSL_CLEC_MAX_EVT_IN) ||
+       (evtCfg->extEvtNum >= CSL_CLEC_MAX_EXT_EVT_OUT) ||
+       (evtCfg->c7xEvtNum >= CSL_CLEC_MAX_C7X_EVT_OUT))
+    {
+        retVal = CSL_EFAIL;
+    }
+    else
+    {
+        /* Perform read/modify/write so that the default interrupt mode (bit 24)
+         * is in power on reset value and should not be changed by CSL
+         */
+        regVal = CSL_REG32_RD(&pRegs->CFG[evtNum].MRR);
+        evtCfg->secureClaimEnable = CSL_REG32_FEXT(&regVal, CLEC_EVT_CFG_MRR_S         );
+        evtCfg->evtSendEnable     = CSL_REG32_FEXT(&regVal, CLEC_EVT_CFG_MRR_ESE       );
+        evtCfg->rtMap             = CSL_REG32_FEXT(&regVal, CLEC_EVT_CFG_MRR_RTMAP     );
+        evtCfg->extEvtNum         = CSL_REG32_FEXT(&regVal, CLEC_EVT_CFG_MRR_EXT_EVTNUM);
+        evtCfg->c7xEvtNum         = CSL_REG32_FEXT(&regVal, CLEC_EVT_CFG_MRR_C7X_EVTNUM);
+    }
+
+    return (retVal);
+}
+
 int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_InitParam * initParams, DmaUtilsAutoInc3d_ChannelInitParam chInitParams[])
 {
   uint32_t size;
@@ -400,9 +473,8 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_I
   /* Initialize the channel params to default */
    chType = UDMA_CH_TYPE_UTC;
    UdmaChPrms_init(&chPrms, chType);
-   chPrms.utcId = UDMA_UTC_ID_MSMC_DRU0;
-
-  UdmaChUtcPrms_init(&utcPrms);
+   getUtcInfo( &chPrms.utcId, NULL) ;
+   UdmaChUtcPrms_init(&utcPrms);
 
   for ( i = 0; i < initParams->numChannels; i++)
   {
@@ -462,15 +534,39 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_I
           DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "Udma_chEnable : Failed \n");
           goto Exit;
       }
-
       channelContext->druChannelId = Udma_chGetNum(channelHandle);
-
-      //:TODO: Currently its assumed that dru channel id is where the dru event will be generated
-      eventId = channelContext->druChannelId;
-
       channelContext->swTriggerPointer = Udma_druGetTriggerRegAddr(channelHandle);
-      //:TODO: Currently it is assumed that DRU local events are routed to 32 event of c7x. This needs to be done cleanly
-      channelContext->waitWord =  ((uint64_t)1U << (32 + eventId) );
+      if(1) //Better coding for DRU wait
+      {
+        uint32_t dru_local_event_start ;
+        CSL_ClecEventConfig   cfgClec;
+        int32_t thisCore = CSL_clecGetC7xRtmapCpuId() ;
+        #if defined (SOC_J721E)
+        CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+        #else
+        CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
+        #endif
+
+        getUtcInfo( NULL, &dru_local_event_start) ;
+        get_clecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext->druChannelId, &cfgClec);
+        if(cfgClec.rtMap !=  thisCore){
+          retVal = UDMA_EBADARGS;
+          DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, 
+          " This core (%d) is different than CLEC RTMAP CPU (%d) programming for channel %d\n",
+          thisCore, cfgClec.rtMap, channelContext->druChannelId);
+          goto Exit;  
+        }
+        else{
+          channelContext->waitWord =  ((uint64_t)1U << cfgClec.c7xEvtNum);
+        }
+      }
+      else{
+        //:TODO: Currently its assumed that dru channel id is where the dru event will be generated
+        eventId = channelContext->druChannelId;
+        //:TODO: Currently it is assumed that DRU local events are routed to 32 event of c7x. This needs to be done cleanly
+        channelContext->waitWord =  ((uint64_t)1U << (32 + eventId) );
+      }
+
   }
 
 Exit:
@@ -712,10 +808,10 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
         for ( i = 0; i < numTr; i++)
         {
 #ifndef HOST_EMULATION
-              Udma_chDruSubmitTr(channelHandle, tr + i);
+          Udma_chDruSubmitTr(channelHandle, tr + i);
 #else
-              druChannelNum = Udma_chGetNum(channelHandle);
-              hostEmulation_druChSubmitAtomicTr(dmautilsContext->initParams.udmaDrvHandle->utcInfo[UDMA_UTC_ID_MSMC_DRU0].druRegs,
+          druChannelNum = Udma_chGetNum(channelHandle);
+          hostEmulation_druChSubmitAtomicTr(dmautilsContext->initParams.udmaDrvHandle->utcInfo[0].druRegs,
                                                                                 druChannelNum , (void *)tr);
 #endif
         }
@@ -743,13 +839,13 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
       CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trMem + sizeof(CSL_UdmapTR));
 
       druChannelNum = (channelHandle->extChNum - channelHandle->utcInfo->startCh);
-      hostEmulation_druChSubmitAtomicTr(dmautilsContext->initParams.udmaDrvHandle->utcInfo[UDMA_UTC_ID_MSMC_DRU0].druRegs,
+      hostEmulation_druChSubmitAtomicTr(dmautilsContext->initParams.udmaDrvHandle->utcInfo[0].druRegs,
                                                                         druChannelNum,
                                                                         (void *)pTr);
 
       /* Use this field to track the TR, For the target build this would be handled by hardware */
       /* In real hardware this will not be like this it is done just for host emulation*/
-      dmautilsContext->initParams.udmaDrvHandle->utcInfo[UDMA_UTC_ID_MSMC_DRU0].druRegs->CHATOMIC[druChannelNum].DEBUG[1].NEXT_TR_WORD0_1 = 1;
+      dmautilsContext->initParams.udmaDrvHandle->utcInfo[0].druRegs->CHATOMIC[druChannelNum].DEBUG[1].NEXT_TR_WORD0_1 = 1;
 
 #endif
     }
