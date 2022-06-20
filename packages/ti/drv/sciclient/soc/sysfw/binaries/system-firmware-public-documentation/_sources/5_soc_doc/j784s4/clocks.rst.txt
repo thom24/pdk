@@ -1162,11 +1162,11 @@ Clocks for COMPUTE_CLUSTER0_ARM0_DFT_EMBED_PBIST_0 Device
 
 **This device has no defined clocks.**
 
-.. _soc_doc_j784s4_public_clks_compute_cluster0_arm0_dft_embed_pbist_1_0:
+.. _soc_doc_j784s4_public_clks_compute_cluster0_arm0_dft_embed_pbist_1:
 
 
-Clocks for COMPUTE_CLUSTER0_ARM0_DFT_EMBED_PBIST_1_0 Device
------------------------------------------------------------
+Clocks for COMPUTE_CLUSTER0_ARM0_DFT_EMBED_PBIST_1 Device
+---------------------------------------------------------
 
 **This device has no defined clocks.**
 
@@ -1178,11 +1178,11 @@ Clocks for COMPUTE_CLUSTER0_ARM1_DFT_EMBED_PBIST_0 Device
 
 **This device has no defined clocks.**
 
-.. _soc_doc_j784s4_public_clks_compute_cluster0_arm1_dft_embed_pbist_1_0:
+.. _soc_doc_j784s4_public_clks_compute_cluster0_arm1_dft_embed_pbist_1:
 
 
-Clocks for COMPUTE_CLUSTER0_ARM1_DFT_EMBED_PBIST_1_0 Device
------------------------------------------------------------
+Clocks for COMPUTE_CLUSTER0_ARM1_DFT_EMBED_PBIST_1 Device
+---------------------------------------------------------
 
 **This device has no defined clocks.**
 
@@ -1218,41 +1218,41 @@ Clocks for COMPUTE_CLUSTER0_AW7_MSMC_DFT_EMBED_PBIST_0 Device
 
 **This device has no defined clocks.**
 
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss0_0:
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss0:
 
 
-Clocks for COMPUTE_CLUSTER0_C71SS0_0 Device
--------------------------------------------
+Clocks for COMPUTE_CLUSTER0_C71SS0 Device
+-----------------------------------------
 
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS0_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 30)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+------------------------------------------------------------+--------------+
-|   Clock ID | Name                                                       | Function     |
-+============+============================================================+==============+
-|          3 | DEV_COMPUTE_CLUSTER0_C71SS0_0_C7X_CLK                      | Input clock  |
-+------------+------------------------------------------------------------+--------------+
-|          4 | DEV_COMPUTE_CLUSTER0_C71SS0_0_C7X_DIVH_CLK4_OBSCLK_OUT_CLK | Output clock |
-+------------+------------------------------------------------------------+--------------+
-
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss0_core0_0:
-
-
-Clocks for COMPUTE_CLUSTER0_C71SS0_CORE0_0 Device
--------------------------------------------------
-
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS0_CORE0_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 31)
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 30)
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+------------------------------------------------------+-------------+
-|   Clock ID | Name                                                 | Function    |
-+============+======================================================+=============+
-|          0 | DEV_COMPUTE_CLUSTER0_C71SS0_CORE0_0_C7X_CLK          | Input clock |
-+------------+------------------------------------------------------+-------------+
-|          2 | DEV_COMPUTE_CLUSTER0_C71SS0_CORE0_0_PLL_CTRL_CLK_CLK | Input clock |
-+------------+------------------------------------------------------+-------------+
++------------+----------------------------------------------------------+--------------+
+|   Clock ID | Name                                                     | Function     |
++============+==========================================================+==============+
+|          3 | DEV_COMPUTE_CLUSTER0_C71SS0_C7X_CLK                      | Input clock  |
++------------+----------------------------------------------------------+--------------+
+|          4 | DEV_COMPUTE_CLUSTER0_C71SS0_C7X_DIVH_CLK4_OBSCLK_OUT_CLK | Output clock |
++------------+----------------------------------------------------------+--------------+
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss0_core0:
+
+
+Clocks for COMPUTE_CLUSTER0_C71SS0_CORE0 Device
+-----------------------------------------------
+
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS0_CORE0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 31)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+----------------------------------------------------+-------------+
+|   Clock ID | Name                                               | Function    |
++============+====================================================+=============+
+|          0 | DEV_COMPUTE_CLUSTER0_C71SS0_CORE0_C7X_CLK          | Input clock |
++------------+----------------------------------------------------+-------------+
+|          2 | DEV_COMPUTE_CLUSTER0_C71SS0_CORE0_PLL_CTRL_CLK_CLK | Input clock |
++------------+----------------------------------------------------+-------------+
 
 .. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss0_mma_0:
 
@@ -1262,39 +1262,39 @@ Clocks for COMPUTE_CLUSTER0_C71SS0_MMA_0 Device
 
 **This device has no defined clocks.**
 
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss1_0:
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss1:
 
 
-Clocks for COMPUTE_CLUSTER0_C71SS1_0 Device
--------------------------------------------
+Clocks for COMPUTE_CLUSTER0_C71SS1 Device
+-----------------------------------------
 
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS1_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 33)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+---------------------------------------+-------------+
-|   Clock ID | Name                                  | Function    |
-+============+=======================================+=============+
-|          3 | DEV_COMPUTE_CLUSTER0_C71SS1_0_C7X_CLK | Input clock |
-+------------+---------------------------------------+-------------+
-
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss1_core0_0:
-
-
-Clocks for COMPUTE_CLUSTER0_C71SS1_CORE0_0 Device
--------------------------------------------------
-
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS1_CORE0_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 34)
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS1 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 33)
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+------------------------------------------------------+-------------+
-|   Clock ID | Name                                                 | Function    |
-+============+======================================================+=============+
-|          0 | DEV_COMPUTE_CLUSTER0_C71SS1_CORE0_0_C7X_CLK          | Input clock |
-+------------+------------------------------------------------------+-------------+
-|          2 | DEV_COMPUTE_CLUSTER0_C71SS1_CORE0_0_PLL_CTRL_CLK_CLK | Input clock |
-+------------+------------------------------------------------------+-------------+
++------------+-------------------------------------+-------------+
+|   Clock ID | Name                                | Function    |
++============+=====================================+=============+
+|          3 | DEV_COMPUTE_CLUSTER0_C71SS1_C7X_CLK | Input clock |
++------------+-------------------------------------+-------------+
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss1_core0:
+
+
+Clocks for COMPUTE_CLUSTER0_C71SS1_CORE0 Device
+-----------------------------------------------
+
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS1_CORE0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 34)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+----------------------------------------------------+-------------+
+|   Clock ID | Name                                               | Function    |
++============+====================================================+=============+
+|          0 | DEV_COMPUTE_CLUSTER0_C71SS1_CORE0_C7X_CLK          | Input clock |
++------------+----------------------------------------------------+-------------+
+|          2 | DEV_COMPUTE_CLUSTER0_C71SS1_CORE0_PLL_CTRL_CLK_CLK | Input clock |
++------------+----------------------------------------------------+-------------+
 
 .. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss1_mma_0:
 
@@ -1304,37 +1304,37 @@ Clocks for COMPUTE_CLUSTER0_C71SS1_MMA_0 Device
 
 **This device has no defined clocks.**
 
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss2_0:
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss2:
 
 
-Clocks for COMPUTE_CLUSTER0_C71SS2_0 Device
--------------------------------------------
+Clocks for COMPUTE_CLUSTER0_C71SS2 Device
+-----------------------------------------
 
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS2_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 37)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+---------------------------------------+-------------+
-|   Clock ID | Name                                  | Function    |
-+============+=======================================+=============+
-|          3 | DEV_COMPUTE_CLUSTER0_C71SS2_0_C7X_CLK | Input clock |
-+------------+---------------------------------------+-------------+
-
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss2_core0_0:
-
-
-Clocks for COMPUTE_CLUSTER0_C71SS2_CORE0_0 Device
--------------------------------------------------
-
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS2_CORE0_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 38)
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS2 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 37)
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+---------------------------------------------+-------------+
-|   Clock ID | Name                                        | Function    |
-+============+=============================================+=============+
-|          0 | DEV_COMPUTE_CLUSTER0_C71SS2_CORE0_0_C7X_CLK | Input clock |
-+------------+---------------------------------------------+-------------+
++------------+-------------------------------------+-------------+
+|   Clock ID | Name                                | Function    |
++============+=====================================+=============+
+|          3 | DEV_COMPUTE_CLUSTER0_C71SS2_C7X_CLK | Input clock |
++------------+-------------------------------------+-------------+
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss2_core0:
+
+
+Clocks for COMPUTE_CLUSTER0_C71SS2_CORE0 Device
+-----------------------------------------------
+
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS2_CORE0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 38)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+-------------------------------------------+-------------+
+|   Clock ID | Name                                      | Function    |
++============+===========================================+=============+
+|          0 | DEV_COMPUTE_CLUSTER0_C71SS2_CORE0_C7X_CLK | Input clock |
++------------+-------------------------------------------+-------------+
 
 .. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss2_mma_0:
 
@@ -1344,37 +1344,37 @@ Clocks for COMPUTE_CLUSTER0_C71SS2_MMA_0 Device
 
 **This device has no defined clocks.**
 
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss3_0:
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss3:
 
 
-Clocks for COMPUTE_CLUSTER0_C71SS3_0 Device
--------------------------------------------
+Clocks for COMPUTE_CLUSTER0_C71SS3 Device
+-----------------------------------------
 
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS3_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 40)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+---------------------------------------+-------------+
-|   Clock ID | Name                                  | Function    |
-+============+=======================================+=============+
-|          3 | DEV_COMPUTE_CLUSTER0_C71SS3_0_C7X_CLK | Input clock |
-+------------+---------------------------------------+-------------+
-
-.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss3_core0_0:
-
-
-Clocks for COMPUTE_CLUSTER0_C71SS3_CORE0_0 Device
--------------------------------------------------
-
-Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS3_CORE0_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 41)
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS3 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 40)
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+---------------------------------------------+-------------+
-|   Clock ID | Name                                        | Function    |
-+============+=============================================+=============+
-|          0 | DEV_COMPUTE_CLUSTER0_C71SS3_CORE0_0_C7X_CLK | Input clock |
-+------------+---------------------------------------------+-------------+
++------------+-------------------------------------+-------------+
+|   Clock ID | Name                                | Function    |
++============+=====================================+=============+
+|          3 | DEV_COMPUTE_CLUSTER0_C71SS3_C7X_CLK | Input clock |
++------------+-------------------------------------+-------------+
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss3_core0:
+
+
+Clocks for COMPUTE_CLUSTER0_C71SS3_CORE0 Device
+-----------------------------------------------
+
+Device: :ref:`J784S4_DEV_COMPUTE_CLUSTER0_C71SS3_CORE0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 41)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+-------------------------------------------+-------------+
+|   Clock ID | Name                                      | Function    |
++============+===========================================+=============+
+|          0 | DEV_COMPUTE_CLUSTER0_C71SS3_CORE0_C7X_CLK | Input clock |
++------------+-------------------------------------------+-------------+
 
 .. _soc_doc_j784s4_public_clks_compute_cluster0_c71ss3_mma_0:
 
@@ -1471,6 +1471,46 @@ Following is a mapping of Clocks IDs to function:
 
 Clocks for COMPUTE_CLUSTER0_DMSC_WRAP_0 Device
 ----------------------------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_dru0:
+
+
+Clocks for COMPUTE_CLUSTER0_DRU0 Device
+---------------------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_dru4:
+
+
+Clocks for COMPUTE_CLUSTER0_DRU4 Device
+---------------------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_dru5:
+
+
+Clocks for COMPUTE_CLUSTER0_DRU5 Device
+---------------------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_dru6:
+
+
+Clocks for COMPUTE_CLUSTER0_DRU6 Device
+---------------------------------------
+
+**This device has no defined clocks.**
+
+.. _soc_doc_j784s4_public_clks_compute_cluster0_dru7:
+
+
+Clocks for COMPUTE_CLUSTER0_DRU7 Device
+---------------------------------------
 
 **This device has no defined clocks.**
 
@@ -8447,6 +8487,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          4 | DEV_SERDES_10G0_CMN_REFCLK_P                                          | Output clock                                              |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
+|          5 | DEV_SERDES_10G0_CORE_REF1_CLK                                         | Input clock                                               |
++------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          6 | DEV_SERDES_10G0_CORE_REF_CLK                                          | Input muxed clock                                         |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          7 | DEV_SERDES_10G0_CORE_REF_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT           | Parent input clock option to DEV_SERDES_10G0_CORE_REF_CLK |
@@ -8619,6 +8661,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          4 | DEV_SERDES_10G1_CMN_REFCLK_P                                          | Output clock                                              |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
+|          5 | DEV_SERDES_10G1_CORE_REF1_CLK                                         | Input clock                                               |
++------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          6 | DEV_SERDES_10G1_CORE_REF_CLK                                          | Input muxed clock                                         |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          7 | DEV_SERDES_10G1_CORE_REF_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT           | Parent input clock option to DEV_SERDES_10G1_CORE_REF_CLK |
@@ -8773,6 +8817,8 @@ Following is a mapping of Clocks IDs to function:
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          4 | DEV_SERDES_10G2_CMN_REFCLK_P                                          | Input clock                                               |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
+|          5 | DEV_SERDES_10G2_CORE_REF1_CLK                                         | Input clock                                               |
++------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          6 | DEV_SERDES_10G2_CORE_REF_CLK                                          | Input muxed clock                                         |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          7 | DEV_SERDES_10G2_CORE_REF_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT           | Parent input clock option to DEV_SERDES_10G2_CORE_REF_CLK |
@@ -8880,6 +8926,8 @@ Following is a mapping of Clocks IDs to function:
 |          4 | DEV_SERDES_10G4_CMN_REFCLK_P                                          | Input clock                                               |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          4 | DEV_SERDES_10G4_CMN_REFCLK_P                                          | Output clock                                              |
++------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
+|          5 | DEV_SERDES_10G4_CORE_REF1_CLK                                         | Input clock                                               |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          6 | DEV_SERDES_10G4_CORE_REF_CLK                                          | Input muxed clock                                         |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+

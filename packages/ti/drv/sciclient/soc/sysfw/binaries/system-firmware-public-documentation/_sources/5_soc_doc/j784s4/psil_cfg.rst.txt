@@ -109,13 +109,12 @@ thread type. The thread IDs are used in the PSI-L based TISCI messages.
 +---------------------------------------+------------------+
 | navss_mcu_pdma_adc_rx                 | 0x7400 to 0x7403 |
 +---------------------------------------+------------------+
-| saul0_rx                              | 0x74fc to 0x750b |
-| (**Reserved by System Firmware**)     |                  |
-+---------------------------------------+------------------+
 | navss_mcu_saul0_rx                    | 0x7500 to 0x7501 |
 | (**Reserved by System Firmware**)     |                  |
 +---------------------------------------+------------------+
 | navss_mcu_saul0_rx                    | 0x7502 to 0x7503 |
++---------------------------------------+------------------+
+| saul0_rx                              | 0x7504 to 0x750b |
 +---------------------------------------+------------------+
 | navss_main_udmap0_rx                  | 0x9000 to 0x9051 |
 +---------------------------------------+------------------+
@@ -172,9 +171,6 @@ thread type. The thread IDs are used in the PSI-L based TISCI messages.
 | navss_mcu_pdma_mcu2_tx                | 0xf300 to 0xf303 |
 +---------------------------------------+------------------+
 | navss_mcu_pdma_adc_tx                 | 0xf400 to 0xf3ff |
-+---------------------------------------+------------------+
-| saul0_tx                              | 0xf4fc to 0xf503 |
-| (**Reserved by System Firmware**)     |                  |
 +---------------------------------------+------------------+
 | navss_mcu_saul0_tx                    | 0xf500 to 0xf500 |
 | (**Reserved by System Firmware**)     |                  |

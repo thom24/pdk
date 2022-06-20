@@ -49,7 +49,7 @@
  *
  * Host IDs for J784S4 device
  *
- * Data version: 220421_082009
+ * Data version: 220615_194547
  *
  */
 #ifndef TISCI_HOSTS_H
