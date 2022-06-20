@@ -76,7 +76,7 @@
 #if defined (SOC_J784S4)
 #include <ti/drv/sciclient/soc/sysfw/include/j784s4/tisci_resasg_types.h>
 #include <ti/drv/sciclient/soc/V6/sciclient_fmwMsgParams.h>
-#include <ti/drv/sciclient/soc/V6/sciclient_firmware_V6-zebu.h>
+#include <ti/drv/sciclient/soc/V6/sciclient_firmware_V6-zebu-combined.h>
 #endif
 
 #ifdef __cplusplus

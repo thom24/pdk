@@ -222,7 +222,7 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
                 shift
                 ;;
             "j784s4")
-                ./firmwareHeaderGen.sh j784s4-zebu
+                ./firmwareHeaderGen.sh j784s4-zebu-combined
                 shift
                 ;;
         esac
