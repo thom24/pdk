@@ -165,19 +165,6 @@ uint32_t autoRunEnable = (uint32_t) FALSE;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-#if defined (SOC_J784S4)
-/* HACK: until UART driver is added for J784S4 */
-void UART_printf_dummy(const char *pstr, ...)
-{
-}
-
-/* HACK: until Board library is added for J784S4 */
-Board_STATUS Board_init(Board_initCfg cfg)
-{
-    return BOARD_SOK;
-}
-#endif
-
 int32_t App_sciclientParser(void)
 {
     uint32_t testcaseId;
