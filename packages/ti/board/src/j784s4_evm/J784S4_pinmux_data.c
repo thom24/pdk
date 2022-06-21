@@ -796,6 +796,11 @@ static pinmuxPerCfg_t gMmcsd1PinCfg[] =
         PIN_TIMER_IO0, PIN_MODE(8) | \
         ((PIN_PULL_DISABLE | PIN_INPUT_ENABLE) & (~PIN_PULL_DIRECTION))
     },
+    /* MyMMC1 -> MMC1_CLKLB */
+    {
+        PIN_MMC1_CLKLB, PIN_MODE(0) | \
+        ((PIN_PULL_DIRECTION | PIN_INPUT_ENABLE) & (~PIN_PULL_DISABLE))
+    },
     {PINMUX_END}
 };
 
