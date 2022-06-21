@@ -394,11 +394,6 @@ static int32_t Sciclient_ccs_init_send_boardcfg (uint8_t devgrp_curr)
         if (CSL_PASS == status)
         {
             printf("PASSED\n");
-#if defined (SOC_J784S4)
-            /* TEMP HACK: trigger deferred PM init w/ dummy request */
-            Sciclient_pmSetModuleRst(0xffffffffU, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            printf("!! Completed PM deferred init!!\n");
-#endif
         }
         else
         {
