@@ -56,7 +56,7 @@ extern "C" {
 /**
  * \brief VRing Buffer Size required for all core combinations.
  */
-#define IPC_VRING_BUFFER_SIZE   (0x1C00000U)
+#define IPC_VRING_BUFFER_SIZE   (0x3000000U)
 
 /** \brief Core definitions */
 #define    IPC_MPU1_0           (0U)    /**< ARM A72 - VM0 */
