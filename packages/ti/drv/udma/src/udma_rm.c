@@ -2235,7 +2235,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
     #endif
     #if defined (BUILD_C7X) && (UDMA_LOCAL_C7X_DRU_PRESENT == 1)
         uint32_t utcId, rmId;
-        for(rmId = UDMA_RM_START_C7X_DRU ; rmId <= UDMA_RM_NUM_C7X_DRU ; rmId++)
+        for(rmId = UDMA_RM_START_C7X_DRU ; rmId <= UDMA_RM_MAX_C7X_DRU ; rmId++)
         {
             /**
              * RM ids and UTC ids for these DRUs are continuous

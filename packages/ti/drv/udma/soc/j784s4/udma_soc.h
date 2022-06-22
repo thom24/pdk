@@ -395,8 +395,10 @@ extern "C" {
 #define UDMA_RM_C7X_MSMC_DRU7                   (20U)
 /** \brief Start of local DRUs */
 #define UDMA_RM_START_C7X_DRU                   (UDMA_RM_C7X_MSMC_DRU4)
+/** \brief MAX of local DRUs */
+#define UDMA_RM_MAX_C7X_DRU                     (UDMA_RM_C7X_MSMC_DRU7)
 /** \brief Total number of local DRUs */
-#define UDMA_RM_NUM_C7X_DRU                     (UDMA_RM_C7X_MSMC_DRU7 - UDMA_RM_C7X_MSMC_DRU4 + 1U)
+#define UDMA_RM_NUM_C7X_DRU                     (UDMA_RM_MAX_C7X_DRU - UDMA_RM_START_C7X_DRU + 1U)
 #endif
 
 /** \brief Total number of BCDMA resources */
