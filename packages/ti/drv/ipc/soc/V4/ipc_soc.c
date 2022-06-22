@@ -96,10 +96,10 @@ static Ipc_ProcInfo g_Ipc_mp_procInfo[IPC_MAX_PROCS] =
     {IPC_MCU3_1,      "mcu3_1"},      /**< ARM Main R5F - core3 */
     {IPC_MCU4_0,      "mcu4_0"},      /**< ARM Main R5F - core4 */
     {IPC_MCU4_1,      "mcu4_1"},      /**< ARM Main R5F - core5 */
-    {IPC_C7X_1,       "C7X_1"},       /**< DSP C7x - core0 */
-    {IPC_C7X_2,       "C7X_2"},       /**< DSP C7x - core1 */
-    {IPC_C7X_3,       "C7X_3"},       /**< DSP C7x - core2 */
-    {IPC_C7X_4,       "C7X_4"},       /**< DSP C7x - core3 */
+    {IPC_C7X_1,       "c7x_1"},       /**< DSP C7x - core0 */
+    {IPC_C7X_2,       "c7x_2"},       /**< DSP C7x - core1 */
+    {IPC_C7X_3,       "c7x_3"},       /**< DSP C7x - core2 */
+    {IPC_C7X_4,       "c7x_4"},       /**< DSP C7x - core3 */
     {IPC_MPU1_1,      "mpu1_1"}       /**< ARM A72 - VM1 */
 };
 
@@ -635,9 +635,9 @@ uint32_t Ipc_configClecRouter(uint32_t corePackEvent, uint32_t corePackEventBase
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_4;
 #elif defined(BUILD_C7X_2)
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_5;
-#elif defined(BUILD_C7X_2)
+#elif defined(BUILD_C7X_3)
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_6;
-#elif defined(BUILD_C7X_2)
+#elif defined(BUILD_C7X_4)
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_7;
 #endif
     cfgClec.extEvtNum         = 0U;
