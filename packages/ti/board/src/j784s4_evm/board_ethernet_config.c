@@ -380,9 +380,10 @@ Board_STATUS Board_cpsw9gEthPhyConfig(void)
  */
 Board_STATUS Board_cpsw2gMainMacModeConfig(uint8_t mode)
 {
-    uint32_t status;
-    uintptr_t modeSel;
-    uint32_t regData;
+    Board_STATUS retVal = BOARD_SOK;
+    uint32_t     status;
+    uintptr_t    modeSel;
+    uint32_t     regData;
 
     Board_unlockMMR();
 
@@ -397,9 +398,12 @@ Board_STATUS Board_cpsw2gMainMacModeConfig(uint8_t mode)
     status = CSL_REG32_RD(modeSel);
     if (status != regData)
     {
-        return BOARD_FAIL;
+        retVal = BOARD_FAIL;
     }
-    return BOARD_SOK;
+
+    Board_lockMMR();
+
+    return (retVal);
 }
 
 /**
@@ -413,9 +417,12 @@ Board_STATUS Board_cpsw2gMainMacModeConfig(uint8_t mode)
  */
 Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
 {
+    Board_STATUS retVal = BOARD_SOK;
     uint32_t status;
     uintptr_t ethModeCtrl;
     uint32_t regData;
+
+    Board_unlockMMR();
 
     ethModeCtrl = CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_ENET_CTRL;
     regData = CSL_REG32_RD(ethModeCtrl);
@@ -429,10 +436,12 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
     status = CSL_REG32_RD(ethModeCtrl);
     if (status != regData)
     {
-        return BOARD_FAIL;
+        retVal = BOARD_FAIL;
     }
 
-    return BOARD_SOK;
+    Board_lockMMR();
+
+    return (retVal);
 }
 
 /**
@@ -449,6 +458,7 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
  */
 Board_STATUS Board_cpsw9gMacModeConfig(uint32_t portNum, uint8_t mode)
 {
+    Board_STATUS retVal = BOARD_SOK;
     uint32_t status;
     uintptr_t modeSel;
     uint32_t regData;
@@ -466,10 +476,12 @@ Board_STATUS Board_cpsw9gMacModeConfig(uint32_t portNum, uint8_t mode)
     status = CSL_REG32_RD(modeSel);
     if (status != regData)
     {
-        return BOARD_FAIL;
+        retVal = BOARD_FAIL;
     }
 
-    return BOARD_SOK;
+    Board_lockMMR();
+
+    return (retVal);
 }
 
 /**
@@ -482,8 +494,6 @@ Board_STATUS Board_cpsw9gMacModeConfig(uint32_t portNum, uint8_t mode)
 Board_STATUS Board_ethConfigCpsw2g(void)
 {
     Board_STATUS status = BOARD_SOK;
-
-    Board_unlockMMR();
 
     /* Configures the MCU Ethernet */
     status = Board_cpsw2gMacModeConfig(RGMII);
