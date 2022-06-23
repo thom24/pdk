@@ -55,7 +55,11 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+#if defined (SOC_J721S2)
 #define ADDR_AFE                   (0x05060000)
+#elif defined (SOC_J784S4)
+#define ADDR_AFE                   (0x05050000)
+#endif
 
 /**
  *  \anchor Dss_EventGroup

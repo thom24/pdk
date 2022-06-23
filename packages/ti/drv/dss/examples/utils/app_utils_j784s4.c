@@ -215,6 +215,23 @@ void App_configureLCD(App_utilsLcdCfgParams cfgParams)
 
         if(PM_SUCCESS == status)
         {
+            uint64_t clkFreq = 0;
+            status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                SCICLIENT_SERVICE_WAIT_FOREVER);
+
+            PMLIBClkRateGet(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                &clkFreq);
+            printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK Expected %lld and getting %lld Hz\r\n", cfgParams.pixelClk, clkFreq);
+
+            clkFreq = 0;
+            PMLIBClkRateGet(TISCI_DEV_DSS0,
+                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                &clkFreq);
+            printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK Expected %lld and getting %lld Hz\r\n", cfgParams.pixelClk, clkFreq);
+
             printf("\nTISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_CLK is now ENABLED !\r\n");
             /* Enable the DSS device as clock configuration has been successful. */
             status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,

@@ -298,12 +298,15 @@ int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported)
      */
 
 #if defined(SOC_J721S2)
-/* Need to account the change in hpd in j7aep */
-/*  CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG0 + 0x1c4, 0x00040005); */
-#else
+/* J721S2 does not have the HPD pin connected, so no need to do anything here. */
+#elif defined (SOC_J721E)
     /* HPD Pin Mux */
     CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG0 + 0x1c4, 0x00040005);
+#elif defined (SOC_J784S4)
+    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG51 , 0x0004000c); // MUX-Mode-->12
+    /* This HPD pin is mapped to J784S4_EVM on SPI0_CS0--> PADCONFIG_51  */
 #endif
+
     
 
 #if defined (SOC_J721S2)
@@ -327,7 +330,11 @@ int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported)
     CSL_REG32_WR(ADDR_AFE + 0x5FC, 0x00000   );
 #else
     CSL_REG32_WR(ADDR_AFE + 0x408, 0x30000000);
+#if defined (SOC_J721E)
     CSL_REG32_WR(ADDR_AFE + 0x40c, 0x39000000);
+#elif defined(SOC_J784S4)
+    CSL_REG32_WR(ADDR_AFE + 0x40c, 0x2A800000); // SerDes changed to Ct3. This offset is the serdes wiz_config_serdes_rst register. The MMR definition has changed.
+#endif
     CSL_REG32_WR(ADDR_AFE + 0x480, 0x70000000);
     CSL_REG32_WR(ADDR_AFE + 0x4c0, 0x80000000);
     CSL_REG32_WR(ADDR_AFE + 0x500, 0x80000000);
@@ -338,8 +345,13 @@ int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported)
     CSL_REG32_WR(ADDR_AFE + 0x544, 0x10001   );
 #endif
 
+#if defined(SOC_J721S2) || defined (SOC_J721E)
     /* Select EDP PHY CLK source */
     CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_EDP_PHY0_CLKSEL, 0x0);
+#elif defined(SOC_J784S4)
+    /* This is by default set to 0 for J784S4, still setting explicitly. */
+    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES4_CLKSEL, 0x0);
+#endif
     /* Set DPTX_SRC_CFG, 0:vif0_en, 1:vif_1_en, 2:vif_2_en, 3: vif_3_en, 4: vif_0_sel, TBD */
     CSL_REG32_WR(CSL_DSS_EDP0_INTG_CFG_VP_BASE + CSL_DPTX_DPTX_SRC_CFG, 0x1F);
 
