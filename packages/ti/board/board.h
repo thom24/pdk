@@ -360,8 +360,11 @@ typedef uint32_t Board_initCfg;
 #define BOARD_INIT_DEFAULT              BOARD_INIT_ALL
 #define BOARD_INIT_CPSW5G_ETH_PHY       (BOARD_INIT_CPSW9G_ETH_PHY)
 #define BOARD_INIT_ENETCTRL_CPSW5G      (BOARD_INIT_ENETCTRL_CPSW9G)
-#define BOARD_INIT_CPSW2G_MAIN_ETH_PHY  (1 << 30U)
-#define BOARD_INIT_ENETCTRL_CPSW2G_MAIN (1 << 31U)
+/* Re-using I2C init and deinit flag values for below two macros as '1 << 31' causing
+ * build failure for C7x. I2C flags are not used/supported by any platforms
+ */
+#define BOARD_INIT_CPSW2G_MAIN_ETH_PHY  (1 << 24U)
+#define BOARD_INIT_ENETCTRL_CPSW2G_MAIN (1 << 25U)
 
 #define BOARD_DEINIT_ALL                (0xFFFFFFFFU)
 #define BOARD_DEINIT_LOCK_MMR           (1 << 1U)
