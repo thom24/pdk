@@ -109,7 +109,11 @@ void IpcInitMmu(bool isSecure)
 
     /* IPC VRing Buffer - uncached */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
+#if defined(SOC_J784S4)
+    (void)Mmu_map(SHARED_DDR_SPACE_START, SHARED_DDR_SPACE_START, 0x04000000U, &attrs, isSecure); /* VRING DDR */
+#else
     (void)Mmu_map(SHARED_DDR_SPACE_START, SHARED_DDR_SPACE_START, 0x02000000U, &attrs, isSecure); /* VRING DDR */
+#endif
 #if defined(BUILD_C7X_1)
     (void)Mmu_map(C7x_1_IPC_DATA_BASE, C7x_1_IPC_DATA_BASE, 0x00100000U, &attrs, isSecure); /* C7X_1 DDR */
 #elif defined(BUILD_C7X_2)

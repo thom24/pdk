@@ -63,7 +63,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .regionId         = 1U,
         .enable           = 1U,
         .baseAddr         = 0x0U,
-#if defined(BUILD_MCU1_0) || defined(BUILD_MCU2_0) || defined(BUILD_MCU3_0) || defined(MCU4_0)
+#if defined(BUILD_MCU1_0) || defined(BUILD_MCU2_0) || defined(BUILD_MCU3_0) || defined(BUILD_MCU4_0)
         /* Use 64KB, for Core 0, to cover Lock-step mode where TCMs are combined */
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_64KB,
 #elif defined(BUILD_MCU1_1) || defined(BUILD_MCU2_1) || defined(BUILD_MCU3_1) || defined(BUILD_MCU4_1)
@@ -132,7 +132,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .regionId         = 5U,
         .enable           = 1U,
         .baseAddr         = 0x41010000,
-#if defined(BUILD_MCU1_0) || defined(BUILD_MCU2_0) || defined(BUILD_MCU3_0) || defined(MCU4_0)
+#if defined(BUILD_MCU1_0) || defined(BUILD_MCU2_0) || defined(BUILD_MCU3_0) || defined(BUILD_MCU4_0)
         /* Use 64KB, for Core 0, to cover Lock-step mode where TCMs are combined */
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_64KB,
 #elif defined(BUILD_MCU1_1) || defined(BUILD_MCU2_1) || defined(BUILD_MCU3_1) || defined(BUILD_MCU4_1)
@@ -195,7 +195,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .regionId         = 8U,
         .enable           = 1U,
         .baseAddr         = 0xAC000000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_32MB,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_64MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 1U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
