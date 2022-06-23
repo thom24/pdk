@@ -207,11 +207,6 @@ Board_STATUS Board_init(Board_initCfg cfg)
         Board_sysInit();
     }
 
-    if (cfg & BOARD_INIT_UNLOCK_MMR)
-        ret = Board_unlockMMR();
-    if (ret != BOARD_SOK)
-        return ret;
-
     if (cfg & BOARD_INIT_ENETCTRL_CPSW2G)
         ret = Board_ethConfigCpsw2g();
     if (ret != BOARD_SOK)
@@ -314,6 +309,11 @@ Board_STATUS Board_init(Board_initCfg cfg)
 
     if (cfg & BOARD_INIT_UART_STDIO)
         ret = Board_uartStdioInit();
+    if (ret != BOARD_SOK)
+        return ret;
+
+    if (cfg & BOARD_INIT_UNLOCK_MMR)
+        ret = Board_unlockMMR();
     if (ret != BOARD_SOK)
         return ret;
 
