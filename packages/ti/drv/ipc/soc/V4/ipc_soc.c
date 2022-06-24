@@ -57,6 +57,8 @@
 
 #define IPC_INTERRUPT_OFFSET                (5U)
 
+extern uint32_t g_ipc_mBoxCnt;
+
 /**
  * \brief Main NavSS512 - Mailbox input line
  */
@@ -460,7 +462,9 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
 {
     int32_t    retVal          = IPC_SOK;
     uint32_t   outIntrBaseNum  = 0;
+    uint32_t   outIntrNum      = 0;
     uint32_t   vimEventBaseNum = 0;
+    uint32_t   vimEventNum     = 0;
     uint16_t   proc_irq        = 0;
 
     /*
@@ -496,6 +500,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
             offset = range;
         }
         outIntrBaseNum = (start + range) - offset;
+        outIntrNum = outIntrBaseNum + intrCnt;
 
         /* Translate to CorePack IRQ number */
         /* Translation must happen after this offset */
@@ -504,6 +509,15 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
         if (CSL_PASS == retVal)
         {
             vimEventBaseNum = proc_irq;
+        }
+
+        /* Translation must happen after this offset */
+        proc_irq = 0;
+        retVal = Ipc_sciclientIrqTranslate((uint16_t)selfId, outIntrNum,
+                                           &proc_irq);
+        if (CSL_PASS == retVal)
+        {
+            vimEventNum = proc_irq;
         }
 
     }
@@ -574,8 +588,8 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
             break;
     }
 #endif
-    cfg->outputIntrNum = outIntrBaseNum + intrCnt;
-    cfg->eventId       = vimEventBaseNum + intrCnt;
+    cfg->outputIntrNum = outIntrNum;
+    cfg->eventId       = vimEventNum;
     cfg->eventIdBase   = vimEventBaseNum;
 
     return retVal;
@@ -621,7 +635,7 @@ uint32_t Ipc_configClecRouter(uint32_t corePackEvent, uint32_t corePackEventBase
    /* Even though same CLEC is shared b/w all C7x cores, CLEC can broadcast the
     * event to any C7x core and CPU IRQ(corepackIrq) is core specific.
     * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */
-    corepackIrq = (corePackEvent - corePackEventBase) + IPC_C7X_MBINTR_OFFSET;
+    corepackIrq = (g_ipc_mBoxCnt) + IPC_C7X_MBINTR_OFFSET;
 
    /* corePackEvent is derived from the NAVSS IR o/p range returned from BoardCfg,
     * based on core specific allocation. And this is different for each C7x.
