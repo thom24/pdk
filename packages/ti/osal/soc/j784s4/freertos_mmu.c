@@ -127,7 +127,7 @@ static void OsalInitMmu(bool isSecure)
      * IPC VRing Buffer - uncached
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    (void)OsalMmuMap(0xAC000000U, 0xAC000000U, 0x02000000U, &attrs, isSecure);
+    (void)OsalMmuMap(0xAC000000U, 0xAC000000U, 0x04000000U, &attrs, isSecure);
 
     return;
 }
