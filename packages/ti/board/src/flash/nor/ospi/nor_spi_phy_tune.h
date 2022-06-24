@@ -54,7 +54,7 @@ typedef struct NOR_PhyConfig_s
 } NOR_PhyConfig;
 
 #define NOR_SPI_PHY_TXDLL_LOW_WINDOW_START     (18U)
-#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (24U)
+#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (34U)
 
 #define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START    (48U)
 #define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END      (38U)
