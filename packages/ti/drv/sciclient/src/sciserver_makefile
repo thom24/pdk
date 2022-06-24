@@ -45,7 +45,6 @@ SRCDIR = src/sciserver
 SRCDIR += src/sciserver/$(SOC)
 
 INCDIR = soc/sysfw/include 
-INCDIR += soc/sysfw/include/$(SOC)
 INCDIR += soc/$(SCISERVER_SOCVER)
 INCDIR += src/sciserver
 INCDIR += src/sciserver/$(SOC)

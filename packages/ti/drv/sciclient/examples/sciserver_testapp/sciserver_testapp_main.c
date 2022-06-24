@@ -126,13 +126,7 @@ int main(void)
     App_sciclientPrintf("RM_PM_HAL Version: %s\n", rmpmhal_version_str);
     if (ret == CSL_PASS)
     {
-       App_sciclientPrintf("Starting Sciserver..... PASSED\n");
-
-        uint32_t freqHz;
-        Sciclient_pmGetModuleClkFreq(TISCI_DEV_GTC0, TISCI_DEV_GTC0_GTC_CLK,
-            (uint64_t *) &freqHz, SCICLIENT_SERVICE_WAIT_FOREVER);
-       App_sciclientPrintf("GTC freq: %d\n", freqHz);
-
+        App_sciclientPrintf("Starting Sciserver..... PASSED\n");
         OS_start();
     }
     else
