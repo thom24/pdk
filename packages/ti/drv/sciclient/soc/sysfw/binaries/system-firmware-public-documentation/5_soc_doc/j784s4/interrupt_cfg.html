@@ -144,7 +144,6 @@
 <li class="toctree-l4"><a class="reference internal" href="#navss0-modss-inta-1-interrupt-aggregator-virtual-interrupt-destinations">NAVSS0_MODSS_INTA_1 Interrupt Aggregator Virtual Interrupt Destinations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#navss0-udmass-inta-0-interrupt-aggregator-virtual-interrupt-destinations">NAVSS0_UDMASS_INTA_0 Interrupt Aggregator Virtual Interrupt Destinations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#mcu-navss0-udmass-inta-0-interrupt-aggregator-virtual-interrupt-destinations">MCU_NAVSS0_UDMASS_INTA_0 Interrupt Aggregator Virtual Interrupt Destinations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#mcu-sa3-ss0-intaggr-0-interrupt-aggregator-virtual-interrupt-destinations">MCU_SA3_SS0_INTAGGR_0 Interrupt Aggregator Virtual Interrupt Destinations</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#global-events">Global Events</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#event-based-interrupt-source-ids">Event-Based Interrupt Source IDs</a></li>
 </ul>
@@ -23642,9 +23641,6 @@ ID be provided as part of the request. Based on <a class="reference internal" hr
 <tr class="row-odd"><td>J784S4_DEV_MCU_NAVSS0_UDMASS_INTA_0</td>
 <td>331</td>
 </tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-</tr>
 </tbody>
 </table>
 </div>
@@ -23689,10 +23685,6 @@ detected.</p>
 </tr>
 <tr class="row-odd"><td>J784S4_DEV_MCU_NAVSS0_UDMASS_INTA_0</td>
 <td>22 to 255</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
-<td>0 to 7</td>
 </tr>
 </tbody>
 </table>
@@ -28379,367 +28371,6 @@ detected.</p>
 </tbody>
 </table>
 </div>
-<div class="section" id="mcu-sa3-ss0-intaggr-0-interrupt-aggregator-virtual-interrupt-destinations">
-<span id="pub-soc-j784s4-mcu-sa3-ss0-intaggr-0-vint-output-dst-list"></span><h2>MCU_SA3_SS0_INTAGGR_0 Interrupt Aggregator Virtual Interrupt Destinations<a class="headerlink" href="#mcu-sa3-ss0-intaggr-0-interrupt-aggregator-virtual-interrupt-destinations" title="Permalink to this headline">¶</a></h2>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Resources marked as reserved for use by TIFS <strong>cannot</strong> be assigned to a
-host within the RM Board Configuration resource assignment array.  The RM
-Board Configuration is rejected if an overlap with a reserved resource is
-detected.</p>
-</div>
-<table border="1" class="docutils">
-<colgroup>
-<col width="23%" />
-<col width="11%" />
-<col width="11%" />
-<col width="25%" />
-<col width="16%" />
-<col width="14%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">IA Name</th>
-<th class="head">IA Device ID</th>
-<th class="head">IA VINT Index</th>
-<th class="head">Destination Name</th>
-<th class="head">Destination Interface</th>
-<th class="head">Destination Index</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>0</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>896</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>896</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>0</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>88</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>88</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>1</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>897</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>897</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>1</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>89</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>89</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>2</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>898</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>898</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>2</td>
-<td>J784S4_DEV_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>148</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>148</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>2</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>90</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>90</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>3</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>899</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>899</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>3</td>
-<td>J784S4_DEV_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>149</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>149</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>3</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>91</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>91</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>4</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>900</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>900</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>4</td>
-<td>J784S4_DEV_R5FSS1_CORE0</td>
-<td>intr</td>
-<td>148</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_R5FSS1_CORE1</td>
-<td>intr</td>
-<td>148</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>4</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>92</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>92</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>5</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>901</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>901</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>5</td>
-<td>J784S4_DEV_R5FSS1_CORE0</td>
-<td>intr</td>
-<td>149</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_R5FSS1_CORE1</td>
-<td>intr</td>
-<td>149</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>5</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>93</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>93</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>6</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>902</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>902</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>6</td>
-<td>J784S4_DEV_R5FSS2_CORE0</td>
-<td>intr</td>
-<td>148</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_R5FSS2_CORE1</td>
-<td>intr</td>
-<td>148</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>6</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>94</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>94</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>7</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_CLEC</td>
-<td>soc_events_in</td>
-<td>903</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_COMPUTE_CLUSTER0_GIC500SS</td>
-<td>spi</td>
-<td>903</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>7</td>
-<td>J784S4_DEV_R5FSS2_CORE0</td>
-<td>intr</td>
-<td>149</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_R5FSS2_CORE1</td>
-<td>intr</td>
-<td>149</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0
-(<strong>Reserved by System Firmware</strong>)</td>
-<td>372</td>
-<td>7</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE0</td>
-<td>intr</td>
-<td>95</td>
-</tr>
-<tr class="row-odd"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>J784S4_DEV_MCU_R5FSS0_CORE1</td>
-<td>intr</td>
-<td>95</td>
-</tr>
-</tbody>
-</table>
-</div>
 <div class="section" id="global-events">
 <span id="pub-soc-j784s4-global-events"></span><h2>Global Events<a class="headerlink" href="#global-events" title="Permalink to this headline">¶</a></h2>
 <p>This section describes J784S4 global events.  The global events are used in
@@ -28766,53 +28397,41 @@ detected.</p>
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>0 to 55</td>
 </tr>
-<tr class="row-odd"><td>MCU_SA3_SS0_INTAGGR_0 SEVT
-(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
-<td>0 to 99</td>
-</tr>
-<tr class="row-even"><td>NAVSS0_UDMASS_INTA_0 SEVT</td>
+<tr class="row-odd"><td>NAVSS0_UDMASS_INTA_0 SEVT</td>
 <td>56 to 4607</td>
 </tr>
-<tr class="row-odd"><td>MCU_SA3_SS0_INTAGGR_0 MEVT
-(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
-<td>8192 to 8223</td>
-</tr>
-<tr class="row-even"><td>MCU_SA3_SS0_INTAGGR_0 GEVT
-(<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
-<td>10240 to 10271</td>
-</tr>
-<tr class="row-odd"><td>MCU_NAVSS0_UDMASS_INTA_0 SEVT
+<tr class="row-even"><td>MCU_NAVSS0_UDMASS_INTA_0 SEVT
 (<strong>RESERVED BY SYSTEM FIRMWARE</strong>)</td>
 <td>16384 to 16405</td>
 </tr>
-<tr class="row-even"><td>MCU_NAVSS0_UDMASS_INTA_0 SEVT</td>
+<tr class="row-odd"><td>MCU_NAVSS0_UDMASS_INTA_0 SEVT</td>
 <td>16406 to 17919</td>
 </tr>
-<tr class="row-odd"><td>NAVSS0_MODSS_INTA_0 SEVT</td>
+<tr class="row-even"><td>NAVSS0_MODSS_INTA_0 SEVT</td>
 <td>20480 to 21503</td>
 </tr>
-<tr class="row-even"><td>NAVSS0_MODSS_INTA_1 SEVT</td>
+<tr class="row-odd"><td>NAVSS0_MODSS_INTA_1 SEVT</td>
 <td>22528 to 23551</td>
 </tr>
-<tr class="row-odd"><td>NAVSS0_UDMASS_INTA_0 MEVT</td>
+<tr class="row-even"><td>NAVSS0_UDMASS_INTA_0 MEVT</td>
 <td>32768 to 33279</td>
 </tr>
-<tr class="row-even"><td>MCU_NAVSS0_UDMASS_INTA_0 MEVT</td>
+<tr class="row-odd"><td>MCU_NAVSS0_UDMASS_INTA_0 MEVT</td>
 <td>34816 to 34943</td>
 </tr>
-<tr class="row-odd"><td>NAVSS0_UDMASS_INTA_0 GEVT</td>
+<tr class="row-even"><td>NAVSS0_UDMASS_INTA_0 GEVT</td>
 <td>36864 to 37375</td>
 </tr>
-<tr class="row-even"><td>MCU_NAVSS0_UDMASS_INTA_0 GEVT</td>
+<tr class="row-odd"><td>MCU_NAVSS0_UDMASS_INTA_0 GEVT</td>
 <td>39936 to 40191</td>
 </tr>
-<tr class="row-odd"><td>NAVSS0_UDMAP_0 TRIGGER</td>
+<tr class="row-even"><td>NAVSS0_UDMAP_0 TRIGGER</td>
 <td>49152 to 50175</td>
 </tr>
-<tr class="row-even"><td>NAVSS0_BCDMA_0 TRIGGER</td>
+<tr class="row-odd"><td>NAVSS0_BCDMA_0 TRIGGER</td>
 <td>50176 to 50271</td>
 </tr>
-<tr class="row-odd"><td>MCU_NAVSS0_UDMAP_0 TRIGGER</td>
+<tr class="row-even"><td>MCU_NAVSS0_UDMAP_0 TRIGGER</td>
 <td>56320 to 56575</td>
 </tr>
 </tbody>
@@ -28824,7 +28443,7 @@ detected.</p>
 <colgroup>
 <col width="24%" />
 <col width="9%" />
-<col width="47%" />
+<col width="48%" />
 <col width="19%" />
 </colgroup>
 <thead valign="bottom">
@@ -28845,33 +28464,23 @@ detected.</p>
 <td>Ring events</td>
 <td>0 to 255</td>
 </tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_RINGACC_0</td>
-<td>374</td>
-<td>Ring events</td>
-<td>N/A to N/A</td>
-</tr>
-<tr class="row-odd"><td>J784S4_DEV_NAVSS0_RINGACC_0</td>
+<tr class="row-even"><td>J784S4_DEV_NAVSS0_RINGACC_0</td>
 <td>315</td>
 <td>Ring monitor events</td>
 <td>1024 to 1055</td>
 </tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_NAVSS0_RINGACC0</td>
+<tr class="row-odd"><td>J784S4_DEV_MCU_NAVSS0_RINGACC0</td>
 <td>328</td>
 <td>Ring monitor events</td>
 <td>1024 to 1055</td>
 </tr>
-<tr class="row-odd"><td>J784S4_DEV_NAVSS0_RINGACC_0</td>
+<tr class="row-even"><td>J784S4_DEV_NAVSS0_RINGACC_0</td>
 <td>315</td>
 <td>Ring global error event</td>
 <td>2048</td>
 </tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_NAVSS0_RINGACC0</td>
+<tr class="row-odd"><td>J784S4_DEV_MCU_NAVSS0_RINGACC0</td>
 <td>328</td>
-<td>Ring global error event</td>
-<td>2048</td>
-</tr>
-<tr class="row-odd"><td>J784S4_DEV_MCU_SA3_SS0_RINGACC_0</td>
-<td>374</td>
 <td>Ring global error event</td>
 <td>2048</td>
 </tr>
@@ -28954,41 +28563,6 @@ detected.</p>
 <td>321</td>
 <td>NAVSS0_UDMASS_INTA_0 mapped bcdma_rx_chan_ring_completion events</td>
 <td>4096 to 4127</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-<td>MCU_SA3_SS0_INTAGGR_0 mapped timermgr_evt events</td>
-<td>0 to 1023</td>
-</tr>
-<tr class="row-odd"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-<td>MCU_SA3_SS0_INTAGGR_0 mapped pktdma_tx_chan_error events</td>
-<td>4096 to 4097</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-<td>MCU_SA3_SS0_INTAGGR_0 mapped pktdma_tx_flow_completion events</td>
-<td>4608 to 4623</td>
-</tr>
-<tr class="row-odd"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-<td>MCU_SA3_SS0_INTAGGR_0 mapped pktdma_rx_chan_error events</td>
-<td>5120 to 5123</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-<td>MCU_SA3_SS0_INTAGGR_0 mapped pktdma_rx_flow_completion events</td>
-<td>5632 to 5647</td>
-</tr>
-<tr class="row-odd"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-<td>MCU_SA3_SS0_INTAGGR_0 mapped pktdma_rx_flow_starvation events</td>
-<td>6144 to 6159</td>
-</tr>
-<tr class="row-even"><td>J784S4_DEV_MCU_SA3_SS0_INTAGGR_0</td>
-<td>372</td>
-<td>MCU_SA3_SS0_INTAGGR_0 mapped pktdma_rx_flow_firewall events</td>
-<td>6656 to 6671</td>
 </tr>
 </tbody>
 </table>
