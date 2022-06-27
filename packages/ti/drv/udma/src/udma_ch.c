@@ -3708,7 +3708,6 @@ static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
 
     utcInfo = chHandle->utcInfo;
     Udma_assert(drvHandle, utcInfo != NULL_PTR);
-    Udma_assert(drvHandle, chHandle->peerThreadId != UDMA_THREAD_ID_INVALID);
     Udma_assert(drvHandle, chHandle->extChNum != UDMA_DMA_CH_INVALID);
     if(UDMA_UTC_TYPE_DRU == utcInfo->utcType)
     {
@@ -3757,6 +3756,7 @@ static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
             /* Use src thread instead of dest thread
              * (already has bit info CSL_PSILCFG_DEST_THREAD_OFFSET,
              * so just reset the bit) */
+            Udma_assert(drvHandle, chHandle->peerThreadId != UDMA_THREAD_ID_INVALID);
             srcThreadId = chHandle->peerThreadId &
                                 ~((uint32_t) CSL_PSILCFG_DEST_THREAD_OFFSET);
             retVal = Udma_psilcfgWrite(
@@ -3832,6 +3832,7 @@ static int32_t Udma_chDisableExtChan(Udma_ChHandle chHandle, uint32_t timeout)
         /* Use src thread instead of dest thread
          * (already has bit info CSL_PSILCFG_DEST_THREAD_OFFSET,
          * so just reset the bit) */
+        Udma_assert(drvHandle, chHandle->peerThreadId != UDMA_THREAD_ID_INVALID);
         srcThreadId = chHandle->peerThreadId &
                             ~((uint32_t) CSL_PSILCFG_DEST_THREAD_OFFSET);
         retVal = Udma_psilcfgWrite(
