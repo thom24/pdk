@@ -955,6 +955,24 @@ int32_t OSPI_socInit(void)
             ospiInitCfg[1].intrNum = CSLR_R5FSS1_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
     }
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3) /* Main R5 SS2*/
+    {
+        /* Configure the Main SS OSPI instances for Main SS Pulsar R5 . R5FSS'n'_CORE'n' */
+        if(r5CpuInfo.cpuID == 0U)
+        {
+            /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
+            ospiInitCfg[0].intrNum = CSLR_R5FSS2_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
+            /* ********* OSPI-1 . intrNum = R5FSS'n'_INTRTR0 **************** */
+            ospiInitCfg[1].intrNum = CSLR_R5FSS2_CORE0_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
+        }
+        else
+        {
+            /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
+            ospiInitCfg[0].intrNum = CSLR_R5FSS2_CORE1_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
+            /* ********* OSPI-1 . intrNum = R5FSS'n'_INTRTR0 **************** */
+            ospiInitCfg[1].intrNum = CSLR_R5FSS2_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
+        }
+    }
     else
     {
         ret = -1;
@@ -1054,6 +1072,31 @@ int32_t MCSPI_socInit(void)
             spiInitCfg[5].intNum = CSLR_R5FSS1_CORE1_INTR_MCSPI5_INTR_SPI_0;
             spiInitCfg[6].intNum = CSLR_R5FSS1_CORE1_INTR_MCSPI6_INTR_SPI_0;
             spiInitCfg[7].intNum = CSLR_R5FSS1_CORE1_INTR_MCSPI7_INTR_SPI_0;
+        }
+    }
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3)         /* MAIN R5 SS2 */
+    {
+        if(r5CpuInfo.cpuID == 0U)                                           /* Main R5 -SS2 - CPU0 */
+        {
+            spiInitCfg[0].intNum = CSLR_R5FSS2_CORE0_INTR_MCU_MCSPI0_INTR_SPI_0;
+            spiInitCfg[1].intNum = CSLR_R5FSS2_CORE0_INTR_MCU_MCSPI1_INTR_SPI_0;
+            spiInitCfg[2].intNum = CSLR_R5FSS2_CORE0_INTR_MCU_MCSPI2_INTR_SPI_0;
+            spiInitCfg[3].intNum = CSLR_R5FSS2_CORE0_INTR_MCSPI3_INTR_SPI_0;
+            spiInitCfg[4].intNum = CSLR_R5FSS2_CORE0_INTR_MCSPI4_INTR_SPI_0;
+            spiInitCfg[5].intNum = CSLR_R5FSS2_CORE0_INTR_MCSPI5_INTR_SPI_0;
+            spiInitCfg[6].intNum = CSLR_R5FSS2_CORE0_INTR_MCSPI6_INTR_SPI_0;
+            spiInitCfg[7].intNum = CSLR_R5FSS2_CORE0_INTR_MCSPI7_INTR_SPI_0;
+        }
+        else                                                                /* Main R5 -SS2 - CPU1*/
+        {
+            spiInitCfg[0].intNum = CSLR_R5FSS2_CORE1_INTR_MCU_MCSPI0_INTR_SPI_0;
+            spiInitCfg[1].intNum = CSLR_R5FSS2_CORE1_INTR_MCU_MCSPI1_INTR_SPI_0;
+            spiInitCfg[2].intNum = CSLR_R5FSS2_CORE1_INTR_MCU_MCSPI2_INTR_SPI_0;
+            spiInitCfg[3].intNum = CSLR_R5FSS2_CORE1_INTR_MCSPI3_INTR_SPI_0;
+            spiInitCfg[4].intNum = CSLR_R5FSS2_CORE1_INTR_MCSPI4_INTR_SPI_0;
+            spiInitCfg[5].intNum = CSLR_R5FSS2_CORE1_INTR_MCSPI5_INTR_SPI_0;
+            spiInitCfg[6].intNum = CSLR_R5FSS2_CORE1_INTR_MCSPI6_INTR_SPI_0;
+            spiInitCfg[7].intNum = CSLR_R5FSS2_CORE1_INTR_MCSPI7_INTR_SPI_0;
         }
     }
     else
