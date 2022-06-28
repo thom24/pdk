@@ -239,6 +239,10 @@ extern "C" {
 #define BOARD_SOC_DOMAIN_WKUP    (1U)
 /* Value for indicating SoC MCU domain */
 #define BOARD_SOC_DOMAIN_MCU     (2U)
+/* Value for indicating all SoC domains */
+#define BOARD_SOC_DOMAIN_ALL     (0xFU)
+/* SoC domain max count */
+#define BOARD_SOC_DOMAIN_MAX     (3U)
 /* Maximum I2C instance number common across the domain */
 #define BOARD_I2C_DOMAIN_INSTANCE_MAX     (2U)
 

@@ -44,6 +44,32 @@
 #include <ti/csl/cslr_mdio.h>
 
 /**
+ * \brief  Configures kick registers for Ethernet MMR access
+ *
+ * \param   domain   [IN]   MMR register domain
+ * \param   lockCtrl [IN]   Register lock/unlock control
+ *                          0 - Unlocks the MMR register write access
+ *                          1 - Locks the MMR register write access
+ *
+ * \return  Board_STATUS
+ */
+static Board_STATUS Board_ethCfgKickCtrl(uint32_t domain, uint32_t lockCtrl)
+{
+    Board_STATUS status;
+
+    if(lockCtrl)
+    {
+        status = Board_lockMMRPartition(domain, BOARD_MMR_PARTITION1);
+    }
+    else
+    {
+        status = Board_unlockMMRPartition(domain, BOARD_MMR_PARTITION1);
+    }
+
+    return (status);
+}
+
+/**
  * \brief  Function to initialize MDIO
  *
  * \param   baseAddr [IN]   MDIO base address
@@ -385,7 +411,7 @@ Board_STATUS Board_cpsw2gMainMacModeConfig(uint8_t mode)
     uintptr_t    modeSel;
     uint32_t     regData;
 
-    Board_unlockMMR();
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MAIN, 0);
 
     modeSel = CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_CPSW2_ENET1_CTRL;
     regData = CSL_REG32_RD(modeSel);
@@ -401,7 +427,7 @@ Board_STATUS Board_cpsw2gMainMacModeConfig(uint8_t mode)
         retVal = BOARD_FAIL;
     }
 
-    Board_lockMMR();
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MAIN, 1);
 
     return (retVal);
 }
@@ -422,7 +448,7 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
     uintptr_t ethModeCtrl;
     uint32_t regData;
 
-    Board_unlockMMR();
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MCU, 0);
 
     ethModeCtrl = CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_ENET_CTRL;
     regData = CSL_REG32_RD(ethModeCtrl);
@@ -439,7 +465,7 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
         retVal = BOARD_FAIL;
     }
 
-    Board_lockMMR();
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MCU, 1);
 
     return (retVal);
 }
@@ -463,7 +489,7 @@ Board_STATUS Board_cpsw9gMacModeConfig(uint32_t portNum, uint8_t mode)
     uintptr_t modeSel;
     uint32_t regData;
 
-    Board_unlockMMR();
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MAIN, 0);
 
     modeSel = CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_ENET1_CTRL + (portNum * 0x04);
     regData = CSL_REG32_RD(modeSel);
@@ -479,7 +505,7 @@ Board_STATUS Board_cpsw9gMacModeConfig(uint32_t portNum, uint8_t mode)
         retVal = BOARD_FAIL;
     }
 
-    Board_lockMMR();
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MAIN, 1);
 
     return (retVal);
 }
