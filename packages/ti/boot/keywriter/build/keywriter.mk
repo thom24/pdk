@@ -33,6 +33,21 @@ COMP_LIST_COMMON             = pmic sciclient_direct board uart osal_nonos csl c
 
 CFLAGS_LOCAL_COMMON          = $(PDK_CFLAGS)
 
+ifeq ($(SOC),j721e)
+  # J721E EVM reference on ti.com shows use of LDO3 to set VPP. However, as LDO3
+  # is used for many other generic power sequences, it is desirable to have
+  # dedicated source for temporary VPP supply (VPP for efuse is not intended to
+  # remain asserted persistently).
+  #
+  # Recommendation is to use another GPIO to drive an external LDO - see
+  # https://www.ti.com/lit/ug/slvuc99a/slvuc99a.pdf for more details. The
+  # default keywriter example code uses this method. Comment this flag only if
+  # testing keywriter on a TI J721E EVM and you need to use PMICB LDO3 to toggle
+  # VPP for efuse programming.
+
+  CFLAGS_LOCAL_COMMON		+= -DJ721E_USE_GPIO_FOR_VPP
+endif
+
 SRCS_COMMON                 += main.c
 SRCS_COMMON                 += soc/common/pmic_example.c
 SRCS_COMMON                 += soc/$(SOC)/keywriter_utils.c

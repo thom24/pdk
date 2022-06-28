@@ -92,6 +92,19 @@ void OTP_VppEn(void)
 
     if (PMIC_ST_SUCCESS == status)
     {
+#ifdef J721E_USE_GPIO_FOR_VPP
+        /* Toggle LEO PMICB GPIO9 which drives external LDO on board */
+        pmicStatus = Pmic_gpioSetValue(pPmicCoreHandle, 9, PMIC_GPIO_HIGH);
+
+        if (PMIC_ST_SUCCESS != pmicStatus)
+        {
+            UART_printf("Pmic_gpioSetValue ret: %d\n", pmicStatus);
+        }
+        else
+        {
+            UART_printf("Pmic_gpioSetValue ret: %d Works!!!\n", pmicStatus);
+        }
+#else
         /*  Set Power Resource as LDO3 */
         pwrRsrc    = PMIC_TPS6594X_REGULATOR_LDO3;
         pmicStatus = Pmic_powerGetPwrResourceCfg(pPmicCoreHandle,
@@ -115,10 +128,12 @@ void OTP_VppEn(void)
         {
             UART_printf("Pmic_powerSetPwrResourceCfg ret: %d\n", pmicStatus);
         }
+#endif
     }
 
     if ((pPmicCoreHandle != NULL) && (PMIC_ST_SUCCESS == status))
     {
         test_pmic_appDeInit(pPmicCoreHandle);
     }
+
 }
