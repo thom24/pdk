@@ -42,6 +42,8 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/DebugP.h>
 #include <ti/osal/soc/osal_soc.h>
+#include <ti/drv/sciclient/sciclient.h>
+#include <ti/csl/arch/csl_arch.h>
 
 #if defined (_TMS320C6X) && defined (SOC_J721E)
 #include <ti/drv/sciclient/sciclient.h>
@@ -56,6 +58,7 @@ uint32_t TaskP_getTaskId(TaskP_Handle handle);
 extern void LoadP_addTask(TaskP_Handle handle, uint32_t tskId);
 extern void LoadP_removeTask(uint32_t tskId);
 static int32_t prvC66xTickInterruptConfig( void );
+static int32_t prvSetupTimerPSC( void );
 
 /**
  * \brief Value to be used for lowest priority task 
@@ -412,25 +415,49 @@ uint32_t TaskP_getTaskId(TaskP_Handle handle)
     return (taskHandle->tskId);
 }
 
+static int32_t prvSetupTimerPSC( void )
+{
+    int32_t xStatus = CSL_PASS;
+#if defined (SOC_J784S4) && defined (BUILD_MCU)
+    CSL_ArmR5CPUInfo info;
 
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        Sciclient_ConfigPrms_t config;
+ 
+        Sciclient_configPrmsInit(&config);
+ 
+        xStatus = Sciclient_init(&config);
+        if(  xStatus == CSL_PASS )
+        {
+            uint32_t currState, resetState, contextLossState, timerModuleId;
+            /* on J7AHP, Main domain timers 8-19 are connected to LPSC_PER_SPARE_0 which is not powered ON by default. 
+             * All other timers are connected to LPSC which is ALWAYS_ON */
+            xStatus = Sciclient_pmGetModuleState(TISCI_DEV_TIMER8, &currState, &resetState,
+                                                &contextLossState, SCICLIENT_SERVICE_WAIT_FOREVER);
+            if((xStatus == CSL_PASS) && (currState != TISCI_MSG_VALUE_DEVICE_SW_STATE_ON))
+            {
+                xStatus = Sciclient_pmSetModuleState(TISCI_DEV_TIMER8, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                                    (TISCI_MSG_FLAG_AOP |TISCI_MSG_FLAG_DEVICE_RESET_ISO),
+                                                    SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+        }
+    }
+#endif
+    return xStatus;
+}
 
 void OS_init( void )
 {
-#if defined (SOC_AWR294X)
-    /* For AWR294x the soc frequency needs to be set at runtime,
-     * based on package Type. Hence adding soc specific code here.
-     * Update the CPU Frequency in Hw attr structure. */
-    Osal_HwAttrs hwAttrs;
-    uint32_t ctrlBitMap = 0;
-
-    hwAttrs.cpuFreqKHz = CSL_SocGetCpuFreq() / 1000U;
-    ctrlBitMap |= OSAL_HWATTR_SET_CPU_FREQ;
-
-    Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
-#endif
     int32_t xStatus = CSL_PASS;
 
     xStatus = prvC66xTickInterruptConfig();
+
+    if(xStatus == CSL_PASS)
+    {
+        xStatus = prvSetupTimerPSC();
+    }
 
     DebugP_assert(xStatus == CSL_PASS);
 }
