@@ -55,7 +55,7 @@
 
 #define MAILBOX_REG_SIZE                    (0x200)
 
-#define IPC_INTERRUPT_OFFSET                (5U)
+#define IPC_INTERRUPT_OFFSET                (6U)
 
 extern uint32_t g_ipc_mBoxCnt;
 
@@ -486,10 +486,10 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
 
     if((retVal == IPC_SOK) && (range >= 1))
     {
-        /* Allocate the last 5 interrupts for IPC. Note that the IR allocation is
+        /* Allocate the last 6 interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is
          * used by UDMA and middle one's are used by other modules like CPSW9G so
-         * we are using last 5 as a safe option.
+         * we are using last 6 as a safe option.
          */
         if(range >= IPC_INTERRUPT_OFFSET)
         {
