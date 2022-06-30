@@ -57,6 +57,9 @@
 #if defined (SOC_J721S2)
 #include <ti/board/src/j721s2_evm/include/board_control.h>
 #endif
+#if defined (SOC_J784S4)
+#include <ti/board/src/j784s4_evm/include/board_control.h>
+#endif
 #include <dss_display_test.h>
 
 /* ========================================================================== */
@@ -290,7 +293,7 @@ int32_t DispApp_InitI2c(DispApp_Obj *appObj)
         App_print("\nI2C Open failed!\n");
         status = FVID2_EFAIL;
     }
-#elif defined (SOC_J721S2)
+#elif defined (SOC_J721S2) || defined(SOC_J784S4)
     uint32_t i=0;
     I2C_Params i2cParams;
     I2C_Handle i2cHandle = NULL;
