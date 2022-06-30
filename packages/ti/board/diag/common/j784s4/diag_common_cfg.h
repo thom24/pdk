@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -32,65 +32,37 @@
  *****************************************************************************/
 
 /**
+ *  \file   diag_common_cfg.h
  *
- * \file   eeprom_stress_test.h
- *
- * \brief  This is the header file for EEPROM Stress test.
+ *  \brief  Common protoypes and data structures used by diagnostic tests.
  *
  */
-
-#ifndef _EEPROM_STRESS_TEST_H_
-#define _EEPROM_STRESS_TEST_H_
-
-#include <stdio.h>
+#include <stdbool.h>
 #include <stdlib.h>
-#include <string.h>
+#include <ti/drv/uart/soc/UART_soc.h>
+#include <ti/board/src/j784s4_evm/include/board_utils.h>
 
-#include <ti/drv/i2c/I2C.h>
-#include <ti/drv/i2c/soc/I2C_soc.h>
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
-#include <ti/csl/soc.h>
-#endif
 #include "board.h"
 #include "board_cfg.h"
 
-#include "diag_common_cfg.h"
+#define DIAG_STRESS_TEST_ITERATIONS			(100)
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* Macros used by test pattern generate function */ 
+#define BOARD_DIAG_TEST_PATTERN_FF     (0xFF)
+#define BOARD_DIAG_TEST_PATTERN_AA     (0xAA)
+#define BOARD_DIAG_TEST_PATTERN_55     (0x55)
+#define BOARD_DIAG_TEST_PATTERN_NULL   (0)
+#define BOARD_DIAG_TEST_PATTERN_RANDOM (1)
+#define BOARD_DIAG_TEST_PATTERN_INC    (2)
+#define BOARD_DIAG_TEST_PATTERN_AA_55  (3)
 
-#define ONE_KB_SIZE                             (1024U)
+extern UART_HwAttrs uartInitCfg[];
 
-#if (defined(j721e_evm) || defined(j7200_evm))
-/* Size of Boot EEPROM is 128 KB */
-#define BOOT_EEPROM_SIZE                        (128 * ONE_KB_SIZE)
-
-/* Size of Boot EEPROM page is 256 Bytes */
-#define BOOT_EEPROM_PAGE_SIZE                   (256U)
-#else
-/* Size of Boot EEPROM is 64 KB */
-#define BOOT_EEPROM_SIZE                        (64 * ONE_KB_SIZE)
-
-/* Size of Boot EEPROM page is 128 Bytes */
-#define BOOT_EEPROM_PAGE_SIZE                   (128U)
-#endif
-
-/* Total Boot EEPROM Pages */
-#define TOTAL_BOOT_EEPROM_PAGES                 (BOOT_EEPROM_SIZE/BOOT_EEPROM_PAGE_SIZE)
-
-#define BOARD_EEPROM_FIRST_PAGE                 (0U)
-
-#define BOARD_EEPROM_LAST_PAGE                  (TOTAL_BOOT_EEPROM_PAGES - 1U)
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* _EEPROM_STRESS_TEST_H_ */
+Board_STATUS DIAG_init(void);
+bool BoardDiag_memCompare(uint8_t *buf1, uint8_t *buf2, uint32_t length,  
+                          uint32_t *failIndex);
+void BoardDiag_genPattern(uint8_t *buf, uint32_t length, uint8_t flag);
+int8_t BoardDiag_getUserInput(uint8_t instance);
+void enableMAINI2C(uint8_t instance, uint32_t baseAddr);
+void enableI2C(uint32_t baseAddr);
+void BoardDiag_timerIntrDisable(void);

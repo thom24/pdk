@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -44,7 +44,7 @@
  *  Supported SoCs: AM65XX, J721E, J7200, TPR12, AM64x, AWR294x, J721S2
  *
  *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, tpr12_evm,
- *                       am64x_evm ,am64x_svb, awr294x_evm, j721s2_evm
+ *                       am64x_evm ,am64x_svb, awr294x_evm, j721s2_evm, j784s4_evm
  *
  */
 
@@ -120,6 +120,17 @@ boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
 };
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false}
+};
+#elif defined(j784s4_evm)
+boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
+    {"EVM Board\0",                 EVM_EEPROM_SLAVE_ADDR,          true},
+    {"GESI Board\0",                EXP_CONN_EEPROM_SLAVE_ADDR,     false},
+    {"CSI2 Board\0",                CSI2_EXP_EEPROM_SLAVE_ADDR,     false},
+    {"ENET Board\0",                ENET_EXP_EEPROM_SLAVE_ADDR,     false}
+};
+Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_WKUP, false},
     {0,     BOARD_SOC_DOMAIN_WKUP, false}
 };

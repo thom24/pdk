@@ -73,12 +73,17 @@ COMP_LIST_COMMON += spi
 
 # Common source files and CFLAGS across all platforms and cores
 # Common source files and CFLAGS across all platforms and cores
-PACKAGE_SRCS_COMMON = ../src $(BOARD) makefile
+PACKAGE_SRCS_COMMON = ../src makefile
 PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
-SRCS_COMMON += octal_nand_test.c diag_common_cfg.c ospi_mux_gpio_pin_config.c
+SRCS_COMMON += octal_nand_test.c diag_common_cfg.c
+
+ifeq ($(BOARD), $(filter $(BOARD), j721s2_evm j784s4_evm))
+SRCS_COMMON += ospi_mux_gpio_pin_config.c
+PACKAGE_SRCS_COMMON += $(BOARD)
+endif
 
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 SRCS_ASM_COMMON += diag_entry_r5.asm

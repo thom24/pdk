@@ -7,7 +7,7 @@
  */
 
 /*
- * Copyright (C) 2014-2019 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -111,7 +111,7 @@ static void delay(unsigned int delayValue);
  **********************************************************************/
 
 MMCSD_Handle handle = NULL;
-#if defined(DIAG_STRESS_TEST) && (defined(j7200_evm) || defined(SOC_AM64X))
+#if defined(DIAG_STRESS_TEST) && (defined(j7200_evm) || defined(SOC_AM64X)  || defined(SOC_J721S2) || defined(SOC_J784S4))
 static uint8_t tx[SECTORSIZE*TESTSECTORS] __attribute__ ((section (".data_buffer")));
 static uint8_t rx[SECTORSIZE*TESTSECTORS] __attribute__ ((section (".data_buffer")));
 #else

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -307,6 +307,11 @@ static int8_t BoardDiag_EepromStressTest(void)
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
 
+#if ( defined(SOC_J721S2) || defined(SOC_J784S4) && defined (__aarch64__))
+    /* Enabling MCU I2C */
+    enableI2C(CSL_MCU_I2C0_CFG_BASE);
+#endif
+
     for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
     {
         I2C_socGetInitCfg(index, &i2cConfig);
@@ -330,7 +335,7 @@ static int8_t BoardDiag_EepromStressTest(void)
         return ret;
     }
 
-#if (defined(SOC_J721E) || defined(SOC_J7200))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2 ) || defined(SOC_J784S4))
     GPIO_v0_HwAttrs gpioCfg;
     GPIO_socGetInitCfg(0, &gpioCfg);
     gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;

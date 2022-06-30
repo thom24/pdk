@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -40,9 +40,9 @@
  *
  *  Operation: Verification of OSPI by accessing the device connected to it.
  *
- *  Supported SoCs : J721S2
+ *  Supported SoCs : J721S2, J784S4
  *
- *  Supported Platforms: j721s2_evm.
+ *  Supported Platforms: j721s2_evm, j784s4_evm.
  *
  */
 

@@ -83,7 +83,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += ospi_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm j721s2_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm j721s2_evm j784s4_evm))
 SRCS_COMMON += ospi_mux_gpio_pin_config.c
 PACKAGE_SRCS_COMMON += $(BOARD)
 endif

@@ -73,6 +73,7 @@ board_diag_j721e_BOARDLIST = j721e_evm
 board_diag_j721e_CORELIST = mpu1_0 mcu1_0
 board_diag_j7200_CORELIST = mpu1_0 mcu1_0
 board_diag_j721s2_CORELIST = mpu1_0 mcu1_0
+board_diag_j784s4_CORELIST = mpu1_0 mcu1_0
 board_diag_tpr12_CORELIST = mcu1_0
 board_diag_awr294x_CORELIST = mcu1_0
 board_diag_am64x_CORELIST = mpu1_0 mcu1_0
@@ -158,7 +159,7 @@ export board_diag_bootEeprom_CORE_DEPENDENCY
 export board_diag_bootEeprom_MAKEFILE
 board_diag_bootEeprom_PKG_LIST = board_diag_bootEeprom
 board_diag_bootEeprom_INCLUDE = $(board_diag_bootEeprom_PATH)
-board_diag_bootEeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm j721s2_evm
+board_diag_bootEeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm j721s2_evm j784s4_evm
 board_diag_bootEeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_bootEeprom_$(SOC)_CORELIST
 export board_diag_bootEeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -400,7 +401,7 @@ export board_diag_eeprom_CORE_DEPENDENCY
 export board_diag_eeprom_MAKEFILE
 board_diag_eeprom_PKG_LIST = board_diag_eeprom
 board_diag_eeprom_INCLUDE = $(board_diag_eeprom_PATH)
-board_diag_eeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb awr294x_evm j721s2_evm
+board_diag_eeprom_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_evm am64x_svb awr294x_evm j721s2_evm j784s4_evm
 board_diag_eeprom_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_eeprom_$(SOC)_CORELIST
 export board_diag_eeprom_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -440,7 +441,7 @@ export board_diag_emmc_CORE_DEPENDENCY
 export board_diag_emmc_MAKEFILE
 board_diag_emmc_PKG_LIST = board_diag_emmc
 board_diag_emmc_INCLUDE = $(board_diag_emmc_PATH)
-board_diag_emmc_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm
+board_diag_emmc_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm j784s4_evm
 board_diag_emmc_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_emmc_$(SOC)_CORELIST
 export board_diag_emmc_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -755,7 +756,7 @@ export board_diag_mem_CORE_DEPENDENCY
 export board_diag_mem_MAKEFILE
 board_diag_mem_PKG_LIST = board_diag_mem
 board_diag_mem_INCLUDE = $(board_diag_mem_PATH)
-board_diag_mem_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm
+board_diag_mem_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm j784s4_evm
 board_diag_mem_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_mem_$(SOC)_CORELIST
 export board_diag_mem_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -775,7 +776,7 @@ export board_diag_mmcsd_CORE_DEPENDENCY
 export board_diag_mmcsd_MAKEFILE
 board_diag_mmcsd_PKG_LIST = board_diag_mmcsd
 board_diag_mmcsd_INCLUDE = $(board_diag_mmcsd_PATH)
-board_diag_mmcsd_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm
+board_diag_mmcsd_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm j784s4_evm
 board_diag_mmcsd_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_mmcsd_$(SOC)_CORELIST
 export board_diag_mmcsd_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -795,7 +796,7 @@ export board_diag_norflash_CORE_DEPENDENCY
 export board_diag_norflash_MAKEFILE
 board_diag_norflash_PKG_LIST = board_diag_norflash
 board_diag_norflash_INCLUDE = $(board_diag_norflash_PATH)
-board_diag_norflash_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_svb awr294x_evm j721s2_evm
+board_diag_norflash_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm tpr12_evm am64x_svb awr294x_evm j721s2_evm j784s4_evm
 board_diag_norflash_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_norflash_$(SOC)_CORELIST
 export board_diag_norflash_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -815,7 +816,7 @@ export board_diag_octalNand_CORE_DEPENDENCY
 export board_diag_octalNand_MAKEFILE
 board_diag_octalNand_PKG_LIST = board_diag_octalNand
 board_diag_octalNand_INCLUDE = $(board_diag_octalNand_PATH)
-board_diag_octalNand_BOARDLIST = j721s2_evm
+board_diag_octalNand_BOARDLIST = j721s2_evm j784s4_evm
 board_diag_octalNand_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_octalNand_$(SOC)_CORELIST
 export board_diag_octalNand_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
@@ -855,7 +856,7 @@ export board_diag_ospi_CORE_DEPENDENCY
 export board_diag_ospi_MAKEFILE
 board_diag_ospi_PKG_LIST = board_diag_ospi
 board_diag_ospi_INCLUDE = $(board_diag_ospi_PATH)
-board_diag_ospi_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm
+board_diag_ospi_BOARDLIST = j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm am64x_svb j721s2_evm j784s4_evm
 board_diag_ospi_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
 export board_diag_ospi_$(SOC)_CORELIST
 export board_diag_ospi_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)

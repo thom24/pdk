@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -32,65 +32,38 @@
  *****************************************************************************/
 
 /**
+ *  \file   ospi_mux_gpio_pin_config.c
  *
- * \file   eeprom_stress_test.h
- *
- * \brief  This is the header file for EEPROM Stress test.
+ *  \brief  GPIO pin configuration file.
  *
  */
-
-#ifndef _EEPROM_STRESS_TEST_H_
-#define _EEPROM_STRESS_TEST_H_
-
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <ti/drv/i2c/I2C.h>
-#include <ti/drv/i2c/soc/I2C_soc.h>
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
-#include <ti/drv/uart/UART.h>
-#include <ti/drv/uart/UART_stdio.h>
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
 #include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
 #include <ti/csl/soc.h>
-#endif
-#include "board.h"
-#include "board_cfg.h"
+#include <ti/drv/gpio/soc/GPIO_soc.h>
 
-#include "diag_common_cfg.h"
+/*
+   Port and pin number mask for GPIO.
+   Bits 7-0: Pin number  and Bits 15-8: Port number */
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+/* SPI test header pin - 1 2 and 4 */
+#define OSPI_NAND_BUS_SEL      (0x0006)
 
-#define ONE_KB_SIZE                             (1024U)
+/* GPIO Driver board specific pin configuration structure */
+GPIO_PinConfig gpioPinConfigs[] = {
+	OSPI_NAND_BUS_SEL  | GPIO_CFG_OUTPUT,
+};
 
-#if (defined(j721e_evm) || defined(j7200_evm))
-/* Size of Boot EEPROM is 128 KB */
-#define BOOT_EEPROM_SIZE                        (128 * ONE_KB_SIZE)
+/* GPIO Driver call back functions */
+GPIO_CallbackFxn gpioCallbackFunctions[] = {
+    NULL,
+};
 
-/* Size of Boot EEPROM page is 256 Bytes */
-#define BOOT_EEPROM_PAGE_SIZE                   (256U)
-#else
-/* Size of Boot EEPROM is 64 KB */
-#define BOOT_EEPROM_SIZE                        (64 * ONE_KB_SIZE)
-
-/* Size of Boot EEPROM page is 128 Bytes */
-#define BOOT_EEPROM_PAGE_SIZE                   (128U)
-#endif
-
-/* Total Boot EEPROM Pages */
-#define TOTAL_BOOT_EEPROM_PAGES                 (BOOT_EEPROM_SIZE/BOOT_EEPROM_PAGE_SIZE)
-
-#define BOARD_EEPROM_FIRST_PAGE                 (0U)
-
-#define BOARD_EEPROM_LAST_PAGE                  (TOTAL_BOOT_EEPROM_PAGES - 1U)
-
-#ifdef __cplusplus
-}
-#endif /* __cplusplus */
-
-#endif /* _EEPROM_STRESS_TEST_H_ */
+/* GPIO Driver configuration structure */
+GPIO_v0_Config GPIO_v0_config = {
+    gpioPinConfigs,
+    gpioCallbackFunctions,
+    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
+    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
+    0,
+};

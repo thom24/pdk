@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -53,7 +53,7 @@
 
 #include "board.h"
 #include "board_cfg.h"
-#if (defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm))
+#if (defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm))
 #include "board_utils.h"
 #endif
 
@@ -117,6 +117,16 @@ extern "C" {
 #define EXP_CONN_EEPROM_SLAVE_ADDR              (0x52U)
 #define CSI2_EXP_EEPROM_SLAVE_ADDR              (0x52U)
 #define ENET_EXP_EEPROM_SLAVE_ADDR              (0x54U)
+
+#elif defined(j784s4_evm)
+#define I2C_INSTANCE                            (0U)
+#define MAX_NUM_OF_BOARDS                       (BOARD_ID_MAX_BOARDS)
+#define STARTING_BOARD_NUM                      (1U)
+
+#define EVM_EEPROM_SLAVE_ADDR                   (BOARD_EVM_EEPROM_SLAVE_ADDR)
+#define EXP_CONN_EEPROM_SLAVE_ADDR              (BOARD_GESI_EEPROM_SLAVE_ADDR)
+#define CSI2_EXP_EEPROM_SLAVE_ADDR              (BOARD_CSI2_EEPROM_SLAVE_ADDR)
+#define ENET_EXP_EEPROM_SLAVE_ADDR              (BOARD_ENET_EEPROM_SLAVE_ADDR)
 
 #else  /* j721e_evm */
 #define MAX_NUM_OF_BOARDS                       (9U)

@@ -277,7 +277,8 @@ extern "C" {
 #define BOARD_EEPROM_CONFIG_ADDR                        (BOARD_EEPROM_SERIAL_NO_ADDR + BOARD_EEPROM_SERIAL_NO_LENGTH)
 
 #define BOARD_SOM_EEPROM_SLAVE_ADDR                   (0x50U)
-#define BOARD_CP_EEPROM_SLAVE_ADDR                    (0x51U)
+#define BOARD_CP_EEPROM_SLAVE_ADDR                    (0x50U)
+#define BOARD_EVM_EEPROM_SLAVE_ADDR                   (0x50U)
 #define BOARD_ENET_EEPROM_SLAVE_ADDR                  (0x54U)
 #define BOARD_GESI_EEPROM_SLAVE_ADDR                  (0x52U)
 #define BOARD_CSI2_EEPROM_SLAVE_ADDR                  (0x52U)
