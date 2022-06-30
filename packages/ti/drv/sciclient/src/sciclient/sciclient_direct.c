@@ -355,6 +355,46 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                     ret = CSL_EFAIL;
                 }
                 break;
+
+#ifdef CONFIG_LPM_DM    /* Low power mode handling */
+            case TISCI_MSG_PREPARE_SLEEP:
+                memcpy(message, pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
+                /* Processing prepare sleep message locally */
+                ret = Sciclient_ProcessPmMessage(pReqPrm->flags,message);
+                if (pRespPrm->pRespPayload != NULL)
+                {
+                    memcpy(pRespPrm->pRespPayload, message, pRespPrm->respPayloadSize);
+                }
+                hdr = (struct tisci_header *) &message;
+                pRespPrm->flags = hdr->flags;
+
+                if ((ret == CSL_PASS) &&
+                        ((pRespPrm->flags & TISCI_MSG_FLAG_ACK) == TISCI_MSG_FLAG_ACK))
+                {
+                /* Sending to TIFS for further processing */
+                *fwdStatus = SCISERVER_FORWARD_MSG;
+                ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
+                }
+                else
+                {
+                    /* local processing of prepare sleep failed, send NACK to power master */
+                    ret = CSL_EFAIL;
+                }
+                break;
+            case TISCI_MSG_ENTER_SLEEP:
+            case TISCI_MSG_WAKE_REASON:
+            case TISCI_MSG_SET_IO_ISOLATION:
+                memcpy(message, pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
+                /* Processing enter sleep message locally */
+                ret = Sciclient_ProcessPmMessage(pReqPrm->flags,message);
+                if (pRespPrm->pRespPayload != NULL)
+                {
+                    memcpy(pRespPrm->pRespPayload, message, pRespPrm->respPayloadSize);
+                }
+                hdr = (struct tisci_header *) &message;
+                pRespPrm->flags = hdr->flags;
+                break;
+#endif
             /* RM messages processed by Secure RM within TIFS on M3 */
             case TISCI_MSG_RM_PSIL_PAIR:
             case TISCI_MSG_RM_PSIL_UNPAIR:
@@ -560,6 +600,16 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
             break;
         case TISCI_MSG_SYS_RESET               :
             ret = sys_reset_handler((uint32_t*)tx_msg); break;
+#ifdef CONFIG_LPM_DM
+        case TISCI_MSG_PREPARE_SLEEP             :
+            ret = dm_prepare_sleep_handler((uint32_t*)tx_msg); break;
+        case TISCI_MSG_ENTER_SLEEP               :
+            ret = dm_enter_sleep_handler((uint32_t*)tx_msg); break;
+        case TISCI_MSG_WAKE_REASON               :
+            ret = dm_lpm_wake_reason_handler((uint32_t*)tx_msg); break;
+        case TISCI_MSG_SET_IO_ISOLATION          :
+            ret = dm_set_io_isolation_handler((uint32_t*)tx_msg); break;
+#endif
         default:
             ret = CSL_EFAIL; msg_inval = 1U;
     }
