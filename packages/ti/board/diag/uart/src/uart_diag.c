@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2021, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,11 +49,11 @@
 static uint8_t gUartTestBuf[100] = "\nTesting UART print to console at 115.2k baud rate";
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include "board_i2c_io_exp.h"
 #include "diag_common_cfg.h"
 
-#if defined(SOC_J7200)
+#if defined(SOC_J7200) || defined(SOC_J784S4)
 #include "board_control.h"
 #endif
 
@@ -761,7 +761,7 @@ int main(void)
 
     return ret;
 }
-#elif (defined(SOC_J721S2))
+#elif (defined(SOC_J721S2) || defined(SOC_J784S4))
 int main(void)
 {
     Board_STATUS status;
@@ -840,6 +840,54 @@ int main(void)
     }
 
     UART_printf("\nSoC UART2 Test Completed!\n");
+
+#if defined(j784s4_evm)
+    UART_printf("\nStarting SoC UART3 Test...\n");
+    UART_printf("\nCheck SoC UART3 console for the test logs\n");
+
+    /* Close the UART instance for SoC UART1 */
+    Board_deinit(BOARD_DEINIT_UART_STDIO);
+
+    /* UART Mux enable for instance 3 */
+    Board_control(BOARD_CTRL_CMD_SET_IO_MUX_PORTB2, NULL);
+
+    Board_IoExpCfg_t ioExpCfg;
+
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_1;
+    ioExpCfg.pinNum      = PIN_NUM_4;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to enable the I2C mux selection\n");
+    }
+
+
+
+    initParams.uartInst = BOARD_UART3_INSTANCE;
+    Board_setInitParams(&initParams);
+    status = Board_init(BOARD_INIT_UART_STDIO);
+    if(status != BOARD_SOK)
+    {
+        return -1;
+    }
+
+    ret = uart_test();
+    if(ret != 0)
+    {
+        UART_printf("\nSoC UART3 Test Failed!!\n");
+        return ret;
+    }
+
+    UART_printf("\nSoC UART3 Test Completed!\n");
+
+#endif
 
     UART_printf("\nStarting MCU UART Test...\n");
     UART_printf("\nCheck MCU UART console for the test logs\n");

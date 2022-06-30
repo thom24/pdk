@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -44,7 +44,7 @@
  *
  *  Supported SoCs: AM65XX, J721E, J7200,AM64x, TPR12, AWR294X, J721S2
  *
- *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb, tpr12_evm, awr294x_evm, j721s2_evm
+ *  Supported Platforms: am65xx_idk, j721e_evm, j7200_evm, am64x_evm, am64x_svb, tpr12_evm, awr294x_evm, j721s2_evm, j784s4_evm
  *
  */
 
@@ -94,6 +94,15 @@ BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_CP] =
  {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, MCU_MCAN1_TX_INT_NUM,  MCU_MCAN1_RX_INT_NUM,  MCU_MCAN1_TS_INT_NUM},
  {CSL_MCAN3_MSGMEM_RAM_BASE,     3, MAIN_MCAN3_TX_INT_NUM, MAIN_MCAN3_RX_INT_NUM, MAIN_MCAN3_TS_INT_NUM},
  {CSL_MCAN5_MSGMEM_RAM_BASE,     5, MAIN_MCAN5_TX_INT_NUM, MAIN_MCAN5_RX_INT_NUM, MAIN_MCAN5_TS_INT_NUM}
+};
+#elif defined(j784s4_evm)
+BoardDiag_McanPortInfo_t gMcanDiagPortInfo[MCAN_MAX_PORTS_CP] =
+{{CSL_MCU_MCAN0_MSGMEM_RAM_BASE, 0, MCU_MCAN0_TX_INT_NUM,  MCU_MCAN0_RX_INT_NUM,  MCU_MCAN0_TS_INT_NUM},
+ {CSL_MCU_MCAN1_MSGMEM_RAM_BASE, 1, MCU_MCAN1_TX_INT_NUM,  MCU_MCAN1_RX_INT_NUM,  MCU_MCAN1_TS_INT_NUM},
+ {CSL_MCAN3_MSGMEM_RAM_BASE,     3, MAIN_MCAN3_TX_INT_NUM, MAIN_MCAN3_RX_INT_NUM, MAIN_MCAN3_TS_INT_NUM},
+ {CSL_MCAN5_MSGMEM_RAM_BASE,     5, MAIN_MCAN5_TX_INT_NUM, MAIN_MCAN5_RX_INT_NUM, MAIN_MCAN5_TS_INT_NUM},
+ {CSL_MCAN16_MSGMEM_RAM_BASE,    16, MAIN_MCAN16_TX_INT_NUM, MAIN_MCAN16_RX_INT_NUM, MAIN_MCAN16_TS_INT_NUM},
+ {CSL_MCAN4_MSGMEM_RAM_BASE,     4, MAIN_MCAN4_TX_INT_NUM, MAIN_MCAN4_RX_INT_NUM, MAIN_MCAN4_TS_INT_NUM}
 };
 #elif defined(SOC_AM64X)
 BoardDiag_McanPortInfo_t  gMcanDiagPortInfo[MCAN_MAX_PORTS] =
@@ -945,7 +954,7 @@ static int8_t BoardDiag_mcanRxTest(uint8_t index)
     return testStatus;
 }
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 /**
  * \brief   This function enables the Main CAN module and transceiver by setting
  *          the Enable and STB Pins
@@ -956,6 +965,7 @@ static void BoardDiag_mcanMainconfigs(void)
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
 
+#if !defined (j784s4_evm)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
@@ -970,7 +980,7 @@ static void BoardDiag_mcanMainconfigs(void)
     {
         UART_printf("Failed to enable the main MCAN0 \n");
     }
-
+#endif
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
@@ -978,8 +988,14 @@ static void BoardDiag_mcanMainconfigs(void)
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_7;
+#if defined(j784s4_evm)
+    /* MCAN3_STB, MCAN5_STB, MCAN4_STB pins enabling*/
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
+
+#else
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
-    
+#endif
+
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
     if(status != BOARD_SOK)
     {
@@ -1003,7 +1019,7 @@ static void BoardDiag_mcanMainconfigs(void)
     }
 #endif
 }
-#endif  /* #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) */
+#endif  /* #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)*/
 
 #if !defined(SOC_AM64X) && !defined(SOC_TPR12) && !defined(SOC_AWR294X)
 
@@ -1067,7 +1083,7 @@ void BoardDiag_McanMuxEnable(i2cIoExpPinNumber_t pinNum,
 static void BoardDiag_mcanEnable(void)
 {
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     Board_IoExpCfg_t ioExpCfg;
     Board_STATUS status = BOARD_SOK;
 #endif
@@ -1118,10 +1134,15 @@ static void BoardDiag_mcanEnable(void)
 #else
     BoardDiag_mcanGpioConfig(CSL_WKUP_GPIO0_BASE,0);
     /* Enable MCU CAN transceivers by setting the STB pins */
+#if defined(j784s4_evm)
+    GPIO_write(0, 0); /* MCU_CAN0_STB */
+    GPIO_write(1, 0); /* MCU_CAN1_STB */
+#else
     GPIO_write(0, 1); /* MCU_CAN0_STB */
     GPIO_write(1, 0); /* MCU_CAN1_STB */
     /* MCU_MCAN0_EN */
     GPIO_write(2, 1); /* WKUP_GPIO0_0 */
+#endif
 
     /* Enable CP board MAIN CAN transceivers by setting the STB pins */
     BoardDiag_mcanMainconfigs();
@@ -1161,8 +1182,32 @@ static void BoardDiag_mcanEnable(void)
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
 
     Board_control(BOARD_CTRL_CMD_SET_SOM_MUX_PORTB2, NULL);
-#endif
 
+#elif defined (j784s4_evm)
+    /* Mapping MCAN3 and MCAN5 tx and rx pins */
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_1;
+    ioExpCfg.pinNum      = PIN_NUM_4;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to set the mcan TX and RX pin \n");
+    }
+
+    /* Mapping MCAN4 tx and rx pins */
+    status = Board_control (BOARD_CTRL_CMD_SET_IO_MUX_PORTB2, NULL);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to set the mux from A -> B2 \n");
+    }
+    /* MCU0, MCU1, MCAN16 tx and rx are directly mapped to SOC */
+#endif
     if(expBoardDetect)
     {
         UART_printf("GESI board Detected\n");
@@ -1211,11 +1256,11 @@ int32_t BoardDiag_mcanTest(void)
     uint32_t  index;
     uint32_t  portNum;
 
-#if defined(DIAG_STRESS_TEST) && (defined(am65xx_idk) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if defined(DIAG_STRESS_TEST) && (defined(am65xx_idk) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4))
     char rdBuf = 'y';
 #endif
 
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4))
     UART_printf  ("***********************************************\n");
     UART_printf  ("*                MCAN Stress Test             *\n");
     UART_printf  ("***********************************************\n");
@@ -1295,7 +1340,7 @@ int32_t BoardDiag_mcanTest(void)
             }
 
             UART_printf("\nReceived Packet - %d\n\n", (index + 1));
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4))
             /* Check if there a input from console to break the test */
             rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
             if((rdBuf == 'b') || (rdBuf == 'B'))
@@ -1343,7 +1388,7 @@ int32_t BoardDiag_mcanTest(void)
             }
 
             UART_printf("\nReceived Packet - %d\n\n", (index + 1));
-#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X))
+#if defined(DIAG_STRESS_TEST) && ((defined(am65xx_idk)) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4))
             /* Check if there a input from console to break the test */
             rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
             if((rdBuf == 'b') || (rdBuf == 'B'))

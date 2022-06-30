@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -107,7 +107,7 @@ static int8_t BoardDiag_UartStressTest(uint32_t uartInstance, uint8_t setPort)
     uint8_t testPassMsg[] = "UART Stress Test Passed\n";
     uint8_t testFailMsg[] = "UART Stress Test Failed\n";
     uint8_t input = '\n';
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_J721S2) || defined(SOC_J784S4)
     if(setPort == 1)
     {
         /* Enable MCU UART port */
@@ -422,6 +422,55 @@ int main(void)
     {
         ret = -1;
     }
+#endif
+
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
+    ret = BoardDiag_UartStressTest(BOARD_UART5_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+
+    ret = BoardDiag_UartStressTest(BOARD_UART2_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+
+#if defined(j784s4_evm)
+    /* UART Mux enable for instance 3 */
+    Board_control(BOARD_CTRL_CMD_SET_IO_MUX_PORTB2, NULL);
+
+    Board_IoExpCfg_t ioExpCfg;
+
+    ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_1;
+    ioExpCfg.pinNum      = PIN_NUM_4;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to enable the I2C mux selection\n");
+    }
+
+    ret = BoardDiag_UartStressTest(BOARD_UART3_INSTANCE, 0);
+    if(ret != 0)
+    {
+        ret = -1;
+    }
+#endif
+
+    ret = BoardDiag_UartStressTest(BOARD_MCU_UART_INSTANCE, 1);
+    if (ret != 0)
+    {
+        ret = -1;
+    }
+
 #endif
 
 #if !defined(am64x_evm)
