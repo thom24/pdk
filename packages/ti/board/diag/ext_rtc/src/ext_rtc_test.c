@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  Operation: This test is used to verify the external RTC interface on the
  *  board by setting and reading the time configurations.
  *
- *  Supported SoCs: AM65xx, J721E, J7200, J721S2.
+ *  Supported SoCs: AM65xx, J721E, J7200, J721S2, J784S4.
  * 
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, j721s2_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, j721s2_evm, j784s4_evm.
  * 
  */
  

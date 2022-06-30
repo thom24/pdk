@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016-2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -134,6 +134,43 @@ inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
     {"VSYS_3V3_SOM",        0x4DU, {0.001, 0.0025, 1.25, 0.006103516, 0.0002441, 20972}},
     {"VDDA_DLL_0V8",        0x4EU, {0.01,  0.0025, 1.25, 1.2207E-05,  0.0000005, 64528}},
     {"EXP_3V3",             0x4FU, {0.01,  0.0025, 1.25, 0.007629395, 0.0003052, 1677}}
+};
+#elif defined(SOC_J784S4)
+inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
+    {"VDD_MCU_0V85",        0x40U, {0.01,  0.0025, 1.25, 0.001028442, 0.0000411, 12446}},
+    {"VDD_MCU_RAM_0V85",    0x41U, {0.01,  0.0025, 1.25, 9.91821E-05, 0.0000040, 55924}},
+    {"VDA_MCU_1V8",         0x42U, {0.01,  0.0025, 1.25, 4.42505E-05, 0.0000018, 64528}},
+    {"VDD_MCUIO_3V3",       0x43U, {0.01,  0.0025, 1.25, 3.96729E-05, 0.0000016, 64528}},
+    {"VDD_MCUIO_1V8",       0x44U, {0.01,  0.0025, 1.25, 0.0002388,   0.0000096, 53601}},
+    {"VDD_RAM_0V85",        0x46U, {0.01,  0.0025, 1.25, 0.000244904, 0.0000098, 52265}},
+    {"VDD_GPIORET_WK_0V8",  0x47U, {0.01,  0.0025, 1.25, 2.28882E-05, 0.0000009, 64528}},
+    {"VSYS_GPIORET_IO_3V3", 0x49U, {0.01,  0.0025, 1.25, 0.000117493, 0.0000047, 64528}},
+/*
+    {"VDD_CORE_0V8",        0x45U, {0.005, 0.0025, 1.25, 0.003561401, 0.0001425, 7188}},
+    {"VDD_CPU_AVS",         0x48U, {0.01,  0.0025, 1.25, 0.003318787, 0.0001328, 3856}},
+    {"VDD_DDR_1V1",         0x4AU, {0.01,  0.0025, 1.25, 0.000117493, 0.0000047, 47935}},
+*/ //Reserved for future use. Not enabled in current design
+    {"VDD_PHYCORE_0V8",     0x4BU, {0.01,  0.0025, 1.25, 0.00021286,  0.0000085, 60133}},
+    {"VDA_PLL_1V8",         0x4CU, {0.01,  0.0025, 1.25, 1.60217E-05, 0.0000006, 64528}},
+    {"VDA_PHY_1V8",         0x4DU, {0.01,  0.0025, 1.25, 6.63757E-05, 0.0000027, 18641}},
+    {"VDA_USB_3V3",         0x4EU, {0.01,  0.0025, 1.25, 7.62939E-06, 0.0000003, 64528}},
+    {"VDD_GPIORET_IO_3V3",  0x4FU, {0.01,  0.0025, 1.25, 0.000122833, 0.0000049, 64528}},
+    {"VDD_IO_1V8",          0x40U, {0.01,  0.0025, 1.25, 0.000127411, 0.0000051, 16777}},
+    {"VDD_IO_3V3",          0x41U, {0.01,  0.0025, 1.25, 2.28882E-05, 0.0000009, 64528}},
+    {"VDD_SD_DV",           0x42U, {0.01,  0.0025, 1.25, 4.27246E-05, 0.0000017, 33554}},
+    {"VDD1_DDR_1V8",        0x43U, {0.01,  0.0025, 1.25, 0.000976563, 0.0000391, 13107}},
+    {"VCCA_3V3_CORE",       0x45U, {0.01,  0.0025, 1.25, 0.00038147,  0.0000153, 33554}},
+    {"VSYS_MCUIO_1V8",      0x46U, {0.01,  0.0025, 1.25, 0.000198364, 0.0000079, 64527}},
+    {"VSYS_MCUIO_3V3",      0x47U, {0.01,  0.0025, 1.25, 0.000686646, 0.0000275, 18641}},
+    {"VSYS_IO_1V8",         0x48U, {0.01,  0.0025, 1.25, 0.001144409, 0.0000458, 11184}},
+    {"VSYS_IO_3V3",         0x49U, {0.01,  0.0025, 1.25, 0.006103516, 0.0002441, 2097}},
+    {"VCC_12V0",            0x4AU, {0.01,  0.0025, 1.25, 0.003814697, 0.0001526, 3355}},
+    {"VSYS_5V0",            0x4BU, {0.005, 0.0025, 1.25, 0.004959106, 0.0001984, 5162}},
+    {"VSYS_3V3",            0x4CU, {0.001, 0.0025, 1.25, 0.006103516, 0.0002441, 20972}},
+    {"VCCA_3V3_DDR",        0x4DU, {0.01,  0.0025, 1.25, 0.007629395, 0.0003052, 1677}},
+    {"VDA_DLL_0V8",         0x4EU, {0.01,  0.0025, 1.25, 1.2207E-05,  0.0000005, 64528}},
+    {"VCCA_3V3_CPU_AVS",    0x4FU, {0.01,  0.0025, 1.25, 0.007629395, 0.0003052, 1677}}
+//    {"VDD_DDR_SOC_1V1",     0x44U, {0.01,  0.0025, 1.25, 0.000190735, 0.0000076, 64527}}, //Reserved for future use. Not enabled in current design
 };
 #elif defined(SOC_J7200)
 inaCfgObj_t inaDevice[NUM_OF_INA_DEVICES] = {
@@ -550,8 +587,8 @@ static int8_t BoardDiag_read_current(I2C_Handle handle,
 
 #if defined(j721s2_evm)
 /**
- * \brief   This function enables the Main CAN module and transceiver by setting
- *          the Enable and STB Pins
+ * \brief   This function enables the Mux for I2C instance controlling
+ *          current monitor devices
  *
  */
 static void BoardDiag_configI2CMux(void)
@@ -592,6 +629,21 @@ static void BoardDiag_configI2CMux(void)
         UART_printf("Failed to enable the I2C mux selection\n");
     }
 }
+
+#elif defined(j784s4_evm)
+
+static void BoardDiag_configI2CMux(void)
+{
+
+    Board_STATUS status = BOARD_SOK;
+    status = Board_control(BOARD_CTRL_CMD_SET_IO_MUX_PORTB2, NULL);
+    if(status != BOARD_SOK)
+    {
+        UART_printf("Failed to enable the port2  mux selection\n");
+    }
+}
+
+
 #endif  /* #if defined(j721e_evm) */
 
 /**
@@ -625,7 +677,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 
     /* Initializes the I2C Parameters */
     I2C_Params_init(&i2cParams);
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AWR294X) || defined(SOC_J721S2))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AWR294X) || defined(SOC_J721S2) || defined(SOC_J784S4))
     i2cParams.bitRate = I2C_400kHz;
 #endif
     /* Configures the I2C instance with the passed parameters*/
@@ -640,7 +692,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 
     for(index = 0; index < NUM_OF_INA_DEVICES; index++)
     {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
         if (index == TOT_INA_IN_PM1)
         {
              /* Selecting PM2 I2C */
@@ -743,12 +795,16 @@ static int8_t BoardDiag_run_current_monitor_test(void)
 int8_t BoardDiag_currentMonitorFuctionalTest(void)
 {
     int8_t ret = 0;
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)  || defined(SOC_J784S4)
+
     Board_I2cInitCfg_t i2cCfg;
+#if!defined(j784s4_evm)
     i2cIoExpSignalLevel_t signalLev = GPIO_SIGNAL_LEVEL_LOW;
 #endif
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
-	
+#endif
+
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+
 #if !defined (__aarch64__)
 	enableI2C(CSL_I2C0_CFG_BASE);
 #endif
@@ -774,6 +830,7 @@ int8_t BoardDiag_currentMonitorFuctionalTest(void)
                               PIN_NUM_0,
                               (i2cIoExpSignalLevel_t) SIGNAL_LEVEL_HIGH);
 
+#if !defined(j784s4_evm)
     Board_i2cIoExpSetPinDirection(BOARD_I2C_IOEXP_DEVICE2_ADDR,
                                   THREE_PORT_IOEXP,
                                   PORTNUM_1,
@@ -799,7 +856,16 @@ int8_t BoardDiag_currentMonitorFuctionalTest(void)
                               PORTNUM_1,
                               PIN_NUM_4,
                               signalLev);
+#endif
     Board_i2cIoExpDeInit();
+
+
+#if defined(j784s4_evm)
+    GPIO_v0_HwAttrs gpioCfg;
+    GPIO_socGetInitCfg(0, &gpioCfg);
+    gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
+    GPIO_socSetInitCfg(0, &gpioCfg);
+#endif
 
     GPIO_init();
     /* Selecting PM1 I2C */
@@ -883,7 +949,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
  *            -1 - in case of failure.
  *
  */
-#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X) || defined(SOC_J721S2))
+#if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AM64X) || defined(SOC_AWR294X) || defined(SOC_J721S2) || defined(SOC_J784S4))
 int main(void)
 {
     Board_STATUS status;
@@ -911,20 +977,18 @@ int main(void)
 	enableMAINI2C(2, CSL_I2C2_CFG_BASE);
 #endif
 
-#if (defined(SOC_J721E) || defined(SOC_J7200)) && !defined (__aarch64__)
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */
 	enableMAINI2C(BOARD_I2C_CURRENT_MONITOR_INSTANCE, CSL_I2C2_CFG_BASE);
-#elif (defined(SOC_J721S2) && !defined (__aarch64__))
-	enableMAINI2C(BOARD_I2C_CURRENT_MONITOR_INSTANCE, CSL_I2C1_CFG_BASE);
 #endif
 
     UART_printf("\n**********************************************\n");
     UART_printf  ("*            Current Monitor Test            *\n");
     UART_printf  ("**********************************************\n");
 
-#if defined(j721s2_evm)
+#if defined(j721s2_evm) || defined(j784s4_evm)
     /* Enable the Mux for routing I2C lines */
     BoardDiag_configI2CMux();
 #endif

@@ -77,7 +77,7 @@ PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += current_monitor_test.c diag_common_cfg.c
-ifeq ($(SOC), $(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC), $(filter $(SOC), j721e j7200 j721s2 j784s4))
 SRCS_COMMON += current_monitor_config.c
 PACKAGE_SRCS_COMMON += $(BOARD)
 endif

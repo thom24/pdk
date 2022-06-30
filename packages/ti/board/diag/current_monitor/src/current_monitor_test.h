@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -59,11 +59,16 @@
 
 #include "diag_common_cfg.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/drv/gpio/GPIO.h>
 #include "board_internal.h"
 #include "board_i2c_io_exp.h"
 #include "board_control.h"
+#endif
+
+#if defined(j784s4_evm)
+#include <ti/csl/csl_gpio.h>
+#include <ti/drv/gpio/soc/GPIO_soc.h>
 #endif
 
 #ifdef __cplusplus
@@ -91,6 +96,9 @@ extern "C" {
 #elif defined(SOC_J721S2)
 #define NUM_OF_INA_DEVICES                (32U)
 #define TOT_INA_IN_PM1                    (16U)
+#elif defined(SOC_J784S4)
+#define NUM_OF_INA_DEVICES                (28U)
+#define TOT_INA_IN_PM1                    (13U)
 #elif defined(SOC_J7200)
 #define NUM_OF_INA_DEVICES                (32U)
 #define TOT_INA_IN_PM1                    (16U)
@@ -109,7 +117,7 @@ extern "C" {
 #define CALIBRATION_CONSTANT              (5120000U)
 #define DEFAULT_CONFIG_REG_VAL            (0x4497U)
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #define SIGNAL_LEVEL_LOW                  (0U)
 #define SIGNAL_LEVEL_HIGH                 (1U)
 #endif
