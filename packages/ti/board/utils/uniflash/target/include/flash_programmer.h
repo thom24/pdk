@@ -41,34 +41,66 @@ extern "C" {
 #include <stdint.h>
 #include <string.h>
 
+#define UFP_BAUDRATE_115200         (115200U)
+#define UFP_BAUDRATE_230400         (230400U)
+#define UFP_BAUDRATE_460800         (460800U)
+#define UFP_BAUDRATE_500000         (500000U)
+#define UFP_BAUDRATE_576000         (576000U)
+#define UFP_BAUDRATE_921600         (921600U)
+#define UFP_BAUDRATE_1000000        (1000000U)
+#define UFP_BAUDRATE_1152000        (1152000U)
+#define UFP_BAUDRATE_1500000        (1500000U)
+#define UFP_BAUDRATE_2000000        (2000000U)
+#define UFP_BAUDRATE_2500000        (2500000U)
+#define UFP_BAUDRATE_3000000        (3000000U)
+#define UFP_BAUDRATE_3500000        (3500000U)
+#define UFP_BAUDRATE_4000000        (4000000U)
+#define UFP_BAUDRATE_6000000        (6000000U)
+
+#define UFP_BAUDRATE_115200_ID      (0x0U)
+#define UFP_BAUDRATE_230400_ID      (0x1U)
+#define UFP_BAUDRATE_460800_ID      (0x2U)
+#define UFP_BAUDRATE_500000_ID      (0x3U)
+#define UFP_BAUDRATE_576000_ID      (0x4U)
+#define UFP_BAUDRATE_921600_ID      (0x5U)
+#define UFP_BAUDRATE_1000000_ID     (0x6U)
+#define UFP_BAUDRATE_1152000_ID     (0x7U)
+#define UFP_BAUDRATE_1500000_ID     (0x8U)
+#define UFP_BAUDRATE_2000000_ID     (0x9U)
+#define UFP_BAUDRATE_2500000_ID     (0xAU)
+#define UFP_BAUDRATE_3000000_ID     (0xBU)
+#define UFP_BAUDRATE_3500000_ID     (0xCU)
+#define UFP_BAUDRATE_4000000_ID     (0xDU)
+#define UFP_BAUDRATE_6000000_ID     (0xEU)
+
 #if defined(iceAMIC110) || defined(icev2AM335x)
 #define SPI_FLASH
-#define MAX_BAUDRATE_SUPPORTED			(0x1U)
+#define MAX_BAUDRATE_SUPPORTED			(UFP_BAUDRATE_230400_ID)
 #endif
 
 #if defined(evmAM335x)
 #define SPI_FLASH
-#define MAX_BAUDRATE_SUPPORTED			(0x0U)
+#define MAX_BAUDRATE_SUPPORTED			(UFP_BAUDRATE_115200_ID)
 #endif 
 
 #if defined(idkAM437x)
 #define QSPI_FLASH
-#define MAX_BAUDRATE_SUPPORTED			(0x1U)
+#define MAX_BAUDRATE_SUPPORTED			(UFP_BAUDRATE_230400_ID)
 #endif 
 
 #if defined(idkAM571x) || defined(idkAM572x) || defined(idkAM574x) || defined(iceK2G)
 #define QSPI_FLASH
-#define MAX_BAUDRATE_SUPPORTED			(0xBU)
+#define MAX_BAUDRATE_SUPPORTED			(UFP_BAUDRATE_3000000_ID)
 #endif
 
 #if defined(evmK2G)
 #define QSPI_FLASH
-#define MAX_BAUDRATE_SUPPORTED			(0x0U)
+#define MAX_BAUDRATE_SUPPORTED			(UFP_BAUDRATE_115200_ID)
 #endif
 
 #if defined(j721e_evm)
-#define MAX_BAUDRATE_SUPPORTED			(0xEU)
-#define MAX_BAUDRATE_SUPPORTED_LINUX	(0xBU)
+#define MAX_BAUDRATE_SUPPORTED          (UFP_BAUDRATE_6000000_ID)
+#define MAX_BAUDRATE_SUPPORTED_LINUX    (UFP_BAUDRATE_3000000_ID)
 
 #define HPF_FLASH
 #define OSPI_FLASH
@@ -77,17 +109,17 @@ extern "C" {
 #endif
 
 #if defined(j7200_evm)
-#define MAX_BAUDRATE_SUPPORTED          (0xEU)
-#define MAX_BAUDRATE_SUPPORTED_LINUX    (0xBU)
+#define MAX_BAUDRATE_SUPPORTED          (UFP_BAUDRATE_6000000_ID)
+#define MAX_BAUDRATE_SUPPORTED_LINUX    (UFP_BAUDRATE_3000000_ID)
 
 #define HPF_FLASH
 #define OSPI_FLASH
 #define EMMC_FLASH
 #endif
 
-#if defined(j721s2_evm)
-#define MAX_BAUDRATE_SUPPORTED          (0xEU)
-#define MAX_BAUDRATE_SUPPORTED_LINUX    (0xBU)
+#if (defined(j721s2_evm) || defined(j784s4_evm))
+#define MAX_BAUDRATE_SUPPORTED          (UFP_BAUDRATE_6000000_ID)
+#define MAX_BAUDRATE_SUPPORTED_LINUX    (UFP_BAUDRATE_3000000_ID)
 
 #define OSPI_FLASH
 #define OSPI_NAND_FLASH
@@ -95,16 +127,16 @@ extern "C" {
 #endif
 
 #if defined(am65xx_evm) || defined(am65xx_idk)
-#define MAX_BAUDRATE_SUPPORTED			(0xEU)
-#define MAX_BAUDRATE_SUPPORTED_LINUX	(0xBU)
+#define MAX_BAUDRATE_SUPPORTED          (UFP_BAUDRATE_6000000_ID)
+#define MAX_BAUDRATE_SUPPORTED_LINUX    (UFP_BAUDRATE_3000000_ID)
 
 #define OSPI_FLASH
 #define EMMC_FLASH
 #endif
 
 #if defined(am64x_evm)
-#define MAX_BAUDRATE_SUPPORTED          (0x8U)  /* 1500000 */
-#define MAX_BAUDRATE_SUPPORTED_LINUX    (0x8U)  /* 1500000 */
+#define MAX_BAUDRATE_SUPPORTED          (UFP_BAUDRATE_1500000_ID)  /* 1500000 */
+#define MAX_BAUDRATE_SUPPORTED_LINUX    (UFP_BAUDRATE_1500000_ID)  /* 1500000 */
 
 #define OSPI_FLASH
 #define EMMC_FLASH
@@ -119,13 +151,13 @@ extern "C" {
 #if defined(am64x_evm)
 #define UFP_FLOW_CTRL_STS               (0x1U)
 
-#define MAX_BAUDRATE_SUPPORTED_FC       (0xBU)  /* 3000000 */
-#define MAX_BAUDRATE_SUPPORTED_LINUX_FC (0xBU)  /* 3000000 */
+#define MAX_BAUDRATE_SUPPORTED_FC       (UFP_BAUDRATE_3000000_ID)  /* 3000000 */
+#define MAX_BAUDRATE_SUPPORTED_LINUX_FC (UFP_BAUDRATE_3000000_ID)  /* 3000000 */
 
 #else
 #define UFP_FLOW_CTRL_STS               (0x0U)
 
-#if (defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721s2_evm))
+#if (defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721s2_evm) || defined(j784s4_evm))
 #define MAX_BAUDRATE_SUPPORTED_FC       (MAX_BAUDRATE_SUPPORTED)
 #define MAX_BAUDRATE_SUPPORTED_LINUX_FC (MAX_BAUDRATE_SUPPORTED_LINUX)
 #else
@@ -155,22 +187,6 @@ extern "C" {
 #define UFP_HEADER_PKT_SIZE        (14U)
 
 #define UFP_BAUDRATE_LIST_COUNT    (15U)
-
-#define UFP_BAUDRATE_115200         (115200U)
-#define UFP_BAUDRATE_230400         (230400U)
-#define UFP_BAUDRATE_460800         (460800U)
-#define UFP_BAUDRATE_500000         (500000U)
-#define UFP_BAUDRATE_576000         (576000U)
-#define UFP_BAUDRATE_921600         (921600U)
-#define UFP_BAUDRATE_1000000        (1000000U)
-#define UFP_BAUDRATE_1152000        (1152000U)
-#define UFP_BAUDRATE_1500000        (1500000U)
-#define UFP_BAUDRATE_2000000        (2000000U)
-#define UFP_BAUDRATE_2500000        (2500000U)
-#define UFP_BAUDRATE_3000000        (3000000U)
-#define UFP_BAUDRATE_3500000        (3500000U)
-#define UFP_BAUDRATE_4000000        (4000000U)
-#define UFP_BAUDRATE_6000000        (6000000U)
 
 #define UFP_CMD_PROGRAM             (0x50U)
 #define UFP_CMD_PROGRAM_XIP         (0x51U)

@@ -1,5 +1,5 @@
 #  ============================================================================
-#  (C) Copyright 2019-2021 Texas Instruments, Inc.
+#  (C) Copyright 2019-2022 Texas Instruments, Inc.
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions
@@ -85,7 +85,9 @@ board_utils_j721e_CORELIST = mcu1_0
 board_utils_j7200_BOARDLIST = j7200_evm
 board_utils_j7200_CORELIST = mcu1_0
 board_utils_j721s2_BOARDLIST = j721s2_evm
+board_utils_j784s4_BOARDLIST = j784s4_evm
 board_utils_j721s2_CORELIST = mcu1_0
+board_utils_j784s4_CORELIST = mcu1_0
 board_utils_tpr12_BOARDLIST = tpr12_evm
 board_utils_tpr12_CORELIST = mcu1_0
 board_utils_awr294x_BOARDLIST = awr294x_evm
@@ -157,7 +159,7 @@ board_utils_uart_flash_programmer_hs_BOARDLIST = $(board_utils_$(SOC)_BOARDLIST)
 export board_utils_uart_flash_programmer_hs_BOARDLIST
 board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST = $(board_utils_$(SOC)_CORELIST)
 export board_utils_uart_flash_programmer_hs_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), tpr12 am64x awr294x))
+ifneq ($(SOC), $(filter $(SOC), tpr12 am64x awr294x j784s4))
 board_utils_EXAMPLE_LIST += board_utils_uart_flash_programmer_hs
 endif
 board_utils_uart_flash_programmer_hs_SBL_IMAGEGEN = yes

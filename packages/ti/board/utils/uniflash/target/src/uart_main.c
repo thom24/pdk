@@ -69,7 +69,7 @@
 #include <hyperflash.h>
 #endif
 
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm) || defined(j784s4_evm)
 #include <ti/osal/CacheP.h>
 #endif
 
@@ -140,7 +140,7 @@ UFP_flashConfig UPF_flashFxnPtr[FLASH_DEVICE_MAX] = {
 
 };
 
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm) || defined(j784s4_evm)
 uint32_t gSysFirmware[1] __attribute((section(".firmware")));
 #endif
 
@@ -201,7 +201,7 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
                 outbyte(MAX_BAUDRATE_SUPPORTED);
             }
             c = inbyte(DELAY);
-#if defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk) || defined(am64x_evm) || defined(j721s2_evm)
+#if defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk) || defined(am64x_evm) || defined(j721s2_evm) || defined(j784s4_evm)
             if (c == XMODEM_STS_NSUP)
             {
                 if (gFlowCtrlSts)
@@ -399,7 +399,7 @@ int main(void)
            No need to flash onto boot device */
         if (imgType == UFP_IMAGE_SYSFW)
         {
-#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm)
+#if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm) || defined(j784s4_evm)
             offset = UFP_xModemFirmwareReceive((unsigned char *)gSysFirmware,
                                                UFP_SYSFW_SIZE);
             if(offset != 0)
