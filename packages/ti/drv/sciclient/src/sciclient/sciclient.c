@@ -50,7 +50,9 @@
 
 #include <ti/drv/sciclient/sciserver.h>
 #include <ti/osal/osal.h>
+#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62X))
 #include <lib/trace.h>
+#endif
 
 #ifdef QNX_OS
 #include <ti/drv/sciclient/src/sciclient/sciclient_qnx.h>
@@ -1124,6 +1126,7 @@ int32_t Sciclient_abiCheck(void)
     return status;
 }
 
+#if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined (SOC_J784S4) || defined (SOC_AM62X))
 int32_t Sciclient_setDebugConfig()
 {
     int32_t retVal = CSL_PASS;
@@ -1159,6 +1162,7 @@ int32_t Sciclient_setDebugConfig()
 
     return retVal;
 }
+#endif
 
 uint32_t Sciclient_getCurrentContext(uint16_t messageType)
 {
