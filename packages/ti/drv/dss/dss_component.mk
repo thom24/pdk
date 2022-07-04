@@ -40,9 +40,10 @@ drvdss_am65xx_CORELIST = mpu1_0
 drvdss_j721e_CORELIST  = mcu2_0
 drvdss_j721s2_CORELIST  = mcu2_0
 drvdss_j784s4_CORELIST  = mcu2_0
-drvdssm2m_SOCLIST         = j721e
-drvdssm2m_BOARDLIST       = j721e_evm
+drvdssm2m_SOCLIST         = j721e j721s2
+drvdssm2m_BOARDLIST       = j721e_evm j721s2_evm
 drvdssm2m_j721e_CORELIST  = mcu2_0
+drvdssm2m_j721s2_CORELIST = mcu2_0
 drvdss_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 
 define DRV_DSS_RTOS_BOARDLIST_RULE
