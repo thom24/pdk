@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2021
+ *  Copyright (c) Texas Instruments Incorporated 2021 - 2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -221,6 +221,14 @@ static int32_t App_initParams(M2MApp_AppObj *appObj)
         wbPipeCfg->outFmt.width      = APP_DSS_M2M_OUT_FRAME_WIDTH;
         wbPipeCfg->outFmt.height     = APP_DSS_M2M_OUT_FRAME_HEIGHT;
         wbPipeCfg->outFmt.dataFormat = APP_DSS_M2M_OUT_FRAME_FORMAT;
+        if ( (wbPipeCfg->inFmt.width != wbPipeCfg->outFmt.width) || (wbPipeCfg->inFmt.height != wbPipeCfg->outFmt.height))
+        {
+            wbPipeCfg->scEnable = TRUE;
+        }
+        else
+        {
+            wbPipeCfg->scEnable = FALSE;
+        }
         wbPipeCfg->outFmt.ccsFormat  = FVID2_CCSF_BITS8_PACKED;
         wbPipeCfg->inPos.startX      = 0U;
         wbPipeCfg->inPos.startY      = 0U;

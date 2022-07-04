@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018 - 2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -140,6 +140,9 @@ static void Dss_wbPipeCbFxn(const uint32_t *event,
                             void *arg);
 
 static void Dss_wbPipeDmaCompletionCbFxn(DssM2MDrv_InstObj *instObj);
+
+static int32_t Dss_m2mValidateM2mPipeParams(const Dss_WbPipeCfgParams *wbPipeParams);
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -1427,6 +1430,15 @@ static int32_t Dss_m2mDrvIoctlSetWbPipeParams(DssM2MDrv_VirtContext *context,
 
         if (FVID2_SOK == retVal)
         {
+            retVal = Dss_m2mValidateM2mPipeParams(pipeCfg);
+            if (FVID2_SOK != retVal)
+            {
+                GT_0trace(DssTrace, GT_ERR, "Invalid arguments have been passed!!\r\n");
+            }
+        }
+
+        if (FVID2_SOK == retVal)
+        {
             /* Only copy provided configurations to channel/virtual context object.
                This will be programmed to HW module when buffers are submitted
                through 'Fvid2_processRequest()' */
@@ -1675,4 +1687,67 @@ static void Dss_wbPipeDmaCompletionCbFxn(DssM2MDrv_InstObj *instObj)
     GT_assert(DssTrace, (FVID2_SOK == retVal));
 
     return;
+}
+
+static int32_t Dss_m2mValidateM2mPipeParams(const Dss_WbPipeCfgParams *wbPipeParams)
+{
+    int32_t retVal = FVID2_SOK, planeIdx, numFields, fieldIdx;
+    uint32_t pitchValArr[FVID2_MAX_PLANES_PER_FIELD];
+    CSL_DssWbPipeCfg wbPipeCfg;
+
+    wbPipeCfg = wbPipeParams->pipeCfg;
+    if (wbPipeCfg.inFmt.dataFormat != FVID2_DF_ARGB48_12121212)
+    {
+        GT_0trace(DssTrace, GT_ERR, "Input format can only be ARGB12121212!!\r\n");
+        retVal = FVID2_EBADARGS;
+    }
+
+    if( ((wbPipeCfg.inFmt.width != wbPipeCfg.outFmt.width) ||
+         (wbPipeCfg.inFmt.height != wbPipeCfg.outFmt.height)) &&
+         wbPipeCfg.scEnable != TRUE)
+    {
+        GT_0trace(DssTrace, GT_ERR, "Scaling must be enabled if input and output widths/heights are different!!\r\n");
+        retVal = FVID2_EBADARGS;
+    }
+
+    if (wbPipeCfg.outFmt.dataFormat == FVID2_DF_YUV420SP_UV)
+    {
+        if ((wbPipeCfg.inFmt.width > (2*wbPipeCfg.outFmt.width)) ||
+            (wbPipeCfg.inFmt.height > (2*wbPipeCfg.outFmt.height)))
+        {
+            GT_0trace(DssTrace, GT_ERR, "For YUV420 output, can not downscale more than a factor of 2!!\r\n");
+            retVal = FVID2_EBADARGS;
+        }
+    }
+
+    /* The the pitch factors in bits per pixel. */
+    retVal = CSL_dssWbGetPitchFactors(wbPipeCfg.outFmt.dataFormat, pitchValArr);
+
+    if (retVal == CSL_PASS)
+    {
+        if (wbPipeCfg.outFmt.scanFormat == FVID2_SF_INTERLACED)
+        {
+            numFields = 2;
+        }
+        else
+        {
+            numFields = 1;
+        }
+        for(fieldIdx = 0U ; fieldIdx < numFields; fieldIdx++)
+        {
+            for(planeIdx = 0U ; planeIdx < FVID2_MAX_PLANES_PER_FIELD; planeIdx++)
+            {
+                /* Application programmes pitch in terms of Byte, so divide referance pitch factor by 8. */
+                /* Application can allocate buffer in a way that the programmed pitch is greater than the minimum required pitch. */
+                if (wbPipeCfg.outFmt.pitch[fieldIdx*FVID2_MAX_PLANES_PER_FIELD + planeIdx] < (wbPipeCfg.outFmt.width*pitchValArr[planeIdx])/8)
+                {
+                    retVal = FVID2_EBADARGS;
+                    GT_0trace(DssTrace, GT_ERR, "Programmed pitch is too little for given data format parameters!!\r\n");
+                    break;
+                }
+            }
+        }
+    }
+
+    return retVal;
 }
