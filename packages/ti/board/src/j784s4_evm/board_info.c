@@ -78,6 +78,7 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
     Board_STATUS ret = BOARD_SOK;
     I2C_Transaction i2cTransaction;
     I2C_Handle handle = NULL;
+    uint32_t ddrInfoIndex = 0;
     uint16_t offsetAddress = BOARD_EEPROM_HEADER_ADDR;
     uint8_t rdBuff[3];
     char txBuf[2] = {0x00, 0x00};
@@ -157,15 +158,15 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
         }
 
         /* Checking whether DDR field is present or not */
-        if (rdBuff[0] == BOARD_DDR_FIELD_TYPE)
+        while (rdBuff[0] == BOARD_DDR_FIELD_TYPE)
         {
-            memcpy(&info->ddrInfo, &rdBuff[0], sizeof(rdBuff));
+            memcpy(&info->multiDdrInfo[ddrInfoIndex], &rdBuff[0], sizeof(rdBuff));
 
             offsetAddress = offsetAddress + i2cTransaction.readCount;
             txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress)>>8);
             txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
-            i2cTransaction.readBuf = &info->ddrInfo.ddrCtrl;
-            i2cTransaction.readCount = info->ddrInfo.ddrStructLen;
+            i2cTransaction.readBuf   = &info->multiDdrInfo[ddrInfoIndex].ddrCtrl;
+            i2cTransaction.readCount = info->multiDdrInfo[ddrInfoIndex].ddrStructLen;
 
             status = I2C_transfer(handle, &i2cTransaction);
             if (status == false)
@@ -179,8 +180,8 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
             txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
             txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
             i2cTransaction.readBuf = &rdBuff[0];
-            i2cTransaction.readCount = BOARD_EEPROM_TYPE_SIZE +
-                                        BOARD_EEPROM_STRUCT_LENGTH_SIZE;
+            i2cTransaction.readCount = (BOARD_EEPROM_TYPE_SIZE +
+                                        BOARD_EEPROM_STRUCT_LENGTH_SIZE);
             status = I2C_transfer(handle, &i2cTransaction);
             if (status == false)
             {
@@ -188,6 +189,8 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
                 Board_i2cDeInit();
                 return ret;
             }
+
+            ddrInfoIndex++;
         }
 
         /* Checking whether MAC id field is present or not */
@@ -273,8 +276,10 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
     Board_STATUS ret = BOARD_SOK;
     I2C_Transaction i2cTransaction;
     I2C_Handle handle = NULL;
+    uint32_t ddrInfoIndex = 0;
     uint16_t offsetSize = 2;
     uint16_t offsetAddress = BOARD_EEPROM_HEADER_ADDR;
+    uint8_t  ddrStructType;
     char txBuf[BOARD_EEPROM_MAX_BUFF_LENGTH + 2 + 1];
     bool status;
 
@@ -318,16 +323,17 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
     }
 
     /* Checking whether DDR field is included or not */
-    if (info->ddrInfo.ddrStructType == BOARD_DDR_FIELD_TYPE)
+    ddrStructType = info->multiDdrInfo[ddrInfoIndex].ddrStructType;
+    while (ddrStructType == BOARD_DDR_FIELD_TYPE)
     {
         offsetAddress = offsetAddress + i2cTransaction.writeCount;
-        i2cTransaction.writeCount = info->ddrInfo.ddrStructLen +
+        i2cTransaction.writeCount = info->multiDdrInfo[ddrInfoIndex].ddrStructLen +
                                      BOARD_EEPROM_TYPE_SIZE +
                                      BOARD_EEPROM_STRUCT_LENGTH_SIZE +
                                      offsetSize;
         txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
         txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
-        memcpy(&txBuf[2], &info->ddrInfo, i2cTransaction.writeCount);
+        memcpy(&txBuf[2], &info->multiDdrInfo[ddrInfoIndex], i2cTransaction.writeCount);
 
         status = I2C_transfer(handle, &i2cTransaction);
         if (status == false)
@@ -336,6 +342,8 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
             Board_i2cDeInit();
             return ret;
         }
+
+        ddrStructType = info->multiDdrInfo[ddrInfoIndex++].ddrStructType;
     }
 
     /* Checking whether MAC id field is included or not */

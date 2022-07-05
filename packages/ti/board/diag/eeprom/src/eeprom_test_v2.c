@@ -132,6 +132,8 @@ boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
 };
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
     {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
     {0,     BOARD_SOC_DOMAIN_WKUP, false}
 };
 #else
@@ -176,6 +178,8 @@ int8_t eepromTest(uint8_t slaveAddress)
     Board_STATUS status;
     Board_IDInfo_v2 info = {0};
     uint8_t index = 0, count = 0, i;
+    uint32_t ddrInfoIndex = 0;
+    uint8_t  ddrStructType;
 
     status = Board_getIDInfo_v2(&info, slaveAddress);
     if(status != BOARD_SOK)
@@ -220,6 +224,21 @@ int8_t eepromTest(uint8_t slaveAddress)
     UART_printf("\n\tSerial Number: ");
     UART_dataWrite((char *)&info.boardInfo.serialNum, BOARD_SERIAL_NUM_LEN);
 
+#if defined(j784s4_evm)
+    ddrStructType = info.multiDdrInfo[ddrInfoIndex].ddrStructType;
+    /* Displaying DDR fields, if it is there */
+    if(ddrStructType == BOARD_DDR_FIELD_TYPE)
+    {
+        UART_printf("\nDisplaying DDR Fields");
+        UART_printf("\n=====================");
+        do
+        {
+            UART_printf("\n\tDDR Control Word%d: %02x\n", ddrInfoIndex, info.multiDdrInfo[ddrInfoIndex].ddrCtrl);
+            ddrInfoIndex++;
+            ddrStructType = info.multiDdrInfo[ddrInfoIndex].ddrStructType;
+        } while(ddrStructType == BOARD_DDR_FIELD_TYPE);
+    }
+#else
     /* Displaying DDR fields, if it is there */
     if(info.ddrInfo.ddrStructType == BOARD_DDR_FIELD_TYPE)
     {
@@ -227,6 +246,7 @@ int8_t eepromTest(uint8_t slaveAddress)
         UART_printf("\n=====================");
         UART_printf("\n\tDDR Control Word: %02x\n", info.ddrInfo.ddrCtrl);
     }
+#endif
 
     /* Displaying MAC id fields, if it is there */
     if(info.macInfo.macStructType == BOARD_MACINFO_FIELD_TYPE)

@@ -147,7 +147,10 @@ extern "C" {
  *************************************************************/
 
 /* Max number of characters per ID entry field */
-#define BOARD_MAX_ID_STR_LEN    20
+#define BOARD_MAX_ID_STR_LEN     (20U)
+
+/* Max number of DDR instances in board info */
+#define BOARD_DDR_INFO_MAX       (4U)
 
 #define BOARD_BOARD_NAME_LEN     (16U)
 #define BOARD_DESIGN_REV_LEN     (2U)
@@ -258,6 +261,9 @@ typedef struct
 
     /* DDR info of the board */
     Board_ddrInfo ddrInfo;
+
+    /* DDR info array to be used on platforms with multiple DDR instances */
+    Board_ddrInfo multiDdrInfo[BOARD_DDR_INFO_MAX];
 
     /* Mac Info of the board */
     Board_macInfo macInfo;
