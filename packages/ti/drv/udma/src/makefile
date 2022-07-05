@@ -33,7 +33,7 @@ PACKAGE_SRCS_COMMON += config_mk.bld package.bld package.xdc package.xs
 PACKAGE_SRCS_COMMON += Settings.xdc.xdt udmaver.h udmaver.h.xdt
 
 # Common source files and CFLAGS across all platforms and cores
-#SRCS_COMMON += udma.c
+SRCS_COMMON += udma.c
 SRCS_COMMON += udma_rm.c udma_rmcfg.c
 SRCS_COMMON += udma_ch.c
 SRCS_COMMON += udma_ring_common.c udma_proxy.c udma_flow.c udma_event.c

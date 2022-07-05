@@ -76,7 +76,6 @@
 
 #include <stdint.h>
 #include <stdarg.h>
-//#include "udma.h"
 #include "ti/csl/csl_types.h"
 
 #ifdef __cplusplus
@@ -88,6 +87,7 @@ extern "C" {
 //:TODO: Actual value on SOC is 3 but currently VLAB supports only on
 /** \brief Number of TR's that can be submitted back to back channel  */
 #define DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE (1U)
+#define DMAUTILS_INTERFACE_WITH_NO_UDMA  (1U)
 
 typedef enum{
   DMAUTILS_SOK = CSL_PASS,

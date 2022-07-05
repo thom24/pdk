@@ -60,12 +60,14 @@
 #include "ti/drv/udma/dmautils/src/dmautils_autoincrement_3d_priv.h"
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
 #include <ti/csl/csl_clec.h>
-#include <ti/csl//arch/c7x/cslr_C7X_CPU.h>
+#include <ti/csl/arch/c7x/cslr_C7X_CPU.h>
 
 #if defined (BUILD_C7X)
 #include <c7x.h>
 #endif
 
+#define DRU_LOCAL_EVENT_START_DEFAULT  (192U)   // Default for J721E and J721S2
+#define DRU_LOCAL_EVENT_START_J784S4   (664U)
 
 /* If its a Loki Build then force the mode to be in hostemulation as Loki doesnt support DRU */
 #if defined (LOKI_BUILD)
@@ -357,38 +359,38 @@ static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext, DmaUt
     return retVal;
 }
 
-static void getUtcInfo(uint32_t *pUtcId, uint32_t *pDru_local_event_start)
+static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t *pUtcId, uint32_t *pDru_local_event_start)
 {
   uint32_t utcId  = 0;
-  uint32_t dru_local_event_start = 192 ;
+  uint32_t dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT ;
 
 #ifndef HOST_EMULATION
   uint64_t dnum;
   uint8_t corePacNum;
   /* Get the bits from bit 7 to bit 15, which represents the core pac number */
-  dnum = __DNUM;
+  dnum = __DNUM;    // This register is used to identify the current core
   corePacNum = CSL_REG64_FEXT(&dnum, C7X_CPU_DNUM_COREPACNUM);
   switch (corePacNum)
   {
     case CSL_C7X_CPU_COREPACK_NUM_C7X1:
       utcId = UDMA_UTC_ID_C7X_MSMC_DRU4;
-      dru_local_event_start = 664 + (96*0); // TODO: Pick from CSL if possible
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96*0); // TODO: Pick from CSL if possible
       break;
     case CSL_C7X_CPU_COREPACK_NUM_C7X2:
       utcId = UDMA_UTC_ID_C7X_MSMC_DRU5;
-      dru_local_event_start = 664 + (96*1) ; // TODO: Pick from CSL if possible
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96*1) ; // TODO: Pick from CSL if possible
       break;
     case CSL_C7X_CPU_COREPACK_NUM_C7X3:
       utcId = UDMA_UTC_ID_C7X_MSMC_DRU6;
-      dru_local_event_start = 664 + (96*2); // TODO: Pick from CSL if possible
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96*2); // TODO: Pick from CSL if possible
       break;
     case CSL_C7X_CPU_COREPACK_NUM_C7X4:
       utcId = UDMA_UTC_ID_C7X_MSMC_DRU7;
-      dru_local_event_start = 664 + (96*3); // TODO: Pick from CSL if possible
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96*3); // TODO: Pick from CSL if possible
       break;
-    default:
+    default:  //J7ES and J721S2 will fall in this condition
       utcId = UDMA_UTC_ID_MSMC_DRU0;
-      dru_local_event_start = 192; // TODO: Pick from CSL if possible
+      dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT; // TODO: Pick from CSL if possible
   }
 #endif
   if(pUtcId) *pUtcId = utcId ;
@@ -396,8 +398,9 @@ static void getUtcInfo(uint32_t *pUtcId, uint32_t *pDru_local_event_start)
   return ;
 }
 
+#ifndef HOST_EMULATION
 //:TODO: Check if this function can be included in CSL
-static int32_t get_clecConfigEvent(CSL_CLEC_EVTRegs *pRegs,
+static int32_t DmaUtilsAutoInc3d_getClecConfigEvent(CSL_CLEC_EVTRegs *pRegs,
                             uint32_t evtNum,
                             CSL_ClecEventConfig *evtCfg)
 {
@@ -405,10 +408,7 @@ static int32_t get_clecConfigEvent(CSL_CLEC_EVTRegs *pRegs,
     uint32_t    regVal;
 
     if((NULL == pRegs) ||
-       (NULL == evtCfg) ||
-       (evtNum >= CSL_CLEC_MAX_EVT_IN) ||
-       (evtCfg->extEvtNum >= CSL_CLEC_MAX_EXT_EVT_OUT) ||
-       (evtCfg->c7xEvtNum >= CSL_CLEC_MAX_C7X_EVT_OUT))
+        (evtNum >= CSL_CLEC_MAX_EVT_IN))
     {
         retVal = CSL_EFAIL;
     }
@@ -427,6 +427,41 @@ static int32_t get_clecConfigEvent(CSL_CLEC_EVTRegs *pRegs,
 
     return (retVal);
 }
+#endif
+
+int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext)
+{
+  int32_t eventId;
+
+#ifndef HOST_EMULATION
+  uint32_t dru_local_event_start;
+  CSL_ClecEventConfig   cfgClec;
+  int32_t thisCore = CSL_clecGetC7xRtmapCpuId() ;
+
+  #if defined (SOC_J721E)
+  CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+  #else
+  CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
+  #endif
+
+  DmaUtilsAutoInc3d_getUtcInfo( NULL, &dru_local_event_start) ;
+  DmaUtilsAutoInc3d_getClecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext->druChannelId, &cfgClec);
+  if(cfgClec.rtMap !=  thisCore){
+    DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, 
+    " This core (%d) is different than CLEC RTMAP CPU (%d) programming for channel %d\n",
+    thisCore, cfgClec.rtMap, channelContext->druChannelId);
+    return DMAUTILS_EFAIL;  
+  }
+  else{
+    eventId = cfgClec.c7xEvtNum;
+  }
+#else
+  //It is assumed that DRU local events are routed to 32 event of c7x
+  eventId = channelContext->druChannelId + 32; // Assuming dru channel id is where the dru event will be generated
+#endif
+
+  return eventId;
+}
 
 int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_InitParam * initParams, DmaUtilsAutoInc3d_ChannelInitParam chInitParams[])
 {
@@ -434,7 +469,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_I
   int32_t     retVal = DMAUTILS_SOK;
   int32_t i;
   uint32_t                chType;
-  uint32_t                eventId;
+  int32_t                eventId;
   Udma_ChPrms       chPrms;
   Udma_ChUtcPrms  utcPrms;
   DmaUtilsAutoInc3d_Context              * dmautilsContext;
@@ -474,7 +509,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_I
   /* Initialize the channel params to default */
    chType = UDMA_CH_TYPE_UTC;
    UdmaChPrms_init(&chPrms, chType);
-   getUtcInfo( &chPrms.utcId, NULL) ;
+   DmaUtilsAutoInc3d_getUtcInfo( &chPrms.utcId, NULL) ;
    UdmaChUtcPrms_init(&utcPrms);
 
   for ( i = 0; i < initParams->numChannels; i++)
@@ -537,41 +572,14 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_I
       }
       channelContext->druChannelId = Udma_chGetNum(channelHandle);
       channelContext->swTriggerPointer = Udma_druGetTriggerRegAddr(channelHandle);
-#ifndef HOST_EMULATION
-      if(1) //Better coding for DRU wait
+
+      eventId = DmaUtilsAutoInc3d_getEventNum(channelContext, autoIncrementContext);
+      if(eventId == DMAUTILS_EFAIL)
       {
-        uint32_t dru_local_event_start ;
-        CSL_ClecEventConfig   cfgClec;
-        int32_t thisCore = CSL_clecGetC7xRtmapCpuId() ;
-
-        #if defined (SOC_J721E)
-        CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-        #else
-        CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-        #endif
-
-        getUtcInfo( NULL, &dru_local_event_start) ;
-        get_clecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext->druChannelId, &cfgClec);
-        if(cfgClec.rtMap !=  thisCore){
-          retVal = DMAUTILS_EBADARGS;
-          DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, 
-          " This core (%d) is different than CLEC RTMAP CPU (%d) programming for channel %d\n",
-          thisCore, cfgClec.rtMap, channelContext->druChannelId);
-          goto Exit;  
-        }
-        else{
-          channelContext->waitWord =  ((uint64_t)1U << cfgClec.c7xEvtNum);
-        }
+        retVal = DMAUTILS_EFAIL;
+        goto Exit;
       }
-      else
-#endif
-      {
-        //:TODO: Currently its assumed that dru channel id is where the dru event will be generated
-        eventId = channelContext->druChannelId;
-        //:TODO: Currently it is assumed that DRU local events are routed to 32 event of c7x. This needs to be done cleanly
-        channelContext->waitWord =  ((uint64_t)1U << (32 + eventId) );
-      }
-
+      channelContext->waitWord =  ((uint64_t)1U << eventId);
   }
 
 Exit:
@@ -916,10 +924,12 @@ void  DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId)
 int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, uint8_t * trMem, int32_t numTr)
 {
     int32_t     retVal = DMAUTILS_SOK;
-    //DmaUtilsAutoInc3d_Context              * dmautilsContext;
-    //DmaUtilsAutoInc3d_ChannelContext * channelContext;
+#ifndef DMA_UTILS_STANDALONE
+    DmaUtilsAutoInc3d_Context              * dmautilsContext;
+    DmaUtilsAutoInc3d_ChannelContext * channelContext;
+    Udma_ChHandle channelHandle;
+#endif
     uint32_t isRingBasedFlowReq =0;
-    //Udma_ChHandle channelHandle;
 
     if ( autoIncrementContext == NULL)
     {
@@ -935,11 +945,11 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
       goto Exit;
     }
 
-    //dmautilsContext = ( DmaUtilsAutoInc3d_Context *)autoIncrementContext;
-
-    //channelContext = dmautilsContext->channelContext[channelId];
-    //channelHandle = &channelContext->chHandle;
-
+#ifndef DMA_UTILS_STANDALONE
+    dmautilsContext = ( DmaUtilsAutoInc3d_Context *)autoIncrementContext;
+    channelContext = dmautilsContext->channelContext[channelId];
+    channelHandle = &channelContext->chHandle;
+#endif
 
     /* disable  The channel */
     if ( numTr > DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
