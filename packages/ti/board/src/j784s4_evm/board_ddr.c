@@ -424,28 +424,28 @@ static Board_DdrHandle Board_DDROpen(uint32_t ddrInstance)
                     ddrHandle->ddrCtlReg      = DDRSS0_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS0_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS0_phyReg;
-                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS0_SSCFG_BASE;
+                    ddrHandle->eccAddr        = (void *)CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS0_SSCFG_BASE;
                     break;
                  case BOARD_DDR_INSTANCE_1:
                     ddrHandle->ddrCtlAddr     = (void *)BOARD_DDR1_CTL_CFG_BASE;
                     ddrHandle->ddrCtlReg      = DDRSS1_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS1_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS1_phyReg;
-                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS1_SSCFG_BASE;
+                    ddrHandle->eccAddr        = (void *)CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS1_SSCFG_BASE;
                     break;
                  case BOARD_DDR_INSTANCE_2:
                     ddrHandle->ddrCtlAddr     = (void *)BOARD_DDR2_CTL_CFG_BASE;
                     ddrHandle->ddrCtlReg      = DDRSS2_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS2_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS2_phyReg;
-                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS2_SSCFG_BASE;
+                    ddrHandle->eccAddr        = (void *)CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS2_SSCFG_BASE;
                     break;
                  case BOARD_DDR_INSTANCE_3:
                     ddrHandle->ddrCtlAddr     = (void *)BOARD_DDR3_CTL_CFG_BASE;
                     ddrHandle->ddrCtlReg      = DDRSS3_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS3_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS3_phyReg;
-                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS3_SSCFG_BASE;
+                    ddrHandle->eccAddr        = (void *)CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS3_SSCFG_BASE;
                     break;
             }
         }

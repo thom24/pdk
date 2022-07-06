@@ -121,7 +121,7 @@ typedef struct Board_DdrObject_s
     /** Pointer to DDR PHY register array */
     uint32_t *ddrPhyReg;
     /** ECC base address */
-    uint32_t eccAddr;
+    void *eccAddr;
 } Board_DdrObject_t;
 
 typedef Board_DdrObject_t * Board_DdrHandle;
