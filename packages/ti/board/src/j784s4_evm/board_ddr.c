@@ -322,6 +322,44 @@ static Board_STATUS Board_DDRStart(Board_DdrHandle ddrHandle)
 }
 
 /**
+ * \brief Configures DDR ECC
+ *
+ * Invokes EMIF CSL APIs to configure ECC and Primes the memory
+ *
+ * \return  BOARD_SOK in case of success or appropriate error code
+ *
+ */
+/* Refer EMIF ECC Configuration Section in TRM */
+Board_STATUS emif_ConfigureECC(Board_DdrHandle ddrHandle)
+{
+    Board_STATUS   status    = BOARD_SOK;
+    int32_t        cslResult = CSL_PASS;
+    CSL_EmifConfig emifCfg;
+
+    BOARD_DEBUG_LOG("\r\n Configuring ECC");
+
+    memset(&emifCfg, 0, sizeof(emifCfg));
+
+    emifCfg.bEnableMemoryECC = true;
+    emifCfg.bReadModifyWriteEnable = true;
+    emifCfg.bECCCheck = true;
+    emifCfg.bWriteAlloc = true;
+    emifCfg.ECCThreshold = 1U;
+    emifCfg.pMemEccCfg.startAddr[0] = BOARD_DDR_START_ADDR-BOARD_DDR_START_ADDR;
+    emifCfg.pMemEccCfg.endAddr[0] = BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR;
+
+    cslResult = CSL_emifConfig((CSL_emif_sscfgRegs *)ddrHandle->eccAddr,
+                               &emifCfg);
+    if ( cslResult == BOARD_SOK )
+    {
+        /* Clears ECC errors */
+        CSL_emifClearAllECCErrors((CSL_emif_sscfgRegs *)ddrHandle->eccAddr);
+    }
+
+    return status;
+}
+
+/**
  * \brief DDR4 Configuration function
  *
  * Invokes DDR CSL APIs to configure the DDR timing parameters and ECC configuration
@@ -386,24 +424,28 @@ static Board_DdrHandle Board_DDROpen(uint32_t ddrInstance)
                     ddrHandle->ddrCtlReg      = DDRSS0_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS0_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS0_phyReg;
+                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS0_SSCFG_BASE;
                     break;
                  case BOARD_DDR_INSTANCE_1:
                     ddrHandle->ddrCtlAddr     = (void *)BOARD_DDR1_CTL_CFG_BASE;
                     ddrHandle->ddrCtlReg      = DDRSS1_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS1_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS1_phyReg;
+                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS1_SSCFG_BASE;
                     break;
                  case BOARD_DDR_INSTANCE_2:
                     ddrHandle->ddrCtlAddr     = (void *)BOARD_DDR2_CTL_CFG_BASE;
                     ddrHandle->ddrCtlReg      = DDRSS2_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS2_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS2_phyReg;
+                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS2_SSCFG_BASE;
                     break;
                  case BOARD_DDR_INSTANCE_3:
                     ddrHandle->ddrCtlAddr     = (void *)BOARD_DDR3_CTL_CFG_BASE;
                     ddrHandle->ddrCtlReg      = DDRSS3_ctlReg;
                     ddrHandle->ddrPhyIndepReg = DDRSS3_phyIndepReg;
                     ddrHandle->ddrPhyReg      = DDRSS3_phyReg;
+                    ddrHandle->eccAddr        = CSL_COMPUTE_CLUSTER0_VBUSP_DDRSS3_SSCFG_BASE;
                     break;
             }
         }
@@ -490,7 +532,28 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
             return status;
         }
 
+        if (eccEnable == TRUE)
+        {
+            status = emif_ConfigureECC(ddrHandle);
+            if ( status != BOARD_SOK )
+            {
+                BOARD_DEBUG_LOG("\r\n CSL_emifConfig Failed");
+                return status;
+            }
+        }
         Board_DDRClose(ddrHandle);
+    }
+
+    if (eccEnable == TRUE)
+    {
+#ifdef BOARD_DDR_ENABLE_DDR_MEM_PRIME
+        status = BOARD_udmaPrimeDDR((void *)BOARD_DDR_START_ADDR, BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR+1U);
+        if ( status != BOARD_SOK )
+        {
+            BOARD_DEBUG_LOG("\r\n UDMAPrime Failed");
+            return status;
+        }
+#endif
     }
 
     /* Lock the register access */

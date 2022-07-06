@@ -91,7 +91,7 @@ extern "C" {
 #define BOARD_DDR_LOCK0                         (0x115008U)
 #define BOARD_DDR_LOCK1                         (0x11500CU)
 
-#define BOARD_DDR_CFG_LOAD_VALUE                (0x11500CU)
+#define BOARD_DDR_CFG_LOAD_VALUE                (0x60000000U)
 
 /**
  * \brief DDR object structure
