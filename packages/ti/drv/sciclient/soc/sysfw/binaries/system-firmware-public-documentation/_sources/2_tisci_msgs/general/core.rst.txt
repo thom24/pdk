@@ -180,3 +180,37 @@ Message Data Structures
 .. sysfwapistruct:: tisci_query_msmc_req
 
 .. sysfwapistruct:: tisci_query_msmc_resp
+
+TISCI_MSG_GET_TRACE_CONFIG
+==========================
+
+Objective
+----------
+
+Retrieve debug trace configuration from TIFS.
+
+Usage
+-----
+
+.. note::
+
+  DM firmware doesn't have the information about debug trace configuration. DM uses this message to
+  query TIFS for debug trace configuration.
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | No     |
++------------------------+--------+
+
+TISCI Message ID
+----------------
+
+.. sysfwapimacro:: TISCI_MSG_GET_TRACE_CONFIG
+
+Message Data Structures
+-----------------------
+
+.. sysfwapistruct:: tisci_get_trace_config_req
+
+.. sysfwapistruct:: tisci_get_trace_config_resp

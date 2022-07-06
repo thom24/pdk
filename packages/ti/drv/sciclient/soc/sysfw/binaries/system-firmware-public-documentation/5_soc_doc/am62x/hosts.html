@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.02
+                08.04.03
               </div>
             
           
@@ -214,10 +214,40 @@ entity to indicate the same thing.</p>
 <td>Secure</td>
 <td>Device Management and Security Control</td>
 </tr>
-<tr class="row-odd"><td>254</td>
-<td>DM</td>
+<tr class="row-odd"><td>10</td>
+<td>A53_0</td>
+<td>Secure</td>
+<td>Cortex a53 context 0 on Main island</td>
+</tr>
+<tr class="row-even"><td>11</td>
+<td>A53_1</td>
+<td>Secure</td>
+<td>Cortex A53 context 1 on Main island</td>
+</tr>
+<tr class="row-odd"><td>12</td>
+<td>A53_2</td>
 <td>Non Secure</td>
-<td>Device Management</td>
+<td>Cortex A53 context 2 on Main island</td>
+</tr>
+<tr class="row-even"><td>13</td>
+<td>A53_3</td>
+<td>Non Secure</td>
+<td>Cortex A53 context 3 on Main island</td>
+</tr>
+<tr class="row-odd"><td>14</td>
+<td>A53_4</td>
+<td>Non Secure</td>
+<td>Cortex A53 context 1 on Main island</td>
+</tr>
+<tr class="row-even"><td>30</td>
+<td>M4_0</td>
+<td>Non Secure</td>
+<td>M4</td>
+</tr>
+<tr class="row-odd"><td>31</td>
+<td>GPU</td>
+<td>Non Secure</td>
+<td>GPU context 0 on Main island</td>
 </tr>
 <tr class="row-even"><td>35</td>
 <td>MAIN_0_R5_0</td>
@@ -239,50 +269,20 @@ entity to indicate the same thing.</p>
 <td>Non Secure</td>
 <td>Cortex R5_0 context 3 on Main island</td>
 </tr>
-<tr class="row-even"><td>10</td>
-<td>A53_0</td>
-<td>Secure</td>
-<td>Cortex a53 context 0 on Main island</td>
-</tr>
-<tr class="row-odd"><td>11</td>
-<td>A53_1</td>
-<td>Secure</td>
-<td>Cortex A53 context 1 on Main island</td>
-</tr>
-<tr class="row-even"><td>12</td>
-<td>A53_2</td>
-<td>Non Secure</td>
-<td>Cortex A53 context 2 on Main island</td>
-</tr>
-<tr class="row-odd"><td>13</td>
-<td>A53_3</td>
-<td>Non Secure</td>
-<td>Cortex A53 context 3 on Main island</td>
-</tr>
-<tr class="row-even"><td>30</td>
-<td>M4_0</td>
-<td>Non Secure</td>
-<td>M4</td>
-</tr>
-<tr class="row-odd"><td>31</td>
-<td>GPU</td>
-<td>Non Secure</td>
-<td>GPU context 0 on Main island</td>
-</tr>
-<tr class="row-even"><td>14</td>
-<td>A53_4</td>
-<td>Non Secure</td>
-<td>Cortex A53 context 1 on Main island</td>
-</tr>
-<tr class="row-odd"><td>250</td>
+<tr class="row-even"><td>250</td>
 <td>DM2TIFS</td>
 <td>Secure</td>
 <td>DM to TIFS communication</td>
 </tr>
-<tr class="row-even"><td>251</td>
+<tr class="row-odd"><td>251</td>
 <td>TIFS2DM</td>
 <td>Non Secure</td>
 <td>TIFS to DM communication</td>
+</tr>
+<tr class="row-even"><td>254</td>
+<td>DM</td>
+<td>Non Secure</td>
+<td>Device Management</td>
 </tr>
 </tbody>
 </table>
@@ -342,7 +342,7 @@ Host context</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.02',
+            VERSION:'08.04.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

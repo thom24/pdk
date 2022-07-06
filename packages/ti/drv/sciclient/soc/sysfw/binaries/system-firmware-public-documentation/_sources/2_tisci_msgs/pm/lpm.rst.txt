@@ -28,6 +28,10 @@ Device configuration and control APIs
 +------------------+--------------------------------------------+
 | 0x0301           | :ref:`pm_lpm_msg_enter_sleep`              |
 +------------------+--------------------------------------------+
+| 0x0306           | :ref:`pm_lpm_msg_wake_reason`              |
++------------------+--------------------------------------------+
+| 0x0307           | :ref:`pm_lpm_msg_set_io_isolation`         |
++------------------+--------------------------------------------+
 
 
 .. _pm_lpm_msg_prepare_sleep:
@@ -98,3 +102,101 @@ Message Data Structures
 
 .. sysfwapistruct:: tisci_msg_enter_sleep_resp
 
+
+.. _pm_lpm_msg_wake_reason:
+
+TISCI_MSG_LPM_WAKE_REASON
+=========================
+
+Objective
+----------
+
+Get which wake up source woke the soc from low power mode.
+
+Wake up sources
+---------------
+
++------------------+------------+
+| Wake Up Source   | Source ID  |
++==================+============+
+| WKUP_I2C0        | 0x00       |
++------------------+------------+
+| WKUP_UART0       | 0x10       |
++------------------+------------+
+| MCU_GPIO0        | 0x20       |
++------------------+------------+
+| WKUP_ICEMELTER0  | 0x30       |
++------------------+------------+
+| WKUP_TIMER0      | 0x40       |
++------------------+------------+
+| WKUP_TIMER1      | 0x41       |
++------------------+------------+
+| WKUP_RTC0        | 0x50       |
++------------------+------------+
+| RESET            | 0x60       |
++------------------+------------+
+| USB0             | 0x70       |
++------------------+------------+
+| USB1             | 0x71       |
++------------------+------------+
+| MAIN_IO          | 0x80       |
++------------------+------------+
+| MCU_IO           | 0x81       |
++------------------+------------+
+| CAN_IO           | 0x82       |
++------------------+------------+
+| INVALID          | 0xFF       |
++------------------+------------+
+
+Usage
+-----
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | No     |
++------------------------+--------+
+
+
+TISCI Message ID
+----------------
+
+.. sysfwapimacro:: TISCI_MSG_LPM_WAKE_REASON
+
+Message Data Structures
+-----------------------
+
+.. sysfwapistruct:: tisci_msg_lpm_wake_reason_req
+
+.. sysfwapistruct:: tisci_msg_lpm_wake_reason_resp
+
+.. _pm_lpm_msg_set_io_isolation:
+
+TISCI_MSG_SET_IO_ISOLATION
+==========================
+
+Objective
+---------
+
+Enable and disable IO isolation
+
+Usage
+-----
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | No     |
++------------------------+--------+
+
+TISCI Message ID
+----------------
+
+.. sysfwapimacro:: TISCI_MSG_SET_IO_ISOLATION
+
+Message Data Structures
+-----------------------
+
+.. sysfwapistruct:: tisci_msg_set_io_isolation_req
+
+.. sysfwapistruct:: tisci_msg_set_io_isolation_resp

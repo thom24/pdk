@@ -286,6 +286,33 @@ struct tisci_query_msmc_resp {
     uint32_t            msmc_end_high;
 } __attribute__((__packed__));
 
+/**
+ * \brief TISCI_MSG_GET_TRACE_CONFIG request to get the debug trace config from
+ * base board config
+ *
+ * Although this message is essentially empty and contains only a header
+ * a full data structure is created for consistency in implementation.
+ *
+ * \param hdr TISCI header
+ */
+struct tisci_get_trace_config_req {
+    struct tisci_header hdr;
+} __attribute__((__packed__));
+
+/**
+ * \brief TISCI_MSG_GET_TRACE_CONFIG request response providing the debug config
+ * from base board config
+ *
+ * \param hdr TISCI header.
+ * \param trace_dst_enables enabled destination traces
+ * \param trace_src_enables enabled source traces
+ */
+struct tisci_get_trace_config_resp {
+    struct tisci_header    hdr;
+    uint16_t            trace_dst_enables;
+    uint16_t            trace_src_enables;
+} __attribute__((__packed__));
+
 #endif /* MESSAGES_CORE_H */
 
 /* @} */

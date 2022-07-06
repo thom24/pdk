@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.02
+                08.04.03
               </div>
             
           
@@ -113,6 +113,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-prepare-sleep">TISCI_MSG_PREPARE_SLEEP</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-enter-sleep">TISCI_MSG_ENTER_SLEEP</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-lpm-wake-reason">TISCI_MSG_LPM_WAKE_REASON</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-set-io-isolation">TISCI_MSG_SET_IO_ISOLATION</a></li>
 </ul>
 </li>
 </ul>
@@ -212,6 +214,12 @@ supported by the SOC.</p>
 </tr>
 <tr class="row-odd"><td>0x0301</td>
 <td><a class="reference internal" href="#pm-lpm-msg-enter-sleep"><span class="std std-ref">TISCI_MSG_ENTER_SLEEP</span></a></td>
+</tr>
+<tr class="row-even"><td>0x0306</td>
+<td><a class="reference internal" href="#pm-lpm-msg-wake-reason"><span class="std std-ref">TISCI_MSG_LPM_WAKE_REASON</span></a></td>
+</tr>
+<tr class="row-odd"><td>0x0307</td>
+<td><a class="reference internal" href="#pm-lpm-msg-set-io-isolation"><span class="std std-ref">TISCI_MSG_SET_IO_ISOLATION</span></a></td>
 </tr>
 </tbody>
 </table>
@@ -421,6 +429,228 @@ called to prepare for the low power mode.</p>
 </p>
 </div>
 </div>
+<div class="section" id="tisci-msg-lpm-wake-reason">
+<span id="pm-lpm-msg-wake-reason"></span><h2>TISCI_MSG_LPM_WAKE_REASON<a class="headerlink" href="#tisci-msg-lpm-wake-reason" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id5">
+<h3>Objective<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p>Get which wake up source woke the soc from low power mode.</p>
+</div>
+<div class="section" id="wake-up-sources">
+<h3>Wake up sources<a class="headerlink" href="#wake-up-sources" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="60%" />
+<col width="40%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Wake Up Source</th>
+<th class="head">Source ID</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>WKUP_I2C0</td>
+<td>0x00</td>
+</tr>
+<tr class="row-odd"><td>WKUP_UART0</td>
+<td>0x10</td>
+</tr>
+<tr class="row-even"><td>MCU_GPIO0</td>
+<td>0x20</td>
+</tr>
+<tr class="row-odd"><td>WKUP_ICEMELTER0</td>
+<td>0x30</td>
+</tr>
+<tr class="row-even"><td>WKUP_TIMER0</td>
+<td>0x40</td>
+</tr>
+<tr class="row-odd"><td>WKUP_TIMER1</td>
+<td>0x41</td>
+</tr>
+<tr class="row-even"><td>WKUP_RTC0</td>
+<td>0x50</td>
+</tr>
+<tr class="row-odd"><td>RESET</td>
+<td>0x60</td>
+</tr>
+<tr class="row-even"><td>USB0</td>
+<td>0x70</td>
+</tr>
+<tr class="row-odd"><td>USB1</td>
+<td>0x71</td>
+</tr>
+<tr class="row-even"><td>MAIN_IO</td>
+<td>0x80</td>
+</tr>
+<tr class="row-odd"><td>MCU_IO</td>
+<td>0x81</td>
+</tr>
+<tr class="row-even"><td>CAN_IO</td>
+<td>0x82</td>
+</tr>
+<tr class="row-odd"><td>INVALID</td>
+<td>0xFF</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id6">
+<h3>Usage<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="75%" />
+<col width="25%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Message Type</strong></td>
+<td>Normal</td>
+</tr>
+<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id7">
+<h3>TISCI Message ID<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_LPM_WAKE_REASON</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0306U)</span></code></p>
+</div>
+<div class="section" id="id8">
+<h3>Message Data Structures<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_lpm_wake_reason_req</strong></p>
+<p>Request for TISCI_MSG_LPM_WAKE_REASON.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="24%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>TISCI header to provide ACK/NAK flags to the host.</td>
+</tr>
+</tbody>
+</table>
+<p>This message is used to query the wake up source from low power mode.</p>
+</p>
+<p><p><strong>struct tisci_msg_lpm_wake_reason_resp</strong></p>
+<p>Response for TISCI_MSG_LPM_WAKE_REASON.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="18%" />
+<col width="24%" />
+<col width="58%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>TISCI header to provide ACK/NAK flags to the host.</td>
+</tr>
+<tr class="row-odd"><td>wake_source</td>
+<td>u32</td>
+<td>The wake up source that woke soc from LPM.</td>
+</tr>
+<tr class="row-even"><td>wake_timestamp</td>
+<td>u64</td>
+<td>Timestamp at which soc woke.</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
+<div class="section" id="tisci-msg-set-io-isolation">
+<span id="pm-lpm-msg-set-io-isolation"></span><h2>TISCI_MSG_SET_IO_ISOLATION<a class="headerlink" href="#tisci-msg-set-io-isolation" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id9">
+<h3>Objective<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h3>
+<p>Enable and disable IO isolation</p>
+</div>
+<div class="section" id="id10">
+<h3>Usage<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="75%" />
+<col width="25%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Message Type</strong></td>
+<td>Normal</td>
+</tr>
+<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id11">
+<h3>TISCI Message ID<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_SET_IO_ISOLATION</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0307U)</span></code></p>
+</div>
+<div class="section" id="id12">
+<h3>Message Data Structures<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_msg_set_io_isolation_req</strong></p>
+<p>Request for TISCI_MSG_SET_IO_ISOLATION.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="24%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>TISCI header to provide ACK/NAK flags to the host.</td>
+</tr>
+<tr class="row-odd"><td>state</td>
+<td>u8</td>
+<td>The deseared state of the IO isolation.</td>
+</tr>
+</tbody>
+</table>
+<p>This message is used to enable/disable IO isolation for low power modes.</p>
+</p>
+<p><p><strong>struct tisci_msg_set_io_isolation_resp</strong></p>
+<p>Response for TISCI_MSG_SET_IO_ISOLATION.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="24%" />
+<col width="60%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>TISCI header to provide ACK/NAK flags to the host.</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
 </div>
 
 
@@ -464,7 +694,7 @@ called to prepare for the low power mode.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.02',
+            VERSION:'08.04.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
