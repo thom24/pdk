@@ -372,6 +372,7 @@ static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t *pUtcId, uint32_t *pDru_local_
   corePacNum = CSL_REG64_FEXT(&dnum, C7X_CPU_DNUM_COREPACNUM);
   switch (corePacNum)
   {
+#ifdef SOC_J784S4
     case CSL_C7X_CPU_COREPACK_NUM_C7X1:
       utcId = UDMA_UTC_ID_C7X_MSMC_DRU4;
       dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96*0); // TODO: Pick from CSL if possible
@@ -388,9 +389,11 @@ static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t *pUtcId, uint32_t *pDru_local_
       utcId = UDMA_UTC_ID_C7X_MSMC_DRU7;
       dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96*3); // TODO: Pick from CSL if possible
       break;
+#else
     default:  //J7ES and J721S2 will fall in this condition
       utcId = UDMA_UTC_ID_MSMC_DRU0;
       dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT; // TODO: Pick from CSL if possible
+#endif
   }
 #endif
   if(pUtcId) *pUtcId = utcId ;
