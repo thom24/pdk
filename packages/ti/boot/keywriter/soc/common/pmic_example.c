@@ -65,17 +65,7 @@
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 
-/* Timer specific headers */
-#if defined(SOC_J721E)
-#include <ti/board/src/j721e_evm/include/board_utils.h>
-#endif
-#if defined(SOC_J7200)
-#include <ti/board/src/j7200_evm/include/board_utils.h>
-#endif
-
-#if (defined(SOC_J721E) || defined(SOC_J7200))
 #include <ti/build/unit-test/Unity/src/unity.h>
-#endif
 
 /* Pointer holds the pPmicCoreHandle for I2C */
 Pmic_CoreHandle_t *pPmicCoreHandleI2C = NULL;

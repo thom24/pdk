@@ -65,8 +65,8 @@
 #                             to be compiled in the application build stage.
 #
 ifeq ($(keywriter_component_make_include), )
-keywriter_BOARDLIST = j721e_evm j7200_evm
-keywriter_SOCLIST = j721e j7200
+keywriter_BOARDLIST = j721e_evm j7200_evm j721s2_evm
+keywriter_SOCLIST = j721e j7200 j721s2
 keywriter_j721e_CORELIST := mcu1_0
 keywriter_j7200_CORELIST := mcu1_0
 
@@ -95,7 +95,7 @@ export keywriter_img_SOC_DEPENDENCY   = yes
 export keywriter_img_CORE_DEPENDENCY  = yes
 export keywriter_img_PKG_LIST         = sbl
 export keywriter_img_INCLUDE          = $(keywriter_img_PATH)
-export keywriter_img_BOARDLIST        = j721e_evm j7200_evm
+export keywriter_img_BOARDLIST        = $(keywriter_BOARDLIST)
 export keywriter_img_$(SOC)_CORELIST  = mcu1_0
 export keywriter_img_KEYWR_IMAGEGEN   = yes
 
@@ -109,9 +109,9 @@ export keywriter_cfg_test_gen_PATH = $(PDK_KEYWR_COMP_PATH)
 export keywriter_cfg_test_gen_MAKEFILE = -f scripts/keywriter_cfg_test_gen.mk
 export keywriter_cfg_test_gen_BOARD_DEPENDENCY = yes
 export keywriter_cfg_test_gen_CORE_DEPENDENCY = yes
-export keywriter_cfg_test_gen_BOARDLIST = j721e_evm j7200_evm
+export keywriter_cfg_test_gen_BOARDLIST = $(keywriter_BOARDLIST)
 export keywriter_cfg_test_gen_$(SOC)_CORELIST  = mcu1_0
-export keywriter_cfg_test_gen_CORELIST = j721e j7200
+export keywriter_cfg_test_gen_CORELIST = $(keywriter_SOCLIST)
 export keywriter_cfg_test_gen_LIBNAME = keywriter_cfg_test_gen
 
 ###########END BOOT PERF KNOBS#############
