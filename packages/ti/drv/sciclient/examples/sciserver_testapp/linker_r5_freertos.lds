@@ -68,7 +68,7 @@ MEMORY
     R5F_TCMB0(RWIX)             : ORIGIN = 0x41010100 , LENGTH = 0x00007F00
     OCMC_RAM_BOARD_CFG (RWIX)   : ORIGIN = 0x41c80000 , LENGTH = 0x2000
     /* Sciserver App Space */
-    OCMC_RAM_SCISERVER (RWIX)   : ORIGIN = 0x41C82000 , LENGTH = 0x7BB00
+    OCMC_RAM_SCISERVER (RWIX)   : ORIGIN = 0x41C82000 , LENGTH = 0x00060000
     OCMC_RAM_X509_HEADER1 (RWIX) : ORIGIN = 0x41cffb00 , LENGTH = 0x500 /* covers header for J7200/J721E */
     OCMC_RAM_X509_HEADER2 (RWIX) : ORIGIN = 0x41cfdb00 , LENGTH = 0x500 /* covers header for J721S2 */
 }
@@ -87,9 +87,9 @@ SECTIONS
         .text.mpu       : palign(8)
         .text.boot      : palign(8)
     }                                > OCMC_RAM_SCISERVER
-    .const          : {} palign(8)   > OCMC_RAM_SCISERVER
+    .const          : {} palign(8)   > R5F_TCMB0
     .rodata         : {} palign(8)   > OCMC_RAM_SCISERVER
-    .cinit          : {} palign(8)   > OCMC_RAM_SCISERVER
+    .cinit          : {} palign(8)   > R5F_TCMB0
     .bss            : {} align(4)    > OCMC_RAM_SCISERVER
     .far            : {} align(4)    > OCMC_RAM_SCISERVER
     .data           : {} palign(128) > OCMC_RAM_SCISERVER
