@@ -52,14 +52,6 @@ isFreertos = 1;
 // Set this to 1, if using 'SafeRTOS'
 isSafertos = 0;  
 
-// Set this to 1 to allow loading the GEL files directly from the ccxml file.
-disableGelLoad = 0;
-// Set to 1 to use the firmware with Firewalls.
-if (disableGelLoad == 0)
-{
-    //Path to GEL files
-    gelFilePath = "k3-avv-repo/framework/gels/K3J7";
-}
 //PDK path. Edit this
 pdkPath = "/ti/j7presi/workarea/pdk";
 
