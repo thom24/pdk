@@ -766,7 +766,10 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     struct tisci_msg_rm_irq_set_req      rmIrqReq;
     struct tisci_msg_rm_irq_set_resp     rmIrqResp;
     struct tisci_msg_rm_irq_release_req  rmIrqRelease;
-    uint16_t ir_id = 0U, dst_id, irq_range_start, irq_range_num;
+    uint16_t dst_id;
+#if defined (BUILD_MCU)
+    uint16_t ir_id = 0U, irq_range_start, irq_range_num;
+#endif
 
     if (setIntrPath)
     {
