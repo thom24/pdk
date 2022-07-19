@@ -319,12 +319,12 @@ struct tisci_msg_abort_enter_sleep_resp {
  * \brief Request for TISCI_MSG_LPM_WAKE_REASON.
  *
  * \param hdr TISCI header to provide ACK/NAK flags to the host.
- * 
+ *
  * This message is used to query the wake up source from low power mode.
  *
  */
 struct tisci_msg_lpm_wake_reason_req {
-	struct tisci_header hdr;
+    struct tisci_header hdr;
 } __attribute__((__packed__));
 
 /**
@@ -336,9 +336,9 @@ struct tisci_msg_lpm_wake_reason_req {
  *
  */
 struct tisci_msg_lpm_wake_reason_resp {
-	struct tisci_header hdr;
-	uint64_t 			wake_source;
-	uint64_t			wake_timestamp;
+    struct tisci_header    hdr;
+    uint32_t            wake_source;
+    uint64_t            wake_timestamp;
 } __attribute__((__packed__));
 
 /**
@@ -346,13 +346,13 @@ struct tisci_msg_lpm_wake_reason_resp {
  *
  * \param hdr TISCI header to provide ACK/NAK flags to the host.
  * \param state The deseared state of the IO isolation.
- * 
+ *
  * This message is used to enable/disable IO isolation for low power modes.
  *
  */
 struct tisci_msg_set_io_isolation_req {
-	struct tisci_header hdr;
-	uint8_t				state;
+    struct tisci_header    hdr;
+    uint8_t            state;
 } __attribute__((__packed__));
 
 /**
@@ -362,7 +362,7 @@ struct tisci_msg_set_io_isolation_req {
  *
  */
 struct tisci_msg_set_io_isolation_resp {
-	struct tisci_header hdr;
+    struct tisci_header hdr;
 } __attribute__((__packed__));
 
 #endif

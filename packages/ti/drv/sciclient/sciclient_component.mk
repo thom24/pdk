@@ -106,7 +106,7 @@ export sciclient_PKG_LIST = sciclient
 export sciclient_INCLUDE = $(sciclient_PATH)
 export sciclient_SOCLIST = $(drvsciclient_SOCLIST)
 export sciclient_BOARDLIST = $(drvsciclient_BOARDLIST)
-export sciclient_$(SOC)_CORELIST = $(filter-out mcu1_0, $(drvsciclient_$(SOC)_CORELIST))
+export sciclient_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 
 export sciclient_hs_COMP_LIST = sciclient_hs
 export sciclient_hs_RELPATH = ti/drv/sciclient
@@ -126,7 +126,7 @@ export sciclient_hs_PKG_LIST = sciclient_hs
 export sciclient_hs_INCLUDE = $(sciclient_hs_PATH)
 export sciclient_hs_SOCLIST = $(drvsciclient_SOCLIST)
 export sciclient_hs_BOARDLIST = $(drvsciclient_BOARDLIST)
-export sciclient_hs_$(SOC)_CORELIST = $(filter-out mcu1_0, $(drvsciclient_$(SOC)_CORELIST))
+export sciclient_hs_$(SOC)_CORELIST = $(drvsciclient_$(SOC)_CORELIST)
 
 export sciclient_direct_COMP_LIST = sciclient_direct
 export sciclient_direct_RELPATH = ti/drv/sciclient_direct

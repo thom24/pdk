@@ -169,7 +169,7 @@ struct tisci_sec_header {
 #define TISCI_MSG_CORE_RESUME                   (0x0304U)
 #define TISCI_MSG_ABORT_ENTER_SLEEP             (0x0305U)
 #define TISCI_MSG_LPM_WAKE_REASON               (0x0306U)
-#define TISCI_MSG_SET_IO_ISOLATION				(0x0307U)
+#define TISCI_MSG_SET_IO_ISOLATION              (0x0307U)
 
 #define TISCI_MSG_FIRMWARE_LOAD                 (0x8105U)
 #define MSG_FIRMWARE_LOAD_RESULT                (0x8805U)

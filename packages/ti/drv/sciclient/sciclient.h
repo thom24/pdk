@@ -659,13 +659,6 @@ int32_t Sciclient_deinit(void);
 int32_t Sciclient_abiCheck(void);
 
 /**
- * @brief API to configure the trace configuration.
- *
- * @return return CSL_PASS on success, else failure
- */
-int32_t Sciclient_setDebugConfig(void);
-
-/**
  *  \brief API to get the default board config info.
  *
  *  \return CSL_PASS on success, else failure
