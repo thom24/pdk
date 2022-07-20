@@ -63,7 +63,7 @@ endif
 SRCDIR = ../src ../../common/$(SOC)
 INCDIR = ../../../../board ../../../../csl ../src ../../../src/$(BOARD)/include ../../../src/$(BOARD) ../../common/$(SOC)
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm tpr12_evm am64x_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j784s4_evm j7200_evm tpr12_evm am64x_evm))
 SRCDIR += ./$(BOARD)
 INCDIR += ./$(BOARD)
 endif
@@ -89,7 +89,7 @@ SRCS_COMMON += gpio_test_header.c diag_common_cfg.c
 endif
 
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm tpr12_evm am64x_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j7200_evm j784s4_evm tpr12_evm am64x_evm))
 SRCS_COMMON += gpio_test_header_config.c
 endif
 

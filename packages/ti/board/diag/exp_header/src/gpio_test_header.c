@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -43,9 +43,9 @@
  *             on one pin and verifying the same on the other pin
  *             with both the pins connected externally.
  *
- *  Supported SoCs: AM65xx, J721E, J7200, AM64x.
+ *  Supported SoCs: AM65xx, J721E, J7200, AM64x, J784S4.
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm.
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm, j784s4_evm.
  */
 
 #include "gpio_test_header.h"
@@ -261,6 +261,33 @@ static uint32_t pinMuxgpioBeta[PADCONFIG_MAX_COUNT_BETA] =
 };
 
 static uint32_t mlbHeader_pinMuxgpio[NUM_OF_MLB_HEADER_PINS]={PIN_UART1_CTSN, PIN_UART0_CTSN, PIN_UART1_RTSN};
+
+#elif defined(SOC_J784S4) /*j784s4_evm*/
+uint8_t gMainPadConfigMaxCount = MAIN_PADCONFIG_MAX_COUNT;
+uint8_t gPadConfigMaxCount = PADCONFIG_MAX_COUNT;
+
+testHeaderPinDetails_t testHeaderPin[NUM_PIN_SETS] = {
+    {"SPI HEADER PINS\0",     0U,     4U,     CSL_GPIO0_BASE},
+    {"I3C PINS\0",            5U,     2U,     CSL_WKUP_GPIO0_BASE},
+};
+
+/* Pad Config register offset address details */
+static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
+{
+    /* SPI HEADER */
+    /* Short pin1, pin2 and pin3, pin5 on J26 header */
+    PIN_MCASP0_AXR3,    /* SPI5_CLK */
+    PIN_MCAN1_RX,       /* SPI5_D0  */
+
+    PIN_MCASP0_AXR6,    /* SPI5_D1  */
+    PIN_MCAN0_RX,       /* SPI5_CS0 */
+    PIN_MCAN0_TX,       /* SPI5_CS1 (By default high) */
+
+    /* I3C HEADER PINS */
+    /* Short pin2 and pin3 on J25 header */
+    PIN_WKUP_GPIO0_8,
+    PIN_WKUP_GPIO0_9,
+};
 #else /*j7200_evm*/
 testHeaderPinDetails_t testHeaderPin[NUM_PIN_SETS] = {
     {"I3C PINS\0", 0U, 2U, CSL_WKUP_GPIO0_BASE},
@@ -340,8 +367,11 @@ static int8_t BoardDiag_runGpioTestHeaderVerification(uint8_t index,
                 UART_printf("Looping back the signal low Passed for pin %d and pin %d\n\r", pinIndex, (pinIndex+1));
             }
         }
+
+        GPIO_write(pinIndex, !gpioSignalLevel);
         pinIndex = pinIndex + 2U;
     }
+
     if(((testHeaderPin[index].numOfPins)%2) != 0)
     {
         rdSignalLevel = GPIO_read(pinIndex - 1U);
@@ -392,6 +422,10 @@ int8_t BoardDiag_runExpHeaderTest(void)
 
     Board_STATUS status = BOARD_SOK;
 
+#if defined (SOC_J784S4)
+    Board_control(BOARD_CTRL_CMD_SET_IO_MUX_PORTB3, NULL);
+#endif
+
     /* set board pin mux mode to MAIN domain */
 #if defined(SOC_AM65XX)
     for(index = 0; index < MAIN_PADCONFIG_MAX_COUNT; index++)
@@ -399,7 +433,7 @@ int8_t BoardDiag_runExpHeaderTest(void)
         Board_pinMuxSetMode(pinMuxgpio[index],
                             (GPIO_PADCONFIG_MUX_MODE | PIN_INPUT_ENABLE));
     }
-#elif defined(SOC_J721E)
+#elif defined(SOC_J721E) || defined (SOC_J784S4)
     for(index = 0; index < gMainPadConfigMaxCount; index++)
     {
         status = Board_pinmuxSetReg(BOARD_SOC_DOMAIN_MAIN,

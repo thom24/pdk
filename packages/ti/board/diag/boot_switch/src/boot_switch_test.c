@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2020 Texas Instruments Incorporated - http://www.ti.com/
+ *  Copyright (C) 2018-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,10 @@
  *  Operation: This test verifies the boot switch mode by reading the 
  *              boot values and compared with expected values.
  *
- *  Supported SoCs: AM65XX, J721E, J7200, AM64x.
+ *  Supported SoCs: AM65XX, J721E, J7200, AM64x, J721S2, J784S4.
  *
- *  Supported Platforms: am65xx_idk, am65xx_evm, j721e_evm, j7200_evm, am64x_evm.
+ *  Supported Platforms: am65xx_idk, am65xx_evm, j721e_evm, j7200_evm, am64x_evm,
+ *                       j721s2_evm, j784s4_evm.
  *
  */
 
@@ -132,6 +133,38 @@ static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
 switchDetails_t swDetails[NUM_OF_SW] = {
     { "SW8",  8, 0 },
     { "SW9",  8, 8 }
+};
+#elif defined(SOC_J721S2) || defined(SOC_J784S4)
+static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
+{
+    /*      SW8         */
+    PIN_MCU_OSPI0_D0,
+    PIN_MCU_OSPI0_D1,
+    PIN_MCU_OSPI0_D4,
+    PIN_MCU_OSPI0_D5,
+    PIN_WKUP_GPIO0_56,
+    PIN_WKUP_GPIO0_57,
+    PIN_WKUP_GPIO0_66,
+    PIN_WKUP_GPIO0_67,
+    /*      SW9         */
+    PIN_MCU_SPI0_D1,
+    PIN_WKUP_GPIO0_0,
+    PIN_WKUP_GPIO0_1,
+    PIN_WKUP_GPIO0_2,
+    PIN_WKUP_GPIO0_14,
+    PIN_WKUP_GPIO0_15,
+    PIN_WKUP_GPIO0_12,
+    PIN_WKUP_GPIO0_13
+};
+#if defined (j784s4_evm)
+switchDetails_t swDetails[NUM_OF_SW] = {
+    { "SW11", 7, 0 },
+    { "SW7",  8, 8 }
+#elif defined(j721s2_evm)
+switchDetails_t swDetails[NUM_OF_SW] = {
+    { "SW8",  7, 0 },
+    { "SW9",  8, 8 }
+#endif
 };
 #elif defined(SOC_J7200)
 static uint32_t pinMuxgpio[PADCONFIG_MAX_COUNT] =
@@ -383,7 +416,11 @@ static int8_t BoardDiag_bootSwTest(void)
         /* Initializing GPIO to MAIN domain */
         GPIO_v0_HwAttrs gpioCfg;
         GPIO_socGetInitCfg(0, &gpioCfg);
+#if defined (j784s4_evm)
+        gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
+#else
         gpioCfg.baseAddr = CSL_GPIO0_BASE;
+#endif
         GPIO_socSetInitCfg(0, &gpioCfg);
         GPIO_init();
 
@@ -417,7 +454,7 @@ static int8_t BoardDiag_bootSwTest(void)
     return 0;
 }
 
-#if (defined(j721e_evm) || defined(j7200_evm)) && !defined (__aarch64__)
+#if (defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm)) && !defined (__aarch64__)
 /* Function to enable MAIN UART0 */
 void Board_enableMAINUART0(void)
 {
@@ -444,7 +481,7 @@ int main(void)
     Board_STATUS status;
     Board_initCfg boardCfg;
     uint8_t ret;
-#if (defined(j721e_evm) || defined(j7200_evm)) && !defined (__aarch64__)
+#if (defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm)) && !defined (__aarch64__)
     Board_initParams_t initParams;
 
     Board_getInitParams(&initParams);

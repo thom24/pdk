@@ -59,7 +59,7 @@
 #include "src/am65xx_evm/am65xx_evm_pinmux.h"
 #elif defined(am65xx_idk)
 #include "src/am65xx_idk/am65xx_idk_pinmux.h"
-#elif defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm)
+#elif defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm)|| defined(j784s4_evm)
 #include "board_pinmux.h"
 #endif
 
@@ -76,6 +76,8 @@ extern "C" {
 #define ADC0_CHANNEL_NO		(8U)
 #if defined(SOC_J721E)
 #define ADC1_CHANNEL_NO		(8U)
+#elif defined(SOC_J784S4)
+#define ADC1_CHANNEL_NO		(2U)
 #else
 #define ADC1_CHANNEL_NO		(1U)
 #endif

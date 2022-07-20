@@ -72,7 +72,7 @@ PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
 SRCS_COMMON += boot_switch_test.c diag_common_cfg.c
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk j7200_evm am64x_evm j721s2_evm j784s4_evm))
 SRCS_COMMON += boot_switch_config.c
 endif
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -55,12 +55,13 @@
 
 #include "board.h"
 #include "board_cfg.h"
+#include "board_control.h"
 
 #if defined(am65xx_evm)
 #include "src/am65xx_evm/am65xx_evm_pinmux.h"
 #elif defined(am65xx_idk)
 #include "src/am65xx_idk/am65xx_idk_pinmux.h"
-#elif defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X)
+#elif defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J784S4)
 #include "board_pinmux.h"
 #endif
 
@@ -105,6 +106,10 @@ extern "C" {
 #define MAIN_PADCONFIG_MAX_COUNT    (85U)
 #define PADCONFIG_MAX_COUNT         (101U)
 /* number of gpio pin sets for loopback test*/
+#define NUM_PIN_SETS                (2U)
+#elif defined(SOC_J784S4) /*j784s4_evm*/
+#define PADCONFIG_MAX_COUNT         (7U)
+#define MAIN_PADCONFIG_MAX_COUNT    (5U)
 #define NUM_PIN_SETS                (2U)
 #else /*j7200_evm*/
 

@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -66,7 +66,7 @@
 #include "src/am65xx_evm/am65xx_evm_pinmux.h"
 #elif defined(am65xx_idk)
 #include "src/am65xx_idk/am65xx_idk_pinmux.h"
-#elif (defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm))
+#elif (defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm) || defined(j784s4_evm))
 #include "board_pinmux.h"
 #include "board_utils.h"
 #endif
@@ -101,6 +101,16 @@ extern "C" {
 #define NUM_OF_SW                       (2U)
 
 #elif defined(j7200_evm)
+#define PADCONFIG_MAX_COUNT             (16U)
+#define MAIN_PADCONFIG_MAX_COUNT        (0U)
+
+#define NUM_OF_PATTERNS                 (4U)
+#define NUM_OF_SW                       (2U)
+
+#define START_OF_WKUP_PIN_OFFSET        (0U)
+#define TOT_NUM_OF_SW                   (16U)
+
+#elif defined(j721s2_evm) || defined(j784s4_evm)
 #define PADCONFIG_MAX_COUNT             (16U)
 #define MAIN_PADCONFIG_MAX_COUNT        (0U)
 

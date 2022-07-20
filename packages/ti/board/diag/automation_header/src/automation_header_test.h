@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2018-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2018-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -56,7 +56,7 @@
 
 #include "diag_common_cfg.h"
 
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
 #include "board_internal.h"
 #include "board_i2c_io_exp.h"
 #include "board_control.h"
@@ -95,6 +95,9 @@ extern "C" {
 #elif defined(SOC_J721S2)
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x00U)
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x07U)
+#elif defined(SOC_J784S4)
+#define BOOTMODE_CFG_SET1_PIN_POS                  (0x0EU) // SW7
+#define BOOTMODE_CFG_SET2_PIN_POS                  (0x00U) // SW11
 #elif defined(SOC_AM64X)
 #define BOOTMODE_CFG_SET1_PIN_POS                  (0x3BU) /* SW2 */
 #define BOOTMODE_CFG_SET2_PIN_POS                  (0x00U) /* SW3 */

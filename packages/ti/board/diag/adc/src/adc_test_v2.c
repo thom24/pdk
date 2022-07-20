@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -43,7 +43,7 @@
  *
  *  Supported SoCs: AM65xx, J721E, J7200, AM64x, J721S2
  *
- *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm, j721s2_evm
+ *  Supported Platforms: am65xx_evm, am65xx_idk, j721e_evm, j7200_evm, am64x_evm, j721s2_evm, j784s4_evm
  */
 
 #include "adc_test_v2.h"
@@ -55,6 +55,11 @@ adcDetails_t adc[NUM_OF_ADC] = {
 #elif defined(am64x_evm)
 adcDetails_t adc[NUM_OF_ADC] = {
 	{ CSL_ADC0_BASE, ADC0_CHANNEL_NO }
+};
+#elif defined(j784s4_evm)
+adcDetails_t adc[NUM_OF_ADC] = {
+	{ CSL_MCU_ADC12FCC0_ADC_BASE, ADC0_CHANNEL_NO },
+	{ CSL_MCU_ADC12FCC1_ADC_BASE, ADC1_CHANNEL_NO }
 };
 #else
 adcDetails_t adc[NUM_OF_ADC] = {
