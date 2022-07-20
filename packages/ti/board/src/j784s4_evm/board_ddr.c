@@ -485,7 +485,13 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     uint32_t multiDdrCfgVal0;
     uint32_t multiDdrCfgVal1;
     uint32_t ddrInstance;
+    uint32_t eccConfig = MULTI_DDR_CFG_ECC_ENABLE;
     Board_DdrHandle ddrHandle;
+
+    if(eccEnable == TRUE)
+    {
+        eccConfig = 1;
+    }
 
     /* Unlock the PLL register access for DDR clock bypass */
     HW_WR_REG32(BOARD_PLL12_LOCK0, KICK0_UNLOCK);
@@ -498,7 +504,7 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
                       (MULTI_DDR_CFG_INTRLV_SIZE      << 16) |
                       (BOARD_MULTI_DDR_CFG_INTRLV_HEARTBEAT <<  0);
 
-    multiDdrCfgVal1 = (MULTI_DDR_CFG_ECC_ENABLE      << 16) |
+    multiDdrCfgVal1 = (eccConfig                     << 16) |
                       (MULTI_DDR_CFG_HYBRID_SELECT   <<  8) |
                       (MULTI_DDR_CFG_EMIFS_ACTIVE    <<  0);
 
@@ -516,32 +522,36 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
 
     for(ddrInstance = BOARD_DDR_INSTANCE_START; ddrInstance <= BOARD_DDR_INSTANCE_END; ddrInstance++)
     {
-        /* Set to Boot Frequency(F0) while configuring the DDR */
-        Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_0);
-        ddrHandle = Board_DDROpen(ddrInstance);
-        if(ddrHandle == NULL)
+        /* Initialize the DDR instance only if it is set active in EMIF tool generated config */
+        if(MULTI_DDR_CFG_EMIFS_ACTIVE & (1 << ddrInstance))
         {
-            BOARD_DEBUG_LOG("Board_DDROpen: FAIL\n");
-            return BOARD_FAIL;
-        }
-
-        status = Board_DDRConfig(ddrHandle, 0);
-        if(status != BOARD_SOK)
-        {
-            BOARD_DEBUG_LOG("Board_DDRConfig: FAIL\n");
-            return status;
-        }
-
-        if (eccEnable == TRUE)
-        {
-            status = emif_ConfigureECC(ddrHandle);
-            if ( status != BOARD_SOK )
+            /* Set to Boot Frequency(F0) while configuring the DDR */
+            Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_0);
+            ddrHandle = Board_DDROpen(ddrInstance);
+            if(ddrHandle == NULL)
             {
-                BOARD_DEBUG_LOG("\r\n CSL_emifConfig Failed");
+                BOARD_DEBUG_LOG("Board_DDROpen: FAIL\n");
+                return BOARD_FAIL;
+            }
+
+            status = Board_DDRConfig(ddrHandle, 0);
+            if(status != BOARD_SOK)
+            {
+                BOARD_DEBUG_LOG("Board_DDRConfig: FAIL\n");
                 return status;
             }
+
+            if (eccEnable == TRUE)
+            {
+                status = emif_ConfigureECC(ddrHandle);
+                if ( status != BOARD_SOK )
+                {
+                    BOARD_DEBUG_LOG("\r\n CSL_emifConfig Failed");
+                    return status;
+                }
+            }
+            Board_DDRClose(ddrHandle);
         }
-        Board_DDRClose(ddrHandle);
     }
 
     if (eccEnable == TRUE)
