@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -182,7 +182,7 @@ extern "C" {
 #define UFP_IMAGE_SYSFW           (0x4U)
 #define UFP_IMAGE_CUST            (0x5U)
 
-#define UFP_SYSFW_SIZE            (0x40000U)
+#define UFP_SYSFW_SIZE            (0x42000U)
 
 #define UFP_HEADER_PKT_SIZE        (14U)
 

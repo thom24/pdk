@@ -48,7 +48,7 @@ MEMORY
      * after SYSFW is done.
      * Location of all board configurations: 0x41c80040 after SYSFW is done.
      */
-    OCMRAM_SYSFW (RWIX)   : origin=0x41C80000 length=0x40000
+    OCMRAM_SYSFW (RWIX)   : origin=0x41C80000 length=0x42000
 
 }  /* end of MEMORY */
 
