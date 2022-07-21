@@ -758,10 +758,9 @@ static uint16_t UART_socGetSciSrcID(uint32_t baseAddr)
 
 static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
 {
-   int32_t ret = UART_SUCCESS;
+   int32_t ret = UART_SUCCESS, retVal = CSL_PASS;
 
 #if defined (BUILD_C66X) || defined (BUILD_MCU)
-    int32_t                              retVal;
     UART_HwAttrs                         *hwAttrs = (UART_HwAttrs *)(pHwAttrs);
     struct tisci_msg_rm_irq_set_req      rmIrqReq;
     struct tisci_msg_rm_irq_set_resp     rmIrqResp;
@@ -912,7 +911,6 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
         }
     }
 #elif defined (BUILD_C7X)
-    int32_t               retVal;
     UART_HwAttrs         *hwAttrs = (UART_HwAttrs *)(pHwAttrs);
     CSL_ClecEventConfig   cfgClec;
     CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
