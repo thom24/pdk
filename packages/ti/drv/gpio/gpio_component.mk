@@ -207,8 +207,11 @@ export GPIO_Baremetal_LedBlink_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=bare
 GPIO_Baremetal_LedBlink_TestApp_PKG_LIST = GPIO_Baremetal_LedBlink_TestApp
 GPIO_Baremetal_LedBlink_TestApp_INCLUDE = $(GPIO_Baremetal_LedBlink_TestApp_PATH)
 export GPIO_Baremetal_LedBlink_TestApp_BOARDLIST = $(drvgpio_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), j721e am64x))
+ifeq ($(SOC),$(filter $(SOC), am64x))
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELISTARM)
+else ifeq ($(SOC),$(filter $(SOC), j721e))
+# J721e:- There are no IR path from WKUP_GPIO to mcu3_0/mcu3_1.
+export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(filter $(drvgpio_$(SOC)_CORELISTARM), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else ifeq ($(SOC),$(filter $(SOC), j7200))
 # J7200:- There are no IR path from WKUP_GPIO to mcu2_0/mcu2_1.
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(filter $(drvgpio_$(SOC)_CORELISTARM), mpu1_0 mcu1_0 mcu1_1)
@@ -241,6 +244,9 @@ export GPIO_LedBlink_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1))
 export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvgpio_$(SOC)_CORELIST))
 ifeq ($(SOC),$(filter $(SOC), am64x))
     export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
+else ifeq ($(SOC),$(filter $(SOC), j721e))
+    # J721e:- There are no IR path from WKUP_GPIO to mcu3_0/mcu3_1/c66 cores.
+    export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
     #TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
     export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
