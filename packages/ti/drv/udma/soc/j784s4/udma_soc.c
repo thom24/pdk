@@ -245,7 +245,7 @@ CSL_DRU_t                gHost_DRU_t0, gHost_DRU_t4, gHost_DRU_t5, gHost_DRU_t6,
 #define UDMA_UTC_BASE_DRU6                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU6_MMR_CFG_DRU_BASE)
 #define UDMA_UTC_BASE_DRU7                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU7_MMR_CFG_DRU_BASE)
 /* CSL_COMPUTE_CLUSTER0_DRU0_FW_BASE flag inconsistency */                                    
-#define UDMA_COMPUTE_CLUSTER0_CLEC_REGS_BASE                    (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
+#define UDMA_COMPUTE_CLUSTER0_CLEC_REGS_BASE                    (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
 #endif
 /* None */
 

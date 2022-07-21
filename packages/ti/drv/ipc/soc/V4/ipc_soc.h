@@ -120,7 +120,7 @@ extern "C" {
 /* For C7x, DMSC does not configure or map CLEC router
  * it must be done by C7x software.
  */
-#define   C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
+#define   C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
 
 /* CLEC Offset = 992:- soc_events_in #32 is connected to CLEC event #1024 */
 /* CLEC is shared b/w all C7x cores and the offset can be common.

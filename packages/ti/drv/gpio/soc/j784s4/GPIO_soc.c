@@ -595,7 +595,7 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
     #if defined (BUILD_C7X)
         int32_t               ret;
         CSL_ClecEventConfig   cfgClec;
-        CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
+        CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
         /* Configure CLEC for GPIO */
         cfgClec.secureClaimEnable = FALSE;

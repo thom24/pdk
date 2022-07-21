@@ -639,7 +639,7 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     int32_t               retVal;
     UART_HwAttrs         *hwAttrs = (UART_HwAttrs *)(pHwAttrs);
     CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
     /* Configure CLEC for UART */
     cfgClec.secureClaimEnable = FALSE;

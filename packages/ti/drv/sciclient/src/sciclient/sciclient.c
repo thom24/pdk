@@ -386,11 +386,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      */
                     uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992;
 
-                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-                    #else
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-                    #endif
                     CSL_ClecEventConfig evtCfg;
                     evtCfg.secureClaimEnable = 0;
                     evtCfg.evtSendEnable = 1;
@@ -456,11 +452,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      */
                     uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992;
 
-                    #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-                    #else
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-                    #endif
                     CSL_ClecEventConfig evtCfg;
                     evtCfg.secureClaimEnable = 0;
                     evtCfg.evtSendEnable = 1;
@@ -985,11 +977,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
 
         #if defined (BUILD_C7X)
         {
-            #if defined (SOC_J721S2) || defined (SOC_J784S4)
-            CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-            #else
             CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-            #endif
             CSL_ClecEventConfig evtCfg;
             evtCfg.secureClaimEnable = 0;
             evtCfg.evtSendEnable = 1;
@@ -1179,11 +1167,7 @@ static void Sciclient_ISR(uintptr_t arg)
             Osal_DisableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
             #if defined (BUILD_C7X)
             {
-                #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-                #else
                 CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-                #endif
                 CSL_ClecEventConfig evtCfg;
                 evtCfg.secureClaimEnable = 0;
                 evtCfg.evtSendEnable = 0;

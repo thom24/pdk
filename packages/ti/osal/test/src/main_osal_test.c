@@ -184,7 +184,7 @@ void C7x_ConfigureTimerOutput(void);
     #endif
     #if defined(SOC_J721S2)
         #if defined(FREERTOS)
-            #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
+            #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
             /* DMTimer 0/1 and Interrupt num 14(configTIMER_INT_NUM) 
             * is used by FreeRTOS by default for C7x_1/C7x_2 respectively, 
             * so we need to use a different one here */
@@ -195,7 +195,7 @@ void C7x_ConfigureTimerOutput(void);
     #endif
     #if defined(SOC_J784S4)
         #if defined(FREERTOS)
-            #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
+            #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
             /* DMTimer 0/1/2/3 and Interrupt num 14(configTIMER_INT_NUM) 
             * is used by FreeRTOS by default for C7x_1/C7x_2/C7x_3/C7x_4 respectively, 
             * so we need to use a different one here */

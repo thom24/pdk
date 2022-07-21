@@ -237,7 +237,7 @@ CSL_DRU_t                gHost_DRU_t;
 /* CSL_COMPUTE_CLUSTER0_DRU0_FW_BASE flag inconsistency */
 #define UDMA_UTC_BASE_DRU0                                      (CSL_COMPUTE_CLUSTER0_MMR_DRU0_MMR_CFG_DRU_BASE)
 /* CSL_COMPUTE_CLUSTER0_DRU0_FW_BASE flag inconsistency */                                    
-#define UDMA_COMPUTE_CLUSTER0_CLEC_REGS_BASE                    (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
+#define UDMA_COMPUTE_CLUSTER0_CLEC_REGS_BASE                    (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
 #endif
 /* None */
 

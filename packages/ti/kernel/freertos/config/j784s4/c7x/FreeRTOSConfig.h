@@ -183,7 +183,7 @@
 #define portCONFIGURE_DDR_SIZE      (0x80000000U)
 
 /* Compute Cluster CLEC Register Base Address */
-#define portCOMPUTE_CLUSTER_CLEC_BASE   (CSL_COMPUTE_CLUSTER0_CLEC_BASE)
+#define portCOMPUTE_CLUSTER_CLEC_BASE   (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
 
 /* 
  * This is not a FreeRTOS defined config and is defined by TI to enable

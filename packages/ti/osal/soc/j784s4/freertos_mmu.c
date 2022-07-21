@@ -144,7 +144,7 @@ static void OsalInitMmu(bool isSecure)
 void OsalCfgClecAccessCtrl (bool onlyInSecure)
 {
     CSL_ClecEventConfig cfgClec;
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
     uint32_t            i, maxInputs = 2048U;
     uint32_t            secureClaim = 0U;
 

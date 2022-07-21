@@ -630,7 +630,7 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
     int32_t               retVal;
     I2C_HwAttrs const    *hwAttrs = (I2C_HwAttrs const *)(pHwAttrs);
     CSL_ClecEventConfig   cfgClec;
-    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
+    CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
     /* Configure CLEC for I2C0 */
     cfgClec.secureClaimEnable = FALSE;
