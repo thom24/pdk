@@ -2041,6 +2041,15 @@ static int32_t Udma_chCheckParams(Udma_DrvHandle drvHandle,
             Udma_printf(drvHandle, "[Error] Invalid Peer Channel Number!!!\n");
         }
     }
+    if((chType & UDMA_CH_FLAG_PSIL) == UDMA_CH_FLAG_PSIL)
+    {
+        if((UDMA_DMA_CH_INVALID == chPrms->peerChNum) ||
+           (UDMA_DMA_CH_NA == chPrms->peerChNum))
+        {
+            retVal = UDMA_EINVALID_PARAMS;
+            Udma_printf(drvHandle, "[Error] Invalid Peer Channel Number!!!\n");
+        }
+    }
     if((chType & UDMA_CH_FLAG_MAPPED) == UDMA_CH_FLAG_MAPPED)
     {
         if(UDMA_MAPPED_GROUP_INVALID == chPrms->mappedChGrp)
