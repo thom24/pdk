@@ -41,7 +41,7 @@ CFLAGS_OS_DEFINES = -DSAFERTOS
 # List all the components required by the application
 COMP_LIST_COMMON  = $(PDK_COMMON_SAFERTOS_COMP)
 EXTERNAL_INTERFACES = safertos
-CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciserver_testapp/linker_r5_safertos.lds
+CONFIG_BLD_LNK_r5f = $(PDK_INSTALL_PATH)/ti/drv/sciclient/examples/sciserver_testapp/safertos/$(SOC)/linker_r5_safertos.lds
 endif
 
 COMP_LIST_COMMON += sciserver_tirtos

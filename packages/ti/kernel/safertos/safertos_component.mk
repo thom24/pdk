@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 - 2020, Texas Instruments Incorporated
+# Copyright (c) 2016 - 2022, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -66,9 +66,10 @@
 #
 ifeq ($(safertos_component_make_include), )
 
-safertos_BOARDLIST       = tpr12_evm awr294x_evm j721e_evm
-safertos_SOCLIST         = tpr12 awr294x j721e
+safertos_BOARDLIST       = tpr12_evm awr294x_evm j721e_evm j7200_evm
+safertos_SOCLIST         = tpr12 awr294x j721e j7200
 safertos_j721e_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
+safertos_j7200_CORELIST  = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 safertos_tpr12_CORELIST  = c66xdsp_1
 safertos_awr294x_CORELIST  = c66xdsp_1
 

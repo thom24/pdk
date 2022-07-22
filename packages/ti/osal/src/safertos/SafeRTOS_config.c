@@ -271,12 +271,14 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1;
     }
+#if defined (SOC_J721E)    
     else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
     {    
         params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1;
     } 
+#endif
 #elif defined (BUILD_C7X)
     params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_1;
     params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1;

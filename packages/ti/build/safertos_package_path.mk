@@ -12,11 +12,18 @@ ifeq ($(BOARD),$(filter $(BOARD), j721e_evm ))
   export SAFERTOS_j721e_c7x_INSTALL_PATH = 
 endif
 
+ifeq ($(BOARD),$(filter $(BOARD), j7200_evm ))
+  export SAFERTOS_j7200_r5f_INSTALL_PATH = 
+endif
+
 # This release is validated on below mentioned SafeRTOS Version on said SOC's/ISA's 
 ifeq ($(BOARD),$(filter $(BOARD), j721e_evm ))
   SAFERTOS_VERSION_r5f = 009-002-199-024-219-004
   SAFERTOS_VERSION_c66 = 009-002-201-005-219-002
   SAFERTOS_VERSION_c7x = 009-002-230-005-219-005
+endif
+ifeq ($(BOARD),$(filter $(BOARD), j7200_evm ))
+  SAFERTOS_VERSION_r5f = 009-002-199-024-243-001
 endif
 
 include $(PDK_INSTALL_PATH)/ti/build/makerules/platform.mk

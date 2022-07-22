@@ -24,6 +24,9 @@ while [ $# -gt 0 ]; do
     --j721e_r5f_path=*)
       j721e_r5f_path="${1#*=}"
       ;;
+    --j7200_r5f_path=*)
+      j7200_r5f_path="${1#*=}"
+      ;;
     --j721e_c66_path=*)
       j721e_c66_path="${1#*=}"
       ;;
@@ -37,6 +40,7 @@ while [ $# -gt 0 ]; do
       echo "--j721e_r5f_path       Path to J721E(TDA4VM) R5F SafeRTOS Package from WHIS"
       echo "--j721e_c66_path       Path to J721E(TDA4VM) C66 SafeRTOS Package from WHIS"
       echo "--j721e_c7x_path       Path to J721E(TDA4VM) C7x SafeRTOS Package from WHIS"
+      echo "--j7200_r5f_path       Path to J7200(DRA821) R5F SafeRTOS Package from WHIS"
       exit 0
       ;;
     *)
@@ -97,6 +101,28 @@ if [ ! "${j721e_c7x_path}" == "" ]; then
     #Build osal_safertos for c7x
     make osal_safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release;
     printf "\n Successfully completed setup SafeRTOS Builds for J721E C7x\n\n"
+  fi
+fi
+
+if [ ! "${j7200_r5f_path}" == "" ]; then
+  printf "\n j7200_r5f_path = $j7200_r5f_path \n\n"
+  if [ !  -d ${j7200_r5f_path} ] ; then
+    printf "\n Error: Invalid j7200_r5f_path!!\n\n"
+  else
+    #Update R5F Install Path
+    sed -i -e "s|SAFERTOS_j7200_r5f_INSTALL_PATH =.*|SAFERTOS_j7200_r5f_INSTALL_PATH = ${j7200_r5f_path}|g" safertos_package_path.mk
+    #Build safertos lib for all R5F cores
+    make safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
+    make safertos -sj8 CORE=mcu1_1 BUILD_PROFILE=release BOARD=j7200_evm
+    make safertos -sj8 CORE=mcu2_0 BUILD_PROFILE=release BOARD=j7200_evm
+    make safertos -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j7200_evm
+    #Build osal_safertos for R5F
+    make osal_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
+    #Build sciserver_testapp_safertos and check-in
+    make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
+    cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j7200/sciserver_testapp_safertos_mcu1_0_release.xer5f ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j7200/
+    cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j7200/sciserver_testapp_safertos_mcu1_0_release.rprc  ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j7200/
+    printf "\n Successfully completed setup SafeRTOS Builds for J7200 R5F\n\n"
   fi
 fi
 

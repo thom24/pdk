@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2017 - 2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2017 - 2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -149,7 +149,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        //Region 7 configuration: Covers first 32MB of EVM Flash (FSS DAT0) *
+        //Region 7 configuration: Covers first 64MB of EVM Flash (FSS DAT0) *
         .regionId         = 7U,
         .enable           = 1U,
         .baseAddr         = 0x50000000,
