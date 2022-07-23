@@ -263,7 +263,7 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
 
     if ((pTimer != NULL_PTR) && (pTimer->used == TRUE))
     {
-        if( xPortInIsrContext() )
+        if( Osal_isInISRContext() )
         {
             /* timeout is ignored when in ISR mode */
             xCreateResult = xTimerStartFromISR(pTimer->timerHndl);
@@ -299,7 +299,7 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
 
     if ((pTimer != NULL_PTR) && (pTimer->used == TRUE))
     {
-        if( xPortInIsrContext() )
+        if( Osal_isInISRContext() )
         {
             /* timeout is ignored when in ISR mode */
             xCreateResult = xTimerStopFromISR(pTimer->timerHndl);

@@ -1,5 +1,5 @@
 /*
- * Copyright ( c ) 2015-2018, Texas Instruments Incorporated
+ * Copyright ( c ) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,6 +54,8 @@
 #endif
 
 /* Global Osal static memory status variables */
+extern uint32_t __IRQ_STACK_START;
+extern uint32_t __IRQ_STACK_END;
 uint32_t  gOsalSemAllocCnt   = 0U, gOsalSemPeak = 0U;
 uint32_t  gOsalTimerAllocCnt = 0U, gOsalTimerPeak = 0U;
 uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak = 0U;
@@ -115,7 +117,7 @@ void Osal_DebugP_assert( int32_t expression, const char *file, int32_t line )
 Osal_ThreadType Osal_getThreadType( void )
 {
     Osal_ThreadType osalThreadType;
-    if(  xPortInIsrContext(  ) )
+    if(  Osal_isInISRContext(  ) )
     {
         osalThreadType = Osal_ThreadType_Hwi;
     }
@@ -253,6 +255,33 @@ int32_t Osal_getStaticMemStatus( Osal_StaticMemStatus *pMemStat )
     }
 
     return ( retVal );
+}
+
+int32_t Osal_isInISRContext(void)
+{
+    int32_t retVal = true;
+
+    /* xPortInIsrContext accesses kernel data, and hence, causes abort when
+     * a non privileged task tries to call the same. This implementation reads the
+     * the stack pointer on ARM cores and checks if the current contxt is an IRQ context.
+     */ 
+#if defined (BUILD_MCU)
+    uint32_t volatile sp = 0, start, end;
+    __asm volatile ("mov %0, sp" :  "=r" (sp));
+    start = (uint32_t)&__IRQ_STACK_START;
+    end = (uint32_t)&__IRQ_STACK_END;
+    if ((start <= sp) && (end >= sp))
+    {
+        retVal = true;
+    }
+    else
+    {
+        retVal = false;
+    }
+#else
+    retVal = xPortInIsrContext();
+#endif
+    return retVal;
 }
 
 /* Nothing past this point */

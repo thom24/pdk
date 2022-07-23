@@ -97,6 +97,7 @@ typedef struct Safertos_OSTimerParams_s
 
 portBaseType prvSetupHardware( void );
 void prvGetOSTimerParams( Safertos_OSTimerParams *params);
+int32_t Osal_isInISRContext(void);
 
 #ifdef __cplusplus
 }

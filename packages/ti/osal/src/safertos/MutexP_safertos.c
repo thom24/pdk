@@ -183,7 +183,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
     /* TODO check why this mutex->isRecursiveMutex needed, may be removed */
     if ((mutex != NULL_PTR) && (mutex->used == TRUE )&& (mutex->isRecursiveMutex))
     {
-        if (!xPortInIsrContext())
+        if (!Osal_isInISRContext())
         {
             if (timeout == MutexP_WAIT_FOREVER)
             {
@@ -229,7 +229,7 @@ MutexP_Status MutexP_unlock(MutexP_Handle handle)
 
     if ((mutex != NULL_PTR) && (mutex->used == TRUE) && (mutex->isRecursiveMutex))
     {
-        if (!xPortInIsrContext())
+        if (!Osal_isInISRContext())
         {
             /* Should not be called from ISR */
             xCreateResult = xMutexGive(mutex->mutHndl);

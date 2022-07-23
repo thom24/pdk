@@ -178,7 +178,7 @@ uintptr_t HwiP_disable(void)
 {
     uintptr_t key = (uintptr_t)NULL_PTR;
 
-    if(( xPortInIsrContext() ) || 
+    if(( Osal_isInISRContext() ) || 
        ( ! xTaskIsSchedulerStarted() ))
     {
         key = OsalArch_globalDisableInterrupt();
@@ -196,7 +196,7 @@ uintptr_t HwiP_disable(void)
  */
 void HwiP_restore(uintptr_t key)
 {
-    if(( xPortInIsrContext() ) || 
+    if(( Osal_isInISRContext() ) || 
        ( ! xTaskIsSchedulerStarted() ))
     {
         OsalArch_globalRestoreInterrupt(key);

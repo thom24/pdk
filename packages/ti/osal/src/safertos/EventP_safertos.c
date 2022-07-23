@@ -232,7 +232,7 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
     
     if((event != NULL_PTR) && (event->used==TRUE))
     {
-        if( xPortInIsrContext() )
+        if( Osal_isInISRContext() )
         {   
             xCreateResult  = xEventGroupSetBitsFromISR(event->eventHndl,
                                                  (eventBitsType)eventMask);
@@ -281,7 +281,7 @@ uint32_t EventP_getPostedEvents(EventP_Handle handle)
     
     if((event != NULL_PTR) && (event->used==TRUE))
     {
-        if( xPortInIsrContext() )
+        if( Osal_isInISRContext() )
         {   
             xCreateResult = xEventGroupGetBitsFromISR(event->eventHndl, (eventBitsType *)&eventBitsGet);
             if(xCreateResult != pdPASS)

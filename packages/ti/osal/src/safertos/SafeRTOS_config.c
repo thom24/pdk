@@ -133,7 +133,7 @@ const xPORT_INIT_PARAMETERS gSafertosPortInit =
 #if defined (BUILD_MCU)
     pdFALSE,                            /* xIdleTaskUsingFPU */
     {                                   /* xIdleTaskMPUParameters */
-        mpuUNPRIVILEGED_TASK,           /* The idle hook will be executed in unprivileged mode. */
+        mpuPRIVILEGED_TASK,             /* The idle hook will be executed in privileged mode. */
         {
             { NULL, 0U, 0U, 0U },
             { NULL, 0U, 0U, 0U },

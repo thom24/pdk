@@ -198,7 +198,7 @@ int32_t SemaphoreP_constructBinary( SemaphoreP_safertos *handle, uint32_t initCo
         if( initCount == 0 )
         {
             uint32_t            isSemTaken;
-            DebugP_assert(xPortInIsrContext( ) == false);
+            DebugP_assert(Osal_isInISRContext( ) == false);
             /* SafeRTOS on BinarySemaphore create initializes semaphore with count of 1.
              * So we need to take semaphore to make count 0, if we are creating a binary semaphore with init count of 0.
              */
@@ -294,7 +294,7 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
     DebugP_assert( ( handle != NULL_PTR ) );
-    if(  xPortInIsrContext(  )  )
+    if(  Osal_isInISRContext(  )  )
     {
         /* timeout is ignored when in ISR mode */
         isSemTaken = xSemaphoreTakeFromISR( pSemaphore->semHndl);
@@ -333,7 +333,7 @@ SemaphoreP_Status SemaphoreP_post( SemaphoreP_Handle handle )
     DebugP_assert( ( handle != NULL_PTR ) );
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
-    if(  xPortInIsrContext(  )  )
+    if(  Osal_isInISRContext(  )  )
     {
         xSemaphoreGiveFromISR( pSemaphore->semHndl);
         safertosapiYIELD_FROM_ISR();

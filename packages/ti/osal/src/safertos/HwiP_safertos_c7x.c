@@ -260,7 +260,7 @@ uintptr_t HwiP_disable(void)
 {
     uintptr_t key = (uintptr_t)NULL_PTR;
 
-    if(( xPortInIsrContext() ) || 
+    if(( Osal_isInISRContext() ) || 
        ( ! xTaskIsSchedulerStarted() ))
     {
         key = Hwi_disable();
@@ -318,7 +318,7 @@ int32_t HwiP_post(uint32_t interruptNum)
  */
 void HwiP_restore(uintptr_t key)
 {
-    if(( xPortInIsrContext() ) || 
+    if(( Osal_isInISRContext() ) || 
        ( ! xTaskIsSchedulerStarted() ))
     {
         (void)Hwi_restore((uint32_t)key);
