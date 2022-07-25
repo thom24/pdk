@@ -441,11 +441,7 @@ int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channel
   CSL_ClecEventConfig   cfgClec;
   int32_t thisCore = CSL_clecGetC7xRtmapCpuId() ;
 
-  #if defined (SOC_J721E)
   CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-  #else
-  CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-  #endif
 
   DmaUtilsAutoInc3d_getUtcInfo( NULL, &dru_local_event_start) ;
   DmaUtilsAutoInc3d_getClecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext->druChannelId, &cfgClec);
