@@ -478,6 +478,7 @@ int32_t blockCopy(
     UdmaInitPrms_init(instId, &initPrms);
     initPrms.printFxn = &testDmaAutoIncPrintf;
     initPrms.virtToPhyFxn = &testDmaAutoIncVirtToPhyFxn;
+    initPrms.skipGlobalEventReg = 1;
     retVal = Udma_init(drvHandle, &initPrms);
     if(UDMA_SOK != retVal)
     {

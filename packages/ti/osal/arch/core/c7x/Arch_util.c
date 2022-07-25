@@ -266,7 +266,11 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
     uint32_t   lo, hi;
 
     key     = HwiP_disable();
+    #if !defined(HOST_EMULATION)
     cycle   = __TSC;
+    #else
+    cycle   = 0x00;
+    #endif
     cycleHi = ((uint64_t)(cycle >> 32U));
 
     /* get the lo and hi parts */

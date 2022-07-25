@@ -505,7 +505,7 @@ int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channel
 {
   int32_t eventId;
 
-#ifndef HOST_EMULATION
+#if !defined(HOST_EMULATION)
   uint32_t dru_local_event_start;
   CSL_ClecEventConfig   cfgClec;
   int32_t thisCore = CSL_clecGetC7xRtmapCpuId() ;
@@ -922,7 +922,7 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
 
 #ifdef HOST_EMULATION
       CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trMem + sizeof(CSL_UdmapTR));
-
+      udmaDrvHandle = (Udma_DrvHandle)dmautilsContext->initParams.udmaDrvHandle;
       druChannelNum = (channelHandle->extChNum - channelHandle->utcInfo->startCh);
       hostEmulation_druChSubmitAtomicTr(udmaDrvHandle->utcInfo[0].druRegs,
                                                                         druChannelNum,
