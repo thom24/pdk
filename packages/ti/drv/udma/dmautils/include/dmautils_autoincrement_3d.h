@@ -82,8 +82,6 @@
 extern "C" {
 #endif
 
-
-
 //:TODO: Actual value on SOC is 3 but currently VLAB supports only on
 /** \brief Number of TR's that can be submitted back to back channel  */
 #define DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE (1U)
@@ -96,6 +94,8 @@ typedef enum{
   DMAUTILS_EINVALID_PARAMS = CSL_EINVALID_PARAMS
 } DmaUtilsAutoInc3d_ReturnType;
 
+/** \brief Size of the programmable part of the secondary TR Size. This determines the starting offset of the CDB table during compression.*/
+#define DMAUTILS_COMP_SECTR_PROG_SIZE (32)
 /**
  *  @enum   DmaUtilsAutoInc3d_SyncType
  *
@@ -114,6 +114,38 @@ typedef enum{
                                                                             whenever one TR is completed */
 }DmaUtilsAutoInc3d_SyncType;
 
+
+/**
+ *  @enum    DmaUtilsAutoInc3d_DfmtType
+ *
+ *  @brief    Describes the formatting option selected for the DMA
+ *
+  */
+typedef enum{
+  DMAUTILSAUTOINC3D_DFMT_NONE      = 0, /*!< No formatting options */
+  //DMAUTILSAUTOINC3D_DFMT_CONST     = 1, /*!< DMA will do constant copy */
+  //DMAUTILSAUTOINC3D_DFMT_TPOSE     = 2, /*!< DMA will transpose 2 inner most dimensions */
+  //DMAUTILSAUTOINC3D_DFMT_REV       = 3, /*!< DMA will reverse all rows. i.e. ICNT0 will be reversed between reading and writing */
+  //DMAUTILSAUTOINC3D_DFMT_REV_TPOSE = 4, /*!< DMA will transpose 2 inner most dimension and then reverse the outputed rows */
+  DMAUTILSAUTOINC3D_DFMT_COMP      = 5, /*!< DMA will compress data into 1-D blocks */
+  DMAUTILSAUTOINC3D_DFMT_DECOMP    = 6  /*!< DMA will decompress data from 1-D blocks into decompressed structure */
+}DmaUitlsAutoInc3d_DfmtType;
+
+
+/**
+ *  @enum    DmaUtilsAutoInc3d_CmprsType
+ *
+ *  @brief    Describes the compression type to be employed by the DMA
+ *
+  */
+typedef enum{
+  DMAUTILSAUTOINC3D_CMPRS_ZERO      = 0, /*!< Zero compression algorithm */
+  DMAUTILSAUTOINC3D_CMPRS_UEG       = 1, /*!< Unsigned Exponential Golomb algorithm */
+  DMAUTILSAUTOINC3D_CMPRS_SEG       = 2, /*!< Signed Exponential Golomb algorithm */
+  DMAUTILSAUTOINC3D_CMPRS_SEG_VAR_K = 3  /*!< Signed Exponenetial Golomb algorithm with variable-k */
+}DmaUtilsAutoInc3d_CmprsType;
+
+
 /**
  *  @enum    DmaUtilsAutoInc3d_AddrType
  *
@@ -131,6 +163,63 @@ typedef enum{
                                                                                        addresses to be constant. This enum is to use circSize2 for
                                                                                        circularity*/
 }DmaUtilsAutoInc3d_AddrType;
+
+
+/**
+ *  @enum    DmaUtilsAutoInc3d_UpdateKType
+ *
+ *  @brief    Describes how the DRU will update the k-value for variable-k signed exponential golomb
+ *
+  */
+typedef enum{
+  DMAUTILSAUTOINC3D_UPDATEK_NONE = 0, /*!< DRU will not change the k-value between superblocks */
+  DMAUTILSAUTOINC3D_UPDATEK_INC  = 1, /*!< DRU will move the k-value by 1 toward the current superblock's
+                                             optimial k-value for the next superblock */
+  DMAUTILSAUTOINC3D_UPDATEK_JUMP = 2  /*!< DRU will set the k-value to the current superblock's optimal
+                                             k-value for the next superblock */
+}DmaUtilsAutoInc3d_UpdateKType;
+
+
+/**
+ *  @enum    DmaUtilsAutoInc3d_CmpElemType
+ *
+ *  @brief    Describes the valid element sizes for variable-k signed exponential golomb compression
+ *
+  */
+typedef enum{
+  DMAUTILSAUTOINC3D_CMPELEM_8BIT  = 0, /*!< 8-bit elements */
+  DMAUTILSAUTOINC3D_CMPELEM_12BIT = 1, /*!< 12-bit elements */
+  DMAUTILSAUTOINC3D_CMPELEM_16BIT = 2  /*!< 16-bit elements */
+}DmaUtilsAutoInc3d_CmpElemType;
+
+
+/**
+ *  @enum    DmaUtilsAutoInc3d_CmpSubType
+ *
+ *  @brief    Describes the pattern of pixel subtraction scheme usages
+ *
+  */
+typedef enum{
+  DMAUTILSAUTOINC3D_CMPSUB_NONE = 0, /*!< No Inter-pixel subtraction before compression */
+  DMAUTILSAUTOINC3D_CMPSUB_SUB0 = 1, /*!< All pixels use subSel0 scheme */
+  DMAUTILSAUTOINC3D_CMPSUB_SUB1 = 2, /*!< Even pixels use subSel0 and odd pixels use subSel1 scheme */
+  DMAUTILSAUTOINC3D_CMPSUB_SUB2 = 3, /*!< Pattern of subSel0, subSel1, and subSel2 schemes */
+  DMAUTILSAUTOINC3D_CMPSUB_SUB3 = 4  /*!< Pattern of subSel0, subSel1, subSel2, and subSel3 schemes */
+}DmaUtilsAutoInc3d_CmpSubType;
+
+
+/**
+ *  @enum    DmaUtilsAutoInc3d_CmpSubSelType
+ *
+ *  @brief    Describes a pixel subtraction scheme
+ *
+  */
+typedef enum{
+  DMAUTILSAUTOINC3D_CMPSUBSEL_SUB1 = 0, /*!< Subtract previous pixel from current pixel */
+  DMAUTILSAUTOINC3D_CMPSUBSEL_SUB2 = 1, /*!< Subtract pixel two before from current pixel */
+  DMAUTILSAUTOINC3D_CMPSUBSEL_SUB3 = 2, /*!< Subtract pixel three before from current pixel */
+  DMAUTILSAUTOINC3D_CMPSUBSEL_SUB4 = 3  /*!< Subtract pixel four before from current pixel */
+}DmaUtilsAutoInc3d_CmpSubSelType;
 
 
 /**
@@ -259,7 +348,64 @@ typedef struct
   uint8_t    *srcPtr;
   /** Pointer to memory buffer for the destination */
   uint8_t    *dstPtr;
+  /** Optional pointer to memory buffer for the secondary TR */
+  uint8_t    *strPtr;
+  /** Optional pointer to CDB table first entry for decompression */
+  uint8_t    *cdbPtr;
 }DmaUtilsAutoInc3d_IOPointers;
+
+
+
+/**
+ *  \brief   The structure specifies the compression parameters for the transfer
+ */
+typedef struct
+{
+  /** Type of compression to use. Please refer to DmaUtilsAutoInc3d_CmprsType */
+  uint8_t     cmpAlg;
+  /** 8-bit bias value for all compression types other than variable-k signed exponential golomb */
+  uint8_t     cmpBias;
+  /** initial k value for variable-k signed exponential golomb */
+  uint8_t     varKStartK;
+  /** k value update method for variable-k signed exponential golomb.
+        Please refer to DmaUtilsAutoInc3d_UpdateKType for valid values */
+  uint8_t     varKUpdateK;
+  /** Element size for variable-k signed exponential golomb.
+        Please refer to DmaUtilsAutoInc3d_CmpElemType for valid values */
+  uint8_t     varKElemSize;
+  /** Pixel subtraction scheme for variable-k signed exponenetial golomb.
+        Please refer to DmaUtilsAutoInc3d_CmpSubType for valid values */
+  uint8_t     varKSubType;
+  /** Pixel subtraction scheme 0 for variable-k signed exponenential golomb.
+       Please refer to DmaUtilsAutoInc3d_CmpSubSelType for valid values */
+  uint8_t     varKSubSel0;
+  /** Pixel subtraction scheme 1 for variable-k signed exponenential golomb.
+       Please refer to DmaUtilsAutoInc3d_CmpSubSelType for valid values */
+  uint8_t     varKSubSel1;
+  /** Pixel subtraction scheme 2 for variable-k signed exponenential golomb.
+       Please refer to DmaUtilsAutoInc3d_CmpSubSelType for valid values */
+  uint8_t     varKSubSel2;
+  /** Pixel subtraction scheme 3 for variable-k signed exponenential golomb.
+       Please refer to DmaUtilsAutoInc3d_CmpSubSelType for valid values */
+  uint8_t     varKSubSel3;
+  /** Total loop iteration count for level 0 (innermost) for a superblock*/
+  uint16_t    sbIcnt0;
+  /** Total loop iteration count for level 1 for a superblock*/
+  uint16_t    sbIcnt1;
+  /** Jump in bytes when moving from sbIcnt0 to sbIcnt1 must be multiple of 16*/
+  uint32_t    sbDim1;
+  /** Jump in bytes when moving from sbIcnt1 to sicnt0 (completing a superblock) */
+  uint32_t    sDim0;
+  
+  //Changes for 1.0.6 start here:
+  /** The destination dimension to use for DICNT0 in the original TR after each super block */
+  uint32_t    dDim0;
+  /** The addressing mode to use for the super block during ICNT0 is decrmenting */
+  uint32_t    sbAM0;
+  /** The addressing mode to use for the super block when SB_ICNT1 is decremented.*/
+  uint32_t    sbAM1; 
+  
+}DmaUtilsAutoInc3d_TransferCompression;
 
 
 /**
@@ -271,12 +417,17 @@ typedef struct
 typedef struct
 {
     /** Trasnfer sync boundary, Refer DmaUtilsAutoInc3d_SyncType for valid values */
-    int32_t syncType;
+    uint32_t syncType;
+    /**  Formatting options for DMA transfer (compression, decompression, transposed, etc.)
+           Please refer to DmaUtilsAutoInc3d_DfmtType for valid values */
+    uint32_t dmaDfmt;
     /** Properties to describe transfer dimensions in terms of icnt's
           and dim's */
     DmaUtilsAutoInc3d_TransferDim transferDim;
     /** Properties describing circularity */
     DmaUtilsAutoInc3d_TransferCirc circProp;
+    /** Optional properties describing compression */
+    DmaUtilsAutoInc3d_TransferCompression cmpProp;
     /** Input and output pointers */
     DmaUtilsAutoInc3d_IOPointers ioPointers;
 }DmaUtilsAutoInc3d_TransferProp;
@@ -492,6 +643,7 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
  */
 int32_t DmaUtilsAutoInc3d_trigger(void * autoIncrementContext, int32_t channelId);
 
+
 /**
  *
  *  \brief   This function waits for completion transfer on a particular channel
@@ -506,6 +658,7 @@ int32_t DmaUtilsAutoInc3d_trigger(void * autoIncrementContext, int32_t channelId
  *
  */
 void  DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId);
+
 
 /**
  *
@@ -536,6 +689,7 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
  */
 int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext);
 
+int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem);
 
 #ifdef __cplusplus
 }
@@ -544,4 +698,3 @@ int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext);
 /* @} */
 
 #endif /*#define DMAUTILS_AUTOINCREMENT_3D_H_*/
-
