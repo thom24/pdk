@@ -51,6 +51,9 @@
 #include <string.h>
 #if defined(HOST_EMULATION)
 #include <malloc.h>
+#else
+#include <ti/csl/csl_clec.h>
+#include <ti/csl/arch/c7x/cslr_C7X_CPU.h>
 #endif
 
 #include "dmautils_autoinc_circular_example.h"
@@ -58,6 +61,9 @@
 
 #define TEST_malloc(heap, size)   malloc(size)
 #define TEST_free(ptr)            free(ptr)
+
+#define DRU_LOCAL_EVENT_START_DEFAULT  (192U)   // Default for J721E and J721S2
+#define DRU_LOCAL_EVENT_START_J784S4   (664U)
 
 #define L2SRAM_SIZE (64*1024)
 
@@ -147,6 +153,41 @@ int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_siz
     return (retVal);
 }
 
+#if !defined(HOST_EMULATION)
+/*Configure CLEC*/
+static void appC7xClecInitDru(void)
+{
+    CSL_ClecEventConfig   cfgClec;
+    #if defined(SOC_J721S2)
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
+    #else
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    #endif
+
+    uint32_t i;
+    uint32_t dru_input_start = 192;
+    #if defined(SOC_J784S4)
+    dru_input_start = DRU_LOCAL_EVENT_START_J784S4;
+    #else
+    dru_input_start = DRU_LOCAL_EVENT_START_DEFAULT;
+    #endif
+    uint32_t dru_input_num   = 16;
+    /*Only configuring 16 channels*/
+    for(i=dru_input_start; i<(dru_input_start+dru_input_num); i++)
+    {
+        /* Configure CLEC */
+        cfgClec.secureClaimEnable = FALSE;
+        cfgClec.evtSendEnable     = TRUE;
+
+        /* cfgClec.rtMap value is different for each C7x */
+        cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_4;
+
+        cfgClec.extEvtNum         = 0;
+        cfgClec.c7xEvtNum         = (i-dru_input_start)+32;
+        CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+    }
+}
+#endif
 
 int32_t main()
 {
@@ -191,6 +232,7 @@ int32_t main()
     }
 
     test_sciclientDmscGetVersion(NULL, 0 ); 
+    appC7xClecInitDru();
 #endif
 
   for (testcaseIdx = 0; testcaseIdx < sizeof(gTestConfig)/ sizeof(dmautilsAutoIncTest_config); testcaseIdx++)

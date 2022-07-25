@@ -28,7 +28,7 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 
 # Include common make files
 
-EXTERNAL_LNKCMD_FILE_LOCAL := c7x_vcop_lnk.cmd
+EXTERNAL_LNKCMD_FILE_LOCAL := c7x_lnk.cmd
 
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR
