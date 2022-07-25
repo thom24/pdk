@@ -50,7 +50,11 @@
 
 #define UDMA_RM_MAX_BLK_COPY_CH             (32U)
 
-#include "udma.h"
+#ifdef DMA_UTILS_STANDALONE
+#include "ti/drv/udma/dmautils/udma_standalone/udma.h"
+#else
+#include "ti/drv/udma/udma.h"
+#endif
 #include "ti/drv/udma/dmautils/include/dmautils_autoincrement_3d.h"
 
 #ifdef __cplusplus
@@ -89,10 +93,6 @@ uint64_t hostEmulation_addressUpdate( uint64_t base, int32_t offset, uint64_t ad
 void hostEmulation_circMask( uint32_t cbk0, uint32_t cbk1, uint64_t * circMask0, uint64_t * circMask1  );
 
 void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle);
-
-
-
-
 
 #endif
 

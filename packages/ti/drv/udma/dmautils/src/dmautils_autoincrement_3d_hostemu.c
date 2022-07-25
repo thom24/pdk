@@ -477,7 +477,7 @@ int32_t checkZeroBasedEOB(int32_t curBitPos, int32_t numDecodeBits)
   return isEOB;
 }
 
-int32_t decodeZeroBasedElem(uint8_t* srcPtr, int32_t bias, uint8_t* decodedElem, int32_t* curBitPos)
+int32_t decodeZeroBasedElem(uint8_t* srcPtr, uint8_t* decodedElem, int32_t* curBitPos)
 {
   int32_t localBitPos  = (*curBitPos) % 8U;
   int32_t localBytePos = (*curBitPos) / 8U;
@@ -540,20 +540,25 @@ int32_t decodeZeroBasedElem(uint8_t* srcPtr, int32_t bias, uint8_t* decodedElem,
  return       : Number of bytes decoded from a given CDB
 */
 
-static uint32_t DmaUtilsAutoInc3d_decompressZeroBasedCDB(uint8_t* srcPtr, uint8_t** dstPtr, uint64_t sbDstAM0, uint32_t* sbIcnt0, uint32_t sbWidth1, uint32_t* curBitPosition)
+static uint32_t DmaUtilsAutoInc3d_decompressZeroBasedCDB(uint8_t* srcPtr, uint8_t** dstPtr, uint64_t sbDstAM0, uint32_t* sbIcnt0, uint32_t sbWidth1, uint32_t* curBitPosition, uint8_t bias)
 {
   int32_t curBitPos = *curBitPosition;
   int32_t isEOB = FALSE;
   uint8_t* localDstPtr = *dstPtr;
-  uint8_t bias = 0;
   uint8_t decodedElem = 0;
   int32_t numDecodedBytes = 0;
   int32_t srcJump = 16U;
+  uint32_t biasAdjustedValue = 0;
   while(isEOB == FALSE && ((numDecodedBytes + (*sbIcnt0)) < (sbWidth1)))
   {
-    isEOB = decodeZeroBasedElem(srcPtr, bias, &decodedElem, &curBitPos);
+    isEOB = decodeZeroBasedElem(srcPtr, &decodedElem, &curBitPos);
     if(!isEOB)
     {
+      //Adjust for bias:
+      biasAdjustedValue = decodedElem + bias;
+      /*prevent overflow, assumption of 8-bit decompressed element being made here*/
+      biasAdjustedValue &= (1<<8U)-1;
+      decodedElem = (uint8_t) biasAdjustedValue;
       *(localDstPtr) = decodedElem;
       localDstPtr = (uint8_t *)hostEmulation_addressUpdate((uint64_t)localDstPtr , 1 , sbDstAM0);
       numDecodedBytes++;
@@ -989,6 +994,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             
             uint32_t  sbHeight = ((sectrPtr->data[1] >> 16) & 0xFFFF);
             uint32_t  sbWidth  = 16 * ((sectrPtr->data[1] & 0xFFFF));
+            uint8_t   bias      =  ( (sectrPtr->data[0]) >> 8 ) & 0xFF;
 
             for (sbIcnt1 = 0; sbIcnt1 < sbHeight; sbIcnt1++)
             {
@@ -999,7 +1005,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                 if(cmprsType == DMAUTILSAUTOINC3D_CMPRS_ZERO)
                 {
                   /*CDB Decode, and dstPtr update happens within this function:*/
-                  srcJump = DmaUtilsAutoInc3d_decompressZeroBasedCDB(srcPtr, &dstPtr, sbDstAM0, &sbIcnt0, sbWidth, &curBitPosition);
+                  srcJump = DmaUtilsAutoInc3d_decompressZeroBasedCDB(srcPtr, &dstPtr, sbDstAM0, &sbIcnt0, sbWidth, &curBitPosition, bias);
                   //Move to the next CDB:
                   srcPtr += srcJump;
                   if(srcJump != 0)
@@ -1927,6 +1933,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
             
             uint32_t  sbHeight = ((sectrPtr->data[1] >> 16) & 0xFFFF);
             uint32_t  sbWidth  = 16 * ((sectrPtr->data[1] & 0xFFFF));
+            uint8_t   bias      =  ( (sectrPtr->data[0]) >> 8 ) & 0xFF;
 
             for (sbIcnt1 = 0; sbIcnt1 < sbHeight; sbIcnt1++)
             {
@@ -1937,7 +1944,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
                 if(cmprsType == DMAUTILSAUTOINC3D_CMPRS_ZERO)
                 {
                   /*CDB Decode, and dstPtr update happens within this function:*/
-                  srcJump = DmaUtilsAutoInc3d_decompressZeroBasedCDB(srcPtr, &dstPtr, sbDstAM0, &sbIcnt0, sbWidth, &curBitPosition);
+                  srcJump = DmaUtilsAutoInc3d_decompressZeroBasedCDB(srcPtr, &dstPtr, sbDstAM0, &sbIcnt0, sbWidth, &curBitPosition, bias);
                   //Move to the next CDB:
                   srcPtr += srcJump;
                   if(srcJump != 0)
