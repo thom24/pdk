@@ -21,8 +21,8 @@ MEMORY
 
     /*========================J721E MCMS3 LOCATIONS ===================*/
     /*---------- J721E Reserved Memory for ARM Trusted Firmware -------*/
-    MSMC3_ARM_FW   (RWIX)   : o = 0x70000000, l = 0x40000       /* 256KB */
-    MSMC3 (RWIX)            : o = 0x70040000  l = 0x7B0000      /* 8MB - 320KB */
+    MSMC3_ARM_FW   (RWIX)   : o = 0x70000000, l = 0x20000       /* 128KB */
+    MSMC3 (RWIX)            : o = 0x70020000  l = 0x7D0000      /* 8MB - 192KB */
     /*------------- J721E Reserved Memory for DMSC Firmware -----------*/
     MSMC3_DMSC_FW  (RWIX)   : o = 0x707F0000, l = 0x10000       /* 64KB */
 

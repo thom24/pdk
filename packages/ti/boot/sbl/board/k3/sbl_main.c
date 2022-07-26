@@ -230,11 +230,19 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 3 configuration: 2 MB MCMS3 RAM */
+        /* Region 3 configuration: MCMS3 RAM */
         .regionId         = 3U,
         .enable           = 1U,
         .baseAddr         = 0x70000000,
+#if defined (SOC_J721E) || defined (SOC_J784S4)
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_8MB,
+#endif
+#if defined (SOC_J7200)
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_1MB,
+#endif
+#if defined (SOC_J721S2) 
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_4MB,
+#endif
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,

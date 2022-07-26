@@ -71,7 +71,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 2 configuration: 1MB KB MCU MSRAM */
+        /* Region 2 configuration: 1MB MCU MSRAM */
         .regionId         = 2U,
         .enable           = 1U,
         .baseAddr         = 0x41C00000,
@@ -85,11 +85,11 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 3 configuration: 4 MB MCMS3 RAM */
+        /* Region 3 configuration: 8 MB MCMS3 RAM */
         .regionId         = 3U,
         .enable           = 1U,
         .baseAddr         = 0x70000000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_4MB,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_8MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,

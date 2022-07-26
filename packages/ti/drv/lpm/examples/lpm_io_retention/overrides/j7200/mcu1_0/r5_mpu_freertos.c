@@ -107,7 +107,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 3 configuration: 8 MB MCMS3 RAM */
+        /* Region 3 configuration: 1 MB OCMC RAM */
         .regionId         = 4U,
         .enable           = 1U,
         .baseAddr         = 0x41C00000,
@@ -121,11 +121,11 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 3 configuration: 8 MB MCMS3 RAM */
+        /* Region 3 configuration: 1 MB MCMS3 RAM */
         .regionId         = 5U,
         .enable           = 1U,
         .baseAddr         = 0x70000000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_8MB,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_1MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
@@ -152,8 +152,8 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* Region 7 configuration: Ring Buffer uncached.... */
         .regionId         = 7U,
         .enable           = 1U,
-        .baseAddr         = 0xAA000000,
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_32MB,
+        .baseAddr         = 0xA4000000,
+        .size             = CSL_ARM_R5_MPU_REGION_SIZE_8MB,
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 1U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
@@ -163,7 +163,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        //Region 8 configuration: Covers first 64MB of EVM Flash (FSS DAT0) *
+        /* Region 8 configuration: Covers first 64MB of EVM Flash (FSS DAT0) */
         .regionId         = 8U,
         .enable           = 1U,
         .baseAddr         = 0x50000000,
@@ -177,7 +177,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        //Region 9 configuration: Covers last 128KB of EVM Flash (FSS DAT0) *
+        /* Region 9 configuration: Covers last 128KB of EVM Flash (FSS DAT0) */
         /* OSPI PHY tuning algorithm which runs in DAC mode needs
          * cache to be disabled for this section of FSS data region.
          */

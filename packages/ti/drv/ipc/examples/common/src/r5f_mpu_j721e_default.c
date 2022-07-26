@@ -91,11 +91,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .regionId         = 3U,
         .enable           = 1U,
         .baseAddr         = 0x70000000,
-#if defined (SOC_J721E)
         .size             = CSL_ARM_R5_MPU_REGION_SIZE_8MB,
-#else
-        .size             = CSL_ARM_R5_MPU_REGION_SIZE_2MB,
-#endif
         .subRegionEnable  = CSL_ARM_R5_MPU_SUB_REGION_ENABLE_ALL,
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,

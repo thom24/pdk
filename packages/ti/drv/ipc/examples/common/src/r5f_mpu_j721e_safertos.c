@@ -134,7 +134,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
-        /* Region 3 configuration: 2 MB MCMS3 RAM */
+        /* Region 3 configuration: 8 MB MCMS3 RAM */
         /* ulRegionNumber */
         .ulRegionNumber         = 4U,
         /* Starting address */
@@ -148,15 +148,8 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
             .ulcachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
             .ulmemAttr          = 0U,
         },
-        /* Size is 2MB */
-        .ulRegionSize           = (2U * 1024U * 1024U),
-#if defined (SOC_J721E)
         /* Size is 8MB */
         .ulRegionSize           = (8U * 1024U * 1024U),
-#else
-        /* Size is 2MB */
-        .ulRegionSize           = (2U * 1024U * 1024U),
-#endif
         /* ulSubRegionDisable */
         .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },

@@ -60,15 +60,6 @@
 *
 */
 
-/*----------------------------------------------------------------------------*/
-/* File: k3m4_r5f_linker.cmd                                                  */
-/* Description:																  */
-/*    Link command file for j721e M4 MCU 0 view							  */
-/*	  TI ARM Compiler version 15.12.3 LTS or later							  */
-/*                                                                            */
-/*    Platform: QT                                                            */
-/* (c) Texas Instruments 2021, All rights reserved.                           */
-/*----------------------------------------------------------------------------*/
 /* Linker Settings                                                            */
 /* Standard linker options													  */
 --retain="*(.bootCode)"
@@ -147,12 +138,12 @@ MEMORY
     MCU0_R5F1_ATCM (RWIX)   : origin=0x41400000 length=0x8000
     MCU0_R5F1_BTCM (RWIX)   : origin=0x41410000 length=0x8000
 
-    /* j721e MCMS3 locations */
-    /* j721e Reserved Memory for ARM Trusted Firmware */
-    MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x40000         /* 256KB */
-    MSMC3   (RWIX)          : origin=0x70040000 length=0x7B0000        /* 8MB - 320KB */
-    /* j721e Reserved Memory for DMSC Firmware */
-    MSMC3_DMSC_FW  (RWIX)   : origin=0x707F0000 length=0x10000         /* 64KB */
+    /* j7200 MCMS3 locations */
+    /* j7200 Reserved Memory for ARM Trusted Firmware */
+    MSMC3_ARM_FW   (RWIX)   : origin=0x70000000 length=0x20000         /* 128KB */
+    MSMC3   (RWIX)          : origin=0x70020000 length=0xD0000         /* 1MB - 192KB */
+    /* j7200 Reserved Memory for DMSC Firmware */
+    MSMC3_DMSC_FW  (RWIX)   : origin=0x700F0000 length=0x10000         /* 64KB */
 
     DDR0    (RWIX)          : origin=0x80000000 length=0x8000000      /* 128MB */
 

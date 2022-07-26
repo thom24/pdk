@@ -10,12 +10,12 @@ MEMORY
 
     /* J784S4 MCMS3 locations                                                  */
     /* J784S4 Reserved Memory for ARM Trusted Firmware                        */
-    MSMC3_ARM_FW   (RWIX)   : ORIGIN = 0x000070000000, LENGTH = 0x40000         /* 256KB */
+    MSMC3_ARM_FW   (RWIX)   : ORIGIN = 0x000070000000, LENGTH = 0x20000         /* 128KB */
     BOOTVECTOR              : ORIGIN = 0x000070020000, LENGTH = 0x1000          /* 4KB */
     BOOTVECTOR_EL3          : ORIGIN = 0x000070021000, LENGTH = 0x1000          /* 4KB */
-    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070022000, LENGTH = 0x7AE000        /* 7864KB */
+    MSMC_MPU1	(RWX)	    : ORIGIN = 0x000070022000, LENGTH = 0x7CE000        /* 7992KB */
     /* J784S4 Reserved Memory for DMSC Firmware                                */
-    MSMC3_DMSC_FW  (RWIX)   : ORIGIN = 0x0000703F0000, LENGTH = 0x10000         /* 64KB */
+    MSMC3_DMSC_FW  (RWIX)   : ORIGIN = 0x0000707F0000, LENGTH = 0x10000         /* 64KB */
     
 }
 REGION_ALIAS("REGION_TEXT_EL3", DDR_MPU1);

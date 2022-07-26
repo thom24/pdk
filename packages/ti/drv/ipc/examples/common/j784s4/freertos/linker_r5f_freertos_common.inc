@@ -88,9 +88,9 @@ MEMORY
 
     /*=================== COMPUTE_CLUSTER0_MSMC_SRAM ==================*/
     /*---------- J784S4 Reserved Memory for ARM Trusted Firmware -------*/
-    MSMC3_ARM_FW         (RWIX) : ORIGIN = 0x70000000 LENGTH = 0x00040000   /* 256KB       */
+    MSMC3_ARM_FW         (RWIX) : ORIGIN = 0x70000000 LENGTH = 0x00020000   /* 128KB       */
     /*-----------------------------------------------------------------*/
-    MSMC3                (RWIX) : ORIGIN = 0x70040000 LENGTH = 0x007B0000   /* 8MB - 320KB */
+    MSMC3                (RWIX) : ORIGIN = 0x70020000 LENGTH = 0x007D0000   /* 8MB - 192KB */
     /*------------- J784S4 Reserved Memory for DMSC Firmware -----------*/
     MSMC3_DMSC_FW        (RWIX) : ORIGIN = 0x707F0000 LENGTH = 0x00010000   /* 64KB        */
 

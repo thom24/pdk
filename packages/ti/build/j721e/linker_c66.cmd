@@ -48,8 +48,8 @@ MEMORY
     DDR0:         o = 0x80000000 l = 0x20000000   /* 512MB DDR0 NAVSS */
     /* j721e MSMC3 Memory													  */
     /* j721e Reserved Memory for ARM Trusted Firmware                         */
-    MSMC3_ARM_FW   (RWIX)   : o = 0x70000000, l = 0x40000       /* 256KB */
-    MSMC3 (RWIX)            : o = 0x70040000  l = 0x7B0000      /* 8MB - 320KB */
+    MSMC3_ARM_FW   (RWIX)   : o = 0x70000000, l = 0x20000       /* 128KB */
+    MSMC3 (RWIX)            : o = 0x70020000  l = 0x7D0000      /* 8MB - 192KB */
     /* j721e Reserved Memory for DMSC Firmware                                */
     MSMC3_DMSC_FW  (RWIX)   : o = 0x707F0000, l = 0x10000       /* 64KB */
 }

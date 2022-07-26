@@ -110,7 +110,7 @@ xMPU_CONFIG_PARAMETERS gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] ={
         .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
-        /* Region 2 configuration: 1MB KB MCU MSRAM */
+        /* Region 2 configuration: 1MB MCU MSRAM */
         /* ulRegionNumber */
         .ulRegionNumber         = 4U,
         /* Starting address */

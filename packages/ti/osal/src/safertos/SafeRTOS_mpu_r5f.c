@@ -153,7 +153,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
-        /* Region 2 configuration: 1MB KB MCU MSRAM */
+        /* Region 2 configuration: 1MB MCU MSRAM */
         /* ulRegionNumber */
         .ulRegionNumber         = 4U,
         /* Starting address */
@@ -177,7 +177,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
     {
-        /* Region 3 configuration: 2 MB MCMS3 RAM */
+        /* Region 3 configuration: MCMS3 RAM */
         /* ulRegionNumber */
         .ulRegionNumber         = 5U,
         /* Starting address */
@@ -191,19 +191,15 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
             .ulcachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
             .ulmemAttr          = 0U,
         },
-        /* Size is 2MB */
-        .ulRegionSize           = (2U * 1024U * 1024U),
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J784S4)
         /* Size is 8MB */
         .ulRegionSize           = (8U * 1024U * 1024U),
 #endif
-
 #if defined (SOC_J7200)
         /* Size is 1MB */
         .ulRegionSize           = (1U * 1024U * 1024U),
 #endif
-
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined (SOC_J721S2) 
         /* Size is 4MB */
         .ulRegionSize           = (4U * 1024U * 1024U),
 #endif

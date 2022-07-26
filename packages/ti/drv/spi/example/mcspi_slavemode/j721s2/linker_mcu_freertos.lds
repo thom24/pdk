@@ -51,8 +51,8 @@ MEMORY
 
     /*========================J721S2 MCMS3 LOCATIONS ===================*/
     /*---------- J721S2 Reserved Memory for ARM Trusted Firmware -------*/
-    MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00040000   /* 256KB       */
-    MSMC3   (RWIX)              : ORIGIN=0x70040000 LENGTH=0x3B0000        /* 4MB - 320KB */
+    MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00020000   /* 128KB       */
+    MSMC3   (RWIX)              : ORIGIN=0x70020000 LENGTH=0x3D0000        /* 4MB - 192KB */
     /* j721s2 Reserved Memory for DMSC Firmware */
     MSMC3_DMSC_FW  (RWIX)       : ORIGIN=0x703F0000 LENGTH=0x10000         /* 64KB */
 

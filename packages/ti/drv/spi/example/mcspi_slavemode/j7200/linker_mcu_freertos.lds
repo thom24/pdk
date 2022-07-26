@@ -51,10 +51,10 @@ MEMORY
 
     /*========================J7200 MCMS3 LOCATIONS ===================*/
     /*---------- J7200 Reserved Memory for ARM Trusted Firmware -------*/
-    MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00040000   /* 256KB       */
-    MSMC3         (RWIX)        : ORIGIN = 0x70040000 LENGTH = 0x000B0000   /* 1MB - 320KB */
+    MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00020000   /* 128KB       */
+    MSMC3         (RWIX)        : ORIGIN = 0x70020000 LENGTH = 0x000D0000   /* 1MB - 192KB */
     /*------------- J7200 Reserved Memory for DMSC Firmware -----------*/
-    MSMC3_DMSC_FW (RWIX)        : ORIGIN = 0x707F0000 LENGTH = 0x00010000   /* 64KB        */
+    MSMC3_DMSC_FW (RWIX)        : ORIGIN = 0x700F0000 LENGTH = 0x00010000   /* 64KB        */
 
     /*======================= J7200 DDR LOCATION =======================*/
     DDR0 (RWIX)                 : ORIGIN = 0x88000000 LENGTH = 0x8000000   /* 128 MB */

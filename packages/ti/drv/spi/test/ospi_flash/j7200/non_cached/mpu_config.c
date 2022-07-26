@@ -71,7 +71,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
     {
-        /* Region 2 configuration: 1MB KB MCU MSRAM */
+        /* Region 2 configuration: 1MB MCU MSRAM */
         .regionId         = 2U,
         .enable           = 1U,
         .baseAddr         = 0x41C00000,

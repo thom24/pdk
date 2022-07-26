@@ -51,10 +51,10 @@ MEMORY
 
     /*========================J784S4 MCMS3 LOCATIONS ===================*/
     /*---------- J784S4 Reserved Memory for ARM Trusted Firmware -------*/
-    MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00040000   /* 256KB       */
-    MSMC3   (RWIX)              : ORIGIN=0x70040000 LENGTH=0x3B0000        /* 4MB - 320KB */
+    MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00020000   /* 128KB       */
+    MSMC3   (RWIX)              : ORIGIN=0x70020000 LENGTH=0x7D0000        /* 8MB - 192KB */
     /* j784s4 Reserved Memory for DMSC Firmware */
-    MSMC3_DMSC_FW  (RWIX)       : ORIGIN=0x703F0000 LENGTH=0x10000         /* 64KB */
+    MSMC3_DMSC_FW  (RWIX)       : ORIGIN=0x707F0000 LENGTH=0x10000         /* 64KB */
 
     /*======================= J784S4 DDR LOCATION =======================*/
     DDR0 (RWIX)                 : ORIGIN = 0x88000000 LENGTH = 0x8000000   /* 128 MB */
