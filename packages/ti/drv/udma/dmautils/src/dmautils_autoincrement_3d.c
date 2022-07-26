@@ -514,7 +514,7 @@ int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channel
 
   DmaUtilsAutoInc3d_getUtcInfo( NULL, &dru_local_event_start) ;
   DmaUtilsAutoInc3d_getClecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext->druChannelId, &cfgClec);
-  if(cfgClec.rtMap !=  thisCore){
+  if((cfgClec.rtMap !=  thisCore) && (cfgClec.rtMap != CSL_CLEC_RTMAP_CPU_ALL)){
     DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, 
     " This core (%d) is different than CLEC RTMAP CPU (%d) programming for channel %d\n",
     thisCore, cfgClec.rtMap, channelContext->druChannelId);
