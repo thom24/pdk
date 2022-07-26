@@ -79,14 +79,9 @@ uint8_t L2SRAM[L2SRAM_SIZE] __attribute__((aligned(128)));
 /*Configure CLEC*/
 static void appC7xClecInitDru(void)
 {
-    printf("CLEC CONFIGURED!\n");
-    CSL_ClecEventConfig   cfgClec;
-    #if defined(SOC_J721S2)
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-    #else
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    #endif
 
+    CSL_ClecEventConfig   cfgClec;
+    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
     uint32_t i;
     uint32_t dru_input_start = 192;
     #if defined(SOC_J784S4)
@@ -95,6 +90,7 @@ static void appC7xClecInitDru(void)
     dru_input_start = DRU_LOCAL_EVENT_START_DEFAULT;
     #endif
     uint32_t dru_input_num   = 16;
+
     /*Only configuring 16 channels*/
     for(i=dru_input_start; i<(dru_input_start+dru_input_num); i++)
     {
@@ -109,7 +105,7 @@ static void appC7xClecInitDru(void)
         cfgClec.c7xEvtNum         = (i-dru_input_start)+32;
         CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
     }
-    printf("CLEC RTMAP = %d\n",cfgClec.rtMap);
+
 }
 #endif
 typedef struct

@@ -182,12 +182,7 @@ int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_siz
 static void appC7xClecInitDru(void)
 {
     CSL_ClecEventConfig   cfgClec;
-    #if defined(SOC_J721S2)
-    CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_BASE;
-    #else
     CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    #endif
-
     uint32_t i;
     uint32_t dru_input_start = 192;
     #if defined(SOC_J784S4)
@@ -196,6 +191,7 @@ static void appC7xClecInitDru(void)
     dru_input_start = DRU_LOCAL_EVENT_START_DEFAULT;
     #endif
     uint32_t dru_input_num   = 16;
+
     /*Only configuring 16 channels*/
     for(i=dru_input_start; i<(dru_input_start+dru_input_num); i++)
     {

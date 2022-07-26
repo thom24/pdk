@@ -27,7 +27,12 @@ INCLUDE_EXTERNAL_INTERFACES=pdk
 SRCS_COMMON += dmautils_autoincrement_3d.c
 SRCS_COMMON += dmautils_autoincrement_3d_hostemu.c
 PACKAGE_SRCS_COMMON = .
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(DMAUTILS_CFLAGS) --disable_inlining
+ifneq ($(CORE),$(filter $(CORE), c7x-hostemu))
+DMAUTILS_CFLAGS += --disable_inlining
+endif
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(DMAUTILS_CFLAGS) 
+
+
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
