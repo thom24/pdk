@@ -125,7 +125,7 @@ typedef enum{
   DMAUTILSAUTOINC3D_DFMT_NONE      = 0, /*!< No formatting options */
   DMAUTILSAUTOINC3D_DFMT_COMP      = 5, /*!< DMA will compress data into 1-D blocks */
   DMAUTILSAUTOINC3D_DFMT_DECOMP    = 6  /*!< DMA will decompress data from 1-D blocks into decompressed structure */
-}DmaUitlsAutoInc3d_DfmtType;
+}DmaUtilsAutoInc3d_DfmtType;
 
 
 /**
