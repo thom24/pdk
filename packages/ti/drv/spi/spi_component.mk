@@ -66,56 +66,25 @@
 #
 ifeq ($(spi_component_make_include), )
 
-drvqspi_RTOS_LIST      = freertos
-drvqspi_BOARDLIST      = tpr12_evm awr294x_evm
 drvspi_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
-drvspi_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
-drvspi_SOCLIST         = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x tpr12 awr294x j721s2 j784s4
-drvspi_SOCLISTLIM      = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
-drvspi_dma_SOCLIST     = tda2xx tda2px tda2ex tda3xx dra72x dra75x dra78x am574x am572x am571x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138 am65xx j721e j7200 am64x	tpr12 awr294x j721s2 j784s4
-drvspi_am574x_CORELIST = c66x a15_0 ipu1_0
-drvspi_am572x_CORELIST = c66x a15_0 ipu1_0
-drvspi_am571x_CORELIST = c66x a15_0 ipu1_0
-drvspi_k2h_CORELIST    = c66x a15_0
-drvspi_k2k_CORELIST    = c66x a15_0
-drvspi_k2l_CORELIST    = c66x a15_0
-drvspi_k2e_CORELIST    = c66x a15_0
-drvspi_k2g_CORELIST    = c66x a15_0
-drvspi_c6678_CORELIST  = c66x
-drvspi_c6657_CORELIST  = c66x
-drvspi_am437x_CORELIST = a9host pru_0 pru_1
-drvspi_am335x_CORELIST = a8host pru_0 pru_1
-drvspi_omapl137_CORELIST    = c674x arm9_0
-drvspi_omapl138_CORELIST    = c674x arm9_0
-drvspi_tda2xx_CORELIST = ipu1_0
-drvspi_tda2px_CORELIST = ipu1_0
-drvspi_tda2ex_CORELIST = ipu1_0
-drvspi_tda3xx_CORELIST = ipu1_0
-drvspi_dra72x_CORELIST = c66x a15_0 ipu1_0
-drvspi_dra75x_CORELIST = c66x a15_0 ipu1_0
-drvspi_dra78x_CORELIST = c66x ipu1_0
-drvspi_am65xx_CORELIST = mpu1_0 mcu1_0
-drvspi_am65xx_CORELIST_CACHE = mcu1_0
-drvspi_j721e_CORELIST  = $(DEFAULT_j721e_CORELIST)
-drvspi_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j721e_CORELIST_DMA  = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j721e_CORELIST_DMA_CACHE  = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j721e_CORELISTARM_CACHE  = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvspi_j7200_CORELIST_CACHE     = mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvspi_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
-drvspi_am64x_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvspi_am64x_CORELISTARM_CACHE  = mcu1_0 mcu1_1 mcu2_0 mcu2_1
-drvspi_tpr12_CORELIST  = mcu1_0
-drvspi_awr294x_CORELIST  = mcu1_0
-drvspi_j721s2_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j721s2_CORELIST_CACHE     = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j721s2_CORELIST_DMA     = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j721s2_CORELIST_DMA_CACHE     = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
-drvspi_j784s4_CORELIST              = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
-drvspi_j784s4_CORELIST_CACHE        = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
-drvspi_j784s4_CORELIST_DMA          = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
-drvspi_j784s4_CORELIST_DMA_CACHE    = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
+drvspi_BOARDLIST       = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
+drvspi_SOCLIST         = j721e j7200 j721s2 j784s4
+drvspi_dma_SOCLIST     = j721e j7200 j721s2 j784s4
+drvspi_j721e_CORELIST              = $(DEFAULT_j721e_CORELIST)
+drvspi_j721e_CORELISTARM           = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721e_CORELIST_DMA          = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721e_CORELIST_DMA_CACHE    = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721e_CORELISTARM_CACHE     = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j7200_CORELIST              = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvspi_j7200_CORELIST_CACHE        = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+drvspi_j721s2_CORELIST             = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721s2_CORELIST_CACHE       = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721s2_CORELIST_DMA         = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j721s2_CORELIST_DMA_CACHE   = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1
+drvspi_j784s4_CORELIST             = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
+drvspi_j784s4_CORELIST_CACHE       = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
+drvspi_j784s4_CORELIST_DMA         = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
+drvspi_j784s4_CORELIST_DMA_CACHE   = mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
 
 ospi_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
 define DRV_OSPI_RTOS_BOARDLIST_RULE
@@ -181,32 +150,6 @@ export spi_SOCLIST
 spi_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 export spi_$(SOC)_CORELIST
 
-# SPI LIB DEVICE INDEPENDENT
-spi_indp_COMP_LIST = spi_indp
-spi_indp_RELPATH = ti/drv/spi
-spi_indp_PATH = $(PDK_SPI_COMP_PATH)
-spi_indp_LIBNAME = ti.drv.spi
-export spi_indp_LIBNAME
-spi_indp_LIBPATH = $(spi_indp_PATH)/lib
-export spi_indp_LIBPATH
-spi_indp_OBJPATH = $(spi_indp_RELPATH)/spi_indp
-export spi_indp_OBJPATH
-spi_indp_MAKEFILE = -f build/makefile_indp.mk
-export spi_indp_MAKEFILE
-spi_indp_BOARD_DEPENDENCY = no
-spi_indp_CORE_DEPENDENCY = no
-spi_indp_SOC_DEPENDENCY = no
-export spi_indp_COMP_LIST
-export spi_indp_BOARD_DEPENDENCY
-export spi_indp_CORE_DEPENDENCY
-export spi_indp_SOC_DEPENDENCY
-spi_indp_PKG_LIST = spi_indp
-spi_indp_INCLUDE = $(spi_indp_PATH)
-spi_indp_SOCLIST = $(drvspi_SOCLISTLIM)
-export spi_indp_SOCLIST
-spi_indp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
-export spi_indp_$(SOC)_CORELIST
-
 # SPI DMA LIB
 spi_dma_COMP_LIST = spi_dma
 spi_dma_RELPATH = ti/drv/spi
@@ -237,88 +180,6 @@ else
 spi_dma_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
 endif
 export spi_dma_$(SOC)_CORELIST
-
-# SPI PROFILING SOC LIB
-spi_profile_COMP_LIST = spi_profile
-spi_profile_RELPATH = ti/drv/spi
-spi_profile_PATH = $(PDK_SPI_COMP_PATH)
-spi_profile_LIBNAME = ti.drv.spi.profiling
-export spi_profile_LIBNAME
-spi_profile_LIBPATH = $(spi_profile_PATH)/lib
-export spi_profile_LIBPATH
-spi_profile_OBJPATH = $(spi_profile_RELPATH)/spi_profile
-export spi_profile_OBJPATH
-spi_profile_MAKEFILE = -f build/makefile_profile.mk
-export spi_profile_MAKEFILE
-spi_profile_BOARD_DEPENDENCY = no
-spi_profile_CORE_DEPENDENCY = no
-spi_profile_SOC_DEPENDENCY = yes
-export spi_profile_COMP_LIST
-export spi_profile_BOARD_DEPENDENCY
-export spi_profile_CORE_DEPENDENCY
-export spi_profile_SOC_DEPENDENCY
-spi_profile_PKG_LIST = spi_profile
-spi_profile_INCLUDE = $(spi_profile_PATH)
-spi_profile_SOCLIST = $(drvspi_SOCLISTLIM)
-export spi_profile_SOCLIST
-spi_profile_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
-export spi_profile_$(SOC)_CORELIST
-
-# SPI PROFILING SOC INDEPENDENT LIB
-spi_profile_indp_COMP_LIST = spi_profile_indp
-spi_profile_indp_RELPATH = ti/drv/spi
-spi_profile_indp_PATH = $(PDK_SPI_COMP_PATH)
-spi_profile_indp_LIBNAME = ti.drv.spi.profiling
-export spi_profile_indp_LIBNAME
-spi_profile_indp_LIBPATH = $(spi_profile_indp_PATH)/lib
-export spi_profile_indp_LIBPATH
-spi_profile_indp_OBJPATH = $(spi_profile_indp_RELPATH)/spi_profile_indp
-export spi_profile_indp_OBJPATH
-spi_profile_indp_MAKEFILE = -f build/makefile_profile_indp.mk
-export spi_profile_indp_MAKEFILE
-spi_profile_indp_BOARD_DEPENDENCY = no
-spi_profile_indp_CORE_DEPENDENCY = no
-spi_profile_indp_SOC_DEPENDENCY = no
-export spi_profile_indp_COMP_LIST
-export spi_profile_indp_BOARD_DEPENDENCY
-export spi_profile_indp_CORE_DEPENDENCY
-export spi_profile_indp_SOC_DEPENDENCY
-spi_profile_indp_PKG_LIST = spi_profile_indp
-spi_profile_indp_INCLUDE = $(spi_profile_indp_PATH)
-spi_profile_indp_SOCLIST = $(drvspi_SOCLISTLIM)
-export spi_profile_indp_SOCLIST
-spi_profile_indp_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
-export spi_profile_indp_$(SOC)_CORELIST
-
-# SPI DMA PROFILING SOC LIB
-spi_dma_profile_COMP_LIST = spi_dma_profile
-spi_dma_profile_RELPATH = ti/drv/spi
-spi_dma_profile_PATH = $(PDK_SPI_COMP_PATH)
-spi_dma_profile_LIBNAME = ti.drv.spi.profiling.dma
-export spi_dma_profile_LIBNAME
-spi_dma_profile_LIBPATH = $(spi_dma_profile_PATH)/lib
-export spi_dma_profile_LIBPATH
-spi_dma_profile_OBJPATH = $(spi_dma_profile_RELPATH)/spi_dma_profile
-export spi_dma_profile_OBJPATH
-spi_dma_profile_MAKEFILE = -f build/makefile_dma_profile.mk
-export spi_dma_profile_MAKEFILE
-spi_dma_profile_BOARD_DEPENDENCY = no
-spi_dma_profile_CORE_DEPENDENCY = no
-spi_dma_profile_SOC_DEPENDENCY = yes
-export spi_dma_profile_COMP_LIST
-export spi_dma_profile_BOARD_DEPENDENCY
-export spi_dma_profile_CORE_DEPENDENCY
-export spi_dma_profile_SOC_DEPENDENCY
-spi_dma_profile_PKG_LIST = spi_dma_profile
-spi_dma_profile_INCLUDE = $(spi_dma_profile_PATH)
-spi_dma_profile_SOCLIST = $(drvspi_SOCLISTLIM)
-export spi_dma_profile_SOCLIST
-ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
-spi_dma_profile_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST_DMA)
-else
-spi_dma_profile_$(SOC)_CORELIST = $(drvspi_$(SOC)_CORELIST)
-endif
-export spi_dma_profile_$(SOC)_CORELIST
 
 #
 # SPI Firmwares

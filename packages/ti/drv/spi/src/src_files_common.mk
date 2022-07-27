@@ -29,57 +29,21 @@
 # OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-SOC_INDP_LIB_SOCS=k2h k2k k2l k2e k2g c6657 c6678 omapl137 omapl138 am571x am572x am574x  am335x am437x
-SOC_DEP_LIB_SOCS=tda2xx tda3xx tda2px dra75x tda2ex dra72x dra78x j721e am77x j7200 am65xx am64x tpr12 awr294x j721s2 j784s4
+SOC_DEP_LIB_SOCS=j721e j7200 j721s2 j784s4
 
 PACKAGE_SRCS_COMMON = makefile SPI.h MCSPI.h spi_component.mk .gitignore ospi_modes.md \
                       docs/ReleaseNotes_SPI_LLD.pdf docs/ESPI_FW_DESIGN_GUIDE.docx \
-                      src/SPI_drv.c src/SPI_osal.h src/src_files_common.mk src/Module.xs \
-                      build config_mk.bld package.bld package.xdc package.xs Settings.xdc.xdt SPIver.h SPIver.h.xdt
-
-
-ifeq ($(SOC),$(filter $(SOC), $(SOC_INDP_LIB_SOCS) ))
-  # All src/v1 files
-  SRCDIR = . src src/v1
-  INCDIR = . src src/v1
-  SRCS_COMMON += SPI_drv.c SPI_v1.c QSPI_v1.c
-  PACKAGE_SRCS_COMMON += src/v1
-
-  # All src/v0 files
-  SRCDIR += src/v0
-  INCDIR += src/v0
-  SRCS_COMMON += SPI_v0.c OSPI_v0.c QSPI_v0.c
-  PACKAGE_SRCS_COMMON += src/v0
-
-  # All src/v2 files
-ifeq ($(SOC),$(filter $(SOC), am335x, am437x))
-  SRCDIR += src/v2
-  INCDIR += src/v2
-  SRCS_COMMON += ESPI_v2.c
-  PACKAGE_SRCS_COMMON += src/v2  build/makefile_icss_espi.mk
-endif
-
-endif
-
+                      src/SPI_drv.c src/SPI_osal.h src/src_files_common.mk build
 
 ifeq ($(SOC),$(filter $(SOC),$(SOC_DEP_LIB_SOCS) ))
   # TDA & J7 targets include SPI_V1, QSPI_V1(for Sitara) , OSPI_V1(For J7)
   SRCDIR = . src src/v1
   INCDIR = . src src/v1
 
-  SRCS_COMMON += SPI_drv.c
+  SRCS_COMMON += SPI_drv.c SPI_v1.c
+  PACKAGE_SRCS_COMMON += src/v1/SPI_v1.c soc/SPI_v1.h
 
-  ifneq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    SRCS_COMMON += SPI_v1.c
-    PACKAGE_SRCS_COMMON += src/v1/SPI_v1.c soc/SPI_v1.h
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), tda2xx tda2px dra75x tda2ex dra72x tda3xx dra78x tpr12 awr294x))
-     SRCS_COMMON += QSPI_v1.c
-     PACKAGE_SRCS_COMMON += src/v1/QSPI_v1.c soc/QSPI_v1.h
-  endif
-
-  ifeq ($(SOC),$(filter $(SOC), j721e am77x j7200 am65xx am64x j721s2 j784s4))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     SRCDIR += src/v0
     INCDIR += src/v0
     SRCS_COMMON += OSPI_v0.c
