@@ -124,6 +124,32 @@ int main(void)
     App_sciclientPrintf("Sciserver Testapp Built On: %s %s\n", __DATE__, __TIME__);
     App_sciclientPrintf("Sciserver Version: %s\n", version_str);
     App_sciclientPrintf("RM_PM_HAL Version: %s\n", rmpmhal_version_str);
+
+#if defined(SOC_J784S4)
+    /* Fix for PDK-12110
+     * GTC_CLK is currently using MAIN_PLL3_HSDIV1 as 200MHz. This clock needs 
+     * to be changed to a different frequency. Therefore, the GTC_CLK should 
+     * use a different input, i.e. MAIN_PLL0_HSDIV6 as a 200MHz source input.
+     */
+    if (ret == CSL_PASS)
+    {
+        uint32_t freqHz;
+        Sciclient_pmSetModuleClkParent(
+            TISCI_DEV_GTC0,
+            TISCI_DEV_GTC0_GTC_CLK,
+            TISCI_DEV_GTC0_GTC_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT6_CLK,
+            SCICLIENT_SERVICE_WAIT_FOREVER);
+
+        Sciclient_pmGetModuleClkFreq(
+            TISCI_DEV_GTC0,
+            TISCI_DEV_GTC0_GTC_CLK,
+            (uint64_t *) &freqHz,
+            SCICLIENT_SERVICE_WAIT_FOREVER);
+
+        App_sciclientPrintf("GTC freq: %d\n", freqHz);
+    }
+#endif
+
     if (ret == CSL_PASS)
     {
         App_sciclientPrintf("Starting Sciserver..... PASSED\n");
