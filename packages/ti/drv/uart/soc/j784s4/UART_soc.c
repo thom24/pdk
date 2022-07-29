@@ -44,6 +44,9 @@
 #include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/soc/UART_soc.h>
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/board/src/j784s4_evm/include/board_cfg.h>
+
+#define MCU_UART_INSTANCE               (BOARD_UART_INSTANCE)
 
 #if defined (BUILD_MCU)
 #define UART_PDMA_TX_THREAD_BASE        (CSL_PDMA_CH_MCU_UART0_CH0_TX)
@@ -627,6 +630,11 @@ void UART_socInit(void)
             uartInitCfg[i].rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
             uartInitCfg[i].txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
         }
+    }
+    else
+    {
+        uartInitCfg[MCU_UART_INSTANCE].rxDmaEventNumber = UART_PDMA_RX_THREAD_BASE;
+        uartInitCfg[MCU_UART_INSTANCE].txDmaEventNumber = UART_PDMA_TX_THREAD_BASE;
     }
 }
 #endif
