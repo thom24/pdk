@@ -338,7 +338,7 @@ int32_t UART_configDMA(UART_Handle handle)
         eventPrms.eventType         = UDMA_EVENT_TYPE_DMA_COMPLETION;
         eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
         eventPrms.chHandle          = rxChHandle;
-        eventPrms.masterEventHandle = NULL;
+        eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(drvHandle);
         eventPrms.eventCb           = &UART_dmaRxIsrHandler;
         eventPrms.appData           = (void *)handle;
         retVal = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
