@@ -385,7 +385,7 @@ int32_t test_sciclientDmscGetVersion(char *version_str, uint32_t version_str_siz
     return (retVal);
 }
 
-int32_t main()
+int32_t test_main()
 {
   uint16_t   width;
   uint16_t   height;

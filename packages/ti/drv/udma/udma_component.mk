@@ -155,16 +155,17 @@ udma_LIB_LIST += udma_apputils
 # DMA Utils tests
 #
 
-# DMA Utils test app
+# DMA Utils Baremetal test apps for Host Emulation
 export dmautils_baremetal_autoincrement_testapp_COMP_LIST = dmautils_baremetal_autoincrement_testapp
 dmautils_baremetal_autoincrement_testapp_RELPATH = ti/drv/udma/dmautils/test/dmautils_autoincrement_test
 dmautils_baremetal_autoincrement_testapp_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoincrement_test
 export dmautils_baremetal_autoincrement_testapp_BOARD_DEPENDENCY = yes
 export dmautils_baremetal_autoincrement_testapp_CORE_DEPENDENCY = yes
+export dmautils_baremetal_autoincrement_testapp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 dmautils_baremetal_autoincrement_testapp_PKG_LIST = dmautils_baremetal_autoincrement_testapp
 dmautils_baremetal_autoincrement_testapp_INCLUDE = $(dmautils_baremetal_autoincrement_testapp_PATH)
-export dmautils_baremetal_autoincrement_testapp_BOARDLIST = j721e_hostemu j721e_sim j721e_loki j721e_ccqt j721e_evm j721s2_evm j721s2_hostemu j784s4_evm j784s4_hostemu
-export dmautils_baremetal_autoincrement_testapp_$(SOC)_CORELIST = c7x_1 c7x-hostemu
+export dmautils_baremetal_autoincrement_testapp_BOARDLIST = j721e_hostemu j721e_sim j721e_loki j721e_ccqt j721s2_hostemu
+export dmautils_baremetal_autoincrement_testapp_$(SOC)_CORELIST = c7x-hostemu
 udma_EXAMPLE_LIST += dmautils_baremetal_autoincrement_testapp
 
 export dmautils_baremetal_autoinc_1d2d3d_testapp_COMP_LIST = dmautils_baremetal_autoinc_1d2d3d_testapp
@@ -172,10 +173,11 @@ dmautils_baremetal_autoinc_1d2d3d_testapp_RELPATH = ti/drv/udma/dmautils/test/dm
 dmautils_baremetal_autoinc_1d2d3d_testapp_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoinc_1d2d3d_test
 export dmautils_baremetal_autoinc_1d2d3d_testapp_BOARD_DEPENDENCY = yes
 export dmautils_baremetal_autoinc_1d2d3d_testapp_CORE_DEPENDENCY = yes
+export dmautils_baremetal_autoinc_1d2d3d_testapp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 dmautils_baremetal_autoinc_1d2d3d_testapp_PKG_LIST = dmautils_baremetal_autoinc_1d2d3d_testapp
 dmautils_baremetal_autoinc_1d2d3d_testapp_INCLUDE = $(dmautils_baremetal_autoinc_1d2d3d_testapp_PATH)
-export dmautils_baremetal_autoinc_1d2d3d_testapp_BOARDLIST = j721e_hostemu j721e_sim j721e_loki j721e_ccqt j721e_evm j721s2_evm j721s2_hostemu j784s4_evm j784s4_hostemu
-export dmautils_baremetal_autoinc_1d2d3d_testapp_$(SOC)_CORELIST = c7x_1 c7x-hostemu
+export dmautils_baremetal_autoinc_1d2d3d_testapp_BOARDLIST = j721e_hostemu j721e_sim j721e_loki j721e_ccqt j721s2_hostemu
+export dmautils_baremetal_autoinc_1d2d3d_testapp_$(SOC)_CORELIST = c7x-hostemu
 udma_EXAMPLE_LIST += dmautils_baremetal_autoinc_1d2d3d_testapp
 
 export dmautils_baremetal_autoinc_circular_testapp_COMP_LIST = dmautils_baremetal_autoinc_circular_testapp
@@ -183,10 +185,11 @@ dmautils_baremetal_autoinc_circular_testapp_RELPATH = ti/drv/udma/dmautils/test/
 dmautils_baremetal_autoinc_circular_testapp_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoinc_circular_test
 export dmautils_baremetal_autoinc_circular_testapp_BOARD_DEPENDENCY = yes
 export dmautils_baremetal_autoinc_circular_testapp_CORE_DEPENDENCY = yes
+export dmautils_baremetal_autoinc_circular_testapp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 dmautils_baremetal_autoinc_circular_testapp_PKG_LIST = dmautils_baremetal_autoinc_circular_testapp
 dmautils_baremetal_autoinc_circular_testapp_INCLUDE = $(dmautils_baremetal_autoinc_circular_testapp_PATH)
-export dmautils_baremetal_autoinc_circular_testapp_BOARDLIST = j721e_hostemu j721e_sim j721e_loki j721e_ccqt j721e_evm j721s2_evm j721s2_hostemu j784s4_evm j784s4_hostemu
-export dmautils_baremetal_autoinc_circular_testapp_$(SOC)_CORELIST = c7x_1 c7x-hostemu
+export dmautils_baremetal_autoinc_circular_testapp_BOARDLIST = j721e_hostemu j721e_sim j721e_loki j721e_ccqt j721s2_hostemu
+export dmautils_baremetal_autoinc_circular_testapp_$(SOC)_CORELIST = c7x-hostemu
 udma_EXAMPLE_LIST += dmautils_baremetal_autoinc_circular_testapp
 
 export dmautils_baremetal_autoinc_compression_testapp_COMP_LIST = dmautils_baremetal_autoinc_compression_testapp
@@ -194,11 +197,100 @@ dmautils_baremetal_autoinc_compression_testapp_RELPATH = ti/drv/udma/dmautils/te
 dmautils_baremetal_autoinc_compression_testapp_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoinc_compression_test
 export dmautils_baremetal_autoinc_compression_testapp_BOARD_DEPENDENCY = yes
 export dmautils_baremetal_autoinc_compression_testapp_CORE_DEPENDENCY = yes
+export dmautils_baremetal_autoinc_compression_testapp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
 dmautils_baremetal_autoinc_compression_testapp_PKG_LIST = dmautils_baremetal_autoinc_compression_testapp
 dmautils_baremetal_autoinc_compression_testapp_INCLUDE = $(dmautils_baremetal_autoinc_compression_testapp_PATH)
-export dmautils_baremetal_autoinc_compression_testapp_BOARDLIST = j721e_hostemu j721e_sim j721e_loki j721e_ccqt j721e_evm j721s2_evm j721s2_hostemu j784s4_evm j784s4_hostemu
-export dmautils_baremetal_autoinc_compression_testapp_$(SOC)_CORELIST = c7x_1 c7x-hostemu
+export dmautils_baremetal_autoinc_compression_testapp_BOARDLIST = j721s2_hostemu
+export dmautils_baremetal_autoinc_compression_testapp_$(SOC)_CORELIST = c7x-hostemu
 udma_EXAMPLE_LIST += dmautils_baremetal_autoinc_compression_testapp
+
+
+# DMA Utils RTOS autoincrement test app
+define DMAUTILS_AUTOINCREMENT_TESTAPP_RULE
+
+export dmautils_autoincrement_testapp_$(1)_COMP_LIST = dmautils_autoincrement_testapp_$(1)
+dmautils_autoincrement_testapp_$(1)_RELPATH = ti/drv/udma/dmautils/test/dmautils_autoincrement_test
+dmautils_autoincrement_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoincrement_test
+export dmautils_autoincrement_testapp_$(1)_BOARD_DEPENDENCY = yes
+export dmautils_autoincrement_testapp_$(1)_CORE_DEPENDENCY = yes
+export dmautils_autoincrement_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+dmautils_autoincrement_testapp_$(1)_PKG_LIST = dmautils_autoincrement_testapp_$(1)
+dmautils_autoincrement_testapp_$(1)_INCLUDE = $(dmautils_autoincrement_testapp_$(1)_PATH)
+export dmautils_autoincrement_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j721s2_evm)
+export dmautils_autoincrement_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), c7x_1)
+udma_EXAMPLE_LIST += dmautils_autoincrement_testapp_$(1)
+
+endef
+
+DMAUTILS_AUTOINCREMENT_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call DMAUTILS_AUTOINCREMENT_TESTAPP_RULE,$(curos)))
+
+$(eval ${DMAUTILS_AUTOINCREMENT_TESTAPP_MACRO_LIST})
+
+
+# DMA Utils RTOS autoinc 1d2d3d test app
+define DMAUTILS_AUTOINC_1D2D3D_TESTAPP_RULE
+
+export dmautils_autoinc_1d2d3d_testapp_$(1)_COMP_LIST = dmautils_autoinc_1d2d3d_testapp_$(1)
+dmautils_autoinc_1d2d3d_testapp_$(1)_RELPATH = ti/drv/udma/dmautils/test/dmautils_autoinc_1d2d3d_test
+dmautils_autoinc_1d2d3d_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoinc_1d2d3d_test
+export dmautils_autoinc_1d2d3d_testapp_$(1)_BOARD_DEPENDENCY = yes
+export dmautils_autoinc_1d2d3d_testapp_$(1)_CORE_DEPENDENCY = yes
+export dmautils_autoinc_1d2d3d_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+dmautils_autoinc_1d2d3d_testapp_$(1)_PKG_LIST = dmautils_autoinc_1d2d3d_testapp_$(1)
+dmautils_autoinc_1d2d3d_testapp_$(1)_INCLUDE = $(dmautils_autoinc_1d2d3d_testapp_$(1)_PATH)
+export dmautils_autoinc_1d2d3d_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j721s2_evm)
+export dmautils_autoinc_1d2d3d_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), c7x_1)
+udma_EXAMPLE_LIST += dmautils_autoinc_1d2d3d_testapp_$(1)
+
+endef
+
+DMAUTILS_AUTOINC_1D2D3D_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call DMAUTILS_AUTOINC_1D2D3D_TESTAPP_RULE,$(curos)))
+
+$(eval ${DMAUTILS_AUTOINC_1D2D3D_TESTAPP_MACRO_LIST})
+
+
+# DMA Utils RTOS autoinc 1d2d3d test app
+define DMAUTILS_AUTOINC_CIRCULAR_TESTAPP_RULE
+
+export dmautils_autoinc_circular_testapp_$(1)_COMP_LIST = dmautils_autoinc_circular_testapp_$(1)
+dmautils_autoinc_circular_testapp_$(1)_RELPATH = ti/drv/udma/dmautils/test/dmautils_autoinc_circular_test
+dmautils_autoinc_circular_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoinc_circular_test
+export dmautils_autoinc_circular_testapp_$(1)_BOARD_DEPENDENCY = yes
+export dmautils_autoinc_circular_testapp_$(1)_CORE_DEPENDENCY = yes
+export dmautils_autoinc_circular_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+dmautils_autoinc_circular_testapp_$(1)_PKG_LIST = dmautils_autoinc_circular_testapp_$(1)
+dmautils_autoinc_circular_testapp_$(1)_INCLUDE = $(dmautils_autoinc_circular_testapp_$(1)_PATH)
+export dmautils_autoinc_circular_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j721s2_evm)
+export dmautils_autoinc_circular_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), c7x_1)
+udma_EXAMPLE_LIST += dmautils_autoinc_circular_testapp_$(1)
+
+endef
+
+DMAUTILS_AUTOINC_CIRCULAR_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call DMAUTILS_AUTOINC_CIRCULAR_TESTAPP_RULE,$(curos)))
+
+$(eval ${DMAUTILS_AUTOINC_CIRCULAR_TESTAPP_MACRO_LIST})
+
+
+# DMA Utils RTOS autoinc compression test app
+define DMAUTILS_AUTOINC_COMPRESSION_TESTAPP_RULE
+
+export dmautils_autoinc_compression_testapp_$(1)_COMP_LIST = dmautils_autoinc_compression_testapp_$(1)
+dmautils_autoinc_compression_testapp_$(1)_RELPATH = ti/drv/udma/dmautils/test/dmautils_autoinc_compression_test
+dmautils_autoinc_compression_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/dmautils/test/dmautils_autoinc_compression_test
+export dmautils_autoinc_compression_testapp_$(1)_BOARD_DEPENDENCY = yes
+export dmautils_autoinc_compression_testapp_$(1)_CORE_DEPENDENCY = yes
+export dmautils_autoinc_compression_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+dmautils_autoinc_compression_testapp_$(1)_PKG_LIST = dmautils_autoinc_compression_testapp_$(1)
+dmautils_autoinc_compression_testapp_$(1)_INCLUDE = $(dmautils_autoinc_compression_testapp_$(1)_PATH)
+export dmautils_autoinc_compression_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721s2_evm)
+export dmautils_autoinc_compression_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), c7x_1)
+udma_EXAMPLE_LIST += dmautils_autoinc_compression_testapp_$(1)
+
+endef
+
+DMAUTILS_AUTOINC_COMPRESSION_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call DMAUTILS_AUTOINC_COMPRESSION_TESTAPP_RULE,$(curos)))
+
+$(eval ${DMAUTILS_AUTOINC_COMPRESSION_TESTAPP_MACRO_LIST})
 
 
 # RTOS UDMA memcpy test apps

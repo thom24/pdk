@@ -3,7 +3,12 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-APP_NAME = dmautils_baremetal_autoinc_circular_testapp
+ifeq ($(BUILD_OS_TYPE), baremetal)
+  APP_NAME = dmautils_baremetal_autoinc_circular_testapp
+else
+  APP_NAME = dmautils_autoinc_circular_testapp_$(BUILD_OS_TYPE)
+endif
+
 
 SRCDIR = .
 INCDIR = .
@@ -13,12 +18,22 @@ INCDIR = .
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON = $(PDK_COMMON_BAREMETAL_COMP) 
-COMP_LIST_COMMON += dmautils
+COMP_LIST_COMMON = dmautils
+
+ifeq ($(BUILD_OS_TYPE), baremetal) 
+  SRCS_COMMON = main.c
+  COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
+else
+  SRCS_COMMON = main_rtos.c
+  ifeq ($(BUILD_OS_TYPE), freertos)
+    COMP_LIST_COMMON += $(PDK_COMMON_FREERTOS_COMP) 
+    INCLUDE_EXTERNAL_INTERFACES += freertos
+  endif
+endif 
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
-SRCS_COMMON = dmautils_autoinc_circular_example.c dmautils_autoinc_circular_test.c
+SRCS_COMMON += dmautils_autoinc_circular_example.c dmautils_autoinc_circular_test.c
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 

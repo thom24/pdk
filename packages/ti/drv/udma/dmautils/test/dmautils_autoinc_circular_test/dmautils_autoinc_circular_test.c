@@ -185,7 +185,7 @@ static void appC7xClecInitDru(void)
 }
 #endif
 
-int32_t main()
+int32_t test_main()
 {
   uint16_t   width;
   uint16_t   height;
