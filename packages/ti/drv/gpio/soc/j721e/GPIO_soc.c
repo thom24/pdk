@@ -489,7 +489,7 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
 
     GPIO_v0_HwAttrs   *cfg = (GPIO_v0_HwAttrs *)hwAttrs;
     GPIO_IntCfg       *intCfg;
-    uint32_t           bankNum;
+    uint32_t           bankNum = 0, maxPinNum = 0, maxPorts = 0;
 	int32_t retVal=CSL_PASS;
     struct tisci_msg_rm_irq_set_req     rmIrqReq = {0};
     struct tisci_msg_rm_irq_set_resp    rmIrqResp = {0};
@@ -499,61 +499,68 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
     intCfg = cfg->intCfg;
 
     /* Input parameter validation */
-    bankNum = pinNum/16U; /* Each GPIO bank has 16 pins */
-
-    /* We route bank interrupts to the cpu interrupts */
-    switch (cfg->baseAddr)
+    GPIO_socGetNumPinsPorts(&maxPinNum, &maxPorts);
+    if (pinNum >= maxPinNum)
     {
-        case (uint32_t)CSL_WKUP_GPIO0_BASE:
-            src_id = TISCI_DEV_WKUP_GPIO0;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J721E_DEV_WKUP_GPIO0 */
-            break;
-        case (uint32_t)CSL_WKUP_GPIO1_BASE:
-            src_id = TISCI_DEV_WKUP_GPIO1;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J721E_DEV_WKUP_GPIO1 */
-            break;
-        case (uint32_t)CSL_GPIO0_BASE:
-            src_id = TISCI_DEV_GPIO0;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO0 */
-            break;
-        case (uint32_t)CSL_GPIO2_BASE:
-            src_id = TISCI_DEV_GPIO2;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO2 */
-            break;
-        case (uint32_t)CSL_GPIO4_BASE:
-            src_id = TISCI_DEV_GPIO4;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO4 */
-            break;
-        case (uint32_t)CSL_GPIO6_BASE:
-            src_id = TISCI_DEV_GPIO6;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO6 */
-            break;
-        case (uint32_t)CSL_GPIO1_BASE:
-            src_id = TISCI_DEV_GPIO1;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO1 */
-            break;
-        case (uint32_t)CSL_GPIO3_BASE:
-            src_id = TISCI_DEV_GPIO3;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO3 */
-            break;
-        case (uint32_t)CSL_GPIO5_BASE:
-            src_id = TISCI_DEV_GPIO5;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO5 */
-            break;
-        case (uint32_t)CSL_GPIO7_BASE:
-            src_id = TISCI_DEV_GPIO7;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO7 */
-            break;
-        default:
-            retVal = CSL_EFAIL;
-            break;
+        retVal = CSL_EFAIL;
     }
 
-    /* Get TISCI Destination Idx for the core. */
-    dst_id = GPIO_socGetCoreSciId();
-
-    if (retVal == CSL_PASS)
+    if (CSL_PASS == retVal)
     {
+        bankNum = pinNum/16U; /* Each GPIO bank has 16 pins */
+        /* We route bank interrupts to the cpu interrupts */
+        switch (cfg->baseAddr)
+        {
+            case (uint32_t)CSL_WKUP_GPIO0_BASE:
+                src_id = TISCI_DEV_WKUP_GPIO0;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J721E_DEV_WKUP_GPIO0 */
+                break;
+            case (uint32_t)CSL_WKUP_GPIO1_BASE:
+                src_id = TISCI_DEV_WKUP_GPIO1;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J721E_DEV_WKUP_GPIO1 */
+                break;
+            case (uint32_t)CSL_GPIO0_BASE:
+                src_id = TISCI_DEV_GPIO0;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO0 */
+                break;
+            case (uint32_t)CSL_GPIO2_BASE:
+                src_id = TISCI_DEV_GPIO2;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO2 */
+                break;
+            case (uint32_t)CSL_GPIO4_BASE:
+                src_id = TISCI_DEV_GPIO4;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO4 */
+                break;
+            case (uint32_t)CSL_GPIO6_BASE:
+                src_id = TISCI_DEV_GPIO6;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J721E_DEV_GPIO6 */
+                break;
+            case (uint32_t)CSL_GPIO1_BASE:
+                src_id = TISCI_DEV_GPIO1;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO1 */
+                break;
+            case (uint32_t)CSL_GPIO3_BASE:
+                src_id = TISCI_DEV_GPIO3;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO3 */
+                break;
+            case (uint32_t)CSL_GPIO5_BASE:
+                src_id = TISCI_DEV_GPIO5;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO5 */
+                break;
+            case (uint32_t)CSL_GPIO7_BASE:
+                src_id = TISCI_DEV_GPIO7;
+                src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-2) mentioned in DMSC firmware guide  for J721E_DEV_GPIO7 */
+                break;
+            default:
+                retVal = CSL_EFAIL;
+                break;
+        }
+    }
+
+    if(CSL_PASS == retVal)
+    {
+        /* Get TISCI Destination Idx for the core. */
+        dst_id = GPIO_socGetCoreSciId();
         /* Check if the source is a GPIO in the wakeup domain. */
         if (TISCI_DEV_WKUP_GPIO0 == src_id || TISCI_DEV_WKUP_GPIO1 == src_id)
         {
@@ -591,10 +598,9 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
                     break;
             }
         }
+        /* Get the valid range of valid interrupts based on the ir_id. */
+        retVal = GPIO_socGetIrqRange(ir_id, dst_id, &irq_range_start, &irq_range_num);
     }
-    /* Get the valid range of valid interrupts based on the ir_id. */
-    retVal = GPIO_socGetIrqRange(ir_id, dst_id, &irq_range_start, &irq_range_num);
-    
 
     if(CSL_PASS == retVal) 
     {
