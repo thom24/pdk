@@ -236,7 +236,7 @@ extern SemaphoreP_Status SemaphoreP_postFromISR(SemaphoreP_Handle semPhandle);
 extern int32_t SemaphoreP_getCount(SemaphoreP_Handle semPhandle);
 
 /*!
- *  @brief  Function to clear a semaphore for resuse.
+ *  @brief  Function to clear a semaphore for reuse.
  *
  *  @param  semPhandle  A SemaphoreP_Handle returned from ::SemaphoreP_create
  */

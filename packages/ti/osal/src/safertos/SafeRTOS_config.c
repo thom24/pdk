@@ -256,7 +256,7 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
     }
 #endif
 #if defined (BUILD_MCU)
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
     if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)

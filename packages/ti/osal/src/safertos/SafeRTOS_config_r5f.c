@@ -169,7 +169,7 @@ __attribute__((section(".startupCode")))  void _system_post_cinit( void )
     osalArch_Init(&cfg);
 
     uint32_t            loopCnt = 0U, regAddr;
-    CSL_ArmR5CPUInfo    info;
+    CSL_ArmR5CPUInfo    info = {0};
     uint32_t            maxIntrs;
     CSL_vimRegs         *pRegs;
 
@@ -286,7 +286,10 @@ portBaseType prvSetupHardware( void )
 
 void vFiqHandler( void )
 {
-    while( 1 ); /* vFiqhandler not used in SAFERTOS */
+    /* FIQ is not supported with SafeRTOS.
+     *
+     * Force an assert(), then stop here so application writers can catch the error. */
+    DebugP_assert(0); 
 }
 
 /*-------------------------------------------------------------------------*/
