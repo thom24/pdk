@@ -526,7 +526,7 @@ uint32_t Udma_getGlobalEventOffset(void)
 
 uint32_t Udma_getCoreId(void)
 {
-    uint32_t coreId;
+    uint32_t coreId = UDMA_CORE_ID_INVALID;
 
 #if defined (BUILD_MPU1_0)
     coreId = UDMA_CORE_ID_MPU1_0;

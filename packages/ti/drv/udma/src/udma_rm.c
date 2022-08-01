@@ -2604,7 +2604,10 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
     uint32_t    numUnresvRes;
 
     /* Error Check */
-    if(NULL_PTR == rmSharedResPrms)
+    if((NULL_PTR == rmSharedResPrms) ||
+        (instId == UDMA_CORE_ID_INVALID) ||
+        ((instId - startInstId) >=  UDMA_RM_SHARED_RES_MAX_INST) ||
+        (startInstId > instId))
     {
         retVal = UDMA_EBADARGS;
     }

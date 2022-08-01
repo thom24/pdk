@@ -110,6 +110,9 @@ extern "C" {
 /** \brief Macro used to specify shift value for RX flow threshold before passing to SysFw */
 #define UDMA_RFLOW_RX_SIZE_THRESH_VAL_SHIFT      ((uint32_t) 0x00000005U)
 
+/** Invalid Core ID */
+#define UDMA_CORE_ID_INVALID               ((uint32_t) 0xFFFF0008U)
+
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */
