@@ -762,12 +762,12 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
 
 #if defined (BUILD_C66X) || defined (BUILD_MCU)
     UART_HwAttrs                         *hwAttrs = (UART_HwAttrs *)(pHwAttrs);
-    struct tisci_msg_rm_irq_set_req      rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp     rmIrqResp;
-    struct tisci_msg_rm_irq_release_req  rmIrqRelease;
-    uint16_t dst_id;
+    struct tisci_msg_rm_irq_set_req      rmIrqReq = {0};
+    struct tisci_msg_rm_irq_set_resp     rmIrqResp = {0};
+    struct tisci_msg_rm_irq_release_req  rmIrqRelease = {0};
+    uint16_t dst_id = 0;
 #if defined (BUILD_MCU)
-    uint16_t ir_id = 0U, irq_range_start, irq_range_num;
+    uint16_t ir_id = 0U, irq_range_start = 0, irq_range_num = 0;
 #endif
 
     if (setIntrPath)
@@ -809,7 +809,7 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
        dst_id = TISCI_DEV_C66SS1_CORE0;
     }
 #elif defined (BUILD_MCU)
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
     if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
@@ -827,8 +827,11 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
                                         TISCI_DEV_R5FSS1_CORE1;
     }
 
-    if(TISCI_DEV_UART0 == rmIrqReq.src_id || TISCI_DEV_UART1 == rmIrqReq.src_id || TISCI_DEV_UART2 == rmIrqReq.src_id)
+    if(hwAttrs->baseAddr == CSL_UART0_BASE || hwAttrs->baseAddr == CSL_UART1_BASE || hwAttrs->baseAddr == CSL_UART2_BASE)
     {
+        /* UART instances 0,1 and 2 have direct interrupt lines to the Main R5 cores.
+         * We dont need to do interrupt routing for them.
+         */
         if (setIntrPath)
         {
             rmIrqReq.src_id = UART_TISCI_INVALID_DEV_ID;
