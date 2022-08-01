@@ -60,7 +60,7 @@ extern void Hwi_switchAndRunFunc(void (*func)());
 
 
 extern char Hwi_vectorsBase[];
-extern  char _stack[0x10001];
+extern  char _stack[0x12001];
 
 /*
  * ECSP stores an 8 KB context for each interrupt, up to a maximum of 8
@@ -251,7 +251,10 @@ void Hwi_Instance_finalize(Hwi_Object *hwi, int status)
  *  Here on interrupt unPlugged by Hwi_delete().
  */
 void Hwi_unPluggedInterrupt() {
-    while(true);
+    /* Unplugged interrupt is not supported.
+     *
+     * Force an assert(), then stop here so application writers can catch the error. */
+    DebugP_assert(0); 
 }
 
 /*

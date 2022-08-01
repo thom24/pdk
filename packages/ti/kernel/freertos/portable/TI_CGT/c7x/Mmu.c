@@ -704,7 +704,7 @@ void Mmu_initFuncDefault()
     return;
 
 fail:
-    while (1);
+    DebugP_assert(0);
 }
 
 #if defined(__GNUC__) && !defined(__ti__)
