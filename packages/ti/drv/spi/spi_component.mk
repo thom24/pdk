@@ -447,7 +447,7 @@ $(eval ${MCSPI_Slave_TestApp_MACRO_LIST})
 define MCSPI_MasterSlave_TestApp_RULE
 
 export MCSPI_MasterSlave_TestApp_$(1)_COMP_LIST = MCSPI_MasterSlave_TestApp_$(1)
-MCSPI_MasterSlave_TestApp_$(1)_RELPATH = ti/drv/spi/examples/mcspi_slavemode
+MCSPI_MasterSlave_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_MasterSlave_TestApp_$(1)_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/MCSPI_Master_TestApp_$(1)/bin
 MCSPI_MasterSlave_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 export MCSPI_MasterSlave_TestApp_$(1)_BOARD_DEPENDENCY = yes
@@ -552,7 +552,7 @@ $(eval ${MCSPI_Slave_Dma_TestApp_MACRO_LIST})
 define MCSPI_MasterSlave_Dma_TestApp_RULE
 
 export MCSPI_MasterSlave_Dma_TestApp_$(1)_COMP_LIST = MCSPI_MasterSlave_Dma_TestApp_$(1)
-MCSPI_MasterSlave_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/examples/mcspi_slavemode
+MCSPI_MasterSlave_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
 MCSPI_MasterSlave_Dma_TestApp_$(1)_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/MCSPI_Master_Dma_TestApp_$(1)/bin
 MCSPI_MasterSlave_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
 export MCSPI_MasterSlave_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
