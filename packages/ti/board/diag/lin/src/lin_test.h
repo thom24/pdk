@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -96,6 +96,11 @@ typedef struct BoardDiagLinUartInfo_s
 #define BOARD_DIAG_LIN_MAX_PORTS                  (0x01U)
 #define BOARD_DIAG_LIN_NODE_ID                    (0x81U)
 #elif defined(j721s2_evm)
+#define BOARD_DIAG_LIN_MAX_PORTS                  (0x02U)
+#define BOARD_DIAG_LIN1_NODE_ID                   (0x81U)
+#define BOARD_DIAG_LIN2_NODE_ID                   (0x82U)
+#define BOARD_DIAG_LIN3_NODE_ID                   (0x83U)
+#elif defined(j784s4_evm)
 #define BOARD_DIAG_LIN_MAX_PORTS                  (0x02U)
 #define BOARD_DIAG_LIN1_NODE_ID                   (0x81U)
 #define BOARD_DIAG_LIN2_NODE_ID                   (0x82U)
