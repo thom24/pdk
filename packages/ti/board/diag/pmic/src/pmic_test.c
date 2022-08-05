@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014-2021 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2014-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -56,7 +56,7 @@
 #include "board.h"
 #include "board_cfg.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AWR294X)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined(SOC_AWR294X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/soc.h>
 #include "board_utils.h"
 #include "diag_common_cfg.h"
@@ -74,7 +74,7 @@ typedef struct pmic_data
     uint8_t   pmicDevCtrl;
 }pmic_data_t;
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
 #endif
 int32_t numPmic = 1;
@@ -95,7 +95,7 @@ extern I2C_config_list I2C_config;
 #define PMIC_RDID_CMD                      (0x02U)
 #define PMIC_RD_REVID_CMD                   (0X01U)
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #define BOARD_NAME_LENGTH                  (16)
 #else
 #define BOARD_NAME_LENGTH                  (8)
@@ -143,7 +143,7 @@ extern I2C_config_list I2C_config;
 
 #define TPS65941_PMICA_I2C_SLAVE_ADDR      (0x48U)
 #define TPS65941_PMICA_REG                 (0x16U)/* BUCK5 */
-#define TPS65941_PMICA_VOLTAGE_VAL         (0xADU)/* 1.7V */
+#define TPS65941_PMICA_VOLTAGE_VAL         (0x43U)/* 0.86V */
 
 #define TPS65941_PMICB_I2C_SLAVE_ADDR      (0x4CU)
 #define TPS65941_PMICB_REG                 (0x0EU)/* BUCK1 */
@@ -154,18 +154,6 @@ extern I2C_config_list I2C_config;
 #define LP8764_PMICID_REG                  (0x01U)
 #define LP8764_PMIC_REG                    (0x14U)/* BUCK4 */
 #define LP8764_PMIC_VOLTAGE_VAL            (0xADU)/* 1.7V */
-
-/* TPS65313 Register value */
-#define TPS65313_PMIC_SPI_CS               (0x00U)
-#define TPS65313_PMICID_REG                (0x02U)
-#define TPS65313_PMIC_REG                  (0x0EU) //TODO: Need to update regitser value for tpr12_evm
-#define TPS65313_PMIC_VOLTAGE_VAL          (0x41U) //TODO: Need to update regitser voltage value for tpr12_evm
-
-/* LP8762 Register value */
-#define LP8762_PMIC_SPI_CS                 (0x0U)
-#define LP8762_PMICID_REG                  (0x01U)
-#define LP8762_PMIC_REG                    (0x14U)
-#define LP8762_PMIC_VOLTAGE_VAL            (0xADU)
 
 /**********************************************************************
  ************************** Global Variables **************************
@@ -244,28 +232,6 @@ pmic_data_t lp8764 = {
     0U,
     LP8764_PMIC_REG,
     LP8764_PMIC_VOLTAGE_VAL,
-    0U,
-    0U
-};
-
-pmic_data_t tps65313 = {
-    TPS65313_PMIC_SPI_CS,
-    MIBSPI_INST_ID_MSS_SPIB,
-    TPS65313_PMICID_REG,
-    0U,
-    TPS65313_PMIC_REG,
-    TPS65313_PMIC_VOLTAGE_VAL,
-    0U,
-    0U
-};
-
-pmic_data_t lp8762 = {
-    LP8762_PMIC_SPI_CS,
-    MIBSPI_INST_ID_MSS_SPIB,
-    LP8762_PMICID_REG,
-    0U,
-    LP8762_PMIC_REG,
-    LP8762_PMIC_VOLTAGE_VAL,
     0U,
     0U
 };
@@ -473,7 +439,7 @@ uint32_t getPmicId(void *h, pmic_data_t *pPmicData)
 }
 #endif
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 uint32_t getPmicId(I2C_Handle h, pmic_data_t *pPmicData)
 {
     uint32_t val = 0;
@@ -552,7 +518,7 @@ void *Board_PmicInit(uint8_t devInstance)
     int i;
     I2C_Params i2cParams;
     I2C_Handle handle = NULL;
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     enableI2C(CSL_WKUP_I2C0_CFG_BASE);
 #endif
     for (i=0; I2C_config[i].fxnTablePtr != NULL; i++)
@@ -586,12 +552,14 @@ void Board_PmicDeinit(void* h)
 int pmic_test()
 {
     int ret = 0;
+    uint8_t finalVoltage = 0;
 /* TODO: Need to update it for tpr12 after getting register details*/
 #if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
-    uint8_t voltage, val;
+    uint8_t voltage = 0;
+    uint8_t val;
 #endif
     void* handle = NULL;
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     Board_IDInfo_v2 info = {0};
 #else
     Board_IDInfo boardInfo;
@@ -599,7 +567,7 @@ int pmic_test()
     pmic_data_t *pPmicData;
     int32_t stat = BOARD_SOK;
 
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     Board_setI2cInitConfig(&boardI2cInitCfg);
     stat = Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
 #else
@@ -613,16 +581,10 @@ int pmic_test()
 
     if(stat == BOARD_SOK)
     {
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
         pPmicData = Get_PmicData(info.boardInfo.boardName);
 #else
-/* TODO : Need to update this after Flashing board id details */
-#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
-        pPmicData = &tps65313;
-        numPmic = 1;
-#else
         pPmicData = Get_PmicData(boardInfo.boardName);
-#endif
 #endif
         handle = (void *)Board_PmicInit(pPmicData->devInstance);
 
@@ -632,13 +594,11 @@ int pmic_test()
 
         while(numPmic)
         {
-#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
             val = pPmicData->pmicVoltVal;
-#endif
             UART_printf("Testing PMIC module... \n");
             UART_printf("PMIC ID = 0x%08x\n", getPmicId(handle, pPmicData));
             numPmic--;
-#if !(defined(SOC_TPR12) || defined(SOC_AWR294X))
+
             voltage = readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg);
             UART_printf("Initial PMIC voltage = 0x%x\n", voltage);
             UART_printf("Setting PMIC voltage to 0x%x\n", val);
@@ -647,17 +607,22 @@ int pmic_test()
             UART_printf("PMIC voltage after = 0x%x\n", readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg));
             UART_printf("Setting PMIC voltage to original value\n");
             setPmicVoltage(handle, pPmicData, voltage);
-            UART_printf("Final voltage value = 0x%x\n", readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg));
-            numPmic--;
+            finalVoltage = readPmicVoltage(handle, pPmicData->slaveSelect, pPmicData->pmicReg);
+            UART_printf("Final voltage value = 0x%x\n", finalVoltage);
 
             if(numPmic)
             {
                 pPmicData = gDualPmicData;
             }
-#endif
         }
-
-        UART_printf("Test PASSED!\n");
+        if (finalVoltage == voltage)
+        {
+            UART_printf("Test PASSED!\n");
+        }
+        else
+        {
+            UART_printf("Test FAILED!\n");
+        }
 
         Board_PmicDeinit(handle);
     }
@@ -745,15 +710,12 @@ pmic_data_t* Get_PmicData(char *pBoardName)
         gDualPmicData = &lp8764;
         numPmic = 2;
     }
-    /* Check if the board is TPR12_EVM by comparing the string read from EEPROM. */
-    else if (strncmp("TPR_EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+
+    /* Check if the board is J784S4X-PM1-SOM by comparing the string read from EEPROM. */
+    else if (strncmp("J784S4X-PM1-SOM", pBoardName, BOARD_NAME_LENGTH) == 0U)
     {
-        pPmicData = &tps65313;
-    }
-    /* Check if the board is AWR294x_EVM by comparing the string read from EEPROM. */
-    else if (strncmp("AWR294X_EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
-    {
-        pPmicData = &lp8762;
+        pPmicData = &tps65941_pmicA;
+        numPmic = 1;
     }
     else
     {
