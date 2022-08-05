@@ -88,8 +88,8 @@ SECTIONS
 /* Data sections. */
 
     .KERNEL_DATA LOAD_START( lnkKernelDataStartAddr ),
-                    LOAD_END( lnkKernelDataEndAddr )        : {} palign( 32 )  > R5F_TCMB0
-    .boardcfg_data                                          : {} palign( 128 ) > OCMC_RAM_SCISERVER
+                    LOAD_END( lnkKernelDataEndAddr )        : {} palign( 0x800 )  > R5F_TCMB0
+    .boardcfg_data                                          : {} palign( 128 ) > R5F_TCMB0
 
     GROUP  palign( 32 ), LOAD_START( lnkRamStartAddr ), LOAD_END( lnkRamEndAddr )
     {
@@ -122,6 +122,7 @@ SECTIONS
         .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4)
         RUN_START(__SVC_STACK_START)
         RUN_END(__SVC_STACK_END)
-    } > R5F_TCMB0
+    } > OCMC_RAM_SCISERVER
+
 
 }

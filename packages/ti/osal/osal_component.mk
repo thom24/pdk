@@ -74,8 +74,8 @@ libosal_SOCLIST   =  j721e j7200 j721s2 j784s4
 
 libosal_freertos_BOARDLIST  = j721e_evm j7200_evm j721s2_evm j784s4_evm
 libosal_freertos_SOCLIST    = j721e j7200 j721s2 j784s4
-libosal_safertos_BOARDLIST  = j721e_evm
-libosal_safertos_SOCLIST    = j721e
+libosal_safertos_BOARDLIST  = j721e_evm j7200_evm
+libosal_safertos_SOCLIST    = j721e j7200
 
 
 ifeq ($(SOC),$(filter $(SOC), $(libosal_SOCLIST)))
