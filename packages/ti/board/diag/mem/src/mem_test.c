@@ -62,9 +62,12 @@
 #endif
 
 #if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) && defined(__aarch64__)
-#if defined(SOC_J721S2) || defined(SOC_J784S4)
-#define BOARD_DDR_EXT_MEM_START_ADDR        (0x900000000U)
-#define BOARD_DDR_EXT_MEM_END_ADDR          (0x9ffffffffU)
+#if defined(SOC_J721S2)
+#define BOARD_DDR_EXT_MEM_START_ADDR        (0x880000000U)
+#define BOARD_DDR_EXT_MEM_END_ADDR          (0xBFFFFFFFFU)
+#elif defined(SOC_J784S4) && defined(__aarch64__)
+#define BOARD_DDR_EXT_MEM_START_ADDR        (0x880000000U)
+#define BOARD_DDR_EXT_MEM_END_ADDR          (0xFFFFFFFFFU)
 #else
 #define BOARD_DDR_EXT_MEM_START_ADDR		(0x900000000U)
 #define BOARD_DDR_EXT_MEM_END_ADDR			(0x9ffffffffU)
@@ -367,6 +370,101 @@ static inline int32_t board_memory_test (uint32_t start_address,
 #else
 
 #if (defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) && defined(__aarch64__)
+
+#if (defined(SOC_J721S2) || defined(SOC_J784S4))
+/**
+ * \brief  Memory test for extended access beyond 2GB
+ *
+ * This function verifies the DDR memory  access by writing a data
+ * and its compliment to all the locations and reading the same for
+ * verification.
+ *
+ * \param   start_address  [IN]   Starting address of the DDR memory
+ * \param   end_address    [IN]   Ending address of the DDR memory
+ *
+ * \return  int32_t
+ *              0  - In case of success
+ *             -1  - In case of failure
+ *
+ */
+static inline int32_t board_memory_test (uint64_t start_address, uint64_t end_address)
+{
+    uint64_t index;
+    uint64_t value = 0;
+
+    UART_printf("First test started\n");
+    UART_printf("Writing to test area...\n");
+
+    /* Write a pattern */
+    for (index = start_address; (index >= start_address) && (index < end_address); index += 8)
+    {
+        *(uint64_t *)index = index;
+
+        if (!(index & (uint32_t)MSG_FREQ))
+        {
+            UART_printf("\tWrite up to 0x%x%08x done\n", BOARD_DIAG_MEM_LWORD_SPLIT(index));
+        }
+    }
+
+    UART_printf("Write finished!\n");
+    UART_printf("Checking values...\n");
+
+    /* Read and check the pattern */
+    for (index = start_address;  (index >= start_address) && (index < end_address); index += 8)
+    {
+        value = *(uint64_t *)index;
+
+        if((value != index))
+        {
+            UART_printf("board_memory_test: Failed at address index = 0x%x%08x value = 0x%x%08x\n",
+                        BOARD_DIAG_MEM_LWORD_SPLIT(index),
+                        BOARD_DIAG_MEM_LWORD_SPLIT(value));
+            return (-1);
+        }
+
+        if (!(index & MSG_FREQ))
+        {
+            UART_printf("\tRead up to 0x%x%08x done\n", BOARD_DIAG_MEM_LWORD_SPLIT(index));
+        }
+    }
+
+    UART_printf("\nSecond test started\n");
+    UART_printf("Writing complementary values to test area...\n");
+    /* Write a pattern for complementary values */
+    for (index = start_address; (index >= start_address) && (index < end_address); index += 8)
+    {
+        *(uint64_t *)index = ~index;
+
+        if (!(index & MSG_FREQ))
+        {
+            UART_printf("\tWrite up to 0x%x%08x done\n", BOARD_DIAG_MEM_LWORD_SPLIT(index));
+        }
+    }
+
+    UART_printf("Write finished!\n");
+    UART_printf("Checking values...\n");
+    /* Read and check the pattern */
+    for (index = start_address;  (index >= start_address) && (index < end_address); index += 8)
+    {
+        value = *(uint64_t *)index;
+
+        if(value != ~index)
+        {
+            UART_printf("board_memory_test: Failed at address index = 0x%x%08x value = 0x%x%08x\n",
+                        BOARD_DIAG_MEM_LWORD_SPLIT(index),
+                        BOARD_DIAG_MEM_LWORD_SPLIT(value));
+            return (-1);
+        }
+
+        if (!(index & MSG_FREQ))
+        {
+            UART_printf("\tRead up to 0x%x%08x done\n", BOARD_DIAG_MEM_LWORD_SPLIT(index));
+        }
+    }
+
+    return 0;
+}
+#else
 /**
  * \brief  Memory test for extended access beyond 2GB
  *
@@ -483,6 +581,8 @@ static inline int32_t board_memory_test (uint64_t start_address, uint64_t end_ad
 
     return 0;
 }
+#endif
+
 #else
 /**
  * \brief  Memory test for access 2GB
@@ -690,7 +790,7 @@ int main(void)
     boardCfg = BOARD_INIT_UART_STDIO;
 #endif  /*  #ifdef PDK_RAW_BOOT */
     Board_init(boardCfg);
-    
+
     return mem_test();
 }
 #endif

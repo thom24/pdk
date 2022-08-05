@@ -151,7 +151,15 @@ static void BoardDiag_mmuStartup(void)
     desc = CSL_mmuInitLevel1Desc(0x600000000, &attrs);
     gCSLa53Mmulevel1TableDiag[24] = desc;
 
-    /* 4GB DDR memory for 64-bit access */
+    /* 32GB DDR memory for 64-bit access */
+    desc = CSL_mmuInitLevel1Desc(0x800000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[32] = desc;
+    desc = CSL_mmuInitLevel1Desc(0x840000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[33] = desc;
+    desc = CSL_mmuInitLevel1Desc(0x880000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[34] = desc;
+    desc = CSL_mmuInitLevel1Desc(0x8C0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[35] = desc;
     desc = CSL_mmuInitLevel1Desc(0x900000000, &attrs);
     gCSLa53Mmulevel1TableDiag[36] = desc;
     desc = CSL_mmuInitLevel1Desc(0x940000000, &attrs);
@@ -160,6 +168,54 @@ static void BoardDiag_mmuStartup(void)
     gCSLa53Mmulevel1TableDiag[38] = desc;
     desc = CSL_mmuInitLevel1Desc(0x9C0000000, &attrs);
     gCSLa53Mmulevel1TableDiag[39] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xA00000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[40] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xA40000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[41] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xA80000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[42] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xAC0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[43] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xB00000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[44] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xB40000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[45] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xB80000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[46] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xBC0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[47] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xC00000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[48] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xC40000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[49] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xC80000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[50] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xCC0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[51] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xD00000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[52] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xD40000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[53] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xD80000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[54] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xDC0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[55] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xE00000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[56] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xE40000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[57] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xE80000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[58] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xEC0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[59] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xF00000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[60] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xF40000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[61] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xF80000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[62] = desc;
+    desc = CSL_mmuInitLevel1Desc(0xFC0000000, &attrs);
+    gCSLa53Mmulevel1TableDiag[63] = desc;
 
     for (idx = 0, addr = 0x40000000; addr < 0x70000000; idx++, addr+=0x200000) {
       desc = CSL_mmuInitLevel2Desc(addr, &attrs);
