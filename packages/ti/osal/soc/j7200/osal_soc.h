@@ -123,8 +123,8 @@ extern "C" {
 /* Default DM Timer allocation for r5f cores in j7200   */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1 )   /*  MCU DM Timer 1  */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2 )   /*  MCU DM Timer 2  */  
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 0 )   /*  DM Timer 12  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 1 )   /*  DM Timer 13  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 0 )   /*  DM Timer 0  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 1 )   /*  DM Timer 1  */
 #endif
 
 /* external references */

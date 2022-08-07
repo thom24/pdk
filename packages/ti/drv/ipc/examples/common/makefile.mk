@@ -71,7 +71,7 @@ endif
 ifeq ($(BUILD_OS_TYPE), safertos)
   COMP_LIST_COMMON =  $(PDK_COMMON_SAFERTOS_COMP)
   COMP_LIST_COMMON += ipc
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
     ifeq ($(CORE),mcu1_0)
       COMP_LIST_COMMON += sciserver_tirtos
     endif

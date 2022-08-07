@@ -16,6 +16,10 @@ ifeq ($(BOARD),$(filter $(BOARD), j7200_evm ))
   export SAFERTOS_j7200_r5f_INSTALL_PATH = 
 endif
 
+ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm ))
+  export SAFERTOS_j721s2_r5f_INSTALL_PATH = 
+endif
+
 # This release is validated on below mentioned SafeRTOS Version on said SOC's/ISA's 
 ifeq ($(BOARD),$(filter $(BOARD), j721e_evm ))
   SAFERTOS_VERSION_r5f = 009-002-199-024-219-004
@@ -24,6 +28,9 @@ ifeq ($(BOARD),$(filter $(BOARD), j721e_evm ))
 endif
 ifeq ($(BOARD),$(filter $(BOARD), j7200_evm ))
   SAFERTOS_VERSION_r5f = 009-002-199-024-243-001
+endif
+ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm ))
+  SAFERTOS_VERSION_r5f = 009-002-199-024-235-001
 endif
 
 # ISA based directory extensions used in SafeRTOS Package 

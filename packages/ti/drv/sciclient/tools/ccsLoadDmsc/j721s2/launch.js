@@ -45,6 +45,11 @@
 //     for your usage.
 //
 
+//<!!!!!! EDIT THIS !!!!!>
+// Set this to 1, if using 'freertos'
+isFreertos = 1;
+// Set this to 1, if using 'SafeRTOS'
+isSafertos = 0;
 //PDK path. Edit this
 pdkPath = "/ti/j7presi/workarea/pdk";
 
@@ -52,7 +57,16 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 pathSciclient = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j721s2/"
 ccs_init_elf_file = pathSciclient+"sciclient_ccs_init_mcu1_0_release.xer5f";
 loadSciserverFlag = 1;
-sciserver_elf_file = pathSciclient+"sciserver_testapp_freertos_mcu1_0_release.xer5f";
+if(isFreertos == 1)
+{
+    //Path to FreeRTOS sciserver
+    sciserver_elf_file = pathSciclient+"sciserver_testapp_freertos_mcu1_0_release.xer5f";
+}
+else if(isSafertos == 1)
+{
+    //Path to SafeRTOS sciserver
+    sciserver_elf_file = pathSciclient+"sciserver_testapp_safertos_mcu1_0_release.xer5f";
+}
 
 //path to tifs bin
 tifs_bin = pdkPath+"/packages/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-j721s2-gp.bin"
