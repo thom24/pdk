@@ -284,7 +284,7 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     gTuneEnable = FALSE;
 
@@ -304,7 +304,7 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
 #endif
 
     /* Set the default OSPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Open the Board OSPI NOR device with SPI port 0
        and use default OSPI configurations */
@@ -388,7 +388,7 @@ static int8_t BoardDiag_ospiFlashTest(void)
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     gTuneEnable = FALSE;
 
@@ -402,7 +402,7 @@ static int8_t BoardDiag_ospiFlashTest(void)
     ospi_cfg.dacEnable  = false;
 
     /* Set the default OSPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Open the Board OSPI NOR device with OSPI port 0
        and use default OSPI configurations */
@@ -481,7 +481,7 @@ static int8_t BoardDiag_ospiFlashPhyTest(void)
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     gTuneEnable = TRUE;
 
@@ -500,7 +500,7 @@ static int8_t BoardDiag_ospiFlashPhyTest(void)
     ospi_cfg.dacEnable  = true;
 
     /* Set the default OSPI init configurations */
-    OSPI_socSetInitCfg(BOARD_OSPI_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Open the Board OSPI NOR device with OSPI port 0
        and use default OSPI configurations */

@@ -235,7 +235,7 @@ static int8_t BoardDiag_norFlashStressTest(void)
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Modify the default OSPI configurations if necessary */
     ospi_cfg.intrEnable = false;
@@ -256,7 +256,7 @@ static int8_t BoardDiag_norFlashStressTest(void)
     ospi_cfg.dtrEnable = false;
 
     /* Set the default OSPI init configurations */
-    OSPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Open the Board NOR device with SPI port 0
        and use default NOR configurations */
@@ -342,7 +342,7 @@ static int8_t BoardDiag_norFlashTest(void)
     UART_printf("\nReading Device ID\n");
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Modify the default OSPI configurations if necessary */
     ospi_cfg.intrEnable = false;
@@ -363,7 +363,7 @@ static int8_t BoardDiag_norFlashTest(void)
     ospi_cfg.dtrEnable = false;
 
     /* Set the default OSPI init configurations */
-    OSPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Open the Board NOR device with port 1
        and use default NOR configurations */
