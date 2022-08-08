@@ -1611,7 +1611,7 @@ static int32_t Dss_dispDrvSetPipeSafetyParamsIoctl(
                                 (const uint32_t *)&safetyEvt,
                                 1U,
                                 Dss_dispSafetyErrCbFxn,
-                                (void *)&gDss_DispEvtMgrClientInfo[numHandle]);
+                                (void *)&gDss_DispEvtMgrClientInfo[(instObj->drvInstId*DSS_DISP_INST_EVT_MGR_MAX_CLIENTS) + numHandle]);
         instObj->numRegEvtHandle++;
 
         /* Call CSL APIs */
