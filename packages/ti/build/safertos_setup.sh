@@ -57,7 +57,7 @@ if [ ! "${j721e_r5f_path}" == "" ]; then
     printf "\n Error: Invalid j721e_r5f_path!!\n\n"
   else
     #Update R5F Install Path
-    sed -i -e "s|SAFERTOS_j721e_r5f_INSTALL_PATH =.*|SAFERTOS_j721e_r5f_INSTALL_PATH = ${j721e_r5f_path}|g" safertos_package_path.mk
+    sed -i -e "s|SAFERTOS_j721e_r5f_INSTALL_PATH =.*|SAFERTOS_j721e_r5f_INSTALL_PATH = ${j721e_r5f_path}|g" safertos_version.mk
     #Build safertos lib for all R5F cores
     make safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721e_evm
     make safertos -sj8 CORE=mcu1_1 BUILD_PROFILE=release BOARD=j721e_evm
@@ -80,7 +80,7 @@ if [ ! "${j721e_c66_path}" == "" ]; then
     printf "\n Error: Invalid j721e_c66_path!!\n\n"
   else
     #Update C66 Install Path
-    sed -i -e "s|SAFERTOS_j721e_c66_INSTALL_PATH =.*|SAFERTOS_j721e_c66_INSTALL_PATH = ${j721e_c66_path}|g" safertos_package_path.mk
+    sed -i -e "s|SAFERTOS_j721e_c66_INSTALL_PATH =.*|SAFERTOS_j721e_c66_INSTALL_PATH = ${j721e_c66_path}|g" safertos_version.mk
     #Build safertos lib for all c66 cores
     make safertos -sj8 CORE=c66xdsp_1 BUILD_PROFILE=release;
     make safertos -sj8 CORE=c66xdsp_2 BUILD_PROFILE=release;
@@ -95,7 +95,7 @@ if [ ! "${j721e_c7x_path}" == "" ]; then
     printf "\n Error: Invalid j721e_c7x_path!!\n\n"
   else
     #Update C7x install Path
-    sed -i -e "s|SAFERTOS_j721e_c7x_INSTALL_PATH =.*|SAFERTOS_j721e_c7x_INSTALL_PATH = ${j721e_c7x_path}|g" safertos_package_path.mk
+    sed -i -e "s|SAFERTOS_j721e_c7x_INSTALL_PATH =.*|SAFERTOS_j721e_c7x_INSTALL_PATH = ${j721e_c7x_path}|g" safertos_version.mk
     #Build safertos lib for all c7x cores
     make safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release;
     #Build osal_safertos for c7x
@@ -110,7 +110,7 @@ if [ ! "${j7200_r5f_path}" == "" ]; then
     printf "\n Error: Invalid j7200_r5f_path!!\n\n"
   else
     #Update R5F Install Path
-    sed -i -e "s|SAFERTOS_j7200_r5f_INSTALL_PATH =.*|SAFERTOS_j7200_r5f_INSTALL_PATH = ${j7200_r5f_path}|g" safertos_package_path.mk
+    sed -i -e "s|SAFERTOS_j7200_r5f_INSTALL_PATH =.*|SAFERTOS_j7200_r5f_INSTALL_PATH = ${j7200_r5f_path}|g" safertos_version.mk
     #Build safertos lib for all R5F cores
     make safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
     make safertos -sj8 CORE=mcu1_1 BUILD_PROFILE=release BOARD=j7200_evm
