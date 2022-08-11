@@ -60,7 +60,7 @@ extern "C" {
 #elif defined(SOC_AM437x)
 #include <ti/board/src/idkAM437x/device/qspi_flash.h>
 
-#elif defined(j721e_evm)
+#elif defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm)
 #include <ti/board/src/flash/include/board_flash.h>
 
 #elif defined(SOC_TPR12)
@@ -91,7 +91,7 @@ extern "C" {
 #define QSPI_FLASH_ID   BOARD_FLASH_ID_QSPIFLASH_S25FL256S
 #elif evmK2G
 #define QSPI_FLASH_ID   BOARD_FLASH_ID_QSPIFLASH_S25FL512S
-#elif defined(j721e_evm)
+#elif defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm)
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_MT25QU512ABB
 #define QSPI_NOR_BLOCK_SIZE     (64U * 1024U)
 #elif defined(tpr12_evm)
@@ -102,7 +102,7 @@ extern "C" {
 #define QSPI_FLASH_ID           BOARD_FLASH_ID_GD25B64CW2G
 #endif
 
-#if !(defined(SOC_K2G) || defined(j721e_evm))
+#if !(defined(SOC_K2G) || defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm))
 extern QSPI_HwAttrs qspiInitCfg[1];
 
 /** QSPI device specific definitions */

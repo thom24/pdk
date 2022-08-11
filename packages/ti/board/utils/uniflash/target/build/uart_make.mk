@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2021 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2022 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -127,7 +127,7 @@ INCDIR += $(UNIFLASH_BASE_DIR)/src/ospi_nand
 SRCDIR += $(UNIFLASH_BASE_DIR)/src/ospi_nand
 endif
 
-ifeq ($(BOARD), $(filter $(BOARD), j721e_evm))
+ifeq ($(BOARD), $(filter $(BOARD), j721e_evm j721s2_evm j784s4_evm))
 SRCS_COMMON += qspi.c
 endif
 ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk am64x_evm))

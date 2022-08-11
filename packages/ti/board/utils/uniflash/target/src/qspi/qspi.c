@@ -61,7 +61,7 @@ static int8_t UFP_qspiClose(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(awr294x_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(tpr12_evm) || defined(awr294x_evm))
     Board_flashHandle gQspiHandle;
 #else
     S25FL_Handle gQspiHandle;
@@ -130,7 +130,7 @@ static uintptr_t UFP_l2GlobalAddress (uintptr_t addr)
  */
 static int8_t UFP_qspiClose(void)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(awr294x_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(tpr12_evm) || defined(awr294x_evm))
     Board_flashClose(gQspiHandle);
 #else
     S25FLFlash_QuadModeEnable(gQspiHandle);
@@ -153,7 +153,7 @@ static int8_t UFP_qspiClose(void)
  */
 static int8_t UFP_qspiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(awr294x_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(tpr12_evm) || defined(awr294x_evm))
     uint32_t ioMode;
 
     ioMode = BOARD_FLASH_QSPI_IO_MODE_QUAD;
@@ -198,13 +198,13 @@ static int8_t UFP_qspiFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
  */
 static int8_t UFP_qspiFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(awr294x_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(tpr12_evm) || defined(awr294x_evm))
     uint32_t startBlockNum, endBlockNum, pageNum;
     uint32_t ioMode, i;
 
     ioMode = BOARD_FLASH_QSPI_IO_MODE_QUAD;
 
-#if defined(j721e_evm)
+#if defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm)
     if (!(offset % QSPI_NOR_BLOCK_SIZE))
 #else
     if (!(offset % NOR_BLOCK_SIZE))
@@ -351,7 +351,7 @@ static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
  */
 static int8_t UFP_qspiFlashErase(uint32_t offset, uint32_t length)
 {
-#if (defined(SOC_K2G) || defined(j721e_evm) || defined(tpr12_evm) || defined(awr294x_evm))
+#if (defined(SOC_K2G) || defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(tpr12_evm) || defined(awr294x_evm))
     uint32_t startBlockNum, endBlockNum, pageNum, i;
 
     /* Get starting block number */
@@ -430,11 +430,11 @@ static int8_t UFP_qspiInit(void)
     gQspiHandle = Board_flashOpen(QSPI_FLASH_ID,
 									BOARD_QSPI_NOR_INSTANCE, NULL);
 
-#elif defined(j721e_evm)
+#elif defined(j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm)
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
-    OSPI_socGetInitCfg(SPI_OSPI_DOMAIN_MAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
     ospi_cfg.intrEnable = false;
     /* Enable quad mode */
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
@@ -443,7 +443,7 @@ static int8_t UFP_qspiInit(void)
     ospi_cfg.dtrEnable = false;
 
     /* Set the default SPI init configurations */
-    OSPI_socSetInitCfg(SPI_OSPI_DOMAIN_MAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Open the Board QSPI NOR device */
     gQspiHandle = Board_flashOpen(QSPI_FLASH_ID,
