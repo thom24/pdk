@@ -43,6 +43,8 @@
 #include <sbl_err_trap.h>
 #include <sbl_sci_client.h>
 
+#define CNTR_RELOAD_VALUE 0U
+
 extern int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes);
 uint32_t __attribute__((section(".firmware"))) gSciclient_firmware[1];
 
@@ -194,7 +196,10 @@ void SBL_SciClientInit(void)
         SblErrLoop(__FILE__, __LINE__);
     }
 
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
+    SBL_ADD_PROFILE_POINT;
     status = Sciclient_loadFirmware((const uint32_t *) sysfw_ptr);
+    SBL_ADD_PROFILE_POINT;
     if (status != CSL_PASS)
     {
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
@@ -205,8 +210,10 @@ void SBL_SciClientInit(void)
         SblErrLoop(__FILE__, __LINE__);
     }
 
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
     SBL_ADD_PROFILE_POINT;
     status = Sciclient_init(&config);
+    SBL_ADD_PROFILE_POINT;
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"Sciclient init ...FAILED \n");
@@ -219,7 +226,12 @@ void SBL_SciClientInit(void)
     sblBoardCfgPrms.boardConfigHigh = 0;
     sblBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
     sblBoardCfgPrms.devGrp = SBL_DEVGRP;
+    SBL_ADD_PROFILE_POINT;
+
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
+    SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfg(&sblBoardCfgPrms);
+    SBL_ADD_PROFILE_POINT;
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"Sciclient board config ...FAILED \n");
@@ -238,7 +250,10 @@ void SBL_SciClientInit(void)
     sblBoardCfgPmPrms.boardConfigHigh = 0;
     sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
     sblBoardCfgPmPrms.devGrp = SBL_DEVGRP;
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
+    SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
+    SBL_ADD_PROFILE_POINT;
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"Sciclient board config pm...FAILED \n")
@@ -264,7 +279,10 @@ void SBL_SciClientInit(void)
     sblBoardCfgSecPrms.boardConfigHigh = 0;
     sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
     sblBoardCfgSecPrms.devGrp = SBL_DEVGRP;
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
+    SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
+    SBL_ADD_PROFILE_POINT;
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"Sciclient board config sec...FAILED \n");
@@ -287,7 +305,8 @@ void SBL_SciClientInit(void)
         .start_address = 0,
         .end_address = 0
     };
-
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
+    SBL_ADD_PROFILE_POINT;
     for (i = 0; i < MCU_FSS0_S0_FW_REGIONS; i++)
     {
         reqFwCtrl.region = i;
@@ -297,6 +316,7 @@ void SBL_SciClientInit(void)
             SBL_log(SBL_LOG_ERR,"MCU FSS0_S0 firewall region # %d disable...FAILED \n", i);
         }
     }
+    SBL_ADD_PROFILE_POINT;
 #endif
 #endif
 
@@ -307,7 +327,10 @@ void SBL_SciClientInit(void)
     sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
     sblBoardCfgRmPrms.devGrp = SBL_DEVGRP;
     gCertLength = boardcfgRmFindCertSize((uint32_t*)boardCfgInfo.boardCfgLowRm);
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
+    SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
+    SBL_ADD_PROFILE_POINT;
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"Sciclient board config rm...FAILED \n");

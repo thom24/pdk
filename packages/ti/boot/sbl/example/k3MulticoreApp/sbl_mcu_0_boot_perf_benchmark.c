@@ -36,6 +36,7 @@
 #include <ti/csl/arch/r5/csl_arm_r5.h>
 
 #include "sbl_boot_perf_benchmark.h"
+#include <string.h>
 
 /**
  * MCU DEVGRP is not currently properly supported for AM65xx
