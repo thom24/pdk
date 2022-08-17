@@ -432,14 +432,14 @@ void MCSPI_init(void)
 /*
  *  ======== MCSPI_open ========
  */
-MCSPI_Handle MCSPI_open(uint32_t index, uint32_t channel, MCSPI_Params *params)
+MCSPI_Handle MCSPI_open(uint32_t domain, uint32_t index, uint32_t channel, MCSPI_Params *params)
 {
     MCSPI_Handle handle = NULL;
 
-    if ((MCSPI_Handle)&(MCSPI_config[index][channel]) != NULL)
+    if ((MCSPI_Handle)&(MCSPI_config[domain][index][channel]) != NULL)
     {
         /* Get handle for this driver instance */
-        handle = (MCSPI_Handle)&(MCSPI_config[index][channel]);
+        handle = (MCSPI_Handle)&(MCSPI_config[domain][index][channel]);
 
         if (spiMutex != NULL)
         {

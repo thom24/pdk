@@ -65,6 +65,11 @@ extern "C" {
 #define MCSPI_MAX_NUM_INSTANCES     (SPI_MAX_CONFIG_CNT)
 
 /*!
+ *  @brief    Max number of MCSPI peripheral domains
+ */
+#define MCSPI_MAX_DOMAIN_CNT        (2U)
+
+/*!
  *  @brief    Max number of channels of a MCSPI peripheral instance
  */
 #define MCSPI_MAX_NUM_CHANNELS      (4U)
@@ -194,7 +199,7 @@ typedef struct MCSPI_Config_s {
 
 } MCSPI_Config;
 
-typedef MCSPI_Config MCSPI_config_list[MCSPI_MAX_NUM_INSTANCES][MCSPI_MAX_NUM_CHANNELS];
+typedef MCSPI_Config MCSPI_config_list[MCSPI_MAX_DOMAIN_CNT][MCSPI_MAX_NUM_INSTANCES][MCSPI_MAX_NUM_CHANNELS];
 
 /*!
  *  @brief  Function to close a channel of a SPI peripheral specified by the MCSPI handle
@@ -243,6 +248,9 @@ extern void MCSPI_init(void);
  *
  *  @pre    MCSPI controller has been initialized using MCSPI_init()
  *
+ *  @param  domain        Logical domain number of domain where SPI IP is
+ *                        present
+ *
  *  @param  idx           Logical peripheral number for the MCSPI indexed into
  *                        the MCSPI_config table
  *
@@ -258,7 +266,7 @@ extern void MCSPI_init(void);
  *  @sa     MCSPI_init()
  *  @sa     MCSPI_close()
  */
-extern MCSPI_Handle MCSPI_open(uint32_t idx, uint32_t channel, MCSPI_Params *params);
+extern MCSPI_Handle MCSPI_open(uint32_t domain, uint32_t idx, uint32_t channel, MCSPI_Params *params);
 
 /*!
  *  @brief  Function to initialize the MCSPI_Params struct to its defaults

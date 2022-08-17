@@ -1440,7 +1440,7 @@ static bool SPI_test_multi_channel(void *arg)
             spiParams.transferCallbackFxn = cbFxn[chn];;
         }
 
-        spi[chn] = MCSPI_open(instance, chn, &spiParams);
+        spi[chn] = MCSPI_open(domain, instance, chn, &spiParams);
 
         if (spi[chn] == NULL)
         {

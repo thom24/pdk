@@ -109,17 +109,21 @@ static MCSPI_Handle MCSPI_get_handle(SPI_Handle handle)
     MCSPI_Handle          mcHandle = NULL;
     SPI_v1_HWAttrs const *hwAttrs;
     uint32_t              chNum;
+    uint32_t              domain;
     uint32_t              i;
 
     hwAttrs = (const SPI_v1_HWAttrs *)handle->hwAttrs;
     chNum   = hwAttrs->chNum;
 
-    for (i = 0; i < MCSPI_MAX_NUM_INSTANCES; i++)
+    for (domain = 0; domain < MCSPI_MAX_DOMAIN_CNT; domain++)
     {
-        if(MCSPI_config[i][chNum].handle == handle)
+        for (i = 0; i < MCSPI_MAX_NUM_INSTANCES; i++)
         {
-            mcHandle = (MCSPI_Handle)&(MCSPI_config[i][chNum]);
-            break;
+            if(MCSPI_config[domain][i][chNum].handle == handle)
+            {
+                mcHandle = (MCSPI_Handle)&(MCSPI_config[domain][i][chNum]);
+                break;
+            }
         }
     }
 
