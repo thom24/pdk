@@ -96,6 +96,28 @@ AM62x
    am62x/firewalls
    am62x/soc_devgrps
 
+======
+AM62Ax
+======
+
+.. toctree::
+   :maxdepth: 1
+
+   am62ax/hosts
+   am62ax/devices
+   am62ax/clocks
+   am62ax/pll_data
+   am62ax/resasg_types
+   am62ax/interrupt_cfg
+   am62ax/ra_cfg
+   am62ax/dma_cfg
+   am62ax/psil_cfg
+   am62ax/proxy_cfg
+   am62ax/sec_proxy
+   am62ax/processors
+   am62ax/firewalls
+   am62ax/soc_devgrps
+
 =====
 J721E
 =====

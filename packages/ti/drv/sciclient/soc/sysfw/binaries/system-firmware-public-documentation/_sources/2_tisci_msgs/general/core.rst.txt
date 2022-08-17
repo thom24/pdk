@@ -214,3 +214,51 @@ Message Data Structures
 .. sysfwapistruct:: tisci_get_trace_config_req
 
 .. sysfwapistruct:: tisci_get_trace_config_resp
+
+TISCI_MSG_QUERY_FW_CAPS
+=======================
+
+Objective
+----------
+
+Retrieve the firmware capabilities of the currently running system-firmware.
+
+Usage
+-----
+
++------------------------+--------+
+| **Message Type**       | Normal |
++------------------------+--------+
+| **Secure Queue Only?** | No     |
++------------------------+--------+
+
+Each bit in the response indicating a certain functionality is present or not.
+
+
++----------------------------------+-------------------+
+| Feature Present                  | Representing Bit  |
++==================================+===================+
+| Generic capability               | 0                 |
++----------------------------------+-------------------+
+| Deep sleep low power mode        | 1                 |
++----------------------------------+-------------------+
+| MCU only low power mode          | 2                 |
++----------------------------------+-------------------+
+| Standby low power mode           | 3                 |
++----------------------------------+-------------------+
+| Partial IO on low power mode     | 4                 |
++----------------------------------+-------------------+
+| Reserved                         | 5-63              |
++----------------------------------+-------------------+
+
+TISCI Message ID
+----------------
+
+.. sysfwapimacro:: TISCI_MSG_QUERY_FW_CAPS
+
+Message Data Structures
+-----------------------
+
+.. sysfwapistruct:: tisci_query_fw_caps_req
+
+.. sysfwapistruct:: tisci_query_fw_caps_resp

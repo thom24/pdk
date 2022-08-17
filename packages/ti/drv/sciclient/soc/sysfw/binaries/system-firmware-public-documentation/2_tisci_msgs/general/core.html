@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.03
+                08.04.05
               </div>
             
           
@@ -114,6 +114,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-board-config-pm">TISCI_MSG_BOARD_CONFIG_PM</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-query-msmc">TISCI_MSG_QUERY_MSMC</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#tisci-msg-get-trace-config">TISCI_MSG_GET_TRACE_CONFIG</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#tisci-msg-query-fw-caps">TISCI_MSG_QUERY_FW_CAPS</a></li>
 </ul>
 </li>
 </ul>
@@ -612,6 +613,119 @@ query TIFS for debug trace configuration.</p>
 </p>
 </div>
 </div>
+<div class="section" id="tisci-msg-query-fw-caps">
+<h2>TISCI_MSG_QUERY_FW_CAPS<a class="headerlink" href="#tisci-msg-query-fw-caps" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id12">
+<h3>Objective<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h3>
+<p>Retrieve the firmware capabilities of the currently running system-firmware.</p>
+</div>
+<div class="section" id="id13">
+<h3>Usage<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="75%" />
+<col width="25%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Message Type</strong></td>
+<td>Normal</td>
+</tr>
+<tr class="row-even"><td><strong>Secure Queue Only?</strong></td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Each bit in the response indicating a certain functionality is present or not.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="64%" />
+<col width="36%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Feature Present</th>
+<th class="head">Representing Bit</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>Generic capability</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>Deep sleep low power mode</td>
+<td>1</td>
+</tr>
+<tr class="row-even"><td>MCU only low power mode</td>
+<td>2</td>
+</tr>
+<tr class="row-odd"><td>Standby low power mode</td>
+<td>3</td>
+</tr>
+<tr class="row-even"><td>Partial IO on low power mode</td>
+<td>4</td>
+</tr>
+<tr class="row-odd"><td>Reserved</td>
+<td>5-63</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="id14">
+<h3>TISCI Message ID<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h3>
+<p><code class="docutils literal"><span class="pre">TISCI_MSG_QUERY_FW_CAPS</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">(0x0022U)</span></code></p>
+</div>
+<div class="section" id="id15">
+<h3>Message Data Structures<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h3>
+<p><p><strong>struct tisci_query_fw_caps_req</strong></p>
+<p>TISCI_MSG_QUERY_FW_CAPS request to provide the firmware/SOC capabilities</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="27%" />
+<col width="43%" />
+<col width="31%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>TISCI header</td>
+</tr>
+</tbody>
+</table>
+<p>Although this message is essentially empty and contains only a header
+ a full data structure is created for consistency in implementation.</p>
+</p>
+<p><p><strong>struct tisci_query_fw_caps_resp</strong></p>
+<p>TISCI_MSG_QUERY_FW_CAPS request response providing currently available SOC/firmware capabilities</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="15%" />
+<col width="24%" />
+<col width="61%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Parameter</th>
+<th class="head">Type</th>
+<th class="head">Description</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>hdr</td>
+<td>struct tisci_header</td>
+<td>TISCI header.</td>
+</tr>
+<tr class="row-odd"><td>fw_caps</td>
+<td>u64</td>
+<td>Each bit in fw_caps indicating one FW/SOC capability</td>
+</tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
 </div>
 
 
@@ -655,7 +769,7 @@ query TIFS for debug trace configuration.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.03',
+            VERSION:'08.04.05',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
