@@ -415,7 +415,14 @@ extern "C" {
 /** \brief Total number of shared resources - 
  *  Free_Flows/Global_Event/IR Intr/VINT */
 #if defined (BUILD_C7X)
-/* Additional DRUs local to C7X */
+/* 
+ * Additional DRUs local to C7x subsystem:
+ * In J784S4 we have 4 Additional DRUs and each has 32 channels
+ * These DRUs can be use by any C7x core (J784S4 has 4 C7x cores)
+ * UDMA driver currently allocates minimum of 4 channels of every DRU to each C7x core 
+ * (Use \ref Udma_rmGetSharedResPrms API to get default 
+ *     UDMA RM Shared resource parameters, and override default sharing policy)
+ */
 #define UDMA_RM_NUM_SHARED_RES                  (8U)
 #else
 #define UDMA_RM_NUM_SHARED_RES                  (4U)
