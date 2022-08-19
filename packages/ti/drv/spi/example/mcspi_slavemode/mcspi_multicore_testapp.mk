@@ -74,7 +74,7 @@ force_multi_core_img_gen.c:
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
-	$(SBL_CERT_GEN) -b $(BINDIR)/$(RPRC_PREFIX_MASTERSLAVE)_multicore_$(BUILD_PROFILE_$(CORE)).appimage -o $(BINDIR)/$(RPRC_PREFIX_MASTERSLAVESLAVE)_multicore_$(BUILD_PROFILE_$(CORE)).appimage.signed -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
+	$(SBL_CERT_GEN) -b $(BINDIR)/$(RPRC_PREFIX_MASTERSLAVE)_multicore_$(BUILD_PROFILE_$(CORE)).appimage -o $(BINDIR)/$(RPRC_PREFIX_MASTERSLAVE)_multicore_$(BUILD_PROFILE_$(CORE)).appimage.signed -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )
