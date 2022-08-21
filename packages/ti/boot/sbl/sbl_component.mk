@@ -118,7 +118,7 @@ else
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
     sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
-    sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs
+    sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
   else ifeq ($(SOC),$(filter $(SOC), j784s4))
     sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
     sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
@@ -1630,7 +1630,7 @@ export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
 export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
 export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_hs_SBL_IMAGEGEN = yes
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2 j784s4))
+ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j784s4))
 sbl_EXAMPLE_LIST += sbl_cust_img_hs
 endif
 
