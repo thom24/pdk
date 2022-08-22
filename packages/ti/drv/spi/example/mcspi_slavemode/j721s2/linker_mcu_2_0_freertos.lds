@@ -49,14 +49,14 @@ MEMORY
     OCMC_RAM             (RWIX) : ORIGIN = 0x41CE3100 LENGTH = 0x0001AA00
     OCMC_RAM_X509_HEADER (RWIX) : ORIGIN = 0x41CFDB00 LENGTH = 0x00000500
 
-    /*========================J784S4 MCMS3 LOCATIONS ===================*/
-    /*---------- J784S4 Reserved Memory for ARM Trusted Firmware -------*/
+    /*========================J721S2 MCMS3 LOCATIONS ===================*/
+    /*---------- J721S2 Reserved Memory for ARM Trusted Firmware -------*/
     MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00020000   /* 128KB       */
-    MSMC3         (RWIX)        : ORIGIN = 0x70020000 LENGTH = 0x007D0000   /* 8MB - 192KB */
-    /*------------- J784S4 Reserved Memory for DMSC Firmware -----------*/
-    MSMC3_DMSC_FW (RWIX)        : ORIGIN = 0x707F0000 LENGTH = 0x00010000   /* 64KB        */
+    MSMC3         (RWIX)        : ORIGIN = 0x70020000 LENGTH = 0x003D0000   /* 4MB - 192KB */
+    /*------------- J721S2 Reserved Memory for DMSC Firmware -----------*/
+    MSMC3_DMSC_FW (RWIX)        : ORIGIN = 0x703F0000 LENGTH = 0x00010000   /* 64KB        */
 
-    /*======================= J784S4 DDR LOCATION =======================*/
+    /*======================= J721S2 DDR LOCATION =======================*/
     DDR0 (RWIX)                 : ORIGIN = 0x80000000 LENGTH = 0x80000000   /* 2GB */
 }
 
