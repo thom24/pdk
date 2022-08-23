@@ -63,9 +63,9 @@ extern "C" {
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId, 
+int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId,
                  uint32_t *clusterId, uint32_t *userId, uint32_t *queueId);
-int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId, 
+int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
                  uint32_t *clusterId, uint32_t *userId, uint32_t *queueId);
 int32_t Ipc_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId,
                  uint32_t userId, Ipc_MbConfig* cfg, uint32_t cnt);

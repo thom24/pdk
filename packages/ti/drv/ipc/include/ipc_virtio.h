@@ -124,7 +124,7 @@ void * Ipc_getResourceTraceBufPtr(void);
  *          0 if linux vdev status is not 0x7
  *
  */
-uint8_t Ipc_isRemoteReady(uint16_t procId);
+Bool Ipc_isRemoteReady(uint16_t procId);
 
 /**
  * \brief Creates Virtio late when Linux is ready
@@ -143,7 +143,7 @@ int32_t Ipc_lateVirtioCreate(uint16_t procId);
  * \return  1 if virtio exists for the given remote proc
  *          0 if virtio does not exist for the given remote proc
  */
-uint8_t Ipc_isRemoteVirtioCreated(uint32_t remoteId);
+Bool Ipc_isRemoteVirtioCreated(uint32_t remoteId);
 
 #ifdef __cplusplus
 }

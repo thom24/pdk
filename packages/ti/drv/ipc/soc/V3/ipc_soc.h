@@ -79,7 +79,7 @@ extern "C" {
 #define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512U)
 
 /* Refer to J721S2 interrupt mapping table and BoardCfg Resource allocation */
-/* Note: In case of IPC_SUPPORT_SCICLIENT this is not actually used, since 
+/* Note: In case of IPC_SUPPORT_SCICLIENT this is not actually used, since
  * the range is returned from the BoardCfg */
 #ifndef QNX_OS
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (105U)
@@ -114,19 +114,19 @@ extern "C" {
 
 /* CLEC Offset = 992:- soc_events_in #32 is connected to CLEC event #1024 */
 /* CLEC is shared b/w both the C7x cores and the offset can be common.
- * ClecEvent # will be different for c7x_1 and c7x_2 since the 
+ * ClecEvent # will be different for c7x_1 and c7x_2 since the
  * range is returned from BardCfg based on core specific allocation */
-#define   C7X_CLEC_OFFSET                 (1024 - 32)
+#define   C7X_CLEC_OFFSET                 (1024U - 32U)
 
 /* User selected IRQ number */
 /* Start of C7x events associated to CLEC that IPC Driver will manage */
 /* Events  0 - 15  : left for other drivers, Timer Interrupts etc.
  * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
- * Events 48 - 58  : managed by UDMA for routing various UDMA events to C7x  
+ * Events 48 - 58  : managed by UDMA for routing various UDMA events to C7x
  * Events 59 - 63  : managed by IPC for routing various Mailbox events to C7x */ 
 /* Even though same CLEC is shared b/w two C7x cores, CLEC can broadcast the
  * event to any C7x core and CPU IRQ is core specific.
- * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */ 
+ * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */
 #define   IPC_C7X_MBINTR_OFFSET            (59U)
 
 /* ========================================================================== */

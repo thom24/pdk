@@ -161,7 +161,7 @@ uint32_t Virtio_getProcId(Virtio_Handle vq);
  *
  *  \sa         VirtioIPC_getVirtQueues
  */
-uint8_t VirtioIPC_getVirtQueues(uint32_t type, uint32_t procId, uint32_t rank,
+Bool VirtioIPC_getVirtQueues(uint32_t type, uint32_t procId, uint32_t rank,
         uint32_t *tx_vqId, uint32_t *rx_vqId);
 
 /**

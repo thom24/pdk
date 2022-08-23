@@ -72,13 +72,13 @@ extern "C" {
 
 /* Resource info: Must match include/linux/remoteproc.h: */
 /** \brief carvout type */
-#define TYPE_CARVEOUT    0
+#define TYPE_CARVEOUT    0U
 /** \brief Devmem type */
-#define TYPE_DEVMEM      1
+#define TYPE_DEVMEM      1U
 /** \brief trace type */
-#define TYPE_TRACE       2
+#define TYPE_TRACE       2U
 /** \brief VDEV type */
-#define TYPE_VDEV        3
+#define TYPE_VDEV        3U
 
 /* Linux kernel defines this as (-1), below define avoids compile warnings */
 /** \brief Macro to specify memory needs to be dynamically allocated */
@@ -202,7 +202,7 @@ typedef struct
     Ipc_Hdr base;
     /**< Header Information */
 
-    uint32_t offset[NUM_ENTRIES];  
+    uint32_t offset[NUM_ENTRIES];
     /**< offset, Should match 'num' in actual definition */
 
     Ipc_VDev       rpmsg_vdev;

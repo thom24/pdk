@@ -350,13 +350,13 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
 
 #ifdef IPC_SUPPORT_SCICLIENT
     /* Get available CorePack IRQ number from DMSC */
-    if( (start == 0) && (range == 0))
+    if( (start == 0U) && (range == 0U))
     {
         /* Query the Interrupt Router o/p # alloacted for the core. */
         retVal = Ipc_getIntNumRange(selfId, &start, &range);
     }
 
-    if((retVal == IPC_SOK) && (range >= 1))
+    if((retVal == IPC_SOK) && (range >= 1U))
     {
         /* Allocate the last 5 interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is
@@ -396,7 +396,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
     {
         case IPC_MPU1_0:
             outIntrBaseNum  = NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET;
-            vimEventBaseNum = NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET; 
+            vimEventBaseNum = NAVSS512_MPU1_0_INPUT_MAILBOX_VIM_OFFSET;
             break;
         case IPC_MCU1_0:
             outIntrBaseNum  = NAVSS512_MCU1R5F0_INPUT_MAILBOX_OFFSET;
@@ -480,11 +480,11 @@ uint32_t Ipc_configClecRouter(uint32_t corePackEvent, uint32_t corePackEventBase
 
    /* Even though same CLEC is shared b/w two C7x cores, CLEC can broadcast the
     * event to any C7x core and CPU IRQ(corepackIrq) is core specific.
-    * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */ 
+    * Hence same Mailbox Interrupt offset can be used for both C7x cores.  */
     corepackIrq = (corePackEvent - corePackEventBase) + IPC_C7X_MBINTR_OFFSET;
-  
+
    /* corePackEvent is derived from the NAVSS IR o/p range returned from BoardCfg,
-    * based on core specific allocation. And this is different for c7x_1 and c7x_2. 
+    * based on core specific allocation. And this is different for c7x_1 and c7x_2.
     * Hence same C7X_CLEC_OFFSET can be used for both C7x cores. */
     input = corePackEvent + C7X_CLEC_OFFSET;
 

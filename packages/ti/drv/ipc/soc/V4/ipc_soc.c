@@ -478,13 +478,13 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
 
 #ifdef IPC_SUPPORT_SCICLIENT
     /* Get available CorePack IRQ number from DMSC */
-    if( (start == 0) && (range == 0))
+    if( (start == 0U) && (range == 0U))
     {
         /* Query the Interrupt Router o/p # alloacted for the core. */
         retVal = Ipc_getIntNumRange(selfId, &start, &range);
     }
 
-    if((retVal == IPC_SOK) && (range >= 1))
+    if((retVal == IPC_SOK) && (range >= 1U))
     {
         /* Allocate the last 6 interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is

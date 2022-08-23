@@ -61,7 +61,7 @@ extern "C" {
 /**
  * \brief Maximum EndPoints Supported
  */
-#define MAXENDPOINTS           256
+#define MAXENDPOINTS           256U
 
 
 /**
@@ -72,7 +72,7 @@ extern "C" {
 /**
  *  \brief Maximum value of System Reserved Endpoints
  */
-#define RPMessage_MAX_RESERVED_ENDPOINT  100
+#define RPMessage_MAX_RESERVED_ENDPOINT  100U
 
 /** \brief IPC print buffer length */
 #define IPC_PRINT_BUF_LEN              ((uint32_t) 1024U)

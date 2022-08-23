@@ -109,13 +109,13 @@ uint32_t Ipc_mpGetId(const char* name)
     if( (NULL == name) || (strlen(name) == 0U) )
     {
         /* Invalid parameter */
-   
+
     }
     else
     {
         for(i = 0; i < pMpCfg->numProcessors; i++)
         {
-            if ((strncmp(name, pMpCfg->procInfo[i].name, IPC_MAX_PROC_NAMELEN) == 0U))
+            if ((strncmp(name, pMpCfg->procInfo[i].name, IPC_MAX_PROC_NAMELEN) == 0))
             {
                 procId = pMpCfg->procInfo[i].procId;
             }
@@ -134,7 +134,7 @@ const char* Ipc_mpGetName(uint32_t id)
     if(id >= IPC_MAX_PROCS)
     {
         /* TBD : add failure log */
-    }    
+    }
     else
     {
         if(id ==  pMpCfg->selfProcId)
@@ -169,7 +169,7 @@ uint16_t Ipc_mpGetNumProcessors(void)
 
 uint32_t Ipc_mpGetSelfId(void)
 {
-    return g_ipcMpConfig.selfProcId; 
+    return g_ipcMpConfig.selfProcId;
 }
 
 uint32_t Ipc_mpGetRemoteProcId(uint32_t coreIndex)
@@ -182,5 +182,5 @@ uint32_t Ipc_mpGetRemoteProcId(uint32_t coreIndex)
         remoteId = pMpCfg->procInfo[coreIndex].procId;
     }
 
-    return remoteId; 
+    return remoteId;
 }

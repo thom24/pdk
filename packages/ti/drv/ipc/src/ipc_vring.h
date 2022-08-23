@@ -81,26 +81,26 @@ extern "C" {
 /* ========================================================================== */
 
 /**
- *  \brief This marks a buffer as continuing via the next field. 
+ *  \brief This marks a buffer as continuing via the next field.
  */
 #define VRING_DESC_F_NEXT   1U
 
 /**
- *  \brief This marks a buffer as write-only (otherwise read-only). 
+ *  \brief This marks a buffer as write-only (otherwise read-only).
  */
 #define VRING_DESC_F_WRITE  2U
 
-/** 
- *  \brief The Host uses this in used->flags to advise the Guest: don't kick 
- *         me when you add a buffer.  It's unreliable, so it's simply an 
- *         optimization.  Guest will still kick if it's out of buffers. 
+/**
+ *  \brief The Host uses this in used->flags to advise the Guest: don't kick
+ *         me when you add a buffer.  It's unreliable, so it's simply an
+ *         optimization.  Guest will still kick if it's out of buffers.
  */
 #define VRING_USED_F_NO_NOTIFY  1U
 
 /**
- *  \brief The Guest uses this in avail->flags to advise the Host: don't 
- *         interrupt me when you consume a buffer.  It's unreliable, so it's 
- *         simply an optimization.  
+ *  \brief The Guest uses this in avail->flags to advise the Host: don't
+ *         interrupt me when you consume a buffer.  It's unreliable, so it's
+ *         simply an optimization.
  */
 #define VRING_AVAIL_F_NO_INTERRUPT  1U
 
@@ -117,15 +117,15 @@ extern "C" {
 /* ========================================================================== */
 
 /**
- *  \brief Virtio ring descriptors: 16 bytes.  These can chain together via 
- *         "next". 
+ *  \brief Virtio ring descriptors: 16 bytes.  These can chain together via
+ *         "next".
  */
 struct vring_desc
 {
-    uint32_t addr;      
+    uint32_t addr;
     /**< Address (guest-physical). */
 
-    uint32_t padding; 
+    uint32_t padding;
     /**< Because 64 bits is originally used for addr */
 
     uint32_t len;
@@ -147,7 +147,7 @@ struct vring_avail
 };
 
 /**
- *  \brief u32 is used here for ids for padding reasons. 
+ *  \brief u32 is used here for ids for padding reasons.
  */
 struct vring_used_elem
 {
@@ -190,15 +190,15 @@ static inline void vring_init(struct VRing *vr, uint32_t num, void *p,
     vr->desc = (struct vring_desc *) p;
     vr->avail = (struct vring_avail *)
                     ((uintptr_t)p + (num * sizeof(struct vring_desc)));
-    vr->used = (struct vring_used *)(((uintptr_t)&vr->avail->ring[num] + (uintptr_t)pagesize-1)
-                & ~((uintptr_t)pagesize - 1));
+    vr->used = (struct vring_used *)(((uintptr_t)&vr->avail->ring[num] + (uintptr_t)pagesize-1U)
+                & ~((uintptr_t)pagesize - 1U));
 }
 
 static inline uint32_t vring_size(uint32_t num, uint32_t pagesize)
 {
-    return ((sizeof(struct vring_desc) * num + sizeof(uint16_t) * (2 + num)
-                + (uintptr_t)pagesize - 1) & ~((uintptr_t)pagesize - 1))
-                + sizeof(uint16_t) * 2 + sizeof(struct vring_used_elem) * num;
+    return ((sizeof(struct vring_desc) * num + sizeof(uint16_t) * (2U + num)
+                + (uintptr_t)pagesize - 1U) & ~((uintptr_t)pagesize - 1U))
+                + sizeof(uint16_t) * 2U + sizeof(struct vring_used_elem) * num;
 }
 
 

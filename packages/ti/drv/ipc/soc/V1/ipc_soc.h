@@ -95,7 +95,7 @@ extern "C" {
 #define    MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX   (512U)
 
 /* Refer to J7ES interrupt mapping table and BoardCfg Resource allocation */
-/* Note: In case of IPC_SUPPORT_SCICLIENT this is not actually used, since 
+/* Note: In case of IPC_SUPPORT_SCICLIENT this is not actually used, since
  * the range is returned from the BoardCfg */
 #ifndef QNX_OS
 #define    NAVSS512_MPU1_0_INPUT_MAILBOX_OFFSET             (182U)
@@ -149,14 +149,14 @@ extern "C" {
 #define   C7X_CLEC_BASE_ADDR              (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
 
 /* CLEC Offset = 992:- soc_events_in #32 is connected to CLEC event #1024 */
-#define   C7X_CLEC_OFFSET                 (1024 - 32)
+#define   C7X_CLEC_OFFSET                 (1024U - 32U)
 
 /* User selected IRQ number */
 /* Start of C7x events associated to CLEC that IPC Driver will manage */
 /* Events  0 - 15  : left for other drivers, Timer Interrupts etc.
  * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
- * Events 48 - 58  : managed by UDMA for routing various UDMA events to C7x  
- * Events 59 - 63  : managed by IPC for routing various Mailbox events to C7x */ 
+ * Events 48 - 58  : managed by UDMA for routing various UDMA events to C7x
+ * Events 59 - 63  : managed by IPC for routing various Mailbox events to C7x */
 #define   IPC_C7X_MBINTR_OFFSET            (59U)
 
 /* ========================================================================== */
@@ -199,7 +199,7 @@ int32_t Ipc_sciclientIrqSet(uint16_t remoteId, uint32_t clusterId,
 int32_t Ipc_getIntNumRange(uint32_t coreIndex, uint16_t *rangeStartP,
         uint16_t *rangeNumP);
 #endif
- 
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */

@@ -222,33 +222,37 @@ static Ipc_Object gIpcObject;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-RPMessage_Object* RPMessage_lookupEndpt(void* p, uint32_t e);
-void RPMessage_assignEndpt(void* p, uint32_t e, RPMessage_Object* obj);
-void UNUSED(const void* x);
-uint8_t is_aligned(const void* ptr, uint32_t byteCnt);
+static inline RPMessage_Object* RPMessage_lookupEndpt(void* p, uint32_t e);
+static inline void RPMessage_assignEndpt(void* p, uint32_t e, RPMessage_Object* obj);
+#ifndef IPC_EXCLUDE_CTRL_TASKS
+static inline void UNUSED(const void* x);
+#endif
+static inline uint8_t is_aligned(const void* ptr, uint32_t byteCnt);
 RPMessage_Object*  RPMessage_allocObject(void);
 
 
-inline RPMessage_Object* RPMessage_lookupEndpt(void* p, uint32_t e)
+static inline RPMessage_Object* RPMessage_lookupEndpt(void* p, uint32_t e)
 {
     return (((RPMessage_Object**)(p))[(e)]);
 }
 
-inline void RPMessage_assignEndpt(void* p, uint32_t e, RPMessage_Object* obj)
+static inline void RPMessage_assignEndpt(void* p, uint32_t e, RPMessage_Object* obj)
 {
     (((RPMessage_Object**)(p))[(e)] = (obj));
 }
 
-inline void UNUSED(const void* x)
+#ifndef IPC_EXCLUDE_CTRL_TASKS
+static inline void UNUSED(const void* x)
 {
     (void)(x);
 }
+#endif
 
-inline uint8_t is_aligned(const void* ptr, uint32_t byteCnt)
+static inline uint8_t is_aligned(const void* ptr, uint32_t byteCnt)
 {
     uint8_t retVal;
     uint32_t bufAddr = (uint32_t)(uintptr_t)ptr;
-    retVal = (0 == (bufAddr%byteCnt)) ? TRUE : FALSE;
+    retVal = (uint8_t)((0U == (bufAddr%byteCnt)) ? TRUE : FALSE);
     return retVal;
 }
 
@@ -276,14 +280,14 @@ int32_t RPMessageParams_init(RPMessage_Params *params)
 uint32_t RPMessage_getMessageBufferSize(void)
 {
     uint32_t msgBufSize = MSGBUFFERSIZE;
-    msgBufSize = ((msgBufSize + HEAPALIGNMENT-1) & ~(HEAPALIGNMENT-1));
+    msgBufSize = ((msgBufSize + HEAPALIGNMENT-1U) & ~(HEAPALIGNMENT-1U));
     return msgBufSize;
 }
 
 uint32_t RPMessage_getObjMemRequired(void)
 {
-    uint32_t objSize = sizeof(RPMessage_Object);
-    objSize = ((objSize + HEAPALIGNMENT-1) & ~(HEAPALIGNMENT-1));
+    uint32_t objSize = (uint32_t)sizeof(RPMessage_Object);
+    objSize = ((objSize + HEAPALIGNMENT-1U) & ~(HEAPALIGNMENT-1U));
     return objSize;
 }
 
@@ -330,7 +334,7 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
         RPMessage_Announcement *amsg = (RPMessage_Announcement*)msg->payload;
         if (amsg->ctrl.type == CNTRLMSG_ANNOUNCE)
         {
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
             SystemP_printf("RPMessage_enqueMsg ...CNTRLMSG_ANNOUNCE\n");
 #endif
             status = RPMessage_processAnnounceMsg(
@@ -378,7 +382,7 @@ static int32_t RPMessage_enqueMsg(RPMessage_EndptPool *pool, RPMessage_MsgHeader
             }
 
             /* Allocate a buffer to copy the payload: */
-            size = msg->dataLen + sizeof(RPMessage_MsgElem);
+            size = (uint32_t)(msg->dataLen + sizeof(RPMessage_MsgElem));
 
             /* HeapBuf_alloc() is non-blocking, so needs protection: HIsrGate has already been taken*/
             payload = (RPMessage_MsgElem *)IpcUtils_HeapAlloc(&obj->heap, size, 0);
@@ -423,9 +427,9 @@ static void RPMessage_swiLinuxFxn(uintptr_t arg0, uintptr_t arg1)
 {
     RPMessage_CallbackData *cbdata = (RPMessage_CallbackData*)arg0;
     RPMessage_MsgHeader    *msg;
-    Int16                  token;
+    int16_t                token;
     int32_t                len;
-    uint8_t                usedBufAdded = FALSE;
+    Bool                   usedBufAdded = FALSE;
     int32_t                key;
 
     key = gIpcObject.initPrms.osalPrms.lockHIsrGate(module.gateSwi);
@@ -440,7 +444,7 @@ static void RPMessage_swiLinuxFxn(uintptr_t arg0, uintptr_t arg1)
 
         key = gIpcObject.initPrms.osalPrms.lockHIsrGate(module.gateSwi);
 
-        Virtio_addUsedBuf(cbdata->vq, token, MSGBUFFERSIZE);
+        Virtio_addUsedBuf(cbdata->vq, (int16_t)token, (int32_t)MSGBUFFERSIZE);
         usedBufAdded = TRUE;
     }
 
@@ -508,13 +512,13 @@ int32_t RPMessage_announce(uint32_t remoteProcId, uint32_t endPt, const char* na
     int32_t                 status = IPC_SOK;
     size_t                  namelen;
 
-#if  DEBUG_PRINT
+#ifdef DEBUG_PRINT
     SystemP_printf("RPMessage_announce : remote %d, endpt %d, name %s\n",
         remoteProcId, endPt, name);
 #endif
 
     namelen = strlen(name);
-    if(namelen >= SERVICENAMELEN || namelen == 0)
+    if((namelen >= SERVICENAMELEN) || (namelen == 0U))
     {
         status = IPC_EFAIL;
     }
@@ -523,8 +527,8 @@ int32_t RPMessage_announce(uint32_t remoteProcId, uint32_t endPt, const char* na
     {
         msg.ctrl.type = CNTRLMSG_ANNOUNCE;
         msg.endPt = endPt;
-        strncpy(msg.name, name, SERVICENAMELEN-1);
-        msg.name[SERVICENAMELEN-1] = '\0';
+        strncpy(msg.name, name, SERVICENAMELEN-1U);
+        msg.name[SERVICENAMELEN-1U] = '\0';
 
         if(remoteProcId == RPMESSAGE_ALL)
         {
@@ -535,11 +539,11 @@ int32_t RPMessage_announce(uint32_t remoteProcId, uint32_t endPt, const char* na
                 {
                     vq = module.VQ_callbacks[c].vq;
                     procId = Virtio_getProcId(vq);
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
                     SystemP_printf("RPMessage_announce.....c%d ProcId %d\n", c, procId);
 #endif
                     status = RPMessage_send(NULL, procId, IPC_CTRL_ENDPOINT_ID,
-                            IPC_CTRL_ENDPOINT_ID, &msg, sizeof(msg));
+                            IPC_CTRL_ENDPOINT_ID, &msg, (uint16_t)sizeof(msg));
                     if (status != IPC_SOK)
                     {
                         SystemP_printf("RPMessage_announce.....failed to send c %d (%s)\n", c, Ipc_mpGetName(procId));
@@ -552,7 +556,7 @@ int32_t RPMessage_announce(uint32_t remoteProcId, uint32_t endPt, const char* na
         else
         {
             status = RPMessage_send(NULL, remoteProcId, IPC_CTRL_ENDPOINT_ID,
-                    IPC_CTRL_ENDPOINT_ID, &msg, sizeof(msg));
+                    IPC_CTRL_ENDPOINT_ID, &msg, (uint16_t)sizeof(msg));
             if (status != IPC_SOK)
             {
                 SystemP_printf("RPMessage_announce.....failed to send\n");
@@ -578,7 +582,7 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
     int32_t rtnVal = IPC_SOK;
     Ipc_OsalPrms *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
     SystemP_printf("RPMessage_processAnnounceMsg : announcement from %d for endPt %d\n",
              procId, amsg->endPt );
 #endif
@@ -617,7 +621,7 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
             p->endPt = amsg->endPt;
             p->procId = procId;
             strncpy(p->name, amsg->name, SERVICENAMELEN);
-            p->name[SERVICENAMELEN-1] = '\0';
+            p->name[SERVICENAMELEN-1U] = '\0';
             module.nameEntryCnt++;
 
             /* No interrupt / SWI protection, required here again.
@@ -627,7 +631,7 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
 #ifndef IPC_EXCLUDE_CTRL_TASKS
             /* Wakeup all the tasks that are waiting on the */
             /* announced name.                              */
-            if (!IpcUtils_QisEmpty(&module.waitingTasks))
+            if (TRUE != IpcUtils_QisEmpty(&module.waitingTasks))
             {
                 /* No interrupt / SWI protection, required here again.
                    We are already in SWI protected region */
@@ -636,14 +640,14 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
                 {
                     w = (RPMessage_Waiter*)elem;
                     if( (NULL != w) &&
-                            (strncmp(w->name, amsg->name, SERVICENAMELEN-1) == 0) &&
-                            (w->procId == procId || w->procId == RPMESSAGE_ANY))
+                            (strncmp(w->name, amsg->name, SERVICENAMELEN-1U) == 0) &&
+                            ((w->procId == procId) || (w->procId == RPMESSAGE_ANY)))
                     {
                         /* Update the waiter's entry with actual */
                         /* announcement values.                   */
                         w->procId = procId;
                         w->endPt = amsg->endPt;
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
                         SystemP_printf("RPMessage_processAnnounceMsg :Semphore Handle 0x%x\n",
                                 (uint32_t)w->semHandle);
 #endif
@@ -666,10 +670,10 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
  *           received.
  *           non-blocking query - must be protected by caller
  */
-static uint8_t RPMessage_lookupName(uint32_t procId, const char* name, uint32_t *remoteProcId,
+static Bool RPMessage_lookupName(uint32_t procId, const char* name, uint32_t *remoteProcId,
                               uint32_t *remoteEndPt)
 {
-    uint8_t               found = FALSE;
+    Bool                 found = FALSE;
     RPMessage_NameEntry  *p;
     IpcUtils_QElem       *elem, *head;
 
@@ -681,12 +685,12 @@ static uint8_t RPMessage_lookupName(uint32_t procId, const char* name, uint32_t 
             p = (RPMessage_NameEntry*)elem;
             if( (NULL != p) &&
                 (strncmp(p->name, name, SERVICENAMELEN) == 0) &&
-                (p->procId == procId || procId == RPMESSAGE_ANY))
+                ((p->procId == procId) || (procId == RPMESSAGE_ANY)))
             {
                 found = TRUE;
                 *remoteEndPt = p->endPt;
                 *remoteProcId = p->procId;
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
                 SystemP_printf("RPMessage_lookupName found endpoint %d, remote %d\n",
                     *remoteEndPt, *remoteProcId);
 #endif
@@ -705,7 +709,7 @@ int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uin
                              uint32_t *remoteEndPt, uint32_t timeout, uint32_t token)
 {
     int32_t            key;
-    uint8_t            lookupStatus = FALSE;
+    Bool               lookupStatus =FALSE;
     int32_t            rtnVal = IPC_SOK;
 #ifndef IPC_EXCLUDE_CTRL_TASKS
     void              *semHandle;
@@ -715,7 +719,7 @@ int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uin
     Ipc_OsalPrms      *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
     namelen = strlen(name);
-    if ((namelen >= SERVICENAMELEN || namelen == 0))
+    if ((namelen >= SERVICENAMELEN) || (namelen == 0U))
     {
         rtnVal = IPC_EFAIL;
     }
@@ -739,8 +743,8 @@ int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uin
 #ifndef IPC_EXCLUDE_CTRL_TASKS
         semHandle   = pOsalPrms->createMutex();
         taskWaiter.semHandle = semHandle;
-        strncpy(taskWaiter.name, name, SERVICENAMELEN-1);
-        taskWaiter.name[SERVICENAMELEN-1] = '\0';
+        strncpy(taskWaiter.name, name, SERVICENAMELEN-1U);
+        taskWaiter.name[SERVICENAMELEN-1U] = '\0';
         taskWaiter.procId = selfProcId;
         taskWaiter.endPt  = 0;
         taskWaiter.token = token;
@@ -802,7 +806,7 @@ void RPMessage_unblockGetRemoteEndPt(uint32_t token)
     int32_t rtnVal = IPC_SOK;
     Ipc_OsalPrms *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
     SystemP_printf("RPMessage_unblockGetRemoteEpt : unblocking for token %d\n",
              token);
 #endif
@@ -820,7 +824,7 @@ void RPMessage_unblockGetRemoteEndPt(uint32_t token)
 
         /* Wakeup the specified task that is waiting on the */
         /* announced name.                              */
-        if (!IpcUtils_QisEmpty(&module.waitingTasks))
+        if (TRUE!=IpcUtils_QisEmpty(&module.waitingTasks))
         {
             /* No interrupt / SWI protection, required here again.
                We are already in SWI protected region */
@@ -834,7 +838,7 @@ void RPMessage_unblockGetRemoteEndPt(uint32_t token)
                     /* announcement values.                   */
                     w->procId = IPC_MP_INVALID_ID;
                     w->endPt = RPMESSAGE_ANY;
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
                     SystemP_printf("RPMessage_unblockGetRemoteEpt :Semphore Handle 0x%x\n",
                             (uint32_t)w->semHandle);
 #endif
@@ -908,7 +912,7 @@ static void RPMessage_ctrlMsgTask(void* arg0, void* arg1)
     {
         status = RPMessage_recv((RPMessage_Handle)obj, (void*)amsg, &len,
                                       &remoteEndpoint, &remoteProcId,
-                                      IPC_RPMESSAGE_TIMEOUT_FOREVER);
+                                      (uint32_t)IPC_RPMESSAGE_TIMEOUT_FOREVER);
         if(status != IPC_SOK)
         {
             SystemP_printf("RPMessage_recv failed with code %d for endPt %d\n"
@@ -919,7 +923,7 @@ static void RPMessage_ctrlMsgTask(void* arg0, void* arg1)
 
         if(amsg->ctrl.type == CNTRLMSG_ANNOUNCE)
         {
-#if DEBUG_PRINT
+#ifdef DEBUG_PRINT
             SystemP_printf("RPMessage_ctrlMsgTask ...CNTRLMSG_ANNOUNCE\n");
 #endif
             status = RPMessage_processAnnounceMsg(
@@ -988,7 +992,7 @@ static RPMessage_Object* RPMessage_rawCreate(
         uint32_t *endPt)
 {
     RPMessage_Object *obj   = NULL;
-    uint8_t           found = FALSE;
+    Bool             found = FALSE;
     uint32_t          i;
     uint32_t          queueIndex = 0;
     int32_t           key = 0;
@@ -1020,7 +1024,7 @@ static RPMessage_Object* RPMessage_rawCreate(
         if (params->requestedEndpt == RPMESSAGE_ANY)
         {
             /* Search the array for a free slot above reserved: */
-            for (i = RPMessage_MAX_RESERVED_ENDPOINT + 1;
+            for (i = RPMessage_MAX_RESERVED_ENDPOINT + 1U;
                     (i < MAXENDPOINTS) && (found == 0U); i++)
             {
                 if (RPMessage_lookupEndpt(pool, i) == NULL)
@@ -1031,7 +1035,7 @@ static RPMessage_Object* RPMessage_rawCreate(
                 }
             }
         }
-        else if (params->requestedEndpt <= RPMessage_MAX_RESERVED_ENDPOINT)
+        else if (params->requestedEndpt <= (uint32_t)RPMessage_MAX_RESERVED_ENDPOINT)
         {
             if (RPMessage_lookupEndpt(pool, params->requestedEndpt) == NULL)
             {
@@ -1039,10 +1043,14 @@ static RPMessage_Object* RPMessage_rawCreate(
                 found = TRUE;
             }
         }
+        else
+        {
+          /*Do Nothing*/
+        }
     }
 
     if ((FALSE == found) ||
-        (params->numBufs < 1) ||
+        (params->numBufs < 1U) ||
         (params->bufSize < ((params->numBufs * MSGBUFFERSIZE) + objSize)))
     {
         status = IPC_EFAIL;
@@ -1075,7 +1083,7 @@ static RPMessage_Object* RPMessage_rawCreate(
                 RPMessage_assignEndpt(pool, queueIndex, obj);
 
                 /* See RPMessage_unblock() */
-                obj->unblocked   = FALSE;
+                obj->unblocked   = (uint8_t)FALSE;
                 obj->pool        = pool;
                 obj->recv_buffer = NULL;
                 *endPt           = queueIndex;
@@ -1131,7 +1139,7 @@ int32_t RPMessage_lateInit(uint32_t proc)
 
         if (NULL != pOsalPrms->registerIntr)
         {
-            Ipc_mailboxEnableNewMsgInt(Ipc_mpGetSelfId(), proc);
+            Ipc_mailboxEnableNewMsgInt((uint16_t)Ipc_mpGetSelfId(),(uint16_t)proc);
         }
     }
     else
@@ -1141,7 +1149,9 @@ int32_t RPMessage_lateInit(uint32_t proc)
 
 #ifndef IPC_EXCLUDE_CTRL_TASKS
     if(retVal == IPC_SOK)
-        RPMessage_checkForMessages(&module.globalPool);
+    {
+      RPMessage_checkForMessages(&module.globalPool);
+    }
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
 
     return retVal;
@@ -1161,7 +1171,7 @@ int32_t RPMessage_init(RPMessage_Params *params)
     /* Clear module state */
     memset(&module, 0, sizeof(module));
 
-    if((NULL == params) || (0 == params->bufSize) || (NULL == params->buf))
+    if((NULL == params) || (0U == params->bufSize) || (NULL == params->buf))
     {
         SystemP_printf("RPMessage_init ...Invalid params\n");
         retVal = IPC_EFAIL;
@@ -1170,7 +1180,7 @@ int32_t RPMessage_init(RPMessage_Params *params)
 #ifndef IPC_EXCLUDE_CTRL_TASKS
     if( retVal != IPC_EFAIL)
     {
-        if((0 == params->stackSize) || (NULL == params->stackBuffer))
+        if((0U == params->stackSize) || (NULL == params->stackBuffer))
         {
             SystemP_printf("RPMessage_init ...Invalid params\n");
             retVal = IPC_EFAIL;
@@ -1241,7 +1251,7 @@ int32_t RPMessage_init(RPMessage_Params *params)
 
                 if (NULL != pOsalPrms->registerIntr)
                 {
-                    Ipc_mailboxEnableNewMsgInt(Ipc_mpGetSelfId(), p);
+                    Ipc_mailboxEnableNewMsgInt((uint16_t)Ipc_mpGetSelfId(),(uint16_t) p);
                 }
             }
             else
@@ -1343,7 +1353,7 @@ int32_t RPMessage_delete(RPMessage_Handle *handlePtr)
        key = pOsalPrms->lockHIsrGate(module.gateSwi);
 
        /* Free/discard all queued message buffers: */
-       while (0U == IpcUtils_QisEmpty(&obj->queue))
+       while (FALSE == IpcUtils_QisEmpty(&obj->queue))
        {
             payload = (RPMessage_MsgElem *)IpcUtils_QgetHead(&obj->queue);
             if(NULL != payload)
@@ -1374,9 +1384,9 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
     int32_t             status = IPC_SOK;
     RPMessage_Object   *obj = NULL;
     int32_t             semStatus;
-    uint8_t             skiplist = FALSE;
+    Bool                skiplist = FALSE;
     RPMessage_MsgElem  *payload;
-    uint32_t            key;
+    int32_t            key;
     /* Fix ME TBD, skipping the null tests, as this function check's/error
         handling would require an overhaul */
     Ipc_OsalPrms *pOsalPrms = &gIpcObject.initPrms.osalPrms;
@@ -1395,7 +1405,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
         if (TRUE == IpcUtils_QisEmpty(&obj->queue))
         {
             obj->recv_buffer = data;
-            skiplist = TRUE;
+            skiplist =TRUE;
         }
         pOsalPrms->unLockHIsrGate(module.gateSwi, key);
 
@@ -1414,7 +1424,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
         }
         else if(TRUE == skiplist)
         {
-            *len = obj->payload.len;
+            *len = (uint16_t)obj->payload.len;
             *rplyEndPt = obj->payload.src;
             *rplyProcId = obj->payload.procId;
         }
@@ -1445,7 +1455,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
                 *rplyEndPt  = payload->src;
                 *rplyProcId = payload->procId;
                 IpcUtils_HeapFree(&obj->heap, (void *)payload,
-                        (payload->len + sizeof(RPMessage_MsgElem)));
+                        (payload->len + (uint32_t) sizeof(RPMessage_MsgElem)));
             }
 
             pOsalPrms->unLockHIsrGate(module.gateSwi, key);
@@ -1467,7 +1477,7 @@ int32_t RPMessage_recvNb(RPMessage_Handle handle, void* data, uint16_t *len,
 {
     RPMessage_Object    *obj;
     RPMessage_MsgElem   *payload;
-    uint32_t            key;
+    int32_t            key;
     int32_t             status = IPC_EBADARGS;
     Ipc_OsalPrms *pOsalPrms = &gIpcObject.initPrms.osalPrms;
 
@@ -1500,7 +1510,7 @@ int32_t RPMessage_recvNb(RPMessage_Handle handle, void* data, uint16_t *len,
                 *rplyProcId = payload->procId;
 
                 IpcUtils_HeapFree(&obj->heap, (void *)payload,
-                    (payload->len + sizeof(RPMessage_MsgElem)));
+                    (payload->len + (uint32_t)sizeof(RPMessage_MsgElem)));
 
                 status = IPC_SOK;
             }
@@ -1540,7 +1550,7 @@ static int32_t RPMessage_rawSend(Virtio_Handle vq,
         status = IPC_EFAIL;
     }
 
-    bufSize = sizeof(RPMessage_MsgHeader) + len;
+    bufSize = (uint32_t)sizeof(RPMessage_MsgHeader) + len;
 
     if ((NULL != pOsalPrms->lockHIsrGate) &&
         (NULL != pOsalPrms->unLockHIsrGate))
@@ -1556,7 +1566,7 @@ static int32_t RPMessage_rawSend(Virtio_Handle vq,
         SystemP_printf("RPMessage_rawSend ...NULL MsgHdr\n");
         status = IPC_EFAIL;
     }
-    if(length < bufSize)
+    if((uint32_t)length < bufSize)
     {
         SystemP_printf("RPMessage_rawSend ...length %d, reqrd %d\n", length, bufSize);
         status = IPC_EFAIL;
@@ -1574,7 +1584,7 @@ static int32_t RPMessage_rawSend(Virtio_Handle vq,
             msg->srcProcId = Ipc_mpGetSelfId();
 
             key = pOsalPrms->lockHIsrGate(module.gateSwi);
-            Virtio_addUsedBuf(vq, token, bufSize);
+            Virtio_addUsedBuf(vq,token,(int32_t) bufSize);
             Virtio_kick(vq);
             pOsalPrms->unLockHIsrGate(module.gateSwi, key);
         }
@@ -1635,7 +1645,7 @@ void RPMessage_unblock(RPMessage_Handle handle)
     RPMessage_Object *obj = (RPMessage_Object *)handle;
 
     /* Set instance to 'unblocked' state, and post */
-    obj->unblocked = TRUE;
+    obj->unblocked = (uint8_t)TRUE;
 
     if (NULL != gIpcObject.initPrms.osalPrms.unlockMutex)
     {
@@ -1701,11 +1711,11 @@ int32_t Ipc_init(Ipc_InitPrms *cfg)
     }
 #if defined (IPC_CFG_PRINT_ENABLE)
     if (IPC_SOK == retVal)
-    {   
+    {
         Ipc_OsalPrms *pOsalPrms;
         pOsalPrms = &gIpcObject.initPrms.osalPrms;
-        
-        if ((NULL != pOsalPrms->createMutex) && 
+
+        if ((NULL != pOsalPrms->createMutex) &&
             (NULL != pOsalPrms->deleteMutex) &&
             (NULL != pOsalPrms->lockMutex) &&
             (NULL != pOsalPrms->unlockMutex))

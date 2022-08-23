@@ -142,7 +142,7 @@ void* IpcUtils_QgetHead(IpcUtils_QHandle *handle);
  *
  *  \return TRUE in case queue is empty FALSE otherwise
  */
-uint8_t IpcUtils_QisEmpty(IpcUtils_QHandle *handle);
+Bool IpcUtils_QisEmpty(IpcUtils_QHandle *handle);
 
 /**
  *  \brief  IpcUtils_Qput

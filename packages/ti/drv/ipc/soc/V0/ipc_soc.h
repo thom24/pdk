@@ -58,10 +58,10 @@ extern "C" {
 #define IPC_VRING_BUFFER_SIZE   (0x200000)
 
 /** \brief Core definitions */
-#define    IPC_MPU1_0           (0)    /**< ARM A53 - VM0 */
-#define    IPC_MCU1_0           (1)    /**< ARM MCU  R5F - core0 */
-#define    IPC_MCU1_1           (2)    /**< ARM MCU  R5F - core1 */
-#define    IPC_MAX_PROCS        (3)    /**< Maximum Processors */
+#define    IPC_MPU1_0           (0U)    /**< ARM A53 - VM0 */
+#define    IPC_MCU1_0           (1U)    /**< ARM MCU  R5F - core0 */
+#define    IPC_MCU1_1           (2U)    /**< ARM MCU  R5F - core1 */
+#define    IPC_MAX_PROCS        (3U)    /**< Maximum Processors */
 
 #define    IPC_MAILBOX_CLUSTER_CNT              (12U)
 #define    IPC_MAILBOX_USER_CNT                  (4U)
@@ -113,7 +113,7 @@ int32_t Ipc_sciclientIrqSet(uint16_t remoteId, uint32_t clusterId,
 #endif
 int32_t Ipc_getIntNumRange(uint32_t coreIndex, uint16_t *rangeStartP,
         uint16_t *rangeNumP);
- 
+
 int32_t Ipc_main2mcu_intRouter(Ipc_MbConfig *cfg);
 
 /* ========================================================================== */

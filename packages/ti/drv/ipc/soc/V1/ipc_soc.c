@@ -402,28 +402,28 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
 
 #ifdef IPC_SUPPORT_SCICLIENT
     /* Get available CorePack IRQ number from DMSC */
-    if( (start == 0) && (range == 0))
+    if( (start == 0U) && (range == 0U))
     {
         /* Query the Interrupt Router o/p # alloacted for the core. */
         retVal = Ipc_getIntNumRange(selfId, &start, &range);
     }
 
-    if((retVal == IPC_SOK) && (range >= 1))
+    if((retVal == IPC_SOK) && (range >= 1U))
     {
         /* Allocate the last 5 interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is
          * used by UDMA and middle one's are used by other modules like CPSW9G so
          * we are using last 5 as a safe option.
          */
-        if(range >= 5)
+        if(range >= 5U)
         {
-            offset = 5;
+            offset = 5U;
         }
         else
         {
             offset = range;
         }
-        outIntrBaseNum = (start + range) - offset;
+        outIntrBaseNum = (( uint32_t )((start + range) - offset));
 
         /* Translation must happen after this offset */
         retVal = Ipc_sciclientIrqTranslate((uint16_t)selfId, outIntrBaseNum,
@@ -572,7 +572,7 @@ void Ipc_configC66xIntrRouter(uint32_t input)
 #endif
 
     /* Mailbox Interrupt Router */
-    intr_router[inputPin+1] = (0x1 << 16) + (outputPin & 0xFFFF);
+    intr_router[inputPin+1U] = ((uint32_t)(0x1 << 16)) + (outputPin & 0xFFFFU);
 }
 #endif
 
@@ -650,7 +650,7 @@ static const uint16_t req_type[] =
     TISCI_DEV_NAVSS0_INTR_ROUTER_0,
     TISCI_DEV_C66SS0_INTROUTER0,
     TISCI_DEV_C66SS1_INTROUTER0,
-    TISCI_DEV_NAVSS0_INTR_ROUTER_0 
+    TISCI_DEV_NAVSS0_INTR_ROUTER_0
 #endif
 };
 
@@ -668,7 +668,7 @@ static const uint16_t req_subtype[] =
     TISCI_RESASG_SUBTYPE_IR_OUTPUT,
     TISCI_RESASG_SUBTYPE_IR_OUTPUT,
     TISCI_RESASG_SUBTYPE_IR_OUTPUT,
-    TISCI_RESASG_SUBTYPE_IR_OUTPUT 
+    TISCI_RESASG_SUBTYPE_IR_OUTPUT
 #endif
 };
 
@@ -750,7 +750,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
                 &req,
                 &res,
                 IPC_SCICLIENT_TIMEOUT);
-    if (CSL_PASS != retVal || res.range_num == 0) {
+    if ((CSL_PASS != retVal) || (res.range_num == 0)) {
         /* Try with HOST_ID_ALL */
         req.type           = req_type[coreIndex];
         req.subtype        = (uint8_t)req_subtype[coreIndex];
