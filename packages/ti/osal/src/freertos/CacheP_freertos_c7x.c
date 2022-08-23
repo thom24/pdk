@@ -49,7 +49,6 @@
 
 void CacheP_wb(const void * addr, int32_t size)
 {
-
    Cache_wb((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, (bool)true);
 }
 void CacheP_wbInv(const void * addr, int32_t size)

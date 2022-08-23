@@ -164,13 +164,13 @@ extern const uint32_t Cache_atomicBlockSize;
 void Cache_enable( uint16_t type);
 
 /* inv */
-void Cache_inv( void * blockPtr, size_t byteCnt, uint16_t type, bool wait);
+void Cache_inv(void * blockPtr, size_t byteCnt, uint16_t type, bool wait);
 
 /* wb */
-void Cache_wb( void * blockPtr, size_t byteCnt, uint16_t type, bool wait);
+void Cache_wb(void * blockPtr, size_t byteCnt, uint16_t type, bool wait);
 
 /* wbInv */
-void Cache_wbInv( void * blockPtr, size_t byteCnt, uint16_t type, bool wait);
+void Cache_wbInv(void * blockPtr, size_t byteCnt, uint16_t type, bool wait);
 
 /* wait */
 void Cache_wait( void);
@@ -253,3 +253,4 @@ extern struct Cache_Module_State Cache_Module_state;
 #endif
 
 #endif
+

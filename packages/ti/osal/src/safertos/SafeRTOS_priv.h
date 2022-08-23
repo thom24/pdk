@@ -78,11 +78,11 @@ extern "C" {
  * Event ID and Interrupt Number for the cores during run time. */
 typedef struct Safertos_OSTimerParams_s
 {
-    int32_t timerId;        /* Timer ID */
+    uint32_t timerId;        /* Timer ID */
 #if defined (BUILD_C66X) || defined (BUILD_C7X)
     int32_t eventId;        /* Event Id used by Timer */
-    int32_t intNum;         /* Interrupt Number used by Timer */
-#endif    
+    uint32_t intNum;         /* Interrupt Number used by Timer */
+#endif   
 }Safertos_OSTimerParams;
 
 /* ========================================================================== */

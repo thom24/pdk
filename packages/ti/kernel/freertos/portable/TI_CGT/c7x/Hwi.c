@@ -97,7 +97,7 @@ void Hwi_secureStart()
  */
 void Hwi_Module_startup(void)
 {
-    int i;
+    int32_t i;
     Hwi_Object *hwi;
 
     /* Task and Swi APIs used not called until BIOS_start() */
@@ -159,10 +159,10 @@ void Hwi_Module_startup(void)
 /*
  *  ======== Hwi_Instance_init ========
  */
-int Hwi_Instance_init(Hwi_Object *hwi, int intNum,
+int32_t Hwi_Instance_init(Hwi_Object *hwi, int32_t intNum,
                       Hwi_FuncPtr fxn, const Hwi_Params *params)
 {
-    int status;
+    int32_t status;
 
     /* there are 64 "interrupt" events in C7x */
     if (intNum < 0 || intNum > 63) {
@@ -202,7 +202,7 @@ int Hwi_Instance_init(Hwi_Object *hwi, int intNum,
  *  returns 'eb' *and* 'n' for number of successful createFxn() calls iff
  *      one of the createFxn() calls fails
  */
-int Hwi_postInit (Hwi_Object *hwi)
+int32_t Hwi_postInit (Hwi_Object *hwi)
 {
 
     if (hwi->priority < 1 || hwi->priority > 7) {
@@ -219,7 +219,7 @@ int Hwi_postInit (Hwi_Object *hwi)
  *  ======== Hwi_Instance_finalize ========
  *  Here on Hwi_delete() or failed Hwi_create().
  */
-void Hwi_Instance_finalize(Hwi_Object *hwi, int status)
+void Hwi_Instance_finalize(Hwi_Object *hwi, int32_t status)
 {
     unsigned int intNum;
 
@@ -254,7 +254,7 @@ void Hwi_unPluggedInterrupt() {
     /* Unplugged interrupt is not supported.
      *
      * Force an assert(), then stop here so application writers can catch the error. */
-    DebugP_assert(0); 
+    DebugP_assert((bool)false);
 }
 
 /*
@@ -283,7 +283,7 @@ void Hwi_eventMap(int vectId, int eventId)
 /*
  *  ======== Hwi_getEventId ========
  */
-int Hwi_getEventId(unsigned int vectId)
+int32_t Hwi_getEventId(unsigned int vectId)
 {
     if (vectId > 63) {
         return -1;
@@ -688,9 +688,9 @@ void Hwi_dispatchCore(int intNum)
 
 
 /* construct */
-int Hwi_construct(HwiC7x_Struct *objp, int intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *paramsPtr)
+int32_t Hwi_construct(HwiC7x_Struct *objp, int32_t intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *paramsPtr)
 {
-    int iStat;
+    int32_t iStat;
 
     /* common instance initialization */
     memset(objp, 0, sizeof(*objp));
@@ -716,7 +716,7 @@ void Hwi_Params__init__S( Hwi_Params *prms)
 }
 
 
-void Hwi_Params_init( Hwi_Params *prms ) 
+void Hwi_Params_init( Hwi_Params *prms )
 {
     if (prms != NULL) {
         Hwi_Params__init__S(prms);
@@ -730,7 +730,7 @@ void Hwi_Params_init( Hwi_Params *prms )
  *  ======== Hwi_dispatchC ========
  *  Configurable dispatcher.
  */
-void Hwi_dispatchC(int intNum)
+void Hwi_dispatchC(int32_t intNum)
 {
     extern uint32_t ulPortInterruptNesting;
     extern uint32_t ulPortYieldRequired;
@@ -776,8 +776,8 @@ const Hwi_Params Hwi_Object__PARAMS__C = {
     Hwi_MaskingOption_SELF,  /* maskSetting */
     ((unsigned int)(0x0)),  /* arg */
     1,  /* enableInt */
-    (int)(-0x0 - 1),  /* eventId */
-    (int)(-0x0 - 1),  /* priority */
+    (int32_t)(-0x0 - 1),  /* eventId */
+    (int32_t)(-0x0 - 1),  /* priority */
     (unsigned long)0x0UL,  /* disableMask */
     (unsigned long)0x0UL,  /* restoreMask */
 };
@@ -857,10 +857,10 @@ struct Hwi_Module_State Hwi_Module_state = {
         (char)(-0x0 - 1),  /* [63] */
     },  /* intEvents */
     (unsigned long)0x4003UL,  /* ierMask */
-    (int)0x0,  /* intNum */
+    (int32_t)0x0,  /* intNum */
     ((char*)NULL),  /* taskSP */
     ((char*)NULL),  /* isrStack */
-    (int)0x0,  /* scw */
+    (int32_t)0x0,  /* scw */
     {
         0,  /* [0] */
         0,  /* [1] */

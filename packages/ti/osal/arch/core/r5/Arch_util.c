@@ -60,7 +60,7 @@ static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
 
 osalArch_Config_t gOsalArchConfig =
 {
-    .disableIrqOnInit = false,
+    .disableIrqOnInit = (bool)false,
 };
 
 void osalArch_Init (osalArch_Config_t *cfg)
@@ -239,7 +239,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             }
 #endif
             gFirstTime = (bool)false;
-            if (gOsalArchConfig.disableIrqOnInit == false)
+            if (gOsalArchConfig.disableIrqOnInit == (bool)false)
             {
                 Intc_SystemEnable();
             }
@@ -310,7 +310,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
     uint32_t          maxHwi;
     HwiP_Handle       retHandle = NULL_PTR;
     CSL_ArmR5CPUInfo  info;
-    uint16_t          intrSrcType;
+    uint32_t          intrSrcType;
 
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
@@ -401,7 +401,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
                 }
 #endif
                 gFirstTime = (bool)false;
-                if (gOsalArchConfig.disableIrqOnInit == false)
+                if (gOsalArchConfig.disableIrqOnInit == (bool)false)
                 {
                     Intc_SystemEnable();
                 }
@@ -427,8 +427,8 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
             hwi_handle->intNum = (uint32_t)interruptNum;
 
             /* Registering the Interrupt Service Routine(ISR). */
-            CSL_vimCfgIntr( (CSL_vimRegs *)(uintptr_t)gVimRegs, interruptNum,
-                           params->priority, (CSL_VimIntrMap)0x0,
+            (void)CSL_vimCfgIntr( (CSL_vimRegs *)(uintptr_t)gVimRegs, (uint32_t)interruptNum,
+                           params->priority, (CSL_VimIntrMap)0x0U,
                            (CSL_VimIntrType)intrSrcType, (uint32_t)hwiFxn );
 
             /* Enabling the interrupt if configured */

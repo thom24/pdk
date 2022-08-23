@@ -60,13 +60,22 @@ extern void LoadP_removeTask(uint32_t tskId);
 static int32_t prvC66xTickInterruptConfig( void );
 static int32_t prvSetupTimerPSC( void );
 
-/**
- * \brief Value to be used for lowest priority task 
+/* The function that implements the task being created. */
+static void TaskP_Function (void *arg);
+
+/*
+ * Dummy function to check size during compile time
+ *  ======== TaskP_compileTime_SizeChk ========
  */
-#define TaskP_PRIORITY_LOWEST       (0u)
+static void TaskP_compileTime_SizeChk(void);
 
 /**
- * \brief Value to be used for highest priority task 
+ * \brief Value to be used for lowest priority task
+ */
+#define TaskP_PRIORITY_LOWEST       (0)
+
+/**
+ * \brief Value to be used for highest priority task
  */
 #define TaskP_PRIORITY_HIGHEST      (configMAX_PRIORITIES - 1)
 
@@ -96,7 +105,7 @@ static TaskP_freertos gOsalTaskPfreertosPool[OSAL_FREERTOS_CONFIGNUM_TASK];
 
 uint32_t  gOsalTaskAllocCnt = 0U, gOsalTaskPeak = 0U;
 
-void TaskP_compileTime_SizeChk(void)
+static void TaskP_compileTime_SizeChk(void)
 {
 #if defined(__GNUC__) && !defined(__ti__)
 #pragma GCC diagnostic push
@@ -116,15 +125,15 @@ void TaskP_compileTime_SizeChk(void)
 #endif
 }
 
-void TaskP_Function (void *arg)
+static void TaskP_Function (void *arg)
 {
     TaskP_freertos *handle = (TaskP_freertos *)(arg);
 
     /* Call the application function. */
     (*handle->taskfxn)(handle->arg0, handle->arg1);
-    
+
     /* Task Fxn completed execution. */
-    handle->terminated = TRUE;
+    handle->terminated = (bool)true;
     /* Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
     while (handle->terminated)
     {
@@ -144,7 +153,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
     uint32_t        i;
     uintptr_t       key;
     uint32_t        maxTasks;
-    uint32_t        taskPriority;
+    int8_t          taskPriority;
 
     DebugP_assert((taskfxn != NULL));
     DebugP_assert((params != NULL_PTR));
@@ -164,9 +173,9 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
 
      for (i = 0; i < maxTasks; i++)
      {
-         if (taskPool[i].used == FALSE)
+         if (taskPool[i].used == (bool)false)
          {
-             taskPool[i].used = TRUE;
+             taskPool[i].used = (bool)true;
              taskPool[i].taskObj = &gOsalFreertosTaskObjPool[i];
              /* Update statistics */
              gOsalTaskAllocCnt++;
@@ -205,20 +214,20 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
         handle->taskfxn = (TaskP_mainFunction_t)(taskfxn);
         handle->arg0 = params->arg0;
         handle->arg1 = params->arg1;
-        handle->terminated = FALSE;
+        handle->terminated = (bool)false;
 
         handle->taskHndl = xTaskCreateStatic((TaskFunction_t)TaskP_Function, /* Pointer to the function that implements the task. */
                                       (char *)params->name,              /* Text name for the task.  This is to facilitate debugging only. */
-                                      params->stacksize/(sizeof(UBaseType_t)),  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
+                                      (UBaseType_t)params->stacksize/(sizeof(UBaseType_t)),  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
                                       handle,       /* task specific args */
-                                      taskPriority,   /* task priority, 0 is lowest priority, configMAX_PRIORITIES-1 is highest */
+                                      (UBaseType_t)taskPriority,   /* task priority, 0 is lowest priority, configMAX_PRIORITIES-1 is highest */
                                       (StackType_t*)params->stack,      /* pointer to stack base */
                                       handle->taskObj); /* pointer to statically allocated task object memory */
         if(handle->taskHndl == NULL)
         {
             /* If there was an error reset the task object and return NULL. */
             key = HwiP_disable();
-            handle->used = FALSE;
+            handle->used = (bool)false;
             /* Found the osal task object to delete */
             if (gOsalTaskAllocCnt > 0U)
             {
@@ -248,7 +257,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
     TaskP_freertos *task = (TaskP_freertos *)hTask;
     TaskHandle_t currentTaskHndl;
 
-    if((task != NULL_PTR) && (task->used==TRUE))
+    if((task != NULL_PTR) && (task->used==(bool)true))
     {
         currentTaskHndl = xTaskGetCurrentTaskHandle();
         if(currentTaskHndl == task->taskHndl)
@@ -266,7 +275,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
         /* In FreeRTOS, task is deleted in the idle task.
          * So the TaskObj should not be memset to 0 */
         /* (void )memset( (void *)task->taskObj, 0, sizeof(task->taskObj)); */
-        task->used      = FALSE;
+        task->used      = (bool)false;
         task->taskObj   = NULL;
         task->taskHndl  = NULL;
         task->taskfxn   = NULL;
@@ -342,7 +351,7 @@ TaskP_Handle TaskP_self(void)
         maxTasks        = OSAL_FREERTOS_CONFIGNUM_TASK;
         for (i = 0; i < maxTasks; i++)
         {
-            if ((gOsalTaskPfreertosPool[i].used == TRUE) &&
+            if ((gOsalTaskPfreertosPool[i].used == (bool)true) &&
                 (gOsalTaskPfreertosPool[i].taskHndl == taskHndl))
             {
                 retHandle = (TaskP_Handle) (&gOsalTaskPfreertosPool[i]);
@@ -372,7 +381,7 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert((handle != NULL_PTR));
-    if((TRUE == taskHandle->terminated) || (eTaskGetState(taskHandle->taskHndl) == eDeleted))
+    if(((bool)true == taskHandle->terminated) || (eTaskGetState(taskHandle->taskHndl) == eDeleted))
     {
         isTaskTerminated = 1;
     }
@@ -392,7 +401,7 @@ uint32_t TaskP_disable(void)
 
 void TaskP_restore(uint32_t key)
 {
-    xTaskResumeAll();
+    (void)xTaskResumeAll();
 }
 
 TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
@@ -400,7 +409,7 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert((handle != NULL_PTR));
-    DebugP_assert((taskHandle->used != FALSE));
+    DebugP_assert((taskHandle->used != (bool)false));
 
     return (taskHandle->taskHndl);
 }
@@ -410,7 +419,7 @@ uint32_t TaskP_getTaskId(TaskP_Handle handle)
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert((handle != NULL_PTR));
-    DebugP_assert((taskHandle->used != FALSE));
+    DebugP_assert((taskHandle->used != (bool)false));
 
     return (taskHandle->tskId);
 }
@@ -425,9 +434,9 @@ static int32_t prvSetupTimerPSC( void )
     if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
         Sciclient_ConfigPrms_t config;
- 
-        Sciclient_configPrmsInit(&config);
- 
+
+        (void)Sciclient_configPrmsInit(&config);
+
         xStatus = Sciclient_init(&config);
         if(  xStatus == CSL_PASS )
         {
@@ -436,7 +445,7 @@ static int32_t prvSetupTimerPSC( void )
              * All other timers are connected to LPSC which is ALWAYS_ON */
             xStatus = Sciclient_pmGetModuleState(TISCI_DEV_TIMER8, &currState, &resetState,
                                                 &contextLossState, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if((xStatus == CSL_PASS) && (currState != TISCI_MSG_VALUE_DEVICE_SW_STATE_ON))
+            if((xStatus == CSL_PASS) && (currState != (uint32_t)TISCI_MSG_VALUE_DEVICE_SW_STATE_ON))
             {
                 xStatus = Sciclient_pmSetModuleState(TISCI_DEV_TIMER8, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                                     (TISCI_MSG_FLAG_AOP |TISCI_MSG_FLAG_DEVICE_RESET_ISO),
@@ -481,11 +490,7 @@ static int32_t prvC66xTickInterruptConfig( void )
     Sciclient_configPrmsInit(&config);
 
     xStatus = Sciclient_init(&config);
-    if(  xStatus != CSL_PASS )
-    {
-        return xStatus;
-    }
-    else
+    if(  xStatus == CSL_PASS )
     {
         struct tisci_msg_rm_irq_set_req     rmIrqReq;
         struct tisci_msg_rm_irq_set_resp    rmIrqResp;

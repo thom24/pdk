@@ -77,7 +77,7 @@ static portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAcce
  *         gMemAttr[x][2]: B bit value
  */
 __attribute__((section(".startupData"))) \
-static uint32_t gMemAttr[CSL_ARM_R5_MEM_ATTR_MAX][3U] =
+static uint32_t gMemAttr[(portUInt32Type)CSL_ARM_R5_MEM_ATTR_MAX][3U] =
 {
 /*    TEX[2:0], C,     B bits */
     {   0x0U,   0x0U,  0x0U,}, /* Strongly-ordered.*/
@@ -157,7 +157,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* ulRegionNumber */
         .ulRegionNumber         = 4U,
         /* Starting address */
-        .ulRegionBeginAddress   = 0x41C00000,
+        .ulRegionBeginAddress   = 0x41C00000U,
         /* Access permission */
         {
             .ulexeNeverControl  = 0U,
@@ -168,10 +168,12 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
             .ulmemAttr          = 0U,
         },
         /* Size is 512KB */
-        .ulRegionSize           = (512U * 1024U),
+
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
         /* Size is 1MB */
         .ulRegionSize           = (1024U * 1024U),
+#else
+        .ulRegionSize           = (512U * 1024U),
 #endif
         /* ulSubRegionDisable */
         .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
@@ -181,7 +183,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* ulRegionNumber */
         .ulRegionNumber         = 5U,
         /* Starting address */
-        .ulRegionBeginAddress   = 0x70000000,
+        .ulRegionBeginAddress   = 0x70000000U,
         /* Access permission */
         {
             .ulexeNeverControl  = 0U,
@@ -211,7 +213,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* ulRegionNumber */
         .ulRegionNumber         = 6U,
         /* Starting address */
-        .ulRegionBeginAddress   = 0x80000000,
+        .ulRegionBeginAddress   = 0x80000000U,
         /* Access permission */
         {
             .ulexeNeverControl  = 0U,
@@ -239,7 +241,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* ulRegionNumber */
         .ulRegionNumber         = 7U,
         /* Starting address */
-        .ulRegionBeginAddress   = 0x41010000,
+        .ulRegionBeginAddress   = 0x41010000U,
         /* Access permission */
         {
             .ulexeNeverControl  = 0U,
@@ -259,7 +261,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* ulRegionNumber */
         .ulRegionNumber         = 8U,
         /* Starting address */
-        .ulRegionBeginAddress   = 0x0,
+        .ulRegionBeginAddress   = 0x0U,
         /* Access permission */
         {
             .ulexeNeverControl  = 0U,
@@ -280,7 +282,7 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 /*                          Function Defintions                               */
 /* ========================================================================== */
 
-__attribute__((section(".startupCode"))) portBaseType xConfigureMPU()
+__attribute__((section(".startupCode"))) portBaseType xConfigureMPU(void)
 {
     portBaseType            xInitMpuResult = pdPASS;
     xMPU_CONFIG_PARAMETERS *xMPUconfig;
@@ -351,11 +353,11 @@ static portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAcce
         accessCtrlRegVal |=
                         ( tex << CSL_ARM_R5_MPU_REGION_AC_TEX_SHIFT);
         accessCtrlRegVal |=
-                        ( gMemAttr[xMPUconfigAccess->ulmemAttr][1U] <<
-                        CSL_ARM_R5_MPU_REGION_AC_B_SHIFT);
+                        ( gMemAttr[(portUInt32Type)xMPUconfigAccess->ulmemAttr][1UL] <<
+                        ((portUInt32Type)CSL_ARM_R5_MPU_REGION_AC_B_SHIFT));
         accessCtrlRegVal |=
-                        ( gMemAttr[xMPUconfigAccess->ulmemAttr][2U] <<
-                        CSL_ARM_R5_MPU_REGION_AC_C_SHIFT);
+                        ( gMemAttr[(portUInt32Type)xMPUconfigAccess->ulmemAttr][2UL] <<
+                        ((portUInt32Type)CSL_ARM_R5_MPU_REGION_AC_C_SHIFT));
     }
     return accessCtrlRegVal;
 }

@@ -48,8 +48,7 @@ typedef struct HwiP_nonOs_s {
 } HwiP_nonOs;
 
 /* Local hwi structures */
-static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI] = {{0}};
-
+static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI] = {0};
 
 /*
  * Dummy function to check size during compile time
@@ -107,9 +106,8 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     Hwi_Struct                   *hwi_handle = (Hwi_Struct *) NULL_PTR;
     //CSL_IntcParam                 vectId;
 
-    uint32_t i;
-    uintptr_t key;
-
+    uint32_t          i;
+    uintptr_t         key;
     uintptr_t         temp;
     HwiP_nonOs       *hwiPool;
     uint32_t          maxHwi;
@@ -134,62 +132,64 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
 
     if (params == NULL_PTR)
     {
-        return (NULL_PTR);
-    }
-
-    key = OsalArch_globalDisableInterrupt();
-    for (i = 0u; i < maxHwi; i++) {
-        if (hwiPool[i].used == FALSE) {
-            hwiPool[i].used = TRUE;
-            break;
-        }
-    }
-    OsalArch_globalRestoreInterrupt(key);
-
-    if (i != maxHwi)
-    {
-      hwi_handle = &(hwiPool[i].hwi);
-      retHandle  = (HwiP_Handle)&hwiPool[i];
+        retHandle = (HwiP_Handle)(NULL_PTR);
     }
     else
     {
-      retHandle  = (HwiP_Handle)(NULL_PTR);
-    }
+        key = OsalArch_globalDisableInterrupt();
+        for (i = 0u; i < maxHwi; i++) {
+            if (hwiPool[i].used == FALSE) {
+                hwiPool[i].used = TRUE;
+                break;
+            }
+        }
+        OsalArch_globalRestoreInterrupt(key);
 
-    if (hwi_handle != (Hwi_Struct *) NULL_PTR)
-    {
-         //if (gFirstTime == FALSE) {
-         //  /* record the index in the handle */
-         //  gContext.numEvtEntries      = OSAL_NONOS_CONFIGNUM_HWI;
-         //  gContext.eventhandlerRecord = gEventRecord;
-         //  //TODO: Integrate to CSL once C7x arch is supported
-         //  //CSL_intcInit(&gContext);
-         //  gFirstTime = TRUE;
-         //}
+        if (i != maxHwi)
+        {
+            hwi_handle = &(hwiPool[i].hwi);
+            retHandle  = (HwiP_Handle)&hwiPool[i];
+        }
+        else
+        {
+            retHandle  = (HwiP_Handle)(NULL_PTR);
+        }
 
-         //TODO: Integrate to CSL once C7x arch is supported
-         //CSL_intcGlobalNmiEnable();
-         //CSL_intcGlobalEnable(NULL_PTR);
-         //vectId = (CSL_IntcParam)interruptNum;
-         //
-         //hwi_handle->handle = CSL_intcOpen (&hwi_handle->intcObj, params->evtId, &vectId, NULL_PTR);
-         //
-         //if(hwi_handle->handle != NULL_PTR)
-         //{
-         //    CSL_IntcEventHandlerRecord  evtHandler;
-         //    evtHandler.handler = (CSL_IntcEventHandler)hwiFxn;
-         //    evtHandler.arg     = (void *) params->arg;
-         //
-         //    CSL_intcPlugEventHandler(hwi_handle->handle, &evtHandler);
-         //    CSL_intcHwControl(hwi_handle->handle,CSL_INTC_CMD_EVTCLEAR,NULL_PTR);
-         //    CSL_intcHwControl(hwi_handle->handle,CSL_INTC_CMD_EVTENABLE,NULL_PTR);
-         //}
-         //else
-         //{
-         //    /* Free the pool */
-         //    hwiPool[i].used = FALSE;
-         //    retHandle = (HwiP_Handle *) NULL_PTR;
-         //}
+        if (hwi_handle != (Hwi_Struct *) NULL_PTR)
+        {
+            //if (gFirstTime == FALSE) {
+            //  /* record the index in the handle */
+            //  gContext.numEvtEntries      = OSAL_NONOS_CONFIGNUM_HWI;
+            //  gContext.eventhandlerRecord = gEventRecord;
+            //  //TODO: Integrate to CSL once C7x arch is supported
+            //  //CSL_intcInit(&gContext);
+            //  gFirstTime = TRUE;
+      //}
+
+             //TODO: Integrate to CSL once C7x arch is supported
+             //CSL_intcGlobalNmiEnable();
+             //CSL_intcGlobalEnable(NULL_PTR);
+             //vectId = (CSL_IntcParam)interruptNum;
+             //
+             //hwi_handle->handle = CSL_intcOpen (&hwi_handle->intcObj, params->evtId, &vectId, NULL_PTR);
+             //
+             //if(hwi_handle->handle != NULL_PTR)
+             //{
+             //    CSL_IntcEventHandlerRecord  evtHandler;
+             //    evtHandler.handler = (CSL_IntcEventHandler)hwiFxn;
+             //    evtHandler.arg     = (void *) params->arg;
+             //
+             //    CSL_intcPlugEventHandler(hwi_handle->handle, &evtHandler);
+             //    CSL_intcHwControl(hwi_handle->handle,CSL_INTC_CMD_EVTCLEAR,NULL_PTR);
+             //    CSL_intcHwControl(hwi_handle->handle,CSL_INTC_CMD_EVTENABLE,NULL_PTR);
+             //}
+             //else
+             //{
+             //    /* Free the pool */
+             //    hwiPool[i].used = FALSE;
+             //    retHandle = (HwiP_Handle *) NULL_PTR;
+             //}
+       }
     }
 
     return ( (HwiP_Handle) (retHandle) );  /* _TMS320C6X */

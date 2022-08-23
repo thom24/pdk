@@ -77,8 +77,8 @@ typedef uint32_t Osal_CacheP_isCoherent;
  *  @brief    MAR register setting type definition
  */
 typedef enum CacheP_Mar_e {
-    CacheP_Mar_DISABLE,  /*!<  The Permit Copy bit of MAR register is disabled */
-    CacheP_Mar_ENABLE    /*!<  The Permit Copy bit of MAR register is enabled */
+    CacheP_Mar_DISABLE = ((uint32_t) 0),  /*!<  The Permit Copy bit of MAR register is disabled */
+    CacheP_Mar_ENABLE  = ((uint32_t) 1),/*!<  The Permit Copy bit of MAR register is enabled */
 } CacheP_Mar;
 
 /*!

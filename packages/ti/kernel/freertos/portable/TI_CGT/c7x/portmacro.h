@@ -99,8 +99,8 @@
 /* Hardware specifics. */
     #define portARCH_NAME         "TI-C7X"
     #define portSTACK_GROWTH      ( -1 )
-    #define portTICK_PERIOD_MS    ( ( TickType_t ) 1000 / configTICK_RATE_HZ )
-    #define portBYTE_ALIGNMENT    16
+    #define portTICK_PERIOD_MS    ( ( TickType_t ) 1000U / configTICK_RATE_HZ )
+    #define portBYTE_ALIGNMENT    16U
     #define portHAS_STACK_OVERFLOW_CHECKING    1
     #define portCRITICAL_NESTING_IN_TCB        1
 
@@ -169,5 +169,5 @@
         } /* extern C */
     #endif
 
-
 #endif /* PORTMACRO_H */
+

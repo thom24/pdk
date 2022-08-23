@@ -41,12 +41,12 @@ portTaskHandleType TaskP_getSafeRTOSHandle( TaskP_Handle handle );
 /**
  * \brief Value to be used for lowest priority task
  */
-#define TaskP_PRIORITY_LOWEST       ( 0u )
+#define TaskP_PRIORITY_LOWEST       ( 0 )
 
 /**
  * \brief Value to be used for highest priority task
  */
-#define TaskP_PRIORITY_HIGHEST      ( configMAX_PRIORITIES - 1 )
+#define TaskP_PRIORITY_HIGHEST      (configMAX_PRIORITIES - 1)
 
 /*
  * Defines the prototype of the task main functions.
@@ -66,6 +66,15 @@ typedef struct TaskP_SafeRTOS_s {
     bool                    terminated;
 } TaskP_SafeRTOS;
 
+/* The function that implements the task being created. */
+static void TaskP_Function (void *arg);
+
+/*
+ * Dummy function to check size during compile time
+ *  ======== TaskP_compileTime_SizeChk ========
+ */
+static void TaskP_compileTime_SizeChk(void);
+
 /* global pool of statically allocated task pools */
 static TaskP_SafeRTOS gOsalTaskPSafeRTOSPool[OSAL_SAFERTOS_CONFIGNUM_TASK];
 
@@ -73,7 +82,7 @@ uint32_t  gOsalTaskAllocCnt = 0U, gOsalTaskPeak = 0U;
 
 extern uint32_t gSaftRtosInitDone;
 
-void TaskP_compileTime_SizeChk( void )
+static void TaskP_compileTime_SizeChk( void )
 {
 #if defined( __GNUC__ ) && !defined( __ti__ )
 #pragma GCC diagnostic push
@@ -93,7 +102,7 @@ void TaskP_compileTime_SizeChk( void )
 #endif
 }
 
-void TaskP_Function ( void *arg )
+static void TaskP_Function ( void *arg )
 {
     TaskP_SafeRTOS *handle = ( TaskP_SafeRTOS * )( arg );
     TaskP_Handle hTask;
@@ -121,7 +130,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
     uint32_t        i;
     uintptr_t       key;
     uint32_t        maxTasks;
-    uint32_t        taskPriority;
+    int8_t          taskPriority;
 
     DebugP_assert( ( taskfxn != NULL ) );
     DebugP_assert( ( params != NULL_PTR ) );
@@ -192,7 +201,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
              (portInt8Type *)params->stack,                 /* The buffer allocated for use as the task stack. */
              params->stacksize,             /* The size of the buffer allocated for use as the task stack - note this is in BYTES! */
              handle,                        /* The task parameter. */
-             taskPriority,                  /* The priority to assigned to the task being created. */
+             (portUnsignedBaseType)taskPriority,     /* The priority to assigned to the task being created. */
              NULL,
 #if defined (BUILD_MCU)
              pdFALSE,                            /* Check task does not use the FPU. */
@@ -313,7 +322,7 @@ void TaskP_sleepInMsecs( uint32_t timeoutInMsecs )
     uint32_t ticks;
 
     /* configTICK_RATE_MS is in units of msecs */
-    ticks = timeoutInMsecs / configTICK_RATE_MS;
+    ticks = timeoutInMsecs / (uint32_t)configTICK_RATE_MS;
 
     ( void )xTaskDelay( ticks );
 }

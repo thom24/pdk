@@ -157,7 +157,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     {
         return (NULL_PTR);
     }
-    
+
     key = OsalArch_globalDisableInterrupt();
     for (i = 0u; i < maxHwi; i++) {
         if (hwiPool[i].used == FALSE) {
@@ -182,13 +182,13 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
           Intc_Init();
           gFirstTime = FALSE;
         }
-    
+
         /* Enable the interrupt */
         OsalArch_globalRestoreInterrupt(0);
-    
+
         /* Registering the Interrupt Service Routine(ISR). */
         Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
-    
+
         /* Setting the priority for the UART interrupt in INTC. */
         Intc_IntPrioritySet((uint16_t)interruptNum, params->priority, 0);
 

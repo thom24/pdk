@@ -83,11 +83,11 @@
 #define heapBITS_PER_BYTE         ( ( size_t ) 8 )
 
 /* minimum alignment for heap allocations */
-#define heapBYTE_ALIGNMENT_MASK   (heapBYTE_ALIGNMENT-1)  
+#define heapBYTE_ALIGNMENT_MASK   (heapBYTE_ALIGNMENT-1U)
 
 /* The size of the structure placed at the beginning of each allocated memory
  * block must by correctly byte aligned. */
-static const size_t xHeapStructSize = ( sizeof( HeapBlockLink_t ) + ( ( size_t ) ( heapBYTE_ALIGNMENT - 1 ) ) ) & ~( ( size_t ) heapBYTE_ALIGNMENT_MASK );
+static const size_t xHeapStructSize = ( sizeof( HeapBlockLink_t ) + ( ( size_t ) ( heapBYTE_ALIGNMENT - 1U ) ) ) & ~( ( size_t ) heapBYTE_ALIGNMENT_MASK );
 
 /*
  * Inserts a block of memory that is being freed into the correct position in
@@ -106,6 +106,7 @@ static void prvHeapInit( StaticHeap_t *heap );
 
 void vHeapCreateStatic( StaticHeap_t *heap, void *pvHeap, size_t xTotalHeapSize )
 {
+
     heap->pxEnd = NULL;
     heap->pvHeap = pvHeap;
     heap->xTotalHeapSize = xTotalHeapSize;
@@ -122,38 +123,38 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
 {
     HeapBlockLink_t * pxBlock, * pxPreviousBlock, * pxNewBlockLink;
     void * pvReturn = NULL;
-
+    size_t xMallocSize = xWantedSize;
     {
         /* Check the requested block size is not so large that the top bit is
          * set.  The top bit of the block size member of the HeapBlockLink_t structure
          * is used to determine who owns the block - the application or the
          * kernel, so it must be free. */
-        if( ( xWantedSize & heap->xBlockAllocatedBit ) == 0 )
+        if( ( xMallocSize & heap->xBlockAllocatedBit ) == 0U )
         {
             /* The wanted size is increased so it can contain a HeapBlockLink_t
              * structure in addition to the requested amount of bytes. */
-            if( xWantedSize > 0 )
+            if( xMallocSize > ( size_t )0 )
             {
-                xWantedSize += xHeapStructSize;
+                xMallocSize += xHeapStructSize;
 
                 /* Ensure that blocks are always aligned to the required number
                  * of bytes. */
-                if( ( xWantedSize & heapBYTE_ALIGNMENT_MASK ) != 0x00 )
+                if( ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) != ( size_t )0x00 )
                 {
                     /* Byte alignment required. */
-                    xWantedSize += ( heapBYTE_ALIGNMENT - ( xWantedSize & heapBYTE_ALIGNMENT_MASK ) );
-                    DebugP_assert( ( xWantedSize & heapBYTE_ALIGNMENT_MASK ) == 0 );
+                    xMallocSize += ( heapBYTE_ALIGNMENT - ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) );
+                    DebugP_assert( ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) == ( size_t )0 );
                 }
             }
 
-            if( ( xWantedSize > 0 ) && ( xWantedSize <= heap->xFreeBytesRemaining ) )
+            if( ( xMallocSize > ( size_t )0 ) && ( xMallocSize <= heap->xFreeBytesRemaining ) )
             {
                 /* Traverse the list from the start	(lowest address) block until
                  * one	of adequate size is found. */
                 pxPreviousBlock = &heap->xStart;
                 pxBlock = heap->xStart.pxNextFreeBlock;
 
-                while( ( pxBlock->xBlockSize < xWantedSize ) && ( pxBlock->pxNextFreeBlock != NULL ) )
+                while( ( pxBlock->xBlockSize < xMallocSize ) && ( pxBlock->pxNextFreeBlock != NULL ) )
                 {
                     pxPreviousBlock = pxBlock;
                     pxBlock = pxBlock->pxNextFreeBlock;
@@ -173,19 +174,19 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
 
                     /* If the block is larger than required it can be split into
                      * two. */
-                    if( ( pxBlock->xBlockSize - xWantedSize ) > heapMINIMUM_BLOCK_SIZE )
+                    if( ( pxBlock->xBlockSize - xMallocSize ) > heapMINIMUM_BLOCK_SIZE )
                     {
                         /* This block is to be split into two.  Create a new
                          * block following the number of bytes requested. The void
                          * cast is used to prevent byte alignment warnings from the
                          * compiler. */
-                        pxNewBlockLink = ( HeapBlockLink_t * ) ( ( ( uint8_t * ) pxBlock ) + xWantedSize );
-                        DebugP_assert( ( ( ( size_t ) pxNewBlockLink ) & heapBYTE_ALIGNMENT_MASK ) == 0 );
+                        pxNewBlockLink = ( HeapBlockLink_t * ) ( ( ( uint8_t * ) pxBlock ) + xMallocSize );
+                        DebugP_assert( ( ( ( size_t ) pxNewBlockLink ) & (heapBYTE_ALIGNMENT_MASK ) )== 0U);
 
                         /* Calculate the sizes of two blocks split from the
                          * single block. */
-                        pxNewBlockLink->xBlockSize = pxBlock->xBlockSize - xWantedSize;
-                        pxBlock->xBlockSize = xWantedSize;
+                        pxNewBlockLink->xBlockSize = pxBlock->xBlockSize - xMallocSize;
+                        pxBlock->xBlockSize = xMallocSize;
 
                         /* Insert the new block into the list of free blocks. */
                         prvInsertBlockIntoFreeList( heap, pxNewBlockLink );
@@ -208,7 +209,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
         }
     }
 
-    DebugP_assert( ( ( ( size_t ) pvReturn ) & ( size_t ) heapBYTE_ALIGNMENT_MASK ) == 0 );
+    DebugP_assert( ( ( ( size_t ) pvReturn ) & ( size_t ) heapBYTE_ALIGNMENT_MASK ) == 0U );
     return pvReturn;
 }
 
@@ -227,10 +228,10 @@ void vHeapFree( StaticHeap_t *heap, void * pv )
         pxLink = ( HeapBlockLink_t * ) puc;
 
         /* Check the block is actually allocated. */
-        DebugP_assert( ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) != 0 );
+        DebugP_assert( ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) != ( size_t )0 );
         DebugP_assert( pxLink->pxNextFreeBlock == NULL );
 
-        if( ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) != 0 )
+        if( ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) != ( size_t )0 )
         {
             if( pxLink->pxNextFreeBlock == NULL )
             {
@@ -259,7 +260,7 @@ size_t xHeapGetMinimumEverFreeHeapSize( StaticHeap_t *heap )
     return heap->xMinimumEverFreeBytesRemaining;
 }
 
-static void prvHeapInit( StaticHeap_t *heap ) 
+static void prvHeapInit( StaticHeap_t *heap )
 {
     HeapBlockLink_t * pxFirstFreeBlock;
     uint8_t * pucAlignedHeap;
@@ -269,9 +270,9 @@ static void prvHeapInit( StaticHeap_t *heap )
     /* Ensure the heap starts on a correctly aligned boundary. */
     uxAddress = ( size_t ) heap->pvHeap;
 
-    if( ( uxAddress & heapBYTE_ALIGNMENT_MASK ) != 0 )
+    if( ( uxAddress & heapBYTE_ALIGNMENT_MASK ) != ( size_t )0 )
     {
-        uxAddress += ( heapBYTE_ALIGNMENT - 1 );
+        uxAddress += ( heapBYTE_ALIGNMENT - ( size_t )1 );
         uxAddress &= ~( ( size_t ) heapBYTE_ALIGNMENT_MASK );
         xTotalHeapSize -= uxAddress - ( size_t ) heap->pvHeap;
     }
@@ -303,10 +304,10 @@ static void prvHeapInit( StaticHeap_t *heap )
     heap->xFreeBytesRemaining = pxFirstFreeBlock->xBlockSize;
 
     /* Work out the position of the top bit in a size_t variable. */
-    heap->xBlockAllocatedBit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1 );
+    heap->xBlockAllocatedBit = ( ( size_t ) 1 ) << ( ( sizeof( size_t ) * heapBITS_PER_BYTE ) - 1U );
 }
 
-static void prvInsertBlockIntoFreeList( StaticHeap_t *heap, HeapBlockLink_t * pxBlockToInsert ) 
+static void prvInsertBlockIntoFreeList( StaticHeap_t *heap, HeapBlockLink_t * pxBlockToInsert )
 {
     HeapBlockLink_t * pxIterator;
     uint8_t * puc;
@@ -363,7 +364,7 @@ static void prvInsertBlockIntoFreeList( StaticHeap_t *heap, HeapBlockLink_t * px
 void vHeapGetHeapStats( StaticHeap_t *heap, HeapMemStats_t * pxHeapStats )
 {
     HeapBlockLink_t * pxBlock;
-    size_t xBlocks = 0, xMaxSize = 0, xMinSize = 0xFFFFFFFFu; 
+    size_t xBlocks = 0, xMaxSize = 0, xMinSize = 0xFFFFFFFFu;
 
     {
         pxBlock = heap->xStart.pxNextFreeBlock;
@@ -407,3 +408,4 @@ void vHeapGetHeapStats( StaticHeap_t *heap, HeapMemStats_t * pxHeapStats )
         pxHeapStats->totalHeapSizeInBytes = heap->xTotalHeapSize;
     }
 }
+

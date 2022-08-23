@@ -59,7 +59,7 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-extern __attribute__((section(".startupCode"))) portBaseType xConfigureMPU();
+extern __attribute__((section(".startupCode"))) portBaseType xConfigureMPU(void);
 void vFiqHandler( void );
 
 /*---------------------------------------------------------------------------*/
@@ -289,7 +289,7 @@ void vFiqHandler( void )
     /* FIQ is not supported with SafeRTOS.
      *
      * Force an assert(), then stop here so application writers can catch the error. */
-    DebugP_assert(0); 
+    DebugP_assert((bool)false);
 }
 
 /*-------------------------------------------------------------------------*/

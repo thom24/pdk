@@ -209,7 +209,7 @@ int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eve
    evtHandler.handler = (CSL_IntcEventHandler)eventIsrRoutine;
    evtHandler.arg     = (void *)arg;
    (void)CSL_intcPlugEventHandler(handleTemp, &evtHandler);
-   if (unmask == (bool)TRUE)
+   if (unmask == (bool)true)
    {
       (void)EventCombinerP_enableEvent(eventId);
    }
@@ -245,3 +245,4 @@ int32_t EventCombinerP_dispatchUnplug(uint32_t eventId)
 #endif
 
 #endif /* #ifdef _TMS320C6X */
+

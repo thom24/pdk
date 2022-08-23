@@ -59,11 +59,11 @@
 #endif
 
 /* Global Osal static memory status variables */
-uint32_t  gOsalSemAllocCnt   = 0U, gOsalSemPeak = 0U;
+uint32_t  gOsalSemAllocCnt   = 0U, gOsalSemPeak   = 0U;
 uint32_t  gOsalTimerAllocCnt = 0U, gOsalTimerPeak = 0U;
-uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak = 0U;
+uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak   = 0U;
 uint32_t  gOsalMutexAllocCnt = 0U, gOsalMutexPeak = 0U;
-uint32_t  gOsalHeapAllocCnt   = 0U, gOsalHeapPeak = 0U;
+uint32_t  gOsalHeapAllocCnt  = 0U, gOsalHeapPeak  = 0U;
 
 #ifndef OSAL_CPU_FREQ_KHZ_DEFAULT
 #define OSAL_CPU_FREQ_KHZ_DEFAULT (400000)
@@ -121,7 +121,7 @@ void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line)
 Osal_ThreadType Osal_getThreadType(void)
 {
     Osal_ThreadType osalThreadType;
-    if( xPortInIsrContext())
+    if( xPortInIsrContext() == 1 )
     {
         osalThreadType = Osal_ThreadType_Hwi;
     }

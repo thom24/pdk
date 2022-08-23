@@ -73,7 +73,7 @@ typedef struct InterruptDispatchTable_
  *---------------------------------------------------------------------------*/
 
 /* Dispatch table of TI Interrupt handler functions. */
-static const InterruptDispatchTable axIntDispatchTable[] =
+static const InterruptDispatchTable axIntDispatchTable[5] =
 {
     [0] =
     {
@@ -181,7 +181,7 @@ void _system_post_cinit( void )
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = true;
+    cfg.disableIrqOnInit = (bool)true;
     osalArch_Init( &cfg );
 }
 /*---------------------------------------------------------------------------*/
@@ -194,14 +194,13 @@ void vApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorNum )
     portUInt32Type *pxDispatchAddress;
     portUInt32Type *pxCpuInterruptTable = ( portUInt32Type * )&CSL_intcCpuIntrTable;
     portUInt32Type uxDispatchIndex;
+    portUInt32Type uxIntDispatchTableSize = sizeof( axIntDispatchTable )/sizeof(axIntDispatchTable[0]);
 
     pxDispatchAddress = ( portUInt32Type * )( pxCpuInterruptTable + ( 1 + ulInterruptVectorNum ) );
     CSL_intcCpuIntrTable.currentVectId = ( Uint32 )pxDispatchAddress;
     pxIntDispatchFn = * ( ( vInterruptDispatchFn **  ) pxDispatchAddress );
 
-    for ( uxDispatchIndex = 0;
-          uxDispatchIndex < sizeof( axIntDispatchTable )/sizeof( axIntDispatchTable[ 0 ] );
-          uxDispatchIndex++ )
+    for ( uxDispatchIndex = 0;uxDispatchIndex < uxIntDispatchTableSize; uxDispatchIndex++ )
     {
         if ( axIntDispatchTable[ uxDispatchIndex ].pxIntHandlerFn == pxIntDispatchFn )
         {
@@ -209,9 +208,9 @@ void vApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorNum )
         }
     }
 
-    if( uxDispatchIndex >= sizeof( axIntDispatchTable )/sizeof( axIntDispatchTable[ 0 ] ) )
+    if( uxDispatchIndex >= uxIntDispatchTableSize )
     {
-       DebugP_assert(0);
+       DebugP_assert((bool)false);
     }
     axIntDispatchTable[ uxDispatchIndex ].pxIntHandlerCoreFn();
 }

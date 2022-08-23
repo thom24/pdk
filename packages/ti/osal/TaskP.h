@@ -87,7 +87,6 @@ typedef  void *TaskP_Handle;
  *  mpuUNPRIVILEGED_TASK value is 0.
  *  mpuPRIVILEGED_TASK value is 1.
  */
-
 typedef unsigned long TaskP_Privilege_Mode;
 
 /*!
@@ -124,7 +123,6 @@ typedef struct TaskP_Params_s
  */
 extern TaskP_Handle TaskP_create(TaskP_Fxn taskfxn,
                                  const TaskP_Params *params);
-
 /*!
  *  @brief  Function to delete a task.
  *
@@ -149,7 +147,6 @@ extern void TaskP_Params_init(TaskP_Params *params);
  *  @param timeout  sleep ticks.
  */
 extern void TaskP_sleep(uint32_t timeout);
-
 
 /*!
  *  @brief  Function for Task sleep in units of msecs

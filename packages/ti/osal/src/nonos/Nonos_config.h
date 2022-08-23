@@ -309,3 +309,4 @@ void osalArch_Init (osalArch_Config_t *cfg);
 #endif
 
 #endif /* ti_osal_src_noos_config__include */
+

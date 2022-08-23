@@ -152,7 +152,7 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
             (void)EventCombinerP_dispatchPlug((uint32_t)interruptRegParams->corepacConfig.corepacEventNum,
                                         interruptRegParams->corepacConfig.isrRoutine,
                                         interruptRegParams->corepacConfig.arg,
-                                        interruptRegParams->corepacConfig.enableIntr);
+                                        (interruptRegParams->corepacConfig.enableIntr != 0));
        }
    } else {
        /* Do not use the event combiner. Use the supplied ISR routine */
@@ -389,3 +389,4 @@ void Osal_ClearInterrupt(int32_t corepacEvent,int32_t interruptNum)
 #ifdef __cplusplus
 }
 #endif
+

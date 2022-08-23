@@ -206,7 +206,7 @@ uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
         if(xCreateResult == pdPASS)
         {
             /* all the event mask bits heve been set, so updating eventBits with eventMask*/
-            eventBits = pxEventBitsSet;
+            eventBits = (uint32_t)pxEventBitsSet;
         }
         else
         {
@@ -232,8 +232,8 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
     
     if((event != NULL_PTR) && (event->used==TRUE))
     {
-        if( Osal_isInISRContext() )
-        {   
+        if( Osal_isInISRContext() == 1 )
+        {
             xCreateResult  = xEventGroupSetBitsFromISR(event->eventHndl,
                                                  (eventBitsType)eventMask);
 
@@ -281,8 +281,8 @@ uint32_t EventP_getPostedEvents(EventP_Handle handle)
     
     if((event != NULL_PTR) && (event->used==TRUE))
     {
-        if( Osal_isInISRContext() )
-        {   
+        if( Osal_isInISRContext() == 1 )
+        {
             xCreateResult = xEventGroupGetBitsFromISR(event->eventHndl, (eventBitsType *)&eventBitsGet);
             if(xCreateResult != pdPASS)
             {
@@ -305,3 +305,4 @@ uint32_t EventP_getPostedEvents(EventP_Handle handle)
 
     return eventBitsGet;
 }
+

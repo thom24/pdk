@@ -65,7 +65,7 @@ uint32_t  gOsalHeapAllocCnt   = 0U, gOsalHeapPeak = 0U;
 #define OSAL_CPU_FREQ_KHZ_DEFAULT ( 400000 )
 #endif
 
-volatile bool Osal_DebugP_Assert_Val=( bool )true;
+volatile bool Osal_DebugP_Assert_Val = (bool)true;
 
 /* Global Osal_HwAttr structure */
 Osal_HwAttrs  gOsal_HwAttrs = {
@@ -101,6 +101,13 @@ Osal_HwAttrs  gOsal_HwAttrs = {
   }
 };
 
+#if defined (BUILD_MCU)
+/* This implementation reads the the stack pointer on ARM cores and
+ * checks if the current contxt is an IRQ context.
+ */
+static uint32_t Osal_getSP(void);
+#endif
+
 /*
  *  ======== Osal_DebugP_assert ========
  */
@@ -110,14 +117,14 @@ void Osal_DebugP_assert( int32_t expression, const char *file, int32_t line )
     ( void )line;
 
     if ( expression != 0 ) {
-        while ( Osal_DebugP_Assert_Val == ( bool )true ) {}
+        while ( Osal_DebugP_Assert_Val == (bool)true) {}
     }
 }
 
 Osal_ThreadType Osal_getThreadType( void )
 {
     Osal_ThreadType osalThreadType;
-    if(  Osal_isInISRContext(  ) )
+    if(  Osal_isInISRContext() == 1 )
     {
         osalThreadType = Osal_ThreadType_Hwi;
     }
@@ -257,29 +264,40 @@ int32_t Osal_getStaticMemStatus( Osal_StaticMemStatus *pMemStat )
     return ( retVal );
 }
 
+#if defined (BUILD_MCU)
+static uint32_t Osal_getSP(void)
+{
+      uint32_t volatile sp = 0 ;
+      __asm volatile ("mov %0, sp" :  "=r" (sp));
+
+      return sp;
+}
+#endif
+
 int32_t Osal_isInISRContext(void)
 {
-    int32_t retVal = true;
+    int32_t retVal = (bool)true;
 
     /* xPortInIsrContext accesses kernel data, and hence, causes abort when
      * a non privileged task tries to call the same. This implementation reads the
      * the stack pointer on ARM cores and checks if the current contxt is an IRQ context.
-     */ 
+     */
 #if defined (BUILD_MCU)
+
     uint32_t volatile sp = 0, start, end;
-    __asm volatile ("mov %0, sp" :  "=r" (sp));
+    sp = Osal_getSP();
     start = (uint32_t)&__IRQ_STACK_START;
     end = (uint32_t)&__IRQ_STACK_END;
     if ((start <= sp) && (end >= sp))
     {
-        retVal = true;
+          retVal = (bool)true;
     }
     else
     {
-        retVal = false;
+        retVal = (bool)false;
     }
 #else
-    retVal = xPortInIsrContext();
+    retVal = (int32_t)xPortInIsrContext();
 #endif
     return retVal;
 }

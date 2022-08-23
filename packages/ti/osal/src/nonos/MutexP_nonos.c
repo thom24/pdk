@@ -52,16 +52,18 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
     if (mutexObj == NULL)
     {
-        return NULL;
+        ret_handle =  NULL;
     }
+    else
+    {
+      SemaphoreP_Params_init(&prms);
+      prms.mode = SemaphoreP_Mode_BINARY;
+      handle = (void *)SemaphoreP_create(1U, &prms);
 
-    SemaphoreP_Params_init(&prms);
-    prms.mode = SemaphoreP_Mode_BINARY;
-    handle = (void *)SemaphoreP_create(1U, &prms);
-
-    mutexObj->object = (void *)handle;
-    mutexObj->key = 0;
-    ret_handle = (MutexP_Handle)mutexObj;
+      mutexObj->object = (void *)handle;
+      mutexObj->key = 0;
+      ret_handle = (MutexP_Handle)mutexObj;
+    }
 
     return ret_handle;
 }
@@ -74,7 +76,7 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
 
     semHandle = (void *)mutexObj->object;
 
-    return (MutexP_Status)SemaphoreP_delete(semHandle);
+    return (MutexP_Status)((int32_t)SemaphoreP_delete(semHandle));
 }
 
 MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)

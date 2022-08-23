@@ -77,7 +77,7 @@ void Exception_Module_startup(void)
 static void printTwoVectors(char * name1, void * vectorReg1[],
                             char * name2, void * vectorReg2[])
 {
-    int i;
+    int32_t i;
 
     DebugP_log4("\n%s=0x%016lx [0]    %s=0x%016lx [0]\n    ",
                   (uintptr_t)name1, (uintptr_t)vectorReg1[0], (uintptr_t)name2, (uintptr_t)vectorReg2[0]);

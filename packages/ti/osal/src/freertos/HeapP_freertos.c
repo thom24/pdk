@@ -111,9 +111,9 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
 
      for (i = 0; i < maxHeap; i++)
      {
-         if (heapPool[i].used == FALSE)
+         if (heapPool[i].used == (bool)false)
          {
-             heapPool[i].used = TRUE;
+             heapPool[i].used = (bool)true;
              /* Update statistics */
              gOsalHeapAllocCnt++;
              if (gOsalHeapAllocCnt > gOsalHeapPeak)
@@ -155,14 +155,14 @@ HeapP_Status HeapP_delete(HeapP_Handle handle)
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((heap != NULL_PTR) && (heap->used==TRUE))
+    if((heap != NULL_PTR) && (heap->used==(bool)true))
     {
         vTaskSuspendAll();
         vHeapDelete(&heap->heapHndl);
-        xTaskResumeAll();
+        (void)xTaskResumeAll();
 
         key = HwiP_disable();
-        heap->used = FALSE;
+        heap->used = (bool)false;
         /* Found the osal heap object to delete */
         if (gOsalHeapAllocCnt > 0U)
         {
@@ -188,11 +188,11 @@ void *HeapP_alloc(HeapP_Handle handle, uint32_t allocSize)
     void *ptr = NULL_PTR;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((heap != NULL_PTR) && (heap->used==TRUE))
+    if((heap != NULL_PTR) && (heap->used==(bool)true))
     {
         vTaskSuspendAll();
         ptr = pvHeapMalloc(&heap->heapHndl, allocSize);
-        xTaskResumeAll();
+        (void)xTaskResumeAll();
     }
 
     return ptr;
@@ -208,11 +208,11 @@ HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size)
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((heap != NULL_PTR) && (heap->used==TRUE) && (ptr != NULL_PTR))
+    if((heap != NULL_PTR) && (heap->used==(bool)true) && (ptr != NULL_PTR))
     {
         vTaskSuspendAll();
         vHeapFree(&heap->heapHndl, ptr);
-        xTaskResumeAll();
+        (void)xTaskResumeAll();
     }
     else
     {
@@ -228,26 +228,27 @@ HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size)
 HeapP_Status HeapP_getHeapStats(HeapP_Handle handle, HeapP_MemStats *stats)
 {
     DebugP_assert((handle != NULL_PTR));
-    
+    DebugP_assert((stats  != NULL_PTR));
+
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
     HeapMemStats_t pHeapStats;
 
-    if((heap != NULL_PTR) && (heap->used==TRUE))
+    if((heap != NULL_PTR) && (heap->used==(bool)true))
     {
         vTaskSuspendAll();
         vHeapGetHeapStats(&heap->heapHndl, &pHeapStats);
-        xTaskResumeAll();
+        (void)xTaskResumeAll();
 
-        stats->totalSize        = pHeapStats.totalHeapSizeInBytes;
-        stats->totalFreeSize    = pHeapStats.availableHeapSpaceInBytes;
-        stats->largestFreeSize  = pHeapStats.sizeOfLargestFreeBlockInBytes; 
+        stats->totalSize        = (uint32_t)pHeapStats.totalHeapSizeInBytes;
+        stats->totalFreeSize    = (uint32_t)pHeapStats.availableHeapSpaceInBytes;
+        stats->largestFreeSize  = (uint32_t)pHeapStats.sizeOfLargestFreeBlockInBytes;
     }
     else
     {
        ret_val = HeapP_FAILURE;
     }
-    
+
     return ret_val;
 }
 

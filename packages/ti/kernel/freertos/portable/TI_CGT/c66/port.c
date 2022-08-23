@@ -228,7 +228,7 @@ static void prvTaskExitError( void )
      *
      * Force an assert() to be triggered if configASSERT() is
      * defined, then stop here so application writers can catch the error. */
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 #define TaskSupport_buildTaskStack ti_sysbios_family_c62_TaskSupport_buildTaskStack
@@ -336,7 +336,7 @@ BaseType_t xPortStartScheduler(void)
     Hwi_Module_startup();
     prvPortInitTickTimer();
     Hwi_switchFromBootStack();
-    
+
     /* Start the ISR handling of the timer that generates the tick ISR. */
     prvPortStartTickTimer();
     ulPortSchedularRunning = pdTRUE;
@@ -401,7 +401,7 @@ uint32_t uiPortGetRunTimeCounterValue()
      *
      * We call LoadP_update() in idle loop (from vApplicationIdleHook) to accumlate the task load into a 64b value.
      * The implementation of LoadP_update() is in osal/src/freertos/LoadP_freertos.c
-     * 
+     *
      */
     return (uint32_t)(uxTimeInUsecs);
 }
@@ -453,7 +453,7 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask,
                                     char * pcTaskName )
 {
     DebugP_log1("[FreeRTOS] Stack overflow detected for task [%s]", (uintptr_t)pcTaskName);
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 /* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
@@ -614,8 +614,8 @@ void vPortCacheConfig(void)
                     portCONFIGURE_CACHE_L2_SIZE);
 
     /* Enable cache for all DDR space */
-    CacheP_setMar((void *)portCONFIGURE_DDR_START, 
-                  (uint32_t)portCONFIGURE_DDR_SIZE, 
+    CacheP_setMar((void *)portCONFIGURE_DDR_START,
+                  (uint32_t)portCONFIGURE_DDR_SIZE,
                   CacheP_Mar_ENABLE);
 }
 
@@ -637,7 +637,7 @@ void vPortCacheConfig(void)
 /* linking with the C/C++ runtime library.                                   */
 /*****************************************************************************/
 
-int _system_pre_init(void)
+int32_t _system_pre_init(void)
 {
     vPortCacheConfig();
     return 1;
@@ -661,7 +661,7 @@ void _system_post_cinit(void)
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = true;
+    cfg.disableIrqOnInit = (bool)true;
     osalArch_Init(&cfg);
 }
 
@@ -676,3 +676,4 @@ void vApplicationIdleHook( void )
 
     asm("    IDLE");
 }
+

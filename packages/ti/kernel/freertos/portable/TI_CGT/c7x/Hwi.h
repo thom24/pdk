@@ -139,7 +139,7 @@ typedef enum Hwi_TSR_CXM Hwi_TSR_CXM;
 
 /* Args__create */
 typedef struct Hwi_Args_create {
-    int intNum;
+    int32_t intNum;
     Hwi_FuncPtr hwiFxn;
 } Hwi_Args_create;
 
@@ -188,10 +188,10 @@ extern const void * Hwi_vectorTableBase_SS;
 /* Params */
 struct Hwi_Params {
     Hwi_MaskingOption maskSetting;
-    unsigned int arg;
+    uintptr_t arg;
     bool enableInt;
-    int eventId;
-    int priority;
+    int32_t eventId;
+    int32_t priority;
     unsigned long disableMask;
     unsigned long restoreMask;
 };
@@ -205,16 +205,16 @@ void Hwi_Module_startup( void );
 
 
 /* Instance_init */
-int Hwi_Instance_init(Hwi_Object *obj, int intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *prms);
+int32_t Hwi_Instance_init(Hwi_Object *obj, int32_t intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *prms);
 
 /* Instance_finalize */
-void Hwi_Instance_finalize(Hwi_Object *obj, int ec);
+void Hwi_Instance_finalize(Hwi_Object *obj, int32_t ec);
 
 /* create */
-Hwi_Handle Hwi_create( int intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *prms);
+Hwi_Handle Hwi_create( int32_t intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *prms);
 
 /* construct */
-int Hwi_construct(HwiC7x_Struct *obj, int intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *prms);
+int32_t Hwi_construct(HwiC7x_Struct *obj, int32_t intNum, Hwi_FuncPtr hwiFxn, const Hwi_Params *prms);
 
 /* delete */
 void Hwi_delete(Hwi_Handle *instp);
@@ -262,7 +262,7 @@ void Hwi_eventMap( int intNum, int eventId);
 void Hwi_plug( unsigned int intNum, Hwi_PlugFuncPtr fxn);
 
 /* getEventId */
-int Hwi_getEventId( unsigned int intNum);
+int32_t Hwi_getEventId( unsigned int intNum);
 
 /* disableIER */
 unsigned long Hwi_disableIER( unsigned long mask);
@@ -280,7 +280,7 @@ void Hwi_setPriority( unsigned int intNum, unsigned int priority);
 Hwi_TSR_CXM Hwi_getCXM( void);
 
 /* setCOP */
-void Hwi_setCOP( int cop);
+void Hwi_setCOP( int32_t cop);
 
 /* secureStart */
 void Hwi_secureStart( void);
@@ -291,19 +291,19 @@ void Hwi_reconfig( Hwi_Handle instp, Hwi_FuncPtr fxn, const Hwi_Params *params);
 /* getIsrStackAddress */
 char *Hwi_getIsrStackAddress( void);
 
-void Hwi_dispatchC( int intNum);
+void Hwi_dispatchC( int32_t intNum);
 
 /* dispatchCore */
-void Hwi_dispatchCore( int intNum);
+void Hwi_dispatchCore( int32_t intNum);
 
 /* unPluggedInterrupt */
 void Hwi_unPluggedInterrupt( void);
 
 /* switchAndDispatch */
-void Hwi_switchAndDispatch( int intNum);
+void Hwi_switchAndDispatch( int32_t intNum);
 
 /* postInit */
-int Hwi_postInit( Hwi_Object *hwi);
+int32_t Hwi_postInit( Hwi_Object *hwi);
 
 
 /* Params_init */
@@ -329,10 +329,10 @@ void Hwi_restore(unsigned int key);
 struct Hwi_Module_State {
     Hwi_Module_State_intEvents intEvents;
     unsigned long ierMask;
-    volatile int intNum;
+    volatile int32_t intNum;
     char *taskSP;
     char *isrStack;
-    int scw;
+    int32_t scw;
     Hwi_Module_State_dispatchTable dispatchTable;
 };
 
@@ -345,8 +345,8 @@ struct Hwi_Object {
     unsigned long restoreMask;
     unsigned int arg;
     Hwi_FuncPtr fxn;
-    int intNum;
-    int priority;
+    int32_t intNum;
+    int32_t priority;
     Hwi_Irp irp;
 };
 
@@ -358,3 +358,4 @@ struct Hwi_Object {
 #endif
 
 #endif
+

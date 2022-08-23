@@ -38,14 +38,6 @@
 #include <ti/osal/ClockP.h>
 #include <timers.h>
 
-
-/**
- * \brief Callback that is called when the clock expires
- *
- * \param args [in] user specific argument pointer that was passed via \ref ClockP_Params
- */
-typedef void (*ClockP_FxnCallback)(void *args);
-
 typedef struct ClockP_safertos_s
 {
     bool                        used;
@@ -70,7 +62,7 @@ void ClockP_timerCallbackFunction(timerHandleType xTimer)
     portBaseType    xTimerID = ((timerControlBlockType *)xTimer)->xTimerID;
     ClockP_safertos *pTimer = &gOsalClockPSafeRtosPool[xTimerID];
 
-    if(pTimer != NULL_PTR && pTimer->callback && pTimer->used == TRUE)
+    if( (pTimer != NULL_PTR) && (pTimer->callback) && (pTimer->used == (bool)true) )
     {
         pTimer->callback(pTimer->arg);
     }
@@ -93,10 +85,10 @@ void ClockP_Params_init(ClockP_Params *params)
 /*
  *  ======== ClockP_create ========
  */
-ClockP_Handle ClockP_create(void *clockfxn,
+ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
                             const ClockP_Params *params)
 {
-    
+
     ClockP_safertos         *pTimer = (ClockP_safertos *)NULL_PTR;
     ClockP_safertos         *timerPool;
     portBaseType            uxAutoReload = pdFALSE;
@@ -120,9 +112,9 @@ ClockP_Handle ClockP_create(void *clockfxn,
 
     for (i = 0; i < maxClocks; i++)
     {
-        if (timerPool[i].used == FALSE)
+        if (timerPool[i].used == (bool)false)
         {
-            timerPool[i].used = TRUE;
+            timerPool[i].used = (bool)true;
             /* Update statistics */
             gOsalClockAllocCnt++;
             if (gOsalClockAllocCnt > gOsalClockPeak)
@@ -180,7 +172,7 @@ ClockP_Handle ClockP_create(void *clockfxn,
         {
             /* If there was an error reset the clock object and return NULL. */
             key = HwiP_disable();
-            pTimer->used      = FALSE;
+            pTimer->used      = (bool)false;
             /* Found the osal clock object to delete */
             if (gOsalClockAllocCnt > 0U)
             {
@@ -198,7 +190,7 @@ ClockP_Handle ClockP_create(void *clockfxn,
                 {
                     /* If there was an error reset the clock object and return NULL. */
                     key = HwiP_disable();
-                    pTimer->used      = FALSE;
+                    pTimer->used      = (bool)false;
                     /* Found the osal clock object to delete */
                     if (gOsalClockAllocCnt > 0U)
                     {
@@ -224,14 +216,14 @@ ClockP_Status ClockP_delete(ClockP_Handle handle)
     ClockP_Status   ret = ClockP_OK;
     portBaseType    xCreateResult;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == TRUE))
+    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
     {
         xCreateResult = xTimerDelete(pTimer->timerHndl, safertosapiMAX_DELAY);
 
         if(xCreateResult == pdPASS)
         {
             key = HwiP_disable();
-            pTimer->used      = FALSE;
+            pTimer->used      = (bool)false;
             pTimer->timerHndl = NULL;
             pTimer->callback  = NULL;
             pTimer->arg       = NULL;
@@ -261,9 +253,9 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
     ClockP_safertos *pTimer = (ClockP_safertos*)handle;
     portBaseType    xCreateResult;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == TRUE))
+    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
     {
-        if( Osal_isInISRContext() )
+        if( Osal_isInISRContext() == 1 )
         {
             /* timeout is ignored when in ISR mode */
             xCreateResult = xTimerStartFromISR(pTimer->timerHndl);
@@ -297,9 +289,9 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
     ClockP_safertos *pTimer   = (ClockP_safertos*)handle;
     portBaseType    xCreateResult;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == TRUE))
+    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
     {
-        if( Osal_isInISRContext() )
+        if( Osal_isInISRContext() == 1 )
         {
             /* timeout is ignored when in ISR mode */
             xCreateResult = xTimerStopFromISR(pTimer->timerHndl);

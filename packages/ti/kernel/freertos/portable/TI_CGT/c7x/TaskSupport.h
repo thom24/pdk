@@ -111,7 +111,7 @@ extern const unsigned int TaskSupport_stackAlignment;
 void TaskSupport_swap( void **oldtskContext, void **newtskContext);
 
 /* getStackAlignment */
-unsigned int TaskSupport_getStackAlignment( void);
+uint32_t TaskSupport_getStackAlignment( void);
 
 
 extern void * TaskSupport_buildTaskStack(void * stack, Task_FuncPtr fxn, TaskSupport_FuncPtr exit, TaskSupport_FuncPtr enter, void* arg0, TaskFunction_t arg1, void * TCSP, bool privileged);

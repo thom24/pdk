@@ -429,7 +429,7 @@ void TimerP_updateDefaultInfoTbl(void)
         intIdx = CSLR_R5FSS0_CORE0_INTR_TIMER0_INTR_PEND_0;
         for (i = 0U; i < TimerP_numTimerDevices; i++)
         {
-            gDmTimerPInfoTbl[i].baseAddr = CSL_TIMER0_CFG_BASE + (i * 0x10000U);
+            gDmTimerPInfoTbl[i].baseAddr = (uint32_t)CSL_TIMER0_CFG_BASE + (i * 0x10000U);
             if(i == 12U)
             {
                 /* Interrupt number from Timer12 is a separate group */ 

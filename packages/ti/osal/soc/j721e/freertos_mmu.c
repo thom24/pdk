@@ -99,13 +99,13 @@ static void OsalInitMmu(bool isSecure)
     Mmu_initMapAttrs(&attrs);
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
-    if(true == isSecure)
+    if((bool)true == isSecure)
     {
-        attrs.ns = 0;
+        attrs.ns = (bool)false;
     }
     else
     {
-        attrs.ns = 1;
+        attrs.ns = (bool)true;
     }
 
     /* Register region */
@@ -147,7 +147,7 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure)
     CSL_CLEC_EVTRegs   *clecBaseAddr = (CSL_CLEC_EVTRegs*) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
     uint32_t            i, maxInputs = 2048U;
 
-    cfgClec.secureClaimEnable = onlyInSecure;
+    cfgClec.secureClaimEnable = onlyInSecure?1U:0U;
     cfgClec.evtSendEnable     = false;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
     cfgClec.extEvtNum         = 0U;
@@ -163,11 +163,11 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure)
 
 void Osal_initMmuDefault(void)
 {
-    OsalInitMmu(false);
-    OsalInitMmu(true);
+    OsalInitMmu((bool)false);
+    OsalInitMmu((bool)true);
 
     /* Setup CLEC access/configure in non-secure mode */
-    OsalCfgClecAccessCtrl(false);
+    OsalCfgClecAccessCtrl((bool)false);
 
     return;
 }

@@ -48,7 +48,7 @@ TaskP_Handle gMainTask;
 void task_switch_main(void *arg0, void* arg1);
 void c66xIntrConfig(void);
 
-int main()
+int32_t main()
 {
     Board_initCfg boardCfg;
     Board_STATUS  status;
@@ -83,7 +83,7 @@ int main()
        will only return if there was not enough FreeRTOS heap memory available to
        create the Idle and (if configured) Timer tasks.  Heap management, and
        techniques for trapping heap exhaustion, are described in the book text. */
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 
     return 0;
 }
@@ -125,3 +125,4 @@ void c66xIntrConfig(void)
 
     return;
 }
+

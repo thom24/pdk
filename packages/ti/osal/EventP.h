@@ -70,103 +70,103 @@ extern "C" {
 /*!
 *  @brief    Event ID NONE
 */
-#define EventP_ID_NONE     0x0
+#define EventP_ID_NONE     0x0U
 /*!
  *  @brief    Event ID 0
  */
-#define EventP_ID_00       0x1
+#define EventP_ID_00       0x1U
 /*!
  *  @brief    Event ID 1
  */
-#define EventP_ID_01       0x2
+#define EventP_ID_01       0x2U
 /*!
  *  @brief    Event ID 2
  */
-#define EventP_ID_02       0x4
+#define EventP_ID_02       0x4U
 /*!
  *  @brief    Event ID 3
  */
-#define EventP_ID_03       0x8
+#define EventP_ID_03       0x8U
 /*!
  *  @brief    Event ID 4
  */
-#define EventP_ID_04       0x10
+#define EventP_ID_04       0x10U
 /*!
  *  @brief    Event ID 5
  */
-#define EventP_ID_05       0x20
+#define EventP_ID_05       0x20U
 /*!
  *  @brief    Event ID 6
  */
-#define EventP_ID_06       0x40
+#define EventP_ID_06       0x40U
 /*!
  *  @brief    Event ID 7
  */
-#define EventP_ID_07       0x80
+#define EventP_ID_07       0x80U
 /*!
  *  @brief    Event ID 8
  */
-#define EventP_ID_08       0x100
+#define EventP_ID_08       0x100U
 /*!
  *  @brief    Event ID 9
  */
-#define EventP_ID_09       0x200
+#define EventP_ID_09       0x200U
 /*!
  *  @brief    Event ID 10
  */
-#define EventP_ID_10       0x400
+#define EventP_ID_10       0x400U
 /*!
  *  @brief    Event ID 11
  */
-#define EventP_ID_11       0x800
+#define EventP_ID_11       0x800U
 /*!
  *  @brief    Event ID 12
  */
-#define EventP_ID_12       0x1000
+#define EventP_ID_12       0x1000U
 /*!
  *  @brief    Event ID 13
  */
-#define EventP_ID_13       0x2000
+#define EventP_ID_13       0x2000U
 /*!
  *  @brief    Event ID 14
  */
-#define EventP_ID_14       0x4000
+#define EventP_ID_14       0x4000U
 /*!
  *  @brief    Event ID 15
  */
-#define EventP_ID_15       0x8000
+#define EventP_ID_15       0x8000U
 /*!
  *  @brief    Event ID 16
  */
-#define EventP_ID_16       0x10000
+#define EventP_ID_16       0x10000U
 /*!
  *  @brief    Event ID 17
  */
-#define EventP_ID_17       0x20000
+#define EventP_ID_17       0x20000U
 /*!
  *  @brief    Event ID 18
  */
-#define EventP_ID_18       0x40000
+#define EventP_ID_18       0x40000U
 /*!
  *  @brief    Event ID 19
  */
-#define EventP_ID_19       0x80000
+#define EventP_ID_19       0x80000U
 /*!
  *  @brief    Event ID 20
  */
-#define EventP_ID_20       0x100000
+#define EventP_ID_20       0x100000U
 /*!
  *  @brief    Event ID 21
  */
-#define EventP_ID_21       0x200000
+#define EventP_ID_21       0x200000U
 /*!
  *  @brief    Event ID 22
  */
-#define EventP_ID_22       0x400000
+#define EventP_ID_22       0x400000U
 /*!
  *  @brief    Event ID 23
  */
-#define EventP_ID_23       0x800000
+#define EventP_ID_23       0x800000U
 /* @} */
 
 /*!
@@ -184,12 +184,12 @@ typedef enum EventP_Status_e
  *  @brief  Event wait modes for EventP_wait API
  */
 typedef enum EventP_WaitMode_e {
-    EventP_WaitMode_ANY,       /*!< Test bits for logical OR. 
-                                *   EventP_wait will return when ANY of the bits 
-                                *   set in mask are set in the Event bits*/
-    EventP_WaitMode_ALL        /*!< Test bits for logical AND.  
-                                *   EventP_wait will return when ALL the bits 
-                                *   set in mask are set in the Event bits*/
+    EventP_WaitMode_ANY = ( (uint8_t) 0),     /*!< Test bits for logical OR. 
+                                               *   EventP_wait will return when ANY of the bits 
+                                               *   set in mask are set in the Event bits*/
+    EventP_WaitMode_ALL = ( (uint8_t) 1),      /*!< Test bits for logical AND.  
+                                                *   EventP_wait will return when ALL the bits 
+                                                *   set in mask are set in the Event bits*/
 }EventP_WaitMode;
 
 /*!

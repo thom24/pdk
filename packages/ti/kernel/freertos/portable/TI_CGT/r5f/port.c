@@ -143,7 +143,9 @@ RunTimeTimerControl_t   gTimerCntrl;
 extern void vPortRestoreTaskContext( void );
 
 uint64_t uxPortGetTimeInUsec(void);
-    
+
+BaseType_t xPortInIsrContext(void);
+
 static void prvTaskExitError( void )
 {
     /* A function that implements a task must not exit or attempt to return to
@@ -152,7 +154,7 @@ static void prvTaskExitError( void )
      *
      * Force an assert() to be triggered if configASSERT() is
      * defined, then stop here so application writers can catch the error. */
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
@@ -475,7 +477,7 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask,
                                     char * pcTaskName )
 {
     DebugP_log1("[FreeRTOS] Stack overflow detected for task [%s]", (uintptr_t)pcTaskName);
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 /* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
@@ -542,7 +544,7 @@ static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
  * Returns true if the current core is in ISR context; low prio ISR, med prio ISR or timer tick ISR. High prio ISRs
  * aren't detected here, but they normally cannot call C code, so that should not be an issue anyway.
  */
-BaseType_t xPortInIsrContext()
+BaseType_t xPortInIsrContext(void)
 {
     BaseType_t inISR = false;
     if (ulPortInterruptNesting != 0)
@@ -570,7 +572,7 @@ __attribute__((weak)) void _system_post_cinit(void)
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = true;
+    cfg.disableIrqOnInit = (bool)true;
     osalArch_Init(&cfg);
 }
 
@@ -578,10 +580,11 @@ __attribute__((weak)) void _system_post_cinit(void)
 __attribute__((weak)) void vApplicationIdleHook( void )
 {
 #if (configLOAD_UPDATE_IN_IDLE==1)
-    void vApplicationLoadHook();
+    void vApplicationLoadHook(void);
 
     vApplicationLoadHook();
 #endif
 
     asm ( " WFI " );
 }
+

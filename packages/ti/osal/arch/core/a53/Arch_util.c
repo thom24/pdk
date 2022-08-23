@@ -201,12 +201,12 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         /* Pick up the internal static memory block */
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
-        
-        if(gHwiInitialized==(bool)false) 
+
+        if(gHwiInitialized==(bool)false)
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
-          gHwiInitialized = true; 
+          gHwiInitialized = (bool)true;
         }
     }
 
@@ -217,8 +217,8 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     coreId = (uint8_t)(cpuId) & (uint8_t)0xFF;
     key = OsalArch_globalDisableInterrupt();
     for (i = 0u; i < maxHwi; i++) {
-        if (hwiPool[i].used == false) {
-            hwiPool[i].used = true;
+        if (hwiPool[i].used == (bool)false) {
+            hwiPool[i].used = (bool)true;
             break;
         }
     }
@@ -233,15 +233,15 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     {
       retHandle  = NULL_PTR;
      }
-   } 
-   
+   }
+
     if (hwi_handle != NULL_PTR)
     {
         /* Registering the Interrupt Service Routine(ISR). */
         Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
 
         /* Set the priority to default priority if priority is set un-initialized */
-        
+
         if (params->priority == HWIP_USE_DEFAULT_PRIORITY)
         {
             priority = (uint16_t)HWIP_A53_DEFAULT_PRIORITY;

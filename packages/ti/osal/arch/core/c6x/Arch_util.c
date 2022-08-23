@@ -54,8 +54,11 @@ static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
 
 osalArch_Config_t gOsalArchConfig =
 {
-    .disableIrqOnInit = false,
+    .disableIrqOnInit = (bool)false,
 };
+
+/* Below function posts the interrupt delay */
+static void OsalArch_delay( void );
 
 void osalArch_Init (osalArch_Config_t *cfg)
 {
@@ -98,21 +101,27 @@ void OsalArch_clearInterrupt(uint32_t intNum)
     CSL_intcInterruptClear((CSL_IntcVectId)intNum);
     return;
 }
-extern cregister volatile unsigned int IRP;
-extern cregister volatile unsigned int IER;
-extern cregister volatile unsigned int ISR;
-extern cregister volatile unsigned int ICR;
-extern cregister volatile unsigned int ISTP;
+extern cregister volatile uint32_t IRP;
+extern cregister volatile uint32_t IER;
+extern cregister volatile uint32_t ISR;
+extern cregister volatile uint32_t ICR;
+extern cregister volatile uint32_t ISTP;
+
+
+static void OsalArch_delay( void )
+{
+   asm ("  NOP 4  "); /* Compliant */
+}
 
 /* Below function posts the interrupt */
 int32_t OsalArch_postInterrupt(uint32_t intrNum)
 {
-
-    ISR = (1 << intrNum);
-    asm("    nop 4    ");
+    ISR = (1U << intrNum);
+    OsalArch_delay();
 
     return (osal_UNSUPPORTED);
 }
+
 /* Below function globally disable interrupt in the chip level */
 uintptr_t OsalArch_globalDisableInterrupt(void)
 {
@@ -208,7 +217,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     {
          OsalArch_oneTimeInit();
          (void)CSL_intcGlobalNmiEnable();
-         if (gOsalArchConfig.disableIrqOnInit == false)
+         if (gOsalArchConfig.disableIrqOnInit == (bool)false)
          {
             (void)CSL_intcGlobalEnable((CSL_IntcGlobalEnableState *)NULL_PTR);
          }

@@ -96,9 +96,9 @@ EventP_Handle EventP_create(EventP_Params *params)
 
      for (i = 0; i < maxEvent; i++)
      {
-         if (eventPool[i].used == FALSE)
+         if (eventPool[i].used == (bool)false)
          {
-             eventPool[i].used = TRUE;
+             eventPool[i].used = (bool)true;
              /* Update statistics */
              gOsalEventAllocCnt++;
              if (gOsalEventAllocCnt > gOsalEventPeak)
@@ -126,7 +126,7 @@ EventP_Handle EventP_create(EventP_Params *params)
         {
             /* If there was an error reset the event object and return NULL. */
             key = HwiP_disable();
-            handle->used = FALSE;
+            handle->used = (bool)false;
             /* Found the osal event object to delete */
             if (gOsalEventAllocCnt > 0U)
             {
@@ -155,12 +155,12 @@ EventP_Status EventP_delete(EventP_Handle *handle)
     EventP_Status   ret_val = EventP_OK;
     EventP_freertos *event = (EventP_freertos *)*handle;
 
-    if((event != NULL_PTR) && (event->used==TRUE))
+    if((event != NULL_PTR) && (event->used== (bool)true))
     {
         vEventGroupDelete(event->eventHndl);
 
         key = HwiP_disable();
-        event->used = FALSE;
+        event->used = (bool)false;
         /* Found the osal event object to delete */
         if (gOsalEventAllocCnt > 0U)
         {
@@ -190,7 +190,7 @@ uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
     EventP_freertos *event = (EventP_freertos *)handle;
     uint32_t        eventBits = 0U;
 
-    if((event != NULL_PTR) && (event->used==TRUE) && (waitMode <= EventP_WaitMode_ALL))
+    if((event != NULL_PTR) && (event->used== (bool)true) && (waitMode <= EventP_WaitMode_ALL))
     {
         eventBits = (uint32_t)xEventGroupWaitBits(event->eventHndl,
                                                   (EventBits_t)eventMask,
@@ -213,10 +213,10 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
     EventP_Status   ret_val = EventP_OK;
     EventP_freertos *event = (EventP_freertos *)handle;
     
-    if((event != NULL_PTR) && (event->used==TRUE))
+    if((event != NULL_PTR) && (event->used==(bool)true))
     {
-        if( xPortInIsrContext() )
-        {   
+        if( xPortInIsrContext() == 1 )
+        {
             BaseType_t xHigherPriorityTaskWoken = pdFALSE;
             BaseType_t xResult;
 
@@ -226,7 +226,7 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
 
             if(xResult != pdFAIL)
             {
-                portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+                portYIELD_FROM_ISR((uint32_t)xHigherPriorityTaskWoken);
                 ret_val = EventP_OK;
             }
             else
@@ -236,7 +236,7 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
         }
         else
         {
-            xEventGroupSetBits(event->eventHndl, (EventBits_t)eventMask);
+            (void)xEventGroupSetBits(event->eventHndl, (EventBits_t)eventMask);
         }
     }
     else
@@ -257,10 +257,10 @@ uint32_t EventP_getPostedEvents(EventP_Handle handle)
     EventP_freertos *event = (EventP_freertos *)handle;
     uint32_t        eventBits = 0U;
     
-    if((event != NULL_PTR) && (event->used==TRUE))
+    if((event != NULL_PTR) && (event->used==(bool)true))
     {
-        if( xPortInIsrContext() )
-        {   
+        if( xPortInIsrContext() == 1 )
+        {
             eventBits = (uint32_t)xEventGroupGetBitsFromISR(event->eventHndl);
         }
         else
@@ -271,3 +271,4 @@ uint32_t EventP_getPostedEvents(EventP_Handle handle)
 
     return eventBits;
 }
+

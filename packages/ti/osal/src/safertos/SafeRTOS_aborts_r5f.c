@@ -77,7 +77,9 @@ void vUndefAbort(void)
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
     while(loop)
-        ;
+    {
+
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -93,7 +95,9 @@ void vPrefetchAbort(void)
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
     while(loop)
-        ;
+    {
+
+    }
 }
 
 /*---------------------------------------------------------------------------*/
@@ -121,7 +125,9 @@ void vDataAbort_c(void)
         /* Go into an infinite loop.*/
         volatile uint32_t loop = 1;
         while(loop)
-            ;
+        {
+
+        }
     }
 }
 

@@ -221,7 +221,7 @@ static void prvTaskExitError( void )
      *
      * Force an assert() to be triggered if configASSERT() is
      * defined, then stop here so application writers can catch the error. */
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 
@@ -257,7 +257,7 @@ StackType_t *pxPortInitialiseStack(StackType_t * pxTopOfStack, StackType_t * pxE
 {
 #if ( portUSING_MPU_WRAPPERS != 1 )
     /* TODO this should be a parameter */
-    bool privileged = true;
+    bool privileged = (bool)true;
 #endif
     pxTopOfStack = (StackType_t *)TaskSupport_setupTaskStack(pxTopOfStack, pxEndOfStack, ti_sysbios_knl_Task_Func, Task_exit, Task_enter, pxCode, pvParameters, privileged);
 
@@ -356,7 +356,7 @@ BaseType_t xPortStartScheduler(void)
 
     prvPortInitTickTimer();
     Hwi_switchFromBootStack();
-    
+
     /* Start the ISR handling of the timer that generates the tick ISR. */
     prvPortStartTickTimer();
     ulPortSchedularRunning = pdTRUE;
@@ -451,7 +451,7 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask,
                                     char * pcTaskName )
 {
     DebugP_log1("[FreeRTOS] Stack overflow detected for task [%s]", (uintptr_t)pcTaskName);
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 /* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
@@ -629,7 +629,7 @@ void vApplicationIdleHook( void )
 /* linking with the C/C++ runtime library.                                   */
 /*****************************************************************************/
 
-int _system_pre_init(void)
+int32_t _system_pre_init(void)
 {
     /* WA for K3_OPEN_SI-457 */
     __sa_set_cr(0, __sa_get_cr(1));

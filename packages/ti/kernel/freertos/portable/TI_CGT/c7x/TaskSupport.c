@@ -149,7 +149,7 @@ void * TaskSupport_setupTaskStack(StackType_t * pxStackArrayEndAddress, StackTyp
 /*
  *  ======== TaskSupport_getStackAlignment ========
  */
-unsigned int TaskSupport_getStackAlignment()
+uint32_t TaskSupport_getStackAlignment()
 {
     return (TaskSupport_stackAlignment);
 }

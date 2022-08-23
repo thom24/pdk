@@ -199,7 +199,7 @@ void vApplicationErrorHook( portTaskHandleType xHandleOfTaskWithError,
     ( void ) xErrorCode;
 
     /* Will only get here if an internal kernel error occurs. */
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -220,7 +220,7 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     xTimerParams.runMode    = TimerP_RunMode_CONTINUOUS;
     xTimerParams.startMode  = TimerP_StartMode_USER;
     xTimerParams.periodType = TimerP_PeriodType_MICROSECS;
-    xTimerParams.period     = ( 1000000UL / ulTickRateHz );
+    xTimerParams.period     = (uint32_t)( 1000000UL / ulTickRateHz );
     prvGetOSTimerParams( &xOSTimerParams );
 #if defined (BUILD_C66X) || defined (BUILD_C7X)
     xTimerParams.intNum     = xOSTimerParams.intNum;
@@ -235,7 +235,7 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     if( ( NULL == pxTickTimerHandle ) ||
         ( TimerP_OK != TimerP_start( pxTickTimerHandle ) ) )
     {
-            DebugP_assert(0);
+            DebugP_assert((bool)false);
     }
 }
 
@@ -255,7 +255,6 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
         params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C66X_2;
         params->eventId = OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_2;
         params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_2;
-
     }
 #endif
 #if defined (BUILD_MCU)
@@ -280,7 +279,11 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
         params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1;
-    } 
+    }
+    else
+    {
+          /*   Do nothing  */
+    }
 #endif
 #elif defined (BUILD_C7X)
     int32_t rtMapCpuId;

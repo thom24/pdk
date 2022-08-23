@@ -104,24 +104,24 @@ typedef enum TimerP_Status_e {
  *  @brief  Timer period units for TimerP APIs
  */
 typedef enum TimerP_PeriodType_e {
-    TimerP_PeriodType_MICROSECS,  /*!< timer period is in micro seconds */
-    TimerP_PeriodType_COUNTS      /*!< timer period is in counts */
+    TimerP_PeriodType_MICROSECS = ( (uint32_t) 0), /*!< timer period is in micro seconds */
+    TimerP_PeriodType_COUNTS    = ( (uint32_t) 1), /*!< timer period is in counts */
 } TimerP_PeriodType;
 
 /*!
  *  @brief  Timer runtime modes for TimerP APIs
  */
 typedef enum TimerP_RunMode_e {
-    TimerP_RunMode_CONTINUOUS,  /*!< timer is periodic and runs continuously */
-    TimerP_RunMode_ONESHOT      /*!< timer runs for a single period values and stops */
+    TimerP_RunMode_CONTINUOUS = ( (uint32_t) 0), /*!< timer is periodic and runs continuously */
+    TimerP_RunMode_ONESHOT    = ( (uint32_t) 1), /*!< timer runs for a single period values and stops */
  } TimerP_RunMode;
 
 /*!
  *  @brief  Timer start modes for TimerP APIs
  */
 typedef enum TimerP_StartMode_e {
-    TimerP_StartMode_AUTO,      /*!< timer starts automatically after create*/
-    TimerP_StartMode_USER       /*!< timer will be started by the user */
+    TimerP_StartMode_AUTO =  ( (uint32_t) 0),     /*!< timer starts automatically after create*/
+    TimerP_StartMode_USER =  ( (uint32_t) 1),     /*!< timer will be started by the user */
 }TimerP_StartMode;
 
 /*!

@@ -177,7 +177,7 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_safertos *mailbox = (MailboxP_safertos *)handle;
 
-    if( Osal_isInISRContext() )
+    if( Osal_isInISRContext() == 1 )
     {
         /* timeout is ignored when in ISR mode */
         xCreateResult = xQueueSendFromISR(mailbox->mailboxHndl, msg);
@@ -217,7 +217,7 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_safertos *mailbox = (MailboxP_safertos *)handle;
 
-    if( Osal_isInISRContext() )
+    if( Osal_isInISRContext() == 1 )
     {
         /* timeout is ignored when in ISR mode */
         xCreateResult = xQueueReceiveFromISR(mailbox->mailboxHndl, msg);
@@ -250,12 +250,12 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
 int32_t MailboxP_getNumPendingMsgs(MailboxP_Handle handle)
 {
     DebugP_assert((handle != NULL_PTR));
-    
+
     portBaseType xCreateResult;
     portUnsignedBaseType numMsg;
     MailboxP_safertos *mailbox = (MailboxP_safertos *)handle;
 
-    if( Osal_isInISRContext() )
+    if( Osal_isInISRContext() == 1 )
     {
         /* There is no ISR API for waiting in safertos */
         xCreateResult = errNULL_PARAMETER_SUPPLIED;

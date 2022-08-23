@@ -223,7 +223,7 @@ static void * prvWorkerThread( void * pvArgs )
         /* Parse messages */
         if( xMessageSize == MQUEUE_MSG_WORKER_CTRL_MSG_SIZE )
         {
-            switch( ( int ) pcReceiveBuffer[ 0 ] )
+            switch( ( int32_t ) pcReceiveBuffer[ 0 ] )
             {
                 case eWORKER_CTRL_MSG_CONTINUE:
                     /* Task branch, currently only prints message to screen. */
@@ -265,8 +265,8 @@ static void * prvDispatcherThread( void * pvArgs )
     char pcSendBuffer[ MQUEUE_MSG_WORKER_CTRL_MSG_SIZE ] = { 0 };
 
     /* Just for fun, let threads do a total of MQUEUE_NUM_MSGS independent tasks. */
-    int i = 0;
-    const int totalNumOfJobsPerThread = MQUEUE_NUM_MSGS;
+    int32_t i = 0;
+    const int32_t totalNumOfJobsPerThread = MQUEUE_NUM_MSGS;
 
     /* Distribute MQUEUE_NUM_MSGS independent tasks to workers, in round-robin fashion. */
     pcSendBuffer[ 0 ] = ( char ) eWORKER_CTRL_MSG_CONTINUE;
@@ -318,8 +318,8 @@ static void * prvDispatcherThread( void * pvArgs )
  */
 void posix_demo_main( void *pvParameters )
 {
-    int i = 0;
-    int iStatus = 0;
+    int32_t i = 0;
+    int32_t iStatus = 0;
 
 	/* Remove warnings about unused parameters. */
     ( void ) pvParameters;
@@ -452,5 +452,5 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 
-
 #endif
+

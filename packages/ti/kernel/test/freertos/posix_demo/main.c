@@ -60,7 +60,7 @@ void freertos_main(void *args)
 }
 
 
-int main()
+int32_t main()
 {
     Board_initCfg boardCfg;
     Board_STATUS  status;
@@ -91,7 +91,7 @@ int main()
 	will only return if there was not enough FreeRTOS heap memory available to
 	create the Idle and (if configured) Timer tasks.  Heap management, and
 	techniques for trapping heap exhaustion, are described in the book text. */
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 
     return 0;
 }
@@ -100,7 +100,7 @@ void c66xIntrConfig(void)
 {
 #if defined (_TMS320C6X) && defined (SOC_J721E)
     /* On J721E C66x builds we define timer tick in the configuration file to
-     * trigger event #21 for C66x_1(from DMTimer0) and #20 for C66x_2(from DMTimer1). 
+     * trigger event #21 for C66x_1(from DMTimer0) and #20 for C66x_2(from DMTimer1).
      * Map DMTimer interrupts to these events through DMSC RM API.
      */
     #include <ti/drv/sciclient/sciclient.h>
@@ -133,3 +133,4 @@ void c66xIntrConfig(void)
 
     return;
 }
+

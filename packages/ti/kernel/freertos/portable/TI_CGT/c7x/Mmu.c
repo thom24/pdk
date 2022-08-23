@@ -105,7 +105,7 @@ void Mmu_addBlockEntry(uint8_t level, uint64_t *tablePtr, uint16_t tableIdx,
             ((uint64_t)(mapAttrs->accessPerm & 0x3) << 6) |
             ((uint64_t)(mapAttrs->shareable & 0x3) << 8) |
             ((uint64_t)(0x1) << 10) |  /* access flag */
-            ((uint64_t)(!(mapAttrs->global) & 0x1) << 11) | 
+            ((uint64_t)(!(mapAttrs->global) & 0x1) << 11) |
             ((uint64_t)(paddr & ~((1 << Mmu_configInfo.tableOffset[level]) - 1))) |
             ((uint64_t)(!(mapAttrs->privExecute) & 0x1) << 53) |
             ((uint64_t)(!(mapAttrs->userExecute) & 0x1) << 54);
@@ -188,24 +188,24 @@ void Mmu_disable()
     if (!(Mmu_isEnabled())) {
         return;
     }
-    
+
     key = Hwi_disable();
 
     /* get the current enabled bits */
 //    type = Cache_getEnabled();
     type = Cache_Type_L1D;
-    
+
     if (type & Cache_Type_L1D) {
         /* disable the L1 data cache */
         Cache_disable(Cache_Type_L1D);
     }
-    
+
     /* disables the MMU */
     Mmu_disableI();
 
     /* Invalidate entire TLB */
     Mmu_tlbInvAll(0);
-    
+
     /* set cache back to initial settings */
     Cache_enable(type);
 
@@ -240,17 +240,17 @@ void Mmu_enable()
     key = Hwi_disable();
 
     Cache_disable(Cache_Type_L1D);
-    
+
     /* Invalidate entire TLB */
     Mmu_tlbInvAll(0);
-    
+
     /* enables the MMU */
     mode = Hwi_getCXM();
     if (mode == Hwi_TSR_CXM_SecureSupervisor) {
         Mmu_enableI_secure();
     }
     Mmu_enableI();
-    
+
     Cache_enable(Cache_Type_L1D);
 
     Hwi_restore(key);
@@ -324,9 +324,9 @@ bool Mmu_map(uint64_t vaddr, uint64_t paddr, size_t size, Mmu_MapAttrs *mapAttrs
     DebugP_assert(paddr <= Mmu_PADDR_MASK);
 
     /* Alignment check on vaddr, paddr & size */
-    DebugP_assert((vaddr & (Mmu_granuleSize - 1)) == 0); 
-    DebugP_assert((paddr & (Mmu_granuleSize - 1)) == 0); 
-    DebugP_assert((size & (Mmu_granuleSize - 1)) == 0); 
+    DebugP_assert((vaddr & (Mmu_granuleSize - 1)) == 0);
+    DebugP_assert((paddr & (Mmu_granuleSize - 1)) == 0);
+    DebugP_assert((size & (Mmu_granuleSize - 1)) == 0);
 
     key = Hwi_disable();
 
@@ -511,7 +511,7 @@ void Mmu_startup()
 
     /* Invalidate entire TLB */
 //    Mmu_tlbInvAll(0);
-    
+
     if (Mmu_enableMMU) {
         mode = Hwi_getCXM();
         if (mode == Hwi_TSR_CXM_SecureSupervisor) {
@@ -704,7 +704,7 @@ void Mmu_initFuncDefault()
     return;
 
 fail:
-    DebugP_assert(0);
+    DebugP_assert((bool)false);
 }
 
 #if defined(__GNUC__) && !defined(__ti__)
@@ -804,3 +804,4 @@ const Mmu_ConfigInfo Mmu_configInfo = {
     (uint8_t)0x9U,  /* indexBits */
     0,  /* noLevel0Table */
 };
+

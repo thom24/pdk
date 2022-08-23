@@ -140,7 +140,7 @@ portBaseType prvSetupHardware( void )
 /*-------------------------------------------------------------------------*/
 #endif
 
-int main( void )
+int32_t main( void )
 {
     Board_initCfg boardCfg;
     Board_STATUS  status;

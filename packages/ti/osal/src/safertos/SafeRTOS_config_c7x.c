@@ -184,11 +184,11 @@ static void prvMmuInit( Bool isSecure )
 
     if( TRUE == isSecure )
     {
-        attrs.ns = 0;
+        attrs.ns = (bool)false;
     }
     else
     {
-        attrs.ns = 1;
+        attrs.ns = (bool)true;
     }
 
     /* Register region */
@@ -244,17 +244,17 @@ static void vPortInitTimerCLECCfg( uint32_t timerId, uint32_t timerIntNum )
 {
     CSL_ClecEventConfig   cfgClec;
     CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs*)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t input         = gDmTimerPInfoTbl[timerId].eventId;
+    uint32_t input         = (uint32_t)gDmTimerPInfoTbl[timerId].eventId;
     uint32_t corepackEvent = timerIntNum;
 
     /* Configure CLEC */
     cfgClec.secureClaimEnable = FALSE;
     cfgClec.evtSendEnable     = TRUE;
     cfgClec.rtMap             = CSL_clecGetC7xRtmapCpuId();
-    cfgClec.extEvtNum         = 0;
+    cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = corepackEvent;
     CSL_clecClearEvent(clecBaseAddr, input);
-    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
+    CSL_clecConfigEventLevel(clecBaseAddr, input, 0U); /* configure interrupt as pulse */
     CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
 }
 

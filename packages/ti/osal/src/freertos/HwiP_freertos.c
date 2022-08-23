@@ -124,7 +124,7 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
 
     OSAL_Assert((handle == NULL_PTR));
 
-    if(handle != NULL_PTR) 
+    if(handle != NULL_PTR)
     {
         status = OsalArch_HwiPDelete(handle);
 
@@ -183,7 +183,7 @@ uintptr_t HwiP_disable(void)
 {
     uintptr_t key = (uintptr_t)NULL_PTR;
 
-    if(( xPortInIsrContext() ) || 
+    if(( xPortInIsrContext() == 1 ) ||
        ( xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED ))
     {
         key = OsalArch_globalDisableInterrupt();
@@ -201,7 +201,7 @@ uintptr_t HwiP_disable(void)
  */
 void HwiP_restore(uintptr_t key)
 {
-    if(( xPortInIsrContext() ) || 
+    if(( xPortInIsrContext() == 1 ) ||
        ( xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED ))
     {
         OsalArch_globalRestoreInterrupt(key);
@@ -233,3 +233,4 @@ int32_t HwiP_getEventId(int32_t interruptNum)
     return(OsalArch_getEventId(interruptNum));
 }
 #endif
+

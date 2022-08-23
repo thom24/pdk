@@ -972,15 +972,15 @@ uint32_t ddr_buf[BUF_LEN];
 #elif defined(__TI_ARM_V7M4__)
 uint32_t ddr_buf[BUF_LEN];
 #endif
-void OSAL_cache_test_fill_buf(uint32_t *buf, int len,uint32_t pattern) {
-  int i;
+void OSAL_cache_test_fill_buf(uint32_t *buf, uint32_t len,uint32_t pattern) {
+  uint32_t i;
   for(i=0;i<len;i++) {
      buf[i]=pattern;
   }
 }
 /* Returns FALSE if all the buffer is not 'pattern'. This will read the contents though */
-bool OSAL_cache_test_check_buf(uint32_t *buf, int len,uint32_t pattern) {
-  int i;
+bool OSAL_cache_test_check_buf(uint32_t *buf, uint32_t len,uint32_t pattern) {
+  uint32_t i;
   bool match=TRUE;
   for(i=0;i<len;i++) {
      if(buf[i]!=pattern) {
@@ -1320,7 +1320,7 @@ bool OSAL_queue_test()
     QueueP_Handle   handle;
     Test_Queue_Buf buf[10], *pBuf;
     QueueP_Status   status;
-    int i;
+    uint32_t i;
 
     QueueP_Params_init(&params);
 
@@ -1334,7 +1334,7 @@ bool OSAL_queue_test()
 
     for (i = 0; i < 10; i++)
     {
-        buf[i].index = (uint32_t)i;
+        buf[i].index = i;
         buf[i].pkt = NULL;
     }
 
@@ -1416,7 +1416,7 @@ bool OSAL_event_test()
     }
 
     /* Test 1: event post test */
-    eventMask = EventP_ID_00 + EventP_ID_02 + EventP_ID_04 + EventP_ID_05; 
+    eventMask = EventP_ID_00 + EventP_ID_02 + EventP_ID_04 + EventP_ID_05;
     status = EventP_post(handle, eventMask);
     if(EventP_OK != status)
     {

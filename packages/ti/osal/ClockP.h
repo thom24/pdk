@@ -77,16 +77,16 @@ typedef enum ClockP_Status_e
  *  @brief  Timer runtime modes for ClockP APIs
  */
 typedef enum ClockP_RunMode_e {
-    ClockP_RunMode_ONESHOT,      /*!< timer runs for a single period values and stops */
-    ClockP_RunMode_CONTINUOUS    /*!< timer is periodic and runs continuously */
+    ClockP_RunMode_ONESHOT     = ((uint8_t) 0),      /*!< timer runs for a single period values and stops */
+    ClockP_RunMode_CONTINUOUS  = ((uint8_t) 1),      /*!< timer is periodic and runs continuously */
  } ClockP_RunMode;
 
 /*!
  *  @brief  Timer start modes for ClockP APIs
  */
 typedef enum ClockP_StartMode_e {
-    ClockP_StartMode_USER,       /*!< timer will be started by the user */
-    ClockP_StartMode_AUTO        /*!< timer starts automatically after create or scheduler start */
+    ClockP_StartMode_USER = ((uint8_t) 0),       /*!< timer will be started by the user */
+    ClockP_StartMode_AUTO = ((uint8_t) 1),       /*!< timer starts automatically after create or scheduler start */
 }ClockP_StartMode;
 
 /*!
@@ -112,7 +112,6 @@ typedef struct ClockP_Params_s
     void     *arg;       /*!< User argument that is available inside the callback */
 } ClockP_Params;
 
-
 /*!
  *  @brief  Initialize params structure to default values.
  *
@@ -120,16 +119,23 @@ typedef struct ClockP_Params_s
  */
 extern void ClockP_Params_init(ClockP_Params *params);
 
+/**
+ * \brief Callback that is called when the clock expires
+ *
+ * \param args [in] user specific argument pointer that was passed via \ref ClockP_Params
+ */
+typedef void (*ClockP_FxnCallback)(void *args);
+
 /*!
  *  @brief  Function to create a clock.
  *
- *  @param  clockfxn  Function pointer of the clock function.
+ *  @param  clockfxn  Function pointer of the clock function \ref ClockP_FxnCallback.
  *
  *  @param  params  Pointer to the instance configuration parameters.
  *
  *  @return A ClockP_Handle on success or a NULL on an error
  */
-extern ClockP_Handle ClockP_create(void *clockfxn,
+extern ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
                                    const ClockP_Params *params);
 
 /*!

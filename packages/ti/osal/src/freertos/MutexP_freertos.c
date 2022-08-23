@@ -73,71 +73,72 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
     if (mutexObj == NULL)
     {
-        return NULL;
-    }
-
-    /* Pick up the internal static memory block */
-    mutexPool = (MutexP_freertos *) &gOsalMutexPFreeRtosPool[0];
-    maxMutex  = OSAL_FREERTOS_CONFIGNUM_MUTEX;
-
-    if(gOsalMutexAllocCnt==0U) 
-    {
-        (void)memset((void *)gOsalMutexPFreeRtosPool,0,sizeof(gOsalMutexPFreeRtosPool));
-    }
-
-    key = HwiP_disable();
-
-    for (i = 0; i < maxMutex; i++)
-    {
-        if (mutexPool[i].used == FALSE)
-        {
-            mutexPool[i].used = TRUE;
-            /* Update statistics */
-            gOsalMutexAllocCnt++;
-            if (gOsalMutexAllocCnt > gOsalMutexPeak)
-            {
-                gOsalMutexPeak = gOsalMutexAllocCnt;
-            }
-            break;
-        }
-    }
-    HwiP_restore(key);
-
-    if (i < maxMutex)
-    {
-        /* Grab the memory */
-        handle = (MutexP_freertos *) &mutexPool[i];
-    }
-
-    if (handle == NULL_PTR) {
-        ret_handle = NULL_PTR;
+         ret_handle = NULL;
     }
     else
     {
-        handle->isRecursiveMutex = 1;
-        handle->semHndl = xSemaphoreCreateRecursiveMutexStatic(&handle->semObj);
+      /* Pick up the internal static memory block */
+      mutexPool = (MutexP_freertos *) &gOsalMutexPFreeRtosPool[0];
+      maxMutex  = OSAL_FREERTOS_CONFIGNUM_MUTEX;
 
-        if (handle->semHndl == NULL)
-        {
-            /* If there was an error reset the mutex object and return NULL. */
-            key = HwiP_disable();
-            handle->used = FALSE;
-            /* Found the osal task object to delete */
-            if (gOsalMutexAllocCnt > 0U)
-            {
-                gOsalMutexAllocCnt--;
-            }
-            HwiP_restore(key);
-            ret_handle = NULL_PTR;
-        }
-        else 
-        {
-            mutexObj->object = (void *)handle;
-            mutexObj->key = 0;
-            ret_handle = (MutexP_Handle)mutexObj;
-        }
+      if(gOsalMutexAllocCnt==0U)
+      {
+          (void)memset((void *)gOsalMutexPFreeRtosPool,0,sizeof(gOsalMutexPFreeRtosPool));
+      }
+
+      key = HwiP_disable();
+
+      for (i = 0; i < maxMutex; i++)
+      {
+          if (mutexPool[i].used == (bool)false)
+          {
+              mutexPool[i].used = (bool)true;
+              /* Update statistics */
+              gOsalMutexAllocCnt++;
+              if (gOsalMutexAllocCnt > gOsalMutexPeak)
+              {
+                  gOsalMutexPeak = gOsalMutexAllocCnt;
+              }
+              break;
+          }
+      }
+      HwiP_restore(key);
+
+      if (i < maxMutex)
+      {
+          /* Grab the memory */
+          handle = (MutexP_freertos *) &mutexPool[i];
+      }
+
+      if (handle == NULL_PTR) {
+          ret_handle = NULL_PTR;
+      }
+      else
+      {
+          handle->isRecursiveMutex = 1;
+          handle->semHndl = xSemaphoreCreateRecursiveMutexStatic(&handle->semObj);
+
+          if (handle->semHndl == NULL)
+          {
+              /* If there was an error reset the mutex object and return NULL. */
+              key = HwiP_disable();
+              handle->used = (bool)false;
+              /* Found the osal task object to delete */
+              if (gOsalMutexAllocCnt > 0U)
+              {
+                  gOsalMutexAllocCnt--;
+              }
+              HwiP_restore(key);
+              ret_handle = NULL_PTR;
+          }
+          else
+          {
+              mutexObj->object = (void *)handle;
+              mutexObj->key = 0;
+              ret_handle = (MutexP_Handle)mutexObj;
+          }
+      }
     }
-
     return ret_handle;
 }
 
@@ -150,12 +151,12 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
     MutexP_Object *mutexObj = (MutexP_Object *)handle;
     MutexP_freertos *mutex = (MutexP_freertos *)mutexObj->object;
 
-    if ((mutex != NULL_PTR) && (mutex->used == TRUE))
+    if ((mutex != NULL_PTR) && (mutex->used == (bool)true))
     {
         vSemaphoreDelete(mutex->semHndl);
 
         key = HwiP_disable();
-        mutex->used = FALSE;
+        mutex->used = (bool)false;
         if (gOsalMutexAllocCnt > 0U)
         {
             gOsalMutexAllocCnt--;
@@ -180,16 +181,19 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
     MutexP_freertos *mutex = (MutexP_freertos *)mutexObj->object;
     uint32_t isTaken = 0;
 
-    if ((mutex != NULL_PTR) && (mutex->used == TRUE )&& (mutex->isRecursiveMutex))
+    if ((mutex != NULL_PTR) && (mutex->used == (bool)true )&& (mutex->isRecursiveMutex == 1U))
     {
-        if (!xPortInIsrContext())
+        if (xPortInIsrContext() == 0 )
         {
             if (timeout == MutexP_WAIT_FOREVER)
             {
-                timeout = portMAX_DELAY;
+                isTaken = (uint32_t )xSemaphoreTakeRecursive(mutex->semHndl, portMAX_DELAY);
             }
-            isTaken = xSemaphoreTakeRecursive(mutex->semHndl, timeout);
-            if(isTaken)
+            else
+            {
+                isTaken = (uint32_t )xSemaphoreTakeRecursive(mutex->semHndl, timeout);
+            }
+            if(isTaken != 0U)
             {
                 ret = MutexP_OK;
             }
@@ -219,11 +223,11 @@ MutexP_Status MutexP_unlock(MutexP_Handle handle)
     MutexP_freertos *mutex = (MutexP_freertos *)mutexObj->object;
     /* Note: timeout is not use */
 
-    if ((mutex != NULL_PTR) && (mutex->used == TRUE) && (mutex->isRecursiveMutex))
+    if ((mutex != NULL_PTR) && (mutex->used == (bool)true) && (mutex->isRecursiveMutex == 1U ))
     {
-        if (!xPortInIsrContext())
+        if (xPortInIsrContext() == 0)
         {
-            xSemaphoreGiveRecursive(mutex->semHndl);
+            (void)xSemaphoreGiveRecursive(mutex->semHndl);
             ret = MutexP_OK;
         }
         else

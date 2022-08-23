@@ -43,7 +43,7 @@ extern uint32_t  gOsalSemAllocCnt, gOsalSemPeak;
  *  The order is important as the semaphore object has to be word aligned.
  */
 typedef struct SemaphoreP_safertos_s {
-    uint64_t          semObj[(safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t) + 1)];
+    uint64_t          semObj[(safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t)+(1U))];
     xSemaphoreHandle  semHndl;
     bool              used;
 } SemaphoreP_safertos;
@@ -195,15 +195,15 @@ int32_t SemaphoreP_constructBinary( SemaphoreP_safertos *handle, uint32_t initCo
     }
     else
     {
-        if( initCount == 0 )
+        if( initCount == 0U )
         {
             uint32_t            isSemTaken;
-            DebugP_assert(Osal_isInISRContext( ) == false);
+            DebugP_assert(Osal_isInISRContext( ) == (bool)false );
             /* SafeRTOS on BinarySemaphore create initializes semaphore with count of 1.
              * So we need to take semaphore to make count 0, if we are creating a binary semaphore with init count of 0.
              */
-            isSemTaken = xSemaphoreTake( handle->semHndl, safertosapiMAX_DELAY);
-            DebugP_assert(isSemTaken == true);
+            isSemTaken = (uint32_t)xSemaphoreTake( handle->semHndl, safertosapiMAX_DELAY);
+            DebugP_assert(isSemTaken == (bool)true);
         }
         status = SemaphoreP_OK;
     }
@@ -294,22 +294,22 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
     DebugP_assert( ( handle != NULL_PTR ) );
-    if(  Osal_isInISRContext(  )  )
+    if(  Osal_isInISRContext() == 1  )
     {
         /* timeout is ignored when in ISR mode */
-        isSemTaken = xSemaphoreTakeFromISR( pSemaphore->semHndl);
+        isSemTaken =(uint32_t) xSemaphoreTakeFromISR( pSemaphore->semHndl);
         safertosapiYIELD_FROM_ISR();
     }
     else
     {
         if ( timeout == SemaphoreP_WAIT_FOREVER )
         {
-            isSemTaken = xSemaphoreTake( pSemaphore->semHndl, safertosapiMAX_DELAY );
+            isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, safertosapiMAX_DELAY );
             DebugP_assert(isSemTaken == pdPASS);
         }
         else
         {
-            isSemTaken = xSemaphoreTake( pSemaphore->semHndl, timeout );
+            isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, timeout );
         }
     }
 
@@ -333,7 +333,7 @@ SemaphoreP_Status SemaphoreP_post( SemaphoreP_Handle handle )
     DebugP_assert( ( handle != NULL_PTR ) );
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
-    if(  Osal_isInISRContext(  )  )
+    if(  Osal_isInISRContext() == 1  )
     {
         xSemaphoreGiveFromISR( pSemaphore->semHndl);
         safertosapiYIELD_FROM_ISR();
@@ -375,8 +375,10 @@ int32_t SemaphoreP_getCount( SemaphoreP_Handle handle )
 
 	xResult = xSemaphoreGetCountDepth(  pSemaphore->semHndl, &uxCount  );
 	if(  xResult != pdPASS  )
+  {
 		uxCount = 0U;
-    return uxCount;
+  }
+    return (int32_t)uxCount;
 }
 
 SemaphoreP_Status SemaphoreP_reset( SemaphoreP_Handle handle )
@@ -389,8 +391,8 @@ SemaphoreP_Status SemaphoreP_reset( SemaphoreP_Handle handle )
 
     vTaskSuspendScheduler(  );
     do {
-        isSemTaken = xSemaphoreTake( pSemaphore->semHndl, 0 );
-    } while( isSemTaken != 0 );
+        isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, 0U );
+    } while( isSemTaken != 0U );
     xTaskResumeScheduler(  );
 
     return ( ret_val );

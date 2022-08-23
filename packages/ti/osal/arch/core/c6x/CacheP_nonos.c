@@ -41,15 +41,15 @@
 #include <ti/osal/CacheP.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 
-#define MAR                     ((volatile uint32_t *) (SOC_DSP_ICFG_BASE + DSP_MAR(0)))
+#define MAR                     ((volatile uint32_t *) (SOC_DSP_ICFG_BASE + DSP_MAR(0U)))
 
 /* Max word count per cache operations */
 #define MAXWC                   (0xFF00U)
 
-/* Following parameter CACHEP_ATOMIC_BLOCK_SIZE is used to break up 
- * large blocks into multiple small blocks which are done atomically.  
- * Each block of the specified size waits for the cache operation to 
- * finish before starting the next block. 
+/* Following parameter CACHEP_ATOMIC_BLOCK_SIZE is used to break up
+ * large blocks into multiple small blocks which are done atomically.
+ * Each block of the specified size waits for the cache operation to
+ * finish before starting the next block.
  * Setting this size to 0, means the cache operations are not done atomically.
  */
 /* #define CACHEP_ATOMIC_BLOCK_SIZE    (CACHE_L2_LINESIZE) */
@@ -147,9 +147,9 @@ static void CacheP_block(const void * addr, int32_t size, CacheP_Function_t fxnP
     int32_t   size_remaining  = (int32_t)alignedSize;
     uint32_t  bytes_count;
     uint32_t  incCnt;
-    
+
     /* determine the increment count */
-    if(CACHEP_ATOMIC_BLOCK_SIZE)
+    if(CACHEP_ATOMIC_BLOCK_SIZE != 0U)
     {
         incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
     }
@@ -159,14 +159,14 @@ static void CacheP_block(const void * addr, int32_t size, CacheP_Function_t fxnP
         incCnt = MAXWC * sizeof(uint32_t);
     }
 
-    while(size_remaining > 0) 
+    while(size_remaining > 0)
     {
         bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt: (uint32_t)size_remaining;
 
         fxnPtr((void *)block_addr, bytes_count, CACHE_WAIT);
 
         size_remaining -= (int32_t)incCnt;
-        block_addr     += incCnt; 
+        block_addr     += incCnt;
     }
-    
+
 }

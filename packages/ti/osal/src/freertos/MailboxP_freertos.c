@@ -101,9 +101,9 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
      for (i = 0; i < maxMailbox; i++)
      {
-         if (mailboxPool[i].used == FALSE)
+         if (mailboxPool[i].used == (bool)false)
          {
-             mailboxPool[i].used = TRUE;
+             mailboxPool[i].used = (bool)true;
              /* Update statistics */
              gOsalMailboxAllocCnt++;
              if (gOsalMailboxAllocCnt > gOsalMailboxPeak)
@@ -134,7 +134,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
         {
             /* If there was an error reset the mailbox object and return NULL. */
             key = HwiP_disable();
-            handle->used = FALSE;
+            handle->used = (bool)false;
             /* Found the osal mailbox object to delete */
             if (gOsalMailboxAllocCnt > 0U)
             {
@@ -160,12 +160,12 @@ MailboxP_Status MailboxP_delete(MailboxP_Handle handle)
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if((mailbox != NULL_PTR) && (mailbox->used==TRUE))
+    if((mailbox != NULL_PTR) && (mailbox->used==(bool)true))
     {
         vQueueDelete(mailbox->mailboxHndl);
 
         key = HwiP_disable();
-        mailbox->used = FALSE;
+        mailbox->used = (bool)false;
         /* Found the osal mailbox object to delete */
         if (gOsalMailboxAllocCnt > 0U)
         {
@@ -192,21 +192,24 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if( xPortInIsrContext() )
+    if( xPortInIsrContext() == 1 )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
         /* timeout is ignored when in ISR mode */
         qStatus = xQueueSendToBackFromISR(mailbox->mailboxHndl, msg, &xHigherPriorityTaskWoken);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR((uint32_t)xHigherPriorityTaskWoken);
     }
     else
     {
         if (timeout == MailboxP_WAIT_FOREVER)
         {
-            timeout = portMAX_DELAY;
+            qStatus = xQueueSendToBack(mailbox->mailboxHndl, msg, portMAX_DELAY);
         }
-        qStatus = xQueueSendToBack(mailbox->mailboxHndl, msg, timeout);
+        else
+        {
+            qStatus = xQueueSendToBack(mailbox->mailboxHndl, msg, timeout);
+        }
     }
 
     if (qStatus == pdPASS)
@@ -231,21 +234,24 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if( xPortInIsrContext() )
+    if( xPortInIsrContext() == 1 )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
         /* timeout is ignored when in ISR mode */
         qStatus = xQueueReceiveFromISR(mailbox->mailboxHndl, msg, &xHigherPriorityTaskWoken);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR((uint32_t)xHigherPriorityTaskWoken);
     }
     else
     {
         if (timeout == MailboxP_WAIT_FOREVER)
         {
-            timeout = portMAX_DELAY;
+            qStatus = xQueueReceive(mailbox->mailboxHndl, msg, portMAX_DELAY);
         }
-        qStatus = xQueueReceive(mailbox->mailboxHndl, msg, timeout);
+        else
+        {
+            qStatus = xQueueReceive(mailbox->mailboxHndl, msg, timeout);
+        }
     }
 
     if (qStatus == pdPASS)
@@ -263,11 +269,11 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
 int32_t MailboxP_getNumPendingMsgs(MailboxP_Handle handle)
 {
     DebugP_assert((handle != NULL_PTR));
-    
-    BaseType_t numMsg;
+
+    UBaseType_t numMsg;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if( xPortInIsrContext() )
+    if( xPortInIsrContext() == 1 )
     {
         numMsg = uxQueueMessagesWaitingFromISR(mailbox->mailboxHndl);
     }

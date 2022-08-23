@@ -99,13 +99,13 @@ static void OsalInitMmu(bool isSecure)
     Mmu_initMapAttrs(&attrs);
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
-    if(true == isSecure)
+    if( (bool)true == isSecure )
     {
-        attrs.ns = 0;
+        attrs.ns = (bool)false;
     }
     else
     {
-        attrs.ns = 1;
+        attrs.ns = (bool)true;
     }
 
     /* Register region */
@@ -148,20 +148,20 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure)
     uint32_t            i, maxInputs = 2048U;
     uint32_t            secureClaim = 0U;
 
-    cfgClec.secureClaimEnable = onlyInSecure;
+    cfgClec.secureClaimEnable = onlyInSecure?1U:0U;
     cfgClec.evtSendEnable     = false;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
     cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = 0U;
     for(i = 0U; i < maxInputs; i++)
     {
-        /* Since the CLEC module is shared b/w c7x_1, c7x_2, c7x_3 and c7x_4, 
+        /* Since the CLEC module is shared b/w c7x_1, c7x_2, c7x_3 and c7x_4,
          * Before reseting the events and disabling secure claim,
          * check if its already done by other C7x. */
-        CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);
+        (void)CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);
         if(secureClaim)
         {
-            CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
+            (void)CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
         }
     }
 }
@@ -171,11 +171,12 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure)
 
 void Osal_initMmuDefault(void)
 {
-    OsalInitMmu(false);
-    OsalInitMmu(true);
+    OsalInitMmu((bool)false);
+    OsalInitMmu((bool)true);
 
     /* Setup CLEC access/configure in non-secure mode */
-    OsalCfgClecAccessCtrl(false);
+    OsalCfgClecAccessCtrl((bool)false);
 
     return;
 }
+

@@ -462,7 +462,7 @@ static TimerP_Status TimerP_dmTimerInitObj(TimerP_Struct *timer, TimerP_Fxn tick
      timer->intNum = params->intNum;
    }
    else {
-     timer->intNum = gDmTimerPInfoTbl[timer->timerId].intNum;
+     timer->intNum = (uint32_t)gDmTimerPInfoTbl[timer->timerId].intNum;
    }
 
 #if (defined (_TMS320C6X) || defined (BUILD_C7X))
@@ -550,7 +550,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
 
     HwiP_restore(key);
 
-    if ((tempId == 0xffffU) || (0x0 == baseAddr)) {
+    if ((tempId == 0xffffU) || (0x0U == baseAddr)) {
       ret = TimerP_NOT_AVAILABLE;
     }
   }
@@ -841,8 +841,8 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
 #else
     eventId = 0u;
 #endif
-    Osal_ClearInterrupt(eventId, timer->intNum);
-    Osal_EnableInterrupt(eventId, timer->intNum);
+    Osal_ClearInterrupt((int32_t)eventId,timer->intNum);
+    Osal_EnableInterrupt((int32_t)eventId,timer->intNum);
   }
   else {
       retVal = TimerP_FAILURE;
@@ -911,8 +911,8 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
 #else
       eventId = 0u;
 #endif
-      Osal_ClearInterrupt(eventId, timer->intNum);
-      Osal_DisableInterrupt(eventId, timer->intNum);
+      Osal_ClearInterrupt((int32_t)eventId,timer->intNum);
+      Osal_DisableInterrupt((int32_t)eventId,timer->intNum);
     }
     else {
         retVal = TimerP_FAILURE;

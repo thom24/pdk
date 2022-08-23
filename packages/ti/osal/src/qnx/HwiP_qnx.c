@@ -72,14 +72,14 @@ void *isr_thread (void *arg)
     qnx_osal_hwi_info *hwi = (qnx_osal_hwi_info *)arg;
     int             rcvid;
     struct _pulse   pulse;
-    uintptr_t       interruptNum;
+    int32_t         interruptNum;
 
     while (1) {
         rcvid = MsgReceivePulse(hwi->chid, &pulse, sizeof(struct _pulse), NULL);
         if (rcvid != -1) {
             switch (pulse.code) {
                 case ISR_PULSE:
-                    interruptNum = pulse.value.sival_int;
+                    interruptNum = (int32_t)pulse.value.sival_int;
 
                     /* Call the callback function */
                     hwi->isrFxn(hwi->arg);

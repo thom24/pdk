@@ -128,9 +128,9 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
 
      for (i = 0; i < maxSemaphores; i++)
      {
-         if (semPool[i].used == FALSE)
+         if (semPool[i].used == (bool)false)
          {
-             semPool[i].used = TRUE;
+             semPool[i].used = (bool)true;
              /* Update statistics */
              gOsalSemAllocCnt++;
              if (gOsalSemAllocCnt > gOsalSemPeak)
@@ -175,7 +175,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
         if (retVal != SemaphoreP_OK)
         {
             key = HwiP_disable();
-            handle->used = FALSE;
+            handle->used = (bool)false;
             /* Found the osal semaphore object to delete */
             if (gOsalSemAllocCnt > 0U)
             {
@@ -204,10 +204,10 @@ int32_t SemaphoreP_constructBinary(SemaphoreP_freertos *handle, uint32_t initCou
     else
     {
         vQueueAddToRegistry(handle->semHndl, "Binary Sem (OSAL)");
-        if(initCount == 1)
+        if(initCount == 1U)
         {
             /* post a semaphore to increment initial count to 1 */
-            xSemaphoreGive(handle->semHndl);
+            (void)xSemaphoreGive(handle->semHndl);
         }
         status = SemaphoreP_OK;
     }
@@ -247,12 +247,12 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
     SemaphoreP_Status ret = SemaphoreP_OK;
     SemaphoreP_freertos *semaphore = (SemaphoreP_freertos *)handle;
 
-    if((semaphore != NULL_PTR) && (semaphore->used==TRUE))
+    if((semaphore != NULL_PTR) && (semaphore->used==(bool)true))
     {
         vSemaphoreDelete(semaphore->semHndl);
 
         key = HwiP_disable();
-        semaphore->used = FALSE;
+        semaphore->used = (bool)false;
         /* Found the osal semaphore object to delete */
         if (gOsalSemAllocCnt > 0U)
         {
@@ -294,24 +294,27 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
 
     DebugP_assert((handle != NULL_PTR));
 
-    if( xPortInIsrContext() )
+    if( xPortInIsrContext() == 1 )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
         /* timeout is ignored when in ISR mode */
-        isSemTaken = xSemaphoreTakeFromISR(pSemaphore->semHndl, &xHigherPriorityTaskWoken);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        isSemTaken = (uint32_t)xSemaphoreTakeFromISR(pSemaphore->semHndl,&xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR((uint32_t)xHigherPriorityTaskWoken);
     }
     else
     {
         if (timeout == SemaphoreP_WAIT_FOREVER)
         {
-            timeout = portMAX_DELAY;
+            isSemTaken = (uint32_t)xSemaphoreTake(pSemaphore->semHndl, portMAX_DELAY);
         }
-        isSemTaken = xSemaphoreTake(pSemaphore->semHndl, timeout);
+        else
+        {
+            isSemTaken = (uint32_t)xSemaphoreTake(pSemaphore->semHndl, timeout);
+        }
     }
 
-    if(isSemTaken)
+    if(isSemTaken != 0U)
     {
         ret_val = SemaphoreP_OK;
     }
@@ -331,16 +334,16 @@ SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
     DebugP_assert((handle != NULL_PTR));
     SemaphoreP_freertos *pSemaphore = (SemaphoreP_freertos *)handle;
 
-    if( xPortInIsrContext() )
+    if(xPortInIsrContext() == 1 )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
-        xSemaphoreGiveFromISR(pSemaphore->semHndl, &xHigherPriorityTaskWoken);
-        portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+        (void)xSemaphoreGiveFromISR(pSemaphore->semHndl, &xHigherPriorityTaskWoken);
+        portYIELD_FROM_ISR((uint32_t)xHigherPriorityTaskWoken);
     }
     else
     {
-        xSemaphoreGive(pSemaphore->semHndl);
+        (void)xSemaphoreGive(pSemaphore->semHndl);
     }
 
     return (SemaphoreP_OK);
@@ -370,7 +373,7 @@ int32_t SemaphoreP_getCount(SemaphoreP_Handle handle)
 		
     SemaphoreP_freertos *pSemaphore = (SemaphoreP_freertos *)handle;
 
-    return (uxSemaphoreGetCount(pSemaphore->semHndl));
+    return ((int32_t)uxSemaphoreGetCount(pSemaphore->semHndl));
 }
 
 SemaphoreP_Status SemaphoreP_reset(SemaphoreP_Handle handle)
@@ -383,9 +386,9 @@ SemaphoreP_Status SemaphoreP_reset(SemaphoreP_Handle handle)
 
     vTaskSuspendAll();
     do {
-        isSemTaken = xSemaphoreTake(pSemaphore->semHndl, 0);
-    } while(isSemTaken != 0);
-    xTaskResumeAll();
+        isSemTaken = (uint32_t)xSemaphoreTake(pSemaphore->semHndl, 0);
+    } while(isSemTaken != 0U);
+    (void)xTaskResumeAll();
 
     return (ret_val);
 }
