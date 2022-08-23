@@ -453,14 +453,14 @@ static int32_t Sciclient_pmSetMsgProxy(uint32_t *msg_recv, uint32_t reqFlags, ui
 
     switch (state) {
         case TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF:
-            Sciclient_procBootSetSequenceCtrl(procId,
+            ret = Sciclient_procBootSetSequenceCtrl((uint8_t)procId,
                                               0,
                                               TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_LPSC,
                                               reqFlags,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
             break;
         case TISCI_MSG_VALUE_DEVICE_SW_STATE_ON:
-            Sciclient_procBootSetSequenceCtrl(procId,
+            ret = Sciclient_procBootSetSequenceCtrl((uint8_t)procId,
                                               TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_LPSC,
                                               0,
                                               reqFlags,
@@ -485,14 +485,14 @@ static int32_t Sciclient_pmSetCpuResetMsgProxy(uint32_t *msg_recv, uint32_t proc
 
     switch (reset) {
         case 0: /* Take CPU out of RESET */
-            Sciclient_procBootSetSequenceCtrl(procId,
+            ret = Sciclient_procBootSetSequenceCtrl((uint8_t)procId,
                                               0,
                                               TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_RESET,
                                               0,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
             break;
         case 1: /* Put CPU into RESET */
-            Sciclient_procBootSetSequenceCtrl(procId,
+            ret = Sciclient_procBootSetSequenceCtrl((uint8_t)procId,
                                               TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_RESET,
                                               0,
                                               0,
@@ -508,7 +508,7 @@ static int32_t Sciclient_pmSetCpuResetMsgProxy(uint32_t *msg_recv, uint32_t proc
 int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
 {
     int32_t ret = CSL_PASS;
-    uint32_t msg_inval = 0U;
+    bool msg_inval = (bool)false;
     uint32_t msgType = ((struct tisci_header *) tx_msg)->type;
     uint32_t flags = ((struct tisci_header *) tx_msg)->flags;
     switch (msgType)
@@ -550,6 +550,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                     break;
                     default:
                         ret = set_device_handler((uint32_t*)tx_msg);
+                    break;
                 }
             }
             break;
@@ -572,13 +573,17 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                     break;
                     default:
                         ret = set_device_resets_handler((uint32_t*)tx_msg);
+                    break;
                 }
             }
             break;
         case TISCI_MSG_SYS_RESET               :
-            ret = sys_reset_handler((uint32_t*)tx_msg); break;
+            ret = sys_reset_handler((uint32_t*)tx_msg);
+        break;
         default:
-            ret = CSL_EFAIL; msg_inval = 1U;
+            ret = CSL_EFAIL;
+            msg_inval = (bool)true;
+        break;
     }
     if ((flags & TISCI_MSG_FLAG_AOP) != 0UL) {
         if (ret == CSL_PASS) {
@@ -603,7 +608,8 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
 
 __attribute__((optnone)) static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
 {
-    uint16_t cert_len = 0;
+    uint16_t cert_len = 0U;
+    uint16_t certSize = 0U;
     uint8_t *cert_len_ptr = (uint8_t *)&cert_len;
     uint8_t *x509_cert_ptr;
 
@@ -613,86 +619,88 @@ __attribute__((optnone)) static uint16_t boardcfgRmFindCertSize(uint32_t *msg_re
    x509_cert_ptr = (uint8_t *)req->tisci_boardcfg_rmp_low;
 
 
-    if (*x509_cert_ptr != 0x30)
+    if (*x509_cert_ptr != 0x30U)
     {
         /* The data does not contain a certificate - return */
-        return 0;
-    }
-
-    cert_len = *(x509_cert_ptr + 1);
-
-    /* If you need more than 2 bytes to store the cert length  */
-    /* it means that the cert length is greater than 64 Kbytes */
-    /* and we do not support it                                */
-    if ((cert_len > 0x80) &&
-        (cert_len != 0x82))
-    {
-        return 0;
-    }
-
-    if (cert_len == 0x82)
-    {
-        *cert_len_ptr = *(x509_cert_ptr + 3);
-        *(cert_len_ptr + 1) = *(x509_cert_ptr + 2);
-
-        /* add current offset from start of x509 cert */
-        cert_len += 3;
+        certSize = 0U;
     }
     else
     {
-        /* add current offset from start of x509 cert  */
-        /* if cert len was obtained from 2nd byte i.e. */
-        /* cert size is 127 bytes or less              */
-        cert_len += 1;
+        cert_len = *(x509_cert_ptr + 1);
+
+        /* If you need more than 2 bytes to store the cert length  */
+        /* it means that the cert length is greater than 64 Kbytes */
+        /* and we do not support it                                */
+        if ((cert_len > 0x80U) &&
+          (cert_len != 0x82U))
+          {
+            certSize = 0U;
+          }
+          else
+          {
+            if (cert_len == 0x82U)
+            {
+              *cert_len_ptr = *(x509_cert_ptr + 3);
+              *(cert_len_ptr + 1) = *(x509_cert_ptr + 2);
+
+              /* add current offset from start of x509 cert */
+              certSize = cert_len + 3U;
+            }
+            else
+            {
+              /* add current offset from start of x509 cert  */
+              /* if cert len was obtained from 2nd byte i.e. */
+              /* cert size is 127 bytes or less              */
+              certSize= cert_len + 1U;
+            }
+
+            /* certSize now contains the offset of the last byte */
+            /* of the cert from the ccert_start. To get the size */
+            /* of certificate, add 1                             */
+            certSize =  certSize + 1U;
+          }
     }
-
-    /* cert_len now contains the offset of the last byte */
-    /* of the cert from the ccert_start. To get the size */
-    /* of certificate, add 1                             */
-
-    return cert_len + 1;
+    return (certSize);
 }
 
 static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize)
 {
     int32_t r = CSL_PASS;
-    uint16_t newSize = 0;
+    uint16_t newSize = 0U;
     struct tisci_msg_board_config_rm_req *req =
         (struct tisci_msg_board_config_rm_req *) msg;
 
     /* If there was no certificate to begin with, do not adjust anything */
-    if (adjSize == 0)
+    if (adjSize == 0U)
     {
-        return r;
+        r = CSL_PASS;
     }
-
-    /* Invalidate the cache */
-    CacheP_Inv((const void*) req->tisci_boardcfg_rmp_low,
-            req->tisci_boardcfg_rm_size);
-
-    /*
-     * See if there is still a certificate that needs to be compensated for (in
-     * case TIFS did not process this upon multiple requests for RM board cfg).
-     *
-     * If there is no certificate, then we adjust the size of the RM boardcfg
-     * request. If there is a certificate, it should match the size we retrieved
-     * earlier. Advance the base pointer. If the size does not match, then this
-     * is an error.
-     */
-    newSize = boardcfgRmFindCertSize(msg);
-
-    if (newSize == 0)
-    {
-        req->tisci_boardcfg_rm_size -= adjSize;
-    }
-    else if (newSize == adjSize)
-    {
-        req->tisci_boardcfg_rm_size -= adjSize;
-        req->tisci_boardcfg_rmp_low += adjSize;
-    }
-    else
-    {
-        r = CSL_EFAIL;
+    else{
+            /* Invalidate the cache */
+            CacheP_Inv((const void*) req->tisci_boardcfg_rmp_low,
+                    (int32_t)req->tisci_boardcfg_rm_size);
+    
+            /*
+             * See if there is still a certificate that needs to be compensated for (in
+             * case TIFS did not process this upon multiple requests for RM board cfg).
+             *
+             * If there is no certificate, then we adjust the size of the RM boardcfg
+             * request. If there is a certificate, it should match the size we retrieved
+             * earlier. Advance the base pointer. If the size does not match, then this
+             * is an error.
+             */
+            newSize = boardcfgRmFindCertSize(msg);
+    
+            if (newSize == 0U){
+                req->tisci_boardcfg_rm_size -= adjSize;
+            }
+            else if (newSize == adjSize){
+                req->tisci_boardcfg_rm_size -= adjSize;
+                req->tisci_boardcfg_rmp_low += adjSize;
+            }
+            else{
+                r = CSL_EFAIL;
+            }
     }
 
     return r;
@@ -720,7 +728,7 @@ static int32_t tisci_msg_board_config_rm_handler(uint32_t *msg_recv)
 int32_t Sciclient_ProcessRmMessage(void *tx_msg)
 {
     int32_t r = CSL_PASS;
-    uint32_t msg_inval = 0U;
+    bool msg_inval = (bool)false;
     uint32_t msgType = ((struct tisci_header *) tx_msg)->type;
 
     switch (msgType) {
@@ -765,11 +773,11 @@ int32_t Sciclient_ProcessRmMessage(void *tx_msg)
             break;
         default:
             r = CSL_EFAIL;
-            msg_inval = 1U;
+            msg_inval = (bool)true;
             break;
     }
 
-    if ((((struct tisci_header *) tx_msg)->flags & TISCI_MSG_FLAG_AOP) != 0) {
+    if ((((struct tisci_header *) tx_msg)->flags & TISCI_MSG_FLAG_AOP) != 0U) {
         if (r != CSL_PASS) {
             Sciclient_TisciMsgSetNakResp((struct tisci_header *)tx_msg);
         } else {
@@ -815,8 +823,8 @@ int32_t Sciclient_boardCfgPrepHeader (
         pX509Table->num_comps = 1;
         pX509Table->comps[0].comp_type =
             SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SBL_DATA;
-        pX509Table->comps[0].boot_core = 0x10;
-        pX509Table->comps[0].comp_opts = 0;
+        pX509Table->comps[0].boot_core = 0x10U;
+        pX509Table->comps[0].comp_opts = 0U;
         pX509Table->comps[0].dest_addr = (uint64_t) pBoardCfgHeader;
         pX509Table->comps[0].comp_size = 
             sizeof(Sciclient_DirectBoardCfgDescTable) +
@@ -831,15 +839,15 @@ int32_t Sciclient_boardCfgPrepHeader (
         pBoardCfgDesc->num_elems = 2U;
         pBoardCfgDesc->sw_rev  = 0U; /* Not Used for RM and PM */
         pBoardCfgDesc->descs[0].type = TISCI_MSG_BOARD_CONFIG_PM;
-        pBoardCfgDesc->descs[0].offset = (uint32_t) pInPmPrms->boardConfigLow -
-                                         (uint32_t) pBoardCfgHeader;
+        pBoardCfgDesc->descs[0].offset = (uint16_t) ((uint32_t) pInPmPrms->boardConfigLow -
+                                         (uint32_t) pBoardCfgHeader);
         pBoardCfgDesc->descs[0].size = pInPmPrms->boardConfigSize;
         pBoardCfgDesc->descs[0].devgrp = pInPmPrms->devGrp;
         pBoardCfgDesc->descs[0].reserved = 0x0;
         pBoardCfgDesc->descs[1].type = TISCI_MSG_BOARD_CONFIG_RM;
         pBoardCfgDesc->descs[1].offset = 
-            (uint32_t) pInRmPrms->boardConfigLow -
-            (uint32_t) pBoardCfgHeader;
+            (uint16_t) ((uint32_t) pInRmPrms->boardConfigLow -
+            (uint32_t) pBoardCfgHeader);
         pBoardCfgDesc->descs[1].size = pInRmPrms->boardConfigSize;
         pBoardCfgDesc->descs[1].devgrp = pInRmPrms->devGrp;
         pBoardCfgDesc->descs[1].reserved = 0x0;
@@ -883,9 +891,9 @@ int32_t Sciclient_boardCfgParseHeader (
         for (j = 0U; j < pX509Table->num_comps; j++)
         {
             uint32_t addr = (uint32_t) (pX509Table->comps[j].dest_addr
-                 & (uint64_t) 0xFFFFFFFF);
+                 & (uint64_t) 0xFFFFFFFFU);
             if (pX509Table->comps[j].comp_type !=
-                SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SBL_DATA)
+                (uint32_t)SCICLIENT_DIRECT_EXTBOOT_X509_COMPTYPE_SBL_DATA)
             {
                 continue;
             }

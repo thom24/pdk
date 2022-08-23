@@ -55,6 +55,9 @@
 #define SCICLIENT_RM_IR_NUM_INST 8
 
 #define SCICLIENT_IRQ_MAX_ROUTE_DEPTH 3
+
+#define SCICLIENT_RM_IRQ_TREE_SIZE 174
+
 #endif
 
 /* ========================================================================== */

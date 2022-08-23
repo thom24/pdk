@@ -202,8 +202,7 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
 #if defined (CONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY)
         /* Switch pointer back to regular sproxy cfg struct used after Boot Notification msg received */
         pSciclient_secProxyCfg = &gSciclient_secProxyCfg;
-        gSciclient_maxMsgSizeBytes = CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
-                                CSL_SEC_PROXY_RSVD_MSG_BYTES;
+        
 #endif
     }
     else

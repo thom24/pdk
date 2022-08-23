@@ -96,14 +96,21 @@ typedef struct {
 /* ========================================================================== */
 
 static int32_t Sciserver_MsgVerifyHost(uint32_t *msg, uint8_t known_host);
+
 static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
-                                        int32_t *pRespMsgSize,
+                                        uint32_t *pRespMsgSize,
                                         uint8_t hw_host);
 
 static int32_t Sciserver_TisciMsgResponse(uint8_t   response_host,
                                    uint32_t  *response,
                                    uint32_t  size);
+                                   
 static void Sciserver_SetMsgHostId(uint32_t *msg, uint8_t hostId);
+
+static int32_t Sciserver_ProcessFullMessage(uint32_t *msg_recv,
+                                            uint32_t reqMsgSize,
+                                            uint32_t respMsgSize);
+                                            
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -147,7 +154,7 @@ int32_t Sciserver_init(Sciserver_CfgPrms_t *pPrms)
 {
     int32_t ret = CSL_PASS;
 
-    if (gSciserverState.initDone == SCISERVER_INIT_NOT_DONE)
+    if (gSciserverState.initDone == (uint8_t)SCISERVER_INIT_NOT_DONE)
     {
         if (pPrms == NULL)
         {
@@ -170,11 +177,11 @@ int32_t Sciserver_init(Sciserver_CfgPrms_t *pPrms)
     return ret;
 }
 
-int32_t Sciserver_deinit()
+int32_t Sciserver_deinit(void)
 {
     int32_t ret = CSL_PASS;
-    
-    if (gSciserverState.initDone == SCISERVER_INIT_DONE)
+
+    if (gSciserverState.initDone == (uint8_t)SCISERVER_INIT_DONE)
     {
         if (CSL_PASS == ret)
         {
@@ -195,7 +202,7 @@ void Sciserver_setCtrlState (uint8_t state)
     gSciserverState.ctrlState = state;
 }
 
-uint8_t Sciserver_getCtrlState ()
+uint8_t Sciserver_getCtrlState (void)
 {
    return gSciserverState.ctrlState;
 }
@@ -205,7 +212,7 @@ void Sciserver_setProcessState (uint8_t state)
     gSciserverState.processState = state;
 }
 
-uint8_t Sciserver_getProcessState ()
+uint8_t Sciserver_getProcessState (void)
 {
    return gSciserverState.processState;
 }
@@ -253,7 +260,7 @@ int32_t Sciserver_interruptHandler(Sciserver_hwiData *uhd, bool* soft_error)
 
     if (ret == CSL_PASS)
     {
-        uhd->user_msg_data->host = hw_host;
+        uhd->user_msg_data->host = (uint8_t)hw_host;
         uhd->user_msg_data->is_pending = true;
         ret = Sciserver_SproxyMsgAck(uhd->hw_msg_queue_id);
     }
@@ -271,7 +278,7 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
     /* the host ID that the response message is sent to */
     uint8_t respHost;
     /* the response message size */
-    int32_t respMsgSize;
+    uint32_t respMsgSize;
     /* the response message pointer */
     uint32_t *respMsg = NULL;
     /* TISCI flags of the received message  */
@@ -317,7 +324,7 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
             Sciserver_SetMsgHostId(respMsg, TISCI_HOST_ID_DM);
         }
         /* Check AOP flag before sending a respone back */
-        if(tisci_flags & TISCI_MSG_FLAG_AOP){
+        if((tisci_flags & TISCI_MSG_FLAG_AOP)!= 0U){
             ret = Sciserver_TisciMsgResponse(respHost, respMsg, respMsgSize);
         }
 
@@ -401,9 +408,9 @@ static void Sciserver_SetMsgHostId(uint32_t *msg, uint8_t hostId)
     hdr->host = hostId;
 }
 
-int32_t Sciserver_ProcessFullMessage(uint32_t *msg_recv,
-    int32_t reqMsgSize,
-    int32_t respMsgSize)
+static int32_t Sciserver_ProcessFullMessage(uint32_t *msg_recv,
+    uint32_t reqMsgSize,
+    uint32_t respMsgSize)
 {
     int32_t ret = CSL_EFAIL;
     Sciclient_ReqPrm_t reqPrm = {0};
@@ -446,14 +453,14 @@ int32_t Sciserver_ProcessFullMessage(uint32_t *msg_recv,
 }
 
 static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
-                                        int32_t *pRespMsgSize,
+                                        uint32_t *pRespMsgSize,
                                         uint8_t hw_host_id)
 {
     int32_t ret = CSL_PASS;
     struct  tisci_header *hdr = (struct tisci_header *) msg_recv;
     int32_t runLocalRmOnly = 0;
-    int32_t reqMsgSize;
-    int32_t respMsgSize;
+    uint32_t reqMsgSize;
+    uint32_t respMsgSize;
 
     Sciserver_printf("type = 0x%x, host = %d\n", hdr->type, hw_host_id);
 
@@ -604,6 +611,9 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
             {
                 runLocalRmOnly = 1;
             }
+            break;
+        default:
+         /* Do-Nothing */
             break;
     }
 

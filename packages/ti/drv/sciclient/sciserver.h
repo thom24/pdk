@@ -116,25 +116,25 @@
  *  This macro will indicate to SCICLIENT Direct if the SCISERVER is still
  *  processing messages.
  */
-#define SCISERVER_PROCESS_STATE_RUN     (0xA5)
+#define SCISERVER_PROCESS_STATE_RUN     (0xA5U)
 
 /**
  * Macro do indicate whether the message is being forwarded to another service
  * provider.
  */
-#define SCISERVER_FORWARD_MSG           (0x5A)
+#define SCISERVER_FORWARD_MSG           (0x5AU)
 
 /**
  * Macro do indicate whether the message is NOT being forwarded to another
  * service provider.
  */
-#define SCISERVER_NO_FORWARD_MSG        (0xA5)
+#define SCISERVER_NO_FORWARD_MSG        (0xA5U)
 
 /** Macro to indicate if the SCISERVER is initialized */
-#define SCISERVER_INIT_DONE             (0x69)
+#define SCISERVER_INIT_DONE             (0x69U)
 
 /** Macro to indicate if the SCISERVER is not initialized */
-#define SCISERVER_INIT_NOT_DONE         (0x96)
+#define SCISERVER_INIT_NOT_DONE         (0x96U)
 
 /** Max size of the message for SCICLIENT */
 #define SCISERVER_HW_QUEUE_SIZE (52U)
@@ -296,13 +296,13 @@ typedef struct {
  *  \param None
  *  \return string with Sciserver version info
  */
-char * Sciserver_getVersionStr();
+char * Sciserver_getVersionStr(void);
 
 /** \brief Sciserver Get RM_PM_HAL Version String Function
  *  \param None
  *  \return string with RM_PM_HAL version info
  */
-char * Sciserver_getRmPmHalVersionStr();
+char * Sciserver_getRmPmHalVersionStr(void);
 
 /** \brief Sciserver Initialization Function.
  *  \param pPrms        Configuration Parameters for Sciserver.
@@ -317,7 +317,7 @@ int32_t Sciserver_init(Sciserver_CfgPrms_t *pPrms);
  *  \return CSL_PASS if the server has been de-initialized correctly.
  *          CSL_EFAIL if otherwise.
  */
-int32_t Sciserver_deinit();
+int32_t Sciserver_deinit(void);
 
 /** \brief Sciserver Set the Control Command State.
  *  \param state     Control Command State.
@@ -329,7 +329,7 @@ void Sciserver_setCtrlState (uint8_t state);
  *  \param None
  *  \return state     Control Command State.
  */
-uint8_t Sciserver_getCtrlState ();
+uint8_t Sciserver_getCtrlState (void);
 
 /** \brief Sciserver Set the Process State.
  *  \param state     Process State.
@@ -341,7 +341,7 @@ void Sciserver_setProcessState (uint8_t state);
  *  \param None
  *  \return state     Process State.
  */
-uint8_t Sciserver_getProcessState ();
+uint8_t Sciserver_getProcessState (void);
 
 /** \brief Sciserver Interrupt Handler
  *  \param uhd        Sciserver HWI Data. Refer #Sciserver_hwiData.

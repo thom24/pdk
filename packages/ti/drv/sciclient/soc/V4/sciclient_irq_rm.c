@@ -55,23 +55,23 @@ uint8_t vint_usage_count_MCU_NAVSS0_UDMASS_INTA_0[256] = {0};
 static struct Sciclient_rmIaUsedMapping rom_usage_MCU_NAVSS0_UDMASS_INTA_0[5U] = {
     {
         .event = 16404U,
-        .cleared = false,
+        .cleared = (bool)false,
     },
     {
         .event = 16405U,
-        .cleared = false,
+        .cleared = (bool)false,
     },
     {
         .event = 16406U,
-        .cleared = false,
+        .cleared = (bool)false,
     },
     {
         .event = 16407U,
-        .cleared = false,
+        .cleared = (bool)false,
     },
     {
         .event = 16414U,
-        .cleared = false,
+        .cleared = (bool)false,
     },
 };
 
@@ -128,8 +128,8 @@ static struct Sciclient_rmIrUsedMapping rom_usage_MAIN2MCU_LVL_INTRTR0[1U] = {
         .inp_start = 28U,
         .outp_start = 32U,
         .length = 2U,
-        .cleared = false,
-        .opCleared = false,
+        .cleared = (bool)false,
+        .opCleared = (bool)false,
     },
 };
 static struct Sciclient_rmIrUsedMapping rom_usage_MCU_NAVSS0_INTR_ROUTER_0[1U] = {
@@ -137,8 +137,8 @@ static struct Sciclient_rmIrUsedMapping rom_usage_MCU_NAVSS0_INTR_ROUTER_0[1U] =
         .inp_start = 1U,
         .outp_start = 0U,
         .length = 4U,
-        .cleared = false,
-        .opCleared = false,
+        .cleared = (bool)false,
+        .opCleared = (bool)false,
     },
 };
 

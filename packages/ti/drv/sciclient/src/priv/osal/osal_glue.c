@@ -10,6 +10,7 @@
 
 #include <TimerP.h>
 #include <stdio.h>
+#include "osal_clock_user.h"
 
 /**
  * \brief Block inside the current task for the specified amount of time.

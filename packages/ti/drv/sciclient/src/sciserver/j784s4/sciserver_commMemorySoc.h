@@ -55,5 +55,4 @@
  */
 #define J784S4_SPROXY_MEM_IDX_DMSS_HSM_IPC_SRAM (2U)
 
-
 #endif /* SOC_J784S4_COMM_MEMORY_H */

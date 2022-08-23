@@ -36,8 +36,8 @@
  *  \brief Configuration header for J784S4
  */
 
-#ifndef _CONFIG_H_
-#define _CONFIG_H_
+#ifndef CONFIG_H_
+#define CONFIG_H_
 
 #define CONFIG_KEYSTONE3 1
 

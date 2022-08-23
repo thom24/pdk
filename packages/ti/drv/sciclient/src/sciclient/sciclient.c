@@ -100,6 +100,12 @@ static void Sciclient_utilByteCopy(uint8_t *src,
                                    uint8_t *dest,
                                    uint32_t num_bytes);
 
+static int32_t Sciclient_serviceGetPayloadSize(const Sciclient_ReqPrm_t *pReqPrm,
+                                                Sciclient_RespPrm_t      *pRespPrm,
+                                                uint32_t *txPayloadSize,
+                                                uint32_t *rxPayloadSize);
+
+
 #if defined(_TMS320C6X)
 /**
  *  \brief   This utility function is used to set the RAT for IRs for C66x
@@ -222,14 +228,14 @@ int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
                     ((uint64_t)boardCfgInfo.boardCfgLowRm >= SCICLIENT_ALLOWED_BOARDCFG_BASE_START) &&
                     ((uint64_t)boardCfgInfo.boardCfgLowRm < SCICLIENT_ALLOWED_BOARDCFG_BASE_END))
             {
-                pCfgPrms->inPmPrms.boardConfigLow = (uintptr_t)boardCfgInfo.boardCfgLowPm;
+                pCfgPrms->inPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
                 pCfgPrms->inPmPrms.boardConfigHigh = 0U;
-                pCfgPrms->inPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+                pCfgPrms->inPmPrms.boardConfigSize = (uint16_t)boardCfgInfo.boardCfgLowPmSize;
                 pCfgPrms->inPmPrms.devGrp = DEVGRP_ALL;
 
-                pCfgPrms->inRmPrms.boardConfigLow = (uintptr_t)boardCfgInfo.boardCfgLowRm;
+                pCfgPrms->inRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
                 pCfgPrms->inRmPrms.boardConfigHigh = 0U;
-                pCfgPrms->inRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
+                pCfgPrms->inRmPrms.boardConfigSize = (uint16_t)boardCfgInfo.boardCfgLowRmSize;
                 pCfgPrms->inRmPrms.devGrp = DEVGRP_ALL;
             }
             else
@@ -244,7 +250,7 @@ int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
         pCfgPrms->pBoardCfgPrms  = NULL;
         pCfgPrms->isSecureMode   = 0U;
         pCfgPrms->c66xRatRegion  = 15U;
-        pCfgPrms->skipLocalBoardCfgProcess = FALSE;
+        pCfgPrms->skipLocalBoardCfgProcess = (uint8_t)FALSE;
     }
     else
     {
@@ -384,7 +390,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
                      * to the event number which is shared between GIC and CLEC.
                      */
-                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992;
+                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992U;
 
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
                     CSL_ClecEventConfig evtCfg;
@@ -450,7 +456,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                      * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
                      * to the event number which is shared between GIC and CLEC.
                      */
-                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992;
+                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992U;
 
                     CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
                     CSL_ClecEventConfig evtCfg;
@@ -670,26 +676,26 @@ int32_t Sciclient_servicePrepareHeader(const Sciclient_ReqPrm_t *pReqPrm,
          */
         Sciclient_utilByteCopy((uint8_t *)&(pReqPrm->messageType),
                                (uint8_t *)&((*header)->type),
-                               sizeof(pReqPrm->messageType));
+                               (uint32_t)sizeof(pReqPrm->messageType));
 
         /*
          * If the message is to be forwarded, do not override the host id
          * already present in the header.
          */
-        if (pReqPrm->forwardStatus != SCISERVER_FORWARD_MSG)
+        if (pReqPrm->forwardStatus != (uint8_t)SCISERVER_FORWARD_MSG)
         {
             /* Set host if this is not a forwarded message */
             (*header)->host = (uint8_t) gSciclientMap[contextId].hostId;
         }
 
         (*header)->seq = (uint8_t) gSciclientHandle.currSeqId;
-        *localSeqId = gSciclientHandle.currSeqId;
+        *localSeqId = (uint8_t)gSciclientHandle.currSeqId;
         /* This is done in such a fashion as the C66x does not honor a non word aligned
          * write.
          */
         Sciclient_utilByteCopy((uint8_t *)&(pReqPrm->flags),
                                (uint8_t *)&((*header)->flags),
-                               sizeof(pReqPrm->flags));
+                               (uint32_t)sizeof(pReqPrm->flags));
         gSciclientHandle.currSeqId = (gSciclientHandle.currSeqId + 1U) %
                                     SCICLIENT_MAX_QUEUE_SIZE;
         if (gSciclientHandle.currSeqId == 0U)
@@ -700,10 +706,10 @@ int32_t Sciclient_servicePrepareHeader(const Sciclient_ReqPrm_t *pReqPrm,
     return status;
 }
 
-int32_t Sciclient_serviceGetPayloadSize(const Sciclient_ReqPrm_t *pReqPrm,
-                                        Sciclient_RespPrm_t      *pRespPrm,
-                                        uint32_t *txPayloadSize,
-                                        uint32_t *rxPayloadSize)
+static int32_t Sciclient_serviceGetPayloadSize(const Sciclient_ReqPrm_t *pReqPrm,
+                                                Sciclient_RespPrm_t      *pRespPrm,
+                                                uint32_t *txPayloadSize,
+                                                uint32_t *rxPayloadSize)
 {
     int32_t status = CSL_PASS;
     if((pReqPrm == NULL) || (pRespPrm == NULL))
@@ -716,7 +722,7 @@ int32_t Sciclient_serviceGetPayloadSize(const Sciclient_ReqPrm_t *pReqPrm,
         if (pReqPrm->reqPayloadSize > 0U)
         {
             *txPayloadSize = pReqPrm->reqPayloadSize -
-                            sizeof(struct tisci_header);
+                            (uint32_t)sizeof(struct tisci_header);
         }
         else
         {
@@ -867,7 +873,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         (status == CSL_PASS) &&
         ((pReqPrm->flags & TISCI_MSG_FLAG_MASK) != 0U) &&
         (pLocalRespHdr != NULL)) ||
-        (pReqPrm->forwardStatus == SCISERVER_FORWARD_MSG))
+        (pReqPrm->forwardStatus == (uint8_t)SCISERVER_FORWARD_MSG))
     {
         /* Check if some message is received*/
         while (((HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
@@ -921,7 +927,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
          SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT) &&
         (status == CSL_PASS) &&
         ((pReqPrm->flags & TISCI_MSG_FLAG_MASK) != 0U) &&
-        (pReqPrm->forwardStatus != SCISERVER_FORWARD_MSG))
+        (pReqPrm->forwardStatus != (uint8_t)SCISERVER_FORWARD_MSG))
     {
         status = SemaphoreP_pend(gSciclientHandle.semHandles[localSeqId],timeToWait);
         gSciclientHandle.semStatus[localSeqId] = (SemaphoreP_Status)status;
@@ -943,7 +949,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             uint32_t j = 0U;
             for (j = 0U; j < 4U; j++)
             {
-                *(pLocalRespPayload + i * 4 + j) = *tempWordPtr;
+                *(pLocalRespPayload + ((i * 4U) + j)) = *(tempWordPtr);
                 tempWordPtr++;
             }
 
@@ -956,7 +962,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
                     ((uint8_t)i + gSecHeaderSizeWords));
             uint8_t * pTempWord = (uint8_t*) &tempWord;
             Sciclient_utilByteCopy(pTempWord,
-                                   (uint8_t*)pLocalRespPayload + i*4,
+                                   (uint8_t*)pLocalRespPayload + (i*4U),
                                    trailBytes);
         }
 
@@ -991,17 +997,17 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
             {
                 #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992U, &evtCfg);
                 #else
-                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992U, &evtCfg);
                 #endif
             }
             else
             {
                 #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992U, &evtCfg);
                 #else
-                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992U, &evtCfg);
                 #endif
             }
         }
@@ -1083,7 +1089,7 @@ int32_t Sciclient_abiCheck(void)
         TISCI_MSG_VERSION,
         TISCI_MSG_FLAG_AOP,
         (uint8_t *) &request,
-        sizeof (request),
+        (uint32_t)sizeof (request),
         SCICLIENT_SERVICE_WAIT_FOREVER
     };
 
@@ -1181,17 +1187,17 @@ static void Sciclient_ISR(uintptr_t arg)
                 if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
                 {
                     #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_189 + 992U, &evtCfg);
                     #else
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_189 + 992U, &evtCfg);
                     #endif
                 }
                 else
                 {
                     #if defined (SOC_J721S2) || defined (SOC_J784S4)
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_0_OUTL_INTR_191 + 992U, &evtCfg);
                     #else
-                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992, &evtCfg);
+                    CSL_clecConfigEvent(regs, CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_NAVSS0_INTR_ROUTER_0_OUTL_INTR_191 + 992U, &evtCfg);
                     #endif
                 }
             }
@@ -1231,13 +1237,16 @@ static void Sciclient_utilByteCopy(uint8_t *src,
                                    uint8_t *dest,
                                    uint32_t num_bytes)
 {
-    int32_t i;
+    uint32_t i;
     uint8_t *srcP = src;
     uint8_t *destP = dest;
 
     for(i=0; i < num_bytes; i++)
     {
-        *destP++ = *srcP++;
+        *destP = *srcP;
+        destP++;
+        srcP++;
+
     }
 }
 
@@ -1260,7 +1269,7 @@ static int32_t Sciclient_C66xRatMap(uint32_t ratRegion)
 #endif
 
     if (ratRegion < CSL_ratGetMaxRegions(pC66xRatRegs)) {
-        if (CSL_ratIsRegionTranslationEnabled(pC66xRatRegs, ratRegion) == false) {
+        if (CSL_ratIsRegionTranslationEnabled(pC66xRatRegs, ratRegion) == (bool)false) {
             CSL_ratEnableRegionTranslation(pC66xRatRegs, ratRegion);
             CSL_ratConfigRegionTranslation(pC66xRatRegs, ratRegion, &TranslationCfg);
         }

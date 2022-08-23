@@ -77,8 +77,8 @@
 /* ========================================================================== */
 
 void Sciserver_tirtosUserMsgHwiFxn(uintptr_t arg);
-void Sciserver_tirtosUnRegisterIntr();
-void Sciserver_tirtosDeinit();
+void Sciserver_tirtosUnRegisterIntr(void);
+void Sciserver_tirtosDeinit(void);
 void Sciserver_tirtosUserMsgTask(void* arg0, void* arg1);
 
 static int32_t Sciserver_tirtosInitHwis(void);
@@ -146,7 +146,7 @@ int32_t Sciserver_tirtosInit(Sciserver_TirtosCfgPrms_t *pAppPrms)
     if (ret == CSL_PASS)
     {
         Sciserver_setCtrlState(SCISERVER_PROCESS_STATE_RUN);
-        if (Sciserver_getCtrlState() != SCISERVER_PROCESS_STATE_RUN)
+        if (Sciserver_getCtrlState() != (uint8_t)SCISERVER_PROCESS_STATE_RUN)
         {
             ret = CSL_EFAIL;
         }
@@ -181,7 +181,7 @@ void Sciserver_tirtosUserMsgHwiFxn(uintptr_t arg)
     }
 }
 
-void Sciserver_tirtosUnRegisterIntr()
+void Sciserver_tirtosUnRegisterIntr(void)
 {
     uint32_t i = 0U;
 
@@ -189,17 +189,17 @@ void Sciserver_tirtosUnRegisterIntr()
         if (gSciserverHwiHandles[i] != NULL)
         {
             Osal_DeleteInterrupt(gSciserverHwiHandles[i],
-                                 sciserver_hwi_list[i].irq_num);
+                                 (int32_t)sciserver_hwi_list[i].irq_num);
             gSciserverHwiHandles[i] = NULL_PTR;
         }
     }
 }
 
-void Sciserver_tirtosDeinit()
+void Sciserver_tirtosDeinit(void)
 {
     uint32_t i = 0U;
 
-    for (i = 0U; i < SCISERVER_SEMAPHORE_MAX_CNT; i++) {
+    for (i = 0U; i < (uint32_t)SCISERVER_SEMAPHORE_MAX_CNT; i++) {
         SemaphoreP_delete(gSciserverUserSemHandles[i]);
     }
     Sciserver_deinit();
@@ -229,18 +229,18 @@ void Sciserver_tirtosUserMsgTask(void *arg0, void* arg1)
      * there are pending messages queued prior to the task starting up. This
      * only should be done once, so we protect access with the global state.
      */
-    if (hwiMasked == 1)
+    if (hwiMasked == 1U)
     {
         hwiMasked = 0;
         for (i = 0U; i < SCISERVER_ARRAY_SIZE(sciserver_hwi_list); i++) {
-            Osal_EnableInterrupt(0, sciserver_hwi_list[i].irq_num);
+            Osal_EnableInterrupt(0,(int32_t)sciserver_hwi_list[i].irq_num);
         }
     }
 
     /* Leave critical section */
     HwiP_restore(key);
 
-    while(loopForever)
+    while(loopForever != 0U)
     {
         SemaphoreP_pend(gSciserverUserSemHandles[utd->semaphore_id],
                         SemaphoreP_WAIT_FOREVER);
@@ -263,7 +263,7 @@ void Sciserver_tirtosUserMsgTask(void *arg0, void* arg1)
              * for the gloabl interrupt data array. This is functional but can
              * be cleaned up.
              */
-            Osal_EnableInterrupt(0, sciserver_hwi_list[2U * utd->task_id +
+            Osal_EnableInterrupt(0U, sciserver_hwi_list[(2U * ((uint32_t) utd->task_id)) +
                     utd->state->current_buffer_idx].irq_num);
         }
     }
@@ -278,7 +278,7 @@ static int32_t Sciserver_tirtosInitSemaphores(void)
     int32_t ret = CSL_PASS;
     uint32_t i = 0U;
 
-    for (i = 0U; i < SCISERVER_SEMAPHORE_MAX_CNT; i++) {
+    for (i = 0U; i < (uint32_t)SCISERVER_SEMAPHORE_MAX_CNT; i++) {
         SemaphoreP_Params_init(&gSciserverUserSemParams[i]);
         gSciserverUserSemHandles[i] = SemaphoreP_create(0U, &gSciserverUserSemParams[i]);
 
@@ -334,7 +334,7 @@ static int32_t Sciserver_tirtosInitUserTasks(Sciserver_TirtosCfgPrms_t *pPrms)
     for (i = 0U; i < SCISERVER_ARRAY_SIZE(gSciserverTaskList); i++)
     {
         TaskP_Params_init (&gSciserverUserTaskParams[i]);
-        gSciserverUserTaskParams[i].priority = pPrms->taskPriority[i];
+        gSciserverUserTaskParams[i].priority = (int8_t)pPrms->taskPriority[i];
         gSciserverUserTaskParams[i].stack = gSciserverTaskList[i].stack;
         gSciserverUserTaskParams[i].stacksize = SCISERVER_TASK_STACK_SIZE;
         gSciserverUserTaskParams[i].arg0 = (void *) &gSciserverTaskList[i];

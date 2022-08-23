@@ -92,7 +92,7 @@ int32_t Sciserver_tirtosInit(Sciserver_TirtosCfgPrms_t *pPrms);
  *  \param None
  *  \return None
  */
-void Sciserver_tirtosDeinit();
+void Sciserver_tirtosDeinit(void);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
