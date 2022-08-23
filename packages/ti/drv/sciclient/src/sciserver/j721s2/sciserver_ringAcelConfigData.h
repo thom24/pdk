@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@
 #define J721S2_MCU_NAVSS0_RINGACC0_RING_0270_CONF_057 (0x39U)
 #define J721S2_MCU_NAVSS0_RINGACC0_RING_0269_CONF_058 (0x3AU)
 #define J721S2_MCU_NAVSS0_RINGACC0_RING_0268_CONF_059 (0x3BU)
-#define J721S2_MCU_NAVSS0_RINGACC0_RING_0267_CONF_060 (0x3CU)
-#define J721S2_MCU_NAVSS0_RINGACC0_RING_0266_CONF_061 (0x3DU)
+#define J721S2_MCU_SA3_SS0_RINGACC_0_RING_0005_CONF_060 (0x3CU)
+#define J721S2_MCU_SA3_SS0_RINGACC_0_RING_0004_CONF_061 (0x3DU)
 
 #endif /* SOC_J721S2_RA_CONFIG_DATA_H */

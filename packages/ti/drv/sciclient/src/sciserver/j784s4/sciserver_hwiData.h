@@ -100,7 +100,7 @@ static const Sciserver_hwiData sciserver_hwi_list[] = {
         .irq_num =
             CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_6,
         .hw_msg_queue_id =
-            J784S4_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR078_CONF067,
+            J784S4_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR080_CONF067,
         .hw_msg_buffer = user_hi_msg_buffer,
         .semaphore_id = SCISERVER_SEMAPHORE_USER_HI,
         .user_msg_data = &user_hi_msg_data,
@@ -120,7 +120,7 @@ static const Sciserver_hwiData sciserver_hwi_list[] = {
         .irq_num =
             CSLR_MCU_R5FSS0_CORE0_INTR_MCU_NAVSS0_INTR_ROUTER_0_OUTL_INTR_8,
         .hw_msg_queue_id = 
-            J784S4_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR077_CONF068,
+            J784S4_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR079_CONF068,
         .hw_msg_buffer = user_lo_msg_buffer,
         .semaphore_id = SCISERVER_SEMAPHORE_USER_LO,
         .user_msg_data = &user_lo_msg_data,

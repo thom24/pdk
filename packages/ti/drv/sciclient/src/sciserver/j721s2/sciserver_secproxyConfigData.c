@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,6 +49,9 @@
 
 /** SAFE_EVENT Does NOT generate an IRQ or an event onto ETL */
 #define SOC_SAFE_EVENT (0xFFFFU)
+
+const uint16_t soc_secure_proxy_tx_dm_config_idx = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_HIGH_PRIORITY_THR027_CONF117;
+const uint16_t soc_secure_proxy_rx_dm_config_idx = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS2DM_RESPONSE_THR026_CONF059;
 
 const uint16_t Sciserver_SecureProxyTxConfigNum = SOC_MAX_SPT_TX_CONFIG_INSTANCES;
 
@@ -917,106 +920,88 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM2TIFS_RESPONSE_THR021_CONF057,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS_SEC_HSM_NOTIFY_TX_THR080_CONF096] = {
-		.host_id = HOST_ID_TIFS,
-		.thread_id = 80U,
-		.num_credits = 1U,
-		.threshold = 1U,
-		.evt_threshold = SOC_SAFE_EVENT,
-		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_HSM_NOTIFY_THR030_CONF060,
-	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS_SEC_HSM_RESPONSE_TX_THR079_CONF097] = {
-		.host_id = HOST_ID_TIFS,
-		.thread_id = 79U,
-		.num_credits = 2U,
-		.threshold = 1U,
-		.evt_threshold = SOC_SAFE_EVENT,
-		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_HSM_RESPONSE_THR031_CONF061,
-	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_NOTIFY_TX_THR075_CONF098] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_NOTIFY_TX_THR077_CONF096] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 75U,
+		.thread_id = 77U,
 		.num_credits = 2U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_MCU_0_R5_0_NOTIFY_THR000_CONF048,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_RESPONSE_TX_THR074_CONF099] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_RESPONSE_TX_THR076_CONF097] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 74U,
+		.thread_id = 76U,
 		.num_credits = 20U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_MCU_0_R5_0_RESPONSE_THR001_CONF049,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_NOTIFY_TX_THR073_CONF100] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_NOTIFY_TX_THR075_CONF098] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 73U,
+		.thread_id = 75U,
 		.num_credits = 1U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_MCU_0_R5_2_NOTIFY_THR010_CONF052,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_RESPONSE_TX_THR072_CONF101] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_RESPONSE_TX_THR074_CONF099] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 72U,
+		.thread_id = 74U,
 		.num_credits = 2U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_MCU_0_R5_2_RESPONSE_THR011_CONF053,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_NOTIFY_TX_THR071_CONF102] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_NOTIFY_TX_THR073_CONF100] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 71U,
+		.thread_id = 73U,
 		.num_credits = 2U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS2DM_NOTIFY_THR025_CONF058,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_RESPONSE_TX_THR070_CONF103] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_RESPONSE_TX_THR072_CONF101] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 70U,
+		.thread_id = 72U,
 		.num_credits = 4U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS2DM_RESPONSE_THR026_CONF059,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_0_HIGH_PRIORITY_THR002_CONF104] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_0_HIGH_PRIORITY_THR002_CONF102] = {
 		.host_id = HOST_ID_MCU_0_R5_0,
 		.thread_id = 2U,
 		.num_credits = 10U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR078_CONF045,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR080_CONF045,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_0_LOW_PRIORITY_THR003_CONF105] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_0_LOW_PRIORITY_THR003_CONF103] = {
 		.host_id = HOST_ID_MCU_0_R5_0,
 		.thread_id = 3U,
 		.num_credits = 10U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR077_CONF046,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR079_CONF046,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_0_NOTIFY_RESP_THR004_CONF106] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_0_NOTIFY_RESP_THR004_CONF104] = {
 		.host_id = HOST_ID_MCU_0_R5_0,
 		.thread_id = 4U,
 		.num_credits = 2U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR076_CONF047,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR078_CONF047,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_1_HIGH_PRIORITY_THR007_CONF107] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_1_HIGH_PRIORITY_THR007_CONF105] = {
 		.host_id = HOST_ID_MCU_0_R5_1,
 		.thread_id = 7U,
 		.num_credits = 10U,
@@ -1025,7 +1010,7 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_HIGH_PRIORITY_RX_THR089_CONF042,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_1_LOW_PRIORITY_THR008_CONF108] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_1_LOW_PRIORITY_THR008_CONF106] = {
 		.host_id = HOST_ID_MCU_0_R5_1,
 		.thread_id = 8U,
 		.num_credits = 10U,
@@ -1034,7 +1019,7 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_LOW_PRIORITY_RX_THR088_CONF043,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_1_NOTIFY_RESP_THR009_CONF109] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_1_NOTIFY_RESP_THR009_CONF107] = {
 		.host_id = HOST_ID_MCU_0_R5_1,
 		.thread_id = 9U,
 		.num_credits = 2U,
@@ -1043,34 +1028,34 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_NOTIFY_RESP_RX_THR087_CONF044,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_2_HIGH_PRIORITY_THR012_CONF110] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_2_HIGH_PRIORITY_THR012_CONF108] = {
 		.host_id = HOST_ID_MCU_0_R5_2,
 		.thread_id = 12U,
 		.num_credits = 1U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR078_CONF045,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR080_CONF045,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_2_LOW_PRIORITY_THR013_CONF111] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_2_LOW_PRIORITY_THR013_CONF109] = {
 		.host_id = HOST_ID_MCU_0_R5_2,
 		.thread_id = 13U,
 		.num_credits = 1U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR077_CONF046,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR079_CONF046,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_2_NOTIFY_RESP_THR014_CONF112] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_2_NOTIFY_RESP_THR014_CONF110] = {
 		.host_id = HOST_ID_MCU_0_R5_2,
 		.thread_id = 14U,
 		.num_credits = 1U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR076_CONF047,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR078_CONF047,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_3_HIGH_PRIORITY_THR017_CONF113] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_3_HIGH_PRIORITY_THR017_CONF111] = {
 		.host_id = HOST_ID_MCU_0_R5_3,
 		.thread_id = 17U,
 		.num_credits = 1U,
@@ -1079,7 +1064,7 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_HIGH_PRIORITY_RX_THR089_CONF042,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_3_LOW_PRIORITY_THR018_CONF114] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_3_LOW_PRIORITY_THR018_CONF112] = {
 		.host_id = HOST_ID_MCU_0_R5_3,
 		.thread_id = 18U,
 		.num_credits = 1U,
@@ -1088,7 +1073,7 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_LOW_PRIORITY_RX_THR088_CONF043,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_3_NOTIFY_RESP_THR019_CONF115] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_MCU_0_R5_3_NOTIFY_RESP_THR019_CONF113] = {
 		.host_id = HOST_ID_MCU_0_R5_3,
 		.thread_id = 19U,
 		.num_credits = 1U,
@@ -1097,7 +1082,7 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_NOTIFY_RESP_RX_THR087_CONF044,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM2TIFS_HIGH_PRIORITY_THR022_CONF116] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM2TIFS_HIGH_PRIORITY_THR022_CONF114] = {
 		.host_id = HOST_ID_DM2TIFS,
 		.thread_id = 22U,
 		.num_credits = 2U,
@@ -1106,7 +1091,7 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_HIGH_PRIORITY_RX_THR089_CONF042,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM2TIFS_LOW_PRIORITY_THR023_CONF117] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM2TIFS_LOW_PRIORITY_THR023_CONF115] = {
 		.host_id = HOST_ID_DM2TIFS,
 		.thread_id = 23U,
 		.num_credits = 2U,
@@ -1115,7 +1100,7 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_LOW_PRIORITY_RX_THR088_CONF043,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM2TIFS_NOTIFY_RESP_THR024_CONF118] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM2TIFS_NOTIFY_RESP_THR024_CONF116] = {
 		.host_id = HOST_ID_DM2TIFS,
 		.thread_id = 24U,
 		.num_credits = 2U,
@@ -1124,59 +1109,50 @@ const struct Sciserver_SecureProxyTxThreadConfig Sciserver_SecureProxyTxConfigur
 		.evt_error = SOC_SAFE_EVENT,
 		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_NOTIFY_RESP_RX_THR087_CONF044,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_HIGH_PRIORITY_THR027_CONF119] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_HIGH_PRIORITY_THR027_CONF117] = {
 		.host_id = HOST_ID_TIFS2DM,
 		.thread_id = 27U,
 		.num_credits = 2U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR078_CONF045,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR080_CONF045,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_LOW_PRIORITY_THR028_CONF120] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_LOW_PRIORITY_THR028_CONF118] = {
 		.host_id = HOST_ID_TIFS2DM,
 		.thread_id = 28U,
 		.num_credits = 2U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR077_CONF046,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR079_CONF046,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_NOTIFY_RESP_THR029_CONF121] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_TIFS2DM_NOTIFY_RESP_THR029_CONF119] = {
 		.host_id = HOST_ID_TIFS2DM,
 		.thread_id = 29U,
 		.num_credits = 2U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR076_CONF047,
+		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR078_CONF047,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_HSM_HIGH_PRIORITY_THR032_CONF122] = {
-		.host_id = HOST_ID_HSM,
-		.thread_id = 32U,
-		.num_credits = 1U,
+	[J721S2_MCU_SA3_SS0_SEC_PROXY_0_TX_TIFS_HSM_SEC_HSM_RESPONSE_TX_THR014_CONF120] = {
+		.host_id = HOST_ID_TIFS,
+		.thread_id = 14U,
+		.num_credits = 8U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_HIGH_PRIORITY_RX_THR089_CONF042,
+		.rx_thread_instance_id = J721S2_MCU_SA3_SS0_SEC_PROXY_0_RX_HSM_RESPONSE_THR000_CONF061,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_HSM_LOW_PRIORITY_THR033_CONF123] = {
+	[J721S2_MCU_SA3_SS0_SEC_PROXY_0_TX_HSM_LOW_PRIORITY_THR001_CONF121] = {
 		.host_id = HOST_ID_HSM,
-		.thread_id = 33U,
-		.num_credits = 1U,
+		.thread_id = 1U,
+		.num_credits = 8U,
 		.threshold = 1U,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_LOW_PRIORITY_RX_THR088_CONF043,
-	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_TX_HSM_NOTIFY_RESP_THR034_CONF124] = {
-		.host_id = HOST_ID_HSM,
-		.thread_id = 34U,
-		.num_credits = 1U,
-		.threshold = 1U,
-		.evt_threshold = SOC_SAFE_EVENT,
-		.evt_error = SOC_SAFE_EVENT,
-		.rx_thread_instance_id = J721S2_MCU_NAVSS0_SEC_PROXY0_RX_TIFS_SEC_NOTIFY_RESP_RX_THR087_CONF044,
+		.rx_thread_instance_id = J721S2_MCU_SA3_SS0_SEC_PROXY_0_RX_TIFS_HSM_SEC_LOW_PRIORITY_RX_THR015_CONF060,
 	},
 };
 
@@ -1588,27 +1564,27 @@ const struct Sciserver_SecureProxyRxThreadConfig gSciserverSecureProxyRxConfigur
 		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0,
 		.ring_config_instance_id = J721S2_MCU_NAVSS0_RINGACC0_RING_0283_CONF_044,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR078_CONF045] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_HIGH_PRIORITY_RX_THR080_CONF045] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 78U,
+		.thread_id = 80U,
 		.threshold = 1U,
 		.evt_threshold = 0x4011U,
 		.evt_error = 0x4010U,
 		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0,
 		.ring_config_instance_id = J721S2_MCU_NAVSS0_RINGACC0_RING_0282_CONF_045,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR077_CONF046] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_LOW_PRIORITY_RX_THR079_CONF046] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 77U,
+		.thread_id = 79U,
 		.threshold = 1U,
 		.evt_threshold = 0x4013U,
 		.evt_error = 0x4010U,
 		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0,
 		.ring_config_instance_id = J721S2_MCU_NAVSS0_RINGACC0_RING_0281_CONF_046,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR076_CONF047] = {
+	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_DM_NONSEC_NOTIFY_RESP_RX_THR078_CONF047] = {
 		.host_id = HOST_ID_DM,
-		.thread_id = 76U,
+		.thread_id = 78U,
 		.threshold = 1U,
 		.evt_threshold = 0x4015U,
 		.evt_error = 0x4010U,
@@ -1723,22 +1699,24 @@ const struct Sciserver_SecureProxyRxThreadConfig gSciserverSecureProxyRxConfigur
 		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0,
 		.ring_config_instance_id = J721S2_MCU_NAVSS0_RINGACC0_RING_0268_CONF_059,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_HSM_NOTIFY_THR030_CONF060] = {
-		.host_id = HOST_ID_HSM,
-		.thread_id = 30U,
-		.threshold = 1U,
-		.evt_threshold = SOC_SAFE_EVENT,
-		.evt_error = SOC_SAFE_EVENT,
-		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0,
-		.ring_config_instance_id = J721S2_MCU_NAVSS0_RINGACC0_RING_0267_CONF_060,
+	[J721S2_MCU_SA3_SS0_SEC_PROXY_0_RX_TIFS_HSM_SEC_LOW_PRIORITY_RX_THR015_CONF060] = {
+		.host_id = HOST_ID_TIFS,
+		.thread_id = 15U,
+		.threshold = 8U,
+		.evt_threshold = 0x0001U,
+		.evt_error = 0x0000U,
+		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0,
+		.ring_config_instance_id = J721S2_MCU_SA3_SS0_RINGACC_0_RING_0005_CONF_060,
 	},
-	[J721S2_MCU_NAVSS0_SEC_PROXY0_RX_HSM_RESPONSE_THR031_CONF061] = {
+	[J721S2_MCU_SA3_SS0_SEC_PROXY_0_RX_HSM_RESPONSE_THR000_CONF061] = {
 		.host_id = HOST_ID_HSM,
-		.thread_id = 31U,
-		.threshold = 1U,
+		.thread_id = 0U,
+		.threshold = 18,
 		.evt_threshold = SOC_SAFE_EVENT,
 		.evt_error = SOC_SAFE_EVENT,
-		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_NAVSS0_SEC_PROXY0,
-		.ring_config_instance_id = J721S2_MCU_NAVSS0_RINGACC0_RING_0266_CONF_061,
+		.secure_proxy_instance_id = J721S2_SPROXY_IDX_MCU_SA3_SS0_SEC_PROXY_0,
+		.ring_config_instance_id = J721S2_MCU_SA3_SS0_RINGACC_0_RING_0004_CONF_061,
 	},
 };
+
+

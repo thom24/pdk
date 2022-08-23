@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2021-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,15 +50,15 @@ const struct sproxy_host_tx_thread_data sproxy_route_data[J721S2_CONFIG_MAX] = {
 	 * Non Secure Host MCU_0_R5_0[3]
 	 */
 	[HOST_ID_MCU_0_R5_0] = {
-		.sproxy_resp_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_RESPONSE_TX_THR074_CONF099,
-		.sproxy_ntfy_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_NOTIFY_TX_THR075_CONF098,
+		.sproxy_resp_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_RESPONSE_TX_THR076_CONF097,
+		.sproxy_ntfy_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_0_NOTIFY_TX_THR077_CONF096,
 	},
 	/*
 	 * Non Secure Host MCU_0_R5_2[5]
 	 */
 	[HOST_ID_MCU_0_R5_2] = {
-		.sproxy_resp_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_RESPONSE_TX_THR072_CONF101,
-		.sproxy_ntfy_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_NOTIFY_TX_THR073_CONF100,
+		.sproxy_resp_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_RESPONSE_TX_THR074_CONF099,
+		.sproxy_ntfy_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_MCU_0_R5_2_NOTIFY_TX_THR075_CONF098,
 	},
 	/*
 	 * Non Secure Host A72_2[12]
@@ -134,7 +134,8 @@ const struct sproxy_host_tx_thread_data sproxy_route_data[J721S2_CONFIG_MAX] = {
 	 * Non Secure Host TIFS2DM[251]
 	 */
 	[HOST_ID_TIFS2DM] = {
-		.sproxy_resp_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_RESPONSE_TX_THR070_CONF103,
-		.sproxy_ntfy_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_NOTIFY_TX_THR071_CONF102,
+		.sproxy_resp_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_RESPONSE_TX_THR072_CONF101,
+		.sproxy_ntfy_conf_id = J721S2_MCU_NAVSS0_SEC_PROXY0_TX_DM_NONSEC_TIFS2DM_NOTIFY_TX_THR073_CONF100,
 	},
 };
+
