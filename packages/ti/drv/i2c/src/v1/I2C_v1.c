@@ -128,7 +128,7 @@ static void I2C_close_v1(I2C_Handle handle)
             {
                 if (hwAttrs->configSocIntrPath != NULL)
                 {
-                    (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, FALSE);
+                    (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, (bool)FALSE);
                 }
 
                 /* Destruct the Hwi */
@@ -254,7 +254,7 @@ static void I2C_v1_hwiFxnMaster(I2C_Handle handle)
                 I2CMasterIntClearEx(hwAttrs->baseAddr, I2C_INT_NO_ACK);
                 fatalError=1U;
             }
-			
+
             if ((rawStat & I2C_INT_ARBITRATION_LOST) != 0U)
             {
                 intErr   |= I2C_INT_ARBITRATION_LOST;
@@ -262,7 +262,7 @@ static void I2C_v1_hwiFxnMaster(I2C_Handle handle)
  			    I2CMasterIntClearEx(hwAttrs->baseAddr,I2C_INT_ARBITRATION_LOST);
 				fatalError=1U;
             }
-			
+
             if ((rawStat & I2C_INT_ACCESS_ERROR) != 0U)
             {
                 intErr   |= I2C_INT_ACCESS_ERROR;
@@ -435,7 +435,7 @@ static void I2C_v1_hwiFxnSlave(I2C_Handle handle)
      *  accordingly. Application should call the abort transfer explicitly.
      */
     rawStat = I2CSlaveIntRawStatus(hwAttrs->baseAddr);
-    
+
     if ((rawStat & I2C_INT_RECV_READY) != 0U)
     {
         /* Read from Rx register only when current transaction is ongoing */
@@ -474,7 +474,7 @@ static void I2C_v1_hwiFxnSlave(I2C_Handle handle)
             /* This is end of current transfer */
             I2CSlaveIntClearEx(hwAttrs->baseAddr, I2C_INT_ALL);
             object->mode = I2C_IDLE_MODE;
-         
+
 		    /* Finish the current transfer */
 			I2C_v1_complete_curr_transfer(handle,I2C_STS_SUCCESS);
         }
@@ -510,6 +510,7 @@ static void I2C_v1_hwiFxnSlave(I2C_Handle handle)
             }
             else
             {
+              /* Do Nothing */
             }
 
             object->mode = I2C_SLAVE_RESTART_MODE;
@@ -546,7 +547,7 @@ static void I2C_v1_hwiFxnSlave(I2C_Handle handle)
                 object->readBufIdx = (uint8_t*)(object->currentTransaction->readBuf);
                 object->readCountIdx = (uint32_t)object->currentTransaction->readCount;
 
-                
+
 
 				/* Post Semaphore to unblock transfer fxn */
                 object->i2cParams.transferCallbackFxn(handle,
@@ -586,7 +587,7 @@ static void I2C_v1_hwiFxnSlave(I2C_Handle handle)
                 /* Disable STOP condition interrupt */
                 I2CSlaveIntDisableEx(hwAttrs->baseAddr, I2C_INT_ALL);
 
-                object->readBufIdx = (uint8_t*)(object->currentTransaction->readBuf);
+                object->readBufIdx = ((uint8_t*)(object->currentTransaction->readBuf));
                 object->readCountIdx = (uint32_t)object->currentTransaction->readCount;
 
                 /* Post Semaphore to unblock transfer fxn */
@@ -733,7 +734,7 @@ static I2C_Handle I2C_open_v1(I2C_Handle handle, const I2C_Params *params)
                if (hwAttrs->configSocIntrPath != NULL)
                {
                    /* setup the interrupt router path via DMSC */
-                   (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, TRUE);
+                   (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, (bool)TRUE);
                }
 
                /* Initialize with defaults */
@@ -1016,7 +1017,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 }
 
                 /* wait for bus busy */
-                while ((I2CMasterBusBusy(hwAttrs->baseAddr) == 1) && (timeout != 0))
+                while ((I2CMasterBusBusy(hwAttrs->baseAddr) == 1) && (timeout != 0U))
                 {
                     I2C_v1_udelay(I2C_DELAY_USEC);
                     if (I2C_checkTimeout(&uSecTimeout))
@@ -1030,7 +1031,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                 /* generate start */
                 I2CMasterStart(hwAttrs->baseAddr);
 
-                while ((object->writeCountIdx != 0U) && (timeout != 0))
+                while ((object->writeCountIdx != 0U) && (timeout != 0U))
                 {
                     /* wait for transmit ready or error */
                     while(((I2CMasterIntRawStatusEx(hwAttrs->baseAddr, I2C_INT_TRANSMIT_READY) == 0U) && \
@@ -1038,7 +1039,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                                                                        I2C_INT_NO_ACK | \
                                                                        I2C_INT_ACCESS_ERROR | \
                                                                        I2C_INT_STOP_CONDITION ) == 0U)) && \
-                          (timeout != 0))
+                          (timeout != 0U))
                     {
                         I2C_v1_udelay(I2C_DELAY_USEC);
                         if (I2C_checkTimeout(&uSecTimeout))
@@ -1068,7 +1069,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                     /* update number of bytes written */
                     object->writeCountIdx--;
                 }
-                
+
                 if ((fatalError == 0U) && (timeout != 0U))
                 {
                     /* wait for register access ready */
@@ -1202,7 +1203,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
                     object->readBufIdx++;
                     object->readCountIdx--;   /* update number of bytes read */
                 }
-                
+
                 if ((fatalError == 0U) && (timeout != 0U))
                 {
                     /* wait for register access ready */

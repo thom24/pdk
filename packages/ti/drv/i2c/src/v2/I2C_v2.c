@@ -47,7 +47,7 @@
 #include <ti/drv/i2c/src/I2C_drv_log.h>
 #include <ti/csl/hw_types.h>
 
-static ICSS_funct_mode CurrentICSSMode[MAX_ICSS_INSTANCE] = 
+static ICSS_funct_mode CurrentICSSMode[MAX_ICSS_INSTANCE] =
 {
     {
         {
@@ -181,7 +181,7 @@ static void I2C_v2_hwiFxn(uintptr_t arg)
     int32_t                  irqId          = 0;
     uint32_t                 cmdResponse    = 0;
     uint32_t                 localStatusErr = 0;
-    
+
     /* Input parameter validation */
     if((void *)pruFuncPtr != NULL)
     {
@@ -200,7 +200,7 @@ static void I2C_v2_hwiFxn(uintptr_t arg)
                 {
                     /* Get the pointer to the object */
                     object = (I2C_v2_Object*)handle->object;
-                    
+
                     cmdResponse = I2C_v2_readResp2PRU(handle);
                     if(((cmdResponse & ((uint32_t)0xFFFF0000U)) == 0) && ((cmdResponse & ((uint32_t)0x0000FFFFU)) != 0))
                     {
@@ -319,7 +319,7 @@ static I2C_Handle I2C_open_v2(I2C_Handle handle, const I2C_Params *params)
             {
                 I2C_osalPendLock(CurrentICSSMode[ICSSInst].pruMode[0].pruInstLock, SemaphoreP_WAIT_FOREVER);
                 I2C_osalPendLock(CurrentICSSMode[ICSSInst].pruMode[1].pruInstLock, SemaphoreP_WAIT_FOREVER);
-                 
+
                 switch(params->bitRate)
                 {
                     case I2C_1P0Mhz:
@@ -355,8 +355,8 @@ static I2C_Handle I2C_open_v2(I2C_Handle handle, const I2C_Params *params)
                         }
                         break;
                     case I2C_100kHz:
-                        if(((CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig == I2C_ICSS_100KHZ_MODE) || 
-                            (CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig == I2C_ICSS_NO_CONFIG)) && 
+                        if(((CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig == I2C_ICSS_100KHZ_MODE) ||
+                            (CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruConfig == I2C_ICSS_NO_CONFIG)) &&
                             (CurrentICSSMode[ICSSInst].pruMode[1 - PRUInst].pruConfig != I2C_ICSS_1MHZ_MODE))
                         {
                             object->configMode = I2C_ICSS_100KHZ_MODE;
@@ -418,14 +418,14 @@ static I2C_Handle I2C_open_v2(I2C_Handle handle, const I2C_Params *params)
                     OsalRegisterIntrParams_t interruptRegParams;
                     /* Initialize with defaults */
                     Osal_RegisterInterrupt_initParams(&interruptRegParams);
-                    
+
                     /* Populate the interrupt parameters */
                     interruptRegParams.corepacConfig.arg=(uintptr_t)(&(CurrentICSSMode[ICSSInst].pruMode[PRUInst]));
                     interruptRegParams.corepacConfig.name=NULL;
                     interruptRegParams.corepacConfig.isrRoutine=&I2C_v2_hwiFxn;
                     interruptRegParams.corepacConfig.corepacEventNum=swipAttrs->eventId; /* Event going in to CPU */
                     interruptRegParams.corepacConfig.intVecNum=swipAttrs->intNum; /* Host Interrupt vector */
-                    
+
                     /* Register interrupts */
                     I2C_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
                     if(object->hwi == NULL) {
@@ -456,14 +456,14 @@ static I2C_Handle I2C_open_v2(I2C_Handle handle, const I2C_Params *params)
                  * Store a callback function that posts the transfer complete
                  * semaphore for synchronous mode
                  */
-                if (object->operMode == I2C_OPER_MODE_BLOCKING) 
+                if (object->operMode == I2C_OPER_MODE_BLOCKING)
                 {
                    /*
                     * Construct thread safe handle for recieving command ACK
                     * Semaphore to provide synchronized access to command response
                     */
                    object->cmdAckSem = I2C_osalCreateBlockingLock(0U, &semParams);
-                
+
                    /* Store internal callback function */
                    object->i2cParams.transferCallbackFxn = &I2C_transfer_Callback_v2;
                 }
@@ -472,7 +472,7 @@ static I2C_Handle I2C_open_v2(I2C_Handle handle, const I2C_Params *params)
                    /* Check to see if a callback function was defined for async mode */
                    if(object->i2cParams.transferCallbackFxn != NULL)
                    {
-                       if (params != NULL) 
+                       if (params != NULL)
                        {
                           /* Save the callback function pointer */
                           object->i2cParams.transferCallbackFxn = params->transferCallbackFxn;
@@ -489,7 +489,7 @@ static I2C_Handle I2C_open_v2(I2C_Handle handle, const I2C_Params *params)
 
                 I2C_drv_log1("\n I2C: Object created 0x%x \n", swipAttrs->baseAddr);
             }
-            
+
             if((ret_flag == 0) && (ICSSInst <= I2C_ICSS_INSTANCE2))
             {
                 I2C_osalPendLock(CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruInstLock, SemaphoreP_WAIT_FOREVER);
@@ -591,7 +591,7 @@ static int32_t I2C_v2_writePinNum(I2C_Handle handle)
         /* Set the SDA pin mux register value for GPI */
         pinReg = swipAttrs->sdaInputPin;
         regVal |= (((uint32_t)(pinReg.pinNum)) << 8);
-        
+
         HW_WR_REG32(swipAttrs->baseAddr + ICSS_I2C_PRU_PIN_OFFSET,regVal);
     }
     else
@@ -699,7 +699,7 @@ static int32_t I2C_v2_pruIcssInit(I2C_Handle handle, const I2C_Params *params)
 
                 PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_DATARAM(PRUInst));
                 PRUICSS_pruInitMemory(pruIcssHandle, PRU_ICSS_IRAM(PRUInst));
-                
+
                 if(PRUICSS_PRU0 == PRUInst)
                 {
                     PRUICSS_pruWriteMemory(pruIcssHandle,PRU_ICSS_DATARAM(PRUInst),0,
@@ -819,12 +819,12 @@ static void I2C_close_v2(I2C_Handle handle)
         if ((ICSSInst <= I2C_ICSS_INSTANCE2) && (PRUInst <= PRUICSS_PRU1))
         {
             pruIcssHandle = CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruIcssHandle;
-            
+
             /* Check to see if a I2C transaction is in progress */
             if(object->headPtr == NULL)
             {
                 I2C_osalPendLock(CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruInstLock, SemaphoreP_WAIT_FOREVER);
-                
+
                 switch(object->configMode)
                 {
                     case I2C_ICSS_1MHZ_MODE:
@@ -854,7 +854,7 @@ static void I2C_close_v2(I2C_Handle handle)
                     default:
                         break;
                 }
-                
+
                 I2C_osalPostLock(CurrentICSSMode[ICSSInst].pruMode[PRUInst].pruInstLock);
 
                 if (I2C_OPER_MODE_POLLING != object->operMode)
@@ -869,7 +869,7 @@ static void I2C_close_v2(I2C_Handle handle)
                 if (I2C_OPER_MODE_BLOCKING == object->operMode)
                 {
                     /* Destruct the transfer completion lock */
-                    I2C_osalDeleteBlockingLock(object->cmdAckSem);        
+                    I2C_osalDeleteBlockingLock(object->cmdAckSem);
                 }
 
                 object->isOpen = (bool)false;
@@ -892,7 +892,7 @@ static int16_t I2C_primeTransfer_v2(I2C_Handle handle,
     int16_t                  status = I2C_STS_SUCCESS;
     int32_t                  ret_flag = 0;
     uint32_t                 irqCommonSts = 0;
-    
+
     /* Input parameter validation */
     if((handle != NULL) && (transaction != NULL))
     {
@@ -966,17 +966,17 @@ static int16_t I2C_primeTransfer_v2(I2C_Handle handle,
                 {
                     ret_flag = I2C_v2_disableStopBit(handle);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_sendCmd2PRU(handle, ICSS_I2C_SETUP_CMD);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_waitForCompletion(handle, SemaphoreP_WAIT_FOREVER);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     /* Set number of bytes to be transmitting */
@@ -991,18 +991,18 @@ static int16_t I2C_primeTransfer_v2(I2C_Handle handle,
                     /* copy the data */
                     ret_flag = I2C_v2_putData(handle, object->writeBufIdx, object->writeCountIdx);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     /* Start the tx command */
                     ret_flag = I2C_v2_sendCmd2PRU(handle, ICSS_I2C_TX_CMD);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_waitForCompletion(handle, transaction->timeout);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     I2C_drv_log1("\n I2C:(0x%x) I2C_IDLE_MODE: -> I2C_WRITE_MODE; Writing w/ START \n",
@@ -1015,23 +1015,23 @@ static int16_t I2C_primeTransfer_v2(I2C_Handle handle,
                 {
                     ret_flag = I2C_v2_enableStopBit(handle);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_sendCmd2PRU(handle, ICSS_I2C_SETUP_CMD);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_waitForCompletion(handle, SemaphoreP_WAIT_FOREVER);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     /* Specify the number of bytes to read */
                     ret_flag = I2C_v2_setDataCount(handle, object->readCountIdx);
                 }
-                
+
                 /*
                  * Start the I2C transfer in master receive mode,
                  * and automatically send stop when done
@@ -1041,12 +1041,12 @@ static int16_t I2C_primeTransfer_v2(I2C_Handle handle,
                     /* Start the RX command */
                     ret_flag = I2C_v2_sendCmd2PRU(handle, ICSS_I2C_RX_CMD);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_waitForCompletion(handle, transaction->timeout);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     /* copy the data */
@@ -1085,7 +1085,7 @@ static int16_t I2C_loopbackTransfer_v2(I2C_Handle handle,
     int16_t                  status = I2C_STS_SUCCESS;
     int32_t                  ret_flag = 0;
     uint32_t                 irqCommonSts = 0;
-    
+
     /* Input parameter validation */
     if((handle != NULL) && (transaction != NULL))
     {
@@ -1175,7 +1175,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
     int16_t                  status = I2C_STS_SUCCESS;
     int32_t                  ret_flag = 0;
     uint32_t                 irqCommonSts = 0;
-    
+
     /* Input parameter validation */
     if((handle != NULL) && (transaction != NULL))
     {
@@ -1296,7 +1296,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* copy the data to buffer */
                              ret_flag = I2C_v2_putData(handle, object->writeBufIdx, 1U);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1329,7 +1329,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* Set number of bytes to be transmitting */
                              ret_flag = I2C_v2_setDataCount(handle, 1U);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1378,7 +1378,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* copy the data to buffer */
                              ret_flag = I2C_v2_putData(handle, object->writeBufIdx, 1U);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1416,7 +1416,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* copy the data to buffer */
                              ret_flag = I2C_v2_putSmbusCmdCode(handle, (object->transactionCmd).cmdCode);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1465,7 +1465,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* copy the data to buffer */
                              ret_flag = I2C_v2_putData(handle, object->writeBufIdx, 2U);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1503,7 +1503,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* copy the data to buffer */
                              ret_flag = I2C_v2_putSmbusCmdCode(handle, (object->transactionCmd).cmdCode);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1552,7 +1552,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* copy the data to buffer */
                              ret_flag = I2C_v2_putData(handle, object->writeBufIdx, object->writeCountIdx);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1590,7 +1590,7 @@ static int16_t I2C_smbusTransfer_v2(I2C_Handle handle,
                              /* copy the data to buffer */
                              ret_flag = I2C_v2_putSmbusCmdCode(handle, (object->transactionCmd).cmdCode);
                          }
-     
+
                          if(ret_flag == 0)
                          {
                              /* Start the tx command */
@@ -1681,7 +1681,7 @@ static int16_t I2C_transfer_v2(I2C_Handle handle,
             }
             else
             {
-                retVal = I2C_smbusTransfer_v2(handle, transaction); 
+                retVal = I2C_smbusTransfer_v2(handle, transaction);
             }
 
             (object->transactionCmd).transferCmd = STANDARD_I2C_CMD;
@@ -1715,7 +1715,7 @@ static int16_t I2C_transfer_v2(I2C_Handle handle,
                     retVal = I2C_STS_SUCCESS;
                     break;
             }
-            
+
             /* Release the lock for this particular I2C handle */
             I2C_osalPostLock(object->mutex);
         }
@@ -1738,13 +1738,13 @@ static int32_t I2C_v2_recoverBus(I2C_Handle handle, uint32_t i2cDelay)
     I2C_PRU_IOPinMuxAttrs    pinReg;
     int32_t                  status = I2C_STATUS_SUCCESS;
     int32_t                  ret_flag = 0;
-    
-    
+
+
     if(handle == NULL)
     {
         status = I2C_STATUS_ERROR;
     }
-    
+
     if(I2C_STATUS_SUCCESS == status)
     {
         /* Get the pointer to swipAttrs */
@@ -1770,7 +1770,7 @@ static int32_t I2C_v2_recoverBus(I2C_Handle handle, uint32_t i2cDelay)
         I2C_v2_pruGPIOMuxConfig(&pinReg, I2C_PRU_PINMUX_GPI_MODE);
 
         ret_flag = I2C_v2_sendCmd2PRU(handle, ICSS_I2C_READ_SCL_CMD);
-        
+
         if(ret_flag == 0)
         {
             if(I2C_OPER_MODE_POLLING != object->operMode)
@@ -1922,14 +1922,14 @@ static int32_t I2C_v2_setBusFrequency(I2C_Handle handle, I2C_ConfigMode busFrequ
                HW_WR_REG32(swipAttrs->configAddr + I2C_BUS_FREQUENCY_OFFSET, (((uint32_t)IEP_CMP_INCREMENT_VAL_400KHZ << 16) | ICSS_I2C_400KHZ_FREQ));
                break;
            }
-           
+
            case I2C_ICSS_100KHZ_MODE:
            {
                /* Set the I2C configuration */
                HW_WR_REG32(swipAttrs->configAddr + I2C_BUS_FREQUENCY_OFFSET, (((uint32_t)IEP_CMP_INCREMENT_VAL_100KHZ << 16) | ICSS_I2C_100KHZ_FREQ));
                break;
            }
-           
+
            default:
            {
                retVal = 1;
@@ -1958,7 +1958,7 @@ static int32_t I2C_v2_control(I2C_Handle handle, uint32_t cmd, void *arg)
     uint8_t                  regVal = 0;
     I2C_v2_Object           *object = NULL;
     int32_t                  ret_flag = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -1973,7 +1973,7 @@ static int32_t I2C_v2_control(I2C_Handle handle, uint32_t cmd, void *arg)
 
                 /* Acquire the lock for this particular I2C handle */
                 I2C_osalPendLock(object->mutex, SemaphoreP_WAIT_FOREVER);
-            
+
                 ret_flag = I2C_v2_enableStopBit(handle);
                 ret_flag = I2C_v2_enableStartBit(handle);
 
@@ -1981,7 +1981,7 @@ static int32_t I2C_v2_control(I2C_Handle handle, uint32_t cmd, void *arg)
                 {
                     ret_flag = I2C_v2_sendCmd2PRU(handle, ICSS_I2C_SETUP_CMD);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_waitForCompletion(handle, SemaphoreP_WAIT_FOREVER);
@@ -2002,18 +2002,18 @@ static int32_t I2C_v2_control(I2C_Handle handle, uint32_t cmd, void *arg)
                     /* copy the data */
                     ret_flag = I2C_v2_putData(handle, &regVal, 1U);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     /* Start the tx command */
                     ret_flag = I2C_v2_sendCmd2PRU(handle, ICSS_I2C_TX_CMD);
                 }
-                
+
                 if(ret_flag == 0)
                 {
                     ret_flag = I2C_v2_waitForCompletion(handle, I2C_DELAY_BIG);
                 }
-                
+
                 if(1 == ret_flag)
                 {
                     retVal = I2C_STATUS_ERROR;
@@ -2085,7 +2085,7 @@ int32_t I2C_v2_enableModule(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2112,7 +2112,7 @@ int32_t I2C_v2_disableModule(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2139,7 +2139,7 @@ int32_t I2C_v2_enableMasterMode(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2166,7 +2166,7 @@ int32_t I2C_v2_enableSlaveMode(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2193,7 +2193,7 @@ int32_t I2C_v2_7bitAddressMode(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2220,7 +2220,7 @@ int32_t I2C_v2_10bitAddressMode(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2247,7 +2247,7 @@ int32_t I2C_v2_enableStartBit(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2274,7 +2274,7 @@ int32_t I2C_v2_disableStartBit(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2301,7 +2301,7 @@ int32_t I2C_v2_enableStopBit(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2328,7 +2328,7 @@ int32_t I2C_v2_disableStopBit(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal    = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2353,7 +2353,7 @@ int32_t I2C_v2_sendCmd2PRU(I2C_Handle handle, uint32_t cmd)
     I2C_v2_Object           *object    = NULL;
     uint32_t                 regVal    = 0x00000000;
     int32_t                  retVal    = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2371,7 +2371,7 @@ int32_t I2C_v2_sendCmd2PRU(I2C_Handle handle, uint32_t cmd)
         {
             regVal |= (cmd << 16);
             HW_WR_REG32(swipAttrs->baseAddr + ICSS_I2C_COMMAND_OFFSET,regVal);
-        }    
+        }
     }
     else
     {
@@ -2385,7 +2385,7 @@ uint32_t I2C_v2_readResp2PRU(I2C_Handle handle)
 {
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2403,7 +2403,7 @@ int32_t I2C_v2_clearResp2PRU(I2C_Handle handle)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     uint32_t                 regVal = 0x00000000;
     int32_t                  retVal = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2427,17 +2427,17 @@ static uint32_t I2C_v2_pollIrqSts(I2C_Handle handle)
     uint32_t                 irqMaskVal     = 0x80000000U;
     uint32_t                 cmdResponse    = 0;
     uint32_t                 retVal         = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
         /* Get the pointer to the swipAttrs */
         swipAttrs = (I2C_SwIPAttrs const *)handle->hwAttrs;
-                
+
         /* read the register which indicate the irq status of all instances */
         irqCommonSts = HW_RD_REG32(swipAttrs->configAddr + IRQ_COMMON_REGISTER_OFFSET);
         irqMaskVal = ((uint32_t)0x00000001 << swipAttrs->i2cInstId);
-        
+
         while((irqCommonSts & irqMaskVal) == 0U)
         {
             irqCommonSts = HW_RD_REG32(swipAttrs->configAddr + IRQ_COMMON_REGISTER_OFFSET);
@@ -2463,7 +2463,7 @@ int32_t I2C_v2_setSlaveAddress(I2C_Handle handle, uint32_t address)
 {
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     int32_t                  retVal = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2484,7 +2484,7 @@ int32_t I2C_v2_putSmbusCmdCode(I2C_Handle handle, uint8_t cmdCode)
 {
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     int32_t                  retVal = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2505,7 +2505,7 @@ int32_t I2C_v2_setDataCount(I2C_Handle handle, uint32_t count)
 {
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     int32_t                  retVal = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2526,7 +2526,7 @@ int32_t I2C_v2_getDataCount(I2C_Handle handle, uint32_t* count)
 {
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     int32_t                  retVal = 0;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2548,7 +2548,7 @@ int32_t I2C_v2_putData(I2C_Handle handle, uint8_t* dataPtr, uint32_t dataCount)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     int32_t                  retVal = 0;
     uint32_t                 i = 0U;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2573,7 +2573,7 @@ int32_t I2C_v2_getData(I2C_Handle handle, uint8_t* dataPtr, uint32_t dataCount)
     I2C_SwIPAttrs const     *swipAttrs = NULL;
     int32_t                  retVal = 0;
     uint32_t                 i = 0U;
-    
+
     /* Input parameter validation */
     if(handle != NULL)
     {
@@ -2766,7 +2766,7 @@ int32_t I2C_v2_writeInstId(I2C_Handle handle)
 
 /**
  * change the pinmux of GPIO pins of pru based on FW.
- **/ 
+ **/
 void I2C_v2_pruGPIOMuxConfig(I2C_PRU_IOPinMuxAttrs *handle, uint32_t pinMode)
 {
     uint32_t regVal = *(volatile uint32_t *)(handle->baseRegAddr);

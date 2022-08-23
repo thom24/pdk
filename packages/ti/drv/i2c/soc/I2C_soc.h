@@ -85,8 +85,8 @@ extern "C" {
 
 #endif
 /* I2C SoC HW IP level API */
-extern int32_t I2C_socGetInitCfg(uint32_t index, I2C_HwAttrs *cfg);
-extern int32_t I2C_socSetInitCfg(uint32_t index, const I2C_HwAttrs *cfg);
+extern int32_t I2C_socGetInitCfg(uint32_t idx, I2C_HwAttrs *cfg);
+extern int32_t I2C_socSetInitCfg(uint32_t idx, const I2C_HwAttrs *cfg);
 
 /* I2C SoC SW IP level API */
 #if defined(SOC_AM572x) || defined(SOC_AM574x) || defined(SOC_AM437x) || defined(SOC_AM437X) || defined(SOC_AM335x) || defined(SOC_AM335X)
@@ -102,3 +102,4 @@ extern void I2C_socInitFwCfg(void);
 #endif
 
 #endif /* I2C_SOC_H */
+

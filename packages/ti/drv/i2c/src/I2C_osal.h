@@ -122,7 +122,6 @@ extern "C" {
  */
 #define I2C_osalDeleteBlockingLock(X)       (SemaphoreP_delete(X))
 
-
 /*!
  *  @brief  Initialize params structure to default values.
  *

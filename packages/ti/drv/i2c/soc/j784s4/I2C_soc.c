@@ -113,7 +113,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 #if defined (BUILD_C7X)
         /* default configuration for I2C instance and DSP core on Main domain*/
         (uint32_t)CSL_I2C1_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 1,                   /* intNum */
+        I2C_C7X_IRQ0 + 1U,                   /* intNum */
         CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_I2C1_POINTRPEND_0 + I2C_CLEC_SOC_EVENTS_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
@@ -137,7 +137,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 #if defined (BUILD_C7X)
         /* default configuration for I2C instance and DSP core on Main domain*/
         (uint32_t)CSL_I2C2_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 2,                   /* intNum */
+        I2C_C7X_IRQ0 + 2U,                   /* intNum */
         CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_I2C2_POINTRPEND_0 + I2C_CLEC_SOC_EVENTS_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
@@ -161,7 +161,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 #if defined (BUILD_C7X)
         /* default configuration for I2C instance and DSP core on Main domain*/
         (uint32_t)CSL_I2C3_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 3,                   /* intNum */
+        I2C_C7X_IRQ0 + 3U,                   /* intNum */
         CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_I2C3_POINTRPEND_0 + I2C_CLEC_SOC_EVENTS_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
@@ -185,7 +185,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 #if defined (BUILD_C7X)
         /* default configuration for I2C instance and DSP core on Main domain*/
         (uint32_t)CSL_I2C4_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 4,                   /* intNum */
+        I2C_C7X_IRQ0 + 4U,                   /* intNum */
         CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_I2C4_POINTRPEND_0 + I2C_CLEC_SOC_EVENTS_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
@@ -209,7 +209,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 #if defined (BUILD_C7X)
         /* default configuration for I2C instance and DSP core on Main domain*/
         (uint32_t)CSL_I2C5_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 5,                   /* intNum */
+        I2C_C7X_IRQ0 + 5U,                   /* intNum */
         CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_I2C5_POINTRPEND_0 + I2C_CLEC_SOC_EVENTS_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
@@ -233,7 +233,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
 #if defined (BUILD_C7X)
         /* default configuration for I2C instance and DSP core on Main domain*/
         (uint32_t)CSL_I2C6_CFG_BASE,        /* baseAddr */
-        I2C_C7X_IRQ0 + 6,                   /* intNum */
+        I2C_C7X_IRQ0 + 6U,                   /* intNum */
         CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_I2C6_POINTRPEND_0 + I2C_CLEC_SOC_EVENTS_IN_EVT_OFFSET, /* eventId, input event # to CLEC */
 #endif
         I2C_INPUT_CLK,
@@ -311,13 +311,13 @@ I2C_config_list I2C_config = {
  * \return 0 success: -1: error
  *
  */
-int32_t I2C_socGetInitCfg(uint32_t index, I2C_HwAttrs *cfg)
+int32_t I2C_socGetInitCfg(uint32_t idx, I2C_HwAttrs *cfg)
 {
     int32_t ret = 0;
 
-    if (index < I2C_HWIP_MAX_CNT)
+    if (idx < I2C_HWIP_MAX_CNT)
     {
-        *cfg = i2cInitCfg[index];
+        *cfg = i2cInitCfg[idx];
     }
     else
     {
@@ -336,13 +336,13 @@ int32_t I2C_socGetInitCfg(uint32_t index, I2C_HwAttrs *cfg)
  * \return           0 success: -1: error
  *
  */
-int32_t I2C_socSetInitCfg(uint32_t index, const I2C_HwAttrs *cfg)
+int32_t I2C_socSetInitCfg(uint32_t idx, const I2C_HwAttrs *cfg)
 {
     int32_t ret = 0;
 
-    if (index < I2C_HWIP_MAX_CNT)
+    if (idx < I2C_HWIP_MAX_CNT)
     {
-        i2cInitCfg[index] = *cfg;
+        i2cInitCfg[idx] = *cfg;
     }
     else
     {

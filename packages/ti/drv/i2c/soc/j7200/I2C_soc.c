@@ -311,13 +311,13 @@ I2C_config_list I2C_config = {
  * \return 0 success: -1: error
  *
  */
-int32_t I2C_socGetInitCfg(uint32_t index, I2C_HwAttrs *cfg)
+int32_t I2C_socGetInitCfg(uint32_t idx, I2C_HwAttrs *cfg)
 {
     int32_t ret = 0;
 
-    if (index < I2C_HWIP_MAX_CNT)
+    if (idx < I2C_HWIP_MAX_CNT)
     {
-        *cfg = i2cInitCfg[index];
+        *cfg = i2cInitCfg[idx];
     }
     else
     {
@@ -336,13 +336,13 @@ int32_t I2C_socGetInitCfg(uint32_t index, I2C_HwAttrs *cfg)
  * \return           0 success: -1: error
  *
  */
-int32_t I2C_socSetInitCfg(uint32_t index, const I2C_HwAttrs *cfg)
+int32_t I2C_socSetInitCfg(uint32_t idx, const I2C_HwAttrs *cfg)
 {
     int32_t ret = 0;
 
-    if (index < I2C_HWIP_MAX_CNT)
+    if (idx < I2C_HWIP_MAX_CNT)
     {
-        i2cInitCfg[index] = *cfg;
+        i2cInitCfg[idx] = *cfg;
     }
     else
     {
@@ -395,7 +395,7 @@ void I2C_socInit(void)
 }
 #endif
 
-#if NOT_REQUIRED_YET
+#if defined (NOT_REQUIRED_YET)
 static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
 {
    int32_t ret = I2C_STATUS_SUCCESS;

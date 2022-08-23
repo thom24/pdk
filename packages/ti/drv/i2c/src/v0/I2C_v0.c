@@ -201,8 +201,8 @@ static void I2C_v0_hwiFxnMaster(I2C_Handle handle)
                   xferStatus=I2C_STS_ERR;
                 } else {
                   xferStatus=I2C_STS_SUCCESS;
-                } 
-		
+                }
+
                 /* callback to application or post Semaphore to unblock transfer fxn */
                 I2C_v0_complete_curr_transfer(handle,xferStatus);
 
@@ -310,13 +310,13 @@ static void I2C_v0_hwiFxnMaster(I2C_Handle handle)
            xferStatus = I2C_STS_ERR_NO_ACK;
            I2CMasterIntClearEx(hwAttrs->baseAddr, I2C_INT_NO_ACK);
 		} else if (errStatus & I2C_INT_ARBITRATION_LOST)
-        { 
+        {
            xferStatus = I2C_STS_ERR_ARBITRATION_LOST;
  		   I2CMasterIntClearEx(hwAttrs->baseAddr,I2C_INT_ARBITRATION_LOST);
         } else {
            xferStatus = I2C_STS_ERR;
 		}
-	        
+
 		I2C_v0_complete_curr_transfer(handle,xferStatus);
 
         /* Try to send a STOP bit to end all I2C communications immediately */
@@ -364,7 +364,7 @@ static void I2C_v0_hwiFxnSlave(I2C_Handle handle)
                                                 I2C_INT_MASK_ADRR_READY_ACESS | I2C_INT_MASK_ADRR_SLAVE |
                                                 I2C_INT_MASK_NO_ACK | I2C_INT_MASK_STOP_CONDITION);
 
-                if (((object->writeCountIdx) != 0) &&
+                if (((object->writeCountIdx) != 0U) &&
                     ((intStat & I2C_INT_TRANSMIT_READY) == I2C_INT_TRANSMIT_READY))
                 {
                     /* Slave transmit mode, send data and clear the interrupt */
@@ -1108,7 +1108,7 @@ static int16_t I2C_transfer_v0(I2C_Handle handle,
             transaction->masterMode = true;
         }
 
-        if (transaction->timeout == 0)
+        if (transaction->timeout == 0U)
         {
             /* timeout cannot be NO_WAIT, set it to default value */
             transaction->timeout = I2C_WAIT_FOREVER;
@@ -1185,12 +1185,12 @@ static int16_t I2C_transfer_v0(I2C_Handle handle,
                 {
                    retVal = I2C_STS_ERR_NO_ACK;
 		        } else if (object->intStatusErr & I2C_INT_ARBITRATION_LOST)
-                { 
+                {
                    retVal = I2C_STS_ERR_ARBITRATION_LOST;
                 } else {
                    retVal = I2C_STS_SUCCESS;
 		        }
-				
+
 				if (semStatus == SemaphoreP_TIMEOUT) {
                  retVal = (int16_t)I2C_STS_ERR;
 				}
@@ -1205,8 +1205,8 @@ static int16_t I2C_transfer_v0(I2C_Handle handle,
             }
 
             /* Release the lock for this particular I2C handle */
-            I2C_osalPostLock(object->mutex);   
-        } 
+            I2C_osalPostLock(object->mutex);
+        }
     }
 
     /* Return the number of bytes transferred by the I2C */
