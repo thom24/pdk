@@ -506,31 +506,15 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
         /* Program GIC IR */
-    #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2)
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
-    #elif defined (SOC_J784S4)
-        if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
-    #endif
         {
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
-            if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_63)
-#else
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_63)
-#endif
             {
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
-                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_0;
-#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
-#endif
             }
             else
             {
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
-                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_64;
-#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_64;
-#endif
                 irOffset += 64U;
             }
 
@@ -818,31 +802,15 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
 
 #if defined (SOC_J721E) || (SOC_J721S2) || (SOC_J784S4)
         /* Reset GIC IR */
-    #if defined (SOC_J721E) || (SOC_J721S2)
         if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
-    #elif defined (SOC_J784S4)
-        if(TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS == req->dst_id)
-    #endif
         {
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
-            if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_63)
-#else
             if(req->dst_host_irq <= CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_63)
-#endif
             {
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
-                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_0;
-#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_0;
-#endif
             }
             else
             {
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
-                irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_0_OUTL_INTR_64;
-#else
                 irOffset = req->dst_host_irq - CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_NAVSS0_INTR_ROUTER_0_OUTL_INTR_64;
-#endif
                 irOffset += 64U;
             }
 
