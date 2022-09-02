@@ -6,7 +6,7 @@
  */
 
 /*
- * Copyright (C) 2016-2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016-2022 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -191,6 +191,17 @@ void C7x_ConfigureTimerOutput(void);
             /* 15 for C7x_1 - DMTimer 1; 15 for C7x_2 - DMTimer 2 */
             #define OSAL_TEST_TIMER_INT_NUM                 (configTIMER_INT_NUM + 1U) 
             #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + configTIMER_ID + 1)
+        #elif defined(SAFERTOS)
+            #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
+            /* DMTimer 0/1 and Interrupt num 14 is used by SafeRTOS by default for C7x_1/C7x_2 respectively, 
+             * So we need to use a different one here */
+            #if defined (BUILD_C7X_1)
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1+1)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_1 + 1)
+            #elif defined (BUILD_C7X_2)
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2+1)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_2 + 1)
+            #endif
         #endif
     #endif
     #if defined(SOC_J784S4)

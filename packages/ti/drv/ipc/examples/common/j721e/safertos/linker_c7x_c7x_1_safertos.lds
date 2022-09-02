@@ -57,7 +57,7 @@ SECTIONS
         .data                   : {}  /* Initialized data */
 
         .init_array             : {}  /* C++ initializations */
-        .stack                  : {} ALIGN(0x2000)
+        .stack                  : {} ALIGN(0x10000)
         .args                   : {}
         .cio                    : {}
         .switch                 : {} /* For exception handling. */

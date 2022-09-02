@@ -30,6 +30,9 @@ while [ $# -gt 0 ]; do
     --j721s2_r5f_path=*)
       j721s2_r5f_path="${1#*=}"
       ;;
+    --j721s2_c7x_path=*)
+      j721s2_c7x_path="${1#*=}"
+      ;;
     --j721e_c66_path=*)
       j721e_c66_path="${1#*=}"
       ;;
@@ -45,6 +48,7 @@ while [ $# -gt 0 ]; do
       echo "--j721e_c7x_path       Path to J721E(TDA4VM) C7x SafeRTOS Package from WHIS"
       echo "--j7200_r5f_path       Path to J7200(DRA821) R5F SafeRTOS Package from WHIS"
       echo "--j721s2_r5f_path      Path to J721S2(TDA4VL) R5F SafeRTOS Package from WHIS"
+      echo "--j721s2_c7x_path      Path to J721S2(TDA4VL) C7X SafeRTOS Package from WHIS"
       exit 0
       ;;
     *)
@@ -151,6 +155,23 @@ if [ ! "${j721s2_r5f_path}" == "" ]; then
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j721s2/sciserver_testapp_safertos_mcu1_0_release.xer5f ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j721s2/
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j721s2/sciserver_testapp_safertos_mcu1_0_release.rprc  ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j721s2/
     printf "\n Successfully completed setup SafeRTOS Builds for J721S2 R5F\n\n"
+  fi
+fi
+
+if [ ! "${j721s2_c7x_path}" == "" ]; then
+  printf "\n j721s2_c7x_path = $j721s2_c7x_path \n\n"
+  if [ !  -d ${j721s2_c7x_path} ] ; then
+    printf "\n Error: Invalid j721s2_c7x_path!!\n\n"
+  else
+    #Update C7X Install Path
+    sed -i -e "s|SAFERTOS_j721s2_c7x_INSTALL_PATH =.*|SAFERTOS_j721s2_c7x_INSTALL_PATH = ${j721s2_c7x_path}|g" safertos_version.mk
+    #Build safertos lib for all C7X cores
+    make safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release BOARD=j721s2_evm
+    make safertos -sj8 CORE=c7x_2 BUILD_PROFILE=release BOARD=j721s2_evm
+
+        #Build osal_safertos for C7X
+    make osal_safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release BOARD=j721s2_evm
+    printf "\n Successfully completed setup SafeRTOS Builds for J721S2 C7X\n\n"
   fi
 fi
 

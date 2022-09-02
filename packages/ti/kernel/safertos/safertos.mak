@@ -15,7 +15,7 @@ ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/${SAFERTOS_ISA_EXT_$(ISA)}
 endif
 ifeq ($(ISA),$(filter $(ISA), c7x))
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/TI_c7x_Support
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_$(TDA_EXT_$(SOC))_C7x_Demo/TI_c7x_Support
 endif
 
 INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT_$(ISA))
@@ -27,8 +27,8 @@ INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRT
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))/$(SAFERTOS_COMPILER_EXT_$(ISA))
 ifeq ($(ISA),$(filter $(ISA), c7x))
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/NoWrapper
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo/TI_c7x_Support
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_TDA4VM_C7x_Demo
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_$(TDA_EXT_$(SOC))_C7x_Demo/TI_c7x_Support
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_$(TDA_EXT_$(SOC))_C7x_Demo
 endif
 
 # List all the external components/interfaces, whose interface header files

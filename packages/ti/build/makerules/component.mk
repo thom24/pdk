@@ -130,10 +130,6 @@ else
 #SafeRTOS is not supported on other SOCs
 DEFAULT_CORELIST_EXCLUDE_CORES_safertos = $(DEFAULT_$(SOC)_CORELIST)
 endif
-ifeq ($(SOC),$(filter $(SOC), j721s2))
-# SafeRTOS is not currently supported on J721S2 C7x cores
-DEFAULT_CORELIST_EXCLUDE_CORES_safertos += c7x_1 c7x_2
-endif
 
 DEFAULT_$(SOC)_CORELIST_safertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES_safertos), $(DEFAULT_$(SOC)_CORELIST))
 

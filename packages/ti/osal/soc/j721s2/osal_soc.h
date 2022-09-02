@@ -145,6 +145,15 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
  * Instance is hard-coded for J721S2 only
  *
  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 0 )   /*  DMTimer 0  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 14 )
+
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_2         ( 1 )   /*  DMTimer 1  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2    ( 14 )
+
+#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13 )
 void OsalCfgClecAccessCtrl (bool onlyInSecure);
 #endif
 

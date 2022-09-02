@@ -221,6 +221,7 @@ static void prvCfgClecAccessCtrl ( Bool onlyInSecure )
     CSL_ClecEventConfig cfgClec;
     CSL_CLEC_EVTRegs   *clecBaseAddr = ( CSL_CLEC_EVTRegs* ) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
     uint32_t            i, maxInputs = 2048U;
+    uint32_t            secureClaim = 0U;
 
     cfgClec.secureClaimEnable = onlyInSecure;
     cfgClec.evtSendEnable     = FALSE;
@@ -229,7 +230,11 @@ static void prvCfgClecAccessCtrl ( Bool onlyInSecure )
     cfgClec.c7xEvtNum         = 0U;
     for(i = 0U; i < maxInputs; i++)
     {
-        CSL_clecConfigEvent( clecBaseAddr, i, &cfgClec );
+        CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);
+        if(secureClaim)
+        {
+            CSL_clecConfigEvent( clecBaseAddr, i, &cfgClec );
+        }
     }
 }
 /*-------------------------------------------------------------------------*/
@@ -245,7 +250,7 @@ static void vPortInitTimerCLECCfg( uint32_t timerId, uint32_t timerIntNum )
     /* Configure CLEC */
     cfgClec.secureClaimEnable = FALSE;
     cfgClec.evtSendEnable     = TRUE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
+    cfgClec.rtMap             = CSL_clecGetC7xRtmapCpuId();
     cfgClec.extEvtNum         = 0;
     cfgClec.c7xEvtNum         = corepackEvent;
     CSL_clecClearEvent(clecBaseAddr, input);

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018 - 2022
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -170,7 +170,7 @@ void rpmsg_responderFxn(void *arg0, void *arg1)
     void		*buf;
     uint32_t            requestedEpt = (uint32_t)(*(uint32_t*)arg0);
     char *              name = (char *)arg1;
-
+    
     uint32_t            bufSize = rpmsgDataSize;
     char                str[MSGSIZE];
 

@@ -43,6 +43,9 @@
 
 #include <ti/osal/TimerP.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
+#if defined(BUILD_C7X)
+#include <ti/csl/csl_clec.h>
+#endif
 
 #include "SafeRTOS_priv.h"
 
@@ -280,9 +283,23 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
     } 
 #endif
 #elif defined (BUILD_C7X)
-    params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_1;
-    params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1;
-    params->eventId = TimerP_USE_DEFAULT;
+    int32_t rtMapCpuId;
+    rtMapCpuId = CSL_clecGetC7xRtmapCpuId();
+    if (CSL_CLEC_RTMAP_CPU_4 == rtMapCpuId)
+    {
+        params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_1;
+        params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1;
+        params->eventId = TimerP_USE_DEFAULT;
+    }
+#if defined (SOC_J721S2)
+    else if (CSL_CLEC_RTMAP_CPU_5 == rtMapCpuId)
+    {
+        params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_2;
+        params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2;
+        params->eventId = TimerP_USE_DEFAULT;
+    }
+#endif
+    
 #endif
 }
 

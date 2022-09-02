@@ -18,6 +18,7 @@ endif
 
 ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm ))
   export SAFERTOS_j721s2_r5f_INSTALL_PATH = 
+  export SAFERTOS_j721s2_c7x_INSTALL_PATH =
 endif
 
 # This release is validated on below mentioned SafeRTOS Version on said SOC's/ISA's 
@@ -31,6 +32,7 @@ ifeq ($(BOARD),$(filter $(BOARD), j7200_evm ))
 endif
 ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm ))
   SAFERTOS_VERSION_r5f = 009-002-199-024-235-001
+  SAFERTOS_VERSION_c7x = 009-002-230-005-235-001
 endif
 
 # ISA based directory extensions used in SafeRTOS Package 
@@ -41,3 +43,7 @@ SAFERTOS_ISA_EXT_c7x = 230_C7x
 SAFERTOS_COMPILER_EXT_r5f = 024_Clang
 SAFERTOS_COMPILER_EXT_c66 = 005_TI_CGT
 SAFERTOS_COMPILER_EXT_c7x = 005_TI_CGT
+
+TDA_EXT_j721s2 = TDA4VL
+TDA_EXT_j721e = TDA4VM
+TDA_EXT_j784s4 = TDA4VH
