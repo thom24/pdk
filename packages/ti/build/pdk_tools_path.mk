@@ -73,10 +73,6 @@ GCC_VERSION_ARM_A15=$(GCC_CROSS_TOOL_PREFIX)$(GCC_CROSS_TOOL_TAG)
   export C6X_GEN_INSTALL_PATH      ?= $(TOOLS_INSTALL_PATH)/ti-cgt-c6000_$(CGT_VERSION)
   export C7X_GEN_INSTALL_PATH      ?= $(TOOLS_INSTALL_PATH)/ti-cgt-c7000_$(CGT_C7X_VERSION)
   export CL_PRU_INSTALL_PATH       ?= $(TOOLS_INSTALL_PATH)/ti-cgt-pru_$(CGT_PRU_VERSION)
-  export TOOLCHAIN_PATH_A8         ?= $(TOOLS_INSTALL_PATH)/gcc-$(GCC_VERSION_ARM_A8)
-  export TOOLCHAIN_PATH_A9         ?= $(TOOLS_INSTALL_PATH)/gcc-$(GCC_VERSION_ARM_A9)
-  export TOOLCHAIN_PATH_Arm9       ?= $(TOOLS_INSTALL_PATH)/ti-cgt-arm_$(CGT_ARM_VERSION)
-  export TOOLCHAIN_PATH_A15        ?= $(TOOLS_INSTALL_PATH)/gcc-$(GCC_VERSION_ARM_A15)
 
 ifeq ($(OS),Windows_NT)
   #Paths for windows machine
@@ -104,8 +100,6 @@ endif
   export NS_INSTALL_PATH           ?= $(SDK_INSTALL_PATH)/ns_$(NS_VERSION)
   export PDK_INSTALL_PATH          ?= $(SDK_INSTALL_PATH)/pdk$(PDK_VERSION_STR)/packages
   export UIA_INSTALL_PATH          ?= $(SDK_INSTALL_PATH)/uia_$(UIA_VERSION)
-  export XDC_INSTALL_PATH          ?= $(SDK_INSTALL_PATH)/xdctools_$(XDC_VERSION)
-  export UTILS_INSTALL_DIR         ?= $(XDC_INSTALL_PATH)/bin
   export RADARLINK_INSTALL_PATH    ?= $(SDK_INSTALL_PATH)/$(mmwavelink_version)
   export CG_XML_BIN_INSTALL_PATH   ?= $(SDK_INSTALL_PATH)/cg_xml_$(CG_XML_VERSION)/bin
   export TI_SECURE_DEV_PKG         ?= $(SDK_INSTALL_PATH)/proc-sdk-secdev_$(SECDEV_VERSION)
@@ -118,22 +112,8 @@ endif
   export FREERTOS_LABS_INSTALL_PATH     ?= $(PDK_INSTALL_PATH)/ti/kernel/freertos/FreeRTOS-Labs
   export MMWAVE_DFP_INSTALL_PATH        ?= $(SDK_INSTALL_PATH)/mmwave_dfp_$(MMWAVE_DFP_VERSION)
 
-ifeq ($(SOC),$(filter $(SOC), am335x))
-  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
-  export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A8)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu
-else ifeq  ($(SOC),$(filter $(SOC), am437x))
-  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A9)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
-  export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A9)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu
-else
-  export HARDLIB_PATH ?= $(TOOLCHAIN_PATH_A15)/lib/gcc/arm-none-eabi/$(GCC_VERSION_HARDLIB)
-  export FPULIB_PATH ?= $(TOOLCHAIN_PATH_A15)/lib/gcc/arm-none-eabi/$(GCC_VERSION_FPULIB)/fpu
-endif
-
 # Utilities directory. This is required only if the build machine is Windows.
-#   - specify the installation directory of utility which supports POSIX commands
-#     (eg: Cygwin installation or MSYS installation).
-# This could be in CCS install directory as in c:/ti/ccsv<ver>/utils/cygwin or
-# the XDC install bin folder represented by  $(UTILS_INSTALL_DIR)
+# This should be CCS install directory as in c:/ti/ccsv<ver>/ccs/utils/cygwin
 ifeq ($(OS),Windows_NT)
-  export utils_PATH ?= $(UTILS_INSTALL_DIR)
+  export utils_PATH ?= c:/ti/ccs1120/ccs/utils/cygwin
 endif
