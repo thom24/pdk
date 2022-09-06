@@ -55,11 +55,6 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
         # Master running on mcu2_0 core, use the common linker command file in build
         CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK
         APP_MASTER_SLAVE  = Master
-        ifeq ($(SOC),$(filter $(SOC), j721s2))
-            ifeq ($(BUILD_OS_TYPE), freertos)
-                EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_2_0_freertos.lds
-            endif
-        endif
     endif
 endif
 
