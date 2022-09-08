@@ -72,44 +72,10 @@ all:
 
 # This target is used to build all configurations for a particular SBL_PLATFORM
 all_sbl_images:
-ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), am65xx j721e j7200 am64x_evm))
+ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), j721e j7200 j721s2 j784s4))
 	# All keystone 3
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build all
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build all
-else
-ifeq ($(SBL_PLATFORM), am57xx)
-	# am57xx
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=idkAM572x SOC=AM572x BOOTMODE=mmcsd
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=idkAM572x SOC=AM572x BOOTMODE=qspi
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=idkAM574x SOC=AM574x BOOTMODE=mmcsd
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=idkAM574x SOC=AM574x BOOTMODE=qspi
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=idkAM571x SOC=AM571x BOOTMODE=mmcsd
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=idkAM571x SOC=AM571x BOOTMODE=qspi
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=evmAM572x SOC=AM572x BOOTMODE=mmcsd
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=evmAM572x SOC=AM572x BOOTMODE=emmc
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter BOARD=idkAM572x SOC=AM572x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter BOARD=idkAM574x SOC=AM574x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter BOARD=idkAM571x SOC=AM571x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl sbl_lib BOARD=idkAM572x SOC=AM572x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl sbl_lib BOARD=idkAM574x SOC=AM574x
-else ifeq ($(SBL_PLATFORM), k2g)
-	# k2g
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=evmK2G SOC=K2G BOOTMODE=mmcsd
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=evmK2G SOC=K2G BOOTMODE=qspi
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter BOARD=evmK2G SOC=K2G
-else ifeq ($(SBL_PLATFORM), omapl137)
-	# omapl137
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=evmOMAPL137 SOC=OMAPL137 BOOTMODE=spi
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl spi_flashwriter BOARD=evmOMAPL137 SOC=OMAPL137
-else ifeq ($(SBL_PLATFORM), omapl138)
-	# omapl138
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=lcdkOMAPL138 SOC=OMAPL138 BOOTMODE=mmcsd
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl all BOARD=lcdkC6748 SOC=C6748 BOOTMODE=mmcsd
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter BOARD=lcdkOMAPL138 SOC=OMAPL138
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter BOARD=lcdkC6748 SOC=C6748
-else ifeq ($(SBL_PLATFORM), $(filter $(SOC), tpr12 awr294x))
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build all
-endif
 endif
 
 
@@ -126,16 +92,6 @@ example:
 	@$(MAKE) -f ./example/mpuMulticoreApp/makefile $@
 	@$(MAKE) -f ./example/dsp1MulticoreApp/makefile $@
 	@$(MAKE) -f ./example/ipu1MulticoreApp/makefile $@
-ifeq ($(SOC),$(filter $(SOC), AM572x AM574x))
-	@$(MAKE) -f ./example/mpu1MulticoreApp/makefile $@
-	@$(MAKE) -f ./example/dsp2MulticoreApp/makefile $@
-	@$(MAKE) -f ./example/ipu2MulticoreApp/makefile $@
-endif
-
-eveLoader:
-ifeq ($(SOC),$(filter $(SOC), AM572x AM574x))
-	@$(MAKE) -C  ./example/mpuM4EveLoaderApp $@
-endif
 
 tools:
 	@$(MAKE) -C tools/btoccs
@@ -166,51 +122,15 @@ example_clean:
 	@$(MAKE) -f ./example/mpuMulticoreApp/makefile $@
 	@$(MAKE) -f ./example/dsp1MulticoreApp/makefile $@
 	@$(MAKE) -f ./example/ipu1MulticoreApp/makefile $@
-ifeq ($(SOC),$(filter $(SOC), AM572x AM574x))
-	@$(MAKE) -f ./example/dsp2MulticoreApp/makefile $@
-	@$(MAKE) -f ./example/ipu2MulticoreApp/makefile $@
-endif
 	@$(RMDIR) $(PDK_INSTALL_PATH)/ti/boot/sbl/binary/sbl_multicore_app/$(BOARD)
 
 sbl_lib_clean:
 	@$(MAKE) -f ./src/sbl_eve/sbl_lib/src/makefile $@
 
-eveLoader_clean:
-ifeq ($(SOC),$(filter $(SOC), AM572x AM574x))
-	@$(MAKE) -C ./example/mpuM4EveLoaderApp $@
-endif
-
 # This target is used to clean all images for a particular SBL_PLATFORM
 all_sbl_images_clean:
-ifeq ($(SBL_PLATFORM), am57xx)
-	# am57xx
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=idkAM572x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=idkAM574x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=idkAM571x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=evmAM572x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter_clean BOARD=idkAM572x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter_clean BOARD=idkAM574x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter_clean BOARD=idkAM571x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl sbl_lib_clean BOARD=idkAM572x
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl sbl_lib_clean BOARD=idkAM574x
-else ifeq ($(SBL_PLATFORM), k2g)
-	# k2g
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=evmK2G
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl flashwriter_clean BOARD=evmK2G
-else ifeq ($(SBL_PLATFORM), omapl137)
-	# omapl137
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=evmOMAPL137
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl spi_flashwriter_clean BOARD=evmOMAPL137
-else ifeq ($(SBL_PLATFORM), omapl138)
-	# omapl138
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=lcdkOMAPL138
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl clean BOARD=lcdkC6748
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter_clean BOARD=lcdkOMAPL138
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl mmcsd_flashwriter_clean BOARD=lcdkC6748
-else ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), am65xx j721e j7200))
+ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), j721e j7200 j721s2 j784s4))
 	# All keystone3
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean
-	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean
-else ifeq ($(SBL_PLATFORM),$(filter $(SBL_PLATFORM), tpr12 awr294x))
 	$(MAKE) -C $(PDK_INSTALL_PATH)/ti/boot/sbl/build clean
 endif

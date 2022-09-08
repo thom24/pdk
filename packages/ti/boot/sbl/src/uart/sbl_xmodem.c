@@ -52,52 +52,8 @@
 
 #define MAXRETRANS          (100U)
 #define SBL_XMODEM_DELAY    (0x3FFFFF)
-#if (defined(SOC_TPR12) || defined (SOC_AWR294X))
-#include <ti/csl/soc.h>
-#include <ti/csl/cslr_sci.h>
 
-/* TPR12 Does not have CSL-FL layer for UART. Som implementing the 
- * UART character read function here
- */
-
-static uint32_t UartSci_isRxFree (const CSL_sciRegs* ptrSCIRegs)
-{
-    return CSL_FEXT(ptrSCIRegs->SCIFLR, SCI_SCIFLR_RXRDY);
-}
-
-static uint8_t UartSci_getCh (const CSL_sciRegs* ptrSCIRegs)
-{
-    return (uint8_t)CSL_FEXT(ptrSCIRegs->SCIRD, SCI_SCIRD_RD);
-}
-
-
-uint32_t READBYTE_WITH_TIMEOUT(uint32_t xmodemUartAddr, uint32_t delayMs, uint8_t *pData)
-{
-    int32_t timeCounter = delayMs;
-    bool charReceived = false;
-    const CSL_sciRegs* ptrSCIRegs = (const CSL_sciRegs*)xmodemUartAddr;
-
-    /* Is the receiver free? */
-    while (timeCounter > 10)
-    {
-        if (UartSci_isRxFree(ptrSCIRegs) == 1U)
-        {
-              /* YES: Read out a character from the buffer. */
-              *pData = UartSci_getCh (ptrSCIRegs);
-              charReceived = true;
-              break;
-        }
-        timeCounter--;
-    }
-    return charReceived;
-}
-#else
- #ifdef SOC_K2G
- #define READBYTE_WITH_TIMEOUT(xmodemUartAddr, delayMs, pData)    UART_charGetTimeout2_v0((xmodemUartAddr), (delayMs), pData)
- #else
- #define READBYTE_WITH_TIMEOUT(xmodemUartAddr, delayMs, pData)    ((int32_t)(UARTCharGetTimeout2((xmodemUartAddr), (delayMs), pData)))
- #endif
-#endif
+#define READBYTE_WITH_TIMEOUT(xmodemUartAddr, delayMs, pData)    ((int32_t)(UARTCharGetTimeout2((xmodemUartAddr), (delayMs), pData)))
 
 static const unsigned short crc16tab[256]= {
 	0x0000,0x1021,0x2042,0x3063,0x4084,0x50a5,0x60c6,0x70e7,

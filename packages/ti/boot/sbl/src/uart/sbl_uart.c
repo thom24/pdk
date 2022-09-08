@@ -69,16 +69,8 @@
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
-#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
-/* TPR12 SBL presently does not support certificate parsing so use the entire
- * SBL scratch for UART receive
- */
-#define XMODEM_TEMP_BUFF_SIZE    (SBL_SCRATCH_MEM_SIZE)
-#define SBL_XMODEM_BUFF_ADDR     (SBL_SCRATCH_MEM_START)
-#else
 #define XMODEM_TEMP_BUFF_SIZE    ((SBL_SCRATCH_MEM_SIZE) / 2)
 #define SBL_XMODEM_BUFF_ADDR     ((SBL_SCRATCH_MEM_START) + (XMODEM_TEMP_BUFF_SIZE))
-#endif
 
 
 static int32_t SBL_UART_ReadXmodemBuffer(void *dstAddr,

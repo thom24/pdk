@@ -107,28 +107,28 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
     {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(am64x_evm)
+#if defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm)
         0U
 #else
         1U
 #endif
     },
     {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(am64x_evm)
+#if defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm)
         0U
 #else
         1U
 #endif
     },
     {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(am64x_evm)
+#if defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm)
         0U
 #else
         1U
 #endif
     },
     {
-#if defined(iceK2G) || defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm) || defined(am64x_evm)
+#if defined(j721e_evm) || defined(j7200_evm) || defined(j721s2_evm) || defined(j784s4_evm)
         0U
 #else
         1U
@@ -292,10 +292,6 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
     uint32_t authenticated = 0; 
     uint32_t srcAddr = 0;
     uint32_t imgOffset = 0;
-#endif
-
-#ifdef iceK2G
-    MMCSDInitCfg[1].cardType = MMCSD_CARD_SD;
 #endif
 
     /* Initialization of the driver. */

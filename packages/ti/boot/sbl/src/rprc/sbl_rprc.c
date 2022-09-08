@@ -65,7 +65,7 @@ static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
 /******************************************************************************
  ***                     SBL Multicore RPRC parse functions                 ***
 *******************************************************************************/
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #if defined(BUILD_MCU1_0)
 extern void SBL_DCacheClean(void *addr, uint32_t size);
 #endif
@@ -213,7 +213,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
 {
     switch (CoreID)
     {
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
         case ONLY_LOAD_ID:
             /* Only loading, ignore entry point*/
             SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
@@ -394,435 +394,13 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
 
             break;
 #endif
-#if defined(OMAPL137_BUILD) || defined(C6748_BUILD)  || defined(OMAPL138_BUILD)
-        case DSP0_ID:
-            /* DSP0*/
-            pAppEntry->entryPoint_DSP0 = entry;
-            break;
-#endif
-#if defined(AM572x_BUILD) || defined(AM574x_BUILD) || defined(K2H_BUILD) || defined(K2E_BUILD) || defined(K2L_BUILD) || defined(K2K_BUILD) || defined(K2G_BUILD)
-        case MPU_CPU1_ID:
-            /* CSL_MPU CPU1 */
-            pAppEntry->entryPoint_MPU_CPU1 = entry;
-            break;
-#endif
-
-#if defined(K2H_BUILD) || defined(K2E_BUILD) || defined(K2K_BUILD) || defined(K2G_BUILD)
-        case MPU_CPU2_ID:
-            pAppEntry->entryPoint_MPU_CPU2 = entry;
-            break;
-
-        case MPU_CPU3_ID:
-            pAppEntry->entryPoint_MPU_CPU3 = entry;
-            break;
-
-        case MPU_SMP_ID:
-            pAppEntry->entryPoint_MPU_CPU0 = entry;
-            pAppEntry->entryPoint_MPU_CPU1 = entry;
-            pAppEntry->entryPoint_MPU_CPU2 = entry;
-            pAppEntry->entryPoint_MPU_CPU3 = entry;
-            break;
-#endif
-
-#if defined(AM571x_BUILD) || defined(AM572x_BUILD) || defined(AM574x_BUILD)
-        case IPU1_CPU0_ID:
-            /*IPU1 CPU0*/
-            pAppEntry->entryPoint_IPU1_CPU0 = entry;
-            break;
-
-        case IPU1_CPU1_ID:
-            /*IPU1 CPU1*/
-            pAppEntry->entryPoint_IPU1_CPU1 = entry;
-            break;
-
-        case IPU1_CPU_SMP_ID:
-            /*IPU1 CPU0 & CPU1*/
-            pAppEntry->entryPoint_IPU1_CPU0 = entry;
-            pAppEntry->entryPoint_IPU1_CPU1 = entry;
-            break;
-#endif
-
-#if defined (AM572x_BUILD) || defined(AM574x_BUILD)
-        case IPU2_CPU0_ID:
-            /*IPU2 CPU0*/
-            pAppEntry->entryPoint_IPU2_CPU0 = entry;
-            break;
-
-        case IPU2_CPU1_ID:
-            /*IPU2 CPU1*/
-            pAppEntry->entryPoint_IPU2_CPU1 = entry;
-            break;
-
-        case IPU2_CPU_SMP_ID:
-            /*IPU2 CPU0 & CPU1*/
-            pAppEntry->entryPoint_IPU2_CPU0 = entry;
-            pAppEntry->entryPoint_IPU2_CPU1 = entry;
-            break;
-#endif
-
-#if defined(K2H_BUILD) || defined(K2E_BUILD) || defined(K2L_BUILD) || defined(K2K_BUILD) || defined(K2G_BUILD)
-        case DSP0_ID:
-            pAppEntry->entryPoint_DSP0 = entry;
-            break;
-#endif
-
-#if defined(AM572x_BUILD) || defined(AM574x_BUILD) || defined(AM571x_BUILD) || defined(K2H_BUILD) || defined(K2L_BUILD) || defined(K2K_BUILD)
-        case DSP1_ID:
-            /* DSP1*/
-            pAppEntry->entryPoint_DSP1 = entry;
-            break;
-#endif
-
-#if defined (AM572x_BUILD) || defined(AM574x_BUILD) || defined(K2H_BUILD) || defined(K2L_BUILD) || defined(K2K_BUILD)
-        case DSP2_ID:
-            /* DSP2*/
-            pAppEntry->entryPoint_DSP2 = entry;
-            break;
-#endif
-
-#if defined(K2H_BUILD) || defined(K2L_BUILD) || defined(K2K_BUILD)
-        case DSP3_ID:
-            pAppEntry->entryPoint_DSP3 = entry;
-            break;
-#endif
-
-#if defined(K2H_BUILD)
-        case DSP4_ID:
-            pAppEntry->entryPoint_DSP4 = entry;
-            break;
-
-        case DSP5_ID:
-            pAppEntry->entryPoint_DSP5 = entry;
-            break;
-
-        case DSP6_ID:
-            pAppEntry->entryPoint_DSP6 = entry;
-            break;
-
-        case DSP7_ID:
-            pAppEntry->entryPoint_DSP7 = entry;
-            break;
-#endif
-#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
-        case ONLY_LOAD_ID:
-            /* Only loading, ignore entry point*/
-            SBL_log(SBL_LOG_MAX, "Only load (not execute) image @0x%x\n", entry);
-            pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
-            break;
-        case DSP1_C66X_ID:
-        case MCU1_CPU0_ID:
-        case MCU1_CPU1_ID:
-#if defined (SOC_AWR294X)
-        case RSS1_R4_ID:
-#endif
-            /* All other cores*/
-            SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
-            pAppEntry->CpuEntryPoint[CoreID] = entry;
-            break;
-
-        case MCU1_SMP_ID:
-            /* Cluster 2 SMP*/
-            SBL_log(SBL_LOG_MAX, "Setting Lockstep entry point for MCU1 @0x%x\n", entry);
-            pAppEntry->CpuEntryPoint[MCU1_CPU0_ID] = entry;
-            pAppEntry->CpuEntryPoint[MCU1_CPU1_ID] = SBL_MCU_LOCKSTEP_ADDR;
-            pAppEntry->CpuEntryPoint[CoreID] = SBL_INVALID_ENTRY_ADDR;
-            break;
-#endif
             default:
             /* Wrong CPU ID */
             break;
     }
 }
 
-#if defined(K2G_BUILD) || defined(K2E_BUILD) || defined(K2H_BUILD) || defined(K2K_BUILD) || defined(K2L_BUILD) || defined(AM571x_BUILD) || defined(AM572x_BUILD) || defined(AM574x_BUILD)
-static int32_t SBL_RprcImageParse(void *srcAddr,
-                                  uint32_t *entryPoint,
-                                  int32_t CoreId)
-{
-    rprcFileHeader_t    header;
-    rprcSectionHeader_t section;
-    int32_t i;
-    int32_t retVal = E_PASS;
-
-    /*read application image header*/
-    fp_readData(&header, srcAddr, sizeof (rprcFileHeader_t));
-
-    /*check magic number*/
-    if (header.magic != RPRC_MAGIC_NUMBER)
-    {
-        UART_printf("Invalid magic number in boot image. Expected: %x, received: %x\n", RPRC_MAGIC_NUMBER, header.magic);
-        retVal = E_FAIL;
-    }
-    else
-    {
-        /* Set the Entry Point */
-        *entryPoint = header.entry;
-
-        /*read entrypoint and copy sections to memory*/
-        for (i = 0; i < header.SectionCount; i++)
-        {
-            /*read new section header*/
-            fp_readData(&section, srcAddr, sizeof (rprcSectionHeader_t));
-#if defined(K2G_BUILD) || defined(K2E_BUILD) || defined(K2H_BUILD) || defined(K2K_BUILD) || defined(K2L_BUILD)
-#if 0
-            if ((section.addr >= CSL_MSMC_SRAM_REGS) &&
-                (section.addr < CSL_MSMC_SRAM_REGS + CSL_MSMC_SRAM_REGS_SIZE))
-            {
-
-            }
-            else if (section.addr >= CSL_DDR_0_DATA)
-            {
-
-            }
-            else if ((section.addr >= CSL_C66X_COREPAC_LOCAL_L2_SRAM_REGS) &&
-                (section.addr < CSL_C66X_COREPAC_LOCAL_L2_SRAM_REGS + CSL_C66X_COREPAC_LOCAL_L2_SRAM_REGS_SIZE))
-            {
-                section.addr |= 0x10000000;
-            }
-            else
-            {
-
-            }
-#else
-            if ((section.addr >= CSL_MSMC_SRAM_REGS) &&
-                (section.addr < CSL_MSMC_SRAM_REGS + 0x01000000))
-            {
-
-            }
-            else if (section.addr >= 0x80000000)
-            {
-
-            }
-            else if ((section.addr >= CSL_C66X_COREPAC_LOCAL_L2_SRAM_REGS) &&
-                (section.addr < CSL_C66X_COREPAC_LOCAL_L2_SRAM_REGS + 0x00100000))
-            {
-                switch (CoreId)
-                {
-                    case DSP0_ID:
-                        section.addr |= 0x10000000; /* CorePac0 L2 SRAM */
-                        break;
-#if defined(K2H_BUILD) || defined(K2K_BUILD) || defined(K2L_BUILD)
-                    case DSP1_ID:
-                        section.addr |= 0x11000000; /* CorePac1 L2 SRAM */
-                        break;
-
-                    case DSP2_ID:
-                        section.addr |= 0x12000000; /* CorePac2 L2 SRAM */
-                        break;
-
-                    case DSP3_ID:
-                        section.addr |= 0x13000000; /* CorePac3 L2 SRAM */
-                        break;
-#endif
-#if defined(K2H_BUILD) || defined(K2K_BUILD)
-                    case DSP4_ID:
-                        section.addr |= 0x14000000; /* CorePac4 L2 SRAM */
-                        break;
-
-                    case DSP5_ID:
-                        section.addr |= 0x15000000; /* CorePac5 L2 SRAM */
-                        break;
-
-                    case DSP6_ID:
-                        section.addr |= 0x16000000; /* CorePac6 L2 SRAM */
-                        break;
-
-                    case DSP7_ID:
-                        section.addr |= 0x17000000; /* CorePac7 L2 SRAM */
-                        break;
-#endif
-                    default:
-                    /* Wrong CPU ID */
-                    break;
-                }
-            }
-            else
-            {
-
-            }
-#endif
-#else
-#if defined (AM572x_BUILD) || defined(AM574x_BUILD)
-            if (((section.addr >= CSL_MPU_OCMC_RAM1_REGS) &&
-                 (section.addr < (CSL_MPU_OCMC_RAM1_REGS + SOC_OCMC_RAM1_SIZE))) ||
-                ((section.addr >= CSL_MPU_OCMC_RAM2_REGS) &&
-                 (section.addr < (CSL_MPU_OCMC_RAM2_REGS + SOC_OCMC_RAM2_SIZE))) ||
-                ((section.addr >= CSL_MPU_OCMC_RAM3_REGS) &&
-                 (section.addr < (CSL_MPU_OCMC_RAM3_REGS + SOC_OCMC_RAM3_SIZE))))
-#elif defined (AM571x_BUILD)
-            if ((section.addr >= CSL_MPU_OCMC_RAM1_REGS) &&
-                 (section.addr < (CSL_MPU_OCMC_RAM1_REGS + SOC_OCMC_RAM1_SIZE)))
-#endif
-            {
-                /* Internal OCMC RAM Space for all the cores */
-            }
-            /*copy section to memory*/
-            /*check for section mapped into CPU internal memories*/
-            else if (section.addr < 0x80000000U)
-            {
-                switch (CoreId)
-                {
-                    case MPU_CPU0_ID:
-                        /*No action*/
-                        break;
-#if defined (AM572x_BUILD) || defined(AM574x_BUILD)
-                    case MPU_CPU1_ID:
-                        /*No action*/
-                        break;
-#endif
-                    case IPU1_CPU0_ID:
-                    case IPU1_CPU1_ID:
-                    case IPU1_CPU_SMP_ID:
-
-                        if (((section.addr >= CSL_IPU_IPU1_BOOT_SPACE_REGS) &&
-                             (section.addr <
-                              (CSL_IPU_IPU1_BOOT_SPACE_REGS + 0x10000U))) ||
-                            ((section.addr >= CSL_IPU_IPU1_RAM_REGS) &&
-                             (section.addr < (CSL_IPU_IPU1_RAM_REGS + 0x10000))))
-                        {
-                            section.addr = section.addr & 0x000FFFFFU;
-                            section.addr = MPU_IPU1_RAM + section.addr;
-                        }
-                        else
-                        {
-                            UART_puts("IPU1 - Invalid Memory section", -1);
-                        }
-
-                        break;
-#if defined (AM572x_BUILD) || defined(AM574x_BUILD)
-                    case IPU2_CPU0_ID:
-                    case IPU2_CPU1_ID:
-                    case IPU2_CPU_SMP_ID:
-                        if (((section.addr >= CSL_IPU_IPU1_BOOT_SPACE_REGS) &&
-                             (section.addr <
-                              (CSL_IPU_IPU1_BOOT_SPACE_REGS + 0x10000U)))
-                            ||
-                            ((section.addr >= CSL_IPU_IPU1_RAM_REGS) &&
-                             (section.addr < (CSL_IPU_IPU1_RAM_REGS + 0x10000))))
-                        {
-                            section.addr = section.addr & 0x000FFFFFU;
-                            section.addr = MPU_IPU2_RAM + section.addr;
-                        }
-                        else
-                        {
-                            UART_puts("IPU2  - Invalid Memory section", -1);
-                        }
-
-                        break;
-#endif
-                    case DSP1_ID:
-
-                        if ((section.addr >= SOC_DSP_L2_BASE) &&
-                            (section.addr < (SOC_DSP_L2_BASE + 0x48000)))
-                        {
-                            /* L2 RAM Read the offset */
-                            section.addr = section.addr - SOC_DSP_L2_BASE;
-                            section.addr = MPU_DSP1_L2_RAM + section.addr;
-                        }
-                        else if ((section.addr >= SOC_DSP_L1P_BASE) &&
-                                 (section.addr < (SOC_DSP_L1P_BASE + 0x8000)))
-                        {
-                            /* CSL_MPU_DSP1_L1P_CACHE Read the offset */
-                            section.addr = section.addr - SOC_DSP_L1P_BASE;
-                            section.addr = MPU_DSP1_L1P_CACHE + section.addr;
-                        }
-                        else if ((section.addr >= SOC_DSP_L1D_BASE) &&
-                                 (section.addr < (SOC_DSP_L1D_BASE + 0x8000)))
-                        {
-                            /* CSL_MPU_DSP1_L1D_CACHE */
-                            section.addr = section.addr - SOC_DSP_L1D_BASE;
-                            section.addr = MPU_DSP1_L1D_CACHE + section.addr;
-                        }
-                        else
-                        {
-                            UART_puts("DSP1 - Invalid Memory section", -1);
-                        }
-
-                        break;
-#if defined (AM572x_BUILD) || defined(AM574x_BUILD)
-                    case DSP2_ID:
-
-                        if ((section.addr >= SOC_DSP_L2_BASE) &&
-                            (section.addr < (SOC_DSP_L2_BASE + 0x48000)))
-                        {
-                            /* DSP2 L2 RAM Read the offset */
-                            section.addr = section.addr - SOC_DSP_L2_BASE;
-                            section.addr = MPU_DSP2_L2_RAM + section.addr;
-                        }
-                        else if ((section.addr >= SOC_DSP_L1P_BASE) &&
-                                 (section.addr < (SOC_DSP_L1P_BASE + 0x8000)))
-                        {
-                            /* CSL_MPU_DSP2_L1P_CACHE Read the offset */
-                            section.addr = section.addr - SOC_DSP_L1P_BASE;
-                            section.addr = MPU_DSP2_L1P_CACHE + section.addr;
-                        }
-                        else if ((section.addr >= SOC_DSP_L1D_BASE) &&
-                                 (section.addr < (SOC_DSP_L1D_BASE + 0x8000)))
-                        {
-                            /* CSL_MPU_DSP2_L1D_CACHE */
-                            section.addr = section.addr - SOC_DSP_L1D_BASE;
-                            section.addr = MPU_DSP2_L1D_CACHE + section.addr;
-                        }
-                        else
-                        {
-                            UART_puts("DSP2 - Invalid Memory section", -1);
-                        }
-
-                        break;
-#endif
-                    default:
-                        break;
-                }
-            }
-            else
-            {
-                /* To remove MISRA C error */
-            }
-#endif
-            fp_readData((void *) section.addr, srcAddr, section.size);
-        }
-    }
-    return retVal;
-}
-#endif
-
-#if defined(OMAPL137_BUILD) || defined(OMAPL138_BUILD) || defined(C6748_BUILD)
-/* */
-static int32_t SBL_RprcImageParse(void *srcAddr,
-                                  uint32_t *entryPoint,
-                                  int32_t CoreId)
-{
-    rprcFileHeader_t    header;
-    rprcSectionHeader_t section;
-    uint32_t i;
-    int32_t retVal = E_PASS;
-
-    /*read application image header*/
-    fp_readData(&header, srcAddr, sizeof (rprcFileHeader_t));
-
-    /*check magic number*/
-    if (header.magic != RPRC_MAGIC_NUMBER)
-    {
-        UART_printf("Invalid magic number in boot image. Expected: %x, received: %x\n", RPRC_MAGIC_NUMBER, header.magic);
-        retVal = E_FAIL;
-    }
-    else
-    {
-        /* Set the Entry Point */
-        *entryPoint = header.entry;
-
-        /*read entrypoint and copy sections to memory*/
-        for (i = 0; i < header.SectionCount; i++)
-        {
-            fp_readData(&section, srcAddr, sizeof (rprcSectionHeader_t));
-            fp_readData((void *) section.addr, srcAddr, section.size);
-        }
-    }
-    return retVal;
-}
-#endif
-
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 /* */
 
 __attribute__((weak)) void SBL_SetupCoreMem(uint32_t CoreID);
@@ -844,7 +422,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocAtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
+#if (SBL_USE_DMA && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
     /* Use SoC level address of MCU1_0 ATCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_ATCM_BASE_ADDR_SOC,
 #else
@@ -861,7 +439,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
     const uint32_t SocBtcmAddr[] =
     {
-#if defined(SOC_AM64X) || (SBL_USE_DMA && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
+#if (SBL_USE_DMA && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
     /* Use SoC level address of MCU1_0 BTCM for non-CPU writes to this TCM. */
     SBL_MCU1_CPU0_BTCM_BASE_ADDR_SOC,
 #else
@@ -966,10 +544,6 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                     }
                     break;
 #endif
-#if defined(SOC_AM64X)
-                /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
-                case MCU1_CPU0_ID:
-#endif
                 case MCU1_CPU1_ID:
                 case MCU2_CPU0_ID:
                 case MCU2_CPU1_ID:
@@ -1072,64 +646,6 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 #if defined(BUILD_MCU1_0)
                 SBL_DCacheClean((void *)(uintptr_t)(section.addr), section.size);
 #endif
-            }
-        }
-    }
-    return retVal;
-}
-#endif
-
-#if (defined(SOC_TPR12) || defined(SOC_AWR294X))
-#include <ti/osal/osal.h>
-#include "sbl_utils_addrxlate.h"
-
-static int32_t SBL_RprcImageParse(void *srcAddr,
-                                  uint32_t *entryPoint,
-                                  int32_t CoreId)
-{
-    rprcFileHeader_t    header;
-    rprcSectionHeader_t section;
-    uint32_t sbl_rsvd_mem_start = Utils_xlate2LocalAddr((uint32_t)(SBL_SCRATCH_MEM_START), SBL_getLocalCoreId());
-    uint32_t sbl_rsvd_mem_end = Utils_xlate2LocalAddr((uint32_t)(((uint32_t)(SBL_SCRATCH_MEM_START)) + ((uint32_t)(SBL_SCRATCH_MEM_SIZE))) , SBL_getLocalCoreId());
-    uint32_t i;
-    int32_t retVal = E_PASS;
-
-    /*read application image header*/
-    fp_readData(&header, srcAddr, sizeof (rprcFileHeader_t));
-
-    /*check magic number*/
-    if (header.magic != RPRC_MAGIC_NUMBER)
-    {
-        SBL_log(SBL_LOG_ERR, "Invalid magic number in boot image. Expected: %x, received: %x\n", RPRC_MAGIC_NUMBER, header.magic);
-        retVal = E_FAIL;
-    }
-    else
-    {
-        /* Set the Entry Point */
-        *entryPoint = header.entry;
-
-        /* Setup CPUs internal memory before using it */
-        SBL_SetupCoreMem(CoreId);
-
-        /*read entrypoint and copy sections to memory*/
-        for (i = (0U); i < header.SectionCount; i++)
-        {
-            fp_readData(&section, srcAddr, sizeof (rprcSectionHeader_t));
-
-            section.addr = Utils_xlate2LocalAddr(section.addr, CoreId);
-
-            if ((fp_readData == SBL_ReadMem) &&
-               (((section.addr > sbl_rsvd_mem_start) && (section.addr < sbl_rsvd_mem_end)) ||
-                (((section.addr + section.size) > sbl_rsvd_mem_start) && ((section.addr + section.size) < sbl_rsvd_mem_end))))
-            {
-                SBL_log(SBL_LOG_ERR, "Warning!! Section overwrites SBL reserved memory\n");
-                retVal = E_FAIL;
-            }
-            else
-            {
-                SBL_log(SBL_LOG_MAX, "Copying 0x%x bytes to 0x%x\n", section.size, section.addr);
-                fp_readData((void *)(uintptr_t)(section.addr), srcAddr, section.size);
-                CacheP_wbInv((void *)(uintptr_t)(section.addr), section.size);
             }
         }
     }

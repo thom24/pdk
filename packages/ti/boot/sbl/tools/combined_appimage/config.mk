@@ -113,7 +113,7 @@ RTOS_BIN_PATH ?= $(PDK_INSTALL_PATH)/ti/boot/sbl/example/k3MulticoreApp/binary/$
 #     NOTE: Device ID's are defined in <ti/build/makerules/platform.mk>
 #
 #     NOTE: images configured to run on the same device as SBL will be started
-#           last. For example, on AM65xx SBL runs on MCU1_0, so any images
+#           last. For example, on j721e SBL runs on MCU1_0, so any images
 #           configured to run on MCU1 will be started when SBL is finished.
 #
 # Example:

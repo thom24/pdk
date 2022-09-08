@@ -66,13 +66,8 @@
 #
 ifeq ($(sbl_component_make_include), )
 
-sbl_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm j784s4_evm am64x_evm tpr12_evm tpr12_qt awr294x_evm
-
-sbl_SOCLIST = am65xx j721e j7200 j721s2 j784s4 am64x tpr12 awr294x
-
-am65xx_smp_CORELIST := mcu1_0 mpu1_0 mpu2_0
-sbl_am65xx_CORELIST := mcu1_0 mcu1_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1
-am65xx_LASTCORE := $(word $(words $(sbl_am65xx_CORELIST)), $(sbl_am65xx_CORELIST))
+sbl_BOARDLIST = j721e_evm j7200_evm j721s2_evm j784s4_evm
+sbl_SOCLIST = j721e j7200 j721s2 j784s4
 
 j721e_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
 sbl_j721e_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
@@ -90,16 +85,6 @@ j784s4_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mcu4_0 mpu1_0 mpu2_0
 sbl_j784s4_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
 j784s4_LASTCORE := $(word $(words $(sbl_j784s4_CORELIST)), $(sbl_j784s4_CORELIST))
 
-am64x_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
-sbl_am64x_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
-am64x_LASTCORE := $(word $(words $(sbl_am64x_CORELIST)), $(sbl_am64x_CORELIST))
-
-sbl_tpr12_CORELIST := mcu1_0 mcu1_1 c66xdsp_1
-tpr12_LASTCORE := $(word $(words $(sbl_tpr12_CORELIST)), $(sbl_tpr12_CORELIST))
-
-sbl_awr294x_CORELIST := mcu1_0 c66xdsp_1
-awr294x_LASTCORE := $(word $(words $(sbl_awr294x_CORELIST)), $(sbl_awr294x_CORELIST))
-
 sbl_DISABLE_PARALLEL_MAKE = yes
 ############################
 # sbl package
@@ -107,33 +92,26 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 # The components included here are built and will be part of sbl
 ############################
 
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_mmcsd_hlos sbl_lib_ospi sbl_lib_ospi_hlos sbl_lib_uart sbl_lib_cust
-  sbl_LIB_LIST += sbl_lib_ospi_nondma_hlos
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
+  sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
+  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
+  sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
+else ifeq ($(SOC),$(filter $(SOC), j784s4))
+  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
+  sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
+  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
 else
-  ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-    sbl_LIB_LIST = sbl_lib_uart
-    sbl_LIB_LIST += sbl_lib_qspi sbl_lib_qspi_nondma
-  else ifeq ($(SOC),$(filter $(SOC), j721s2))
-    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
-    sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
-    sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
-    sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
-  else ifeq ($(SOC),$(filter $(SOC), j784s4))
-    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
-    sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
-    sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
-  else
-    sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
-    sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
-    sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
-    sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs sbl_lib_cust_hs
-    sbl_LIB_LIST += sbl_lib_mmcsd_hlos_hs sbl_lib_ospi_hlos_hs sbl_lib_hyperflash_hlos_hs
-    sbl_LIB_LIST += sbl_lib_ospi_nondma_hs sbl_lib_ospi_nondma_hlos_hs
-  endif
-  ifeq ($(SOC), $(filter $(SOC), j721e))
-    sbl_LIB_LIST += sbl_lib_emmc
-  endif
+  # for j721e, j7200
+  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
+  sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
+  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
+  sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs sbl_lib_cust_hs
+  sbl_LIB_LIST += sbl_lib_mmcsd_hlos_hs sbl_lib_ospi_hlos_hs sbl_lib_hyperflash_hlos_hs
+  sbl_LIB_LIST += sbl_lib_ospi_nondma_hs sbl_lib_ospi_nondma_hlos_hs
+endif
+ifeq ($(SOC), $(filter $(SOC), j721e))
+  sbl_LIB_LIST += sbl_lib_emmc
 endif
 
 ############################
@@ -142,27 +120,22 @@ endif
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  sbl_EXAMPLE_LIST = sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_uart_img
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+  sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
+else ifeq ($(SOC),$(filter $(SOC), j784s4))
+  sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
 else
-  ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-    sbl_EXAMPLE_LIST = sbl_uart_img sbl_qspi_img
-  else ifeq ($(SOC),$(filter $(SOC), j721s2))
-    sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
-    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
-    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
-  else ifeq ($(SOC),$(filter $(SOC), j784s4))
-    sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
-    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
-  else
-    sbl_EXAMPLE_LIST = sbl_uart_img
-    sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
-    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
-    sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
-  endif
-  ifeq ($(SOC), $(filter $(SOC), j721e))
-    sbl_EXAMPLE_LIST += sbl_emmc_img
-  endif
+  # for j721e, j7200
+  sbl_EXAMPLE_LIST = sbl_uart_img
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
+endif
+ifeq ($(SOC), $(filter $(SOC), j721e))
+  sbl_EXAMPLE_LIST += sbl_emmc_img
 endif
 
 
@@ -630,49 +603,6 @@ export sbl_lib_uart_hs_BOARDLIST
 sbl_lib_uart_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_uart_hs_$(SOC)_CORELIST
 
-# SBL QSPI LIB
-sbl_lib_qspi_COMP_LIST = sbl_lib_qspi
-sbl_lib_qspi_RELPATH = ti/boot/sbl
-export sbl_lib_qspi_OBJPATH = ti/boot/sbl/qspi
-sbl_lib_qspi_LIBNAME = sbl_lib_qspi
-sbl_lib_qspi_PATH = $(PDK_SBL_COMP_PATH)
-sbl_lib_qspi_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/qspi
-sbl_lib_qspi_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=qspi SBL_USE_DMA=yes
-export sbl_lib_qspi_MAKEFILE
-export sbl_lib_qspi_LIBNAME
-export sbl_lib_qspi_LIBPATH
-sbl_lib_qspi_BOARD_DEPENDENCY = yes
-sbl_lib_qspi_SOC_DEPENDENCY = yes
-sbl_lib_qspi_CORE_DEPENDENCY = no
-export sbl_lib_qspi_COMP_LIST
-export sbl_lib_qspi_BOARD_DEPENDENCY
-export sbl_lib_qspi_CORE_DEPENDENCY
-sbl_lib_qspi_PKG_LIST = sbl_lib_qspi
-sbl_lib_qspi_INCLUDE = $(sbl_lib_qspi_PATH)
-sbl_lib_qspi_SOCLIST = tpr12 awr294x
-sbl_lib_qspi_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
-export sbl_lib_qspi_SOCLIST
-export sbl_lib_qspi_BOARDLIST
-sbl_lib_qspi_$(SOC)_CORELIST = mcu1_0
-export sbl_lib_qspi_$(SOC)_CORELIST
-
-# SBL QSPI LIB with NON-DMA
-export sbl_lib_qspi_nondma_COMP_LIST = sbl_lib_qspi_nondma
-sbl_lib_qspi_nondma_RELPATH = ti/boot/sbl
-export sbl_lib_qspi_nondma_OBJPATH = ti/boot/sbl/qspi_nondma
-sbl_lib_qspi_nondma_PATH = $(PDK_SBL_COMP_PATH)
-export sbl_lib_qspi_nondma_LIBNAME = sbl_lib_qspi_nondma
-export sbl_lib_qspi_nondma_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/qspi
-export sbl_lib_qspi_nondma_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=qspi SBL_USE_DMA=no
-export sbl_lib_qspi_nondma_BOARD_DEPENDENCY = yes
-export sbl_lib_qspi_nondma_SOC_DEPENDENCY = yes
-export sbl_lib_qspi_nondma_CORE_DEPENDENCY = no
-sbl_lib_qspi_nondma_PKG_LIST = sbl_lib_qspi_nondma
-sbl_lib_qspi_nondma_INCLUDE = $(sbl_lib_qspi_nondma_PATH)
-export sbl_lib_qspi_nondma_SOCLIST = tpr12 awr294x
-export sbl_lib_qspi_nondma_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
-export sbl_lib_qspi_nondma_$(SOC)_CORELIST = mcu1_0
-
 #
 # SBL Examples
 #
@@ -821,11 +751,7 @@ sbl_ospi_img_hlos_COMP_LIST = sbl_ospi_img_hlos
 sbl_ospi_img_hlos_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_hlos_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/ospi/bin
 sbl_ospi_img_hlos_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-ifeq ($(SOC),$(filter $(SOC), am64x))
-  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=no
-else
-  sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
-endif
+sbl_ospi_img_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=no
 export sbl_ospi_img_hlos_MAKEFILE
 export sbl_ospi_img_hlos_SBL_CERT_KEY=$(SBL_CERT_KEY)
 sbl_ospi_img_hlos_BOARD_DEPENDENCY = yes
@@ -983,27 +909,9 @@ export sbl_hyperflash_img_hlos_hs_SBL_IMAGEGEN = yes
 
 # SBL UART Image
 sbl_uart_img_COMP_LIST = sbl_uart_img
-ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-ifeq ($(SOC), $(filter $(SOC), tpr12))
-sbl_uart_img_RELPATH = ti/boot/sbl/board/evmTPR12
-endif
-ifeq ($(SOC), $(filter $(SOC), awr294x))
-sbl_uart_img_RELPATH = ti/boot/sbl/board/evmAWR294x
-endif
-else
 sbl_uart_img_RELPATH = ti/boot/sbl/board/k3
-endif
 sbl_uart_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/uart/bin
-ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-ifeq ($(SOC), $(filter $(SOC), tpr12))
-sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmTPR12
-endif
-ifeq ($(SOC), $(filter $(SOC), awr294x))
-sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmAWR294x
-endif
-else
 sbl_uart_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-endif
 sbl_uart_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart SBL_USE_DMA=yes BUILD_HS=no
 export sbl_uart_img_MAKEFILE
 export sbl_uart_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
@@ -1045,42 +953,6 @@ export sbl_uart_img_hs_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_uart_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_uart_img_hs_SBL_IMAGEGEN = yes
 
-# SBL QSPI Image
-ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-sbl_qspi_img_COMP_LIST = sbl_qspi_img
-ifeq ($(SOC), $(filter $(SOC), tpr12))
-sbl_qspi_img_RELPATH = ti/boot/sbl/board/evmTPR12
-endif
-ifeq ($(SOC), $(filter $(SOC), awr294x))
-sbl_qspi_img_RELPATH = ti/boot/sbl/board/evmAWR294x
-endif
-sbl_qspi_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/qspi/bin
-ifeq ($(SOC), $(filter $(SOC), tpr12))
-sbl_qspi_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmTPR12
-endif
-ifeq ($(SOC), $(filter $(SOC), awr294x))
-sbl_qspi_img_PATH = $(PDK_SBL_COMP_PATH)/board/evmAWR294x
-endif
-sbl_qspi_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=qspi SBL_USE_DMA=yes BUILD_HS=no
-export sbl_qspi_img_MAKEFILE
-export sbl_qspi_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
-sbl_qspi_img_BOARD_DEPENDENCY = yes
-sbl_qspi_img_SOC_DEPENDENCY = yes
-sbl_qspi_img_CORE_DEPENDENCY = no
-export sbl_qspi_img_COMP_LIST
-export sbl_qspi_img_BOARD_DEPENDENCY
-export sbl_qspi_img_SOC_DEPENDENCY
-export sbl_qspi_img_CORE_DEPENDENCY
-sbl_qspi_img_PKG_LIST = sbl
-sbl_qspi_img_INCLUDE = $(sbl_qspi_img_PATH)
-sbl_qspi_img_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
-export sbl_qspi_img_BOARDLIST
-sbl_qspi_img_$(SOC)_CORELIST = mcu1_0
-export sbl_qspi_img_$(SOC)_CORELIST
-sbl_qspi_img_SBL_IMAGEGEN = yes
-export sbl_qspi_img_SBL_IMAGEGEN
-endif
-
 # Individual Core Boot Test (Ordered)
 sbl_boot_test_ordered_COMP_LIST = sbl_boot_test_ordered
 sbl_boot_test_ordered_RELPATH = ti/boot/sbl/example/k3MulticoreApp
@@ -1101,9 +973,7 @@ sbl_boot_test_ordered_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_test_ordered_BOARDLIST
 sbl_boot_test_ordered_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
 export sbl_boot_test_ordered_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_boot_test_ordered
-endif
 sbl_boot_test_ordered_SBL_APPIMAGEGEN = yes
 export sbl_boot_test_ordered_SBL_APPIMAGEGEN
 
@@ -1130,9 +1000,7 @@ sbl_multicore_amp_ordered_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_amp_ordered_BOARDLIST
 sbl_multicore_amp_ordered_$(SOC)_CORELIST = $($(SOC)_LASTCORE)
 export sbl_multicore_amp_ordered_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_multicore_amp_ordered
-endif
 sbl_multicore_amp_ordered_SBL_APPIMAGEGEN = no
 export sbl_multicore_amp_ordered_SBL_APPIMAGEGEN
 
@@ -1156,9 +1024,7 @@ sbl_boot_test_short_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_test_short_BOARDLIST
 sbl_boot_test_short_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
 export sbl_boot_test_short_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_boot_test_short
-endif
 sbl_boot_test_short_SBL_APPIMAGEGEN = yes
 export sbl_boot_test_short_SBL_APPIMAGEGEN
 
@@ -1185,9 +1051,7 @@ sbl_multicore_amp_short_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_amp_short_BOARDLIST
 sbl_multicore_amp_short_$(SOC)_CORELIST = $($(SOC)_LASTCORE)
 export sbl_multicore_amp_short_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_multicore_amp_short
-endif
 sbl_multicore_amp_short_SBL_APPIMAGEGEN = no
 export sbl_multicore_amp_short_SBL_APPIMAGEGEN
 
@@ -1211,9 +1075,7 @@ sbl_boot_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_test_BOARDLIST
 sbl_boot_test_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
 export sbl_boot_test_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_boot_test
-endif
 sbl_boot_test_SBL_APPIMAGEGEN = yes
 export sbl_boot_test_SBL_APPIMAGEGEN
 
@@ -1240,9 +1102,7 @@ sbl_multicore_amp_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_amp_BOARDLIST
 sbl_multicore_amp_$(SOC)_CORELIST = $($(SOC)_LASTCORE)
 export sbl_multicore_amp_$(SOC)_CORELIST
-ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_multicore_amp
-endif
 sbl_multicore_amp_SBL_APPIMAGEGEN = no
 export sbl_multicore_amp_SBL_APPIMAGEGEN
 
@@ -1266,7 +1126,7 @@ sbl_smp_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_smp_test_BOARDLIST
 sbl_smp_test_$(SOC)_CORELIST = $($(SOC)_smp_CORELIST)
 export sbl_smp_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2 j784s4))
+ifneq ($(SOC),$(filter $(SOC), j721s2 j784s4))
 sbl_EXAMPLE_LIST += sbl_smp_test
 endif
 sbl_smp_test_SBL_APPIMAGEGEN = yes
@@ -1295,7 +1155,7 @@ sbl_multicore_smp_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_multicore_smp_BOARDLIST
 sbl_multicore_smp_$(SOC)_CORELIST := $($(SOC)_LASTCORE)
 export sbl_multicore_smp_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j721s2 j784s4))
+ifneq ($(SOC),$(filter $(SOC), j721s2 j784s4))
 sbl_EXAMPLE_LIST += sbl_multicore_smp
 endif
 sbl_multicore_smp_SBL_APPIMAGEGEN = no
@@ -1321,9 +1181,7 @@ sbl_boot_xip_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_test_BOARDLIST
 sbl_boot_xip_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_boot_xip_test
-endif
 sbl_boot_xip_test_SBL_APPIMAGEGEN = yes
 sbl_boot_xip_test_SBL_APP_BINIMAGEGEN = yes
 sbl_boot_xip_test_SBL_APP_BIN_SECTIONS = --only-section .rstvectors --only-section .sbl_mcu_1_0_resetvector --only-section .text --only-section .rodata
@@ -1351,9 +1209,7 @@ sbl_boot_xip_entry_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_xip_entry_BOARDLIST
 sbl_boot_xip_entry_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_xip_entry_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_boot_xip_entry
-endif
 sbl_boot_xip_entry_SBL_APPIMAGEGEN = yes
 export sbl_boot_xip_entry_SBL_APPIMAGEGEN
 
@@ -1377,9 +1233,7 @@ sbl_boot_multicore_xip_entry_BOARDLIST = j721e_evm j7200_evm
 export sbl_boot_multicore_xip_entry_BOARDLIST
 sbl_boot_multicore_xip_entry_$(SOC)_CORELIST = mcu1_0 mcu2_0
 export sbl_boot_multicore_xip_entry_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_boot_multicore_xip_entry
-endif
 sbl_boot_multicore_xip_entry_SBL_APPIMAGEGEN = yes
 export sbl_boot_multicore_xip_entry_SBL_APPIMAGEGEN
 
@@ -1396,11 +1250,7 @@ export sbl_boot_multicore_xip_entry_SBL_APPIMAGEGEN
 # SBL log level
 # no logs = 0, only errors =1, normal logs = 2, all logs = 3
 
-ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-SBL_CFLAGS += -DSBL_LOG_LEVEL=0
-else
 SBL_CFLAGS += -DSBL_LOG_LEVEL=2
-endif
 
 SBL_CFLAGS += -DSBL_ENABLE_PLL
 SBL_CFLAGS += -DSBL_ENABLE_CLOCKS
@@ -1509,7 +1359,7 @@ CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm j721s2_evm j784s4_evm am64
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SKIP_MCU_RESET -DSBL_SKIP_BRD_CFG_PM -DBOOT_OSPI "
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
 #CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
-ifeq ($(SOC),$(filter $(SOC), j7200 j721s2 j784s4 am64x))
+ifeq ($(SOC),$(filter $(SOC), j7200 j721s2 j784s4))
 # NOTE: If changing to SBL_USE_DMA=1, below, then also change 'sbl_lib_cust' & 'sbl_cust_img' MAKEFILE lines further below to use 'SBL_USE_DMA=yes'
 CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI ${OCM_RAT_STRING}"
 else
@@ -1600,11 +1450,7 @@ export sbl_cust_img_SOCLIST
 export sbl_cust_img_BOARDLIST
 sbl_cust_img_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-ifneq ($(BOARD),$(filter $(BOARD), am64x_svb))
 sbl_EXAMPLE_LIST += sbl_cust_img
-endif
-endif
 sbl_cust_img_SBL_IMAGEGEN = yes
 export sbl_cust_img_SBL_IMAGEGEN
 
@@ -1630,7 +1476,7 @@ export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
 export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
 export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_hs_SBL_IMAGEGEN = yes
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x j784s4))
+ifneq ($(SOC),$(filter $(SOC), j784s4))
 sbl_EXAMPLE_LIST += sbl_cust_img_hs
 endif
 
@@ -1656,71 +1502,16 @@ export sbl_boot_perf_test_SOCLIST
 export sbl_boot_perf_test_BOARDLIST
 sbl_boot_perf_test_$(SOC)_CORELIST = mcu1_0
 export sbl_boot_perf_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), am64x tpr12 awr294x))
 sbl_EXAMPLE_LIST += sbl_boot_perf_test
-endif
 sbl_boot_perf_test_SBL_APPIMAGEGEN = yes
 export sbl_boot_perf_test_SBL_APPIMAGEGEN
-
-# TPR12 QT Test Bench image
-ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-sbl_r4tb_COMP_LIST = sbl_r4tb
-sbl_r4tb_RELPATH = ti/boot/sbl/example/tpr12MulticoreApp/r4_tb
-sbl_r4tb_BINPATH = $(PDK_SBL_COMP_PATH)/example/tpr12MulticoreApp/r4_tb/obj
-sbl_r4tb_PATH = $(PDK_SBL_COMP_PATH)/example/tpr12MulticoreApp/r4_tb
-sbl_r4tb_MAKEFILE = -f$(sbl_r4tb_PATH)/makefile all R4_TB_PATH:=${sbl_r4tb_PATH} R4_CODEGEN_INSTALL_PATH:=${TOOLCHAIN_PATH_R5}
-export sbl_r4tb_MAKEFILE
-sbl_r4tb_BOARD_DEPENDENCY = no
-sbl_r4tb_SOC_DEPENDENCY = no
-sbl_r4tb_CORE_DEPENDENCY = no
-export sbl_r4tb_COMP_LIST
-export sbl_r4tb_BOARD_DEPENDENCY
-export sbl_r4tb_SOC_DEPENDENCY
-export sbl_r4tb_CORE_DEPENDENCY
-sbl_r4tb_PKG_LIST = sbl_r4tb
-sbl_r4tb_INCLUDE = $(sbl_r4tb_PATH)
-sbl_r4tb_BOARDLIST = tpr12_evm tpr12_qt awr294x_evm
-export sbl_r4tb_BOARDLIST
-sbl_r4tb_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
-export sbl_r4tb_$(SOC)_CORELIST
-sbl_r4tb_SBL_APPIMAGEGEN = no
-export sbl_r4tb_SBL_APPIMAGEGEN
-endif
-
-ifeq ($(SOC), $(filter $(SOC), tpr12 awr294x))
-# R5 Lockstep and DSP Boot Test
-sbl_tpr12_test_COMP_LIST = sbl_tpr12_test
-sbl_tpr12_test_RELPATH = ti/boot/sbl/example/tpr12MulticoreApp
-sbl_tpr12_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/tpr12MulticoreApp/binary
-sbl_tpr12_test_PATH = $(PDK_SBL_COMP_PATH)/example/tpr12MulticoreApp
-sbl_tpr12_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_tpr12_test.mk BOOTMODE=uart
-export sbl_tpr12_test_MAKEFILE
-sbl_tpr12_test_BOARD_DEPENDENCY = no
-sbl_tpr12_test_SOC_DEPENDENCY = no
-sbl_tpr12_test_CORE_DEPENDENCY = no
-export sbl_tpr12_test_COMP_LIST
-export sbl_tpr12_test_BOARD_DEPENDENCY
-export sbl_tpr12_test_SOC_DEPENDENCY
-export sbl_tpr12_test_CORE_DEPENDENCY
-sbl_tpr12_test_PKG_LIST = sbl_tpr12_test
-sbl_tpr12_test_INCLUDE = $(sbl_tpr12_test_PATH)
-sbl_tpr12_test_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_tpr12_test_BOARDLIST
-sbl_tpr12_test_$(SOC)_CORELIST = $(sbl_tpr12_CORELIST)
-export sbl_tpr12_test_$(SOC)_CORELIST
-sbl_EXAMPLE_LIST += sbl_tpr12_test
-sbl_tpr12_test_SBL_APPIMAGEGEN = yes
-export sbl_tpr12_test_SBL_APPIMAGEGEN
-endif
 
 # SBL not supported for any profile
 # other than release
 ifneq ($(BUILD_PROFILE), release)
-ifneq ($(SOC), $(filter $(SOC), tpr12 awr294x))
 sbl_LIB_LIST =
 sbl_EXAMPLE_LIST =
 SBL_CFLAGS =
-endif # TPR12 Debug SBL build support
 endif # ifneq ($(BUILD_PROFILE), release)
 
 export sbl_LIB_LIST
