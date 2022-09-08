@@ -39,11 +39,6 @@
  *
  */
 
-#if defined (USE_BIOS)
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#endif
 #include <stdio.h>
 #include <string.h>
 

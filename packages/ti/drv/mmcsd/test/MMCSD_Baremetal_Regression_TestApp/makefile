@@ -9,23 +9,8 @@ export DISABLE_RECURSE_DEPS
 BUILD_OS_TYPE = baremetal
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_Baremetal_Regression_TestApp
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
-    LOCAL_APP_NAME = MMCSD_Baremetal_Regression_$(BOARD)_$(CORE)TestApp
-endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-SRCDIR = ../src ../../
-INCDIR = ../src ../include ../../
-# Common source files across all platforms and cores
-SRCS_COMMON += main.c
-
-CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED -DMMCSD_REGRESSION_TEST -DMMCSD_TEST_FATFS_BENCHMARK_ENABLED
-
-
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
@@ -50,21 +35,10 @@ INCLUDE_EXTERNAL_INTERFACES = pdk csl_arch
 # List all the components required by the application
 COMP_LIST_COMMON += $(PDK_COMMON_BAREMETAL_COMP)
 COMP_LIST_COMMON += fatfs_indp mmcsd
-LNKFLAGS_LOCAL_a15_0  += --entry Entry
-LNKFLAGS_LOCAL_a8host += --entry Entry
-LNKFLAGS_LOCAL_a9host += --entry Entry
+
 LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
 
 # CFLAGS_MMCSD_UT += -DIO_CONSOLE
-# am65xx build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
-CFLAGS_MMCSD_UT    += -DsimAM6x
-endif
-
-# EVM build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-evm))
-CFLAGS_MMCSD_UT += -DevmAM65xx
-endif
 
 PACKAGE_SRCS_COMMON = ../
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT) -DBARE_METAL

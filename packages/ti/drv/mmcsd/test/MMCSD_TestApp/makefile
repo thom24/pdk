@@ -5,24 +5,6 @@ else
 include $(RULES_MAKE)
 endif
 
-#TI RTOS Specifics
-ifeq ($(BUILD_OS_TYPE), tirtos)
-
-    APP_NAME = MMCSD_TestApp_$(BUILD_OS_TYPE)
-    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
-
-    ifeq ($(SOC),$(filter $(SOC), am65xx))
-        XDC_CFG_FILE_mpu1_0 = ../am65xx/a53/mmcsdUnitTest_a53.cfg
-        XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-    else
-        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-    endif
-
-    EXTERNAL_INTERFACES = xdc bios
-    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-
-endif
-
 #FreeRTOS Specifics
 ifeq ($(BUILD_OS_TYPE), freertos)
 
@@ -39,28 +21,12 @@ INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
 SRCS_COMMON += main.c
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-
-SRCS_COMMON += profiling.c
-
-endif
-
 
 
 # List all the components required by the application
 COMP_LIST_COMMON += mmcsd
 
 #CFLAGS_MMCSD_UT += -DIO_CONSOLE
-# am65xx build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
-CFLAGS_MMCSD_UT    += -DsimAM6x
-endif
-
-# EVM build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-evm))
-CFLAGS_MMCSD_UT += -DevmAM65xx
-endif
-
 # j7 build
 ifeq ($(BOARD),$(filter $(BOARD), j721e-evm))
 CFLAGS_MMCSD_UT    += -Dj721e_sim

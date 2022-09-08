@@ -255,23 +255,18 @@ define MMCSD_TestApp_RULE
     export MMCSD_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MMCSD_TestApp_$(1)_CORE_DEPENDENCY = no
     export MMCSD_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MMCSD_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
     MMCSD_TestApp_$(1)_PKG_LIST = MMCSD_TestApp_$(1)
     MMCSD_TestApp_$(1)_INCLUDE = $(MMCSD_TestApp_$(1)_PATH)
     export MMCSD_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
 
-    ifeq ($(SOC),$(filter $(SOC), am64x))
-        export MMCSD_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
-    else
-        export MMCSD_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
-    endif
+    export MMCSD_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
         export MMCSD_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
+        ifeq ($(1),$(filter $(1), freertos))
             mmcsd_EXAMPLE_LIST += MMCSD_TestApp_$(1)
         endif
     else
@@ -295,18 +290,17 @@ define MMCSD_EMMC_TestApp_RULE
     export MMCSD_EMMC_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MMCSD_EMMC_TestApp_$(1)_CORE_DEPENDENCY = no
     export MMCSD_EMMC_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MMCSD_EMMC_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
     MMCSD_EMMC_TestApp_$(1)_PKG_LIST = MMCSD_EMMC_TestApp_$(1)
     MMCSD_EMMC_TestApp_$(1)_INCLUDE = $(MMCSD_EMMC_TestApp_$(1)_PATH)
     export MMCSD_EMMC_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
 
     export MMCSD_EMMC_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
         export MMCSD_EMMC_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
+        ifeq ($(1),$(filter $(1), freertos))
             mmcsd_EXAMPLE_LIST += MMCSD_EMMC_TestApp_$(1)
         endif
     else
@@ -329,19 +323,18 @@ define MMCSD_EMMC_DMA_TestApp_RULE
     export MMCSD_EMMC_DMA_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MMCSD_EMMC_DMA_TestApp_$(1)_CORE_DEPENDENCY = no
     export MMCSD_EMMC_DMA_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MMCSD_EMMC_DMA_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
 
     MMCSD_EMMC_DMA_TestApp_$(1)_PKG_LIST = MMCSD_EMMC_DMA_TestApp_$(1)
     MMCSD_EMMC_DMA_TestApp_$(1)_INCLUDE = $(MMCSD_EMMC_DMA_TestApp_$(1)_PATH)
     export MMCSD_EMMC_DMA_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_EMMC_DMA_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
         export MMCSD_EMMC_DMA_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
+        ifeq ($(1),$(filter $(1), freertos))
             mmcsd_EXAMPLE_LIST += MMCSD_EMMC_DMA_TestApp_$(1)
         endif
     else
@@ -371,11 +364,11 @@ export MMCSD_Baremetal_TestApp_MAKEFILE
 export MMCSD_Baremetal_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_TestApp_PKG_LIST = MMCSD_Baremetal_TestApp
 MMCSD_Baremetal_TestApp_INCLUDE = $(MMCSD_Baremetal_TestApp_PATH)
-MMCSD_Baremetal_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
+MMCSD_Baremetal_TestApp_BOARDLIST = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
 export MMCSD_Baremetal_TestApp_BOARDLIST
 MMCSD_Baremetal_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 MMCSD_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_TestApp_SBL_APPIMAGEGEN
 endif
@@ -395,11 +388,11 @@ export MMCSD_Baremetal_DMA_TestApp_MAKEFILE
 export MMCSD_Baremetal_DMA_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_DMA_TestApp_PKG_LIST = MMCSD_Baremetal_DMA_TestApp
 MMCSD_Baremetal_DMA_TestApp_INCLUDE = $(MMCSD_Baremetal_DMA_TestApp_PATH)
-MMCSD_Baremetal_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
+MMCSD_Baremetal_DMA_TestApp_BOARDLIST = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
 export MMCSD_Baremetal_DMA_TestApp_BOARDLIST
 MMCSD_Baremetal_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_DMA_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 MMCSD_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_DMA_TestApp_SBL_APPIMAGEGEN
 endif
@@ -413,19 +406,18 @@ define MMCSD_DMA_TestApp_RULE
     export MMCSD_DMA_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MMCSD_DMA_TestApp_$(1)_CORE_DEPENDENCY = no
     export MMCSD_DMA_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MMCSD_DMA_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
 
     MMCSD_DMA_TestApp_$(1)_PKG_LIST = MMCSD_DMA_TestApp_$(1)
     MMCSD_DMA_TestApp_$(1)_INCLUDE = $(MMCSD_DMA_TestApp_$(1)_PATH)
     export MMCSD_DMA_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_DMA_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
         export MMCSD_DMA_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
+        ifeq ($(1),$(filter $(1), freertos))
             mmcsd_EXAMPLE_LIST += MMCSD_DMA_TestApp_$(1)
         endif
     else
@@ -455,11 +447,11 @@ export MMCSD_Baremetal_EMMC_TestApp_MAKEFILE
 export MMCSD_Baremetal_EMMC_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_EMMC_TestApp_PKG_LIST = MMCSD_Baremetal_EMMC_TestApp
 MMCSD_Baremetal_EMMC_TestApp_INCLUDE = $(MMCSD_Baremetal_EMMC_TestApp_PATH)
-MMCSD_Baremetal_EMMC_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
+MMCSD_Baremetal_EMMC_TestApp_BOARDLIST = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
 export MMCSD_Baremetal_EMMC_TestApp_BOARDLIST
 MMCSD_Baremetal_EMMC_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_EMMC_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 MMCSD_Baremetal_EMMC_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_EMMC_TestApp_SBL_APPIMAGEGEN
 endif
@@ -479,11 +471,11 @@ export MMCSD_Baremetal_EMMC_DMA_TestApp_MAKEFILE
 export MMCSD_Baremetal_EMMC_DMA_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_EMMC_DMA_TestApp_PKG_LIST = MMCSD_Baremetal_EMMC_DMA_TestApp
 MMCSD_Baremetal_EMMC_DMA_TestApp_INCLUDE = $(MMCSD_Baremetal_EMMC_DMA_TestApp_PATH)
-MMCSD_Baremetal_EMMC_DMA_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_sim j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
+MMCSD_Baremetal_EMMC_DMA_TestApp_BOARDLIST = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
 export MMCSD_Baremetal_EMMC_DMA_TestApp_BOARDLIST
 MMCSD_Baremetal_EMMC_DMA_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_EMMC_DMA_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 MMCSD_Baremetal_EMMC_DMA_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_EMMC_DMA_TestApp_SBL_APPIMAGEGEN
 endif
@@ -497,19 +489,18 @@ define MMCSD_Regression_TestApp_RULE
     export MMCSD_Regression_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MMCSD_Regression_TestApp_$(1)_CORE_DEPENDENCY = yes
     export MMCSD_Regression_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MMCSD_Regression_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
 
     MMCSD_Regression_TestApp_$(1)_PKG_LIST = MMCSD_Regression_TestApp_$(1)
     MMCSD_Regression_TestApp_$(1)_INCLUDE = $(MMCSD_Regression_TestApp_$(1)_PATH)
     export MMCSD_Regression_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_Regression_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
         export MMCSD_Regression_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
+        ifeq ($(1),$(filter $(1), freertos))
             mmcsd_EXAMPLE_LIST += MMCSD_Regression_TestApp_$(1)
         endif
     else
@@ -539,11 +530,11 @@ export MMCSD_Baremetal_Regression_TestApp_MAKEFILE
 export MMCSD_Baremetal_Regression_TestApp_XDC_CONFIGURO
 MMCSD_Baremetal_Regression_TestApp_PKG_LIST = MMCSD_Baremetal_Regression_TestApp
 MMCSD_Baremetal_Regression_TestApp_INCLUDE = $(MMCSD_Baremetal_Regression_TestApp_PATH)
-MMCSD_Baremetal_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
+MMCSD_Baremetal_Regression_TestApp_BOARDLIST = j721e_evm j7200_evm j721s2_evm j784s4_evm
 export MMCSD_Baremetal_Regression_TestApp_BOARDLIST
 MMCSD_Baremetal_Regression_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_Baremetal_Regression_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 MMCSD_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN
 endif
@@ -557,19 +548,18 @@ define MMCSD_EMMC_Regression_TestApp_RULE
     export MMCSD_EMMC_Regression_TestApp_$(1)_BOARD_DEPENDENCY = yes
     export MMCSD_EMMC_Regression_TestApp_$(1)_CORE_DEPENDENCY = no
     export MMCSD_EMMC_Regression_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
-    export MMCSD_EMMC_Regression_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos,$(1)),yes,no)
 
     MMCSD_EMMC_Regression_TestApp_$(1)_PKG_LIST = MMCSD_EMMC_Regression_TestApp_$(1)
     MMCSD_EMMC_Regression_TestApp_$(1)_INCLUDE = $(MMCSD_EMMC_Regression_TestApp_$(1)_PATH)
     export MMCSD_EMMC_Regression_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmmcsd_BOARDLIST))
     export MMCSD_EMMC_Regression_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmmcsd_$(SOC)_CORELIST))
 
-    ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+    ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
         export MMCSD_EMMC_Regression_TestApp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        ifeq ($(1),$(filter $(1), freertos tirtos))
+        ifeq ($(1),$(filter $(1), freertos))
             mmcsd_EXAMPLE_LIST += MMCSD_EMMC_Regression_TestApp_$(1)
         endif
     else
@@ -598,11 +588,11 @@ export MMCSD_EMMC_Baremetal_Regression_TestApp_MAKEFILE
 export MMCSD_EMMC_Baremetal_Regression_TestApp_XDC_CONFIGURO
 MMCSD_EMMC_Baremetal_Regression_TestApp_PKG_LIST = MMCSD_EMMC_Baremetal_Regression_TestApp
 MMCSD_EMMC_Baremetal_Regression_TestApp_INCLUDE = $(MMCSD_EMMC_Baremetal_Regression_TestApp_PATH)
-MMCSD_EMMC_Baremetal_Regression_TestApp_BOARDLIST = am65xx_idk am65xx_evm j721e_evm j7200_evm am64x_evm j721s2_evm j784s4_evm
+MMCSD_EMMC_Baremetal_Regression_TestApp_BOARDLIST = j721e_evm j7200_evm j721s2_evm j784s4_evm
 export MMCSD_EMMC_Baremetal_Regression_TestApp_BOARDLIST
 MMCSD_EMMC_Baremetal_Regression_TestApp_$(SOC)_CORELIST = $(drvmmcsd_$(SOC)_CORELIST)
 export MMCSD_EMMC_Baremetal_Regression_TestApp_$(SOC)_CORELIST
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 MMCSD_EMMC_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN = yes
 export MMCSD_EMMC_Baremetal_Regression_TestApp_SBL_APPIMAGEGEN
 endif

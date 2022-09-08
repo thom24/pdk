@@ -5,25 +5,6 @@ else
 include $(RULES_MAKE)
 endif
 
-#TI RTOS Specifics
-ifeq ($(BUILD_OS_TYPE), tirtos)
-
-    APP_NAME = MMCSD_Regression_TestApp_$(BUILD_OS_TYPE)
-    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
-
-    ifeq ($(SOC),$(filter $(SOC), am65xx))
-        XDC_CFG_FILE_mpu1_0 = ../am65xx/a53/mmcsdUnitTest_a53.cfg
-        XDC_CFG_FILE_mcu1_0 = ../am65xx/r5/mmcsdUnitTest_r5.cfg
-    else
-        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-    endif
-
-    INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
-
-    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-
-endif
-
 #FreeRTOS Specifics
 ifeq ($(BUILD_OS_TYPE), freertos)
 
@@ -45,16 +26,6 @@ SRCS_COMMON += main.c profiling.c
 COMP_LIST_COMMON += mmcsd fatfs_indp
 
 # CFLAGS_MMCSD_UT += -DIO_CONSOLE
-# am65xx build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
-CFLAGS_MMCSD_UT    += -DsimAM6x
-endif
-
-# EVM build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-evm))
-CFLAGS_MMCSD_UT += -DevmAM65xx
-endif
-
 
 PACKAGE_SRCS_COMMON = ../
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_MMCSD_UT) $(CFLAGS_OS_DEFINES)

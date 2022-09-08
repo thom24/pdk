@@ -167,10 +167,6 @@ const FATFS_Config FATFS_config[_VOLUMES + 1] = {
     {NULL, NULL, NULL}
 };
 
-#ifdef iceK2G
-extern MMCSD_v1_HwAttrs MMCSDInitCfg[];
-#endif
-
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #define SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MASK      (0x78U)
 #define SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD     (0x0U)

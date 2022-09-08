@@ -66,7 +66,7 @@
 #
 ifeq ($(fatfs_component_make_include), )
 
-# List with various rtos_types(such as tirtos(sysbios),freertos,safertos) to build RTOS apps. 
+# List with various rtos_types(such as freertos,safertos) to build RTOS apps. 
 # Use the Default List defined in 'ti/build/makerules/component.mk'
 # This list will be used to generate RTOS app make rule for each rtos_type.
 drvfatfs_RTOS_LIST       = $(DEFAULT_RTOS_LIST)
@@ -83,7 +83,7 @@ drvfatfs_j784s4_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4
 # Default BOARDLIST for each rtos_type is defined in 'ti/build/makerules/component.mk'
 # The following rule filters out FATFS Drivers BOARDLIST for each rtos_type.
 # Here $(1) refers tot the first argument passed to the rule.
-# In this case it is $(curos), each instance in "drvfatfs_RTOS_LIST" (ie, tirtos/freertos/safertos..)
+# In this case it is $(curos), each instance in "drvfatfs_RTOS_LIST" (ie, freertos/safertos..)
 define DRV_FATFS_BOARDLIST_RULE
 
 drvfatfs_$(1)_BOARDLIST     = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvfatfs_BOARDLIST))
@@ -136,33 +136,6 @@ export fatfs_indp_SOCLIST
 fatfs_indp_$(SOC)_CORELIST = $(drvfatfs_$(SOC)_CORELIST)
 export fatfs_indp_$(SOC)_CORELIST
 
-# FATFS PROFILING SOC INDEPENDENT LIB
-fatfs_profile_indp_COMP_LIST = fatfs_profile_indp
-fatfs_profile_indp_RELPATH = ti/fs/fatfs
-fatfs_profile_indp_PATH = $(PDK_FATFS_COMP_PATH)
-fatfs_profile_indp_LIBNAME = ti.fs.fatfs.profiling
-export fatfs_profile_indp_LIBNAME
-fatfs_profile_indp_LIBPATH = $(fatfs_profile_indp_PATH)/lib
-export fatfs_profile_indp_LIBPATH
-fatfs_profile_indp_OBJPATH = $(fatfs_profile_indp_RELPATH)/fatfs_profile_indp
-export fatfs_profile_indp_OBJPATH
-fatfs_profile_indp_MAKEFILE = -f build/makefile_profile_indp.mk
-export fatfs_profile_indp_MAKEFILE
-fatfs_profile_indp_BOARD_DEPENDENCY = no
-fatfs_profile_indp_CORE_DEPENDENCY = no
-fatfs_profile_indp_SOC_DEPENDENCY = no
-export fatfs_profile_indp_COMP_LIST
-export fatfs_profile_indp_BOARD_DEPENDENCY
-export fatfs_profile_indp_CORE_DEPENDENCY
-export fatfs_profile_indp_SOC_DEPENDENCY
-fatfs_profile_indp_PKG_LIST = fatfs_profile_indp
-export fatfs_profile_indp_PKG_LIST
-fatfs_profile_indp_INCLUDE = $(fatfs_profile_indp_PATH)
-fatfs_profile_indp_SOCLIST = am574x am572x am571x am437x am335x dra72x dra75x dra78x k2g omapl137 omapl138
-export fatfs_profile_indp_SOCLIST
-fatfs_profile_indp_$(SOC)_CORELIST = $(drvfatfs_$(SOC)_CORELIST)
-export fatfs_profile_indp_$(SOC)_CORELIST
-
 # EMMC Readwrite test
 # RTOS FATFS Console test apps
 define FATFS_CONSOLE_TESTAPP_RULE
@@ -173,13 +146,12 @@ FATFS_Console_TestApp_$(1)_PATH = $(PDK_FATFS_COMP_PATH)/example/console
 export FATFS_Console_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 export FATFS_Console_TestApp_$(1)_BOARD_DEPENDENCY = yes
 export FATFS_Console_TestApp_$(1)_CORE_DEPENDENCY = no
-export FATFS_Console_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
 FATFS_Console_TestApp_$(1)_PKG_LIST = FATFS_Console_TestApp_$(1)
 FATFS_Console_TestApp_$(1)_INCLUDE = $(FATFS_Console_TestApp_$(1)_PATH)
 export FATFS_Console_TestApp_$(1)_BOARDLIST = $(drvfatfs_$(1)_BOARDLIST)
 export FATFS_Console_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvfatfs_$(SOC)_CORELIST))
 
-ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   export FATFS_Console_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 endif
 

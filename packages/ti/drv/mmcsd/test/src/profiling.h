@@ -48,11 +48,6 @@ extern "C" {
 
 #include <stdio.h>
 
-#if defined (USE_BIOS)
-#include <xdc/std.h>
-#include <xdc/runtime/System.h>
-#endif
-
 
 #include "MMCSD_log.h"
 

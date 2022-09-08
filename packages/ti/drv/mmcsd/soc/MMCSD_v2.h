@@ -106,11 +106,6 @@ extern "C" {
 /** \brief MMC any operating voltage. */
 #define MMCSD_VOLTAGE_ANY               (0x0U)
 
-#if defined(SOC_AM65XX)
-/* HS400 has been descoped for AM65x */
-#define MMCSD_SUPPORT_MMC_HS400_DISABLED 1
-#endif
-
 /** \brief MMC 3.3V operating voltage. */
 typedef enum {
     MMCSD_BUS_VOLTAGE_1_8V = 0x1U,

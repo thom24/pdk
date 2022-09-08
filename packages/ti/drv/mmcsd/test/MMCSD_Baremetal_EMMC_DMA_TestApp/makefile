@@ -9,14 +9,10 @@ export DISABLE_RECURSE_DEPS
 
 #Name of the directory created under packages/ti/binary/
 APP_NAME = MMCSD_Baremetal_EMMC_DMA_TestApp
-# Name of the binary if different from the default (APP_NAME)_$(BOARD_$(CORE)_<build_profile>
-ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
-    LOCAL_APP_NAME = MMCSD_Baremetal_EMMC_DMA_$(BOARD)_$(CORE)TestApp
-endif
 
 BUILD_OS_TYPE = baremetal
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
@@ -35,9 +31,6 @@ COMP_LIST_COMMON += mmcsd
 PACKAGE_SRCS_COMMON = .
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DBARE_METAL -DMMCSD_ADMA_ENABLED
 
-LNKFLAGS_LOCAL_a15_0  += --entry Entry
-LNKFLAGS_LOCAL_a8host += --entry Entry
-LNKFLAGS_LOCAL_a9host += --entry Entry
 LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
 
 # Core/SoC/platform specific source files and CFLAGS

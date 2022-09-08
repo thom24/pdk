@@ -7,25 +7,6 @@ endif
 
 # Assumes - this would not be invoked for baremetal - refer mmcsd_component.mk
 
-#TI RTOS Specifics
-ifeq ($(BUILD_OS_TYPE), tirtos)
-
-    APP_NAME = MMCSD_EMMC_TestApp_$(BUILD_OS_TYPE)
-    CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
-
-    ifeq ($(SOC),$(filter $(SOC), am65xx))
-        XDC_CFG_FILE_mpu1_0 = ../am65xx/a53/mmcsdUnitTest_a53.cfg
-        XDC_CFG_FILE_mcu1_0 = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-    else
-        XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-    endif
-
-    INCLUDE_EXTERNAL_INTERFACES = bios xdc pdk
-
-    COMP_LIST_COMMON = $(PDK_COMMON_TIRTOS_COMP)
-
-endif
-
 #FreeRTOS Specifics
 ifeq ($(BUILD_OS_TYPE), freertos)
 
@@ -36,15 +17,7 @@ ifeq ($(BUILD_OS_TYPE), freertos)
 
 endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-SRCDIR = ../src ../../
-INCDIR = ../src ../include ../../
-# Common source files across all platforms and cores
-SRCS_COMMON += main_emmc.c profiling.c
-
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     SRCDIR = ../src ../../
     INCDIR = ../src ../include ../../
     # Common source files across all platforms and cores
@@ -57,15 +30,6 @@ endif
 COMP_LIST_COMMON += mmcsd
 
 # CFLAGS_MMCSD_UT += -DIO_CONSOLE
-# am65xx build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-sim))
-    CFLAGS_MMCSD_UT    += -DsimAM65xx
-endif
-
-# EVM build
-ifeq ($(BOARD),$(filter $(BOARD), am65xx-evm))
-    CFLAGS_MMCSD_UT += -DevmAM65xx
-endif
 
 # j7 build
 ifeq ($(BOARD),$(filter $(BOARD), j721e-evm))

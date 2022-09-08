@@ -234,12 +234,6 @@ void taskFxn(void * a0, void * a1)
     USB_Handle  usb_handle;
     UInt        events;
 
-#if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
-    MMCSD_v0_HwAttrs           hwAttrsConfig;
-#else
-    MMCSD_v1_HwAttrs           hwAttrsConfig;
-#endif
-
     consolePrintf("\nRTOS USB Dev MSC - MMCSD example!!\n");
 
     /* initialize MMCSD example application */

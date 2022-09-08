@@ -40,24 +40,6 @@
  */
 
 
-/* XDCtools Header files */
-#include <xdc/std.h>
-#include <xdc/cfg/global.h>
-#include <xdc/runtime/System.h>
-#include <stdio.h>
-#include <ti/sysbios/knl/Task.h>
-#include <ti/sysbios/knl/Semaphore.h>
-
-/* BIOS Header files */
-#include <ti/sysbios/BIOS.h>
-#ifdef MMCSD_EDMA_ENABLED
-#include <ti/sysbios/family/arm/a15/Cache.h>
-#include <ti/sdo/edma3/drv/edma3_drv.h>
-#include <ti/sdo/edma3/rm/edma3_rm.h>
-#include <ti/sdo/edma3/drv/sample/bios6_edma3_drv_sample.h>
-#endif
-#include <xdc/runtime/Error.h>
-
 /* TI-RTOS Header files */
 #include <ti/csl/cslr_device.h>
 #include "MMCSD_log.h"
@@ -72,22 +54,9 @@
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 
-#ifdef MMCSD_EDMA_ENABLED
-#if defined(SOC_K2G)
-/* MMCSD is connected to EDMA_1 for K2G */
-#define MMCSD_EDMACC_NUM 1
-#else
-#define MMCSD_EDMACC_NUM 0
-#endif
-#endif
-
 /**********************************************************************
  ************************** Macros ************************************
  **********************************************************************/
-/* MUX selection for K2G */
-#if defined(SOC_K2G)
- #define GPIO_MUX_SEL 4
-#endif
 
 #define GPIO_PIN_MMCSD_ACTIVE_STATE 0
 
@@ -119,15 +88,6 @@ GPIO_CallbackFxn gpioCallbackFunctions[] = {
 };
 
 /* GPIO Driver configuration structure */
-#if defined(SOC_K2G) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-GPIO_v0_Config GPIO_v0_config = {
-    gpioPinConfigs,
-    gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
-    0,
-};
-#else
 GPIO_v1_Config GPIO_v1_config = {
     gpioPinConfigs,
     gpioCallbackFunctions,
@@ -135,7 +95,6 @@ GPIO_v1_Config GPIO_v1_config = {
     sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
     0,
 };
-#endif
 
 /* MMCSD function table for MMCSD implementation */
 FATFS_DrvFxnTable FATFS_drvFxnTable = {
@@ -201,62 +160,13 @@ Uint32 fatfsShellProcessFlag = 0;
 /* Callback function */
 void AppGpioCallbackFxn(void);
 
- void board_initGPIO(void)
-{
-    
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-    GPIO_v0_HwAttrs gpio_cfg;
-
-    /* Get the default SPI init configurations */
-    GPIO_socGetInitCfg(GPIO_MMC_SDCD_PORT_NUM, &gpio_cfg);
-
-    /* Modify the default GPIO configurations if necessary */
-
-    /* Set the default GPIO init configurations */
-    GPIO_socSetInitCfg(GPIO_MMC_SDCD_PORT_NUM, &gpio_cfg);
-
-#if defined(SOC_K2G)
-    /* Setup GPIO interrupt configurations */
-    GPIO_socSetIntMux(GPIO_MMC_SDCD_PORT_NUM, GPIO_MMC_SDCD_PIN_NUM, NULL, GPIO_MUX_SEL);
-#endif
-#if defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-    /* Setup GPIO interrupt configurations */
-    GPIO_socSetBankInt(GPIO_MMC_SDCD_PORT_NUM, GPIO_MMC_SDCD_PIN_NUM, NULL);
-#endif
-#endif
-
-}
-
 /*
  *  ======== test function ========
  */
 void mmcsd_fatfs_console(UArg arg0, UArg arg1)
 {
-#ifdef MMCSD_EDMA_ENABLED
-    EDMA3_DRV_Result edmaResult = 0;
-    EDMA3_RM_Handle gEdmaHandle = NULL;
-#if defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-    MMCSD_v0_HwAttrs hwAttrsConfig;
-#else
-    MMCSD_v1_HwAttrs hwAttrsConfig;
-#endif
-#endif
 	/* Perform board specific GPIO init  */
     board_initGPIO();
-#ifdef MMCSD_EDMA_ENABLED
-    gEdmaHandle = (EDMA3_RM_Handle)edma3init(MMCSD_EDMACC_NUM, &edmaResult);
-
-	if(MMCSD_socGetInitCfg(0,&hwAttrsConfig)!=0) {
- 	   MMCSD_log ("\nUnable to obtain MMCSD config.Exiting. TEST FAILED.\r\n");
-	   return;
-	}
-
-    hwAttrsConfig.edmaHandle = gEdmaHandle;
-    if(MMCSD_socSetInitCfg(0,&hwAttrsConfig)!=0) {
-        MMCSD_log ("\nUnable to set config.Exiting. TEST FAILED.\r\n");
-         return;
- 	}
-#endif
     /* GPIO initialization */
     GPIO_init();
 

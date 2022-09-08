@@ -39,11 +39,6 @@
  *
  */
 
-#if defined (USE_BIOS)
-/* This is a must include header for ti rtos */
-#include <xdc/std.h>
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <ti/csl/soc.h>
@@ -56,12 +51,6 @@
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/drv/mmcsd/src/MMCSD_osal.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
-
-#if defined (USE_BIOS)
-#if defined (BUILD_MPU)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
-#endif
-#endif
 
 #ifdef MMCSD_TEST_FATFS_BENCHMARK_ENABLED
 #include <ti/fs/fatfs/ff.h>
@@ -82,8 +71,8 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 /* FATFS configuration structure */
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
-#if defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    {  /* MMC1 is SD card  for AM65xx GP EVM */
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+    {  /* MMC1 is SD card  for J7 GP EVM */
         1U
     },
 #else
@@ -132,21 +121,8 @@ const FATFSConfigList FATFS_config = {
 
 #endif
 
-
-
-#ifdef MMCSD_EDMA_ENABLED
-#include <ti/sdo/edma3/drv/edma3_drv.h>
-#include <ti/sdo/edma3/rm/edma3_rm.h>
-#include <ti/sdo/edma3/drv/sample/bios6_edma3_drv_sample.h>
-#define MMCSD_DMA_ENABLED 1
-#endif
-
 #ifdef MMCSD_ADMA_ENABLED
 #define MMCSD_DMA_ENABLED 1
-#endif
-
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200)  && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
-#define GPIO_ENABLED
 #endif
 
 
@@ -159,13 +135,9 @@ const FATFSConfigList FATFS_config = {
 
 #include <ti/board/board.h>
 
-#ifdef GPIO_ENABLED
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
-#endif
 #include "profiling.h"
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #endif
 /**********************************************************************
@@ -175,16 +147,11 @@ const FATFSConfigList FATFS_config = {
 #define HSMMCSD_DATA_SIZE               512
 
 #define PAGE_OFFSET   0x0
-#if defined (SOC_OMAPL137)
-/* MMC card is used for testing the example on OMAPL137.
- * Setting the start sector to 8MB offset on OMAPL137 to support small size MMC cards. */
-#define MMCSTARTSECTOR  0x4000  //@8MB
-#else
+
 #ifdef SIM_BUILD
 #define MMCSTARTSECTOR  0x4000 //@8MB for VLAB only
 #else
 #define MMCSTARTSECTOR  0x300000 //@1.5GB //100
-#endif
 #endif
 
 #define DATA_PATTERN_00     0
@@ -198,11 +165,7 @@ const FATFSConfigList FATFS_config = {
 
 #ifndef BARE_METAL
 #define MMCSD_TEST_NUM_SIZES (5U) /* 0.25 MB, 0.5 MB, 1 MB , 2MB , 5MB*/
-#if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
-uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*256),(1024*512),(1024*1024),(1024*1024*2),(1024*1024*3)};
-#else
 uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*256),(1024*512),(1024*1024),(1024*1024*2),(1024*1024*5)};
-#endif
 #else
 #define MMCSD_TEST_NUM_SIZES (1U) /* 32K */
 uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*32)};
@@ -211,78 +174,16 @@ uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*32)};
 
 #define SECTORSIZE    (512) /* Size of a block */
 
-/* On K2G, GPIO1_12 shares pin with MMC0SDCD */
-#define GPIO_MUX_SEL 4
-
 
 #ifndef GPIO_PIN_MMC_SDCD_ACTIVE_STATE
 #define GPIO_PIN_MMC_SDCD_ACTIVE_STATE 0
 #endif
 
-#if  defined(iceK2G) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #define MMCSD_INSTANCE_SDCARD  1
 #else
   #define MMCSD_INSTANCE_SDCARD  0
   #define MMCSD_INSTANCE_EMMC    1
-#endif
-
-/* MUX SEL for K2G */
-#define GPIO_MUX_SEL 4
-
-#ifdef MMCSD_EDMA_ENABLED
-#if defined(SOC_K2G)
-/* MMCSD is connected to EDMA_1 for K2G */
-#define MMCSD_EDMACC_NUM 1
-#else
-#define MMCSD_EDMACC_NUM 0
-#endif
-
-#endif
-
-#ifdef GPIO_ENABLED
-
-
-#ifndef GPIO_PIN_MMC_SDCD_ACTIVE_STATE
-  #define GPIO_PIN_MMC_SDCD_ACTIVE_STATE 0
-#endif
-/* ON Board LED pins which are connected to GPIO pins. */
-typedef enum GPIO_PIN {
-    GPIO_PIN_MMC_SDCD      = 0U,
-    GPIO_PIN_COUNT
-}GPIO_PIN;
-
-/* GPIO Driver board specific pin configuration structure */
-GPIO_PinConfig gpioPinConfigs[] = {
-    /* Output pin : AM335X_ICE V2_LD_PIN */
-    GPIO_DEVICE_CONFIG(GPIO_MMC_SDCD_PORT_NUM, GPIO_MMC_SDCD_PIN_NUM) |
-    GPIO_CFG_IN_INT_BOTH_EDGES | GPIO_CFG_INPUT,
-};
-
-
-/* GPIO Driver call back functions */
-GPIO_CallbackFxn gpioCallbackFunctions[] = {
-    NULL,
-};
-
-/* GPIO Driver configuration structure */
-#if defined(SOC_K2G) || defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
-GPIO_v0_Config GPIO_v0_config = {
-    gpioPinConfigs,
-    gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
-    0,
-};
-#else
-GPIO_v1_Config GPIO_v1_config = {
-    gpioPinConfigs,
-    gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
-    0,
-};
-#endif
-
 #endif
 
 
@@ -290,7 +191,7 @@ GPIO_v1_Config GPIO_v1_config = {
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 #endif
 
@@ -299,9 +200,6 @@ typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
  **********************************************************************/
 
 static int32_t fillMmcPageData(uint8_t *buf, int32_t length, uint8_t flag,uint32_t *rampBase);
-
-/* Callback function */
-void AppGpioCallbackFxn(void);
 
 /**********************************************************************
  ************************** Global Variables **************************
@@ -333,205 +231,16 @@ uint8_t rx[MMCSD_TEST_MAX_BUFSIZE] __attribute__((aligned(DATA_BUF_ALIGN))) __at
 
 #ifndef BARE_METAL
 
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
     Osal_initMmuDefault();
 }
-
-#elif defined(SOC_AM65XX) && defined (BUILD_MPU)
-
-volatile int emuwait_mmu=1;
-Void InitMmu()
-{
-    #ifndef FREERTOS
-
-    bool ret= false;
-    Mmu_MapAttrs attrs;
-
-    Mmu_initMapAttrs(&attrs);
-
-   /* TODO: Check if the return value is non zero, then raise error and exit TODO!!!!!*/
-    attrs.attrIndx = 0;
-
-
-    ret=Mmu_map(0x0100000, 0x0100000, 0x00900000, &attrs); /* PLL_MMR_CFG registers regs       */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-
-	/* GTC registers */
-	ret=Mmu_map(0x0A80000, 0x0A80000, 0x00080000, &attrs); /* GTC registers       */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-	    /* MCU_CTRL_MMR */
-	 ret = Mmu_map(0x40f00000ul, 0x40f00000ul, 0x00020000ul, &attrs);
-     if (ret == FALSE)
-    {
-         goto mmu_exit;
-    }
-
-	    /* PSC WKUP*/
-
-     ret = Mmu_map(0x42000000ul, 0x42000000ul, 0x00001000ul, &attrs);
-     if (ret == FALSE)
-    {
-         goto mmu_exit;
-    }
-   /* WKUP_CTRL_MMR */
-     ret = Mmu_map(0x43000000ul, 0x43000000ul, 0x00020000ul, &attrs);
-     if (ret == FALSE)
-    {
-         goto mmu_exit;
-    }
-
-
-    ret = Mmu_map(0x00400000, 0x00400000, 0x00001000, &attrs); /* PSC0          */
-    if(ret == FALSE)
-    {
-        goto mmu_exit;
-    }
-
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    ret=Mmu_map(0x01800000, 0x01800000, 0x00200000, &attrs); /* gicv3       */
-    if(ret==false) {
-		goto mmu_exit;
-	}
-
-	/* SCICLIENT UDMA */
-	ret = Mmu_map(0x20000000ul, 0x20000000ul, 0x10000000ul, &attrs);
-    if (ret == false)
-    {
-         goto mmu_exit;
-    }
-#else
-    ret=Mmu_map(0x01800000, 0x01800000, 0x00100000, &attrs); /* gicv3       */
-    if(ret==false) {
-		goto mmu_exit;
-	}
-#endif
-
-    ret=Mmu_map(0x02400000, 0x02400000, 0x000c0000, &attrs); /* dmtimer     */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x02800000, 0x02800000, 0x00001000, &attrs); /* uart        */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x2A430000, 0x2A430000, 0x00001000, &attrs); /* ctrcontrol0 */
-
-     if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x02B00000, 0x02B00000, 0x00030000, &attrs); /* uart        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x02C40000, 0x02C40000, 0x00100000, &attrs); /* pinmux ctrl  */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-
-   ret=Mmu_map(0x030800000, 0x030800000, 0xC000000, &attrs); /* navss        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-	ret=Mmu_map(0x42120000, 0x42120000, 0x00001000, &attrs); /* mmcsd        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-
-   ret=Mmu_map(0x04F80000, 0x04F80000, 0x80000, &attrs); /* mmcsd        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-
-    attrs.attrIndx = 7;
-
-    ret=Mmu_map(0x70000000, 0x70000000, 0x00200000, &attrs); /* msmc        */
-     if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x80000000, 0x80000000, 0x080000000, &attrs); /* ddr        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-
-
-mmu_exit:
-    if(ret==false) {
-		 System_printf("Mmu_map returned error %d",ret);
-		 while(emuwait_mmu);
-	 }
-    #endif /* not defined for FREERTOS */
-    return;
-}
 #endif
 #endif
 
 Uint32 readWriteTestFlag = 0;
-/*
- *  ======== Board specific GPIO init ========
- */
-#ifdef GPIO_ENABLED
- void board_initGPIO(void)
-{
-
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-    GPIO_v0_HwAttrs gpio_cfg;
-
-    /* Get the default SPI init configurations */
-    GPIO_socGetInitCfg(GPIO_MMC_SDCD_PORT_NUM, &gpio_cfg);
-
-    /* Modify the default GPIO configurations if necessary */
-
-    /* Set the default GPIO init configurations */
-    GPIO_socSetInitCfg(GPIO_MMC_SDCD_PORT_NUM, &gpio_cfg);
-
-#if defined(SOC_K2G)
-    /* Setup GPIO interrupt configurations */
-    GPIO_socSetIntMux(GPIO_MMC_SDCD_PORT_NUM, GPIO_MMC_SDCD_PIN_NUM, NULL, GPIO_MUX_SEL);
-#endif
-#if defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-    /* Setup GPIO interrupt configurations */
-    GPIO_socSetBankInt(GPIO_MMC_SDCD_PORT_NUM, GPIO_MMC_SDCD_PIN_NUM, NULL);
-#endif
-#endif
-
-}
-#endif
 
 
 /* ========================================================================== */
@@ -575,10 +284,6 @@ typedef struct {
   mmcsdTestBenchmarks_t *benchmarks;
 } mmcsdTestSDProfile_t;
 
-#if defined(SOC_AM65XX)
-/* UHS Tests are disabled for AM65x PG 1.0 due to the silicon issue in 1.8 voltage switching */
-#define  MMCSD_UHS_TEST_DISABLED
-#endif
 mmcsdTestBenchmarks_t SDProfiles_3p3V_DS_1bit_benchmarks;
 mmcsdTestSDProfile_t SDProfiles_3p3V_DS_1bit = {
 	                                        /*** Test Config details ***/
@@ -876,7 +581,7 @@ mmcsdTestSDProfile_t * mmcsdTestProfiles[] = {
 	&SDProfiles_1p8V_SDR50,
 	&SDProfiles_1p8V_DDR50,
 
-#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 	&SDProfiles_1p8V_SDR104,
 #endif
 #endif
@@ -957,16 +662,8 @@ static int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestSDProfile_t *testProfilePtr);
 static int32_t HSMMCSDReadWriteTest_FATFS(mmcsdTestSDProfile_t *testProfilePtr);
 #endif
 
-#ifdef MMCSD_EDMA_ENABLED
-EDMA3_RM_Handle gEdmaHandle = NULL;
-#endif
-
-#if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
-MMCSD_v0_HwAttrs           hwAttrsConfigDefault;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)  || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 MMCSD_v2_HwAttrs           hwAttrsConfigDefault;
-#else
-MMCSD_v1_HwAttrs hwAttrsConfigDefault;
 #endif
 uint32_t hwAttrsConfigDefaultSaved=0;
 
@@ -984,17 +681,8 @@ void mmcsd_test(void *arg0, void *arg1)
 	int32_t testID=0; /* Default */
 	mmcsdTestSDProfile_t *testProfilePtr;
 
-#if defined (SOC_OMAPL137) || defined (SOC_OMAPL138)
-    MMCSD_v0_HwAttrs           hwAttrsConfig;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     MMCSD_v2_HwAttrs           hwAttrsConfig;
-#else
-    MMCSD_v1_HwAttrs           hwAttrsConfig;
-#endif
-
-#ifdef MMCSD_EDMA_ENABLED
-    EDMA3_DRV_Result edmaResult = 0;
-    gEdmaHandle = (EDMA3_RM_Handle)edma3init(MMCSD_EDMACC_NUM, &edmaResult);
 #endif
 
 #ifdef MEASURE_TIME
@@ -1063,15 +751,6 @@ void mmcsd_test(void *arg0, void *arg1)
 		 hwAttrsConfigDefault = hwAttrsConfig;
 		 hwAttrsConfigDefaultSaved=1;
 	 }
-#ifdef iceK2G
-  /* On K2G ICE EVM , MMC2 is SD Card whereas the default value in the hwInit (defined in soc/k2g/MMCSD_soc.c)
-   * corresponds to the K2G EVM where the SD card is in MMC1 and EMMC is in MMC2.
-   * Consequently, to run SD Card on K2G ICE, those values need to be re-configured before init()
-   */
-	 hwAttrsConfig.cardType=MMCSD_CARD_SD;
-	 hwAttrsConfigDefault.cardType=MMCSD_CARD_SD;
-	 hwAttrsConfig.supportedBusWidth= (MMCSD_BUS_WIDTH_1BIT | MMCSD_BUS_WIDTH_4BIT);
-#endif
 
      readWriteTestFlag = 1;
 
@@ -1084,7 +763,7 @@ void mmcsd_test(void *arg0, void *arg1)
 
       hwAttrsConfig.enableInterrupt = testProfilePtr->intr;
       hwAttrsConfig.supportedBusVoltages = testProfilePtr->busVoltage;
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
       hwAttrsConfig.supportedModes = testProfilePtr->mode;
       hwAttrsConfig.supportedBusWidth = testProfilePtr->busWidth;
 #endif
@@ -1105,11 +784,6 @@ void mmcsd_test(void *arg0, void *arg1)
 #ifdef MMCSD_DMA_ENABLED
      /* EDMA / ADMA2 / SDMA */
      hwAttrsConfig.enableDma=1;
-
-
-#ifdef MMCSD_EDMA_ENABLED
-      hwAttrsConfig.edmaHandle = gEdmaHandle;
-#endif
 
 #ifdef MMCSD_ADMA_ENABLED
      /* Enable Interrupts for ADMA2 completion */
@@ -1220,17 +894,8 @@ int main(void)
     OS_init();
 #endif
 
-#ifdef GPIO_ENABLED
-    board_initGPIO();
-#endif
-
     Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_PINMUX_CONFIG | BOARD_INIT_UART_STDIO | BOARD_INIT_MODULE_CLOCK;
-
-#if defined(SOC_AM65XX) &&  !defined(__aarch64__)
-    /* Clear it until the issue is resolved */
-    boardCfg &= ~(BOARD_INIT_MODULE_CLOCK);
-#endif
 
     board_status=Board_init(boardCfg);
     if(board_status!=BOARD_SOK) {
@@ -1684,22 +1349,3 @@ fatfs_test_exit:
 }
 
 #endif
-
-
-/*
- *  ======== Callback function ========
- */
-void AppGpioCallbackFxn(void)
-{
-#ifdef GPIO_ENABLED
-
-    if (GPIO_PIN_MMC_SDCD_ACTIVE_STATE == GPIO_read(GPIO_PIN_MMC_SDCD))
-    {
-        readWriteTestFlag = 1;
-    }
-    else
-    {
-        readWriteTestFlag = 0;
-    }
-#endif
-}

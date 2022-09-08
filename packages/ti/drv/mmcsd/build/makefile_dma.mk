@@ -35,13 +35,11 @@ include $(PDK_MMCSD_COMP_PATH)/src/src_files_common.mk
 
 MODULE_NAME = mmcsd_dma
 
-ifeq ($(SOC),$(filter $(SOC), dra72x dra75x dra78x k2g am437x am335x am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 SOC_DIR=$(SOC)
-else ifeq ($(SOC),$(filter $(SOC), am571x am572x am574x))
-SOC_DIR=am57xx
 endif
 
-ifeq ($(SOC),$(filter $(SOC), dra72x dra75x dra78x am571x am572x am574x k2g am437x am335x am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 SRCDIR += soc/$(SOC_DIR)
 INCDIR += soc
 SRCS_COMMON += MMCSD_soc.c
@@ -51,19 +49,17 @@ endif
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-ifneq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifneq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 INCLUDE_EXTERNAL_INTERFACES += edma
 endif
                       
-ifeq ($(SOC),$(filter $(SOC), dra72x dra75x dra78x am571x am572x am574x k2g am437x am335x am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 PACKAGE_SRCS_COMMON += soc/$(SOC_DIR)
 endif
 
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-else
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) -DMMCSD_EDMA_ENABLED
 endif
 
 # Include common make files

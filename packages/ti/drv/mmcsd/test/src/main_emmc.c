@@ -39,12 +39,6 @@
  *
  */
 
-
-#if defined (USE_BIOS)
-/* This is a must include header for ti rtos */
-#include <xdc/std.h>
-#endif
-
 #include <stdio.h>
 #include <string.h>
 #include <ti/csl/soc.h>
@@ -52,20 +46,8 @@
 #include <ti/csl/arch/csl_arch.h>
 
 #include <ti/osal/osal.h>
-#ifdef MMCSD_EDMA_ENABLED
-#include <ti/sdo/edma3/drv/edma3_drv.h>
-#include <ti/sdo/edma3/rm/edma3_rm.h>
-#include <ti/sdo/edma3/drv/sample/bios6_edma3_drv_sample.h>
-#define MMCSD_DMA_ENABLED 1
-#endif
 #ifdef MMCSD_ADMA_ENABLED
 #define MMCSD_DMA_ENABLED 1
-#endif
-
-#if defined (USE_BIOS)
-#if defined (BUILD_MPU)
-#include <ti/sysbios/family/arm/v8a/Mmu.h>
-#endif
 #endif
 
 /* TI-RTOS Header files */
@@ -78,24 +60,10 @@
 #include <ti/board/board.h>
 
 /* Example/Board Header files */
-#if defined (evmAM437x)
-#include <ti/starterware/include/hw/am437x.h>
-#include <ti/starterware/board/am43xx/am43xx_pinmux.h>
-#endif
-
-
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
-#define GPIO_ENABLED 1
-#endif
-
-#ifdef GPIO_ENABLED
-#include <ti/drv/gpio/GPIO.h>
-#include <ti/drv/gpio/soc/GPIO_soc.h>
-#endif
 
 #include "profiling.h"
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #endif
 /**********************************************************************
@@ -106,16 +74,10 @@
 #define HSMMCSD_DATA_SIZE               512
 
 #define PAGE_OFFSET   0x0
-#if defined (SOC_OMAPL137)
-/* MMC card is used for testing the example on OMAPL137.
- * Setting the start sector to 8MB offset on OMAPL137 to support small size MMC cards. */
-#define MMCSTARTSECTOR  0x4000  //@8MB
-#else
 #ifdef SIMULATOR
 #define MMCSTARTSECTOR  0x4000 //@8MB for VLAB
 #else
 #define MMCSTARTSECTOR  0x300000 //@1.5GB //100
-#endif
 #endif
 
 #define DATA_PATTERN_00     0
@@ -134,78 +96,17 @@ uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*256),(1024*512),(1024*102
 uint32_t mmcsd_test_sizes[MMCSD_TEST_NUM_SIZES]={(1024*32)};
 #endif
 
-#if defined (SOC_OMAPL137) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #define MMCSD_INSTANCE_EMMC    (0U)
 #else
 #define MMCSD_INSTANCE_EMMC    (1U)
-#endif
-
-
-#ifdef GPIO_ENABLED
-/* GPIO pin value definitions */
-#define GPIO_PIN_VAL_LOW     (0U)
-#define GPIO_PIN_VAL_HIGH    (1U)
-
-#define GPIO_MUX_SEL 4
-
-#endif
-
-#ifdef MMCSD_EDMA_ENABLED
-#if defined(SOC_K2G)
-/* MMCSD is connected to EDMA_1 for K2G */
-#define MMCSD_EDMACC_NUM 1
-#else
-#define MMCSD_EDMACC_NUM 0
-#endif
-#endif
-
-
-#ifdef GPIO_ENABLED
-
-#if !defined(SOC_OMAPL137)
-/* ON Board LED pins which are connected to GPIO pins. */
-typedef enum GPIO_PIN {
-    GPIO_PIN_EMMC_RST      = 0U,
-    GPIO_PIN_COUNT
-}GPIO_PIN;
-
-/* GPIO Driver board specific pin configuration structure */
-GPIO_PinConfig gpioPinConfigs[] = {
-    /* Output pin : EMMC_RST */
-    GPIO_DEVICE_CONFIG(GPIO_EMMC_RST_PORT_NUM, GPIO_EMMC_RST_PIN_NUM) | GPIO_CFG_OUTPUT,
-};
-
-/* GPIO Driver call back functions */
-GPIO_CallbackFxn gpioCallbackFunctions[] = {
-    NULL
-};
-
-#ifdef SOC_K2G
-GPIO_v0_Config GPIO_v0_config = {
-    gpioPinConfigs,
-    gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
-    0,
-};
-#else
-GPIO_v1_Config GPIO_v1_config = {
-    gpioPinConfigs,
-    gpioCallbackFunctions,
-    sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
-    sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
-    0,
-};
-#endif
-
-#endif
 #endif
 
 /* ========================================================================== */
 /*                         Structures and Enums                               */
 /* ========================================================================== */
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 #endif
 
@@ -216,13 +117,9 @@ typedef CSL_control_core_pad_ioRegs *CSL_padRegsOvly;
 static int32_t fillMmcPageData(uint8_t *buf, int32_t length, uint8_t flag,uint32_t *rampBase);
 
 
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 static void EmmcsReset(void);
 /* Delay function */
-#endif
-
-#if !defined(SOC_OMAPL137) && defined(GPIO_ENABLED)
-static void delay(unsigned int delayValue);
 #endif
 
 /**********************************************************************
@@ -250,210 +147,18 @@ uint8_t rx[MMCSD_TEST_MAX_BUFSIZE] __attribute__((aligned(DATA_BUF_ALIGN))) __at
 #pragma DATA_ALIGN(tx, DATA_BUF_ALIGN)
 #pragma DATA_ALIGN(rx, DATA_BUF_ALIGN)
 #endif
-#ifndef BARE_METAL
 
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
+#ifndef BARE_METAL
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) && (defined(BUILD_MPU) || defined (BUILD_C7X))
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
     Osal_initMmuDefault();
 }
-#elif defined(SOC_AM65XX) && defined (BUILD_MPU)
-volatile int emuwait_mmu=1;
-Void InitMmu()
-{
-    bool ret= false;
-    Mmu_MapAttrs attrs;
-
-    Mmu_initMapAttrs(&attrs);
-
-   /* TODO: Check if the return value is non zero, then raise error and exit TODO!!!!!*/
-    attrs.attrIndx = 0;
-
-
-    ret=Mmu_map(0x0100000, 0x0100000, 0x00900000, &attrs); /* PLL_MMR_CFG registers regs       */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-
-	/* GTC registers */
-	ret=Mmu_map(0x0A80000, 0x0A80000, 0x00080000, &attrs); /* GTC registers       */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-	    /* MCU_CTRL_MMR */
-	 ret = Mmu_map(0x40f00000ul, 0x40f00000ul, 0x00020000ul, &attrs);
-     if (ret == FALSE)
-    {
-         goto mmu_exit;
-    }
-
-	    /* PSC WKUP*/
-
-     ret = Mmu_map(0x42000000ul, 0x42000000ul, 0x00001000ul, &attrs);
-     if (ret == FALSE)
-    {
-         goto mmu_exit;
-    }
-   /* WKUP_CTRL_MMR */
-     ret = Mmu_map(0x43000000ul, 0x43000000ul, 0x00020000ul, &attrs);
-     if (ret == FALSE)
-    {
-         goto mmu_exit;
-    }
-
-    ret = Mmu_map(0x00400000, 0x00400000, 0x00001000, &attrs); /* PSC0          */
-    if(ret == FALSE)
-    {
-        goto mmu_exit;
-    }
-
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    ret=Mmu_map(0x01800000, 0x01800000, 0x00200000, &attrs); /* gicv3       */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-
-	/* SCICLIENT UDMA */
-	ret = Mmu_map(0x20000000ul, 0x20000000ul, 0x10000000ul, &attrs);
-    if (ret == false)
-    {
-         goto mmu_exit;
-    }
-#else
-    ret=Mmu_map(0x01800000, 0x01800000, 0x00100000, &attrs); /* gicv3       */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-#endif
-
-    ret=Mmu_map(0x02400000, 0x02400000, 0x000c0000, &attrs); /* dmtimer     */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x02800000, 0x02800000, 0x00001000, &attrs); /* uart        */
-
-    if(ret==false) {
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x2A430000, 0x2A430000, 0x00001000, &attrs); /* ctrcontrol0 */
-
-     if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x02B00000, 0x02B00000, 0x00030000, &attrs); /* uart        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x02C40000, 0x02C40000, 0x00100000, &attrs); /* pinmux ctrl  */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-
-   ret=Mmu_map(0x030800000, 0x030800000, 0xC000000, &attrs); /* navss        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-   ret=Mmu_map(0x04F80000, 0x04F80000, 0x80000, &attrs); /* mmcsd        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-
-    attrs.attrIndx = 7;
-
-    ret=Mmu_map(0x70000000, 0x70000000, 0x00200000, &attrs); /* msmc        */
-     if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-    ret=Mmu_map(0x80000000, 0x80000000, 0x080000000, &attrs); /* ddr        */
-
-    if(ret==false) {
-
-		goto mmu_exit;
-	}
-
-
-
-mmu_exit:
-    if(ret==false) {
-		 System_printf("Mmu_map returned error %d",ret);
-		 while(emuwait_mmu);
-	 }
-
-    return;
-}
-
 #endif
 #endif
 
 Uint32 readWriteTestFlag = 0;
-/*
- *  ======== Board specific GPIO init ========
- */
-#ifdef GPIO_ENABLED
- void board_initGPIO(void)
-{
-
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657)
-    GPIO_v0_HwAttrs gpio_cfg;
-
-    /* Get the default SPI init configurations */
-    GPIO_socGetInitCfg(GPIO_EMMC_RST_PORT_NUM, &gpio_cfg);
-
-    /* Modify the default GPIO configurations if necessary */
-
-    /* Set the default GPIO init configurations */
-    GPIO_socSetInitCfg(GPIO_EMMC_RST_PIN_NUM, &gpio_cfg);
-
-#if defined(SOC_K2G)
-    /* Setup GPIO interrupt configurations */
-    GPIO_socSetIntMux(GPIO_EMMC_RST_PORT_NUM, GPIO_EMMC_RST_PIN_NUM, NULL, GPIO_MUX_SEL);
-#endif
-#endif
-
-}
-#endif
-
-#ifdef evmAM437x
-
- void pinmux_emmc_AM437x(void)
-{
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD0))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad0.mmc1_dat0 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD1))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad1.mmc1_dat1 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD2))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad2.mmc1_dat2 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD3))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad3.mmc1_dat3 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD4))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad4.mmc1_dat4 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD5))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad5.mmc1_dat5 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD6))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad6.mmc1_dat6 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_AD7))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(1)); /* gpmc_ad6.mmc1_dat7 */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_CSN1))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(2)); /* gpmc_csn1.mmc1_clk  */
-  *((volatile unsigned int *)(SOC_CONTROL_MODULE_REG + PIN_GPMC_CSN2))=(PIN_RX_ACTIVE | PIN_PULL_UP_EN | PIN_MODE(2)); /* gpmc_csn2.mmc1_cmd  */
-}
-#endif
 
 typedef enum {
    MMCSD_REGRESSION_INTRMODE_TEST,
@@ -600,38 +305,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_Default = {
 	                                        0, /* Interrupt Enabled/Disabled */
                                             &EMMCProfiles_Default_benchmarks
 										   };
-#if defined (SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM437x) || defined(SOC_AM335x)
-mmcsdTestBenchmarks_t EMMCProfiles_Default_1bit_benchmarks;
-mmcsdTestMMCProfile_t EMMCProfiles_Default_1bit = {
-                                            /*** Test Config details ***/
-                                            MMCSD_REGRESSION_DEFAULT_1BIT_TEST,  /* testID */
-                                            "1bit Unit Test (Max speed)",  /* testDescription */
-                                            TRUE, /* powerCycleRequired */
-                                            /*** Device config details ***/
-                                           (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_ALL, /* mode */
-                                           (MMCSD_BusVoltage_e)(MMCSD_BUS_VOLTAGE_3_3V | MMCSD_BUS_VOLTAGE_1_8V), /* bus Voltage */
-                                           (MMCSD_BUS_WIDTH_1BIT), /* busWidth */
-                                            0, /* Interrupt Enabled/Disabled */
-                                            &EMMCProfiles_Default_1bit_benchmarks
-                                           };
 
-
-mmcsdTestBenchmarks_t EMMCProfiles_Default_4bit_benchmarks;
-mmcsdTestMMCProfile_t EMMCProfiles_Default_4bit = {
-                                            /*** Test Config details ***/
-                                            MMCSD_REGRESSION_DEFAULT_4BIT_TEST,  /* testID */
-                                            "4bit Unit Test (Max speed)",  /* testDescription */
-                                            TRUE, /* powerCycleRequired */
-                                            /*** Device config details ***/
-                                           (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_ALL, /* mode */
-                                           (MMCSD_BusVoltage_e)(MMCSD_BUS_VOLTAGE_3_3V | MMCSD_BUS_VOLTAGE_1_8V), /* bus Voltage */
-                                           (MMCSD_BUS_WIDTH_4BIT), /* busWidth */
-                                            0, /* Interrupt Enabled/Disabled */
-                                            &EMMCProfiles_Default_4bit_benchmarks
-                                           };
-
-
-#endif
 mmcsdTestMMCProfile_t EMMCProfiles_All_NonPowerCycleTests = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_ALL_NON_POWERCYCLE_TESTS,  /* testID */
@@ -667,7 +341,7 @@ mmcsdTestMMCProfile_t * mmcsdTestProfiles[] = {
 	&EMMCProfiles_HS_SDR,
 	&EMMCProfiles_HS_DDR,
 	&EMMCProfiles_HS200,
-#if !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
+#if !defined(SOC_J721E) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
     /* HS400 mode for AM65x has been descoped for AM65x & J721E */
 	&EMMCProfiles_HS400,
 #endif
@@ -676,11 +350,6 @@ mmcsdTestMMCProfile_t * mmcsdTestProfiles[] = {
     &EMMCProfiles_Exit,
 #else
     &EMMCProfiles_Default,
-#if defined (SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM437x) || defined(SOC_AM335x)
-    /* EMMC 4 bit is supported for non OMAP devices */
-    &EMMCProfiles_Default_1bit,
-    &EMMCProfiles_Default_4bit,
-#endif
     &EMMCProfiles_Exit,
 #endif
 	NULL,
@@ -872,12 +541,8 @@ int32_t mmcsd_regression_seek_testID()
 }
 
 
-#if defined (SOC_OMAPL137)
-MMCSD_v0_HwAttrs           hwAttrsConfigDefault;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 MMCSD_v2_HwAttrs           hwAttrsConfigDefault;
-#else
-MMCSD_v1_HwAttrs hwAttrsConfigDefault;
 #endif
 uint32_t hwAttrsConfigDefaultSaved=0;
 /*
@@ -898,18 +563,8 @@ void mmcsd_test(void *arg0, void *arg1)
     uint32_t defaults_test_index=0;
 #endif
 
-#if defined (SOC_OMAPL137)
-    MMCSD_v0_HwAttrs           hwAttrsConfig;
-#elif defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     MMCSD_v2_HwAttrs           hwAttrsConfig;
-#else
-    MMCSD_v1_HwAttrs hwAttrsConfig;
-#endif
-
-#ifdef MMCSD_EDMA_ENABLED
-    EDMA3_DRV_Result edmaResult = 0;
-    EDMA3_RM_Handle gEdmaHandle = NULL;
-    gEdmaHandle = (EDMA3_RM_Handle)edma3init(MMCSD_EDMACC_NUM, &edmaResult);
 #endif
 
 #ifdef MEASURE_TIME
@@ -982,15 +637,6 @@ void mmcsd_test(void *arg0, void *arg1)
 		 hwAttrsConfigDefaultSaved=1;
 	 }
 
-#if defined(SOC_OMAPL137)
-     /* There is no eMMC support for OMAPL137. This test is verified
-      * with MMC card inserted into the same slot used for SD card testing.
-      * Default card type will be SD. Change the card type to eMMC for the test here
-      */
-     hwAttrsConfig.cardType = MMCSD_CARD_EMMC;
-     hwAttrsConfigDefault.cardType = MMCSD_CARD_EMMC;
-#endif
-
      /* Set the test profile. For default tests let the hwAttrs config
       * settings such as mode, busWidth etc be unchanged */
    if(testProfilePtr->testID!= MMCSD_REGRESSION_DEFAULT_TEST)
@@ -1001,7 +647,7 @@ void mmcsd_test(void *arg0, void *arg1)
       hwAttrsConfig.supportedBusVoltages = testProfilePtr->busVoltage;
       /* Set the bus width */
       hwAttrsConfig.supportedBusWidth = testProfilePtr->busWidth;
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
       /* Set the Mode parameters */
       hwAttrsConfig.supportedModes = testProfilePtr->mode;
 #endif
@@ -1014,10 +660,6 @@ void mmcsd_test(void *arg0, void *arg1)
    }
 #ifdef MMCSD_DMA_ENABLED
      hwAttrsConfig.enableDma=1;
-
-#ifdef MMCSD_EDMA_ENABLED
-     hwAttrsConfig.edmaHandle = gEdmaHandle;
-#endif
 
 #ifdef MMCSD_ADMA_ENABLED /* Enable Interrupts for ADMA2 completion */
 #ifdef SIMULATOR
@@ -1047,7 +689,7 @@ void mmcsd_test(void *arg0, void *arg1)
          return;
  	}
 
-#if !defined(SOC_OMAPL137) && !defined(SOC_AM65XX) && !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_AM64X) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
+#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
     GPIO_init();
 
     EmmcsReset();
@@ -1112,26 +754,13 @@ int main(void)
     OS_init();
 #endif
 
-
-#if !defined(SOC_OMAPL137)  && defined(GPIO_ENABLED)
-    board_initGPIO();
-#endif
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_MODULE_CLOCK | BOARD_INIT_UART_STDIO;
-
-#if defined(SOC_AM65XX) &&  !defined(__aarch64__)
-    /* Clear it until the issue is resolved */
-    boardCfg &= ~(BOARD_INIT_MODULE_CLOCK);
-#endif
 
     board_status=Board_init(boardCfg);
     if(board_status!=BOARD_SOK) {
 		while(emuwait_board);
 	}
-
-#ifdef evmAM437x
-     pinmux_emmc_AM437x();
-#endif
 
 #ifdef RTOS_ENV
     TaskP_Params_init (&taskParams);
@@ -1326,25 +955,3 @@ raw_test_exit:
     }
     return testRet;
 }
-
-#if !defined(SOC_OMAPL137) && defined(GPIO_ENABLED)
-static void EmmcsReset(void)
-{
-    /* EMMC reset */
-    GPIO_write(GPIO_PIN_EMMC_RST, GPIO_PIN_VAL_LOW);
-    delay(100);
-    GPIO_write(GPIO_PIN_EMMC_RST, GPIO_PIN_VAL_HIGH);
-    delay(100);
-}
-#endif
-
-#if !defined(SOC_OMAPL137) && defined(GPIO_ENABLED)
-/*
- *  ======== Delay function ========
- */
-static void delay(unsigned int delayValue)
-{
-    volatile uint32_t delay1 = delayValue*10000;
-    while (delay1--) ;
-}
-#endif

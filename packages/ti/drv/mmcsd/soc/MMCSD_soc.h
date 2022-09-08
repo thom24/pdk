@@ -57,30 +57,11 @@ extern "C" {
 #include <ti/csl/soc.h>
 #include <ti/osal/osal.h>
 
-#if defined (SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined(SOC_K2G)
-#include <ti/drv/mmcsd/soc/MMCSD_v1.h>
-#elif defined (SOC_OMAPL137) || defined(SOC_OMAPL138)
-#include <ti/drv/mmcsd/soc/MMCSD_v0.h>
-#elif defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/drv/mmcsd/soc/MMCSD_v2.h>
 #endif
 
-
-#if defined(SOC_AM574x) || defined(SOC_AM572x) || defined (SOC_AM571x)
-   #define MMCSD_CNT CSL_MPU_MMCHS_CNT
-#elif defined(SOC_AM437x) || defined (SOC_AM335x)
-   #define MMCSD_CNT 3
-#elif defined(SOC_DRA72x) || defined(SOC_DRA75x)
-   #define MMCSD_CNT CSL_MMCHS_CNT
-#elif defined(SOC_DRA78x)
-   #define MMCSD_CNT 1
-#elif defined(SOC_K2G)
-   #define MMCSD_CNT CSL_MMCSD_CNT
-#elif defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-	#define MMCSD_CNT CSL_MMCSD_CNT
-#elif defined(SOC_AM65XX)
-	#define MMCSD_CNT 2
-#elif defined(SOC_J721E)
+#if defined(SOC_J721E)
 	#define MMCSD_CNT 3
 #elif defined(SOC_J7200)
 	#define MMCSD_CNT 2
@@ -88,8 +69,6 @@ extern "C" {
     #define MMCSD_CNT 2
 #elif defined(SOC_J784S4)
     #define MMCSD_CNT 2
-#elif defined(SOC_AM64X)
-	#define MMCSD_CNT 2
 #endif
 #ifdef __cplusplus
 }
