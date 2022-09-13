@@ -60,6 +60,12 @@ static int32_t Sciclient_setBoardConfigHeader ();
 #define MCU_FSS0_S0_FWID (1036)
 #define MCU_FSS0_S0_FW_REGIONS (8)
 
+/* Firewall ID for PCIE region */
+#define PCIE0_CFG_FWID (2560)
+#define PCIE0_CFG_REGIONS (8)
+#define PCIE1_CFG_FWID (2561)
+#define PCIE1_CFG_REGIONS (8)
+
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined(SOC_J784S4)
 /** \brief Aligned address at which the Board Config header is placed. */
 #define SCISERVER_BOARDCONFIG_HEADER_ADDR (0x41c80000U)
@@ -319,6 +325,79 @@ void SBL_SciClientInit(void)
     SBL_ADD_PROFILE_POINT;
 #endif
 #endif
+
+#if (defined(BUILD_HS) && defined(SOC_J721E))
+    /* By default firewall regions for PCIE is enabled on J721E HS. Disable them since PCIE is not able to access that */
+    uint16_t temp;
+    struct tisci_msg_fwl_get_firewall_region_resp resp_get_fw_ctrl[2] = {{0}, {0}};
+    struct tisci_msg_fwl_get_firewall_region_req req_get_fw_ctrl[2] = 
+    {
+        {
+            .fwl_id = (uint16_t) PCIE0_CFG_FWID,
+            .region = (uint16_t) 0,
+            .n_permission_regs = (uint16_t) 3
+        },
+        {
+            .fwl_id = (uint16_t) PCIE1_CFG_FWID,
+            .region = (uint16_t) 0,
+            .n_permission_regs = (uint16_t) 3
+        }
+    };
+
+    if (Sciclient_firewallGetRegion(&req_get_fw_ctrl[0], &resp_get_fw_ctrl[0], SCICLIENT_SERVICE_WAIT_FOREVER) != 0){
+        SBL_log(SBL_LOG_ERR,"Unable to get the start and end address of PCIE0_CFG\n");
+    }
+    if (Sciclient_firewallGetRegion(&req_get_fw_ctrl[1], &resp_get_fw_ctrl[1], SCICLIENT_SERVICE_WAIT_FOREVER) != 0){
+        SBL_log(SBL_LOG_ERR,"Unable to get the start and end address of PCIE1_CFG\n");
+    }
+
+    struct tisci_msg_fwl_set_firewall_region_resp resp_fw_ctrl[2] = {{0}, {0}};
+    struct tisci_msg_fwl_set_firewall_region_req req_fw_ctrl[2] =
+    {
+        {
+            .fwl_id = (uint16_t) PCIE0_CFG_FWID,
+            .region = (uint16_t) 0,
+            .n_permission_regs = (uint32_t) 3,
+            /* Set .control to zero to disable the firewall region */
+            .control = (uint32_t) 0,
+            .permissions[0] = (uint32_t) 0,
+            .permissions[1] = (uint32_t) 0,
+            .permissions[2] = (uint32_t) 0,
+            .start_address = resp_get_fw_ctrl[0].start_address,
+            .end_address = resp_get_fw_ctrl[0].end_address
+        },
+        {
+            .fwl_id = (uint16_t) PCIE1_CFG_FWID,
+            .region = (uint16_t) 0,
+            .n_permission_regs = (uint32_t) 3,
+            /* Set .control to zero to disable the firewall region */
+            .control = (uint32_t) 0,
+            .permissions[0] = (uint32_t) 0,
+            .permissions[1] = (uint32_t) 0,
+            .permissions[2] = (uint32_t) 0,
+            .start_address = resp_get_fw_ctrl[1].start_address,
+            .end_address = resp_get_fw_ctrl[1].end_address
+        }
+    };
+    for (temp = 0; temp < PCIE0_CFG_REGIONS; temp++)
+    {
+        req_fw_ctrl[0].region = temp;
+        status = Sciclient_firewallSetRegion(&req_fw_ctrl[0], &resp_fw_ctrl[0], SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status != CSL_PASS)
+        {
+            SBL_log(SBL_LOG_ERR,"PCIE0_CFG firewall region # %d disable...FAILED \n", temp);
+        }
+    }
+    for (temp = 0; temp < PCIE1_CFG_REGIONS; temp++)
+    {
+        req_fw_ctrl[1].region = temp;
+        status = Sciclient_firewallSetRegion(&req_fw_ctrl[1], &resp_fw_ctrl[1], SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status != CSL_PASS)
+        {
+            SBL_log(SBL_LOG_ERR,"PCIE1_CFG firewall region # %d disable...FAILED \n", temp);
+        }
+    }
+#endif  
 
 #ifndef SBL_SKIP_BRD_CFG_RM
     SBL_ADD_PROFILE_POINT;
