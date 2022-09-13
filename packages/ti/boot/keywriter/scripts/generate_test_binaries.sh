@@ -16,25 +16,49 @@ if [ ! -f $PDK_KEYWR_COMP_PATH/scripts/ti_fek_public.pem ]; then
 	exit
 fi
 
-declare -A test1 test2 test3
+declare -A test1 test2
 test1[comment]="Test 1 - multi-stage conversion"
-test1[1]="./gen_keywr_cert.sh --msv 0xC0FFE --msv-wp -t ti_fek_public.pem"
-test1[2]="./gen_keywr_cert.sh --msv 0xC0FFE --msv-ovrd -t ti_fek_public.pem"
-test1[3]="./gen_keywr_cert.sh -t ti_fek_public.pem --sr-sbl 3 --sr-sysfw 1 "
-test1[4]="./gen_keywr_cert.sh -t ti_fek_public.pem --sr-bcfg 5"
-test1[5]="./construct_ext_otp_data.sh -extotp 0x80000001 -indx 0 -size 32;
-        ./gen_keywr_cert.sh -t ti_fek_public.pem --ext-otp ext_otp_data.bin --ext-otp-indx 0 --ext-otp-size 32 "
-test1[6]="./construct_ext_otp_data.sh -extotp 0x81 -indx 32 -size 8;
-        ./gen_keywr_cert.sh -t ti_fek_public.pem --ext-otp ext_otp_data.bin --ext-otp-indx 32 --ext-otp-size 8 "
-test1[7]="./gen_keywr_cert.sh -t ti_fek_public.pem -b keys/bmpk.pem --bmek keys/bmek.key -b-wp --bmek-wp --mek-opt 0x1 --mpk-opt 0x21"
-test1[8]="./gen_keywr_cert.sh -t ti_fek_public.pem -s keys/smpk.pem --smek keys/smek.key -s-wp --smek-wp --mek-opt 0x1 --mpk-opt 0x21"
-test1[9]="./gen_keywr_cert.sh -t ti_fek_public.pem --keycnt 2 --keycnt-wp "
-test1[10]="./gen_keywr_cert.sh -t ti_fek_public.pem --keyrev 1 "
+# Generate MSV (Expected PASS)
+test1[1]="./gen_keywr_cert.sh --msv 0xC0FFE            -t ti_fek_public.pem"
+# Attempt to update MSV without override set (Expected FAIL)
+test1[2]=${test1[1]}
+# Attempt to override MSV with similar value (Expected PASS)
+test1[3]="./gen_keywr_cert.sh --msv 0xC0FFE --msv-ovrd -t ti_fek_public.pem"
+# Write-protect MSV (Expected PASS)
+test1[4]="./gen_keywr_cert.sh --msv 0xC0FFE --msv-ovrd --msv-wp -t ti_fek_public.pem"
+# Attempt to override write-protected MSV (Expected FAIL)
+test1[5]="./gen_keywr_cert.sh --msv 0xC0FFE --msv-ovrd -t ti_fek_public.pem"
+# Override SWREV values. Keep SYSFW SWREV at 1, bump SBL SWREV (Expected PASS)
+# Note: Requires SWREV update in tiboot3.bin certificate
+test1[6]="./gen_keywr_cert.sh -t ti_fek_public.pem --sr-sbl 3 --sr-sysfw 1 --sr-sbl-ovrd --sr-sysfw-ovrd"
+# Override Security boardcfg SWREV (Expected PASS)
+# Note: Requires SWREV update in Security boardcfg certificate/extended boot data
+test1[7]="./gen_keywr_cert.sh -t ti_fek_public.pem --sr-bcfg 5 --sr-bcfg-ovrd"
+# Generate pattern for blowing into beginning of Extended OTP (Expected PASS)
+test1[8]="./construct_ext_otp_data.sh -extotp 0x80000001 -indx 0 -size 32;
+          ./gen_keywr_cert.sh -t ti_fek_public.pem --ext-otp ext_otp_data.bin --ext-otp-indx 0 --ext-otp-size 32 --ext-otp-wprp 0x1"
+test1[9]=${test1[8]}
+# Generate pattern for blowing into offset from Extended OTP base (Expected PASS)
+test1[10]="./construct_ext_otp_data.sh -extotp 0x81 -indx 32 -size 8;
+          ./gen_keywr_cert.sh -t ti_fek_public.pem --ext-otp ext_otp_data.bin --ext-otp-indx 32 --ext-otp-size 8 "
+# Blow backup keyset with write-protection (Expected PASS) and attempt to blow again (Expected FAIL)
+test1[11]="./gen_keywr_cert.sh -t ti_fek_public.pem -b keys/bmpk.pem --bmek keys/bmek.key -b-wp --bmek-wp --mek-opt 0x1 --mpk-opt 0x21"
+test1[12]=${test1[11]}
+# Blow secondary keyset with write-protection (Expected PASS) and attempt to blow again (Expected FAIL)
+test1[13]="./gen_keywr_cert.sh -t ti_fek_public.pem -s keys/smpk.pem --smek keys/smek.key -s-wp --smek-wp --mek-opt 0x1 --mpk-opt 0x21"
+test1[14]=${test1[13]}
+# Set Key count to 2 (Expected PASS)
+test1[15]="./gen_keywr_cert.sh -t ti_fek_public.pem --keycnt 2 --keycnt-wp "
+# Set Key revision to 1 (Expected PASS)
+# Note: Device is now HS-SE
+test1[16]="./gen_keywr_cert.sh -t ti_fek_public.pem --keyrev 1 "
 
 test2[comment]="Test 2 - single-shot converstion"
+# Blow secondary key set, backup key set key count, and key revision in one go
+# Note: Device is now HS-SE
 test2[1]="./gen_keywr_cert.sh -t ti_fek_public.pem
-            -s keys/smpk.pem --smek keys/smek.key -s-wp --smek-wp
-            -b keys/bmpk.pem --bmek keys/bmek.key -b-wp --bmek-wp
+            -s keys/smpk.pem --smek keys/smek.key -s-rp --smek-rp
+            -b keys/bmpk.pem --bmek keys/bmek.key -b-rp --bmek-rp
             --mek-opt 0x1 --mpk-opt 0x21
             --keycnt 2 --keycnt-wp
             --keyrev 1" 
