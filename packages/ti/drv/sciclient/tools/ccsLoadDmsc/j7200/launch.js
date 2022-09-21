@@ -121,6 +121,11 @@ function connectTargets()
     print( "DMSC Firmware run starting now...");
     // Run the DMSC firmware
     dsDMSC_0.target.runAsynch();
+    /* Run the DDR Configuration */
+    print("J7200 Running the DDR configuration... Wait till it completes!");
+    dsDMSC_0.target.halt();
+    dsDMSC_0.expression.evaluate("J7ES_LPDDR4_Config_Late()");
+    dsDMSC_0.target.runAsynch();
     print("Connecting to MCU Cortex_R5_0!");
 
     // Connect the MCU R5F
@@ -161,11 +166,7 @@ function connectTargets()
 
 
     dsMCU1_0.target.restart();
-    /* Run the DDR Configuration */
-    print("J7200 Running the DDR configuration... Wait till it completes!");
-    dsDMSC_0.target.halt();
-    dsDMSC_0.expression.evaluate("J7ES_LPDDR4_Config_Late()");
-    dsDMSC_0.target.runAsynch();
+    
 }
 
 function disconnectTargets()
