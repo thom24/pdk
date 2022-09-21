@@ -1506,6 +1506,110 @@ sbl_EXAMPLE_LIST += sbl_boot_perf_test
 sbl_boot_perf_test_SBL_APPIMAGEGEN = yes
 export sbl_boot_perf_test_SBL_APPIMAGEGEN
 
+# Boot App OSPI
+boot_app_ospi_COMP_LIST = boot_app_ospi
+boot_app_ospi_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_ospi_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_ospi_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_ospi_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=no
+export boot_app_ospi_MAKEFILE
+boot_app_ospi_BOARD_DEPENDENCY = yes
+boot_app_ospi_SOC_DEPENDENCY = yes
+boot_app_ospi_CORE_DEPENDENCY = yes
+export boot_app_ospi_COMP_LIST
+export boot_app_ospi_BOARD_DEPENDENCY
+export boot_app_ospi_SOC_DEPENDENCY
+export boot_app_ospi_CORE_DEPENDENCY
+boot_app_ospi_PKG_LIST = boot_app_ospi
+boot_app_ospi_INCLUDE = $(boot_app_ospi_PATH)
+boot_app_ospi_SOCLIST = $(sbl_SOCLIST)
+boot_app_ospi_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_ospi_SOCLIST
+export boot_app_ospi_BOARDLIST
+boot_app_ospi_$(SOC)_CORELIST = mcu1_0
+export boot_app_ospi_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_ospi
+boot_app_ospi_SBL_APPIMAGEGEN = yes
+export boot_app_ospi_SBL_APPIMAGEGEN
+
+# Boot App MMCSD
+boot_app_mmcsd_COMP_LIST = boot_app_mmcsd
+boot_app_mmcsd_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_mmcsd_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_mmcsd_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_mmcsd_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=no
+export boot_app_mmcsd_MAKEFILE
+boot_app_mmcsd_BOARD_DEPENDENCY = yes
+boot_app_mmcsd_SOC_DEPENDENCY = yes
+boot_app_mmcsd_CORE_DEPENDENCY = yes
+export boot_app_mmcsd_COMP_LIST
+export boot_app_mmcsd_BOARD_DEPENDENCY
+export boot_app_mmcsd_SOC_DEPENDENCY
+export boot_app_mmcsd_CORE_DEPENDENCY
+boot_app_mmcsd_PKG_LIST = boot_app_mmcsd
+boot_app_mmcsd_INCLUDE = $(boot_app_mmcsd_PATH)
+boot_app_mmcsd_SOCLIST = $(sbl_SOCLIST)
+boot_app_mmcsd_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_mmcsd_SOCLIST
+export boot_app_mmcsd_BOARDLIST
+boot_app_mmcsd_$(SOC)_CORELIST = mcu1_0
+export boot_app_mmcsd_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_mmcsd
+boot_app_mmcsd_SBL_APPIMAGEGEN = yes
+export boot_app_mmcsd_SBL_APPIMAGEGEN
+
+# Boot App OSPI HS
+boot_app_ospi_hs_COMP_LIST = boot_app_ospi_hs
+boot_app_ospi_hs_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_ospi_hs_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_ospi_hs_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_ospi_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=yes
+export boot_app_ospi_hs_MAKEFILE
+boot_app_ospi_hs_BOARD_DEPENDENCY = yes
+boot_app_ospi_hs_SOC_DEPENDENCY = yes
+boot_app_ospi_hs_CORE_DEPENDENCY = yes
+export boot_app_ospi_hs_COMP_LIST
+export boot_app_ospi_hs_BOARD_DEPENDENCY
+export boot_app_ospi_hs_SOC_DEPENDENCY
+export boot_app_ospi_hs_CORE_DEPENDENCY
+boot_app_ospi_hs_PKG_LIST = boot_app_ospi_hs
+boot_app_ospi_hs_INCLUDE = $(boot_app_ospi_hs_PATH)
+boot_app_ospi_hs_SOCLIST = $(sbl_SOCLIST)
+boot_app_ospi_hs_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_ospi_hs_SOCLIST
+export boot_app_ospi_hs_BOARDLIST
+boot_app_ospi_hs_$(SOC)_CORELIST = mcu1_0
+export boot_app_ospi_hs_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_ospi_hs
+boot_app_ospi_hs_SBL_APPIMAGEGEN = yes
+export boot_app_ospi_hs_SBL_APPIMAGEGEN
+
+# Boot App MMCSD HS
+boot_app_mmcsd_hs_COMP_LIST = boot_app_mmcsd_hs
+boot_app_mmcsd_hs_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_mmcsd_hs_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_mmcsd_hs_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_mmcsd_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=yes
+export boot_app_mmcsd_hs_MAKEFILE
+boot_app_mmcsd_hs_BOARD_DEPENDENCY = yes
+boot_app_mmcsd_hs_SOC_DEPENDENCY = yes
+boot_app_mmcsd_hs_CORE_DEPENDENCY = yes
+export boot_app_mmcsd_hs_COMP_LIST
+export boot_app_mmcsd_hs_BOARD_DEPENDENCY
+export boot_app_mmcsd_hs_SOC_DEPENDENCY
+export boot_app_mmcsd_hs_CORE_DEPENDENCY
+boot_app_mmcsd_hs_PKG_LIST = boot_app_mmcsd
+boot_app_mmcsd_hs_INCLUDE = $(boot_app_mmcsd_PATH)
+boot_app_mmcsd_hs_SOCLIST = $(sbl_SOCLIST)
+boot_app_mmcsd_hs_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_mmcsd_hs_SOCLIST
+export boot_app_mmcsd_hs_BOARDLIST
+boot_app_mmcsd_hs_$(SOC)_CORELIST = mcu1_0
+export boot_app_mmcsd_hs_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_mmcsd_hs
+boot_app_mmcsd_hs_SBL_APPIMAGEGEN = yes
+export boot_app_mmcsd_hs_SBL_APPIMAGEGEN
+
 # SBL not supported for any profile
 # other than release
 ifneq ($(BUILD_PROFILE), release)
