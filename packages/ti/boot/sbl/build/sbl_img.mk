@@ -138,7 +138,7 @@ SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcop
 #SoCs like TPR12 do not have GCC tool. So we package it as part of SBL
 #TI ARM CGT objcopy does not copy .data sections correctly so cannot be used
 ifeq ("$(wildcard ${TOOLCHAIN_PATH_GCC_ARCH64})","")
-$(info gcc-arm compiler not found. please download it by running setup_psdk_rtos.sh)
+$(error gcc-arm compiler not found. please download it by running setup_psdk_rtos.sh)
 endif
 export SBL_OBJ_COPY
 
