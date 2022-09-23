@@ -1547,7 +1547,7 @@ bool OSAL_mutex_test()
         taskParams.stacksize    = APP_TSK_STACK_MAIN;
         taskParams.arg0         = mutexHandle;
         taskParams.arg1         = hDoneSem;
-        hMutexTestTask[i] = TaskP_create(mutexTestFxn, &taskParams);
+        hMutexTestTask[i] = TaskP_create(&mutexTestFxn, &taskParams);
     }
 
     /* Wait for tasks completion */
@@ -1633,7 +1633,7 @@ static bool loadPrint()
     return true;
 }
 
-static void loadPrintFxn(SemaphoreP_Handle hDoneSem)
+static void loadPrintFxn(SemaphoreP_Handle hDoneSem, void *arg1)
 {
     uint32_t    printIntervalInMs = 500;
 
@@ -1652,7 +1652,7 @@ static void loadPrintFxn(SemaphoreP_Handle hDoneSem)
     }
 }
 
-void loadTestFxn(SemaphoreP_Handle hSignalSem)
+void loadTestFxn(SemaphoreP_Handle hSignalSem, void *arg1)
 {
     /* Wait for signal to start */
     SemaphoreP_pend(hSignalSem, SemaphoreP_WAIT_FOREVER);
@@ -1700,7 +1700,7 @@ bool OSAL_load_test()
         taskParams.stack        = &gAppTskStackLoadTask[i];
         taskParams.stacksize    = APP_TSK_STACK_MAIN;
         taskParams.arg0         = hTaskSignalSem[i];
-        hLoadTestTask[i] = TaskP_create(loadTestFxn, &taskParams);
+        hLoadTestTask[i] = TaskP_create(&loadTestFxn, &taskParams);
     }
     hLoadTestTask[OSAL_LOAD_TEST_NUM_TASKS] = TaskP_self();
 
@@ -1710,7 +1710,7 @@ bool OSAL_load_test()
     taskParams.stack        = &gAppTskStackLoadTask[i];
     taskParams.stacksize    = APP_TSK_STACK_MAIN;
     taskParams.arg0         = hDoneSem;
-    hPrintTask = TaskP_create(loadPrintFxn, &taskParams); 
+    hPrintTask = TaskP_create(&loadPrintFxn, &taskParams); 
 
     /* ==============================================================================
      * Stay in while loop of Task A for ~2s, (Expected Task Load:......2s/7s = ~28%)
@@ -2365,7 +2365,7 @@ int main(void)
 #if defined(USE_BIOS)
     taskParams.pErrBlk      = &eb;
 #endif
-    TaskP_create(osal_test, &taskParams);
+    TaskP_create(&osal_test, &taskParams);
 #endif
     OS_start();
 #endif

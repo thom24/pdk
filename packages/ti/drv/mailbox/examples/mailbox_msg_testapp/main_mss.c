@@ -378,7 +378,7 @@ int main (void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    TaskP_create(Test_initTask, &taskParams);
+    TaskP_create(&Test_initTask, &taskParams);
 
     OS_start();
     return 0;
@@ -599,17 +599,17 @@ void multiChannelTest (void)
     TaskP_Params_init(&taskParams);
     taskParams.stack        = gAppTskStackChannel1;
     taskParams.stacksize    = sizeof (gAppTskStackChannel1);
-    multiChTaskHandle[1] = TaskP_create(Test_channel1Task, &taskParams);
+    multiChTaskHandle[1] = TaskP_create(&Test_channel1Task, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.stack        = gAppTskStackChannel3;
     taskParams.stacksize    = sizeof (gAppTskStackChannel3);
-    multiChTaskHandle[3] = TaskP_create(Test_channel3Task, &taskParams);
+    multiChTaskHandle[3] = TaskP_create(&Test_channel3Task, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.stack        = gAppTskStackChannel4;
     taskParams.stacksize    = sizeof (gAppTskStackChannel4);
-    multiChTaskHandle[4] = TaskP_create(Test_channel4Task, &taskParams);
+    multiChTaskHandle[4] = TaskP_create(&Test_channel4Task, &taskParams);
 
     for(i=0;i<3;i++)
     {

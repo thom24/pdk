@@ -113,7 +113,7 @@ void TaskP_Function ( void *arg )
 /*
  *  ======== TaskP_create ========
  */
-TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
+TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
 {
     TaskP_Handle    ret_handle;
     TaskP_SafeRTOS *handle = ( TaskP_SafeRTOS * ) NULL_PTR;
@@ -123,7 +123,7 @@ TaskP_Handle TaskP_create( void *taskfxn, const TaskP_Params *params )
     uint32_t        maxTasks;
     uint32_t        taskPriority;
 
-    DebugP_assert( ( taskfxn != NULL_PTR ) );
+    DebugP_assert( ( taskfxn != NULL ) );
     DebugP_assert( ( params != NULL_PTR ) );
     DebugP_assert( ( params->stack != NULL_PTR ) );
     /* Check if the OS_init is done. */

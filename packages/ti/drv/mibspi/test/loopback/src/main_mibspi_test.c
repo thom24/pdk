@@ -263,7 +263,7 @@ int main (void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    TaskP_create(Test_initTask, &taskParams);
+    TaskP_create(&Test_initTask, &taskParams);
 
     OS_start();
 

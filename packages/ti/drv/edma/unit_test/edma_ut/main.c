@@ -3142,7 +3142,7 @@ void main (void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    TaskP_create(Test_task, &taskParams);
+    TaskP_create(&Test_task, &taskParams);
 
     OS_start();
     return;

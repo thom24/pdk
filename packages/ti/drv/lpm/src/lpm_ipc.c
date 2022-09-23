@@ -183,7 +183,7 @@ void Lpm_ipcExitResponseTask()
  * This "Task" waits for a "ping" message from any processor
  * then replies with a "pong" message.
  */
-void Lpm_ipcResponderFxn(uint32_t *arg0, uint32_t *arg1)
+void Lpm_ipcResponderFxn(void *arg0, void *arg1)
 {
     RPMessage_Params    params;
     RPMessage_Handle  g_ResponderHandle;
@@ -194,7 +194,7 @@ void Lpm_ipcResponderFxn(uint32_t *arg0, uint32_t *arg1)
     int32_t		n;
     int32_t		status = 0;
     void		*buf;
-    uint32_t            requestedEpt = (uint32_t)*arg0;
+    uint32_t            requestedEpt = (uint32_t)(*(uint32_t*)arg0);
     char *              name = (char *)arg1;
 
     uint32_t            bufSize = rpmsgDataSize;
@@ -319,7 +319,7 @@ void Lpm_ipcResponderFxn(uint32_t *arg0, uint32_t *arg1)
     return;
 }
 
-void Lpm_ipcSenderFxn(uint32_t *arg0, uint32_t *arg1)
+void Lpm_ipcSenderFxn(void *arg0, void *arg1)
 {
     RPMessage_Handle    handle;
     RPMessage_Params    params;
@@ -336,8 +336,8 @@ void Lpm_ipcSenderFxn(uint32_t *arg0, uint32_t *arg1)
     uint32_t            cntPing = 0;
     uint32_t            cntPong = 0;
 
-    buf1 = &pSendTaskBuf[rpmsgDataSize * (uint32_t)*arg1];
-    dstProc = (uint32_t)*arg0;
+    buf1 = &pSendTaskBuf[rpmsgDataSize * (uint32_t)(*(uint32_t*)arg1)];
+    dstProc = (uint32_t)(*(uint32_t*)arg0);
 
 #ifdef DEBUG_PRINT
     UART_printf("SendTask%d: Task Created!\n",
@@ -650,9 +650,9 @@ int32_t Lpm_ipcEchoApp(void)
                         params.priority   = IPC_SETUP_TASK_PRI;
                         params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
                         params.stacksize  = IPC_TASK_STACKSIZE;
-                        params.arg0       = (uint32_t *)&service_ping.endPt;
-                        params.arg1       = (uint32_t *)&service_ping.name[0];
-                        TaskP_create((void*)Lpm_ipcResponderFxn, &params);
+                        params.arg0       = (void *)&service_ping.endPt;
+                        params.arg1       = (void *)&service_ping.name[0];
+                        TaskP_create(&Lpm_ipcResponderFxn, &params);
 
                     #ifdef DEBUG_PRINT
                         UART_printf("Lpm_ipcResponderFxn for ENDPT_PING created!\n");
@@ -665,9 +665,9 @@ int32_t Lpm_ipcEchoApp(void)
                         params.priority   = IPC_SETUP_TASK_PRI;
                         params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
                         params.stacksize  = IPC_TASK_STACKSIZE;
-                        params.arg0       = (uint32_t *)&service_chrdev.endPt;
-                        params.arg1       = (uint32_t *)&service_chrdev.name[0];
-                        TaskP_create((void*)Lpm_ipcResponderFxn, &params);
+                        params.arg0       = (void *)&service_chrdev.endPt;
+                        params.arg1       = (void *)&service_chrdev.name[0];
+                        TaskP_create(&Lpm_ipcResponderFxn, &params);
                     #ifdef DEBUG_PRINT
                         UART_printf("Lpm_ipcResponderFxn for ENDPT_CHRDEV created!\n");
                     #endif
@@ -691,9 +691,9 @@ int32_t Lpm_ipcEchoApp(void)
                             params.priority  = IPC_SETUP_TASK_PRI;
                             params.stack     = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
                             params.stacksize = IPC_TASK_STACKSIZE;
-                            params.arg0      = (uint32_t *)&pRemoteProcArray[t];
-                            params.arg1      = (uint32_t *)&gSendTaskBufIdx[t];
-                            TaskP_create((void*)Lpm_ipcSenderFxn, &params);
+                            params.arg0      = (void *)&pRemoteProcArray[t];
+                            params.arg1      = (void *)&gSendTaskBufIdx[t];
+                            TaskP_create(&Lpm_ipcSenderFxn, &params);
 
                         }
 
@@ -704,7 +704,7 @@ int32_t Lpm_ipcEchoApp(void)
                         params.stack     = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
                         params.stacksize = IPC_TASK_STACKSIZE;
                         params.arg0 = 0;
-                        TaskP_create((void*)Lpm_ipcVdevMonitorFxn, &params);
+                        TaskP_create(&Lpm_ipcVdevMonitorFxn, &params);
                     #endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH) */
                     }
                 }

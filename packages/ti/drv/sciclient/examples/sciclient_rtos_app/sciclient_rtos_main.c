@@ -127,7 +127,7 @@ int main(void)
     taskParams.stack = gAppTskStackMain;
     taskParams.stacksize = sizeof (gAppTskStackMain);
 
-    taskHdl = TaskP_create(mainTsk, &taskParams);
+    taskHdl = TaskP_create(&mainTsk, &taskParams);
     if (taskHdl == NULL)
     {
         App_sciclientPrintf("Task_create() mainTsk failed!\n");
@@ -174,13 +174,13 @@ void mainTsk(void* arg0, void* arg1)
 
     App_sciclientConsoleInit();
  
-    task1 = TaskP_create(GetRevisionTest1, &taskParams1);
+    task1 = TaskP_create(&GetRevisionTest1, &taskParams1);
     if (task1 == NULL)
     {
         App_sciclientPrintf("Task_create() GetRevisionTest1 failed!\n");
     }
 
-    task2 = TaskP_create(GetRevisionTest2, &taskParams2);
+    task2 = TaskP_create(&GetRevisionTest2, &taskParams2);
     if (task2 == NULL)
     {
         App_sciclientPrintf("Task_create() GetRevisionTest2 failed!\n");

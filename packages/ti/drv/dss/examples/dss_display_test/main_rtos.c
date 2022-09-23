@@ -108,7 +108,7 @@ int main(void)
     taskParams.stack     = gDispAppTskStackMain;
     taskParams.stacksize = sizeof(gDispAppTskStackMain);
 
-    gTask = TaskP_create(taskFxn, &taskParams);
+    gTask = TaskP_create(&taskFxn, &taskParams);
     if(NULL == gTask)
     {
         OS_stop();

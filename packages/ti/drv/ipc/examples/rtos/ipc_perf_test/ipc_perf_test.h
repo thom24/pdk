@@ -71,9 +71,9 @@ void Ipc_perf_test_setup(void);
 
 RPMessage_Handle Ipc_createRpmsg(uint8_t *buf, uint32_t bufSize, uint32_t *myEndPt);
 
-void Ipc_recvTaskFxn(uint32_t *arg0, uint32_t *arg1);
+void Ipc_recvTaskFxn(void *arg0, void *arg1);
 
-TaskP_Handle Ipc_createRcvThread(uint32_t *arg0, uint32_t *arg1);
+TaskP_Handle Ipc_createRcvThread(RPMessage_Handle handle, uint32_t *myEndPt);
 
 void Ipc_runPerfTest(uint32_t coreId, uint32_t numCount, uint32_t testId);
 

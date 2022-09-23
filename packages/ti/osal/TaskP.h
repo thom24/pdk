@@ -91,6 +91,11 @@ typedef  void *TaskP_Handle;
 typedef unsigned long TaskP_Privilege_Mode;
 
 /*!
+ *  @brief  Prototype for TaskP function.
+ */
+typedef void ( * TaskP_Fxn )( void *arg0, void *arg1 );
+
+/*!
  *  @brief    Basic TaskP Parameters
  *
  *  Structure that contains the parameters are passed into ::TaskP_create
@@ -117,7 +122,7 @@ typedef struct TaskP_Params_s
  *
  *  @return A TaskP_Handle on success or a NULL on an error
  */
-extern TaskP_Handle TaskP_create(void *taskfxn,
+extern TaskP_Handle TaskP_create(TaskP_Fxn taskfxn,
                                  const TaskP_Params *params);
 
 /*!

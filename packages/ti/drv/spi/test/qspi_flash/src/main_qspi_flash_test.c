@@ -515,7 +515,7 @@ int main(void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    TaskP_create(spi_test, &taskParams);
+    TaskP_create(&spi_test, &taskParams);
 #endif
 
     boardCfg = BOARD_INIT_PINMUX_CONFIG |

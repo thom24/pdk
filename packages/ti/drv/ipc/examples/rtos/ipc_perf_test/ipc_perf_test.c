@@ -263,7 +263,7 @@ int32_t Ipc_perf_test(void)
 
     if(IPC_SOK == status)
     {
-        tskHandle = Ipc_createRcvThread((void*)handle, &myEndPt);
+        tskHandle = Ipc_createRcvThread(handle, &myEndPt);
 
         while(testCompleted != TRUE)
         {
@@ -342,7 +342,7 @@ int32_t Ipc_perf_test(void)
     return IPC_SOK;
 }
 
-void Ipc_recvTaskFxn(uint32_t *arg0, uint32_t *arg1)
+void Ipc_recvTaskFxn(void *arg0, void *arg1)
 {
     RPMessage_Handle    handle;
     uint8_t             buf[MSGSIZE];
@@ -353,7 +353,7 @@ void Ipc_recvTaskFxn(uint32_t *arg0, uint32_t *arg1)
     uint32_t            myEndPt = 0;
 
     handle = (RPMessage_Handle)arg0;
-    myEndPt = *arg1;
+    myEndPt = (uint32_t)(*(uint32_t*)arg1);
 
     while( testCompleted != TRUE)
     {
@@ -379,7 +379,7 @@ void Ipc_recvTaskFxn(uint32_t *arg0, uint32_t *arg1)
     }
 }
 
-TaskP_Handle Ipc_createRcvThread(uint32_t *arg0, uint32_t *arg1)
+TaskP_Handle Ipc_createRcvThread(RPMessage_Handle handle, uint32_t *myEndpt)
 {
     TaskP_Params       params;
     TaskP_Handle       tskHandle  = NULL;
@@ -388,9 +388,9 @@ TaskP_Handle Ipc_createRcvThread(uint32_t *arg0, uint32_t *arg1)
     params.priority   = 3;
     params.stack      = recvStack;
     params.stacksize  = IPC_TASK_STACKSIZE;
-    params.arg0       = arg0;
-    params.arg1       = arg1;
-    tskHandle = TaskP_create(Ipc_recvTaskFxn, &params);
+    params.arg0       = (void*)handle;
+    params.arg1       = (void*)myEndpt;
+    tskHandle = TaskP_create(&Ipc_recvTaskFxn, &params);
     return (tskHandle);
 }
 

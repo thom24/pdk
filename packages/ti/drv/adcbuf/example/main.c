@@ -1258,7 +1258,7 @@ int main (void)
     TaskP_Params_init(&taskParams);
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof(gAppTskStackMain);
-    TaskP_create(Test_ADCBUFInitTask, &taskParams);
+    TaskP_create(&Test_ADCBUFInitTask, &taskParams);
 
     /* Start OS */
     OS_start();

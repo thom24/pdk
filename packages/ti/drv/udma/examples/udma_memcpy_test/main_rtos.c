@@ -104,7 +104,7 @@ int main(void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    task = TaskP_create(taskFxn, &taskParams);
+    task = TaskP_create(&taskFxn, &taskParams);
     if(NULL == task)
     {
         OS_stop();

@@ -115,7 +115,7 @@ EDMA3_DRV_Handle hEdma;
 void configureAudio(void);
 void configMcASP_SocHwInfo(void);
 
-extern void Audio_echo_Task(void);
+extern void Audio_echo_Task(void *arg0, void *arg1);
 /* ========================================================================== */
 /*                           FUNCTION DEFINITIONS                             */
 /* ========================================================================== */
@@ -169,7 +169,7 @@ int main(void)
     tskParms.stack      = gAppTskStackMain;
     tskParms.stacksize  = MCASP_APP_TASK_STACK_SIZE;
 
-    if ((TaskP_Handle)NULL != TaskP_create(Audio_echo_Task, &tskParms))
+    if ((TaskP_Handle)NULL != TaskP_create(&Audio_echo_Task, &tskParms))
     {
         OS_start();
     }

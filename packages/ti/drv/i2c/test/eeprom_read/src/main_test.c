@@ -889,7 +889,7 @@ int main(void)
     taskParams.stacksize = 0x8000;
     taskParams.stack = (void *) gEepromReadAppStack;
 
-    task = TaskP_create(i2c_test, &taskParams);
+    task = TaskP_create(&i2c_test, &taskParams);
     if (task == NULL) {
         OS_stop();
         OSAL_Assert(task == NULL);

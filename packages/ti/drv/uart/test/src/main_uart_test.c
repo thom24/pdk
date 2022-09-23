@@ -1043,7 +1043,7 @@ static bool UART_test_simultaneous_rw(bool dmaMode)
     writeTaskParams.priority = 1;
 
     /* Create the UART write task */
-    writeTask = TaskP_create(UART_simultaneous_rw_write, &writeTaskParams);
+    writeTask = TaskP_create(&UART_simultaneous_rw_write, &writeTaskParams);
     if (writeTask == NULL)
     {
         goto Err;
@@ -3267,7 +3267,7 @@ Int main()
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    TaskP_create(taskFxn, &taskParams);
+    TaskP_create(&taskFxn, &taskParams);
     /* Start the scheduler to start the tasks executing. */
     OS_start();
     return(0);

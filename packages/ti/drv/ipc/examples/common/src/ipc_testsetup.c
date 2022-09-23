@@ -122,7 +122,7 @@ uint32_t rpmsgDataSize = RPMSG_DATA_SIZE;
 /* ========================================================================== */
 #if defined(BUILD_MCU1_0)
 static uint32_t geteventID(uint32_t coreID);
-static void ipc_checker_task();
+static void ipc_checker_task(void *arg0, void *arg1);
 #endif
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -157,7 +157,7 @@ void rpmsg_exit_responseTask()
  * then replies with a "pong" message.
  */
 
-void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
+void rpmsg_responderFxn(void *arg0, void *arg1)
 {
     RPMessage_Handle    handle;
     RPMessage_Params    params;
@@ -168,7 +168,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
     int32_t		n;
     int32_t		status = 0;
     void		*buf;
-    uint32_t            requestedEpt = (uint32_t)*arg0;
+    uint32_t            requestedEpt = (uint32_t)(*(uint32_t*)arg0);
     char *              name = (char *)arg1;
 
     uint32_t            bufSize = rpmsgDataSize;
@@ -263,7 +263,7 @@ void rpmsg_responderFxn(uint32_t *arg0, uint32_t *arg1)
                     Ipc_mpGetSelfName());
 }
 
-void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
+void rpmsg_senderFxn(void *arg0, void *arg1)
 {
     RPMessage_Handle    handle;
     RPMessage_Params    params;
@@ -280,8 +280,8 @@ void rpmsg_senderFxn(uint32_t *arg0, uint32_t *arg1)
     uint32_t            cntPing = 0;
     uint32_t            cntPong = 0;
 
-    buf1 = &pSendTaskBuf[rpmsgDataSize * (uint32_t)*arg1];
-    dstProc = (uint32_t)*arg0;
+    buf1 = &pSendTaskBuf[rpmsgDataSize * (uint32_t)(*(uint32_t*)arg1)];
+    dstProc = (uint32_t)(*(uint32_t*)arg0);
 
     /* Create the endpoint for receiving. */
     RPMessageParams_init(&params);
@@ -498,7 +498,7 @@ int32_t Ipc_echo_test(void)
     taskParams.priority   = 4;
     taskParams.stack      = &gCheckerTskStack;
     taskParams.stacksize  = APP_CHECKER_TSK_STACK;
-    TaskP_create(ipc_checker_task, &taskParams);
+    TaskP_create(&ipc_checker_task, &taskParams);
 #endif
     /* Step 3: Initialize RPMessage */
     RPMessage_Params cntrlParam;
@@ -521,9 +521,9 @@ int32_t Ipc_echo_test(void)
     params.priority   = 3;
     params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
     params.stacksize  = IPC_TASK_STACKSIZE;
-    params.arg0       = (uint32_t *)&service_ping.endPt;
-    params.arg1       = (uint32_t *)&service_ping.name[0];
-    TaskP_create(rpmsg_responderFxn, &params);
+    params.arg0       = (void *)&service_ping.endPt;
+    params.arg1       = (void *)&service_ping.name[0];
+    TaskP_create(&rpmsg_responderFxn, &params);
 
 #if !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS)
     /* Respond to messages coming in to endPt ENDPT_CHRDEV (for testing rpmsg_chrdev) */
@@ -531,9 +531,9 @@ int32_t Ipc_echo_test(void)
     params.priority   = IPC_SETUP_TASK_PRI;
     params.stack      = &pTaskBuf[index++ * IPC_TASK_STACKSIZE];
     params.stacksize  = IPC_TASK_STACKSIZE;
-    params.arg0       = (uint32_t *)&service_chrdev.endPt;
-    params.arg1       = (uint32_t *)&service_chrdev.name[0];
-    TaskP_create(rpmsg_responderFxn, &params);
+    params.arg0       = (void *)&service_chrdev.endPt;
+    params.arg1       = (void *)&service_chrdev.name[0];
+    TaskP_create(&rpmsg_responderFxn, &params);
 #endif
 
     for(t = 0; t < numProc; t++, index++)
@@ -551,9 +551,9 @@ int32_t Ipc_echo_test(void)
         params.priority  = IPC_SETUP_TASK_PRI;
         params.stack     = &pTaskBuf[index * IPC_TASK_STACKSIZE];
         params.stacksize = IPC_TASK_STACKSIZE;
-        params.arg0      = (uint32_t *)&pRemoteProcArray[t];
-        params.arg1      = (uint32_t *)&gSendTaskBufIdx[t];
-        TaskP_create(rpmsg_senderFxn, &params);
+        params.arg0      = (void *)&pRemoteProcArray[t];
+        params.arg1      = (void *)&gSendTaskBufIdx[t];
+        TaskP_create(&rpmsg_senderFxn, &params);
 
     }
 
@@ -563,7 +563,7 @@ int32_t Ipc_echo_test(void)
     params.priority = IPC_SETUP_TASK_PRI;
     params.stacksize = 0x1000;
     params.arg0 = 0;
-    TaskP_create(rpmsg_vdevMonitorFxn, &params);
+    TaskP_create(&rpmsg_vdevMonitorFxn, &params);
 #endif /* !defined(BUILD_MPU1_0) && defined(A72_LINUX_OS) && defined(A72_LINUX_OS_IPC_ATTACH) */
 
     return 1;
@@ -571,7 +571,7 @@ int32_t Ipc_echo_test(void)
 
 #if defined(BUILD_MCU1_0)
 
-static void ipc_checker_task()
+static void ipc_checker_task(void *arg0, void *arg1)
 {
     uint32_t        retEventMask;
     uint32_t        eventMask = 0x0;

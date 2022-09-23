@@ -488,7 +488,7 @@ int total_frames_sent=0;
 #define NUM_TEST_FRAMES 100
 #endif
 
-void Audio_echo_Task()
+void Audio_echo_Task(void *arg0, void *arg1)
 {
     volatile int32_t i32Count, status = 0;
 	hMcaspDev  = NULL;

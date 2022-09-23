@@ -42,7 +42,7 @@
 /*
  *  ======== TaskP_create ========
  */
-TaskP_Handle TaskP_create(void *taskfxn, const TaskP_Params *params)
+TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
 {
     pthread_attr_t attr;
     int            status;

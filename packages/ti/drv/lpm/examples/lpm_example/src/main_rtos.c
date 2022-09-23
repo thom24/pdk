@@ -144,7 +144,7 @@ int main(void)
     mainAppTaskParams.stack          = MainApp_TaskStack;
     mainAppTaskParams.stacksize      = sizeof (MainApp_TaskStack);
 
-    mainAppTask = TaskP_create(MainApp_TaskFxn, &mainAppTaskParams);
+    mainAppTask = TaskP_create(&MainApp_TaskFxn, &mainAppTaskParams);
     if (NULL == mainAppTask)
     {
         OS_stop();

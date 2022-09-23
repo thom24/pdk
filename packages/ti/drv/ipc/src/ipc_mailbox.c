@@ -116,7 +116,7 @@ void Ipc_mailboxInternalCallback(uintptr_t mboxNdx);
 uint32_t     g_pollTaskExit = FALSE;
 TaskP_Handle g_pollTask     = NULL;
 
-void Mailbox_Poll_Task(void* argNotUsed)
+void Mailbox_Poll_Task(void* arg0, void* arg1)
 {
     uint32_t                n    = 0U;
     uint32_t                cnt  = 0U;
@@ -180,7 +180,7 @@ void StartmailboxPollingTask()
     param.stack = g_pollTaskStack;
 #endif
     param.stacksize = IPC_TASK_STACKSIZE;
-    g_pollTask = TaskP_create((void *) Mailbox_Poll_Task, &param);
+    g_pollTask = TaskP_create(&(void *) Mailbox_Poll_Task, &param);
 }
 
 #endif /* IPC_EXCLUDE_POLLED_RX */

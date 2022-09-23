@@ -861,14 +861,7 @@ int itemp;
 int result, pwr_status, fs_status, bck_status;
 int total_frames_sent=0;
 
-
-
-
-
-
-
-
-void Audio_echo_Task()
+void Audio_echo_Task(void *arg0, void *arg1)
 {
     Mcasp_HwInfo hwInfo;
     volatile int32_t status = 0;

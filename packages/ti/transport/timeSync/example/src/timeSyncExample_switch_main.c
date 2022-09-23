@@ -997,29 +997,29 @@ int main()
     TaskP_Params_init(&taskParams);
     taskParams.priority = 5;
     taskParams.name = (uint8_t *)"LEDTask";
-    TaskP_create(timeSync_example_taskLedBlink, &taskParams);
+    TaskP_create(&timeSync_example_taskLedBlink, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 5;
     taskParams.name = (uint8_t *)"LEDTask";
-    TaskP_create(timeSync_example_taskLedBlink2, &taskParams);
+    TaskP_create(&timeSync_example_taskLedBlink2, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 15;
     taskParams.name = (uint8_t *) "SwitchTask";
-    TaskP_create((Task_FuncPtr)timeSync_example_pruIcssTask, &taskParams);
+    TaskP_create(&timeSync_example_pruIcssTask, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 1;
     taskParams.name = (uint8_t *)"UARTMenuTask";
     taskParams.arg0 = (void *)emachandle;
-    TaskP_create(timeSync_example_taskUartMenu, &taskParams);
+    TaskP_create(&timeSync_example_taskUartMenu, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 6;
     taskParams.arg0 = (void *)timeSyncHandle;
     taskParams.name = (uint8_t *)"PTPStatusTask";
-    TaskP_create(timeSync_example_monitorPTPStatus_Task, &taskParams);
+    TaskP_create(&timeSync_example_monitorPTPStatus_Task, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 10;
@@ -1027,7 +1027,7 @@ int main()
     taskParams.stacksize = 0x1000;
     taskParams.arg0 = (void *)emachandle;
 
-    ((ICSS_EmacObject*)emachandle->object)->rxTaskHandle = TaskP_create((Task_FuncPtr)ICSS_EMacOsRxTaskFnc, &taskParams);
+    ((ICSS_EmacObject*)emachandle->object)->rxTaskHandle = TaskP_create(&ICSS_EMacOsRxTaskFnc, &taskParams);
 
     if(((ICSS_EmacObject*)emachandle->object)->rxTaskHandle==NULL)
     {
@@ -1038,7 +1038,7 @@ int main()
     taskParams.name = (uint8_t*)"port0_linkTaskFnc";
     taskParams.stacksize = 0x1000;
     taskParams.arg0 = (void *)emachandle;
-    ((ICSS_EmacObject*)emachandle->object)->linkTaskHandle = TaskP_create((Task_FuncPtr)ICSS_EMacOsLinkTaskFnc, &taskParams);
+    ((ICSS_EmacObject*)emachandle->object)->linkTaskHandle = TaskP_create(&ICSS_EMacOsLinkTaskFnc, &taskParams);
 
     if(((ICSS_EmacObject*)emachandle->object)->linkTaskHandle==NULL)
     {

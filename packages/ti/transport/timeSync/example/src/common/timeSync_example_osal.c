@@ -243,7 +243,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
         taskParams.priority = PTP_DELAY_REQ_SEND_TASK_PRIORITY;
         taskParams.arg0 = (void *)timeSyncHandle;
         timeSyncHandle->timeSync_pDelayReqSendTask = TaskP_create(
-                    TimeSync_PdelayReqSendTask,
+                    &TimeSync_PdelayReqSendTask,
                     &taskParams);
 
         if(timeSyncHandle->timeSync_pDelayReqSendTask  == NULL)
@@ -258,7 +258,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
         taskParams.priority = PTP_DELAY_REQ_SEND_TASK_PRIORITY;
         taskParams.arg0 = (void *)timeSyncHandle;
         timeSyncHandle->timeSync_delayReqSendTask = TaskP_create(
-                    TimeSync_delayReqSendTask,
+                    &TimeSync_delayReqSendTask,
                     &taskParams);
 
         if(timeSyncHandle->timeSync_delayReqSendTask  == NULL)
@@ -270,7 +270,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
     TaskP_Params_init(&taskParams);
     taskParams.priority = PTP_TX_TS_TASK_PRIORITY;
     taskParams.arg0 = (void *)timeSyncHandle;
-    timeSyncHandle->timeSync_TxTSTaskP1 = TaskP_create(TimeSync_TxTSTask_P1,
+    timeSyncHandle->timeSync_TxTSTaskP1 = TaskP_create(&TimeSync_TxTSTask_P1,
                                           &taskParams);
 
     if(timeSyncHandle->timeSync_TxTSTaskP1  == NULL)
@@ -281,7 +281,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
     TaskP_Params_init(&taskParams);
     taskParams.priority = PTP_TX_TS_TASK_PRIORITY;
     taskParams.arg0 = (void *)timeSyncHandle;
-    timeSyncHandle->timeSync_TxTSTaskP2 = TaskP_create(TimeSync_TxTSTask_P2,
+    timeSyncHandle->timeSync_TxTSTaskP2 = TaskP_create(&TimeSync_TxTSTask_P2,
                                           &taskParams);
 
     if(timeSyncHandle->timeSync_TxTSTaskP2  == NULL)
@@ -293,7 +293,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
     TaskP_Params_init(&taskParams);
     taskParams.priority = PTP_SYNC_TASK_PRIORITY;
     taskParams.arg0 = (void *)timeSyncHandle;
-    timeSyncHandle->timeSync_syncTxTask = TaskP_create(TimeSync_SyncTxTask,
+    timeSyncHandle->timeSync_syncTxTask = TaskP_create(&TimeSync_SyncTxTask,
                                           &taskParams);
 
     if(timeSyncHandle->timeSync_syncTxTask  == NULL)
@@ -305,7 +305,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
     TaskP_Params_init(&taskParams);
     taskParams.priority = PTP_ANNOUNCE_TASK_PRIORITY;
     taskParams.arg0 = (void *)timeSyncHandle;
-    timeSyncHandle->timeSync_announceTxTask = TaskP_create(TimeSync_AnnounceTxTask,
+    timeSyncHandle->timeSync_announceTxTask = TaskP_create(&TimeSync_AnnounceTxTask,
             &taskParams);
 
     if(timeSyncHandle->timeSync_announceTxTask  == NULL)
@@ -317,7 +317,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
     TaskP_Params_init(&taskParams);
     taskParams.priority = 8;
     taskParams.arg0 = (void *)timeSyncHandle;
-    timeSyncHandle->timeSync_NRT_Task = TaskP_create(TimeSync_NRT_Task,
+    timeSyncHandle->timeSync_NRT_Task = TaskP_create(&TimeSync_NRT_Task,
                                         &taskParams);
 
     if(timeSyncHandle->timeSync_NRT_Task  == NULL)
@@ -329,7 +329,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
     TaskP_Params_init(&taskParams);
     taskParams.priority = 7;
     taskParams.arg0 = (void *)timeSyncHandle;
-    timeSyncHandle->timeSync_backgroundTask = TaskP_create(TimeSync_BackgroundTask,
+    timeSyncHandle->timeSync_backgroundTask = TaskP_create(&TimeSync_BackgroundTask,
             &taskParams);
 
     if(timeSyncHandle->timeSync_backgroundTask  == NULL)
@@ -343,7 +343,7 @@ int8_t TimeSync_isrAndTaskInit(TimeSync_ParamsHandle_t timeSyncHandle)
         TaskP_Params_init(&taskParams);
         taskParams.priority = 6;
         taskParams.arg0 = (void *)timeSyncHandle;
-        timeSyncHandle->timeSync_latchSyncTask = TaskP_create(TimeSync_latchSyncTask,
+        timeSyncHandle->timeSync_latchSyncTask = TaskP_create(&TimeSync_latchSyncTask,
                 &taskParams);
 
         if(timeSyncHandle->timeSync_latchSyncTask  == NULL)

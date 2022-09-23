@@ -274,7 +274,7 @@ static void pong_isr(uintptr_t arg)
     SemaphoreP_post(gPingSem);
 }
 
-void ping_main(void *args)
+void ping_main(void *arg0, void *arg1)
 {
     uint32_t count; /* loop `count` times */
     volatile uint64_t curTime; /* time in units of usecs */
@@ -352,7 +352,7 @@ void ping_main(void *args)
     FREERTOS_log("All tests have passed!!\r\n");
 }
 
-void pong_main(void *args)
+void pong_main(void *arg0, void *arg1)
 {
     uint32_t count; /* loop `count` times */
 
@@ -416,7 +416,7 @@ void task_switch_main(void *args)
     taskParams.priority = PONG_TASK_PRI;
     taskParams.arg0 = NULL;
 
-    gPongTask = TaskP_create(pong_main, &taskParams);
+    gPongTask = TaskP_create(&pong_main, &taskParams);
     configASSERT(gPongTask != NULL);
 
     TaskP_Params_init(&taskParams);
@@ -425,7 +425,7 @@ void task_switch_main(void *args)
     taskParams.stack = gPingTaskStack;
     taskParams.priority = PING_TASK_PRI;
     taskParams.arg0 = NULL;
-    gPingTask = TaskP_create(ping_main, &taskParams);
+    gPingTask = TaskP_create(&ping_main, &taskParams);
     configASSERT(gPingTask != NULL);
 
     /* Dont close drivers to keep the UART driver open for console */

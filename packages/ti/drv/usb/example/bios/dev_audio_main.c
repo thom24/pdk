@@ -271,7 +271,7 @@ int usb_main(void)
     taskParams.stack = gTskStackMain;
     taskParams.stacksize = sizeof(gTskStackMain);
     taskParams.priority = 1;
-    task = TaskP_create(taskFxn, &taskParams);
+    task = TaskP_create(&taskFxn, &taskParams);
     if (task == NULL) {
         printf("TaskP_create() failed!\n");
         OS_stop();

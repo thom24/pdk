@@ -170,7 +170,7 @@
 static void taskFxn(void* a0, void* a1);
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)))
-void Ipc_setupSciServer(void);
+void Ipc_setupSciServer(void *arg0, void *arg1);
 /**< Initialize SCI Server, to process RM/PM Requests by other cores */
 #endif
 
@@ -389,7 +389,7 @@ int main(void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    task = TaskP_create(taskFxn, &taskParams);
+    task = TaskP_create(&taskFxn, &taskParams);
     if(NULL == task)
     {
         OS_stop();
@@ -419,7 +419,7 @@ static void taskFxn(void* a0, void* a1)
     sciserverInitTaskParams.stack        = gSciserverInitTskStack;
     sciserverInitTaskParams.stacksize    = sizeof (gSciserverInitTskStack);
 
-    sciserverInitTask = TaskP_create(Ipc_setupSciServer, &sciserverInitTaskParams);
+    sciserverInitTask = TaskP_create(&Ipc_setupSciServer, &sciserverInitTaskParams);
     if(NULL == sciserverInitTask)
     {
         OS_stop();
@@ -458,7 +458,7 @@ void InitMmu(void)
 #endif
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)))
-void Ipc_setupSciServer(void)
+void Ipc_setupSciServer(void *arg0, void *arg1)
 {
 
     Sciserver_TirtosCfgPrms_t appPrms;

@@ -377,7 +377,7 @@ int main(void)
     taskParams.stack = gAppTskStackMain;
     taskParams.stacksize = sizeof (gAppTskStackMain);
 
-    task = TaskP_create(fatfs_console, &taskParams);
+    task = TaskP_create(&fatfs_console, &taskParams);
     if (task == NULL) {
         OS_stop();
     }

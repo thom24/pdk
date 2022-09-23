@@ -1879,9 +1879,9 @@ int main(void)
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
 #if defined (MCSPI_SLAVE_TASK)
-    task = TaskP_create(slaveTaskFxn, &taskParams);
+    task = TaskP_create(&slaveTaskFxn, &taskParams);
 #elif defined (MCSPI_MASTER_TASK)
-    task = TaskP_create(masterTaskFxn, &taskParams);
+    task = TaskP_create(&masterTaskFxn, &taskParams);
 #endif /* Task type */
 
     if (task == NULL)

@@ -1029,7 +1029,7 @@ void printQosResults(uint32_t iteration, uint32_t dataArray[], uint32_t size) {
  ****************************************************************************/
 
 int i;
-void pcie (void)
+void pcie (void *arg0, void *arg1)
 {
   int32_t          deviceNum = 0;
   pcieRet_e        retVal;
@@ -1383,7 +1383,7 @@ int main() {
   TaskP_Params_init (&params);
   params.stack     = gTskStackMain;
   params.stacksize = sizeof(gTskStackMain);
-  TaskP_create((void *) pcie, &params);
+  TaskP_create(&pcie, &params);
 
   Board_initCfg boardCfg;
   boardCfg = BOARD_INIT_UNLOCK_MMR

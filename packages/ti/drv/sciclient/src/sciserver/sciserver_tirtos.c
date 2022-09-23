@@ -339,7 +339,7 @@ static int32_t Sciserver_tirtosInitUserTasks(Sciserver_TirtosCfgPrms_t *pPrms)
         gSciserverUserTaskParams[i].stacksize = SCISERVER_TASK_STACK_SIZE;
         gSciserverUserTaskParams[i].arg0 = (void *) &gSciserverTaskList[i];
         gSciserverUserTaskHandles[i] =
-            TaskP_create((void *)Sciserver_tirtosUserMsgTask, &gSciserverUserTaskParams[i]);
+            TaskP_create(&Sciserver_tirtosUserMsgTask, &gSciserverUserTaskParams[i]);
         if(NULL == gSciserverUserTaskHandles[i])
         {
             ret = CSL_EFAIL;

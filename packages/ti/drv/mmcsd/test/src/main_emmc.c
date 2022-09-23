@@ -1139,7 +1139,7 @@ int main(void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    task = TaskP_create(mmcsd_test, &taskParams);
+    task = TaskP_create(&mmcsd_test, &taskParams);
     if (task == NULL) {
         OS_stop();
         OSAL_Assert(task == NULL);

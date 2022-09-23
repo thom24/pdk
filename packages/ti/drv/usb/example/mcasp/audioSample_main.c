@@ -86,7 +86,7 @@ EDMA3_DRV_Handle hEdma;
 extern void configureAudio(void);
 extern void McaspDevice_init(void);
 extern void configMcASP_SocHwInfo(void);
-extern void Audio_echo_Task();
+extern void Audio_echo_Task(void *arg0, void *arg1);
 extern int usb_main(void);
 
 /* ========================================================================== */
@@ -132,7 +132,7 @@ int main(void)
     taskParams.stack     = gTskStackMain;
     taskParams.stacksize = sizeof(gTskStackMain);
     taskParams.priority = 2;
-    task = TaskP_create(Audio_echo_Task, &taskParams, &eb);
+    task = TaskP_create(&Audio_echo_Task, &taskParams, &eb);
     if (task == NULL) {
         printf("TaskP_create() failed!\n");
         OS_stop();

@@ -2157,7 +2157,7 @@ uint32_t base_address = 0x5500000;
 #endif
 #endif
 int i;
-void pcie (void)
+void pcie (void *arg0, void *arg1)
 {
 #ifdef _TMS320C6X
   TSCL = 1;
@@ -2595,7 +2595,7 @@ int main() {
   TaskP_Params_init (&params);
   params.stack     = gTskStackMain;
   params.stacksize = sizeof(gTskStackMain);
-  TaskP_create((void *) pcie, &params);
+  TaskP_create(&pcie, &params);
 
 #ifdef __ARM_ARCH_7A__
   {

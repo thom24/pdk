@@ -455,7 +455,7 @@ int main(void)
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
-    TaskP_create(gpio_test, &taskParams);
+    TaskP_create(&gpio_test, &taskParams);
 #endif
 
     OS_start();

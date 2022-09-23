@@ -224,7 +224,7 @@ static Ipc_Object gIpcObject;
 
 RPMessage_Object* RPMessage_lookupEndpt(void* p, uint32_t e);
 void RPMessage_assignEndpt(void* p, uint32_t e, RPMessage_Object* obj);
-void UNUSED(const uint32_t* x);
+void UNUSED(const void* x);
 uint8_t is_aligned(const void* ptr, uint32_t byteCnt);
 RPMessage_Object*  RPMessage_allocObject(void);
 
@@ -239,7 +239,7 @@ inline void RPMessage_assignEndpt(void* p, uint32_t e, RPMessage_Object* obj)
     (((RPMessage_Object**)(p))[(e)] = (obj));
 }
 
-inline void UNUSED(const uint32_t* x)
+inline void UNUSED(const void* x)
 {
     (void)(x);
 }
@@ -887,7 +887,7 @@ static void RPMessage_checkForMessages(RPMessage_EndptPool *pool)
 #ifdef QNX_OS
 static void RPMessage_ctrlMsgTask(void* arg0, void* arg1)
 #else
-static void RPMessage_ctrlMsgTask(uint32_t* arg0, uint32_t* arg1)
+static void RPMessage_ctrlMsgTask(void* arg0, void* arg1)
 #endif
 {
 #ifdef QNX_OS
@@ -965,7 +965,7 @@ static int32_t RPMessage_startCtrlMsgTask(RPMessage_Params *params)
         tparams.arg0      = (uint32_t*)obj;
         tparams.stacksize = params->stackSize;
         tparams.stack     = params->stackBuffer;
-        tskHandle = TaskP_create((void *) RPMessage_ctrlMsgTask, &tparams);
+        tskHandle = TaskP_create(&RPMessage_ctrlMsgTask, &tparams);
         if(tskHandle == NULL)
         {
             retVal = IPC_EFAIL;

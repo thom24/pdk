@@ -139,7 +139,7 @@ void StartmailboxPollingTask()
     param.stack = g_pollTaskStack;
 #endif
     param.stacksize = IPC_TASK_STACKSIZE;
-    g_pollTask = TaskP_create((void *) Mailbox_Poll_Task, &param);
+    g_pollTask = TaskP_create(&Mailbox_Poll_Task, &param);
 }
 
 #endif /* IPC_EXCLUDE_POLLED_RX */

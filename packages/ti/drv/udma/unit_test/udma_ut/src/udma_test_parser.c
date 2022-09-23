@@ -555,7 +555,7 @@ int32_t udmaTestCreateTestTasks(UdmaTestObj *testObj, UdmaTestParams *testPrms)
             taskPrms.arg0 = taskObj;
             taskPrms.stack = &gUdmaParserTskStack[taskCnt][0U];
             taskPrms.stacksize = APP_TSK_STACK_MAIN;
-            taskObj->taskHandle = TaskP_create((void *) &udmaTestTask, &taskPrms);
+            taskObj->taskHandle = TaskP_create(&udmaTestTask, &taskPrms);
             if(NULL == taskObj->taskHandle)
             {
                 retVal = UDMA_EALLOC;

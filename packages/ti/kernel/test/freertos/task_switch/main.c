@@ -45,7 +45,7 @@ StackType_t gMainTaskStack[MAIN_TASK_SIZE] __attribute__((aligned(32)));
 
 TaskP_Handle gMainTask;
 
-void task_switch_main(void *args);
+void task_switch_main(void *arg0, void* arg1);
 void c66xIntrConfig(void);
 
 int main()
@@ -73,7 +73,7 @@ int main()
     taskParams.arg1 = NULL;
 
 	/* This task is created at highest priority, it should create more tasks and then delete itself */
-    gMainTask = TaskP_create(task_switch_main, &taskParams);
+    gMainTask = TaskP_create(&task_switch_main, &taskParams);
     configASSERT(gMainTask != NULL);
 
     /* Start the scheduler to start the tasks executing. */

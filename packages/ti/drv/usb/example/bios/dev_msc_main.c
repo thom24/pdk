@@ -317,7 +317,7 @@ int main(void)
     TaskP_Params_init(&params);
     params.stack     = gTskStackMain;
     params.stacksize = sizeof(gTskStackMain);
-    task = TaskP_create(taskFxn, &params);
+    task = TaskP_create(&taskFxn, &params);
     if (task == NULL) {
         consolePrintf("TaskP_create() failed!\n");
         OS_stop();

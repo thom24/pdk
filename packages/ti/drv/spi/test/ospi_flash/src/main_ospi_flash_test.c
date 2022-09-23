@@ -1354,7 +1354,7 @@ int main(void)
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 
     /* Start BIOS */
-	task = TaskP_create(spi_test, &taskParams);
+	task = TaskP_create(&spi_test, &taskParams);
     if (task == NULL) {
         UART_printf("TaskP_create() failed!\n");
         OS_stop();
