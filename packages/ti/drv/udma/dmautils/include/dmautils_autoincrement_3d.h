@@ -122,9 +122,9 @@ typedef enum{
  *
   */
 typedef enum{
-  DMAUTILSAUTOINC3D_DFMT_NONE      = 0, /*!< No formatting options */
-  DMAUTILSAUTOINC3D_DFMT_COMP      = 5, /*!< DMA will compress data into 1-D blocks */
-  DMAUTILSAUTOINC3D_DFMT_DECOMP    = 6  /*!< DMA will decompress data from 1-D blocks into decompressed structure */
+  DMAUTILSAUTOINC3D_DFMT_NONE      = 0U, /*!< No formatting options */
+  DMAUTILSAUTOINC3D_DFMT_COMP      = 5U, /*!< DMA will compress data into 1-D blocks */
+  DMAUTILSAUTOINC3D_DFMT_DECOMP    = 6U  /*!< DMA will decompress data from 1-D blocks into decompressed structure */
 }DmaUtilsAutoInc3d_DfmtType;
 
 
@@ -392,15 +392,15 @@ typedef struct
   uint32_t    sbDim1;
   /** Jump in bytes when moving from sbIcnt1 to sicnt0 (completing a superblock) */
   uint32_t    sDim0;
-  
+
   //Changes for 1.0.6 start here:
   /** The destination dimension to use for DICNT0 in the original TR after each super block */
   uint32_t    dDim0;
   /** The addressing mode to use for the super block during ICNT0 is decrmenting */
   uint32_t    sbAM0;
   /** The addressing mode to use for the super block when SB_ICNT1 is decremented.*/
-  uint32_t    sbAM1; 
-  
+  uint32_t    sbAM1;
+
 }DmaUtilsAutoInc3d_TransferCompression;
 
 
@@ -496,7 +496,6 @@ typedef struct
  */
 
 int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
-
 /**
  *  \brief     This function initializes the DMA UTILS context for autoincrement usecase.
  *
@@ -505,8 +504,7 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
  *
  *  \param    autoIncrementContext [IN] Memory allocated by the user as per DmaUtilsAutoInc3d_getContextSize
  *                                                      API. Try to allocate this memory in the fastest available memory for optimal performance
- *
- *
+  *
  *  \param    initParams [IN] Init params for the dmautils
  *
  *  \param    chInitParams [IN] Init parameter for each channel. This is an array and number of enteries should be same as numChannels
@@ -516,6 +514,7 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
  *
  *  =======================================================
  */
+
  int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext , DmaUtilsAutoInc3d_InitParam * initParams, DmaUtilsAutoInc3d_ChannelInitParam chInitParams[]);
 
 
@@ -668,9 +667,10 @@ void  DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId);
  *
  *  \param trMem [IN] Populated TrMem after calling DmaUtilsAutoInc3d_prepareTr function
  *
-  * \param numTr [IN] Number of Transfer Records (TR's) that will be submitted to a particular channel
+ * \param numTr [IN] Number of Transfer Records (TR's) that will be submitted to a particular channel
  *
  *  \return \ref Udma_ErrorCodes
+ *
  */
 int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, uint8_t * trMem, int32_t numTr);
 
@@ -683,9 +683,10 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
  *  \return   \ref  Udma_ErrorCodes
  *
  */
-int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext);
 
+int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext);
 int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem);
+
 
 #ifdef __cplusplus
 }
