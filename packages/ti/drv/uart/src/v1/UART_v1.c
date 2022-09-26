@@ -1674,7 +1674,6 @@ static uint32_t UART_charGet_v1(UART_HwAttrs const *hwAttrs, uint8_t *data, uint
             }
             else
             {
-                (void)UART_osalDelay(1U);
                 timeoutCnt--;
             }
         }
