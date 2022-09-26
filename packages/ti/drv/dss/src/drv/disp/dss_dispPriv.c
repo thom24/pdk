@@ -160,7 +160,7 @@ int32_t Dss_dispDrvPrivInit(uint32_t numInst,
                                 (const uint32_t *)&enabledEvents[0U],
                                 numEvents,
                                 Dss_dispErrCbFxn,
-                                (void *)&gDss_DispEvtMgrClientInfo[numHandle]);
+                                (void *)&gDss_DispEvtMgrClientInfo[(instObj->drvInstId*DSS_DISP_INST_EVT_MGR_MAX_CLIENTS) + numHandle]);
                 instObj->numRegEvtHandle++;
             }
 
