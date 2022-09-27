@@ -277,6 +277,15 @@ void IpcUtils_HeapFree(IpcUtils_HeapHandle *pHndl, void* block, uint32_t size);
  */
 uintptr_t IpcUtils_getMemoryAddress(uint32_t daAddr, uint32_t size);
 
+/**
+ *  \brief  IpcUtils_strnlen
+ *
+ *  \param s          [IN]
+ *
+ *  \return length of string
+ */
+uint32_t IpcUtils_strnlen(const char *s);
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */

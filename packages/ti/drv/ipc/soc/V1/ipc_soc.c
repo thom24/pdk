@@ -572,7 +572,7 @@ void Ipc_configC66xIntrRouter(uint32_t input)
 #endif
 
     /* Mailbox Interrupt Router */
-    intr_router[inputPin+1U] = ((uint32_t)(0x1 << 16)) + (outputPin & 0xFFFFU);
+    intr_router[inputPin+1U] = (((uint32_t)0x1U) << 16) + (outputPin & 0xFFFFU);
 }
 #endif
 
@@ -750,7 +750,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
                 &req,
                 &res,
                 IPC_SCICLIENT_TIMEOUT);
-    if ((CSL_PASS != retVal) || (res.range_num == 0)) {
+    if ((CSL_PASS != retVal) || (res.range_num == 0U)) {
         /* Try with HOST_ID_ALL */
         req.type           = req_type[coreIndex];
         req.subtype        = (uint8_t)req_subtype[coreIndex];

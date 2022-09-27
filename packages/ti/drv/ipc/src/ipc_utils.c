@@ -80,6 +80,29 @@ Ipc_UtilsObj gIpcUtilsObj = {IPC_UTILS_UN_INITIALIZED};
 /**< Function disable all interrupts */
 
 /* ========================================================================== */
+/*                           Function Declaration                              */
+/* ========================================================================== */
+
+/**
+ *  \brief  IpcUtils_Qenqueue
+ *
+ *  \param IpcUtils_QHandle        [IN]
+ *  \param IpcUtils_QElem          [IN]
+ *
+ *  \return None
+*/
+void IpcUtils_Qenqueue(IpcUtils_QHandle *handle, IpcUtils_QElem *elem);
+
+/**
+ *  \brief  IpcUtils_Qdequeue
+ *
+ *  \param IpcUtils_QHandle        [IN]
+ *
+ *  \return None
+*/
+void* IpcUtils_Qdequeue(IpcUtils_QHandle *handle);
+
+/* ========================================================================== */
 /*                              API's                                         */
 /* ========================================================================== */
 int32_t IpcUtils_Init(Ipc_OsalPrms *pOsalInit)
@@ -366,6 +389,22 @@ void SystemP_printf(const char *format, ...)
 
     return;
 }
+
+uint32_t IpcUtils_strnlen(const char *s)
+{
+  uint32_t i=0;
+  if (NULL != s)
+  {
+      while(*s != '\0')
+      {
+        i++;
+        s++;
+      }
+  }
+  return i;
+}
+
+
 /* ========================================================================== */
 /*                          Local Functions                                   */
 /* ========================================================================== */

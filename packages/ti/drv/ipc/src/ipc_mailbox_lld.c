@@ -77,7 +77,7 @@ Ipc_MailboxData        g_ipc_mBoxData[IPC_MAX_PROCS];
 /* ========================================================================== */
 /*                           Function Prototypes                              */
 /* ========================================================================== */
-void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndpoint);
+static void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndpoint);
 
 /**
  *  When IPC is built for bare metal and interrupt mode is not desired,
@@ -392,7 +392,7 @@ void Ipc_mailboxIsr(uint32_t remoteProcId)
 /*!
  *  ======== Ipc_mailboxInternalCallback ========
  */
-void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndpoint)
+static void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance remoteEndpoint)
 {
     int32_t               ret;
     uint32_t              msg;

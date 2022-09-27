@@ -44,6 +44,7 @@
 #include "ipc_osal.h"
 
 #include <ti/drv/ipc/ipc.h>
+#include <ti/drv/ipc/src/ipc_mailbox.h>
 #include <ti/drv/ipc/soc/ipc_soc.h>
 #include <ti/drv/ipc/include/ipc_types.h>
 
@@ -142,78 +143,6 @@ static int32_t Ipc_osalHIsrPost(Ipc_OsalHIsrHandle *handle)
         rtnVal = IPC_SOK;
     }
     return (rtnVal);
-}
-
-void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t arg)
-{
-    OsalRegisterIntrParams_t    intrPrms;
-    OsalInterruptRetCode_e      osalRetVal;
-    HwiP_Handle                 hwiHandle = NULL;
-    uint32_t                    coreIntrNum = 0U;
-#ifndef IPC_SUPPORT_SCICLIENT
-    CSL_IntrRouterCfg           irRegs;
-#endif
-
-#ifdef DEBUG_PRINT
-    SystemP_printf("Navss Rtr: input %d, output %d%d\n",
-        cfg->inputIntrNum, cfg->outputIntrNum);
-#endif
-
-#ifndef IPC_SUPPORT_SCICLIENT
-    /* Configure Main NavSS512 interrupt router */
-    irRegs.pIntrRouterRegs = (CSL_intr_router_cfgRegs *)IPC_MCU_NAVSS0_INTR0_CFG_BASE;
-    irRegs.pIntdRegs       = (CSL_intr_router_intd_cfgRegs *) NULL;
-    irRegs.numInputIntrs   = MAIN_NAVSS_MAILBOX_INPUTINTR_MAX;
-    irRegs.numOutputIntrs  = MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX;
-    CSL_intrRouterCfgMux(&irRegs, cfg->inputIntrNum, cfg->outputIntrNum);
-
-#if defined (SOC_AM65XX)
-#if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1)
-    Ipc_main2mcu_intRouter(cfg);
-#endif
-#endif
-
-
-    /* Configure C66x Interrupt Router now */
-#if defined(BUILD_C66X)
-    Ipc_configC66xIntrRouter(cfg->eventId );
-#endif
-
-#endif  /* IPC_SUPPORT_SCICLIENT */
-
-    coreIntrNum = cfg->eventId;
-
-    /*
-     * CLEC needs to be configured for all modes - CSL and Sciclient
-     **/
-#if defined(BUILD_C7X)
-    /* Pass the corePackEvent and the base (which was derived from the NAVSS IR o/p
-     * range returned from BoardCfg) to route the corressponding CLEC i/p Event to
-     * a C7x IRQ. The returned IRQ num is used to register Interrupt with OSAL. */
-    coreIntrNum = Ipc_configClecRouter(cfg->eventId, cfg->eventIdBase);
-#endif
-
-    /* Register interrupts */
-    Osal_RegisterInterrupt_initParams(&intrPrms);
-    intrPrms.corepacConfig.arg              = arg;
-    intrPrms.corepacConfig.isrRoutine       = func;
-    intrPrms.corepacConfig.priority         = cfg->priority;
-
-#if defined(BUILD_C66X)
-    intrPrms.corepacConfig.corepacEventNum  = coreIntrNum;
-    intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
-#else
-    intrPrms.corepacConfig.intVecNum        = (int32_t)coreIntrNum;
-    intrPrms.corepacConfig.corepacEventNum  = 0;
-#endif
-
-    osalRetVal = Osal_RegisterInterrupt(&intrPrms, &hwiHandle);
-    if(OSAL_INT_SUCCESS != osalRetVal)
-    {
-        SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
-    }
-
-    return (hwiHandle);
 }
 
 static void *Ipc_osalMutexCreate(void)

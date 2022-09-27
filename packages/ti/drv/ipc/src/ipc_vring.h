@@ -196,9 +196,9 @@ static inline void vring_init(struct VRing *vr, uint32_t num, void *p,
 
 static inline uint32_t vring_size(uint32_t num, uint32_t pagesize)
 {
-    return ((sizeof(struct vring_desc) * num + sizeof(uint16_t) * (2U + num)
+    return (((sizeof(struct vring_desc) * num) + (sizeof(uint16_t) * (2U + num))
                 + (uintptr_t)pagesize - 1U) & ~((uintptr_t)pagesize - 1U))
-                + sizeof(uint16_t) * 2U + sizeof(struct vring_used_elem) * num;
+                + (sizeof(uint16_t) * 2U) + (sizeof(struct vring_used_elem) * num);
 }
 
 

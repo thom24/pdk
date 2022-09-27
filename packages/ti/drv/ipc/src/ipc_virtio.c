@@ -211,10 +211,95 @@ void* Ipc_allocVirtio(void)
     return ptr;
 }
 
+/* ========================================================================== */
+/*                          Function Declarations                               */
+/* ========================================================================== */
+
+#ifdef QNX_OS
+
 /**
  * \brief    Add entry to the translation able
  **/
-void Ipc_addTranslationEntry(uint32_t phyAddr, uint32_t len)
+static void Ipc_addTranslationEntry(uint32_t phyAddr, uint32_t len);
+#endif
+
+/**
+ * \brief Get virual address for given physical address
+ *
+ * \param pa physical address
+ *        va virtual address
+ *
+ * \return #IPC_SOK or #IPC_EFAIL
+ *
+ **/
+static int32_t Ipc_physToVirt(uint32_t pa, uintptr_t *va);
+
+/**
+ * \brief Get physical address from given virual address
+ *
+ * \param   pa physical address
+ *          va virtual address
+ *
+ * \return #IPC_SOK or #IPC_EFAIL
+ *
+ **/
+static int32_t Ipc_virtToPhys(uintptr_t va, uint32_t *pa);
+
+/**
+ *  \brief Virtio_isr
+ */
+static void Virtio_isr(uint32_t* msg, uint32_t priv);
+
+/**
+ *  \brief Setups vring buffers.  The buffers are "allocated" from
+ *  a single block of memory beginning at addr.  It is assumed that
+ *  addr has the appropriate alignment.
+ */
+static void Virtio_prime(Virtio_Object *vq, uintptr_t addr, uint32_t num);
+
+/**
+ *  \brief Virtio_enableCallback
+ */
+uint8_t Virtio_enableCallback(Virtio_Handle vq);
+
+/**
+ *  \brief Virtio_disableCallback
+ */
+void Virtio_disableCallback(Virtio_Handle vq);
+
+ /**
+  *  \brief Virtio_create
+  */
+static Virtio_Handle Virtio_create(uint32_t vqId, uint32_t procId,
+     Virtio_callback callback, Vring_Params *params,
+     VIRTIO_DIR direction, uint8_t status, uint32_t timeoutCnt);
+
+/**
+ * \brief Creates Virtio for TX and RX for given core pair.
+ * Must be called multiple times with for each remote core.
+ * It will result in a TX/RX pair of Virtio being created.
+ * One assumption made is that all vrings will be accessed as Virtio.
+ * The Virtio callback to the higher level transport is set to
+ * Null.  It must be changed when higher level transport is initialized.
+ *
+ * \return #IPC_SOK or #IPC_EFAIL
+ *
+ */
+static int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t timeoutCnt);
+
+/**
+ *  \brief Ipc_updateVirtioInfo
+ */
+static void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
+                      Ipc_VirtioInfo* info);
+
+/* ========================================================================== */
+/*                          Function Definitions                              */
+/* ========================================================================== */
+
+#ifdef QNX_OS
+
+static void Ipc_addTranslationEntry(uint32_t phyAddr, uint32_t len)
 {
     if(vrTranslationTable.count < (IPC_TABLE_MAX_CNT-1U))
     {
@@ -236,11 +321,9 @@ void Ipc_addTranslationEntry(uint32_t phyAddr, uint32_t len)
 #endif
     }
 }
+#endif
 
-/**
- * \brief Get virual address for given physical address
- **/
-int32_t Ipc_physToVirt(uint32_t pa, uintptr_t *va)
+static int32_t Ipc_physToVirt(uint32_t pa, uintptr_t *va)
 {
     uint32_t                n;
     uint32_t                offset;
@@ -269,10 +352,7 @@ int32_t Ipc_physToVirt(uint32_t pa, uintptr_t *va)
     return (rtnVal);
 }
 
-/**
- * \brief Get physical address from given virual address
- **/
-int32_t Ipc_virtToPhys(uintptr_t va, uint32_t *pa)
+static int32_t Ipc_virtToPhys(uintptr_t va, uint32_t *pa)
 {
     uint32_t              n;
     uint32_t              offset;
@@ -627,11 +707,7 @@ uint8_t Virtio_enableCallback(Virtio_Handle vq)
     return (0U);
 }
 
-
-/**
- *  \brief Virtio_isr
- */
-void Virtio_isr(uint32_t* msg, uint32_t priv)
+static void Virtio_isr(uint32_t* msg, uint32_t priv)
 {
     Virtio_Object *vq;
 
@@ -645,7 +721,7 @@ void Virtio_isr(uint32_t* msg, uint32_t priv)
 /**
  *  \brief Virtio_create
  */
- Virtio_Handle Virtio_create(uint32_t vqId, uint32_t procId,
+ static Virtio_Handle Virtio_create(uint32_t vqId, uint32_t procId,
     Virtio_callback callback, Vring_Params *params,
     VIRTIO_DIR direction, uint8_t status, uint32_t timeoutCnt)
 {
@@ -723,13 +799,7 @@ int32_t Virtio_setCallback(uint32_t procId, Virtio_callback callback, uint32_t* 
     return status;
 }
 
-
-/**
- *  \brief Setups vring buffers.  The buffers are "allocated" from
- *  a single block of memory beginning at addr.  It is assumed that
- *  addr has the appropriate alignment.
- */
-void Virtio_prime(Virtio_Object *vq, uintptr_t addr, uint32_t num)
+static void Virtio_prime(Virtio_Object *vq, uintptr_t addr, uint32_t num)
 {
     uint32_t i;
     uint8_t *buf;
@@ -789,15 +859,7 @@ Bool VirtioIPC_getVirtQueues(uint32_t type, uint32_t procId, uint32_t rank,
     return retVal;
 }
 
-/**
- * \brief Creates Virtio for TX and RX for given given core pair.
- * Must be called multiple times with for each remote core.
- * It will result in a TX/RX pair of Virtio being created.
- * One assumption made is that all vrings will be accessed as Virtio.
- * The Virtio callback to the higher level transport is set to
- * Null.  It must be changed when higher level transport is initialized.
- */
-int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t timeoutCnt)
+static int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t timeoutCnt)
 {
     Vring_Params   params;
     Virtio_Handle  tx_vq, rx_vq;
@@ -864,7 +926,7 @@ Bool Ipc_isRemoteVirtioCreated(uint32_t remoteId)
     return vqCreated;
 }
 
-void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
+static void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
                       Ipc_VirtioInfo* info)
 {
     uint32_t cnt = 0, a , b, i;

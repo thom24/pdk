@@ -371,7 +371,7 @@ int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
         {
             offset = range;
         }
-        outIntrBaseNum = (start + range) - offset;
+        outIntrBaseNum = (uint32_t)((start + range) - offset);
 
         /* Translate to CorePack IRQ number */
         /* Translation must happen after this offset */
@@ -645,7 +645,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
                 &req,
                 &res,
                 IPC_SCICLIENT_TIMEOUT);
-    if (CSL_PASS != retVal || res.range_num == 0) {
+    if ((CSL_PASS != retVal) || (res.range_num == 0U)) {
         /* Try with HOST_ID_ALL */
         req.type           = req_type[coreIndex];
         req.subtype        = (uint8_t)req_subtype[coreIndex];

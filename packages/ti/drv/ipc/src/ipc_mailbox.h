@@ -88,7 +88,7 @@ int32_t Ipc_mailboxModuleStartup (void);
 
 int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
                         uint32_t timeoutCnt);
-int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId, 
+int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
             Mailbox_hwiCallback func, uint32_t arg, uint32_t timeoutCnt);
 
 /** \brief Handles Interrupts from remote cores.
@@ -99,6 +99,14 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
  *  \return None
  */
 void Ipc_mailboxIsr(uint32_t remoteProcId);
+
+/** \brief Mailbox Interrupts  */
+void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t arg);
+
+/**
+*  \brief Clear interrupt and return the message.
+*/
+uint32_t Ipc_mailboxClear(uintptr_t baseAddr, uint32_t queueId);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

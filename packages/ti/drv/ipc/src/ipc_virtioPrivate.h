@@ -213,6 +213,10 @@ int32_t VirtioIPC_init(Ipc_VirtIoParams* vqInfo);
  */
 uint8_t Virtio_isReady(Virtio_Handle vq);
 
+/**
+ *  \brief Ipc_allocVirtio
+ */
+void* Ipc_allocVirtio(void);
 
 /*
  *  ============================================================================

@@ -95,7 +95,7 @@ extern "C" {
 /**
  * \brief Timeout foreever for IPC Recv
  */
-#define IPC_RPMESSAGE_TIMEOUT_FOREVER   ~(0)
+#define IPC_RPMESSAGE_TIMEOUT_FOREVER   ~(0U)
 
 /**
  * \brief RPMessage Endpoint any available

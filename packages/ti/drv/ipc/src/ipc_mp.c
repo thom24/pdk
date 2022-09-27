@@ -46,6 +46,7 @@
 #include <ti/drv/ipc/include/ipc_mp.h>
 #include <ti/drv/ipc/include/ipc_types.h>
 #include "ipc_priv.h"
+#include "ipc_utils.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -106,7 +107,7 @@ uint32_t Ipc_mpGetId(const char* name)
     uint16_t       i      = 0;
     Ipc_MpConfig  *pMpCfg = &g_ipcMpConfig;
 
-    if( (NULL == name) || (strlen(name) == 0U) )
+    if( (NULL == name) || (IpcUtils_strnlen(name) == 0U) )
     {
         /* Invalid parameter */
 

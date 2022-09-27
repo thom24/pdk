@@ -56,6 +56,10 @@
 #include "ipc_osal.h"
 #include "ipc_priv.h"
 
+/* ========================================================================== */
+/*                           Macros & Typedefs                                */
+/* ========================================================================== */
+
 /* Fix Me, need not be 256, can be max remote proc / max proc, i.e. 1 as
     structure which uses this is instantiated max proc times. */
 #define  IPC_MBOX_MAXFIFO_CNT    16U
@@ -63,7 +67,7 @@
 #define  IPC_MBOX_MAXDATA        8U
 
 /* ========================================================================== */
-/*                             Local Types                                    */
+/*                         Structure Declarations                             */
 /* ========================================================================== */
 
 typedef struct Ipc_MailboxFifo_s
@@ -87,24 +91,34 @@ typedef struct Ipc_MailboxData_s
 } Ipc_MailboxData;
 
 /* ========================================================================== */
-/*                             Globals                                        */
+/*                          Function Declarations                             */
 /* ========================================================================== */
+
+/**
+ *  \brief Mailbox Internal Callback
+ */
+static void Ipc_mailboxInternalCallback(uintptr_t arg);
+
+/**
+ *  \brief Enable remote processor interrupt
+ */
+static void Ipc_mailboxEnable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId);
+
+/**
+ *  \brief Disables remote processor interrupt
+ */
+static void Ipc_mailboxDisable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId);
+
+/* ========================================================================== */
+/*                            Global Variables                                */
+/* ========================================================================== */
+
 uint32_t               g_ipc_mBoxCnt = 0U;
 Ipc_MailboxData        g_ipc_mBoxData[IPC_MBOX_MAXDATA];
 /**
  * \brief Maps mBoxData allocated to a given Remote Processor
  */
 uintptr_t       gIpcRProcIdToMBoxDataMap[IPC_MAX_PROCS];
-
-/* ========================================================================== */
-/*                           Function Prototypes                              */
-/* ========================================================================== */
-void Ipc_mailboxInternalCallback(uintptr_t mboxNdx);
-
-/**
- *  When IPC is built for bare metal and interrupt mode is not desired,
- *  Don't use the task to poll the mailboxes, rely on apps to poll
- */
 
 /* ========================================================================== */
 /*                             Local Functions                                */
@@ -201,7 +215,7 @@ int32_t Ipc_mailboxModuleStartup (void)
 /**
  *  \brief Enable remote processor interrupt
  */
-void Ipc_mailboxEnable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
+static void Ipc_mailboxEnable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
 {
     MailboxEnableNewMsgInt(baseAddr, userId, queueId);
 }
@@ -209,7 +223,7 @@ void Ipc_mailboxEnable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
 /**
  *  \brief Disables remote processor interrupt
  */
-void Ipc_mailboxDisable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
+static void Ipc_mailboxDisable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
 {
     MailboxDisableNewMsgInt(baseAddr, userId, queueId);
 }
@@ -368,7 +382,7 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
 
                     {
                         /* Release the resource first */
-                        retVal = Ipc_sciclientIrqRelease(selfId, clusterId, userId, cfg.eventId);
+                        Ipc_sciclientIrqRelease(selfId, clusterId, userId, cfg.eventId);
 
                         uint32_t timeout_cnt = 10;
                         do
@@ -455,7 +469,7 @@ void Ipc_mailboxIsr(uint32_t remoteProcId)
 /*!
  *  ======== Ipc_mailboxInternalCallback ========
  */
-void Ipc_mailboxInternalCallback(uintptr_t arg)
+static void Ipc_mailboxInternalCallback(uintptr_t arg)
 {
     uint32_t              n;
     Ipc_MailboxData      *mbox;
@@ -535,3 +549,100 @@ void Ipc_mailboxDisableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
     }
 }
 
+void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t arg)
+{
+    OsalRegisterIntrParams_t    intrPrms;
+    OsalInterruptRetCode_e      osalRetVal;
+    HwiP_Handle                 hwiHandle = NULL;
+    uint32_t                    coreIntrNum = 0U;
+#ifndef IPC_SUPPORT_SCICLIENT
+    CSL_IntrRouterCfg           irRegs;
+#endif
+
+#ifdef DEBUG_PRINT
+    SystemP_printf("Navss Rtr: input %d, output %d%d\n",
+        cfg->inputIntrNum, cfg->outputIntrNum);
+#endif
+#ifdef QNX_OS
+#ifdef DEBUG_PRINT
+    SystemP_printf("Mailbox_plugInterrupt: Navss Rtr input %d, output %d\n",
+        cfg->inputIntrNum, cfg->outputIntrNum);
+#endif
+#endif
+#ifndef IPC_SUPPORT_SCICLIENT
+    /* Configure Main NavSS512 interrupt router */
+    #ifdef QNX_OS
+    if(g_navssIntRtrBaseVirtAddr == 0)
+    {
+        g_navssIntRtrBaseVirtAddr = IpcUtils_getMemoryAddress(IPC_MCU_NAVSS0_INTR0_CFG_BASE,
+                NVSS_INTRTR_SIZE );
+    }
+    irRegs.pIntrRouterRegs = (CSL_intr_router_cfgRegs *)g_navssIntRtrBaseVirtAddr;
+    irRegs.pIntdRegs       = (CSL_intr_router_intd_cfgRegs *) NULL;
+    irRegs.numInputIntrs   = MAIN_NAVSS_MAILBOX_INPUTINTR_MAX;
+    irRegs.numOutputIntrs  = MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX;
+    CSL_intrRouterCfgMux(&irRegs, cfg->inputIntrNum, cfg->outputIntrNum);
+    #else
+    irRegs.pIntrRouterRegs = (CSL_intr_router_cfgRegs *)IPC_MCU_NAVSS0_INTR0_CFG_BASE;
+    irRegs.pIntdRegs       = (CSL_intr_router_intd_cfgRegs *) NULL;
+    irRegs.numInputIntrs   = MAIN_NAVSS_MAILBOX_INPUTINTR_MAX;
+    irRegs.numOutputIntrs  = MAIN_NAVSS_MAILBOX_OUTPUTINTR_MAX;
+    CSL_intrRouterCfgMux(&irRegs, cfg->inputIntrNum, cfg->outputIntrNum);
+    #endif
+
+#if defined (SOC_AM65XX)
+#if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_1)
+    Ipc_main2mcu_intRouter(cfg);
+#endif
+#endif
+
+    /* Configure C66x Interrupt Router now */
+#if defined(BUILD_C66X)
+    Ipc_configC66xIntrRouter(cfg->eventId );
+#endif
+
+#endif  /* IPC_SUPPORT_SCICLIENT */
+
+    coreIntrNum = cfg->eventId;
+
+    /*
+     * CLEC needs to be configured for all modes - CSL and Sciclient
+     **/
+#if defined(BUILD_C7X)
+    /* Pass the corePackEvent and the base (which was derived from the NAVSS IR o/p
+     * range returned from BoardCfg) to route the corressponding CLEC i/p Event to
+     * a C7x IRQ. The returned IRQ num is used to register Interrupt with OSAL. */
+    coreIntrNum = Ipc_configClecRouter(cfg->eventId, cfg->eventIdBase);
+#endif
+
+#ifdef QNX_OS
+#if 1 //def DEBUG_PRINT
+    SystemP_printf("Mailbox_plugInterrupt: interrupt Number %d, arg 0x%X\n",
+        cfg->eventId, (uint32_t)arg);
+#endif
+#endif
+
+    /* Register interrupts */
+    Osal_RegisterInterrupt_initParams(&intrPrms);
+    intrPrms.corepacConfig.arg              = arg;
+    intrPrms.corepacConfig.isrRoutine       = func;
+    intrPrms.corepacConfig.priority         = cfg->priority;
+
+#if defined(BUILD_C66X)
+    intrPrms.corepacConfig.corepacEventNum  = coreIntrNum;
+    intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
+#else
+    intrPrms.corepacConfig.intVecNum        = coreIntrNum;
+    intrPrms.corepacConfig.corepacEventNum  = 0;
+#endif
+#ifdef QNX_OS
+    intrPrms.corepacConfig.intAutoEnable  = 1;
+#endif
+    osalRetVal = Osal_RegisterInterrupt(&intrPrms, &hwiHandle);
+    if(OSAL_INT_SUCCESS != osalRetVal)
+    {
+        SystemP_printf("Mailbox_plugInterrupt : Failed to register ISR...\n");
+    }
+
+    return (hwiHandle);
+}
