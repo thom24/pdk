@@ -279,6 +279,15 @@ a lot of data that needs to be copied, this should be set high. */
 #define ARP_TABLE_SIZE          10
 #define ARP_QUEUEING            1
 
+/* Enables Checksum Offload */
+#define LWIP_CHECKSUM_CTRL_PER_NETIF    1
+#define CHECKSUM_CHECK_UDP              0
+#define CHECKSUM_CHECK_TCP              0
+#define CHECKSUM_GEN_UDP                0
+#define CHECKSUM_GEN_TCP                0
+
+/* Checksum on copy from app buffers to pbufs, boosts performance */
+#define LWIP_CHECKSUM_ON_COPY           ((CHECKSUM_CHECK_UDP == 1) || (CHECKSUM_CHECK_TCP == 1) || (CHECKSUM_GEN_UDP == 1) || (CHECKSUM_GEN_TCP == 1))
 
 /* ---------- IP options ---------- */
 /* Define IP_FORWARD to 1 if you wish to have the ability to forward
@@ -404,9 +413,6 @@ void sys_unlock_tcpip_core(void);
 /*-------------------------Misc Options-------------------------*/
 /* Enables ARP*/
 #define LWIP_ARP			  1
-
-/* Checksum on copy from app buffers to pbufs, boosts performance */
-#define LWIP_CHECKSUM_ON_COPY			1
 
 /* Enables a routine to be called when netif is deleted. Used to close Enet */
 #define LWIP_NETIF_REMOVE_CALLBACK      1
