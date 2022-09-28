@@ -112,8 +112,24 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     fi
 
     $ECHO "Remove old SYSFW dir, and replace it with the newly cloned repo"
-    $RM -fr sysfw
-    $MV system-firmware-releases sysfw
+    $RM -fr sysfw/binaries/scripts
+    $MV system-firmware-releases/binaries/scripts sysfw/binaries
+    $RM -fr sysfw/binaries/system-firmware-public-documentation
+    $MV system-firmware-releases/binaries/system-firmware-public-documentation sysfw/binaries
+    $MV system-firmware-releases/binaries/ti-fs*j7*gp.bin sysfw/binaries
+    $MV system-firmware-releases/binaries/ti-fs*j7*cert.bin sysfw/binaries
+    $MV system-firmware-releases/binaries/ti-fs*j7*enc.bin sysfw/binaries
+    for SOC in $SOC_LIST
+    do
+        $RM -fr sysfw/include/$SOC
+        $MV system-firmware-releases/include/$SOC sysfw/include
+    
+    done
+
+    $RM -fr system-firmware-release
+
+
+
     cd sysfw
 
     $ECHO "Removing files not required from SYSFW release.."
@@ -122,39 +138,11 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM -fr log
     $RM -fr binaries/system-firmware-design-documentation
     $RM -fr binaries/system-firmware-full-documentation
-    $RM binaries/*.elf
-    $RM binaries/*.png
-    $RM binaries/*.svg
-    $RM binaries/*.cmm
-    $RM binaries/t32-qt-lsf
-    $RM binaries/*hs.bin
-    $RM binaries/*hs-fs.bin
-    $RM -fr binaries/am6
-    $RM -fr binaries/am65x_sr2
-    $RM -fr binaries/j721e
-    $RM -fr binaries/am64
-    $RM -fr binaries/j7200
-    $RM -fr binaries/j721s2
-    $RM -fr binaries/j784s4
-    $RM -fr binaries/memory
-    $RM -fr binaries/ti-sci-firmware-j721e-gp.bin
     $RM -fr docs/BUILD.md
     $RM -fr reports
-    $MV System_Controller_Firmware_MISRAC_Report.xlsx docs/
-    $RM -fr scripts
-    $RM .gitignore
-    $RM .gitmodules
-    $RM Makefile
-    $RM README.md
-    $RM binaries/SYSFW_Software_FMEA_Form.xls
-
     $ECHO "Modifying SR2 headers such that they don't cause any collisions with the SR1 headers"
 
     # Remove files which are the same between AM65 and AM65 SR2
-    $RM -fr include/am65x_sr2/tisci_boardcfg_constraints.h
-    $RM -fr include/am65x_sr2/tisci_hosts.h
-    $RM -fr include/am65x_sr2/tisci_resasg_types.h
-    $RM -fr include/am65x_sr2/tisci_sec_proxy.h
 
     # Include guards need to be modified to remove collision with SR1
     sed -i 's/SOC_TISCI_DEVICES_H/&_SR2/' include/am65x_sr2/tisci_devices.h
@@ -222,8 +210,8 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
                 shift
                 ;;
             "j784s4")
-                ./firmwareHeaderGen.sh j784s4-zebu-combined
                 ./firmwareHeaderGen.sh j784s4
+                ./firmwareHeaderGen.sh j784s4-hs
                 shift
                 ;;
         esac
