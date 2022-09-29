@@ -84,6 +84,8 @@ libosal_freertos_$(SOC)_CORELIST = $(filter-out mpu%, $(libosal_$(SOC)_CORELIST)
 endif
 
 libosal_safertos_j721e_CORELIST   = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
+libosal_safertos_j7200_CORELIST   = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+libosal_safertos_j721s2_CORELIST   = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 
 ############################
 # osal package
