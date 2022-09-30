@@ -170,6 +170,7 @@ void rpmsg_responderFxn(void *arg0, void *arg1)
     void		*buf;
     uint32_t            requestedEpt = (uint32_t)(*(uint32_t*)arg0);
     char *              name = (char *)arg1;
+    uintptr_t key;
     
     uint32_t            bufSize = rpmsgDataSize;
     char                str[MSGSIZE];
@@ -229,7 +230,10 @@ void rpmsg_responderFxn(void *arg0, void *arg1)
         if(status == 1)
         {
             memset(str, 0, MSGSIZE);
+            /* Not having a Hwip_disable here causes C7X goes into a bad state. This is for SafeRTOS on C7X. */
+            key = HwiP_disable();
             len = snprintf(str, 255, "pong %d", n);
+            HwiP_restore(key);
             if(len > 255)
             {
                 App_printf("RecvTask: snprintf failed, len %d\n", len);
@@ -276,6 +280,7 @@ void rpmsg_senderFxn(void *arg0, void *arg1)
     int32_t             status = 0;
     char                buf[256];
     uint8_t            *buf1;
+    uintptr_t key;
 
     uint32_t            cntPing = 0;
     uint32_t            cntPong = 0;
@@ -309,7 +314,10 @@ void rpmsg_senderFxn(void *arg0, void *arg1)
     {
         /* Send data to remote endPt: */
         memset(buf, 0, 256);
+        /* Not having a Hwip_disable here causes C7X go into a bad state. This is for SafeRTOS on C7X */
+        key = HwiP_disable();
         len = snprintf(buf, 255, "ping %d", i);
+        HwiP_restore(key);
         if(len > 255)
         {
             App_printf("SendTask%d: snprintf failed, len %d\n", dstProc, len);
