@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building SafeRTOS Task Switch Example App
+# This file is the makefile for building SafeRTOS Unit Test
 #
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -8,13 +8,13 @@ include $(RULES_MAKE)
 endif
 
 
-APP_NAME = safertos_test_task_switch
+APP_NAME = safertos_test_ut
 BUILD_OS_TYPE=safertos
 CFLAGS_TEST_DEFINES =
 
 
 SRCDIR = . ../common
-INCDIR += . ../common
+INCDIR = . ../common
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component
@@ -26,18 +26,25 @@ else
 # List all the components required by the application
 endif
 
-
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
-SRCS_COMMON += main.c task_switch.c SafeRTOSConfig.c aborts.c timerHooks.c
+SRCS_COMMON = main.c test_safertos.c SafeRTOSConfig.c aborts.c timerHooks.c
 SRCS_COMMON += SafeRTOS_startup_$(ISA).c SafeRTOS_Hwi_$(ISA).c
 
 ifeq ($(ISA),$(filter $(ISA), r5f))
   SRCS_ASM_COMMON += utilsasm_r5f.asm
 endif
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
+SRCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
+INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
+SRCS_COMMON += unity_config.c unity.c
 
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
+CFLAGS_LOCAL_COMMON += -DUNITY_INCLUDE_CONFIG_H -DUNITY_INCLUDE_DOUBLE
+
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1 c66xdsp_2 c7x_1 c7x_2 c7x_3 c7x_4))
+ CFLAGS_LOCAL_COMMON += --c99
+endif
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<core/SoC/platform-name> =

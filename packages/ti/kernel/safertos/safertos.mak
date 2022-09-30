@@ -117,6 +117,8 @@ endif
 
 PACKAGE_SRCS_COMMON = safertos.mak safertos_component.mk
 PACKAGE_SRCS_COMMON += ../test/safertos/task_switch
+PACKAGE_SRCS_COMMON += ../test/safertos/ut
+PACKAGE_SRCS_COMMON += ../test/safertos/common
 
 #include posix support files if present
 -include safertos_posix.mak
