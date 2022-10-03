@@ -159,7 +159,7 @@ a lot of data that needs to be copied, this should be set high. */
 /* MEMP_NUM_PBUF: the number of memp struct pbufs. If the application
    sends a lot of data out of ROM (or other static memory), this
    should be set high. */
-#define MEMP_NUM_PBUF           16
+#define MEMP_NUM_PBUF           128
 /* MEMP_NUM_RAW_PCB: the number of UDP protocol control blocks. One
    per active RAW "connection". */
 #define MEMP_NUM_RAW_PCB        3
@@ -182,7 +182,7 @@ a lot of data that needs to be copied, this should be set high. */
 /* The following four are used only with the sequential API and can be
    set to 0 if the application only will use the raw API. */
 /* MEMP_NUM_NETBUF: the number of struct netbufs. */
-#define MEMP_NUM_NETBUF         64
+#define MEMP_NUM_NETBUF         128
 /* MEMP_NUM_NETCONN: the number of struct netconns. */
 #define MEMP_NUM_NETCONN        10
 /* MEMP_NUM_TCPIP_MSG_*: the number of struct tcpip_msg, which is used
@@ -211,10 +211,10 @@ a lot of data that needs to be copied, this should be set high. */
  *   PBUF_POOL_SIZE = 64 + ((2 * 64) * 2)
  *   PBUF_POOL_SIZE = 320
  */
-#define PBUF_POOL_SIZE          320
+#define PBUF_POOL_SIZE          (320U)
 
 /* PBUF_POOL_BUFSIZE: the size of each pbuf in the pbuf pool. */
-#define PBUF_POOL_BUFSIZE       1536
+#define PBUF_POOL_BUFSIZE       (1536U)
 
 /** SYS_LIGHTWEIGHT_PROT
  * define SYS_LIGHTWEIGHT_PROT in lwipopts.h if you want inter-task protection
@@ -249,11 +249,11 @@ a lot of data that needs to be copied, this should be set high. */
 #define TCP_MSS                 1460
 
 /* TCP sender buffer space (bytes). */
-#define TCP_SND_BUF             (2 * TCP_MSS)
+#define TCP_SND_BUF             (16 * TCP_MSS)
 
 /* TCP sender buffer space (pbufs). This must be at least = 2 *
    TCP_SND_BUF/TCP_MSS for things to work. */
-#define TCP_SND_QUEUELEN       (10 * TCP_SND_BUF/TCP_MSS)
+#define TCP_SND_QUEUELEN       (8 * TCP_SND_BUF/TCP_MSS)
 
 /* TCP writable space (bytes). This must be less than or equal
    to TCP_SND_BUF. It is the amount of space which must be
@@ -424,7 +424,7 @@ void sys_unlock_tcpip_core(void);
 #define DEFAULT_THREAD_PRIO				1
 
 /* Prevents pbuf chain from getting created thus disabling scatter-gather*/
-#define LWIP_NETIF_TX_SINGLE_PBUF       1
+#define LWIP_NETIF_TX_SINGLE_PBUF       0
 
 #define DEFAULT_ACCEPTMBOX_SIZE			(TCPIP_MBOX_SIZE)
 
