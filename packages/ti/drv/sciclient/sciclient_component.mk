@@ -42,25 +42,18 @@ drvsciclient_RTOS_LIST           = $(DEFAULT_RTOS_LIST)
 # The components included here are built and will be part of sciclient lib
 ############################
 sciclient_LIB_LIST = sciclient
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
 sciclient_LIB_LIST += sciclient_hs
 endif
 
 ifneq ($(BUILD_OS_TYPE), qnx)
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 sciclient_LIB_LIST += rm_pm_hal
 sciclient_LIB_LIST += sciserver_tirtos
 sciclient_LIB_LIST += sciserver_baremetal
 sciclient_LIB_LIST += sciclient_direct
 sciclient_LIB_LIST += sciclient_direct_hs
 endif
-endif
-
-ifeq ($(SOC),$(filter $(SOC), j784s4))
-sciclient_LIB_LIST += rm_pm_hal
-sciclient_LIB_LIST += sciserver_tirtos
-sciclient_LIB_LIST += sciserver_baremetal
-sciclient_LIB_LIST += sciclient_direct
 endif
 
 drvsciclient_BOARDLIST = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm am64x_evm
@@ -154,8 +147,8 @@ export sciclient_direct_hs_BOARD_DEPENDENCY = no
 export sciclient_direct_hs_CORE_DEPENDENCY = yes
 export sciclient_direct_hs_PKG_LIST = sciclient_direct_hs
 export sciclient_direct_hs_INCLUDE = $(sciclient_hs_direct_PATH)
-export sciclient_direct_hs_SOCLIST = j721e j7200 j721s2
-export sciclient_direct_hs_BOARDLIST = j721e_evm j7200_evm j721s2_evm
+export sciclient_direct_hs_SOCLIST = j721e j7200 j721s2 j784s4
+export sciclient_direct_hs_BOARDLIST = j721e_evm j7200_evm j721s2_evm j784s4_evm
 export sciclient_direct_hs_$(SOC)_CORELIST = mcu1_0
 
 export sciserver_tirtos_COMP_LIST = sciserver_tirtos
