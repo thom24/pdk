@@ -25,15 +25,16 @@
 #        DSP3_C7X_ID          : 20
 #        DSP4_C7X_ID          : 21
 #        DSP1_C7X_HOSTEMU_ID  : 22
-#        MPU1_SMP_ID          : 23
-#        MPU2_SMP_ID          : 24
-#        MPU_SMP_ID           : 25
-#        MCU1_SMP_ID          : 26
-#        MCU2_SMP_ID          : 27
-#        MCU3_SMP_ID          : 28
-#        MCU4_SMP_ID          : 29
-#        ONLY_LOAD_ID         : 30
-#        NUM_CORES            : 31
+#        HSM_CPU_ID           : 23
+#        MPU1_SMP_ID          : 24
+#        MPU2_SMP_ID          : 25
+#        MPU_SMP_ID           : 26
+#        MCU1_SMP_ID          : 27
+#        MCU2_SMP_ID          : 28
+#        MCU3_SMP_ID          : 29
+#        MCU4_SMP_ID          : 30
+#        ONLY_LOAD_ID         : 31
+#        NUM_CORES            : 32
 
 # Device Id for K3 is 55
 # Device ID & CPU ID should be in sync with SBL. Refer to SBL user guide for values

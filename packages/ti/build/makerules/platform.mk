@@ -617,14 +617,15 @@ ifeq ($(SOC),$(filter $(SOC), j7200 j721e j721s2 j784s4))
   SBL_CORE_ID_c7x_3 = 20
   SBL_CORE_ID_c7x_4 = 21
   SBL_CORE_ID_c7x-hostemu = 22
-  SBL_CORE_ID_mpu1_smp = 23
-  SBL_CORE_ID_mpu2_smp = 24
-  SBL_CORE_ID_mpu_smp = 25
-  SBL_CORE_ID_mcu1_0_smp = 26
-  SBL_CORE_ID_mcu2_0_smp = 27
-  SBL_CORE_ID_mcu3_0_smp = 28
-  SBL_CORE_ID_mcu4_0_smp = 29
-  SBL_CORE_ID_load_only = 30
+  SBL_CORE_ID_hsm = 23
+  SBL_CORE_ID_mpu1_smp = 24
+  SBL_CORE_ID_mpu2_smp = 25
+  SBL_CORE_ID_mpu_smp = 26
+  SBL_CORE_ID_mcu1_0_smp = 27
+  SBL_CORE_ID_mcu2_0_smp = 28
+  SBL_CORE_ID_mcu3_0_smp = 29
+  SBL_CORE_ID_mcu4_0_smp = 30
+  SBL_CORE_ID_load_only = 31
 endif
 
 export SOC

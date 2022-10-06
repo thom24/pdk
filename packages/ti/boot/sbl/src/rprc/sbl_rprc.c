@@ -241,6 +241,7 @@ void SBL_BootCore(uint32_t entry, uint32_t CoreID, sblEntryPoint_t *pAppEntry, u
         case MCU3_CPU1_ID:
         case MCU4_CPU0_ID:
         case MCU4_CPU1_ID:
+        case HSM_CPU_ID:
             /* All other non-bootloader cores*/
             SBL_log(SBL_LOG_MAX, "Setting entry point for core %d @0x%x\n", CoreID, entry);
             pAppEntry->CpuEntryPoint[CoreID] = entry;
@@ -488,6 +489,11 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
     SBL_M4F_DRAM_BASE_ADDR_SOC
     };
 
+    const uint32_t SocHsmM4fDramAddr[] =
+    {
+    SBL_HSM_M4F_SRAM_BASE_ADDR_SOC
+    };
+
 
     /*read application image header*/
     fp_readData(&header, srcAddr, sizeof (rprcFileHeader_t));
@@ -622,6 +628,25 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                         section.addr = section.addr - SBL_C7X_L1DMEM_BASE;
                         section.addr = SocC7xL1DmemAddr[CoreId - DSP1_C7X_ID] + section.addr;
                         SBL_log(SBL_LOG_MAX, "SoC C7x L2DMEM addr 0x%x\n", section.addr);
+                    }
+                    else
+                    {
+                        /* To remove MISRA C error */
+                    }
+                    break;
+                case HSM_CPU_ID:
+                    /*
+                     * HSM entry is always specified as the local SRAM base
+                     * (0x0000_0000)
+                     */
+                    *entryPoint = 0U;
+                    /* Remap HSM local address to SoC address */
+                    if ((section.addr >= 0U) &&
+                        (section.addr < (SBL_HSM_M4F_SRAM_SIZE)))
+                    {
+                        SBL_log(SBL_LOG_MAX, "Translating HSM local SRAM addr 0x%x to ", section.addr);
+                        section.addr = SocHsmM4fDramAddr[0U] + section.addr;
+                        SBL_log(SBL_LOG_MAX, "SoC HSM SRAM addr 0x%x\n", section.addr);
                     }
                     else
                     {

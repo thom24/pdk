@@ -159,6 +159,9 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_M4F_IRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
 #define SBL_M4F_DRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
 
+#define SBL_HSM_M4F_SRAM_BASE_ADDR_SOC      (SBL_INVALID_ID)
+#define SBL_HSM_M4F_SRAM_SIZE               (SBL_INVALID_ID)
+
 #define SBL_UART_PLL_BASE                   (CSL_MCU_PLL0_CFG_BASE)
 #define SBL_UART_PLL_KICK0_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0)
 #define SBL_UART_PLL_KICK1_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY1)
@@ -309,6 +312,11 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_DSP4_C7X         (SBL_INVALID_ID)
 #define SBL_DSP4_C7X_FREQ_HZ        (SBL_INVALID_ID)
 
+#define SBL_PROC_ID_HSM_M4          (SBL_INVALID_ID)
+#define SBL_DEV_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
+
 #if defined (SBL_ENABLE_DEV_GRP_MCU)
 #define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
 #define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
@@ -383,6 +391,9 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 
 #define SBL_M4F_IRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
 #define SBL_M4F_DRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
+
+#define SBL_HSM_M4F_SRAM_BASE_ADDR_SOC      (SBL_INVALID_ID)
+#define SBL_HSM_M4F_SRAM_SIZE               (SBL_INVALID_ID)
 
 #define SBL_UART_PLL_BASE                   (CSL_MCU_PLL0_CFG_BASE)
 #define SBL_UART_PLL_KICK0_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0)
@@ -534,6 +545,11 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_DSP4_C7X         (SBL_INVALID_ID)
 #define SBL_DSP4_C7X_FREQ_HZ        (SBL_INVALID_ID)
 
+#define SBL_PROC_ID_HSM_M4          (SBL_INVALID_ID)
+#define SBL_DEV_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
+
 #if defined (SBL_ENABLE_DEV_GRP_MCU)
 #define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
 #define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
@@ -608,6 +624,11 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 
 #define SBL_M4F_IRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
 #define SBL_M4F_DRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
+
+#define SBL_HSM_M4F_SRAM_BASE_ADDR_SOC      (CSL_WKUP_SMS0_HSM_SRAM0_0_BASE)
+#define SBL_HSM_M4F_SRAM_SIZE               (CSL_WKUP_SMS0_HSM_SRAM0_0_SIZE + \
+                                             CSL_WKUP_SMS0_HSM_SRAM0_1_SIZE + \
+                                             CSL_WKUP_SMS0_HSM_SRAM1_SIZE)
 
 #define SBL_UART_PLL_BASE                   (CSL_MCU_PLL0_CFG_BASE)
 #define SBL_UART_PLL_KICK0_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0)
@@ -759,6 +780,11 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_DSP4_C7X         (SBL_INVALID_ID)
 #define SBL_DSP4_C7X_FREQ_HZ        (SBL_INVALID_ID)
 
+#define SBL_PROC_ID_HSM_M4          (SCICLIENT_PROC_ID_WKUP_HSM0)
+#define SBL_DEV_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
+
 #if defined (SBL_ENABLE_DEV_GRP_MCU)
 #define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
 #define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
@@ -832,6 +858,11 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 
 #define SBL_M4F_IRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
 #define SBL_M4F_DRAM_BASE_ADDR_SOC          (SBL_INVALID_ID)
+
+#define SBL_HSM_M4F_SRAM_BASE_ADDR_SOC      (CSL_WKUP_SMS0_HSM_SRAM0_0_BASE)
+#define SBL_HSM_M4F_SRAM_SIZE               (CSL_WKUP_SMS0_HSM_SRAM0_0_SIZE + \
+                                             CSL_WKUP_SMS0_HSM_SRAM0_1_SIZE + \
+                                             CSL_WKUP_SMS0_HSM_SRAM1_SIZE)
 
 #define SBL_UART_PLL_BASE                   (CSL_MCU_PLL0_CFG_BASE)
 #define SBL_UART_PLL_KICK0_OFFSET           (CSL_MCU_PLL_MMR_CFG_PLL1_LOCKKEY0)
@@ -982,6 +1013,11 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_DEV_ID_DSP4_C7X         (TISCI_DEV_COMPUTE_CLUSTER0_C71SS3)
 #define SBL_CLK_ID_DSP4_C7X         (TISCI_DEV_COMPUTE_CLUSTER0_C71SS3_C7X_CLK)
 #define SBL_DSP4_C7X_FREQ_HZ        (1000000000)
+
+#define SBL_PROC_ID_HSM_M4          (SCICLIENT_PROC_ID_WKUP_HSM0)
+#define SBL_DEV_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
+#define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
 
 #if defined (SBL_ENABLE_DEV_GRP_MCU)
 #define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)

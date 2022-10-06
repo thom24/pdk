@@ -258,9 +258,14 @@ extern "C" {
 #define SCICLIENT_PROC_ID_R5FSS2_CORE1 (0x0BU)
 
 /**
+ * SMS_WKUP_0_SECCTRL_0: (Cluster 0 Processor 1)
+ */
+#define SCICLIENT_PROC_ID_WKUP_HSM0 (0x80U)
+
+/**
  * Total Number of processors in J784S4
  */
-#define SCICLIENT_SOC_NUM_PROCESSORS (0x14U)
+#define SCICLIENT_SOC_NUM_PROCESSORS (0x15U)
 /* @} */
 
 /** -------------------- Resource Management Parameters ---------------------*/

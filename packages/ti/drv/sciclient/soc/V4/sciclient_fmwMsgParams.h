@@ -186,9 +186,14 @@ extern "C" {
 #define SCICLIENT_PROC_ID_R5FSS1_CORE1 (0x09U)
 
 /**
+ * SMS_WKUP_0_SECCTRL_0: (Cluster 0 Processor 1)
+ */
+#define SCICLIENT_PROC_ID_WKUP_HSM0 (0x80U)
+
+/**
  * Total Number of processors in J721S2
  */
-#define SCICLIENT_SOC_NUM_PROCESSORS (0x0AU)
+#define SCICLIENT_SOC_NUM_PROCESSORS (0x0BU)
 /* @} */
 
 /** -------------------- Resource Management Parameters ---------------------*/

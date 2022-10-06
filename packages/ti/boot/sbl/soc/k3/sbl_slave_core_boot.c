@@ -242,6 +242,20 @@ static const sblSlaveCoreInfo_t sbl_slave_core_info[] =
     SBL_CLK_ID_DSP4_C7X,
     SBL_DSP4_C7X_FREQ_HZ,
     },
+    /* DSP1_C7X HOST_EMU (invalid) */
+    {
+    SBL_INVALID_ID,
+    SBL_INVALID_ID,
+    SBL_INVALID_ID,
+    SBL_INVALID_ID,
+    },
+    /* HSM M4F */
+    {
+    SBL_PROC_ID_HSM_M4,
+    SBL_DEV_ID_HSM_M4,
+    SBL_CLK_ID_HSM_M4,
+    SBL_HSM_M4_FREQ_HZ
+    }
 };
 
 static const uint32_t SblAtcmAddr[] =
@@ -774,13 +788,16 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             SblErrLoop(__FILE__, __LINE__);
         }
 
-        SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleClkFreq, DevId 0x%x @ %dHz... \n", sblSlaveCoreInfoPtr->tisci_dev_id, sblSlaveCoreInfoPtr->slave_clk_freq_hz);
-        SBL_ADD_PROFILE_POINT;
-        Sciclient_pmSetModuleClkFreq(sblSlaveCoreInfoPtr->tisci_dev_id,
-                                     sblSlaveCoreInfoPtr->tisci_clk_id,
-                                     sblSlaveCoreInfoPtr->slave_clk_freq_hz,
-                                     TISCI_MSG_FLAG_AOP,
-                                     SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (sblSlaveCoreInfoPtr->tisci_dev_id != SBL_INVALID_ID)
+        {
+            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleClkFreq, DevId 0x%x @ %dHz... \n", sblSlaveCoreInfoPtr->tisci_dev_id, sblSlaveCoreInfoPtr->slave_clk_freq_hz);
+            SBL_ADD_PROFILE_POINT;
+            Sciclient_pmSetModuleClkFreq(sblSlaveCoreInfoPtr->tisci_dev_id,
+                                         sblSlaveCoreInfoPtr->tisci_clk_id,
+                                         sblSlaveCoreInfoPtr->slave_clk_freq_hz,
+                                         TISCI_MSG_FLAG_AOP,
+                                         SCICLIENT_SERVICE_WAIT_FOREVER);
+        }
         SBL_ADD_PROFILE_POINT;
     }
     else
@@ -974,6 +991,20 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             }
 
             SBL_ADD_PROFILE_POINT;
+            break;
+       case HSM_CPU_ID:
+            /* Release core */
+            if (status == CSL_PASS) {
+                status = Sciclient_procBootSetSequenceCtrl(sblSlaveCoreInfoPtr->tisci_proc_id, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_HSM_M4_RESET, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+                if (status == CSL_PASS)
+                {
+                    if (requestCoresFlag == SBL_REQUEST_CORE)
+                    {
+                        SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
+                    }
+                }
+
+            }
             break;
         default:
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);

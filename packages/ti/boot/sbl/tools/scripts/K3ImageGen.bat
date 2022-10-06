@@ -26,15 +26,16 @@ REM DSP2_C7X_ID          : 19
 REM DSP3_C7X_ID          : 20
 REM DSP4_C7X_ID          : 21
 REM DSP1_C7X_HOSTEMU_ID  : 22
-REM MPU1_SMP_ID          : 23
-REM MPU2_SMP_ID          : 24
-REM MPU_SMP_ID           : 25
-REM MCU1_SMP_ID          : 26
-REM MCU2_SMP_ID          : 27
-REM MCU3_SMP_ID          : 28
-REM MCU4_SMP_ID          : 29
-REM ONLY_LOAD_ID         : 30
-REM NUM_CORES            : 31
+REM HSM_CPU_ID           : 23
+REM MPU1_SMP_ID          : 24
+REM MPU2_SMP_ID          : 25
+REM MPU_SMP_ID           : 26
+REM MCU1_SMP_ID          : 27
+REM MCU2_SMP_ID          : 28
+REM MCU3_SMP_ID          : 29
+REM MCU4_SMP_ID          : 30
+REM ONLY_LOAD_ID         : 31
+REM NUM_CORES            : 32
 
 if not defined TOOLS_PATH (
 set TOOLS_PATH=%PDK_INSTALL_PATH%\ti\boot\sbl\tools
