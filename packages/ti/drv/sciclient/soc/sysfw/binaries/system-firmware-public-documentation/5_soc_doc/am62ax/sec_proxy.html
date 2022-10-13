@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.05
+                08.05.00
               </div>
             
           
@@ -526,12 +526,12 @@ PE/Host documentation for further information</p>
 <span id="soc-doc-am62ax-public-sproxy-desc-sproxy-per-list-sa3-ss0-sec-proxy-0"></span><h3>Secure Proxy thread allocation for SA3_SS0_SEC_PROXY_0<a class="headerlink" href="#secure-proxy-thread-allocation-for-sa3-ss0-sec-proxy-0" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
-<col width="19%" />
-<col width="21%" />
-<col width="16%" />
-<col width="6%" />
+<col width="18%" />
+<col width="20%" />
+<col width="15%" />
+<col width="7%" />
+<col width="15%" />
 <col width="13%" />
-<col width="14%" />
 <col width="11%" />
 </colgroup>
 <thead valign="bottom">
@@ -545,13 +545,37 @@ PE/Host documentation for further information</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
-<td>&#160;</td>
+<tr class="row-even"><td>15</td>
+<td>read</td>
+<td>8</td>
+<td>TIFS_HSM</td>
+<td>sec_low_priority_rx</td>
+<td>TIFS0/NVIC_217</td>
+<td>TIFS0/NVIC_217</td>
+</tr>
+<tr class="row-odd"><td>14</td>
+<td>write</td>
+<td>8</td>
+<td>TIFS_HSM</td>
+<td>sec_HSM_response_tx</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-even"><td>0</td>
+<td>read</td>
+<td>8</td>
+<td>HSM</td>
+<td>response</td>
+<td>N/A</td>
+<td>N/A</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>write</td>
+<td>8</td>
+<td>HSM</td>
+<td>low_priority</td>
+<td>N/A</td>
+<td>N/A</td>
 </tr>
 </tbody>
 </table>
@@ -600,7 +624,7 @@ PE/Host documentation for further information</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.05',
+            VERSION:'08.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

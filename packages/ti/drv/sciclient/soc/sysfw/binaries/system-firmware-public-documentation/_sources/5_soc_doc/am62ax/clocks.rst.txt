@@ -2450,6 +2450,40 @@ Following is a mapping of Clocks IDs to function:
 |          3 | DEV_MCU_MCU_16FF0_PLL_CTRL_MCU_CLK24_CLK | Input clock |
 +------------+------------------------------------------+-------------+
 
+.. _soc_doc_am62ax_public_clks_mcu_obsclk_mux_sel_dev_vd:
+
+
+Clocks for MCU_OBSCLK_MUX_SEL_DEV_VD Device
+-------------------------------------------
+
+Device: :ref:`AM62AX_DEV_MCU_OBSCLK_MUX_SEL_DEV_VD <soc_doc_am62ax_public_devices_desc_device_list>` (ID = 227)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|   Clock ID | Name                                                                                 | Function                                                       |
++============+======================================================================================+================================================================+
+|          0 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK                                                    | Input muxed clock                                              |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          1 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_RCOSC_CLKOUT                      | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          2 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MCU_0_HSDIVOUT0_CLK            | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          3 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MCU_0_HSDIVOUT4_CLK            | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          4 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MCU_0_HSDIVOUT0_CLK_DUP0       | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          5 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_RCOSC_CLK_1P0V_97P65K3            | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          6 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT                     | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          7 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT8                    | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          8 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_SAM62_PLL_CTRL_WRAP_MCU_0_CHIP_DIV1_CLK_CLK | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+|          9 | DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK_PARENT_CLK_32K_RC_SEL_OUT0                         | Parent input clock option to DEV_MCU_OBSCLK_MUX_SEL_DEV_VD_CLK |
++------------+--------------------------------------------------------------------------------------+----------------------------------------------------------------+
+
 .. _soc_doc_am62ax_public_clks_mcu_pbist0:
 
 
@@ -2745,6 +2779,60 @@ Following is a mapping of Clocks IDs to function:
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
 |          8 | DEV_MMCSD2_EMMCSDSS_XIN_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT2_CLK  | Parent input clock option to DEV_MMCSD2_EMMCSDSS_XIN_CLK  |
 +------------+-----------------------------------------------------------------------+-----------------------------------------------------------+
+
+.. _soc_doc_am62ax_public_clks_obsclk0_mux_sel_dev_vd:
+
+
+Clocks for OBSCLK0_MUX_SEL_DEV_VD Device
+----------------------------------------
+
+Device: :ref:`AM62AX_DEV_OBSCLK0_MUX_SEL_DEV_VD <soc_doc_am62ax_public_devices_desc_device_list>` (ID = 228)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|   Clock ID | Name                                                                                                           | Function                                                    |
++============+================================================================================================================+=============================================================+
+|          0 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK                                                                                 | Input muxed clock                                           |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          1 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT0_CLK                                        | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          2 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT0_CLK                                        | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          3 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_CPSW_3GUSS_MAIN_0_CPTS_GENF0                                             | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          4 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_CPSW_3GUSS_MAIN_0_CPTS_GENF1                                             | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          5 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MCU_0_HSDIVOUT0_CLK                                         | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          6 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_15_HSDIVOUT0_CLK                                       | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          7 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV0_16FFT_MAIN_17_HSDIVOUT0_CLK                                       | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          8 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_SAM62_PLL_CTRL_WRAP_MAIN_0_CHIP_DIV1_CLK_CLK                             | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|          9 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_CLK_32K_RC_SEL_OUT0                                                      | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         10 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_5_HSDIVOUT0_CLK                                        | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         11 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_SAM62A_C7XV_WRAP_MAIN_0_CLOCK_CONTROL_0_C7XV_DIVH_CLK4_OBSCLK_OUT_CLK    | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         12 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT0_CLK                                        | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         13 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_SAM62A_A53_512KB_WRAP_MAIN_0_ARM_COREPACK_0_A53_DIVH_CLK4_OBSCLK_OUT_CLK | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         14 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_SAM62A_DDR_WRAP_MAIN_0_DDR_PLL_DIVH_CLK4_OBSCLK_OUT_CLK                  | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         15 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_RCOSC_CLKOUT                                                   | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         16 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT8                                                 | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         17 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT0_CLK_DUP0                                   | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         18 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT                                                  | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
+|         19 | DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK_PARENT_GLUELOGIC_RCOSC_CLK_1P0V_97P65K3                                         | Parent input clock option to DEV_OBSCLK0_MUX_SEL_DEV_VD_CLK |
++------------+----------------------------------------------------------------------------------------------------------------+-------------------------------------------------------------+
 
 .. _soc_doc_am62ax_public_clks_pbist0:
 

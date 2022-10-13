@@ -93,7 +93,7 @@
 #define TISCI_HOST_ID_MAIN_0_R5_1 (36U)
 /** MAIN_0_R5_2(Non Secure): Cortex R5_0 context 2 on Main island */
 #define TISCI_HOST_ID_MAIN_0_R5_2 (37U)
-/** MAIN_0_R5_3(Secure): Cortex R5_0 context 3 on MCU island */
+/** MAIN_0_R5_3(Secure): Cortex R5_0 context 3 on Main island */
 #define TISCI_HOST_ID_MAIN_0_R5_3 (38U)
 /** MAIN_1_R5_0(Non Secure): Cortex R5_1 context 0 on Main island */
 #define TISCI_HOST_ID_MAIN_1_R5_0 (40U)
@@ -101,7 +101,7 @@
 #define TISCI_HOST_ID_MAIN_1_R5_1 (41U)
 /** MAIN_1_R5_2(Non Secure): Cortex R5_1 context 2 on Main island */
 #define TISCI_HOST_ID_MAIN_1_R5_2 (42U)
-/** MAIN_1_R5_3(Secure): Cortex R5_1 context 3 on MCU island */
+/** MAIN_1_R5_3(Secure): Cortex R5_1 context 3 on Main island */
 #define TISCI_HOST_ID_MAIN_1_R5_3 (43U)
 /** DM2TIFS(Secure): DM to TIFS communication */
 #define TISCI_HOST_ID_DM2TIFS (250U)

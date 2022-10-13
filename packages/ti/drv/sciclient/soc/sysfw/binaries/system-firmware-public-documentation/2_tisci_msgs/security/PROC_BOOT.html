@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.05
+                08.05.00
               </div>
             
           
@@ -188,52 +188,76 @@ scenario of processors.</li>
 <p>Book Keeping APIs:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="22%" />
-<col width="78%" />
+<col width="15%" />
+<col width="54%" />
+<col width="14%" />
+<col width="17%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">TISCI Message ID</th>
 <th class="head">Message Name</th>
+<th class="head">Available in GP</th>
+<th class="head">Avialable in HS-FS</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0xC000</td>
 <td><a class="reference internal" href="#proc-boot-request-processor"><span class="std std-ref">TISCI_MSG_PROC_REQUEST</span></a>.</td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr class="row-odd"><td>0xC001</td>
 <td><a class="reference internal" href="#proc-boot-release-processor"><span class="std std-ref">TISCI_MSG_PROC_RELEASE</span></a>.</td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr class="row-even"><td>0xC005</td>
 <td><a class="reference internal" href="#proc-boot-handover-processor"><span class="std std-ref">TISCI_MSG_PROC_HANDOVER</span></a>.</td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 </tbody>
 </table>
 <p>Processor Control APIs:</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="17%" />
-<col width="83%" />
+<col width="13%" />
+<col width="62%" />
+<col width="12%" />
+<col width="14%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">TISCI Message ID</th>
 <th class="head">Message Name</th>
+<th class="head">Available in GP</th>
+<th class="head">Avialable in HS-FS</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0xC100</td>
 <td><a class="reference internal" href="#proc-boot-set-processor-configuration"><span class="std std-ref">TISCI_MSG_PROC_SET_CONFIG</span></a></td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr class="row-odd"><td>0xC101</td>
 <td><a class="reference internal" href="#proc-boot-set-processor-control"><span class="std std-ref">TISCI_MSG_PROC_SET_CONTROL</span></a></td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr class="row-even"><td>0xC120</td>
 <td><a class="reference internal" href="#proc-boot-authenticate-image-and-configure-processor"><span class="std std-ref">TISCI_MSG_PROC_AUTH_BOOT</span></a></td>
+<td>No</td>
+<td>Yes</td>
 </tr>
 <tr class="row-odd"><td>0xC400</td>
 <td><a class="reference internal" href="#proc-boot-get-processor-status"><span class="std std-ref">TISCI_MSG_PROC_GET_STATUS</span></a></td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 <tr class="row-even"><td>0xC401</td>
 <td><a class="reference internal" href="#proc-boot-wait-processor-status"><span class="std std-ref">TISCI_MSG_PROC_WAIT_STATUS</span></a></td>
+<td>Yes</td>
+<td>Yes</td>
 </tr>
 </tbody>
 </table>
@@ -1424,21 +1448,18 @@ Section 5.1 (“5.1 Control Module (CTRL_MMR)”) -&gt; CTRLMMR_SEC_CLSTRx_CFG R
 <tr class="row-odd"><td>R5_LPSC</td>
 <td>1</td>
 <td>Command for R5F LPSC Control (1 - LPSC ON, 0 - LPSC OFF)
-Reads will always return 0. You are expected to read the PM status via the PM message TISCI_MSG_GET_DEVICE
-This particular control is applicable only for J721E and J7200 devices (MCU_R5 only). This is done because
-the MCU R5F is running PM and RM and the MCU R5F cannot control its owner power down and power up.</td>
+Reads will always return 0. You are expected to read the PM status via the PM message TISCI_MSG_GET_DEVICE</td>
 </tr>
-<tr class="row-even"><td>R5 RESET</td>
+<tr class="row-even"><td>R5_RESET</td>
 <td>2</td>
-<td>R5F Reset control command (1- Assert Reset, 0 - Deassert Reset)
-This particular control is applicable only for J721E and J7200 devices (MCU_R5 only). This is done because
-the MCU R5F is running PM and RM and the MCU R5F cannot control its owner power down and power up.</td>
+<td>R5F Reset control command (1- Assert Reset, 0 - Deassert Reset)</td>
 </tr>
 </tbody>
 </table>
-<p>The usage of R5_LPSC and R5_RESET is only for the MCU R5F. On the J721E and
-J7200 family of devices the RM and PM functions run on the MCU R5F. The MCU
-R5F cannot turn off and on its own self during a re-boot sequence which
+<p>The usage of R5_LPSC and R5_RESET is only for below mentioned devices,
+- MCU R5F on the J721E, J7200, J721S2 and J784S2 family of devices where the RM and PM functions run on the MCU R5F.
+- DM R5F on the AM62x and AM62Ax family of devices where the RM and PM functions run on the DM R5F.</p>
+<p>The MCU R5F and DM R5F (where the RM and PM functions run) cannot turn off/on by itself during a re-boot sequence which
 requires the following fundamental sequence of steps:</p>
 <ol class="arabic simple">
 <li>Wait for the R5F to hit WFI. (MCU at this point is running WFI and cannot run
@@ -1737,7 +1758,7 @@ gatekeeper for HSM reset control. This is not appicable to general purpose M4 pr
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.05',
+            VERSION:'08.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

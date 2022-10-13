@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.05
+                08.05.00
               </div>
             
           
@@ -212,13 +212,13 @@ sequence control of the SoC.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>MCU_WAKEUP</td>
-<td>DEVGRP_00</td>
-<td>0x1U &lt;&lt;  0U</td>
+<td>DEVGRP_01</td>
+<td>0x1U &lt;&lt;  1U</td>
 <td>Set of MCU domain peripherals to initialize at boot and use during runtime.</td>
 </tr>
 <tr class="row-odd"><td>MAIN</td>
-<td>DEVGRP_01</td>
-<td>0x1U &lt;&lt;  1U</td>
+<td>DEVGRP_00</td>
+<td>0x1U &lt;&lt;  0U</td>
 <td>Set of Main domain peripherals to initialize at boot and use during runtime.</td>
 </tr>
 </tbody>
@@ -242,6 +242,12 @@ sequence control of the SoC.</p>
 </tr>
 <tr class="row-odd"><td>7</td>
 <td>AM64X_DEV_MCU_M4FSS0</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>AM64X_DEV_MCU_M4FSS0_CBASS_0</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>AM64X_DEV_MCU_M4FSS0_CORE0</td>
 </tr>
 <tr class="row-even"><td>23</td>
 <td>AM64X_DEV_MCU_DCC0</td>
@@ -294,7 +300,10 @@ sequence control of the SoC.</p>
 <tr class="row-even"><td>149</td>
 <td>AM64X_DEV_MCU_UART0</td>
 </tr>
-<tr class="row-odd"><td>160</td>
+<tr class="row-odd"><td>157</td>
+<td>AM64X_DEV_BOARD0</td>
+</tr>
+<tr class="row-even"><td>160</td>
 <td>AM64X_DEV_MCU_UART1</td>
 </tr>
 </tbody>
@@ -327,12 +336,6 @@ sequence control of the SoC.</p>
 </tr>
 <tr class="row-even"><td>6</td>
 <td>AM64X_DEV_TIMESYNC_EVENT_INTROUTER0</td>
-</tr>
-<tr class="row-odd"><td>8</td>
-<td>AM64X_DEV_MCU_M4FSS0_CBASS_0</td>
-</tr>
-<tr class="row-even"><td>9</td>
-<td>AM64X_DEV_MCU_M4FSS0_CORE0</td>
 </tr>
 <tr class="row-odd"><td>13</td>
 <td>AM64X_DEV_CPSW0</td>
@@ -667,31 +670,28 @@ sequence control of the SoC.</p>
 <tr class="row-odd"><td>156</td>
 <td>AM64X_DEV_UART5</td>
 </tr>
-<tr class="row-even"><td>157</td>
-<td>AM64X_DEV_BOARD0</td>
-</tr>
-<tr class="row-odd"><td>158</td>
+<tr class="row-even"><td>158</td>
 <td>AM64X_DEV_UART6</td>
 </tr>
-<tr class="row-even"><td>161</td>
+<tr class="row-odd"><td>161</td>
 <td>AM64X_DEV_USB0</td>
 </tr>
-<tr class="row-odd"><td>162</td>
+<tr class="row-even"><td>162</td>
 <td>AM64X_DEV_SERDES_10G0</td>
 </tr>
-<tr class="row-even"><td>163</td>
+<tr class="row-odd"><td>163</td>
 <td>AM64X_DEV_PBIST0</td>
 </tr>
-<tr class="row-odd"><td>164</td>
+<tr class="row-even"><td>164</td>
 <td>AM64X_DEV_PBIST1</td>
 </tr>
-<tr class="row-even"><td>165</td>
+<tr class="row-odd"><td>165</td>
 <td>AM64X_DEV_PBIST2</td>
 </tr>
-<tr class="row-odd"><td>166</td>
+<tr class="row-even"><td>166</td>
 <td>AM64X_DEV_PBIST3</td>
 </tr>
-<tr class="row-even"><td>167</td>
+<tr class="row-odd"><td>167</td>
 <td>AM64X_DEV_COMPUTE_CLUSTER0_PBIST_0</td>
 </tr>
 </tbody>
@@ -740,7 +740,7 @@ sequence control of the SoC.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.05',
+            VERSION:'08.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

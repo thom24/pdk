@@ -8,15 +8,20 @@ Derived KEK TISCI Description
 This chapter provides information on  |sysfw| API for Derived Key Encryption
 Key(DKEK) management. The available API are listed below.
 
-+------------------+-----------------------------------------------------------------------+
-| TISCI Message ID |                        Message Name                                   |
-+==================+=======================================================================+
-| 0x9003           | :ref:`TISCI_MSG_SA2UL_SET_DKEK <sec-api-sa2ul-set-dkek>`              |
-+------------------+-----------------------------------------------------------------------+
-| 0x9004           | :ref:`TISCI_MSG_SA2UL_RELEASE_DKEK <sec-api-sa2ul-release-dkek>`      |
-+------------------+-----------------------------------------------------------------------+
-| 0x9029           | :ref:`TISCI_MSG_SA2UL_GET_DKEK <sec-api-sa2ul-get-dkek>`              |
-+------------------+-----------------------------------------------------------------------+
++------------------+-----------------------------------------------------------------------+-----------------+--------------------+
+| TISCI Message ID |                        Message Name                                   | Available in GP | Avialable in HS-FS |
++==================+=======================================================================+=================+====================+
+| 0x9003           | :ref:`TISCI_MSG_SA2UL_SET_DKEK <sec-api-sa2ul-set-dkek>`              | Yes*            | Yes                |
++------------------+-----------------------------------------------------------------------+-----------------+--------------------+
+| 0x9004           | :ref:`TISCI_MSG_SA2UL_RELEASE_DKEK <sec-api-sa2ul-release-dkek>`      | Yes*            | Yes                |
++------------------+-----------------------------------------------------------------------+-----------------+--------------------+
+| 0x9029           | :ref:`TISCI_MSG_SA2UL_GET_DKEK <sec-api-sa2ul-get-dkek>`              | Yes*            | Yes                |
++------------------+-----------------------------------------------------------------------+-----------------+--------------------+
+
+.. note::
+
+   On GP devices, DKEK APIs return unconditional success but do not actually
+   involve any step to derive or program the DKEK values
 
 This document must be read along side
 

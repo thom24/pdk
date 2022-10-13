@@ -83,7 +83,7 @@
 #define TISCI_HOST_ID_MAIN_0_R5_1 (36U)
 /** MAIN_0_R5_2(Non Secure): Cortex R5_0 context 2 on Main island */
 #define TISCI_HOST_ID_MAIN_0_R5_2 (37U)
-/** MAIN_0_R5_3(Secure): Cortex R5_0 context 3 on MCU island */
+/** MAIN_0_R5_3(Secure): Cortex R5_0 context 3 on Main island */
 #define TISCI_HOST_ID_MAIN_0_R5_3 (38U)
 /** DM2DMSC(Secure): DM to DMSC communication */
 #define TISCI_HOST_ID_DM2DMSC (250U)

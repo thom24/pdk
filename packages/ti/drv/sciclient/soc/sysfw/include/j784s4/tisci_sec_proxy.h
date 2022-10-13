@@ -49,7 +49,7 @@
  *
  * Secure Proxy indices for J784S4 device
  *
- * Data version: 220615_194547
+ * Data version: 220721_142300
  *
  */
 #ifndef J784S4_TISCI_SEC_PROXY_H
@@ -1074,30 +1074,15 @@
  * Secure Proxy configurations for HSM host
  */
 
-/** Thread ID macro for HSM notify */
-#define TISCI_SEC_PROXY_HSM_READ_NOTIFY_THREAD_ID (30U)
-/** Num messages macro for HSM notify */
-#define TISCI_SEC_PROXY_HSM_READ_NOTIFY_NUM_MESSAGES (1U)
-
 /** Thread ID macro for HSM response */
-#define TISCI_SEC_PROXY_HSM_READ_RESPONSE_THREAD_ID (31U)
+#define TISCI_SEC_PROXY_HSM_READ_RESPONSE_THREAD_ID (0U)
 /** Num messages macro for HSM response */
-#define TISCI_SEC_PROXY_HSM_READ_RESPONSE_NUM_MESSAGES (2U)
-
-/** Thread ID macro for HSM high_priority */
-#define TISCI_SEC_PROXY_HSM_WRITE_HIGH_PRIORITY_THREAD_ID (32U)
-/** Num messages macro for HSM high_priority */
-#define TISCI_SEC_PROXY_HSM_WRITE_HIGH_PRIORITY_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_HSM_READ_RESPONSE_NUM_MESSAGES (8U)
 
 /** Thread ID macro for HSM low_priority */
-#define TISCI_SEC_PROXY_HSM_WRITE_LOW_PRIORITY_THREAD_ID (33U)
+#define TISCI_SEC_PROXY_HSM_WRITE_LOW_PRIORITY_THREAD_ID (1U)
 /** Num messages macro for HSM low_priority */
-#define TISCI_SEC_PROXY_HSM_WRITE_LOW_PRIORITY_NUM_MESSAGES (1U)
-
-/** Thread ID macro for HSM notify_resp */
-#define TISCI_SEC_PROXY_HSM_WRITE_NOTIFY_RESP_THREAD_ID (34U)
-/** Num messages macro for HSM notify_resp */
-#define TISCI_SEC_PROXY_HSM_WRITE_NOTIFY_RESP_NUM_MESSAGES (1U)
+#define TISCI_SEC_PROXY_HSM_WRITE_LOW_PRIORITY_NUM_MESSAGES (8U)
 
 
 #endif /* J784S4_TISCI_SEC_PROXY_H */

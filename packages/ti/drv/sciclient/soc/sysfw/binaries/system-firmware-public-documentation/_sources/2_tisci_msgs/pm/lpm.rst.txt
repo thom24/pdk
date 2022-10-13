@@ -15,7 +15,9 @@ Supported low power modes
 -------------------------
 
 .. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP
+
 .. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_MCU_ONLY
+
 .. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_STANDBY
 
 Device configuration and control APIs

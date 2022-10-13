@@ -20,9 +20,9 @@ Enumeration of Device group IDs
 +-----------------+---------------------+--------------+------------------------------------------------------------------------------+
 | SoC Devgrp ID   | Generic Devgrp ID   | Flag Value   | Description                                                                  |
 +=================+=====================+==============+==============================================================================+
-| MCU_WAKEUP      | DEVGRP_00           | 0x1U <<  0U  | Set of MCU domain peripherals to initialize at boot and use during runtime.  |
+| MCU_WAKEUP      | DEVGRP_01           | 0x1U <<  1U  | Set of MCU domain peripherals to initialize at boot and use during runtime.  |
 +-----------------+---------------------+--------------+------------------------------------------------------------------------------+
-| MAIN            | DEVGRP_01           | 0x1U <<  1U  | Set of Main domain peripherals to initialize at boot and use during runtime. |
+| MAIN            | DEVGRP_00           | 0x1U <<  0U  | Set of Main domain peripherals to initialize at boot and use during runtime. |
 +-----------------+---------------------+--------------+------------------------------------------------------------------------------+
 
 .. _soc_doc_am64x_public_devgrp_desc_mcu_wakeup_ip_list:
@@ -36,6 +36,10 @@ Enumeration Devices accessible in devgrp "MCU_WAKEUP"
 |           5 | AM64X_DEV_MCU_MCU_GPIOMUX_INTROUTER0 |
 +-------------+--------------------------------------+
 |           7 | AM64X_DEV_MCU_M4FSS0                 |
++-------------+--------------------------------------+
+|           8 | AM64X_DEV_MCU_M4FSS0_CBASS_0         |
++-------------+--------------------------------------+
+|           9 | AM64X_DEV_MCU_M4FSS0_CORE0           |
 +-------------+--------------------------------------+
 |          23 | AM64X_DEV_MCU_DCC0                   |
 +-------------+--------------------------------------+
@@ -71,6 +75,8 @@ Enumeration Devices accessible in devgrp "MCU_WAKEUP"
 +-------------+--------------------------------------+
 |         149 | AM64X_DEV_MCU_UART0                  |
 +-------------+--------------------------------------+
+|         157 | AM64X_DEV_BOARD0                     |
++-------------+--------------------------------------+
 |         160 | AM64X_DEV_MCU_UART1                  |
 +-------------+--------------------------------------+
 
@@ -91,10 +97,6 @@ Enumeration Devices accessible in devgrp "MAIN"
 |           3 | AM64X_DEV_MAIN_GPIOMUX_INTROUTER0   |
 +-------------+-------------------------------------+
 |           6 | AM64X_DEV_TIMESYNC_EVENT_INTROUTER0 |
-+-------------+-------------------------------------+
-|           8 | AM64X_DEV_MCU_M4FSS0_CBASS_0        |
-+-------------+-------------------------------------+
-|           9 | AM64X_DEV_MCU_M4FSS0_CORE0          |
 +-------------+-------------------------------------+
 |          13 | AM64X_DEV_CPSW0                     |
 +-------------+-------------------------------------+
@@ -317,8 +319,6 @@ Enumeration Devices accessible in devgrp "MAIN"
 |         155 | AM64X_DEV_UART4                     |
 +-------------+-------------------------------------+
 |         156 | AM64X_DEV_UART5                     |
-+-------------+-------------------------------------+
-|         157 | AM64X_DEV_BOARD0                    |
 +-------------+-------------------------------------+
 |         158 | AM64X_DEV_UART6                     |
 +-------------+-------------------------------------+

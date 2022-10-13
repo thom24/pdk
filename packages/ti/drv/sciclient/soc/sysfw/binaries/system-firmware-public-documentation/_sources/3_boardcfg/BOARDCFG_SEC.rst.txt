@@ -143,9 +143,9 @@ Processor access list entry
 +============================+======+===============================================================================+
 | processor_id               | u8   | Processor ID (mandatory) - Use 0 to mark unused                               |
 +----------------------------+------+-------------------------------------------------------------------------------+
-| proc_access_master         | u16  | Recovery Host ID or Primary control master host ID (mandatory)                |
+| proc_access_master         | u8   | Recovery Host ID or Primary control master host ID (mandatory)                |
 +----------------------------+------+-------------------------------------------------------------------------------+
-| proc_access_secondary[0-2] | u16  | Other Host IDs that can control this processor(set to DMSC host ID if unused) |
+| proc_access_secondary[0-2] | u8   | Other Host IDs that can control this processor(set to DMSC host ID if unused) |
 +----------------------------+------+-------------------------------------------------------------------------------+
 
 .. _pub_boardcfg_host_hierarchy:

@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.05
+                08.05.00
               </div>
             
           
@@ -184,16 +184,14 @@ supported by the SOC.</p>
 <div class="section" id="supported-low-power-modes">
 <h3>Supported low power modes<a class="headerlink" href="#supported-low-power-modes" title="Permalink to this headline">¶</a></h3>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0x0</span></code></p>
-<p>Sleep mode in which complete SOC excpet the wakeup domain in not turned
- off.</p>
+<p>Sleep mode in which complete SOC except the wakeup domain is turned off.</p>
 </p>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_SLEEP_MODE_MCU_ONLY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0x1</span></code></p>
-<p>Sleep mode in which complete SOC excpet the wakeup and MCU domain in not
- turned off.</p>
+<p>Sleep mode in which complete SOC except the wakeup and MCU domain is turned off.</p>
 </p>
 <p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_SLEEP_MODE_STANDBY</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0x2</span></code></p>
 <p>Sleep mode in which software is in low power mode but the hardware remains
- on</p>
+ on.</p>
 </p>
 </div>
 <div class="section" id="device-configuration-and-control-apis">
@@ -694,7 +692,7 @@ called to prepare for the low power mode.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.05',
+            VERSION:'08.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

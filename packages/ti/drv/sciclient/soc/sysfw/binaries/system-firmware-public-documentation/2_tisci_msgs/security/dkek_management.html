@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.05
+                08.05.00
               </div>
             
           
@@ -179,26 +179,41 @@
 Key(DKEK) management. The available API are listed below.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="20%" />
-<col width="80%" />
+<col width="14%" />
+<col width="56%" />
+<col width="13%" />
+<col width="16%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">TISCI Message ID</th>
 <th class="head">Message Name</th>
+<th class="head">Available in GP</th>
+<th class="head">Avialable in HS-FS</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0x9003</td>
 <td><a class="reference internal" href="#sec-api-sa2ul-set-dkek"><span class="std std-ref">TISCI_MSG_SA2UL_SET_DKEK</span></a></td>
+<td>Yes*</td>
+<td>Yes</td>
 </tr>
 <tr class="row-odd"><td>0x9004</td>
 <td><a class="reference internal" href="#sec-api-sa2ul-release-dkek"><span class="std std-ref">TISCI_MSG_SA2UL_RELEASE_DKEK</span></a></td>
+<td>Yes*</td>
+<td>Yes</td>
 </tr>
 <tr class="row-even"><td>0x9029</td>
 <td><a class="reference internal" href="#sec-api-sa2ul-get-dkek"><span class="std std-ref">TISCI_MSG_SA2UL_GET_DKEK</span></a></td>
+<td>Yes*</td>
+<td>Yes</td>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">On GP devices, DKEK APIs return unconditional success but do not actually
+involve any step to derive or program the DKEK values</p>
+</div>
 <p>This document must be read along side</p>
 <ol class="arabic simple">
 <li><a class="reference internal" href="../../6_topic_user_guides/dkek_management.html"><span class="doc">Using Derived KEK on HS devices</span></a> and</li>
@@ -507,7 +522,7 @@ of the TISCI messages(see <a class="reference internal" href="../general/TISCI_h
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.05',
+            VERSION:'08.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

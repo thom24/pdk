@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.04.05
+                08.05.00
               </div>
             
           
@@ -111,7 +111,7 @@
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Security X509 Certificate Documentation</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#references">References</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#extensions">Extensions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sysfw-extensions">System Firmware Extensions</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#keywriter-extensions">Keywriter extensions</a></li>
 </ul>
 </li>
@@ -204,14 +204,14 @@ frameworks
 <li><a class="reference internal" href="PROC_BOOT.html"><span class="doc">Processor Boot Management TISCI Description</span></a></li>
 </ol>
 </div>
-<div class="section" id="extensions">
-<span id="sysfw-x509-ext-summary"></span><h2>Extensions<a class="headerlink" href="#extensions" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="sysfw-extensions">
+<span id="sysfw-x509-ext-summary"></span><h2>System Firmware Extensions<a class="headerlink" href="#sysfw-extensions" title="Permalink to this headline">¶</a></h2>
 <p>The following X509 extensions are supported by System Firmware.</p>
 <table border="1" class="docutils">
 <colgroup>
-<col width="35%" />
-<col width="45%" />
-<col width="21%" />
+<col width="34%" />
+<col width="46%" />
+<col width="20%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Extension Name</th>
@@ -220,34 +220,195 @@ frameworks
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td><a class="reference internal" href="#sysfw-boot-ext"><span class="std std-ref">System Firmware Boot Extension</span></a></td>
-<td>Provide boot information</td>
-<td>1.3.6.1.4.1.294.1.33</td>
+<tr class="row-even"><td>ROM Boot Information <a class="footnote-reference" href="#f1" id="id1">[1]</a></td>
+<td>ROM extension required for all ROM-bootable images</td>
+<td>1.3.6.1.4.1.294.1.1</td>
 </tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sysfw-image-integrity-ext"><span class="std std-ref">System Firmware Image Integrity Extension</span></a></td>
-<td>Image hash and length</td>
-<td>1.3.6.1.4.1.294.1.34</td>
+<tr class="row-odd"><td>ROM Image Intregity <a class="footnote-reference" href="#f1" id="id2">[1]</a></td>
+<td>ROM extension required for all ROM-bootable images</td>
+<td>1.3.6.1.4.1.294.1.2</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-swrev-ext"><span class="std std-ref">System Firmware Software Revision Extension</span></a></td>
-<td>revision of binary for anti-rollback</td>
+<td>Revision of binary for anti-rollback</td>
 <td>1.3.6.1.4.1.294.1.3</td>
-</tr>
-<tr class="row-odd"><td><a class="reference internal" href="#sysfw-load-ext"><span class="std std-ref">System Firmware Load Extension</span></a></td>
-<td>Provide load information</td>
-<td>1.3.6.1.4.1.294.1.35</td>
-</tr>
-<tr class="row-even"><td><a class="reference internal" href="#sysfw-debug-ext"><span class="std std-ref">System Firmware Debug Extension</span></a></td>
-<td>To unlock debug port</td>
-<td>1.3.6.1.4.1.294.1.8</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#sysfw-encryption-ext"><span class="std std-ref">System Firmware Encryption Extension</span></a></td>
 <td>Encryption extension</td>
 <td>1.3.6.1.4.1.294.1.4</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-debug-ext"><span class="std std-ref">System Firmware Debug Extension</span></a></td>
+<td>To unlock debug port</td>
+<td>1.3.6.1.4.1.294.1.8</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sysfw-boot-ext"><span class="std std-ref">System Firmware Boot Extension</span></a></td>
+<td>Provide boot information</td>
+<td>1.3.6.1.4.1.294.1.33</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-image-integrity-ext"><span class="std std-ref">System Firmware Image Integrity Extension</span></a></td>
+<td>Image hash and length</td>
+<td>1.3.6.1.4.1.294.1.34</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sysfw-load-ext"><span class="std std-ref">System Firmware Load Extension</span></a></td>
+<td>Provide load information</td>
+<td>1.3.6.1.4.1.294.1.35</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-hs-bcfg-ext"><span class="std std-ref">System Firmware HS Board Configuration Extension</span></a></td>
 <td>HS Boardcfg extension</td>
 <td>1.3.6.1.4.1.294.1.36</td>
 </tr>
+</tbody>
+</table>
+<p>Specific extensions are required for particular image types. The below table
+summarizes which extensions are mandatory (<strong>M</strong>) for a particular image type, which
+are optional (<strong>O</strong>) to take any additional specific actions, and which are ignored
+or not applicable (<strong>.</strong>).</p>
+<span id="sysfw-x509-ext-requirements"></span><table border="1" class="docutils align-center" id="id12">
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">Applicability of certificate extensions to image types</span><a class="headerlink" href="#id12" title="Permalink to this table">¶</a></caption>
+<colgroup>
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+<col width="14%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Certificate Extension</th>
+<th class="head">tiboot3.bin <a class="footnote-reference" href="#tiboot3-footnote" id="id3">[2]</a></th>
+<th class="head">TIFS/SYSFW Outer certificate</th>
+<th class="head">Boardcfg</th>
+<th class="head">Processor Boot</th>
+<th class="head">Debug</th>
+<th class="head">Generic Data <a class="footnote-reference" href="#data-auth-footnote" id="id4">[3]</a></th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>ROM Boot <a class="footnote-reference" href="#f1" id="id5">[1]</a></td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+<tr class="row-odd"><td>ROM Image Integrity <a class="footnote-reference" href="#f1" id="id6">[1]</a></td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-swrev-ext"><span class="std std-ref">SWREV</span></a> <a class="footnote-reference" href="#swrev-footnote" id="id7">[4]</a></td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sysfw-boot-ext"><span class="std std-ref">Boot</span></a></td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td><strong>M</strong></td>
+<td>.</td>
+<td>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-image-integrity-ext"><span class="std std-ref">Integrity</span></a></td>
+<td>.</td>
+<td>.</td>
+<td><strong>M</strong></td>
+<td><strong>M</strong></td>
+<td>.</td>
+<td><strong>M</strong></td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sysfw-load-ext"><span class="std std-ref">Load</span></a></td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td><strong>M</strong></td>
+<td>.</td>
+<td><strong>M</strong></td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-debug-ext"><span class="std std-ref">Debug</span></a></td>
+<td>O</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td><strong>M</strong></td>
+<td>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sysfw-encryption-ext"><span class="std std-ref">Encryption</span></a></td>
+<td>O</td>
+<td>.</td>
+<td>.</td>
+<td>O</td>
+<td>.</td>
+<td>O</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-hs-bcfg-ext"><span class="std std-ref">HS Boardcfg</span></a></td>
+<td>.</td>
+<td>O <a class="footnote-reference" href="#opt-boardcfg-footnote" id="id8">[5]</a></td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+</tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="f1" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id2">2</a>, <a class="fn-backref" href="#id5">3</a>, <a class="fn-backref" href="#id6">4</a>)</em> See device Technical Reference Manual for details on these extensions</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="tiboot3-footnote" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[2]</a></td><td>tiboot3.bin is the boot image supplied for ROM boot flow.
+It includes SBL/SPL and optionally SYSFW and boardcfg
+data based on the boot method used.</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="data-auth-footnote" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[3]</a></td><td>Generic data can be authenticated and optionally
+decrypted using the <a class="reference internal" href="PROC_BOOT.html#proc-boot-authenticate-image-and-configure-processor"><span class="std std-ref">TISCI_MSG_PROC_AUTH_BOOT</span></a>
+API and supplying the relevant subset of extensions</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="swrev-footnote" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id7">[4]</a></td><td><p class="first">SWREV extension is used for various purposes:</p>
+<ul class="last simple">
+<li>tiboot3.bin: ROM will check against the current SWREV
+value programmed for bootloaders in the device efuses and
+reject if certificate value is lower than the efuse
+value.</li>
+<li>Board configuration: SYSFW will check against the current
+configuration SWREV value programmed in the device efuses
+and reject if certificate value is lower than the efuse
+value.</li>
+<li>Debug: SYSFW will check against the value specified in
+the <a class="reference internal" href="../../3_boardcfg/BOARDCFG_SEC.html#pub-boardcfg-secure-debug-unlock"><span class="std std-ref">Secure Debug
+Configuration</span></a> in the
+security boardcfg and reject if certificate value is
+lower than the boardcfg value.</li>
+<li>For other certificate types, this is reserved for future
+use and is mandatory to protect for compatibility.</li>
+</ul>
+</td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="opt-boardcfg-footnote" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[5]</a></td><td>This is only used for outer certificate to enable
+optimized boot. See <a class="reference internal" href="../../6_topic_user_guides/hs_boardcfg_signing.html#sysfw-pub-hs-bcfg-in-cert"><span class="std std-ref">Including board configuration information in System Firmware outer certificate</span></a></td></tr>
 </tbody>
 </table>
 </div>
@@ -461,8 +622,10 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 <span class="p">{</span><span class="w"></span>
 <span class="w">     </span><span class="n">destAddr</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Address</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">accompanying</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">certificate</span><span class="w"></span>
 <span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">needs</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">copied</span><span class="p">.</span><span class="w"></span>
-<span class="w">     </span><span class="n">auth_in_place</span><span class="w"> </span><span class="n">INTEGER</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Controls</span><span class="w"> </span><span class="k">if</span><span class="o">/</span><span class="n">how</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">authenticated</span><span class="w"> </span><span class="n">binary</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">copied</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">different</span><span class="w"></span>
-<span class="w">                           </span><span class="o">--</span><span class="w"> </span><span class="n">location</span><span class="p">.</span><span class="w"> </span><span class="n">See</span><span class="w"> </span><span class="n">below</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">information</span><span class="p">.</span><span class="w"></span>
+<span class="w">     </span><span class="n">auth_type</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">      </span><span class="o">--</span><span class="w"> </span><span class="n">Serves</span><span class="w"> </span><span class="n">two</span><span class="w"> </span><span class="nl">purposes</span> <span class="p">:</span><span class="w"></span>
+<span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">Controls</span><span class="w"> </span><span class="k">if</span><span class="o">/</span><span class="n">how</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">authenticated</span><span class="w"> </span><span class="n">binary</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">copied</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">different</span><span class="w"></span>
+<span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">location</span><span class="p">.</span><span class="w"> </span><span class="n">See</span><span class="w"> </span><span class="n">below</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">information</span><span class="p">.</span><span class="w"></span>
+<span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">Contains</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Host</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="n">core</span><span class="w"></span>
 <span class="p">}</span><span class="w"></span>
 </pre></div>
 </div>
@@ -470,11 +633,12 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 <div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_load_info</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
 <span class="w"> </span><span class="n">u64</span><span class="w"> </span><span class="n">destAddr</span><span class="p">;</span><span class="w"></span>
 <span class="w"> </span><span class="n">u8</span><span class="w">  </span><span class="n">auth_in_place</span><span class="p">;</span><span class="w"></span>
+<span class="w"> </span><span class="n">u8</span><span class="w">  </span><span class="n">copy_as_host</span><span class="p">;</span><span class="w"></span>
 <span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="section" id="id1">
-<h4>Populating the certificate fields<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id9">
+<h4>Populating the certificate fields<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic">
 <li><p class="first"><code class="docutils literal"><span class="pre">destAddr</span></code></p>
 <ul class="simple">
@@ -482,11 +646,13 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 needs to be copied. The representation is big endian.</li>
 </ul>
 </li>
-<li><p class="first"><code class="docutils literal"><span class="pre">auth_in_place</span></code></p>
+<li><p class="first"><code class="docutils literal"><span class="pre">auth_type</span></code></p>
 <ul>
-<li><p class="first">This is an integer field used to indicate whether the binary should be copied
-to the specified load address during authentication. The valid values for this
-field and their interpretation are described below.</p>
+<li><p class="first">This is an integer field that contains two pieces of information:
+* The lower byte indicate whether the binary should be copied to the specified load address during authentication.
+* The upper byte represent the host ID of the destination core.
+* The upper 2 bytes are reserved.</p>
+<p>The valid values for least significant byte and their interpretation are described below.</p>
 <table border="1" class="docutils">
 <colgroup>
 <col width="13%" />
@@ -499,15 +665,27 @@ field and their interpretation are described below.</p>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>0</td>
-<td>Normal operation. Binary is copied to load address.</td>
+<td>Normal operation. Binary is copied to load address.
+Value[15:8] would be used to get host id for copying certificate
+since host id 0 is reserved for TIFS, we wont support this
+value. If host id is 0, the caller’s host ID will be used for
+the transfer.</td>
 </tr>
 <tr class="row-odd"><td>1</td>
-<td>In place operation. Binary is not moved.</td>
+<td>In place operation. Binary is not moved.
+Value[15:8] would be used to get host id for copying certificate
+since host id 0 is reserved for TIFS, we wont support this
+value. If host id is 0, the caller’s host ID will be used for
+the transfer.</td>
 </tr>
 <tr class="row-even"><td>2</td>
 <td>In place operation variant. Binary is moved to the beginning of
 the buffer i.e. binary now starts at the location where the
-certificate started</td>
+certificate started
+Value[15:8] would be used to get host id for copying certificate
+since host id 0 is reserved for TIFS, we wont support this
+value. If host id is 0, the caller’s host ID will be used for
+the transfer.</td>
 </tr>
 <tr class="row-odd"><td>Any
 other
@@ -545,8 +723,8 @@ additional information is required. This is identified by OID
 <span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="section" id="id2">
-<h4>Populating the certificate fields<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id10">
+<h4>Populating the certificate fields<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li><code class="docutils literal"><span class="pre">initialVector</span></code><ul>
 <li>This is the 16 byte initialization vector to be used in AES-CBC
@@ -733,8 +911,8 @@ extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
 <span class="p">};</span><span class="w"></span>
 </pre></div>
 </div>
-<div class="section" id="id3">
-<h4>Populating the certificate fields<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id11">
+<h4>Populating the certificate fields<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li><code class="docutils literal"><span class="pre">initialVector</span></code><ul>
 <li>This is the 16 byte initialization vector to be used in AES-CBC
@@ -1362,7 +1540,7 @@ Image integrity (<code class="docutils literal"><span class="pre">sysfw_image_in
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.04.05',
+            VERSION:'08.05.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

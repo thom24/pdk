@@ -3489,7 +3489,7 @@
                 ],
                 "constraints": [
                     {
-                        "max_resource_entries": 897
+                        "max_resource_entries": 586
                     }
                 ]
             },

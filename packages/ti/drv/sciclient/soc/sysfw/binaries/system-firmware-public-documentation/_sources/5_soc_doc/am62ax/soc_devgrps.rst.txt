@@ -79,6 +79,8 @@ Enumeration Devices accessible in devgrp "MCU_WAKEUP"
 +-------------+----------------------------------------+
 |         226 | AM62AX_DEV_WKUP_CLKOUT_SEL_DEV_VD      |
 +-------------+----------------------------------------+
+|         227 | AM62AX_DEV_MCU_OBSCLK_MUX_SEL_DEV_VD   |
++-------------+----------------------------------------+
 
 .. _soc_doc_am62ax_public_devgrp_desc_main_ip_list:
 
@@ -377,5 +379,7 @@ Enumeration Devices accessible in devgrp "MAIN"
 |         222 | AM62AX_DEV_CODEC_WS_BW_LIMITER3     |
 +-------------+-------------------------------------+
 |         225 | AM62AX_DEV_HSM0                     |
++-------------+-------------------------------------+
+|         228 | AM62AX_DEV_OBSCLK0_MUX_SEL_DEV_VD   |
 +-------------+-------------------------------------+
 
