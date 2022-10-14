@@ -97,6 +97,11 @@ int32_t Dss_m2mDrvIoctlSetPipeMflagParams(DssM2MDrv_VirtContext *context,
 int32_t Dss_m2mDrvIoctlSetPipeCsc(DssM2MDrv_VirtContext *context,
                                   const Dss_PipeCscParams *csc);
 
+/* Internal functions to check parameters. */
+static int32_t Dss_m2mDrvDispCheckFieldMerge(const Fvid2_Format *instCfg, const Fvid2_Format *progCfg, uint32_t scanFmt);
+
+static int32_t Dss_m2mDrvDispCheckPitch(const Fvid2_Format *instCfg, const Fvid2_Format *progCfg, uint32_t scanFmt);
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -105,30 +110,81 @@ int32_t Dss_m2mDrvIoctlSetPipeCsc(DssM2MDrv_VirtContext *context,
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
+int32_t Dss_m2mDrvDispCheckPitch(const Fvid2_Format *instCfg, const Fvid2_Format *progCfg, uint32_t scanFmt)
+{
+    uint32_t numFields, fieldIdx, planeIdx;
+    int32_t retVal = FVID2_SOK;
+
+    if (scanFmt == FVID2_SF_INTERLACED)
+    {
+        numFields = 2;
+    }
+    else
+    {
+        numFields = 1;
+    }
+    for(fieldIdx = 0U ; fieldIdx < numFields; fieldIdx++)
+    {
+        for(planeIdx = 0U ; planeIdx < FVID2_MAX_PLANES_PER_FIELD; planeIdx++)
+        {
+            if (instCfg->pitch[fieldIdx*FVID2_MAX_PLANES_PER_FIELD + planeIdx] != progCfg->pitch[fieldIdx*FVID2_MAX_PLANES_PER_FIELD + planeIdx])
+            {
+                retVal = FVID2_EINVALID_PARAMS;
+                break;
+            }
+        }
+    }
+    return retVal;
+}
+
+int32_t Dss_m2mDrvDispCheckFieldMerge(const Fvid2_Format *instCfg, const Fvid2_Format *progCfg, uint32_t scanFmt)
+{
+    int32_t retVal = FVID2_SOK;
+    uint32_t planeIdx;
+
+    if (scanFmt == FVID2_SF_INTERLACED)
+    {
+        for (planeIdx=0; planeIdx<FVID2_MAX_PLANES_PER_FIELD; planeIdx++)
+        {
+            if(instCfg->fieldMerged[planeIdx] != progCfg->fieldMerged[planeIdx])
+            {
+                retVal = FVID2_EINVALID_PARAMS;
+                break;
+            }
+        }
+    }
+    else
+    {
+        /* Field merged is not used for Progressive scan format. */
+    }
+    return retVal;
+}
+
 uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
                                   const Dss_DispParams *progCfg)
 {
     uint32_t retVal = (uint32_t) TRUE;
-    uint32_t loopCnt = 0U;
+    uint32_t loopCnt = 0U, scanFmt;
 
+    scanFmt = instCfg->pipeCfg.inFmt.scanFormat;
     /* check for Pipe configurations */
-    if ((instCfg->pipeCfg.pipeType          != progCfg->pipeCfg.pipeType)         ||
-        (instCfg->pipeCfg.pixelInc          != progCfg->pipeCfg.pixelInc)         ||
-        (instCfg->pipeCfg.yuvAlign          != progCfg->pipeCfg.yuvAlign)         ||
-        (instCfg->pipeCfg.outWidth          != progCfg->pipeCfg.outWidth)         ||
-        (instCfg->pipeCfg.outHeight         != progCfg->pipeCfg.outHeight)        ||
-        (instCfg->pipeCfg.scEnable          != progCfg->pipeCfg.scEnable)         ||
-        (instCfg->pipeCfg.cscRange          != progCfg->pipeCfg.cscRange)         ||
-        (instCfg->pipeCfg.flipType          != progCfg->pipeCfg.flipType)         ||
-        (instCfg->pipeCfg.nibbleModeEnable  != progCfg->pipeCfg.nibbleModeEnable) ||
-        (instCfg->pipeCfg.gammaEnable       != progCfg->pipeCfg.gammaEnable)      ||
-        (instCfg->pipeCfg.inFmt.width       != progCfg->pipeCfg.inFmt.width)      ||
-        (instCfg->pipeCfg.inFmt.height      != progCfg->pipeCfg.inFmt.height)     ||
-        (instCfg->pipeCfg.inFmt.pitch       != progCfg->pipeCfg.inFmt.pitch)      ||
-        (instCfg->pipeCfg.inFmt.dataFormat  != progCfg->pipeCfg.inFmt.dataFormat) ||
-        (instCfg->pipeCfg.inFmt.scanFormat  != progCfg->pipeCfg.inFmt.scanFormat) ||
-        (instCfg->pipeCfg.inFmt.ccsFormat   != progCfg->pipeCfg.inFmt.ccsFormat)  ||
-        (instCfg->pipeCfg.inFmt.fieldMerged != progCfg->pipeCfg.inFmt.fieldMerged))
+    if ((instCfg->pipeCfg.pipeType          != progCfg->pipeCfg.pipeType)                                           ||
+        (instCfg->pipeCfg.pixelInc          != progCfg->pipeCfg.pixelInc)                                           ||
+        (instCfg->pipeCfg.yuvAlign          != progCfg->pipeCfg.yuvAlign)                                           ||
+        (instCfg->pipeCfg.outWidth          != progCfg->pipeCfg.outWidth)                                           ||
+        (instCfg->pipeCfg.outHeight         != progCfg->pipeCfg.outHeight)                                          ||
+        (instCfg->pipeCfg.scEnable          != progCfg->pipeCfg.scEnable)                                           ||
+        (instCfg->pipeCfg.cscRange          != progCfg->pipeCfg.cscRange)                                           ||
+        (instCfg->pipeCfg.flipType          != progCfg->pipeCfg.flipType)                                           ||
+        (instCfg->pipeCfg.nibbleModeEnable  != progCfg->pipeCfg.nibbleModeEnable)                                   ||
+        (instCfg->pipeCfg.gammaEnable       != progCfg->pipeCfg.gammaEnable)                                        ||
+        (instCfg->pipeCfg.inFmt.width       != progCfg->pipeCfg.inFmt.width)                                        ||
+        (instCfg->pipeCfg.inFmt.height      != progCfg->pipeCfg.inFmt.height)                                       ||
+        (Dss_m2mDrvDispCheckPitch(&(instCfg->pipeCfg.inFmt), &(progCfg->pipeCfg.inFmt), scanFmt) != FVID2_SOK)      ||
+        (instCfg->pipeCfg.inFmt.dataFormat  != progCfg->pipeCfg.inFmt.dataFormat)                                   ||
+        (instCfg->pipeCfg.inFmt.scanFormat  != progCfg->pipeCfg.inFmt.scanFormat)                                   ||
+        (instCfg->pipeCfg.inFmt.ccsFormat   != progCfg->pipeCfg.inFmt.ccsFormat)                                    ||
+        (Dss_m2mDrvDispCheckFieldMerge(&(instCfg->pipeCfg.inFmt), &(progCfg->pipeCfg.inFmt), scanFmt) != FVID2_SOK))
     {
         retVal = (uint32_t) FALSE;
     }
