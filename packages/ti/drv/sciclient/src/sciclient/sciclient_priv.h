@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2020 Texas Instruments Incorporated
+ *  Copyright (C) 2018-2022 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -48,6 +48,7 @@
 #include <ti/csl/csl_sec_proxy.h>
 #include <ti/osal/osal.h>
 #include <ti/osal/SemaphoreP.h>
+#include <ti/osal/CacheP.h>
 #include <ti/osal/RegisterIntr.h>
 
 #include <ti/drv/sciclient/sciclient.h>

@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2021 Texas Instruments Incorporated
+* Copyright (c) 2021 - 2022 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -181,7 +181,7 @@ static void Lpm_initGTC(void)
 void Lpm_mcuDCacheClean(void *addr, uint32_t size)
 {
     /* Invalidate by MVA */
-    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size));
+    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), (bool)TRUE);
 }
 #endif
 

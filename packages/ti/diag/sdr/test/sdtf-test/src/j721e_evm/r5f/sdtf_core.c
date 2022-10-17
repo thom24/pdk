@@ -37,6 +37,7 @@
 
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
 #include <ti/csl/arch/r5/csl_cache.h>
+#include <ti/osal/CacheP.h>
 #include "sdtf_common.h"
 #include <sdtf_core.h>
 
@@ -52,10 +53,10 @@ void SDTF_profileTimerInit(void)
 
 void SDTF_cpuCacheInv(const void * addr, int32_t size)
 {
-    CSL_armR5CacheInv(addr, size);
+    CacheP_Inv(addr, size);
 }
 
 void SDTF_cpuCacheWbInv(const void * addr, int32_t size)
 {
-    CSL_armR5CacheWbInv(addr, size);
+    CacheP_wbInv(addr, size);
 }

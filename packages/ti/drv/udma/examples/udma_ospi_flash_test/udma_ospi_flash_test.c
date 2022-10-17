@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2020
+ *  Copyright (c) Texas Instruments Incorporated 2020 - 2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -636,7 +636,7 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
         txStartTicks = App_getGTCTimerTicks();
 
         /* Do Cache write-back for "appTestObj->numBytes" chunk to be tranferred */
-        CSL_armR5CacheWb(txBuf, size);
+        CSL_armR5CacheWb(txBuf, size, (bool)TRUE);
         
         /* Set number of times to trigger TX transfer */
         chunkCnt = appTrObj->icnt[1];
@@ -854,7 +854,7 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
                 }
 #ifndef UDMA_TEST_DISABLE_RT_CACHEOPS
                 /* Do Cache invalidate for the received chunk */
-                CSL_armR5CacheInv(rxBuf, size);
+                CSL_armR5CacheInv(rxBuf, size, (bool)TRUE);
 #endif
 
                 rxStopTicks = App_getGTCTimerTicks();

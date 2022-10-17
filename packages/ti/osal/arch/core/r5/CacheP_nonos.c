@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2018, Texas Instruments Incorporated
+ * Copyright (c) 2015-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,18 +45,18 @@
 
 void CacheP_wb(const void * addr, int32_t size)
 {
-    CSL_armR5CacheWb(addr, size);
+    CSL_armR5CacheWb(addr, size, (bool)TRUE);
     return;
 }
 void CacheP_wbInv(const void * addr, int32_t size)
 {
-    CSL_armR5CacheWbInv(addr, size);
+    CSL_armR5CacheWbInv(addr, size, (bool)TRUE);
     return;
 
 }
 void CacheP_Inv(const void * addr, int32_t size)
 {
-    CSL_armR5CacheInv(addr, size);
+    CSL_armR5CacheInv(addr, size, (bool)TRUE);
     return;
 }
 /* Nothing past this point */

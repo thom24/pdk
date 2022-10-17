@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2018-2020, Texas Instruments Incorporated
+ * Copyright (c) 2018-2022, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -93,8 +93,7 @@ int32_t Sciclient_boardCfg(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfgp_low,
-                        request.tisci_boardcfg_size);
+    CacheP_wbInv((const void*) request.tisci_boardcfgp_low, request.tisci_boardcfg_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {
@@ -137,8 +136,7 @@ int32_t Sciclient_boardCfgPm(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfg_pmp_low,
-                            request.tisci_boardcfg_pm_size);
+    CacheP_wbInv((const void*) request.tisci_boardcfg_pmp_low, request.tisci_boardcfg_pm_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {
@@ -179,8 +177,7 @@ int32_t Sciclient_boardCfgRm(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfg_rmp_low,
-                            request.tisci_boardcfg_rm_size);
+    CacheP_wbInv((const void*) request.tisci_boardcfg_rmp_low, request.tisci_boardcfg_rm_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {
@@ -220,8 +217,7 @@ int32_t Sciclient_boardCfgSec(const Sciclient_BoardCfgPrms_t * pInPrms)
         .pRespPayload    = (uint8_t *) 0,
         .respPayloadSize = (uint32_t) 0
     };
-    CSL_armR5CacheWbInv((const void*) request.tisci_boardcfg_securityp_low,
-                            request.tisci_boardcfg_security_size);
+    CacheP_wbInv((const void*) request.tisci_boardcfg_securityp_low, request.tisci_boardcfg_security_size);
     if((CSL_PASS != Sciclient_service(&reqParam, &respParam))
         || ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
     {

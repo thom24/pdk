@@ -163,7 +163,7 @@ void SBL_DCacheClean(void *addr, uint32_t size)
     if (num_iterations < 64 * 4)
     {
         /* Invalidate by MVA */
-        CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size));
+        CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), (bool)TRUE);
     }
     else
     {

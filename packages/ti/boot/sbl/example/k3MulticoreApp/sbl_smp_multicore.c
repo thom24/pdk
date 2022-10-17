@@ -74,7 +74,7 @@ int main()
 {
 
     *(MPU_POKE_MEM_ADDR) += 1;
-    CSL_armR5CacheWbInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int));
+    CSL_armR5CacheWbInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int), (bool)TRUE);
     asm volatile("	wfi");
     return 0;
 }
@@ -224,7 +224,7 @@ int main()
 
     /* Reset the boot flags */
     *(MPU_POKE_MEM_ADDR) = 0;
-    CSL_armR5CacheWbInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int));
+    CSL_armR5CacheWbInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int), (bool)TRUE);
 
     /* SMP apps is already loaded, simply reset the cores to run it */
     UART_printf("Resetting all ARM cores now...\r\n");
@@ -235,7 +235,7 @@ int main()
         {
             SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &sblSmpTestEntry, SBL_REQUEST_CORE);
             UART_printf("No of Cortex-A core(s) running: ");
-            CSL_armR5CacheInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int));
+            CSL_armR5CacheInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int), (bool)TRUE);
             UART_printf("%d\r\n", *(MPU_POKE_MEM_ADDR));
         }
     }
@@ -267,7 +267,7 @@ int main()
             /* Restart the core */
             SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &sblSmpTestEntry, SBL_REQUEST_CORE);
             UART_printf("No of Cortex-R core(s) running: ");
-            CSL_armR5CacheInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int));
+            CSL_armR5CacheInv((const void *)MPU_POKE_MEM_ADDR, sizeof (int), (bool)TRUE);
             UART_printf("%d\r\n", *(MPU_POKE_MEM_ADDR));
         }
     }
