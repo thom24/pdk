@@ -162,9 +162,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     do
         make -j -s allclean
         make -j -s sciclient_boardcfg BOARD="$SOC"_evm
-        if [ ! $SOC=="j784s4" ]; then
-            make -j -s sciclient_boardcfg BOARD="$SOC"_evm BUILD_HS=yes
-        fi
+        make -j -s sciclient_boardcfg BOARD="$SOC"_evm BUILD_HS=yes
         make -j -s sciclient_ccs_init_clean BOARD="$SOC"_evm
         make -j -s sciclient_ccs_init BOARD="$SOC"_evm
         make -j -s sciserver_testapp_freertos_clean BOARD="$SOC"_evm
