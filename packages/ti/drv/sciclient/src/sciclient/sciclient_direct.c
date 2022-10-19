@@ -360,14 +360,31 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
             case TISCI_MSG_RM_PSIL_UNPAIR:
             case TISCI_MSG_RM_PSIL_READ:
             case TISCI_MSG_RM_PSIL_WRITE:
+            {
+                /*
+                 * These RM messages are entirely processed on DMSC. When 
+                 * called on mcu1_0 directly, these are treated as native calls
+                 * to DMSC. If these requests are made from other CPUs, the 
+                 * sciserver will take care of setting the forward status prior
+                 * to calling this function. 
+                 * When running on mcu1_0 we still use forwarding to retain
+                 * the host id information of the non-secure/secure mode of mcu1_0.
+                 * Setting forwarding ensures that the mcu1_0 uses the DM2DMSC
+                 * secure proxy threads.  
+                 * NOTE: Forwarding always leads to forced polling.
+                 */
+                *fwdStatus = SCISERVER_FORWARD_MSG;
+                ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
+                break;
+            } 
             default:
             {
                 /*
-                 * These RM messages and all baseport and security messages are
-                 * entirely processed on DMSC. When called on mcu1_0 directly,
-                 * these are treated as native calls to DMSC. If these requests
-                 * are made from other CPUs, the sciserver will take care of
-                 * setting the forward status prior to calling this function.
+                 * All baseport and security messages are entirely processed on
+                 * DMSC. When called on mcu1_0 directly, these are treated as 
+                 * native calls to DMSC. If these requests are made from other 
+                 * CPUs, the sciserver will take care of setting the forward 
+                 * status prior to calling this function.
                  * The MCU1_0 will always be secure when trying to send the message
                  * to the TIFS directly to avoid self blocking.
                  */
