@@ -94,7 +94,7 @@
 #include <ti/csl/cslr_device.h>
 #include <ti/csl/cslr_mcasp.h>
 
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)
 #include <ti/drv/udma/include/udma_types.h>
  #ifndef MCASP_UDMA_ENABLED
  #define MCASP_UDMA_ENABLED
@@ -256,6 +256,8 @@ typedef struct Mcasp_HwInfo_s
 #define MCASP_CNT  (3U)
 #elif defined(SOC_J721E)
 #define MCASP_CNT  (12U)
+#elif defined(SOC_J721S2)
+#define MCASP_CNT  (5U)
 #else
 #error "Unsupported SOC !! "
 #endif

@@ -72,6 +72,13 @@ ifeq ($(SOC), $(filter $(SOC), j721e))
   PACKAGE_SRCS_COMMON += ../$(SOC)
 endif
 
+ifeq ($(SOC), $(filter $(SOC), j721s2))
+  SRCDIR += ../j721s2/src
+  INCDIR += ../j721s2/include
+
+  PACKAGE_SRCS_COMMON += ../$(SOC)
+endif
+
 ifeq ($(SOC), $(filter $(SOC), j7200))
   SRCDIR += ../j7200/src
   INCDIR += ../j7200/include

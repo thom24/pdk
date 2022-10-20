@@ -67,7 +67,7 @@
 ifeq ($(mcasp_component_make_include), )
 
 # under other list
-drvmcasp_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm j7200_evm
+drvmcasp_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm
 drvmcasp_SOCLIST         = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200
 drvmcasp_am572x_CORELIST = c66x a15_0 ipu1_0
 drvmcasp_am574x_CORELIST = c66x a15_0 ipu1_0
@@ -82,6 +82,7 @@ drvmcasp_omapl137_CORELIST = c674x arm9_0
 drvmcasp_omapl138_CORELIST = c674x arm9_0
 drvmcasp_am65xx_CORELIST     = mpu1_0 mcu1_0
 drvmcasp_j721e_CORELIST     = mpu1_0 mcu1_0 mcu2_0 c66xdsp_1 c66xdsp_2
+drvmcasp_j721s2_CORELIST    = mcu1_0 mcu2_0 mcu3_0
 drvmcasp_j7200_CORELIST     = mpu1_0 mcu1_0 mcu2_0
 drvmcasp_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
 
@@ -203,7 +204,7 @@ MCASP_DeviceLoopback_TestApp_$(1)_INCLUDE = $(MCASP_DeviceLoopback_TestApp_$(1)_
 export MCASP_DeviceLoopback_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvmcasp_BOARDLIST))
 export MCASP_DeviceLoopback_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvmcasp_$(SOC)_CORELIST))
 
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2))
 export MCASP_DeviceLoopback_TestApp_$(1)_SBL_APPIMAGEGEN = yes
 endif
 

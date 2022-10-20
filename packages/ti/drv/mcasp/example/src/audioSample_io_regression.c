@@ -1088,7 +1088,7 @@ Void Audio_echo_Task()
   MCASP_log("\n Testing complete. PLEASE POWERCYCLE before running the next iteration!\n");
   MCASP_log("\n All tests have passed\n");
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J200) || defined(SOC_J721S2)
     Sciclient_deinit();
 #endif
 

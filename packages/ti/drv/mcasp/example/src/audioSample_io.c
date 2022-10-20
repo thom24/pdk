@@ -72,12 +72,15 @@
 #include <ti/csl/csl_chip.h>
 #endif
 
-#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200)
+#if defined(SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2)
  #define MCASP_UDMA_ENABLED
 #else
  #define MCASP_EDMA_ENABLED
 #endif
 
+#include <ti/board/src/devices/audio/pcm3168A.h>
+#include <ti/drv/i2c/I2C.h>
+#include <ti/drv/i2c/soc/I2C_soc.h>
 
 #if defined(MCASP_EDMA_ENABLED)
  #include <ti/sdo/edma3/drv/edma3_drv.h>
@@ -177,6 +180,10 @@ Ptr  hAicChannel;
 static void createStreams();
 static void prime();
 
+#if defined(SOC_J721S2)
+I2C_Handle  I2C_handle = NULL;
+#endif
+
 Ptr rxbuf[NUM_BUFS];
 Ptr txbuf[NUM_BUFS];
 
@@ -227,6 +234,33 @@ McASP_App_BufferInfo_t McASP_App_bufs[2][NUM_APP_BUFS_QUEUE_ENTRIES];
 #ifdef MCASP_ENABLE_DEBUG_LOG
 uint32_t mcaspFrames_rx[NUM_TEST_FRAMES+PRIME_COUNT][MCASPFRAMES_RX_SIZE/4];
 uint8_t mcaspFrame_rx_index=0;
+#endif
+
+#if defined(SOC_J721S2)
+I2C_Handle I2C_CodecInit()
+{
+    I2C_Params  i2cParams;
+	I2C_HwAttrs codec_i2c_cfg;
+
+	I2C_init();
+
+    I2C_Params_init(&i2cParams);
+    i2cParams.transferMode = I2C_MODE_BLOCKING;
+
+    I2C_socGetInitCfg(I2C_CODEC_INSTANCE, &codec_i2c_cfg);
+    codec_i2c_cfg.enableIntr=false;
+    I2C_socSetInitCfg(I2C_CODEC_INSTANCE, &codec_i2c_cfg);
+
+    I2C_handle = I2C_open(I2C_CODEC_INSTANCE, &i2cParams);
+    if(I2C_handle != NULL)
+    {
+        MCASP_log("I2c Open successful \n ");
+    }
+    else{
+        MCASP_log("I2c Open Failed \n ");
+    }
+    return I2C_handle;
+}
 #endif
 
 /* Initialize the queue of buffer info  and push them in to the free queues */
@@ -555,8 +589,19 @@ static void createStreams()
     mcaspDebugLog(DEBUG_APP_AFTER_RX_CREATECHAN, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED,MCASP_DEBUG_UNDEFINED);
 #endif
 
+#if defined(SOC_J721S2)
+    I2C_handle = I2C_CodecInit();
 
-
+    status = Board_pcm3168Config(I2C_handle, I2C_CODEC_SLAVE_ADDRESS);
+    if(status != BOARD_SOK)
+    {
+        MCASP_log("I2C communication failed with codec \n");
+    }
+    else
+    {
+        MCASP_log("I2C communication successful with codec \n");
+    }
+#endif
 #if defined(MCASP_MASTER)
 /* If MCASP master, configure the clock of the slave device attached to McASP now.
     In the below case, it is the AIC codec */
@@ -789,7 +834,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
     if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
-#if (defined (SOC_J721E) || defined (SOC_J7200)) && defined (BUILD_MCU1_0)
+#if (defined (SOC_J721E) || defined (SOC_J7200)) && defined (BUILD_MCU1_0) || defined(SOC_J721S2)
         instId = UDMA_INST_ID_MCU_0;
 #else
         instId = UDMA_INST_ID_MAIN_0;
@@ -1118,6 +1163,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
 		   to the device here.
 		*/
    		memcpy((void *)((uint8_t *)appBuf_ptr_tx->buf),(void *)((uint8_t *)appBuf_ptr_rx->buf),rx_frame_size);
+        memcpy((void *)((uint8_t *)appBuf_ptr_tx->buf + rx_frame_size),(void *)((uint8_t *)appBuf_ptr_rx->buf),rx_frame_size);
 #endif
 
         /******************************* Sample Processing End ***************************/
@@ -1279,7 +1325,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
    mcaspDebugLog_PrintAll();
 #endif
 
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)
     McaspApp_udma_deinit();
     Sciclient_deinit();
 #endif
