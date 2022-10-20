@@ -19,6 +19,15 @@ ifeq ($(BOOTMODE), ospi)
   endif
 endif
 
+# By default it boots from boot0 partition if you want to boot it from UDA partition 
+# use EMMC_BOOT0=no while bulding sbl_emmc_img
+EMMC_BOOT0?=yes
+
+# if you want to boot app more than 500KB you need to change the following macro
+# for instance your app is x KB then you need to give the macro with the following value from cmd line
+# (x * 1024) in hexadecimal
+MAX_APP_SIZE_EMMC ?= 0x7D000
+
 APP_NAME = sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
 LOCAL_APP_NAME=sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)_$(CORE)
 BUILD_OS_TYPE = baremetal
@@ -69,6 +78,9 @@ endif # ifeq ($(BOOTMODE), mmcsd)
 
 ifeq ($(BOOTMODE), emmc)
   SBL_CFLAGS += -DBOOT_EMMC
+  ifeq ($(EMMC_BOOT0), yes)
+    SBL_CFLAGS += -DEMMC_BOOT0
+  endif
 endif # ifeq ($(BOOTMODE), emmc)
 
 ifeq ($(BOOTMODE), ospi)
@@ -115,6 +127,7 @@ else
 endif # ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_DMA=1), -DSBL_USE_DMA=1)
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
 
+SBL_CFLAGS += -DMAX_APP_SIZE_EMMC=$(MAX_APP_SIZE_EMMC)
 
 SRCS_COMMON += sbl_main.c
 

@@ -62,6 +62,23 @@
 #include "sbl_sec.h"
 #endif
 
+#ifdef EMMC_BOOT0
+/* eMMC Sector size */
+#define SECTORSIZE                      (512U) //0x200
+/* System firmware offset in eMMC boot0 partition */
+#define EMMC_BOOT0_SYSFS_OFFSET         (0x80000) //0x400 sector
+/* Application Image offset in eMMC boot0 partition */
+#define EMMC_BOOT0_APP_OFFSET           (0x280000) //0x1400 sector
+/* Application Image Size */
+#define APP_SIZE                        MAX_APP_SIZE_EMMC
+extern volatile uint32_t * outData01;
+/* Handle to operate eMMC read/write */
+MMCSD_Handle gHandle=NULL;
+/* SBL scratch memory defined at compile time */
+static uint8_t *sbl_scratch_mem = ((uint8_t *)(SBL_SCRATCH_MEM_START));
+static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
+#endif
+
 /**
  * \brief    SBL_FileRead function reads N bytes from eMMC and
  *           advances the cursor.
@@ -86,7 +103,29 @@ int32_t SBL_FileRead(void  *buff,
  */
 void SBL_FileSeek(void *fileptr, uint32_t location);
 
+/**
+ * \brief    SBL_emmcRead function copies memory contents from DDR to the
+ *           destination and advances the cursor.
+ *
+ * \param     buff - Pointer to data buffer
+ * \param     fileptr - Read head pointer
+ * \param     size - Number of bytes to read
+ *
+ * \return    Error code on file error
+ */
+int32_t SBL_emmcRead(void  *buff,
+                     void *fileptr,
+                     uint32_t size);
 
+/**
+ *  \brief    SBL_emmcSeek function to move the read head by the provided location
+ *
+ *  \param    srcAddr - Read head pointer
+ *  \param    location - Move the read head pointer to the provided location
+ *
+ * \return  none
+ */
+void SBL_emmcSeek(void *fileptr, uint32_t location);
 
 int32_t SBL_loadMMCSDBootFile(FIL * fp);
 
@@ -184,6 +223,15 @@ extern SBL_incomingBootData_S sblInBootData;
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
     int32_t retVal = CSL_PASS;
+
+#ifdef EMMC_BOOT0
+    uint32_t partition = 1;
+    /* Total number of blocks to be read*/
+    uint32_t num_blocks_read  = (num_bytes/SECTORSIZE) + 1;
+    /* Start block to be read */
+    uint32_t mmcStartSector = (EMMC_BOOT0_SYSFS_OFFSET/SECTORSIZE);
+#endif
+
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     const TCHAR *fileName = "0:/tifs.bin";
 #else
@@ -232,11 +280,34 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
     hwAttrsConfig.configSocIntrPath=NULL;
 
+#ifdef EMMC_BOOT0
+    hwAttrsConfig.enableDma = 1;
+    hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_8BIT;
+    hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
+    hwAttrsConfig.supportedBusVoltages = MMCSD_BUS_VOLTAGE_1_8V;
+    hwAttrsConfig.supportedModes = MMCSD_SUPPORT_MMC_DS;
+#endif
+
     if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0) {
        UART_printf("\nUnable to set config.Exiting. TEST FAILED.\r\n");
        retVal = E_FAIL;
      }
 
+#ifdef EMMC_BOOT0
+
+    MMCSD_init();
+    retVal = MMCSD_open(FATFS_initCfg[0].drvInst, NULL, &gHandle);
+    /* Enable boot partition configurations */
+    if ((retVal = MMCSD_control(gHandle, MMCSD_CMD_ENABLEBOOTPARTITION,
+                            (void *)&partition)))
+    {
+       printf ("\n MMCSD_control failed with retval=%d\r\n",retVal);
+    }
+    if(retVal == CSL_PASS)
+    {
+        retVal = MMCSD_read(gHandle, sysfw_ptr, mmcStartSector, num_blocks_read);
+    }
+#else
     /* Initialization of the driver. */
     FATFS_init();
 
@@ -271,6 +342,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
     FATFS_close(sbl_fatfsHandle);
     sbl_fatfsHandle = NULL;
+#endif
 
     return retVal;
 }
@@ -278,11 +350,20 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
 int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
 {
+    UART_printf("\n If you don't get the logs of the application while booting \
+        from boot0 partition then you might need to pass the MAX_APP_SIZE_EMMC (=<size of you application>) \
+        while building your appimage \n");
     int32_t retVal = E_PASS;
     const TCHAR *fileName = "0:/app";
     FIL     fp = {0};
     FRESULT  fresult;
 
+#ifdef EMMC_BOOT0
+    /* Total number of blocks to be read*/
+    uint32_t num_blocks_read  = (APP_SIZE/SECTORSIZE) + 1;
+    /* Start block to be read */
+    uint32_t mmcStartSector = (EMMC_BOOT0_APP_OFFSET/SECTORSIZE);
+#endif
 
 #ifdef SECURE_BOOT
     uint32_t authenticated = 0; 
@@ -290,6 +371,29 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
     uint32_t imgOffset = 0;
 #endif
 
+
+#ifdef EMMC_BOOT0
+    /* Read the application image into DDR */
+    retVal = MMCSD_read(gHandle, sbl_scratch_mem, mmcStartSector, num_blocks_read);
+    if(retVal != FR_OK)
+    {
+        UART_printf("MMCSD_read Failed to read contents into DDR\n");
+    }
+
+    if(gHandle)
+    {
+        MMCSD_close(gHandle);
+    }
+    fp_readData = &SBL_emmcRead;
+    fp_seek     = &SBL_emmcSeek;
+
+#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200)) || defined(SOC_J721S2)
+        retVal = SBL_MulticoreImageParse((void *) &sbl_scratch_mem, SBL_SCRATCH_MEM_START, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
+#else
+        retVal = SBL_MulticoreImageParse((void *) &sbl_scratch_mem, SBL_SCRATCH_MEM_START, pEntry, SBL_BOOT_AFTER_COPY);
+#endif
+
+#else
     /* Initialization of the driver. */
     FATFS_init();
 
@@ -317,8 +421,8 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
 
 #else
 
-        fp_readData = &SBL_MemRead;
-        fp_seek     = &SBL_MemSeek;
+        fp_readData = &SBL_emmcRead;
+        fp_seek     = &SBL_emmcSeek;
 
 
         /* handling secure boot image */
@@ -361,6 +465,7 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
 
     FATFS_close(sbl_fatfsHandle);
     sbl_fatfsHandle = NULL;
+#endif
 
 #ifdef SECURE_BOOT
     /* install RAM Secure Kernel to overwrite DSP secure server*/
@@ -410,6 +515,22 @@ void SBL_FileSeek(void *fileptr, uint32_t location)
 {
     FIL *fp = (FIL *) (fileptr);
     f_lseek(fp, location);
+}
+
+int32_t SBL_emmcRead(void     *buff,
+                    void     *fileptr,
+                    uint32_t size)
+{
+    int32_t retVal = E_PASS;
+    uint8_t *tmp_buff_ptr = (uint8_t *)buff;
+    memcpy((void *)tmp_buff_ptr, (void *)(*((uint32_t *)fileptr)), size);
+    *((uint32_t *)fileptr) += size;
+    return retVal;
+}
+
+void SBL_emmcSeek(void *fileptr, uint32_t location)
+{
+    *((uint32_t *) fileptr) = location;
 }
 
 #else
