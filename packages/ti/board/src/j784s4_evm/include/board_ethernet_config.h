@@ -51,6 +51,7 @@ extern "C" {
 
 #define BOARD_RGMII_ID_DISABLE_MASK           (0x10U)
 #define BOARD_CPSW9G_ENET1_QGMII_PORTNUM      (0U)
+#define BOARD_CPSW9G_ENET2_QGMII_PORTNUM      (1U)
 #define BOARD_RGMII_ID_DISABLE_MASK           (0x10U)
 
 typedef struct Board_mdioInfo_t
@@ -175,12 +176,16 @@ Board_STATUS Board_ethConfigCpsw9g(void);
  * \brief  Power down the ENET PHYs
  * \brief  Enable/Disable PHY reset for ENET EXP boards PHY
  *
+ * \param  enableFlag      PHY reset enable (drive low)
+ *
  * \return  BOARD_SOK in case of success or appropriate error code
  */
 Board_STATUS Board_cpswEnetExpPhyReset(bool enableFlag);
 
 /**
  * \brief  Enable/Disable COMA_MODE for ENET EXP boards PHY
+ *
+ * \param  enableFlag      Power down enable (drive high)
  *
  * \return  BOARD_SOK in case of success or appropriate error code
  */

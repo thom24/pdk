@@ -41,6 +41,9 @@
 
 #include "board_serdes_cfg.h"
 #include "board_internal.h"
+#include "board_utils.h"
+
+extern Board_initParams_t gBoardInitParams;
 
 /**
  * \brief  Configures kick registers for Pinmux MMR access
@@ -69,11 +72,24 @@ static Board_STATUS Board_serdesKickCtrl(uint32_t lockCtrl)
     return (status);
 }
 
-static Board_STATUS Board_CfgSgmii(void)
+static Board_STATUS Board_CfgSgmii(uint32_t boardID)
 {
     CSL_SerdesResult result;
     CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
     CSL_SerdesLaneEnableParams serdesLaneEnableParams  = {0};
+    uint32_t laneNum;
+    uint32_t laneMask;
+
+    if (boardID == BOARD_ID_ENET)
+    {
+        laneNum  = BOARD_SERDES_SGMII_ENET1_LANE_NUM;
+        laneMask = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    }
+    else
+    {
+        laneNum  = BOARD_SERDES_SGMII_ENET2_LANE_NUM;
+        laneMask = BOARD_SERDES_SGMII_ENET2_LANE_MASK;
+    }
 
     memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
 
@@ -83,16 +99,16 @@ static Board_STATUS Board_CfgSgmii(void)
     serdesLaneEnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
     serdesLaneEnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT0;
     serdesLaneEnableParams.linkRate          = CSL_SERDES_LINK_RATE_1p25G;
-    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET1_LANE_COUNT;
-    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    serdesLaneEnableParams.numLanes          = 1U;
+    serdesLaneEnableParams.laneMask          = laneMask;
     serdesLaneEnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_SGMII;
     serdesLaneEnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
     serdesLaneEnableParams.phyInstanceNum    = BOARD_SERDES_LANE_SELECT_CPSW;
     serdesLaneEnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN3;
 
-    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
-    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
+    serdesLaneEnableParams.laneCtrlRate[laneNum] = CSL_SERDES_LANE_FULL_RATE;
+    serdesLaneEnableParams.loopbackMode[laneNum] = CSL_SERDES_LOOPBACK_DISABLED;
 
     CSL_serdesPorReset(serdesLaneEnableParams.baseAddr);
 
@@ -101,7 +117,7 @@ static Board_STATUS Board_CfgSgmii(void)
                        serdesLaneEnableParams.phyType,
                        serdesLaneEnableParams.phyInstanceNum,
                        serdesLaneEnableParams.serdesInstance,
-                       BOARD_SERDES_SGMII_ENET1_LANE_NUM);
+                       laneNum);
 
 
     result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
@@ -138,11 +154,24 @@ static Board_STATUS Board_CfgSgmii(void)
     return BOARD_SOK;
 }
 
-static Board_STATUS Board_CfgQsgmii(void)
+static Board_STATUS Board_CfgQsgmii(uint32_t boardID)
 {
     CSL_SerdesResult result;
     CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
     CSL_SerdesLaneEnableParams serdesLaneEnableParams  = {0};
+    uint32_t laneNum;
+    uint32_t laneMask;
+
+    if (boardID == BOARD_ID_ENET)
+    {
+        laneNum  = BOARD_SERDES_SGMII_ENET1_LANE_NUM;
+        laneMask = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    }
+    else
+    {
+        laneNum  = BOARD_SERDES_SGMII_ENET2_LANE_NUM;
+        laneMask = BOARD_SERDES_SGMII_ENET2_LANE_MASK;
+    }
 
     memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
 
@@ -152,16 +181,16 @@ static Board_STATUS Board_CfgQsgmii(void)
     serdesLaneEnableParams.refClock          = CSL_SERDES_REF_CLOCK_100M;
     serdesLaneEnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT0;
     serdesLaneEnableParams.linkRate          = CSL_SERDES_LINK_RATE_5G;
-    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET1_LANE_COUNT;
-    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    serdesLaneEnableParams.numLanes          = 1U;
+    serdesLaneEnableParams.laneMask          = laneMask;
     serdesLaneEnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_QSGMII;
     serdesLaneEnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
     serdesLaneEnableParams.phyInstanceNum    = BOARD_SERDES_LANE_SELECT_CPSW;
     serdesLaneEnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
 
-    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
-    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET1_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
+    serdesLaneEnableParams.laneCtrlRate[laneNum] = CSL_SERDES_LANE_FULL_RATE;
+    serdesLaneEnableParams.loopbackMode[laneNum] = CSL_SERDES_LOOPBACK_DISABLED;
 
     CSL_serdesPorReset(serdesLaneEnableParams.baseAddr);
 
@@ -170,8 +199,7 @@ static Board_STATUS Board_CfgQsgmii(void)
                        serdesLaneEnableParams.phyType,
                        serdesLaneEnableParams.phyInstanceNum,
                        serdesLaneEnableParams.serdesInstance,
-                       BOARD_SERDES_SGMII_ENET1_LANE_NUM);
-
+                       laneNum);
 
     result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
                                  serdesLaneEnableParams.baseAddr,
@@ -203,11 +231,24 @@ static Board_STATUS Board_CfgQsgmii(void)
     return BOARD_SOK;
 }
 
-static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
+static Board_STATUS Board_serdesCfgEthernetUsxgmii(uint32_t boardID)
 {
     CSL_SerdesResult result;
     CSL_SerdesLaneEnableStatus laneRetVal = CSL_SERDES_LANE_ENABLE_NO_ERR;
     CSL_SerdesLaneEnableParams serdesLaneEnableParams;
+    uint32_t laneNum;
+    uint32_t laneMask;
+
+    if (boardID == BOARD_ID_ENET)
+    {
+        laneNum  = BOARD_SERDES_SGMII_ENET1_LANE_NUM;
+        laneMask = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
+    }
+    else
+    {
+        laneNum  = BOARD_SERDES_SGMII_ENET2_LANE_NUM;
+        laneMask = BOARD_SERDES_SGMII_ENET2_LANE_MASK;
+    }
 
     memset(&serdesLaneEnableParams, 0, sizeof(serdesLaneEnableParams));
 
@@ -216,15 +257,15 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
     serdesLaneEnableParams.baseAddr          = CSL_WIZ16B8M4CT3_2_WIZ16B8M4CT3_BASE;
     serdesLaneEnableParams.refClock          = CSL_SERDES_REF_CLOCK_156p25M;
     serdesLaneEnableParams.refClkSrc         = CSL_SERDES_REF_CLOCK_INT0;
-    serdesLaneEnableParams.numLanes          = BOARD_SERDES_SGMII_ENET2_LANE_COUNT;
-    serdesLaneEnableParams.laneMask          = BOARD_SERDES_SGMII_ENET2_LANE_MASK;
+    serdesLaneEnableParams.numLanes          = 1U;
+    serdesLaneEnableParams.laneMask          = laneMask;
     serdesLaneEnableParams.SSC_mode          = CSL_SERDES_NO_SSC;
     serdesLaneEnableParams.phyType           = CSL_SERDES_PHY_TYPE_USXGMII;
     serdesLaneEnableParams.operatingMode     = CSL_SERDES_FUNCTIONAL_MODE;
     serdesLaneEnableParams.phyInstanceNum    = BOARD_SERDES_LANE_SELECT_CPSW;
 
-    serdesLaneEnableParams.laneCtrlRate[BOARD_SERDES_SGMII_ENET2_LANE_NUM] = CSL_SERDES_LANE_FULL_RATE;
-    serdesLaneEnableParams.loopbackMode[BOARD_SERDES_SGMII_ENET2_LANE_NUM] = CSL_SERDES_LOOPBACK_DISABLED;
+    serdesLaneEnableParams.laneCtrlRate[laneNum] = CSL_SERDES_LANE_FULL_RATE;
+    serdesLaneEnableParams.loopbackMode[laneNum] = CSL_SERDES_LOOPBACK_DISABLED;
 
     serdesLaneEnableParams.pcieGenType       = CSL_SERDES_PCIE_GEN4;
     serdesLaneEnableParams.linkRate          = CSL_SERDES_LINK_RATE_5p15625G;
@@ -237,7 +278,7 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
                        serdesLaneEnableParams.phyType,
                        serdesLaneEnableParams.phyInstanceNum,
                        serdesLaneEnableParams.serdesInstance,
-                       BOARD_SERDES_SGMII_ENET2_LANE_NUM);
+                       laneNum);
 
     result = CSL_serdesRefclkSel(CSL_CTRL_MMR0_CFG0_BASE,
                                  serdesLaneEnableParams.baseAddr,
@@ -274,25 +315,36 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
  *
  *  The function configures the serdes module for SGMII instance
  *
+ * \param   boardID  [IN]  ID of the board to be configured for:
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
+ *
  * \return   BOARD_SOK in case of success or appropriate error code
  *
  */
 Board_STATUS Board_serdesCfgSgmii(void)
 {
-    Board_STATUS ret;
+    Board_STATUS ret = BOARD_SOK;
+    uint32_t boardID;
 
-    /* Unlock MMR write access */
-    Board_serdesKickCtrl(0);
+    boardID = gBoardInitParams.enetBoardID;
 
-    /* SGMII SERDES initializations */
-    ret = Board_CfgSgmii();
-    Board_serdesKickCtrl(1); /* Lock MMR write access */
-    if(ret != BOARD_SOK)
+    if ((boardID == BOARD_ID_ENET) ||
+        (boardID == BOARD_ID_ENET2))
     {
-        return ret;
+        /* Unlock MMR write access */
+        Board_serdesKickCtrl(0);
+
+        /* SGMII SERDES initializations */
+        ret = Board_CfgSgmii(boardID);
+        Board_serdesKickCtrl(1); /* Lock MMR write access */
+    }
+    else
+    {
+        ret = BOARD_INVALID_PARAM;
     }
 
-    return BOARD_SOK;
+    return ret;
 }
 
 /**
@@ -300,25 +352,36 @@ Board_STATUS Board_serdesCfgSgmii(void)
  *
  *  The function configures the serdes module for QSGMII instances
  *
+ * \param   boardID  [IN]  ID of the board to be configured for:
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
+ *
  * \return   BOARD_SOK in case of success or appropriate error code
  *
  */
 Board_STATUS Board_serdesCfgQsgmii(void)
 {
-    Board_STATUS ret;
+    Board_STATUS ret = BOARD_SOK;
+    uint32_t boardID;
 
-    /* Unlock MMR write access */
-    Board_serdesKickCtrl(0);
+    boardID = gBoardInitParams.enetBoardID;
 
-    /* QSGMII SERDES initializations */
-    ret = Board_CfgQsgmii();
-    Board_serdesKickCtrl(1); /* Lock MMR write access */
-    if(ret != BOARD_SOK)
+    if ((boardID == BOARD_ID_ENET) ||
+        (boardID == BOARD_ID_ENET2))
     {
-        return ret;
+        /* Unlock MMR write access */
+        Board_serdesKickCtrl(0);
+
+        /* QSGMII SERDES initializations */
+        ret = Board_CfgQsgmii(boardID);
+        Board_serdesKickCtrl(1); /* Lock MMR write access */
+    }
+    else
+    {
+        ret = BOARD_INVALID_PARAM;
     }
 
-    return BOARD_SOK;
+    return ret;
 }
 
 /**
@@ -326,24 +389,35 @@ Board_STATUS Board_serdesCfgQsgmii(void)
  *
  *  The function configures the serdes module for USXGMII interface
  *
+ * \param   boardID  [IN]  ID of the board to be configured for:
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
+ *
  * \return   BOARD_SOK in case of success or appropriate error code
  *
  */
 Board_STATUS Board_serdesCfgUsxgmii(void)
 {
-    Board_STATUS ret;
+    Board_STATUS ret = BOARD_SOK;
+    uint32_t boardID;
 
-    /* Unlock MMR write access */
-    Board_serdesKickCtrl(0);
-    /* USXGMII SERDES initializations */
-    ret = Board_serdesCfgEthernetUsxgmii();
-    Board_serdesKickCtrl(1); /* Lock MMR write access */
-    if(ret != BOARD_SOK)
+    boardID = gBoardInitParams.enetBoardID;
+
+    if ((boardID == BOARD_ID_ENET) ||
+        (boardID == BOARD_ID_ENET2))
     {
-        return ret;
+        /* Unlock MMR write access */
+        Board_serdesKickCtrl(0);
+        /* USXGMII SERDES initializations */
+        ret = Board_serdesCfgEthernetUsxgmii(boardID);
+        Board_serdesKickCtrl(1); /* Lock MMR write access */
+    }
+    else
+    {
+        ret = BOARD_INVALID_PARAM;
     }
 
-    return BOARD_SOK;
+    return ret;
 }
 
 /**

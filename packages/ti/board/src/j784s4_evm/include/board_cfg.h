@@ -264,13 +264,15 @@ extern "C" {
 #define BOARD_ID_GESI            (0x0)
 /* Board detect ID for Fusion2 */
 #define BOARD_ID_FUSION2         (0x1U)
-/* Board detect ID for Ethernet expansion board */
+/* Board detect ID for Ethernet expansion board in ENET-EXP-1 slot */
 #define BOARD_ID_ENET            (0x2U)
 /* Board detect ID for EVM */
 #define BOARD_ID_EVM             (0x3U)
+/* Board detect ID for Ethernet expansion board in ENET-EXP-2 slot */
+#define BOARD_ID_ENET2           (0x4U)
 
 /* Maximum number of supporting board ID */
-#define BOARD_ID_MAX_BOARDS      (0x4U)
+#define BOARD_ID_MAX_BOARDS      (0x5U)
 
 #define BOARD_EEPROM_HEADER_LENGTH                      (4U)
 #define BOARD_EEPROM_BOARD_NAME_LENGTH                  (8U)
@@ -286,7 +288,8 @@ extern "C" {
 #define BOARD_SOM_EEPROM_SLAVE_ADDR                   (0x50U)
 #define BOARD_CP_EEPROM_SLAVE_ADDR                    (0x50U)
 #define BOARD_EVM_EEPROM_SLAVE_ADDR                   (0x50U)
-#define BOARD_ENET_EEPROM_SLAVE_ADDR                  (0x54U)
+#define BOARD_ENET1_EEPROM_SLAVE_ADDR                 (0x54U)
+#define BOARD_ENET2_EEPROM_SLAVE_ADDR                 (0x51U)
 #define BOARD_GESI_EEPROM_SLAVE_ADDR                  (0x52U)
 #define BOARD_CSI2_EEPROM_SLAVE_ADDR                  (0x52U)
 #define BOARD_DISPLAY_EEPROM_SLAVE_ADDR               (0x00U) //J7ES_TBD: Need to update salve addr when board design is complete

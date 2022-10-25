@@ -50,12 +50,13 @@
 Board_DetectCfg_t  gBoardDetCfg[BOARD_ID_MAX_BOARDS] =
  {{BOARD_COMMON_EEPROM_I2C_INST, BOARD_GESI_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-GESI-EXP"},
   {BOARD_CSI2_EEPROM_I2C_INST, BOARD_CSI2_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_MAIN, "J7X-FUSION2-CSI"},
-  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_ENET_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-VSC8514-ETH"},
-  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_EVM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J784S4X-EVM"}};
+  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_ENET1_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-VSC8514-ETH"},
+  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_EVM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J784S4X-EVM"},
+  {BOARD_COMMON_EEPROM_I2C_INST, BOARD_ENET2_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-VSC8514-ETH"}};
 
 Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
 Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE,
-                                       BOARD_MAIN_CLOCK_GROUP_ALL, BOARD_MCU_CLOCK_GROUP_ALL};
+                                       BOARD_MAIN_CLOCK_GROUP_ALL, BOARD_MCU_CLOCK_GROUP_ALL, BOARD_ID_ENET, 0};
 
 /**
  *  \brief    Function to configure SD card voltage control gpio configuration.
@@ -98,8 +99,9 @@ static void Board_sdVoltageCtrlGpioCfg(uint8_t gpioValue)
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
  * \n                      BOARD_ID_EVM(0x3) - EVM Board
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
  *
@@ -131,8 +133,9 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
  * \n                      BOARD_ID_EVM(0x3) - EVM Board
+ * \n                      BOARD_ID_ENET2(0x4) - ENET Board (ENET-EXP-2)
  *
  * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
@@ -146,7 +149,7 @@ bool Board_detectBoard(uint32_t boardID)
     Board_STATUS status;
     bool bDet = FALSE;
 
-    if(boardID <= BOARD_ID_EVM)
+    if(boardID <= BOARD_ID_ENET2)
     {
         status = Board_getBoardData(&info, boardID);
         if(status == 0)
@@ -169,8 +172,9 @@ bool Board_detectBoard(uint32_t boardID)
  * \param   boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
  * \n                      BOARD_ID_EVM(0x3) - EVM Board
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
  *
  * \return TRUE if board revision is Alpha, FALSE for all other cases
  */
@@ -188,37 +192,49 @@ bool Board_isAlpha(uint32_t boardID)
  *  This function detects type of the application card connected on
  *  ENET expansion connector.
  *
+ * \param   boardID  [IN]  ID of the board to be detected
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
+ *
  *  \return
  *            0 (BOARD_ENET_NONE)   - No board connected or invalid board ID data
  *            1 (BOARD_ENET_QSGMII) - QSGMII board connected
  *            2 (BOARD_ENET_SGMII)  - SGMII board connected
  *           -1 (BOARD_ENET_UNKOWN) - Unknown board
 */
-int32_t Board_detectEnetCard(void)
+int32_t Board_detectEnetCard(uint32_t boardID)
 {
     Board_IDInfo_v2 info = {0};
     Board_STATUS status;
     int8_t ret = 0;
 
-    status = Board_getBoardData(&info, BOARD_ID_ENET);
-    if(status == 0)
+    if ((boardID == BOARD_ID_ENET) ||
+        (boardID == BOARD_ID_ENET2))
     {
-        if((strcmp(info.boardInfo.boardName, "J7X-VSC8514-ETH")) == 0)
+        status = Board_getBoardData(&info, boardID);
+        if(status == 0)
         {
-            ret = BOARD_ENET_QSGMII;
-        }
-        else if((strcmp(info.boardInfo.boardName, "J7X-DP83869-ETH")) == 0)
-        {
-            ret = BOARD_ENET_SGMII;
+            if((strcmp(info.boardInfo.boardName, "J7X-VSC8514-ETH")) == 0)
+            {
+                ret = BOARD_ENET_QSGMII;
+            }
+            else if((strcmp(info.boardInfo.boardName, "J7X-DP83869-ETH")) == 0)
+            {
+                ret = BOARD_ENET_SGMII;
+            }
+            else
+            {
+                ret = BOARD_ENET_UNKOWN;
+            }
         }
         else
         {
-            ret = BOARD_ENET_UNKOWN;
+            ret = BOARD_ENET_NONE;
         }
     }
     else
     {
-        ret = BOARD_ENET_NONE;
+        ret = BOARD_ENET_UNKOWN;
     }
 
     return ret;
@@ -247,8 +263,9 @@ int32_t Board_detectEnetCard(void)
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
  * \n                      BOARD_ID_EVM(0x3) - EVM Board
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
  * \param  macAddrBuf[OUT] Buffer to write MAC IDs read from EEPROM
  * \param  macBufSize[IN]  Size of the macAddrBuf
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
@@ -268,7 +285,7 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
     Board_STATUS status;
     uint8_t macCount = 0;
 
-    if((boardID <= BOARD_ID_EVM) && (macAddrBuf != NULL))
+    if((boardID <= BOARD_ID_ENET2) && (macAddrBuf != NULL))
     {
         status = Board_getBoardData(&info, boardID);
         if(status == 0)
@@ -311,8 +328,9 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
  * \param  boardID  [IN]  ID of the board to be detected
  * \n                      BOARD_ID_GESI(0x0) - GESI Board
  * \n                      BOARD_ID_FUSION2(0x1) - Fusion 2 Board
- * \n                      BOARD_ID_ENET(0x2) - ENET Board
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
  * \n                      BOARD_ID_EVM(0x3) - EVM Board
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
  * \param  macAddrCnt[OUT] Number of valid MAC addresses programmed to the EEPROM
  *
  * \return   BOARD_SOK in case of success or appropriate error code.
@@ -324,7 +342,7 @@ Board_STATUS Board_readMacAddrCount(uint32_t boardID,
     Board_IDInfo_v2 info = {0};
     Board_STATUS status;
 
-    if((boardID <= BOARD_ID_EVM) && (macAddrCnt != NULL))
+    if((boardID <= BOARD_ID_ENET2) && (macAddrCnt != NULL))
     {
         status = Board_getBoardData(&info, boardID);
         if(status == 0)

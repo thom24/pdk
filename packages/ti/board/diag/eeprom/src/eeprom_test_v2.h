@@ -126,7 +126,7 @@ extern "C" {
 #define EVM_EEPROM_SLAVE_ADDR                   (BOARD_EVM_EEPROM_SLAVE_ADDR)
 #define EXP_CONN_EEPROM_SLAVE_ADDR              (BOARD_GESI_EEPROM_SLAVE_ADDR)
 #define CSI2_EXP_EEPROM_SLAVE_ADDR              (BOARD_CSI2_EEPROM_SLAVE_ADDR)
-#define ENET_EXP_EEPROM_SLAVE_ADDR              (BOARD_ENET_EEPROM_SLAVE_ADDR)
+#define ENET_EXP_EEPROM_SLAVE_ADDR              (BOARD_ENET1_EEPROM_SLAVE_ADDR)
 
 #else  /* j721e_evm */
 #define MAX_NUM_OF_BOARDS                       (9U)

@@ -115,6 +115,13 @@ typedef struct Board_initParams_s
         BOARD_MCU_CLOCK_GROUP1 - Enable clock for all group1 in mcu domain
         BOARD_MCU_CLOCK_GROUP2 - Enable clock for all group2 in mcu domain */
     uint8_t mcuClkGrp;
+    /** Board ID of the ENET expansion board. Default - BOARD_ID_ENET */
+    uint32_t enetBoardID;
+    /** Flag to indicate whether both the ENET ports will be used for ENET card
+        0 - One ENET port with enetBoardID is used for ENET card and other is used as USXGMII.
+        1 - Both ENET ports are used for ENET card connection.
+       */
+    uint32_t dualEnetCfg;
 } Board_initParams_t;
 
 /**
@@ -186,10 +193,17 @@ bool Board_isAlpha(uint32_t boardID);
 /**
  *  \brief    Function to detect ENET expansion application card type
  *
+ * \param   boardID  [IN]  ID of the board to be detected
+ * \n                      BOARD_ID_ENET(0x2) - ENET Board (ENET-EXP-1)
+ * \n                      BOARD_ID_ENET2(0x4) - ENET board (ENET-EXP-2)
  *
  *  \return
+ *            0 (BOARD_ENET_NONE)   - No board connected or invalid board ID data
+ *            1 (BOARD_ENET_QSGMII) - QSGMII board connected
+ *            2 (BOARD_ENET_SGMII)  - SGMII board connected
+ *           -1 (BOARD_ENET_UNKOWN) - Unknown board
  */
-int32_t Board_detectEnetCard(void);
+int32_t Board_detectEnetCard(uint32_t enetExpId);
 
 /**
  * \brief Read MAC ID function
