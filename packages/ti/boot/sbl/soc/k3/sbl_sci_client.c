@@ -245,6 +245,10 @@ void SBL_SciClientInit(void)
     }
 #endif
 
+/* On J7AHP HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround 
+SBL needs to open this firewall before doing PM Init. This condition should be 
+removed after having a fix in TIFS */
+#if !(defined(SOC_J784S4) && defined(BUILD_HS))
 #ifndef SBL_SKIP_BRD_CFG_PM
     if (SBL_LOG_LEVEL > SBL_LOG_NONE)
     {
@@ -277,6 +281,7 @@ void SBL_SciClientInit(void)
         UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
         UART_stdioInit(BOARD_UART_INSTANCE);
     }
+#endif
 #endif
 
 #ifndef SBL_SKIP_BRD_CFG_SEC
@@ -398,6 +403,43 @@ void SBL_SciClientInit(void)
         }
     }
 #endif  
+
+/* As a workaround do PM Init for J7AHP HS after opening up BOLT_PSC firewall */
+#if defined(SOC_J784S4) && defined(BUILD_HS)
+#ifndef SBL_SKIP_BRD_CFG_PM
+    if (SBL_LOG_LEVEL > SBL_LOG_NONE)
+    {
+        SBL_ADD_PROFILE_POINT;
+        UART_stdioDeInit();
+    }
+    SBL_ADD_PROFILE_POINT;
+    sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
+    sblBoardCfgPmPrms.boardConfigHigh = 0;
+    sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+    sblBoardCfgPmPrms.devGrp = SBL_DEVGRP;
+    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
+    SBL_ADD_PROFILE_POINT;
+    status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
+    SBL_ADD_PROFILE_POINT;
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient board config pm...FAILED \n")
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    if (SBL_LOG_LEVEL > SBL_LOG_NONE)
+    {
+        /* Re-init UART for logging */
+        UART_HwAttrs uart_cfg;
+
+        SBL_ADD_PROFILE_POINT;
+        UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
+        uart_cfg.frequency = SBL_SYSFW_UART_MODULE_INPUT_CLK;
+        UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
+        UART_stdioInit(BOARD_UART_INSTANCE);
+    }
+#endif
+#endif
 
 #ifndef SBL_SKIP_BRD_CFG_RM
     SBL_ADD_PROFILE_POINT;

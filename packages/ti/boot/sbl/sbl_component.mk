@@ -1478,9 +1478,7 @@ export sbl_cust_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
 export sbl_cust_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
 export sbl_cust_img_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_cust_img_hs_SBL_IMAGEGEN = yes
-ifneq ($(SOC),$(filter $(SOC), ))
 sbl_EXAMPLE_LIST += sbl_cust_img_hs
-endif
 
 # R5 boot performance Test - works only with custom SBL
 sbl_boot_perf_test_COMP_LIST = sbl_boot_perf_test
