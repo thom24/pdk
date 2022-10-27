@@ -88,7 +88,7 @@ SECTIONS
 /* Data sections. */
 
     .KERNEL_DATA LOAD_START( lnkKernelDataStartAddr ),
-                    LOAD_END( lnkKernelDataEndAddr )        : {} palign( 32 )  > R5F_TCMB0
+                    LOAD_END( lnkKernelDataEndAddr )        : {} palign( 0x800 )  > OCMC_RAM_SCISERVER
     .boardcfg_data                                          : {} palign( 128 ) > R5F_TCMB0
 
     GROUP  palign( 32 ), LOAD_START( lnkRamStartAddr ), LOAD_END( lnkRamEndAddr )
