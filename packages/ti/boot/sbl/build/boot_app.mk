@@ -23,7 +23,6 @@ endif
 
 APP_NAME = boot_app_$(BOOTMODE)$(HS_SUFFIX)
 LOCAL_APP_NAME = sbl_boot_app_$(BOOTMODE)$(HLOS_SUFFIX)$(HS_SUFFIX)_$(BOARD)_$(CORE)_$(BUILD_OS_TYPE)_TestApp
-$(info building app with $(HS_SUFFIX) $(HLOS_SUFFIX) $(APP_NAME))
 SRCDIR      = $(PDK_SBL_COMP_PATH)/example/boot_app
 
 INCDIR      =  $(PDK_INSTALL_PATH)/ti/boot/sbl/soc/k3

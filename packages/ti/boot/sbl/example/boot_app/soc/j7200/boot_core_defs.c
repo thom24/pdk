@@ -134,16 +134,16 @@ const sblSlaveCoreInfo_t sbl_late_slave_core_stages_info[NUM_BOOT_STAGES][MAX_CO
         SBL_MCU2_CPU1_FREQ_HZ,
         },
         {
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
         },
         {
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
         }
     },
     {
@@ -155,22 +155,22 @@ const sblSlaveCoreInfo_t sbl_late_slave_core_stages_info[NUM_BOOT_STAGES][MAX_CO
         SBL_MPU1_CPU0_FREQ_HZ,
         },
         {
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
         },
         {
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
         },
         {
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE,
-        SBL_INVALID_CORE
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
         }
     }
 };
