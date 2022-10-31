@@ -503,31 +503,31 @@ optimized boot. See <a class="reference internal" href="../../6_topic_user_guide
 <p>This extension adds support for booting various cores on a K3 SOC. It is
 identified by the OID <strong>1.3.6.1.4.1.294.1.33</strong>. The structure of the field is
 shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">Boot</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">bootCore</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">indicates</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">core</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="n">that</span><span class="w"> </span><span class="n">needs</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">booted</span><span class="w"></span>
-<span class="w">                      </span><span class="o">--</span><span class="w"> </span><span class="n">with</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">accompanying</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">certificate</span><span class="p">.</span><span class="w"></span>
-<span class="w">    </span><span class="n">configFlags_set</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">core</span><span class="w"> </span><span class="n">being</span><span class="w"> </span><span class="n">booted</span><span class="p">.</span><span class="w"></span>
-<span class="w">                             </span><span class="o">--</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">set</span><span class="w"></span>
-<span class="w">    </span><span class="n">configFlags_clr</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Configuration</span><span class="w"> </span><span class="n">options</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">core</span><span class="w"> </span><span class="n">being</span><span class="w"> </span><span class="n">booted</span><span class="w"></span>
-<span class="w">                             </span><span class="o">--</span><span class="w"> </span><span class="n">flags</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">clear</span><span class="w"></span>
-<span class="w">    </span><span class="n">resetVec</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Location</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">reset</span><span class="w"> </span><span class="n">vector</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">core</span><span class="p">.</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">Boot</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+    <span class="n">bootCore</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">the</span> <span class="n">core</span> <span class="n">in</span> <span class="n">the</span> <span class="n">device</span> <span class="n">that</span> <span class="n">needs</span> <span class="n">to</span> <span class="n">be</span> <span class="n">booted</span>
+                      <span class="o">--</span> <span class="n">with</span> <span class="n">the</span> <span class="n">image</span> <span class="n">accompanying</span> <span class="k">this</span> <span class="n">certificate</span><span class="p">.</span>
+    <span class="n">configFlags_set</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">Configuration</span> <span class="n">options</span> <span class="k">for</span> <span class="n">the</span> <span class="n">core</span> <span class="n">being</span> <span class="n">booted</span><span class="p">.</span>
+                             <span class="o">--</span> <span class="n">flags</span> <span class="n">to</span> <span class="n">set</span>
+    <span class="n">configFlags_clr</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">Configuration</span> <span class="n">options</span> <span class="k">for</span> <span class="n">the</span> <span class="n">core</span> <span class="n">being</span> <span class="n">booted</span>
+                             <span class="o">--</span> <span class="n">flags</span> <span class="n">to</span> <span class="n">clear</span>
+    <span class="n">resetVec</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">Location</span> <span class="n">of</span> <span class="n">reset</span> <span class="n">vector</span> <span class="k">for</span> <span class="n">the</span> <span class="n">core</span><span class="p">.</span>
 
-<span class="w">    </span><span class="n">fieldValid</span><span class="w"> </span><span class="n">INTEGER</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">indicates</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">reserved</span><span class="w"> </span><span class="n">fields</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">extension</span><span class="w"> </span><span class="n">are</span><span class="w"></span>
-<span class="w">                       </span><span class="o">--</span><span class="w"> </span><span class="n">valid</span><span class="w"></span>
-<span class="w">    </span><span class="n">rsvd1</span><span class="w">     </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">reserved</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">future</span><span class="w"> </span><span class="n">use</span><span class="w"></span>
-<span class="w">    </span><span class="n">rsvd2</span><span class="w">     </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">reserved</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">future</span><span class="w"> </span><span class="n">use</span><span class="w"></span>
-<span class="w">    </span><span class="n">rsvd3</span><span class="w">     </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">reserved</span><span class="w"> </span><span class="n">field</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">future</span><span class="w"> </span><span class="n">use</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+    <span class="n">fieldValid</span> <span class="n">INTEGER</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">which</span> <span class="n">of</span> <span class="n">the</span> <span class="n">reserved</span> <span class="n">fields</span> <span class="n">in</span> <span class="n">the</span> <span class="n">extension</span> <span class="n">are</span>
+                       <span class="o">--</span> <span class="n">valid</span>
+    <span class="n">rsvd1</span>     <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">reserved</span> <span class="n">field</span> <span class="k">for</span> <span class="n">future</span> <span class="n">use</span>
+    <span class="n">rsvd2</span>     <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">reserved</span> <span class="n">field</span> <span class="k">for</span> <span class="n">future</span> <span class="n">use</span>
+    <span class="n">rsvd3</span>     <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">reserved</span> <span class="n">field</span> <span class="k">for</span> <span class="n">future</span> <span class="n">use</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The boot extension is decoded into the below structure.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">sec_boot_ctrl</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">u32</span><span class="w"> </span><span class="n">bootCore</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">u32</span><span class="w"> </span><span class="n">configFlags_set</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">u32</span><span class="w"> </span><span class="n">configFlags_clr</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">u64</span><span class="w"> </span><span class="n">resetVec</span><span class="p">;</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sec_boot_ctrl</span> <span class="p">{</span>
+    <span class="n">u32</span> <span class="n">bootCore</span><span class="p">;</span>
+    <span class="n">u32</span> <span class="n">configFlags_set</span><span class="p">;</span>
+    <span class="n">u32</span> <span class="n">configFlags_clr</span><span class="p">;</span>
+    <span class="n">u64</span> <span class="n">resetVec</span><span class="p">;</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The reserved fields are for future use and are not decoded currently.</p>
@@ -538,8 +538,8 @@ shown below in ASN.1 notation.</p>
 <li><p class="first"><code class="docutils literal"><span class="pre">bootCore</span></code> should be initialized to the Core ID of the targeted core.
 Core ID should be obtained from the SOC data. e.g. For booting a
 core with ID <code class="docutils literal"><span class="pre">0x20</span></code>, the relevant line in the X509 template is</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">[</span><span class="w"> </span><span class="n">boot_seq</span><span class="w"> </span><span class="p">]</span><span class="w"></span>
-<span class="n">bootCore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nl">INTEGER</span><span class="p">:</span><span class="mh">0x20</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="p">[</span> <span class="n">boot_seq</span> <span class="p">]</span>
+<span class="n">bootCore</span> <span class="o">=</span> <span class="nl">INTEGER</span><span class="p">:</span><span class="mh">0x20</span>
 </pre></div>
 </div>
 </li>
@@ -590,15 +590,15 @@ that needs to be programmed. The representation is big endian.</li>
 <p>This extension adds support for specifying a hash and size of the accompanying
 payload. It is identified by the OID <strong>1.3.6.1.4.1.294.1.34</strong>. The structure of
 the field is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">INTEGRITY</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">shaType</span><span class="w"> </span><span class="n">OID</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">indicates</span><span class="w"> </span><span class="n">OID</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">hash</span><span class="w"> </span><span class="n">used</span><span class="p">.</span><span class="w"> </span><span class="n">Must</span><span class="w"> </span><span class="n">always</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">set</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">SHA2</span><span class="mi">-512</span><span class="w"></span>
-<span class="w">                </span><span class="o">--</span><span class="w"> </span><span class="nl">OID</span><span class="p">:</span><span class="mf">2.16.840.1.101.3.4.2.3</span><span class="w"></span>
-<span class="w">   </span><span class="n">shaValue</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">SHA2</span><span class="mi">-512</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">payload</span><span class="w"></span>
-<span class="w">   </span><span class="n">imageSize</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Size</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">bytes</span><span class="p">.</span><span class="w"> </span><span class="n">This</span><span class="w"> </span><span class="n">will</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">amount</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">data</span><span class="w"></span>
-<span class="w">                      </span><span class="o">--</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">checking</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">integrity</span><span class="p">,</span><span class="w"> </span><span class="n">copying</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">image</span><span class="w"></span>
-<span class="w">                      </span><span class="o">--</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">its</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="n">or</span><span class="w"> </span><span class="n">when</span><span class="w"> </span><span class="n">decrypting</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">image</span><span class="p">.</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">INTEGRITY</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">shaType</span> <span class="n">OID</span><span class="p">,</span> <span class="o">--</span> <span class="n">indicates</span> <span class="n">OID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">hash</span> <span class="n">used</span><span class="p">.</span> <span class="n">Must</span> <span class="n">always</span> <span class="n">be</span> <span class="n">set</span> <span class="n">to</span> <span class="n">SHA2</span><span class="o">-</span><span class="mi">512</span>
+                <span class="o">--</span> <span class="nl">OID</span><span class="p">:</span><span class="mf">2.16.840.1.101.3.4.2.3</span>
+   <span class="n">shaValue</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">SHA2</span><span class="o">-</span><span class="mi">512</span> <span class="n">value</span> <span class="n">of</span> <span class="n">the</span> <span class="n">payload</span>
+   <span class="n">imageSize</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">Size</span> <span class="n">of</span> <span class="n">the</span> <span class="n">image</span> <span class="n">in</span> <span class="n">bytes</span><span class="p">.</span> <span class="n">This</span> <span class="n">will</span> <span class="n">be</span> <span class="n">amount</span> <span class="n">of</span> <span class="n">data</span>
+                      <span class="o">--</span> <span class="n">used</span> <span class="n">when</span> <span class="n">checking</span> <span class="n">the</span> <span class="n">image</span> <span class="n">integrity</span><span class="p">,</span> <span class="n">copying</span> <span class="n">the</span> <span class="n">image</span>
+                      <span class="o">--</span> <span class="n">to</span> <span class="n">its</span> <span class="n">destination</span> <span class="n">or</span> <span class="n">when</span> <span class="n">decrypting</span> <span class="n">the</span> <span class="n">image</span><span class="p">.</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -607,10 +607,10 @@ the field is shown below in ASN.1 notation.</p>
 <p>System Firmware reuses the Software Revision extension/OID as defined by ROM as no
 additional information is required. This is identified by OID
 <strong>1.3.6.1.4.1.294.1.3</strong>.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">SWREV</span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">swrev</span><span class="w"> </span><span class="n">INTEGER</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="n">bit</span><span class="w"> </span><span class="n">value</span><span class="w"> </span><span class="n">indicating</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">revision</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">binary</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">SWREV</span><span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">swrev</span> <span class="n">INTEGER</span> <span class="o">--</span> <span class="mi">32</span> <span class="n">bit</span> <span class="n">value</span> <span class="n">indicating</span> <span class="n">the</span> <span class="n">revision</span> <span class="n">of</span> <span class="n">the</span> <span class="n">binary</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -618,23 +618,23 @@ additional information is required. This is identified by OID
 <span id="sysfw-load-ext"></span><h3>System Firmware Load Extension<a class="headerlink" href="#sysfw-load-extension" title="Permalink to this headline">¶</a></h3>
 <p>System Firmware uses the Load extension to determine where the image is loaded
 as part of authentication. The load extension is identified by OID <strong>1.3.6.1.4.1.294.1.35</strong>. This is a new extension defined by System Firmware.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">LOAD</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">     </span><span class="n">destAddr</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Address</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">image</span><span class="w"> </span><span class="n">accompanying</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">certificate</span><span class="w"></span>
-<span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">needs</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">copied</span><span class="p">.</span><span class="w"></span>
-<span class="w">     </span><span class="n">auth_type</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">      </span><span class="o">--</span><span class="w"> </span><span class="n">Serves</span><span class="w"> </span><span class="n">two</span><span class="w"> </span><span class="nl">purposes</span> <span class="p">:</span><span class="w"></span>
-<span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">Controls</span><span class="w"> </span><span class="k">if</span><span class="o">/</span><span class="n">how</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">authenticated</span><span class="w"> </span><span class="n">binary</span><span class="w"> </span><span class="n">is</span><span class="w"> </span><span class="n">copied</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="n">different</span><span class="w"></span>
-<span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">location</span><span class="p">.</span><span class="w"> </span><span class="n">See</span><span class="w"> </span><span class="n">below</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">more</span><span class="w"> </span><span class="n">information</span><span class="p">.</span><span class="w"></span>
-<span class="w">                            </span><span class="o">--</span><span class="w"> </span><span class="n">Contains</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">Host</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">destination</span><span class="w"> </span><span class="n">core</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">LOAD</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+     <span class="n">destAddr</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">Address</span> <span class="n">to</span> <span class="n">which</span> <span class="n">the</span> <span class="n">image</span> <span class="n">accompanying</span> <span class="k">this</span> <span class="n">certificate</span>
+                            <span class="o">--</span> <span class="n">needs</span> <span class="n">to</span> <span class="n">be</span> <span class="n">copied</span><span class="p">.</span>
+     <span class="n">auth_type</span> <span class="n">INTEGER</span>      <span class="o">--</span> <span class="n">Serves</span> <span class="n">two</span> <span class="nl">purposes</span> <span class="p">:</span>
+                            <span class="o">--</span> <span class="n">Controls</span> <span class="k">if</span><span class="o">/</span><span class="n">how</span> <span class="n">the</span> <span class="n">authenticated</span> <span class="n">binary</span> <span class="n">is</span> <span class="n">copied</span> <span class="n">to</span> <span class="n">a</span> <span class="n">different</span>
+                            <span class="o">--</span> <span class="n">location</span><span class="p">.</span> <span class="n">See</span> <span class="n">below</span> <span class="k">for</span> <span class="n">more</span> <span class="n">information</span><span class="p">.</span>
+                            <span class="o">--</span> <span class="n">Contains</span> <span class="n">the</span> <span class="n">Host</span> <span class="n">ID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">destination</span> <span class="n">core</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The load extension is decoded into the below structure.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_load_info</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w"> </span><span class="n">u64</span><span class="w"> </span><span class="n">destAddr</span><span class="p">;</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w">  </span><span class="n">auth_in_place</span><span class="p">;</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w">  </span><span class="n">copy_as_host</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_load_info</span> <span class="p">{</span>
+ <span class="n">u64</span> <span class="n">destAddr</span><span class="p">;</span>
+ <span class="n">u8</span>  <span class="n">auth_in_place</span><span class="p">;</span>
+ <span class="n">u8</span>  <span class="n">copy_as_host</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 <div class="section" id="id9">
@@ -705,22 +705,22 @@ value</td>
 <p>System Firmware reuses the Encryption extension/OID as defined by ROM as no
 additional information is required. This is identified by OID
 <strong>1.3.6.1.4.1.294.1.4</strong>.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">ENCRYPT</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">initalVector</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">randomString</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">iterationCnt</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">salt</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="nl">ENCRYPT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">initalVector</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">randomString</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">iterationCnt</span> <span class="n">INTEGER</span><span class="p">,</span>
+   <span class="n">salt</span> <span class="n">OCTET</span> <span class="n">STRING</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The encryption extension is decoded into the following data structure.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_enc_info</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">iterationCnt</span><span class="p">;</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">salt</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_enc_info</span> <span class="p">{</span>
+ <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>
+ <span class="n">u8</span> <span class="n">salt</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 <div class="section" id="id10">
@@ -763,22 +763,22 @@ before performing in-place decryption at the loaded location.</p>
 <p>The custom extension field used for debug control is identified by the OID
 <strong>1.3.6.1.4.1.294.1.8</strong>. The structure of the field is shown below in
 ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">UID</span><span class="o">-</span><span class="n">Debug</span><span class="w"> </span><span class="o">::=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">uid</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">unique</span><span class="w"> </span><span class="n">ID</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">device</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="k">this</span><span class="w"> </span><span class="n">certificate</span><span class="w"> </span><span class="n">applies</span><span class="w"></span>
-<span class="w">    </span><span class="n">debugCtrl</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">debug</span><span class="w"> </span><span class="n">control</span><span class="w"> </span><span class="n">information</span><span class="w"></span>
-<span class="w">    </span><span class="n">coreDbgEn</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Core</span><span class="w"> </span><span class="n">IDs</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">debug</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">enabled</span><span class="w"></span>
-<span class="w">    </span><span class="n">coreDbgSecEn</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"> </span><span class="o">--</span><span class="w"> </span><span class="n">Core</span><span class="w"> </span><span class="n">IDs</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">which</span><span class="w"> </span><span class="n">secure</span><span class="w"> </span><span class="n">debug</span><span class="w"> </span><span class="n">must</span><span class="w"> </span><span class="n">be</span><span class="w"> </span><span class="n">enabled</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">UID</span><span class="o">-</span><span class="n">Debug</span> <span class="o">::=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+    <span class="n">uid</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span> <span class="o">--</span> <span class="n">unique</span> <span class="n">ID</span> <span class="n">of</span> <span class="n">the</span> <span class="n">device</span> <span class="k">for</span> <span class="n">which</span> <span class="k">this</span> <span class="n">certificate</span> <span class="n">applies</span>
+    <span class="n">debugCtrl</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">debug</span> <span class="n">control</span> <span class="n">information</span>
+    <span class="n">coreDbgEn</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">Core</span> <span class="n">IDs</span> <span class="k">for</span> <span class="n">which</span> <span class="n">debug</span> <span class="n">must</span> <span class="n">be</span> <span class="n">enabled</span>
+    <span class="n">coreDbgSecEn</span> <span class="n">INTEGER</span><span class="p">,</span> <span class="o">--</span> <span class="n">Core</span> <span class="n">IDs</span> <span class="k">for</span> <span class="n">which</span> <span class="n">secure</span> <span class="n">debug</span> <span class="n">must</span> <span class="n">be</span> <span class="n">enabled</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The debug control data is decoded as a structure below:</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">sdbg_debug_ctrl</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">    </span><span class="n">u16</span><span class="w"> </span><span class="n">debug_priv_level</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">u16</span><span class="w"> </span><span class="n">reserved</span><span class="p">;</span><span class="w"></span>
-<span class="w">    </span><span class="n">u8</span><span class="w"> </span><span class="n">debug_core_sel</span><span class="p">[</span><span class="n">MAX_CPU_CORES</span><span class="p">];</span><span class="w"></span>
-<span class="w">    </span><span class="n">u8</span><span class="w"> </span><span class="n">sec_debug_core_sel</span><span class="p">[</span><span class="n">MAX_CPU_CORES</span><span class="p">];</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">sdbg_debug_ctrl</span> <span class="p">{</span>
+    <span class="n">u16</span> <span class="n">debug_priv_level</span><span class="p">;</span>
+    <span class="n">u16</span> <span class="n">reserved</span><span class="p">;</span>
+    <span class="n">u8</span> <span class="n">debug_core_sel</span><span class="p">[</span><span class="n">MAX_CPU_CORES</span><span class="p">];</span>
+    <span class="n">u8</span> <span class="n">sec_debug_core_sel</span><span class="p">[</span><span class="n">MAX_CPU_CORES</span><span class="p">];</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The table below shows the way <strong>UID-Debug</strong> fields are decoded into <strong>struct sdbg_debug_ctrl</strong>.</p>
@@ -883,32 +883,32 @@ board configuration blobs</p>
 <p>and the encryption parameters of the security board configuration are encoded in
 the board configuration extension of the System Firmware outer certificate . This
 extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="n">HS</span><span class="o">-</span><span class="nl">BCFG</span><span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">initalVector</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">randomString</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">iterationCnt</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">salt</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">secBoardCfgHash</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">secBoardCfgVer</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">pmBoardCfgHash</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w"></span>
-<span class="w">   </span><span class="n">rmBoardCfgHash</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="w"></span>
-<span class="w">   </span><span class="n">boardCfgHash</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="n">HS</span><span class="o">-</span><span class="nl">BCFG</span><span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">initalVector</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">randomString</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">iterationCnt</span> <span class="n">INTEGER</span><span class="p">,</span>
+   <span class="n">salt</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">secBoardCfgHash</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">secBoardCfgVer</span> <span class="n">INTEGER</span><span class="p">,</span>
+   <span class="n">pmBoardCfgHash</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>
+   <span class="n">rmBoardCfgHash</span> <span class="n">OCTET</span> <span class="n">STRING</span>
+   <span class="n">boardCfgHash</span> <span class="n">OCTET</span> <span class="n">STRING</span>
+<span class="p">}</span>
 </pre></div>
 </div>
 <p>The extension is decoded into the following data structure.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">ti_bcfg_info</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">iterationCnt</span><span class="p">;</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">salt</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">secBoardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">secBoardCfgVer</span><span class="p">;</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">pmBoardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">rmBoardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w"> </span><span class="n">u8</span><span class="w"> </span><span class="n">boardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">ti_bcfg_info</span> <span class="p">{</span>
+ <span class="n">u8</span> <span class="n">initialVector</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">randomString</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">iterationCnt</span><span class="p">;</span>
+ <span class="n">u8</span> <span class="n">salt</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">secBoardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">secBoardCfgVer</span><span class="p">;</span>
+ <span class="n">u8</span> <span class="n">pmBoardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">rmBoardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+ <span class="n">u8</span> <span class="n">boardCfgHash</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 <div class="section" id="id11">
@@ -968,17 +968,17 @@ structure.</li>
 <p>This extension contains information about the TIFEK(public) encrypted AES-256 key (random key,
 chosen by customer for keywriter). It is identified by the OID <strong>1.3.6.1.4.1.294.1.64</strong>.
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span><span class="w"> </span><span class="n">encrypted</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">chosen</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">          </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span> <span class="n">encrypted</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span> <span class="n">key</span> <span class="n">chosen</span> <span class="n">by</span> <span class="n">the</span> <span class="n">user</span><span class="p">.</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_enc_aes</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_enc_aes</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -987,17 +987,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the TIFEK(public) encrypted, SMPK(priv) signed
 AES-256 key (random key, chosen by customer for keywriter). It is identified by the
 OID <strong>1.3.6.1.4.1.294.1.65</strong>. The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">SMPK</span><span class="o">-</span><span class="n">SIGN</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span><span class="w"> </span><span class="n">encrypted</span><span class="p">,</span><span class="w"> </span><span class="n">SMPK</span><span class="p">(</span><span class="n">priv</span><span class="p">)</span><span class="w"> </span><span class="kt">signed</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">chosen</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">          </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">SMPK</span><span class="o">-</span><span class="n">SIGN</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span> <span class="n">encrypted</span><span class="p">,</span> <span class="n">SMPK</span><span class="p">(</span><span class="n">priv</span><span class="p">)</span> <span class="kt">signed</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span> <span class="n">key</span> <span class="n">chosen</span> <span class="n">by</span> <span class="n">the</span> <span class="n">user</span><span class="p">.</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_enc_smpk_sign_aes</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_enc_smpk_sign_aes</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1006,17 +1006,17 @@ OID <strong>1.3.6.1.4.1.294.1.65</strong>. The structure of the fields is shown 
 <p>This extension contains information about the TIFEK(public) encrypted, BMPK(priv) signed AES-256 key (random key,
 chosen by customer for keywriter). It is identified by the OID <strong>1.3.6.1.4.1.294.1.66</strong>.
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">BMPK</span><span class="o">-</span><span class="n">SIGN</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span><span class="w"> </span><span class="n">encrypted</span><span class="p">,</span><span class="w"> </span><span class="n">BMPK</span><span class="p">(</span><span class="n">priv</span><span class="p">)</span><span class="w"> </span><span class="kt">signed</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">chosen</span><span class="w"> </span><span class="n">by</span><span class="w"> </span><span class="n">the</span><span class="w"> </span><span class="n">user</span><span class="p">.</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">          </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">BMPK</span><span class="o">-</span><span class="n">SIGN</span><span class="o">-</span><span class="nl">AES</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">TIFEK</span><span class="p">(</span><span class="n">pub</span><span class="p">)</span> <span class="n">encrypted</span><span class="p">,</span> <span class="n">BMPK</span><span class="p">(</span><span class="n">priv</span><span class="p">)</span> <span class="kt">signed</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span> <span class="n">key</span> <span class="n">chosen</span> <span class="n">by</span> <span class="n">the</span> <span class="n">user</span><span class="p">.</span>
+   <span class="n">size</span> <span class="n">INTEGER</span>          <span class="o">--</span> <span class="n">size</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_enc_bmpk_sign_aes</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_enc_bmpk_sign_aes</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1025,23 +1025,23 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the AES-256 key encrypted SMPKH (SHA-512 hashed SMPK Public key).
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.67</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">SMPKH</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">encrypted</span><span class="w"> </span><span class="n">SMPKH</span><span class="w"> </span><span class="p">(</span><span class="n">SHA</span><span class="mi">-512</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">hashing</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="n">iv</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Intitial</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">rs</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Random</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w">         </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">SMPKH</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">SMPKH</span> <span class="p">(</span><span class="n">SHA</span><span class="o">-</span><span class="mi">512</span> <span class="n">used</span> <span class="k">for</span> <span class="n">hashing</span><span class="p">)</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span><span class="p">,</span>         <span class="o">--</span> <span class="n">size</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_smpkh</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_aes_enc_smpkh</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 <div class="section" id="keywriter-action-flags">
@@ -1109,23 +1109,23 @@ OVRD should be same, since these two swrev fields are clubbed together.</p>
 <p>This extension contains information about the AES-256 key encrypted SMEK.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.68</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">SMEK</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">encrypted</span><span class="w"> </span><span class="n">SMEK</span><span class="w"></span>
-<span class="w">   </span><span class="n">iv</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Intitial</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">rs</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Random</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w">         </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">SMEK</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">SMEK</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span><span class="p">,</span>         <span class="o">--</span> <span class="n">size</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_smek</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_aes_enc_smek</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1138,17 +1138,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the MPK Options
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.69</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">MPK</span><span class="o">-</span><span class="nl">OPT</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">MPK</span><span class="w"> </span><span class="n">Options</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">MPK</span><span class="o">-</span><span class="nl">OPT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">MPK</span> <span class="n">Options</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_mpk_opt</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_mpk_opt</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1157,23 +1157,23 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about AES-256 key encrypted BMPKH (SHA-512 hashed BMPK Public key).
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.70</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">BMPKH</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">encrypted</span><span class="w"> </span><span class="n">BMPKH</span><span class="w"> </span><span class="p">(</span><span class="n">SHA</span><span class="mi">-512</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="n">hashing</span><span class="p">)</span><span class="w"></span>
-<span class="w">   </span><span class="n">iv</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Intitial</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">rs</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Random</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w">         </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">BMPKH</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">BMPKH</span> <span class="p">(</span><span class="n">SHA</span><span class="o">-</span><span class="mi">512</span> <span class="n">used</span> <span class="k">for</span> <span class="n">hashing</span><span class="p">)</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span><span class="p">,</span>         <span class="o">--</span> <span class="n">size</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_bmpkh</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_aes_enc_bmpkh</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1182,23 +1182,23 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the AES-256 key encrypted BMEK.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.71</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">BMEK</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="w"> </span><span class="n">key</span><span class="w"> </span><span class="n">encrypted</span><span class="w"> </span><span class="n">BMEK</span><span class="w"></span>
-<span class="w">   </span><span class="n">iv</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Intitial</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">rs</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Random</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w">         </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="nl">BMEK</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span> <span class="n">key</span> <span class="n">encrypted</span> <span class="n">BMEK</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">size</span> <span class="n">INTEGER</span><span class="p">,</span>         <span class="o">--</span> <span class="n">size</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_bmek</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_aes_enc_bmek</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1211,17 +1211,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the MEK Options,
 it is identified by the OID <strong>1.3.6.1.4.1.294.1.72</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">MEK</span><span class="o">-</span><span class="nl">OPT</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">MEK</span><span class="w"> </span><span class="n">Options</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">MEK</span><span class="o">-</span><span class="nl">OPT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">MEK</span> <span class="n">Options</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_mek_opt</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_mek_opt</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1234,28 +1234,28 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the AES-256 key encrypted extended OTP values.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.73</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">EXT</span><span class="o">-</span><span class="nl">OTP</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Extended</span><span class="w"> </span><span class="n">OTP</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">octet</span><span class="w"> </span><span class="n">string</span><span class="w"> </span><span class="n">format</span><span class="w"></span>
-<span class="w">   </span><span class="n">iv</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Intitial</span><span class="w"> </span><span class="n">Value</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">128</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">rs</span><span class="w">  </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Random</span><span class="w"> </span><span class="n">String</span><span class="w"> </span><span class="n">used</span><span class="w"> </span><span class="n">in</span><span class="w"> </span><span class="n">AES</span><span class="mi">-256</span><span class="o">-</span><span class="n">CBC</span><span class="w"> </span><span class="n">encryption</span><span class="p">,</span><span class="w"> </span><span class="mi">256</span><span class="w"> </span><span class="n">bits</span><span class="w"></span>
-<span class="w">   </span><span class="n">wprp</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">    </span><span class="o">--</span><span class="w"> </span><span class="n">Write</span><span class="w"> </span><span class="n">Protect</span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="n">bits</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">Read</span><span class="w"> </span><span class="n">Protect</span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="n">bits</span><span class="p">)</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">bit</span><span class="w"></span>
-<span class="w">                            </span><span class="n">represents</span><span class="w"> </span><span class="n">each</span><span class="w"> </span><span class="n">efuse</span><span class="w"> </span><span class="n">row</span><span class="p">.</span><span class="w"></span>
-<span class="w">   </span><span class="n">index</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w">        </span><span class="o">--</span><span class="w"> </span><span class="n">Starting</span><span class="w"> </span><span class="n">index</span><span class="w"> </span><span class="n">to</span><span class="w"> </span><span class="n">write</span><span class="w"> </span><span class="n">ext</span><span class="w"> </span><span class="n">otp</span><span class="w"> </span><span class="n">value</span><span class="w"></span>
-<span class="w">   </span><span class="n">size</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span><span class="w">         </span><span class="o">--</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="n">of</span><span class="w"> </span><span class="n">ext_otp</span><span class="w"> </span><span class="n">value</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="o">~</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">AES</span><span class="o">-</span><span class="n">ENC</span><span class="o">-</span><span class="n">EXT</span><span class="o">-</span><span class="nl">OTP</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Extended</span> <span class="n">OTP</span> <span class="n">in</span> <span class="n">octet</span> <span class="n">string</span> <span class="n">format</span>
+   <span class="n">iv</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Intitial</span> <span class="n">Value</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">128</span> <span class="n">bits</span>
+   <span class="n">rs</span>  <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Random</span> <span class="n">String</span> <span class="n">used</span> <span class="n">in</span> <span class="n">AES</span><span class="o">-</span><span class="mi">256</span><span class="o">-</span><span class="n">CBC</span> <span class="n">encryption</span><span class="p">,</span> <span class="mi">256</span> <span class="n">bits</span>
+   <span class="n">wprp</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>    <span class="o">--</span> <span class="n">Write</span> <span class="n">Protect</span><span class="p">(</span><span class="mi">64</span> <span class="n">bits</span><span class="p">)</span> <span class="o">|</span> <span class="n">Read</span> <span class="n">Protect</span><span class="p">(</span><span class="mi">64</span> <span class="n">bits</span><span class="p">)</span> <span class="n">each</span> <span class="n">bit</span>
+                            <span class="n">represents</span> <span class="n">each</span> <span class="n">efuse</span> <span class="n">row</span><span class="p">.</span>
+   <span class="n">index</span> <span class="n">INTEGER</span><span class="p">,</span>        <span class="o">--</span> <span class="n">Starting</span> <span class="n">index</span> <span class="n">to</span> <span class="n">write</span> <span class="n">ext</span> <span class="n">otp</span> <span class="n">value</span>
+   <span class="n">size</span> <span class="n">INTEGER</span><span class="p">,</span>         <span class="o">--</span> <span class="n">size</span> <span class="n">of</span> <span class="n">ext_otp</span> <span class="n">value</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="o">~</span> <span class="o">|</span> <span class="o">~</span> <span class="o">|</span> <span class="o">~</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_aes_enc_ext_otp</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">wprp</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">index</span><span class="p">;</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">size</span><span class="p">;</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_aes_enc_ext_otp</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">iv</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">rs</span><span class="p">[</span><span class="mi">32</span><span class="p">];</span>
+   <span class="n">u8</span> <span class="n">wprp</span><span class="p">[</span><span class="mi">16</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">index</span><span class="p">;</span>
+   <span class="n">u32</span> <span class="n">size</span><span class="p">;</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1265,17 +1265,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 By default, keyrevision should be set to 1. If it is set to 2, BMPK and BMEK will be used
 instead of SMPK and SMEK. It is identified by the OID <strong>1.3.6.1.4.1.294.1.74</strong>.
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">KEYREV</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Keyrev</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">KEYREV</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Keyrev</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_keyrev</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_keyrev</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1284,17 +1284,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the MSV.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.76</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">MSV</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">MSV</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">MSV</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">MSV</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_msv</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_msv</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1303,17 +1303,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the Key count field.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.77</strong>.
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">KEYCNT</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">Key</span><span class="w"> </span><span class="n">count</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">KEYCNT</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">Key</span> <span class="n">count</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_keycnt</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_keycnt</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1322,17 +1322,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the Software revision value for SYSFW.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.78</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">SWREV</span><span class="o">-</span><span class="nl">SYSFW</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">SWREV</span><span class="w"> </span><span class="n">SYSFW</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">SWREV</span><span class="o">-</span><span class="nl">SYSFW</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">SWREV</span> <span class="n">SYSFW</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_swrev_sysfw</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_swrev_sysfw</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1341,17 +1341,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the Software revision value for SBL.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.79</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">SWREV</span><span class="o">-</span><span class="nl">SBL</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">SWREV</span><span class="w"> </span><span class="n">SBL</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">SWREV</span><span class="o">-</span><span class="nl">SBL</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">SWREV</span> <span class="n">SBL</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_swrev_sbl</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_swrev_sbl</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1360,17 +1360,17 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the Software revision value for the Secure Boardconfig.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.80</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">SWREV</span><span class="o">-</span><span class="n">SEC</span><span class="o">-</span><span class="nl">BCFG</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">SWREV</span><span class="w"> </span><span class="n">SEC</span><span class="w"> </span><span class="n">BCFG</span><span class="w"></span>
-<span class="w">   </span><span class="n">action_flags</span><span class="w"> </span><span class="n">INTEGER</span><span class="w">  </span><span class="o">--</span><span class="w"> </span><span class="n">WP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">RP</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">OVRD</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">ACTIVE</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="n">SWREV</span><span class="o">-</span><span class="n">SEC</span><span class="o">-</span><span class="nl">BCFG</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">SWREV</span> <span class="n">SEC</span> <span class="n">BCFG</span>
+   <span class="n">action_flags</span> <span class="n">INTEGER</span>  <span class="o">--</span> <span class="n">WP</span> <span class="o">|</span> <span class="n">RP</span> <span class="o">|</span> <span class="n">OVRD</span> <span class="o">|</span> <span class="n">ACTIVE</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_swrev_sec_bcfg</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="w">   </span><span class="n">u32</span><span class="w"> </span><span class="n">action_flags</span><span class="p">;</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_swrev_sec_bcfg</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+   <span class="n">u32</span> <span class="n">action_flags</span><span class="p">;</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>
@@ -1379,15 +1379,15 @@ The structure of the fields is shown below in ASN.1 notation.</p>
 <p>This extension contains information about the Keywriter version.
 It is identified by the OID <strong>1.3.6.1.4.1.294.1.81</strong>
 The structure of the fields is shown below in ASN.1 notation.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">VERSION</span> <span class="p">:</span><span class="o">=</span><span class="w"> </span><span class="n">SEQUENCE</span><span class="w"></span>
-<span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">val</span><span class="w"> </span><span class="n">OCTET</span><span class="w"> </span><span class="n">STRING</span><span class="p">,</span><span class="w">     </span><span class="o">--</span><span class="w"> </span><span class="n">SWREV</span><span class="w"> </span><span class="n">SEC</span><span class="w"> </span><span class="n">BCFG</span><span class="w"></span>
-<span class="p">}</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">KEYWR</span><span class="o">-</span><span class="nl">VERSION</span> <span class="p">:</span><span class="o">=</span> <span class="n">SEQUENCE</span>
+<span class="p">{</span>
+   <span class="n">val</span> <span class="n">OCTET</span> <span class="n">STRING</span><span class="p">,</span>     <span class="o">--</span> <span class="n">SWREV</span> <span class="n">SEC</span> <span class="n">BCFG</span>
+<span class="p">}</span>
 </pre></div>
 </div>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="nc">keywr_version</span><span class="w"> </span><span class="p">{</span><span class="w"></span>
-<span class="w">   </span><span class="n">u8</span><span class="w"> </span><span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span><span class="w"></span>
-<span class="p">};</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span> <span class="n">keywr_version</span> <span class="p">{</span>
+   <span class="n">u8</span> <span class="n">val</span><span class="p">[</span><span class="mi">64</span><span class="p">];</span>
+<span class="p">};</span>
 </pre></div>
 </div>
 </div>

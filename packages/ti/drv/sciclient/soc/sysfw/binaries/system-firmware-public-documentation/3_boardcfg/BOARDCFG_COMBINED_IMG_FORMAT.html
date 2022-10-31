@@ -252,8 +252,8 @@ configuration</td>
 <p>When not using ROM combined image format, the sequence of APIs that a bootloader
 developer needs to call is as below:</p>
 <p><em>STEP 1</em>: Load the firmware using ROM APIs during boot.</p>
-<div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from R5 to M3 */</span><span class="w"></span>
+<div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from R5 to M3 */</span>
 <span class="cp">#define ROM_MSG_R5_TO_M3_M3FW                    (0x8105U)</span>
 </pre></div>
 </td></tr></table></div>
@@ -261,16 +261,16 @@ developer needs to call is as below:</p>
 DMSC Internal memory. Based on the device type this may also include
 authentication and/or decryption of the System Firmware by ROM.</p>
 <p>The ROM will send back a response with the following message ID and response.</p>
-<div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span>
-<span class="normal">3</span>
-<span class="normal">4</span>
-<span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from M3 to R5 */</span><span class="w"></span>
+<div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
+2
+3
+4
+5
+6</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/** Firmware Load Command ID from M3 to R5 */</span>
 <span class="cp">#define ROM_MSG_M3_TO_R5_M3FW_RESULT             (0x8805U)</span>
-<span class="cm">/** Firmware Load Command response Authorization Passed */</span><span class="w"></span>
+<span class="cm">/** Firmware Load Command response Authorization Passed */</span>
 <span class="cp">#define ROM_MSG_CERT_AUTH_PASS                   (0x555555U)</span>
-<span class="cm">/** Firmware Load Command response Authorization Failed */</span><span class="w"></span>
+<span class="cm">/** Firmware Load Command response Authorization Failed */</span>
 <span class="cp">#define ROM_MSG_CERT_AUTH_FAIL                   (0xffffffU)</span>
 </pre></div>
 </td></tr></table></div>
@@ -355,54 +355,54 @@ passed board configuration to System Firmware.</p>
 </table>
 </p>
 <p>This value is bit wise encoded to reflect the status of the board configuration:</p>
-<div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal"> 1</span>
-<span class="normal"> 2</span>
-<span class="normal"> 3</span>
-<span class="normal"> 4</span>
-<span class="normal"> 5</span>
-<span class="normal"> 6</span>
-<span class="normal"> 7</span>
-<span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
-<span class="normal">13</span>
-<span class="normal">14</span>
-<span class="normal">15</span>
-<span class="normal">16</span>
-<span class="normal">17</span>
-<span class="normal">18</span>
-<span class="normal">19</span>
-<span class="normal">20</span>
-<span class="normal">21</span>
-<span class="normal">22</span>
-<span class="normal">23</span>
-<span class="normal">24</span>
-<span class="normal">25</span>
-<span class="normal">26</span>
-<span class="normal">27</span>
-<span class="normal">28</span>
-<span class="normal">29</span>
-<span class="normal">30</span>
-<span class="normal">31</span>
-<span class="normal">32</span>
-<span class="normal">33</span>
-<span class="normal">34</span>
-<span class="normal">35</span>
-<span class="normal">36</span>
-<span class="normal">37</span>
-<span class="normal">38</span>
-<span class="normal">39</span>
-<span class="normal">40</span>
-<span class="normal">41</span>
-<span class="normal">42</span>
-<span class="normal">43</span>
-<span class="normal">44</span>
-<span class="normal">45</span>
-<span class="normal">46</span>
-<span class="normal">47</span>
-<span class="normal">48</span></pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<div class="highlight-c"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="cm">/**</span>
 <span class="cm"> * Bitfields to define status and validity of different boardconfig</span>
 <span class="cm"> * data provided by system integrator.</span>
 <span class="cm"> *</span>
@@ -438,18 +438,18 @@ passed board configuration to System Firmware.</p>
 <span class="cm"> *</span>
 <span class="cm"> * \def EXTBOOT_BOARDCFG_NUM_FIELDS</span>
 <span class="cm"> * Number of fields in extended boot status</span>
-<span class="cm"> */</span><span class="w"></span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_PRESENT                BIT(0)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_VALID                  BIT(1)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_PRESENT       BIT(2)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_VALID         BIT(3)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_PM_PRESENT             BIT(4)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_PM_VALID               BIT(5)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_RM_PRESENT             BIT(6)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_RM_VALID               BIT(7)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_PRESENT                         BIT(8)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_VALID                           BIT(9)</span>
-<span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_NUM_FIELDS             (10)</span>
+<span class="cm"> */</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_PRESENT                BIT(0)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_VALID                  BIT(1)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_PRESENT       BIT(2)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_VALID         BIT(3)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_PM_PRESENT             BIT(4)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_PM_VALID               BIT(5)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_RM_PRESENT             BIT(6)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_RM_VALID               BIT(7)</span>
+ <span class="cp">#define EXTBOOT_PRESENT                         BIT(8)</span>
+ <span class="cp">#define EXTBOOT_VALID                           BIT(9)</span>
+ <span class="cp">#define EXTBOOT_BOARDCFG_NUM_FIELDS             (10)</span>
 </pre></div>
 </td></tr></table></div>
 <div class="section" id="boardconfig-data-for-combined-boot-flow">

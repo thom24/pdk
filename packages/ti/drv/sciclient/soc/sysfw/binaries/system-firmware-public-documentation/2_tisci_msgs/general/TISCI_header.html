@@ -449,8 +449,8 @@ followed by the payload.</li>
 <ol class="arabic" start="4">
 <li><p class="first">The calculated value of the integrity check is inserted MSB first into the
 secure header extension.</p>
-<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">integ_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MSB</span><span class="p">(</span><span class="n">calc_val</span><span class="p">)</span><span class="w"></span>
-<span class="n">integ_check</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">LSB</span><span class="p">(</span><span class="n">calc_val</span><span class="p">)</span><span class="w"></span>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="n">integ_check</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">MSB</span><span class="p">(</span><span class="n">calc_val</span><span class="p">)</span>
+<span class="n">integ_check</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">LSB</span><span class="p">(</span><span class="n">calc_val</span><span class="p">)</span>
 </pre></div>
 </div>
 </li>

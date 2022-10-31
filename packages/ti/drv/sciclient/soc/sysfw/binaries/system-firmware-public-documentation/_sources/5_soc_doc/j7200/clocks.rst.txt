@@ -1704,6 +1704,26 @@ Clocks for MAIN2WKUPMCU_VD Device
 
 **This device has no defined clocks.**
 
+.. _soc_doc_j7200_public_clks_main_pll8_sel_extwave_vd:
+
+
+Clocks for MAIN_PLL8_SEL_EXTWAVE_VD Device
+------------------------------------------
+
+Device: :ref:`J7200_DEV_MAIN_PLL8_SEL_EXTWAVE_VD <soc_doc_j7200_public_devices_desc_device_list>` (ID = 323)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+----------------------------------------------------------------------------------+---------------------------------------------------------------+
+|   Clock ID | Name                                                                             | Function                                                      |
++============+==================================================================================+===============================================================+
+|          0 | DEV_MAIN_PLL8_SEL_EXTWAVE_VD_CLK                                                 | Input muxed clock                                             |
++------------+----------------------------------------------------------------------------------+---------------------------------------------------------------+
+|          1 | DEV_MAIN_PLL8_SEL_EXTWAVE_VD_CLK_PARENT_PLLFRACF_SSMOD_16FFT_MAIN_8_FOUTVCOP_CLK | Parent input clock option to DEV_MAIN_PLL8_SEL_EXTWAVE_VD_CLK |
++------------+----------------------------------------------------------------------------------+---------------------------------------------------------------+
+|          2 | DEV_MAIN_PLL8_SEL_EXTWAVE_VD_CLK_PARENT_HSDIV0_16FFT_MAIN_8_HSDIVOUT0_CLK        | Parent input clock option to DEV_MAIN_PLL8_SEL_EXTWAVE_VD_CLK |
++------------+----------------------------------------------------------------------------------+---------------------------------------------------------------+
+
 .. _soc_doc_j7200_public_clks_mcan0:
 
 
