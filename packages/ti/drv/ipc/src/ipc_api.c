@@ -1413,6 +1413,23 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
         semStatus = IPC_SOK;
         semStatus = pOsalPrms->lockMutex(obj->semHandle, timeout);
 
+        if (TRUE == skiplist)
+        {
+            key = pOsalPrms->lockHIsrGate(module.gateSwi);
+            if (NULL == obj->recv_buffer)
+            {
+                /* Incoming message filled. Clear any error flag that could be
+                 * set due to a race */
+                semStatus = IPC_SOK;
+                obj->unblocked = FALSE;
+            }
+            else
+            {
+                obj->recv_buffer = NULL;
+            }
+            pOsalPrms->unLockHIsrGate(module.gateSwi, key);
+        }
+
         if (semStatus == IPC_ETIMEOUT)
         {
             SystemP_printf(" Warning: RPMessage_recv: IPC_ETIMEOUT\n");
