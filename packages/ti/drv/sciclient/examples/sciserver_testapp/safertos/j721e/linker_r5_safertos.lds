@@ -88,7 +88,7 @@ SECTIONS
 /* Data sections. */
 
     .KERNEL_DATA LOAD_START( lnkKernelDataStartAddr ),
-                    LOAD_END( lnkKernelDataEndAddr )        : {} palign( 0x800 )  > OCMC_RAM_SCISERVER
+                    LOAD_END( lnkKernelDataEndAddr )        : {} palign( 0x800 )  > R5F_TCMB0
     .boardcfg_data                                          : {} palign( 128 ) > R5F_TCMB0
 
     GROUP  palign( 32 ), LOAD_START( lnkRamStartAddr ), LOAD_END( lnkRamEndAddr )
@@ -105,23 +105,20 @@ SECTIONS
     /* Stack sections. */
     .stack  RUN_START( lnkStacksStartAddr ) : {} align(4) > R5F_TCMA0
 
-    GROUP
-    {
-        .irqStack                               : {. = . + __IRQ_STACK_SIZE;}   align(4)
-        RUN_START(__IRQ_STACK_START)
-        RUN_END(__IRQ_STACK_END)
-        .fiqStack                               : {. = . + __FIQ_STACK_SIZE;}   align(4)
-        RUN_START(__FIQ_STACK_START)
-        RUN_END(__FIQ_STACK_END)
-        .abortStack                             : {. = . + __ABORT_STACK_SIZE;} align(4)
-        RUN_START(__ABORT_STACK_START)
-        RUN_END(__ABORT_STACK_END)
-        .undStack                               : {. = . + __UND_STACK_SIZE;}   align(4)
-        RUN_START(__UND_STACK_START)
-        RUN_END(__UND_STACK_END)
-        .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4)
-        RUN_START(__SVC_STACK_START)
-        RUN_END(__SVC_STACK_END)
-    } > R5F_TCMB0
+    .irqStack                               : {. = . + __IRQ_STACK_SIZE;}   align(4) > R5F_TCMB0
+    RUN_START(__IRQ_STACK_START)
+    RUN_END(__IRQ_STACK_END)
+    .fiqStack                               : {. = . + __FIQ_STACK_SIZE;}   align(4) > R5F_TCMB0
+    RUN_START(__FIQ_STACK_START)
+    RUN_END(__FIQ_STACK_END)
+    .abortStack                             : {. = . + __ABORT_STACK_SIZE;} align(4) > R5F_TCMB0
+    RUN_START(__ABORT_STACK_START)
+    RUN_END(__ABORT_STACK_END)
+    .undStack                               : {. = . + __UND_STACK_SIZE;}   align(4) > R5F_TCMB0
+    RUN_START(__UND_STACK_START)
+    RUN_END(__UND_STACK_END)
+    .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4) > R5F_TCMB0
+    RUN_START(__SVC_STACK_START)
+    RUN_END(__SVC_STACK_END)
 
 }
