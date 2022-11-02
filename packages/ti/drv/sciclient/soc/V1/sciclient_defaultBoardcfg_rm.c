@@ -1457,18 +1457,6 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .host_id = TISCI_HOST_ID_ALL,
         },
         {
-            .num_resource = 96,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
-            .start_resource = 172,
-            .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
-        },
-        {
-            .num_resource = 32,
-            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
-            .start_resource = 268,
-            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
-        },
-        {
             .num_resource = 16,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
             .start_resource = 140,
@@ -1496,6 +1484,18 @@ __attribute__(( aligned(128), section(".boardcfg_data") )) =
             .num_resource = 2,
             .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
             .start_resource = 170,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
+        },
+        {
+            .num_resource = 96,
+            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
+            .start_resource = 172,
+            .host_id = TISCI_HOST_ID_MAIN_0_R5_0,
+        },
+        {
+            .num_resource = 32,
+            .type = TISCI_RESASG_UTYPE (TISCI_DEV_NAVSS0_UDMAP_0, TISCI_RESASG_SUBTYPE_UDMAP_TX_ECHAN),
+            .start_resource = 268,
             .host_id = TISCI_HOST_ID_MAIN_0_R5_2,
         },
         {
