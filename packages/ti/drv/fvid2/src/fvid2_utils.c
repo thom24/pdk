@@ -44,6 +44,7 @@
 
 #include <string.h>
 #include <ti/drv/fvid2/fvid2.h>
+#include <stdbool.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

@@ -50,6 +50,7 @@
 
 #include <ti/csl/tistdtypes.h>
 #include <ti/drv/fvid2/fvid2.h>
+#include <stdbool.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -435,13 +436,13 @@ GT_trace7(uint32_t      maskType,
 
 #if defined (FVID2_CFG_ASSERT_ENABLE)
 void GT_assertLocal(uint32_t    enableMask,
-                    uint32_t    condition,
-                    const char *str,
+                    bool  condition,
+                    const char *      str,
                     const char *fileName,
                     int32_t     lineNum)
 {
     volatile uint32_t loop = 1U;
-    if (condition == 0U)
+    if (condition == (bool)0)
     {
         GT_3trace(
             Fvid2Trace, GT_ERR,

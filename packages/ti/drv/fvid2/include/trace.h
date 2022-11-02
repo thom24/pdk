@@ -44,6 +44,7 @@
 #define FVID2TRACE_H_
 
 #include <ti/csl/tistdtypes.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -135,14 +136,14 @@ void Fvid2_printf(const char *format, ...);
 
 /** \brief assert function. */
 void GT_assertLocal(uint32_t    enableMask,
-                    uint32_t    condition,
-                    const char *str,
+                    bool   condition,
+                    const char *  str,
                     const char *fileName,
                     int32_t     lineNum);
 
 /** \brief GT_assert */
 #define GT_assert(x, y)                                           \
-    (GT_assertLocal((uint32_t) (x), (uint32_t) (y), (const char *) # y, \
+    (GT_assertLocal((uint32_t) (x), (bool) (y), (const char *) #y, \
                     (const char *) __FILE__, (int32_t) __LINE__))
 
 #else
