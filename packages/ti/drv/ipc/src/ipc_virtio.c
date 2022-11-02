@@ -283,7 +283,7 @@ int32_t Ipc_virtToPhys(uintptr_t va, uint32_t *pa)
 
     if(vrTranslationTable.count == 0U)
     {
-        *pa = (uint32_t)va;
+        *pa = va;
     }
 
     for (n = 0; n < vrTranslationTable.count; n++)
@@ -291,7 +291,7 @@ int32_t Ipc_virtToPhys(uintptr_t va, uint32_t *pa)
         e = &vrTranslationTable.entry[n];
         if ((va >= e->va) && (va < (e->va + e->len)))
         {
-            offset = (uint32_t)va - (uint32_t)e->va;
+            offset = (uint32_t)(va - e->va);
             *pa = e->pa + offset;
              rtnVal = IPC_SOK;
              break;

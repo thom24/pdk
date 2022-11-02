@@ -203,7 +203,7 @@ int32_t Ipc_mailboxModuleStartup (void)
  */
 void Ipc_mailboxEnable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
 {
-    MailboxEnableNewMsgInt((uint32_t)baseAddr, userId, queueId);
+    MailboxEnableNewMsgInt(baseAddr, userId, queueId);
 }
 
 /**
@@ -211,7 +211,7 @@ void Ipc_mailboxEnable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
  */
 void Ipc_mailboxDisable(uintptr_t baseAddr, uint32_t userId, uint32_t queueId)
 {
-    MailboxDisableNewMsgInt((uint32_t)baseAddr, userId, queueId);
+    MailboxDisableNewMsgInt(baseAddr, userId, queueId);
 }
 
 /**
@@ -222,7 +222,7 @@ uint32_t Ipc_mailboxClear(uintptr_t baseAddr, uint32_t queueId)
     uint32_t retVal = 0;
     uint32_t msg[4];
 
-    retVal = MailboxGetMessage((uint32_t)baseAddr, queueId, msg);
+    retVal = MailboxGetMessage(baseAddr, queueId, msg);
 
     return retVal;
 }
@@ -273,7 +273,7 @@ int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
 
         do
         {
-            retVal = MailboxSendMessage((uint32_t)baseAddr, queueId, val);
+            retVal = MailboxSendMessage(baseAddr, queueId, val);
             cnt--;
         } while( (cnt != 0U) && (retVal == MESSAGE_INVALID));
 
@@ -360,7 +360,7 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
                 {
                     Ipc_MbConfig cfg;
 
-                    MailboxClrNewMsgStatus((uint32_t)baseAddr, userId, queueId);
+                    MailboxClrNewMsgStatus(baseAddr, userId, queueId);
 
 #ifdef IPC_SUPPORT_SCICLIENT
                     /* Get the Interrupt Configuration */
@@ -471,15 +471,15 @@ void Ipc_mailboxInternalCallback(uintptr_t arg)
         {
             fifo = &mbox->fifoTable[n];
 
-            if(0U != MailboxGetRawNewMsgStatus((uint32_t)mbox->baseAddr, mbox->userId, fifo->queueId))
+            if(0U != MailboxGetRawNewMsgStatus(mbox->baseAddr, mbox->userId, fifo->queueId))
             {
-                if( MailboxGetMessageCount((uint32_t)mbox->baseAddr, fifo->queueId) > 0U)
+                if( MailboxGetMessageCount(mbox->baseAddr, fifo->queueId) > 0U)
                 {
                     /* Get the message from Mailbox fifo */
-                    MailboxGetMessage((uint32_t)mbox->baseAddr, fifo->queueId, msg);
+                    MailboxGetMessage(mbox->baseAddr, fifo->queueId, msg);
 
                     /* Clear new message status of Mailbox */
-                    MailboxClrNewMsgStatus((uint32_t)mbox->baseAddr, mbox->userId,
+                    MailboxClrNewMsgStatus(mbox->baseAddr, mbox->userId,
                             fifo->queueId);
 
                     /* Call the function with arg */
@@ -488,7 +488,7 @@ void Ipc_mailboxInternalCallback(uintptr_t arg)
                 else
                 {
                     /* Clear new message status of Mailbox */
-                    MailboxClrNewMsgStatus((uint32_t)mbox->baseAddr, mbox->userId, fifo->queueId);
+                    MailboxClrNewMsgStatus(mbox->baseAddr, mbox->userId, fifo->queueId);
                 }
             }
         }
