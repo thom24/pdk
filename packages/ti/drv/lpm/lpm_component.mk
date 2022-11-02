@@ -98,6 +98,20 @@ export lpm_SOCLIST = j721e j7200
 export lpm_$(SOC)_CORELIST = mcu1_0
 lpm_LIB_LIST = lpm
 
+# lpm S2R
+lpm_s2r_COMP_LIST = lpm_s2r
+lpm_s2r_RELPATH = $(lpm_RELPATH)
+lpm_s2r_PATH = $(PDK_LPM_COMP_PATH)
+export lpm_s2r_LIBNAME = lpm_s2r
+export lpm_s2r_MAKEFILE = -fsrc/s2r/makefile
+export lpm_s2r_BOARD_DEPENDENCY = yes
+export lpm_s2r_CORE_DEPENDENCY = no
+export lpm_s2r_SOC_DEPENDENCY = yes
+export lpm_s2r_SOCLIST = j7200
+export lpm_s2r_$(SOC)_CORELIST = mcu1_0
+lpm_LIB_LIST += lpm_s2r
+lpm_PKG_LIST += lpm_s2r
+
 ############################
 # lpm examples
 # List of examples under lpm
