@@ -103,8 +103,8 @@ typedef void ( * TaskP_Fxn )( void *arg0, void *arg1 );
  */
 typedef struct TaskP_Params_s
 {
-    uint8_t *name;           /*!< Name of the task instance.                  */
-    void *pErrBlk; /*!< Pointer to the error block for task Create */
+    const char *name;    /*!< Name of the task instance.                  */
+    void *pErrBlk;       /*!< Pointer to the error block for task Create */
     int8_t priority;     /*!< The priority of the task                    */
     uint32_t stacksize;  /*!< The stack size of the task                  */
     void *arg0;          /*!< argument 0                                        */

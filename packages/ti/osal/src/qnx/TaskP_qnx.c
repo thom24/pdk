@@ -89,7 +89,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *handle)
  */
 void TaskP_Params_init(TaskP_Params *params)
 {
-    params->name = (uint8_t *) NULL;
+    params->name = (const char *) NULL;
     params->pErrBlk = (void *) NULL;
     params->priority = 0;
     params->stacksize = 0;

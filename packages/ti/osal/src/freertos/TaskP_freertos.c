@@ -296,7 +296,7 @@ void TaskP_Params_init(TaskP_Params *params)
 {
     if(params != NULL_PTR)
     {
-        params->name = (uint8_t *)"FREERTOS_TASK";
+        params->name = (const char *)"FREERTOS_TASK";
         params->stacksize = 0;
         params->stack = NULL;
         params->priority = (TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST) / 2;

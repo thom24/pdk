@@ -288,7 +288,7 @@ TaskP_Status TaskP_delete( TaskP_Handle *hTaskPtr )
  */
 void TaskP_Params_init( TaskP_Params *params )
 {
-    params->name = ( uint8_t * )"SafeRTOS_TASK";
+    params->name = ( const char * )"SafeRTOS_TASK";
     params->stacksize = 0;
     params->stack = NULL;
     params->priority = ( TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST ) / 2;

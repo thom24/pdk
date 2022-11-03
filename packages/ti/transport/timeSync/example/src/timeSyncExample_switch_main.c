@@ -996,34 +996,34 @@ int main()
 #endif //EMAC_SWITCH
     TaskP_Params_init(&taskParams);
     taskParams.priority = 5;
-    taskParams.name = (uint8_t *)"LEDTask";
+    taskParams.name = (const char *)"LEDTask";
     TaskP_create(&timeSync_example_taskLedBlink, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 5;
-    taskParams.name = (uint8_t *)"LEDTask";
+    taskParams.name = (const char *)"LEDTask";
     TaskP_create(&timeSync_example_taskLedBlink2, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 15;
-    taskParams.name = (uint8_t *) "SwitchTask";
+    taskParams.name = (const char *) "SwitchTask";
     TaskP_create(&timeSync_example_pruIcssTask, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 1;
-    taskParams.name = (uint8_t *)"UARTMenuTask";
+    taskParams.name = (const char *)"UARTMenuTask";
     taskParams.arg0 = (void *)emachandle;
     TaskP_create(&timeSync_example_taskUartMenu, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 6;
     taskParams.arg0 = (void *)timeSyncHandle;
-    taskParams.name = (uint8_t *)"PTPStatusTask";
+    taskParams.name = (const char *)"PTPStatusTask";
     TaskP_create(&timeSync_example_monitorPTPStatus_Task, &taskParams);
 
     TaskP_Params_init(&taskParams);
     taskParams.priority = 10;
-    taskParams.name = (uint8_t*)"port0_rxTaskFnc";
+    taskParams.name = (const char *)"port0_rxTaskFnc";
     taskParams.stacksize = 0x1000;
     taskParams.arg0 = (void *)emachandle;
 
@@ -1035,7 +1035,7 @@ int main()
     }
     TaskP_Params_init(&taskParams);
     taskParams.priority = 10;
-    taskParams.name = (uint8_t*)"port0_linkTaskFnc";
+    taskParams.name = (const char *)"port0_linkTaskFnc";
     taskParams.stacksize = 0x1000;
     taskParams.arg0 = (void *)emachandle;
     ((ICSS_EmacObject*)emachandle->object)->linkTaskHandle = TaskP_create(&ICSS_EMacOsLinkTaskFnc, &taskParams);

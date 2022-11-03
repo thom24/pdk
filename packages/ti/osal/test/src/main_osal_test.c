@@ -1707,7 +1707,7 @@ bool OSAL_load_test()
         
         TaskP_Params_init(&taskParams);
         taskParams.priority     = OSAL_LOAD_TEST_TASK_PRIO;   
-        taskParams.name         = (uint8_t *)taskNameStr[i];
+        taskParams.name         = (const char *)taskNameStr[i];
         taskParams.stack        = &gAppTskStackLoadTask[i];
         taskParams.stacksize    = APP_TSK_STACK_MAIN;
         taskParams.arg0         = hTaskSignalSem[i];
