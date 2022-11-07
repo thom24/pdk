@@ -93,9 +93,6 @@ MMCSD_Error MMCSD_init(void)
             MMCSD_config[MMCSD_count].fxnTablePtr->initFxn((MMCSD_Handle)&(MMCSD_config[MMCSD_count]));
         }
     }
-#if defined (BUILD_MCU)
-    retVal = MMCSD_socInit();
-#endif
     return (retVal);
 }
 

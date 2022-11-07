@@ -93,9 +93,4 @@ extern MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance, MMCSD_BusVoltag
 */
 extern MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr,bool setIntrPath);
 
-/* This SOC function will initialize InitConfig[] as per the core/subsystem
-* the driver is running on. This includes domain specific parameters such as
-* intNum, baseAddress etc.
-*/
-extern MMCSD_Error MMCSD_socInit(void);
 #endif /* _MMCSD_SOC_H */

@@ -64,7 +64,7 @@ MMCSD_v2_HwAttrs MMCSDInitCfg[MMCSD_CNT] =
         CSL_MMCSD0_CTL_CFG_BASE,
         CSL_MMCSD0_SS_CFG_BASE , /* SS Registers */
         CSL_MMCSD0_SS_CFG_BASE + 0x100,/* PHY  Registers */
-        CSLR_R5FSS0_CORE1_INTR_MMCSD0_EMMCSS_INTR_0, /* Corresponds to MAIN_R5_CORE0
+        CSLR_R5FSS0_CORE1_INTR_MMCSD0_EMMCSS_INTR_0, /* Corresponds to MAIN_R5_CORE1
                                                                 This will update dynamically either through
                                                                 dedicated interrupt line or query from BoardCfg*/
         0,
@@ -156,6 +156,17 @@ MMCSD_v2_HwAttrs MMCSDInitCfg[MMCSD_CNT] =
 /* MMCSD objects */
 MMCSD_v2_Object MMCSDObjects[MMCSD_CNT];
 
+Bool gIrqRangeQueryFirstTime = TRUE;
+
+ 
+/* This SOC function sets the interrupt path by checking all the available 
+   interrupt lines for that core */
+static MMCSD_Error MMCSD_configInterruptRouter(uint32_t instNum,  uint32_t eventId, 
+                        uint16_t irId, uint16_t dstCoreId, uint16_t rangeStart, 
+                            uint16_t rangeNum, uint16_t* coreIntrIdx);
+
+/* This function gets the available interrupt range for that particular core */
+static MMCSD_Error MMCSD_getIrqRange(uint16_t irId, uint16_t* rangeStart, uint16_t* rangeNum);
 
 /* MMC configuration structure */
 const MMCSD_Config_list MMCSD_config = {
@@ -182,241 +193,223 @@ uint32_t MMCSD_soc_l2_global_addr (uint32_t addr)
   return addr;
 }
 
-#if defined (BUILD_MCU)
-/**
- * \brief  This API update the default SoC level of configurations
- *         based on the core and domain
- *
- *         uartInitCfg table configures MCU domain's UART instances by
- *         default for R5, UART_socInit() is called UART_init() to
- *         overwrite the defaut configurations with the configurations
- *         of Main domain's UART instances if R5 is on the Main domain
- *
- * \param  none
- *
- * \return none
- *
- */
-MMCSD_Error MMCSD_socInit(void)
+MMCSD_Error MMCSD_configInterruptRouter(uint32_t instNum,  uint32_t eventId, 
+                uint16_t irId, uint16_t dstCoreId, uint16_t rangeStart, 
+                    uint16_t rangeNum, uint16_t* coreIntrIdx)
 {
-    MMCSD_Error ret=MMCSD_OK;
-    
-    return ret;    
+        int32_t retVal = CSL_EFAIL;
+        struct tisci_msg_rm_irq_set_req     rmIrqReq;
+        struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+
+        memset (&rmIrqReq,0,sizeof(rmIrqReq));       
+        rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+        rmIrqReq.src_id = (instNum == 1) ? TISCI_DEV_MMCSD0 : TISCI_DEV_MMCSD1;
+        rmIrqReq.src_index = eventId;  /* This is the event coming out of the peripheral */
+
+        /* Set the destination interrupt */ 
+        rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
+        rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+
+        /* Set the destination based on the core */
+        rmIrqReq.dst_id       = dstCoreId;
+
+        /* Try to find a free interrupt line */
+        for(uint16_t irIntrIdx = rangeStart; irIntrIdx < rangeStart+rangeNum; irIntrIdx++)
+        {
+            retVal = Sciclient_rmIrqTranslateIrOutput(irId, irIntrIdx, dstCoreId, coreIntrIdx);
+            if(CSL_PASS == retVal)
+            {
+               rmIrqReq.dst_host_irq = *coreIntrIdx;
+               retVal = Sciclient_rmIrqSet(
+                           (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq, 
+                           &rmIrqResp, 
+                           SCICLIENT_SERVICE_WAIT_FOREVER);
+                if(CSL_PASS == retVal)
+                {
+                    break;
+                }
+            }
+        }
+        return retVal;
 }
-#endif
+
+MMCSD_Error MMCSD_getIrqRange(uint16_t irId, uint16_t* rangeStart, uint16_t* rangeNum)
+{
+    int32_t retVal;
+    MMCSD_Error ret = MMCSD_ERR;
+    struct tisci_msg_rm_get_resource_range_resp res = {0};
+    struct tisci_msg_rm_get_resource_range_req  req = {0};
+
+    req.type           = irId;
+    req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
+    req.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    res.range_num = 0;
+    res.range_start = 0;
+    /* Get interrupt number range */
+    retVal =  Sciclient_rmGetResourceRange(&req, &res, SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    if (CSL_PASS != retVal || res.range_num == 0)
+    {
+        /* Try with HOST_ID_ALL */
+        req.secondary_host = TISCI_HOST_ID_ALL;
+
+        retVal = Sciclient_rmGetResourceRange(&req, &res, SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    if(retVal == CSL_PASS)
+    {
+        *rangeStart = res.range_start;
+        *rangeNum = res.range_num;
+        ret = MMCSD_OK;
+    }
+
+    return ret;
+}
 
 /* This function will configure the interrupt path to the destination CPU
   using SYSFW firmware via sciclient if setIntrPath is set to TRUE. */
 MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
 {
    MMCSD_Error ret=MMCSD_OK;
-   /* Only mcu1_0, mcu1_1 requires routing of interrupts */
 #if defined(BUILD_MCU)
-    CSL_ArmR5CPUInfo r5CpuInfo;
-    int32_t retVal;
+    CSL_ArmR5CPUInfo r5CpuInfo = {0};
+    int32_t retVal= CSL_PASS;
     MMCSD_v2_HwAttrs const *hwAttrs = (MMCSD_v2_HwAttrs const *)(hwAttrs_ptr);
-    struct tisci_msg_rm_irq_set_req     rmIrqReq;
-    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
-    struct tisci_msg_rm_irq_release_req rmIrqRelease;
-    uint16_t src_id,src_index,dst_id = 0U,dst_host_irq;
+    bool isIrInvolved = FALSE;
+    static uint16_t        irIntrIdx;
+    static uint16_t        rangeStart;
+    static uint16_t        rangeNum;
+    static uint16_t        irId;
+    static uint16_t        dstCoreId;
+    static uint16_t        coreIntrIdx;
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 
+    /* IR invloved only in mcu1_0 and mcu1_1*/
     if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
-        /* IR involved only in mcu1_0, mcu1_1 cores and not involved in other R5F cores */
-        int32_t         retVal = CSL_PASS;
-        uint16_t        irIntrIdx;
-        uint16_t        irqNum;
-        uint16_t irId = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
-        /* Check if core is mcu1_0 || mcu1_1 */
-        uint16_t dstId = (r5CpuInfo.cpuID == CSL_ARM_R5_CPU_ID_0)?
-                                    TISCI_DEV_MCU_R5FSS0_CORE0:
-                                        TISCI_DEV_MCU_R5FSS0_CORE1;
-        struct tisci_msg_rm_get_resource_range_resp res = {0};
-        struct tisci_msg_rm_get_resource_range_req  req = {0};
+        isIrInvolved = TRUE;
+        irId = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
+        dstCoreId = (r5CpuInfo.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                TISCI_DEV_MCU_R5FSS0_CORE0:
+                                    TISCI_DEV_MCU_R5FSS0_CORE1;
+    }
 
-        req.type           = irId;
-        req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
-        req.secondary_host = (uint8_t)TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-
-        res.range_num = 0;
-        res.range_start = 0;
-
-        /* Get interrupt number range */
-        retVal =  Sciclient_rmGetResourceRange(&req, &res, SCICLIENT_SERVICE_WAIT_FOREVER);
-
-        if (CSL_PASS != retVal || res.range_num == 0)
-        {
-            /* Try with HOST_ID_ALL */
-            req.type           = irId;
-            req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
-            req.secondary_host = TISCI_HOST_ID_ALL;
-
-            retVal = Sciclient_rmGetResourceRange(&req, &res, SCICLIENT_SERVICE_WAIT_FOREVER);
-        }
-
-        if ((CSL_PASS == retVal) && (res.range_num != 0))
-        {
-            /* Translate IR Idx to Core Interrupt Idx */
-            irIntrIdx = res.range_start;
-            retVal = Sciclient_rmIrqTranslateIrOutput(irId, irIntrIdx, dstId, &irqNum);
-        }
-        else
-        {
-            retVal = CSL_EFAIL;
-        }
-
-        if(retVal == CSL_PASS)
-        {
-            MMCSDInitCfg[hwAttrs->instNum].intNum = irqNum;
-        }
-        else
-        {
-            ret = MMCSD_ERR;
-        }
-
-    } /* For other R5F cores(other than mcu1_0 and mcu1_1) IR is not involved. They are directly mapped to CPU */
-    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) /* Main R5 SS0*/
+    if(setIntrPath)
     {
-       /* Configure the Main SS MMCSD instances for mcu2_0 and mcu2_1 . R5FSS'n'_CORE'n' */
-       /*  ********* MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' **************** */
-       if(r5CpuInfo.cpuID == 0U) 
-       {
-            MMCSDInitCfg[hwAttrs->instNum].intNum = (hwAttrs->instNum == 0)?
-                                CSLR_R5FSS0_CORE0_INTR_MMCSD0_EMMCSS_INTR_0:
-                                    CSLR_R5FSS0_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;
-       }
-       else
-       {
-            MMCSDInitCfg[hwAttrs->instNum].intNum = (hwAttrs->instNum == 0)?
-                                CSLR_R5FSS0_CORE1_INTR_MMCSD0_EMMCSS_INTR_0:
-                                    CSLR_R5FSS0_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
-       }
-    } 
-    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) /* Main R5 SS1*/
-    {
-        /* Configure the Main SS MMCSD instances for mcu3_0 and mcu3_1. R5FSS'n'_CORE'n' */
-        /********** MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' *****************/
-        if(r5CpuInfo.cpuID == 0U) 
+        if(isIrInvolved)
         {
-            MMCSDInitCfg[hwAttrs->instNum].intNum = (hwAttrs->instNum == 0)?
-                                CSLR_R5FSS1_CORE0_INTR_MMCSD0_EMMCSS_INTR_0:
-                                    CSLR_R5FSS1_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;  
+            if (gIrqRangeQueryFirstTime)
+            {
+                retVal = MMCSD_getIrqRange(irId, &rangeStart, &rangeNum); 
+                gIrqRangeQueryFirstTime = FALSE;
+            }
+            if(retVal == CSL_PASS)
+            {
+                retVal = MMCSD_configInterruptRouter(hwAttrs->instNum, hwAttrs->eventId, irId, dstCoreId, rangeStart, rangeNum, &coreIntrIdx);
+                if(retVal == CSL_PASS)
+                {
+                    MMCSDInitCfg[hwAttrs->instNum-1].intNum = coreIntrIdx;
+                }
+            }
         }
         else
         {
-            MMCSDInitCfg[hwAttrs->instNum].intNum = (hwAttrs->instNum == 0)?
-                                CSLR_R5FSS1_CORE1_INTR_MMCSD0_EMMCSS_INTR_0:
-                                    CSLR_R5FSS1_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
+            if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) /* Main R5 SS0*/
+            {
+                /* Configure the Main SS MMCSD instances for mcu2_0 and mcu2_1. R5FSS'n'_CORE'n' */
+                /*  ********* MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' **************** */
+                if(r5CpuInfo.cpuID == 0U) 
+                {
+                        MMCSDInitCfg[hwAttrs->instNum-1].intNum = (hwAttrs->instNum == 1)?
+                                            CSLR_R5FSS0_CORE0_INTR_MMCSD0_EMMCSS_INTR_0:
+                                                CSLR_R5FSS0_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;
+                }
+                else
+                {
+                        MMCSDInitCfg[hwAttrs->instNum-1].intNum = (hwAttrs->instNum == 1)?
+                                            CSLR_R5FSS0_CORE1_INTR_MMCSD0_EMMCSS_INTR_0:
+                                                CSLR_R5FSS0_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
+                }
+            } 
+            else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) /* Main R5 SS1*/
+            {
+                /* Configure the Main SS MMCSD instances for mcu3_0 and mcu3_1. R5FSS'n'_CORE'n' */
+                /********** MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' *****************/
+                if(r5CpuInfo.cpuID == 0U) 
+                {
+                    MMCSDInitCfg[hwAttrs->instNum-1].intNum = (hwAttrs->instNum == 1)?
+                                        CSLR_R5FSS1_CORE0_INTR_MMCSD0_EMMCSS_INTR_0:
+                                            CSLR_R5FSS1_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;  
+                }
+                else
+                {
+                    MMCSDInitCfg[hwAttrs->instNum-1].intNum = (hwAttrs->instNum == 1)?
+                                        CSLR_R5FSS1_CORE1_INTR_MMCSD0_EMMCSS_INTR_0:
+                                            CSLR_R5FSS1_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
+                }
+            }
+            else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3) /* Main R5 SS2*/
+            {
+                /* Configure the Main SS MMCSD instances for mcu4_0 and mcu4_1. R5FSS'n'_CORE'n' */
+                /********** MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' *****************/
+                if(r5CpuInfo.cpuID == 0U) 
+                {
+                    MMCSDInitCfg[hwAttrs->instNum-1].intNum = (hwAttrs->instNum == 1)?
+                                        CSLR_R5FSS2_CORE0_INTR_MMCSD0_EMMCSS_INTR_0:
+                                            CSLR_R5FSS2_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;  
+                }
+                else
+                {
+                    MMCSDInitCfg[hwAttrs->instNum-1].intNum = (hwAttrs->instNum == 1)?
+                                        CSLR_R5FSS2_CORE1_INTR_MMCSD0_EMMCSS_INTR_0:
+                                            CSLR_R5FSS2_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
+                }
+            }
+            else
+            {
+                retVal=CSL_EFAIL;
+            }
         }
     }
-    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3) /* Main R5 SS2*/
-    {
-        /* Configure the Main SS MMCSD instances for mcu4_0 and mcu4_1. R5FSS'n'_CORE'n' */
-        /********** MMCSD-0 and MMCSD-1 . intNum = R5FSS'n'_CORE'n' *****************/
-        if(r5CpuInfo.cpuID == 0U) 
-        {
-            MMCSDInitCfg[hwAttrs->instNum].intNum = (hwAttrs->instNum == 0)?
-                                CSLR_R5FSS2_CORE0_INTR_MMCSD0_EMMCSS_INTR_0:
-                                    CSLR_R5FSS2_CORE0_INTR_MMCSD1_EMMCSDSS_INTR_0;  
-        }
-        else
-        {
-            MMCSDInitCfg[hwAttrs->instNum].intNum = (hwAttrs->instNum == 0)?
-                                CSLR_R5FSS2_CORE1_INTR_MMCSD0_EMMCSS_INTR_0:
-                                    CSLR_R5FSS2_CORE1_INTR_MMCSD1_EMMCSDSS_INTR_0;
-        }
-    } 
     else
     {
-        ret=MMCSD_ERR;
-    }
-
-    if(hwAttrs->instNum==1) {
-       src_id = TISCI_DEV_MMCSD0;
-    } else {
-       src_id = TISCI_DEV_MMCSD1;
-    }
-    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0) /* MCU R5 */
-    {
-        if(r5CpuInfo.cpuID == 0U)
+        if(isIrInvolved)
         {
-            dst_id = TISCI_DEV_MCU_R5FSS0_CORE0; /* mcu1_0 */ 
+            struct tisci_msg_rm_irq_release_req rmIrqRelease;
+            memset (&rmIrqRelease,0,sizeof(rmIrqRelease));
+
+            rmIrqRelease.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+            /* Check if instance MMCSD0 or MMCSD1 */
+            rmIrqRelease.src_id = (hwAttrs->instNum == 1)?TISCI_DEV_MMCSD0:TISCI_DEV_MMCSD1;
+            rmIrqRelease.src_index = hwAttrs->eventId;  /* This is the event coming out of 
+                                                        the peripheral */
+
+            /* Set the destination interrupt */ 
+            rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
+            rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+
+            /* Set the destination based on the core */
+            /* Since IR is involved only on MCU R5 cores. dst_id can be mcu1_0 or mcu1_1 */
+            rmIrqRelease.dst_id       = dstCoreId;
+            rmIrqRelease.dst_host_irq = hwAttrs->intNum;
+            retVal = Sciclient_rmIrqRelease(
+                    (const struct tisci_msg_rm_irq_release_req *)&rmIrqRelease,
+                        SCICLIENT_SERVICE_WAIT_FOREVER);
         }
         else
         {
-            dst_id = TISCI_DEV_MCU_R5FSS0_CORE1; /* mcu1_1 */
+            /* If IR is not involved we don't need to release the interrupt */
+            ret = MMCSD_OK;
         }
     }
-       
-    src_index = hwAttrs->eventId;  /* Index coming from the peripheral */
-    dst_host_irq = hwAttrs->intNum;  /* Already updated dynamically by this time for
-                                        the current core, either dedicated line or by
-                                        querying from BoardCfg incase of IR involved */
-   
-   if( (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) ||
-       (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) ||
-       (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3))
-   {
-     /* Nothing to be configured as the MMCSD0, MMCSD1 -> MAIN R5 does not need any configuration.
-      * It is direct to the core, bypassing INTR and MAIN2MCU RTR. Hence there is no
-      * firmware involvement needed. Consequently, the interrupt path configuration should
-      * bypassed entirely.
-      */
-      ret = MMCSD_OK;
-   } else
-   {
-    if(setIntrPath) {
-      memset (&rmIrqReq,0,sizeof(rmIrqReq));       
-      rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-      rmIrqReq.src_id = src_id;
-      rmIrqReq.src_index = src_index;  /* This is the event coming out of 
-      the peripheral */
 
-      /* Set the destination interrupt */ 
-      rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-      rmIrqReq.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-      /* Set the destination based on the core */
-      rmIrqReq.dst_id       = dst_id;
-      rmIrqReq.dst_host_irq       = dst_host_irq;
-
-     } else 
-     {
-       memset (&rmIrqRelease,0,sizeof(rmIrqRelease));
-
-       rmIrqRelease.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-       rmIrqRelease.src_id = src_id;
-       rmIrqRelease.src_index = src_index;  /* This is the event coming out of 
-       the peripheral */
-
-       /* Set the destination interrupt */ 
-       rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-       rmIrqRelease.valid_params |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-
-       /* Set the destination based on the core */
-       rmIrqRelease.dst_id       = dst_id;
-       rmIrqRelease.dst_host_irq = dst_host_irq;
-     } 
-     /* Config event */
-     if(setIntrPath) {
-        retVal = Sciclient_rmIrqSet(
-                    (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq, 
-                     &rmIrqResp, 
-                     SCICLIENT_SERVICE_WAIT_FOREVER);
-      } else {
-        retVal = Sciclient_rmIrqRelease(
-                    (const struct tisci_msg_rm_irq_release_req *)&rmIrqRelease,
-                     SCICLIENT_SERVICE_WAIT_FOREVER);
-      }               
-      if(CSL_PASS != retVal)
-      {
-       ret = MMCSD_ERR_SET_SOC_INTERRUPT_PATH;
-      }
-    }  
+    if(CSL_PASS != retVal)
+    {
+        ret = MMCSD_ERR_SET_SOC_INTERRUPT_PATH;
+    }
 #endif
-     return(ret);
+    return(ret);
 }
 
 /* Initializes PHY */
