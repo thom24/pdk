@@ -314,7 +314,7 @@ static int32_t BootApp_RequestStageCores(uint8_t stageNum)
 
     for (i = 0; i < MAX_CORES_PER_STAGE; i++)
     {
-        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != 0xBAD00000)
+        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != SBL_INVALID_ID)
         {
             #if defined(UART_PRINT_DEBUG)
                 UART_printf("Calling Sciclient_procBootRequestProcessor, ProcId 0x%x... \n",
@@ -344,7 +344,7 @@ static int32_t BootApp_ReleaseStageCores(uint8_t stageNum)
 
     for (i = 0; i < MAX_CORES_PER_STAGE; i++)
     {
-        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != 0xBAD00000)
+        if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != SBL_INVALID_ID)
         {
             #if defined(UART_PRINT_DEBUG)
                 UART_printf("Sciclient_procBootReleaseProcessor, ProcId 0x%x...\n",
