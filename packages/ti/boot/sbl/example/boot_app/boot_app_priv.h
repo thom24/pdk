@@ -150,6 +150,15 @@ extern cpu_core_id_t *boot_array_stage[];
 /* Defines number of cores booted in each stage */
 extern uint8_t num_cores_per_boot_stage[];
 
+/* ========================================================================== */
+/*                          Function Declarations                             */
+/* ========================================================================== */
+
+#if defined(MPU1_HLOS_BOOT_ENABLED)
+/* Function to clean the MCU R5 cache for a given start address and given memory size */
+void BootApp_McuDCacheClean(void *addr, uint32_t size);
+#endif
+
 #ifdef __cplusplus
 }
 #endif

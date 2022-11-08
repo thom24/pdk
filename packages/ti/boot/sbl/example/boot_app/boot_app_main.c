@@ -116,11 +116,6 @@ static uint32_t BootApp_SetupSciServer(void);
 extern int32_t   (*fp_readData)(void *dstAddr, void *srcAddr, uint32_t length);
 extern void     (*fp_seek)(void *srcAddr, uint32_t location);
 
-#if defined(MPU1_HLOS_BOOT_ENABLED)
-/* Function to clean the MCU R5 cache for a given start address and given memory size */
-void BootApp_McuDCacheClean(void *addr, uint32_t size);
-#endif
-
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -394,7 +389,7 @@ uint32_t BootApp_GetTimeInMicroSec(uint32_t pmuCntrVal){
 void BootApp_McuDCacheClean(void *addr, uint32_t size)
 {
     /* Invalidate by MVA */
-    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), bool(TRUE));
+    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), (bool)TRUE);
 }
 #endif
 
