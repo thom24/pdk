@@ -38,7 +38,7 @@
 #include "SafeRTOS_API.h"
 #include "SafeRTOSConfig.h"
 
-#include <ti/csl/src/intc/csl_intc.h>
+#include <ti/csl/soc.h>
 #include <ti/csl/csl_clec.h>
 #include "Mmu.h"
 
