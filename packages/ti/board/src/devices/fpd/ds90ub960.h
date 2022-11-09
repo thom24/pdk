@@ -118,6 +118,8 @@ extern "C" {
 #define BOARD_CSI_INST_0             ((uint32_t) 0x0U)
 /** \brief CSIRX Instance: 1 */
 #define BOARD_CSI_INST_1             ((uint32_t) 0x1U)
+/** \brief CSIRX Instance: 2 */
+#define BOARD_CSI_INST_2             ((uint32_t) 0x2U)
 /* @} */
 
 /* @} */

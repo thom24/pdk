@@ -125,7 +125,7 @@ extern "C" {
 #define BOARD_I2C_IOEXP_DEVICE2_INSTANCE                (0U)
 #define BOARD_I2C_IOEXP_DEVICE3_INSTANCE                (3U)
 #define BOARD_I2C_IOEXP_DEVICE4_INSTANCE                (4U)
-#define BOARD_I2C_IOEXP_DEVICE5_INSTANCE                (6U)
+#define BOARD_I2C_IOEXP_DEVICE5_INSTANCE                (5U)
 #define BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE           (3U)
 #define BOARD_I2C_VIDEO_IOEXP_DEVICE_INSTANCE           (1U)
 #define BOARD_I2C_DSI2DP_DEVICE_INSTANCE                (4U)
