@@ -493,6 +493,26 @@ export board_diag_emmc_$(SOC)_CORELIST
 export board_diag_emmc_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 #board_diag_EXAMPLE_LIST += board_diag_emmc
 
+# ENET
+board_diag_enet_COMP_LIST = board_diag_enet
+board_diag_enet_RELPATH = ti/board/diag/enet/build
+board_diag_enet_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/enet/build
+board_diag_enet_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_enet_MAKEFILE = -f makefile
+board_diag_enet_BOARD_DEPENDENCY = yes
+board_diag_enet_CORE_DEPENDENCY = yes
+export board_diag_enet_COMP_LIST
+export board_diag_enet_BOARD_DEPENDENCY
+export board_diag_enet_CORE_DEPENDENCY
+export board_diag_enet_MAKEFILE
+board_diag_enet_PKG_LIST = board_diag_enet
+board_diag_enet_INCLUDE = $(board_diag_enet_PATH)
+board_diag_enet_BOARDLIST = j784s4_evm
+board_diag_enet_$(SOC)_CORELIST = mcu2_0
+export board_diag_enet_$(SOC)_CORELIST
+export board_diag_enet_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+#board_diag_EXAMPLE_LIST += board_diag_enet
+
 # EXPANSION HEADER
 board_diag_expHeader_COMP_LIST = board_diag_expHeader
 board_diag_expHeader_RELPATH = ti/board/diag/exp_header/build
