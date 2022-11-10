@@ -227,10 +227,10 @@ int8_t UFP_sciclientInit(void *sysfw)
     };
     /* SYSFW board configurations */
     Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
-    Sciclient_BoardCfgPrms_t sblBoardCfgPrms;
-    Sciclient_BoardCfgPrms_t sblBoardCfgPmPrms;
-    Sciclient_BoardCfgPrms_t sblBoardCfgRmPrms;
-    Sciclient_BoardCfgPrms_t sblBoardCfgSecPrms;
+    Sciclient_BoardCfgPrms_t ufsBoardCfgPrms;
+    Sciclient_BoardCfgPrms_t ufsBoardCfgPmPrms;
+    Sciclient_BoardCfgPrms_t ufsBoardCfgRmPrms;
+    Sciclient_BoardCfgPrms_t ufsBoardCfgSecPrms;
 
     UFP_isSysfwEnc((uint8_t *) sysfw);
 
@@ -239,6 +239,13 @@ int8_t UFP_sciclientInit(void *sysfw)
     {
         return (-1);
     }
+
+    Sciclient_configPrmsInit(&config);
+    config.opModeFlag               =   SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
+    config.pBoardCfgPrms            =   NULL;
+    config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
+    config.c66xRatRegion            =   0;
+    config.skipLocalBoardCfgProcess =   TRUE;
 
     status = Sciclient_init(&config);
     if (status != CSL_PASS)
@@ -252,41 +259,60 @@ int8_t UFP_sciclientInit(void *sysfw)
         return (-1);
     }
 
-    sblBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLow;
-    sblBoardCfgPrms.boardConfigHigh = 0;
-    sblBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
-    sblBoardCfgPrms.devGrp = DEVGRP_ALL;
-    status = Sciclient_boardCfg(&sblBoardCfgPrms);
+    ufsBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLow;
+    ufsBoardCfgPrms.boardConfigHigh = 0;
+    ufsBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
+    ufsBoardCfgPrms.devGrp = DEVGRP_ALL;
+    status = Sciclient_boardCfg(&ufsBoardCfgPrms);
     if (status != CSL_PASS)
     {
         return (-1);
     }
 
-    sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
-    sblBoardCfgPmPrms.boardConfigHigh = 0;
-    sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
-    sblBoardCfgPmPrms.devGrp = DEVGRP_ALL;
-    status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
+    /** On J784S4 HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround
+     *  Uniflash needs to open this firewall before doing PM Init. This condition should be
+     *  removed after having a fix in TIFS
+     */
+#if !(defined(SOC_J784S4) && defined(BUILD_HS))
+    ufsBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
+    ufsBoardCfgPmPrms.boardConfigHigh = 0;
+    ufsBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+    ufsBoardCfgPmPrms.devGrp = DEVGRP_ALL;
+    status = Sciclient_boardCfgPm(&ufsBoardCfgPmPrms);
+    if (status != CSL_PASS)
+    {
+        return (-1);
+    }
+#endif
+
+    ufsBoardCfgSecPrms.boardConfigLow  = (uint32_t)boardCfgInfo.boardCfgLowSec;
+    ufsBoardCfgSecPrms.boardConfigHigh = 0;
+    ufsBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
+    ufsBoardCfgSecPrms.devGrp = DEVGRP_ALL;
+    status = Sciclient_boardCfgSec(&ufsBoardCfgSecPrms);
     if (status != CSL_PASS)
     {
         return (-1);
     }
 
-    sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
-    sblBoardCfgRmPrms.boardConfigHigh = 0;
-    sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
-    sblBoardCfgRmPrms.devGrp = DEVGRP_ALL;
-    status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
+    /* As a workaround do PM Init for J784S4 HS after opening up BOLT_PSC firewall */
+#if defined(SOC_J784S4) && defined(BUILD_HS)
+    ufsBoardCfgPmPrms.boardConfigLow  = (uint32_t)boardCfgInfo.boardCfgLowPm;
+    ufsBoardCfgPmPrms.boardConfigHigh = 0;
+    ufsBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+    ufsBoardCfgPmPrms.devGrp = DEVGRP_ALL;
+    status = Sciclient_boardCfgPm(&ufsBoardCfgPmPrms);
     if (status != CSL_PASS)
     {
         return (-1);
     }
+#endif
 
-    sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowSec;
-    sblBoardCfgSecPrms.boardConfigHigh = 0;
-    sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
-    sblBoardCfgSecPrms.devGrp = DEVGRP_ALL;
-    status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
+    ufsBoardCfgRmPrms.boardConfigLow  = (uint32_t)boardCfgInfo.boardCfgLowRm;
+    ufsBoardCfgRmPrms.boardConfigHigh = 0;
+    ufsBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
+    ufsBoardCfgRmPrms.devGrp = DEVGRP_ALL;
+    status = Sciclient_boardCfgRm(&ufsBoardCfgRmPrms);
     if (status != CSL_PASS)
     {
         return (-1);

@@ -158,6 +158,10 @@ ifeq ($(BOARD), $(filter $(BOARD), am65xx_evm am65xx_idk))
 CFLAGS_LOCAL_COMMON += -DSOC_AM65XX
 endif
 
+ifeq ($(BUILD_HS),yes)
+CFLAGS_LOCAL_COMMON += -DBUILD_HS
+endif
+
 ifeq ($(BOARD), $(filter $(BOARD), j721e_evm am65xx_evm am65xx_idk am64x_evm j721s2_evm j784s4_evm))
 ifeq ($(BUILD_HS),no)
 #CFLAGS_LOCAL_COMMON += -DSPI_DMA_ENABLE
