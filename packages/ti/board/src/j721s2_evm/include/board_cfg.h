@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -56,7 +56,7 @@ extern "C" {
 #define BOARD_DDR_SIZE                                  (2048 * 1024 * 1024UL)
 #define BOARD_DDR_END_ADDR                              (0xFFFFFFFFU)
 /* Note with ECC enabled, all memory is not usable: 1/8 memory used for inline ECC */
-#define BOARD_DDR_ECC_END_ADDR                          (0xF1FFFFFFU)
+#define BOARD_DDR_ECC_END_ADDR                          (0xF1C71C00U)
 /* Enable/Disable DDR Memory Prime for ECC. Define the following macro to enable. */
 #undef BOARD_DDR_ENABLE_DDR_MEM_PRIME
 
