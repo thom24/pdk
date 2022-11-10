@@ -1,4 +1,4 @@
-# Copyright (C) 2019-2020 Texas Instruments Incorporated - http://www.ti.com/
+# Copyright (C) 2019-2022 Texas Instruments Incorporated - http://www.ti.com/
 #
 #
 #  Redistribution and use in source and binary forms, with or without
@@ -71,13 +71,19 @@ PACKAGE_SRCS_COMMON += ../../common/$(SOC)
 PACKAGE_SRCS_COMMON += ../../board_diag_component.mk
 PACKAGE_SRCS_COMMON += ../../create_sd.bat ../../create_sd.sh
 
+ifeq ($(BOARD), $(filter $(BOARD), j784s4_evm))
+SRCS_COMMON += cpsw_enet_eth_test.c diag_common_cfg.c
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_1))
+EXTERNAL_LNKCMD_FILE_LOCAL = ../../../../build/j784s4/linker_r5.lds
+endif
+else
 SRCS_COMMON += cpsw_eth_test.c diag_common_cfg.c
-
-CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS) $(ENET_CFLAGS)
-
 ifeq ($(CORE),$(filter $(CORE), mcu1_0))
 EXTERNAL_LNKCMD_FILE_LOCAL = ../../common/$(SOC)/linker_$(CORE).lds
 endif
+endif
+
+CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS) -DDIAG_$(TESTMODE) $(BOARD_DIAG_CFLAGS) $(ENET_CFLAGS)
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

@@ -249,8 +249,12 @@ export board_diag_cpsw_CORE_DEPENDENCY
 export board_diag_cpsw_MAKEFILE
 board_diag_cpsw_PKG_LIST = board_diag_cpsw
 board_diag_cpsw_INCLUDE = $(board_diag_cpsw_PATH)
-board_diag_cpsw_BOARDLIST = tpr12_evm awr294x_evm
+board_diag_cpsw_BOARDLIST = tpr12_evm awr294x_evm j784s4_evm
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+board_diag_cpsw_$(SOC)_CORELIST = mcu1_0 mcu2_1
+else
 board_diag_cpsw_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+endif
 export board_diag_cpsw_$(SOC)_CORELIST
 export board_diag_cpsw_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 #board_diag_EXAMPLE_LIST += board_diag_cpsw
