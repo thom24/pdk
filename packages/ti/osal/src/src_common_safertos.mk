@@ -2,7 +2,7 @@
 SRCDIR = . src/safertos src/nonos arch/core src/freertos
 INCDIR = . src/safertos src/nonos arch/core src/freertos
 
-SRCS_COMMON += SwiP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c
+SRCS_COMMON += SwiP_nonos.c DebugP_nonos.c RegisterIntr_nonos.c Core_utils.c CycleprofilerP_nonos.c
 SRCS_COMMON += SemaphoreP_SafeRTOS.c TaskP_SafeRTOS.c Utils_SafeRTOS.c SafeRTOS_config.c
 SRCS_COMMON += EventP_safertos.c MailboxP_safertos.c ClockP_safertos.c MutexP_safertos.c
 SRCS_COMMON += HeapP_freertos.c HeapP_freertos_internal.c QueueP_freertos.c

@@ -67,8 +67,8 @@ void ClockP_timerCallbackFunction(timerHandleType xTimer)
      * For now assuming it is passing the timer ID, which is index as
      * initialized at the time of creation.
      */
-    portBaseType    *xTimerID = (portBaseType *)xTimer;
-    ClockP_safertos *pTimer = &gOsalClockPSafeRtosPool[*xTimerID];
+    portBaseType    xTimerID = ((timerControlBlockType *)xTimer)->xTimerID;
+    ClockP_safertos *pTimer = &gOsalClockPSafeRtosPool[xTimerID];
 
     if(pTimer != NULL_PTR && pTimer->callback && pTimer->used == TRUE)
     {
