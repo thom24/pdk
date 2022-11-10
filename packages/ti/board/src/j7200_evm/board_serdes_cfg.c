@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -40,6 +40,33 @@
  */
 
 #include "board_serdes_cfg.h"
+
+/**
+ * \brief  Configures kick registers for Pinmux MMR access
+ *
+ * \param   lockCtrl [IN]   Register lock/unlock control
+ *                          0 - Unlocks the MMR register write access
+ *                          1 - Locks the MMR register write access
+ *
+ * \return  Board_STATUS
+ */
+static Board_STATUS Board_serdesKickCtrl(uint32_t lockCtrl)
+{
+    Board_STATUS status;
+
+    if(lockCtrl)
+    {
+        status  = Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION1);
+        status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION2);
+    }
+    else
+    {
+        status  = Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION1);
+        status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION2);
+    }
+
+    return (status);
+}
 
 static Board_STATUS Board_serdesInitParams(CSL_SerdesLaneEnableParams *laneParams,
                                            uint32_t phyType)
@@ -239,8 +266,13 @@ Board_STATUS Board_serdesCfgSgmii(void)
 {
     Board_STATUS ret;
 
+    /* Unlock MMR write access */
+    Board_serdesKickCtrl(0);
+
     /* SERDES0 Initializations */
     ret = Board_serdesCfgEthernet(CSL_SERDES_PHY_TYPE_SGMII);
+    /* Lock MMR write access */
+    Board_serdesKickCtrl(1);
     if(ret != BOARD_SOK)
     {
         return ret;
@@ -261,8 +293,13 @@ Board_STATUS Board_serdesCfgQsgmii(void)
 {
     Board_STATUS ret;
 
+    /* Unlock MMR write access */
+    Board_serdesKickCtrl(0);
+
     /* SERDES0 Initializations */
     ret = Board_serdesCfgEthernet(CSL_SERDES_PHY_TYPE_QSGMII);
+    /* Lock MMR write access */
+    Board_serdesKickCtrl(1);
     if(ret != BOARD_SOK)
     {
         return ret;
@@ -283,8 +320,13 @@ Board_STATUS Board_serdesCfgUsxgmii(void)
 {
     Board_STATUS ret;
 
+    /* Unlock MMR write access */
+    Board_serdesKickCtrl(0);
+
     /* SERDES0 Initializations */
     ret = Board_serdesCfgEthernetUsxgmii();
+    /* Lock MMR write access */
+    Board_serdesKickCtrl(1);
     if(ret != BOARD_SOK)
     {
         return ret;

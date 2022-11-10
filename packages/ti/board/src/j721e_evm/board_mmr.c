@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,147 +42,121 @@
 #include "board_internal.h"
 #include <ti/csl/soc/j721e/src/cslr_wkup_ctrl_mmr.h>
 
+/* Array to store the state of the kick registers before doing unlock */
+static uint32_t gBoardKickState[BOARD_SOC_DOMAIN_MAX][BOARD_MMR_PARTITION_MAX] = {{0,0,0,0,0,0,0,0},
+                                                                                  {0,0,0,0,0,0,0,0},
+                                                                                  {0,0,0,0,0,0,0,0}};
+
 /**
- * \brief  Configures kick registers to lock/unlock MMR access
+ *  \brief  Gets base address of MMR control registers
  *
- * \param   kick0    [IN]   KICK0 register address
- * \param   kick1    [IN]   KICK1 register address
- * \param   lockCtrl [IN]   Register lock/unlock control
- *                          0 - Unlocks the MMR register write access
- *                          1 - Locks the MMR register write access
+ *  \param   domain [IN]  SoC domain for MMR register space
+ *  \n                     BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                     BOARD_SOC_DOMAIN_MCU  - MCU domain
+ *  \n                     BOARD_SOC_DOMAIN_WKUP - Wakeup domain
  *
- * \return  BOARD_SOK - MMR kick register configurations successful
- *          BOARD_FAIL - MMR kick register configurations failed
+ *  \return   Valid address in case success or 0 in case of failure
  */
-static Board_STATUS MMR_config(uint32_t *kick0, uint32_t *kick1, uint8_t lockCtrl)
+static uint32_t Board_mmrGetBaseAddr(uint8_t domain)
 {
-    /* Initialize the status variable */
-    Board_STATUS status = BOARD_SOK;
+    uint32_t baseAddr;
 
-    if(lockCtrl == 0)
+    switch(domain)
     {
-        /* If either of the kick lock registers are locked */
-        if(!(*kick0 & 0x01))
-        {
-            /* Unlock the partition by writing the unlock values to the kick lock registers */
-            *kick0 = BOARD_KICK0_UNLOCK_VAL;
-            *kick1 = BOARD_KICK1_UNLOCK_VAL;
-        }
-
-        /* Confirm both the kick registers are unlocked */
-        if(!(*kick0 & 0x01))
-        {
-            status = BOARD_FAIL;
-        }
-    }
-    else
-    {
-        /* Lock the partition by writing the lock values to the kick lock registers */
-        *kick0 = BOARD_KICK0_LOCK_VAL;
-        *kick1 = BOARD_KICK1_LOCK_VAL;
-
-        /* Confirm both the kick registers are locked */
-        if(*kick0 & 0x01)
-        {
-            status = BOARD_FAIL;
-        }
+        case BOARD_SOC_DOMAIN_MAIN:
+            baseAddr = (CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK0_KICK0);
+        break;
+        case BOARD_SOC_DOMAIN_MCU:
+            baseAddr = (CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK0_KICK0);
+        break;
+        case BOARD_SOC_DOMAIN_WKUP:
+            baseAddr = (CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK0_KICK0);
+        break;
+        default:
+            baseAddr = 0;
+        break;
     }
 
-    return status;
+    return (baseAddr);
 }
 
 /**
- * \brief  Unlocks MMR registers
+ * \brief  Locks MMR register partition
  *
- * \param   lockCtrl [IN]   Register lock/unlock control
- *                          0 - Unlocks the MMR register write access
- *                          1 - Locks the MMR register write access
+ *  \param   domain  [IN]  SoC domain for MMR register space
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                      BOARD_SOC_DOMAIN_MCU  - MCU domain
+ *  \n                      BOARD_SOC_DOMAIN_WKUP - Wakeup domain
  *
- * \return  BOARD_SOK - MMR kick register configurations successful
- *          BOARD_FAIL - MMR kick register configurations failed
+ *  \param   partNum [IN]  Partition number
+ *
+ * \return  Board_STATUS
  */
-Board_STATUS Board_ctrlMMR(uint8_t lockCtrl)
+Board_STATUS Board_lockMMRPartition(uint32_t domain, uint32_t partNum)
 {
     Board_STATUS status = BOARD_SOK;
-    uint32_t *lock0;
-    uint32_t *lock1;
+    uint32_t baseAddr;
+    uint32_t kick0;
 
-    Board_setRATCfg();
+    /**
+     * Lock the partition only if the kick register is in lock state before board unlock.
+     * This will ensure that the board module is not changing state of the kick registers
+     * which are unlocked by some other module/core.
+     */
+    if(!gBoardKickState[domain][partNum])
+    {
+        baseAddr  = Board_mmrGetBaseAddr(domain);
+        baseAddr += (BOARD_MMR_PARTITION_SIZE * partNum);
+        HW_WR_REG32(baseAddr, BOARD_KICK0_LOCK_VAL);
+        HW_WR_REG32((baseAddr + 4), BOARD_KICK1_LOCK_VAL);
 
-    /* Unlock MAIN MMR registers */
-    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK0_KICK0);
-    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK0_KICK1);
-    status = MMR_config(lock0, lock1, lockCtrl);
+        /* Confirm the kick registers are locked */
+        kick0 = HW_RD_REG32(baseAddr);
+        if(kick0 & 0x01)
+        {
+            status = BOARD_FAIL;
+        }
+    }
 
-    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK0);
-    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK1_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
+    return (status);
+}
 
-    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK0);
-    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK2_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
+/**
+ * \brief  Unlocks MMR register partition
+ *
+ *  \param   domain  [IN]  SoC domain for MMR register space
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                      BOARD_SOC_DOMAIN_MCU  - MCU domain
+ *  \n                      BOARD_SOC_DOMAIN_WKUP - Wakeup domain
+ *
+ *  \param   partNum [IN]  Partition number
+ *
+ * \return  Board_STATUS
+ */
 
-    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK3_KICK0);
-    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK3_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
+Board_STATUS Board_unlockMMRPartition(uint32_t domain, uint32_t partNum)
+{
+    Board_STATUS status = BOARD_SOK;
+    uint32_t baseAddr;
+    uint32_t kick0;
 
-    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0);
-    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
+    baseAddr  = Board_mmrGetBaseAddr(domain);
+    baseAddr += (BOARD_MMR_PARTITION_SIZE * partNum);
 
-    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK6_KICK0);
-    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK6_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
+    /* Read the current state of the kick lock. Will be used by board lock function */
+    gBoardKickState[domain][partNum] = HW_RD_REG32(baseAddr) & 0x1;
 
-    lock0 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK7_KICK0);
-    lock1 = (uint32_t *)(BOARD_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_LOCK7_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
+    HW_WR_REG32(baseAddr, BOARD_KICK0_UNLOCK_VAL);
+    HW_WR_REG32((baseAddr + 4), BOARD_KICK1_UNLOCK_VAL);
 
-    /* Unlock wakeup MMR registers */
-    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK0_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
+    /* Confirm the kick registers are locked */
+    kick0 = HW_RD_REG32(baseAddr);
+    if(!(kick0 & 0x01))
+    {
+        status = BOARD_FAIL;
+    }
 
-    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK1_KICK0);
-    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK1_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK2_KICK0);
-    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK2_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK3_KICK0);
-    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK3_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK6_KICK0);
-    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK6_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    lock0 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK7_KICK0);
-    lock1 = (uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK7_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    /* Unlock MCU MMR registers */
-    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK0_KICK0);
-    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK0_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK1_KICK0);
-    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK1_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK0);
-    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK2_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    lock0 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK3_KICK0);
-    lock1 = (uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_LOCK3_KICK1);
-    status |= MMR_config(lock0, lock1, lockCtrl);
-
-    Board_restoreRATCfg();
-
-    return status;
+    return (status);
 }
 
 /**
@@ -194,7 +168,32 @@ Board_STATUS Board_lockMMR(void)
 {
     Board_STATUS status;
 
-    status = Board_ctrlMMR(1);
+    Board_setRATCfg();
+
+    /* Lock MAIN MMR registers */
+    status  = Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION0);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION1);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION2);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION3);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION5);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION6);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION7);
+
+    /* Lock WAKEUP MMR registers */
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION0);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION1);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION2);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION3);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION6);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION7);
+
+    /* Lock MCU MMR registers */
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION0);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION1);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION2);
+    status |= Board_lockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION3);
+
+    Board_restoreRATCfg();
 
     return status;
 }
@@ -208,7 +207,32 @@ Board_STATUS Board_unlockMMR(void)
 {
     Board_STATUS status;
 
-    status = Board_ctrlMMR(0);
+    Board_setRATCfg();
+
+    /* Unlock MAIN MMR registers */
+    status  = Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION0);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION1);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION2);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION3);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION5);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION6);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MAIN, BOARD_MMR_PARTITION7);
+
+    /* Unlock WAKEUP MMR registers */
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION0);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION1);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION2);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION3);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION6);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_WKUP, BOARD_MMR_PARTITION7);
+
+    /* Unlock MCU MMR registers */
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION0);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION1);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION2);
+    status |= Board_unlockMMRPartition(BOARD_SOC_DOMAIN_MCU, BOARD_MMR_PARTITION3);
+
+    Board_restoreRATCfg();
 
     return status;
 }

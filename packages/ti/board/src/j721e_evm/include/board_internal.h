@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -395,6 +395,18 @@ typedef struct Board_I2cObj_s
 #define BOARD_WKUP_MMR_P7_CLAIM_OFFSET  (0x1C000U)
 #define BOARD_MMR_CLAIM_ADDR_PER_REG    (128U)
 
+#define BOARD_MMR_PARTITION_MAX              (8U)
+#define BOARD_MMR_PARTITION_SIZE             (0x4000U)
+
+#define BOARD_MMR_PARTITION0                 (0x0U)
+#define BOARD_MMR_PARTITION1                 (0x1U)
+#define BOARD_MMR_PARTITION2                 (0x2U)
+#define BOARD_MMR_PARTITION3                 (0x3U)
+#define BOARD_MMR_PARTITION4                 (0x4U)
+#define BOARD_MMR_PARTITION5                 (0x5U)
+#define BOARD_MMR_PARTITION6                 (0x6U)
+#define BOARD_MMR_PARTITION7                 (0x7U)
+
 /*********************XXXXXXXXXXXXXXXXXXXXX**********************/
 
 /*****************************************************************************
@@ -595,6 +607,35 @@ Board_STATUS Board_lockMMR(void);
  * \return  Board_STATUS
  */
 Board_STATUS Board_unlockMMR(void);
+
+/**
+ * \brief  Locks MMR register partition
+ *
+ *  \param   domain  [IN]  SoC domain for MMR register space
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                      BOARD_SOC_DOMAIN_MCU  - MCU domain
+ *  \n                      BOARD_SOC_DOMAIN_WKUP - Wakeup domain
+ *
+ *  \param   partNum [IN]  Partition number
+ *
+ * \return  Board_STATUS
+ */
+Board_STATUS Board_lockMMRPartition(uint32_t domain, uint32_t partNum);
+
+/**
+ * \brief  Unlocks MMR register partition
+ *
+ *  \param   domain  [IN]  SoC domain for MMR register space
+ *  \n                      BOARD_SOC_DOMAIN_MAIN - Main domain
+ *  \n                      BOARD_SOC_DOMAIN_MCU  - MCU domain
+ *  \n                      BOARD_SOC_DOMAIN_WKUP - Wakeup domain
+ *
+ *  \param   partNum [IN]  Partition number
+ *
+ * \return  Board_STATUS
+ */
+
+Board_STATUS Board_unlockMMRPartition(uint32_t domain, uint32_t partNum);
 
 /**
  *  \brief Serdes configurations

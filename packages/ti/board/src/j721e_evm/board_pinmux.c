@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019-2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -48,6 +48,32 @@ static Board_PinmuxConfig_t gBoardPinmuxCfg = {BOARD_PINMUX_CUSTOM,
                                                BOARD_PINMUX_ENET_QSGMII};
 
 /**
+ * \brief  Configures kick registers for Pinmux MMR access
+ *
+ * \param   domain   [IN]   MMR register domain
+ * \param   lockCtrl [IN]   Register lock/unlock control
+ *                          0 - Unlocks the MMR register write access
+ *                          1 - Locks the MMR register write access
+ *
+ * \return  Board_STATUS
+ */
+static Board_STATUS Board_pinmuxKickCtrl(uint32_t domain, uint32_t lockCtrl)
+{
+    Board_STATUS status;
+
+    if(lockCtrl)
+    {
+        status = Board_lockMMRPartition(domain, BOARD_MMR_PARTITION7);
+    }
+    else
+    {
+        status = Board_unlockMMRPartition(domain, BOARD_MMR_PARTITION7);
+    }
+
+    return (status);
+}
+
+/**
  *  \brief  Gets base address of padconfig registers
  *
  *  \param   domain [IN]  SoC domain for pinmux
@@ -64,6 +90,9 @@ static void Board_pinmuxWriteProxy1Reg(uint8_t domain,
     uint32_t    claimOffset;
     uint32_t    claimShift;
     uint32_t    claimRegVal;
+
+    /* Unlock MMR write access */
+    Board_pinmuxKickCtrl(domain, 0);
 
     if(domain == BOARD_SOC_DOMAIN_MAIN)
     {
@@ -92,6 +121,9 @@ static void Board_pinmuxWriteProxy1Reg(uint8_t domain,
 
     /* Write PAD config MMR register */
     HW_WR_REG32(baseAddr, regVal);
+
+    /* Lock MMR write access */
+    Board_pinmuxKickCtrl(domain, 1);
 }
 
 /**
@@ -139,8 +171,6 @@ void Board_pinMuxSetMode(uint32_t offset, uint32_t mode)
     uint32_t baseAddr;
     uint32_t regVal;
 
-    Board_unlockMMR();
-
     baseAddr = Board_pinmuxGetBaseAddr(BOARD_SOC_DOMAIN_MAIN);
 
     regVal = HW_RD_REG32((baseAddr + offset));
@@ -167,8 +197,6 @@ void Board_pinMuxSetModeWkup(uint32_t offset, uint32_t mode)
 {
     uint32_t baseAddr;
     uint32_t regVal;
-
-    Board_unlockMMR();
 
     baseAddr = Board_pinmuxGetBaseAddr(BOARD_SOC_DOMAIN_WKUP);
 
@@ -203,8 +231,6 @@ Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
 {
     uint32_t baseAddr;
     Board_STATUS status = BOARD_SOK;
-
-    Board_unlockMMR();
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
     if(baseAddr != 0)
@@ -322,8 +348,6 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
     uint32_t rdRegVal;
     uint32_t baseAddr;
     Board_STATUS status = BOARD_SOK;
-
-    Board_unlockMMR();
 
     /* MAIN domain pinmux needs RAT configuration for C66x core. */
     if(domain == BOARD_SOC_DOMAIN_MAIN)
@@ -581,9 +605,11 @@ Board_STATUS Board_pinmuxConfigWkup (void)
 void Board_uartTxPinmuxConfig(void)
 {
     /* Unlock partition lock kick */
-    HW_WR_REG32(BOARD_MCU_UART_TX_LOCK_KICK_ADDR, BOARD_KICK0_UNLOCK_VAL);
-    HW_WR_REG32(BOARD_MCU_UART_TX_LOCK_KICK_ADDR + 4U, BOARD_KICK1_UNLOCK_VAL);
+    Board_pinmuxKickCtrl(BOARD_SOC_DOMAIN_WKUP, 0);
 
     /* Configure pinmux for UART Tx pin */
     HW_WR_REG32(BOARD_MCU_UART_TX_PINMUX_ADDR, BOARD_MCU_UART_TX_PINMUX_VAL);
+
+    /* Lock partition lock kick */
+    Board_pinmuxKickCtrl(BOARD_SOC_DOMAIN_WKUP, 1);
 }

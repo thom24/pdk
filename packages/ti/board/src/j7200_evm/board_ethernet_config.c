@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -48,6 +48,32 @@ Board_pruicssMdioInfo  Board_cpswMdioInfo =
     {(CSL_CPSW0_NUSS_BASE + BOARD_CPSW_MDIO_REG_OFFSET), BOARD_GESI_CPSW_PHY_ADDR};
 
 extern Board_initParams_t gBoardInitParams;
+
+/**
+ * \brief  Configures kick registers for Ethernet MMR access
+ *
+ * \param   domain   [IN]   MMR register domain
+ * \param   lockCtrl [IN]   Register lock/unlock control
+ *                          0 - Unlocks the MMR register write access
+ *                          1 - Locks the MMR register write access
+ *
+ * \return  Board_STATUS
+ */
+static Board_STATUS Board_ethCfgKickCtrl(uint32_t domain, uint32_t lockCtrl)
+{
+    Board_STATUS status;
+
+    if(lockCtrl)
+    {
+        status = Board_lockMMRPartition(domain, BOARD_MMR_PARTITION1);
+    }
+    else
+    {
+        status = Board_unlockMMRPartition(domain, BOARD_MMR_PARTITION1);
+    }
+
+    return (status);
+}
 
 /**
  * \brief  Function to initialize MDIO
@@ -488,7 +514,7 @@ Board_STATUS Board_cpsw5gEthConfig(uint32_t portNum, uint8_t mode)
     uintptr_t modeSel;
     uint32_t regData;
 
-    Board_unlockMMR();
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MAIN, 0);
 
     modeSel = CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_ENET1_CTRL + (portNum * 0x04);
     regData = CSL_REG32_RD(modeSel);
@@ -503,6 +529,8 @@ Board_STATUS Board_cpsw5gEthConfig(uint32_t portNum, uint8_t mode)
     {
         return BOARD_FAIL;
     }
+
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MAIN, 1);
 
     return BOARD_SOK;
 }
@@ -525,6 +553,8 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
     uintptr_t ethModeCtrl;
     uint32_t regData;
 
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MCU, 0);
+
     ethModeCtrl = CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_ENET_CTRL;
     regData = CSL_REG32_RD(ethModeCtrl);
     regData = mode;
@@ -534,6 +564,9 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
     }
 
     CSL_REG32_WR(ethModeCtrl , regData);
+
+    Board_ethCfgKickCtrl(BOARD_SOC_DOMAIN_MCU, 1);
+
     status = CSL_REG32_RD(ethModeCtrl);
     if (status != regData)
     {
@@ -553,8 +586,6 @@ Board_STATUS Board_cpsw2gMacModeConfig(uint8_t mode)
 Board_STATUS Board_ethConfigCpsw2g(void)
 {
     Board_STATUS status = BOARD_SOK;
-
-    Board_unlockMMR();
 
     /* Configures the MCU Ethernet */
     status = Board_cpsw2gMacModeConfig(RGMII);
