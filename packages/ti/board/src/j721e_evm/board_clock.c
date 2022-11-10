@@ -96,6 +96,7 @@ uint32_t gBoardClkModuleMainIDDeinitGroup1[] = {
 };
 
 uint32_t gBoardClkModuleMainIDGroup2[] = {
+    TISCI_DEV_CPSW0,
     TISCI_DEV_TIMER0,
     TISCI_DEV_TIMER1,
     TISCI_DEV_TIMER2,

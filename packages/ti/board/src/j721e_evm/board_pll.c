@@ -168,6 +168,11 @@ static Board_PllClkCfg_t gBoardPllClkCfgMain[] =
    520000000
  },
 
+ { TISCI_DEV_CPSW0,
+   TISCI_DEV_CPSW0_RGMII_MHZ_250_CLK,
+   250000000
+ }, //MAIN_PLL3_HSDIV0_CLKOUT
+
   /* GTC Clockout */
  { TISCI_DEV_GTC0,
    TISCI_DEV_GTC0_GTC_CLK,
