@@ -1665,6 +1665,19 @@ static int32_t Dss_dispDrvSetPipeCscParamsIoctl(
     /* Take the instance semaphore */
     (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);
 
+    /* Set csc coefficients here only if the csc range is custom. CSL will set appropriately
+     * if the cscRange is FULL or LIMITED.
+     */
+    if(FVID2_SOK == retVal)
+    {
+        if(instObj->pipeParams[instObj->pipeId].pipeCfg.cscRange == CSL_DSS_CSC_RANGE_CUSTOM)
+        {
+            Fvid2Utils_memcpy(&instObj->pipeParams[instObj->pipeId].pipeCfg.custCscCoeff,
+                            cscCoeff,
+                            sizeof (CSL_DssCscCoeff));
+        }
+    }
+    
     if(FVID2_SOK == retVal)
     {
         /* Get video pipe registers */

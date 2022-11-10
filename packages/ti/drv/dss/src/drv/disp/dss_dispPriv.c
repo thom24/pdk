@@ -313,6 +313,11 @@ int32_t Dss_dispDrvCreateInstObj(Dss_DispDrvInstObj *instObj)
         }
     }
 
+    if(FVID2_SOK == retVal)
+    {
+        CSL_dssCscCoeffInit(&instObj->pipeParams[instObj->pipeId].pipeCfg.custCscCoeff);
+    }
+
     /* Deallocate if error occurs */
     if(FVID2_SOK != retVal)
     {

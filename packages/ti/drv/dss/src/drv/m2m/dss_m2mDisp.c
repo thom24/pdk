@@ -329,6 +329,16 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
                 if (FVID2_SOK == retVal)
                 {
                     /* Program: DSS Pipeline */
+                    /* Need to program CSC params only is cscRange is CUSTOM. CSL has prediefined params
+                     * for LIMITED and FULL ranges which it uses for programming pipe.
+                     */
+                    if(CSL_DSS_CSC_RANGE_CUSTOM == instCfg->cfgParams.pipeCfg.cscRange)
+                    {
+                        Fvid2Utils_memcpy(&instCfg->cfgParams.pipeCfg.custCscCoeff,
+                                &progCfg->cfgParams,
+                                sizeof(CSL_DssCscCoeff));
+                    }
+
                     retVal = CSL_dssVidPipeSetConfig(instObj->pipeRegs[context->pipeId[pipeIdx]],
                                 (const CSL_DssVidPipeCfg *)(&instCfg->cfgParams.pipeCfg),
                                 (const CSL_DssVidPipeVC1Cfg *)(&instCfg->cfgParams.vc1Cfg));
@@ -386,7 +396,7 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
                 if (FVID2_SOK == retVal)
                 {
                     /* Program: DSS Pipeline Csc */
-                   CSL_dssVidPipeSetCSCCoeff(instObj->pipeRegs[context->pipeId[pipeIdx]],
+                    CSL_dssVidPipeSetCSCCoeff(instObj->pipeRegs[context->pipeId[pipeIdx]],
                             (const CSL_DssCscCoeff *)(&instCfg->cscCoeff));
                     copyCfg = (uint32_t) TRUE;
                 }
