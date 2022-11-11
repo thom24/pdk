@@ -306,6 +306,28 @@ ifneq ($(wildcard $(PDK_CSIRX_COMP_PATH)),)
 #board_diag_EXAMPLE_LIST += board_diag_csirx board_diag_csirx_tirtos
 endif
 
+# csitx_rx
+board_diag_csitx_rx_COMP_LIST = board_diag_csitx_rx
+board_diag_csitx_rx_RELPATH = ti/board/diag/csitx_rx/build
+board_diag_csitx_rx_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/csitx_rx/build
+board_diag_csitx_rx_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_csitx_rx_MAKEFILE = -f makefile IS_BAREMETAL=yes
+board_diag_csitx_rx_BOARD_DEPENDENCY = yes
+board_diag_csitx_rx_CORE_DEPENDENCY = yes
+board_diag_csitx_rx_XDC_CONFIGURO = no
+export board_diag_csitx_rx_COMP_LIST
+export board_diag_csitx_rx_BOARD_DEPENDENCY
+export board_diag_csitx_rx_CORE_DEPENDENCY
+export board_diag_csitx_rx_MAKEFILE
+export board_diag_csitx_rx_XDC_CONFIGURO
+board_diag_csitx_rx_PKG_LIST = board_diag_csitx_rx
+board_diag_csitx_rx_INCLUDE = $(board_diag_csitx_rx_PATH)
+board_diag_csitx_rx_BOARDLIST = j784s4_evm
+board_diag_csitx_rx_$(SOC)_CORELIST = mcu2_0
+export board_diag_csitx_rx_$(SOC)_CORELIST
+export board_diag_csitx_rx_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+#board_diag_EXAMPLE_LIST += board_diag_csitx_rx
+
 
 # CURRENT MONITOR
 board_diag_currentMonitor_COMP_LIST = board_diag_currentMonitor
