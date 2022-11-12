@@ -347,6 +347,26 @@ export board_diag_displayPort_$(SOC)_CORELIST
 export board_diag_displayPort_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
 #board_diag_EXAMPLE_LIST += board_diag_displayPort
 
+# DSI to eDP bridge
+board_diag_edpBridge_COMP_LIST = board_diag_edpBridge
+board_diag_edpBridge_RELPATH = ti/board/diag/edp_bridge/build
+board_diag_edpBridge_PATH = $(PDK_BOARD_DIAG_COMP_PATH)/edp_bridge/build
+board_diag_edpBridge_CUSTOM_BINPATH = $(board_diag_LOCAL_BINPATH)
+board_diag_edpBridge_MAKEFILE = -f makefile
+board_diag_edpBridge_BOARD_DEPENDENCY = yes
+board_diag_edpBridge_CORE_DEPENDENCY = yes
+export board_diag_edpBridge_COMP_LIST
+export board_diag_edpBridge_BOARD_DEPENDENCY
+export board_diag_edpBridge_CORE_DEPENDENCY
+export board_diag_edpBridge_MAKEFILE
+board_diag_edpBridge_PKG_LIST = board_diag_edpBridge
+board_diag_edpBridge_INCLUDE = $(board_diag_edpBridge_PATH)
+board_diag_edpBridge_BOARDLIST = j721s2_evm j784s4_evm
+board_diag_edpBridge_$(SOC)_CORELIST = $(board_diag_$(SOC)_CORELIST)
+export board_diag_edpBridge_$(SOC)_CORELIST
+export board_diag_edpBridge_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
+#board_diag_EXAMPLE_LIST += board_diag_edpBridge
+
 # DSI-FPD Device test
 board_diag_dsi_COMP_LIST = board_diag_dsi
 board_diag_dsi_RELPATH = ti/board/diag/dsi/build
