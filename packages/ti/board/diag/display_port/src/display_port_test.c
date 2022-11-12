@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2019 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2019-2022 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -41,9 +41,9 @@
  *  Operation: This test verifies DisplayPort interface by displaying color bar
  *             on connected DisplayPort monitor.
  *
- *  Supported SoCs: J721E.
+ *  Supported SoCs: J721E, J721S2, J784S4
  *
- *  Supported Platforms: j721e_evm.
+ *  Supported Platforms: j721e_evm, j721s2_evm, j784s4_evm
  */
 
 #include "display_port_test.h"
@@ -297,8 +297,11 @@ static int8_t BoardDiag_dpInitDss(BoardDiag_DpDisplayObj *displayObj)
 static int8_t BoardDiag_dpConfigDpClk(void)
 {
     int32_t status = PM_SUCCESS, regVal;
+    int8_t  retVal = 0;
 
     UART_printf("Configuring DP clock...\n");
+
+#if defined(j721e_evm)
     status = Sciclient_pmSetModuleState(TISCI_DEV_SERDES_10G0,
                                         TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                         TISCI_MSG_FLAG_AOP,
@@ -372,8 +375,229 @@ static int8_t BoardDiag_dpConfigDpClk(void)
     {
         return -1;
     }
+#endif
 
-    return 0;
+#if defined(j721s2_evm)
+    int32_t clockStatus;
+    uint64_t respClkRate;
+
+    if(PM_SUCCESS == status)
+    {
+        /* Power on SerDes module. */
+        status = Sciclient_pmSetModuleState(TISCI_DEV_SERDES_10G0,
+            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+            TISCI_MSG_FLAG_AOP,
+            SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
+    if(PM_SUCCESS == status)
+    {
+        /* Power on EDP module. */
+        status = Sciclient_pmSetModuleState(TISCI_DEV_DSS_EDP0,
+            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+            TISCI_MSG_FLAG_AOP,
+            SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
+    /* Power off DSS before configuring the clocks. */
+    status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
+            TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+            TISCI_MSG_FLAG_AOP,
+            SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    if(status == PM_SUCCESS)
+    {
+        UART_printf("\n TISCI_DEV_DSS0 device shutdown successful !\r\n");
+    }
+    else
+    {
+        UART_printf("\n TISCI_DEV_DSS0 device shutdown NOT successful !!!\r\n");
+    }
+
+    /* Checking if the required pixel clock can be set by the system firmware. */
+    status = Sciclient_pmQueryModuleClkFreq(TISCI_DEV_DSS0,
+                                        TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                        BOARD_DIAG_DP_DISPLAY_CLOCK,
+                                        &respClkRate,
+                                        SCICLIENT_SERVICE_WAIT_FOREVER);
+
+    if(status == PM_SUCCESS)
+    {
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK possible rate = %lld Hz\r\n", respClkRate);
+    }
+    else
+    {
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK requested rate range NOT possible !!\r\n");
+    }
+
+    if(status == PM_SUCCESS)
+    {
+        /* Check if the clock is enabled or not. */
+        status = Sciclient_pmModuleGetClkStatus(TISCI_DEV_DSS0,
+                                                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                                &clockStatus,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
+    if ((status == PM_SUCCESS) && (respClkRate >= BOARD_DIAG_DP_DISPLAY_CLOCK))
+    {
+        /* Set the pixel clock. */
+        status = Sciclient_pmSetModuleClkFreq(
+                                  TISCI_DEV_DSS0,
+                                  TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                  respClkRate,
+                                  TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
+                                  SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == PM_SUCCESS)
+        {
+            if (clockStatus == TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ)
+            {
+                /* Enable the required clock. */
+                status = Sciclient_pmModuleClkRequest(
+                                                    TISCI_DEV_DSS0,
+                                                    TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                                    TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
+                                                    0U,
+                                                    SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+        }
+    }
+
+    if(PM_SUCCESS == status)
+    {
+        UART_printf("\nTISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_CLK is now ENABLED !\r\n");
+        /* Enable the DSS device as clock configuration has been successful. */
+        status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
+            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+            TISCI_MSG_FLAG_AOP,
+            SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    else
+    {
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_CLK is STILL DISABLED !!!\r\n");
+    }
+#endif
+
+#if defined(j784s4_evm)
+    int32_t clockStatus;
+    uint64_t respClkRate;
+
+    /* Power on SerDes module. */
+    status = Sciclient_pmSetModuleState(TISCI_DEV_SERDES_10G0,
+                                        TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                        TISCI_MSG_FLAG_AOP,
+                                        SCICLIENT_SERVICE_WAIT_FOREVER);
+    if(PM_SUCCESS == status)
+    {
+        /* Power on EDP module. */
+        status = Sciclient_pmSetModuleState(TISCI_DEV_DSS_EDP0,
+                                            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                            TISCI_MSG_FLAG_AOP,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
+    /* Power off DSS before configuring the clocks. */
+    status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
+                                        TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
+                                        TISCI_MSG_FLAG_AOP,
+                                        SCICLIENT_SERVICE_WAIT_FOREVER);
+    if(status == PM_SUCCESS)
+    {
+        UART_printf("\n TISCI_DEV_DSS0 device shutdown successful !\r\n");
+    }
+    else
+    {
+        UART_printf("\n TISCI_DEV_DSS0 device shutdown NOT successful !!!\r\n");
+    }
+
+    /* Checking if the required pixel clock can be set by the system firmware. */
+    status = Sciclient_pmQueryModuleClkFreq(TISCI_DEV_DSS0,
+                                            TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                            BOARD_DIAG_DP_DISPLAY_CLOCK,
+                                            &respClkRate,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+    if(status == PM_SUCCESS)
+    {
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK possible rate = %lld Hz\r\n", respClkRate);
+    }
+    else
+    {
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK requested rate range NOT possible !!\r\n");
+    }
+
+    if(status == PM_SUCCESS)
+    {
+        /* Check if the clock is enabled or not. */
+        status = Sciclient_pmModuleGetClkStatus(TISCI_DEV_DSS0,
+                                                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                                &clockStatus,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
+    if ((status == PM_SUCCESS) && (respClkRate >= BOARD_DIAG_DP_DISPLAY_CLOCK))
+    {
+        /* Set the pixel clock. */
+        status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
+                                              TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                              respClkRate,
+                                              TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == PM_SUCCESS)
+        {
+            if (clockStatus == TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ)
+            {
+                /* Enable the required clock. */
+                status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
+                                                      TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                                      TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
+                                                      0U,
+                                                      SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+        }
+    }
+
+    if(PM_SUCCESS == status)
+    {
+        uint64_t clkFreq = 0;
+        status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
+                                                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                                                TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+
+        PMLIBClkRateGet(TISCI_DEV_DSS0,
+                        TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
+                        &clkFreq);
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK Expected %lld and getting %lld Hz\r\n", BOARD_DIAG_DP_DISPLAY_CLOCK, clkFreq);
+
+        clkFreq = 0;
+        PMLIBClkRateGet(TISCI_DEV_DSS0,
+                        TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
+                        &clkFreq);
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK Expected %lld and getting %lld Hz\r\n", BOARD_DIAG_DP_DISPLAY_CLOCK, clkFreq);
+
+        UART_printf("\nTISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_CLK is now ENABLED !\r\n");
+        /* Enable the DSS device as clock configuration has been successful. */
+        status = Sciclient_pmSetModuleState(TISCI_DEV_DSS0,
+                                            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                            TISCI_MSG_FLAG_AOP,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+    else
+    {
+        UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_CLK is STILL DISABLED !!!\r\n");
+    }
+#endif
+
+    if(status == PM_SUCCESS)
+    {
+        retVal = 0;
+    }
+    else
+    {
+        retVal = -1;
+    }
+
+    return (retVal);
 }
 
 /**

@@ -341,7 +341,7 @@ export board_diag_displayPort_CORE_DEPENDENCY
 export board_diag_displayPort_MAKEFILE
 board_diag_displayPort_PKG_LIST = board_diag_displayPort
 board_diag_displayPort_INCLUDE = $(board_diag_displayPort_PATH)
-board_diag_displayPort_BOARDLIST = j721e_evm
+board_diag_displayPort_BOARDLIST = j721e_evm j721s2_evm j784s4_evm
 board_diag_displayPort_$(SOC)_CORELIST = mcu2_0
 export board_diag_displayPort_$(SOC)_CORELIST
 export board_diag_displayPort_SBL_APPIMAGEGEN = $(board_diag_APPIMAGEGEN_CTRL)
