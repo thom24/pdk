@@ -159,6 +159,7 @@ MMCSD_v2_Object MMCSDObjects[MMCSD_CNT];
 Bool gIrqRangeQueryFirstTime = TRUE;
 
 
+#if defined(BUILD_MCU)
 /* This SOC function sets the interrupt path by checking all the available 
    interrupt lines for that core */
 static MMCSD_Error MMCSD_configInterruptRouter(uint32_t instNum,  uint32_t eventId, 
@@ -167,6 +168,7 @@ static MMCSD_Error MMCSD_configInterruptRouter(uint32_t instNum,  uint32_t event
 
 /* This function gets the available interrupt range for that particular core */
 static MMCSD_Error MMCSD_getIrqRange(uint16_t irId, uint16_t* rangeStart, uint16_t* rangeNum);
+#endif
 
 /* MMC configuration structure */
 const MMCSD_Config_list MMCSD_config = {
