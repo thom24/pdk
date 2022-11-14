@@ -1678,13 +1678,13 @@ Device: :ref:`AM64X_DEV_LED0 <soc_doc_am64x_public_devices_desc_device_list>` (I
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------+-------------+
-|   Clock ID | Name               | Function    |
-+============+====================+=============+
-|          0 | DEV_LED0_LED_CLK   | Input clock |
-+------------+--------------------+-------------+
-|          1 | DEV_LED0_VBUSP_CLK | Input clock |
-+------------+--------------------+-------------+
++------------+-------------------+-------------+
+|   Clock ID | Name              | Function    |
++============+===================+=============+
+|          0 | DEV_LED0_LED_CLK  | Input clock |
++------------+-------------------+-------------+
+|          1 | DEV_LED0_VBUS_CLK | Input clock |
++------------+-------------------+-------------+
 
 .. _soc_doc_am64x_public_clks_mailbox0:
 
