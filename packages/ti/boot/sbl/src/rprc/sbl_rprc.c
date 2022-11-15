@@ -420,6 +420,8 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
     uint32_t sbl_rsvd_mem_end = (uint32_t)(((uint32_t)(SBL_SCRATCH_MEM_START)) + ((uint32_t)(SBL_SCRATCH_MEM_SIZE)));
     uint32_t i;
     int32_t retVal = E_PASS;
+    uint32_t atcmSize;
+    uint32_t btcmSize;
 
     const uint32_t SocAtcmAddr[] =
     {
@@ -511,6 +513,22 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 
         /* Setup CPUs internal memory before using it */
         SBL_SetupCoreMem(CoreId);
+    
+    /* Remap virtual core-ids if needed */
+    switch (CoreId)
+    {
+        case MCU2_SMP_ID:
+            CoreId = MCU2_CPU0_ID;
+            break;
+        case MCU3_SMP_ID:
+            CoreId = MCU3_CPU0_ID;
+            break;
+        case MCU4_SMP_ID:
+            CoreId = MCU4_CPU0_ID;
+            break;
+        default:
+            break;
+    }
 
 	/*read entrypoint and copy sections to memory*/
         for (i = (0U); i < header.SectionCount; i++)
@@ -522,11 +540,13 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
 #if (SBL_USE_DMA && defined(BOOT_OSPI) && (defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)))
                 /* Need address translation to SoC level addresses of MCU1_0 TCMs, when trying to copy to local addresses */
                 case MCU1_CPU0_ID:
+                    atcmSize = sblAtcmSize();
+                    btcmSize = sblBtcmSize();
                     /* Only do TCM addr remapping for MCU1_0 if using UDMA for transfers from OSPI to local TCMs */
                     if (fp_readData == SBL_OSPI_ReadSectors)
                     {
                         /*Remap TCM address from R5 local to SoC memory map*/
-                        if (section.addr < (SBL_MCU_ATCM_BASE + SBL_MCU_ATCM_SIZE))
+                        if (section.addr < (SBL_MCU_ATCM_BASE + atcmSize))
                         {
                             /* Get offset into ATCM */
                             SBL_log(SBL_LOG_MAX, "Translating coreid %d local ATCM addr 0x%x to ", CoreId, section.addr);
@@ -535,7 +555,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                             SBL_log(SBL_LOG_MAX, "SoC MCU ATCM addr 0x%x\n", section.addr);
                         }
                         else if ((section.addr >= SBL_MCU_BTCM_BASE) &&
-                                 (section.addr < (SBL_MCU_BTCM_BASE + SBL_MCU_BTCM_SIZE)))
+                                 (section.addr < (SBL_MCU_BTCM_BASE + btcmSize)))
                         {
                             /* Get offset into BTCM */
                             SBL_log(SBL_LOG_MAX, "Translating coreid %d local BTCM addr 0x%x to ", CoreId, section.addr);
@@ -557,8 +577,10 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                 case MCU3_CPU1_ID:
                 case MCU4_CPU0_ID:
                 case MCU4_CPU1_ID:
+                    atcmSize = sblAtcmSize();
+                    btcmSize = sblBtcmSize();
                     /*Remap TCM address from R5 local to SoC memory map*/
-                    if (section.addr < (SBL_MCU_ATCM_BASE + SBL_MCU_ATCM_SIZE))
+                    if (section.addr < (SBL_MCU_ATCM_BASE + atcmSize))
                     {
                         /* Get offset into ATCM */
                         SBL_log(SBL_LOG_MAX, "Translating coreid %d local ATCM addr 0x%x to ", CoreId, section.addr);
@@ -567,7 +589,7 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
                         SBL_log(SBL_LOG_MAX, "SoC MCU ATCM addr 0x%x\n", section.addr);
                     }
                     else if ((section.addr >= SBL_MCU_BTCM_BASE) &&
-                             (section.addr < (SBL_MCU_BTCM_BASE + SBL_MCU_BTCM_SIZE)))
+                             (section.addr < (SBL_MCU_BTCM_BASE + btcmSize)))
                     {
                         /* Get offset into BTCM */
                         SBL_log(SBL_LOG_MAX, "Translating coreid %d local BTCM addr 0x%x to ", CoreId, section.addr);
