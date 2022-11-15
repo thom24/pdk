@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019
+ *  Copyright (c) Texas Instruments Incorporated 2019-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -81,6 +81,8 @@ extern "C" {
 #endif
 
 #define UDMA_TEST_RF_SOC                (UDMA_TEST_RF_SOC_J7200)
+
+#define UDMA_TEST_NUM_INST_ID           (UDMA_NUM_INST_ID)
 
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)

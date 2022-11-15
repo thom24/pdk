@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -87,7 +87,7 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
     Udma_InitPrms   initPrms;
     Udma_DrvHandle  drvHandle;
 
-    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
     {
         /* UDMA driver init */
         drvHandle = &testObj->drvObj[instId];
@@ -95,15 +95,31 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
         initPrms.virtToPhyFxn       = &Udma_appVirtToPhyFxn;
         initPrms.phyToVirtFxn       = &Udma_appPhyToVirtFxn;
         initPrms.printFxn           = &udmaDrvPrint;
-#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-        /* As per BoardCfg, there no HC Block Copy Channel assigned for any core.
-         * In this case, use the resource assigned for HC RX/TX channels
+
+        /* As per BoardCfg, if there no HC Block Copy Channel assigned to the core, 
+         * use the resource assigned for HC RX/TX channels
          * to test various HC Block Copy testcases.
          * This is with the assumption that, the range of this resources are same
          * for both RX and TX High Capacity channels. */
-        initPrms.rmInitPrms.startBlkCopyHcCh  = initPrms.rmInitPrms.startRxHcCh;
-        initPrms.rmInitPrms.numBlkCopyHcCh = initPrms.rmInitPrms.numRxHcCh;
-#endif
+        if((initPrms.rmInitPrms.numBlkCopyHcCh == 0U) && 
+        ((initPrms.rmInitPrms.numRxHcCh != 0U) && (initPrms.rmInitPrms.numTxHcCh != 0U)) &&
+        (initPrms.rmInitPrms.startRxHcCh == initPrms.rmInitPrms.startTxHcCh))
+        {
+            initPrms.rmInitPrms.startBlkCopyHcCh  = initPrms.rmInitPrms.startRxHcCh;
+            initPrms.rmInitPrms.numBlkCopyHcCh = initPrms.rmInitPrms.numRxHcCh;
+        }
+        /*
+        * For chaining TC atleast 2 channels are required, 
+        * if a core does not have enough Block Copy channels
+        * we can use RX/TX channels as Block Copy channels for test
+        */
+        if((initPrms.rmInitPrms.numBlkCopyCh < 2U) && 
+        ((initPrms.rmInitPrms.numRxCh >= 2U) && (initPrms.rmInitPrms.numTxCh >= 2U)) &&
+        (initPrms.rmInitPrms.startRxCh == initPrms.rmInitPrms.startTxCh))
+        {
+            initPrms.rmInitPrms.startBlkCopyCh  = initPrms.rmInitPrms.startRxCh;
+            initPrms.rmInitPrms.numBlkCopyCh = initPrms.rmInitPrms.numRxCh;
+        }
         retVal += Udma_init(drvHandle, &initPrms);
         if(UDMA_SOK != retVal)
         {
@@ -121,7 +137,7 @@ int32_t udmaTestDeinitDriver(UdmaTestObj *testObj)
     uint32_t        instId;
     Udma_DrvHandle  drvHandle;
 
-    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
     {
         /* UDMA driver deinit */
         drvHandle = &testObj->drvObj[instId];

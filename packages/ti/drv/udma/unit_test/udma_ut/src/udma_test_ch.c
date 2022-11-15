@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019-20
+ *  Copyright (c) Texas Instruments Incorporated 2019-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -133,7 +133,7 @@ int32_t udmaTestChPktdmaChApiTc(UdmaTestTaskObj *taskObj)
 static int32_t udmaTestChPktdmaParamCheckTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
-#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
     uint32_t            elemCnt = 50U, ringMemSize;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
     Udma_DrvHandle      drvHandle;
@@ -221,7 +221,7 @@ static int32_t udmaTestChPktdmaParamCheckTestLoop(UdmaTestTaskObj *taskObj)
 static int32_t udmaTestChPktdmaChApiTestLoop(UdmaTestTaskObj *taskObj)
 {
     int32_t             retVal = UDMA_SOK;
-#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
     uint32_t            elemCnt = 50U, ringMemSize;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
     Udma_DrvHandle      drvHandle;

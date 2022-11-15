@@ -36,10 +36,14 @@ ifeq ($(udma_ut_component_make_include), )
 
 drvudma_ut_am65xx_CORELIST = mpu1_0 mcu1_0
 drvudma_ut_j721e_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
+drvudma_ut_j721s2_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
+drvudma_ut_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
 drvudma_ut_j7200_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu2_1
 
 drvudma_dynamic_ut_am65xx_CORELIST = mcu1_0
 drvudma_dynamic_ut_j721e_CORELIST  = mcu1_0 mcu2_1
+drvudma_dynamic_ut_j721s2_CORELIST  = mcu1_0 mcu2_1
+drvudma_dynamic_ut_j784s4_CORELIST  = mcu1_0 mcu2_1
 drvudma_dynamic_ut_j7200_CORELIST  = mcu1_0 mcu2_1
 
 ############################

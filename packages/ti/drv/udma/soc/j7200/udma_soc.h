@@ -65,12 +65,22 @@ extern "C" {
 #define UDMA_INST_ID_MAIN_0             (UDMA_INST_ID_0)
 /** \brief MCU NAVSS UDMA instance */
 #define UDMA_INST_ID_MCU_0              (UDMA_INST_ID_1)
+/** \brief Start of UDMAP instance */
+#define UDMA_INST_ID_UDMAP_START        (UDMA_INST_ID_0)
+/** \brief Maximum number of UDMAP instance */
+#define UDMA_INST_ID_UDMAP_MAX          (UDMA_INST_ID_1)
+/** \brief Total number of UDMAP instances */
+#define UDMA_NUM_UDMAP_INST_ID          (UDMA_INST_ID_UDMAP_MAX - UDMA_INST_ID_UDMAP_START + 1U)
+/** \brief Total number of BCDMA instances */
+#define UDMA_NUM_BCDMA_INST_ID          (0U)
+/** \brief Total number of PKTDMA instances */
+#define UDMA_NUM_PKTDMA_INST_ID         (0U)
 /** \brief Start of UDMA instance */
 #define UDMA_INST_ID_START              (UDMA_INST_ID_0)
 /** \brief Maximum number of UDMA instance */
 #define UDMA_INST_ID_MAX                (UDMA_INST_ID_1)
 /** \brief Total number of UDMA instances */
-#define UDMA_NUM_INST_ID                (UDMA_INST_ID_MAX - UDMA_INST_ID_START + 1U)
+#define UDMA_NUM_INST_ID                (UDMA_NUM_UDMAP_INST_ID + UDMA_NUM_BCDMA_INST_ID + UDMA_NUM_PKTDMA_INST_ID)
 /* @} */
  
 /**

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019-2022
+ *  Copyright (c) Texas Instruments Incorporated 2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -51,6 +51,9 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+/* This is not generic. Fix this properly when BCDMA tests is enabled. */
+#define HACK_PDK_12290      (1U)
+
 /** \brief Utility define for Kilobyte, i.e 1024 bytes */
 #ifndef KB
 #define KB ((uint32_t) 1024U)
@@ -80,18 +83,22 @@ extern "C" {
 #define UDMA_TEST_DEFAULT_UDMA_INST     (UDMA_INST_ID_MAIN_0)
 #endif
 
-#define UDMA_TEST_RF_SOC                (UDMA_TEST_RF_SOC_J721E)
+#define UDMA_TEST_RF_SOC                (UDMA_TEST_RF_SOC_J721S2)
 
-#define UDMA_TEST_NUM_INST_ID           (UDMA_NUM_INST_ID)
+/* Add UDMA_NUM_BCDMA_INST_ID while adding UT support for BCDMA */
+#define UDMA_TEST_NUM_INST_ID           (UDMA_NUM_UDMAP_INST_ID)
 
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)
+#define UDMA_TEST_INST_ID_BCDMA_BC      (UDMA_INST_ID_BCDMA_0)
 
 #define UDMA_TEST_RF_MAIN_BC_HC         (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MAIN_BC            (UDMA_TEST_RF_SOC | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_BCDMA_BC           (UDMA_TEST_RF_SOC | \
+                                         UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC_HC          (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
@@ -102,9 +109,11 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MCU3_0 | \
                                          UDMA_TEST_RF_CORE_MCU3_1 | \
                                          UDMA_TEST_RF_CORE_C7X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_2 | \
+                                         UDMA_TEST_RF_CORE_C7X_2 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
+                                         UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_BCDMA              (UDMA_TEST_RF_SOC | \
+                                         UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_MCU_BC_INTERNAL_MEM (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
@@ -112,25 +121,21 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MCU2_1 | \
                                          UDMA_TEST_RF_CORE_MCU3_0 | \
                                          UDMA_TEST_RF_CORE_MCU3_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_2 | \
+                                         UDMA_TEST_RF_CORE_C7X_1 | \
+                                         UDMA_TEST_RF_CORE_C7X_2 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_DRU                (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CORE_C7X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_2 | \
+                                         UDMA_TEST_RF_CORE_C7X_2 | \
                                          UDMA_TEST_RF_CFG_DEF)
 /* Need at least two channels - so enable only for those cores */
 #define UDMA_TEST_RF_CHAIN              (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MPU1_0 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
-                                         UDMA_TEST_RF_CORE_MCU3_0 | \
-                                         UDMA_TEST_RF_CORE_MCU3_1 | \
                                          UDMA_TEST_RF_CORE_C7X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_2 | \
+                                         UDMA_TEST_RF_CORE_C7X_2 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 
@@ -144,8 +149,8 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MCU3_0 | \
                                          UDMA_TEST_RF_CORE_MCU3_1 | \
                                          UDMA_TEST_RF_CORE_C7X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_1 | \
-                                         UDMA_TEST_RF_CORE_C66X_2 | \
+                                         UDMA_TEST_RF_CORE_C7X_1 | \
+                                         UDMA_TEST_RF_CORE_C7X_2 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_DRU_MT             (UDMA_TEST_RF_DRU)
@@ -161,18 +166,18 @@ extern "C" {
 
 #if defined (BUILD_MPU1_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MPU1_0)
-#define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (4U)
+#define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (1U)
+#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (1U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (4U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
-#define UDMA_TEST_MAX_MCU_BC_CH         (3U)
+#define UDMA_TEST_MAX_MCU_BC_CH         (4U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
 #endif
 #if defined (BUILD_MCU2_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU2_0)
-#define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (4U)
+#define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (1U)
+#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (1U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (4U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
@@ -187,13 +192,13 @@ extern "C" {
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (1U)
-#define UDMA_TEST_MAX_DRU_CH            (0U)
+#define UDMA_TEST_MAX_DRU_CH            (2U)
 #endif
 #if defined (BUILD_MCU3_0)
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU3_0)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
+#define UDMA_TEST_MAX_MAIN_BC_CH        (1U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (1U)
@@ -203,7 +208,7 @@ extern "C" {
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU3_1)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
+#define UDMA_TEST_MAX_MAIN_BC_CH        (1U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (1U)
@@ -219,18 +224,8 @@ extern "C" {
 #define UDMA_TEST_MAX_MCU_BC_CH         (1U)
 #define UDMA_TEST_MAX_DRU_CH            (4U)
 #endif
-#if defined (BUILD_C66X_1)
-#define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_C66X_1)
-#define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
-#define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
-#define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
-#define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
-#define UDMA_TEST_MAX_MCU_BC_CH         (1U)
-#define UDMA_TEST_MAX_DRU_CH            (4U)
-#endif
-#if defined (BUILD_C66X_2)
-#define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_C66X_2)
+#if defined (BUILD_C7X_2)
+#define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_C7X_2)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
 #define UDMA_TEST_MAX_MAIN_BC_CH        (2U)

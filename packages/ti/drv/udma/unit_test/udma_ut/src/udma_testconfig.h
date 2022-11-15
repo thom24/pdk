@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -489,7 +489,7 @@ static const UdmaTestRingPrm gUdmaTestRingPrm[] =
 #define UDMA_TEST_NUM_RING_PRM          (sizeof(gUdmaTestRingPrm) / \
                                          sizeof(gUdmaTestRingPrm[0U]))
 
-#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
 /** \brief Defines the various PKTDMA channel parameters. */
 static const UdmaTestPktdmaChPrm gUdmaTestPktdmaChPrm[] =
 {

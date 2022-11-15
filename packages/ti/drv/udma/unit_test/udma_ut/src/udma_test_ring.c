@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -262,7 +262,7 @@ int32_t udmaTestRingMemPtrTc(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
                 ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
@@ -463,7 +463,7 @@ static int32_t udmaTestRingProxyTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
                 ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
@@ -600,7 +600,7 @@ static int32_t udmaTestRingFlushTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
                 ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
@@ -778,7 +778,7 @@ static int32_t udmaTestRingEventTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
                 ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
@@ -985,7 +985,7 @@ static int32_t udmaTestRingParamCheckTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
                 ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
@@ -1216,7 +1216,7 @@ static int32_t udmaTestRingAttachTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
                 ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
@@ -1450,7 +1450,7 @@ static int32_t udmaTestRingResetTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             for(ringMode = UDMA_TEST_RING_MODE_DEFAULT_START;
                 ringMode <= UDMA_TEST_RING_MODE_DEFAULT_STOP;
@@ -1642,7 +1642,7 @@ static int32_t udmaTestRingPrimeTestLoop(UdmaTestTaskObj *taskObj)
 
     if(UDMA_SOK == retVal)
     {
-        for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
         {
             ringMode = TISCI_MSG_VALUE_RM_RING_MODE_RING;
             GT_2trace(taskObj->traceMask, GT_INFO1,

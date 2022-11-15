@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -128,7 +128,7 @@ int32_t udmaTestOsalPrmsTc(UdmaTestTaskObj *taskObj)
                   " Udma_osalSetCachePrms API failed!!\n");
     }
 
-    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
     {
         /* UDMA driver init */
         drvHandle = &testObj->drvObj[instId];

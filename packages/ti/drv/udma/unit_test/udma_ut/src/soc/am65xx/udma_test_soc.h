@@ -82,6 +82,8 @@ extern "C" {
 
 #define UDMA_TEST_RF_SOC                (UDMA_TEST_RF_SOC_AM65XX)
 
+#define UDMA_TEST_NUM_INST_ID           (UDMA_NUM_INST_ID)
+
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)
 

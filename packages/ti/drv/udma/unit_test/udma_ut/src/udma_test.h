@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -128,10 +128,15 @@ extern "C" {
 #define UDMA_TEST_INST_ID_BCDMA_0       (UDMA_INST_ID_2)
 #define UDMA_TEST_INST_ID_PKTDMA_0      (UDMA_INST_ID_3)
 
+
+#define UDMA_TEST_INST_ID_MAX                (UDMA_TEST_NUM_INST_ID - 1U)
+
 #define UDMA_TEST_RF_SOC_AM65XX         ((uint64_t) 0x00000001U)
 #define UDMA_TEST_RF_SOC_J721E          ((uint64_t) 0x00000002U)
 #define UDMA_TEST_RF_SOC_J7200          ((uint64_t) 0x00000004U)
 #define UDMA_TEST_RF_SOC_AM64X          ((uint64_t) 0x00000008U)
+#define UDMA_TEST_RF_SOC_J721S2         ((uint64_t) 0x00000010U)
+#define UDMA_TEST_RF_SOC_J784S4         ((uint64_t) 0x00000020U)
 #define UDMA_TEST_RF_SOC_ALL            ((uint64_t) 0xFFFFFFFFU)
 
 #define UDMA_TEST_RF_CORE_MPU1_0        ((uint64_t)(((uint64_t) 0x0001U) << 32U))
@@ -141,10 +146,15 @@ extern "C" {
 #define UDMA_TEST_RF_CORE_MCU2_1        ((uint64_t)(((uint64_t) 0x0010U) << 32U))
 #define UDMA_TEST_RF_CORE_MCU3_0        ((uint64_t)(((uint64_t) 0x0020U) << 32U))
 #define UDMA_TEST_RF_CORE_MCU3_1        ((uint64_t)(((uint64_t) 0x0040U) << 32U))
-#define UDMA_TEST_RF_CORE_C7X_1         ((uint64_t)(((uint64_t) 0x0080U) << 32U))
-#define UDMA_TEST_RF_CORE_C66X_1        ((uint64_t)(((uint64_t) 0x0100U) << 32U))
-#define UDMA_TEST_RF_CORE_C66X_2        ((uint64_t)(((uint64_t) 0x0200U) << 32U))
-#define UDMA_TEST_RF_CORE_M4F_0         ((uint64_t)(((uint64_t) 0x0400U) << 32U))
+#define UDMA_TEST_RF_CORE_MCU4_0        ((uint64_t)(((uint64_t) 0x0080U) << 32U))
+#define UDMA_TEST_RF_CORE_MCU4_1        ((uint64_t)(((uint64_t) 0x0100U) << 32U))
+#define UDMA_TEST_RF_CORE_C7X_1         ((uint64_t)(((uint64_t) 0x0200U) << 32U))
+#define UDMA_TEST_RF_CORE_C7X_2         ((uint64_t)(((uint64_t) 0x0400U) << 32U))
+#define UDMA_TEST_RF_CORE_C7X_3         ((uint64_t)(((uint64_t) 0x0800U) << 32U))
+#define UDMA_TEST_RF_CORE_C7X_4         ((uint64_t)(((uint64_t) 0x1000U) << 32U))
+#define UDMA_TEST_RF_CORE_C66X_1        ((uint64_t)(((uint64_t) 0x2000U) << 32U))
+#define UDMA_TEST_RF_CORE_C66X_2        ((uint64_t)(((uint64_t) 0x4000U) << 32U))
+#define UDMA_TEST_RF_CORE_M4F_0         ((uint64_t)(((uint64_t) 0x8000U) << 32U))
 #define UDMA_TEST_RF_CORE_ALL           ((uint64_t)(((uint64_t) 0xFFFFU) << 32U))
 #define UDMA_TEST_RF_CORE_MCU_ALL       (UDMA_TEST_RF_CORE_MCU1_0 | UDMA_TEST_RF_CORE_MCU1_1 | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | UDMA_TEST_RF_CORE_MCU2_1 | \
@@ -603,7 +613,7 @@ struct UdmaTestObj_t
     uint64_t            runFlag;
     /**< Current run flag for a SOC, CORE and other configurations. */
 
-    struct Udma_DrvObj  drvObj[UDMA_INST_ID_MAX + 1U];
+    struct Udma_DrvObj  drvObj[UDMA_TEST_INST_ID_MAX + 1U];
     /**< Driver Object for all applicable instances. (max+1 since instance index starts from 0) */
 
     SemaphoreP_Handle   taskCompleteSem;

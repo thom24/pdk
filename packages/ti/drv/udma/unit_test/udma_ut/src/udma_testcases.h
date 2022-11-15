@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -2077,7 +2077,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
 #endif /* #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1) */
-#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
     {
         /* For LCDMA with Dual ring, 
          * Ring Prime Read checks for Reverse occupancy.
@@ -2122,7 +2122,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_BCDMA_BC | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
-#endif /* #if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) */
+#endif /* #if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_BCDMA_PRESENT == 1) */
 #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
@@ -3260,7 +3260,7 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_CHAIN | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
     },
-#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 6282U,

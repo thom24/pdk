@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2022
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -147,7 +147,7 @@ static int32_t udmaTestEventOutOfRangeFlowLoop(UdmaTestTaskObj *taskObj,
     Udma_EventRxFlowIdFwStatus  status;
     char                       *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
 
-    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
     {
         if(0U == loopCnt)
         {
@@ -224,7 +224,7 @@ static int32_t udmaTestEventDisableEnableSanityLoop(UdmaTestTaskObj *taskObj,
     Udma_EventHandle            eventHandle = NULL;
     char                       *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
 
-    for(instId = UDMA_INST_ID_START; instId <= UDMA_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
     {
         if(0U == loopCnt)
         {
