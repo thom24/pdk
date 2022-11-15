@@ -92,13 +92,8 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 # The components included here are built and will be part of sbl
 ############################
 
-ifeq ($(SOC),$(filter $(SOC), j721s2))
-  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
-  sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
-  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
-  sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
-else ifeq ($(SOC),$(filter $(SOC), j784s4))
-  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
+ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
+  sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust sbl_lib_emmc
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
   sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
   sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
@@ -106,13 +101,10 @@ else
   # for j721e, j7200
   sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
-  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos
+  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos sbl_lib_emmc
   sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs sbl_lib_cust_hs
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos_hs sbl_lib_ospi_hlos_hs sbl_lib_hyperflash_hlos_hs
   sbl_LIB_LIST += sbl_lib_ospi_nondma_hs sbl_lib_ospi_nondma_hlos_hs
-endif
-ifeq ($(SOC), $(filter $(SOC), j721e j721s2))
-  sbl_LIB_LIST += sbl_lib_emmc
 endif
 
 ############################
@@ -121,23 +113,16 @@ endif
 # All the tests mentioned in list are built when test target is called
 # List below all examples for allowed values
 ############################
-ifeq ($(SOC),$(filter $(SOC), j721s2))
+ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
   sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
-  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
-  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
-else ifeq ($(SOC),$(filter $(SOC), j784s4))
-  sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img
-  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos sbl_emmc_img
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
 else
   # for j721e, j7200
-  sbl_EXAMPLE_LIST = sbl_uart_img
+  sbl_EXAMPLE_LIST = sbl_uart_img sbl_emmc_img
   sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_hyperflash_img_hs sbl_uart_img_hs
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
-endif
-ifeq ($(SOC), $(filter $(SOC), j721e j721s2))
-  sbl_EXAMPLE_LIST += sbl_emmc_img
 endif
 
 
@@ -268,8 +253,8 @@ export sbl_lib_emmc_BOARD_DEPENDENCY
 export sbl_lib_emmc_CORE_DEPENDENCY
 sbl_lib_emmc_PKG_LIST = sbl_lib_emmc
 sbl_lib_emmc_INCLUDE = $(sbl_lib_emmc_PATH)
-sbl_lib_emmc_SOCLIST = j721e j721s2
-sbl_lib_emmc_BOARDLIST = j721e_evm j721s2_evm
+sbl_lib_emmc_SOCLIST = $(sbl_SOCLIST)
+sbl_lib_emmc_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_lib_emmc_SOCLIST
 export sbl_lib_emmc_BOARDLIST
 sbl_lib_emmc_$(SOC)_CORELIST = mcu1_0
@@ -717,7 +702,7 @@ export sbl_emmc_img_SOC_DEPENDENCY
 export sbl_emmc_img_CORE_DEPENDENCY
 sbl_emmc_img_PKG_LIST = sbl
 sbl_emmc_img_INCLUDE = $(sbl_emmc_img_PATH)
-sbl_emmc_img_BOARDLIST = j721e_evm j721s2_evm
+sbl_emmc_img_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_emmc_img_BOARDLIST
 sbl_emmc_img_$(SOC)_CORELIST = mcu1_0
 export sbl_emmc_img_$(SOC)_CORELIST
