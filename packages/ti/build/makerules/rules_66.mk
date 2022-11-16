@@ -233,10 +233,10 @@ _LNKFLAGS = $(LNKFLAGS_INTERNAL_COMMON) $(LNKFLAGS_INTERNAL_BUILD_PROFILE) $(LNK
 # Path of the RTS library - normally doesn't change for a given tool-chain
 #Let the linker choose the required library
 RTSLIB_PATH = $(C6X_GEN_INSTALL_PATH)/lib/libc.a
-LIB_PATHS += $(RTSLIB_PATH)
 
 LNK_LIBS = $(addprefix -l,$(LIB_PATHS))
 LNK_LIBS += $(addprefix -l,$(EXT_LIB_PATHS))
+LNK_LIBS += $(addprefix -l,$(RTSLIB_PATH))
 
 # Linker - to create executable file
 ifeq ($(LOCAL_APP_NAME),)
