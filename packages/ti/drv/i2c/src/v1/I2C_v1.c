@@ -128,7 +128,7 @@ static void I2C_close_v1(I2C_Handle handle)
             {
                 if (hwAttrs->configSocIntrPath != NULL)
                 {
-                    (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, (bool)FALSE);
+                    (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, (bool)false);
                 }
 
                 /* Destruct the Hwi */
@@ -734,7 +734,7 @@ static I2C_Handle I2C_open_v1(I2C_Handle handle, const I2C_Params *params)
                if (hwAttrs->configSocIntrPath != NULL)
                {
                    /* setup the interrupt router path via DMSC */
-                   (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, (bool)TRUE);
+                   (void)hwAttrs->configSocIntrPath((const void *)hwAttrs, (bool)true);
                }
 
                /* Initialize with defaults */
@@ -1477,7 +1477,6 @@ static void I2C_transfer_Callback_v1(I2C_Handle handle,
 
         /* Indicate transfer complete */
         (void)I2C_osalPostLock(object->transferComplete);
-        msg = msg;
         (void)transferStatus;
     }
 }
@@ -1605,7 +1604,6 @@ static int32_t I2C_v1_control(I2C_Handle handle, uint32_t cmd, void *arg)
             default:
             {
                 retVal = I2C_STATUS_UNDEFINEDCMD;
-                arg = arg;
                 break;
             }
         }

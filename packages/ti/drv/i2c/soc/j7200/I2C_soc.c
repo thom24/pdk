@@ -501,9 +501,6 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
             }
         }
     }
-#else
-    pHwAttrs = pHwAttrs;
-    setIntrPath = setIntrPath;
 #endif
 
     return(ret);

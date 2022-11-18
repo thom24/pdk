@@ -643,9 +643,6 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
     {
         ret = I2C_STATUS_ERROR;
     }
-#else
-    pHwAttrs = pHwAttrs;
-    setIntrPath = setIntrPath;
 #endif
 
     return(ret);
