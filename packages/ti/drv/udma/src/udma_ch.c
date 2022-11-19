@@ -348,6 +348,10 @@ int32_t Udma_chConfigTx(Udma_ChHandle chHandle, const Udma_ChTxPrms *txPrms)
                 rmUdmaTxReq.valid_params    |= TISCI_MSG_VALUE_RM_UDMAP_EXTENDED_CH_TYPE_VALID;
                 rmUdmaTxReq.extended_ch_type = UDMA_DMSC_EXTENDED_CH_TYPE_BCDMA_SPLIT_TR_TX;
             }
+            else
+            {
+                /* Do Nothing */
+            }
         }
 #endif
         if(NULL_PTR != chHandle->tdCqRing)
@@ -1394,6 +1398,10 @@ void *Udma_chGetSwTriggerRegister(Udma_ChHandle chHandle)
                     Udma_assert(drvHandle, chHandle->pBcdmaTxRtRegs != NULL_PTR);
                     pSwTriggerReg = (void *) &chHandle->pBcdmaTxRtRegs->SWTRIG;
                 }
+                else
+                {
+                    /* Do Nothing */
+                }
             }
 #endif
 #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
@@ -2340,6 +2348,10 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
                 Udma_assert(drvHandle, chHandle->fqRing->ringNum >= drvHandle->rxChOffset);
                 chHandle->defaultFlow->flowStart    = chHandle->fqRing->ringNum - drvHandle->rxChOffset;
             }
+            else
+            {
+                /* Do Nothing*/
+            }
         }
     }
 
@@ -2795,6 +2807,10 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
             CSL_FINS(regVal, PSILCFG_REG_RT_ENABLE_ENABLE, (uint32_t) 1U);
             CSL_REG32_WR(&chHandle->pBcdmaRxRtRegs->PEER8, regVal);
         }
+        else
+        {
+              /* Do Nothing */
+        }
     }
 #endif
 #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
@@ -2928,6 +2944,7 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
 static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout)
 {
     int32_t         retVal = UDMA_SOK;
+    Bool            exitLoop = FALSE;
     uint32_t        currTimeout = 0U;
     Udma_DrvHandle  drvHandle;
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
@@ -2981,7 +2998,7 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
             if(FALSE == udmapRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+                exitLoop = TRUE;
             }
         }
 #endif
@@ -2992,7 +3009,7 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
             if(FALSE == bcdmaRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+                exitLoop = TRUE;
             }
         }
 #endif
@@ -3003,10 +3020,15 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
             if(FALSE == pktdmaRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+                exitLoop = TRUE;
             }
         }
 #endif
+        if (exitLoop == TRUE)
+        {
+           break;
+        }
+
         if(currTimeout > timeout)
         {
             retVal = UDMA_ETIMEOUT;
@@ -3050,6 +3072,7 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
 
         /* Wait for disable to complete */
         currTimeout = 0U;
+        exitLoop = FALSE;
         while(UDMA_SOK == retVal)
         {
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
@@ -3059,7 +3082,7 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
                 if(FALSE == udmapRtStatus.enable)
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
@@ -3070,7 +3093,7 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
                 if(FALSE == bcdmaRtStatus.enable)
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
@@ -3081,10 +3104,14 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
                 if(FALSE == pktdmaRtStatus.enable)
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
+            if (exitLoop == TRUE)
+            {
+               break;
+            }
 
             if(currTimeout > timeout)
             {
@@ -3140,6 +3167,7 @@ static int32_t Udma_chDisableBlkCpyChan(Udma_ChHandle chHandle, uint32_t timeout
 static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
 {
     int32_t         retVal = UDMA_SOK;
+    Bool            exitLoop = FALSE;
     uint32_t        peerRtEnable = 0U, currTimeout = 0U;
     Udma_DrvHandle  drvHandle;
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
@@ -3152,7 +3180,6 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
     CSL_PktdmaRT    pktdmaRtStatus;
 #endif
     uint32_t        rtEnableRegOffset;
-
     drvHandle = chHandle->drvHandle;
     Udma_assert(drvHandle, chHandle->txChNum != UDMA_DMA_CH_INVALID);
     rtEnableRegOffset = CSL_PSILCFG_REG_RT_ENABLE - CSL_PSILCFG_REG_STATIC_TR;
@@ -3196,7 +3223,7 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
             if(FALSE == udmapRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+                exitLoop = TRUE;
             }
         }
 #endif
@@ -3208,7 +3235,7 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
             if(FALSE == bcdmaRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+                exitLoop = TRUE;
             }
         }
 #endif
@@ -3219,10 +3246,14 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
             if(FALSE == pktdmaRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+              exitLoop = TRUE;
             }
         }
 #endif
+        if (exitLoop == TRUE)
+        {
+          break;
+        }
 
         if(currTimeout > timeout)
         {
@@ -3325,6 +3356,7 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
 #endif
         /* Wait for disable to complete */
         currTimeout = 0U;
+        exitLoop    = FALSE;
         while(UDMA_SOK == retVal)
         {
 
@@ -3341,7 +3373,7 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
                 (CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE) == FALSE))
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
@@ -3359,7 +3391,7 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
                 (CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE) == FALSE))
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
@@ -3376,10 +3408,14 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
                 (CSL_FEXT(peerRtEnable, PSILCFG_REG_RT_ENABLE_ENABLE) == FALSE))
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
+            if(exitLoop == TRUE)
+            {
+              break;
+            }
 
             if(currTimeout > timeout)
             {
@@ -3455,7 +3491,8 @@ static int32_t Udma_chDisableTxChan(Udma_ChHandle chHandle, uint32_t timeout)
 
 static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
 {
-    int32_t         retVal = UDMA_SOK;
+    int32_t         retVal      = UDMA_SOK;
+    Bool            exitLoop    = FALSE;
     uint32_t        currTimeout = 0U, regVal;
     Udma_DrvHandle  drvHandle;
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
@@ -3511,7 +3548,7 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
             if(FALSE == udmapRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+              exitLoop = TRUE;
             }
         }
 #endif
@@ -3523,7 +3560,7 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
             if(FALSE == bcdmaRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+                exitLoop = TRUE;
             }
         }
 #endif
@@ -3534,10 +3571,14 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
             if(FALSE == pktdmaRtStatus.enable)
             {
                 /* Teardown complete */
-                break;
+                exitLoop = TRUE;
             }
         }
 #endif
+        if(exitLoop == TRUE)
+        {
+          break;
+        }
 
         if(currTimeout > timeout)
         {
@@ -3582,6 +3623,7 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
 
         /* Wait for disable to complete - both locally and for peer thread */
         currTimeout = 0U;
+        exitLoop    = FALSE;
         while(UDMA_SOK == retVal)
         {
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
@@ -3597,7 +3639,7 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
                if((FALSE == udmapRtStatus.enable) && (FALSE == peerRtEnableBit))
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
@@ -3615,7 +3657,7 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
                 if((FALSE == bcdmaRtStatus.enable) && (FALSE == peerRtEnableBit))
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
@@ -3632,10 +3674,15 @@ static int32_t Udma_chDisableRxChan(Udma_ChHandle chHandle, uint32_t timeout)
                 if((FALSE == pktdmaRtStatus.enable) && (FALSE == peerRtEnableBit))
                 {
                     /* Teardown complete */
-                    break;
+                    exitLoop = TRUE;
                 }
             }
 #endif
+            if(exitLoop == TRUE )
+            {
+              break;
+            }
+
             if(currTimeout > timeout)
             {
                 retVal = UDMA_ETIMEOUT;
@@ -4189,9 +4236,12 @@ static void Udma_chPauseTxLocal(Udma_DrvHandle drvHandle, uint32_t txChNum,uint3
         if((chType & UDMA_CH_FLAG_BLK_COPY) != UDMA_CH_FLAG_BLK_COPY)
         {
             /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
-            txChNum += drvHandle->txChOffset;
+            (void) CSL_bcdmaPauseTxChan(&drvHandle->bcdmaRegs, (txChNum + drvHandle->txChOffset));
         }
-        (void) CSL_bcdmaPauseTxChan(&drvHandle->bcdmaRegs, txChNum);
+        else
+        {
+            (void) CSL_bcdmaPauseTxChan(&drvHandle->bcdmaRegs, txChNum);
+        }
     }
 #endif
 #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
@@ -4216,9 +4266,12 @@ static void Udma_chUnpauseTxLocal(Udma_DrvHandle drvHandle, uint32_t txChNum, ui
         if((chType & UDMA_CH_FLAG_BLK_COPY) != UDMA_CH_FLAG_BLK_COPY)
         {
             /*Add offset to chNum, so that BCDMA can identify it as Tx Channel*/
-            txChNum += drvHandle->txChOffset;
+            (void) CSL_bcdmaUnpauseTxChan(&drvHandle->bcdmaRegs, (txChNum + drvHandle->txChOffset));
         }
-        (void) CSL_bcdmaUnpauseTxChan(&drvHandle->bcdmaRegs, txChNum);
+        else
+        {
+            (void) CSL_bcdmaUnpauseTxChan(&drvHandle->bcdmaRegs, txChNum);
+        }
     }
 #endif
 #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
@@ -4289,11 +4342,11 @@ static void Udma_chSetPeerReg(Udma_DrvHandle drvHandle,
     CSL_REG32_WR(PEER8, regVal);
 
     Udma_assert(drvHandle, PEER0 != NULL_PTR);
-    regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
-                CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
+    regVal = (uint32_t)CSL_FMK(PSILCFG_REG_STATIC_TR_X, pdmaPrms->elemSize) |
+              (uint32_t)CSL_FMK(PSILCFG_REG_STATIC_TR_Y, pdmaPrms->elemCnt);
     CSL_REG32_WR(PEER0, regVal);
 
     Udma_assert(drvHandle, PEER1 != NULL_PTR);
-    regVal = CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
+    regVal = (uint32_t)CSL_FMK(PSILCFG_REG_STATIC_TR_Z, pdmaPrms->fifoCnt);
     CSL_REG32_WR(PEER1, regVal);
 }

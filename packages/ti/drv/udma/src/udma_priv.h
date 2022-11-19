@@ -105,7 +105,7 @@ extern "C" {
 #define UDMA_RM_SCI_REQ_TYPE_INVALID       ((uint16_t) 0xFFFFU)
 
 /** \brief Macro used to specify that the Sciclient RM resource assignment subtype is invalid. */
-#define UDMA_RM_SCI_REQ_SUBTYPE_INVALID    ((uint16_t) 0xFFFFU)
+#define UDMA_RM_SCI_REQ_SUBTYPE_INVALID    ((uint8_t) 0xFFU)
 
 /** \brief Macro used to specify shift value for RX flow threshold before passing to SysFw */
 #define UDMA_RFLOW_RX_SIZE_THRESH_VAL_SHIFT      ((uint32_t) 0x00000005U)
@@ -126,7 +126,7 @@ typedef struct
     /**< UDMA Resource Id \ref Udma_RmResId macros. */
     uint16_t                sciclientReqType;
     /**< Sciclient RM resource assignment type */
-    uint16_t                sciclientReqSubtype;
+    uint8_t                 sciclientReqSubtype;
     /**< Sciclient RM resource assignment subtype */
     uint8_t                 sciclientSecHost;
     /**< Sciclient Secondary host */

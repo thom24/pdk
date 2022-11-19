@@ -99,189 +99,186 @@ int32_t Udma_rmInit(Udma_DrvHandle drvHandle)
     uint32_t            mappedGrp;
 #endif
 
-    if(UDMA_SOK == retVal)
+    /* Mark all resources as free */
+    for(i = 0U; i < rmInitPrms->numBlkCopyCh; i++)
     {
-        /* Mark all resources as free */
-        for(i = 0U; i < rmInitPrms->numBlkCopyCh; i++)
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->blkCopyChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numBlkCopyHcCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->blkCopyHcChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numBlkCopyUhcCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->blkCopyUhcChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numTxCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_TX_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->txChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numRxCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_RX_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->rxChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numTxHcCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_TX_HC_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->txHcChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numRxHcCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_RX_HC_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->rxHcChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numTxUhcCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_TX_UHC_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->txUhcChFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numRxUhcCh; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_RX_UHC_CH_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->rxUhcChFlag[offset] |= bitMask;
+    }
+    #if (UDMA_NUM_UTC_INSTANCE > 0)
+    for(utcId = 0U; utcId < UDMA_NUM_UTC_INSTANCE; utcId++)
+    {
+        for(i = 0U; i < rmInitPrms->numUtcCh[utcId]; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE);
+            Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->blkCopyChFlag[offset] |= bitMask;
+            drvHandle->utcChFlag[utcId][offset] |= bitMask;
         }
-        for(i = 0U; i < rmInitPrms->numBlkCopyHcCh; i++)
+    }
+    #endif
+    #if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+    for(mappedGrp = 0U; mappedGrp < UDMA_NUM_MAPPED_TX_GROUP; mappedGrp++)
+    {
+        for(i = 0U; i < rmInitPrms->numMappedTxCh[mappedGrp]; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->blkCopyHcChFlag[offset] |= bitMask;
+            drvHandle->mappedTxChFlag[mappedGrp][offset] |= bitMask;
         }
-        for(i = 0U; i < rmInitPrms->numBlkCopyUhcCh; i++)
+    }
+    #endif
+    #if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+    for(mappedGrp = 0U; mappedGrp < UDMA_NUM_MAPPED_RX_GROUP; mappedGrp++)
+    {
+        for(i = 0U; i < rmInitPrms->numMappedRxCh[mappedGrp]; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->blkCopyUhcChFlag[offset] |= bitMask;
+            drvHandle->mappedRxChFlag[mappedGrp][offset] |= bitMask;
         }
-        for(i = 0U; i < rmInitPrms->numTxCh; i++)
+    }
+    #endif
+    #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+    for(mappedGrp = 0U; mappedGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP); mappedGrp++)
+    {
+        for(i = 0U; i < rmInitPrms->numMappedRing[mappedGrp]; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->txChFlag[offset] |= bitMask;
+            drvHandle->mappedRingFlag[mappedGrp][offset] |= bitMask;
         }
-        for(i = 0U; i < rmInitPrms->numRxCh; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_CH_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->rxChFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numTxHcCh; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_HC_CH_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->txHcChFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numRxHcCh; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_HC_CH_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->rxHcChFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numTxUhcCh; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_UHC_CH_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->txUhcChFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numRxUhcCh; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_UHC_CH_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->rxUhcChFlag[offset] |= bitMask;
-        }
-#if (UDMA_NUM_UTC_INSTANCE > 0)
-        for(utcId = 0U; utcId < UDMA_NUM_UTC_INSTANCE; utcId++)
-        {
-            for(i = 0U; i < rmInitPrms->numUtcCh[utcId]; i++)
-            {
-                offset = i >> 5U;
-                Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
-                bitPos = i - (offset << 5U);
-                bitMask = (uint32_t) 1U << bitPos;
-                drvHandle->utcChFlag[utcId][offset] |= bitMask;
-            }
-        }
-#endif
-#if (UDMA_NUM_MAPPED_TX_GROUP > 0)
-        for(mappedGrp = 0U; mappedGrp < UDMA_NUM_MAPPED_TX_GROUP; mappedGrp++)
-        {
-            for(i = 0U; i < rmInitPrms->numMappedTxCh[mappedGrp]; i++)
-            {
-                offset = i >> 5U;
-                Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE);
-                bitPos = i - (offset << 5U);
-                bitMask = (uint32_t) 1U << bitPos;
-                drvHandle->mappedTxChFlag[mappedGrp][offset] |= bitMask;
-            }
-        }
-#endif
-#if (UDMA_NUM_MAPPED_RX_GROUP > 0)
-        for(mappedGrp = 0U; mappedGrp < UDMA_NUM_MAPPED_RX_GROUP; mappedGrp++)
-        {
-            for(i = 0U; i < rmInitPrms->numMappedRxCh[mappedGrp]; i++)
-            {
-                offset = i >> 5U;
-                Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE);
-                bitPos = i - (offset << 5U);
-                bitMask = (uint32_t) 1U << bitPos;
-                drvHandle->mappedRxChFlag[mappedGrp][offset] |= bitMask;
-            }
-        }
-#endif
-#if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
-        for(mappedGrp = 0U; mappedGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP); mappedGrp++)
-        {
-            for(i = 0U; i < rmInitPrms->numMappedRing[mappedGrp]; i++)
-            {
-                offset = i >> 5U;
-                Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
-                bitPos = i - (offset << 5U);
-                bitMask = (uint32_t) 1U << bitPos;
-                drvHandle->mappedRingFlag[mappedGrp][offset] |= bitMask;
-            }
-        }
-#endif
-        for(i = 0U; i < rmInitPrms->numFreeRing; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->freeRingFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numFreeFlow; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_FREE_FLOW_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->freeFlowFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numGlobalEvent; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_GLOBAL_EVENT_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->globalEventFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numVintr; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_VINTR_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->vintrFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numIrIntr; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->irIntrFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numProxy; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_PROXY_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->proxyFlag[offset] |= bitMask;
-        }
-        for(i = 0U; i < rmInitPrms->numRingMon; i++)
-        {
-            offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RING_MON_ARR_SIZE);
-            bitPos = i - (offset << 5U);
-            bitMask = (uint32_t) 1U << bitPos;
-            drvHandle->ringMonFlag[offset] |= bitMask;
-        }
+    }
+    #endif
+    for(i = 0U; i < rmInitPrms->numFreeRing; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->freeRingFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numFreeFlow; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_FREE_FLOW_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->freeFlowFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numGlobalEvent; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_GLOBAL_EVENT_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->globalEventFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numVintr; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_VINTR_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->vintrFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numIrIntr; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->irIntrFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numProxy; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_PROXY_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->proxyFlag[offset] |= bitMask;
+    }
+    for(i = 0U; i < rmInitPrms->numRingMon; i++)
+    {
+        offset = i >> 5U;
+        Udma_assert(drvHandle, offset < UDMA_RM_RING_MON_ARR_SIZE);
+        bitPos = i - (offset << 5U);
+        bitMask = (uint32_t) 1U << bitPos;
+        drvHandle->ringMonFlag[offset] |= bitMask;
     }
 
     return (retVal);
@@ -1221,9 +1218,9 @@ void Udma_rmFreeExtCh(uint32_t chNum,
 #endif
 
 #if (UDMA_NUM_MAPPED_TX_GROUP > 0)
-uint32_t Udma_rmAllocMappedTxCh(uint32_t preferredChNum, 
+uint32_t Udma_rmAllocMappedTxCh(uint32_t preferredChNum,
                                 Udma_DrvHandle drvHandle,
-                                const uint32_t mappedChGrp)                 
+                                const uint32_t mappedChGrp)
 {
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     uint32_t            i, offset, bitPos, bitMask;
@@ -1307,9 +1304,9 @@ void Udma_rmFreeMappedTxCh(uint32_t chNum,
 #endif
 
 #if (UDMA_NUM_MAPPED_RX_GROUP > 0)
-uint32_t Udma_rmAllocMappedRxCh(uint32_t preferredChNum, 
+uint32_t Udma_rmAllocMappedRxCh(uint32_t preferredChNum,
                                 Udma_DrvHandle drvHandle,
-                                const uint32_t mappedChGrp)                 
+                                const uint32_t mappedChGrp)
 {
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     uint32_t            i, offset, bitPos, bitMask;
@@ -1395,11 +1392,11 @@ void Udma_rmFreeMappedRxCh(uint32_t chNum,
 #if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
 uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
                                 const uint32_t mappedRingGrp,
-                                const uint32_t mappedChNum)                 
+                                const uint32_t mappedChNum)
 {
     uint32_t    ringNum = UDMA_RING_INVALID;
-    uint32_t    i,offset, bitPos, bitMask;  
-    uint32_t    loopStart, loopMax;      
+    uint32_t    i,offset, bitPos, bitMask;
+    uint32_t    loopStart, loopMax;
     int32_t     retVal = UDMA_SOK;
 
     Udma_RmInitPrms             *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
@@ -1408,17 +1405,17 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
     Udma_assert(drvHandle, mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP));
 
     retVal = Udma_getMappedChRingAttributes(drvHandle, mappedRingGrp, mappedChNum, &chAttr);
-    
+
     if((UDMA_SOK == retVal) && (0U != chAttr.numFreeRing))
     {
         /* Derive the intersecting pool (loopStart and loopMax) based on the rings reserved for the core (rmcfg)
         * and the permissible range for the given channel(free rings reserved for specific channels).
-        * 
+        *
         * Core_ring_Start (rmInitPrms->startMappedRing) & Core_ring_End (rmInitPrms->startMappedRing +rmInitPrms->numMappedRing)
         * refers to the range of reserved rings for the core.
-        * Channel_ring_Start (chAttr->startFreeRing) & Channel_ring_End (chAttr->startFreeRing + chAttr->numFreeRing) 
+        * Channel_ring_Start (chAttr->startFreeRing) & Channel_ring_End (chAttr->startFreeRing + chAttr->numFreeRing)
         * refers to permissible range of free rings for the particular channel.
-        * 
+        *
         * CASE 'A' refers to those that affects the loopStart
         * CASE 'B' refers to those that affects the loopMax
         */
@@ -1431,9 +1428,9 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
         if(chAttr.startFreeRing > rmInitPrms->startMappedRing[mappedRingGrp])
         {
             /* Update loopStart to start from Channel_ring_Start,
-            * so as to skip the starting rings which are reserved for the core, 
+            * so as to skip the starting rings which are reserved for the core,
             * but can't be used for the current channel */
-            loopStart = chAttr.startFreeRing - rmInitPrms->startMappedRing[mappedRingGrp]; 
+            loopStart = chAttr.startFreeRing - rmInitPrms->startMappedRing[mappedRingGrp];
         }
         /* For all other CASE 'A's, loopStart should be 0 itself. */
 
@@ -1441,7 +1438,7 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
         if((chAttr.startFreeRing + chAttr.numFreeRing) < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]))
         {
             /* Update loopMax to stop at Channel_ring_End,
-            * so as to skip the last rings which are reserved for the core, 
+            * so as to skip the last rings which are reserved for the core,
             * but can't be used for the current channel */
             Udma_assert(drvHandle, (chAttr.startFreeRing + chAttr.numFreeRing) >= rmInitPrms->startMappedRing[mappedRingGrp]);
             loopMax = (chAttr.startFreeRing + chAttr.numFreeRing) - rmInitPrms->startMappedRing[mappedRingGrp];
@@ -1480,7 +1477,7 @@ void Udma_rmFreeMappedRing(uint32_t ringNum,
 {
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-    Udma_MappedChRingAttributes  chAttr;   
+    Udma_MappedChRingAttributes  chAttr;
     int32_t     retVal = UDMA_SOK;
 
     Udma_assert(drvHandle, mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP));
@@ -1607,7 +1604,7 @@ uint16_t Udma_rmAllocProxy(Udma_DrvHandle drvHandle)
         if((drvHandle->proxyFlag[offset] & bitMask) == bitMask)
         {
             drvHandle->proxyFlag[offset] &= ~bitMask;
-            proxyNum = (uint16_t)rmInitPrms->startProxy;  /* Add start offset */
+            proxyNum = rmInitPrms->startProxy;  /* Add start offset */
             proxyNum += i;
             break;
         }
@@ -1621,14 +1618,15 @@ uint16_t Udma_rmAllocProxy(Udma_DrvHandle drvHandle)
 
 void Udma_rmFreeProxy(uint16_t proxyNum, Udma_DrvHandle drvHandle)
 {
-    uint32_t            i, offset, bitPos, bitMask;
+    uint16_t           i;
+    uint32_t           offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
     Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     i = proxyNum - rmInitPrms->startProxy;
-    offset = i >> 5U;
+    offset = (uint32_t)(i >> (uint16_t)5U);
     Udma_assert(drvHandle, offset < UDMA_RM_PROXY_ARR_SIZE);
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
@@ -1965,7 +1963,7 @@ uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum)
         /* For C66x Sciclient translates NAVSS IR Idx to corresponding C66 IR Idx,
          * Not the Core Interrupt Idx. */
         Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
-        
+
         coreIntrNum = irIntrNum - rmInitPrms->startIrIntr;
         coreIntrNum += rmInitPrms->startC66xCoreIntr;
 #else
@@ -1973,9 +1971,9 @@ uint32_t Udma_rmTranslateIrOutput(Udma_DrvHandle drvHandle, uint32_t irIntrNum)
         uint16_t dstId = 0U;
 
         retVal = Sciclient_rmIrqTranslateIrOutput(drvHandle->devIdIr,
-                                                irIntrNum,
+                                                (uint16_t)irIntrNum,
                                                 drvHandle->devIdCore,
-                                                &dstId); 
+                                                &dstId);
         if(UDMA_SOK == retVal)
         {
             coreIntrNum = dstId;
@@ -2006,15 +2004,15 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
 #else
         int32_t  retVal = UDMA_SOK;
         uint16_t irId = 0U;
-        
+
         retVal = Sciclient_rmIrqTranslateIrqInput(drvHandle->devIdCore,
-                                                  coreIntrNum,
+                                                  (uint16_t)coreIntrNum,
                                                   drvHandle->devIdIr,
-                                                  &irId); 
+                                                  &irId);
         if(UDMA_SOK == retVal)
         {
             irIntrNum = irId;
-        } 
+        }
 #endif
 #else
         /* In case of devices like AM64x, where there are no Interrupt Routers,
@@ -2023,7 +2021,7 @@ uint32_t Udma_rmTranslateCoreIntrInput(Udma_DrvHandle drvHandle, uint32_t coreIn
 #endif
 
     return (irIntrNum);
-} 
+}
 
 int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
 {
@@ -2033,7 +2031,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
     uint32_t                                     splitResFlag[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES] = {0U};
     uint32_t numRes = 0U;
     uint32_t resIdx;
-    bool blkCopySubType = false;
+    bool blkCopySubType = (bool)false;
 
     /* Error check */
     if(NULL_PTR == rmInitPrms)
@@ -2042,529 +2040,533 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
     }
 
     if(UDMA_SOK == retVal)
-    {
-        rmDefBoardCfgPrms = Udma_rmGetDefBoardCfgPrms(instId);
-    
-        memset(rmDefBoardCfgResp, 0, sizeof(rmDefBoardCfgResp));
-        memset(rmInitPrms, 0, sizeof(*rmInitPrms));
-
-    #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1) 
-    
-        uint32_t numtTxCh = 0U;
-        uint32_t numRxCh  = 0U;
-        uint32_t numExtCh = 0U;
-
-        if(UDMA_INST_ID_MCU_0 == instId)
         {
-            numRes      = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
-            blkCopySubType = false;
-            /* Assign offset Params */
-            numtTxCh    = CSL_NAVSS_MCU_UDMAP_NUM_TX_CHANS;    
-            numRxCh     = CSL_NAVSS_MCU_UDMAP_NUM_RX_CHANS;
-            numExtCh    = CSL_NAVSS_MCU_UDMAP_NUM_EXT_CHANS;
-        }
-        else if(UDMA_INST_ID_MAIN_0 == instId)
-        {
-            numRes      = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
-            blkCopySubType = false;
-            /* Assign offset Params */
-            numtTxCh    = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS;    
-            numRxCh     = CSL_NAVSS_MAIN_UDMAP_NUM_RX_CHANS;
-            numExtCh    = CSL_NAVSS_MAIN_UDMAP_NUM_EXT_CHANS;
-        }
-    #endif
-    #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
-        if(UDMA_INST_ID_BCDMA_0 == instId)
-        {
-            blkCopySubType = true;
-            numRes = UDMA_RM_NUM_BCDMA_RES;
-        }
-    #endif
-    #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
-        if(UDMA_INST_ID_PKTDMA_0 == instId)
-        {
-            blkCopySubType = true;
-            numRes = UDMA_RM_NUM_PKTDMA_RES;
-        }
-    #endif
+            rmDefBoardCfgPrms = Udma_rmGetDefBoardCfgPrms(instId);
 
-        for(resIdx = 0U; resIdx < numRes; resIdx++)
-        {
-            /* Query all the resources range from Sciclient Default BoardCfg */
-            retVal += Udma_rmGetSciclientDefaultBoardCfgRmRange(&rmDefBoardCfgPrms[resIdx], &rmDefBoardCfgResp[resIdx], &splitResFlag[resIdx]);
-        }
+            memset(rmDefBoardCfgResp, 0, sizeof(rmDefBoardCfgResp));
+            memset(rmInitPrms, 0, sizeof(*rmInitPrms));
 
-    #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1) || (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
-        if(blkCopySubType)
-        {   
-            /* Ultra High Capacity Block Copy Channels */
-            rmInitPrms->startBlkCopyUhcCh   = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_UHC].rangeStart;
-            rmInitPrms->numBlkCopyUhcCh     = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_UHC].rangeNum;
+        #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
 
-            /* High Capacity Block Copy Channels */
-            rmInitPrms->startBlkCopyHcCh    = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_HC].rangeStart;
-            rmInitPrms->numBlkCopyHcCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_HC].rangeNum;
+            uint32_t numtTxCh = 0U;
+            uint32_t numRxCh  = 0U;
+            uint32_t numExtCh = 0U;
 
-            /* Normal Capacity Block Copy Channels */
-            rmInitPrms->startBlkCopyCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC].rangeStart;
-            rmInitPrms->numBlkCopyCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC].rangeNum;
-
-            /* Ultra High Capacity TX Channels */
-            rmInitPrms->startTxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeStart;
-            rmInitPrms->numTxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeNum;
-
-            /* High Capacity TX Channels */
-            rmInitPrms->startTxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeStart;
-            rmInitPrms->numTxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeNum;
-
-            /* Normal Capacity TX Channels */
-            rmInitPrms->startTxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeStart;
-            rmInitPrms->numTxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeNum;
-
-            /* Ultra High Capacity RX Channels */
-            rmInitPrms->startRxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeStart;
-            rmInitPrms->numRxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeNum;
-
-             /* High Capacity RX Channels */
-            rmInitPrms->startRxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeStart;
-            rmInitPrms->numRxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeNum;
-
-            /* Normal Capacity RX Channels */
-            rmInitPrms->startRxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeStart;
-            rmInitPrms->numRxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeNum;
-        }
-    #endif
-    #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)   
-        if(!blkCopySubType)
-        {   
-            /* Ultra High Capacity Block Copy and TX Channels */
-            /* Primary for Block Copy Channel */
-            rmInitPrms->startBlkCopyUhcCh   = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeStart;
-            rmInitPrms->numBlkCopyUhcCh     = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeNum;
-             /* Secondary for TX Channel */
-            rmInitPrms->startTxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeStartSec;
-            rmInitPrms->numTxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeNumSec;
-
-            /* High Capacity Block Copy and TX Channels */
-            /* Primary for Block Copy Channel */
-            rmInitPrms->startBlkCopyHcCh    = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeStart;
-            rmInitPrms->numBlkCopyHcCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeNum;
-             /* Secondary for TX Channel */
-            rmInitPrms->startTxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeStartSec;
-            rmInitPrms->numTxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeNumSec;
-
-            /* Normal Capacity Block Copy and TX Channels */
-            /* Primary for Block Copy Channel */
-            rmInitPrms->startBlkCopyCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeStart;
-            rmInitPrms->numBlkCopyCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeNum;
-            /* Secondary for TX Channel */
-            rmInitPrms->startTxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeStartSec;
-            rmInitPrms->numTxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeNumSec;
-
-            /* Ultra High Capacity RX Channels */
-            /* Secondary for RX Channel (Primary for Block Copy Channel) */
-            rmInitPrms->startRxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeStartSec;
-            rmInitPrms->numRxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeNumSec;
-
-            /* High Capacity RX Channels */
-            /* Secondary for RX Channel (Primary for Block Copy Channel) */
-            rmInitPrms->startRxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeStartSec;
-            rmInitPrms->numRxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeNumSec;
-
-            /* Normal Capacity RX Channels */
-            /* Secondary for RX Channel (Primary for Block Copy Channel) */
-            rmInitPrms->startRxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeStartSec;
-            rmInitPrms->numRxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeNumSec;
-        }
-    #endif
-
-    #if (UDMA_NUM_UTC_INSTANCE > 0)
-        /* UTC - Extended Channels (MSMC_DRU/VPAC_TC0/VPAC_TC1/DMPAC) */
-        /* Primary for MSMC_DRU Channel */
-        rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStart;
-        rmInitPrms->numUtcCh[UDMA_UTC_ID_MSMC_DRU0]         = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNum;
-        /* Sub offset. TODO: Remove offset if feasible */
-        if(rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0] >= numtTxCh)
-        {
-            rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0]  -= numtTxCh; 
-        }
-    #if (UDMA_NUM_UTC_INSTANCE > 1)
-        /* Secondary for VPAC_TC0+VPAC_TC1+DMPAC Channels */
-        /* Here the assumption taken to split the external channels for HWA is that,
-         * all similar type of channels (VPAC_TC0/VPAC_TC1/DMPAC) will be reserved to same core */
-        uint32_t vpac0Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC0;
-        uint32_t vpac1Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC1;
-    #if (UDMA_SOC_CFG_VPAC1_PRESENT == 1)
-        uint32_t vpac10Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC1_TC0;
-        uint32_t vpac11Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC1_TC1;
-    #endif
-        uint32_t dmpacStart = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_DMPAC_TC0;
-
-        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec == vpac0Start) &&
-           (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac0Start + UDMA_UTC_NUM_CH_VPAC_TC0))
-        {
-            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC_TC0]    = UDMA_UTC_START_CH_VPAC_TC0;
-            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC_TC0]      = UDMA_UTC_NUM_CH_VPAC_TC0;
-        }
-        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac1Start) &&
-           (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac1Start + UDMA_UTC_NUM_CH_VPAC_TC1))
-        {
-            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC_TC1]    = UDMA_UTC_START_CH_VPAC_TC1;
-            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC_TC1]      = UDMA_UTC_NUM_CH_VPAC_TC1;
-        }
-    #if (UDMA_SOC_CFG_VPAC1_PRESENT == 1)
-        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac10Start) &&
-           (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac10Start + UDMA_UTC_NUM_CH_VPAC1_TC0))
-        {
-            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC1_TC0]    = UDMA_UTC_START_CH_VPAC1_TC0;
-            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC1_TC0]      = UDMA_UTC_NUM_CH_VPAC1_TC0;
-        }
-        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac11Start) &&
-           (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec >= vpac11Start + UDMA_UTC_NUM_CH_VPAC1_TC1))
-        {
-            rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC1_TC1]    = UDMA_UTC_START_CH_VPAC1_TC1;
-            rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC1_TC1]      = UDMA_UTC_NUM_CH_VPAC1_TC1;
-        }
-    #endif
-        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= dmpacStart) &&
-           (rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec == dmpacStart + UDMA_UTC_NUM_CH_DMPAC_TC0))
-        {
-            rmInitPrms->startUtcCh[UDMA_UTC_ID_DMPAC_TC0]   = UDMA_UTC_START_CH_DMPAC_TC0;
-            rmInitPrms->numUtcCh[UDMA_UTC_ID_DMPAC_TC0]     = UDMA_UTC_NUM_CH_DMPAC_TC0;
-        }
-    #endif
-    #if defined (BUILD_C7X) && (UDMA_LOCAL_C7X_DRU_PRESENT == 1)
-        uint32_t utcId, rmId;
-        for(rmId = UDMA_RM_START_C7X_DRU ; rmId <= UDMA_RM_MAX_C7X_DRU ; rmId++)
-        {
-            /**
-             * RM ids and UTC ids for these DRUs are continuous
-             * To obtain UTC id get offset from RM id for particular DRU
-             * Add the offset to DRU Start.
-             */
-            utcId    = (rmId - UDMA_RM_START_C7X_DRU) + UDMA_LOCAL_UTC_START;
-
-            const Udma_RmDefBoardCfgResp *resp = Udma_rmGetLocalBoardCfgResp(rmId);
-
-            if(resp != NULL_PTR)
+            if(UDMA_INST_ID_MCU_0 == instId)
             {
-                retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(rmId),
-                                                        Udma_getCoreId(),
-                                                        UDMA_CORE_ID_C7X_1,
-                                                        resp->rangeStart,
-                                                        resp->rangeNum,
-                                                        &rmInitPrms->startUtcCh[utcId],
-                                                        &rmInitPrms->numUtcCh[utcId]);
+                numRes         = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
+                blkCopySubType = (bool)false;
+                /* Assign offset Params */
+                numtTxCh    = CSL_NAVSS_MCU_UDMAP_NUM_TX_CHANS;
+                numRxCh     = CSL_NAVSS_MCU_UDMAP_NUM_RX_CHANS;
+                numExtCh    = CSL_NAVSS_MCU_UDMAP_NUM_EXT_CHANS;
+            }
+            else if(UDMA_INST_ID_MAIN_0 == instId)
+            {
+                numRes         = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
+                blkCopySubType = (bool)false;
+                /* Assign offset Params */
+                numtTxCh    = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS;
+                numRxCh     = CSL_NAVSS_MAIN_UDMAP_NUM_RX_CHANS;
+                numExtCh    = CSL_NAVSS_MAIN_UDMAP_NUM_EXT_CHANS;
             }
             else
+        #endif
+        #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
+            if(UDMA_INST_ID_BCDMA_0 == instId)
+            {
+                blkCopySubType = (bool)true;
+                numRes = UDMA_RM_NUM_BCDMA_RES;
+            }
+            else
+        #endif
+        #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
+            if(UDMA_INST_ID_PKTDMA_0 == instId)
+            {
+                blkCopySubType = true;
+                numRes = UDMA_RM_NUM_PKTDMA_RES;
+            }
+            else
+        #endif
             {
                 retVal = UDMA_EFAIL;
             }
-        }
-    #endif
-    #endif
+          for(resIdx = 0U; resIdx < numRes; resIdx++)
+          {
+              /* Query all the resources range from Sciclient Default BoardCfg */
+              retVal += Udma_rmGetSciclientDefaultBoardCfgRmRange(&rmDefBoardCfgPrms[resIdx], &rmDefBoardCfgResp[resIdx], &splitResFlag[resIdx]);
+          }
 
-    #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)  
-        /* Free Flows */
-        if(0U == splitResFlag[UDMA_RM_RES_ID_RX_FLOW])
-        {
-            rmInitPrms->startFreeFlow                           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeStart;
-            rmInitPrms->numFreeFlow                             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeNum;
-        }
-        else
-        {
-            retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_RX_FLOW),
-                                                    Udma_getCoreId(),
-                                                    0U,
-                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeStart,
-                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeNum,
-                                                    &rmInitPrms->startFreeFlow,
-                                                    &rmInitPrms->numFreeFlow);
-        }
-        /* Sub offset. TODO: Remove offset if feasible */
-        if(rmInitPrms->startFreeFlow >= numRxCh)
-        {
-            rmInitPrms->startFreeFlow                      -= numRxCh; 
-        }
+      #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1) || (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
+          if(blkCopySubType)
+          {
+              /* Ultra High Capacity Block Copy Channels */
+              rmInitPrms->startBlkCopyUhcCh   = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_UHC].rangeStart;
+              rmInitPrms->numBlkCopyUhcCh     = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_UHC].rangeNum;
 
-        /* Free Rings */
-        rmInitPrms->startFreeRing                           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING].rangeStart;
-        rmInitPrms->numFreeRing                             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING].rangeNum;
-        /* Sub offset. TODO: Remove offset if feasible */
-        if(rmInitPrms->startFreeRing >= (numtTxCh + numRxCh + numExtCh))
-        {
-            rmInitPrms->startFreeRing                      -= (numtTxCh + numRxCh + numExtCh); 
-        }
-    #endif
+              /* High Capacity Block Copy Channels */
+              rmInitPrms->startBlkCopyHcCh    = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_HC].rangeStart;
+              rmInitPrms->numBlkCopyHcCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC_HC].rangeNum;
 
-        /* Global Event */
-        /* Shared resource - Split based on instance */
-        retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_GLOBAL_EVENT),
-                                               instId,
-                                               UDMA_INST_ID_START,
-                                               rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeStart,
-                                               rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeNum,
-                                               &rmInitPrms->startGlobalEvent,
-                                               &rmInitPrms->numGlobalEvent);
-        if(rmInitPrms->numGlobalEvent != 0U)
-        {
-            uint32_t offset = Udma_getGlobalEventOffset();
-            /* Substract Offset for Global Events */
-            if(rmInitPrms->startGlobalEvent >= offset)
-            {
-                rmInitPrms->startGlobalEvent               -=  offset;  
-            }
-            else
-            {
-                retVal = UDMA_EFAIL;
-            }
-        }
+              /* Normal Capacity Block Copy Channels */
+              rmInitPrms->startBlkCopyCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC].rangeStart;
+              rmInitPrms->numBlkCopyCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_BC].rangeNum;
 
-        /* Virtual Interrupts */
-        /* Shared resource - Split based on instance */
-        retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_VINTR),
-                                               instId,
-                                               UDMA_INST_ID_START,
-                                               rmDefBoardCfgResp[UDMA_RM_RES_ID_VINTR].rangeStart,
-                                               rmDefBoardCfgResp[UDMA_RM_RES_ID_VINTR].rangeNum,
-                                               &rmInitPrms->startVintr,
-                                               &rmInitPrms->numVintr);
+              /* Ultra High Capacity TX Channels */
+              rmInitPrms->startTxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeStart;
+              rmInitPrms->numTxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeNum;
 
-        /* Interrupt Router Interrupts */
-#if defined (BUILD_C7X)
-        /* Interrupts reserved for other drivers */
-        uint32_t totalResrvIntr = 0U;
-        /* Interrupts available for UDMA driver */
-        uint32_t numIrIntrAvbl  = 0U;
+              /* High Capacity TX Channels */
+              rmInitPrms->startTxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeStart;
+              rmInitPrms->numTxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeNum;
 
-        Udma_RmSharedResPrms *rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR);
-        /* 
-         * startResrvCnt and endResrvCnt are number of interrupts reserved for other
-         * drivers, can't be used by UDMA driver. \ref Udma_RmSharedResPrms
-         */
-        if(rmSharedResPrms != NULL_PTR)
-        {
-            totalResrvIntr  = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt);
-            numIrIntrAvbl   = (rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - totalResrvIntr);
+              /* Normal Capacity TX Channels */
+              rmInitPrms->startTxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeStart;
+              rmInitPrms->numTxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeNum;
 
-            /* Make sure that number of interrupts never execeeds number of C7x events for UDMA driver */
-            if(numIrIntrAvbl > UDMA_C7X_CORE_NUM_INTR)
-            {
-                rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum = totalResrvIntr + UDMA_C7X_CORE_NUM_INTR;
-            }
-        }
-        else
-        {
-            retVal = UDMA_EFAIL;
-        }
-#endif
-    #if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)   
-        /* Shared resource - Split based on instance */
-        retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
-                                            instId,
-                                            UDMA_INST_ID_START,
-                                            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
-                                            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
-                                            &rmInitPrms->startIrIntr,
-                                            &rmInitPrms->numIrIntr);
-    #else 
-        /* One to one mapping exists from Virtual Interrupts. 
-            * So translate to corresponding range.
-            * In case of devices like AM64x, where there are no Interrupt Routers,
-            * this refers to core interrupt itslef. */
-        retVal += Sciclient_rmIrqTranslateIaOutput(rmDefBoardCfgPrms[UDMA_RM_RES_ID_VINTR].sciclientReqType,
-                                                    rmInitPrms->startVintr,
-                                                    Udma_getCoreSciDevId(),
-                                                    (uint16_t *) &rmInitPrms->startIrIntr);
-    
-        rmInitPrms->numIrIntr                          = rmInitPrms->numVintr;             
-    #endif
+              /* Ultra High Capacity RX Channels */
+              rmInitPrms->startRxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeStart;
+              rmInitPrms->numRxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeNum;
 
-    #if defined (BUILD_C7X) || defined (_TMS320C6X)
-    #if defined (_TMS320C6X)
-        /* Start C6xx Core Interrupt */
-        rmInitPrms->startC66xCoreIntr                       = UDMA_C66X_CORE_INTR_OFFSET;
-    #endif
-        if(UDMA_INST_ID_START != instId)
-        {
-            uint32_t curInstIrStart     = 0U;
-            uint32_t startInstIrStart   = 0U;
-            /* Returned num value not used in this case, Passing to avoid dereferencing of NULL pointer */
-            uint32_t num        = 0U;
+               /* High Capacity RX Channels */
+              rmInitPrms->startRxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeStart;
+              rmInitPrms->numRxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeNum;
 
-            /* Get the startInstIrStart i.e., start value of range of IR interrupts
-               allocated to first instance */
-            retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
-                                                   UDMA_INST_ID_START,
-                                                   UDMA_INST_ID_START,
-                                                   rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
-                                                   rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
-                                                   &startInstIrStart,
-                                                   &num);
+              /* Normal Capacity RX Channels */
+              rmInitPrms->startRxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeStart;
+              rmInitPrms->numRxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeNum;
+          }
+      #endif
+      #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+          if(!blkCopySubType)
+          {
+              /* Ultra High Capacity Block Copy and TX Channels */
+              /* Primary for Block Copy Channel */
+              rmInitPrms->startBlkCopyUhcCh   = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeStart;
+              rmInitPrms->numBlkCopyUhcCh     = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeNum;
+               /* Secondary for TX Channel */
+              rmInitPrms->startTxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeStartSec;
+              rmInitPrms->numTxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_UHC].rangeNumSec;
 
-            /* Get the curInstIrStart i.e., start value of range of IR interrupts
-               allocated to current instance */
-            retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
-                                                   instId,
-                                                   UDMA_INST_ID_START,
-                                                   rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
-                                                   rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
-                                                   &curInstIrStart,
-                                                   &num);
-            /* Add the no. of IR Interrupts reserved for C7x/C66x before current instance
-               to make sure each instance has their own range C7x/C66x events */
-        #if defined (BUILD_C7X)
-            /* Start C7x Core Interrupt */
-            rmInitPrms->startC7xCoreIntr                   =  (UDMA_C7X_CORE_INTR_OFFSET + (curInstIrStart - startInstIrStart));
-        #endif
-        #if defined (_TMS320C6X)
-            rmInitPrms->startC66xCoreIntr                  +=  (curInstIrStart - startInstIrStart);
-        #endif
-        }
-    #endif
+              /* High Capacity Block Copy and TX Channels */
+              /* Primary for Block Copy Channel */
+              rmInitPrms->startBlkCopyHcCh    = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeStart;
+              rmInitPrms->numBlkCopyHcCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeNum;
+               /* Secondary for TX Channel */
+              rmInitPrms->startTxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeStartSec;
+              rmInitPrms->numTxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX_HC].rangeNumSec;
 
-    #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)  
-        /* Proxy */
-        if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeNum)
-        {
-            rmInitPrms->proxyThreadNum                      = rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeStart;
-            rmInitPrms->startProxy                          = rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeStart + 1U;
-            rmInitPrms->numProxy                            = rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeNum - 1U;
-        }
-    #endif
+              /* Normal Capacity Block Copy and TX Channels */
+              /* Primary for Block Copy Channel */
+              rmInitPrms->startBlkCopyCh      = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeStart;
+              rmInitPrms->numBlkCopyCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeNum;
+              /* Secondary for TX Channel */
+              rmInitPrms->startTxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeStartSec;
+              rmInitPrms->numTxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_TX].rangeNumSec;
 
-    #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)  
-        /* Ring Monitors */
-        rmInitPrms->startRingMon                            = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING_MON].rangeStart;
-        rmInitPrms->numRingMon                              = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING_MON].rangeNum;
-    #endif
+              /* Ultra High Capacity RX Channels */
+              /* Secondary for RX Channel (Primary for Block Copy Channel) */
+              rmInitPrms->startRxUhcCh        = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeStartSec;
+              rmInitPrms->numRxUhcCh          = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_UHC].rangeNumSec;
 
-    #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1) 
-        if(UDMA_INST_ID_PKTDMA_0 == instId)
-        {
-        #if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+              /* High Capacity RX Channels */
+              /* Secondary for RX Channel (Primary for Block Copy Channel) */
+              rmInitPrms->startRxHcCh         = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeStartSec;
+              rmInitPrms->numRxHcCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_HC].rangeNumSec;
 
-            /* Mapped TX Channels for CPSW */
-            rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_CPSW]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_CPSW].rangeStart;
-            rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_CPSW]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_CPSW].rangeNum;
+              /* Normal Capacity RX Channels */
+              /* Secondary for RX Channel (Primary for Block Copy Channel) */
+              rmInitPrms->startRxCh           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeStartSec;
+              rmInitPrms->numRxCh             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX].rangeNumSec;
+          }
+      #endif
 
-            /* Mapped TX Channels for SAUL */
-            if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_0].rangeNum)
-            {
-                rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_0].rangeStart;
-            }
-            else
-            {
-                rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_1].rangeStart;
-            }
-            rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_0].rangeNum + 
-                                                                         rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_1].rangeNum;
-            
-            /* Mapped TX Channels for ICSSG_0 */
-            rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_0]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_0].rangeStart;
-            rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_0]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_0].rangeNum;
-            
-            /* Mapped TX Channels for ICSSG_1 */
-            rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_1]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_1].rangeStart;
-            rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_1]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_1].rangeNum;
-        #endif
-        #if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+      #if (UDMA_NUM_UTC_INSTANCE > 0)
+          /* UTC - Extended Channels (MSMC_DRU/VPAC_TC0/VPAC_TC1/DMPAC) */
+          /* Primary for MSMC_DRU Channel */
+          rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStart;
+          rmInitPrms->numUtcCh[UDMA_UTC_ID_MSMC_DRU0]         = rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNum;
+          /* Sub offset. TODO: Remove offset if feasible */
+          if(rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0] >= numtTxCh)
+          {
+              rmInitPrms->startUtcCh[UDMA_UTC_ID_MSMC_DRU0]  -= numtTxCh;
+          }
+      #if (UDMA_NUM_UTC_INSTANCE > 1)
+          /* Secondary for VPAC_TC0+VPAC_TC1+DMPAC Channels */
+          /* Here the assumption taken to split the external channels for HWA is that,
+           * all similar type of channels (VPAC_TC0/VPAC_TC1/DMPAC) will be reserved to same core */
+          uint32_t vpac0Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC0;
+          uint32_t vpac1Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC_TC1;
+      #if (UDMA_SOC_CFG_VPAC1_PRESENT == 1)
+          uint32_t vpac10Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC1_TC0;
+          uint32_t vpac11Start = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_VPAC1_TC1;
+      #endif
+          uint32_t dmpacStart = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS + UDMA_UTC_START_CH_DMPAC_TC0;
 
-            /* Mapped RX Channels for CPSW */
-            rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_CPSW - UDMA_NUM_MAPPED_TX_GROUP]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_CPSW].rangeStart;
-            rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_CPSW - UDMA_NUM_MAPPED_TX_GROUP]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_CPSW].rangeNum;
+          if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec == vpac0Start) &&
+             ((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec) >= (vpac0Start + UDMA_UTC_NUM_CH_VPAC_TC0)))
+          {
+              rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC_TC0]    = UDMA_UTC_START_CH_VPAC_TC0;
+              rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC_TC0]      = UDMA_UTC_NUM_CH_VPAC_TC0;
+          }
+          if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac1Start) &&
+             ((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec) >= (vpac1Start + UDMA_UTC_NUM_CH_VPAC_TC1)))
+          {
+              rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC_TC1]    = UDMA_UTC_START_CH_VPAC_TC1;
+              rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC_TC1]      = UDMA_UTC_NUM_CH_VPAC_TC1;
+          }
+      #if (UDMA_SOC_CFG_VPAC1_PRESENT == 1)
+          if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac10Start) &&
+             ((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec) >= (vpac10Start + UDMA_UTC_NUM_CH_VPAC1_TC0)))
+          {
+              rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC1_TC0]    = UDMA_UTC_START_CH_VPAC1_TC0;
+              rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC1_TC0]      = UDMA_UTC_NUM_CH_VPAC1_TC0;
+          }
+          if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= vpac11Start) &&
+             ((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec) >= (vpac11Start + UDMA_UTC_NUM_CH_VPAC1_TC1)))
+          {
+              rmInitPrms->startUtcCh[UDMA_UTC_ID_VPAC1_TC1]    = UDMA_UTC_START_CH_VPAC1_TC1;
+              rmInitPrms->numUtcCh[UDMA_UTC_ID_VPAC1_TC1]      = UDMA_UTC_NUM_CH_VPAC1_TC1;
+          }
+      #endif
+          if((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec <= dmpacStart) &&
+             ((rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeStartSec + rmDefBoardCfgResp[UDMA_RM_RES_ID_UTC].rangeNumSec) == (dmpacStart + UDMA_UTC_NUM_CH_DMPAC_TC0)))
+          {
+              rmInitPrms->startUtcCh[UDMA_UTC_ID_DMPAC_TC0]   = UDMA_UTC_START_CH_DMPAC_TC0;
+              rmInitPrms->numUtcCh[UDMA_UTC_ID_DMPAC_TC0]     = UDMA_UTC_NUM_CH_DMPAC_TC0;
+          }
+      #endif
+      #if defined (BUILD_C7X) && (UDMA_LOCAL_C7X_DRU_PRESENT == 1)
+          uint32_t utcId, rmId;
+          for(rmId = UDMA_RM_START_C7X_DRU ; rmId <= UDMA_RM_MAX_C7X_DRU ; rmId++)
+          {
+              /**
+               * RM ids and UTC ids for these DRUs are continuous
+               * To obtain UTC id get offset from RM id for particular DRU
+               * Add the offset to DRU Start.
+               */
+              utcId    = (rmId - UDMA_RM_START_C7X_DRU) + UDMA_LOCAL_UTC_START;
 
-            /* Mapped RX Channels for SAUL */
-            if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_0].rangeNum)
-            {
-                rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL - UDMA_NUM_MAPPED_TX_GROUP] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_0].rangeStart;
-            }
-            else
-            {
-                rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL - UDMA_NUM_MAPPED_TX_GROUP] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_2].rangeStart;
-            }
-            rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL - UDMA_NUM_MAPPED_TX_GROUP]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_0].rangeNum + 
-                                                                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_1].rangeNum +
-                                                                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_2].rangeNum + 
-                                                                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_3].rangeNum;
-            
-            
-            /* Mapped RX Channels for ICSSG_0 */
-            rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_0 - UDMA_NUM_MAPPED_TX_GROUP]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_0].rangeStart;
-            rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_0 - UDMA_NUM_MAPPED_TX_GROUP]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_0].rangeNum;
-            
-            /* Mapped RX Channels for ICSSG_1 */
-            rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_1 - UDMA_NUM_MAPPED_TX_GROUP]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_1].rangeStart;
-            rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_1 - UDMA_NUM_MAPPED_TX_GROUP]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_1].rangeNum;
-        #endif
-        #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+              const Udma_RmDefBoardCfgResp *resp = Udma_rmGetLocalBoardCfgResp(rmId);
 
-            /* Mapped TX Rings for CPSW */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_CPSW]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_CPSW].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_CPSW]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_CPSW].rangeNum;
+              if(resp != NULL_PTR)
+              {
+                  retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(rmId),
+                                                          Udma_getCoreId(),
+                                                          UDMA_CORE_ID_C7X_1,
+                                                          resp->rangeStart,
+                                                          resp->rangeNum,
+                                                          &rmInitPrms->startUtcCh[utcId],
+                                                          &rmInitPrms->numUtcCh[utcId]);
+              }
+              else
+              {
+                  retVal = UDMA_EFAIL;
+              }
+          }
+      #endif
+      #endif
 
-            /* Mapped TX Rings for SAUL */
+      #if (UDMA_SOC_CFG_RA_NORMAL_PRESENT == 1)
+          /* Free Flows */
+          if(0U == splitResFlag[UDMA_RM_RES_ID_RX_FLOW])
+          {
+              rmInitPrms->startFreeFlow                           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeStart;
+              rmInitPrms->numFreeFlow                             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeNum;
+          }
+          else
+          {
+              retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_RX_FLOW),
+                                                      Udma_getCoreId(),
+                                                      0U,
+                                                      rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeStart,
+                                                      rmDefBoardCfgResp[UDMA_RM_RES_ID_RX_FLOW].rangeNum,
+                                                      &rmInitPrms->startFreeFlow,
+                                                      &rmInitPrms->numFreeFlow);
+          }
+          /* Sub offset. TODO: Remove offset if feasible */
+          if(rmInitPrms->startFreeFlow >= numRxCh)
+          {
+              rmInitPrms->startFreeFlow                      -= numRxCh;
+          }
+
+          /* Free Rings */
+          rmInitPrms->startFreeRing                           = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING].rangeStart;
+          rmInitPrms->numFreeRing                             = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING].rangeNum;
+          /* Sub offset. TODO: Remove offset if feasible */
+          if(rmInitPrms->startFreeRing >= (numtTxCh + numRxCh + numExtCh))
+          {
+              rmInitPrms->startFreeRing                      -= (numtTxCh + numRxCh + numExtCh);
+          }
+      #endif
+
+          /* Global Event */
+          /* Shared resource - Split based on instance */
+          retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_GLOBAL_EVENT),
+                                                 instId,
+                                                 UDMA_INST_ID_START,
+                                                 rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeStart,
+                                                 rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeNum,
+                                                 &rmInitPrms->startGlobalEvent,
+                                                 &rmInitPrms->numGlobalEvent);
+          if(rmInitPrms->numGlobalEvent != 0U)
+          {
+              uint32_t offset = Udma_getGlobalEventOffset();
+              /* Substract Offset for Global Events */
+              if(rmInitPrms->startGlobalEvent >= offset)
+              {
+                  rmInitPrms->startGlobalEvent               -=  offset;
+              }
+              else
+              {
+                  retVal = UDMA_EFAIL;
+              }
+          }
+
+          /* Virtual Interrupts */
+          /* Shared resource - Split based on instance */
+          retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_VINTR),
+                                                 instId,
+                                                 UDMA_INST_ID_START,
+                                                 rmDefBoardCfgResp[UDMA_RM_RES_ID_VINTR].rangeStart,
+                                                 rmDefBoardCfgResp[UDMA_RM_RES_ID_VINTR].rangeNum,
+                                                 &rmInitPrms->startVintr,
+                                                 &rmInitPrms->numVintr);
+
+          /* Interrupt Router Interrupts */
+  #if defined (BUILD_C7X)
+          /* Interrupts reserved for other drivers */
+          uint32_t totalResrvIntr = 0U;
+          /* Interrupts available for UDMA driver */
+          uint32_t numIrIntrAvbl  = 0U;
+
+          Udma_RmSharedResPrms *rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR);
           /*
-            Temp disabled until SYSFW-4170 is properly fixed and Sysconfig Tool is updated.
-            (SAUL_RX_0_CHAN,SAUL_RX_1_CHAN is reserved is SYSFW, But the corresponding RX Rings are not reserved.)
-            
-            if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_0].rangeNum)
-            {
-                rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_0].rangeStart;
-            }
-            else
-            {
-                rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeStart;
-            }
-            rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_0].rangeNum + 
-                                                                         rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeNum;
-          */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeNum;
+           * startResrvCnt and endResrvCnt are number of interrupts reserved for other
+           * drivers, can't be used by UDMA driver. \ref Udma_RmSharedResPrms
+           */
+          if(rmSharedResPrms != NULL_PTR)
+          {
+              totalResrvIntr  = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt);
+              numIrIntrAvbl   = (rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - totalResrvIntr);
 
-            /* Mapped TX Rings for ICSSG_0 */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_0]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_0].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_0]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_0].rangeNum;
-            
-            /* Mapped TX Rings for ICSSG_1 */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_1]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_1].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_1]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_1].rangeNum;
-            
-            /* Mapped RX Rings for CPSW */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_CPSW]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_CPSW].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_CPSW]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_CPSW].rangeNum;
+              /* Make sure that number of interrupts never execeeds number of C7x events for UDMA driver */
+              if(numIrIntrAvbl > UDMA_C7X_CORE_NUM_INTR)
+              {
+                  rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum = (uint16_t)(totalResrvIntr + UDMA_C7X_CORE_NUM_INTR);
+              }
+          }
+          else
+          {
+              retVal = UDMA_EFAIL;
+          }
+  #endif
+      #if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)
+          /* Shared resource - Split based on instance */
+          retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
+                                              instId,
+                                              UDMA_INST_ID_START,
+                                              rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
+                                              rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
+                                              &rmInitPrms->startIrIntr,
+                                              &rmInitPrms->numIrIntr);
+      #else
+          /* One to one mapping exists from Virtual Interrupts.
+              * So translate to corresponding range.
+              * In case of devices like AM64x, where there are no Interrupt Routers,
+              * this refers to core interrupt itslef. */
+          retVal += Sciclient_rmIrqTranslateIaOutput(rmDefBoardCfgPrms[UDMA_RM_RES_ID_VINTR].sciclientReqType,
+                                                      rmInitPrms->startVintr,
+                                                      Udma_getCoreSciDevId(),
+                                                      (uint16_t *) &rmInitPrms->startIrIntr);
 
-            /* Mapped RX Rings for SAUL */
-          /*
-            Temp disabled until SYSFW-4170 is properly fixed and Sysconfig Tool is updated.
-            (SAUL_RX_0_CHAN,SAUL_RX_1_CHAN is reserved is SYSFW, But the corresponding RX Rings are not reserved.)
-            
-            if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_0].rangeNum)
-            {
-                rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_0].rangeStart;
-            }
-            else
-            {
-                rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeStart;
-            }
-            rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_0].rangeNum + 
-                                                                         rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeNum;
-          */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeNum;
-            
-            /* Mapped RX Rings for ICSSG_0 */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_0]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_0].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_0]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_0].rangeNum;
-            
-            /* Mapped RX Rings for ICSSG_1 */
-            rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_1]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_1].rangeStart;
-            rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_1]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_1].rangeNum;
-        #endif
-        }
-    #endif
-    }
+          rmInitPrms->numIrIntr                          = rmInitPrms->numVintr;
+      #endif
 
+      #if defined (BUILD_C7X) || defined (_TMS320C6X)
+      #if defined (_TMS320C6X)
+          /* Start C6xx Core Interrupt */
+          rmInitPrms->startC66xCoreIntr                       = UDMA_C66X_CORE_INTR_OFFSET;
+      #endif
+          if(UDMA_INST_ID_START != instId)
+          {
+              uint32_t curInstIrStart     = 0U;
+              uint32_t startInstIrStart   = 0U;
+              /* Returned num value not used in this case, Passing to avoid dereferencing of NULL pointer */
+              uint32_t num        = 0U;
+
+              /* Get the startInstIrStart i.e., start value of range of IR interrupts
+                 allocated to first instance */
+              retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
+                                                     UDMA_INST_ID_START,
+                                                     UDMA_INST_ID_START,
+                                                     rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
+                                                     rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
+                                                     &startInstIrStart,
+                                                     &num);
+
+              /* Get the curInstIrStart i.e., start value of range of IR interrupts
+                 allocated to current instance */
+              retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
+                                                     instId,
+                                                     UDMA_INST_ID_START,
+                                                     rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
+                                                     rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
+                                                     &curInstIrStart,
+                                                     &num);
+              /* Add the no. of IR Interrupts reserved for C7x/C66x before current instance
+                 to make sure each instance has their own range C7x/C66x events */
+          #if defined (BUILD_C7X)
+              /* Start C7x Core Interrupt */
+              rmInitPrms->startC7xCoreIntr                   =  (UDMA_C7X_CORE_INTR_OFFSET + (curInstIrStart - startInstIrStart));
+          #endif
+          #if defined (_TMS320C6X)
+              rmInitPrms->startC66xCoreIntr                  +=  (curInstIrStart - startInstIrStart);
+          #endif
+          }
+      #endif
+
+      #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
+          /* Proxy */
+          if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeNum)
+          {
+              rmInitPrms->proxyThreadNum                      = rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeStart;
+              rmInitPrms->startProxy                          = rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeStart + 1U;
+              rmInitPrms->numProxy                            = rmDefBoardCfgResp[UDMA_RM_RES_ID_PROXY].rangeNum - 1U;
+          }
+      #endif
+
+      #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
+          /* Ring Monitors */
+          rmInitPrms->startRingMon                            = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING_MON].rangeStart;
+          rmInitPrms->numRingMon                              = rmDefBoardCfgResp[UDMA_RM_RES_ID_RING_MON].rangeNum;
+      #endif
+
+      #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
+          if(UDMA_INST_ID_PKTDMA_0 == instId)
+          {
+          #if (UDMA_NUM_MAPPED_TX_GROUP > 0)
+
+              /* Mapped TX Channels for CPSW */
+              rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_CPSW]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_CPSW].rangeStart;
+              rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_CPSW]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_CPSW].rangeNum;
+
+              /* Mapped TX Channels for SAUL */
+              if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_0].rangeNum)
+              {
+                  rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_0].rangeStart;
+              }
+              else
+              {
+                  rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_1].rangeStart;
+              }
+              rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_0].rangeNum +
+                                                                           rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_SAUL_1].rangeNum;
+
+              /* Mapped TX Channels for ICSSG_0 */
+              rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_0]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_0].rangeStart;
+              rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_0]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_0].rangeNum;
+
+              /* Mapped TX Channels for ICSSG_1 */
+              rmInitPrms->startMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_1]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_1].rangeStart;
+              rmInitPrms->numMappedTxCh[UDMA_MAPPED_TX_GROUP_ICSSG_1]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_ICSSG_1].rangeNum;
+          #endif
+          #if (UDMA_NUM_MAPPED_RX_GROUP > 0)
+
+              /* Mapped RX Channels for CPSW */
+              rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_CPSW - UDMA_NUM_MAPPED_TX_GROUP]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_CPSW].rangeStart;
+              rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_CPSW - UDMA_NUM_MAPPED_TX_GROUP]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_CPSW].rangeNum;
+
+              /* Mapped RX Channels for SAUL */
+              if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_0].rangeNum)
+              {
+                  rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL - UDMA_NUM_MAPPED_TX_GROUP] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_0].rangeStart;
+              }
+              else
+              {
+                  rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL - UDMA_NUM_MAPPED_TX_GROUP] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_2].rangeStart;
+              }
+              rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_SAUL - UDMA_NUM_MAPPED_TX_GROUP]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_0].rangeNum +
+                                                                                                      rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_1].rangeNum +
+                                                                                                      rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_2].rangeNum +
+                                                                                                      rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_SAUL_3].rangeNum;
+
+
+              /* Mapped RX Channels for ICSSG_0 */
+              rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_0 - UDMA_NUM_MAPPED_TX_GROUP]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_0].rangeStart;
+              rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_0 - UDMA_NUM_MAPPED_TX_GROUP]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_0].rangeNum;
+
+              /* Mapped RX Channels for ICSSG_1 */
+              rmInitPrms->startMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_1 - UDMA_NUM_MAPPED_TX_GROUP]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_1].rangeStart;
+              rmInitPrms->numMappedRxCh[UDMA_MAPPED_RX_GROUP_ICSSG_1 - UDMA_NUM_MAPPED_TX_GROUP]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_ICSSG_1].rangeNum;
+          #endif
+          #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
+
+              /* Mapped TX Rings for CPSW */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_CPSW]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_CPSW].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_CPSW]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_CPSW].rangeNum;
+
+              /* Mapped TX Rings for SAUL */
+            /*
+              Temp disabled until SYSFW-4170 is properly fixed and Sysconfig Tool is updated.
+              (SAUL_RX_0_CHAN,SAUL_RX_1_CHAN is reserved is SYSFW, But the corresponding RX Rings are not reserved.)
+
+              if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_0].rangeNum)
+              {
+                  rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_0].rangeStart;
+              }
+              else
+              {
+                  rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeStart;
+              }
+              rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_0].rangeNum +
+                                                                           rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeNum;
+            */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_SAUL_1].rangeNum;
+
+              /* Mapped TX Rings for ICSSG_0 */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_0]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_0].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_0]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_0].rangeNum;
+
+              /* Mapped TX Rings for ICSSG_1 */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_1]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_1].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_TX_GROUP_ICSSG_1]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_TX_RING_ICSSG_1].rangeNum;
+
+              /* Mapped RX Rings for CPSW */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_CPSW]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_CPSW].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_CPSW]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_CPSW].rangeNum;
+
+              /* Mapped RX Rings for SAUL */
+            /*
+              Temp disabled until SYSFW-4170 is properly fixed and Sysconfig Tool is updated.
+              (SAUL_RX_0_CHAN,SAUL_RX_1_CHAN is reserved is SYSFW, But the corresponding RX Rings are not reserved.)
+
+              if(0U != rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_0].rangeNum)
+              {
+                  rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_0].rangeStart;
+              }
+              else
+              {
+                  rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_SAUL] = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeStart;
+              }
+              rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_0].rangeNum +
+                                                                           rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeNum;
+            */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]     = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_SAUL]       = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_SAUL_2].rangeNum;
+
+              /* Mapped RX Rings for ICSSG_0 */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_0]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_0].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_0]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_0].rangeNum;
+
+              /* Mapped RX Rings for ICSSG_1 */
+              rmInitPrms->startMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_1]  = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_1].rangeStart;
+              rmInitPrms->numMappedRing[UDMA_MAPPED_RX_GROUP_ICSSG_1]    = rmDefBoardCfgResp[UDMA_RM_RES_ID_MAPPED_RX_RING_ICSSG_1].rangeNum;
+          #endif
+          }
+      #endif
+      }
     return (retVal);
 }
 
@@ -2584,7 +2586,7 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
 
     /* Skip for invalid type/subtype.
      * This is for the cases in which IP supports some type of resorces and
-     * a particular SOC dosen't have any. 
+     * a particular SOC dosen't have any.
      * (Here, no TISCI define for those resource will be defined for the SOC)
      */
     if((UDMA_RM_SCI_REQ_TYPE_INVALID != req.type) && (UDMA_RM_SCI_REQ_SUBTYPE_INVALID != req.type))
@@ -2594,8 +2596,8 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
                     &req,
                     &res,
                     UDMA_SCICLIENT_TIMEOUT);
-        if((CSL_PASS != retVal) || 
-        ((res.range_num == 0) && (res.range_num_sec == 0)))
+        if((CSL_PASS != retVal) ||
+        ((res.range_num == 0U) && (res.range_num_sec == 0U)))
         {
             /* If range_num and range_num_sec = 0 (no entry for the core),
             * There is no reservation for the current core.
@@ -2606,15 +2608,15 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
                         &req,
                         &res,
                         UDMA_SCICLIENT_TIMEOUT);
-            if((CSL_PASS == retVal) && (res.range_num != 0)) 
+            if((CSL_PASS == retVal) && (res.range_num != 0U))
             {
-                /* If range_num != 0, 
-                * ie, When using TISCI_HOST_ID_ALL entry, 
+                /* If range_num != 0,
+                * ie, When using TISCI_HOST_ID_ALL entry,
                 * Set the split resource flag, if passed.
-                * (no need to check for range_num_sec, 
+                * (no need to check for range_num_sec,
                 *  since there will only be single entry for TISCI_HOST_ID_ALL) */
                 if(NULL_PTR != splitResFlag)
-                { 
+                {
                     *splitResFlag = 1;
                 }
             }
@@ -2646,7 +2648,7 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
     uint32_t    splitShare;
     uint32_t    splitMod;
     uint32_t    udmaResvCnt;
-    uint32_t    numInst; 
+    uint32_t    numInst;
     uint32_t    minReq;
     uint32_t    startResrvCnt;
     uint32_t    endResrvCnt;
@@ -2662,7 +2664,7 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
     }
     if(UDMA_SOK == retVal)
     {
-        numInst = rmSharedResPrms->numInst; 
+        numInst = rmSharedResPrms->numInst;
         minReq = rmSharedResPrms->minReq;
         startResrvCnt = rmSharedResPrms->startResrvCnt;
         endResrvCnt = rmSharedResPrms->endResrvCnt;
@@ -2731,7 +2733,7 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
             *start += instFinalShare[i];
         }
     }
-    
+
     return (retVal);
 }
 

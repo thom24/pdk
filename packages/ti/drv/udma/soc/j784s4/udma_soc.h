@@ -55,7 +55,7 @@ extern "C" {
 
 
 /* Macro to find maximum of given values */
-#define UDMA_MAX(X,Y)  (X>Y ? X:Y)
+#define UDMA_MAX(X,Y)  ((X>Y) ? X:Y)
 /**
  *  \anchor Udma_InstanceIdSoc
  *  \name UDMA Instance ID specific to SOC
@@ -91,7 +91,7 @@ extern "C" {
 /** \brief Total number of UDMA instances */
 #define UDMA_NUM_INST_ID                (UDMA_NUM_UDMAP_INST_ID + UDMA_NUM_BCDMA_INST_ID + UDMA_NUM_PKTDMA_INST_ID)
 /* @} */
- 
+
 /**
  *  \anchor Udma_SocCfg
  *  \name UDMA SOC Configuration
@@ -104,22 +104,22 @@ extern "C" {
 #define UDMA_SOC_CFG_UDMAP_PRESENT               (1U)
 
 /** \brief Flag to indicate BCDMA module is present or not in the SOC*/
-#define UDMA_SOC_CFG_BCDMA_PRESENT               (1U) 
+#define UDMA_SOC_CFG_BCDMA_PRESENT               (1U)
 
 /** \brief Flag to indicate PKTDMA module is present or not in the SOC*/
-#define UDMA_SOC_CFG_PKTDMA_PRESENT              (0U) 
-    
+#define UDMA_SOC_CFG_PKTDMA_PRESENT              (0U)
+
 /** \brief Flag to indicate Proxy is present or not in the SOC*/
-#define UDMA_SOC_CFG_PROXY_PRESENT               (1U) 
-    
+#define UDMA_SOC_CFG_PROXY_PRESENT               (1U)
+
 /** \brief Flag to indicate Interrupt Router is present or not in the SOC*/
-#define UDMA_SOC_CFG_INTR_ROUTER_PRESENT         (1U) 
+#define UDMA_SOC_CFG_INTR_ROUTER_PRESENT         (1U)
 
 /** \brief Flag to indicate Clec is present or not in the SOC*/
-#define UDMA_SOC_CFG_CLEC_PRESENT                (1U) 
+#define UDMA_SOC_CFG_CLEC_PRESENT                (1U)
 
 /** \brief Flag to indicate Normal RA is present or not in the SOC*/
-#define UDMA_SOC_CFG_RA_NORMAL_PRESENT           (1U) 
+#define UDMA_SOC_CFG_RA_NORMAL_PRESENT           (1U)
 
 /** \brief Flag to indicate LCDMA RA is present or not in the SOC*/
 #define UDMA_SOC_CFG_RA_LCDMA_PRESENT            (1U)
@@ -361,7 +361,7 @@ extern "C" {
 /** \brief Ultra High Capacity Block Copy Channels */
 #define UDMA_RM_RES_ID_BC_UHC                   (0U)
 /** \brief High Capacity Block Copy Channels */
-#define UDMA_RM_RES_ID_BC_HC                    (1U) 
+#define UDMA_RM_RES_ID_BC_HC                    (1U)
 /** \brief Normal Capacity Block Copy Channels */
 #define UDMA_RM_RES_ID_BC                       (2U)
 /* List of all UDMAP and BCDMA TX/RX Channel Resource Id's */
@@ -426,29 +426,32 @@ extern "C" {
 
 /* @} */
 
-/** \brief Total number of shared resources - 
- *  Free_Flows/Global_Event/IR Intr/VINT */
+/** \brief Total number of shared resources -
+ *  Global_Event/IR Intr/VINT */
+#define UDMA_RM_NUM_INST_SHARED_RES             (3U)
+
 #if defined (BUILD_C7X)
-/* 
- * Additional DRUs local to C7x subsystem:
+/*
+ * Free_Flows/Additional DRUs local to C7x subsystem
  * In J784S4 we have 4 Additional DRUs and each has 32 channels
  * These DRUs can be use by any C7x core (J784S4 has 4 C7x cores)
- * UDMA driver currently allocates minimum of 4 channels of every DRU to each C7x core 
- * (Use \ref Udma_rmGetSharedResPrms API to get default 
+ * UDMA driver currently allocates minimum of 4 channels of every DRU to each C7x core
+ * (Use \ref Udma_rmGetSharedResPrms API to get default
  *     UDMA RM Shared resource parameters, and override default sharing policy)
  */
-#define UDMA_RM_NUM_SHARED_RES                  (8U)
+#define UDMA_RM_NUM_CORE_SHARED_RES             (5U)
 #else
-#define UDMA_RM_NUM_SHARED_RES                  (4U)
-#endif 
-/** \brief Maximum no.of instances to split a shared resource. 
+#define UDMA_RM_NUM_CORE_SHARED_RES             (1U)
+#endif
+#define UDMA_RM_NUM_SHARED_RES                  (UDMA_RM_NUM_CORE_SHARED_RES + UDMA_RM_NUM_INST_SHARED_RES)
+/** \brief Maximum no.of instances to split a shared resource.
  *  This should be max(UDMA_NUM_CORE,UDMA_NUM_INST_ID) */
 #define UDMA_RM_SHARED_RES_MAX_INST             (UDMA_NUM_CORE)
 
 /* Start of C7x events associated to CLEC that UDMA Driver will manage */
 /* Events  0 - 32  : left for other drivers
  * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
- * Events 48 - 63  : managed by UDMA for routing various UDMA events to C7x  */ 
+ * Events 48 - 63  : managed by UDMA for routing various UDMA events to C7x  */
 #define UDMA_C7X_CORE_INTR_OFFSET               (48U)
 /* Number of C7x Events available for UDMA */
 #define UDMA_C7X_CORE_NUM_INTR                  (64U - UDMA_C7X_CORE_INTR_OFFSET)

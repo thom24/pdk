@@ -200,14 +200,14 @@ static void *Udma_osalRegisterIntr(Udma_OsalIsrFxn isrFxn,
      * use the macro for interrupt number to specify we wish to use Event
      * Combiner.
      */
-    intrPrms.corepacConfig.corepacEventNum  = (int32_t)coreIntrNum;
+    intrPrms.corepacConfig.corepacEventNum  = coreIntrNum;
     intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
 #else
     /* Other (non-C66x) CPUs don't use event number and interrupt number is
      * passed in and programmed to CPU Intc directly.
      */
-    intrPrms.corepacConfig.corepacEventNum  = (int32_t)0;
-    intrPrms.corepacConfig.intVecNum        = (int32_t)coreIntrNum;
+    intrPrms.corepacConfig.corepacEventNum  = 0U;
+    intrPrms.corepacConfig.intVecNum        = coreIntrNum;
 #endif
 
     /* Register interrupts */
@@ -222,7 +222,7 @@ static void *Udma_osalRegisterIntr(Udma_OsalIsrFxn isrFxn,
 
 static void Udma_osalUnRegisterIntr(void *hwiHandle)
 {
-    int32_t     corepacEventNum = (int32_t)0;   //TODO: Should be set based on core?
+    uint32_t     corepacEventNum = 0U;   //TODO: Should be set based on core?
 
     /* Delete interrupts */
     (void) Osal_DeleteInterrupt((HwiP_Handle) hwiHandle, corepacEventNum);
@@ -232,9 +232,9 @@ static void Udma_osalUnRegisterIntr(void *hwiHandle)
 
 static void Udma_osalDisableIntr(uint32_t coreIntrNum)
 {
-    int32_t     corepacEventNum = (int32_t)0;   //TODO: Should be set based on core?
+    uint32_t     corepacEventNum = 0U;   //TODO: Should be set based on core?
 
-    Osal_DisableInterrupt(corepacEventNum, (int32_t)coreIntrNum);
+    Osal_DisableInterrupt(corepacEventNum, coreIntrNum);
 
     return;
 }

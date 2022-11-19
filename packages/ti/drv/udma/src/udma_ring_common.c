@@ -1147,7 +1147,7 @@ int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
                  *------------------------------------------------------------*/
                 dbRingCnt = ((uint32_t)1U << 22) - ringOcc;
                 thisDbRingCnt = UDMA_RING_MAX_DB_RING_CNT;
-                regVal = CSL_FMK(RINGACC_RT_RINGRT_DB_CNT, thisDbRingCnt);
+                regVal = (uint32_t)CSL_FMK(RINGACC_RT_RINGRT_DB_CNT, thisDbRingCnt);
                 while(dbRingCnt != 0U)
                 {
                     /*----------------------------------------------------------
@@ -1157,7 +1157,7 @@ int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
                     if(dbRingCnt < UDMA_RING_MAX_DB_RING_CNT)
                     {
                         thisDbRingCnt = dbRingCnt;
-                        regVal = CSL_FMK(RINGACC_RT_RINGRT_DB_CNT, thisDbRingCnt);
+                        regVal = (uint32_t)CSL_FMK(RINGACC_RT_RINGRT_DB_CNT, thisDbRingCnt);
                     }
                     CSL_REG32_WR(&ringHandle->pRtRegs->DB, regVal);
                     dbRingCnt -= thisDbRingCnt;

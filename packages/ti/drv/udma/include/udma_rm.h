@@ -205,7 +205,7 @@ typedef struct
     /**< Number of IR interrupts to be managed.
      *   Note: This cannot exceed #UDMA_RM_MAX_IR_INTR */
 
-    uint32_t                proxyThreadNum;
+    uint16_t                proxyThreadNum;
     /**< Proxy thread to push/pop to ring in proxy mode.
      *   By default driver will initialize to a default value based on
      *   core and NAVSS instance. User can override this based on need.
@@ -241,10 +241,10 @@ typedef struct
      *   reserved for the UDMA driver.
      *   This is NA for other cores and could be set to 0.
      */
-    uint32_t                startProxy;
+    uint16_t                startProxy;
     /**< Start proxy from which this UDMA driver instance manages.
      *   Note this should not overlap with proxyThreadNum */
-    uint32_t                numProxy;
+    uint16_t                numProxy;
     /**< Number of proxy to be managed.
      *   Note: This cannot exceed #UDMA_RM_MAX_PROXY */
     uint32_t                startRingMon;
@@ -293,7 +293,7 @@ typedef struct
       *   OR 
       *   Adjustments should be made in minReq/startResrvCnt/endResrvCnt.
       */
-    uint32_t                instShare[UDMA_RM_SHARED_RES_MAX_INST];
+    uint32_t                *instShare;
     /**< No. of resources for each instance.
      *   This can be:
      *   - #UDMA_RM_SHARED_RES_CNT_MIN - Reserves 'minReq' no.of resources for the instance

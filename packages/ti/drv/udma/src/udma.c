@@ -232,10 +232,10 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle)
     return (retVal);
 }
 
-static inline int32_t Udma_checkInstId(int32_t instId)
+static inline int32_t Udma_checkInstId(uint32_t instId)
 {
     int32_t retVal = UDMA_SOK;
-    if((UDMA_INST_ID_START > instId) || (UDMA_INST_ID_MAX < instId))
+    if(UDMA_INST_ID_MAX < instId)
     {
         retVal = UDMA_EINVALID_PARAMS;
     }
@@ -254,7 +254,7 @@ int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
 
     if(UDMA_SOK == retVal)
     {
-        retVal = Udma_checkInstId((int32_t)instId);
+        retVal = Udma_checkInstId(instId);
     }
 
     if(UDMA_SOK == retVal)

@@ -521,11 +521,11 @@ struct Udma_DrvObj
      */
     uint16_t                srcIdRingIrq;
     /**< Ring completion event IRQ Source ID. */
-    uint32_t                blkCopyRingIrqOffset;
+    uint16_t                blkCopyRingIrqOffset;
     /**< Block Copy channel ring completion event IRQ offset. */
-    uint32_t                txRingIrqOffset;
+    uint16_t                txRingIrqOffset;
     /**< TX channel ring completion event IRQ offset. */
-    uint32_t                rxRingIrqOffset;
+    uint16_t                rxRingIrqOffset;
     /**< RX channel ring completion event IRQ offset. */
     /*
      * TISCI TR event IRQ params
@@ -534,11 +534,11 @@ struct Udma_DrvObj
      */
     uint16_t                srcIdTrIrq;
     /**< TR event IRQ Source ID. */
-    uint32_t                blkCopyTrIrqOffset;
+    uint16_t                blkCopyTrIrqOffset;
     /**< Block Copy channel TR event IRQ offset. */
-    uint32_t                txTrIrqOffset;
+    uint16_t                txTrIrqOffset;
     /**< TX channel TR event IRQ offset. */
-    uint32_t                rxTrIrqOffset;
+    uint16_t                rxTrIrqOffset;
     /**< RX channel TR event IRQ offset. */
     /*
      * Channel Offsets

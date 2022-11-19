@@ -775,7 +775,7 @@ static int32_t Udma_eventAllocResource(Udma_DrvHandle drvHandle,
         {
             if(UDMA_CORE_INTR_ANY != eventPrms->preferredCoreIntrNum)
             {
-                preferredIrIntrNum = Udma_rmTranslateCoreIntrInput(drvHandle, eventPrms->preferredCoreIntrNum);
+                preferredIrIntrNum = Udma_rmTranslateCoreIntrInput(drvHandle, (uint16_t)eventPrms->preferredCoreIntrNum);
             }
             else
             {
@@ -787,8 +787,8 @@ static int32_t Udma_eventAllocResource(Udma_DrvHandle drvHandle,
                     Udma_rmAllocIrIntr(preferredIrIntrNum, drvHandle);
                 if(UDMA_INTR_INVALID != eventHandle->irIntrNum)
                 {
-                    eventHandle->coreIntrNum = Udma_rmTranslateIrOutput(drvHandle, eventHandle->irIntrNum);
-                    
+                    eventHandle->coreIntrNum = Udma_rmTranslateIrOutput(drvHandle,(uint16_t)eventHandle->irIntrNum);
+
                 }
             }
             if(UDMA_INTR_INVALID == eventHandle->coreIntrNum)
@@ -1193,7 +1193,7 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
             evtCfg.extEvtNum         = 0x00U;   /* Not used */
             evtCfg.c7xEvtNum         = coreIntrNum;
             clecEvtNum = eventHandle->coreIntrNum + drvHandle->clecOffset;
-            CSL_clecConfigEvent(drvHandle->clecRegs, clecEvtNum, &evtCfg);
+            (void)CSL_clecConfigEvent(drvHandle->clecRegs, clecEvtNum, &evtCfg);
 #endif
 
             /* Register interrupt only when asked for */
@@ -1467,16 +1467,9 @@ static int32_t Udma_eventProgramSteering(Udma_DrvHandle drvHandle,
         Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
         chHandle = eventPrms->chHandle;
 
-        if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
-            ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
-        {
-            /* Done by DMSC RM */
-        }
-        else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
-        {
-            /* Done by DMSC RM */
-        }
-        else
+        if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) != UDMA_CH_FLAG_BLK_COPY) &&
+            ((chHandle->chType & UDMA_CH_FLAG_RX) != UDMA_CH_FLAG_RX) &&
+            ((chHandle->chType & UDMA_CH_FLAG_TX) != UDMA_CH_FLAG_TX))
         {
 #if (UDMA_NUM_UTC_INSTANCE > 0)
             uint32_t                evtNum;
@@ -1507,6 +1500,10 @@ static int32_t Udma_eventProgramSteering(Udma_DrvHandle drvHandle,
             }
 #endif
         }
+        else
+        {
+            /* Do Nothing */
+        }
 
         if(UDMA_SOK == retVal)
         {
@@ -1533,16 +1530,9 @@ static void Udma_eventResetSteering(Udma_DrvHandle drvHandle,
         Udma_assert(drvHandle, eventPrms->chHandle != NULL_PTR);
         chHandle = eventPrms->chHandle;
 
-        if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) == UDMA_CH_FLAG_BLK_COPY) ||
-            ((chHandle->chType & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX))
-        {
-            /* Done in DMSC RM */
-        }
-        else if((chHandle->chType & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
-        {
-            /* Done in DMSC RM */
-        }
-        else
+        if(((chHandle->chType & UDMA_CH_FLAG_BLK_COPY) != UDMA_CH_FLAG_BLK_COPY) &&
+            ((chHandle->chType & UDMA_CH_FLAG_RX) != UDMA_CH_FLAG_RX) &&
+            ((chHandle->chType & UDMA_CH_FLAG_TX) != UDMA_CH_FLAG_TX))
         {
 #if (UDMA_NUM_UTC_INSTANCE > 0)
             uint32_t                evtNum;
@@ -1572,6 +1562,10 @@ static void Udma_eventResetSteering(Udma_DrvHandle drvHandle,
                     "[Error] TR events not possible in other external channels!!\n");
             }
 #endif
+        }
+        else
+        {
+           /* Do Nothing */
         }
 
         if(UDMA_SOK == retVal)

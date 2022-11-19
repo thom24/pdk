@@ -318,6 +318,11 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
             pUdmapRegs->pRxChanRtRegs   = ((CSL_udmap_rxcrtRegs *) UDMA_NAVSS0_UDMASS_UDMAP0_CFG_RCHANRT_BASE);
             drvHandle->trigGemOffset    = CSL_NAVSS_GEM_MAIN_UDMA_TRIGGER_OFFSET;
         }
+        else
+        {
+            /* Do Nothing */
+        }
+        
         /* UDMA not present in CC QT build. Only DRU is present */
 #ifndef CC_QT_BUILD
         /* Fill other SOC specific parameters by reading from UDMA config
@@ -387,7 +392,11 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
             pRaRegs->pIscRegs   = (CSL_ringacc_iscRegs *) UDMA_NAVSS0_UDMASS_RINGACC0_ISC_ISC_BASE;
             pRaRegs->maxRings   = CSL_NAVSS_MAIN_RINGACC_RING_CNT;
         }
-        
+        else
+        {
+             /* Do Nothing */
+        }
+
         pRaRegs->maxMonitors     = CSL_RINGACC_MAX_MONITORS;
         pRaRegs->bTraceSupported = (bool)true;
 
@@ -589,9 +598,9 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
         * will be ringNum + the corresponding following offset. 
         * So setting the offset as TISCI Start Idx - corresponding ringNum Offset (if any) */
         drvHandle->blkCopyRingIrqOffset = TISCI_BCDMA0_BC_RC_OES_IRQ_SRC_IDX_START;
-        drvHandle->txRingIrqOffset      = TISCI_BCDMA0_TX_RC_OES_IRQ_SRC_IDX_START - drvHandle->txChOffset;
-        drvHandle->rxRingIrqOffset      = TISCI_BCDMA0_RX_RC_OES_IRQ_SRC_IDX_START - drvHandle->rxChOffset;
-        drvHandle->udmapSrcThreadOffset = CSL_PSILCFG_NAVSS_MAIN_BCDMA0_STRM_PSILS_THREAD_OFFSET; 
+        drvHandle->txRingIrqOffset      = (uint16_t)(TISCI_BCDMA0_TX_RC_OES_IRQ_SRC_IDX_START - drvHandle->txChOffset);
+        drvHandle->rxRingIrqOffset      = (uint16_t)(TISCI_BCDMA0_RX_RC_OES_IRQ_SRC_IDX_START - drvHandle->rxChOffset);
+        drvHandle->udmapSrcThreadOffset = CSL_PSILCFG_NAVSS_MAIN_BCDMA0_STRM_PSILS_THREAD_OFFSET;
         drvHandle->udmapDestThreadOffset= CSL_PSILCFG_NAVSS_MAIN_BCDMA0_STRM_PSILD_THREAD_OFFSET;
         drvHandle->maxRings             = CSL_NAVSS_BCDMA_NUM_BC_CHANS + CSL_NAVSS_BCDMA_NUM_TX_CHANS + CSL_NAVSS_BCDMA_NUM_RX_CHANS;
         drvHandle->devIdRing            = TISCI_DEV_NAVSS0_BCDMA_0;

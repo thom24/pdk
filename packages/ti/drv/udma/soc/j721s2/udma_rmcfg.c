@@ -148,74 +148,139 @@ const Udma_RmDefBoardCfgPrms gUdmaRmDefBoardCfg_McuNavss[UDMA_RM_DEFAULT_BOARDCF
     {UDMA_RM_RES_ID_RING_MON,     TISCI_DEV_MCU_NAVSS0_RINGACC0,      TISCI_RESASG_SUBTYPE_RA_MONITORS,          TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST}
 };
 
+/**
+  * Static sharing policy to share flows between different hosts.
+  * RM Board Config does not take ownership of sharing of flows among cores.
+  * UDMA driver need to define the sharing policy of these flows among cores.
+*/
+uint32_t gFlowInstShare[UDMA_NUM_CORE] =
+{
+    0U,                            /* MPU1_0  - Reserved in BoardCfg*/
+    UDMA_RM_SHARED_RES_CNT_REST,   /* MCU2_0 */
+    8U,                            /* MCU2_1 */
+    0U,                            /* MCU3_0 */
+    0U,                            /* MCU3_1 */
+    0U,                            /* C7X_1  */
+    0U,                            /* C7X_2  */
+    0U,                            /* MCU1_0 */
+    0U                             /* MCU1_1 */
+};
+
+#if defined (BUILD_MPU1_0)
+   /*          instShare[                        MAIN_NAVSS,                     MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_MIN};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_MIN};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_MIN};
+#endif
+#if defined (BUILD_MCU2_0)
+   /*          instShare[                         MAIN_NAVSS,                     MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
+#endif
+#if defined (BUILD_MCU2_1)
+    /*          instShare[                      MAIN_NAVSS,                   MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+#endif
+#if defined (BUILD_MCU3_0)
+   /*          instShare[                        MAIN_NAVSS,                  MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+#endif
+#if defined (BUILD_MCU3_1)
+    /*          instShare[                      MAIN_NAVSS,                   MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+#endif
+#if defined (BUILD_C7X_1)
+    /*          instShare[                      MAIN_NAVSS,                   MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+#endif
+#if defined (BUILD_C7X_2)
+   /*          instShare[                       MAIN_NAVSS,                   MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0};
+#endif
+#if defined (BUILD_MCU1_0)
+    /*          instShare[              MAIN_NAVSS,                     MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0};
+#endif
+#if defined (BUILD_MCU1_1)
+    /*          instShare[              MAIN_NAVSS,                     MCU_NAVSS,              BCDMA] */
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0};
+#endif
+
 /** \brief Shared resource Params */
 Udma_RmSharedResPrms gUdmaRmSharedResPrms[UDMA_RM_NUM_SHARED_RES] =
 {
     /* MAIN NAVSS RX Free Flows are assigned to HOST_ID_ALL and some cores dosen't have core specific reservation */
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[core] */
-    {UDMA_RM_RES_ID_RX_FLOW,      0U,            0U,          UDMA_NUM_CORE,     0U,     {0U,                            /* MPU1_0  - Reserved in BoardCfg*/
-                                                                                          UDMA_RM_SHARED_RES_CNT_REST,   /* MCU2_0 */
-                                                                                          8U,                            /* MCU2_1 */
-                                                                                          0U,                            /* MCU3_0 */
-                                                                                          0U,                            /* MCU3_1 */
-                                                                                          0U,                            /* C7X_1 */
-                                                                                          0U,                            /* C7X_2 */
-                                                                                          0U,                            /* MCU1_0 */
-                                                                                          0U} },                         /* MCU1_1 */
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare*/
+    {UDMA_RM_RES_ID_RX_FLOW,      0U,            0U,          UDMA_NUM_CORE,     0U,     gFlowInstShare},
     /* Global Events/VINTR/IN INTR must be used based on core and split across MCU and MAIN NAVSS instances */
 #if defined (BUILD_MPU1_0)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_MIN} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_MIN} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_MIN} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     gIntrInstShare},
 #endif
 #if defined (BUILD_MCU2_0)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  8U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  6U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  8U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  6U,     gIntrInstShare},
 #endif
 #if defined (BUILD_MCU2_1)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  2U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  2U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     gIntrInstShare},
 #endif
 #if defined (BUILD_MCU3_0)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  6U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare */
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  6U,     gIntrInstShare},
 #endif
 #if defined (BUILD_MCU3_1)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare*/
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     gIntrInstShare},
 #endif
 #if defined (BUILD_C7X_1)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {8U,                          UDMA_RM_SHARED_RES_CNT_MIN, 0} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare*/
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     gIntrInstShare},
 #endif
 #if defined (BUILD_C7X_2)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN, 0} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     {8U,                          UDMA_RM_SHARED_RES_CNT_MIN, 0} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare*/
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  4U,     gIntrInstShare},
 #endif
 #if defined (BUILD_MCU1_0)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  2U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare*/
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  50U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  4U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  2U,     gIntrInstShare},
 #endif
 #if defined (BUILD_MCU1_1)
-    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare[MAIN_NAVSS,MCU_NAVSS,BCDMA] */
-    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  16U,    {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
-    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  1U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
-    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  2U,     {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST, 0} },
+    /* resId,                     startResrvCnt, endResrvCnt, numInst,           minReq, instShare*/
+    {UDMA_RM_RES_ID_GLOBAL_EVENT, 0U,            0U,          UDMA_NUM_INST_ID,  16U,    gEvtInstShare },
+    {UDMA_RM_RES_ID_VINTR,        0U,            0U,          UDMA_NUM_INST_ID,  1U,     gVintInstShare},
+    {UDMA_RM_RES_ID_IR_INTR,      0U,            5U,          UDMA_NUM_INST_ID,  2U,     gIntrInstShare},
 #endif
 };
 
@@ -252,11 +317,11 @@ Udma_RmSharedResPrms *Udma_rmGetSharedResPrms(uint32_t resId)
     {
         if(resId == gUdmaRmSharedResPrms[i].resId)
         {
-            rmSharedResPrms = &gUdmaRmSharedResPrms[i]; 
-            break;   
+            rmSharedResPrms = &gUdmaRmSharedResPrms[i];
+            break;
         }
     }
-    
+
     return (rmSharedResPrms);
 }
 
