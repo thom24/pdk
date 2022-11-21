@@ -67,9 +67,12 @@ ElfImages1=("ipc_rtos_echo_test_freertos_mcu2_0_release.xer5f" \
            )
 ElfImages2=("ipc_rtos_echo_test_freertos_mcu3_0_release.xer5f" \
             "ipc_rtos_echo_test_freertos_mcu3_1_release.xer5f" \
+            "ipc_rtos_echo_test_freertos_mcu4_0_release.xer5f" \
+            "ipc_rtos_echo_test_freertos_mcu4_1_release.xer5f" \
             "ipc_rtos_echo_test_freertos_c7x_1_release.xe71" \
             "ipc_rtos_echo_test_freertos_c7x_2_release.xe71" \
             "ipc_rtos_echo_test_freertos_c7x_3_release.xe71" \
+            "ipc_rtos_echo_test_freertos_c7x_4_release.xe71" \
            )
 ElfImages3=("udma_baremetal_memcpy_testapp_mpu1_0_release.xa72fg" \
            )
@@ -79,15 +82,18 @@ CoreRprcFiles1=("ipc_rtos_echo_test_freertos_mcu2_0_release.xer5f.rprc" \
                )
 CoreRprcFiles2=("ipc_rtos_echo_test_freertos_mcu3_0_release.xer5f.rprc" \
                 "ipc_rtos_echo_test_freertos_mcu3_1_release.xer5f.rprc" \
+                "ipc_rtos_echo_test_freertos_mcu4_0_release.xer5f.rprc" \
+                "ipc_rtos_echo_test_freertos_mcu4_1_release.xer5f.rprc" \
                 "ipc_rtos_echo_test_freertos_c7x_1_release.xe71.rprc" \
                 "ipc_rtos_echo_test_freertos_c7x_2_release.xe71.rprc" \
                 "ipc_rtos_echo_test_freertos_c7x_3_release.xe71.rprc" \
+                "ipc_rtos_echo_test_freertos_c7x_4_release.xe71.rprc" \
                )
 CoreRprcFiles3=("udma_baremetal_memcpy_testapp_mpu1_0_release.xa72fg.rprc" \
                )
 
 CoreIds1=(10 11);
-CoreIds2=(12 13 18 19 20);
+CoreIds2=(12 13 14 15 18 19 20 21);
 CoreIds3=(0);
 
 ############################################################

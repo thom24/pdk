@@ -259,12 +259,13 @@ const sblSlaveCoreInfo_t sbl_late_slave_core_stages_info[NUM_BOOT_STAGES][MAX_CO
         },
         {
         SBL_INVALID_ID,
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
         SBL_INVALID_ID
-/* ========================================================================== */
-/*                          External Dependencies                             */
-/* ========================================================================== */
-/* Definition of available Main Domain cores that can be booted
- * by the sample application for J784S4 SOC */,
+        },
+        {
+        SBL_INVALID_ID,
+        SBL_INVALID_ID,
         SBL_INVALID_ID,
         SBL_INVALID_ID
         },
@@ -281,8 +282,6 @@ const sblSlaveCoreInfo_t sbl_late_slave_core_stages_info[NUM_BOOT_STAGES][MAX_CO
         SBL_INVALID_ID
         }
     },
-    /* Load remaining cores before MPU1 to avoid contention
-     * for control of Flash or SD card */
     {
         /* MCU3_CPU0 info */
         {
