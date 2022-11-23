@@ -58,9 +58,6 @@ typedef struct HwiP_nonOs_s {
 /* Local hwi structures */
 static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
 
-/* local function */
-static void osalArch_TimestampCcntAutoRefresh(uintptr_t arg);
-
 osalArch_Config_t gOsalArchConfig =
 {
     .disableIrqOnInit = false,
@@ -484,27 +481,11 @@ int32_t  osalArch_TimeStampGetFreqKHz(void)
 /* Initialize the time stamp module */
 void    osalArch_TimestampInit(void)
 {
-    TimerP_Params  timerParams;
-    TimerP_Handle  timerHandle;
-
     if (gTimestampFirstTime == (bool)true)
     {
         osal_TimestampProvider_initCCNT();
         /* One time initialization is done */
         gTimestampFirstTime = (bool)false;
-
-        /* Initialize the parameters */
-        TimerP_Params_init(&timerParams);
-        timerParams.startMode = (uint32_t)TimerP_StartMode_USER;
-        timerParams.periodType = (uint32_t)TimerP_PeriodType_MICROSECS;
-        timerParams.period    = 1000000u;
-        timerHandle = TimerP_create(OSAL_ARCH_TIMER_INST_FOR_TS, (TimerP_Fxn)&osalArch_TimestampCcntAutoRefresh, &timerParams);
-
-        if ( timerHandle != NULL_PTR)
-        {
-            /* start the timer */
-            (void)TimerP_start(timerHandle);
-        }
     }
 
     return;
@@ -537,7 +518,7 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 }
 
 /* Needs to be run at least once after a over flow happens and before next overflow */
-static void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
+void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
 {
     uint32_t    ovsrStatus;
     ovsrStatus = osal_TimestampProvider_getOverflowCCNT();

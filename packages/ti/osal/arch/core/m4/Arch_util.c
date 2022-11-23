@@ -63,8 +63,6 @@ static TimeStamp_Struct gTimeStamp = {0U};
 static uintptr_t gTimerBaseAddr;
 static uint32_t  gTimerId;
 
-/* local function */
-static void osalArch_TimestampCcntAutoRefresh(uintptr_t arg);
 /* local defines */
 #define OSAL_ARCH_UTIL_ZERO          ((uint32_t) 0U)
 
@@ -302,7 +300,7 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 }
 
 /* Needs to be run at least once after a over flow happens and before next overflow */
-static void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
+void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
 {
     uintptr_t   key;
 

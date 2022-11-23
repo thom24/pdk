@@ -74,3 +74,7 @@ uint32_t CycleprofilerP_getTimeStamp(void)
 
 #endif
 
+void CycleprofilerP_refreshCounter(void)
+{
+    osalArch_TimestampCcntAutoRefresh(0);
+}

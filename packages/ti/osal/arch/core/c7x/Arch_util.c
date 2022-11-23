@@ -285,4 +285,9 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
     HwiP_restore(key);
 }
 
+void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
+{
+    return;
+}
+
 /* Nothing past this point */

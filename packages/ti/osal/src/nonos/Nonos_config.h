@@ -267,8 +267,9 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle);
 
 /*Below function implements the time in micro seconds read */
 void             osalArch_TimestampGet64(TimeStamp_Struct *timeStamp);
+void             osalArch_TimestampCcntAutoRefresh(uintptr_t arg);
 void             osalArch_TimestampInit(void);
-int32_t  osalArch_TimeStampGetFreqKHz(void);
+int32_t          osalArch_TimeStampGetFreqKHz(void);
 extern           void osal_TimestampProvider_initCCNT(void);
 extern           uint32_t osal_TimestampProvider_getOverflowCCNT(void);
 

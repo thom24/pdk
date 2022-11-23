@@ -63,6 +63,7 @@
 #include <ti/osal/HwiP.h>
 #include <ti/osal/TimerP.h>
 #include <ti/osal/DebugP.h>
+#include <ti/osal/CycleprofilerP.h>
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/r5/csl_arm_r5_pmu.h>
 #include <ti/csl/arch/csl_arch.h>
@@ -338,6 +339,7 @@ void vPortTimerTickHandler()
         {
             ulPortYieldRequired = pdTRUE;
         }
+        CycleprofilerP_refreshCounter();
     }
 }
 
