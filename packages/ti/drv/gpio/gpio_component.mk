@@ -224,7 +224,7 @@ export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = mcu1_0
 else
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2))
+ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
 export GPIO_Baremetal_LedBlink_TestApp_SBL_APPIMAGEGEN = yes
 endif
 
