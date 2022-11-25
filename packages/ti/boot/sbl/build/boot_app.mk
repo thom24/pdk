@@ -1,6 +1,3 @@
-# By default HLOS boot set to none. options : qnx, linux
-HLOSBOOT ?= none
-
 BUILD_OS_TYPE = freertos
 
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -12,16 +9,14 @@ else
 endif
 
 ifeq ($(HLOSBOOT), qnx)
-    HLOS_SUFFIX =_hlos_qnx
+    HLOS_SUFFIX =_qnx
 else ifeq ($(HLOSBOOT), linux)
-    HLOS_SUFFIX =_hlos_linux
+    HLOS_SUFFIX =_linux
 else 
     HLOS_SUFFIX =
 endif
 
-
-
-APP_NAME = boot_app_$(BOOTMODE)$(HS_SUFFIX)
+APP_NAME = boot_app_$(BOOTMODE)$(HLOS_SUFFIX)$(HS_SUFFIX)
 LOCAL_APP_NAME = sbl_boot_app_$(BOOTMODE)$(HLOS_SUFFIX)$(HS_SUFFIX)_$(BOARD)_$(CORE)_$(BUILD_OS_TYPE)_TestApp
 SRCDIR      = $(PDK_SBL_COMP_PATH)/example/boot_app
 

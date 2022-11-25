@@ -198,6 +198,7 @@ all_libs_clean:
 	$(RM) -rf ../*/*/*/*/lib
 	$(RM) -rf ../drv/emac/firmware/icss_dualmac/bin/
 	$(RM) -rf ../boot/sbl/binary
+	$(RM) -rf ../boot/sbl/example/boot_app/binary
 
 package: $(FINAL_PKG_LIST_PACKAGE) $(FINAL_DUP_EXAMPLE_LIST_PACKAGE)
 

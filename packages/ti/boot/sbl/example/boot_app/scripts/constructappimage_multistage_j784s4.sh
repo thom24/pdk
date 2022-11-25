@@ -46,9 +46,9 @@ SBL_REPO_PATH="${PDK_INSTALL_PATH}/ti/boot/sbl"
 MULTICORE_APPIMAGE_GEN_TOOL_PATH="${SBL_REPO_PATH}/tools/multicoreImageGen/bin"
 SBL_OUT2RPRC_GEN_TOOL_PATH="${SBL_REPO_PATH}/tools/out2rprc/bin"
 
-rm -rf ../binary/*
-mkdir -p ../binary/j784s4_evm
-MULTICOREAPP_BIN_PATH=${SBL_REPO_PATH}/example/boot_app/binary/j784s4_evm
+rm -rf ../multicore_images/*
+mkdir -p ../multicore_images/j784s4_evm
+MULTICOREAPP_BIN_PATH=${SBL_REPO_PATH}/example/boot_app/multicore_images/j784s4_evm
 
 devId=55
 
@@ -59,7 +59,7 @@ devId=55
 numStages=3
 
 appImageName1=multicore_MCU2_0_MCU2_1_stage1.appimage
-appImageName2=multicore_DSP_1_2_3_C7x_MCU3_0_MCU3_1_stage2.appimage
+appImageName2=multicore_DSPs_MCU3_0_MCU3_1_MCU4_0_MCU4_1_stage2.appimage
 appImageName3=multicore_MPU1_0_stage3.appimage
 
 ElfImages1=("ipc_rtos_echo_test_freertos_mcu2_0_release.xer5f" \
@@ -140,7 +140,7 @@ done
 
 # Generate the appimage (both unsigned and signed) for Stage 1
 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName1 $output_args1
-$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/binary/j784s4_evm/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
+$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/multicore_images/j784s4_evm/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
 
 echo "output_args is $output_args1"
 echo "Wrote output appImage to $appImageName1"
@@ -148,7 +148,7 @@ echo "Wrote signed output appImage to $appImageName1.signed"
 
 # ## Generate the appimage (both unsigned and signed) for Stage 2
 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName2 $output_args2
-$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/binary/j784s4_evm/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
+$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/multicore_images/j784s4_evm/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
 
 echo "output_args is $output_args2"
 echo "Wrote output appImage to $appImageName2"
@@ -156,7 +156,7 @@ echo "Wrote signed output appImage to $appImageName2.signed"
 
 ## Generate the appimage (both unsigned and signed) for Stage 3
 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName3 $output_args3
-$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/binary/j784s4_evm/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
+$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/multicore_images/j784s4_evm/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
 
 echo "output_args is $output_args3"
 echo "Wrote output appImage to $appImageName3"

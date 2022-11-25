@@ -1494,9 +1494,9 @@ export sbl_boot_perf_test_SBL_APPIMAGEGEN
 # Boot App OSPI
 boot_app_ospi_COMP_LIST = boot_app_ospi
 boot_app_ospi_RELPATH = ti/boot/sbl/example/boot_app
-boot_app_ospi_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_ospi_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)/ospi
 boot_app_ospi_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
-boot_app_ospi_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=no
+boot_app_ospi_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=no HLOSBOOT=none
 export boot_app_ospi_MAKEFILE
 boot_app_ospi_BOARD_DEPENDENCY = yes
 boot_app_ospi_SOC_DEPENDENCY = yes
@@ -1517,12 +1517,64 @@ sbl_EXAMPLE_LIST += boot_app_ospi
 boot_app_ospi_SBL_APPIMAGEGEN = yes
 export boot_app_ospi_SBL_APPIMAGEGEN
 
+# Boot App OSPI to boot qnx
+boot_app_ospi_qnx_COMP_LIST = boot_app_ospi_qnx
+boot_app_ospi_qnx_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_ospi_qnx_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)/ospi
+boot_app_ospi_qnx_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_ospi_qnx_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=no HLOSBOOT=qnx
+export boot_app_ospi_qnx_MAKEFILE
+boot_app_ospi_qnx_BOARD_DEPENDENCY = yes
+boot_app_ospi_qnx_SOC_DEPENDENCY = yes
+boot_app_ospi_qnx_CORE_DEPENDENCY = yes
+export boot_app_ospi_qnx_COMP_LIST
+export boot_app_ospi_qnx_BOARD_DEPENDENCY
+export boot_app_ospi_qnx_SOC_DEPENDENCY
+export boot_app_ospi_qnx_CORE_DEPENDENCY
+boot_app_ospi_qnx_PKG_LIST = boot_app_ospi_qnx
+boot_app_ospi_qnx_INCLUDE = $(boot_app_ospi_qnx_PATH)
+boot_app_ospi_qnx_SOCLIST = $(sbl_SOCLIST)
+boot_app_ospi_qnx_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_ospi_qnx_SOCLIST
+export boot_app_ospi_qnx_BOARDLIST
+boot_app_ospi_qnx_$(SOC)_CORELIST = mcu1_0
+export boot_app_ospi_qnx_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_ospi_qnx
+boot_app_ospi_qnx_SBL_APPIMAGEGEN = yes
+export boot_app_ospi_qnx_SBL_APPIMAGEGEN
+
+# Boot App OSPI to boot linux
+boot_app_ospi_linux_COMP_LIST = boot_app_ospi_linux
+boot_app_ospi_linux_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_ospi_linux_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)/ospi
+boot_app_ospi_linux_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_ospi_linux_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=no HLOSBOOT=linux
+export boot_app_ospi_linux_MAKEFILE
+boot_app_ospi_linux_BOARD_DEPENDENCY = yes
+boot_app_ospi_linux_SOC_DEPENDENCY = yes
+boot_app_ospi_linux_CORE_DEPENDENCY = yes
+export boot_app_ospi_linux_COMP_LIST
+export boot_app_ospi_linux_BOARD_DEPENDENCY
+export boot_app_ospi_linux_SOC_DEPENDENCY
+export boot_app_ospi_linux_CORE_DEPENDENCY
+boot_app_ospi_linux_PKG_LIST = boot_app_ospi_linux
+boot_app_ospi_linux_INCLUDE = $(boot_app_ospi_linux_PATH)
+boot_app_ospi_linux_SOCLIST = $(sbl_SOCLIST)
+boot_app_ospi_linux_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_ospi_linux_SOCLIST
+export boot_app_ospi_linux_BOARDLIST
+boot_app_ospi_linux_$(SOC)_CORELIST = mcu1_0
+export boot_app_ospi_linux_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_ospi_linux
+boot_app_ospi_linux_SBL_APPIMAGEGEN = yes
+export boot_app_ospi_linux_SBL_APPIMAGEGEN
+
 # Boot App MMCSD
 boot_app_mmcsd_COMP_LIST = boot_app_mmcsd
 boot_app_mmcsd_RELPATH = ti/boot/sbl/example/boot_app
-boot_app_mmcsd_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_mmcsd_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)/mmcsd
 boot_app_mmcsd_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
-boot_app_mmcsd_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=no
+boot_app_mmcsd_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=no HLOSBOOT=none
 export boot_app_mmcsd_MAKEFILE
 boot_app_mmcsd_BOARD_DEPENDENCY = yes
 boot_app_mmcsd_SOC_DEPENDENCY = yes
@@ -1543,12 +1595,64 @@ sbl_EXAMPLE_LIST += boot_app_mmcsd
 boot_app_mmcsd_SBL_APPIMAGEGEN = yes
 export boot_app_mmcsd_SBL_APPIMAGEGEN
 
+# Boot App MMCSD to boot qnx
+boot_app_mmcsd_qnx_COMP_LIST = boot_app_mmcsd_qnx
+boot_app_mmcsd_qnx_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_mmcsd_qnx_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)/mmcsd
+boot_app_mmcsd_qnx_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_mmcsd_qnx_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=no HLOSBOOT=qnx
+export boot_app_mmcsd_qnx_MAKEFILE
+boot_app_mmcsd_qnx_BOARD_DEPENDENCY = yes
+boot_app_mmcsd_qnx_SOC_DEPENDENCY = yes
+boot_app_mmcsd_qnx_CORE_DEPENDENCY = yes
+export boot_app_mmcsd_qnx_COMP_LIST
+export boot_app_mmcsd_qnx_BOARD_DEPENDENCY
+export boot_app_mmcsd_qnx_SOC_DEPENDENCY
+export boot_app_mmcsd_qnx_CORE_DEPENDENCY
+boot_app_mmcsd_qnx_PKG_LIST = boot_app_mmcsd_qnx
+boot_app_mmcsd_qnx_INCLUDE = $(boot_app_mmcsd_qnx_PATH)
+boot_app_mmcsd_qnx_SOCLIST = $(sbl_SOCLIST)
+boot_app_mmcsd_qnx_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_mmcsd_qnx_SOCLIST
+export boot_app_mmcsd_qnx_BOARDLIST
+boot_app_mmcsd_qnx_$(SOC)_CORELIST = mcu1_0
+export boot_app_mmcsd_qnx_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_mmcsd_qnx
+boot_app_mmcsd_qnx_SBL_APPIMAGEGEN = yes
+export boot_app_mmcsd_qnx_SBL_APPIMAGEGEN
+
+# Boot App MMCSD to boot linux
+boot_app_mmcsd_linux_COMP_LIST = boot_app_mmcsd_linux
+boot_app_mmcsd_linux_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_mmcsd_linux_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)/mmcsd
+boot_app_mmcsd_linux_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_mmcsd_linux_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=no HLOSBOOT=linux
+export boot_app_mmcsd_linux_MAKEFILE
+boot_app_mmcsd_linux_BOARD_DEPENDENCY = yes
+boot_app_mmcsd_linux_SOC_DEPENDENCY = yes
+boot_app_mmcsd_linux_CORE_DEPENDENCY = yes
+export boot_app_mmcsd_linux_COMP_LIST
+export boot_app_mmcsd_linux_BOARD_DEPENDENCY
+export boot_app_mmcsd_linux_SOC_DEPENDENCY
+export boot_app_mmcsd_linux_CORE_DEPENDENCY
+boot_app_mmcsd_linux_PKG_LIST = boot_app_mmcsd_linux
+boot_app_mmcsd_linux_INCLUDE = $(boot_app_mmcsd_linux_PATH)
+boot_app_mmcsd_linux_SOCLIST = $(sbl_SOCLIST)
+boot_app_mmcsd_linux_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_mmcsd_linux_SOCLIST
+export boot_app_mmcsd_linux_BOARDLIST
+boot_app_mmcsd_linux_$(SOC)_CORELIST = mcu1_0
+export boot_app_mmcsd_linux_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_mmcsd_linux
+boot_app_mmcsd_linux_SBL_APPIMAGEGEN = yes
+export boot_app_mmcsd_linux_SBL_APPIMAGEGEN
+
 # Boot App OSPI HS
 boot_app_ospi_hs_COMP_LIST = boot_app_ospi_hs
 boot_app_ospi_hs_RELPATH = ti/boot/sbl/example/boot_app
-boot_app_ospi_hs_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_ospi_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)_hs/ospi
 boot_app_ospi_hs_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
-boot_app_ospi_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=yes
+boot_app_ospi_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=yes HLOSBOOT=none
 export boot_app_ospi_hs_MAKEFILE
 boot_app_ospi_hs_BOARD_DEPENDENCY = yes
 boot_app_ospi_hs_SOC_DEPENDENCY = yes
@@ -1569,12 +1673,38 @@ sbl_EXAMPLE_LIST += boot_app_ospi_hs
 boot_app_ospi_hs_SBL_APPIMAGEGEN = yes
 export boot_app_ospi_hs_SBL_APPIMAGEGEN
 
+# Boot App OSPI HS to boot qnx
+boot_app_ospi_qnx_hs_COMP_LIST = boot_app_ospi_qnx_hs
+boot_app_ospi_qnx_hs_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_ospi_qnx_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)_hs/ospi
+boot_app_ospi_qnx_hs_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_ospi_qnx_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=ospi BUILD_HS=yes HLOSBOOT=qnx
+export boot_app_ospi_qnx_hs_MAKEFILE
+boot_app_ospi_qnx_hs_BOARD_DEPENDENCY = yes
+boot_app_ospi_qnx_hs_SOC_DEPENDENCY = yes
+boot_app_ospi_qnx_hs_CORE_DEPENDENCY = yes
+export boot_app_ospi_qnx_hs_COMP_LIST
+export boot_app_ospi_qnx_hs_BOARD_DEPENDENCY
+export boot_app_ospi_qnx_hs_SOC_DEPENDENCY
+export boot_app_ospi_qnx_hs_CORE_DEPENDENCY
+boot_app_ospi_qnx_hs_PKG_LIST = boot_app_ospi_qnx_hs
+boot_app_ospi_qnx_hs_INCLUDE = $(boot_app_ospi_qnx_hs_PATH)
+boot_app_ospi_qnx_hs_SOCLIST = $(sbl_SOCLIST)
+boot_app_ospi_qnx_hs_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_ospi_qnx_hs_SOCLIST
+export boot_app_ospi_qnx_hs_BOARDLIST
+boot_app_ospi_qnx_hs_$(SOC)_CORELIST = mcu1_0
+export boot_app_ospi_qnx_hs_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_ospi_qnx_hs
+boot_app_ospi_qnx_hs_SBL_APPIMAGEGEN = yes
+export boot_app_ospi_qnx_hs_SBL_APPIMAGEGEN
+
 # Boot App MMCSD HS
 boot_app_mmcsd_hs_COMP_LIST = boot_app_mmcsd_hs
 boot_app_mmcsd_hs_RELPATH = ti/boot/sbl/example/boot_app
-boot_app_mmcsd_hs_BINPATH = $(PDK_SBL_COMP_PATH)/binary
+boot_app_mmcsd_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)_hs/mmcsd
 boot_app_mmcsd_hs_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
-boot_app_mmcsd_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=yes
+boot_app_mmcsd_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=yes HLOSBOOT=none
 export boot_app_mmcsd_hs_MAKEFILE
 boot_app_mmcsd_hs_BOARD_DEPENDENCY = yes
 boot_app_mmcsd_hs_SOC_DEPENDENCY = yes
@@ -1594,6 +1724,32 @@ export boot_app_mmcsd_hs_$(SOC)_CORELIST
 sbl_EXAMPLE_LIST += boot_app_mmcsd_hs
 boot_app_mmcsd_hs_SBL_APPIMAGEGEN = yes
 export boot_app_mmcsd_hs_SBL_APPIMAGEGEN
+
+# Boot App MMCSD HS to boot qnx
+boot_app_mmcsd_qnx_hs_COMP_LIST = boot_app_mmcsd_qnx_hs
+boot_app_mmcsd_qnx_hs_RELPATH = ti/boot/sbl/example/boot_app
+boot_app_mmcsd_qnx_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/boot_app/binary/$(BOARD)_hs/mmcsd
+boot_app_mmcsd_qnx_hs_PATH = $(PDK_SBL_COMP_PATH)/example/boot_app
+boot_app_mmcsd_qnx_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/boot_app.mk BOOTMODE=mmcsd BUILD_HS=yes HLOSBOOT=qnx
+export boot_app_mmcsd_qnx_hs_MAKEFILE
+boot_app_mmcsd_qnx_hs_BOARD_DEPENDENCY = yes
+boot_app_mmcsd_qnx_hs_SOC_DEPENDENCY = yes
+boot_app_mmcsd_qnx_hs_CORE_DEPENDENCY = yes
+export boot_app_mmcsd_qnx_hs_COMP_LIST
+export boot_app_mmcsd_qnx_hs_BOARD_DEPENDENCY
+export boot_app_mmcsd_qnx_hs_SOC_DEPENDENCY
+export boot_app_mmcsd_qnx_hs_CORE_DEPENDENCY
+boot_app_mmcsd_qnx_hs_PKG_LIST = boot_app_mmcsd
+boot_app_mmcsd_qnx_hs_INCLUDE = $(boot_app_mmcsd_PATH)
+boot_app_mmcsd_qnx_hs_SOCLIST = $(sbl_SOCLIST)
+boot_app_mmcsd_qnx_hs_BOARDLIST = $(sbl_BOARDLIST)
+export boot_app_mmcsd_qnx_hs_SOCLIST
+export boot_app_mmcsd_qnx_hs_BOARDLIST
+boot_app_mmcsd_qnx_hs_$(SOC)_CORELIST = mcu1_0
+export boot_app_mmcsd_qnx_hs_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += boot_app_mmcsd_qnx_hs
+boot_app_mmcsd_qnx_hs_SBL_APPIMAGEGEN = yes
+export boot_app_mmcsd_qnx_hs_SBL_APPIMAGEGEN
 
 # SBL not supported for any profile
 # other than release

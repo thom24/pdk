@@ -46,9 +46,9 @@ SBL_REPO_PATH="${PDK_INSTALL_PATH}/ti/boot/sbl"
 MULTICORE_APPIMAGE_GEN_TOOL_PATH="${SBL_REPO_PATH}/tools/multicoreImageGen/bin"
 SBL_OUT2RPRC_GEN_TOOL_PATH="${SBL_REPO_PATH}/tools/out2rprc/bin"
 
-rm -rf ../binary/*
-mkdir -p ../binary/j721s2_evm
-MULTICOREAPP_BIN_PATH=${SBL_REPO_PATH}/example/boot_app/binary/j721s2_evm
+rm -rf ../multicore_images/*
+mkdir -p ../multicore_images/j721s2_evm
+MULTICOREAPP_BIN_PATH=${SBL_REPO_PATH}/example/boot_app/multicore_images/j721s2_evm
 
 devId=55
 
@@ -132,7 +132,7 @@ done
 
 # Generate the appimage (both unsigned and signed) for Stage 1
 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName1 $output_args1
-$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/binary/j721s2_evm/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
+$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/multicore_images/j721s2_evm/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
 
 echo "output_args is $output_args1"
 echo "Wrote output appImage to $appImageName1"
@@ -140,7 +140,7 @@ echo "Wrote signed output appImage to $appImageName1.signed"
 
 # ## Generate the appimage (both unsigned and signed) for Stage 2
 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName2 $output_args2
-$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/binary/j721s2_evm/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
+$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/multicore_images/j721s2_evm/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
 
 echo "output_args is $output_args2"
 echo "Wrote output appImage to $appImageName2"
@@ -148,7 +148,7 @@ echo "Wrote signed output appImage to $appImageName2.signed"
 
 ## Generate the appimage (both unsigned and signed) for Stage 3
 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName3 $output_args3
-$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/binary/j721s2_evm/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
+$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh -b $PDK_INSTALL_PATH/ti/boot/sbl/example/boot_app/multicore_images/j721s2_evm/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.signed -c R5 -l 0x41C00100 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
 
 echo "output_args is $output_args3"
 echo "Wrote output appImage to $appImageName3"
