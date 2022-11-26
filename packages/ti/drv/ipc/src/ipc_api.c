@@ -120,6 +120,7 @@ typedef struct RPMessage_Waiter_s
     char               name[SERVICENAMELEN];
     uint32_t           token;
 } RPMessage_Waiter;
+
 /**
  *  \brief Element to hold payload copied onto receiver's queue.
  */
@@ -217,6 +218,9 @@ static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32
 static RPMessage_Module module;
 
 static Ipc_Object gIpcObject;
+
+RPMessage_Waiter  taskWaiter_pool[MAXENDPOINTS];
+
 /**< IPC Object */
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -713,7 +717,7 @@ int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uin
     int32_t            rtnVal = IPC_SOK;
 #ifndef IPC_EXCLUDE_CTRL_TASKS
     void              *semHandle;
-    RPMessage_Waiter   taskWaiter;
+    RPMessage_Waiter  taskWaiter = taskWaiter_pool[*remoteEndPt];
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
     size_t             namelen;
     Ipc_OsalPrms      *pOsalPrms = &gIpcObject.initPrms.osalPrms;
