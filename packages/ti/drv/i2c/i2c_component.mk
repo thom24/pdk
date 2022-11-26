@@ -96,8 +96,8 @@ drvi2c_j721e_CORELIST   = $(DEFAULT_j721e_CORELIST)
 drvi2c_j721e_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvi2c_j721s2_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 c7x_1
 drvi2c_j721s2_CORELISTARM  = mcu1_0 mcu2_0 mcu3_0
-drvi2c_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu4_0 c7x_1
-drvi2c_j784s4_CORELISTARM  = mpu1_0 mcu1_0 mcu2_0 mcu3_0 mcu4_0
+drvi2c_j784s4_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1
+drvi2c_j784s4_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
 drvi2c_j7200_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 drvi2c_am64x_CORELIST  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 m4f_0
 drvi2c_tpr12_CORELIST  = mcu1_0 c66xdsp_1
@@ -127,7 +127,7 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 # List below all examples for allowed values
 ############################
 ifeq ($(SOC),$(filter $(SOC), j784s4))
-i2c_EXAMPLE_LIST = drv_i2c_utility
+i2c_EXAMPLE_LIST = drv_i2c_utility I2C_Baremetal_Eeprom_TestApp
 else
 i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
 endif
@@ -375,10 +375,12 @@ export I2C_Baremetal_Eeprom_TestApp_CORE_DEPENDENCY
 export I2C_Baremetal_Eeprom_TestApp_MAKEFILE
 I2C_Baremetal_Eeprom_TestApp_PKG_LIST = I2C_Baremetal_Eeprom_TestApp
 I2C_Baremetal_Eeprom_TestApp_INCLUDE = $(I2C_Baremetal_Eeprom_TestApp_PATH)
-I2C_Baremetal_Eeprom_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm am64x_evm
+I2C_Baremetal_Eeprom_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j784s4_evm j7200_evm am64x_evm
 export I2C_Baremetal_Eeprom_TestApp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), j721e))
 I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_j721e_CORELISTARM)
+else ifeq ($(SOC),$(filter $(SOC), j784s4))
+I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_j784s4_CORELISTARM)
 else ifeq ($(SOC),$(filter $(SOC), am64x))
 I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 else

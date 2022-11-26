@@ -76,7 +76,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #endif
 
-#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X) || defined (SOC_J721S2) || defined (SOC_J784S4))
+#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined (SOC_J784S4) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X) || defined (SOC_J721S2)
 #include <ti/build/unit-test/Unity/src/unity.h>
 #include <ti/build/unit-test/config/unity_config.h>
 #endif
@@ -116,13 +116,23 @@ extern char eepromData[I2C_EEPROM_RX_LENGTH];
 #if defined (SOC_J721E)
 /* By default for, first available output from IR */
 #define I2C_INST_WKUP_I2C0_INT_NUM_MAIN (CSLR_R5FSS0_CORE0_INTR_R5FSS0_INTROUTER0_OUTL_0)
+#define I2C_INST_WKUP_I2C0_INT_NUM_MCU (CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0)
 /* Interrupt reserved for Core ID 1. 128 is based on RM */
 #define I2C_INST_WKUP_I2C0_INT_OFFSET   (128U)
+#endif
+
+#if defined (SOC_J784S4)
+/* WKUP I2C0 interrupt goes directly into MAIN R5 cores. Interrupt Numbers for all R5 main cores are same. */
+#define I2C_INST_WKUP_I2C0_INT_NUM_MAIN (CSLR_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0)
+#define I2C_INST_WKUP_I2C0_INT_NUM_MCU (CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0)
+/* Interrupt reserved for Core ID 1. 128 is based on RM */
+#define I2C_INST_WKUP_I2C0_INT_OFFSET   (0)
 #endif
 
 #if defined (SOC_J7200)
 /* Applicable for MCU 20/21 only */
 #define I2C_INST_WKUP_I2C0_INT_NUM_MAIN (CSLR_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0)
+#define I2C_INST_WKUP_I2C0_INT_NUM_MCU (CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0)
 /* No interrupt router, its directly connected */
 #define I2C_INST_WKUP_I2C0_INT_OFFSET   (0U)
 #endif /* J7200 Specific */
@@ -200,7 +210,7 @@ bool Board_initI2C(void)
 #endif
 #endif
 
-#if defined (SOC_J721E) || defined(SOC_J7200)
+#if defined (SOC_J721E) || defined(SOC_J7200) || defined (SOC_J784S4)
     /* No I2C instanced connected to eeprom in main domain, use i2c instance in wakeup domain */
     i2c_cfg.baseAddr = CSL_WKUP_I2C0_CFG_BASE;
 #if defined (BUILD_MPU)
@@ -230,7 +240,7 @@ bool Board_initI2C(void)
     else
     {
         /* Pulsar R5 core is on the MCU domain */
-        i2c_cfg.intNum = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_I2C0_POINTRPEND_0;
+        i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MCU;
     }
 #endif /* for mcu builds only */
 
@@ -284,7 +294,7 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
     /* Get the default SPI init configurations */
     I2C_socGetInitCfg(instance, &i2c_cfg);
 
-#if defined (SOC_J721E)
+#if defined (SOC_J721E) || defined (SOC_J784S4)
 #if defined (BUILD_C66X)
     /*
      * There is no interrupt routing supported in sciclient to
@@ -446,7 +456,7 @@ static bool I2C_bitrate_test(void *arg)
 }
 
 
-#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X) || defined (SOC_J784S4)
 static bool I2C_Probe_BusFrequency_test(void *arg)
 {
     I2C_Handle      handle;
@@ -675,7 +685,7 @@ I2C_Tests I2c_tests[] =
 {
     /* testFunc                   testID                       dma    intr   cbMode timeout                  testDesc */
     {I2C_bitrate_test,            I2C_TEST_ID_BIT_RATE,        false, true,  false, SemaphoreP_WAIT_FOREVER, "\r\n I2C bit rate test in interrupt mode"},
-#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X)
+#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X) || defined (SOC_J784S4)
     {I2C_Probe_BusFrequency_test, I2C_TEST_ID_PROBE_BUS_FREQ,  false, true,  false, SemaphoreP_WAIT_FOREVER, "\r\n I2C probe bus freq test in interrupt mode"},
     {I2C_timeout_test,            I2C_TEST_ID_TIMEOUT_INT,     false, true,  false, 1,                       "\r\n I2C timeout test in interrupt mode"},
 #endif
@@ -683,7 +693,7 @@ I2C_Tests I2c_tests[] =
 };
 
 
-#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X))
+#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined (SOC_J784S4) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X))
 /*
  *  ======== Unity set up and tear down ========
  */
@@ -815,7 +825,7 @@ void i2c_test(void *arg0, void *arg1)
 int main ()
 #endif
 {
-#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X))
+#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined (SOC_J784S4) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X))
     test_I2C_Eeprom_TestApp_runner();
 #else
     bool       testResult = true;
