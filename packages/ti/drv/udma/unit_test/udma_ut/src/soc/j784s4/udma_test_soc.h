@@ -144,7 +144,6 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_C7X_2 | \
                                          UDMA_TEST_RF_CORE_C7X_3 | \
                                          UDMA_TEST_RF_CORE_C7X_4 | \
-                                         UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
 
 /* Multipe task testcases - some have only one instance. Doesn't make sense to run from 1 task */
@@ -173,7 +172,7 @@ extern "C" {
 #define UDMA_TEST_MAX_MAIN_BC_CH        (4U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
-#define UDMA_TEST_MAX_MCU_BC_CH         (4U)
+#define UDMA_TEST_MAX_MCU_BC_CH         (3U)
 #define UDMA_TEST_MAX_DRU_CH            (0U)
 #endif
 #if defined (BUILD_MCU2_0)
@@ -220,7 +219,7 @@ extern "C" {
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU4_0)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (1U)
+#define UDMA_TEST_MAX_MAIN_BC_CH        (3U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (1U)
@@ -280,7 +279,7 @@ extern "C" {
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU1_0)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
+#define UDMA_TEST_MAX_MAIN_BC_CH        (1U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (2U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (2U)
@@ -290,7 +289,7 @@ extern "C" {
 #define UDMA_TEST_RF_CORE               (UDMA_TEST_RF_CORE_MCU1_1)
 #define UDMA_TEST_MAX_MAIN_BC_UHC_CH    (0U)
 #define UDMA_TEST_MAX_MAIN_BC_HC_CH     (0U)
-#define UDMA_TEST_MAX_MAIN_BC_CH        (2U)
+#define UDMA_TEST_MAX_MAIN_BC_CH        (1U)
 #define UDMA_TEST_MAX_MCU_BC_UHC_CH     (0U)
 #define UDMA_TEST_MAX_MCU_BC_HC_CH      (0U)
 #define UDMA_TEST_MAX_MCU_BC_CH         (0U)
