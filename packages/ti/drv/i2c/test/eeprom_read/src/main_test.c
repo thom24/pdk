@@ -76,7 +76,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #endif
 
-#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined (SOC_J784S4) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X) || defined (SOC_J721S2)
+#if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined (SOC_J784S4) || defined(SOC_J7200) || defined(SOC_AM65XX) || defined(SOC_AM64X) || defined (SOC_J721S2))
 #include <ti/build/unit-test/Unity/src/unity.h>
 #include <ti/build/unit-test/config/unity_config.h>
 #endif
