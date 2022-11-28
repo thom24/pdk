@@ -52,6 +52,7 @@
 /* SBL Header files. */
 #include "sbl_rprc_parse.h"
 #include "sbl_emmc.h"
+#include "sbl_log.h"
 
 /* K3 Header files */
 #ifdef BUILD_MCU
@@ -350,9 +351,10 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
 int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
 {
-    UART_printf("\n If you don't get the logs of the application while booting \
-        from boot0 partition then you might need to pass the MAX_APP_SIZE_EMMC (=<size of you application>) \
-        while building your appimage \n");
+    SBL_log(SBL_LOG_MAX, "\n If you don't get the logs of the application while booting \
+    from boot0 partition then you might need to pass the MAX_APP_SIZE_EMMC (=<size of you application>) \
+    while building your appimage \n");
+
     int32_t retVal = E_PASS;
     const TCHAR *fileName = "0:/app";
     FIL     fp = {0};

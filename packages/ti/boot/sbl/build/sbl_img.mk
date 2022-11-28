@@ -18,18 +18,20 @@ ifeq ($(BOOTMODE), ospi)
     DMA_SUFFIX=_nondma
   endif
 endif
-
-# By default it boots from boot0 partition if you want to boot it from UDA partition 
-# use EMMC_BOOT0=no while bulding sbl_emmc_img
-EMMC_BOOT0?=yes
+EMMC_SUFFIX=
+ifeq ($(EMMC_BOOT0), yes)
+  EMMC_SUFFIX=_boot0
+else ifeq ($(EMMC_BOOT0), no)
+  EMMC_SUFFIX=_uda
+endif
 
 # if you want to boot app more than 500KB you need to change the following macro
 # for instance your app is x KB then you need to give the macro with the following value from cmd line
 # (x * 1024) in hexadecimal
 MAX_APP_SIZE_EMMC ?= 0x7D000
 
-APP_NAME = sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
-LOCAL_APP_NAME=sbl_$(BOOTMODE)_img$(HLOS_SUFFIX)_$(CORE)
+APP_NAME = sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
+LOCAL_APP_NAME=sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
 BUILD_OS_TYPE = baremetal
 
 SRCDIR += $(PDK_SBL_COMP_PATH)/board/k3
