@@ -35,11 +35,6 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 
-#if defined(j721s2_evm) || defined(j784s4_evm)
-/* SPI entry offset is at index 0 of OSPI config array */
-#define SPI_CONFIG_OFFSET     (0U)
-#endif
-
 static NAND_HANDLE Nand_ospiOpen(uint32_t nandIntf, uint32_t portNum, void *params);
 static void Nand_ospiClose(NAND_HANDLE handle);
 static NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr,
@@ -486,7 +481,7 @@ NAND_HANDLE Nand_ospiOpen(uint32_t nandIntf, uint32_t portNum, void *params)
 
     /* Use default OSPI config params if no params provided */
     OSPI_Params_init(&spiParams);
-    hwHandle = (OSPI_Handle)OSPI_open(SPI_OSPI_DOMAIN_MCU, portNum + SPI_CONFIG_OFFSET, &spiParams);
+    hwHandle = (OSPI_Handle)OSPI_open(SPI_OSPI_DOMAIN_MCU, portNum, &spiParams);
     if (hwHandle)
     {
         retVal = NAND_PASS;

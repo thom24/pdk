@@ -36,13 +36,6 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 
-#if (defined (j7200_evm) || defined (j721e_evm) || defined(j721s2_evm) || defined(j784s4_evm))
-/* SPI entry offset is at index 0 of OSPI config array */
-#define SPI_CONFIG_OFFSET     (0U)
-#elif defined (am64x_evm) || defined (am64x_svb)
-#define SPI_CONFIG_OFFSET     (7U)
-#endif
-
 static NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params);
 static void Nor_qspiClose(NOR_HANDLE handle);
 static NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
@@ -306,7 +299,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
         /* Use default SPI config params if no params provided */
 		OSPI_Params_init(&spiParams);
     }
-    hwHandle = (OSPI_Handle)OSPI_open(SPI_OSPI_DOMAIN_MCU, portNum + SPI_CONFIG_OFFSET, &spiParams);
+    hwHandle = (OSPI_Handle)OSPI_open(SPI_OSPI_DOMAIN_MCU, portNum, &spiParams);
 
     if (hwHandle)
     {
