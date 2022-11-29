@@ -574,10 +574,12 @@ echo "# encrypt smpk-pub hash using aes256 key"
 gen_pub_key_x509_extension "${smpk_info[file]}" tmpdir/smpkpub.der tmpdir/smpkh "SMPKH" \
 		tmpdir/smpkh.iv tmpdir/smpkh.rs tmpdir/smpkhfield tmpdir/aesenc_smpkh.enc
 
+if [[  ${smek_info[flag]} == "yes" ]]; then
 echo "# encrypt smek (sym key) using aes256 key"
-# gen_sym_key_x509_extension <SYMKEY> <SYMKEY.HASH> <IV> <RS> <FIELD> <OUTPUT>
+# gen_sym_key_x509_extension <SMEKH/BMEKH> <SYMKEY> <SYMKEY.HASH> <IV> <RS> <FIELD> <OUTPUT>
 gen_sym_key_x509_extension "SMEKH" "${smek_info[file]}" tmpdir/smekh tmpdir/smek.iv \
 		tmpdir/smek.rs tmpdir/smekfield tmpdir/aesenc_smek.enc
+fi
 
 if [[ ${extotp_info[flag]} == "yes" ]]; then
 echo "# encrypt ext_otp using aes256 key"
