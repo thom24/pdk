@@ -101,10 +101,18 @@ ifeq ($(BUILD_OS_TYPE), tirtos)
   EXTERNAL_LNKCMD_FILE_LOCAL = rtos/$(SOC)/linker_$(CORE).lds
 endif
 ifeq ($(BUILD_OS_TYPE), freertos)
-  APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
+  ifeq ($(SOC),$(filter $(SOC), j721s2))
+    APPEND_LNKCMD_FILE = rtos/j721s2/linker_append_$(ISA).cmd
+  else
+    APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
+  endif
 endif
 ifeq ($(BUILD_OS_TYPE), safertos)
-  APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
+  ifeq ($(SOC),$(filter $(SOC), j721s2))
+    APPEND_LNKCMD_FILE = rtos/j721s2/linker_append_$(ISA).cmd
+  else
+    APPEND_LNKCMD_FILE = rtos/linker_append_$(ISA).cmd
+  endif
 endif
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
