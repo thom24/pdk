@@ -296,7 +296,7 @@ Board_flash_STATUS Board_flashRead(Board_flashHandle  handle,
         return BOARD_FLASH_EFAIL;
     }
 
-    if (buf == NULL || len == 0)
+    if (len == 0)
     {
         return BOARD_FLASH_EINVALID;
     }
