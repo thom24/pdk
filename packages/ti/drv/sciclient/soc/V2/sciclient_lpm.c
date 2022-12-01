@@ -39,17 +39,8 @@
 
 #include <stdint.h>
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/drv/sciclient/src/sciclient/sciclient_s2r.h>
 #include <osal_hwi.h>
-
-#ifdef DEBUG_SUSPEND
-#include <ti/drv/uart/UART_stdio.h>
-#define S2R_debugPrintf UART_printf
-#else
-#define S2R_debugPrintf(...)
-#endif
-
-/* not implemented yet */
-void S2R_goRetention(uint32_t core_resume_addr) {};
 
 int32_t Sciclient_prepareSleep(void)
 {
