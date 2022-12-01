@@ -102,6 +102,7 @@ Board_STATUS Board_getIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
     txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
     i2cTransaction.readBuf = &info->headerInfo;
     i2cTransaction.readCount = BOARD_EEPROM_HEADER_FIELD_SIZE;
+    i2cTransaction.timeout = 0x400;
 
     status = I2C_transfer(handle, &i2cTransaction);
     if (status == false)
