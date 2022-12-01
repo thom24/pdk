@@ -501,7 +501,8 @@ int32_t Sciclient_pmEnableWdt(uint32_t timeout);
 int32_t Sciclient_pmDisableWakeup(uint32_t timeout);
 
 /**
- *  \brief    Request wakeup reason
+ *  \brief    [Not supported on TDA4(Jacinto) Platforms]
+ *  Request wakeup reason
  *  After a wakeup, the host can request the deepest sleep/idle mode reached
  *  and the reason for the wakeup. The API also returns the time spent in idle
  *  state.
@@ -523,7 +524,8 @@ int32_t Sciclient_pmGetWakeupReason(uint8_t mode[32],
                                     uint32_t * time_ms,
                                     uint32_t timeout);
 /**
- *  \brief    Some processors have a special sequence for powering off the core
+ *  \brief    [Not supported on TDA4(Jacinto) Platforms]
+ *  Some processors have a special sequence for powering off the core
  *  that provides notification to the PMMC when that sequence has completed.
  *  For processors without such a sequence, the goodbye message exists.
  *  The exact sequence involved in the goodbye message depends on the SoC.
