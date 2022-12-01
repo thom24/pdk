@@ -39,6 +39,17 @@
 
 #include <stdint.h>
 #include <ti/drv/sciclient/sciclient.h>
+#include <osal_hwi.h>
+
+#ifdef DEBUG_SUSPEND
+#include <ti/drv/uart/UART_stdio.h>
+#define S2R_debugPrintf UART_printf
+#else
+#define S2R_debugPrintf(...)
+#endif
+
+/* not implemented yet */
+void S2R_goRetention(uint32_t core_resume_addr) {};
 
 int32_t Sciclient_prepareSleep(void)
 {
@@ -47,9 +58,34 @@ int32_t Sciclient_prepareSleep(void)
     return ret;
 }
 
-int32_t Sciclient_enterSleep(void)
+int32_t Sciclient_enterSleep(uint32_t *msg_recv)
 {
     int32_t ret = -1;
-    /* Low power sequence will be implemented by Bootlin */
+    uint32_t core_resume_addr;
+    struct tisci_msg_enter_sleep_req *req =
+        (struct tisci_msg_enter_sleep_req *) msg_recv;
+
+    uint8_t mode = req->mode;
+
+    if (req->core_resume_hi != 0)
+    {
+        S2R_debugPrintf("Adress too high, not reachable, upper 32bits=%x\n",
+                        req->core_resume_hi);
+    }
+
+    core_resume_addr = req->core_resume_lo;
+
+    if (mode != TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP)
+    {
+        ret = EINVAL;
+    }
+    else
+    {
+        osal_hwip_disable();
+
+        S2R_goRetention(core_resume_addr);
+        /* Never reach this point */
+    }
+
     return ret;
 }

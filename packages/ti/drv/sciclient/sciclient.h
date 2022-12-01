@@ -759,9 +759,11 @@ int32_t Sciclient_prepareSleep(void);
 
 /** \brief Sciclient Enter Sleep Function
  *
+ *  \param msg_recv  Pointer to the received message
+ *
  *  \return status    Function return status.
  */
-int32_t Sciclient_enterSleep(void);
+int32_t Sciclient_enterSleep(uint32_t *msg_recv);
 
 /** \brief Sciclient PMIC shutdown function.
  *

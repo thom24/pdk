@@ -609,7 +609,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
             ret = Sciclient_prepareSleep();
             break;
         case TISCI_MSG_ENTER_SLEEP              :
-            ret = Sciclient_enterSleep();
+            ret = Sciclient_enterSleep((uint32_t*)tx_msg);
             break;
         default:
             ret = CSL_EFAIL;
