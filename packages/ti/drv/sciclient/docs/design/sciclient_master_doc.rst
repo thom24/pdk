@@ -65,21 +65,6 @@ PM        Power Management
 RM        Resource Management
 =====     =============================
 
-
-References
------------
-
-.. csv-table::
-   :file: images/references.csv
-   :header-rows: 0
-   :widths: 5, 10, 50
-
-Requirements
-==============
-
- Requirements at https://confluence.itg.ti.com/display/Drivers/SciClient+Granular+Requirements .
-
-
 Assumptions
 ------------
 
@@ -317,9 +302,12 @@ Use alternate 2 to not have multiple APIs in the SCIClient HAL and the SCIClient
 Document revision history
 ============================
 
+
 ============  ==========    ===============  ===========================  ================
 Version #      Date         Author Name      Revision History             Status  
 ============  ==========    ===============  ===========================  ================
- 01.00        2-Jan-2018    SACHIN PUROHIT   Added design info for        Draft    
+ 01.00        2-Jan-2018    SACHIN PUROHIT   Added design info for          Draft    
                                                      sciclient.h                        
+ 01.01        6-Dec-2022    KUNAL LAHOTI     Removing internal Links        Draft    
+                                             from sciclient_designdoc                            
 ============  ==========    ===============  ===========================  ================
