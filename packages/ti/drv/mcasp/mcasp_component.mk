@@ -68,7 +68,7 @@ ifeq ($(mcasp_component_make_include), )
 
 # under other list
 drvmcasp_BOARDLIST       = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm
-drvmcasp_SOCLIST         = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200
+drvmcasp_SOCLIST         = am574x am572x am571x k2g am437x am335x dra72x dra75x dra78x omapl137 omapl138 am65xx j721e j7200 j721s2
 drvmcasp_am572x_CORELIST = c66x a15_0 ipu1_0
 drvmcasp_am574x_CORELIST = c66x a15_0 ipu1_0
 drvmcasp_dra72x_CORELIST = c66x a15_0 ipu1_0
