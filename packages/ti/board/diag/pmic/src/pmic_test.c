@@ -712,7 +712,7 @@ pmic_data_t* Get_PmicData(char *pBoardName)
     }
 
     /* Check if the board is J784S4X-PM1-SOM by comparing the string read from EEPROM. */
-    else if (strncmp("J784S4X-PM1-SOM", pBoardName, BOARD_NAME_LENGTH) == 0U)
+    else if (strncmp("J784S4X-EVM", pBoardName, BOARD_NAME_LENGTH) == 0U)
     {
         pPmicData = &tps65941_pmicA;
         numPmic = 1;
