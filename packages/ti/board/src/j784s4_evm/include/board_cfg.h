@@ -337,8 +337,8 @@ extern "C" {
 #define BOARD_LIN1_UART_INSTANCE                         (6U)
 #define BOARD_LIN1_UART_BASE                             (CSL_UART6_BASE)
 
-#define BOARD_LIN2_UART_INSTANCE                         (3U)
-#define BOARD_LIN2_UART_BASE                             (CSL_UART3_BASE)
+#define BOARD_LIN2_UART_INSTANCE                         (9U)
+#define BOARD_LIN2_UART_BASE                             (CSL_UART9_BASE)
 
 #define BOARD_CSI2RX_CTRL_I2C_INSTANCE                   (0x5U)
 
