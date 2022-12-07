@@ -672,7 +672,7 @@ int main(void)
     enableMAINI2C(0, CSL_I2C0_CFG_BASE);
 #endif
 
-#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2)) && !defined (__aarch64__)
+#if (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) && !defined (__aarch64__)
     /* MCU I2C instance will be active by default for R5 core.
      * Need update HW attrs to enable MAIN I2C instance.
      */

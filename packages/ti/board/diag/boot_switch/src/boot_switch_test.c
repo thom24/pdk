@@ -485,7 +485,11 @@ int main(void)
     Board_initParams_t initParams;
 
     Board_getInitParams(&initParams);
+#if defined(j784s4_evm)
+    initParams.uartInst = BOARD_UART_INSTANCE;
+#else
     initParams.uartInst = 0;
+#endif
     initParams.uartSocDomain = BOARD_SOC_DOMAIN_MAIN;
     Board_setInitParams(&initParams);
 #endif
