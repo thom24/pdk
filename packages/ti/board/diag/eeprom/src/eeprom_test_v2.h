@@ -121,7 +121,7 @@ extern "C" {
 #elif defined(j784s4_evm)
 #define I2C_INSTANCE                            (0U)
 #define MAX_NUM_OF_BOARDS                       (BOARD_ID_MAX_BOARDS)
-#define STARTING_BOARD_NUM                      (1U)
+#define STARTING_BOARD_NUM                      (0U)
 
 #define EVM_EEPROM_SLAVE_ADDR                   (BOARD_EVM_EEPROM_SLAVE_ADDR)
 #define EXP_CONN_EEPROM_SLAVE_ADDR              (BOARD_GESI_EEPROM_SLAVE_ADDR)
