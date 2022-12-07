@@ -44,9 +44,7 @@
 #if defined(OSPI_TESTAPP_RTOS)
 #include "ti/osal/osal.h"
 #include "ti/osal/TaskP.h"
-#if defined(OSPI_TESTAPP_TIRTOS)
-#include <ti/sysbios/utils/Load.h>
-#endif
+#include "ti/osal/LoadP.h"
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #if defined (__aarch64__)
 #include <ti/sysbios/family/arm/v8a/Mmu.h>
@@ -876,7 +874,7 @@ static bool OSPI_flash_test(void *arg)
     uint64_t          elapsedTime; /* elapsed time in usec */
     float             xferRate;
     uint32_t          xferRateInt;
-#if defined(OSPI_TESTAPP_TIRTOS)
+#if defined(FREERTOS)
     uint32_t          cpuLoad;
 #endif
 #endif
@@ -1031,8 +1029,8 @@ static bool OSPI_flash_test(void *arg)
         }
     }
 #ifdef OSPI_PROFILE
-#if defined(OSPI_TESTAPP_TIRTOS)
-    Load_reset( );
+#if defined(FREERTOS)
+    LoadP_reset( );
 #endif
     /* Get start time stamp for the write performance measurement */
     startTime = TimerP_getTimeInUsecs();
@@ -1060,15 +1058,14 @@ static bool OSPI_flash_test(void *arg)
 
 #ifdef OSPI_PROFILE
     elapsedTime = TimerP_getTimeInUsecs() - startTime;
-#if defined(OSPI_TESTAPP_TIRTOS)
-    Load_update( );
-    cpuLoad = Load_getCPULoad();
+#if defined(FREERTOS)
+    cpuLoad = LoadP_getCPULoad();
 #endif
     /* calculate the write transfer rate in Kbps */
     xferRate = (float) (((float) (testLen * 8)) / elapsedTime) * 1000U;
     xferRateInt = (uint32_t)xferRate;
     SPI_log("\n Board_flashWrite %d bytes at transfer rate %d Kbps \n", testLen, xferRateInt);
-#if defined(OSPI_TESTAPP_TIRTOS)
+#if defined(FREERTOS)
     SPI_log("\n Board_flashWrite CPU load %d%% \n", cpuLoad);
 #endif
 #endif
@@ -1137,8 +1134,8 @@ static bool OSPI_flash_test(void *arg)
         elapsedPhyTuningTime = TimerP_getTimeInUsecs() - startPhyTuningTime;
         SPI_log("\n PHY tuning + 4 byte read took %d us \n", (uint32_t)elapsedPhyTuningTime);
     }
-#if defined(OSPI_TESTAPP_TIRTOS)
-    Load_reset( );
+#if defined(FREERTOS)
+    LoadP_reset( );
 #endif
     /* Get start time stamp for the read performance measurement */
     startTime = TimerP_getTimeInUsecs();
@@ -1165,15 +1162,14 @@ static bool OSPI_flash_test(void *arg)
 
 #ifdef OSPI_PROFILE
     elapsedTime = TimerP_getTimeInUsecs() - startTime;
-#if defined(OSPI_TESTAPP_TIRTOS)
-    Load_update( );
-    cpuLoad = Load_getCPULoad();
+#if defined(FREERTOS)
+    cpuLoad = LoadP_getCPULoad();
 #endif
     /* calculate the write transfer rate in Kbps */
     xferRate = (float) (((float) (testLen * 8)) / elapsedTime);
     xferRateInt = (uint32_t)xferRate;
     SPI_log("\n Board_flashRead %d bytes at transfer rate %d Mbps \n", testLen, xferRateInt);
-#if defined(OSPI_TESTAPP_TIRTOS)
+#if defined(FREERTOS)
     SPI_log("\n Board_flashRead CPU load %d%% \n", cpuLoad);
 #endif
 #endif
