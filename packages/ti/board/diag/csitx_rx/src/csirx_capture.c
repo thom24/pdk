@@ -177,6 +177,7 @@ void BoardDiag_initCaptParams(BoardDiag_CsiTxObj *csirxObj)
     csirxObj->captObj.createPrms.instCfg.enableCsiv2p0Support = (uint32_t)TRUE;
     csirxObj->captObj.createPrms.instCfg.numDataLanes = 4U;
     csirxObj->captObj.createPrms.instCfg.enableErrbypass = (uint32_t)FALSE;
+    csirxObj->captObj.createPrms.instCfg.enableStrm[CSIRX_CAPT_STREAM_ID] = 1U;
     for (loopCnt = 0U ;
          loopCnt < csirxObj->captObj.createPrms.instCfg.numDataLanes ;
          loopCnt++)

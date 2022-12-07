@@ -446,6 +446,8 @@ int32_t BoardDiag_csitxTest(BoardDiag_CsiTxObj *csitxObj)
         }
     }
 
+    UART_printf("Tx streaming has started\n");
+
     /* Wait for transfer completion */
     while (csitxObj->numFramesTx < csitxObj->numFramesToTx)
     {
