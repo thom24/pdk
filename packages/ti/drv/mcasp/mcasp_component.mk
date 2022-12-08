@@ -82,7 +82,7 @@ drvmcasp_omapl137_CORELIST = c674x arm9_0
 drvmcasp_omapl138_CORELIST = c674x arm9_0
 drvmcasp_am65xx_CORELIST     = mpu1_0 mcu1_0
 drvmcasp_j721e_CORELIST     = mpu1_0 mcu1_0 mcu2_0 c66xdsp_1 c66xdsp_2
-drvmcasp_j721s2_CORELIST    = mcu1_0 mcu2_0 mcu3_0
+drvmcasp_j721s2_CORELIST    = mcu2_0 mcu3_0
 drvmcasp_j7200_CORELIST     = mpu1_0 mcu1_0 mcu2_0
 drvmcasp_RTOS_LIST          = $(DEFAULT_RTOS_LIST)
 
