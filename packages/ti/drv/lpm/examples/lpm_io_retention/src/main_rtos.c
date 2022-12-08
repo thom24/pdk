@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2021 Texas Instruments Incorporated
+* Copyright (c) 2021-22 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -89,6 +89,8 @@ Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
 /**< Stack required for the stack */
 #define MAIN_APP_TASK_PRIORITY          (2)
 
+/* Enable to pause before entering the low power mode and check the PADCONF values*/
+#define PAUSE_BEFORE_ENTERING_LPM        (0)
 
 /*********************************  *************************************
  ************************** Internal functions ************************
@@ -369,13 +371,13 @@ void wkup_configure_can_uart_lock_dmsc()
     *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK0) = 0x0;
     *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, DMSC_CM_LOCK0_KICK1) = 0x0;
 
-/* Pause before entering the low power mode and check the PADCONF values*/
-#if 0
-    UART_printf("PADCONFIG52 (0x4301c0d0) immediately after entering IO retention : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1c0d0);
-    AppUtils_Printf(MSG_NORMAL, "Press enter key to send I2C commands to PMIC to enter low power mode... ");
-    int c;
-    UART_scanFmt("%d", &c);
-#endif
+    if(PAUSE_BEFORE_ENTERING_LPM)
+    {
+        int c;
+        UART_printf("PADCONFIG52 (0x4301c0d0) immediately after entering IO retention : 0x%x\n", *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1c0d0));
+        AppUtils_Printf(MSG_NORMAL, "Press enter key to send I2C commands to PMIC to enter low power mode... ");
+        UART_scanFmt("%d", &c);
+    }
 }
 
 

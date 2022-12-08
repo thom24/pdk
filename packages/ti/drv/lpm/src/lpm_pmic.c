@@ -1,6 +1,6 @@
 /*
 *
-* Copyright (c) 2021 Texas Instruments Incorporated
+* Copyright (c) 2021-22 Texas Instruments Incorporated
 *
 * All rights reserved not granted herein.
 *
@@ -2228,6 +2228,7 @@ void Lpm_pmicStateChangeActiveToIORetention(void)
      */
 
     uint8_t dataToSlave[2];
+	uint8_t dataFromSlave[2];
 
     if(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE)
     {
@@ -2268,24 +2269,69 @@ void Lpm_pmicStateChangeActiveToIORetention(void)
     dataToSlave[1] = 0xF7;
     Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write MASK_GPIO1_8_FALL = 0x%x\n", dataToSlave[1]);
+	
+	/* Pause after unmask GPIO4 but before read 0x3F for nINT */
+    {
+        int c;
+        AppUtils_Printf(MSG_NORMAL, "Lpm_pmicStateChangeActiveToIORetention: Press enter key to send I2C commands to PMIC to enter low power mode...before STEP4A ");
+        /* Using UART_scanFmt control will wait till user enters key
+         Unmask of GPIO4 can be checked */
+        UART_scanFmt("%d", &c);
+    }
 
+    /* Read back Register 0x3F from PMIC A, check bit 3 if low then exit (to be implemented) */	
+	dataToSlave[0] = 0x3F;
+    Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 1, dataFromSlave, 1);
+    AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "PMICA_REG_0x3F = 0x%x\n", dataFromSlave[0]);
+	
+    /* clear nINT to allow PMIC go to IORET */
+    {
+        int c;
+        AppUtils_Printf(MSG_NORMAL, "Lpm_pmicStateChangeActiveToIORetention: Press enter key to clear nINT ");
+        /*Check the nINT beofre clear at this point */
+        UART_scanFmt("%d", &c);
+        dataToSlave[0] = 0x64;
+        dataToSlave[1] = 0x08;
+        Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+    }
+ 
     /* Change FSM_I2C_TRIGGERS */
     dataToSlave[0] = 0x85;
     dataToSlave[1] = 0x40;
     Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_I2C_TRIGGERS = 0x%x\n", dataToSlave[1]);
-
+	
     /* Change FSM_I2C_TRIGGERS - PMICB */
     dataToSlave[0] = 0x85;
     dataToSlave[1] = 0x40;
     Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x4C, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
 
+    /* Pause before send I2C commands to PMIC to enter low power mode. */
+    {
+        int c;
+        AppUtils_Printf(MSG_NORMAL, "Lpm_pmicStateChangeActiveToIORetention: Press enter key to send I2C commands to PMIC to enter low power mode...immediately before STEP6 (gotoioret)");
+        /* Wait till user enter key Memory values before sending I@C commands can be checked */
+        UART_scanFmt("%d", &c);
+    }
+
     /* Change FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
     dataToSlave[1] = 0x00;
     Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Write FSM_NSLEEP_TRIGGERS = 0x%x\n", dataToSlave[1]);
+
+    /* JWTBD clear nINT to allow PMIC go to IORET, if there is pre-existing interrupt on GPIO4 */
+    {
+        int c;
+        AppUtils_Printf(MSG_NORMAL, "GPIO4 interrupt PENDING, device can not go into IORET: Press any key to clear... ");
+        UART_scanFmt("%d", &c);
+        AppUtils_Printf(MSG_NORMAL, "Clearing GPIO4 pending interrupt to allow entering IORET: Good Night!");
+        dataToSlave[0] = 0x64;
+        dataToSlave[1] = 0x08;
+        Lpm_setupI2CTransfer(gLpmPmicI2cHandle, 0x48, dataToSlave, 2, NULL, 0);
+        AppUtils_Printf(MSG_NORMAL, "signing off!"); //this line should not execute
+    }
 
     return;
 }
