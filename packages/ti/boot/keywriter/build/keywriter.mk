@@ -8,16 +8,25 @@ APP_NAME                     = keywriter_img
 LOCAL_APP_NAME               = keywriter_img_$(SOC)
 BUILD_OS_TYPE                = baremetal
 
+# J784S4 EVM does not use PMIC
+ifeq ($(BOARD),j784s4_evm)
+VPP_EN_CONTROL               = gpio
+else
+VPP_EN_CONTROL               = pmic
+endif
+
 KEYWRITER_APP_DIR            = $(PDK_KEYWR_COMP_PATH)
 SRCDIR                      += $(KEYWRITER_APP_DIR)
 
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/board/src/$(BOARD)/include
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/csl
 INCDIR                      += $(KEYWRITER_APP_DIR)/boardcfgs/$(SOC)
+ifeq ($(VPP_EN_CONTROL),pmic)
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/include
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/common
 INCDIR                      += $(PDK_INSTALL_PATH)/ti/drv/pmic/test/power_test
+endif
 INCDIR                      += $(KEYWRITER_APP_DIR)/soc/$(SOC)
 
 PACKAGE_SRCS_COMMON          = . ../boardcfgs/$(SOC) ../scripts ../soc/common ../soc/$(SOC)
@@ -29,7 +38,10 @@ PACKAGE_SRCS_COMMON         += ../keywriter_component.mk ../main.h
 INCLUDE_EXTERNAL_INTERFACES  = pdk
 
 # List all the components required by the application
-COMP_LIST_COMMON             = pmic sciclient_direct board uart osal_nonos csl csl_init i2c gpio rm_pm_hal
+COMP_LIST_COMMON             = sciclient_direct board uart osal_nonos csl csl_init i2c gpio rm_pm_hal
+ifeq ($(VPP_EN_CONTROL),pmic)
+COMP_LIST_COMMON            += pmic
+endif
 
 CFLAGS_LOCAL_COMMON          = $(PDK_CFLAGS)
 
@@ -49,7 +61,9 @@ ifeq ($(SOC),j721e)
 endif
 
 SRCS_COMMON                 += main.c
+ifeq ($(VPP_EN_CONTROL),pmic)
 SRCS_COMMON                 += soc/common/pmic_example.c
+endif
 SRCS_COMMON                 += soc/$(SOC)/keywriter_utils.c
 SRCS_ASM_COMMON             += init.asm
 
