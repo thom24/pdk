@@ -85,12 +85,12 @@ ulGetInstructionFaultAddressRegister:
         BX      LR
 
 ;-------------------------------------------------------------------------------
-; void vDataAbort( void )
+; void vApplicationDataAbortHook( void )
 ;-------------------------------------------------------------------------------
-        .global vDataAbort
+        .global vApplicationDataAbortHook
         .arm
 
-vDataAbort:
+vApplicationDataAbortHook:
 	;  Return to the instruction following the interrupted.
 	SUB		lr, lr, #4
 

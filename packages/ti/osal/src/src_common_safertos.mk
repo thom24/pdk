@@ -30,13 +30,23 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
   SRCS_COMMON += TimerP_default_$(ISA).c
 endif
 
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1))
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1))
   SRCDIR += arch/core/r5
   SRCS_COMMON += CacheP_nonos.c Arch_util.c SafeRTOS_aborts_r5f.c SafeRTOS_mpu_r5f.c HwiP_safertos.c
   SRCS_COMMON += SafeRTOS_config_r5f.c
-  SRCS_ASM_COMMON += TimestampProvider_asm.asm SafeRTOS_utils_r5f.asm
-  PACKAGE_SRCS_COMMON += arch/core/r5  src/safertos/SafeRTOS_utils_r5f.asm  src/safertos/SafeRTOS_aborts_r5f.c src/safertos/SafeRTOS_mpu_r5f.c
-  PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_r5f.c src/safertos/HwiP_safertos.c 
+  SRCS_ASM_COMMON += TimestampProvider_asm.asm
+  ifeq ($(SOC),$(filter $(SOC), j7200))
+    SRCS_ASM_COMMON += SafeRTOS_utils_j7200_r5f.asm
+  else
+    SRCS_ASM_COMMON += SafeRTOS_utils_r5f.asm
+  endif
+  PACKAGE_SRCS_COMMON += arch/core/r5 src/safertos/SafeRTOS_aborts_r5f.c src/safertos/SafeRTOS_mpu_r5f.c
+  PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_r5f.c src/safertos/HwiP_safertos.c
+  ifeq ($(SOC),$(filter $(SOC), j7200))
+    PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_utils_j7200_r5f.asm
+  else
+    PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_utils_r5f.asm
+  endif
 endif
 
 ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))
@@ -47,7 +57,7 @@ ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))
   PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_c66.c
 endif
 
-ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2))
+ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2 c7x_3 c7x_4))
   SRCDIR += arch/core/c7x
   SRCS_COMMON += Arch_util.c HwiP_safertos_c7x.c CacheP_freertos_c7x.c SafeRTOS_config_c7x.c
   PACKAGE_SRCS_COMMON += src/freertos/CacheP_freertos_c7x.c src/safertos/HwiP_safertos_c7x.c arch/core/c7x/Arch_util.c src/safertos/SafeRTOS_config_c7x.c

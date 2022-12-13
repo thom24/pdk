@@ -24,6 +24,12 @@ while [ $# -gt 0 ]; do
     --j721e_r5f_path=*)
       j721e_r5f_path="${1#*=}"
       ;;
+    --j721e_c66_path=*)
+      j721e_c66_path="${1#*=}"
+      ;;
+    --j721e_c7x_path=*)
+      j721e_c7x_path="${1#*=}"
+      ;;   
     --j7200_r5f_path=*)
       j7200_r5f_path="${1#*=}"
       ;;
@@ -33,12 +39,12 @@ while [ $# -gt 0 ]; do
     --j721s2_c7x_path=*)
       j721s2_c7x_path="${1#*=}"
       ;;
-    --j721e_c66_path=*)
-      j721e_c66_path="${1#*=}"
+    --j784s4_c7x_path=*)
+      j784s4_c7x_path="${1#*=}"
       ;;
-    --j721e_c7x_path=*)
-      j721e_c7x_path="${1#*=}"
-      ;;    
+    --j784s4_r5f_path=*)
+      j784s4_r5f_path="${1#*=}"
+      ;;  
     -h|--help)
       echo Usage: $0 [options]
       echo
@@ -49,6 +55,8 @@ while [ $# -gt 0 ]; do
       echo "--j7200_r5f_path       Path to J7200(DRA821) R5F SafeRTOS Package from WHIS"
       echo "--j721s2_r5f_path      Path to J721S2(TDA4VL) R5F SafeRTOS Package from WHIS"
       echo "--j721s2_c7x_path      Path to J721S2(TDA4VL) C7X SafeRTOS Package from WHIS"
+      echo "--j784s4_r5f_path      Path to J784S4(TDA4VH) R5F SafeRTOS Package from WHIS"
+      echo "--j784s4_c7x_path      Path to J784S4(TDA4VH) C7X SafeRTOS Package from WHIS"
       exit 0
       ;;
     *)
@@ -73,7 +81,7 @@ if [ ! "${j721e_r5f_path}" == "" ]; then
     make safertos -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j721e_evm
     make safertos -sj8 CORE=mcu3_0 BUILD_PROFILE=release BOARD=j721e_evm
     make safertos -sj8 CORE=mcu3_1 BUILD_PROFILE=release BOARD=j721e_evm
-    #Build osal_safertos for R5F
+    #OSAL is a core independent library, and hence building for 1 of the cores is sufficient.
     make osal_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721e_evm
     #Build sciserver_testapp_safertos and check-in
     make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721e_evm
@@ -92,7 +100,7 @@ if [ ! "${j721e_c66_path}" == "" ]; then
     #Build safertos lib for all c66 cores
     make safertos -sj8 CORE=c66xdsp_1 BUILD_PROFILE=release;
     make safertos -sj8 CORE=c66xdsp_2 BUILD_PROFILE=release;
-    #Build osal_safertos for c66
+    #OSAL is a core independent library, and hence building for 1 of the cores is sufficient.
     make osal_safertos -sj8 CORE=c66xdsp_1 BUILD_PROFILE=release;
     printf "\n Successfully completed setup SafeRTOS Builds for J721E C66\n\n"
   fi
@@ -124,7 +132,7 @@ if [ ! "${j7200_r5f_path}" == "" ]; then
     make safertos -sj8 CORE=mcu1_1 BUILD_PROFILE=release BOARD=j7200_evm
     make safertos -sj8 CORE=mcu2_0 BUILD_PROFILE=release BOARD=j7200_evm
     make safertos -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j7200_evm
-    #Build osal_safertos for R5F
+    #OSAL is a core independent library, and hence building for 1 of the cores is sufficient.
     make osal_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
     #Build sciserver_testapp_safertos and check-in
     make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
@@ -148,7 +156,7 @@ if [ ! "${j721s2_r5f_path}" == "" ]; then
     make safertos -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j721s2_evm
     make safertos -sj8 CORE=mcu3_0 BUILD_PROFILE=release BOARD=j721s2_evm
     make safertos -sj8 CORE=mcu3_1 BUILD_PROFILE=release BOARD=j721s2_evm
-        #Build osal_safertos for R5F
+    #OSAL is a core independent library, and hence building for 1 of the cores is sufficient.
     make osal_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721s2_evm
     #Build sciserver_testapp_safertos and check-in
     make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721s2_evm
@@ -168,10 +176,54 @@ if [ ! "${j721s2_c7x_path}" == "" ]; then
     #Build safertos lib for all C7X cores
     make safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release BOARD=j721s2_evm
     make safertos -sj8 CORE=c7x_2 BUILD_PROFILE=release BOARD=j721s2_evm
-
-        #Build osal_safertos for C7X
+    #OSAL is a core independent library, and hence building for 1 of the cores is sufficient.
     make osal_safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release BOARD=j721s2_evm
     printf "\n Successfully completed setup SafeRTOS Builds for J721S2 C7X\n\n"
+  fi
+fi
+
+if [ ! "${j784s4_r5f_path}" == "" ]; then
+  printf "\n j784s4_r5f_path = $j784s4_r5f_path \n\n"
+  if [ !  -d ${j7284s4_r5f_path} ] ; then
+    printf "\n Error: Invalid j784s4_r5f_path!!\n\n"
+  else
+    #Update R5F Install Path
+    sed -i -e "s|SAFERTOS_j784s4_r5f_INSTALL_PATH =.*|SAFERTOS_j784s4_r5f_INSTALL_PATH = ${j784s4_r5f_path}|g" safertos_version.mk
+    #Build safertos lib for all R5F cores
+    make safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=mcu1_1 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=mcu2_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=mcu3_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=mcu3_1 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=mcu4_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=mcu4_1 BUILD_PROFILE=release BOARD=j784s4_evm
+    #OSAL is a core independent library, and hence building for 1 of the cores is sufficient.
+    make osal_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    #Build sciserver_testapp_safertos and check-in
+    make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j784s4/sciserver_testapp_safertos_mcu1_0_release.xer5f ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j784s4/
+    cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j784s4/sciserver_testapp_safertos_mcu1_0_release.rprc  ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j784s4/
+    printf "\n Successfully completed setup SafeRTOS Builds for j784s4 R5F\n\n"
+  fi
+fi
+
+if [ ! "${j784s4_c7x_path}" == "" ]; then
+  printf "\n j784s4_c7x_path = $j784s4_c7x_path \n\n"
+  if [ !  -d ${j784s4_c7x_path} ] ; then
+    printf "\n Error: Invalid j784s4_c7x_path!!\n\n"
+  else
+    #Update C7X Install Path
+    sed -i -e "s|SAFERTOS_j784s4_c7x_INSTALL_PATH =.*|SAFERTOS_j784s4_c7x_INSTALL_PATH = ${j784s4_c7x_path}|g" safertos_version.mk
+    #Build safertos lib for all C7X cores
+    make safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=c7x_2 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=c7x_3 BUILD_PROFILE=release BOARD=j784s4_evm
+    make safertos -sj8 CORE=c7x_4 BUILD_PROFILE=release BOARD=j784s4_evm
+    #OSAL is a core independent library, and hence building for 1 of the cores is sufficient.
+    make osal_safertos -sj8 CORE=c7x_1 BUILD_PROFILE=release BOARD=j784s4_evm
+
+    printf "\n Successfully completed setup SafeRTOS Builds for j784s4 C7X\n\n"
   fi
 fi
 

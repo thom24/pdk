@@ -19,7 +19,7 @@
 --diag_suppress=10063                   /* entry point not _c_int00 */
 --stack_size=0x4000
 --heap_size=0x8000
---entry_point=_safeRTOSresetvectors     /* C RTS boot.asm with added SVC handler	*/
+--entry_point=_axSafeRTOSresetVectors     /* C RTS boot.asm with added SVC handler	*/
 
 -stack  0x4000  /* SOFTWARE STACK SIZE */
 -heap   0x8000  /* HEAP AREA SIZE      */
@@ -62,34 +62,38 @@ SECTIONS
 /* Startup code sections. */
     GROUP
     {
-        .bootCode                                               : {} palign( 8 )
-        .startupCode                                            : {} palign( 8 )
         .pinit                                                  : {} align( 32 )
         .cinit                                                  : {} align( 32 )
         .MPU_INIT_FUNCTION                                      : {} palign( 8 )
-        .startupData                                            : {} palign( 8 ), type = NOINIT
     } > R5F_TCMA0
 
 
+    .bootCode                                               : {} palign( 8 ) > R5F_TCMB0
+    .startupCode                                            : {} palign( 8 ) > R5F_TCMB0
+    .startupData                                            : {} palign( 8 ), type = NOINIT > R5F_TCMB0
 
 /* Code sections. */
     GROUP LOAD_START( lnkFlashStartAddr ), LOAD_END( lnkFlashEndAddr )
     {
         .KERNEL_FUNCTION LOAD_START( lnkKernelFuncStartAddr ),
-                         LOAD_END( lnkKernelFuncEndAddr ) 
+                         LOAD_END( lnkKernelFuncEndAddr ) : {} align( 0x1000 )
     } > R5F_TCMB0
 
     .unpriv_flash palign( 32 ) :
     {
         *(.text)
-        *(.rodata)
     } > OCMC_RAM_SCISERVER
+
+    .rodatasec align( 32 ) :
+    {
+        *(.rodata)
+    } >>  R5F_TCMB0 | OCMC_RAM_SCISERVER
 
 /* Data sections. */
 
     .KERNEL_DATA LOAD_START( lnkKernelDataStartAddr ),
                     LOAD_END( lnkKernelDataEndAddr )        : {} palign( 0x800 )  > R5F_TCMB0
-    .boardcfg_data                                          : {} palign( 128 ) > R5F_TCMB0
+    .boardcfg_data                                          : {} palign( 128 ) > OCMC_RAM_SCISERVER
 
     GROUP  palign( 32 ), LOAD_START( lnkRamStartAddr ), LOAD_END( lnkRamEndAddr )
     {
@@ -105,7 +109,7 @@ SECTIONS
     /* Stack sections. */
     .stack  RUN_START( lnkStacksStartAddr ) : {} align(4) > R5F_TCMA0
 
-    .irqStack                               : {. = . + __IRQ_STACK_SIZE;}   align(4) > R5F_TCMB0
+    .irqStack                               : {. = . + __IRQ_STACK_SIZE;}   align(4) > R5F_TCMA0
     RUN_START(__IRQ_STACK_START)
     RUN_END(__IRQ_STACK_END)
     .fiqStack                               : {. = . + __FIQ_STACK_SIZE;}   align(4) > R5F_TCMB0
@@ -117,7 +121,7 @@ SECTIONS
     .undStack                               : {. = . + __UND_STACK_SIZE;}   align(4) > R5F_TCMB0
     RUN_START(__UND_STACK_START)
     RUN_END(__UND_STACK_END)
-    .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4) > R5F_TCMB0
+    .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4) > OCMC_RAM_SCISERVER
     RUN_START(__SVC_STACK_START)
     RUN_END(__SVC_STACK_END)
 

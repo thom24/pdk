@@ -302,12 +302,12 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 endif
 
 ifeq ($(BUILD_OS_TYPE),safertos)
-  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     ifeq ($(CONFIG_BLD_XDC_r5f),)
         CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_safertos.lds
     endif
   endif
-  ifeq ($(SOC),$(filter $(SOC), j721e j721s2))
+  ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
     ifeq ($(CONFIG_BLD_XDC_c7x),)
         CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x_safertos.cmd
     endif

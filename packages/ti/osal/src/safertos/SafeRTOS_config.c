@@ -60,7 +60,11 @@
 #define configSTACK_CHECK_MARGIN            ( 0U )
 
 /* The user configuration for the timer module. */
+/* SafeRTOS package defines this. We want to use the OSAL definition in PDK */
+#undef configTIMER_TASK_PRIORITY
 #define configTIMER_TASK_PRIORITY           ( configMAX_PRIORITIES - 1U )
+/* SafeRTOS package defines this. We want to use the OSAL definition in PDK */
+#undef configTIMER_QUEUE_LENGTH
 #define configTIMER_QUEUE_LENGTH            ( 50U )
 #define configTIMER_CMD_QUEUE_BUFFER_SIZE   ( ( configTIMER_QUEUE_LENGTH * sizeof( timerQueueMessageType ) ) + safertosapiQUEUE_OVERHEAD_BYTES )
 
@@ -273,18 +277,26 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1;
     }
-#if defined (SOC_J721E) || defined (SOC_J721S2)
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
     {    
         params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1;
     }
+#endif
+#if defined (SOC_J784S4)
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3)
+    {    
+        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_SAFERTOS_OS_TIMER_ID_MCU4_0:
+                                        OSAL_SAFERTOS_OS_TIMER_ID_MCU4_1;
+    } 
+#endif
     else
     {
           /*   Do nothing  */
     }
-#endif
 #elif defined (BUILD_C7X)
     int32_t rtMapCpuId;
     rtMapCpuId = CSL_clecGetC7xRtmapCpuId();
@@ -294,11 +306,25 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
         params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1;
         params->eventId = TimerP_USE_DEFAULT;
     }
-#if defined (SOC_J721S2)
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
     else if (CSL_CLEC_RTMAP_CPU_5 == rtMapCpuId)
     {
         params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_2;
         params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2;
+        params->eventId = TimerP_USE_DEFAULT;
+    }
+#endif
+#if defined (SOC_J784S4)
+    else if (CSL_CLEC_RTMAP_CPU_6 == rtMapCpuId)
+    {
+        params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_3;
+        params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_3;
+        params->eventId = TimerP_USE_DEFAULT;
+    }
+    else if (CSL_CLEC_RTMAP_CPU_7 == rtMapCpuId)
+    {
+        params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C7X_4;
+        params->intNum  = OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_4;
         params->eventId = TimerP_USE_DEFAULT;
     }
 #endif

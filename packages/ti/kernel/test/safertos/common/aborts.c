@@ -52,8 +52,11 @@ portUInt32Type ulGetInstructionFaultAddressRegister( void );
 /*-----------------------------------------------------------------------------
  * Function Definitions
  *---------------------------------------------------------------------------*/
-
+#if !defined (SOC_J7200)
+void vApplicationDataAbortHook( void )
+#else
 void vDataAbort( void )
+#endif
 {
     volatile portUInt32Type ulDataFaultStatusReg;
     volatile portUInt32Type ulDataFaultAddressReg;
@@ -68,7 +71,11 @@ void vDataAbort( void )
 }
 /*---------------------------------------------------------------------------*/
 
+#if !defined (SOC_J7200)
+void vApplicationPrefetchAbortHook( void )
+#else
 void vPrefetchAbort( void )
+#endif
 {
     volatile portUInt32Type ulInstrFaultStatusReg;
     volatile portUInt32Type ulInstrFaultAddressReg;
@@ -82,7 +89,11 @@ void vPrefetchAbort( void )
     }
 }
 /*---------------------------------------------------------------------------*/
+#if !defined (SOC_J7200)
+void vApplicationUndefAbortHook( void )
+#else
 void vUndefAbort( void )
+#endif
 {
     for( ;; )
     {

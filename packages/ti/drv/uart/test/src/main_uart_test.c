@@ -3242,7 +3242,7 @@ int main(void)
 #if defined(SAFERTOS) && defined (BUILD_MCU) 
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(APP_TSK_STACK_MAIN)));
 #else
-static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(32)));
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__((aligned(64)));
 #endif
 /*
  *  ======== main ========

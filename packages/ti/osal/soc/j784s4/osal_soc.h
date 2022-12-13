@@ -113,6 +113,32 @@ extern "C" {
 #define OSAL_FREERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
 
 #define OSAL_ARCH_TIMER_INST_FOR_TS         (TimerP_ANY)
+
+/* Max number of various modules for SafeRTOS */
+#define OSAL_SAFERTOS_MAX_HWIP_PER_SOC       ((uint32_t) 40U)
+#define OSAL_SAFERTOS_MAX_SEMAPHOREP_PER_SOC ((uint32_t) 150U)
+#define OSAL_SAFERTOS_MAX_TASKP_PER_SOC      ((uint32_t) 40U)
+#define OSAL_SAFERTOS_MAX_TIMERP_PER_SOC     (TimerP_numTimerDevices)
+#define OSAL_SAFERTOS_MAX_CLOCKP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_MUTEXP_PER_SOC     ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_MAILBOXP_PER_SOC   ((uint32_t) 20U)
+#define OSAL_SAFERTOS_MAX_EVENTP_PER_SOC     ((uint32_t) 20U)
+ 
+ 
+#if defined (BUILD_MCU)
+/* Default DM Timer allocation for r5f cores in j784s4   */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1 )   /*  MCU DM Timer 1  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2 )   /*  MCU DM Timer 2  */  
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 4 )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 5 )   /*  DM Timer 13  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0        ( 6 )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 7 )   /*  DM Timer 13  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU4_0        ( 8 )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU4_1        ( 9 )   /*  DM Timer 13  */
+
+#endif
+
+
 /**< Default timer instance for timer */
 
 /* external references */
@@ -126,6 +152,25 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
  *
  */
 void OsalCfgClecAccessCtrl (bool onlyInSecure);
+
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 0 )   /*  DMTimer 0  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 14 )
+
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_2         ( 1 )   /*  DMTimer 1  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2    ( 14 )
+
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_3         ( 2 )   /*  DMTimer 2  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_3    ( 14 )
+
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_4         ( 3 )   /*  DMTimer 3  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_4    ( 14 )
+
+#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13 )
+
 #endif
 
 #ifdef __cplusplus

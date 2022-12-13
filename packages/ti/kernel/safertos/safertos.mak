@@ -15,7 +15,7 @@ ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/${SAFERTOS_ISA_EXT_$(ISA)}
 endif
 ifeq ($(ISA),$(filter $(ISA), c7x))
-SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_$(TDA_EXT_$(SOC))_C7x_Demo/TI_c7x_Support
+SRCDIR += $(PDK_SAFERTOS_COMP_PATH)/TI_CGT/c7x
 endif
 
 INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT_$(ISA))
@@ -27,8 +27,7 @@ INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRT
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))/$(SAFERTOS_COMPILER_EXT_$(ISA))
 ifeq ($(ISA),$(filter $(ISA), c7x))
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/NoWrapper
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_$(TDA_EXT_$(SOC))_C7x_Demo/TI_c7x_Support
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/demo_projects/SafeRTOS_$(TDA_EXT_$(SOC))_C7x_Demo
+INCDIR += $(PDK_SAFERTOS_COMP_PATH)/TI_CGT/c7x
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -75,15 +74,12 @@ ifeq ($(ISA),$(filter $(ISA), c7x))
 ifneq ($(CPLUSPLUS_BUILD), yes)
 SRCS_COMMON += \
     boot.c \
-    Exception.c \
     Hwi.c \
     Startup.c \
     c7x_module_config.c \
     Mmu.c \
-    TimestampProvider.c \
-    IntrinsicsSupport.c \
     Cache.c \
-    Mmu_table.c 
+    Mmu_table.c
 endif
 endif
 
@@ -102,11 +98,8 @@ ifeq ($(ISA),$(filter $(ISA), c7x))
 SRCS_ASM_COMMON := \
     portasm.asm \
     Mmu_asm.asm \
-    Clobber_asm.asm \
     Cache_asm.asm \
-    Hwi_asm.asm \
-    Exception_asm.asm \
-    Hwi_asm_switch.asm 
+    Hwi_asm.asm
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
@@ -119,6 +112,7 @@ PACKAGE_SRCS_COMMON = safertos.mak safertos_component.mk
 PACKAGE_SRCS_COMMON += ../test/safertos/task_switch
 PACKAGE_SRCS_COMMON += ../test/safertos/ut
 PACKAGE_SRCS_COMMON += ../test/safertos/common
+PACKAGE_SRCS_COMMON += ../safertos/TI_CGT/c7x
 
 #include posix support files if present
 -include safertos_posix.mak

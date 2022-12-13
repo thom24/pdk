@@ -39,6 +39,13 @@
 #include <ti/osal/CycleprofilerP.h>
 
 #if defined (BUILD_C7X)
+#if defined(SOC_J721E)
+/* configTICK_TIMER_ID and configTICK_TIMER_INT_NUM is not defined in WHIS package
+ * for J721E-C7X: 009-004-230-005-235-001
+ */
+#define configTICK_TIMER_ID 2
+#define configTICK_TIMER_INT_NUM 16
+#endif
 #include <ti/csl/csl_clec.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 #endif

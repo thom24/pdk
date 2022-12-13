@@ -108,6 +108,8 @@ Osal_HwAttrs  gOsal_HwAttrs = {
 static uint32_t Osal_getSP(void);
 #endif
 
+extern portBaseType xPortInIsrContext( void );
+
 /*
  *  ======== Osal_DebugP_assert ========
  */

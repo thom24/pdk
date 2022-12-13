@@ -40,7 +40,6 @@
 #include "SafeRTOS_priv.h"
 
 #include "Mmu.h"
-#include "Exception.h"
 
 #include <ti/csl/csl_clec.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
@@ -153,18 +152,10 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure)
 
 /*---------------------------------------------------------------------------*/
 
-/* Dispatch handler for TI PDK style exceptions. */
-void vApplicationExceptionHandlerHook( portBaseType xAbortFlag, portBaseType xVectorType )
-{
-   Exception_handler( xAbortFlag, xVectorType );
-}
-
-/*---------------------------------------------------------------------------*/
-
 /* Dispatch handler for TI PDK style interrupts. */
-portBaseType xApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorNum )
+void vApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorNum )
 {
-   return Hwi_dispatchC( ulInterruptVectorNum );
+   Hwi_dispatchCore( ulInterruptVectorNum );
 }
 
 /*-----------------------------------------------------------------------------
@@ -175,6 +166,29 @@ portBaseType xApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorN
  * Private function definitions.
  *---------------------------------------------------------------------------*/
 
+
+static void prvCfgClecAccessCtrl ( Bool onlyInSecure )
+{
+    CSL_ClecEventConfig cfgClec;
+    CSL_CLEC_EVTRegs   *clecBaseAddr = ( CSL_CLEC_EVTRegs* ) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+    uint32_t            i, maxInputs = 2048U;
+    uint32_t            secureClaim = 0U;
+
+    cfgClec.secureClaimEnable = onlyInSecure;
+    cfgClec.evtSendEnable     = FALSE;
+    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
+    cfgClec.extEvtNum         = 0U;
+    cfgClec.c7xEvtNum         = 0U;
+    for(i = 0U; i < maxInputs; i++)
+    {
+        CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);
+        if(secureClaim)
+        {
+            CSL_clecConfigEvent( clecBaseAddr, i, &cfgClec );
+        }
+    }
+}
+/*-------------------------------------------------------------------------*/
 static void prvMmuInit( Bool isSecure )
 {
     Mmu_MapAttrs    attrs;
@@ -214,31 +228,6 @@ static void prvMmuInit( Bool isSecure )
 
     return;
 }
-/*-------------------------------------------------------------------------*/
-
-static void prvCfgClecAccessCtrl ( Bool onlyInSecure )
-{
-    CSL_ClecEventConfig cfgClec;
-    CSL_CLEC_EVTRegs   *clecBaseAddr = ( CSL_CLEC_EVTRegs* ) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-    uint32_t            i, maxInputs = 2048U;
-    uint32_t            secureClaim = 0U;
-
-    cfgClec.secureClaimEnable = onlyInSecure;
-    cfgClec.evtSendEnable     = FALSE;
-    cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
-    cfgClec.extEvtNum         = 0U;
-    cfgClec.c7xEvtNum         = 0U;
-    for(i = 0U; i < maxInputs; i++)
-    {
-        CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);
-        if(secureClaim)
-        {
-            CSL_clecConfigEvent( clecBaseAddr, i, &cfgClec );
-        }
-    }
-}
-/*-------------------------------------------------------------------------*/
-
 
 static void vPortInitTimerCLECCfg( uint32_t timerId, uint32_t timerIntNum )
 {

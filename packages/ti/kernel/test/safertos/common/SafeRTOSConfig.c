@@ -55,6 +55,8 @@
 #define configSTACK_CHECK_MARGIN            ( 0U )
 
 /* The user configuration for the timer module. */
+/* SafeRTOS package defines this. We want to use the OSAL definition in PDK */
+#undef configTIMER_TASK_PRIORITY
 #define configTIMER_TASK_PRIORITY           ( configMAX_PRIORITIES - 1U )
 #define configTIMER_CMD_QUEUE_LEN           ( 50U )
 #define configTIMER_CMD_QUEUE_BUFFER_SIZE   ( ( configTIMER_CMD_QUEUE_LEN * sizeof( timerQueueMessageType ) ) + safertosapiQUEUE_OVERHEAD_BYTES )
@@ -80,7 +82,11 @@
  * initialisation function. */
 portBaseType xInitializeScheduler( void );
 
+#if !defined (SOC_J7200)
+void vApplicationFiqHandlerHook( void );
+#else
 void vFiqHandler( void );
+#endif
 
 /*-----------------------------------------------------------------------------
  * Local Variables
@@ -185,7 +191,11 @@ void vApplicationErrorHook( portTaskHandleType xHandleOfTaskWithError,
 }
 /*---------------------------------------------------------------------------*/
 #if defined (BUILD_MCU)
+#if !defined (SOC_J7200)
+void vApplicationFiqHandlerHook( void )
+#else
 void vFiqHandler( void )
+#endif
 {
     while( 1 ); /* vFiqhandler not used in SAFERTOS */
 }

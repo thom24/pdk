@@ -72,7 +72,11 @@ extern CSL_R5ExptnHandlers gExptnHandlers;
 /*                          Function Defintions                               */
 /* ========================================================================== */
 
+#if !defined (SOC_J7200)
+void vApplicationUndefAbortHook(void)
+#else
 void vUndefAbort(void)
+#endif
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
@@ -84,7 +88,11 @@ void vUndefAbort(void)
 
 /*---------------------------------------------------------------------------*/
 
+#if !defined (SOC_J7200)
+void vApplicationPrefetchAbortHook(void)
+#else
 void vPrefetchAbort(void)
+#endif
 {
     volatile portUInt32Type ulInstrFaultStatusReg;
     volatile portUInt32Type ulInstrFaultAddressReg;
