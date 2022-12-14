@@ -94,8 +94,8 @@ safertos_EXAMPLE_LIST =
 
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 ifeq ($(SOC),$(filter $(SOC), $(safertos_SOCLIST)))
-safertos_EXAMPLE_LIST =  safertos_test_task_switch 
-safertos_EXAMPLE_LIST +=  safertos_test_ut 
+safertos_EXAMPLE_LIST =  task_switch_safertos
+safertos_EXAMPLE_LIST +=  unit_test_safertos
 # safertos_EXAMPLE_LIST +=  safertos_demo 
 endif
 endif
@@ -147,48 +147,48 @@ export safertos_$(SOC)_CORELIST
 # safertos rtos baremetal test app
 
 # safertos rtos task switch test app
-safertos_test_task_switch_COMP_LIST = safertos_test_task_switch
-safertos_test_task_switch_RELPATH = ti/kernel/safertos
-safertos_test_task_switch_PATH = $(PDK_FREERTOS_COMP_PATH)/test/safertos/task_switch
-safertos_test_task_switch_BOARD_DEPENDENCY = yes
-safertos_test_task_switch_CORE_DEPENDENCY = no
-safertos_test_task_switch_XDC_CONFIGURO = no
-safertos_test_task_switch_MAKEFILE = -f makefile BAREMETAL=yes
-export safertos_test_task_switch_COMP_LIST
-export safertos_test_task_switch_BOARD_DEPENDENCY
-export safertos_test_task_switch_CORE_DEPENDENCY
-export safertos_test_task_switch_XDC_CONFIGURO
-export safertos_test_task_switch_MAKEFILE
-safertos_test_task_switch_PKG_LIST = safertos_test_task_switch
-export safertos_test_task_switch_PKG_LIST
-safertos_test_task_switch_INCLUDE = $(safertos_test_task_switch_PATH)
-safertos_test_task_switch_BOARDLIST = $(safertos_BOARDLIST)
-export safertos_test_task_switch_BOARDLIST
-safertos_test_task_switch_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
-export safertos_test_task_switch_$(SOC)_CORELIST
-export safertos_test_task_switch_SBL_APPIMAGEGEN = yes
+task_switch_safertos_COMP_LIST = task_switch_safertos
+task_switch_safertos_RELPATH = ti/kernel/safertos
+task_switch_safertos_PATH = $(PDK_FREERTOS_COMP_PATH)/test/safertos/task_switch
+task_switch_safertos_BOARD_DEPENDENCY = yes
+task_switch_safertos_CORE_DEPENDENCY = no
+task_switch_safertos_XDC_CONFIGURO = no
+task_switch_safertos_MAKEFILE = -f makefile BAREMETAL=yes
+export task_switch_safertos_COMP_LIST
+export task_switch_safertos_BOARD_DEPENDENCY
+export task_switch_safertos_CORE_DEPENDENCY
+export task_switch_safertos_XDC_CONFIGURO
+export task_switch_safertos_MAKEFILE
+task_switch_safertos_PKG_LIST = task_switch_safertos
+export task_switch_safertos_PKG_LIST
+task_switch_safertos_INCLUDE = $(task_switch_safertos_PATH)
+task_switch_safertos_BOARDLIST = $(safertos_BOARDLIST)
+export task_switch_safertos_BOARDLIST
+task_switch_safertos_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
+export task_switch_safertos_$(SOC)_CORELIST
+export task_switch_safertos_SBL_APPIMAGEGEN = yes
 
 # safertos rtos unit test app
-safertos_test_ut_COMP_LIST = safertos_test_ut
-safertos_test_ut_RELPATH = ti/kernel/safertos/
-safertos_test_ut_PATH = $(PDK_FREERTOS_COMP_PATH)/test/safertos/ut
-safertos_test_ut_BOARD_DEPENDENCY = yes
-safertos_test_ut_CORE_DEPENDENCY = no
-safertos_test_ut_XDC_CONFIGURO = no
-safertos_test_ut_MAKEFILE = -f makefile BAREMETAL=yes
-export safertos_test_ut_COMP_LIST
-export safertos_test_ut_BOARD_DEPENDENCY
-export safertos_test_ut_CORE_DEPENDENCY
-export safertos_test_ut_XDC_CONFIGURO
-export safertos_test_ut_MAKEFILE
-safertos_test_ut_PKG_LIST = safertos_test_ut
-export safertos_test_ut_PKG_LIST
-safetos_test_ut_INCLUDE = $(safertos_test_ut_PATH)
-safertos_test_ut_BOARDLIST = $(safertos_BOARDLIST)
-export safertos_test_ut_BOARDLIST
-safertos_test_ut_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
-export safertos_test_ut_$(SOC)_CORELIST
-export safertos_test_ut_SBL_APPIMAGEGEN = yes
+unit_test_safertos_COMP_LIST = unit_test_safertos
+unit_test_safertos_RELPATH = ti/kernel/safertos/
+unit_test_safertos_PATH = $(PDK_FREERTOS_COMP_PATH)/test/safertos/ut
+unit_test_safertos_BOARD_DEPENDENCY = yes
+unit_test_safertos_CORE_DEPENDENCY = no
+unit_test_safertos_XDC_CONFIGURO = no
+unit_test_safertos_MAKEFILE = -f makefile BAREMETAL=yes
+export unit_test_safertos_COMP_LIST
+export unit_test_safertos_BOARD_DEPENDENCY
+export unit_test_safertos_CORE_DEPENDENCY
+export unit_test_safertos_XDC_CONFIGURO
+export unit_test_safertos_MAKEFILE
+unit_test_safertos_PKG_LIST = unit_test_safertos
+export unit_test_safertos_PKG_LIST
+unit_test_safertos_INCLUDE = $(unit_test_safertos_PATH)
+unit_test_safertos_BOARDLIST = $(safertos_BOARDLIST)
+export unit_test_safertos_BOARDLIST
+unit_test_safertos_$(SOC)_CORELIST = $(safertos_$(SOC)_CORELIST)
+export unit_test_safertos_$(SOC)_CORELIST
+export unit_test_safertos_SBL_APPIMAGEGEN = yes
 
 # safertos demo
 safertos_demo_COMP_LIST = safertos_demo

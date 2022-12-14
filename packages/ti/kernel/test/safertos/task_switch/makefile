@@ -8,7 +8,7 @@ include $(RULES_MAKE)
 endif
 
 
-APP_NAME = safertos_test_task_switch
+APP_NAME = task_switch_safertos
 BUILD_OS_TYPE=safertos
 CFLAGS_TEST_DEFINES =
 
