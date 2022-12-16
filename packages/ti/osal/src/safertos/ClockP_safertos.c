@@ -161,6 +161,8 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
         xTimerInitParameters.pxNewTimer         = &pTimer->timerObj;
         /* pxCallbackFunction */
         xTimerInitParameters.pxCallbackFunction = ClockP_timerCallbackFunction;
+        /* xTaskToNotify */
+        xTimerInitParameters.xTaskToNotify      = NULL;
         /* pxTimerInstance */
         xTimerInitParameters.pxTimerInstance    = NULL;
         /* pvObjec */
