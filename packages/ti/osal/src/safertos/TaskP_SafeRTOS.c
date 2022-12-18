@@ -202,7 +202,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
              params->stacksize,             /* The size of the buffer allocated for use as the task stack - note this is in BYTES! */
              handle,                        /* The task parameter. */
              (portUnsignedBaseType)taskPriority,     /* The priority to assigned to the task being created. */
-             NULL,
+             params->userData,              /* User-defined data. */
 #if defined (BUILD_MCU)
              pdFALSE,                            /* Check task does not use the FPU. */
              {                                   /* MPU task parameters. */
@@ -303,6 +303,7 @@ void TaskP_Params_init( TaskP_Params *params )
     params->priority = ( TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST ) / 2;
     params->arg0 = NULL;
     params->arg1 = NULL;
+    params->userData = NULL;
     /* By default task will be privileged task, until set by the user */
 #if defined (BUILD_MCU)
     params->taskPrivilege = mpuPRIVILEGED_TASK;

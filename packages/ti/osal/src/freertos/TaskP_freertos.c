@@ -240,6 +240,9 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
         {
             LoadP_addTask((TaskP_Handle)handle, handle->tskId);
             ret_handle = ((TaskP_Handle)handle);
+#if (configNUM_THREAD_LOCAL_STORAGE_POINTERS > 0)
+            vTaskSetThreadLocalStoragePointer(handle->taskHndl, 0, params->userData);
+#endif
         }
     }
 
@@ -311,6 +314,7 @@ void TaskP_Params_init(TaskP_Params *params)
         params->priority = (TaskP_PRIORITY_HIGHEST - TaskP_PRIORITY_LOWEST) / 2;
         params->arg0 = NULL;
         params->arg1 = NULL;
+        params->userData = NULL;
         params->taskPrivilege = 0U; /* Not Used */
     }
 }

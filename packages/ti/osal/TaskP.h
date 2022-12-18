@@ -109,6 +109,7 @@ typedef struct TaskP_Params_s
     void *arg0;          /*!< argument 0                                        */
     void *arg1;          /*!< argument 1                                        */
     void *stack;         /*!< pointer to stack memory, shall be non-null value */
+    void *userData;      /*!< [SafeRTOS, FreeRTOS only] Pointer to user-defined data */
     TaskP_Privilege_Mode taskPrivilege; /*!< [SafeRTOS only] Privilege mode of the task */
 } TaskP_Params;
 
