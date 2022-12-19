@@ -260,6 +260,17 @@ int main()
 
     SBL_ADD_PROFILE_POINT;
 
+    uint32_t devGroup;
+    #if defined(BOOT_PERF) || defined(SBL_USE_MCU_DOMAIN_ONLY)
+        devGroup = DEVGRP_00;
+        #define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
+        #define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
+    #else
+        devGroup = DEVGRP_ALL;
+        #define SBL_PLL_INIT                (BOARD_INIT_PLL)
+        #define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK)
+    #endif
+
     /* Any SoC specific Init. */
     SBL_SocEarlyInit();
 
@@ -306,7 +317,7 @@ int main()
 #endif
 
     /* Load SYSFW. */
-    SBL_SciClientInit();
+    SBL_SciClientInit(devGroup);
 
 #if !defined(SBL_SKIP_PINMUX_ENABLE)
     /* Board pinmux. */
@@ -355,7 +366,7 @@ int main()
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
-#if !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
     /* Enable GTC */
     SBL_log(SBL_LOG_MAX, "Initializing GTC ...");
     volatile uint32_t *gtcRegister = (uint32_t *) CSL_GTC0_GTC_CFG1_BASE;

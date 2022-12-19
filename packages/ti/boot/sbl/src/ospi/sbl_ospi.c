@@ -568,7 +568,7 @@ int32_t SBL_ospiClose(const void *handle)
     return 0;
 }
 
-#if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
+#if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
 /* Only put OSPI flash back into SPI mode if we're going to directly boot ATF/U-boot/Linux from SBL */
 int32_t SBL_ospiLeaveConfigSPI()
 {
@@ -651,7 +651,7 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
                     1);
 #endif
 
-#if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
+#if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
 /* Only put OSPI flash back into SPI mode if we're going to directly boot ATF/U-boot/Linux from SBL */
     SBL_ospiLeaveConfigSPI();
 #endif

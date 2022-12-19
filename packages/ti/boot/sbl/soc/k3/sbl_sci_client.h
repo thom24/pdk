@@ -60,13 +60,13 @@ extern "C" {
 /**
  * @brief - SBL_SciClientInit() - function to do load DMSC firmware.
  *
- * @param   none
+ * @param   devGroup - Indicate which dev group to use  
  *
  * @return - none
  *      Loops forever if error occurs
  *
  */
-void SBL_SciClientInit(void);
+void SBL_SciClientInit(uint32_t devGroup);
 
 /**
  * @brief - SBL_ReadSysfwImage() - function to do read DMSC firmware.

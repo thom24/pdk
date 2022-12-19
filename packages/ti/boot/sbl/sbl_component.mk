@@ -1309,13 +1309,6 @@ endif
 #SBL_CFLAGS += -DSBL_SKIP_BRD_CFG_SEC
 #SBL_CFLAGS += -DSBL_SKIP_BRD_CFG_PM
 
-# If enabled, SBL will only enable the Clocks
-# and PLLs for the MCU domain. Clocks and PLLs
-# for the Main domaincan be initialized by the
-# app to save boot time or if the application
-# usecase demands it.
-#SBL_CFLAGS += -DSBL_ENABLE_DEV_GRP_MCU
-
 # If enabled, SBL will use alternate
 # config steps to directly boot an HLOS,
 # including an alternate set of Sciclient
@@ -1364,24 +1357,14 @@ endif
 # Example - Building Custom SBL Images
 # Build and SBl with custom flags to change
 # different build configurations
-CUST_SBL_TEST_SOCS = am65xx j721e j7200 j721s2 j784s4 am64x
-CUST_SBL_TEST_BOARDS = am65xx_evm j721e_evm j7200_evm j721s2_evm j784s4_evm am64x_evm
-#CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_MCU_RESET  -DBOOT_OSPI "
-#CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SKIP_MCU_RESET -DSBL_SKIP_BRD_CFG_PM -DBOOT_OSPI "
-#CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=0 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_SKIP_SYSFW_INIT -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
-#CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=1 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
-ifeq ($(SOC),$(filter $(SOC), j7200 j721s2 j784s4))
+CUST_SBL_TEST_SOCS = j721e j7200 j721s2 j784s4
+CUST_SBL_TEST_BOARDS = j721e_evm j7200_evm j721s2_evm j784s4_evm
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 # NOTE: If changing to SBL_USE_DMA=1, below, then also change 'sbl_lib_cust' & 'sbl_cust_img' MAKEFILE lines further below to use 'SBL_USE_DMA=yes'
-CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xC2000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI ${OCM_RAT_STRING}"
-else
-  ifeq ($(findstring j7,$(SOC)),j7)
-# NOTE: If changing to SBL_USE_DMA=1, below, then also change 'sbl_lib_cust' & 'sbl_cust_img' MAKEFILE lines further below to use 'SBL_USE_DMA=yes'
-CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xC2000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI ${OCM_RAT_STRING}"
-# Custom ex: Early CAN response (NOTE: before using line below, comment out the line above)
-#CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_ENABLE_DEV_GRP_MCU -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_PINMUX_ENABLE -DSBL_SKIP_LATE_INIT -DSBL_USE_MCU_DOMAIN_ONLY"
-  else
-CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x70100000 -DSBL_SCRATCH_MEM_SIZE=0xF0000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI"
-  endif
+CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI ${OCM_RAT_STRING}"
+CUST_SBL_BOOT_PERF_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_LATE_INIT -DSBL_USE_MCU_DOMAIN_ONLY"
+# NOTE: To measure Early CAN response uncomment below line and comment above line
+#CUST_SBL_BOOT_PERF_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_LATE_INIT -DSBL_SKIP_PINMUX_ENABLE -DSBL_USE_MCU_DOMAIN_ONLY"
 endif
 
 # SBL Custom LIB
@@ -1465,6 +1448,33 @@ sbl_EXAMPLE_LIST += sbl_cust_img
 sbl_cust_img_SBL_IMAGEGEN = yes
 export sbl_cust_img_SBL_IMAGEGEN
 
+# SBL perf custom image 
+sbl_boot_perf_cust_img_COMP_LIST = sbl_boot_perf_cust_img
+sbl_boot_perf_cust_img_RELPATH = ti/boot/sbl/board/k3
+sbl_boot_perf_cust_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/cust/bin
+sbl_boot_perf_cust_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+sbl_boot_perf_cust_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=cust SBL_USE_DMA=no BUILD_HS=no CUST_SBL_FLAGS=$(CUST_SBL_BOOT_PERF_TEST_FLAGS) BOOT_PERF=yes
+export sbl_boot_perf_cust_img_MAKEFILE
+export sbl_boot_perf_cust_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_boot_perf_cust_img_BOARD_DEPENDENCY = yes
+sbl_boot_perf_cust_img_SOC_DEPENDENCY = yes
+sbl_boot_perf_cust_img_CORE_DEPENDENCY = no
+export sbl_boot_perf_cust_img_COMP_LIST
+export sbl_boot_perf_cust_img_BOARD_DEPENDENCY
+export sbl_boot_perf_cust_img_SOC_DEPENDENCY
+export sbl_boot_perf_cust_img_CORE_DEPENDENCY
+sbl_boot_perf_cust_img_PKG_LIST = sbl
+sbl_boot_perf_cust_img_INCLUDE = $(sbl_boot_perf_cust_img_PATH)
+sbl_boot_perf_cust_img_SOCLIST = $(CUST_SBL_TEST_SOCS)
+sbl_boot_perf_cust_img_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
+export sbl_boot_perf_cust_img_SOCLIST
+export sbl_boot_perf_cust_img_BOARDLIST
+sbl_boot_perf_cust_img_$(SOC)_CORELIST = mcu1_0
+export sbl_boot_perf_cust_img_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_boot_perf_cust_img
+sbl_boot_perf_cust_img_SBL_IMAGEGEN = yes
+export sbl_boot_perf_cust_img_SBL_IMAGEGEN
+
 # SBL custom image - For HS build
 export sbl_cust_img_hs_COMP_LIST = sbl_cust_img_hs
 sbl_cust_img_hs_RELPATH = ti/boot/sbl/board/k3
@@ -1494,7 +1504,7 @@ sbl_boot_perf_test_COMP_LIST = sbl_boot_perf_test
 sbl_boot_perf_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
 sbl_boot_perf_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
 sbl_boot_perf_test_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
-sbl_boot_perf_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_mcu0_boot_perf_test.mk BOOTMODE=cust CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
+sbl_boot_perf_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_mcu0_boot_perf_test.mk BOOTMODE=cust CUST_SBL_FLAGS=$(CUST_SBL_BOOT_PERF_TEST_FLAGS)
 export sbl_boot_perf_test_MAKEFILE
 sbl_boot_perf_test_BOARD_DEPENDENCY = no
 sbl_boot_perf_test_SOC_DEPENDENCY = no

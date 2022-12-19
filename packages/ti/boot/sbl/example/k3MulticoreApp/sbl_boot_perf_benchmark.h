@@ -60,15 +60,4 @@ extern sblProfileInfo_t *sblProfileLogAddr;
 extern uint32_t *sblProfileLogIndxAddr;
 extern uint32_t *sblProfileLogOvrFlwAddr;
 
-/** SYSFW DEVGRP settings -
- * Some DEVGRP settings may have already been enabled during SBL boot,
- * in which case, the complementary group must be set. If the SYSFW init
- * was skipped altogether, it must be set up with all DEVGRPS enabled.
-*/
-#if defined(SBL_SKIP_SYSFW_INIT) || defined(SBL_SKIP_BRD_CFG_BOARD)
-#define SBL_PERF_TEST_DEVGRP (DEVGRP_ALL)
-#elif defined (SBL_ENABLE_DEV_GRP_MCU)
-#define SBL_PERF_TEST_DEVGRP (DEVGRP_01) /* Main Domain wakeup group */
-#endif
-
 

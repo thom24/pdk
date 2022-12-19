@@ -317,16 +317,6 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
 #define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
 
-#if defined (SBL_ENABLE_DEV_GRP_MCU)
-#define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
-#define SBL_DEVGRP                  (DEVGRP_00) /* MCU-wakeup DEVGRP */
-#else
-#define SBL_PLL_INIT                (BOARD_INIT_PLL)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK)
-#define SBL_DEVGRP                  (DEVGRP_ALL)
-#endif
-
 #define SBL_HYPERFLASH_BASE_ADDRESS      (CSL_MCU_FSS0_DAT_REG1_BASE)
 #define SBL_HYPERFLASH_CTLR_BASE_ADDRESS (CSL_MCU_FSS0_HPB_CTRL_BASE)
 
@@ -549,16 +539,6 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_DEV_ID_HSM_M4           (SBL_INVALID_ID)
 #define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
 #define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
-
-#if defined (SBL_ENABLE_DEV_GRP_MCU)
-#define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
-#define SBL_DEVGRP                  (DEVGRP_00) /* MCU-wakeup DEVGRP */
-#else
-#define SBL_PLL_INIT                (BOARD_INIT_PLL)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK)
-#define SBL_DEVGRP                  (DEVGRP_ALL)
-#endif
 
 #define SBL_HYPERFLASH_BASE_ADDRESS      (CSL_MCU_FSS0_DAT_REG1_BASE)
 #define SBL_HYPERFLASH_CTLR_BASE_ADDRESS (CSL_MCU_FSS0_HPB_CTRL_BASE)
@@ -785,16 +765,6 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
 #define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
 
-#if defined (SBL_ENABLE_DEV_GRP_MCU)
-#define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
-#define SBL_DEVGRP                  (DEVGRP_00) /* MCU-wakeup DEVGRP */
-#else
-#define SBL_PLL_INIT                (BOARD_INIT_PLL)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK)
-#define SBL_DEVGRP                  (DEVGRP_ALL)
-#endif
-
 #define SBL_HYPERFLASH_BASE_ADDRESS      (CSL_MCU_FSS0_DAT_REG1_BASE)
 #define SBL_HYPERFLASH_CTLR_BASE_ADDRESS (CSL_MCU_FSS0_HPB_CTRL_BASE)
 
@@ -1018,16 +988,6 @@ extern uint16_t sblMapOtpVidToMilliVolts[256];
 #define SBL_DEV_ID_HSM_M4           (SBL_INVALID_ID)
 #define SBL_CLK_ID_HSM_M4           (SBL_INVALID_ID)
 #define SBL_HSM_M4_FREQ_HZ          (SBL_INVALID_ID)
-
-#if defined (SBL_ENABLE_DEV_GRP_MCU)
-#define SBL_PLL_INIT                (BOARD_INIT_PLL_MCU)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK_MCU)
-#define SBL_DEVGRP                  (DEVGRP_00) /* MCU-wakeup DEVGRP */
-#else
-#define SBL_PLL_INIT                (BOARD_INIT_PLL)
-#define SBL_CLOCK_INIT              (BOARD_INIT_MODULE_CLOCK)
-#define SBL_DEVGRP                  (DEVGRP_ALL)
-#endif
 
 #define SBL_HYPERFLASH_BASE_ADDRESS      (CSL_MCU_FSS0_DAT_REG1_BASE)
 #define SBL_HYPERFLASH_CTLR_BASE_ADDRESS (CSL_MCU_FSS0_HPB_CTRL_BASE)

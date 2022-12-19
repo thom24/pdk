@@ -30,8 +30,13 @@ endif
 # (x * 1024) in hexadecimal
 MAX_APP_SIZE_EMMC ?= 0x7D000
 
-APP_NAME = sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
-LOCAL_APP_NAME=sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
+ifeq ($(BOOT_PERF), yes)
+  APP_NAME = sbl_boot_perf_cust_img
+  LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_$(CORE)
+else
+  APP_NAME = sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
+  LOCAL_APP_NAME=sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
+endif
 BUILD_OS_TYPE = baremetal
 
 SRCDIR += $(PDK_SBL_COMP_PATH)/board/k3
@@ -65,6 +70,10 @@ else
   endif
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)$(HLOS_SUFFIX)$(HS_SUFFIX)
 endif # ifeq ($(BOOTMODE), cust)
+
+ifeq ($(BOOT_PERF), yes)
+  SBL_CFLAGS += -DBOOT_PERF 
+endif
 
 # HLOS Boot flags
 ifeq ($(HLOS_BOOT),yes)

@@ -510,7 +510,7 @@ void SBL_SetupPmicCfg(sblCfgPmic_t *pmicVoltCfg, uint32_t opp)
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J784S4)
 void SBL_ConfigureEthernet(void)
 {
-#if !defined(SBL_USE_MCU_DOMAIN_ONLY) && !defined(SBL_ENABLE_DEV_GRP_MCU)
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
     Board_STATUS status = BOARD_SOK;
 #if defined(SOC_J721E)
     bool gesiDetected = false;
@@ -676,7 +676,7 @@ void SBL_SocLateInit(void)
 
     J721E_SetupLeoPmicAvs(SBL_OPP_NOM);
 
-#if !defined(SBL_ENABLE_DEV_GRP_MCU) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
     SBL_SetQoS();
 #endif
 

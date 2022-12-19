@@ -157,7 +157,7 @@ static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
     return cert_len + 1;
 }
 
-void SBL_SciClientInit(void)
+void SBL_SciClientInit(uint32_t devGroup)
 {
     int32_t status = CSL_EFAIL;
     void *sysfw_ptr = gSciclient_firmware;
@@ -221,7 +221,8 @@ void SBL_SciClientInit(void)
     sblBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLow;
     sblBoardCfgPrms.boardConfigHigh = 0;
     sblBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
-    sblBoardCfgPrms.devGrp = SBL_DEVGRP;
+    sblBoardCfgPrms.devGrp = devGroup;
+    
 
     SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfg(&sblBoardCfgPrms);
@@ -247,7 +248,8 @@ removed after having a fix in TIFS */
     sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
     sblBoardCfgPmPrms.boardConfigHigh = 0;
     sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
-    sblBoardCfgPmPrms.devGrp = SBL_DEVGRP;
+    sblBoardCfgPmPrms.devGrp = devGroup;
+
     status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
     if (status != CSL_PASS)
     {
@@ -272,7 +274,8 @@ removed after having a fix in TIFS */
     sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowSec;
     sblBoardCfgSecPrms.boardConfigHigh = 0;
     sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
-    sblBoardCfgSecPrms.devGrp = SBL_DEVGRP;
+    sblBoardCfgSecPrms.devGrp = devGroup;
+    
     SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
     if (status != CSL_PASS)
@@ -392,7 +395,7 @@ removed after having a fix in TIFS */
     sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
     sblBoardCfgPmPrms.boardConfigHigh = 0;
     sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
-    sblBoardCfgPmPrms.devGrp = SBL_DEVGRP;
+    sblBoardCfgPmPrms.devGrp = devGroup;
     CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
     status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
     if (status != CSL_PASS)
@@ -418,7 +421,8 @@ removed after having a fix in TIFS */
     sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
     sblBoardCfgRmPrms.boardConfigHigh = 0;
     sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
-    sblBoardCfgRmPrms.devGrp = SBL_DEVGRP;
+    sblBoardCfgRmPrms.devGrp = devGroup;
+
     gCertLength = boardcfgRmFindCertSize((uint32_t*)boardCfgInfo.boardCfgLowRm);
     SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
