@@ -691,6 +691,8 @@ int32_t udmaTestBugTcPDK_4654(UdmaTestTaskObj *taskObj);
  */
 int32_t udmaTestChPktdmaParamCheckTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestChPktdmaChApiTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestBcdmaParamCheckTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestBcdmaChApiTc(UdmaTestTaskObj *taskObj);
 
 /*
  * UDMA Negative test case functions

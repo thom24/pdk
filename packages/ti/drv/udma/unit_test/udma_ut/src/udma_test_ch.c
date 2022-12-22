@@ -62,6 +62,8 @@
 
 static int32_t udmaTestChPktdmaParamCheckTestLoop(UdmaTestTaskObj *taskObj);
 static int32_t udmaTestChPktdmaChApiTestLoop(UdmaTestTaskObj *taskObj);
+static int32_t udmaTestBcdmaParamCheckTestLoop(UdmaTestTaskObj *taskObj);
+static int32_t udmaTestBcdmaChApiTestLoop(UdmaTestTaskObj *taskObj);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -349,6 +351,269 @@ static int32_t udmaTestChPktdmaChApiTestLoop(UdmaTestTaskObj *taskObj)
                   " Testing for PKTDMA %s Channel Group passed!!\r\n",
                   pktdmaChGrpStr[chGrpIdx]);
     }
+#endif
+
+    return(retVal);
+}
+
+int32_t udmaTestBcdmaParamCheckTc(UdmaTestTaskObj *taskObj)
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t    loopCnt = 0U;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: BCDMA Channel Paramter Check Testcase ::\r\n", taskObj->taskId);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Loop count           : %d ::\r\n", taskObj->taskId, taskObj->loopCnt);
+
+    gUdmaTestChResult = UDMA_SOK;
+    while(loopCnt < taskObj->loopCnt)
+    {
+        retVal = udmaTestBcdmaParamCheckTestLoop(taskObj);
+        if(UDMA_SOK != retVal)
+        {
+            break;
+        }
+
+        loopCnt++;
+    }
+
+    retVal += gUdmaTestChResult;
+
+    return (retVal);
+}
+
+int32_t udmaTestBcdmaChApiTc(UdmaTestTaskObj *taskObj)
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t    loopCnt = 0U;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: BCDMA Channel API's Testcase ::\r\n", taskObj->taskId);
+    GT_2trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d: Loop count           : %d ::\r\n", taskObj->taskId, taskObj->loopCnt);
+
+    gUdmaTestChResult = UDMA_SOK;
+    while(loopCnt < taskObj->loopCnt)
+    {
+        retVal = udmaTestBcdmaChApiTestLoop(taskObj);
+        if(UDMA_SOK != retVal)
+        {
+            break;
+        }
+
+        loopCnt++;
+    }
+
+    retVal += gUdmaTestChResult;
+
+    return (retVal);
+}
+
+static int32_t udmaTestBcdmaParamCheckTestLoop(UdmaTestTaskObj *taskObj)
+{
+    int32_t             retVal = UDMA_SOK;
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
+    uint32_t            elemCnt = 50U, ringMemSize;
+    uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
+    Udma_DrvHandle      drvHandle;
+    uint32_t            chType[UDMA_TEST_BCDMA_CH_NUM_CH_TYPE] = {UDMA_CH_TYPE_TX, UDMA_CH_TYPE_RX};
+    uint32_t            peerCh[UDMA_TEST_BCDMA_CH_NUM_CH_TYPE] = {UDMA_TEST_BCDMA_PEER_CH_NUM_TX, UDMA_TEST_BCDMA_PEER_CH_NUM_RX};
+    struct Udma_ChObj   chObj;
+    Udma_ChHandle       chHandle = &chObj;
+    Udma_ChPrms         chPrms;
+    uint32_t            i;
+    void               *ringMem = NULL;
+
+    drvHandle = &taskObj->testObj->drvObj[UDMA_TEST_INST_ID_BCDMA_0];
+
+    for (i = 0; i < UDMA_TEST_BCDMA_CH_NUM_CH_TYPE; i++)
+    {
+        /* BCDMA Channel Open with no ring memory test */
+        memset(&chPrms, 0u, sizeof(Udma_ChPrms));
+        UdmaChPrms_init(&chPrms, chType[i]);
+        chPrms.peerChNum   = peerCh[i];
+        retVal = Udma_chOpen(drvHandle, chHandle, chType[i], &chPrms);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA channel open failed!!\n");
+        }
+        if(UDMA_SOK == retVal)
+        {
+            if(chHandle->fqRing != (Udma_RingHandle) NULL_PTR)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                        " Ring allocated even when no ring memory was provided!!\n");
+                retVal = UDMA_EFAIL;
+            }
+        }
+        if(UDMA_SOK == retVal)
+        {
+            retVal = Udma_chClose(chHandle);
+            if(UDMA_SOK != retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                    " UDMA channel close failed!!\n");
+            }
+        }
+
+        ringMemSize = elemCnt * sizeof (uint64_t);
+        ringMem = Utils_memAlloc(heapId, ringMemSize, UDMA_CACHELINE_ALIGNMENT);
+        if(NULL == ringMem)
+        {
+            retVal = UDMA_EALLOC;
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring memory allocation failure\r\n");
+        }
+
+
+        /* BCDMA Channel Open with ring memory test */
+        UdmaChPrms_init(&chPrms, chType[i]);
+        chPrms.peerChNum   = peerCh[i];
+        chPrms.fqRingPrms.ringMem       = ringMem;
+        chPrms.fqRingPrms.ringMemSize   = ringMemSize;
+        chPrms.fqRingPrms.elemCnt       = elemCnt;
+        retVal = Udma_chOpen(drvHandle, chHandle, chType[i], &chPrms);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA channel open failed!!\n");
+        }
+        if(UDMA_SOK == retVal)
+        {
+            if(chHandle->fqRing == (Udma_RingHandle) NULL_PTR)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                        " Ring allocation failed even ring memory was provided!!\n");
+                retVal = UDMA_EFAIL;
+            }
+        }
+        if(UDMA_SOK == retVal)
+        {
+            retVal = Udma_chClose(chHandle);
+            if(UDMA_SOK != retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                    " UDMA channel close failed!!\n");
+            }
+        }
+
+        if(NULL != ringMem)
+        {
+            retVal += Utils_memFree(heapId, ringMem, ringMemSize);
+            if(UDMA_SOK != retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring free failed!!\n");
+            }
+        }
+    }
+#endif
+
+    return(retVal);
+}
+
+static int32_t udmaTestBcdmaChApiTestLoop(UdmaTestTaskObj *taskObj)
+{
+    int32_t             retVal = UDMA_SOK;
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) && (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
+    uint32_t            elemCnt = 50U, ringMemSize;
+    uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
+    Udma_DrvHandle      drvHandle;
+    uint32_t            chType[UDMA_TEST_BCDMA_CH_NUM_CH_TYPE] = {UDMA_CH_TYPE_TX, UDMA_CH_TYPE_RX};
+    uint32_t            peerCh[UDMA_TEST_BCDMA_CH_NUM_CH_TYPE] = {UDMA_TEST_BCDMA_PEER_CH_NUM_TX, UDMA_TEST_BCDMA_PEER_CH_NUM_RX};
+    struct Udma_ChObj   chObj;
+    Udma_ChHandle       chHandle = &chObj;
+    Udma_ChPrms         chPrms;
+    Udma_ChTxPrms       txPrms;
+    Udma_ChRxPrms       rxPrms;
+    uint32_t            i;
+    void               *ringMem = NULL;
+
+    drvHandle = &taskObj->testObj->drvObj[UDMA_TEST_INST_ID_BCDMA_0];
+
+    for (i = 0; i < UDMA_TEST_BCDMA_CH_NUM_CH_TYPE; i++)
+    {
+        ringMemSize = elemCnt * sizeof (uint64_t);
+        ringMem = Utils_memAlloc(heapId, ringMemSize, UDMA_CACHELINE_ALIGNMENT);
+        if(NULL == ringMem)
+        {
+            retVal = UDMA_EALLOC;
+            GT_0trace(taskObj->traceMask, GT_ERR, " Ring memory allocation failure\r\n");
+        }
+        memset(&chPrms, 0u, sizeof(Udma_ChPrms));
+        UdmaChPrms_init(&chPrms, chType[i]);
+        chPrms.peerChNum   = peerCh[i];
+        chPrms.fqRingPrms.ringMem       = ringMem;
+        chPrms.fqRingPrms.ringMemSize   = ringMemSize;
+        chPrms.fqRingPrms.elemCnt       = elemCnt;
+        retVal = Udma_chOpen(drvHandle, chHandle, chType[i], &chPrms);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA channel open failed!!\n");
+        }
+        else
+        {
+            GT_2trace(taskObj->traceMask, GT_INFO1,
+                        " |TEST INFO|:: Task:%d: Allocated Ch   : %d ::\r\n",
+                        taskObj->taskId, Udma_chGetNum(chHandle));
+        }
+
+        if((chType[i] & UDMA_CH_FLAG_TX) == UDMA_CH_FLAG_TX)
+        {
+            /* Config TX channel */
+            UdmaChTxPrms_init(&txPrms, chType[i]);
+            retVal = Udma_chConfigTx(chHandle, &txPrms);
+            if(UDMA_SOK != retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                    " UDMA TX channel config failed!!\n");
+            }
+        }
+
+        if((chType[i] & UDMA_CH_FLAG_RX) == UDMA_CH_FLAG_RX)
+        {
+            /* Config RX channel */
+            UdmaChRxPrms_init(&rxPrms, chType[i]);
+            retVal = Udma_chConfigRx(chHandle, &rxPrms);
+            if(UDMA_SOK != retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR,
+                    " UDMA RX channel config failed!!\n");
+            }
+        }
+        
+        retVal = Udma_chEnable(chHandle);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA channel enable failed!!\n");
+        }
+
+        retVal = Udma_chDisable(chHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA channel disable failed!!\n");
+        }
+
+        retVal = Udma_chClose(chHandle);
+        if(UDMA_SOK != retVal)
+        {
+            GT_0trace(taskObj->traceMask, GT_ERR,
+                " UDMA channel close failed!!\n");
+        }
+
+        if(NULL != ringMem)
+        {
+            retVal += Utils_memFree(heapId, ringMem, ringMemSize);
+            if(UDMA_SOK != retVal)
+            {
+                GT_0trace(taskObj->traceMask, GT_ERR, " Ring free failed!!\n");
+            }
+        }
+    }
+
 #endif
 
     return(retVal);

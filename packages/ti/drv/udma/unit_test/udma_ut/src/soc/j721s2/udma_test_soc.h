@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2022
+ *  Copyright (c) Texas Instruments Incorporated 2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -51,8 +51,6 @@ extern "C" {
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* This is not generic. Fix this properly when BCDMA tests is enabled. */
-#define HACK_PDK_12290      (1U)
 
 /** \brief Utility define for Kilobyte, i.e 1024 bytes */
 #ifndef KB
@@ -85,8 +83,12 @@ extern "C" {
 
 #define UDMA_TEST_RF_SOC                (UDMA_TEST_RF_SOC_J721S2)
 
-/* Add UDMA_NUM_BCDMA_INST_ID while adding UT support for BCDMA */
-#define UDMA_TEST_NUM_INST_ID           (UDMA_NUM_UDMAP_INST_ID)
+#define UDMA_TEST_NUM_INST_ID           (UDMA_NUM_INST_ID)
+
+/* Number of resources shared between UDMA instances need to be overwritten.
+   The resources those are getting overwritten are Global Events/VINTS/
+   Ir Interrupts */
+#define UDMA_TEST_NUM_RES_OVERWRITE     (3U)
 
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)
@@ -265,6 +267,13 @@ extern "C" {
 #define UDMA_TEST_RING_MODE_DEFAULT_START       (TISCI_MSG_VALUE_RM_RING_MODE_RING)
 #define UDMA_TEST_RING_MODE_DEFAULT_STOP        (TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE)
 
+/* Number of channel types for BCDMA Channel API Test Case.
+ * We have 2 channel types, they are BCDMA Tx and BCDMA Rx */
+#define UDMA_TEST_BCDMA_CH_NUM_CH_TYPE                    (2U)
+
+/* Peer Channel Number for BCDMA Channel API Test Case */
+#define UDMA_TEST_BCDMA_PEER_CH_NUM_TX                    (CSL_PSIL_CSI_TX0_CH0)
+#define UDMA_TEST_BCDMA_PEER_CH_NUM_RX                    (CSL_PSIL_CSI_RX0_CH0)
 /* ========================================================================== */
 /*                         Structure Declarations                             */
 /* ========================================================================== */

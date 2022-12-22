@@ -63,7 +63,7 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-/* None */
+static void udmaTestOverrideDefRes(Udma_InitPrms   *initPrms);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -96,30 +96,8 @@ int32_t udmaTestInitDriver(UdmaTestObj *testObj)
         initPrms.phyToVirtFxn       = &Udma_appPhyToVirtFxn;
         initPrms.printFxn           = &udmaDrvPrint;
 
-        /* As per BoardCfg, if there no HC Block Copy Channel assigned to the core, 
-         * use the resource assigned for HC RX/TX channels
-         * to test various HC Block Copy testcases.
-         * This is with the assumption that, the range of this resources are same
-         * for both RX and TX High Capacity channels. */
-        if((initPrms.rmInitPrms.numBlkCopyHcCh == 0U) && 
-        ((initPrms.rmInitPrms.numRxHcCh != 0U) && (initPrms.rmInitPrms.numTxHcCh != 0U)) &&
-        (initPrms.rmInitPrms.startRxHcCh == initPrms.rmInitPrms.startTxHcCh))
-        {
-            initPrms.rmInitPrms.startBlkCopyHcCh  = initPrms.rmInitPrms.startRxHcCh;
-            initPrms.rmInitPrms.numBlkCopyHcCh = initPrms.rmInitPrms.numRxHcCh;
-        }
-        /*
-        * For chaining TC atleast 2 channels are required, 
-        * if a core does not have enough Block Copy channels
-        * we can use RX/TX channels as Block Copy channels for test
-        */
-        if((initPrms.rmInitPrms.numBlkCopyCh < 2U) && 
-        ((initPrms.rmInitPrms.numRxCh >= 2U) && (initPrms.rmInitPrms.numTxCh >= 2U)) &&
-        (initPrms.rmInitPrms.startRxCh == initPrms.rmInitPrms.startTxCh))
-        {
-            initPrms.rmInitPrms.startBlkCopyCh  = initPrms.rmInitPrms.startRxCh;
-            initPrms.rmInitPrms.numBlkCopyCh = initPrms.rmInitPrms.numRxCh;
-        }
+        udmaTestOverrideDefRes(&initPrms);
+
         retVal += Udma_init(drvHandle, &initPrms);
         if(UDMA_SOK != retVal)
         {
@@ -426,4 +404,71 @@ uint32_t udmaTestGetRingHwOccDriver(Udma_RingHandle ringHandle, uint32_t directi
         occ = drvHandle->ringGetReverseRingOcc(ringHandle);
     }
     return (occ);
+}
+
+static void udmaTestOverrideDefRes(Udma_InitPrms   *initPrms)
+{
+    /* Override the default RM Shared Resource parameters. 
+       If number of resources allocated to any UDMA instance 
+       is 0U then allocate resources to that instance */
+    Udma_RmSharedResPrms *rmSharedResPrms;
+    uint32_t i;
+    uint32_t shareRes[UDMA_TEST_NUM_RES_OVERWRITE] = {UDMA_RM_RES_ID_GLOBAL_EVENT, 
+                                                        UDMA_RM_RES_ID_VINTR,
+#if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)
+                                                        UDMA_RM_RES_ID_IR_INTR
+#endif
+                                                        };
+    for( i = 0 ; i < UDMA_TEST_NUM_RES_OVERWRITE ; i++)
+    {
+        rmSharedResPrms = Udma_rmGetSharedResPrms(shareRes[i]);
+
+        if(NULL_PTR != rmSharedResPrms)
+        {
+            rmSharedResPrms->startResrvCnt = 0U;
+            rmSharedResPrms->endResrvCnt = 0U;
+#if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
+#if defined(BUILD_MCU1_0) || defined(BUILD_MCU1_0)
+            rmSharedResPrms->instShare[UDMA_INST_ID_MAIN_0] = UDMA_RM_SHARED_RES_CNT_MIN;
+            rmSharedResPrms->instShare[UDMA_INST_ID_MCU_0] = UDMA_RM_SHARED_RES_CNT_REST;
+#else
+            rmSharedResPrms->instShare[UDMA_INST_ID_MAIN_0] = UDMA_RM_SHARED_RES_CNT_REST;
+            rmSharedResPrms->instShare[UDMA_INST_ID_MCU_0] = UDMA_RM_SHARED_RES_CNT_MIN;
+#endif
+#endif
+#if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
+            rmSharedResPrms->instShare[UDMA_INST_ID_BCDMA_0] = UDMA_RM_SHARED_RES_CNT_MIN;
+#endif
+#if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
+            rmSharedResPrms->instShare[UDMA_INST_ID_PKTDMA_0] = UDMA_RM_SHARED_RES_CNT_MIN;
+#endif
+        }
+    }
+
+    /* As per BoardCfg, if there no HC Block Copy Channel assigned to the core, 
+    * use the resource assigned for HC RX/TX channels
+    * to test various HC Block Copy testcases.
+    * This is with the assumption that, the range of this resources are same
+    * for both RX and TX High Capacity channels. */
+    if((initPrms->rmInitPrms.numBlkCopyHcCh == 0U) && 
+    ((initPrms->rmInitPrms.numRxHcCh != 0U) && (initPrms->rmInitPrms.numTxHcCh != 0U)) &&
+    (initPrms->rmInitPrms.startRxHcCh == initPrms->rmInitPrms.startTxHcCh))
+    {
+        initPrms->rmInitPrms.startBlkCopyHcCh  = initPrms->rmInitPrms.startRxHcCh;
+        initPrms->rmInitPrms.numBlkCopyHcCh = initPrms->rmInitPrms.numRxHcCh;
+    }
+    /*
+    * For chaining TC atleast 2 channels are required, 
+    * if a core does not have enough Block Copy channels
+    * we can use RX/TX channels as Block Copy channels for test
+    */
+    if((initPrms->rmInitPrms.numBlkCopyCh < 2U) && 
+    ((initPrms->rmInitPrms.numRxCh >= 2U) && (initPrms->rmInitPrms.numTxCh >= 2U)) &&
+    (initPrms->rmInitPrms.startRxCh == initPrms->rmInitPrms.startTxCh))
+    {
+        initPrms->rmInitPrms.startBlkCopyCh  = initPrms->rmInitPrms.startRxCh;
+        initPrms->rmInitPrms.numBlkCopyCh = initPrms->rmInitPrms.numRxCh;
+    }
+
+    return;
 }

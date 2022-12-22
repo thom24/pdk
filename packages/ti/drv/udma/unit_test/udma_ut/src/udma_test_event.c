@@ -147,7 +147,7 @@ static int32_t udmaTestEventOutOfRangeFlowLoop(UdmaTestTaskObj *taskObj,
     Udma_EventRxFlowIdFwStatus  status;
     char                       *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
 
-    for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_UDMAP_START; instId <= UDMA_INST_ID_UDMAP_MAX; instId++)
     {
         if(0U == loopCnt)
         {
@@ -224,7 +224,7 @@ static int32_t udmaTestEventDisableEnableSanityLoop(UdmaTestTaskObj *taskObj,
     Udma_EventHandle            eventHandle = NULL;
     char                       *instanceIdStr[] = {"MAIN", "MCU", "BCDMA", "PKTDMA"};
 
-    for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
+    for(instId = UDMA_INST_ID_UDMAP_START; instId <= UDMA_INST_ID_UDMAP_MAX; instId++)
     {
         if(0U == loopCnt)
         {

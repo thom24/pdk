@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2019-2022
+ *  Copyright (c) Texas Instruments Incorporated 2019-2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -83,6 +83,11 @@ extern "C" {
 #define UDMA_TEST_RF_SOC                (UDMA_TEST_RF_SOC_J721E)
 
 #define UDMA_TEST_NUM_INST_ID           (UDMA_NUM_INST_ID)
+
+/* Number of resources shared between UDMA instances need to be overwritten.
+   The resources those are getting overwritten are Global Events/VINTS/
+   Ir Interrupts */
+#define UDMA_TEST_NUM_RES_OVERWRITE     (3U)
 
 #define UDMA_TEST_INST_ID_MAIN_BC       (UDMA_INST_ID_MAIN_0)
 #define UDMA_TEST_INST_ID_MCU_BC        (UDMA_INST_ID_MCU_0)
