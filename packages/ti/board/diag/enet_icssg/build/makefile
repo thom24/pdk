@@ -66,7 +66,7 @@ COMP_LIST_COMMON = board csl csl_init osal_nonos uart gpio i2c
 ifeq ($(SOC), $(filter $(SOC), am65xx))
 COMP_LIST_COMMON += sciclient udma pruss
 endif
-COMP_LIST_COMMON += enet enetsoc enetphy enet_example_utils_baremetal pm_lib enet_cfgserver
+COMP_LIST_COMMON += enet enetsoc enetphy enet_example_utils_baremetal pm_lib
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = ../src makefile
