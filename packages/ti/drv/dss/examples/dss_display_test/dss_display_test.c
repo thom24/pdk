@@ -158,8 +158,11 @@ int32_t Dss_displayTest(void)
 
 #if (1U == DISP_APP_TEST_DSI)
     gDispApp_Obj.dsiPrms.numOfLanes = 2;
-    gDispApp_Obj.dsiPrms.laneSpeedInKbps = 432000;
-
+#if defined (SOC_J721E)
+    gDispApp_Obj.dsiPrms.laneSpeedInKbps = 891000;
+#else
+    gDispApp_Obj.dsiPrms.laneSpeedInKbps = 768000;
+#endif
     if (FVID2_SOK == retVal)
     {
         retVal = DispApp_runTest(&gDispApp_Obj);
@@ -316,9 +319,6 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
     /* Create driver */
     DispApp_create(appObj);
 
-#if (1==DISP_APP_TEST_DSI)
-    DispApp_SetDsiSerdesCfg(&gDispApp_Obj);
-#endif
     App_print("Starting display ... !!!\r\n");
     App_print("Display in progress ... DO NOT HALT !!!\r\n");
 
@@ -525,13 +525,24 @@ static void DispApp_create(DispApp_Obj *appObj)
     vpParams->lcdOpTimingCfg.mInfo.standard = FVID2_STD_CUSTOM;
     vpParams->lcdOpTimingCfg.mInfo.width = DISP_APP_LCD_WIDTH;
     vpParams->lcdOpTimingCfg.mInfo.height = DISP_APP_LCD_HEIGHT;
-    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 36000000U;
-    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 24U;
-    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 128U;
-    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 72U;
-    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 1U;
-    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 22U;
-    vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 2U;
+#if defined (SOC_J721E)
+    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 74250000ULL;
+    vpParams->lcdOpTimingCfg.mInfo.scanFormat = FVID2_SF_PROGRESSIVE;
+    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 110U;
+    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 220U;
+    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 40U;
+    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 5U;
+    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 20U;
+    vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 5U;
+#else
+    vpParams->lcdOpTimingCfg.mInfo.pixelClock = 64000000ULL;
+    vpParams->lcdOpTimingCfg.mInfo.scanFormat = FVID2_SF_PROGRESSIVE;
+    vpParams->lcdOpTimingCfg.mInfo.hFrontPorch = 48U;
+    vpParams->lcdOpTimingCfg.mInfo.hBackPorch = 80U;
+    vpParams->lcdOpTimingCfg.mInfo.hSyncLen = 32U;
+    vpParams->lcdOpTimingCfg.mInfo.vFrontPorch = 4U;
+    vpParams->lcdOpTimingCfg.mInfo.vBackPorch = 12U;
+#endif
 
     vpParams->lcdPolarityCfg.pixelClkPolarity = FVID2_EDGE_POL_RISING;
 #endif
@@ -1027,7 +1038,9 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
 
         dsiPrms.numOfLanes = appObj->dsiPrms.numOfLanes;
         dsiPrms.laneSpeedInKbps = appObj->dsiPrms.laneSpeedInKbps;
-
+#if (1==DISP_APP_TEST_DSI)
+    DispApp_cfgAdditionalDsiPeripherals();
+#endif
         retVal = Fvid2_control(
             appObj->dctrlHandle,
             IOCTL_DSS_DCTRL_SET_DSI_PARAMS,

@@ -142,7 +142,11 @@ static void taskFxn(void* a0, void* a1)
 #else
     #if (1U == DISP_APP_TEST_DSI)
         lcdParams.outType  = (uint32_t)APP_OUTPUT_DSI;
-        lcdParams.pixelClk = (uint64_t)36000000u;
+#if defined (SOC_J721E)
+        lcdParams.pixelClk = (uint64_t)74250000ULL;
+#else
+        lcdParams.pixelClk = (uint64_t)64000000ULL;
+#endif
         App_configureLCD(lcdParams);
     #elif (1U == DISP_APP_TEST_EDP)
         lcdParams.outType  = (uint32_t)APP_OUTPUT_EDP;

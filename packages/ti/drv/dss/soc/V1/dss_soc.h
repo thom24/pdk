@@ -210,6 +210,22 @@ typedef void (*Dss_DctrlDpHpdCbFxn)(uint32_t hpdState, void *appData);
 /** \brief DSS M2M DRV Virtual Context: Number of virtual contexts per DSS M2M pipeline */
 #define DSSM2M_NUM_VIRTUAL_CONTEXT                   (8U)
 
+/**
+ *  \anchor Dss_DsiConnectionType
+ *  \name   DSS DSI Connection Type
+ *
+ *  Flags to indicate the connection of DSI IP on the board.
+ *
+ *  @{
+ */
+/** \brief DSI connection terminated at the DSI to DP bridge. */
+#define DSS_DSI_CONNECTION_DSI2DP_BRIDGE             (0U)
+/** \brief DSI connection terminated at the FPD connector. */
+#define DSS_DSI_CONNECTION_FPD                       (1U)
+/** \brief Maximum types for DSS connections. */
+#define DSS_DSI_CONNECTION_MAX                       (2U)
+/* @} */
+
 /*
  *  SOC specific IOCTLs.
  */
@@ -320,6 +336,8 @@ typedef struct
 {
     uint32_t isAvailable;
     /**< Flag to indicate whether eDP module is available */
+    uint32_t isConnectedTo;
+    /**< Flag to indicate the connection of DSI IP on the board. Refer to \Dss_DsiConnectionType for values */
 } Dss_DsiInitParams;
 
 /**
@@ -507,6 +525,7 @@ static inline void Dss_dsiInitParamsInit(Dss_DsiInitParams *dsiInitParams)
     if(NULL != dsiInitParams)
     {
         dsiInitParams->isAvailable = TRUE;
+        dsiInitParams->isConnectedTo = DSS_DSI_CONNECTION_FPD;
     }
 }
 

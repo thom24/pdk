@@ -64,6 +64,8 @@ typedef struct
 {
     uint32_t isAvailable;
     /**< Flag to indicate whether DSI module is available */
+    uint32_t isConnectedTo;
+    /**< Indicates what the DSI to DP bridge is connected to on the Board. */
 } Dss_DctrlDrvDsiInitParams;
 
 /**

@@ -146,6 +146,8 @@ int32_t Dss_init(const Dss_InitParams *initParams)
 #if defined(SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
         dctrlInitParams.dsiInitParams.isAvailable =
             initParams->socParams.dsiInitParams.isAvailable;
+	dctrlInitParams.dsiInitParams.isConnectedTo =
+            initParams->socParams.dsiInitParams.isConnectedTo;
 #endif
 
         retVal = Dss_dctrlDrvInit(&dctrlInitParams);

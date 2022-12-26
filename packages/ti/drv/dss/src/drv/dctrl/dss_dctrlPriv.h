@@ -227,7 +227,7 @@ int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
     const Dss_DctrlDsiParams *dsPrms);
 int32_t Dss_dctrlDrvEnableVideoDSI(Dss_DctrlDrvInfo *drvInfo,
     const Fvid2_ModeInfo *mInfo, uint32_t hsyncPolarity,
-    uint32_t vsyncPolarity);
+    uint32_t vsyncPolarity, uint32_t isConnectedTo);
 
 
 /* ========================================================================== */

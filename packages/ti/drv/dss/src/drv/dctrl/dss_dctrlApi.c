@@ -1154,7 +1154,8 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
             (TRUE == Dss_dctrlDrvIsOutputDSI(vpId)))
         {
             retVal = Dss_dctrlDrvEnableVideoDSI(pDrvInfo, &lcdOpTimingCfg->mInfo,
-                lcdPolarityCfg->hsPolarity, lcdPolarityCfg->vsPolarity);
+                lcdPolarityCfg->hsPolarity, lcdPolarityCfg->vsPolarity,
+                gDss_DctrlDrvCommonObj.drvInitParams.dsiInitParams.isConnectedTo);
         }
 #endif
 

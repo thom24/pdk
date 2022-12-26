@@ -52,7 +52,7 @@
 #include <dss_soc_priv.h>
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/drv/pm/pmlib.h>
-
+#include <string.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -113,10 +113,26 @@ typedef struct
     uint32_t rangeMin;
     /**< Lower boundary of the range */
     uint32_t rangeMax;
-    /**< Hogher boundary of the range */
+    /**< Higher boundary of the range */
     uint32_t progVal;
     /**< Value to be programmed for given range */
 } Dsitx_DphyRangeData;
+
+/**
+ *  struct Dss_DctrlvpDsiSupportedBlanks
+ *
+ *  \brief This structure holds information about VP and DSI2DP blanking parameters.
+ *         Driver needs to have an additional set of blanking parameters for DSI2DP Bridge
+ *         as bridge does not support the standard VESA parameters.
+ *
+ */
+typedef struct
+{
+    Fvid2_ModeInfo vpBlankingParams;
+    /**< Supported VP blanking params */
+    Fvid2_ModeInfo dsi2DpBlankingParams;
+    /**< DSI2DP bridge blanking params corresponding to VP blanking params */
+} Dss_DctrlDsi2DpBridgeBlankingParams;
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -323,6 +339,71 @@ static Dsitx_DphyRangeData gDsiTxLaneSpeedBandInfo[] =
     },
 };
 
+/* This array contains information about what DSI blanking should be programmed for what supported VP Blanking */
+static Dss_DctrlDsi2DpBridgeBlankingParams supportedBlanks[] =
+{
+    {
+        .vpBlankingParams = {
+            .standard = FVID2_STD_CUSTOM,
+            .scanFormat = FVID2_SF_PROGRESSIVE,
+            .fps = 60U, .width = 1280U,
+            .height = 720U,
+            .pixelClock = 64000000U,
+            .hFrontPorch = 48U,
+            .hBackPorch = 80U,
+            .hSyncLen = 32U,
+            .vFrontPorch = 4U,
+            .vBackPorch = 12U,
+            .vSyncLen = 5U
+        },
+        .dsi2DpBlankingParams = {
+            .standard = FVID2_STD_CUSTOM,
+            .scanFormat = FVID2_SF_PROGRESSIVE,
+            .fps = 60U,
+            .width = 1280U,
+            .height = 720U,
+            .pixelClock = 64000000U,
+            .hFrontPorch = 48U,
+            .hBackPorch = 80U,
+            .hSyncLen = 32U,
+            .vFrontPorch = 4U,
+            .vBackPorch = 12U,
+            .vSyncLen = 5U
+        }
+    },
+    {
+        .vpBlankingParams = {
+            .standard = FVID2_STD_CUSTOM,
+            .scanFormat = FVID2_SF_PROGRESSIVE,
+            .fps = 60U,
+            .width = 1920U,
+            .height = 1080U,
+            .pixelClock = 133320000U,
+            .hFrontPorch = 8U,
+            .hBackPorch = 40U,
+            .hSyncLen = 32U,
+            .vFrontPorch = 17U,
+            .vBackPorch = 6U,
+            .vSyncLen = 8U
+        },
+        .dsi2DpBlankingParams = {
+            .standard = FVID2_STD_CUSTOM,
+            .scanFormat = FVID2_SF_PROGRESSIVE,
+            .fps = 60U,
+            .width = 1920U,
+            .height = 1080U,
+            .pixelClock = 133320000U,
+            .hFrontPorch = 8U,
+            .hBackPorch = 40U,
+            .hSyncLen = 32U,
+            .vFrontPorch = 16U,
+            .vBackPorch = 6U,
+            .vSyncLen = 8
+        }
+    },
+    
+};
+
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                    */
 /* ========================================================================== */
@@ -337,13 +418,13 @@ static int32_t dssDctrlWaitForLock(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlSetDphyPowerAndReset(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlInitDsiLinkConfig(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlSetVideoConfig(Dss_DctrlDSIDrvObj *dsiObj,
-    const Fvid2_ModeInfo *mInfo);
+    const Fvid2_ModeInfo *mInfo, uint32_t connectedTo);
 static int32_t dssDctrlGetVideoModeAndSizeConfig(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlSetVideoModeAndSizeConfig(Dss_DctrlDSIDrvObj *dsiObj);
 static void dssDctrlUpdateVideoModeConfig(Dss_DctrlDSIDrvObj *dsiObj,
     const Fvid2_ModeInfo *mInfo);
-static void dssDctrlUpdateVideoSizeConfig(Dss_DctrlDSIDrvObj *dsiObj,
-    const Fvid2_ModeInfo *mInfo);
+static int32_t dssDctrlUpdateVideoSizeConfig(Dss_DctrlDSIDrvObj *dsiObj,
+    const Fvid2_ModeInfo *mInfo, uint32_t connectedTo);
 static int32_t dssDctrlSetVideoModeAndSizeConfig(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlEnableDsiLinkAndPath(Dss_DctrlDSIDrvObj *dsiObj);
 static int32_t dssDctrlEnableDsiLink(Dss_DctrlDSIDrvObj *dsiObj);
@@ -409,8 +490,27 @@ int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
     return (status);
 }
 
-int32_t Dss_dctrlDrvEnableVideoDSI(Dss_DctrlDrvInfo *drvInfo,
-    const Fvid2_ModeInfo *mInfo, uint32_t hsyncPolarity, uint32_t vsyncPolarity)
+static int32_t dssDctrlValidateSupportedVpModes(const Fvid2_ModeInfo *mInfo, Fvid2_ModeInfo **dsiMode)
+{
+    uint32_t supLen = sizeof(supportedBlanks)/sizeof(supportedBlanks[0]);
+    uint32_t supInd = 0;
+    int32_t retVal = CSL_EFAIL;
+    for (supInd = 0; supInd < supLen; supInd++)
+    {
+        if (0 == memcmp(mInfo, &(supportedBlanks[supInd].vpBlankingParams), sizeof(Fvid2_ModeInfo)))
+        {
+            *dsiMode = &(supportedBlanks[supInd].dsi2DpBlankingParams);
+            retVal = CSL_PASS;
+            break;
+        }
+    }
+
+    return retVal;
+}
+
+
+int32_t Dss_dctrlDrvEnableVideoDSI(Dss_DctrlDrvInfo *drvInfo, const Fvid2_ModeInfo *mInfo, 
+                                uint32_t hsyncPolarity, uint32_t vsyncPolarity, uint32_t connectedTo)
 {
     int32_t status;
     Dss_DctrlDSIDrvObj *dsiObj;
@@ -461,7 +561,7 @@ int32_t Dss_dctrlDrvEnableVideoDSI(Dss_DctrlDrvInfo *drvInfo,
 
     if (CDN_EOK == status)
     {
-        status = dssDctrlSetVideoConfig(dsiObj, mInfo);
+        status = dssDctrlSetVideoConfig(dsiObj, mInfo, connectedTo);
     }
 
     if (CDN_EOK == status)
@@ -802,7 +902,7 @@ static int32_t dssDctrlInitDsiLinkConfig(Dss_DctrlDSIDrvObj *dsiObj)
 }
 
 static int32_t dssDctrlSetVideoConfig(Dss_DctrlDSIDrvObj *dsiObj,
-    const Fvid2_ModeInfo *mInfo)
+    const Fvid2_ModeInfo *mInfo, uint32_t connectedTo)
 {
     int32_t status;
 
@@ -811,7 +911,10 @@ static int32_t dssDctrlSetVideoConfig(Dss_DctrlDSIDrvObj *dsiObj,
     if (CDN_EOK == status)
     {
         dssDctrlUpdateVideoModeConfig(dsiObj, mInfo);
-        dssDctrlUpdateVideoSizeConfig(dsiObj, mInfo);
+        if (CSL_PASS != dssDctrlUpdateVideoSizeConfig(dsiObj, mInfo, connectedTo))
+        {
+            status = CDN_EINVAL;
+        }
     }
 
     if (CDN_EOK == status)
@@ -874,22 +977,47 @@ static void dssDctrlUpdateVideoModeConfig(Dss_DctrlDSIDrvObj *dsiObj,
         (4u / dsiObj->cfgDsiTx.numOfLanes);
 }
 
-static void dssDctrlUpdateVideoSizeConfig(Dss_DctrlDSIDrvObj *dsiObj,
-    const Fvid2_ModeInfo *mInfo)
+static int32_t dssDctrlUpdateVideoSizeConfig(Dss_DctrlDSIDrvObj *dsiObj,
+    const Fvid2_ModeInfo *mInfo, uint32_t connectedTo)
 {
     uint32_t horzTotal;
+    int32_t retVal = CSL_PASS;
 
-    horzTotal = mInfo->width + mInfo->hFrontPorch + mInfo->hBackPorch + mInfo->hSyncLen;
+    if (DSS_DSI_CONNECTION_MAX > connectedTo)
+    {
+        if (DSS_DSI_CONNECTION_DSI2DP_BRIDGE == connectedTo)
+        {
+            Fvid2_ModeInfo *dsiMode;
+            retVal = dssDctrlValidateSupportedVpModes(mInfo,  &dsiMode);
+            mInfo = dsiMode;
+        }
+    }
+    else
+    {
+        retVal = CSL_EFAIL;
+    }
+    if(CSL_PASS == retVal)
+    {
+        horzTotal = mInfo->width + mInfo->hFrontPorch + mInfo->hBackPorch + mInfo->hSyncLen;
 
-    dsiObj->videoSizeCfg.vact = mInfo->height;
-    dsiObj->videoSizeCfg.vfp = 1;
-    dsiObj->videoSizeCfg.vbp = mInfo->vBackPorch;
-    dsiObj->videoSizeCfg.vsa = mInfo->vSyncLen;
-    dsiObj->videoSizeCfg.hsa = (mInfo->hSyncLen * BPP) - 14;
-    dsiObj->videoSizeCfg.hbp = (mInfo->hBackPorch * BPP) - 12;
-    dsiObj->videoSizeCfg.rgb = mInfo->width * BPP;
-    dsiObj->videoSizeCfg.hfp = (mInfo->hFrontPorch * BPP) - 6;
-    dsiObj->videoSizeCfg.blkLinePulsePacket = (horzTotal * BPP) - 20 - dsiObj->videoSizeCfg.hsa;
+        dsiObj->videoSizeCfg.vact = mInfo->height;
+        if (DSS_DSI_CONNECTION_DSI2DP_BRIDGE != connectedTo)
+        {
+            dsiObj->videoSizeCfg.vfp = 1;
+        }
+        else
+        {
+            dsiObj->videoSizeCfg.vfp = mInfo->vFrontPorch;
+        }
+        dsiObj->videoSizeCfg.vbp = mInfo->vBackPorch;
+        dsiObj->videoSizeCfg.vsa = mInfo->vSyncLen;
+        dsiObj->videoSizeCfg.hsa = (mInfo->hSyncLen * BPP) - 14;
+        dsiObj->videoSizeCfg.hbp = (mInfo->hBackPorch * BPP) - 12;
+        dsiObj->videoSizeCfg.rgb = mInfo->width * BPP;
+        dsiObj->videoSizeCfg.hfp = (mInfo->hFrontPorch * BPP) - 6;
+        dsiObj->videoSizeCfg.blkLinePulsePacket = (horzTotal * BPP) - 20 - dsiObj->videoSizeCfg.hsa;
+    }
+    return retVal;
 }
 
 static int32_t dssDctrlEnableDsiLinkAndPath(Dss_DctrlDSIDrvObj *dsiObj)

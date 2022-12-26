@@ -123,8 +123,7 @@ extern "C" {
 
 #define DISP_APP_TEST_MULTISYNC           (0U)
 
-/**< Enable DSI output, configures DSI for 800x600 resolution and
- *   uses LCD AUO display for displaying YUV422 image */
+/**< Enable DSI output, configures DSI for 720p resolution. */
 #define DISP_APP_TEST_DSI                 (0U)
 
 
@@ -132,8 +131,8 @@ extern "C" {
 #define DISP_APP_LCD_WIDTH              (1280U)
 #define DISP_APP_LCD_HEIGHT             (800U)
 #elif (1u == DISP_APP_TEST_DSI)
-#define DISP_APP_LCD_WIDTH              (800U)
-#define DISP_APP_LCD_HEIGHT             (600U)
+#define DISP_APP_LCD_WIDTH              (1280U)
+#define DISP_APP_LCD_HEIGHT             (720U)
 #elif (DISP_APP_USE_TEST_PARAMS == DISP_APP_BGR24)
 #define DISP_APP_LCD_WIDTH              (1280U)
 #define DISP_APP_LCD_HEIGHT             (720U)
@@ -275,7 +274,7 @@ typedef struct
 /*                  Internal/Private Function Declarations                   */
 /* ========================================================================== */
 
-int32_t DispApp_SetDsiSerdesCfg(DispApp_Obj *appObj);
+int32_t DispApp_cfgAdditionalDsiPeripherals();
 
 
 /* ========================================================================== */
