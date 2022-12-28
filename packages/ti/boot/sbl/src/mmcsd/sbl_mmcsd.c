@@ -58,10 +58,6 @@
 #include <sbl_sci_client.h>
 #endif
 
-#ifdef SECURE_BOOT
-#include "sbl_sec.h"
-#endif
-
 /**
  * \brief    SBL_FileRead function reads N bytes from SD card and
  *           advances the cursor.
@@ -176,10 +172,6 @@ const FATFS_Config FATFS_config[_VOLUMES + 1] = {
 #define SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK    (0x1U)
 #endif
 
-#ifdef SECURE_BOOT
-extern SBL_incomingBootData_S sblInBootData;
-#endif
-
 #ifdef BUILD_MCU
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
@@ -283,17 +275,6 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
     FIL     fp = {0};
     FRESULT  fresult;
 
-
-#ifdef SECURE_BOOT
-    uint32_t authenticated = 0; 
-    uint32_t srcAddr = 0;
-    uint32_t imgOffset = 0;
-#endif
-
-#ifdef iceK2G
-    MMCSDInitCfg[1].cardType = MMCSD_CARD_SD;
-#endif
-
     /* Initialization of the driver. */
     FATFS_init();
 
@@ -308,8 +289,6 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
     }
     else
     {
-
-#ifndef SECURE_BOOT
         fp_readData = &SBL_FileRead;
         fp_seek     = &SBL_FileSeek;
 
@@ -319,63 +298,15 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
         retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry, SBL_BOOT_AFTER_COPY);
 #endif
 
-#else
-
-        fp_readData = &SBL_MemRead;
-        fp_seek     = &SBL_MemSeek;
-
-
-        /* handling secure boot image */
-        if (E_PASS == SBL_loadMMCSDBootFile(&fp))
-        {
-            /* successfully loading boot image */
-            /* authentiate it */
-            authenticated = SBL_authentication(sblInBootData.sbl_boot_buff);
-            if (authenticated == 0)
-            {
-                /* fails authentiation */
-                UART_printf("\n SD Boot - fail authentication\n");
-
-                retVal = E_FAIL;
-            }
-            else
-            {
-                /* need to skip the TOC headers */
-                imgOffset = ((uint32_t*)sblInBootData.sbl_boot_buff)[0];
-                srcAddr = (uint32_t)(sblInBootData.sbl_boot_buff) + imgOffset; 
-#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
-                retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
-#else
-                retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry, SBL_BOOT_AFTER_COPY);
-#endif
-
-            }
-        }
-        else
-        {
-            UART_printf("\n SD sec Boot - incorrect image\n");
-
-            retVal = E_FAIL;
-        }
-
-#endif
-
         f_close(&fp);
     }
 
     FATFS_close(sbl_fatfsHandle);
     sbl_fatfsHandle = NULL;
 
-#ifdef SECURE_BOOT
-    /* install RAM Secure Kernel to overwrite DSP secure server*/
-    UART_printf("\n Starting Secure Kernel on DSP...\n");
-    SBL_startSK();
-#endif
-
     return retVal;
 }
 
-#ifndef SECURE_BOOT
 int32_t SBL_FileRead(void       *buff,
                       void *fileptr,
                       uint32_t    size)
@@ -415,57 +346,4 @@ void SBL_FileSeek(void *fileptr, uint32_t location)
     FIL *fp = (FIL *) (fileptr);
     f_lseek(fp, location);
 }
-
-#else
-
-/* load signed boot image from MMCSD */
-int32_t SBL_loadMMCSDBootFile(FIL * fp)
-{
-    int32_t  retVal = E_PASS;
-    uint32_t bytes_read;
-    uint32_t doneRead = 0;
-    uint32_t buff_idx = 0;
-    FRESULT  fresult  = FR_OK;
-
-
-    /* reading entire boot image into memory */
-    buff_idx = 0;
-    while ((doneRead == 0) && 
-           ((buff_idx + READ_BUFF_SIZE) < SBL_MAX_BOOT_BUFF_SIZE))
-    {
-        fresult = f_read(fp, (sblInBootData.sbl_boot_buff + buff_idx), 
-                         READ_BUFF_SIZE, &bytes_read);
-
-        if (fresult == FR_OK) 
-        {
-            if (bytes_read < READ_BUFF_SIZE)
-            {
-                doneRead = 1;
-            }
-
-            buff_idx += bytes_read;
-        }
-        else
-        {
-            doneRead = 1;
-
-            /* fail read */
-            retVal = E_FAIL;
-        }
-
-        if ((doneRead == 0) && 
-            ((buff_idx + READ_BUFF_SIZE)>=SBL_MAX_BOOT_BUFF_SIZE))
-        {
-            /* boot image is bigger than reserved buffer. Error */
-            doneRead = 1;
-            retVal = E_FAIL;
-        }
-    }
-
-    sblInBootData.sbl_boot_size = buff_idx;
-    sblInBootData.sbl_boot_buff_idx = 0;    /* reset the read pointer */
-
-    return retVal;
-}
-#endif
 

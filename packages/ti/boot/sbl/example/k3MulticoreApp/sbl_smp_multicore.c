@@ -41,10 +41,6 @@
 
 #define MPU_POKE_MEM_ADDR ((volatile int *)0x7002FFFC)
 
-#if defined (SOC_AM65XX)
-#define SBL_SMP_TEST_NUM_CORES 4
-#endif
-
 #if defined (SOC_J7200)
 #define SBL_SMP_TEST_NUM_CORES 3
 #endif

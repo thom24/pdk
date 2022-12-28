@@ -55,7 +55,7 @@ uint32_t __attribute__((section(".firmware"))) gSciclient_firmware[1];
 #if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
 static int32_t Sciclient_setBoardConfigHeader ();
 #endif
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 /* Firewall ID for MCU_FSS0_S0 */
 #define MCU_FSS0_S0_FWID (1036)
 #define MCU_FSS0_S0_FW_REGIONS (8)
@@ -299,7 +299,7 @@ removed after having a fix in TIFS */
         SBL_log(SBL_LOG_ERR,"Sciclient board config sec...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200)
     /* Secure ROM has left firewall regions for FSS DAT0 set.  Disable them for DMA usage. */
     uint16_t i;
     struct tisci_msg_fwl_set_firewall_region_resp respFwCtrl = {0};
@@ -522,17 +522,10 @@ removed after having a fix in TIFS */
 
 
 
-#if !defined(SBL_SKIP_MCU_RESET) || defined(SOC_AM65XX)
+#if !defined(SBL_SKIP_MCU_RESET)
     /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-#if defined(SOC_AM64X)
-    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI8, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI9, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI10, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI11, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-    Sciclient_pmSetModuleState(SBL_DEV_ID_MCU_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-#endif
 #endif
 
 

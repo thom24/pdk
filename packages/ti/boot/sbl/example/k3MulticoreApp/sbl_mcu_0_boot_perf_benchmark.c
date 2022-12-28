@@ -38,13 +38,6 @@
 #include "sbl_boot_perf_benchmark.h"
 #include <string.h>
 
-/**
- * MCU DEVGRP is not currently properly supported for AM65xx
- */
-#if defined(SOC_AM65XX)
-#undef SBL_ENABLE_DEV_GRP_MCU
-#endif
-
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
@@ -158,13 +151,8 @@ static int32_t BOOT_PERF_TEST_sysfwInit(void)
 {
     int32_t status = CSL_PASS;
     
-#if defined(SOC_AM64X)    
-    uint32_t dev_id = HW_RD_REG32((CSL_MCU_CTRL_MMR0_CFG0_BASE
-				   + CSL_MAIN_CTRL_MMR_CFG0_JTAGID));
-#else
     uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
-				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));
-#endif				   
+				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));			   
     Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
 
 #if defined(SBL_SKIP_SYSFW_INIT)

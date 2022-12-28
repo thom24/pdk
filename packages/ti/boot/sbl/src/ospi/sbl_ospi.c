@@ -74,10 +74,6 @@
 #include <ti/board/src/flash/include/board_flash.h>
 #include "sbl_ospi.h"
 
-#ifdef SECURE_BOOT
-#include "sbl_sec.h"
-#endif
-
 /* Macro representing the offset where the App Image has to be written/Read from
    the OSPI Flash.
 */
@@ -99,12 +95,6 @@ void SBL_SysFwLoad(void *dst, void *src, uint32_t size);
 static void *boardHandle = NULL;
 
 static OSPI_v0_HwAttrs ospi_cfg;
-
-#ifdef SECURE_BOOT
-extern SBL_incomingBootData_S sblInBootData;
-
-int32_t SBL_loadOSPIBootData(void);
-#endif
 
 #if SBL_USE_DMA
 
@@ -158,12 +148,7 @@ static int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
     if (gDrvHandle == (Udma_DrvHandle)uint32_to_void_ptr(0U))
     {
         /* UDMA driver init */
-#if defined (SOC_AM64X)
-        /* Use Block Copy DMA for AM64x */
-        instId = UDMA_INST_ID_BCDMA_0;
-#else
         instId = UDMA_INST_ID_MCU_0;
-#endif
 
         UdmaInitPrms_init(instId, &initPrms);
         retVal = Udma_init(&gUdmaDrvObj, &initPrms);
@@ -224,7 +209,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /* Get default OSPI cfg */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
-#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
+#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_200M;
 #else
     ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
@@ -321,14 +306,6 @@ void OSPI_configClk(uint32_t freq)
 	int32_t retVal;
     uint64_t ospi_rclk_freq;
     uint32_t parClk;
-#if defined (SOC_AM64X)
-    uint32_t clkID[] = {
-                           TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK,
-    };
-    uint32_t devID[] = {
-                           TISCI_DEV_FSS0_OSPI_0,
-    };
-#else
     uint32_t clkID[] = {
                            TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK,
                            TISCI_DEV_MCU_FSS0_OSPI_1_OSPI_RCLK_CLK
@@ -337,7 +314,6 @@ void OSPI_configClk(uint32_t freq)
                            TISCI_DEV_MCU_FSS0_OSPI_0,
 	                       TISCI_DEV_MCU_FSS0_OSPI_1
     };
-#endif
 
     /* Get the default SPI init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -355,11 +331,7 @@ void OSPI_configClk(uint32_t freq)
     /* Max clocks */
     if (freq == OSPI_MODULE_CLK_166M)
     {
-#if defined (SOC_AM64X)
-        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;
-#else
         parClk = TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK;
-#endif
 
         retVal = Sciclient_pmSetModuleClkParent(devID[BOARD_OSPI_NOR_INSTANCE],
                                                 clkID[BOARD_OSPI_NOR_INSTANCE],
@@ -368,11 +340,7 @@ void OSPI_configClk(uint32_t freq)
     }
     else
     {
-#if defined (SOC_AM64X)
-        parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;
-#else
         parClk = TISCI_DEV_MCU_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MCU_1_HSDIVOUT4_CLK;
-#endif
         retVal = Sciclient_pmSetModuleClkParent(devID[BOARD_OSPI_NOR_INSTANCE],
                                                 clkID[BOARD_OSPI_NOR_INSTANCE],
                                                 parClk,
@@ -476,10 +444,6 @@ int32_t SBL_ospiInit(void *handle)
 
     ospi_cfg.dtrEnable = true;
 
-#if defined(SOC_AM64X)
-    ospi_cfg.funcClk = OSPI_MODULE_CLK_166M;
-#endif
-
 #if SBL_USE_DMA
     ospi_cfg.dmaEnable = true;
     Ospi_udma_init(&ospi_cfg);
@@ -491,7 +455,7 @@ int32_t SBL_ospiInit(void *handle)
 
 #if SBL_USE_DMA
     /* J721E: PHY mode was already previously enabled, so we keep it enabled */
-    /* J7200/J721S2/J784S4/AM64X: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
+    /* J7200/J721S2/J784S4: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
     ospi_cfg.phyEnable = true;
 #else
 #if defined(SOC_J721E) || defined(BUILD_XIP)
@@ -504,7 +468,7 @@ int32_t SBL_ospiInit(void *handle)
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
-#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
+#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
                         BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
 #else
@@ -553,17 +517,6 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     Board_flashHandle h = *(const Board_flashHandle *) handle;
     uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
 
-#if defined(SOC_AM64X)
-    /* Special handling for M4F memory region transfers to workaround BCDMA copy issue */
-    if (((uint32_t)dst >= (uint32_t)(SBL_M4F_IRAM_BASE_ADDR_SOC)) &&
-        ((uint32_t)dst < (uint32_t)(SBL_M4F_DRAM_BASE_ADDR_SOC + SBL_M4F_DRAM_SIZE)))
-    {
-        memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
-        SBL_log(SBL_LOG_MAX, "Copy to M4F mem location 0x%x ...\n", (uint32_t)dst);
-    }
-    else
-    {
-#endif
     if (length > 4 * 1024)
     {
         /* split transfer if not reading from 16 byte aligned flash offset */
@@ -591,9 +544,6 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
         SBL_DCacheClean((void *)dst, length);
         Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
     }
-#if defined(SOC_AM64X)
-    }  /* End of 'else' for M4F memory region transfers */
-#endif
 
 #else
 #if defined(SOC_J721E) || defined(BUILD_XIP)
@@ -672,7 +622,7 @@ int32_t SBL_ospiLeaveConfigSPI()
 
     SBL_ADD_PROFILE_POINT;
 
-#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SOC_AM64X)
+#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
                         BOARD_OSPI_NOR_INSTANCE, NULL);
 #else
@@ -703,57 +653,15 @@ int32_t SBL_ospiLeaveConfigSPI()
 int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 {
     int32_t retVal;
-
-#ifdef SECURE_BOOT
-    uint32_t authenticated = 0;
-    uint32_t srcAddr = 0;
-    uint32_t imgOffset = 0;
-#else
     uint32_t offset = OSPI_OFFSET_SI;
-#endif
 
     /* Initialization of the driver. */
     SBL_OSPI_Initialize();
 
-#ifndef SECURE_BOOT
 #if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
     retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 #else
     retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry, SBL_BOOT_AFTER_COPY);
-#endif
-
-#else
-    retVal = SBL_loadOSPIBootData();
-
-    if (retVal == E_PASS)
-    {
-        /* authentiate it */
-        authenticated = SBL_authentication(sblInBootData.sbl_boot_buff);
-        if (authenticated == 0)
-        {
-            /* fails authentiation */
-            SBL_log(SBL_LOG_ERR, "\n OSPI Boot - fail authentication\n");
-
-            retVal = E_FAIL;
-        }
-        else
-        {
-            /* need to skip the TOC headers */
-            imgOffset = ((uint32_t*)sblInBootData.sbl_boot_buff)[0];
-            srcAddr = (uint32_t)(sblInBootData.sbl_boot_buff) + imgOffset;
-#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
-            retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
-#else
-            retVal = SBL_MulticoreImageParse((void *)srcAddr, 0, pEntry, SBL_BOOT_AFTER_COPY);
-#endif
-        }
-    }
-    else
-    {
-        retVal = E_FAIL;
-        SBL_log(SBL_LOG_ERR, "\n OSPI Boot - problem processing image \n");
-    }
-
 #endif
 
     SBL_ospiClose(&boardHandle);
@@ -785,19 +693,9 @@ static void SBL_OSPI_Initialize(void)
     SBL_ospiInit(&boardHandle);
 
     /* Initialize the function pointers to parse through the RPRC format. */
-
-#ifndef SECURE_BOOT
     fp_readData = &SBL_OSPI_ReadSectors;
     fp_seek     = &SBL_OSPI_seek;
-#else
-    fp_readData = &SBL_MemRead;
-    fp_seek     = &SBL_MemSeek;
-#endif
-
 }
-
-
-#ifndef SECURE_BOOT
 
 void SBL_SPI_init()
 {
@@ -819,76 +717,5 @@ void SBL_OSPI_seek(void *srcAddr, uint32_t location)
 {
     *((uint32_t *) srcAddr) = location;
 }
-
-#else
-
-/* load signed boot data from OSPI */
-int32_t SBL_loadOSPIBootData()
-{
-    int32_t  retVal = E_PASS;
-    uint32_t key_size = 0;
-    uint32_t load_size = 0;
-    uint32_t total_size = 0;
-    uint8_t  *u8Ptr = 0;
-
-    sblInBootData.sbl_boot_size = 0;
-    sblInBootData.sbl_boot_buff_idx = 0;    /* reset the read pointer */
-
-    u8Ptr = sblInBootData.sbl_boot_buff;
-
-    /* first read a block to figure out the max size */
-    retVal = SBL_ospiFlashRead(&boardHandle, sblInBootData.sbl_boot_buff,
-                               READ_BUFF_SIZE, OSPI_OFFSET_SI);
-
-    if (retVal == E_PASS)
-    {
-        if (strcmp((char *)&u8Ptr[TOC_HDR_SIZE + TOC_FILE_NAME_OFFSET], "KEYS")==0)
-        {
-            /* first TOC HDR is IMG. Second TOC HDR is image */
-            key_size = *(uint32_t*)(&u8Ptr[TOC_HDR_SIZE + TOC_DAT_SIZE_OFFSET]);
-
-            if (strcmp((char *)&u8Ptr[TOC_FILE_NAME_OFFSET], "2ND")==0)
-            {
-                load_size = *(uint32_t*)(&u8Ptr[TOC_DAT_SIZE_OFFSET]);
-
-                total_size = key_size + load_size + 0x60;
-                sblInBootData.sbl_boot_size = total_size;
-
-                if (total_size < SBL_MAX_BOOT_BUFF_SIZE)
-                {
-                    /* read the entire boot data in */
-                    retVal = SBL_ospiFlashRead(&boardHandle,
-                                            sblInBootData.sbl_boot_buff,
-                                            total_size,
-                                            OSPI_OFFSET_SI);
-                }
-                else
-                {
-                    /* not enough buffer to read entire boot data */
-                    retVal = E_FAIL;
-                }
-            }
-            else
-            {
-                /* bad or unsupported image type */
-                retVal = E_FAIL;
-            }
-        }
-        else
-        {
-            /* Keys not found */
-            retVal = E_FAIL;
-        }
-    }
-    else
-    {
-        /* Fail to read the OSPI flash */
-        retVal = E_FAIL;
-    }
-
-
-    return retVal;
-}
-#endif
 
 

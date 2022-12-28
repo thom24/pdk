@@ -270,7 +270,6 @@ SBL_MCU4_CPU0_ATCM_BASE_ADDR_SOC,
 SBL_MCU4_CPU1_ATCM_BASE_ADDR_SOC
 };
 
-#if !defined(SOC_AM65XX)
 static const uint32_t SblBtcmAddr[] =
 {
 SBL_MCU_BTCM_BASE,
@@ -282,7 +281,7 @@ SBL_MCU3_CPU1_BTCM_BASE_ADDR_SOC,
 SBL_MCU4_CPU0_BTCM_BASE_ADDR_SOC,
 SBL_MCU4_CPU1_BTCM_BASE_ADDR_SOC
 };
-#endif
+
 /* ========================================================================== */
 /*                           Internal Functions                               */
 /* ========================================================================== */
@@ -292,16 +291,6 @@ static void SBL_RequestCore(cpu_core_id_t core_id)
 #if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
     int32_t proc_id = sbl_slave_core_info[core_id].tisci_proc_id;
     int32_t status = CSL_EFAIL;
-
-#if defined(SOC_AM64X)
-    /* Do not touch the M4 if reset isolation is enabled */
-    uint32_t mmrMagicRegister;
-    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
-    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
-    {
-        return;
-    }
-#endif
 
     if (proc_id != SBL_INVALID_ID)
     {
@@ -343,16 +332,6 @@ static void SBL_ReleaseCore (cpu_core_id_t core_id, uint32_t reqFlag)
 #if !defined(SBL_SKIP_BRD_CFG_BOARD) && !defined(SBL_SKIP_SYSFW_INIT)
     int32_t proc_id = sbl_slave_core_info[core_id].tisci_proc_id;
     int32_t status = CSL_EFAIL;
-
-#if defined(SOC_AM64X)
-    /* Do not touch the M4 if reset isolation is enabled */
-    uint32_t mmrMagicRegister;
-    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
-    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
-    {
-        return;
-    }
-#endif
 
     if(proc_id != SBL_INVALID_ID)
     {
@@ -496,16 +475,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
 
     SBL_ADD_PROFILE_POINT;
 
-#if defined(SOC_AM64X)
-    /* Do not touch the M4 if reset isolation is enabled */
-    uint32_t mmrMagicRegister;
-    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
-    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
-    {
-        return;
-    }
-#endif
-
     /* Remap virtual core-ids if needed */
     switch (core_id)
     {
@@ -600,17 +569,12 @@ void SBL_SetupCoreMem(uint32_t core_id)
             proc_set_config_req.bootvector_hi = cpuStatus.bootvector_hi;
             proc_set_config_req.config_flags_1_set = 0;
             proc_set_config_req.config_flags_1_clear = 0;
-#if defined(SOC_AM65XX)
-            SBL_log(SBL_LOG_MAX, "Restore TCM defaults (ATCM disabled), after reset, for core %d\n", core_id);
-            proc_set_config_req.config_flags_1_clear |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
-#else
             SBL_log(SBL_LOG_MAX, "Enabling MCU TCMs after reset for core %d\n", core_id);
             proc_set_config_req.config_flags_1_set |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_ATCM_EN;
-#endif
             proc_set_config_req.config_flags_1_set |= (TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_BTCM_EN |
                                                        TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_TCM_RSTBASE);
 
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
             /* Only need to set mem_init disable bit for MCU1_0 or MCU2_0 (for each cluster) */
             if ((core_id == MCU1_CPU0_ID) || (core_id == MCU2_CPU0_ID) || (core_id == MCU3_CPU0_ID) || (core_id == MCU4_CPU0_ID))
             {
@@ -626,9 +590,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetProcessorCfg...FAILED \n");
                 SblErrLoop(__FILE__, __LINE__);
             }
-
-#if !defined(SOC_AM65XX)
-            /* Only initialize TCMs for Non-AM65xx SoCs. For AM65xx, TCMs must be initialized by the app itself. */
 
             /* For lockstep R5 pairs, this section will naturally only set HALT bit for MCU2_CPU0_ID or MCU3_CPU0_ID */
             if (core_id != MCU1_CPU0_ID)
@@ -661,15 +622,9 @@ void SBL_SetupCoreMem(uint32_t core_id)
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) ATCM @ 0x%x\n", core_id, SblAtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, atcm_size);
 
-#ifndef VLAB_SIM
                 SBL_log(SBL_LOG_MAX, "Clearing core_id %d (lock-step) BTCM @ 0x%x\n", core_id, SblBtcmAddr[core_id - MCU1_CPU0_ID]);
                 memset(((void *)(SblBtcmAddr[core_id - MCU1_CPU0_ID])), 0xFF, btcm_size);
-#else
-/* BTCM is not recognized in VLAB : ASTC TICKET # TBD */
-                SBL_log(SBL_LOG_MAX, "***Not Clearing*** BTCM @0x%x\n", SblBtcmAddr[core_id - MCU1_CPU0_ID]);
-#endif
             }
-#endif /* #if !defined(SOC_AM65XX) */
             break;
         case MPU1_SMP_ID:
         case MPU1_CPU0_ID:
@@ -729,16 +684,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr = &(sbl_slave_core_info[core_id]);
 
     SBL_ADD_PROFILE_POINT;
-
-#if defined(SOC_AM64X)
-    /* Do not touch the M4 if reset isolation is enabled */
-    uint32_t mmrMagicRegister;
-    mmrMagicRegister = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE+CSL_MAIN_CTRL_MMR_CFG0_RST_MAGIC_WORD)));
-    if (core_id == M4F_CPU0_ID && mmrMagicRegister != 0)
-    {
-        return;
-    }
-#endif
 
 #if defined(SBL_SKIP_MCU_RESET) && (defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT))
     /* Skip copy if R5 app entry point is already 0 */
@@ -811,7 +756,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             /* Display profile logs */
             SBL_printProfileLog();
 
-#if !defined(SOC_AM65XX)  /* Pre-loading ATCM is not permitted for AM65xx */
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
                 /* Skip copy if R5 app entry point is already 0 */
@@ -821,16 +765,13 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                     memcpy(((void *)(SblAtcmAddr[core_id - MCU1_CPU0_ID])), (void *)(pAppEntry->CpuEntryPoint[core_id]), 128);
                 }
             }
-#endif
 
 #ifdef SBL_SKIP_MCU_RESET
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
-#if !defined(SOC_AM65XX)
                 /* Un-halt MCU1_1 core */
                 Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-#endif
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
   
@@ -892,7 +833,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
              *   It is necessary to reset MCU1_1 before MCU1_0, so as to maintain the specification that
              *   MCU1_1 may never ben in a higher functional state than MCU1_0.
              */
-#if !defined(SOC_AM65XX)
             Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU1, 1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU0, 1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
 
@@ -900,10 +840,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
              * Un-halt MCU1_1 (MCU1_0 is not halted)
              */
             Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-#else
-            /* AM65x case (can't use local reset flags): Power down core running SBL */
-            Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-#endif
 
             /**
              * Notify SYSFW that the SBL is relinquishing the MCU cluster running the SBL
@@ -922,20 +858,11 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
              *   shall leave reset. Only take MCU1_1 out of reset if an application will be running
              *   on it.
              */
-#if !defined(SOC_AM65XX)
             Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU0, 0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
             {
                 Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU1, 0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-#else
-            /* AM65x case (can't use local reset flags): Power ON CPU0 core, then power ON CPU1 core if necessary */
-            Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU0, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
-            {
-                Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            }
-#endif
 
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
             /* Notifying SYSFW that the SBL is relinquishing the MCU cluster running the SBL */
@@ -953,7 +880,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
         case MCU1_CPU0_ID:
             /* Skip copy if R5 app entry point is already 0 */
-#if !defined(SOC_AM65XX) || defined(SBL_SKIP_MCU_RESET)
+#if defined(SBL_SKIP_MCU_RESET)
             if (pAppEntry->CpuEntryPoint[core_id])
             {
                 SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
