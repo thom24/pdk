@@ -54,15 +54,15 @@ syfw_image = 0x41C3E000;
 MEMORY
 {
         /* Used for SYSFW initlization */
-	OCMRAM_SBL_SYSFW (RWIX) : origin=0x41C3E000 length=0x4000
-	OCMRAM_SBL_UNUSED (X)   : origin=0x41C8F000 length=0x2000
+	OCMRAM_SBL_SYSFW (RWIX) : origin=0x41C80000 length=0x2000
+	OCMRAM_SBL_UNUSED (X)   : origin=0x41C60000 length=0x2000
     /* Line below is not used / not needed for AM65xx */
-    OCMRAM_SBL_RM_PM_HAL (X): origin=0x41C91000 length=0x6000
+    OCMRAM_SBL_RM_PM_HAL (X): origin=0x41C08000 length=0x6000
 
         /* App code resides here  */
-	RESET_VECTORS (X)       : origin=0x41C43F00 length=0x100
-	OCMRAM_BOOT_PERF (RWIX) : origin=0x41C44000 length=0x4B000 - 0x100
-	VECTORS (X)             : origin=0x41C42000 length=0x1000
+	RESET_VECTORS (X)       : origin=0x41C82000 length=0x100
+	OCMRAM_BOOT_PERF (RWIX) : origin=0x41C82100 length=0x50000 - 0x100
+	VECTORS (X)             : origin=0x41CD2100 length=0x1000
 
 
 /* Additional memory settings	*/
