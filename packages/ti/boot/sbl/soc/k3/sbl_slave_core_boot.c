@@ -880,7 +880,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
 
         case MCU1_CPU0_ID:
             /* Skip copy if R5 app entry point is already 0 */
-#if defined(SBL_SKIP_MCU_RESET)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(SBL_SKIP_MCU_RESET)
             if (pAppEntry->CpuEntryPoint[core_id])
             {
                 SBL_log(SBL_LOG_MAX, "Copying first 128 bytes from app to MCU ATCM @ 0x%x for core %d\n", SblAtcmAddr[core_id - MCU1_CPU0_ID], core_id);
