@@ -115,7 +115,7 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
 
     int ret;
     struct timespec ts;
-    int timeout_ns = timeout*1000000;
+    uint64_t timeout_ns = timeout*1000000;
 
     if (timeout == SemaphoreP_WAIT_FOREVER) {
         ret = sem_wait((sem_t *)handle);

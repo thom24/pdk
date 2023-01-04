@@ -262,7 +262,7 @@ static int32_t Ipc_qnxSemWait(void *handle, uint32_t timeout)
     int ret = 0;
     int32_t rtnVal = IPC_SOK;
     struct timespec ts;
-    int timeout_ns = timeout*1000;
+    uint64_t timeout_ns = timeout*1000;
 
     if(handle != NULL)
     {
