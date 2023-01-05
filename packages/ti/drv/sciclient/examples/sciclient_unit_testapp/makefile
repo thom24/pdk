@@ -53,6 +53,14 @@ SRCS_COMMON = sciclient_ut_main.c \
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SCICLIENT_UT_CFLAGS) $(CFLAGS_OS_DEFINES)
 PACKAGE_SRCS_COMMON = . ../common
 
+# SoCs which use firewall exception notification tests (mcu1_0 UT only)
+ifeq ($(SOC),$(filter $(SOC), j721e))
+  ifeq ($(CORE), mcu1_0)
+    SCICLIENT_UT_CFLAGS += -DENABLE_FW_NOTIFICATION
+    SRCS_COMMON +=  sciclient_fw_notify.c
+  endif
+endif
+
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
 #   SRCS_<coqre/SoC/platform-name> =

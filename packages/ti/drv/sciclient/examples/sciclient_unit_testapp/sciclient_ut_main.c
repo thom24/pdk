@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2018-2023 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -55,6 +55,9 @@
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
 
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_ut_tests.h>
+#if defined(ENABLE_FW_NOTIFICATION)
+#include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_fw_notify.h>
+#endif
 #if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
 #endif
@@ -91,6 +94,9 @@ static int32_t App_msmcQueryTest(void);
 static int32_t App_rmGetResourceRange(void);
 #elif defined(ENABLE_MSG_FWD)
 static int32_t App_tifs2dmMsgForwardingTest(void);
+#endif
+#if defined(ENABLE_FW_NOTIFICATION)
+static int32_t App_fwExcpNotificationTest(void);
 #endif
 
 /* ========================================================================== */
@@ -186,6 +192,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #elif defined(ENABLE_MSG_FWD)
         case 6:
             testParams->testResult = App_tifs2dmMsgForwardingTest();
+            break;
+#endif
+#if defined(ENABLE_FW_NOTIFICATION)
+        case 7:
+            testParams->testResult = App_fwExcpNotificationTest();
             break;
 #endif
         default:
@@ -751,6 +762,63 @@ static int32_t App_tifs2dmMsgForwardingTest(void)
         status = Sciclient_deinit();
     }
     return status;
+}
+#endif
+
+#if defined(ENABLE_FW_NOTIFICATION)
+extern uint32_t gInterruptRecieved;
+static int32_t App_fwExcpNotificationTest(void)
+{
+    
+    int32_t status = CSL_PASS;
+    volatile uint32_t* excpRegCmbn;
+    volatile uint32_t* excpRegDmsc;
+    OsalRegisterIntrParams_t    intrPrmsDmscIntr;
+    OsalRegisterIntrParams_t    intrPrmsCmbnIntr;
+    CSL_R5ExptnHandlers sciclientR5ExptnHandlers;
+    HwiP_Handle hwiPHandleDmscIntr;
+    HwiP_Handle hwiPHandleCmbnIntr;
+
+    App_sciclientPrintf(" Starting firewall notification handling (from secure queue)\n");
+    
+    excpRegDmsc = (volatile uint32_t*)DMSC_FW_EXCP_REG;
+    excpRegCmbn = (volatile uint32_t*)CMBN_FW_EXCP_REG;
+    
+    /* Register an abort exception handler */
+    Intc_InitExptnHandlers(&sciclientR5ExptnHandlers);
+    sciclientR5ExptnHandlers.dabtExptnHandler = (void*)App_fwAbortHandlerIsr;
+    Intc_RegisterExptnHandlers(&sciclientR5ExptnHandlers);
+
+    /* Interrupt registration for dmsc interrupt notification routing */
+    Osal_RegisterInterrupt_initParams(&intrPrmsCmbnIntr);  
+    intrPrmsCmbnIntr.corepacConfig.isrRoutine       =
+                                (void*)App_fwNotiIsrCmbn;
+    intrPrmsCmbnIntr.corepacConfig.corepacEventNum  = 0;
+    intrPrmsCmbnIntr.corepacConfig.intVecNum        = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_DMSC0_CORTEX_M3_0_SEC_OUT_1;
+    status =Osal_RegisterInterrupt(&intrPrmsCmbnIntr, &hwiPHandleCmbnIntr);
+
+    /* Interrupt registration for dmsc interrupt notification routing */
+    Osal_RegisterInterrupt_initParams(&intrPrmsDmscIntr);                                                              
+    intrPrmsDmscIntr.corepacConfig.isrRoutine       =
+                                (void*)App_fwNotiIsrDmsc;
+    intrPrmsDmscIntr.corepacConfig.corepacEventNum  = 0;
+    intrPrmsDmscIntr.corepacConfig.intVecNum        = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_DMSC0_CORTEX_M3_0_SEC_OUT_0;
+    status =Osal_RegisterInterrupt(&intrPrmsDmscIntr, &hwiPHandleDmscIntr);
+    
+    /* Invoking a firewall exception notification for the dmsc exception handler by writing to dmsc address */
+    *excpRegDmsc = 0x01;
+
+    Osal_delay(1U); /*Delay of 1ms*/
+
+    /* Invoking a firewall exception notification for the cmbn exception handler by writing to dmsc address */
+    *excpRegCmbn = 0x01;
+
+    if (gInterruptRecieved!=EXCEPTION_INTERRUPT_CNT)
+    {
+        status = CSL_EFAIL;
+    }
+    return status;
+
 }
 #endif
 

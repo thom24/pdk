@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2018-2019 Texas Instruments Incorporated
+ *  Copyright (C) 2018-2023 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -298,6 +298,43 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
         /** *passFailCriteria **/
         "Sciclient gets ACK and the DEV ID 0 state info, after sending get device\
          state message on a secure queue (to TIFS and then DM) without any error.",
+
+        /** cpuID **/
+        APP_SCICLIENT_R5F,
+
+        /** sciclientConfigParams **/
+        {},
+
+        /** printEnable **/
+        PRINT_ENABLE,
+
+        /** testType **/
+        (APP_SCICLIENT_TEST_TYPE_SANITY)
+    },
+#endif
+#if defined(ENABLE_FW_NOTIFICATION)
+    {
+        /** enableTest **/
+        TEST_ENABLE,
+
+        /** testCaseId **/
+        7U,
+
+        /** *reqId **/
+        "PDK-12208::PDK-12209",
+
+        /** *testCaseName **/
+        "SCICLIENT Firewall Exception Notification Testapp",
+
+        /** *userInfo **/
+        "None",
+
+        /** *disableReason **/
+        "None",
+
+        /** *passFailCriteria **/
+        "Sciclient should receive Firewall exception interrupts and be able to read\
+        the firewall exception logging register value.",
 
         /** cpuID **/
         APP_SCICLIENT_R5F,
