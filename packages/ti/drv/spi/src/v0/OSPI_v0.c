@@ -53,10 +53,8 @@
 #define OSPI_XIP_SETUP_DELAY        (250U)
 
 /* Set the indirect trigger address offset at a non-cached location */
-#if defined(SOC_J7200) || defined(SOC_AM64X)
+#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2)
     #define OSPI_INDAC_TRIG_ADDR (0x3FC0000)
-#elif defined(SOC_J721S2)
-    #define OSPI_INDAC_TRIG_ADDR (0x0)
 #else
     #define OSPI_INDAC_TRIG_ADDR (0x3FE0000)
 #endif
