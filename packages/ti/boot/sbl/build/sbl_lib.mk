@@ -87,7 +87,7 @@ SRCS_ASM_COMMON += sbl_init.asm
 
 # scratch memory given to the SBL
 # for image load and parsing
-SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xB8000000
+SBL_CFLAGS += -DSBL_SCRATCH_MEM_START=0xC2000000
 SBL_CFLAGS += -DSBL_SCRATCH_MEM_SIZE=0x4000000
 
 # Check for custom flags
