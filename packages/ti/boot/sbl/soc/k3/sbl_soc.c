@@ -106,8 +106,6 @@ void SBL_printProfileLog(void)
     uint32_t i = 0, prev_cycle_cnt = 0, cycles_per_usec;
     uint32_t lastlogIndx;
 
-    SBL_ADD_PROFILE_POINT;
-
     Sciclient_pmGetModuleClkFreq(SBL_DEV_ID_MCU1_CPU0, SBL_CLK_ID_MCU1_CPU0, &mcu_clk_freq, SCICLIENT_SERVICE_WAIT_FOREVER);
     cycles_per_usec = (mcu_clk_freq / 1000000);
 
@@ -184,13 +182,10 @@ uint32_t SBL_GetCertLen(uint8_t *x509_cert_ptr)
     uint32_t cert_len = 0;
     uint8_t *cert_len_ptr = (uint8_t *)&cert_len;
 
-    SBL_ADD_PROFILE_POINT;
-
     SBL_log(SBL_LOG_MAX,"Searching for X509 certificate ...");
     if ( *x509_cert_ptr != 0x30)
     {
         SBL_log(SBL_LOG_MAX,"not found\r\n");
-        SBL_ADD_PROFILE_POINT;
         return 0;
     }
 
@@ -203,7 +198,6 @@ uint32_t SBL_GetCertLen(uint8_t *x509_cert_ptr)
         (cert_len != 0x82))
     {
         SBL_log(SBL_LOG_MAX,"size invalid\r\n");
-        SBL_ADD_PROFILE_POINT;
         return 0;
     }
 
@@ -230,15 +224,12 @@ uint32_t SBL_GetCertLen(uint8_t *x509_cert_ptr)
     /* of certificate, add 1                             */
     SBL_log(SBL_LOG_MAX,"size = %d bytes\r\n", cert_len + 1);
 
-    SBL_ADD_PROFILE_POINT;
     return cert_len + 1;
 }
 
 uint8_t *SBL_FindSeq(uint8_t *x509_cert_ptr, uint32_t x509_cert_size, uint8_t *seq_oid, uint8_t seq_len)
 {
     uint8_t *x509_cert_end = x509_cert_ptr + x509_cert_size - seq_len;
-
-    SBL_ADD_PROFILE_POINT;
 
     /* searching for the following byte seq in the cert */
     /* seq_id(0x30) seq_len(< 0x80) 0x06 0x09 0x2B...   */
@@ -250,15 +241,12 @@ uint8_t *SBL_FindSeq(uint8_t *x509_cert_ptr, uint32_t x509_cert_size, uint8_t *s
         {
             if ((bcmp((const void *)x509_cert_ptr, (const void *)seq_oid, seq_len)) == 0)
             {
-                SBL_ADD_PROFILE_POINT;
                 /* return start boot_seq */
                 return (x509_cert_ptr - 2);
             }
         }
         x509_cert_ptr++;
     }
-
-    SBL_ADD_PROFILE_POINT;
 
     return NULL;
 }
@@ -270,8 +258,6 @@ uint32_t SBL_GetMsgLen(uint8_t *x509_cert_ptr, uint32_t x509_cert_size)
     uint8_t *msg_len_ptr = (uint8_t *)&msg_len;
     /* oid encoding of boot_seq extension - 1.3.6.1.4.1.294.1.1 */
     uint8_t boot_seq_oid[] = {0x06, 0x09, 0x2B, 0x06, 0x01, 0x04, 0x01, 0x82, 0x26, 0x01, 0x01};
-
-    SBL_ADD_PROFILE_POINT;
 
     boot_seq_ptr = SBL_FindSeq(x509_cert_ptr, x509_cert_size, boot_seq_oid, sizeof(boot_seq_oid));
     SBL_log(SBL_LOG_MAX,"Found seq @ 0x%x\r\n", boot_seq_ptr);
@@ -323,8 +309,6 @@ uint32_t SBL_GetMsgLen(uint8_t *x509_cert_ptr, uint32_t x509_cert_size)
 
     SBL_log(SBL_LOG_MAX,"image length = %d bytes\r\n", msg_len);
 
-    SBL_ADD_PROFILE_POINT;
-
     return msg_len;
 }
 
@@ -341,8 +325,6 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
     int32_t retVal = E_FAIL, auth_retval = E_FAIL;
     uint32_t SBL_GetCertLen(uint8_t *x509_cert_ptr);
     uint32_t SBL_GetMsgLen(uint8_t *x509_cert_ptr, uint32_t x509_cert_size);
-
-    SBL_ADD_PROFILE_POINT;
 
     if ((fp_readData != NULL) && (fp_seek != NULL))
     {
@@ -395,8 +377,6 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
             authReq.certificate_address_lo = cert_load_addr;
             SBL_log(SBL_LOG_MAX,"Cert @ 0x%x ...", authReq.certificate_address_lo);
 
-            SBL_ADD_PROFILE_POINT;
-
             retVal = auth_retval = Sciclient_procBootAuthAndStart(&authReq, SCICLIENT_SERVICE_WAIT_FOREVER);
             if (retVal == CSL_PASS)
             {
@@ -415,8 +395,6 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
                     SblErrLoop(__FILE__, __LINE__);
                 }
             }
-
-            SBL_ADD_PROFILE_POINT;
 
             /* Image is loaded. RPRC parsing no longer */
             /* neeeds to access the boot media. Update */
@@ -450,7 +428,6 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
         SBL_log(SBL_LOG_ERR,"App verification fails!! Boot Halted!!\n\r");
         SblErrLoop(__FILE__, __LINE__);
     }
-    SBL_ADD_PROFILE_POINT;
 
     return retVal;
 }
@@ -515,8 +492,6 @@ void SBL_SetupPmicCfg(sblCfgPmic_t *pmicVoltCfg, uint32_t opp)
     uint32_t vtmOppVidMask = (SBL_VTM_OPP_VID_MASK << opp);
     sblCfgPmic_t *pmicCfg;
 
-    SBL_ADD_PROFILE_POINT;
-
     for (vd = 0; vd < SBL_MAX_VTM_VDS; vd++)
     {
         vtmDevInfo = CSL_REG32_RD(SBL_VTM_CFG_BASE + CSL_VTM_CFG1_VD_DEVINFO(vd));
@@ -530,7 +505,6 @@ void SBL_SetupPmicCfg(sblCfgPmic_t *pmicVoltCfg, uint32_t opp)
         }
     }
 
-    SBL_ADD_PROFILE_POINT;
 }
 
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J784S4)
@@ -624,16 +598,13 @@ void J721E_SetLeoPmicVoltages(void *handle, sblCfgPmic_t *pmicVoltCfg)
     {
         if(pmicVoltCfg->millivolts)
         {
-            SBL_ADD_PROFILE_POINT;
             retStatus = Board_tps65941SetVoltage(handle, pmicVoltCfg->slaveAddr, pmicVoltCfg->powerResource, pmicVoltCfg->millivolts);
             if(retStatus != BOARD_SOK)
             {
-                SBL_ADD_PROFILE_POINT;
                 SBL_log(SBL_LOG_MAX,"Failed to set voltage to %d mV for Slave:0x%x, Res:0x%x\r\n", pmicVoltCfg->millivolts, pmicVoltCfg->slaveAddr, pmicVoltCfg->powerResource);
             }
             else
             {
-                SBL_ADD_PROFILE_POINT;
                 SBL_log(SBL_LOG_MAX,"Successfully set voltage to %d mV for Slave:0x%x, Res:0x%x\r\n", pmicVoltCfg->millivolts, pmicVoltCfg->slaveAddr, pmicVoltCfg->powerResource)
             }
         }
@@ -645,8 +616,6 @@ static void J721E_SetupLeoPmicAvs(uint32_t opp)
 {
     I2C_Handle handle = NULL;
 
-    SBL_ADD_PROFILE_POINT;
-
     handle = Board_getI2CHandle(BOARD_SOC_DOMAIN_WKUP, BOARD_I2C_PMIC_INSTANCE);
     if(handle == NULL)
     {
@@ -656,7 +625,6 @@ static void J721E_SetupLeoPmicAvs(uint32_t opp)
     SBL_SetupPmicCfg(pmicAvsVoltCfg, opp);
     J721E_SetLeoPmicVoltages(handle, pmicAvsVoltCfg);
 
-    SBL_ADD_PROFILE_POINT;
 }
 
 
@@ -706,15 +674,12 @@ void SBL_SocLateInit(void)
 {
     J721E_EnableThermalMaxTempAlert();
 
-    SBL_ADD_PROFILE_POINT;
-
     J721E_SetupLeoPmicAvs(SBL_OPP_NOM);
 
 #if !defined(SBL_ENABLE_DEV_GRP_MCU) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
     SBL_SetQoS();
 #endif
 
-    SBL_ADD_PROFILE_POINT;
 }
 
 static void J721E_UART_InitPwrClk(void)

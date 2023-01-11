@@ -96,8 +96,6 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
     Board_flashHandle h;
 
-    SBL_ADD_PROFILE_POINT;
-
     SBL_hyperflashInit();
 
     h = Board_flashOpen(BOARD_FLASH_ID_S71KS512S,
@@ -105,7 +103,6 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
     if(h)
     {
-        SBL_ADD_PROFILE_POINT;
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) 
         SBL_log(SBL_LOG_MAX, "Waiting for tifs.bin ...\n");
 #else
@@ -121,8 +118,6 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         SBL_log(SBL_LOG_ERR, "Board_flashOpen failed!\n");
         SblErrLoop(__FILE__, __LINE__);
     }
-
-    SBL_ADD_PROFILE_POINT;
 
     return CSL_PASS;
 }
@@ -257,7 +252,6 @@ static int32_t SBL_hyperflashRead(const void *handle, uint32_t offset,
                                   void *dataBuff,
                                   uint32_t rdCount)
 {
-    SBL_ADD_PROFILE_POINT;
 
     /*
      * Curently all the memories have been configured as write through,
@@ -269,8 +263,6 @@ static int32_t SBL_hyperflashRead(const void *handle, uint32_t offset,
      */
     memcpy(dataBuff, (uint16_t *)(gBaseAddress + offset), rdCount);
 
-    SBL_ADD_PROFILE_POINT;
-
     return 0;
 }
 
@@ -278,11 +270,8 @@ int32_t SBL_hyperflashClose(const void *handle)
 {
     Board_flashHandle h = *(const Board_flashHandle *) handle;
 
-    SBL_ADD_PROFILE_POINT;
-
     SBL_log(SBL_LOG_MAX, "SBL_hyperflashClose called!\n");
     Board_flashClose(h);
-    SBL_ADD_PROFILE_POINT;
 
     return 0;
 }

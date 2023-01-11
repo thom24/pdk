@@ -314,14 +314,11 @@ static void SBL_RequestAllCores(void)
     cpu_core_id_t core_id;
     uint32_t num_cores = sizeof(sbl_slave_core_info)/ sizeof(sblSlaveCoreInfo_t);
 
-    SBL_ADD_PROFILE_POINT;
-
     for (core_id = 0; core_id < num_cores; core_id++)
     {
         SBL_RequestCore(core_id);
     }
 
-    SBL_ADD_PROFILE_POINT;
 #endif
 
     return;
@@ -355,14 +352,11 @@ static void SBL_ReleaseAllCores(void)
     cpu_core_id_t core_id;
     uint32_t num_cores = sizeof(sbl_slave_core_info)/sizeof(sblSlaveCoreInfo_t);
 
-    SBL_ADD_PROFILE_POINT;
-
     for (core_id = 0; core_id < num_cores; core_id++)
     {
         SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
     }
 
-    SBL_ADD_PROFILE_POINT;
 #endif
 
     return;
@@ -373,8 +367,6 @@ static void SBL_ConfigMcuLockStep(uint8_t enableLockStep, const sblSlaveCoreInfo
     int32_t status = CSL_EFAIL;
     struct tisci_msg_proc_get_status_resp cpuStatus;
     struct tisci_msg_proc_set_config_req  proc_set_config_req;
-
-    SBL_ADD_PROFILE_POINT;
 
     SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootGetProcessorState, ProcId 0x%x... \n", sblCoreInfoPtr->tisci_proc_id);
     status = Sciclient_procBootGetProcessorState(sblCoreInfoPtr->tisci_proc_id, &cpuStatus, SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -401,15 +393,11 @@ static void SBL_ConfigMcuLockStep(uint8_t enableLockStep, const sblSlaveCoreInfo
         proc_set_config_req.config_flags_1_clear |= TISCI_MSG_VAL_PROC_BOOT_CFG_FLAG_R5_LOCKSTEP;
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     status =  Sciclient_procBootSetProcessorCfg(&proc_set_config_req,  SCICLIENT_SERVICE_WAIT_FOREVER);
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg lockstep...NOT DONE \n");
     }
-
-    SBL_ADD_PROFILE_POINT;
 
     return;
 }
@@ -419,16 +407,12 @@ int32_t SBL_BootImage(sblEntryPoint_t *pEntry)
     int32_t retval = 0;
     cpu_core_id_t core_id;
 
-    SBL_ADD_PROFILE_POINT;
-
     /* Initialize the entry point array to 0. */
     for (core_id = MPU1_CPU0_ID; core_id < NUM_CORES; core_id ++)
         pEntry->CpuEntryPoint[core_id] = SBL_INVALID_ENTRY_ADDR;
 
     /* Request SYSW for control of all cores */
     SBL_RequestAllCores();
-
-    SBL_ADD_PROFILE_POINT;
 
 #if defined(BOOT_MMCSD)
     /* MMCSD Boot Mode Image Copy function. */
@@ -446,12 +430,8 @@ int32_t SBL_BootImage(sblEntryPoint_t *pEntry)
         retval = E_FAIL;
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     /* Release control of all cores */
     SBL_ReleaseAllCores();
-
-    SBL_ADD_PROFILE_POINT;
 
     return retval;
 }
@@ -472,8 +452,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
     struct tisci_msg_proc_get_status_resp cpuStatus;
     struct tisci_msg_proc_set_config_req  proc_set_config_req;
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr;
-
-    SBL_ADD_PROFILE_POINT;
 
     /* Remap virtual core-ids if needed */
     switch (core_id)
@@ -660,8 +638,6 @@ void SBL_SetupCoreMem(uint32_t core_id)
             break;
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     return;
 }
 
@@ -682,8 +658,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
     int32_t status = CSL_EFAIL;
     struct tisci_msg_proc_set_config_req  proc_set_config_req;
     const sblSlaveCoreInfo_t *sblSlaveCoreInfoPtr = &(sbl_slave_core_info[core_id]);
-
-    SBL_ADD_PROFILE_POINT;
 
 #if defined(SBL_SKIP_MCU_RESET) && (defined(SBL_SKIP_BRD_CFG_BOARD) || defined(SBL_SKIP_BRD_CFG_PM) || defined(SBL_SKIP_SYSFW_INIT))
     /* Skip copy if R5 app entry point is already 0 */
@@ -725,7 +699,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
     if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR) /* Set entry point only is valid */
     {
         SBL_log(SBL_LOG_MAX, "Sciclient_procBootSetProcessorCfg, ProcId 0x%x, EntryPoint 0x%x...\n", proc_set_config_req.processor_id, proc_set_config_req.bootvector_lo);
-        SBL_ADD_PROFILE_POINT;
         status =  Sciclient_procBootSetProcessorCfg(&proc_set_config_req,  SCICLIENT_SERVICE_WAIT_FOREVER);
         if (status != CSL_PASS)
         {
@@ -736,14 +709,12 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
         if (sblSlaveCoreInfoPtr->tisci_dev_id != SBL_INVALID_ID)
         {
             SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleClkFreq, DevId 0x%x @ %dHz... \n", sblSlaveCoreInfoPtr->tisci_dev_id, sblSlaveCoreInfoPtr->slave_clk_freq_hz);
-            SBL_ADD_PROFILE_POINT;
             Sciclient_pmSetModuleClkFreq(sblSlaveCoreInfoPtr->tisci_dev_id,
                                          sblSlaveCoreInfoPtr->tisci_clk_id,
                                          sblSlaveCoreInfoPtr->slave_clk_freq_hz,
                                          TISCI_MSG_FLAG_AOP,
                                          SCICLIENT_SERVICE_WAIT_FOREVER);
         }
-        SBL_ADD_PROFILE_POINT;
     }
     else
     {
@@ -917,7 +888,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
             }
 
-            SBL_ADD_PROFILE_POINT;
             break;
        case HSM_CPU_ID:
             /* Release core */
@@ -945,7 +915,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
             }
 
-            SBL_ADD_PROFILE_POINT;
             break;
     }
 }

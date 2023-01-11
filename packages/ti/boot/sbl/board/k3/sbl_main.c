@@ -246,6 +246,13 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 
 int main()
 {
+    #if !defined(SOC_J721E)
+        /* Calculating the RBL execution time by reading the MCU Timer9.
+           This timer is initialized by ROM at the start of RBL */
+        uint32_t rblExecutionTime = *(uint32_t*)(CSL_STD_FW_MCU_TIMER9_CFG_CFG_START + 0x3C);
+        SBL_LogCycleCount(((uint8_t *)__func__), rblExecutionTime);
+    #endif
+
 #if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
     cpu_core_id_t core_id;
 #endif
@@ -262,8 +269,6 @@ int main()
         Board_uartTxPinmuxConfig();
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     if (SBL_LOG_LEVEL > SBL_LOG_NONE)
     {
         UART_HwAttrs uart_cfg;
@@ -278,11 +283,7 @@ int main()
         UART_stdioInit(BOARD_UART_INSTANCE);
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     SBL_log(SBL_LOG_MIN, "%s (%s - %s)\n", SBL_VERSION_STR, __DATE__, __TIME__);
-
-    SBL_ADD_PROFILE_POINT;
 
     /* Initialize the ATCM */
     atcm_size = sblAtcmSize();
@@ -290,8 +291,6 @@ int main()
 
     /* Relocate CSL Vectors to ATCM*/
     memcpy((void *)SBL_MCU_ATCM_BASE, (void *)_resetvectors, 0x100);
-
-    SBL_ADD_PROFILE_POINT;
 
 #if defined(SBL_OCM_MAIN_DOMAIN_RAT)
     /* Setup RAT to load data into MCU2_0 OCM RAM for MCU1_0 */
@@ -306,34 +305,29 @@ int main()
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
-    SBL_ADD_PROFILE_POINT;
-
     /* Load SYSFW. */
     SBL_SciClientInit();
 
-    SBL_ADD_PROFILE_POINT;
-
 #if !defined(SBL_SKIP_PINMUX_ENABLE)
     /* Board pinmux. */
+    SBL_ADD_PROFILE_POINT;
     Board_init(BOARD_INIT_PINMUX_CONFIG);
 #endif
 
 #if !defined(SBL_SKIP_LATE_INIT)
-    SBL_ADD_PROFILE_POINT;
     /* Any SoC specific Init. */
     SBL_SocLateInit();
 #endif
 
 #if defined(SBL_ENABLE_PLL) && !defined(SBL_SKIP_SYSFW_INIT)
-    SBL_log(SBL_LOG_MAX, "Initlialzing PLLs ...");
     SBL_ADD_PROFILE_POINT;
+    SBL_log(SBL_LOG_MAX, "Initlialzing PLLs ...");
     Board_init(SBL_PLL_INIT);
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
 #if defined(SBL_ENABLE_CLOCKS) && !defined(SBL_SKIP_SYSFW_INIT)
     SBL_log(SBL_LOG_MAX, "InitlialzingClocks ...");
-    SBL_ADD_PROFILE_POINT;
 #if defined(SBL_ENABLE_HLOS_BOOT)
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     Board_initParams_t initParams;
@@ -343,6 +337,7 @@ int main()
     Board_setInitParams(&initParams);
 #endif
 #endif
+    SBL_ADD_PROFILE_POINT;
     Board_init(SBL_CLOCK_INIT);
 
     SBL_log(SBL_LOG_MAX, "done.\n");
@@ -350,7 +345,6 @@ int main()
 
 #if defined(SBL_ENABLE_DDR) && defined(SBL_ENABLE_PLL) && defined(SBL_ENABLE_CLOCKS)  && !defined(SBL_SKIP_SYSFW_INIT)
     SBL_log(SBL_LOG_MAX, "Initlialzing DDR ...");
-    SBL_ADD_PROFILE_POINT;
     Board_init(BOARD_INIT_DDR);
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
@@ -377,6 +371,7 @@ int main()
 
     /* Boot all non-SBL cores in multi-core app image */
     SBL_BootImage(&k3xx_evmEntry);
+    SBL_ADD_PROFILE_POINT;
 
     /* Export SBL logs */
     sblProfileLogAddr = sblProfileLog;
@@ -402,6 +397,8 @@ int main()
             SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
     }
 #endif
+
+    SBL_ADD_PROFILE_POINT;
 
     /* Boot the core running SBL in the end */
     if ((k3xx_evmEntry.CpuEntryPoint[MCU1_CPU1_ID] != SBL_INVALID_ENTRY_ADDR) ||

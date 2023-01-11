@@ -147,6 +147,89 @@ static void BOOT_PERF_TEST_printSblProfileLog(sblProfileInfo_t *sblProfileLog, u
     }
 }
 
+static void sblBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
+{
+    char majorApis[13][100] = {"SBL : SBL_SciClientInit: ReadSysfwImage                 :", \
+                                "Load/Start SYSFW                                        :", \
+                                "Sciclient_init                                          :", \
+                                "Board Config                                            :", \
+                                "PM Config                                               :", \
+                                "Security Config                                         :", \
+                                "RM Config                                               :", \
+                                "SBL: Board_init (pinmux)                                :", \
+                                "SBL: Board_init (PLL)                                   :", \
+                                "SBL: Board_init (CLOCKS)                                :", \
+                                "SBL: OSPI init                                          :", \
+                                "SBL: Parsing appimage and copy to MCU SRAM & Jump to App:", \
+                                "Misc                                                    :"};
+    uint64_t mcu_clk_freq = SBL_MCU1_CPU0_FREQ_HZ;
+    uint32_t majorApisIndx = 0, indx = 3, cycles_per_usec;
+    float convertMicroToMilli = 1000;
+    float totalTime = 0;
+    char sbl_test_str[256];
+
+    Sciclient_pmGetModuleClkFreq(SBL_DEV_ID_MCU1_CPU0, SBL_CLK_ID_MCU1_CPU0, &mcu_clk_freq, SCICLIENT_SERVICE_WAIT_FOREVER);
+    cycles_per_usec = (mcu_clk_freq / 1000000);
+
+    sbl_puts("\r\n NOTE : Below numbers will be corrupted if SBL_ADD_PROFILE_POINT is added anywhere \n");
+    sbl_puts("\r\n           ------- SBL Boot Performance Info overview -------  \r\n\n");
+    #if !defined(SOC_J721E)
+        float convertToMilli = 250000;
+        float rblExecutionTime = (float)sblBootPerfLog[0].line;
+        sprintf(sbl_test_str, "RBL Execution time                                      : %.3fms \r\n", rblExecutionTime/convertToMilli);
+        sbl_puts(sbl_test_str);
+        totalTime += rblExecutionTime/convertToMilli;
+    #endif
+
+    while(indx < 17)
+    {
+        /* Skipping this index as timer is being reset at this particular index */ 
+        if(indx == 7){
+            indx++;
+            continue;
+        }
+        uint32_t currentCycleCount;
+        uint32_t previousCycleCount;
+        float timeTaken;
+        
+        currentCycleCount = sblBootPerfLog[indx].cycle_cnt/cycles_per_usec;
+        previousCycleCount = sblBootPerfLog[indx-1].cycle_cnt/cycles_per_usec;
+        timeTaken = (currentCycleCount-previousCycleCount)/convertMicroToMilli;
+        /* For Misc - add the time after copying appimage to MCU SRAM till core 
+        boots and from start of SBL main to before reading sysfw */
+        if(indx == 15)
+        {
+            timeTaken += (sblBootPerfLog[2].cycle_cnt/cycles_per_usec - sblBootPerfLog[1].cycle_cnt/cycles_per_usec)/convertMicroToMilli;
+        }
+        totalTime += timeTaken;
+        sprintf(sbl_test_str,"%s %.3fms\r\n", majorApis[majorApisIndx], timeTaken);
+        sbl_puts(sbl_test_str);
+        indx++;
+        majorApisIndx++;
+    }
+    
+    sprintf(sbl_test_str, "Time taken to boot CAN application from SBL main : %.3fms \r\n", totalTime);
+    sbl_puts(sbl_test_str);
+    #if defined(SOC_J721E)
+        /* This time does not include RBL execution time */
+        float expCanRespTime = 39.5;
+    #elif (defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) 
+        /* This time includes RBL execution time */
+        float expCanRespTime = 40;
+    #endif
+    if(totalTime < expCanRespTime)
+    {
+        sprintf(sbl_test_str, "Boot Performance test has passed");
+        sbl_puts(sbl_test_str);
+    }
+    else
+    {
+        sprintf(sbl_test_str, "Boot Performance test has failed");
+        sbl_puts(sbl_test_str);
+    }
+
+}
+
 static int32_t BOOT_PERF_TEST_sysfwInit(void)
 {
     int32_t status = CSL_PASS;
@@ -376,5 +459,6 @@ int32_t main()
     }
 
     BOOT_PERF_TEST_printSblProfileLog(sblProfileLogAddr, *sblProfileLogIndxAddr, *sblProfileLogOvrFlwAddr);
+    sblBootPerfPrint(sblProfileLogAddr);
     return 0;
 }

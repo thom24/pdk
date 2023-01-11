@@ -47,7 +47,7 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-#define MAX_PROFILE_LOG_ENTRIES 256
+#define MAX_PROFILE_LOG_ENTRIES 32
 #define SBL_ADD_PROFILE_POINT SBL_LogCycleCount(((uint8_t *)__func__), __LINE__)
 
 typedef struct sblProfileInfo {

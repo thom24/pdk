@@ -100,7 +100,6 @@ static void SBL_UART_seek(void *srcAddr, uint32_t location)
 #if (!defined(SOC_TPR12)  && !defined(SOC_AWR294X))/* SysFw not present for TPR12 */
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
-    SBL_ADD_PROFILE_POINT;
 
     SBL_uartInit(SBL_ROM_UART_MODULE_INPUT_CLK);
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4) 
@@ -111,8 +110,6 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
     SBL_uartXmodemRead((uint8_t *)(*pBuffer), SBL_SYSFW_MAX_SIZE);
 
-    SBL_ADD_PROFILE_POINT;
-
     return CSL_PASS;
 }
 #endif
@@ -121,8 +118,6 @@ int32_t SBL_uartInit(uint32_t inClkFreqHz)
 {
     /* Init UART for xmodem boot */
     UART_HwAttrs uart_cfg;
-
-    SBL_ADD_PROFILE_POINT;
 
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
 #if (defined(SOC_TPR12) || defined (SOC_AWR294X))
@@ -147,18 +142,13 @@ int32_t SBL_uartInit(uint32_t inClkFreqHz)
     UART_stdioInit(BOARD_UART_INSTANCE);
 #endif
 
-    SBL_ADD_PROFILE_POINT;
-
     return 0;
 }
 
 int32_t SBL_uartClose(void)
 {
-    SBL_ADD_PROFILE_POINT;
 
     UART_stdioDeInit();
-
-    SBL_ADD_PROFILE_POINT;
 
     return 0;
 }

@@ -85,6 +85,9 @@
 /* Macro to config OSPI for optimized XIP performance (166MHz+PHY+Pipeline) */
 #undef BUILD_XIP
 
+/* Macro to specify the counter number */
+#define CNTR_NUMBER 0x1F
+
 /* Initialize the OSPI driver and the controller. */
 static void SBL_OSPI_Initialize(void);
 
@@ -143,8 +146,6 @@ static int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
     Udma_InitPrms   initPrms;
     uint32_t        instId;
 
-    SBL_ADD_PROFILE_POINT;
-
     if (gDrvHandle == (Udma_DrvHandle)uint32_to_void_ptr(0U))
     {
         /* UDMA driver init */
@@ -170,16 +171,12 @@ static int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
         cfg->dmaInfo             = &gUdmaInfo;
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     return (retVal);
 }
 
 static int32_t Ospi_udma_deinit(void)
 {
     int32_t         retVal = UDMA_SOK;
-
-    SBL_ADD_PROFILE_POINT;
 
     if (gDrvHandle)
     {
@@ -190,8 +187,6 @@ static int32_t Ospi_udma_deinit(void)
         }
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     return (retVal);
 }
 #endif
@@ -200,8 +195,6 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
 #if !defined(SBL_BYPASS_OSPI_DRIVER) && !defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD)
     Board_flashHandle h;
-
-    SBL_ADD_PROFILE_POINT;
 
     /* Init SPI driver */
     OSPI_init();
@@ -250,7 +243,6 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
     if (h)
     {
-        SBL_ADD_PROFILE_POINT;
 
         /* Disable PHY pipeline mode */
         CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
@@ -277,11 +269,8 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
         SblErrLoop(__FILE__, __LINE__);
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     return CSL_PASS;
 #else
-   SBL_ADD_PROFILE_POINT;
 
      /* Get default OSPI cfg */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -291,8 +280,6 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
       /* Set up ROM to load system firmware */
       *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
    }
-
-   SBL_ADD_PROFILE_POINT;
 
    return CSL_PASS;
 #endif
@@ -392,12 +379,9 @@ int32_t SBL_ospiInit(void *handle)
     Board_flashHandle h = *(Board_flashHandle *) handle;
     static uint32_t enableTuning = TRUE;
 
-    SBL_ADD_PROFILE_POINT;
-
     if (h)
     {
         Board_flashClose(h);
-        SBL_ADD_PROFILE_POINT;
 
     }
 
@@ -491,13 +475,8 @@ int32_t SBL_ospiInit(void *handle)
         SblErrLoop(__FILE__, __LINE__);
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     return 0;
 #else
-    SBL_ADD_PROFILE_POINT;
-
-    SBL_ADD_PROFILE_POINT;
     return 0;
 #endif
 }
@@ -505,7 +484,7 @@ int32_t SBL_ospiInit(void *handle)
 int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     uint32_t offset)
 {
-    uint32_t start_time = SBL_ADD_PROFILE_POINT;
+    uint32_t start_time = CSL_armR5PmuReadCntr(CNTR_NUMBER);
     uint32_t end_time = 0;
 
 #if (!defined(SBL_BYPASS_OSPI_DRIVER) \
@@ -560,7 +539,7 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
 #endif /* #if !defined(SBL_BYPASS_OSPI_DRIVER) */
 
-    end_time = SBL_ADD_PROFILE_POINT;
+    end_time = CSL_armR5PmuReadCntr(CNTR_NUMBER);
 
     SBL_log(SBL_LOG_MAX, "Ospi Read speed for 0x%x bytes from offset 0x%x = %d Mbytes per sec\n", length, offset, ((400000000 / (end_time-start_time)) * length)/0x100000);
 
@@ -576,8 +555,6 @@ int32_t SBL_ospiClose(const void *handle)
 
     Board_flashHandle h = *(const Board_flashHandle *) handle;
 
-    SBL_ADD_PROFILE_POINT;
-
     SBL_log(SBL_LOG_MAX, "SBL_ospiClose called\n");
     Board_flashClose(h);
 #if SBL_USE_DMA
@@ -586,10 +563,7 @@ int32_t SBL_ospiClose(const void *handle)
     #endif
     Ospi_udma_deinit();
 #endif
-    SBL_ADD_PROFILE_POINT;
 #else
-    SBL_ADD_PROFILE_POINT;
-    SBL_ADD_PROFILE_POINT;
 #endif
     return 0;
 }
@@ -601,8 +575,6 @@ int32_t SBL_ospiLeaveConfigSPI()
     int32_t retVal = E_PASS;
     Board_flashHandle h;
     Board_FlashInfo *flashInfo;
-
-    SBL_ADD_PROFILE_POINT;
 
     /* Get default OSPI cfg */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -619,8 +591,6 @@ int32_t SBL_ospiLeaveConfigSPI()
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
-
-    SBL_ADD_PROFILE_POINT;
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
@@ -644,7 +614,6 @@ int32_t SBL_ospiLeaveConfigSPI()
         retVal = E_FAIL;
     }
 
-    SBL_ADD_PROFILE_POINT;
 
     return(retVal);
 }
@@ -655,12 +624,14 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
     int32_t retVal;
     uint32_t offset = OSPI_OFFSET_SI;
 
+    SBL_ADD_PROFILE_POINT;
     /* Initialization of the driver. */
     SBL_OSPI_Initialize();
 
 #if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
     retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 #else
+    SBL_ADD_PROFILE_POINT;
     retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry, SBL_BOOT_AFTER_COPY);
 #endif
 
