@@ -208,5 +208,13 @@ endef
 lwipport_MACRO_LIST := $(foreach curos,$(drvlwip_RTOS_LIST),$(call lwipport_RULE,$(curos)))
 $(eval ${lwipport_MACRO_LIST})
 
+#
+# Unit test lwip-port
+#
+-include $(PDK_LWIP_COMP_PATH)/lwip-port/unit_test/lwip_sysarch_ut_component.mk
+ifneq ($(lwip_sysarch_ut_EXAMPLE_LIST),)
+  lwip_EXAMPLE_LIST += $(lwip_sysarch_ut_EXAMPLE_LIST)
+endif
+
 lwip_component_make_include := 1
 endif
