@@ -50,6 +50,8 @@ INCDIR += $(LWIP_CONTRIB_DIR)
 
 ifeq ($(BUILD_OS_TYPE),freertos)
   LWIP_CONTRIB_CFLAGS += -DFREERTOS
+else ifeq ($(BUILD_OS_TYPE),safertos)
+  LWIP_CONTRIB_CFLAGS += -DSAFERTOS
 endif
 ifeq ($(BUILD_OS_TYPE),tirtos)
   INCDIR += $(bios_PATH)/packages/ti/posix/ccs
@@ -59,8 +61,9 @@ endif
 # need to be included for this component
 ifeq ($(BUILD_OS_TYPE),freertos)
   INCLUDE_EXTERNAL_INTERFACES = pdk osal freertos
-endif
-ifeq ($(BUILD_OS_TYPE),tirtos)
+else ifeq ($(BUILD_OS_TYPE),safertos)
+  INCLUDE_EXTERNAL_INTERFACES = pdk osal safertos
+else ifeq ($(BUILD_OS_TYPE),tirtos)
   INCLUDE_EXTERNAL_INTERFACES = pdk xdc osal bios
 endif
 

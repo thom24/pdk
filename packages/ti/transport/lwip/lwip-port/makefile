@@ -15,12 +15,17 @@ INCDIR += $(BUILD_OS_TYPE)/include/arch
 
 ifeq ($(BUILD_OS_TYPE),freertos)
   ENET_CFLAGS += -DFREERTOS
+else ifeq ($(BUILD_OS_TYPE),safertos)
+  ENET_CFLAGS += -DSAFERTOS
 endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 ifeq ($(BUILD_OS_TYPE),freertos)
   INCLUDE_EXTERNAL_INTERFACES = pdk osal freertos
+endif
+ifeq ($(BUILD_OS_TYPE),safertos)
+  INCLUDE_EXTERNAL_INTERFACES = pdk osal safertos
 endif
 ifeq ($(BUILD_OS_TYPE),tirtos)
   INCLUDE_EXTERNAL_INTERFACES = pdk xdc osal bios
