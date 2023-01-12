@@ -194,6 +194,7 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
                 ./firmwareHeaderGen.sh j721e
                 ./firmwareHeaderGen.sh j721e-hs
                 ./firmwareHeaderGen.sh j721e_sr1_1-hs
+                ./firmwareHeaderGen.sh j721e_sr2-hs
                 shift
                 ;;
             "j7200")

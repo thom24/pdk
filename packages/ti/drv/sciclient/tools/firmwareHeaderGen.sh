@@ -37,6 +37,7 @@
 #         For J721E             : ./firmwareHeaderGen.sh j721e
 #         For J721E-HS          : ./firmwareHeaderGen.sh j721e-hs
 #         For J721E-HS (ES1.1)  : ./firmwareHeaderGen.sh j721e_sr1_1-hs
+#         For J721E-HS (ES2.0)  : ./firmwareHeaderGen.sh j721E_sr2-hs
 #         For J721E-HS Prime    : ./firmwareHeaderGen.sh j721e-hsp
 #         For AM64x             : ./firmwareHeaderGen.sh am64x
 #         For J7200             : ./firmwareHeaderGen.sh j7200
@@ -113,6 +114,12 @@ if [[ $FW_SOC == *"zebu"* ]]; then
   BIN_EXT=-zebu-combined
 fi
 
+if [[ $FW_SOC == *"hs-fs"* ]]; then
+  FW_SOC_TYPE=-hs-fs-enc
+  FW_SOC=${FW_SOC%-hs-fs}
+  BIN_EXT=-hs-fs-enc
+fi
+
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
 
 if [ "$FW_SOC" = "am65x" ]; then
@@ -155,6 +162,15 @@ export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert_sr1.1.bin
 export SYSFW_LOAD_ADDR=0x40000
 fi
 
+if [ "$FW_SOC" = "j721e_sr2" ]; then
+export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V1
+export SCICLIENT_FIRMWARE_HEADER=sciclient_firmware_V1_sr2$BIN_EXT.h
+export SYSFW_SE_SIGNED=$SCI_CLIENT_OUT_SOC_DIR/tifs_sr2$BIN_EXT.bin
+export FIRMWARE_SILICON=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC$FW_SOC_TYPE.bin
+export SYSFW_SE_INNER_CERT=$SCI_CLIENT_IN_SOC_DIR/ti-fs-firmware-$FW_SOC${FW_SOC_TYPE%-enc}-cert.bin
+export SYSFW_SE_CUST_CERT=$SCI_CLIENT_OUT_SOC_DIR/tifs_cert_sr2.bin
+export SYSFW_LOAD_ADDR=0x40000
+fi
 
 if [ "$FW_SOC" = "j7200" ]; then
 export SCI_CLIENT_OUT_SOC_DIR=$SCI_CLIENT_DIR/soc/V2
