@@ -17,6 +17,25 @@ GCC_ARCH64_BIN_PREFIX ?= aarch64-none-elf
 
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
+BUILD_HS ?= no
+
+#################################################################################
+# HLOS Configuration
+#################################################################################
+
+# HLOS Boot Profile
+#
+#     This setting configures the method by which the HLOS is "booted". In all
+#     cases, SBL will technically bring up the board, and then kick off an HLOS
+#     "boot" as configured here.
+#
+#     Choices are as follows:
+#         - "optimized"     : ATF/OPTEE start the HLOS kernel directly
+#         - "development"   : ATF/OPTEE start SPL, which uses U-Boot to boot HLOS
+#         - <NULL>          : No HLOS boot
+#
+HLOS_BOOT ?= optimized
+
 #################################################################################
 # General Configuration
 #################################################################################
@@ -25,8 +44,17 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 #     OUT_DIR defines the output directory for the combined appimage.
 #     OUT_IMG defines the name of the combined appimage
 #
+ifeq ($(BUILD_HS), no)
 OUT_DIR ?= $(mkfile_dir)bin/$(BOARD)
-OUT_IMG ?= combined.appimage
+else
+OUT_DIR ?= $(mkfile_dir)bin/$(BOARD)_hs
+endif
+
+ifeq ($(HLOS_BOOT),optimized)
+OUT_IMG = combined_opt.appimage
+else ifeq ($(HLOS_BOOT),development)
+OUT_IMG = combined_dev.appimage
+endif
 
 # Raw Binary Extensions
 #
@@ -47,25 +75,8 @@ RAW_EXTENSIONS ?= .bin .dtb
 #
 EXTENSIONLESS_TYPE ?= raw
 
-#################################################################################
-# HLOS Configuration
-#################################################################################
-
-# HLOS Boot Profile
-#
-#     This setting configures the method by which the HLOS is "booted". In all
-#     cases, SBL will technically bring up the board, and then kick off an HLOS
-#     "boot" as configured here.
-#
-#     Choices are as follows:
-#         - "optimized" : ATF/OPTEE start the HLOS kernel directly
-#         - "development"   : ATF/OPTEE start SPL, which uses U-Boot to boot HLOS
-#         - <NULL>        : No HLOS boot
-#
-HLOS_BOOT ?= optimized
-
 # Path which contains all HLOS binaries
-HLOS_BIN_PATH ?= $(SDK_INSTALL_PATH)/ti-processor-sdk-linux/board-support/prebuilt-images/$(BOARD)
+HLOS_BIN_PATH ?= $(mkfile_dir)bin/$(BOARD)
 
 # GCC PATH
 GCC_LINUX_ARM_PATH ?= $(SDK_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-$(GCC_ARCH64_BIN_PREFIX)
@@ -86,7 +97,11 @@ ATF_IMG    ?= mpu1_0,$(HLOS_BIN_PATH)/bl31.bin,0x70000000,0x70000000
 OPTEE_IMG  ?= load_only,$(HLOS_BIN_PATH)/bl32.bin,0x9e800000,0x9e800000
 KERNEL_IMG ?= load_only,$(HLOS_BIN_PATH)/Image,0x80080000,0x80080000
 # Use board-specific pre-built DTBs to ensure SD card filesystem is used for Linux boot
+ifeq ($(BUILD_HS), no)
 DTB_IMG    ?= load_only,$(mkfile_dir)bin/$(BOARD)/base-board.dtb,0x82000000,0x82000000
+else
+DTB_IMG    ?= load_only,$(mkfile_dir)bin/$(BOARD)_hs/base-board.dtb,0x82000000,0x82000000
+endif
 SPL_IMG    ?= load_only,$(HLOS_BIN_PATH)/u-boot-spl.bin,0x80080000,0x80080000
 
 #################################################################################

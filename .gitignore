@@ -16,7 +16,6 @@ packages/ti/drv/sciclient/src/rm_pm_hal
 packages/ti/*/lib
 packages/ti/*/*/lib
 packages/ti/*/*/*/lib
-packages/ti/boot/sbl/tools/combined_appimage/bin/
 packages/ti/boot/sbl/example/boot_app/multicore_images/
 packages/ti/boot/sbl/example/boot_app/binary/
 packages/ti/diag/serdes_diag/
