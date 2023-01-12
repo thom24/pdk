@@ -501,46 +501,6 @@ int32_t Sciclient_pmEnableWdt(uint32_t timeout);
 int32_t Sciclient_pmDisableWakeup(uint32_t timeout);
 
 /**
- *  \brief    [Not supported on TDA4(Jacinto) Platforms]
- *  Request wakeup reason
- *  After a wakeup, the host can request the deepest sleep/idle mode reached
- *  and the reason for the wakeup. The API also returns the time spent in idle
- *  state.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_WAKE_REASON
- *  \n<b>Request</b>:    #tisci_msg_wake_reason_req
- *  \n<b>Response</b>:   #tisci_msg_wake_reason_resp
- *
- *  \param  mode            Deepest sleep/idle mode 0x000C reached (ASCII)
- *  \param  reason          Wakeup reason (ASCII)
- *  \param  time_ms         Time spent in idle state (ms)
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_pmGetWakeupReason(uint8_t mode[32],
-                                    uint8_t reason[32],
-                                    uint32_t * time_ms,
-                                    uint32_t timeout);
-/**
- *  \brief    [Not supported on TDA4(Jacinto) Platforms]
- *  Some processors have a special sequence for powering off the core
- *  that provides notification to the PMMC when that sequence has completed.
- *  For processors without such a sequence, the goodbye message exists.
- *  The exact sequence involved in the goodbye message depends on the SoC.
- *
- *  \n<b>Message</b>:    #TISCI_MSG_GOODBYE
- *  \n<b>Request</b>:    #tisci_msg_goodbye_req
- *  \n<b>Response</b>:   #tisci_msg_goodbye_resp
- *
- *  \param  timeout         Gives a sense of how long to wait for the operation.
- *                          Refer \ref Sciclient_ServiceOperationTimeout.
- *  \return CSL_PASS on success, else failure
- */
-int32_t Sciclient_pmDevicePowerOff(uint32_t timeout);
-
-/**
  *  \brief   Objective: Trigger a SoC level reset
  *  Usage: Used to trigger a system level reset.
  *  NOTE: Depending on permissions configured for the SoC, not all processing
