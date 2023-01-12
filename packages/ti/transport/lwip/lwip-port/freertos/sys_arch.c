@@ -53,8 +53,8 @@
 /** Set this to 1 to use a mutex for SYS_ARCH_PROTECT() critical regions.
  * Default is 0 and locks interrupts/scheduler for SYS_ARCH_PROTECT().
  */
-#ifndef LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
-#define LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX     0
+#ifndef LWIP_SYS_ARCH_PROTECT_USES_MUTEX
+#define LWIP_SYS_ARCH_PROTECT_USES_MUTEX     0
 #endif
 
 /** Set this to 1 to include a sanity check that SYS_ARCH_PROTECT() and
@@ -72,8 +72,8 @@
 /** Set this to 1 to enable core locking check functions in this port.
  * For this to work, you'll have to define LWIP_ASSERT_CORE_LOCKED()
  * and LWIP_MARK_TCPIP_THREAD() correctly in your lwipopts.h! */
-#ifndef LWIP_FREERTOS_CHECK_CORE_LOCKING
-#define LWIP_FREERTOS_CHECK_CORE_LOCKING              0
+#ifndef LWIP_CHECK_CORE_LOCKING
+#define LWIP_CHECK_CORE_LOCKING              0
 #endif
 
 /** Set this to 0 to implement sys_now() yourself, e.g. using a hw timer.
@@ -92,13 +92,13 @@
 #if !INCLUDE_vTaskSuspend
 # error "lwIP FreeRTOS port requires INCLUDE_vTaskSuspend"
 #endif
-#if LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX || !LWIP_COMPAT_MUTEX
+#if LWIP_SYS_ARCH_PROTECT_USES_MUTEX || !LWIP_COMPAT_MUTEX
 #if !configUSE_MUTEXES
 # error "lwIP FreeRTOS port requires configUSE_MUTEXES"
 #endif
 #endif
 
-#if SYS_LIGHTWEIGHT_PROT && LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
+#if SYS_LIGHTWEIGHT_PROT && LWIP_SYS_ARCH_PROTECT_USES_MUTEX
 static SemaphoreHandle_t sys_arch_protect_mutex;
 #endif
 #if SYS_LIGHTWEIGHT_PROT && LWIP_FREERTOS_SYS_ARCH_PROTECT_SANITY_CHECK
@@ -109,12 +109,12 @@ static sys_prot_t sys_arch_protect_nesting;
 void
 sys_init(void)
 {
-#if SYS_LIGHTWEIGHT_PROT && LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
+#if SYS_LIGHTWEIGHT_PROT && LWIP_SYS_ARCH_PROTECT_USES_MUTEX
   /* initialize sys_arch_protect global mutex */
   sys_arch_protect_mutex = xSemaphoreCreateRecursiveMutex();
   LWIP_ASSERT("failed to create sys_arch_protect mutex",
     sys_arch_protect_mutex != NULL);
-#endif /* SYS_LIGHTWEIGHT_PROT && LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX */
+#endif /* SYS_LIGHTWEIGHT_PROT && LWIP_SYS_ARCH_PROTECT_USES_MUTEX */
 }
 
 #if configUSE_16_BIT_TICKS == 1
@@ -140,15 +140,15 @@ sys_jiffies(void)
 sys_prot_t
 sys_arch_protect(void)
 {
-#if LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
+#if LWIP_SYS_ARCH_PROTECT_USES_MUTEX
   BaseType_t ret;
   LWIP_ASSERT("sys_arch_protect_mutex != NULL", sys_arch_protect_mutex != NULL);
 
   ret = xSemaphoreTakeRecursive(sys_arch_protect_mutex, portMAX_DELAY);
   LWIP_ASSERT("sys_arch_protect failed to take the mutex", ret == pdTRUE);
-#else /* LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX */
+#else /* LWIP_SYS_ARCH_PROTECT_USES_MUTEX */
   taskENTER_CRITICAL();
-#endif /* LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX */
+#endif /* LWIP_SYS_ARCH_PROTECT_USES_MUTEX */
 #if LWIP_FREERTOS_SYS_ARCH_PROTECT_SANITY_CHECK
   {
     /* every nested call to sys_arch_protect() returns an increased number */
@@ -165,7 +165,7 @@ sys_arch_protect(void)
 void
 sys_arch_unprotect(sys_prot_t pval)
 {
-#if LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
+#if LWIP_SYS_ARCH_PROTECT_USES_MUTEX
   BaseType_t ret;
 #endif
 #if LWIP_FREERTOS_SYS_ARCH_PROTECT_SANITY_CHECK
@@ -174,14 +174,14 @@ sys_arch_unprotect(sys_prot_t pval)
   LWIP_ASSERT("unexpected sys_arch_protect_nesting", sys_arch_protect_nesting == pval);
 #endif
 
-#if LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX
+#if LWIP_SYS_ARCH_PROTECT_USES_MUTEX
   LWIP_ASSERT("sys_arch_protect_mutex != NULL", sys_arch_protect_mutex != NULL);
 
   ret = xSemaphoreGiveRecursive(sys_arch_protect_mutex);
   LWIP_ASSERT("sys_arch_unprotect failed to give the mutex", ret == pdTRUE);
-#else /* LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX */
+#else /* LWIP_SYS_ARCH_PROTECT_USES_MUTEX */
   taskEXIT_CRITICAL();
-#endif /* LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX */
+#endif /* LWIP_SYS_ARCH_PROTECT_USES_MUTEX */
   LWIP_UNUSED_ARG(pval);
 }
 
@@ -372,7 +372,8 @@ sys_mbox_trypost_fromisr(sys_mbox_t *mbox, void *msg)
   ret = xQueueSendToBackFromISR((QueueHandle_t )mbox->mbx, &msg, &xHigherPriorityTaskWoken);
   if (ret == pdTRUE) {
     if (xHigherPriorityTaskWoken == pdTRUE) {
-      return ERR_NEED_SCHED;
+      portYIELD_FROM_ISR(pdTRUE);
+      return ERR_OK;
     }
     return ERR_OK;
   } else {
@@ -396,11 +397,11 @@ sys_arch_mbox_fetch(sys_mbox_t *mbox, void **msg, u32_t timeout_ms)
 
   if (!timeout_ms) {
     /* wait infinite */
-    ret = xQueueReceive((QueueHandle_t )mbox->mbx, &(*msg), portMAX_DELAY);
+    ret = xQueueReceive((QueueHandle_t )mbox->mbx, msg, portMAX_DELAY);
     LWIP_ASSERT("mbox fetch failed", ret == pdTRUE);
   } else {
     TickType_t timeout_ticks = timeout_ms / portTICK_PERIOD_MS;
-    ret = xQueueReceive((QueueHandle_t )mbox->mbx, &(*msg), timeout_ticks);
+    ret = xQueueReceive((QueueHandle_t )mbox->mbx, msg, timeout_ticks);
     if (ret == errQUEUE_EMPTY) {
       /* timed out */
       *msg = NULL;
@@ -427,7 +428,7 @@ sys_arch_mbox_tryfetch(sys_mbox_t *mbox, void **msg)
     msg = &msg_dummy;
   }
 
-  ret = xQueueReceive((QueueHandle_t )mbox->mbx, &(*msg), 0);
+  ret = xQueueReceive((QueueHandle_t )mbox->mbx, msg, 0);
   if (ret == errQUEUE_EMPTY) {
     *msg = NULL;
     return SYS_MBOX_EMPTY;
@@ -542,11 +543,11 @@ void sys_arch_netconn_sem_free(void)
 
 #endif /* LWIP_NETCONN_SEM_PER_THREAD */
 
-#if LWIP_FREERTOS_CHECK_CORE_LOCKING
+#if LWIP_CHECK_CORE_LOCKING
 #if LWIP_TCPIP_CORE_LOCKING
 
 /** Flag the core lock held. A counter for recursive locks. */
-static u8_t lwip_core_lock_count;
+static u8_t lwip_core_lock_count=0;
 static TaskHandle_t lwip_core_lock_holder_thread;
 
 void
@@ -608,4 +609,4 @@ sys_check_core_locking(void)
 #endif /* !NO_SYS */
 }
 
-#endif /* LWIP_FREERTOS_CHECK_CORE_LOCKING*/
+#endif /* LWIP_CHECK_CORE_LOCKING*/

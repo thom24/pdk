@@ -430,10 +430,11 @@ void sys_unlock_tcpip_core(void);
 
 
 /* FreeRTOS specific config options */
-#define LWIP_FREERTOS_CHECK_CORE_LOCKING 1
-#define LWIP_FREERTOS_SYS_ARCH_PROTECT_USES_MUTEX     1
+#define LWIP_CHECK_CORE_LOCKING                       1
+#define LWIP_SYS_ARCH_PROTECT_USES_MUTEX              1
 #define LWIP_FREERTOS_SYS_ARCH_PROTECT_SANITY_CHECK   1
 #define LWIP_FREERTOS_CHECK_QUEUE_EMPTY_ON_FREE       1
+#define LWIP_NETCONN_SEM_PER_THREAD                   1
 
 /*---------------------------------------------------------------*/
 #if defined(__ARM_ARCH) && (defined(__TI_EABI__) || defined(__clang__))
