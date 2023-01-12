@@ -21,6 +21,8 @@ of TRM and :ref:`Firewall TISCI Description <sec_ap_fwl_tisci_desc>`.
     In the below table, a firewall owned by RM implies that the corresponding resource is managed by the resource manager.
     Firewall configuration is internally handled by RM based on RM boardcfg.
 
+    For additional firewall information, checkout the :doc:`../../6_topic_user_guides/firewall_faq`.
+
 .. _soc_doc_am6_public_fwl_desc_region_fwl_list:
 
 List of Region Based Firewalls

@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.05.02
+                08.06.00
               </div>
             
           
@@ -270,8 +270,16 @@ about the location and size can be found below.</p>
 <td>0x4405F000</td>
 <td>0x1000</td>
 </tr>
-<tr class="row-odd"><td>J721S2</td>
-<td>0x4406A000</td>
+<tr class="row-odd"><td>AM62Ax</td>
+<td>0x4405F000</td>
+<td>0x1000</td>
+</tr>
+<tr class="row-even"><td>J721S2</td>
+<td>0x4406B000</td>
+<td>0x1000</td>
+</tr>
+<tr class="row-odd"><td>J784S4</td>
+<td>0x4406B000</td>
 <td>0x1000</td>
 </tr>
 </tbody>
@@ -307,7 +315,13 @@ over the UART.</p>
 <tr class="row-even"><td>AM62x</td>
 <td>MAIN UART1</td>
 </tr>
-<tr class="row-odd"><td>J721S2</td>
+<tr class="row-odd"><td>AM62Ax</td>
+<td>MAIN UART1</td>
+</tr>
+<tr class="row-even"><td>J721S2</td>
+<td>WKUP UART0</td>
+</tr>
+<tr class="row-odd"><td>J784S4</td>
 <td>WKUP UART0</td>
 </tr>
 </tbody>
@@ -321,6 +335,10 @@ various Trace destinations. By defining a common convention for these
 u32’s to represent data they can be used to describe events within the
 system. The below format describes the standard meaning of each bit inside
 the u32.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The trace version for this release is 0x03007</p>
+</div>
 <table border="1" class="docutils">
 <colgroup>
 <col width="24%" />
@@ -1408,6 +1426,19 @@ unpairing</td>
 <td>Source thread peer register thread
 value</td>
 </tr>
+<tr class="row-odd"><td rowspan="2">PSIL_HOST_ID_CHECK</td>
+<td rowspan="2">41</td>
+<td rowspan="2">Verify message host
+ID matches resource
+host ID</td>
+<td>PSIL_HOST_ID_BCFG</td>
+<td>19</td>
+<td>Resource host ID in RM boardcfg</td>
+</tr>
+<tr class="row-even"><td>PSIL_MSG_HOST_ID</td>
+<td>20</td>
+<td>Message host ID</td>
+</tr>
 <tr class="row-odd"><td>IRQ_INIT</td>
 <td>43</td>
 <td>IRQ driver init
@@ -1980,7 +2011,7 @@ to the requested device</td>
 
   <div role="contentinfo">
     <p>
-      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2022</a>, Texas Instruments Incorporated. All rights reserved. <br>
+      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2023</a>, Texas Instruments Incorporated. All rights reserved. <br>
       <a href="http://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="http://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="http://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="http://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
 
     </p>
@@ -2002,7 +2033,7 @@ to the requested device</td>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'08.05.02',
+            VERSION:'08.06.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

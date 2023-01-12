@@ -141,6 +141,16 @@ After verification of these key hashes, keyrev will be programmed.
 
     KEYREV by default is set to ``1``. Maximum supported value is ``2``.
 
+    +---------------+------------------------------------------------------------+
+    | Key rev value |               Valid State transition                       | 
+    +===============+============================================================+
+    | 0             | OTP Keywriter to set valid state to 1                      | 
+    +---------------+------------------------------------------------------------+
+    | 1             | Key rev API to set valid state to 2 (if key cnt is also 2) | 
+    +---------------+------------------------------------------------------------+
+    | 2             | No other change allowed                                    | 
+    +---------------+------------------------------------------------------------+
+
 Following is the template for Primary Certificate (SMPK private key to be 
 used for signing this)
 

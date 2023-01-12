@@ -1,5 +1,5 @@
 =============================
-SA2UL Access Outside of SYSFW
+SAUL Access Outside of SYSFW
 =============================
 
 This guide describes which cryptographic accelerator features are available for
@@ -9,44 +9,69 @@ resources.
 Introduction
 ============
 
-SA2UL is the crypto accelerator subsystem in TIs K3 family of devices. Each SoC
+SAUL is the crypto accelerator subsystem in TIs K3 family of devices. Each SoC
 has one or more instances of this subsystem. On High Secure (HS) devices,
-portions of an SA2UL subsystem are dedicated to support authentication and
+portions of an SAUL subsystem are dedicated to support authentication and
 decryption services in |sysfw|, while other portions are freely avable for host
-software to access. |sysfw| does not use any SA2UL resources on General Purpose
-(GP) devices, and on HS devices with multiple SA2UL instances |sysfw| does not
+software to access. |sysfw| does not use any SAUL resources on General Purpose
+(GP) devices, and on HS devices with multiple SAUL instances |sysfw| does not
 use the resources on the additional instances. For example:
 
-+-------+---------------------------+-----------------------+-------------------------+-----------------------+
-| SoC   | Number of SA2UL instances | Device                | Used by System Firmware | Host access available |
-+=======+===========================+=======================+=========================+=======================+
-| am65x | 1                         | AM6_DEV_SA2_UL0       | Yes                     | Limited               |
-+-------+---------------------------+-----------------------+-------------------------+-----------------------+
-| j721e | 2                         | J721E_DEV_MCU_SA2_UL0 | Yes                     | Limited               |
-|       |                           +-----------------------+-------------------------+-----------------------+
-|       |                           | J721E_DEV_SA2_UL0     | No                      | Yes                   |
-+-------+---------------------------+-----------------------+-------------------------+-----------------------+
+SA2UL
+-----
 
-The following section describes the details on availability of the SA2UL
-resources for host software.
++--------+---------------------------+-----------------------------+-------------------------+-----------------------+
+| SoC    | Number of SA2UL instances | Device                      | Used by System Firmware | Host access available |
++========+===========================+=============================+=========================+=======================+
+| am64x  | 1                         | AM64X_DEV_SA2_UL0           | Yes                     | Limited               |
++--------+---------------------------+-----------------------------+-------------------------+-----------------------+
+| am65x  | 1                         | AM6_DEV_SA2_UL0             | Yes                     | Limited               |
++--------+---------------------------+-----------------------------+-------------------------+-----------------------+
+| j721e  | 2                         | J721E_DEV_MCU_SA2_UL0       | Yes                     | Limited               |
+|        |                           +-----------------------------+-------------------------+-----------------------+
+|        |                           | J721E_DEV_SA2_UL0           | No                      | Yes                   |
++--------+---------------------------+-----------------------------+-------------------------+-----------------------+
+| j721s2 | 2                         | J721S2_DEV_SA2_CPSW_PSILSS0 | No                      | Yes                   |
+|        |                           +-----------------------------+-------------------------+-----------------------+
+|        |                           | J721S2_DEV_SA2_UL0          | No                      | Yes                   |
++--------+---------------------------+-----------------------------+-------------------------+-----------------------+
+| j784s4 | 2                         | J784S4_DEV_SA2_CPSW_PSILSS0 | No                      | Yes                   |
+|        |                           +-----------------------------+-------------------------+-----------------------+
+|        |                           | J784S4_DEV_SA2_UL0          | No                      | Yes                   |
++--------+---------------------------+-----------------------------+-------------------------+-----------------------+
+| j7200  | 1                         | J7200_DEV_MCU_SA2_UL0       | Yes                     | Limited               |
++--------+---------------------------+-----------------------------+-------------------------+-----------------------+
 
-* :ref:`pub_ug_sa2ul_resources`
+SA3UL
+-----
+
++--------+---------------------------+-------------------------+-----------------------+
+| SoC    | Number of SA3UL instances | Used by System Firmware | Host access available |
++========+===========================+=========================+=======================+
+| am62ax | 1                         | Yes                     | No                    |
++--------+---------------------------+-------------------------+-----------------------+
+| am62x  | 1                         | Yes                     | No                    |
++--------+---------------------------+-------------------------+-----------------------+
+| j721s2 | 1                         | Yes                     | No                    |
++--------+---------------------------+-------------------------+-----------------------+
+| j784s4 | 1                         | Yes                     | No                    |
++--------+---------------------------+-------------------------+-----------------------+
 
 .. note::
 
-   This does not cover the overview of SA2UL or its functional description -
+   This does not cover the overview of SAUL or its functional description -
    please refer to the device TRM for further details.
 
-.. _pub_ug_sa2ul_resources:
+.. _pub_ug_saul_resources:
 
-SA2UL Resource Availability
+SAUL Resource Availability
 ===========================
 
-The following table describes the access policies for all SA2UL instances on GP
+The following table describes the access policies for all SAUL instances on GP
 and HS devices
 
 +----------------+----------------+--------------------------------------------+------------------------------------------------+
-| Resource       | SA2UL instance | GP Policy                                  | HS Policy                                      | 
+| Resource       | SAUL instance  | GP Policy                                  | HS Policy                                      | 
 +================+================+============================================+================================================+
 | Control MMR    | Primary        | Open Access                                | **Read-only access**                           |
 |                +----------------+                                            +------------------------------------------------+
@@ -60,7 +85,7 @@ and HS devices
 |                | Others         |                                            | Open Access                                    |
 +----------------+----------------+--------------------------------------------+------------------------------------------------+
 | ECC Aggregator | Primary        | Open Access                                | Open Access                                    |
-| MMR (for SA2UL +----------------+                                            |                                                |
+| MMR (for SAUL  +----------------+                                            |                                                |
 | memories)      | Others         |                                            |                                                |
 +----------------+----------------+--------------------------------------------+------------------------------------------------+
 | TRNG MMR       | Primary        | Open Access. Engine must be enabled by     | Open access. Engine is enabled indefinitely by |

@@ -33,7 +33,7 @@ Processor Control APIs:
 +------------------+----------------------------------------------------------------------------------------+-----------------+--------------------+
 | 0xC101           | :ref:`TISCI_MSG_PROC_SET_CONTROL <proc-boot-set-processor-control>`                    | Yes             | Yes                |
 +------------------+----------------------------------------------------------------------------------------+-----------------+--------------------+
-| 0xC120           | :ref:`TISCI_MSG_PROC_AUTH_BOOT <proc-boot-authenticate-image-and-configure-processor>` | No              | Yes                |
+| 0xC120           | :ref:`TISCI_MSG_PROC_AUTH_BOOT <proc-boot-authenticate-image-and-configure-processor>` | No              | Yes*               |
 +------------------+----------------------------------------------------------------------------------------+-----------------+--------------------+
 | 0xC400           | :ref:`TISCI_MSG_PROC_GET_STATUS <proc_boot_get_processor_status>`                      | Yes             | Yes                |
 +------------------+----------------------------------------------------------------------------------------+-----------------+--------------------+
@@ -327,10 +327,10 @@ TISCI_MSG_PROC_AUTH_BOOT - Authenticate Image and Configure Processor
 
     * The certificate itself shall contain relevant information about the
       processor flags and configuration information.
-    * ONLY secure hosts are permitted to invoke this API in addition to
-      being part of the access control list.
     * See Hosts description for the corresponding SoC to identify which hosts
       are secure and which are not.
+    * On HS-FS device type, only image integrity check is done. The root of
+      trust key comparison check is skipped.
 
 .. attention::
 

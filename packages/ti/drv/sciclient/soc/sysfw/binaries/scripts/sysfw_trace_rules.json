@@ -2853,6 +2853,32 @@
                                     ]
                                 }
                             }
+                        },
+                        "0x03007": {
+                            "action_long": "Verify message host ID matches resource host ID",
+                            "action_short": "PSIL_HOST_ID_CHECK",
+                            "sub_actions": {
+                                "0x13": {
+                                    "msg_data": [
+                                        {
+                                            "fmt": "%d",
+                                            "higher_bit": 16,
+                                            "lower_bit": 0,
+                                            "name": "Resource host ID in RM boardcfg"
+                                        }
+                                    ]
+                                },
+                                "0x14": {
+                                    "msg_data": [
+                                        {
+                                            "fmt": "%d",
+                                            "higher_bit": 16,
+                                            "lower_bit": 0,
+                                            "name": "Message host ID"
+                                        }
+                                    ]
+                                }
+                            }
                         }
                     }
                 },

@@ -27,6 +27,10 @@ assigned using `Host ID`. Only a owner of a firewall can
 - Query the firewall permissions
 - Transfer the firewall ownership to another owner(host)
 
+.. note::
+
+   For additional firewall information, checkout the :doc:`../../6_topic_user_guides/firewall_faq`.
+
 Initial Configuration
 =====================
 

@@ -21,6 +21,8 @@ of TRM and :ref:`Firewall TISCI Description <sec_ap_fwl_tisci_desc>`.
     In the below table, a firewall owned by RM implies that the corresponding resource is managed by the resource manager.
     Firewall configuration is internally handled by RM based on RM boardcfg.
 
+    For additional firewall information, checkout the :doc:`../../6_topic_user_guides/firewall_faq`.
+
 .. _soc_doc_am62a_public_fwl_desc_region_fwl_list:
 
 List of Region Based Firewalls
@@ -53,7 +55,7 @@ List of Region Based Firewalls
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
 |            33 |        0 | none    | 0x00000000      | 0xFFFFFFFFFFF | everyone,rwcd       | everyone,rwcd      | everyone,rwcd      |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
-|            33 |        6 | tifs    | 0x00A00000      | 0x00A307FF    | tifs,rwcd           | dm,rwcd            | everyone,r         |
+|            33 |        6 | tifs    | 0x00A00000      | 0x00A007FF    | tifs,rwcd           | dm,rwcd            | everyone,r         |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
 |            33 |        7 | tifs    | 0x00300000      | 0x003000FF    | tifs,rwcd           | tifs,rwcd          | tifs,rwcd          |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
@@ -123,9 +125,9 @@ List of Region Based Firewalls
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
 |           639 |        2 | tifs    | 0x45E00000      | 0x45FFFFFF    | tifs,rwd            | tifs,rwd           | tifs,rwd           |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
-|           641 |        0 | none    | 0x43C00000      | 0x43C2FFFF    | dm,rwd              | hsm,rwd            |                    |
+|           641 |        0 | none    | 0x43C00000      | 0x43C2FFFF    | everyone,rwcd       | everyone,rwcd      | everyone,rwcd      |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
-|           642 |        0 | none    | 0x43C30000      | 0x43C3FFFF    | dm,rwd              | hsm,rwd            |                    |
+|           642 |        0 | none    | 0x43C30000      | 0x43C3FFFF    | everyone,rwcd       | everyone,rwcd      | everyone,rwcd      |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
 |           672 |        0 | hsm     | 0x43936000      | 0x43936FFF    | hsm,rwd             |                    |                    |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+

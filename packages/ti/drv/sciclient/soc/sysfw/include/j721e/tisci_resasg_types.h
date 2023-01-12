@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2017-2022 Texas Instruments Incorporated
+ *  Copyright (C) 2017-2023 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -141,7 +141,7 @@
 /**
  * Total number of resource entries allowed for SoC
  */
-#define TISCI_RESASG_ENTRIES_MAX (TISCI_RESASG_UTYPE_CNT * 10U)
+#define TISCI_RESASG_ENTRIES_MAX (480U)
 
 #endif /* TISCI_RESASG_TYPES_H */
 

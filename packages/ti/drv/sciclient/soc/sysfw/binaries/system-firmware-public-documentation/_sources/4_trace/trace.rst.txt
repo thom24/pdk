@@ -76,7 +76,11 @@ about the location and size can be found below.
 +-----------+------------------+-----------+
 | AM62x     | 0x4405F000       | 0x1000    |
 +-----------+------------------+-----------+
-| J721S2    | 0x4406A000       | 0x1000    |
+| AM62Ax    | 0x4405F000       | 0x1000    |
++-----------+------------------+-----------+
+| J721S2    | 0x4406B000       | 0x1000    |
++-----------+------------------+-----------+
+| J784S4    | 0x4406B000       | 0x1000    |
 +-----------+------------------+-----------+
 
 .. _pub_trace_uart_allocation:
@@ -100,7 +104,11 @@ over the UART.
 +-----------+------------------+
 | AM62x     | MAIN UART1       |
 +-----------+------------------+
+| AM62Ax    | MAIN UART1       |
++-----------+------------------+
 | J721S2    | WKUP UART0       |
++-----------+------------------+
+| J784S4    | WKUP UART0       |
 +-----------+------------------+
 
 Trace Debug Data Format
@@ -111,6 +119,10 @@ various Trace destinations. By defining a common convention for these
 u32's to represent data they can be used to describe events within the
 system. The below format describes the standard meaning of each bit inside
 the u32.
+
+.. note::
+
+   The trace version for this release is 0x03007
 
 +-----------------------+-----------+--------------------------------------------------------------+
 |         Type          | Bit Index |                             Use                              |
@@ -608,6 +620,10 @@ Resource Management Action IDs & Sub-Action IDs
 |                             |       |                       +-----------------------------+-------+-------------------------------------+
 |                             |       |                       | PSIL_SRC_THREAD_PEER        | 14    | Source thread peer register thread  |
 |                             |       |                       |                             |       | value                               |
++-----------------------------+-------+-----------------------+-----------------------------+-------+-------------------------------------+
+| PSIL_HOST_ID_CHECK          | 41    | Verify message host   | PSIL_HOST_ID_BCFG           | 19    | Resource host ID in RM boardcfg     |
+|                             |       | ID matches resource   +-----------------------------+-------+-------------------------------------+
+|                             |       | host ID               | PSIL_MSG_HOST_ID            | 20    | Message host ID                     |
 +-----------------------------+-------+-----------------------+-----------------------------+-------+-------------------------------------+
 | IRQ_INIT                    | 43    | IRQ driver init       | N/A                         | N/A   | N/A                                 |
 |                             |       | complete              |                             |       |                                     |

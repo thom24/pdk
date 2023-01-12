@@ -15,7 +15,7 @@
    ./extended_otp
    ./dkek_management
    ./firewall_faq
-   ./sa2ul_access
+   ./saul_access
    ./security_handover
    ./secure_debug
    ./key_writer

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>SA2UL Access Outside of SYSFW &mdash; TISCI User Guide</title>
+  <title>SAUL Access Outside of SYSFW &mdash; TISCI User Guide</title>
   
 
   
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.05.02
+                08.06.00
               </div>
             
           
@@ -115,9 +115,13 @@
 <li class="toctree-l2"><a class="reference internal" href="extended_otp.html">Using Extended OTP on HS devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dkek_management.html">Using Derived KEK on HS devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="firewall_faq.html">Firewall FAQ</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">SA2UL Access Outside of SYSFW</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#sa2ul-resource-availability">SA2UL Resource Availability</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">SAUL Access Outside of SYSFW</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#sa2ul">SA2UL</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sa3ul">SA3UL</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#saul-resource-availability">SAUL Resource Availability</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#resource-access">Resource Access</a></li>
 </ul>
 </li>
@@ -161,7 +165,7 @@
       
           <li><a href="index.html">Chapter 6: Topic User Guides</a> &raquo;</li>
       
-    <li>SA2UL Access Outside of SYSFW</li>
+    <li>SAUL Access Outside of SYSFW</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -173,27 +177,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="sa2ul-access-outside-of-sysfw">
-<h1>SA2UL Access Outside of SYSFW<a class="headerlink" href="#sa2ul-access-outside-of-sysfw" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="saul-access-outside-of-sysfw">
+<h1>SAUL Access Outside of SYSFW<a class="headerlink" href="#saul-access-outside-of-sysfw" title="Permalink to this headline">¶</a></h1>
 <p>This guide describes which cryptographic accelerator features are available for
 access outside of System Firmware and how host software may gain access to the its
 resources.</p>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>SA2UL is the crypto accelerator subsystem in TIs K3 family of devices. Each SoC
+<p>SAUL is the crypto accelerator subsystem in TIs K3 family of devices. Each SoC
 has one or more instances of this subsystem. On High Secure (HS) devices,
-portions of an SA2UL subsystem are dedicated to support authentication and
+portions of an SAUL subsystem are dedicated to support authentication and
 decryption services in System Firmware, while other portions are freely avable for host
-software to access. System Firmware does not use any SA2UL resources on General Purpose
-(GP) devices, and on HS devices with multiple SA2UL instances System Firmware does not
+software to access. System Firmware does not use any SAUL resources on General Purpose
+(GP) devices, and on HS devices with multiple SAUL instances System Firmware does not
 use the resources on the additional instances. For example:</p>
+<div class="section" id="sa2ul">
+<h3>SA2UL<a class="headerlink" href="#sa2ul" title="Permalink to this headline">¶</a></h3>
 <table border="1" class="docutils">
 <colgroup>
 <col width="7%" />
+<col width="24%" />
 <col width="26%" />
 <col width="22%" />
-<col width="24%" />
-<col width="22%" />
+<col width="21%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">SoC</th>
@@ -204,38 +210,106 @@ use the resources on the additional instances. For example:</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>am65x</td>
+<tr class="row-even"><td>am64x</td>
+<td>1</td>
+<td>AM64X_DEV_SA2_UL0</td>
+<td>Yes</td>
+<td>Limited</td>
+</tr>
+<tr class="row-odd"><td>am65x</td>
 <td>1</td>
 <td>AM6_DEV_SA2_UL0</td>
 <td>Yes</td>
 <td>Limited</td>
 </tr>
-<tr class="row-odd"><td rowspan="2">j721e</td>
+<tr class="row-even"><td rowspan="2">j721e</td>
 <td rowspan="2">2</td>
 <td>J721E_DEV_MCU_SA2_UL0</td>
 <td>Yes</td>
 <td>Limited</td>
 </tr>
-<tr class="row-even"><td>J721E_DEV_SA2_UL0</td>
+<tr class="row-odd"><td>J721E_DEV_SA2_UL0</td>
 <td>No</td>
 <td>Yes</td>
 </tr>
+<tr class="row-even"><td rowspan="2">j721s2</td>
+<td rowspan="2">2</td>
+<td>J721S2_DEV_SA2_CPSW_PSILSS0</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>J721S2_DEV_SA2_UL0</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td rowspan="2">j784s4</td>
+<td rowspan="2">2</td>
+<td>J784S4_DEV_SA2_CPSW_PSILSS0</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-odd"><td>J784S4_DEV_SA2_UL0</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr class="row-even"><td>j7200</td>
+<td>1</td>
+<td>J7200_DEV_MCU_SA2_UL0</td>
+<td>Yes</td>
+<td>Limited</td>
+</tr>
 </tbody>
 </table>
-<p>The following section describes the details on availability of the SA2UL
-resources for host software.</p>
-<ul class="simple">
-<li><a class="reference internal" href="#pub-ug-sa2ul-resources"><span class="std std-ref">SA2UL Resource Availability</span></a></li>
-</ul>
+</div>
+<div class="section" id="sa3ul">
+<h3>SA3UL<a class="headerlink" href="#sa3ul" title="Permalink to this headline">¶</a></h3>
+<table border="1" class="docutils">
+<colgroup>
+<col width="10%" />
+<col width="33%" />
+<col width="30%" />
+<col width="28%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">SoC</th>
+<th class="head">Number of SA3UL instances</th>
+<th class="head">Used by System Firmware</th>
+<th class="head">Host access available</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>am62ax</td>
+<td>1</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>am62x</td>
+<td>1</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-even"><td>j721s2</td>
+<td>1</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+<tr class="row-odd"><td>j784s4</td>
+<td>1</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This does not cover the overview of SA2UL or its functional description -
+<p class="last">This does not cover the overview of SAUL or its functional description -
 please refer to the device TRM for further details.</p>
 </div>
 </div>
-<div class="section" id="sa2ul-resource-availability">
-<span id="pub-ug-sa2ul-resources"></span><h2>SA2UL Resource Availability<a class="headerlink" href="#sa2ul-resource-availability" title="Permalink to this headline">¶</a></h2>
-<p>The following table describes the access policies for all SA2UL instances on GP
+</div>
+<div class="section" id="saul-resource-availability">
+<span id="pub-ug-saul-resources"></span><h2>SAUL Resource Availability<a class="headerlink" href="#saul-resource-availability" title="Permalink to this headline">¶</a></h2>
+<p>The following table describes the access policies for all SAUL instances on GP
 and HS devices</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -246,7 +320,7 @@ and HS devices</p>
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Resource</th>
-<th class="head">SA2UL instance</th>
+<th class="head">SAUL instance</th>
 <th class="head">GP Policy</th>
 <th class="head">HS Policy</th>
 </tr>
@@ -272,7 +346,7 @@ base control MMR.</td>
 <td>Open Access</td>
 </tr>
 <tr class="row-even"><td rowspan="2">ECC Aggregator
-MMR (for SA2UL
+MMR (for SAUL
 memories)</td>
 <td>Primary</td>
 <td rowspan="2">Open Access</td>
@@ -371,7 +445,7 @@ hosts may read the MMR.</p>
 
   <div role="contentinfo">
     <p>
-      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2022</a>, Texas Instruments Incorporated. All rights reserved. <br>
+      <a href="http://www.ti.com/corp/docs/legal/copyright.shtml">&copy; Copyright 2016-2023</a>, Texas Instruments Incorporated. All rights reserved. <br>
       <a href="http://www.ti.com/corp/docs/legal/trademark/trademrk.htm">Trademarks</a> | <a href="http://www.ti.com/corp/docs/legal/privacy.shtml">Privacy policy</a> | <a href="http://www.ti.com/corp/docs/legal/termsofuse.shtml">Terms of use</a> | <a href="http://www.ti.com/lsds/ti/legal/termsofsale.page">Terms of sale</a>
 
     </p>
@@ -393,7 +467,7 @@ hosts may read the MMR.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'08.05.02',
+            VERSION:'08.06.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
