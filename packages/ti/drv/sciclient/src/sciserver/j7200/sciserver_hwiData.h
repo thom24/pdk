@@ -46,9 +46,6 @@
 #include <ti/drv/sciclient/sciserver.h>
 #include <sciserver_secproxyConfigData.h>
 
-/** Maximum number of Secure Proxy Instances */
-#define SCISERVER_SECPROXY_INSTANCE_COUNT (0x2U)
-
 /*
  * Task stacks are also static memory blocks so the size must be
  * defined below.

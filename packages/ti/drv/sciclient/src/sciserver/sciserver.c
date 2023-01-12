@@ -47,7 +47,6 @@
 #include <ti/drv/sciclient/sciserver.h>
 #include <sciserver_secproxyConfigData.h>
 #include <sciserver_secproxyTransfer.h>
-#include <sciserver_hwiData.h>
 #include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
 #include <ti/drv/sciclient/src/version/sciserver_version.h>
 #include <ti/drv/sciclient/src/version/rmpmhal_version.h>

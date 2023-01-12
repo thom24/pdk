@@ -142,6 +142,9 @@
 /** Max number of interrupts for HWI */
 #define SCISERVER_HWI_NUM (5U)
 
+/** Macro to define number of secure proxy instances **/
+#define SCISERVER_SECPROXY_INSTANCE_COUNT (0x2U)
+
 /** \brief Semaphore Ids to be used for the user and DM tasks */
 enum Sciserver_SemaphoreIds {
     SCISERVER_SEMAPHORE_USER_HI = 0,
