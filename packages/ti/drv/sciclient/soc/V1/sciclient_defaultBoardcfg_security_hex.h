@@ -48,6 +48,10 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+#ifndef SCICLIENT_DEFAULTBOARDCFG_SECURITY_HEX_H_
+#define SCICLIENT_DEFAULTBOARDCFG_SECURITY_HEX_H_
+
+
 #define SCICLIENT_BOARDCFG_SECURITY_SIZE_IN_BYTES (349U)
 
 /* ========================================================================== */
@@ -90,3 +94,5 @@
     0xaf000000U,     0x00001042U,     0x00000000U,     0x00000000U, \
     0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U\
 } /* 349 bytes */
+
+#endif

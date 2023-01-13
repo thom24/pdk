@@ -48,6 +48,10 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+#ifndef SCICLIENT_DEFAULTBOARDCFG_PM_HEX_H_
+#define SCICLIENT_DEFAULTBOARDCFG_PM_HEX_H_
+
+
 #define SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES (2U)
 
 /* ========================================================================== */
@@ -69,3 +73,5 @@
 #define SCICLIENT_BOARDCFG_PM { \
     0x00000100U,\
 } /* 2 bytes */
+
+#endif

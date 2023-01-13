@@ -71,6 +71,24 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
         arrName[j] = (uint8_t)toupper(ch);
         j++;
     }
+
+    uint8_t * fn = get_file_name_from_path(filename);
+    uint16_t fs = strlen(fn)+1;
+    char arrName2[fs];
+    memcpy(arrName2,fn,fs);
+    char ch2;
+    uint32_t k = 0;
+
+    while (arrName2[k] && k<fs) {
+        ch2 = arrName2[k];
+        if (ch2!='.'){
+          arrName2[k] = (uint8_t)toupper(ch2);
+        }
+        else{
+          arrName2[k]='_';
+        }
+        k++;
+    }
     
     /* Print a non-error type message to stdout */
    	fprintf(stdout, "\r\n Converting binary file [%s] to C array \r\n", inName );
@@ -137,6 +155,10 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
 \n/*                           Macros & Typedefs                                */\
 \n/* ========================================================================== */\
 \n\
+\n#ifndef %s_\
+\n#define %s_\
+\n\
+\n\
 \n#define %s_SIZE_IN_BYTES (%dU)\
 \n\
 \n/* ========================================================================== */\
@@ -156,8 +178,7 @@ STATUS bin2c( uint8_t *inName, uint8_t * filename, uint8_t * arrName) {
 \n/* ========================================================================== */\
 \n\
 \n#define %s {",
-get_file_name_from_path(filename), arrName, csize, arrName);
-
+get_file_name_from_path(filename),arrName2,arrName2,arrName, csize,arrName);
     size=0;
     csize=0;
     while(bytes) {
@@ -191,6 +212,8 @@ get_file_name_from_path(filename), arrName, csize, arrName);
     }
     fprintf(fout, "\\\n} /* %d bytes */", csize );
     fprintf(fout, "\n");
+    fprintf(fout, "\n");
+    fprintf(fout, "#endif");
 	  /* Print a non-error type message to stdout */
     fprintf(stdout, " Done. (%d bytes)\r\n", size);
 

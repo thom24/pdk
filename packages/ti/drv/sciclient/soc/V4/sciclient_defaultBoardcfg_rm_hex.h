@@ -48,6 +48,10 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+#ifndef SCICLIENT_DEFAULTBOARDCFG_RM_HEX_H_
+#define SCICLIENT_DEFAULTBOARDCFG_RM_HEX_H_
+
+
 #define SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES (3902U)
 
 /* ========================================================================== */
@@ -312,3 +316,5 @@
     0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
     0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U\
 } /* 3902 bytes */
+
+#endif
