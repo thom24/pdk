@@ -36,6 +36,7 @@
 #include "aborts.h"
 
 #include <ti/osal/TimerP.h>
+#include <ti/osal/CycleprofilerP.h>
 
 #if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
@@ -133,6 +134,11 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     {
         vApplicationAbort();
     }
+}
+
+void vApplicationTickHook ( void )
+{
+    CycleprofilerP_refreshCounter();
 }
 
 /*-------------------------------------------------------------------------*/
