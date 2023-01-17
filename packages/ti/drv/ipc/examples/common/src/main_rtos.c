@@ -188,7 +188,7 @@ void ipc_initSciclient()
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)))
         if (gSciclientHandle.rmBoardConfigComplete == SCICLIENT_FT_PASS)
         {
-            App_printf("Sciclient_boardCfgRm init Passed\n");         
+            App_printf("Sciclient_boardCfgRm init Passed\n");
         }
         else
         {
@@ -198,6 +198,7 @@ void ipc_initSciclient()
     }
 }
 
+#if defined(BUILD_MCU1_0)
 void ipc_boardInit()
 {
     Board_initCfg           boardCfg;
@@ -215,6 +216,7 @@ void ipc_boardInit()
     /* Mark Board_init() has been called */
     gBoardinit = 1;
 }
+#endif
 
 int main(void)
 {
@@ -225,7 +227,7 @@ int main(void)
 
 #if defined ECHO_TEST_BTCM && defined FREERTOS && defined BUILD_MCU
     /* Relocate FreeRTOS Reset Vectors from BTCM*/
-    void _freertosresetvectors (void);  
+    void _freertosresetvectors (void);
     memcpy((void *)0x0, (void *)_freertosresetvectors, 0x40);
 #endif
 
@@ -260,7 +262,9 @@ static void taskFxn(void* a0, void* a1)
 
     /* Initialize SCI Client - It must be called before board init */
     ipc_initSciclient();
+#if defined(BUILD_MCU1_0)
     ipc_boardInit();
+#endif
 
 #if (defined (BUILD_MCU1_0) && (defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)))
     TaskP_Handle sciserverInitTask;
@@ -279,7 +283,7 @@ static void taskFxn(void* a0, void* a1)
     }
 #endif
 
-#if defined (_TMS320C6X) 
+#if defined (_TMS320C6X)
 #if defined (FREERTOS) || defined (SAFERTOS)
     ipc_cacheMarInit();
 #endif
