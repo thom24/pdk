@@ -1,5 +1,20 @@
 #!/bin/bash
 
+if [ -z "$PDK_INSTALL_PATH" ]; then
+    echo "Error: PDK_INSTALL_PATH is not defined"
+    exit
+fi
+
+if [ -z "$SOC" ]; then
+    echo "Error: SOC is not defined"
+    exit
+fi
+
+if [ -z "$PDK_KEYWR_COMP_PATH" ]; then
+    PDK_KEYWR_COMP_PATH="$PDK_INSTALL_PATH/ti/boot/keywriter"
+    echo "PDK_KEYWR_COMP_PATH = $PDK_KEYWR_COMP_PATH"
+fi
+
 OUTPUT="$PDK_KEYWR_COMP_PATH/binary/${SOC}/test_images"
 
 mkdir -p $OUTPUT
@@ -14,7 +29,7 @@ cp $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem $PDK_INSTALL_PATH/ti/boot
 xxd -p -r $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mek.txt > $PDK_INSTALL_PATH/ti/boot/keywriter/scripts/keys/smek.key
 
 if [ ! -f $PDK_KEYWR_COMP_PATH/scripts/ti_fek_public.pem ]; then
-	echo "ERR: ti_fek_public.pem doesn't exist"
+	echo "Error: ti_fek_public.pem doesn't exist"
 	exit
 fi
 
