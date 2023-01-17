@@ -1,3 +1,5 @@
+#!/bin/bash
+
 OUTPUT="$PDK_KEYWR_COMP_PATH/binary/${SOC}/test_images"
 
 mkdir -p $OUTPUT
