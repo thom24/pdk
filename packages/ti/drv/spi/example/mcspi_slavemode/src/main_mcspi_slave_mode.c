@@ -906,19 +906,19 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     {
         if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
         {
-            transaction.txBuf = (void *)addrCancelTxBuff;
-            transaction.rxBuf = (void *)addrCancelRxBuff;
+            transaction.txBuf = (uint64_t)addrCancelTxBuff;
+            transaction.rxBuf = (uint64_t)addrCancelRxBuff;
         }
         else
         {
-            transaction.txBuf = (void *)addrMasterTxBuf;
-            transaction.rxBuf = (void *)addrMasterRxBuf;
+            transaction.txBuf = (uint64_t)addrMasterTxBuf;
+            transaction.rxBuf = (uint64_t)addrMasterRxBuf;
         }
     }
     else
     {
-        transaction.txBuf = (void *)addrSlaveTxBuf;
-        transaction.rxBuf = (void *)addrSlaveRxBuf;
+        transaction.txBuf = (uint64_t)addrSlaveTxBuf;
+        transaction.rxBuf = (uint64_t)addrSlaveRxBuf;
     }
 
     /* Initiate SPI transfer */
