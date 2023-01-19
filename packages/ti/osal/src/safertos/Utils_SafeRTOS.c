@@ -1,5 +1,5 @@
 /*
- * Copyright ( c ) 2015-2022, Texas Instruments Incorporated
+ * Copyright ( c ) 2015-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -300,6 +300,17 @@ int32_t Osal_isInISRContext(void)
     retVal = (int32_t)xPortInIsrContext();
 #endif
     return retVal;
+}
+
+int32_t Osal_isInPrivilegeMode(void)
+{
+  int32_t retVal = (bool)true;
+
+  /* SafeRTOS package does not have an API to check for privilege level for C7X. */
+#if defined (BUILD_MCU) || defined (BUILD_C66X)
+  retVal = xPortIsPrivilegedMode();
+#endif
+  return retVal;
 }
 
 /* Nothing past this point */

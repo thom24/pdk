@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015 - 2018, Texas Instruments Incorporated
+ * Copyright (c) 2015 - 2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -422,6 +422,13 @@ extern int32_t Osal_getStaticMemStatus(Osal_StaticMemStatus *pMemStat);
  *  @return core ID of the running core
  */
 extern int32_t Osal_getCoreId(void);
+
+/*!
+ *  @brief  Function to check if the calling task is in privileged mode.
+ *
+ *  @return Returns pdTrue
+ */
+int32_t Osal_isInPrivilegeMode(void);
 
 /*! 
  * @brief external references for Osal Hw Attribute structure 

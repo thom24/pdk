@@ -185,6 +185,7 @@ uintptr_t HwiP_disable(void)
     }
     else
     {
+        DebugP_assert(( (bool) true == Osal_isInPrivilegeMode() ));
         portENTER_CRITICAL_WITHIN_API();
     }
 
@@ -203,6 +204,7 @@ void HwiP_restore(uintptr_t key)
     }
     else
     {
+        DebugP_assert(( (bool) true == Osal_isInPrivilegeMode() ));
         portEXIT_CRITICAL_WITHIN_API();
     }
 
