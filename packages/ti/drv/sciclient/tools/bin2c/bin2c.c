@@ -214,6 +214,7 @@ get_file_name_from_path(filename),arrName2,arrName2,arrName, csize,arrName);
     fprintf(fout, "\n");
     fprintf(fout, "\n");
     fprintf(fout, "#endif");
+    fprintf(fout, "\n");
 	  /* Print a non-error type message to stdout */
     fprintf(stdout, " Done. (%d bytes)\r\n", size);
 
