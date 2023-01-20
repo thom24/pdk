@@ -445,7 +445,7 @@ void GT_assertLocal(uint32_t    enableMask,
     if (condition == (bool)0)
     {
         GT_3trace(
-            Fvid2Trace, GT_ERR,
+            enableMask, GT_ERR,
             " Assertion @ Line: %d in %s: %s : failed !!!\n",
             lineNum, fileName, str);
         while (loop == 1U)
