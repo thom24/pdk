@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2013-2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,25 +30,46 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== Mmu_table.c ========
+ *  ======== Hwi_vector_table.c ========
  */
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <c7x.h>
-#include <Mmu.h>
+#include "Hwi.h"
+#include "FreeRTOS.h"
 
 
+#pragma FUNC_EXT_CALLED(Hwi_dispatchC);
 
-#pragma DATA_SECTION(Mmu_tableArray, ".data.Mmu_tableArray");
-#pragma DATA_ALIGN(Mmu_tableArray, 4096);
+void Hwi_dispatchC(int32_t intNum)
+{
+    extern uint32_t ulPortInterruptNesting;
+    extern uint32_t ulPortYieldRequired;
 
-uint64_t Mmu_tableArray[16][512];
+    ulPortInterruptNesting++;
 
-#pragma DATA_SECTION(Mmu_tableArray_NS, ".data.Mmu_tableArray_NS");
-#pragma DATA_ALIGN(Mmu_tableArray_NS, 4096);
+    Hwi_switchAndDispatch(intNum);
 
+    ulPortInterruptNesting--;
+    if (ulPortInterruptNesting == 0)
+    {
+        if (ulPortYieldRequired != pdFALSE)
+        {
+            ulPortYieldRequired = pdFALSE;
+            vPortYieldAsyncFromISR();
+        }
+    
+    }
 
-uint64_t Mmu_tableArray_NS[16][512];
+}
+
+/* vectorTableBase__C */
+#pragma DATA_SECTION(Hwi_vectorTableBase, ".const:Hwi_vectorTableBase");
+extern const void *Hwi_vectorTableBase;
+extern void (*soft_reset)(void);
+const void * Hwi_vectorTableBase = ((const void *)((void*)&soft_reset));
+
+/* vectorTableBase_SS__C */
+#pragma DATA_SECTION(Hwi_vectorTableBase_SS, ".const:Hwi_vectorTableBase_SS");
+extern const void * Hwi_vectorTableBase_SS;
+extern void (*secure_soft_reset)(void);
+const void * Hwi_vectorTableBase_SS = ((const void *)((void*)&secure_soft_reset));
+

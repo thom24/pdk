@@ -43,7 +43,7 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/CacheP.h>
 
-#include <ti/kernel/freertos/portable/TI_CGT/c7x/Cache.h>
+#include "Cache.h"
 
 
 

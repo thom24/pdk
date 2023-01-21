@@ -17,6 +17,7 @@ SRCDIR = .
 INCDIR = ../
 INCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
+INCDIR += $(PDK_CSL_COMP_PATH)/arch/$(ISA)
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/dpl/common
 

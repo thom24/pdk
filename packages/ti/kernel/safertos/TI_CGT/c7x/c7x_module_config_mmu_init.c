@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2012-2021, Texas Instruments Incorporated
+ * Copyright (c) 2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,34 +30,15 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== IntrinsicsSupport.c ========
+ *  ======== c7x_module_config_mmu_init.c ========
  */
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include <stddef.h>
+#include "Mmu.h"
 
-#include <c6x_migration.h>    /* for legacy C6x intrinsics */
-#include <c7x.h>    /* for C7x intrinsics */
+/* --> InitMmu */
+void vInitMmu( void );
 
-#include "IntrinsicsSupport.h"
+/* initFunc */
+#pragma DATA_SECTION(Mmu_initFunc, ".const:Mmu_initFunc");
+const Mmu_InitFuncPtr Mmu_initFunc = ((Mmu_InitFuncPtr)(vInitMmu));
 
-/*
- *  ======== IntrinsicsSupport_maxbit ========
- *  Returns bit number of most significant '1' in bits argument.
- *  Must be called with non zero bits argument.
- */
-unsigned int IntrinsicsSupport_maxbit(unsigned int bits)
-{
-    return (31 - _lmbd(1, bits));
-}
-
-/*
- *  ======== IntrinsicsSupport_mfence ========
- *  Ensure all pending memory operations are completed
- */
-void IntrinsicsSupport_mfence(void)
-{
-    _mfence();
-}

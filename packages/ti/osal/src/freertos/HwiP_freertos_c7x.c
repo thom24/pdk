@@ -43,7 +43,7 @@
 #include <ti/osal/osal.h>
 #include <ti/osal/HwiP.h>
 #include <ti/csl/csl_types.h>
-#include <ti/kernel/freertos/portable/TI_CGT/c7x/Hwi.h>
+#include "Hwi.h"
 
 #include <FreeRTOS.h>
 #include <task.h>

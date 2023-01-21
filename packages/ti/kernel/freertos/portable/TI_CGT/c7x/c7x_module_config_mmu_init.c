@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2021, Texas Instruments Incorporated
+ * Copyright (c) 2023, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,42 +30,16 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 /*
- *  ======== c7x_module_config.c ========
+ *  ======== c7x_module_config_mmu_init.c ========
  */
 
-#include <stdint.h>
-#include <stdbool.h>
-#include <stdarg.h>
-#include <stddef.h>
-#include <c7x.h>
-#include <Cache.h>
-#include <Hwi.h>
-#include <Mmu.h>
+#include "Mmu.h"
 
-/* enableCache__C */
-#pragma DATA_SECTION(Cache_enableCache, ".const:Cache_enableCache");
-const bool Cache_enableCache = 1;
-
-/* initSize */
-#pragma DATA_SECTION(Cache_initSize, ".const:Cache_initSize");
-const Cache_Size Cache_initSize = {
-    Cache_L1Size_32K,  /* l1pSize */
-    Cache_L1Size_32K,  /* l1dSize */
-    Cache_L2Size_0K,  /* l2Size */
-};
-
-void vInitMmu( void );
+/* --> InitMmu */
+extern void InitMmu(void);
 
 /* initFunc */
 #pragma DATA_SECTION(Mmu_initFunc, ".const:Mmu_initFunc");
-const Mmu_InitFuncPtr Mmu_initFunc = ((Mmu_InitFuncPtr)(vInitMmu));
+const Mmu_InitFuncPtr Mmu_initFunc = ((Mmu_InitFuncPtr)(InitMmu));
 
-
-/* dispatcherAutoNestingSupport */
-#pragma DATA_SECTION(Hwi_dispatcherAutoNestingSupport, ".const:Hwi_dispatcherAutoNestingSupport");
-const bool Hwi_dispatcherAutoNestingSupport = 0;
-
-/* DEFAULT_INT_PRIORITY */
-#pragma DATA_SECTION(Hwi_DEFAULT_INT_PRIORITY, ".const:Hwi_DEFAULT_INT_PRIORITY");
-const unsigned int Hwi_DEFAULT_INT_PRIORITY = (unsigned int)0x6U;
 

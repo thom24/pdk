@@ -7,12 +7,12 @@ MODULE_NAME = freertos
 
 SRCDIR = freertos/portable/TI_CGT/$(ISA)
 SRCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/ \
-          ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/portable/MemMang
+          ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/portable/MemMang \
 	
 INCDIR = freertos/config/$(SOC)/$(ISA)
 INCDIR += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include \
-          freertos/portable/TI_CGT/$(ISA)
-
+          freertos/portable/TI_CGT/$(ISA) \
+          $(PDK_CSL_COMP_PATH)/arch/$(ISA)
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
@@ -21,29 +21,11 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 # Common source files and CFLAGS across all platforms and cores
 ifeq ($(ISA),$(filter $(ISA), c7x))
 SRCS_COMMON += \
-            boot.c                        \
-            Mmu.c                         \
-            Cache.c                       \
-            Hwi.c                         \
-            IntrinsicsSupport.c           \
-            TaskSupport.c                 \
-            Exception.c                   \
-            TimestampProvider.c           \
-            Startup.c                     \
-            Mmu_table.c                   \
-            c7x_module_config.c
-endif
+            Hwi_vector_table.c                         \
+            c7x_module_config_mmu_init.c               \
+            TaskSupport.c                              \
+            TimestampProvider.c
 
-ifeq ($(ISA),$(filter $(ISA), c7x))
-SRCS_ASM_COMMON :=       \
-    Cache_asm.asm        \
-    Clobber_asm.asm      \
-    Exception_asm.asm    \
-    Hwi_asm.asm          \
-    Hwi_asm_switch.asm   \
-    Hwi_disp_always.asm  \
-    Mmu_asm.asm          \
-    TaskSupport_asm.asm
 endif
 
 SRCS_COMMON += \
@@ -86,13 +68,14 @@ SRCS_ASM_COMMON := \
     port_Hwi_handlers_asm.asm
 endif
 
+ifeq ($(ISA),$(filter $(ISA), c7x))
+SRCS_ASM_COMMON := \
+    TaskSupport_asm.asm
+endif
+
 
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
-ifeq ($(ISA),$(filter $(ISA), c7x))
-CFLAGS_LOCAL_COMMON += -DHwi_bootToNonSecure__D=true
-CFLAGS_LOCAL_COMMON += -DException_vectors__D
-endif
 
 PACKAGE_SRCS_COMMON = freertos.mak freertos_component.mk makefile
 PACKAGE_SRCS_COMMON += freertos

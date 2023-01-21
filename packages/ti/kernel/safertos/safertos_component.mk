@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2016 - 2022, Texas Instruments Incorporated
+# Copyright (c) 2016 - 2023, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -135,6 +135,7 @@ safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_proje
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/kernel/include_prv
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/config
 safertos_INCLUDE += $(PDK_SAFERTOS_COMP_PATH)/TI_CGT/c7x
+safertos_INCLUDE += $(PDK_CSL_COMP_PATH)/arch/c7x
 
 export safertos_SOCLIST
 export safertos_$(SOC)_CORELIST

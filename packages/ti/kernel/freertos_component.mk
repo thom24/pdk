@@ -134,6 +134,9 @@ export freertos_PKG_LIST
 freertos_INCLUDE = $(freertos_PATH)
 freertos_INCLUDE += ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
 freertos_INCLUDE += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
+ifeq ($(ISA), c7x)
+freertos_INCLUDE += $(PDK_CSL_COMP_PATH)/arch/c7x
+endif
 freertos_INCLUDE += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
 
 export freertos_SOCLIST

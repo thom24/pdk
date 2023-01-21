@@ -45,7 +45,7 @@
 
 
 #if (defined (FREERTOS))
-#include <ti/kernel/freertos/portable/TI_CGT/c7x/Mmu.h>
+#include "Mmu.h"
 #elif (defined (SAFERTOS))
 #include "Mmu.h"
 #endif

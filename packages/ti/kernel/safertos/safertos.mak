@@ -28,6 +28,7 @@ INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRT
 ifeq ($(ISA),$(filter $(ISA), c7x))
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/NoWrapper
 INCDIR += $(PDK_SAFERTOS_COMP_PATH)/TI_CGT/c7x
+INCDIR += $(PDK_CSL_COMP_PATH)/arch/c7x
 endif
 
 # List all the external components/interfaces, whose interface header files
@@ -63,23 +64,21 @@ SRCS_COMMON += \
     apiStreamBufferWrapper.c \
     apiEvtMplxWrapper.c 
 endif
+
 ifeq ($(ISA),$(filter $(ISA), r5f))
 SRCS_COMMON += \
     mpuARM.c \
     portmpu.c \
     apiMPU.c
+
 endif
 ifeq ($(ISA),$(filter $(ISA), c7x))
 # Following does not compile in CPP build. Skip it for CPP build
 ifneq ($(CPLUSPLUS_BUILD), yes)
 SRCS_COMMON += \
-    boot.c \
-    Hwi.c \
-    Startup.c \
-    c7x_module_config.c \
-    Mmu.c \
-    Cache.c \
-    Mmu_table.c
+    Hwi_vector_table.c \
+    c7x_module_config_mmu_init.c
+
 endif
 endif
 
@@ -96,10 +95,7 @@ endif
 
 ifeq ($(ISA),$(filter $(ISA), c7x))
 SRCS_ASM_COMMON := \
-    portasm.asm \
-    Mmu_asm.asm \
-    Cache_asm.asm \
-    Hwi_asm.asm
+    portasm.asm 
 endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)

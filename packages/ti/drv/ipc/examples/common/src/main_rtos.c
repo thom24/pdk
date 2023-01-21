@@ -60,8 +60,8 @@
 #include <ti/osal/soc/osal_soc.h>
 
 #if (defined (FREERTOS))
-#include <ti/kernel/freertos/portable/TI_CGT/c7x/Hwi.h>
-#include <ti/kernel/freertos/portable/TI_CGT/c7x/Mmu.h>
+#include "Hwi.h"
+#include "Mmu.h"
 #elif (defined (SAFERTOS))
 #include "Mmu.h"
 #endif

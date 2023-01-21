@@ -56,6 +56,9 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 INCDIR =  ${FREERTOS_KERNEL_INSTALL_PATH}/FreeRTOS-Kernel/include
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/portable/TI_CGT/$(ISA)
+ifeq ($(ISA), c7x)
+INCDIR += $(PDK_CSL_COMP_PATH)/arch/c7x/
+endif
 INCDIR += $(PDK_FREERTOS_COMP_PATH)/freertos/config/$(SOC)/$(ISA)
 
 CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
