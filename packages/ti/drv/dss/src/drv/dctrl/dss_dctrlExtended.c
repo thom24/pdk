@@ -556,6 +556,18 @@ static void Dss_dctrlDrvDpIntr(uintptr_t arg)
                 pObj->hpdPending = FALSE;
             }
         }
+        if ((0U != (hpdEvents & DP_HPD_STATE)) && (0U != (hpdEvents & DP_HPD_PULSE)))
+        {
+            if (NULL != pObj->hpdCbFxn)
+            {
+                pObj->hpdInProgress = TRUE;
+                pObj->hpdCbFxn(TRUE, pObj->hpdCbData);
+            }
+            else
+            {
+                pObj->hpdPending = TRUE;
+            }
+        }
     }
 }
 
