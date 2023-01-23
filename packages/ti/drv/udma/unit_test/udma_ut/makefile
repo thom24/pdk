@@ -26,9 +26,11 @@ INCDIR = . ./src ./src/soc/$(SOC) ./rtos
 #  need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
 
-COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
-INCLUDE_EXTERNAL_INTERFACES += freertos
-SRCS_COMMON = main_rtos.c
+ifeq ($(BUILD_OS_TYPE), freertos)
+  COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP)
+  INCLUDE_EXTERNAL_INTERFACES += freertos
+  SRCS_COMMON = main_rtos.c
+endif
 
 ifeq ($(BUILD_OS_TYPE), safertos)
   CFLAGS_OS_DEFINES = -DSAFERTOS
@@ -49,6 +51,7 @@ SRCS_COMMON += udma_test_ring.c udma_test_ch.c
 SRCS_COMMON += udma_test_event.c udma_test_flow.c
 SRCS_COMMON += udma_test_bug.c udma_test_misc.c
 SRCS_COMMON += udma_test_soc.c
+SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
 SRCS_COMMON += utils_trace.c
 SRCS_COMMON += utils_mem.c utils_prf.c
 
