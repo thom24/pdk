@@ -204,7 +204,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
              (portUnsignedBaseType)taskPriority,     /* The priority to assigned to the task being created. */
              params->userData,              /* User-defined data. */
 #if defined (BUILD_MCU)
-             pdFALSE,                            /* Check task does not use the FPU. */
+             pdTRUE,                            /* Check task does not use the FPU. */
              {                                   /* MPU task parameters. */
                  params->taskPrivilege,          /* Check task is privileged. */
                  {
