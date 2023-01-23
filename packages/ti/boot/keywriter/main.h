@@ -66,11 +66,11 @@
 #include <keywriter_utils.h>
 
 /* Discard any previous definitions
- * These two macros are defined in ti-fs-keywriter.h file.
+ * These two macros are defined in tifs_keywriter.h file.
  * */
 #undef TIFS_KEYWRITER_BIN_SIZE_IN_BYTES
 #undef TIFS_KEYWRITER_BIN
-#include "ti-fs-keywriter.h"
+#include "tifs_keywriter.h"
 
 #define OTP_VERSION_STR  "OTP Keywriter Version: 02.00.00.00"
 
