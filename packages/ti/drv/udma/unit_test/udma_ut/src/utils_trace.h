@@ -332,6 +332,72 @@ void GT_trace7(uint32_t      maskType,
                uintptr_t     param6);
 
 #if defined (UDMAUT_CFG_TRACE_ENABLE)
+
+/*  UDMA UT has issue with GT_traces on C7X cores. 
+    This work fine with release binary by bypassing GT_traces*/
+#if defined (BUILD_C7X)
+/** \brief Log the trace with zero parameters and information string. */
+#define GT_0trace(maskType, classType, infoString)                          \
+    (UdmaUt_printf((const char *) (infoString)))
+
+/** \brief Function to log the trace with one additional parameters. */
+#define GT_1trace(maskType, classType, infoString, param0)                  \
+    (UdmaUt_printf((const char *) (infoString),  (param0)))
+
+/** \brief Function to log the trace with two additional parameters. */
+#define GT_2trace(maskType, classType, infoString, param0, param1)          \
+    (UdmaUt_printf((const char *) (infoString),  (param0),  (param1)))
+
+/** \brief Function to log the trace with three additional parameters. */
+#define GT_3trace(maskType, classType, infoString, param0, param1, param2)  \
+    (UdmaUt_printf((const char *) (infoString),                                 \
+                (param0),                                        \
+                (param1),                                        \
+                (param2)))
+
+/** \brief Function to log the trace with four additional parameters. */
+#define GT_4trace(maskType, classType, infoString,                          \
+                  param0, param1, param2, param3)                           \
+    (UdmaUt_printf((const char *) (infoString),                                 \
+                (param0),                                        \
+                (param1),                                        \
+                (param2),                                        \
+                (param3)))
+
+/** \brief Function to log the trace with five additional parameters. */
+#define GT_5trace(maskType, classType, infoString,                          \
+                  param0, param1, param2, param3, param4)                   \
+    (UdmaUt_printf((const char *) (infoString),                                 \
+                (param0),                                        \
+                (param1),                                        \
+                (param2),                                        \
+                (param3),                                        \
+                (param4)))
+
+/** \brief Function to log the trace with six additional parameters. */
+#define GT_6trace(maskType, classType, infoString,                          \
+                  param0, param1, param2, param3, param4, param5)           \
+    (UdmaUt_printf((const char *) (infoString),                                 \
+                (param0),                                        \
+                (param1),                                        \
+                (param2),                                        \
+                (param3),                                        \
+                (param4),                                        \
+                (param5)))
+
+/** \brief Function to log the trace with seven additional parameters. */
+#define GT_7trace(maskType, classType, infoString,                          \
+                  param0, param1, param2, param3, param4, param5, param6)   \
+    (UdmaUt_printf((const char *) (infoString),                                 \
+                (param0),                                        \
+                (param1),                                        \
+                (param2),                                        \
+                (param3),                                        \
+                (param4),                                        \
+                (param5),                                        \
+                (param6)))
+
+#else
 /** \brief Log the trace with zero parameters and information string. */
 #define GT_0trace(maskType, classType, infoString)                          \
     (GT_trace0((maskType), (classType),                                     \
@@ -408,6 +474,8 @@ void GT_trace7(uint32_t      maskType,
                (uintptr_t) (param4),                                        \
                (uintptr_t) (param5),                                        \
                (uintptr_t) (param6)))
+
+#endif
 
 #else   /* if defined (UDMAUT_CFG_TRACE_ENABLE) */
 
