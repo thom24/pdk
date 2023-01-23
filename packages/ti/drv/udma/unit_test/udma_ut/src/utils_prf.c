@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,13 +42,9 @@
 /* ========================================================================== */
 
 #include <string.h>
-#include <xdc/runtime/System.h>
-#include <xdc/runtime/Types.h>
-#include <xdc/runtime/Timestamp.h>
-#include <ti/sysbios/hal/Hwi.h>
-#include <ti/sysbios/utils/Load.h>
-#include <ti/sysbios/knl/Task.h>
-
+#include "ti/osal/osal.h"
+#include "ti/osal/TaskP.h"
+#include "ti/osal/LoadP.h"
 #include "udma_test.h"
 
 /* ========================================================================== */
@@ -94,25 +90,10 @@ typedef struct
 /* ========================================================================== */
 
 static Utils_PrfObj        gUtils_prfObj;
-static Utils_AccPrfLoadObj gUtils_accPrfLoadObj;
-static uint32_t               gUtils_startLoadCalc = 0;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
-
-int32_t Utils_prfInit(void)
-{
-    memset(&gUtils_prfObj, 0, sizeof (gUtils_prfObj));
-    memset(&gUtils_accPrfLoadObj, 0, sizeof (Utils_AccPrfLoadObj));
-
-    return (0);
-}
-
-int32_t Utils_prfDeInit(void)
-{
-    return (0);
-}
 
 Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
 {
@@ -120,7 +101,7 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
     uint32_t        cookie;
     Utils_PrfTsHndl *pHndl = NULL;
 
-    cookie = Hwi_disable();
+    cookie = HwiP_disable();
 
     for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
     {
@@ -137,7 +118,7 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
         }
     }
 
-    Hwi_restore(cookie);
+    HwiP_restore(cookie);
 
     return (pHndl);
 }
@@ -169,13 +150,13 @@ uint64_t Utils_prfTsDelta(Utils_PrfTsHndl *pHndl,
 
     endTs = Utils_prfTsGet64();
 
-    cookie = Hwi_disable();
+    cookie = HwiP_disable();
 
     pHndl->totalTs += (endTs - pHndl->startTs);
     pHndl->count++;
     pHndl->numFrames += numFrames;
 
-    Hwi_restore(cookie);
+    HwiP_restore(cookie);
 
     return (endTs);
 }
@@ -184,40 +165,29 @@ int32_t Utils_prfTsReset(Utils_PrfTsHndl *pHndl)
 {
     uint32_t cookie;
 
-    cookie = Hwi_disable();
+    cookie = HwiP_disable();
 
     pHndl->totalTs   = 0;
     pHndl->count     = 0;
     pHndl->numFrames = 0;
 
-    Hwi_restore(cookie);
+    HwiP_restore(cookie);
 
     return (0);
 }
 
 uint64_t Utils_prfTsGet64(void)
 {
-    uint64_t curTs;
-    Types_Timestamp64 ts64;
-
-    Timestamp_get64(&ts64);
-
-    curTs = ((uint64_t) ts64.hi << 32) | ts64.lo;
-
+    uint64_t curTs = (uint64_t) AppUtils_getCurTimeInMsec();
     return (curTs);
 }
 
 int32_t Utils_prfTsPrint(Utils_PrfTsHndl *pHndl, uint32_t resetAfterPrint, uint32_t trace)
 {
-    uint32_t       cpuKhz;
     uint32_t       timeMs, fps, fpc;
-    Types_FreqHz cpuHz;
 
-    Timestamp_getFreq(&cpuHz);
 
-    cpuKhz = cpuHz.lo / (uint32_t) 1000U; /* convert to Khz */
-
-    timeMs = pHndl->totalTs / cpuKhz;
+    timeMs = pHndl->totalTs;
 
     if(0U == timeMs)
     {
@@ -285,7 +255,7 @@ int32_t Utils_prfLoadRegister(TaskP_Handle pTsk, const char *name)
     int32_t             status = CSL_EFAIL;
     Utils_PrfLoadObj   *pHndl;
 
-    cookie = Hwi_disable();
+    cookie = HwiP_disable();
 
     for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
     {
@@ -303,7 +273,7 @@ int32_t Utils_prfLoadRegister(TaskP_Handle pTsk, const char *name)
         }
     }
 
-    Hwi_restore(cookie);
+    HwiP_restore(cookie);
 
     return (status);
 }
@@ -315,7 +285,7 @@ int32_t Utils_prfLoadUnRegister(TaskP_Handle pTsk)
     int32_t             status = CSL_EFAIL;
     Utils_PrfLoadObj   *pHndl;
 
-    cookie = Hwi_disable();
+    cookie = HwiP_disable();
 
     for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
     {
@@ -329,32 +299,27 @@ int32_t Utils_prfLoadUnRegister(TaskP_Handle pTsk)
         }
     }
 
-    Hwi_restore(cookie);
+    HwiP_restore(cookie);
 
     return (status);
 }
 
 int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
 {
-    uint32_t            hwiLoad, swiLoad, tskLoad, hndlId, cpuLoad;
+    uint32_t            tskLoad, hndlId, cpuLoad;
     Utils_PrfLoadObj   *pHndl;
 
-    hwiLoad = (uint32_t) ((gUtils_accPrfLoadObj.totalHwiThreadTime *
-                         (uint64_t) 100U) / gUtils_accPrfLoadObj.totalTime);
-    swiLoad = (uint32_t) ((gUtils_accPrfLoadObj.totalSwiThreadTime *
-                         (uint64_t) 100U) / gUtils_accPrfLoadObj.totalTime);
-    cpuLoad = (uint32_t) 100U -
-              (uint32_t) ((gUtils_accPrfLoadObj.totalIdlTskTime *
-                         (uint64_t) 100U) /
-                        gUtils_accPrfLoadObj.totalTime);
+    LoadP_Status status = LoadP_OK;
+    LoadP_Stats loadStatsTask;
+
+    /* Query CPU Load */
+    cpuLoad = LoadP_getCPULoad();
 
     GT_0trace(trace, GT_INFO, "\r\n");
-    GT_4trace(trace, GT_INFO,
-              " %d: LOAD: CPU: %d%%, HWI: %d%%, SWI:%d%% \r\n",
+    GT_2trace(trace, GT_INFO,
+              " %d: LOAD: CPU: %d%% \r\n",
               AppUtils_getCurTimeInMsec(),
-              cpuLoad,
-              hwiLoad,
-              swiLoad);
+              cpuLoad);
 
     if(((uint32_t) TRUE) == printTskLoad)
     {
@@ -364,9 +329,8 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
 
             if(TRUE == pHndl->isAlloc)
             {
-                tskLoad = (uint32_t) ((pHndl->totalTskThreadTime *
-                                     (uint64_t) 100U) /
-                                    gUtils_accPrfLoadObj.totalTime);
+                status += LoadP_getTaskLoad(pHndl->pTsk, &loadStatsTask);
+                tskLoad = loadStatsTask.percentLoad;
 
                 GT_3trace(trace, GT_INFO,
                           " %d: LOAD: TSK: %s: %d%% \r\n",
@@ -384,23 +348,14 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
 
 void Utils_prfLoadCalcStart(void)
 {
-    uint32_t cookie;
-
-    cookie = Hwi_disable();
-    gUtils_startLoadCalc = (uint32_t) TRUE;
-    Hwi_restore(cookie);
+    
+    LoadP_reset();
 
     return;
 }
 
 void Utils_prfLoadCalcStop(void)
 {
-    uint32_t cookie;
-
-    cookie = Hwi_disable();
-    gUtils_startLoadCalc = FALSE;
-    Hwi_restore(cookie);
-
     return;
 }
 
@@ -408,11 +363,6 @@ void Utils_prfLoadCalcReset(void)
 {
     uint32_t            hndlId;
     Utils_PrfLoadObj   *pHndl;
-
-    gUtils_accPrfLoadObj.totalHwiThreadTime = 0;
-    gUtils_accPrfLoadObj.totalSwiThreadTime = 0;
-    gUtils_accPrfLoadObj.totalTime          = 0;
-    gUtils_accPrfLoadObj.totalIdlTskTime    = 0;
 
     /* Reset the performace loads accumulator */
     for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
@@ -432,39 +382,5 @@ void Utils_prfLoadCalcReset(void)
 /* Function called by Loadupdate for each update cycle */
 void Utils_prfLoadUpdate(void)
 {
-    uint32_t            hndlId;
-    Load_Stat           hwiLoadStat, swiLoadStat, tskLoadStat, idlTskLoadStat;
-    TaskP_Handle        idlTskHndl = NULL;
-    Utils_PrfLoadObj   *pHndl;
-
-    if(((uint32_t) TRUE) == (uint32_t) gUtils_startLoadCalc)
-    {
-        idlTskHndl = Task_getIdleTask();
-
-        /* Get the all loads first */
-        Load_getGlobalHwiLoad(&hwiLoadStat);
-        Load_getGlobalSwiLoad(&swiLoadStat);
-        Load_getTaskLoad(idlTskHndl, &idlTskLoadStat);
-
-        gUtils_accPrfLoadObj.totalHwiThreadTime += hwiLoadStat.threadTime;
-        gUtils_accPrfLoadObj.totalSwiThreadTime += swiLoadStat.threadTime;
-        gUtils_accPrfLoadObj.totalTime          += hwiLoadStat.totalTime;
-        gUtils_accPrfLoadObj.totalIdlTskTime    += idlTskLoadStat.threadTime;
-
-        /* Call the load updated function of each registered task one by one
-         * along with the swiLoad, hwiLoad, and Task's own load */
-        for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
-        {
-            pHndl = &gUtils_prfObj.loadObj[hndlId];
-
-            if(((uint32_t) TRUE == pHndl->isAlloc) &&
-                (pHndl->pTsk != NULL))
-            {
-                Load_getTaskLoad(pHndl->pTsk, &tskLoadStat);
-                pHndl->totalTskThreadTime += tskLoadStat.threadTime;
-            }
-        }
-    }
-
     return;
 }

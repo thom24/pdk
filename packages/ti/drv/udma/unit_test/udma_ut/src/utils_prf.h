@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -113,21 +113,6 @@ typedef struct
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-/**
- *  \brief Initializes the profiling utility.
- *
- *  This function must be called before using any peformance or Timestamp utils
- *
- *  \return 0 on success, else failure
- */
-int32_t Utils_prfInit(void);
-
-/**
- *  \brief De-initializes the profiling utility.
- *
- *  \return 0 on success, else failure
- */
-int32_t Utils_prfDeInit(void);
 
 /**
  *  \brief Creates the handle for the time stamp taking.
