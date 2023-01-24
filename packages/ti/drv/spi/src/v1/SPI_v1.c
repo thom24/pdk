@@ -383,25 +383,25 @@ static void MCSPI_close_v1(MCSPI_Handle mcHandle)
  *  if 8 bits < dataSize <= 16 bits, read 16-bit word from RX FIFO,
  *  if 16 bits < dataSize <= 32 bits, read 32-bit word from RX FIFO,
  */
-static void *MCSPI_receiveData_v1 (uint32_t baseAddr, uint32_t dataSize, void *dataBuf, uint32_t chNum);  /*for misra warnings*/
-static void *MCSPI_receiveData_v1 (uint32_t baseAddr, uint32_t dataSize, void *dataBuf, uint32_t chNum)
+static uint64_t MCSPI_receiveData_v1 (uint32_t baseAddr, uint32_t dataSize, uint64_t dataBuf, uint32_t chNum);  /*for misra warnings*/
+static uint64_t MCSPI_receiveData_v1 (uint32_t baseAddr, uint32_t dataSize, uint64_t dataBuf, uint32_t chNum)
 {
-    void *dataPtr;
+    uint64_t dataPtr;
 
     if (dataSize <= 8U)
     {
         *(uint8_t *)dataBuf = (uint8_t)McSPIReceiveData(baseAddr, chNum);
-        dataPtr = (void *)(((uint8_t *)dataBuf) + 1U);
+        dataPtr = (uint64_t)(((uint8_t *)dataBuf) + 1U);
     }
     else if (dataSize <= 16U)
     {
         *(uint16_t *)dataBuf = (uint16_t)McSPIReceiveData(baseAddr, chNum);
-        dataPtr = (void *)(((uint8_t *)dataBuf) + 2U);
+        dataPtr = (uint64_t)(((uint8_t *)dataBuf) + 2U);
     }
     else
     {
         *(uint32_t *)dataBuf = (uint32_t)McSPIReceiveData(baseAddr, chNum);
-        dataPtr = (void *)(((uint8_t *)dataBuf) + 4U);
+        dataPtr = (uint64_t)(((uint8_t *)dataBuf) + 4U);
     }
 
     return (dataPtr);
@@ -416,25 +416,25 @@ static void *MCSPI_receiveData_v1 (uint32_t baseAddr, uint32_t dataSize, void *d
  *  if 8 bits < dataSize <= 16 bits, write 16-bit word to TX FIFO,
  *  if 16 bits < dataSize <= 32 bits, write 32-bit word to TX FIFO,
  */
-void *MCSPI_transmitData_v1 (uint32_t baseAddr, uint32_t dataSize, void *dataBuf, uint32_t chNum);  /*for misra warnings*/
-void *MCSPI_transmitData_v1 (uint32_t baseAddr, uint32_t dataSize, void *dataBuf, uint32_t chNum)
+uint64_t MCSPI_transmitData_v1 (uint32_t baseAddr, uint32_t dataSize, uint64_t dataBuf, uint32_t chNum);  /*for misra warnings*/
+uint64_t MCSPI_transmitData_v1 (uint32_t baseAddr, uint32_t dataSize, uint64_t dataBuf, uint32_t chNum)
 {
-    void *dataPtr;
+    uint64_t dataPtr;
 
     if (dataSize <= 8U)
     {
         McSPITransmitData(baseAddr, (uint32_t)(*(uint8_t *)dataBuf), chNum);
-        dataPtr = (void *)(((uint8_t *)dataBuf) + 1U);
+        dataPtr = (uint64_t )(((uint8_t *)dataBuf) + 1U);
     }
     else if (dataSize <= 16U)
     {
         McSPITransmitData(baseAddr, (uint32_t)(*(uint16_t *)dataBuf), chNum);
-        dataPtr = (void *)(((uint8_t *)dataBuf) + 2U);
+        dataPtr = (uint64_t )(((uint8_t *)dataBuf) + 2U);
     }
     else
     {
         McSPITransmitData(baseAddr, *(uint32_t *)dataBuf, chNum);
-        dataPtr = (void *)(((uint8_t *)dataBuf) + 4U);
+        dataPtr = (uint64_t )(((uint8_t *)dataBuf) + 4U);
     }
 
     return (dataPtr);
@@ -470,13 +470,13 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
 
     if (chnCfg->trMode == MCSPI_RX_ONLY_MODE)
     {
-        chObj->writeBufIdx = NULL;
+        chObj->writeBufIdx = (uint64_t)NULL_PTR;
         chObj->writeCountIdx = 0;
     }
     else
     {
         chObj->writeBufIdx = (uint64_t)transaction->txBuf;
-        if (chObj->writeBufIdx != NULL)
+        if (chObj->writeBufIdx != (uint64_t)NULL_PTR)
         {
             chObj->writeCountIdx = (uint32_t)transaction->count;
         }
@@ -488,13 +488,13 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
 
     if (chnCfg->trMode == MCSPI_TX_ONLY_MODE)
     {
-        chObj->readBufIdx = NULL;
+        chObj->readBufIdx = (uint64_t)NULL_PTR;
         chObj->readCountIdx = 0;
     }
     else
     {
         chObj->readBufIdx = (uint64_t)transaction->rxBuf;
-        if (chObj->readBufIdx != NULL)
+        if (chObj->readBufIdx != (uint64_t)NULL_PTR)
         {
             chObj->readCountIdx = (uint32_t)transaction->count;
         }
