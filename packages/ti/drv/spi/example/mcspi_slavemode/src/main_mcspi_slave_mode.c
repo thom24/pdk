@@ -1316,8 +1316,8 @@ static bool SPI_test_xfer_error(void *arg)
         /* Initialize slave SPI transaction structure */
         transaction.count = 10;
         transaction.arg = (void *)&terminateXfer;
-        transaction.txBuf = (void *)masterTxBuffer;
-        transaction.rxBuf = (void *)masterRxBuffer;
+        transaction.txBuf = (uint64_t)masterTxBuffer;
+        transaction.rxBuf = (uint64_t)masterRxBuffer;
 
         /* Initiate SPI transfer */
         SPI_test_xfer_ctrl(spi, 1);

@@ -475,7 +475,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     }
     else
     {
-        chObj->writeBufIdx = (void *)transaction->txBuf;
+        chObj->writeBufIdx = (uint64_t)transaction->txBuf;
         if (chObj->writeBufIdx != NULL)
         {
             chObj->writeCountIdx = (uint32_t)transaction->count;
@@ -493,7 +493,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     }
     else
     {
-        chObj->readBufIdx = (void *)transaction->rxBuf;
+        chObj->readBufIdx = (uint64_t)transaction->rxBuf;
         if (chObj->readBufIdx != NULL)
         {
             chObj->readCountIdx = (uint32_t)transaction->count;

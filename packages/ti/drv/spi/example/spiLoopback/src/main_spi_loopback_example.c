@@ -235,8 +235,8 @@ void spi_test(UArg arg0, UArg arg1)
     CacheP_wbInv((void *)txBuf, (int32_t)sizeof(txBuf));
     CacheP_wbInv((void *)rxBuf, (int32_t)sizeof(rxBuf));
 
-    transaction.txBuf = (void *)&txBuf[0];
-    transaction.rxBuf = (void *)&rxBuf[0];
+    transaction.txBuf = (uint64_t)&txBuf[0];
+    transaction.rxBuf = (uint64_t)&rxBuf[0];
 #else
     /* Write Command */
     txBuf = 0xA5A5A5A5; /* Test data */
