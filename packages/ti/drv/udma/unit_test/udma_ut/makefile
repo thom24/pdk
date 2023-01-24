@@ -53,7 +53,13 @@ SRCS_COMMON += udma_test_bug.c udma_test_misc.c
 SRCS_COMMON += udma_test_soc.c
 SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
 SRCS_COMMON += utils_trace.c
-SRCS_COMMON += utils_mem.c utils_prf.c
+SRCS_COMMON += utils_mem.c
+
+ifeq ($(BUILD_OS_TYPE), freertos)
+  SRCS_COMMON += utils_prf.c
+else
+  SRCS_COMMON += utils_prf_baremetal.c
+endif
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(UDMA_CFLAGS) $(UDMAUT_CFLAGS) $(CFLAGS_OS_DEFINES)
 ifeq ($(UDMA_UT_MANUAL_ENTRY), yes)
