@@ -220,9 +220,9 @@ typedef struct SPI_v1_chObject_s {
     uint32_t           clockMode;           /* Clock Mode */
     uint32_t           operMode;            /* interrupt or polling mode */
     SPI_Transaction   *transaction;         /* Pointer to the current transaction */
-    uint64_t           writeBufIdx;         /* Internal inc. writeBuf index */
+    void              *writeBufIdx;         /* Internal inc. writeBuf index */
     uint32_t           writeCountIdx;       /* Internal dec. writeCounter */
-    uint64_t           readBufIdx;          /* Internal inc. readBuf index */
+    void              *readBufIdx;          /* Internal inc. readBuf index */
     uint32_t           readCountIdx;        /* Internal dec. readCounter */
     bool               isOpen;              /* flag to indicate module is open */
     uint32_t           wordLenShift;        /* word length shift bits

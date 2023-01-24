@@ -906,19 +906,19 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     {
         if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
         {
-            transaction.txBuf = (uint64_t)addrCancelTxBuff;
-            transaction.rxBuf = (uint64_t)addrCancelRxBuff;
+            transaction.txBuf = (void *)addrCancelTxBuff;
+            transaction.rxBuf = (void *)addrCancelRxBuff;
         }
         else
         {
-            transaction.txBuf = (uint64_t)addrMasterTxBuf;
-            transaction.rxBuf = (uint64_t)addrMasterRxBuf;
+            transaction.txBuf = (void *)addrMasterTxBuf;
+            transaction.rxBuf = (void *)addrMasterRxBuf;
         }
     }
     else
     {
-        transaction.txBuf = (uint64_t)addrSlaveTxBuf;
-        transaction.rxBuf = (uint64_t)addrSlaveRxBuf;
+        transaction.txBuf = (void *)addrSlaveTxBuf;
+        transaction.rxBuf = (void *)addrSlaveRxBuf;
     }
 
     /* Initiate SPI transfer */
@@ -1316,8 +1316,8 @@ static bool SPI_test_xfer_error(void *arg)
         /* Initialize slave SPI transaction structure */
         transaction.count = 10;
         transaction.arg = (void *)&terminateXfer;
-        transaction.txBuf = (uint64_t)masterTxBuffer;
-        transaction.rxBuf = (uint64_t)masterRxBuffer;
+        transaction.txBuf = (void *)masterTxBuffer;
+        transaction.rxBuf = (void *)masterRxBuffer;
 
         /* Initiate SPI transfer */
         SPI_test_xfer_ctrl(spi, 1);

@@ -172,7 +172,7 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
 
 static void MCSPI_udmaHpdInit(Udma_ChHandle  chHandle,
                               uint8_t       *pHpdMem,
-                              uint64_t       bufPtr,
+                              const void    *bufPtr,
                               uint32_t       length)
 {
     CSL_UdmapCppi5HMPD *pHpd = (CSL_UdmapCppi5HMPD *) pHpdMem;
@@ -210,7 +210,7 @@ static void MCSPI_udmaHpdInit(Udma_ChHandle  chHandle,
 }
 
 static int32_t MCSPI_dmaTx(MCSPI_Handle   mcHandle,
-                           uint64_t       srcBuf,
+                           const void    *srcBuf,
                            uint32_t       length)
 {
     int32_t            retVal;
@@ -274,7 +274,7 @@ static int32_t MCSPI_dmaTx(MCSPI_Handle   mcHandle,
 }
 
 static int32_t MCSPI_dmaRx(MCSPI_Handle   mcHandle,
-                           uint64_t       destBuf,
+                           const void    *destBuf,
                            uint32_t       length)
 {
     int32_t            retVal;
@@ -383,18 +383,18 @@ void MCSPI_dmaTransfer(MCSPI_Handle     mcHandle,
     transBytes = (uint32_t)transaction->count << chObj->wordLenShift;
     if (chnCfg->trMode == MCSPI_TX_RX_MODE)
     {
-        (void)MCSPI_dmaRx(mcHandle, transaction->rxBuf, transBytes);
-        (void)MCSPI_dmaTx(mcHandle, transaction->txBuf, transBytes);
+        (void)MCSPI_dmaRx(mcHandle, (const void *)transaction->rxBuf, transBytes);
+        (void)MCSPI_dmaTx(mcHandle, (const void *)transaction->txBuf, transBytes);
     }
     else if (chnCfg->trMode == MCSPI_TX_ONLY_MODE)
     {
         /* TX_ONLY Mode */
-        (void)MCSPI_dmaTx(mcHandle, transaction->txBuf, transBytes);
+        (void)MCSPI_dmaTx(mcHandle, (const void *)transaction->txBuf, transBytes);
     }
     else
     {
         /* RX_ONLY Mode */
-        (void)MCSPI_dmaRx(mcHandle, transaction->rxBuf, transBytes);
+        (void)MCSPI_dmaRx(mcHandle, (const void *)transaction->rxBuf, transBytes);
     }
 }
 

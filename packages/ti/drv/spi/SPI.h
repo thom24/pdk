@@ -155,8 +155,8 @@ typedef enum SPI_Status_s {
 typedef struct SPI_Transaction_s {
     /* User input (write-only) fields */
     size_t     count;      /*!< Number of frames for this transaction */
-    uint64_t   txBuf;      /*!< void * to a buffer with data to be transmitted */
-    uint64_t   rxBuf;      /*!< void * to a buffer to receive data */
+    void      *txBuf;      /*!< void * to a buffer with data to be transmitted */
+    void      *rxBuf;      /*!< void * to a buffer to receive data */
     void      *arg;        /*!< Argument to be passed to the callback function */
 
     /* User output (read-only) fields */
