@@ -2350,28 +2350,55 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
     #if defined (BUILD_C7X)
         /* Start C7x Core Interrupt */
         rmInitPrms->startC7xCoreIntr                        = UDMA_C7X_CORE_INTR_OFFSET;
+        /* Out of 63 events of C7x core, there are (63U - UDMA_C7X_CORE_INTR_OFFSET) available for driver.
+        So, max number of IR interrupts used by driver should be <= (63U - UDMA_C7X_CORE_INTR_OFFSET) */
+        uint32_t maxC7xEvtAvailable      =   63U - UDMA_C7X_CORE_INTR_OFFSET;
+        /* startResrvCnt and endResrvCnt are number of interrupts reserved for other
+            drivers, can't be used by UDMA driver. \ref Udma_RmSharedResPrms */
+        Udma_RmSharedResPrms *rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR);
+        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - 
+            (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt)) > maxC7xEvtAvailable)
+        {
+            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt) + maxC7xEvtAvailable;
+        }
     #endif
     #if defined (_TMS320C6X)
         /* Start C6xx Core Interrupt */
         rmInitPrms->startC66xCoreIntr                       = UDMA_C66X_CORE_INTR_OFFSET;
     #endif
-        if(UDMA_INST_ID_MCU_0 == instId)
+        if(UDMA_INST_ID_START != instId)
         {
-            uint32_t offset = 0U;
-            uint32_t start = 0U; /* Returned start value not used in this case, Passing to avoid dereferencing of NULL pointer */
-            /* Add the no. of IR Interrupts reserved for C7x/C66x in Main NAVSS Instance */  
+            uint32_t curInstIrStart     = 0U;
+            uint32_t startInstIrStart   = 0U;
+            /* Returned num value not used in this case, Passing to avoid dereferencing of NULL pointer */
+            uint32_t num        = 0U;
+
+            /* Get the startInstIrStart i.e., start value of range of IR interrupts
+               allocated to first instance */
             retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
-                                                   UDMA_INST_ID_MAIN_0,
+                                                   UDMA_INST_ID_START,
                                                    UDMA_INST_ID_START,
                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
                                                    rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
-                                                   &start,
-                                                   &offset);
+                                                   &startInstIrStart,
+                                                   &num);
+
+            /* Get the curInstIrStart i.e., start value of range of IR interrupts
+               allocated to current instance */
+            retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
+                                                   instId,
+                                                   UDMA_INST_ID_START,
+                                                   rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeStart,
+                                                   rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum,
+                                                   &curInstIrStart,
+                                                   &num);
+            /* Add the no. of IR Interrupts reserved for C7x/C66x before current instance
+               to make sure each instance has their own range C7x/C66x events */
         #if defined (BUILD_C7X)
-            rmInitPrms->startC7xCoreIntr                   +=  offset;  
+            rmInitPrms->startC7xCoreIntr                   +=  (curInstIrStart - startInstIrStart);
         #endif
         #if defined (_TMS320C6X)
-            rmInitPrms->startC66xCoreIntr                  +=  offset;  
+            rmInitPrms->startC66xCoreIntr                  +=  (curInstIrStart - startInstIrStart);
         #endif
         }
     #endif
