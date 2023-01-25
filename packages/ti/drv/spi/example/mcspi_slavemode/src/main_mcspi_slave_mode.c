@@ -48,7 +48,7 @@
  */
 
 /*
- * Copyright (C) 2016 - 2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2016 - 2023 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -906,19 +906,43 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     {
         if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
         {
-            transaction.txBuf = (void *)addrCancelTxBuff;
-            transaction.rxBuf = (void *)addrCancelRxBuff;
+            if (dmaMode == true)
+            {
+                transaction.txDmaBuf = (uint64_t)addrCancelTxBuff;
+                transaction.rxDmaBuf = (uint64_t)addrCancelRxBuff;
+            }
+            else
+            {
+                transaction.txBuf = (void *)addrCancelTxBuff;
+                transaction.rxBuf = (void *)addrCancelRxBuff;
+            }
         }
         else
         {
-            transaction.txBuf = (void *)addrMasterTxBuf;
-            transaction.rxBuf = (void *)addrMasterRxBuf;
+            if (dmaMode == true)
+            {
+                transaction.txDmaBuf = (uint64_t)addrMasterTxBuf;
+                transaction.rxDmaBuf = (uint64_t)addrMasterRxBuf;
+            }
+            else
+            {
+                transaction.txBuf = (void *)addrMasterTxBuf;
+                transaction.rxBuf = (void *)addrMasterRxBuf;
+            }
         }
     }
     else
     {
-        transaction.txBuf = (void *)addrSlaveTxBuf;
-        transaction.rxBuf = (void *)addrSlaveRxBuf;
+        if (dmaMode == true)
+        {
+            transaction.txDmaBuf = (uint64_t)addrSlaveTxBuf;
+            transaction.rxDmaBuf = (uint64_t)addrSlaveRxBuf;
+        }
+        else
+        {
+            transaction.txBuf = (void *)addrSlaveTxBuf;
+            transaction.rxBuf = (void *)addrSlaveRxBuf;
+        }
     }
 
     /* Initiate SPI transfer */
