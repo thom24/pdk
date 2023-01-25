@@ -2018,49 +2018,49 @@ Following is a mapping of Clocks IDs to function:
 |          4 | DEV_CSI_RX_IF2_VP_CLK_CLK        | Input clock |
 +------------+----------------------------------+-------------+
 
-.. _soc_doc_j784s4_public_clks_csi_tx_if_v2_0:
+.. _soc_doc_j784s4_public_clks_csi_tx_if0:
 
 
-Clocks for CSI_TX_IF_V2_0 Device
---------------------------------
+Clocks for CSI_TX_IF0 Device
+----------------------------
 
-Device: :ref:`J784S4_DEV_CSI_TX_IF_V2_0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 75)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------------------------+-------------+
-|   Clock ID | Name                                       | Function    |
-+============+============================================+=============+
-|          2 | DEV_CSI_TX_IF_V2_0_DPHY_TXBYTECLKHS_CL_CLK | Input clock |
-+------------+--------------------------------------------+-------------+
-|          3 | DEV_CSI_TX_IF_V2_0_ESC_CLK_CLK             | Input clock |
-+------------+--------------------------------------------+-------------+
-|          4 | DEV_CSI_TX_IF_V2_0_MAIN_CLK_CLK            | Input clock |
-+------------+--------------------------------------------+-------------+
-|          5 | DEV_CSI_TX_IF_V2_0_VBUS_CLK_CLK            | Input clock |
-+------------+--------------------------------------------+-------------+
-
-.. _soc_doc_j784s4_public_clks_csi_tx_if_v2_1:
-
-
-Clocks for CSI_TX_IF_V2_1 Device
---------------------------------
-
-Device: :ref:`J784S4_DEV_CSI_TX_IF_V2_1 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 76)
+Device: :ref:`J784S4_DEV_CSI_TX_IF0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 75)
 
 Following is a mapping of Clocks IDs to function:
 
-+------------+--------------------------------------------+-------------+
-|   Clock ID | Name                                       | Function    |
-+============+============================================+=============+
-|          2 | DEV_CSI_TX_IF_V2_1_DPHY_TXBYTECLKHS_CL_CLK | Input clock |
-+------------+--------------------------------------------+-------------+
-|          3 | DEV_CSI_TX_IF_V2_1_ESC_CLK_CLK             | Input clock |
-+------------+--------------------------------------------+-------------+
-|          4 | DEV_CSI_TX_IF_V2_1_MAIN_CLK_CLK            | Input clock |
-+------------+--------------------------------------------+-------------+
-|          5 | DEV_CSI_TX_IF_V2_1_VBUS_CLK_CLK            | Input clock |
-+------------+--------------------------------------------+-------------+
++------------+----------------------------------------+-------------+
+|   Clock ID | Name                                   | Function    |
++============+========================================+=============+
+|          2 | DEV_CSI_TX_IF0_DPHY_TXBYTECLKHS_CL_CLK | Input clock |
++------------+----------------------------------------+-------------+
+|          3 | DEV_CSI_TX_IF0_ESC_CLK_CLK             | Input clock |
++------------+----------------------------------------+-------------+
+|          4 | DEV_CSI_TX_IF0_MAIN_CLK_CLK            | Input clock |
++------------+----------------------------------------+-------------+
+|          5 | DEV_CSI_TX_IF0_VBUS_CLK_CLK            | Input clock |
++------------+----------------------------------------+-------------+
+
+.. _soc_doc_j784s4_public_clks_csi_tx_if1:
+
+
+Clocks for CSI_TX_IF1 Device
+----------------------------
+
+Device: :ref:`J784S4_DEV_CSI_TX_IF1 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 76)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+----------------------------------------+-------------+
+|   Clock ID | Name                                   | Function    |
++============+========================================+=============+
+|          2 | DEV_CSI_TX_IF1_DPHY_TXBYTECLKHS_CL_CLK | Input clock |
++------------+----------------------------------------+-------------+
+|          3 | DEV_CSI_TX_IF1_ESC_CLK_CLK             | Input clock |
++------------+----------------------------------------+-------------+
+|          4 | DEV_CSI_TX_IF1_MAIN_CLK_CLK            | Input clock |
++------------+----------------------------------------+-------------+
+|          5 | DEV_CSI_TX_IF1_VBUS_CLK_CLK            | Input clock |
++------------+----------------------------------------+-------------+
 
 .. _soc_doc_j784s4_public_clks_dcc0:
 

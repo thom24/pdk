@@ -485,7 +485,7 @@ const struct Sciclient_rmIrqIf * const tisci_if_CSI_TX_IF_V2_0[] = {
 	&CSI_TX_IF_V2_0_csi_level_1_1_to_MAIN2MCU_LVL_INTRTR0_in_251_251,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_CSI_TX_IF_V2_0 = {
-	.id = TISCI_DEV_CSI_TX_IF_V2_0,
+	.id = TISCI_DEV_CSI_TX_IF0,
 	.n_if = 2,
 	.p_if = &tisci_if_CSI_TX_IF_V2_0[0],
 };
@@ -508,7 +508,7 @@ const struct Sciclient_rmIrqIf * const tisci_if_CSI_TX_IF_V2_1[] = {
 	&CSI_TX_IF_V2_1_csi_level_1_1_to_MAIN2MCU_LVL_INTRTR0_in_249_249,
 };
 static const struct Sciclient_rmIrqNode tisci_irq_CSI_TX_IF_V2_1 = {
-	.id = TISCI_DEV_CSI_TX_IF_V2_1,
+	.id = TISCI_DEV_CSI_TX_IF1,
 	.n_if = 2,
 	.p_if = &tisci_if_CSI_TX_IF_V2_1[0],
 };
