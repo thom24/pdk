@@ -1,10 +1,10 @@
 /*----------------------------------------------------------------------------*/
-/* File: mcuXiplinker.cmd                                                           */
-/* Description:								      */
-/*    Link command file for Maxwell Multicore Testcase			      */
+/* File: mcuXiplinker.cmd                                                     */
+/* Description:								                                  */
+/*    Link command file to execute from OSPI flash memory		              */
 /*                                                                            */
-/*    Platform: R5 Cores on AM65xx                                            */
-/* (c) Texas Instruments 2019, All rights reserved.                           */
+/*    Platform: R5 Cores on J7                                                */
+/* (c) Texas Instruments 2019-2023, All rights reserved.                      */
 /*----------------------------------------------------------------------------*/
 
 --entry_point=_sblTestResetVectors
@@ -13,9 +13,9 @@
 MEMORY
 {
     OSPI_MCU1_CPU0_XIP_VEC (RIX)    : origin=0x501c0000 length=0x40			/* 64B */
-    OSPI_MCU1_CPU0_XIP_1 (RIX)      : origin=0x501c0040 length=0x118
-    OSPI_MCU1_CPU0_XIP_2 (RIX)      : origin=0x501c0158 length=0x108
-    OCMRAM_SBL_SYSFW (RWX)	        : origin=0x41C3E000 length=0x2000 - 0x800	/* 8KB */
+    OSPI_MCU1_CPU0_XIP_1 (RIX)      : origin=0x501c0040 length=0x200
+    OSPI_MCU1_CPU0_XIP_2 (RIX)      : origin=0x501c0240 length=0x200
+    OCMRAM_SBL_SYSFW (RWX)	        : origin=0x41C83000 length=0x2000 - 0x800	/* 8KB */
 }
 
 SECTIONS
