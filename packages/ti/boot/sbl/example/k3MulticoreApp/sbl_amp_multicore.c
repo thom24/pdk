@@ -48,6 +48,9 @@ int sblTestmain(void)
         sbl_puts(" running\n\r");
         // log completion
         *pokeMemAddr = 0xC0DEBABE;
+        #if defined(BUILD_XIP)
+            sbl_puts("XIP Boot test has passed\n\r");
+        #endif
     }
 
     // Check if all cores have run by checking flags

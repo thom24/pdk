@@ -316,6 +316,10 @@ int main()
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
+    #if defined(BUILD_XIP)
+        SBL_enableXIPMode();
+    #endif
+
     /* Load SYSFW. */
     SBL_SciClientInit(devGroup);
 

@@ -82,9 +82,6 @@
 #define OSPI_MPU_REGION_NUM         (0x6)
 #define OSPI_MPU_ENABLE_REGION      (0x1)
 
-/* Macro to config OSPI for optimized XIP performance (166MHz+PHY+Pipeline) */
-#undef BUILD_XIP
-
 /* Macro to specify the counter number */
 #define CNTR_NUMBER 0x1F
 
@@ -98,6 +95,9 @@ void SBL_SysFwLoad(void *dst, void *src, uint32_t size);
 static void *boardHandle = NULL;
 
 static OSPI_v0_HwAttrs ospi_cfg;
+
+/* Global variable to check whether BUILD_XIP is defined or not */
+bool isXIPEnable = false; 
 
 #if SBL_USE_DMA
 
@@ -222,13 +222,24 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     ospi_cfg.phyEnable = false;
 #endif
 
-#if defined(SOC_J721E) || defined(BUILD_XIP)
+if (isXIPEnable == true)
+{
     ospi_cfg.phyEnable = false;
     /* OSPI baud rate = (master reference clock) / (baud rate devisor)
      * Default baud rate devisor is 32
      * Using a smaller devisor to get higher speeds */
     ospi_cfg.baudRateDiv = 6;
-#endif
+}
+else
+{
+    #if defined(SOC_J721E)
+        ospi_cfg.phyEnable = false;
+        /* OSPI baud rate = (master reference clock) / (baud rate devisor)
+        * Default baud rate devisor is 32
+        * Using a smaller devisor to get higher speeds */
+        ospi_cfg.baudRateDiv = 6;
+    #endif
+}
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -395,13 +406,21 @@ int32_t SBL_ospiInit(void *handle)
          * that issue is fixed
          */
         uint64_t ospiFunClk;
-#if defined(SOC_J721E) || defined(SOC_J721S2) || defined(SOC_J784S4) || defined(BUILD_XIP)
-        ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
-        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
-#else
-        ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_133M);
-        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_2;
-#endif
+        if(isXIPEnable == true)
+        {
+            ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
+            ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
+        }
+        else
+        {
+            #if defined(SOC_J721E) || defined(SOC_J721S2) || defined(SOC_J784S4)
+                    ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
+                    ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
+            #else
+                    ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_133M);
+                    ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_2;
+            #endif
+        }
         ospi_cfg.funcClk = ospiFunClk;
         ospi_cfg.baudRateDiv = 0;
 
@@ -442,12 +461,17 @@ int32_t SBL_ospiInit(void *handle)
     /* J7200/J721S2/J784S4: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
     ospi_cfg.phyEnable = true;
 #else
-#if defined(SOC_J721E) || defined(BUILD_XIP)
+#if defined(SOC_J721E)
     ospi_cfg.phyEnable = true;
     ospi_cfg.cacheEnable = true;
 #else
     ospi_cfg.phyEnable = false;
 #endif
+if(isXIPEnable == true)
+{
+    ospi_cfg.phyEnable = true;
+    ospi_cfg.cacheEnable = true;
+}
 #endif
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -464,9 +488,12 @@ int32_t SBL_ospiInit(void *handle)
         *(Board_flashHandle *) handle = h;
         /* Update the static handle as well, for later use */
         boardHandle = (void *)h;
-#if !(SBL_USE_DMA) && !defined(SOC_J721E) && !defined(BUILD_XIP)
-        /* Disable PHY pipeline mode if not using DMA */
-        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
+#if !(SBL_USE_DMA) && !defined(SOC_J721E)
+        if(isXIPEnable == false)
+        {
+            /* Disable PHY pipeline mode if not using DMA */
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
+        }
 #endif
     }
     else
@@ -525,14 +552,26 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     }
 
 #else
-#if defined(SOC_J721E) || defined(BUILD_XIP)
-    Board_flashHandle h = *(const Board_flashHandle *) handle;
-    uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
-    SBL_DCacheClean((void *)dst, length);
-    Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
-#else
-    memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
-#endif
+
+    if(isXIPEnable == true)
+    {
+        Board_flashHandle h = *(const Board_flashHandle *) handle;
+        uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
+        SBL_DCacheClean((void *)dst, length);
+        Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
+    }
+    else
+    {
+        #if defined(SOC_J721E)
+            Board_flashHandle h = *(const Board_flashHandle *) handle;
+            uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
+            SBL_DCacheClean((void *)dst, length);
+            Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
+        #else
+            memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+        #endif
+    }
+
 #endif /* #if SBL_USE_DMA */
 
 #else
@@ -637,19 +676,22 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 
     SBL_ospiClose(&boardHandle);
 
-#if defined(BUILD_XIP) && (defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
-    /* These fields are reset by Nor_xspiClose but are required for XIP */
+if(isXIPEnable == true)
+{
+    #if (defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
+        /* These fields are reset by Nor_xspiClose but are required for XIP */
 
-    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr);
+        const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr);
 
-    CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
-                    OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD,
-                    1);
+        CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                        OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD,
+                        1);
 
-    CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
-                    OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_DQS_ENABLE_FLD,
-                    1);
-#endif
+        CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                        OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_DQS_ENABLE_FLD,
+                        1);
+    #endif
+}
 
 #if defined(SBL_HLOS_OWNS_FLASH) && !defined(SBL_USE_MCU_DOMAIN_ONLY)
 /* Only put OSPI flash back into SPI mode if we're going to directly boot ATF/U-boot/Linux from SBL */
@@ -687,6 +729,11 @@ int32_t SBL_OSPI_ReadSectors(void *dstAddr,
 void SBL_OSPI_seek(void *srcAddr, uint32_t location)
 {
     *((uint32_t *) srcAddr) = location;
+}
+
+void SBL_enableXIPMode()
+{
+    isXIPEnable = true;
 }
 
 

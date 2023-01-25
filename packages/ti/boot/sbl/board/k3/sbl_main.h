@@ -52,6 +52,11 @@
 #include "sbl_log.h"
 #include "sbl_profile.h"
 
+/* If BUILD_XIP is defined then SBL call SBL_enableXIPMode() to update global variable isXIPEnable */
+#if defined(BUILD_XIP)
+#include <ti/boot/sbl/src/ospi/sbl_ospi.h>
+#endif
+
 #if defined(SBL_ENABLE_HLOS_BOOT)
 #if defined(SOC_J721E)
 #include <ti/board/src/j721e_evm/include/board_utils.h>

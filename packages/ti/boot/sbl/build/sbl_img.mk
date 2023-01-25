@@ -33,6 +33,9 @@ MAX_APP_SIZE_EMMC ?= 0x7D000
 ifeq ($(BOOT_PERF), yes)
   APP_NAME = sbl_boot_perf_cust_img
   LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_$(CORE)
+else ifeq ($(BOOTMODE), xip)
+  APP_NAME = sbl_xip_img$(HS_SUFFIX)
+  LOCAL_APP_NAME = sbl_xip_img_$(CORE)
 else
   APP_NAME = sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
   LOCAL_APP_NAME=sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
@@ -62,14 +65,19 @@ CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
 ifeq ($(BOOTMODE), cust)
   SBL_CFLAGS = $(CUST_SBL_FLAGS)
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(HS_SUFFIX)
+else ifeq ($(BOOTMODE), xip)
+  SBL_CFLAGS = $(CUST_SBL_FLAGS)
+  SBL_CFLAGS += -BUILD_XIP
+  COMP_LIST_COMMON += sbl_lib_cust$(HS_SUFFIX)
 else
-  ifeq ($(SBL_USE_DMA),yes)
-    SBL_CFLAGS += -DSBL_USE_DMA=1
-  else
-    SBL_CFLAGS += -DSBL_USE_DMA=0
-  endif
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)$(HLOS_SUFFIX)$(HS_SUFFIX)
 endif # ifeq ($(BOOTMODE), cust)
+
+ifeq ($(SBL_USE_DMA),yes)
+  SBL_CFLAGS += -DSBL_USE_DMA=1
+else
+  SBL_CFLAGS += -DSBL_USE_DMA=0
+endif
 
 ifeq ($(BOOT_PERF), yes)
   SBL_CFLAGS += -DBOOT_PERF 

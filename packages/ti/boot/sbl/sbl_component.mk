@@ -1318,11 +1318,10 @@ endif
 CUST_SBL_TEST_SOCS = j721e j7200 j721s2 j784s4
 CUST_SBL_TEST_BOARDS = j721e_evm j7200_evm j721s2_evm j784s4_evm
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
-# NOTE: If changing to SBL_USE_DMA=1, below, then also change 'sbl_lib_cust' & 'sbl_cust_img' MAKEFILE lines further below to use 'SBL_USE_DMA=yes'
-CUST_SBL_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI ${OCM_RAT_STRING}"
-CUST_SBL_BOOT_PERF_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_LATE_INIT -DSBL_USE_MCU_DOMAIN_ONLY"
+CUST_SBL_TEST_FLAGS =" -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0xB8000000 -DSBL_SCRATCH_MEM_SIZE=0x4000000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_ENABLE_DDR -DSBL_SKIP_MCU_RESET -DBOOT_OSPI ${OCM_RAT_STRING}"
+CUST_SBL_BOOT_PERF_TEST_FLAGS =" -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_LATE_INIT -DSBL_USE_MCU_DOMAIN_ONLY"
 # NOTE: To measure Early CAN response uncomment below line and comment above line
-#CUST_SBL_BOOT_PERF_TEST_FLAGS =" -DSBL_USE_DMA=0 -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_LATE_INIT -DSBL_SKIP_PINMUX_ENABLE -DSBL_USE_MCU_DOMAIN_ONLY"
+#CUST_SBL_BOOT_PERF_TEST_FLAGS =" -DSBL_LOG_LEVEL=1 -DSBL_SCRATCH_MEM_START=0x41cc0000 -DSBL_SCRATCH_MEM_SIZE=0x40000 -DSBL_ENABLE_PLL -DSBL_ENABLE_CLOCKS -DSBL_SKIP_MCU_RESET -DBOOT_OSPI -DSBL_HLOS_OWNS_FLASH -DSBL_SKIP_LATE_INIT -DSBL_SKIP_PINMUX_ENABLE -DSBL_USE_MCU_DOMAIN_ONLY"
 endif
 
 # SBL Custom LIB
@@ -1378,6 +1377,55 @@ export sbl_lib_cust_hs_SOCLIST
 export sbl_lib_cust_hs_BOARDLIST
 sbl_lib_cust_hs_$(SOC)_CORELIST = mcu1_0
 export sbl_lib_cust_hs_$(SOC)_CORELIST
+
+# SBL XIP image
+# Used to boot an application directly from OSPI flash
+sbl_xip_img_COMP_LIST = sbl_xip_img
+sbl_xip_img_RELPATH = ti/boot/sbl/board/k3
+sbl_xip_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/xip/bin
+sbl_xip_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+sbl_xip_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=xip SBL_USE_DMA=no CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
+export sbl_xip_img_MAKEFILE
+export sbl_xip_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_xip_img_BOARD_DEPENDENCY = yes
+sbl_xip_img_SOC_DEPENDENCY = yes
+sbl_xip_img_CORE_DEPENDENCY = no
+export sbl_xip_img_COMP_LIST
+export sbl_xip_img_BOARD_DEPENDENCY
+export sbl_xip_img_SOC_DEPENDENCY
+export sbl_xip_img_CORE_DEPENDENCY
+sbl_xip_img_PKG_LIST = sbl
+sbl_xip_img_INCLUDE = $(sbl_xip_img_PATH)
+sbl_xip_img_SOCLIST = $(CUST_SBL_TEST_SOCS)
+sbl_xip_img_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
+export sbl_xip_img_SOCLIST
+export sbl_xip_img_BOARDLIST
+sbl_xip_img_$(SOC)_CORELIST = mcu1_0
+export sbl_xip_img_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_xip_img
+sbl_xip_img_SBL_IMAGEGEN = yes
+export sbl_xip_img_SBL_IMAGEGEN
+
+# SBL xip image - For HS build
+# # Used to boot an application directly from OSPI flash
+export sbl_xip_img_hs_COMP_LIST = sbl_xip_img_hs
+sbl_xip_img_hs_RELPATH = ti/boot/sbl/board/k3
+sbl_xip_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/xip/bin
+sbl_xip_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+export sbl_xip_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS) BOOTMODE=xip SBL_USE_DMA=no BUILD_HS=yes
+export sbl_xip_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
+export sbl_xip_img_hs_BOARD_DEPENDENCY = yes
+export sbl_xip_img_hs_SOC_DEPENDENCY = yes
+export sbl_xip_img_hs_CORE_DEPENDENCY = no
+sbl_xip_img_hs_PKG_LIST = sbl
+sbl_xip_img_hs_INCLUDE = $(sbl_xip_img_hs_PATH)
+export sbl_xip_img_hs_SOCLIST = $(CUST_SBL_TEST_SOCS)
+export sbl_xip_img_hs_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
+export sbl_xip_img_hs_$(SOC)_CORELIST = mcu1_0
+export sbl_xip_img_hs_SBL_IMAGEGEN = yes
+sbl_EXAMPLE_LIST += sbl_xip_img_hs
+sbl_xip_img_hs_SBL_IMAGEGEN = yes
+export sbl_xip_img_hs_SBL_IMAGEGEN
 
 # SBL custom image
 sbl_cust_img_COMP_LIST = sbl_cust_img

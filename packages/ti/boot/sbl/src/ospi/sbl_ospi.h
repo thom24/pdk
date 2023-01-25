@@ -130,6 +130,9 @@ void SBL_OSPI_seek(void *srcAddr, uint32_t location);
 
 /* Proxy function for apps to be able to use same OSPI_init func, but called externally */
 void SBL_SPI_init();
+
+/* Update global variable isXIPEnable to true if BUILD_XIP is defined */
+void SBL_enableXIPMode();
 #endif
 
 #ifdef __cplusplus

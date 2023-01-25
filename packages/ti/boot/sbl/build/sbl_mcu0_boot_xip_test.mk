@@ -16,6 +16,8 @@ INCDIR      += $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
 
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
+CFLAGS_LOCAL_COMMON += -DBUILD_XIP
+
 PACKAGE_SRCS_COMMON = .
 
 # List all the external components/interfaces, whose interface header files
