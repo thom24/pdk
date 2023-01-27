@@ -312,6 +312,91 @@ void Board_initOSAL(void)
     return;
 }
 
+/*
+ *  ======== Floating point test function ========
+ */
+#define FLOAT_CALC_ITER 100
+#if defined (BUILD_MCU) && defined (SAFERTOS)
+uint8_t gFloatingNoiseTaskStack[4*1024] __attribute__((aligned(4*1024)));
+#else
+uint8_t gFloatingNoiseTaskStack[4*1024];
+#endif
+SemaphoreP_Handle noiseSem, floatSem;
+
+/* Aim of this task is to do some floating point operations in between operations carried by OSAL_floating_point_test */
+void floatingNoiseTaskFxn( void *arg1, void *arg2 )
+{
+    /* Below variable values are randomly picked. No special significance. */
+    volatile double floating_noise = 1.09, val_2p0 = 2.0;
+    uint8_t count = FLOAT_CALC_ITER;
+    /* FreeRTOS task needs to call portTASK_USES_FLOATING_POINT if configFLOATING_POINT_CONTEXT is 0.
+     * SafeRTOS enables FPU by default.
+     */
+#if defined (FREERTOS) && (configFLOATING_POINT_CONTEXT==0)
+    portTASK_USES_FLOATING_POINT();
+#endif
+
+    while(count--)
+    {
+        SemaphoreP_pend(noiseSem, SemaphoreP_WAIT_FOREVER);
+        floating_noise = floating_noise + 0.1;
+        floating_noise = floating_noise * val_2p0;
+        floating_noise = floating_noise / val_2p0;
+        SemaphoreP_post(floatSem);
+    }
+}
+
+bool OSAL_floating_point_test()
+{
+    /* FreeRTOS task needs to call portTASK_USES_FLOATING_POINT if configFLOATING_POINT_CONTEXT is 0.
+     * SafeRTOS enables FPU by default.
+     */
+    #if defined (FREERTOS) && (configFLOATING_POINT_CONTEXT==0)
+    portTASK_USES_FLOATING_POINT();
+    #endif
+    /* Below variable values are randomly picked. No special significance. */
+    volatile double expected_float = 1.07, calculated_float = 1.07, val_1p02 = 1.02;
+    uint8_t count = FLOAT_CALC_ITER;
+    TaskP_Params taskParams;
+    SemaphoreP_Params semParams;
+    bool retval = false;
+ 
+    /* Initialize and create Noise task and task faculties. */
+    TaskP_Params_init(&taskParams);
+    taskParams.priority = 2;
+    taskParams.stack = gFloatingNoiseTaskStack;
+    taskParams.stacksize = sizeof(gFloatingNoiseTaskStack);
+    SemaphoreP_Params_init(&semParams);
+    noiseSem = SemaphoreP_create(1U, &semParams);
+    SemaphoreP_Params_init(&semParams);
+    floatSem = SemaphoreP_create(0U, &semParams);
+ 
+    TaskP_create(&floatingNoiseTaskFxn, &taskParams);
+   
+    /* Floating point calculations under test here, while exchanging CPU time with the noisy floating point task. */
+    while (count--)
+    {
+        SemaphoreP_pend(floatSem, SemaphoreP_WAIT_FOREVER);
+        calculated_float = pow(calculated_float, val_1p02);
+        SemaphoreP_post(noiseSem);
+    }
+    /* Calculate the expected value. */
+    count = FLOAT_CALC_ITER;
+    while( count-- )
+    {
+        expected_float = pow(expected_float, 1.02);
+    }
+   
+    OSAL_log("\n Calculated float is %u.%u, and expected float is %u.%u ...\n", (uint32_t)calculated_float, (uint32_t)((calculated_float-(uint32_t)calculated_float)*1000000), (uint32_t)expected_float, (uint32_t)((expected_float-(uint32_t)expected_float)*1000000));
+ 
+    /* Match the expected and the calculated value. if same return true, else return false. */
+    if (calculated_float == expected_float)
+    {
+        retval = true;
+    }
+ 
+    return retval;
+}
 
 /*
  *  ======== HWI test function ========
@@ -2267,6 +2352,14 @@ void osal_test(void *arg0, void *arg1)
     }
 #endif
 
+    if (OSAL_floating_point_test() == true)
+    {
+        OSAL_log("\n Floating point tests have passed. \n");
+    }
+    else
+    {
+        testFail = true;
+    }
     if(testFail == true)
     {
         OSAL_log("\n Some tests have failed. \n");
