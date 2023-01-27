@@ -198,7 +198,6 @@ void ipc_initSciclient()
     }
 }
 
-#if defined(BUILD_MCU1_0)
 void ipc_boardInit()
 {
     Board_initCfg           boardCfg;
@@ -216,7 +215,6 @@ void ipc_boardInit()
     /* Mark Board_init() has been called */
     gBoardinit = 1;
 }
-#endif
 
 int main(void)
 {
@@ -262,7 +260,12 @@ static void taskFxn(void* a0, void* a1)
 
     /* Initialize SCI Client - It must be called before board init */
     ipc_initSciclient();
-#if defined(BUILD_MCU1_0)
+    /* IPC Board Init should be done only for MCU1_0 for Linux,
+     * unconditionally for RTOS
+     */
+#if defined(A72_LINUX_OS) && defined(BUILD_MCU1_0)
+    ipc_boardInit();
+#elif !defined(A72_LINUX_OS)
     ipc_boardInit();
 #endif
 
