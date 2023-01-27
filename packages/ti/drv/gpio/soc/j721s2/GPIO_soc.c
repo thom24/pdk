@@ -625,7 +625,7 @@ static uint16_t GPIO_socGetCoreSciId()
 #if defined (BUILD_MPU)
     devId = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
 #elif defined (BUILD_MCU)
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
 
     CSL_armR5GetCpuID(&info);
     if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)

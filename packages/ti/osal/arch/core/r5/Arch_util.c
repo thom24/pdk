@@ -148,7 +148,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     HwiP_nonOs       *hwiPool;
     uint32_t          maxHwi;
     HwiP_Handle       retHandle = NULL_PTR;
-    CSL_ArmR5CPUInfo  info;
+    CSL_ArmR5CPUInfo  info = {0U, 0U, 0U};
 
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block

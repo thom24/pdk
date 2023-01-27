@@ -419,7 +419,7 @@ uint32_t TimerP_reverseMapId(uint32_t id)
 void TimerP_updateDefaultInfoTbl(void)
 {
     uint32_t         i, intIdx;
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
 
     CSL_armR5GetCpuID(&info);
 

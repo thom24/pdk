@@ -1988,7 +1988,7 @@ static void Lpm_swResetMainDomain(void)
 static void Lpm_pmicStateChangeMCUOnlyToActive(void)
 {
     uint8_t dataToSlave[2];
-    uint8_t dataFromSlave[2];
+    uint8_t dataFromSlave[2] = {0U, 0U};
 
     /* Read INT_TOP */
     dataToSlave[0] = 0x5A;
