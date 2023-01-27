@@ -53,6 +53,9 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 else ifeq ($(BUILD_OS_TYPE),safertos)
   LWIP_CONTRIB_CFLAGS += -DSAFERTOS
 endif
+
+LWIP_CONTRIB_CFLAGS += -mthumb -O3
+
 ifeq ($(BUILD_OS_TYPE),tirtos)
   INCDIR += $(bios_PATH)/packages/ti/posix/ccs
 endif
