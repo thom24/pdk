@@ -90,6 +90,7 @@ typedef struct
 /* ========================================================================== */
 
 static Utils_PrfObj        gUtils_prfObj;
+static LoadP_Stats         gLoadStatsTask;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -310,7 +311,6 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
     Utils_PrfLoadObj   *pHndl;
 
     LoadP_Status status = LoadP_OK;
-    LoadP_Stats loadStatsTask;
 
     /* Query CPU Load */
     cpuLoad = LoadP_getCPULoad();
@@ -329,8 +329,8 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
 
             if(TRUE == pHndl->isAlloc)
             {
-                status += LoadP_getTaskLoad(pHndl->pTsk, &loadStatsTask);
-                tskLoad = loadStatsTask.percentLoad;
+                status += LoadP_getTaskLoad(pHndl->pTsk, &gLoadStatsTask);
+                tskLoad = gLoadStatsTask.percentLoad;
 
                 GT_3trace(trace, GT_INFO,
                           " %d: LOAD: TSK: %s: %d%% \r\n",
