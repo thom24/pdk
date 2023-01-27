@@ -645,13 +645,7 @@ export sbl_mmcsd_img_hlos_SBL_IMAGEGEN
 export sbl_mmcsd_img_hs_COMP_LIST = sbl_mmcsd_img_hs
 sbl_mmcsd_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_mmcsd_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/mmcsd/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_mmcsd_img_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_mmcsd_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_mmcsd_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_mmcsd_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_mmcsd_img_hs_BOARD_DEPENDENCY = yes
@@ -667,13 +661,7 @@ export sbl_mmcsd_img_hs_SBL_IMAGEGEN = yes
 export sbl_mmcsd_img_hlos_hs_COMP_LIST = sbl_mmcsd_img_hlos_hs
 sbl_mmcsd_img_hlos_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_mmcsd_img_hlos_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/mmcsd/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_mmcsd_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_mmcsd_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_mmcsd_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=mmcsd HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_mmcsd_img_hlos_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_mmcsd_img_hlos_hs_BOARD_DEPENDENCY = yes
@@ -785,13 +773,7 @@ export sbl_ospi_img_hlos_SBL_IMAGEGEN
 export sbl_ospi_img_hs_COMP_LIST = sbl_ospi_img_hs
 sbl_ospi_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/ospi/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_ospi_img_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_ospi_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_ospi_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_ospi_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_ospi_img_hs_BOARD_DEPENDENCY = yes
@@ -807,13 +789,7 @@ export sbl_ospi_img_hs_SBL_IMAGEGEN = yes
 export sbl_ospi_img_hlos_hs_COMP_LIST = sbl_ospi_img_hlos_hs
 sbl_ospi_img_hlos_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_ospi_img_hlos_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/ospi/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_ospi_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_ospi_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_ospi_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_ospi_img_hlos_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_ospi_img_hlos_hs_BOARD_DEPENDENCY = yes
@@ -878,13 +854,7 @@ export sbl_hyperflash_img_hlos_SBL_IMAGEGEN
 export sbl_hyperflash_img_hs_COMP_LIST = sbl_hyperflash_img_hs
 sbl_hyperflash_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_hyperflash_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/hyperflash/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_hyperflash_img_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_hyperflash_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_hyperflash_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_hyperflash_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_hyperflash_img_hs_BOARD_DEPENDENCY = yes
@@ -900,13 +870,7 @@ export sbl_hyperflash_img_hs_SBL_IMAGEGEN = yes
 export sbl_hyperflash_img_hlos_hs_COMP_LIST = sbl_hyperflash_img_hlos_hs
 sbl_hyperflash_img_hlos_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_hyperflash_img_hlos_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/hyperflash/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_hyperflash_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_hyperflash_img_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_hyperflash_img_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=hyperflash HLOS_BOOT=yes SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_hyperflash_img_hlos_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_hyperflash_img_hlos_hs_BOARD_DEPENDENCY = yes
@@ -946,13 +910,7 @@ export sbl_uart_img_SBL_IMAGEGEN
 export sbl_uart_img_hs_COMP_LIST = sbl_uart_img_hs
 sbl_uart_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_uart_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/uart/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_uart_img_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_uart_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_uart_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=uart SBL_USE_DMA=yes BUILD_HS=yes
 export sbl_uart_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_uart_img_hs_BOARD_DEPENDENCY = yes
@@ -1479,13 +1437,7 @@ export sbl_boot_perf_cust_img_SBL_IMAGEGEN
 export sbl_cust_img_hs_COMP_LIST = sbl_cust_img_hs
 sbl_cust_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_cust_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/cust/bin
-#Note: The below variable is purposefully set to build folder - different than
-#non-hs app.
-#The APPNAME or app -C directory (_PATH variable) should be unique as the complier
-#creates lto_$APPNAME optimization file in the directory in which -C is called
-#Because of this multiple lto_ files with same name can be created if app name
-#and app path are same
-sbl_cust_img_hs_PATH = $(PDK_SBL_COMP_PATH)/build
+sbl_cust_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
 export sbl_cust_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS) BOOTMODE=cust SBL_USE_DMA=no BUILD_HS=yes
 export sbl_cust_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_cust_img_hs_BOARD_DEPENDENCY = yes
