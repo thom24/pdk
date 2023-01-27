@@ -1890,15 +1890,15 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
     Udma_DrvHandle     drvHandle;
     uint32_t           chNum;
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-    CSL_UdmapChanStats udmapChanStats;
+    CSL_UdmapChanStats udmapChanStats = {0U};
     CSL_UdmapChanDir   udmapChDir;
 #endif
 #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
-    CSL_BcdmaChanStats  bcdmaChanStats;
+    CSL_BcdmaChanStats  bcdmaChanStats = {0U};
     CSL_BcdmaChanDir    bcdmaChDir;
 #endif
 #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
-    CSL_PktdmaChanStats pktdmaChanStats;
+    CSL_PktdmaChanStats pktdmaChanStats = {0U};
     CSL_PktdmaChanDir   pktdmaChDir;
 #endif
 
@@ -2676,13 +2676,13 @@ static int32_t Udma_chEnableLocal(Udma_ChHandle chHandle)
     uint32_t                regVal;
     Udma_DrvHandle          drvHandle;
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-    CSL_UdmapRT             udmapRtEnable;
+    CSL_UdmapRT             udmapRtEnable = {0U};
 #endif
 #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
-    CSL_BcdmaRT             bcdmaRtEnable;
+    CSL_BcdmaRT             bcdmaRtEnable = {0U};
 #endif
 #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
-    CSL_PktdmaRT            pktdmaRtEnable;
+    CSL_PktdmaRT            pktdmaRtEnable = {0U};
 #endif
 #if (UDMA_NUM_UTC_INSTANCE > 0)
     uint32_t                utcChNum;
