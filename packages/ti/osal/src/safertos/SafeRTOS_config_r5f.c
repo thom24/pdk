@@ -48,6 +48,8 @@
 #include "mpuARM.h"
 
 #include <ti/osal/src/nonos/Nonos_config.h>
+#include <ti/drv/sciclient/sciclient.h>
+#include <ti/csl/arch/csl_arch.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -285,6 +287,43 @@ void vApplicationInterruptHandlerHook( void )
 portBaseType prvSetupHardware( void )
 {
     portBaseType xStatus = pdPASS;
+    int32_t sciclientRet = CSL_PASS;
+#if defined (SOC_J784S4)
+    CSL_ArmR5CPUInfo info;
+    CSL_armR5GetCpuID(&info);
+
+    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        Sciclient_ConfigPrms_t config;
+
+        Sciclient_configPrmsInit(&config);
+        sciclientRet = Sciclient_init(&config);
+        if(  sciclientRet == CSL_PASS )
+        {
+            uint32_t currState, resetState, contextLossState, timerModuleId;
+            /* on J7AHP, Main domain timers 8-19 are connected to LPSC_PER_SPARE_0 which is not powered ON by default.
+             * All other timers are connected to LPSC which is ALWAYS_ON.
+             * For J7AHP, MCU4_0 and MCU4_1 use DMTimer 8 and DMTimer 9 as tick timers.
+             */
+            sciclientRet = Sciclient_pmGetModuleState(TISCI_DEV_TIMER8, &currState, &resetState,
+                                                &contextLossState, SCICLIENT_SERVICE_WAIT_FOREVER);
+            if((sciclientRet == CSL_PASS) && (currState != TISCI_MSG_VALUE_DEVICE_SW_STATE_ON))
+            {
+                sciclientRet = Sciclient_pmSetModuleState(TISCI_DEV_TIMER8, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                                    (TISCI_MSG_FLAG_AOP |TISCI_MSG_FLAG_DEVICE_RESET_ISO),
+                                                    SCICLIENT_SERVICE_WAIT_FOREVER);
+            }
+        }
+    }
+    if ( sciclientRet == CSL_PASS )
+    {
+	    xStatus = pdPASS;
+    }
+    else
+    {
+	    xStatus = pdFAIL;
+    }
+#endif
 
     return xStatus;
 }
