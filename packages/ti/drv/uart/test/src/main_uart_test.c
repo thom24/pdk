@@ -716,6 +716,10 @@ bool UART_test_trglvl_xfer(UART_Handle uart, uint32_t dmaMode, uint32_t xferSize
     }
 
     /* Write in blocking mode */
+    if (dmaMode)
+    {
+        CacheP_wbInv((void *)(uintptr_t)addrFifoTrgLvlData, (int32_t)sizeof(addrFifoTrgLvlData));
+    }
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrFifoTrgLvlData;
     transaction.count = xferSize;
