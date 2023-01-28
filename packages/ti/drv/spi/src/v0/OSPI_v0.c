@@ -1677,6 +1677,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
 {
     OSPI_v0_HwAttrs       *hwAttrs; /* OSPI hardware attributes */
     OSPI_v0_Object        *object;  /* OSPI object */
+    uint32_t               phyOpMode;
     int32_t                retVal = SPI_STATUS_ERROR;
     const uint32_t        *ctrlData = (const uint32_t *)arg;
     uint32_t               nvcrCmd;
@@ -1828,8 +1829,9 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                     uint32_t txDelay = *ctrlData++;
                     uint32_t rxDelay = *ctrlData;
                     uint32_t funcClk = hwAttrs->funcClk;
+                    phyOpMode        = hwAttrs->phyOpMode;
                     CSL_ospiConfigPhyDLL((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                         txDelay, rxDelay, funcClk);
+                                         txDelay, rxDelay, phyOpMode, funcClk);
                 }
                 else
                 {

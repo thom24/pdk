@@ -143,6 +143,7 @@ typedef struct OSPI_Tests_s
     bool     dacMode;
     bool     dmaMode;
     bool     norFlash;
+    uint32_t phyOpMode;
     uint32_t clk;
     char     testDesc[80];
 
@@ -172,6 +173,8 @@ typedef struct OSPI_Tests_s
 #define OSPI_NAND_TEST_ID_INDAC_166M   12  /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
 #define OSPI_NAND_TEST_ID_DAC_DMA_166M 13  /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
 #define OSPI_NAND_TEST_ID_DAC_133M_SPI 14  /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
+#define OSPI_TEST_ID_PHY_CFG_MASTER    15   /* OSPI Phy Config Master mode test */
+#define OSPI_TEST_ID_PHY_CFG_BYPASS    16   /* OSPI Phy Config Bypass mode test */
 
 /* OSPI NOR flash offset address for read/write test */
 #define TEST_ADDR_OFFSET   (0U)
@@ -851,6 +854,112 @@ void OSPI_deInitConfig(OSPI_Tests *test)
 /*
  *  ======== OSPI unit test function ========
  */
+
+static bool OSPI_phyConfigTest(void *arg)
+{
+    OSPI_Params     spiParams;  /* SPI params structure */
+    OSPI_Handle     hwHandle;  /* SPI handle */
+    OSPI_v0_HwAttrs ospiCfg;
+    bool            retVal = true;
+    int32_t         status = SPI_STATUS_SUCCESS;
+    OSPI_Tests      *test = (OSPI_Tests *)arg;
+    uint32_t        data[3];
+    uint32_t        phyOpMode;
+
+#if defined (BUILD_MCU)
+    /* Change interrupt number based on core */
+    status = OSPI_socInit();
+    if(status != SPI_STATUS_SUCCESS)
+    {
+        SPI_log("\nOSPI_socInit failed!!\n");
+        retVal = false;
+    }
+    else
+#endif
+    {
+        /* Get the OSPI SoC configurations */
+        status = OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospiCfg);
+        if(status != SPI_STATUS_SUCCESS)
+        {
+            SPI_log("\nOSPI_socGetInitCfg failed!!\n");
+            retVal = false;
+        }
+        else
+        {
+            ospiCfg.phyOpMode = test->phyOpMode;
+
+            status = OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospiCfg);
+            if(status != SPI_STATUS_SUCCESS)
+            {
+                SPI_log("\nOSPI_socGetInitCfg failed!!\n");
+                retVal = false;
+            }
+            else
+            {
+                /* Use default SPI config params if no params provided */
+                OSPI_Params_init(&spiParams);
+                hwHandle = (OSPI_Handle)OSPI_open(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &spiParams);
+
+                if(hwHandle == NULL)
+                {
+                    SPI_log("\nOSPI_open failed!!\n");
+                    retVal = false;
+                }
+                else
+                {
+                    OSPI_v0_HwAttrs const        *hwAttrs= (OSPI_v0_HwAttrs const *)hwHandle->hwAttrs;
+                    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
+
+                    data[0] = TRUE;
+                    data[1] = 0U;
+                    data[2] = 0U;
+
+                    status = OSPI_control(hwHandle, OSPI_V0_CMD_CFG_PHY, (void *)data);
+
+                    if(status != SPI_STATUS_SUCCESS)
+                    {
+                        SPI_log("\nOSPI_control failed!!\n");
+                        retVal = false;
+                    }
+                    else
+                    {
+                        phyOpMode = CSL_REG32_FEXT(&pRegs->PHY_MASTER_CONTROL_REG,
+                                        OSPI_FLASH_CFG_PHY_MASTER_CONTROL_REG_PHY_MASTER_BYPASS_MODE_FLD);
+
+                        if((test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_MASTER))
+                        {
+                            if(phyOpMode != 0U)
+                            {
+                                SPI_log("\nFAIL: PHY not configured in master mode\n");
+                                retVal = false;
+                            }
+                            else
+                            {
+                                SPI_log("\nPHY configured in master mode\n");
+                                retVal = true;
+                            }
+                        }
+                        if((test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_BYPASS))
+                        {
+                            if(phyOpMode != 1U)
+                            {
+                                SPI_log("\nFAIL: PHY not configured in bypass mode\n");
+                                retVal = false;
+                            }
+                            else
+                            {
+                                SPI_log("\nPHY configured in bypass mode\n");
+                                retVal = true;
+                            }
+                        }
+                    }
+                    OSPI_close(hwHandle);
+                }
+            }
+        }
+    }
+    return retVal;
+}
 static bool OSPI_flash_test(void *arg)
 {
     Board_flashHandle boardHandle;
@@ -1218,36 +1327,38 @@ OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING
 #if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    /* testFunc       testID                            dacMode dmaMode norFlash    clk                   testDesc */
-    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,           false,  false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+    /* testFunc             testID                            dacMode dmaMode norFlash    phyOpMode                           clk                   testDesc */
+    {OSPI_flash_test,       OSPI_TEST_ID_WR_TUNING,           false,  false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #else
-    {OSPI_flash_test, OSPI_TEST_ID_WR_TUNING,           true,   false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+    {OSPI_flash_test,       OSPI_TEST_ID_WR_TUNING,           true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #endif
 #endif
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M,            true,   false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
-    {OSPI_flash_test, OSPI_TEST_ID_INDAC_133M,          false,  false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M,            true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_INDAC_133M,          false,  false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_133M,        true,   true,   true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_DMA_133M,        true,   true,   true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
 #endif
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_166M,            true,   false,  true,       OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
-    {OSPI_flash_test, OSPI_TEST_ID_INDAC_166M,          false,  false,  true,       OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_166M,            true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_INDAC_166M,          false,  false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_DMA_166M,        true,   true,   true,       OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_DMA_166M,        true,   true,   true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
-    {OSPI_flash_test, OSPI_TEST_ID_DAC_133M_SPI,        true,   false,  true,       OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M_SPI,        true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
 #if defined(SOC_J721S2) || defined(SOC_J784S4)
-    {OSPI_flash_test, OSPI_NAND_TEST_ID_INDAC_166M,     false,  false,  false,      OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
-    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_133M_SPI,   true,   false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
-    {OSPI_flash_test, OSPI_NAND_TEST_ID_INDAC_133M,     false,  false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in INDAC mode at 133MHz RCLK"},
-    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_133M,       true,   false,  false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_166M,     false,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M_SPI,   true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_133M,     false,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in INDAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M,       true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_DMA_133M,   true,   true,   false,      OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_DMA_133M,   true,   true,   false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 133MHz RCLK"},
 #endif
-    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_166M,       true,   false,  false,      OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_166M,       true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC mode at 166MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test, OSPI_NAND_TEST_ID_DAC_DMA_166M,   true,   true,   false,      OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_DMA_166M,   true,   true,   false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
 #endif
+    {OSPI_phyConfigTest,    OSPI_TEST_ID_PHY_CFG_MASTER,      true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_MASTER,   OSPI_MODULE_CLK_133M, "\r\n OSPI Phy Config Master mode test"},
+    {OSPI_phyConfigTest,    OSPI_TEST_ID_PHY_CFG_BYPASS,      true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_BYPASS,   OSPI_MODULE_CLK_133M, "\r\n OSPI Phy Config bypass mode test"},
     {NULL, }
 };
 
