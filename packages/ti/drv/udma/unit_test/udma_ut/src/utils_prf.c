@@ -112,7 +112,7 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
         {
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((uint32_t) sizeof (pHndl->name) - 1U));
-            pHndl->name[sizeof (pHndl->name) - 1U] = (UInt8) '\0';
+            pHndl->name[sizeof (pHndl->name) - 1U] = (uint8_t) '\0';
             pHndl->isAlloc = (uint32_t) TRUE;
             Utils_prfTsReset(pHndl);
             break;
@@ -268,7 +268,7 @@ int32_t Utils_prfLoadRegister(TaskP_Handle pTsk, const char *name)
             pHndl->pTsk    = pTsk;
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((uint32_t) sizeof (pHndl->name) - 1U));
-            pHndl->name[sizeof (pHndl->name) - 1U] = (UInt8) '\0';
+            pHndl->name[sizeof (pHndl->name) - 1U] = (uint8_t) '\0';
             status = CSL_SOK;
             break;
         }
@@ -348,7 +348,7 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
 
 void Utils_prfLoadCalcStart(void)
 {
-    
+    memset(&gUtils_prfObj, 0U, sizeof(gUtils_prfObj));
     LoadP_reset();
 
     return;
