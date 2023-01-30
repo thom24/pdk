@@ -34,6 +34,11 @@
 #include <ti/board/src/flash/nand/ospi/nand_ospi.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
+#include <ti/osal/CacheP.h>
+
+#define BOARD_FLASH_FULL_PAGE_SIZE    (NAND_PAGE_SIZE + NAND_SPARE_AREA_SIZE)
+static uint8_t nandFullPageBuf[BOARD_FLASH_FULL_PAGE_SIZE] __attribute__((aligned(128)));
+static uint32_t dmaEnable = FALSE;
 
 static NAND_HANDLE Nand_ospiOpen(uint32_t nandIntf, uint32_t portNum, void *params);
 static void Nand_ospiClose(NAND_HANDLE handle);
@@ -456,6 +461,7 @@ NAND_HANDLE Nand_ospiOpen(uint32_t nandIntf, uint32_t portNum, void *params)
 
     /* Save the DTR enable flag */
     gDtrEnable = ospiCfg.dtrEnable;
+    dmaEnable  = ospiCfg.dmaEnable;
 
     /* Reset the PHY tunning configuration data when enabled */
     data = *(uint32_t *)params;
@@ -531,6 +537,10 @@ NAND_HANDLE Nand_ospiOpen(uint32_t nandIntf, uint32_t portNum, void *params)
         if (nandHandle == 0)
         {
             OSPI_close(hwHandle);
+        }
+        else
+        {
+            memset((void *)nandFullPageBuf, 0xFF, BOARD_FLASH_FULL_PAGE_SIZE);
         }
     }
 
@@ -813,10 +823,25 @@ NAND_STATUS Nand_ospiWrite(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint
         pageAddr = addr / NAND_PAGE_SIZE;
         colmAddr = addr % NAND_PAGE_SIZE;
 
+        /* Fill the data buffer with 0xFF if the data size is less than page size
+         * to avoid writing erased sections which need not be written for this page.
+         */
+        if(chunkLen < NAND_PAGE_SIZE)
+        {
+            memset((void *)nandFullPageBuf, 0xFF, BOARD_FLASH_FULL_PAGE_SIZE);
+        }
+
+        memcpy((void*)nandFullPageBuf, (const void*)&buf[actual], chunkLen);
+
+        if(dmaEnable == TRUE)
+        {
+            CacheP_wbInv((void *)nandFullPageBuf, (int32_t)BOARD_FLASH_FULL_PAGE_SIZE);
+        }
+
         transaction.arg   = (void *)(uintptr_t)colmAddr;
-        transaction.txBuf = (void *)(buf + actual);
+        transaction.txBuf = (void *)(nandFullPageBuf);
         transaction.rxBuf = NULL;
-        transaction.count = chunkLen;
+        transaction.count = BOARD_FLASH_FULL_PAGE_SIZE;
 
         ret = OSPI_transfer(ospiHandle, &transaction);
         if (ret == false)
