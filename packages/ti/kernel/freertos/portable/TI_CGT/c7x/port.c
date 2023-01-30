@@ -114,9 +114,13 @@ uint32_t ulPortInterruptNesting = 0UL;
 uint32_t ulPortSchedularRunning = pdFALSE;
 
 
-/* set to true when scheduler gets enabled in xPortStartScheduler */
+/* Counts the incorrect yield, i.e, when doing switch to same task */
 uint32_t uxPortIncorrectYieldCount = 0UL;
 
+/* Store the Schedular start TSC counter timerstamp.
+ * This is required to account for schedular start time in current run time
+ * counter calculations. */
+uint64_t ullPortSchedularStartTs = 0U;
 /*
  * Task control block.  A task control block (TCB) is allocated for each task,
  * and stores task state information, including a pointer to the task's context
@@ -409,12 +413,14 @@ void vPortConfigTimerForRunTimeStats()
 
     /* we assume clock is initialized before the schedular is started */
     TimestampProvider_Module_startup();
+
+    ullPortSchedularStartTs = __TSC;
 }
 
 /* return current counter value of high speed counter in units of 10's of usecs */
 uint32_t uiPortGetRunTimeCounterValue()
 {
-    uint64_t ts = __TSC;
+    uint64_t ts = __TSC - ullPortSchedularStartTs;
     uint64_t timeInUsecs;
 
     timeInUsecs = (ts * 1000000) / configCPU_CLOCK_HZ;
