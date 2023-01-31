@@ -361,7 +361,7 @@ Board_STATUS Board_writeIDInfo_v2(Board_IDInfo_v2 *info, uint8_t slaveAddress)
     }
 
     offsetAddress = offsetAddress + i2cTransaction.writeCount;
-    i2cTransaction.writeCount = BOARD_EEPROM_TYPE_SIZE + offsetSize;
+    i2cTransaction.writeCount = BOARD_EEPROM_TYPE_SIZE;
     txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress)>>8);
     txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
     memcpy(&txBuf[2], &info->endList, i2cTransaction.writeCount);
