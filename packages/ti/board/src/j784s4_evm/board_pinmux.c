@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2022 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2022-2023 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -112,14 +112,8 @@ static void Board_pinmuxWriteReg(uint8_t domain,
                                  uint32_t baseAddr,
                                  uint32_t regVal)
 {
-    /* Unlock MMR write access */
-    Board_pinmuxKickCtrl(domain, 0);
-
     /* Write PAD config MMR register */
     HW_WR_REG32(baseAddr, regVal);
-
-    /* Lock MMR write access */
-    Board_pinmuxKickCtrl(domain, 1);
 }
 
 /**
