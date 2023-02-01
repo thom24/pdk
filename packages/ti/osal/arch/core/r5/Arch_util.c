@@ -481,12 +481,16 @@ int32_t  osalArch_TimeStampGetFreqKHz(void)
 /* Initialize the time stamp module */
 void    osalArch_TimestampInit(void)
 {
+    /* FreeRTOS R5F port already initialized PMU counter as part of 
+     * schedular start for runtime measurement */
+#if !defined(FREERTOS)
     if (gTimestampFirstTime == (bool)true)
     {
         osal_TimestampProvider_initCCNT();
         /* One time initialization is done */
         gTimestampFirstTime = (bool)false;
     }
+#endif
 
     return;
 }
@@ -494,9 +498,28 @@ void    osalArch_TimestampInit(void)
 /* Osal time stamp provider implementations */
 void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 {
-    uint32_t    lo, ovsrStatus;
     if (tStamp !=  NULL_PTR)
     {
+    #if defined(FREERTOS)
+        /* FreeRTOS R5F port handles PMU counter init and overflow.
+         * Hence use the same and avoid duplicate overflow handle */
+        uint64_t   cycle, cycleHi;
+        uint32_t   lo, hi;
+        
+        extern uint64_t uxPortReadPmuCounter();
+        
+        cycle = uxPortReadPmuCounter();
+        cycleHi = ((uint64_t)(cycle >> 32U));
+
+        /* get the lo and hi parts */
+        lo    = ((uint32_t)(cycle   & ((uint32_t)(0xFFFFFFFFU))));
+        hi    = ((uint32_t)(cycleHi & ((uint32_t)(0xFFFFFFFFU))));
+
+        tStamp->lo         = lo;
+        tStamp->hi         = hi;
+    #else
+        uint32_t    lo, ovsrStatus;
+
         /* Make sure init is done, if not done already */
         osalArch_TimestampInit();
         lo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
@@ -512,6 +535,7 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
         gTimeStamp.lo      = lo;
         tStamp->lo         = lo;
         tStamp->hi         = gTimeStamp.hi;
+    #endif
     }
     /* return time in micro seconds */
     return;
@@ -520,6 +544,10 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 /* Needs to be run at least once after a over flow happens and before next overflow */
 void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
 {
+    /* FreeRTOS R5F port handles PMU counter overflow and checks periodically 
+     * in every OS tick.
+     * Hence avoid duplicate overflow handle */
+#if !defined(FREERTOS)
     uint32_t    ovsrStatus;
     ovsrStatus = osal_TimestampProvider_getOverflowCCNT();
 
@@ -528,7 +556,8 @@ void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
         gTimeStamp.lo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
         gTimeStamp.hi++;
     }
-    /* return time in micro seconds */
+#endif
+
     return;
 }
 
