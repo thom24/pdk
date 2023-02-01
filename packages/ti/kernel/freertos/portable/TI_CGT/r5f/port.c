@@ -123,6 +123,14 @@ uint32_t ulPortInterruptNesting = 0UL;
 /* set to true when schedular gets enabled in xPortStartScheduler */
 uint32_t ulPortSchedularRunning = pdFALSE;
 
+/* Store the PMU counter timestamp during an OS tick.
+ * This is required to calculate the time in microseconds for 
+ * uiPortGetRunTimeCounterValue. */
+static uint64_t ullPortLastTickPmuTs;
+
+/*  PMU counter timestamp overflow count. */
+static uint32_t ulPmuTsOverFlowCount = 0;
+
 /*
  * Run Time Timer Control Structure. 
  */
@@ -131,7 +139,6 @@ typedef struct xRUN_TIME_TIMER_CONTROL
     uint64_t        uxTicks;
     TimerP_Handle   pxTimerHandle;
     uint32_t        ulUSecPerTick;
-    uint32_t        ulTimerReloadCnt; 
 } RunTimeTimerControl_t;
 
 RunTimeTimerControl_t   gTimerCntrl;
@@ -142,9 +149,9 @@ RunTimeTimerControl_t   gTimerCntrl;
  */
 extern void vPortRestoreTaskContext( void );
 
-uint64_t uxPortGetTimeInUsec(void);
-
 BaseType_t xPortInIsrContext(void);
+
+uint64_t uxPortReadPmuCounter(void);
 
 static void prvTaskExitError( void )
 {
@@ -253,6 +260,8 @@ static void prvPorttimerTickIsr(uintptr_t args)
 
     /* increment the systick counter */
     gTimerCntrl.uxTicks++;
+    /* Store the PMU counter timestamp  */
+    ullPortLastTickPmuTs = uxPortReadPmuCounter();
 
     vPortTimerTickHandler();
 }
@@ -277,7 +286,6 @@ static void prvPortInitTickTimer(void)
     /* init internal data structure */
     gTimerCntrl.uxTicks             = 0;
     gTimerCntrl.ulUSecPerTick       = (portTICK_PERIOD_MS * 1000);
-    gTimerCntrl.ulTimerReloadCnt    = TimerP_getReloadCount(pTickTimerHandle);
     gTimerCntrl.pxTimerHandle       = pTickTimerHandle;
 }
 
@@ -341,7 +349,6 @@ void vPortTimerTickHandler()
         {
             ulPortYieldRequired = pdTRUE;
         }
-        CycleprofilerP_refreshCounter();
     }
 }
 
@@ -411,46 +418,61 @@ void vPortExitCritical( void )
 void vPortConfigTimerForRunTimeStats()
 {
     /* Timer is initialized by prvPortInitTickTimer before the schedular is started */
+
+    /* Configure and initialize PMU Counter for calculating micro seconds */
+    CSL_armR5PmuEnableAllCntrs(1);    /* Set/clear PMCR E-bit */
+    CSL_armR5PmuResetCntrs();         /* Set PMCR P-bit */
+    CSL_armR5PmuResetCycleCnt();      /* Set PMCR C-bit */
+    CSL_armR5PmuEnableCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, 1);     /* Set PMCNTENSET for event */
+    CSL_armR5PmuClearCntrOverflowStatus(0x80000007);
+    ulPmuTsOverFlowCount = 0;
 }
 
+uint64_t uxPortReadPmuCounter(void)
+{
+    uint32_t tsLo;
+    uint32_t ovsrStatus;
+    uint64_t ts;
+
+    tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
+    ovsrStatus = (CSL_armR5PmuReadCntrOverflowStatus() & (0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
+
+    if (ovsrStatus != 0)
+    {
+        tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
+        ulPmuTsOverFlowCount++;
+        CSL_armR5PmuClearCntrOverflowStatus((0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
+    }
+    ts = ((uint64_t)tsLo | ((uint64_t) ulPmuTsOverFlowCount << 32U));
+
+    return ts;
+}
 /* return current counter value of high speed counter in usecs */
 uint32_t uiPortGetRunTimeCounterValue()
 {
-    uint64_t uxTimeInUsecs = uxPortGetTimeInUsec();
+    uint64_t uxDeltaTs;
+    uint64_t uxTimeInMilliSecs;
+    uint64_t uxTimeInUsecs;
+    
+    /* time in milliseconds based on no. of OS ticks */
+    uxTimeInMilliSecs = gTimerCntrl.uxTicks * (uint64_t)portTICK_PERIOD_MS;
+
+    /* PMU counter increments after last OS tick  */
+    uxDeltaTs = uxPortReadPmuCounter() - ullPortLastTickPmuTs;
+
+    uxTimeInUsecs = (uxTimeInMilliSecs * 1000U) + 
+                        (uxDeltaTs * 1000000) / configCPU_CLOCK_HZ /* convert PMU timestamp to microseconds */;
 
     /* note, there is no overflow protection for this 32b value in FreeRTOS
      *
      * This value will overflow in
      * ((0xFFFFFFFF)/(1000000*60)) minutes ~ 71 minutes
      *
-     * We call LoadP_update() in idle loop (from vApplicationIdleHook) to accumlate the task load into a 64b value.
+     * We call LoadP_update() in idle loop (from vApplicationIdleHook) to accumulate the task load into a 64b value.
      * The implementation of LoadP_update() is in osal/src/freertos/LoadP_freertos.c
      * 
      */
     return (uint32_t)(uxTimeInUsecs);
-}
-
-/* Get the current time in microseconds. */
-uint64_t uxPortGetTimeInUsec()
-{
-    uint64_t uxTimeInUsecs;
-    uint32_t ulTimerCount;
-    uint64_t uxTicks1;
-    uint64_t uxTicks2;
-
-    do {
-        uxTicks1 = gTimerCntrl.uxTicks;
-        ulTimerCount = TimerP_getCount(gTimerCntrl.pxTimerHandle);
-        uxTicks2 = gTimerCntrl.uxTicks;
-    } while (uxTicks1 != uxTicks2);
-
-    /* Get the current time in microseconds */
-    uxTimeInUsecs = uxTicks2 * (uint64_t)gTimerCntrl.ulUSecPerTick
-                        + (uint64_t) ( /* convert timer count to usecs */
-                            (uint64_t)(ulTimerCount - gTimerCntrl.ulTimerReloadCnt)*gTimerCntrl.ulUSecPerTick/(0xFFFFFFFFu - gTimerCntrl.ulTimerReloadCnt)
-                            );
-
-    return (uxTimeInUsecs);
 }
 
 /* This is used to make sure we are using the FreeRTOS API from within a valid interrupt priority level
