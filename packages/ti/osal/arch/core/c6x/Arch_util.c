@@ -369,12 +369,16 @@ int32_t  osalArch_TimeStampGetFreqKHz(void)
 /* Initialize the time stamp module */
 void    osalArch_TimestampInit(void)
 {
+    /* FreeRTOS C66x port already initialized TSC counter as part of 
+     * schedular start for runtime measurement */
+#if !defined(FREERTOS)
     if (gTimestampFirstTime == (bool)true)
     {
         /* Initialize TSCL to 0, for count */
         CSL_tscEnable();
         gTimestampFirstTime = (bool)false;
     }
+#endif
 
     return;
 }

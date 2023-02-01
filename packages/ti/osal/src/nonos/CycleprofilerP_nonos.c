@@ -60,10 +60,8 @@ uint32_t CycleprofilerP_getTimeStamp(void)
 
 void CycleprofilerP_init(void)
 {
-    #if !defined(FREERTOS)
     /* Make sure init is done, if not done already */
     osalArch_TimestampInit();
-    #endif
 }
 uint32_t CycleprofilerP_getTimeStamp(void) 
 {
