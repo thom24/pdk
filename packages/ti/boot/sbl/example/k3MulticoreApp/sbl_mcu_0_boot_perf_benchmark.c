@@ -45,6 +45,20 @@ struct tisci_boardcfg sblPerfTestBoardCfg __attribute((section(".sysfw_data_cfg_
 struct sblTest_local_rm_boardcfg sblPerfTestBoardCfg_rm __attribute((section(".sysfw_data_cfg_board_rm")));
 struct tisci_boardcfg_sec sblPerfTestBoardCfg_sec __attribute((section(".sysfw_data_cfg_board_sec")));
 
+/* For j721e SBL doesn't able to profile RBL boot time since it doesn't have mcu timer9 
+        So SBL profile info for j721e is one index ahead of others */
+#if !defined(SOC_J721E)
+    #define ARRAY_LENGTH 17
+    #define SKIP_INDX 7
+    /* This time includes RBL execution time */
+    float expCanRespTime = 40;
+#else
+    #define ARRAY_LENGTH 16
+    #define SKIP_INDX 6
+    /* This time does not include RBL execution time */
+    float expCanRespTime = 39.5;
+#endif
+
 /**********************************************************************
  ************************** Internal functions ************************
  **********************************************************************/
@@ -136,7 +150,16 @@ static void sblBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
                                 "SBL: Parsing appimage and copy to MCU SRAM & Jump to App:", \
                                 "Misc                                                    :"};
     uint64_t mcu_clk_freq = SBL_MCU1_CPU0_FREQ_HZ;
-    uint32_t majorApisIndx = 0, indx = 3, cycles_per_usec;
+    uint32_t majorApisIndx = 0, cycles_per_usec;
+
+    /* For j721e SBL doesn't able to profile RBL boot time since it doesn't have mcu timer9 
+        So SBL profile info for j721e is one index ahead of others */
+    #if !defined(SOC_J721E)
+        uint32_t indx = 3;
+    #else
+        uint32_t indx = 2;
+    #endif
+
     float convertMicroToMilli = 1000;
     float totalTime = 0;
     char sbl_test_str[256];
@@ -154,10 +177,10 @@ static void sblBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
         totalTime += rblExecutionTime/convertToMilli;
     #endif
 
-    while(indx < 17)
+    while(indx < ARRAY_LENGTH)
     {
         /* Skipping this index as timer is being reset at this particular index */ 
-        if(indx == 7){
+        if(indx == SKIP_INDX){
             indx++;
             continue;
         }
@@ -170,9 +193,13 @@ static void sblBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
         timeTaken = (currentCycleCount-previousCycleCount)/convertMicroToMilli;
         /* For Misc - add the time after copying appimage to MCU SRAM till core 
         boots and from start of SBL main to before reading sysfw */
-        if(indx == 15)
+        if(indx == (ARRAY_LENGTH-1))
         {
-            timeTaken += (sblBootPerfLog[2].cycle_cnt/cycles_per_usec - sblBootPerfLog[1].cycle_cnt/cycles_per_usec)/convertMicroToMilli;
+            #if !defined(SOC_J721E)
+                timeTaken += (sblBootPerfLog[2].cycle_cnt/cycles_per_usec - sblBootPerfLog[1].cycle_cnt/cycles_per_usec)/convertMicroToMilli;
+            #else
+                timeTaken += (sblBootPerfLog[1].cycle_cnt/cycles_per_usec - sblBootPerfLog[0].cycle_cnt/cycles_per_usec)/convertMicroToMilli;
+            #endif
         }
         totalTime += timeTaken;
         sprintf(sbl_test_str,"%s %.3fms\r\n", majorApis[majorApisIndx], timeTaken);
@@ -183,13 +210,6 @@ static void sblBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
     
     sprintf(sbl_test_str, "Time taken to boot CAN application from SBL main : %.3fms \r\n", totalTime);
     sbl_puts(sbl_test_str);
-    #if defined(SOC_J721E)
-        /* This time does not include RBL execution time */
-        float expCanRespTime = 39.5;
-    #elif (defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)) 
-        /* This time includes RBL execution time */
-        float expCanRespTime = 40;
-    #endif
     if(totalTime < expCanRespTime)
     {
         sprintf(sbl_test_str, "Boot Performance test has passed");
