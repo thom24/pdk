@@ -367,6 +367,8 @@ extern "C" {
  * Events 16 - 47  : For routing DRU Local Events from CLEC (done by Vision Apps/TIDL)
  * Events 48 - 63  : managed by UDMA for routing various UDMA events to C7x  */ 
 #define UDMA_C7X_CORE_INTR_OFFSET               (48U)
+/* Number of C7x Events available for UDMA */
+#define UDMA_C7X_CORE_NUM_INTR                  (64U - UDMA_C7X_CORE_INTR_OFFSET)
 
 /**
  *  \anchor Udma_PsilCh

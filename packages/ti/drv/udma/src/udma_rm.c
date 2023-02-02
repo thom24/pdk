@@ -2324,6 +2324,26 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
                                                &rmInitPrms->numVintr);
 
         /* Interrupt Router Interrupts */
+#if defined (BUILD_C7X)
+        /* Interrupts reserved for other drivers */
+        uint32_t totalResrvIntr = 0U;
+        /* Interrupts available for UDMA driver */
+        uint32_t numIrIntrAvbl  = 0U;
+
+        Udma_RmSharedResPrms *rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR);
+        /* 
+         * startResrvCnt and endResrvCnt are number of interrupts reserved for other
+         * drivers, can't be used by UDMA driver. \ref Udma_RmSharedResPrms
+         */
+        totalResrvIntr  = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt);
+        numIrIntrAvbl   = (rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - totalResrvIntr);
+
+        /* Make sure that number of interrupts never execeeds number of C7x events for UDMA driver */
+        if(numIrIntrAvbl > UDMA_C7X_CORE_NUM_INTR)
+        {
+            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum = totalResrvIntr + UDMA_C7X_CORE_NUM_INTR;
+        }
+#endif
     #if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)   
         /* Shared resource - Split based on instance */
         retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR),
@@ -2347,21 +2367,6 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
     #endif
 
     #if defined (BUILD_C7X) || defined (_TMS320C6X)
-    #if defined (BUILD_C7X)
-        /* Start C7x Core Interrupt */
-        rmInitPrms->startC7xCoreIntr                        = UDMA_C7X_CORE_INTR_OFFSET;
-        /* Out of 63 events of C7x core, there are (63U - UDMA_C7X_CORE_INTR_OFFSET) available for driver.
-        So, max number of IR interrupts used by driver should be <= (63U - UDMA_C7X_CORE_INTR_OFFSET) */
-        uint32_t maxC7xEvtAvailable      =   63U - UDMA_C7X_CORE_INTR_OFFSET;
-        /* startResrvCnt and endResrvCnt are number of interrupts reserved for other
-            drivers, can't be used by UDMA driver. \ref Udma_RmSharedResPrms */
-        Udma_RmSharedResPrms *rmSharedResPrms = Udma_rmGetSharedResPrms(UDMA_RM_RES_ID_IR_INTR);
-        if((rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - 
-            (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt)) > maxC7xEvtAvailable)
-        {
-            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt) + maxC7xEvtAvailable;
-        }
-    #endif
     #if defined (_TMS320C6X)
         /* Start C6xx Core Interrupt */
         rmInitPrms->startC66xCoreIntr                       = UDMA_C66X_CORE_INTR_OFFSET;
@@ -2395,7 +2400,8 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
             /* Add the no. of IR Interrupts reserved for C7x/C66x before current instance
                to make sure each instance has their own range C7x/C66x events */
         #if defined (BUILD_C7X)
-            rmInitPrms->startC7xCoreIntr                   +=  (curInstIrStart - startInstIrStart);
+            /* Start C7x Core Interrupt */
+            rmInitPrms->startC7xCoreIntr                   =  (UDMA_C7X_CORE_INTR_OFFSET + (curInstIrStart - startInstIrStart));
         #endif
         #if defined (_TMS320C6X)
             rmInitPrms->startC66xCoreIntr                  +=  (curInstIrStart - startInstIrStart);
