@@ -97,15 +97,29 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
         return status;
     }
 
-    /* Copy user buffers into a local copy, TODO should not be necessary */
     tisci_msg_t tisci_msg = {0};
-
+    off64_t reqPhyPayloadPtr = 0;
+    void   *reqPayload = NULL;
+    off64_t responsePayloadPhyPtr = 0;
+    void   *respPayload = NULL;
 
     /* Fill out request */
-    uint64_t reqPhyPayloadPtr = 0;
     if((pReqPrm->pReqPayload != 0) && (pReqPrm->reqPayloadSize != 0)){
-        //printf("%s: translate request\n",__func__);
-        reqPhyPayloadPtr = Sciclient_qnxVirtToPhyFxn((uint64_t *) pReqPrm->pReqPayload, (void *)&pReqPrm->reqPayloadSize);
+        reqPayload = mmap64(NULL, pReqPrm->reqPayloadSize, PROT_READ|PROT_WRITE|PROT_NOCACHE, MAP_SHARED|MAP_PHYS|MAP_ANON, NOFD, 0);
+         if(reqPayload == MAP_FAILED) {
+            fprintf(stderr, "%s:%d mma64 failed errno/%d\n",__FUNCTION__, __LINE__, errno);
+            status = CSL_EFAIL;
+            goto exit;
+        }
+        else {
+            mem_offset64(reqPayload, NOFD, pReqPrm->reqPayloadSize, &reqPhyPayloadPtr, 0);
+            if(reqPhyPayloadPtr == 0) {
+                fprintf(stderr, "%s:%d mem_offset64 failed errno/%d\n",__FUNCTION__, __LINE__, errno);
+                status = CSL_EFAIL;
+                goto exit;
+            }
+        }
+        memcpy((void *)reqPayload, (void *)pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
     }
     tisci_msg.reqPrm.messageType = pReqPrm->messageType;
     tisci_msg.reqPrm.flags       = pReqPrm->flags;
@@ -115,10 +129,22 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
 
 
     /* Define expected response */
-    uint64_t responsePayloadPhyPtr = 0;
     if((pRespPrm->pRespPayload != 0) && (pRespPrm->respPayloadSize != 0)){
-        //printf("%s: translate response\n",__func__);
-        responsePayloadPhyPtr = Sciclient_qnxVirtToPhyFxn((uint64_t *) pRespPrm->pRespPayload, (void *)&pReqPrm->reqPayloadSize);
+        respPayload = mmap64(NULL, pRespPrm->respPayloadSize, PROT_READ|PROT_WRITE|PROT_NOCACHE, MAP_SHARED|MAP_PHYS|MAP_ANON, NOFD, 0);
+        if(respPayload == MAP_FAILED) {
+            fprintf(stderr, "%s:%d mma64 failed errno/%d\n",__FUNCTION__, __LINE__, errno);
+            status = CSL_EFAIL;
+            goto exit;
+        }
+        else {
+            mem_offset64(respPayload, NOFD, pRespPrm->respPayloadSize, &responsePayloadPhyPtr, 0);
+            if(responsePayloadPhyPtr == 0) {
+                fprintf(stderr, "%s:%d mem_offset64 failed errno/%d\n",__FUNCTION__, __LINE__, errno);
+                status = CSL_EFAIL;
+                goto exit;
+            }
+        }
+        memcpy((void *)respPayload, (void *)pRespPrm->pRespPayload, pRespPrm->respPayloadSize);
     }
     tisci_msg.respPrm.flags = pRespPrm->flags;
     tisci_msg.respPrm.pRespPayload = (uint8_t *) responsePayloadPhyPtr;
@@ -132,19 +158,21 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
     if ((rc = devctlv(fd, DCMD_TISCI_MESSAGE, 1, 1, siov, riov, NULL)) != EOK) {
         fprintf(stderr, "devctl failed:%d errno/%d rc/%d\n", status, errno, rc);
         status = CSL_EFAIL;
-        if(fd > 0) {
-            close(fd);
-        }
+        goto exit;
     }
 
+    memcpy((void *)pRespPrm->pRespPayload, (void *)respPayload, pRespPrm->respPayloadSize);
+
     /* Flags parameter not getting set sometimes, ensure the response to user has correct flags value  */
+    pRespPrm->flags = tisci_msg.respPrm.flags;
     QNX_DEBUG_PRINT("%s: tisci_msg.respPrm.flags = 0x%08x\n",__func__,tisci_msg.respPrm.flags);
     QNX_DEBUG_PRINT("%s: pRespPrm->flags = 0x%08x\n",__func__,pRespPrm->flags);
-    pRespPrm->flags = tisci_msg.respPrm.flags;
-    QNX_DEBUG_PRINT("%s: pRespPrm->flags = 0x%08x\n",__func__,pRespPrm->flags);
+
+exit:
+    if (reqPayload) munmap(reqPayload, pReqPrm->reqPayloadSize);
+    if (respPayload) munmap(respPayload, pRespPrm->respPayloadSize);
 
     /* Close fd */
-    // TODO: keep fd open to save time
     if(fd > 0) {
         close(fd);
     }
