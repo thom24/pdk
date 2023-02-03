@@ -78,8 +78,8 @@ CoreRprcFiles1=("ipc_rtos_echo_test_freertos_mcu2_0_release.xer5f.rprc" \
                )
 CoreRprcFiles2=("ipc_rtos_echo_test_freertos_mcu3_0_release.xer5f.rprc" \
                 "ipc_rtos_echo_test_freertos_mcu3_1_release.xer5f.rprc" \
-                "ipc_rtos_echo_test_freertos_c7x_1_release.xe71.rprc"
                 "ipc_rtos_echo_test_freertos_c7x_1_release.xe71.rprc" \
+                "ipc_rtos_echo_test_freertos_c7x_2_release.xe71.rprc" \
                )
 CoreRprcFiles3=("udma_baremetal_memcpy_testapp_mpu1_0_release.xa72fg.rprc" \
                )

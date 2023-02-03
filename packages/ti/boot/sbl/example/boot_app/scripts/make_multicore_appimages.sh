@@ -62,8 +62,8 @@ then
   declare -a cores_exten_names_j721e=("xa72fg" "xer5f" "xer5f" "xer5f" "xer5f" "xe66" "xe66" "xe71")
   declare -a cores_j7200=("mpu1_0" "mcu2_0" "mcu2_1")
   declare -a cores_exten_names_j7200=("xa72fg" "xer5f" "xer5f")
-  declare -a cores_j721s2=("mpu1_0" "mcu2_0" "mcu2_1" "mcu3_0" "mcu3_1"  "c7x_1")
-  declare -a cores_exten_names_j721s2=("xa72fg" "xer5f" "xer5f" "xer5f" "xer5f" "xe71")
+  declare -a cores_j721s2=("mpu1_0" "mcu2_0" "mcu2_1" "mcu3_0" "mcu3_1"  "c7x_1" "c7x_2")
+  declare -a cores_exten_names_j721s2=("xa72fg" "xer5f" "xer5f" "xer5f" "xer5f" "xe71" "xe71")
   declare -a cores_j784s4=("mpu1_0" "mcu2_0" "mcu2_1" "mcu3_0" "mcu3_1" "mcu4_0" "mcu4_1" "c7x_1" "c7x_2" "c7x_3" "c7x_4")
   declare -a cores_exten_names_j784s4=("xa72fg" "xer5f" "xer5f" "xer5f" "xer5f" "xer5f" "xer5f" "xe71" "xe71" "xe71" "xe71")
   MY_BLD="-s -j BOARD=${MY_BOARD} SOC=${MY_SOC} BUILD_PROFILE=${MY_PROFILE}" 
