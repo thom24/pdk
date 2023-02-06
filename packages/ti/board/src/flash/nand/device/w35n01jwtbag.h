@@ -107,6 +107,8 @@ extern "C" {
 #define NAND_DEVICE_ID                (0xDC21U) /* Device ID */
 
 /** Status Register, Write-in-Progress bit */
+#define NAND_SR1_ADDR                 (0xA0U)
+#define NAND_SR2_ADDR                 (0xB0U)
 #define NAND_SR3_ADDR                 (0xC0U)
 
 /** Status Register, Write-in-Progress bit */

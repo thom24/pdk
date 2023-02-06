@@ -106,6 +106,44 @@ static NAND_STATUS NAND_ospiCmdRead(OSPI_Handle handle, uint8_t *cmdBuf,
     }
 }
 
+static NAND_STATUS Nand_ospiReadStatusReg(OSPI_Handle handle, uint8_t regAddr, uint8_t *regData)
+{
+    uint8_t         status;
+    uint8_t         cmd[3];
+    uint32_t        cmdDummyCycles = 0;
+    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+
+    if(CSL_ospiGetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)))
+    {
+        cmd[0] = NAND_CMD_RDSR;
+        cmd[1] = regAddr;  /* Address Bytes */
+        cmd[2] = 0x00;
+
+        cmdDummyCycles = 7;
+        OSPI_control(handle, OSPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&cmdDummyCycles);
+
+        status = NAND_ospiCmdRead(handle, cmd, 3, regData, 1);
+
+        cmdDummyCycles = 8;
+        OSPI_control(handle, OSPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&cmdDummyCycles);
+    }
+    else
+    {
+        cmd[0] = NAND_CMD_RDSR;
+        cmd[1] = regAddr;  /* Address Bytes */
+
+        cmdDummyCycles = 0;
+        OSPI_control(handle, OSPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&cmdDummyCycles);
+
+        NAND_ospiCmdRead(handle, cmd, 2, &status, 1);
+
+        cmdDummyCycles = 8;
+        OSPI_control(handle, OSPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&cmdDummyCycles);
+    }
+
+    return status;
+}
+
 static NAND_STATUS Nand_ospiReadId(OSPI_Handle handle)
 {
     NAND_STATUS     retVal;
@@ -670,15 +708,19 @@ static OSPI_Transaction transaction;
 NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8_t *buf)
 {
     NAND_Info        *nandOspiInfo;
-    OSPI_Handle       ospiHandle;
+    OSPI_Handle      ospiHandle;
+    NAND_STATUS      status;
     uint32_t         rdAddr;
     uint32_t         pageAddr;
     uint32_t         colmAddr;
+    uint32_t         chunkLen;
+    uint32_t         actual=0;
+    uint32_t         pageReadCmdLen = 4;
     bool             ret = TRUE;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_READ;
     OSPI_v0_HwAttrs *hwAttrs;
     uint8_t          pageReadCmd[4];
-    uint32_t         pageReadCmdLen = 4;
+    uint8_t          bufMode;
 
     if (!handle)
     {
@@ -692,6 +734,13 @@ NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8
     }
     ospiHandle = (OSPI_Handle)nandOspiInfo->hwHandle;
     hwAttrs = (OSPI_v0_HwAttrs *)ospiHandle->hwAttrs;
+
+    /* Read the buffer mode configuration from flash register */
+    status = Nand_ospiReadStatusReg(ospiHandle, NAND_SR2_ADDR, &bufMode);
+    if(status != NAND_PASS)
+    {
+        return status;
+    }
 
     if (gPhyEnable == (bool)true)
     {
@@ -707,11 +756,85 @@ NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8
         return NAND_FAIL;
     }
 
-    for(rdAddr = addr; rdAddr < (addr+len); rdAddr += NAND_PAGE_SIZE)
+    bufMode = (bufMode >> 3) & 0x1;
+    if(bufMode == 1)
     {
+        actual = 0;
+        for(rdAddr = addr; rdAddr < (addr+len);)
+        {
+            /*
+             * In the buffered read mode NAND flash returns data from specified column address
+             * till end of the data buffer filled by page read command. Multiple page read and
+             * data read commands are needed for reading the data.
+             */
+
+            /* Split the page and column addresses */
+            pageAddr = rdAddr / NAND_PAGE_SIZE;
+            colmAddr = rdAddr % NAND_PAGE_SIZE;
+
+            chunkLen =  NAND_PAGE_SIZE - colmAddr;
+
+            /* Send Page Program command */
+            chunkLen = ((len - actual) < chunkLen ?
+                        (len - actual) : chunkLen);
+
+            if (hwAttrs->xferLines == OSPI_XFER_LINES_OCTAL)
+            {
+                /* Send the page read command */
+                pageReadCmd[0] = NAND_CMD_PAGE_READ;
+                pageReadCmd[1] = (pageAddr >>  8) & 0xff;    /* page address 2 bytes */
+                pageReadCmd[2] = (pageAddr >>  0) & 0xff;
+                pageReadCmdLen = 3;
+                Nand_ospiCmdWrite(ospiHandle, pageReadCmd, pageReadCmdLen, 0);
+            }
+            else
+            {
+                /* Send the page read command */
+                pageReadCmd[0] = NAND_CMD_PAGE_READ;
+                pageReadCmd[1] = 0x00;                       /* Dummy Byte */
+                pageReadCmd[2] = (pageAddr >>  8) & 0xff;    /* page address 2 bytes */
+                pageReadCmd[3] = (pageAddr >>  0) & 0xff;
+                pageReadCmdLen = 4;
+                Nand_ospiCmdWrite(ospiHandle, pageReadCmd, pageReadCmdLen, 0);
+            }
+
+            /* Check BUSY bit of Flash */
+            if (Nand_ospiWaitReady(ospiHandle, NAND_WRR_WRITE_TIMEOUT))
+            {
+                return NAND_FAIL;
+            }
+
+            /* Set transfer mode and read type */
+            OSPI_control(ospiHandle, OSPI_V0_CMD_SET_XFER_MODE, NULL);
+            OSPI_control(ospiHandle, OSPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
+
+            transaction.arg   = (void *)(uintptr_t)colmAddr;
+            transaction.txBuf = NULL;
+            transaction.rxBuf = (void *)(buf + actual);
+            transaction.count = chunkLen;
+
+            ret = OSPI_transfer(ospiHandle, &transaction);
+            if (ret == false)
+            {
+                return NAND_FAIL;
+            }
+
+            rdAddr += chunkLen;
+            actual += chunkLen;
+        }
+    }
+    else
+    {
+        /*
+         * In the continuous read mode NAND flash returns data from start of the page
+         * and cotinue to output the data from next page when it reaches end of buffer.
+         * Whole memory area can be read with single data read command.
+         * Column address will be ingored in continuous read mode.
+         */
+
         /* Split the page and column addresses */
-        pageAddr = rdAddr / NAND_PAGE_SIZE;
-        colmAddr = rdAddr % NAND_PAGE_SIZE;
+        pageAddr = addr / NAND_PAGE_SIZE;
+        colmAddr = 0; /* Column address will be dummy cycles in contnuous read mode */
 
         if (hwAttrs->xferLines == OSPI_XFER_LINES_OCTAL)
         {
@@ -745,8 +868,8 @@ NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8
 
         transaction.arg   = (void *)(uintptr_t)colmAddr;
         transaction.txBuf = NULL;
-        transaction.rxBuf = (void *)(buf+rdAddr-addr);
-        transaction.count = NAND_PAGE_SIZE;
+        transaction.rxBuf = (void *)(buf);
+        transaction.count = len;
 
         ret = OSPI_transfer(ospiHandle, &transaction);
         if (ret == false)
@@ -754,6 +877,7 @@ NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8
             return NAND_FAIL;
         }
     }
+
     return NAND_PASS;
 }
 
