@@ -67,12 +67,12 @@ extern "C" {
 /*!
  *  @brief    Max number of MCSPI peripheral domains
  */
-#define MCSPI_MAX_DOMAIN_CNT        (2U)
+#define MCSPI_MAX_DOMAIN_CNT        (SPI_MAX_DOMAIN_CNT)
 
 /*!
  *  @brief    Max number of channels of a MCSPI peripheral instance
  */
-#define MCSPI_MAX_NUM_CHANNELS      (4U)
+#define MCSPI_MAX_NUM_CHANNELS      (CSL_MCSPI_CHAN_CNT)
 
 /*!
  *  @brief      A handle that is returned from a MCSPI_open() call.

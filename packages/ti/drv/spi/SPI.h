@@ -69,6 +69,8 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
+#include <ti/csl/soc.h>
+
 /*!
  * Common SPI_control command code reservation offset.
  * SPI driver implementations should offset command codes with SPI_CMD_RESERVED
@@ -339,8 +341,8 @@ typedef struct SPI_Config_s {
     void         const *hwAttrs;
 } SPI_Config;
 
-#define SPI_MAX_CONFIG_CNT (8U)
-#define SPI_MAX_DOMAIN_CNT (2U)
+#define SPI_MAX_CONFIG_CNT (CSL_MCSPI_PER_CNT)
+#define SPI_MAX_DOMAIN_CNT (CSL_MCSPI_DOMAIN_CNT)
 typedef SPI_Config SPI_config_list[SPI_MAX_DOMAIN_CNT][SPI_MAX_CONFIG_CNT];
 
 /*!
@@ -554,8 +556,8 @@ typedef struct OSPI_Config_s {
     void         const *hwAttrs;
 } OSPI_Config;
 
-#define OSPI_MAX_CONFIG_CNT (2U)
-#define OSPI_MAX_DOMAIN_CNT (2U)
+#define OSPI_MAX_CONFIG_CNT (CSL_OSPI_PER_CNT)
+#define OSPI_MAX_DOMAIN_CNT (CSL_OSPI_DOMAIN_CNT)
 typedef OSPI_Config OSPI_config_list[OSPI_MAX_DOMAIN_CNT][OSPI_MAX_CONFIG_CNT];
 
 /*!

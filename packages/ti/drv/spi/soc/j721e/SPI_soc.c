@@ -45,9 +45,6 @@
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/drv/spi/test/src/SPI_log.h>
 
-#define SPI_OSPI_PER_CNT (2U)
-#define SPI_OSPI_DOMAIN_CNT (2U)
-
 /* SPI configuration structure */
 SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
 {

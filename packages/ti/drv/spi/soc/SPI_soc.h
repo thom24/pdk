@@ -125,8 +125,11 @@ extern int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath);
 
 #define SPI_OSPI_DOMAIN_MCU     (0U)
 #define SPI_OSPI_DOMAIN_MAIN    (1U)
-#endif
 
+#define SPI_OSPI_PER_CNT        (CSL_OSPI_PER_CNT)
+#define SPI_OSPI_DOMAIN_CNT     (CSL_OSPI_DOMAIN_CNT)
+
+#endif
 
 #if defined(SOC_AM335x) || defined(SOC_AM437x)
 #include <ti/drv/spi/soc/ESPI_v2.h>
