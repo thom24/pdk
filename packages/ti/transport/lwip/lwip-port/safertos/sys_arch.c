@@ -550,7 +550,7 @@ sys_thread_t sys_thread_new(const char *name, lwip_thread_fn thread, void *arg, 
 
   LWIP_ASSERT("task queue handle null error", sys_thread_state_obj_queue != NULL);
 
-  element = QueueP_get(sys_thread_state_obj_queue);
+  element = (QueueP_Elem*)QueueP_get(sys_thread_state_obj_queue);
   LWIP_ASSERT("task queue element not found", element != NULL);
 
   pThreadState = __containerof(element, struct sys_thread_state, queueElement);
@@ -603,7 +603,7 @@ sys_sem_t *sys_arch_netconn_sem_get(void)
   LWIP_ASSERT("error, semaphore is in ISR", Osal_isInISRContext() == false);
 
   /* Returns a pointer to the local storage object of the currently executing task. */
-  ret = pvTaskTLSObjectGet();
+  ret = (sys_sem_t*)pvTaskTLSObjectGet();
 
   return ret;
 }
@@ -615,7 +615,7 @@ void sys_arch_netconn_sem_alloc(void)
 
   LWIP_ASSERT("error, semaphore is in ISR", Osal_isInISRContext() == false);
 
-  sem = pvTaskTLSObjectGet();
+  sem = (sys_sem_t*)pvTaskTLSObjectGet();
   LWIP_ASSERT("TLS object invalid", sem != NULL);
 
   err = sys_sem_new(sem, 0);
