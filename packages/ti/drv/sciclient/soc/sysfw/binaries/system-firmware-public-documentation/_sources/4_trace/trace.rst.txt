@@ -854,6 +854,9 @@ Power Management Action IDs
 +---------------------+-------+----------------------------------------+----------------------------------------+
 | FAIL (modifier)     | 0x40  | Action failed when action bit set      | N/A                                    |
 +---------------------+-------+----------------------------------------+----------------------------------------+
+| LPM_SEQ             | 48    | Low power mode sequence                | [21:8]   - Sequence number             |
+|                     |       |                                        | [7:0]    - Value                       |
++---------------------+-------+----------------------------------------+----------------------------------------+
 | EXCLUSIVE_BUSY      | 123   | Other hosts have enabled the device    | [21:12]   - Device ID                  |
 |                     |       | which exclusive access has been        | [11:6]    - Requesting host ID         |
 |                     |       | requested                              | [5:0]     - One of other host IDs      |

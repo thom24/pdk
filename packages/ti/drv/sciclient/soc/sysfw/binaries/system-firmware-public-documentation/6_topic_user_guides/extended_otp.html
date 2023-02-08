@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.01
+                08.06.03
               </div>
             
           
@@ -222,9 +222,10 @@ Device. It can be used to program the extended OTP area at the same time.
 Once the key revision and key count are programmed a HS FS device becomes HS
 Security Enforced(SE) device. Key Writer does not run on a HS SE device.</li>
 <li>System Firmware - System Firmware provides API that can be used to access and
-modify the extended OTP area on a HS SE device. System Firmware is not a
-standalone executable and must be used along with software running on another
-core to access or modify the extended OTP area.</li>
+modify the extended OTP area on a HS SE device for all SoCs. It provides these
+APIs on HS FS and GP device also for AM64x, AM62x and AM62Ax SoCs. System
+Firmware is not a standalone executable and must be used along with software
+running on another core to access or modify the extended OTP area.</li>
 </ol>
 <p>In this document, we describe how to use System Firmware to access/modify the extended
 OTP area.</p>
@@ -329,7 +330,7 @@ to the row even after a device cold/warm reset.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'08.06.01',
+            VERSION:'08.06.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

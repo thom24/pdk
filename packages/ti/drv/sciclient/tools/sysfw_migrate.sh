@@ -195,22 +195,26 @@ if [ "$SKIP_GEN_BIN" != "YES" ];  then
                 ./firmwareHeaderGen.sh j721e-hs
                 ./firmwareHeaderGen.sh j721e_sr1_1-hs
                 ./firmwareHeaderGen.sh j721e_sr2-hs
+                ./firmwareHeaderGen.sh j721e_sr2-hs-fs
                 shift
                 ;;
             "j7200")
                 ./firmwareHeaderGen.sh j7200
                 ./firmwareHeaderGen.sh j7200-hs
                 ./firmwareHeaderGen.sh j7200_sr2-hs
+                ./firmwareHeaderGen.sh j7200_sr2-hs-fs
                 shift
                 ;;
             "j721s2")
                 ./firmwareHeaderGen.sh j721s2
                 ./firmwareHeaderGen.sh j721s2-hs
+                ./firmwareHeaderGen.sh j721s2-hs-fs
                 shift
                 ;;
             "j784s4")
                 ./firmwareHeaderGen.sh j784s4
                 ./firmwareHeaderGen.sh j784s4-hs
+                ./firmwareHeaderGen.sh j784s4-hs-fs
                 shift
                 ;;
         esac

@@ -54,9 +54,10 @@ TI provides two pieces of software to program the extended OTP area.
    Security Enforced(SE) device. Key Writer does not run on a HS SE device.
 
 2. System Firmware - System Firmware provides API that can be used to access and
-   modify the extended OTP area on a HS SE device. System Firmware is not a
-   standalone executable and must be used along with software running on another
-   core to access or modify the extended OTP area.
+   modify the extended OTP area on a HS SE device for all SoCs. It provides these
+   APIs on HS FS and GP device also for AM64x, AM62x and AM62Ax SoCs. System 
+   Firmware is not a standalone executable and must be used along with software 
+   running on another core to access or modify the extended OTP area.
 
 In this document, we describe how to use |sysfw| to access/modify the extended
 OTP area.
