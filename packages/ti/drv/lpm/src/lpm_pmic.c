@@ -2228,7 +2228,7 @@ void Lpm_pmicStateChangeActiveToIORetention(void)
      */
 
     uint8_t dataToSlave[2];
-	uint8_t dataFromSlave[2];
+    uint8_t dataFromSlave[2] = {0U, 0U};
 
     if(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE)
     {

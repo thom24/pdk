@@ -153,6 +153,7 @@ bool Board_detectBoard(uint32_t boardID)
     Board_STATUS status;
     bool bDet = FALSE;
 
+    memset(&info, 0x0, sizeof(info));
     if(boardID <= BOARD_ID_SOM)
     {
         status = Board_getBoardData(&info, boardID);

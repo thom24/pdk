@@ -491,7 +491,7 @@ uint32_t Board_getSocDomain(void)
     uint32_t socDomain = BOARD_SOC_DOMAIN_MAIN;
 
 #ifdef BUILD_MCU
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
 
     CSL_armR5GetCpuID(&info);
     if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
