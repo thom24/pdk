@@ -18,6 +18,9 @@
 #Environmental variables
 pdk_build_path=`pwd`
 
+#Ethernet related libraries
+enet_libs="lwipstack_safertos lwipcontrib_safertos lwipport_safertos enet_example_utils_safertos enet_example_utils_full_safertos lwipif_safertos lwipific_safertos"
+
 #Get user input
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -87,6 +90,10 @@ if [ ! "${j721e_r5f_path}" == "" ]; then
     make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721e_evm
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j721e/sciserver_testapp_safertos_mcu1_0_release.xer5f ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j721e/
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j721e/sciserver_testapp_safertos_mcu1_0_release.rprc  ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j721e/
+    #Ethernet related libraries
+    make ${enet_libs} -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721e_evm
+    make ${enet_libs} -sj8 CORE=mcu2_0 BUILD_PROFILE=release BOARD=j721e_evm
+    make ${enet_libs} -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j721e_evm
     printf "\n Successfully completed setup SafeRTOS Builds for J721E R5F\n\n"
   fi
 fi
@@ -138,6 +145,10 @@ if [ ! "${j7200_r5f_path}" == "" ]; then
     make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j7200/sciserver_testapp_safertos_mcu1_0_release.xer5f ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j7200/
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j7200/sciserver_testapp_safertos_mcu1_0_release.rprc  ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j7200/
+    #Ethernet related libraries
+    make ${enet_libs} -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j7200_evm
+    make ${enet_libs} -sj8 CORE=mcu2_0 BUILD_PROFILE=release BOARD=j7200_evm
+    make ${enet_libs} -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j7200_evm
     printf "\n Successfully completed setup SafeRTOS Builds for J7200 R5F\n\n"
   fi
 fi
@@ -162,6 +173,10 @@ if [ ! "${j721s2_r5f_path}" == "" ]; then
     make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721s2_evm
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j721s2/sciserver_testapp_safertos_mcu1_0_release.xer5f ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j721s2/
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j721s2/sciserver_testapp_safertos_mcu1_0_release.rprc  ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j721s2/
+    #Ethernet related libraries
+    make ${enet_libs} -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j721s2_evm
+    make ${enet_libs} -sj8 CORE=mcu2_0 BUILD_PROFILE=release BOARD=j721s2_evm
+    make ${enet_libs} -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j721s2_evm
     printf "\n Successfully completed setup SafeRTOS Builds for J721S2 R5F\n\n"
   fi
 fi
@@ -204,6 +219,10 @@ if [ ! "${j784s4_r5f_path}" == "" ]; then
     make sciserver_testapp_safertos -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j784s4_evm
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j784s4/sciserver_testapp_safertos_mcu1_0_release.xer5f ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j784s4/
     cp ${pdk_build_path}/../binary/sciserver_testapp_safertos/bin/j784s4/sciserver_testapp_safertos_mcu1_0_release.rprc  ${pdk_build_path}/../drv/sciclient/tools/ccsLoadDmsc/j784s4/
+    #Ethernet related libraries
+    make ${enet_libs} -sj8 CORE=mcu1_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    make ${enet_libs} -sj8 CORE=mcu2_0 BUILD_PROFILE=release BOARD=j784s4_evm
+    make ${enet_libs} -sj8 CORE=mcu2_1 BUILD_PROFILE=release BOARD=j784s4_evm
     printf "\n Successfully completed setup SafeRTOS Builds for j784s4 R5F\n\n"
   fi
 fi
