@@ -52,31 +52,31 @@ uint32_t gFwExcpExtInputRegAddr[FW_MAX_ISR_INPUTS] =
 {
     [0] = CMBN_FW_EXCP_LOG_REG_0,
     [1] = CMBN_FW_EXCP_LOG_REG_1,
-    [3] = CMBN_FW_EXCP_LOG_REG_3,
-    [5] = CMBN_FW_EXCP_LOG_REG_5,
-    [6] = CMBN_FW_EXCP_LOG_REG_6,
-    [7] = CMBN_FW_EXCP_LOG_REG_7,
-    [8] = CMBN_FW_EXCP_LOG_REG_8,
-    [9] = CMBN_FW_EXCP_LOG_REG_9,
-    [10] = CMBN_FW_EXCP_LOG_REG_10,
-    [11] = CMBN_FW_EXCP_LOG_REG_11,
-    [12] = CMBN_FW_EXCP_LOG_REG_12,
-    [13] = CMBN_FW_EXCP_LOG_REG_13,
-    [14] = CMBN_FW_EXCP_LOG_REG_14,
-    [15] = CMBN_FW_EXCP_LOG_REG_15,
-    [20] = CMBN_FW_EXCP_LOG_REG_20,
-    [24] = CMBN_FW_EXCP_LOG_REG_24,
-    [25] = CMBN_FW_EXCP_LOG_REG_25,
-    [26] = CMBN_FW_EXCP_LOG_REG_26,
-    [27] = CMBN_FW_EXCP_LOG_REG_27,
-    [28] = CMBN_FW_EXCP_LOG_REG_28,
-    [29] = CMBN_FW_EXCP_LOG_REG_29,
-    [30] = CMBN_FW_EXCP_LOG_REG_30,
-    [40] = CMBN_FW_EXCP_LOG_REG_40,
-    [41] = CMBN_FW_EXCP_LOG_REG_41,
-    [42] = CMBN_FW_EXCP_LOG_REG_42,
-    [43] = CMBN_FW_EXCP_LOG_REG_43,
-    [48] = CMBN_FW_EXCP_LOG_REG_48,
+    [2] = CMBN_FW_EXCP_LOG_REG_3,
+    [3] = CMBN_FW_EXCP_LOG_REG_5,
+    [4] = CMBN_FW_EXCP_LOG_REG_6,
+    [5] = CMBN_FW_EXCP_LOG_REG_7,
+    [6] = CMBN_FW_EXCP_LOG_REG_8,
+    [7] = CMBN_FW_EXCP_LOG_REG_9,
+    [8] = CMBN_FW_EXCP_LOG_REG_10,
+    [9] = CMBN_FW_EXCP_LOG_REG_11,
+    [10] = CMBN_FW_EXCP_LOG_REG_12,
+    [11] = CMBN_FW_EXCP_LOG_REG_13,
+    [12] = CMBN_FW_EXCP_LOG_REG_14,
+    [13] = CMBN_FW_EXCP_LOG_REG_15,
+    [14] = CMBN_FW_EXCP_LOG_REG_20,
+    [15] = CMBN_FW_EXCP_LOG_REG_24,
+    [16] = CMBN_FW_EXCP_LOG_REG_25,
+    [17] = CMBN_FW_EXCP_LOG_REG_26,
+    [18] = CMBN_FW_EXCP_LOG_REG_27,
+    [19] = CMBN_FW_EXCP_LOG_REG_28,
+    [20] = CMBN_FW_EXCP_LOG_REG_29,
+    [21] = CMBN_FW_EXCP_LOG_REG_30,
+    [22] = CMBN_FW_EXCP_LOG_REG_40,
+    [23] = CMBN_FW_EXCP_LOG_REG_41,
+    [24] = CMBN_FW_EXCP_LOG_REG_42,
+    [25] = CMBN_FW_EXCP_LOG_REG_43,
+    [26] = CMBN_FW_EXCP_LOG_REG_48,
 };
 
 void App_fwAbortHandlerIsr(void)
@@ -101,64 +101,28 @@ void App_fwExcepSendTrace(App_fwExceptionData_t *ptr)
 void App_fwNotiIsrDmsc(void)
 {  
     App_fwExceptionData_t *excepPtr;
-    App_fwExceptionData_t excepLocal;
-
     excepPtr = (App_fwExceptionData_t *) gDmscGlbRegs;
-
     gInterruptRecieved++; 
-
-    excepLocal.pend_set = excepPtr->pend_set;
-    excepLocal.pend_clr = excepPtr->pend_clr;
-
-    (void) memcpy(&excepLocal.hdr[0], &excepPtr->hdr[0], (6U * sizeof(uint32_t)));
-
     /* Do trace */
-    App_fwExcepSendTrace(&excepLocal);
+    App_fwExcepSendTrace(excepPtr);
 }
 
 void App_fwNotiIsrCmbn(void)
 {
-    uint32_t fwExpL, fwExpH;
-    volatile uint32_t* cmbnFwMapLwr;
-    volatile uint32_t* cmbnFwMapHgr;
     uint32_t i = 0;
     App_fwExceptionData_t *excepPtr;
-
-    cmbnFwMapLwr = (volatile uint32_t*)CMBM_FW_EXCP_MAP_LWR;
-    cmbnFwMapHgr = (volatile uint32_t*)CMBM_FW_EXCP_MAP_HGR;
-
     gInterruptRecieved++; 
-    fwExpL = *cmbnFwMapLwr;
-    fwExpH = *cmbnFwMapHgr;
     for (i = 0; i < FW_MAX_ISR_INPUTS; i++) 
     {
-        uint32_t intValid = 0;
-
-        if (i < 32U) 
+        excepPtr =
+            (App_fwExceptionData_t *)
+            gFwExcpExtInputRegAddr
+            [i];
+        if (excepPtr != NULL && excepPtr->hdr[0]!=0) 
         {
-            intValid = (fwExpL & (1U << i));
-        } 
-        else 
-        {
-            intValid = (fwExpH & (1U << (i - 32U)));
+            App_fwExcepSendTrace(excepPtr);
         }
-
-        if (intValid > 0U) 
-        {
-            App_sciclientPrintf("FW Bit %d\n ", i);
-            excepPtr =
-                (App_fwExceptionData_t *)
-                gFwExcpExtInputRegAddr
-                [i];
-            if (excepPtr != NULL) 
-            {
-                App_fwExceptionData_t excepLocal;
-                excepLocal.pend_set = excepPtr->pend_set;
-                excepLocal.pend_clr = excepPtr->pend_clr;
-                (void) memcpy(&excepLocal.hdr[0], &excepPtr->hdr[0], (6U * sizeof(uint32_t)));
-                App_fwExcepSendTrace(&excepLocal);
-            }
-        }
+        
     }
 }
 

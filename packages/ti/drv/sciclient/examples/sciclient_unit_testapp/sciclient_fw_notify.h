@@ -50,7 +50,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#define FW_MAX_ISR_INPUTS 50
+#define FW_MAX_ISR_INPUTS 27
 #define SIZE_EXCEPTION_LOG_REG 4
 #define EXCEPTION_INTERRUPT_CNT 2
 #define DMSC_FW_EXCP_REG (CSL_STD_FW_WKUP_DMSC0_IIRAM_SLV_IRAM_START)
@@ -84,9 +84,7 @@
 #define CMBN_FW_EXCP_LOG_REG_41 (0x45B0D400U)
 #define CMBN_FW_EXCP_LOG_REG_42 (0x45B0D800U)
 #define CMBN_FW_EXCP_LOG_REG_43 (0x45B0DC00U)
-#define CMBN_FW_EXCP_LOG_REG_48 (0x45B04000U)
-#define CMBM_FW_EXCP_MAP_LWR    (0x44230500U) 
-#define CMBM_FW_EXCP_MAP_HGR    (0x44230504U)   
+#define CMBN_FW_EXCP_LOG_REG_48 (0x45B04000U)  
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
