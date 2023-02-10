@@ -312,6 +312,7 @@ void Board_initOSAL(void)
     return;
 }
 
+#if !defined (BARE_METAL)
 /*
  *  ======== Floating point test function ========
  */
@@ -397,6 +398,7 @@ bool OSAL_floating_point_test()
  
     return retval;
 }
+#endif
 
 /*
  *  ======== HWI test function ========
@@ -2352,6 +2354,7 @@ void osal_test(void *arg0, void *arg1)
     }
 #endif
 
+#if !defined (BARE_METAL)
     if (OSAL_floating_point_test() == true)
     {
         OSAL_log("\n Floating point tests have passed. \n");
@@ -2360,6 +2363,8 @@ void osal_test(void *arg0, void *arg1)
     {
         testFail = true;
     }
+#endif
+
     if(testFail == true)
     {
         OSAL_log("\n Some tests have failed. \n");
