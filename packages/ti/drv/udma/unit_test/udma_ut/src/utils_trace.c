@@ -401,7 +401,7 @@ GT_trace6(uint32_t      maskType,
  *  \param      param3 The fourth parameter which needs to be logged.
  *  \param      param4 The fifth parameter which needs to be logged.
  *  \param      param5 The sixth parameter which needs to be logged.
- *  \param      param6 The sixth parameter which needs to be logged.
+ *  \param      param6 The seventh parameter which needs to be logged.
  */
 void
 GT_trace7(uint32_t      maskType,
