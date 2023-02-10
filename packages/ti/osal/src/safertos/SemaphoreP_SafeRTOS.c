@@ -392,7 +392,7 @@ SemaphoreP_Status SemaphoreP_reset( SemaphoreP_Handle handle )
     vTaskSuspendScheduler(  );
     do {
         isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, 0U );
-    } while( isSemTaken != 0U );
+    } while( isSemTaken == pdPASS );
     xTaskResumeScheduler(  );
 
     return ( ret_val );
