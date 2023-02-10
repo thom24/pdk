@@ -135,7 +135,7 @@ static NAND_STATUS Nand_ospiReadStatusReg(OSPI_Handle handle, uint8_t regAddr, u
         cmdDummyCycles = 0;
         OSPI_control(handle, OSPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&cmdDummyCycles);
 
-        NAND_ospiCmdRead(handle, cmd, 2, &status, 1);
+        status = NAND_ospiCmdRead(handle, cmd, 2, regData, 1);
 
         cmdDummyCycles = 8;
         OSPI_control(handle, OSPI_V0_CMD_EXT_RD_DUMMY_CLKS, (void *)&cmdDummyCycles);
