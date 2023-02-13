@@ -103,6 +103,9 @@ typedef struct BoardDiag_EnetObj_s
     
     /* Board ID */
     uint32_t boardId;
+
+    /* Expansion Port*/
+    uint32_t expPort;
     
     /* MAC port numbers */
     Enet_MacPort macPort0;
@@ -162,7 +165,8 @@ void BoardDiag_enetGetTestConfig(Enet_Type *enetType,
                            Enet_MacPort *macPort0,
                            Enet_MacPort *macPort1,
                            EnetMacPort_Interface *mii,
-                           uint32_t *boardId);
+                           uint32_t *boardId,
+                           uint32_t *expPort);
 
 void BoardDiag_enetMacMode2MacMii(emac_mode macMode,
                              EnetMacPort_Interface *mii);

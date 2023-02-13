@@ -63,6 +63,21 @@ BoardDiag_EnetObj gEnetLpbk;
 volatile bool txSem = false;
 volatile bool rxSem = false;
 
+uint32_t txScatterSegments[] =
+{
+    [0] = sizeof(EthFrameHeader),
+    [1] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [2] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [3] = ((ENETLPBK_TEST_PKT_LEN / 3) + (ENETLPBK_TEST_PKT_LEN % 3)),
+};
+
+uint32_t rxScatterSegments[] = 
+{
+    [0] = (ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader)),
+    [1] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [2] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [3] = ((ENETLPBK_TEST_PKT_LEN / 3) + (ENETLPBK_TEST_PKT_LEN % 3) + 32),
+};
 
 /**
  * \brief   ENET receive ISR function
@@ -130,6 +145,65 @@ uint32_t BoardDiag_enetLpbkReceivePkts(void)
     return rxReadyCnt;
 }
 
+bool EnetLpbk_verifyRxFrame(EnetDma_Pkt *pktInfo, uint8_t rxCnt)
+{
+    uint8_t *rxPayload;
+    EthFrame *rxframe;
+    uint8_t verifyRxpkt = 0xA5+rxCnt;
+    bool retval = false;
+    uint32_t i,j;
+    uint32_t segmentLen, headerLen;
+    bool incorrectPayload = false;
+
+    rxframe = (EthFrame *)pktInfo->sgList.list[0U].bufPtr;
+    rxPayload = rxframe->payload;
+
+    if (pktInfo->sgList.numScatterSegments == 1)
+    {
+        for (i = 0; i < ENETLPBK_TEST_PKT_LEN; i++)
+        {
+            if((rxPayload[i] != verifyRxpkt))
+            {
+                retval = false;
+                break;
+            }
+            retval = true;
+        }
+    }
+    else
+    {
+        headerLen = rxPayload - pktInfo->sgList.list[0U].bufPtr;
+        for (i = 0; i < pktInfo->sgList.numScatterSegments; i++)
+        {
+            segmentLen = pktInfo->sgList.list[i].segmentFilledLen;
+            if(i == 0)
+            {
+                segmentLen -= headerLen;
+            }
+            else
+            {
+                rxPayload = pktInfo->sgList.list[i].bufPtr;
+            }
+            for (j = 0; j < segmentLen; j++)
+            {
+                if((rxPayload[j] != verifyRxpkt))
+                {
+                    retval = false;
+                    incorrectPayload = true;
+                    break;
+                }
+                retval = true;
+            }
+            if(incorrectPayload == true)
+            {
+                break;
+            }
+        }
+    }
+
+    return retval;
+}
+
 /**
  * \brief   This function is used to retrieve's any CPSW packets that may be free now
  *
@@ -179,7 +253,8 @@ void BoardDiag_enetGetTestConfig(Enet_Type *enetType,
                            Enet_MacPort *macPort0,
                            Enet_MacPort *macPort1,
                            EnetMacPort_Interface *mii,
-                           uint32_t *boardId)
+                           uint32_t *boardId,
+                           uint32_t *expPort)
 {
 
     uint32_t userInput = 0;
@@ -192,11 +267,12 @@ void BoardDiag_enetGetTestConfig(Enet_Type *enetType,
     UART_printf  ("*             ENET QSGMII LOOPBACK Test        *\n");
     UART_printf  ("************************************************\n");
 
-    enetCard = Board_detectEnetCard(BOARD_ENET_QSGMII);
+    enetCard = Board_detectEnetCard(BOARD_ID_ENET);
 
     if (enetCard == BOARD_ENET_QSGMII)
     {
         *boardId = ENETBOARD_QPENET_ID;
+        *expPort = ENETBOARD_EXP_PORT_ENET1;
         mii->layerType    = ENET_MAC_LAYER_GMII;
         mii->variantType   = ENET_MAC_VARIANT_FORCED;
     }
@@ -244,6 +320,7 @@ int32_t BoardDiag_enetPktRxTx(void)
     uint32_t         rxReadyCnt;
     uint32_t         loopCnt;
     uint32_t         pktCnt;
+    uint32_t         rxPktCnt = 0;
     uint32_t         loopRxPktCnt;
     int32_t          status = ENET_SOK;
     uint8_t bcastAddr[ENET_MAC_ADDR_LEN] = {0xffU, 0xffU, 0xffU, 0xffU, 0xffU, 0xffU};
@@ -265,7 +342,7 @@ int32_t BoardDiag_enetPktRxTx(void)
             {
                 pktCnt++;
                 /* Fill the TX Eth frame with test content */
-                frame = (EthFrame *)pktInfo->bufPtr;
+                frame = (EthFrame *)pktInfo->sgList.list[0U].bufPtr;
 
                 memcpy(frame->hdr.dstMac,
                        bcastAddr,
@@ -280,7 +357,7 @@ int32_t BoardDiag_enetPktRxTx(void)
                        (uint8_t)(0xA5 + pktCnt),
                        ENETLPBK_TEST_PKT_LEN);
                        
-                pktInfo->userBufLen = ENETLPBK_TEST_PKT_LEN + sizeof (EthFrameHeader);
+                pktInfo->sgList.list[0U].segmentFilledLen = ENETLPBK_TEST_PKT_LEN + sizeof (EthFrameHeader);
                 pktInfo->appPriv    = &gEnetLpbk;
                 pktInfo->chkSumInfo = 0U;
                 
@@ -342,19 +419,19 @@ int32_t BoardDiag_enetPktRxTx(void)
                     pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
                     while (pktInfo != NULL)
                     {
+                    rxPktCnt++;
                         EnetDma_checkPktState(&pktInfo->pktState,
                                             ENET_PKTSTATE_MODULE_APP,
                                             ENET_PKTSTATE_APP_WITH_READYQ,
                                             ENET_PKTSTATE_APP_WITH_FREEQ);
 
                         /* Consume the packet by just printing its content */
-                        frame = (EthFrame *)pktInfo->bufPtr;
                         if (gEnetLpbk.printFrame)
                         {
                             EnetAppUtils_printFrame(frame,
-                                                    (pktInfo->userBufLen - sizeof (EthFrameHeader)));
+                                                    (pktInfo->sgList.list[0U].segmentFilledLen - sizeof (EthFrameHeader)));
                         }
-
+                    EnetAppUtils_assert(EnetLpbk_verifyRxFrame(pktInfo, rxPktCnt) == true);
                        /* Release the received packet */
                         EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pktInfo->node);
                         pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
@@ -691,10 +768,9 @@ int32_t BoardDiag_enetOpenEnet(void)
         EnetPhy_Cfg *phyCfg = &port0LinkCfg.phyCfg;
 
         /* Setup board for requested Ethernet port */
-        ethPort0.enetType = gEnetLpbk.enetType;
-        ethPort0.instId   = gEnetLpbk.instId;
         ethPort0.macPort  = gEnetLpbk.macPort0;
         ethPort0.boardId  = gEnetLpbk.boardId;
+        ethPort0.expPort  = gEnetLpbk.expPort;
         if(gEnetLpbk.macPort0 == ENET_MAC_PORT_1 || gEnetLpbk.macPort0 == ENET_MAC_PORT_2)
         {
             /* ENET_MAC_PORT_1 and ENET_MAC_PORT_2 are considered as MAIN Ports */
@@ -707,7 +783,7 @@ int32_t BoardDiag_enetOpenEnet(void)
 
         BoardDiag_enetMacMode2MacMii(macMode, &ethPort0.mii);
 
-        status = EnetBoard_setupPorts(&ethPort0, 1U);
+        status = EnetBoard_setupPorts(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort0, 1U);
         if (status != ENET_SOK)
         {
             UART_printf("Failed to setup ports: %d\n", status);
@@ -720,20 +796,20 @@ int32_t BoardDiag_enetOpenEnet(void)
         CpswMacPort_initCfg(&macCfg);
         BoardDiag_enetMacMode2MacMii(macMode, mii);
 
-        const EnetBoard_PhyCfg *board0PhyCfg = NULL;
+        const EnetBoard_PortCfg *board0PhyCfg = NULL;
 
         /* Set PHY configuration params */
         EnetPhy_initCfg(phyCfg);
         status = BoardDiag_enetMacMode2PhyMii(gEnetLpbk.macMode, &phyMii);
         
-         board0PhyCfg = EnetBoard_getPhyCfg(&ethPort0);
+         board0PhyCfg = EnetBoard_getPortCfg(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort0);
         if (board0PhyCfg != NULL)
         {
-            phyCfg->phyAddr     = board0PhyCfg->phyAddr;
-            phyCfg->isStrapped  = board0PhyCfg->isStrapped;
-            phyCfg->skipExtendedCfg = board0PhyCfg->skipExtendedCfg;
-            phyCfg->extendedCfgSize = board0PhyCfg->extendedCfgSize;
-            memcpy(phyCfg->extendedCfg, board0PhyCfg->extendedCfg, phyCfg->extendedCfgSize);
+            phyCfg->phyAddr     = board0PhyCfg->phyCfg.phyAddr;
+            phyCfg->isStrapped  = board0PhyCfg->phyCfg.isStrapped;
+            phyCfg->skipExtendedCfg = board0PhyCfg->phyCfg.skipExtendedCfg;
+            phyCfg->extendedCfgSize = board0PhyCfg->phyCfg.extendedCfgSize;
+            memcpy(phyCfg->extendedCfg, board0PhyCfg->phyCfg.extendedCfg, phyCfg->extendedCfgSize);
         }
         else
         {
@@ -771,10 +847,9 @@ int32_t BoardDiag_enetOpenEnet(void)
         
         
         /* Setup board for requested Ethernet port */
-        ethPort1.enetType = gEnetLpbk.enetType;
-        ethPort1.instId   = gEnetLpbk.instId;
         ethPort1.macPort  = gEnetLpbk.macPort1;
         ethPort1.boardId  = gEnetLpbk.boardId;
+        ethPort1.expPort  = gEnetLpbk.expPort;
         if(gEnetLpbk.macPort1 == ENET_MAC_PORT_1 || gEnetLpbk.macPort1 == ENET_MAC_PORT_2)
         {
             /* ENET_MAC_PORT_1 and ENET_MAC_PORT_2 are considered as MAIN Ports */
@@ -786,7 +861,7 @@ int32_t BoardDiag_enetOpenEnet(void)
         }
         BoardDiag_enetMacMode2MacMii(macMode, &ethPort1.mii);
         
-        status = EnetBoard_setupPorts(&ethPort1, 1U);
+        status = EnetBoard_setupPorts(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort1, 1U);
         if (status != ENET_SOK)
         {
             UART_printf("Failed to setup ports: %d\n", status);
@@ -799,19 +874,19 @@ int32_t BoardDiag_enetOpenEnet(void)
         CpswMacPort_initCfg(&macCfg);
         BoardDiag_enetMacMode2MacMii(macMode, mii);
         
-        const EnetBoard_PhyCfg *board1PhyCfg = NULL;
+        const EnetBoard_PortCfg *board1PhyCfg = NULL;
         /* Set PHY configuration params */
         EnetPhy_initCfg(phyCfg);
         status = BoardDiag_enetMacMode2PhyMii(macMode, &phyMii);
         
-         board1PhyCfg = EnetBoard_getPhyCfg(&ethPort1);
+         board1PhyCfg = EnetBoard_getPortCfg(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort1);
          if (board1PhyCfg != NULL)
         {
-            phyCfg->phyAddr     = board1PhyCfg->phyAddr;
-            phyCfg->isStrapped  = board1PhyCfg->isStrapped;
-            phyCfg->skipExtendedCfg = board1PhyCfg->skipExtendedCfg;
-            phyCfg->extendedCfgSize = board1PhyCfg->extendedCfgSize;
-            memcpy(phyCfg->extendedCfg, board1PhyCfg->extendedCfg, phyCfg->extendedCfgSize);
+            phyCfg->phyAddr     = board1PhyCfg->phyCfg.phyAddr;
+            phyCfg->isStrapped  = board1PhyCfg->phyCfg.isStrapped;
+            phyCfg->skipExtendedCfg = board1PhyCfg->phyCfg.skipExtendedCfg;
+            phyCfg->extendedCfgSize = board1PhyCfg->phyCfg.extendedCfgSize;
+            memcpy(phyCfg->extendedCfg, board1PhyCfg->phyCfg.extendedCfg, phyCfg->extendedCfgSize);
         }
         else
         {
@@ -1005,8 +1080,9 @@ void BoardDiag_enetInitTxFreePktQ(void)
     for (i = 0U; i < ENET_MEM_NUM_TX_PKTS; i++)
     {
         pPktInfo = EnetMem_allocEthPkt(&gEnetLpbk,
-                                                  ENET_MEM_LARGE_POOL_PKT_SIZE,
-                                                  ENETDMA_CACHELINE_ALIGNMENT);
+                                       ENETDMA_CACHELINE_ALIGNMENT,
+                                       ENET_ARRAYSIZE(txScatterSegments),
+                                       txScatterSegments);
         EnetAppUtils_assert(pPktInfo != NULL);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
 
@@ -1039,8 +1115,9 @@ void BoardDiag_enetInitRxReadyPktQ(void)
     for (i = 0U; i < ENET_MEM_NUM_RX_PKTS; i++)
     {
         pPktInfo = EnetMem_allocEthPkt(&gEnetLpbk,
-                                                  ENET_MEM_LARGE_POOL_PKT_SIZE,
-                                                  ENETDMA_CACHELINE_ALIGNMENT);
+                                       ENETDMA_CACHELINE_ALIGNMENT,
+                                       ENET_ARRAYSIZE(rxScatterSegments),
+                                       rxScatterSegments);
         EnetAppUtils_assert(pPktInfo != NULL);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
         EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pPktInfo->node);
@@ -1350,17 +1427,14 @@ int main(void)
     {
         return -1;
     }
-    
-    UART_printf("\n************************************************\n");
-    UART_printf  ("*                 ENET Loopback Test           *\n");
-    UART_printf  ("************************************************\n");
 
     BoardDiag_enetGetTestConfig(&gEnetLpbk.enetType,
                           &gEnetLpbk.instId,
                           &gEnetLpbk.macPort0,
                           &gEnetLpbk.macPort1,
                           &gEnetLpbk.mii,
-                          &gEnetLpbk.boardId);
+                          &gEnetLpbk.boardId,
+                          &gEnetLpbk.expPort);
 
 
    /* Run the loopback test */

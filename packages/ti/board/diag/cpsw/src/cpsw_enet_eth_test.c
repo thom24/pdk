@@ -66,6 +66,21 @@ BoardDiag_EnetObj gEnetLpbk;
 volatile bool txSem = false;
 volatile bool rxSem = false;
 
+uint32_t txScatterSegments[] = 
+{
+    [0] = sizeof(EthFrameHeader),
+    [1] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [2] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [3] = ((ENETLPBK_TEST_PKT_LEN / 3) + (ENETLPBK_TEST_PKT_LEN % 3)),
+};
+
+uint32_t rxScatterSegments[] = 
+{
+    [0] = (ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader)),
+    [1] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [2] = (ENETLPBK_TEST_PKT_LEN / 3),
+    [3] = ((ENETLPBK_TEST_PKT_LEN / 3) + (ENETLPBK_TEST_PKT_LEN % 3) + 32),
+};
 
 /**
  * \brief   ENET receive ISR function
@@ -167,13 +182,48 @@ void BoardDiag_enetPktTx(void)
                 pktCnt++;
 
                 /* Fill the TX Eth frame with test content */
-                frame = (EthFrame *)pktInfo->bufPtr;
+                frame = (EthFrame *)pktInfo->sgList.list[0U].bufPtr;
                 memcpy(frame->hdr.dstMac, bcastAddr, ENET_MAC_ADDR_LEN);
                 memcpy(frame->hdr.srcMac, &gEnetLpbk.hostMacAddr[0U], ENET_MAC_ADDR_LEN);
                 frame->hdr.etherType = Enet_htons(ETHERTYPE_EXPERIMENTAL1);
-                memset(&frame->payload[0U], (uint8_t)(0xA5 + pktCnt), ENETLPBK_TEST_PKT_LEN);
+                if (pktInfo->sgList.numScatterSegments == 1)
+                {
+                    EnetAppUtils_assert(pktInfo->sgList.list[0U].segmentAllocLen >= (ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader)));
+                    memset(&frame->payload[0U], (uint8_t)(0xA5 + pktCnt), ENETLPBK_TEST_PKT_LEN);
+                    pktInfo->sgList.list[0U].segmentFilledLen = sizeof(EthFrameHeader) + ENETLPBK_TEST_PKT_LEN;
+                }
+                else
+                {
+                    uint32_t segmentFillLength;
+                    uint32_t i;
+                    uint32_t payloadSegmentLen;
+                    uint32_t payloadRemainLength;
 
-                pktInfo->userBufLen = ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader);
+                    EnetAppUtils_assert(pktInfo->sgList.numScatterSegments > 1);
+                    segmentFillLength = (ENETLPBK_TEST_PKT_LEN / (pktInfo->sgList.numScatterSegments - 1));
+
+                    pktInfo->sgList.list[0U].segmentFilledLen = sizeof(EthFrameHeader);
+                    payloadRemainLength = ENETLPBK_TEST_PKT_LEN;
+                    for (i = 1; i < pktInfo->sgList.numScatterSegments; i++)
+                    {
+                        payloadSegmentLen = EnetUtils_min(segmentFillLength, pktInfo->sgList.list[i].segmentAllocLen);
+                        memset(pktInfo->sgList.list[i].bufPtr,
+                               (uint8_t)(0xA5 + pktCnt),
+                               payloadSegmentLen);
+                        pktInfo->sgList.list[i].segmentFilledLen = payloadSegmentLen;
+                        payloadRemainLength -= payloadSegmentLen;
+                    }
+                    if (payloadRemainLength)
+                    {
+                        uint32_t lastSegmentIndex = pktInfo->sgList.numScatterSegments - 1;
+                        uint32_t lastSegmentBufOffset = pktInfo->sgList.list[lastSegmentIndex].segmentFilledLen;
+
+                        EnetAppUtils_assert(pktInfo->sgList.list[lastSegmentIndex].segmentAllocLen >= (lastSegmentBufOffset + payloadRemainLength));
+                        memset(&pktInfo->sgList.list[lastSegmentIndex].bufPtr[lastSegmentBufOffset], (uint8_t)(0xA5 + pktCnt), payloadRemainLength);
+                        pktInfo->sgList.list[lastSegmentIndex].segmentFilledLen += payloadRemainLength;
+                    }
+                }
+
                 pktInfo->appPriv    = &gEnetLpbk;
                 pktInfo->chkSumInfo = 0U;
                 pktInfo->txPortNum  = ENET_MAC_PORT_INV;
@@ -273,19 +323,75 @@ uint32_t BoardDiag_enetReceivePkts(void)
     return rxReadyCnt;
 }
 
-/**
- * \brief   This function is used for CPSW packet reception
- *
- * \param   NULL
- *
- */
+bool EnetLpbk_verifyRxFrame(EnetDma_Pkt *pktInfo, uint8_t rxCnt)
+{
+    uint8_t *rxPayload;
+    EthFrame *rxframe;
+    uint8_t verifyRxpkt = 0xA5+rxCnt;
+    bool retval = false;
+    uint32_t i,j;
+    uint32_t segmentLen, headerLen;
+    bool incorrectPayload = false;
+
+    rxframe = (EthFrame *)pktInfo->sgList.list[0U].bufPtr;
+    rxPayload = rxframe->payload;
+
+    if (pktInfo->sgList.numScatterSegments == 1)
+    {
+        for (i = 0; i < ENETLPBK_TEST_PKT_LEN; i++)
+        {
+            if((rxPayload[i] != verifyRxpkt))
+            {
+                retval = false;
+                break;
+            }
+            retval = true;
+        }
+    }
+    else
+    {
+        headerLen = rxPayload - pktInfo->sgList.list[0U].bufPtr;
+        for (i = 0; i < pktInfo->sgList.numScatterSegments; i++)
+        {
+            segmentLen = pktInfo->sgList.list[i].segmentFilledLen;
+            if(i == 0)
+            {
+                segmentLen -= headerLen;
+            }
+            else
+            {
+                rxPayload = pktInfo->sgList.list[i].bufPtr;
+            }
+            for (j = 0; j < segmentLen; j++)
+            {
+                if((rxPayload[j] != verifyRxpkt))
+                {
+                    retval = false;
+                    incorrectPayload = true;
+                    break;
+                }
+                retval = true;
+            }
+            if(incorrectPayload == true)
+            {
+                break;
+            }
+        }
+    }
+
+    return retval;
+}
+
 void BoardDiag_enetPktRx(void)
 {
     EnetDma_Pkt *pktInfo;
-    EthFrame *frame;
     uint32_t rxReadyCnt;
     uint32_t loopCnt, loopRxPktCnt;
+    uint32_t i;
+    uint8_t *payload;
+    uint32_t len;
     int32_t status = ENET_SOK;
+    uint32_t rxPktCnt = 0;
 
     gEnetLpbk.totalRxCnt = 0U;
 
@@ -306,6 +412,7 @@ void BoardDiag_enetPktRx(void)
                 pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
                 while (NULL != pktInfo)
                 {
+                    rxPktCnt++;
                     EnetDma_checkPktState(&pktInfo->pktState,
                                             ENET_PKTSTATE_MODULE_APP,
                                             ENET_PKTSTATE_APP_WITH_READYQ,
@@ -314,12 +421,9 @@ void BoardDiag_enetPktRx(void)
                     /* Consume the packet by just printing its content */
                     if (gEnetLpbk.printFrame)
                     {
-                        frame = (EthFrame *)pktInfo->bufPtr;
-
-                        EnetAppUtils_printFrame(frame,
-                                                pktInfo->userBufLen - sizeof(EthFrameHeader));
+                        EnetAppUtils_printSGFrame(pktInfo);
                     }
-
+                    EnetAppUtils_assert(EnetLpbk_verifyRxFrame(pktInfo, rxPktCnt) == true);
                     /* Release the received packet */
                     EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pktInfo->node);
                     pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
@@ -681,13 +785,11 @@ int32_t BoardDiag_enetOpenEnet(void)
         EnetPhy_Mii phyMii;
 
         /* Setup board for requested Ethernet port */
-        ethPort.enetType = gEnetLpbk.enetType;
-        ethPort.instId   = gEnetLpbk.instId;
         ethPort.macPort  = gEnetLpbk.macPort;
         ethPort.boardId  = gEnetLpbk.boardId;
         BoardDiag_macMode2MacMii(gEnetLpbk.macMode, &ethPort.mii);
 
-        status = EnetBoard_setupPorts(&ethPort, 1U);
+        status = EnetBoard_setupPorts(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort, 1U);
         EnetAppUtils_assert(status == ENET_SOK);
 
         /* Set port link params */
@@ -699,7 +801,7 @@ int32_t BoardDiag_enetOpenEnet(void)
 
         if (gEnetLpbk.testPhyLoopback)
         {
-            const EnetBoard_PhyCfg *boardPhyCfg = NULL;
+            const EnetBoard_PortCfg *boardPhyCfg = NULL;
 
             /* Set PHY configuration params */
             EnetPhy_initCfg(phyCfg);
@@ -707,14 +809,14 @@ int32_t BoardDiag_enetOpenEnet(void)
 
             if (status == ENET_SOK)
             {
-                boardPhyCfg = EnetBoard_getPhyCfg(&ethPort);
+                boardPhyCfg = EnetBoard_getPortCfg(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort);
                 if (boardPhyCfg != NULL)
                 {
-                    phyCfg->phyAddr     = boardPhyCfg->phyAddr;
-                    phyCfg->isStrapped  = boardPhyCfg->isStrapped;
-                    phyCfg->skipExtendedCfg = boardPhyCfg->skipExtendedCfg;
-                    phyCfg->extendedCfgSize = boardPhyCfg->extendedCfgSize;
-                    memcpy(phyCfg->extendedCfg, boardPhyCfg->extendedCfg, phyCfg->extendedCfgSize);
+                    phyCfg->phyAddr     = boardPhyCfg->phyCfg.phyAddr;
+                    phyCfg->isStrapped  = boardPhyCfg->phyCfg.isStrapped;
+                    phyCfg->skipExtendedCfg = boardPhyCfg->phyCfg.skipExtendedCfg;
+                    phyCfg->extendedCfgSize = boardPhyCfg->phyCfg.extendedCfgSize;
+                    memcpy(phyCfg->extendedCfg, boardPhyCfg->phyCfg.extendedCfg, phyCfg->extendedCfgSize);
                 }
                 else
                 {
@@ -982,8 +1084,9 @@ void BoardDiag_enetInitTxFreePktQ(void)
     for (pktNum = 0U; pktNum < ENET_MEM_NUM_TX_PKTS; pktNum++)
     {
         pPktInfo = EnetMem_allocEthPkt(&gEnetLpbk,
-                                                  ENET_MEM_LARGE_POOL_PKT_SIZE,
-                                                  ENETDMA_CACHELINE_ALIGNMENT);
+                                       ENETDMA_CACHELINE_ALIGNMENT,
+                                       ENET_ARRAYSIZE(txScatterSegments),
+                                       txScatterSegments);
         EnetAppUtils_assert(pPktInfo != NULL);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
 
@@ -1016,8 +1119,9 @@ void BoardDiag_enetInitRxReadyPktQ(void)
     for (pktNum = 0U; pktNum < ENET_MEM_NUM_RX_PKTS; pktNum++)
     {
         pPktInfo = EnetMem_allocEthPkt(&gEnetLpbk,
-                                                  ENET_MEM_LARGE_POOL_PKT_SIZE,
-                                                  ENETDMA_CACHELINE_ALIGNMENT);
+                                       ENETDMA_CACHELINE_ALIGNMENT,
+                                       ENET_ARRAYSIZE(rxScatterSegments),
+                                       rxScatterSegments);
         EnetAppUtils_assert(pPktInfo != NULL);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
         EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pPktInfo->node);
