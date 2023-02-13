@@ -56,8 +56,10 @@ PACKAGE_SRCS_COMMON = . ../common
 # SoCs which use firewall exception notification tests (mcu1_0 UT only)
 ifeq ($(SOC),$(filter $(SOC), j721e))
   ifeq ($(CORE), mcu1_0)
-    SCICLIENT_UT_CFLAGS += -DENABLE_FW_NOTIFICATION
-    SRCS_COMMON +=  sciclient_fw_notify.c
+    ifeq ($(BUILD_OS_TYPE), freertos)
+      SCICLIENT_UT_CFLAGS += -DENABLE_FW_NOTIFICATION
+      SRCS_COMMON +=  sciclient_fw_notify.c
+    endif
   endif
 endif
 
