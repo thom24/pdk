@@ -283,7 +283,7 @@ removed after having a fix in TIFS */
         SBL_log(SBL_LOG_ERR,"Sciclient board config sec...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
-#if defined(SOC_J721E) || defined(SOC_J7200)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     /* Secure ROM has left firewall regions for FSS DAT0 set.  Disable them for DMA usage. */
     uint16_t i;
     struct tisci_msg_fwl_set_firewall_region_resp respFwCtrl = {0};
