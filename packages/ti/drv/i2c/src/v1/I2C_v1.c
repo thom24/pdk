@@ -626,15 +626,17 @@ static void I2C_v1_hwiFxn(uintptr_t arg);   /* for misra warnings*/
 static void I2C_v1_hwiFxn(uintptr_t arg)
 {
 	I2C_Handle          handle = (I2C_Handle)arg;
-    I2C_v1_Object      *object = NULL;
 
     /* Input parameter validation */
     if (handle != NULL)
     {
+      I2C_v1_Object      *object = NULL;
         /* Get the pointer to the object and hwAttrs */
         object = (I2C_v1_Object *)handle->object;
 
-        if (object->currentTransaction->masterMode)
+        if((object != NULL) &&
+         (((object)->currentTransaction) != NULL) &&
+         (((object)->currentTransaction->masterMode) == (bool)true))
         {
             I2C_v1_hwiFxnMaster(handle);
         }
