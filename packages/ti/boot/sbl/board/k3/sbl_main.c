@@ -317,7 +317,11 @@ int main()
 #endif
 
     #if defined(BUILD_XIP)
-        SBL_enableXIPMode();
+        #if defined(OSPI_FREQ_133)
+            SBL_enableXIPMode(133);
+        #elif defined(OSPI_FREQ_166)
+            SBL_enableXIPMode(166);
+        #endif
     #endif
 
     /* Load SYSFW. */

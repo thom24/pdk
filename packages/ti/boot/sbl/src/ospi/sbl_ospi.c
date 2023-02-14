@@ -98,6 +98,8 @@ static OSPI_v0_HwAttrs ospi_cfg;
 
 /* Global variable to check whether BUILD_XIP is defined or not */
 bool isXIPEnable = false; 
+/* Global variable to check whether OSPI needs to run on 133 MHZ or 166 MHz while booting an application in XIP mode */
+uint32_t ospiFrequency;
 
 #if SBL_USE_DMA
 
@@ -408,8 +410,16 @@ int32_t SBL_ospiInit(void *handle)
         uint64_t ospiFunClk;
         if(isXIPEnable == true)
         {
-            ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
-            ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
+            if(ospiFrequency == 166)
+            {
+                ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
+                ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
+            }
+            else
+            {
+                ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_133M);
+                ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_2;
+            }
         }
         else
         {
@@ -731,9 +741,10 @@ void SBL_OSPI_seek(void *srcAddr, uint32_t location)
     *((uint32_t *) srcAddr) = location;
 }
 
-void SBL_enableXIPMode()
+void SBL_enableXIPMode(uint32_t freq)
 {
     isXIPEnable = true;
+    ospiFrequency = freq;
 }
 
 

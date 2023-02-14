@@ -1412,7 +1412,7 @@ export sbl_xip_img_hs_COMP_LIST = sbl_xip_img_hs
 sbl_xip_img_hs_RELPATH = ti/boot/sbl/board/k3
 sbl_xip_img_hs_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)_hs/xip/bin
 sbl_xip_img_hs_PATH = $(PDK_SBL_COMP_PATH)/board/k3
-export sbl_xip_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS) BOOTMODE=xip SBL_USE_DMA=no BUILD_HS=yes
+export sbl_xip_img_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS) BOOTMODE=xip OSPI_FREQ=166 SBL_USE_DMA=no BUILD_HS=yes
 export sbl_xip_img_hs_SBL_CERT_KEY=$(SBL_CERT_KEY_HS)
 export sbl_xip_img_hs_BOARD_DEPENDENCY = yes
 export sbl_xip_img_hs_SOC_DEPENDENCY = yes
@@ -1480,6 +1480,35 @@ export sbl_boot_perf_cust_img_$(SOC)_CORELIST
 sbl_EXAMPLE_LIST += sbl_boot_perf_cust_img
 sbl_boot_perf_cust_img_SBL_IMAGEGEN = yes
 export sbl_boot_perf_cust_img_SBL_IMAGEGEN
+
+# SBL XIP image
+# Used to boot an application directly from OSPI flash at 133 MHz
+# Used to validate xip memory benchmarking apps at 133 MHz frequency
+sbl_xip_133_img_COMP_LIST = sbl_xip_133_img
+sbl_xip_133_img_RELPATH = ti/boot/sbl/board/k3
+sbl_xip_133_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/xip/bin
+sbl_xip_133_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+sbl_xip_133_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=xip OSPI_FREQ=133 SBL_USE_DMA=no CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
+export sbl_xip_133_img_MAKEFILE
+export sbl_xip_133_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_xip_133_img_BOARD_DEPENDENCY = yes
+sbl_xip_133_img_SOC_DEPENDENCY = yes
+sbl_xip_133_img_CORE_DEPENDENCY = no
+export sbl_xip_133_img_COMP_LIST
+export sbl_xip_133_img_BOARD_DEPENDENCY
+export sbl_xip_133_img_SOC_DEPENDENCY
+export sbl_xip_133_img_CORE_DEPENDENCY
+sbl_xip_133_img_PKG_LIST = sbl
+sbl_xip_133_img_INCLUDE = $(sbl_xip_133_img_PATH)
+sbl_xip_133_img_SOCLIST = $(CUST_SBL_TEST_SOCS)
+sbl_xip_133_img_BOARDLIST = $(CUST_SBL_TEST_BOARDS)
+export sbl_xip_133_img_SOCLIST
+export sbl_xip_133_img_BOARDLIST
+sbl_xip_133_img_$(SOC)_CORELIST = mcu1_0
+export sbl_xip_133_img_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_xip_133_img
+sbl_xip_133_img_SBL_IMAGEGEN = yes
+export sbl_xip_133_img_SBL_IMAGEGEN
 
 # SBL custom image - For HS build
 export sbl_cust_img_hs_COMP_LIST = sbl_cust_img_hs

@@ -34,8 +34,13 @@ ifeq ($(BOOT_PERF), yes)
   APP_NAME = sbl_boot_perf_cust_img
   LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_$(CORE)
 else ifeq ($(BOOTMODE), xip)
-  APP_NAME = sbl_xip_img$(HS_SUFFIX)
-  LOCAL_APP_NAME = sbl_xip_img_$(CORE)
+  ifeq ($(OSPI_FREQ), 133)
+    APP_NAME = sbl_xip_133_img$(HS_SUFFIX)
+    LOCAL_APP_NAME = sbl_xip_133_img_$(CORE)
+  else
+    APP_NAME = sbl_xip_img$(HS_SUFFIX)
+    LOCAL_APP_NAME = sbl_xip_img_$(CORE)
+  endif
 else
   APP_NAME = sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
   LOCAL_APP_NAME=sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
@@ -67,7 +72,12 @@ ifeq ($(BOOTMODE), cust)
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(HS_SUFFIX)
 else ifeq ($(BOOTMODE), xip)
   SBL_CFLAGS = $(CUST_SBL_FLAGS)
-  SBL_CFLAGS += -BUILD_XIP
+  SBL_CFLAGS += -DBUILD_XIP
+  ifeq ($(OSPI_FREQ), 133)
+    SBL_CFLAGS += -DOSPI_FREQ_133
+  else
+    SBL_CFLAGS += -DOSPI_FREQ_166
+  endif
   COMP_LIST_COMMON += sbl_lib_cust$(HS_SUFFIX)
 else
   COMP_LIST_COMMON += sbl_lib_$(BOOTMODE)$(DMA_SUFFIX)$(HLOS_SUFFIX)$(HS_SUFFIX)
