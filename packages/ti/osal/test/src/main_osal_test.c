@@ -320,7 +320,7 @@ void Board_initOSAL(void)
 #if defined (BUILD_MCU) && defined (SAFERTOS)
 uint8_t gFloatingNoiseTaskStack[4*1024] __attribute__((aligned(4*1024)));
 #else
-uint8_t gFloatingNoiseTaskStack[4*1024];
+uint8_t gFloatingNoiseTaskStack[32*1024] __attribute__(( aligned( 128 )));
 #endif
 SemaphoreP_Handle noiseSem, floatSem;
 
@@ -360,6 +360,7 @@ bool OSAL_floating_point_test()
     uint8_t count = FLOAT_CALC_ITER;
     TaskP_Params taskParams;
     SemaphoreP_Params semParams;
+    TaskP_Handle taskHandle;
     bool retval = false;
  
     /* Initialize and create Noise task and task faculties. */
@@ -372,7 +373,11 @@ bool OSAL_floating_point_test()
     SemaphoreP_Params_init(&semParams);
     floatSem = SemaphoreP_create(0U, &semParams);
  
-    TaskP_create(&floatingNoiseTaskFxn, &taskParams);
+    taskHandle = TaskP_create(&floatingNoiseTaskFxn, &taskParams);
+    if (taskHandle == NULL)
+    {
+        OSAL_log("\n Floating Noise Task could not be created!!\n");
+    }
    
     /* Floating point calculations under test here, while exchanging CPU time with the noisy floating point task. */
     while (count--)
