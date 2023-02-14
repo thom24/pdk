@@ -1454,6 +1454,35 @@ sbl_EXAMPLE_LIST += sbl_cust_img
 sbl_cust_img_SBL_IMAGEGEN = yes
 export sbl_cust_img_SBL_IMAGEGEN
 
+# SBL custom image which RAT maps main OCM to DDR(0xD0000000)
+# This SBL target is used to run ocmc_memory_benchmarking app on mcu2_0.
+# Since main OCM is situated at 40 bit address RAT map main OCM to 0xD0000000
+sbl_cust_rat_main_ocm_img_COMP_LIST = sbl_cust_rat_main_ocm_img
+sbl_cust_rat_main_ocm_img_RELPATH = ti/boot/sbl/board/k3
+sbl_cust_rat_main_ocm_img_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/cust/bin
+sbl_cust_rat_main_ocm_img_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+sbl_cust_rat_main_ocm_img_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=cust RAT=1 SBL_USE_DMA=no BUILD_HS=no CUST_SBL_FLAGS=$(CUST_SBL_TEST_FLAGS)
+export sbl_cust_rat_main_ocm_img_MAKEFILE
+export sbl_cust_rat_main_ocm_img_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_cust_rat_main_ocm_img_BOARD_DEPENDENCY = yes
+sbl_cust_rat_main_ocm_img_SOC_DEPENDENCY = yes
+sbl_cust_rat_main_ocm_img_CORE_DEPENDENCY = no
+export sbl_cust_rat_main_ocm_img_COMP_LIST
+export sbl_cust_rat_main_ocm_img_BOARD_DEPENDENCY
+export sbl_cust_rat_main_ocm_img_SOC_DEPENDENCY
+export sbl_cust_rat_main_ocm_img_CORE_DEPENDENCY
+sbl_cust_rat_main_ocm_img_PKG_LIST = sbl
+sbl_cust_rat_main_ocm_img_INCLUDE = $(sbl_cust_rat_main_ocm_img_PATH)
+sbl_cust_rat_main_ocm_img_SOCLIST = j7200
+sbl_cust_rat_main_ocm_img_BOARDLIST = j7200_evm
+export sbl_cust_rat_main_ocm_img_SOCLIST
+export sbl_cust_rat_main_ocm_img_BOARDLIST
+sbl_cust_rat_main_ocm_img_$(SOC)_CORELIST = mcu1_0
+export sbl_cust_rat_main_ocm_img_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_cust_rat_main_ocm_img
+sbl_cust_rat_main_ocm_img_SBL_IMAGEGEN = yes
+export sbl_cust_rat_main_ocm_img_SBL_IMAGEGEN
+
 # SBL perf custom image 
 sbl_boot_perf_cust_img_COMP_LIST = sbl_boot_perf_cust_img
 sbl_boot_perf_cust_img_RELPATH = ti/boot/sbl/board/k3
