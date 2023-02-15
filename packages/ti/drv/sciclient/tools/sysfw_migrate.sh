@@ -142,17 +142,6 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM -fr binaries/system-firmware-full-documentation
     $RM -fr docs/BUILD.md
     $RM -fr reports
-    $ECHO "Modifying SR2 headers such that they don't cause any collisions with the SR1 headers"
-
-    # Remove files which are the same between AM65 and AM65 SR2
-
-    # Include guards need to be modified to remove collision with SR1
-    sed -i 's/SOC_TISCI_DEVICES_H/&_SR2/' include/am65x_sr2/tisci_devices.h
-    sed -i 's/SOC_AM6_CLOCKS_H/&_SR2/' include/am65x_sr2/tisci_clocks.h
-
-    # RM cfg count needs to be modified to remove collision with SR1
-    sed -i 's/TISCI_RESASG_UTYPE_CNT/&_SR2/' include/am65x_sr2/tisci_resasg_types.h
-
 fi
 
 ################################################################################
