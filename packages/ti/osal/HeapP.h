@@ -132,6 +132,15 @@ extern HeapP_Status HeapP_delete(HeapP_Handle handle);
  * @param handle    [in] Heap handle
  * @param allocSize [in] Size of memory to allocate
  *
+ * NOTE: Application should make sure that there is no buffer overflow. 
+ * i.e., writing to memory beyond allocated size for this heap chunk would 
+ * potentially cause unexpected failures.
+ * Specifically the heap implementation stores relevant software book-keeping 
+ * parameters in the unallocated/free heap regions. Overflow of a previous 
+ * allocated buffer could corrupt this and could cause issues with successive 
+ * heap allocations. Similarly this could also corrupt the contents of 
+ * successive allocated buffers as well.
+ * 
  * \return pointer to allcoated memory
  * \return NULL - memory could not be allocated since a free block of required size could not be found
  */
