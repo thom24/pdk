@@ -188,6 +188,7 @@ bool Board_isAlpha(uint32_t boardID)
     Board_STATUS status;
     bool alphaBoard = FALSE;
 
+    memset(&info, 0x0, sizeof(info));
     status = Board_getBoardData(&info, boardID);
     if(status == 0)
     {
@@ -268,6 +269,7 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
     Board_STATUS status;
     uint8_t macCount = 0;
 
+    memset(&info, 0x0, sizeof(info));
     if((boardID <= BOARD_ID_SOM) && (macAddrBuf != NULL))
     {
         status = Board_getBoardData(&info, boardID);
@@ -324,6 +326,7 @@ Board_STATUS Board_readMacAddrCount(uint32_t boardID,
     Board_IDInfo_v2 info;
     Board_STATUS status;
 
+    memset(&info, 0x0, sizeof(info));
     if((boardID <= BOARD_ID_SOM) && (macAddrCnt != NULL))
     {
         status = Board_getBoardData(&info, boardID);
