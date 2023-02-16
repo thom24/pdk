@@ -1890,15 +1890,15 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
     Udma_DrvHandle     drvHandle;
     uint32_t           chNum;
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-    CSL_UdmapChanStats udmapChanStats = {0U};
+    CSL_UdmapChanStats udmapChanStats;
     CSL_UdmapChanDir   udmapChDir;
 #endif
 #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
-    CSL_BcdmaChanStats  bcdmaChanStats = {0U};
+    CSL_BcdmaChanStats  bcdmaChanStats;
     CSL_BcdmaChanDir    bcdmaChDir;
 #endif
 #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
-    CSL_PktdmaChanStats pktdmaChanStats = {0U};
+    CSL_PktdmaChanStats pktdmaChanStats;
     CSL_PktdmaChanDir   pktdmaChDir;
 #endif
 
@@ -1947,6 +1947,7 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
                     udmapChDir = CSL_UDMAP_CHAN_DIR_RX;
                 }
             }
+            memset(&udmapChanStats, 0, sizeof(CSL_UdmapChanStats));
             CSL_udmapGetChanStats(&drvHandle->udmapRegs, chNum, udmapChDir, &udmapChanStats);
             (void)memcpy(chStats, &udmapChanStats, sizeof(Udma_ChStats));
         }
@@ -1979,6 +1980,7 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
                     bcdmaChDir = CSL_BCDMA_CHAN_DIR_RX;
                 }
             }
+            memset(&bcdmaChanStats, 0, sizeof(CSL_BcdmaChanStats));
             CSL_bcdmaGetChanStats(&drvHandle->bcdmaRegs, chNum, bcdmaChDir, &bcdmaChanStats);
             (void)memcpy(chStats, &bcdmaChanStats, sizeof(Udma_ChStats));
         }
@@ -2009,6 +2011,7 @@ int32_t Udma_chGetStats(Udma_ChHandle chHandle, Udma_ChStats *chStats)
                     pktdmaChDir = CSL_PKTDMA_CHAN_DIR_RX;
                 }
             }
+            memset(&pktdmaChanStats, 0, sizeof(CSL_PktdmaChanStats));
             CSL_pktdmaGetChanStats(&drvHandle->pktdmaRegs, chNum, pktdmaChDir, &pktdmaChanStats);
             (void)memcpy(chStats, &pktdmaChanStats, sizeof(Udma_ChStats));
         }
