@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2021 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2021-2023 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -43,6 +43,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #include "board_internal.h"
 #include "board_utils.h"
+#include "board_info_ddr.h"
 #include "board_cfg.h"
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
@@ -121,7 +122,28 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
     i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
-    status = Board_getIDInfo_v2(info, gBoardDetCfg[boardID].slaveAddr);
+    if(Board_isBoardDDRIdDataValid())
+    {
+        if((boardID == BOARD_ID_GESI) ||
+           (boardID == BOARD_ID_CP))
+        {
+            status = Board_getBoardIdData(info, boardID);
+            if(status != BOARD_SOK)
+            {
+#if defined(BOARD_ID_MEMORY_DUMP_ERR_FALLBACK)
+                status = Board_getIDInfo_v2(info, gBoardDetCfg[boardID].slaveAddr);
+#endif
+            }
+        }
+        else
+        {
+            status = Board_getIDInfo_v2(info, gBoardDetCfg[boardID].slaveAddr);
+        }
+    }
+    else
+    {
+        status = Board_getIDInfo_v2(info, gBoardDetCfg[boardID].slaveAddr);
+    }
 
     return status;
 }
