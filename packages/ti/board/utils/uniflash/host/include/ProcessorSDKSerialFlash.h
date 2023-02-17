@@ -56,7 +56,7 @@ int xmodemHTransfer ( unsigned char*, int, int, int );
 
 using namespace std;
 
-#define VERSION "1.7.0.0"
+#define VERSION "1.8.0.0"
 
 #define NUM_OF_SYSFW             2
 

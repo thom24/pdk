@@ -1979,7 +1979,9 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 		{
 			char* ext;
 			ext = strrchr((char*)*optInVal,'.');
+#ifdef DEBUG
 			cout<<"The file extension is "<<ext<<endl;
+#endif
 			if(!(strcmp( ext,".appimage_xip" )))
 			{
 				program = PROGRAM_XIP_CMD;
