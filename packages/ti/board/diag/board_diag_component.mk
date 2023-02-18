@@ -1111,9 +1111,10 @@ board_diag_img_$(SOC)_CORELIST = mpu1_0
 export board_diag_img_$(SOC)_CORELIST
 board_diag_EXAMPLE_LIST += board_diag_img
 
-ifeq ($(BUILD_BOARD_DIAG),yes)
-export board_diag_EXAMPLE_LIST
+ifneq ($(BUILD_BOARD_DIAG),yes)
+board_diag_EXAMPLE_LIST =
 endif
+export board_diag_EXAMPLE_LIST
 
 # Diagnostic test build flags
 ifeq ($(BUILD_PROFILE),debug)
