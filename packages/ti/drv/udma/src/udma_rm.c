@@ -2246,13 +2246,20 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
 
             const Udma_RmDefBoardCfgResp *resp = Udma_rmGetLocalBoardCfgResp(rmId);
 
-            retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(rmId),
-                                                    Udma_getCoreId(),
-                                                    UDMA_CORE_ID_C7X_1,
-                                                    resp->rangeStart,
-                                                    resp->rangeNum,
-                                                    &rmInitPrms->startUtcCh[utcId],
-                                                    &rmInitPrms->numUtcCh[utcId]);
+            if(resp != NULL_PTR)
+            {
+                retVal += Udma_rmSetSharedResRmInitPrms(Udma_rmGetSharedResPrms(rmId),
+                                                        Udma_getCoreId(),
+                                                        UDMA_CORE_ID_C7X_1,
+                                                        resp->rangeStart,
+                                                        resp->rangeNum,
+                                                        &rmInitPrms->startUtcCh[utcId],
+                                                        &rmInitPrms->numUtcCh[utcId]);
+            }
+            else
+            {
+                retVal = UDMA_EFAIL;
+            }
         }
     #endif
     #endif
@@ -2335,13 +2342,20 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
          * startResrvCnt and endResrvCnt are number of interrupts reserved for other
          * drivers, can't be used by UDMA driver. \ref Udma_RmSharedResPrms
          */
-        totalResrvIntr  = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt);
-        numIrIntrAvbl   = (rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - totalResrvIntr);
-
-        /* Make sure that number of interrupts never execeeds number of C7x events for UDMA driver */
-        if(numIrIntrAvbl > UDMA_C7X_CORE_NUM_INTR)
+        if(rmSharedResPrms != NULL_PTR)
         {
-            rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum = totalResrvIntr + UDMA_C7X_CORE_NUM_INTR;
+            totalResrvIntr  = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt);
+            numIrIntrAvbl   = (rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - totalResrvIntr);
+
+            /* Make sure that number of interrupts never execeeds number of C7x events for UDMA driver */
+            if(numIrIntrAvbl > UDMA_C7X_CORE_NUM_INTR)
+            {
+                rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum = totalResrvIntr + UDMA_C7X_CORE_NUM_INTR;
+            }
+        }
+        else
+        {
+            retVal = UDMA_EFAIL;
         }
 #endif
     #if (UDMA_SOC_CFG_INTR_ROUTER_PRESENT == 1)   
