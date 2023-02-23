@@ -4,14 +4,19 @@
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
 APP_NAME = sbl_boot_test
-BUILD_OS_TYPE = baremetal
-LOCAL_APP_NAME = sbl_$(BUILD_OS_TYPE)_boot_test_$(BOARD)_$(CORE)TestApp
+ifneq ($(CORE), $(filter $(CORE), mcu1_0 c7x_1 c7x_2 c7x_3 c7x_4 c66xdsp_1 c66xdsp_2))
+  BUILD_OS_TYPE = baremetal
+else
+  BUILD_OS_TYPE = freertos
+endif
+LOCAL_APP_NAME = sbl_boot_test_$(BOARD)_$(CORE)TestApp
 
 SBL_SRC_DIR =  $(PDK_INSTALL_PATH)/ti/boot/sbl
 
 SRCDIR      += $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
 
 INCDIR      += $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+INCDIR      += $(PDK_INSTALL_PATH)
 
 
 
@@ -28,7 +33,7 @@ COMP_LIST_COMMON =
 SRCS_COMMON += sbl_amp_multicore.c sbl_printf.c
 
 # asm files and linker scripts change due to different tool chains for R5 and A53
-ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1))
+ifeq ($(CORE),$(filter $(CORE), mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1))
   SRCS_ASM_COMMON = sbl_multicore_r5.asm
   EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mcuAmplinker.lds
   APPEND_LNKCMD_FILE = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mcuAmplinker_$(CORE).lds
@@ -37,6 +42,18 @@ endif
 ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3))
   SRCS_ASM_COMMON = sbl_multicore_a53.asm
   LNKCMD_FILE = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/mpuAmplinker.lds
+endif
+
+ifeq ($(CORE),$(filter $(CORE), mcu1_0 c7x_1 c7x_2 c7x_3 c7x_4 c66xdsp_1 c66xdsp_2))
+  COMP_LIST_COMMON += $(PDK_COMMON_FREERTOS_COMP)
+  INCLUDE_EXTERNAL_INTERFACES += freertos
+  SRCS_COMMON += main_rtos.c
+  ifeq ($(CORE), mcu1_0)
+    COMP_LIST_COMMON += sciserver_tirtos
+    EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/linker_mcu1_0.lds
+  else
+    EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/$(SOC)/dspAMPlinker_$(CORE).lds
+  endif
 endif
 
 # Core/SoC/platform specific source files and CFLAGS

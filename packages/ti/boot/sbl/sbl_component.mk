@@ -71,19 +71,17 @@ sbl_SOCLIST = j721e j7200 j721s2 j784s4
 
 j721e_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
 sbl_j721e_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
-j721e_LASTCORE := $(word $(words $(sbl_j721e_CORELIST)), $(sbl_j721e_CORELIST))
 
 j7200_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
 sbl_j7200_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
-j7200_LASTCORE := $(word $(words $(sbl_j7200_CORELIST)), $(sbl_j7200_CORELIST))
 
 j721s2_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
 sbl_j721s2_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
-j721s2_LASTCORE := $(word $(words $(sbl_j721s2_CORELIST)), $(sbl_j721s2_CORELIST))
 
 j784s4_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mcu4_0 mpu1_0 mpu2_0
 sbl_j784s4_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
-j784s4_LASTCORE := $(word $(words $(sbl_j784s4_CORELIST)), $(sbl_j784s4_CORELIST))
+
+$(SOC)_LASTCORE := $(word $(words $(sbl_$(SOC)_CORELIST)), $(sbl_$(SOC)_CORELIST)))
 
 sbl_DISABLE_PARALLEL_MAKE = yes
 ############################
@@ -946,32 +944,32 @@ sbl_EXAMPLE_LIST += sbl_boot_test
 sbl_boot_test_SBL_APPIMAGEGEN = yes
 export sbl_boot_test_SBL_APPIMAGEGEN
 
-# Multicore AMP Boot Test
-sbl_multicore_amp_COMP_LIST = sbl_multicore_amp
-sbl_multicore_amp_RELPATH = ti/boot/sbl/example/k3MulticoreApp
-sbl_multicore_amp_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
-sbl_multicore_amp_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
-sbl_multicore_amp_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_multicore_amp.mk
-export sbl_multicore_amp_MAKEFILE
-# SBL multicore amp depends on sbl_boot_test for all the cores
-sbl_multicore_amp_DEPENDS_ON=sbl_boot_test
-export sbl_multicore_amp_DEPENDS_ON
-sbl_multicore_amp_BOARD_DEPENDENCY = no
-sbl_multicore_amp_SOC_DEPENDENCY = no
-sbl_multicore_amp_CORE_DEPENDENCY = no
-export sbl_multicore_amp_COMP_LIST
-export sbl_multicore_amp_BOARD_DEPENDENCY
-export sbl_multicore_amp_SOC_DEPENDENCY
-export sbl_multicore_amp_CORE_DEPENDENCY
-sbl_multicore_amp_PKG_LIST = sbl_multicore_amp
-sbl_multicore_amp_INCLUDE = $(sbl_multicore_amp_PATH)
-sbl_multicore_amp_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_multicore_amp_BOARDLIST
-sbl_multicore_amp_$(SOC)_CORELIST = $($(SOC)_LASTCORE)
-export sbl_multicore_amp_$(SOC)_CORELIST
-sbl_EXAMPLE_LIST += sbl_multicore_amp
-sbl_multicore_amp_SBL_APPIMAGEGEN = no
-export sbl_multicore_amp_SBL_APPIMAGEGEN
+# Multicore Boot Test
+sbl_multicore_boot_test_COMP_LIST = sbl_multicore_boot_test
+sbl_multicore_boot_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
+sbl_multicore_boot_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+sbl_multicore_boot_test_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+sbl_multicore_boot_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_multicore_boot_test.mk
+export sbl_multicore_boot_test_MAKEFILE
+# SBL multicore boot depends on sbl_boot_test for all the cores
+sbl_multicore_boot_test_DEPENDS_ON=sbl_boot_test
+export sbl_multicore_boot_test_DEPENDS_ON
+sbl_multicore_boot_test_BOARD_DEPENDENCY = no
+sbl_multicore_boot_test_SOC_DEPENDENCY = no
+sbl_multicore_boot_test_CORE_DEPENDENCY = no
+export sbl_multicore_boot_test_COMP_LIST
+export sbl_multicore_boot_test_BOARD_DEPENDENCY
+export sbl_multicore_boot_test_SOC_DEPENDENCY
+export sbl_multicore_boot_test_CORE_DEPENDENCY
+sbl_multicore_boot_test_PKG_LIST = sbl_multicore_boot_test
+sbl_multicore_boot_test_INCLUDE = $(sbl_multicore_boot_test_PATH)
+sbl_multicore_boot_test_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_multicore_boot_test_BOARDLIST
+sbl_multicore_boot_test_$(SOC)_CORELIST = $($(SOC)_LASTCORE)
+export sbl_multicore_boot_test_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_multicore_boot_test
+sbl_multicore_boot_test_SBL_APPIMAGEGEN = no
+export sbl_multicore_boot_test_SBL_APPIMAGEGEN
 
 # R5 Lockstep and MPU SMP Boot Test
 sbl_smp_test_COMP_LIST = sbl_smp_test

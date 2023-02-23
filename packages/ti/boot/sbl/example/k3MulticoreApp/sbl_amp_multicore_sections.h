@@ -30,25 +30,20 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+/* SBL_AMP_TEST_NUM_BOOT_CORES indicates numbers cores in SOC */
 #if defined (SOC_J7200)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (6)
 #endif
 #if defined (SOC_J721S2)
-#define SBL_AMP_TEST_NUM_BOOT_CORES (8)
-// Currently the amp test does not have an
-// app for c7x_0, c7x_1
+#define SBL_AMP_TEST_NUM_BOOT_CORES (10)
 #endif
 #if defined (SOC_J784S4)
-#define SBL_AMP_TEST_NUM_BOOT_CORES (16)
+#define SBL_AMP_TEST_NUM_BOOT_CORES (20)
+#endif
+#if defined (SOC_J721E)
+#define SBL_AMP_TEST_NUM_BOOT_CORES (11)
 #endif
 
-#if defined (SOC_J721E)
-#define SBL_AMP_TEST_NUM_BOOT_CORES (8)
-// Currently the amp test does not have an
-// app for c66x_1, c66x_2 and c7x
-//#define SBL_AMP_TEST_NUM_BOOT_CORES (11)
-#endif
-#if defined(SOC_J784S4)
 #define POKE_MEM_ADDR_MCU1_0 0x41CE1FFC
 #define POKE_MEM_ADDR_MCU1_1 0x41CE2FFC
 #define POKE_MEM_ADDR_MCU2_0 0x41CE3FFC
@@ -71,22 +66,6 @@
 #define POKE_MEM_ADDR_MPU2_1 0x41CF4FFC
 #define POKE_MEM_ADDR_MPU2_2 0x41CF5FFC
 #define POKE_MEM_ADDR_MPU2_3 0x41CF6FFC
-#else
-#define POKE_MEM_ADDR_MCU1_0 0x41CE1FFC
-#define POKE_MEM_ADDR_MCU1_1 0x41CE3FFC
-#define POKE_MEM_ADDR_MCU2_0 0x41CE5FFC
-#define POKE_MEM_ADDR_MCU2_1 0x41CE7FFC
-#define POKE_MEM_ADDR_MCU3_0 0x41CE9FFC
-#define POKE_MEM_ADDR_MCU3_1 0x41CEBFFC
-#define POKE_MEM_ADDR_C66X_0 0x41CEDFFC
-#define POKE_MEM_ADDR_C66X_1 0x41CEFFFC
-#define POKE_MEM_ADDR_C7X_0  0x41CF1FFC
-#define POKE_MEM_ADDR_C7X_1  0x41CF3FFC
-#define POKE_MEM_ADDR_MPU1_0 0x41CF5FFC
-#define POKE_MEM_ADDR_MPU1_1 0x41CF7FFC
-#define POKE_MEM_ADDR_MPU2_0 0x41CF9FFC
-#define POKE_MEM_ADDR_MPU2_1 0x41CFBFFC
-#endif
 
 #define START_CHECK_ADDR 0x7002DFFC
 #define CORE_COUNTER_ADDR 0x7002FFFC
@@ -94,157 +73,159 @@
 #define PUTS_BUFFER 0x70033FFC //should be 2 bytes
 #define STARTED 0xDEADBEEF
 #define SEMAPHORE 0xBEEEEF00
+#define POKE_MEM_ADDR_GAP 0x400
 
+/* BOOT_DELAY is used to halt the core for some time using while(boot_delay--) */
 #ifdef BUILD_MCU1_0
     #define CORE_NAME "MCU1_0"
-    #define BOOT_DELAY (0x2A0000)
+    #define BOOT_DELAY (0x600000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU1_0)
     __attribute__((section(".sbl_mcu_1_0_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_MCU1_1
     #define CORE_NAME "MCU1_1"
-    #define BOOT_DELAY (0x80000)
+    #define BOOT_DELAY (0x700000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU1_1)
     __attribute__((section(".sbl_mcu_1_1_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_MCU2_0
     #define CORE_NAME "MCU2_0"
-    #define BOOT_DELAY (0xA0000)
+    #define BOOT_DELAY (0x340000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU2_0)
     __attribute__((section(".sbl_mcu_2_0_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_MCU2_1
     #define CORE_NAME "MCU2_1"
-    #define BOOT_DELAY (0xC0000)
+    #define BOOT_DELAY (0x380000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU2_1)
     __attribute__((section(".sbl_mcu_2_1_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_MCU3_0
     #define CORE_NAME "MCU3_0"
-    #define BOOT_DELAY (0xE0000)
+    #define BOOT_DELAY (0x4C0000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU3_0)
     __attribute__((section(".sbl_mcu_3_0_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_MCU3_1
     #define CORE_NAME "MCU3_1"
-    #define BOOT_DELAY (0x100000)
+    #define BOOT_DELAY (0x500000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU3_1)
     __attribute__((section(".sbl_mcu_3_1_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_MCU4_0
     #define CORE_NAME "MCU4_0"
-    #define BOOT_DELAY (0x120000)
+    #define BOOT_DELAY (0x540000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU4_0)
     __attribute__((section(".sbl_mcu_4_0_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_MCU4_1
     #define CORE_NAME "MCU4_1"
-    #define BOOT_DELAY (0x140000)
+    #define BOOT_DELAY (0x580000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MCU4_1)
     __attribute__((section(".sbl_mcu_4_1_resetvector"))) void sbl_puts(char *str);
 #endif
 
 #ifdef BUILD_C66X_1
     #define CORE_NAME "C66X_0"
-    #define BOOT_DELAY (0x160000)
+    #define BOOT_DELAY (0x80000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_C66X_0)
     #pragma SET_CODE_SECTION(".sbl_c66x_0_resetvector")
 #endif
 
 #ifdef BUILD_C66X_2
     #define CORE_NAME "C66X_1"
-    #define BOOT_DELAY (0x180000)
+    #define BOOT_DELAY (0xA0000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_C66X_1)
     #pragma SET_CODE_SECTION(".sbl_c66x_1_resetvector")
 #endif
 
 #ifdef BUILD_C7X_1
     #define CORE_NAME "C7X_0"
-    #define BOOT_DELAY (0x1A0000)
+    #define BOOT_DELAY (0x40000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_C7X_0)
     #pragma SET_CODE_SECTION(".sbl_c7x_0_resetvector")
 #endif
 
 #ifdef BUILD_C7X_2
     #define CORE_NAME "C7X_1"
-    #define BOOT_DELAY (0x1C0000)
+    #define BOOT_DELAY (0x80000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_C7X_1)
     #pragma SET_CODE_SECTION(".sbl_c7x_1_resetvector")
 #endif
 
 #ifdef BUILD_C7X_3
     #define CORE_NAME "C7X_2"
-    #define BOOT_DELAY (0x1E0000)
+    #define BOOT_DELAY (0xC0000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_C7X_2)
     #pragma SET_CODE_SECTION(".sbl_c7x_2_resetvector")
 #endif
 
 #ifdef BUILD_C7X_4
     #define CORE_NAME "C7X_3"
-    #define BOOT_DELAY (0x200000)
+    #define BOOT_DELAY (0x100000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_C7X_3)
     #pragma SET_CODE_SECTION(".sbl_c7x_3_resetvector")
 #endif
 
 #ifdef BUILD_MPU1_0
     #define CORE_NAME "MPU1_0"
-    #define BOOT_DELAY (0x1)
+    #define BOOT_DELAY (0x140000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_0)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_0_resetvector")));
 #endif
 
 #ifdef BUILD_MPU1_1
     #define CORE_NAME "MPU1_1"
-    #define BOOT_DELAY (0x20000)
+    #define BOOT_DELAY (0x180000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_1)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_1_resetvector")));
 #endif
 
 #ifdef BUILD_MPU1_2
     #define CORE_NAME "MPU1_2"
-    #define BOOT_DELAY (0x40000)
+    #define BOOT_DELAY (0x1C0000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_2)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
 #endif
 
 #ifdef BUILD_MPU1_3
     #define CORE_NAME "MPU1_3"
-    #define BOOT_DELAY (0x60000)
+    #define BOOT_DELAY (0x200000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_3)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_0
     #define CORE_NAME "MPU2_0"
-    #define BOOT_DELAY (0x80000)
+    #define BOOT_DELAY (0x240000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_0)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_0_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_1
     #define CORE_NAME "MPU2_1"
-    #define BOOT_DELAY (0xA0000)
+    #define BOOT_DELAY (0x280000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_1)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_1_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_2
     #define CORE_NAME "MPU2_2"
-    #define BOOT_DELAY (0xC0000)
+    #define BOOT_DELAY (0x2C0000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_2)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_3
     #define CORE_NAME "MPU2_3"
-    #define BOOT_DELAY (0xE0000)
+    #define BOOT_DELAY (0x300000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_3)
     int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
 #endif

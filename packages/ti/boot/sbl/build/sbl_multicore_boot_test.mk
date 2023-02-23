@@ -4,15 +4,14 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-APP_NAME = sbl_multicore_amp
-BUILD_OS_TYPE = baremetal
+APP_NAME = sbl_multicore_boot_test
 
 SRCDIR      += $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
 
 # Local name of SBL test app
-RPRC_PREFIX = sbl_$(BUILD_OS_TYPE)_boot_test_$(BOARD)
+RPRC_PREFIX = sbl_boot_test_$(BOARD)
 
-MULTICORE_IMG_PARAMS = $(foreach SOC_CORE_ID, $(sbl_boot_test_$(SOC)_CORELIST), $(SBL_CORE_ID_$(SOC_CORE_ID)) $(BINDIR)/$(RPRC_PREFIX)_$(SOC_CORE_ID)TestApp_$(BUILD_PROFILE_$(CORE)).rprc)
+MULTICORE_IMG_PARAMS = $(foreach SOC_CORE_ID, $(sbl_boot_test_$(SOC)_CORELIST), $(SBL_CORE_ID_$(SOC_CORE_ID)) $(BINDIR)/$(RPRC_PREFIX)_$(SOC_CORE_ID)TestApp_release.rprc)
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS)
 PACKAGE_SRCS_COMMON = .

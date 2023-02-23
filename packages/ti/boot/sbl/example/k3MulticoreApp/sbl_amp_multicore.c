@@ -39,63 +39,43 @@ int sblTestmain(void)
     volatile int *bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
     volatile int boot_delay = BOOT_DELAY, num_cores_booted = 0;
 
-    // if we have run before, someone
-    // reset the system, dont print message
+    /* if we have run before, someone
+       reset the system, dont print message */
     if (*pokeMemAddr != 0xC0DEBABE)
     {
         while (boot_delay--);
         sbl_puts(CORE_NAME);
         sbl_puts(" running\n\r");
-        // log completion
+        /* log completion */
         *pokeMemAddr = 0xC0DEBABE;
         #if defined(BUILD_XIP)
             sbl_puts("XIP Boot test has passed\n\r");
         #endif
     }
 
-    // Check if all cores have run by checking flags
-    // left in MSMC by each cores testcase
-    #if defined(SOC_J784S4)
-        while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3)
+    /* Check if all cores have run by checking flags
+       left in MSMC by each cores testcase */
+    while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3)
+    {
+        if (*bootFlagAddr == 0xC0DEBABE)
         {
-            if (*bootFlagAddr == 0xC0DEBABE)
-            {
-                num_cores_booted++;
-            }
-            bootFlagAddr += 0x400;
+            num_cores_booted++;
         }
-    #else
-        while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1)
-        {
-            if (*bootFlagAddr == 0xC0DEBABE)
-            {
-                num_cores_booted++;
-            }
-            bootFlagAddr += 0x800;
-        }
-    #endif
+        bootFlagAddr += POKE_MEM_ADDR_GAP;
+    }
 
     if (num_cores_booted == SBL_AMP_TEST_NUM_BOOT_CORES)
     {
         sbl_puts(CORE_NAME);
         sbl_puts(" reports: All tests have passed\n\r");
 
-        // Clean up pokemem flags for the next run
-        #if defined(SOC_J784S4)
-            for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
-                bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3;
-                bootFlagAddr += 0x400)
-            {
-                *bootFlagAddr = 0xFEEDFACE;
-            }
-        #else
-            for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
-                bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_1;
-                bootFlagAddr += 0x800)
-            {
-                *bootFlagAddr = 0xFEEDFACE;
-            }
-        #endif
+        /* Clean up pokemem flags for the next run */
+        for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
+            bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3;
+            bootFlagAddr += POKE_MEM_ADDR_GAP)
+        {
+            *bootFlagAddr = 0xFEEDFACE;
+        }
     }
 
     return 0XFEEDFACE;
