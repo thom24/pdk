@@ -65,7 +65,7 @@ else ifeq ($(HLOSBOOT), qnx)
     CFLAGS_LOCAL_COMMON += -DMPU1_HLOS_BOOT_ENABLED -DHLOS_BOOT_QNX_OS
 endif
 
-EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/example/boot_app/linker_files/$(SOC)/$(CORE)/linker_r5_freertos.lds
+EXTERNAL_LNKCMD_FILE_LOCAL = $(PDK_SBL_COMP_PATH)/example/boot_app/linker_r5_freertos.lds
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )
