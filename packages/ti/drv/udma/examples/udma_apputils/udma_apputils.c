@@ -147,7 +147,7 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
 #endif
 #endif
 
-#if defined (SOC_J721E)  || defined (SOC_J7200) || defined (SOC_J721S2)
+#if defined (SOC_J721E)  || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
 #if defined (BUILD_MCU1_0)
 #if defined (SOC_J721E)
     atcmSizeLocal = CSL_MCU_ARMSS_ATCM_SIZE;
@@ -267,7 +267,7 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
 #endif
 #endif
 
-#if defined (SOC_J721E)  || defined (SOC_J7200) || defined (SOC_J721S2)
+#if defined (SOC_J721E)  || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
 #if defined (BUILD_MCU1_0)
     atcmSizeGlobal = CSL_MCU_R5FSS0_CORE0_ATCM_SIZE;
     atcmBaseGlobal = CSL_MCU_R5FSS0_CORE0_ATCM_BASE;
