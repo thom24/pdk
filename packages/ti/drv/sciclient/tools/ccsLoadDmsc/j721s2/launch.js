@@ -56,6 +56,10 @@ pdkPath = "/ti/j7presi/workarea/pdk";
 //path to board config elf
 pathSciclient = pdkPath+"/packages/ti/drv/sciclient/tools/ccsLoadDmsc/j721s2/"
 ccs_init_elf_file = pathSciclient+"sciclient_ccs_init_mcu1_0_release.xer5f";
+
+// Set this to 1, to clear 'Secure Claim' Bit in CLEC register
+clearCLECSecureClaimFlag = 1;
+
 loadSciserverFlag = 1;
 if(isFreertos == 1)
 {
@@ -230,12 +234,35 @@ function loadSciserver()
     dsMCU1_0.expression.evaluate('GEL_Load("'+ sciserver_elf_file +'")');
 }
 
+function clearCLECSecureClaim()
+{
+    dsC7X1_0 = debugServer.openSession( ".*C71X_0" );
+
+    dsC7X1_0.target.connect();
+
+    c7x_binary = pdkPath+"/packages/ti/drv/sciclient/tools/clearClecSecureClaim/sciclient_clear_clec_secure_claim_c7x_1_release.xe71";
+
+    dsC7X1_0.memory.loadProgram(c7x_binary);
+    dsC7X1_0.target.runAsynch();
+
+    // Halt and re-run since the startup code image doesn't have a main function.
+    dsC7X1_0.target.halt();
+    dsC7X1_0.target.runAsynch();
+
+    dsC7X1_0.target.disconnect();
+}
+
 function doEverything()
 {
     printVars();
     connectTargets();
     disconnectTargets();
-    // sampleDDRCheck ();
+    sampleDDRCheck ();
+    if (clearCLECSecureClaimFlag == 1)
+    {
+        print("Clearing CLEC Secure Claim...");
+        clearCLECSecureClaim();
+    }
     if (loadSciserverFlag == 1)
     {
         loadSciserver();
