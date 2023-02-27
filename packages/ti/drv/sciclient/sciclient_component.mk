@@ -263,6 +263,20 @@ export sciclient_ccs_init_SBL_APPIMAGEGEN = no
 export sciclient_ccs_init_SBL_IMAGEGEN = yes
 sciclient_EXAMPLE_LIST += sciclient_ccs_init
 
+# SCICLIENT Tools: Clear CLEC Secure Claim C7x Application
+export sciclient_clear_clec_secure_claim_COMP_LIST = sciclient_clear_clec_secure_claim
+export sciclient_clear_clec_secure_claim_RELPATH = ti/drv/sciclient/tools/clearClecSecureClaim
+export sciclient_clear_clec_secure_claim_PATH = $(PDK_SCICLIENT_COMP_PATH)/tools/clearClecSecureClaim
+export sciclient_clear_clec_secure_claim_BOARD_DEPENDENCY = no
+export sciclient_clear_clec_secure_claim_CORE_DEPENDENCY = yes
+export sciclient_clear_clec_secure_claim_PKG_LIST = sciclient_clear_clec_secure_claim
+export sciclient_clear_clec_secure_claim_INCLUDE = $(sciclient_clear_clec_secure_claim_PATH)
+export sciclient_clear_clec_secure_claim_BOARDLIST = j721e_evm j721s2_evm j784s4_evm
+# This application is only for C7x
+export sciclient_clear_clec_secure_claim_$(SOC)_CORELIST = c7x_1
+export sciclient_clear_clec_secure_claim_SBL_APPIMAGEGEN = yes
+# sciclient_EXAMPLE_LIST += sciclient_clear_clec_secure_claim
+
 # SCICLIENT RTOS Applications
 define SCICLIENT_RTOS_APP_RULE
 
