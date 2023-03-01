@@ -202,10 +202,17 @@ void * QueueP_get(QueueP_Handle handle)
     { 
         q = &queue->queueHndl;
 
-        pElem = q->next;
+        if (QueueP_isEmpty(handle) != true)
+        {
+            pElem = q->next;
 
-        q->next = pElem->next;
-        pElem->next->prev = q;
+            q->next = pElem->next;
+            pElem->next->prev = q;
+        }
+        else
+        {
+            pElem = NULL;
+        }
     }
     
     HwiP_restore(key);
