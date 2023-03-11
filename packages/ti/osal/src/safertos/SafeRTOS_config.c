@@ -161,7 +161,7 @@ const xPORT_INIT_PARAMETERS gSafertosPortInit =
     acTimerCommandQueueBuffer,          /* pcTimerCommandQueueBuffer */
 
 #if defined (BUILD_MCU)
-    pdTRUE,                             /* xEnableCache */
+    pdFALSE,                             /* xEnableCache */
 #endif
 };
 

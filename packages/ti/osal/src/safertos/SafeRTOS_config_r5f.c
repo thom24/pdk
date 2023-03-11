@@ -61,6 +61,12 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
+/* Disable I/D caches */
+extern uint32_t CSL_armR5StartupCacheEnableAllCache( uint32_t enable );
+/* Disable force write-thru */
+extern uint32_t CSL_armR5StartupCacheEnableForceWrThru( uint32_t enable );
+/* Invalidate I/D caches */
+extern uint32_t CSL_armR5StartupCacheInvalidateAllCache( void );
 extern __attribute__((section(".startupCode"))) portBaseType xConfigureMPU(void);
 void vFiqHandler( void );
 
@@ -131,6 +137,14 @@ __attribute__((section(".startupCode"))) void __mpu_init( void )
 
     /* Configure the regions in the MPU that are common to all tasks. */
     vMPUSetupMPU();
+    /* Disable I/D caches */
+    CSL_armR5StartupCacheEnableAllCache( CSL_CACHE_DISABLE );
+    /* Disable force write-thru */
+    CSL_armR5StartupCacheEnableForceWrThru( CSL_CACHE_DISABLE );
+    /* Invalidate I/D caches */
+    CSL_armR5StartupCacheInvalidateAllCache();
+    /* Enable I/D caches */
+    CSL_armR5StartupCacheEnableAllCache( CSL_CACHE_ENABLE );
 }
 /*-------------------------------------------------------------------------*/
 
