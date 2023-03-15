@@ -200,7 +200,7 @@ void IpcInitPrms_init(uint32_t instId, Ipc_InitPrms *initPrms);
  *
  *  \return      #IPC_SOK or #IPC_EINVALID_PARAMS or #IPC_EFAIL
  */
-int32_t Ipc_init(Ipc_InitPrms *cfg);
+int32_t Ipc_init(const Ipc_InitPrms *cfg);
 
 /**
  *  \brief      De Initialize IPC module
@@ -434,7 +434,7 @@ void RPMessage_unblock(RPMessage_Handle handle);
  *  to announce the named endpoint.  Suitable values for timeout are the
  *  same as for the ti.sysbios.knl.Semaphore module.
  *
- *  \param selfProcId    [IN] Remote processor ID
+ *  \param currProcId    [IN] Remote processor ID
  *  \param name      [IN] Name of the endpoint
  *  \param remoteProcId    [OUT] Remote processor ID
  *  \param remoteEndPt    [OUT] Remote endpoint ID
@@ -444,7 +444,7 @@ void RPMessage_unblock(RPMessage_Handle handle);
  *              - #IPC_ETIMEOUT: Time out occured
  *              - #IPC_EFAIL:    Invalid input
  */
-int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t *remoteProcId,
+int32_t RPMessage_getRemoteEndPt(uint32_t currProcId, const char* name, uint32_t *remoteProcId,
                              uint32_t *remoteEndPt, uint32_t timeout);
 
 /*
@@ -463,7 +463,7 @@ int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t
  *  can be taken with the request, which can be used by the application
  *  to unblock the request in order to unblock it's waiting task.
  *
- *  \param selfProcId    [IN] Remote processor ID
+ *  \param currProcId    [IN] Remote processor ID
  *  \param name      [IN] Name of the endpoint
  *  \param remoteProcId    [OUT] Remote processor ID
  *  \param remoteEndPt    [OUT] Remote endpoint ID
@@ -477,7 +477,7 @@ int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t
  *              - #IPC_ETIMEOUT: Time out occured
  *              - #IPC_EFAIL:    Invalid input
  */
-int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uint32_t *remoteProcId,
+int32_t RPMessage_getRemoteEndPtToken(uint32_t currProcId, const char* name, uint32_t *remoteProcId,
                              uint32_t *remoteEndPt, uint32_t timeout, uint32_t token);
 
 /**

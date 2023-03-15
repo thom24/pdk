@@ -105,7 +105,7 @@ void* IpcUtils_Qdequeue(IpcUtils_QHandle *handle);
 /* ========================================================================== */
 /*                              API's                                         */
 /* ========================================================================== */
-int32_t IpcUtils_Init(Ipc_OsalPrms *pOsalInit)
+int32_t IpcUtils_Init(const Ipc_OsalPrms *pOsalInit)
 {
     int32_t rtnVal = IPC_EINVALID_PARAMS;
     if (NULL != pOsalInit)
@@ -140,7 +140,7 @@ void* IpcUtils_QgetHead(IpcUtils_QHandle *handle)
     return (elem);
 }
 
-Bool IpcUtils_QisEmpty(IpcUtils_QHandle *handle)
+Bool IpcUtils_QisEmpty(const IpcUtils_QHandle *handle)
 {
     Bool  rtnVal = FALSE;
     if (handle->next == handle)
@@ -196,7 +196,7 @@ void* IpcUtils_Qdequeue(IpcUtils_QHandle *handle)
 }
 
 
-void* IpcUtils_QgetHeadNode(IpcUtils_QHandle *handle)
+void* IpcUtils_QgetHeadNode(const IpcUtils_QHandle *handle)
 {
     void *rtnVal = NULL;
 
@@ -209,7 +209,7 @@ void* IpcUtils_QgetHeadNode(IpcUtils_QHandle *handle)
     return (rtnVal);
 }
 
-void* IpcUtils_Qnext(IpcUtils_QElem *qelem)
+void* IpcUtils_Qnext(const IpcUtils_QElem *qelem)
 {
     void *rtnVal = NULL;
     if (NULL != qelem)
@@ -220,7 +220,7 @@ void* IpcUtils_Qnext(IpcUtils_QElem *qelem)
     return rtnVal;
 }
 
-void IpcUtils_Qremove(IpcUtils_QElem *qelem)
+void IpcUtils_Qremove(const IpcUtils_QElem *qelem)
 {
     if (NULL != qelem)
     {
@@ -256,7 +256,7 @@ int32_t IpcUtils_Qcreate(IpcUtils_QHandle *handle)
 }
 
 int32_t IpcUtils_HeapCreate(IpcUtils_HeapHandle *pHndl,
-                            IpcUtils_HeapParams *param)
+                            const IpcUtils_HeapParams *param)
 {
     uint8_t *tempBufPtr;
     uint32_t idx;
@@ -393,12 +393,13 @@ void SystemP_printf(const char *format, ...)
 uint32_t IpcUtils_strnlen(const char *s)
 {
   uint32_t i=0;
-  if (NULL != s)
+  const char *l = s;
+  if (NULL != l)
   {
-      while(*s != '\0')
+      while(*l != '\0')
       {
         i++;
-        s++;
+        l++;
       }
   }
   return i;

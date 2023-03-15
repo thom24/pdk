@@ -603,8 +603,6 @@ void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t ar
 
 #endif  /* IPC_SUPPORT_SCICLIENT */
 
-    coreIntrNum = cfg->eventId;
-
     /*
      * CLEC needs to be configured for all modes - CSL and Sciclient
      **/
@@ -613,6 +611,8 @@ void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t ar
      * range returned from BoardCfg) to route the corressponding CLEC i/p Event to
      * a C7x IRQ. The returned IRQ num is used to register Interrupt with OSAL. */
     coreIntrNum = Ipc_configClecRouter(cfg->eventId, cfg->eventIdBase);
+#else
+    coreIntrNum = cfg->eventId;
 #endif
 
 #ifdef QNX_OS

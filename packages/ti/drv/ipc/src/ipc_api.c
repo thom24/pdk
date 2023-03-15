@@ -205,10 +205,10 @@ typedef struct RPMessage_Module_s
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
-static RPMessage_Object* RPMessage_rawCreate(RPMessage_Params *params,
+static RPMessage_Object* RPMessage_rawCreate(const RPMessage_Params *params,
         RPMessage_EndptPool* pool, uint32_t *endPt);
 
-static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32_t procId);
+static int32_t RPMessage_processAnnounceMsg(const RPMessage_Announcement *amsg, uint32_t procId);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -576,7 +576,7 @@ int32_t RPMessage_announce(uint32_t remoteProcId, uint32_t endPt, const char* na
  *  \brief RPMessage_processAnnounceMsg : Handle an endpoint annoucement
  *         message from another processor
  */
-static int32_t RPMessage_processAnnounceMsg(RPMessage_Announcement *amsg, uint32_t procId)
+static int32_t RPMessage_processAnnounceMsg(const RPMessage_Announcement *amsg, uint32_t procId)
 {
     int32_t key;
     RPMessage_NameEntry *p;
@@ -712,7 +712,7 @@ static Bool RPMessage_lookupName(uint32_t procId, const char* name, uint32_t *re
 /**
  *  \brief RPMessage_getRemoteEndPtToken
  */
-int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uint32_t *remoteProcId,
+int32_t RPMessage_getRemoteEndPtToken(uint32_t currProcId, const char* name, uint32_t *remoteProcId,
                              uint32_t *remoteEndPt, uint32_t timeout, uint32_t token)
 {
     int32_t            key;
@@ -752,7 +752,7 @@ int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uin
         taskWaiter.semHandle = semHandle;
         strncpy(taskWaiter.name, name, SERVICENAMELEN-1U);
         taskWaiter.name[SERVICENAMELEN-1U] = '\0';
-        taskWaiter.procId = selfProcId;
+        taskWaiter.procId = currProcId;
         taskWaiter.endPt  = 0;
         taskWaiter.token = token;
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
@@ -762,7 +762,7 @@ int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uin
          * RPMessage_lookupName() and the IpcUtils_Qput().
          */
         key = pOsalPrms->lockHIsrGate(module.gateSwi);
-        lookupStatus = RPMessage_lookupName(selfProcId, name,
+        lookupStatus = RPMessage_lookupName(currProcId, name,
                                             remoteProcId, remoteEndPt);
         if(FALSE == lookupStatus)
         {
@@ -799,10 +799,10 @@ int32_t RPMessage_getRemoteEndPtToken(uint32_t selfProcId, const char* name, uin
     return rtnVal;
 }
 
-int32_t RPMessage_getRemoteEndPt(uint32_t selfProcId, const char* name, uint32_t *remoteProcId,
+int32_t RPMessage_getRemoteEndPt(uint32_t currProcId, const char* name, uint32_t *remoteProcId,
                              uint32_t *remoteEndPt, uint32_t timeout)
 {
-    return RPMessage_getRemoteEndPtToken(selfProcId, name, remoteProcId, remoteEndPt, timeout, 0);
+    return RPMessage_getRemoteEndPtToken(currProcId, name, remoteProcId, remoteEndPt, timeout, 0);
 }
 
 void RPMessage_unblockGetRemoteEndPt(uint32_t token)
@@ -828,7 +828,7 @@ void RPMessage_unblockGetRemoteEndPt(uint32_t token)
     if (IPC_SOK == rtnVal)
     {
         key = pOsalPrms->lockHIsrGate(module.gateSwi);
-        
+
         /* Wakeup the specified task that is waiting on the */
         /* announced name.                              */
         if (TRUE!=IpcUtils_QisEmpty(&module.waitingTasks))
@@ -996,7 +996,7 @@ static int32_t RPMessage_startCtrlMsgTask(RPMessage_Params *params)
 #endif /* IPC_EXCLUDE_CTRL_TASKS */
 
 static RPMessage_Object* RPMessage_rawCreate(
-        RPMessage_Params *params,
+        const RPMessage_Params *params,
         RPMessage_EndptPool* pool,
         uint32_t *endPt)
 {
@@ -1289,21 +1289,23 @@ int32_t RPMessage_init(RPMessage_Params *params)
 RPMessage_Handle RPMessage_create(RPMessage_Params *params, uint32_t *endPt)
 {
     RPMessage_Object *obj = NULL;
-    RPMessage_Params defaultParams;
+    RPMessage_Params *defaultParams = params;
 
-    if(params == NULL)
+    if(defaultParams == NULL)
     {
-        params = &defaultParams;
-        RPMessageParams_init(params);
+        RPMessageParams_init(defaultParams);
     }
 
-    if( 0U == is_aligned(params->buf,HEAPALIGNMENT))
+    if (defaultParams != NULL)
     {
-        SystemP_printf("RPMessage_create : Memory alignment failed\n");
-    }
-    else
-    {
-       obj = RPMessage_rawCreate(params, &module.globalPool, endPt);
+        if( 0U == is_aligned(params->buf,HEAPALIGNMENT))
+        {
+            SystemP_printf("RPMessage_create : Memory alignment failed\n");
+        }
+        else
+        {
+            obj = RPMessage_rawCreate(params, &module.globalPool, endPt);
+        }
     }
 
     return (RPMessage_Handle)obj;
@@ -1396,7 +1398,7 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
 #ifndef IPC_EXCLUDE_BLOCKING_RX
     int32_t             status = IPC_SOK;
     RPMessage_Object   *obj = NULL;
-    int32_t             semStatus;
+    int32_t             semStatus = IPC_SOK;
     Bool                skiplist = FALSE;
     RPMessage_MsgElem  *payload;
     int32_t            key;
@@ -1423,7 +1425,6 @@ int32_t RPMessage_recv(RPMessage_Handle handle, void* data, uint16_t *len,
         pOsalPrms->unLockHIsrGate(module.gateSwi, key);
 
         /*  Block until notified. */
-          semStatus = IPC_SOK;
           semStatus = pOsalPrms->lockMutex(obj->semHandle, timeout);
 
           if (TRUE == skiplist)
@@ -1563,7 +1564,7 @@ int32_t RPMessage_recvNb(RPMessage_Handle handle, void* data, uint16_t *len,
 static int32_t RPMessage_rawSend(Virtio_Handle vq,
                       uint32_t dstEndPt,
                       uint32_t srcEndPt,
-                      void*    data,
+                      const void*    data,
                       uint16_t len)
 {
     int32_t               status = IPC_SOK;
@@ -1706,7 +1707,7 @@ Ipc_Object *getIpcObjInst(uint32_t instId)
     return &gIpcObject;
 }
 
-int32_t Ipc_init(Ipc_InitPrms *cfg)
+int32_t Ipc_init(const Ipc_InitPrms *cfg)
 {
     int32_t retVal = IPC_EINVALID_PARAMS;
 

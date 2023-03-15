@@ -290,7 +290,7 @@ static int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t t
 /**
  *  \brief Ipc_updateVirtioInfo
  */
-static void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
+static void Ipc_updateVirtioInfo(uint32_t numProc, const void *baseAddr, uint32_t vrBufSize,
                       Ipc_VirtioInfo* info);
 
 /* ========================================================================== */
@@ -532,7 +532,7 @@ static inline void * mapPAtoVA(uint32_t pa)
 /**
  *  \brief Placeholder for MMU Address translation
  */
-static inline uint32_t mapVAtoPA(void *va)
+static inline uint32_t mapVAtoPA(const void *va)
 {
     uint32_t pa;
 
@@ -926,7 +926,7 @@ Bool Ipc_isRemoteVirtioCreated(uint32_t remoteId)
     return vqCreated;
 }
 
-static void Ipc_updateVirtioInfo(uint32_t numProc, void *baseAddr, uint32_t vrBufSize,
+static void Ipc_updateVirtioInfo(uint32_t numProc, const void *baseAddr, uint32_t vrBufSize,
                       Ipc_VirtioInfo* info)
 {
     uint32_t cnt = 0, a , b, i;

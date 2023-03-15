@@ -110,7 +110,7 @@ typedef IpcUtils_HeapElem IpcUtils_HeapHandle;
  *  \return IPC_SOK on success OR IPC_EINVALID_PARAMS if required parameters
  *          are not provided
  */
-int32_t IpcUtils_Init(Ipc_OsalPrms *pOsalInit);
+int32_t IpcUtils_Init(const Ipc_OsalPrms *pOsalInit);
 
 /**
  *  \brief  IpcUtils_DeInit
@@ -142,7 +142,7 @@ void* IpcUtils_QgetHead(IpcUtils_QHandle *handle);
  *
  *  \return TRUE in case queue is empty FALSE otherwise
  */
-Bool IpcUtils_QisEmpty(IpcUtils_QHandle *handle);
+Bool IpcUtils_QisEmpty(const IpcUtils_QHandle *handle);
 
 /**
  *  \brief  IpcUtils_Qput
@@ -168,7 +168,7 @@ void IpcUtils_Qput(IpcUtils_QHandle *handle, IpcUtils_QElem *elem);
  *
  *  \return void * Data associated with this node
  */
-void* IpcUtils_QgetHeadNode(IpcUtils_QHandle *handle);
+void* IpcUtils_QgetHeadNode(const IpcUtils_QHandle *handle);
 
 /**
  *  \brief  IpcUtils_Qnext
@@ -180,7 +180,7 @@ void* IpcUtils_QgetHeadNode(IpcUtils_QHandle *handle);
  *
  *  \return void * Data associated with the node
  */
-void* IpcUtils_Qnext(IpcUtils_QElem *qelem);
+void* IpcUtils_Qnext(const IpcUtils_QElem *qelem);
 
 /**
  *  \brief  IpcUtils_Qremove
@@ -191,7 +191,7 @@ void* IpcUtils_Qnext(IpcUtils_QElem *qelem);
  *
  *  \return None
  */
-void IpcUtils_Qremove(IpcUtils_QElem *qelem);
+void IpcUtils_Qremove(const IpcUtils_QElem *qelem);
 
 /**
  *  \brief  IpcUtils_Qdelete
@@ -230,7 +230,7 @@ int32_t IpcUtils_Qcreate(IpcUtils_QHandle *handle);
  *          not yet initialized
  */
 int32_t IpcUtils_HeapCreate(IpcUtils_HeapHandle *pHndl,
-                            IpcUtils_HeapParams *param);
+                            const IpcUtils_HeapParams *param);
 /**
  *  \brief  IpcUtils_HeapDelete
  *

@@ -539,7 +539,7 @@ void Ipc_configC66xIntrRouter(uint32_t input)
     uint32_t           inputPin    = 0U;
 
     /* program virtual address to REGION_BASE */
-    RAT[1] = (int)intr_router;
+    RAT[1] = (uint32_t)intr_router;
 
     /* program C66_1/2 INTR_ROUTER physical addr to REGION_TRANS_L */
 #ifdef BUILD_C66X_1
