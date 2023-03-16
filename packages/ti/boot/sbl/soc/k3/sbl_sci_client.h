@@ -45,7 +45,7 @@ extern "C" {
 
 #define SBL_NEVER_AUTH_APP         (0x55555555u)
 #define SBL_ALWAYS_AUTH_APP        (0xAAAAAAAAu)
-#define SBL_SYSFW_MAX_SIZE         (0x42000U)
+#define SBL_SYSFW_MAX_SIZE         (0x43000U)
 
 
 #define SBL_SYS_STATUS_REG              (0x44234100U)

@@ -48,10 +48,10 @@ MEMORY
      * after SYSFW is done.
      * Location of all board configurations: 0x41c80040 after SYSFW is done.
      */
-    OCMRAM_SBL_SYSFW (RWIX)   : origin=0x41C80000 length=0x42000
+    OCMRAM_SBL_SYSFW (RWIX)   : origin=0x41C80000 length=0x43000
 
     /* This is the maximum required by custom boot app. Do not use. */
-    OCMRAM_SBL_RESERVED_CUST_BOOT (RWIX)   : origin=0x41CC2000 length=0x40000 - 0x2500
+    OCMRAM_SBL_RESERVED_CUST_BOOT (RWIX)   : origin=0x41CC3000 length=0x40000 - 0x3500
 
     /* X509 Header to be left behind by CCS Init for Sciserver to read */
     OCMC_RAM_X509_HEADER (RWIX)     : ORIGIN = 0x41CFFB00 , LENGTH = 0x500
