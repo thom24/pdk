@@ -80,7 +80,15 @@
 #if defined (SOC_J721S2)
 #define MCU_1_0_PRIVID (96)
 #define MCU_SRAM_FWL_ID (1050)
-#define MSMC_SRAM_FWL_ID (4760)
+#define MSMC_SRAM_FWL_ID (5140)
+#define DRAM_FWL_ID (1280)
+#define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_1)
+#endif
+
+#if defined (SOC_J784S4)
+#define MCU_1_0_PRIVID (96)
+#define MCU_SRAM_FWL_ID (1050)
+#define MSMC_SRAM_FWL_ID (5140)
 #define DRAM_FWL_ID (1280)
 #define PROC_HOST_ID (TISCI_HOST_ID_MCU_0_R5_1)
 #endif
