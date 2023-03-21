@@ -50,14 +50,14 @@ MEMORY
 
     OCMC_RAM_SBL_RUNTIME (RWIX) : origin=0x41C00000 length=0x80000
 
-    /*========================J7 MCMS3 LOCATIONS ===================*/
-    /*---------- J7 Reserved Memory for ARM Trusted Firmware -------*/
+    /*======================== MSMC3 LOCATIONS ===================*/
+    /*---------- Reserved Memory for ARM Trusted Firmware -------*/
     MSMC3_ARM_FW  (RWIX)        : ORIGIN = 0x70000000 LENGTH = 0x00020000   /* 128KB       */
     MSMC3         (RWIX)        : ORIGIN = 0x70020000 LENGTH = 0x007D0000   /* 8MB - 192KB */
-    /*------------- J7 Reserved Memory for DMSC Firmware -----------*/
+    /*------------- Reserved Memory for DMSC Firmware -----------*/
     MSMC3_DMSC_FW (RWIX)        : ORIGIN = 0x707F0000 LENGTH = 0x00010000   /* 64KB        */
 
-    /*======================= J7 DDR LOCATION =======================*/
+    /*======================= DDR LOCATION =======================*/
     DDR0 (RWIX)                 : ORIGIN = 0x80000000 LENGTH = 0x80000000   /* 2GB */
 }
 

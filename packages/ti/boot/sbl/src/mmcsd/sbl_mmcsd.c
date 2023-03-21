@@ -224,6 +224,12 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
     hwAttrsConfig.configSocIntrPath=NULL;
 
+    /* Disabling DMA if enabled already while reading SYSFW since SBL loaded memory 
+       is firewalled for DMA access. Enable the DMA after reading SYSFW */
+    #if defined(BUILD_HS)
+        hwAttrsConfig.enableDma = 0;
+    #endif
+
     if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0) {
        UART_printf("\nUnable to set config.Exiting. TEST FAILED.\r\n");
        retVal = E_FAIL;
@@ -260,6 +266,16 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 
         f_close(&fp);
     }
+
+    /* Re-Enabling DMA since TIFS is already copied to OCMC by this time */
+    #if defined(BUILD_HS)
+        hwAttrsConfig.enableDma = 1;
+        if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0) 
+        {
+            UART_printf("\nUnable to set MMCSD config, exiting. Test Failed.\r\n");
+            retVal = E_FAIL;
+        }
+    #endif
 
     FATFS_close(sbl_fatfsHandle);
     sbl_fatfsHandle = NULL;

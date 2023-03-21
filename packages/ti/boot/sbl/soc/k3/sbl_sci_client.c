@@ -66,6 +66,19 @@ static int32_t Sciclient_setBoardConfigHeader ();
 #define PCIE1_CFG_FWID (2561)
 #define PCIE1_CFG_REGIONS (8)
 
+/* Firewall ID for OCMC region */
+#if defined(SOC_J721E)
+#define OCMC_FWID          CSL_STD_FW_MCU_MSRAM_1MB0_SLV_ID
+#define OCMC_REGIONS       CSL_STD_FW_MCU_MSRAM_1MB0_SLV_NUM_REGIONS
+#define OCMC_START_ADDRESS CSL_STD_FW_MCU_MSRAM_1MB0_SLV_RAM_START
+#define OCMC_END_ADDRESS   CSL_STD_FW_MCU_MSRAM_1MB0_SLV_RAM_END
+#else
+#define OCMC_FWID          CSL_STD_FW_MCU_MSRAM_1MB0_RAM_ID
+#define OCMC_REGIONS       CSL_STD_FW_MCU_MSRAM_1MB0_RAM_NUM_REGIONS
+#define OCMC_START_ADDRESS CSL_STD_FW_MCU_MSRAM_1MB0_RAM_RAM_START
+#define OCMC_END_ADDRESS   CSL_STD_FW_MCU_MSRAM_1MB0_RAM_RAM_END
+#endif
+
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined(SOC_J784S4)
 /** \brief Aligned address at which the Board Config header is placed. */
 #define SCISERVER_BOARDCONFIG_HEADER_ADDR (0x41c80000U)
@@ -161,6 +174,11 @@ void SBL_SciClientInit(uint32_t devGroup)
 {
     int32_t status = CSL_EFAIL;
     void *sysfw_ptr = gSciclient_firmware;
+
+#if defined(BUILD_HS)
+    struct tisci_msg_fwl_set_firewall_region_resp respSetOCMCFwCtrl;
+    struct tisci_msg_fwl_set_firewall_region_req reqSetOCMCFwCtrl;
+#endif
 
 #ifndef SBL_SKIP_SYSFW_INIT
     /* SYSFW board configurations */
@@ -310,6 +328,35 @@ removed after having a fix in TIFS */
         }
     }
 #endif
+#endif
+
+#if defined(BUILD_HS)
+    /* Secure ROM enables firewall for SBL loaded OCMC memory to access from DMA 
+       Disable for DMA usage */
+    memset(&respSetOCMCFwCtrl, 0, sizeof(respSetOCMCFwCtrl));
+    reqSetOCMCFwCtrl = (struct tisci_msg_fwl_set_firewall_region_req){
+        .fwl_id = (uint16_t) OCMC_FWID,
+        .region = (uint16_t) 1U,
+        .n_permission_regs = (uint32_t) 3U,
+        /* Set .control to zero to disable the firewall region */
+        .control = (uint32_t) 0U,
+        .permissions[0] = (uint32_t) 0U,
+        .permissions[1] = (uint32_t) 0U,
+        .permissions[2] = (uint32_t) 0U,
+        .start_address = OCMC_START_ADDRESS,
+        .end_address = OCMC_END_ADDRESS
+    };
+
+    for (uint32_t regionNum = 0; regionNum < OCMC_REGIONS; regionNum++)
+    {
+        reqSetOCMCFwCtrl.region = regionNum;
+        status = Sciclient_firewallSetRegion(&reqSetOCMCFwCtrl, &respSetOCMCFwCtrl, SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status != CSL_PASS)
+        {
+            SBL_log(SBL_LOG_ERR,"OCMC region # %d: FAILED to disable Firewall... \n", regionNum);
+        }
+    }
+
 #endif
 
 #if (defined(BUILD_HS) && defined(SOC_J721E))
