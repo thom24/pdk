@@ -48,6 +48,9 @@
 extern int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes);
 uint32_t __attribute__((section(".firmware"))) gSciclient_firmware[1];
 
+/* Global variable to check whether combined ROM boot image format is used or not */
+uint8_t combinedBootmode = FALSE;
+
 #if SCICLIENT_FIRMWARE_SIZE_IN_BYTES > SBL_SYSFW_MAX_SIZE
 #error "SYSFW too large...update SBL_SYSFW_MAX_SIZE"
 #endif
@@ -170,75 +173,15 @@ static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
     return cert_len + 1;
 }
 
-void SBL_SciClientInit(uint32_t devGroup)
+
+
+
+void SBL_SciclientBoardCfg(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t *boardCfgInfo)
 {
     int32_t status = CSL_EFAIL;
-    void *sysfw_ptr = gSciclient_firmware;
-
-#if defined(BUILD_HS)
-    struct tisci_msg_fwl_set_firewall_region_resp respSetOCMCFwCtrl;
-    struct tisci_msg_fwl_set_firewall_region_req reqSetOCMCFwCtrl;
-#endif
-
-#ifndef SBL_SKIP_SYSFW_INIT
-    /* SYSFW board configurations */
-    Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
-    Sciclient_ConfigPrms_t config;
-    Sciclient_configPrmsInit(&config);
-    config.opModeFlag               =   SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
-    config.pBoardCfgPrms            =   NULL;
-    config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
-    config.c66xRatRegion            =   0;
-    config.skipLocalBoardCfgProcess =   TRUE;
-#endif
-
-    SBL_ADD_PROFILE_POINT;
-
-    status = SBL_ReadSysfwImage(&sysfw_ptr, SBL_SYSFW_MAX_SIZE);
-    if (status != CSL_PASS)
-    {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-        SBL_log(SBL_LOG_ERR,"TIFS read...FAILED \n");
-#else
-        SBL_log(SBL_LOG_ERR,"SYSFW read...FAILED \n");
-#endif
-        SblErrLoop(__FILE__, __LINE__);
-    }
-
-#ifndef SBL_SKIP_SYSFW_INIT
-
-    status = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
-
-    if (status != CSL_PASS)
-    {
-        SBL_log(SBL_LOG_ERR,"Sciclient get default board config...FAILED \n");
-        SblErrLoop(__FILE__, __LINE__);
-    }
-
-    SBL_ADD_PROFILE_POINT;
-    status = Sciclient_loadFirmware((const uint32_t *) sysfw_ptr);
-    if (status != CSL_PASS)
-    {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-        SBL_log(SBL_LOG_ERR,"TIFS load...FAILED \n");
-#else
-        SBL_log(SBL_LOG_ERR,"SYSFW load...FAILED \n");
-#endif
-        SblErrLoop(__FILE__, __LINE__);
-    }
-
-    SBL_ADD_PROFILE_POINT;
-    status = Sciclient_init(&config);
-    if (status != CSL_PASS)
-    {
-        SBL_log(SBL_LOG_ERR,"Sciclient init ...FAILED \n");
-        SblErrLoop(__FILE__, __LINE__);
-    }
-
-#ifndef SBL_SKIP_BRD_CFG_BOARD
-    sblBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLow;
+    sblBoardCfgPrms.boardConfigLow = (uint32_t)boardCfgInfo->boardCfgLow;
     sblBoardCfgPrms.boardConfigHigh = 0;
-    sblBoardCfgPrms.boardConfigSize = boardCfgInfo.boardCfgLowSize;
+    sblBoardCfgPrms.boardConfigSize = boardCfgInfo->boardCfgLowSize;
     sblBoardCfgPrms.devGrp = devGroup;
     
 
@@ -249,13 +192,11 @@ void SBL_SciClientInit(uint32_t devGroup)
         SBL_log(SBL_LOG_ERR,"Sciclient board config ...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
-#endif
+}
 
-/* On J7AHP HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround 
-SBL needs to open this firewall before doing PM Init. This condition should be 
-removed after having a fix in TIFS */
-#if !(defined(SOC_J784S4) && defined(BUILD_HS))
-#ifndef SBL_SKIP_BRD_CFG_PM
+void SBL_SciclientBoardCfgPm(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t *boardCfgInfo)
+{
+    int32_t status = CSL_EFAIL;
     if (SBL_LOG_LEVEL > SBL_LOG_NONE)
     {
         UART_stdioDeInit();
@@ -263,9 +204,9 @@ removed after having a fix in TIFS */
     SBL_ADD_PROFILE_POINT;
     CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
     SBL_ADD_PROFILE_POINT;
-    sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
+    sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo->boardCfgLowPm;
     sblBoardCfgPmPrms.boardConfigHigh = 0;
-    sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
+    sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo->boardCfgLowPmSize;
     sblBoardCfgPmPrms.devGrp = devGroup;
 
     status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
@@ -285,13 +226,14 @@ removed after having a fix in TIFS */
         UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
         UART_stdioInit(BOARD_UART_INSTANCE);
     }
-#endif
-#endif
+}
 
-#ifndef SBL_SKIP_BRD_CFG_SEC
-    sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowSec;
+void SBL_SciclientCfgSec(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t *boardCfgInfo)
+{
+    int32_t status = CSL_EFAIL;
+    sblBoardCfgSecPrms.boardConfigLow = (uint32_t)boardCfgInfo->boardCfgLowSec;
     sblBoardCfgSecPrms.boardConfigHigh = 0;
-    sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo.boardCfgLowSecSize;
+    sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo->boardCfgLowSecSize;
     sblBoardCfgSecPrms.devGrp = devGroup;
     
     SBL_ADD_PROFILE_POINT;
@@ -301,6 +243,12 @@ removed after having a fix in TIFS */
         SBL_log(SBL_LOG_ERR,"Sciclient board config sec...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
+}
+
+void SBL_OpenFirewalls()
+{
+    int32_t status = CSL_EFAIL;
+#ifndef SBL_SKIP_BRD_CFG_SEC
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     /* Secure ROM has left firewall regions for FSS DAT0 set.  Disable them for DMA usage. */
     uint16_t i;
@@ -333,6 +281,8 @@ removed after having a fix in TIFS */
 #if defined(BUILD_HS)
     /* Secure ROM enables firewall for SBL loaded OCMC memory to access from DMA 
        Disable for DMA usage */
+    struct tisci_msg_fwl_set_firewall_region_resp respSetOCMCFwCtrl;
+    struct tisci_msg_fwl_set_firewall_region_req reqSetOCMCFwCtrl;
     memset(&respSetOCMCFwCtrl, 0, sizeof(respSetOCMCFwCtrl));
     reqSetOCMCFwCtrl = (struct tisci_msg_fwl_set_firewall_region_req){
         .fwl_id = (uint16_t) OCMC_FWID,
@@ -362,8 +312,7 @@ removed after having a fix in TIFS */
 #if (defined(BUILD_HS) && defined(SOC_J721E))
     /* By default firewall regions for PCIE is enabled on J721E HS. Disable them since PCIE is not able to access that */
     uint16_t temp;
-    struct tisci_msg_fwl_get_firewall_region_resp resp_get_fw_ctrl[2];
-    memset(&resp_get_fw_ctrl, 0, sizeof(resp_get_fw_ctrl));
+    struct tisci_msg_fwl_get_firewall_region_resp resp_get_fw_ctrl[2] = {{0}, {0}};
     struct tisci_msg_fwl_get_firewall_region_req req_get_fw_ctrl[2] = 
     {
         {
@@ -431,47 +380,18 @@ removed after having a fix in TIFS */
             SBL_log(SBL_LOG_ERR,"PCIE1_CFG firewall region # %d disable...FAILED \n", temp);
         }
     }
-#endif  
-
-/* As a workaround do PM Init for J7AHP HS after opening up BOLT_PSC firewall */
-#if defined(SOC_J784S4) && defined(BUILD_HS)
-#ifndef SBL_SKIP_BRD_CFG_PM
-    if (SBL_LOG_LEVEL > SBL_LOG_NONE)
-    {
-        UART_stdioDeInit();
-    }
-    sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm;
-    sblBoardCfgPmPrms.boardConfigHigh = 0;
-    sblBoardCfgPmPrms.boardConfigSize = boardCfgInfo.boardCfgLowPmSize;
-    sblBoardCfgPmPrms.devGrp = devGroup;
-    CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
-    status = Sciclient_boardCfgPm(&sblBoardCfgPmPrms);
-    if (status != CSL_PASS)
-    {
-        SBL_log(SBL_LOG_ERR,"Sciclient board config pm...FAILED \n")
-        SblErrLoop(__FILE__, __LINE__);
-    }
-
-    if (SBL_LOG_LEVEL > SBL_LOG_NONE)
-    {
-        /* Re-init UART for logging */
-        UART_HwAttrs uart_cfg;
-
-        UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
-        uart_cfg.frequency = SBL_SYSFW_UART_MODULE_INPUT_CLK;
-        UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
-        UART_stdioInit(BOARD_UART_INSTANCE);
-    }
 #endif
-#endif
+}
 
-#ifndef SBL_SKIP_BRD_CFG_RM
-    sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowRm;
+void SBL_SciclientBoardCfgRm(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t *boardCfgInfo)
+{
+    int32_t status = CSL_EFAIL;
+    sblBoardCfgRmPrms.boardConfigLow = (uint32_t)boardCfgInfo->boardCfgLowRm;
     sblBoardCfgRmPrms.boardConfigHigh = 0;
-    sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo.boardCfgLowRmSize;
+    sblBoardCfgRmPrms.boardConfigSize = boardCfgInfo->boardCfgLowRmSize;
     sblBoardCfgRmPrms.devGrp = devGroup;
 
-    gCertLength = boardcfgRmFindCertSize((uint32_t*)boardCfgInfo.boardCfgLowRm);
+    gCertLength = boardcfgRmFindCertSize((uint32_t*)boardCfgInfo->boardCfgLowRm);
     SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
     if (status != CSL_PASS)
@@ -479,51 +399,149 @@ removed after having a fix in TIFS */
         SBL_log(SBL_LOG_ERR,"Sciclient board config rm...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
+}
+
+void SBL_getSysfwVersion()
+{
+    int32_t status = CSL_EFAIL;
+    struct tisci_msg_version_req req = {0};
+    const Sciclient_ReqPrm_t      reqPrm =
+    {
+        TISCI_MSG_VERSION,
+        TISCI_MSG_FLAG_AOP,
+        (const uint8_t *)&req,
+        sizeof(req),
+        SCICLIENT_SERVICE_WAIT_FOREVER
+    };
+
+    struct tisci_msg_version_resp response;
+    Sciclient_RespPrm_t           respPrm =
+    {
+        0,
+        (uint8_t *) &response,
+        (uint32_t)sizeof (response)
+    };
+
+    status = Sciclient_service(&reqPrm, &respPrm);
+    if (CSL_PASS == status)
+    {
+        if (respPrm.flags == (uint32_t)TISCI_MSG_FLAG_ACK)
+        {
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+            SBL_log(SBL_LOG_MIN,"TIFS  ver: %s\n", (char *) response.str);
+#else
+            SBL_log(SBL_LOG_MIN,"SYSFW  ver: %s\n", (char *) response.str);
+#endif
+        }
+        else
+        {
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+            SBL_log(SBL_LOG_ERR,"TIFS Get Version failed \n");
+#else
+            SBL_log(SBL_LOG_ERR,"SYSFW Get Version failed \n");
+#endif
+            SblErrLoop(__FILE__, __LINE__);
+        }
+    }
+
+}
+
+void SBL_SciClientInit(uint32_t devGroup)
+{
+    int32_t status = CSL_EFAIL;
+
+#ifndef SBL_SKIP_SYSFW_INIT
+    /* SYSFW board configurations */
+    Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
+    Sciclient_ConfigPrms_t config;
+    Sciclient_configPrmsInit(&config);
+    config.opModeFlag               =   SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
+    config.pBoardCfgPrms            =   NULL;
+    config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
+    config.c66xRatRegion            =   0;
+    config.skipLocalBoardCfgProcess =   TRUE;
 #endif
 
-    /* Get SYSFW/TIFS version */
+    SBL_ADD_PROFILE_POINT;
 
+    void *sysfw_ptr = gSciclient_firmware;
+    status = SBL_ReadSysfwImage(&sysfw_ptr, SBL_SYSFW_MAX_SIZE);
+    if (status != CSL_PASS)
+    {
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+        SBL_log(SBL_LOG_ERR,"TIFS read...FAILED \n");
+#else
+        SBL_log(SBL_LOG_ERR,"SYSFW read...FAILED \n");
+#endif
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+#ifndef SBL_SKIP_SYSFW_INIT
+
+    status = Sciclient_loadFirmware((const uint32_t *) sysfw_ptr);
+    if (status != CSL_PASS)
+    {
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+        SBL_log(SBL_LOG_ERR,"TIFS load...FAILED \n");
+#else
+        SBL_log(SBL_LOG_ERR,"SYSFW load...FAILED \n");
+#endif
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    SBL_ADD_PROFILE_POINT;
+
+    status = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
+
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient get default board config...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    SBL_ADD_PROFILE_POINT;
+
+    status = Sciclient_init(&config);
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient init ...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+#ifndef SBL_SKIP_BRD_CFG_BOARD
+    SBL_SciclientBoardCfg(devGroup, &boardCfgInfo);
+#endif
+
+/* On J7AHP HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround
+SBL needs to open this firewall before doing PM Init. This condition should be
+removed after having a fix in TIFS */
+#if !(defined(SOC_J784S4) && defined(BUILD_HS))
+#ifndef SBL_SKIP_BRD_CFG_PM
+    SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
+#endif
+#endif
+
+#ifndef SBL_SKIP_BRD_CFG_SEC
+    SBL_SciclientCfgSec(devGroup, &boardCfgInfo);
+#endif
+
+    SBL_OpenFirewalls();
+
+/* As a workaround do PM Init for J7AHP HS after opening up BOLT_PSC firewall */
+#if (defined(SOC_J784S4) && defined(BUILD_HS))
+#ifndef SBL_SKIP_BRD_CFG_PM
+    SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
+#endif
+#endif
+
+#ifndef SBL_SKIP_BRD_CFG_RM
+    SBL_SciclientBoardCfgRm(devGroup, &boardCfgInfo);
+#endif
+
+/* Get SYSFW/TIFS version */
     if (SBL_LOG_LEVEL > SBL_LOG_ERR)
     {
-        struct tisci_msg_version_req req = {0};
-        const Sciclient_ReqPrm_t      reqPrm =
-        {
-            TISCI_MSG_VERSION,
-            TISCI_MSG_FLAG_AOP,
-            (const uint8_t *)&req,
-            sizeof(req),
-            SCICLIENT_SERVICE_WAIT_FOREVER
-        };
-
-        struct tisci_msg_version_resp response;
-        Sciclient_RespPrm_t           respPrm =
-        {
-            0,
-            (uint8_t *) &response,
-            (uint32_t)sizeof (response)
-        };
-
-        status = Sciclient_service(&reqPrm, &respPrm);
-        if (CSL_PASS == status)
-        {
-            if (respPrm.flags == (uint32_t)TISCI_MSG_FLAG_ACK)
-            {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-                SBL_log(SBL_LOG_MIN,"TIFS  ver: %s\n", (char *) response.str);
-#else
-                SBL_log(SBL_LOG_MIN,"SYSFW  ver: %s\n", (char *) response.str);
-#endif
-            }
-            else
-            {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-                SBL_log(SBL_LOG_ERR,"TIFS Get Version failed \n");
-#else
-                SBL_log(SBL_LOG_ERR,"SYSFW Get Version failed \n");
-#endif
-                SblErrLoop(__FILE__, __LINE__);
-            }
-        }
+        SBL_getSysfwVersion();
     }
 
 
@@ -540,18 +558,117 @@ removed after having a fix in TIFS */
     }
 #endif
 
+#if !defined(SBL_SKIP_MCU_RESET)
+    /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
+    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    Sciclient_pmSetModuleState(SBL_DEV_ID_RTI1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+#endif
+#endif
+}
 
+void SBL_SciClientCombinedBootInit(uint32_t devGroup)
+{
+    int32_t status = CSL_EFAIL;
+    combinedBootmode = TRUE;
+
+#ifndef SBL_SKIP_SYSFW_INIT
+    /* SYSFW board configurations */
+    Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
+    Sciclient_ConfigPrms_t config;
+    Sciclient_configPrmsInit(&config);
+    config.opModeFlag               =   SCICLIENT_SERVICE_OPERATION_MODE_POLLED;
+    config.pBoardCfgPrms            =   NULL;
+    config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
+    config.c66xRatRegion            =   0;
+    config.skipLocalBoardCfgProcess =   TRUE;
+#endif
+
+    SBL_ADD_PROFILE_POINT;
+
+#ifndef SBL_SKIP_SYSFW_INIT
+
+    status = Sciclient_bootNotification();
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient_bootNotification ...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    SBL_ADD_PROFILE_POINT;
+
+    status = Sciclient_getDefaultBoardCfgInfo(&boardCfgInfo);
+
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient get default board config...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    SBL_ADD_PROFILE_POINT;
+
+    status = Sciclient_init(&config);
+    if (status != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient init ...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+#ifndef SBL_SKIP_BRD_CFG_BOARD
+    SBL_SciclientBoardCfg(devGroup, &boardCfgInfo);
+#endif
+
+/* On J7AHP HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround
+SBL needs to open this firewall before doing PM Init. This condition should be
+removed after having a fix in TIFS */
+#if !(defined(SOC_J784S4) && defined(BUILD_HS))
+#ifndef SBL_SKIP_BRD_CFG_PM
+    SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
+#endif
+#endif
+
+#ifndef SBL_SKIP_BRD_CFG_SEC
+    SBL_SciclientCfgSec(devGroup, &boardCfgInfo);
+#endif
+
+    SBL_OpenFirewalls();
+
+/* As a workaround do PM Init for J7AHP HS after opening up BOLT_PSC firewall */
+#if (defined(SOC_J784S4) && defined(BUILD_HS))
+#ifndef SBL_SKIP_BRD_CFG_PM
+    SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
+#endif
+#endif
+
+#ifndef SBL_SKIP_BRD_CFG_RM
+    SBL_SciclientBoardCfgRm(devGroup, &boardCfgInfo);
+#endif
+
+/* Get SYSFW/TIFS version */
+    if (SBL_LOG_LEVEL > SBL_LOG_ERR)
+    {
+        SBL_getSysfwVersion();
+    }
+
+
+#if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
+    status = Sciclient_setBoardConfigHeader();
+    if (CSL_PASS == status)
+    {
+        SBL_log(SBL_LOG_MAX,"Sciclient_setBoardConfigHeader... PASSED\n");
+    }
+    else
+    {
+        SBL_log(SBL_LOG_ERR,"Sciclient_setBoardConfigHeader... FAILED\n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+#endif
 
 #if !defined(SBL_SKIP_MCU_RESET)
     /* RTI seems to be turned on by ROM. Turning it off so that Power domain can transition */
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI0, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
     Sciclient_pmSetModuleState(SBL_DEV_ID_RTI1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
 #endif
-
-
-
 #endif
-
 }
 
 #if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))

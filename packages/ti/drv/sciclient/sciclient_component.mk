@@ -185,6 +185,17 @@ export sciclient_boardcfg_BOARDLIST = $(sciclient_BOARDLIST)
 export sciclient_boardcfg_$(SOC)_CORELIST = mcu1_0
 export sciclient_boardcfg_LIBNAME = sciclient_boardcfg
 
+export sciclient_UTILS_LIST += sciclient_boardcfg_combined
+export sciclient_boardcfg_combined_COMP_LIST = sciclient_boardcfg_combined
+export sciclient_boardcfg_combined_RELPATH = ti/drv/sciclient
+export sciclient_boardcfg_combined_PATH = $(PDK_SCICLIENT_COMP_PATH)
+export sciclient_boardcfg_combined_MAKEFILE = -fsrc/boardcfg_makefile SBL_IMAGE_TYPE=combined
+export sciclient_boardcfg_combined_BOARD_DEPENDENCY = yes
+export sciclient_boardcfg_combined_CORE_DEPENDENCY = yes
+export sciclient_boardcfg_combined_BOARDLIST = $(sciclient_BOARDLIST)
+export sciclient_boardcfg_combined_$(SOC)_CORELIST = mcu1_0
+export sciclient_boardcfg_combined_LIBNAME = sciclient_boardcfg_combined
+
 export sciclient_UTILS_LIST += sciclient_boardcfg_hs
 export sciclient_boardcfg_hs_COMP_LIST = sciclient_boardcfg_hs
 export sciclient_boardcfg_hs_RELPATH = ti/drv/sciclient

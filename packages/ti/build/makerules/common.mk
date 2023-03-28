@@ -612,6 +612,32 @@ ifeq ($(SBL_TYPE), mflash)
   SBL_HS_ADDRESS=0xffffffff
 endif
 
+ifeq ($(SBL_IMAGE_TYPE),combined)
+  # SoC Specific source files
+  ifeq ($(SOC),$(filter $(SOC), j7200))
+    SCICLIENT_SOCVER = V2
+  endif
+  ifeq ($(SOC),$(filter $(SOC), j721s2))
+    SCICLIENT_SOCVER = V4
+  endif
+  ifeq ($(SOC),$(filter $(SOC), j784s4))
+    SCICLIENT_SOCVER = V6
+  endif
+  COMBINED_TIFS_BRDCFG=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/combined-tifs-cfg.bin
+  COMBINED_DM_BRDCFG=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/$(SCICLIENT_SOCVER)/combined-dm-cfg.bin
+	ifeq ($(BUILD_HS),yes)
+    ifeq ($(SOC),$(filter $(SOC), j7200))
+      SYSFW_PATH=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)_sr2-hs-enc.bin
+      SYSFW_INNER_CERT=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)_sr2-hs-cert.bin
+    else
+      SYSFW_PATH=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-hs-enc.bin
+      SYSFW_INNER_CERT=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-hs-cert.bin
+    endif
+	else
+    SYSFW_PATH=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-gp.bin
+    SYSFW_INNER_CERT=""
+	endif
+endif
 
 SBL_BIN_FILE=sbl_img_bin
 SBL_OBJ_COPY_OPTS := --gap-fill=0xff
@@ -666,7 +692,11 @@ else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
+ifeq ($(SBL_IMAGE_TYPE),combined)
+	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $($(APP_NAME)_SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -w $(SYSFW_PATH) -v $(SYSFW_LOADADDR) -q $(SYSFW_INNER_CERT) -g $(COMBINED_TIFS_BRDCFG) -n $(COMBINED_TIFS_BRDCFG_LOADADDR) -t $(COMBINED_DM_BRDCFG) -p $(COMBINED_DM_BRDCFG_LOADADDR) -a $(SBL_IMAGE_TYPE) -m $(SBL_MCU_STARTUP_MODE)
+else
 	$(SBL_CERT_GEN) -b $(SBL_BIN_PATH) -o $(SBL_TIIMAGE_PATH) -c R5 -l $(SBL_RUN_ADDRESS) -k $($(APP_NAME)_SBL_CERT_KEY) -d DEBUG -j DBG_FULL_ENABLE -m $(SBL_MCU_STARTUP_MODE)
+endif
 else ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(PDK_INSTALL_PATH)/ti/build/makerules/tpr12rom_sign_non_secure.sh

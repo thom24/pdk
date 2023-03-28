@@ -102,6 +102,8 @@ bool isXIPEnable = false;
 uint32_t ospiFrequency;
 /* Global variable to check whether OSPI_NAND_BOOT is defined or not */
 bool gIsNandBootEnable = false;
+/* Global variable to check whether combined ROM boot image format is used or not */
+extern uint8_t combinedBootmode;
 
 #if SBL_USE_DMA
 
@@ -514,6 +516,16 @@ if(isXIPEnable == true)
         ospi_cfg.cacheEnable = 1;
     }
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
+    /* Currently there is a dependence for Board_flashClose() to be called before SBL_ospiInit() to reset
+     * OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD. In the combined boot case, where SBL_ReadSysfwImage
+     * is not called, setting this bit before opening the flash is necessary for clock frequencies of 166 MHz  */
+    if(combinedBootmode == TRUE)
+    {
+        const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr);
+        CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG, OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD, 0);
+
+    }
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     if (gIsNandBootEnable == true)

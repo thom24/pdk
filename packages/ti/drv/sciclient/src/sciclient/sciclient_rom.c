@@ -96,7 +96,6 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
     uint32_t rxThread = SCICLIENT_ROM_R5_RX_NORMAL_THREAD;
     Sciclient_RomFirmwareLoadHdr_t header      = {0};
     Sciclient_RomFirmwareLoadPayload_t payload = {0};
-    uint32_t secHeaderSizeWords = sizeof(struct tisci_sec_header)/sizeof(uint32_t);
     volatile Sciclient_RomFirmwareLoadHdr_t *pLocalRespHdr;
     uint8_t  payloadSize = sizeof (Sciclient_RomFirmwareLoadPayload_t) /
                            sizeof (uint8_t);
@@ -171,8 +170,36 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
             (void) Sciclient_readThread32(rxThread,
                             (uint8_t)((gSciclient_maxMsgSizeBytes/4U)-1U));
         }
+        status = Sciclient_bootNotification();
+    }
+    else
+    {
+        status = CSL_EFAIL;
+    }
 
-        /* CHECKING FOR TISCI_MSG_BOOT_NOTIFICATION from DMSC*/
+    return status;
+}
+
+int32_t Sciclient_bootNotification()
+{
+    int32_t  status   = CSL_PASS;
+    uint32_t rxThread = SCICLIENT_ROM_R5_RX_NORMAL_THREAD;
+    uint32_t gSciclient_maxMsgSizeBytes;
+    uint32_t secHeaderSizeWords = sizeof(struct tisci_sec_header)/sizeof(uint32_t);
+    volatile Sciclient_RomFirmwareLoadHdr_t *pLocalRespHdr;
+
+#if defined (CONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY)
+    /* Switch pointer to struct with alternate sproxy cfg used by ROM for firmware loading */
+    pSciclient_secProxyCfg = &gSciclient_secProxyCfg_rom;
+#endif
+
+    /* Update pLocalRespHdr and maxMsgSizeBytes vars, which are dependent on pointer selected above */
+    pLocalRespHdr = (Sciclient_RomFirmwareLoadHdr_t *)CSL_secProxyGetDataAddr
+                                        (pSciclient_secProxyCfg, rxThread, 0U);
+    gSciclient_maxMsgSizeBytes = CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
+                                CSL_SEC_PROXY_RSVD_MSG_BYTES;
+
+    /* CHECKING FOR TISCI_MSG_BOOT_NOTIFICATION from DMSC*/
         pLocalRespHdr =
         (Sciclient_RomFirmwareLoadHdr_t *)(CSL_secProxyGetDataAddr(
                                             pSciclient_secProxyCfg, rxThread, 0U)
@@ -204,11 +231,6 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
         pSciclient_secProxyCfg = &gSciclient_secProxyCfg;
         
 #endif
-    }
-    else
-    {
-        status = CSL_EFAIL;
-    }
 
     return status;
 }

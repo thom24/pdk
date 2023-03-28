@@ -8,6 +8,10 @@ HLOS_SUFFIX=
 ifeq ($(HLOS_BOOT),yes)
 HLOS_SUFFIX=_hlos
 endif
+COMBINE_SUFFIX=
+ifeq ($(SBL_IMAGE_TYPE),combined)
+COMBINE_SUFFIX=_combined
+endif
 HS_SUFFIX=
 ifeq ($(BUILD_HS),yes)
 HS_SUFFIX=_hs
@@ -49,8 +53,8 @@ else ifeq ($(RAT), 1)
   APP_NAME = sbl_cust_rat_main_ocm_img
   LOCAL_APP_NAME = sbl_cust_rat_main_ocm_img_$(CORE)
 else
-  APP_NAME = sbl_$(BOOTMODE)$(OSPI_NAND_SUFFIX)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
-  LOCAL_APP_NAME=sbl_$(BOOTMODE)$(OSPI_NAND_SUFFIX)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
+  APP_NAME = sbl_$(BOOTMODE)$(OSPI_NAND_SUFFIX)$(EMMC_SUFFIX)_img$(COMBINE_SUFFIX)$(HLOS_SUFFIX)$(HS_SUFFIX)
+  LOCAL_APP_NAME=sbl_$(BOOTMODE)$(OSPI_NAND_SUFFIX)$(EMMC_SUFFIX)_img$(COMBINE_SUFFIX)$(HLOS_SUFFIX)_$(CORE)
 endif
 BUILD_OS_TYPE = baremetal
 
@@ -101,6 +105,11 @@ endif
 
 ifeq ($(BOOT_PERF), yes)
   SBL_CFLAGS += -DBOOT_PERF 
+endif
+
+# Combined boot image flags
+ifeq ($(SBL_IMAGE_TYPE), combined)
+  SBL_CFLAGS += -DSBL_COMBINED_BOOT
 endif
 
 # HLOS Boot flags

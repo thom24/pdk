@@ -106,6 +106,7 @@ endif
 
 VALIDATOR_JSON := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_rules.json
 VALIDATOR_SCRIPT := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_validator.py
+COMBINE_SCRIPT := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_blob_creator.py
 
 HS_SUFFIX=
 ifeq ($(BUILD_HS),yes)
@@ -140,6 +141,12 @@ ifeq ($(MAKERULEDIR), )
   export MAKERULEDIR
 endif
 include $(MAKERULEDIR)/common.mk
+
+COMBINED_DM_BRDCFG := $(CFG_DIR)/combined-dm-cfg.bin
+COMBINED_TIFS_BRDCFG := $(CFG_DIR)/combined-tifs-cfg.bin
+
+.PHONY: sciclient_boardcfg $(COMBINED_DM_BRDCFG) $(COMBINED_TIFS_BRDCFG)
+$(APP_NAME): $(HEXFILES) $(COMBINED_DM_BRDCFG) $(COMBINED_TIFS_BRDCFG)
 
 define CREATE_HEX_GEN
 
@@ -201,6 +208,21 @@ endef
 
 $(foreach HEXFILE,$(HEXFILES),$(eval $(call CREATE_HEX_GEN,$(notdir $(basename $(HEXFILE))),$(subst $(HEX_EXT),,$(HEXFILE)))))
 
+# For combined boot images, creates the combined brdcfg bin files combined-tifs-brdcfg.bin and combined-dm-brdcfg.bin
+ifeq ($(SBL_IMAGE_TYPE),combined)
+SHELL:=/bin/bash
+$(COMBINED_DM_BRDCFG): $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned
+	$(PYTHON) $(COMBINE_SCRIPT) -p $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned -r $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned -o $@
+	@echo "Created combined-dm-brdcfg.bin file"
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+$(COMBINED_TIFS_BRDCFG): $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_tifs_rm_hex.bin.unsigned
+	$(PYTHON) $(COMBINE_SCRIPT) -b $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned -s $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned -p $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned -r $(OBJDIR)/$(BRD_CFG)cfg_tifs_rm_hex.bin.unsigned -o $@
+else
+$(COMBINED_TIFS_BRDCFG): $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned
+	$(PYTHON) $(COMBINE_SCRIPT) -b $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned -s $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned -p $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned -r $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned -o $@
+endif
+	@echo "Created combined-tifs-brdcfg.bin"
+endif
 
 # OBJs and libraries are built by using rule defined in rules_<target>.mk
 #     and need not be explicitly specified here

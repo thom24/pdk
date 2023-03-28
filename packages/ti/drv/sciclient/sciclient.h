@@ -543,6 +543,21 @@ typedef struct
 int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware);
 
 /**
+ *
+ * \brief  This API is called in place of Sciclient_loadFirmware for the
+ *         Combined ROM boot image, where the TIFS binary and SBL binary
+ *         are booted together for optimized boot. This is also called within
+ *         Sciclient_loadFirmware to check for TISCI_MSG_BOOT_NOTIFICATION from
+ *         DMSC
+ *
+ * Requirement: TBD
+ *
+ *  \return CSL_PASS on success, else failure
+ *
+ */
+ int32_t Sciclient_bootNotification(void);
+
+/**
  *  \brief  This API is called once for registering interrupts and creating
  *          semaphore handles to be able to talk to the firmware.
  *          The application should assume that the firmware is pre-loaded while

@@ -332,8 +332,13 @@ int main()
     SBL_enableEmmcBoot0();
 #endif
 
+#if defined(SBL_COMBINED_BOOT)
+    /* SciClient init for ROM combined boot image */
+    SBL_SciClientCombinedBootInit(devGroup);
+#else
     /* Load SYSFW. */
     SBL_SciClientInit(devGroup);
+#endif
 
 #if !defined(SBL_SKIP_PINMUX_ENABLE)
     /* Board pinmux. */

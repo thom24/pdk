@@ -57,6 +57,12 @@ R5_BOOTCORE_OPTS=0
 DEVICE_UID=0000000000000000000000000000000000000000000000000000000000000000
 DEVICE_DEBUG_TYPE=0000
 
+declare -A sha_oids
+sha_oids["sha256"]=2.16.840.1.101.3.4.2.1
+sha_oids["sha384"]=2.16.840.1.101.3.4.2.2
+sha_oids["sha512"]=2.16.840.1.101.3.4.2.3
+sha_oids["sha224"]=2.16.840.1.101.3.4.2.4
+
 gen_ecdsakey() {
 	openssl ecparam -out $TSIGN_KEY -name prime256v1 -genkey
 	SIGN_KEY=$TSIGN_KEY
@@ -199,9 +205,16 @@ options_help[d]="debug_extn:Default is disabled. Valid option DEBUG"
 options_help[u]="UID_file:txt file with Device Specific Unique ID(32 bytes) included in Debug Extn. Default will be 0"
 options_help[j]="debug_type:Debug type to be included in Debug Extn. Valid options are $VALID_DBG_TYPES"
 options_help[m]="mode:Start R5 in lockstep or split mode. Valid options are $VALID_R5_BOOTCORE_OPTS"
+options_help[a]="SBL_IMAGE_TYPE: Option to indicate that a combined boot image will be created"
+options_help[w]="SYSFW: Bin file corresponding to sysfw image"
+options_help[v]="SYSFW loadaddress: SYSFW image load address"
+options_help[g]="SYSFW_DATA: Bin file corresponding to combined board configurations"
+options_help[n]="SYSFW_DATA loadaddr: Combine board configuration load address"
+options_help[t]="DM_DATA: Bin file corresponding to combined board configurations for RM and PM. If this is used, RM and PM do not need to be provided as part of SYSFW_DATA. (OPTIONAL)"
+options_help[p]="DM_DATA loadaddr: Combine RM and PM blob board configuration load address (OPTIONAL)"
+options_help[q]="SYSFW CERT: SYSFW Inner Certificate"
 
-
-while getopts "b:k:o:c:l:s:e:i:r:y:d:u:j:m:h:f" opt
+while getopts "b:k:o:c:l:s:e:i:r:y:d:u:j:m:a:w:v:g:n:t:p:q:h:f" opt
 do
 	case $opt in
 	b)
@@ -292,6 +305,30 @@ do
 			R5_BOOTCORE_OPTS=2
 		fi
 	;;
+	a)
+		SBL_IMAGE_TYPE=$OPTARG
+	;;
+	w)
+		SYSFW=$OPTARG
+	;;
+	v)
+		SYSFW_LOADADDR=$OPTARG
+	;;
+	g)
+		SYSFW_DATA=$OPTARG
+	;;
+	n)
+		SYSFW_DATA_LOADADDR=$OPTARG
+	;;
+	t)
+		DM_DATA=$OPTARG
+	;;
+	p)
+		DM_DATA_LOADADDR=$OPTARG
+	;;
+	q)
+		SYSFW_INNER_CERT=$OPTARG
+	;;
 	h)
 		usage
 		exit 0
@@ -318,6 +355,24 @@ if [ -z "$BIN" ]; then
 	exit 1
 fi
 
+if [[ $SBL_IMAGE_TYPE == "combined" ]]; then
+	echo "Combined SBL image will be created"
+	if [ -z "$BIN" -o -z "$LOADADDR" ]; then
+		usage "Bootloader and its loadaddr are compulsory"
+		exit 1
+	fi
+
+	if [ -z "$SYSFW" -o -z "$SYSFW_LOADADDR" ]; then
+		usage "SYSFW and its loadaddr are compulsory"
+		exit 1
+	fi
+
+	if [ -z "$SYSFW_DATA" -o -z "$SYSFW_DATA_LOADADDR" ]; then
+		usage "SYSFW board configuration and its loadaddr are compulsory"
+		exit 1
+	fi
+fi
+
 # Create a temp workarea based on input file. This allows the script
 # to be invoked simultaneously for different appimages when parallel
 # make is used.
@@ -328,7 +383,11 @@ cd  $WORK_DIR
 
 #Generate random key if user doesn't provide a key.
 if [ -z "$SIGN_KEY" ]; then
+if [[ $SBL_IMAGE_TYPE == "combined" ]]; then
+	gen_ecdsakey
+else
 	gen_rsakey
+fi
 fi
 
 if [ ! -z $IMG_DBG ]; then
@@ -341,8 +400,6 @@ if [ ! -z $IMG_DBG ]; then
 	fi
 	echo "	UID = $DEVICE_UID"
 	echo "	DBG_TYPE = $DEVICE_DEBUG_TYPE"
-
-
 fi
 
 #if Image encryption is enabled, encrypt the binary
@@ -382,6 +439,70 @@ SHA_VAL=`openssl dgst -$SHA -hex $BIN | sed -e "s/^.*= //g"`
 BIN_SIZE=`cat $BIN | wc -c | tr -d ' '`
 ADDR=`printf "%08x" $LOADADDR`
 
+if [[ $SBL_IMAGE_TYPE == "combined" ]]; then
+	SHA_OID=${sha_oids["$SHA"]}
+	SBL_SHA_VAL=`openssl dgst -$SHA -hex $BIN | sed -e "s/^.*= //g"`
+	SBL_SIZE=`cat $BIN | wc -c`
+	SBL_ADDR=`printf "%08x" $LOADADDR`
+
+	SYSFW_SHA_VAL=`openssl dgst -$SHA -hex $SYSFW | sed -e "s/^.*= //g"`
+	SYSFW_SIZE=`cat $SYSFW | wc -c`
+	SYSFW_ADDR=`printf "%08x" $SYSFW_LOADADDR`
+
+	SYSFW_DATA_SHA_VAL=`openssl dgst -$SHA -hex $SYSFW_DATA | sed -e "s/^.*= //g"`
+	SYSFW_DATA_SIZE=`cat $SYSFW_DATA | wc -c`
+	SYSFW_DATA_ADDR=`printf "%08x" $SYSFW_DATA_LOADADDR`
+
+	NUM_COMPS_COUNT=3
+
+	if [ -n "$SYSFW_INNER_CERT" ]; then
+       SYSFW_INNER_CERT_SHA_VAL=`openssl dgst -$SHA -hex $SYSFW_INNER_CERT | sed -e "s/^.*= //g"`
+       SYSFW_INNER_CERT_SIZE=`cat $SYSFW_INNER_CERT | wc -c`
+       NUM_COMPS_COUNT=$(expr $NUM_COMPS_COUNT + 1)
+       SYSFW_INNER_CERT_EXT_BOOT_SEQUENCE_STRING="sysfw_inner_cert=SEQUENCE:sysfw_inner_cert"
+	read -r -d '' SYSFW_INNER_CERT_EXT_BOOT_BLOCK << EOM
+	\\
+	[sysfw_inner_cert]\\
+	compType = INTEGER:3\\
+	bootCore = INTEGER:0\\
+	compOpts = INTEGER:0\\
+	destAddr = FORMAT:HEX,OCT:00000000\\
+	compSize = INTEGER:SYSFW_INNER_CERT_IMAGE_SIZE\\
+	shaType  = OID:SYSFW_INNER_CERT_SHA_OID\\
+	shaValue = FORMAT:HEX,OCT:SYSFW_INNER_CERT_SHA_VAL
+EOM
+	else
+       SYSFW_INNER_CERT_SIZE=`printf "%08x" 0`
+       SYSFW_INNER_CERT_EXT_BOOT_SEQUENCE_STRING=""
+       SYSFW_INNER_CERT_EXT_BOOT_BLOCK=""
+	fi
+
+	if [ -n "$DM_DATA" ]; then
+		DM_DATA_SHA_VAL=`openssl dgst -$SHA -hex $DM_DATA | sed -e "s/^.*= //g"`
+		DM_DATA_SIZE=`cat $DM_DATA | wc -c`
+		DM_DATA_ADDR=`printf "%08x" $DM_DATA_LOADADDR`
+		NUM_COMPS_COUNT=$(expr $NUM_COMPS_COUNT + 1)
+		DM_DATA_EXT_BOOT_SEQUENCE_STRING="dm_data=SEQUENCE:dm_data"
+	read -r -d '' DM_DATA_EXT_BOOT_BLOCK << EOM
+	\\
+	[dm_data]\\
+	compType = INTEGER:17\\
+	bootCore = INTEGER:16\\
+	compOpts = INTEGER:0\\
+	destAddr = FORMAT:HEX,OCT:DM_DATA_DEST_ADDR\\
+	compSize = INTEGER:DM_DATA_IMAGE_SIZE\\
+	shaType  = OID:DM_DATA_IMAGE_SHA_OID\\
+	shaValue = FORMAT:HEX,OCT:DM_DATA_IMAGE_SHA_VAL
+EOM
+	else
+		DM_DATA_SIZE=`printf "%08x" 0`
+		DM_DATA_EXT_BOOT_SEQUENCE_STRING=""
+		DM_DATA_EXT_BOOT_BLOCK=""
+	fi
+
+	TOTAL_SIZE=$(expr $BIN_SIZE + $SYSFW_SIZE + $SYSFW_DATA_SIZE + $SYSFW_INNER_CERT_SIZE + $DM_DATA_SIZE)
+fi
+
 gen_cert() {
 if [[ $BOARD_CONFIG == 0 ]]; then
 	echo "$CERT_SIGN Certificate being generated :"
@@ -394,6 +515,47 @@ if [[ $BOARD_CONFIG == 0 ]]; then
 	echo "	IMAGE_SIZE = $BIN_SIZE"
 	echo "	BOOT_OPTIONS = $BOOTCORE_OPTS"
 fi
+	echo "Certificate being generated :"
+if [[ $SBL_IMAGE_TYPE == "combined" ]]; then
+	sed -i "s/SW_REV/$SWRV/"  $X509_DEFAULT
+	#echo $SBL_ADDR $SBL_SIZE $SBL_SHA_VAL
+	sed -i "s/NUM_COMPS_COUNT/$NUM_COMPS_COUNT/"  $X509_DEFAULT
+	sed -i "s/BOOTCORE_OPTS/$BOOTCORE_OPTS/"  $X509_DEFAULT
+	sed -i "s/SBL_DEST_ADDR/$SBL_ADDR/"  $X509_DEFAULT
+	sed -i "s/SBL_IMAGE_SIZE/$SBL_SIZE/" $X509_DEFAULT
+	sed -i "s/SBL_IMAGE_SHA_OID/$SHA_OID/" $X509_DEFAULT
+	sed -i "s/SBL_IMAGE_SHA_VAL/$SBL_SHA_VAL/" $X509_DEFAULT
+	#echo $SYSFW_ADDR $SYSFW_SIZE $SYSFW_SHA_VAL
+	sed -i "s/SYSFW_DEST_ADDR/$SYSFW_ADDR/" $X509_DEFAULT
+	sed -i "s/SYSFW_IMAGE_SIZE/$SYSFW_SIZE/" $X509_DEFAULT
+	sed -i "s/SYSFW_IMAGE_SHA_OID/$SHA_OID/" $X509_DEFAULT
+	sed -i "s/SYSFW_IMAGE_SHA_VAL/$SYSFW_SHA_VAL/" $X509_DEFAULT
+	#echo $SYSFW_DATA_ADDR $SYSFW_DATA_SIZE $SYSFW_DATA_SHA_VAL
+	sed -i "s/SYSFW_DATA_DEST_ADDR/$SYSFW_DATA_ADDR/" $X509_DEFAULT
+	sed -i "s/SYSFW_DATA_IMAGE_SIZE/$SYSFW_DATA_SIZE/" $X509_DEFAULT
+	sed -i "s/SYSFW_DATA_IMAGE_SHA_OID/$SHA_OID/" $X509_DEFAULT
+	sed -i "s/SYSFW_DATA_IMAGE_SHA_VAL/$SYSFW_DATA_SHA_VAL/" $X509_DEFAULT
+	#echo $SYSFW_INNER_CERT_ADDR $SYSFW_INNER_CERT_SIZE $SYSFW_INNER_CERT_VAL
+	sed -i "s/SYSFW_INNER_CERT_EXT_BOOT_BLOCK/$SYSFW_INNER_CERT_EXT_BOOT_BLOCK/" $X509_DEFAULT
+	sed -i "s/SYSFW_INNER_CERT_EXT_BOOT_SEQUENCE_STRING/$SYSFW_INNER_CERT_EXT_BOOT_SEQUENCE_STRING/" $X509_DEFAULT
+	sed -i "s/SYSFW_INNER_CERT_DEST_ADDR/$SYSFW_INNER_CERT_ADDR/" $X509_DEFAULT
+	sed -i "s/SYSFW_INNER_CERT_IMAGE_SIZE/$SYSFW_INNER_CERT_SIZE/" $X509_DEFAULT
+	sed -i "s/SYSFW_INNER_CERT_SHA_OID/$SHA_OID/" $X509_DEFAULT
+	sed -i "s/SYSFW_INNER_CERT_SHA_VAL/$SYSFW_INNER_CERT_SHA_VAL/" $X509_DEFAULT
+	#echo $DM_DATA_ADDR $DM_DATA_SIZE $DM_DATA_SHA_VAL
+	sed -i "s/DM_DATA_EXT_BOOT_BLOCK/$DM_DATA_EXT_BOOT_BLOCK/" $X509_DEFAULT
+	sed -i "s/DM_DATA_EXT_BOOT_SEQUENCE_STRING/$DM_DATA_EXT_BOOT_SEQUENCE_STRING/" $X509_DEFAULT
+	sed -i "s/DM_DATA_DEST_ADDR/$DM_DATA_ADDR/" $X509_DEFAULT
+	sed -i "s/DM_DATA_IMAGE_SIZE/$DM_DATA_SIZE/" $X509_DEFAULT
+	sed -i "s/DM_DATA_IMAGE_SHA_OID/$SHA_OID/" $X509_DEFAULT
+	sed -i "s/DM_DATA_IMAGE_SHA_VAL/$DM_DATA_SHA_VAL/" $X509_DEFAULT
+	#echo $DEVICE_UID $DEVICE_DEBUG_TYPE
+	sed -i "s/TEST_DEVICE_UID/$DEVICE_UID/" $X509_DEFAULT
+    sed -i "s/TEST_DEVICE_DEBUG_TYPE/$DEVICE_DEBUG_TYPE/" $X509_DEFAULT
+	#echo $TOTAL_SIZE
+	sed -i "s/TOTAL_IMAGE_LENGTH/$TOTAL_SIZE/" $X509_DEFAULT
+	openssl req -new -x509 -key $SIGN_KEY -nodes -outform DER -out $CERT -config $X509_DEFAULT -$SHA
+	else
 	sed -e "s/TEST_IMAGE_LENGTH/$BIN_SIZE/"	\
 		-e "s/TEST_IMAGE_SHA512/$SHA_VAL/" \
 		-e "s/TEST_SWRV/$SWRV/" \
@@ -408,6 +570,7 @@ fi
 		-e "s/TEST_DEVICE_DEBUG_TYPE/$DEVICE_DEBUG_TYPE/" \
 		-e "s/TEST_BOOT_ADDR/$ADDR/" ${X509_DEFAULT} > $TEMP_X509
 	openssl req -new -x509 -key $SIGN_KEY -nodes -outform DER -out $CERT -config $TEMP_X509 -$SHA
+	fi
 }
 
 gen_x509template() {
@@ -431,9 +594,18 @@ cat << __HEADER_EOF > $X509_DEFAULT
  [ v3_ca ]
   basicConstraints = CA:true
   1.3.6.1.4.1.294.1.3=ASN1:SEQUENCE:swrv
+__HEADER_EOF
+
+if [[ $SBL_IMAGE_TYPE != "combined" ]]; then
+	cat << __HEADER_SYSFW_EOF >> $X509_DEFAULT
   1.3.6.1.4.1.294.1.34=ASN1:SEQUENCE:sysfw_image_integrity
   1.3.6.1.4.1.294.1.35=ASN1:SEQUENCE:sysfw_image_load
-__HEADER_EOF
+__HEADER_SYSFW_EOF
+else
+cat << __HEADER_SYSFW_EOF >> $X509_DEFAULT
+  1.3.6.1.4.1.294.1.9=ASN1:SEQUENCE:ext_boot_info
+__HEADER_SYSFW_EOF
+fi
 
 if [ ! -z $IMG_ENC ]; then
 	cat << __HEADER_ENC_EOF >> $X509_DEFAULT
@@ -441,11 +613,14 @@ if [ ! -z $IMG_ENC ]; then
 __HEADER_ENC_EOF
 fi
 
+
+if [[ $SBL_IMAGE_TYPE != "combined" ]]; then
 if [[ $BOARD_CONFIG == 0 ]]; then
 	cat << __HEADER_ENC_EOF >> $X509_DEFAULT
   1.3.6.1.4.1.294.1.1=ASN1:SEQUENCE:boot_seq
   1.3.6.1.4.1.294.1.2=ASN1:SEQUENCE:image_integrity
 __HEADER_ENC_EOF
+fi
 fi
 
 if [ ! -z $IMG_DBG ]; then
@@ -454,7 +629,7 @@ if [ ! -z $IMG_DBG ]; then
 __HEADER_DBG_EOF
 fi
 
-
+if [[ $SBL_IMAGE_TYPE != "combined" ]]; then
 cat << __IMAGE_DEFAULT_EOF >> $X509_DEFAULT
 
  [ swrv ]
@@ -491,6 +666,50 @@ else
   authInPlace = INTEGER:2
 __IMAGE_ENC_EOF
 fi
+else
+	cat << __IMAGE_COMBINE_EOF >> $X509_DEFAULT
+ [swrv]
+ swrv=INTEGER:SW_REV
+
+ [ext_boot_info]
+ extImgSize=INTEGER:TOTAL_IMAGE_LENGTH
+ numComp=INTEGER:NUM_COMPS_COUNT
+ sbl=SEQUENCE:sbl
+ sysfw=SEQUENCE:sysfw
+ sysfw_data=SEQUENCE:sysfw_data
+ SYSFW_INNER_CERT_EXT_BOOT_SEQUENCE_STRING
+ DM_DATA_EXT_BOOT_SEQUENCE_STRING
+
+ [sbl]
+ compType = INTEGER:1
+ bootCore = INTEGER:16
+ compOpts = INTEGER:BOOTCORE_OPTS
+ destAddr = FORMAT:HEX,OCT:SBL_DEST_ADDR
+ compSize = INTEGER:SBL_IMAGE_SIZE
+ shaType  = OID:SBL_IMAGE_SHA_OID
+ shaValue = FORMAT:HEX,OCT:SBL_IMAGE_SHA_VAL
+
+ [sysfw]
+ compType = INTEGER:2
+ bootCore = INTEGER:0
+ compOpts = INTEGER:0
+ destAddr = FORMAT:HEX,OCT:SYSFW_DEST_ADDR
+ compSize = INTEGER:SYSFW_IMAGE_SIZE
+ shaType  = OID:SYSFW_IMAGE_SHA_OID
+ shaValue = FORMAT:HEX,OCT:SYSFW_IMAGE_SHA_VAL
+
+ [sysfw_data]
+ compType = INTEGER:18
+ bootCore = INTEGER:0
+ compOpts = INTEGER:0
+ destAddr = FORMAT:HEX,OCT:SYSFW_DATA_DEST_ADDR
+ compSize = INTEGER:SYSFW_DATA_IMAGE_SIZE
+ shaType  = OID:SYSFW_DATA_IMAGE_SHA_OID
+ shaValue = FORMAT:HEX,OCT:SYSFW_DATA_IMAGE_SHA_VAL
+ SYSFW_INNER_CERT_EXT_BOOT_BLOCK
+ DM_DATA_EXT_BOOT_BLOCK
+__IMAGE_COMBINE_EOF
+fi
 
 if [ ! -z $IMG_ENC ]; then
 	cat << __IMAGE_ENC_EOF >> $X509_DEFAULT
@@ -513,14 +732,17 @@ if [ ! -z $IMG_DBG ]; then
   coreDbgSecEn =  INTEGER:0
 __IMAGE_DBG_EOF
 fi
-
 }
 
 
 gen_x509template
 gen_cert
 
+if [[ $SBL_IMAGE_TYPE == "combined" ]]; then
+	cat $CERT $BIN $SYSFW $SYSFW_DATA $SYSFW_INNER_CERT $DM_DATA > $OUTPUT
+else
 cat $CERT $BIN > $OUTPUT
+fi
 
 if [[ $BOARD_CONFIG == 0 ]]; then
 echo "SUCCESS: Image $OUTPUT generated. Good to boot"
