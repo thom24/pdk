@@ -3,13 +3,18 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-APP_NAME = sbl_boot_test
+ifeq ($(IS_BOOTAPP_TEST), yes)
+  APP_NAME = bootapp_boot_test
+else
+  APP_NAME = sbl_boot_test
+endif
+
 ifneq ($(CORE), $(filter $(CORE), mcu1_0 c7x_1 c7x_2 c7x_3 c7x_4 c66xdsp_1 c66xdsp_2))
   BUILD_OS_TYPE = baremetal
 else
   BUILD_OS_TYPE = freertos
 endif
-LOCAL_APP_NAME = sbl_boot_test_$(BOARD)_$(CORE)TestApp
+LOCAL_APP_NAME = $(APP_NAME)_$(BOARD)_$(CORE)TestApp
 
 SBL_SRC_DIR =  $(PDK_INSTALL_PATH)/ti/boot/sbl
 
@@ -29,6 +34,10 @@ INCLUDE_EXTERNAL_INTERFACES =
 
 # List all the components required by the application
 COMP_LIST_COMMON =
+
+ifeq ($(IS_BOOTAPP_TEST), yes)
+  CFLAGS_LOCAL_COMMON += -DBOOTAPP_TEST
+endif
 
 SRCS_COMMON += sbl_amp_multicore.c sbl_printf.c
 

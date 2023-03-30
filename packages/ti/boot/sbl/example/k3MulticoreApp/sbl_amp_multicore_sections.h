@@ -30,18 +30,23 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-/* SBL_AMP_TEST_NUM_BOOT_CORES indicates numbers cores in SOC */
+/* SBL_AMP_TEST_NUM_BOOT_CORES indicates number of cores in SOC */
+/* BOOTAPP_NUM_BOOT_CORES indicates number of cores booted from lateapps */
 #if defined (SOC_J7200)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (6)
+#define BOOTAPP_NUM_BOOT_CORES (3)
 #endif
 #if defined (SOC_J721S2)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (10)
+#define BOOTAPP_NUM_BOOT_CORES (7)
 #endif
 #if defined (SOC_J784S4)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (20)
+#define BOOTAPP_NUM_BOOT_CORES (11)
 #endif
 #if defined (SOC_J721E)
 #define SBL_AMP_TEST_NUM_BOOT_CORES (11)
+#define BOOTAPP_NUM_BOOT_CORES (8)
 #endif
 
 #define POKE_MEM_ADDR_MCU1_0 0x41CE1FFC
@@ -74,6 +79,8 @@
 #define STARTED 0xDEADBEEF
 #define SEMAPHORE 0xBEEEEF00
 #define POKE_MEM_ADDR_GAP 0x400
+#define UPDATE_VALUE 0xC0DEBABE
+#define DEFAULT_VALUE 0xFEEDFACE 
 
 /* BOOT_DELAY is used to halt the core for some time using while(boot_delay--) */
 #ifdef BUILD_MCU1_0

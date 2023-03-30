@@ -36,48 +36,135 @@
 int sblTestmain(void)
 {
     volatile int *pokeMemAddr = (volatile int *)POKE_MEM_ADDR;
+#if defined(BOOTAPP_TEST)
+    volatile int delay1 = 10;
+    volatile int delay2 = BOOT_DELAY;
+#if defined(BUILD_MCU2_0)
     volatile int *bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
-    volatile int boot_delay = BOOT_DELAY, num_cores_booted = 0;
+    volatile int numCoresBooted = 0;
+#endif
+#else
+#if defined(BUILD_MCU1_0)
+    volatile int delay1 = 10;
+    volatile int delay2 = BOOT_DELAY;
+    volatile int *bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
+    volatile int numCoresBooted = 0;
+#endif
+#endif
 
+#if !defined(BOOTAPP_TEST)
+    volatile int bootDelay = BOOT_DELAY;
+#endif
+
+#if defined(BOOTAPP_TEST)
+    if (*pokeMemAddr != UPDATE_VALUE)
+    {
+        /* Adding extra delay so that this application logs print after BootApp logs */
+        while(delay1--)
+        {
+            while (delay2--);
+            delay2 = BOOT_DELAY;
+        }
+        sbl_puts(CORE_NAME);
+        sbl_puts(" booted\n\r");
+        *pokeMemAddr = UPDATE_VALUE;
+    }
+
+#if defined(BUILD_MCU2_0)
+    delay1 = 2;
+    delay2 = BOOT_DELAY;
+    while(delay1--)
+    {
+        while (delay2--)
+        {
+            /* Do Nothing */
+        }
+        delay2 = BOOT_DELAY;
+    }
+    while(1)
+    {
+        for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0; bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3; bootFlagAddr += POKE_MEM_ADDR_GAP)
+        {
+            if (*bootFlagAddr == UPDATE_VALUE)
+            {
+                numCoresBooted++;
+            }
+        }
+        if(numCoresBooted == BOOTAPP_NUM_BOOT_CORES)
+        {
+            sbl_puts("lateapps booted successfully\n\r");
+            sbl_puts(CORE_NAME);
+            sbl_puts(" reports: All tests have passed\n\r");
+            break;
+        }
+        else
+        {
+            numCoresBooted = 0;
+        }
+    }
+    /* Clean up pokemem flags for the next run */
+    for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
+        bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3;
+        bootFlagAddr += POKE_MEM_ADDR_GAP)
+    {
+        *bootFlagAddr = DEFAULT_VALUE;
+    }
+#endif
+#else
     /* if we have run before, someone
        reset the system, dont print message */
-    if (*pokeMemAddr != 0xC0DEBABE)
+    if (*pokeMemAddr != UPDATE_VALUE)
     {
-        while (boot_delay--);
+        while (bootDelay--);
         sbl_puts(CORE_NAME);
         sbl_puts(" running\n\r");
         /* log completion */
-        *pokeMemAddr = 0xC0DEBABE;
+        *pokeMemAddr = UPDATE_VALUE;
         #if defined(BUILD_XIP)
             sbl_puts("XIP Boot test has passed\n\r");
         #endif
     }
-
-    /* Check if all cores have run by checking flags
-       left in MSMC by each cores testcase */
-    while (bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3)
+#if defined(BUILD_MCU1_0)
+    delay1 = 10;
+    delay2 = BOOT_DELAY;
+    while(delay1--)
     {
-        if (*bootFlagAddr == 0xC0DEBABE)
+        while (delay2--)
         {
-            num_cores_booted++;
+            /* Do Nothing */
         }
-        bootFlagAddr += POKE_MEM_ADDR_GAP;
+        delay2 = BOOT_DELAY;
     }
-
-    if (num_cores_booted == SBL_AMP_TEST_NUM_BOOT_CORES)
+    while(1)
     {
-        sbl_puts(CORE_NAME);
-        sbl_puts(" reports: All tests have passed\n\r");
-
-        /* Clean up pokemem flags for the next run */
-        for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
-            bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3;
-            bootFlagAddr += POKE_MEM_ADDR_GAP)
+        for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0; bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3; bootFlagAddr += POKE_MEM_ADDR_GAP)
         {
-            *bootFlagAddr = 0xFEEDFACE;
+            if (*bootFlagAddr == UPDATE_VALUE)
+            {
+                numCoresBooted++;
+            }
+        }
+        if(numCoresBooted == SBL_AMP_TEST_NUM_BOOT_CORES)
+        {
+            sbl_puts(CORE_NAME);
+            sbl_puts(" reports: All tests have passed\n\r");
+            break;
+        }
+        else
+        {
+            numCoresBooted = 0;
         }
     }
+    /* Clean up pokemem flags for the next run */
+    for (bootFlagAddr = (volatile int *)POKE_MEM_ADDR_MCU1_0;
+        bootFlagAddr <= (int *)POKE_MEM_ADDR_MPU2_3;
+        bootFlagAddr += POKE_MEM_ADDR_GAP)
+    {
+        *bootFlagAddr = DEFAULT_VALUE;
+    }
+#endif
+#endif
 
-    return 0XFEEDFACE;
+    return DEFAULT_VALUE;
 }
 

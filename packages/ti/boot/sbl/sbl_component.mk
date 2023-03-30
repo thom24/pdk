@@ -971,6 +971,30 @@ sbl_EXAMPLE_LIST += sbl_multicore_boot_test
 sbl_multicore_boot_test_SBL_APPIMAGEGEN = no
 export sbl_multicore_boot_test_SBL_APPIMAGEGEN
 
+# Boot App individual core boot test
+bootapp_boot_test_COMP_LIST = bootapp_boot_test
+bootapp_boot_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
+bootapp_boot_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+bootapp_boot_test_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+bootapp_boot_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_boot_test.mk IS_BOOTAPP_TEST=yes
+export bootapp_boot_test_MAKEFILE
+bootapp_boot_test_BOARD_DEPENDENCY = no
+bootapp_boot_test_SOC_DEPENDENCY = no
+bootapp_boot_test_CORE_DEPENDENCY = no
+export bootapp_boot_test_COMP_LIST
+export bootapp_boot_test_BOARD_DEPENDENCY
+export bootapp_boot_test_SOC_DEPENDENCY
+export bootapp_boot_test_CORE_DEPENDENCY
+bootapp_boot_test_PKG_LIST = bootapp_boot_test
+bootapp_boot_test_INCLUDE = $(bootapp_boot_test_PATH)
+bootapp_boot_test_BOARDLIST = $(sbl_BOARDLIST)
+export bootapp_boot_test_BOARDLIST
+bootapp_boot_test_$(SOC)_CORELIST = $(CORE_LIST_$(SOC))
+export bootapp_boot_test_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += bootapp_boot_test
+bootapp_boot_test_SBL_APPIMAGEGEN = yes
+export bootapp_boot_test_SBL_APPIMAGEGEN
+
 # R5 Lockstep and MPU SMP Boot Test
 sbl_smp_test_COMP_LIST = sbl_smp_test
 sbl_smp_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
