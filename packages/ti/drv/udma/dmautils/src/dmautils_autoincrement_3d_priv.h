@@ -89,12 +89,16 @@ void hostEmulation_updateTriggerCount(struct Udma_DrvObj * udmaDrvHandle,
 void hostEmulation_druChSubmitAtomicTr(CSL_DRU_t *pRegs,
                                            uint32_t chId,
                                            void *  vdata);
+
 uint64_t hostEmulation_addressUpdate( uint64_t base, int32_t offset, uint64_t addrMask );
+
 void hostEmulation_circMask( uint32_t cbk0, uint32_t cbk1, uint64_t * circMask0, uint64_t * circMask1  );
 
 void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle);
 
 #endif
+
+Bool checkZeroBasedEOB(int32_t curBitPos, int32_t numDecodeBits);
 
 #ifdef __cplusplus
 }

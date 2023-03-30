@@ -596,7 +596,7 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels);
  *
  */
 int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
-                                            DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
+                                            const DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam ,
                                             uint32_t convertMask);
 
 
@@ -672,7 +672,7 @@ void  DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId);
  *  \return \ref Udma_ErrorCodes
  *
  */
-int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, uint8_t * trMem, int32_t numTr);
+int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, const uint8_t * trMem, int32_t numTr);
 
 /**
  *
@@ -685,8 +685,8 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
  */
 
 int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext);
-int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem);
 
+int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem);
 
 #ifdef __cplusplus
 }

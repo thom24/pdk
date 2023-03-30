@@ -88,7 +88,7 @@
  *  \return   Zero Value (isEOB)
  *
  */
-static int32_t decodeZeroBasedElem(uint8_t * srcPtr, uint8_t * decodedElem, int32_t * curBitPos);
+static int32_t decodeZeroBasedElem(const uint8_t * srcPtr, uint8_t * decodedElem, int32_t * curBitPos);
 
 /*Common Functions:*/
 uint64_t hostEmulation_addressUpdate( uint64_t base, int32_t offset, uint64_t addrMask )
@@ -130,7 +130,7 @@ void hostEmulation_circMask( uint32_t cbk0, uint32_t cbk1, uint64_t * circMask0,
    return      : length of compressed symbol in bits
 */
 static uint8_t DmaUtilsAutoInc3d_compressElem
-( CSL_UdmapSecTR * secondaryTR
+( const CSL_UdmapSecTR * secondaryTR
 , uint32_t         symbolIn
 , uint64_t*        symbolOut
 )
@@ -327,7 +327,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
  symbolOut   : uncompressed symbol
  return      : length of compressed symbol
 */
-static uint8_t DmaUtilsAutoInc3d_decompressElem ( CSL_UdmapSecTR * secondaryTR,
+static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondaryTR,
                                                        uint64_t           symbolIn,
                                                        uint32_t*          symbolOut)
 {
@@ -512,21 +512,21 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem ( CSL_UdmapSecTR * secondaryTR,
 }
 
 /*Start of updated decompression routines*/
-int32_t checkZeroBasedEOB(int32_t curBitPos, int32_t numDecodeBits)
+Bool checkZeroBasedEOB(int32_t curBitPos, int32_t numDecodeBits)
 {
-  int32_t isEOB = (int32_t)TRUE;
+  Bool isEOB = TRUE;
   if(((uint32_t)curBitPos + (uint32_t)numDecodeBits) > 128U)
   {
     isEOB = TRUE;
   }
   else
   {
-    isEOB = (int32_t)FALSE;
+    isEOB = FALSE;
   }
   return isEOB;
 }
 
-int32_t decodeZeroBasedElem(uint8_t* srcPtr, uint8_t* decodedElem, int32_t* curBitPos)
+static int32_t decodeZeroBasedElem(const uint8_t* srcPtr, uint8_t* decodedElem, int32_t* curBitPos)
 {
   int32_t localBitPos  = (*curBitPos) % (int32_t)8;
   int32_t localBytePos = (*curBitPos) / (int32_t)8;
@@ -640,8 +640,6 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
   uint32_t chId;
   for ( chId = 0U; chId <= 1U; chId++)/*:TODO: Remove hard coded value of 32*/
   {
-    if (1)
-    {
       uint8_t *srcPtr;
       uint8_t *dstPtr;
       uint8_t *cdbPtr;
@@ -1007,7 +1005,8 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
             dstPtr += 16;
             /*zero out next CDB for writing*/
             memset(dstPtr, 0, 16);
-            len = 0;
+            /* MISRAC fix for VA_UNUSED.GEN */
+            //len = 0;
             cdbCnt++;
 
             /*Write CDB info to table*/
@@ -1361,8 +1360,9 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
         {
           if ( DFMT == (uint32_t)DMAUTILSAUTOINC3D_DFMT_COMP)
           {
-            totalSrcCnt = ((uint32_t)origTransferRecord->icnt0 * (uint32_t)origTransferRecord->icnt1 * (uint32_t)origTransferRecord->icnt2 * (uint32_t)origTransferRecord->icnt3);
-            totalDstCnt = ((uint32_t)origTransferRecord->dicnt0 * (uint32_t)origTransferRecord->dicnt1 * (uint32_t)origTransferRecord->dicnt2 * (uint32_t)origTransferRecord->dicnt3);
+            /* fix for MISRAC VA_UNUSED.GEN */
+            //totalSrcCnt = ((uint32_t)origTransferRecord->icnt0 * (uint32_t)origTransferRecord->icnt1 * (uint32_t)origTransferRecord->icnt2 * (uint32_t)origTransferRecord->icnt3);
+            //totalDstCnt = ((uint32_t)origTransferRecord->dicnt0 * (uint32_t)origTransferRecord->dicnt1 * (uint32_t)origTransferRecord->dicnt2 * (uint32_t)origTransferRecord->dicnt3);
             nextSBStartOffset = 0;
           }
           ret = 1U;
@@ -1512,7 +1512,6 @@ if (ret == 1U)
       {
         free(interimBuffer);
       }
-    }
   }
   return 0;
 }

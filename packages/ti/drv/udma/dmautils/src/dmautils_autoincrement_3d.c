@@ -139,10 +139,10 @@ static uint32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t n
 
 }
 
-static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
+static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(const DmaUtilsAutoInc3d_Context * dmautilsContext,
   const uintptr_t virtualAddr,int32_t chNum);
 
-static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(DmaUtilsAutoInc3d_Context * dmautilsContext,
+static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(const DmaUtilsAutoInc3d_Context * dmautilsContext,
   const uintptr_t virtualAddr,int32_t chNum)
   {
     uintptr_t phyAddr = virtualAddr;
@@ -211,7 +211,7 @@ static uint32_t DmaUtilsAutoInc3d_getTrFlags(int32_t syncType)
   return flags;
 }
 
-static uint32_t DmaUtilsAutoInc3d_getTrFmtFlags(DmaUtilsAutoInc3d_TransferCirc * circProp, int32_t dmaDfmt) {
+static uint32_t DmaUtilsAutoInc3d_getTrFmtFlags(const DmaUtilsAutoInc3d_TransferCirc * circProp, int32_t dmaDfmt) {
   uint32_t fmtflags = 0;
   uint32_t eltype = CSL_UDMAP_TR_FMTFLAGS_ELYPE_1;
   uint32_t sectrType = CSL_UDMAP_TR_FMTFLAGS_SECTR_NONE;
@@ -398,8 +398,8 @@ int32_t DmaUtilsAutoInc3d_getContextSize(int32_t numChannels) {
   return contextSize;
 }
 
-static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext, DmaUtilsAutoInc3d_InitParam * initParams);
-static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext, DmaUtilsAutoInc3d_InitParam * initParams) {
+static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext,const DmaUtilsAutoInc3d_InitParam * initParams);
+static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext,const DmaUtilsAutoInc3d_InitParam * initParams) {
   int32_t retVal = (int32_t) DMAUTILS_SOK;
   int32_t memLocation = 0;
   uint8_t * memPointer;
@@ -474,7 +474,7 @@ static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_loca
 
 #ifndef HOST_EMULATION
 //:TODO: Check if this function can be included in CSL
-static int32_t DmaUtilsAutoInc3d_getClecConfigEvent(CSL_CLEC_EVTRegs * pRegs,
+static int32_t DmaUtilsAutoInc3d_getClecConfigEvent(const CSL_CLEC_EVTRegs * pRegs,
   uint32_t evtNum,
   CSL_ClecEventConfig * evtCfg) {
   int32_t retVal = CSL_PASS;
@@ -510,7 +510,7 @@ static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * 
   CSL_CLEC_EVTRegs * clecBaseAddr = (CSL_CLEC_EVTRegs * ) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
   DmaUtilsAutoInc3d_getUtcInfo(NULL, & dru_local_event_start);
-  DmaUtilsAutoInc3d_getClecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext -> druChannelId, & cfgClec);
+  (void)DmaUtilsAutoInc3d_getClecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext -> druChannelId, & cfgClec);
   if ((cfgClec.rtMap != (uint32_t) thisCore) && (cfgClec.rtMap != CSL_CLEC_RTMAP_CPU_ALL)) {
     DmaUtilsAutoInc3d_printf(autoIncrementContext, 0,
       " This core (%d) is different than CLEC RTMAP CPU (%d) programming for channel %d\n",
@@ -559,7 +559,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
 
       retVal = DmaUtilsAutoInc3d_setupContext(autoIncrementContext, initParams);
 
-      if (DMAUTILS_SOK == retVal)
+      if (retVal == (int32_t)DMAUTILS_SOK)
       {
         /* Initialize the channel params to default */
         chType = UDMA_CH_TYPE_UTC;
@@ -602,7 +602,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
           channelHandle = & (channelContext -> chHandle);
 
           retVal = Udma_chOpen((Udma_DrvHandle) initParams -> udmaDrvHandle, channelHandle, chType, & chPrms);
-          if (DMAUTILS_SOK != retVal) {
+          if (retVal != (int32_t)DMAUTILS_SOK) {
             DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "Udma_chOpen : Failed \n");
             break;
           } else {
@@ -610,7 +610,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
             utcPrms.druQueueId = chInitParams[i].dmaQueNo;
 
             retVal = Udma_chConfigUtc(channelHandle, & utcPrms);
-            if (DMAUTILS_SOK != retVal)
+            if (retVal != (int32_t)DMAUTILS_SOK)
             {
               DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "Udma_chConfigUtc : Failed \n");
 
@@ -619,7 +619,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
 
               /* Enable The channel */
               retVal = Udma_chEnable(channelHandle);
-              if (DMAUTILS_SOK != retVal)
+              if (retVal != (int32_t)DMAUTILS_SOK)
                {
                 DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "Udma_chEnable : Failed \n");
 
@@ -679,55 +679,47 @@ int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam * trPrepPar
     CSL_UdmapTR * pTrArray;
     int32_t i;
 
-    if ( trPrepParam == NULL )
+    if ( trPrepParam != NULL )
     {
-      retVal = (int32_t)DMAUTILS_EBADARGS;
-      goto Exit;
+      size = DmaUtilsAutoInc3d_getTrMemReq(trPrepParam->numTRs);
+
+      if ( trPrepParam->trMemSize < size )
+      {
+        retVal = (int32_t)DMAUTILS_EINVALID_PARAMS;
+      }
+
+      if ( trPrepParam->numTRs > (int32_t)DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
+      {
+          isRingBasedFlowReq = 1;
+      }
+
+      pTrArray = (CSL_UdmapTR *)trPrepParam->trMem;
+
+      if ( isRingBasedFlowReq == 1 )
+      {
+  #ifndef DMA_UTILS_STANDALONE
+        /* This needs to be updated with correct value during configure */
+        uint32_t cqRingNum = 0;
+        /* Setup TR descriptor */
+
+        CSL_UdmapCppi5TRPD * pTrpd = (CSL_UdmapCppi5TRPD *)trPrepParam->trMem;
+        CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trPrepParam->trMem + sizeof(CSL_UdmapTR));
+
+        UdmaUtils_makeTrpd(pTrpd, UDMA_TR_TYPE_9, (uint32_t)trPrepParam->numTRs, cqRingNum);
+        pTrArray = pTr;
+  #endif
+      }
+
+      for ( i = 0; i < trPrepParam->numTRs ; i++)
+      {
+          DmaUtilsAutoInc3d_setupTr(&pTrArray[i], &transferProp[i]);
+      }
+
     }
-
-    size = DmaUtilsAutoInc3d_getTrMemReq(trPrepParam->numTRs);
-
-    if ( trPrepParam->trMemSize < size )
+    else
     {
-      retVal = (int32_t)DMAUTILS_EINVALID_PARAMS;
-      goto Exit;
+      retVal = (int32_t) DMAUTILS_EBADARGS;
     }
-
-    if ( trPrepParam->trMem == NULL )
-    {
-      retVal = (int32_t)DMAUTILS_EBADARGS;
-      goto Exit;
-    }
-
-    if ( trPrepParam->numTRs > (int32_t)DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
-    {
-        isRingBasedFlowReq = 1;
-    }
-
-    pTrArray = (CSL_UdmapTR *)trPrepParam->trMem;
-
-    if ( isRingBasedFlowReq == 1 )
-    {
-#ifndef DMA_UTILS_STANDALONE
-      /* This needs to be updated with correct value during configure */
-      uint32_t cqRingNum = 0;
-      /* Setup TR descriptor */
-
-      CSL_UdmapCppi5TRPD * pTrpd = (CSL_UdmapCppi5TRPD *)trPrepParam->trMem;
-      CSL_UdmapTR           *pTr = (CSL_UdmapTR *)(trPrepParam->trMem + sizeof(CSL_UdmapTR));
-
-      UdmaUtils_makeTrpd(pTrpd, UDMA_TR_TYPE_9, trPrepParam->numTRs, cqRingNum);
-      pTrArray = pTr;
-#endif
-    }
-
-    for ( i = 0; i < trPrepParam->numTRs ; i++)
-    {
-        DmaUtilsAutoInc3d_setupTr(&pTrArray[i], &transferProp[i]);
-    }
-
-
-Exit:
 
     return retVal;
 
@@ -741,7 +733,7 @@ int32_t DmaUtilsAutoInc3d_prepareTrWithPhysicalAddress(void * autoIncrementConte
   uint32_t convertMask = ((uint32_t) DMAUTILSAUTOINC3D_ADDRCONVERTMASK_SRCADDR | (uint32_t) DMAUTILSAUTOINC3D_ADDRCONVERTMASK_DSTADDR);
   retVal = DmaUtilsAutoInc3d_prepareTr(trPrepParam, transferProp);
 
-  if (retVal == DMAUTILS_SOK)
+  if (retVal == (int32_t)DMAUTILS_SOK)
   {
     retVal = DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(autoIncrementContext,
       trPrepParam,
@@ -751,7 +743,7 @@ int32_t DmaUtilsAutoInc3d_prepareTrWithPhysicalAddress(void * autoIncrementConte
 }
 
 int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
-  DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam,
+  const DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam,
   uint32_t convertMask) {
   int32_t retVal = (int32_t) DMAUTILS_SOK;
   int32_t isRingBasedFlowReq = 0;
@@ -895,7 +887,7 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
         CSL_UDMAP_CPPI5_PD_PKTINFO2_RETPUSHPOLICY_VAL_TO_TAIL,
         cqRingNum);
 
-      Udma_ringQueueRaw(Udma_chGetFqRingHandle(channelHandle),(uint64_t) trMem);
+      (void)Udma_ringQueueRaw(Udma_chGetFqRingHandle(channelHandle),(uint64_t) trMem);
 
       #ifdef HOST_EMULATION
       CSL_UdmapTR * pTr = (CSL_UdmapTR * )(trMem + sizeof(CSL_UdmapTR));
@@ -959,7 +951,7 @@ void DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId) {
   return;
 }
 
-int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, uint8_t * trMem, int32_t numTr)
+int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, const uint8_t * trMem, int32_t numTr)
 {
     int32_t retVal = (int32_t) DMAUTILS_SOK;
   #ifndef DMA_UTILS_STANDALONE
@@ -999,7 +991,7 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
       #ifndef DMA_UTILS_STANDALONE
         uint64_t pDesc = 0;
         retVal = Udma_ringDequeueRaw(Udma_chGetCqRingHandle(channelHandle), & pDesc);
-      if (DMAUTILS_SOK != retVal)
+      if (retVal != (int32_t)DMAUTILS_SOK )
       {
         DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_deconfigure : Failed : Udma_ringDequeueRaw\n");
         retVal = (int32_t) DMAUTILS_EFAIL;
@@ -1037,14 +1029,14 @@ int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext) {
       which are not emulated in host emulation */
       retVal = Udma_chDisable(channelHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
       #endif
-      if (DMAUTILS_SOK != retVal) {
+      if (retVal != (int32_t)DMAUTILS_SOK) {
         DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_deconfigure : Failed : Udma_chDisable\n");
         retVal = (int32_t) DMAUTILS_EFAIL;
         i = dmautilsContext -> initParams.numChannels;
       } else {
 
         retVal = Udma_chClose(channelHandle);
-        if (DMAUTILS_SOK != retVal) {
+        if (retVal != (int32_t)DMAUTILS_SOK ) {
           DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_deinit : Udma_chClose : Failed \n");
           i = dmautilsContext -> initParams.numChannels;
 
