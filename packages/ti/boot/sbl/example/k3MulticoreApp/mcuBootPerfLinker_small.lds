@@ -91,8 +91,8 @@ SECTIONS
     .bss     	: {} align(4)  		> OCMRAM_BOOT_PERF
     .data    	: {} palign(128) 	> OCMRAM_BOOT_PERF
     .boardcfg_data   : {} palign(128)    > OCMRAM_BOOT_PERF
-    .bss.devgroup*   : {} align(4)       > OCMRAM_SBL_RM_PM_HAL
-    .const.devgroup* : {} align(4)       > OCMRAM_SBL_RM_PM_HAL
+    .bss.devgroup    : {*(.bss.devgroup*)} align(4)       > OCMRAM_SBL_RM_PM_HAL
+    .const.devgroup  : {*(.const.devgroup*)} align(4)     > OCMRAM_SBL_RM_PM_HAL
 
     .sysmem  	: {} 			> OCMRAM_BOOT_PERF
     .stack  	: {} align(8)		> OCMRAM_BOOT_PERF  (HIGH)

@@ -85,8 +85,8 @@ SECTIONS
     .data            : {} palign(128)    > OCMC_RAM
     .sysmem          : {}                > OCMC_RAM
     .data_buffer     : {} palign(128)    > OCMC_RAM
-    .bss.devgroup*   : {} align(4)       > OCMC_RAM
-    .const.devgroup* : {} align(4)       > OCMC_RAM
+    .bss.devgroup    : {*(.bss.devgroup*)} align(4)       > OCMC_RAM
+    .const.devgroup  : {*(.const.devgroup*)} align(4)     > OCMC_RAM
     .boardcfg_data   : {} align(4)       > OCMC_RAM
 
     /* USB or any other LLD buffer for benchmarking */

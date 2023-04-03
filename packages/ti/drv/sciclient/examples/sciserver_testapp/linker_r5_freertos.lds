@@ -90,15 +90,14 @@ SECTIONS
     .const          : {} palign(8)   > R5F_TCMB0
     .rodata         : {} palign(8)   > OCMC_RAM_SCISERVER
     .cinit          : {} palign(8)   > R5F_TCMB0
-    .bss            : {} align(4)    > OCMC_RAM_SCISERVER
     .far            : {} align(4)    > OCMC_RAM_SCISERVER
+    .bss            : {*(.bss.devgroup*)} align(4)    > OCMC_RAM_SCISERVER
     .data           : {} palign(128) > OCMC_RAM_SCISERVER
     .sysmem         : {}             > OCMC_RAM_SCISERVER
     .stack          : {} align(4)    > OCMC_RAM_SCISERVER
     .data_buffer    : {} palign(128) > OCMC_RAM_SCISERVER
     .boardcfg_data  : {} palign(8)   > OCMC_RAM_SCISERVER
-    .const*         : {} palign(4)   > R5F_TCMB0
-    .bss*           : {} align(4)    > R5F_TCMB0
+    .const          : {*(.const.devgroup*)} palign(4) > R5F_TCMB0
 
     .irqStack       : {. = . + __IRQ_STACK_SIZE;} align(4)    > OCMC_RAM_SCISERVER  (HIGH)
                         RUN_START(__IRQ_STACK_START)

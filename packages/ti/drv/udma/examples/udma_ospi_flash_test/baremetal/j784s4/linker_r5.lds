@@ -76,8 +76,8 @@ SECTIONS
     .data          : {} palign(128)    > MSMC3
     .sysmem        : {}                > MSMC3
     .data_buffer   : {} palign(128)    > MSMC3
-    .bss.devgroup* : {} align(4)       > MSMC3
-    .const.devgroup*: {} align(4)      > MSMC3
+    .bss.devgroup  : {*(.bss.devgroup*)} align(4)       > MSMC3
+    .const.devgroup: {*(.const.devgroup*)} align(4)     > MSMC3
     .boardcfg_data : {} align(4)       > MSMC3
     .rm_pm_hal : {
         *rm_pm_hal.aer5f(.*)

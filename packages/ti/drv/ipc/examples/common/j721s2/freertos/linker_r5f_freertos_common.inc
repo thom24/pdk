@@ -115,8 +115,8 @@ SECTIONS
     .data               : {} palign(128)    > __CORE_DDR_SPACE
     .sysmem             : {}                > __CORE_DDR_SPACE
     .data_buffer        : {} palign(128)    > __CORE_DDR_SPACE
-    .bss.devgroup*      : {} align(4)       > __CORE_DDR_SPACE
-    .const.devgroup*    : {} align(4)       > __CORE_DDR_SPACE
+    .bss.devgroup       : {*(.bss.devgroup*)} align(4)       > __CORE_DDR_SPACE
+    .const.devgroup     : {*(.const.devgroup*)} align(4)     > __CORE_DDR_SPACE
     .boardcfg_data      : {} align(4)       > __CORE_DDR_SPACE
 
     /* USB or any other LLD buffer for benchmarking */

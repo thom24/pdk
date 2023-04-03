@@ -147,8 +147,8 @@ SECTIONS
     .data    	: {} palign(128) 	> OCMC_RAM
     .data_buffer: {} palign(128) 	> MCU0_R5F_TCMB0
 	.sysmem  	: {}                > MCU0_R5F_TCMB0
-    .bss.devgroup* : {} align(4)      > MCU0_R5F_TCMB0
-    .const.devgroup*: {} align(4)     > OCMC_RAM
+    .bss.devgroup  : {*(.bss.devgroup*)} align(4)      > MCU0_R5F_TCMB0
+    .const.devgroup : {*(.const.devgroup*)} align(4)     > OCMC_RAM
     .data_user      : {} align(4)      > MCU0_R5F_TCMB0
     .boardcfg_data  : {} align(4)      > MCU0_R5F_TCMB0
 

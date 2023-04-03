@@ -278,7 +278,6 @@ void App_wait(uint32_t wait_in_ms)
 #if defined(FREERTOS)
 void App_printLoad(void)
 {
-    LoadP_Status status = LoadP_OK;
     LoadP_Stats loadStatsTask;
     uint32_t cpuLoad;
 
@@ -286,7 +285,7 @@ void App_printLoad(void)
     cpuLoad = LoadP_getCPULoad();
     App_print("CPU Load is %d percent \n", cpuLoad);
     /* Get task loads */
-    status += LoadP_getTaskLoad(gTask, &loadStatsTask);
+    LoadP_getTaskLoad(gTask, &loadStatsTask);
     if(loadStatsTask.percentLoad > 0U)
     {
         App_print("Task Load is: %d percent \n", loadStatsTask.percentLoad);

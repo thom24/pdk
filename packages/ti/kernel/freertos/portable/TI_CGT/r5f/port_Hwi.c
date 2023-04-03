@@ -194,7 +194,7 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
     pVimRegs        = (CSL_vimRegs *)(uintptr_t)gVimBaseAddr;
 
     /* Read to force prioritization logic to take effect */
-    dummy = CSL_vimGetFiqVectorAddress(pVimRegs);
+    CSL_vimGetFiqVectorAddress(pVimRegs);
 
     status = CSL_vimGetActivePendingIntr(pVimRegs,
                                         CSL_VIM_INTR_MAP_FIQ,

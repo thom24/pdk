@@ -80,7 +80,7 @@ endif
 ifeq ($(OPTIMIZATION),PERFORMANCE)
   OPT_LEVEL = -O3
 else
-  OPT_LEVEL = -Oz
+  OPT_LEVEL = -Os
 endif
 
 LNKFLAGS_INTERNAL_COMMON +=
@@ -172,7 +172,7 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
    LNKFLAGS_INTERNAL_BUILD_PROFILE = $(LNKFLAGS_GLOBAL_$(CORE))
    ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-     CFLAGS_INTERNAL += $(OPT_LEVEL) -s
+     CFLAGS_INTERNAL += -flto $(OPT_LEVEL) -s
    else
      CFLAGS_INTERNAL += $(OPT_LEVEL) -op0 -os --optimize_with_debug --inline_recursion_limit=20
    endif
@@ -290,8 +290,10 @@ else
 endif
 
 ifeq ($(CGT_ISA), R5)
-  LNKFLAGS_INTERNAL_COMMON += -mcpu=cortex-r5 -march=armv7-r
+  LNKFLAGS_INTERNAL_COMMON += -mcpu=cortex-r5 -march=armv7-r -flto
   #--diag_suppress=10063 supresses 'warning: entry point other than _c_int00 specified'
+  # Supress warning for " linking in section which does not contain program data"
+  LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10230-D
 else
 ifeq ($(CGT_ISA), M4F)
   LNKFLAGS_INTERNAL_COMMON += --mcpu=cortex-m4

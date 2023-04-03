@@ -1268,7 +1268,7 @@ static int32_t udmaTestBlkcpyFree(UdmaTestTaskObj *taskObj)
         }
     }
 
-    return (UDMA_SOK);
+    return retVal;
 }
 
 static int32_t udmaTestBlkcpyCompareData(UdmaTestTaskObj *taskObj,

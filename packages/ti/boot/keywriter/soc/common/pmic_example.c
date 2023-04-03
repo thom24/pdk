@@ -1455,13 +1455,15 @@ void GPIO_configIntRouter(uint32_t portNum,
                           GPIO_v0_HwAttrs *cfg)
 {
     GPIO_IntCfg       *intCfg;
-    uint32_t           bankNum;
+
+    #if (defined(SOC_J721E) || defined(SOC_J7200))
+        uint32_t           bankNum;
+        bankNum       = pinNum / 16; /* Each GPIO bank has 16 pins */
+    #endif
 
     intCfg        = cfg->intCfg;
 
     cfg->baseAddr = CSL_WKUP_GPIO0_BASE;
-
-    bankNum       = pinNum / 16; /* Each GPIO bank has 16 pins */
 
     /* WKUP GPIO int router input interrupt is the GPIO bank interrupt */
 #if defined (SOC_J721E)

@@ -598,7 +598,7 @@ int32_t Sciclient_fw_test(
         {
             value += *(pointer + i);
         }
-        if (gAbortRecieved == (fail_end_address + 1 - fail_start_address)/4U)
+        if ((gAbortRecieved == (fail_end_address + 1 - fail_start_address)/4U) && value == 0 )
         {
                 r = CSL_PASS;
         }

@@ -46,6 +46,7 @@
 
 #include <arch/sys_arch.h>
 #include <ti/board/board.h>
+#include <ti/osal/DebugP.h>
 
 
 /* ========================================================================== */
@@ -88,6 +89,7 @@ int main()
                BOARD_INIT_UART_STDIO;
 
     status = Board_init(boardCfg);
+    DebugP_assert(status == BOARD_SOK);
 
     OS_init();
     sys_init();

@@ -55,7 +55,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+#define UNUSED(x)   (x = x)
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -270,6 +270,8 @@ void vApplicationInterruptHandlerHook( void )
     /* Read to force prioritization logic to take effect */
     dummy = CSL_vimGetIrqVectorAddress( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr);
 
+    UNUSED(dummy);
+
     /* Process a pending FIQ interrupt before a pending IRQ interrupt */
     if( ( CSL_vimGetActivePendingIntr( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, CSL_VIM_INTR_MAP_FIQ, (uint32_t *)&intNum, (uint32_t *)0 ) == 0 )       ||
         ( CSL_vimGetActivePendingIntr( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, CSL_VIM_INTR_MAP_IRQ, (uint32_t *)&intNum, (uint32_t *)0 ) == 0 ) )
@@ -301,7 +303,9 @@ void vApplicationInterruptHandlerHook( void )
 portBaseType prvSetupHardware( void )
 {
     portBaseType xStatus = pdPASS;
+#if defined (SOC_J784S4)
     int32_t sciclientRet = CSL_PASS;
+#endif
 #if defined (SOC_J784S4)
     CSL_ArmR5CPUInfo info;
     CSL_armR5GetCpuID(&info);
@@ -314,7 +318,7 @@ portBaseType prvSetupHardware( void )
         sciclientRet = Sciclient_init(&config);
         if(  sciclientRet == CSL_PASS )
         {
-            uint32_t currState, resetState, contextLossState, timerModuleId;
+            uint32_t currState, resetState, contextLossState;
             /* on J7AHP, Main domain timers 8-19 are connected to LPSC_PER_SPARE_0 which is not powered ON by default.
              * All other timers are connected to LPSC which is ALWAYS_ON.
              * For J7AHP, MCU4_0 and MCU4_1 use DMTimer 8 and DMTimer 9 as tick timers.

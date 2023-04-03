@@ -343,7 +343,7 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
 
     GT_0trace(trace, GT_INFO, "\r\n");
 
-    return (0);
+    return status;
 }
 
 void Utils_prfLoadCalcStart(void)
