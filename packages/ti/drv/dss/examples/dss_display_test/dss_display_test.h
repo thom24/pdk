@@ -111,6 +111,10 @@ extern "C" {
 #define DISP_APP_ENABLE_FLIP              (0U)
 
 #define DISP_APP_RAW_DATA_INPUT           (0U)
+
+/* Set this flag to 1U to use the DP to HDMI converter. */
+#define ENABLE_DP_TO_HDMI_CONVERTER       (0U)
+
 #if defined (SOC_J721S2) || defined (SOC_J784S4)
 #define DISP_APP_TEST_EDP                 (1U)
 #else

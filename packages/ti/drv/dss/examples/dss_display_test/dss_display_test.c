@@ -53,6 +53,16 @@
 #include <ti/drv/dss/examples/utils/app_utils_prf.h>
 #endif
 
+#if defined (SOC_J721E)
+#include <ti/board/src/j721e_evm/include/board_control.h>
+#include <ti/board/src/j721e_evm/include/board_i2c_io_exp.h>
+#elif defined (SOC_J721S2)
+#include <ti/board/src/j721s2_evm/include/board_control.h>
+#include <ti/board/src/j721s2_evm/include/board_i2c_io_exp.h>
+#elif defined (SOC_J784S4)
+#include <ti/board/src/j784s4_evm/include/board_control.h>
+#include <ti/board/src/j784s4_evm/include/board_i2c_io_exp.h>
+#endif
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -117,6 +127,7 @@ static void DispApp_initParams(DispApp_Obj *appObj);
 static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
                                            DispApp_InstObj *instObj);
 static int32_t DispApp_pipeCbFxn(Fvid2_Handle handle, void *appData);
+static void DispApp_enableDP2HDMI( void );
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -183,6 +194,40 @@ int32_t Dss_displayTest(void)
     return (0);
 }
 
+void DispApp_enableDP2HDMI( void )
+{
+    Board_STATUS boardStatus;
+    Board_IoExpCfg_t ioExpCfg;
+
+    App_print("Turning on DP0_PWR_SW_EN pin for eDP adapters ... !!!\n");
+
+    /* DP0_PWR_SW_EN is connected to I2C1 on J721E. I2C1 is mapped to I2C4 on Quad devices. */
+#if defined (SOC_J721E)
+    ioExpCfg.i2cInst     = 1U;
+#elif defined (SOC_J721S2) || defined (SOC_J784S4)
+    ioExpCfg.i2cInst     = 4U;
+#endif
+    ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
+    ioExpCfg.slaveAddr   = 0x20;
+    ioExpCfg.enableIntr  = false;
+    ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
+    ioExpCfg.portNum     = PORTNUM_0;
+    ioExpCfg.pinNum      = PIN_NUM_0;
+    ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
+
+    boardStatus = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)(&ioExpCfg));
+    Osal_delay(500u);
+
+    if (boardStatus == BOARD_SOK)
+    {
+        App_print("Turning on DP0_PWR_SW_EN pin for eDP adapters ... Done!!!\n");
+    }
+    else
+    {
+        App_print("Turning on DP0_PWR_SW_EN pin for eDP adapters ... failed !!!\n");
+    }
+}
+
 static void DispApp_init(DispApp_Obj *appObj)
 {
     int32_t         retVal = FVID2_SOK;
@@ -207,6 +252,16 @@ static void DispApp_init(DispApp_Obj *appObj)
     appObj->initParams.socParams.dpInitParams.isHpdSupported = FALSE;
     Dss_init(&appObj->initParams);
 
+#if (1U == ENABLE_DP_TO_HDMI_CONVERTER)
+#if (1U != DISP_APP_TEST_EDP)
+    App_print("Display interface must be DP for using the DP to HDMI converter!!\r\n");
+    retVal = FVID2_EBADARGS;
+#endif
+    if(retVal == FVID2_SOK)
+    {
+        DispApp_enableDP2HDMI();
+    }
+#endif
     if(FVID2_SOK == retVal)
     {
         /* Create DCTRL handle, used for common driver configuration */
