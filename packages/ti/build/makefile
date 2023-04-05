@@ -138,6 +138,7 @@ FINAL_EXAMPLE_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_EXAMPLE_
 FINAL_DUP_EXAMPLE_HAS_DEP_LIST = $(addsuffix _has_dep,$(filter-out $(FINAL_DUP_EXAMPLE_LIST_DEP_LIST),$(FINAL_DUP_EXAMPLE_LIST)))
 FINAL_FIRM_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_FIRM_LIST_DEP_LIST),$(FINAL_FIRM_LIST)))
 FINAL_SAFERTOS_EXAMPLE_HAS_DEP_LIST = $(filter %safertos_has_dep, $(FINAL_EXAMPLE_HAS_DEP_LIST))
+FINAL_SAFERTOS_EXAMPLE_HAS_DEP_LIST += $(filter %safertos_has_dep, $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST))
 FINAL_UTILS_LIST_ALL_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_UTILS_LIST_ALL_DEP_LIST),$(FINAL_UTILS_LIST_ALL)))
 
 
