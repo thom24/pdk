@@ -132,10 +132,19 @@ $(EXE_NAME) : $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE)
 
 
 else
-CC=g++-5 -c
-AR=gcc-ar-5
-LD=g++-5
-LNK = g++-5
+
+# Set the default gcc based on the version of Ubuntu
+OS_VERSION := $(shell cat /etc/os-release | grep VERSION_ID= | sed -e "s|VERSION_ID=\"||" | sed -e "s|\"||")
+ifeq ($(OS_VERSION),18.04)
+PDK_GCC_VERSION?=5
+else
+PDK_GCC_VERSION?=11
+endif
+
+CC=g++-$(PDK_GCC_VERSION) -c
+AR=gcc-ar-$(PDK_GCC_VERSION)
+LD=g++-$(PDK_GCC_VERSION)
+LNK = g++-$(PDK_GCC_VERSION)
 CFLAGS_DIROPTS =
 
 
