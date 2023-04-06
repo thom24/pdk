@@ -643,11 +643,11 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
         #if defined(SOC_J721E)
             /* Enable write completion auto polling */
             CSL_ospiSetWrCompAutoPolling((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                         CSL_OSPI_WRITE_COMP_AUTO_POLLING_DISABLE);
+                                         CSL_OSPI_WRITE_COMP_AUTO_POLLING_ENABLE);
         #else
             /* Disable write completion auto polling */
             CSL_ospiSetWrCompAutoPolling((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                         CSL_OSPI_WRITE_COMP_AUTO_POLLING_ENABLE);
+                                         CSL_OSPI_WRITE_COMP_AUTO_POLLING_DISABLE);
         #endif
 
             /* Set SRAM partition configuration */
