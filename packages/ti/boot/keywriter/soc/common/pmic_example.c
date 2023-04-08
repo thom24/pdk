@@ -1245,7 +1245,7 @@ int32_t test_pmic_appInit(Pmic_CoreHandle_t **pmicCoreHandle,
             pmicStatus = Pmic_fsmDeviceOnRequest(pmicHandle);
         }
 
-        if (PMIC_ST_SUCCESS == pmicStatus)
+        if (PMIC_ST_SUCCESS == pmicStatus && PMIC_DEV_HERA_LP8764X != pmicHandle->pmicDeviceType)
         {
             pmicStatus = Pmic_intrClr(pmicHandle);
         }
