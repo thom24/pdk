@@ -45,6 +45,7 @@
 #include <ti/osal/osal.h>
 
 #include "SafeRTOS_API.h"
+#include "Safertos_Aborts.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
@@ -81,8 +82,8 @@ void vUndefAbort(void)
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
-    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
-    while(loop)
+    gCurrentProcessorState = CSL_ARM_R5_ABORT_MODE;
+    while(1U == loop)
     {
 
     }
@@ -96,10 +97,10 @@ void vApplicationPrefetchAbortHook(void)
 void vPrefetchAbort(void)
 #endif
 {
-    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
+    gCurrentProcessorState = CSL_ARM_R5_ABORT_MODE;
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
-    while(loop)
+    while(1U == loop)
     {
 
     }
@@ -114,9 +115,9 @@ void vPrefetchAbort(void)
  */
 void vDataAbort_c(void)
 {
-    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
+    gCurrentProcessorState = CSL_ARM_R5_ABORT_MODE;
     /* Call registered call back */
-    if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
+    if ((exptnHandlerPtr)NULL != gExptnHandlers.dabtExptnHandler)
     {
         gExptnHandlers.dabtExptnHandler(gExptnHandlers.dabtExptnHandlerArgs);
     }
@@ -124,7 +125,7 @@ void vDataAbort_c(void)
     {
         /* Go into an infinite loop.*/
         volatile uint32_t loop = 1;
-        while(loop)
+        while(1U == loop)
         {
 
         }

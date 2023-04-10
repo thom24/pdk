@@ -48,7 +48,7 @@ extern "C" {
 #endif
 
 /* This is the number of c6x interrupts [0-15] */
-#define OSAL_ECM_NUM_INTERRUPTS (16)
+#define OSAL_ECM_NUM_INTERRUPTS (16U)
 /**************************************************************
    Description: Returns the Hwi Handle associated with the event group.
                 It returns NULL_PTR if the Event combiner is not registered
@@ -59,13 +59,13 @@ extern "C" {
 *******************************************************************/
 HwiP_Handle EventCombinerP_getHwi(uint32_t groupNum) {
     HwiP_Handle handle=NULL_PTR;
-    int32_t event,i;
+    uint32_t event,i;
 
     for(i=0;i<OSAL_ECM_NUM_INTERRUPTS;i++) {
        /* Find out the event associated with the interrupt vector number */
        event=HwiP_getEventId(i);
 
-       if((uint32_t)event==groupNum) {
+       if(event == groupNum) {
            /* If the associated event is the ECM group (0-3),
             * find out the event associated with the interrupt vector number */
            handle=HwiP_getHandle(i);
@@ -81,9 +81,9 @@ HwiP_Handle EventCombinerP_getHwi(uint32_t groupNum) {
    Returns:     The interrupt vector id corresponding to a groupNum. 
                 -1 if the event combiner is not registered
 *******************************************************************/
-int32_t EventCombinerP_getIntNum(int32_t groupNum) {
+uint32_t EventCombinerP_getIntNum(uint32_t groupNum) {
 
-    int32_t event,i,intNum=-1;
+    uint32_t event,i,intNum = CSL_INVALID_INTR_ID;
 
     for(i=0;i<OSAL_ECM_NUM_INTERRUPTS;i++) {
        /* Find out the event associated with the interrupt vector number */
@@ -110,7 +110,7 @@ int32_t EventCombinerP_getIntNum(int32_t groupNum) {
                 OSAL_EVTCOMBINE_ERR_GROUPREG_REGISTER_ERR if error.
 *******************************************************************/
 
-int32_t EventCombinerP_SingleRegisterInt(int32_t groupNum, int32_t intNum)
+int32_t EventCombinerP_SingleRegisterInt(uint32_t groupNum, uint32_t intNum)
 {
     /* There is nothing to be done here as the HwiP_create() already 
 	   allocates it */
@@ -125,7 +125,7 @@ int32_t EventCombinerP_SingleRegisterInt(int32_t groupNum, int32_t intNum)
 
 	Returns: OSAL_EVTCOMBINE_GROUPREG_SUCCESS 
 *******************************************************************/
-int32_t EventCombinerP_GroupRegisterInt(int32_t intNum[])
+int32_t EventCombinerP_GroupRegisterInt(uint32_t intNum[])
 {
     /* There is nothing to be done here as the HwiP_create() already 
 	   allocates it */
@@ -205,11 +205,11 @@ int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eve
 	   we use this temporary handle (which has ->eventId= corepac eventId) so that 
 	   the CSL_intcPlugEventHandler(handleTemp,..) registers it 
 	*/
-   handleTemp->eventId = (CSL_IntcEventId)eventId;
+   handleTemp->eventId = eventId;
    evtHandler.handler = (CSL_IntcEventHandler)eventIsrRoutine;
    evtHandler.arg     = (void *)arg;
    (void)CSL_intcPlugEventHandler(handleTemp, &evtHandler);
-   if (unmask == (bool)true)
+   if ((bool)true == unmask)
    {
       (void)EventCombinerP_enableEvent(eventId);
    }
@@ -231,7 +231,7 @@ int32_t EventCombinerP_dispatchUnplug(uint32_t eventId)
 
     key = _disable_interrupts();
 
-    handleTemp->eventId = (CSL_IntcEventId)eventId;
+    handleTemp->eventId = eventId;
     CSL_intcUnplugEventHandler(handleTemp);
     (void)EventCombinerP_disableEvent(eventId);
 

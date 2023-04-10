@@ -55,18 +55,23 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
-/*!
- *  @brief    Status codes for MutexP APIs
+/**
+ * \anchor MutexP_Status
+ * \name MutexP Status codes
+ *
+ * @{
  */
-typedef enum MutexP_Status_e
-{
-    /*! API completed successfully */
-    MutexP_OK         = 0,
-    /*! API failed */
-    MutexP_FAILURE    = (-(int32_t)1),
-    /*! API failed  because of a timeout */
-    MutexP_TIMEOUT    = (-(int32_t)2)
-} MutexP_Status;
+/*!
+ *  @brief  This enumerator defines the Status codes for MutexP APIs
+ */
+typedef int32_t MutexP_Status;
+/*! API completed successfully */
+#define MutexP_OK             0
+/*! API failed */
+#define MutexP_FAILURE        (-(int32_t)1)
+/*! API failed  because of a timeout */
+#define MutexP_TIMEOUT        (-(int32_t)2)
+/* @} */
 
 /*!
  *  @brief    Wait forever define

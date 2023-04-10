@@ -123,7 +123,7 @@ HwiP_Handle EventCombinerP_getHwi(uint32_t groupNum);
  *  @param  groupNum  The event combiner group id (0-3)
  *
  */
-int32_t EventCombinerP_getIntNum(int32_t groupNum);
+uint32_t EventCombinerP_getIntNum(uint32_t groupNum);
 
 /*!
  *  @brief  Function to register single event combiner group to a vector number
@@ -133,7 +133,7 @@ int32_t EventCombinerP_getIntNum(int32_t groupNum);
  *  @param  intNum    The interrupt vector id (4-15)
  *
  */
-int32_t EventCombinerP_SingleRegisterInt(int32_t groupNum, int32_t intNum);
+int32_t EventCombinerP_SingleRegisterInt(uint32_t groupNum, uint32_t intNum);
 
 /*!
  *  @brief  Function to register single event combiner group to a vector number
@@ -141,7 +141,7 @@ int32_t EventCombinerP_SingleRegisterInt(int32_t groupNum, int32_t intNum);
  *  @param  intNum []   List of interrupt vector ids (4-15) per ECM group(0-3)
  *
  */
-int32_t EventCombinerP_GroupRegisterInt(int32_t intNum[]);
+int32_t EventCombinerP_GroupRegisterInt(uint32_t intNum[]);
 
 /**
  *  \name Osal Event Combiner return Codes
@@ -169,13 +169,13 @@ int32_t EventCombinerP_GroupRegisterInt(int32_t intNum[]);
  *  @{
  */
 /*! ECM group 0 default interrupt: 4 */
-#define OSAL_ECM_GROUP0_INT 4
+#define OSAL_ECM_GROUP0_INT 4U
 /*! ECM group 1 default interrupt: 5 */
-#define OSAL_ECM_GROUP1_INT 5
+#define OSAL_ECM_GROUP1_INT 5U
 /*! ECM group 2 default interrupt: 6 */
-#define OSAL_ECM_GROUP2_INT 6
+#define OSAL_ECM_GROUP2_INT 6U
 /*! ECM group 3 default interrupt: 7 */
-#define OSAL_ECM_GROUP3_INT 7
+#define OSAL_ECM_GROUP3_INT 7U
 /* @} */
 
 #ifdef __cplusplus

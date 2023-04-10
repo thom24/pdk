@@ -129,7 +129,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
          * set.  The top bit of the block size member of the HeapBlockLink_t structure
          * is used to determine who owns the block - the application or the
          * kernel, so it must be free. */
-        if( ( xMallocSize & heap->xBlockAllocatedBit ) == 0U )
+        if( 0U == ( xMallocSize & heap->xBlockAllocatedBit ) )
         {
             /* The wanted size is increased so it can contain a HeapBlockLink_t
              * structure in addition to the requested amount of bytes. */
@@ -139,11 +139,11 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
 
                 /* Ensure that blocks are always aligned to the required number
                  * of bytes. */
-                if( ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) != ( size_t )0x00 )
+                if( ( size_t )0x00 != ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) )
                 {
                     /* Byte alignment required. */
                     xMallocSize += ( heapBYTE_ALIGNMENT - ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) );
-                    DebugP_assert( ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) == ( size_t )0 );
+                    DebugP_assert( ( size_t )0 == ( xMallocSize & heapBYTE_ALIGNMENT_MASK ) );
                 }
             }
 
@@ -154,7 +154,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
                 pxPreviousBlock = &heap->xStart;
                 pxBlock = heap->xStart.pxNextFreeBlock;
 
-                while( ( pxBlock->xBlockSize < xMallocSize ) && ( pxBlock->pxNextFreeBlock != NULL ) )
+                while( ( pxBlock->xBlockSize < xMallocSize ) && ( NULL != pxBlock->pxNextFreeBlock ) )
                 {
                     pxPreviousBlock = pxBlock;
                     pxBlock = pxBlock->pxNextFreeBlock;
@@ -181,7 +181,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
                          * cast is used to prevent byte alignment warnings from the
                          * compiler. */
                         pxNewBlockLink = ( HeapBlockLink_t * ) ( ( ( uint8_t * ) pxBlock ) + xMallocSize );
-                        DebugP_assert( ( ( ( size_t ) pxNewBlockLink ) & (heapBYTE_ALIGNMENT_MASK ) )== 0U);
+                        DebugP_assert( 0U == ( ( ( size_t ) pxNewBlockLink ) & (heapBYTE_ALIGNMENT_MASK ) ) );
 
                         /* Calculate the sizes of two blocks split from the
                          * single block. */
@@ -209,7 +209,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
         }
     }
 
-    DebugP_assert( ( ( ( size_t ) pvReturn ) & ( size_t ) heapBYTE_ALIGNMENT_MASK ) == 0U );
+    DebugP_assert( 0U == ( ( ( size_t ) pvReturn ) & ( size_t ) heapBYTE_ALIGNMENT_MASK ) );
     return pvReturn;
 }
 
@@ -218,7 +218,7 @@ void vHeapFree( StaticHeap_t *heap, void * pv )
     uint8_t * puc = ( uint8_t * ) pv;
     HeapBlockLink_t * pxLink;
 
-    if( pv != NULL )
+    if( NULL != pv )
     {
         /* The memory being freed will have an HeapBlockLink_t structure immediately
          * before it. */
@@ -228,12 +228,12 @@ void vHeapFree( StaticHeap_t *heap, void * pv )
         pxLink = ( HeapBlockLink_t * ) puc;
 
         /* Check the block is actually allocated. */
-        DebugP_assert( ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) != ( size_t )0 );
-        DebugP_assert( pxLink->pxNextFreeBlock == NULL );
+        DebugP_assert( ( size_t )0 != ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) );
+        DebugP_assert( NULL == pxLink->pxNextFreeBlock );
 
-        if( ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) != ( size_t )0 )
+        if( ( size_t )0 != ( pxLink->xBlockSize & heap->xBlockAllocatedBit ) )
         {
-            if( pxLink->pxNextFreeBlock == NULL )
+            if( NULL == pxLink->pxNextFreeBlock )
             {
                 /* The block is being returned to the heap - it is no longer
                  * allocated. */
@@ -270,7 +270,7 @@ static void prvHeapInit( StaticHeap_t *heap )
     /* Ensure the heap starts on a correctly aligned boundary. */
     uxAddress = ( size_t ) heap->pvHeap;
 
-    if( ( uxAddress & heapBYTE_ALIGNMENT_MASK ) != ( size_t )0 )
+    if( ( size_t )0 != ( uxAddress & heapBYTE_ALIGNMENT_MASK ) )
     {
         uxAddress += ( heapBYTE_ALIGNMENT - ( size_t )1 );
         uxAddress &= ~( ( size_t ) heapBYTE_ALIGNMENT_MASK );
@@ -311,10 +311,12 @@ static void prvInsertBlockIntoFreeList( StaticHeap_t *heap, HeapBlockLink_t * px
 {
     HeapBlockLink_t * pxIterator;
     uint8_t * puc;
+    HeapBlockLink_t * pxInsertBlock;
+    pxInsertBlock = pxBlockToInsert;
 
     /* Iterate through the list until a block is found that has a higher address
      * than the block being inserted. */
-    for( pxIterator = &heap->xStart; pxIterator->pxNextFreeBlock < pxBlockToInsert; pxIterator = pxIterator->pxNextFreeBlock )
+    for( pxIterator = &heap->xStart; pxIterator->pxNextFreeBlock < pxInsertBlock; pxIterator = pxIterator->pxNextFreeBlock )
     {
         /* Nothing to do here, just iterate to the right position. */
     }
@@ -323,55 +325,55 @@ static void prvInsertBlockIntoFreeList( StaticHeap_t *heap, HeapBlockLink_t * px
      * make a contiguous block of memory? */
     puc = ( uint8_t * ) pxIterator;
 
-    if( ( puc + pxIterator->xBlockSize ) == ( uint8_t * ) pxBlockToInsert )
+    if( ( puc + pxIterator->xBlockSize ) == ( uint8_t * ) pxInsertBlock )
     {
-        pxIterator->xBlockSize += pxBlockToInsert->xBlockSize;
-        pxBlockToInsert = pxIterator;
+        pxIterator->xBlockSize += pxInsertBlock->xBlockSize;
+        pxInsertBlock = pxIterator;
     }
 
     /* Do the block being inserted, and the block it is being inserted before
      * make a contiguous block of memory? */
-    puc = ( uint8_t * ) pxBlockToInsert;
+    puc = ( uint8_t * ) pxInsertBlock;
 
-    if( ( puc + pxBlockToInsert->xBlockSize ) == ( uint8_t * ) pxIterator->pxNextFreeBlock )
+    if( ( puc + pxInsertBlock->xBlockSize ) == ( uint8_t * ) pxIterator->pxNextFreeBlock )
     {
         if( pxIterator->pxNextFreeBlock != heap->pxEnd )
         {
             /* Form one big block from the two blocks. */
-            pxBlockToInsert->xBlockSize += pxIterator->pxNextFreeBlock->xBlockSize;
-            pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock->pxNextFreeBlock;
+            pxInsertBlock->xBlockSize += pxIterator->pxNextFreeBlock->xBlockSize;
+            pxInsertBlock->pxNextFreeBlock = pxIterator->pxNextFreeBlock->pxNextFreeBlock;
         }
         else
         {
-            pxBlockToInsert->pxNextFreeBlock = heap->pxEnd;
+            pxInsertBlock->pxNextFreeBlock = heap->pxEnd;
         }
     }
     else
     {
-        pxBlockToInsert->pxNextFreeBlock = pxIterator->pxNextFreeBlock;
+        pxInsertBlock->pxNextFreeBlock = pxIterator->pxNextFreeBlock;
     }
 
     /* If the block being inserted plugged a gab, so was merged with the block
      * before and the block after, then it's pxNextFreeBlock pointer will have
      * already been set, and should not be set here as that would make it point
      * to itself. */
-    if( pxIterator != pxBlockToInsert )
+    if( pxIterator != pxInsertBlock )
     {
-        pxIterator->pxNextFreeBlock = pxBlockToInsert;
+        pxIterator->pxNextFreeBlock = pxInsertBlock;
     }
 }
 
 void vHeapGetHeapStats( StaticHeap_t *heap, HeapMemStats_t * pxHeapStats )
 {
     HeapBlockLink_t * pxBlock;
-    size_t xBlocks = 0, xMaxSize = 0, xMinSize = 0xFFFFFFFFu;
+    size_t xBlocks = 0, xMaxSize = 0, xMinSize = 0xFFFFFFFFU;
 
     {
         pxBlock = heap->xStart.pxNextFreeBlock;
 
         /* pxBlock will be NULL if the heap has not been initialised.  The heap
          * is initialised automatically when the first allocation is made. */
-        if( pxBlock != NULL )
+        if( NULL != pxBlock )
         {
             do
             {

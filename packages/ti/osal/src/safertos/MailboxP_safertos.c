@@ -58,7 +58,7 @@ static MailboxP_safertos gOsalMailboxPSafeRtosPool[OSAL_SAFERTOS_CONFIGNUM_MAILB
 
 void MailboxP_Params_init(MailboxP_Params *params)
 {
-    if (params != NULL_PTR)
+    if (NULL_PTR != params)
     {
         params->pErrBlk =  NULL_PTR;
         params->name    =  NULL_PTR;
@@ -80,15 +80,15 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
     uint32_t            maxMailbox;
     portBaseType        xCreateResult;
 
-    DebugP_assert((params != NULL_PTR));
-    DebugP_assert((params->buf != NULL_PTR));
+    DebugP_assert(NULL_PTR != params);
+    DebugP_assert(NULL_PTR != params->buf);
     DebugP_assert((params->bufsize >= (params->size * params->count)));
 
     /* Pick up the internal static memory block */
     mailboxPool       = (MailboxP_safertos *) &gOsalMailboxPSafeRtosPool[0];
     maxMailbox        = OSAL_SAFERTOS_CONFIGNUM_MAILBOX;
     
-    if(gOsalMailboxAllocCnt==0U) 
+    if(0U == gOsalMailboxAllocCnt) 
     {
         (void)memset( (void *)gOsalMailboxPSafeRtosPool,0,sizeof(gOsalMailboxPSafeRtosPool));
     }
@@ -97,9 +97,9 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
      for (i = 0; i < maxMailbox; i++)
      {
-         if (mailboxPool[i].used == FALSE)
+         if ((bool)false == mailboxPool[i].used)
          {
-             mailboxPool[i].used = TRUE;
+             mailboxPool[i].used = (bool)true;
              /* Update statistics */
              gOsalMailboxAllocCnt++;
              if (gOsalMailboxAllocCnt > gOsalMailboxPeak)
@@ -117,7 +117,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
         handle = (MailboxP_safertos *) &mailboxPool[i];
     }
 
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
         ret_handle = NULL_PTR;
     }
     else
@@ -133,7 +133,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
         {
             /* If there was an error reset the mailbox object and return NULL. */
             key = HwiP_disable();
-            handle->used = FALSE;
+            handle->used = (bool)false;
             /* Found the osal mailbox object to delete */
             if (gOsalMailboxAllocCnt > 0U)
             {
@@ -156,7 +156,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
 MailboxP_Status MailboxP_delete(MailboxP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     MailboxP_Status ret_val = MailboxP_FAILURE;
 
@@ -171,13 +171,13 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
                               void * msg,
                               uint32_t timeout)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
     
     portBaseType xCreateResult;
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_safertos *mailbox = (MailboxP_safertos *)handle;
 
-    if( Osal_isInISRContext() == 1 )
+    if( 1 == Osal_isInISRContext() )
     {
         /* timeout is ignored when in ISR mode */
         xCreateResult = xQueueSendFromISR(mailbox->mailboxHndl, msg);
@@ -185,7 +185,7 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
     }
     else
     {
-        if (timeout == MailboxP_WAIT_FOREVER)
+        if (MailboxP_WAIT_FOREVER == timeout)
         {
             xCreateResult = xQueueSend(mailbox->mailboxHndl, msg, safertosapiMAX_DELAY);
         }
@@ -195,7 +195,7 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
         }
     }
 
-    if (xCreateResult == pdPASS)
+    if (pdPASS == xCreateResult)
     {
         ret_val = MailboxP_OK;
     }
@@ -211,13 +211,13 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
                               void * msg,
                               uint32_t timeout)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
     
     portBaseType xCreateResult;
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_safertos *mailbox = (MailboxP_safertos *)handle;
 
-    if( Osal_isInISRContext() == 1 )
+    if( 1 == Osal_isInISRContext() )
     {
         /* timeout is ignored when in ISR mode */
         xCreateResult = xQueueReceiveFromISR(mailbox->mailboxHndl, msg);
@@ -225,7 +225,7 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
     }
     else
     {
-        if (timeout == MailboxP_WAIT_FOREVER)
+        if (MailboxP_WAIT_FOREVER == timeout)
         {
             xCreateResult = xQueueReceive(mailbox->mailboxHndl, msg, safertosapiMAX_DELAY);
         }
@@ -235,7 +235,7 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
         }
     }
 
-    if (xCreateResult == pdPASS)
+    if (pdPASS == xCreateResult)
     {
         ret_val = MailboxP_OK;
     }
@@ -249,13 +249,13 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
 
 int32_t MailboxP_getNumPendingMsgs(MailboxP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     portBaseType xCreateResult;
     portUnsignedBaseType numMsg;
     MailboxP_safertos *mailbox = (MailboxP_safertos *)handle;
 
-    if( Osal_isInISRContext() == 1 )
+    if( 1 == Osal_isInISRContext() )
     {
         /* There is no ISR API for waiting in safertos */
         xCreateResult = errNULL_PARAMETER_SUPPLIED;
@@ -265,7 +265,7 @@ int32_t MailboxP_getNumPendingMsgs(MailboxP_Handle handle)
         xCreateResult = xQueueMessagesWaiting(mailbox->mailboxHndl, &numMsg);
     }
 
-    if(xCreateResult != pdPASS)
+    if(pdPASS != xCreateResult)
     {
         /* There is an error, return numMsg as zero */
         numMsg = 0;

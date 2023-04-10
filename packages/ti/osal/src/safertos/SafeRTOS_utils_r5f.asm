@@ -55,6 +55,7 @@ FALSE                                   .equ ( 0 )
 	.global ulGetDataFaultAddressRegister
 	.global ulGetInstructionFaultStatusRegister
 	.global ulGetInstructionFaultAddressRegister
+    .global Osal_getSP
 
 ;-------------------------------------------------------------------------------
 ; portUInt32Type ulGetDataFaultStatusRegister( void )
@@ -115,6 +116,13 @@ vApplicationDataAbortHook:
 
 
 vApplicationDataAbortHandlerConst: .word vDataAbort_c
+
+;-------------------------------------------------------------------------------
+; uint32_t Osal_getSP( void )
+;-------------------------------------------------------------------------------
+Osal_getSP:
+  MOV   r0, r13
+  BX    LR
 
 ;-------------------------------------------------------------------------------
 

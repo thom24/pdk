@@ -62,7 +62,7 @@
 /* The user configuration for the timer module. */
 /* SafeRTOS package defines this. We want to use the OSAL definition in PDK */
 #undef configTIMER_TASK_PRIORITY
-#define configTIMER_TASK_PRIORITY           ( configMAX_PRIORITIES - 1U )
+#define configTIMER_TASK_PRIORITY           ( (uint32_t)configMAX_PRIORITIES - 1U )
 /* SafeRTOS package defines this. We want to use the OSAL definition in PDK */
 #undef configTIMER_QUEUE_LENGTH
 #define configTIMER_QUEUE_LENGTH            ( 50U )
@@ -123,7 +123,7 @@ static portInt8Type acTimerCommandQueueBuffer[ configTIMER_CMD_QUEUE_BUFFER_SIZE
 const xPORT_INIT_PARAMETERS gSafertosPortInit =
 {
     configSYSTICK_CLOCK_HZ,             /* ulCPUClockHz */
-    configTICK_RATE_HZ,                 /* ulTickRateHz */
+    (uint32_t)configTICK_RATE_HZ,       /* ulTickRateHz */
 #if defined (BUILD_C7X)
     OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X, /* uxYieldInterruptNumber */
 #endif
@@ -177,7 +177,7 @@ void OS_init( void )
 
     xInitSchedResult = prvSetupHardware();
 
-    if (xInitSchedResult == pdPASS)
+    if (pdPASS == xInitSchedResult)
     {
         /* Initialise the kernel by passing in a pointer to the xPORT_INIT_PARAMETERS structure
         * and return the resulting error code. */
@@ -185,7 +185,7 @@ void OS_init( void )
     }
 
     /* Assert that xInitSchedResult is successful */
-    DebugP_assert((xInitSchedResult == pdPASS));
+    DebugP_assert(pdPASS == xInitSchedResult);
 
     gSaftRtosInitDone = TRUE;
 
@@ -248,7 +248,7 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
 void prvGetOSTimerParams( Safertos_OSTimerParams *params)
 {
 #if defined (BUILD_C66X)
-    if (CSL_chipReadDNUM() == 0U)
+    if (0U == CSL_chipReadDNUM())
     {   
         params->timerId = OSAL_SAFERTOS_OS_TIMER_ID_C66X_1;
         params->eventId = OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_1;
@@ -265,30 +265,30 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
     CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
-    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
     {
-        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        params->timerId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1;
     }
-    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
+    else if (CSL_ARM_R5_CLUSTER_GROUP_ID_1 == info.grpId)
     {     
-        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        params->timerId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1;
     }
 #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
+    else if (CSL_ARM_R5_CLUSTER_GROUP_ID_2 == info.grpId)
     {    
-        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        params->timerId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1;
     }
 #endif
 #if defined (SOC_J784S4)
-    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3)
+    else if (CSL_ARM_R5_CLUSTER_GROUP_ID_3 == info.grpId)
     {    
-        params->timerId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        params->timerId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                     OSAL_SAFERTOS_OS_TIMER_ID_MCU4_0:
                                         OSAL_SAFERTOS_OS_TIMER_ID_MCU4_1;
     } 
@@ -298,7 +298,7 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
           /*   Do nothing  */
     }
 #elif defined (BUILD_C7X)
-    int32_t rtMapCpuId;
+    uint32_t rtMapCpuId;
     rtMapCpuId = CSL_clecGetC7xRtmapCpuId();
     if (CSL_CLEC_RTMAP_CPU_4 == rtMapCpuId)
     {
@@ -328,7 +328,10 @@ void prvGetOSTimerParams( Safertos_OSTimerParams *params)
         params->eventId = TimerP_USE_DEFAULT;
     }
 #endif
-    
+    else
+    {
+      /* Do nothing */
+    }
 #endif
 }
 

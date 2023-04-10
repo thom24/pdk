@@ -52,7 +52,9 @@ static ClockP_safertos gOsalClockPSafeRtosPool[OSAL_SAFERTOS_CONFIGNUM_CLOCK];
 
 uint32_t gOsalClockAllocCnt = 0U, gOsalClockPeak = 0U;
 
-void ClockP_timerCallbackFunction(timerHandleType xTimer)
+static void ClockP_timerCallbackFunction(timerHandleType xTimer);
+
+static void ClockP_timerCallbackFunction(timerHandleType xTimer)
 {
     /*
      * TODO check what is the parameter the call back function is passing.
@@ -62,7 +64,7 @@ void ClockP_timerCallbackFunction(timerHandleType xTimer)
     portBaseType    xTimerID = ((timerControlBlockType *)xTimer)->xTimerID;
     ClockP_safertos *pTimer = &gOsalClockPSafeRtosPool[xTimerID];
 
-    if( (pTimer != NULL_PTR) && (pTimer->callback) && (pTimer->used == (bool)true) )
+    if( (NULL_PTR != pTimer) && (pTimer->callback) && ((bool)true == pTimer->used) )
     {
         pTimer->callback(pTimer->arg);
     }
@@ -70,7 +72,7 @@ void ClockP_timerCallbackFunction(timerHandleType xTimer)
 
 void ClockP_Params_init(ClockP_Params *params)
 {
-    if(params != NULL_PTR)
+    if(NULL_PTR != params)
     {
         params->pErrBlk     = NULL_PTR;
         params->startMode   = ClockP_StartMode_USER;
@@ -103,7 +105,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
     timerPool = (ClockP_safertos *) &gOsalClockPSafeRtosPool[0];
     maxClocks  = OSAL_SAFERTOS_CONFIGNUM_CLOCK;
 
-    if(gOsalClockAllocCnt==0U) 
+    if(0U == gOsalClockAllocCnt) 
     {
         (void)memset((void *)gOsalClockPSafeRtosPool,0,sizeof(gOsalClockPSafeRtosPool));
     }
@@ -112,7 +114,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
 
     for (i = 0; i < maxClocks; i++)
     {
-        if (timerPool[i].used == (bool)false)
+        if ((bool)false == timerPool[i].used)
         {
             timerPool[i].used = (bool)true;
             /* Update statistics */
@@ -132,13 +134,13 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
         pTimer = (ClockP_safertos *) &timerPool[i];
     }
 
-    if((pTimer == NULL_PTR) || (params == NULL_PTR))
+    if((NULL_PTR == pTimer) || (NULL_PTR == params))
     {
         ret_handle = NULL_PTR;
     }
     else 
     {
-        if(params->runMode == ClockP_RunMode_CONTINUOUS)
+        if(ClockP_RunMode_CONTINUOUS == params->runMode)
         {
             uxAutoReload = pdTRUE;
         }
@@ -170,7 +172,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
 
         xCreateResult = xTimerCreate(&xTimerInitParameters, &pTimer->timerHndl);
 
-        if(xCreateResult != pdPASS)
+        if(pdPASS != xCreateResult)
         {
             /* If there was an error reset the clock object and return NULL. */
             key = HwiP_disable();
@@ -185,10 +187,10 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
         }
         else
         {
-            if(params->startMode == ClockP_StartMode_AUTO)
+            if(ClockP_StartMode_AUTO == params->startMode)
             {
                 xCreateResult = xTimerStart(pTimer->timerHndl, safertosapiMAX_DELAY);
-                if(xCreateResult != pdPASS)
+                if(pdPASS != xCreateResult)
                 {
                     /* If there was an error reset the clock object and return NULL. */
                     key = HwiP_disable();
@@ -218,11 +220,11 @@ ClockP_Status ClockP_delete(ClockP_Handle handle)
     ClockP_Status   ret = ClockP_OK;
     portBaseType    xCreateResult;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
+    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
     {
         xCreateResult = xTimerDelete(pTimer->timerHndl, safertosapiMAX_DELAY);
 
-        if(xCreateResult == pdPASS)
+        if(pdPASS == xCreateResult)
         {
             key = HwiP_disable();
             pTimer->used      = (bool)false;
@@ -255,9 +257,9 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
     ClockP_safertos *pTimer = (ClockP_safertos*)handle;
     portBaseType    xCreateResult;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
+    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
     {
-        if( Osal_isInISRContext() == 1 )
+        if( 1 == Osal_isInISRContext() )
         {
             /* timeout is ignored when in ISR mode */
             xCreateResult = xTimerStartFromISR(pTimer->timerHndl);
@@ -267,7 +269,7 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
         {
             xCreateResult = xTimerStart(pTimer->timerHndl, safertosapiMAX_DELAY);
         }
-        if(xCreateResult == pdPASS)
+        if(pdPASS == xCreateResult)
         {
             ret = ClockP_OK;
         }
@@ -291,9 +293,9 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
     ClockP_safertos *pTimer   = (ClockP_safertos*)handle;
     portBaseType    xCreateResult;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
+    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
     {
-        if( Osal_isInISRContext() == 1 )
+        if( 1 == Osal_isInISRContext() )
         {
             /* timeout is ignored when in ISR mode */
             xCreateResult = xTimerStopFromISR(pTimer->timerHndl);
@@ -303,7 +305,7 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
         {
             xCreateResult = xTimerStop(pTimer->timerHndl, safertosapiMAX_DELAY);
         }
-        if(xCreateResult == pdPASS)
+        if(pdPASS == xCreateResult)
         {
             ret = ClockP_OK;
         }

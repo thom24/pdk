@@ -41,6 +41,7 @@
 #include <ti/csl/csl_types.h>
 #include <ti/osal/osal.h>
 #include <ti/osal/soc/osal_soc.h>
+#include <ti/osal/src/nonos/Nonos_config.h>
 
 #include <FreeRTOS.h>
 #include <semphr.h>
@@ -105,7 +106,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if (gOsal_HwAttrs.extSemaphorePBlock.base != (uintptr_t)0U)
+    if ((uintptr_t)0U != gOsal_HwAttrs.extSemaphorePBlock.base)
     {
         /* pick up the external memory block configured */
         semPool        = (SemaphoreP_freertos *) gOsal_HwAttrs.extSemaphorePBlock.base;
@@ -118,7 +119,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
         semPool        = (SemaphoreP_freertos *) &gOsalSemPfreertosPool[0];
         maxSemaphores  = OSAL_FREERTOS_CONFIGNUM_SEMAPHORE;
         
-        if(gOsalSemAllocCnt==0U) 
+        if(0U == gOsalSemAllocCnt) 
         {
 			(void)memset( (void *)gOsalSemPfreertosPool,0,sizeof(gOsalSemPfreertosPool));
 		}
@@ -128,7 +129,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
 
      for (i = 0; i < maxSemaphores; i++)
      {
-         if (semPool[i].used == (bool)false)
+         if ((bool)false == semPool[i].used)
          {
              semPool[i].used = (bool)true;
              /* Update statistics */
@@ -148,12 +149,12 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
         handle = (SemaphoreP_freertos *) &semPool[i];
     }
 
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
         ret_handle = NULL_PTR;
     }
     else
     {
-        if (params == NULL_PTR)
+        if (NULL_PTR == params)
         {
             SemaphoreP_Params semParam;
             SemaphoreP_Params_init(&semParam);
@@ -161,7 +162,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
         }
         else
         {
-            if (params->mode == SemaphoreP_Mode_BINARY)
+            if (SemaphoreP_Mode_BINARY == params->mode)
             {
                 retVal = SemaphoreP_constructBinary(handle, count);
             }
@@ -197,14 +198,14 @@ int32_t SemaphoreP_constructBinary(SemaphoreP_freertos *handle, uint32_t initCou
     int32_t status;
 
     handle->semHndl = xSemaphoreCreateBinaryStatic(&handle->semObj);
-    if( handle->semHndl == NULL )
+    if( NULL == handle->semHndl )
     {
         status = SemaphoreP_FAILURE;
     }
     else
     {
         vQueueAddToRegistry(handle->semHndl, "Binary Sem (OSAL)");
-        if(initCount == 1U)
+        if(1U == initCount)
         {
             /* post a semaphore to increment initial count to 1 */
             (void)xSemaphoreGive(handle->semHndl);
@@ -223,7 +224,7 @@ int32_t SemaphoreP_constructCounting(SemaphoreP_freertos *handle, uint32_t initC
                                 maxCount,
                                 initCount,
                                 &handle->semObj);
-    if( handle->semHndl == NULL )
+    if( NULL == handle->semHndl )
     {
         status = SemaphoreP_FAILURE;
     }
@@ -241,13 +242,13 @@ int32_t SemaphoreP_constructCounting(SemaphoreP_freertos *handle, uint32_t initC
  */
 SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t   key;
     SemaphoreP_Status ret = SemaphoreP_OK;
     SemaphoreP_freertos *semaphore = (SemaphoreP_freertos *)handle;
 
-    if((semaphore != NULL_PTR) && (semaphore->used==(bool)true))
+    if((NULL_PTR != semaphore) && ((bool)true == semaphore->used))
     {
         vSemaphoreDelete(semaphore->semHndl);
 
@@ -273,9 +274,9 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
  */
 void SemaphoreP_Params_init(SemaphoreP_Params *params)
 {
-    DebugP_assert((params != NULL_PTR));
+    DebugP_assert(NULL_PTR != params);
 
-    if(params != NULL_PTR)
+    if(NULL_PTR != params)
     {
       params->mode = SemaphoreP_Mode_COUNTING;
       params->name = (char *) NULL_PTR;
@@ -292,9 +293,9 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
     SemaphoreP_Status   ret_val;
     SemaphoreP_freertos *pSemaphore = (SemaphoreP_freertos *)handle;
 
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
-    if( xPortInIsrContext() == 1 )
+    if( 1 == xPortInIsrContext() )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
@@ -314,7 +315,7 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
         }
     }
 
-    if(isSemTaken != 0U)
+    if(0U != isSemTaken)
     {
         ret_val = SemaphoreP_OK;
     }
@@ -331,10 +332,10 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
  */
 SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
     SemaphoreP_freertos *pSemaphore = (SemaphoreP_freertos *)handle;
 
-    if(xPortInIsrContext() == 1 )
+    if( 1 == xPortInIsrContext() )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
@@ -369,7 +370,7 @@ SemaphoreP_Status SemaphoreP_postFromISR(SemaphoreP_Handle handle)
  */
 int32_t SemaphoreP_getCount(SemaphoreP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 		
     SemaphoreP_freertos *pSemaphore = (SemaphoreP_freertos *)handle;
 
@@ -382,12 +383,12 @@ SemaphoreP_Status SemaphoreP_reset(SemaphoreP_Handle handle)
     SemaphoreP_Status ret_val = SemaphoreP_OK;
     SemaphoreP_freertos *pSemaphore = (SemaphoreP_freertos *)handle;
 
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     vTaskSuspendAll();
     do {
         isSemTaken = (uint32_t)xSemaphoreTake(pSemaphore->semHndl, 0);
-    } while(isSemTaken != 0U);
+    } while(0U != isSemTaken);
     (void)xTaskResumeAll();
 
     return (ret_val);
@@ -428,15 +429,15 @@ typedef struct /* The old naming convention is used to prevent breaking kernel a
     volatile int8_t cRxLock;                /*< Stores the number of items received from the queue (removed from the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
     volatile int8_t cTxLock;                /*< Stores the number of items transmitted to the queue (added to the queue) while the queue was locked.  Set to queueUNLOCKED when the queue is not locked. */
 
-    #if ( ( configSUPPORT_STATIC_ALLOCATION == 1 ) && ( configSUPPORT_DYNAMIC_ALLOCATION == 1 ) )
+    #if ( ( 1 == configSUPPORT_STATIC_ALLOCATION ) && ( 1 == configSUPPORT_DYNAMIC_ALLOCATION ) )
         uint8_t ucStaticallyAllocated; /*< Set to pdTRUE if the memory used by the queue was statically allocated to ensure no attempt is made to free the memory. */
     #endif
 
-    #if ( configUSE_QUEUE_SETS == 1 )
+    #if ( 1 == configUSE_QUEUE_SETS )
         struct QueueDefinition * pxQueueSetContainer;
     #endif
 
-    #if ( configUSE_TRACE_FACILITY == 1 )
+    #if ( 1 == configUSE_TRACE_FACILITY )
         UBaseType_t uxQueueNumber;
         uint8_t ucQueueType;
     #endif

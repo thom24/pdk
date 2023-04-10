@@ -47,7 +47,7 @@
  * if SOC is not supporting it, set to -1
  */
 #ifndef EXTERNAL_CLOCK_KHZ_DEFAULT
-#define EXTERNAL_CLOCK_KHZ_DEFAULT (-1)
+#define EXTERNAL_CLOCK_KHZ_DEFAULT (0xFFFFFFFFU)
 #endif
 
 #ifndef OSAL_DELAY_TIMER_ADDR_DEFAULT
@@ -66,7 +66,7 @@ uint32_t  gOsalMutexAllocCnt = 0U, gOsalMutexPeak = 0U;
 uint32_t  gOsalHeapAllocCnt  = 0U, gOsalHeapPeak  = 0U;
 
 #ifndef OSAL_CPU_FREQ_KHZ_DEFAULT
-#define OSAL_CPU_FREQ_KHZ_DEFAULT (400000)
+#define OSAL_CPU_FREQ_KHZ_DEFAULT (400000U)
 #endif
 
 volatile bool Osal_DebugP_Assert_Val=(bool)true;
@@ -113,15 +113,15 @@ void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line)
     (void)file;
     (void)line;
     
-    if (expression != 0) {
-        while (Osal_DebugP_Assert_Val == (bool)true) {}
+    if (0 != expression) {
+        while ((bool)true == Osal_DebugP_Assert_Val) {}
     }
 }
 
 Osal_ThreadType Osal_getThreadType(void)
 {
     Osal_ThreadType osalThreadType;
-    if( xPortInIsrContext() == 1 )
+    if( 1 == xPortInIsrContext() )
     {
         osalThreadType = Osal_ThreadType_Hwi;
     }
@@ -165,26 +165,26 @@ int32_t Osal_delay(uint32_t nTicks)
 int32_t Osal_setHwAttrs(uint32_t ctrlBitMap, const Osal_HwAttrs *hwAttrs)
 {
    int32_t  ret = osal_FAILURE;
-   if (hwAttrs != NULL_PTR) {
-     if ((ctrlBitMap & OSAL_HWATTR_SET_EXT_CLK) !=0U) {
+   if (NULL_PTR != hwAttrs) {
+     if ( 0U != (ctrlBitMap & OSAL_HWATTR_SET_EXT_CLK) ) {
        gOsal_HwAttrs.extClkKHz= hwAttrs->extClkKHz;
        ret = osal_OK;
      }
 #ifdef _TMS320C6X
      /* Set the Event Combiner Interrupts */
-     if ((ctrlBitMap & OSAL_HWATTR_SET_ECM_INT) !=0U) {
+     if ( 0U != (ctrlBitMap & OSAL_HWATTR_SET_ECM_INT) ) {
        (void)memcpy(gOsal_HwAttrs.ECM_intNum,hwAttrs->ECM_intNum,4U*sizeof(gOsal_HwAttrs.ECM_intNum[0]));
        ret = osal_OK;
      }
 #endif
      /* Set the Hw Access type */
-     if ((ctrlBitMap & OSAL_HWATTR_SET_HWACCESS_TYPE) != 0U) {
+     if ( 0U != (ctrlBitMap & OSAL_HWATTR_SET_HWACCESS_TYPE) ) {
        gOsal_HwAttrs.hwAccessType = hwAttrs->hwAccessType;
        ret = osal_OK;
      }
 
      /* Set the Hw Access type */
-     if ((ctrlBitMap & OSAL_HWATTR_SET_OSALDELAY_TIMER_BASE) !=0U) {
+     if ( 0U != (ctrlBitMap & OSAL_HWATTR_SET_OSALDELAY_TIMER_BASE) ) {
 #if  defined(SOC_AM437x)|| defined (SOC_AM335x)
        gOsal_HwAttrs.osalDelayTimerBaseAddr = hwAttrs->osalDelayTimerBaseAddr;
        ret = osal_OK;
@@ -194,7 +194,7 @@ int32_t Osal_setHwAttrs(uint32_t ctrlBitMap, const Osal_HwAttrs *hwAttrs)
      }
 
      /* Set the extended memmory block for semaphore operations */
-     if ((ctrlBitMap & OSAL_HWATTR_SET_SEMP_EXT_BASE) !=0U)
+     if (0U != (ctrlBitMap & OSAL_HWATTR_SET_SEMP_EXT_BASE) )
      {
          gOsal_HwAttrs.extSemaphorePBlock = hwAttrs->extSemaphorePBlock;
          /* Zero out the given memory block */
@@ -203,7 +203,7 @@ int32_t Osal_setHwAttrs(uint32_t ctrlBitMap, const Osal_HwAttrs *hwAttrs)
      }
 
      /* Set the extended memmory block for semaphore operations */
-     if ((ctrlBitMap & OSAL_HWATTR_SET_HWIP_EXT_BASE)!=0U)
+     if (0U != (ctrlBitMap & OSAL_HWATTR_SET_HWIP_EXT_BASE) )
      {
          gOsal_HwAttrs.extHwiPBlock = hwAttrs->extHwiPBlock;
          /* Zero out the given memory block */
@@ -211,7 +211,7 @@ int32_t Osal_setHwAttrs(uint32_t ctrlBitMap, const Osal_HwAttrs *hwAttrs)
          ret = osal_OK;
      }
      /* Set the CPU frequency */
-     if ((ctrlBitMap & OSAL_HWATTR_SET_CPU_FREQ)!=0U)
+     if (0U != (ctrlBitMap & OSAL_HWATTR_SET_CPU_FREQ) )
      {
          gOsal_HwAttrs.cpuFreqKHz = hwAttrs->cpuFreqKHz;
          ret = osal_OK;
@@ -226,7 +226,7 @@ int32_t Osal_setHwAttrs(uint32_t ctrlBitMap, const Osal_HwAttrs *hwAttrs)
 int32_t Osal_getHwAttrs( Osal_HwAttrs *hwAttrs)
 {
    int32_t  ret = osal_FAILURE;
-   if (hwAttrs != NULL_PTR) {
+   if (NULL_PTR != hwAttrs) {
      (void)memcpy(hwAttrs, &gOsal_HwAttrs, sizeof(Osal_HwAttrs));
      ret = osal_OK;
    }

@@ -63,7 +63,7 @@ static MailboxP_freertos gOsalMailboxPFreeRtosPool[OSAL_FREERTOS_CONFIGNUM_MAILB
 
 void MailboxP_Params_init(MailboxP_Params *params)
 {
-    if (params != NULL_PTR)
+    if (NULL_PTR != params)
     {
         params->pErrBlk =  NULL_PTR;
         params->name    =  NULL_PTR;
@@ -84,15 +84,15 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
     uintptr_t           key;
     uint32_t            maxMailbox;
 
-    DebugP_assert((params != NULL_PTR));
-    DebugP_assert((params->buf != NULL_PTR));
+    DebugP_assert(NULL_PTR != params);
+    DebugP_assert(NULL_PTR != params->buf);
     DebugP_assert((params->bufsize >= (params->size * params->count)));
 
     /* Pick up the internal static memory block */
     mailboxPool       = (MailboxP_freertos *) &gOsalMailboxPFreeRtosPool[0];
     maxMailbox        = OSAL_FREERTOS_CONFIGNUM_MAILBOX;
     
-    if(gOsalMailboxAllocCnt==0U) 
+    if(0U == gOsalMailboxAllocCnt) 
     {
         (void)memset( (void *)gOsalMailboxPFreeRtosPool,0,sizeof(gOsalMailboxPFreeRtosPool));
     }
@@ -101,7 +101,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
      for (i = 0; i < maxMailbox; i++)
      {
-         if (mailboxPool[i].used == (bool)false)
+         if ((bool)false == mailboxPool[i].used)
          {
              mailboxPool[i].used = (bool)true;
              /* Update statistics */
@@ -121,7 +121,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
         handle = (MailboxP_freertos *) &mailboxPool[i];
     }
 
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
         ret_handle = NULL_PTR;
     }
     else
@@ -130,7 +130,7 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
                                         (UBaseType_t)params->size, 
                                         (uint8_t*)params->buf,
                                         &handle->mailboxObj);
-        if(handle->mailboxHndl == NULL)
+        if(NULL == handle->mailboxHndl)
         {
             /* If there was an error reset the mailbox object and return NULL. */
             key = HwiP_disable();
@@ -154,13 +154,13 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
 MailboxP_Status MailboxP_delete(MailboxP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t   key;
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if((mailbox != NULL_PTR) && (mailbox->used==(bool)true))
+    if((NULL_PTR != mailbox) && ((bool)true == mailbox->used))
     {
         vQueueDelete(mailbox->mailboxHndl);
 
@@ -186,13 +186,13 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
                               void * msg,
                               uint32_t timeout)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
     
     BaseType_t qStatus;
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if( xPortInIsrContext() == 1 )
+    if( 1 == xPortInIsrContext() )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
@@ -202,7 +202,7 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
     }
     else
     {
-        if (timeout == MailboxP_WAIT_FOREVER)
+        if (MailboxP_WAIT_FOREVER == timeout)
         {
             qStatus = xQueueSendToBack(mailbox->mailboxHndl, msg, portMAX_DELAY);
         }
@@ -212,7 +212,7 @@ MailboxP_Status MailboxP_post(MailboxP_Handle handle,
         }
     }
 
-    if (qStatus == pdPASS)
+    if (pdPASS == qStatus)
     {
         ret_val = MailboxP_OK;
     }
@@ -228,13 +228,13 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
                               void * msg,
                               uint32_t timeout)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
     
     BaseType_t qStatus;
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if( xPortInIsrContext() == 1 )
+    if( 1 == xPortInIsrContext() )
     {
         BaseType_t xHigherPriorityTaskWoken = 0;
 
@@ -244,7 +244,7 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
     }
     else
     {
-        if (timeout == MailboxP_WAIT_FOREVER)
+        if (MailboxP_WAIT_FOREVER == timeout)
         {
             qStatus = xQueueReceive(mailbox->mailboxHndl, msg, portMAX_DELAY);
         }
@@ -254,7 +254,7 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
         }
     }
 
-    if (qStatus == pdPASS)
+    if (pdPASS == qStatus )
     {
         ret_val = MailboxP_OK;
     }
@@ -268,12 +268,12 @@ MailboxP_Status MailboxP_pend(MailboxP_Handle handle,
 
 int32_t MailboxP_getNumPendingMsgs(MailboxP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     UBaseType_t numMsg;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if( xPortInIsrContext() == 1 )
+    if( 1 == xPortInIsrContext() )
     {
         numMsg = uxQueueMessagesWaitingFromISR(mailbox->mailboxHndl);
     }

@@ -47,10 +47,10 @@ void HwiP_Params_init(HwiP_Params *params)
     params->name     = (char *) NULL_PTR;
     params->arg      = 0;
     params->priority = HWIP_USE_DEFAULT_PRIORITY;
-    params->evtId    = 0;
+    params->evtId    = 0U;
     params->enableIntr = TRUE;
 #if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
-    params->triggerSensitivity = (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL;
+    params->triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_LEVEL;
 #if !((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     {
         Osal_HwAttrs hwAttrs;
@@ -68,13 +68,13 @@ void HwiP_Params_init(HwiP_Params *params)
 /*
  *  ======== HwiP_create ========
  */
-HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn, const HwiP_Params *params)
+HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn, const HwiP_Params *params)
 {
     HwiP_Handle handle;
     handle = OsalArch_HwiPCreate(interruptNum,hwiFxn,params);
 
     /* Update statistics for successful allocation */
-    if(handle != NULL_PTR)
+    if(NULL_PTR != handle)
     {
         gOsalHwiAllocCnt++;
         if(gOsalHwiAllocCnt > gOsalHwiPeak)
@@ -88,7 +88,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn, const HwiP_Params
 /*
  *  ======== HwiP_createDirect ========
  */
-HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+HwiP_Handle HwiP_createDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
                               const HwiP_Params *params)
 {
     HwiP_Handle handle;
@@ -99,7 +99,7 @@ HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
 #endif
 
     /* Update statistics for successful allocation */
-    if(handle != NULL_PTR)
+    if(NULL_PTR != handle)
     {
         gOsalHwiAllocCnt++;
         if(gOsalHwiAllocCnt > gOsalHwiPeak)
@@ -117,13 +117,13 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
 {
     HwiP_Status status;
 
-    OSAL_Assert((handle == NULL_PTR));
+    OSAL_Assert(NULL_PTR == handle);
 
-    if(handle != NULL_PTR)
+    if(NULL_PTR != handle)
     {
         status = OsalArch_HwiPDelete(handle);
 
-        if(status == HwiP_OK)
+        if(HwiP_OK == status)
         {
             if(gOsalHwiAllocCnt > 0U)
             {
@@ -148,26 +148,26 @@ int32_t HwiP_post(uint32_t interruptNum)
 /*
  *  ======== HwiP_clearInterrupt ========
  */
-void HwiP_clearInterrupt(int32_t interruptNum)
+void HwiP_clearInterrupt(uint32_t interruptNum)
 {
-    OsalArch_clearInterrupt((uint32_t)interruptNum);
+    OsalArch_clearInterrupt(interruptNum);
 }
 
 /*
  *  ======== HwiP_disableInterrupt ========
  */
-void HwiP_disableInterrupt(int32_t interruptNum)
+void HwiP_disableInterrupt(uint32_t interruptNum)
 {
-    OsalArch_disableInterrupt((uint32_t)interruptNum);
+    OsalArch_disableInterrupt(interruptNum);
     return;
 }
 
 /*
  *  ======== HwiP_enableInterrupt ========
  */
-void HwiP_enableInterrupt(int32_t interruptNum)
+void HwiP_enableInterrupt(uint32_t interruptNum)
 {
-    OsalArch_enableInterrupt((uint32_t)interruptNum);
+    OsalArch_enableInterrupt(interruptNum);
     return;
 }
 
@@ -178,14 +178,14 @@ uintptr_t HwiP_disable(void)
 {
     uintptr_t key = (uintptr_t)NULL_PTR;
 
-    if(( Osal_isInISRContext() == 1) ||
-       ( xTaskIsSchedulerStarted() == 0))
+    if(( 1 == Osal_isInISRContext() ) ||
+       ( pdFALSE    == xTaskIsSchedulerStarted() ))
     {
         key = OsalArch_globalDisableInterrupt();
     }
     else
     {
-        DebugP_assert(( (bool) true == Osal_isInPrivilegeMode() ));
+        DebugP_assert( 1 == Osal_isInPrivilegeMode() );
         portENTER_CRITICAL_WITHIN_API();
     }
 
@@ -197,14 +197,14 @@ uintptr_t HwiP_disable(void)
  */
 void HwiP_restore(uintptr_t key)
 {
-    if(( Osal_isInISRContext() == 1 ) ||
-       ( xTaskIsSchedulerStarted() == 0 ))
+    if(( 1 == Osal_isInISRContext() ) ||
+       ( pdFALSE    == xTaskIsSchedulerStarted() ))
     {
         OsalArch_globalRestoreInterrupt(key);
     }
     else
     {
-        DebugP_assert(( (bool) true == Osal_isInPrivilegeMode() ));
+        DebugP_assert( 1 == Osal_isInPrivilegeMode() );
         portEXIT_CRITICAL_WITHIN_API();
     }
 
@@ -216,7 +216,7 @@ void HwiP_restore(uintptr_t key)
  *  ======== HwiP_getHandle ========
  *  Returns the HwiP handle associated with an interrupt number
   */
-HwiP_Handle HwiP_getHandle(int32_t interruptNum)
+HwiP_Handle HwiP_getHandle(uint32_t interruptNum)
 {
     return(OsalArch_getHandle(interruptNum));
 }
@@ -225,7 +225,7 @@ HwiP_Handle HwiP_getHandle(int32_t interruptNum)
  *  ======== HwiP_getEventId ========
  *  Returns the Event ID associated with an interrupt
   */
-int32_t HwiP_getEventId(int32_t interruptNum)
+uint32_t HwiP_getEventId(uint32_t interruptNum)
 {
     return(OsalArch_getEventId(interruptNum));
 }

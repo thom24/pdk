@@ -111,7 +111,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if (gOsal_HwAttrs.extSemaphorePBlock.base != (uintptr_t)0U)
+    if ((uintptr_t)0U != gOsal_HwAttrs.extSemaphorePBlock.base)
     {
         /* pick up the external memory block configured */
         semPool        = (Sem_Struct *) gOsal_HwAttrs.extSemaphorePBlock.base;
@@ -125,14 +125,14 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
         maxSemaphores  = OSAL_NONOS_CONFIGNUM_SEMAPHORE;
     }
     /* First time, semaphores are not initialized */
-    if(gOsalSemAllocCnt==0U)
+    if(0U == gOsalSemAllocCnt)
     {
        semaphoreInit(semPool,maxSemaphores);
 	}
     
     for (i = 0; i < maxSemaphores; i++)
     {
-        if (semPool[i].used == (bool)false)
+        if ((bool)false == semPool[i].used)
         {
             semPool[i].used = (bool)true;
 
@@ -145,7 +145,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
 
             semPool[i].sem = i;
             semPool[i].count = count;
-            if (params != NULL_PTR)
+            if (NULL_PTR != params)
             {
                 semPool[i].mode = params->mode;
             }
@@ -171,12 +171,12 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
  */
 SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
 {
-    OSAL_Assert((handle == NULL_PTR));
+    OSAL_Assert(NULL_PTR == handle);
     SemaphoreP_Status ret = SemaphoreP_OK;
     uintptr_t   key;
     Sem_Struct *semS = (Sem_Struct *)handle;
     
-    if((semS != NULL_PTR) && (semS->used))
+    if((NULL_PTR != semS) && (semS->used))
     {
       key = HwiP_disable();
       semS->used = (bool)false;
@@ -201,8 +201,8 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
  */
 void SemaphoreP_Params_init(SemaphoreP_Params *params)
 {
-    OSAL_Assert((params == NULL_PTR));
-    if(params!=NULL_PTR) {
+    OSAL_Assert(NULL_PTR == params);
+    if(NULL_PTR != params) {
       params->mode = SemaphoreP_Mode_COUNTING;
       params->name = (char *) NULL_PTR;
     }  
@@ -213,7 +213,7 @@ void SemaphoreP_Params_init(SemaphoreP_Params *params)
  */
 SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
 {
-    OSAL_Assert((handle == NULL_PTR));
+    OSAL_Assert(NULL_PTR == handle);
 
     uintptr_t           key;
     Sem_Struct         *semS        = (Sem_Struct *)handle;
@@ -221,15 +221,15 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
     SemaphoreP_Status   ret_val     = SemaphoreP_OK;
     bool iterate = (bool)true;
     
-    if(semS!=NULL) {
-      while ( (ret_val == SemaphoreP_OK) && (iterate== (bool)true))
+    if(NULL != semS) {
+      while ( (SemaphoreP_OK == ret_val) && ((bool)true == iterate))
       {
         key = HwiP_disable();
         if (semS->count > 0U)
         {
-            if (semS->mode == SemaphoreP_Mode_BINARY)
+            if (SemaphoreP_Mode_BINARY == semS->mode)
             {
-				semS->count = 0;
+				        semS->count = 0;
             }
             else
             {
@@ -241,12 +241,12 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
 	  else
         {
             HwiP_restore(key);
-            if (semTimeout == SemaphoreP_NO_WAIT)
+            if (SemaphoreP_NO_WAIT == semTimeout)
             {
                 ret_val = (SemaphoreP_TIMEOUT);
                 iterate=(bool)false;
             }
-            else if  (semTimeout == SemaphoreP_WAIT_FOREVER)
+            else if  (SemaphoreP_WAIT_FOREVER == semTimeout)
             {
                /* Wait forever */
             }
@@ -270,15 +270,15 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
  */
 SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
 {
-    OSAL_Assert((handle == NULL_PTR));
+    OSAL_Assert(NULL_PTR == handle);
     SemaphoreP_Status ret = SemaphoreP_OK;
     uintptr_t   key;
     Sem_Struct *semS = (Sem_Struct *)handle;
-    if(semS != NULL_PTR)
+    if(NULL_PTR != semS)
     {
       
       key = HwiP_disable();
-      if (semS->mode == SemaphoreP_Mode_BINARY)
+      if (SemaphoreP_Mode_BINARY == semS->mode)
       {
         semS->count = 1;
       }
@@ -304,9 +304,9 @@ int32_t SemaphoreP_getCount(SemaphoreP_Handle handle)
 
 {
     int32_t ret=0;
-    OSAL_Assert((handle == NULL_PTR));
+    OSAL_Assert(NULL_PTR == handle);
     Sem_Struct *semS = (Sem_Struct *)handle;
-    if(semS !=NULL_PTR) {
+    if(NULL_PTR != semS) {
        ret = (int32_t)semS->count;
     } else {
        ret = 0;

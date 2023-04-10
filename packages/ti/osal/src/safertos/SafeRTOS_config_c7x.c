@@ -46,10 +46,10 @@
 #include <ti/osal/DebugP.h>
 
 /* Function declaration */
-static void prvMmuInit( Bool isSecure );
-static void prvCfgClecAccessCtrl ( Bool onlyInSecure );
+static void prvMmuInit( bool isSecure );
+static void prvCfgClecAccessCtrl ( bool onlyInSecure );
 static void vPortInitTimerCLECCfg( uint32_t timerId, uint32_t timerIntNum );
-
+void Osal_initMmuDefault(void);
 
 /* Hook function handlers targeting the TI PDK libraries. */
 
@@ -60,8 +60,8 @@ static void vPortInitTimerCLECCfg( uint32_t timerId, uint32_t timerIntNum );
 __attribute__((weak)) portBaseType prvSetupHardware( void )
 {
     portBaseType           xStatus = pdPASS;
-    Safertos_OSTimerParams xOSTimerParams;
-
+    Safertos_OSTimerParams xOSTimerParams = {0};
+    
     prvGetOSTimerParams( &xOSTimerParams );
     
     vPortInitTimerCLECCfg( xOSTimerParams.timerId, 
@@ -126,11 +126,11 @@ __attribute__((weak)) void _system_post_cinit( void )
 
 void Osal_initMmuDefault( void )
 {
-    prvMmuInit( false );
-    prvMmuInit( true );
+    prvMmuInit( (bool)false );
+    prvMmuInit( (bool)true );
 
     /* Setup CLEC access/configure in non-secure mode */
-    prvCfgClecAccessCtrl( false );
+    prvCfgClecAccessCtrl( (bool)false );
 }
 
 /*---------------------------------------------------------------------------*/
@@ -167,14 +167,14 @@ void vApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorNum )
  *---------------------------------------------------------------------------*/
 
 
-static void prvCfgClecAccessCtrl ( Bool onlyInSecure )
+static void prvCfgClecAccessCtrl ( bool onlyInSecure )
 {
     CSL_ClecEventConfig cfgClec;
     CSL_CLEC_EVTRegs   *clecBaseAddr = ( CSL_CLEC_EVTRegs* ) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
     uint32_t            i, maxInputs = 2048U;
     uint32_t            secureClaim = 0U;
 
-    cfgClec.secureClaimEnable = onlyInSecure;
+    cfgClec.secureClaimEnable = onlyInSecure?1U:0U;
     cfgClec.evtSendEnable     = FALSE;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
     cfgClec.extEvtNum         = 0U;
@@ -182,21 +182,21 @@ static void prvCfgClecAccessCtrl ( Bool onlyInSecure )
     for(i = 0U; i < maxInputs; i++)
     {
         CSL_clecGetSecureClaimStatus(clecBaseAddr, i, &secureClaim);
-        if(secureClaim)
+        if(SECURE_ENABLE == secureClaim)
         {
             CSL_clecConfigEvent( clecBaseAddr, i, &cfgClec );
         }
     }
 }
 /*-------------------------------------------------------------------------*/
-static void prvMmuInit( Bool isSecure )
+static void prvMmuInit( bool isSecure )
 {
     Mmu_MapAttrs    attrs;
 
     Mmu_initMapAttrs( &attrs );
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
-    if( TRUE == isSecure )
+    if( (bool)true == isSecure )
     {
         attrs.ns = (bool)false;
     }
@@ -206,17 +206,17 @@ static void prvMmuInit( Bool isSecure )
     }
 
     /* Register region */
-    ( void )Mmu_map( 0x00000000U, 0x00000000U, 0x20000000U, &attrs, isSecure );
-    ( void )Mmu_map( 0x20000000U, 0x20000000U, 0x20000000U, &attrs, isSecure );
-    ( void )Mmu_map( 0x40000000U, 0x40000000U, 0x20000000U, &attrs, isSecure );
-    ( void )Mmu_map( 0x60000000U, 0x60000000U, 0x10000000U, &attrs, isSecure );
-    ( void )Mmu_map( 0x78000000U, 0x78000000U, 0x08000000U, &attrs, isSecure ); /* CLEC */
+    Mmu_map( 0x00000000U, 0x00000000U, 0x20000000U, &attrs, isSecure );
+    Mmu_map( 0x20000000U, 0x20000000U, 0x20000000U, &attrs, isSecure );
+    Mmu_map( 0x40000000U, 0x40000000U, 0x20000000U, &attrs, isSecure );
+    Mmu_map( 0x60000000U, 0x60000000U, 0x10000000U, &attrs, isSecure );
+    Mmu_map( 0x78000000U, 0x78000000U, 0x08000000U, &attrs, isSecure ); /* CLEC */
 
     attrs.attrIndx = Mmu_AttrIndx_MAIR7;
-    ( void )Mmu_map( 0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure ); /* DDR */
-    ( void )Mmu_map( 0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure ); /* DDR */
-    ( void )Mmu_map( 0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure ); /* MSMC - 8MB */
-    ( void )Mmu_map( 0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, isSecure ); /* OCMC - 512KB */
+    Mmu_map( 0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure ); /* DDR */
+    Mmu_map( 0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure ); /* DDR */
+    Mmu_map( 0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure ); /* MSMC - 8MB */
+    Mmu_map( 0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, isSecure ); /* OCMC - 512KB */
 
     /*
      * DDR range 0xA0000000 - 0xAA000000 : Used as RAM by multiple
@@ -224,7 +224,7 @@ static void prvMmuInit( Bool isSecure )
      * IPC VRing Buffer - uncached
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    ( void )Mmu_map( 0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure );
+    Mmu_map( 0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure );
 
     return;
 }

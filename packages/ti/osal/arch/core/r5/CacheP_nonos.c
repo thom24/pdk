@@ -43,18 +43,18 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
 
-void CacheP_wb(const void * addr, int32_t size)
+void CacheP_wb(const void * addr, uint32_t size)
 {
     CSL_armR5CacheWb(addr, size, (bool)TRUE);
     return;
 }
-void CacheP_wbInv(const void * addr, int32_t size)
+void CacheP_wbInv(const void * addr, uint32_t size)
 {
     CSL_armR5CacheWbInv(addr, size, (bool)TRUE);
     return;
 
 }
-void CacheP_Inv(const void * addr, int32_t size)
+void CacheP_Inv(const void * addr, uint32_t size)
 {
     CSL_armR5CacheInv(addr, size, (bool)TRUE);
     return;

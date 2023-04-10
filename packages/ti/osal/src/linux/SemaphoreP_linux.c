@@ -55,7 +55,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
 
     /* Creates a COUNTING semaphore */
     handle = sem_open(params->name, O_CREAT, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH, count);
-    if (handle == SEM_FAILED)
+    if (SEM_FAILED == handle)
     {
         return NULL;
     }
@@ -68,7 +68,7 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
  */
 SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
 {
-    OSAL_Assert((handle == NULL));
+    OSAL_Assert(NULL == handle);
 
     int ret;
 
@@ -85,7 +85,7 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
  */
 void SemaphoreP_Params_init(SemaphoreP_Params *params)
 {
-    OSAL_Assert((params == NULL));
+    OSAL_Assert(NULL == params);
 
     params->mode = SemaphoreP_Mode_COUNTING;
     params->name = NULL;
@@ -96,13 +96,13 @@ void SemaphoreP_Params_init(SemaphoreP_Params *params)
  */
 SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
 {
-    OSAL_Assert((handle == NULL));
+    OSAL_Assert(NULL == handle);
 
     int ret;
     struct timespec ts;
     int timeout_ns = timeout*1000;
 
-    if (timeout == SemaphoreP_WAIT_FOREVER) {
+    if (SemaphoreP_WAIT_FOREVER == timeout) {
         ret = sem_wait((sem_t *)handle);
     } else {
         clock_gettime(CLOCK_REALTIME, &ts);
@@ -112,7 +112,7 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
         ret = sem_timedwait((sem_t *)handle, &ts);
     }
     if (ret < 0) {
-        if (errno == ETIMEDOUT) {
+        if (ETIMEDOUT == errno) {
                 return (SemaphoreP_TIMEOUT);
         } else {
                 return (SemaphoreP_FAILURE);
@@ -127,7 +127,7 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
  */
 SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
 {
-    OSAL_Assert((handle == NULL));
+    OSAL_Assert(NULL == handle);
 
     int ret;
 

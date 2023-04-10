@@ -68,17 +68,17 @@ extern "C" {
 /*!
  * Const used to specify any timer
  */
-#define TimerP_ANY       (~(uint32_t)0u)
+#define TimerP_ANY            ((uint32_t)0U)
 
 /*!
  * Max value of Timer period for PeriodType_COUNTS
  */
-#define TimerP_MAX_PERIOD ((uint32_t)0xffffffffu)
+#define TimerP_MAX_PERIOD     ((uint32_t)0xFFFFFFFFU)
 
 /*!
  * Use default values as provided by the OSAL package
  */
-#define TimerP_USE_DEFAULT   (-(int32_t)1)
+#define TimerP_USE_DEFAULT    ((uint32_t)0xFFFFFFFFU)
 
 /*!
  *  @brief  Frequency-in-hertz struct
@@ -99,30 +99,53 @@ typedef enum TimerP_Status_e {
     TimerP_ISR_HOOK_ERR  = (-(int32_t) 4)
 } TimerP_Status;
 
-
-/*!
- *  @brief  Timer period units for TimerP APIs
+/**
+ * \anchor TimerP_PeriodType
+ * \name  Timer period units for TimerP APIs
+ *
+ * @{
  */
-typedef enum TimerP_PeriodType_e {
-    TimerP_PeriodType_MICROSECS = ( (uint32_t) 0), /*!< timer period is in micro seconds */
-    TimerP_PeriodType_COUNTS    = ( (uint32_t) 1), /*!< timer period is in counts */
-} TimerP_PeriodType;
-
 /*!
- *  @brief  Timer runtime modes for TimerP APIs
+ *  @brief  This enumerator defines the Timer Period unit
  */
-typedef enum TimerP_RunMode_e {
-    TimerP_RunMode_CONTINUOUS = ( (uint32_t) 0), /*!< timer is periodic and runs continuously */
-    TimerP_RunMode_ONESHOT    = ( (uint32_t) 1), /*!< timer runs for a single period values and stops */
- } TimerP_RunMode;
+typedef uint32_t TimerP_PeriodType;
+/** Timer period unit is in micro seconds */
+#define TimerP_PeriodType_MICROSECS               ( (uint32_t) 0U)
+/** Timer period unit is in counts */
+#define TimerP_PeriodType_COUNTS                  ( (uint32_t) 1U)
+/* @} */
 
-/*!
- *  @brief  Timer start modes for TimerP APIs
+/**
+ * \anchor TimerP_RunMode
+ * \name Timer runtime modes for TimerP APIs
+ *
+ * @{
  */
-typedef enum TimerP_StartMode_e {
-    TimerP_StartMode_AUTO =  ( (uint32_t) 0),     /*!< timer starts automatically after create*/
-    TimerP_StartMode_USER =  ( (uint32_t) 1),     /*!< timer will be started by the user */
-}TimerP_StartMode;
+/*!
+ *  @brief  This enumerator defines the Timer runtime modes
+ */
+typedef uint32_t TimerP_RunMode;
+/** Timer is periodic and runs continuously */
+#define TimerP_RunMode_CONTINUOUS                 ( (uint32_t) 0U)
+/** Timer runs for a single period values and stops */
+#define TimerP_RunMode_ONESHOT                    ( (uint32_t) 1U) 
+/* @} */
+
+/**
+ * \anchor TimerP_StartMode
+ * \name Timer start modes for TimerP APIs
+ *
+ * @{
+ */
+/*!
+ *  @brief  This enumerator defines the Timer start modes
+ */
+typedef uint32_t TimerP_StartMode;
+/** Timer starts automatically after create */
+#define TimerP_StartMode_AUTO                     ( (uint32_t) 0U)
+/** Timer will be started by the user */
+#define TimerP_StartMode_USER                     ( (uint32_t) 1U)    
+/* @} */
 
 /*!
  * @brief Timer mode for 64 bit timers (KeyStone devices)
@@ -173,13 +196,13 @@ typedef struct TimerP_Params_s {
                              This can be used for debugging purposes, or
                              set to NULL if not needed. */
     uint32_t periodType;  /*!< Period type, default micro seconds */
-    int32_t  extfreqLo;   /*!< least siginificant 32-bits of ext frequency
+    uint32_t  extfreqLo;  /*!< least siginificant 32-bits of ext frequency
                                set to 0 to use internal clk freq  */
-    int32_t  extfreqHi;   /*!< most siginificant 32-bits of ext frequency
+    uint32_t  extfreqHi;  /*!< most siginificant 32-bits of ext frequency
                                set to 0 to use internal clk freq  */
-    int32_t  intfreqLo;   /*!< least siginificant 32-bits of int frequency
+    uint32_t  intfreqLo;  /*!< least siginificant 32-bits of int frequency
                                set to 0 to use default internal clk freq  */
-    int32_t  intfreqHi;   /*!< most siginificant 32-bits of int frequency
+    uint32_t  intfreqHi;  /*!< most siginificant 32-bits of int frequency
                                set to 0 to use default internal clk freq  */
     uint32_t startMode;   /*!< timer start mode */
     uint32_t runMode;     /*!< timer run mode */
@@ -187,9 +210,9 @@ typedef struct TimerP_Params_s {
     TimerP_Timer64Mode timerMode; /*!< timer mode for 64bit timer */
     TimerP_Timer64Half timerHalf; /*!< timer half for 64bit timer */
 
-    int32_t  intNum;      /*!< Hwi Interrupt number to be used by Timer */
+    uint32_t  intNum;      /*!< Hwi Interrupt number to be used by Timer */
 #if (defined (_TMS320C6X) || defined (BUILD_C7X))
-    int32_t  eventId;     /*!< Hwi event Id to be used by the Timer */
+    uint32_t  eventId;     /*!< Hwi event Id to be used by the Timer */
 #endif
     void*    arg;         /*!< Argument passed into the timer function. */
 } TimerP_Params;
@@ -208,7 +231,7 @@ typedef struct TimerP_Params_s {
  *  @return A TimerP_Handle on success or a NULL on an error.  This handle can
  *          be passed to TimerP_start()
  */
-extern TimerP_Handle TimerP_create(int32_t        id,
+extern TimerP_Handle TimerP_create(uint32_t        id,
                                    TimerP_Fxn     tickFxn,
                                    const TimerP_Params *timerParams);
 

@@ -45,7 +45,7 @@
  */
 void QueueP_Params_init(QueueP_Params *params)
 {
-    if (params != NULL)
+    if (NULL != params)
     {
         params->pErrBlk =  NULL;
     }
@@ -60,7 +60,7 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
     QueueP_Elem *obj = NULL;
 
     obj = calloc(1, sizeof(QueueP_Elem));
-    if (obj != NULL)
+    if (NULL != obj)
     {
         obj->next = (QueueP_Elem *)obj;
         obj->prev = (QueueP_Elem *)obj;
@@ -73,7 +73,7 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
  */
 QueueP_Status QueueP_delete(QueueP_Handle queueHandle)
 {
-    if (queueHandle != NULL)
+    if (NULL != queueHandle)
     {
         free(queueHandle);
     }
@@ -90,7 +90,7 @@ void * QueueP_get(QueueP_Handle queueHandle)
     QueueP_Elem *obj = (QueueP_Elem *)queueHandle;
     uintptr_t key;
 
-    if (obj != NULL)
+    if (NULL != obj)
     {
         key = HwiP_disable();
 
@@ -113,7 +113,7 @@ QueueP_Status QueueP_put(QueueP_Handle queueHandle, void *new)
     QueueP_Elem *obj = (QueueP_Elem *)queueHandle;
     QueueP_Elem *elem = (QueueP_Elem *)new;
 
-    if ((obj != NULL) && (elem != NULL))
+    if ((NULL != obj) && (NULL != elem))
     {
         key = HwiP_disable();
 
@@ -136,7 +136,7 @@ QueueP_State QueueP_isEmpty(QueueP_Handle queueHandle)
     QueueP_State state = QueueP_EMPTY;
     QueueP_Elem *obj = (QueueP_Elem *) queueHandle;
 
-    if (obj != NULL)
+    if (NULL != obj)
     {
         if(obj->next != (QueueP_Elem*)obj)
         {

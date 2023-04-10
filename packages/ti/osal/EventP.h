@@ -180,17 +180,21 @@ typedef enum EventP_Status_e
     EventP_FAILURE    = (-(int32_t)1)
 } EventP_Status;
 
-/*!
- *  @brief  Event wait modes for EventP_wait API
+/**
+ * \anchor EventP_WaitMode
+ * \name Event wait modes for EventP_wait API
+ *
+ * @{
  */
-typedef enum EventP_WaitMode_e {
-    EventP_WaitMode_ANY = ( (uint8_t) 0),     /*!< Test bits for logical OR. 
-                                               *   EventP_wait will return when ANY of the bits 
-                                               *   set in mask are set in the Event bits*/
-    EventP_WaitMode_ALL = ( (uint8_t) 1),      /*!< Test bits for logical AND.  
-                                                *   EventP_wait will return when ALL the bits 
-                                                *   set in mask are set in the Event bits*/
-}EventP_WaitMode;
+/*!
+ *  @brief  This enumerator defines the Event wait modes
+ */
+typedef uint8_t EventP_WaitMode;
+/* EventP_wait will return when ANY of the bits set in mask are set in the Event bits */
+#define EventP_WaitMode_ANY                     ( (uint8_t) 0U)
+/* EventP_wait will return when ALL the bits set in mask are set in the Event bits */
+#define EventP_WaitMode_ALL                     ( (uint8_t) 1U)
+/* @} */
 
 /*!
  *  @brief    Wait forever define

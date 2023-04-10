@@ -61,7 +61,7 @@ void OsalArch_compileTime_SizeChk(void)
     OSAL_COMPILE_TIME_SIZE_CHECK (sizeof(HwiP_nonOs),OSAL_NONOS_HWIP_SIZE_BYTES);
 }
 
-static bool gFirstTime = FALSE;
+static bool gFirstTime = (bool)false;
 //TODO: Integrate to CSL once C7x arch is supported
 //static CSL_IntcContext               gContext;
 //static CSL_IntcEventHandlerRecord    gEventRecord[OSAL_NONOS_CONFIGNUM_HWI];
@@ -100,7 +100,7 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue)
 }
 
 /* Below function registers the interrupt for a given ISR */
-HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
+HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                           const HwiP_Params *params)
 {
     Hwi_Struct                   *hwi_handle = (Hwi_Struct *) NULL_PTR;
@@ -116,7 +116,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if (gOsal_HwAttrs.extHwiPBlock.base != (uintptr_t)NULL_PTR)
+    if ((uintptr_t)NULL_PTR != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -130,15 +130,15 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
     }
 
-    if (params == NULL_PTR)
+    if (NULL_PTR == params)
     {
         retHandle = (HwiP_Handle)(NULL_PTR);
     }
     else
     {
         key = OsalArch_globalDisableInterrupt();
-        for (i = 0u; i < maxHwi; i++) {
-            if (hwiPool[i].used == FALSE) {
+        for (i = 0U; i < maxHwi; i++) {
+            if (FALSE == hwiPool[i].used) {
                 hwiPool[i].used = TRUE;
                 break;
             }
@@ -155,9 +155,9 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             retHandle  = (HwiP_Handle)(NULL_PTR);
         }
 
-        if (hwi_handle != (Hwi_Struct *) NULL_PTR)
+        if ((Hwi_Struct *) NULL_PTR != hwi_handle)
         {
-            //if (gFirstTime == FALSE) {
+            //if (FALSE == gFirstTime) {
             //  /* record the index in the handle */
             //  gContext.numEvtEntries      = OSAL_NONOS_CONFIGNUM_HWI;
             //  gContext.eventhandlerRecord = gEventRecord;
@@ -205,7 +205,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    if (hwi_hnd->used == TRUE)
+    if (TRUE == hwi_hnd->used)
     {
         hwi_hnd->used = FALSE;
     }
@@ -216,7 +216,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
     OsalArch_globalRestoreInterrupt(key);
     //status = CSL_intcClose(hwi_hnd->hwi.handle);
 
-    //if (status == CSL_SOK)
+    //if (CSL_SOK == status)
     //{
     //  ret_val = (HwiP_OK);
     //}
@@ -231,7 +231,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
  *  ======== HwiP_getHandle ========
  *  Returns the HwiP handle associated with an interrupt number
   */
-HwiP_Handle OsalArch_getHandle(int32_t interruptNum)
+HwiP_Handle OsalArch_getHandle(uint32_t interruptNum)
 {
    Hwi_Struct *handle= (Hwi_Struct *) NULL_PTR;
    return((HwiP_Handle)handle);
@@ -240,9 +240,9 @@ HwiP_Handle OsalArch_getHandle(int32_t interruptNum)
  *  ======== HwiP_getEventId ========
  *  Returns the Event ID associated with an interrupt
   */
-int32_t OsalArch_getEventId(int32_t interruptNum)
+uint32_t OsalArch_getEventId(uint32_t interruptNum)
 {
-    return(-1);
+    return CSL_INVALID_EVENT_ID;
 }
 
 /* Below function posts the interrupt */
@@ -252,7 +252,7 @@ int32_t OsalArch_postInterrupt(uint32_t intrNum)
 }
 
 /* Return the cycle frequency used for timeStamp */
-int32_t osalArch_TimeStampGetFreqKHz(void)
+uint32_t osalArch_TimeStampGetFreqKHz(void)
 {
     /* TSCH/TSCL runs at CPU speed*/
     return (gOsal_HwAttrs.cpuFreqKHz);

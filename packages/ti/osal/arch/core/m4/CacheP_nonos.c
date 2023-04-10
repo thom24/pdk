@@ -44,7 +44,7 @@
 #include <ti/csl/arch/csl_arch.h>
 
 
-void CacheP_wb(const void * addr, int32_t size)
+void CacheP_wb(const void * addr, uint32_t size)
 {
 #if defined(UNICACHE_ENABLED)
   UNICACHEWriteBack(
@@ -54,7 +54,7 @@ void CacheP_wb(const void * addr, int32_t size)
       UNICACHE_WAIT_INFINITE);
 #endif
 }
-void CacheP_wbInv(const void * addr, int32_t size)
+void CacheP_wbInv(const void * addr, uint32_t size)
 {
 #if defined(UNICACHE_ENABLED)
   UNICACHEWriteBackAndInvalidate(
@@ -65,7 +65,7 @@ void CacheP_wbInv(const void * addr, int32_t size)
 #endif
 }
 
-void CacheP_Inv(const void * addr, int32_t size)
+void CacheP_Inv(const void * addr, uint32_t size)
 {
 #if defined(UNICACHE_ENABLED)
   UNICACHEInvalidate(

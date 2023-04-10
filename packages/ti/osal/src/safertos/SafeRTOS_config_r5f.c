@@ -45,6 +45,7 @@
 
 /* SafeRTOS Includes */
 #include "SafeRTOS_API.h"
+#include "SafeRTOS_priv.h"
 #include "mpuARM.h"
 
 #include <ti/osal/src/nonos/Nonos_config.h>
@@ -69,6 +70,7 @@ extern uint32_t CSL_armR5StartupCacheEnableForceWrThru( uint32_t enable );
 extern uint32_t CSL_armR5StartupCacheInvalidateAllCache( void );
 extern __attribute__((section(".startupCode"))) portBaseType xConfigureMPU(void);
 void vFiqHandler( void );
+__attribute__((section(".startupCode"))) void __mpu_init( void );
 
 /*---------------------------------------------------------------------------*/
 
@@ -85,7 +87,7 @@ void vApplicationInterruptHandlerHook( void );
  * TI PDK variables required by the interrupt handler.
  *---------------------------------------------------------------------------*/
 
-extern uint32_t             gVimBaseAddr;
+extern uintptr_t            gVimBaseAddr;
 extern uint8_t              intrMap[ R5_VIM_INTR_NUM ];
 extern void                 *argArray[ R5_VIM_INTR_NUM ];
 extern IntrFuncPtr          fxnArray[ R5_VIM_INTR_NUM ];
@@ -199,10 +201,10 @@ __attribute__((section(".startupCode")))  void _system_post_cinit( void )
     CSL_armR5GetCpuID(&info);
 
 #if defined(CSL_MAIN_DOMAIN_VIM_BASE_ADDR0) && defined(CSL_MAIN_DOMAIN_VIM_BASE_ADDR1)
-    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
     {
         /* MCU SS Pulsar R5 SS */
-        regAddr = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        regAddr = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                  CSL_MCU_DOMAIN_VIM_BASE_ADDR0:
                                  CSL_MCU_DOMAIN_VIM_BASE_ADDR1;
 
@@ -210,14 +212,14 @@ __attribute__((section(".startupCode")))  void _system_post_cinit( void )
     else
     {
         /* MAIN SS Pulsar R5 SS */
-        regAddr = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        regAddr = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                  CSL_MAIN_DOMAIN_VIM_BASE_ADDR0:
                                  CSL_MAIN_DOMAIN_VIM_BASE_ADDR1;
 
     }
 #else
     /* MCU SS Pulsar R5 SS */
-    regAddr = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+    regAddr = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                              CSL_MCU_DOMAIN_VIM_BASE_ADDR0:
                              CSL_MCU_DOMAIN_VIM_BASE_ADDR1;
 #endif
@@ -266,34 +268,36 @@ void vApplicationInterruptHandlerHook( void )
     IntrFuncPtr        fxnPtr;
     volatile uint32_t  intNum;
     volatile uint32_t  dummy;
+    int32_t FIQ_stat, IRQ_stat;
 
     /* Read to force prioritization logic to take effect */
-    dummy = CSL_vimGetIrqVectorAddress( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr);
+    dummy = CSL_vimGetIrqVectorAddress( (CSL_vimRegs *)gVimBaseAddr);
 
     UNUSED(dummy);
 
     /* Process a pending FIQ interrupt before a pending IRQ interrupt */
-    if( ( CSL_vimGetActivePendingIntr( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, CSL_VIM_INTR_MAP_FIQ, (uint32_t *)&intNum, (uint32_t *)0 ) == 0 )       ||
-        ( CSL_vimGetActivePendingIntr( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, CSL_VIM_INTR_MAP_IRQ, (uint32_t *)&intNum, (uint32_t *)0 ) == 0 ) )
+    FIQ_stat = CSL_vimGetActivePendingIntr( (CSL_vimRegs *)gVimBaseAddr, CSL_VIM_INTR_MAP_FIQ, (uint32_t *)&intNum, (uint32_t *)0 );
+    IRQ_stat = CSL_vimGetActivePendingIntr( (CSL_vimRegs *)gVimBaseAddr, CSL_VIM_INTR_MAP_IRQ, (uint32_t *)&intNum, (uint32_t *)0 );
+    if( ( 0 == FIQ_stat ) || ( 0 == IRQ_stat ) )
     {
         /* Clear pulse-type interrupt before calling ISR */
-        if( intrSrcType[intNum] == (uint32_t)CSL_VIM_INTR_TYPE_PULSE )
+        if( CSL_VIM_INTR_TYPE_PULSE == intrSrcType[intNum] )
         {
-            CSL_vimClrIntrPending( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, intNum );
+            CSL_vimClrIntrPending( (CSL_vimRegs *)gVimBaseAddr, intNum );
         }
         /* Call ISR */
-        if( fxnArray[intNum] != NULL )
+        if( NULL != fxnArray[intNum] )
         {
             fxnPtr = fxnArray[intNum];
             fxnPtr(argArray[intNum]);
         }
         /* Clear level-type interrupt after calling ISR */
-        if( intrSrcType[intNum] == (uint32_t)CSL_VIM_INTR_TYPE_LEVEL )
+        if( CSL_VIM_INTR_TYPE_LEVEL == intrSrcType[intNum] )
         {
-            CSL_vimClrIntrPending( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, intNum );
+            CSL_vimClrIntrPending( (CSL_vimRegs *)gVimBaseAddr, intNum );
         }
         /* Acknowledge interrupt servicing */
-        CSL_vimAckIntr( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, (CSL_VimIntrMap)intrMap[intNum] );
+        CSL_vimAckIntr( (CSL_vimRegs *)gVimBaseAddr, (CSL_VimIntrMap)intrMap[intNum] );
     }
 }
 
@@ -307,16 +311,16 @@ portBaseType prvSetupHardware( void )
     int32_t sciclientRet = CSL_PASS;
 #endif
 #if defined (SOC_J784S4)
-    CSL_ArmR5CPUInfo info;
+    CSL_ArmR5CPUInfo info = {0};
     CSL_armR5GetCpuID(&info);
 
-    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 != info.grpId)
     {
         Sciclient_ConfigPrms_t config;
 
         Sciclient_configPrmsInit(&config);
         sciclientRet = Sciclient_init(&config);
-        if(  sciclientRet == CSL_PASS )
+        if( CSL_PASS == sciclientRet )
         {
             uint32_t currState, resetState, contextLossState;
             /* on J7AHP, Main domain timers 8-19 are connected to LPSC_PER_SPARE_0 which is not powered ON by default.
@@ -325,7 +329,7 @@ portBaseType prvSetupHardware( void )
              */
             sciclientRet = Sciclient_pmGetModuleState(TISCI_DEV_TIMER8, &currState, &resetState,
                                                 &contextLossState, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if((sciclientRet == CSL_PASS) && (currState != TISCI_MSG_VALUE_DEVICE_SW_STATE_ON))
+            if((CSL_PASS == sciclientRet) && ((uint32_t)TISCI_MSG_VALUE_DEVICE_SW_STATE_ON != currState))
             {
                 sciclientRet = Sciclient_pmSetModuleState(TISCI_DEV_TIMER8, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                                     (TISCI_MSG_FLAG_AOP |TISCI_MSG_FLAG_DEVICE_RESET_ISO),
@@ -333,7 +337,7 @@ portBaseType prvSetupHardware( void )
             }
         }
     }
-    if ( sciclientRet == CSL_PASS )
+    if ( CSL_PASS == sciclientRet )
     {
 	    xStatus = pdPASS;
     }

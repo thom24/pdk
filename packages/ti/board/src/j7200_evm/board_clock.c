@@ -362,7 +362,7 @@ Board_STATUS Board_moduleClockInitMcu(void)
                  * Change the timer input clock frequency configuration
                    based on R5 CPU clock configured
                  */
-                hwAttrs.cpuFreqKHz = (int32_t)(mcuClkFreq/1000U);
+                hwAttrs.cpuFreqKHz = (uint32_t)(mcuClkFreq/1000U);
                 ctrlBitmap         = OSAL_HWATTR_SET_CPU_FREQ;
                 ret = Osal_setHwAttrs(ctrlBitmap, &hwAttrs);
             }

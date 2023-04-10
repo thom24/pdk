@@ -56,18 +56,18 @@ int32_t Osal_getCoreId(void)
 void CacheP_fenceCpu2Dma(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent isCoherent)
 {
     /* CPU to DMA would be to do Wb call if it is not coherent */
-    if (isCoherent == OSAL_CACHEP_NOT_COHERENT)
+    if (OSAL_CACHEP_NOT_COHERENT == isCoherent)
     {
-        CacheP_wb( (const void *)addr, (int32_t)size);
+        CacheP_wb( (const void *)addr, size);
     }
 }
 
 void CacheP_fenceDma2Cpu(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent isCoherent)
 {
     /* DMA to CPU would be to do Cache inv call if it is not coherent */
-    if (isCoherent == OSAL_CACHEP_NOT_COHERENT)
+    if (OSAL_CACHEP_NOT_COHERENT == isCoherent)
     {
-        CacheP_Inv( (const void *)addr, (int32_t)size);
+        CacheP_Inv( (const void *)addr, size);
     }
 }
 /* Nothing past this point */

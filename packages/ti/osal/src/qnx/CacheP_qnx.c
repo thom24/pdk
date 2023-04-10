@@ -44,7 +44,7 @@
 /*
  *  ======== CacheP_wb ========
  */
-void CacheP_wb(const void * addr, int32_t size)
+void CacheP_wb(const void * addr, uint32_t size)
 {
     /* Not supported by QNX OSAL */
    return;
@@ -53,7 +53,7 @@ void CacheP_wb(const void * addr, int32_t size)
 /*
  *  ======== CacheP_wbInv ========
  */
-void CacheP_wbInv(const void * addr, int32_t size)
+void CacheP_wbInv(const void * addr, uint32_t size)
 {
     /* Not supported by QNX OSAL */
     return;
@@ -62,7 +62,7 @@ void CacheP_wbInv(const void * addr, int32_t size)
 /*
  *  ======== CacheP_Inv ========
  */
-void CacheP_Inv(const void * addr, int32_t size)
+void CacheP_Inv(const void * addr, uint32_t size)
 {
     /* Not supported by QNX OSAL */
     return;

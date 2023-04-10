@@ -105,15 +105,15 @@ void HwiP_compileTime_SizeChk(void)
 /*
  *  ======== HwiP_clearInterrupt ========
  */
-void HwiP_clearInterrupt(int32_t interruptNum)
+void HwiP_clearInterrupt(uint32_t interruptNum)
 {
-    Hwi_clearInterrupt((uint32_t)interruptNum);
+    Hwi_clearInterrupt(interruptNum);
 }
 
 /*
  *  ======== HwiP_create ========
  */
-HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
+HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                         const HwiP_Params *params)
 {
     HwiP_freeRtos *handle = (HwiP_freeRtos *) NULL_PTR;
@@ -121,14 +121,14 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
     uint32_t          i;
     uintptr_t         key;
     uintptr_t         temp;
-    HwiP_freeRtos      *hwiPool;
+    HwiP_freeRtos     *hwiPool;
     uint32_t          maxHwi;
-    int32_t          iStat;
+    int32_t           iStat;
 
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if (gOsal_HwAttrs.extHwiPBlock.base != (uintptr_t)0U)
+    if ((uintptr_t)0U != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_freeRtos *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -141,7 +141,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
         hwiPool        = (HwiP_freeRtos *) &gOsalHwiPFreeRtosPool[0];
         maxHwi         = OSAL_FREERTOS_C7X_CONFIGNUM_HWI;
         
-        if(gOsalHwiAllocCnt==0U) 
+        if(0U == gOsalHwiAllocCnt) 
         {
             (void)memset((void *)gOsalHwiPFreeRtosPool,0,sizeof(gOsalHwiPFreeRtosPool));
 		}
@@ -152,7 +152,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
 
     for (i = 0U; i < maxHwi; i++)
     {
-        if (hwiPool[i].used == (bool)false)
+        if ((bool)false == hwiPool[i].used)
         {
             hwiPool[i].used = (bool)true;
             /* Update statistics */
@@ -172,9 +172,9 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
         handle = (HwiP_freeRtos *) &hwiPool[i];
     }
 
-    if (handle != NULL_PTR)
+    if (NULL_PTR != handle)
     {
-        if (params == NULL_PTR)
+        if (NULL_PTR == params)
         {
             Hwi_Params_init(&hwiParams);
             iStat = Hwi_construct(&handle->hwi, interruptNum, (Hwi_FuncPtr)hwiFxn, &hwiParams);
@@ -184,7 +184,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
             Hwi_Params_init(&hwiParams);
             hwiParams.arg            = params->arg;
 
-            if (params->priority==0U) 
+            if (0U == params->priority) 
             {
                /* A priority of 0 is invalid for many targets. -1 forces 
                   sysbios to assign a default priority */
@@ -195,8 +195,8 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
                hwiParams.priority       = (int32_t)params->priority;
             }
 
-            hwiParams.eventId        = (int32_t)params->evtId;
-            if (params->enableIntr == (uint32_t)true)
+            hwiParams.eventId        = params->evtId;
+            if (TRUE == params->enableIntr)
             {
                 hwiParams.enableInt      = (bool)true;
             }
@@ -208,7 +208,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
             iStat = Hwi_construct(&handle->hwi, interruptNum, (Hwi_FuncPtr)hwiFxn,
                           &hwiParams);
 
-            if (iStat != 0)
+            if (0 != iStat)
             {
                 /* Free the allocated memory and return null */
                 handle->used = (bool)false;
@@ -223,7 +223,7 @@ HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
 /*
  *  ======== HwiP_createDirect ========
  */
-HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+HwiP_Handle HwiP_createDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
                               const HwiP_Params *params)
 {
     HwiP_Handle handle;
@@ -238,14 +238,14 @@ HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
  */
 HwiP_Status HwiP_delete(HwiP_Handle handle)
 {
-    HWIPOSAL_Assert((handle == NULL_PTR));
+    HWIPOSAL_Assert(NULL_PTR == handle);
 
     uintptr_t   key;
     HwiP_Status ret;
     
     HwiP_freeRtos *hwi = (HwiP_freeRtos *)handle;
 
-    if((hwi!=NULL_PTR) && (hwi->used== (bool)true)) {
+    if((NULL_PTR != hwi) && ((bool)true == hwi->used)) {
       Hwi_destruct(&hwi->hwi);
       key = HwiP_disable();
       hwi->used = (bool)false;
@@ -272,8 +272,8 @@ uintptr_t HwiP_disable(void)
 {
     uintptr_t key = (uintptr_t)NULL_PTR;
 
-    if(( xPortInIsrContext() == 1 ) ||
-       ( xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED ))
+    if(( 1 == xPortInIsrContext() ) ||
+       ( taskSCHEDULER_NOT_STARTED == xTaskGetSchedulerState() ))
     {
         key = Hwi_disable();
     }
@@ -288,17 +288,17 @@ uintptr_t HwiP_disable(void)
 /*
  *  ======== HwiP_disableInterrupt ========
  */
-void HwiP_disableInterrupt(int32_t interruptNum)
+void HwiP_disableInterrupt(uint32_t interruptNum)
 {
-    (void)Hwi_disableInterrupt((uint32_t)interruptNum);
+    (void)Hwi_disableInterrupt(interruptNum);
 }
 
 /*
  *  ======== HwiP_enableInterrupt ========
  */
-void HwiP_enableInterrupt(int32_t interruptNum)
+void HwiP_enableInterrupt(uint32_t interruptNum)
 {
-    (void)Hwi_enableInterrupt((uint32_t)interruptNum);
+    (void)Hwi_enableInterrupt(interruptNum);
 }
 
 /*
@@ -310,7 +310,7 @@ void HwiP_Params_init(HwiP_Params *params)
     params->arg = 0;
     params->priority = HWIP_USE_DEFAULT_PRIORITY;
     params->evtId    = 0;
-    params->enableIntr = (uint32_t)true;
+    params->enableIntr = TRUE;
 
 #if defined(__GNUC__) && !defined(__ti__)
 #pragma GCC diagnostic push
@@ -344,8 +344,8 @@ int32_t HwiP_post(uint32_t interruptNum)
  */
 void HwiP_restore(uintptr_t key)
 {
-    if(( xPortInIsrContext() == 1) ||
-       ( xTaskGetSchedulerState() == taskSCHEDULER_NOT_STARTED ))
+    if(( 1 == xPortInIsrContext() ) ||
+       ( taskSCHEDULER_NOT_STARTED == xTaskGetSchedulerState() ))
     {
         (void)Hwi_restore((uint32_t)key);
     }

@@ -51,10 +51,10 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
 
     pthread_attr_init(&attr);
 
-    if(params != (TaskP_Params *)NULL)
+    if((TaskP_Params *)NULL != params)
     {
         pthread_attr_setstacksize(&attr, params->stacksize);
-        if(params->stack!=NULL)
+        if(NULL != params->stack)
         {
             pthread_attr_setstackaddr(&attr, params->stack);
         }
@@ -62,7 +62,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
 
     status = pthread_create(tid, &attr, (void *)taskfxn, (void *)(params->arg0));
 
-    if(status==EOK)
+    if(EOK == status)
     {
         retVal = ((TaskP_Handle) tid);
     }
@@ -75,7 +75,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
  */
 TaskP_Status TaskP_delete(TaskP_Handle *handle)
 {
-    if (*handle != NULL)
+    if (NULL != *handle)
     {
         pthread_cancel(*(pthread_t*)handle);
         free(*handle);
@@ -156,14 +156,14 @@ void TaskP_yield(void) {
  */
 uint32_t TaskP_isTerminated(TaskP_Handle handle)
 {
-    uint32_t isTaskTerminated = 0;
+    uint32_t isTaskTerminated = 0U;
 
-    if(pthread_cancel(*(pthread_t*)handle) == EOK)
-    if (handle != NULL)
+    if(EOK == pthread_cancel(*(pthread_t*)handle))
+    if (NULL != handle)
     {
-        if(pthread_cancel((pthread_t)(long)handle) == EOK)
+        if(EOK == pthread_cancel((pthread_t)(long)handle))
         {
-            isTaskTerminated = 1;
+            isTaskTerminated = 1U;
         }
     }
     return isTaskTerminated;

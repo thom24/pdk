@@ -56,9 +56,9 @@ typedef struct Arch_TimerP_Struct_s
 
 /* Local hwi structures */
 static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI] = {{0}};
-static bool gFirstTime = TRUE;
+static bool gFirstTime = (bool)true;
 
-static bool gTimestampFirstTime = TRUE;
+static bool gTimestampFirstTime = (bool)true;
 static TimeStamp_Struct gTimeStamp = {0U};
 static uintptr_t gTimerBaseAddr;
 static uint32_t  gTimerId;
@@ -125,7 +125,7 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue)
 }
 
 /* Below function registers the interrupt for a given ISR */
-HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
+HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                           const HwiP_Params *params)
 {
     uint32_t i;
@@ -139,7 +139,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if (gOsal_HwAttrs.extHwiPBlock.base != (uintptr_t)NULL_PTR)
+    if ((uintptr_t)NULL_PTR != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -153,14 +153,14 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
     }
 
-    if (params == NULL_PTR)
+    if (NULL_PTR == params)
     {
         return (NULL_PTR);
     }
 
     key = OsalArch_globalDisableInterrupt();
-    for (i = 0u; i < maxHwi; i++) {
-        if (hwiPool[i].used == FALSE) {
+    for (i = 0U; i < maxHwi; i++) {
+        if (FALSE == hwiPool[i].used) {
             hwiPool[i].used = TRUE;
             break;
         }
@@ -176,9 +176,9 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
       retHandle  = (HwiP_Handle)(NULL_PTR);
     }
 
-    if (retHandle != (HwiP_Handle) NULL_PTR)
+    if ((HwiP_Handle) NULL_PTR != retHandle)
     {
-        if (gFirstTime == TRUE)  {
+        if (TRUE == gFirstTime)  {
           Intc_Init();
           gFirstTime = FALSE;
         }
@@ -193,7 +193,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         Intc_IntPrioritySet((uint16_t)interruptNum, params->priority, 0);
 
         /* Enabling the interrupt if configured */
-        if (params->enableIntr == TRUE)
+        if (TRUE == params->enableIntr)
         {
             /* Enabling the interrupt in INTC. */
             OsalArch_enableInterrupt(interruptNum);
@@ -216,7 +216,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    if (hwi_hnd->used == TRUE)
+    if (TRUE == hwi_hnd->used)
     {
         hwi_hnd->used = FALSE;
     }
@@ -230,7 +230,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
 
 /* Return the cycle frequency used for timeStamp */
-int32_t  osalArch_TimeStampGetFreqKHz(void)
+uint32_t  osalArch_TimeStampGetFreqKHz(void)
 {
     uint32_t  lo, hi;
     uint64_t  freq;
@@ -252,7 +252,7 @@ void    osalArch_TimestampInit(void)
     TimerP_Handle  timerHandle;
     uint32_t       timerId;
 
-    if (gTimestampFirstTime == TRUE)
+    if (TRUE == gTimestampFirstTime)
     {
         /* One time initialization is done */
         gTimestampFirstTime = FALSE;
@@ -264,10 +264,10 @@ void    osalArch_TimestampInit(void)
         timerParams.period    = TimerP_MAX_PERIOD-1U;
         timerHandle = TimerP_create(TimerP_ANY, (TimerP_Fxn)&osalArch_TimestampCcntAutoRefresh, &timerParams);
 
-        if ( timerHandle != (TimerP_Handle) NULL_PTR)
+        if ( (TimerP_Handle) NULL_PTR != timerHandle )
         {
             Arch_TimerP_Struct *timer = (Arch_TimerP_Struct *) timerHandle;
-            gTimerBaseAddr = (uintptr_t)gDmTimerPInfoTbl[timer->timerId].baseAddr;
+            gTimerBaseAddr = gDmTimerPInfoTbl[timer->timerId].baseAddr;
             gTimerId       = timer->timerId;
             /* start the timer */
             TimerP_start(timerHandle);
@@ -282,7 +282,7 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 {
     uintptr_t   key;
 
-    if (tStamp != (TimeStamp_Struct *) NULL_PTR)
+    if ((TimeStamp_Struct *) NULL_PTR != tStamp)
     {
         key        = HwiP_disable();
         /* Make sure init is done, if not done already */

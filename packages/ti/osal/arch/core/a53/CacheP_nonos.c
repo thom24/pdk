@@ -57,13 +57,13 @@ static uint32_t CacheP_getCacheSize(void)
 }
 
 
-void CacheP_wb(const void * addr, int32_t size)
+void CacheP_wb(const void * addr, uint32_t size)
 {
    uintptr_t i, firstAddr, lastAddr;
    uint32_t cacheLineSize = CacheP_getCacheSize();
 
    /* Calculate the last address */
-   lastAddr = (uintptr_t) addr + (uint32_t)size;
+   lastAddr = (uintptr_t) addr + size;
 
    /* find the first address for cache Wb */
    firstAddr = (uintptr_t ) addr & ~(cacheLineSize -1U);
@@ -76,13 +76,13 @@ void CacheP_wb(const void * addr, int32_t size)
 
    return;
 }
-void CacheP_wbInv(const void * addr, int32_t size)
+void CacheP_wbInv(const void * addr, uint32_t size)
 {
     uintptr_t i, firstAddr, lastAddr;
     uint32_t cacheLineSize = CacheP_getCacheSize();
     
     /* Calculate the last address */
-    lastAddr = (uintptr_t) addr + (uint32_t)size;
+    lastAddr = (uintptr_t) addr + size;
     
     /* find the first address for cache Wb */
     firstAddr = (uintptr_t ) addr & ~(cacheLineSize -1U);
@@ -96,13 +96,13 @@ void CacheP_wbInv(const void * addr, int32_t size)
     return;
 
 }
-void CacheP_Inv(const void * addr, int32_t size)
+void CacheP_Inv(const void * addr, uint32_t size)
 {
     uintptr_t i, firstAddr, lastAddr;
     uint32_t cacheLineSize = CacheP_getCacheSize();
     
     /* Calculate the last address */
-    lastAddr = (uintptr_t) addr + (uint32_t)size;
+    lastAddr = (uintptr_t) addr + size;
     
     /* find the first address for cache Wb */
     firstAddr = (uintptr_t ) addr & ~(cacheLineSize -1U);

@@ -45,7 +45,7 @@
 /*
  *  ======== HwiP_clearInterrupt ========
  */
-void HwiP_clearInterrupt(int32_t interruptNum)
+void HwiP_clearInterrupt(uint32_t interruptNum)
 {
     /* stub */
 }
@@ -53,7 +53,7 @@ void HwiP_clearInterrupt(int32_t interruptNum)
 /*
  *  ======== HwiP_create ========
  */
-HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
+HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                         const HwiP_Params *params)
 {
     /* stub */
@@ -81,7 +81,7 @@ uintptr_t HwiP_disable(void)
 /*
  *  ======== HwiP_disableInterrupt ========
  */
-void HwiP_disableInterrupt(int32_t interruptNum)
+void HwiP_disableInterrupt(uint32_t interruptNum)
 {
     /* stub */
 }
@@ -89,7 +89,7 @@ void HwiP_disableInterrupt(int32_t interruptNum)
 /*
  *  ======== HwiP_enableInterrupt ========
  */
-void HwiP_enableInterrupt(int32_t interruptNum)
+void HwiP_enableInterrupt(uint32_t interruptNum)
 {
     /* stub */
 }

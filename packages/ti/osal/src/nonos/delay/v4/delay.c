@@ -55,7 +55,7 @@ static void osal_core_delay(uint32_t nTicks)
     TimeStamp_Struct    timestamp64;
     uint32_t            msTick = 0;
     uint64_t            start, end, diff;
-    int32_t             tsFreqKHz;
+    uint32_t            tsFreqKHz;
 
     /* Get the frequency of the timeStatmp provider */
     tsFreqKHz  = osalArch_TimeStampGetFreqKHz();
@@ -73,7 +73,7 @@ static void osal_core_delay(uint32_t nTicks)
 
         diff  = end - start;
 
-        if ((int64_t)diff >= tsFreqKHz)
+        if (diff >= (uint64_t)tsFreqKHz)
         {
             msTick++;
             start = end;
@@ -109,7 +109,7 @@ void    osalArch_TimestampInit(void)
 {
 }
 
-int32_t  osalArch_TimeStampGetFreqKHz(void)
+uint32_t  osalArch_TimeStampGetFreqKHz(void)
 {
     /* R5F time Stamp is via PMU, which runs at CPU speed */
     return (0);

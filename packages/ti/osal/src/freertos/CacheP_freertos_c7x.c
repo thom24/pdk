@@ -47,16 +47,16 @@
 
 
 
-void CacheP_wb(const void * addr, int32_t size)
+void CacheP_wb(const void * addr, uint32_t size)
 {
    Cache_wb((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, (bool)true);
 }
-void CacheP_wbInv(const void * addr, int32_t size)
+void CacheP_wbInv(const void * addr, uint32_t size)
 {
    Cache_wbInv((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, (bool)true);
 }
 
-void CacheP_Inv(const void * addr, int32_t size)
+void CacheP_Inv(const void * addr, uint32_t size)
 {
   Cache_inv((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, (bool)true);
 }

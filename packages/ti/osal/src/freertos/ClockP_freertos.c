@@ -59,15 +59,15 @@ typedef struct ClockP_freertos_s
 /* global pool of statically allocated clock pools */
 static ClockP_freertos gOsalClockPFreeRtosPool[OSAL_FREERTOS_CONFIGNUM_CLOCK];
 
-void ClockP_timerCallbackFunction(TimerHandle_t xTimer);
+static void ClockP_timerCallbackFunction(TimerHandle_t xTimer);
 
 uint32_t gOsalClockAllocCnt = 0U, gOsalClockPeak = 0U;
 
-void ClockP_timerCallbackFunction(TimerHandle_t xTimer)
+static void ClockP_timerCallbackFunction(TimerHandle_t xTimer)
 {
     ClockP_freertos *pTimer = (ClockP_freertos *)pvTimerGetTimerID(xTimer);
 
-    if( (pTimer != NULL_PTR) && (pTimer->callback) )
+    if( (NULL_PTR != pTimer) && (pTimer->callback) )
     {
         pTimer->callback(pTimer->arg);
     }
@@ -75,7 +75,7 @@ void ClockP_timerCallbackFunction(TimerHandle_t xTimer)
 
 void ClockP_Params_init(ClockP_Params *params)
 {
-    if(params != NULL_PTR)
+    if(NULL_PTR != params)
     {
         params->pErrBlk     = NULL_PTR;
         params->startMode   = ClockP_StartMode_USER;
@@ -106,7 +106,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
     timerPool = (ClockP_freertos *) &gOsalClockPFreeRtosPool[0];
     maxClocks  = OSAL_FREERTOS_CONFIGNUM_CLOCK;
 
-    if(gOsalClockAllocCnt==0U)
+    if(0U == gOsalClockAllocCnt)
     {
         (void)memset((void *)gOsalClockPFreeRtosPool,0,sizeof(gOsalClockPFreeRtosPool));
     }
@@ -115,7 +115,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
 
     for (i = 0; i < maxClocks; i++)
     {
-        if (timerPool[i].used == (bool)false)
+        if ((bool)false == timerPool[i].used)
         {
             timerPool[i].used = (bool)true;
             /* Update statistics */
@@ -135,13 +135,13 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
         pTimer = (ClockP_freertos *) &timerPool[i];
     }
 
-    if((pTimer == NULL_PTR) || (params == NULL_PTR))
+    if((NULL_PTR == pTimer) || (NULL_PTR == params))
     {
         ret_handle = NULL_PTR;
     }
     else
     {
-        if(params->runMode == ClockP_RunMode_CONTINUOUS)
+        if(ClockP_RunMode_CONTINUOUS == params->runMode)
         {
             uxAutoReload = pdTRUE;
         }
@@ -157,7 +157,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
                                 ClockP_timerCallbackFunction,
                                 &pTimer->timerObj
                                 );
-        if(pTimer->timerHndl == NULL_PTR)
+        if(NULL_PTR == pTimer->timerHndl)
         {
             /* If there was an error reset the clock object and return NULL. */
             key = HwiP_disable();
@@ -172,7 +172,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
         }
         else
         {
-            if(params->startMode == ClockP_StartMode_AUTO)
+            if(ClockP_StartMode_AUTO == params->startMode)
             {
                 (void)xTimerStart(pTimer->timerHndl, portMAX_DELAY);
             }
@@ -191,7 +191,7 @@ ClockP_Status ClockP_delete(ClockP_Handle handle)
     uintptr_t       key;
     ClockP_Status   ret = ClockP_OK;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
+    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
     {
         (void)xTimerDelete(pTimer->timerHndl, portMAX_DELAY);
 
@@ -221,9 +221,9 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
     ClockP_freertos *pTimer = (ClockP_freertos*)handle;
     BaseType_t  status;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
+    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
     {
-        if( xPortInIsrContext() == 1 )
+        if( 1 == xPortInIsrContext())
         {
             BaseType_t xHigherPriorityTaskWoken = 0;
 
@@ -235,7 +235,7 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
         {
             status = xTimerStart(pTimer->timerHndl, portMAX_DELAY);
         }
-        if(status == pdPASS)
+        if(pdPASS == status)
         {
             ret = ClockP_OK;
         }
@@ -259,9 +259,9 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
     ClockP_freertos *pTimer = (ClockP_freertos*)handle;
     BaseType_t  status;
 
-    if ((pTimer != NULL_PTR) && (pTimer->used == (bool)true))
+    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
     {
-        if( xPortInIsrContext() == 1 )
+        if( 1 == xPortInIsrContext() )
         {
             BaseType_t xHigherPriorityTaskWoken = 0;
 
@@ -273,7 +273,7 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
         {
             status = xTimerStop(pTimer->timerHndl, portMAX_DELAY);
         }
-        if(status == pdPASS)
+        if(pdPASS == status)
         {
             ret = ClockP_OK;
         }

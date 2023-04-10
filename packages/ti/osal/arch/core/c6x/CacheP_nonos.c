@@ -58,9 +58,9 @@
 /* Defines the prototype of the CSL Cache Ops Function */
 typedef void (* CacheP_Function_t)( const void* blockPtr, uint32_t byteCnt, CACHE_Wait wait);
 
-static void CacheP_block(const void * addr, int32_t size, CacheP_Function_t fxnPtr);
+static void CacheP_block(const void * addr, uint32_t size, CacheP_Function_t fxnPtr);
 
-void CacheP_wb(const void * addr, int32_t size)
+void CacheP_wb(const void * addr, uint32_t size)
 {
     /*
      * Writes back the range of memory within the specified starting address
@@ -74,7 +74,7 @@ void CacheP_wb(const void * addr, int32_t size)
     CacheP_block(addr, size, (CacheP_Function_t)CACHE_wbL2);
 }
 
-void CacheP_wbInv(const void * addr, int32_t size)
+void CacheP_wbInv(const void * addr, uint32_t size)
 {
     /*
      * Writes back and invalidates the range of memory within the specified
@@ -88,7 +88,7 @@ void CacheP_wbInv(const void * addr, int32_t size)
     CacheP_block(addr, size, (CacheP_Function_t)CACHE_wbInvL2);
 }
 
-void CacheP_Inv(const void * addr, int32_t size)
+void CacheP_Inv(const void * addr, uint32_t size)
 {
     /*
      * Invalidate the range of memory within the specified starting address and
@@ -139,17 +139,17 @@ uint32_t CacheP_getMar(void *baseAddr)
 
 }
 
-static void CacheP_block(const void * addr, int32_t size, CacheP_Function_t fxnPtr)
+static void CacheP_block(const void * addr, uint32_t size, CacheP_Function_t fxnPtr)
 {
-    uintptr_t alignedAddr     = (uintptr_t)addr & ~((uintptr_t)0x3u);
-    uint32_t  alignedSize     = (uint32_t)size + (uint32_t)((uintptr_t)addr - (uintptr_t)alignedAddr);
+    uintptr_t alignedAddr     = (uintptr_t)addr & ~((uintptr_t)0x3U);
+    uint32_t  alignedSize     = size + (uint32_t)((uintptr_t)addr - (uintptr_t)alignedAddr);
     uintptr_t block_addr      = alignedAddr;
-    int32_t   size_remaining  = (int32_t)alignedSize;
+    uint32_t  size_remaining  = alignedSize;
     uint32_t  bytes_count;
-    uint32_t  incCnt;
+    uint32_t  incCnt, currSize;
 
     /* determine the increment count */
-    if(CACHEP_ATOMIC_BLOCK_SIZE != 0U)
+    if(0U != CACHEP_ATOMIC_BLOCK_SIZE)
     {
         incCnt = CACHEP_ATOMIC_BLOCK_SIZE;
     }
@@ -159,13 +159,12 @@ static void CacheP_block(const void * addr, int32_t size, CacheP_Function_t fxnP
         incCnt = MAXWC * sizeof(uint32_t);
     }
 
-    while(size_remaining > 0)
+    for (currSize = 0U; currSize < size_remaining; currSize += incCnt)
     {
-        bytes_count = ((uint32_t)size_remaining > incCnt )? incCnt: (uint32_t)size_remaining;
+        bytes_count = (size_remaining > incCnt )? incCnt: size_remaining;
 
         fxnPtr((void *)block_addr, bytes_count, CACHE_WAIT);
 
-        size_remaining -= (int32_t)incCnt;
         block_addr     += incCnt;
     }
 

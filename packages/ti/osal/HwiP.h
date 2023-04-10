@@ -89,31 +89,31 @@ typedef enum HwiP_Status_e {
 } HwiP_Status;
 
 /**
+ * \anchor OSAL_armGicTrigType_t
+ * \name Enumerates the types different trigger types.
+ *
+ * @{
+ */
+/*!
  *  @brief Enumerates the types different trigger types.
  *  Please refer to Section 4.3.13 Interrupt Configuration Registers, GICD_ICFGRn
  *  of ARM Generic Interrupt Controller Architecture version 2.0
  *  Architecture Specification document for details.
  */
-typedef enum
-{
-    OSAL_ARM_GIC_TRIG_TYPE_LEVEL = 1,
-    /**< Corresponding interrupt is level sensitive */
-
-    OSAL_ARM_GIC_TRIG_TYPE_EDGE = 2,
-    /**< Corresponding interrupt is edge sensitive */
-
-    OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL = 3,
-    /**< Coressponding interrupt is high level sensitive */
-
-    OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL = 4,
-    /**< Coressponding interrupt is low level sensitive */
-
-    OSAL_ARM_GIC_TRIG_TYPE_RISING_EDGE = 5,
-    /**< Coressponding interrupt is rising edge sensitive */
-
-    OSAL_ARM_GIC_TRIG_TYPE_FALLING_EDGE = 6
-    /**< Coressponding interrupt is falling edge sensitive */
-} OSAL_armGicTrigType_t;
+typedef uint32_t OSAL_armGicTrigType_t;
+/**< Corresponding interrupt is level sensitive */
+#define OSAL_ARM_GIC_TRIG_TYPE_LEVEL          ((uint32_t) 1U)
+/**< Corresponding interrupt is edge sensitive */
+#define OSAL_ARM_GIC_TRIG_TYPE_EDGE           ((uint32_t) 2U)
+/**< Coressponding interrupt is high level sensitive */
+#define OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL     ((uint32_t) 3U)
+/**< Coressponding interrupt is low level sensitive */
+#define OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL      ((uint32_t) 4U)
+/**< Coressponding interrupt is rising edge sensitive */
+#define OSAL_ARM_GIC_TRIG_TYPE_RISING_EDGE    ((uint32_t) 5U)
+/**< Coressponding interrupt is falling edge sensitive */
+#define OSAL_ARM_GIC_TRIG_TYPE_FALLING_EDGE   ((uint32_t) 6U)
+/* @} */
 
 /*!
  *  @brief  Prototype for the entry function for a hardware interrupt
@@ -166,7 +166,7 @@ typedef struct HwiP_Params_s {
  *
  *  @param  interruptNum interrupt number to clear
  */
-extern void HwiP_clearInterrupt(int32_t interruptNum);
+extern void HwiP_clearInterrupt(uint32_t interruptNum);
 
 /*!
  *  @brief  Function to create an interrupt on CortexM devices
@@ -181,7 +181,7 @@ extern void HwiP_clearInterrupt(int32_t interruptNum);
  *
  *  @return 
  */
-extern HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
+extern HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                                const HwiP_Params *hwipParams);
 
 /*!
@@ -195,7 +195,7 @@ extern HwiP_Handle HwiP_create(int32_t interruptNum, HwiP_Fxn hwiFxn,
  *                    denotes to use the default parameters. The HwiP default
  *                    parameters are noted in ::HwiP_Params_init.
  */
-extern HwiP_Handle HwiP_createDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+extern HwiP_Handle HwiP_createDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
                                      const HwiP_Params *hwipParams);
 
 /*!
@@ -235,14 +235,14 @@ extern uintptr_t HwiP_disable(void);
  *
  *  @param  interruptNum interrupt number to disable
  */
-extern void HwiP_disableInterrupt(int32_t interruptNum);
+extern void HwiP_disableInterrupt(uint32_t interruptNum);
 
 /*!
  *  @brief  Function to enable a single interrupt
  *
  *  @param  interruptNum interrupt number to enable
  */
-extern void HwiP_enableInterrupt(int32_t interruptNum);
+extern void HwiP_enableInterrupt(uint32_t interruptNum);
 
 /*!
  *  @brief  Initialize params structure to default values.
@@ -267,13 +267,13 @@ extern void HwiP_restore(uintptr_t key);
  *
  *  @param  interruptNum the interrupt number
  */
-HwiP_Handle HwiP_getHandle(int32_t interruptNum);
+HwiP_Handle HwiP_getHandle(uint32_t interruptNum);
 /*!
  *  @brief  Function to get the eventId associated with an interrupt number
  *
  *  @param  interruptNum the interrupt number
  */
-int32_t HwiP_getEventId(int32_t interruptNum);
+uint32_t HwiP_getEventId(uint32_t interruptNum);
 /*!
  *  @brief  Function to post the Hwi interrupt by software
  *

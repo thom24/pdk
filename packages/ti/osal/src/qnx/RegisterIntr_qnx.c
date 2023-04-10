@@ -38,6 +38,7 @@
 #include <ti/osal/RegisterIntr.h>
 #include <ti/csl/csl.h>
 #include <ti/csl/tistdtypes.h>
+#include <ti/osal/src/nonos/Nonos_config.h>
 
 /*
  *  ======== Osal_RegisterInterrupt_initParams ========
@@ -48,17 +49,17 @@
  */
 void Osal_RegisterInterrupt_initParams(OsalRegisterIntrParams_t *interruptRegParams)
 {
-    if (interruptRegParams != NULL) {
+    if (NULL != interruptRegParams) {
         /* Corepac config */
         interruptRegParams->corepacConfig.name = NULL;
-        interruptRegParams->corepacConfig.corepacEventNum = -1;
-        interruptRegParams->corepacConfig.intVecNum = -1;
+        interruptRegParams->corepacConfig.corepacEventNum = CSL_INVALID_EVENT_ID;
+        interruptRegParams->corepacConfig.intVecNum = CSL_INVALID_VEC_ID;
         interruptRegParams->corepacConfig.isrRoutine = NULL;
         interruptRegParams->corepacConfig.arg = (uintptr_t)NULL;
         interruptRegParams->corepacConfig.priority = 0x20U; /* Default */
         interruptRegParams->corepacConfig.intAutoEnable = 0; /* Don't automatically re-enable interrupt */
 #if defined (__ARM_ARCH_7A__)
-        interruptRegParams->corepacConfig.triggerSensitivity = 0x3; /* interrupt edge triggered */
+        interruptRegParams->corepacConfig.triggerSensitivity = 0x3U; /* interrupt edge triggered */
 #endif
 
 #if defined(__aarch64__) || defined (__TI_ARM_V7R4__)
@@ -89,7 +90,7 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
     HwiP_Params                hwiInputParams;
 
     /* Program the corepac interrupt */
-    if( (interruptRegParams->corepacConfig.isrRoutine == NULL) ||
+    if( (NULL == interruptRegParams->corepacConfig.isrRoutine) ||
         (interruptRegParams->corepacConfig.corepacEventNum < 0)) {
         ret = OSAL_INT_ERR_INVALID_PARAMS;
     }
@@ -104,7 +105,7 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
     hwiInputParams.autoEnable = interruptRegParams->corepacConfig.intAutoEnable;
 
     hwiPHandle =  HwiP_create(interruptRegParams->corepacConfig.intVecNum,interruptRegParams->corepacConfig.isrRoutine, &hwiInputParams);
-    if(hwiPHandle == NULL) {
+    if(NULL == hwiPHandle) {
         ret = OSAL_INT_ERR_HWICREATE;
         goto finish_processing;
     }
@@ -122,14 +123,14 @@ finish_processing:
  *
  * Returns:     OSAL_INT_SUCCESS if successful,OSAL_INT_ERR_DELETE if failed
  */
-OsalInterruptRetCode_e Osal_DeleteInterrupt(HwiP_Handle handle,int32_t corepacEventNum)
+OsalInterruptRetCode_e Osal_DeleteInterrupt(HwiP_Handle handle,uint32_t corepacEventNum)
 {
     HwiP_Status hwiP_ret = HwiP_OK;
     OsalInterruptRetCode_e ret = OSAL_INT_SUCCESS;
 
     /* For non-c66x cases, just delete the handle */
     hwiP_ret = HwiP_delete(handle);
-    if(hwiP_ret != HwiP_OK) {
+    if(HwiP_OK != hwiP_ret) {
       ret = OSAL_INT_ERR_DELETE;
     }
 
@@ -148,7 +149,7 @@ OsalInterruptRetCode_e Osal_DeleteInterrupt(HwiP_Handle handle,int32_t corepacEv
  *
  * Returns:     None
  */
-void Osal_EnableInterrupt(int32_t corepacEvent,int32_t interruptNum)
+void Osal_EnableInterrupt(uint32_t corepacEvent,uint32_t interruptNum)
 {
     /* For non c66x cases, there is no event combiner , just invoke the HwiP */
     HwiP_enableInterrupt(interruptNum);
@@ -164,7 +165,7 @@ void Osal_EnableInterrupt(int32_t corepacEvent,int32_t interruptNum)
  *
  * Returns:     None
  */
-void Osal_DisableInterrupt(int32_t corepacEvent,int32_t interruptNum)
+void Osal_DisableInterrupt(uint32_t corepacEvent,uint32_t interruptNum)
 {
     /* For non c66x cases, there is no event combiner , just invoke the HwiP */
     HwiP_disableInterrupt(interruptNum);
@@ -178,9 +179,9 @@ void Osal_DisableInterrupt(int32_t corepacEvent,int32_t interruptNum)
  *
  * Returns:     None
  */
-void Osal_ClearInterrupt(int32_t corepacEvent,int32_t interruptNum)
+void Osal_ClearInterrupt(uint32_t corepacEvent,uint32_t interruptNum)
 {
-    int32_t intNum = interruptNum;
+    uint32_t intNum = interruptNum;
 
     /* For non c66x cases, there is no event combiner , just clear the interruptNum's vector */
     HwiP_clearInterrupt(intNum);

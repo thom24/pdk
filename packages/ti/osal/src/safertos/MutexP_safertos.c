@@ -46,7 +46,7 @@ extern uint32_t  gOsalMutexAllocCnt, gOsalMutexPeak;
  */
 typedef struct MutexP_safertos_s {
     bool used;
-    uint64_t            mutObj[(safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t) + (1U))];
+    uint64_t            mutObj[((safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t)) + (1U))];
     xMutexHandleType    mutHndl;
     uint32_t isRecursiveMutex;
 } MutexP_safertos;
@@ -65,7 +65,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
     uint32_t maxMutex;
     portBaseType xCreateResult;
 
-    if (mutexObj == NULL)
+    if (NULL == mutexObj)
     {
         ret_handle = NULL;
     }
@@ -76,7 +76,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
         mutexPool = (MutexP_safertos *) &gOsalMutexPSafeRtosPool[0];
         maxMutex  = OSAL_SAFERTOS_CONFIGNUM_MUTEX;
 
-        if(gOsalMutexAllocCnt==0U)
+        if(0U == gOsalMutexAllocCnt)
         {
             (void)memset((void *)gOsalMutexPSafeRtosPool,0,sizeof(gOsalMutexPSafeRtosPool));
         }
@@ -85,7 +85,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
         for (i = 0; i < maxMutex; i++)
         {
-            if (mutexPool[i].used == (bool)false)
+            if ((bool)false == mutexPool[i].used)
             {
                 mutexPool[i].used = (bool)true;
                 /* Update statistics */
@@ -105,7 +105,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
             handle = (MutexP_safertos *) &mutexPool[i];
         }
 
-      if (handle == NULL_PTR) {
+      if (NULL_PTR == handle) {
           ret_handle = NULL_PTR;
       }
       else
@@ -113,7 +113,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
           handle->isRecursiveMutex = 1;
           xCreateResult = xMutexCreate((portInt8Type *)&(handle->mutObj[0]), &handle->mutHndl);
 
-          if (xCreateResult != pdPASS)
+          if (pdPASS != xCreateResult)
           {
               /* If there was an error reset the mutex object and return NULL. */
               key = HwiP_disable();
@@ -139,7 +139,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
 MutexP_Status MutexP_delete(MutexP_Handle handle)
 {
-    DebugP_assert(handle != NULL_PTR);
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t   key;
     MutexP_Status ret = MutexP_OK;
@@ -150,7 +150,7 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
      * NOTE : Mutex delete is not supported in safertos.
      * We just memset and return success.
      */
-    if ((mutex != NULL_PTR) && (mutex->used == (bool)true))
+    if ((NULL_PTR != mutex) && ((bool)true == mutex->used))
     {
         memset(&mutex->mutObj, 0, sizeof(mutex->mutObj));
         mutex->mutHndl = NULL;
@@ -175,7 +175,7 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
 MutexP_Status MutexP_lock(MutexP_Handle handle,
                           uint32_t timeout)
 {
-    DebugP_assert(handle != NULL_PTR);
+    DebugP_assert(NULL_PTR != handle);
 
     MutexP_Status ret = MutexP_OK;
     MutexP_Object *mutexObj = (MutexP_Object *)handle;
@@ -183,11 +183,11 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
     portBaseType xCreateResult;
 
     /* TODO check why this mutex->isRecursiveMutex needed, may be removed */
-    if ((mutex != NULL_PTR) && (mutex->used == (bool)true)&& (mutex->isRecursiveMutex == 1U ))
+    if ((NULL_PTR != mutex) && ((bool)true == mutex->used) && (1U == mutex->isRecursiveMutex))
     {
-        if (Osal_isInISRContext() == 0 )
+        if ( 0 == Osal_isInISRContext() )
         {
-            if (timeout == MutexP_WAIT_FOREVER)
+            if (MutexP_WAIT_FOREVER == timeout)
             {
                 /* Should not be called from ISR */
                 xCreateResult = xMutexTake(mutex->mutHndl, safertosapiMAX_DELAY);
@@ -198,7 +198,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
                 xCreateResult = xMutexTake(mutex->mutHndl, timeout);
             }
 
-            if(xCreateResult == pdPASS)
+            if(pdPASS == xCreateResult)
             {
                 ret = MutexP_OK;
             }
@@ -221,7 +221,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
 
 MutexP_Status MutexP_unlock(MutexP_Handle handle)
 {
-    DebugP_assert(handle != NULL_PTR);
+    DebugP_assert(NULL_PTR != handle);
 
     MutexP_Status ret = MutexP_OK;
     MutexP_Object *mutexObj = (MutexP_Object *)handle;
@@ -229,14 +229,14 @@ MutexP_Status MutexP_unlock(MutexP_Handle handle)
     portBaseType xCreateResult;
     /* Note: timeout is not use */
 
-    if ((mutex != NULL_PTR) && (mutex->used == (bool)true) && (mutex->isRecursiveMutex == 1U ))
+    if ((NULL_PTR != mutex) && ((bool)true == mutex->used) && (1U == mutex->isRecursiveMutex))
     {
-        if ( Osal_isInISRContext() == 0 )
+        if ( 0 == Osal_isInISRContext() )
         {
             /* Should not be called from ISR */
             xCreateResult = xMutexGive(mutex->mutHndl);
 
-            if(xCreateResult == pdPASS)
+            if(pdPASS == xCreateResult)
             {
                 ret = MutexP_OK;
             }

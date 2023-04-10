@@ -80,7 +80,7 @@ typedef struct Safertos_OSTimerParams_s
 {
     uint32_t timerId;        /* Timer ID */
 #if defined (BUILD_C66X) || defined (BUILD_C7X)
-    int32_t eventId;        /* Event Id used by Timer */
+    uint32_t eventId;        /* Event Id used by Timer */
     uint32_t intNum;         /* Interrupt Number used by Timer */
 #endif   
 }Safertos_OSTimerParams;
@@ -98,6 +98,8 @@ typedef struct Safertos_OSTimerParams_s
 portBaseType prvSetupHardware( void );
 void prvGetOSTimerParams( Safertos_OSTimerParams *params);
 int32_t Osal_isInISRContext(void);
+portBaseType _system_pre_init( void );
+void _system_post_cinit( void );
 
 #ifdef __cplusplus
 }

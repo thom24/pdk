@@ -65,8 +65,8 @@ typedef void (*Osal_IsrRoutine)(uintptr_t arg);
  */
 typedef struct {
     char    *name;              /*!< Name of the instance for debugging purposes, could be set to NULL */
-    int32_t corepacEventNum;    /*!< Event number going in to the DSP corepac */
-    int32_t intVecNum;          /*!< Interrupt vector number for ARM corepac */
+    uint32_t corepacEventNum;   /*!< Event number going in to the DSP corepac */
+    uint32_t intVecNum;         /*!< Interrupt vector number for ARM corepac */
     Osal_IsrRoutine isrRoutine; /*!< The ISR routine to hook the corepacEventNum to */
     uintptr_t arg;              /*!< Argument to the ISR routine */
     uint32_t priority;          /*!< Device specific priority for ARM corepac where a lower priority value
@@ -100,7 +100,7 @@ typedef struct {
 /*!
  * @brief For C6x, if intVec=16, then event combiner is to be used
  */
-#define OSAL_REGINT_INTVEC_EVENT_COMBINER (16) 
+#define OSAL_REGINT_INTVEC_EVENT_COMBINER (16U) 
 
 /*!
  *  @brief  Interrupt Configuration parameters for soc mux prior to reaching the core
@@ -167,22 +167,22 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
  *  @brief  Function to delete interrupt corresponding to an event number
  *
  */
-OsalInterruptRetCode_e Osal_DeleteInterrupt(HwiP_Handle hwiPhandle,int32_t corepacEventNum);
+OsalInterruptRetCode_e Osal_DeleteInterrupt(HwiP_Handle hwiPhandle,uint32_t corepacEventNum);
 /*!
  *  @brief  Function to enable the interrupt corresponding to an event number
  *
  */
-void Osal_EnableInterrupt(int32_t corepacEvent,int32_t interruptNum);
+void Osal_EnableInterrupt(uint32_t corepacEvent,uint32_t interruptNum);
 /*!
  *  @brief  Function to disable the  interrupt corresponding to an event number
  *
  */
-void Osal_DisableInterrupt(int32_t corepacEvent,int32_t interruptNum);
+void Osal_DisableInterrupt(uint32_t corepacEvent,uint32_t interruptNum);
 /*!
  *  @brief  Function to clear the interrupt corresponding to an event number
  *
  */
-void Osal_ClearInterrupt(int32_t corepacEvent,int32_t interruptNum);
+void Osal_ClearInterrupt(uint32_t corepacEvent,uint32_t interruptNum);
 #ifdef __cplusplus
 }
 #endif

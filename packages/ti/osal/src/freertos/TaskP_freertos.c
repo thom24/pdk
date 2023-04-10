@@ -135,7 +135,7 @@ static void TaskP_Function (void *arg)
     /* Task Fxn completed execution. */
     handle->terminated = (bool)true;
     /* Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
-    while (handle->terminated)
+    while ((bool)true == handle->terminated)
     {
         vTaskSuspend(NULL);
     }
@@ -155,15 +155,15 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
     uint32_t        maxTasks;
     int8_t          taskPriority;
 
-    DebugP_assert((taskfxn != NULL));
-    DebugP_assert((params != NULL_PTR));
-    DebugP_assert((params->stack != NULL_PTR));
+    DebugP_assert(NULL != taskfxn);
+    DebugP_assert(NULL_PTR != params);
+    DebugP_assert(NULL_PTR != params->stack);
 
     /* Pick up the internal static memory block */
     taskPool        = (TaskP_freertos *) &gOsalTaskPfreertosPool[0];
     maxTasks        = OSAL_FREERTOS_CONFIGNUM_TASK;
     
-    if(gOsalTaskAllocCnt==0U) 
+    if(0U == gOsalTaskAllocCnt) 
     {
         (void)memset( (void *)gOsalTaskPfreertosPool,0,sizeof(gOsalTaskPfreertosPool));
         (void)memset( (void *)gOsalFreertosTaskObjPool,0,sizeof(gOsalFreertosTaskObjPool));
@@ -173,7 +173,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
 
      for (i = 0; i < maxTasks; i++)
      {
-         if (taskPool[i].used == (bool)false)
+         if ((bool)false == taskPool[i].used)
          {
              taskPool[i].used = (bool)true;
              taskPool[i].taskObj = &gOsalFreertosTaskObjPool[i];
@@ -195,7 +195,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
         handle->tskId = i;
     }
 
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
         ret_handle = NULL_PTR;
     }
     else
@@ -218,12 +218,12 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
 
         handle->taskHndl = xTaskCreateStatic((TaskFunction_t)TaskP_Function, /* Pointer to the function that implements the task. */
                                       (char *)params->name,              /* Text name for the task.  This is to facilitate debugging only. */
-                                      (UBaseType_t)params->stacksize/(sizeof(UBaseType_t)),  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
+                                      (uint32_t)(params->stacksize/(sizeof(UBaseType_t))),  /* Stack depth in units of StackType_t typically uint32_t on 32b CPUs */
                                       handle,       /* task specific args */
                                       (UBaseType_t)taskPriority,   /* task priority, 0 is lowest priority, configMAX_PRIORITIES-1 is highest */
                                       (StackType_t*)params->stack,      /* pointer to stack base */
                                       handle->taskObj); /* pointer to statically allocated task object memory */
-        if(handle->taskHndl == NULL)
+        if(NULL == handle->taskHndl)
         {
             /* If there was an error reset the task object and return NULL. */
             key = HwiP_disable();
@@ -260,7 +260,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
     TaskP_freertos *task = (TaskP_freertos *)hTask;
     TaskHandle_t currentTaskHndl;
 
-    if((task != NULL_PTR) && (task->used==(bool)true))
+    if((NULL_PTR != task) && ((bool)true == task->used))
     {
         currentTaskHndl = xTaskGetCurrentTaskHandle();
         if(currentTaskHndl == task->taskHndl)
@@ -306,7 +306,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
  */
 void TaskP_Params_init(TaskP_Params *params)
 {
-    if(params != NULL_PTR)
+    if(NULL_PTR != params)
     {
         params->name = (const char *)"FREERTOS_TASK";
         params->stacksize = 0;
@@ -338,7 +338,7 @@ void TaskP_setPrio(TaskP_Handle handle, uint32_t priority)
 {
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
     vTaskPrioritySet(taskHandle->taskHndl, priority);
 }
 
@@ -349,13 +349,13 @@ TaskP_Handle TaskP_self(void)
     uint32_t        i, maxTasks;
 
     taskHndl = xTaskGetCurrentTaskHandle();
-    if (taskHndl != NULL_PTR)
+    if (NULL_PTR != taskHndl)
     {
         /* Now get the corresponding TaskP Handle */
         maxTasks        = OSAL_FREERTOS_CONFIGNUM_TASK;
         for (i = 0; i < maxTasks; i++)
         {
-            if ((gOsalTaskPfreertosPool[i].used == (bool)true) &&
+            if (((bool)true == gOsalTaskPfreertosPool[i].used) &&
                 (gOsalTaskPfreertosPool[i].taskHndl == taskHndl))
             {
                 retHandle = (TaskP_Handle) (&gOsalTaskPfreertosPool[i]);
@@ -384,8 +384,8 @@ uint32_t TaskP_isTerminated(TaskP_Handle handle)
     uint32_t isTaskTerminated = 0;
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
-    DebugP_assert((handle != NULL_PTR));
-    if(((bool)true == taskHandle->terminated) || (eTaskGetState(taskHandle->taskHndl) == eDeleted))
+    DebugP_assert(NULL_PTR != handle);
+    if(((bool)true == taskHandle->terminated) || (eDeleted == eTaskGetState(taskHandle->taskHndl)))
     {
         isTaskTerminated = 1;
     }
@@ -412,8 +412,8 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
 {
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
-    DebugP_assert((handle != NULL_PTR));
-    DebugP_assert((taskHandle->used != (bool)false));
+    DebugP_assert(NULL_PTR != handle);
+    DebugP_assert((bool)false != taskHandle->used);
 
     return (taskHandle->taskHndl);
 }
@@ -422,8 +422,8 @@ uint32_t TaskP_getTaskId(TaskP_Handle handle)
 {
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
-    DebugP_assert((handle != NULL_PTR));
-    DebugP_assert((taskHandle->used != (bool)false));
+    DebugP_assert(NULL_PTR != handle);
+    DebugP_assert((bool)false != taskHandle->used);
 
     return (taskHandle->tskId);
 }
@@ -435,7 +435,7 @@ static int32_t prvSetupTimerPSC( void )
     CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
 
     CSL_armR5GetCpuID(&info);
-    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 != info.grpId)
     {
         Sciclient_ConfigPrms_t config;
 
@@ -444,7 +444,7 @@ static int32_t prvSetupTimerPSC( void )
         xStatus = Sciclient_init(&config);
         if(  xStatus == CSL_PASS )
         {
-            uint32_t currState, resetState, contextLossState, timerModuleId;
+            uint32_t currState, resetState, contextLossState;
             /* on J7AHP, Main domain timers 8-19 are connected to LPSC_PER_SPARE_0 which is not powered ON by default. 
              * All other timers are connected to LPSC which is ALWAYS_ON */
             xStatus = Sciclient_pmGetModuleState(TISCI_DEV_TIMER8, &currState, &resetState,
@@ -467,12 +467,12 @@ void OS_init( void )
 
     xStatus = prvC66xTickInterruptConfig();
 
-    if(xStatus == CSL_PASS)
+    if(CSL_PASS == xStatus)
     {
         xStatus = prvSetupTimerPSC();
     }
 
-    DebugP_assert(xStatus == CSL_PASS);
+    DebugP_assert(CSL_PASS == xStatus);
 }
 
 void OS_start(void)
@@ -494,7 +494,7 @@ static int32_t prvC66xTickInterruptConfig( void )
     Sciclient_configPrmsInit(&config);
 
     xStatus = Sciclient_init(&config);
-    if(  xStatus == CSL_PASS )
+    if( CSL_PASS == xStatus )
     {
         struct tisci_msg_rm_irq_set_req     rmIrqReq;
         struct tisci_msg_rm_irq_set_resp    rmIrqResp;
@@ -502,7 +502,7 @@ static int32_t prvC66xTickInterruptConfig( void )
         rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                           TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
         rmIrqReq.src_index              = 0U;
-        if (CSL_chipReadDNUM() == 0U)
+        if ( 0U == CSL_chipReadDNUM() )
         {
             rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
             rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;

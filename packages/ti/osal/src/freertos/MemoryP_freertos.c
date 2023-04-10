@@ -61,43 +61,47 @@ void* MemoryP_ctrlAlloc(uint32_t size, uint8_t alignment)
     void *origAllocAddress;
     MemoryTrack_t *memoryTrackAddress;
     uintptr_t offset;
-    if (alignment < (uint8_t)portBYTE_ALIGNMENT)
+    uint8_t   heapAlignment = alignment;
+    uint32_t alignedSize;
+    
+    if (heapAlignment < (uint8_t)portBYTE_ALIGNMENT)
     {
         /* If alignment not requested by application set to minimum alignment. */
-        alignment = portBYTE_ALIGNMENT;
+        heapAlignment = portBYTE_ALIGNMENT;
     }
     /* Assert that requested align is a power of 2 */
-    DebugP_assert(((alignment & (alignment - 1U)) == 0U));
+    DebugP_assert(0U == (heapAlignment & (heapAlignment - 1U)));
 
     /* Assert that requested block size is non-zero */
-    DebugP_assert((size != 0U));
+    DebugP_assert(0U != size);
 
-    origAllocAddress = pvPortMalloc(size + alignment + sizeof(MemoryTrack_t));
-    offset = (uintptr_t)origAllocAddress & ((uintptr_t)alignment - 1U);
-    allocAddress = (void *)((uintptr_t)origAllocAddress - offset + (uintptr_t)alignment);
+    alignedSize = size + heapAlignment;
+    origAllocAddress = pvPortMalloc((size_t)(alignedSize + sizeof(MemoryTrack_t)));
+    offset = (uintptr_t)origAllocAddress & ((uintptr_t)heapAlignment - 1U);
+    allocAddress = (void *)((uintptr_t)origAllocAddress - offset + (uintptr_t)heapAlignment);
     if (((uintptr_t)allocAddress - (uintptr_t)origAllocAddress) < sizeof(MemoryTrack_t))
     {
         /* We cant add the mem track address before the alloc Address.
          * Move the alloc address by alignment value.
          * This happens when the original alloc address is already aligned.
          */
-        allocAddress = (void *)((uintptr_t)allocAddress + (uintptr_t)alignment);
-        if ((alignment < sizeof(MemoryTrack_t)) &&
+        allocAddress = (void *)((uintptr_t)allocAddress + (uintptr_t)heapAlignment);
+        if ((heapAlignment < sizeof(MemoryTrack_t)) &&
             (((uintptr_t)allocAddress - (uintptr_t)origAllocAddress) < sizeof(MemoryTrack_t)))
         {
             /* if alignment value is less than MemoryTrack_t,
              * the alloc address might need to be updated again.
              * to accomodate the MemoryTrack_t before the address passed to app.
              */
-            allocAddress = (void *)((uintptr_t)allocAddress + (uintptr_t)alignment);
+            allocAddress = (void *)((uintptr_t)allocAddress + (uintptr_t)heapAlignment);
         }
     }
     memoryTrackAddress = (MemoryTrack_t *)((uintptr_t)allocAddress - sizeof(MemoryTrack_t));
     DebugP_assert((void *)memoryTrackAddress >= origAllocAddress);
     memoryTrackAddress->allocKey = 0xDEADBEEFU;
     memoryTrackAddress->origAllocAddress = origAllocAddress;
-    memoryTrackAddress->origAllocSize = size + (uint32_t)alignment + (uint32_t)sizeof(MemoryTrack_t);
-    DebugP_assert(((uintptr_t)allocAddress & ((uintptr_t)alignment - 1U)) == 0U);
+    memoryTrackAddress->origAllocSize = size + (uint32_t)heapAlignment + (uint32_t)sizeof(MemoryTrack_t);
+    DebugP_assert(  0U == ((uintptr_t)allocAddress & ((uintptr_t)heapAlignment - 1U)) );
     DebugP_assert(((uintptr_t)allocAddress + size) <= ((uintptr_t)memoryTrackAddress->origAllocAddress + memoryTrackAddress->origAllocSize));
     return allocAddress;
 }
@@ -111,7 +115,7 @@ void MemoryP_ctrlFree(void* ptr, uint32_t size)
     MemoryTrack_t *memoryTrackAddress;
 
     memoryTrackAddress = (MemoryTrack_t *)((uintptr_t)ptr - sizeof(MemoryTrack_t));
-    DebugP_assert(memoryTrackAddress->allocKey == 0xDEADBEEFU);
+    DebugP_assert(0xDEADBEEFU == memoryTrackAddress->allocKey);
 
     origAllocAddress = memoryTrackAddress->origAllocAddress;
     vPortFree(origAllocAddress);

@@ -73,21 +73,37 @@ typedef enum ClockP_Status_e
     ClockP_FAILURE    = (-(int32_t)1)
 } ClockP_Status;
 
-/*!
- *  @brief  Timer runtime modes for ClockP APIs
+/**
+ * \anchor ClockP_RunMode
+ * \name Timer runtime modes for ClockP APIs
+ *
+ * @{
  */
-typedef enum ClockP_RunMode_e {
-    ClockP_RunMode_ONESHOT     = ((uint8_t) 0),      /*!< timer runs for a single period values and stops */
-    ClockP_RunMode_CONTINUOUS  = ((uint8_t) 1),      /*!< timer is periodic and runs continuously */
- } ClockP_RunMode;
+/*!
+ *  @brief  This enumerator defines the Timer runtime modes
+ */
+typedef uint8_t ClockP_RunMode;
+      /** Timer runs for a single period values and stops */
+#define ClockP_RunMode_ONESHOT                      ((uint8_t) 0U)
+      /** Timer is periodic and runs continuously */
+#define ClockP_RunMode_CONTINUOUS                   ((uint8_t) 1U)
+/* @} */
 
-/*!
- *  @brief  Timer start modes for ClockP APIs
+/**
+ * \anchor ClockP_StartMode
+ * \name Timer start modes for ClockP APIs
+ *
+ * @{
  */
-typedef enum ClockP_StartMode_e {
-    ClockP_StartMode_USER = ((uint8_t) 0),       /*!< timer will be started by the user */
-    ClockP_StartMode_AUTO = ((uint8_t) 1),       /*!< timer starts automatically after create or scheduler start */
-}ClockP_StartMode;
+/*!
+ *  @brief  This enumerator defines the Timer start modes
+ */
+typedef uint8_t ClockP_StartMode;
+      /** Timer will be started by the user */
+ #define ClockP_StartMode_USER                      ((uint8_t) 0U)
+      /** Timer starts automatically after create or scheduler start */
+#define ClockP_StartMode_AUTO                       ((uint8_t) 1U)
+/* @} */
 
 /*!
  *  @brief    Opaque client reference to an instance of a ClockP

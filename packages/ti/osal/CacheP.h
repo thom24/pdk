@@ -73,13 +73,21 @@ typedef uint32_t Osal_CacheP_isCoherent;
 #define OSAL_CACHEP_NOT_COHERENT                        ((uint32_t) 1U)
 /* @} */
 
-/*!
- *  @brief    MAR register setting type definition
+/**
+ * \anchor CacheP_Mar
+ * \name Set Cache MAR register
+ *
+ * @{
  */
-typedef enum CacheP_Mar_e {
-    CacheP_Mar_DISABLE = ((uint32_t) 0),  /*!<  The Permit Copy bit of MAR register is disabled */
-    CacheP_Mar_ENABLE  = ((uint32_t) 1),/*!<  The Permit Copy bit of MAR register is enabled */
-} CacheP_Mar;
+/*!
+ *  @brief  This enumerator defines the MAR register setting types
+ */
+typedef uint32_t CacheP_Mar;
+    /** Cache MAR register disabled */
+#define CacheP_Mar_DISABLE                             (0U)
+    /** Cache MAR register is enabled */
+#define CacheP_Mar_ENABLE                              (1U)
+/* @} */
 
 /*!
  *  @brief  Function to write back cache lines
@@ -89,7 +97,7 @@ typedef enum CacheP_Mar_e {
  *  @param  size  size (in bytes) of the memory to be written back
  *
  */
-extern void CacheP_wb(const void * addr, int32_t size);
+extern void CacheP_wb(const void * addr, uint32_t size);
 
 
 /*!
@@ -100,7 +108,7 @@ extern void CacheP_wb(const void * addr, int32_t size);
  *  @param  size  size (in bytes) of the memory to invalidate
  *
  */
-extern void CacheP_Inv(const void * addr, int32_t size);
+extern void CacheP_Inv(const void * addr, uint32_t size);
 
 
 /*!
@@ -111,7 +119,7 @@ extern void CacheP_Inv(const void * addr, int32_t size);
  *  @param  size  size (in bytes) of the memory to be written back and invalidate
  *
  */
-extern void CacheP_wbInv(const void * addr, int32_t size);
+extern void CacheP_wbInv(const void * addr, uint32_t size);
 
 /*!
  *  @brief  Function to call before handing over the memory buffer to DMA from CPU
@@ -147,7 +155,7 @@ void CacheP_fenceDma2Cpu(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent i
  * 
  *  @param size  Region size in bytes. Recommended to be multiple of 16MB aligned
  * 
- *  @param value   value for setting MAR register @ref CacheP_Mar
+ *  @param value   value for setting MAR register \ref CacheP_Mar
  */
 void CacheP_setMar(void *baseAddr, uint32_t size, uint32_t value);
 

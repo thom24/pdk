@@ -136,7 +136,7 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue)
 }
 
 /* Below function registers the interrupt for a given ISR */
-HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
+HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                          const HwiP_Params *params)
 {
     Hwi_Struct                   *hwi_handle = NULL;
@@ -153,7 +153,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if (gOsal_HwAttrs.extHwiPBlock.base != 0U)
+    if (0U != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -166,7 +166,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
 
-        if(gHwiInitialized==(bool)false)
+        if((bool)false == gHwiInitialized)
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
@@ -174,12 +174,12 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         }
     }
 
-    if (params != NULL_PTR)
+    if (NULL_PTR != params)
     {
 
     key = OsalArch_globalDisableInterrupt();
     for (i = 0u; i < maxHwi; i++) {
-        if (hwiPool[i].used == (bool)false) {
+        if ((bool)false == hwiPool[i].used) {
             hwiPool[i].used = (bool)true;
             break;
         }
@@ -196,17 +196,17 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
       retHandle  = (HwiP_Handle)(NULL);
     }
 
-    if (hwi_handle != NULL_PTR)
+    if (NULL_PTR != hwi_handle)
     {
-        if (gFirstTime == (bool)true)
+        if ((bool)true == gFirstTime)
         {
             Intc_Init();
             CSL_armR5GetCpuID(&info);
 #if defined(CSL_MAIN_DOMAIN_VIM_BASE_ADDR0) && defined(CSL_MAIN_DOMAIN_VIM_BASE_ADDR1)
-            if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+            if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
             {
                 /* MCU SS Pulsar R5 SS */
-                if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+                if (CSL_ARM_R5_CPU_ID_0 == info.cpuID)
                 {
                     gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR0;
                 }
@@ -218,7 +218,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             else
             {
                 /* MAIN SS Pulsar R5 SS */
-                if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+                if (CSL_ARM_R5_CPU_ID_0 == info.cpuID)
                 {
                     gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MAIN_DOMAIN_VIM_BASE_ADDR0;
                 }
@@ -229,7 +229,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             }
 #else
             /* MCU SS Pulsar R5 SS */
-            if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+            if (CSL_ARM_R5_CPU_ID_0 == info.cpuID)
             {
                 gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR0;
             }
@@ -239,7 +239,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             }
 #endif
             gFirstTime = (bool)false;
-            if (gOsalArchConfig.disableIrqOnInit == (bool)false)
+            if ((bool)false == gOsalArchConfig.disableIrqOnInit)
             {
                 Intc_SystemEnable();
             }
@@ -249,9 +249,9 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         Intc_IntDisable((uint16_t)interruptNum);
 
         /* Set the trigger type */
-        if ((params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL) ||
-            (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL) ||
-            (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL))
+        if ((OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL == params->triggerSensitivity) ||
+            (OSAL_ARM_GIC_TRIG_TYPE_LEVEL      == params->triggerSensitivity) ||
+            (OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL  == params->triggerSensitivity))
         {
             Intc_IntSetSrcType((uint16_t)interruptNum, CSL_VIM_INTR_TYPE_LEVEL);
         }
@@ -260,11 +260,11 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
             Intc_IntSetSrcType((uint16_t)interruptNum, CSL_VIM_INTR_TYPE_PULSE);
         }
 
-        hwi_handle->intNum = (uint32_t)interruptNum;
+        hwi_handle->intNum = interruptNum;
 
         /* Set the priority to default priority if priority is set un-initialized */
         if ((params->priority > CSL_VIM_PRI_INT_VAL_MAX) ||
-            (params->priority == HWIP_USE_DEFAULT_PRIORITY))
+            (HWIP_USE_DEFAULT_PRIORITY == params->priority))
         {
             priority = (uint16_t)HWIP_R5F_DEFAULT_PRIORITY;
         }
@@ -280,7 +280,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
 
         /* Enabling the interrupt if configured */
-        if (params->enableIntr == 1U)
+        if (TRUE == params->enableIntr)
         {
             /* Enabling the interrupt in INTC. */
             Intc_IntEnable((uint16_t)interruptNum);
@@ -297,25 +297,24 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
 }
 
 /* Below function registers the direct interrupt for a given ISR */
-HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+HwiP_Handle OsalArch_HwiPCreateDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
                                       const HwiP_Params *params)
 {
     Hwi_Struct                   *hwi_handle = NULL;
 
     uint32_t i;
     uintptr_t key;
-    uint16_t priority;
     uintptr_t         temp;
     HwiP_nonOs       *hwiPool;
     uint32_t          maxHwi;
     HwiP_Handle       retHandle = NULL_PTR;
-    CSL_ArmR5CPUInfo  info;
+    CSL_ArmR5CPUInfo  info = {0U, 0U, 0U};
     uint32_t          intrSrcType;
 
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if (gOsal_HwAttrs.extHwiPBlock.base != 0U)
+    if ((uintptr_t)(0U) != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -328,7 +327,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
 
-        if(gHwiInitialized==(bool)false)
+        if((bool)false == gHwiInitialized)
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
@@ -336,12 +335,12 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
         }
     }
 
-    if (params != NULL_PTR)
+    if (NULL_PTR != params)
     {
 
         key = OsalArch_globalDisableInterrupt();
-        for (i = 0u; i < maxHwi; i++) {
-            if (hwiPool[i].used == (bool)false) {
+        for (i = 0U; i < maxHwi; i++) {
+            if ((bool)false == hwiPool[i].used) {
                 hwiPool[i].used = (bool)true;
                 break;
             }
@@ -358,17 +357,17 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
             retHandle  = (HwiP_Handle)(NULL);
         }
 
-        if (hwi_handle != NULL_PTR)
+        if (NULL_PTR != hwi_handle)
         {
-            if (gFirstTime == (bool)true)
+            if ((bool)true == gFirstTime)
             {
                 Intc_Init();
                 CSL_armR5GetCpuID(&info);
 #if defined(CSL_MAIN_DOMAIN_VIM_BASE_ADDR0) && defined(CSL_MAIN_DOMAIN_VIM_BASE_ADDR1)
-                if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+                if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
                 {
                     /* MCU SS Pulsar R5 SS */
-                    if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+                    if (CSL_ARM_R5_CPU_ID_0 == info.cpuID)
                     {
                         gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR0;
                     }
@@ -380,7 +379,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
                 else
                 {
                     /* MAIN SS Pulsar R5 SS */
-                    if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+                    if (CSL_ARM_R5_CPU_ID_0 == info.cpuID)
                     {
                         gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MAIN_DOMAIN_VIM_BASE_ADDR0;
                     }
@@ -391,7 +390,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
                 }
 #else
                 /* MCU SS Pulsar R5 SS */
-                if (info.cpuID == CSL_ARM_R5_CPU_ID_0)
+                if (CSL_ARM_R5_CPU_ID_0 == info.cpuID)
                 {
                     gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR0;
                 }
@@ -401,7 +400,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
                 }
 #endif
                 gFirstTime = (bool)false;
-                if (gOsalArchConfig.disableIrqOnInit == (bool)false)
+                if ((bool)false == gOsalArchConfig.disableIrqOnInit)
                 {
                     Intc_SystemEnable();
                 }
@@ -411,9 +410,9 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
             Intc_IntDisable((uint16_t)interruptNum);
 
             /* Set the trigger type */
-            if ((params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL) ||
-                (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL) ||
-                (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL))
+            if ((OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL == params->triggerSensitivity) ||
+                (OSAL_ARM_GIC_TRIG_TYPE_LEVEL      == params->triggerSensitivity) ||
+                (OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL  == params->triggerSensitivity))
             {
                 intrSrcType = CSL_VIM_INTR_TYPE_LEVEL;
                 Intc_IntSetSrcType((uint16_t)interruptNum, CSL_VIM_INTR_TYPE_LEVEL);
@@ -424,15 +423,15 @@ HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFx
                 Intc_IntSetSrcType((uint16_t)interruptNum, CSL_VIM_INTR_TYPE_PULSE);
             }
 
-            hwi_handle->intNum = (uint32_t)interruptNum;
+            hwi_handle->intNum = interruptNum;
 
             /* Registering the Interrupt Service Routine(ISR). */
-            (void)CSL_vimCfgIntr( (CSL_vimRegs *)(uintptr_t)gVimRegs, (uint32_t)interruptNum,
+            (void)CSL_vimCfgIntr( (CSL_vimRegs *)gVimRegs, interruptNum,
                            params->priority, (CSL_VimIntrMap)0x0U,
                            (CSL_VimIntrType)intrSrcType, (uint32_t)hwiFxn );
 
             /* Enabling the interrupt if configured */
-            if (params->enableIntr == 1U)
+            if (TRUE == params->enableIntr)
             {
                 /* Enabling the interrupt in INTC. */
                 Intc_IntEnable((uint16_t)interruptNum);
@@ -456,7 +455,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    if (hwi_hnd->used)
+    if ((bool)true == hwi_hnd->used)
     {
         hwi_hnd->used = (bool)false;
         Intc_IntUnregister((uint16_t)(hwi_hnd->hwi.intNum));
@@ -472,7 +471,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 }
 
 /* Return the cycle frequency used for timeStamp */
-int32_t  osalArch_TimeStampGetFreqKHz(void)
+uint32_t  osalArch_TimeStampGetFreqKHz(void)
 {
     /* R5F time Stamp is via PMU, which runs at CPU speed */
     return (gOsal_HwAttrs.cpuFreqKHz);
@@ -484,7 +483,7 @@ void    osalArch_TimestampInit(void)
     /* FreeRTOS R5F port already initialized PMU counter as part of 
      * schedular start for runtime measurement */
 #if !defined(FREERTOS)
-    if (gTimestampFirstTime == (bool)true)
+    if ((bool)true == gTimestampFirstTime)
     {
         osal_TimestampProvider_initCCNT();
         /* One time initialization is done */
@@ -498,7 +497,7 @@ void    osalArch_TimestampInit(void)
 /* Osal time stamp provider implementations */
 void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 {
-    if (tStamp !=  NULL_PTR)
+    if (NULL_PTR != tStamp)
     {
     #if defined(FREERTOS)
         /* FreeRTOS R5F port handles PMU counter init and overflow.
@@ -506,7 +505,7 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
         uint64_t   cycle, cycleHi;
         uint32_t   lo, hi;
         
-        extern uint64_t uxPortReadPmuCounter();
+        extern uint64_t uxPortReadPmuCounter(void);
         
         cycle = uxPortReadPmuCounter();
         cycleHi = ((uint64_t)(cycle >> 32U));
@@ -526,7 +525,7 @@ void osalArch_TimestampGet64(TimeStamp_Struct *tStamp)
 
         ovsrStatus = osal_TimestampProvider_getOverflowCCNT();
 
-        if (ovsrStatus != OSAL_ARCH_UTIL_ZERO)
+        if (OSAL_ARCH_UTIL_ZERO != ovsrStatus)
         {
             lo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
             gTimeStamp.hi++;
@@ -551,7 +550,7 @@ void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
     uint32_t    ovsrStatus;
     ovsrStatus = osal_TimestampProvider_getOverflowCCNT();
 
-    if (ovsrStatus != OSAL_ARCH_UTIL_ZERO)
+    if (OSAL_ARCH_UTIL_ZERO != ovsrStatus)
     {
         gTimeStamp.lo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
         gTimeStamp.hi++;

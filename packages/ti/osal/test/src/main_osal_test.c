@@ -152,12 +152,12 @@ void C66xTimerInterruptInit(void);
             #endif
         #endif
         #if defined(FREERTOS)
-            #define OSAL_TEST_OS_TIMER_INT_NUM          (configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
-            #define OSAL_TEST_OS_TIMER_EVENT_NUM        (configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
+            #define OSAL_TEST_OS_TIMER_INT_NUM          ((uint32_t)configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
+            #define OSAL_TEST_OS_TIMER_EVENT_NUM        ((uint32_t)configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
         #endif
         #if defined(SAFERTOS)
-            #define OSAL_TEST_OS_TIMER_INT_NUM          (configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
-            #define OSAL_TEST_OS_TIMER_EVENT_NUM        (configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
+            #define OSAL_TEST_OS_TIMER_INT_NUM          ((uint32_t)configTIMER_INT_NUM) /* 14 for C66x_1; 15 for C66x_2 */
+            #define OSAL_TEST_OS_TIMER_EVENT_NUM        ((uint32_t)configTIMER_EVENT_ID) /* 21 for C66x_1; 20 for C66x_2 */
         #endif
         /* DMTimers used for OSAL Timer Test */ 
         /* The Event 20/21 is used for DMTimer0/1 by SysBIOS/FreeRTOS by default, 
@@ -190,17 +190,17 @@ void C7x_ConfigureTimerOutput(void);
             * so we need to use a different one here */
             /* 15 for C7x_1 - DMTimer 1; 15 for C7x_2 - DMTimer 2 */
             #define OSAL_TEST_TIMER_INT_NUM                 (configTIMER_INT_NUM + 1U) 
-            #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + configTIMER_ID + 1)
+            #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + configTIMER_ID + 1U)
         #elif defined(SAFERTOS)
             #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
             /* DMTimer 0/1 and Interrupt num 14 is used by SafeRTOS by default for C7x_1/C7x_2 respectively, 
              * So we need to use a different one here */
             #if defined (BUILD_C7X_1)
-                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1+1)
-                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_1 + 1)
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1+1U)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + OSAL_SAFERTOS_OS_TIMER_ID_C7X_1 + 1U)
             #elif defined (BUILD_C7X_2)
-                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2+1)
-                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_2 + 1)
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2+1U)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + OSAL_SAFERTOS_OS_TIMER_ID_C7X_2 + 1U)
             #endif
         #endif
     #endif
@@ -213,7 +213,7 @@ void C7x_ConfigureTimerOutput(void);
             /* 15 for C7x_1 - DMTimer 1; 15 for C7x_2 - DMTimer 2 */
             /* 15 for C7x_3 - DMTimer 3; 15 for C7x_4 - DMTimer 4 */
             #define OSAL_TEST_TIMER_INT_NUM                 (configTIMER_INT_NUM + 1U) 
-            #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + configTIMER_ID + 1)
+            #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + configTIMER_ID + 1U)
         #elif defined(SAFERTOS)
             #define OSAL_TEST_CLEC_BASE_ADDRESS             (CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE)
             /* DMTimer 0/1/2/3 and Interrupt num 14 is used by SafeRTOS 
@@ -222,17 +222,17 @@ void C7x_ConfigureTimerOutput(void);
             /* 15 for C7x_1 - DMTimer 1; 15 for C7x_2 - DMTimer 2 */
             /* 15 for C7x_3 - DMTimer 3; 15 for C7x_4 - DMTimer 4 */
             #if defined (BUILD_C7X_1)
-                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1+1)
-                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_1 + 1)
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1+1U)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + OSAL_SAFERTOS_OS_TIMER_ID_C7X_1 + 1U)
             #elif defined (BUILD_C7X_2)
-                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2+1)
-                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_2 + 1)
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2+1U)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + OSAL_SAFERTOS_OS_TIMER_ID_C7X_2 + 1U)
             #elif defined (BUILD_C7X_3)
-                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_3+1)
-                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_3 + 1)
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_3+1U)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + OSAL_SAFERTOS_OS_TIMER_ID_C7X_3 + 1U)
             #elif defined (BUILD_C7X_4)
-                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_4+1)
-                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992 + OSAL_SAFERTOS_OS_TIMER_ID_C7X_4 + 1)            
+                #define OSAL_TEST_TIMER_INT_NUM                 (OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_4+1U)
+                #define OSAL_TEST_TIMER_EVENT_NUM               (CSLR_COMPUTE_CLUSTER0_CLEC_SOC_EVENTS_IN_TIMER0_INTR_PEND_0 + 992U + OSAL_SAFERTOS_OS_TIMER_ID_C7X_4 + 1U)            
             #endif
         #endif
     #endif
@@ -411,7 +411,7 @@ bool OSAL_floating_point_test()
 volatile   uint64_t gTestlocalTimeout = 0x300000U;
 
 #if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)) && (!defined(BUILD_C66X))&&(!defined(BUILD_C7X))
-#define INT_NUM_IRQ 32
+#define INT_NUM_IRQ 32U
 #define LOOP_CNT    100
 volatile uint64_t gFlagIRQ = 0;
 
@@ -1322,7 +1322,7 @@ bool OSAL_ExtBlock_test(void)
     HwiP_Params_init(&hwiParams);
 
     /* create the hwi block */
-    hwiHandle = HwiP_create(8, (HwiP_Fxn)myIsr, &hwiParams);
+    hwiHandle = HwiP_create(8U, (HwiP_Fxn)myIsr, &hwiParams);
     if (hwiHandle == (HwiP_Handle) NULL_PTR)
     {
         return (false);

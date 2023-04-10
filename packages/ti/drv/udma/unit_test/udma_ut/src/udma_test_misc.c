@@ -71,8 +71,8 @@ static void *udmaTestOsalRegisterIntr(Udma_OsalIsrFxn isrFxn,
                                       uint32_t intrPriority,
                                       void *arg);
 static void udmaTestOsalUnRegisterIntr(void *hwiHandle);
-static void udmaTestOsalCacheInv(const void *addr, int32_t size);
-static void udmaTestOsalCacheWb(const void *addr, int32_t size);
+static void udmaTestOsalCacheInv(const void *addr, uint32_t size);
+static void udmaTestOsalCacheWb(const void *addr, uint32_t size);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -400,7 +400,7 @@ static void udmaTestOsalUnRegisterIntr(void *hwiHandle)
     return;
 }
 
-static void udmaTestOsalCacheInv(const void *addr, int32_t size)
+static void udmaTestOsalCacheInv(const void *addr, uint32_t size)
 {
     CacheP_Inv(addr, size);
     gUdmaTestOsalPrmsFlag[9U]++;
@@ -408,7 +408,7 @@ static void udmaTestOsalCacheInv(const void *addr, int32_t size)
     return;
 }
 
-static void udmaTestOsalCacheWb(const void *addr, int32_t size)
+static void udmaTestOsalCacheWb(const void *addr, uint32_t size)
 {
     CacheP_wb(addr, size);
     gUdmaTestOsalPrmsFlag[10U]++;

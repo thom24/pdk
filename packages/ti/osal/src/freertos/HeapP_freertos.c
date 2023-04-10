@@ -74,7 +74,7 @@ static HeapP_freertos gOsalHeapPFreeRtosPool[OSAL_FREERTOS_CONFIGNUM_HEAP];
  */
 void HeapP_Params_init(HeapP_Params *params)
 {
-    if (params != NULL_PTR)
+    if (NULL_PTR != params )
     {
         params->size    =  0U;
         params->buf     =  NULL_PTR;
@@ -94,15 +94,15 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
     uintptr_t        key;
     uint32_t         maxHeap;
 
-    DebugP_assert((params != NULL_PTR));
-    DebugP_assert((params->buf != NULL_PTR));
-    DebugP_assert((params->size != 0U));
+    DebugP_assert(NULL_PTR != params);
+    DebugP_assert(NULL_PTR != params->buf);
+    DebugP_assert(0U       != params->size);
 
     /* Pick up the internal static memory block */
     heapPool       = (HeapP_freertos *) &gOsalHeapPFreeRtosPool[0];
     maxHeap        = OSAL_FREERTOS_CONFIGNUM_HEAP;
     
-    if(gOsalHeapAllocCnt==0U) 
+    if(0U == gOsalHeapAllocCnt) 
     {
         (void)memset( (void *)gOsalHeapPFreeRtosPool,0,sizeof(gOsalHeapPFreeRtosPool));
     }
@@ -111,7 +111,7 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
 
      for (i = 0; i < maxHeap; i++)
      {
-         if (heapPool[i].used == (bool)false)
+         if ((bool)false == heapPool[i].used)
          {
              heapPool[i].used = (bool)true;
              /* Update statistics */
@@ -131,7 +131,7 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
         handle = (HeapP_freertos *) &heapPool[i];
     }
 
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
         ret_handle = NULL_PTR;
     }
     else
@@ -149,13 +149,13 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
  */
 HeapP_Status HeapP_delete(HeapP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t   key;
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((heap != NULL_PTR) && (heap->used==(bool)true))
+    if((NULL_PTR != heap) && ((bool)true == heap->used))
     {
         vTaskSuspendAll();
         vHeapDelete(&heap->heapHndl);
@@ -183,12 +183,12 @@ HeapP_Status HeapP_delete(HeapP_Handle handle)
  */
 void *HeapP_alloc(HeapP_Handle handle, uint32_t allocSize)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     void *ptr = NULL_PTR;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((heap != NULL_PTR) && (heap->used==(bool)true))
+    if((NULL_PTR != heap) && ((bool)true == heap->used))
     {
         vTaskSuspendAll();
         ptr = pvHeapMalloc(&heap->heapHndl, allocSize);
@@ -203,12 +203,12 @@ void *HeapP_alloc(HeapP_Handle handle, uint32_t allocSize)
  */
 HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((heap != NULL_PTR) && (heap->used==(bool)true) && (ptr != NULL_PTR))
+    if((NULL_PTR != heap) && ((bool)true == heap->used) && (NULL_PTR != ptr))
     {
         vTaskSuspendAll();
         vHeapFree(&heap->heapHndl, ptr);
@@ -227,14 +227,14 @@ HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size)
  */
 HeapP_Status HeapP_getHeapStats(HeapP_Handle handle, HeapP_MemStats *stats)
 {
-    DebugP_assert((handle != NULL_PTR));
-    DebugP_assert((stats  != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
+    DebugP_assert(NULL_PTR != stats);
 
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
     HeapMemStats_t pHeapStats;
 
-    if((heap != NULL_PTR) && (heap->used==(bool)true))
+    if((NULL_PTR != heap) && ((bool)true == heap->used))
     {
         vTaskSuspendAll();
         vHeapGetHeapStats(&heap->heapHndl, &pHeapStats);

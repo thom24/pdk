@@ -81,13 +81,13 @@ EventP_Handle EventP_create(EventP_Params *params)
     uintptr_t           key;
     uint32_t            maxEvent;
 
-    DebugP_assert((params != NULL_PTR));
+    DebugP_assert(NULL_PTR != params);
 
     /* Pick up the internal static memory block */
     eventPool       = (EventP_freertos *) &gOsalEventPFreeRtosPool[0];
     maxEvent        = OSAL_FREERTOS_CONFIGNUM_EVENT;
     
-    if(gOsalEventAllocCnt==0U) 
+    if(0U == gOsalEventAllocCnt) 
     {
         (void)memset( (void *)gOsalEventPFreeRtosPool,0,sizeof(gOsalEventPFreeRtosPool));
     }
@@ -96,7 +96,7 @@ EventP_Handle EventP_create(EventP_Params *params)
 
      for (i = 0; i < maxEvent; i++)
      {
-         if (eventPool[i].used == (bool)false)
+         if ((bool)false == eventPool[i].used)
          {
              eventPool[i].used = (bool)true;
              /* Update statistics */
@@ -116,13 +116,13 @@ EventP_Handle EventP_create(EventP_Params *params)
         handle = (EventP_freertos *) &eventPool[i];
     }
 
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
         ret_handle = NULL_PTR;
     }
     else
     {
         handle->eventHndl = xEventGroupCreateStatic(&(handle->eventObj));
-        if(handle->eventHndl == NULL)
+        if(NULL == handle->eventHndl)
         {
             /* If there was an error reset the event object and return NULL. */
             key = HwiP_disable();
@@ -149,13 +149,13 @@ EventP_Handle EventP_create(EventP_Params *params)
  */
 EventP_Status EventP_delete(EventP_Handle *handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t       key;
     EventP_Status   ret_val = EventP_OK;
     EventP_freertos *event = (EventP_freertos *)*handle;
 
-    if((event != NULL_PTR) && (event->used== (bool)true))
+    if((NULL_PTR != event) && ((bool)true == event->used))
     {
         vEventGroupDelete(event->eventHndl);
 
@@ -183,14 +183,16 @@ EventP_Status EventP_delete(EventP_Handle *handle)
 uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
                     uint8_t waitMode, uint32_t timeout)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
     DebugP_assert(eventMask <= EventP_ID_23);
     DebugP_assert(eventMask != EventP_ID_NONE);
 
     EventP_freertos *event = (EventP_freertos *)handle;
     uint32_t        eventBits = 0U;
 
-    if((event != NULL_PTR) && (event->used== (bool)true) && (waitMode <= EventP_WaitMode_ALL))
+    if((NULL_PTR != event) && 
+       ((bool)true == event->used) && 
+       (EventP_WaitMode_ALL >= waitMode))
     {
         eventBits = (uint32_t)xEventGroupWaitBits(event->eventHndl,
                                                   (EventBits_t)eventMask,
@@ -207,15 +209,15 @@ uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
  */
 EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
 {
-    DebugP_assert((handle != NULL_PTR));
-    DebugP_assert(eventMask <= EventP_ID_23);
+    DebugP_assert(NULL_PTR != handle);
+    DebugP_assert(EventP_ID_23 >= eventMask);
 
     EventP_Status   ret_val = EventP_OK;
     EventP_freertos *event = (EventP_freertos *)handle;
     
-    if((event != NULL_PTR) && (event->used==(bool)true))
+    if((NULL_PTR != event) && ((bool)true == event->used))
     {
-        if( xPortInIsrContext() == 1 )
+        if( 1 == xPortInIsrContext() )
         {
             BaseType_t xHigherPriorityTaskWoken = pdFALSE;
             BaseType_t xResult;
@@ -224,7 +226,7 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
                                                  (EventBits_t)eventMask,
                                                  &xHigherPriorityTaskWoken);
 
-            if(xResult != pdFAIL)
+            if(pdFAIL != xResult)
             {
                 portYIELD_FROM_ISR((uint32_t)xHigherPriorityTaskWoken);
                 ret_val = EventP_OK;
@@ -252,14 +254,14 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
  */
 uint32_t EventP_getPostedEvents(EventP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     EventP_freertos *event = (EventP_freertos *)handle;
     uint32_t        eventBits = 0U;
     
-    if((event != NULL_PTR) && (event->used==(bool)true))
+    if((NULL_PTR != event) && ((bool)true == event->used))
     {
-        if( xPortInIsrContext() == 1 )
+        if( 1 == xPortInIsrContext() )
         {
             eventBits = (uint32_t)xEventGroupGetBitsFromISR(event->eventHndl);
         }

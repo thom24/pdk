@@ -171,7 +171,7 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue)
 }
 
 /* Below function registers the interrupt for a given ISR */
-HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
+HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                          const HwiP_Params *params)
 {
     Hwi_Struct                   *hwi_handle = NULL_PTR;
@@ -269,16 +269,16 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
         }
 
         /* Return Non Zero value for the handle for A15 target */
-        hwi_handle->intNum = (uint32_t)interruptNum;
+        hwi_handle->intNum = interruptNum;
 
         /* Enabling the interrupt if configured */
         if (params->enableIntr == 1U)
         {
-            OsalArch_enableInterrupt((uint32_t)interruptNum);
+            OsalArch_enableInterrupt(interruptNum);
         }
         else
         {
-            OsalArch_disableInterrupt((uint32_t)interruptNum);
+            OsalArch_disableInterrupt(interruptNum);
         }
     }
     return ((HwiP_Handle) (retHandle) );
@@ -319,10 +319,10 @@ void    osalArch_TimestampInit(void)
 }
 
 /* Return the cycle frequency used for timeStamp */
-int32_t  osalArch_TimeStampGetFreqKHz(void)
+uint32_t  osalArch_TimeStampGetFreqKHz(void)
 {
    /* A53 timeStamp provider is GTC, which is at 200MHz */
-   return ((int32_t)OSAL_SOC_MPU_GTC_CLK);
+   return OSAL_SOC_MPU_GTC_CLK;
 }
 
 /* Osal time stamp provider implementations */

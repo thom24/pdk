@@ -54,7 +54,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 {
     pthread_mutex_t *mutexHandle = (pthread_mutex_t *)calloc(1, sizeof(pthread_mutex_t));
 
-    if (mutexHandle != NULL)
+    if (NULL != mutexHandle)
     {
         if (EOK == pthread_mutex_init((pthread_mutex_t *) mutexHandle, NULL))
         {
@@ -79,7 +79,7 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
  */
 MutexP_Status MutexP_delete(MutexP_Handle handle)
 {
-    OSAL_Assert(handle == NULL);
+    OSAL_Assert(NULL == handle);
 
     int ret;
 
@@ -100,13 +100,13 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
  */
 MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
 {
-    OSAL_Assert(handle == NULL);
+    OSAL_Assert(NULL == handle);
 
     int ret;
     struct timespec ts;
     int timeout_ns = timeout*1000000;
 
-    if (timeout == MutexP_WAIT_FOREVER) {
+    if (MutexP_WAIT_FOREVER == timeout) {
         ret = pthread_mutex_lock((pthread_mutex_t *)handle);
     } else {
         clock_gettime(CLOCK_REALTIME, &ts);
@@ -116,7 +116,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
         ret = pthread_mutex_timedlock((pthread_mutex_t *)handle, &ts);
     }
     if (ret < 0) {
-        if (errno == ETIMEDOUT) {
+        if (ETIMEDOUT == errno) {
             return (MutexP_TIMEOUT);
         } else {
             return (MutexP_FAILURE);
@@ -131,7 +131,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
  */
 MutexP_Status MutexP_unlock(MutexP_Handle handle)
 {
-    OSAL_Assert(handle == NULL);
+    OSAL_Assert(NULL == handle);
 
     int ret;
 

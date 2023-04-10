@@ -146,7 +146,7 @@ typedef void (*Udma_OsalUnRegisterIntrFxn)(void *hwiHandle);
  *  \param addr         [IN] Start address of the cache line/s
  *  \param size         [IN] size (in bytes) of the memory to invalidate
  */
-typedef void (*Udma_OsalCacheInv)(const void *addr, int32_t size);
+typedef void (*Udma_OsalCacheInv)(const void *addr, uint32_t size);
 
 /**
  *  \brief UDMA OSAL cache writeback function prototype.
@@ -154,7 +154,7 @@ typedef void (*Udma_OsalCacheInv)(const void *addr, int32_t size);
  *  \param addr         [IN] Start address of the cache line/s
  *  \param size         [IN] size (in bytes) of the memory to be written back
  */
-typedef void (*Udma_OsalCacheWb)(const void *addr, int32_t size);
+typedef void (*Udma_OsalCacheWb)(const void *addr, uint32_t size);
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */

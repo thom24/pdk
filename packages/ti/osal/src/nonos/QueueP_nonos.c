@@ -78,7 +78,7 @@ static QueueP_freertos gOsalQueuePFreeRtosPool[OSAL_FREERTOS_CONFIGNUM_QUEUE];
  */
 void QueueP_Params_init(QueueP_Params *params)
 {
-    if (params != NULL_PTR)
+    if (NULL_PTR != params)
     {
         params->pErrBlk =  NULL_PTR;
     }
@@ -102,7 +102,7 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
     queuePool       = (QueueP_freertos *) &gOsalQueuePFreeRtosPool[0];
     maxQueue        = OSAL_FREERTOS_CONFIGNUM_QUEUE;
     
-    if(gOsalQueueAllocCnt==0U) 
+    if(0U == gOsalQueueAllocCnt) 
     {
         (void)memset( (void *)gOsalQueuePFreeRtosPool,0,sizeof(gOsalQueuePFreeRtosPool));
     }
@@ -111,7 +111,7 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
 
      for (i = 0; i < maxQueue; i++)
      {
-         if (queuePool[i].used == (bool)false)
+         if ((bool)false == queuePool[i].used)
          {
              queuePool[i].used = (bool)true;
              /* Update statistics */
@@ -131,7 +131,7 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
         handle = (QueueP_freertos *) &queuePool[i];
     }
 
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
         ret_handle = NULL_PTR;
     }
     else
@@ -152,14 +152,14 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
  */
 QueueP_Status QueueP_delete(QueueP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t       key;
     QueueP_Status   ret_val = QueueP_OK;
     QueueP_freertos *queue = (QueueP_freertos *)handle;
     Queue_Elem      *q;
 
-    if((queue != NULL_PTR) && (queue->used==(bool)true))
+    if((NULL_PTR != queue) && ((bool)true == queue->used))
     {
         q = &queue->queueHndl;
 
@@ -189,7 +189,7 @@ QueueP_Status QueueP_delete(QueueP_Handle handle)
  */
 void * QueueP_get(QueueP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t       key;
     QueueP_freertos *queue = (QueueP_freertos *)handle;
@@ -225,7 +225,7 @@ void * QueueP_get(QueueP_Handle handle)
  */
 QueueP_Status QueueP_put(QueueP_Handle handle, void *elem)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t       key;
     QueueP_Status   ret_val = QueueP_OK;
@@ -235,7 +235,7 @@ QueueP_Status QueueP_put(QueueP_Handle handle, void *elem)
 
     key = HwiP_disable();
 
-    if((queue != NULL_PTR) && (queue->used==(bool)true) && (elem != NULL_PTR))
+    if((NULL_PTR != queue) && ((bool)true == queue->used) && (NULL_PTR != elem))
     {
         q = &queue->queueHndl;
 
@@ -259,7 +259,7 @@ QueueP_Status QueueP_put(QueueP_Handle handle, void *elem)
  */
 QueueP_State QueueP_isEmpty(QueueP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     QueueP_State    ret_val;
     QueueP_freertos *queue = (QueueP_freertos *)handle;
@@ -281,7 +281,7 @@ QueueP_State QueueP_isEmpty(QueueP_Handle handle)
  */
 void * QueueP_getQPtr(QueueP_Handle handle)
 {
-    DebugP_assert((handle != NULL_PTR));
+    DebugP_assert(NULL_PTR != handle);
 
     QueueP_freertos *queue = (QueueP_freertos *)handle;
 

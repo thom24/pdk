@@ -57,7 +57,7 @@ typedef struct
     uintptr_t arg;
 } qnx_osal_hwi_info;
 
-#define QNX_OSAL_MAX_INTR_COUNT           (16)
+#define QNX_OSAL_MAX_INTR_COUNT           (16U)
 #define ISR_PULSE                          _PULSE_CODE_MINAVAIL
 
 static qnx_osal_hwi_info      g_hwi[QNX_OSAL_MAX_INTR_COUNT];
@@ -72,20 +72,20 @@ void *isr_thread (void *arg)
     qnx_osal_hwi_info *hwi = (qnx_osal_hwi_info *)arg;
     int             rcvid;
     struct _pulse   pulse;
-    int32_t         interruptNum;
+    uint32_t        interruptNum;
 
     while (1) {
         rcvid = MsgReceivePulse(hwi->chid, &pulse, sizeof(struct _pulse), NULL);
-        if (rcvid != -1) {
+        if (-1 != rcvid) {
             switch (pulse.code) {
                 case ISR_PULSE:
-                    interruptNum = (int32_t)pulse.value.sival_int;
+                    interruptNum = pulse.value.sival_int;
 
                     /* Call the callback function */
                     hwi->isrFxn(hwi->arg);
 
                     /* Check if application wants interrupt re-enabled */
-                    if(hwi->irq_autoEnable == 1) {
+                    if(1U == hwi->irq_autoEnable) {
                         HwiP_enableInterrupt(interruptNum);
                     }
                     break;
@@ -115,7 +115,7 @@ void HwiP_Params_init(HwiP_Params *params)
 /*
  *  ======== HwiP_create ========
  */
-HwiP_Handle HwiP_create(int32_t coreIntrNum, HwiP_Fxn hwiFxn,
+HwiP_Handle HwiP_create(uint32_t coreIntrNum, HwiP_Fxn hwiFxn,
                         const HwiP_Params *params)
 {
     pthread_t      tid;
@@ -128,7 +128,7 @@ HwiP_Handle HwiP_create(int32_t coreIntrNum, HwiP_Fxn hwiFxn,
     // NOTE: Override the interrupt priority pass as params->priority
     intrPriority = 21;
 
-    if (g_currIntrCount >= QNX_OSAL_MAX_INTR_COUNT) {
+    if (QNX_OSAL_MAX_INTR_COUNT <= g_currIntrCount) {
         DebugP_log0("MAXed out on the hwi structure");
         OSAL_Assert(1);
     }
@@ -137,7 +137,7 @@ HwiP_Handle HwiP_create(int32_t coreIntrNum, HwiP_Fxn hwiFxn,
 
 
     hwi->chid = ChannelCreate( _NTO_CHF_DISCONNECT | _NTO_CHF_UNBLOCK);
-    if(hwi->chid == -1)
+    if(-1 == hwi->chid)
     {
         DebugP_log1("Failed to create chid:%d", hwi->chid);
         OSAL_Assert(1);
@@ -148,7 +148,7 @@ HwiP_Handle HwiP_create(int32_t coreIntrNum, HwiP_Fxn hwiFxn,
     param.sched_priority = intrPriority;
     pthread_attr_setschedparam(&thread_attr, &param);
 
-    if (pthread_create(&tid, &thread_attr, (void *)isr_thread, (void *)hwi) != EOK) {
+    if (EOK != pthread_create(&tid, &thread_attr, (void *)isr_thread, (void *)hwi)) {
         DebugP_log0("Unable to create isr thread");
         OSAL_Assert(1);
     }
@@ -159,7 +159,7 @@ HwiP_Handle HwiP_create(int32_t coreIntrNum, HwiP_Fxn hwiFxn,
     hwi->isrFxn = hwiFxn;
     hwi->coreIntrNum = coreIntrNum;
     hwi->intrPriority = intrPriority;
-    hwi->arg = (uintptr_t)params->arg;
+    hwi->arg = params->arg;
     hwi->irq_autoEnable = params->autoEnable;
 
     /* Init the pulse for interrupt event */
@@ -176,7 +176,7 @@ HwiP_Handle HwiP_create(int32_t coreIntrNum, HwiP_Fxn hwiFxn,
      * _NTO_INTR_FLAGS_NO_UNMASK - Start with interrupt masked
      */
     hwi->evtId = InterruptAttachEvent (coreIntrNum, &hwi->isr_event,  0 /*_NTO_INTR_FLAGS_NO_UNMASK*/);
-    if(hwi->evtId == -1)
+    if(-1 == hwi->evtId)
     {
        DebugP_log0("InterruptAttachEvent failed");
        OSAL_Assert(1);
@@ -210,7 +210,7 @@ uintptr_t HwiP_disable(void)
 
     /* Create a spinLock and lock interrupts */
     spinlock_ptr = malloc(sizeof(intrspin_t));
-    OSAL_Assert(spinlock_ptr  == NULL);
+    OSAL_Assert(NULL == spinlock_ptr);
     memset( (void *) spinlock_ptr, 0, sizeof(intrspin_t) );
 
     InterruptLock(spinlock_ptr);
@@ -225,7 +225,7 @@ void HwiP_restore(uintptr_t key)
 {
     /* Enable interrupts */
 
-    OSAL_Assert((intrspin_t *) key == NULL);
+    OSAL_Assert(NULL == (intrspin_t *) key);
     InterruptUnlock((intrspin_t *) key);
     free((void *) key);
 }
@@ -233,7 +233,7 @@ void HwiP_restore(uintptr_t key)
 /*
  *  ======== HwiP_disableInterrupt ========
  */
-void HwiP_disableInterrupt(int32_t interruptNum)
+void HwiP_disableInterrupt(uint32_t interruptNum)
 {
     InterruptMask(interruptNum, -1); // -1, don't track mask/unmask count
 }
@@ -241,7 +241,7 @@ void HwiP_disableInterrupt(int32_t interruptNum)
 /*
  *  ======== HwiP_enableInterrupt ========
  */
-void HwiP_enableInterrupt(int32_t interruptNum)
+void HwiP_enableInterrupt(uint32_t interruptNum)
 {
     /* Unmask interrupt */
     InterruptUnmask (interruptNum, -1);
@@ -250,7 +250,7 @@ void HwiP_enableInterrupt(int32_t interruptNum)
 /*
  *  ======== HwiP_clearInterrupt ========
  */
-void HwiP_clearInterrupt(int32_t interruptNum)
+void HwiP_clearInterrupt(uint32_t interruptNum)
 {
   /* Empty */
 }

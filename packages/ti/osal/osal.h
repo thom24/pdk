@@ -306,16 +306,16 @@ typedef struct Osal_memRange_s {
 typedef struct Osal_HwAttrs_s
 {
     /*! CPU frequency in KHz */
-    int32_t  cpuFreqKHz;
+    uint32_t  cpuFreqKHz;
     /*! External Clock value in KHz */
-    int32_t  extClkKHz;
+    uint32_t  extClkKHz;
 #if defined(gnu_targets_arm_A15F)
     /*! Set Target processor list */
     uint32_t a15TargetProcMask;
 #endif
 #ifdef _TMS320C6X
     /*! Interrupt numbers for Event combiner groups (0-3) */
-    int32_t ECM_intNum[4];
+    uint32_t ECM_intNum[4];
 #endif
     /*! Hardware access type */
     Osal_HwAccessType hwAccessType;

@@ -54,38 +54,38 @@ extern "C" {
 /* AM65XX Core CPU frequency */
 #if defined (SOC_AM65XX)
 #if defined (BUILD_MCU1_0) || defined(BUILD_MCU1_1)
-  #define OSAL_TEST_CPU_FREQ_KHZ   (400000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (400000U)
 #else
-  #define OSAL_TEST_CPU_FREQ_KHZ   (800000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (800000U)
 #endif
 #endif
 
 /* AM572x Core CPU frequency */
 #if defined (SOC_AM572x)
 #if defined (BUILD_A15_0) || defined(BUILD_IPU1_0)
-  #define OSAL_TEST_CPU_FREQ_KHZ   (960000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (960000U)
 #endif
 #if defined (_TMS320C6X)
-  #define OSAL_TEST_CPU_FREQ_KHZ   (576000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (576000U)
 #endif
 #endif
 
 /* KeyStone parts Core CPU frequency */
 #if defined (SOC_K2G) || defined(SOC_K2E)
 #if defined (BUILD_A15_0)
-  #define OSAL_TEST_CPU_FREQ_KHZ   (800000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (800000U)
 #endif
 #if defined (_TMS320C6X)
-  #define OSAL_TEST_CPU_FREQ_KHZ   (900000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (900000U)
 #endif
 #endif
 
 /* TPR Core CPU frequency */
 #if defined (SOC_TPR12) || defined (SOC_AWR294X)
 #if defined (_TMS320C6X)
-  #define OSAL_TEST_CPU_FREQ_KHZ   (450000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (450000U)
 #else
-  #define OSAL_TEST_CPU_FREQ_KHZ   (400000)
+  #define OSAL_TEST_CPU_FREQ_KHZ   (400000U)
 #endif
 #endif
 

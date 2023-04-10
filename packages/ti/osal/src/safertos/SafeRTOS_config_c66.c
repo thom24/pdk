@@ -37,6 +37,7 @@
 /* SafeRTOS includes */
 #include "SafeRTOS_API.h"
 #include "SafeRTOSConfig.h"
+#include "SafeRTOS_priv.h"
 
 #include <ti/osal/CacheP.h>
 #include "ti/csl/csl_tsc.h"
@@ -115,7 +116,7 @@ portBaseType prvSetupHardware( void )
     Sciclient_configPrmsInit(&config);
 
     ret = Sciclient_init(&config);
-    if(  ret != CSL_PASS )
+    if(  CSL_PASS != ret )
     {
         xStatus = pdFAIL;
     }
@@ -123,7 +124,7 @@ portBaseType prvSetupHardware( void )
     {
         xStatus = prvC66xTickInterruptConfig();
     }
-    DebugP_assert((xStatus == pdPASS));    
+    DebugP_assert(pdPASS == xStatus);    
     vPortSetInterruptVectors();
 
     return xStatus;
@@ -196,7 +197,7 @@ void vApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorNum )
     portUInt32Type uxDispatchIndex;
     portUInt32Type uxIntDispatchTableSize = sizeof( axIntDispatchTable )/sizeof(axIntDispatchTable[0]);
 
-    pxDispatchAddress = ( portUInt32Type * )( pxCpuInterruptTable + ( 1 + ulInterruptVectorNum ) );
+    pxDispatchAddress = ( portUInt32Type * )( pxCpuInterruptTable + ( 1U + ulInterruptVectorNum ) );
     CSL_intcCpuIntrTable.currentVectId = ( Uint32 )pxDispatchAddress;
     pxIntDispatchFn = * ( ( vInterruptDispatchFn **  ) pxDispatchAddress );
 
@@ -227,7 +228,7 @@ static portBaseType prvC66xTickInterruptConfig( void )
     rmIrqReq.valid_params           = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                                       TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
     rmIrqReq.src_index              = 0U;
-    if (CSL_chipReadDNUM() == 0U)
+    if (0U == CSL_chipReadDNUM())
     {
         rmIrqReq.src_id                 = TISCI_DEV_TIMER0;
         rmIrqReq.dst_id                 = TISCI_DEV_C66SS0_CORE0;
@@ -246,7 +247,7 @@ static portBaseType prvC66xTickInterruptConfig( void )
     rmIrqReq.vint_status_bit_index  = 0U;
     rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-    return ( ( Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER) == CSL_PASS )? pdPASS : pdFAIL );
+    return ( ( CSL_PASS == Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER) )? pdPASS : pdFAIL );
 }
 /*-------------------------------------------------------------------------*/
 

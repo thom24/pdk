@@ -53,8 +53,8 @@ extern "C" {
 #undef  TIMERP_ANY_MASK
 #endif
 
-#define  EXTERNAL_CLOCK_KHZ_DEFAULT       (24000)
-#define  PMU_CLOCK_KHZ_DEFAULT            (1000000U)
+#define  EXTERNAL_CLOCK_KHZ_DEFAULT         (24000U)
+#define  PMU_CLOCK_KHZ_DEFAULT              (1000000U)
 
 #if defined(BUILD_MCU)
   #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
@@ -75,16 +75,16 @@ extern "C" {
 #undef   TIMERP_TIMER_FREQ_HI
 #endif
 
-#define  TIMERP_TIMER_FREQ_LO   ((int32_t) 19200000)
-#define  TIMERP_TIMER_FREQ_HI   ((int32_t) 0)
+#define  TIMERP_TIMER_FREQ_LO   (19200000U)
+#define  TIMERP_TIMER_FREQ_HI   (0U)
 
 #define TimerP_numTimerDevices          ((uint32_t) 20U )
 #if defined (BUILD_MCU)
   #define TIMERP_ANY_MASK               ((uint32_t) 0x00FF)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x00FF))
+  #define TIMERP_AVAILABLE_MASK         ((uint32_t) 0x00FF)
 #else
   #define TIMERP_ANY_MASK               ((uint32_t) 0x0FFF)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x0FFF))
+  #define TIMERP_AVAILABLE_MASK         ((uint32_t) 0x0FFF)
 #endif
 
 /* using the default timer base addresses */
@@ -98,7 +98,7 @@ extern "C" {
 #define TIMER_RLD_COUNT                 (0xFFF00000U)
 
 /* GTC count clock for A72 */
-#define  OSAL_SOC_MPU_GTC_CLK               ((int32_t) 200000)
+#define  OSAL_SOC_MPU_GTC_CLK               (200000U)
 
 /* Max number of various modules for NonOs */
 #define OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
@@ -134,32 +134,32 @@ extern "C" {
 
 #if defined (BUILD_MCU)
 /* Default DM Timer allocation for r5f cores in j721e   */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1 )   /*  MCU DM Timer 1  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2 )   /*  MCU DM Timer 2  */  
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 0 )   /*  DM Timer 12  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 1 )   /*  DM Timer 13  */   
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0        ( 2 )   /*  DM Timer 14  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 3 )   /*  DM Timer 15  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1U )   /*  MCU DM Timer 1  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2U )   /*  MCU DM Timer 2  */  
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 0U )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 1U )   /*  DM Timer 13  */   
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0        ( 2U )   /*  DM Timer 14  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 3U )   /*  DM Timer 15  */
 #endif
 
 #if defined (_TMS320C6X)
 /* Default DM Timer allocation for c66x cores in j721e   */
-#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_1        ( 0 )   /*  DM Timer 0  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_2        ( 1 )   /*  DM Timer 1  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_1        ( 0U )   /*  DM Timer 0  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C66X_2        ( 1U )   /*  DM Timer 1  */
 
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_1   ( 14 ) 
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_2   ( 15 )
-#define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_1  ( 21 )
-#define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_2  ( 20 )
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_1   ( 14U ) 
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C66X_2   ( 15U )
+#define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_1  ( 21U )
+#define OSAL_SAFERTOS_OS_TIMER_EVENT_ID_C66X_2  ( 20U )
 #endif
 
 #if defined (BUILD_C7X)
 /* Default DM Timer allocation for c7x cores in j721e   */
-#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 2 )   /*  DM Timer 2  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 2U )   /*  DM Timer 2  */
 
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 16 )
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 16U )
 
-#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13 )
+#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13U )
 #endif
 
 /* external references */

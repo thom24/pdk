@@ -43,7 +43,7 @@ extern uint32_t  gOsalSemAllocCnt, gOsalSemPeak;
  *  The order is important as the semaphore object has to be word aligned.
  */
 typedef struct SemaphoreP_safertos_s {
-    uint64_t          semObj[(safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t)+(1U))];
+    uint64_t          semObj[((safertosapiQUEUE_OVERHEAD_BYTES/sizeof(uint64_t)) + (1U))];
     xSemaphoreHandle  semHndl;
     bool              used;
 } SemaphoreP_safertos;
@@ -97,7 +97,7 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if ( gOsal_HwAttrs.extSemaphorePBlock.base != ( uintptr_t )0U )
+    if ( (uintptr_t)0U != gOsal_HwAttrs.extSemaphorePBlock.base )
     {
         /* pick up the external memory block configured */
         semPool        = ( SemaphoreP_safertos * ) gOsal_HwAttrs.extSemaphorePBlock.base;
@@ -110,7 +110,7 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
         semPool        = ( SemaphoreP_safertos * ) &gOsalSemPsafertosPool[0];
         maxSemaphores  = OSAL_SAFERTOS_CONFIGNUM_SEMAPHORE;
 
-        if( gOsalSemAllocCnt==0U )
+        if( 0U == gOsalSemAllocCnt )
         {
 			( void )memset(  ( void * )gOsalSemPsafertosPool,0,sizeof( gOsalSemPsafertosPool ) );
 		}
@@ -120,9 +120,9 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
 
      for ( i = 0; i < maxSemaphores; i++ )
      {
-         if ( semPool[i].used == FALSE )
+         if ( (bool)false == semPool[i].used )
          {
-             semPool[i].used = TRUE;
+             semPool[i].used = (bool)true;
              /* Update statistics */
              gOsalSemAllocCnt++;
              if ( gOsalSemAllocCnt > gOsalSemPeak )
@@ -140,12 +140,12 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
         handle = ( SemaphoreP_safertos * ) &semPool[i];
     }
 
-    if ( handle == NULL_PTR ) {
+    if ( NULL_PTR == handle ) {
         ret_handle = NULL_PTR;
     }
     else
     {
-        if ( params == NULL_PTR )
+        if ( NULL_PTR == params )
         {
             SemaphoreP_Params semParam;
             SemaphoreP_Params_init( &semParam );
@@ -153,7 +153,7 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
         }
         else
         {
-            if ( params->mode == SemaphoreP_Mode_BINARY )
+            if ( SemaphoreP_Mode_BINARY == params->mode )
             {
                 retVal = SemaphoreP_constructBinary( handle, count );
             }
@@ -164,10 +164,10 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
         }
 
         /* If there was an error reset the sem object and return NULL. */
-        if ( retVal != SemaphoreP_OK )
+        if ( SemaphoreP_OK != retVal )
         {
             key = HwiP_disable(  );
-            handle->used = FALSE;
+            handle->used = (bool)false;
             /* Found the osal semaphore object to delete */
             if ( gOsalSemAllocCnt > 0U )
             {
@@ -189,21 +189,21 @@ int32_t SemaphoreP_constructBinary( SemaphoreP_safertos *handle, uint32_t initCo
     int32_t status;
 
     portBaseType xResult = xSemaphoreCreateBinary((portInt8Type *)&(handle->semObj[0]), &handle->semHndl  );
-    if(  (  xResult != pdPASS  ) || (  handle->semHndl == NULL  )  )
+    if( ( pdPASS != xResult ) || ( NULL == handle->semHndl ) )
     {
         status = SemaphoreP_FAILURE;
     }
     else
     {
-        if( initCount == 0U )
+        if( 0U == initCount )
         {
             uint32_t            isSemTaken;
-            DebugP_assert(Osal_isInISRContext( ) == (bool)false );
+            DebugP_assert(0 == Osal_isInISRContext( ));
             /* SafeRTOS on BinarySemaphore create initializes semaphore with count of 1.
              * So we need to take semaphore to make count 0, if we are creating a binary semaphore with init count of 0.
              */
             isSemTaken = (uint32_t)xSemaphoreTake( handle->semHndl, safertosapiMAX_DELAY);
-            DebugP_assert(isSemTaken == (bool)true);
+            DebugP_assert(TRUE == isSemTaken);
         }
         status = SemaphoreP_OK;
     }
@@ -220,7 +220,7 @@ int32_t SemaphoreP_constructCounting( SemaphoreP_safertos *handle, uint32_t init
                                 initCount,
                                 (portInt8Type *)&(handle->semObj[0]),
 								&handle->semHndl  );
-    if(  (  xResult != pdPASS  ) || (  handle->semHndl == NULL  )  )
+    if( ( pdPASS != xResult ) || ( NULL == handle->semHndl ) )
     {
         status = SemaphoreP_FAILURE;
     }
@@ -237,7 +237,7 @@ int32_t SemaphoreP_constructCounting( SemaphoreP_safertos *handle, uint32_t init
  */
 SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
 {
-    DebugP_assert( ( handle != NULL_PTR ) );
+    DebugP_assert(NULL_PTR != handle);
 
     uintptr_t   key;
     SemaphoreP_Status ret = SemaphoreP_OK;
@@ -247,12 +247,12 @@ SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
      * NOTE : there is no delete Semaphore API in safertos.
      * We just memset the memory to zero.
      */
-    if( ( semaphore != NULL_PTR ) && ( semaphore->used==TRUE ) )
+    if( ( NULL_PTR != semaphore ) && ( (bool)true == semaphore->used ) )
     {
         memset(&semaphore->semObj, 0, sizeof(semaphore->semObj));
         semaphore->semHndl = NULL;
         key = HwiP_disable(  );
-        semaphore->used = FALSE;
+        semaphore->used = (bool)false;
         /* Found the osal semaphore object to delete */
         if ( gOsalSemAllocCnt > 0U )
         {
@@ -274,9 +274,9 @@ SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
  */
 void SemaphoreP_Params_init( SemaphoreP_Params *params )
 {
-    DebugP_assert( ( params != NULL_PTR ) );
+    DebugP_assert( NULL_PTR != params );
 
-    if( params != NULL_PTR )
+    if( NULL_PTR != params )
     {
       params->mode = SemaphoreP_Mode_COUNTING;
       params->name = ( char * ) NULL_PTR;
@@ -293,27 +293,27 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
     SemaphoreP_Status   ret_val;
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
-    DebugP_assert( ( handle != NULL_PTR ) );
-    if(  Osal_isInISRContext() == 1  )
+    DebugP_assert( NULL_PTR != handle );
+    if( 1 == Osal_isInISRContext() )
     {
         /* timeout is ignored when in ISR mode */
-        isSemTaken =(uint32_t) xSemaphoreTakeFromISR( pSemaphore->semHndl);
+        isSemTaken = (portBaseType)xSemaphoreTakeFromISR( pSemaphore->semHndl);
         safertosapiYIELD_FROM_ISR();
     }
     else
     {
-        if ( timeout == SemaphoreP_WAIT_FOREVER )
+        if ( SemaphoreP_WAIT_FOREVER == timeout )
         {
-            isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, safertosapiMAX_DELAY );
-            DebugP_assert(isSemTaken == pdPASS);
+            isSemTaken = (portBaseType)xSemaphoreTake( pSemaphore->semHndl, safertosapiMAX_DELAY );
+            DebugP_assert(pdPASS == isSemTaken);
         }
         else
         {
-            isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, timeout );
+            isSemTaken = (portBaseType)xSemaphoreTake( pSemaphore->semHndl, timeout );
         }
     }
 
-    if( isSemTaken == pdPASS)
+    if( pdPASS == isSemTaken )
     {
         ret_val = SemaphoreP_OK;
     }
@@ -330,10 +330,10 @@ SemaphoreP_Status SemaphoreP_pend( SemaphoreP_Handle handle, uint32_t timeout )
  */
 SemaphoreP_Status SemaphoreP_post( SemaphoreP_Handle handle )
 {
-    DebugP_assert( ( handle != NULL_PTR ) );
+    DebugP_assert( NULL_PTR != handle );
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
-    if(  Osal_isInISRContext() == 1  )
+    if( 1 == Osal_isInISRContext() )
     {
         xSemaphoreGiveFromISR( pSemaphore->semHndl);
         safertosapiYIELD_FROM_ISR();
@@ -369,7 +369,7 @@ int32_t SemaphoreP_getCount( SemaphoreP_Handle handle )
 	portBaseType xResult;
 	portUnsignedBaseType uxCount;
 
-    DebugP_assert( ( handle != NULL_PTR ) );
+    DebugP_assert( NULL_PTR != handle );
 
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
@@ -387,12 +387,12 @@ SemaphoreP_Status SemaphoreP_reset( SemaphoreP_Handle handle )
     SemaphoreP_Status ret_val = SemaphoreP_OK;
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
-    DebugP_assert( ( handle != NULL_PTR ) );
+    DebugP_assert( NULL_PTR != handle );
 
     vTaskSuspendScheduler(  );
     do {
         isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, 0U );
-    } while( isSemTaken == pdPASS );
+    } while( (uint32_t)pdPASS == isSemTaken );
     xTaskResumeScheduler(  );
 
     return ( ret_val );

@@ -53,7 +53,7 @@ extern "C" {
 #undef  TIMERP_ANY_MASK
 #endif
 
-#define  EXTERNAL_CLOCK_KHZ_DEFAULT       (24000)
+#define  EXTERNAL_CLOCK_KHZ_DEFAULT       (24000U)
 #define  PMU_CLOCK_KHZ_DEFAULT            (1000000U)
 #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
 
@@ -65,21 +65,21 @@ extern "C" {
 #undef   TIMERP_TIMER_FREQ_HI
 #endif
 
-#define  TIMERP_TIMER_FREQ_LO   ((int32_t) 19200000)
-#define  TIMERP_TIMER_FREQ_HI   ((int32_t) 0)
+#define  TIMERP_TIMER_FREQ_LO           (19200000U)
+#define  TIMERP_TIMER_FREQ_HI           (0U)
 
 #define TimerP_numTimerDevices          ((uint32_t) 20U )
 #if defined (BUILD_MCU)
   #define TIMERP_ANY_MASK               ((uint32_t) 0x03FF)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x03FF))
+  #define TIMERP_AVAILABLE_MASK         ((uint32_t) 0x03FF)
 #endif
 #if defined (BUILD_MPU)
   #define TIMERP_ANY_MASK               ((uint32_t) 0x0FFF)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x0FFF))
+  #define TIMERP_AVAILABLE_MASK         ((uint32_t) 0x0FFF)
 #endif
 #if defined (BUILD_C7X)
   #define TIMERP_ANY_MASK               ((uint32_t) 0x00FF)
-  #define TIMERP_AVAILABLE_MASK       ((uint32_t)(0x00FF))
+  #define TIMERP_AVAILABLE_MASK         ((uint32_t) 0x00FF)
 #endif
 
 /* using the default timer base addresses */
@@ -93,7 +93,7 @@ extern "C" {
 #define TIMER_RLD_COUNT                 (0xFFF00000U)
 
 /* GTC count clock for A53 */
-#define  OSAL_SOC_MPU_GTC_CLK               ((int32_t) 200000)
+#define  OSAL_SOC_MPU_GTC_CLK               (200000U)
 
 /* Max number of various modules for NonOs */
 #define OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC   ((uint32_t) 80U)
@@ -127,14 +127,14 @@ extern "C" {
  
 #if defined (BUILD_MCU)
 /* Default DM Timer allocation for r5f cores in j784s4   */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1 )   /*  MCU DM Timer 1  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2 )   /*  MCU DM Timer 2  */  
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 4 )   /*  DM Timer 12  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 5 )   /*  DM Timer 13  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0        ( 6 )   /*  DM Timer 12  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 7 )   /*  DM Timer 13  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU4_0        ( 8 )   /*  DM Timer 12  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_MCU4_1        ( 9 )   /*  DM Timer 13  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1U )   /*  MCU DM Timer 1  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2U )   /*  MCU DM Timer 2  */  
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 4U )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 5U )   /*  DM Timer 13  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0        ( 6U )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 7U )   /*  DM Timer 13  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU4_0        ( 8U )   /*  DM Timer 12  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_MCU4_1        ( 9U )   /*  DM Timer 13  */
 
 #endif
 
@@ -153,23 +153,23 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
  */
 void OsalCfgClecAccessCtrl (bool onlyInSecure);
 
-#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 0 )   /*  DMTimer 0  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 0U )   /*  DMTimer 0  */
 
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 14 )
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 14U )
 
-#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_2         ( 1 )   /*  DMTimer 1  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_2         ( 1U )   /*  DMTimer 1  */
 
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2    ( 14 )
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2    ( 14U )
 
-#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_3         ( 2 )   /*  DMTimer 2  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_3         ( 2U )   /*  DMTimer 2  */
 
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_3    ( 14 )
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_3    ( 14U )
 
-#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_4         ( 3 )   /*  DMTimer 3  */
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_4         ( 3U )   /*  DMTimer 3  */
 
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_4    ( 14 )
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_4    ( 14U )
 
-#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13 )
+#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13U )
 
 #endif
 

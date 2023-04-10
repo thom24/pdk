@@ -78,7 +78,7 @@ extern uint32_t CycleprofilerP_getTimeStamp(void);
  * to refresh the higher bits of the PMU counter in R5F periodically to handle overflow.
  * FreeRTOS already handles this by periodically invoking the same from OS tick timer ISR.
  */
-extern void CycleprofilerP_refreshCounter();
+extern void CycleprofilerP_refreshCounter(void);
 
 #ifdef __cplusplus
 }

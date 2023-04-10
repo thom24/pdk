@@ -40,7 +40,7 @@
 #include <ti/osal/CacheP.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 
-void CacheP_wb(const void * addr, int32_t size)
+void CacheP_wb(const void * addr, uint32_t size)
 {
   //TODO: Integrate to CSL once C7x arch is supported
   //uint32_t alignedAddr = (uint32_t)addr & ~((uint32_t)0x3u);
@@ -57,7 +57,7 @@ void CacheP_wb(const void * addr, int32_t size)
   //}
 }
 
-void CacheP_wbInv(const void * addr, int32_t size)
+void CacheP_wbInv(const void * addr, uint32_t size)
 {
   //TODO: Integrate to CSL once C7x arch is supported
   //uint32_t alignedAddr = (uint32_t)addr & ~((uint32_t)0x3u);
@@ -74,7 +74,7 @@ void CacheP_wbInv(const void * addr, int32_t size)
   //}
 }
 
-void CacheP_Inv(const void * addr, int32_t size)
+void CacheP_Inv(const void * addr, uint32_t size)
 {
   //TODO: Integrate to CSL once C7x arch is supported
   //uint32_t alignedAddr = (uint32_t)addr & ~((uint32_t)0x3u);

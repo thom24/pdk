@@ -45,10 +45,7 @@ extern "C" {
 #include <ti/osal/osal.h>
 #include <ti/osal/soc/osal_soc.h>
 #include <ti/csl/csl_types.h>
-
-typedef struct osalArch_Config_s {
-    bool disableIrqOnInit;
-}osalArch_Config_t;
+#include <ti/csl/csl_error.h>
 
 /* Host emulation defines _TMS320C6X which needs to be */
 #if defined (HOST_EMULATION)
@@ -64,69 +61,86 @@ typedef struct osalArch_Config_s {
 #include <ti/csl/csl_chipAux.h>
 #include <ti/csl/arch/csl_arch.h>
 
-typedef struct hwi_struct {
-      uint32_t                      intNum;
-      CSL_IntcObj                   intcObj;
-      CSL_IntcHandle                handle;
- } Hwi_Struct;
 #elif defined (__aarch64__)
 #include <ti/csl/arch/a53/csl_a53.h>
 #include <ti/csl/arch/a53/interrupt.h>
 #include <ti/csl/arch/a53/csl_a53v8misc.h>
-
-typedef struct hwi_struct {
-  uint32_t                          intNum;
-} Hwi_Struct;
 
 #elif defined (__ARM_ARCH_7A__) && !defined (SOC_AM437x) &&  !defined(SOC_AM335x)
 #include <ti/csl/csl_a15.h>
 #include <ti/csl/csl_armGic.h>
 #include <ti/csl/csl_armGicAux.h>
 
-typedef struct hwi_struct {
-  uint32_t                          intNum;
-  CSL_ArmGicIntrParams_t            gicParams;
-} Hwi_Struct;
 #elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') 
 #include <ti/csl/arch/csl_arch.h>
-typedef struct hwi_struct {
-    uint32_t                      intNum;
-} Hwi_Struct;
+
 #elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32)
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/soc.h>
 #if	defined(__TI_ARM_V7M4__) && !defined(BUILD_M4F)
 #include <ti/csl/cslr_unicache_cfg.h>
 #endif
+#endif
 
+typedef struct osalArch_Config_s {
+    bool disableIrqOnInit;
+}osalArch_Config_t;
+
+#ifdef _TMS320C6X
 typedef struct hwi_struct {
-    uint32_t                      intNum;
+      uint32_t									intNum;
+      CSL_IntcObj               intcObj;
+      CSL_IntcHandle            handle;
+ } Hwi_Struct;
+
+#elif defined (__aarch64__)
+typedef struct hwi_struct {
+  uint32_t                      intNum;
 } Hwi_Struct;
+
+#elif defined (__ARM_ARCH_7A__) && !defined (SOC_AM437x) &&  !defined(SOC_AM335x)
+typedef struct hwi_struct {
+  uint32_t                      intNum;
+  CSL_ArmGicIntrParams_t        gicParams;
+} Hwi_Struct;
+
+#elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R')
+typedef struct hwi_struct {
+    uint32_t                    intNum;
+} Hwi_Struct;
+
+#elif (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'M') && defined(__ARM_FEATURE_SIMD32)
+typedef struct hwi_struct {
+    uint32_t                    intNum;
+} Hwi_Struct;
+
 #elif defined(SOC_AM437x) || defined(SOC_AM335x)
 typedef struct hwi_struct {
-  uint32_t     intNum;
-  HwiP_Fxn     fxn;
-  void*        arg;
+  uint32_t     									intNum;
+  HwiP_Fxn     									fxn;
+  void*        									arg;
 } Hwi_Struct;
 #else
 typedef struct hwi_struct {
   /* TBD */
-  uint32_t reserved;
+  uint32_t 											reserved;
 } Hwi_Struct;
 #endif
-
 
 /* TimeStamp Provider structure */
 typedef struct timeStamp_struct
 {
-    uint32_t    lo;
-    uint32_t    hi;
+    uint32_t    								lo;
+    uint32_t    								hi;
 }TimeStamp_Struct;
 
+#define  SECURE_ENABLE                      (1U)
+#define  SECURE_DISABLE                     (0U)
 
-#define  TIMERP_EVENT_NOT_AVAILABLE (-(int32_t) (1u))
-#define  TIMERP_INTR_USER_CONFIGURE (-(int32_t) (2u))
-#define  TIMERP_EVENT_USER_CONFIGURE (-(int32_t) (3u))
+/** TimerP Flags */
+#define  TIMERP_EVENT_NOT_AVAILABLE         (-(int32_t)(1))
+#define  TIMERP_INTR_USER_CONFIGURE         (-(int32_t)(2))
+#define  TIMERP_EVENT_USER_CONFIGURE        (-(int32_t)(3))
 
 /*
  *  @brief    TimerP Information structure
@@ -139,9 +153,9 @@ typedef struct TimerP_dmTimerDefault_s {
                              persist for the life of the clock instance.
                              This can be used for debugging purposes, or
                              set to NULL if not needed. */
-    uint32_t baseAddr;   /*< timer base address */
-    int32_t  intNum;     /*< timer Interrupt number */
-    int32_t  eventId;    /*< timer event Id */
+    uintptr_t baseAddr;      /*< timer base address */
+    int32_t  intNum;        /*< timer Interrupt number */
+    int32_t  eventId;       /*< timer event Id */
 } TimerP_dmTimerDefault;
 
 
@@ -156,11 +170,11 @@ typedef struct TimerP_timer64Default_s {
                              persist for the life of the clock instance.
                              This can be used for debugging purposes, or
                              set to NULL if not needed. */
-    uint32_t baseAddr;     /*< timer base address */
-    int32_t  intNumLo;     /*< timer Interrupt number for timer Lo*/
-    int32_t  intNumHi;     /*< timer Interrupt number for timer Hi*/
-    int32_t  eventIdLo;    /*< timer lo event Id */
-    int32_t  eventIdHi;    /*< timer hi event Id */
+    uintptr_t baseAddr;     /*< timer base address */
+    uint32_t  intNumLo;     /*< timer Interrupt number for timer Lo*/
+    uint32_t  intNumHi;     /*< timer Interrupt number for timer Hi*/
+    uint32_t  eventIdLo;    /*< timer lo event Id */
+    uint32_t  eventIdHi;    /*< timer hi event Id */
 } TimerP_timer64Default;
 
 /*
@@ -174,9 +188,9 @@ typedef struct TimerP_rtiTimerDefault_s {
                              persist for the life of the clock instance.
                              This can be used for debugging purposes, or
                              set to NULL if not needed. */
-    uint32_t baseAddr;   /*< timer base address */
-    int32_t  intNum;     /*< timer Interrupt number */
-    int32_t  eventId;    /*< timer event Id (C66x only) */
+    uint32_t baseAddr;      /*< timer base address */
+    uint32_t  intNum;       /*< timer Interrupt number */
+    uint32_t  eventId;      /*< timer event Id (C66x only) */
 } TimerP_rtiTimerDefault;
 
 #if defined(SOC_AM571x) || defined(SOC_AM572x) || defined(SOC_AM574x) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_DRA72x) || defined(SOC_DRA75x) || defined(SOC_DRA78x) || defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) ||defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)
@@ -184,12 +198,12 @@ typedef struct TimerP_rtiTimerDefault_s {
 /* This function returns the lower 32 bits of the
  * internal frequency set for the timer
  */
-int32_t TimerP_getDefaultFreqLo(uint32_t timerId);
+uint32_t TimerP_getDefaultFreqLo(uint32_t timerId);
 
 /* This function returns the higher 32 bits of the
  * internal frequency set for the timer
  */
-int32_t TimerP_getDefaultFreqHi(uint32_t timerId);
+uint32_t TimerP_getDefaultFreqHi(uint32_t timerId);
 
 #if defined (BUILD_MCU)
 /*
@@ -250,7 +264,7 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue);
 void OsalArch_oneTimeInit(void);
 
 /* Below function registers the interrupt for a given ISR */
-HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
+HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                           const HwiP_Params *params);
 
 #if defined (BUILD_MCU)
@@ -258,7 +272,7 @@ HwiP_Handle OsalArch_HwiPCreate(int32_t interruptNum, HwiP_Fxn hwiFxn,
  * Below function registers the direct interrupt for a given ISR. Note
  * that this is supported only for R5F cores on select SoCs.
  */
-HwiP_Handle OsalArch_HwiPCreateDirect(int32_t interruptNum, HwiP_DirectFxn hwiFxn,
+HwiP_Handle OsalArch_HwiPCreateDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
                                       const HwiP_Params *params);
 #endif
 
@@ -269,7 +283,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle);
 void             osalArch_TimestampGet64(TimeStamp_Struct *timeStamp);
 void             osalArch_TimestampCcntAutoRefresh(uintptr_t arg);
 void             osalArch_TimestampInit(void);
-int32_t          osalArch_TimeStampGetFreqKHz(void);
+uint32_t          osalArch_TimeStampGetFreqKHz(void);
 extern           void osal_TimestampProvider_initCCNT(void);
 extern           uint32_t osal_TimestampProvider_getOverflowCCNT(void);
 
@@ -280,12 +294,12 @@ void OsalArch_gicInit(void);
 #endif
 #endif
 
-#ifdef _TMS320C6X
+#if defined (_TMS320C6X) || (BUILD_C7X)
 /* Returns the HwiP_Handle corresponding to an interrupt number */
-HwiP_Handle OsalArch_getHandle(int32_t interruptNum);
+HwiP_Handle OsalArch_getHandle(uint32_t interruptNum);
 
 /* Returns the event ID corresponding to a interrupt number*/
-int32_t OsalArch_getEventId(int32_t interruptNum);
+uint32_t OsalArch_getEventId(uint32_t interruptNum);
 #endif
 
 extern Osal_HwAttrs  gOsal_HwAttrs;
@@ -303,6 +317,7 @@ void SemaphoreP_compileTime_SizeChk(void);
 void HwiP_compileTime_SizeChk(void);
 
 void osalArch_Init (osalArch_Config_t *cfg);
+__attribute__((weak)) void vInitMmu( void );
 
 #if defined(BUILD_MCU)
 /**

@@ -276,6 +276,30 @@ xMPU_CONFIG_PARAMETERS  gMPUConfigParms[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* ulSubRegionDisable */
         .ulSubRegionDisable     = mpuREGION_ALL_SUB_REGIONS_ENABLED,
     },
+    {
+      0U
+    },
+    {
+      0U
+    },
+    {
+      0U
+    },
+    {
+      0U
+    },
+    {
+      0U
+    },
+    {
+      0U
+    },
+    {
+      0U
+    },
+    {
+      0U
+    }  
 };
 
 /* ========================================================================== */
@@ -338,7 +362,7 @@ static portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAcce
                            CSL_ARM_R5_MPU_REGION_AC_AP_SHIFT);
     accessCtrlRegVal |= ( xMPUconfigAccess->ulshareable <<
                            CSL_ARM_R5_MPU_REGION_AC_S_SHIFT);
-    if (xMPUconfigAccess->ulcacheable == 1U)
+    if (1U == xMPUconfigAccess->ulcacheable)
     {
         tex = (1U << 2U);
         tex |= (xMPUconfigAccess->ulcachePolicy);
@@ -353,10 +377,10 @@ static portUInt32Type xConfigureMPUAccessCtrl(xMPU_CONFIG_ACCESS *xMPUconfigAcce
         accessCtrlRegVal |=
                         ( tex << CSL_ARM_R5_MPU_REGION_AC_TEX_SHIFT);
         accessCtrlRegVal |=
-                        ( gMemAttr[(portUInt32Type)xMPUconfigAccess->ulmemAttr][1UL] <<
+                        ( (portUInt32Type)gMemAttr[(portUInt32Type)xMPUconfigAccess->ulmemAttr][1UL] <<
                         ((portUInt32Type)CSL_ARM_R5_MPU_REGION_AC_B_SHIFT));
         accessCtrlRegVal |=
-                        ( gMemAttr[(portUInt32Type)xMPUconfigAccess->ulmemAttr][2UL] <<
+                        ( (portUInt32Type)gMemAttr[(portUInt32Type)xMPUconfigAccess->ulmemAttr][2UL] <<
                         ((portUInt32Type)CSL_ARM_R5_MPU_REGION_AC_C_SHIFT));
     }
     return accessCtrlRegVal;

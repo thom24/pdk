@@ -116,7 +116,7 @@ void LoadP_reset(void)
     {
         pHndl = &gLoadP_freertos.taskLoadObj[i];
 
-        if (pHndl->used == (bool)true)
+        if ((bool)true == pHndl->used )
         {
             pHndl->threadTime = 0U;
         }
@@ -133,7 +133,7 @@ LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stats)
     TaskStatus_t        tskStat;
     uint32_t            tskId;
 
-    if((stats != NULL_PTR) && (taskHandle != NULL_PTR))
+    if((NULL_PTR != stats) && (NULL_PTR != taskHandle))
     {
         vTaskSuspendAll();
 
@@ -143,7 +143,7 @@ LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stats)
 
         pHndl = &gLoadP_freertos.taskLoadObj[tskId];
 
-        if ((pHndl->used == (bool)true) && (pHndl->pTsk == taskHandle))
+        if (((bool)true == pHndl->used) && (pHndl->pTsk == taskHandle))
         {
             vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk), &tskStat, pdFALSE, eRunning);
             stats->threadTime  = pHndl->threadTime;
@@ -210,7 +210,7 @@ void LoadP_update(void)
     {
         pHndl = &gLoadP_freertos.taskLoadObj[i];
 
-        if ((pHndl->used == (bool)true) && (pHndl->pTsk != NULL_PTR))
+        if (((bool)true == pHndl->used) && (NULL_PTR != pHndl->pTsk))
         {
             vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk),
                           &tskStat,

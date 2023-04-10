@@ -48,6 +48,7 @@
 #include <c7x.h>
 
 #include <ti/csl/soc.h>
+#include <ti/osal/soc/j721e/osal_soc.h>
 
 #if defined (BUILD_C7X)
 #include <ti/csl/csl_clec.h>
@@ -71,7 +72,9 @@
 /*                          Function Declarations                             */
 /* ========================================================================== */
 
+/* Applications can choose to define this function or declare it as an extern to reuse this definition. */
 void Osal_initMmuDefault(void);
+
 /**< Simple wrapper for FreeRTOS port Mmu_map(), as the paramters for different arch
 		differ */
 static bool OsalMmuMap(uint64_t vaddr, uint64_t paddr, size_t size,
@@ -109,17 +112,17 @@ static void OsalInitMmu(bool isSecure)
     }
 
     /* Register region */
-    (void)OsalMmuMap(0x00000000U, 0x00000000U, 0x20000000U, &attrs, isSecure);
-    (void)OsalMmuMap(0x20000000U, 0x20000000U, 0x20000000U, &attrs, isSecure);
-    (void)OsalMmuMap(0x40000000U, 0x40000000U, 0x20000000U, &attrs, isSecure);
-    (void)OsalMmuMap(0x60000000U, 0x60000000U, 0x10000000U, &attrs, isSecure);
-    (void)OsalMmuMap(0x78000000U, 0x78000000U, 0x08000000U, &attrs, isSecure); /* CLEC */
+    OsalMmuMap(0x00000000U, 0x00000000U, 0x20000000U, &attrs, isSecure);
+    OsalMmuMap(0x20000000U, 0x20000000U, 0x20000000U, &attrs, isSecure);
+    OsalMmuMap(0x40000000U, 0x40000000U, 0x20000000U, &attrs, isSecure);
+    OsalMmuMap(0x60000000U, 0x60000000U, 0x10000000U, &attrs, isSecure);
+    OsalMmuMap(0x78000000U, 0x78000000U, 0x08000000U, &attrs, isSecure); /* CLEC */
 
     attrs.attrIndx = Mmu_AttrIndx_MAIR7;
-    (void)OsalMmuMap(0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure); /* DDR */
-    (void)OsalMmuMap(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure); /* DDR */
-    (void)OsalMmuMap(0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure); /* MSMC - 8MB */
-    (void)OsalMmuMap(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, isSecure); /* OCMC - 512KB */
+    OsalMmuMap(0x80000000U, 0x80000000U, 0x20000000U, &attrs, isSecure); /* DDR */
+    OsalMmuMap(0xA0000000U, 0xA0000000U, 0x20000000U, &attrs, isSecure); /* DDR */
+    OsalMmuMap(0x70000000U, 0x70000000U, 0x00800000U, &attrs, isSecure); /* MSMC - 8MB */
+    OsalMmuMap(0x41C00000U, 0x41C00000U, 0x00080000U, &attrs, isSecure); /* OCMC - 512KB */
 
     /*
      * DDR range 0xA0000000 - 0xAA000000 : Used as RAM by multiple
@@ -127,7 +130,7 @@ static void OsalInitMmu(bool isSecure)
      * IPC VRing Buffer - uncached
      */
     attrs.attrIndx =  Mmu_AttrIndx_MAIR4;
-    (void)OsalMmuMap(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure);
+    OsalMmuMap(0xAA000000U, 0xAA000000U, 0x02000000U, &attrs, isSecure);
 
     return;
 }
@@ -157,9 +160,6 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure)
         CSL_clecConfigEvent(clecBaseAddr, i, &cfgClec);
     }
 }
-
-
-
 
 void Osal_initMmuDefault(void)
 {
