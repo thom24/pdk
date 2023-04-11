@@ -118,6 +118,7 @@ if [[ $FW_SOC == *"hs-fs"* ]]; then
   FW_SOC_TYPE=-hs-fs-enc
   FW_SOC=${FW_SOC%-hs-fs}
   BIN_EXT=-hs-fs-enc
+  IS_HS_FS=y
 fi
 
 export SCI_CLIENT_IN_SOC_DIR=$SCI_CLIENT_DIR/soc/sysfw/binaries
@@ -272,13 +273,22 @@ else
     export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/rom_degenerateKey.pem
     $SBL_CERT_GEN -b $FIRMWARE_SILICON -o $SYSFW_SE_SIGNED -c DMSC_I -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
     else
-    $ECHO "Generating outer certificate for " $SYSFW_SE_INNER_CERT
-    export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/k3_dev_mpk.pem
-    $SBL_CERT_GEN -b $SYSFW_SE_INNER_CERT -o $SYSFW_SE_CUST_CERT -c DMSC_O -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
+    if [ "$IS_HS_FS" = "y" ]; then
+      $ECHO "Skipping Outer Certificate generation for HS-FS device"
+    else
+      $ECHO "Generating outer certificate for " $SYSFW_SE_INNER_CERT
+      export SBL_CERT_KEY=$ROOTDIR/ti/build/makerules/k3_dev_mpk.pem
+      $SBL_CERT_GEN -b $SYSFW_SE_INNER_CERT -o $SYSFW_SE_CUST_CERT -c DMSC_O -l $SYSFW_LOAD_ADDR -k $SBL_CERT_KEY
+    fi
 
     $ECHO "Generating the Header file for " $FIRMWARE_SILICON
-    $CAT $SYSFW_SE_CUST_CERT $FIRMWARE_SILICON > $SYSFW_SE_SIGNED
-    $RM -f $SYSFW_SE_CUST_CERT
+
+    if [ "$IS_HS_FS" = "y" ]; then
+      $CAT $SYSFW_SE_INNER_CERT $FIRMWARE_SILICON > $SYSFW_SE_SIGNED
+    else
+      $CAT $SYSFW_SE_CUST_CERT $FIRMWARE_SILICON > $SYSFW_SE_SIGNED
+      $RM -f $SYSFW_SE_CUST_CERT
+    fi
     fi
 fi
 $ECHO "Generating the Header file for the soc in the folder"
