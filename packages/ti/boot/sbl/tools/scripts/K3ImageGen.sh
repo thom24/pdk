@@ -98,6 +98,7 @@ then
     rm -f $BIN_PATH/$APP_OUT_NAME.appimage $BIN_PATH/$APP_OUT_NAME.appimage.signed
     "$TOOLS_PATH/multicoreImageGen/bin/MulticoreImageGen" LE $Dev_ID $BIN_PATH/$APP_OUT_NAME.appimage $COREID $APP_RPRC
     "$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh" -b $BIN_PATH/$APP_OUT_NAME.appimage -o $BIN_PATH/$APP_OUT_NAME.appimage.signed -c R5 -l 0x0 -k $PDK_INSTALL_PATH/ti/build/makerules/k3_dev_mpk.pem
+    "$PDK_INSTALL_PATH/ti/build/makerules/x509CertificateGen.sh" -b $BIN_PATH/$APP_OUT_NAME.appimage -o $BIN_PATH/$APP_OUT_NAME.appimage.hs_fs -c R5 -l 0x0 -k $PDK_INSTALL_PATH/ti/build/makerules/rom_degenerateKey.pem
 fi
 
 #Undefine the image_gen variable to avoid re generation of the app Image.
