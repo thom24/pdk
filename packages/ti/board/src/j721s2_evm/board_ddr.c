@@ -414,9 +414,13 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     uint32_t ddrInstance;
     Board_DdrHandle ddrHandle;
 
-    /* Unlock the PLL register access for DDR clock bypass */
+    /* Unlock the PLL register access for DDR0 clock bypass */
     HW_WR_REG32(BOARD_PLL12_LOCK0, KICK0_UNLOCK);
     HW_WR_REG32(BOARD_PLL12_LOCK1, KICK1_UNLOCK);
+
+    /* Unlock the PLL register access for DDR1 clock bypass */
+    HW_WR_REG32(BOARD_PLL26_LOCK0, KICK0_UNLOCK);
+    HW_WR_REG32(BOARD_PLL26_LOCK1, KICK1_UNLOCK);
 
     HW_WR_REG32(BOARD_DDR_LOCK0, KICK0_UNLOCK);
     HW_WR_REG32(BOARD_DDR_LOCK1, KICK1_UNLOCK);
@@ -465,6 +469,8 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     /* Lock the register access */
     HW_WR_REG32(BOARD_PLL12_LOCK0, KICK_LOCK);
     HW_WR_REG32(BOARD_PLL12_LOCK1, KICK_LOCK);
+    HW_WR_REG32(BOARD_PLL26_LOCK0, KICK_LOCK);
+    HW_WR_REG32(BOARD_PLL26_LOCK1, KICK_LOCK);
     HW_WR_REG32(BOARD_DDR_LOCK0, KICK_LOCK);
     HW_WR_REG32(BOARD_DDR_LOCK1, KICK_LOCK);
     HW_WR_REG32(BOARD_CTRL_MMR_PART5_LOCK0, KICK_LOCK);

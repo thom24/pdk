@@ -63,8 +63,13 @@ extern "C" {
 #define BOARD_CTRL_MMR_PART5_LOCK0              (0x115008U)
 #define BOARD_CTRL_MMR_PART5_LOCK1              (0x11500CU)
 
+/* DDR0 PLL */
 #define BOARD_PLL12_LOCK0                       (0x68C010U)
 #define BOARD_PLL12_LOCK1                       (0x68C014U)
+
+/* DDR1 PLL */
+#define BOARD_PLL26_LOCK0                       (0x69A010U)
+#define BOARD_PLL26_LOCK1                       (0x69A014U)
 
 #define BOARD_DDR_SRAM_MAX                      (512U)
 
