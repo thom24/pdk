@@ -180,16 +180,6 @@ ifeq ($(MAKERULEDIR), )
   export MAKERULEDIR
 endif
 
-# Select the SBL_OBJ_COPY to use.
-#
-SBL_OBJ_COPY := $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy
-#SoCs like TPR12 do not have GCC tool. So we package it as part of SBL
-#TI ARM CGT objcopy does not copy .data sections correctly so cannot be used
-ifeq ("$(wildcard ${TOOLCHAIN_PATH_GCC_ARCH64})","")
-$(error gcc-arm compiler not found. please download it by running setup_psdk_rtos.sh)
-endif
-export SBL_OBJ_COPY
-
 # EFUSE_DEFAULT - R5 ROM will run the SBL in lockstep mode in lockstep
 # #                 enabled devices and in split mode, if the devices do
 # #                 not support lockstep.

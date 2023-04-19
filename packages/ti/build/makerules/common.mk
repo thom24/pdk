@@ -424,6 +424,8 @@ SBL_OBJ_COPY?=$(TOOLCHAIN_PATH_GCC)/bin/arm-none-eabi-objcopy$(EXE_EXT)
 endif
 ifneq ("$(wildcard $(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT))","")
 SBL_OBJ_COPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$(EXE_EXT)
+else
+$(error gcc-arm compiler not found. Please refer user guide to download the same)
 endif
 ifneq ("$(wildcard $(PDK_SBL_AUTO_COMP_PATH)/tools)","")
 SBL_TOOLS_PATH=$(PDK_SBL_AUTO_COMP_PATH)/tools
@@ -614,15 +616,10 @@ endif
 SBL_BIN_FILE=sbl_img_bin
 SBL_OBJ_COPY_OPTS := --gap-fill=0xff
 
-is_obj_copy_util_available:
-	ifeq ($(SBL_OBJ_COPY), "")
-		$(error gcc-arm compiler not found. Please refer user guide to download the same)
-	endif
-
-sbl_img_bin: is_obj_copy_util_available $(EXE_NAME)
+sbl_img_bin: $(EXE_NAME)
 	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $< $(SBL_BIN_PATH)
 
-keywr_imagegen: is_obj_copy_util_available $(SBL_BIN_FILE)
+keywr_imagegen: $(SBL_BIN_FILE)
 	$(SBL_OBJ_COPY) $(SBL_OBJ_COPY_OPTS) -O binary $(EXE_NAME) $(SBL_BIN_PATH)
 	$(ECHO) \# Appending certificate to keywriter binary file.
 	$(CAT) $(KEYWRITER_APP_DIR)/x509cert/final_certificate.bin >> $(SBL_BIN_PATH)
@@ -728,7 +725,7 @@ endif
 #SBL App image generation
 sbl_appimagegen: $(SBL_APPIMAGE_PATH) $(SBL_APP_BINIMAGE_PATH)
 
-$(SBL_APP_BINIMAGE_PATH): is_obj_copy_util_available $(EXE_NAME)
+$(SBL_APP_BINIMAGE_PATH): $(EXE_NAME)
   ifeq ($($(APP_NAME)_SBL_APP_BINIMAGEGEN),yes)
 	$(SBL_OBJ_COPY) $(EXE_NAME) -O binary $($(APP_NAME)_SBL_APP_BIN_SECTIONS) $(SBL_APP_BINIMAGE_PATH)
 	$(ECHO) \# App Hex image $(SBL_APP_BINIMAGE_PATH) created.
