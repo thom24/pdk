@@ -132,7 +132,7 @@ static void I2C_close_v1(I2C_Handle handle)
                 }
 
                 /* Destruct the Hwi */
-                (void)I2C_osalHardwareIntDestruct(object->hwi, (int32_t)hwAttrs->eventId);
+                (void)I2C_osalHardwareIntDestruct(object->hwi, hwAttrs->eventId);
             }
 
             /* Destruct the instance lock */
@@ -746,8 +746,8 @@ static I2C_Handle I2C_open_v1(I2C_Handle handle, const I2C_Params *params)
                interruptRegParams.corepacConfig.arg = (uintptr_t)handle;
                interruptRegParams.corepacConfig.name = NULL;
                interruptRegParams.corepacConfig.isrRoutine = &I2C_v1_hwiFxn;
-               interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->eventId; /* Event going in to CPU */
-               interruptRegParams.corepacConfig.intVecNum = (int32_t)hwAttrs->intNum; /* Host Interrupt vector */
+               interruptRegParams.corepacConfig.corepacEventNum = hwAttrs->eventId; /* Event going in to CPU */
+               interruptRegParams.corepacConfig.intVecNum = hwAttrs->intNum; /* Host Interrupt vector */
 
                /* Register interrupts */
                (void)I2C_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
@@ -1404,14 +1404,14 @@ static int16_t I2C_transfer_v1(I2C_Handle handle,
              */
             if (I2C_OPER_MODE_POLLING != object->operMode)
             {
-                I2C_osalHardwareIntrDisable((int32_t)hwAttrs->eventId, (int32_t)hwAttrs->intNum);
+                I2C_osalHardwareIntrDisable(hwAttrs->eventId, hwAttrs->intNum);
             }
 
             retVal = I2C_primeTransfer_v1(handle, transaction);
 
             if (I2C_OPER_MODE_POLLING != object->operMode)
             {
-                I2C_osalHardwareIntrEnable((int32_t)hwAttrs->eventId, (int32_t)hwAttrs->intNum);
+                I2C_osalHardwareIntrEnable(hwAttrs->eventId, hwAttrs->intNum);
             }
             if (object->operMode == I2C_OPER_MODE_BLOCKING)
             {
