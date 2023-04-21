@@ -81,7 +81,7 @@ sbl_j721s2_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
 j784s4_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mcu4_0 mpu1_0 mpu2_0
 sbl_j784s4_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
 
-$(SOC)_LASTCORE := $(word $(words $(sbl_$(SOC)_CORELIST)), $(sbl_$(SOC)_CORELIST)))
+$(SOC)_LASTCORE := $(word $(words $(sbl_$(SOC)_CORELIST)), $(sbl_$(SOC)_CORELIST))
 
 sbl_DISABLE_PARALLEL_MAKE = yes
 ############################
