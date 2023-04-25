@@ -268,14 +268,14 @@ static int8_t UFP_ospiNandFlashWrite(uint8_t *src, uint32_t offset, uint32_t len
     }
 
     /* Write buffer to flash */
-    for(i = 0; i < length; i+=OSPI_WR_LEN)
+    for(i = 0; i < length; i+=OSPI_NAND_WR_LEN)
     {
-        if (Board_flashWrite(gOspiHandle, offset, src, OSPI_WR_LEN, &writeMode))
+        if (Board_flashWrite(gOspiHandle, offset, src, OSPI_NAND_WR_LEN, &writeMode))
         {
             return -1;
         }
-        offset = offset + OSPI_WR_LEN;
-        src = src + OSPI_WR_LEN;
+        offset = offset + OSPI_NAND_WR_LEN;
+        src = src + OSPI_NAND_WR_LEN;
 	}
 
     return 0;

@@ -74,7 +74,7 @@ extern "C" {
 
 #define OSPI_NAND_FLASH_ID   BOARD_FLASH_ID_W35N01JWTBAG
 
-#define OSPI_WR_LEN             (NAND_PAGE_SIZE)
+#define OSPI_NAND_WR_LEN        (NAND_PAGE_SIZE)
 
 #define OSPI_FW_WRITE_DELAY     (100U)
 
