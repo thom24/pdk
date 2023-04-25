@@ -938,7 +938,7 @@ sbl_boot_test_PKG_LIST = sbl_boot_test
 sbl_boot_test_INCLUDE = $(sbl_boot_test_PATH)
 sbl_boot_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_test_BOARDLIST
-sbl_boot_test_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
+sbl_boot_test_$(SOC)_CORELIST = $(CORE_LIST_$(SOC))
 export sbl_boot_test_$(SOC)_CORELIST
 sbl_EXAMPLE_LIST += sbl_boot_test
 sbl_boot_test_SBL_APPIMAGEGEN = yes
