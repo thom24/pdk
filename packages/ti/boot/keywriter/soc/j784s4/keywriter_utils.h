@@ -40,4 +40,9 @@
 #ifndef KEYWR_SOC_H_
 #define KEYWR_SOC_H_
 
+/* AM69 SK board EEPROM slave address */
+#define KEYWRITER_SK_EEPROM_SLAVE_ADDR   (0x51U)
+#define EN_EFUSE_VPP_CTRL             ((0 << 8) | 54)  // WKUP_GPIO0_54
+#define SK_EN_EFUSE_VPP_CTRL          ((0 << 8) | 28)  // WKUP_GPIO0_28
+
 #endif	/* KEYWR_SOC_H_ */

@@ -47,14 +47,14 @@
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
 
-#define EN_EFUSE_VPP_CTRL             ((0 << 8) | 54)  // WKUP_GPIO0_54
-
 GPIO_PinConfig gpioPinConfigs[] = {
-    EN_EFUSE_VPP_CTRL | GPIO_CFG_OUTPUT
+    EN_EFUSE_VPP_CTRL | GPIO_CFG_OUTPUT,
+    SK_EN_EFUSE_VPP_CTRL | GPIO_CFG_OUTPUT
 };
 
 /* GPIO Driver call back functions */
 GPIO_CallbackFxn gpioCallbackFunctions[] = {
+    NULL,
     NULL
 };
 
@@ -69,24 +69,47 @@ GPIO_v0_Config GPIO_v0_config = {
 
 void OTP_VppEn(void)
 {
+    Board_initCfg      boardCfg;
+    Board_I2cInitCfg_t i2cCfg;
+    Board_IDInfo_v2    info;
+    Board_STATUS       status;
+    uint32_t           gpioIndex = 0;
+
     UART_printf("OTP_VppEn\n");
 
     /* Initialize pinmux */
-    Board_initCfg boardCfg;
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
-        BOARD_INIT_MODULE_CLOCK |
-        BOARD_INIT_UART_STDIO;
+               BOARD_INIT_MODULE_CLOCK  |
+               BOARD_INIT_UART_STDIO;
     Board_init(boardCfg);
+
+    i2cCfg.i2cInst    = BOARD_I2C_EEPROM_INSTANCE;
+    i2cCfg.socDomain  = BOARD_SOC_DOMAIN_WKUP;
+    i2cCfg.enableIntr = FALSE;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    /* Check if the board is SK */
+    status = Board_getIDInfo_v2(&info, KEYWRITER_SK_EEPROM_SLAVE_ADDR);
+    if(status == BOARD_SOK)
+    {
+        if(!(strncmp(info.boardInfo.boardName,
+                     "AM69-SK",
+                     BOARD_BOARD_NAME_LEN)))
+        {
+            UART_printf("AM69 SK Detected!!\n");
+            gpioIndex = 1;
+        }
+    }
 
     /* Configure GPIO base address */
     GPIO_v0_HwAttrs gpioCfg;
-    GPIO_socGetInitCfg(0, &gpioCfg);
+    GPIO_socGetInitCfg(gpioIndex, &gpioCfg);
     gpioCfg.baseAddr = CSL_WKUP_GPIO0_BASE;
-    GPIO_socSetInitCfg(0, &gpioCfg);
+    GPIO_socSetInitCfg(gpioIndex, &gpioCfg);
 
     /* Set GPIO to HIGH */
     GPIO_init();
-    GPIO_write(0, 1);
+    GPIO_write(gpioIndex, 1);
 
-    UART_printf("WKUP_GPIO0_54 output high\n");
+    UART_printf("WKUP_GPIO0_VPP_CTRL output high\n");
 }

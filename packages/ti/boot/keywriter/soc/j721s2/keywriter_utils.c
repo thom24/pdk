@@ -39,6 +39,7 @@
  */
 
 #include "keywriter_utils.h"
+#include "board_utils.h"
 
 static void keywr_leo_pmicb_set_params(Pmic_CoreCfg_t *pmicConfigData)
 {
@@ -68,7 +69,8 @@ static void keywr_leo_pmicb_set_params(Pmic_CoreCfg_t *pmicConfigData)
     pmicConfigData->validParams        |= PMIC_CFG_CRITSEC_STOP_VALID_SHIFT;
 }
 
-void OTP_VppEn(void)
+/* Enable VPP for J721S2 EVM or a custom board */
+void OTP_VppEn_EVM(void)
 {
     uint16_t pmic_device_info;
     int32_t status, pmicStatus;
@@ -76,7 +78,7 @@ void OTP_VppEn(void)
     Pmic_CoreCfg_t pmicb_cfg = {0U};
     Pmic_GpioCfg_t gpioCfg = {0U};
 
-    UART_printf("OTP_VppEn\n");
+    UART_printf("OTP_VppEn_EVM\n");
 
     pmic_device_info = J721E_LEO_PMICB_DEVICE;
     (void)pmic_device_info;
@@ -134,5 +136,65 @@ void OTP_VppEn(void)
     if ((pPmicCoreHandle != NULL) && (PMIC_ST_SUCCESS == status))
     {
         test_pmic_appDeInit(pPmicCoreHandle);
+    }
+}
+
+/* Enable VPP for AM68 SK board */
+void OTP_VppEn_SK(void)
+{
+    uint32_t regVal;
+
+    UART_printf("OTP_VppEn_SK\n");
+
+	/* Set the GPIO direction to output */
+    regVal = (HW_RD_REG32(0x42110010)) & (~(0x1 << KEYWRITER_SK_VPP_CTRL_GPIO));
+    HW_WR_REG32(0x42110010, regVal);
+
+	/* Set the GPIO value to high */
+    regVal = (HW_RD_REG32(0x42110014)) | (0x1 << KEYWRITER_SK_VPP_CTRL_GPIO);
+	HW_WR_REG32(0x42110014, regVal);
+
+    UART_printf("OTP Vpp is Enabled!\n");
+}
+
+/* Function to enable VPP voltage.
+ * GPIO based VPP control is required for AM68 SK.
+ * PMIC based VPP control is required for J721S2 EVM.
+ * One of these VPP configs can be used as per the custom board design.
+ */
+void OTP_VppEn(void)
+{
+    Board_I2cInitCfg_t i2cCfg;
+    Board_IDInfo_v2    info;
+    Board_STATUS       status;
+    bool               skBoardDet = FALSE;
+
+    i2cCfg.i2cInst    = BOARD_I2C_EEPROM_INSTANCE;
+    i2cCfg.socDomain  = BOARD_SOC_DOMAIN_WKUP;
+    i2cCfg.enableIntr = FALSE;
+    Board_setI2cInitConfig(&i2cCfg);
+
+    /* Check if the board is SK */
+    status = Board_getIDInfo_v2(&info, KEYWRITER_SK_EEPROM_SLAVE_ADDR);
+    if(status == BOARD_SOK)
+    {
+        if(!(strncmp(info.boardInfo.boardName,
+                     "AM68-SK-SOM",
+                     BOARD_BOARD_NAME_LEN)))
+        {
+            UART_printf("AM68 SK Detected!!\n");
+            skBoardDet = TRUE;
+        }
+    }
+
+    if(skBoardDet == TRUE)
+    {
+        /* Enable VPP for AM68 SK board */
+        OTP_VppEn_SK();
+    }
+    else
+    {
+        /* Enable VPP for J721S2 EVM or a Custom board */
+        OTP_VppEn_EVM();
     }
 }

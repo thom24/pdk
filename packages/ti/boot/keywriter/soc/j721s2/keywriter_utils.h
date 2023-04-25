@@ -45,4 +45,9 @@
 
 #define KEYWRITER_VPP_VOLT_mV 1800U
 
+/* AM68 SK board EEPROM slave address */
+#define KEYWRITER_SK_EEPROM_SLAVE_ADDR   (0x51U)
+/* AM68 SK board VPP control GPIO  */
+#define KEYWRITER_SK_VPP_CTRL_GPIO       (28U)
+
 #endif	/* KEYWR_SOC_H_ */
