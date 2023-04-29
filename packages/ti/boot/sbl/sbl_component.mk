@@ -70,16 +70,16 @@ sbl_BOARDLIST = j721e_evm j7200_evm j721s2_evm j784s4_evm
 sbl_SOCLIST = j721e j7200 j721s2 j784s4
 
 j721e_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
-sbl_j721e_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
+sbl_j721e_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1 mpu1_0 mpu1_1
 
 j7200_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
 sbl_j7200_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
 
 j721s2_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
-sbl_j721s2_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mpu1_0 mpu1_1
+sbl_j721s2_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2 mpu1_0 mpu1_1
 
 j784s4_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mcu4_0 mpu1_0 mpu2_0
-sbl_j784s4_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
+sbl_j784s4_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4 mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
 
 $(SOC)_LASTCORE := $(word $(words $(sbl_$(SOC)_CORELIST)), $(sbl_$(SOC)_CORELIST))
 
@@ -938,7 +938,7 @@ sbl_boot_test_PKG_LIST = sbl_boot_test
 sbl_boot_test_INCLUDE = $(sbl_boot_test_PATH)
 sbl_boot_test_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_boot_test_BOARDLIST
-sbl_boot_test_$(SOC)_CORELIST = $(CORE_LIST_$(SOC))
+sbl_boot_test_$(SOC)_CORELIST = $(sbl_$(SOC)_CORELIST)
 export sbl_boot_test_$(SOC)_CORELIST
 sbl_EXAMPLE_LIST += sbl_boot_test
 sbl_boot_test_SBL_APPIMAGEGEN = yes
