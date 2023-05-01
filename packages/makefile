@@ -61,7 +61,7 @@ else
 CORE_LIST = $(CORE)
 endif
 
-.PHONY: all all_libs all_examples clean env_check help xdc_meta \
+.PHONY: all all_libs all_examples clean env_check help \
    buildinfra_all buildinfra_clean buildinfra_pdk_examples \
    non-buildinfra_all non-buildinfra_clean buildinfra_pdk_libs  non-buildinfra_pdk_examples \
    cplusplus_build
@@ -129,9 +129,6 @@ help: env_check
 	$(ECHO) " clean: Cleans libraries & applications of all modules."
 	$(ECHO) "     Example:  \"make clean \""
 	$(ECHO) ""
-	$(ECHO) " xdc_meta/xdc_meta: Generates xdc meta file (used if pdk is cloned from pdk.git)."
-	$(ECHO) "     Example:  \"make xdc_meta \""
-	$(ECHO) ""
 	$(ECHO) "------------------"
 	$(ECHO) "OPTIONAL ARGUMENTS "
 	$(ECHO) "------------------"
@@ -154,24 +151,6 @@ help: env_check
 	$(ECHO) ""
 	$(ECHO) "SOC=<soc> CORE=<core> BOARD=<board> This will build libraries/examples for the specified combination of <soc,core,board>"
 	$(ECHO) "Valid values of SOC/BOARD/CORE are found from LIMIT_SOC/BOARD/CORES above"
-
-
-
-
-# if PDK.git is initiated from a fresh clone, the XDC meta headers will not have been generated. (xdc meta headers are used for CCS based projects)
-# These headers are usually generated during the procsdk installer building process ('make release' from within a component's directory)
-# This xdc_meta target will help enable the user to generate the same meta files after a fresh git clone of pdk
-
-# Find all the directories with package.xdc and run xdc_meta on them to generate the rtsc meta files
-PACKAGE_XDC_LOC := $(wildcard */package.xdc)
-PACKAGE_XDC_LOC += $(wildcard */*/package.xdc)
-PACKAGE_XDC_LOC += $(wildcard */*/*/package.xdc)
-PACKAGE_XDC_LOC += $(wildcard */*/*/*/package.xdc)
-SUBDIRS =  $(filter-out ./,$(dir $(PACKAGE_XDC_LOC)))
-xdc_meta:
-	$(foreach xdcdir, $(SUBDIRS),\
-	$(MAKE) -C $(xdcdir) $@; \
-	)
 
 cplusplus_build:
 	$(MAKE) all BUILD_PROFILE=debug CPLUSPLUS_BUILD=yes
