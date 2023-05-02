@@ -24,6 +24,10 @@ ifeq ($(EMMC_BOOT0), yes)
 else ifeq ($(EMMC_BOOT0), no)
   EMMC_SUFFIX=_uda
 endif
+OSPI_NAND_SUFFIX=
+ifeq ($(OSPI_NAND), yes)
+  OSPI_NAND_SUFFIX=_nand
+endif
 
 # if you want to boot app more than 500KB you need to change the following macro
 # for instance your app is x KB then you need to give the macro with the following value from cmd line
@@ -45,8 +49,8 @@ else ifeq ($(RAT), 1)
   APP_NAME = sbl_cust_rat_main_ocm_img
   LOCAL_APP_NAME = sbl_cust_rat_main_ocm_img_$(CORE)
 else
-  APP_NAME = sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
-  LOCAL_APP_NAME=sbl_$(BOOTMODE)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
+  APP_NAME = sbl_$(BOOTMODE)$(OSPI_NAND_SUFFIX)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)$(HS_SUFFIX)
+  LOCAL_APP_NAME=sbl_$(BOOTMODE)$(OSPI_NAND_SUFFIX)$(EMMC_SUFFIX)_img$(HLOS_SUFFIX)_$(CORE)
 endif
 BUILD_OS_TYPE = baremetal
 
@@ -120,6 +124,9 @@ endif # ifeq ($(BOOTMODE), emmc)
 
 ifeq ($(BOOTMODE), ospi)
   SBL_CFLAGS += -DBOOT_OSPI
+  ifeq ($(OSPI_NAND), yes)
+    SBL_CFLAGS += -DOSPI_NAND_BOOT
+  endif
 endif # ifeq ($(BOOTMODE), ospi)
 
 ifeq ($(BOOTMODE), hyperflash)

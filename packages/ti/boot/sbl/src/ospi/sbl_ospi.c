@@ -100,6 +100,8 @@ static OSPI_v0_HwAttrs ospi_cfg;
 bool isXIPEnable = false; 
 /* Global variable to check whether OSPI needs to run on 133 MHZ or 166 MHz while booting an application in XIP mode */
 uint32_t ospiFrequency;
+/* Global variable to check whether OSPI_NAND_BOOT is defined or not */
+bool gIsNandBootEnable = false;
 
 #if SBL_USE_DMA
 
@@ -244,11 +246,23 @@ else
 }
 
     /* Set the default SPI init configurations */
+    if (gIsNandBootEnable == 1)
+    {
+        ospi_cfg.cacheEnable = 1;
+    }
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
-                        BOARD_OSPI_NOR_INSTANCE, NULL);
+    if (gIsNandBootEnable == true)
+    {
+        h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
+                            BOARD_OSPI_NOR_INSTANCE, NULL);
+    }
+    else
+    {
+        h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                            BOARD_OSPI_NOR_INSTANCE, NULL);
+    }
 #else
     h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
                         BOARD_OSPI_NOR_INSTANCE, NULL);
@@ -265,8 +279,19 @@ else
          * ROM can more efficiently load the SYSFW directly from xSPI flash */
         if(pBuffer)
         {
-            /* Set up ROM to load system firmware */
-            *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
+            if (gIsNandBootEnable == true)
+            {
+                if (Board_flashRead(h, OSPI_OFFSET_SYSFW, *pBuffer, SBL_SYSFW_MAX_SIZE, NULL))
+                {
+                    SBL_log(SBL_LOG_ERR, "Board_flashRead failed in SBL_ReadSysfwImage \n");
+                    SblErrLoop(__FILE__, __LINE__);
+                }
+            }
+            else
+            {
+                /* Set up ROM to load system firmware */
+                *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
+            }   /* (gIsNandBootEnable == true) && defined(SOC_J721S2) */
         }
 #else
         /* Optimized CPU copy loop - can be removed once ROM load is working */
@@ -278,7 +303,7 @@ else
     }
     else
     {
-        SBL_log(SBL_LOG_ERR, "Board_flashOpen failed!\n");
+        SBL_log(SBL_LOG_ERR, "Board_flashOpen failed in SBL_ReadSysfwImage \n");
         SblErrLoop(__FILE__, __LINE__);
     }
 
@@ -484,11 +509,23 @@ if(isXIPEnable == true)
 }
 #endif
     /* Set the default SPI init configurations */
+    if (gIsNandBootEnable == true)
+    {
+        ospi_cfg.cacheEnable = 1;
+    }
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
-                        BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
+    if (gIsNandBootEnable == true)
+    {
+        h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
+                            BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
+    }
+    else
+    {
+        h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                            BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
+    }
 #else
     h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
                             BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
@@ -508,7 +545,7 @@ if(isXIPEnable == true)
     }
     else
     {
-        SBL_log(SBL_LOG_ERR, "Board_flashOpen failed!\n");
+        SBL_log(SBL_LOG_ERR, "Board_flashOpen failed in SBL_ospiInit \n");
         SblErrLoop(__FILE__, __LINE__);
     }
 
@@ -563,7 +600,7 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
 
 #else
 
-    if(isXIPEnable == true)
+    if((isXIPEnable == true) || (gIsNandBootEnable == true))
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
         uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
@@ -642,8 +679,16 @@ int32_t SBL_ospiLeaveConfigSPI()
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
-                        BOARD_OSPI_NOR_INSTANCE, NULL);
+    if (gIsNandBootEnable == true)
+    {
+        h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
+                            BOARD_OSPI_NOR_INSTANCE, NULL);
+    }
+    else
+    {
+        h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                            BOARD_OSPI_NOR_INSTANCE, NULL);
+    }
 #else
     h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
                         BOARD_OSPI_NOR_INSTANCE, NULL);
@@ -745,6 +790,11 @@ void SBL_enableXIPMode(uint32_t freq)
 {
     isXIPEnable = true;
     ospiFrequency = freq;
+}
+
+void SBL_enableNandBoot()
+{
+    gIsNandBootEnable = true;
 }
 
 

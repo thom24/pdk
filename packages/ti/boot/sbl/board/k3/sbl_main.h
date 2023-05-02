@@ -53,7 +53,7 @@
 #include "sbl_profile.h"
 
 /* If BUILD_XIP is defined then SBL call SBL_enableXIPMode() to update global variable isXIPEnable */
-#if defined(BUILD_XIP)
+#if defined(BUILD_XIP) || defined(OSPI_NAND_BOOT)
 #include <ti/boot/sbl/src/ospi/sbl_ospi.h>
 #endif
 

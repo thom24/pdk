@@ -133,6 +133,10 @@ void SBL_SPI_init();
 
 /* Update global variable isXIPEnable to true if BUILD_XIP is defined and update the OSPI frequency */
 void SBL_enableXIPMode(uint32_t freq);
+
+/* Update global variable gIsNandBootEnable to true if OSPI_NAND_BOOT is defined */
+void SBL_enableNandBoot();
+
 #endif
 
 #ifdef __cplusplus

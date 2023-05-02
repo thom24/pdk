@@ -324,6 +324,10 @@ int main()
         #endif
     #endif
 
+#if defined(OSPI_NAND_BOOT)
+    SBL_enableNandBoot();
+#endif
+
     /* Load SYSFW. */
     SBL_SciClientInit(devGroup);
 
