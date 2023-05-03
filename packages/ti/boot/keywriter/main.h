@@ -85,7 +85,7 @@
                                              PIN_PULL_DISABLE)
 #define PIN_OUTPUT                      (PIN_PULL_DISABLE)
 
-#define BOARD_UART_INSTANCE             (0U)
+#define KEYWRITER_BOARD_UART_INSTANCE   (0U)
 #define SBL_ROM_UART_MODULE_INPUT_CLK   (48000000U)
 #define SBL_SYSFW_UART_MODULE_INPUT_CLK (96000000U)
 #define MCU_FSS0_S0_FWID                (1036)

@@ -185,7 +185,6 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
 {
     int32_t status;
     uint32_t intNum;
-    volatile uint32_t dummy;
     uint32_t priority;
 
     CSL_vimRegs     *pVimRegs;
@@ -238,7 +237,7 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
     }
 }
 
-void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_reserved_handler(void)
+void __attribute__((interrupt("UNDEF"), section(".text.hwi"))) HwiP_reserved_handler(void)
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
@@ -246,7 +245,7 @@ void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_reserved_hand
         ;
 }
 
-void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_undefined_handler(void)
+void __attribute__((interrupt("UNDEF"), section(".text.hwi"))) HwiP_undefined_handler(void)
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
@@ -254,7 +253,7 @@ void __attribute__((interrupt("UDEF"), section(".text.hwi"))) HwiP_undefined_han
         ;
 }
 
-void __attribute__((interrupt("PABT"), section(".text.hwi"))) HwiP_prefetch_abort_handler(void)
+void __attribute__((interrupt("ABORT"), section(".text.hwi"))) HwiP_prefetch_abort_handler(void)
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;

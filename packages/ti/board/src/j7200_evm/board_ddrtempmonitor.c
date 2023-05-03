@@ -127,8 +127,11 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) static Board_STATUS 
 {
     Board_STATUS    status = BOARD_SOK;
     uint16_t        irIntrIdx;
-    struct tisci_msg_rm_get_resource_range_resp res = {0};
-    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_get_resource_range_req  req;
+
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
 
     if(BOARD_DEV_ID_IR_INVALID != gBoard_DDRThermalMgmtInstance.devIdIr)
     {

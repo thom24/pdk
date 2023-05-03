@@ -181,7 +181,8 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 #else
     const TCHAR *fileName = "0:/sysfw.bin";
 #endif
-    FIL     fp = {0};
+    FIL     fp;
+    memset(&fp, 0, sizeof(fp));
     FRESULT  fresult;
     uint32_t bytes_read = 0;
     void *sysfw_ptr = *pBuffer;
@@ -288,7 +289,8 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
 {
     int32_t retVal = E_PASS;
     const TCHAR *fileName = "0:/app";
-    FIL     fp = {0};
+    FIL     fp;
+    memset(&fp, 0, sizeof(fp));
     FRESULT  fresult;
 
     /* Initialization of the driver. */

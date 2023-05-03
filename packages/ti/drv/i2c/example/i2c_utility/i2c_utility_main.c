@@ -1106,7 +1106,7 @@ static void App_consolePrintf(const char *pcString, ...)
     /* Start the var args processing. */
     va_start(arguments, pcString);
     vsnprintf (printBuffer, sizeof(printBuffer), pcString, arguments);
-    printf(printBuffer);
+    printf("%s", printBuffer);
     /* Bypassing UART for initial bring up */
 #if 0
     App_consolePrintf(printBuffer);

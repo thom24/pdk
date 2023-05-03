@@ -257,7 +257,7 @@ QueueP_State QueueP_isEmpty(QueueP_Handle handle)
     QueueP_State    ret_val;
     QueueP_freertos *queue = (QueueP_freertos *)handle;
 
-    if((queue->queueHndl.next == &(queue->queueHndl)))
+    if(queue->queueHndl.next == &(queue->queueHndl))
     {
         ret_val = QueueP_EMPTY;
     } 

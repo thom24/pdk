@@ -951,7 +951,7 @@ static bool OSPI_phyConfigTest(void *arg)
                         phyOpMode = CSL_REG32_FEXT(&pRegs->PHY_MASTER_CONTROL_REG,
                                         OSPI_FLASH_CFG_PHY_MASTER_CONTROL_REG_PHY_MASTER_BYPASS_MODE_FLD);
 
-                        if((test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_MASTER))
+                        if(test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_MASTER)
                         {
                             if(phyOpMode != 0U)
                             {
@@ -964,7 +964,7 @@ static bool OSPI_phyConfigTest(void *arg)
                                 retVal = true;
                             }
                         }
-                        if((test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_BYPASS))
+                        if(test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_BYPASS)
                         {
                             if(phyOpMode != 1U)
                             {

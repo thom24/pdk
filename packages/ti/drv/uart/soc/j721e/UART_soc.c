@@ -762,9 +762,14 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
 
 #if defined (BUILD_C66X) || defined (BUILD_MCU)
     UART_HwAttrs                         *hwAttrs = (UART_HwAttrs *)(pHwAttrs);
-    struct tisci_msg_rm_irq_set_req      rmIrqReq = {0};
-    struct tisci_msg_rm_irq_set_resp     rmIrqResp = {0};
-    struct tisci_msg_rm_irq_release_req  rmIrqRelease = {0};
+    struct tisci_msg_rm_irq_set_req      rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp     rmIrqResp;
+    struct tisci_msg_rm_irq_release_req  rmIrqRelease;
+
+    memset(&rmIrqReq, 0, sizeof(rmIrqReq));
+    memset(&rmIrqResp, 0, sizeof(rmIrqResp));
+    memset(&rmIrqRelease, 0, sizeof(rmIrqRelease));
+
     uint16_t dst_id = 0;
 #if defined (BUILD_MCU)
     uint16_t ir_id = 0U, irq_range_start = 0, irq_range_num = 0;
@@ -932,7 +937,6 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     setIntrPath = setIntrPath;
 #else
     (void)pHwAttrs;
-    setIntrPath = setIntrPath;
 #endif
 
     if (retVal == CSL_PASS)
@@ -953,8 +957,10 @@ static int32_t UART_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *ir
     int32_t         retVal = CSL_PASS;
     /* Get interrupt number range */
     uint16_t        irIntrIdx;
-    struct tisci_msg_rm_get_resource_range_resp res = {0};
-    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_get_resource_range_req  req;
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
 
     req.type           = ir_id;
     req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;

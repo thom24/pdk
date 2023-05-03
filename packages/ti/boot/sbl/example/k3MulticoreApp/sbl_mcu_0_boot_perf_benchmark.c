@@ -226,9 +226,7 @@ static void sblBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
 static int32_t BOOT_PERF_TEST_sysfwInit(void)
 {
     int32_t status = CSL_PASS;
-    
-    uint32_t dev_id = HW_RD_REG32((CSL_WKUP_CTRL_MMR0_CFG0_BASE
-				   + CSL_WKUP_CTRL_MMR_CFG0_JTAGID));			   
+    			   
     Sciclient_DefaultBoardCfgInfo_t boardCfgInfo;
 
     Sciclient_BoardCfgPrms_t sblPerfTestBoardCfgPrms;

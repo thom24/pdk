@@ -1683,7 +1683,6 @@ static int32_t MCSPI_control_v1(MCSPI_Handle mcHandle, uint32_t cmd, const void 
 {
     (void)mcHandle;
     (void)cmd;
-    arg = arg;
     return SPI_STATUS_UNDEFINEDCMD;
 }
 

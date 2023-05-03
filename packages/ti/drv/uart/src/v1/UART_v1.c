@@ -1812,7 +1812,6 @@ static int32_t UART_control_v1 (UART_Handle handle, uint32_t cmd, void *arg)
     /* Workaround to resolve the Misra-C 2012 Rule 2.7 issue */
     (void)handle;
     (void)cmd;
-    arg = arg;
 
     return(0);
 }

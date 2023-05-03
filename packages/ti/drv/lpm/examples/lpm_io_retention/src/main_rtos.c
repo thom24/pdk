@@ -360,8 +360,8 @@ int wkup_io_pm_seq (void)
 
 void wkup_configure_can_uart_lock_dmsc()
 {
-
-    uint32_t daisy_chain = wkup_io_pm_seq();
+    
+    wkup_io_pm_seq();
 
     /* Load the Magic Word */
     *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL) = 0x55555554;
@@ -383,8 +383,8 @@ void wkup_configure_can_uart_lock_dmsc()
 
 void main_configure_can_uart_lock_dmsc()
 {
-    uint32_t daisy_chain = main_io_pm_seq();
-
+    main_io_pm_seq();
+    
     /* Load the Magic word */
     *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL) = 0x55555554;
     *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL) = 0x55555555;

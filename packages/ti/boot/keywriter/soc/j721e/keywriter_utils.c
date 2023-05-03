@@ -71,16 +71,18 @@ static void keywr_leo_pmicb_set_params(Pmic_CoreCfg_t *pmicConfigData)
 void OTP_VppEn(void)
 {
     uint16_t pmic_device_info;
-    uint16_t pwrRsrc;
     int32_t status, pmicStatus;
     Pmic_CoreHandle_t *pPmicCoreHandle  = NULL;
     Pmic_CoreCfg_t pmicb_cfg = {0U};
+#ifndef J721E_USE_GPIO_FOR_VPP
+    uint16_t pwrRsrc;
     Pmic_PowerResourceCfg_t powerCfg_rd = {
         PMIC_CFG_REGULATOR_VMON_VOLTAGE_SET_VALID_SHIFT,
     };
     Pmic_PowerResourceCfg_t pPowerCfg = {
         PMIC_CFG_REGULATOR_VMON_VOLTAGE_SET_VALID_SHIFT,
     };
+#endif
 
     UART_printf("OTP_VppEn\n");
 

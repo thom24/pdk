@@ -61,7 +61,6 @@
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
-static volatile int32_t gTestStatus;
 volatile static uint64_t time_usecs[5] = { 0 };
 
 volatile uint32_t loop = 1U;

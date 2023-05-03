@@ -735,8 +735,11 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
         uint16_t *rangeStartP, uint16_t *rangeNumP)
 {
     int32_t                                     retVal = IPC_SOK;
-    struct tisci_msg_rm_get_resource_range_resp res = {0};
-    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_get_resource_range_req  req;
+
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
 
     req.type           = req_type[coreIndex];
     req.subtype        = (uint8_t)req_subtype[coreIndex];

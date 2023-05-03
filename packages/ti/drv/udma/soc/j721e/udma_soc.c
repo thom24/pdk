@@ -564,7 +564,7 @@ uint32_t Udma_getCoreId(void)
 
 uint16_t Udma_getCoreSciDevId(void)
 {
-    uint16_t coreSciDevId;
+    uint16_t coreSciDevId = 0U;
 
 #if defined (BUILD_MPU1_0)
     coreSciDevId = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;

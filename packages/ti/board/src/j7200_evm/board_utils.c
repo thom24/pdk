@@ -108,9 +108,11 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  */
 bool Board_detectBoard(uint32_t boardID)
 {
-    Board_IDInfo_v2 info = {0};
+    Board_IDInfo_v2 info;
     Board_STATUS status;
     bool bDet = FALSE;
+
+    memset(&info, 0, sizeof(info));
 
     if(boardID <= BOARD_ID_SOM)
     {
@@ -143,9 +145,11 @@ bool Board_detectBoard(uint32_t boardID)
  */
 bool Board_isAlpha(uint32_t boardID)
 {
-    Board_IDInfo_v2 info = {0};
+    Board_IDInfo_v2 info;
     Board_STATUS status;
     bool alphaBoard = FALSE;
+
+    memset(&info, 0, sizeof(info));
 
     status = Board_getBoardData(&info, boardID);
     if(status == 0)
@@ -188,9 +192,11 @@ bool Board_isAlpha(uint32_t boardID)
 */
 int32_t Board_detectEnetCard(void)
 {
-    Board_IDInfo_v2 info = {0};
+    Board_IDInfo_v2 info;
     Board_STATUS status;
     int8_t ret = 0;
+
+    memset(&info, 0, sizeof(info));
 
     status = Board_getBoardData(&info, BOARD_ID_ENET);
     if(status == 0)
@@ -256,9 +262,11 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
                                uint32_t macBufSize,
                                uint32_t *macAddrCnt)
 {
-    Board_IDInfo_v2 info = {0};
+    Board_IDInfo_v2 info;
     Board_STATUS status;
     uint8_t macCount = 0;
+
+    memset(&info, 0, sizeof(info));
 
     if((boardID <= BOARD_ID_SOM) && (macAddrBuf != NULL))
     {
@@ -311,8 +319,10 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
 Board_STATUS Board_readMacAddrCount(uint32_t boardID,
                                     uint32_t *macAddrCnt)
 {
-    Board_IDInfo_v2 info = {0};
+    Board_IDInfo_v2 info;
     Board_STATUS status;
+
+    memset(&info, 0, sizeof(info));
 
     if((boardID <= BOARD_ID_SOM) && (macAddrCnt != NULL))
     {

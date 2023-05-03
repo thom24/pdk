@@ -279,7 +279,6 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
     int32_t retVal= CSL_PASS;
     MMCSD_v2_HwAttrs const *hwAttrs = (MMCSD_v2_HwAttrs const *)(hwAttrs_ptr);
     bool isIrInvolved = FALSE;
-    static uint16_t        irIntrIdx;
     static uint16_t        rangeStart;
     static uint16_t        rangeNum;
     static uint16_t        irId;

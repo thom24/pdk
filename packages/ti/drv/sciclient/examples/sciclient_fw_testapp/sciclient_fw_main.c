@@ -145,7 +145,6 @@ void Sciclient_fw_abort_C_handler();
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-static volatile int32_t gTestStatus;
 #if defined(SAFERTOS)
 static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(32*1024)));
 #else
@@ -518,7 +517,10 @@ int32_t Sciclient_fw_test(
         .region = (uint16_t) 1,
         .n_permission_regs = (uint32_t) 1,
         .control = (uint32_t) 0xA,
-        .permissions = (uint32_t) (privId << 16) | perm_for_access,
+        .permissions = 
+        {
+            (uint32_t) (privId << 16) | perm_for_access, 0, 0
+        },
         .start_address = pass_start_address,
         .end_address = pass_end_address
         };
@@ -527,7 +529,10 @@ int32_t Sciclient_fw_test(
         .region = (uint16_t) 2,
         .n_permission_regs = (uint32_t) 1,
         .control = (uint32_t) 0xA,
-        .permissions = (uint32_t) (privId << 16) | perm_for_no_access,
+        .permissions = 
+        {
+            (uint32_t) (privId << 16) | perm_for_no_access, 0, 0
+        },
         .start_address = fail_start_address,
         .end_address = fail_end_address
         };
@@ -598,6 +603,7 @@ int32_t Sciclient_fw_test(
         {
             value += *(pointer + i);
         }
+        /* Added value check to if condition to remove variable set but not used error */
         if ((gAbortRecieved == (fail_end_address + 1 - fail_start_address)/4U) && value == 0 )
         {
                 r = CSL_PASS;

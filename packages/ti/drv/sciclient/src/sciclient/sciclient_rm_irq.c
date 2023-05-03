@@ -1584,9 +1584,13 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
     bool cur_outp_valid = false, next_inp_valid = false;
     uint32_t cur_inp;
     uint16_t cur_outp = 0, next_inp = 0;
-    struct tisci_msg_rm_get_resource_range_req req = {0};
-    struct tisci_msg_rm_get_resource_range_resp host_resp = {0};
-    struct tisci_msg_rm_get_resource_range_resp all_resp = {0};
+    struct tisci_msg_rm_get_resource_range_req req;
+    struct tisci_msg_rm_get_resource_range_resp host_resp;
+    struct tisci_msg_rm_get_resource_range_resp all_resp;
+
+    memset(&req, 0, sizeof(req));
+    memset(&host_resp, 0, sizeof(host_resp));
+    memset(&all_resp, 0, sizeof(all_resp));
 
     if (cfg->s_ia == SCICLIENT_RM_DEV_NONE) {
         /* First node's interface must contain the source IRQ */

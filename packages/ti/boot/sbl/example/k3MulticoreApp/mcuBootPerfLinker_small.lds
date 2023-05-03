@@ -57,7 +57,7 @@ MEMORY
 	OCMRAM_SBL_SYSFW (RWIX) : origin=0x41C80000 length=0x2000
 	OCMRAM_SBL_UNUSED (X)   : origin=0x41C60000 length=0x2000
     /* Line below is not used / not needed for AM65xx */
-    OCMRAM_SBL_RM_PM_HAL (X): origin=0x41C08000 length=0x6000
+    OCMRAM_SBL_RM_PM_HAL (X): origin=0x41C08000 length=0x7000
 
         /* App code resides here  */
 	RESET_VECTORS (X)       : origin=0x41C82000 length=0x100

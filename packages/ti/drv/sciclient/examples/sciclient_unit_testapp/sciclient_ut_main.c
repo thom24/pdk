@@ -103,7 +103,6 @@ static int32_t App_fwExcpNotificationTest(void);
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-static volatile int32_t gTestStatus;
 /* For SafeRTOS on R5F with FFI Support, task stack should be aligned to the stack size */
 #if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(32*1024))) = { 0 };

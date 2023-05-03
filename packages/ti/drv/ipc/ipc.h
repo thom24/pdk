@@ -75,6 +75,7 @@ extern "C" {
 #include <ti/drv/ipc/include/ipc_mp.h>
 #include <ti/drv/ipc/include/ipc_virtio.h>
 #include <ti/drv/ipc/soc/ipc_soc.h>
+#include <string.h>
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

@@ -1589,7 +1589,6 @@ static void OSPI_transferCallback_v0(OSPI_Handle handle, OSPI_Transaction *msg)
 
         /* Indicate transfer complete */
         (void)SPI_osalPostLock(object->transferComplete);
-        msg = msg;
     }
 
 }
@@ -1770,7 +1769,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                 {
                     numAddrBytes = CSL_OSPI_MEM_MAP_NUM_ADDR_BYTES_4;
                 }
-                if ((object->xferLines == OSPI_XFER_LINES_OCTAL))
+                if (object->xferLines == OSPI_XFER_LINES_OCTAL)
                 {
                     /* 8 dummy cycles required for polling status register in octal mode */
                     CSL_ospiSetPollingDummyCycles((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),

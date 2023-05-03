@@ -945,7 +945,7 @@ Board_STATUS Board_tps65941ClearIntr(void *handle,
     uint8_t regMask  = 0;
     uint8_t regShift = 0;
 
-    if((handle == NULL))
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }

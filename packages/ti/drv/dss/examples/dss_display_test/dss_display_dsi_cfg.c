@@ -396,7 +396,9 @@ int32_t DispApp_InitI2c(DispApp_Obj *appObj)
 int32_t DispApp_SetDsiSerdesCfg(DispApp_Obj *appObj)
 {
     int32_t status = FVID2_SOK;
+#if defined(SOC_J721E)
     uint32_t cnt, clientAddr;
+#endif
 
     status = DispApp_SetBoardMux();
 

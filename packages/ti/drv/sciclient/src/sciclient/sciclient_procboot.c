@@ -78,7 +78,8 @@ int32_t Sciclient_procBootRequestProcessor(uint8_t processorId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_proc_request_req request = {0};
+    struct tisci_msg_proc_request_req request;
+    memset(&request, 0, sizeof(request));
     request.processor_id       = (uint8_t) processorId;
 
     Sciclient_ReqPrm_t reqParam = {0};
@@ -109,7 +110,8 @@ int32_t Sciclient_procBootReleaseProcessor(uint8_t  processorId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_proc_release_req request = {0};
+    struct tisci_msg_proc_release_req request;
+    memset(&request, 0, sizeof(request));
     request.processor_id       = (uint8_t) processorId;
 
     Sciclient_ReqPrm_t reqParam = {0};
@@ -148,7 +150,8 @@ int32_t Sciclient_procBootHandoverProcessor(uint8_t  processorId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_proc_handover_req request = {0};
+    struct tisci_msg_proc_handover_req request;
+    memset(&request, 0, sizeof(request));
     request.processor_id     = (uint8_t) processorId;
     request.host_id          = (uint8_t) hostId;
 
@@ -208,7 +211,8 @@ int32_t Sciclient_procBootSetSequenceCtrl(uint8_t  processorId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_proc_set_control_req request = {0};
+    struct tisci_msg_proc_set_control_req request;
+    memset(&request, 0, sizeof(request));
     request.processor_id         = (uint8_t ) processorId;
     request.control_flags_1_set  = (uint32_t) control_flags_1_set;
     request.control_flags_1_clear= (uint32_t) control_flags_1_clear;
@@ -249,7 +253,8 @@ int32_t Sciclient_procBootAuthAndStart(
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_proc_auth_boot_resp response = {0};
+    struct tisci_msg_proc_auth_boot_resp response;
+    memset(&response, 0, sizeof(response));
 
     Sciclient_ReqPrm_t reqParam = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_PROC_AUTH_BOOT;
@@ -279,7 +284,8 @@ int32_t Sciclient_procBootGetProcessorState(
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_proc_get_status_req request = {0};
+    struct tisci_msg_proc_get_status_req request;
+    memset(&request, 0, sizeof(request));
     request.processor_id         = (uint8_t ) processorId;
     Sciclient_ReqPrm_t reqParam = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_PROC_GET_STATUS;
@@ -312,7 +318,8 @@ int32_t Sciclient_procBootWaitProcessorState(uint8_t  processorId,
                                         uint32_t timeout)
 {
     int32_t retVal = CSL_PASS;
-    struct tisci_msg_proc_status_wait_req request = {0};
+    struct tisci_msg_proc_status_wait_req request;
+    memset(&request, 0, sizeof(request));
     request.processor_id         = (uint8_t ) processorId;
     request.num_wait_iterations = (uint8_t)255;
     request.num_match_iterations = (uint8_t)num_match_iterations;

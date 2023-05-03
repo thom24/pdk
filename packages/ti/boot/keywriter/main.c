@@ -122,10 +122,10 @@ static void OTP_SciClientInit(void)
     }
 
     /* Re-init UART for logging */
-    UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
+    UART_socGetInitCfg(KEYWRITER_BOARD_UART_INSTANCE, &uart_cfg);
     uart_cfg.frequency = SBL_SYSFW_UART_MODULE_INPUT_CLK;
-    UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
-    UART_stdioInit(BOARD_UART_INSTANCE);
+    UART_socSetInitCfg(KEYWRITER_BOARD_UART_INSTANCE, &uart_cfg);
+    UART_stdioInit(KEYWRITER_BOARD_UART_INSTANCE);
 
     sblBoardCfgSecPrms.boardConfigLow  = (uint32_t)boardCfgInfo.boardCfgLowSec;
     sblBoardCfgSecPrms.boardConfigHigh = 0;
@@ -197,11 +197,11 @@ int main()
     /* pinmux for M3 logs */
     HW_WR_REG32(WKUP_UART_TXD_MUX_ADDR, PIN_OUTPUT | PIN_MODE(0));
 
-    UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
+    UART_socGetInitCfg(KEYWRITER_BOARD_UART_INSTANCE, &uart_cfg);
     uart_cfg.frequency       = SBL_ROM_UART_MODULE_INPUT_CLK;
     uart_cfg.enableInterrupt = FALSE;
-    UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
-    UART_stdioInit(BOARD_UART_INSTANCE);
+    UART_socSetInitCfg(KEYWRITER_BOARD_UART_INSTANCE, &uart_cfg);
+    UART_stdioInit(KEYWRITER_BOARD_UART_INSTANCE);
 
     UART_printf("%s (%s - %s)\n", OTP_VERSION_STR, __DATE__, __TIME__);
     OTP_SciClientInit();

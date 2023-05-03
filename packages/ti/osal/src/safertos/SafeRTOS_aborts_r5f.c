@@ -111,9 +111,6 @@ void vPrefetchAbort(void)
  */
 void vDataAbort_c(void)
 {
-    ulGetDataFaultStatusRegister();
-    ulGetDataFaultAddressRegister();
-
     /* Call registered call back */
     if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
     {

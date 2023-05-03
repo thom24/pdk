@@ -367,7 +367,7 @@ void Ipc_recvTaskFxn(void *arg0, void *arg1)
             break;
         }
 
-        if((buf[0] == IPC_PERF_TEST))
+        if(buf[0] == IPC_PERF_TEST)
         {
             Ipc_processPerfCmd(handle, remoteEndPt, remoteProcId,
                     myEndPt, buf, len);

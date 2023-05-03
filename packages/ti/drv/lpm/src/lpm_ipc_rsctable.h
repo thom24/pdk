@@ -76,25 +76,33 @@ extern char Ipc_traceBuffer[IPC_TRACE_BUFFER_MAX_SIZE];
 
 const Ipc_ResourceTable ti_ipc_remoteproc_ResourceTable __attribute__ ((section (".resource_table"), aligned (4096))) = 
 {
-    1U,                   /* we're the first version that implements this */
-    NUM_ENTRIES,         /* number of entries in the table */
-    0U, 0U,                /* reserved, must be zero */
+    .base =
+    {
+        .num = 1U,                  /* we're the first version that implements this */
+        .ver = NUM_ENTRIES,         /* number of entries in the table */
+        .reserved = {0U, 0U},       /* reserved, must be zero */
+    },
 
     /* offsets to entries */
+    .offset =
     {
         offsetof(Ipc_ResourceTable, rpmsg_vdev),
         offsetof(Ipc_ResourceTable, trace),
     },
 
     /* rpmsg vdev entry */
+    .rpmsg_vdev =
     {
         TYPE_VDEV, VIRTIO_ID_RPMSG, 0U,
         RPMSG_R5F_C0_FEATURES, 0U, 0U, 0U, 2U, { 0U, 0U },
         /* no config data */
     },
     /* the two vrings */
+    .rpmsg_vring0 =
     { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ0_SIZE, 1U, 0U },
+    .rpmsg_vring1 =
     { RPMSG_VRING_ADDR_ANY, 4096U, R5F_RPMSG_VQ1_SIZE, 2U, 0U },
+    .trace =
     {
         (TRACE_INTS_VER0 | TYPE_TRACE), TRACEBUFADDR, IPC_TRACE_BUFFER_MAX_SIZE, 0, "trace:r5f0",
     },

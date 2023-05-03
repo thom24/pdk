@@ -1120,7 +1120,7 @@ static int32_t App_create(App_UdmaObj *appObj)
 
 static int32_t App_delete(App_UdmaObj *appObj)
 {
-    int32_t         retVal, tempRetVal;
+    int32_t         retVal = UDMA_SOK, tempRetVal;
     uint64_t        pDesc;
     App_UdmaChObj  *appChObj = &appObj->appChObj;
     App_UdmaTrObj  *appTrObj = &appChObj->appTrObj;

@@ -563,7 +563,6 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     int32_t ret = UART_SUCCESS;
 
     (void)pHwAttrs;
-    setIntrPath = setIntrPath;
 
     return(ret);
 }

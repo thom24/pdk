@@ -403,7 +403,9 @@ static void DispApp_create(DispApp_Obj *appObj)
     Dss_DctrlVpParams *vpParams;
     Dss_DctrlAdvVpParams *advVpParams;
     DispApp_InstObj *instObj;
+#if (1==DISP_APP_TEST_EDP)
     int32_t dpConnectedCmdArg;
+#endif
     DispApp_initParams(appObj);
     vpParams = &appObj->vpParams;
     advVpParams = &appObj->advVpParams;
@@ -1150,7 +1152,7 @@ void App_print(const char *format, ...)
     /* Start the var args processing. */
     va_start(arguments, format);
     vsnprintf (printBuffer, sizeof(printBuffer), format, arguments);
-    DSS_log(printBuffer);
+    DSS_log("%s", printBuffer);
     /* End the var args processing. */
     va_end(arguments);
 }

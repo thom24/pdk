@@ -425,15 +425,13 @@ void MuxIntcP_clearInEvent(int32_t muxNum, int32_t muxInEvent)
 
 MuxIntcP_Status MuxIntcP_create(MuxIntcP_inParams *inParams, MuxIntcP_outParams *outParams)
 {
-    inParams = inParams;
-    outParams = outParams;
 
     return (MuxIntcP_OK);
 }
 
 /* A count kept for each bank usage/ 16 pins share a bank */
 #define GPIO_NUM_BANKS        ((GPIO_NUM_PINS_PER_PORT + 15U) / 16U)
-uint32_t GPIO_PinBankUsageCount[GPIO_NUM_PORTS][GPIO_NUM_BANKS] = {0U, };
+uint32_t GPIO_PinBankUsageCount[GPIO_NUM_PORTS][GPIO_NUM_BANKS] = {{0U}};
 
 /**
  * \brief  This function sets/clears the soc interrupt path including the \n
@@ -456,9 +454,13 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
 
     intCfg = cfg->intCfg;
 
-    struct tisci_msg_rm_irq_set_req     rmIrqReq     = {0};
-    struct tisci_msg_rm_irq_release_req rmIrqRelease = {0};
-    struct tisci_msg_rm_irq_set_resp    rmIrqResp    = {0};
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_release_req rmIrqRelease;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+
+    memset(&rmIrqReq, 0, sizeof(rmIrqReq));
+    memset(&rmIrqRelease, 0, sizeof(rmIrqRelease));
+    memset(&rmIrqResp, 0, sizeof(rmIrqResp));
 
     uint16_t ir_id = 0U, src_id = 0U, src_index = 0U, dst_id, dst_host_irq, irq_range_start, irq_range_num;
 
@@ -671,8 +673,11 @@ static int32_t GPIO_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *ir
 {
     int32_t         retVal = CSL_PASS;
     uint16_t        irIntrIdx;
-    struct tisci_msg_rm_get_resource_range_resp res = {0};
-    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_get_resource_range_req  req;
+
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
 
     req.type           = ir_id;
     req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;

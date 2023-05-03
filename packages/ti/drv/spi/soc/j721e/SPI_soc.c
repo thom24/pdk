@@ -1240,13 +1240,19 @@ int32_t OSPI_configSocIntrPath(void *hwAttrs_ptr, bool setIntrPath)
 #if defined(BUILD_MCU)
     CSL_ArmR5CPUInfo r5CpuInfo = {0};
     OSPI_v0_HwAttrs *hwAttrs = (OSPI_v0_HwAttrs*)(hwAttrs_ptr);
-    struct tisci_msg_rm_irq_set_req  rmIrqReq = {0};
-    struct tisci_msg_rm_irq_set_resp rmIrqResp = {0};
-    struct tisci_msg_rm_irq_release_req rmIrqRelease = {0};
-    struct tisci_msg_rm_get_resource_range_resp res = {0};
-    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    struct tisci_msg_rm_irq_set_req  rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp rmIrqResp;
+    struct tisci_msg_rm_irq_release_req rmIrqRelease;
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_get_resource_range_req  req;
     uint16_t src_id,src_index,dst_id = 0U,dst_host_irq;
     uint16_t intNum, intRangeNum;
+
+    memset(&rmIrqReq, 0, sizeof(rmIrqReq));
+    memset(&rmIrqResp, 0, sizeof(rmIrqResp));
+    memset(&rmIrqRelease, 0, sizeof(rmIrqRelease));
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 
@@ -1449,13 +1455,19 @@ int32_t MCSPI_configSocIntrPath(uint32_t instance, void *hwAttrs_ptr, bool setIn
 #if defined(BUILD_MCU)
     CSL_ArmR5CPUInfo r5CpuInfo = {0};
     SPI_v1_HWAttrs *hwAttrs = (SPI_v1_HWAttrs*)(hwAttrs_ptr);
-    struct tisci_msg_rm_irq_set_req  rmIrqReq = {0};
-    struct tisci_msg_rm_irq_set_resp rmIrqResp = {0};
-    struct tisci_msg_rm_irq_release_req rmIrqRelease = {0};
-    struct tisci_msg_rm_get_resource_range_resp res = {0};
-    struct tisci_msg_rm_get_resource_range_req  req = {0};
+    struct tisci_msg_rm_irq_set_req  rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp rmIrqResp;
+    struct tisci_msg_rm_irq_release_req rmIrqRelease;
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_get_resource_range_req  req;
     uint16_t src_id,src_index,dst_id = 0U,dst_host_irq;
     uint16_t intNum, intRangeNum;
+
+    memset(&rmIrqReq, 0, sizeof(rmIrqReq));
+    memset(&rmIrqResp, 0, sizeof(rmIrqResp));
+    memset(&rmIrqRelease, 0, sizeof(rmIrqRelease));
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 

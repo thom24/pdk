@@ -362,7 +362,8 @@ removed after having a fix in TIFS */
 #if (defined(BUILD_HS) && defined(SOC_J721E))
     /* By default firewall regions for PCIE is enabled on J721E HS. Disable them since PCIE is not able to access that */
     uint16_t temp;
-    struct tisci_msg_fwl_get_firewall_region_resp resp_get_fw_ctrl[2] = {{0}, {0}};
+    struct tisci_msg_fwl_get_firewall_region_resp resp_get_fw_ctrl[2];
+    memset(&resp_get_fw_ctrl, 0, sizeof(resp_get_fw_ctrl));
     struct tisci_msg_fwl_get_firewall_region_req req_get_fw_ctrl[2] = 
     {
         {

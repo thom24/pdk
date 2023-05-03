@@ -472,16 +472,6 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
     SBL_C7X2_L1DMEM_BASE_ADDR_SOC
     };
 
-    const uint32_t SocM4fIramAddr[] =
-    {
-    SBL_M4F_IRAM_BASE_ADDR_SOC
-    };
-
-    const uint32_t SocM4fDramAddr[] =
-    {
-    SBL_M4F_DRAM_BASE_ADDR_SOC
-    };
-
     const uint32_t SocHsmM4fDramAddr[] =
     {
     SBL_HSM_M4F_SRAM_BASE_ADDR_SOC

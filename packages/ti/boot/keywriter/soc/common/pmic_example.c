@@ -153,7 +153,7 @@ GPIO_v0_Config GPIO_v0_config = {
     gpioCallbackFunctions,
     sizeof(gpioPinConfigs) / sizeof(GPIO_PinConfig),
     sizeof(gpioCallbackFunctions) / sizeof(GPIO_CallbackFxn),
-#ifdef __TI_ARM_V7R4__
+#if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     0x8U
 #else
 #if defined(BUILD_C7X)
@@ -1456,10 +1456,10 @@ void GPIO_configIntRouter(uint32_t portNum,
 {
     GPIO_IntCfg       *intCfg;
 
-    #if (defined(SOC_J721E) || defined(SOC_J7200))
-        uint32_t           bankNum;
-        bankNum       = pinNum / 16; /* Each GPIO bank has 16 pins */
-    #endif
+#if (defined(SOC_J721E) || defined(SOC_J7200))
+    uint32_t           bankNum;
+    bankNum       = pinNum / 16; /* Each GPIO bank has 16 pins */
+#endif
 
     intCfg        = cfg->intCfg;
 

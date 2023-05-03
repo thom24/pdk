@@ -118,7 +118,7 @@ static int32_t Sciclient_C66xRatMap(uint32_t ratRegion);
  *   \brief Handle used by #Sciclient_service function
  */
 Sciclient_ServiceHandle_t gSciclientHandle =
-    (Sciclient_ServiceHandle_t){0};
+    (Sciclient_ServiceHandle_t){{0}};
 
 /**
  *   \brief Size of secure header.This is initialized when the context is
@@ -894,7 +894,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
                         (HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
                         CSL_SEC_PROXY_RT_THREAD_STATUS_CUR_CNT_MASK) -
                         initialCount;
-                if ((pLocalRespHdr->seq == (uint32_t) localSeqId))
+                if (pLocalRespHdr->seq == (uint32_t) localSeqId)
                 {
                     status = CSL_PASS;
                     break;

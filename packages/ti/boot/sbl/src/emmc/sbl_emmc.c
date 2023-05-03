@@ -73,7 +73,6 @@ extern volatile uint32_t * outData01;
 MMCSD_Handle gHandle=NULL;
 /* SBL scratch memory defined at compile time */
 static uint8_t *sbl_scratch_mem = ((uint8_t *)(SBL_SCRATCH_MEM_START));
-static uint32_t sbl_scratch_sz = SBL_SCRATCH_MEM_SIZE;
 #endif
 
 /**
@@ -223,16 +222,17 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     uint32_t num_blocks_read  = (num_bytes/SECTORSIZE) + 1;
     /* Start block to be read */
     uint32_t mmcStartSector = (EMMC_BOOT0_SYSFS_OFFSET/SECTORSIZE);
-#endif
-
+#else
+    FIL     fp;
+    memset(&fp, 0, sizeof(fp));
+    FRESULT  fresult;
+    uint32_t bytes_read = 0;
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     const TCHAR *fileName = "0:/tifs.bin";
 #else
     const TCHAR *fileName = "0:/sysfw.bin";
 #endif
-    FIL     fp = {0};
-    FRESULT  fresult;
-    uint32_t bytes_read = 0;
+#endif
     void *sysfw_ptr = *pBuffer;
     MMCSD_v2_HwAttrs hwAttrsConfig;
 
@@ -348,15 +348,16 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
     while building your appimage \n");
 
     int32_t retVal = E_PASS;
-    const TCHAR *fileName = "0:/app";
-    FIL     fp = {0};
-    FRESULT  fresult;
-
 #ifdef EMMC_BOOT0
     /* Total number of blocks to be read*/
     uint32_t num_blocks_read  = (APP_SIZE/SECTORSIZE) + 1;
     /* Start block to be read */
     uint32_t mmcStartSector = (EMMC_BOOT0_APP_OFFSET/SECTORSIZE);
+#else
+    const TCHAR *fileName = "0:/app";
+    FIL     fp;
+    memset(&fp, 0, sizeof(fp));
+    FRESULT  fresult;
 #endif
 
 

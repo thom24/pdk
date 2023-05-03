@@ -251,7 +251,7 @@ void C7x_ConfigureTimerOutput(void);
 /**********************************************************************
  ************************** Global Variables **************************
  **********************************************************************/
-#if defined (__TI_ARM_V5__)
+#if ( __ARM_ARCH == 5)
 TimerP_Handle handle;
 #endif
 
@@ -705,7 +705,7 @@ uint64_t     gTestTimeRd[OSAL_GET_TIME_MAX_SAMPLES];
 
 void timerIsr(void *arg)
 {
-#if defined(BARE_METAL) && defined(__TI_ARM_V5__)
+#if (defined(BARE_METAL) && ( __ARM_ARCH == 5))
     TimerP_ClearInterrupt(handle);
 #endif
 
@@ -780,7 +780,7 @@ bool Osal_getTime_test(void)
 bool OSAL_timer_test()
 {
     TimerP_Params timerParams;
-#if !defined (__TI_ARM_V5__)
+#if ( __ARM_ARCH != 5)
     /* Timer handle is defined as global for OMAPL13x ARM9 core since
        it is required for clearing the interrupt from ISR */
     TimerP_Handle handle;

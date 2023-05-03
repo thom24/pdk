@@ -2573,8 +2573,10 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
                                                          uint32_t *splitResFlag)
 {
     int32_t                                     retVal = UDMA_SOK;
-    struct tisci_msg_rm_get_resource_range_req  req = {0};
-    struct tisci_msg_rm_get_resource_range_resp res = {0};
+    struct tisci_msg_rm_get_resource_range_req  req;
+    struct tisci_msg_rm_get_resource_range_resp res;
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
 
     req.type           = rmDefBoardCfgPrms->sciclientReqType;
     req.subtype        = rmDefBoardCfgPrms->sciclientReqSubtype;

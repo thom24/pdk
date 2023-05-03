@@ -578,13 +578,16 @@ static int32_t sblUdmaDelete(Sbl_UdmaObj *udmaObj)
 static void sblTrpdinit(Sbl_UdmaChObj *udmaChObj, void *srcAddr, void *dstAddr, uint32_t length)
 {
     uint32_t               num_tr = 1, cnt;
-    uint16_t               icnt[SBL_MAX_TR][4] = {0};
-    uint32_t               addr_offset[SBL_MAX_TR] = {0};
+    uint16_t               icnt[SBL_MAX_TR][4];
+    uint32_t               addr_offset[SBL_MAX_TR];
     CSL_UdmapCppi5TRPD *pTrpd = (CSL_UdmapCppi5TRPD *) udmaChObj->trpdMem;
     CSL_UdmapTR15 *pTr = (CSL_UdmapTR15 *)(udmaChObj->trpdMem + sizeof(CSL_UdmapTR15));
     uint32_t               *pTrResp;
     uint32_t cqRingNum = Udma_chGetCqRingNum(udmaChObj->chHandle);
     uint32_t descType = CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR;
+
+    memset(icnt, 0, sizeof(icnt));
+    memset(addr_offset, 0, sizeof(addr_offset));
 
     if (length < SBL_UDMA_XFER_SIZE)
     {

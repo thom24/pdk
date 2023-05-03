@@ -127,8 +127,11 @@ int32_t Sciclient_pmGetModuleState(uint32_t  moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_get_device_req request = {0};
-    struct tisci_msg_get_device_resp response = {0};
+    struct tisci_msg_get_device_req request;
+    struct tisci_msg_get_device_resp response;
+    memset(&request, 0, sizeof(request));
+    memset(&response, 0, sizeof(response));
+
     Sciclient_ReqPrm_t reqParam = {0};
 
     Sciclient_RespPrm_t respParam = {0};
@@ -165,7 +168,8 @@ int32_t Sciclient_pmSetModuleRst(uint32_t moduleId,
                                  uint32_t timeout)
 {
     int32_t retVal = CSL_PASS;
-    struct tisci_msg_set_device_resets_req request = {0};
+    struct tisci_msg_set_device_resets_req request;
+    memset(&request, 0, sizeof(request));
     request.id     = (uint32_t) moduleId;
     request.resets = (uint32_t) resetBit;
 
@@ -230,7 +234,8 @@ int32_t Sciclient_pmModuleClkRequest(uint32_t moduleId,
                                      uint32_t timeout)
 {
     int32_t retVal = CSL_PASS;
-    struct tisci_msg_set_clock_req request = {0};
+    struct tisci_msg_set_clock_req request;
+    memset(&request, 0, sizeof(request));
     request.device = (uint32_t) moduleId;
 
     if(clockId > (uint32_t)(255U))
@@ -272,7 +277,8 @@ int32_t Sciclient_pmModuleGetClkStatus(uint32_t  moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_get_clock_req request = {0};
+    struct tisci_msg_get_clock_req request;
+    memset(&request, 0, sizeof(request));
     request.device = (uint32_t) moduleId;
 
     /* If clockId is larger than 8-bit max, we use clk32 to specify the
@@ -287,7 +293,7 @@ int32_t Sciclient_pmModuleGetClkStatus(uint32_t  moduleId,
         request.clk    = (uint8_t) clockId;
     }
 
-    struct tisci_msg_get_clock_resp response = {0};
+    struct tisci_msg_get_clock_resp response = {{0}};
     Sciclient_ReqPrm_t reqParam = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_GET_CLOCK;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
@@ -320,7 +326,8 @@ int32_t Sciclient_pmSetModuleClkParent(uint32_t moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_set_clock_parent_req request = {0};
+    struct tisci_msg_set_clock_parent_req request;
+    memset(&request, 0, sizeof(request));
     request.device = (uint32_t) moduleId;
 
     /* If clockId is larger than 8-bit max, we use clk32 to specify the
@@ -376,7 +383,8 @@ int32_t Sciclient_pmGetModuleClkParent(uint32_t  moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_get_clock_parent_req request = {0};
+    struct tisci_msg_get_clock_parent_req request;
+    memset(&request, 0, sizeof(request));
     request.device = (uint32_t) moduleId;
 
     /* If clockId is larger than 8-bit max, we use clk32 to specify the
@@ -391,7 +399,7 @@ int32_t Sciclient_pmGetModuleClkParent(uint32_t  moduleId,
         request.clk    = (uint8_t) clockId;
     }
 
-    struct tisci_msg_get_clock_parent_resp response = {0};
+    struct tisci_msg_get_clock_parent_resp response = {{0}};
     Sciclient_ReqPrm_t reqParam = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_GET_CLOCK_PARENT;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
@@ -425,7 +433,7 @@ int32_t Sciclient_pmGetModuleClkNumParent(uint32_t  moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_get_num_clock_parents_req request = {0};
+    struct tisci_msg_get_num_clock_parents_req request = {{0}};
     request.device = (uint32_t) moduleId;
 
     /* If clockId is larger than 8-bit max, we use clk32 to specify the
@@ -440,7 +448,7 @@ int32_t Sciclient_pmGetModuleClkNumParent(uint32_t  moduleId,
         request.clk    = (uint8_t) clockId;
     }
 
-    struct tisci_msg_get_num_clock_parents_resp response = {0};
+    struct tisci_msg_get_num_clock_parents_resp response = {{0}};
     Sciclient_ReqPrm_t reqParam = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_GET_NUM_CLOCK_PARENTS;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
@@ -474,7 +482,8 @@ int32_t Sciclient_pmSetModuleClkFreq(uint32_t moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_set_freq_req request = {0};
+    struct tisci_msg_set_freq_req request;
+    memset(&request, 0, sizeof(request));
     request.device         = (uint32_t) moduleId;
     request.min_freq_hz    = (uint64_t) freqHz;
     request.target_freq_hz = (uint64_t) freqHz;
@@ -527,7 +536,8 @@ int32_t Sciclient_pmQueryModuleClkFreq(uint32_t moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_query_freq_req request = {0};
+    struct tisci_msg_query_freq_req request;
+    memset(&request, 0, sizeof(request));
     request.device         = (uint32_t) moduleId;
     request.min_freq_hz    = (uint64_t) reqFreqHz;
     request.target_freq_hz = (uint64_t) reqFreqHz;
@@ -551,7 +561,8 @@ int32_t Sciclient_pmQueryModuleClkFreq(uint32_t moduleId,
         request.clk    = (uint8_t) clockId;
     }
 
-    struct tisci_msg_query_freq_resp response = {0};
+    struct tisci_msg_query_freq_resp response;
+    memset(&response, 0, sizeof(response));
     Sciclient_ReqPrm_t reqParam = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_QUERY_FREQ;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
@@ -585,7 +596,8 @@ int32_t Sciclient_pmGetModuleClkFreq(uint32_t  moduleId,
 {
     int32_t retVal = CSL_PASS;
 
-    struct tisci_msg_get_freq_req request = {0};
+    struct tisci_msg_get_freq_req request;
+    memset(&request, 0, sizeof(request));
     request.device = (uint32_t) moduleId;
 
     /* If clockId is larger than 8-bit max, we use clk32 to specify the
@@ -600,7 +612,8 @@ int32_t Sciclient_pmGetModuleClkFreq(uint32_t  moduleId,
         request.clk    = (uint8_t) clockId;
     }
 
-    struct tisci_msg_get_freq_resp response = {0};
+    struct tisci_msg_get_freq_resp response;
+    memset(&response, 0, sizeof(response));
     Sciclient_ReqPrm_t reqParam = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_GET_FREQ;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
@@ -684,7 +697,8 @@ int32_t Sciclient_pmDeviceReset(uint32_t timeout)
     int32_t retVal = CSL_PASS;
 
     Sciclient_ReqPrm_t reqParam = {0};
-    struct tisci_msg_sys_reset_req request = {0};
+    struct tisci_msg_sys_reset_req request;
+    memset(&request, 0, sizeof(request));
     struct tisci_msg_sys_reset_resp response = {0};
     reqParam.messageType    = (uint16_t) TISCI_MSG_SYS_RESET;
     reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
@@ -711,7 +725,8 @@ int32_t Sciclient_pmDomainReset(domgrp_t domGrp, uint32_t timeout)
     int32_t retVal = CSL_PASS;
 
     Sciclient_ReqPrm_t reqParam = {0};
-    struct tisci_msg_sys_reset_req request = {0};
+    struct tisci_msg_sys_reset_req request;
+    memset(&request, 0, sizeof(request));
     struct tisci_msg_sys_reset_resp response = {0};
     request.domain = domGrp;
     reqParam.messageType    = (uint16_t) TISCI_MSG_SYS_RESET;

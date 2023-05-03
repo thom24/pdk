@@ -258,7 +258,7 @@ Board_STATUS Board_releaseI2CHandle(I2C_Handle hI2c)
     {
         for (i2cInst = 0; i2cInst < BOARD_I2C_PORT_CNT; i2cInst++)
         {
-            if((hI2c == gBoardI2cObj[i2cInst].i2cHandle))
+            if(hI2c == gBoardI2cObj[i2cInst].i2cHandle)
             {
                 break;
             }

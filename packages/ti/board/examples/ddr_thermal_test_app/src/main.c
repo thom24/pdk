@@ -92,7 +92,7 @@ int main(void)
 #endif /* #ifndef BAREMETAL */
 {
     int32_t       retVal = 0;
-    Board_STATUS  boardStatus;
+    Board_STATUS  boardStatus = BOARD_SOK;
     char inputChar;
 #ifdef BAREMETAL
     Board_initCfg boardCfg;

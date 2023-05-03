@@ -1108,7 +1108,7 @@ static uint32_t SPI_test_get_instance (uint32_t testId, bool master)
 
 static uint32_t SPI_test_get_domain (uint32_t testId, bool master)
 {
-    uint32_t domain;
+    uint32_t domain = 0U;
 
     /*
      * For AM65XX/J721E/J7200 SoC, master/slave test is set up to use
