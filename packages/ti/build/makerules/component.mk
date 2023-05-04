@@ -444,17 +444,6 @@ ifneq ($(sciclient_UTILS_LIST),)
   pdk_UTILS_LIST += $(sciclient_UTILS_LIST)
 endif
 
--include $(PDK_VHWA_COMP_PATH)/vhwa_component.mk
-ifneq ($(vhwa_LIB_LIST),)
-  pdk_LIB_LIST += $(vhwa_LIB_LIST)
-endif
-ifneq ($(vhwa_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(vhwa_APP_LIB_LIST)
-endif
-ifneq ($(vhwa_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(vhwa_EXAMPLE_LIST)
-endif
-
 # - used to ignore include if component not present
 -include $(PDK_IOLINK_COMP_PATH)/iolink_component.mk
 ifneq ($(iolink_LIB_LIST),)
