@@ -97,8 +97,8 @@ SECTIONS
         .sysmem                                                 : {}
         .bss                                                    : {} align( 4 ) 
         .data                                                   : {} palign( 128 ) 
-        .const.devgroup*                                        : {} align( 4 )
-        .bss.devgroup*                                          : {} align( 4 )
+        .const.devgroup                                         : {*(.const.devgroup*) align( 4 )
+        .bss.devgroup                                           : {*(.bss.devgroup*)} align( 4 )
 
     } > OCMC_RAM_SCISERVER
 
