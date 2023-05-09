@@ -1458,11 +1458,14 @@ void spi_test()
 int main(void)
 {
     /* Call board init functions */
+#if !defined(SAFERTOS)
     Board_initCfg boardCfg;
+#endif
 #if defined(OSPI_TESTAPP_RTOS)
     TaskP_Handle task;
     TaskP_Params taskParams;
 #endif
+#if !defined(SAFERTOS)
     boardCfg = BOARD_INIT_PINMUX_CONFIG |
         BOARD_INIT_MODULE_CLOCK |
         BOARD_INIT_UART_STDIO;
@@ -1470,8 +1473,6 @@ int main(void)
     /* Need to do PLL config through board init for proper clock input on J7200 */
     boardCfg |= BOARD_INIT_PLL;
 #endif
-
-#if !defined(SAFERTOS)
     Board_init(boardCfg);
 #endif
 

@@ -71,10 +71,9 @@ void vApplicationInterruptHandlerHook( void )
 {
     IntrFuncPtr        fxnPtr;
     volatile uint32_t  intNum;
-    volatile uint32_t  dummy;
 
     /* Read to force prioritization logic to take effect */
-    dummy = CSL_vimGetIrqVectorAddress( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr);
+    CSL_vimGetIrqVectorAddress( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr);
 
     /* Process a pending FIQ interrupt before a pending IRQ interrupt */
     if( ( CSL_vimGetActivePendingIntr( (CSL_vimRegs *)(uintptr_t)gVimBaseAddr, CSL_VIM_INTR_MAP_FIQ, (uint32_t *)&intNum, (uint32_t *)0 ) == 0 )       ||

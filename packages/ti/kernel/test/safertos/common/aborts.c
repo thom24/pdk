@@ -58,12 +58,6 @@ void vApplicationDataAbortHook( void )
 void vDataAbort( void )
 #endif
 {
-    volatile portUInt32Type ulDataFaultStatusReg;
-    volatile portUInt32Type ulDataFaultAddressReg;
-
-    ulDataFaultStatusReg = ulGetDataFaultStatusRegister();
-    ulDataFaultAddressReg = ulGetDataFaultAddressRegister();
-
     for( ;; )
     {
         prvAbortDelay();
@@ -77,12 +71,6 @@ void vApplicationPrefetchAbortHook( void )
 void vPrefetchAbort( void )
 #endif
 {
-    volatile portUInt32Type ulInstrFaultStatusReg;
-    volatile portUInt32Type ulInstrFaultAddressReg;
-
-    ulInstrFaultStatusReg = ulGetInstructionFaultStatusRegister();
-    ulInstrFaultAddressReg = ulGetInstructionFaultAddressRegister();
-
     for( ;; )
     {
         prvAbortDelay();
