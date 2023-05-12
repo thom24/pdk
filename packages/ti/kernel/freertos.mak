@@ -84,8 +84,9 @@ PACKAGE_SRCS_COMMON += test/freertos/ut
 PACKAGE_SRCS_COMMON += test/freertos/build
 
 
-#include posix support files if present
--include freertos_posix.mak
+# Processor SDK is using FreeRTOS V10.5.1. POSIX builds generate builds errors with FreeRTOS V10.5.1
+# Include posix support files if present
+# -include freertos_posix.mak
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
