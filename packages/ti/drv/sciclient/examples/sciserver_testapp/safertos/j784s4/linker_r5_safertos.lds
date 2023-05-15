@@ -76,7 +76,7 @@ SECTIONS
     GROUP LOAD_START( lnkFlashStartAddr ), LOAD_END( lnkFlashEndAddr )
     {
         .KERNEL_FUNCTION LOAD_START( lnkKernelFuncStartAddr ),
-                         LOAD_END( lnkKernelFuncEndAddr ) : {} align( 0x1000 )
+                         LOAD_END( lnkKernelFuncEndAddr ) : {} align( 0x8000 )
     } > OCMC_RAM_SCISERVER
 
     .unpriv_flash palign( 32 ) :
