@@ -279,15 +279,20 @@ a lot of data that needs to be copied, this should be set high. */
 #define ARP_TABLE_SIZE          10
 #define ARP_QUEUEING            1
 
+/* If enabled, prevents pbuf chain from getting created thus disabling scatter-gather */
+#define LWIP_NETIF_TX_SINGLE_PBUF       0
+
 /* Enables Checksum Offload */
 #define LWIP_CHECKSUM_CTRL_PER_NETIF    1
-#define CHECKSUM_CHECK_UDP              0
-#define CHECKSUM_CHECK_TCP              0
-#define CHECKSUM_GEN_UDP                0
-#define CHECKSUM_GEN_TCP                0
+#define CHECKSUM_CHECK_UDP              1
+#define CHECKSUM_CHECK_TCP              1
+#define CHECKSUM_GEN_UDP                1
+#define CHECKSUM_GEN_TCP                1
 
-/* Checksum on copy from app buffers to pbufs, boosts performance */
+/* Checksum on copy from app buffers to pbufs, boosts performance (if not using scatter-gather) */
+#if LWIP_NETIF_TX_SINGLE_PBUF
 #define LWIP_CHECKSUM_ON_COPY           ((CHECKSUM_CHECK_UDP == 1) || (CHECKSUM_CHECK_TCP == 1) || (CHECKSUM_GEN_UDP == 1) || (CHECKSUM_GEN_TCP == 1))
+#endif
 
 /* ---------- IP options ---------- */
 /* Define IP_FORWARD to 1 if you wish to have the ability to forward
@@ -422,9 +427,6 @@ void sys_unlock_tcpip_core(void);
 
 /* Thread priority of any other thread created using the stack functions */
 #define DEFAULT_THREAD_PRIO				1
-
-/* Prevents pbuf chain from getting created thus disabling scatter-gather*/
-#define LWIP_NETIF_TX_SINGLE_PBUF       0
 
 #define DEFAULT_ACCEPTMBOX_SIZE			(TCPIP_MBOX_SIZE)
 
