@@ -62,6 +62,7 @@ extern uint32_t    intrSrcType[R5_VIM_INTR_NUM];
 extern uint16_t    intrPri[R5_VIM_INTR_NUM];
 extern uint8_t     intrMap[R5_VIM_INTR_NUM];
 extern CSL_R5ExptnHandlers gExptnHandlers;
+extern volatile uint32_t gCurrentProcessorState;
 
 /* ========================================================================== */
 /*                          Function Declarations                             */
@@ -257,6 +258,8 @@ void __attribute__((interrupt("ABORT"), section(".text.hwi"))) HwiP_prefetch_abo
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
+
+    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
     while(loop)
         ;
 }
@@ -269,6 +272,7 @@ void __attribute__((interrupt("ABORT"), section(".text.hwi"))) HwiP_prefetch_abo
 void __attribute__((section(".text.hwi"))) HwiP_data_abort_handler_c(void)
 {
     /* Call registered call back */
+    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
     if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
     {
         gExptnHandlers.dabtExptnHandler(gExptnHandlers.dabtExptnHandlerArgs);

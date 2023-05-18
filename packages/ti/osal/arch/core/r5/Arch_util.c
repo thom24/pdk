@@ -561,4 +561,16 @@ void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
     return;
 }
 
+bool Osal_isInAbortContext( void )
+{
+    bool retVal = false;
+    extern volatile uint32_t gCurrentProcessorState;
+    if (CSL_ARM_R5_ABORT_MODE == gCurrentProcessorState)
+    {
+        retVal = true;
+    }
+
+    return retVal;
+}
+
 /* Nothing past this point */

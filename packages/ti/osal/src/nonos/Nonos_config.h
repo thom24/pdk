@@ -304,6 +304,17 @@ void HwiP_compileTime_SizeChk(void);
 
 void osalArch_Init (osalArch_Config_t *cfg);
 
+#if defined(BUILD_MCU)
+/**
+ *  \brief This API checks if the current processor state is of an Abort.
+ *
+ *  \param None 
+ *
+ *  \return Returns true if in abort state, false otherwise.
+ */
+bool  Osal_isInAbortContext( void );
+#endif
+
 #ifdef __cplusplus
 }
 #endif

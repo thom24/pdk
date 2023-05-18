@@ -240,7 +240,8 @@ typedef enum Osal_ThreadType_e {
     Osal_ThreadType_Hwi,   /*!< Current thread is a Hwi  */
     Osal_ThreadType_Swi,   /*!< Current thread is a Swi  */
     Osal_ThreadType_Task,  /*!< Current thread is a Task */
-    Osal_ThreadType_Main   /*!< Current thread is Main   */
+    Osal_ThreadType_Main,  /*!< Current thread is Main   */
+    Osal_ThreadType_Abort, /*!< Current thread is an Abort */
 } Osal_ThreadType;
 
 /* Internal function for assert */

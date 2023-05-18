@@ -113,7 +113,18 @@ void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line)
 
 Osal_ThreadType Osal_getThreadType(void)
 {
-    return (Osal_ThreadType_Main);
+    Osal_ThreadType osalThreadType;
+#if defined (BUILD_MCU)    
+    if (true == Osal_isInAbortContext())
+    {
+      osalThreadType = Osal_ThreadType_Abort;
+    }
+    else
+#endif
+    {
+      osalThreadType = Osal_ThreadType_Main;
+    }
+    return (osalThreadType);
 }
 
 

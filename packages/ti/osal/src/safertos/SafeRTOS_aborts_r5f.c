@@ -67,6 +67,7 @@ portUInt32Type ulGetInstructionFaultAddressRegister( void );
 /* ========================================================================== */
 
 extern CSL_R5ExptnHandlers gExptnHandlers;
+extern volatile uint32_t gCurrentProcessorState;
 
 /* ========================================================================== */
 /*                          Function Defintions                               */
@@ -80,6 +81,7 @@ void vUndefAbort(void)
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
+    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
     while(loop)
     {
 
@@ -94,6 +96,7 @@ void vApplicationPrefetchAbortHook(void)
 void vPrefetchAbort(void)
 #endif
 {
+    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
     while(loop)
@@ -111,6 +114,7 @@ void vPrefetchAbort(void)
  */
 void vDataAbort_c(void)
 {
+    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
     /* Call registered call back */
     if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
     {

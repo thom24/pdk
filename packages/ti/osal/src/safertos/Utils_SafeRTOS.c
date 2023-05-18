@@ -130,6 +130,12 @@ Osal_ThreadType Osal_getThreadType( void )
     {
         osalThreadType = Osal_ThreadType_Hwi;
     }
+#if defined (BUILD_MCU)
+    else if (true == Osal_isInAbortContext())
+    {
+        osalThreadType = Osal_ThreadType_Abort;
+    }
+#endif
     else if(pdFALSE == xTaskIsSchedulerStarted())
     {
         osalThreadType = Osal_ThreadType_Main;
