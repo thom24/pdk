@@ -32,10 +32,6 @@ PACKAGE_SRCS_COMMON = .
 SRCS_COMMON += main.c task_switch.c SafeRTOSConfig.c aborts.c timerHooks.c
 SRCS_COMMON += SafeRTOS_startup_$(ISA).c SafeRTOS_Hwi_$(ISA).c
 
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCS_ASM_COMMON += utilsasm_r5f.asm
-endif
-
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_TEST_DEFINES)
 
 # Core/SoC/platform specific source files and CFLAGS

@@ -1,5 +1,5 @@
 /*
- *  Copyright ( C ) 2022 Texas Instruments Incorporated
+ *  Copyright ( C ) 2022 - 2023 Texas Instruments Incorporated
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -34,89 +34,14 @@
 #include "aborts.h"
 
 /*-----------------------------------------------------------------------------
- * Private Function Declarations.
- *---------------------------------------------------------------------------*/
-
-static void prvAbortDelay( void );
-
-#if defined (BUILD_MCU)
-/*-----------------------------------------------------------------------------
- * External Functions (declared in utilsasm_r5f.asm)
- *---------------------------------------------------------------------------*/
-
-portUInt32Type ulGetDataFaultStatusRegister( void );
-portUInt32Type ulGetDataFaultAddressRegister( void );
-portUInt32Type ulGetInstructionFaultStatusRegister( void );
-portUInt32Type ulGetInstructionFaultAddressRegister( void );
-
-/*-----------------------------------------------------------------------------
  * Function Definitions
  *---------------------------------------------------------------------------*/
-#if !defined (SOC_J7200)
-void vApplicationDataAbortHook( void )
-#else
-void vDataAbort( void )
-#endif
-{
-    for( ;; )
-    {
-        prvAbortDelay();
-    }
-}
-/*---------------------------------------------------------------------------*/
-
-#if !defined (SOC_J7200)
-void vApplicationPrefetchAbortHook( void )
-#else
-void vPrefetchAbort( void )
-#endif
-{
-    for( ;; )
-    {
-        prvAbortDelay();
-    }
-}
-/*---------------------------------------------------------------------------*/
-#if !defined (SOC_J7200)
-void vApplicationUndefAbortHook( void )
-#else
-void vUndefAbort( void )
-#endif
-{
-    for( ;; )
-    {
-        prvAbortDelay();
-    }
-}
-/*---------------------------------------------------------------------------*/
-#endif
 
 void vApplicationAbort( void )
 {
-    for( ;; )
+    while(1U)
     {
-        prvAbortDelay();
+
     }
 }
-/*---------------------------------------------------------------------------*/
 
-void vStartupAbort( void )
-{
-    for( ;; )
-    {
-        prvAbortDelay();
-    }
-}
-/*---------------------------------------------------------------------------*/
-
-static void prvAbortDelay( void )
-{
-    const portUnsignedBaseType uxDelayTime = 3500000;
-    volatile portUnsignedBaseType uxCount = 0;
-
-    for( uxCount = 0; uxCount < uxDelayTime; uxCount++ )
-    {
-        ; /* Do nothing. */
-    }
-}
-/*---------------------------------------------------------------------------*/

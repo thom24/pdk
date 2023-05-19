@@ -31,10 +31,6 @@ PACKAGE_SRCS_COMMON = .
 SRCS_COMMON = main.c test_safertos.c SafeRTOSConfig.c aborts.c timerHooks.c
 SRCS_COMMON += SafeRTOS_startup_$(ISA).c SafeRTOS_Hwi_$(ISA).c
 
-ifeq ($(ISA),$(filter $(ISA), r5f))
-  SRCS_ASM_COMMON += utilsasm_r5f.asm
-endif
-
 SRCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
 INCDIR += $(PDK_INSTALL_PATH)/ti/build/unit-test/Unity/src $(PDK_INSTALL_PATH)/ti/build/unit-test/config
 SRCS_COMMON += unity_config.c unity.c
