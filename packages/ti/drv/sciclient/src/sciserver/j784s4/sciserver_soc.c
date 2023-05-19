@@ -41,7 +41,11 @@
 #include <lib/mmr_lock.h>
 #include <ti/drv/sciclient/sciserver.h>
 
-void Sciserver_enableAcspcie()
+static void Sciserver_powerOnLocalDru (void);
+
+static void Sciserver_enableAcspcie (void);
+
+static void Sciserver_enableAcspcie (void)
 {
     mmr_unlock(CSL_CTRL_MMR0_CFG0_BASE, 2);
 
@@ -72,7 +76,7 @@ void Sciserver_enableAcspcie()
     mmr_lock(CSL_CTRL_MMR0_CFG0_BASE, 2);
 }
 
-void Sciserver_powerOnLocalDru()
+static void Sciserver_powerOnLocalDru (void)
 {
     Sciclient_pmSetModuleState(TISCI_DEV_COMPUTE_CLUSTER0_DRU4,
         TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);
@@ -84,7 +88,7 @@ void Sciserver_powerOnLocalDru()
         TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);
 }
 
-void Sciserver_socInit()
+void Sciserver_socInit(void)
 {
     /** Set OUT_CLK_EN bit for ACSPCIE Buffer **/
     Sciserver_enableAcspcie();
@@ -92,3 +96,4 @@ void Sciserver_socInit()
     /*  Turn on the local DRU devices. They are not part of the MAIN_ALWAYS_ON LPSC. */
     Sciserver_powerOnLocalDru();
 }
+

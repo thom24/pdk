@@ -196,9 +196,9 @@ static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize);
  * \def gcSciclientDirectExtBootX509MagicWord
  * Magic word that specifies whether combined image is being used.
  */
-const uint8_t gcSciclientDirectExtBootX509MagicWord[
+const char gcSciclientDirectExtBootX509MagicWord[
     SCICLIENT_DIRECT_EXTBOOT_X509_MAGIC_WORD_LEN] =
-    { 'E', 'X', 'T', 'B', 'O', 'O', 'T', 0 };
+    { 'E', 'X', 'T', 'B', 'O', 'O', 'T', (char)0};
 
 extern Sciclient_ServiceHandle_t gSciclientHandle;
 
@@ -686,7 +686,7 @@ static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize)
     else{
             /* Invalidate the cache */
             CacheP_Inv((const void*) req->tisci_boardcfg_rmp_low,
-                    (int32_t)req->tisci_boardcfg_rm_size);
+                    req->tisci_boardcfg_rm_size);
     
             /*
              * See if there is still a certificate that needs to be compensated for (in

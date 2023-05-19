@@ -39,7 +39,7 @@
 
 #include <ti/drv/sciclient/sciclient.h>
 
-void Sciserver_socInit()
+void Sciserver_socInit(void)
 {
     /**
      * Set the frequency of msmc clock to 1GHz during DM initialisation

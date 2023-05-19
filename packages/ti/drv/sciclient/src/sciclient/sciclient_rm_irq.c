@@ -840,7 +840,7 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
     uint16_t messageType = TISCI_MSG_RM_IRQ_SET;
     uint8_t dst_host;
     struct Sciclient_rmIrqCfg cfg;
-    
+
     memset(&cfg, 0, sizeof(cfg));
 
     /* Run all error checks */
@@ -855,7 +855,7 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
     } else {
         dst_host = (uint8_t) gSciclientMap[Sciclient_getCurrentContext(messageType)].hostId;
     }
-    
+
     if (((r == CSL_PASS) &&
         Sciclient_rmParamIsValid(req->valid_params,
                                  TISCI_MSG_VALUE_RM_IA_ID_VALID)) == TRUE) {
@@ -863,7 +863,7 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
     } else {
         cfg.s_ia = SCICLIENT_RM_DEV_NONE;
     }
-    
+
     if (r == CSL_PASS) {
         cfg.valid_params = req->valid_params;
         cfg.host = dst_host;
@@ -886,7 +886,7 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
                  */
                 cfg.vint = cfg.s_idx;
             }
-    
+
             /* Route search for non event-source routes */
             r = Sciclient_rmIrqFindRoute(&cfg);
             if (r == CSL_PASS) {
@@ -921,7 +921,7 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
             r = CSL_EBADARGS;
         }
     }
-    
+
     return r;
 }
 
@@ -948,7 +948,7 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
     } else {
         dst_host = (uint8_t) gSciclientMap[Sciclient_getCurrentContext(messageType)].hostId;
     }
-    
+
     if (((r == CSL_PASS) &&
         Sciclient_rmParamIsValid(req->valid_params,
                                  TISCI_MSG_VALUE_RM_IA_ID_VALID)) == TRUE) {
@@ -956,7 +956,7 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
     } else {
         cfg.s_ia = SCICLIENT_RM_DEV_NONE;
     }
-    
+
     if (r == CSL_PASS) {
         cfg.valid_params = req->valid_params;
         cfg.host = dst_host;
@@ -1193,7 +1193,7 @@ static int32_t Sciclient_rmPsPop(const struct Sciclient_rmIrqNode  **n,
     } else {
         r = CSL_EFAIL;
     }
-    
+
     return r;
 }
 
@@ -1698,7 +1698,7 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
                     }
                 }
             }
-        }    
+        }
         if ((i > 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
             /* Get the IR output resource range host assignments */
             req.secondary_host = cfg->host;
@@ -1750,7 +1750,7 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
                             CSL_PASS) {
                             next_inp_valid = (bool)true;
                         }
-                    }    
+                    }
                     if ((cur_outp_valid == (bool)true) &&
                         (next_inp_valid == (bool)true)) {
                         break;
@@ -2963,4 +2963,3 @@ static bool Sciclient_rmIrIsIr(uint16_t id)
 
     return r;
 }
-

@@ -160,20 +160,20 @@ void Sciserver_tirtosUserMsgHwiFxn(uintptr_t arg)
     int32_t ret = CSL_PASS;
     bool soft_error = false;
 
-    Osal_DisableInterrupt(0, (int32_t) uhd->irq_num);
+    Osal_DisableInterrupt(0, uhd->irq_num);
 
     ret = Sciserver_interruptHandler(uhd, &soft_error);
 
     if ((ret != CSL_PASS) && (soft_error == true))
     {
-        Osal_EnableInterrupt(0, (int32_t) uhd->irq_num);
+        Osal_EnableInterrupt(0, uhd->irq_num);
     }
     else
     {
         (void) SemaphoreP_post(gSciserverUserSemHandles[uhd->semaphore_id]);
     }
 
-    Osal_ClearInterrupt(0, (int32_t) uhd->irq_num);
+    Osal_ClearInterrupt(0, uhd->irq_num);
 
     if ((ret != CSL_PASS) && (soft_error != true)) {
         /* At this point secure proxy is broken so halt */
@@ -189,7 +189,7 @@ void Sciserver_tirtosUnRegisterIntr(void)
         if (gSciserverHwiHandles[i] != NULL)
         {
             Osal_DeleteInterrupt(gSciserverHwiHandles[i],
-                                 (int32_t)sciserver_hwi_list[i].irq_num);
+                                 sciserver_hwi_list[i].irq_num);
             gSciserverHwiHandles[i] = NULL_PTR;
         }
     }
@@ -233,7 +233,7 @@ void Sciserver_tirtosUserMsgTask(void *arg0, void* arg1)
     {
         hwiMasked = 0;
         for (i = 0U; i < SCISERVER_ARRAY_SIZE(sciserver_hwi_list); i++) {
-            Osal_EnableInterrupt(0,(int32_t)sciserver_hwi_list[i].irq_num);
+            Osal_EnableInterrupt(0,sciserver_hwi_list[i].irq_num);
         }
     }
 
@@ -263,8 +263,8 @@ void Sciserver_tirtosUserMsgTask(void *arg0, void* arg1)
              * for the gloabl interrupt data array. This is functional but can
              * be cleaned up.
              */
-            Osal_EnableInterrupt(0U, sciserver_hwi_list[(2U * ((uint32_t) utd->task_id)) +
-                    utd->state->current_buffer_idx].irq_num);
+            Osal_EnableInterrupt(0U, sciserver_hwi_list[(2 * utd->task_id) +
+                    ((int32_t) utd->state->current_buffer_idx)].irq_num);
         }
     }
 }
@@ -312,7 +312,7 @@ static int32_t Sciserver_tirtosInitHwis(void)
         intrPrms.corepacConfig.isrRoutine = &Sciserver_tirtosUserMsgHwiFxn;
         intrPrms.corepacConfig.enableIntr = FALSE;
         intrPrms.corepacConfig.corepacEventNum  = 0;
-        intrPrms.corepacConfig.intVecNum = (int32_t)
+        intrPrms.corepacConfig.intVecNum = 
             sciserver_hwi_list[i].irq_num;
         /* Register interrupts */
         ret = Osal_RegisterInterrupt(&intrPrms,

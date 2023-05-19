@@ -49,7 +49,7 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+#define SPROXY_ROUTE_DATA_MAX (0xFFU)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -71,7 +71,7 @@ extern const uint16_t sproxy_route_data_count;
 /**
  * List of secure proxy host data based off host ID index
  */
-extern const struct sproxy_host_tx_thread_data sproxy_route_data[];
+extern const struct sproxy_host_tx_thread_data sproxy_route_data[SPROXY_ROUTE_DATA_MAX];
 
 /* ========================================================================== */
 /*                          Function Declarations                             */

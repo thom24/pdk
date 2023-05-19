@@ -267,6 +267,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
     uintptr_t key;
     uint32_t b_doInit = 0U;
     uint32_t rxThread;
+    uint32_t contextId;
 
 #ifdef QNX_OS
 
@@ -349,188 +350,197 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
                     break;
                 }
             }
-            /* Initialize currSeqId. Make sure currSeqId is never 0 */
-            gSciclientHandle.currSeqId = (uint8_t) 1;
+            if(status == CSL_PASS){
+                /* Initialize currSeqId. Make sure currSeqId is never 0 */
+                gSciclientHandle.currSeqId = (uint8_t) 1;
 
-            /* Register interrupts for secure and non-secure contexts of the CPU */
-            /* Non-Secure */
-            uint32_t contextId = SCICLIENT_CONTEXT_NONSEC;
-            if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
-            {
-                OsalRegisterIntrParams_t    intrPrms;
-                rxThread = gSciclientMap[contextId].respThreadId;
-                CSL_secProxyGetDataAddr(pSciclient_secProxyCfg, rxThread, 0U);
-                /* Get the Max Message Size */
-                gSciclient_maxMsgSizeBytes =
-                        CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
-                        CSL_SEC_PROXY_RSVD_MSG_BYTES;
-                Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
-                Osal_RegisterInterrupt_initParams(&intrPrms);
-                /* Populate the interrupt parameters */
-                intrPrms.corepacConfig.arg              = (uintptr_t) contextId;
-                intrPrms.corepacConfig.isrRoutine       = &Sciclient_ISR;
-                #if defined (_TMS320C6X)
-                /* On C66x, we use Event Combiner to map the interrupt to the CPU Intc.  To
-                 * do this, OSAL expects that event number holds the interrupt number and we
-                 * use the macro for interrupt number to specify we wish to use Event
-                 * Combiner.
-                 */
-                intrPrms.corepacConfig.corepacEventNum  = (int32_t) gSciclientMap[contextId].respIntrNum;
-                intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
-                #else
-                /* Other (non-C66x) CPUs don't use event number and interrupt number is
-                 * passed in and programmed to CPU Intc directly.
-                 */
-                intrPrms.corepacConfig.corepacEventNum  = 0;
-                intrPrms.corepacConfig.intVecNum        = (int32_t) gSciclientMap[contextId].respIntrNum;
-                #endif
-                #if defined (BUILD_C7X)
+                /* Register interrupts for secure and non-secure contexts of the CPU */
+                /* Non-Secure */
+                contextId = SCICLIENT_CONTEXT_NONSEC;
+                if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
                 {
-                    /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
-                     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
-                     * to the event number which is shared between GIC and CLEC.
-                     */
-                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992U;
+                    OsalRegisterIntrParams_t    intrPrms;
+                    rxThread = gSciclientMap[contextId].respThreadId;
+                    CSL_secProxyGetDataAddr(pSciclient_secProxyCfg, rxThread, 0U);
+                    /* Get the Max Message Size */
+                    gSciclient_maxMsgSizeBytes =
+                            CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
+                            CSL_SEC_PROXY_RSVD_MSG_BYTES;
+                    Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
+                    Osal_RegisterInterrupt_initParams(&intrPrms);
+                    /* Populate the interrupt parameters */
+                    intrPrms.corepacConfig.arg              = (uintptr_t) contextId;
+                    intrPrms.corepacConfig.isrRoutine       = &Sciclient_ISR;
+                    #if defined (_TMS320C6X)
+                    /* On C66x, we use Event Combiner to map the interrupt to the CPU Intc.  To
+                    * do this, OSAL expects that event number holds the interrupt number and we
+                    * use the macro for interrupt number to specify we wish to use Event
+                    * Combiner.
+                    */
+                      intrPrms.corepacConfig.corepacEventNum  =  gSciclientMap[contextId].respIntrNum;
+                      intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
+                    #else
+                    /* Other (non-C66x) CPUs don't use event number and interrupt number is
+                    * passed in and programmed to CPU Intc directly.
+                    */
+                      intrPrms.corepacConfig.corepacEventNum  = 0;
+                      intrPrms.corepacConfig.intVecNum        =  gSciclientMap[contextId].respIntrNum;
+                    #endif
+                    #if defined (BUILD_C7X)
+                    {
+                        /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
+                        * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+                        * to the event number which is shared between GIC and CLEC.
+                        */
+                        uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992U;
 
-                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-                    CSL_ClecEventConfig evtCfg;
-                    evtCfg.secureClaimEnable = 0;
-                    evtCfg.evtSendEnable = 1;
-                    evtCfg.rtMap = 0x3C;
-                    evtCfg.extEvtNum = 0x0;
-                    evtCfg.c7xEvtNum = SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM;
-                    CSL_clecConfigEvent(regs, evtNum, &evtCfg);
-                    intrPrms.corepacConfig.priority = 1U;
+                        CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+                        CSL_ClecEventConfig evtCfg;
+                        evtCfg.secureClaimEnable = 0;
+                        evtCfg.evtSendEnable = 1;
+                        evtCfg.rtMap = 0x3C;
+                        evtCfg.extEvtNum = 0x0;
+                        evtCfg.c7xEvtNum = SCICLIENT_C7X_NON_SECURE_INTERRUPT_NUM;
+                        CSL_clecConfigEvent(regs, evtNum, &evtCfg);
+                        intrPrms.corepacConfig.priority = 1U;
+                    }
+                    #endif
+                    #ifdef QNX_OS
+                      intrPrms.corepacConfig.intAutoEnable  = 0;
+                    #endif
+
+                    /* Clear Interrupt */
+                    Osal_ClearInterrupt(intrPrms.corepacConfig.corepacEventNum, intrPrms.corepacConfig.intVecNum);
+                    /* Register interrupts */
+                    status = Osal_RegisterInterrupt(&intrPrms, &gSciclientHandle.respIntr[0]);
+                    if(OSAL_INT_SUCCESS != status)
+                    {
+                        gSciclientHandle.respIntr[0] = NULL_PTR;
+                    }
                 }
-                #endif
-#ifdef QNX_OS
-                intrPrms.corepacConfig.intAutoEnable  = 0;
-#endif
-                /* Clear Interrupt */
-                Osal_ClearInterrupt(intrPrms.corepacConfig.corepacEventNum, intrPrms.corepacConfig.intVecNum);
-                /* Register interrupts */
-                status = Osal_RegisterInterrupt(&intrPrms, &gSciclientHandle.respIntr[0]);
-                if(OSAL_INT_SUCCESS != status)
+                else
                 {
-                    gSciclientHandle.respIntr[0] = NULL_PTR;
+                    status = CSL_EFAIL;
                 }
             }
-            else
-            {
-                status = CSL_EFAIL;
-            }
-            /* Secure Context */
-            contextId = SCICLIENT_CONTEXT_SEC;
-            if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
-            {
-                OsalRegisterIntrParams_t    intrPrms;
-                rxThread = gSciclientMap[contextId].respThreadId;
-                CSL_secProxyGetDataAddr(pSciclient_secProxyCfg, rxThread, 0U);
-                /* Get the Max Message Size */
-                gSciclient_maxMsgSizeBytes =
-                        CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
-                        CSL_SEC_PROXY_RSVD_MSG_BYTES;
-                Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
-                Osal_RegisterInterrupt_initParams(&intrPrms);
-                /* Populate the interrupt parameters */
-                intrPrms.corepacConfig.arg              = (uintptr_t) contextId;
-                intrPrms.corepacConfig.isrRoutine       = &Sciclient_ISR;
-                #if defined (_TMS320C6X)
-                /* On C66x, we use Event Combiner to map the interrupt to the CPU Intc.  To
-                 * do this, OSAL expects that event number holds the interrupt number and we
-                 * use the macro for interrupt number to specify we wish to use Event
-                 * Combiner.
-                 */
-                intrPrms.corepacConfig.corepacEventNum  = (int32_t) gSciclientMap[contextId].respIntrNum;
-                intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
-                #else
-                /* Other (non-C66x) CPUs don't use event number and interrupt number is
-                 * passed in and programmed to CPU Intc directly.
-                 */
-                intrPrms.corepacConfig.corepacEventNum  = 0;
-                intrPrms.corepacConfig.intVecNum        = (int32_t) gSciclientMap[contextId].respIntrNum;
-                #endif
-                #if defined (BUILD_C7X)
+            if(status == CSL_PASS){
+                /* Secure Context */
+                contextId = SCICLIENT_CONTEXT_SEC;
+                if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
                 {
-                    /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
-                     * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
-                     * to the event number which is shared between GIC and CLEC.
-                     */
-                    uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992U;
+                    OsalRegisterIntrParams_t    intrPrms;
+                    rxThread = gSciclientMap[contextId].respThreadId;
+                    CSL_secProxyGetDataAddr(pSciclient_secProxyCfg, rxThread, 0U);
+                    /* Get the Max Message Size */
+                    gSciclient_maxMsgSizeBytes =
+                            CSL_secProxyGetMaxMsgSize(pSciclient_secProxyCfg) -
+                            CSL_SEC_PROXY_RSVD_MSG_BYTES;
+                    Sciclient_flush(rxThread, gSciclient_maxMsgSizeBytes);
+                    Osal_RegisterInterrupt_initParams(&intrPrms);
+                    /* Populate the interrupt parameters */
+                    intrPrms.corepacConfig.arg              = (uintptr_t) contextId;
+                    intrPrms.corepacConfig.isrRoutine       = &Sciclient_ISR;
+                    #if defined (_TMS320C6X)
+                    /* On C66x, we use Event Combiner to map the interrupt to the CPU Intc.  To
+                    * do this, OSAL expects that event number holds the interrupt number and we
+                    * use the macro for interrupt number to specify we wish to use Event
+                    * Combiner.
+                    */
+                    intrPrms.corepacConfig.corepacEventNum  =  gSciclientMap[contextId].respIntrNum;
+                    intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
+                    #else
+                    /* Other (non-C66x) CPUs don't use event number and interrupt number is
+                    * passed in and programmed to CPU Intc directly.
+                    */
+                      intrPrms.corepacConfig.corepacEventNum  = 0;
+                      intrPrms.corepacConfig.intVecNum        =  gSciclientMap[contextId].respIntrNum;
+                    #endif
+                    #if defined (BUILD_C7X)
+                    {
+                        /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
+                        * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
+                        * to the event number which is shared between GIC and CLEC.
+                        */
+                        uint32_t evtNum = gSciclientMap[contextId].c7xEvtIn + 992U;
 
-                    CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
-                    CSL_ClecEventConfig evtCfg;
-                    evtCfg.secureClaimEnable = 0;
-                    evtCfg.evtSendEnable = 1;
-                    evtCfg.rtMap = 0x3C;
-                    evtCfg.extEvtNum = 0x0;
-                    evtCfg.c7xEvtNum = SCICLIENT_C7X_SECURE_INTERRUPT_NUM;
-                    CSL_clecConfigEvent(regs, evtNum, &evtCfg);
-                    intrPrms.corepacConfig.priority = 1U;
+                        CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
+                        CSL_ClecEventConfig evtCfg;
+                        evtCfg.secureClaimEnable = 0;
+                        evtCfg.evtSendEnable = 1;
+                        evtCfg.rtMap = 0x3C;
+                        evtCfg.extEvtNum = 0x0;
+                        evtCfg.c7xEvtNum = SCICLIENT_C7X_SECURE_INTERRUPT_NUM;
+                        CSL_clecConfigEvent(regs, evtNum, &evtCfg);
+                        intrPrms.corepacConfig.priority = 1U;
+                    }
+                    #endif
+                    #ifdef QNX_OS
+                      intrPrms.corepacConfig.intAutoEnable  = 0;
+                    #endif
+                    /* Clear Interrupt */
+                    Osal_ClearInterrupt(intrPrms.corepacConfig.corepacEventNum, intrPrms.corepacConfig.intVecNum);
+                    /* Register interrupts */
+                    status = Osal_RegisterInterrupt(&intrPrms, &gSciclientHandle.respIntr[1]);
+                    if(OSAL_INT_SUCCESS != status)
+                    {
+                        gSciclientHandle.respIntr[1] = NULL_PTR;
+                    }
                 }
-                #endif
-#ifdef QNX_OS
-                intrPrms.corepacConfig.intAutoEnable  = 0;
-#endif
-                /* Clear Interrupt */
-                Osal_ClearInterrupt(intrPrms.corepacConfig.corepacEventNum, intrPrms.corepacConfig.intVecNum);
-                /* Register interrupts */
-                status = Osal_RegisterInterrupt(&intrPrms, &gSciclientHandle.respIntr[1]);
-                if(OSAL_INT_SUCCESS != status)
+                else
                 {
-                    gSciclientHandle.respIntr[1] = NULL_PTR;
+                    status = CSL_EFAIL;
                 }
-            }
-            else
-            {
-                status = CSL_EFAIL;
             }
         }
-        if (pCfgPrms != NULL)
-        {
-            if( (CSL_PASS==status) && ((pCfgPrms->isSecureMode==0U) ||
-                    (pCfgPrms->isSecureMode==1U)) )
+        if(status == CSL_PASS){
+            if (pCfgPrms != NULL)
             {
-                gSciclientHandle.isSecureMode = pCfgPrms->isSecureMode;
+                if( (CSL_PASS==status) && ((pCfgPrms->isSecureMode==0U) ||
+                        (pCfgPrms->isSecureMode==1U)) )
+                {
+                    gSciclientHandle.isSecureMode = pCfgPrms->isSecureMode;
+                }
+                else
+                {
+                    status = CSL_EBADARGS;
+                }
             }
             else
             {
-                status = CSL_EBADARGS;
+                gSciclientHandle.isSecureMode = 0U;
             }
-        }
-        else
-        {
-            gSciclientHandle.isSecureMode = 0U;
         }
 #if defined(BUILD_MCU1_0) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined (SOC_J784S4))
-        if (pCfgPrms != NULL)
-        {
-            if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
+        if(status == CSL_PASS){
+            if (pCfgPrms != NULL)
             {
-                /* Run pm_init */
-                if (status == CSL_PASS)
+                if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
                 {
-                    status = Sciclient_boardCfgPm(&pCfgPrms->inPmPrms);
+                    /* Run pm_init */
                     if (status == CSL_PASS)
                     {
-                        gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_PASS;
+                        status = Sciclient_boardCfgPm(&pCfgPrms->inPmPrms);
+                        if (status == CSL_PASS)
+                        {
+                            gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_PASS;
+                        }
+                        else
+                        {
+                            gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                        }
                     }
-                    else
-                    {
-                        gSciclientHandle.pmBoardConfigComplete = SCICLIENT_FT_FAIL;
-                    }
-                }
-                /* Run rm_init */
-                if (status == CSL_PASS)
-                {
-                    status = Sciclient_boardCfgRm(&pCfgPrms->inRmPrms);
+                    /* Run rm_init */
                     if (status == CSL_PASS)
                     {
-                        gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_PASS;
-                    }
-                    else
-                    {
-                        gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                        status = Sciclient_boardCfgRm(&pCfgPrms->inRmPrms);
+                        if (status == CSL_PASS)
+                        {
+                            gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_PASS;
+                        }
+                        else
+                        {
+                            gSciclientHandle.rmBoardConfigComplete = SCICLIENT_FT_FAIL;
+                        }
                     }
                 }
             }
@@ -977,8 +987,8 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
        )
     {
         #if defined (_TMS320C6X)
-        Osal_ClearInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
-        Osal_EnableInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
+        Osal_ClearInterrupt( gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
+        Osal_EnableInterrupt( gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
         #else
 
         #if defined (BUILD_C7X)
@@ -993,7 +1003,7 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             /* Clec interrupt number 1024 is connected to GIC interrupt number 32 in J721E.
              * Due to this for CLEC programming one needs to add an offset of 992 (1024 - 32)
              * to the event number which is shared between GIC and CLEC.
-             */ 
+             */
             if (SCICLIENT_NON_SECURE_CONTEXT == gSciclientMap[contextId].context)
             {
                 #if defined (SOC_J721S2) || defined (SOC_J784S4)
@@ -1012,8 +1022,8 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             }
         }
         #endif
-        Osal_ClearInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
-        Osal_EnableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
+        Osal_ClearInterrupt(0, gSciclientMap[contextId].respIntrNum);
+        Osal_EnableInterrupt(0, gSciclientMap[contextId].respIntrNum);
         #endif
     }
     return status;
@@ -1059,7 +1069,7 @@ int32_t Sciclient_deinit(void)
                 contextId = SCICLIENT_CONTEXT_NONSEC;
                 if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
                 {
-                    (void) Osal_DeleteInterrupt(gSciclientHandle.respIntr[0], (int32_t) gSciclientMap[contextId].respIntrNum);
+                    (void) Osal_DeleteInterrupt(gSciclientHandle.respIntr[0], gSciclientMap[contextId].respIntrNum);
                 }
             }
             if (gSciclientHandle.respIntr[1] != NULL)
@@ -1067,7 +1077,7 @@ int32_t Sciclient_deinit(void)
                 contextId = SCICLIENT_CONTEXT_SEC;
                 if(contextId < SCICLIENT_CONTEXT_MAX_NUM)
                 {
-                    (void) Osal_DeleteInterrupt(gSciclientHandle.respIntr[1], (int32_t) gSciclientMap[contextId].respIntrNum);
+                    (void) Osal_DeleteInterrupt(gSciclientHandle.respIntr[1], gSciclientMap[contextId].respIntrNum);
                 }
             }
         }
@@ -1167,10 +1177,10 @@ static void Sciclient_ISR(uintptr_t arg)
         {
             (void) SemaphoreP_post(gSciclientHandle.semHandles[seqId]);
             #if defined (_TMS320C6X)
-            Osal_DisableInterrupt((int32_t) gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
+            Osal_DisableInterrupt( gSciclientMap[contextId].respIntrNum, OSAL_REGINT_INTVEC_EVENT_COMBINER);
             #else
 #ifndef QNX_OS
-            Osal_DisableInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
+            Osal_DisableInterrupt(0, gSciclientMap[contextId].respIntrNum);
             #if defined (BUILD_C7X)
             {
                 CSL_CLEC_EVTRegs * regs = (CSL_CLEC_EVTRegs *) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
@@ -1201,7 +1211,7 @@ static void Sciclient_ISR(uintptr_t arg)
                     #endif
                 }
             }
-            Osal_ClearInterrupt(0, (int32_t) gSciclientMap[contextId].respIntrNum);
+            Osal_ClearInterrupt(0, gSciclientMap[contextId].respIntrNum);
             #endif
 #endif
             #endif

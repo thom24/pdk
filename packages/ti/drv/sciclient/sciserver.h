@@ -47,7 +47,7 @@
 
 #include <stdint.h>
 #include <stddef.h>
-#include <stdbool.h> 
+#include <stdbool.h>
 #include <ti/csl/csl_types.h>
 #include <ti/drv/sciclient/sciclient.h>
 
@@ -89,7 +89,7 @@
 #define SCISERVER_CTRL_CMD_RUN          (0x5A)
 
 /** SCISERVER Process state for Waiting for new messages. This is used with the
- *  API Sciserver_getProcessState to know the status of the SCISERVER. 
+ *  API Sciserver_getProcessState to know the status of the SCISERVER.
  *  This is done so that the SCICLIENT Direct and SCISERVER can both run on the
  *  same core. There could be a scenario where the MCU1_0 or DM is running its
  *  own SCICLIENT Direct calls and the SCISERVER is running the calls for other
@@ -104,7 +104,7 @@
 #define SCISERVER_PROCESS_STATE_WAIT    (0x5A)
 
 /** SCISERVER Process state for Waiting for new messages. This is used with the
- *  API Sciserver_getProcessState to know the status of the SCISERVER. 
+ *  API Sciserver_getProcessState to know the status of the SCISERVER.
  *  This is done so that the SCICLIENT Direct and SCISERVER can both run on the
  *  same core. There could be a scenario where the MCU1_0 or DM is running its
  *  own SCICLIENT Direct calls and the SCISERVER is running the calls for other
@@ -145,27 +145,41 @@
 /** Macro to define number of secure proxy instances **/
 #define SCISERVER_SECPROXY_INSTANCE_COUNT (0x2U)
 
-/** \brief Semaphore Ids to be used for the user and DM tasks */
-enum Sciserver_SemaphoreIds {
-    SCISERVER_SEMAPHORE_USER_HI = 0,
+/**
+ * \anchor Sciserver_SemaphoreIds
+ * \name Semaphore Ids to be used for the user and DM tasks.
+ *
+ * @{
+ */
+/*!
+ * @brief Semaphore Ids to be used for the user and DM tasks */
+typedef uint32_t Sciserver_SemaphoreIds;
+#define SCISERVER_SEMAPHORE_USER_HI   (uint32_t)0
     /**< User High Priority Semaphore */
-    SCISERVER_SEMAPHORE_USER_LO = 1,
+#define SCISERVER_SEMAPHORE_USER_LO   (uint32_t)1
     /**< User Low Priority Semaphore */
-    SCISERVER_SEMAPHORE_USER_DM = 2,
+#define SCISERVER_SEMAPHORE_USER_DM   (uint32_t)2
     /**< Device Manager Semaphore */
-    SCISERVER_SEMAPHORE_MAX_CNT = 3,
+#define SCISERVER_SEMAPHORE_MAX_CNT   (uint32_t)3
     /**< Max Semaphore */
-};
+/* @} */
 
-/** \brief Task Ids to be used for the user and DM tasks */
-enum Sciserver_TaskIds {
-    SCISERVER_TASK_USER_HI = 0,
+/**
+ * \anchor Sciserver_TaskIds
+ * \name Task Ids to be used for the user and DM tasks.
+ *
+ * @{
+ */
+/*!
+ * @brief Task Ids to be used for the user and DM tasks */
+typedef uint32_t Sciserver_TaskIds;
+#define SCISERVER_TASK_USER_HI    (uint32_t)0
     /**< User High priority Task ID */
-    SCISERVER_TASK_USER_LO = 1,
+#define SCISERVER_TASK_USER_LO    (uint32_t)1
     /**< User Low priority Task ID */
-    SCISERVER_TASK_MAX_CNT = 2,
+#define SCISERVER_TASK_MAX_CNT    (uint32_t)2
     /**< User Max Task ID */
-};
+/* @} */
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -239,7 +253,7 @@ typedef struct {
     const uint32_t              irq_num;
     uint32_t *const             hw_msg_buffer;
     const uint16_t              hw_msg_queue_id;
-    const int32_t               semaphore_id;
+    const uint32_t              semaphore_id;
     Sciserver_msgData *const    user_msg_data;
 } Sciserver_hwiData;
 
@@ -281,7 +295,7 @@ typedef struct {
     uint32_t *const             *hw_msg_buffer_list;
     const uint8_t               hw_msg_buffer_count;
     const uint32_t              hw_msg_buffer_sz;
-    const int32_t               semaphore_id;
+    const uint32_t              semaphore_id;
     Sciserver_taskState *const  state;
     Sciserver_msgData *const    *user_msg_data;
     const int32_t               priority;
@@ -369,7 +383,7 @@ int32_t Sciserver_initPrms_Init(Sciserver_CfgPrms_t *pPrms);
 /**
  * @brief Sciserver function to implement SoC specific configuration
  */
-void Sciserver_socInit();
+void Sciserver_socInit (void);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
