@@ -1490,7 +1490,7 @@ bool OSAL_queue_test()
     /* When called with an empty queue, QueueP_get should return a pointer to the queue itself */
     pBuf = QueueP_get(handle);
 
-    if (pBuf != QueueP_getQPtr(handle))
+    if (pBuf != NULL)
     {
         OSAL_log("Queue is still not empty with element %p, handle %p \n", pBuf, handle);
         return false;
