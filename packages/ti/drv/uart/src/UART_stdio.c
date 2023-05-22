@@ -835,7 +835,7 @@ void UART_printf(const char *pcString, ...)
     Osal_ThreadType threadType = UART_osalGetThreadType();
     const char *pStr = pcString;
 
-    if ((threadType != Osal_ThreadType_Main) && (threadType != Osal_ThreadType_Hwi))
+    if ((threadType != Osal_ThreadType_Main) && (threadType != Osal_ThreadType_Hwi) && (threadType != Osal_ThreadType_Abort))
     {
         /* Acquire the lock for this particular UART_printf */
         (void)UART_osalPendLock(uart_stdio.sem, SemaphoreP_WAIT_FOREVER);
@@ -1042,7 +1042,7 @@ void UART_printf(const char *pcString, ...)
     /* End the varargs processing. */
     va_end(vaArgP);
 
-    if ((threadType != Osal_ThreadType_Main) && (threadType != Osal_ThreadType_Hwi))
+    if ((threadType != Osal_ThreadType_Main) && (threadType != Osal_ThreadType_Hwi) && (threadType != Osal_ThreadType_Abort))
     {
         /* Release the lock for this particular UART_printf */
         (void)UART_osalPostLock(uart_stdio.sem);
