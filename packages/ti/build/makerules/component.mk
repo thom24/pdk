@@ -369,6 +369,18 @@ ifneq ($(lwip_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
+-include ${PDK_TSN_COMP_PATH}/tsn_component.mk
+ifneq ($(tsn_LIB_LIST),)
+  pdk_LIB_LIST += $(tsn_LIB_LIST)
+endif
+ifneq ($(tsn_APP_LIB_LIST),)
+  pdk_APP_LIB_LIST += $(tsn_APP_LIB_LIST)
+endif
+ifneq ($(tsn_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(tsn_EXAMPLE_LIST)
+endif
+
+# - used to ignore include if component not present
 -include $(PDK_CSIRX_COMP_PATH)/csirx_component.mk
 ifneq ($(csirx_LIB_LIST),)
   pdk_LIB_LIST += $(csirx_LIB_LIST)
