@@ -119,6 +119,7 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $MV system-firmware-releases/binaries/ti-fs*j7*gp.bin sysfw/binaries
     $MV system-firmware-releases/binaries/ti-fs*j7*cert.bin sysfw/binaries
     $MV system-firmware-releases/binaries/ti-fs*j7*enc.bin sysfw/binaries
+    $MV system-firmware-releases/reports sysfw/reports
     $RM -fr sysfw/include/tisci
     $COPY -r system-firmware-releases/include/tisci sysfw/include
     for SOC in $SOC_LIST
