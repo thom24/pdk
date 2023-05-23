@@ -126,7 +126,7 @@ uint32_t ulPortSchedularRunning = pdFALSE;
 /* Store the PMU counter timestamp during an OS tick.
  * This is required to calculate the time in microseconds for 
  * uiPortGetRunTimeCounterValue. */
-static uint64_t ullPortLastTickPmuTs;
+static volatile uint64_t ullPortLastTickPmuTs;
 
 /*  PMU counter timestamp overflow count. */
 static uint32_t ulPmuTsOverFlowCount = 0;
@@ -435,43 +435,82 @@ uint64_t uxPortReadPmuCounter(void)
     uint64_t ts;
 
     tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
-    ovsrStatus = (CSL_armR5PmuReadCntrOverflowStatus() & (0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
 
-    if (ovsrStatus != 0)
+    if( true == (bool)xPortInIsrContext() )
     {
-        tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
-        ulPmuTsOverFlowCount++;
-        CSL_armR5PmuClearCntrOverflowStatus((0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
+        ovsrStatus = (CSL_armR5PmuReadCntrOverflowStatus() & (0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
+
+        if (ovsrStatus != 0)
+        {
+            tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
+            ulPmuTsOverFlowCount++;
+            CSL_armR5PmuClearCntrOverflowStatus((0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
+        }
     }
     ts = ((uint64_t)tsLo | ((uint64_t) ulPmuTsOverFlowCount << 32U));
 
     return ts;
 }
-/* return current counter value of high speed counter in usecs */
+/* Return current counter value of high speed counter in usecs, or return 0 in case of an unexpected error. */
 uint32_t uiPortGetRunTimeCounterValue()
 {
-    uint64_t uxDeltaTs;
-    uint64_t uxTimeInMilliSecs;
-    uint64_t uxTimeInUsecs;
-    
-    /* time in milliseconds based on no. of OS ticks */
-    uxTimeInMilliSecs = gTimerCntrl.uxTicks * (uint64_t)portTICK_PERIOD_MS;
-
-    /* PMU counter increments after last OS tick  */
-    uxDeltaTs = uxPortReadPmuCounter() - ullPortLastTickPmuTs;
-
-    uxTimeInUsecs = (uxTimeInMilliSecs * 1000U) + 
-                        (uxDeltaTs * 1000000) / configCPU_CLOCK_HZ /* convert PMU timestamp to microseconds */;
-
-    /* note, there is no overflow protection for this 32b value in FreeRTOS
-     *
-     * This value will overflow in
-     * ((0xFFFFFFFF)/(1000000*60)) minutes ~ 71 minutes
-     *
-     * We call LoadP_update() in idle loop (from vApplicationIdleHook) to accumulate the task load into a 64b value.
-     * The implementation of LoadP_update() is in osal/src/freertos/LoadP_freertos.c
-     * 
+    uint64_t uxDeltaTs, uxTimeInUsecs;
+    volatile uint64_t uxTimeInMilliSecs, t1, t2, pmuCounterRead, pmuCounterReadHi, pmuCounterReadLow;
+    uint32_t noBusyWaiting = 2;
+    /* If there is a tick in between reading the micro seconds from last tick, then the differenfece will get corrupted.
+     * We should keep looping to ensure that no tick happened during the miscrosecond offset measurement.
+     * Worst case expectation is that the loop will execute 2 times, as the tick interrupt occurs in 
+     * magnitude of 1ms and the below instructions are executed on a 1GHz processor.
      */
+    do
+    {
+        --noBusyWaiting;
+        t1 = gTimerCntrl.uxTicks;
+        /* PMU counter increments after last OS tick  */
+        pmuCounterRead = uxPortReadPmuCounter();
+
+        /* PMU Overflow is only handled in the tick timer. The below check
+         * is to handle the cases when the PMU overflows and the tick has not happened yet.
+         */
+        if (pmuCounterRead < ullPortLastTickPmuTs)
+        {
+            pmuCounterReadHi = pmuCounterRead >> 32U;
+            pmuCounterReadLow = pmuCounterRead & 0xFFFFFFFF;
+            /* Increase the higher 32 bits by 1, as overflow has happened. Do not handle the overflow
+             * as the tick timer will handle it. Just use the correct value here.
+             */
+            pmuCounterReadHi++;
+            pmuCounterRead =  (pmuCounterReadHi << 32U) | pmuCounterReadLow;
+        }
+        uxDeltaTs = pmuCounterRead - ullPortLastTickPmuTs;
+        t2 = gTimerCntrl.uxTicks;
+    } while ( (t1 != t2) && (0U != noBusyWaiting) );
+
+    /* If t1 and t2 are not equal after 2 iterations of the while loop, then this is 
+     * as unexpected situation and we should return an error, i.e., 0
+     */
+    if ( ( 0U == noBusyWaiting ) && ( t1!=t2 ) )
+    {
+        uxTimeInUsecs = (uint64_t)0;
+    }
+    else
+    {
+        /* time in milliseconds based on no. of OS ticks */
+        uxTimeInMilliSecs = t2 * (uint64_t)portTICK_PERIOD_MS;
+
+        uxTimeInUsecs = (uxTimeInMilliSecs * 1000U) + 
+                            (uxDeltaTs * 1000000) / configCPU_CLOCK_HZ /* convert PMU timestamp to microseconds */;
+
+        /* note, there is no overflow protection for this 32b value in FreeRTOS
+        *
+        * This value will overflow in
+        * ((0xFFFFFFFF)/(1000000*60)) minutes ~ 71 minutes
+        *
+        * We call LoadP_update() in idle loop (from vApplicationIdleHook) to accumulate the task load into a 64b value.
+        * The implementation of LoadP_update() is in osal/src/freertos/LoadP_freertos.c
+        * 
+        */
+    }
     return (uint32_t)(uxTimeInUsecs);
 }
 
