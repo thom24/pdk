@@ -337,7 +337,7 @@ typedef struct
     uint32_t isAvailable;
     /**< Flag to indicate whether eDP module is available */
     uint32_t isConnectedTo;
-    /**< Flag to indicate the connection of DSI IP on the board. Refer to \Dss_DsiConnectionType for values */
+    /**< Flag to indicate the connection of DSI IP on the board. Refer to \ref Dss_DsiConnectionType for values */
 } Dss_DsiInitParams;
 
 /**

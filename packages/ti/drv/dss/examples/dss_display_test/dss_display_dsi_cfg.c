@@ -383,7 +383,6 @@ int32_t DispApp_InitI2c()
         status = FVID2_EFAIL;
     }
 #elif defined (SOC_J721S2) || defined(SOC_J784S4)
-    uint32_t i=0;
     I2C_Params i2cParams;
 
     /* Enable the DSI to eDP bridge. */
