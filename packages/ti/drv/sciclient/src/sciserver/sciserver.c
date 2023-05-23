@@ -155,18 +155,9 @@ int32_t Sciserver_init(Sciserver_CfgPrms_t *pPrms)
         }
         if (CSL_PASS == ret)
         {
+            /* Implement SoC specific configuration */
+            Sciserver_socInit();
 
-#if ( defined(SOC_J784S4) && defined(BUILD_MCU1_0) )
-        /*  Turn on the local DRU devices. They are not part of the MAIN_ALWAYS_ON LPSC. */
-        Sciclient_pmSetModuleState(TISCI_DEV_COMPUTE_CLUSTER0_DRU4,
-            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);
-        Sciclient_pmSetModuleState(TISCI_DEV_COMPUTE_CLUSTER0_DRU5,
-            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);
-        Sciclient_pmSetModuleState(TISCI_DEV_COMPUTE_CLUSTER0_DRU6,
-            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);
-        Sciclient_pmSetModuleState(TISCI_DEV_COMPUTE_CLUSTER0_DRU7,
-            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,TISCI_MSG_FLAG_AOP,SCICLIENT_SERVICE_WAIT_FOREVER);
-#endif
             gSciserverState.ctrlState = SCISERVER_CTRL_CMD_HALT;
             gSciserverState.processState = SCISERVER_PROCESS_STATE_WAIT;
             gSciserverState.initDone = SCISERVER_INIT_DONE;

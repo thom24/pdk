@@ -66,6 +66,7 @@ ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
     SRCS_COMMON += sciserver_secproxySocData.c
     SRCS_COMMON += sciserver_secproxyConfigData.c
     SRCS_COMMON += sciserver_dmTxRoutingData.c
+    SRCS_COMMON += sciserver_soc.c
 # Keep the sciclient.c the first file in this list. This is used to trigger
 # the generation of the header files from the firmware binary file.
 ifneq ($(IS_BAREMETAL),yes)

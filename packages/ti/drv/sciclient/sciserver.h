@@ -366,6 +366,11 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd);
  */
 int32_t Sciserver_initPrms_Init(Sciserver_CfgPrms_t *pPrms);
 
+/**
+ * @brief Sciserver function to implement SoC specific configuration
+ */
+void Sciserver_socInit();
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
