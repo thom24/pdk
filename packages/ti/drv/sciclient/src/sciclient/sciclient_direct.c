@@ -257,6 +257,8 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
             case TISCI_MSG_GET_DEVICE:
             case TISCI_MSG_SET_DEVICE_RESETS:
             case TISCI_MSG_SYS_RESET:
+            case TISCI_MSG_PREPARE_SLEEP:
+            case TISCI_MSG_ENTER_SLEEP:
                 memcpy(message, pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
                 ret = Sciclient_ProcessPmMessage(pReqPrm->flags, message);
                 if (pRespPrm->pRespPayload != NULL)
@@ -579,7 +581,13 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
             break;
         case TISCI_MSG_SYS_RESET               :
             ret = sys_reset_handler((uint32_t*)tx_msg);
-        break;
+            break;
+        case TISCI_MSG_PREPARE_SLEEP            :
+            ret = Sciclient_prepareSleep();
+            break;
+        case TISCI_MSG_ENTER_SLEEP              :
+            ret = Sciclient_enterSleep();
+            break;
         default:
             ret = CSL_EFAIL;
             msg_inval = (bool)true;

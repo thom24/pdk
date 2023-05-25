@@ -363,6 +363,7 @@ typedef uint8_t devgrp_t;
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_soc_uid.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_keywriter.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/security/tisci_dkek.h>
+#include <ti/drv/sciclient/soc/sysfw/include/tisci/lpm/tisci_lpm.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_clock.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_device.h>
 #include <ti/drv/sciclient/soc/sysfw/include/tisci/pm/tisci_pm_core.h>
@@ -734,6 +735,18 @@ int32_t Sciclient_boardCfgParseHeader (
     uint8_t * pCommonHeader,
     Sciclient_BoardCfgPrms_t * pInPmPrms,
     Sciclient_BoardCfgPrms_t * pInRmPrms);
+
+/** \brief Sciclient Prepare Sleep Function
+ *  \param None
+ *  \return status    Function return status.
+ */
+int32_t Sciclient_prepareSleep();
+
+/** \brief Sciclient Enter Sleep Function
+ *  \param None
+ *  \return status    Function return status.
+ */
+int32_t Sciclient_enterSleep();
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

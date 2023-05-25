@@ -757,6 +757,62 @@ int32_t Sciclient_pmIsModuleValid(uint32_t modId)
     return retVal;
 }
 
+int32_t Sciclient_pmPrepareSleep(uint32_t timeout)
+{
+    int32_t retVal = CSL_PASS;
+
+    Sciclient_ReqPrm_t reqParam = {0};
+    struct tisci_msg_prepare_sleep_req request;
+    memset(&request, 0, sizeof(request));
+    struct tisci_msg_prepare_sleep_resp response = {0};
+    reqParam.messageType    = (uint16_t) TISCI_MSG_PREPARE_SLEEP;
+    reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
+    reqParam.timeout        = (uint32_t) timeout;
+
+    Sciclient_RespPrm_t respParam = {0};
+    respParam.flags           = (uint32_t) 0;   /* Populated by the API */
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof(response);
+
+    retVal = Sciclient_service(&reqParam, &respParam);
+    if((retVal != CSL_PASS) ||
+        ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
+    {
+        retVal = CSL_EFAIL;
+    }
+    return retVal;
+}
+
+int32_t Sciclient_pmEnterSleep(uint32_t timeout)
+{
+    int32_t retVal = CSL_PASS;
+
+    Sciclient_ReqPrm_t reqParam = {0};
+    struct tisci_msg_enter_sleep_req request;
+    memset(&request, 0, sizeof(request));
+    struct tisci_msg_enter_sleep_resp response = {0};
+    reqParam.messageType    = (uint16_t) TISCI_MSG_ENTER_SLEEP;
+    reqParam.flags          = (uint32_t) TISCI_MSG_FLAG_AOP;
+    reqParam.pReqPayload    = (const uint8_t *) &request;
+    reqParam.reqPayloadSize = (uint32_t) sizeof(request);
+    reqParam.timeout        = (uint32_t) timeout;
+
+    Sciclient_RespPrm_t respParam = {0};
+    respParam.flags           = (uint32_t) 0;   /* Populated by the API */
+    respParam.pRespPayload    = (uint8_t *) &response;
+    respParam.respPayloadSize = (uint32_t) sizeof(response);
+
+    retVal = Sciclient_service(&reqParam, &respParam);
+    if((retVal != CSL_PASS) ||
+        ((respParam.flags & TISCI_MSG_FLAG_ACK) != TISCI_MSG_FLAG_ACK))
+    {
+        retVal = CSL_EFAIL;
+    }
+    return retVal;
+}
+
 /* -------------------------------------------------------------------------- */
 /*                 Internal Function Definitions                              */
 /* -------------------------------------------------------------------------- */
