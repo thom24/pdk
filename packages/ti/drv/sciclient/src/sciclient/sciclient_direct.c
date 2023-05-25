@@ -202,6 +202,9 @@ const char gcSciclientDirectExtBootX509MagicWord[
 
 extern Sciclient_ServiceHandle_t gSciclientHandle;
 
+/* Number of active cores. When reached 0, ready to shutdown */
+static int32_t coreRefCnt = 0;
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -549,6 +552,22 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                         ret = Sciclient_pmSetMsgProxy((uint32_t*)tx_msg,
                                 reqFlags,
                                 SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID);
+                    break;
+                    case TISCI_DEV_BOARD0:
+                        if (req->state == TISCI_MSG_VALUE_DEVICE_SW_STATE_ON) {
+                            coreRefCnt++;
+                        }
+                        else if (req->state == TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF) {
+                            coreRefCnt--;
+                            /*
+                             * When no core is active, shutdown PMIC.
+                             * The <= catches call to shutdown before powering up a core.
+                             */
+                            if (coreRefCnt <= 0) {
+                                Osal_delay(1000U); /* time for ATF go in WFI */
+                                ret = Sciclient_pmicShutdown();
+                            }
+                        }
                     break;
                     default:
                         ret = set_device_handler((uint32_t*)tx_msg);

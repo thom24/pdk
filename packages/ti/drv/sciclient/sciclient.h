@@ -763,6 +763,12 @@ int32_t Sciclient_prepareSleep();
  */
 int32_t Sciclient_enterSleep();
 
+/** \brief Sciclient PMIC shutdown function.
+ *
+ *  \return status    Function return status.
+ */
+int32_t Sciclient_pmicShutdown();
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */

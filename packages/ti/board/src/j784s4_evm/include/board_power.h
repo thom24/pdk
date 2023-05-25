@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2020-2023 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2023 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -55,9 +55,6 @@ extern "C" {
 #include <ti/csl/tistdtypes.h>
 #include <stdio.h>
 #include <stdbool.h>
-
-/* GPIO port and pin numbers for SDIO 1V8 enable */
-#define BOARD_SDIO_1V8_EN_PIN_NUM          (55U) //GPIO0_55 - SEL_SDIO_3V3_1V8n
 
 #define TPS6594X_REG_DEV_REV                     (0x01U)
 #define TPS6594X_INT_STARTUP                     (0x65U)

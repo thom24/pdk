@@ -65,6 +65,7 @@ SRCS_COMMON += sciclient_secureProxyCfg.c
 SRCS_COMMON += sciclient_secureproxy.c
 SRCS_COMMON += sciclient_keywriter.c
 SRCS_COMMON += sciclient_lpm.c
+SRCS_COMMON += sciclient_pmic.c
 endif
 
 #Use CSL implementation to bypass DMSC

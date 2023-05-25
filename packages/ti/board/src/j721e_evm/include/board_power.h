@@ -71,6 +71,47 @@ extern "C" {
 /* GPIO port and pin numbers for SDIO 1V8 enable */
 #define BOARD_SDIO_1V8_EN_PIN_NUM          (117U)
 
+#define TPS6594X_REG_DEV_REV                     (0x01U)
+#define TPS6594X_INT_STARTUP                     (0x65U)
+#define TPS6594X_INT_MISC                        (0x66U)
+#define TPS6594X_CONFIG_1                        (0x7dU)
+#define TPS6594X_FSM_I2C_TRIGGERS                (0x85U)
+#define TPS6594X_FSM_NSLEEP_TRIGGERS             (0x86U)
+
+#define TPS6594X_DEV_REV_DEV_ID                  (0xffU)
+
+#define TPS6594X_INT_STARTUP_NPWRON_START_INT    (1 << 0)
+#define TPS6594X_INT_STARTUP_ENABLE_INT          (1 << 1)
+#define TPS6594X_INT_STARTUP_RTC_INT             (1 << 2)
+#define TPS6594X_INT_STARTUP_FSD_INT             (1 << 4)
+#define TPS6594X_INT_STARTUP_SOFT_REBOOT_INT     (1 << 5)
+
+#define TPS6594X_INT_MISC_BIST_PASS_INT          (1 << 0)
+#define TPS6594X_INT_MISC_EXT_CLK_INT            (1 << 1)
+#define TPS6594X_INT_MISC_TWARN_INT              (1 << 3)
+
+#define TPS6594X_CONFIG_NSLEEP1_MASK             (1 << 6)
+#define TPS6594X_CONFIG_NSLEEP2_MASK             (1 << 7)
+
+#define TPS6594X_FSM_I2C_TRIGGERS_I2C0           (1 << 0)
+
+#define TPS6594X_FSM_NSLEEP_NSLEEP1B             (1 << 0)
+#define TPS6594X_FSM_NSLEEP_NSLEEP2B             (1 << 1)
+
+#define TPS6594X_RTC_CTRL_REG_GET_TIME           (1 << 6)
+#define TPS6594X_RTC_CTRL_REG_STOP_RTC           (1 << 0)
+#define TPS6594X_RTC_INTERRUPTS_REG_IT_ALARM     (1 << 3)
+
+/**
+ *  \brief    Function to power off the PMIC.
+ *
+ *  \param slaveAddr [IN] PMIC slave address
+ *
+ *  \return   BOARD_SOK in case of success or appropriate error code
+ *
+ */
+Board_STATUS Board_pmPowerOff(uint32_t slaveAddr);
+
 #ifdef __cplusplus
 }
 #endif /* __cplusplus */
