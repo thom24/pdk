@@ -95,7 +95,7 @@ struct tisci_header {
 #ifdef HOST_EMULATION
     uint8_t    payload; 
 #else 
-    uint8_t    payload[]; 
+    uint8_t    *payload; 
 #endif
 };
 
