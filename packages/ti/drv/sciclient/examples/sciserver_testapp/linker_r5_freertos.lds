@@ -65,6 +65,7 @@ __SVC_STACK_SIZE = 0x100;
 MEMORY
 {
     VECTORS (X)                 : ORIGIN = 0x00000000 , LENGTH = 0x00000040
+    R5F_TCMA0(RWIX)             : ORIGIN = 0x00000040 , LENGTH = 0x00007F00
     R5F_TCMB0(RWIX)             : ORIGIN = 0x41010100 , LENGTH = 0x00007F00
     OCMC_RAM_BOARD_CFG (RWIX)   : ORIGIN = 0x41c80000 , LENGTH = 0x2000
     /* Sciserver App Space */
@@ -76,10 +77,10 @@ MEMORY
 SECTIONS
 {
     .freertosrstvectors : {} palign(8) > VECTORS
-    .bootCode           : {} palign(8) > OCMC_RAM_SCISERVER
-    .startupCode        : {} palign(8) > OCMC_RAM_SCISERVER
-    .text.hwi           : {} palign(8) > OCMC_RAM_SCISERVER
-    .startupData        : {} palign(8) > OCMC_RAM_SCISERVER, type = NOINIT
+    .bootCode           : {} palign(8) > R5F_TCMA0
+    .startupCode        : {} palign(8) > R5F_TCMA0
+    .text.hwi           : {} palign(8) > R5F_TCMA0
+    .startupData        : {} palign(8) > R5F_TCMA0, type = NOINIT
     .text               : {} palign(8) > OCMC_RAM_SCISERVER
     GROUP {
         .text.hwi       : palign(8)
