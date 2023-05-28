@@ -139,7 +139,7 @@ typedef struct
 typedef struct
 {
     uint8_t                 pauseOnError;
-    /**< [IN] Bool: When set (TRUE), pause channel on error */
+    /**< [IN] Bool: When set (UTRUE), pause channel on error */
     uint8_t                 addrType;
     /**< [IN] Address type for this channel.
      *   Refer \ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_atype */
@@ -174,8 +174,8 @@ typedef struct
     /**< [IN] Bool: Specifies whether or not the channel should suppress
      *   sending the single data phase teardown packet when teardown is
      *   complete.
-     *      FALSE = TD packet is sent
-     *      TRUE = Suppress sending TD packet
+     *      UFALSE = TD packet is sent
+     *      UTRUE = Suppress sending TD packet
      *   TODO: Should we allocate tdCq based on this flag?
      */
 

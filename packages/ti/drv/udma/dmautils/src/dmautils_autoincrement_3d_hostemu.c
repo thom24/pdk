@@ -97,7 +97,7 @@ uint64_t hostEmulation_addressUpdate( uint64_t base, int32_t offset, uint64_t ad
 
   newAddr = (uint64_t)(base + offset);
 
-  if ( addrMask != 0U )
+  if ( 0U != addrMask )
   {
     newAddr = ( base & addrMask ) | ( newAddr & ~addrMask );
   }
@@ -143,7 +143,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
   uint8_t  bias       = (uint8_t)( ((uint32_t)secondaryTR->data[0]) >> (uint8_t)8) & (uint8_t)0xFF; /*TODO CSL doesn't exist for compression fields...*/
   uint8_t  algorithm  = ( ((uint8_t)secondaryTR->data[0])      ) & (uint8_t)0x0F;
   uint16_t i;
-  if ( algorithm != (uint8_t)DMAUTILSAUTOINC3D_CMPRS_SEG_VAR_K )
+  if ( (uint8_t)DMAUTILSAUTOINC3D_CMPRS_SEG_VAR_K != algorithm )
   {
     temp = elem - bias;
 
@@ -167,7 +167,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
               compressed |= ( 1 << (8 - i) ) ;
       */
 
-      if ( temp != 0U )
+      if ( 0U != temp )
       {
         compressed = 1;
         /*invert the 8 bit number*/
@@ -205,20 +205,20 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
       */
       temp++;
 
-      uint8_t lengthDiv2 = 0xff;
+      uint8_t lengthDiv2 = 0xFF;
       /*Find how many zeroes to append*/
       for ( i = 0U; i < (length+1U); ++i )
       {
-        if ( (temp & ((uint64_t)1<<(uint64_t)i))!= (uint64_t)0 )
+        if ( (uint64_t)0 != (temp & ((uint64_t)1<<(uint64_t)i)) )
         {
           lengthDiv2 = (uint8_t)i;
         }
       }
       /*invert temp*/
-      uint32_t inverted = 0;
+      uint32_t inverted = 0U;
       for ( i = (uint16_t)0; i < ((uint16_t)lengthDiv2+(uint16_t)2); ++i )
       {
-        if ( (temp &  ((uint64_t)1<<(uint64_t)i) )!= (uint64_t)0 )
+        if ( (uint64_t)0 != (temp &  ((uint64_t)1<<(uint64_t)i) ) )
         {
             inverted |= ((uint32_t)1<<((uint32_t)lengthDiv2-(uint32_t)i));
         }
@@ -267,19 +267,19 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
       */
 
       /* sign extend by 1 bit*/
-      if (( temp & ( (uint32_t)1 << ((uint32_t)length-(uint32_t)1) ) )!= 0U)
+      if ( 0U != ( temp & ( (uint32_t)1 << ((uint32_t)length-(uint32_t)1) ) ) )
       {
         temp |= ( (uint32_t)1 << (uint32_t)length );
       }
 
-      if ( algorithm == (uint8_t)DMAUTILSAUTOINC3D_CMPRS_SEG_VAR_K )
+      if ( (uint8_t)DMAUTILSAUTOINC3D_CMPRS_SEG_VAR_K == algorithm )
       {
         temp   = elem + ((uint32_t)1 << (uint32_t)kVal) - (uint32_t)1;
         temp  &= (((uint32_t)1 << ((uint32_t)length+(uint32_t)1)) - (uint32_t)1); /*mask out top bit in case of rollover*/
       }
 
       /*alternate output mapping between positive and negative inputs*/
-      if (( temp & ( (uint32_t)1 << (uint32_t)length ) )!= 0U)
+      if (0U != ( temp & ( (uint32_t)1 << (uint32_t)length ) ))
       {
         temp = ( ( (uint32_t)1<<((uint32_t)length+(uint32_t)1) ) - temp ) << (uint32_t)1;
       }
@@ -292,7 +292,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
       uint8_t lengthDiv2 = 0xff;
       for ( i = (uint16_t)0; (i < ((uint16_t)length+(uint16_t)1)); ++i )
       {
-        if ( (temp &((uint64_t)1<<(uint64_t)i))!= (uint64_t)0)
+        if ( (uint64_t)0 != (temp &((uint64_t)1<<(uint64_t)i)) )
         {
           lengthDiv2 = (uint8_t)i;
         }
@@ -302,7 +302,7 @@ static uint8_t DmaUtilsAutoInc3d_compressElem
       uint64_t inverted = 0;
       for ( i = (uint16_t)0; i < ((uint16_t)lengthDiv2+(uint16_t)1); ++i )
       {
-        if ( (temp &  ((uint64_t)1<<(uint64_t)i))!= (uint64_t)0 )
+        if ( (uint64_t)0 != (temp &  ((uint64_t)1<<(uint64_t)i)) )
         {
           inverted |= (uint64_t)1<<((uint64_t)lengthDiv2-(uint64_t)i);
         }
@@ -332,7 +332,7 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondar
                                                        uint32_t*          symbolOut)
 {
   uint64_t elem         = symbolIn;
-  uint32_t uncompressed = 0;
+  uint32_t uncompressed = 0U;
   uint8_t  length       = 8; /*elements are 8-bit unless variable-k*/
   uint8_t  elsize       = length;
   uint64_t temp         = elem;
@@ -352,7 +352,7 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondar
             if ( compressed & ( 1 << i ) ) :
               uncompressed |= ( 1 << (8 - i) ) ;
       */
-      if (( temp & (uint64_t)1 )!= (uint64_t)0)
+      if ((uint64_t)0 != ( temp & (uint64_t)1 ))
       {
         length = elsize + (uint8_t)1;
         for (i = 1; i < length; i++ )
@@ -387,14 +387,14 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondar
       int8_t zeros = -1;
       for ( i = 0; i <= elsize; i++ )
       {
-        if ( (temp &  ((uint64_t)1<<(uint64_t)i)  )!= (uint64_t)0)
+        if ( (uint64_t)0 != (temp &  ((uint64_t)1<<(uint64_t)i)  ) )
         {
           zeros = (int8_t)i;
           i=elsize;
         }
       }
 
-      if ( zeros == -1 )
+      if ( -1 == zeros )
       {
         length = 0;
       }
@@ -443,10 +443,10 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondar
       int8_t zeros = -1;
       for ( i = 0; i <= elsize; i++ )
       {
-        if (( temp & (((uint64_t)1<<(uint64_t)i)) )!= (uint64_t)0)
+        if ((uint64_t)0 != ( temp & (((uint64_t)1<<(uint64_t)i)) ))
         {
           zeros = (int8_t)i;
-          i=elsize;
+          i = elsize;
         }
       }
 
@@ -461,13 +461,13 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondar
 
               for (i = (uint8_t)0; i < ((uint8_t)zeros+(uint8_t)1); i++ )
               {
-                if (( temp & ((uint64_t)1<<((uint64_t)length-(uint64_t)i-(uint64_t)1)) )!= (uint64_t)0)
+                if ((uint64_t)0 != ( temp & ((uint64_t)1<<((uint64_t)length-(uint64_t)i-(uint64_t)1)) ))
                 {
                   uncompressed |= ((uint32_t)1<<(uint32_t)i);
                 }
               }
 
-              if (( uncompressed & 1U )!= 0U)
+              if (0U != ( uncompressed & 1U ))
               {
                 uncompressed = uncompressed >> 1U;
               }
@@ -477,7 +477,7 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondar
               }
 
       /*remove variable-k*/
-      if ( algorithm == (uint8_t)DMAUTILSAUTOINC3D_CMPRS_SEG_VAR_K )
+      if ( (uint8_t)DMAUTILSAUTOINC3D_CMPRS_SEG_VAR_K == algorithm )
       {
         if ( uncompressed >= ((1U << (uint32_t)kVal) - 1U ))
         {
@@ -514,14 +514,14 @@ static uint8_t DmaUtilsAutoInc3d_decompressElem (const CSL_UdmapSecTR * secondar
 /*Start of updated decompression routines*/
 Bool checkZeroBasedEOB(int32_t curBitPos, int32_t numDecodeBits)
 {
-  Bool isEOB = TRUE;
+  Bool isEOB = UTRUE;
   if(((uint32_t)curBitPos + (uint32_t)numDecodeBits) > 128U)
   {
-    isEOB = TRUE;
+    isEOB = UTRUE;
   }
   else
   {
-    isEOB = FALSE;
+    isEOB = UFALSE;
   }
   return isEOB;
 }
@@ -530,17 +530,17 @@ static int32_t decodeZeroBasedElem(const uint8_t* srcPtr, uint8_t* decodedElem, 
 {
   int32_t localBitPos  = (*curBitPos) % (int32_t)8;
   int32_t localBytePos = (*curBitPos) / (int32_t)8;
-  int32_t isEOB = (int32_t)TRUE;
+  int32_t isEOB = 1;
   int32_t i = 0;
   int32_t numBitsRead = (int32_t)0;
   //Reset decoded value:
   (*decodedElem) = 0U;
-  if(((uint32_t)srcPtr[localBytePos] & ((uint32_t)1 << (uint32_t)localBitPos))!= 0U)
+  if(0U != ((uint32_t)srcPtr[localBytePos] & ((uint32_t)1 << (uint32_t)localBitPos)))
   {
     //Non Zero Value:
     isEOB = checkZeroBasedEOB(*curBitPos, (int32_t)9);
     (*curBitPos)++;
-    if( (int32_t)FALSE == isEOB)
+    if(0 == isEOB)
     {
       localBitPos  = (*curBitPos) % (int32_t)8;
       localBytePos = (*curBitPos) / (int32_t)8;
@@ -548,7 +548,7 @@ static int32_t decodeZeroBasedElem(const uint8_t* srcPtr, uint8_t* decodedElem, 
       for(i = localBitPos; (i < (int32_t)8) && (numBitsRead < (int32_t)8); i++)
       {
         numBitsRead++;
-        if(((uint32_t)srcPtr[localBytePos] & ((uint32_t)1 << (uint32_t)i)) != 0U)
+        if(0U != ((uint32_t)srcPtr[localBytePos] & ((uint32_t)1 << (uint32_t)i)))
         {
           (*decodedElem) |= ((uint8_t)1 << ((uint8_t)8 - (uint8_t)numBitsRead));
         }
@@ -570,7 +570,7 @@ static int32_t decodeZeroBasedElem(const uint8_t* srcPtr, uint8_t* decodedElem, 
   {
     //Zero Value:
     isEOB = checkZeroBasedEOB(*curBitPos, (int32_t)1);
-    if( (int32_t)FALSE == isEOB)
+    if(0 == isEOB)
     {
       *decodedElem = 0;
       (*curBitPos)++;
@@ -592,16 +592,16 @@ static int32_t decodeZeroBasedElem(const uint8_t* srcPtr, uint8_t* decodedElem, 
 static uint32_t DmaUtilsAutoInc3d_decompressZeroBasedCDB(uint8_t* srcPtr, uint8_t** dstPtr, uint64_t sbDstAM0, uint32_t* sbIcnt0, uint32_t sbWidth1, uint32_t* curBitPosition, uint8_t bias)
 {
   int32_t curBitPos = (int32_t)*curBitPosition;
-  int32_t isEOB = (int32_t)FALSE;
+  int32_t isEOB = 0;
   uint8_t* localDstPtr = *dstPtr;
   uint8_t decodedElem = 0;
   int32_t numDecodedBytes = 0;
   uint32_t srcJump = 16U;
   uint32_t biasAdjustedValue = 0;
-  while((isEOB == (int32_t)FALSE) && ((((int32_t)numDecodedBytes + (int32_t)(*sbIcnt0))) < (int64_t)(sbWidth1)))
+  while((0 == isEOB) && ((((int32_t)numDecodedBytes + (int32_t)(*sbIcnt0))) < (int64_t)(sbWidth1)))
   {
     isEOB = decodeZeroBasedElem(srcPtr, &decodedElem, &curBitPos);
-    if(isEOB == (int32_t)FALSE)
+    if(0 == isEOB)
     {
       //Adjust for bias:
       biasAdjustedValue = ((uint32_t)decodedElem + (uint32_t)bias);
@@ -1098,7 +1098,7 @@ int32_t DmaUitlsAutoInc3d_CompressSW(void* trMem)
                   }
 
                   /*check for eob symbol*/
-                  bool eobFound = (bool)false;
+                  bool eobFound = BFALSE;
                   switch( cmprsType )
                   {
                     case (uint8_t)DMAUTILSAUTOINC3D_CMPRS_ZERO :
@@ -2039,7 +2039,7 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle, uint32_t utcId
                   }
 
                   /*check for eob symbol*/
-                  bool eobFound = false;
+                  bool eobFound = BFALSE;
                   switch( cmprsType )
                   {
                     case DMAUTILSAUTOINC3D_CMPRS_ZERO :

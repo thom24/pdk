@@ -87,7 +87,7 @@ extern "C" {
 #define DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE (1U)
 #define DMAUTILS_INTERFACE_WITH_NO_UDMA  (1U)
 
-typedef enum{
+typedef enum{// instead of typecasting in all the usage, can we define rather than having in the enum
   DMAUTILS_SOK = CSL_PASS,
   DMAUTILS_EFAIL = CSL_EFAIL,
   DMAUTILS_EBADARGS = CSL_EBADARGS,
