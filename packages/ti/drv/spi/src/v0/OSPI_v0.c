@@ -1829,7 +1829,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                     uint32_t rxDelay = *ctrlData;
                     uint32_t funcClk = hwAttrs->funcClk;
                     phyOpMode        = hwAttrs->phyOpMode;
-                    uint16_t halfClkLock = hwAttrs->phyForceHalfClk;
+                    uint32_t halfClkLock = hwAttrs->phyLockCycle;
                     CSL_ospiConfigPhyDLL((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                          txDelay, rxDelay, phyOpMode, halfClkLock, funcClk);
                 }
