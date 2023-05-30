@@ -53,15 +53,15 @@ typedef struct NOR_PhyConfig_s
     int32_t rdDelay;
 } NOR_PhyConfig;
 
-#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_START     (18U)
-#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (34U)
+#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_START     (0)
+#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (127)
 
-#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START    (48U)
-#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END      (38U)
+#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START    (127)
+#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END      (0)
 
 
-#define NOR_SPI_PHY_INIT_RD_DELAY   (1U)
-#define NOR_SPI_PHY_VTM_TARGET      (700U)
+#define NOR_SPI_PHY_INIT_RD_DELAY   (1)
+#define NOR_SPI_PHY_VTM_TARGET      (700)
 
 extern NOR_STATUS Nor_spiPhyTune(OSPI_Handle handle, uint32_t offset);
 extern void Nor_spiPhyTuneReset(bool ddrMode);

@@ -62,6 +62,13 @@ uint32_t norSpiTuneCnt = 0;
 #define NOR_log UART_printf
 #endif
 
+#define MIN(A,B)                    (A<B?A:B)
+#define MAX(A,B)                    (A>B?A:B)
+#define TX_DLL_SEC_SEARCH_OFFSET    (4)
+#define PHY_DDR_TUNE_RD_DELAY_START (1)
+#define PHY_DDR_TUNE_RD_DELAY_MAX   (4)
+#define PHY_DDR_TUNE_DLL_MAX        (128)
+
 static NOR_PhyConfig ddrTuningPoint = {0, };
 static NOR_PhyConfig sdrTuningPoint = {0, };
 
@@ -114,7 +121,8 @@ static NOR_STATUS NOR_spiPhyRdAttack(uintptr_t flashVectorAddr)
 
 /*
  * Searches txDLL down from start until the tuning basis passes.
- * Does not look at the next rdDelay setting.  Returns txDLL=128 if fail.
+ * Does not look at the next rdDelay setting.
+ * Returns txDLL = PHY_DDR_TUNE_DLL_MAX if fail.
  */
 NOR_PhyConfig NOR_spiPhyFindTxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
@@ -129,9 +137,9 @@ NOR_PhyConfig NOR_spiPhyFindTxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
     while(status == NOR_FAIL)
     {
         start.txDLL--;
-        if(start.txDLL < 48U)
+        if(start.txDLL < 0)
         {
-            start.txDLL = 128U;
+            start.txDLL = PHY_DDR_TUNE_DLL_MAX;
             break;
         }
         NOR_spiPhyConfig(handle, start);
@@ -145,7 +153,8 @@ NOR_PhyConfig NOR_spiPhyFindTxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
 
 /*
  * Searches txDLL up from start until the tuning basis passes.
- * Does not look at the next rdDelay setting.  Returns txDLL=128 if fail.
+ * Does not look at the next rdDelay setting.
+ * Returns txDLL=PHY_DDR_TUNE_DLL_MAX if fail.
  */
 NOR_PhyConfig NOR_spiPhyFindTxLow(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
@@ -161,9 +170,9 @@ NOR_PhyConfig NOR_spiPhyFindTxLow(OSPI_Handle handle, NOR_PhyConfig start, uint3
     while(status == NOR_FAIL)
     {
         start.txDLL++;
-        if (start.txDLL > 32U)
+        if (start.txDLL > 127)
         {
-            start.txDLL = 128U;
+            start.txDLL = PHY_DDR_TUNE_DLL_MAX;
             break;
         }
         NOR_spiPhyConfig(handle, start);
@@ -177,7 +186,8 @@ NOR_PhyConfig NOR_spiPhyFindTxLow(OSPI_Handle handle, NOR_PhyConfig start, uint3
 
 /*
  * Searches rxDLL down from start until the tuning basis passes.
- * Does not look at the next rdDelay setting.  Returns rxDLL=128 if fail.
+ * Does not look at the next rdDelay setting.
+ * Returns rxDLL=PHY_DDR_TUNE_DLL_MAX if fail.
  */
 NOR_PhyConfig NOR_spiPhyFindRxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
@@ -192,9 +202,9 @@ NOR_PhyConfig NOR_spiPhyFindRxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
     while(status == NOR_FAIL)
     {
         start.rxDLL--;
-        if(start.rxDLL < 25U)
+        if(start.rxDLL < 0)
         {
-            start.rxDLL = 128U;
+            start.rxDLL = PHY_DDR_TUNE_DLL_MAX;
             break;
         }
         NOR_spiPhyConfig(handle, start);
@@ -208,7 +218,7 @@ NOR_PhyConfig NOR_spiPhyFindRxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
 
 /*
  * Searches rxDLL up from start until the tuning basis passes.
- * Does not look at the next rdDelay setting. Returns rxDLL=128 if fail.
+ * Does not look at the next rdDelay setting. Returns rxDLL=PHY_DDR_TUNE_DLL_MAX if fail.
  */
 NOR_PhyConfig NOR_spiPhyFindRxLow(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
@@ -223,9 +233,9 @@ NOR_PhyConfig NOR_spiPhyFindRxLow(OSPI_Handle handle, NOR_PhyConfig start, uint3
     while(status == NOR_FAIL)
     {
         start.rxDLL++;
-        if(start.rxDLL > 10U)
+        if(start.rxDLL > 127)
         {
-            start.rxDLL = 128U;
+            start.rxDLL = PHY_DDR_TUNE_DLL_MAX;
             break;
         }
         NOR_spiPhyConfig(handle, start);
@@ -291,7 +301,8 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     NOR_PhyConfig          topRight;
     NOR_PhyConfig          gapLow;
     NOR_PhyConfig          gapHigh;
-    NOR_PhyConfig          rxLow, rxHigh, txLow, txHigh, temp, left, right;
+    int32_t                maxSearchRange = 63;
+    NOR_PhyConfig          rxLow, rxHigh, txLow, txHigh, temp, temp1, left, right;
     int32_t                rdDelay;
     float                  temperature = 0;
     float                  length1,length2;
@@ -335,17 +346,17 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         searchPoint.rdDelay = rdDelay;
         searchPoint.rxDLL   = 0;
         rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        while(rxLow.rxDLL == 128U)
+        while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX)
         {
             searchPoint.rdDelay++;
-            if(searchPoint.rdDelay > 4U)
+            if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
             {
                 if(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END)
                 {
 #ifdef NOR_SPI_TUNE_DEBUG
-                    NOR_log("Unable to find RX Min\n");
-#endif
+                    NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
                     return NOR_FAIL;
+#endif
                 }
                 else
                 {
@@ -355,7 +366,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
             rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
         }
 
-        if(rxLow.rxDLL != 128U)
+        if(rxLow.rxDLL != PHY_DDR_TUNE_DLL_MAXU)
         {
             break;
         }
@@ -368,13 +379,13 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     searchPoint.txDLL = NOR_SPI_PHY_TXDLL_LOW_WINDOW_START;
     searchPoint.rxDLL = 0U;
     rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-    while(rxLow.rxDLL == 128U)
+    while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAXU)
     {
         searchPoint.rdDelay++;
-        if(searchPoint.rdDelay > 4U)
+        if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
         {
 #ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Unable to find RX Min\n");
+            NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
 #endif
             return NOR_FAIL;
         }
@@ -383,15 +394,19 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
 #endif  /* #if !defined(NOR_DISABLE_TXDLL_WINDOW) */
 
     /* Find rxDLL Max at a txDLL */
-    searchPoint.rxDLL = 63U;
+    #ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("After 2nd search txdll: %d\n", searchPoint.txDLL);
+    #endif
+    searchPoint.rxDLL = 127;
+    searchPoint.rdDelay = rdDelay;
     rxHigh = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-    while(rxHigh.rxDLL == 128U)
+    while(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
     {
         searchPoint.rdDelay++;
-        if(searchPoint.rdDelay > 4U)
+        if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
         {
 #ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Unable to find RX Min\n");
+            NOR_log("Warning: Unable to find RX Max :: Line: %d\n", __LINE__);
 #endif
             return NOR_FAIL;
         }
@@ -429,15 +444,15 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
             searchPoint.rdDelay = rdDelay;
             searchPoint.rxDLL   = 0;
             temp = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-            while(temp.rxDLL == 128U)
+            while(temp.rxDLL == PHY_DDR_TUNE_DLL_MAX)
             {
                 searchPoint.rdDelay++;
-                if(searchPoint.rdDelay > 4U)
+                if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
                 {
                     if(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
                     {
 #ifdef NOR_SPI_TUNE_DEBUG
-                        NOR_log("Unable to find RX Min\n");
+                        NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
 #endif
                         return NOR_FAIL;
                     }
@@ -449,7 +464,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
                 temp = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
             }
 
-            if(temp.rxDLL != 128U)
+            if(temp.rxDLL != PHY_DDR_TUNE_DLL_MAX)
             {
                 break;
             }
@@ -464,13 +479,13 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
 
         /* Find rxDLL Min */
         temp = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        while(temp.rxDLL == 128U)
+        while(temp.rxDLL == PHY_DDR_TUNE_DLL_MAX)
         {
             searchPoint.rdDelay++;
-            if(searchPoint.rdDelay > 4U)
+            if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
             {
 #ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Unable to find RX Min\n");
+                NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
 #endif
                 return NOR_FAIL;
             }
@@ -483,15 +498,16 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         }
 
         /* Find rxDLL Max */
-        searchPoint.rxDLL = 63U;
+        searchPoint.rxDLL = maxSearchRange;
+        searchPoint.rdDelay = rdDelay;
         temp = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-        while(temp.rxDLL == 128U)
+        while(temp.rxDLL == PHY_DDR_TUNE_DLL_MAX)
         {
             searchPoint.rdDelay++;
-            if(searchPoint.rdDelay > 4U)
+            if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
             {
 #ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Unable to find RX Max\n");
+                NOR_log("Warning: Unable to find RX Max :: Line: %d\n", __LINE__);
 #endif
                 return NOR_FAIL;
             }
@@ -511,26 +527,26 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     searchPoint.rxDLL = (rxHigh.rxDLL+rxLow.rxDLL)/4U;
     searchPoint.txDLL = 0U;
     txLow = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-    while(txLow.txDLL==128U){
+    while(txLow.txDLL==PHY_DDR_TUNE_DLL_MAX){
         searchPoint.rdDelay++;
         txLow = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-        if(searchPoint.rdDelay>4U){
+        if(searchPoint.rdDelay>PHY_DDR_TUNE_RD_DELAY_MAX){
 #ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Unable to find TX Min\n");
+            NOR_log("Error: Unable to find TX Min :: Line: %d\n", __LINE__);
 #endif
             return NOR_FAIL;
         }
     }
 
     /* Find txDLL Max */
-    searchPoint.txDLL = 63U;
+    searchPoint.txDLL = maxSearchRange;
     txHigh = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-    while(txHigh.txDLL==128U){
+    while(txHigh.txDLL==PHY_DDR_TUNE_DLL_MAX){
         searchPoint.rdDelay++;
         txHigh = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-        if(searchPoint.rdDelay>4U){
+        if(searchPoint.rdDelay>PHY_DDR_TUNE_RD_DELAY_MAX){
 #ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Unable to find TX Max\n");
+            NOR_log("Error: Unable to find TX Max :: Line: %d\n", __LINE__);
 #endif
             return NOR_FAIL;
         }
@@ -545,14 +561,14 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
            Find txDLL Min */
         searchPoint.rdDelay = rdDelay;
         searchPoint.rxDLL = 3U*(rxHigh.rxDLL+rxLow.rxDLL)/4U;
-        searchPoint.txDLL = 0U;
+        searchPoint.txDLL = 0;
         temp = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-        while(temp.txDLL==128U){
+        while(temp.txDLL==PHY_DDR_TUNE_DLL_MAX){
             searchPoint.rdDelay++;
             temp = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-            if(searchPoint.rdDelay>4U){
+            if(searchPoint.rdDelay>PHY_DDR_TUNE_RD_DELAY_MAX){
 #ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Unable to find TX Min\n");
+                NOR_log("Error: Unable to find TX Min :: Line: %d\n", __LINE__);
 #endif
                 return NOR_FAIL;
             }
@@ -562,14 +578,15 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         }
 
         /* Find txDLL Max */
-        searchPoint.txDLL = 63U;
+        searchPoint.txDLL = maxSearchRange;
+        searchPoint.txDLL = maxSearchRange;
         temp = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-        while(temp.txDLL==128U){
+        while(temp.txDLL==PHY_DDR_TUNE_DLL_MAX){
             searchPoint.rdDelay++;
             temp = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-            if(searchPoint.rdDelay>4U){
+            if(searchPoint.rdDelay>PHY_DDR_TUNE_RD_DELAY_MAX){
 #ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Unable to find TX Max\n");
+                NOR_log("Error: Unable to find TX Max :: Line: %d\n", __LINE__);
 #endif
                 return NOR_FAIL;
             }
@@ -590,8 +607,8 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         bottomLeft.rdDelay = txLow.rdDelay;
     }else bottomLeft.rdDelay = rxLow.rdDelay;
     temp = bottomLeft;
-    temp.txDLL += 4U;
-    temp.rxDLL += 4U;
+    temp.txDLL += 4;
+    temp.rxDLL += 4;
     NOR_spiPhyConfig(handle, temp);
     status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -608,6 +625,13 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     if (status == NOR_PASS){
         bottomLeft.rdDelay = temp.rdDelay;
     }
+    else
+    {
+#ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("Error: Unable to find TX Max :: Line: %d\n", __LINE__);
+#endif
+        return NOR_FAIL;
+    }
 
     /* Top Right */
     topRight.txDLL = txHigh.txDLL;
@@ -616,8 +640,8 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         topRight.rdDelay = txHigh.rdDelay;
     }else topRight.rdDelay = rxHigh.rdDelay;
     temp = topRight;
-    temp.txDLL -= 4U;
-    temp.rxDLL -= 4U;
+    temp.txDLL -= 4;
+    temp.rxDLL -= 4;
     NOR_spiPhyConfig(handle, temp);
     status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -678,14 +702,14 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         //The "true" top right corner was too small to find, so the start of the metastability gap is a good approximation
         topRight = gapLow;
         searchPoint.rdDelay = bottomLeft.rdDelay;
-        searchPoint.txDLL = (bottomLeft.txDLL+topRight.txDLL)/2U;
-        searchPoint.rxDLL = (bottomLeft.rxDLL+topRight.rxDLL)/2U;
+        searchPoint.txDLL = (bottomLeft.txDLL+topRight.txDLL)/2;
+        searchPoint.rxDLL = (bottomLeft.rxDLL+topRight.rxDLL)/2;
 #ifdef NOR_SPI_TUNE_DEBUG
         NOR_log("Only one passing window found, from txDLL,rxDLL of %d,%d to %d,%d, and a rdDelay of %d\n",bottomLeft.txDLL,bottomLeft.rxDLL,topRight.txDLL,topRight.rxDLL,topRight.rdDelay);
 #endif
         temperature = NOR_spiPhyAvgVtmTemp(NOR_SPI_PHY_VTM_TARGET);
-        searchPoint.txDLL+= (topRight.txDLL-bottomLeft.txDLL)*(0.5*(temperature-42.5)/165U);
-        searchPoint.rxDLL+= (topRight.rxDLL-bottomLeft.rxDLL)*(0.5*(temperature-42.5)/165U);
+        searchPoint.txDLL+= (topRight.txDLL-bottomLeft.txDLL)*(0.5*(temperature-42.5)/165);
+        searchPoint.rxDLL+= (topRight.rxDLL-bottomLeft.rxDLL)*(0.5*(temperature-42.5)/165);
     }else{
         /* If there are two segments, find the start and end of the second one */
 
@@ -732,12 +756,12 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         length2 = abs(gapHigh.txDLL-topRight.txDLL) + abs(gapHigh.rxDLL-topRight.rxDLL);
         if(length2>length1){
             searchPoint = topRight;
-            searchPoint.txDLL-=16U;
-            searchPoint.rxDLL-= 16U * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
+            searchPoint.txDLL-=16;
+            searchPoint.rxDLL-= 16 * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
         }else{
             searchPoint = bottomLeft;
-            searchPoint.txDLL+=16U;
-            searchPoint.rxDLL+=16U * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
+            searchPoint.txDLL+=16;
+            searchPoint.rxDLL+=16 * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
         }
 #ifdef NOR_SPI_TUNE_DEBUG
         NOR_log("Bottom left found at txDLL,rxDLL of %d,%d to %d,%d, and a rdDelay of %d\n",bottomLeft.txDLL,bottomLeft.rxDLL,gapLow.txDLL,gapLow.rxDLL,gapLow.rdDelay);
@@ -779,7 +803,7 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         return rxDLL;
     while(status == NOR_FAIL){
         rxDLL++;
-        if(rxDLL==128U) break;
+        if(rxDLL==PHY_DDR_TUNE_DLL_MAX) break;
         NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -837,8 +861,8 @@ static NOR_STATUS NOR_spiPhyFindRxWindow(OSPI_Handle handle, int32_t txDLL, int3
     /* Search up from 0 to find the start of the Rx window */
     *rxStart = NOR_spiPhyFindRxStart(handle,txDLL,0,offset);
 
-    /* If rxStart gets all the way to rxDLL=128 and doesn't pass, there is no rxDLL window */
-    if(*rxStart == 128U)
+    /* If rxStart gets all the way to rxDLL=PHY_DDR_TUNE_DLL_MAX and doesn't pass, there is no rxDLL window */
+    if(*rxStart == PHY_DDR_TUNE_DLL_MAX)
         return NOR_FAIL;
 
     /* Find the end of the rxDLL window, searching up from rxStart */
