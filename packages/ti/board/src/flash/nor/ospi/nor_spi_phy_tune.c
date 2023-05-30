@@ -300,7 +300,21 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
      * Bottom left corner is present in initial rdDelay value and search from there.
      * Can be adjusted to save time.
      */
-    rdDelay = 1U;
+    rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
+ 
+    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
+
+    /*
+     * Acquire half clock lock, and update search range to 127
+    */
+    CSL_ospiPhyResyncDll(pRegs, hwAttrs->phyForceHalfClk);
+    volatile uint32_t dll_lock_mode = CSL_REG32_FEXT(&pRegs->DLL_OBSERVABLE_LOWER_REG,
+                                   OSPI_FLASH_CFG_DLL_OBSERVABLE_LOWER_REG_DLL_OBSERVABLE_LOWER_LOCK_MODE_FLD);
+    if(dll_lock_mode != 0U)
+    {
+        maxSearchRange = 127;
+    }
+
 
     /*
      * Finding RxDLL fails at some of the TxDLL values based on the HW platform.

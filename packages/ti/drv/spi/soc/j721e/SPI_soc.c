@@ -600,7 +600,8 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_DOMAIN_CNT][SPI_OSPI_PER_CNT + 1U] =
     #else
             (uintptr_t)CSL_MCU_FSS0_DAT_REG1_BASE,
     #endif
-            CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,  /* PHY operating mode */ 
+            CSL_OSPI_CFG_PHY_OP_MODE_MASTER,   /* PHY operating mode */ 
+            CSL_OSPI_CFG_PHY_DLL_MODE_DEFAULT,   /* PHY DLL force half cycle lock */
             OSPI_MODULE_CLOCK,                 /* Input frequency */
     #if defined(BUILD_MPU)
         CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0,
@@ -641,7 +642,8 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_DOMAIN_CNT][SPI_OSPI_PER_CNT + 1U] =
     #else
             (uintptr_t)(CSL_MCU_FSS0_DAT_REG1_BASE + 0x08000000U),
     #endif
-            CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,  /* PHY operating mode */ 
+            CSL_OSPI_CFG_PHY_OP_MODE_MASTER,  /* PHY operating mode */
+            CSL_OSPI_CFG_PHY_DLL_MODE_DEFAULT,   /* PHY DLL force half cycle lock */
             OSPI_MODULE_CLOCK,
     #if defined(BUILD_MPU)
             CSLR_COMPUTE_CLUSTER0_GIC500SS_SPI_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0,

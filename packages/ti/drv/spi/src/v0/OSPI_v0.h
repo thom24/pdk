@@ -219,7 +219,9 @@ typedef struct OSPI_v0_HwAttrs_s {
     /*! OSPI Data base address */
     uintptr_t       dataAddr;
     /*!< OSPI PHY dll in master mode/bypass mode */
-    uint32_t        phyOpMode;          
+    uint32_t        phyOpMode;
+    /*!< OSPI PHY dll in master mode/bypass mode */
+    uint16_t        phyForceHalfClk;
     /*! OSPI IP V0 functional clock */
     uint32_t        funcClk;
     /*! OSPI IP V0 Peripheral CorePac interrupt vector */
