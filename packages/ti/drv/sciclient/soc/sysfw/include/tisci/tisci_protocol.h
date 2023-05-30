@@ -91,12 +91,6 @@ struct tisci_header {
     uint8_t    host;
     uint8_t    seq;
     uint32_t    flags;
-    /* Both GCC-11 and Windows Visual Studio build has issues with payload[], changing it for host emulation build */
-#ifdef HOST_EMULATION
-    uint8_t    payload; 
-#else 
-    uint8_t    *payload; 
-#endif
 };
 
 /*
