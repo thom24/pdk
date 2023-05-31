@@ -48,6 +48,7 @@
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
 #include <ti/drv/mmcsd/src/MMCSD_osal.h>
+#include <ti/boot/sbl/soc/k3/sbl_soc_cfg.h>
 
 /* SBL Header files. */
 #include "sbl_rprc_parse.h"
@@ -336,6 +337,25 @@ int32_t SBL_FileRead(void       *buff,
     uint32_t Max_read   = 0x400U; /*setting a fatfs read size of 1k */
     FRESULT  fresult    = FR_OK;
     int32_t retVal = E_FAIL;
+    MMCSD_v2_HwAttrs hwAttrsConfig;
+    volatile uint32_t atcmSize = sblAtcmSize(); 
+
+    /* Disabling the DMA while copying to ATCM since ATCM address is not translated to global address */
+    if ((uint32_t) buff < atcmSize)
+    {
+        if(MMCSD_socGetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0)
+        {
+            UART_printf("\nUnable to get default MMCSD config, exiting. SBL Failed.\r\n");
+            retVal = E_FAIL;
+        }
+
+        hwAttrsConfig.enableDma = 0;
+        if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig) != 0) 
+        {
+            UART_printf("\nUnable to set MMCSD config, exiting. SBL Failed.\r\n");
+            retVal = E_FAIL;
+        }
+    }
 
     for (i = ((uint32_t)0U); i < (size / Max_read); ++i)
     {
@@ -354,6 +374,17 @@ int32_t SBL_FileRead(void       *buff,
     if (fresult == FR_OK)
     {
         retVal = E_PASS;
+    }
+
+    /* Re-Enabling DMA if it is disabled while copying to ATCM */
+    if ((uint32_t) buff < atcmSize)
+    {
+        hwAttrsConfig.enableDma = 1;
+        if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig) != 0) 
+        {
+            UART_printf("\nUnable to set MMCSD config, exiting. SBL Failed.\r\n");
+            retVal = E_FAIL;
+        }
     }
 
     return retVal;
