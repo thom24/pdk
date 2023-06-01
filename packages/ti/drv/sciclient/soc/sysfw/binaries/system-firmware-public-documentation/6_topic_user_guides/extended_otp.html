@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Using Extended OTP on HS devices &mdash; TISCI User Guide</title>
+  <title>Using Extended OTP &mdash; TISCI User Guide</title>
   
 
   
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -112,7 +112,7 @@
 <li class="toctree-l2"><a class="reference internal" href="domgrp_usage.html">Domain Group Primer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="secure_boot_signing.html">Signing binaries for Secure Boot on HS Devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hs_boardcfg_signing.html">Signing Board Configuration on HS devices</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Using Extended OTP on HS devices</a><ul>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using Extended OTP</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#hardware-configuration">Hardware Configuration</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#programming-the-extended-otp">Programming the extended OTP</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#extended-otp-read-api">Extended OTP Read API</a></li>
@@ -160,7 +160,7 @@
       
           <li><a href="index.html">Chapter 6: Topic User Guides</a> &raquo;</li>
       
-    <li>Using Extended OTP on HS devices</li>
+    <li>Using Extended OTP</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -172,8 +172,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="using-extended-otp-on-hs-devices">
-<h1>Using Extended OTP on HS devices<a class="headerlink" href="#using-extended-otp-on-hs-devices" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="using-extended-otp">
+<h1>Using Extended OTP<a class="headerlink" href="#using-extended-otp" title="Permalink to this headline">¶</a></h1>
 <p>K3 family of devices have a set of one-time programmable(OTP) efuses to carry
 root of trust keys and other information used during device boot. The purpose of
 these efuses is fixed. K3 family of devices have another set of OTP efuses for
@@ -190,19 +190,93 @@ API. This document must be read along side</p>
 They do not access the predefined key area containing
 the root of trust keys.</p>
 </div>
-<div class="admonition note">
-<p class="first admonition-title">Note</p>
-<p class="last">This document is only applicable to HS devices.</p>
-</div>
 <div class="section" id="hardware-configuration">
 <h2>Hardware Configuration<a class="headerlink" href="#hardware-configuration" title="Permalink to this headline">¶</a></h2>
 <p>The extended OTP area can have a maximum of 1024 bits. The extended OTP area is
 organized into rows of bits. The width of each row can vary based on the device.
-Please refer to the <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">Chapter 5: SoC Family Specific Documentation</span></a> for the below details.</p>
-<ul class="simple">
-<li>number of bits available in the OTP area</li>
-<li>Width of the OTP rows</li>
-</ul>
+Please refer to the table below for SOC specific details of hardware rows:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="12%" />
+<col width="24%" />
+<col width="20%" />
+<col width="14%" />
+<col width="14%" />
+<col width="16%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">SoC</th>
+<th class="head">Number of bits in
+Extended OTP area</th>
+<th class="head">Number of bits
+per OTP row</th>
+<th class="head">Number of
+OTP rows</th>
+<th class="head">Number of
+OTP MMRs</th>
+<th class="head">Initial bit
+offset</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>AM65x</td>
+<td>1024</td>
+<td>32</td>
+<td>32</td>
+<td>32</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>J721e</td>
+<td>1024</td>
+<td>25</td>
+<td>41</td>
+<td>32</td>
+<td>0</td>
+</tr>
+<tr class="row-even"><td>AM64x</td>
+<td>384</td>
+<td>25</td>
+<td>15</td>
+<td>12</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>J7200</td>
+<td>1024</td>
+<td>25</td>
+<td>41</td>
+<td>32</td>
+<td>0</td>
+</tr>
+<tr class="row-even"><td>AM62x</td>
+<td>1024</td>
+<td>25</td>
+<td>42</td>
+<td>32</td>
+<td>2</td>
+</tr>
+<tr class="row-odd"><td>AM62Ax</td>
+<td>1024</td>
+<td>25</td>
+<td>42</td>
+<td>32</td>
+<td>2</td>
+</tr>
+<tr class="row-even"><td>J721S2</td>
+<td>1024</td>
+<td>25</td>
+<td>42</td>
+<td>32</td>
+<td>2</td>
+</tr>
+<tr class="row-odd"><td>J784S4</td>
+<td>1024</td>
+<td>25</td>
+<td>42</td>
+<td>32</td>
+<td>2</td>
+</tr>
+</tbody>
+</table>
 <p>On device boot, the data in the OTP area is read into a set of 32 bit memory
 mapped registers(MMRs). There are 32 such registers to accommodate the maximum
 number of OTP bits. The width of these registers is always 32 bits irrespective
@@ -244,7 +318,8 @@ granularity at which they work.</p>
 <ol class="arabic simple">
 <li>System Firmware does not maintain state across device reboots. Any write protection
 performed must be tied to the hardware. Hardware provides write protection at
-row granularity. Therefore the write/lock API must operate at a row granularity.</li>
+row granularity. Therefore, the write/lock API must operate at hardware row
+granularity.</li>
 <li>We expect the OTP read operation to be performed more often compared to the
 OTP write operation. We expect most data stored in the OTP area to be a
 multiple of 32 bit width. If it is smaller, it could be easily extracted from
@@ -330,7 +405,7 @@ to the row even after a device cold/warm reset.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

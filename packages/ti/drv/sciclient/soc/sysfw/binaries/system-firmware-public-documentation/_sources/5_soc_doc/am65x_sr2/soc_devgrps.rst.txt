@@ -1,6 +1,6 @@
-=============================
-AM6 Device Group descriptions
-=============================
+===================================
+AM65X_SR2 Device Group descriptions
+===================================
 
 .. _soc_doc_am65x_sr2_public_devgrp_desc_intro:
 

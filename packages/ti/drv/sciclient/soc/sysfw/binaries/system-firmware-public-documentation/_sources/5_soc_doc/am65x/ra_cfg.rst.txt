@@ -1,5 +1,5 @@
 ==============================================
-AM6 Ring Accelerator Device Descriptions
+AM65X_SR1 Ring Accelerator Device Descriptions
 ==============================================
 
 Introduction

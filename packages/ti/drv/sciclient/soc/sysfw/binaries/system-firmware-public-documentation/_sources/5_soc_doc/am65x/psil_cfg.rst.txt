@@ -1,5 +1,5 @@
 ===================================
-AM6 PSI-L Device Descriptions
+AM65X_SR1 PSI-L Device Descriptions
 ===================================
 
 Introduction

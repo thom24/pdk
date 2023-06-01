@@ -1,5 +1,5 @@
 ===================================
-AM6 Proxy Device Descriptions
+AM65X_SR1 Proxy Device Descriptions
 ===================================
 
 Introduction

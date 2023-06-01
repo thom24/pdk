@@ -1,6 +1,6 @@
-================
-AM6 PLL Defaults
-================
+======================
+AM65X_SR1 PLL Defaults
+======================
 
 .. _soc_doc_am6_public_plls_desc_intro:
 

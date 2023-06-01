@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AM6 Host Descriptions &mdash; TISCI User Guide</title>
+  <title>AM65X_SR2 Host Descriptions &mdash; TISCI User Guide</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="TISCI User Guide" href="../../index.html"/>
         <link rel="up" title="Chapter 5: SoC Family Specific Documentation" href="../index.html"/>
-        <link rel="next" title="AM6 Devices Descriptions" href="devices.html"/>
-        <link rel="prev" title="AM65x Extended OTP Information" href="../am65x/extended_otp.html"/> 
+        <link rel="next" title="AM65X_SR2 Devices Descriptions" href="devices.html"/>
+        <link rel="prev" title="AM65X_SR1 Device Group descriptions" href="../am65x/soc_devgrps.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -108,25 +108,25 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 5: SoC Family Specific Documentation</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">AM6 Host Descriptions</a><ul>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AM65X_SR2 Host Descriptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#enumeration-of-host-ids">Enumeration of Host IDs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="devices.html">AM6 Devices Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="clocks.html">AM6 Clock Identifiers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pll_data.html">AM6 PLL Defaults</a></li>
+<li class="toctree-l3"><a class="reference internal" href="devices.html">AM65X_SR2 Devices Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clocks.html">AM65X_SR2 Clock Identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pll_data.html">AM65X_SR2 PLL Defaults</a></li>
 <li class="toctree-l3"><a class="reference internal" href="resasg_types.html">AM65X_SR2 Board Configuration Resource Assignment Type Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="interrupt_cfg.html">AM65X_SR2 Interrupt Management Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="ra_cfg.html">AM65X_SR2 Ring Accelerator Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dma_cfg.html">AM65X_SR2 DMA Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="psil_cfg.html">AM65X_SR2 PSI-L Device Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">AM65X_SR2 Proxy Device Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM6 Secure Proxy Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="processors.html">AM6 Processor Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="runtime_keystore.html">AM6 Runtime Keystore</a></li>
-<li class="toctree-l3"><a class="reference internal" href="firewalls.html">AM6 Firewall Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM6 Device Group descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM65X_SR2 Secure Proxy Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html">AM65X_SR2 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime_keystore.html">AM65X_SR2 Runtime Keystore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">AM65X_SR2 Firewall Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM65X_SR2 Device Group descriptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
@@ -171,7 +171,7 @@
       
           <li><a href="../index.html">Chapter 5: SoC Family Specific Documentation</a> &raquo;</li>
       
-    <li>AM6 Host Descriptions</li>
+    <li>AM65X_SR2 Host Descriptions</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -183,16 +183,20 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="am6-host-descriptions">
-<h1>AM6 Host Descriptions<a class="headerlink" href="#am6-host-descriptions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="am65x-sr2-host-descriptions">
+<h1>AM65X_SR2 Host Descriptions<a class="headerlink" href="#am65x-sr2-host-descriptions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <span id="soc-doc-am65x-sr2-public-host-desc-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>This chapter provides information of Host IDs that are permitted in the am6
-SoC. These host IDs represent processing entities (or PEs) which is mandatory
-identification of a Host in a processor.</p>
-<p>Typically a host is a ‘compute entity’ which may be an actual processor or even
-a virtual machine. We just use host or processing entity to indicate the same
-thing.</p>
+<p>This chapter provides information on the set of HostIDs permitted
+in this AM65x SoC. HostIDs uniquely identify each logically distinct high level
+software entity. A software entity identification number (HostID) can be
+assigned to an OS either native or virtualized, or a firmware/native
+application. The HostID is used to select the set of Secure Proxy channels for
+which this software entity should use to communicate with the System Firmware.</p>
+<p>System Firmware also checks that the used HostID comes from software running
+on the correct core (as implied by Host Name in the below table) and with the
+correct security level (Security Status column) to prevent HostID
+spoofing.</p>
 </div>
 <div class="section" id="enumeration-of-host-ids">
 <span id="soc-doc-am65x-sr2-public-host-desc-host-list"></span><h2>Enumeration of Host IDs<a class="headerlink" href="#enumeration-of-host-ids" title="Permalink to this headline">¶</a></h2>
@@ -333,10 +337,10 @@ Host context</li>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="devices.html" class="btn btn-neutral float-right" title="AM6 Devices Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="devices.html" class="btn btn-neutral float-right" title="AM65X_SR2 Devices Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="../am65x/extended_otp.html" class="btn btn-neutral" title="AM65x Extended OTP Information" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="../am65x/soc_devgrps.html" class="btn btn-neutral" title="AM65X_SR1 Device Group descriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -367,7 +371,7 @@ Host context</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

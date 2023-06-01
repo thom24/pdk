@@ -59,6 +59,8 @@ The following X509 extensions are supported by |sysfw|.
 +--------------------------------------+----------------------------------------------------+-----------------------+
 | :ref:`sysfw_hs_bcfg_ext`             | HS Boardcfg extension                              | 1.3.6.1.4.1.294.1.36  |
 +--------------------------------------+----------------------------------------------------+-----------------------+
+| :ref:`sysfw_fwl_ext`                 | Firewall configuration extension                   | 1.3.6.1.4.1.294.1.37  |
++--------------------------------------+----------------------------------------------------+-----------------------+
 
 Specific extensions are required for particular image types. The below table
 summarizes which extensions are mandatory (**M**) for a particular image type, which
@@ -148,6 +150,14 @@ or not applicable (**.**).
      - O [#opt_boardcfg_footnote]_
      - .
      - .
+     - .
+     - .
+   
+   * - :ref:`Firewall Config<sysfw_fwl_ext>`
+     - .
+     - .
+     - .
+     - O
      - .
      - .
 
@@ -485,6 +495,79 @@ Populating the certificate fields
    |sysfw| always loads the binary to the location specified by :ref:`sysfw_load_ext`
    before performing in-place decryption at the loaded location.
 
+.. _sysfw_fwl_ext:
+
+|sysfw| Firewall Extension
+--------------------------
+
+This extension allows author to request firewall configuration through 
+:ref:`TISCI_MSG_PROC_AUTH_BOOT <proc-boot-authenticate-image-and-configure-processor>`.
+This is not a mandatory extension and must be included only when firewalls are to be configured
+through :ref:`TISCI_MSG_PROC_AUTH_BOOT <proc-boot-authenticate-image-and-configure-processor>`.
+It is identified by the OID **1.3.6.1.4.1.294.1.37**. 
+The structure of the field is shown below in ASN.1 notation.
+
+::
+
+   SYSFW-FIREWALL := SEQUENCE
+   {
+      numConfigs INTEGER,
+      fwlID0 INTEGER,
+      control0 INTEGER,
+      numPermissions0 INTEGER,
+      permission00 INTEGER,
+      permission01 INTEGER,
+      permission02 INTEGER,
+      startAddress0 OCTET STRING,
+      endAddress0 OCTET STRING,
+   }
+
+The certificate author may want to configure multiple firewall regions.
+Every region configuration requires a group of fields; these are fwlID,
+region, control, numPermissions, 'numPermissions' permission values, startAddress 
+and endAddress. To configure multiple regions, author has to include an 
+equal number of groups in the extension, one for each configuration. The field values
+are same as those provided to the :ref:`TISCI_MSG_SET_FWL_REGION <set-firewall-region>`
+(refer to :ref:`TISCI_MSG_SET_FWL_REGION <set-firewall-region>` for more information.)
+Every region configuration group is decoded into a structure shown below.
+
+::
+
+   struct fwl_region_info {
+      u16		fwl_id;
+      u16		region;
+      u32		control;
+      u32		n_permission_regs;
+      u32		permissions[FWL_MAX_PRIVID_SLOTS];
+      u64      start_address;
+      u64      end_address;
+   }
+
+Populating the certificate fields
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For an example, please refer to the section ``[ sysfw_fwl_ext ]`` in :ref:`sysfw_x509_template_example`.
+The examples demonstrates requesting two region configurations through the certificate.
+
+1. ``fwlID`` ID of the firewall to which the region belongs.
+
+2. ``region`` The region number.
+
+3. ``control`` The control value. This is a 32 bit field that represents the control register value for the
+   region being configured.
+
+4. ``numPermissions`` The number of permissions to be configured.
+
+5. ``permission`` The actual permission value. There should same number of instances
+   of this field as the value of numPermissions, for each configuration group.
+
+6. ``startAddress`` The soc level start address.
+
+7. ``endAddress`` The soc level end address.
+
+Author will also have to provide a host ID as specified in :ref:`sysfw_load_ext`
+(refer to :ref:`TISCI_MSG_PROC_AUTH_BOOT <proc-boot-authenticate-image-and-configure-processor>` for more information.)
+Adding firewall extension without a host ID would lead to API failure.
 
 .. _sysfw_debug_ext:
 
@@ -1244,6 +1327,7 @@ Sample x509 template
     1.3.6.1.4.1.294.1.34=ASN1:SEQUENCE:sysfw_image_integrity
     1.3.6.1.4.1.294.1.35=ASN1:SEQUENCE:sysfw_image_load
     1.3.6.1.4.1.294.1.36=ASN1:SEQUENCE:sysfw_hs_boardcfg
+    1.3.6.1.4.1.294.1.37=ASN1:SEQUENCE:sysfw_fwl_ext
 
     [ sysfw_boot_seq ]
     bootCore = INTEGER:0x20
@@ -1267,6 +1351,25 @@ Sample x509 template
 
     [ swrv ]
     swrv = INTEGER:0
+
+    [ sysfw_fwl_ext ]
+    numConfig = INTEGER:2
+    fwlID0 = INTEGER:64
+    region0 = INTEGER:0
+    control0 = INTEGER:266
+    numPermissions0 = INTEGER:3
+    permission00 = INTEGER:12845055
+    permission01 = INTEGER:0
+    permission02 = INTEGER:0
+    startAddress0 = FORMAT:HEX,OCT:70000000
+    endAddress0 = FORMAT:HEX,OCT:7000ffff
+    fwlID1 = INTEGER:64
+    region1 = INTEGER:1
+    control1 = INTEGER:10
+    numPermissions1 = INTEGER:1
+    permission10 = INTEGER:131071
+    startAddress1 = FORMAT:HEX,OCT:70000000
+    endAddress1 = FORMAT:HEX,OCT:70000fff
 
     [ debug ]
     debugUID = FORMAT:HEX,OCT:0000000000000000000000000000000000000000000000000000000000000000

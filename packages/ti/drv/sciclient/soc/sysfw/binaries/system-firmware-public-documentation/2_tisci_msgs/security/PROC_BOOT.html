@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -824,7 +824,9 @@ information.</p>
 <ul class="simple">
 <li>Authenticate and load a binary using the certificate provided information</li>
 <li>Use certificate information also to setup critical processor specific
-flags which is similar to
+flags which is similar to</li>
+<li>Use certificate information also to configure firewalls. This feature can be used
+to protect the binary being authenticated.
 <a class="reference internal" href="#proc-boot-set-processor-configuration"><span class="std std-ref">Set Processor Configuration</span></a>.</li>
 </ul>
 <p><strong>Usage</strong>:</p>
@@ -885,6 +887,12 @@ processor flags and configuration information.</li>
 are secure and which are not.</li>
 <li>On HS-FS device type, only image integrity check is done. The root of
 trust key comparison check is skipped.</li>
+<li>Only the unowned firewalls/regions or those owned by the requesting host
+would be configurable through the certificate.</li>
+<li>The user must specify the host which would own the firewall/regions being
+configured. Ownership would be transfered to this host. It is mandatory
+to specify a host in the certificate to configure firewalls. Skipping this
+would result in the API failure.</li>
 </ul>
 </div>
 <div class="admonition attention">
@@ -1758,7 +1766,7 @@ gatekeeper for HSM reset control. This is not appicable to general purpose M4 pr
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

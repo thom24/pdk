@@ -11,7 +11,7 @@ Secure Debug User Guide
 .. _sysfw_pub_sec_dbg_ug_intro:
 
 Introduction
-------------
+============
 
 On K3 High Security - Security Enforced (HS-SE) devices, the JTAG port is closed by default.
 The below table shows the default state of the JTAG on various device types.
@@ -49,53 +49,67 @@ controlled via board configuration.
 
 
 Creating a debug certificate
-----------------------------
+============================
 
-Certificate validation done by |sysfw|
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+X509 Configuration Template
+---------------------------
 
-|sysfw| expects a certificate signed with the active customer key to unlock
-the debug access to the non-M3 cores. The active customer key is
+.. code-block :: bash
 
-1. SMPK if key revision is set to 1 in the efuses
-2. BMPK if key revision is set to 2 in the efuses
+    [ req ]
+    distinguished_name = req_distinguished_name
+    x509_extensions = v3_ca
+    prompt = no
 
-The signature of the certificate is verified and the hash of the public key
-in the certificate is compared against the hash of the public key in the efuses.
-|sysfw| proceeds to the next steps only if the signature is verified and the
-public key hashes match.
+    dirstring_type = nobmp
 
-|sysfw| next looks for the :ref:`sysfw_debug_ext` in the X509 certificate.
-If this X509 extension is not present, further processing does not happen.
+    # This information will be filled by the end user.
+    # The current data is only a place holder.
+    # System firmware does not make decisions based
+    # on the contents of this distinguished name block.
+    [ req_distinguished_name ]
+    C = oR
+    ST = rx
+    L = gQE843yQV0sag
+    O = dqhGYAQ2Y4gFfCq0t1yABCYxex9eAxt71f
+    OU = a87RB35W
+    CN = x0FSqGTPWbGpuiV
+    emailAddress = kFp5uGcgWXxcfxi@vsHs9C9qQWGrBs.com
 
-|sysfw| reads the certificate revision from the :ref:`sysfw_swrev_ext`.
-If this extension is not present in the certificate, further processing
-does not happen.
+    [ v3_ca ]
+    basicConstraints = CA:true
+    1.3.6.1.4.1.294.1.3=ASN1:SEQUENCE:swrv
+    1.3.6.1.4.1.294.1.8=ASN1:SEQUENCE:debug
 
-|sysfw| ignores the remaining X509 extensions when processing the debug
-certificate.
+    [ swrv ]
+    # Replace PUT-SWRV with actual SWREV SYSFW value
+    swrv = INTEGER:PUT-SWRV
 
-|sysfw| validates the information passed in the :ref:`sysfw_debug_ext`.
+    [ debug ]
+    # Replace PUT-DEVICE-UID with actual device UID value
+    debugUID = FORMAT:HEX,OCT:PUT-DEVICE-UID
+    # Replace PUT-DBG-TYPE with actual debug type value
+    debugType = INTEGER:PUT-DBG-TYPE
+    # Replace PUT-NONSEC-DBG with actual non secure debug cores value
+    coreDbgEn = INTEGER:PUT-NONSEC-DBG
+    # Replace PUT-SEC-DBG with actual secure debug cores value
+    coreDbgSecEn = INTEGER:PUT-SEC-DBG
 
-1. The UID passed in the debug extension is checked against the SOC UID.
-   The UID's must match unless otherwise specified in the board configuration.
-   See the field ``allow_wildcard_unlock`` in :ref:`pub_boardcfg_secure_debug_unlock`.
+This X509 config can then be signed with SMPK (private) or BMPK (private) by using the command below:
 
-2. The certificate revision of the debug certificate must be equal to or higher than
-   the value specified by ``min_cert_rev`` field in :ref:`pub_boardcfg_secure_debug_unlock`.
+.. code-block:: bash
 
-3. |sysfw| verifies that the values specified for ``debug_priv_level`` is valid.
+    $ openssl req -new -x509 -key custMpk.pem -nodes -outform der -out debug_unlock_cert.der -config signing_config.txt -sha512
 
-4. |sysfw| verifies that the processor ID's specified in the fields
-   ``coreDbgEn`` and ``coreDbgSecEn`` are valid.
-   ``coreDbgSecEn`` lists which cores need to have secure level debug enabled.
-   ``coreDbgEn`` lists which cores need to have non-secure level debug enabled.
-   It also verifies that cores specified in ``coreDbgSecEn`` actually support secure debug.
+.. note::
 
-Once these checks pass, |sysfw| performs the actual debug unlock operation.
+   The data in the ``req_distinguished_name`` section is random to indicate the following:
+
+   1. |sysfw| does not process the information in the section.
+   2. The data in this section needs to be updated by the user to reflect their company name, location, email address, etc.
 
 Populating the fields in the certificate
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+----------------------------------------
 
 The X509 certificate format is described in :ref:`sysfw_x509_ext_doc`.
 
@@ -104,10 +118,10 @@ The X509 certificate format is described in :ref:`sysfw_x509_ext_doc`.
 1. :ref:`sysfw_debug_ext` - Mandatory
 2. :ref:`sysfw_swrev_ext` - Mandatory
 
-Below are the steps to populate the X509 extensions.
+Below are the steps to populate the X509 extensions:
 
 Debug Certificate Revision
-++++++++++++++++++++++++++
+--------------------------
 
 If you have specified a non-zero debug certificate revision in the
 :ref:`pub_boardcfg_secure_debug_unlock`, you must populate the
@@ -115,9 +129,9 @@ If you have specified a non-zero debug certificate revision in the
 equal to or higher than minimum specified version.
 
 Debug Extension
-+++++++++++++++
+---------------
 
-1. Populate the SOC UID in the extension. SOC UID can be obtained in mutliple
+1. Populate the SOC UID in the extension. SOC UID can be obtained in multiple
    ways.
 
    - Using TISCI API :ref:`TISCI_MSG_GET_SOC_UID <get-soc-uid>`
@@ -216,69 +230,66 @@ Debug Extension
 
     coreDbgSecEn = INTEGER:0x2223
 
+Certificate validation done by |sysfw|
+======================================
 
-Example certificate configuration
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+First, |sysfw| expects a certificate signed with an active customer key to unlock
+the debug access to the non-M3 cores. 
 
-Below code block shows an X509 signing configuration showing the extensions required for
-debug unlock certificate.
+The active customer key is:
 
+1. SMPK if key revision is set to 1 in the efuses
+2. BMPK if key revision is set to 2 in the efuses
+
+Then, the signature of the certificate is verified, and the hash of the public key
+in the certificate is compared against the hash of the public key in the efuses.
 
 .. note::
 
-   The data in the ``req_distinguished_name`` section is random to indicates
+   |sysfw| proceeds to the next steps only if the signature is verified and the
+   public key hashes match.
 
-   1. |sysfw| does not process the information in the section.
-   2. This needs to be updated by the user to reflect his information.
+Next, |sysfw| looks for the :ref:`sysfw_debug_ext` and :ref:`sysfw_swrev_ext` in 
+the X509 certificate.
 
-.. code-block :: bash
+.. warning::
 
-    [ req ]
-    distinguished_name = req_distinguished_name
-    x509_extensions = v3_ca
-    prompt = no
+   If any one of the two X509 extensions is not present, further processing does not 
+   happen.
 
-    dirstring_type = nobmp
+.. note::
 
-    # This information will be filled by the end user.
-    # The current data is only a place holder.
-    # System firmware does not make decisions based
-    # on the contents of this distinguished name block.
-    [ req_distinguished_name ]
-    C = oR
-    ST = rx
-    L = gQE843yQV0sag
-    O = dqhGYAQ2Y4gFfCq0t1yABCYxex9eAxt71f
-    OU = a87RB35W
-    CN = x0FSqGTPWbGpuiV
-    emailAddress = kFp5uGcgWXxcfxi@vsHs9C9qQWGrBs.com
+   The remaining X509 extensions are ignored by |sysfw| when processing the debug
+   certificate.
 
-    [ v3_ca ]
-    basicConstraints = CA:true
-    1.3.6.1.4.1.294.1.3=ASN1:SEQUENCE:swrv
-    1.3.6.1.4.1.294.1.8=ASN1:SEQUENCE:debug
+Afterwards, |sysfw| validates the information passed in the :ref:`sysfw_debug_ext` 
+and :ref:`sysfw_swrev_ext` by doing the following:
 
-    [ swrv ]
-    swrv = INTEGER:0
+1. The certificate revision of the debug certificate must be greater than or equal to
+   the value specified by the ``min_cert_rev`` field in :ref:`pub_boardcfg_secure_debug_unlock`.
 
-    [ debug ]
-    debugUID = FORMAT:HEX,OCT:0000000000000000000000000000000000000000000000000000000000000000
-    debugType = INTEGER:0x00000004
-    coreDbgEn = INTEGER:0x20210102
-    coreDbgSecEn = INTEGER:0x2223
+2. The UID passed in the debug extension is checked against the SOC UID.
+   The UID's must match unless otherwise specified in the board configuration.
+   See the field ``allow_wildcard_unlock`` in :ref:`pub_boardcfg_secure_debug_unlock`.
 
+3. |sysfw| checks that the values specified for ``debug_priv_level`` are valid.
 
-The certificate can be signed with the below command.
+4. |sysfw| verifies that the processor ID's specified in the fields
+   ``coreDbgEn`` and ``coreDbgSecEn`` are valid, and that the cores in ``coreDbgSecEn`` 
+   actually support secure debug.
+   
+.. note::
+     
+   ``coreDbgSecEn`` lists which cores need to have secure level debug enabled.
+   ``coreDbgEn`` lists which cores need to have non-secure level debug enabled.
 
-.. code-block:: bash
-
-    $ openssl req -new -x509 -key custMpk.pem -nodes -outform der -out debug_unlock_cert.der -config signing_config.txt -sha512
+Once these checks pass, |sysfw| performs the actual debug unlock operation.
 
 Sending debug certificate to |sysfw|
-------------------------------------
+====================================
 
 Using TISCI API
-~~~~~~~~~~~~~~~
+---------------
 
 The debug unlock certificate can be supplied to |sysfw| via the
 :ref:`open-debug-fwls` message. The debug unlock certificate must first be
@@ -292,7 +303,7 @@ certificate over the JTAG interface.
 .. _sysfw_pub_sec_dbg_ug_over_jtag:
 
 Over the JTAG interface
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 The debug unlock certificate can be provided to |sysfw| over the JTAG interface.
 Even though the JTAG access to the cores on the device is locked, the host PC
@@ -308,7 +319,6 @@ is also supported in TI Code Composer Studio(CCS). We will describe how to use
 CCS to unlock the JTAG. The required CCS version is CCS 9.3 or later.
 Normally it would suffice to have a version of CCS that supports the
 device you are using.
-
 
 1. Create a target configuration file for the HS EVM in CCS and launch the target
    configuration file. This will create a file ``ccBoard0.dat`` which we will use
@@ -338,7 +348,7 @@ device you are using.
    for mode 3.
 
 Performing JTAG unlock
-++++++++++++++++++++++
+======================
 
 To unlock the JTAG, use the ``unlock`` command of ``dbgauth`` tool. We are
 assuming that ccs version is ``ccs1010``.
@@ -374,12 +384,12 @@ Please read the help of ``dbgauth`` for command line options.
         ...
 
 Retrieveing SOC UID
--------------------
+===================
 
 .. _sysfw_pub_sec_dbg_ug_soc_uid_over_jtag:
 
 Retrieving the SOC UID over JTAG
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 To retrieve the SOC UID, use the ``getuid`` command of ``dbgauth`` tool. We are
 assuming that ccs version is ``ccs1010``.
@@ -413,7 +423,7 @@ The retrieved UID can be populated into the debug certificate in the below manne
 .. _sysfw_pub_sec_dbg_ug_soc_uid_over_uart:
 
 Retrieving the SOC UID over UART
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 When the device is in UART boot mode, ROM prints the SOC information including
 the SOC ID on the boot UART. The last 32 bytes i.e. 64 characters before the
@@ -446,7 +456,7 @@ The characters corresponding to SOC data are
     a14e0749da22d4cb
 
 Retrieving the SOC UID via TISCI 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--------------------------------
 
 The :ref:`TISCI_MSG_GET_SOC_UID <get-soc-uid>` API can be used to retrieve the
 SOC UID to print for reference:
@@ -468,7 +478,7 @@ the debugUID field in the certificate. Alternative is to cast the response
 payload to a byte array before printing to view the values in byte order.
 
 Controlling Debug via Board Configuration
------------------------------------------
+=========================================
 
 |Sec_bcfg| allows the user to control the JTAG unlock process. See
 :ref:`pub_boardcfg_secure_debug_unlock` for the data structure definition.

@@ -87,6 +87,18 @@ A host can claim ownership of a firewall region with owner set to ``none`` by us
 :ref:`TISCI_MSG_CHANGE_FWL_OWNER <change-firewall-owner>` message. A host
 can use the same message to transfer a firewall region it owns to another host.
 
+Who can update the firewall owner ?
+----------------------------------------------------------------------
+
+The only one that can update the firewall owner, is the current owner.
+Requests from any other hosts will be rejected.
+
+Who can update the start address and end address ?
+----------------------------------------------------------------------
+
+The only one that can update the addresses, is the current owner.
+Requests from any other hosts will be rejected.
+
 Is there any relationship between ownership and firewall permissions ?
 ----------------------------------------------------------------------
 

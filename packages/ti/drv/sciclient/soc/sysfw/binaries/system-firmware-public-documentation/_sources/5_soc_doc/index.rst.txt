@@ -26,7 +26,6 @@ AM65x SR1
    am65x/runtime_keystore
    am65x/firewalls
    am65x/soc_devgrps
-   am65x/extended_otp
 
 =========
 AM65x SR2

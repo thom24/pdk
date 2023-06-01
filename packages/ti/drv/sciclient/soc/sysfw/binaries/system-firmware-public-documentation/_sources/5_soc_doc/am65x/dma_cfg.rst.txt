@@ -1,5 +1,5 @@
 =================================
-AM6 DMA Device Descriptions
+AM65X_SR1 DMA Device Descriptions
 =================================
 
 Introduction

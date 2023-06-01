@@ -7,13 +7,17 @@ AM64X Host Descriptions
 Introduction
 ============
 
-This chapter provides information of Host IDs that are permitted in
-the AM64X SoC. These host IDs represent processing entities (or PEs)
-which is mandatory identification of a Host in a processor.
+This chapter provides information on the set of HostIDs permitted
+in this AM64X SoC. HostIDs uniquely identify each logically distinct high level
+software entity. A software entity identification number (HostID) can be
+assigned to an OS either native or virtualized, or a firmware/native
+application. The HostID is used to select the set of Secure Proxy channels for
+which this software entity should use to communicate with the System Firmware.
 
-Typically a host is a 'compute entity' which may be an actual
-processor or even a virtual machine. We just use host or processing
-entity to indicate the same thing.
+System Firmware also checks that the used HostID comes from software running
+on the correct core (as implied by Host Name in the below table) and with the
+correct security level (Security Status column) to prevent HostID
+spoofing.
 
 .. _soc_doc_am64x_public_host_desc_host_list:
 

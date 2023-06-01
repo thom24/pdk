@@ -4248,7 +4248,7 @@
                             "fmt": "%d",
                             "higher_bit": 19,
                             "lower_bit": 14,
-                            "name": "Power domain ID"
+                            "name": "LPSC ID"
                         },
                         {
                             "fmt": "%d",
@@ -4314,13 +4314,13 @@
                             "fmt": "%d",
                             "higher_bit": 21,
                             "lower_bit": 20,
-                            "name": "LPSC ID"
+                            "name": "PSC ID"
                         },
                         {
                             "fmt": "%d",
                             "higher_bit": 19,
                             "lower_bit": 14,
-                            "name": "Power domain ID"
+                            "name": "LPSC ID"
                         },
                         {
                             "fmt": "%d",
@@ -4338,13 +4338,13 @@
                             "fmt": "%d",
                             "higher_bit": 21,
                             "lower_bit": 20,
-                            "name": "LPSC ID"
+                            "name": "PSC ID"
                         },
                         {
                             "fmt": "%d",
                             "higher_bit": 19,
                             "lower_bit": 14,
-                            "name": "Power domain ID"
+                            "name": "LPSC ID"
                         },
                         {
                             "fmt": "%d",
@@ -4355,7 +4355,7 @@
                     ]
                 },
                 "0x12": {
-                    "action_long": "Retention Put",
+                    "action_long": "Initialize Power Domains",
                     "action_short": "PD_INIT",
                     "msg_data": [
                         {
@@ -4470,7 +4470,7 @@
                             "fmt": "%d",
                             "higher_bit": 19,
                             "lower_bit": 14,
-                            "name": "Power domain ID"
+                            "name": "LPSC ID"
                         },
                         {
                             "fmt": "%d",

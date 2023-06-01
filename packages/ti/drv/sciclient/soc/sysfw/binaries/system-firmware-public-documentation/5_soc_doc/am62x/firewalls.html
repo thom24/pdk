@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -189,19 +189,29 @@
 <div class="section" id="introduction">
 <span id="soc-doc-am62-public-fwl-desc-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides information on firewalls that system firmware configures
-by default at boot time. Guide to read the tables in this chapter is provided
-below. For more details on firewalls refer to “Interconnect Firewalls” section
-of TRM and <a class="reference internal" href="../../2_tisci_msgs/security/firewall_api.html#sec-ap-fwl-tisci-desc"><span class="std std-ref">Firewall TISCI Description</span></a>.</p>
+by default at boot time. The guide to read the tables in this chapter is
+provided below. For more details on firewalls, refer to the “Interconnect
+Firewalls” section of the TRM and <a class="reference internal" href="../../2_tisci_msgs/security/firewall_api.html#sec-ap-fwl-tisci-desc"><span class="std std-ref">Firewall TISCI Description</span></a>.</p>
+<div class="section" id="table-legend">
+<span id="soc-doc-am62-public-fwl-desc-table-legend"></span><h3>Table Legend<a class="headerlink" href="#table-legend" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
-<li>Firewall ID: The firewall ID uniquely identifies each firewall</li>
-<li>Owner: <a class="reference internal" href="hosts.html#soc-doc-am62x-public-host-desc-host-list"><span class="std std-ref">Host ID</span></a> that is owner of the firewall</li>
-<li>CBA_PERMISSION_x: Each firewall region/channel can have up to 3 slots for configuring permissions. Each permission slot takes the form of [user, permission], where user is a host and permission is a combination of r-read, w-write, c-cache, d-debug. The priv-id, secure/non-secure, user/privileged information are derived from the host id.</li>
+<li><code class="docutils literal"><span class="pre">Firewall</span> <span class="pre">ID</span></code>: The unique identifier for each firewall</li>
+<li><code class="docutils literal"><span class="pre">Owner</span></code>: The <a class="reference internal" href="hosts.html#soc-doc-am62x-public-host-desc-host-list"><span class="std std-ref">host ID</span></a> that owns the firewall</li>
+<li><code class="docutils literal"><span class="pre">CBA_PERMISSION_x</span></code>: Each permission slot takes the form of [user, permission], where “user” is a host ID and “permission” is a combination of r-read, w-write, c-cache, d-debug. Additionally, each firewall region/channel can have up to 3 slots for configuring permissions.</li>
+</ul>
+</div>
+<div class="section" id="table-guide">
+<span id="soc-doc-am62-public-fwl-desc-table-guide"></span><h3>Table Guide<a class="headerlink" href="#table-guide" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li>If a firewall is owned by <code class="docutils literal"><span class="pre">TIFS</span></code>/<code class="docutils literal"><span class="pre">DMSC</span></code>, it means that only TIFS/DMSC can configure it.</li>
+<li>If a firewall is owned by <code class="docutils literal"><span class="pre">none</span></code>, it means any host can configure it.</li>
+<li>If a firewall is owned by <code class="docutils literal"><span class="pre">rm</span></code>, it means that the corresponding resource is managed by the resource manager based on the RM boardcfg.</li>
+<li>If a firewall is not listed in the table below, it does not mean it doesn’t exist. It simply means it was not one of the firewalls configured at boot time by system firmware.</li>
 </ul>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p>In the below table, a firewall owned by RM implies that the corresponding resource is managed by the resource manager.
-Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 <p class="last">For additional firewall information, checkout the <a class="reference internal" href="../../6_topic_user_guides/firewall_faq.html"><span class="doc">Firewall FAQ</span></a>.</p>
+</div>
 </div>
 </div>
 <div class="section" id="list-of-region-based-firewalls">
@@ -522,9 +532,9 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 <td>tifs</td>
 <td>0x44880000</td>
 <td>0x44887FFF</td>
+<td>everyone,r</td>
 <td>tifs,rwd</td>
 <td>hsm,rwd</td>
-<td>everyone,r</td>
 </tr>
 <tr class="row-odd"><td>638</td>
 <td>4</td>
@@ -663,6 +673,10 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">For more details on firewalls, refer to the “Interconnect Firewalls” section of the TRM.</p>
+</div>
 </div>
 <div class="section" id="list-of-channelized-firewalls">
 <span id="soc-doc-am62-public-fwl-desc-channel-fwl-list"></span><h2>List of Channelized Firewalls<a class="headerlink" href="#list-of-channelized-firewalls" title="Permalink to this headline">¶</a></h2>
@@ -887,7 +901,7 @@ Firewall configuration is internally handled by RM based on RM boardcfg.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

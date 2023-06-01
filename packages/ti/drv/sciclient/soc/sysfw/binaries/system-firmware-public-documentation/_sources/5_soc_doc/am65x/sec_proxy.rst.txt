@@ -1,6 +1,6 @@
-=============================
-AM6 Secure Proxy Descriptions
-=============================
+===================================
+AM65X_SR1 Secure Proxy Descriptions
+===================================
 
 .. _soc_doc_am6_public_sproxy_desc_intro:
 

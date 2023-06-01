@@ -1,6 +1,6 @@
-==================================
- Using Extended OTP on HS devices
-==================================
+====================
+ Using Extended OTP
+====================
 
 K3 family of devices have a set of one-time programmable(OTP) efuses to carry
 root of trust keys and other information used during device boot. The purpose of
@@ -18,19 +18,33 @@ API. This document must be read along side
    They do not access the predefined key area containing
    the root of trust keys.
 
-.. note::
-
-   This document is only applicable to HS devices.
-
 Hardware Configuration
 ========================
 
 The extended OTP area can have a maximum of 1024 bits. The extended OTP area is
 organized into rows of bits. The width of each row can vary based on the device.
-Please refer to the :ref:`pub_soc_family_doc` for the below details.
+Please refer to the table below for SOC specific details of hardware rows:
 
-- number of bits available in the OTP area
-- Width of the OTP rows
++---------+------------------+---------------+----------+----------+------------+
+| SoC     | Number of bits in| Number of bits| Number of| Number of| Initial bit|  
+|         | Extended OTP area| per OTP row   | OTP rows | OTP MMRs | offset     |  
++=========+==================+===============+==========+==========+============+
+| AM65x   | 1024             | 32            | 32       | 32       | 0          |
++---------+------------------+---------------+----------+----------+------------+
+| J721e   | 1024             | 25            | 41       | 32       | 0          | 
++---------+------------------+---------------+----------+----------+------------+
+| AM64x   | 384              | 25            | 15       | 12       | 0          |
++---------+------------------+---------------+----------+----------+------------+
+| J7200   | 1024             | 25            | 41       | 32       | 0          |
++---------+------------------+---------------+----------+----------+------------+
+| AM62x   | 1024             | 25            | 42       | 32       | 2          |
++---------+------------------+---------------+----------+----------+------------+
+| AM62Ax  | 1024             | 25            | 42       | 32       | 2          |
++---------+------------------+---------------+----------+----------+------------+
+| J721S2  | 1024             | 25            | 42       | 32       | 2          |
++---------+------------------+---------------+----------+----------+------------+
+| J784S4  | 1024             | 25            | 42       | 32       | 2          |
++---------+------------------+---------------+----------+----------+------------+
 
 On device boot, the data in the OTP area is read into a set of 32 bit memory
 mapped registers(MMRs). There are 32 such registers to accommodate the maximum
@@ -77,7 +91,8 @@ The reasons for the different granularity are
 
 1. |sysfw| does not maintain state across device reboots. Any write protection
    performed must be tied to the hardware. Hardware provides write protection at
-   row granularity. Therefore the write/lock API must operate at a row granularity.
+   row granularity. Therefore, the write/lock API must operate at hardware row 
+   granularity.
 
 2. We expect the OTP read operation to be performed more often compared to the
    OTP write operation. We expect most data stored in the OTP area to be a

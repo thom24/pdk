@@ -1,6 +1,6 @@
-==========================
-AM6 Processor Descriptions
-==========================
+================================
+AM65X_SR2 Processor Descriptions
+================================
 
 .. _soc_doc_am65x_sr2_public_proc_desc_intro:
 

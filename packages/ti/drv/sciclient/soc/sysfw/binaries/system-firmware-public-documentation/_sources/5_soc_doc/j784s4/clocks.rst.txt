@@ -218,6 +218,86 @@ Following is a mapping of Clocks IDs to function:
 |          0 | DEV_A72SS1_CORE3_ARM1_CLK_CLK | Input clock |
 +------------+-------------------------------+-------------+
 
+.. _soc_doc_j784s4_public_clks_acspcie_buffer0:
+
+
+Clocks for ACSPCIE_BUFFER0 Device
+---------------------------------
+
+Device: :ref:`J784S4_DEV_ACSPCIE_BUFFER0 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 415)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|   Clock ID | Name                                                                  | Function                                                |
++============+=======================================================================+=========================================================+
+|          0 | DEV_ACSPCIE_BUFFER0_CLKIN0                                            | Input muxed clock                                       |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          1 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B8M4CT3_MAIN_0_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          2 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          3 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B8M4CT3_MAIN_0_REF_OUT_CLK     | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          4 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B8M4CT3_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          5 | DEV_ACSPCIE_BUFFER0_CLKIN1                                            | Input muxed clock                                       |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          6 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B8M4CT3_MAIN_0_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          7 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          8 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B8M4CT3_MAIN_0_REF_OUT_CLK     | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          9 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B8M4CT3_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         10 | DEV_ACSPCIE_BUFFER0_PAD0_M                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         11 | DEV_ACSPCIE_BUFFER0_PAD0_P                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         12 | DEV_ACSPCIE_BUFFER0_PAD1_M                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         13 | DEV_ACSPCIE_BUFFER0_PAD1_P                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+
+.. _soc_doc_j784s4_public_clks_acspcie_buffer1:
+
+
+Clocks for ACSPCIE_BUFFER1 Device
+---------------------------------
+
+Device: :ref:`J784S4_DEV_ACSPCIE_BUFFER1 <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 416)
+
+Following is a mapping of Clocks IDs to function:
+
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|   Clock ID | Name                                                                  | Function                                                |
++============+=======================================================================+=========================================================+
+|          0 | DEV_ACSPCIE_BUFFER1_CLKIN0                                            | Input muxed clock                                       |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          1 | DEV_ACSPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B8M4CT3_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN0 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          2 | DEV_ACSPCIE_BUFFER1_CLKIN0_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN0 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          3 | DEV_ACSPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B8M4CT3_MAIN_1_REF_OUT_CLK     | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN0 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          5 | DEV_ACSPCIE_BUFFER1_CLKIN1                                            | Input muxed clock                                       |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          6 | DEV_ACSPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B8M4CT3_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN1 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          7 | DEV_ACSPCIE_BUFFER1_CLKIN1_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN1 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|          8 | DEV_ACSPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B8M4CT3_MAIN_1_REF_OUT_CLK     | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN1 |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         10 | DEV_ACSPCIE_BUFFER1_PAD0_M                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         11 | DEV_ACSPCIE_BUFFER1_PAD0_P                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         12 | DEV_ACSPCIE_BUFFER1_PAD1_M                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+|         13 | DEV_ACSPCIE_BUFFER1_PAD1_P                                            | Output clock                                            |
++------------+-----------------------------------------------------------------------+---------------------------------------------------------+
+
 .. _soc_doc_j784s4_public_clks_aggr_atb0:
 
 
@@ -3329,58 +3409,6 @@ Clocks for FFI_MAIN_RC_CBASS_VD Device
 --------------------------------------
 
 **This device has no defined clocks.**
-
-.. _soc_doc_j784s4_public_clks_gluelogic_acspcie0_buffer:
-
-
-Clocks for GLUELOGIC_ACSPCIE0_BUFFER Device
--------------------------------------------
-
-Device: :ref:`J784S4_DEV_GLUELOGIC_ACSPCIE0_BUFFER <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 417)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------------------+--------------+
-|   Clock ID | Name                                 | Function     |
-+============+======================================+==============+
-|          0 | DEV_GLUELOGIC_ACSPCIE0_BUFFER_CLKIN0 | Input clock  |
-+------------+--------------------------------------+--------------+
-|          1 | DEV_GLUELOGIC_ACSPCIE0_BUFFER_CLKIN1 | Input clock  |
-+------------+--------------------------------------+--------------+
-|          2 | DEV_GLUELOGIC_ACSPCIE0_BUFFER_PAD0_M | Output clock |
-+------------+--------------------------------------+--------------+
-|          3 | DEV_GLUELOGIC_ACSPCIE0_BUFFER_PAD0_P | Output clock |
-+------------+--------------------------------------+--------------+
-|          4 | DEV_GLUELOGIC_ACSPCIE0_BUFFER_PAD1_M | Output clock |
-+------------+--------------------------------------+--------------+
-|          5 | DEV_GLUELOGIC_ACSPCIE0_BUFFER_PAD1_P | Output clock |
-+------------+--------------------------------------+--------------+
-
-.. _soc_doc_j784s4_public_clks_gluelogic_acspcie1_buffer:
-
-
-Clocks for GLUELOGIC_ACSPCIE1_BUFFER Device
--------------------------------------------
-
-Device: :ref:`J784S4_DEV_GLUELOGIC_ACSPCIE1_BUFFER <soc_doc_j784s4_public_devices_desc_device_list>` (ID = 418)
-
-Following is a mapping of Clocks IDs to function:
-
-+------------+--------------------------------------+--------------+
-|   Clock ID | Name                                 | Function     |
-+============+======================================+==============+
-|          0 | DEV_GLUELOGIC_ACSPCIE1_BUFFER_CLKIN0 | Input clock  |
-+------------+--------------------------------------+--------------+
-|          1 | DEV_GLUELOGIC_ACSPCIE1_BUFFER_CLKIN1 | Input clock  |
-+------------+--------------------------------------+--------------+
-|          2 | DEV_GLUELOGIC_ACSPCIE1_BUFFER_PAD0_M | Output clock |
-+------------+--------------------------------------+--------------+
-|          3 | DEV_GLUELOGIC_ACSPCIE1_BUFFER_PAD0_P | Output clock |
-+------------+--------------------------------------+--------------+
-|          4 | DEV_GLUELOGIC_ACSPCIE1_BUFFER_PAD1_M | Output clock |
-+------------+--------------------------------------+--------------+
-|          5 | DEV_GLUELOGIC_ACSPCIE1_BUFFER_PAD1_P | Output clock |
-+------------+--------------------------------------+--------------+
 
 .. _soc_doc_j784s4_public_clks_gpio0:
 

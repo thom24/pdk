@@ -1,5 +1,5 @@
 ==================================================
-AM6 Interrupt Management Device Descriptions
+AM65X_SR1 Interrupt Management Device Descriptions
 ==================================================
 
 Introduction

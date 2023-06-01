@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>AM6 Interrupt Management Device Descriptions &mdash; TISCI User Guide</title>
+  <title>AM65X_SR1 Interrupt Management Device Descriptions &mdash; TISCI User Guide</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../../search.html"/>
     <link rel="top" title="TISCI User Guide" href="../../index.html"/>
         <link rel="up" title="Chapter 5: SoC Family Specific Documentation" href="../index.html"/>
-        <link rel="next" title="AM6 Ring Accelerator Device Descriptions" href="ra_cfg.html"/>
-        <link rel="prev" title="AM6 Board Configuration Resource Assignment Type Descriptions" href="resasg_types.html"/> 
+        <link rel="next" title="AM65X_SR1 Ring Accelerator Device Descriptions" href="ra_cfg.html"/>
+        <link rel="prev" title="AM65X_SR1 Board Configuration Resource Assignment Type Descriptions" href="resasg_types.html"/> 
 
   
   <script src="../../_static/js/modernizr.min.js"></script>
@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -107,12 +107,12 @@
 <li class="toctree-l1"><a class="reference internal" href="../../4_trace/index.html">Chapter 4: Interpreting Trace Data</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Chapter 5: SoC Family Specific Documentation</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html#am65x-sr1">AM65x SR1</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="hosts.html">AM6 Host Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="devices.html">AM6 Devices Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="clocks.html">AM6 Clock Identifiers</a></li>
-<li class="toctree-l3"><a class="reference internal" href="pll_data.html">AM6 PLL Defaults</a></li>
-<li class="toctree-l3"><a class="reference internal" href="resasg_types.html">AM6 Board Configuration Resource Assignment Type Descriptions</a></li>
-<li class="toctree-l3 current"><a class="current reference internal" href="#">AM6 Interrupt Management Device Descriptions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="hosts.html">AM65X_SR1 Host Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="devices.html">AM65X_SR1 Devices Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="clocks.html">AM65X_SR1 Clock Identifiers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="pll_data.html">AM65X_SR1 PLL Defaults</a></li>
+<li class="toctree-l3"><a class="reference internal" href="resasg_types.html">AM65X_SR1 Board Configuration Resource Assignment Type Descriptions</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">AM65X_SR1 Interrupt Management Device Descriptions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#introduction">Introduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#interrupt-router-device-ids">Interrupt Router Device IDs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#cmpevent-intrtr0-interrupt-router-input-sources">CMPEVENT_INTRTR0 Interrupt Router Input Sources</a></li>
@@ -141,16 +141,15 @@
 <li class="toctree-l4"><a class="reference internal" href="#event-based-interrupt-source-ids">Event-Based Interrupt Source IDs</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="ra_cfg.html">AM6 Ring Accelerator Device Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="dma_cfg.html">AM6 DMA Device Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="psil_cfg.html">AM6 PSI-L Device Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">AM6 Proxy Device Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM6 Secure Proxy Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="processors.html">AM6 Processor Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="runtime_keystore.html">AM6 Runtime Keystore</a></li>
-<li class="toctree-l3"><a class="reference internal" href="firewalls.html">AM6 Firewall Descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM6 Device Group descriptions</a></li>
-<li class="toctree-l3"><a class="reference internal" href="extended_otp.html">AM65x Extended OTP Information</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ra_cfg.html">AM65X_SR1 Ring Accelerator Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dma_cfg.html">AM65X_SR1 DMA Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="psil_cfg.html">AM65X_SR1 PSI-L Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="proxy_cfg.html">AM65X_SR1 Proxy Device Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="sec_proxy.html">AM65X_SR1 Secure Proxy Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="processors.html">AM65X_SR1 Processor Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="runtime_keystore.html">AM65X_SR1 Runtime Keystore</a></li>
+<li class="toctree-l3"><a class="reference internal" href="firewalls.html">AM65X_SR1 Firewall Descriptions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="soc_devgrps.html">AM65X_SR1 Device Group descriptions</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am65x-sr2">AM65x SR2</a></li>
@@ -196,7 +195,7 @@
       
           <li><a href="../index.html">Chapter 5: SoC Family Specific Documentation</a> &raquo;</li>
       
-    <li>AM6 Interrupt Management Device Descriptions</li>
+    <li>AM65X_SR1 Interrupt Management Device Descriptions</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -208,8 +207,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="am6-interrupt-management-device-descriptions">
-<h1>AM6 Interrupt Management Device Descriptions<a class="headerlink" href="#am6-interrupt-management-device-descriptions" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="am65x-sr1-interrupt-management-device-descriptions">
+<h1>AM65X_SR1 Interrupt Management Device Descriptions<a class="headerlink" href="#am65x-sr1-interrupt-management-device-descriptions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides information on the Interrupt Management devices in the
@@ -20273,10 +20272,10 @@ detected.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="ra_cfg.html" class="btn btn-neutral float-right" title="AM6 Ring Accelerator Device Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="ra_cfg.html" class="btn btn-neutral float-right" title="AM65X_SR1 Ring Accelerator Device Descriptions" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="resasg_types.html" class="btn btn-neutral" title="AM6 Board Configuration Resource Assignment Type Descriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="resasg_types.html" class="btn btn-neutral" title="AM65X_SR1 Board Configuration Resource Assignment Type Descriptions" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -20307,7 +20306,7 @@ detected.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

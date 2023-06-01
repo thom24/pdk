@@ -8,18 +8,31 @@ Introduction
 ============
 
 This chapter provides information on firewalls that system firmware configures
-by default at boot time. Guide to read the tables in this chapter is provided
-below. For more details on firewalls refer to "Interconnect Firewalls" section
-of TRM and :ref:`Firewall TISCI Description <sec_ap_fwl_tisci_desc>`.
+by default at boot time. The guide to read the tables in this chapter is
+provided below. For more details on firewalls, refer to the "Interconnect
+Firewalls" section of the TRM and :ref:`Firewall TISCI Description
+<sec_ap_fwl_tisci_desc>`.
 
-- Firewall ID: The firewall ID uniquely identifies each firewall
-- Owner: :ref:`Host ID <soc_doc_am62ax_public_host_desc_host_list>` that is owner of the firewall
-- CBA_PERMISSION_x: Each firewall region/channel can have up to 3 slots for configuring permissions. Each permission slot takes the form of [user, permission], where user is a host and permission is a combination of r-read, w-write, c-cache, d-debug. The priv-id, secure/non-secure, user/privileged information are derived from the host id.
+.. _soc_doc_am62a_public_fwl_desc_table_legend:
+
+Table Legend
+------------
+
+- ``Firewall ID``: The unique identifier for each firewall
+- ``Owner``: The :ref:`host ID <soc_doc_am62ax_public_host_desc_host_list>` that owns the firewall
+- ``CBA_PERMISSION_x``: Each permission slot takes the form of [user, permission], where "user" is a host ID and "permission" is a combination of r-read, w-write, c-cache, d-debug. Additionally, each firewall region/channel can have up to 3 slots for configuring permissions.
+
+.. _soc_doc_am62a_public_fwl_desc_table_guide:
+
+Table Guide
+-----------
+
+- If a firewall is owned by ``TIFS``/``DMSC``, it means that only TIFS/DMSC can configure it.
+- If a firewall is owned by ``none``, it means any host can configure it.
+- If a firewall is owned by ``rm``, it means that the corresponding resource is managed by the resource manager based on the RM boardcfg.
+- If a firewall is not listed in the table below, it does not mean it doesn't exist. It simply means it was not one of the firewalls configured at boot time by system firmware.
 
 .. note::
-
-    In the below table, a firewall owned by RM implies that the corresponding resource is managed by the resource manager.
-    Firewall configuration is internally handled by RM based on RM boardcfg.
 
     For additional firewall information, checkout the :doc:`../../6_topic_user_guides/firewall_faq`.
 
@@ -105,7 +118,7 @@ List of Region Based Firewalls
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
 |           638 |        0 | tifs    | 0x44800000      | 0x44FFFFFF    | tifs,rwd            | hsm,rwd            | everyone,r         |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
-|           638 |        1 | tifs    | 0x44880000      | 0x44887FFF    | tifs,rwd            | hsm,rwd            | everyone,r         |
+|           638 |        1 | tifs    | 0x44880000      | 0x44887FFF    | everyone,r          | tifs,rwd           | hsm,rwd            |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
 |           638 |        4 | tifs    | 0x43702000      | 0x43702FFF    | tifs,rwd            | hsm,rwd            |                    |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
@@ -137,6 +150,11 @@ List of Region Based Firewalls
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
 |           690 |        0 | hsm     | 0x43701000      | 0x437013FF    | hsm,rwd             |                    |                    |
 +---------------+----------+---------+-----------------+---------------+---------------------+--------------------+--------------------+
+
+
+.. note::
+
+    For more details on firewalls, refer to the "Interconnect Firewalls" section of the TRM.
 
 .. _soc_doc_am62a_public_fwl_desc_channel_fwl_list:
 

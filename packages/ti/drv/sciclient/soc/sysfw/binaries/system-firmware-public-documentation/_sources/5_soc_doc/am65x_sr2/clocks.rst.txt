@@ -1,6 +1,6 @@
-=====================
-AM6 Clock Identifiers
-=====================
+===========================
+AM65X_SR2 Clock Identifiers
+===========================
 
 .. _soc_doc_am65x_sr2_public_clks_desc_intro:
 

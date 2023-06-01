@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -229,12 +229,12 @@ assigned using <cite>Host ID</cite>. Only a owner of a firewall can</p>
 <h2>Initial Configuration<a class="headerlink" href="#initial-configuration" title="Permalink to this headline">¶</a></h2>
 <p>System firmware configures the firewalls in the following manner on startup.</p>
 <ol class="arabic simple">
-<li>DMSC internal memories are firewalled. Firewall ownership is assigned to DMSC.</li>
-<li>Secure proxy and associated resources required for DMSC operation are
-firewalled. Firewall ownership is assigned to DMSC.</li>
-<li>All Navss resources not used by DMSC are firewalled and ownership of the
+<li>DMSC/TIFS internal memories are firewalled. Firewall ownership is assigned to DMSC/TIFS.</li>
+<li>Secure proxy and associated resources required for DMSC/TIFS operation are
+firewalled. Firewall ownership is assigned to DMSC/TIFS.</li>
+<li>Navss/DMSS resources not used by DMSC/TIFS are firewalled and ownership of the
 firewalls is assigned to Resource Manager(RM). The intent is that RM programs
-the firewalls for Navss resources based on resource assignment in board
+the firewalls for Navss/DMSS resources based on resource assignment in board
 configuration.</li>
 </ol>
 </div>
@@ -593,7 +593,7 @@ configuration.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

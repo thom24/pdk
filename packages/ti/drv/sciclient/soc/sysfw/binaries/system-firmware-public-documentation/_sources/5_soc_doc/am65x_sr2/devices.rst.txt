@@ -1,6 +1,6 @@
-========================
-AM6 Devices Descriptions
-========================
+==============================
+AM65X_SR2 Devices Descriptions
+==============================
 
 .. _soc_doc_am65x_sr2_public_devices_desc_intro:
 

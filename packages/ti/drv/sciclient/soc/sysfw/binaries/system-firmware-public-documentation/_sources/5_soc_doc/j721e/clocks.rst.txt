@@ -710,88 +710,88 @@ Following is a mapping of Clocks IDs to function:
 |        297 | DEV_AASRC0_TX3_SYNC_PARENT_BOARD_0_EXT_REFCLK1_OUT            | Parent input clock option to DEV_AASRC0_TX3_SYNC |
 +------------+---------------------------------------------------------------+--------------------------------------------------+
 
-.. _soc_doc_j721e_public_clks_ascpcie_buffer0:
+.. _soc_doc_j721e_public_clks_acspcie_buffer0:
 
 
-Clocks for ASCPCIE_BUFFER0 Device
+Clocks for ACSPCIE_BUFFER0 Device
 ---------------------------------
 
-Device: :ref:`J721E_DEV_ASCPCIE_BUFFER0 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 337)
+Device: :ref:`J721E_DEV_ACSPCIE_BUFFER0 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 337)
 
 Following is a mapping of Clocks IDs to function:
 
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
 |   Clock ID | Name                                                                 | Function                                                |
 +============+======================================================================+=========================================================+
-|          0 | DEV_ASCPCIE_BUFFER0_CLKIN0                                           | Input muxed clock                                       |
+|          0 | DEV_ACSPCIE_BUFFER0_CLKIN0                                           | Input muxed clock                                       |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          1 | DEV_ASCPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_0_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN0 |
+|          1 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_0_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          2 | DEV_ASCPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN0 |
+|          2 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          3 | DEV_ASCPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_0_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN0 |
+|          3 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_0_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          4 | DEV_ASCPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_1_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN0 |
+|          4 | DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_1_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          5 | DEV_ASCPCIE_BUFFER0_CLKIN1                                           | Input muxed clock                                       |
+|          5 | DEV_ACSPCIE_BUFFER0_CLKIN1                                           | Input muxed clock                                       |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          6 | DEV_ASCPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_0_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN1 |
+|          6 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_0_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          7 | DEV_ASCPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN1 |
+|          7 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_1_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          8 | DEV_ASCPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_0_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN1 |
+|          8 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_0_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          9 | DEV_ASCPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_1_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER0_CLKIN1 |
+|          9 | DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_1_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         10 | DEV_ASCPCIE_BUFFER0_CLKOUT0_N                                        | Output clock                                            |
+|         10 | DEV_ACSPCIE_BUFFER0_CLKOUT0_N                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         11 | DEV_ASCPCIE_BUFFER0_CLKOUT0_P                                        | Output clock                                            |
+|         11 | DEV_ACSPCIE_BUFFER0_CLKOUT0_P                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         12 | DEV_ASCPCIE_BUFFER0_CLKOUT1_N                                        | Output clock                                            |
+|         12 | DEV_ACSPCIE_BUFFER0_CLKOUT1_N                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         13 | DEV_ASCPCIE_BUFFER0_CLKOUT1_P                                        | Output clock                                            |
+|         13 | DEV_ACSPCIE_BUFFER0_CLKOUT1_P                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
 
-.. _soc_doc_j721e_public_clks_ascpcie_buffer1:
+.. _soc_doc_j721e_public_clks_acspcie_buffer1:
 
 
-Clocks for ASCPCIE_BUFFER1 Device
+Clocks for ACSPCIE_BUFFER1 Device
 ---------------------------------
 
-Device: :ref:`J721E_DEV_ASCPCIE_BUFFER1 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 338)
+Device: :ref:`J721E_DEV_ACSPCIE_BUFFER1 <soc_doc_j721e_public_devices_desc_device_list>` (ID = 338)
 
 Following is a mapping of Clocks IDs to function:
 
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
 |   Clock ID | Name                                                                 | Function                                                |
 +============+======================================================================+=========================================================+
-|          0 | DEV_ASCPCIE_BUFFER1_CLKIN0                                           | Input muxed clock                                       |
+|          0 | DEV_ACSPCIE_BUFFER1_CLKIN0                                           | Input muxed clock                                       |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          1 | DEV_ASCPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_2_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN0 |
+|          1 | DEV_ACSPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_2_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          2 | DEV_ASCPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_3_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN0 |
+|          2 | DEV_ACSPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_3_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          3 | DEV_ASCPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_2_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN0 |
+|          3 | DEV_ACSPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_2_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          4 | DEV_ASCPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_3_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN0 |
+|          4 | DEV_ACSPCIE_BUFFER1_CLKIN0_PARENT_WIZ16B4M4CS_MAIN_3_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN0 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          5 | DEV_ASCPCIE_BUFFER1_CLKIN1                                           | Input muxed clock                                       |
+|          5 | DEV_ACSPCIE_BUFFER1_CLKIN1                                           | Input muxed clock                                       |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          6 | DEV_ASCPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_2_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN1 |
+|          6 | DEV_ACSPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_2_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          7 | DEV_ASCPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_3_REF_DER_OUT_CLK | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN1 |
+|          7 | DEV_ACSPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_3_REF_DER_OUT_CLK | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          8 | DEV_ASCPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_2_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN1 |
+|          8 | DEV_ACSPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_2_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|          9 | DEV_ASCPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_3_REF1_OUT_CLK    | Parent input clock option to DEV_ASCPCIE_BUFFER1_CLKIN1 |
+|          9 | DEV_ACSPCIE_BUFFER1_CLKIN1_PARENT_WIZ16B4M4CS_MAIN_3_REF1_OUT_CLK    | Parent input clock option to DEV_ACSPCIE_BUFFER1_CLKIN1 |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         10 | DEV_ASCPCIE_BUFFER1_CLKOUT0_N                                        | Output clock                                            |
+|         10 | DEV_ACSPCIE_BUFFER1_CLKOUT0_N                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         11 | DEV_ASCPCIE_BUFFER1_CLKOUT0_P                                        | Output clock                                            |
+|         11 | DEV_ACSPCIE_BUFFER1_CLKOUT0_P                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         12 | DEV_ASCPCIE_BUFFER1_CLKOUT1_N                                        | Output clock                                            |
+|         12 | DEV_ACSPCIE_BUFFER1_CLKOUT1_N                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
-|         13 | DEV_ASCPCIE_BUFFER1_CLKOUT1_P                                        | Output clock                                            |
+|         13 | DEV_ACSPCIE_BUFFER1_CLKOUT1_P                                        | Output clock                                            |
 +------------+----------------------------------------------------------------------+---------------------------------------------------------+
 
 .. _soc_doc_j721e_public_clks_atl0:

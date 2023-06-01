@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -207,6 +207,12 @@ chosen domain by resending the board configuration for baseport, power
 management, resource management, and security management. If the chosen
 domain reset would lead to system-wide reset, then no additional board
 configuration calls are necessary.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">On AM62x, AM64x and AM62Ax devices the module parameter is unused. On these
+devices this API will result in a system-wide warm reset, or
+if MCU reset isolation is enabled, a MAIN domain only reset.</p>
+</div>
 </div>
 <div class="section" id="macros-used-in-this-document">
 <h3>Macros Used in this Document<a class="headerlink" href="#macros-used-in-this-document" title="Permalink to this headline">¶</a></h3>
@@ -314,7 +320,7 @@ argument, it would perform the SoC’s default reset behavior.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

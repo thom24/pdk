@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -186,12 +186,16 @@
 <h1>J721S2 Host Descriptions<a class="headerlink" href="#j721s2-host-descriptions" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <span id="soc-doc-j721s2-public-host-desc-intro"></span><h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>This chapter provides information of Host IDs that are permitted in
-the J721S2 SoC. These host IDs represent processing entities (or PEs)
-which is mandatory identification of a Host in a processor.</p>
-<p>Typically a host is a ‘compute entity’ which may be an actual
-processor or even a virtual machine. We just use host or processing
-entity to indicate the same thing.</p>
+<p>This chapter provides information on the set of HostIDs permitted
+in this J721S2 SoC. HostIDs uniquely identify each logically distinct high level
+software entity. A software entity identification number (HostID) can be
+assigned to an OS either native or virtualized, or a firmware/native
+application. The HostID is used to select the set of Secure Proxy channels for
+which this software entity should use to communicate with the System Firmware.</p>
+<p>System Firmware also checks that the used HostID comes from software running
+on the correct core (as implied by Host Name in the below table) and with the
+correct security level (Security Status column) to prevent HostID
+spoofing.</p>
 </div>
 <div class="section" id="enumeration-of-host-ids">
 <span id="soc-doc-j721s2-public-host-desc-host-list"></span><h2>Enumeration of Host IDs<a class="headerlink" href="#enumeration-of-host-ids" title="Permalink to this headline">¶</a></h2>
@@ -403,7 +407,7 @@ Host context</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

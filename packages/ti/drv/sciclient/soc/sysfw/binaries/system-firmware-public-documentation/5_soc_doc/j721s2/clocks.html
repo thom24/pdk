@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                08.06.03
+                09.00.03
               </div>
             
           
@@ -312,6 +312,74 @@ These do have chapters in this document associated with them, however, these wou
 <tr class="row-even"><td>0</td>
 <td>DEV_A72SS0_CORE1_ARM_CLK_CLK</td>
 <td>Input clock</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-acspcie-buffer0-device">
+<span id="soc-doc-j721s2-public-clks-acspcie-buffer0"></span><h3>Clocks for ACSPCIE_BUFFER0 Device<a class="headerlink" href="#clocks-for-acspcie-buffer0-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j721s2-public-devices-desc-device-list"><span class="std std-ref">J721S2_DEV_ACSPCIE_BUFFER0</span></a> (ID = 375)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="9%" />
+<col width="51%" />
+<col width="41%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN0</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B8M4CT2_MAIN_0_REF_DER_OUT_CLK</td>
+<td>Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK</td>
+<td>Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN0_PARENT_WIZ16B8M4CT2_MAIN_0_REF_OUT_CLK</td>
+<td>Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN0</td>
+</tr>
+<tr class="row-even"><td>5</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN1</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>6</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B8M4CT2_MAIN_0_REF_DER_OUT_CLK</td>
+<td>Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1</td>
+</tr>
+<tr class="row-even"><td>7</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT4_CLK</td>
+<td>Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1</td>
+</tr>
+<tr class="row-odd"><td>8</td>
+<td>DEV_ACSPCIE_BUFFER0_CLKIN1_PARENT_WIZ16B8M4CT2_MAIN_0_REF_OUT_CLK</td>
+<td>Parent input clock option to DEV_ACSPCIE_BUFFER0_CLKIN1</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_ACSPCIE_BUFFER0_PAD0_M</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_ACSPCIE_BUFFER0_PAD0_P</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_ACSPCIE_BUFFER0_PAD1_M</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_ACSPCIE_BUFFER0_PAD1_P</td>
+<td>Output clock</td>
 </tr>
 </tbody>
 </table>
@@ -1801,8 +1869,24 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_BOARD0_MCASP4_AFSX_OUT</td>
 <td>Output clock</td>
 </tr>
+<tr class="row-even"><td>349</td>
+<td>DEV_BOARD0_PCIE_REFCLK1_N_OUT_IN</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>350</td>
+<td>DEV_BOARD0_PCIE_REFCLK1_P_OUT_IN</td>
+<td>Input clock</td>
+</tr>
 <tr class="row-even"><td>352</td>
 <td>DEV_BOARD0_VOUT0_PCLK_IN</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-odd"><td>358</td>
+<td>DEV_BOARD0_PCIE_REFCLK3_N_OUT_IN</td>
+<td>Input clock</td>
+</tr>
+<tr class="row-even"><td>360</td>
+<td>DEV_BOARD0_PCIE_REFCLK3_P_OUT_IN</td>
 <td>Input clock</td>
 </tr>
 </tbody>
@@ -12045,6 +12129,14 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <td>DEV_SERDES_10G0_IP4_LN3_TXMCLK</td>
 <td>Output clock</td>
 </tr>
+<tr class="row-even"><td>125</td>
+<td>DEV_SERDES_10G0_REF_DER_OUT_CLK</td>
+<td>Output clock</td>
+</tr>
+<tr class="row-odd"><td>126</td>
+<td>DEV_SERDES_10G0_REF_OUT_CLK</td>
+<td>Output clock</td>
+</tr>
 <tr class="row-even"><td>130</td>
 <td>DEV_SERDES_10G0_TAP_TCK</td>
 <td>Input clock</td>
@@ -14284,7 +14376,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'08.06.03',
+            VERSION:'09.00.03',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -307,6 +307,8 @@ TISCI_MSG_PROC_AUTH_BOOT - Authenticate Image and Configure Processor
 -  Authenticate and load a binary using the certificate provided information
 -  Use certificate information also to setup critical processor specific
    flags which is similar to
+-  Use certificate information also to configure firewalls. This feature can be used
+   to protect the binary being authenticated.
    :ref:`Set Processor Configuration <proc-boot-set-processor-configuration>`.
 
 **Usage**:
@@ -331,6 +333,12 @@ TISCI_MSG_PROC_AUTH_BOOT - Authenticate Image and Configure Processor
       are secure and which are not.
     * On HS-FS device type, only image integrity check is done. The root of
       trust key comparison check is skipped.
+    * Only the unowned firewalls/regions or those owned by the requesting host
+      would be configurable through the certificate. 
+    * The user must specify the host which would own the firewall/regions being
+      configured. Ownership would be transfered to this host. It is mandatory 
+      to specify a host in the certificate to configure firewalls. Skipping this
+      would result in the API failure.
 
 .. attention::
 
