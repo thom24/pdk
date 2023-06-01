@@ -96,7 +96,7 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
 
     ClockP_freertos *pTimer = (ClockP_freertos *)NULL_PTR;
     ClockP_freertos *timerPool;
-    UBaseType_t      uxAutoReload = pdFALSE;
+    BaseType_t       uxAutoReload = pdFALSE;
     ClockP_Handle    ret_handle = NULL_PTR;
     uint32_t         i;
     uintptr_t        key;

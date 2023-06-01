@@ -105,7 +105,7 @@ typedef struct TimerP_Struct_s
  * The TimerP_Struct pool servers to get an available timer
  * handle during timer create API call.
  */
-TimerP_Struct gTimerStructs[OSAL_NONOS_CONFIGNUM_TIMER] = {{0U}};
+TimerP_Struct gTimerStructs[OSAL_NONOS_CONFIGNUM_TIMER] = { 0U };
 static        uint32_t    gTimerInitDone = 0U;
 static        uint32_t    gTimerAnyMask;
 #if defined (BUILD_MCU)

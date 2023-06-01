@@ -58,27 +58,37 @@
 extern "C" {
 #endif
 
+/**
+ * \anchor QueueP_Status
+ * \name Status codes for QueueP APIs
+ *
+ * @{
+ */
 /*!
  *  @brief    Status codes for QueueP APIs
  */
-typedef enum QueueP_Status_e
-{
-    /*! API completed successfully */
-    QueueP_OK         = 0,
-    /*! API failed */
-    QueueP_FAILURE    = (-(int32_t)1),
-} QueueP_Status;
+typedef int32_t QueueP_Status;
+/*! API completed successfully */
+#define QueueP_OK           (int32_t)(0)
+/*! API failed */
+#define QueueP_FAILURE      (int32_t)(-1)
+/* @} */
 
+/**
+ * \anchor QueueP_State
+ * \name State codes for current queue state
+ *
+ * @{
+ */
 /*!
  *  @brief    State codes for current queue state
  */
-typedef enum QueueP_State_e
-{
-    /*! Elements are present in the the queue */
-    QueueP_NOTEMPTY   = 0,
-    /*! Queue is empty. No elements are present. */
-    QueueP_EMPTY      = 1,
-} QueueP_State;
+typedef bool QueueP_State;
+/*! Elements are present in the the queue */
+#define QueueP_NOTEMPTY            ((bool)false)
+/*! Queue is empty. No elements are present. */
+#define QueueP_EMPTY               ((bool)true)
+/* @} */
 
 /*!
  *  @brief    Opaque client reference to an instance of a QueueP

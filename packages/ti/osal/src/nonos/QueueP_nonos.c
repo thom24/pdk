@@ -202,7 +202,7 @@ void * QueueP_get(QueueP_Handle handle)
     { 
         q = &queue->queueHndl;
 
-        if (QueueP_isEmpty(handle) != true)
+        if ((bool)true != QueueP_isEmpty(handle))
         {
             pElem = q->next;
 
