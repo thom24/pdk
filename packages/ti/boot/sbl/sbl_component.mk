@@ -108,23 +108,23 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
   sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust sbl_lib_emmc
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
-  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hs sbl_lib_ospi_nondma_hlos
+  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hs
   sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
 else ifeq ($(SOC),$(filter $(SOC), j721e))
   sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_hyperflash sbl_lib_cust
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_hyperflash_hlos
-  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos sbl_lib_emmc
+  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_emmc
   sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_hyperflash_hs sbl_lib_cust_hs
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos_hs sbl_lib_ospi_hlos_hs sbl_lib_hyperflash_hlos_hs
-  sbl_LIB_LIST += sbl_lib_ospi_nondma_hs sbl_lib_ospi_nondma_hlos_hs
+  sbl_LIB_LIST += sbl_lib_ospi_nondma_hs
 else
   # for j7200
   sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
-  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hlos sbl_lib_emmc
+  sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_emmc
   sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
   sbl_LIB_LIST += sbl_lib_mmcsd_hlos_hs sbl_lib_ospi_hlos_hs
-  sbl_LIB_LIST += sbl_lib_ospi_nondma_hs sbl_lib_ospi_nondma_hlos_hs
+  sbl_LIB_LIST += sbl_lib_ospi_nondma_hs
 endif
 
 ############################
@@ -426,40 +426,6 @@ sbl_lib_ospi_nondma_hs_INCLUDE = $(sbl_lib_ospi_nondma_hs_PATH)
 export sbl_lib_ospi_nondma_hs_SOCLIST = $(sbl_SOCLIST)
 export sbl_lib_ospi_nondma_hs_BOARDLIST = $(sbl_BOARDLIST)
 export sbl_lib_ospi_nondma_hs_$(SOC)_CORELIST = mcu1_0
-
-# SBL OSPI HLOS LIB with NON-DMA
-export sbl_lib_ospi_nondma_hlos_COMP_LIST = sbl_lib_ospi_nondma_hlos
-sbl_lib_ospi_nondma_hlos_RELPATH = ti/boot/sbl
-export sbl_lib_ospi_nondma_hlos_OBJPATH = ti/boot/sbl/ospi_nondma_hlos
-sbl_lib_ospi_nondma_hlos_PATH = $(PDK_SBL_COMP_PATH)
-export sbl_lib_ospi_nondma_hlos_LIBNAME = sbl_lib_ospi_nondma_hlos
-export sbl_lib_ospi_nondma_hlos_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/ospi_hlos
-export sbl_lib_ospi_nondma_hlos_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no
-export sbl_lib_ospi_nondma_hlos_BOARD_DEPENDENCY = yes
-export sbl_lib_ospi_nondma_hlos_SOC_DEPENDENCY = yes
-export sbl_lib_ospi_nondma_hlos_CORE_DEPENDENCY = no
-sbl_lib_ospi_nondma_hlos_PKG_LIST = sbl_lib_ospi_nondma_hlos
-sbl_lib_ospi_nondma_hlos_INCLUDE = $(sbl_lib_ospi_nondma_hlos_PATH)
-export sbl_lib_ospi_nondma_hlos_SOCLIST = $(sbl_SOCLIST)
-export sbl_lib_ospi_nondma_hlos_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_lib_ospi_nondma_hlos_$(SOC)_CORELIST = mcu1_0
-
-# SBL OSPI HLOS LIB with NON-DMA - HS build variant
-export sbl_lib_ospi_nondma_hlos_hs_COMP_LIST = sbl_lib_ospi_nondma_hlos_hs
-sbl_lib_ospi_nondma_hlos_hs_RELPATH = ti/boot/sbl
-export sbl_lib_ospi_nondma_hlos_hs_OBJPATH = ti/boot/sbl/ospi_nondma_hlos_hs
-sbl_lib_ospi_nondma_hlos_hs_PATH = $(PDK_SBL_COMP_PATH)
-export sbl_lib_ospi_nondma_hlos_hs_LIBNAME = sbl_lib_ospi_nondma_hlos_hs
-export sbl_lib_ospi_nondma_hlos_hs_LIBPATH = $(PDK_SBL_COMP_PATH)/lib/ospi_hlos_hs
-export sbl_lib_ospi_nondma_hlos_hs_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_lib.mk BOOTMODE=ospi HLOS_BOOT=yes SBL_USE_DMA=no BUILD_HS=yes
-export sbl_lib_ospi_nondma_hlos_hs_BOARD_DEPENDENCY = yes
-export sbl_lib_ospi_nondma_hlos_hs_SOC_DEPENDENCY = yes
-export sbl_lib_ospi_nondma_hlos_hs_CORE_DEPENDENCY = no
-sbl_lib_ospi_nondma_hlos_hs_PKG_LIST = sbl_lib_ospi_nondma_hlos_hs
-sbl_lib_ospi_nondma_hlos_hs_INCLUDE = $(sbl_lib_ospi_nondma_hlos_hs_PATH)
-export sbl_lib_ospi_nondma_hlos_hs_SOCLIST = $(sbl_SOCLIST)
-export sbl_lib_ospi_nondma_hlos_hs_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_lib_ospi_nondma_hlos_hs_$(SOC)_CORELIST = mcu1_0
 
 # SBL HYPERFLASH LIB
 sbl_lib_hyperflash_COMP_LIST = sbl_lib_hyperflash
