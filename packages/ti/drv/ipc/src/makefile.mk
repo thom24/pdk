@@ -19,17 +19,10 @@ INCDIR =
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk
-ifeq ($(BUILD_OS_TYPE), qnx)
-INCLUDE_EXTERNAL_INTERFACES += osal_qnx csl_init
-endif
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += ipc_api.c ipc_mp.c ipc_soc.c ipc_virtio.c ipc_utils.c ipc_mailbox.c
-ifeq ($(BUILD_OS_TYPE), qnx)
-SRCS_COMMON += ipc_osal_qnx.c
-else
 SRCS_COMMON += ipc_osal.c
-endif
 
 PACKAGE_SRCS_COMMON = ipc.h ipc_component.mk makefile .gitignore include $(SRCDIR)
 PACKAGE_SRCS_COMMON += soc/ipc_soc.h

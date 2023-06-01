@@ -288,12 +288,6 @@ ifeq ($(CORE),$(filter $(CORE), mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2
   endif
 endif
 
-ifeq ($(CORE),$(filter $(CORE), qnx_mpu1_0))
-  ISA = qnx_a72
-  ISA_EXT = qnx_a72
-  ARCH = armv8a
-endif
-
 # C7x DSP
 ifeq ($(CORE),$(filter $(CORE), c7x_1 c7x_2 c7x_3 c7x_4))
  ISA = c7x
@@ -434,23 +428,6 @@ ifeq ($(ISA),a72)
   LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-endif
-
-ifeq ($(ISA),qnx_a72)
-  ENDIAN_EXT = fg
-  FORMAT_EXT =
-
-  # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
-  #    in the filename extension of object/library/executable files
-  ifeq ($(ENDIAN),big)
-    ENDIAN_EXT = e
-  endif
-
-  # Define the file extensions
-  OBJEXT = o$(FORMAT_EXT)a72$(ENDIAN_EXT)
-  LIBEXT = a$(FORMAT_EXT)a72$(ENDIAN_EXT)
-  EXEEXT = x$(FORMAT_EXT)a72$(ENDIAN_EXT)
-  ASMEXT = s$(FORMAT_EXT)a72$(ENDIAN_EXT)
 endif
 
 ifeq ($(ISA),m3)

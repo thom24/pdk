@@ -63,13 +63,6 @@ drvipc_j784s4_BAREMETAL_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu
 drvipc_j784s4_RTOS_CORELIST = $(drvipc_j784s4_CORELIST)
 drvipc_DISABLE_PARALLEL_MAKE = yes
 
-ifeq ($(BUILD_OS_TYPE), qnx)
-drvipc_j721e_CORELIST += qnx_mpu1_0
-drvipc_j7200_CORELIST += qnx_mpu1_0
-drvipc_j721s2_CORELIST += qnx_mpu1_0
-drvipc_j784s4_CORELIST += qnx_mpu1_0
-endif
-
 ############################
 # ipc examples
 # List of examples under ipc (+= is used at each example definition)
