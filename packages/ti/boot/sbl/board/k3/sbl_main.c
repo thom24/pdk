@@ -380,7 +380,7 @@ int main()
     volatile uint32_t *gtcRegister = (uint32_t *) CSL_GTC0_GTC_CFG1_BASE;
     *gtcRegister = *gtcRegister | CSL_GTC_CFG1_CNTCR_EN_MASK | CSL_GTC_CFG1_CNTCR_HDBG_MASK;
 
-#if defined(SOC_J721E) || (!defined(SBL_ENABLE_HLOS_BOOT) && defined(SOC_J7200)) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || (!defined(SBL_ENABLE_HLOS_BOOT) && defined(SOC_J7200)) || (!defined(SBL_ENABLE_HLOS_BOOT) && defined(SOC_J784S4))
     /* Configure external Ethernet PHY and pinmux */
     SBL_ConfigureEthernet();
 #endif
