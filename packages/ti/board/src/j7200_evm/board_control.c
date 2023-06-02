@@ -59,7 +59,7 @@ static Board_STATUS Board_setIoExpPinOutput(Board_IoExpCfg_t *cfg)
     Board_setI2cInitConfig(&i2cCfg);
 
     status = Board_i2cIoExpInit();
-    if(status == BOARD_SOK)
+    if(BOARD_SOK == status)
     {
         /* Setting the pin direction as output */
         status = Board_i2cIoExpSetPinDirection(cfg->slaveAddr,
@@ -96,14 +96,14 @@ static Board_STATUS Board_setCpsw5GMdioMux(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_5;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     status = Board_setIoExpPinOutput(&ioExpCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return status;
     }
@@ -133,11 +133,11 @@ static Board_STATUS Board_setSomMux(uint8_t mask,
 
     i2cCfg.i2cInst    = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     status = Board_i2cIoExpInit();
-    if(status == BOARD_SOK)
+    if(BOARD_SOK == status)
     {
         /* Setting the port direction as output */
         status = Board_i2cIoExpSetPortDirection(BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR,
@@ -265,7 +265,7 @@ static Board_STATUS Board_linConfig(i2cIoExpSignalLevel_t pinLevel)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_6;

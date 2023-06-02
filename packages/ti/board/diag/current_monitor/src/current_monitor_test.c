@@ -289,7 +289,7 @@ static int8_t BoardDiag_read_register(I2C_Handle handle,
     transaction.readCount    = 0;
 
     ret = I2C_transfer(handle, &transaction);
-    if(ret != I2C_STS_SUCCESS)
+    if(I2C_STS_SUCCESS != ret)
     {
         ret = -1;
         return ret;
@@ -303,7 +303,7 @@ static int8_t BoardDiag_read_register(I2C_Handle handle,
     transaction.readCount    = 2;
 
     ret = I2C_transfer(handle, &transaction);
-    if(ret != I2C_STS_SUCCESS)
+    if(I2C_STS_SUCCESS != ret)
     {
         ret = -1;
         return ret;
@@ -360,7 +360,7 @@ static int8_t BoardDiag_write_register(I2C_Handle handle,
     BOARD_delay(1000);
 
     ret = I2C_transfer(handle, &transaction);
-    if(ret != I2C_STS_SUCCESS)
+    if(I2C_STS_SUCCESS != ret)
     {
         ret = -1;
     }
@@ -456,7 +456,7 @@ static int8_t BoardDiag_read_shunt_voltage(I2C_Handle handle,
                                   slaveAddr,
                                   SHUNT_VOLTAGE_REG_ADDR_OFFSET,
                                   &rdShuntRegVal);
-    if(ret != 0)
+    if(0 != ret)
     {
         return ret;
     }
@@ -495,7 +495,7 @@ static int8_t BoardDiag_read_bus_voltage(I2C_Handle handle,
                                   slaveAddr,
                                   BUS_VOLTAGE_REG_ADDR_OFFSET,
                                   &rdBusVolRegVal);
-    if(ret != 0)
+    if(0 != ret)
     {
         return ret;
     }
@@ -534,7 +534,7 @@ static int8_t BoardDiag_read_power(I2C_Handle handle,
                                   slaveAddr,
                                   POWER_REG_ADDR_OFFSET,
                                   &rdPowerRegVal);
-    if(ret != 0)
+    if(0 != ret)
     {
         return ret;
     }
@@ -573,7 +573,7 @@ static int8_t BoardDiag_read_current(I2C_Handle handle,
                                   slaveAddr,
                                   CURRENT_REG_ADDR_OFFSET,
                                   &rdCurrentRegVal);
-    if(ret != 0)
+    if(0 != ret)
     {
         return ret;
     }
@@ -599,14 +599,14 @@ static void BoardDiag_configI2CMux(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_1;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         UART_printf("Failed to enable the I2C mux selection\n");
     }
@@ -615,7 +615,7 @@ static void BoardDiag_configI2CMux(void)
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         UART_printf("Failed to enable the I2C mux selection\n");
     }
@@ -624,7 +624,7 @@ static void BoardDiag_configI2CMux(void)
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         UART_printf("Failed to enable the I2C mux selection\n");
     }
@@ -637,7 +637,7 @@ static void BoardDiag_configI2CMux(void)
 
     Board_STATUS status = BOARD_SOK;
     status = Board_control(BOARD_CTRL_CMD_SET_IO_MUX_PORTB2, NULL);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         UART_printf("Failed to enable the port2  mux selection\n");
     }
@@ -668,7 +668,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
     for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
     {
         I2C_socGetInitCfg(index, &i2cConfig);
-        i2cConfig.enableIntr = false;
+        i2cConfig.enableIntr = BFALSE;
         I2C_socSetInitCfg(index, &i2cConfig);
     }
 
@@ -683,7 +683,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
     /* Configures the I2C instance with the passed parameters*/
     handle = I2C_open(BOARD_I2C_CURRENT_MONITOR_INSTANCE,
                       &i2cParams);
-    if(handle == NULL)
+    if(NULL == handle)
     {
         UART_printf("\nI2C Open failed!\n");
         ret = -1;
@@ -693,7 +693,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
     for(index = 0; index < NUM_OF_INA_DEVICES; index++)
     {
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-        if (index == TOT_INA_IN_PM1)
+        if (TOT_INA_IN_PM1 == index)
         {
              /* Selecting PM2 I2C */
 		    GPIO_write(0U, SIGNAL_LEVEL_HIGH);
@@ -706,7 +706,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
         UART_printf("Setting the configuration register...\n\r");
         ret = BoardDiag_set_configuration(handle,
                                           inaDevice[index].slaveAddr);
-        if(ret != 0)
+        if(0 != ret)
         {
             UART_printf("Unable to set the configuration register\n\r");
             break;
@@ -718,7 +718,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
                                         inaDevice[index].inaCalParams.currentLsb,
                                         (uint8_t)inaDevice[index].inaCalParams.maxRShunt,
                                         inaDevice[index].inaCalParams.calibrartion);
-        if(ret != 0)
+        if(0 != ret)
         {
             UART_printf("Unable to set the calibration register\n\r");
             break;
@@ -729,7 +729,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
                                            inaDevice[index].slaveAddr,
                                            inaDevice[index].inaCalParams.shuntVolLsb,
                                            &rdData);
-        if(ret != 0)
+        if(0 != ret)
         {
             UART_printf("Failed to read the Shunt Voltage register\n\r");
             break;
@@ -744,7 +744,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
                                          inaDevice[index].slaveAddr,
                                          inaDevice[index].inaCalParams.busVolLsb,
                                          &rdData);
-        if(ret != 0)
+        if(0 != ret)
         {
             UART_printf("Failed to read the Bus Voltage register\n\r");
             break;
@@ -759,7 +759,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
                                    inaDevice[index].slaveAddr,
                                    inaDevice[index].inaCalParams.powerLsb,
                                    &rdData);
-        if(ret != 0)
+        if(0 != ret)
         {
             UART_printf("Failed to read the Power register\n\r");
             break;
@@ -774,7 +774,7 @@ static int8_t BoardDiag_run_current_monitor_test(void)
                                      inaDevice[index].slaveAddr,
                                      inaDevice[index].inaCalParams.currentLsb,
                                      &current);
-        if(ret != 0)
+        if(0 != ret)
         {
             UART_printf("Failed to read the Current register\n\r");
             break;
@@ -811,7 +811,7 @@ int8_t BoardDiag_currentMonitorFuctionalTest(void)
 
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 	
     /* I2C Mux select */
@@ -900,7 +900,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
     for(iteration = 1; iteration <= DIAG_STRESS_TEST_ITERATIONS; iteration++)
     {
         ret = BoardDiag_currentMonitorFuctionalTest();
-        if (ret == 0)
+        if (0 == ret)
         {
             UART_printf("\n\n\n\nIteration : %d Current Monitor Test Passed\n",iteration);
             passCount++;
@@ -913,7 +913,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
 
         /* Check if there a input from console to break the test */
         rdBuf = (char)BoardDiag_getUserInput(BOARD_UART_INSTANCE);
-        if((rdBuf == 'b') || (rdBuf == 'B'))
+        if(('b' == rdBuf) || ('B' == rdBuf))
         {
             UART_printf("Received Test Termination... Exiting the Test\n");
             iteration++;
@@ -927,7 +927,7 @@ int8_t BoardDiag_currentMonitorStressTest(void)
     UART_printf("Pass Count - %d\n", passCount);
     UART_printf("Fail Count - %d\n", failCount);
 
-    if((iteration != 0) && (failCount == 0))
+    if((0 != iteration) && (0 == failCount))
     {
         UART_printf("Overall Status - PASS\n\n\n" );
     }
@@ -965,7 +965,7 @@ int main(void)
 #endif
 
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
@@ -1002,7 +1002,7 @@ int main(void)
 #else
     ret = BoardDiag_currentMonitorFuctionalTest();
 #endif
-    if(ret == 0)
+    if(0 == ret)
     {
         UART_printf("\nCurrent Monitor Test Passed\n");
     }
@@ -1031,7 +1031,7 @@ int main(void)
     boardCfg = BOARD_INIT_UART_STDIO;
 #endif
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }

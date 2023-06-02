@@ -574,7 +574,7 @@ fpdRegCfgObj_t ub924RegDetails[] = {
  */
 static bool BoardDiag_setMainI2CInstBaseAddr(uint8_t instNum)
 {
-    bool errStatFlag = false;
+    bool errStatFlag = BFALSE;
     switch(instNum)
     {
         case 0:
@@ -600,7 +600,7 @@ static bool BoardDiag_setMainI2CInstBaseAddr(uint8_t instNum)
         break;
         default:
         UART_printf("The user requested instance doesn't available\n\r");
-        errStatFlag = true;
+        errStatFlag = BTRUE;
         break;
     }
     return errStatFlag;
@@ -1982,7 +1982,7 @@ static int8_t BoardDiag_run_fpd_dsi_test(void)
     for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
     {
         I2C_socGetInitCfg(index, &i2cConfig);
-        i2cConfig.enableIntr = false;
+        i2cConfig.enableIntr = BFALSE;
         I2C_socSetInitCfg(index, &i2cConfig);
     }
 
@@ -2002,7 +2002,7 @@ static int8_t BoardDiag_run_fpd_dsi_test(void)
          * Need update HW attrs to enable MAIN I2C instance.
          */
         errFlag = BoardDiag_setMainI2CInstBaseAddr(i2cInst);
-        if(errFlag == true)
+        if(errFlag == BTRUE)
         {
             return -1;            
         }
@@ -2214,7 +2214,7 @@ int8_t BoardDiag_fpd_dsi_test(void)
     /*setting power mux for dsi lcd*/
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE4_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();

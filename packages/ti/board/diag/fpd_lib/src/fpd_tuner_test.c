@@ -344,7 +344,7 @@ fpdRegCfgObj_t ub925RegDetails[] = {
  */
 static bool BoardDiag_setMainI2CInstBaseAddr(uint8_t instNum)
 {
-    bool errStatFlag = false;
+    bool errStatFlag = BFALSE;
     switch(instNum)
     {
         case 0:
@@ -370,7 +370,7 @@ static bool BoardDiag_setMainI2CInstBaseAddr(uint8_t instNum)
         break;
         default:
         UART_printf("The user requested instance doesn't available\n\r");
-        errStatFlag = true;
+        errStatFlag = BTRUE;
         break;
     }
     return errStatFlag;
@@ -385,7 +385,7 @@ int32_t BoardDiag_tunerPowerEnable(void)
 
     i2cCfg.i2cInst   = BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     ret = Board_i2cIoExpInit();
@@ -854,7 +854,7 @@ int32_t BoardDiag_fpdTuner_run_test()
     
     for (index = 0; I2C_config[index].fxnTablePtr != NULL; index++)
     {
-        ((I2C_HwAttrs *)I2C_config[index].hwAttrs)->enableIntr = false;
+        ((I2C_HwAttrs *)I2C_config[index].hwAttrs)->enableIntr = BFALSE;
     }
 
     /* Initializes the I2C */
@@ -874,7 +874,7 @@ int32_t BoardDiag_fpdTuner_run_test()
          * Need update HW attrs to enable MAIN I2C instance.
          */
         errFlag = BoardDiag_setMainI2CInstBaseAddr(i2cInst);
-        if(errFlag == true)
+        if(errFlag == BTRUE)
         {
             return -1;            
         }

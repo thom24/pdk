@@ -73,8 +73,8 @@ extern "C" {
 #define BOARD_ID_TYPE_MEM                     (0x2U)
 #define BOARD_ID_TYPE_ETH                     (0x3U)
 
-#define BOARD_ENABLE_ID_MEMORY_DUMP           (TRUE)
-#define BOARD_ID_MEMORY_DUMP_ERR_FALLBACK     (TRUE)
+#define BOARD_ENABLE_ID_MEMORY_DUMP           (BTRUE)
+#define BOARD_ID_MEMORY_DUMP_ERR_FALLBACK     (BTRUE)
 
 /**
  *  @brief This structure contains board specific information
@@ -190,7 +190,7 @@ Board_STATUS Board_setBoardIdDataAddr(uint8_t *boardIDRdAddr);
 /**
  * \brief Function to check the board info DDR dump status
  *
- * \return   TRUE if board ID dump is DDR is valid, else false
+ * \return   BTRUE if board ID dump is DDR is valid, else BFALSE
  *
  */
 bool Board_isBoardDDRIdDataValid(void);

@@ -63,10 +63,10 @@
 MCAN_TxBufElement  txMsg;
 MCAN_RxBufElement  rxMsg;
 
-volatile uint32_t gMcanIsrIntr0Flag = 1U;
-volatile uint32_t gMcanIsrIntr1Flag = 1U;
+volatile uint32_t gMcanIsrIntr0Flag = UTRUE;
+volatile uint32_t gMcanIsrIntr1Flag = UTRUE;
 
-uint32_t expBoardDetect = 0;
+uint32_t expBoardDetect = UFALSE;
 uint32_t mcanMaxPorts   = 0;
 uint32_t startPort      = 0;
 
@@ -214,7 +214,7 @@ static int32_t BoardDiag_mcanEdmaOpen(uint8_t devInstance)
         EDMA3CCInitParams 	initParam;
 
         EDMA3CCInitParams_init(&initParam);
-        initParam.initParamSet = TRUE;
+        initParam.initParamSet = UTRUE;
         if (EDMA_init(cfg.edmaCCId, &initParam) != EDMA_NO_ERROR)
         {
             printf("EDMA_init failed \n");
@@ -413,7 +413,7 @@ static int8_t BoardDiag_mcanConfig(uint8_t index)
 
     /* Enable Auto wakeup */
     fdoe = MCAN_isFDOpEnable(baseAddr);
-    if ((uint32_t)TRUE == fdoe)
+    if (UTRUE == fdoe)
     {
         UART_printf("CAN-FD operation is enabled through E-Fuse.\n");
     }
@@ -423,7 +423,7 @@ static int8_t BoardDiag_mcanConfig(uint8_t index)
     }
 
     /* wait for memory initialization to happen */
-    while (FALSE == MCAN_isMemInitDone(baseAddr))
+    while (UFALSE == MCAN_isMemInitDone(baseAddr))
     {}
 
     /* Get endianess value */
@@ -470,9 +470,9 @@ static int8_t BoardDiag_mcanConfig(uint8_t index)
 static void BoardDiag_mcanTxIntDisable(uint32_t baseAddr)
 {
     /* Disable Interrupts */
-    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, (uint32_t)FALSE);
+    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, UFALSE);
     MCAN_enableIntr(baseAddr,
-                    MCAN_INTR_SRC_RES_ADDR_ACCESS, (uint32_t)FALSE);
+                    MCAN_INTR_SRC_RES_ADDR_ACCESS, UFALSE);
     /* Select Interrupt Line */
     MCAN_selectIntrLine(baseAddr,
                         MCAN_INTR_MASK_ALL,
@@ -492,9 +492,9 @@ static void BoardDiag_mcanTxIntDisable(uint32_t baseAddr)
 static void BoardDiag_mcanRxIntDisable(uint32_t baseAddr)
 {
     /* Disable Interrupts */
-    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, (uint32_t)FALSE);
+    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, UFALSE);
     MCAN_enableIntr(baseAddr,
-                    MCAN_INTR_SRC_RES_ADDR_ACCESS, (uint32_t)FALSE);
+                    MCAN_INTR_SRC_RES_ADDR_ACCESS, UFALSE);
     /* Select Interrupt Line */
     MCAN_selectIntrLine(baseAddr,
                         MCAN_INTR_MASK_ALL,
@@ -513,9 +513,9 @@ static void BoardDiag_mcanRxIntDisable(uint32_t baseAddr)
 static void BoardDiag_mcanRxIntEnable(uint32_t baseAddr)
 {
     /* Enable Interrupts */
-    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, (uint32_t)TRUE);
+    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, UTRUE);
     MCAN_enableIntr(baseAddr,
-                    MCAN_INTR_SRC_RES_ADDR_ACCESS, (uint32_t)FALSE);
+                    MCAN_INTR_SRC_RES_ADDR_ACCESS, UFALSE);
     /* Select Interrupt Line */
     MCAN_selectIntrLine(baseAddr,
                         MCAN_INTR_MASK_ALL,
@@ -535,9 +535,9 @@ static void BoardDiag_mcanRxIntEnable(uint32_t baseAddr)
 static int32_t BoardDiag_mcanTxIntEnable(uint32_t baseAddr)
 {
     int32_t  status = 0;
-    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, (uint32_t)TRUE);
+    MCAN_enableIntr(baseAddr, MCAN_INTR_MASK_ALL, UTRUE);
     MCAN_enableIntr(baseAddr,
-                    MCAN_INTR_SRC_RES_ADDR_ACCESS, (uint32_t)FALSE);
+                    MCAN_INTR_SRC_RES_ADDR_ACCESS, UFALSE);
     /* Select Interrupt Line */
     MCAN_selectIntrLine(baseAddr,
                         MCAN_INTR_MASK_ALL,
@@ -549,7 +549,7 @@ static int32_t BoardDiag_mcanTxIntEnable(uint32_t baseAddr)
     /* Enable Transmission interrupt */
     status = MCAN_txBufTransIntrEnable(baseAddr,
                                        1U,
-                                       (uint32_t)TRUE);
+                                       UTRUE);
     return status;
 
 }
@@ -574,7 +574,7 @@ static void BoardDiag_mcanTxIntrISR(void *handle)
     if (MCAN_INTR_SRC_TRANS_COMPLETE ==
         (intrStatus & MCAN_INTR_SRC_TRANS_COMPLETE))
     {
-        gMcanIsrIntr0Flag = 0U;
+        gMcanIsrIntr0Flag = UFALSE;
     }
 
 }
@@ -599,7 +599,7 @@ static void BoardDiag_mcanRxIntrISR(void *handle)
     if (MCAN_INTR_SRC_DEDICATED_RX_BUFF_MSG ==
         (intrStatus & MCAN_INTR_SRC_DEDICATED_RX_BUFF_MSG))
     {
-        gMcanIsrIntr1Flag = 0U;
+        gMcanIsrIntr1Flag = UFALSE;
     }
 }
 
@@ -683,7 +683,7 @@ static void BoardDiag_mcanTsIntrISR(void *handle)
 
     intrInfo = (BoardDiag_McanPortInfo_t *)handle;
     baseAddrs = intrInfo -> mcanBaseAddr;
-    if(MCAN_extTSIsIntrEnable(baseAddrs) == (uint32_t)TRUE)
+    if(MCAN_extTSIsIntrEnable(baseAddrs) == UTRUE)
     {
         UART_printf("MCAN Time Stamp overflow happened.\n");
     }
@@ -842,7 +842,7 @@ static int8_t BoardDiag_mcanTxTest(uint8_t instance)
 #if defined(MCAN_DIAG_INTR_ENABLE)
     while (gMcanIsrIntr0Flag)
     {}
-    gMcanIsrIntr0Flag = 1U;
+    gMcanIsrIntr0Flag = UTRUE;
 #else   
     /* Waiting for Transmission Complete */
     while(((MCAN_getTxBufReqPend(baseAddr) >>
@@ -898,7 +898,7 @@ static int8_t BoardDiag_mcanRxTest(uint8_t index)
 #if defined(MCAN_DIAG_INTR_ENABLE)
     while (gMcanIsrIntr1Flag)
     {}
-    gMcanIsrIntr1Flag = 1U;
+    gMcanIsrIntr1Flag = UTRUE;
 #else
     /* Waiting for Transmission Complete */
     while(MCAN_INTR_SRC_DEDICATED_RX_BUFF_MSG !=
@@ -969,7 +969,7 @@ static void BoardDiag_mcanMainconfigs(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-    ioExpCfg.enableIntr  = false;    
+    ioExpCfg.enableIntr  = BFALSE;    
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_6;
@@ -984,7 +984,7 @@ static void BoardDiag_mcanMainconfigs(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-    ioExpCfg.enableIntr  = false;    
+    ioExpCfg.enableIntr  = BFALSE;    
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_7;
@@ -1006,7 +1006,7 @@ static void BoardDiag_mcanMainconfigs(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-    ioExpCfg.enableIntr  = false;    
+    ioExpCfg.enableIntr  = BFALSE;    
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_4;
@@ -1061,7 +1061,7 @@ void BoardDiag_McanMuxEnable(i2cIoExpPinNumber_t pinNum,
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = pinNum;
@@ -1097,7 +1097,7 @@ static void BoardDiag_mcanEnable(void)
 
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();
@@ -1158,7 +1158,7 @@ static void BoardDiag_mcanEnable(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_7;
@@ -1173,7 +1173,7 @@ static void BoardDiag_mcanEnable(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_4;
@@ -1188,7 +1188,7 @@ static void BoardDiag_mcanEnable(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_4;
@@ -1214,7 +1214,7 @@ static void BoardDiag_mcanEnable(void)
         ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
         ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
         ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-        ioExpCfg.enableIntr  = false;    
+        ioExpCfg.enableIntr  = BFALSE;    
         ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
         ioExpCfg.portNum     = PORTNUM_1;
         ioExpCfg.pinNum      = PIN_NUM_4;
@@ -1430,9 +1430,9 @@ int main(void)
     Board_initCfg boardCfg;
 
 #if defined(j721e_evm) || defined(j7200_evm)
-    if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
+    if(BTRUE == Board_detectBoard(BOARD_ID_GESI))
     {
-        expBoardDetect = 1;
+        expBoardDetect = UTRUE;
     }
 #endif
 

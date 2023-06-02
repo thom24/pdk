@@ -85,47 +85,47 @@ static void BoardDiag_mmuStartup(void)
     CSL_a53MmuDescAttrs attrs;
 
     /* Device memory attributes for 0x0 - 0x3FFFFFFF address space */
-    attrs.type = CSL_a53Mmu_DescType_BLOCK;
-    attrs.nsTable        = FALSE;
-    attrs.apTable        = 0u;
-    attrs.xnTable        = FALSE;
-    attrs.pxnTable       = FALSE;
-    attrs.noExecute      = TRUE;
-    attrs.privNoExecute  = FALSE;
-    attrs.contiguous     = FALSE;
-    attrs.notGlobal      = FALSE;
-    attrs.accessFlag     = TRUE;
+    attrs.type           = CSL_a53Mmu_DescType_BLOCK;
+    attrs.nsTable        = UFALSE;
+    attrs.apTable        = 0U;
+    attrs.xnTable        = UFALSE;
+    attrs.pxnTable       = UFALSE;
+    attrs.noExecute      = UTRUE;
+    attrs.privNoExecute  = UFALSE;
+    attrs.contiguous     = UFALSE;
+    attrs.notGlobal      = UFALSE;
+    attrs.accessFlag     = UTRUE;
     attrs.shareable      = 0x2; /* Outer shareable */
     attrs.accPerm        = 0x10; /* RW at EL1 only */
-    attrs.nonSecure      = TRUE;
-    attrs.attrIndx       = 0;
-    attrs.reserved       = 0u;
+    attrs.nonSecure      = UTRUE;
+    attrs.attrIndx       = 0U;
+    attrs.reserved       = 0U;
 
     desc = CSL_mmuInitLevel1Desc(0x0, &attrs);
     gCSLa53Mmulevel1TableDiag[0] = desc;
 
 
     /* Table pointer for 0x40000000 - 0x7FFFFFFF address space */
-    attrs.type = CSL_a53Mmu_DescType_TABLE;
-    attrs.nsTable = FALSE;
-    attrs.apTable = 0;
-    attrs.xnTable = FALSE;
-    attrs.pxnTable = FALSE;
+    attrs.type     = CSL_a53Mmu_DescType_TABLE;
+    attrs.nsTable  = UFALSE;
+    attrs.apTable  = 0U;
+    attrs.xnTable  = UFALSE;
+    attrs.pxnTable = UFALSE;
 
     desc = CSL_mmuInitLevel1Desc((uint64_t)&gCSLa53Mmulevel2TableDiag[0], &attrs);
     gCSLa53Mmulevel1TableDiag[1] = desc;
 
     /* Normal memory attributes for 0x80000000 - 0xFFFFFFFF address space */
-    attrs.type = CSL_a53Mmu_DescType_BLOCK;
-    attrs.noExecute = TRUE;
-    attrs.privNoExecute = FALSE;
-    attrs.contiguous = FALSE;
-    attrs.notGlobal = FALSE;
-    attrs.accessFlag = TRUE;
-    attrs.shareable = 0x2; /* Outer shareable */
-    attrs.accPerm = 0x10; /* RW at EL1 only */
-    attrs.nonSecure = TRUE;
-    attrs.attrIndx = 1;
+    attrs.type          = CSL_a53Mmu_DescType_BLOCK;
+    attrs.noExecute     = UTRUE;
+    attrs.privNoExecute = UFALSE;
+    attrs.contiguous    = UFALSE;
+    attrs.notGlobal     = UFALSE;
+    attrs.accessFlag    = UTRUE;
+    attrs.shareable     = 0x2; /* Outer shareable */
+    attrs.accPerm       = 0x10; /* RW at EL1 only */
+    attrs.nonSecure     = UTRUE;
+    attrs.attrIndx      = 1U;
 
     desc = CSL_mmuInitLevel1Desc(0x80000000, &attrs);
     gCSLa53Mmulevel1TableDiag[2] = desc;
@@ -133,16 +133,16 @@ static void BoardDiag_mmuStartup(void)
     gCSLa53Mmulevel1TableDiag[3] = desc;
 
     /* Device memory attributes for 0x40000000 - 0x6FFFFFFF address space */
-    attrs.type = CSL_a53Mmu_DescType_BLOCK;
-    attrs.noExecute = TRUE;
-    attrs.privNoExecute = FALSE;
-    attrs.contiguous = FALSE;
-    attrs.notGlobal = FALSE;
-    attrs.accessFlag = TRUE;
-    attrs.shareable = 0x2; /* Outer shareable */
-    attrs.accPerm = 0x10; /* RW at EL1 only */
-    attrs.nonSecure = TRUE;
-    attrs.attrIndx = 0;
+    attrs.type          = CSL_a53Mmu_DescType_BLOCK;
+    attrs.noExecute     = UTRUE;
+    attrs.privNoExecute = UFALSE;
+    attrs.contiguous    = UFALSE;
+    attrs.notGlobal     = UFALSE;
+    attrs.accessFlag    = UTRUE;
+    attrs.shareable     = 0x2; /* Outer shareable */
+    attrs.accPerm       = 0x10; /* RW at EL1 only */
+    attrs.nonSecure     = UTRUE;
+    attrs.attrIndx      = 0U;
 
     /* 1GB for FSS0 OSPI0 */
     desc = CSL_mmuInitLevel1Desc(0x400000000, &attrs);
@@ -223,16 +223,16 @@ static void BoardDiag_mmuStartup(void)
     }
 
     /* Normal memory attributes for 0x70000000 - 0x7FFFFFFF address space */
-    attrs.type = CSL_a53Mmu_DescType_BLOCK;
-    attrs.noExecute = TRUE;
-    attrs.privNoExecute = FALSE;
-    attrs.contiguous = FALSE;
-    attrs.notGlobal = FALSE;
-    attrs.accessFlag = TRUE;
-    attrs.shareable = 0x2; /* Outer shareable */
-    attrs.accPerm = 0x10; /* RW at EL1 only */
-    attrs.nonSecure = TRUE;
-    attrs.attrIndx = 1;
+    attrs.type          = CSL_a53Mmu_DescType_BLOCK;
+    attrs.noExecute     = UTRUE;
+    attrs.privNoExecute = UFALSE;
+    attrs.contiguous    = UFALSE;
+    attrs.notGlobal     = UFALSE;
+    attrs.accessFlag    = UTRUE;
+    attrs.shareable     = 0x2; /* Outer shareable */
+    attrs.accPerm       = 0x10; /* RW at EL1 only */
+    attrs.nonSecure     = UTRUE;
+    attrs.attrIndx      = 1U;
 
     for (; addr < 0x80000000; idx++, addr+=0x200000) {
       desc = CSL_mmuInitLevel2Desc(addr, &attrs);
@@ -266,7 +266,7 @@ int32_t start_boot_diag(void)
     bs = & __bss_start__;
     be = & __bss_end__;
     while (bs < be) {
-        *bs = 0;
+        *bs = 0U;
         bs++;
     }
 
@@ -274,7 +274,7 @@ int32_t start_boot_diag(void)
     bs = & __bss_common_start__;
     be = & __bss_common_end__;
     while (bs < be) {
-        *bs = 0;
+        *bs = 0U;
         bs++;
     }
 
@@ -333,7 +333,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 1U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)FALSE,
+        .cacheable        = UFALSE,
         .cachePolicy      = 0U,
         .memAttr          = 0U,
     },
@@ -347,7 +347,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
         .memAttr          = 0U,
     },
@@ -361,7 +361,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 1U,
-        .cacheable        = (uint32_t)FALSE,
+        .cacheable        = UFALSE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
         .memAttr          = 4U,
     },
@@ -375,7 +375,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 1U,
-        .cacheable        = (uint32_t)FALSE,
+        .cacheable        = UFALSE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
         .memAttr          = 4U,
     },
@@ -389,7 +389,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 1U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
         .memAttr          = 0U,
     },
@@ -411,7 +411,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
         .memAttr          = 0U,
     },
@@ -425,7 +425,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
         .memAttr          = 0U,
     },
@@ -439,7 +439,7 @@ const CSL_ArmR5MpuRegionCfg  gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
         .memAttr          = 0U,
     },
@@ -538,14 +538,14 @@ Board_STATUS DIAG_init(void)
 bool BoardDiag_memCompare(uint8_t *buf1, uint8_t *buf2, uint32_t length,  
                           uint32_t *failIndex)
 {
-    uint32_t idx = 0;
-    bool match   = 1;
+    uint32_t idx = 0U;
+    bool match   = BTRUE;
     
-    for(idx = 0; ((idx < length) && (match == 1)); idx++)
+    for(idx = 0; ((idx < length) && (UTRUE == match)); idx++)
     {
         if(buf1[idx] != buf2[idx])
         {
-            match      = 0;
+            match      = BFALSE;
             *failIndex = idx;
         }            
     }
@@ -580,10 +580,10 @@ bool BoardDiag_memCompare(uint8_t *buf1, uint8_t *buf2, uint32_t length,
  */
 void BoardDiag_genPattern(uint8_t *buf, uint32_t length, uint8_t flag)
 {
-    uint8_t data         = 0;
-    uint8_t incFlag      = 0;
-    uint8_t randFlag     = 0;
-    uint8_t checkerBoard = 0;
+    uint8_t data         = 0U;
+    uint8_t incFlag      = 0U;
+    uint8_t randFlag     = 0U;
+    uint8_t checkerBoard = 0U;
     uint32_t idx;
 
     switch(flag)
@@ -595,15 +595,15 @@ void BoardDiag_genPattern(uint8_t *buf, uint32_t length, uint8_t flag)
              data = flag;
              break;
         case BOARD_DIAG_TEST_PATTERN_INC:
-             data    = 0;
-             incFlag = 1;
+             data    = 0U;
+             incFlag = 1U;
              break;
         case BOARD_DIAG_TEST_PATTERN_RANDOM:
              data     = rand();
-             randFlag = 1;
+             randFlag = 1U;
         case BOARD_DIAG_TEST_PATTERN_AA_55:
              data         = 0xAA;
-             checkerBoard = 1;
+             checkerBoard = 1U;
              break;
         default:
              data = flag;
@@ -658,7 +658,7 @@ void enableMAINI2C(uint8_t instance, uint32_t baseAddr)
     I2C_socGetInitCfg(instance, &i2cCfg);
 
     i2cCfg.baseAddr = baseAddr;
-    i2cCfg.enableIntr = 0;
+    i2cCfg.enableIntr = BFALSE;
 
     I2C_socSetInitCfg(instance, &i2cCfg);
 }
@@ -675,7 +675,7 @@ void enableI2C(uint32_t baseAddr)
     I2C_socGetInitCfg(0, &i2cCfg);
 
     i2cCfg.baseAddr = baseAddr;
-    i2cCfg.enableIntr = 0;
+    i2cCfg.enableIntr = BFALSE;
 
     I2C_socSetInitCfg(0, &i2cCfg);
 }

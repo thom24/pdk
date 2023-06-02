@@ -88,7 +88,7 @@ static int8_t BoardDiag_hpbHyperFlashStressTest(void)
                             flashInfo->device_id, flashInfo->manufacturer_id);
     }
 
-    flashInfo->blkErase_flag = false;
+    flashInfo->blkErase_flag = BFALSE;
     UART_printf("Erasing the complete chip... This will take few seconds\n\n");
     /* Erasing the complete chip */
     retVal = Board_flashEraseBlk(boardHandle, BOARD_DIAG_HPB_CHIP_ERASE);
@@ -205,7 +205,7 @@ static int8_t BoardDiag_hpbReadWriteTest(Board_flashHandle handle,
     }
 
     if (BoardDiag_memCompare(&txBuf[0], &rxBuf[0], numOfBytes, &failIndex)
-                                                                    == false)
+                                                                    == BFALSE)
     {
         UART_printf("\nData mismatch at offset = 0x%x\n", failIndex);
         return -1;

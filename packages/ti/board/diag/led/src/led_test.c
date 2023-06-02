@@ -179,7 +179,7 @@ static int8_t led_run_test(void)
 #elif (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();

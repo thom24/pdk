@@ -157,7 +157,7 @@ static TEST_STATUS clock_generator_detect_test(int32_t clkIndex)
 	
 	for (index=0; I2C_config[index].fxnTablePtr != NULL; index++)
 	{
-		((I2C_HwAttrs *)I2C_config[index].hwAttrs)->enableIntr = false;
+		((I2C_HwAttrs *)I2C_config[index].hwAttrs)->enableIntr = BFALSE;
 	}
 
 	I2C_init();
@@ -276,7 +276,7 @@ static TEST_STATUS run_clock_generator_test(void)
     /* Bring CDCI6214_SERDES reset out */
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();
@@ -305,7 +305,7 @@ static TEST_STATUS run_clock_generator_test(void)
             /* Reset */
             i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
             i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-            i2cCfg.enableIntr = false;
+            i2cCfg.enableIntr = BFALSE;
             Board_setI2cInitConfig(&i2cCfg);
             /* CDCI6214_SERDES in reset */
             Board_i2cIoExpInit();

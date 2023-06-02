@@ -635,7 +635,7 @@ Board_STATUS Board_fpdUb960WriteReg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != 0)
+    if(ret != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -794,7 +794,7 @@ Board_STATUS Board_fpdUb960DesInit(void *handle,
                                  (uint8_t *)(&Board_FpdUb960CfgObj[index].regData),
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -809,7 +809,7 @@ Board_STATUS Board_fpdUb960DesInit(void *handle,
                                  &rdData,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -848,7 +848,7 @@ Board_STATUS Board_fpdUb960DesInitFusionBoardTIDA1130(void *handle,
                                  (uint8_t *)(&Board_FpdUb960CfgObjOv2775[index].regData),
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -863,7 +863,7 @@ Board_STATUS Board_fpdUb960DesInitFusionBoardTIDA1130(void *handle,
                                  &rdData,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -916,7 +916,7 @@ Board_STATUS Board_fpdUb960Cfg(void *handle,
                                      (uint8_t *)(&ub960Cfg[index].regData),
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-            if(ret != 0)
+            if(ret != BOARD_SOK)
             {
                 ret = BOARD_I2C_TRANSFER_FAIL;
                 break;
@@ -932,7 +932,7 @@ Board_STATUS Board_fpdUb960Cfg(void *handle,
                                      &rdData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-            if(ret != 0)
+            if(ret != BOARD_SOK)
             {
                 ret = return BOARD_I2C_TRANSFER_FAIL;
                 break;

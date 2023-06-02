@@ -75,7 +75,7 @@ typedef struct pmic_data
 }pmic_data_t;
 
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
+Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, BFALSE};
 #endif
 int32_t numPmic = 1;
 pmic_data_t *gDualPmicData;
@@ -521,9 +521,9 @@ void *Board_PmicInit(uint8_t devInstance)
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     enableI2C(CSL_WKUP_I2C0_CFG_BASE);
 #endif
-    for (i=0; I2C_config[i].fxnTablePtr != NULL; i++)
+    for (i = 0; I2C_config[i].fxnTablePtr != NULL; i++)
     {
-        ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = false;
+        ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = BFALSE;
     }
 
     I2C_init();

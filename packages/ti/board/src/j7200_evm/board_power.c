@@ -64,22 +64,22 @@ static void Board_sdVoltageCtrlGpioCfg(uint8_t gpioValue)
     uint32_t regVal;
 
     /* Setting the GPIO direction to output */
-    regVal = HW_RD_REG32(CSL_GPIO0_BASE + 0x38);
-    regVal &= ~(0x01 << (BOARD_SDIO_1V8_EN_PIN_NUM % 32));
+    regVal = HW_RD_REG32(CSL_GPIO0_BASE + 0x38U);
+    regVal &= ~(0x01U << (BOARD_SDIO_1V8_EN_PIN_NUM % 32U));
     HW_WR_REG32((CSL_GPIO0_BASE + 0x38), regVal);
 
     /* Setting the GPIO value */
-    regVal = HW_RD_REG32(CSL_GPIO0_BASE + 0x40);
+    regVal = HW_RD_REG32(CSL_GPIO0_BASE + 0x40U);
 
-    if(gpioValue == 0)
+    if(0U == gpioValue)
     {
-        regVal &= ~(0x01 << (BOARD_SDIO_1V8_EN_PIN_NUM % 32));
-        HW_WR_REG32((CSL_GPIO0_BASE + 0x40), regVal);
+        regVal &= ~(0x01U << (BOARD_SDIO_1V8_EN_PIN_NUM % 32U));
+        HW_WR_REG32((CSL_GPIO0_BASE + 0x40U), regVal);
     }
     else
     {
-        regVal |= (gpioValue << (BOARD_SDIO_1V8_EN_PIN_NUM % 32));
-        HW_WR_REG32((CSL_GPIO0_BASE + 0x40), regVal);
+        regVal |= (gpioValue << (BOARD_SDIO_1V8_EN_PIN_NUM % 32U));
+        HW_WR_REG32((CSL_GPIO0_BASE + 0x40U), regVal);
     }
 }
 
@@ -109,12 +109,12 @@ Board_STATUS Board_pmSdVoltageCtrl(uint8_t vsel)
 Board_STATUS Board_pmPowerOff(uint32_t slaveAddr)
 {
     I2C_Handle handle = NULL;
-    Board_STATUS retVal = -1;
+    Board_STATUS retVal = BOARD_INVALID_PARAM;
     uint8_t regData;
 
     handle = Board_getI2CHandle(BOARD_SOC_DOMAIN_WKUP,
                                 BOARD_I2C_PMIC_INSTANCE);
-    if(handle == NULL)
+    if(NULL == handle)
     {
         return (retVal);
     }
@@ -127,7 +127,7 @@ Board_STATUS Board_pmPowerOff(uint32_t slaveAddr)
                                 &regData,
                                 1U,
                                 I2C_WAIT_FOREVER);
-    if(retVal != 0)
+    if(BOARD_SOK != retVal)
     {
         return (retVal);
     }
@@ -144,7 +144,7 @@ Board_STATUS Board_pmPowerOff(uint32_t slaveAddr)
                                 &regData,
                                 1U,
                                 I2C_WAIT_FOREVER);
-    if(retVal != 0)
+    if(BOARD_SOK != retVal)
     {
         return (retVal);
     }
@@ -160,7 +160,7 @@ Board_STATUS Board_pmPowerOff(uint32_t slaveAddr)
                                 &regData,
                                 1U,
                                 I2C_WAIT_FOREVER);
-    if(retVal != 0)
+    if(BOARD_SOK != retVal)
     {
         return (retVal);
     }
@@ -174,7 +174,7 @@ Board_STATUS Board_pmPowerOff(uint32_t slaveAddr)
                                 &regData,
                                 1U,
                                 I2C_WAIT_FOREVER);
-    if(retVal != 0)
+    if(BOARD_SOK != retVal)
     {
         return (retVal);
     }
@@ -188,7 +188,7 @@ Board_STATUS Board_pmPowerOff(uint32_t slaveAddr)
                                 &regData,
                                 1U,
                                 I2C_WAIT_FOREVER);
-    if(retVal != 0)
+    if(BOARD_SOK != retVal)
     {
         return (retVal);
     }

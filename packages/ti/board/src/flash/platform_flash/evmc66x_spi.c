@@ -193,8 +193,8 @@ spi_release
  * 				uint32_t nbytes   - Number of bytes of the TX data
  *              uint8_t* data_out - Pointer to the TX data
  *              uint8_t* data_in  - Pointer to the RX data
- *              Bool terminate  - TRUE: terminate the transfer, release the CS
- *                                FALSE: hold the CS
+ *              Bool terminate  - UTRUE: terminate the transfer, release the CS
+ *                                UFALSE: hold the CS
  *
  * Return Value: error status
  *
@@ -283,12 +283,12 @@ spi_cmd
 
 )
 {
-    Bool        flags = FALSE;
+    Bool        flags = UFALSE;
     uint32_t      ret;
 
-    if (len == 0)
+    if (0U == len)
     {
-        flags = TRUE;
+        flags = UTRUE;
     }
 
     /* Send the command byte */
@@ -302,7 +302,7 @@ spi_cmd
     /* Receive the response */
     if (len)
     {
-        ret = spi_xfer(spiportnumber,len, NULL, response, TRUE);
+        ret = spi_xfer(spiportnumber,len, NULL, response, UTRUE);
         if (ret)
         {
         	IFPRINT (platform_write("SF: Failed to read response (%zu bytes): %d\n",  len, ret));
@@ -338,12 +338,12 @@ spi_cmd_read
 
 )
 {
-    Bool        flags = FALSE;
+    Bool        flags = UFALSE;
     uint32_t      ret;
 
-    if (data_len == 0)
+    if (0U == data_len)
     {
-        flags = TRUE;
+        flags = UTRUE;
     }
 
     /* Send read command */
@@ -356,7 +356,7 @@ spi_cmd_read
     else if (data_len != 0)
     {
         /* Read data */
-        ret = spi_xfer(spiportnumber,data_len, NULL, data, TRUE);
+        ret = spi_xfer(spiportnumber,data_len, NULL, data, UTRUE);
         if (ret)
         {
         	IFPRINT (platform_write("SF: Failed to read %zu bytes of data: %d\n",
@@ -393,12 +393,12 @@ spi_cmd_write
 
 )
 {
-    Bool           flags = FALSE;
+    Bool           flags = UFALSE;
     uint32_t         ret;
 
-    if (data_len == 0)
+    if (0U == data_len)
     {
-        flags = TRUE;
+        flags = UTRUE;
     }
 
     /* Send write command */
@@ -408,10 +408,10 @@ spi_cmd_write
     	IFPRINT (platform_write("SF: Failed to send write command (%zu bytes): %d\n",
             cmd_len, ret));
     }
-    else if (data_len != 0)
+    else if (0U != data_len)
     {
         /* Write data */
-        ret = spi_xfer(spiportnumber,data_len, data, NULL, TRUE);
+        ret = spi_xfer(spiportnumber,data_len, data, NULL, UTRUE);
         if (ret)
         {
         	IFPRINT (platform_write("SF: Failed to write %zu bytes of data: %d\n",

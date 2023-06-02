@@ -66,7 +66,7 @@ static int8_t BoardDiag_dpDeInitDss(BoardDiag_DpDisplayObj *displayObj)
                         IOCTL_DSS_DCTRL_STOP_VP,
                         &displayObj->vpParams,
                         NULL);
-    if(ret != FVID2_SOK)
+    if(FVID2_SOK != ret)
     {
         return -1;
     }
@@ -74,19 +74,19 @@ static int8_t BoardDiag_dpDeInitDss(BoardDiag_DpDisplayObj *displayObj)
     /* Delete DCTRL handle */
     ret = Fvid2_delete(displayObj->dctrlHandle,
                        NULL);
-    if(ret != FVID2_SOK)
+    if(FVID2_SOK != ret)
     {
         return -1;
     }
 
     ret = Dss_deInit();
-    if(ret != FVID2_SOK)
+    if(FVID2_SOK != ret)
     {
         return -1;
     }
 
     ret = Fvid2_deInit(NULL);
-    if(ret != FVID2_SOK)
+    if(FVID2_SOK != ret)
     {
         return -1;
     }
@@ -148,7 +148,7 @@ static int8_t BoardDiag_dpEnableColorBar(BoardDiag_DpDisplayObj *displayObj)
                         IOCTL_DSS_DCTRL_SET_PATH,
                         pathInfo,
                         NULL);
-    if(ret != FVID2_SOK)
+    if(FVID2_SOK != ret)
     {
         UART_printf("Setting Display path failed\n");
         return -1;
@@ -158,7 +158,7 @@ static int8_t BoardDiag_dpEnableColorBar(BoardDiag_DpDisplayObj *displayObj)
                         IOCTL_DSS_DCTRL_SET_VP_PARAMS,
                         vpParams,
                         NULL);
-    if(ret != FVID2_SOK)
+    if(FVID2_SOK != ret)
     {
         UART_printf("Setting VP param failed\n");
         return -1;
@@ -175,13 +175,13 @@ static int8_t BoardDiag_dpEnableColorBar(BoardDiag_DpDisplayObj *displayObj)
     }
 
     overlayParams->overlayId = BOARD_DIAG_DP_OVERLAY_ID;
-    overlayParams->colorbarEnable = TRUE;
+    overlayParams->colorbarEnable = UTRUE;
 
     ret = Fvid2_control(displayObj->dctrlHandle,
                         IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS,
                         overlayParams,
                         NULL);
-    if(ret != FVID2_SOK)
+    if(FVID2_SOK != ret)
     {
         UART_printf("Setting overlay params failed\n");
         return -1;
@@ -229,7 +229,7 @@ static int8_t BoardDiag_dpSetDispConfig(BoardDiag_DpDisplayObj *dispObj)
     advVpParams->lcdAdvSignalCfg.hVClkRiseFall = FVID2_EDGE_POL_RISING;
 
     ret = BoardDiag_dpEnableColorBar(dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
@@ -255,17 +255,17 @@ static int8_t BoardDiag_dpInitDss(BoardDiag_DpDisplayObj *displayObj)
     Fvid2InitPrms_init(&initPrms);
 
     retVal = Fvid2_init(&initPrms);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Initializing Fvid2 Failed\n");
         return -1;
     }
 
     Dss_initParamsInit(&displayObj->initParams);
-    displayObj->initParams.socParams.dpInitParams.isHpdSupported = FALSE;
+    displayObj->initParams.socParams.dpInitParams.isHpdSupported = UFALSE;
 
     retVal = Dss_init(&displayObj->initParams);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("DSS init failed!\n");
         return -1;
@@ -277,7 +277,7 @@ static int8_t BoardDiag_dpInitDss(BoardDiag_DpDisplayObj *displayObj)
                                            NULL,
                                            NULL,
                                            NULL);
-    if(displayObj->dctrlHandle == NULL)
+    if(NULL == displayObj->dctrlHandle)
     {
         UART_printf("Display Handle Create Failed\n");
         return -1;
@@ -306,7 +306,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                         TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                         TISCI_MSG_FLAG_AOP,
                                         SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -315,7 +315,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                         TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                         TISCI_MSG_FLAG_AOP,
                                         SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -324,7 +324,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                         TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                         TISCI_MSG_FLAG_AOP,
                                         SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -333,7 +333,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_18_HSDIVOUT0_CLK,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -342,7 +342,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK,
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK_PARENT_DPI1_EXT_CLKSEL_OUT0,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -351,7 +351,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -361,7 +361,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                           BOARD_DIAG_DP_DISPLAY_CLOCK,
                                           ADDITIONAL_CLK_STATE_FLAG,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -371,7 +371,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                           TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
                                           0,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status != PM_SUCCESS)
+    if(PM_SUCCESS != status)
     {
         return -1;
     }
@@ -405,7 +405,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
             TISCI_MSG_FLAG_AOP,
             SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    if(status == PM_SUCCESS)
+    if(PM_SUCCESS == status)
     {
         UART_printf("\n TISCI_DEV_DSS0 device shutdown successful !\r\n");
     }
@@ -421,7 +421,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                         &respClkRate,
                                         SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    if(status == PM_SUCCESS)
+    if(PM_SUCCESS == status)
     {
         UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK possible rate = %lld Hz\r\n", respClkRate);
     }
@@ -430,7 +430,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
         UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK requested rate range NOT possible !!\r\n");
     }
 
-    if(status == PM_SUCCESS)
+    if(PM_SUCCESS == status)
     {
         /* Check if the clock is enabled or not. */
         status = Sciclient_pmModuleGetClkStatus(TISCI_DEV_DSS0,
@@ -439,7 +439,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
     }
 
-    if ((status == PM_SUCCESS) && (respClkRate >= BOARD_DIAG_DP_DISPLAY_CLOCK))
+    if ((PM_SUCCESS == status) && (BOARD_DIAG_DP_DISPLAY_CLOCK <= respClkRate))
     {
         /* Set the pixel clock. */
         status = Sciclient_pmSetModuleClkFreq(
@@ -448,9 +448,9 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                   respClkRate,
                                   TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                                   SCICLIENT_SERVICE_WAIT_FOREVER);
-        if (status == PM_SUCCESS)
+        if (PM_SUCCESS == status)
         {
-            if (clockStatus == TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ)
+            if (TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ == clockStatus)
             {
                 /* Enable the required clock. */
                 status = Sciclient_pmModuleClkRequest(
@@ -501,7 +501,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                         TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF,
                                         TISCI_MSG_FLAG_AOP,
                                         SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status == PM_SUCCESS)
+    if(PM_SUCCESS == status)
     {
         UART_printf("\n TISCI_DEV_DSS0 device shutdown successful !\r\n");
     }
@@ -516,7 +516,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                             BOARD_DIAG_DP_DISPLAY_CLOCK,
                                             &respClkRate,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if(status == PM_SUCCESS)
+    if(PM_SUCCESS == status)
     {
         UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK possible rate = %lld Hz\r\n", respClkRate);
     }
@@ -525,7 +525,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
         UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK requested rate range NOT possible !!\r\n");
     }
 
-    if(status == PM_SUCCESS)
+    if(PM_SUCCESS == status)
     {
         /* Check if the clock is enabled or not. */
         status = Sciclient_pmModuleGetClkStatus(TISCI_DEV_DSS0,
@@ -534,7 +534,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
     }
 
-    if ((status == PM_SUCCESS) && (respClkRate >= BOARD_DIAG_DP_DISPLAY_CLOCK))
+    if ((PM_SUCCESS == status) && (BOARD_DIAG_DP_DISPLAY_CLOCK <= respClkRate))
     {
         /* Set the pixel clock. */
         status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_DSS0,
@@ -542,9 +542,9 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                                               respClkRate,
                                               TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
-        if (status == PM_SUCCESS)
+        if (PM_SUCCESS == status)
         {
-            if (clockStatus == TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ)
+            if (TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ == clockStatus)
             {
                 /* Enable the required clock. */
                 status = Sciclient_pmModuleClkRequest(TISCI_DEV_DSS0,
@@ -558,7 +558,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
 
     if(PM_SUCCESS == status)
     {
-        uint64_t clkFreq = 0;
+        uint64_t clkFreq = 0U;
         status = Sciclient_pmSetModuleClkParent(TISCI_DEV_DSS0,
                                                 TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
                                                 TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK,
@@ -569,7 +569,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
                         &clkFreq);
         UART_printf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_16_HSDIVOUT0_CLK Expected %lld and getting %lld Hz\r\n", BOARD_DIAG_DP_DISPLAY_CLOCK, clkFreq);
 
-        clkFreq = 0;
+        clkFreq = 0U;
         PMLIBClkRateGet(TISCI_DEV_DSS0,
                         TISCI_DEV_DSS0_DSS_INST0_DPI_0_IN_2X_CLK,
                         &clkFreq);
@@ -588,7 +588,7 @@ static int8_t BoardDiag_dpConfigDpClk(void)
     }
 #endif
 
-    if(status == PM_SUCCESS)
+    if(PM_SUCCESS ==status)
     {
         retVal = 0;
     }
@@ -621,21 +621,21 @@ int8_t BoardDiag_DpRunTest(void)
     UART_printf("\nRunning DisplayPort Test...\n");
 
     ret = BoardDiag_dpConfigDpClk();
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("Configuring DP clock failed!\n");
         return -1;
     }
 
     ret = BoardDiag_dpInitDss(&dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("\nDisplayPort test failed");
         return -1;
     }
 
     ret = BoardDiag_dpSetDispConfig(&dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("\nDisplayPort test failed");
         return -1;
@@ -646,7 +646,7 @@ int8_t BoardDiag_DpRunTest(void)
     UART_scanFmt("%c", &userInput);
 
     ret = BoardDiag_dpDeInitDss(&dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("Failed in DSS de-initializes\n");
         UART_printf("\nDisplayPort test failed");
@@ -686,7 +686,7 @@ int main(void)
 
     /* Board Library Init. */
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }

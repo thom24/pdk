@@ -249,7 +249,7 @@ typedef struct
     uint32_t  sector_size;
     /**<Number of bytes in a sector */
     bool blkErase_flag;
-    /**<Flag to be set false for Sector Erase and true for Block Erase */
+    /**<Flag to be set BFALSE for Sector Erase and BTRUE for Block Erase */
 } Board_FlashInfo;
 
 /**

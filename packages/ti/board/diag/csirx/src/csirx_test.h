@@ -87,10 +87,10 @@ extern "C" {
 
 /**< Maximum number of error frame logs to store.
      It stores most recent errors.*/
-#define BOARD_DIAG_CSIRX_ERR_FRAME_LOG_MAX                                  ((uint32_t)500U)
+#define BOARD_DIAG_CSIRX_ERR_FRAME_LOG_MAX                ((uint32_t)500U)
 
 /**< CSIRX sensor slave address */
-#define BOARD_DIAG_CSIRX_SENSOR_SLAVE_ADDR                      (0x3DU)
+#define BOARD_DIAG_CSIRX_SENSOR_SLAVE_ADDR                (0x3DU)
 
 /**
  *  \brief Capture application object.

@@ -59,7 +59,7 @@ static int32_t BoardDiag_csirxDispCbFxn(Fvid2_Handle handle, void *dispData)
     (void) SemaphoreP_post(gLockSem_dss);
     (void) SemaphoreP_post(gLockSem);
     
-    return 0;
+    return FVID2_SOK;
 }
 
 /**
@@ -75,7 +75,7 @@ int8_t BoardDiag_csirxDispDeInit(void)
 
     /* Delete DCTRL handle */
     retVal = Dss_deInit();
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         // UART_printf("Display De-init Failed\n");
         // return -1;
@@ -130,7 +130,7 @@ static int8_t BoardDiag_csirxDispAllocQFrames(const BoardDiag_CsirxDispObj *disp
          * else frame will get dropped until frames are queued
          */
         retVal = Fvid2_queue(instObj->drvHandle, &frmList, 0U);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("Display Queue Failed\n");
             return -1;
@@ -245,7 +245,7 @@ static int8_t BoardDiag_csirxDispConfig(BoardDiag_CsirxDispObj *dispObj)
     pathInfo->edgeInfo[pathInfo->numEdges].endNode   = TEST_DCTRL_OUT_NODE_ID;
     pathInfo->numEdges++;
 
-    if (gDispAppTestParams.numTestPipes > 1U)
+    if (1U < gDispAppTestParams.numTestPipes)
     {
         for(index = 1U; index < gDispAppTestParams.numTestPipes; index++)
         {
@@ -261,7 +261,7 @@ static int8_t BoardDiag_csirxDispConfig(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_SET_PATH,
                            pathInfo,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Setting Path IOCTL Failed\n");
         return -1;
@@ -271,15 +271,15 @@ static int8_t BoardDiag_csirxDispConfig(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_SET_VP_PARAMS,
                            vpParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Setting VP Params IOCTL Failed\n");
         return -1;
     }
 
     overlayParams->overlayId = BOARD_DIAG_CSIRX_HDMI_OVERLAY_ID;
-    overlayParams->colorbarEnable = FALSE;
-    overlayParams->overlayCfg.colorKeyEnable = TRUE;
+    overlayParams->colorbarEnable = UFALSE;
+    overlayParams->overlayCfg.colorKeyEnable = UTRUE;
     overlayParams->overlayCfg.colorKeySel = CSL_DSS_OVERLAY_TRANS_COLOR_DEST;
     overlayParams->overlayCfg.backGroundColor = 0xb4eacdU;
 
@@ -287,7 +287,7 @@ static int8_t BoardDiag_csirxDispConfig(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS,
                            overlayParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Setting Overlay Params IOCTL Failed\n");
         return -1;
@@ -317,7 +317,7 @@ static int8_t BoardDiag_csirxDispConfig(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_SET_LAYER_PARAMS,
                            layerParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Setting Layer Params IOCTL Failed\n");
         return -1;
@@ -327,7 +327,7 @@ static int8_t BoardDiag_csirxDispConfig(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_SET_ADV_VP_PARAMS,
                            advVpParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Setting Advance VP Params IOCTL Failed\n");
         return -1;
@@ -337,7 +337,7 @@ static int8_t BoardDiag_csirxDispConfig(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_SET_GLOBAL_DSS_PARAMS,
                            globalDssParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Setting Global DSS Params IOCTL Failed\n");
         return -1;
@@ -381,7 +381,7 @@ static int8_t BoardDiag_csirxDispCreate(BoardDiag_CsirxDispObj *dispObj)
     vpParams->lcdPolarityCfg.vsPolarity = FVID2_POL_HIGH;
 
     ret = BoardDiag_csirxDispConfig(dispObj);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -402,8 +402,8 @@ static int8_t BoardDiag_csirxDispCreate(BoardDiag_CsirxDispObj *dispObj)
                                           &instObj->createParams,
                                           &instObj->createStatus,
                                           &instObj->cbParams);
-        if((instObj->drvHandle == NULL) ||
-           (instObj->createStatus.retVal != FVID2_SOK))
+        if((NULL      == instObj->drvHandle) ||
+           (FVID2_SOK != instObj->createStatus.retVal))
         {
             UART_printf("Display Create Failed\n");
             return -1;
@@ -413,7 +413,7 @@ static int8_t BoardDiag_csirxDispCreate(BoardDiag_CsirxDispObj *dispObj)
                                IOCTL_DSS_DISP_SET_DSS_PARAMS,
                                &instObj->dispParams,
                                NULL);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             // UART_printf("DSS Set Params IOCTL Failed\n");
             // return -1;
@@ -423,14 +423,14 @@ static int8_t BoardDiag_csirxDispCreate(BoardDiag_CsirxDispObj *dispObj)
                                IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS,
                                &instObj->mflagParams,
                                NULL);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("DSS Set Mflag Params IOCTL Failed\n");
             return -1;
         }
 
         retVal = BoardDiag_csirxDispAllocQFrames(dispObj, instObj);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("Display Alloc and Queue Failed\n");
             return -1;
@@ -464,7 +464,7 @@ static int8_t BoardDiag_csirxDispInit(BoardDiag_CsirxDispObj *dispObj)
                                         NULL,
                                         NULL,
                                         NULL);
-    if(dispObj->dctrlHandle == NULL)
+    if(NULL == dispObj->dctrlHandle)
     {
         UART_printf("Display Create Failed\n");
         return -1;
@@ -505,20 +505,20 @@ static int8_t BoardDiag_csirxDispDelete(BoardDiag_CsirxDispObj *dispObj)
                                IOCTL_DSS_DISP_GET_CURRENT_STATUS,
                                &currStatus,
                                NULL);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("Failed to get Display Status\n");
-            return -1;
+            return FVID2_EFAIL;
         }
 
         /* Print Synclost errors */
-        if(currStatus.underflowCount != 0U)
+        if(0U != currStatus.underflowCount)
         {
             UART_printf("Underflow occurred\n");
         }
 
         retVal = Fvid2_delete(instObj->drvHandle, NULL);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("Display Delete Failed\n");
             return -1;
@@ -530,14 +530,14 @@ static int8_t BoardDiag_csirxDispDelete(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_GET_VP_ERROR_STATS,
                            pErrorStats,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Failed to get VP Status\n");
         return -1;
     }
 
     /* Print Synclost errors */
-    if(pErrorStats->syncLost != 0U)
+    if(0U != pErrorStats->syncLost)
     {
         UART_printf("Sync Lost occurred\n");
     }
@@ -546,7 +546,7 @@ static int8_t BoardDiag_csirxDispDelete(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_CLEAR_PATH,
                            pathInfo,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Clear Path Failed\n");
         return -1;
@@ -556,7 +556,7 @@ static int8_t BoardDiag_csirxDispDelete(BoardDiag_CsirxDispObj *dispObj)
                            IOCTL_DSS_DCTRL_STOP_VP,
                            vpParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("VP Stop Failed\n");
         return -1;
@@ -588,14 +588,14 @@ int8_t BoardDiag_csirxDispRunTest(BoardDiag_CsirxDispObj *dispObj)
 
     UART_printf("Initializing DSS\n");
     ret = BoardDiag_csirxDispInit(&gDispObj);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
 
     /* Create driver */
     ret = BoardDiag_csirxDispCreate(dispObj);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -606,7 +606,7 @@ int8_t BoardDiag_csirxDispRunTest(BoardDiag_CsirxDispObj *dispObj)
         instObj = &dispObj->instObj[index];
 
         retVal = Fvid2_start(instObj->drvHandle, NULL);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("Display Start Failed\n");
             return -1;
@@ -622,7 +622,7 @@ int8_t BoardDiag_csirxDispRunTest(BoardDiag_CsirxDispObj *dispObj)
                                0U,
                                FVID2_TIMEOUT_NONE);
 
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("Display Dequeue Failed for test pipe - %d\n", index);
             break;
@@ -638,7 +638,7 @@ int8_t BoardDiag_csirxDispRunTest(BoardDiag_CsirxDispObj *dispObj)
     {
         instObj = &dispObj->instObj[index];
         retVal  = Fvid2_stop(instObj->drvHandle, NULL);
-        if(retVal != FVID2_SOK)
+        if(FVID2_SOK != retVal)
         {
             UART_printf("Display Stop Failed\n");
             return -1;
@@ -647,7 +647,7 @@ int8_t BoardDiag_csirxDispRunTest(BoardDiag_CsirxDispObj *dispObj)
 
     /* Delete driver */
     ret = BoardDiag_csirxDispDelete(dispObj);
-    if (ret != 0)
+    if (0 != ret)
     {
         UART_printf("Display delete failed\n");
         return -1;
@@ -679,19 +679,19 @@ static int8_t BoardDiag_csirxHdmiSetPwrDownMode(void)
     ioExpCfg.i2cInst     = BOARD_HDMI_IO_EXP_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_HDMI_IO_SLAVE_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_0;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
 
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
-        return -1;
+          return BOARD_INVALID_PARAM;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -710,13 +710,13 @@ static int8_t BoardDiag_csirxHdmiHotPlugDetect(void)
 
     i2cCfg.i2cInst    = BOARD_DIAG_CSIRX_HDMI_HPD_EXP_INSTANCE;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     status = Board_i2cIoExpInit();
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
-        return -1;
+        return BOARD_INVALID_PARAM;
     }
 
     /* Setting the pin direction as output */
@@ -725,9 +725,9 @@ static int8_t BoardDiag_csirxHdmiHotPlugDetect(void)
                                            PORTNUM_1,
                                            PIN_NUM_2,
                                            PIN_DIRECTION_INPUT);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
-        return -1;
+        return BOARD_INVALID_PARAM;
     }
 
     BOARD_delay(1000);
@@ -738,9 +738,9 @@ static int8_t BoardDiag_csirxHdmiHotPlugDetect(void)
                                        PORTNUM_1,
                                        PIN_NUM_2,
                                        &hpdVal);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
-        return -1;
+        return BOARD_INVALID_PARAM;
     }
 
     Board_i2cIoExpDeInit();
@@ -764,7 +764,7 @@ static int8_t BoardDiag_csirxHdmiDpiClkCfg(void)
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status != PM_SUCCESS)
+    if (PM_SUCCESS != status)
     {
         return -1;
     }
@@ -775,7 +775,7 @@ static int8_t BoardDiag_csirxHdmiDpiClkCfg(void)
                                           BOARD_DIAG_CSIRX_DSS0_DPI_CLK_FREQ,
                                           TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status != PM_SUCCESS)
+    if (PM_SUCCESS != status)
     {
         return -1;
     }
@@ -798,23 +798,23 @@ int8_t BoardDiag_csirxConfigHdmi(void)
     int8_t ret;
 
     ret = BoardDiag_csirxHdmiDpiClkCfg();
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
 
     /* Configure HDMI mux selection */
     status = Board_control(BOARD_CTRL_CMD_SET_HDMI_MUX, NULL);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
-        return -1;
+        return BOARD_INVALID_PARAM;
     }
 
     /* Power on HDMI bridge */
     status = Board_control(BOARD_CTRL_CMD_SET_HDMI_PD_HIGH, NULL);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
-        return -1;
+        return BOARD_INVALID_PARAM;
     }
 
     UART_printf("Detecting HPD..\n");
@@ -822,16 +822,16 @@ int8_t BoardDiag_csirxConfigHdmi(void)
     while(timeOutCnt <= BOARD_DIAG_CSIRX_HDMI_HPD_DETECT_TIMEOUT)
     {
         ret = BoardDiag_csirxHdmiHotPlugDetect();
-        if(ret == 1)
+        if(1 == ret)
         {
             break;
         }
-        else if(ret == -1)
+        else if(-1 == ret)
         {
             return -1;
         }
 
-        if(timeOutCnt == 0)
+        if(0U == timeOutCnt)
         {
             UART_printf("Waiting for HDMI cable to detect...\n\r");
         }
@@ -841,7 +841,7 @@ int8_t BoardDiag_csirxConfigHdmi(void)
         timeOutCnt++;
     }
 
-    if(timeOutCnt > BOARD_DIAG_CSIRX_HDMI_HPD_DETECT_TIMEOUT)
+    if(BOARD_DIAG_CSIRX_HDMI_HPD_DETECT_TIMEOUT < timeOutCnt)
     {
         UART_printf("HDMI cable detection timeout completed\n\r");
         UART_printf("HDMI cable not detected!!\n\r");

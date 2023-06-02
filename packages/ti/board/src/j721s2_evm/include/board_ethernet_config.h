@@ -49,7 +49,7 @@
 extern "C" {
 #endif
 
-#define RGMII_ID_DISABLE_MASK           (0x10)
+#define RGMII_ID_DISABLE_MASK           (0x10U)
 
 typedef struct Board_pruicssMdioInfo
 {

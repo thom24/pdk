@@ -56,7 +56,7 @@ extern "C" {
 #include <stdio.h>
 #include <stdbool.h>
 
-#define BOARD_PSC_DEVICE_MODE_EXCLUSIVE       (0)
+#define BOARD_PSC_DEVICE_MODE_EXCLUSIVE       (0U)
 #define BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE    (1U)
 
 #define BOARD_MAIN_CLOCK_GROUP_ALL            (0U)
@@ -70,10 +70,10 @@ extern "C" {
 
 #define BOARD_MAC_ADDR_BYTES                  (6U)
 
-#define BOARD_ENET_NONE                       (0)
-#define BOARD_ENET_QSGMII                     (1U)
-#define BOARD_ENET_SGMII                      (2U)
-#define BOARD_ENET_UNKOWN                     (-1)
+#define BOARD_ENET_NONE                       ((int32_t)(0))
+#define BOARD_ENET_QSGMII                     ((int32_t)(1))
+#define BOARD_ENET_SGMII                      ((int32_t)(2))
+#define BOARD_ENET_UNKOWN                     ((int32_t)(-1))
 
 /**
  * \brief Structure to configure the board I2C parameters
@@ -147,10 +147,10 @@ typedef struct Board_DetectCfg_s
  * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
  * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
  *
- * \return   TRUE if the given board is detected else FALSE.
+ * \return   BTRUE if the given board is detected else BFALSE.
  *           SoM board will be always connected to the base board.
- *           For SoM boardID return value TRUE indicates dual PMIC
- *           SoM and FALSE indicates alternate PMIC SoM
+ *           For SoM boardID return value BTRUE indicates dual PMIC
+ *           SoM and BFALSE indicates alternate PMIC SoM
  *
  */
 bool Board_detectBoard(uint32_t boardID);
@@ -169,7 +169,7 @@ bool Board_detectBoard(uint32_t boardID);
  * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
  * \n                      BOARD_ID_CP(0x8) - CP Board
  *
- * \return TRUE if board revision is E2, FALSE for all other cases
+ * \return BTRUE if board revision is E2, BFALSE for all other cases
  */
 bool Board_isAlpha(uint32_t boardID);
 

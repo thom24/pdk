@@ -61,7 +61,7 @@ Board_STATUS Board_uartStdioInit(void)
 
     /* Disable the UART interrupt */
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
-    uart_cfg.enableInterrupt = FALSE;
+    uart_cfg.enableInterrupt = UFALSE;
     UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
 
     UART_stdioInit(BOARD_UART_INSTANCE);
@@ -86,7 +86,7 @@ Board_STATUS Board_init(Board_initCfg cfg)
 #if !defined (SIM_BUILD)
     if (cfg & BOARD_INIT_UART_STDIO)
         ret = Board_uartStdioInit();
-    if (ret != BOARD_SOK)
+    if (BOARD_SOK != ret)
         return ret;
 #endif
 

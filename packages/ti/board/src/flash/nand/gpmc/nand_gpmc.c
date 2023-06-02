@@ -852,7 +852,7 @@ static NAND_STATUS  Nand_gpmcReadPage(GPMC_Handle handle,
             transaction.rxBuf = (void *)pRxData;
             transaction.count = NAND_BYTES_PER_XFER;
 
-            if (false == GPMC_transfer(handle, &transaction))
+            if (BFALSE == GPMC_transfer(handle, &transaction))
             {
                 return NAND_FAIL;
             }
@@ -863,7 +863,7 @@ static NAND_STATUS  Nand_gpmcReadPage(GPMC_Handle handle,
                    syndrome calculation. */
                 columnAddr = Nand_gpmcInfo.eccOffset +
                              (xferCount * Nand_gpmcInfo.eccByteCount);
-                if(Nand_gpmcInfo.busWidth == NAND_BUSWIDTH_16BITS)
+                if(NAND_BUSWIDTH_16BITS == Nand_gpmcInfo.busWidth)
                 {
                     columnAddr = columnAddr/2;
                 }
@@ -912,7 +912,7 @@ static NAND_STATUS  Nand_gpmcReadPage(GPMC_Handle handle,
                 {
                     columnAddr = columnAddr/2;
                 }
-                if(xferCount != (NAND_PAGE_SIZE / NAND_BYTES_PER_XFER - 1))
+                if((NAND_PAGE_SIZE / NAND_BYTES_PER_XFER - 1) != xferCount)
                 {
                     Nand_gpmcSetCmd(handle, NAND_CMD_READ_RANDOM);
 
@@ -1063,7 +1063,7 @@ static NAND_STATUS Nand_gpmcWritePage(GPMC_Handle handle,
         transaction.rxBuf = NULL;
         transaction.count = NAND_BYTES_PER_XFER;
 
-        if (false == GPMC_transfer(handle, &transaction))
+        if (BFALSE == GPMC_transfer(handle, &transaction))
         {
             return NAND_FAIL;
         }
@@ -1080,10 +1080,10 @@ static NAND_STATUS Nand_gpmcWritePage(GPMC_Handle handle,
     {
         if(NAND_ECC_ALGO_NONE != Nand_gpmcInfo.eccAlgo)
         {
-            if(status == NAND_PASS)
+            if(NAND_PASS == status)
             {
                 columnAddr = Nand_gpmcInfo.eccOffset;
-                if(Nand_gpmcInfo.busWidth == NAND_BUSWIDTH_16BITS)
+                if(NAND_BUSWIDTH_16BITS == Nand_gpmcInfo.busWidth)
                 {
                     columnAddr = columnAddr / 2;
                 }
@@ -1130,7 +1130,7 @@ static NAND_STATUS Nand_gpmcWrite(NAND_HANDLE handle, uint32_t addr,
     }
 
     /* Validate address input */
-    if ((addr + len) > NAND_SIZE)
+    if (NAND_SIZE < (addr + len))
     {
         return NAND_INVALID_PARAM;
     }
@@ -1143,7 +1143,7 @@ static NAND_STATUS Nand_gpmcWrite(NAND_HANDLE handle, uint32_t addr,
     {
         status = Nand_gpmcWritePage((GPMC_Handle)nandGpmcInfo->hwHandle, blockNum,
                                     pageNum, txData);
-        if (status != NAND_PASS)
+        if (NAND_PASS != status)
         {
            return status;
         }
@@ -1172,7 +1172,7 @@ static NAND_STATUS Nand_gpmcMarkBlockAsBad(GPMC_Handle handle, uint32_t blockNum
     for(pageNum = 0; pageNum < 3; pageNum++)
     {
         /* Last page number of the block */
-        if(pageNum == 2)
+        if(2U == pageNum)
         {
             pageNum = NAND_NUM_PAGES_PER_BLOCK - 1U;
         }

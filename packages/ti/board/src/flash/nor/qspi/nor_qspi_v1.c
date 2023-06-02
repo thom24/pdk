@@ -104,7 +104,7 @@ static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
     SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
     ret = SPI_transfer(handle, &transaction);
-    if (ret != true)
+    if (BTRUE != ret)
     {
         return NOR_FAIL;
     }
@@ -117,7 +117,7 @@ static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
     SPI_control(handle, SPI_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
     ret = SPI_transfer(handle, &transaction);
-    if (ret != true)
+    if (BTRUE != ret)
     {
         return NOR_FAIL;
     }
@@ -136,19 +136,19 @@ static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
     uint32_t    manfID, devID;
 
     retVal = NOR_qspiCmdRead(handle, &cmd, 1, idCode, NOR_RDID_NUM_BYTES);
-    if (retVal == NOR_PASS)
+    if (NOR_PASS == retVal)
     {
         manfID = (uint32_t)idCode[0];
         devID = ((uint32_t)idCode[1] << 8) | ((uint32_t)idCode[2]);
 
-        if (((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))             ||
-            ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID_GD25B16CSAG)) ||
-            ((manfID == NOR_MANF_ID_MX25V1635F) && (devID == NOR_DEVICE_ID_MX25V1635F)))
+        if (((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID == devID))             ||
+            ((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID_GD25B16CSAG == devID)) ||
+            ((NOR_MANF_ID_MX25V1635F == manfID) && (NOR_DEVICE_ID_MX25V1635F == devID)))
         {
             Nor_qspiInfo.manufacturerId = manfID;
             Nor_qspiInfo.deviceId = devID;
 
-            if(devID != NOR_DEVICE_ID)
+            if(NOR_DEVICE_ID != devID)
             {
                 Nor_qspiInfo.blockCnt = NOR_NUM_BLOCKS_2MBIT_FLASH;
                 gBoardQspiFlashSize   = NOR_SIZE_2MBIT_FLASH;
@@ -191,7 +191,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 
     if (hwHandle)
     {
-        if (Nor_qspiReadId(hwHandle) == NOR_PASS)
+        if (NOR_PASS == Nor_qspiReadId(hwHandle))
         {
             /* Quad enable bit is set by default as needed for RoM boot */
             if (NOR_qspiCmdRead(hwHandle, &cmd, 1, &status, 1))
@@ -199,7 +199,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 return NOR_FAIL;
             }
 
-            if ((status & NOR_SR_QE) == 0)
+            if (0U == (status & NOR_SR_QE))
             {
                 if (Nor_qspiQuadModeCtrl(hwHandle, 1))
                 {
@@ -274,7 +274,7 @@ static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
     SPI_control(handle, SPI_V1_CMD_SETFRAMELENGTH, ((void *)&frmLength));
 
     ret = SPI_transfer(handle, &transaction);
-    if (ret != true)
+    if (BTRUE != ret)
     {
         return NOR_FAIL;
     }
@@ -296,7 +296,7 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
         {
             return NOR_FAIL;
         }
-        if ((status & NOR_SR_WIP) == 0)
+        if (0U == (status & NOR_SR_WIP))
         {
             break;
         }
@@ -308,7 +308,7 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
 
     } while (1);
 
-    if ((status & NOR_SR_WIP) == 0)
+    if (0U == (status & NOR_SR_WIP))
     {
         return NOR_PASS;
     }
@@ -440,7 +440,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
             break;
     }
 
-    if(object->qspiMode == QSPI_OPER_MODE_MMAP)
+    if(QSPI_OPER_MODE_MMAP == object->qspiMode)
     {
         /* Update the indirect read command, rx lines and read dummy cycles */
         SPI_control(spiHandle, SPI_CMD_SETXFERLINES, (void *)&rx_lines);
@@ -454,7 +454,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
         SPI_control(spiHandle, SPI_V1_CMD_MMAP_TRANSFER_CMD, (void *)&command);
 
         ret = SPI_transfer(spiHandle, &transaction);
-        if (ret == false)
+        if (BFALSE == ret)
         {
             return NOR_FAIL;
         }
@@ -512,7 +512,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
         transaction.count = len;
 
         ret = SPI_transfer(spiHandle, &transaction);
-        if (ret == false)
+        if (BFALSE == ret)
         {
             return NOR_FAIL;
         }
@@ -596,7 +596,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
             SPI_control(spiHandle, SPI_V1_CMD_MMAP_TRANSFER_CMD, (void *)&command);
 
             ret = SPI_transfer(spiHandle, &transaction);
-            if (ret == false)
+            if (BFALSE == ret)
             {
                 return NOR_FAIL;
             }
@@ -665,7 +665,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
             SPI_control(spiHandle, SPI_V1_CMD_TRANSFERMODE_RW, (void *)&transferType);
 
             ret = SPI_transfer(spiHandle, &transaction);
-            if (ret == false)
+            if (BFALSE == ret)
             {
                 return NOR_FAIL;
             }
@@ -704,14 +704,14 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
 
     spiHandle = (SPI_Handle)norQspiInfo->hwHandle;
 
-    if (erLoc == NOR_BE_SECTOR_NUM)
+    if (NOR_BE_SECTOR_NUM == erLoc)
     {
         cmd[0]  = NOR_CMD_BULK_ERASE;
         cmdLen = 1;
     }
     else
     {
-        if (blkErase == true)
+        if (BTRUE == blkErase)
         {
             if (erLoc >= Nor_qspiInfo.blockCnt)
             {
@@ -722,18 +722,18 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         }
         else
         {
-            if (erLoc >= NOR_NUM_SECTORS)
+            if (NOR_NUM_SECTORS <= erLoc)
             {
                 return NOR_FAIL;
             }
             address   = erLoc * NOR_SECTOR_SIZE;
             cmd[0] = NOR_CMD_SECTOR_ERASE;
         }
-        cmd[1] = (address >> 16) & 0xff; /* 64MB flash device */
-        cmd[2] = (address >>  8) & 0xff;
-        cmd[3] = (address >>  0) & 0xff;
+        cmd[1] = (address >> 16) & 0xFF; /* 64MB flash device */
+        cmd[2] = (address >>  8) & 0xFF;
+        cmd[3] = (address >>  0) & 0xFF;
 
-        cmdLen = 4;
+        cmdLen = 4U;
     }
 
     if (Nor_qspiCmdWrite(spiHandle, &cmdWren, 1, 0))

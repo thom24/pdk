@@ -73,7 +73,7 @@ static uint32_t Board_mmrGetBaseAddr(uint8_t domain)
             baseAddr = (CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK0_KICK0);
         break;
         default:
-            baseAddr = 0;
+            baseAddr = 0U;
         break;
     }
 
@@ -108,11 +108,11 @@ Board_STATUS Board_lockMMRPartition(uint32_t domain, uint32_t partNum)
         baseAddr  = Board_mmrGetBaseAddr(domain);
         baseAddr += (BOARD_MMR_PARTITION_SIZE * partNum);
         HW_WR_REG32(baseAddr, BOARD_KICK0_LOCK_VAL);
-        HW_WR_REG32((baseAddr + 4), BOARD_KICK1_LOCK_VAL);
+        HW_WR_REG32((baseAddr + 4U), BOARD_KICK1_LOCK_VAL);
 
         /* Confirm the kick registers are locked */
         kick0 = HW_RD_REG32(baseAddr);
-        if(kick0 & 0x01)
+        if(kick0 & 0x01U)
         {
             status = BOARD_FAIL;
         }
@@ -144,14 +144,14 @@ Board_STATUS Board_unlockMMRPartition(uint32_t domain, uint32_t partNum)
     baseAddr += (BOARD_MMR_PARTITION_SIZE * partNum);
 
     /* Read the current state of the kick lock. Will be used by board lock function */
-    gBoardKickState[domain][partNum] = HW_RD_REG32(baseAddr) & 0x1;
+    gBoardKickState[domain][partNum] = HW_RD_REG32(baseAddr) & 0x1U;
 
     HW_WR_REG32(baseAddr, BOARD_KICK0_UNLOCK_VAL);
-    HW_WR_REG32((baseAddr + 4), BOARD_KICK1_UNLOCK_VAL);
+    HW_WR_REG32((baseAddr + 4U), BOARD_KICK1_UNLOCK_VAL);
 
     /* Confirm the kick registers are locked */
     kick0 = HW_RD_REG32(baseAddr);
-    if(!(kick0 & 0x01))
+    if(!(kick0 & 0x01U))
     {
         status = BOARD_FAIL;
     }

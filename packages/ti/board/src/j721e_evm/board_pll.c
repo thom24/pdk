@@ -200,30 +200,30 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
     int32_t status   = CSL_EFAIL;
     uint64_t respClkRate = 0;
     uint32_t numParents = 0U;
-    uint32_t moduleClockParentChanged = 0U;
+    uint32_t moduleClockParentChanged = UFALSE;
     uint32_t clockStatus = 0U;
     uint32_t origParent = 0U;
-    uint32_t foundParent = 0U;
+    uint32_t foundParent = UFALSE;
 
     /* Check if the clock is enabled or not */
     status = Sciclient_pmModuleGetClkStatus(modId,
                                             clkId,
                                             &clockStatus,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status == CSL_PASS)
+    if (CSL_PASS == status)
     {
         /* Get the number of parents for the clock */
         status = Sciclient_pmGetModuleClkNumParent(modId,
                                                 clkId,
                                                 &numParents,
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
-        if ((status == CSL_PASS) && (numParents > 1U))
+        if ((CSL_PASS == status) && (1U < numParents))
         {
             status = Sciclient_pmGetModuleClkParent(modId, clkId, &origParent,
                                        SCICLIENT_SERVICE_WAIT_FOREVER);
         }
     }
-    if (status == CSL_PASS)
+    if (CSL_PASS == status)
     {
         /* Disabling the clock */
         status = Sciclient_pmModuleClkRequest(
@@ -233,13 +233,13 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
                                             0U,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-    if (status == CSL_PASS)
+    if (CSL_PASS == status)
     {
-        foundParent = 0U;
+        foundParent = UFALSE;
         /* Try to loop and change parents of the clock */
-        for(i=0U;i<numParents;i++)
+        for(i = 0U; i < numParents; i++)
         {
-            if (numParents > 1U)
+            if (1U < numParents)
             {
                 /* Setting the new parent */
                 status = Sciclient_pmSetModuleClkParent(
@@ -248,12 +248,12 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
                                             clkId+i+1,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
                 /* Check if the clock can be set to desirable freq. */
-                if (status == CSL_PASS)
+                if (CSL_PASS == status)
                 {
-                    moduleClockParentChanged = 1U;
+                    moduleClockParentChanged = UTRUE;
                 }
             }
-            if (status == CSL_PASS)
+            if (CSL_PASS == status)
             {
                 status = Sciclient_pmQueryModuleClkFreq(modId,
                                                         clkId,
@@ -261,14 +261,14 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
                                                         &respClkRate,
                                                         SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-            if ((status == CSL_PASS) && (respClkRate == clkRate))
+            if ((CSL_PASS == status) && (respClkRate == clkRate))
             {
-                foundParent = 1U;
+                foundParent = UTRUE;
                 break;
             }
         }
     }
-    if (foundParent == 1U)
+    if (UTRUE == foundParent)
     {
         /* Set the clock at the desirable frequency*/
         status = Sciclient_pmSetModuleClkFreq(
@@ -282,8 +282,8 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
     {
         status = CSL_EFAIL;
     }
-    if ((status == CSL_PASS) &&
-        (clockStatus == TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ))
+    if ((CSL_PASS == status) &&
+        (TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ == clockStatus))
     {
         /* Restore the clock again to original state */
         status = Sciclient_pmModuleClkRequest(
@@ -293,7 +293,7 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
                                             0U,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-    if ((status != CSL_PASS) && (moduleClockParentChanged == 1U))
+    if ((CSL_PASS != status) && (UTRUE == moduleClockParentChanged))
     {
         /* Setting the original parent if failure */
         status = Sciclient_pmSetModuleClkParent(
@@ -323,7 +323,7 @@ Board_STATUS Board_PLLInit(uint32_t modId,
     int32_t  status = CSL_EFAIL;
 
     status = Board_PLLSetModuleClkFreq(modId, clkId, clkRate);
-    if(status != CSL_PASS)
+    if(CSL_PASS != status)
     {
         return BOARD_FAIL;
     }
@@ -345,16 +345,16 @@ Board_STATUS Board_PLLInitMcu(void)
 
     loopCount = sizeof (gBoardPllClkCfgMcu)/sizeof(Board_PllClkCfg_t);
 
-    for (index = 0; index < loopCount; index++)
+    for (index = 0U; index < loopCount; index++)
     {
         status = Board_PLLInit(gBoardPllClkCfgMcu[index].tisciDevID,
                                gBoardPllClkCfgMcu[index].tisciClkID,
                                gBoardPllClkCfgMcu[index].clkRate);
-        if(status != BOARD_SOK)
+        if(BOARD_SOK != status)
         {
             BOARD_DEBUG_LOG("Failed to set the MCU PLL clock freq at index =%d; Module ID =%d; Clock ID =%d\n\n",index,
                             gBoardPllClkCfgMcu[index].tisciDevID, gBoardPllClkCfgMcu[index].tisciClkID);
-            retVal |= (1 << index);
+            retVal |= (1U << index);
         }
     }
 
@@ -375,16 +375,16 @@ Board_STATUS Board_PLLInitMain(void)
 
     loopCount = sizeof (gBoardPllClkCfgMain)/sizeof(Board_PllClkCfg_t);
 
-    for (index = 0; index < loopCount; index++)
+    for (index = 0U; index < loopCount; index++)
     {
         status = Board_PLLInit(gBoardPllClkCfgMain[index].tisciDevID,
                                gBoardPllClkCfgMain[index].tisciClkID,
                                gBoardPllClkCfgMain[index].clkRate);
-        if(status != BOARD_SOK)
+        if(BOARD_SOK != status)
         {
             BOARD_DEBUG_LOG("Failed to set the Main PLL clock freq at index =%d; Module ID =%d; Clock ID =%d\n\n",index,
                             gBoardPllClkCfgMain[index].tisciDevID, gBoardPllClkCfgMain[index].tisciClkID);
-            retVal |= (1 << index);
+            retVal |= (1U << index);
         }
     }
 

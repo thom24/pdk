@@ -63,7 +63,7 @@ Board_STATUS Board_tlc59108PwmDutycycleCntrl(void *handle,
     Board_STATUS ret = BOARD_SOK;
     uint8_t regData, regAddr = 0;
 
-    if(handle == NULL)
+    if(NULL == handle)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -99,7 +99,7 @@ Board_STATUS Board_tlc59108PwmDutycycleCntrl(void *handle,
             break;
     }
 
-    regData = ((dutyCycle * 256)/100);
+    regData = (uint8_t)((dutyCycle * 256)/100);
 
     ret = Board_i2c8BitRegWr(handle,
                              fpdRmtParams->i2cDevAliasAddr,
@@ -107,7 +107,7 @@ Board_STATUS Board_tlc59108PwmDutycycleCntrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != 0)
+    if(BOARD_SOK != ret)
     {
         return ret;
     }
@@ -145,27 +145,27 @@ Board_STATUS Board_tlc59108LedOut0Cfg(void *handle,
     uint8_t regData = 0;
     uint8_t mask = 0, cnt = 0;
 
-    if(handle == NULL)
+    if(NULL == handle)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(ledSel == BOARD_FPD_TLC59108_LED0)
+    if(BOARD_FPD_TLC59108_LED0 == ledSel)
     {
         mask = BOARD_FPD_TLC59108_LED0_BIT_MASK;
         cnt = BOARD_FPD_TLC59108_LED0_SHIFT_CNT;
     }
-    else if(ledSel == BOARD_FPD_TLC59108_LED1)
+    else if(BOARD_FPD_TLC59108_LED1 == ledSel)
     {
         mask = BOARD_FPD_TLC59108_LED1_BIT_MASK;
         cnt = BOARD_FPD_TLC59108_LED1_SHIFT_CNT;
     }
-    else if(ledSel == BOARD_FPD_TLC59108_LED2)
+    else if(BOARD_FPD_TLC59108_LED2 == ledSel)
     {
         mask = BOARD_FPD_TLC59108_LED2_BIT_MASK;
         cnt = BOARD_FPD_TLC59108_LED2_SHIFT_CNT;
     }
-    else if(ledSel == BOARD_FPD_TLC59108_LED3)
+    else if(BOARD_FPD_TLC59108_LED3 == ledSel)
     {
         mask = BOARD_FPD_TLC59108_LED3_BIT_MASK;
         cnt = BOARD_FPD_TLC59108_LED3_SHIFT_CNT;
@@ -177,7 +177,7 @@ Board_STATUS Board_tlc59108LedOut0Cfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != 0)
+    if(BOARD_SOK != ret)
     {
         return ret;
     }
@@ -190,7 +190,7 @@ Board_STATUS Board_tlc59108LedOut0Cfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != 0)
+    if(BOARD_SOK != ret)
     {
         return ret;
     }
@@ -225,7 +225,7 @@ Board_STATUS Board_tlc59108DeviceRespModeCfg(void *handle,
     Board_STATUS ret = BOARD_SOK;
     uint8_t regData = 0;
 
-    if(handle == NULL)
+    if(NULL == handle)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -236,7 +236,7 @@ Board_STATUS Board_tlc59108DeviceRespModeCfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != 0)
+    if(BOARD_SOK != ret)
     {
         return ret;
     }
@@ -253,7 +253,7 @@ Board_STATUS Board_tlc59108DeviceRespModeCfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != 0)
+    if(BOARD_SOK != ret)
     {
         return ret;
     }

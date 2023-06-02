@@ -120,8 +120,8 @@ EnetIg_Obj gEnetIg;
 IcssgStats_MacPort gEnetIg_icssgStats;
 IcssgStats_Pa gEnetIg_icssgPaStats;
 
-bool printFrameEnable = false;
-bool printStatsEnable = false;
+bool printFrameEnable = BFALSE;
+bool printStatsEnable = BFALSE;
 
 static uint32_t gEnetLpbk_IterationCount;
 
@@ -267,25 +267,25 @@ static int32_t EnetIg_init(void)
     /* Initialize memory */
     EnetAppUtils_print("\nInit memory utils");
     status = EnetMem_init();
-    if (status != ENET_SOK)
+    if (ENET_SOK != status)
     {
         EnetAppUtils_print("\nFailed to initialize memory utils: %d\n", status);
-        EnetAppUtils_assert(false);
+        EnetAppUtils_assert(BFALSE);
     }
 
     /* Initialize all queues */
     EnetQueue_initQ(&gEnetIg.txFreePktInfoQ);
 
     /* Open UDMA driver which is the same handle to be used for all peripherals */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         EnetAppUtils_print("\nOpen Main UDMA driver");
         gEnetIg.hMainUdmaDrv = EnetAppUtils_udmaOpen(ENET_ICSSG_DUALMAC, NULL);
-        if (gEnetIg.hMainUdmaDrv == NULL)
+        if (NULL == gEnetIg.hMainUdmaDrv)
         {
             EnetAppUtils_print("\nFailed to open Main UDMA driver: %d\n", status);
             status = ENET_EALLOC;
-            EnetAppUtils_assert(false);
+            EnetAppUtils_assert(BFALSE);
         }
     }
 
@@ -301,7 +301,7 @@ static void EnetIg_asyncIoctlCb(Enet_Event evt,
     EnetIg_PerCtxt *perCtxt = (EnetIg_PerCtxt *)evtCbArgs;
 
     EnetAppUtils_print("\n%s: Async IOCTL completed\n", perCtxt->name);
-    perCtxt->hAsyncIoctlSem = true;
+    perCtxt->hAsyncIoctlSem = BTRUE;
 }
 
 static void EnetIg_txTsCb(Enet_Event evt,
@@ -318,7 +318,7 @@ static void EnetIg_txTsCb(Enet_Event evt,
     uint64_t rxTs = perCtxt->rxTs[tsId % ENET_MEM_NUM_RX_PKTS];
     uint64_t prevTs;
     int64_t dt;
-    bool status = true;
+    bool status = BTRUE;
 
     dt = txTs - rxTs;
 
@@ -326,22 +326,22 @@ static void EnetIg_txTsCb(Enet_Event evt,
                        perCtxt->name, ENET_MACPORT_ID(macPort), dt, rxTs, txTs);
 
     /* Check correct timestamp delta */
-    if (dt < 0)
+    if (0 > dt)
     {
         EnetAppUtils_print("\n%s: Port %u: ERROR: RX timestamp > TX timestamp: %llu > %llu\n",
                            perCtxt->name, ENET_MACPORT_ID(macPort), rxTs, txTs);
-            status = false;
+            status = BFALSE;
     }
 
     /* Check monotonicity of the TX and RX timestamps */
-    if (txTsInfo->txTsId > 0U)
+    if (0U < txTsInfo->txTsId)
     {
         prevTs = perCtxt->rxTs[(tsId - 1) % ENET_MEM_NUM_RX_PKTS];
         if (prevTs > rxTs)
         {
             EnetAppUtils_print("\n%s: Port %u: ERROR: Non monotonic RX timestamp: %llu -> %llu\n",
                                perCtxt->name, ENET_MACPORT_ID(macPort), prevTs, rxTs);
-            status = false;
+            status = BFALSE;
         }
 
         prevTs = perCtxt->txTs[(tsId - 1) % ENET_MEM_NUM_RX_PKTS];
@@ -349,7 +349,7 @@ static void EnetIg_txTsCb(Enet_Event evt,
         {
             EnetAppUtils_print("\n%s: Port %u: ERROR: Non monotonic TX timestamp: %llu -> %llu\n",
                                perCtxt->name, ENET_MACPORT_ID(macPort), prevTs, txTs);
-            status = false;
+            status = BFALSE;
         }
     }
 
@@ -361,19 +361,19 @@ static void EnetIg_txTsCb(Enet_Event evt,
     /* Save current timestamp for future monotonicity checks */
      perCtxt->txTs[txTsInfo->txTsId % ENET_MEM_NUM_RX_PKTS] = txTs;
 
-    perCtxt->hTxTsSem = true;
+    perCtxt->hTxTsSem = BTRUE;
 }
 
 static void EnetIg_deinit(void)
 {
     /* Close UDMA driver if not closed */
     EnetAppUtils_print("\nClose UDMA driver");
-    if(gEnetIg.hMainUdmaDrv != NULL)
+    if(NULL != gEnetIg.hMainUdmaDrv)
     {
         EnetAppUtils_udmaclose(gEnetIg.hMainUdmaDrv);
     }
 
-    if(gEnetIg.hMcuUdmaDrv != NULL)
+    if(NULL != gEnetIg.hMcuUdmaDrv)
     {
         EnetAppUtils_udmaclose(gEnetIg.hMcuUdmaDrv);
     }
@@ -410,8 +410,8 @@ static int32_t EnetIg_open(EnetIg_PerCtxt *perCtxts,
         EnetAppUtils_enableClocks(perCtxt->enetType, perCtxt->instId);
 
         /*Initialize aync IOCTL and TX timestamp flags*/
-        perCtxt->hAsyncIoctlSem = false;
-        perCtxt->hTxTsSem = false;
+        perCtxt->hAsyncIoctlSem = BFALSE;
+        perCtxt->hTxTsSem = BFALSE;
     }
 
     /* Prepare init configuration for all peripherals */
@@ -621,7 +621,7 @@ static void EnetIg_printStats(EnetIg_PerCtxt *perCtxts,
             EnetAppUtils_print("--------------------------------\n");
             ENET_IOCTL_SET_OUT_ARGS(&prms, &gEnetIg_icssgPaStats);
             status = Enet_ioctl(perCtxt->hEnet, gEnetIg.coreId, ENET_STATS_IOCTL_GET_HOSTPORT_STATS, &prms);
-            if (status != ENET_SOK)
+            if (ENET_SOK != status)
             {
                 EnetAppUtils_print("\n%s: Failed to get PA stats\n", perCtxt->name);
             }
@@ -640,13 +640,13 @@ static void EnetIg_printStats(EnetIg_PerCtxt *perCtxts,
             ENET_IOCTL_SET_INOUT_ARGS(&prms, &macPort, &gEnetIg_icssgStats);
 
             status = Enet_ioctl(perCtxt->hEnet, gEnetIg.coreId, ENET_STATS_IOCTL_GET_MACPORT_STATS, &prms);
-            if (status != ENET_SOK)
+            if (ENET_SOK != status)
             {
                 EnetAppUtils_print("\n%s: Failed to get port %u stats\n", perCtxt->name, ENET_MACPORT_ID(macPort));
                 continue;
             }
 
-            EnetAppUtils_printIcssgMacPortStats(&gEnetIg_icssgStats, false);
+            EnetAppUtils_printIcssgMacPortStats(&gEnetIg_icssgStats, BFALSE);
             EnetAppUtils_print("\n");
         }
     }
@@ -716,10 +716,10 @@ static int32_t EnetIg_openPort(EnetIg_PerCtxt *perCtxt)
         EnetIg_macMode2MacMii(RGMII, &ethPort.mii);
 
         status = EnetBoard_setupPorts(&ethPort, 1U);
-        if (status != ENET_SOK)
+        if (ENET_SOK != status)
         {
             EnetAppUtils_print("\n%s: Failed to setup MAC port %u\n", perCtxt->name, ENET_MACPORT_ID(macPort));
-            EnetAppUtils_assert(false);
+            EnetAppUtils_assert(BFALSE);
         }
 
         IcssgMacPort_initCfg(&icssgMacCfg);
@@ -736,12 +736,12 @@ static int32_t EnetIg_openPort(EnetIg_PerCtxt *perCtxt)
         linkCfg->duplexity = ENET_DUPLEX_AUTO;
 
         boardPhyCfg = EnetBoard_getPhyCfg(&ethPort);
-        if (boardPhyCfg != NULL)
+        if (NULL != boardPhyCfg)
         {
             EnetPhy_initCfg(phyCfg);
             phyCfg->phyAddr     = boardPhyCfg->phyAddr;
             phyCfg->isStrapped  = boardPhyCfg->isStrapped;
-            phyCfg->loopbackEn  = false;
+            phyCfg->loopbackEn  = BFALSE;
             phyCfg->skipExtendedCfg = boardPhyCfg->skipExtendedCfg;
             phyCfg->extendedCfgSize = boardPhyCfg->extendedCfgSize;
             memcpy(phyCfg->extendedCfg, boardPhyCfg->extendedCfg, phyCfg->extendedCfgSize);
@@ -749,17 +749,17 @@ static int32_t EnetIg_openPort(EnetIg_PerCtxt *perCtxt)
         else
         {
             EnetAppUtils_print("%s: No PHY configuration found\n", perCtxt->name);
-            EnetAppUtils_assert(false);
+            EnetAppUtils_assert(BFALSE);
         }
 
         /* Open port link */
-        if (status == ENET_SOK)
+        if (ENET_SOK == status)
         {
             ENET_IOCTL_SET_IN_ARGS(&prms, &portLinkCfg);
 
             EnetAppUtils_print("\n%s: Open port %u link", perCtxt->name, ENET_MACPORT_ID(macPort));
             status = Enet_ioctl(perCtxt->hEnet, gEnetIg.coreId, ENET_PER_IOCTL_OPEN_PORT_LINK, &prms);
-            if (status != ENET_SOK)
+            if (ENET_SOK != status)
             {
                 EnetAppUtils_print("\n%s: Failed to open port link: %d\n", perCtxt->name, status);
             }
@@ -810,17 +810,17 @@ static int32_t EnetIg_waitForLinkUp(EnetIg_PerCtxt *perCtxt)
     for (i = 0U; i < perCtxt->macPortNum; i++)
     {
         macPort = perCtxt->macPort[i];
-        linked = false;
+        linked = BFALSE;
         ENET_IOCTL_SET_INOUT_ARGS(&prms, &macPort, &linked);
 
         while (!linked)
         {
             status = Enet_ioctl(perCtxt->hEnet, gEnetIg.coreId, ENET_PER_IOCTL_IS_PORT_LINK_UP, &prms);
-            if (status != ENET_SOK)
+            if (ENET_SOK != status)
             {
                 EnetAppUtils_print("\n%s: Failed to get port %u link status: %d\n",
                                    perCtxt->name, ENET_MACPORT_ID(macPort), status);
-                linked = false;
+                linked = BFALSE;
                 break;
             }
 
@@ -831,7 +831,7 @@ static int32_t EnetIg_waitForLinkUp(EnetIg_PerCtxt *perCtxt)
             }
 
             linkCheckTime++;
-            if(linkCheckTime > BOARD_DIAG_ICSSG_LINKUP_TIMEOUT)
+            if(BOARD_DIAG_ICSSG_LINKUP_TIMEOUT < linkCheckTime)
             {
                 status = ENET_ETIMEOUT;
                 EnetAppUtils_print("\n%s: Port %u link up timed out\n",
@@ -844,7 +844,7 @@ static int32_t EnetIg_waitForLinkUp(EnetIg_PerCtxt *perCtxt)
                         perCtxt->name, ENET_MACPORT_ID(macPort), linked ? "up" : "down");
 
         /* Set port to 'Forward' state */
-        if (status == ENET_SOK)
+        if (ENET_SOK == status)
         {
             EnetAppUtils_print("\n%s: Set port state to 'Forward'", perCtxt->name);
 
@@ -853,14 +853,14 @@ static int32_t EnetIg_waitForLinkUp(EnetIg_PerCtxt *perCtxt)
             ENET_IOCTL_SET_IN_ARGS(&prms, &setPortStateInArgs);
 
             status = Enet_ioctl(perCtxt->hEnet, gEnetIg.coreId, ICSSG_PER_IOCTL_SET_PORT_STATE, &prms);
-            if (status == ENET_SINPROGRESS)
+            if (ENET_SINPROGRESS == status)
             {
                 /* Wait for asyc ioctl to complete */
-                while(perCtxt->hAsyncIoctlSem != true)
+                while(BTRUE != perCtxt->hAsyncIoctlSem)
                 {
                     Enet_poll(perCtxt->hEnet, ENET_EVT_ASYNC_CMD_RESP, NULL, 0U);
                 }
-                perCtxt->hAsyncIoctlSem = false;
+                perCtxt->hAsyncIoctlSem = BFALSE;
 
                 status = ENET_SOK;
             }
@@ -925,7 +925,7 @@ static void EnetIg_macMode2MacMii(emac_mode macMode,
 #endif
         default:
             EnetAppUtils_print("\nInvalid MAC mode: %u\n", macMode);
-            EnetAppUtils_assert(false);
+            EnetAppUtils_assert(BFALSE);
             break;
     }
 }
@@ -953,10 +953,10 @@ static int32_t EnetIg_openDma(EnetIg_PerCtxt *perCtxt)
     /* Open the TX channel */
     EnetDma_initTxChParams(&txChCfg);
 
-    txChCfg.hUdmaDrv = (perCtxt->enetType == ENET_CPSW_2G) ? gEnetIg.hMcuUdmaDrv : gEnetIg.hMainUdmaDrv;
+    txChCfg.hUdmaDrv = (ENET_CPSW_2G == perCtxt->enetType) ? gEnetIg.hMcuUdmaDrv : gEnetIg.hMainUdmaDrv;
     txChCfg.cbArg    = perCtxt;
     txChCfg.notifyCb = BoardDiag_EnetIg_txIsrFxn;
-    txChCfg.useGlobalEvt = true;
+    txChCfg.useGlobalEvt = BTRUE;
 
     EnetAppUtils_setCommonTxChPrms(&txChCfg);
 
@@ -966,7 +966,7 @@ static int32_t EnetIg_openDma(EnetIg_PerCtxt *perCtxt)
                           &perCtxt->txChNum,
                           &perCtxt->hTxCh,
                           &txChCfg);
-    if (perCtxt->hTxCh == NULL)
+    if (NULL == perCtxt->hTxCh)
     {
 #if FIX_RM
         /* Free the channel number if open Tx channel failed */
@@ -977,24 +977,24 @@ static int32_t EnetIg_openDma(EnetIg_PerCtxt *perCtxt)
 #endif
         EnetAppUtils_print("\nEnetIg_openDma() failed to open TX channel");
         status = ENET_EFAIL;
-        EnetAppUtils_assert(perCtxt->hTxCh != NULL);
+        EnetAppUtils_assert(NULL != perCtxt->hTxCh);
     }
 
     /* Allocate TX packets and keep them locally enqueued */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         EnetIg_initTxFreePktQ();
     }
 
     /* Open the RX flow */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         EnetDma_initRxChParams(&rxChCfg);
 
-        rxChCfg.hUdmaDrv = (perCtxt->enetType == ENET_CPSW_2G) ? gEnetIg.hMcuUdmaDrv : gEnetIg.hMainUdmaDrv;
+        rxChCfg.hUdmaDrv = (ENET_CPSW_2G == perCtxt->enetType) ? gEnetIg.hMcuUdmaDrv : gEnetIg.hMainUdmaDrv;
         rxChCfg.notifyCb = BoardDiag_EnetIg_rxIsrFxn;
         rxChCfg.cbArg    = perCtxt;
-        rxChCfg.useGlobalEvt = true;
+        rxChCfg.useGlobalEvt = BTRUE;
         rxChCfg.flowPrms.sizeThreshEn = 0U;
 
         EnetAppUtils_setCommonRxFlowPrms(&rxChCfg);
@@ -1002,23 +1002,23 @@ static int32_t EnetIg_openDma(EnetIg_PerCtxt *perCtxt)
                                 perCtxt->hEnet,
                                 gEnetIg.coreKey,
                                 gEnetIg.coreId,
-                                true,
+                                BTRUE,
                                 &perCtxt->rxStartFlowIdx,
                                 &perCtxt->rxFlowIdx,
                                 &perCtxt->macAddr[0U],
                                 &perCtxt->hRxCh,
                                 &rxChCfg);
 
-        if (perCtxt->hRxCh == NULL)
+        if (NULL == perCtxt->hRxCh)
         {
             EnetAppUtils_print("\nEnetIg_openRxCh() failed to open RX flow");
             status = ENET_EFAIL;
-            EnetAppUtils_assert(perCtxt->hRxCh != NULL);
+            EnetAppUtils_assert(NULL != perCtxt->hRxCh);
         }
     }
 
     /* Submit all ready RX buffers to DMA */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         EnetIg_initRxReadyPktQ(perCtxt->hRxCh);
     }
@@ -1039,7 +1039,7 @@ static void EnetIg_closeDma(EnetIg_PerCtxt *perCtxt)
                             perCtxt->hEnet,
                             gEnetIg.coreKey,
                             gEnetIg.coreId,
-                            true,
+                            BTRUE,
                             &fqPktInfoQ,
                             &cqPktInfoQ,
                             perCtxt->rxStartFlowIdx,
@@ -1081,7 +1081,7 @@ static void EnetIg_initTxFreePktQ(void)
         pPktInfo = EnetMem_allocEthPkt(&gEnetIg,
                                        ENET_MEM_LARGE_POOL_PKT_SIZE,
                                        ENETDMA_CACHELINE_ALIGNMENT);
-        EnetAppUtils_assert(pPktInfo != NULL);
+        EnetAppUtils_assert(NULL != pPktInfo);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
 
         EnetQueue_enq(&gEnetIg.txFreePktInfoQ, &pPktInfo->node);
@@ -1106,7 +1106,7 @@ static void EnetIg_initRxReadyPktQ(EnetDma_RxChHandle hRxCh)
         pPktInfo = EnetMem_allocEthPkt(&gEnetIg,
                                        ENET_MEM_LARGE_POOL_PKT_SIZE,
                                        ENETDMA_CACHELINE_ALIGNMENT);
-        EnetAppUtils_assert(pPktInfo != NULL);
+        EnetAppUtils_assert(NULL != pPktInfo);
 
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
 
@@ -1116,16 +1116,16 @@ static void EnetIg_initRxReadyPktQ(EnetDma_RxChHandle hRxCh)
     /* Retrieve any packets which are ready */
     EnetQueue_initQ(&rxReadyQ);
     status = EnetDma_retrieveRxPktQ(hRxCh, &rxReadyQ);
-    EnetAppUtils_assert(status == ENET_SOK);
+    EnetAppUtils_assert(ENET_SOK == status);
 
     /* There should not be any packet with DMA during init */
-    EnetAppUtils_assert(EnetQueue_getQCount(&rxReadyQ) == 0U);
+    EnetAppUtils_assert(0U == EnetQueue_getQCount(&rxReadyQ));
 
     EnetDma_submitRxPktQ(hRxCh, &rxFreeQ);
 
     /* Assert here, as during init, the number of DMA descriptors should be equal to
      * the number of free Ethernet buffers available with app */
-    EnetAppUtils_assert(EnetQueue_getQCount(&rxFreeQ) == 0U);
+    EnetAppUtils_assert(0U == EnetQueue_getQCount(&rxFreeQ));
 }
 
 static uint32_t EnetIg_retrieveFreeTxPkts(EnetIg_PerCtxt *perCtxt)
@@ -1139,7 +1139,7 @@ static uint32_t EnetIg_retrieveFreeTxPkts(EnetIg_PerCtxt *perCtxt)
 
     /* Retrieve any packets that may be free now */
     status = EnetDma_retrieveTxPktQ(perCtxt->hTxCh, &txFreeQ);
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         txFreeQCnt = EnetQueue_getQCount(&txFreeQ);
 
@@ -1178,10 +1178,10 @@ static int32_t BoardDiag_EnetIg_LpbckTest(EnetIg_PerCtxt *perCtxts, uint32_t num
         semParams.mode = SemaphoreP_Mode_BINARY;
 
         perCtxt->hRxSem = SemaphoreP_create(0, &semParams);
-        EnetAppUtils_assert(perCtxt->hRxSem != NULL);
+        EnetAppUtils_assert(NULL != perCtxt->hRxSem);
 
         perCtxt->hTxSem = SemaphoreP_create(0, &semParams);
-        EnetAppUtils_assert(perCtxt->hTxSem != NULL);
+        EnetAppUtils_assert(NULL != perCtxt->hTxSem);
 
         status = EnetIg_openPort(perCtxt);
         if (status != ENET_SOK)
@@ -1354,12 +1354,12 @@ static uint32_t BoardDiag_EnetIg_Transmit(EnetIg_PerCtxt *txPerCtxt, EnetIg_PerC
                                   sizeof(EthFrameHeader);
 
             txPktInfo->appPriv = &gEnetIg;
-            txPktInfo->tsInfo.enableHostTxTs = false;
+            txPktInfo->tsInfo.enableHostTxTs = BFALSE;
 
             /* Enqueue the packet for later transmission */
             EnetQueue_enq(&txSubmitQ, &txPktInfo->node);
 
-            if (pktCnt >= BOARD_DIAG_ENETLPBK_TEST_PKT_NUM)
+            if (BOARD_DIAG_ENETLPBK_TEST_PKT_NUM <= pktCnt)
             {
                 break;
             }
@@ -1385,7 +1385,7 @@ static uint32_t BoardDiag_EnetIg_Transmit(EnetIg_PerCtxt *txPerCtxt, EnetIg_PerC
 
 
             /* Retrieve TX free packets */
-            if (status == ENET_SOK)
+            if (ENET_SOK == status)
             {
                 txCnt            = txCnt - EnetQueue_getQCount(&txSubmitQ);
                 txRetrievePktCnt = 0U;
@@ -1404,7 +1404,7 @@ static uint32_t BoardDiag_EnetIg_Transmit(EnetIg_PerCtxt *txPerCtxt, EnetIg_PerC
             }
         }
 
-        if(status == ENET_SOK)
+        if(ENET_SOK == status)
         {
             /* wait to receive the packet */
             do
@@ -1420,17 +1420,17 @@ static uint32_t BoardDiag_EnetIg_Transmit(EnetIg_PerCtxt *txPerCtxt, EnetIg_PerC
 
                 rxReadyCnt = 0;
 
-                if(status == ENET_SOK)
+                if(ENET_SOK == status)
                 {
                     rxReadyCnt = BoardDiag_EnetIg_Receive(rxPerCtxt);
                     loopRxPktCnt += rxReadyCnt;
 
                     status = memcmp(&gEnetIg.txFrame->payload[0], &gEnetIg.rxFrame->payload[0], rxReadyCnt);
-                    if(status != ENET_SOK)
+                    if(ENET_SOK != status)
                     {
                         EnetAppUtils_print("\n\nPacket mismatch error at packet %d", pktCnt);
                         EnetAppUtils_print("\n\nRx Byte Count = %d", rxReadyCnt);
-                        if(printFrameEnable == true)
+                        if(BTRUE == printFrameEnable)
                         {
                             EnetAppUtils_print("\n\nTransmitted Packets: ", pktCnt);
                             BoardDiag_printFrame(gEnetIg.rxFrame, rxReadyCnt);
@@ -1473,14 +1473,14 @@ uint32_t BoardDiag_EnetIg_LpbkTxRx(void)
     status |= BoardDiag_EnetIg_Transmit(&gEnetIg.perCtxt[1], &gEnetIg.perCtxt[0]);
     Osal_delay(100);
 
-    if(status == ENET_SOK)
+    if(ENET_SOK == status)
     {
         if(gEnetIg.totalTxCnt != gEnetIg.totalRxCnt)
         {
             EnetAppUtils_print("\n\nPacket Loss, Test Failed");
             EnetAppUtils_print("\n\nTest Iteration %d failed", gEnetIg.loopCnt+1);
             gEnetIg.failIterations++;
-            printStatsEnable = true;
+            printStatsEnable = BTRUE;
         }
         else
         {
@@ -1491,20 +1491,20 @@ uint32_t BoardDiag_EnetIg_LpbkTxRx(void)
     else
     {
         gEnetIg.failIterations++;
-        printStatsEnable = true;
+        printStatsEnable = BTRUE;
         EnetAppUtils_print("\n\nFailed to transmit/receive packets");
     }
 
     EnetAppUtils_print("\n\nNo. of tests passed: %d", gEnetIg.passIterations);
     EnetAppUtils_print("\n\nNo. of tests failed: %d", gEnetIg.failIterations);
-    if(printStatsEnable == true)
+    if(BTRUE == printStatsEnable)
     {
         /* Print statistics */
         EnetIg_printStats(gEnetIg.perCtxt, gEnetIg.numPerCtxts);
 
         EnetIg_resetStats(gEnetIg.perCtxt, gEnetIg.numPerCtxts);
 
-        printStatsEnable = false;
+        printStatsEnable = BFALSE;
     }
 
     return status;

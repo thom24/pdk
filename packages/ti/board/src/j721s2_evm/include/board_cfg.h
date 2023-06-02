@@ -165,9 +165,9 @@ extern "C" {
 #define BOARD_USER_LED2                                 (7U)
 #define BOARD_USER_LED_IOEXP_PORT                       (2U)
 
-#define BOARD_ICSS_EMAC_PORT_MAX                        (1)
-#define BOARD_CPSW9G_EMAC_PORT_MAX                      (0)
-#define BOARD_CPSW9G_PORT_MAX                           (0)
+#define BOARD_ICSS_EMAC_PORT_MAX                        (1U)
+#define BOARD_CPSW9G_EMAC_PORT_MAX                      (0U)
+#define BOARD_CPSW9G_PORT_MAX                           (0U)
 
 
 /* ICSS0 EMAC PHY register address */
@@ -257,12 +257,12 @@ extern "C" {
 #define BOARD_EEPROM_HEADER_FIELD_SIZE                  (7U)
 #define BOARD_EEPROM_TYPE_SIZE                          (1U)
 #define BOARD_EEPROM_STRUCT_LENGTH_SIZE                 (2U)
-#define BOARD_EEPROM_MAGIC_NUMBER                       (0xEE3355AA)
+#define BOARD_EEPROM_MAGIC_NUMBER                       (0xEE3355AAU)
 
 #define BOARD_BOARD_FIELD_TYPE                          (0x10)
 #define BOARD_DDR_FIELD_TYPE                            (0x11)
 #define BOARD_MACINFO_FIELD_TYPE                        (0x13)
-#define BOARD_ENDLIST                                   (0xFE)
+#define BOARD_ENDLIST                                   (0xFEU)
 
 #define BOARD_EEPROM_HEADER_ADDR                        (0U)
 

@@ -100,22 +100,22 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) static void Board_DD
     CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
-    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
     {
         /* MCU SS Pulsar R5 SS */
         /* For R5 cores in the MCU domain MAIN2MCU_LVL_INTRTR0 is the base interrupt to the VIM. */
         gBoard_DDRThermalMgmtInstance.devIdIr   = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
-        gBoard_DDRThermalMgmtInstance.devIdCore = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        gBoard_DDRThermalMgmtInstance.devIdCore = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                                         TISCI_DEV_MCU_R5FSS0_CORE0:
                                                         TISCI_DEV_MCU_R5FSS0_CORE1;
     }
-    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
+    else if (CSL_ARM_R5_CLUSTER_GROUP_ID_1 == info.grpId)
     {
         /* MAIN SS Pulsar R5 SS0 */
         /* DDR0_DDRSS_CONTROLLER_0 interrupts are directly hardwired to MAIN SS Pulsar R5 SS0 cores.
          * There are no interrupt routers in b/w */
         gBoard_DDRThermalMgmtInstance.devIdIr   = BOARD_DEV_ID_IR_INVALID; 
-        gBoard_DDRThermalMgmtInstance.devIdCore = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+        gBoard_DDRThermalMgmtInstance.devIdCore = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
                                                         TISCI_DEV_R5FSS0_CORE0:
                                                         TISCI_DEV_R5FSS0_CORE1;
     }
@@ -147,7 +147,7 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) static Board_STATUS 
                     &req,
                     &res,
                     SCICLIENT_SERVICE_WAIT_FOREVER);
-        if (CSL_PASS != status || res.range_num == 0) {
+        if ((CSL_PASS != status) || (0 == res.range_num)) {
             /* Try with HOST_ID_ALL */
             req.type           = gBoard_DDRThermalMgmtInstance.devIdIr;
             req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
@@ -158,7 +158,7 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) static Board_STATUS 
                     &res,
                     SCICLIENT_SERVICE_WAIT_FOREVER);
         }
-        if ((CSL_PASS == status) && (res.range_num != 0))
+        if ((CSL_PASS == status) && (0 != res.range_num))
         {
             /* Translate IR Idx to Core Interrupt Idx */
             irIntrIdx = res.range_start;
@@ -225,7 +225,7 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) void Board_DDRInterr
         status = LPDDR4_ReadReg(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), LPDDR4_CTL_REGS,
                                 LPDDR4__AUTO_TEMPCHK_VAL_0__REG_OFFSET,
                                 &regValue);
-        if (status == 0U)
+        if (CDN_EOK == status)
         {
             /* Calculate refresh rate index */
             tempCheckRefreshRateIndex = ((regValue & LPDDR4__AUTO_TEMPCHK_VAL_0_MASK)
@@ -236,7 +236,7 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) void Board_DDRInterr
             Board_updateAllRefreshRate(gRefreshRateMultFactor[tempCheckRefreshRateIndex]);
         
             /* Call application callback function */
-            if (gBoard_DDRThermalMgmtInstance.appCallBackFunction != NULL)
+            if (NULL != gBoard_DDRThermalMgmtInstance.appCallBackFunction)
             {
                 gBoard_DDRThermalMgmtInstance.appCallBackFunction((Board_DDRTempEventType)
                                                                   (BOARD_DDR_TEMP_EVENT_LOW_TEMP_ALARM
@@ -252,7 +252,7 @@ __attribute((section(".text:BOARD_DDR_thermalManagement"))) void Board_DDRInterr
     if (irqStatus)
     {
         /* High or Low temperature alarm : call application callback */
-        if (gBoard_DDRThermalMgmtInstance.appCallBackFunction != NULL)
+        if (NULL != gBoard_DDRThermalMgmtInstance.appCallBackFunction)
         {
             gBoard_DDRThermalMgmtInstance.appCallBackFunction(BOARD_DDR_TEMP_EVENT_TEMP_ALERT);
         }
@@ -306,22 +306,22 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
 
     status = LPDDR4_Init(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &(gBoard_DDRThermalMgmtInstance.boardDDRCfg));
 
-    if ((status > 0U) ||
+    if ((0U < status) ||
         (gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd.ctlBase != (struct LPDDR4_CtlRegs_s *)gBoard_DDRThermalMgmtInstance.boardDDRCfg.ctlBase))
     {
         BOARD_DEBUG_LOG("LPDDR4_Init: FAIL\n");
         status = BOARD_FAIL;
     }
 
-    if (status == BOARD_SOK)
+    if (BOARD_SOK == status)
     {
         /* Read and preserve the initial Refresh Rates as baseline */
-        for (fspIndex = 0; fspIndex <= LPDDR4_FSP_2; fspIndex++)
+        for (fspIndex = 0U; fspIndex <= LPDDR4_FSP_2; fspIndex++)
         {
             lpddrStatus = LPDDR4_GetRefreshRate(&(gBoard_DDRThermalMgmtInstance.boardRuntimeDDRPd), &gBoardDDRFSPNum[fspIndex],
                                                 &(gBoard_DDRThermalMgmtInstance.boardDDRInitRefreshRate[gBoardDDRFSPNum[fspIndex]]),
                                                 &(gBoard_DDRThermalMgmtInstance.boardDDRTrasMax[gBoardDDRFSPNum[fspIndex]]));
-            if (lpddrStatus > 0U)
+            if (0U < lpddrStatus)
             {
                 BOARD_DEBUG_LOG("LPDDR4_GetRefreshRate: FAIL\n");
                 status = BOARD_FAIL;
@@ -330,14 +330,14 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
         }
     }
     
-    if (status == BOARD_SOK)
+    if (BOARD_SOK == status)
     {
         Board_DDRSetDevId();
         /* Get the Core IRQ Idx */
         status = Board_DDRGetIntNum(&coreInterruptIdx);
     }
 
-    if ((status == BOARD_SOK) && (BOARD_DEV_ID_IR_INVALID != gBoard_DDRThermalMgmtInstance.devIdIr))
+    if ((BOARD_SOK == status) && (BOARD_DEV_ID_IR_INVALID != gBoard_DDRThermalMgmtInstance.devIdIr))
     {
         /* Configure interrupt router to route DDR Ctrl interrupt to Monitoring
          * CPU, only if IR are present in b/w DDR Controller and CPU.
@@ -371,7 +371,7 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
         }
     }
 
-    if (status == BOARD_SOK)
+    if (BOARD_SOK == status)
     {
 
         /* Register DDR Control event handler */
@@ -387,13 +387,13 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
 
         /* Register interrupts */
         osalRet = Osal_RegisterInterrupt(&intrPrms, &(gBoard_DDRThermalMgmtInstance.boardTempInterruptHandle));
-        if (osalRet != OSAL_INT_SUCCESS)
+        if (OSAL_INT_SUCCESS != osalRet)
         {
             status = BOARD_FAIL;
         }
     }
 
-    if (status == BOARD_SOK)
+    if (BOARD_SOK == status)
     {
         /* Unmask only DDR thermal interrupt events */
         interruptMask = (uint64_t)(0xffffffffffffffffU)
@@ -405,10 +405,10 @@ Board_STATUS Board_DDRTempMonitoringInit(Board_thermalMgmtCallbackFunction_t cal
         Osal_EnableInterrupt(intrPrms.corepacConfig.corepacEventNum, intrPrms.corepacConfig.intVecNum);
     }
 
-    if (status == BOARD_SOK)
+    if (BOARD_SOK == status)
     {
         gBoard_DDRThermalMgmtInstance.appCallBackFunction = NULL;
-        if (callbackFunction != NULL)
+        if (NULL != callbackFunction)
         {
             /* Register callback function */
             gBoard_DDRThermalMgmtInstance.appCallBackFunction = callbackFunction;

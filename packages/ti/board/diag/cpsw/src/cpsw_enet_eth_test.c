@@ -63,8 +63,8 @@
 /* Enet loopback test object */
 BoardDiag_EnetObj gEnetLpbk;
 
-volatile bool txSem = false;
-volatile bool rxSem = false;
+volatile bool txSem = UFALSE;
+volatile bool rxSem = UFALSE;
 
 uint32_t txScatterSegments[] = 
 {
@@ -90,7 +90,7 @@ uint32_t rxScatterSegments[] =
  */
 void BoardDiag_enetRxIsrFxn(void *appData)
 {
-    rxSem = true;
+    rxSem = BTRUE;
 }
 
 /**
@@ -101,7 +101,7 @@ void BoardDiag_enetRxIsrFxn(void *appData)
  */
 void BoardDiag_enetTxIsrFxn(void *appData)
 {
-    txSem = true;
+    txSem = BTRUE;
 }
 
 /**
@@ -123,7 +123,7 @@ uint32_t BoardDiag_enetRetrieveFreeTxPkts(void)
 
     /* Retrieve any CPSW packets that may be free now */
     status = EnetDma_retrieveTxPktQ(gEnetLpbk.hTxCh, &txFreeQ);
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         txFreeQCnt = EnetQueue_getQCount(&txFreeQ);
 
@@ -163,7 +163,7 @@ void BoardDiag_enetPktTx(void)
     uint32_t txRetrievePktCnt;
     uint32_t loopCnt, pktCnt;
     int32_t status = ENET_SOK;
-    uint8_t bcastAddr[ENET_MAC_ADDR_LEN] = {0xffU, 0xffU, 0xffU, 0xffU, 0xffU, 0xffU};
+    uint8_t bcastAddr[ENET_MAC_ADDR_LEN] = {0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU, 0xFFU};
 
     gEnetLpbk.totalTxCnt = 0U;
     for (loopCnt = 0U; loopCnt < ENETLPBK_NUM_ITERATION; loopCnt++)
@@ -186,7 +186,7 @@ void BoardDiag_enetPktTx(void)
                 memcpy(frame->hdr.dstMac, bcastAddr, ENET_MAC_ADDR_LEN);
                 memcpy(frame->hdr.srcMac, &gEnetLpbk.hostMacAddr[0U], ENET_MAC_ADDR_LEN);
                 frame->hdr.etherType = Enet_htons(ETHERTYPE_EXPERIMENTAL1);
-                if (pktInfo->sgList.numScatterSegments == 1)
+                if (1U == pktInfo->sgList.numScatterSegments)
                 {
                     EnetAppUtils_assert(pktInfo->sgList.list[0U].segmentAllocLen >= (ENETLPBK_TEST_PKT_LEN + sizeof(EthFrameHeader)));
                     memset(&frame->payload[0U], (uint8_t)(0xA5 + pktCnt), ENETLPBK_TEST_PKT_LEN);
@@ -199,7 +199,7 @@ void BoardDiag_enetPktTx(void)
                     uint32_t payloadSegmentLen;
                     uint32_t payloadRemainLength;
 
-                    EnetAppUtils_assert(pktInfo->sgList.numScatterSegments > 1);
+                    EnetAppUtils_assert(1U < pktInfo->sgList.numScatterSegments);
                     segmentFillLength = (ENETLPBK_TEST_PKT_LEN / (pktInfo->sgList.numScatterSegments - 1));
 
                     pktInfo->sgList.list[0U].segmentFilledLen = sizeof(EthFrameHeader);
@@ -215,7 +215,7 @@ void BoardDiag_enetPktTx(void)
                     }
                     if (payloadRemainLength)
                     {
-                        uint32_t lastSegmentIndex = pktInfo->sgList.numScatterSegments - 1;
+                        uint32_t lastSegmentIndex = pktInfo->sgList.numScatterSegments - 1U;
                         uint32_t lastSegmentBufOffset = pktInfo->sgList.list[lastSegmentIndex].segmentFilledLen;
 
                         EnetAppUtils_assert(pktInfo->sgList.list[lastSegmentIndex].segmentAllocLen >= (lastSegmentBufOffset + payloadRemainLength));
@@ -227,7 +227,7 @@ void BoardDiag_enetPktTx(void)
                 pktInfo->appPriv    = &gEnetLpbk;
                 pktInfo->chkSumInfo = 0U;
                 pktInfo->txPortNum  = ENET_MAC_PORT_INV;
-                pktInfo->tsInfo.enableHostTxTs = false;
+                pktInfo->tsInfo.enableHostTxTs = BFALSE;
                 EnetDma_checkPktState(&pktInfo->pktState,
                                         ENET_PKTSTATE_MODULE_APP,
                                         ENET_PKTSTATE_APP_WITH_FREEQ,
@@ -236,7 +236,7 @@ void BoardDiag_enetPktTx(void)
                 /* Enqueue the packet for later transmission */
                 EnetQueue_enq(&txSubmitQ, &pktInfo->node);
 
-                if (pktCnt >= ENETLPBK_TEST_PKT_NUM)
+                if (ENETLPBK_TEST_PKT_NUM <= pktCnt)
                 {
                     break;
                 }
@@ -250,11 +250,11 @@ void BoardDiag_enetPktTx(void)
                 uint32_t txCnt = EnetQueue_getQCount(&txSubmitQ);
                 status = EnetDma_submitTxPktQ(gEnetLpbk.hTxCh,
                                                    &txSubmitQ);
-                while (txSem != true);
-                txSem = false;
+                while (BTRUE != txSem);
+                txSem = BFALSE;
 
                 /* Retrieve TX free packets */
-                if (status == ENET_SOK)
+                if (ENET_SOK == status)
                 {
                     txCnt            = txCnt - EnetQueue_getQCount(&txSubmitQ);
                     txRetrievePktCnt = 0U;
@@ -296,14 +296,14 @@ uint32_t BoardDiag_enetReceivePkts(void)
 
     /* Retrieve any CPSW packets which are ready */
     status = EnetDma_retrieveRxPktQ(gEnetLpbk.hRxCh, &rxReadyQ);
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         rxReadyCnt = EnetQueue_getQCount(&rxReadyQ);
 
         /* Queue the received packet to rxReadyQ and pass new ones from rxFreeQ
         **/
         pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&rxReadyQ);
-        while (pktInfo != NULL)
+        while (NULL != pktInfo)
         {
             EnetDma_checkPktState(&pktInfo->pktState,
                                     ENET_PKTSTATE_MODULE_APP,
@@ -327,25 +327,25 @@ bool EnetLpbk_verifyRxFrame(EnetDma_Pkt *pktInfo, uint8_t rxCnt)
 {
     uint8_t *rxPayload;
     EthFrame *rxframe;
-    uint8_t verifyRxpkt = 0xA5+rxCnt;
-    bool retval = false;
+    uint8_t verifyRxpkt = 0xA5 + rxCnt;
+    bool retval = BFALSE;
     uint32_t i,j;
     uint32_t segmentLen, headerLen;
-    bool incorrectPayload = false;
+    bool incorrectPayload = BFALSE;
 
     rxframe = (EthFrame *)pktInfo->sgList.list[0U].bufPtr;
     rxPayload = rxframe->payload;
 
-    if (pktInfo->sgList.numScatterSegments == 1)
+    if (1U == pktInfo->sgList.numScatterSegments)
     {
         for (i = 0; i < ENETLPBK_TEST_PKT_LEN; i++)
         {
             if((rxPayload[i] != verifyRxpkt))
             {
-                retval = false;
+                retval = BFALSE;
                 break;
             }
-            retval = true;
+            retval = BTRUE;
         }
     }
     else
@@ -354,7 +354,7 @@ bool EnetLpbk_verifyRxFrame(EnetDma_Pkt *pktInfo, uint8_t rxCnt)
         for (i = 0; i < pktInfo->sgList.numScatterSegments; i++)
         {
             segmentLen = pktInfo->sgList.list[i].segmentFilledLen;
-            if(i == 0)
+            if(0U == i)
             {
                 segmentLen -= headerLen;
             }
@@ -366,13 +366,13 @@ bool EnetLpbk_verifyRxFrame(EnetDma_Pkt *pktInfo, uint8_t rxCnt)
             {
                 if((rxPayload[j] != verifyRxpkt))
                 {
-                    retval = false;
-                    incorrectPayload = true;
+                    retval = BFALSE;
+                    incorrectPayload = BTRUE;
                     break;
                 }
-                retval = true;
+                retval = BTRUE;
             }
-            if(incorrectPayload == true)
+            if(BTRUE == incorrectPayload)
             {
                 break;
             }
@@ -401,12 +401,12 @@ void BoardDiag_enetPktRx(void)
         /* Wait for packet reception */
         do
         {
-            while (rxSem != true);
-                rxSem = false;
+            while (BTRUE != rxSem);
+                rxSem = BFALSE;
 
             /* Get the packets received so far */
             rxReadyCnt = BoardDiag_enetReceivePkts();
-            if (rxReadyCnt > 0U)
+            if (0U < rxReadyCnt)
             {
                 /* Consume the received packets and release them */
                 pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
@@ -423,14 +423,14 @@ void BoardDiag_enetPktRx(void)
                     {
                         EnetAppUtils_printSGFrame(pktInfo);
                     }
-                    EnetAppUtils_assert(EnetLpbk_verifyRxFrame(pktInfo, rxPktCnt) == true);
+                    EnetAppUtils_assert(BTRUE == EnetLpbk_verifyRxFrame(pktInfo, rxPktCnt));
                     /* Release the received packet */
                     EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pktInfo->node);
                     pktInfo = (EnetDma_Pkt *)EnetQueue_deq(&gEnetLpbk.rxReadyQ);
                 }
 
                 /*Submit now processed buffers */
-                if (status == ENET_SOK)
+                if (ENET_SOK == status)
                 {
                     EnetAppUtils_validatePacketState(&gEnetLpbk.rxFreeQ,
                                                      ENET_PKTSTATE_APP_WITH_FREEQ,
@@ -443,12 +443,12 @@ void BoardDiag_enetPktRx(void)
 
             loopRxPktCnt += rxReadyCnt;
         }
-        while (loopRxPktCnt < ENETLPBK_TEST_PKT_NUM);
+        while (ENETLPBK_TEST_PKT_NUM > loopRxPktCnt);
 
         gEnetLpbk.totalRxCnt += loopRxPktCnt;
     }
 
-    if (status != ENET_SOK)
+    if (ENET_SOK != status)
     {
         UART_printf("Failed to transmit/receive packets, transmitted : %d, received: %d \n", ENETLPBK_TEST_PKT_NUM, gEnetLpbk.totalRxCnt);
     }
@@ -489,12 +489,12 @@ int32_t BoardDiag_enetLoopbackTest(void)
 
     /* Open Enet driver */
     status = BoardDiag_enetOpenEnet();
-    if (status != ENET_SOK)
+    if (ENET_SOK != status)
     {
         UART_printf("Failed to open Enet driver: %d\n", status);
     }
 
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         /* Attach the core with RM */
         uint32_t coreId;
@@ -503,7 +503,7 @@ int32_t BoardDiag_enetLoopbackTest(void)
 
         ENET_IOCTL_SET_INOUT_ARGS(&prms, &coreId, &attachCoreOutArgs);
         status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId, ENET_PER_IOCTL_ATTACH_CORE, &prms);
-        if (status != ENET_SOK)
+        if (ENET_SOK != status)
         {
             UART_printf("BoardDiag_enetloopbackTest failed ENET_PER_IOCTL_ATTACH_CORE: %d\n", status);
         }
@@ -513,7 +513,7 @@ int32_t BoardDiag_enetLoopbackTest(void)
         }
     }
 
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         /* memutils open should happen after Cpsw is opened as it uses CpswUtils_Q
          * functions */
@@ -522,32 +522,32 @@ int32_t BoardDiag_enetLoopbackTest(void)
     }
 
     /* Open DMA driver */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         status = BoardDiag_enetOpenDma();
-        if (status != ENET_SOK)
+        if (ENET_SOK != status)
         {
             UART_printf("Failed to open DMA: %d\n", status);
         }
     }
 
     /* Enable host port */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         if (Enet_isCpswFamily(gEnetLpbk.enetType))
         {
             status = BoardDiag_enetSetupCpswAle();
-            if (status != ENET_SOK)
+            if (ENET_SOK != status)
             {
                 UART_printf("Failed to setup CPSW ALE: %d\n", status);
             }
         }
 
-        if (status == ENET_SOK)
+        if (ENET_SOK == status)
         {
             ENET_IOCTL_SET_NO_ARGS(&prms);
             status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId, ENET_HOSTPORT_IOCTL_ENABLE, &prms);
-            if (status != ENET_SOK)
+            if (ENET_SOK != status)
             {
                 UART_printf("Failed to enable host port: %d\n", status);
             }
@@ -555,26 +555,26 @@ int32_t BoardDiag_enetLoopbackTest(void)
     }
 
     /* Show alive PHYs */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         status = BoardDiag_enetShowAlivePhys();
     }
 
     /* Wait for link up */
-    if ((status == ENET_SOK) && gEnetLpbk.testPhyLoopback)
+    if ((ENET_SOK == status) && gEnetLpbk.testPhyLoopback)
     {
         status = BoardDiag_enetWaitForLinkUp();
     }
 
     /* Do packet transmission and reception */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         BoardDiag_enetPktTx();
         BoardDiag_enetPktRx();
     }
 
     /* Print network statistics */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         if (Enet_isCpswFamily(gEnetLpbk.enetType))
         {
@@ -583,17 +583,17 @@ int32_t BoardDiag_enetLoopbackTest(void)
     }
 
     /* Disable host port */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         ENET_IOCTL_SET_NO_ARGS(&prms);
         status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId, ENET_HOSTPORT_IOCTL_DISABLE, &prms);
-        if (status != ENET_SOK)
+        if (ENET_SOK != status)
         {
             UART_printf("Failed to disable host port: %d\n", status);
         }
     }
     /* Print DMA statistics */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         EnetAppUtils_showRxChStats(gEnetLpbk.hRxCh);
         EnetAppUtils_showTxChStats(gEnetLpbk.hTxCh);
@@ -633,20 +633,20 @@ void BoardDiag_enetInitCpswCfg(Cpsw_Cfg *cpswCfg)
     Enet_initCfg(gEnetLpbk.enetType, gEnetLpbk.instId, cpswCfg, sizeof(*cpswCfg));
 
     /* Peripheral config */
-    cpswCfg->vlanCfg.vlanAware = false;
+    cpswCfg->vlanCfg.vlanAware = BFALSE;
 
     /* Host port config */
-    hostPortCfg->removeCrc      = true;
-    hostPortCfg->padShortPacket = true;
-    hostPortCfg->passCrcErrors  = true;
+    hostPortCfg->removeCrc      = BTRUE;
+    hostPortCfg->padShortPacket = BTRUE;
+    hostPortCfg->passCrcErrors  = BTRUE;
 
     /* ALE config */
     aleCfg->modeFlags                          = CPSW_ALE_CFG_MODULE_EN;
-    aleCfg->agingCfg.autoAgingEn               = true;
+    aleCfg->agingCfg.autoAgingEn               = BTRUE;
     aleCfg->agingCfg.agingPeriodInMs           = 1000;
-    aleCfg->nwSecCfg.vid0ModeEn                = true;
-    aleCfg->vlanCfg.aleVlanAwareMode           = false;
-    aleCfg->vlanCfg.cpswVlanAwareMode          = false;
+    aleCfg->nwSecCfg.vid0ModeEn                = BTRUE;
+    aleCfg->vlanCfg.aleVlanAwareMode           = BFALSE;
+    aleCfg->vlanCfg.cpswVlanAwareMode          = BFALSE;
     aleCfg->vlanCfg.unknownUnregMcastFloodMask = CPSW_ALE_ALL_PORTS_MASK;
     aleCfg->vlanCfg.unknownRegMcastFloodMask   = CPSW_ALE_ALL_PORTS_MASK;
     aleCfg->vlanCfg.unknownVlanMemberListMask  = CPSW_ALE_ALL_PORTS_MASK;
@@ -654,7 +654,7 @@ void BoardDiag_enetInitCpswCfg(Cpsw_Cfg *cpswCfg)
     /* CPTS config */
     /* Note: Timestamping and MAC loopback are not supported together because of
      * IP limitation, so disabling timestamping for this application */
-    cptsCfg->hostRxTsEn = false;
+    cptsCfg->hostRxTsEn = BFALSE;
 
     EnetAppUtils_initResourceConfig(gEnetLpbk.enetType, gEnetLpbk.instId, gEnetLpbk.coreId, &cpswCfg->resCfg);
 }
@@ -680,29 +680,29 @@ int32_t BoardDiag_enetSetupCpswAle(void)
     /* ALE entry with "secure" bit cleared is required for loopback */
     setUcastInArgs.addr.vlanId  = 0U;
     setUcastInArgs.info.portNum = CPSW_ALE_HOST_PORT_NUM;
-    setUcastInArgs.info.blocked = false;
-    setUcastInArgs.info.secure  = false;
-    setUcastInArgs.info.super   = false;
-    setUcastInArgs.info.ageable = false;
-    setUcastInArgs.info.trunk   = false;
+    setUcastInArgs.info.blocked = BFALSE;
+    setUcastInArgs.info.secure  = BFALSE;
+    setUcastInArgs.info.super   = BFALSE;
+    setUcastInArgs.info.ageable = BFALSE;
+    setUcastInArgs.info.trunk   = BFALSE;
     EnetUtils_copyMacAddr(&setUcastInArgs.addr.addr[0U], gEnetLpbk.hostMacAddr);
     ENET_IOCTL_SET_INOUT_ARGS(&prms, &setUcastInArgs, &entryIdx);
 
     status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId, CPSW_ALE_IOCTL_ADD_UCAST, &prms);
-    if (status != ENET_SOK)
+    if (ENET_SOK != status)
     {
         UART_printf("Failed to add ucast entry: %d\n", status);
     }
 
     /* Set host port to 'forwarding' state */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         setPortStateInArgs.portNum   = CPSW_ALE_HOST_PORT_NUM;
         setPortStateInArgs.portState = CPSW_ALE_PORTSTATE_FORWARD;
         ENET_IOCTL_SET_IN_ARGS(&prms, &setPortStateInArgs);
 
         status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId, CPSW_ALE_IOCTL_SET_PORT_STATE, &prms);
-        if (status != ENET_SOK)
+        if (ENET_SOK != status)
         {
             UART_printf("Failed to set ALE port state: %d\n", status);
         }
@@ -735,21 +735,21 @@ int32_t BoardDiag_enetOpenEnet(void)
     /* Initialize peripheral config */
     BoardDiag_enetInitCpswCfg(&cpswCfg);
 
-    if (gEnetLpbk.enetType == ENET_CPSW_9G)
+    if (ENET_CPSW_9G == gEnetLpbk.enetType)
     {
         UART_printf("CPSW_9G Test on MAIN NAVSS\n");
     }
-    else if (gEnetLpbk.enetType == ENET_CPSW_5G)
+    else if (ENET_CPSW_5G == gEnetLpbk.enetType)
     {
         UART_printf("CPSW_5G Test on MAIN NAVSS\n");
     }
-    else if (gEnetLpbk.enetType == ENET_CPSW_2G)
+    else if (ENET_CPSW_2G == gEnetLpbk.enetType)
     {
-        if (gEnetLpbk.instId == 0)
+        if (0U == gEnetLpbk.instId)
         {
             UART_printf("CPSW_2G Test on MCU NAVSS\n");
         }
-        else if (gEnetLpbk.instId == 1)
+        else if (1U == gEnetLpbk.instId)
         {
             UART_printf("CPSW_2G Test on MAIN NAVSS\n");
         }
@@ -769,14 +769,14 @@ int32_t BoardDiag_enetOpenEnet(void)
 
     /* Open the Enet driver */
     gEnetLpbk.hEnet = Enet_open(gEnetLpbk.enetType, gEnetLpbk.instId, &cpswCfg, sizeof(cpswCfg));
-    if (gEnetLpbk.hEnet == NULL)
+    if (NULL == gEnetLpbk.hEnet)
     {
         UART_printf("Failed to open Enet driver\n");
         status = ENET_EFAIL;
     }
 
     /* Setup port link open parameters */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         EnetBoard_EthPort ethPort;
         EnetMacPort_LinkCfg *linkCfg = &portLinkCfg.linkCfg;
@@ -790,7 +790,7 @@ int32_t BoardDiag_enetOpenEnet(void)
         BoardDiag_macMode2MacMii(gEnetLpbk.macMode, &ethPort.mii);
 
         status = EnetBoard_setupPorts(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort, 1U);
-        EnetAppUtils_assert(status == ENET_SOK);
+        EnetAppUtils_assert(ENET_SOK == status);
 
         /* Set port link params */
         portLinkCfg.macPort = gEnetLpbk.macPort;
@@ -807,10 +807,10 @@ int32_t BoardDiag_enetOpenEnet(void)
             EnetPhy_initCfg(phyCfg);
             status = BoardDiag_macMode2PhyMii(gEnetLpbk.macMode, &phyMii);
 
-            if (status == ENET_SOK)
+            if (ENET_SOK == status)
             {
                 boardPhyCfg = EnetBoard_getPortCfg(gEnetLpbk.enetType, gEnetLpbk.instId, &ethPort);
-                if (boardPhyCfg != NULL)
+                if (NULL != boardPhyCfg)
                 {
                     phyCfg->phyAddr     = boardPhyCfg->phyCfg.phyAddr;
                     phyCfg->isStrapped  = boardPhyCfg->phyCfg.isStrapped;
@@ -821,7 +821,7 @@ int32_t BoardDiag_enetOpenEnet(void)
                 else
                 {
                     UART_printf("PHY info not found\n");
-                    EnetAppUtils_assert(false);
+                    EnetAppUtils_assert(BFALSE);
                 }
 
                 if ((phyMii == ENETPHY_MAC_MII_MII) ||
@@ -868,14 +868,14 @@ int32_t BoardDiag_enetOpenEnet(void)
         /* MAC and PHY loopbacks are mutually exclusive */
         if(gEnetLpbk.testLoopBackType)
         {
-            gEnetLpbk.testExtLoopback = true;
+            gEnetLpbk.testExtLoopback = BTRUE;
             UART_printf("\n Setting for external loopback\n");
             phyCfg->loopbackEn = gEnetLpbk.testLoopBackType && !gEnetLpbk.testExtLoopback;
             macCfg.loopbackEn = !gEnetLpbk.testLoopBackType;
         }
         else
         {
-            gEnetLpbk.testExtLoopback = false;
+            gEnetLpbk.testExtLoopback = BFALSE;
             phyCfg->loopbackEn = gEnetLpbk.testPhyLoopback && !gEnetLpbk.testExtLoopback;
             macCfg.loopbackEn = !gEnetLpbk.testPhyLoopback;
         }
@@ -951,7 +951,7 @@ void BoardDiag_enetCloseEnet(void)
 int32_t BoardDiag_enetShowAlivePhys(void)
 {
     Enet_IoctlPrms prms;
-    bool alive = false;
+    bool alive = BFALSE;
     int8_t i;
     int32_t status;
 
@@ -960,9 +960,9 @@ int32_t BoardDiag_enetShowAlivePhys(void)
         ENET_IOCTL_SET_INOUT_ARGS(&prms, &i, &alive);
 
         status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId, ENET_MDIO_IOCTL_IS_ALIVE, &prms);
-        if (status == ENET_SOK)
+        if (ENET_SOK == status)
         {
-            if (alive == true)
+            if (BTRUE == alive)
             {
                 UART_printf("PHY %u is alive\n", i);
             }
@@ -989,7 +989,7 @@ int32_t BoardDiag_enetShowAlivePhys(void)
 int32_t BoardDiag_enetWaitForLinkUp(void)
 {
     Enet_IoctlPrms prms;
-    bool linked = false;
+    bool linked = BFALSE;
     int32_t status = ENET_SOK;
 
     ENET_IOCTL_SET_INOUT_ARGS(&prms, &gEnetLpbk.macPort, &linked);
@@ -997,11 +997,11 @@ int32_t BoardDiag_enetWaitForLinkUp(void)
     while (!linked)
     {
         status = Enet_ioctl(gEnetLpbk.hEnet, gEnetLpbk.coreId, ENET_PER_IOCTL_IS_PORT_LINK_UP, &prms);
-        if (status != ENET_SOK)
+        if (ENET_SOK != status)
         {
             UART_printf("Failed to get port %u's link status: %d\n",
                             ENET_MACPORT_ID(gEnetLpbk.macPort), status);
-            linked = false;
+            linked = BFALSE;
             break;
         }
 
@@ -1087,7 +1087,7 @@ void BoardDiag_enetInitTxFreePktQ(void)
                                        ENETDMA_CACHELINE_ALIGNMENT,
                                        ENET_ARRAYSIZE(txScatterSegments),
                                        txScatterSegments);
-        EnetAppUtils_assert(pPktInfo != NULL);
+        EnetAppUtils_assert(NULL != pPktInfo);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
 
         EnetQueue_enq(&gEnetLpbk.txFreePktInfoQ, &pPktInfo->node);
@@ -1122,16 +1122,16 @@ void BoardDiag_enetInitRxReadyPktQ(void)
                                        ENETDMA_CACHELINE_ALIGNMENT,
                                        ENET_ARRAYSIZE(rxScatterSegments),
                                        rxScatterSegments);
-        EnetAppUtils_assert(pPktInfo != NULL);
+        EnetAppUtils_assert(NULL != pPktInfo);
         ENET_UTILS_SET_PKT_APP_STATE(&pPktInfo->pktState, ENET_PKTSTATE_APP_WITH_FREEQ);
         EnetQueue_enq(&gEnetLpbk.rxFreeQ, &pPktInfo->node);
     }
 
     /* Retrieve any CPSW packets which are ready */
     status = EnetDma_retrieveRxPktQ(gEnetLpbk.hRxCh, &rxReadyQ);
-    EnetAppUtils_assert(status == ENET_SOK);
+    EnetAppUtils_assert(ENET_SOK == status);
     /* There should not be any packet with DMA during init */
-    EnetAppUtils_assert(EnetQueue_getQCount(&rxReadyQ) == 0U);
+    EnetAppUtils_assert(0U == EnetQueue_getQCount(&rxReadyQ));
 
     EnetAppUtils_validatePacketState(&gEnetLpbk.rxFreeQ,
                                      ENET_PKTSTATE_APP_WITH_FREEQ,
@@ -1213,7 +1213,7 @@ int32_t BoardDiag_enetOpenDma(void)
     }
 
     /* Open the CPSW RX flow  */
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         EnetDma_initRxChParams(&rxChCfg);
 
@@ -1226,7 +1226,7 @@ int32_t BoardDiag_enetOpenDma(void)
                                 gEnetLpbk.hEnet,
                                 gEnetLpbk.coreKey,
                                 gEnetLpbk.coreId,
-                                true,
+                                BTRUE,
                                 &gEnetLpbk.rxStartFlowIdx,
                                 &gEnetLpbk.rxFlowIdx,
                                 &gEnetLpbk.hostMacAddr[0U],
@@ -1273,7 +1273,7 @@ void BoardDiag_enetCloseDma(void)
                              gEnetLpbk.hEnet,
                              gEnetLpbk.coreKey,
                              gEnetLpbk.coreId,
-                             true,
+                             BTRUE,
                              &fqPktInfoQ,
                              &cqPktInfoQ,
                              gEnetLpbk.rxStartFlowIdx,
@@ -1335,13 +1335,13 @@ int32_t BoardDiag_macMode2PhyMii(emac_mode macMode,
         case XFI:
             status = ENET_EFAIL;
             EnetAppUtils_print("XFI is not supported by EnetPhy driver\n");
-            EnetAppUtils_assert(false);
+            EnetAppUtils_assert(BFALSE);
             break;
 
         default:
             status = ENET_EFAIL;
             EnetAppUtils_print("Invalid MAC mode: %u\n", macMode);
-            EnetAppUtils_assert(false);
+            EnetAppUtils_assert(BFALSE);
             break;
     }
 
@@ -1406,7 +1406,7 @@ void BoardDiag_macMode2MacMii(emac_mode macMode,
 
         default:
             EnetAppUtils_print("Invalid MAC mode: %u\n", macMode);
-            EnetAppUtils_assert(false);
+            EnetAppUtils_assert(BFALSE);
             break;
     }
 }
@@ -1449,22 +1449,22 @@ void BoardDiag_getTestConfig(Enet_Type *enetType,
         switch (choice)
         {
             case 0:
-                *testPhyLoopback = false;
-                retry = false;
+                *testPhyLoopback = BFALSE;
+                retry = BFALSE;
                 break;
             case 1:
-                *testPhyLoopback = true;
-                *testLoopBackType = false;
-                retry = false;
+                *testPhyLoopback  = BTRUE;
+                *testLoopBackType = BFALSE;
+                retry = BFALSE;
                 break;
             case 2:
-                *testPhyLoopback = true;
-                *testLoopBackType = true;
-                retry = false;
+                *testPhyLoopback  = BTRUE;
+                *testLoopBackType = BTRUE;
+                retry = BFALSE;
                 break;
             default:
                 EnetAppUtils_print("Wrong option, try again...\n\n");
-                retry = true;
+                retry = BTRUE;
                 break;
         }
 
@@ -1489,12 +1489,12 @@ int main(void)
     Board_initCfg boardCfg;
     Board_STATUS status;
 
-    boardCfg = BOARD_INIT_MODULE_CLOCK |
+    boardCfg = BOARD_INIT_MODULE_CLOCK  |
                BOARD_INIT_PINMUX_CONFIG |
                BOARD_INIT_UART_STDIO;
 
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
@@ -1518,9 +1518,9 @@ int main(void)
         UART_printf("Press 'y' to continue the test, 'b' to exit\n");
         UART_scanFmt("%c", &p);
 
-    } while(p == 'y');
+    } while('y' == p);
 
-    if (status == ENET_SOK)
+    if (ENET_SOK == status)
     {
         UART_printf("\n Enet Loopback test Passed\n");
     }

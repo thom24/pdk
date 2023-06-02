@@ -347,7 +347,7 @@ static int32_t BOARD_udmaInit(Udma_DrvHandle drvHandle)
 
     /* Use MCU NAVSS for MCU domain cores. Rest cores all uses Main NAVSS */
     socDomain = Board_getSocDomain();
-    if(socDomain == BOARD_SOC_DOMAIN_MCU)
+    if(BOARD_SOC_DOMAIN_MCU == socDomain)
     {
         instId = UDMA_INST_ID_MCU_0;
     }
@@ -516,7 +516,7 @@ static int32_t BOARD_udmaDelete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle
     }
 
     /* Flush any pending request from the free queue */
-    while(1)
+    while(BTRUE)
     {
         tempRetVal = Udma_ringFlushRaw(
                          Udma_chGetFqRingHandle(chHandle), &pDesc);
@@ -568,7 +568,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     uint32_t *pTrResp;
     uint32_t cqRingNum = Udma_chGetCqRingNum(chHandle);
 
-    uint32_t numTR = 1, trIdx;
+    uint32_t numTR = 1U, trIdx;
     uint16_t icnt[BOARD_MAX_TR][4] = {0};
     uint32_t addrOffset[BOARD_MAX_TR] = {0};
 
@@ -576,7 +576,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     uint32_t residue      = remainder & (BOARD_UDMA_ICNT_SPLIT_SIZE - 1U);
 
     /* Calculate number of TR's */
-    if (remainder < BOARD_UDMA_ICNT_SPLIT_SIZE)
+    if (BOARD_UDMA_ICNT_SPLIT_SIZE > remainder)
     {
         numTR = 1U;
     }
@@ -591,7 +591,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
 
     pTrResp = (uint32_t *)(pTrpdMem + (sizeof(CSL_UdmapTR15) * (numTR + 1U)));
     
-    if (remainder < BOARD_UDMA_ICNT_SPLIT_SIZE)
+    if (BOARD_UDMA_ICNT_SPLIT_SIZE > remainder)
     {
         icnt[0][0] = (uint16_t)srcBufSize;
         icnt[0][1] = (uint16_t)remainder;
@@ -605,7 +605,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
         icnt[0][2] = (uint16_t)(remainder / BOARD_UDMA_ICNT_SPLIT_SIZE);
         icnt[0][3] = (uint16_t)1U;
     }
-    if (numTR > 1)
+    if (1U < numTR)
     {
         icnt[1][0] = (uint16_t)srcBufSize;
         icnt[1][1] = (uint16_t)residue;
@@ -617,7 +617,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     /* Make TRPD */
     UdmaUtils_makeTrpd(pTrpd, UDMA_TR_TYPE_15, numTR, cqRingNum);
 
-    for (trIdx = 0u; trIdx < numTR; trIdx ++)
+    for (trIdx = 0U; trIdx < numTR; trIdx ++)
     {
         /* Setup TR */
         pTr->flags    = CSL_FMK(UDMAP_TR_FLAGS_TYPE, 15)                                            |

@@ -341,7 +341,7 @@ static int8_t BoardDiag_spiNorflashRunTest(uint32_t  pageOffset)
     /* Read from SPI flash */
     BoardDiag_spiNorflashReadPage(rxBuf, pageOffset, BOARD_DIAG_MAX_BUFF_SIZE);
 
-    if(BoardDiag_memCompare(txBuf, rxBuf, BOARD_DIAG_MAX_BUFF_SIZE, &failIndex) == true)
+    if(BoardDiag_memCompare(txBuf, rxBuf, BOARD_DIAG_MAX_BUFF_SIZE, &failIndex) == BTRUE)
     {
         if(!(pageOffset % BOARD_DIAG_SECTOR_SIZE))
         {

@@ -169,14 +169,14 @@ static int32_t BoardDiag_convert_temp(uint16_t temp)
  */
 int8_t BoardDiag_run_temperature_test(void)
 {
-    int8_t     ret = 0;
+    int8_t     ret = BOARD_SOK;
     uint16_t   index;
     uint16_t   temp;
     I2C_Params i2cParams;
     I2C_HwAttrs i2cConfig;
     I2C_Handle handle = NULL;
 #if ((defined(SOC_AM65XX)) || (defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_AM64X)) || (defined(SOC_J721S2)) || (defined (SOC_J784S4)))
-    bool isBoardAlpha = FALSE;
+    bool isBoardAlpha = BFALSE;
 #endif
 
 #if defined(SOC_J7200) || defined(SOC_J721S2)
@@ -184,7 +184,7 @@ int8_t BoardDiag_run_temperature_test(void)
 #endif
 
 #if defined (SOC_J784S4)  //TODO: Need to do this check based on board type i.e socketed or soldered
-    isBoardAlpha = TRUE;
+    isBoardAlpha = BTRUE;
 #endif
 
 #if (((defined(SOC_J721E)) || (defined(SOC_J7200)) || (defined(SOC_J721S2) || defined(SOC_J784S4))) && (defined (__aarch64__)))
@@ -194,7 +194,7 @@ int8_t BoardDiag_run_temperature_test(void)
     for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
     {
         I2C_socGetInitCfg(index, &i2cConfig);
-        i2cConfig.enableIntr = false;
+        i2cConfig.enableIntr = BFALSE;
         I2C_socSetInitCfg(index, &i2cConfig);
     }
 
@@ -208,10 +208,10 @@ int8_t BoardDiag_run_temperature_test(void)
 #endif
     /* Configures the I2C instance with the passed parameters*/
     handle = I2C_open(I2C_INSTANCE, &i2cParams);
-    if(handle == NULL)
+    if(NULL == handle)
     {
         UART_printf("\nI2C Open failed!\n");
-        ret = -1;
+        ret = BOARD_INVALID_PARAM;
         return ret;
     }
 
@@ -220,7 +220,7 @@ int8_t BoardDiag_run_temperature_test(void)
     ret = BoardDiag_read_temp(handle,
 	                          TEMP_SLAVE_DEVICE1_ADDR,
                               &temp);
-    if(ret == -1)
+    if(BOARD_INVALID_PARAM == ret)
     {
         UART_printf("Temperature sensor test Failed!\n");
         return ret;
@@ -237,12 +237,12 @@ int8_t BoardDiag_run_temperature_test(void)
 
     /* Second temperature sensor will not be aailable on initial
        versions of the boards with socket */
-    if(isBoardAlpha != TRUE)
+    if(BTRUE != isBoardAlpha)
     {
         ret = BoardDiag_read_temp(handle,
                                   TEMP_SLAVE_DEVICE2_ADDR,
                                   &temp);
-        if(ret == -1)
+        if(BOARD_INVALID_PARAM == ret)
         {
             UART_printf("Temperature sensor test Failed!\n");
             return ret;

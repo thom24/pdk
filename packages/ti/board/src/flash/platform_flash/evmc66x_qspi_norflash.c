@@ -75,9 +75,9 @@ static QSPI_STATUS qspiFlashWaitReady(uint32_t timeOut)
             break;
         }
 
-    } while (TRUE);
+    } while (BTRUE);
 
-    if ((status & QSPI_FLASH_SR_WIP) == 0) {
+    if (0U == (status & QSPI_FLASH_SR_WIP)) {
         return QSPI_SUCCESS;
     }
 

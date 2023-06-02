@@ -65,14 +65,14 @@ static int8_t BoardDiag_hdmiSetPwrDownMode(void)
     ioExpCfg.i2cInst     = BOARD_HDMI_IO_EXP_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_HDMI_IO_SLAVE_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_0;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
 
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, &ioExpCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
@@ -97,7 +97,7 @@ static int8_t BoardDiag_hdmiDeInitDss(BoardDiag_HdmiDisplayObj *displayObj)
     retVal = Fvid2_delete(displayObj->dctrlHandle, NULL);
     retVal |= Dss_deInit();
     retVal |= Fvid2_deInit(NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("DCTRL handle delete failed!!!\r\n");
         return -1;
@@ -131,7 +131,7 @@ static int8_t BoardDiag_hdmiEnableColorBar(BoardDiag_HdmiDisplayObj *displayObj)
                            IOCTL_DSS_DCTRL_SET_VP_PARAMS,
                            vpParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Dctrl Set VP Params IOCTL Failed\n");
         return -1;
@@ -148,13 +148,13 @@ static int8_t BoardDiag_hdmiEnableColorBar(BoardDiag_HdmiDisplayObj *displayObj)
                  CSL_DSS_COMMON_M_DISPC_CONNECTIONS, regVal);
 
     overlayParams->overlayId = CSL_DSS_OVERLAY_ID_2;
-    overlayParams->colorbarEnable = TRUE;
+    overlayParams->colorbarEnable = UTRUE;
 
     retVal = Fvid2_control(displayObj->dctrlHandle,
                            IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS,
                            overlayParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("DCTRL Set Overlay Params IOCTL Failed\n");
         return -1;
@@ -184,7 +184,7 @@ static int8_t BoardDiag_hdmiStopDisplay(BoardDiag_HdmiDisplayObj *displayObj)
                            IOCTL_DSS_DCTRL_STOP_VP,
                            vpParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("VP Stop Failed\n");
         return -1;
@@ -223,7 +223,7 @@ static int8_t BoardDiag_hdmiDisplayCfg(BoardDiag_HdmiDisplayObj *displayObj)
     vpParams->lcdPolarityCfg.vsPolarity = FVID2_POL_HIGH;
 
     ret = BoardDiag_hdmiEnableColorBar(displayObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
@@ -248,7 +248,7 @@ static int8_t BoardDiag_hdmiInitDss(BoardDiag_HdmiDisplayObj *displayObj)
 
     Fvid2InitPrms_init(&initPrms);
     retVal = Fvid2_init(&initPrms);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Fvid2 Init Failed\n");
         return -1;
@@ -256,7 +256,7 @@ static int8_t BoardDiag_hdmiInitDss(BoardDiag_HdmiDisplayObj *displayObj)
 
     Dss_initParamsInit(&displayObj->initParams);
     retVal = Dss_init(&displayObj->initParams);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("DSS Init Failed\n");
         return -1;
@@ -268,7 +268,7 @@ static int8_t BoardDiag_hdmiInitDss(BoardDiag_HdmiDisplayObj *displayObj)
                                            NULL,
                                            NULL,
                                            NULL);
-    if(displayObj->dctrlHandle == NULL)
+    if(NULL == displayObj->dctrlHandle)
     {
         UART_printf("DCTRL Create Failed\n");
         return -1;
@@ -293,10 +293,10 @@ static int8_t BoardDiag_hdmiHotPlugDetect(void)
 
     i2cCfg.i2cInst    = BOARD_DIAG_HDMI_HPD_EXP_INSTANCE;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
     status = Board_i2cIoExpInit();
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
@@ -307,7 +307,7 @@ static int8_t BoardDiag_hdmiHotPlugDetect(void)
                                            PORTNUM_1,
                                            PIN_NUM_2,
                                            PIN_DIRECTION_INPUT);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
@@ -318,7 +318,7 @@ static int8_t BoardDiag_hdmiHotPlugDetect(void)
                                        PORTNUM_1,
                                        PIN_NUM_2,
                                        &hpdVal);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
@@ -343,7 +343,7 @@ static int8_t BoardDiag_hdmiDpiClkCfg(void)
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK,
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_1_IN_2X_CLK_PARENT_DPI0_EXT_CLKSEL_OUT0,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status != PM_SUCCESS)
+    if (PM_SUCCESS != status)
     {
         return -1;
     }
@@ -354,7 +354,7 @@ static int8_t BoardDiag_hdmiDpiClkCfg(void)
                                           BOARD_DIAG_DSS0_DPI_CLK_FREQ,
                                           TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status != PM_SUCCESS)
+    if (PM_SUCCESS != status)
     {
         return -1;
     }
@@ -374,7 +374,7 @@ int8_t BoardDiag_HdmiRunTest(void)
     Board_STATUS status;
     BoardDiag_HdmiDisplayObj dispApp_Obj;
     char userInput;
-    uint8_t timeOutCnt = 0;
+    uint8_t timeOutCnt = 0U;
     int8_t ret;
 
     UART_printf("\n***********************************************\n");
@@ -384,45 +384,45 @@ int8_t BoardDiag_HdmiRunTest(void)
     UART_printf("\nRunning HDMI Test...\n");
 
     ret = BoardDiag_hdmiDpiClkCfg();
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
 
     /* Configure HDMI mux selection */
     status = Board_control(BOARD_CTRL_CMD_SET_HDMI_MUX, NULL);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
 
     /* Power on HDMI bridge */
     status = Board_control(BOARD_CTRL_CMD_SET_HDMI_PD_HIGH, NULL);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
 
     UART_printf("Detecting HPD..\n");
-    while(timeOutCnt <= BOARD_DIAG_HDMI_HPD_DETECT_TIMEOUT)
+    while(BOARD_DIAG_HDMI_HPD_DETECT_TIMEOUT >= timeOutCnt)
     {
         ret = BoardDiag_hdmiHotPlugDetect();
-        if(ret == 1)
+        if(1 == ret)
         {
             break;
         }
-        else if(ret == -1)
+        else if(-1 == ret)
         {
             return -1;
         }
 
-        if(timeOutCnt == 0)
+        if(0U == timeOutCnt)
             UART_printf("Waiting for HDMI cable to detect...\n\r");
         BOARD_delay(1000000);
         timeOutCnt++;
     }
 
-    if(timeOutCnt > BOARD_DIAG_HDMI_HPD_DETECT_TIMEOUT)
+    if(BOARD_DIAG_HDMI_HPD_DETECT_TIMEOUT < timeOutCnt)
     {
         UART_printf("HDMI cable detection timeout completed\n\r");
         UART_printf("HDMI cable not detected!!\n\r");
@@ -436,14 +436,14 @@ int8_t BoardDiag_HdmiRunTest(void)
     }
 
     ret = BoardDiag_hdmiInitDss(&dispApp_Obj);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
 
     /* Create driver */
     ret = BoardDiag_hdmiDisplayCfg(&dispApp_Obj);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
@@ -454,19 +454,19 @@ int8_t BoardDiag_HdmiRunTest(void)
 
     /* Power down HDMI bridge */
     ret = BoardDiag_hdmiStopDisplay(&dispApp_Obj);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
 
     ret = BoardDiag_hdmiDeInitDss(&dispApp_Obj);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
 
     ret = BoardDiag_hdmiSetPwrDownMode();
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("Power down HDMI bridge failed\n");
         return -1;
@@ -502,13 +502,13 @@ int main(void)
 #endif
 
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
 
     ret = BoardDiag_HdmiRunTest();
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("\nHDMI Test Failed\n");
         return -1;

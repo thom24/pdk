@@ -115,9 +115,9 @@ int accelerometer_test()
     int retVal = 0;
     int i;
 
-    for (i=0; I2C_config[i].fxnTablePtr != NULL; i++)
+    for (i = 0; (NULL != I2C_config[i].fxnTablePtr) ; i++)
     {
-        ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = false;
+        ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = BFALSE;
     }
 
     I2C_init();
@@ -135,7 +135,7 @@ int accelerometer_test()
 
     data = accel_read(handle, WHO_AM_I);
     UART_printf("0x%x            ", data);
-    if(data != 0x32)
+    if(0x32U != data)
     {
         UART_printf("FAIL \n");
         retVal = -1;
@@ -150,73 +150,73 @@ int accelerometer_test()
 
         /* Enable self-test */
         data = accel_read(handle, CTRL_REG4);
-        data |=(1<<1);
+        data |= (1<<1);
         accel_write(handle, CTRL_REG4, data);
 
         /* Check X axis */
         UART_printf("Self-Test(X Axis)    120-550             ");
-        for(i=0;i<SELF_TEST_LOOPS;i++)
+        for(i = 0; i < SELF_TEST_LOOPS; i++)
         {
             /* wait for data ready */
             do
             {
-              data=accel_read(handle, STATUS);
-            }while ( (data&0x1) != 0x1 );
-            data=accel_read(handle, OUT_X_L_DATA);
-            if(data>=120 && data<=550)
+              data = accel_read(handle, STATUS);
+            }while ( 0x1 != (data & 0x1) );
+            data = accel_read(handle, OUT_X_L_DATA);
+            if((120 <= data) && (550 >= data))
               break;
             }
             UART_printf("%3d               ", data);
-            if(data>=120 && data<=550)
+            if((120 <= data) && (550 >= data))
             UART_printf("PASS\n");
             else
             {
                 UART_printf("FAIL\n");
-                retVal=1;
+                retVal = 1;
             }
 
         UART_printf("Self-Test(Y axis)    120-550             ");
-        for(i=0;i<SELF_TEST_LOOPS;i++)
+        for(i = 0; i < SELF_TEST_LOOPS; i++)
         {
             //wait for data ready
             do
             {
-              data=accel_read(handle, STATUS);
-            }while ( (data&0x2) != 0x2 );
-            data=accel_read(handle, OUT_Y_L_DATA);
-            if(data>=120 && data<=550)
+              data = accel_read(handle, STATUS);
+            }while ( 0x2 != (data&0x2) );
+            data = accel_read(handle, OUT_Y_L_DATA);
+            if((120 <= data) && (550 >= data))
               break;
         }
 
         UART_printf("%3d               ", data);
-        if(data>=120 && data<=550)
+        if((120 <= data) && (550 >= data))
             UART_printf("PASS\n");
         else
         {
             UART_printf("FAIL\n");
-            retVal=1;
+            retVal = 1;
         }
 
         //Check Z axis
         UART_printf("Self-Test(Z Axis)    140-750             ");
-        for(i=0;i<SELF_TEST_LOOPS;i++)
+        for(i = 0; i < SELF_TEST_LOOPS; i++)
         {
             //wait for data ready
         do
         {
-          data=accel_read(handle, STATUS);
-        }while ( (data&0x4) != 0x4 );
-        data=accel_read(handle, OUT_Z_L_DATA);
-        if(data>=140 && data<=750)
+          data = accel_read(handle, STATUS);
+        }while ( 0x4 != (data & 0x4) );
+        data = accel_read(handle, OUT_Z_L_DATA);
+        if((140 <= data) && (750 >= data))
           break;
         }
         UART_printf("%3d               ", data);
-        if(data>=140 && data<=750)
+        if((140 <= data) && (750 >= data))
             UART_printf("PASS\n");
         else
         {
             UART_printf("FAIL\n");
-            retVal=1;
+            retVal = 1;
         }
         if(retVal)
         {

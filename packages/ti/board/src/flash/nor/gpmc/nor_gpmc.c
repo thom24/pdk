@@ -75,7 +75,7 @@ static volatile uint8_t *Nor_gpmcMakeAddr(NOR_HANDLE handle,
     NOR_Info *norGpmcInfo = (NOR_Info *)handle;
     uint32_t addr;
 
-    if (norGpmcInfo->busWidth == NOR_BUSWIDTH_8BITS)
+    if (NOR_BUSWIDTH_8BITS == norGpmcInfo->busWidth)
     {
         addr = 	blkAddr + offset;
     }
@@ -111,7 +111,7 @@ static void Nor_gpmcWriteCmd(NOR_HANDLE handle, uint32_t blkAddr,
 
     addr.cp = Nor_gpmcMakeAddr(handle, blkAddr, offset);
     Nor_gpmcMakeCmd(handle, cmd, &cmdword);
-    if (norGpmcInfo->busWidth == NOR_BUSWIDTH_8BITS)
+    if (NOR_BUSWIDTH_8BITS == norGpmcInfo->busWidth)
     {
         /* Bus width 8 bit */
         *addr.cp = cmdword.c;
@@ -140,7 +140,7 @@ static void Nor_gpmcWriteData(NOR_HANDLE handle, uint32_t address, uint32_t data
     dataword.l = data;
     pAddr.cp = (volatile uint8_t *)address;
 
-    if (norGpmcInfo->busWidth == NOR_BUSWIDTH_8BITS)
+    if (NOR_BUSWIDTH_8BITS == norGpmcInfo->busWidth)
     {
         /* Bus width 8 bit */
         *pAddr.cp = dataword.c;
@@ -163,7 +163,7 @@ uint32_t Nor_gpmcReadData(NOR_HANDLE handle, uint32_t address,
 
     pAddr.cp = Nor_gpmcMakeAddr(handle, address, offset);
 
-    if (norGpmcInfo->busWidth == NOR_BUSWIDTH_8BITS)
+    if (NOR_BUSWIDTH_8BITS == norGpmcInfo->busWidth)
     {
         /* Bus width 8 bit */
         dataword.c = *pAddr.cp;
@@ -222,9 +222,9 @@ static NOR_STATUS Nor_gpmcReadId(NOR_HANDLE handle)
     manfID = Nor_gpmcReadData(handle, norGpmcInfo->baseAddr, NOR_MANFID_ADDR);
     devID = Nor_gpmcReadData(handle, norGpmcInfo->baseAddr, NOR_DEVID_ADDR0);
 #if defined(am64x_svb)
-    if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID1))
+    if ((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID1 == devID))
 #else
-    if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))
+    if ((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID == devID))
 #endif
     {
         Nor_gpmcInfo.manufacturerId = manfID;
@@ -267,7 +267,7 @@ NOR_HANDLE Nor_gpmcOpen(uint32_t norIntf, uint32_t portNum, void *params)
         Nor_gpmcInfo.baseAddr = Nor_gpmcInfo.baseAddr | 0x40000000;
 #endif
         Nor_gpmcSoftReset((NOR_HANDLE)(&Nor_gpmcInfo));
-        if (Nor_gpmcReadId((NOR_HANDLE)(&Nor_gpmcInfo)) == NOR_PASS)
+        if (NOR_PASS == Nor_gpmcReadId((NOR_HANDLE)(&Nor_gpmcInfo)))
         {
             Nor_gpmcInfo.hwHandle = (uint32_t)hwHandle;
             norHandle = (NOR_HANDLE)(&Nor_gpmcInfo);
@@ -301,7 +301,7 @@ static NOR_STATUS Nor_gpmcIsSetAll (NOR_HANDLE handle,
     NOR_Info        *norGpmcInfo = (NOR_Info *)handle;
     volatile NOR_Ptr address;
     NOR_Data         maskword;
-    bool             retval = true;
+    bool             retval = BTRUE;
     uint32_t         temp;
 
     maskword.l = 0x00000000;
@@ -309,7 +309,7 @@ static NOR_STATUS Nor_gpmcIsSetAll (NOR_HANDLE handle,
     address.cp = Nor_gpmcMakeAddr(handle, addr, 0);
     temp = *address.wp;
     Nor_gpmcMakeCmd (handle, mask, &maskword);
-    if (norGpmcInfo->busWidth == NOR_BUSWIDTH_8BITS)
+    if (NOR_BUSWIDTH_8BITS == norGpmcInfo->busWidth)
     {
         temp = *address.cp;
         retval = ((maskword.c & temp) == maskword.c);
@@ -352,7 +352,7 @@ NOR_STATUS Nor_gpmcRead(NOR_HANDLE handle, uint32_t addr,
     GPMC_Handle       gpmcHandle;
     bool              ret;
 
-    if ((!handle) || ((addr + len) > NOR_SIZE))
+    if ((!handle) || (NOR_SIZE < (addr + len)))
     {
         return NOR_INVALID_PARAM;
     }
@@ -370,7 +370,7 @@ NOR_STATUS Nor_gpmcRead(NOR_HANDLE handle, uint32_t addr,
     transaction.count  = len;
 
     ret = GPMC_transfer(gpmcHandle, &transaction);
-    if (ret == true)
+    if (BTRUE == ret)
     {
         return NOR_PASS;
     }
@@ -386,7 +386,7 @@ static NOR_STATUS Nor_gpmcWriteOne(NOR_HANDLE handle, uint32_t offsetAddr,
 {
     NOR_STATUS       status = NOR_PASS;
     NOR_Info        *norGpmcInfo = (NOR_Info *)handle;
-    uint32_t         flag   = 0;
+    uint32_t         flag   = UFALSE;
     uint32_t         address = norGpmcInfo->baseAddr + offsetAddr;
 
     /* Send Commands*/
@@ -401,22 +401,22 @@ static NOR_STATUS Nor_gpmcWriteOne(NOR_HANDLE handle, uint32_t offsetAddr,
         if ((Nor_gpmcReadData(handle, address, 0) &
              (BIT7 | BIT15)) == (data & (BIT7 | BIT15)))
         {
-            flag = 1U;
+            flag = UTRUE;
         }
         else
         {
-            if (Nor_gpmcWaitReady(handle, address, BIT5, NOR_WRITE_TIMEOUT) == NOR_PASS)
+            if (NOR_PASS == Nor_gpmcWaitReady(handle, address, BIT5, NOR_WRITE_TIMEOUT))
             {
                 if ((Nor_gpmcReadData(handle, address, 0) &
                      (BIT7 | BIT15)) != (data & (BIT7 | BIT15)))
                 {
                     status = NOR_FAIL;
                 }
-                flag = 1U;
+                flag = UTRUE;
             }
         }
 
-        if (flag == 1U)
+        if (UTRUE == flag)
         {
             break;
         }
@@ -437,7 +437,7 @@ NOR_STATUS Nor_gpmcWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     uint32_t         i;
     uint32_t         offsetAddr = addr;
 
-    if ((!handle) || ((addr + len) > NOR_SIZE))
+    if ((!handle) || (NOR_SIZE < (addr + len)))
     {
         return NOR_INVALID_PARAM;
     }
@@ -448,12 +448,11 @@ NOR_STATUS Nor_gpmcWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         return NOR_FAIL;
     }
 
-    if (norGpmcInfo->busWidth == NOR_BUSWIDTH_8BITS)
+    if (NOR_BUSWIDTH_8BITS == norGpmcInfo->busWidth)
     {
         for (i = 0; i < len; i++)
         {
-			if (Nor_gpmcWriteOne(handle, offsetAddr, (uint32_t)(*bufPt8)) !=
-			    NOR_PASS)
+			if (NOR_PASS != Nor_gpmcWriteOne(handle, offsetAddr, (uint32_t)(*bufPt8)))
             {
                 return NOR_FAIL;
             }
@@ -465,8 +464,7 @@ NOR_STATUS Nor_gpmcWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     {
         for (i = 0; i < len/2; i++)
         {
-			if (Nor_gpmcWriteOne(handle, offsetAddr, (uint32_t)(*bufPt16)) !=
-			    NOR_PASS)
+			if (NOR_PASS != Nor_gpmcWriteOne(handle, offsetAddr, (uint32_t)(*bufPt16)))
             {
                 return NOR_FAIL;
             }
@@ -485,7 +483,7 @@ NOR_STATUS Nor_gpmcErase(NOR_HANDLE handle, int32_t sector, bool blkErase)
     uint32_t        sectorAddr;
     uint32_t        timeOut;
 
-    if ((!handle) || (sector >= NOR_NUM_SECTORS))
+    if ((!handle) || (NOR_NUM_SECTORS <= sector))
     {
         return NOR_INVALID_PARAM;
     }
@@ -501,7 +499,7 @@ NOR_STATUS Nor_gpmcErase(NOR_HANDLE handle, int32_t sector, bool blkErase)
     Nor_gpmcPrefixCommands(handle);
 
     /* Send commands */
-    if (sector == NOR_BE_SECTOR_NUM)
+    if (NOR_BE_SECTOR_NUM == sector)
     {
         sectorAddr = 0;
         timeOut = NOR_BULK_ERASE_TIMEOUT;

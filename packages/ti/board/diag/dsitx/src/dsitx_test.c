@@ -81,7 +81,7 @@ static int8_t BoardDiag_dsitxDeInitDss(BoardDiag_DsiDisplayObj *displayObj)
     retVal = Fvid2_delete(displayObj->dctrlHandle, NULL);
     retVal |= Dss_deInit();
     retVal |= Fvid2_deInit(NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("DCTRL handle delete failed\n");
         return -1;
@@ -111,7 +111,7 @@ static int8_t BoardDiag_dsitxStopDisplay(BoardDiag_DsiDisplayObj *displayObj)
                            IOCTL_DSS_DCTRL_STOP_VP,
                            vpParams,
                            NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("VP Stop failed\n");
         return -1;
@@ -175,7 +175,7 @@ static int8_t BoardDiag_dsitxEnableColorBar(BoardDiag_DsiDisplayObj *displayObj)
                         IOCTL_DSS_DCTRL_SET_PATH,
                         pathInfo,
                         NULL);
-    if (ret != FVID2_SOK)
+    if (FVID2_SOK != ret)
     {
         UART_printf("Setting Display path failed\n");
         return -1;
@@ -186,7 +186,7 @@ static int8_t BoardDiag_dsitxEnableColorBar(BoardDiag_DsiDisplayObj *displayObj)
                         IOCTL_DSS_DCTRL_SET_DSI_PARAMS,
                         &dsiPrms,
                         NULL);
-    if (ret != FVID2_SOK)
+    if (FVID2_SOK != ret)
     {
         UART_printf("Setting DSI params IOCTL failed\n");
         return -1;
@@ -196,7 +196,7 @@ static int8_t BoardDiag_dsitxEnableColorBar(BoardDiag_DsiDisplayObj *displayObj)
                         IOCTL_DSS_DCTRL_SET_VP_PARAMS,
                         vpParams,
                         NULL);
-    if (ret != FVID2_SOK)
+    if (FVID2_SOK != ret)
     {
         UART_printf("Setting VP param failed\n");
         return -1;
@@ -206,20 +206,20 @@ static int8_t BoardDiag_dsitxEnableColorBar(BoardDiag_DsiDisplayObj *displayObj)
                         IOCTL_DSS_DCTRL_SET_ADV_VP_PARAMS,
                         advVpParams,
                         NULL);
-    if (ret != FVID2_SOK)
+    if (FVID2_SOK != ret)
     {
         UART_printf("Setting Advance VP Params failed\n");
         return -1;
     }
 
     overlayParams->overlayId = BOARD_DIAG_DSITX_OVERLAY_ID;
-    overlayParams->colorbarEnable = TRUE;
+    overlayParams->colorbarEnable = UTRUE;
 
     ret = Fvid2_control(displayObj->dctrlHandle,
                         IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS,
                         overlayParams,
                         NULL);
-    if (ret != FVID2_SOK)
+    if (FVID2_SOK != ret)
     {
         UART_printf("Setting overlay params failed\n");
         return -1;
@@ -290,7 +290,7 @@ static int8_t BoardDiag_dsitxGetHandle(BoardDiag_DsiDisplayObj *displayObj)
     Fvid2InitPrms_init(&initPrms);
 
     retVal = Fvid2_init(&initPrms);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("Initializing Fvid2 Failed\n");
         return -1;
@@ -300,7 +300,7 @@ static int8_t BoardDiag_dsitxGetHandle(BoardDiag_DsiDisplayObj *displayObj)
 
     UART_printf("Initializing DSS...\n");
     retVal = Dss_init(&displayObj->initParams);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         UART_printf("DSS init failed!\n");
         return -1;
@@ -312,7 +312,7 @@ static int8_t BoardDiag_dsitxGetHandle(BoardDiag_DsiDisplayObj *displayObj)
                                            NULL,
                                            NULL,
                                            NULL);
-    if(displayObj->dctrlHandle == NULL)
+    if(NULL == displayObj->dctrlHandle)
     {
         UART_printf("Display Handle Create Failed\n");
         return -1;
@@ -336,7 +336,7 @@ static int8_t BoardDiag_dsitxConfig(void)
     int8_t ret;
 
     ret = BoardDiag_dsitxGetHandle(&dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("\nDSS getting handle failed\n");
         return -1;
@@ -346,7 +346,7 @@ static int8_t BoardDiag_dsitxConfig(void)
 
     UART_printf("Enabling color bar...\n");
     ret = BoardDiag_dsitxEnableColorBar(&dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("Enabling color bar failed\n");
         return -1;
@@ -357,14 +357,14 @@ static int8_t BoardDiag_dsitxConfig(void)
     UART_scanFmt("%c", &userInput);
 
     ret = BoardDiag_dsitxStopDisplay(&dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("Display stop failed\n");
         return -1;
     }
 
     ret = BoardDiag_dsitxDeInitDss(&dispObj);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("DSS De-Initialization failed\n");
         return -1;
@@ -404,7 +404,7 @@ static int8_t BoardDiag_dsitxRunTest(void)
 
     /* Configures the I2C instance with the passed parameters*/
 	handle = Board_getI2CHandle(domain, i2cInst); 
-	if (handle == NULL)
+	if (NULL == handle)
 	{
 		UART_printf("\nI2C Open failed!\n");
 		return -1;
@@ -415,7 +415,7 @@ static int8_t BoardDiag_dsitxRunTest(void)
     ret = Board_fpdUb941SerInit((void *)handle,
                                 &fpdModParams,
                                 &fpdRmtParams[0]);
-    if (ret != 0)
+    if (0 != ret)
     {
         UART_printf("FPD serializer initialization failed\n");
         return -1;
@@ -430,7 +430,7 @@ static int8_t BoardDiag_dsitxRunTest(void)
                              &regData, //enabling led_en
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if (ret != 0)
+    if (0 != ret)
     {
         UART_printf("LED enabling through IO EXP failed\n");
         return -1;
@@ -440,7 +440,7 @@ static int8_t BoardDiag_dsitxRunTest(void)
     ret = Board_tlc59108LedDrvCfg((void *)handle,
                                   &fpdModParams,
                                   &fpdRmtParams[1]);
-    if (ret != 0)
+    if (0 != ret)
     {
         UART_printf("Configuring LED failed\n");
         return -1;
@@ -451,7 +451,7 @@ static int8_t BoardDiag_dsitxRunTest(void)
                                           &fpdRmtParams[1],
                                           BOARD_FPD_TLC59108_PWM_CH2,
                                           BOARD_DIAG_DSITX_MAX_BRIGHTNESS);
-    if (ret != 0)
+    if (0 != ret)
     {
         UART_printf("Configuring Duty Cycle failed\n");
         return -1;
@@ -460,7 +460,7 @@ static int8_t BoardDiag_dsitxRunTest(void)
     UART_printf("Initializing the remote deserializer...\n");
     ret = Board_fpdUb941DsiModuleInit((void *)handle,
                                       &fpdModParams);
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("FPD serializer DSI module init failed\n");
         return -1;
@@ -469,7 +469,7 @@ static int8_t BoardDiag_dsitxRunTest(void)
     Board_i2cDeInit();
 
     ret = BoardDiag_dsitxConfig();
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -495,7 +495,7 @@ static int8_t BoardDiag_dsitxConfigClk(uint32_t dsiPclk)
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK,
                                             TISCI_DEV_DSS0_DSS_INST0_DPI_2_IN_2X_CLK_PARENT_HSDIV1_16FFT_MAIN_18_HSDIVOUT0_CLK,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status != PM_SUCCESS)
+    if (PM_SUCCESS != status)
     {
         return -1;
     }
@@ -506,7 +506,7 @@ static int8_t BoardDiag_dsitxConfigClk(uint32_t dsiPclk)
                                           dsiPclk,
                                           TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status != PM_SUCCESS)
+    if (PM_SUCCESS != status)
     {
         return -1;
     }
@@ -534,7 +534,7 @@ int8_t BoardDiag_DsiTest(void)
 
     UART_printf("\nSetting DSS DSI-Tx clock\n");
     ret = BoardDiag_dsitxConfigClk(BOARD_DIAG_DSITX_PCLK);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -542,7 +542,7 @@ int8_t BoardDiag_DsiTest(void)
     /* Setting power mux for FPD lcd */
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE4_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     Board_i2cIoExpInit();
@@ -552,7 +552,7 @@ int8_t BoardDiag_DsiTest(void)
                                            PORTNUM_0,
                                            PIN_NUM_7,
                                            PIN_DIRECTION_OUTPUT);
-    if (status != BOARD_SOK)
+    if (BOARD_SOK != status)
     {
         UART_printf("UB941 serializer enabling external power reset failed\n");
         return -1;
@@ -563,7 +563,7 @@ int8_t BoardDiag_DsiTest(void)
                                        PORTNUM_0,
                                        PIN_NUM_7,
                                        GPIO_SIGNAL_LEVEL_HIGH);
-    if (status != BOARD_SOK)
+    if (BOARD_SOK != status)
     {
         return -1;
     }
@@ -573,7 +573,7 @@ int8_t BoardDiag_DsiTest(void)
                                            PORTNUM_0,
                                            PIN_NUM_2,
                                            PIN_DIRECTION_OUTPUT);
-    if (status != BOARD_SOK)
+    if (BOARD_SOK != status)
     {
         UART_printf("DSI power switch control enable failed\n");
         return -1;
@@ -584,7 +584,7 @@ int8_t BoardDiag_DsiTest(void)
                                        PORTNUM_0,
                                        PIN_NUM_2,
                                        GPIO_SIGNAL_LEVEL_HIGH);
-    if (status != BOARD_SOK)
+    if (BOARD_SOK != status)
     {
         return -1;
     }
@@ -619,13 +619,13 @@ int main(void)
 #endif
 
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
 
 	ret = BoardDiag_DsiTest();
-    if (ret != 0)
+    if (0 != ret)
     {
         UART_printf("\nDSI-Tx Test Failed\n");
         return -1;

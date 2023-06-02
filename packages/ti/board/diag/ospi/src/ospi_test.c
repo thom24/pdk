@@ -66,7 +66,7 @@ uint8_t rxBuf[MAX_BUFF_SIZE];
 uint8_t verifyBuf[MAX_BUFF_SIZE];
 #endif
 
-static uint32_t gTuneEnable = FALSE;
+static uint32_t gTuneEnable = UFALSE;
 
 extern uint8_t nor_attack_vector[NOR_ATTACK_VECTOR_SIZE];
 
@@ -190,7 +190,7 @@ static int8_t BoardDiag_ospiReadTest(Board_flashHandle  handle,
     }
 
     /* Verify Data */
-    if (BoardDiag_memCompare(&txBuf[0], &rxBuf[0], TEST_DATA_LEN, &failIndex) == false)
+    if (BoardDiag_memCompare(&txBuf[0], &rxBuf[0], TEST_DATA_LEN, &failIndex) == BFALSE)
     {
         UART_printf("\n Data mismatch at offset = 0x%x\n", failIndex);
         return -1;
@@ -253,7 +253,7 @@ static int8_t BoardDiag_ospiReadWriteTest(Board_flashHandle  handle,
     }
 
     /* Verify Data */
-    if (BoardDiag_memCompare(&txBuf[0],&rxBuf[0],TEST_DATA_LEN, &failIndex) == false)
+    if (BoardDiag_memCompare(&txBuf[0],&rxBuf[0],TEST_DATA_LEN, &failIndex) == BFALSE)
     {
         UART_printf("\n Data mismatch at offset = 0x%x\n", failIndex);
         return -1;
@@ -286,21 +286,21 @@ static int8_t BoardDiag_ospiFlashStressTest(void)
     /* Get the default OSPI init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
-    gTuneEnable = FALSE;
+    gTuneEnable = UFALSE;
 
     /* Modify the default OSPI configurations if necessary */
-    ospi_cfg.intrEnable = false;
+    ospi_cfg.intrEnable = BFALSE;
 
 #if defined(UDMA_ENABLE)
-    ospi_cfg.dmaEnable  = true;
+    ospi_cfg.dmaEnable  = BTRUE;
     ospiUdmaInit(&ospi_cfg);
 #else
-    ospi_cfg.dmaEnable  = false;
+    ospi_cfg.dmaEnable  = BFALSE;
 #endif
 #if defined(j7200_evm) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    ospi_cfg.phyEnable  = false;
-    ospi_cfg.dtrEnable  = true;
-    ospi_cfg.dacEnable  = false;
+    ospi_cfg.phyEnable  = BFALSE;
+    ospi_cfg.dtrEnable  = BTRUE;
+    ospi_cfg.dacEnable  = BFALSE;
 #endif
 
     /* Set the default OSPI init configurations */
@@ -384,22 +384,22 @@ static int8_t BoardDiag_ospiFlashTest(void)
 {
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
-    bool testStatus = true;          /* return value */
+    bool testStatus = BTRUE;          /* return value */
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
-    gTuneEnable = FALSE;
+    gTuneEnable = UFALSE;
 
     /* Modify the default OSPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    ospi_cfg.intrEnable = false;
+    ospi_cfg.intrEnable = BFALSE;
 
-    ospi_cfg.dmaEnable  = false;
-    ospi_cfg.phyEnable  = false;
-    ospi_cfg.dtrEnable  = true;
-    ospi_cfg.dacEnable  = false;
+    ospi_cfg.dmaEnable  = BFALSE;
+    ospi_cfg.phyEnable  = BFALSE;
+    ospi_cfg.dtrEnable  = BTRUE;
+    ospi_cfg.dacEnable  = BFALSE;
 
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
@@ -477,27 +477,27 @@ static int8_t BoardDiag_ospiFlashPhyTest(void)
 {
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
-    bool testStatus = true;
+    bool testStatus = BTRUE;
     OSPI_v0_HwAttrs ospi_cfg;
 
     /* Get the default OSPI init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
-    gTuneEnable = TRUE;
+    gTuneEnable = UTRUE;
 
     /* Modify the default OSPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    ospi_cfg.intrEnable = false;
+    ospi_cfg.intrEnable = BFALSE;
 
 #if defined(UDMA_ENABLE)
-    ospi_cfg.dmaEnable  = true;
+    ospi_cfg.dmaEnable  = BTRUE;
     ospiUdmaInit(&ospi_cfg);
 #else
-    ospi_cfg.dmaEnable  = false;
+    ospi_cfg.dmaEnable  = BFALSE;
 #endif
-    ospi_cfg.phyEnable  = true;
-    ospi_cfg.dtrEnable  = true;
-    ospi_cfg.dacEnable  = true;
+    ospi_cfg.phyEnable  = BTRUE;
+    ospi_cfg.dtrEnable  = BTRUE;
+    ospi_cfg.dacEnable  = BTRUE;
 
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);

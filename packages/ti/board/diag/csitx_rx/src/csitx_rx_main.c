@@ -86,11 +86,11 @@ void BoardDiag_clkRateSet(uint32_t moduleId,
     uint64_t currClkFreqHz;
 
     status = PMLIBClkRateGet(moduleId, clkId, &currClkFreqHz);
-    if ((status == FVID2_SOK) &&
+    if ((FVID2_SOK == status) &&
         (currClkFreqHz != clkRateHz))
     {
         status = PMLIBClkRateSet(moduleId, clkId, clkRateHz);
-        if (status == FVID2_SOK)
+        if (FVID2_SOK == status)
         {
             UART_printf("\nPMLIBClkRateSet Passed for clock Id = %d\n", clkId);
         }
@@ -153,7 +153,7 @@ int BoardDiag_CsiTxRx(void)
                    CSITX_MOD_MAIN_CLK,
                    CSITX_MAIN_CLK_HZ);
 
-    if (retVal == FVID2_SOK)
+    if (FVID2_SOK == retVal)
     {
         /* Get the CSITX clock frequencies */
         retVal += PMLIBClkRateGet(CSITX_MOD,
@@ -193,13 +193,13 @@ int main(void)
                BOARD_INIT_UNLOCK_MMR;;
 
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }
 
     ret = BoardDiag_CsiTxRx();
-    if(ret != 0)
+    if(0 != ret)
     {
         UART_printf("\nCSI-TX-RX Test Failed\n");
         return -1;

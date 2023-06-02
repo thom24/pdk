@@ -77,7 +77,7 @@ static void NOR_spiTxRxDllConfig(OSPI_Handle handle, uint32_t txDLL, uint32_t rx
 {
     uint32_t data[3];
 
-    data[0] = TRUE;
+    data[0] = UTRUE;
     data[1] = txDLL;
     data[2] = rxDLL;
     OSPI_control(handle, OSPI_V0_CMD_CFG_PHY, (void *)data);
@@ -96,7 +96,7 @@ static NOR_STATUS NOR_spiPhyRdAttack(uintptr_t flashVectorAddr)
     uint32_t          i;
     volatile uint8_t *pByte = (volatile uint8_t *)rdBuf;
 
-    for (i = 0; i < NOR_ATTACK_VECTOR_SIZE/sizeof(uint32_t); i++)
+    for (i = 0; i < (NOR_ATTACK_VECTOR_SIZE/sizeof(uint32_t)); i++)
     {
         rdBuf[i] = CSL_REG32_RD(flashVectorAddr + i * 4);
     }
@@ -330,8 +330,8 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     NOR_PhyConfig          gapLow;
     NOR_PhyConfig          gapHigh;
     NOR_PhyConfig          rxLow, rxHigh, txLow, txHigh, tempSearchPoint, tempSearchPoint1, left, right;
-    float                  temperature = 0;
-    float                  length1,length2;
+    Float32                temperature = 0;
+    Float32                length1,length2;
 
     /*
      * Finding RxDLL fails at some of the TxDLL values based on the HW platform.
@@ -436,7 +436,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     * find one more rxLow at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
     * steps away from previously passing searchpoint.txDLL
     */
-    if(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END - TX_DLL_SEC_SEARCH_OFFSET)
+    if((NOR_SPI_PHY_TXDLL_LOW_WINDOW_END - TX_DLL_SEC_SEARCH_OFFSET) >= searchPoint.txDLL)
     {
         /*
         * Loop while passing rxDLL is not found at previous rxLow.txDLL + TX_DLL_SEC_SEARCH_OFFSET
@@ -529,7 +529,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     * find one more rxHigh at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
     * steps away from previously passing searchpoint.txDLL
     */
-    if(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END - TX_DLL_SEC_SEARCH_OFFSET)
+    if((NOR_SPI_PHY_TXDLL_LOW_WINDOW_END - TX_DLL_SEC_SEARCH_OFFSET) >= searchPoint.txDLL)
     {
         /*
         * Loop while passing rxDLL is not found at previous rxHigh.txDLL + TX_DLL_SEC_SEARCH_OFFSET
@@ -696,7 +696,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         * find one more rxLow at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
         * steps away from previously passing searchpoint.txDLL
         */
-        if(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END + TX_DLL_SEC_SEARCH_OFFSET)
+        if((NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END + TX_DLL_SEC_SEARCH_OFFSET) >= searchPoint.txDLL)
         {
             /*
             * Loop while passing rxDLL is not found at previous tempSearchPoint.txDLL + TX_DLL_SEC_SEARCH_OFFSET
@@ -787,7 +787,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         * find one more rxHigh at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
         * steps away from previously passing searchPoint.txDLL
         */
-        if(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END + TX_DLL_SEC_SEARCH_OFFSET)
+        if((NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END + TX_DLL_SEC_SEARCH_OFFSET) <= searchPoint.txDLL)
         {
             /*
             * Loop while passing rxDLL is not found at previous searchPoint.txDLL - TX_DLL_SEC_SEARCH_OFFSET
@@ -853,7 +853,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     * break out of the loop else continue searching for txDLL at next rdDelay
     */
     searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-    searchPoint.rxDLL = (rxHigh.rxDLL - rxLow.rxDLL)/4 + rxLow.rxDLL;
+    searchPoint.rxDLL = ((rxHigh.rxDLL - rxLow.rxDLL)/4) + rxLow.rxDLL;
 
     do
     {
@@ -1015,7 +1015,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
 #ifdef NOR_SPI_TUNE_DEBUG
     norSpiTuneCnt++;
 #endif
-    if(status == NOR_FAIL){
+    if(NOR_FAIL == status){
         tempSearchPoint.rdDelay--;
         NOR_spiPhyConfig(handle, tempSearchPoint);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
@@ -1023,7 +1023,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         norSpiTuneCnt++;
 #endif
     }
-    if (status == NOR_PASS){
+    if (NOR_PASS == status){
         bottomLeft.rdDelay = tempSearchPoint.rdDelay;
     }
 
@@ -1038,14 +1038,14 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         topRight.rdDelay = rxHigh.rdDelay;
     }
     tempSearchPoint = topRight;
-    tempSearchPoint.txDLL -= 4;
-    tempSearchPoint.rxDLL -= 4;
+    tempSearchPoint.txDLL -= 4U;
+    tempSearchPoint.rxDLL -= 4U;
     NOR_spiPhyConfig(handle, tempSearchPoint);
     status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 #ifdef NOR_SPI_TUNE_DEBUG
     norSpiTuneCnt++;
 #endif
-    if(status == NOR_FAIL){
+    if(NOR_FAIL == status){
         tempSearchPoint.rdDelay++;
         NOR_spiPhyConfig(handle, tempSearchPoint);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
@@ -1053,7 +1053,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         norSpiTuneCnt++;
 #endif
     }
-    if(status == NOR_PASS){
+    if(NOR_PASS == status){
         topRight.rdDelay = tempSearchPoint.rdDelay;
     }
 
@@ -1067,7 +1067,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     do{
         NOR_spiPhyConfig(handle,searchPoint);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-        if(status == NOR_FAIL){
+        if(NOR_FAIL == status){
             /*
              * Since we couldn't find the pattern, we need to go the
              * the upper half.
@@ -1092,7 +1092,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         norSpiTuneCnt++;
 #endif
     /* Break the loop if the window has closed. */
-    } while ((right.txDLL - left.txDLL >= 2) && (right.rxDLL - left.rxDLL >= 2));
+  } while ((2U <= (right.txDLL - left.txDLL)) && (2U <= (right.rxDLL - left.rxDLL)));
     gapLow = searchPoint;
 
     /* If there's only one segment, put tuning point in the middle and adjust for temperature */
@@ -1121,7 +1121,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         do{
             NOR_spiPhyConfig(handle,searchPoint);
             status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-            if(status == NOR_FAIL){
+            if(NOR_FAIL == status){
                 /*
 			     * Since we couldn't find the pattern, we need to go the
 			     * the upper half.
@@ -1146,7 +1146,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
             norSpiTuneCnt++;
 #endif
         /* Break the loop if the window has closed. */
-        } while ((right.txDLL - left.txDLL >= 2) && (right.rxDLL - left.rxDLL >= 2));
+      } while ((2U <= (right.txDLL - left.txDLL)) && (2U <= (right.rxDLL - left.rxDLL)));
 
         gapHigh = searchPoint;
         /* Place the final tuning point of the PHY in the corner furthest from the gap */
@@ -1155,14 +1155,14 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         if(length2 > length1)
         {
             searchPoint = topRight;
-            searchPoint.txDLL-=16;
-            searchPoint.rxDLL-= 16 * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
+            searchPoint.txDLL -= 16U;
+            searchPoint.rxDLL -= 16 * ((Float32)topRight.rxDLL-(Float32)bottomLeft.rxDLL)/((Float32)topRight.txDLL-(Float32)bottomLeft.txDLL);
         }
         else
         {
             searchPoint = bottomLeft;
-            searchPoint.txDLL+=16;
-            searchPoint.rxDLL+=16 * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
+            searchPoint.txDLL += 16U;
+            searchPoint.rxDLL += 16 * ((Float32)topRight.rxDLL-(Float32)bottomLeft.rxDLL)/((Float32)topRight.txDLL-(Float32)bottomLeft.txDLL);
         }
 #ifdef NOR_SPI_TUNE_DEBUG
         NOR_log("Bottom left found at txDLL,rxDLL of %d,%d to %d,%d, and a rdDelay of %d\n",bottomLeft.txDLL,bottomLeft.rxDLL,gapLow.txDLL,gapLow.rxDLL,gapLow.rdDelay);
@@ -1191,7 +1191,7 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
     int32_t                       rxSaved;
     NOR_STATUS                    retFlag = NOR_PASS;
 
-    if(handle != NULL_PTR)
+    if(NULL_PTR != handle)
     {
         hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
         if(hwAttrs->baseAddr != (uintptr_t)NULL)
@@ -1208,15 +1208,15 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         retFlag = NOR_INVALID_PARAM;
     }
 
-    if(retFlag == NOR_PASS)
+    if(NOR_PASS == retFlag)
     {
-        if((txDLL != PHY_SDR_TX_DLL) || (rxDLL > PHY_SDR_DLL_END))
+        if((PHY_SDR_TX_DLL != txDLL) || (PHY_SDR_DLL_END < rxDLL))
         {
             retFlag = NOR_INVALID_PARAM;
         }
     }
 
-    if(retFlag == NOR_PASS)
+    if(NOR_PASS == retFlag)
     {
         txSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
                                 OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD);
@@ -1230,7 +1230,7 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         {
             NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
             status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-            if((status == NOR_PASS) || (rxDLL >= PHY_SDR_DLL_END))
+            if((NOR_PASS == status) || (PHY_SDR_DLL_END <= rxDLL))
             {
                 break;
             }
@@ -1241,12 +1241,12 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
     #ifdef NOR_SPI_TUNE_DEBUG
             norSpiTuneCnt++;
     #endif
-        }while(status == NOR_FAIL);
+  }while(NOR_FAIL == status);
 
         NOR_spiTxRxDllConfig(handle,txSaved,rxSaved);
     }
     
-    if((retFlag != NOR_PASS) || (status == NOR_FAIL))
+    if((NOR_PASS != retFlag) || (NOR_FAIL == status))
     {
         rxDLL = PHY_DDR_TUNE_DLL_MAX;
     }
@@ -1267,7 +1267,7 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
     int32_t                       rxSaved;
     NOR_STATUS                    retFlag = NOR_PASS;
 
-    if(handle != NULL_PTR)
+    if(NULL_PTR != handle)
     {
         hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
         if(hwAttrs->baseAddr != (uintptr_t)NULL)
@@ -1284,15 +1284,15 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
         retFlag = NOR_INVALID_PARAM;
     }
 
-    if(retFlag == NOR_PASS)
+    if(NOR_PASS == retFlag)
     {
-        if((txDLL != PHY_SDR_TX_DLL) || (rxDLL >= PHY_SDR_DLL_END))
+        if((PHY_SDR_TX_DLL != txDLL) || (PHY_SDR_DLL_END <= rxDLL))
         {
             retFlag = NOR_INVALID_PARAM;
         }
     }
 
-    if(retFlag == NOR_PASS)
+    if(NOR_PASS == retFlag)
     {
         txSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
                                 OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD);
@@ -1306,7 +1306,7 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
         {
             NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
             status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-            if((status == NOR_FAIL) || (rxDLL >= PHY_SDR_DLL_END))
+            if((NOR_FAIL == status) || (PHY_SDR_DLL_END <= rxDLL))
             {
                 break;
             }
@@ -1317,12 +1317,12 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
     #ifdef NOR_SPI_TUNE_DEBUG
             norSpiTuneCnt++;
     #endif
-        }while (status == NOR_PASS);
+  }while (NOR_PASS == status);
     
         NOR_spiTxRxDllConfig(handle,txSaved,rxSaved);
     }
     
-    if(retFlag != NOR_PASS)
+    if(NOR_PASS != retFlag)
     {
         rxDLL = PHY_DDR_TUNE_DLL_MAX;
     }
@@ -1339,24 +1339,24 @@ static NOR_STATUS NOR_spiPhyFindRxWindow(OSPI_Handle handle, int32_t txDLL, int3
     *rxStart = NOR_spiPhyFindRxStart(handle,txDLL,PHY_SDR_DLL_START,offset);
 
     /* If rxStart gets all the way to rxDLL=128 and doesn't pass, there is no rxDLL window */
-    if(*rxStart >= PHY_SDR_DLL_MAX - 4)
+    if((PHY_SDR_DLL_MAX - 4U) <= *rxStart)
     {
         retVal  =   NOR_FAIL;
     }
 
     /* Find the end of the rxDLL window, searching up from rxStart */
-    if(retVal == NOR_PASS)
+    if(NOR_PASS == retVal)
     {
         *rxEnd = NOR_spiPhyFindRxEnd(handle,txDLL,*rxStart+4U,offset);
 
         /* If rxEnd is greater than rxStart, we found a window. */
-        if(*rxEnd >= PHY_DDR_TUNE_DLL_MAX)
+        if(PHY_DDR_TUNE_DLL_MAX <= *rxEnd)
         {
             retVal = NOR_FAIL;
         }
-        if(retVal == NOR_PASS)
+        if(NOR_PASS == retVal)
         {
-            if(*rxEnd>*rxStart+4U)
+            if(*rxEnd > *rxStart+4U)
             {
                 retVal = NOR_PASS;
             }
@@ -1401,13 +1401,13 @@ static void NOR_spiPhyDllObserve(OSPI_Handle handle)
     /* Print out lock status, the lock value, and the tx/rx decoded value */
     switch(dll_lock_mode)
     {
-        case 0b00:
+        case 0B00:
             NOR_log("Decoded TX,RX is %d,%d\nDLL locked on full cycle with %d Delay elements\n",tx_decode,rx_decode,dll_lock_value);
             break;
-        case 0b10:
+        case 0B10:
             NOR_log("Decoded TX,RX is %d,%d\nDLL locked on half cycle with %d Delay elements\n",tx_decode,rx_decode,dll_lock_value);
             break;
-        case 0b11:
+        case 0B11:
             NOR_log("Decoded TX,RX is %d,%d\nDLL did not lock\n",tx_decode,rx_decode);
             break;
         default:
@@ -1433,19 +1433,19 @@ NOR_STATUS Nor_spiPhySdrTune(OSPI_Handle handle, uint32_t offset)
     int32_t       rxStart1,rxEnd1;
     int32_t       rxStart2,rxEnd2;
     NOR_PhyConfig startPoint, tuningPoint;
-    float         rxWindow1 = 0;
-    float         rxWindow2 = 0;
-    float         temperature = 0;
+    Float32       rxWindow1 = 0;
+    Float32       rxWindow2 = 0;
+    Float32       temperature = 0;
     NOR_STATUS    status = NOR_PASS;
     NOR_STATUS    retVal = NOR_PASS;
 
-    if(handle == NULL_PTR)
+    if(NULL_PTR == handle)
     {
         retVal  =   NOR_FAIL;
     }
 
     /* SDR tuning requires as much delay as possible. If locked on a half cycle, go into bypass mode */
-    if(retVal == NOR_PASS)
+    if(NOR_PASS == retVal)
     {
         startPoint.txDLL = PHY_SDR_DLL_START;
         startPoint.rxDLL = PHY_SDR_DLL_START;
@@ -1459,7 +1459,7 @@ NOR_STATUS Nor_spiPhySdrTune(OSPI_Handle handle, uint32_t offset)
             NOR_spiRdDelayConfig(handle, rdDelay1);
             status = NOR_spiPhyFindRxWindow(handle, txDLL, &rxStart1, &rxEnd1, offset);
 
-            if((status == NOR_PASS) || (rdDelay1 == PHY_SDR_RD_DELAY_END))
+            if((NOR_PASS == status) || (PHY_SDR_RD_DELAY_END == rdDelay1))
             {
                 break;
             }
@@ -1468,9 +1468,9 @@ NOR_STATUS Nor_spiPhySdrTune(OSPI_Handle handle, uint32_t offset)
                 rdDelay1++;
             }
 
-        }while(status == NOR_FAIL);
+        }while(NOR_FAIL == status);
         rxWindow1 = rxEnd1-rxStart1;
-        if(status == NOR_FAIL)
+        if(NOR_FAIL == status)
         {
 #ifdef NOR_SPI_TUNE_DEBUG
             NOR_log("Unable to find any rxDLL window.  Panic!\n");
@@ -1483,11 +1483,11 @@ NOR_STATUS Nor_spiPhySdrTune(OSPI_Handle handle, uint32_t offset)
             NOR_log("rxDLL Window of width %d found from %d to %d at txDLL of %d and Read Delay of %d\n",(int)rxWindow1,rxStart1,rxEnd1,txDLL, rdDelay1);
 #endif
         }
-        if(retVal == NOR_PASS)
+        if(NOR_PASS == retVal)
         {    
-            rdDelay2 = rdDelay1+1;
+            rdDelay2 = rdDelay1 + 1;
             NOR_spiRdDelayConfig(handle, rdDelay2);
-            if(NOR_spiPhyFindRxWindow(handle, txDLL, &rxStart2, &rxEnd2, offset) == NOR_PASS)
+            if(NOR_PASS == NOR_spiPhyFindRxWindow(handle, txDLL, &rxStart2, &rxEnd2, offset))
             {
                 rxWindow2 = rxEnd2-rxStart2;
             }else{
@@ -1511,7 +1511,7 @@ NOR_STATUS Nor_spiPhySdrTune(OSPI_Handle handle, uint32_t offset)
             tuningPoint.rdDelay = rdDelay1;
             tuningPoint.txDLL = txDLL;
             tuningPoint.rxDLL = rxStart1;
-            tuningPoint.rxDLL = (int)(((double)tuningPoint.rxDLL+rxWindow1/2U) - ((temperature-42.5)/165)*rxWindow1*0.75);
+            tuningPoint.rxDLL = (uint32_t)(((double)tuningPoint.rxDLL+rxWindow1/2U) - ((temperature-42.5)/165)*rxWindow1*0.75);
         #ifdef NOR_SPI_TUNE_DEBUG
             NOR_log("Tuning was complete in %d steps\n", norSpiTuneCnt);
             NOR_log("Tuning PHY to txDLL,rxDLL of %d,%d and rdDelay of %d\n",tuningPoint.txDLL,tuningPoint.rxDLL,tuningPoint.rdDelay);
@@ -1545,7 +1545,7 @@ NOR_STATUS Nor_spiPhyTune(OSPI_Handle handle, uint32_t offset)
 #endif
     if (hwAttrs->dtrEnable)
     {
-        if ((ddrTuningPoint.txDLL == 0U) && (ddrTuningPoint.rxDLL == 0U))
+        if ((0U == ddrTuningPoint.txDLL) && (0U == ddrTuningPoint.rxDLL))
         {
             /* process the PHY tuning only once */
             status = Nor_spiPhyDdrTune(handle, offset);
@@ -1557,7 +1557,7 @@ NOR_STATUS Nor_spiPhyTune(OSPI_Handle handle, uint32_t offset)
     }
     else
     {
-        if ((sdrTuningPoint.txDLL == 0U) && (sdrTuningPoint.rxDLL == 0U))
+        if ((0U == sdrTuningPoint.txDLL) && (0U == sdrTuningPoint.rxDLL))
         {
             /* process the PHY tuning only once */
             status = Nor_spiPhySdrTune(handle, offset);
@@ -1578,7 +1578,7 @@ NOR_STATUS Nor_spiPhyTune(OSPI_Handle handle, uint32_t offset)
 
 void Nor_spiPhyTuneReset(bool ddrMode)
 {
-    if (ddrMode == (bool)true)
+    if (BTRUE == ddrMode)
     {
         ddrTuningPoint.txDLL   = 0;
         ddrTuningPoint.rxDLL   = 0;

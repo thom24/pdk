@@ -170,7 +170,7 @@ static void BoardDiag_configI2CMux(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_1;
@@ -236,7 +236,7 @@ static int8_t BoardDiag_run_automation_header_test(void)
     for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
     {
         I2C_socGetInitCfg(index, &i2cConfig);
-        i2cConfig.enableIntr = false;
+        i2cConfig.enableIntr = BFALSE;
         I2C_socSetInitCfg(index, &i2cConfig);
     }
 

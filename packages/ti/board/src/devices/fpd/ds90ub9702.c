@@ -152,7 +152,7 @@ Board_STATUS Board_fpdUb9702SetDesDevId(void *handle,
                                         Board_FpdModuleObj *fpdModParams,
                                         uint8_t devId)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -163,7 +163,7 @@ Board_STATUS Board_fpdUb9702SetDesDevId(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -177,12 +177,12 @@ Board_STATUS Board_fpdUb9702SetDesDevId(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -201,7 +201,7 @@ Board_STATUS Board_fpdUb9702SetDigitalRst1ModeCtrl(void *handle,
                                                    Board_FpdModuleObj *fpdModParams,
                                                    uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -212,7 +212,7 @@ Board_STATUS Board_fpdUb9702SetDigitalRst1ModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -228,12 +228,12 @@ Board_STATUS Board_fpdUb9702SetDigitalRst1ModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -252,7 +252,7 @@ Board_STATUS Board_fpdUb9702SetI2cMstrEnModeCtrl(void *handle,
                                                  Board_FpdModuleObj *fpdModParams,
                                                  uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -263,7 +263,7 @@ Board_STATUS Board_fpdUb9702SetI2cMstrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -277,12 +277,12 @@ Board_STATUS Board_fpdUb9702SetI2cMstrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -301,7 +301,7 @@ Board_STATUS Board_fpdUb9702SetOutputEnMode(void *handle,
                                             Board_FpdModuleObj *fpdModParams,
                                             uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -312,7 +312,7 @@ Board_STATUS Board_fpdUb9702SetOutputEnMode(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -326,12 +326,12 @@ Board_STATUS Board_fpdUb9702SetOutputEnMode(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -350,7 +350,7 @@ Board_STATUS Board_fpdUb9702SetOutputEnCtrlMode(void *handle,
                                                 Board_FpdModuleObj *fpdModParams,
                                                 uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -361,7 +361,7 @@ Board_STATUS Board_fpdUb9702SetOutputEnCtrlMode(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -375,12 +375,12 @@ Board_STATUS Board_fpdUb9702SetOutputEnCtrlMode(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -399,7 +399,7 @@ Board_STATUS Board_fpdUb9702SetOSSSelModeCtrl(void *handle,
                                               Board_FpdModuleObj *fpdModParams,
                                               uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -410,7 +410,7 @@ Board_STATUS Board_fpdUb9702SetOSSSelModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -426,12 +426,12 @@ Board_STATUS Board_fpdUb9702SetOSSSelModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -450,7 +450,7 @@ Board_STATUS Board_fpdUb9702GetForceRefClkDetSts(void *handle,
                                                  Board_FpdModuleObj *fpdModParams,
                                                  bool *clkDetSts)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -461,14 +461,14 @@ Board_STATUS Board_fpdUb9702GetForceRefClkDetSts(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    *clkDetSts = (((regData & BOARD_FPD_UB9702_FORCE_REFCLK_DET_BIT_MASK) == 1) ? true : false);
+    *clkDetSts = (((regData & BOARD_FPD_UB9702_FORCE_REFCLK_DET_BIT_MASK) == 1) ? BTRUE : BFALSE);
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -488,7 +488,7 @@ Board_STATUS Board_fpdUb9702SetBCCWatchDogTImer(void *handle,
                                                 Board_FpdModuleObj *fpdModParams,
                                                 uint8_t timeoutCnt)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -503,12 +503,12 @@ Board_STATUS Board_fpdUb9702SetBCCWatchDogTImer(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -529,7 +529,7 @@ Board_STATUS Board_fpdUb9702SetBCCI2CSlvPortMap(void *handle,
                                                 uint8_t BCCChNum,
                                                 uint8_t I2CSlvPort)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -540,7 +540,7 @@ Board_STATUS Board_fpdUb9702SetBCCI2CSlvPortMap(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -564,11 +564,11 @@ Board_STATUS Board_fpdUb9702SetBCCI2CSlvPortMap(void *handle,
              regData |= (I2CSlvPort << BOARD_FPD_UB9702_BCC0_MAP_SHIFT_CNT);
              break;
         default:
-             boardStatus = -1;
+             boardStatus = BOARD_INVALID_PARAM;
              break;
     }
 
-    if(boardStatus == -1)
+    if(boardStatus == BOARD_INVALID_PARAM)
     {
         return boardStatus;
     }
@@ -579,12 +579,12 @@ Board_STATUS Board_fpdUb9702SetBCCI2CSlvPortMap(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -605,7 +605,7 @@ Board_STATUS Board_fpdUb9702SetRcvrPortEnModeCtrl(void *handle,
                                                   uint8_t RcvrPortNum,
                                                   uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -616,7 +616,7 @@ Board_STATUS Board_fpdUb9702SetRcvrPortEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -640,11 +640,11 @@ Board_STATUS Board_fpdUb9702SetRcvrPortEnModeCtrl(void *handle,
              regData |= (cfgMode << BOARD_FPD_UB9702_PORT0_EN_SHIFT_CNT);
              break;
         default:
-             boardStatus = -1;
+             boardStatus = BOARD_INVALID_PARAM;
              break;
     }
 
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -655,12 +655,12 @@ Board_STATUS Board_fpdUb9702SetRcvrPortEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -679,7 +679,7 @@ Board_STATUS Board_fpdUb9702SetIOPinSupply(void *handle,
                                            Board_FpdModuleObj *fpdModParams,
                                            uint8_t ioLevel)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -689,7 +689,7 @@ Board_STATUS Board_fpdUb9702SetIOPinSupply(void *handle,
     boardStatus = Board_fpdUb9702SetIOSupplyOverrideModeCtrl(handle,
                                                              fpdModParams,
                                                              BOARD_FPD_MODE_ENABLE);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -700,7 +700,7 @@ Board_STATUS Board_fpdUb9702SetIOPinSupply(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -714,12 +714,12 @@ Board_STATUS Board_fpdUb9702SetIOPinSupply(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -738,7 +738,7 @@ Board_STATUS Board_fpdUb9702GetIOPinSupply(void *handle,
                                            Board_FpdModuleObj *fpdModParams,
                                            uint8_t *ioLevel)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -749,14 +749,14 @@ Board_STATUS Board_fpdUb9702GetIOPinSupply(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
     *ioLevel = ((regData & BOARD_FPD_UB9702_SEL3P3V_BIT_MASK) >> BOARD_FPD_UB9702_SEL3P3V_SHIFT_CNT);
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -775,7 +775,7 @@ Board_STATUS Board_fpdUb9702SetIOSupplyOverrideModeCtrl(void *handle,
                                                         Board_FpdModuleObj *fpdModParams,
                                                         uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -786,7 +786,7 @@ Board_STATUS Board_fpdUb9702SetIOSupplyOverrideModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -800,12 +800,12 @@ Board_STATUS Board_fpdUb9702SetIOSupplyOverrideModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -824,7 +824,7 @@ Board_STATUS Board_fpdUb9702SetIOSupplyMode(void *handle,
                                             Board_FpdModuleObj *fpdModParams,
                                             uint8_t ioLevel)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -834,7 +834,7 @@ Board_STATUS Board_fpdUb9702SetIOSupplyMode(void *handle,
     boardStatus = Board_fpdUb9702SetIOSupplyOverrideModeCtrl(handle,
                                                              fpdModParams,
                                                              BOARD_FPD_MODE_ENABLE);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -845,7 +845,7 @@ Board_STATUS Board_fpdUb9702SetIOSupplyMode(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -859,12 +859,12 @@ Board_STATUS Board_fpdUb9702SetIOSupplyMode(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -883,7 +883,7 @@ Board_STATUS Board_fpdUb9702GetIOSupplyMode(void *handle,
                                             Board_FpdModuleObj *fpdModParams,
                                             uint8_t *ioLevel)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -894,13 +894,13 @@ Board_STATUS Board_fpdUb9702GetIOSupplyMode(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
     *ioLevel = ((regData & BOARD_FPD_UB9702_IO_SUPPLY_MODE_BIT_MASK) >> BOARD_FPD_UB9702_IO_SUPPLY_MODE_SHIFT_CNT);
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -919,7 +919,7 @@ Board_STATUS Board_fpdUb9702SetFSModeCtrl(void *handle,
                                           Board_FpdModuleObj *fpdModParams,
                                           uint8_t frameSync)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -930,7 +930,7 @@ Board_STATUS Board_fpdUb9702SetFSModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -944,12 +944,12 @@ Board_STATUS Board_fpdUb9702SetFSModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -968,7 +968,7 @@ Board_STATUS Board_fpdUb9702SetFSPulseGenModeCtrl(void *handle,
                                                   Board_FpdModuleObj *fpdModParams,
                                                   uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -979,7 +979,7 @@ Board_STATUS Board_fpdUb9702SetFSPulseGenModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -993,12 +993,12 @@ Board_STATUS Board_fpdUb9702SetFSPulseGenModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1017,7 +1017,7 @@ Board_STATUS Board_fpdUb9702SetFSGenEnModeCtrl(void *handle,
                                                Board_FpdModuleObj *fpdModParams,
                                                uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1028,7 +1028,7 @@ Board_STATUS Board_fpdUb9702SetFSGenEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1042,12 +1042,12 @@ Board_STATUS Board_fpdUb9702SetFSGenEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1066,7 +1066,7 @@ Board_STATUS Board_fpdUb9702SetFSHighTime1(void *handle,
                                            Board_FpdModuleObj *fpdModParams,
                                            uint8_t frameSyncTime)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
 
     regAddr = BOARD_FPD_UB9702_FS_HIGH_TIME_1_REG_ADDR;
@@ -1076,12 +1076,12 @@ Board_STATUS Board_fpdUb9702SetFSHighTime1(void *handle,
                                      &frameSyncTime,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1100,7 +1100,7 @@ Board_STATUS Board_fpdUb9702SetFSHighTime0(void *handle,
                                            Board_FpdModuleObj *fpdModParams,
                                            uint8_t frameSyncTime)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
 
     regAddr = BOARD_FPD_UB9702_FS_HIGH_TIME_0_REG_ADDR;
@@ -1110,12 +1110,12 @@ Board_STATUS Board_fpdUb9702SetFSHighTime0(void *handle,
                                      &frameSyncTime,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1134,7 +1134,7 @@ Board_STATUS Board_fpdUb9702SetFSLowTime1(void *handle,
                                            Board_FpdModuleObj *fpdModParams,
                                            uint8_t frameSyncTime)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
 
     regAddr = BOARD_FPD_UB9702_FS_LOW_TIME_1_REG_ADDR;
@@ -1144,12 +1144,12 @@ Board_STATUS Board_fpdUb9702SetFSLowTime1(void *handle,
                                      &frameSyncTime,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1168,7 +1168,7 @@ Board_STATUS Board_fpdUb9702SetFSLowTime0(void *handle,
                                            Board_FpdModuleObj *fpdModParams,
                                            uint8_t frameSyncTime)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
 
     regAddr = BOARD_FPD_UB9702_FS_LOW_TIME_0_REG_ADDR;
@@ -1178,12 +1178,12 @@ Board_STATUS Board_fpdUb9702SetFSLowTime0(void *handle,
                                      &frameSyncTime,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1202,7 +1202,7 @@ Board_STATUS Board_fpdUb9702SetMaxFrameHiCnt(void *handle,
                                              Board_FpdModuleObj *fpdModParams,
                                              uint8_t frameCnt)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
 
     regAddr = BOARD_FPD_UB9702_MAX_FRM_HI_REG_ADDR;
@@ -1212,12 +1212,12 @@ Board_STATUS Board_fpdUb9702SetMaxFrameHiCnt(void *handle,
                                      &frameCnt,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1236,7 +1236,7 @@ Board_STATUS Board_fpdUb9702SetMaxFrameLoCnt(void *handle,
                                              Board_FpdModuleObj *fpdModParams,
                                              uint8_t frameCnt)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
 
     regAddr = BOARD_FPD_UB9702_MAX_FRM_LO_REG_ADDR;
@@ -1246,12 +1246,12 @@ Board_STATUS Board_fpdUb9702SetMaxFrameLoCnt(void *handle,
                                      &frameCnt,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1270,7 +1270,7 @@ Board_STATUS Board_fpdUb9702SelOscClk(void *handle,
                                       Board_FpdModuleObj *fpdModParams,
                                       uint8_t refClk)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1281,7 +1281,7 @@ Board_STATUS Board_fpdUb9702SelOscClk(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1295,12 +1295,12 @@ Board_STATUS Board_fpdUb9702SelOscClk(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1319,7 +1319,7 @@ Board_STATUS Board_fpdUb9702SetRefClkModeCtrl(void *handle,
                                               Board_FpdModuleObj *fpdModParams,
                                               uint8_t refClk)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1330,7 +1330,7 @@ Board_STATUS Board_fpdUb9702SetRefClkModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1344,12 +1344,12 @@ Board_STATUS Board_fpdUb9702SetRefClkModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1368,7 +1368,7 @@ Board_STATUS Board_fpdUb9702SelCSITxSpeed(void *handle,
                                           Board_FpdModuleObj *fpdModParams,
                                           uint8_t txSpeed)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1379,7 +1379,7 @@ Board_STATUS Board_fpdUb9702SelCSITxSpeed(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1393,12 +1393,12 @@ Board_STATUS Board_fpdUb9702SelCSITxSpeed(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1419,7 +1419,7 @@ Board_STATUS Board_fpdUb9702SetFwdPortDisModeCtrl(void *handle,
                                                   uint8_t fwdPort,
                                                   uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1430,7 +1430,7 @@ Board_STATUS Board_fpdUb9702SetFwdPortDisModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1454,11 +1454,11 @@ Board_STATUS Board_fpdUb9702SetFwdPortDisModeCtrl(void *handle,
              regData |= (cfgMode << BOARD_FPD_UB9702_FWD_PORT0_DIS_SHIFT_CNT);
              break;
         default:
-             boardStatus = -1;
+             boardStatus = BOARD_INVALID_PARAM;
              break;
     }
 
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1469,12 +1469,12 @@ Board_STATUS Board_fpdUb9702SetFwdPortDisModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1495,7 +1495,7 @@ Board_STATUS Board_fpdUb9702SetRxPortMap(void *handle,
                                          uint8_t rxPort,
                                          uint8_t csiPort)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1506,7 +1506,7 @@ Board_STATUS Board_fpdUb9702SetRxPortMap(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1530,11 +1530,11 @@ Board_STATUS Board_fpdUb9702SetRxPortMap(void *handle,
              regData |= (csiPort << BOARD_FPD_UB9702_RX0_MAP_SHIFT_CNT);
              break;
         default:
-             boardStatus = -1;
+             boardStatus = BOARD_INVALID_PARAM;
              break;
     }
 
-    if(boardStatus == -1)
+    if(boardStatus == BOARD_INVALID_PARAM)
     {
         return boardStatus;
     }
@@ -1545,12 +1545,12 @@ Board_STATUS Board_fpdUb9702SetRxPortMap(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1569,7 +1569,7 @@ Board_STATUS Board_fpdUb9702SelTxPortRdBackRegBlk(void *handle,
                                                   Board_FpdModuleObj *fpdModParams,
                                                   uint8_t regBlk)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1580,7 +1580,7 @@ Board_STATUS Board_fpdUb9702SelTxPortRdBackRegBlk(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1594,12 +1594,12 @@ Board_STATUS Board_fpdUb9702SelTxPortRdBackRegBlk(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1618,7 +1618,7 @@ Board_STATUS Board_fpdUb9702SetTxPort1WrEnModeCtrl(void *handle,
                                                    Board_FpdModuleObj *fpdModParams,
                                                    uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1629,7 +1629,7 @@ Board_STATUS Board_fpdUb9702SetTxPort1WrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1643,12 +1643,12 @@ Board_STATUS Board_fpdUb9702SetTxPort1WrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1667,7 +1667,7 @@ Board_STATUS Board_fpdUb9702SetTxPort0WrEnModeCtrl(void *handle,
                                                    Board_FpdModuleObj *fpdModParams,
                                                    uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1678,7 +1678,7 @@ Board_STATUS Board_fpdUb9702SetTxPort0WrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1692,12 +1692,12 @@ Board_STATUS Board_fpdUb9702SetTxPort0WrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 
 }
 
@@ -1717,7 +1717,7 @@ Board_STATUS Board_fpdUb9702SetCSILaneCnt(void *handle,
                                           Board_FpdModuleObj *fpdModParams,
                                           uint8_t laneCnt)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1728,7 +1728,7 @@ Board_STATUS Board_fpdUb9702SetCSILaneCnt(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1742,12 +1742,12 @@ Board_STATUS Board_fpdUb9702SetCSILaneCnt(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1766,7 +1766,7 @@ Board_STATUS Board_fpdUb9702SetCSIContsClkModeCtrl(void *handle,
                                                    Board_FpdModuleObj *fpdModParams,
                                                    uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1777,7 +1777,7 @@ Board_STATUS Board_fpdUb9702SetCSIContsClkModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1791,12 +1791,12 @@ Board_STATUS Board_fpdUb9702SetCSIContsClkModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1815,7 +1815,7 @@ Board_STATUS Board_fpdUb9702SetCSIEnableModeCtrl(void *handle,
                                                  Board_FpdModuleObj *fpdModParams,
                                                  uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1826,7 +1826,7 @@ Board_STATUS Board_fpdUb9702SetCSIEnableModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1840,12 +1840,12 @@ Board_STATUS Board_fpdUb9702SetCSIEnableModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1864,7 +1864,7 @@ Board_STATUS Board_fpdUb9702SetCSIPassModeCtrl(void *handle,
                                                Board_FpdModuleObj *fpdModParams,
                                                uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1875,7 +1875,7 @@ Board_STATUS Board_fpdUb9702SetCSIPassModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1889,12 +1889,12 @@ Board_STATUS Board_fpdUb9702SetCSIPassModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1913,7 +1913,7 @@ Board_STATUS Board_fpdUb9702GetBCCStatus(void *handle,
                                          Board_FpdModuleObj *fpdModParams,
                                          uint8_t *bccStatus)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1924,13 +1924,13 @@ Board_STATUS Board_fpdUb9702GetBCCStatus(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
     *bccStatus = regData;
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -1949,7 +1949,7 @@ Board_STATUS Board_fpdUb9702SelRxPortRdBackRegBlk(void *handle,
                                                   Board_FpdModuleObj *fpdModParams,
                                                   uint8_t regBlk)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -1960,7 +1960,7 @@ Board_STATUS Board_fpdUb9702SelRxPortRdBackRegBlk(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1974,12 +1974,12 @@ Board_STATUS Board_fpdUb9702SelRxPortRdBackRegBlk(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2000,7 +2000,7 @@ Board_STATUS Board_fpdUb9702SetRxPortWrEnModeCtrl(void *handle,
                                                   uint8_t rxWrPort,
                                                   uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -2011,7 +2011,7 @@ Board_STATUS Board_fpdUb9702SetRxPortWrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -2035,11 +2035,11 @@ Board_STATUS Board_fpdUb9702SetRxPortWrEnModeCtrl(void *handle,
              regData |= (cfgMode << BOARD_FPD_UB9702_RX_WRITE_PORT_0_SHIFT_CNT);
              break;
         default:
-             boardStatus = -1;
+             boardStatus = BOARD_INVALID_PARAM;
              break;
     }
 
-    if(boardStatus == -1)
+    if(boardStatus == BOARD_INVALID_PARAM)
     {
         return boardStatus;
     }
@@ -2050,12 +2050,12 @@ Board_STATUS Board_fpdUb9702SetRxPortWrEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2074,7 +2074,7 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrAllModeCtrl(void *handle,
                                                      Board_FpdModuleObj *fpdModParams,
                                                      uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -2085,7 +2085,7 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrAllModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -2099,12 +2099,12 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrAllModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2123,7 +2123,7 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrModeCtrl(void *handle,
                                                   Board_FpdModuleObj *fpdModParams,
                                                   uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -2134,7 +2134,7 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -2148,12 +2148,12 @@ Board_STATUS Board_fpdUb9702SetI2CPassThrModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2172,7 +2172,7 @@ Board_STATUS Board_fpdUb9702SetI2CAutoAckModeCtrl(void *handle,
                                                   Board_FpdModuleObj *fpdModParams,
                                                   uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -2183,7 +2183,7 @@ Board_STATUS Board_fpdUb9702SetI2CAutoAckModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -2197,12 +2197,12 @@ Board_STATUS Board_fpdUb9702SetI2CAutoAckModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2221,7 +2221,7 @@ Board_STATUS Board_fpdUb9702SetBCCEnModeCtrl(void *handle,
                                              Board_FpdModuleObj *fpdModParams,
                                              uint8_t cfgMode)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -2232,7 +2232,7 @@ Board_STATUS Board_fpdUb9702SetBCCEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -2246,12 +2246,12 @@ Board_STATUS Board_fpdUb9702SetBCCEnModeCtrl(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2270,7 +2270,7 @@ Board_STATUS Board_fpdUb9702SelBCFreq(void *handle,
                                       Board_FpdModuleObj *fpdModParams,
                                       uint8_t bcFreq)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -2281,7 +2281,7 @@ Board_STATUS Board_fpdUb9702SelBCFreq(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -2295,12 +2295,12 @@ Board_STATUS Board_fpdUb9702SelBCFreq(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2319,7 +2319,7 @@ Board_STATUS Board_fpdUb9702SetRmtSerId(void *handle,
                                         Board_FpdModuleObj *fpdModParams,
                                         uint8_t rmtSerId)
 {
-    int8_t boardStatus;
+    Board_STATUS boardStatus;
     uint8_t regAddr;
     uint8_t regData = 0;
 
@@ -2330,7 +2330,7 @@ Board_STATUS Board_fpdUb9702SetRmtSerId(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -2344,12 +2344,12 @@ Board_STATUS Board_fpdUb9702SetRmtSerId(void *handle,
                                      &regData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(boardStatus != 0)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    return 0;
+    return BOARD_SOK;
 }
 
 /**
@@ -2392,7 +2392,7 @@ Board_STATUS Board_fpdUb9702RmtSerSlvDevAliasIdCfg(void *handle,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
 
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2405,7 +2405,7 @@ Board_STATUS Board_fpdUb9702RmtSerSlvDevAliasIdCfg(void *handle,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
 
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2500,7 +2500,7 @@ Board_STATUS Board_fpdUb9702CfgPG(void *handle,
                                      (uint8_t *)(&ub9702Cfg[index].regData),
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-            if(ret != 0)
+            if(ret != BOARD_SOK)
             {
                 ret = BOARD_I2C_TRANSFER_FAIL;
             }
@@ -2515,7 +2515,7 @@ Board_STATUS Board_fpdUb9702CfgPG(void *handle,
                                      &rdData,
                                      1U,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-            if(ret != 0)
+            if(ret != BOARD_SOK)
             {
                 ret = BOARD_I2C_TRANSFER_FAIL;
             }

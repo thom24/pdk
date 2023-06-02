@@ -91,7 +91,7 @@ static void Board_pinmuxWriteProxy1Reg(uint8_t domain,
     uint32_t    claimShift;
     uint32_t    claimRegVal;
 
-    if(domain == BOARD_SOC_DOMAIN_MAIN)
+    if(BOARD_SOC_DOMAIN_MAIN == domain)
     {
         claimAddr = BOARD_MAIN_MMR_P7_CLAIM_ADDR;
         /* Get the register offset from base of P7 claim offset range */
@@ -110,11 +110,11 @@ static void Board_pinmuxWriteProxy1Reg(uint8_t domain,
     claimShift  = claimOffset % BOARD_MMR_CLAIM_ADDR_PER_REG;
     claimOffset = claimOffset / BOARD_MMR_CLAIM_ADDR_PER_REG;
 
-    claimRegVal = HW_RD_REG32((claimAddr + 4*claimOffset));
-    claimRegVal |= (1 << claimShift);
+    claimRegVal = HW_RD_REG32((claimAddr + (4*claimOffset)));
+    claimRegVal |= (1U << claimShift);
 
     /* Claim the register access */
-    HW_WR_REG32((claimAddr + 4*claimOffset), claimRegVal);
+    HW_WR_REG32((claimAddr + (4*claimOffset)), claimRegVal);
 
     /* Write PAD config MMR register */
     HW_WR_REG32(baseAddr, regVal);
@@ -142,7 +142,7 @@ static uint32_t Board_pinmuxGetBaseAddr(uint8_t domain)
             baseAddr = BOARD_WKUP_PMUX_CTRL_ADDR;
         break;
         default:
-            baseAddr = 0;
+            baseAddr = 0U;
         break;
     }
 
@@ -242,7 +242,7 @@ Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
     Board_pinmuxKickCtrl(domain, 0);
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
-    if(baseAddr != 0)
+    if(0U != baseAddr)
     {
         Board_pinmuxWriteProxy1Reg(domain, 
                                    (baseAddr + offset), 
@@ -279,7 +279,7 @@ Board_STATUS Board_pinmuxGetReg(uint8_t  domain,
     Board_STATUS status = BOARD_SOK;
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
-    if(baseAddr != 0)
+    if(0U != baseAddr)
     {
         *muxData = HW_RD_REG32((baseAddr + offset));
     }
@@ -365,20 +365,20 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
     Board_pinmuxKickCtrl(domain, 0);
 
     /* MAIN domain pinmux needs RAT configuration for C66x core. */
-    if(domain == BOARD_SOC_DOMAIN_MAIN)
+    if(BOARD_SOC_DOMAIN_MAIN == domain)
     {
         Board_setRATCfg();
     }
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
-    if(baseAddr != 0)
+    if(0U != baseAddr)
     {
         for(i = 0; PINMUX_END != pinmuxData[i].moduleId; i++)
         {
             pModuleData = pinmuxData[i].modulePinCfg;
             for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
             {
-                if(pModuleData[j].doPinConfig == TRUE)
+                if((int16_t)BTRUE == pModuleData[j].doPinConfig)
                 {
                     pInstanceData = pModuleData[j].instPins;
                     for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
@@ -398,7 +398,7 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
         status = BOARD_INVALID_PARAM;
     }
 
-    if(domain == BOARD_SOC_DOMAIN_MAIN)
+    if(BOARD_SOC_DOMAIN_MAIN == domain)
     {
         /* Clear the RAT configuration to allow applications to use the region */
         Board_restoreRATCfg();
@@ -437,21 +437,21 @@ Board_STATUS Board_pinmuxConfig (void)
     if(gBoardPinmuxCfg.autoCfg)
     {
         /* Auto detect the application boards connected and configure the pinmux */
-        if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
+        if(BTRUE == Board_detectBoard(BOARD_ID_GESI))
         {
             gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW;
         }
         else
         {
-            if(Board_detectBoard(BOARD_ID_INFOTAINMENT) == TRUE)
+            if(BTRUE == Board_detectBoard(BOARD_ID_INFOTAINMENT))
             {
                 gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_INFO_VOUT;
             }
         }
     }
 
-    if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
-       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW))
+    if((BOARD_PINMUX_GESI_ICSSG == gBoardPinmuxCfg.gesiExp) ||
+       (BOARD_PINMUX_GESI_CPSW == gBoardPinmuxCfg.gesiExp))
     {
         /* By default ICSSG RGMII is enabled */
         Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiIcssg,
@@ -459,7 +459,7 @@ Board_STATUS Board_pinmuxConfig (void)
         Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_WKUP);
 
-        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW)
+        if(BOARD_PINMUX_GESI_CPSW == gBoardPinmuxCfg.gesiExp)
         {
             /* Overwrite the ICSSG RGMII muc configurations with CPSW9G RGMII */
             Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiCpsw9g,
@@ -468,7 +468,7 @@ Board_STATUS Board_pinmuxConfig (void)
                                BOARD_SOC_DOMAIN_WKUP);
         }
     }
-    else if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_INFO_VOUT)
+    else if(BOARD_PINMUX_INFO_VOUT == gBoardPinmuxCfg.gesiExp)
     {
         Board_pinmuxUpdate(gJ721E_MainPinmuxDataInfo,
                            BOARD_SOC_DOMAIN_MAIN);
@@ -480,7 +480,7 @@ Board_STATUS Board_pinmuxConfig (void)
         return (BOARD_INVALID_PARAM);
     }
 
-    if(gBoardPinmuxCfg.fssCfg == BOARD_PINMUX_FSS_HPB)
+    if(BOARD_PINMUX_FSS_HPB == gBoardPinmuxCfg.fssCfg)
     {
         Board_pinmuxUpdate(gJ721E_WkupPinmuxDataHpb,
                            BOARD_SOC_DOMAIN_WKUP);
@@ -513,34 +513,34 @@ Board_STATUS Board_pinmuxConfigMain (void)
     if(gBoardPinmuxCfg.autoCfg)
     {
         /* Auto detect the application boards connected and configure the pinmux */
-        if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
+        if(BTRUE == Board_detectBoard(BOARD_ID_GESI))
         {
             gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW;
         }
         else
         {
-            if(Board_detectBoard(BOARD_ID_INFOTAINMENT) == TRUE)
+            if(BTRUE == Board_detectBoard(BOARD_ID_INFOTAINMENT))
             {
                 gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_INFO_VOUT;
             }
         }
     }
 
-    if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
-       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW))
+    if((BOARD_PINMUX_GESI_ICSSG == gBoardPinmuxCfg.gesiExp) ||
+       (BOARD_PINMUX_GESI_CPSW  == gBoardPinmuxCfg.gesiExp))
     {
         /* By default ICSSG RGMII is enabled */
         Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_MAIN);
 
-        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW)
+        if(BOARD_PINMUX_GESI_CPSW == gBoardPinmuxCfg.gesiExp)
         {
             /* Overwrite the ICSSG RGMII muc configurations with CPSW9G RGMII */
             Board_pinmuxUpdate(gJ721E_MainPinmuxDataGesiCpsw9g,
                                BOARD_SOC_DOMAIN_MAIN);
         }
     }
-    else if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_INFO_VOUT)
+    else if(BOARD_PINMUX_INFO_VOUT == gBoardPinmuxCfg.gesiExp)
     {
         Board_pinmuxUpdate(gJ721E_MainPinmuxDataInfo,
                            BOARD_SOC_DOMAIN_MAIN);
@@ -576,32 +576,32 @@ Board_STATUS Board_pinmuxConfigWkup (void)
     if(gBoardPinmuxCfg.autoCfg)
     {
         /* Auto detect the application boards connected and configure the pinmux */
-        if(Board_detectBoard(BOARD_ID_GESI) == TRUE)
+        if(BTRUE == Board_detectBoard(BOARD_ID_GESI))
         {
             gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_GESI_CPSW;
         }
         else
         {
-            if(Board_detectBoard(BOARD_ID_INFOTAINMENT) == TRUE)
+            if(BTRUE == Board_detectBoard(BOARD_ID_INFOTAINMENT))
             {
                 gBoardPinmuxCfg.gesiExp = BOARD_PINMUX_INFO_VOUT;
             }
         }
     }
 
-    if((gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_ICSSG) ||
-       (gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW))
+    if((BOARD_PINMUX_GESI_ICSSG == gBoardPinmuxCfg.gesiExp) ||
+       (BOARD_PINMUX_GESI_CPSW  == gBoardPinmuxCfg.gesiExp))
     {
         Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiIcssg,
                            BOARD_SOC_DOMAIN_WKUP);
 
-        if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_GESI_CPSW)
+        if(BOARD_PINMUX_GESI_CPSW == gBoardPinmuxCfg.gesiExp)
         {
             Board_pinmuxUpdate(gJ721E_WkupPinmuxDataGesiCpsw9g,
                                BOARD_SOC_DOMAIN_WKUP);
         }
     }
-    else if(gBoardPinmuxCfg.gesiExp == BOARD_PINMUX_INFO_VOUT)
+    else if(BOARD_PINMUX_INFO_VOUT == gBoardPinmuxCfg.gesiExp)
     {
         Board_pinmuxUpdate(gJ721E_WkupPinmuxDataInfo,
                            BOARD_SOC_DOMAIN_WKUP);
@@ -611,7 +611,7 @@ Board_STATUS Board_pinmuxConfigWkup (void)
         return (BOARD_INVALID_PARAM);
     }
 
-    if(gBoardPinmuxCfg.fssCfg == BOARD_PINMUX_FSS_HPB)
+    if(BOARD_PINMUX_FSS_HPB == gBoardPinmuxCfg.fssCfg)
     {
         Board_pinmuxUpdate(gJ721E_WkupPinmuxDataHpb,
                            BOARD_SOC_DOMAIN_WKUP);

@@ -82,8 +82,8 @@ static pinmuxPerCfg_t gGpio1PinCfg[] =
 
 static pinmuxModuleCfg_t gGpioPinCfg[] =
 {
-    {0, TRUE, gGpio0PinCfg},
-    {1, TRUE, gGpio1PinCfg},
+    {0, 1, gGpio0PinCfg},
+    {1, 1, gGpio1PinCfg},
     {PINMUX_END}
 };
 
@@ -280,10 +280,10 @@ static pinmuxPerCfg_t gMcasp6PinCfg[] =
 
 static pinmuxModuleCfg_t gMcaspPinCfg[] =
 {
-    {1, TRUE, gMcasp1PinCfg},
-    {0, TRUE, gMcasp0PinCfg},
-    {2, TRUE, gMcasp2PinCfg},
-    {6, TRUE, gMcasp6PinCfg},
+    {1, 1, gMcasp1PinCfg},
+    {0, 1, gMcasp0PinCfg},
+    {2, 1, gMcasp2PinCfg},
+    {6, 1, gMcasp6PinCfg},
     {PINMUX_END}
 };
 
@@ -315,7 +315,7 @@ static pinmuxPerCfg_t gSpi3PinCfg[] =
 
 static pinmuxModuleCfg_t gSpiPinCfg[] =
 {
-    {3, TRUE, gSpi3PinCfg},
+    {3, 1, gSpi3PinCfg},
     {PINMUX_END}
 };
 
@@ -472,7 +472,7 @@ static pinmuxPerCfg_t gVout0PinCfg[] =
 
 static pinmuxModuleCfg_t gVoutPinCfg[] =
 {
-    {0, TRUE, gVout0PinCfg},
+    {0, 1, gVout0PinCfg},
     {PINMUX_END}
 };
 
@@ -504,7 +504,7 @@ static pinmuxPerCfg_t gVpfe0PinCfg[] =
 
 static pinmuxModuleCfg_t gVpfePinCfg[] =
 {
-    {0, TRUE, gVpfe0PinCfg},
+    {0, 1, gVpfe0PinCfg},
     {PINMUX_END}
 };
 

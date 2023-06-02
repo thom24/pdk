@@ -91,7 +91,7 @@ static NOR_STATUS Nor_xspiCmdRead(OSPI_Handle handle, uint8_t *cmdBuf,
     transaction.count = cmdLen + rxLen;
 
     ret = OSPI_transfer(handle, &transaction);
-    if (ret == true)
+    if (BTRUE == ret)
     {
         return NOR_PASS;
     }
@@ -118,7 +118,7 @@ static NOR_STATUS Nor_xspiCmdWrite(OSPI_Handle handle, uint8_t *cmdBuf,
     transaction.arg = (void *)(uintptr_t)dataLen;
 
     ret = OSPI_transfer(handle, &transaction);
-    if (ret == true)
+    if (BTRUE == ret)
     {
         return NOR_PASS;
     }
@@ -142,7 +142,7 @@ static NOR_STATUS Nor_xspiRegRead(OSPI_Handle handle,
     cmd[4] = (regAddr) & 0xFF;
 
     retVal = Nor_xspiCmdRead(handle, cmd, 5, data, 1);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
@@ -160,13 +160,13 @@ static NOR_STATUS Nor_xspiRegWrite(OSPI_Handle handle,
     /* Enable flash write */
     cmd[0] = NOR_CMD_WREN;
     retVal = Nor_xspiCmdWrite(handle, cmd, 1, 0);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
 
     retVal = Nor_xspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
@@ -179,13 +179,13 @@ static NOR_STATUS Nor_xspiRegWrite(OSPI_Handle handle,
     cmd[5] = data;
 
     retVal = Nor_xspiCmdWrite(handle, cmd, 5, 1);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
 
     retVal = Nor_xspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
@@ -202,14 +202,14 @@ static NOR_STATUS Nor_xspiHybridSectCfg(OSPI_Handle handle,
 
     /* Read configuration register3 */
     retVal = Nor_xspiRegRead(handle, NOR_CFG3_VREG_ADDR, &regData);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
 
-    if(enable == 1)
+    if(1 == enable)
     {
-        if((regData & 0x8) == 0)
+        if(0 == (regData & 0x8))
         {
             /* Hybrid sector configuration is already in enabled state.
                No further action needed */
@@ -223,7 +223,7 @@ static NOR_STATUS Nor_xspiHybridSectCfg(OSPI_Handle handle,
     }
     else
     {
-        if((regData & 0x8) != 0)
+        if(0 != (regData & 0x8))
         {
             /* Hybrid sector configuration is already in disabled state.
                No further action needed */
@@ -238,7 +238,7 @@ static NOR_STATUS Nor_xspiHybridSectCfg(OSPI_Handle handle,
 
     /* Write configuration register3 */
     retVal = Nor_xspiRegWrite(handle, NOR_CFG3_NVREG_ADDR, regData);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
@@ -359,7 +359,7 @@ static NOR_STATUS Nor_xspiSetDummyCycle(OSPI_Handle handle, uint32_t dummyCycle)
 
     /* Read configuration register2 */
     retVal = Nor_xspiRegRead(handle, NOR_CFG2_VREG_ADDR, &regData);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
@@ -369,7 +369,7 @@ static NOR_STATUS Nor_xspiSetDummyCycle(OSPI_Handle handle, uint32_t dummyCycle)
 
     /* Write configuration register2 */
     retVal = Nor_xspiRegWrite(handle, NOR_CFG2_VREG_ADDR, regData);
-    if(retVal != NOR_PASS)
+    if(NOR_PASS != retVal)
     {
         return NOR_FAIL;
     }
@@ -399,16 +399,16 @@ static NOR_STATUS Nor_xspiResetMemory(OSPI_Handle handle)
 static void Nor_ospiSetOpcode(OSPI_Handle handle)
 {
     uint32_t               data[6];
-    uint32_t               rdDummyCycles = 0;
-    uint32_t               cmdDummyCycles = 0;
+    uint32_t               rdDummyCycles = 0U;
+    uint32_t               cmdDummyCycles = 0U;
     uint32_t               readCmd;
     uint32_t               progCmd;
-    uint32_t               latencyCode = 0;
+    uint32_t               latencyCode = 0U;
     uint32_t               rx_lines;
     OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
     rx_lines = hwAttrs->xferLines;
-    if (rx_lines == OSPI_XFER_LINES_OCTAL)
+    if (OSPI_XFER_LINES_OCTAL == rx_lines)
     {
         if (hwAttrs->dacEnable)
         {
@@ -421,13 +421,13 @@ static void Nor_ospiSetOpcode(OSPI_Handle handle)
             latencyCode   = NOR_OCTAL_READ_DUMMY_CYCLE_LC_INDAC;
         }
 
-        if (gDtrEnable == true)
+        if (BTRUE == gDtrEnable)
         {
             cmdDummyCycles = NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE;
             readCmd = NOR_CMD_OCTAL_DDR_READ;
-            if (gPhyEnable == (bool)true)
+            if (BTRUE == gPhyEnable)
             {
-                rdDummyCycles -= 1;
+                rdDummyCycles -= 1U;
             }
         }
         else
@@ -492,20 +492,20 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 
     /* Reset the PHY tunning configuration data when enabled */
     data = *(uint32_t *)params;
-    if (data != 0)
+    if (0U != data)
     {
         Nor_spiPhyTuneReset(gDtrEnable);
     }
 
     /* Save the PHY enable flag */
     gPhyEnable = ospiCfg.phyEnable;
-    if (gPhyEnable == (bool)true)
+    if (BTRUE == gPhyEnable)
     {
         /*
          * phyEnable is turned on only for DAC read,
          * it turned off for open/erase/write operation
          */
-        ospiCfg.phyEnable = false;
+        ospiCfg.phyEnable = BFALSE;
     }
 
     /* For XSPI flash the read data capture delay needs to be half the value of the baudrate divider */
@@ -528,18 +528,18 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     if (hwHandle)
     {
         retVal = NOR_PASS;
-        if (retVal == NOR_PASS)
+        if (NOR_PASS == retVal)
         {
             OSPI_socGetInitCfg(SPI_OSPI_DOMAIN_MCU, portNum, &ospiCfg);
 
-            if (ospiCfg.xferLines == OSPI_XFER_LINES_OCTAL)
+            if (OSPI_XFER_LINES_OCTAL == ospiCfg.xferLines)
             {
-                if (gPhyEnable == (bool)true)
+                if (BTRUE == gPhyEnable)
                 {
                     Nor_xspiResetMemory(hwHandle);
                 }
 
-                if (ospiCfg.dtrEnable == true)
+                if (BTRUE == ospiCfg.dtrEnable)
                 {
                     Nor_xspiEnableDDR(hwHandle);
                 }
@@ -555,30 +555,30 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 /* Reset device memory for all the other lines */
                 hwAttrs = (OSPI_v0_HwAttrs const *)hwHandle->hwAttrs;
                 CSL_ospiSetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                              FALSE);
+                                              UFALSE);
                 Nor_xspiResetMemory(hwHandle);
                 Nor_ospiSetOpcode(hwHandle);
                 Nor_xspiWaitReady(hwHandle, NOR_WRR_WRITE_TIMEOUT);
-                if(retVal != NOR_PASS)
+                if(NOR_PASS != retVal)
                 {
-                    return NOR_FAIL;
+                    return (NOR_HANDLE)NOR_FAIL;
                 }
             }
 
-            if (Nor_xspiReadId(hwHandle) == NOR_PASS)
+            if (NOR_PASS == Nor_xspiReadId(hwHandle))
             {
                 Nor_xspiInfo.hwHandle = (uintptr_t)hwHandle;
                 norHandle = (NOR_HANDLE)(&Nor_xspiInfo);
             }
         }
 
-        if (norHandle == 0)
+        if (0 == norHandle)
         {
             OSPI_close(hwHandle);
         }
     }
 
-    if((norHandle != 0) && (ospiCfg.xferLines == OSPI_XFER_LINES_OCTAL))
+    if(((NOR_HANDLE)0 != norHandle) && (OSPI_XFER_LINES_OCTAL == ospiCfg.xferLines))
     {
         /* Disable hybrid sector configuration */
         Nor_xspiHybridSectCfg(hwHandle, 0, 0);
@@ -625,9 +625,9 @@ static NOR_STATUS Nor_xspiWaitReady(OSPI_Handle handle, uint32_t timeOut)
     uint8_t         status;
     uint8_t         cmd[6];
     uint32_t        cmdLen;
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    OSPI_v0_HwAttrs const *hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-    if (hwAttrs->xferLines == OSPI_XFER_LINES_OCTAL)
+    if (OSPI_XFER_LINES_OCTAL == hwAttrs->xferLines)
     {
         cmd[0] = NOR_CMD_RDREG;
         cmd[1] = 0;
@@ -648,7 +648,7 @@ static NOR_STATUS Nor_xspiWaitReady(OSPI_Handle handle, uint32_t timeOut)
         {
             return NOR_FAIL;
         }
-        if ((status & NOR_SR_WIP) == 0)
+        if (0U == (status & NOR_SR_WIP))
         {
             break;
         }
@@ -660,7 +660,7 @@ static NOR_STATUS Nor_xspiWaitReady(OSPI_Handle handle, uint32_t timeOut)
 
     } while (1);
 
-    if ((status & NOR_SR_WIP) == 0)
+    if (0U == (status & NOR_SR_WIP))
     {
         return NOR_PASS;
     }
@@ -695,18 +695,18 @@ NOR_STATUS Nor_xspiRead(NOR_HANDLE handle, uint32_t addr,
     const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
 
     /* Validate address input */
-    if ((addr + len) > NOR_SIZE)
+    if (NOR_SIZE < (addr + len))
     {
         return NOR_FAIL;
     }
 
-    if (gPhyEnable == (bool)true)
+    if (BTRUE == gPhyEnable)
     {
         CSL_REG32_FINS(&pRegs->DEV_INSTR_RD_CONFIG_REG,
                     OSPI_FLASH_CFG_DEV_INSTR_RD_CONFIG_REG_DUMMY_RD_CLK_CYCLES_FLD,
                     NOR_OCTAL_READ_DUMMY_CYCLE - 1U);
                     
-        if (Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET) == NOR_FAIL)
+        if (NOR_FAIL == Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET))
         {
            return NOR_FAIL;
         }
@@ -723,7 +723,7 @@ NOR_STATUS Nor_xspiRead(NOR_HANDLE handle, uint32_t addr,
 
     ret = OSPI_transfer(spiHandle, &transaction);
 
-    if (ret == true)
+    if (BTRUE == ret)
     {
         return NOR_PASS;
     }
@@ -761,7 +761,7 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     }
 
     /* Validate address input */
-    if ((addr + len) > NOR_SIZE)
+    if (NOR_SIZE < (addr + len))
     {
         return NOR_FAIL;
     }
@@ -770,7 +770,7 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     hwAttrs = (OSPI_v0_HwAttrs *)spiHandle->hwAttrs;
 
     /* Disable XIP Prefetch before programming flash memory */
-    xipPrefetchEnable = FALSE;
+    xipPrefetchEnable = UFALSE;
     fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
     CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
@@ -789,9 +789,9 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         /* indirect access transfer mode */
         wrSize = NOR_PAGE_SIZE;
     }
-    byteAddr = addr & (wrSize - 1);
+    byteAddr = addr & (wrSize - 1U);
 
-    for (actual = 0; actual < len; actual += chunkLen)
+    for (actual = 0U; actual < len; actual += chunkLen)
     {
         if (Nor_xspiCmdWrite(spiHandle, cmdWren, 1, 0))
         {
@@ -808,7 +808,7 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         OSPI_control(spiHandle, OSPI_V0_CMD_XFER_MODE_RW, (void *)&transferType);
 
         /* Send Page Program command */
-        chunkLen = ((len - actual) < (wrSize - byteAddr) ?
+        chunkLen = (((len - actual) < (wrSize - byteAddr)) ?
                     (len - actual) : (wrSize - byteAddr));
 
         transaction.arg   = (void *)(uintptr_t)addr;
@@ -817,7 +817,7 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         transaction.count = chunkLen;
 
         ret = OSPI_transfer(spiHandle, &transaction);
-        if (ret == false)
+        if (BFALSE == ret)
         {
             return NOR_FAIL;
         }
@@ -833,7 +833,7 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     }
 
     /* Enable back XIP prefetch */
-    xipPrefetchEnable = TRUE;
+    xipPrefetchEnable = UTRUE;
     fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
     CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
@@ -888,7 +888,7 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     }
 
     /* Disable XIP Prefetch before programming flash memory */
-    xipPrefetchEnable = FALSE;
+    xipPrefetchEnable = UFALSE;
     fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
     CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
@@ -918,7 +918,7 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     }
 
     /* Enable back XIP prefetch */
-    xipPrefetchEnable = TRUE;
+    xipPrefetchEnable = UTRUE;
     fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
     CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 

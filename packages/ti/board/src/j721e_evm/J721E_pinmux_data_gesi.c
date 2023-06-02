@@ -77,9 +77,9 @@ static pinmuxPerCfg_t gEhrpwm2PinCfg[] =
 
 static pinmuxModuleCfg_t gEhrpwmPinCfg[] =
 {
-    {0, TRUE, gEhrpwm0PinCfg},
-    {1, TRUE, gEhrpwm1PinCfg},
-    {2, TRUE, gEhrpwm2PinCfg},
+    {0, 1, gEhrpwm0PinCfg},
+    {1, 1, gEhrpwm1PinCfg},
+    {2, 1, gEhrpwm2PinCfg},
     {PINMUX_END}
 };
 
@@ -111,7 +111,7 @@ static pinmuxPerCfg_t gEqep0PinCfg[] =
 
 static pinmuxModuleCfg_t gEqepPinCfg[] =
 {
-    {0, FALSE, gEqep0PinCfg},
+    {0, 0, gEqep0PinCfg},
     {PINMUX_END}
 };
 
@@ -163,8 +163,8 @@ static pinmuxPerCfg_t gGpio1PinCfg[] =
 
 static pinmuxModuleCfg_t gGpioPinCfg[] =
 {
-    {0, TRUE, gGpio0PinCfg},
-    {1, TRUE, gGpio1PinCfg},
+    {0, 1, gGpio0PinCfg},
+    {1, 1, gGpio1PinCfg},
     {PINMUX_END}
 };
 
@@ -261,12 +261,12 @@ static pinmuxPerCfg_t gMcan4PinCfg[] =
 
 static pinmuxModuleCfg_t gMcanPinCfg[] =
 {
-    {6, TRUE, gMcan6PinCfg},
-    {7, TRUE, gMcan7PinCfg},
-    {9, TRUE, gMcan9PinCfg},
-    {1, TRUE, gMcan1PinCfg},
-    {5, TRUE, gMcan5PinCfg},
-    {4, TRUE, gMcan4PinCfg},
+    {6, 1, gMcan6PinCfg},
+    {7, 1, gMcan7PinCfg},
+    {9, 1, gMcan9PinCfg},
+    {1, 1, gMcan1PinCfg},
+    {5, 1, gMcan5PinCfg},
+    {4, 1, gMcan4PinCfg},
     {PINMUX_END}
 };
 
@@ -318,7 +318,7 @@ static pinmuxPerCfg_t gMcu_adc1PinCfg[] =
 
 static pinmuxModuleCfg_t gMcu_adcPinCfg[] =
 {
-    {1, TRUE, gMcu_adc1PinCfg},
+    {1, 1, gMcu_adc1PinCfg},
     {PINMUX_END}
 };
 
@@ -340,7 +340,7 @@ static pinmuxPerCfg_t gMdio0PinCfg[] =
 
 static pinmuxModuleCfg_t gMdioPinCfg[] =
 {
-    {0, TRUE, gMdio0PinCfg},
+    {0, 1, gMdio0PinCfg},
     {PINMUX_END}
 };
 
@@ -362,7 +362,7 @@ static pinmuxPerCfg_t gPru_icssg0_mdio0PinCfg[] =
 
 static pinmuxModuleCfg_t gPru_icssg0_mdioPinCfg[] =
 {
-    {0, TRUE, gPru_icssg0_mdio0PinCfg},
+    {0, 1, gPru_icssg0_mdio0PinCfg},
     {PINMUX_END}
 };
 
@@ -499,8 +499,8 @@ static pinmuxPerCfg_t gPru_icssg0_rgmii2PinCfg[] =
 
 static pinmuxModuleCfg_t gPru_icssg0_rgmiiPinCfg[] =
 {
-    {1, TRUE, gPru_icssg0_rgmii1PinCfg},
-    {2, TRUE, gPru_icssg0_rgmii2PinCfg},
+    {1, 1, gPru_icssg0_rgmii1PinCfg},
+    {2, 1, gPru_icssg0_rgmii2PinCfg},
     {PINMUX_END}
 };
 
@@ -517,7 +517,7 @@ static pinmuxPerCfg_t gPru_icssg1_iep0PinCfg[] =
 
 static pinmuxModuleCfg_t gPru_icssg1_iepPinCfg[] =
 {
-    {0, TRUE, gPru_icssg1_iep0PinCfg},
+    {0, 1, gPru_icssg1_iep0PinCfg},
     {PINMUX_END}
 };
 
@@ -539,7 +539,7 @@ static pinmuxPerCfg_t gPru_icssg1_mdio0PinCfg[] =
 
 static pinmuxModuleCfg_t gPru_icssg1_mdioPinCfg[] =
 {
-    {0, TRUE, gPru_icssg1_mdio0PinCfg},
+    {0, 1, gPru_icssg1_mdio0PinCfg},
     {PINMUX_END}
 };
 
@@ -571,8 +571,8 @@ static pinmuxPerCfg_t gPru_icssg1_pru0PinCfg[] =
 
 static pinmuxModuleCfg_t gPru_icssg1_pruPinCfg[] =
 {
-    {1, TRUE, gPru_icssg1_pru1PinCfg},
-    {0, TRUE, gPru_icssg1_pru0PinCfg},
+    {1, 1, gPru_icssg1_pru1PinCfg},
+    {0, 1, gPru_icssg1_pru0PinCfg},
     {PINMUX_END}
 };
 
@@ -589,7 +589,7 @@ static pinmuxPerCfg_t gPru_icssg1_pwm3PinCfg[] =
 
 static pinmuxModuleCfg_t gPru_icssg1_pwmPinCfg[] =
 {
-    {3, TRUE, gPru_icssg1_pwm3PinCfg},
+    {3, 1, gPru_icssg1_pwm3PinCfg},
     {PINMUX_END}
 };
 
@@ -726,8 +726,8 @@ static pinmuxPerCfg_t gPru_icssg1_rgmii2PinCfg[] =
 
 static pinmuxModuleCfg_t gPru_icssg1_rgmiiPinCfg[] =
 {
-    {1, TRUE, gPru_icssg1_rgmii1PinCfg},
-    {2, TRUE, gPru_icssg1_rgmii2PinCfg},
+    {1, 1, gPru_icssg1_rgmii1PinCfg},
+    {2, 1, gPru_icssg1_rgmii2PinCfg},
     {PINMUX_END}
 };
 
@@ -789,8 +789,8 @@ static pinmuxPerCfg_t gSpi6PinCfg[] =
 
 static pinmuxModuleCfg_t gSpiPinCfg[] =
 {
-    {3, TRUE, gSpi3PinCfg},
-    {6, TRUE, gSpi6PinCfg},
+    {3, 1, gSpi3PinCfg},
+    {6, 1, gSpi6PinCfg},
     {PINMUX_END}
 };
 
@@ -827,8 +827,8 @@ static pinmuxPerCfg_t gUart4PinCfg[] =
 
 static pinmuxModuleCfg_t gUartPinCfg[] =
 {
-    {8, TRUE, gUart8PinCfg},
-    {4, TRUE, gUart4PinCfg},
+    {8, 1, gUart8PinCfg},
+    {4, 1, gUart4PinCfg},
     {PINMUX_END}
 };
 
@@ -845,7 +845,7 @@ static pinmuxPerCfg_t gWkup_gpio0PinCfg[] =
 
 static pinmuxModuleCfg_t gWkup_gpioPinCfg[] =
 {
-    {0, TRUE, gWkup_gpio0PinCfg},
+    {0, 1, gWkup_gpio0PinCfg},
     {PINMUX_END}
 };
 

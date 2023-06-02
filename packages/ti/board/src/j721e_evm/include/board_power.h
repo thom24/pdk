@@ -78,7 +78,7 @@ extern "C" {
 #define TPS6594X_FSM_I2C_TRIGGERS                (0x85U)
 #define TPS6594X_FSM_NSLEEP_TRIGGERS             (0x86U)
 
-#define TPS6594X_DEV_REV_DEV_ID                  (0xffU)
+#define TPS6594X_DEV_REV_DEV_ID                  (0xFFU)
 
 #define TPS6594X_INT_STARTUP_NPWRON_START_INT    (1 << 0)
 #define TPS6594X_INT_STARTUP_ENABLE_INT          (1 << 1)

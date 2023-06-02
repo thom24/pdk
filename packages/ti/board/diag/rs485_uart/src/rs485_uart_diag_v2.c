@@ -218,7 +218,7 @@ void BoardDiag_rs485UartMuxEnable(i2cIoExpPinNumber_t pinNum,
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = false;
+    ioExpCfg.enableIntr  = BFALSE;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = pinNum;
@@ -396,7 +396,7 @@ int BoardDiag_pruIcssUartTest(uint8_t portNum)
         }
     }
     /* Verify Data */
-    if (BoardDiag_memCompare(&txBuf[0], &rxBuf[0], TEST_DATA_LEN, &failIndex) == false)
+    if (BoardDiag_memCompare(&txBuf[0], &rxBuf[0], TEST_DATA_LEN, &failIndex) == BFALSE)
     {
         UART_write(uart,&input,1U);
         UART_write(uart, echoPromptFail, sizeof(echoPromptFail));

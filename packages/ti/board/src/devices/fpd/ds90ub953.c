@@ -238,7 +238,7 @@ Board_STATUS Board_fpdUb953SerInit(void *handle,
                                  (uint8_t *)(&Board_FpdUb953CfgObj[index].regData),
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -253,7 +253,7 @@ Board_STATUS Board_fpdUb953SerInit(void *handle,
                                  &rdData,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -293,7 +293,7 @@ Board_STATUS Board_fpdUb953DesInitFusionBoardTIDA1130(void *handle,
                                  (uint8_t *)(&Board_FpdUb953CfgObjTIDA1130[index].regData),
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -308,7 +308,7 @@ Board_STATUS Board_fpdUb953DesInitFusionBoardTIDA1130(void *handle,
                                  &rdData,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -359,7 +359,7 @@ Board_STATUS Board_fpdUb953Cfg(void *handle,
                                  (uint8_t *)(&ub953Cfg[index].regData),
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -374,7 +374,7 @@ Board_STATUS Board_fpdUb953Cfg(void *handle,
                                  &rdData,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(ret != 0)
+        if(ret != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }

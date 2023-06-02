@@ -448,7 +448,7 @@ static int8_t BoardDiag_run_RtcTest(void)
 
     for (index = 0; I2C_config[index].fxnTablePtr != NULL; index++)
     {
-        ((I2C_HwAttrs *)I2C_config[index].hwAttrs)->enableIntr = false;
+        ((I2C_HwAttrs *)I2C_config[index].hwAttrs)->enableIntr = BFALSE;
     }
 
     /* Initializes the I2C */
