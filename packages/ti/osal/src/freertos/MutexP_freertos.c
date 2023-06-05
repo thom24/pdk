@@ -115,8 +115,8 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
       }
       else
       {
-          handle->isRecursiveMutex = 1;
-          handle->semHndl = xSemaphoreCreateRecursiveMutexStatic(&handle->semObj);
+          handle->isRecursiveMutex = 0U;
+          handle->semHndl = xSemaphoreCreateMutexStatic(&handle->semObj);
 
           if (NULL == handle->semHndl)
           {
@@ -181,17 +181,17 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
     MutexP_freertos *mutex = (MutexP_freertos *)mutexObj->object;
     uint32_t isTaken = 0;
 
-    if ((NULL_PTR != mutex) && ((bool)true == mutex->used) && (1U == mutex->isRecursiveMutex))
+    if ((NULL_PTR != mutex) && ((bool)true == mutex->used) && (0U == mutex->isRecursiveMutex))
     {
         if (0 == xPortInIsrContext() )
         {
             if (MutexP_WAIT_FOREVER == timeout)
             {
-                isTaken = (uint32_t )xSemaphoreTakeRecursive(mutex->semHndl, portMAX_DELAY);
+                isTaken = (uint32_t )xSemaphoreTake(mutex->semHndl, portMAX_DELAY);
             }
             else
             {
-                isTaken = (uint32_t )xSemaphoreTakeRecursive(mutex->semHndl, timeout);
+                isTaken = (uint32_t )xSemaphoreTake(mutex->semHndl, timeout);
             }
             if(0U != isTaken)
             {
@@ -223,11 +223,11 @@ MutexP_Status MutexP_unlock(MutexP_Handle handle)
     MutexP_freertos *mutex = (MutexP_freertos *)mutexObj->object;
     /* Note: timeout is not use */
 
-    if ( (NULL_PTR != mutex) && ((bool)true == mutex->used) && (1U == mutex->isRecursiveMutex) )
+    if ( (NULL_PTR != mutex) && ((bool)true == mutex->used) && (0U == mutex->isRecursiveMutex) )
     {
         if (0 == xPortInIsrContext())
         {
-            (void)xSemaphoreGiveRecursive(mutex->semHndl);
+            (void)xSemaphoreGive(mutex->semHndl);
             ret = MutexP_OK;
         }
         else
