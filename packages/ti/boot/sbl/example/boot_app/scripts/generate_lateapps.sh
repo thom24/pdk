@@ -12,7 +12,7 @@
 # Usage : Run "./generate_lateapps.sh --help" to get usage
 #
 
-PDK_INSTALL_PATH=${PWD}/../../../../../../../..
+PDK_INSTALL_PATH=${PWD}/../../../../../../..
 
 # To get rid of ../../ in the path go to PDK_INSTALL_PATH and reassign PDK_INSTALL_PATH as PWD
 pushd ${PWD}
@@ -22,10 +22,10 @@ PDK_INSTALL_PATH=${PWD}
 
 popd
 
-PDK_BUILD_PATH=${PDK_INSTALL_PATH}/pdk/packages/ti/build
-MULTICORE_APPIMAGE_GEN_TOOL_PATH=${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/tools/multicoreImageGen/bin
-SBL_OUT2RPRC_GEN_TOOL_PATH=${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/tools/out2rprc/bin
-BOOTAPP_BIN_PATH=${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/tools/BootApp_binaries
+PDK_BUILD_PATH=${PDK_INSTALL_PATH}/packages/ti/build
+MULTICORE_APPIMAGE_GEN_TOOL_PATH=${PDK_INSTALL_PATH}/packages/ti/boot/sbl/tools/multicoreImageGen/bin
+SBL_OUT2RPRC_GEN_TOOL_PATH=${PDK_INSTALL_PATH}/packages/ti/boot/sbl/tools/out2rprc/bin
+BOOTAPP_BIN_PATH=${PDK_INSTALL_PATH}/packages/ti/boot/sbl/tools/BootApp_binaries
 
 INPUT_ARGS=$@
 BOARD_LIST_ALL="j721e_evm j7200_evm j721s2_evm j784s4_evm"
@@ -154,7 +154,7 @@ build_bootapp_boot_test()
         do
             echo "Building bootapp_boot_test for board : $BOARD_NAME, core : ${CORE_NAME}"
             make BOARD=${BOARD_NAME} CORE=${CORE_NAME} bootapp_boot_test BUILD_PROFILE=${MY_PROFILE} -s -j
-            FILE=${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/bootapp_boot_test_${BOARD_NAME}_${CORE_NAME}TestApp_${MY_PROFILE}.${core_extension[${CORE_NAME}]}
+            FILE=${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/bootapp_boot_test_${BOARD_NAME}_${CORE_NAME}TestApp_${MY_PROFILE}.${core_extension[${CORE_NAME}]}
             if [ ! -f "$FILE" ]
             then
                 echo "Error - $FILE does not exist"
@@ -311,7 +311,7 @@ generate_lateapps()
             
             rm -rf ../multicore_images/${BOARD_NAME}/*
             mkdir -p ../multicore_images/${BOARD_NAME}
-            MULTICOREAPP_BIN_PATH=${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}
+            MULTICOREAPP_BIN_PATH=${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}
             pushd ${PWD}
             cd ${MULTICOREAPP_BIN_PATH}
 
@@ -319,14 +319,14 @@ generate_lateapps()
             elf_images_list=elf_images_list_stage1_${BOARD_NAME}[@]
             elf_images_list=(${!elf_images_list})
             for i in ${elf_images_list[@]}; do
-                $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
+                $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
             done
 
             # Generate stage2 rprc files
             elf_images_list=elf_images_list_stage2_${BOARD_NAME}[@]
             elf_images_list=(${!elf_images_list})
             for i in ${elf_images_list[@]}; do
-                $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
+                $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
             done
 
             # Generate stage3 rprc files
@@ -335,22 +335,22 @@ generate_lateapps()
                 elf_images_list=elf_images_list_stage3_${BOARD_NAME}[@]
                 elf_images_list=(${!elf_images_list})
                 for i in ${elf_images_list[@]}; do
-                    $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
+                    $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
                 done
             fi
 
             get_appimage_names "${BOARD_NAME}"
             # Generate and sign lateapp1
             $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName1 $output_args1
-            ${PDK_INSTALL_PATH}/pdk/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/pdk/packages/ti/build/makerules/k3_dev_mpk.pem
+            ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/k3_dev_mpk.pem
             # Generate and sign lateapp2
             $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName2 $output_args2
-            ${PDK_INSTALL_PATH}/pdk/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/pdk/packages/ti/build/makerules/k3_dev_mpk.pem
+            ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/k3_dev_mpk.pem
             # Generate and sign lateapp3
             if [ $BOARD_NAME != "j7200_evm" ]
             then
                 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName3 $output_args3
-                ${PDK_INSTALL_PATH}/pdk/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/pdk/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/pdk/packages/ti/build/makerules/k3_dev_mpk.pem
+                ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/k3_dev_mpk.pem
             fi
             popd
         done
