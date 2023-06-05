@@ -281,7 +281,7 @@ else
         {
             if (gIsNandBootEnable == true)
             {
-                if (Board_flashRead(h, OSPI_OFFSET_SYSFW, *pBuffer, SBL_SYSFW_MAX_SIZE, NULL))
+                if (Board_flashRead(h, OSPI_OFFSET_SYSFW, (uint8_t *) *pBuffer, SBL_SYSFW_MAX_SIZE, NULL))
                 {
                     SBL_log(SBL_LOG_ERR, "Board_flashRead failed in SBL_ReadSysfwImage \n");
                     SblErrLoop(__FILE__, __LINE__);
