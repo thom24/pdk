@@ -66,6 +66,10 @@
  * 
  *  This read illustrates TR Reload Feature in which TR Reload count is set as 0x1FFU for perpetual loop.
  *  In this example, after UDMA_TEST_XFER_REPEAT_CNT no.of read operations, we teardown the channel to exit from the loop.
+ * 
+ *  Note: This application has minimal DMA setup to configure OSPI for a particular DAC read.
+ *  Users need to make changes to this app if they want to test different OSPI or DMA configurations,
+ *  refer to OSPI and UDMA drivers for the same.
  */
 
 /* ========================================================================== */
