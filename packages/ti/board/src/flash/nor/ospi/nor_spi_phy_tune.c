@@ -119,28 +119,37 @@ static NOR_STATUS NOR_spiPhyRdAttack(uintptr_t flashVectorAddr)
  */
 NOR_PhyConfig NOR_spiPhyFindTxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-    NOR_STATUS             status;
+    OSPI_v0_HwAttrs const *hwAttrs  = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    NOR_STATUS             status   = NOR_FAIL;
 
-    NOR_spiPhyConfig(handle, start);
-    status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-#ifdef NOR_SPI_TUNE_DEBUG
-    norSpiTuneCnt++;
-#endif
-    while(status == NOR_FAIL)
+    /*
+     * Try to find PHY tuning point in the search window. The loop exits
+     * either on finding such point or when search window has been exhausted.
+     */
+    do
     {
-        start.txDLL--;
-        if(start.txDLL < TX_DLL_HIGH_SEARCH_END)
-        {
-            start.txDLL = PHY_DDR_TUNE_DLL_MAX;
-            break;
-        }
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
+
+        if((status == NOR_PASS) || (start.txDLL == TX_DLL_HIGH_SEARCH_END))
+        {
+            break;
+        }
+        else
+        {
+            start.txDLL--;
+        }
+
 #ifdef NOR_SPI_TUNE_DEBUG
         norSpiTuneCnt++;
 #endif
+    }while(status == NOR_FAIL);
+
+    if(status == NOR_FAIL)
+    {
+        start.txDLL = PHY_DDR_TUNE_DLL_MAX;
     }
+    
     return start;
 }
 
@@ -151,29 +160,37 @@ NOR_PhyConfig NOR_spiPhyFindTxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
  */
 NOR_PhyConfig NOR_spiPhyFindTxLow(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-    NOR_STATUS             status;
+    OSPI_v0_HwAttrs const *hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    NOR_STATUS             status = NOR_FAIL;
 
-
-    NOR_spiPhyConfig(handle, start);
-    status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + (uintptr_t)offset);
-#ifdef NOR_SPI_TUNE_DEBUG
-    norSpiTuneCnt++;
-#endif
-    while(status == NOR_FAIL)
+    /*
+     * Try to find PHY tuning point in the search window. The loop exits
+     * either on finding such point or when search window has been exhausted.
+     */
+    do
     {
-        start.txDLL++;
-        if (start.txDLL > TX_DLL_LOW_SEARCH_END)
-        {
-            start.txDLL = PHY_DDR_TUNE_DLL_MAX;
-            break;
-        }
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
+
+        if((status == NOR_PASS) || (start.txDLL == TX_DLL_LOW_SEARCH_END))
+        {
+            break;
+        }
+        else
+        {
+            start.txDLL++;
+        }
+
 #ifdef NOR_SPI_TUNE_DEBUG
         norSpiTuneCnt++;
 #endif
+    }while(status == NOR_FAIL);
+
+    if(status == NOR_FAIL)
+    {
+        start.txDLL = PHY_DDR_TUNE_DLL_MAX;
     }
+    
     return start;
 }
 
@@ -184,28 +201,37 @@ NOR_PhyConfig NOR_spiPhyFindTxLow(OSPI_Handle handle, NOR_PhyConfig start, uint3
  */
 NOR_PhyConfig NOR_spiPhyFindRxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-    NOR_STATUS             status;
+    OSPI_v0_HwAttrs const *hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    NOR_STATUS             status = NOR_FAIL;
 
-    NOR_spiPhyConfig(handle, start);
-    status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-#ifdef NOR_SPI_TUNE_DEBUG
-    norSpiTuneCnt++;
-#endif
-    while(status == NOR_FAIL)
+    /*
+     * Try to find PHY tuning point in the search window. The loop exits
+     * either on finding such point or when search window has been exhausted.
+     */
+    do
     {
-        start.rxDLL--;
-        if(start.rxDLL < RX_DLL_HIGH_SEARCH_END)
-        {
-            start.rxDLL = PHY_DDR_TUNE_DLL_MAX;
-            break;
-        }
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
+
+        if((status == NOR_PASS) || (start.rxDLL == RX_DLL_HIGH_SEARCH_END))
+        {
+            break;
+        }
+        else
+        {
+            start.rxDLL--;
+        }
+
 #ifdef NOR_SPI_TUNE_DEBUG
         norSpiTuneCnt++;
 #endif
+    }while(status == NOR_FAIL);
+
+    if(status == NOR_FAIL)
+    {
+        start.rxDLL = PHY_DDR_TUNE_DLL_MAX;
     }
+    
     return start;
 }
 
@@ -215,28 +241,37 @@ NOR_PhyConfig NOR_spiPhyFindRxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
  */
 NOR_PhyConfig NOR_spiPhyFindRxLow(OSPI_Handle handle, NOR_PhyConfig start, uint32_t offset)
 {
-    OSPI_v0_HwAttrs const *hwAttrs= (OSPI_v0_HwAttrs const *)handle->hwAttrs;
-    NOR_STATUS             status;
+    OSPI_v0_HwAttrs const *hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+    NOR_STATUS             status = NOR_FAIL;
 
-    NOR_spiPhyConfig(handle, start);
-    status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-#ifdef NOR_SPI_TUNE_DEBUG
-    norSpiTuneCnt++;
-#endif
-    while(status == NOR_FAIL)
+    /*
+     * Try to find PHY tuning point in the search window. The loop exits
+     * either on finding such point or when search window has been exhausted.
+     */
+    do
     {
-        start.rxDLL++;
-        if(start.rxDLL > RX_DLL_LOW_SEARCH_END)
-        {
-            start.rxDLL = PHY_DDR_TUNE_DLL_MAX;
-            break;
-        }
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
+
+        if((status == NOR_PASS) || (start.rxDLL == RX_DLL_LOW_SEARCH_END))
+        {
+            break;
+        }
+        else
+        {
+            start.rxDLL++;
+        }
+
 #ifdef NOR_SPI_TUNE_DEBUG
         norSpiTuneCnt++;
 #endif
+    }while(status == NOR_FAIL);
+
+    if(status == NOR_FAIL)
+    {
+        start.rxDLL = PHY_DDR_TUNE_DLL_MAX;
     }
+    
     return start;
 }
 
@@ -310,74 +345,124 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
      * to reduce the time taken for PHY tuning.
      */
 #if !defined(NOR_DISABLE_TXDLL_WINDOW)
-    /* Look for rxDLL boundaries at a txDLL Window to find rxDLL Min */
+    /*
+    * Loop over NOR_SPI_PHY_TXDLL_LOW_WINDOW while rxDLL == PHY_DDR_TUNE_DLL_MAX
+    *  - Loop over PHY_DDR_TUNE_RD_DELAY while rxDLL == PHY_DDR_TUNE_DLL_MAX
+    *      - Try finding rxDLL in RX_DLL_LOW_SEARCH range
+    *      - if rxDLL is not PHY_DDR_TUNE_DLL_MAX or 
+    *        rdDelay is PHY_DDR_TUNE_RD_DELAY_END break from the loop.
+    *      - else continue searching rxLow at next rdDelay.
+    *  - if rxDLL is not PHY_DDR_TUNE_DLL_MAX or 
+    *    txDLL is NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END break from the loop.
+    *  - else continue searching rxLow at next txDLL
+    */
     searchPoint.txDLL = NOR_SPI_PHY_TXDLL_LOW_WINDOW_START;
-    while(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END)
+    do
     {
+        /* Search for rxLow with in rdDelay range */
         searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-        searchPoint.rxDLL   = RX_DLL_LOW_SEARCH_START;
-        rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+        do
         {
-            searchPoint.rdDelay++;
-            if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
-            {
-                if(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END)
-                {
-#ifdef NOR_SPI_TUNE_DEBUG
-                    NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
-#endif
-                    return NOR_FAIL;
-                }
-                else
-                {
-                    break;
-                }
-            }
-            rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        }
+            searchPoint.rxDLL   = RX_DLL_LOW_SEARCH_START;
 
-        if(rxLow.rxDLL != PHY_DDR_TUNE_DLL_MAX)
+            rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+
+            if((rxLow.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+               (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
+            {
+                break;
+            }
+            else
+            {
+                searchPoint.rdDelay++;
+            }
+
+        }while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+
+        if((rxLow.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+           (searchPoint.txDLL == NOR_SPI_PHY_TXDLL_LOW_WINDOW_END))
         {
             break;
         }
+        else
+        {
+            searchPoint.txDLL++;
+        }
 
-        searchPoint.txDLL++;
-    }
+    }while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX);
 #else
-    /* Look for rxDLL boundaries at txDLL = 16 to find rxDLL Min */
+    /*
+    * Loop while passing rxDLL is not found at NOR_SPI_PHY_TXDLL_LOW_WINDOW_START
+    * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_END
+    * break out of the loop else continue searching for rxDLL at next rdDelay
+    */
     searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-    searchPoint.txDLL = NOR_SPI_PHY_TXDLL_LOW_WINDOW_START;
-    searchPoint.rxDLL = RX_DLL_LOW_SEARCH_START;
-    rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-    while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+    searchPoint.txDLL   = NOR_SPI_PHY_TXDLL_LOW_WINDOW_START;
+    do
     {
-        searchPoint.rdDelay++;
-        if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
-        {
-#ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
-#endif
-            return NOR_FAIL;
-        }
+        searchPoint.rxDLL   = RX_DLL_LOW_SEARCH_START;
+
         rxLow = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-    }
-#endif  /* #if !defined(NOR_DISABLE_TXDLL_WINDOW) */
-    /* Search for one more rxLow at different txDll*/
-    #ifdef NOR_SPI_TUNE_DEBUG
-        NOR_log("Before 2nd search txdll: %d\n", searchPoint.txDLL);
-    #endif
-    if(searchPoint.txDLL < PHY_DDR_TUNE_DLL_MAX - TX_DLL_SEC_SEARCH_OFFSET)
-    {
-        searchPoint.txDLL += TX_DLL_SEC_SEARCH_OFFSET;
-        searchPoint.rxDLL = RX_DLL_LOW_SEARCH_START;
-        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-        tempSearchPoint = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        searchPoint.rdDelay++;
-        for( ; ((searchPoint.rdDelay <= PHY_DDR_TUNE_RD_DELAY_MAX) && (tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)) ; searchPoint.rdDelay++)
+
+        if((rxLow.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+           (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
         {
-            tempSearchPoint = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+            break;
         }
+        else
+        {
+            searchPoint.rdDelay++;
+        }
+        
+    }while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+#endif  /* #if !defined(NOR_DISABLE_TXDLL_WINDOW) */
+
+    if(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+    {
+#ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
+#endif
+        return NOR_FAIL;
+    }
+    else
+    {
+#ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("Found Primary Rx Min: rxDLL:%u txDLL:%u rdDelay:%u\n", rxLow.rxDLL, rxLow.txDLL, rxLow.rdDelay);
+#endif
+    }
+
+    /*
+    * Sometimes the first rxLow that was found may always not belong to valid region,
+    * find one more rxLow at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
+    * steps away from previously passing searchpoint.txDLL
+    */
+    if(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END - TX_DLL_SEC_SEARCH_OFFSET)
+    {
+        /*
+        * Loop while passing rxDLL is not found at previous rxLow.txDLL + TX_DLL_SEC_SEARCH_OFFSET
+        * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_END
+        * break out of the loop else continue searching for rxDLL at next rdDelay
+        */
+        searchPoint.txDLL += TX_DLL_SEC_SEARCH_OFFSET;
+        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
+        do
+        {
+            searchPoint.rxDLL = RX_DLL_LOW_SEARCH_START;
+
+            tempSearchPoint = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+
+            if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+               (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
+            {
+                break;
+            }
+            else
+            {
+                searchPoint.rdDelay++;
+            }
+
+        }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+
         if(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
         {
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -385,44 +470,113 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
 #endif
             return NOR_FAIL;
         }
+        else
+        {
+#ifdef NOR_SPI_TUNE_DEBUG
+            NOR_log("Found Secondary Rx Min: rxDLL:%u txDLL:%u rdDelay:%u\n", tempSearchPoint.rxDLL, tempSearchPoint.txDLL, tempSearchPoint.rdDelay);
+#endif
+        }
         searchPoint.txDLL = rxLow.txDLL;
         rxLow.rxDLL = MIN(rxLow.rxDLL, tempSearchPoint.rxDLL);
         rxLow.rdDelay = MIN(rxLow.rdDelay, tempSearchPoint.rdDelay);
     }
-    /* Find rxDLL Max at a txDLL */
-    #ifdef NOR_SPI_TUNE_DEBUG
-        NOR_log("After 2nd search txdll: %d\n", searchPoint.txDLL);
-    #endif
-    searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
-    searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_MAX;
-    rxHigh = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-    while(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
-    {
-        searchPoint.rdDelay--;
-        if(searchPoint.rdDelay < PHY_DDR_TUNE_RD_DELAY_START)
-        {
+
 #ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Warning: Unable to find RX Max :: Line: %d\n", __LINE__);
+    NOR_log("Golden Rx Min: rxDLL:%u txDLL:%u rdDelay:%u\n", rxLow.rxDLL, rxLow.txDLL, rxLow.rdDelay);
 #endif
+
+    /*
+    * Loop while passing rxDLL is not found at previous rxLow.txDLL 
+    * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_END by decrementing rdDelay after every search
+    * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_START
+    * break out of the loop else continue searching for rxDLL at next rdDelay
+    */
+    searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_END;
+#ifdef NOR_SPI_TUNE_DEBUG
+    NOR_log("Searching Rx High: txDLL:%u rdDelay:%u\n", searchPoint.txDLL, searchPoint.rdDelay);
+#endif
+    do
+    {
+        searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
+        rxHigh = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
+
+        if((rxHigh.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+           (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_START))
+        {
             break;
         }
-        rxHigh = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-    }
-    /* Search for one more rxHigh at different txDll*/
-    if(searchPoint.txDLL < PHY_DDR_TUNE_DLL_MAX - TX_DLL_SEC_SEARCH_OFFSET)
-    {
-        searchPoint.txDLL += TX_DLL_SEC_SEARCH_OFFSET;
-        searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
-        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_MAX;
-        tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-        searchPoint.rdDelay--;
-        for( ; ((searchPoint.rdDelay >= PHY_DDR_TUNE_RD_DELAY_START) && (tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)) ; searchPoint.rdDelay--)
+        else
         {
-            tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
+            searchPoint.rdDelay--;
         }
-        searchPoint.txDLL = rxHigh.txDLL;
-        if(tempSearchPoint.rxDLL < PHY_DDR_TUNE_DLL_MAX)
+    }while(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+
+    if(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+    {
+#ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("Warning: Unable to find RX Max :: Line: %d\n", __LINE__);
+#endif
+    }
+    else
+    {
+#ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("Found Primary Rx High: rxDLL:%u txDLL:%u rdDelay:%u\n", rxHigh.rxDLL, rxHigh.txDLL, rxHigh.rdDelay);
+#endif
+    }
+
+    /*
+    * Sometimes the first rxHigh that was found may always not belong to valid region,
+    * find one more rxHigh at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
+    * steps away from previously passing searchpoint.txDLL
+    */
+    if(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_LOW_WINDOW_END - TX_DLL_SEC_SEARCH_OFFSET)
+    {
+        /*
+        * Loop while passing rxDLL is not found at previous rxHigh.txDLL + TX_DLL_SEC_SEARCH_OFFSET
+        * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_END by decrementing rdDelay after every search
+        * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_START
+        * break out of the loop else continue searching for rxDLL at next rdDelay
+        */
+        searchPoint.txDLL += TX_DLL_SEC_SEARCH_OFFSET;
+        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_END;
+        do
         {
+            searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
+
+            tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
+            
+            if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+               (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_START))
+            {
+                break;
+            }
+            else
+            {
+                searchPoint.rdDelay--;
+            }
+
+        }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+
+        searchPoint.txDLL = rxHigh.txDLL;
+        if(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+        {
+            if(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+            {
+#ifdef NOR_SPI_TUNE_DEBUG
+                NOR_log("Error: Unable to find RX Max :: Line: %d\n", __LINE__);
+#endif
+                return NOR_FAIL;
+            }
+            else
+            {
+                /* Do nothing */
+            }
+        }
+        else
+        {
+#ifdef NOR_SPI_TUNE_DEBUG
+            NOR_log("Found Secondary Rx High: rxDLL:%u txDLL:%u rdDelay:%u \n", tempSearchPoint.rxDLL, tempSearchPoint.txDLL, tempSearchPoint.rdDelay);
+#endif
             if(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
             {
                 rxHigh = tempSearchPoint;
@@ -433,16 +587,6 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
                 {
                     rxHigh = tempSearchPoint;
                 }
-            }
-        }
-        else
-        {
-            if(rxHigh.rxDLL >= PHY_DDR_TUNE_DLL_MAX)
-            {
-				#ifdef NOR_SPI_TUNE_DEBUG
-                    NOR_log("Error: Unable to find RX Max :: Line: %d\n", __LINE__);
-				#endif
-                return NOR_FAIL;
             }
         }
     }
@@ -469,75 +613,116 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
      * to reduce the time taken for PHY tuning.
      */
 #if !defined(NOR_DISABLE_TXDLL_WINDOW)
-        /* Look for rxDLL boundaries at a txDLL Window */
+        /*
+        * Loop over NOR_SPI_PHY_TXDLL_HIGH_WINDOW while rxDLL == PHY_DDR_TUNE_DLL_MAX
+        *  - Loop over PHY_DDR_TUNE_RD_DELAY while rxDLL == PHY_DDR_TUNE_DLL_MAX
+        *      - Try finding rxDLL in RX_DLL_LOW_SEARCH range
+        *      - if rxDLL is not PHY_DDR_TUNE_DLL_MAX or 
+        *        rdDelay is PHY_DDR_TUNE_RD_DELAY_END break from the loop.
+        *      - else continue searching rxLow at next rdDelay.
+        *  - if rxDLL is not PHY_DDR_TUNE_DLL_MAX or 
+        *    txDLL is NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END break from the loop.
+        *  - else continue searching rxLow at next txDLL
+        */
         searchPoint.txDLL = NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START;
-
-        /* Find rxDLL Min */
-        while(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
+        do
         {
-            searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-            searchPoint.rxDLL   = RX_DLL_LOW_SEARCH_START;
-            tempSearchPoint = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-            while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+            searchPoint.rdDelay     = PHY_DDR_TUNE_RD_DELAY_START;
+            do
             {
-                searchPoint.rdDelay++;
-                if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
-                {
-                    if(searchPoint.txDLL <= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
-                    {
-#ifdef NOR_SPI_TUNE_DEBUG
-                        NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
-#endif
-                        return NOR_FAIL;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                searchPoint.rxDLL       = RX_DLL_LOW_SEARCH_START;
                 tempSearchPoint = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-            }
 
-            if(tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX)
+                if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+                   (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
+                {
+                    break;
+                }
+                else
+                {
+                    searchPoint.rdDelay++; 
+                }
+
+            }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+
+            if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+              (searchPoint.txDLL == NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END))
             {
                 break;
             }
+            else
+            {
+                searchPoint.txDLL--;
+            }
 
-            searchPoint.txDLL--;
-        }
+        }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
 #else
         /* Look for rxDLL boundaries at txDLL=48 */
-        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-        searchPoint.txDLL = NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START;
-        searchPoint.rxDLL = RX_DLL_LOW_SEARCH_START;
+        searchPoint.rdDelay     = PHY_DDR_TUNE_RD_DELAY_START;
+        searchPoint.txDLL       = NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START;
 
-        /* Find rxDLL Min */
-        tempSearchPoint = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+        /*
+        * Loop while passing rxDLL is not found at NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START
+        * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_END
+        * break out of the loop else continue searching for rxDLL at next rdDelay
+        */
+        do
         {
-            searchPoint.rdDelay++;
-            if(searchPoint.rdDelay > PHY_DDR_TUNE_RD_DELAY_MAX)
-            {
-#ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
-#endif
-                return NOR_FAIL;
-            }
+            searchPoint.rxDLL       = RX_DLL_LOW_SEARCH_START;
             tempSearchPoint = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        }
-#endif
-        /* Search for one more rxLow at different txDll*/
-        if(searchPoint.txDLL >= TX_DLL_SEC_SEARCH_OFFSET) //boundary check
-        {
-            searchPoint.txDLL -= TX_DLL_SEC_SEARCH_OFFSET;
-            searchPoint.rxDLL = RX_DLL_LOW_SEARCH_START;
-            searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-            tempSearchPoint1 = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
-        searchPoint.rdDelay++;
-            for( ; ((searchPoint.rdDelay <= PHY_DDR_TUNE_RD_DELAY_MAX) && (tempSearchPoint1.rxDLL == PHY_DDR_TUNE_DLL_MAX)) ; searchPoint.rdDelay++)
+            
+            if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+               (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
             {
-                tempSearchPoint1 = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+                break;
             }
+            else
+            {
+                searchPoint.rdDelay++;
+            }
+
+        }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+#endif
+        if(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+        {
+#ifdef NOR_SPI_TUNE_DEBUG
+            NOR_log("Error: Unable to find RX Min :: Line: %d\n", __LINE__);
+#endif
+            return NOR_FAIL;
+        }
+
+        /*
+        * Sometimes the first rxLow that was found may always not belong to valid region,
+        * find one more rxLow at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
+        * steps away from previously passing searchpoint.txDLL
+        */
+        if(searchPoint.txDLL + TX_DLL_SEC_SEARCH_OFFSET >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
+        {
+            /*
+            * Loop while passing rxDLL is not found at previous tempSearchPoint.txDLL + TX_DLL_SEC_SEARCH_OFFSET
+            * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_END
+            * break out of the loop else continue searching for rxDLL at next rdDelay
+            */
+            searchPoint.txDLL      -= TX_DLL_SEC_SEARCH_OFFSET;
+            searchPoint.rdDelay     = PHY_DDR_TUNE_RD_DELAY_START;
+            do
+            {
+                searchPoint.rxDLL = RX_DLL_LOW_SEARCH_START;
+
+                tempSearchPoint1 = NOR_spiPhyFindRxLow(handle, searchPoint, offset);
+                
+                if((tempSearchPoint1.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+                   (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
+                {
+                    break;
+                }
+                else
+                {
+                    searchPoint.rdDelay++;
+                }
+
+            }while(tempSearchPoint1.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+
             if(tempSearchPoint1.rxDLL == PHY_DDR_TUNE_DLL_MAX)
             {
                     #ifdef NOR_SPI_TUNE_DEBUG
@@ -548,45 +733,103 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
             tempSearchPoint.rxDLL = MIN(tempSearchPoint.rxDLL, tempSearchPoint1.rxDLL);
             tempSearchPoint.rdDelay = MIN(tempSearchPoint.rdDelay, tempSearchPoint1.rdDelay);
 		
-            if(tempSearchPoint.rxDLL<rxLow.rxDLL){
+            if(tempSearchPoint.rxDLL < rxLow.rxDLL)
+            {
                 rxLow = tempSearchPoint;
 		    }
-        }
-        /* Find rxDLL Max */
-        searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
-        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-        tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-        while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
-        {
-            searchPoint.rdDelay--;
-            if(searchPoint.rdDelay < PHY_DDR_TUNE_RD_DELAY_START)
+            else
             {
-#ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Warning: Unable to find RX Max :: Line: %d\n", __LINE__);
-#endif
+                /* Do nothing */
+            }
+        }
+
+        /*
+        * Loop while passing rxDLL is not found at previous searchPoint.txDLL 
+        * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_END by decrementing rdDelay after every search
+        * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_START
+        * break out of the loop else continue searching for rxDLL at next rdDelay
+        */
+        searchPoint.rdDelay     = PHY_DDR_TUNE_RD_DELAY_START;
+        do
+        {
+            searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
+
+            tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
+
+            if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+               (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_START))
+            {
                 break;
             }
-            tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
+            else
+            {
+                searchPoint.rdDelay--;
+            }
+            
+        }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+        if(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+        {
+#ifdef NOR_SPI_TUNE_DEBUG
+            NOR_log("Warning: Unable to find RX Max :: Line: %d\n", __LINE__);
+#endif
         }
-        if(tempSearchPoint.rxDLL > rxHigh.rxDLL)
+        else if(tempSearchPoint.rxDLL > rxHigh.rxDLL)
         {
             rxHigh = tempSearchPoint;
         }
-        /* Search for one more rxHigh at different txDll*/
-        if(searchPoint.txDLL >= TX_DLL_SEC_SEARCH_OFFSET) //boundary check
+        else
         {
-            searchPoint.txDLL -= TX_DLL_SEC_SEARCH_OFFSET;
-            searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
-            searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_MAX;
-            tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-            searchPoint.rdDelay--;
+            /* Do nothing */
+        }
 
-            for( ; ((searchPoint.rdDelay >= PHY_DDR_TUNE_RD_DELAY_START)  && (tempSearchPoint.rxDLL == 128U)); searchPoint.rdDelay--)
+        /*
+        * Sometimes the first rxHigh that was found may always not belong to valid region,
+        * find one more rxHigh at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
+        * steps away from previously passing searchPoint.txDLL
+        */
+        if(searchPoint.txDLL + TX_DLL_SEC_SEARCH_OFFSET >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
+        {
+            /*
+            * Loop while passing rxDLL is not found at previous searchPoint.txDLL - TX_DLL_SEC_SEARCH_OFFSET
+            * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_END by decrementing rdDelay after every search
+            * if either passing rxDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_START
+            * break out of the loop else continue searching for rxDLL at next rdDelay
+            */
+            searchPoint.txDLL       -= TX_DLL_SEC_SEARCH_OFFSET;
+            searchPoint.rdDelay     = PHY_DDR_TUNE_RD_DELAY_END;
+            do
             {
+                searchPoint.rxDLL = RX_DLL_HIGH_SEARCH_START;
                 tempSearchPoint = NOR_spiPhyFindRxHigh(handle, searchPoint, offset);
-            }
+
+                if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
+                   (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_START))
+                {
+                    break;
+                }
+                else
+                {
+                    searchPoint.rdDelay--;
+                }
+
+            }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
+
             searchPoint.txDLL = rxHigh.txDLL;
-            if(tempSearchPoint.rxDLL < PHY_DDR_TUNE_DLL_MAX)
+            if(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+            {
+                if(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
+                {
+#ifdef NOR_SPI_TUNE_DEBUG
+                    NOR_log("Error: Unable to find RX Max at first & second TxDLL search point :: Line: %d\n", __LINE__);
+#endif
+                    return NOR_FAIL;
+                }
+                else
+                {
+                    /* Do Nothing */
+                }
+            }
+            else
             {
                 if(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
                 {
@@ -600,51 +843,71 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
                     }
                 }
             }
-            else
-            {
-                if(rxHigh.rxDLL == PHY_DDR_TUNE_DLL_MAX)
-                {
-#ifdef NOR_SPI_TUNE_DEBUG
-                    NOR_log("Error: Unable to find RX Max at first & second TxDLL search point :: Line: %d\n", __LINE__);
-#endif
-                    return NOR_FAIL;
-                }
-            }
         }
     }
 
     /*
-     * Look for txDLL boundaries at 1/4 of rxDLL window
-     * Find txDLL Min
-     */
+    * Loop while passing txDLL is not found at 1/4th rxDLL point between rxLow and rxHigh
+    * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_START
+    * if either passing txDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_END
+    * break out of the loop else continue searching for txDLL at next rdDelay
+    */
     searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;
-    searchPoint.rxDLL = (rxHigh.rxDLL - rxLow.rxDLL)/4 + rxLow.rxDLL; 
-    searchPoint.txDLL = TX_DLL_LOW_SEARCH_START;
-    txLow = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-    while(txLow.txDLL==PHY_DDR_TUNE_DLL_MAX){
-        searchPoint.rdDelay++;
+    searchPoint.rxDLL = (rxHigh.rxDLL - rxLow.rxDLL)/4 + rxLow.rxDLL;
+
+    do
+    {
+        searchPoint.txDLL = TX_DLL_LOW_SEARCH_START;
         txLow = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-        if(searchPoint.rdDelay>PHY_DDR_TUNE_RD_DELAY_MAX){
+
+        if((txLow.txDLL != PHY_DDR_TUNE_DLL_MAX) || (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
+        {
+            break;
+        }
+        else
+        {
+            searchPoint.rdDelay++;
+        }
+
+    }while(txLow.txDLL == PHY_DDR_TUNE_DLL_MAX);
+
+    if(txLow.txDLL == PHY_DDR_TUNE_DLL_MAX)
+    {
 #ifdef NOR_SPI_TUNE_DEBUG
             NOR_log("Error: Unable to find TX Min :: Line: %d\n", __LINE__);
 #endif
             return NOR_FAIL;
-        }
     }
 
-    /* Find txDLL Max */
-    searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_MAX;
-    searchPoint.txDLL = TX_DLL_HIGH_SEARCH_START;
-    txHigh = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-    while(txHigh.txDLL==PHY_DDR_TUNE_DLL_MAX){
-        searchPoint.rdDelay--;
+    /*
+    * Loop while passing txDLL is not found at 1/4th rxDLL point between rxLow and rxHigh
+    * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_END by decrementing rdDelay after every search
+    * if either passing txDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_START
+    * break out of the loop else continue searching for txDLL at next rdDelay
+    */
+    searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_END;
+    do
+    {
+        searchPoint.txDLL   = TX_DLL_HIGH_SEARCH_START;
         txHigh = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-        if(searchPoint.rdDelay < PHY_DDR_TUNE_RD_DELAY_START){
-#ifdef NOR_SPI_TUNE_DEBUG
-            NOR_log("Error: Unable to find TX Max :: Line: %d\n", __LINE__);
-#endif
-            return NOR_FAIL;
+
+        if((txHigh.txDLL != PHY_DDR_TUNE_DLL_MAX) || \
+           (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_START))
+        {
+            break;
         }
+        else
+        {
+            searchPoint.rdDelay--;
+        }
+
+    }while(txHigh.txDLL == PHY_DDR_TUNE_DLL_MAX);
+    if(txHigh.txDLL == PHY_DDR_TUNE_DLL_MAX)
+    {
+#ifdef NOR_SPI_TUNE_DEBUG
+        NOR_log("Error: Unable to find TX Max :: Line: %d\n", __LINE__);
+#endif
+        return NOR_FAIL;
     }
 
     /*
@@ -652,41 +915,79 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
      * This avoids mistaking the metastability gap for an rxDLL boundary
      */
     if(txLow.rdDelay==txHigh.rdDelay){
-        /* Look for txDLL boundaries at 3/4 of rxDLL window
-           Find txDLL Min */
-        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_START;/* macro need to be defined as one*/
-        searchPoint.rxDLL = 3U*(rxHigh.rxDLL - rxLow.rxDLL)/4 + rxLow.rxDLL;
-        searchPoint.txDLL = TX_DLL_LOW_SEARCH_START;
-        tempSearchPoint = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-        while(tempSearchPoint.txDLL==PHY_DDR_TUNE_DLL_MAX){
-            searchPoint.rdDelay++;
+        /*
+        * Loop while passing txDLL is not found at 3/4th rxDLL point between rxLow and rxHigh
+        * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_START
+        * if either passing txDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_END
+        * break out of the loop else continue searching for txDLL at next rdDelay
+        */
+        searchPoint.rdDelay     = PHY_DDR_TUNE_RD_DELAY_START;/* macro need to be defined as one*/
+        searchPoint.rxDLL       = 3U*(rxHigh.rxDLL - rxLow.rxDLL)/4 + rxLow.rxDLL;
+
+        do
+        {
+            searchPoint.txDLL       = TX_DLL_LOW_SEARCH_START;
+            
             tempSearchPoint = NOR_spiPhyFindTxLow(handle,searchPoint,offset);
-            if(searchPoint.rdDelay>PHY_DDR_TUNE_RD_DELAY_MAX){
-#ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Error: Unable to find TX Min :: Line: %d\n", __LINE__);
-#endif
-                return NOR_FAIL;
+
+            if((tempSearchPoint.txDLL != PHY_DDR_TUNE_DLL_MAX) || \
+               (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_END))
+            {
+                break;
             }
+            else
+            {
+                searchPoint.rdDelay++;
+            }
+
+        }while(tempSearchPoint.txDLL == PHY_DDR_TUNE_DLL_MAX);
+
+        if(tempSearchPoint.txDLL == PHY_DDR_TUNE_DLL_MAX)
+        {
+#ifdef NOR_SPI_TUNE_DEBUG
+            NOR_log("Error: Unable to find TX Min :: Line: %d\n", __LINE__);
+#endif
+            return NOR_FAIL;
         }
-        if(tempSearchPoint.txDLL<txLow.txDLL){
+        if(tempSearchPoint.txDLL < txLow.txDLL){
             txLow = tempSearchPoint;
         }
-    
-        /* Find txDLL Max */
-        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_MAX;
-        searchPoint.txDLL = TX_DLL_HIGH_SEARCH_START;
-        tempSearchPoint = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-        while(tempSearchPoint.txDLL==PHY_DDR_TUNE_DLL_MAX){
-            searchPoint.rdDelay--;
+
+    /*
+    * Loop while passing txDLL is not found at 3/4th rxDLL point between rxLow and rxHigh
+    * starting from rdDelay = PHY_DDR_TUNE_RD_DELAY_END by decrementing rdDelay after every search
+    * if either passing txDLL is found or rdDelay reaches PHY_DDR_TUNE_RD_DELAY_START
+    * break out of the loop else continue searching for txDLL at next rdDelay
+    */
+        searchPoint.rdDelay = PHY_DDR_TUNE_RD_DELAY_END;
+
+        do
+        {
+            searchPoint.txDLL = TX_DLL_HIGH_SEARCH_START;
+
             tempSearchPoint = NOR_spiPhyFindTxHigh(handle,searchPoint,offset);
-            if(searchPoint.rdDelay < PHY_DDR_TUNE_RD_DELAY_START){
-#ifdef NOR_SPI_TUNE_DEBUG
-                NOR_log("Error: Unable to find TX Max :: Line: %d\n", __LINE__);
-#endif
-                return NOR_FAIL;
+
+            if((tempSearchPoint.txDLL != PHY_DDR_TUNE_DLL_MAX) || \
+               (searchPoint.rdDelay == PHY_DDR_TUNE_RD_DELAY_START))
+            {
+                break;
             }
+            else
+            {
+                searchPoint.rdDelay--;
+            }
+
+        }while(tempSearchPoint.txDLL == PHY_DDR_TUNE_DLL_MAX);
+
+        if(tempSearchPoint.txDLL==PHY_DDR_TUNE_DLL_MAX)
+        {
+#ifdef NOR_SPI_TUNE_DEBUG
+            NOR_log("Error: Unable to find TX Max :: Line: %d\n", __LINE__);
+#endif
+            return NOR_FAIL;
         }
-        if(tempSearchPoint.txDLL>txHigh.txDLL){
+        if(tempSearchPoint.txDLL > txHigh.txDLL)
+        {
             txHigh = tempSearchPoint;
         }
     }
@@ -698,9 +999,14 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     /* Bottom Left */
     bottomLeft.txDLL = txLow.txDLL;
     bottomLeft.rxDLL = rxLow.rxDLL;
-    if(txLow.rdDelay<=rxLow.rdDelay){
+    if(txLow.rdDelay <= rxLow.rdDelay)
+    {
         bottomLeft.rdDelay = txLow.rdDelay;
-    }else bottomLeft.rdDelay = rxLow.rdDelay;
+    }
+    else
+    {
+        bottomLeft.rdDelay = rxLow.rdDelay;
+    }
     tempSearchPoint = bottomLeft;
     tempSearchPoint.txDLL += 4;
     tempSearchPoint.rxDLL += 4;
@@ -726,7 +1032,11 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
     topRight.rxDLL = rxHigh.rxDLL;
     if(txHigh.rdDelay>=rxHigh.rdDelay){
         topRight.rdDelay = txHigh.rdDelay;
-    }else topRight.rdDelay = rxHigh.rdDelay;
+    }
+    else
+    {
+        topRight.rdDelay = rxHigh.rdDelay;
+    }
     tempSearchPoint = topRight;
     tempSearchPoint.txDLL -= 4;
     tempSearchPoint.rxDLL -= 4;
@@ -840,13 +1150,16 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
 
         gapHigh = searchPoint;
         /* Place the final tuning point of the PHY in the corner furthest from the gap */
-        length1 = abs(gapLow.txDLL-bottomLeft.txDLL) + abs(gapLow.rxDLL-bottomLeft.rxDLL);
-        length2 = abs(gapHigh.txDLL-topRight.txDLL) + abs(gapHigh.rxDLL-topRight.rxDLL);
-        if(length2>length1){
+        length1 = abs((int32_t)gapLow.txDLL - (int32_t)bottomLeft.txDLL) + abs((int32_t)gapLow.rxDLL - (int32_t)bottomLeft.rxDLL);
+        length2 = abs((int32_t)gapHigh.txDLL- (int32_t)topRight.txDLL) + abs((int32_t)gapHigh.rxDLL- (int32_t)topRight.rxDLL);
+        if(length2 > length1)
+        {
             searchPoint = topRight;
             searchPoint.txDLL-=16;
             searchPoint.rxDLL-= 16 * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
-        }else{
+        }
+        else
+        {
             searchPoint = bottomLeft;
             searchPoint.txDLL+=16;
             searchPoint.rxDLL+=16 * ((float)topRight.rxDLL-(float)bottomLeft.rxDLL)/((float)topRight.txDLL-(float)bottomLeft.txDLL);
@@ -891,7 +1204,10 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         return rxDLL;
     while(status == NOR_FAIL){
         rxDLL++;
-        if(rxDLL==PHY_DDR_TUNE_DLL_MAX) break;
+        if(rxDLL==PHY_DDR_TUNE_DLL_MAX)
+        {
+            break;
+        }
         NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 #ifdef NOR_SPI_TUNE_DEBUG

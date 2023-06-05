@@ -48,35 +48,38 @@
  */
 typedef struct NOR_PhyConfig_s
 {
-    int32_t txDLL;
-    int32_t rxDLL;
-    int32_t rdDelay;
+    uint32_t txDLL;
+    uint32_t rxDLL;
+    uint32_t rdDelay;
 } NOR_PhyConfig;
 
-#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_START     (0)
-#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (127)
+#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_START     (0U)
+#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (127U)
 
-#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START    (127)
-#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END      (0)
+#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START    (127U)
+#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END      (0U)
 
-
-#define NOR_SPI_PHY_INIT_RD_DELAY   (1)
 #define NOR_SPI_PHY_VTM_TARGET      (700)
 
 #define MIN(A,B)                    (A<B?A:B)
 #define MAX(A,B)                    (A>B?A:B)
-#define RX_DLL_LOW_SEARCH_START     (0)
-#define RX_DLL_LOW_SEARCH_END       (127)
-#define RX_DLL_HIGH_SEARCH_START    (127)
-#define RX_DLL_HIGH_SEARCH_END      (0)
-#define TX_DLL_LOW_SEARCH_START     (0)
-#define TX_DLL_LOW_SEARCH_END       (127)
-#define TX_DLL_HIGH_SEARCH_START    (127)
-#define TX_DLL_HIGH_SEARCH_END      (0)
-#define TX_DLL_SEC_SEARCH_OFFSET    (4)
-#define PHY_DDR_TUNE_RD_DELAY_START (1)
-#define PHY_DDR_TUNE_RD_DELAY_MAX   (4)
-#define PHY_DDR_TUNE_DLL_MAX        (128)
+/* 
+ * Note: All the ranges below are inclusive,
+ * users need to be aware of it while adjusting below
+ * ranges to minimize tuning time
+ */
+#define RX_DLL_LOW_SEARCH_START     (0U)
+#define RX_DLL_LOW_SEARCH_END       (127U)
+#define RX_DLL_HIGH_SEARCH_START    (127U)
+#define RX_DLL_HIGH_SEARCH_END      (0U)
+#define TX_DLL_LOW_SEARCH_START     (0U)
+#define TX_DLL_LOW_SEARCH_END       (127U)
+#define TX_DLL_HIGH_SEARCH_START    (127U)
+#define TX_DLL_HIGH_SEARCH_END      (0U)
+#define TX_DLL_SEC_SEARCH_OFFSET    (4U)
+#define PHY_DDR_TUNE_RD_DELAY_START (1U)
+#define PHY_DDR_TUNE_RD_DELAY_END   (4U)
+#define PHY_DDR_TUNE_DLL_MAX        (128U)
 
 extern NOR_STATUS Nor_spiPhyTune(OSPI_Handle handle, uint32_t offset);
 extern void Nor_spiPhyTuneReset(bool ddrMode);
