@@ -607,7 +607,7 @@ void Nor_xspiClose(NOR_HANDLE handle)
             pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
             CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
                             OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD,
-                            0);
+                            CSL_OSPI_CFG_PHY_SAMPLE_EDGE_DEFAULT);
 
             CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
                             OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_DQS_ENABLE_FLD,
@@ -686,7 +686,11 @@ NOR_STATUS Nor_xspiRead(NOR_HANDLE handle, uint32_t addr,
     {
         return NOR_FAIL;
     }
+
     spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
+
+    OSPI_v0_HwAttrs const        *hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
+    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
 
     /* Validate address input */
     if ((addr + len) > NOR_SIZE)
@@ -696,6 +700,10 @@ NOR_STATUS Nor_xspiRead(NOR_HANDLE handle, uint32_t addr,
 
     if (gPhyEnable == (bool)true)
     {
+        CSL_REG32_FINS(&pRegs->DEV_INSTR_RD_CONFIG_REG,
+                    OSPI_FLASH_CFG_DEV_INSTR_RD_CONFIG_REG_DUMMY_RD_CLK_CYCLES_FLD,
+                    NOR_OCTAL_READ_DUMMY_CYCLE - 1U);
+                    
         if (Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET) == NOR_FAIL)
         {
            return NOR_FAIL;

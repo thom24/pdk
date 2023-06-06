@@ -49,6 +49,16 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/board/src/flash/nand/device/w35n01jwtbag.h>
 
+/**************************************************************************
+ **                       Macro Definitions
+ **************************************************************************/
+/* Offset address (last block start address) of the 128 bytes tuning pattern data stored on the flash */
+#define NAND_TUNING_DATA_OFFSET    (NAND_SIZE - NAND_BLOCK_SIZE)
+
+/* PHY is independent of flashes creating wrapper functions to reuse Nor PHY tuning algo */
+#define Nand_spiPhyTune              Nor_spiPhyTune
+#define Nand_spiPhyTuneReset         Nor_spiPhyTuneReset
+
 #endif /* NAND_OSPI_H_ */
 
 /* Nothing past this point */

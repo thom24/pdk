@@ -41,6 +41,8 @@
 #ifndef NOR_SPI_PHY_TUNE_H_
 #define NOR_SPI_PHY_TUNE_H_
 
+#include <ti/board/src/flash/nor/nor.h>
+
 /*!
  *  @brief  PHY configuration data
  *
@@ -80,6 +82,13 @@ typedef struct NOR_PhyConfig_s
 #define PHY_DDR_TUNE_RD_DELAY_START (1U)
 #define PHY_DDR_TUNE_RD_DELAY_END   (4U)
 #define PHY_DDR_TUNE_DLL_MAX        (128U)
+
+#define PHY_SDR_DLL_START         (0U)
+#define PHY_SDR_DLL_END           (127U)
+#define PHY_SDR_DLL_MAX           (PHY_SDR_DLL_END + 1)
+#define PHY_SDR_TX_DLL            (127U)
+#define PHY_SDR_RD_DELAY_START    (1U)
+#define PHY_SDR_RD_DELAY_END      (4U)
 
 extern NOR_STATUS Nor_spiPhyTune(OSPI_Handle handle, uint32_t offset);
 extern void Nor_spiPhyTuneReset(bool ddrMode);

@@ -175,6 +175,8 @@ typedef struct OSPI_Tests_s
 #define OSPI_NAND_TEST_ID_DAC_133M_SPI 14  /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
 #define OSPI_TEST_ID_PHY_CFG_MASTER    15   /* OSPI Phy Config Master mode test */
 #define OSPI_TEST_ID_PHY_CFG_BYPASS    16   /* OSPI Phy Config Bypass mode test */
+#define OSPI_NAND_TEST_ID_DAC_OSDR_50M     17   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 50MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_OSDR_166M    18   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 166MHz RCLK */
 
 /* OSPI NOR flash offset address for read/write test */
 #define TEST_ADDR_OFFSET   (0U)
@@ -847,6 +849,25 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.blkSize = 16;
         ospi_cfg.baudRateDiv = 6;
     }
+    if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_50M)
+    {
+        ospi_cfg.phyEnable = false;
+        ospi_cfg.baudRateDiv = 4U;
+        ospi_cfg.dtrEnable = false;
+        ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
+    }
+
+    if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_166M)
+    {
+        ospi_cfg.phyEnable = true;
+        ospi_cfg.baudRateDiv = 0U;
+        ospi_cfg.dtrEnable = false;
+        ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
+        ospi_cfg.devDelays[0] = 0x01U;
+        ospi_cfg.devDelays[1] = 0x00U;
+        ospi_cfg.devDelays[2] = 0x00U;
+        ospi_cfg.devDelays[3] = 0x00U;
+    }
 
     if(ospi_cfg.intrEnable)
     {
@@ -1020,7 +1041,16 @@ static bool OSPI_flash_test(void *arg)
     if (test->testId == OSPI_TEST_ID_WR_TUNING)
     {
         testLen = NOR_ATTACK_VECTOR_SIZE;
-        startOffset = TEST_TUNE_PATTERN_OFFSET;
+        if(test->norFlash == true)
+        {
+            startOffset = NOR_TUNING_DATA_OFFSET;
+        }
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
+        else
+        {
+            startOffset = NAND_TUNING_DATA_OFFSET;
+        }
+#endif
     }
     else
     {
@@ -1038,6 +1068,9 @@ static bool OSPI_flash_test(void *arg)
     }
 
     OSPI_initConfig(test);
+    OSPI_v0_HwAttrs ospi_cfg;
+
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_AM64X)
     deviceId = BOARD_FLASH_ID_S28HS512T;
@@ -1115,94 +1148,96 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 #ifdef OSPI_WRITE
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    if (test->norFlash && test->dacMode)                          /* DAC writes are not supported on Cypress xSPI Flash - Switch to INDAC mode for write as WA to PDK-7115 */
+    if((test->testId != OSPI_NAND_TEST_ID_DAC_OSDR_50M) && (test->testId != OSPI_NAND_TEST_ID_DAC_OSDR_166M))
     {
-        if(test->norFlash)
+    #if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+        if (test->norFlash && test->dacMode)                          /* DAC writes are not supported on Cypress xSPI Flash - Switch to INDAC mode for write as WA to PDK-7115 */
         {
-            SPI_log("\n The Cypress xSPI Flash does not support DAC writes, switching to INDAC mode. \n");
-        }
-        else
-        {
-            SPI_log("\n The Winbond NAND Flash does not support DAC writes, switching to INDAC mode. \n");
-        }
-        OSPI_v0_HwAttrs ospi_cfg;
-        Board_flashClose(boardHandle);
-    #if SPI_DMA_ENABLE
-        if (test->dmaMode)
-        {
-            Ospi_udma_deinit();
+            if(test->norFlash)
+            {
+                SPI_log("\n The Cypress xSPI Flash does not support DAC writes, switching to INDAC mode. \n");
+            }
+            else
+            {
+                SPI_log("\n The Winbond NAND Flash does not support DAC writes, switching to INDAC mode. \n");
+            }
+            Board_flashClose(boardHandle);
+        #if SPI_DMA_ENABLE
+            if (test->dmaMode)
+            {
+                Ospi_udma_deinit();
+            }
+        #endif
+            OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+            ospi_cfg.dacEnable = false;
+            ospi_cfg.phyEnable = false;
+            ospi_cfg.dmaEnable = false;
+            ospi_cfg.intrEnable = true;
+            OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+            boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
         }
     #endif
-        OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
-        ospi_cfg.dacEnable = false;
-        ospi_cfg.phyEnable = false;
-        ospi_cfg.dmaEnable = false;
-        ospi_cfg.intrEnable = true;
-        OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
-        boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
-    }
-#endif
-    for (i = 0; i < testLen; i += blockSize)
-    {
-        offset = startOffset + i;
-        if (Board_flashOffsetToBlkPage(boardHandle, offset,
-                                       &blockNum, &pageNum))
+        for (i = 0; i < testLen; i += blockSize)
         {
-            SPI_log("\n Board_flashOffsetToBlkPage failed. \n");
-            testPassed = false;
-            goto err;
+            offset = startOffset + i;
+            if (Board_flashOffsetToBlkPage(boardHandle, offset,
+                                        &blockNum, &pageNum))
+            {
+                SPI_log("\n Board_flashOffsetToBlkPage failed. \n");
+                testPassed = false;
+                goto err;
+            }
+
+            /* Erase block, to which data has to be written */
+            if (Board_flashEraseBlk(boardHandle, blockNum))
+            {
+                SPI_log("\n Board_flashEraseBlk failed. \n");
+                testPassed = false;
+                goto err;
+            }
+        }
+    #ifdef OSPI_PROFILE
+    #if defined(FREERTOS)
+        LoadP_reset( );
+    #endif
+        /* Get start time stamp for the write performance measurement */
+        startTick = Ospi_getGTCTimerTicks();
+    #endif
+        for (i = 0; i < testLen; i += testSegLen)
+        {
+            offset = startOffset + i;
+            if ((testLen - i) < testSegLen)
+            {
+                xferLen = testLen - i;
+            }
+            else
+            {
+                xferLen = testSegLen;
+            }
+            /* Write buffer to flash */
+            if (Board_flashWrite(boardHandle, offset, &pBuf[i],
+                                xferLen, (void *)(&writeMode)))
+            {
+                SPI_log("\n Board_flashWrite failed. \n");
+                testPassed = false;
+                goto err;
+            }
         }
 
-        /* Erase block, to which data has to be written */
-        if (Board_flashEraseBlk(boardHandle, blockNum))
-        {
-            SPI_log("\n Board_flashEraseBlk failed. \n");
-            testPassed = false;
-            goto err;
-        }
+    #ifdef OSPI_PROFILE
+        numTicks = Ospi_getGTCTimerTicks() - startTick;
+    #if defined(FREERTOS)
+        cpuLoad = LoadP_getCPULoad();
+    #endif
+        /* calculate the write transfer rate in KBps */
+        xferRate = (float) (((float) (testLen)) / OSPI_GTC_TICKS_TO_USEC(numTicks)) * 1000;
+        xferRateInt = (uint32_t)xferRate;
+        SPI_log("\n Board_flashWrite %d bytes at transfer rate %u KBps \n", testLen, xferRateInt);
+    #if defined(FREERTOS)
+        SPI_log("\n Board_flashWrite CPU load %d%% \n", cpuLoad);
+    #endif
+    #endif
     }
-#ifdef OSPI_PROFILE
-#if defined(FREERTOS)
-    LoadP_reset( );
-#endif
-    /* Get start time stamp for the write performance measurement */
-    startTick = Ospi_getGTCTimerTicks();
-#endif
-    for (i = 0; i < testLen; i += testSegLen)
-    {
-        offset = startOffset + i;
-        if ((testLen - i) < testSegLen)
-        {
-            xferLen = testLen - i;
-        }
-        else
-        {
-            xferLen = testSegLen;
-        }
-        /* Write buffer to flash */
-        if (Board_flashWrite(boardHandle, offset, &pBuf[i],
-                             xferLen, (void *)(&writeMode)))
-        {
-            SPI_log("\n Board_flashWrite failed. \n");
-            testPassed = false;
-            goto err;
-        }
-    }
-
-#ifdef OSPI_PROFILE
-    numTicks = Ospi_getGTCTimerTicks() - startTick;
-#if defined(FREERTOS)
-    cpuLoad = LoadP_getCPULoad();
-#endif
-    /* calculate the write transfer rate in KBps */
-    xferRate = (float) (((float) (testLen)) / OSPI_GTC_TICKS_TO_USEC(numTicks)) * 1000;
-    xferRateInt = (uint32_t)xferRate;
-    SPI_log("\n Board_flashWrite %d bytes at transfer rate %u KBps \n", testLen, xferRateInt);
-#if defined(FREERTOS)
-    SPI_log("\n Board_flashWrite CPU load %d%% \n", cpuLoad);
-#endif
-#endif
 #endif /* OSPI_WRITE */
 
 #if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
@@ -1226,6 +1261,21 @@ static bool OSPI_flash_test(void *arg)
             ospi_cfg.dtrEnable = false;
             ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
         }
+        else if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_50M)
+        {
+            /* Disable PHY in legacy SPI mode (1-1-8) */
+            ospi_cfg.phyEnable = false;
+            ospi_cfg.baudRateDiv = 4U;
+            ospi_cfg.dtrEnable = false;
+            ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
+        }
+        else if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_166M)
+        {
+            ospi_cfg.phyEnable = true;
+            ospi_cfg.baudRateDiv = 4U;
+            ospi_cfg.dtrEnable = false;
+            ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
+        }
         else
         {
             /* Enable PHY in octal SPI mode (8-8-8) */
@@ -1248,7 +1298,7 @@ static bool OSPI_flash_test(void *arg)
     }
 #endif
 #ifdef OSPI_PROFILE
-    if( (test->dacMode) && (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) && (test->testId!=OSPI_NAND_TEST_ID_DAC_133M_SPI))
+    if( (test->dacMode) && (test->testId!=OSPI_NAND_TEST_ID_DAC_OSDR_50M) && (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) && (test->testId!=OSPI_NAND_TEST_ID_DAC_133M_SPI))
     {
         uint64_t    startPhyTuningTick;
         uint64_t    elapsedPhyTuningTicks;
@@ -1256,14 +1306,11 @@ static bool OSPI_flash_test(void *arg)
 
         /* Dummy flash read to get just the PHY tuning time */
         startPhyTuningTick = Ospi_getGTCTimerTicks();
-        if(test->norFlash)
+        if (Board_flashRead(boardHandle, 0U, &tmpRxBuf[0], 4U, (void *)(&readMode)))
         {
-            if (Board_flashRead(boardHandle, 0U, &tmpRxBuf[0], 4U, (void *)(&readMode)))
-            {
-                SPI_log("\n Dummy Board_flashRead for PHY tuning measurement failed. \n");
-                testPassed = false;
-                goto err;
-            }
+            SPI_log("\n Dummy Board_flashRead for PHY tuning measurement failed. \n");
+            testPassed = false;
+            goto err;
         }
         elapsedPhyTuningTicks = Ospi_getGTCTimerTicks() - startPhyTuningTick;
         SPI_log("\n PHY tuning + 4 byte read took %d us \n", (uint32_t)OSPI_GTC_TICKS_TO_USEC(elapsedPhyTuningTicks));
@@ -1302,7 +1349,7 @@ static bool OSPI_flash_test(void *arg)
     /* calculate the write transfer rate in KBps */
     xferRate = (float) (((float) (testLen)) / OSPI_GTC_TICKS_TO_USEC(numTicks)) * 1000;
     xferRateInt = (uint32_t)xferRate;
-    SPI_log("\n Board_flashRead %d bytes at transfer rate %u KBps \n", testLen, xferRateInt);
+    SPI_log("\n Board_flashRead %d bytes in %d Usecs at transfer rate %u KBps \n", testLen, (int)OSPI_GTC_TICKS_TO_USEC(numTicks), xferRateInt);
 #if defined(FREERTOS)
     SPI_log("\n Board_flashRead CPU load %d%% \n", cpuLoad);
 #endif
@@ -1372,6 +1419,10 @@ OSPI_Tests Ospi_tests[] =
 #if defined(SOC_J721S2) || defined(SOC_J784S4)
     {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_166M,     false,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
     {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M_SPI,   true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_OSDR_50M,  true,   false,  false,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_200M, "\r\n OSPI flash test slave in DAC SDR OSPI mode at 50MHz RCLK"},
+#ifdef SPI_DMA_ENABLE
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_OSDR_166M,  true,   true,  false,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC SDR OSPI mode at 166MHz RCLK"},
+#endif
     {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_133M,     false,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in INDAC mode at 133MHz RCLK"},
     {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M,       true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE

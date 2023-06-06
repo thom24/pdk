@@ -32,6 +32,7 @@
  */
 
 #include <ti/board/src/flash/nand/ospi/nand_ospi.h>
+#include <ti/board/src/flash/nor/ospi/nor_spi_phy_tune.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 #include <ti/osal/CacheP.h>
@@ -77,6 +78,7 @@ NAND_Info Nand_ospiInfo =
 };
 
 static bool gPhyEnable;
+static bool gIsPhyTuned;
 static bool gDtrEnable;
 
 static NAND_STATUS NAND_ospiCmdRead(OSPI_Handle handle, uint8_t *cmdBuf,
@@ -436,7 +438,7 @@ static void Nand_ospiSetOpcode(OSPI_Handle handle)
         else
         {
             cmdDummyCycles  = NAND_OCTAL_SDR_CMD_READ_DUMMY_CYCLE;
-            readCmd         = NAND_CMD_OCTAL_IO_FAST_RD;
+            readCmd         = NAND_CMD_OCTAL_DDR_O_FAST_RD;
             progCmd         = NAND_CMD_EXT_OCTAL_FAST_PROG;
         }
     }
@@ -466,7 +468,7 @@ static void Nand_ospiSetOpcode(OSPI_Handle handle)
                         256,
                         16);
 
-    if (rx_lines == OSPI_XFER_LINES_OCTAL)
+    if (gDtrEnable == true)
     {
         /* Set the opcodes for dual opcode mode */
         data[0] = 0x00;
@@ -505,10 +507,8 @@ NAND_HANDLE Nand_ospiOpen(uint32_t nandIntf, uint32_t portNum, void *params)
     data = *(uint32_t *)params;
     if (data != 0)
     {
-        /* TO DO - Implement PHY tuning */
-        /*
         Nand_spiPhyTuneReset(gDtrEnable);
-        */
+        gIsPhyTuned = false;
     }
 
     /* Save the PHY enable flag */
@@ -589,6 +589,8 @@ void Nand_ospiClose(NAND_HANDLE handle)
 {
     NAND_Info    *nandOspiInfo;
     OSPI_Handle   ospiHandle;
+    OSPI_v0_HwAttrs const        *hwAttrs;
+    const CSL_ospi_flash_cfgRegs *pRegs;
 
     if (handle)
     {
@@ -597,6 +599,19 @@ void Nand_ospiClose(NAND_HANDLE handle)
 
         if (ospiHandle)
         {
+            /* 
+            * Some fields in RD_DATA_CAPTURE_REG are modified by the Nand_spiPhyTune API.
+            * These fields need to be reset here to avoid errors in subsequent tests.
+            */
+            hwAttrs = (OSPI_v0_HwAttrs const *)ospiHandle->hwAttrs;
+            pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
+            CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                            OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD,
+                            CSL_OSPI_CFG_PHY_SAMPLE_EDGE_DEFAULT);
+
+            CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG,
+                            OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_DQS_ENABLE_FLD,
+                            0);
             OSPI_close(ospiHandle);
         }
     }
@@ -705,6 +720,42 @@ static NAND_STATUS Nand_ospiWaitReady(OSPI_Handle handle, uint32_t timeOut)
 }
 
 static OSPI_Transaction transaction;
+static NAND_STATUS Nand_ospiPageLoad(OSPI_Handle ospiHandle, uint32_t rdAddr)
+{
+    uint32_t         pageAddr = 0U;
+    uint32_t         pageReadCmdLen = 4U;
+    uint8_t          pageReadCmd[4];
+
+    pageAddr = rdAddr / NAND_PAGE_SIZE;
+
+    if (gDtrEnable == true)
+    {
+        /* Send the page read command */
+        pageReadCmd[0] = NAND_CMD_PAGE_READ;
+        pageReadCmd[1] = (pageAddr >>  8) & 0xff;    /* page address 2 bytes */
+        pageReadCmd[2] = (pageAddr >>  0) & 0xff;
+        pageReadCmdLen = 3;
+        Nand_ospiCmdWrite(ospiHandle, pageReadCmd, pageReadCmdLen, 0);
+    }
+    else
+    {
+        /* Send the page read command */
+        pageReadCmd[0] = NAND_CMD_PAGE_READ;
+        pageReadCmd[1] = 0x00;                       /* Dummy Byte */
+        pageReadCmd[2] = (pageAddr >>  8) & 0xff;    /* page address 2 bytes */
+        pageReadCmd[3] = (pageAddr >>  0) & 0xff;
+        pageReadCmdLen = 4;
+        Nand_ospiCmdWrite(ospiHandle, pageReadCmd, pageReadCmdLen, 0);
+    }
+
+    /* Check BUSY bit of Flash */
+    if (Nand_ospiWaitReady(ospiHandle, NAND_WRR_WRITE_TIMEOUT))
+    {
+        return NAND_FAIL;
+    }
+    return NAND_PASS;
+}
+
 NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8_t *buf)
 {
     NAND_Info        *nandOspiInfo;
@@ -744,11 +795,21 @@ NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8
 
     if (gPhyEnable == (bool)true)
     {
-        /* TO DO - Implement PHY tuning */
-        /*
+        if(gIsPhyTuned == (bool)false)
+        {
+            if (Nand_ospiPageLoad(ospiHandle, NAND_TUNING_DATA_OFFSET) == NAND_FAIL)
+            {
+                return NAND_FAIL;
+            }
+        }
         if (Nand_spiPhyTune(ospiHandle, NAND_TUNING_DATA_OFFSET) == NAND_FAIL)
+        {
            return NAND_FAIL;
-        */
+        }
+        else
+        {
+            gIsPhyTuned = true;
+        }
     }
     /* Validate address input */
     if ((addr + len) > NAND_SIZE)
@@ -778,31 +839,7 @@ NAND_STATUS Nand_ospiRead(NAND_HANDLE handle, uint32_t addr, uint32_t len, uint8
             chunkLen = ((len - actual) < chunkLen ?
                         (len - actual) : chunkLen);
 
-            if (hwAttrs->xferLines == OSPI_XFER_LINES_OCTAL)
-            {
-                /* Send the page read command */
-                pageReadCmd[0] = NAND_CMD_PAGE_READ;
-                pageReadCmd[1] = (pageAddr >>  8) & 0xff;    /* page address 2 bytes */
-                pageReadCmd[2] = (pageAddr >>  0) & 0xff;
-                pageReadCmdLen = 3;
-                Nand_ospiCmdWrite(ospiHandle, pageReadCmd, pageReadCmdLen, 0);
-            }
-            else
-            {
-                /* Send the page read command */
-                pageReadCmd[0] = NAND_CMD_PAGE_READ;
-                pageReadCmd[1] = 0x00;                       /* Dummy Byte */
-                pageReadCmd[2] = (pageAddr >>  8) & 0xff;    /* page address 2 bytes */
-                pageReadCmd[3] = (pageAddr >>  0) & 0xff;
-                pageReadCmdLen = 4;
-                Nand_ospiCmdWrite(ospiHandle, pageReadCmd, pageReadCmdLen, 0);
-            }
-
-            /* Check BUSY bit of Flash */
-            if (Nand_ospiWaitReady(ospiHandle, NAND_WRR_WRITE_TIMEOUT))
-            {
-                return NAND_FAIL;
-            }
+            Nand_ospiPageLoad(ospiHandle, rdAddr);
 
             /* Set transfer mode and read type */
             OSPI_control(ospiHandle, OSPI_V0_CMD_SET_XFER_MODE, NULL);

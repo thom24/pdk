@@ -522,8 +522,15 @@ NOR_STATUS Nor_ospiRead(NOR_HANDLE handle, uint32_t addr,
     }
     spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
 
+    OSPI_v0_HwAttrs const        *hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
+    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
+
     if (gPhyEnable == (bool)true)
     {
+        CSL_REG32_FINS(&pRegs->DEV_INSTR_RD_CONFIG_REG,
+                    OSPI_FLASH_CFG_DEV_INSTR_RD_CONFIG_REG_DUMMY_RD_CLK_CYCLES_FLD,
+                    NOR_OCTAL_READ_DUMMY_CYCLE - 1U);
+        
         if (Nor_spiPhyTune(spiHandle, NOR_TUNING_DATA_OFFSET) == NOR_FAIL)
            return NOR_FAIL;
     }
