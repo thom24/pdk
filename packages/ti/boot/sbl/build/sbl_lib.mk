@@ -75,7 +75,6 @@ SRCS_COMMON = sbl_soc.c
 SRCS_COMMON += sbl_rprc.c
 SRCS_COMMON += sbl_slave_core_boot.c
 SRCS_COMMON += UART_soc.c
-SRCS_COMMON += sbl_qos.c
 SRCS_COMMON += sbl_sci_client.c
 SRCS_COMMON += sbl_vid_map.c
 ifeq ($(SBL_USE_DMA), yes)
@@ -158,6 +157,9 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_QSPI), -DBOOT_QSPI)
 # Example:
 #   SRCS_<core/SoC/platform-name> =
 #   CFLAGS_LOCAL_<core/SoC/platform-name> =
+SRCS_j721e += j721e_qos_data.c
+SRCS_j721s2 += j721s2_qos_data.c
+SRCS_j784s4 += j784s4_qos_data.c
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

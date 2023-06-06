@@ -764,6 +764,9 @@ void SBL_SocEarlyInit()
 
 void SBL_SocLateInit(void)
 {
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
+    SBL_SetQoS();
+#endif
 }
 #endif
 
@@ -788,5 +791,8 @@ void SBL_SocEarlyInit()
 
 void SBL_SocLateInit(void)
 {
+#if !defined(SBL_USE_MCU_DOMAIN_ONLY)
+    SBL_SetQoS();
+#endif
 }
 #endif

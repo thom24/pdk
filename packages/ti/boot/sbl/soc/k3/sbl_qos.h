@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2023 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -33,6 +33,24 @@
 
 #ifndef _SBL_QOS_H_
 #define _SBL_QOS_H_
+#include <stdint.h>
+#include <ti/csl/cslr.h>
+
+#if defined(SOC_J721E)
+#include "j721e_qos.h"
+#endif
+#if defined(SOC_J721S2)
+#include "j721s2_qos.h"
+#endif
+#if defined(SOC_J784S4)
+#include "j784s4_qos.h"
+#endif
+
+
+struct k3_qos_data {
+	uint32_t reg;
+	uint32_t val;
+};
 
 void SBL_SetQoS();
 
