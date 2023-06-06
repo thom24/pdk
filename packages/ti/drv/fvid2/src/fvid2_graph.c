@@ -78,12 +78,12 @@ Fvid2_GraphInfo *Fvid2_graphInit(const Fvid2_GraphNodeList *inNodeList,
                                  const Fvid2_GraphEdgeList *inEdgeList,
                                  Fvid2_GraphInfo *graphHandle)
 {
-    GT_assert(Fvid2Trace, (graphHandle != NULL_PTR));
-    GT_assert(Fvid2Trace, (graphHandle->nodeList != NULL_PTR));
-    GT_assert(Fvid2Trace, (graphHandle->edgeList != NULL_PTR));
+    GT_assert(Fvid2Trace, (NULL_PTR != graphHandle));
+    GT_assert(Fvid2Trace, (NULL_PTR != graphHandle->nodeList));
+    GT_assert(Fvid2Trace, (NULL_PTR != graphHandle->edgeList));
 
-    GT_assert(Fvid2Trace, (inNodeList != NULL_PTR));
-    GT_assert(Fvid2Trace, (inEdgeList != NULL_PTR));
+    GT_assert(Fvid2Trace, (NULL_PTR != inNodeList));
+    GT_assert(Fvid2Trace, (NULL_PTR != inEdgeList));
 
     graphHandle->nodeList->numNodes = inNodeList->numNodes;
     graphHandle->edgeList->numEdges = inEdgeList->numEdges;
@@ -116,20 +116,20 @@ uint32_t Fvid2_graphIsNodeInputAvailable(
                             uint32_t nodeId)
 {
     uint32_t j;
-    uint32_t retVal  = TRUE;
+    uint32_t retVal  = UTRUE;
     Fvid2_GraphNodeInfo *curNode = Fvid2_graphGetNodeInfo(nodeList, nodeId);
     if (NULL == curNode)
     {
-        retVal = FALSE;
+        retVal = UFALSE;
     }
     else
     {
-        for (j = 0; j < curNode->inputNodeSet.numNodes; j++)
+        for (j = 0U; j < curNode->inputNodeSet.numNodes; j++)
         {
             if (FVID2_GRAPH_NODE_MODE_ENABLE ==
                                             curNode->inputNodeSet.isEnabled[j])
             {
-                retVal = FALSE;
+                retVal = UFALSE;
                 break;
             }
         }
@@ -142,20 +142,20 @@ uint32_t Fvid2_graphIsNodeOutputAvailable(
                             uint32_t nodeId)
 {
     uint32_t j;
-    uint32_t retVal  = TRUE;
+    uint32_t retVal  = UTRUE;
     Fvid2_GraphNodeInfo *curNode = Fvid2_graphGetNodeInfo(nodeList, nodeId);
     if (NULL == curNode)
     {
-        retVal = FALSE;
+        retVal = UFALSE;
     }
     else
     {
-        for (j = 0; j < curNode->outputNodeSet.numNodes; j++)
+        for (j = 0U; j < curNode->outputNodeSet.numNodes; j++)
         {
             if (FVID2_GRAPH_NODE_MODE_ENABLE ==
                                             curNode->outputNodeSet.isEnabled[j])
             {
-                retVal = FALSE;
+                retVal = UFALSE;
                 break;
             }
         }
@@ -170,16 +170,16 @@ int32_t Fvid2_graphAllocNodes(const Fvid2_GraphNodeList *nodeList,
     uint32_t i, j;
     int32_t retVal = FVID2_SOK;
     Fvid2_GraphEdgeInfo *inputEdgeList = edgeList->list;
-    for (i = 0; i < edgeList->numEdges; i++)
+    for (i = 0U; i < edgeList->numEdges; i++)
     {
         Fvid2_GraphNodeInfo *startNode = Fvid2_graphGetNodeInfo(
             nodeList, inputEdgeList[i].startNode);
-        GT_assert(Fvid2Trace, (startNode != NULL_PTR));
+        GT_assert(Fvid2Trace, (NULL_PTR != startNode));
         Fvid2_GraphNodeInfo *endNode = Fvid2_graphGetNodeInfo(
             nodeList, inputEdgeList[i].endNode);
-        GT_assert(Fvid2Trace, (endNode != NULL_PTR));
-        if ((startNode->nodeId == FVID2_GRAPH_INVALID_NODE_ID) &&
-            (endNode->nodeId == FVID2_GRAPH_INVALID_NODE_ID))
+        GT_assert(Fvid2Trace, (NULL_PTR != endNode));
+        if ((FVID2_GRAPH_INVALID_NODE_ID == startNode->nodeId) &&
+            (FVID2_GRAPH_INVALID_NODE_ID == endNode->nodeId))
         {
             break;
         }
@@ -187,20 +187,20 @@ int32_t Fvid2_graphAllocNodes(const Fvid2_GraphNodeList *nodeList,
         /* Multiple connections from different path does not work */
         if (FVID2_GRAPH_NODE_OUT_SINGLE == startNode->nodeOutNum)
         {
-            uint32_t inUse = FALSE;
-            for (j = 0; j < startNode->outputNodeSet.numNodes; j++)
+            uint32_t inUse = UFALSE;
+            for (j = 0U; j < startNode->outputNodeSet.numNodes; j++)
             {
                 if (FVID2_GRAPH_NODE_MODE_ENABLE ==
                                         startNode->outputNodeSet.isEnabled[j])
                 {
-                    inUse = TRUE;
+                    inUse = UTRUE;
                     break;
                 }
             }
-            if ((FALSE == inUse) ||
+            if ((UFALSE == inUse) ||
                 (FVID2_GRAPH_NODE_MODE_DISABLE == graphNodeMode))
             {
-                for (j = 0; j < startNode->outputNodeSet.numNodes; j++)
+                for (j = 0U; j < startNode->outputNodeSet.numNodes; j++)
                 {
                     if (startNode->outputNodeSet.node[j] == endNode)
                     {
@@ -216,7 +216,7 @@ int32_t Fvid2_graphAllocNodes(const Fvid2_GraphNodeList *nodeList,
         }
         else if (FVID2_GRAPH_NODE_OUT_MULTI == startNode->nodeOutNum)
         {
-            for (j = 0; j < startNode->outputNodeSet.numNodes; j++)
+            for (j = 0U; j < startNode->outputNodeSet.numNodes; j++)
             {
                 if (startNode->outputNodeSet.node[j] == endNode)
                 {
@@ -236,19 +236,19 @@ int32_t Fvid2_graphAllocNodes(const Fvid2_GraphNodeList *nodeList,
 
         if (FVID2_GRAPH_NODE_IN_SINGLE == endNode->nodeInNum)
         {
-            uint32_t inUse = FALSE;
-            for (j = 0; j < endNode->inputNodeSet.numNodes; j++)
+            uint32_t inUse = UFALSE;
+            for (j = 0U; j < endNode->inputNodeSet.numNodes; j++)
             {
                 if (FVID2_GRAPH_NODE_MODE_ENABLE == endNode->inputNodeSet.isEnabled[j])
                 {
-                    inUse = TRUE;
+                    inUse = UTRUE;
                     break;
                 }
             }
-            if ((FALSE == inUse) ||
+            if ((UFALSE == inUse) ||
                 (FVID2_GRAPH_NODE_MODE_DISABLE == graphNodeMode))
             {
-                for (j = 0; j < endNode->inputNodeSet.numNodes; j++)
+                for (j = 0U; j < endNode->inputNodeSet.numNodes; j++)
                 {
                     if (endNode->inputNodeSet.node[j] == startNode)
                     {
@@ -264,7 +264,7 @@ int32_t Fvid2_graphAllocNodes(const Fvid2_GraphNodeList *nodeList,
         }
         else if (FVID2_GRAPH_NODE_IN_MULTI == endNode->nodeInNum)
         {
-            for (j = 0; j < endNode->inputNodeSet.numNodes; j++)
+            for (j = 0U; j < endNode->inputNodeSet.numNodes; j++)
             {
                 if (endNode->inputNodeSet.node[j] == startNode)
                 {
@@ -299,7 +299,7 @@ int32_t Fvid2_graphGetPath(const Fvid2_GraphNodeList *inNodeList,
     uint32_t numInNodes = inNodeList->numNodes;
     uint32_t nodes[FVID2_GRAPH_MAX_NODES] = {0U};
 
-    for (i = 0; i < inEdgeList->numEdges; i++)
+    for (i = 0U; i < inEdgeList->numEdges; i++)
     {
         j = inEdgeList->list[i].startNode;
         nodes[j] = 1U;
@@ -307,9 +307,9 @@ int32_t Fvid2_graphGetPath(const Fvid2_GraphNodeList *inNodeList,
         nodes[j] = 1U;
     }
 
-    for (i = 0; i < numInNodes; i++)
+    for (i = 0U; i < numInNodes; i++)
     {
-        if (nodes[i] == 1U)
+        if (1U == nodes[i])
         {
             pathNodeCount++;
         }
@@ -318,11 +318,11 @@ int32_t Fvid2_graphGetPath(const Fvid2_GraphNodeList *inNodeList,
     GT_assert(Fvid2Trace, (pathNodeCount < maxOutNodeCnt));
     outNodeList->numNodes = pathNodeCount;
 
-    GT_assert(Fvid2Trace, (outNodeList->list != NULL_PTR));
+    GT_assert(Fvid2Trace, (NULL_PTR != outNodeList->list));
 
     GT_assert(Fvid2Trace, (pathEdgeCount < maxOutEdgeCnt));
     outEdgeList->numEdges = pathEdgeCount;
-    GT_assert(Fvid2Trace, (outEdgeList->list != NULL_PTR));
+    GT_assert(Fvid2Trace, (NULL_PTR != outEdgeList->list));
 
     for (i = 0U; i < pathEdgeCount; i++)
     {
@@ -333,7 +333,7 @@ int32_t Fvid2_graphGetPath(const Fvid2_GraphNodeList *inNodeList,
     j = 0U;
     for (i = 0U; i < numInNodes; i++)
     {
-        if (nodes[i] == 1U)
+        if (1U == nodes[i])
         {
             Fvid2Utils_memcpy((void *) &outNodeList->list[j],
                               (void *) &inNodeList->list[i],
@@ -376,9 +376,9 @@ int32_t Fvid2_graphGetEnabledIndex(const uint32_t *array, uint32_t size)
     uint32_t i;
     int32_t  retVal = FVID2_EFAIL;
 
-    for (i = 0; i < size; i++)
+    for (i = 0U; i < size; i++)
     {
-        if ((uint32_t) 0 != array[i])
+        if (0U != array[i])
         {
             retVal = (int32_t) i;
             break;
@@ -404,7 +404,7 @@ static int32_t Fvid2_graphConnect(const Fvid2_GraphNodeList *inNodeList,
     Fvid2_GraphNodeInfo *nodes = inNodeList->list;
     Fvid2_GraphEdgeInfo *edges = inEdgeList->list;
     uint32_t cnt, startNode, endNode, index1, index2;
-    for (cnt = 0; cnt < inNodeList->numNodes; cnt++)
+    for (cnt = 0U; cnt < inNodeList->numNodes; cnt++)
     {
         Fvid2Utils_memset(&nodes[cnt].inputNodeSet,
                           0,
@@ -423,21 +423,21 @@ static int32_t Fvid2_graphConnect(const Fvid2_GraphNodeList *inNodeList,
         index1 = nodes[startNode].outputNodeSet.numNodes;
         nodes[startNode].outputNodeSet.node[index1] = &nodes[endNode];
         nodes[startNode].outputNodeSet.numNodes++;
-        GT_assert(Fvid2Trace, (index1 < FVID2_GRAPH_MAX_NUM_PATHS));
+        GT_assert(Fvid2Trace, (FVID2_GRAPH_MAX_NUM_PATHS > index1));
 
         /* Start Node is input node for the end Node so update
          * information in end node*/
         index2 = nodes[endNode].inputNodeSet.numNodes;
         nodes[endNode].inputNodeSet.node[index2] = &nodes[startNode];
         nodes[endNode].inputNodeSet.numNodes++;
-        GT_assert(Fvid2Trace, (index2 < FVID2_GRAPH_MAX_NUM_PATHS));
+        GT_assert(Fvid2Trace, (FVID2_GRAPH_MAX_NUM_PATHS > index2));
 
         /* Dummy node's input is always enabled */
-        if ((TRUE == nodes[endNode].isDummy) &&
-            (TRUE == nodes[startNode].isDummy))
+        if ((UTRUE == nodes[endNode].isDummy) &&
+            (UTRUE == nodes[startNode].isDummy))
         {
-            nodes[startNode].outputNodeSet.isEnabled[index1] = TRUE;
-            nodes[endNode].inputNodeSet.isEnabled[index2]    = TRUE;
+            nodes[startNode].outputNodeSet.isEnabled[index1] = UTRUE;
+            nodes[endNode].inputNodeSet.isEnabled[index2]    = UTRUE;
         }
     }
 

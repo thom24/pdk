@@ -157,7 +157,7 @@ void *Fvid2Utils_memsetw(void *mem, uint32_t word, uint32_t wordCount)
     GT_assert(Fvid2Trace, (NULL_PTR != mem));
 
     memPtr = (uint32_t *) mem;
-    for (count = 0; count < wordCount; count++)
+    for (count = 0U; count < wordCount; count++)
     {
         memPtr[count] = word;
     }
@@ -239,7 +239,7 @@ int32_t Fvid2Utils_constructLinkList(Fvid2UtilsLinkListObj  *llobj,
         llobj->headNode    = NULL;
         llobj->tailNode    = NULL;
         llobj->numElements = 0U;
-        llobj->priorityCnt = 0;
+        llobj->priorityCnt = 0U;
     }
 
     return retVal;
@@ -285,7 +285,7 @@ int32_t Fvid2Utils_unLinkAllNodes(Fvid2Utils_Handle handle)
     llobj->headNode    = NULL;
     llobj->tailNode    = NULL;
     llobj->numElements = 0U;
-    llobj->priorityCnt = 0;
+    llobj->priorityCnt = 0U;
 
     return (0);
 }
@@ -330,11 +330,11 @@ void Fvid2Utils_linkNodePri(Fvid2Utils_Handle handle,
     }
     else if (FVID2UTILS_LLT_DOUBLE == llobj->listType)
     {
-        (void) dutilsLinkDoublePri(llobj, node, node->data, priority, (uint32_t) FALSE);
+        (void) dutilsLinkDoublePri(llobj, node, node->data, priority, UFALSE);
     }
     else
     {
-        GT_assert(Fvid2Trace, FALSE);
+        GT_assert(Fvid2Trace, BFALSE);
     }
 
     return;
@@ -385,7 +385,7 @@ int32_t Fvid2Utils_linkUniqePriNode(Fvid2Utils_Handle handle,
         }
         else
         {
-            GT_assert(Fvid2Trace, FALSE);
+            GT_assert(Fvid2Trace, BFALSE);
         }
         tempPriority = llobj->priorityCnt;
     }
@@ -405,15 +405,15 @@ int32_t Fvid2Utils_linkUniqePriNode(Fvid2Utils_Handle handle,
             node,
             node->data,
             tempPriority,
-            (uint32_t) TRUE);
-        if (rtnValue == FVID2_SOK)
+            UTRUE);
+        if (FVID2_SOK == rtnValue)
         {
             llobj->numElements++;
         }
     }
     else
     {
-        GT_assert(Fvid2Trace, FALSE);
+        GT_assert(Fvid2Trace, BFALSE);
     }
 
     return (rtnValue);
@@ -445,7 +445,7 @@ void Fvid2Utils_unLinkNodePri(Fvid2Utils_Handle handle, Fvid2Utils_Node *node)
     }
     else
     {
-        GT_assert(Fvid2Trace, FALSE);
+        GT_assert(Fvid2Trace, BFALSE);
     }
 
     return;
@@ -622,11 +622,11 @@ Fvid2Utils_Node *Fvid2Utils_getTailNode(Fvid2Utils_Handle handle)
  *
  *  \param handle           List handle.
  *
- *  \return                 TRUE if List is empty else returns FALSE.
+ *  \return                 UTRUE if List is empty else returns UFALSE.
  */
 uint32_t Fvid2Utils_isListEmpty(Fvid2Utils_Handle handle)
 {
-    uint32_t isEmpty = FALSE;
+    uint32_t isEmpty = UFALSE;
     Fvid2UtilsLinkListObj *llobj;
 
     /* NULL pointer check */
@@ -635,7 +635,7 @@ uint32_t Fvid2Utils_isListEmpty(Fvid2Utils_Handle handle)
     llobj = (Fvid2UtilsLinkListObj *) handle;
     if (NULL == llobj->headNode)
     {
-        isEmpty = (uint32_t) TRUE;
+        isEmpty = UTRUE;
     }
 
     return (isEmpty);
@@ -687,7 +687,7 @@ uint32_t Fvid2Utils_getNumNodes(Fvid2Utils_Handle handle)
     }
     else
     {
-        GT_assert(Fvid2Trace, FALSE);
+        GT_assert(Fvid2Trace, BFALSE);
     }
 
     return (numNodes);
@@ -799,7 +799,7 @@ void *Fvid2Utils_peakHead(Fvid2Utils_QHandle handle)
     GT_assert(Fvid2Trace, (NULL_PTR != handle));
 
     llobj = (Fvid2UtilsLinkListObj *) handle;
-    if (llobj->headNode != NULL)
+    if (NULL != llobj->headNode)
     {
         data = llobj->headNode->data;
     }
@@ -827,7 +827,7 @@ void *Fvid2Utils_peakTail(Fvid2Utils_QHandle handle)
     GT_assert(Fvid2Trace, (NULL_PTR != handle));
 
     llobj = (Fvid2UtilsLinkListObj *) handle;
-    if (llobj->tailNode != NULL)
+    if (NULL != llobj->tailNode)
     {
         data = llobj->tailNode->data;
     }
@@ -867,7 +867,7 @@ void Fvid2Utils_queueBack(Fvid2Utils_QHandle handle,
  *
  *  \param handle           Queue handle.
  *
- *  \return                 TRUE if queue is empty else returns FALSE.
+ *  \return                 UTRUE if queue is empty else returns UFALSE.
  */
 uint32_t Fvid2Utils_isQEmpty(Fvid2Utils_QHandle handle)
 {
@@ -994,9 +994,9 @@ static int32_t dutilsLinkDoublePri(Fvid2UtilsLinkListObj *llobj,
     }
 
     /* If unique priority check is enabled - check for uniqueness */
-    if (linkUniqePriNodes == (uint32_t) TRUE)
+    if (UTRUE == linkUniqePriNodes)
     {
-        if (prevNode != NULL)
+        if (NULL != prevNode)
         {
             if (priority == prevNode->priority)
             {
@@ -1189,13 +1189,13 @@ static Fvid2Utils_Node *dutilsUnLinkDouble(Fvid2UtilsLinkListObj *llobj,
         }
         else
         {
-            GT_assert(Fvid2Trace, FALSE);
+            GT_assert(Fvid2Trace, BFALSE);
         }
     }
     else
     {
         listNode = llobj->headNode;
-        for (nodeCnt = 0; nodeCnt < llobj->numElements; nodeCnt++)
+        for (nodeCnt = 0U; nodeCnt < llobj->numElements; nodeCnt++)
         {
             if (listNode == nodeToBeRem)
             {
@@ -1316,7 +1316,7 @@ static Fvid2Utils_Node *dutilsLinkDouble(Fvid2UtilsLinkListObj *llobj,
     }
     else
     {
-        GT_assert(Fvid2Trace, FALSE);
+        GT_assert(Fvid2Trace, BFALSE);
     }
     llobj->numElements++;
     return (node);

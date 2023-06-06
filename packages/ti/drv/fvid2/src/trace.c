@@ -109,7 +109,7 @@ GT_trace0(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -147,7 +147,7 @@ GT_trace1(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -187,7 +187,7 @@ GT_trace2(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -229,7 +229,7 @@ GT_trace3(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -273,7 +273,7 @@ GT_trace4(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -320,7 +320,7 @@ GT_trace5(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -370,7 +370,7 @@ GT_trace6(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -422,7 +422,7 @@ GT_trace7(uint32_t      maskType,
             /* Print if specified class is greater than or equal to class
              * for this specific print.
              */
-            if (!((classType == GT_INFO) || (classType == GT_INFO1)))
+            if (!((GT_INFO == classType) || (GT_INFO1 == classType)))
             {
                 Fvid2_printf("%s @ Line %d: ", fileName, lineNum);
             }
@@ -441,14 +441,14 @@ void GT_assertLocal(uint32_t    enableMask,
                     const char *fileName,
                     int32_t     lineNum)
 {
-    volatile uint32_t loop = 1U;
-    if (condition == (bool)0)
+    volatile uint32_t loop = UTRUE;
+    if (BFALSE == condition)
     {
         GT_3trace(
             enableMask, GT_ERR,
             " Assertion @ Line: %d in %s: %s : failed !!!\n",
             lineNum, fileName, str);
-        while (loop == 1U)
+        while (UTRUE == loop)
         {
             ;
         }

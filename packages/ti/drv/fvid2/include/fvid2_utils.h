@@ -464,7 +464,7 @@ Fvid2Utils_Node *Fvid2Utils_getTailNode(Fvid2Utils_Handle handle);
  *
  *  \param handle           List handle.
  *
- *  \return                 TRUE if List is empty else returns FALSE.
+ *  \return                 UTRUE if List is empty else returns UFALSE.
  */
 uint32_t Fvid2Utils_isListEmpty(Fvid2Utils_Handle handle);
 
@@ -579,7 +579,7 @@ void Fvid2Utils_queueBack(Fvid2Utils_QHandle handle,
  *
  *  \param handle           Queue handle.
  *
- *  \return                 TRUE if queue is empty else returns FALSE.
+ *  \return                 UTRUE if queue is empty else returns UFALSE.
  */
 uint32_t Fvid2Utils_isQEmpty(Fvid2Utils_QHandle handle);
 
@@ -737,7 +737,7 @@ static inline void Fvid2Utils_initPool(Fvid2Utils_PoolParams *params,
     /* Set pool flags as free */
     for (cnt = 0U; cnt < params->numElem; cnt++)
     {
-        params->flag[cnt] = (uint32_t) FALSE;
+        params->flag[cnt] = UFALSE;
     }
 
     return;
@@ -763,11 +763,11 @@ static inline void *Fvid2Utils_alloc(Fvid2Utils_PoolParams *params,
 
     for (cnt = 0U; cnt < params->numElem; cnt++)
     {
-        if ((uint32_t) FALSE == params->flag[cnt])
+        if (UFALSE == params->flag[cnt])
         {
             tempVal = ((uintptr_t) params->mem) + (((uintptr_t) params->elemSize) * ((uintptr_t) cnt));
             allocMem          = (void *) (tempVal);
-            params->flag[cnt] = (uint32_t) TRUE;
+            params->flag[cnt] = UTRUE;
 
             /* Decrement free count.
              * Assert if it is zero as it can never happen. */
@@ -805,8 +805,8 @@ static inline int32_t Fvid2Utils_free(Fvid2Utils_PoolParams *params,
         if ((void *) (tempVal) == mem)
         {
             /* Check if the memory is already allocated */
-            GT_assert(traceMask, ((uint32_t) TRUE == params->flag[cnt]));
-            params->flag[cnt] = (uint32_t) FALSE;
+            GT_assert(traceMask, (UTRUE == params->flag[cnt]));
+            params->flag[cnt] = UFALSE;
 
             /* Increment free count.
              * Assert if it is more than num elements as it can never happen. */
