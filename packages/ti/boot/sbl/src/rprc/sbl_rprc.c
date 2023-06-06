@@ -498,6 +498,9 @@ static int32_t SBL_RprcImageParse(void *srcAddr,
     /* Remap virtual core-ids if needed */
     switch (CoreId)
     {
+        case MCU1_SMP_ID:
+            CoreId = MCU1_CPU0_ID;
+            break;
         case MCU2_SMP_ID:
             CoreId = MCU2_CPU0_ID;
             break;
