@@ -377,23 +377,6 @@ int32_t SemaphoreP_getCount(SemaphoreP_Handle handle)
     return ((int32_t)uxSemaphoreGetCount(pSemaphore->semHndl));
 }
 
-SemaphoreP_Status SemaphoreP_reset(SemaphoreP_Handle handle)
-{
-    uint32_t isSemTaken = 0;
-    SemaphoreP_Status ret_val = SemaphoreP_OK;
-    SemaphoreP_freertos *pSemaphore = (SemaphoreP_freertos *)handle;
-
-    DebugP_assert(NULL_PTR != handle);
-
-    vTaskSuspendAll();
-    do {
-        isSemTaken = (uint32_t)xSemaphoreTake(pSemaphore->semHndl, 0);
-    } while(0U != isSemTaken);
-    (void)xTaskResumeAll();
-
-    return (ret_val);
-}
-
 /* IMPORTANT:
    This structure is copied from packages/ti/kernel/freertos/FreeRTOS-LTS/FreeRTOS-Kernel/queue.c
    and is used for ROV based views in CCS

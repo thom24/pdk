@@ -380,21 +380,4 @@ int32_t SemaphoreP_getCount( SemaphoreP_Handle handle )
   }
     return (int32_t)uxCount;
 }
-
-SemaphoreP_Status SemaphoreP_reset( SemaphoreP_Handle handle )
-{
-    uint32_t isSemTaken = 0;
-    SemaphoreP_Status ret_val = SemaphoreP_OK;
-    SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
-
-    DebugP_assert( NULL_PTR != handle );
-
-    vTaskSuspendScheduler(  );
-    do {
-        isSemTaken = (uint32_t)xSemaphoreTake( pSemaphore->semHndl, 0U );
-    } while( (uint32_t)pdPASS == isSemTaken );
-    xTaskResumeScheduler(  );
-
-    return ( ret_val );
-}
 /* Nothing past this point */
