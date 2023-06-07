@@ -69,14 +69,14 @@ void CPS_BufferCopy(volatile uint8_t *dst, volatile const uint8_t *src, uint32_t
 
 void CPS_DelayNs(uint32_t ns)
 {
-    uint32_t us = ns / 1000;
-    if(0U == us)
+    uint32_t ms = ns / 1000000;
+    if(0U == ms)
     {
-        /* If less than 1 us sleep requested, fall back to 1 us */
-        us = 1;
+        /* If less than 1 ms sleep requested, fall back to 1 ms */
+        ms = 1U;
     }
 
-    Osal_delay(us);
+    Osal_delay(ms);
 }
 
 void CPS_ExtPhyReset(bool reset)
