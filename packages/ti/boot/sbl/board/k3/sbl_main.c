@@ -225,7 +225,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .memAttr          = 0U,
     },
 #endif
-#if defined(SBL_OCM_MAIN_DOMAIN_RAT) && defined(SOC_J7200)
+#if defined(SBL_OCM_MAIN_DOMAIN_RAT) && (defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
     {
         /* Region 10 configuration: 512KB Virtually Mapped Main OCMRAM */
         .regionId         = 10U,

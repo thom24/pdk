@@ -1432,8 +1432,8 @@ export sbl_cust_rat_main_ocm_img_SOC_DEPENDENCY
 export sbl_cust_rat_main_ocm_img_CORE_DEPENDENCY
 sbl_cust_rat_main_ocm_img_PKG_LIST = sbl
 sbl_cust_rat_main_ocm_img_INCLUDE = $(sbl_cust_rat_main_ocm_img_PATH)
-sbl_cust_rat_main_ocm_img_SOCLIST = j7200
-sbl_cust_rat_main_ocm_img_BOARDLIST = j7200_evm
+sbl_cust_rat_main_ocm_img_SOCLIST = j7200 j721s2 j784s4
+sbl_cust_rat_main_ocm_img_BOARDLIST = j7200_evm j721s2_evm j784s4_evm
 export sbl_cust_rat_main_ocm_img_SOCLIST
 export sbl_cust_rat_main_ocm_img_BOARDLIST
 sbl_cust_rat_main_ocm_img_$(SOC)_CORELIST = mcu1_0
