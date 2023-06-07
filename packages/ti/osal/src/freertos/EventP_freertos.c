@@ -94,11 +94,11 @@ EventP_Handle EventP_create(EventP_Params *params)
 
     key = HwiP_disable();
 
-     for (i = 0; i < maxEvent; i++)
+     for (i = 0U; i < maxEvent; i++)
      {
-         if ((bool)false == eventPool[i].used)
+         if (BFALSE == eventPool[i].used)
          {
-             eventPool[i].used = (bool)true;
+             eventPool[i].used = BTRUE;
              /* Update statistics */
              gOsalEventAllocCnt++;
              if (gOsalEventAllocCnt > gOsalEventPeak)
@@ -126,9 +126,9 @@ EventP_Handle EventP_create(EventP_Params *params)
         {
             /* If there was an error reset the event object and return NULL. */
             key = HwiP_disable();
-            handle->used = (bool)false;
+            handle->used = BFALSE;
             /* Found the osal event object to delete */
-            if (gOsalEventAllocCnt > 0U)
+            if (0U < gOsalEventAllocCnt)
             {
                 gOsalEventAllocCnt--;
             }
@@ -155,14 +155,14 @@ EventP_Status EventP_delete(EventP_Handle *handle)
     EventP_Status   ret_val = EventP_OK;
     EventP_freertos *event = (EventP_freertos *)*handle;
 
-    if((NULL_PTR != event) && ((bool)true == event->used))
+    if((NULL_PTR != event) && (BTRUE == event->used))
     {
         vEventGroupDelete(event->eventHndl);
 
         key = HwiP_disable();
-        event->used = (bool)false;
+        event->used = BFALSE;
         /* Found the osal event object to delete */
-        if (gOsalEventAllocCnt > 0U)
+        if (0U < gOsalEventAllocCnt)
         {
             gOsalEventAllocCnt--;
         }
@@ -183,15 +183,15 @@ EventP_Status EventP_delete(EventP_Handle *handle)
 uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
                     uint8_t waitMode, uint32_t timeout)
 {
-    DebugP_assert(NULL_PTR != handle);
-    DebugP_assert(eventMask <= EventP_ID_23);
-    DebugP_assert(eventMask != EventP_ID_NONE);
+    DebugP_assert(NULL_PTR       != handle);
+    DebugP_assert(EventP_ID_23   >= eventMask);
+    DebugP_assert(EventP_ID_NONE != eventMask);
 
     EventP_freertos *event = (EventP_freertos *)handle;
     uint32_t        eventBits = 0U;
 
     if((NULL_PTR != event) && 
-       ((bool)true == event->used) && 
+       (BTRUE    == event->used) && 
        (EventP_WaitMode_ALL >= waitMode))
     {
         eventBits = (uint32_t)xEventGroupWaitBits(event->eventHndl,
@@ -214,7 +214,7 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
     EventP_Status   ret_val = EventP_OK;
     EventP_freertos *event = (EventP_freertos *)handle;
     
-    if((NULL_PTR != event) && ((bool)true == event->used))
+    if((NULL_PTR != event) && (BTRUE == event->used))
     {
         if( 1 == xPortInIsrContext() )
         {
@@ -258,7 +258,7 @@ uint32_t EventP_getPostedEvents(EventP_Handle handle)
     EventP_freertos *event = (EventP_freertos *)handle;
     uint32_t        eventBits = 0U;
     
-    if((NULL_PTR != event) && ((bool)true == event->used))
+    if((NULL_PTR != event) && (BTRUE == event->used))
     {
         if( 1 == xPortInIsrContext() )
         {

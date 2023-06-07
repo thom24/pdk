@@ -133,9 +133,9 @@ static void TaskP_Function (void *arg)
     (*handle->taskfxn)(handle->arg0, handle->arg1);
 
     /* Task Fxn completed execution. */
-    handle->terminated = (bool)true;
+    handle->terminated = BTRUE;
     /* Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
-    while ((bool)true == handle->terminated)
+    while (BTRUE == handle->terminated)
     {
         vTaskSuspend(NULL);
     }
@@ -155,7 +155,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
     uint32_t        maxTasks;
     int8_t          taskPriority;
 
-    DebugP_assert(NULL != taskfxn);
+    DebugP_assert(NULL     != taskfxn);
     DebugP_assert(NULL_PTR != params);
     DebugP_assert(NULL_PTR != params->stack);
 
@@ -173,9 +173,9 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
 
      for (i = 0; i < maxTasks; i++)
      {
-         if ((bool)false == taskPool[i].used)
+         if (BFALSE == taskPool[i].used)
          {
-             taskPool[i].used = (bool)true;
+             taskPool[i].used = BTRUE;
              taskPool[i].taskObj = &gOsalFreertosTaskObjPool[i];
              /* Update statistics */
              gOsalTaskAllocCnt++;
@@ -202,11 +202,11 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
     {
         taskPriority = params->priority;
         /* if prority is out of range, adjust to bring it in range */
-        if(taskPriority > TaskP_PRIORITY_HIGHEST)
+        if(TaskP_PRIORITY_HIGHEST < taskPriority)
         {
             taskPriority = TaskP_PRIORITY_HIGHEST;
         }
-        if(taskPriority <= TaskP_PRIORITY_LOWEST)
+        if(TaskP_PRIORITY_LOWEST >= taskPriority)
         {
             taskPriority = TaskP_PRIORITY_LOWEST;
         }
@@ -214,7 +214,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
         handle->taskfxn = (TaskP_mainFunction_t)(taskfxn);
         handle->arg0 = params->arg0;
         handle->arg1 = params->arg1;
-        handle->terminated = (bool)false;
+        handle->terminated = BFALSE;
 
         handle->taskHndl = xTaskCreateStatic((TaskFunction_t)TaskP_Function, /* Pointer to the function that implements the task. */
                                       (char *)params->name,              /* Text name for the task.  This is to facilitate debugging only. */
@@ -227,9 +227,9 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params)
         {
             /* If there was an error reset the task object and return NULL. */
             key = HwiP_disable();
-            handle->used = (bool)false;
+            handle->used = BFALSE;
             /* Found the osal task object to delete */
-            if (gOsalTaskAllocCnt > 0U)
+            if (0U < gOsalTaskAllocCnt)
             {
                 gOsalTaskAllocCnt--;
             }
@@ -260,7 +260,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
     TaskP_freertos *task = (TaskP_freertos *)hTask;
     TaskHandle_t currentTaskHndl;
 
-    if((NULL_PTR != task) && ((bool)true == task->used))
+    if((NULL_PTR != task) && (BTRUE == task->used))
     {
         currentTaskHndl = xTaskGetCurrentTaskHandle();
         if(currentTaskHndl == task->taskHndl)
@@ -278,7 +278,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
         /* In FreeRTOS, task is deleted in the idle task.
          * So the TaskObj should not be memset to 0 */
         /* (void )memset( (void *)task->taskObj, 0, sizeof(task->taskObj)); */
-        task->used      = (bool)false;
+        task->used      = BFALSE;
         task->taskObj   = NULL;
         task->taskHndl  = NULL;
         task->taskfxn   = NULL;
@@ -286,7 +286,7 @@ TaskP_Status TaskP_delete(TaskP_Handle *hTaskPtr)
         task->arg1      = NULL;
 
         /* Found the osal task object to delete */
-        if (gOsalTaskAllocCnt > 0U)
+        if (0U < gOsalTaskAllocCnt)
         {
             gOsalTaskAllocCnt--;
         }
@@ -355,7 +355,7 @@ TaskP_Handle TaskP_self(void)
         maxTasks        = OSAL_FREERTOS_CONFIGNUM_TASK;
         for (i = 0; i < maxTasks; i++)
         {
-            if (((bool)true == gOsalTaskPfreertosPool[i].used) &&
+            if ((BTRUE == gOsalTaskPfreertosPool[i].used) &&
                 (gOsalTaskPfreertosPool[i].taskHndl == taskHndl))
             {
                 retHandle = (TaskP_Handle) (&gOsalTaskPfreertosPool[i]);
@@ -381,17 +381,17 @@ void TaskP_yield(void) {
 
 uint32_t TaskP_isTerminated(TaskP_Handle handle)
 {
-    uint32_t isTaskTerminated = 0;
+    uint32_t isTaskTerminated = UFALSE;
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert(NULL_PTR != handle);
-    if(((bool)true == taskHandle->terminated) || (eDeleted == eTaskGetState(taskHandle->taskHndl)))
+    if((BTRUE == taskHandle->terminated) || (eDeleted == eTaskGetState(taskHandle->taskHndl)))
     {
-        isTaskTerminated = 1;
+        isTaskTerminated = UTRUE;
     }
     else
     {
-        isTaskTerminated = 0;
+        isTaskTerminated = UFALSE;
     }
     return isTaskTerminated;
 }
@@ -400,7 +400,7 @@ uint32_t TaskP_disable(void)
 {
     vTaskSuspendAll();
 
-    return 0;
+    return UFALSE;
 }
 
 void TaskP_restore(uint32_t key)
@@ -413,7 +413,7 @@ TaskHandle_t TaskP_getFreertosHandle(TaskP_Handle handle)
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert(NULL_PTR != handle);
-    DebugP_assert((bool)false != taskHandle->used);
+    DebugP_assert(BFALSE   != taskHandle->used);
 
     return (taskHandle->taskHndl);
 }
@@ -423,7 +423,7 @@ uint32_t TaskP_getTaskId(TaskP_Handle handle)
     TaskP_freertos *taskHandle = (TaskP_freertos *)handle;
 
     DebugP_assert(NULL_PTR != handle);
-    DebugP_assert((bool)false != taskHandle->used);
+    DebugP_assert(BFALSE   != taskHandle->used);
 
     return (taskHandle->tskId);
 }
@@ -442,14 +442,14 @@ static int32_t prvSetupTimerPSC( void )
         (void)Sciclient_configPrmsInit(&config);
 
         xStatus = Sciclient_init(&config);
-        if(  xStatus == CSL_PASS )
+        if(  CSL_PASS == xStatus )
         {
             uint32_t currState, resetState, contextLossState;
             /* on J7AHP, Main domain timers 8-19 are connected to LPSC_PER_SPARE_0 which is not powered ON by default. 
              * All other timers are connected to LPSC which is ALWAYS_ON */
             xStatus = Sciclient_pmGetModuleState(TISCI_DEV_TIMER8, &currState, &resetState,
                                                 &contextLossState, SCICLIENT_SERVICE_WAIT_FOREVER);
-            if((xStatus == CSL_PASS) && (currState != (uint32_t)TISCI_MSG_VALUE_DEVICE_SW_STATE_ON))
+            if((CSL_PASS == xStatus) && ((uint32_t)TISCI_MSG_VALUE_DEVICE_SW_STATE_ON != currState))
             {
                 xStatus = Sciclient_pmSetModuleState(TISCI_DEV_TIMER8, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                                     (TISCI_MSG_FLAG_AOP |TISCI_MSG_FLAG_DEVICE_RESET_ISO),

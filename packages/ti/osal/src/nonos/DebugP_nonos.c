@@ -53,7 +53,7 @@ void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t line)
     (void)line;
 
     if (!expression) {
-        while ((bool)true == Osal_DebugP_Assert_Val) {};
+        while (BTRUE == Osal_DebugP_Assert_Val) {};
     }
 }
 #endif

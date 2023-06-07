@@ -70,7 +70,7 @@ void* MemoryP_ctrlAlloc(uint32_t size, uint8_t alignment)
         heapAlignment = portBYTE_ALIGNMENT;
     }
     /* Assert that requested align is a power of 2 */
-    DebugP_assert(0U == (heapAlignment & (heapAlignment - 1U)));
+    DebugP_assert(UFALSE == (heapAlignment & (heapAlignment - 1U)));
 
     /* Assert that requested block size is non-zero */
     DebugP_assert(0U != size);

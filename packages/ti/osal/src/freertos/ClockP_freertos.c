@@ -113,11 +113,11 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
 
     key = HwiP_disable();
 
-    for (i = 0; i < maxClocks; i++)
+    for (i = 0U; i < maxClocks; i++)
     {
-        if ((bool)false == timerPool[i].used)
+        if (BFALSE == timerPool[i].used)
         {
-            timerPool[i].used = (bool)true;
+            timerPool[i].used = BTRUE;
             /* Update statistics */
             gOsalClockAllocCnt++;
             if (gOsalClockAllocCnt > gOsalClockPeak)
@@ -161,9 +161,9 @@ ClockP_Handle ClockP_create(ClockP_FxnCallback clockfxn,
         {
             /* If there was an error reset the clock object and return NULL. */
             key = HwiP_disable();
-            pTimer->used      = (bool)false;
+            pTimer->used      = BFALSE;
             /* Found the osal clock object to delete */
-            if (gOsalClockAllocCnt > 0U)
+            if (0U < gOsalClockAllocCnt)
             {
                 gOsalClockAllocCnt--;
             }
@@ -191,16 +191,16 @@ ClockP_Status ClockP_delete(ClockP_Handle handle)
     uintptr_t       key;
     ClockP_Status   ret = ClockP_OK;
 
-    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
+    if ((NULL_PTR != pTimer) && (BTRUE == pTimer->used))
     {
         (void)xTimerDelete(pTimer->timerHndl, portMAX_DELAY);
 
         key = HwiP_disable();
-        pTimer->used      = (bool)false;
+        pTimer->used      = BFALSE;
         pTimer->timerHndl = NULL;
         pTimer->callback  = NULL;
         pTimer->arg       = NULL;
-        if (gOsalClockAllocCnt > 0U)
+        if (0U < gOsalClockAllocCnt)
         {
             gOsalClockAllocCnt--;
         }
@@ -221,7 +221,7 @@ ClockP_Status ClockP_start(ClockP_Handle handle)
     ClockP_freertos *pTimer = (ClockP_freertos*)handle;
     BaseType_t  status;
 
-    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
+    if ((NULL_PTR != pTimer) && (BTRUE == pTimer->used))
     {
         if( 1 == xPortInIsrContext())
         {
@@ -259,7 +259,7 @@ ClockP_Status ClockP_stop(ClockP_Handle handle)
     ClockP_freertos *pTimer = (ClockP_freertos*)handle;
     BaseType_t  status;
 
-    if ((NULL_PTR != pTimer) && ((bool)true == pTimer->used))
+    if ((NULL_PTR != pTimer) && (BTRUE == pTimer->used))
     {
         if( 1 == xPortInIsrContext() )
         {

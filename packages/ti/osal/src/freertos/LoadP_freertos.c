@@ -96,7 +96,7 @@ void vApplicationLoadHook(void);
 /* ========================================================================== */
 
 static LoadP_freertos   gLoadP_freertos;
-static bool             gLoadP_initDone = (bool)false;
+static bool             gLoadP_initDone = BFALSE;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -112,11 +112,11 @@ void LoadP_reset(void)
     gLoadP_freertos.idlTskTime = 0U;
     gLoadP_freertos.totalTime = 0U;
 
-    for (i = 0; i < OSAL_FREERTOS_CONFIGNUM_TASK; i++)
+    for (i = 0U; i < OSAL_FREERTOS_CONFIGNUM_TASK; i++)
     {
         pHndl = &gLoadP_freertos.taskLoadObj[i];
 
-        if ((bool)true == pHndl->used )
+        if (BTRUE == pHndl->used )
         {
             pHndl->threadTime = 0U;
         }
@@ -143,7 +143,7 @@ LoadP_Status LoadP_getTaskLoad(TaskP_Handle taskHandle, LoadP_Stats *stats)
 
         pHndl = &gLoadP_freertos.taskLoadObj[tskId];
 
-        if (((bool)true == pHndl->used) && (pHndl->pTsk == taskHandle))
+        if ((BTRUE == pHndl->used) && (pHndl->pTsk == taskHandle))
         {
             vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk), &tskStat, pdFALSE, eRunning);
             stats->threadTime  = pHndl->threadTime;
@@ -188,7 +188,7 @@ void LoadP_update(void)
     if(!gLoadP_initDone)
     {
         (void)memset( (void *)&gLoadP_freertos,0,sizeof(gLoadP_freertos));
-        gLoadP_initDone = (bool)false;
+        gLoadP_initDone = BFALSE;
     }
 
     /* Idle Task Update */
@@ -206,11 +206,11 @@ void LoadP_update(void)
     gLoadP_freertos.totalTime += delta;
 
     /* All tasks Update */
-    for (i = 0; i < OSAL_FREERTOS_CONFIGNUM_TASK; i++)
+    for (i = 0U; i < OSAL_FREERTOS_CONFIGNUM_TASK; i++)
     {
         pHndl = &gLoadP_freertos.taskLoadObj[i];
 
-        if (((bool)true == pHndl->used) && (NULL_PTR != pHndl->pTsk))
+        if ((BTRUE == pHndl->used) && (NULL_PTR != pHndl->pTsk))
         {
             vTaskGetInfo( TaskP_getFreertosHandle(pHndl->pTsk),
                           &tskStat,
@@ -253,7 +253,7 @@ static uint32_t LoadP_calcPercentLoad(uint64_t threadTime, uint64_t totalTime)
 
     percentLoad = (uint32_t)(threadTime  / (totalTime / 100U));
 
-    if( percentLoad > 100U)
+    if(100U < percentLoad)
     {
         percentLoad = 100U;
     }
@@ -269,10 +269,10 @@ void LoadP_addTask(TaskP_Handle handle, uint32_t tskId)
     if(!gLoadP_initDone)
     {
         (void)memset( (void *)&gLoadP_freertos,0,sizeof(gLoadP_freertos));
-        gLoadP_initDone = (bool)true;
+        gLoadP_initDone = BTRUE;
     }
 
-    pHndl->used                  = (bool)true;
+    pHndl->used                  = BTRUE;
     pHndl->pTsk                  = handle;
     pHndl->threadTime            = 0U;
     pHndl->lastUpdate_threadTime = 0U;
@@ -283,7 +283,7 @@ void LoadP_removeTask(uint32_t tskId)
 {
     LoadP_taskLoadObj   *pHndl = &gLoadP_freertos.taskLoadObj[tskId];
 
-    pHndl->used = (bool)false; 
+    pHndl->used = BFALSE; 
 }
 
 void vApplicationLoadHook(void)
@@ -300,11 +300,11 @@ void vApplicationLoadHook(void)
     timeElapsed += delta;
 
     /* Check for window */
-    if((timeElapsed) > (uint32_t)configLOAD_WINDOW_IN_MS)
+    if((uint32_t)configLOAD_WINDOW_IN_MS < timeElapsed)
     {
         /* Update load and reset elapsed time */
         LoadP_update();
-        timeElapsed = 0;
+        timeElapsed = 0U;
     }
 }
 

@@ -49,15 +49,15 @@
 
 void CacheP_wb(const void * addr, uint32_t size)
 {
-   Cache_wb((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, (bool)true);
+   Cache_wb((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, BTRUE);
 }
 void CacheP_wbInv(const void * addr, uint32_t size)
 {
-   Cache_wbInv((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, (bool)true);
+   Cache_wbInv((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, BTRUE);
 }
 
 void CacheP_Inv(const void * addr, uint32_t size)
 {
-  Cache_inv((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, (bool)true);
+  Cache_inv((void *)addr, (size_t)size, (uint16_t)Cache_Type_ALL, BTRUE);
 }
 /* Nothing past this point */

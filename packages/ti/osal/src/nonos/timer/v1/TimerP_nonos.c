@@ -44,7 +44,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
 
-#if defined(FREERTOS)
+#if defined (FREERTOS)
 #include <FreeRTOS.h>
 #endif
 
@@ -109,7 +109,7 @@ TimerP_Struct gTimerStructs[OSAL_NONOS_CONFIGNUM_TIMER] = { 0U };
 static        uint32_t    gTimerInitDone = 0U;
 static        uint32_t    gTimerAnyMask;
 #if defined (BUILD_MCU)
-static        bool        gUpdateFlag = (bool)true;
+static        bool        gUpdateFlag = BTRUE;
 #endif
 
 /* external variables */
@@ -137,10 +137,10 @@ static uintptr_t TimerP_getTimerBaseAddr(uint32_t timer_id)
 
     if (timer_id < TimerP_numTimerDevices) {
 #if defined (BUILD_MCU)
-        if ((bool)true == gUpdateFlag)
+        if (BTRUE == gUpdateFlag)
         {
             TimerP_updateDefaultInfoTbl();
-            gUpdateFlag = (bool)false;
+            gUpdateFlag = BFALSE;
         }
 #endif
       addr = gDmTimerPInfoTbl[timer_id].baseAddr;
@@ -180,7 +180,7 @@ static void TimerP_dmTimerStub(uintptr_t arg)
 static void  TimerP_dmTimerInitDevice(TimerP_Struct *timer, uintptr_t baseAddr)
 {
   uint32_t key, status;
-  uint32_t tcrr =0, tldr =0;
+  uint32_t tcrr = 0U, tldr = 0U;
 
   key = (uint32_t)HwiP_disable();
 
@@ -226,21 +226,21 @@ static bool TimerP_dmTimerSetMicroSeconds(TimerP_Struct *timer, uint32_t period)
     uint32_t  roundUp;
     uintptr_t  baseAddr = TimerP_getTimerBaseAddr(timer->timerId);
     uint32_t  status;
-    bool retVal=(bool)true;
+    bool retVal = BTRUE;
 
     (void)TimerP_stop(timer);
 
-    roundUp = ((timer->freqLo % 1000U) >= 500U) ? 1U : 0U;
+    roundUp = (500U <= (timer->freqLo % 1000U)) ? UTRUE : UFALSE;
 
     freqKHz = (timer->freqLo / 1000U) + roundUp;
     if (TimerP_dmTimerCheckOverflow(freqKHz, period/1000U)) {
-            retVal = (bool)false;
+            retVal = BFALSE;
     }
     else
     {
     counts = ((uint64_t)freqKHz * (uint64_t)period) / (uint64_t)1000U;
-    if (counts > 0xFFFFFFFFU) {
-        retVal = (bool)false;
+    if (0xFFFFFFFFU < counts) {
+        retVal = BFALSE;
     }
     else
     {
@@ -295,7 +295,7 @@ static TimerP_Status TimerP_dmTimerDeviceCfg(TimerP_Struct *timer, uintptr_t bas
     key = (uint32_t)HwiP_disable();
 
     /*if doing soft reset: do it first before setting other flags */
-    if ((timer->tiocpCfg & TIMERP_DM_TIOCP_CFG_SOFTRESET_FLAG) > 0U) {
+    if (0U < (timer->tiocpCfg & TIMERP_DM_TIOCP_CFG_SOFTRESET_FLAG)) {
      (void)TIMERReset(baseAddr);
     }
 
@@ -307,7 +307,7 @@ static TimerP_Status TimerP_dmTimerDeviceCfg(TimerP_Struct *timer, uintptr_t bas
     /*xfer 'posted' setting if not current */
     tsicr = HW_RD_REG32(baseAddr + TIMER_TSICR);
 
-    if ((timer->tsicr & TIMERP_DM_TSICR_POSTED) > 0U) {
+    if (0U < (timer->tsicr & TIMERP_DM_TSICR_POSTED)) {
       if (0U == (tsicr & TIMERP_DM_TSICR_POSTED)) {
           (void)TIMERPostedModeConfig(baseAddr, (tsicr | TIMERP_DM_TSICR_POSTED));
       }
@@ -321,7 +321,7 @@ static TimerP_Status TimerP_dmTimerDeviceCfg(TimerP_Struct *timer, uintptr_t bas
     /* xfer 'readmode' setting if not current */
     tsicr = HW_RD_REG32(baseAddr + TIMER_TSICR);
 
-    if ((timer->tsicr & TIMERP_DM_TSICR_READMODE) > 0U) {
+    if (0U < (timer->tsicr & TIMERP_DM_TSICR_READMODE)) {
         if (0U == (tsicr & TIMERP_DM_TSICR_READMODE)) {
             (void)TIMERReadModeConfig(baseAddr, (tsicr | TIMERP_DM_TSICR_READMODE));
         }
@@ -370,7 +370,7 @@ static TimerP_Status TimerP_dmTimerDeviceCfg(TimerP_Struct *timer, uintptr_t bas
         }
     }
    
-   if(retVal != TimerP_FAILURE)
+   if(TimerP_FAILURE != retVal)
    {
     if ((timer->runMode == TimerP_RunMode_CONTINUOUS) ||
         (timer->runMode == TimerP_RunMode_ONESHOT)) {
@@ -568,7 +568,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
   uint32_t      mappedId = 0xFFFF;
   uint32_t      coreId = Osal_getCoreId();
 
-  if ((TimerP_ANY != id) && (id >= TimerP_numTimerDevices)) {
+  if ((TimerP_ANY != id) && (TimerP_numTimerDevices <= id)) {
     ret = TimerP_FAILURE;
   }
 
@@ -606,7 +606,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
     }
     else
     {
-        if ((timer->availMask & ((uint32_t)1U << id)) > 0U) 
+        if (0U < (timer->availMask & ((uint32_t)1U << id))) 
         {
             uint32_t shift, nshift;
             shift  = ((uint32_t) 1U) << id;
@@ -645,7 +645,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
             Ensure to reset the timer */
 
       /* tiocpCfg is populated by tiocpCfg */
-      if ((timer->tiocpCfg & TIMERP_DM_TIOCP_CFG_SOFTRESET_FLAG) > 0U) {
+      if (0U < (timer->tiocpCfg & TIMERP_DM_TIOCP_CFG_SOFTRESET_FLAG)) {
        (void)TIMERReset(baseAddr);
       }
 
@@ -659,7 +659,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
       interruptRegParams.corepacConfig.isrRoutine=TimerP_dmTimerStub;
 
 #if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') )
-#if defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X) || defined (SOC_J721S2) || defined (SOC_J784S4)
       interruptRegParams.corepacConfig.triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL;
       interruptRegParams.corepacConfig.priority = 0x20U;
 #else
@@ -761,9 +761,9 @@ TimerP_Handle TimerP_create(uint32_t id,
 
     for (i = 0; i < OSAL_NONOS_CONFIGNUM_TIMER; i++)
     {
-        if ((bool)false == gTimerStructs[i].used)
+        if (BFALSE == gTimerStructs[i].used)
         {
-            gTimerStructs[i].used = (bool)true;
+            gTimerStructs[i].used = BTRUE;
 
             /* Update statistics */
             gOsalTimerAllocCnt++;
@@ -793,7 +793,7 @@ TimerP_Handle TimerP_create(uint32_t id,
     {
       if (TimerP_dmTimerInstanceInit(&gTimerStructs[i], id, tickFxn, &params) != TimerP_OK) {
         /* Free up the consumed timer memory */
-        gTimerStructs[i].used = (bool)false;
+        gTimerStructs[i].used = BFALSE;
         ret_handle = NULL_PTR;
       }
     }
@@ -803,7 +803,7 @@ TimerP_Handle TimerP_create(uint32_t id,
         (NULL_PTR              != ret_handle))
     {
        if(TimerP_OK != TimerP_start((TimerP_Handle)&gTimerStructs[i])) {
-          gTimerStructs[i].used = (bool)false;
+          gTimerStructs[i].used = BFALSE;
           ret_handle = NULL_PTR;
        }
     }
@@ -831,7 +831,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
     id = gTimerStructs[index].timerId;
     id = TimerP_reverseMapId(id, Osal_getCoreId());
 
-    if((NULL_PTR != timer) && ((bool)true == (gTimerStructs[index].used)))
+    if((NULL_PTR != timer) && (BTRUE == (gTimerStructs[index].used)))
     {
       /* clear the ISR that was set before */
       if(NULL_PTR != timer->hwi) 
@@ -840,9 +840,9 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
       }
       
       /* reset the timer's bit field in the mask and clear the used flag */
-      gTimerStructs[index].used = (bool)false;
-      uint32_t shift = ((uint32_t) 1u) << id;
-      if(0U == (gTimerAnyMask & shift))
+      gTimerStructs[index].used = BFALSE;
+      uint32_t shift = ((uint32_t) 1U) << id;
+      if(UFALSE == (gTimerAnyMask & shift))
       {
         gTimerAnyMask |= shift;
       }
@@ -852,7 +852,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
       }
 
       /* Found the osal timer object to delete */
-      if (gOsalTimerAllocCnt > 0U)
+      if (0U < gOsalTimerAllocCnt)
       {
         gOsalTimerAllocCnt--;
       }
@@ -936,7 +936,7 @@ TimerP_Status TimerP_start(TimerP_Handle handle)
 
       do {
         status = (TIMERWritePostedStatusGet(baseAddr) & TIMERP_DM_TWPS_W_PEND_TCLR);
-      } while (status != 0u);
+      } while (0U != status);
 
       (void)TIMEREnable(baseAddr);
   }
@@ -973,7 +973,7 @@ TimerP_Status TimerP_stop(TimerP_Handle handle)
     tisr = TIMERIntStatusGet(baseAddr);
 
 
-    if(tisr > 0U) {
+    if(0U < tisr) {
       /* Clear all pending interrupts */
       (void)TIMERIntStatusClear(baseAddr, tisr);
     }

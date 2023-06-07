@@ -85,9 +85,9 @@ typedef int32_t QueueP_Status;
  */
 typedef bool QueueP_State;
 /*! Elements are present in the the queue */
-#define QueueP_NOTEMPTY            ((bool)false)
+#define QueueP_NOTEMPTY            (BFALSE)
 /*! Queue is empty. No elements are present. */
-#define QueueP_EMPTY               ((bool)true)
+#define QueueP_EMPTY               (BTRUE)
 /* @} */
 
 /*!

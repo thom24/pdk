@@ -95,12 +95,12 @@ typedef int32_t SemaphoreP_Status;
 /*!
  *  @brief    Wait forever define
  */
-#define SemaphoreP_WAIT_FOREVER (~((uint32_t)0U))
+#define SemaphoreP_WAIT_FOREVER                 (~((uint32_t)0U))
 
 /*!
  *  @brief    No wait define
  */
-#define SemaphoreP_NO_WAIT       ((uint32_t)0U)
+#define SemaphoreP_NO_WAIT                      ((uint32_t)0U)
 
 /*!
  *  @brief    Opaque client reference to an instance of a SemaphoreP

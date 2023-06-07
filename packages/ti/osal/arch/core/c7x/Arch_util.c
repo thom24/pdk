@@ -61,7 +61,7 @@ void OsalArch_compileTime_SizeChk(void)
     OSAL_COMPILE_TIME_SIZE_CHECK (sizeof(HwiP_nonOs),OSAL_NONOS_HWIP_SIZE_BYTES);
 }
 
-static bool gFirstTime = (bool)false;
+static bool gFirstTime = BFALSE;
 //TODO: Integrate to CSL once C7x arch is supported
 //static CSL_IntcContext               gContext;
 //static CSL_IntcEventHandlerRecord    gEventRecord[OSAL_NONOS_CONFIGNUM_HWI];
@@ -138,8 +138,8 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
     {
         key = OsalArch_globalDisableInterrupt();
         for (i = 0U; i < maxHwi; i++) {
-            if (FALSE == hwiPool[i].used) {
-                hwiPool[i].used = TRUE;
+            if (UFALSE == hwiPool[i].used) {
+                hwiPool[i].used = UTRUE;
                 break;
             }
         }
@@ -157,13 +157,13 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
 
         if ((Hwi_Struct *) NULL_PTR != hwi_handle)
         {
-            //if (FALSE == gFirstTime) {
+            //if (BFALSE == gFirstTime) {
             //  /* record the index in the handle */
             //  gContext.numEvtEntries      = OSAL_NONOS_CONFIGNUM_HWI;
             //  gContext.eventhandlerRecord = gEventRecord;
             //  //TODO: Integrate to CSL once C7x arch is supported
             //  //CSL_intcInit(&gContext);
-            //  gFirstTime = TRUE;
+            //  gFirstTime = BTRUE;
       //}
 
              //TODO: Integrate to CSL once C7x arch is supported
@@ -186,7 +186,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
              //else
              //{
              //    /* Free the pool */
-             //    hwiPool[i].used = FALSE;
+             //    hwiPool[i].used = UFALSE;
              //    retHandle = (HwiP_Handle *) NULL_PTR;
              //}
        }
@@ -205,9 +205,9 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    if (TRUE == hwi_hnd->used)
+    if (UTRUE == hwi_hnd->used)
     {
-        hwi_hnd->used = FALSE;
+        hwi_hnd->used = UFALSE;
     }
     else
     {
@@ -233,7 +233,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
   */
 HwiP_Handle OsalArch_getHandle(uint32_t interruptNum)
 {
-   Hwi_Struct *handle= (Hwi_Struct *) NULL_PTR;
+   Hwi_Struct *handle = (Hwi_Struct *) NULL_PTR;
    return((HwiP_Handle)handle);
 }
 /*
@@ -248,7 +248,7 @@ uint32_t OsalArch_getEventId(uint32_t interruptNum)
 /* Below function posts the interrupt */
 int32_t OsalArch_postInterrupt(uint32_t intrNum)
 {
-    return (-1);
+    return (CSL_EFAIL);
 }
 
 /* Return the cycle frequency used for timeStamp */

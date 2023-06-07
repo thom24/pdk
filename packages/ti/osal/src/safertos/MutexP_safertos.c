@@ -83,11 +83,11 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
         key = HwiP_disable();
 
-        for (i = 0; i < maxMutex; i++)
+        for (i = 0U; i < maxMutex; i++)
         {
-            if ((bool)false == mutexPool[i].used)
+            if (BFALSE == mutexPool[i].used)
             {
-                mutexPool[i].used = (bool)true;
+                mutexPool[i].used = BTRUE;
                 /* Update statistics */
                 gOsalMutexAllocCnt++;
                 if (gOsalMutexAllocCnt > gOsalMutexPeak)
@@ -117,9 +117,9 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
           {
               /* If there was an error reset the mutex object and return NULL. */
               key = HwiP_disable();
-              handle->used = (bool)false;
+              handle->used = BFALSE;
               /* Found the osal task object to delete */
-              if (gOsalMutexAllocCnt > 0U)
+              if (0U < gOsalMutexAllocCnt)
               {
                   gOsalMutexAllocCnt--;
               }
@@ -148,14 +148,14 @@ MutexP_Status MutexP_delete(MutexP_Handle handle)
      * NOTE : Mutex delete is not supported in safertos.
      * We just memset and return success.
      */
-    if ((NULL_PTR != mutex) && ((bool)true == mutex->used))
+    if ((NULL_PTR != mutex) && (BTRUE == mutex->used))
     {
         memset(&mutex->mutObj, 0, sizeof(mutex->mutObj));
         mutex->mutHndl = NULL;
         key = HwiP_disable(  );
-        mutex->used = (bool)false;
+        mutex->used = BFALSE;
         /* decrement the count */
-        if ( gOsalMutexAllocCnt > 0U )
+        if (0U < gOsalMutexAllocCnt)
         {
             gOsalMutexAllocCnt--;
         }
@@ -179,7 +179,7 @@ MutexP_Status MutexP_lock(MutexP_Handle handle,
     portBaseType xCreateResult;
 
     /* TODO check why this mutex->isRecursiveMutex needed, may be removed */
-    if ((NULL_PTR != mutex) && ((bool)true == mutex->used) && (1U == mutex->isRecursiveMutex))
+    if ((NULL_PTR != mutex) && (BTRUE == mutex->used) && (1U == mutex->isRecursiveMutex))
     {
         if ( 0 == Osal_isInISRContext() )
         {
@@ -223,7 +223,7 @@ MutexP_Status MutexP_unlock(MutexP_Handle handle)
     portBaseType xCreateResult;
     /* Note: timeout is not use */
 
-    if ((NULL_PTR != mutex) && ((bool)true == mutex->used) && (1U == mutex->isRecursiveMutex))
+    if ((NULL_PTR != mutex) && (BTRUE == mutex->used) && (1U == mutex->isRecursiveMutex))
     {
         if ( 0 == Osal_isInISRContext() )
         {

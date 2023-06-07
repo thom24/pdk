@@ -83,7 +83,7 @@
 #define heapBITS_PER_BYTE         ( ( size_t ) 8 )
 
 /* minimum alignment for heap allocations */
-#define heapBYTE_ALIGNMENT_MASK   (heapBYTE_ALIGNMENT-1U)
+#define heapBYTE_ALIGNMENT_MASK   (heapBYTE_ALIGNMENT - 1U)
 
 /* The size of the structure placed at the beginning of each allocated memory
  * block must by correctly byte aligned. */
@@ -129,7 +129,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
          * set.  The top bit of the block size member of the HeapBlockLink_t structure
          * is used to determine who owns the block - the application or the
          * kernel, so it must be free. */
-        if( 0U == ( xMallocSize & heap->xBlockAllocatedBit ) )
+        if( UFALSE == ( xMallocSize & heap->xBlockAllocatedBit ) )
         {
             /* The wanted size is increased so it can contain a HeapBlockLink_t
              * structure in addition to the requested amount of bytes. */
@@ -147,7 +147,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
                 }
             }
 
-            if( ( xMallocSize > ( size_t )0 ) && ( xMallocSize <= heap->xFreeBytesRemaining ) )
+            if( ( ( size_t )0 < xMallocSize ) && ( xMallocSize <= heap->xFreeBytesRemaining ) )
             {
                 /* Traverse the list from the start	(lowest address) block until
                  * one	of adequate size is found. */
@@ -181,7 +181,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
                          * cast is used to prevent byte alignment warnings from the
                          * compiler. */
                         pxNewBlockLink = ( HeapBlockLink_t * ) ( ( ( uint8_t * ) pxBlock ) + xMallocSize );
-                        DebugP_assert( 0U == ( ( ( size_t ) pxNewBlockLink ) & (heapBYTE_ALIGNMENT_MASK ) ) );
+                        DebugP_assert( UFALSE == ( ( ( size_t ) pxNewBlockLink ) & (heapBYTE_ALIGNMENT_MASK ) ) );
 
                         /* Calculate the sizes of two blocks split from the
                          * single block. */
@@ -209,7 +209,7 @@ void * pvHeapMalloc( StaticHeap_t *heap, size_t xWantedSize )
         }
     }
 
-    DebugP_assert( 0U == ( ( ( size_t ) pvReturn ) & ( size_t ) heapBYTE_ALIGNMENT_MASK ) );
+    DebugP_assert( UFALSE == ( ( ( size_t ) pvReturn ) & ( size_t ) heapBYTE_ALIGNMENT_MASK ) );
     return pvReturn;
 }
 

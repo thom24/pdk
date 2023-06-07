@@ -58,17 +58,17 @@ extern "C" {
                 NULL_PTR if it doesnt registered yet.
 *******************************************************************/
 HwiP_Handle EventCombinerP_getHwi(uint32_t groupNum) {
-    HwiP_Handle handle=NULL_PTR;
+    HwiP_Handle handle = NULL_PTR;
     uint32_t event,i;
 
-    for(i=0;i<OSAL_ECM_NUM_INTERRUPTS;i++) {
+    for(i = 0; i < OSAL_ECM_NUM_INTERRUPTS; i++) {
        /* Find out the event associated with the interrupt vector number */
-       event=HwiP_getEventId(i);
+       event = HwiP_getEventId(i);
 
        if(event == groupNum) {
            /* If the associated event is the ECM group (0-3),
             * find out the event associated with the interrupt vector number */
-           handle=HwiP_getHandle(i);
+           handle = HwiP_getHandle(i);
            break;
        }
     }
@@ -85,14 +85,14 @@ uint32_t EventCombinerP_getIntNum(uint32_t groupNum) {
 
     uint32_t event,i,intNum = CSL_INVALID_INTR_ID;
 
-    for(i=0;i<OSAL_ECM_NUM_INTERRUPTS;i++) {
+    for(i = 0; i < OSAL_ECM_NUM_INTERRUPTS; i++) {
        /* Find out the event associated with the interrupt vector number */
-       event=HwiP_getEventId(i);
+       event = HwiP_getEventId(i);
 
-       if(event==groupNum) {
+       if(event == groupNum) {
            /* If the associated event is the ECM group (0-3),
             * find out the event associated with the interrupt vector number */
-           intNum=i;
+           intNum = i;
            break;
        }
     }
@@ -185,7 +185,7 @@ int32_t EventCombinerP_clearEvent(uint32_t eventNum)
 
     Arguments: eventId: The event number(4-127) 
              eventIsrRoutine: The event's ISR routine
-             unmask: TRUE/FALSE: Mask/Unmask the event combiner flag
+             unmask: BTRUE/BFALSE: Mask/Unmask the event combiner flag
 
     Returns: OSAL_EVTCOMBINE_GROUPREG_SUCCESS 
 ****************************************************************************/
@@ -193,7 +193,7 @@ int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eve
 {
    CSL_IntcObj  intcObj;
    uint32_t     key;
-   CSL_IntcHandle handleTemp=(CSL_IntcHandle)&intcObj;
+   CSL_IntcHandle handleTemp = (CSL_IntcHandle)&intcObj;
    
    CSL_IntcEventHandlerRecord  evtHandler;
 
@@ -209,7 +209,7 @@ int32_t EventCombinerP_dispatchPlug(uint32_t eventId, EventCombinerP_FuncPtr eve
    evtHandler.handler = (CSL_IntcEventHandler)eventIsrRoutine;
    evtHandler.arg     = (void *)arg;
    (void)CSL_intcPlugEventHandler(handleTemp, &evtHandler);
-   if ((bool)true == unmask)
+   if (BTRUE == unmask)
    {
       (void)EventCombinerP_enableEvent(eventId);
    }

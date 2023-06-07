@@ -87,7 +87,7 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
     int ret;
 
     ret = sem_close((sem_t *)handle);
-    if (ret < 0) {
+    if (0 > ret) {
         DebugP_log1("sem_close for QNX Failed - errno-%d", errno);
         return SemaphoreP_FAILURE;
     }
@@ -126,7 +126,7 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
 
         ret = sem_timedwait((sem_t *)handle, &ts);
     }
-    if (ret < 0) {
+    if (0 > ret) {
         if (ETIMEDOUT == errno) {
                 return (SemaphoreP_TIMEOUT);
         } else {
@@ -147,7 +147,7 @@ SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
     int ret;
 
     ret = sem_post((sem_t *)handle);
-    if (ret < 0) {
+    if (0 > ret) {
         return (SemaphoreP_FAILURE);
     }
 

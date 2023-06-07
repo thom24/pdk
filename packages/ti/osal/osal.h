@@ -89,13 +89,13 @@ extern "C" {
  * @def osal_OK
  * OSAL operation successful
  *********************************************************************/
-#define osal_OK        (0)
+#define osal_OK                ((int32_t)(0))
 
 /*********************************************************************
  * @def osal_FAILURE
  * OSAL operation failed
  *********************************************************************/
-#define osal_FAILURE  (-(int32_t)(1))
+#define osal_FAILURE           (-(int32_t)(1))
 
 /*********************************************************************
  * @def osal_UNSUPPORTED
@@ -117,13 +117,13 @@ extern "C" {
  * @def osal_WAIT_FOREVER
  * OSAL timeout wait forever
  *********************************************************************/
-#define osal_WAIT_FOREVER (~((uint32_t)0U))
+#define osal_WAIT_FOREVER      (~((uint32_t)0U))
 
 /*********************************************************************
  * @def osal_NO_WAIT
  * OSAL timeout no wait
  *********************************************************************/
-#define osal_NO_WAIT       ((uint32_t)0U)
+#define osal_NO_WAIT           (uint32_t)0U)
 
 /*********************************************************************
  * @def OSAL_NONOS_SEMAPHOREP_SIZE_BYTES
@@ -133,7 +133,7 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
-#define  OSAL_NONOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 48U)
+#define  OSAL_NONOS_SEMAPHOREP_SIZE_BYTES             ((uint32_t) 48U)
 
 /*********************************************************************
  * @def OSAL_NONOS_HWI_SIZE_BYTES
@@ -142,7 +142,7 @@ extern "C" {
  * memory block for hwip creation when all the memory  (internal to osal)
  * are utilized
  *********************************************************************/
-#define  OSAL_NONOS_HWIP_SIZE_BYTES ((uint32_t) 48U)
+#define  OSAL_NONOS_HWIP_SIZE_BYTES                   ((uint32_t) 48U)
 
 /*********************************************************************
  * @def OSAL_FREERTOS_HWIP_C7X_SIZE_BYTES
@@ -151,7 +151,7 @@ extern "C" {
  * memory block for hwip creation when all the memory  (internal to osal)
  * are utilized
  *********************************************************************/
-#define  OSAL_FREERTOS_HWIP_C7X_SIZE_BYTES ((uint32_t) 56U)
+#define  OSAL_FREERTOS_HWIP_C7X_SIZE_BYTES            ((uint32_t) 56U)
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_HWIP_C7X_SIZE_BYTES
@@ -160,7 +160,7 @@ extern "C" {
  * memory block for hwip creation when all the memory  (internal to osal)
  * are utilized
  *********************************************************************/
-#define  OSAL_SAFERTOS_HWIP_C7X_SIZE_BYTES ((uint32_t) 56U)
+#define  OSAL_SAFERTOS_HWIP_C7X_SIZE_BYTES            ((uint32_t) 56U)
 
 /*********************************************************************
  * @def OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES
@@ -171,9 +171,9 @@ extern "C" {
  *
  *********************************************************************/
 #if defined (BUILD_C7X)
-#define  OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 176U)
+#define  OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES          ((uint32_t) 176U)
 #else
-#define  OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 96U)
+#define  OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES          ((uint32_t) 96U)
 #endif
 
 /*********************************************************************
@@ -184,7 +184,7 @@ extern "C" {
  * are utilized
  *
  *********************************************************************/
-#define  OSAL_FREERTOS_TASKP_SIZE_BYTES ((uint32_t) 128U)
+#define  OSAL_FREERTOS_TASKP_SIZE_BYTES               ((uint32_t) 128U)
 
 /*********************************************************************
  * @def OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES
@@ -195,9 +195,9 @@ extern "C" {
  *
  *********************************************************************/
 #if defined (BUILD_C7X)
-#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 304U)
+#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES          ((uint32_t) 304U)
 #else
-#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES ((uint32_t) 248U)
+#define  OSAL_SAFERTOS_SEMAPHOREP_SIZE_BYTES          ((uint32_t) 248U)
 #endif
 
 /*********************************************************************
@@ -209,9 +209,9 @@ extern "C" {
  *
  *********************************************************************/
 #if defined (BUILD_C7X)
-#define  OSAL_SAFERTOS_TASKP_SIZE_BYTES ((uint32_t) 320U)
+#define  OSAL_SAFERTOS_TASKP_SIZE_BYTES               ((uint32_t) 320U)
 #else
-#define  OSAL_SAFERTOS_TASKP_SIZE_BYTES ((uint32_t) 248U)
+#define  OSAL_SAFERTOS_TASKP_SIZE_BYTES               ((uint32_t) 248U)
 #endif
 
 /**
@@ -342,42 +342,42 @@ typedef struct Osal_HwAttrs_s
 /*!
  * bit map to set external clock in Osal_HwAttr default value
  */
-#define  OSAL_HWATTR_SET_EXT_CLK    (0x00000001U)
+#define  OSAL_HWATTR_SET_EXT_CLK                      (0x00000001U)
 
 /*!
  * bit map to set Event combiner interrupt numbers in the Osal_HwAttr
  */
-#define  OSAL_HWATTR_SET_ECM_INT      (0x00000002U)
+#define  OSAL_HWATTR_SET_ECM_INT                      (0x00000002U)
 
 /*!
  * bit map to set the hardware access type
  */
-#define OSAL_HWATTR_SET_HWACCESS_TYPE (0x00000004U)
+#define OSAL_HWATTR_SET_HWACCESS_TYPE                 (0x00000004U)
 
 /*!
  * bit map to set the osal_delay Timer base address
  */
-#define OSAL_HWATTR_SET_OSALDELAY_TIMER_BASE (0x00000008U)
+#define OSAL_HWATTR_SET_OSALDELAY_TIMER_BASE          (0x00000008U)
 
 /*!
  * bit map to set the extended SemaphoreP memory block for additional SemaphoreP needs
  */
-#define OSAL_HWATTR_SET_SEMP_EXT_BASE   (0x00000010U)
+#define OSAL_HWATTR_SET_SEMP_EXT_BASE                 (0x00000010U)
 
 /*!
  * bit map to set the extended HwiP memory block for additional HwiP needs
  */
-#define OSAL_HWATTR_SET_HWIP_EXT_BASE   (0x00000020U)
+#define OSAL_HWATTR_SET_HWIP_EXT_BASE                 (0x00000020U)
 
 /*!
  * bit map to set the CPU frequency
  */
-#define OSAL_HWATTR_SET_CPU_FREQ        (0x00000040U)
+#define OSAL_HWATTR_SET_CPU_FREQ                      (0x00000040U)
 
 /*!
  * bit map to set the target processor list to direct interrupts to specific core
  */
-#define OSAL_HWATTR_SET_TARG_PROC_LIST  (0x00000080)
+#define OSAL_HWATTR_SET_TARG_PROC_LIST                (0x00000080)
 /* @} */
 
 
@@ -473,7 +473,7 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
          uint8_t NegativeSizeIfPostulateFalse[(y) + 1U - (x)];         \
        } PostulateCheck;                                              \
    }                                                                   \
-   while ((bool)false)
+   while (BFALSE)
 
 /*!
  *  @brief  Function for initializing the OS / scheduler

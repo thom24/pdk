@@ -148,7 +148,7 @@ void HwiP_enableInterrupt(uint32_t interruptNum)
 
 int32_t HwiP_post(uint32_t interruptNum)
 {
-#if defined (SOC_AM65XX) || defined (SOC_AM572x) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)
+#if defined (SOC_AM65XX) || defined (SOC_AM572x) || defined (SOC_AM64X) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined (SOC_J784S4)
    return(OsalArch_postInterrupt(interruptNum));
 #else
    return (osal_UNSUPPORTED);
@@ -165,10 +165,10 @@ void HwiP_Params_init(HwiP_Params *params)
     params->arg      = 0;
     params->priority = HWIP_USE_DEFAULT_PRIORITY;
     params->evtId    = 0U;
-    params->enableIntr = TRUE;
-#if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
+    params->enableIntr = UTRUE;
+#if defined (__ARM_ARCH_7A__) || defined (__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     params->triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_LEVEL;
-#if !defined (SOC_AM437x) &&  !defined(SOC_AM335x) && !((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
+#if !defined (SOC_AM437x) &&  !defined (SOC_AM335x) && !((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     {
        Osal_HwAttrs hwAttrs;
 	   (void)Osal_getHwAttrs(&hwAttrs);

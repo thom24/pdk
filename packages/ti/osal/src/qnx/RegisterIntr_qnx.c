@@ -56,7 +56,7 @@ void Osal_RegisterInterrupt_initParams(OsalRegisterIntrParams_t *interruptRegPar
         interruptRegParams->corepacConfig.intVecNum = CSL_INVALID_VEC_ID;
         interruptRegParams->corepacConfig.isrRoutine = NULL;
         interruptRegParams->corepacConfig.arg = (uintptr_t)NULL;
-        interruptRegParams->corepacConfig.priority = 0x20U; /* Default */
+        interruptRegParams->corepacConfig.priority = 0x20U;  /* Default */
         interruptRegParams->corepacConfig.intAutoEnable = 0; /* Don't automatically re-enable interrupt */
 #if defined (__ARM_ARCH_7A__)
         interruptRegParams->corepacConfig.triggerSensitivity = 0x3U; /* interrupt edge triggered */
@@ -91,7 +91,7 @@ OsalInterruptRetCode_e Osal_RegisterInterrupt(OsalRegisterIntrParams_t *interrup
 
     /* Program the corepac interrupt */
     if( (NULL == interruptRegParams->corepacConfig.isrRoutine) ||
-        (interruptRegParams->corepacConfig.corepacEventNum < 0)) {
+        (0 > interruptRegParams->corepacConfig.corepacEventNum) ) {
         ret = OSAL_INT_ERR_INVALID_PARAMS;
     }
 

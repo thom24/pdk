@@ -99,11 +99,11 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
     key = HwiP_disable();
 
-     for (i = 0; i < maxMailbox; i++)
+     for (i = 0U; i < maxMailbox; i++)
      {
-         if ((bool)false == mailboxPool[i].used)
+         if (BFALSE == mailboxPool[i].used)
          {
-             mailboxPool[i].used = (bool)true;
+             mailboxPool[i].used = BTRUE;
              /* Update statistics */
              gOsalMailboxAllocCnt++;
              if (gOsalMailboxAllocCnt > gOsalMailboxPeak)
@@ -134,9 +134,9 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
         {
             /* If there was an error reset the mailbox object and return NULL. */
             key = HwiP_disable();
-            handle->used = (bool)false;
+            handle->used = BFALSE;
             /* Found the osal mailbox object to delete */
-            if (gOsalMailboxAllocCnt > 0U)
+            if (0U < gOsalMailboxAllocCnt)
             {
                 gOsalMailboxAllocCnt--;
             }
@@ -158,14 +158,14 @@ MailboxP_Status MailboxP_delete(MailboxP_Handle handle)
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;
 
-    if((NULL_PTR != mailbox) && ((bool)true == mailbox->used))
+    if((NULL_PTR != mailbox) && (BTRUE == mailbox->used))
     {
         vQueueDelete(mailbox->mailboxHndl);
 
         key = HwiP_disable();
-        mailbox->used = (bool)false;
+        mailbox->used = BFALSE;
         /* Found the osal mailbox object to delete */
-        if (gOsalMailboxAllocCnt > 0U)
+        if (0U < gOsalMailboxAllocCnt)
         {
             gOsalMailboxAllocCnt--;
         }

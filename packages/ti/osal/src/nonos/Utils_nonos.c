@@ -62,7 +62,7 @@ uint32_t  gOsalHwiAllocCnt   = 0U, gOsalHwiPeak = 0U;
 #define OSAL_CPU_FREQ_KHZ_DEFAULT (400000U)
 #endif
 
-volatile bool Osal_DebugP_Assert_Val=(bool)true;
+volatile bool Osal_DebugP_Assert_Val = BTRUE;
 
 /* Global Osal_HwAttr structure */
 Osal_HwAttrs  gOsal_HwAttrs = {
@@ -107,7 +107,7 @@ void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line)
     (void)line;
     
     if (0 != expression) {
-        while ((bool)true == Osal_DebugP_Assert_Val) {}
+        while (BTRUE == Osal_DebugP_Assert_Val) {}
     }
 }
 
@@ -115,7 +115,7 @@ Osal_ThreadType Osal_getThreadType(void)
 {
     Osal_ThreadType osalThreadType;
 #if defined (BUILD_MCU)    
-    if (true == Osal_isInAbortContext())
+    if (BTRUE == Osal_isInAbortContext())
     {
       osalThreadType = Osal_ThreadType_Abort;
     }

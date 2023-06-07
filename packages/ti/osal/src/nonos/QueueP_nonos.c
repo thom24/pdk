@@ -109,11 +109,11 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
 
     key = HwiP_disable();
 
-     for (i = 0; i < maxQueue; i++)
+     for (i = 0U; i < maxQueue; i++)
      {
-         if ((bool)false == queuePool[i].used)
+         if (BFALSE == queuePool[i].used)
          {
-             queuePool[i].used = (bool)true;
+             queuePool[i].used = BTRUE;
              /* Update statistics */
              gOsalQueueAllocCnt++;
              if (gOsalQueueAllocCnt > gOsalQueuePeak)
@@ -157,7 +157,7 @@ QueueP_Status QueueP_delete(QueueP_Handle handle)
     QueueP_freertos *queue = (QueueP_freertos *)handle;
     Queue_Elem      *q;
 
-    if((NULL_PTR != queue) && ((bool)true == queue->used))
+    if((NULL_PTR != queue) && (BTRUE == queue->used))
     {
         q = &queue->queueHndl;
 
@@ -165,9 +165,9 @@ QueueP_Status QueueP_delete(QueueP_Handle handle)
         q->prev = (Queue_Elem *)NULL_PTR;
 
         key = HwiP_disable();
-        queue->used = (bool)false;
+        queue->used = BFALSE;
         /* Found the osal queue object to delete */
-        if (gOsalQueueAllocCnt > 0U)
+        if (0U < gOsalQueueAllocCnt)
         {
             gOsalQueueAllocCnt--;
         }
@@ -196,11 +196,11 @@ void * QueueP_get(QueueP_Handle handle)
     
     key = HwiP_disable();
 
-    if ((bool)true == queue->used)
+    if (BTRUE == queue->used)
     { 
         q = &queue->queueHndl;
 
-        if ((bool)true != QueueP_isEmpty(handle))
+        if (BTRUE != QueueP_isEmpty(handle))
         {
             pElem = q->next;
 
@@ -231,7 +231,7 @@ QueueP_Status QueueP_put(QueueP_Handle handle, void *elem)
 
     key = HwiP_disable();
 
-    if((NULL_PTR != queue) && ((bool)true == queue->used) && (NULL_PTR != elem))
+    if((NULL_PTR != queue) && (BTRUE == queue->used) && (NULL_PTR != elem))
     {
         q = &queue->queueHndl;
 

@@ -53,7 +53,7 @@ void HwiP_Params_init(HwiP_Params *params)
     params->arg      = 0;
     params->priority = HWIP_USE_DEFAULT_PRIORITY;
     params->evtId    = 0U;
-    params->enableIntr = TRUE;
+    params->enableIntr = UTRUE;
 #if defined (__ARM_ARCH_7A__) || defined(__aarch64__) || ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
     params->triggerSensitivity = OSAL_ARM_GIC_TRIG_TYPE_LEVEL;
 #if !((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
@@ -128,7 +128,7 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
 
         if(HwiP_OK == status)
         {
-            if(gOsalHwiAllocCnt > 0U)
+            if(0U < gOsalHwiAllocCnt)
             {
                 gOsalHwiAllocCnt--;
             }

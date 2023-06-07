@@ -40,7 +40,7 @@
 #include <ti/osal/CycleprofilerP.h>
 
 
-#if defined _TMS320C6X && (defined(SOC_TPR12) || defined(SOC_AWR294X))
+#if defined _TMS320C6X && (defined (SOC_TPR12) || defined (SOC_AWR294X))
 #include <c6x.h>
 void CycleprofilerP_init(void)
 {

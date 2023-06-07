@@ -41,7 +41,7 @@
 #if defined(USE_BIOS)
 /* XDCtools Header files */
 #include <xdc/std.h>
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
 // workaround for A72 does not supported in SYS/BIOS yet
 #if defined (BUILD_C7X)
 #ifndef BARE_METAL
@@ -86,7 +86,7 @@
 
 #include "OSAL_board.h"
 
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
 #include <ti/drv/sciclient/sciclient.h>
 #endif
 /**********************************************************************
@@ -242,7 +242,7 @@ void C7x_ConfigureTimerOutput(void);
 #endif
 
 #undef  ENABLE_GET_TIME_TEST
-#if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_AM572x) || defined(SOC_K2G) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_J7200)|| defined(SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_AM572x) || defined (SOC_K2G) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_J7200)|| defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined (SOC_J784S4)
 #define ENABLE_GET_TIME_TEST     1
 #endif
 
@@ -326,8 +326,7 @@ void Board_initOSAL(void)
     Board_initCfg boardCfg;
     Board_STATUS  status;
 #if defined(evmK2E) || defined(evmC6678)
-    boardCfg = BOARD_INIT_MODULE_CLOCK |
-        BOARD_INIT_UART_STDIO;
+    boardCfg = BOARD_INIT_MODULE_CLOCK | BOARD_INIT_UART_STDIO;
 #else
     boardCfg = BOARD_INIT_PINMUX_CONFIG;
     /* For TPR12 AWR294X we dont do module clock init from app. This is done by
@@ -346,7 +345,7 @@ void Board_initOSAL(void)
 #endif
     status = Board_init(boardCfg);
 
-    if (status != BOARD_SOK)
+    if (BOARD_SOK != status)
     {
         OSAL_log(" Board_init() is not successful...unexpected results may happen \n");
     }
@@ -356,10 +355,10 @@ void Board_initOSAL(void)
 
 bool OSAL_startup_hook_test()
 {
-    bool retval = true;
+    bool retval = BTRUE;
     if( 0U != gStartupHookTestResult )
     {
-        retval = false;
+        retval = BFALSE;
     }
     return retval;
 }
@@ -413,7 +412,7 @@ bool OSAL_floating_point_test()
     TaskP_Params taskParams;
     SemaphoreP_Params semParams;
     TaskP_Handle taskHandle;
-    bool retval = false;
+    bool retval = BFALSE;
  
     /* Initialize and create Noise task and task faculties. */
     TaskP_Params_init(&taskParams);
@@ -426,7 +425,7 @@ bool OSAL_floating_point_test()
     floatSem = SemaphoreP_create(0U, &semParams);
  
     taskHandle = TaskP_create(&floatingNoiseTaskFxn, &taskParams);
-    if (taskHandle == NULL)
+    if (NULL == taskHandle)
     {
         OSAL_log("\n Floating Noise Task could not be created!!\n");
     }
@@ -450,7 +449,7 @@ bool OSAL_floating_point_test()
     /* Match the expected and the calculated value. if same return true, else return false. */
     if (calculated_float == expected_float)
     {
-        retval = true;
+        retval = BTRUE;
     }
  
     return retval;
@@ -465,11 +464,11 @@ volatile   uint64_t gTestlocalTimeout = 0x300000U;
 #if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)) && (!defined(BUILD_C66X))&&(!defined(BUILD_C7X))
 #define INT_NUM_IRQ 32U
 #define LOOP_CNT    100
-volatile uint64_t gFlagIRQ = 0;
+volatile uint64_t gFlagIRQ = 0U;
 
 void myIsrIRQ(uintptr_t arg)
 {
-    gFlagIRQ = 1;
+    gFlagIRQ = 1U;
     gTestlocalTimeout = 0x300000;
 }
 bool  OSAL_core_hwi_test()
@@ -479,38 +478,38 @@ bool  OSAL_core_hwi_test()
     HwiP_Handle handle;
     volatile int intCount = 0;
     int32_t ret;
-    bool test_pass=true;
+    bool test_pass = BTRUE;
 
     HwiP_Params_init(&hwiParams);
 
     OSAL_log("Creating Hwi myIsr \n");
     handle = HwiP_create(INT_NUM_IRQ, myIsrIRQ, &hwiParams);
-    if (handle == NULL_PTR) {
+    if (NULL_PTR == handle) {
       OSAL_log("Failed to create the HwiP handle \n");
-      test_pass = false;
+      test_pass = BFALSE;
     }
 
-    if (test_pass == true)
+    if (BTRUE == test_pass)
     {
-        while (intCount != LOOP_CNT)
+        while (LOOP_CNT != intCount)
         {
-            ret=HwiP_post(INT_NUM_IRQ);
+            ret = HwiP_post(INT_NUM_IRQ);
 
-            if(ret==osal_UNSUPPORTED)
+            if(osal_UNSUPPORTED == ret)
             { /* In case of unsupported SOC/error */
               OSAL_log("HwiP_post unsupported/failed!\n");
-              test_pass=false;
+              test_pass = BFALSE;
               break;
             }
 
             /* Wait for software timeout, ISR should hit
              * otherwise return the test as failed */
-            while (gTestlocalTimeout != 0U)
+            while (0U != gTestlocalTimeout)
             {
               gTestlocalTimeout--;
               if (gFlagIRQ)
               {
-                gFlagIRQ = 0;
+                gFlagIRQ = 0U;
                 intCount++;
                 break;
               }
@@ -518,20 +517,20 @@ bool  OSAL_core_hwi_test()
             /* Wait is over - did not get any interrupts posted/received
              * declare the test as fail
              */
-            if (gTestlocalTimeout == 0)
+            if (0U == gTestlocalTimeout)
             {
               OSAL_log("Failed to get interrupts \n");
-              test_pass = false;
+              test_pass = BFALSE;
               break;
             }
         }
 
         OSAL_log("%d IRQs received. Test over !\n",intCount);
         ret = HwiP_delete(handle);
-        if (ret != HwiP_OK)
+        if (HwiP_OK != ret)
         {
           OSAL_log(" Failed to delete HwiP handle \n");
-          test_pass= false;
+          test_pass = BFALSE;
         }
     }
 
@@ -541,7 +540,7 @@ bool  OSAL_core_hwi_test()
 
 bool OSAL_hwi_test()
 {
-  bool pass = true;
+  bool pass = BTRUE;
 #if (defined (SOC_AM65XX) || defined (SOC_AM64X) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)) && (!defined(BUILD_C66X))&&(!defined(BUILD_C7X))
   pass = OSAL_core_hwi_test();
 #endif
@@ -741,8 +740,8 @@ UT_Timer_Type_t  timer_type   =           UT_Timer_DMTIMER;
 #else
 #define      OSAL_GET_TIME_MAX_SAMPLES  (20U)
 #endif
-volatile uint32_t timerIsrCount = 0;
-volatile uint32_t timerIsr2Count = 0;
+volatile uint32_t timerIsrCount  = 0U;
+volatile uint32_t timerIsr2Count = 0U;
 
 #if defined(SIM_BUILD)
 #define OSAL_TIMER_TEST_MAX_INTERRUPTS      (10U)
@@ -795,7 +794,7 @@ bool Osal_delay_test(void)
    */
    /* Notice a '.' on terminal for every 1 second */
 
-   for (i=0; i<10;i++) {
+   for (i = 0; i < 10 ; i++) {
 #endif
       Osal_delay(OSAL_DELAY_TIME);
       OSAL_log(".");
@@ -804,7 +803,7 @@ bool Osal_delay_test(void)
 #endif
    OSAL_log("\n");
 
-  return(true);
+  return(BTRUE);
 }
 
 #if defined (ENABLE_GET_TIME_TEST)
@@ -814,7 +813,7 @@ bool Osal_delay_test(void)
 bool Osal_getTime_test(void)
 {
    int32_t      i;
-   bool         retVal   = true;
+   bool         retVal   = BTRUE;
 
    OSAL_log(" \n     time read in micro seconds is \n ");
    for (i = 0; i < OSAL_GET_TIME_MAX_SAMPLES; i++)
@@ -884,7 +883,7 @@ bool OSAL_timer_test()
 
     volatile      int32_t i;
     uint32_t      prevCount, ctrlBitmap = OSAL_HWATTR_SET_OSALDELAY_TIMER_BASE ;
-    bool          ret = true;
+    bool          ret = BTRUE;
     int32_t       osal_ret;
 
 #if (defined (SOC_AM437x) || defined (SOC_AM335x))
@@ -910,19 +909,19 @@ bool OSAL_timer_test()
     osal_ret = Osal_setHwAttrs(ctrlBitmap, &hwAttrs);
 
 #if defined (SOC_AM437x) || defined (SOC_AM335x)
-    if (osal_ret == osal_OK) {
-      ret = true;
+    if (osal_OK == osal_ret) {
+      ret = BTRUE;
     }
     else {
-      ret = false;
+      ret = BFALSE;
     }
 #else
-    if ((osal_ret == osal_UNSUPPORTED) ||
-       (osal_ret == osal_OK)) {
-      ret = true;
+    if ((osal_UNSUPPORTED == osal_ret) ||
+        (osal_OK          == osal_ret)) {
+      ret = BTRUE;
     }
     else {
-      ret = false;
+      ret = BFALSE;
     }
 #endif /* (SOC_AM437x) || defined (SOC_AM335x) */
 
@@ -934,7 +933,7 @@ bool OSAL_timer_test()
 
 #if defined(SOC_J721E) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #if defined(_TMS320C6X)
-	timerParams.eventId    = OSAL_TEST_TIMER_EVENT_NUM;
+	  timerParams.eventId    = OSAL_TEST_TIMER_EVENT_NUM;
     timerParams.intNum     = OSAL_TEST_TIMER_INT_NUM;
     OSAL_log("\n set intNum=%d, eventId=%d, id=%d,  \n", timerParams.intNum, timerParams.eventId, id);
 #endif
@@ -949,12 +948,12 @@ bool OSAL_timer_test()
 
 #if defined(_TMS320C6X)
 #if defined(SOC_TPR12) || defined(SOC_AWR294X)
-    timerParams.intNum     = 16;
+    timerParams.intNum     = 16U;
     OSAL_log("\n set intNum=%d, id=%d,  \n", timerParams.intNum, id);
 #endif
 #endif
 
-    if (timer_type == UT_Timer_TIMER64)
+    if (UT_Timer_TIMER64 == timer_type)
     {
       timerParams.timerMode = TimerP_Timer64Mode_UNCHAINED;
       timerParams.timerHalf = TimerP_Timer64Half_LOWER;
@@ -962,10 +961,10 @@ bool OSAL_timer_test()
     handle = TimerP_create(id, (TimerP_Fxn)&timerIsr, &timerParams);
 
     /* don't expect the handle to be null */
-    if (handle == NULL_PTR)
+    if (NULL_PTR == handle)
     {
       OSAL_log("\n Timer Create error \n");
-      ret = false;
+      ret = BFALSE;
     }
 
 #if defined(ENABLE_GET_TIME_TEST)
@@ -975,59 +974,59 @@ bool OSAL_timer_test()
 #if    TWO_TIMER_INTERRUPT_TEST
 
 #if (defined(_TMS320C6X) && (!defined(SOC_J721E)))
-    timerParams.intNum     = 14;
+    timerParams.intNum     = 14U;
 #endif
 
-    if (ret == true)  {
+    if (BTRUE == ret)  {
       handle2 = TimerP_create(OSAL_TEST_TIMER_ID2, (TimerP_Fxn)&timerIsr2, &timerParams);
       /* don't expect the handle to be null */
-      if (handle2 == NULL_PTR)
+      if (NULL_PTR == handle2)
       {
         OSAL_log("\n Timer Create error for handle2 \n");
-        ret = false;
+        ret = BFALSE;
       }
     }
 #endif
 
-    if (ret == true)
+    if (BTRUE == ret)
     {
       timerIsrCount = 0U;
       timerStatus = TimerP_start(handle);
 
-      if (timerStatus != TimerP_OK) {
+      if (TimerP_OK != timerStatus) {
         OSAL_log("Err: Coult not start the timer %d \n", id);
-        ret = false;
+        ret = BFALSE;
       }
 
 #if    TWO_TIMER_INTERRUPT_TEST
       timerIsr2Count = 0U;
       timerStatus = TimerP_start(handle2);
 
-      if (timerStatus != TimerP_OK) {
+      if (TimerP_OK != timerStatus) {
         OSAL_log("Err: Coult not start the timer %d \n", id + 1);
-        ret = false;
+        ret = BFALSE;
       }
 
-      while (1)
+      while (BTRUE)
       {
-        if (timerIsr2Count >= OSAL_TIMER_TEST_MAX_INTERRUPTS) {
+        if (OSAL_TIMER_TEST_MAX_INTERRUPTS <= timerIsr2Count) {
           timerStatus = TimerP_stop(handle2);
-          if (timerStatus != TimerP_OK) {
+          if (TimerP_OK != timerStatus) {
             OSAL_log("Err: Coult not stop the timer %d \n", id);
-            ret = false;
+            ret = BFALSE;
           }
           break;
         }
       }
 #endif
 
-      while (1)
+      while (BTRUE)
       {
-        if (timerIsrCount >= OSAL_TIMER_TEST_MAX_INTERRUPTS) {
+        if (OSAL_TIMER_TEST_MAX_INTERRUPTS <= timerIsrCount) {
           timerStatus = TimerP_stop(handle);
-          if (timerStatus != TimerP_OK) {
+          if (TimerP_OK != timerStatus) {
             OSAL_log("Err: Coult not stop the timer %d \n", id);
-            ret = false;
+            ret = BFALSE;
           }
 
           break;
@@ -1045,14 +1044,14 @@ bool OSAL_timer_test()
 
       /* Now check if timer ISR gets kicked in
        * timer ISR should not be kicked in */
-      if (ret == true)
+      if (BTRUE == ret)
       {
          for (i = 0; i < 50000; i++);
 
          if (prevCount != timerIsrCount)
          {
            OSAL_log(" Error: Timer appears to be not stopped via OSAL calls, val1 = %u and val2 = %u \n ", prevCount, timerIsrCount);
-           ret = false;
+           ret = BFALSE;
          }
          else
          {
@@ -1064,11 +1063,11 @@ bool OSAL_timer_test()
        }
     }
 
-    if (handle != NULL_PTR)
+    if (NULL_PTR != handle)
     {
-      if (TimerP_delete(handle) != TimerP_OK)
+      if (TimerP_OK != TimerP_delete(handle))
       {
-        ret = false;
+        ret = BFALSE;
       }
     }
 
@@ -1081,15 +1080,15 @@ bool OSAL_timer_test()
         timerParams.period     = OSAL_TEST_TIMER_PERIOD;
         handle = TimerP_create(TimerP_ANY, NULL, &timerParams);
         /* don't expect the handle to be null */
-        if (handle == NULL_PTR)
+        if (NULL_PTR == handle)
         {
             OSAL_log("\n Error: Timer Create failed for %d th time \n", i);
-            ret = false;
+            ret = BFALSE;
         }
-        if (TimerP_delete(handle) != TimerP_OK)
+        if (TimerP_OK != TimerP_delete(handle))
         {
             OSAL_log("\n Error: Timer Delete failed for %d th time \n", i);
-            ret = false;
+            ret = BFALSE;
         }
     }    
     return (ret);
@@ -1100,7 +1099,7 @@ bool OSAL_timer_test()
  */
 bool OSAL_clock_test()
 {
-    return true;
+    return BTRUE;
 }
 
 #ifdef MANUAL_CACHE_TEST
@@ -1138,17 +1137,17 @@ uint32_t ddr_buf[BUF_LEN];
 #endif
 void OSAL_cache_test_fill_buf(uint32_t *buf, uint32_t len,uint32_t pattern) {
   uint32_t i;
-  for(i=0;i<len;i++) {
-     buf[i]=pattern;
+  for(i = 0U; i < len; i++) {
+     buf[i] = pattern;
   }
 }
-/* Returns FALSE if all the buffer is not 'pattern'. This will read the contents though */
+/* Returns BFALSE if all the buffer is not 'pattern'. This will read the contents though */
 bool OSAL_cache_test_check_buf(uint32_t *buf, uint32_t len,uint32_t pattern) {
   uint32_t i;
-  bool match=TRUE;
-  for(i=0;i<len;i++) {
-     if(buf[i]!=pattern) {
-       match=FALSE;
+  bool match = BTRUE;
+  for (i = 0U; i < len; i++) {
+     if (buf[i] != pattern) {
+       match = BFALSE;
      }
   }
   return(match);
@@ -1158,7 +1157,7 @@ bool OSAL_cache_test_check_buf(uint32_t *buf, uint32_t len,uint32_t pattern) {
 bool OSAL_cache_test()
 {
 
-  bool match,res=TRUE;
+  bool match, res = BTRUE;
 #if defined (__ARM_ARCH_7A__)
   CSL_a15EnableCache();
 #elif defined(_TMS320C6X)
@@ -1202,8 +1201,8 @@ bool OSAL_cache_test()
 #endif
     OSAL_log("\nChecking if local CPU read fetches the 0x%x value updated by the alternate cpu core\n",ALTERNATE_CPU_WRITE_PATTERN_1);
     /* Now read the value on A15 now */
-    match=OSAL_cache_test_check_buf(ddr_buf,BUF_LEN,ALTERNATE_CPU_WRITE_PATTERN_1);
-    if(match==TRUE) {
+    match = OSAL_cache_test_check_buf(ddr_buf,BUF_LEN,ALTERNATE_CPU_WRITE_PATTERN_1);
+    if(BTRUE == match) {
         OSAL_log("\nPattern matched. OSAL_CacheInv() Test passed\n");
     } else {
         OSAL_log("\n OSAL_CacheInv() Test failed\n");
@@ -1229,8 +1228,8 @@ bool OSAL_cache_test()
     OSAL_log("\nNow write the pattern 0x%x on the alternate CPU physical memory window (a15/m4/c66x) \n",ALTERNATE_CPU_WRITE_PATTERN_2);
     /* Since, on this local cpu, we just wrote back cache() only, and not invalidated, the ALTERNATE_CPU_WRITE_PATTERN_2 wont be seen in the local cpu's cached memory
        Read Variable on A15 to ensure CPU Read(). The value should be the old LOCAL_CPU_WRITE_PATTERN_2.. and NOT the ALTERNATE_CPU_WRITE_PATTERN_2.. which the alternate CPU wrote. */
-    match=OSAL_cache_test_check_buf(ddr_buf,BUF_LEN,LOCAL_CPU_WRITE_PATTERN_2);
-    if(match==TRUE) {
+    match = OSAL_cache_test_check_buf(ddr_buf,BUF_LEN,LOCAL_CPU_WRITE_PATTERN_2);
+    if(BTRUE == match) {
         OSAL_log("\nPattern matched. OSAL_Cache_Writeback() Test passed\n");
      } else {
         OSAL_log("\n OSAL_Cache_Writeback() Test failed\n");
@@ -1263,8 +1262,8 @@ bool OSAL_cache_test()
 #endif
 
     /* Since, on local cpu, we not only wrote back cache but also invalidated it,the local cpu should be able the alternate pattern now */
-    match=OSAL_cache_test_check_buf(ddr_buf,BUF_LEN,ALTERNATE_CPU_WRITE_PATTERN_3);
-    if(match==TRUE) {
+    match = OSAL_cache_test_check_buf(ddr_buf,BUF_LEN,ALTERNATE_CPU_WRITE_PATTERN_3);
+    if(BTRUE == match) {
         OSAL_log("\nPattern matched. OSAL_Cache_WritebackInvalidate() Test passed\n");
      } else {
         OSAL_log("\nOSAL_Cache_WritebackInvalidate() Test failed\n");
@@ -1330,9 +1329,9 @@ bool OSAL_ExtBlock_test(void)
 
     /* Set the timer base for the osal delay */
     osal_ret = Osal_getHwAttrs(&hwAttrs);
-    if (osal_ret != osal_OK)
+    if (osal_OK != osal_ret)
     {
-        return (false);
+        return (BFALSE);
     }
 
     /* This API should return osal_OK for AM3/AM4 and return unsupported for other Socs */
@@ -1341,32 +1340,32 @@ bool OSAL_ExtBlock_test(void)
     hwAttrs.extHwiPBlock.size       = HWIP_BLOCK_SIZE;
     hwAttrs.extHwiPBlock.base       = (uintptr_t) &hwiPMemBlock[0];
     osal_ret = Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
-    if (osal_ret != osal_OK)
+    if (osal_OK != osal_ret)
     {
-        return (false);
+        return (BFALSE);
     }
 
     /* Default parameter initialization */
     SemaphoreP_Params_init(&semParams);
 
     /* create the semaphore block */
-    semHandle = SemaphoreP_create(0, &semParams);
-    if (semHandle == (SemaphoreP_Handle) NULL_PTR)
+    semHandle = SemaphoreP_create(0U, &semParams);
+    if ((SemaphoreP_Handle) NULL_PTR == semHandle)
     {
-        return (false);
+        return (BFALSE);
     }
 
     /* Verify the block created is in the extended memory block range */
     if (semHandle != (SemaphoreP_Handle) &semPMemBlock[0])
     {
-        return(false);
+        return(BFALSE);
     }
 
     /* delete the semaphore block */
     osal_ret = SemaphoreP_delete(semHandle);
-    if (osal_ret != (SemaphoreP_Status) SemaphoreP_OK)
+    if (SemaphoreP_OK != osal_ret)
     {
-        return (false);
+        return (BFALSE);
     }
 
 
@@ -1375,36 +1374,36 @@ bool OSAL_ExtBlock_test(void)
 
     /* create the hwi block */
     hwiHandle = HwiP_create(8U, (HwiP_Fxn)myIsr, &hwiParams);
-    if (hwiHandle == (HwiP_Handle) NULL_PTR)
+    if ((HwiP_Handle) NULL_PTR == hwiHandle)
     {
-        return (false);
+        return (BFALSE);
     }
 
     /* Verify the block created is in the extended memory block range */
     if (hwiHandle != (HwiP_Handle) &hwiPMemBlock[0])
     {
-        return(false);
+        return(BFALSE);
     }
 
     /* delete the hwi block */
     osal_ret = HwiP_delete(hwiHandle);
-    if (osal_ret != (HwiP_Status) HwiP_OK)
+    if ((HwiP_Status) HwiP_OK != osal_ret)
     {
-        return (false);
+        return (BFALSE);
     }
 
     /* Clear the extended block base for next tests */
     /* This API should return osal_OK for AM3/AM4 and return unsupported for other Socs */
     hwAttrs.extSemaphorePBlock.base = (uintptr_t) NULL_PTR;
-    hwAttrs.extSemaphorePBlock.size = 0;
-    hwAttrs.extHwiPBlock.size       = 0;
+    hwAttrs.extSemaphorePBlock.size = 0U;
+    hwAttrs.extHwiPBlock.size       = 0U;
     hwAttrs.extHwiPBlock.base       = (uintptr_t) NULL_PTR;
     osal_ret = Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
-    if (osal_ret != osal_OK)
+    if (osal_OK != osal_ret)
     {
-        return (false);
+        return (BFALSE);
     }
-    return(true);
+    return(BTRUE);
 
 }
 
@@ -1421,48 +1420,48 @@ bool OSAL_semaphore_test()
 
     /* Test 1: counting mode, no timeout */
     semParams.mode = SemaphoreP_Mode_COUNTING;
-    handle1 = SemaphoreP_create(0, &semParams);
-    if (handle1 == NULL_PTR)
+    handle1 = SemaphoreP_create(0U, &semParams);
+    if (NULL_PTR == handle1)
     {
-        return false;
+        return BFALSE;
     }
-    if (SemaphoreP_post(handle1) != SemaphoreP_OK)
+    if (SemaphoreP_OK != SemaphoreP_post(handle1))
     {
-        return false;
+        return BFALSE;
     }
-    if (SemaphoreP_pend(handle1, 0) != SemaphoreP_OK)
+    if (SemaphoreP_OK != SemaphoreP_pend(handle1, 0U))
     {
-        return false;
+        return BFALSE;
     }
 
     /* Test 2: binary mode, with timeout */
     semParams.mode = SemaphoreP_Mode_BINARY;
-    handle2 = SemaphoreP_create(1, &semParams);
-    if (handle2 == NULL_PTR)
+    handle2 = SemaphoreP_create(1U, &semParams);
+    if (NULL_PTR == handle2)
     {
-        return false;
+        return BFALSE;
     }
-    if (SemaphoreP_pend(handle2, 0) != SemaphoreP_OK)
+    if (SemaphoreP_OK != SemaphoreP_pend(handle2, 0U))
     {
-        return false;
+        return BFALSE;
     }
-    if (SemaphoreP_pend(handle2, 10) != SemaphoreP_TIMEOUT)
+    if (SemaphoreP_TIMEOUT != SemaphoreP_pend(handle2, 10U))
     {
-        return false;
+        return BFALSE;
     }
 
     /* SemaphoreP_delete is not available in Safertos */
-    if (SemaphoreP_delete(handle1) != SemaphoreP_OK)
+    if (SemaphoreP_OK != SemaphoreP_delete(handle1))
     {
-        return false;
+        return BFALSE;
     }
 
-    if (SemaphoreP_delete(handle2) != SemaphoreP_OK)
+    if (SemaphoreP_OK != SemaphoreP_delete(handle2))
     {
-        return false;
+        return BFALSE;
     }
 
-    return true;
+    return BTRUE;
 }
 
 #if !defined(BARE_METAL)
@@ -1490,43 +1489,43 @@ bool OSAL_queue_test()
 
     handle = QueueP_create(&params);
 
-    if (handle == NULL_PTR)
+    if (NULL_PTR == handle)
     {
         OSAL_log("Failed to create queue \n");
-        return false;
+        return BFALSE;
     }
 
-    for (i = 0; i < 10; i++)
+    for (i = 0U; i < 10U; i++)
     {
         buf[i].index = i;
         buf[i].pkt = NULL;
     }
 
     /* Test 1: queue push/pop test */
-    for (i = 0; i < 10; i++)
+    for (i = 0U; i < 10U; i++)
     {
         status = QueueP_put(handle, (QueueP_Elem *)&buf[i]);
         if(QueueP_OK != status)
         {
             OSAL_log("Failed to push to queue \n");
-            return false;
+            return BFALSE;
         }
     }
 
-    for (i = 0; i < 10; i++)
+    for (i = 0U; i < 10U; i++)
     {
         pBuf = (Test_Queue_Buf *)QueueP_get(handle);
 
-        if (pBuf == NULL_PTR)
+        if (NULL_PTR == pBuf)
         {
             OSAL_log("Failed to pop queue element %d \n", i);
-            return false;
+            return BFALSE;
         }
 
         if (pBuf->index != i)
         {
             OSAL_log("Pop element %d, but expect %d \n", pBuf->index, i);
-            return false;
+            return BFALSE;
 
         }
     }
@@ -1536,26 +1535,26 @@ bool OSAL_queue_test()
     if (QueueP_EMPTY != QueueP_isEmpty(handle))
     {
         OSAL_log("Empty queue check failed\n");
-        return false;
+        return BFALSE;
     }
 
     /* When called with an empty queue, QueueP_get should return a pointer to the queue itself */
     pBuf = QueueP_get(handle);
 
-    if (pBuf != NULL)
+    if (NULL != pBuf)
     {
         OSAL_log("Queue is still not empty with element %p, handle %p \n", pBuf, handle);
-        return false;
+        return BFALSE;
     }
 
     status = QueueP_delete(handle);
     if(QueueP_OK != status)
     {
         OSAL_log("Failed to delete queue \n");
-        return false;
+        return BFALSE;
     }
 
-    return true;
+    return BTRUE;
 }
 
 /*
@@ -1573,10 +1572,10 @@ bool OSAL_event_test()
 
     handle = EventP_create(&params);
 
-    if (handle == NULL_PTR)
+    if (NULL_PTR == handle)
     {
         OSAL_log("Failed to create event \n");
-        return false;
+        return BFALSE;
     }
 
     /* Test 1: event post test */
@@ -1585,7 +1584,7 @@ bool OSAL_event_test()
     if(EventP_OK != status)
     {
         OSAL_log("Failed to post an event \n");
-        return false;
+        return BFALSE;
     }
 
     /* Test 2: event wait with AND logic test */
@@ -1594,7 +1593,7 @@ bool OSAL_event_test()
     if((retEventMask & eventMask) != eventMask)
     {
         OSAL_log("EventP_wait returned %d, but expect %d \n", retEventMask, eventMask);
-        return false;
+        return BFALSE;
     }
 
     /* Test 3: EventP_wait Timeout test */
@@ -1605,7 +1604,7 @@ bool OSAL_event_test()
     {
         OSAL_log("EventP_wait Timeout test failed \n");
         OSAL_log("EventP_wait returned %d, but expect %d \n", retEventMask, 0);
-        return false;
+        return BFALSE;
     }
     
     /* Test 4: event wait with OR logic test */
@@ -1614,7 +1613,7 @@ bool OSAL_event_test()
     if((retEventMask & eventMask) != EventP_ID_04)
     {
         OSAL_log("EventP_wait returned %d, but expect %d \n", retEventMask, EventP_ID_04);
-        return false;
+        return BFALSE;
     }
 
     /* Test 5: event get posted events test */
@@ -1622,17 +1621,17 @@ bool OSAL_event_test()
     if((retEventMask & EventP_ID_05) != EventP_ID_05)
     {
         OSAL_log("EventP_getPostedEvents returned %d, but expect %d \n", retEventMask, EventP_ID_05);
-        return false;
+        return BFALSE;
     }
 
     status = EventP_delete(&handle);
     if(EventP_OK != status)
     {
         OSAL_log("Failed to delete event \n");
-        return false;
+        return BFALSE;
     }
 
-    return true;
+    return BTRUE;
 }
 
 /*
@@ -1653,7 +1652,7 @@ static uint8_t  gAppTskStackMutexTask[OSAL_MUTEX_TEST_NUM_TASKS][APP_TSK_STACK_M
 #endif
 
 uint32_t gCnt = 0U;
-bool gMutexTestStatus = TRUE;
+bool gMutexTestStatus = BTRUE;
 
 void mutexTestFxn(MutexP_Handle mutexHandle, SemaphoreP_Handle hDoneSem)
 {
@@ -1667,7 +1666,7 @@ void mutexTestFxn(MutexP_Handle mutexHandle, SemaphoreP_Handle hDoneSem)
         if(MutexP_OK != status)
         {
             OSAL_log("Failed to lock mutex \n");
-            gMutexTestStatus = FALSE;
+            gMutexTestStatus = BFALSE;
         }
 
         temp = ++gCnt;
@@ -1681,7 +1680,7 @@ void mutexTestFxn(MutexP_Handle mutexHandle, SemaphoreP_Handle hDoneSem)
         if(MutexP_OK != status)
         {
             OSAL_log("Failed to unlock mutex \n");
-            gMutexTestStatus = FALSE;
+            gMutexTestStatus = BFALSE;
         }
     }
     
@@ -1701,10 +1700,10 @@ bool OSAL_mutex_test()
     MutexP_Handle mutexHandle;
 
     mutexHandle = MutexP_create(&mutexObj);
-    if (mutexHandle == NULL_PTR)
+    if (NULL_PTR == mutexHandle)
     {
         OSAL_log("Failed to create mutex \n");
-        return false;
+        return BFALSE;
     }
 
     /* Create semaphore to signal completion of mutex tasks */
@@ -1731,12 +1730,12 @@ bool OSAL_mutex_test()
         SemaphoreP_pend(hDoneSem, SemaphoreP_WAIT_FOREVER);
     }
 
-    if(gCnt != (OSAL_MUTEX_TEST_NUM_TASKS * OSAL_MUTEX_TEST_ITERATIONS))
+    if((OSAL_MUTEX_TEST_NUM_TASKS * OSAL_MUTEX_TEST_ITERATIONS) != gCnt)
     {
         OSAL_log("Mutex Lock Test Failed.\n Expected Count = %d. Actual Count = %d. \n",
                     (uint32_t)(OSAL_MUTEX_TEST_NUM_TASKS * OSAL_MUTEX_TEST_ITERATIONS),
                     (uint32_t)gCnt);
-        gMutexTestStatus = FALSE;
+        gMutexTestStatus = BFALSE;
     }
     
     Osal_delay(OSAL_DELAY_TIME);
@@ -1754,7 +1753,7 @@ bool OSAL_mutex_test()
     if(MutexP_OK != status)
     {
         OSAL_log("Failed to delete mutex \n");
-        gMutexTestStatus = FALSE;
+        gMutexTestStatus = BFALSE;
     }
 
     return gMutexTestStatus;
@@ -1785,7 +1784,7 @@ static bool loadPrint()
     {
         status += LoadP_getTaskLoad(hLoadTestTask[i], &loadStatsTask[i]);
 
-        if(loadStatsTask[i].percentLoad > 0U)
+        if(0U < loadStatsTask[i].percentLoad)
         {
             OSAL_log("    %s - Load = %d%% \n", loadStatsTask[i].name, loadStatsTask[i].percentLoad);
         }
@@ -1798,21 +1797,21 @@ static bool loadPrint()
     if(LoadP_OK != status)
     {
         OSAL_log("Failed to get tasks load measurement \n");
-        return false;
+        return BFALSE;
     }
 
     /* Query CPU Load */
     cpuLoad = LoadP_getCPULoad();
     OSAL_log("\n    CPU Load = %d%% \n\n", cpuLoad);
 
-    return true;
+    return BTRUE;
 }
 
 static void loadPrintFxn(SemaphoreP_Handle hDoneSem, void *arg1)
 {
-    uint32_t    printIntervalInMs = 500;
+    uint32_t    printIntervalInMs = 500U;
 
-    while(1)
+    while(BTRUE)
     {
         TaskP_sleepInMsecs(printIntervalInMs);
         
@@ -1832,7 +1831,7 @@ void loadTestFxn(SemaphoreP_Handle hSignalSem, void *arg1)
     /* Wait for signal to start */
     SemaphoreP_pend(hSignalSem, SemaphoreP_WAIT_FOREVER);
 
-    while(1)
+    while(BTRUE)
     {
         /* Check for signal to exit */
         if(SemaphoreP_OK == SemaphoreP_pend(hSignalSem, SemaphoreP_NO_WAIT))
@@ -1852,7 +1851,7 @@ bool OSAL_load_test()
     TaskP_Handle        hPrintTask;
     uint32_t            i; 
     char *taskNameStr[] = { "Task A", "Task B", "Task C"};
-    bool status         = true;
+    bool status         = BTRUE;
 
     /* Create semaphore to signal completion of load tasks */
     SemaphoreP_Params_init(&semPrms);
@@ -1897,7 +1896,7 @@ bool OSAL_load_test()
      * =============================================================================*/
     {
         uint32_t waitTimeInMsec[OSAL_LOAD_TEST_NUM_TASKS] = {2000, 1000, 500};
-        uint32_t idleTimeInMsec = 3500;
+        uint32_t idleTimeInMsec = 3500U;
         
         for(i = 0U; i < OSAL_LOAD_TEST_NUM_TASKS; i++)
         {
@@ -1944,7 +1943,7 @@ bool OSAL_load_test()
 volatile bool gFlagSwi;
 void mySwiFxn(uintptr_t arg0, uintptr_t arg1)
 {
-    gFlagSwi = 1U;
+    gFlagSwi = BTRUE;
 }
 
 bool OSAL_swi_test()
@@ -1952,55 +1951,55 @@ bool OSAL_swi_test()
     SwiP_Handle handle;
     SwiP_Params swiParams;
     SwiP_Status status;
-    bool        retVal = true;
+    bool        retVal = BTRUE;
 
     SwiP_Params_init(&swiParams);
     handle = SwiP_create((SwiP_Fxn)&mySwiFxn, &swiParams);
-    if (handle == NULL_PTR)
+    if (NULL_PTR == handle)
     {
         OSAL_log("Failed to create software interrupt \n");
-        retVal = false;
+        retVal = BFALSE;
     }
 
-    if (retVal == true)
+    if (BTRUE == retVal)
     {
-        gFlagSwi = 0;
+        gFlagSwi = BFALSE;
         status = SwiP_post(handle);
         if (status != SwiP_OK)
         {
             OSAL_log("Failed to post software interrupt \n");
-            retVal = false;
+            retVal = BFALSE;
         }
     }
 
-    if (retVal == true)
+    if (BTRUE == retVal)
     {
         gTestlocalTimeout = 0x300000U;
-        while (gTestlocalTimeout != 0U)
+        while (0U != gTestlocalTimeout)
         {
             gTestlocalTimeout--;
             if (gFlagSwi)
             {
-                gFlagSwi = 0;
-                retVal = true;
+                gFlagSwi = BFALSE;
+                retVal = BTRUE;
                 break;
             }
         }
 
-        if (gTestlocalTimeout == 0)
+        if (0U == gTestlocalTimeout)
         {
             OSAL_log("Failed to get software interrupt \n");
-            retVal = false;
+            retVal = BFALSE;
         }
     }
 
-    if (retVal == true)
+    if (BTRUE == retVal)
     {
         status = SwiP_delete(&handle);
-        if (status != SwiP_OK)
+        if (SwiP_OK != status)
         {
             OSAL_log("Failed to delete software interrupt \n");
-            retVal = false;
+            retVal = BFALSE;
         }
     }
 
@@ -2011,7 +2010,7 @@ bool OSAL_swi_test()
 #if ENABLE_DEBUG_LOG_TEST
 bool OSAL_log_test()
 {
-    bool        retVal = true;
+    bool        retVal = BTRUE;
 
     OSAL_log("BegugP Log test starts!\n");
 
@@ -2064,7 +2063,7 @@ bool OSAL_task_sleep_test(void)
      */
     start_time_nticks = OSAL_get_ticks();
 
-    for (i=0; i < OSAL_TASKP_TEST_ITERATION; i++)
+    for (i = 0; i < OSAL_TASKP_TEST_ITERATION; i++)
     {
        TaskP_sleep(OSAL_TASKP_TEST_TICKS);
     }
@@ -2073,7 +2072,7 @@ bool OSAL_task_sleep_test(void)
 
     start_time_nticks = OSAL_get_ticks();
 
-    for (i=0; i < OSAL_TASKP_TEST_ITERATION; i++)
+    for (i = 0; i < OSAL_TASKP_TEST_ITERATION; i++)
     {
        TaskP_sleepInMsecs(OSAL_TASKP_TEST_1MS);
     }
@@ -2088,7 +2087,7 @@ bool OSAL_task_sleep_test(void)
                Clock_tickSource = %d ", Clock_tickPeriod, Clock_tickSource);
 #endif
 
-    return (true);
+    return (BTRUE);
 
 }
 #endif
@@ -2098,64 +2097,64 @@ bool OSAL_mempry_test()
 {
     void *memPtr1, *memPtr2, *memPtr[5];
     uint32_t align;
-    bool retVal = true;
+    bool retVal = BTRUE;
     uint32_t i;
 
     /* Test1: Allocate 16 bytes aligned memory. */
-    align = 16;
-    memPtr1 = MemoryP_ctrlAlloc(100, align);
-    if (memPtr1 != NULL)
+    align = 16U;
+    memPtr1 = MemoryP_ctrlAlloc(100U, align);
+    if (NULL != memPtr1)
     {
         /* Check if teh allocated mempry is 16 bytes aligned. */
-        if (((uintptr_t)memPtr1 & (align - 1)) != 0)
+        if (0U != ((uintptr_t)memPtr1 & (align - 1)))
         {
-            retVal = false;
+            retVal = BFALSE;
         }
     }
     else
     {
-        retVal = false;
+        retVal = BFALSE;
     }
 
     /* Test2: Allocate 64 bytes aligned memory. */
-    align = 64;
-    memPtr2 = MemoryP_ctrlAlloc(200, align);
-    if (memPtr2 != NULL)
+    align = 64U;
+    memPtr2 = MemoryP_ctrlAlloc(200U, align);
+    if (NULL != memPtr2)
     {
         /* Check if teh allocated mempry is 16 bytes aligned. */
-        if (((uintptr_t)memPtr2 & (align - 1)) != 0)
+        if (0U != ((uintptr_t)memPtr2 & (align - 1)))
         {
-            retVal = false;
+            retVal = BFALSE;
         }
     }
     else
     {
-        retVal = false;
+        retVal = BFALSE;
     }
 
-    if (memPtr1 != NULL)
+    if (NULL != memPtr1)
     {
-        MemoryP_ctrlFree(memPtr1, 100);
+        MemoryP_ctrlFree(memPtr1, 100U);
     }
-    if (memPtr2 != NULL)
+    if (NULL != memPtr2)
     {
-        MemoryP_ctrlFree(memPtr2, 200);
+        MemoryP_ctrlFree(memPtr2, 200U);
     }
 
     /* Test2: check memory leak
      * multiple iteration of alloc and free to give same mem pointer.
      */
-    for (i=0; i<5; i++)
+    for (i = 0U; i < 5U; i++)
     {
-        align = 64;
-        memPtr[i] = MemoryP_ctrlAlloc(200, align);
-        MemoryP_ctrlFree(memPtr[i], 200);
+        align = 64U;
+        memPtr[i] = MemoryP_ctrlAlloc(200U, align);
+        MemoryP_ctrlFree(memPtr[i], 200U);
     }
-    for (i=1; i<5; i++)
+    for (i = 1U; i < 5U; i++)
     {
         if (memPtr[i] != memPtr[i-1])
         {
-            retVal = false;
+            retVal = BFALSE;
             break;
         }
     }
@@ -2165,8 +2164,8 @@ bool OSAL_mempry_test()
 
 bool OSAL_TimerP_ANY_test( void )
 {
-	uint32_t looper, numRestricted = 0;
-	uint32_t result=true, availMask=TIMERP_AVAILABLE_MASK, availableTimers = 0;
+	uint32_t looper, numRestricted = 0U;
+	uint32_t result = UTRUE, availMask = TIMERP_AVAILABLE_MASK, availableTimers = 0U;
 	TimerP_Params params;
 	TimerP_Handle handle[TimerP_numTimerDevices];
 	TimerP_Status timerStatus = TimerP_FAILURE;
@@ -2188,7 +2187,7 @@ bool OSAL_TimerP_ANY_test( void )
 	coreId = Osal_getCoreId();
 	if ((OSAL_MCU1_0 == coreId) || (OSAL_MCU1_1 == coreId))
 	{
-		for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+		for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
         {
             if(OSAL_INVALID_CORE_ID != Osal_mcuRestrictedTimerID[looper].coreId)
             {
@@ -2198,7 +2197,7 @@ bool OSAL_TimerP_ANY_test( void )
 	}
 	else
 	{
-		for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+		for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
         {
             if(OSAL_INVALID_CORE_ID != Osal_mainMcuRestrictedTimerID[looper].coreId)
             {
@@ -2208,7 +2207,7 @@ bool OSAL_TimerP_ANY_test( void )
 	}
 #elif defined (BUILD_C7X)
     extern Osal_timerReserved Osal_c7xRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
-    for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
     {
         if(OSAL_INVALID_CORE_ID != Osal_c7xRestrictedTimerID[looper].coreId)
         {
@@ -2217,7 +2216,7 @@ bool OSAL_TimerP_ANY_test( void )
     }
 #elif defined (BUILD_C66X)
 	extern Osal_timerReserved Osal_c66RestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
-    for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
     {
         if(OSAL_INVALID_CORE_ID != Osal_c66RestrictedTimerID[looper].coreId)
         {
@@ -2226,7 +2225,7 @@ bool OSAL_TimerP_ANY_test( void )
     }
 #elif defined (BUILD_MPU)
 	extern Osal_timerReserved Osal_mpuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
-    for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
     {
         if(OSAL_INVALID_CORE_ID != Osal_mpuRestrictedTimerID[looper].coreId)
         {
@@ -2236,38 +2235,38 @@ bool OSAL_TimerP_ANY_test( void )
 #endif
 	OSAL_log(" Timers available for TimerP_ANY: %d, Restricted Timers: %d\n", availableTimers, numRestricted);
 	/* Create as many timers, as are expected to get created succesfully. */
-	for(looper = 0; looper < availableTimers - numRestricted; looper++)
+	for(looper = 0U; looper < availableTimers - numRestricted; looper++)
 	{
 		TimerP_Params_init(&params);
 		params.startMode = TimerP_StartMode_USER;
 		handle[looper] = TimerP_create(TimerP_ANY, NULL, &params);
 		if (NULL == handle[looper])
 		{
-		    result = false;
+		    result = UFALSE;
 		    break;
 		}
 	}
 	OSAL_log(" Created %d Timers...\n", looper);
 
 	/* This TimerP_create should fail, as not more timers are available to get created. */
-	if ( true == result )
+	if ( UTRUE == result )
 	{
 		handle[looper] = TimerP_create(TimerP_ANY, NULL, NULL);
 		if (NULL != handle[looper])
 		{
-		    result = false;
+		    result = UFALSE;
 		}
 	}
 	/* Delete all create timers. */
-	if ( true == result )
+	if ( UTRUE == result )
 	{
-		for(looper = 0; looper < availableTimers - numRestricted; looper++)
+		for(looper = 0U; looper < availableTimers - numRestricted; looper++)
 		{
 		    timerStatus = TimerP_delete(handle[looper]);
 		    if (TimerP_FAILURE == timerStatus)
 		    {
                 OSAL_log("[ERROR]: TimerP_create was supposed to fail, but it went through!!!");
-		        result = false;
+		        result = UFALSE;
 		        break;
 		    }
 		}
@@ -2285,12 +2284,12 @@ void osal_test()
 void osal_test(void *arg0, void *arg1)
 #endif
 {
-    bool testFail = false;
+    bool testFail = BFALSE;
     Osal_StaticMemStatus pMemStats;
 
     Board_initOSAL();
 
-    if (true == OSAL_startup_hook_test())
+    if (BTRUE == OSAL_startup_hook_test())
     {
         OSAL_log("\n StartuphookP test has passed. \n");
     }
@@ -2313,20 +2312,20 @@ void osal_test(void *arg0, void *arg1)
 #endif
 
     OSAL_log(" OSAL Test Starting...\n Takes about 30 seconds ...\n"); 
-    if(OSAL_TimerP_ANY_test() == true)
+    if(BTRUE == OSAL_TimerP_ANY_test())
     {
         OSAL_log("\n TimerP_ANY test has passed. \n");
     }
     else
     {
         OSAL_log("\n TimerP_ANY test has failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #if defined(BARE_METAL)
     /* No TASKP test for BAREmetal */
 #else
     /* TASK Sleep APIs test for RTOS */
-    if (OSAL_task_sleep_test() == true)
+    if (BTRUE == OSAL_task_sleep_test())
     {
         OSAL_log("\n TaskP tests have passed. \n");
     }
@@ -2336,25 +2335,25 @@ void osal_test(void *arg0, void *arg1)
     }
 #endif
 
-    if(OSAL_hwi_test() == true)
+    if(BTRUE == OSAL_hwi_test())
     {
         OSAL_log("\n HWI tests have passed. \n");
     }
     else
     {
         OSAL_log("\n HWI tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 
 #ifdef ENABLE_TIMER_TEST
-    if(OSAL_timer_test() == true)
+    if(BTRUE == OSAL_timer_test())
     {
         OSAL_log("\n Timer tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Timer tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif
 
@@ -2362,61 +2361,61 @@ void osal_test(void *arg0, void *arg1)
 #if !defined(SOC_TDA2XX) && !defined(SOC_TDA2PX) && !defined(SOC_TDA2EX) && !defined(SOC_TDA3XX)
   OSAL_log("\n Running Osal_Delay test:");
 
-  if(Osal_delay_test() == true)
+  if(BTRUE == Osal_delay_test())
   {
       OSAL_log("\n Osal_Delay  tests have passed. \n");
   }
   else
   {
       OSAL_log("\n Osal_Delay  tests have failed. \n");
-      testFail = true;
+      testFail = BTRUE;
   }
 #endif
 
 #ifdef ENABLE_GET_TIME_TEST
     OSAL_log("\n Running Osal_getTime test:");
 
-    if(Osal_getTime_test() == true)
+    if(BTRUE == Osal_getTime_test())
     {
         OSAL_log("\n Osal_getTime  tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Osal_getTime  tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif
 
-    if(OSAL_clock_test() == true)
+    if(BTRUE == OSAL_clock_test())
     {
         OSAL_log("\n Clock tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Clock tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 
-    if(OSAL_semaphore_test() == true)
+    if(BTRUE == OSAL_semaphore_test())
     {
         OSAL_log("\n Semaphore tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Semaphore tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 
 #ifdef ENABLE_EXT_BLOCK_TEST
 
-    if(OSAL_ExtBlock_test() == true)
+    if(BTRUE == OSAL_ExtBlock_test())
     {
         OSAL_log("\n Extended Memory Block tests for HwiP/SwiP have passed. \n");
     }
     else
     {
         OSAL_log("\n Extended Memory Block tests for HwiP/SwiP have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif
 
@@ -2426,7 +2425,7 @@ void osal_test(void *arg0, void *arg1)
     #endif
 
     /* Now print the static memory statistics */
-    if(Osal_getStaticMemStatus(&pMemStats) == osal_OK)
+    if(osal_OK == Osal_getStaticMemStatus(&pMemStats))
     {
        OSAL_log("\n Semaphore Statistics:     \
                  \n  PeakSemObjs    = %u,     \
@@ -2455,104 +2454,104 @@ void osal_test(void *arg0, void *arg1)
     }
     else
     {
-      testFail = true;
+      testFail = BTRUE;
       OSAL_log("\n Memory Statistics query failed \n");
     }
 
 #if defined(USE_BIOS)
-    if(OSAL_swi_test() == true)
+    if(BTRUE == OSAL_swi_test())
     {
         OSAL_log("\n SWI tests have passed. \n");
     }
     else
     {
         OSAL_log("\n SWI tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif
 
 #if !defined(BARE_METAL)
     /* No QueueP,EventP,MutexP tests for Baremetal */
-    if(OSAL_queue_test() == true)
+    if(BTRUE == OSAL_queue_test())
     {
         OSAL_log("\n Queue tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Queue tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 
-    if(OSAL_event_test() == true)
+    if(BTRUE == OSAL_event_test())
     {
         OSAL_log("\n Event tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Event tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 
-    if(OSAL_mutex_test() == true)
+    if(BTRUE == OSAL_mutex_test())
     {
         OSAL_log("\n Mutex tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Mutex tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif /* #if !defined(BARE_METAL) && !defined (SAFERTOS) */
 
 #if defined(FREERTOS)    
     OSAL_log(" \n OSAL Load Test Starting...\n Takes about 10 seconds ...\n\n"); 
-    if(OSAL_load_test() == true)
+    if(BTRUE == OSAL_load_test())
     {
         OSAL_log("\n Load tests have passed. \n");
     }
     else
     {
         OSAL_log("\n Load tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif /* #if defined(FREERTOS) */
 
 #if ENABLE_DEBUG_LOG_TEST
-    if(OSAL_log_test() == true)
+    if(BTRUE == OSAL_log_test())
     {
         OSAL_log("\n DebugP Log tests have passed. \n");
     }
     else
     {
         OSAL_log("\n DebugP Log tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif
 
 #if defined(FREERTOS)
-    if(OSAL_mempry_test() == true)
+    if(BTRUE == OSAL_mempry_test())
     {
         OSAL_log("\n MemoryP Log tests have passed. \n");
     }
     else
     {
         OSAL_log("\n MemoryP Log tests have failed. \n");
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif
 
 #if !defined (BARE_METAL)
-    if (OSAL_floating_point_test() == true)
+    if (BTRUE == OSAL_floating_point_test())
     {
         OSAL_log("\n Floating point tests have passed. \n");
     }
     else
     {
-        testFail = true;
+        testFail = BTRUE;
     }
 #endif
 
-    if(testFail == true)
+    if(BTRUE == testFail)
     {
         OSAL_log("\n Some tests have failed. \n");
     }
@@ -2562,7 +2561,7 @@ void osal_test(void *arg0, void *arg1)
     }
 
 #ifdef BARE_METAL
-    while (1)
+    while (BTRUE)
     {
     }
 #endif
@@ -2586,13 +2585,13 @@ void C7x_ConfigureTimerOutput()
     uint32_t corepackEvent = OSAL_TEST_TIMER_INT_NUM;
 
     /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.secureClaimEnable = UFALSE;
+    cfgClec.evtSendEnable     = UTRUE;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0;
+    cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = corepackEvent;
     CSL_clecClearEvent(clecBaseAddr, input);
-    CSL_clecConfigEventLevel(clecBaseAddr, input, 0); /* configure interrupt as pulse */
+    CSL_clecConfigEventLevel(clecBaseAddr, input, 0U); /* configure interrupt as pulse */
     CSL_clecConfigEvent(clecBaseAddr, input, &cfgClec);
 
 }
@@ -2666,7 +2665,7 @@ int main(void)
      * For AM65XX TPR12 and J7 the common RTSC cfg file is used and hence there is
      * no test application specific task is created in teh RTSC cfg file
      */
-#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_TPR12) || defined (SOC_AWR294X)|| defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_TPR12) || defined (SOC_AWR294X)|| defined (SOC_AM64X) || defined (SOC_J721S2) || defined (SOC_J784S4)
     TaskP_Params taskParams;
 
 #if defined(USE_BIOS)

@@ -56,9 +56,9 @@ typedef struct Arch_TimerP_Struct_s
 
 /* Local hwi structures */
 static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI] = {{0}};
-static bool gFirstTime = (bool)true;
+static bool gFirstTime = BTRUE;
 
-static bool gTimestampFirstTime = (bool)true;
+static bool gTimestampFirstTime = BTRUE;
 static TimeStamp_Struct gTimeStamp = {0U};
 static uintptr_t gTimerBaseAddr;
 static uint32_t  gTimerId;
@@ -160,8 +160,8 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
 
     key = OsalArch_globalDisableInterrupt();
     for (i = 0U; i < maxHwi; i++) {
-        if (FALSE == hwiPool[i].used) {
-            hwiPool[i].used = TRUE;
+        if (UFALSE == hwiPool[i].used) {
+            hwiPool[i].used = UTRUE;
             break;
         }
     }
@@ -178,9 +178,9 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
 
     if ((HwiP_Handle) NULL_PTR != retHandle)
     {
-        if (TRUE == gFirstTime)  {
+        if (BTRUE == gFirstTime)  {
           Intc_Init();
-          gFirstTime = FALSE;
+          gFirstTime = BFALSE;
         }
 
         /* Enable the interrupt */
@@ -193,7 +193,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
         Intc_IntPrioritySet((uint16_t)interruptNum, params->priority, 0);
 
         /* Enabling the interrupt if configured */
-        if (TRUE == params->enableIntr)
+        if (UTRUE == params->enableIntr)
         {
             /* Enabling the interrupt in INTC. */
             OsalArch_enableInterrupt(interruptNum);
@@ -216,9 +216,9 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    if (TRUE == hwi_hnd->used)
+    if (UTRUE == hwi_hnd->used)
     {
-        hwi_hnd->used = FALSE;
+        hwi_hnd->used = UFALSE;
     }
     else
     {
@@ -252,10 +252,10 @@ void    osalArch_TimestampInit(void)
     TimerP_Handle  timerHandle;
     uint32_t       timerId;
 
-    if (TRUE == gTimestampFirstTime)
+    if (BTRUE == gTimestampFirstTime)
     {
         /* One time initialization is done */
-        gTimestampFirstTime = FALSE;
+        gTimestampFirstTime = BFALSE;
 
         /* Initialize the parameters */
         TimerP_Params_init(&timerParams);

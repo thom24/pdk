@@ -76,7 +76,7 @@ extern uint32_t  gOsalHwiAllocCnt, gOsalHwiPeak;
  */
 typedef struct HwiP_freeRtos_s {
     bool              used;
-    HwiC7x_Struct        hwi;
+    HwiC7x_Struct      hwi;
 } HwiP_freeRtos;
 
 /* global pool of statically allocated semaphore pools */
@@ -128,7 +128,7 @@ HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if ((uintptr_t)0U != gOsal_HwAttrs.extHwiPBlock.base)
+    if ((uintptr_t)(0U) != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_freeRtos *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -152,9 +152,9 @@ HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn,
 
     for (i = 0U; i < maxHwi; i++)
     {
-        if ((bool)false == hwiPool[i].used)
+        if (BFALSE == hwiPool[i].used)
         {
-            hwiPool[i].used = (bool)true;
+            hwiPool[i].used = BTRUE;
             /* Update statistics */
             gOsalHwiAllocCnt++;
             if (gOsalHwiAllocCnt > gOsalHwiPeak)
@@ -196,13 +196,13 @@ HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn,
             }
 
             hwiParams.eventId        = params->evtId;
-            if (TRUE == params->enableIntr)
+            if (UTRUE == params->enableIntr)
             {
-                hwiParams.enableInt      = (bool)true;
+                hwiParams.enableInt      = BTRUE;
             }
             else
             {
-                hwiParams.enableInt      = (bool)false;
+                hwiParams.enableInt      = BFALSE;
             }
             hwiParams.maskSetting    = Hwi_MaskingOption_SELF;
             iStat = Hwi_construct(&handle->hwi, interruptNum, (Hwi_FuncPtr)hwiFxn,
@@ -211,7 +211,7 @@ HwiP_Handle HwiP_create(uint32_t interruptNum, HwiP_Fxn hwiFxn,
             if (0 != iStat)
             {
                 /* Free the allocated memory and return null */
-                handle->used = (bool)false;
+                handle->used = BFALSE;
                 handle = (HwiP_freeRtos *) NULL_PTR;
             }
         }
@@ -243,12 +243,12 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
     
     HwiP_freeRtos *hwi = (HwiP_freeRtos *)handle;
 
-    if((NULL_PTR != hwi) && ((bool)true == hwi->used)) {
+    if((NULL_PTR != hwi) && (BTRUE == hwi->used)) {
       Hwi_destruct(&hwi->hwi);
       key = HwiP_disable();
-      hwi->used = (bool)false;
+      hwi->used = BFALSE;
       /* Found the osal hwi object to delete */
-      if (gOsalHwiAllocCnt > 0U)
+      if (0U < gOsalHwiAllocCnt)
       {
         gOsalHwiAllocCnt--;
       }
@@ -308,7 +308,7 @@ void HwiP_Params_init(HwiP_Params *params)
     params->arg = 0;
     params->priority = HWIP_USE_DEFAULT_PRIORITY;
     params->evtId    = 0;
-    params->enableIntr = TRUE;
+    params->enableIntr = UTRUE;
 
 #if defined(__GNUC__) && !defined(__ti__)
 #pragma GCC diagnostic push
