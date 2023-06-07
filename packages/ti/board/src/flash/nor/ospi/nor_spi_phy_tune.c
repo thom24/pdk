@@ -696,7 +696,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         * find one more rxLow at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
         * steps away from previously passing searchpoint.txDLL
         */
-        if(searchPoint.txDLL + TX_DLL_SEC_SEARCH_OFFSET >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
+        if(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END + TX_DLL_SEC_SEARCH_OFFSET)
         {
             /*
             * Loop while passing rxDLL is not found at previous tempSearchPoint.txDLL + TX_DLL_SEC_SEARCH_OFFSET
@@ -787,7 +787,7 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         * find one more rxHigh at different txDLL which is TX_DLL_SEC_SEARCH_OFFSET
         * steps away from previously passing searchPoint.txDLL
         */
-        if(searchPoint.txDLL + TX_DLL_SEC_SEARCH_OFFSET >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END)
+        if(searchPoint.txDLL >= NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END + TX_DLL_SEC_SEARCH_OFFSET)
         {
             /*
             * Loop while passing rxDLL is not found at previous searchPoint.txDLL - TX_DLL_SEC_SEARCH_OFFSET
