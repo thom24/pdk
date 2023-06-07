@@ -319,14 +319,16 @@ generate_lateapps()
             elf_images_list=elf_images_list_stage1_${BOARD_NAME}[@]
             elf_images_list=(${!elf_images_list})
             for i in ${elf_images_list[@]}; do
-                $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
+                # Use mono execute windows application in linux machine
+                mono $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
             done
 
             # Generate stage2 rprc files
             elf_images_list=elf_images_list_stage2_${BOARD_NAME}[@]
             elf_images_list=(${!elf_images_list})
             for i in ${elf_images_list[@]}; do
-                $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
+                # Use mono execute windows application in linux machine
+                mono $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
             done
 
             # Generate stage3 rprc files
@@ -335,7 +337,8 @@ generate_lateapps()
                 elf_images_list=elf_images_list_stage3_${BOARD_NAME}[@]
                 elf_images_list=(${!elf_images_list})
                 for i in ${elf_images_list[@]}; do
-                    $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
+                    # Use mono execute windows application in linux machine
+                    mono $SBL_OUT2RPRC_GEN_TOOL_PATH/out2rprc.exe ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/k3MulticoreApp/binary/${BOARD_NAME%_*}/$i "$i.rprc"
                 done
             fi
 
