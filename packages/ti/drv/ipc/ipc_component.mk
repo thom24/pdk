@@ -364,9 +364,17 @@ ipc_qnx_echo_testb_$(1)_PKG_LIST = ipc_qnx_echo_testb_$(1)
 ipc_qnx_echo_testb_$(1)_INCLUDE = $(ipc_qnx_echo_testb_$(1)_PATH)
 export ipc_qnx_echo_testb_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
 export ipc_qnx_echo_testb_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
 ipc_EXAMPLE_LIST += ipc_qnx_echo_testb_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ipc_qnx_echo_testb_$(1)
+endif
+endif
+
 endef
-IPC_QNX_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_QNX_ECHO_TESTB_RULE,$(curos)))
+
+IPC_QNX_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST) safertos, $(call IPC_QNX_ECHO_TESTB_RULE,$(curos)))
 $(eval ${IPC_QNX_ECHO_TESTB_MACRO_LIST})
 
 

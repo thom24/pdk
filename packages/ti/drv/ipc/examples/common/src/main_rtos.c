@@ -231,8 +231,13 @@ int main(void)
 
 #if defined ECHO_TEST_BTCM && defined SAFERTOS && defined BUILD_MCU
     /* Relocate FreeRTOS Reset Vectors from BTCM*/
-    void _safeRTOSrstvectors (void);
-    memcpy((void *)0x0, (void *)_safeRTOSrstvectors, 0x40);
+#ifdef SOC_J7200
+    void _safeRTOSresetvectors (void);
+    memcpy((void *)0x0, (void *)_safeRTOSresetvectors, 0x40);
+#else
+    void _axSafeRTOSresetVectors (void);
+    memcpy((void *)0x0, (void *)_axSafeRTOSresetVectors, 0x40);
+#endif
 #endif
 
     /*  This should be called before any other OS calls (like Task creation, OS_start, etc..) */
