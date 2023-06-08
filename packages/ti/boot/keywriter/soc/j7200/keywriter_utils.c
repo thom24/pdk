@@ -128,6 +128,7 @@ void OTP_VppEn(void)
         pmicStatus = Pmic_gpioSetValue(pPmicCoreHandle, 9, PMIC_GPIO_HIGH);
 #else
         /* Here is where we need to set GPIO5 of HERA PMIC */
+        pmicStatus = Pmic_gpioSetDir(pPmicCoreHandle, 5, PMIC_GPIO_OUTPUT);
         pmicStatus = Pmic_gpioSetValue(pPmicCoreHandle, 5, PMIC_GPIO_HIGH);
 #endif
 
