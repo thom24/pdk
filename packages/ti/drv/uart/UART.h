@@ -389,6 +389,11 @@ typedef struct UART_Params_s {
     UART_Callback2  writeCallback2;     /**< Pointer to write callback2 */
     UART_FC_TYPE    flowControlType;    /*!< Flow Control type */
     uint8_t         hwFlowControlThr;   /*!< Hardware flow Control threshold, 0-0x100 */
+    uint32_t        procChrTimeoutInt;  /*!< Process Char Timeout Interrupt. Should be set to 1 is timeout interrupt needs to be processed. 0 otherwise. */
+    uint16_t        timeoutIntrVal;     /*!< timeout before the timeout interrupt is triggered. */
+    uint32_t        timeoutBehavior;    /*!< Behavior to be set in the TIMEOUT_BEHAVE field. Can take the following values:
+                                                UART_TIMEOUT_COUNTER_RESET: Reset counter on any activity on RX lines.
+                                                UART_TIMEOUT_COUNTER_NO_CHANGE: Do not reset counter on any activity on RX lines. */
 } UART_Params;
 
 /*!

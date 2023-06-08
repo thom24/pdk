@@ -73,7 +73,10 @@ const UART_Params UART_defaultParams = {
     NULL,                 /* readCallback2 */
     NULL,                 /* writeCallback2 */
     UART_FC_NONE,         /* Flow Control type */
-    0                     /* Flow Control threshold */
+    0,                    /* Flow Control threshold */
+    0,                    /* procChrTimeoutInt */
+    0,                    /* timeoutIntrVal */
+    0                     /* timeoutBehavior */
 };
 
 /* Default UART transaction parameters structure */
