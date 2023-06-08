@@ -198,8 +198,10 @@ ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
 ipc_EXAMPLE_LIST += ipc_echo_testb_$(1)
 endif
 endif
+
 endef
-IPC_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_ECHO_TESTB_RULE,$(curos)))
+
+IPC_ECHO_TESTB_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST) safertos, $(call IPC_ECHO_TESTB_RULE,$(curos)))
 $(eval ${IPC_ECHO_TESTB_MACRO_LIST})
 
 
