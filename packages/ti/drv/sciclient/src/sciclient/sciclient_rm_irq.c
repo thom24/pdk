@@ -1649,55 +1649,56 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
                 break;
             }
         }
+        if (next_n != NULL)
+        {
+            if ((i == 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
+                if (Sciclient_rmIaIsIa(cur_n->id) == (bool)true) {
+                    cur_outp = cfg->vint;
+                    cur_outp_valid = (bool)true;
+                    next_inp_valid = (bool)false;
+                    next_inp = SCICLIENT_OUTP_TO_INP(cfg->vint,
+                                   cur_if->lbase,
+                                   cur_if->rbase);
 
-        if ((i == 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
-            if (Sciclient_rmIaIsIa(cur_n->id) == (bool)true) {
-                cur_outp = cfg->vint;
-                cur_outp_valid = (bool)true;
-                next_inp_valid = (bool)false;
-                next_inp = SCICLIENT_OUTP_TO_INP(cfg->vint,
-                               cur_if->lbase,
-                               cur_if->rbase);
-
-                if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
-                    CSL_PASS) {
-                    next_inp_valid = (bool)true;
-                }
-
-                if (Sciclient_rmParamIsValid(cfg->valid_params,
-                               TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID) ==
-                    (bool)true) {
-                    /*  cur_inp = cfg global event */
-                    cur_inp = cfg->global_evt;
-                    if (Sciclient_rmIaValidateGlobalEvt(cur_n->id,
-                                      cur_inp) ==
+                    if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
                         CSL_PASS) {
-                        if (Sciclient_rmPsSetInp(i, cur_inp) != CSL_PASS) {
+                        next_inp_valid = (bool)true;
+                    }
+
+                    if (Sciclient_rmParamIsValid(cfg->valid_params,
+                                   TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID) ==
+                        (bool)true) {
+                        /*  cur_inp = cfg global event */
+                        cur_inp = cfg->global_evt;
+                        if (Sciclient_rmIaValidateGlobalEvt(cur_n->id,
+                                          cur_inp) ==
+                            CSL_PASS) {
+                            if (Sciclient_rmPsSetInp(i, cur_inp) != CSL_PASS) {
+                                valid = (bool)false;
+                                break;
+                            }
+                        } else {
                             valid = (bool)false;
                             break;
                         }
-                    } else {
-                        valid = (bool)false;
-                        break;
+                    }
+                } else {
+                    /* outp is from source peripheral and specified
+                     * by configuration so always valid */
+                    cur_outp_valid = (bool)true;
+                    next_inp_valid = (bool)false;
+
+                    cur_outp = cfg->s_idx;
+                    next_inp = SCICLIENT_OUTP_TO_INP(cur_outp, cur_if->lbase,
+                                   cur_if->rbase);
+
+                    if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
+                        CSL_PASS) {
+                        next_inp_valid = (bool)true;
                     }
                 }
-            } else {
-                /* outp is from source peripheral and specified
-                 * by configuration so always valid */
-                cur_outp_valid = (bool)true;
-                next_inp_valid = (bool)false;
-
-                cur_outp = cfg->s_idx;
-                next_inp = SCICLIENT_OUTP_TO_INP(cur_outp, cur_if->lbase,
-                               cur_if->rbase);
-
-                if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
-                    CSL_PASS) {
-                    next_inp_valid = (bool)true;
-                }
             }
-        }
-
+        }    
         if ((i > 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
             /* Get the IR output resource range host assignments */
             req.secondary_host = cfg->host;
@@ -1743,11 +1744,13 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
                         CSL_PASS) {
                         cur_outp_valid = (bool)true;
                     }
-                    if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
-                        CSL_PASS) {
-                        next_inp_valid = (bool)true;
-                    }
-
+                    if(next_n !=NULL)
+                    {
+                        if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
+                            CSL_PASS) {
+                            next_inp_valid = (bool)true;
+                        }
+                    }    
                     if ((cur_outp_valid == (bool)true) &&
                         (next_inp_valid == (bool)true)) {
                         break;
