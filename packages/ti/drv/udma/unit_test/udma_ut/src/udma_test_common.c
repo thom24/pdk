@@ -343,8 +343,7 @@ void udmaTestCalcPerformance(UdmaTestTaskObj *taskObj, uint32_t durationMs)
                 ((totalTransfer / (uint64_t) 1000) / (uint64_t) durationMs);
 
     GT_0trace(taskObj->traceMask, GT_INFO1, " \r\n");
-    GT_2trace(taskObj->traceMask, GT_INFO1,
-        " |TEST RESULT|:: Task:%d: Throughput: %llu MB/s ::\r\n", taskObj->taskId, taskObj->mps);
+    UdmaUt_printf(" |TEST RESULT|:: Task:%d: Throughput: %llu MB/s ::\r\n", taskObj->taskId, taskObj->mps);
 
     return;
 }

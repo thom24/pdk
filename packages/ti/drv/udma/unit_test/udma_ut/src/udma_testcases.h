@@ -717,6 +717,80 @@ static UdmaTestParams gUdmaTestCases[] =
     },
     {
         .enableTest = TEST_ENABLE,
+        .tcId       = 12918U,
+        .tcName     = UDMA_TEST_MAIN_BC_TCNAME_PREFIX "2D Blockcpy OCMC circular 1KB to DDR 1MB performance test",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_ENABLE,
+        .tcType     = (UDMA_TCT_FULL | UDMA_TCT_FUNCTIONAL | UDMA_TCT_PERFORMANCE),
+        .dcEnable   = DATA_CHECK_DISABLE,
+        .loopCnt    = UDMA_TEST_PERF_LOOP_CNT,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_BLK_CPY},
+        .testFxnPtr = {&udmaTestBlkcpyTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_TEST_INST_ID_MAIN_BC},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_INTR_DEF},
+        .qdepth     = {UDMA_TEST_DEF_QDEPTH},
+        .icnt       = {
+                        {1*KB, 1U, 1*KB, 1U}
+                      },
+        .dicnt      = {
+                        {1*KB, 1U, 1*KB, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {1*KB, 1*KB, 0U}
+                      },
+        .heapIdSrc  = {UTILS_MEM_HEAP_ID_INTERNAL},
+        .heapIdDest = {UTILS_MEM_HEAP_ID_DDR},
+        .srcBufSize = {1*KB},
+        .destBufSize= {1*MB},
+        .runFlag    = (UDMA_TEST_RF_MAIN_BC),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 12919U,
+        .tcName     = UDMA_TEST_MAIN_BC_TCNAME_PREFIX "2D Blockcpy DDR 1MB to OCMC circular 1KB performance test",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_ENABLE,
+        .tcType     = (UDMA_TCT_FULL | UDMA_TCT_FUNCTIONAL | UDMA_TCT_PERFORMANCE),
+        .dcEnable   = DATA_CHECK_DISABLE,
+        .loopCnt    = UDMA_TEST_PERF_LOOP_CNT,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_BLK_CPY},
+        .testFxnPtr = {&udmaTestBlkcpyTc},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_TEST_INST_ID_MAIN_BC},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_INTR_DEF},
+        .qdepth     = {UDMA_TEST_DEF_QDEPTH},
+        .icnt       = {
+                        {1*KB, 1U, 1*KB, 1U}
+                      },
+        .dicnt      = {
+                        {1*KB, 1U, 1*KB, 1U}
+                      },
+        .dim        = {
+                        {1*KB, 1*KB, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {UTILS_MEM_HEAP_ID_DDR},
+        .heapIdDest = {UTILS_MEM_HEAP_ID_INTERNAL},
+        .srcBufSize = {1*MB},
+        .destBufSize= {1*KB},
+        .runFlag    = (UDMA_TEST_RF_MAIN_BC),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_INVALID,
+    },
+    {
+        .enableTest = TEST_ENABLE,
         .tcId       = 3488U,
         .tcName     = UDMA_TEST_MAIN_BC_TCNAME_PREFIX "2D Blockcpy MSMC circular 1KB to MSMC circular 1KB performance test",
         .disableInfo= NULL,
