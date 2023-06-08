@@ -25,11 +25,8 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
   SRCDIR += soc/V2
   INCDIR += soc/V2
-  PACKAGE_SRCS_COMMON = soc/V2
+  PACKAGE_SRCS_COMMON = soc/V2 include/dss_m2m.h
   CFLAGS_LOCAL_COMMON = -DREF_CLK_19_2MHz -DHAVE_CMN_PLL1
-endif
-ifeq ($(SOC),$(filter $(SOC), j721s2))
-  PACKAGE_SRCS_COMMON += include/dss_m2m.h
 endif
 
 # List all the external components/interfaces, whose interface header files
