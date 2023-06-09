@@ -1207,7 +1207,7 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
 
     if(retFlag == NOR_PASS)
     {
-        if((txDLL != PHY_SDR_TX_DLL) || (rxDLL >= PHY_SDR_DLL_MAX))
+        if((txDLL != PHY_SDR_TX_DLL) || (rxDLL > PHY_SDR_DLL_END))
         {
             retFlag = NOR_INVALID_PARAM;
         }
@@ -1223,7 +1223,7 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         {
             NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
             status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-            if((status == NOR_PASS) || (rxDLL == PHY_DDR_TUNE_DLL_MAX))
+            if((status == NOR_PASS) || (rxDLL >= PHY_SDR_DLL_END))
             {
                 break;
             }
@@ -1237,7 +1237,7 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         }while(status == NOR_FAIL);
     }
     
-    if(retFlag != NOR_PASS)
+    if((retFlag != NOR_PASS) || (status == NOR_FAIL))
     {
         rxDLL = PHY_DDR_TUNE_DLL_MAX;
     }
@@ -1275,7 +1275,7 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
 
     if(retFlag == NOR_PASS)
     {
-        if((txDLL != PHY_SDR_TX_DLL) || (rxDLL >= PHY_SDR_DLL_MAX))
+        if((txDLL != PHY_SDR_TX_DLL) || (rxDLL >= PHY_SDR_DLL_END))
         {
             retFlag = NOR_INVALID_PARAM;
         }
@@ -1291,7 +1291,7 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
         {
             NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
             status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
-            if((status == NOR_FAIL) || (rxDLL>=PHY_SDR_DLL_MAX))
+            if((status == NOR_FAIL) || (rxDLL >= PHY_SDR_DLL_END))
             {
                 break;
             }
@@ -1333,16 +1333,23 @@ static NOR_STATUS NOR_spiPhyFindRxWindow(OSPI_Handle handle, int32_t txDLL, int3
     if(retVal == NOR_PASS)
     {
         *rxEnd = NOR_spiPhyFindRxEnd(handle,txDLL,*rxStart+4U,offset);
-    }
 
-    /* If rxEnd is greater than rxStart, we found a window. */
-    if(*rxEnd>*rxStart+4U)
-    {
-        retVal = NOR_PASS;
-    }
-    else
-    {
-        retVal = NOR_FAIL;
+        /* If rxEnd is greater than rxStart, we found a window. */
+        if(*rxEnd >= PHY_DDR_TUNE_DLL_MAX)
+        {
+            retVal = NOR_FAIL;
+        }
+        if(retVal == NOR_PASS)
+        {
+            if(*rxEnd>*rxStart+4U)
+            {
+                retVal = NOR_PASS;
+            }
+            else
+            {
+                retVal = NOR_FAIL;
+            }
+        }
     }
 
     return retVal;
