@@ -152,7 +152,8 @@ void SBL_printProfileLog(void)
 
 void SBL_DCacheClean(void *addr, uint32_t size)
 {
-    uint32_t set = 0, way = 0;
+    uint32_t numSets = CSL_armR5CacheGetNumSets();
+    uint32_t numWays = CSL_armR5CacheGetNumWays();
     uint32_t cacheLineSize = CSL_armR5CacheGetDcacheLineSize();
     uintptr_t firstAddr = (uintptr_t ) addr & ~(cacheLineSize -1U);
     uintptr_t lastAddr = (uintptr_t) addr + size;
@@ -166,11 +167,11 @@ void SBL_DCacheClean(void *addr, uint32_t size)
     else
     {
         /* Invalidating full cache by set and way is more efficient */
-    for (set = 0; set < 128; set ++)
+    for (uint32_t setNumber = 0; setNumber < numSets; setNumber++)
         {
-            for (way = 0; way < 4; way++)
+            for (uint32_t wayNumber = 0; wayNumber < numWays; wayNumber++)
             {
-                CSL_armR5CacheCleanInvalidateDcacheSetWay(set, way);
+                CSL_armR5CacheCleanInvalidateDcacheSetWay(setNumber, wayNumber);
             }
         }
     }
