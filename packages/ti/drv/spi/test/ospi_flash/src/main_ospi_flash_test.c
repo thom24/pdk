@@ -678,7 +678,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
 #endif
 
     /* Get the default SPI init configurations */
-    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);    
+    OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     retVal = Sciclient_pmModuleClkRequest(devID[BOARD_OSPI_NOR_INSTANCE],
                                           clkID[BOARD_OSPI_NOR_INSTANCE],
@@ -717,16 +717,16 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
                                                 parClk,
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-	 
+
     if (retVal != CSL_PASS)
     {
         SPI_log("\n Sciclient_pmSetModuleClkParent failed");
         goto clk_cfg_exit;
     }
-	 
+
 	ospi_cfg.funcClk = freq;
-    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);    
-	
+    OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+
     ospi_rclk_freq = (uint64_t)freq;
     retVal = Sciclient_pmSetModuleClkFreq(devID[BOARD_OSPI_NOR_INSTANCE],
                                           clkID[BOARD_OSPI_NOR_INSTANCE],
@@ -755,9 +755,9 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
 
 clk_cfg_exit:
       return;
-}	
+}
 #endif
-	
+
 void OSPI_initConfig(OSPI_Tests *test)
 {
     OSPI_v0_HwAttrs ospi_cfg;
@@ -1045,12 +1045,14 @@ static bool OSPI_flash_test(void *arg)
         {
             startOffset = NOR_TUNING_DATA_OFFSET;
         }
-#if defined(SOC_J721S2) || defined(SOC_J784S4)
         else
         {
+            #if defined(SOC_J721S2) || defined(SOC_J784S4)
             startOffset = NAND_TUNING_DATA_OFFSET;
+            #else
+            startOffset = TEST_ADDR_OFFSET;
+            #endif
         }
-#endif
     }
     else
     {
@@ -1367,7 +1369,7 @@ static bool OSPI_flash_test(void *arg)
 
 err:
     OSPI_deInitConfig(test);
-    
+
     if (boardHandle != 0U)
     {
         Board_flashClose(boardHandle);
@@ -1666,8 +1668,8 @@ int32_t OspiFlash_ClkRateSet(uint32_t modId,
                                                    SCICLIENT_SERVICE_WAIT_FOREVER);
         if ((status == CSL_PASS) && (numParents > 1U))
         {
-            status = Sciclient_pmGetModuleClkParent(modId, 
-                                                    clkId, 
+            status = Sciclient_pmGetModuleClkParent(modId,
+                                                    clkId,
                                                     &origParent,
                                                     SCICLIENT_SERVICE_WAIT_FOREVER);
         }
