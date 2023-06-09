@@ -182,7 +182,7 @@ extern void SemaphoreP_Params_init(SemaphoreP_Params *semParams);
  *
  *  @param  semPhandle  A SemaphoreP_Handle returned from ::SemaphoreP_create
  *
- *  @param  timeout Timeout (in milliseconds) to wait for the semaphore to
+ *  @param  timeout Timeout (in ticks) to wait for the semaphore to
  *                  be posted (signalled).
  *
  *  @return Status of the functions
