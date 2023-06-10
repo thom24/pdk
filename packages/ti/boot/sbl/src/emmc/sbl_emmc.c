@@ -376,7 +376,7 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
     fp_readData = &SBL_emmcRead;
     fp_seek     = &SBL_emmcSeek;
 
-#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200)) || defined(SOC_J721S2)
+#if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
         retVal = SBL_MulticoreImageParse((void *) &sbl_scratch_mem, SBL_SCRATCH_MEM_START, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 #else
         retVal = SBL_MulticoreImageParse((void *) &sbl_scratch_mem, SBL_SCRATCH_MEM_START, pEntry, SBL_BOOT_AFTER_COPY);
