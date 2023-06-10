@@ -56,8 +56,6 @@ MEMORY
         /* Used for SYSFW initlization */
 	OCMRAM_SBL_SYSFW (RWIX) : origin=0x41C80000 length=0x2000
 	OCMRAM_SBL_UNUSED (X)   : origin=0x41C60000 length=0x2000
-    /* Line below is not used / not needed for AM65xx */
-    OCMRAM_SBL_RM_PM_HAL (X): origin=0x41C08000 length=0x7000
 
         /* App code resides here  */
 	RESET_VECTORS (X)       : origin=0x41C82000 length=0x100
@@ -91,8 +89,8 @@ SECTIONS
     .bss     	: {} align(4)  		> OCMRAM_BOOT_PERF
     .data    	: {} palign(128) 	> OCMRAM_BOOT_PERF
     .boardcfg_data   : {} palign(128)    > OCMRAM_BOOT_PERF
-    .bss.devgroup    : {*(.bss.devgroup*)} align(4)       > OCMRAM_SBL_RM_PM_HAL
-    .const.devgroup  : {*(.const.devgroup*)} align(4)     > OCMRAM_SBL_RM_PM_HAL
+    .bss.devgroup    : {*(.bss.devgroup*)} align(4)       > OCMRAM_BOOT_PERF
+    .const.devgroup  : {*(.const.devgroup*)} align(4)     > OCMRAM_BOOT_PERF
 
     .sysmem  	: {} 			> OCMRAM_BOOT_PERF
     .stack  	: {} align(8)		> OCMRAM_BOOT_PERF  (HIGH)
