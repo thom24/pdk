@@ -1041,18 +1041,18 @@ static bool OSPI_flash_test(void *arg)
     if (test->testId == OSPI_TEST_ID_WR_TUNING)
     {
         testLen = NOR_ATTACK_VECTOR_SIZE;
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
         if(test->norFlash == true)
         {
             startOffset = NOR_TUNING_DATA_OFFSET;
         }
         else
         {
-            #if defined(SOC_J721S2) || defined(SOC_J784S4)
             startOffset = NAND_TUNING_DATA_OFFSET;
-            #else
-            startOffset = TEST_ADDR_OFFSET;
-            #endif
         }
+#else
+        startOffset = NOR_TUNING_DATA_OFFSET;
+#endif
     }
     else
     {

@@ -1184,21 +1184,24 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
 /* Returns the first rxDLL value which passes the tuning basis test, searching up from given txDLL,rxDLL */
 static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t rxDLL, uint32_t offset)
 {
-    OSPI_v0_HwAttrs const        *hwAttrs = NULL_PTR;
-    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
+    OSPI_v0_HwAttrs const        *hwAttrs;
+    CSL_ospi_flash_cfgRegs const *pRegs;
     NOR_STATUS                    status;
     int32_t                       txSaved;
     int32_t                       rxSaved;
     NOR_STATUS                    retFlag = NOR_PASS;
 
-    txSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
-                             OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD);
-    rxSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
-                             OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_RX_DLL_DELAY_FLD);
-
     if(handle != NULL_PTR)
     {
         hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+        if(hwAttrs->baseAddr != (uintptr_t)NULL)
+        {
+            pRegs   =   (CSL_ospi_flash_cfgRegs const *)hwAttrs->baseAddr;
+        }
+        else
+        {
+            return NOR_FAIL;
+        }
     }
     else
     {
@@ -1213,12 +1216,16 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         }
     }
 
-    /*
-     * Try to find PHY tuning point in the search window. The loop exits
-     * either on finding such point or when search window has been exhausted.
-     */
     if(retFlag == NOR_PASS)
     {
+        txSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
+                                OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD);
+        rxSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
+                                OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_RX_DLL_DELAY_FLD);
+        /*
+        * Try to find PHY tuning point in the search window. The loop exits
+        * either on finding such point or when search window has been exhausted.
+        */
         do
         {
             NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
@@ -1235,6 +1242,8 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
             norSpiTuneCnt++;
     #endif
         }while(status == NOR_FAIL);
+
+        NOR_spiTxRxDllConfig(handle,txSaved,rxSaved);
     }
     
     if((retFlag != NOR_PASS) || (status == NOR_FAIL))
@@ -1242,7 +1251,6 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
         rxDLL = PHY_DDR_TUNE_DLL_MAX;
     }
     
-    NOR_spiTxRxDllConfig(handle,txSaved,rxSaved);
     return rxDLL;
 }
 
@@ -1252,21 +1260,24 @@ static int32_t NOR_spiPhyFindRxStart(OSPI_Handle handle, int32_t txDLL, int32_t 
  */
 static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rxDLL, uint32_t offset)
 {
-    OSPI_v0_HwAttrs const        *hwAttrs = NULL_PTR;
-    const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
+    OSPI_v0_HwAttrs const        *hwAttrs;
+    CSL_ospi_flash_cfgRegs const *pRegs;
     NOR_STATUS                    status;
     int32_t                       txSaved;
     int32_t                       rxSaved;
     NOR_STATUS                    retFlag = NOR_PASS;
 
-    txSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
-                             OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD);
-    rxSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
-                             OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_RX_DLL_DELAY_FLD);
-
     if(handle != NULL_PTR)
     {
         hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
+        if(hwAttrs->baseAddr != (uintptr_t)NULL)
+        {
+            pRegs   =   (CSL_ospi_flash_cfgRegs const *)hwAttrs->baseAddr;
+        }
+        else
+        {
+            return NOR_FAIL;
+        }
     }
     else
     {
@@ -1281,12 +1292,16 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
         }
     }
 
-    /*
-     * Try to find first failing PHY tuning point starting from rxStart in the search window.
-     * The loop exits either on finding such point or when search window has been exhausted.
-     */
     if(retFlag == NOR_PASS)
     {
+        txSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
+                                OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_TX_DLL_DELAY_FLD);
+        rxSaved = CSL_REG32_FEXT(&pRegs->PHY_CONFIGURATION_REG,
+                                OSPI_FLASH_CFG_PHY_CONFIGURATION_REG_PHY_CONFIG_RX_DLL_DELAY_FLD);
+        /*
+        * Try to find first failing PHY tuning point starting from rxStart in the search window.
+        * The loop exits either on finding such point or when search window has been exhausted.
+        */
         do
         {
             NOR_spiTxRxDllConfig(handle,txDLL,rxDLL);
@@ -1303,14 +1318,14 @@ static int32_t NOR_spiPhyFindRxEnd(OSPI_Handle handle, int32_t txDLL, int32_t rx
             norSpiTuneCnt++;
     #endif
         }while (status == NOR_PASS);
+    
+        NOR_spiTxRxDllConfig(handle,txSaved,rxSaved);
     }
     
     if(retFlag != NOR_PASS)
     {
         rxDLL = PHY_DDR_TUNE_DLL_MAX;
     }
-    
-    NOR_spiTxRxDllConfig(handle,txSaved,rxSaved);
 
     return rxDLL;
 }
