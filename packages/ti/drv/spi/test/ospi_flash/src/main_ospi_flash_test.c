@@ -177,6 +177,7 @@ typedef struct OSPI_Tests_s
 #define OSPI_TEST_ID_PHY_CFG_BYPASS    16   /* OSPI Phy Config Bypass mode test */
 #define OSPI_NAND_TEST_ID_DAC_OSDR_50M     17   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 50MHz RCLK */
 #define OSPI_NAND_TEST_ID_DAC_OSDR_166M    18   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 166MHz RCLK */
+#define OSPI_NAND_TEST_ID_WR_TUNING        19   /* OSPI flash test in Direct Acess Controller legacy SPI mode to write tuning data */
 
 /* OSPI NOR flash offset address for read/write test */
 #define TEST_ADDR_OFFSET   (0U)
@@ -822,7 +823,7 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
     }
 
-    if (test->testId == OSPI_TEST_ID_WR_TUNING)
+    if ((test->testId == OSPI_TEST_ID_WR_TUNING) || (test->testId == OSPI_NAND_TEST_ID_WR_TUNING))
     {
         ospi_cfg.phyEnable = false;
     }
@@ -1038,7 +1039,7 @@ static bool OSPI_flash_test(void *arg)
     uint32_t          tuneEnable;
     uint32_t          blockSize;
 
-    if (test->testId == OSPI_TEST_ID_WR_TUNING)
+    if ((test->testId == OSPI_TEST_ID_WR_TUNING) || (test->testId == OSPI_NAND_TEST_ID_WR_TUNING))
     {
         testLen = NOR_ATTACK_VECTOR_SIZE;
 #if defined(SOC_J721S2) || defined(SOC_J784S4)
@@ -1133,7 +1134,7 @@ static bool OSPI_flash_test(void *arg)
 
     /* Generate the data */
     GeneratePattern(txBuf, rxBuf, testLen);
-    if (test->testId == OSPI_TEST_ID_WR_TUNING)
+    if ((test->testId == OSPI_TEST_ID_WR_TUNING) || (test->testId == OSPI_NAND_TEST_ID_WR_TUNING))
     {
         pBuf = nor_attack_vector;
     }
@@ -1300,7 +1301,9 @@ static bool OSPI_flash_test(void *arg)
     }
 #endif
 #ifdef OSPI_PROFILE
-    if( (test->dacMode) && (test->testId!=OSPI_NAND_TEST_ID_DAC_OSDR_50M) && (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) && (test->testId!=OSPI_NAND_TEST_ID_DAC_133M_SPI))
+    if((test->dacMode) && (test->testId!=OSPI_NAND_TEST_ID_DAC_OSDR_50M) &&\
+       (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) &&\
+       (test->testId!=OSPI_NAND_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_NAND_TEST_ID_WR_TUNING))
     {
         uint64_t    startPhyTuningTick;
         uint64_t    elapsedPhyTuningTicks;
@@ -1419,6 +1422,7 @@ OSPI_Tests Ospi_tests[] =
 #endif
     {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M_SPI,        true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
 #if defined(SOC_J721S2) || defined(SOC_J784S4)
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_WR_TUNING,      true,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to nand flash"},
     {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_166M,     false,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
     {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M_SPI,   true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
     {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_OSDR_50M,  true,   false,  false,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_200M, "\r\n OSPI flash test slave in DAC SDR OSPI mode at 50MHz RCLK"},
