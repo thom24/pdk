@@ -127,6 +127,10 @@ else
   sbl_LIB_LIST += sbl_lib_ospi_nondma_hs
 endif
 
+ifeq ($(SOC),$(filter $(SOC), j721s2))
+  sbl_LIB_LIST += sbl_lib_ospi_hlos_hs
+endif
+
 ############################
 # sbl example
 # List of examples under sbl (+= is used at each example definition)
@@ -151,7 +155,7 @@ else
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721s2))
-  sbl_EXAMPLE_LIST += sbl_ospi_nand_img sbl_ospi_nand_img_hs
+  sbl_EXAMPLE_LIST += sbl_ospi_nand_img sbl_ospi_nand_img_hs sbl_ospi_img_hlos_hs
 endif
 
 
