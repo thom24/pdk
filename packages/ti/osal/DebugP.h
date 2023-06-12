@@ -100,6 +100,23 @@ extern "C" {
 #endif
 
 /*!
+ *  @brief    DebugP Log Function to be used for printing
+ */
+#if DebugP_LOG_ENABLED
+typedef void (*DebugP_exptnLogFxn)(const char *format, ...);
+DebugP_exptnLogFxn Osal_exptnLogFxn;
+
+/*!
+ *  @brief    DebugP Log Function registration return types
+ *
+ *  DEBUGP_PRINTFXN_REGISTER_SUCCESS is returned on succesful registration of log API.
+ *  DEBUGP_PRINTFXN_ALREADY_REGISTERD is returned, if an API is already registered.
+ */
+#define DEBUGP_LOGFXN_REGISTER_SUCCESS   (0)
+#define DEBUGP_LOGFXN_ALREADY_REGISTERD  (-1)
+#endif
+
+/*!
  *  @brief  Assert checking function
  *
  *  If the expression is evaluated to true, the API does nothing.
@@ -122,6 +139,24 @@ extern void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t li
 #endif
 
 /*!
+ *  @brief  DebugP Exception state log function.
+ *          It takes a pair of values to be printed during exception dump.
+ *
+ *
+ *  @param  format "printf" format string
+ *  @param  arg1 first parameter to format string
+ *  @param  arg2 second parameter to format string
+ *
+ *  @sa DebugP_LOG_ENABLED
+ *
+ */
+#if DebugP_LOG_ENABLED
+extern void DebugP_exceptionLog(const char * format, uint32_t arg1, uint32_t arg2);
+#else
+#define DebugP_exceptionLog(const char * format, uint32_t arg1, uint32_t arg2)
+#endif
+
+/*!
  *  @brief  Debug log function with 0 parameters
  *
  *  The underlying RTOS port implementation handles the
@@ -136,6 +171,37 @@ extern void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t li
 extern void DebugP_log0(const char *format);
 #else
 #define DebugP_log0(format)
+#endif
+
+/*!
+ *  @brief  Debug log function registration
+ *
+ *  Application needs to call this API to register its print API.
+ *
+ *  @param  DebugP_exptnLogFxn
+ *
+ *  @sa DebugP_LOG_ENABLED
+ *
+ */
+#if DebugP_LOG_ENABLED
+int32_t DebugP_registerExcptnLogFxn(DebugP_exptnLogFxn fxn);
+#else
+#define DebugP_registerExcptnLogFxn(DebugP_exptnLogFxn fxn)
+#endif
+
+/*!
+ *  @brief  Debug log function deregistration
+ *
+ *  Application needs to call this API to de-register its print API.
+ *
+ *
+ *  @sa DebugP_LOG_ENABLED
+ *
+ */
+#if DebugP_LOG_ENABLED
+void DebugP_deRegisterExcptnLogFxn();
+#else
+#define DebugP_deRegisterExcptnLogFxn()
 #endif
 
 /*!

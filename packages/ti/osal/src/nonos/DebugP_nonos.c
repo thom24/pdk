@@ -36,6 +36,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <stdarg.h>
 
 #include <ti/osal/DebugP.h>
 
@@ -58,6 +59,43 @@ void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t line)
 #endif
 
 #if DebugP_LOG_ENABLED
+/*
+ *  ======== DebugP_registerLogFxn ========
+ */
+int32_t DebugP_registerExcptnLogFxn(DebugP_exptnLogFxn fxn)
+{
+    int32_t retval;
+    if (NULL==Osal_exptnLogFxn)
+    {
+        Osal_exptnLogFxn=fxn;
+        retval = DEBUGP_LOGFXN_REGISTER_SUCCESS;
+    }
+    else
+    {
+        retval = DEBUGP_LOGFXN_ALREADY_REGISTERD;
+    }
+    return retval;
+}
+
+/*
+ *  ======== DebugP_exceptionLog ========
+ */
+void DebugP_exceptionLog(const char * format, uint32_t arg1, uint32_t arg2)
+{
+    if (NULL!=Osal_exptnLogFxn)
+    {
+        Osal_exptnLogFxn(format, arg1, arg2);
+    }
+}
+
+/*
+ *  ======== DebugP_unRegisterLogFxn ========
+ */
+void DebugP_deRegisterExcptnLogFxn()
+{
+    Osal_exptnLogFxn=NULL;
+}
+
 /*
  *  ======== DebugP_log0 ========
  */
