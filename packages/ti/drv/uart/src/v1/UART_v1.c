@@ -933,7 +933,7 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
             {
                 UARTDirPolSet(hwAttrs->baseAddr, hwAttrs->dirPol);
             }
-            if (params->procChrTimeoutInt == 1U)
+            if (object->params.procChrTimeoutInt == 1U)
             {
                 UARTSetTimeOutValue(hwAttrs->baseAddr, params->timeoutIntrVal, params->timeoutBehavior);
             }
