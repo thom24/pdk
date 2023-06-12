@@ -443,30 +443,7 @@ static void UART_v1_hwiIntFxn(uintptr_t arg)
     {
         intType = UARTIntIdentityGet(hwAttrs->baseAddr);
 
-        if((intType & UART_INTID_CHAR_TIMEOUT) == UART_INTID_CHAR_TIMEOUT)
-        {
-            /* rx timeout, log the rx timeout errors */
-            object->rxTimeoutCnt++;
-            if (object->params.procChrTimeoutInt == 1U)
-            {
-                /* Flush the FIFO on the stop condition */
-                UART_v1_readData(handle, (int32_t)(object->readSize));
-                /* Set the ReadSize to be 0*/
-                object->readSize = 0;
-                UARTIntDisable(hwAttrs->baseAddr, UART_INT_RHR_CTI | UART_INT_LINE_STAT);
-                /* Reset the read buffer so we can pass it back */
-                object->readBuf = (uint8_t *)object->readBuf - object->readCount;
-                if (object->readTrans != NULL)
-                {
-                    object->readTrans->count = (uint32_t)(object->readCount);
-                    object->readTrans->status = UART_TRANSFER_STATUS_SUCCESS;
-                }
-                /* Call back to application if in callback mode */
-                UART_v1_callback(handle, (bool)true);
-                object->readTrans = NULL;
-            }
-        }
-        else if ((intType & UART_INTID_RX_THRES_REACH) == UART_INTID_RX_THRES_REACH)
+        if ((intType & UART_INTID_RX_THRES_REACH) == UART_INTID_RX_THRES_REACH)
         {
             if ((intType & UART_INTID_RX_LINE_STAT_ERROR) ==
                 UART_INTID_RX_LINE_STAT_ERROR)
@@ -476,6 +453,29 @@ static void UART_v1_hwiIntFxn(uintptr_t arg)
             }
             else
             {
+                if((intType & UART_INTID_CHAR_TIMEOUT) == UART_INTID_CHAR_TIMEOUT)
+                {
+                    /* rx timeout, log the rx timeout errors */
+                    object->rxTimeoutCnt++;
+                    if (object->params.procChrTimeoutInt == 1U)
+                    {
+                        /* Flush the FIFO on the stop condition */
+                        UART_v1_readData(handle, (int32_t)(object->readSize));
+                        /* Set the ReadSize to be 0*/
+                        object->readSize = 0;
+                        UARTIntDisable(hwAttrs->baseAddr, UART_INT_RHR_CTI | UART_INT_LINE_STAT);
+                        /* Reset the read buffer so we can pass it back */
+                        object->readBuf = (uint8_t *)object->readBuf - object->readCount;
+                        if (object->readTrans != NULL)
+                        {
+                            object->readTrans->count = (uint32_t)(object->readCount);
+                            object->readTrans->status = UART_TRANSFER_STATUS_SUCCESS;
+                        }
+                        /* Call back to application if in callback mode */
+                        UART_v1_callback(handle, (bool)true);
+                        object->readTrans = NULL;
+                    }
+                }
                 /* RX FIFO threshold reached */
                 if (object->readSize > 0U)
                 {
