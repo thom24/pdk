@@ -59,7 +59,9 @@
 #include <sbl_sci_client.h>
 #endif
 
-#ifdef EMMC_BOOT0
+/* Global variable to check whether EMMC_BOOT0 is defined or not */
+bool gIsEmmcBoot0Enable = false;
+
 /* eMMC Sector size */
 #define SECTORSIZE                      (512U) //0x200
 /* System firmware offset in eMMC boot0 partition */
@@ -73,7 +75,6 @@ extern volatile uint32_t * outData01;
 MMCSD_Handle gHandle=NULL;
 /* SBL scratch memory defined at compile time */
 static uint8_t *sbl_scratch_mem = ((uint8_t *)(SBL_SCRATCH_MEM_START));
-#endif
 
 /**
  * \brief    SBL_FileRead function reads N bytes from eMMC and
@@ -215,24 +216,18 @@ const FATFS_Config FATFS_config[_VOLUMES + 1] = {
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 {
     int32_t retVal = CSL_PASS;
-
-#ifdef EMMC_BOOT0
+    /* Following variables are used for eMMC Boot0 Boot*/
     uint32_t partition = 1;
     /* Total number of blocks to be read*/
     uint32_t num_blocks_read  = (num_bytes/SECTORSIZE) + 1;
     /* Start block to be read */
     uint32_t mmcStartSector = (EMMC_BOOT0_SYSFS_OFFSET/SECTORSIZE);
-#else
+    /* Following variables are used for eMMC UDA Boot*/
     FIL     fp;
     memset(&fp, 0, sizeof(fp));
     FRESULT  fresult;
     uint32_t bytes_read = 0;
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     const TCHAR *fileName = "0:/tifs.bin";
-#else
-    const TCHAR *fileName = "0:/sysfw.bin";
-#endif
-#endif
     void *sysfw_ptr = *pBuffer;
     MMCSD_v2_HwAttrs hwAttrsConfig;
 
@@ -273,73 +268,78 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
     hwAttrsConfig.configSocIntrPath=NULL;
 
-#ifdef EMMC_BOOT0
-    hwAttrsConfig.enableDma = 1;
-    hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_8BIT;
-    hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
-    hwAttrsConfig.supportedBusVoltages = MMCSD_BUS_VOLTAGE_1_8V;
-    hwAttrsConfig.supportedModes = MMCSD_SUPPORT_MMC_DS;
-#endif
+    if (gIsEmmcBoot0Enable == true)
+    {
+        hwAttrsConfig.enableDma = 1;
+        hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_8BIT;
+        hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
+        hwAttrsConfig.supportedBusVoltages = MMCSD_BUS_VOLTAGE_1_8V;
+        hwAttrsConfig.supportedModes = MMCSD_SUPPORT_MMC_DS;
+    }
 
     if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0) {
        UART_printf("\nUnable to set config.Exiting. TEST FAILED.\r\n");
        retVal = E_FAIL;
      }
 
-#ifdef EMMC_BOOT0
-
-    MMCSD_init();
-    retVal = MMCSD_open(FATFS_initCfg[0].drvInst, NULL, &gHandle);
-    /* Enable boot partition configurations */
-    if ((retVal = MMCSD_control(gHandle, MMCSD_CMD_ENABLEBOOTPARTITION,
-                            (void *)&partition)))
+    if (gIsEmmcBoot0Enable == true)
     {
-       printf ("\n MMCSD_control failed with retval=%d\r\n",retVal);
-    }
-    if(retVal == CSL_PASS)
-    {
-        retVal = MMCSD_read(gHandle, sysfw_ptr, mmcStartSector, num_blocks_read);
-    }
-#else
-    /* Initialization of the driver. */
-    FATFS_init();
-
-    /* eMMC FATFS initialization */
-    FATFS_open(0U, NULL, &sbl_fatfsHandle);
-
-    fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
-    if (fresult != FR_OK)
-    {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-        UART_printf("\n eMMC Boot - tifs File open fails \n");
-#else
-        UART_printf("\n eMMC Boot - sysfw File open fails \n");
-#endif
-        retVal = E_FAIL;
+        MMCSD_init();
+        retVal = MMCSD_open(FATFS_initCfg[0].drvInst, NULL, &gHandle);
+        if (retVal != CSL_PASS)
+        {
+            UART_printf("\n MMCSD open fails for eMMC Boot \n");
+        }
+        /* Enable boot partition configurations */
+        if (retVal == CSL_PASS)
+        {
+            retVal = MMCSD_control(gHandle, MMCSD_CMD_ENABLEBOOTPARTITION, (void *)&partition);
+            if (retVal != CSL_PASS)
+            {
+                UART_printf("\n MMCSD control fails for eMMC Boot \n");
+            }
+        }
+        if(retVal == CSL_PASS)
+        {
+            retVal = MMCSD_read(gHandle, (uint8_t *) sysfw_ptr, mmcStartSector, num_blocks_read);
+            if (retVal != CSL_PASS)
+            {
+                UART_printf("\n eMMC Boot from BOOT0 partition - TIFS File Read Failure \n");
+            }
+        }
     }
     else
     {
-        fresult  = f_read(&fp, sysfw_ptr, num_bytes, &bytes_read);
+        /* Initialization of the driver. */
+        FATFS_init();
+
+        /* eMMC FATFS initialization */
+        FATFS_open(0U, NULL, &sbl_fatfsHandle);
+
+        fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
         if (fresult != FR_OK)
         {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-            UART_printf("\n eMMC Boot - tifs read fails \n");
-#else
-            UART_printf("\n eMMC Boot - sysfw read fails \n");
-#endif
+            UART_printf("\n eMMC Boot from UDA partition - TIFS File Open Failure \n");
             retVal = E_FAIL;
         }
+        else
+        {
+            fresult  = f_read(&fp, sysfw_ptr, num_bytes, &bytes_read);
+            if (fresult != FR_OK)
+            {
+                UART_printf("\n eMMC Boot from UDA partition - TIFS Read Failure \n");
+                retVal = E_FAIL;
+            }
 
-        f_close(&fp);
+            f_close(&fp);
+        }
+
+        FATFS_close(sbl_fatfsHandle);
+        sbl_fatfsHandle = NULL;
+    #endif
     }
-
-    FATFS_close(sbl_fatfsHandle);
-    sbl_fatfsHandle = NULL;
-#endif
-
     return retVal;
 }
-#endif
 
 int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
 {
@@ -348,70 +348,69 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
     while building your appimage \n");
 
     int32_t retVal = E_PASS;
-#ifdef EMMC_BOOT0
     /* Total number of blocks to be read*/
     uint32_t num_blocks_read  = (APP_SIZE/SECTORSIZE) + 1;
     /* Start block to be read */
     uint32_t mmcStartSector = (EMMC_BOOT0_APP_OFFSET/SECTORSIZE);
-#else
     const TCHAR *fileName = "0:/app";
     FIL     fp;
     memset(&fp, 0, sizeof(fp));
     FRESULT  fresult;
-#endif
 
 
-#ifdef EMMC_BOOT0
-    /* Read the application image into DDR */
-    retVal = MMCSD_read(gHandle, sbl_scratch_mem, mmcStartSector, num_blocks_read);
-    if(retVal != FR_OK)
+    if (gIsEmmcBoot0Enable == true)
     {
-        UART_printf("MMCSD_read Failed to read contents into DDR\n");
-    }
+        /* Read the application image into DDR */
+        retVal = MMCSD_read(gHandle, sbl_scratch_mem, mmcStartSector, num_blocks_read);
+        if(retVal != FR_OK)
+        {
+            UART_printf("MMCSD_read Failed to read contents into DDR\n");
+        }
 
-    if(gHandle)
-    {
-        MMCSD_close(gHandle);
-    }
-    fp_readData = &SBL_emmcRead;
-    fp_seek     = &SBL_emmcSeek;
+        if(gHandle)
+        {
+            MMCSD_close(gHandle);
+        }
+        fp_readData = &SBL_emmcRead;
+        fp_seek     = &SBL_emmcSeek;
 
 #if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
         retVal = SBL_MulticoreImageParse((void *) &sbl_scratch_mem, SBL_SCRATCH_MEM_START, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 #else
         retVal = SBL_MulticoreImageParse((void *) &sbl_scratch_mem, SBL_SCRATCH_MEM_START, pEntry, SBL_BOOT_AFTER_COPY);
 #endif
-
-#else
-    /* Initialization of the driver. */
-    FATFS_init();
-
-    /* eMMC FATFS initialization */
-    FATFS_open(0U, NULL, &sbl_fatfsHandle);
-
-    fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
-    if (fresult != FR_OK)
-    {
-        UART_printf("\n SD Boot - File open fails \n");
-        retVal = E_FAIL;
     }
     else
     {
-        fp_readData = &SBL_FileRead;
-        fp_seek     = &SBL_FileSeek;
+        /* Initialization of the driver. */
+        FATFS_init();
+
+        /* eMMC FATFS initialization */
+        FATFS_open(0U, NULL, &sbl_fatfsHandle);
+
+        fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
+        if (fresult != FR_OK)
+        {
+            UART_printf("\n SD Boot - File open fails \n");
+            retVal = E_FAIL;
+        }
+        else
+        {
+            fp_readData = &SBL_FileRead;
+            fp_seek     = &SBL_FileSeek;
 
 #if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
-        retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
+            retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 #else
-        retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry, SBL_BOOT_AFTER_COPY);
+            retVal = SBL_MulticoreImageParse((void *) &fp, 0, pEntry, SBL_BOOT_AFTER_COPY);
 #endif
 
-        f_close(&fp);
+            f_close(&fp);
+        }
+
+        FATFS_close(sbl_fatfsHandle);
+        sbl_fatfsHandle = NULL;
     }
-
-    FATFS_close(sbl_fatfsHandle);
-    sbl_fatfsHandle = NULL;
-#endif
 
     return retVal;
 }
@@ -470,5 +469,10 @@ int32_t SBL_emmcRead(void     *buff,
 void SBL_emmcSeek(void *fileptr, uint32_t location)
 {
     *((uint32_t *) fileptr) = location;
+}
+
+void SBL_enableEmmcBoot0()
+{
+    gIsEmmcBoot0Enable = true;
 }
 

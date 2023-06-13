@@ -57,6 +57,10 @@
 #include <ti/boot/sbl/src/ospi/sbl_ospi.h>
 #endif
 
+#if defined(EMMC_BOOT0)
+#include <ti/boot/sbl/src/emmc/sbl_emmc.h>
+#endif
+
 #if defined(SBL_ENABLE_HLOS_BOOT)
 #if defined(SOC_J721E)
 #include <ti/board/src/j721e_evm/include/board_utils.h>

@@ -161,6 +161,11 @@ SRCS_j721e += j721e_qos_data.c
 SRCS_j721s2 += j721s2_qos_data.c
 SRCS_j784s4 += j784s4_qos_data.c
 
+# User needs to change below macro to boot app with size more than 500 KB.
+# E.g. If app is x KB then give MAX_APP_SIZE_EMMC as (x * 1024) in hexadecimal
+MAX_APP_SIZE_EMMC ?= 0x7D000
+SBL_CFLAGS += -DMAX_APP_SIZE_EMMC=$(MAX_APP_SIZE_EMMC)
+
 # Include common make files
 ifeq ($(MAKERULEDIR), )
 #Makerule path not defined, define this and assume relative path from ROOTDIR

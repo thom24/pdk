@@ -328,6 +328,10 @@ int main()
     SBL_enableNandBoot();
 #endif
 
+#if defined(EMMC_BOOT0)
+    SBL_enableEmmcBoot0();
+#endif
+
     /* Load SYSFW. */
     SBL_SciClientInit(devGroup);
 
