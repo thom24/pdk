@@ -107,7 +107,7 @@ sbl_DISABLE_PARALLEL_MAKE = yes
 
 ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
   sbl_LIB_LIST = sbl_lib_mmcsd sbl_lib_ospi sbl_lib_uart sbl_lib_cust sbl_lib_emmc
-  sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos
+  sbl_LIB_LIST += sbl_lib_mmcsd_hlos sbl_lib_ospi_hlos sbl_lib_ospi_hlos_hs
   sbl_LIB_LIST += sbl_lib_ospi_nondma sbl_lib_ospi_nondma_hs
   sbl_LIB_LIST += sbl_lib_mmcsd_hs sbl_lib_ospi_hs sbl_lib_uart_hs sbl_lib_cust_hs
 else ifeq ($(SOC),$(filter $(SOC), j721e))
@@ -127,10 +127,6 @@ else
   sbl_LIB_LIST += sbl_lib_ospi_nondma_hs
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j721s2))
-  sbl_LIB_LIST += sbl_lib_ospi_hlos_hs
-endif
-
 ############################
 # sbl example
 # List of examples under sbl (+= is used at each example definition)
@@ -140,7 +136,7 @@ endif
 ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
   sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img sbl_emmc_boot0_img
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos sbl_emmc_uda_img
-  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs sbl_ospi_img_hlos_hs
 else ifeq ($(SOC),$(filter $(SOC), j721e))
   sbl_EXAMPLE_LIST = sbl_uart_img sbl_emmc_uda_img sbl_emmc_boot0_img
   sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos sbl_hyperflash_img sbl_hyperflash_img_hlos
@@ -155,7 +151,7 @@ else
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721s2))
-  sbl_EXAMPLE_LIST += sbl_ospi_nand_img sbl_ospi_nand_img_hs sbl_ospi_img_hlos_hs
+  sbl_EXAMPLE_LIST += sbl_ospi_nand_img sbl_ospi_nand_img_hs
 endif
 
 
