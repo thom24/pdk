@@ -82,6 +82,8 @@ static void IntDefaultHandler(void *dummy);
 }
 #endif
 
+extern void vPortDumpExceptionState( void );
+
 static void IntDefaultHandler(void *dummy)
 {
     volatile uint32_t loop = 1;
@@ -260,6 +262,7 @@ void __attribute__((interrupt("ABORT"), section(".text.hwi"))) HwiP_prefetch_abo
     volatile uint32_t loop = 1;
 
     gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
+    vPortDumpExceptionState();
     while(loop)
         ;
 }
@@ -273,6 +276,7 @@ void __attribute__((section(".text.hwi"))) HwiP_data_abort_handler_c(void)
 {
     /* Call registered call back */
     gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
+    vPortDumpExceptionState();
     if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
     {
         gExptnHandlers.dabtExptnHandler(gExptnHandlers.dabtExptnHandlerArgs);

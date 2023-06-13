@@ -53,17 +53,20 @@
 ;   (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 ;   OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-        .text
-        .arm
-        .ref pxCurrentTCB
+	.text
+	.arm
+	.ref pxCurrentTCB
 	.ref vTaskSwitchContext
-        .ref ulPortYieldRequired
-        .ref ulCriticalNesting
-        .ref ulPortTaskHasFPUContext
-        .ref vTaskSwitchContext
-        .ref ulPortInterruptNesting
-        .ref HwiP_irq_handler_c
-        .ref HwiP_data_abort_handler_c
+	.ref ulPortYieldRequired
+	.ref ulCriticalNesting
+	.ref ulPortTaskHasFPUContext
+	.ref vTaskSwitchContext
+	.ref ulPortInterruptNesting
+	.ref HwiP_irq_handler_c
+	.ref HwiP_data_abort_handler_c
+	.ref FaultySP
+	.ref FaultyLR
+	.ref FaultyGPR
 
 SYS_MODE   .set     0x1F
 SVC_MODE   .set     0x13 
@@ -287,6 +290,39 @@ HwiP_data_abort_handler:
 	;  Push used registers.
 	PUSH	{r0-r4, r12}
 
+	; Push R12, as we will use this to index into FaultyGPR
+	PUSH {r12}
+	; Push r0 to r11 to FaultyGPR
+	LDR r12, faultyGPRConst
+	STR r0, [r12], #4
+	STR r1, [r12], #4
+	STR r2, [r12], #4
+	STR r3, [r12], #4
+	STR r4, [r12], #4
+	STR r5, [r12], #4
+	STR r6, [r12], #4
+	STR r7, [r12], #4
+	STR r8, [r12], #4
+	STR r9, [r12], #4
+	STR r10, [r12], #4
+	STR r11, [r12], #4
+	MOV r0, r12
+	; Pop r12 to push it to the FaultyGPR
+	POP {r12}
+	STR r12, [r0]
+
+	;  Capture the faulty SP
+	MOVW r0, faultySPConst
+	MOVT r0, faultySPConst
+	LDR r0, [r0]
+	STR SP, [r0]
+
+	;  Capture the faulty LR
+	MOVW r0, faultyLRConst
+	MOVT r0, faultyLRConst
+	LDR r0, [r0]
+	STR LR, [r0]
+
 	;  Call the interrupt handler.
 	LDR	r1, vApplicationDataAbortHandlerConst
 	BLX	r1
@@ -307,5 +343,8 @@ vTaskSwitchContextConst: .word vTaskSwitchContext
 ulPortInterruptNestingConst: .word ulPortInterruptNesting
 vApplicationIRQHandlerConst: .word HwiP_irq_handler_c
 vApplicationDataAbortHandlerConst: .word HwiP_data_abort_handler_c
+faultySPConst: .word FaultySP
+faultyLRConst: .word FaultyLR
+faultyGPRConst: .word FaultyGPR
 
         .end

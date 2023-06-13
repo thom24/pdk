@@ -131,6 +131,15 @@ static volatile uint64_t ullPortLastTickPmuTs;
 /*  PMU counter timestamp overflow count. */
 static uint32_t ulPmuTsOverFlowCount = 0;
 
+/* Faulty Stack Pointer at Data Abort. */
+uint32_t FaultySP;
+
+/* Faulty Link Register at Data Abort. */
+uint32_t FaultyLR;
+
+/* Faulty General Purpose Registers at Data Abort. */
+uint32_t FaultyGPR[13];
+
 /*
  * Run Time Timer Control Structure. 
  */
@@ -149,6 +158,12 @@ RunTimeTimerControl_t   gTimerCntrl;
  */
 extern void vPortRestoreTaskContext( void );
 
+uint32_t ulGetDataFaultStatusRegister( void );
+uint32_t ulGetDataFaultAddressRegister( void );
+uint32_t ulGetInstructionFaultStatusRegister( void );
+uint32_t ulGetInstructionFaultAddressRegister( void );
+uint32_t ulGetCPSR( void );
+
 BaseType_t xPortInIsrContext(void);
 
 uint64_t uxPortReadPmuCounter(void);
@@ -162,6 +177,45 @@ static void prvTaskExitError( void )
      * Force an assert() to be triggered if configASSERT() is
      * defined, then stop here so application writers can catch the error. */
     DebugP_assert((bool)false);
+}
+
+uint32_t ulGetDataFaultStatusRegister( void )
+{
+    uint32_t DFSR;
+    __asm volatile("MRC     p15, #0, r0, c5, c0, #0\n");
+    __asm volatile ( "MOV %0, r0" : "=r" (DFSR) );
+    return DFSR;
+}
+
+uint32_t ulGetDataFaultAddressRegister( void )
+{
+    uint32_t DFAR;
+    __asm volatile("MRC     p15, #0, r0, c6, c0, #0\n");
+    __asm volatile ( "MOV %0, r0" : "=r" (DFAR) );
+    return DFAR;
+}
+
+uint32_t ulGetInstructionFaultStatusRegister( void )
+{
+    uint32_t IFSR;
+    __asm volatile("MRC     p15, #0, r0, c5, c0, #1\n");
+    __asm volatile ( "MOV %0, r0" : "=r" (IFSR) );
+    return IFSR;
+}
+
+uint32_t ulGetInstructionFaultAddressRegister( void )
+{
+    uint32_t IFAR;
+    __asm volatile("MRC     p15, #0, r0, c6, c0, #2\n");
+    __asm volatile ( "MOV %0, r0" : "=r" (IFAR) );
+    return IFAR;
+}
+
+uint32_t ulGetCPSR( void )
+{
+    volatile uint32_t CPSR;
+	__asm volatile ( "MRS %0, CPSR" : "=r" (CPSR) );
+    return CPSR;
 }
 
 StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
@@ -412,6 +466,26 @@ void vPortExitCritical( void )
             asm ( " CPSIE	i");
         }
     }
+}
+
+void vPortDumpExceptionState( void )
+{
+    volatile uint32_t DFSR, DFAR, IFSR, IFAR, CPSR;
+    DFSR = ulGetDataFaultStatusRegister();
+    DFAR = ulGetDataFaultAddressRegister();
+    IFSR = ulGetInstructionFaultStatusRegister();
+    IFAR = ulGetInstructionFaultAddressRegister();
+    CPSR = ulGetCPSR();
+    DebugP_exceptionLog("[FATAL]: Core has Aborted!!!\nDFAR =0x%x DFSR =0x%x\n", (uintptr_t)DFAR, (uintptr_t)DFSR);
+    DebugP_exceptionLog("IFAR =0x%x IFSR =0x%x\n", (uintptr_t)IFAR, (uintptr_t)IFSR);
+    DebugP_exceptionLog("CPSR =0x%x SP =0x%x\n", (uintptr_t)CPSR, (uintptr_t)FaultySP);
+    DebugP_exceptionLog("LR =0x%x R0 =0x%x\n", (uintptr_t)FaultyLR, (uintptr_t)FaultyGPR[0]);
+    DebugP_exceptionLog("R1 =0x%x R2 =0x%x\n", (uintptr_t)FaultyGPR[1], (uintptr_t)FaultyGPR[2]);
+    DebugP_exceptionLog("R3 =0x%x R4 =0x%x\n", (uintptr_t)FaultyGPR[3], (uintptr_t)FaultyGPR[4]);
+    DebugP_exceptionLog("R5 =0x%x R6 =0x%x\n", (uintptr_t)FaultyGPR[5], (uintptr_t)FaultyGPR[6]);
+    DebugP_exceptionLog("R7 =0x%x R8 =0x%x\n", (uintptr_t)FaultyGPR[7], (uintptr_t)FaultyGPR[8]);
+    DebugP_exceptionLog("R9 =0x%x R10 =0x%x\n", (uintptr_t)FaultyGPR[9], (uintptr_t)FaultyGPR[10]);
+    DebugP_exceptionLog("R11 =0x%x R12 =0x%x\n", (uintptr_t)FaultyGPR[11], (uintptr_t)FaultyGPR[12]);
 }
 
 /* initialize high resolution timer for CPU and task load calculation */

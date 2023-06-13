@@ -74,6 +74,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdarg.h>
 
 #define DebugP_ASSERT_ENABLED 1
 #define DebugP_LOG_ENABLED    1
