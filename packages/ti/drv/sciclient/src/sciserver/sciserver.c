@@ -223,7 +223,7 @@ int32_t Sciserver_interruptHandler(Sciserver_hwiData *uhd, bool* soft_error)
     uint32_t msg_words;
     uint32_t hw_host = 0U;
 
-    *soft_error = false;
+    *soft_error = BFALSE;
     if (ret == CSL_PASS)
     {
         (void) memset(uhd->hw_msg_buffer, 0, SCISERVER_HW_QUEUE_SIZE);
@@ -254,14 +254,14 @@ int32_t Sciserver_interruptHandler(Sciserver_hwiData *uhd, bool* soft_error)
              * the invalid message so that the queue is cleared
              * and we can ignore this message and move on.
              */
-            *soft_error = true;
+            *soft_error = BTRUE;
         }
     }
 
     if (ret == CSL_PASS)
     {
         uhd->user_msg_data->host = (uint8_t)hw_host;
-        uhd->user_msg_data->is_pending = true;
+        uhd->user_msg_data->is_pending = BTRUE;
         ret = Sciserver_SproxyMsgAck(uhd->hw_msg_queue_id);
     }
     else
@@ -292,7 +292,7 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
             utd->state->current_buffer_idx = 0;
         }
 
-        if (utd->user_msg_data[utd->state->current_buffer_idx]->is_pending == true)
+        if (utd->user_msg_data[utd->state->current_buffer_idx]->is_pending == BTRUE)
         {
             utd->state->state = SCISERVER_TASK_PROCESSING_USER_MSG;
             break;
@@ -330,7 +330,7 @@ int32_t Sciserver_processtask(Sciserver_taskData *utd)
 
         if (ret == CSL_PASS)
         {
-            utd->user_msg_data[utd->state->current_buffer_idx]->is_pending = false;
+            utd->user_msg_data[utd->state->current_buffer_idx]->is_pending = BFALSE;
         }
 
         utd->state->state = SCISERVER_TASK_PENDING;
@@ -395,7 +395,7 @@ static int32_t Sciserver_TisciMsgResponse(uint8_t   response_host,
                           msg_words);
     }
 
-    if (ret == 0) {
+    if (ret == CSL_PASS) {
         ret = Sciserver_SproxyMsgFinish(sproxy_conf_id);
     }
 

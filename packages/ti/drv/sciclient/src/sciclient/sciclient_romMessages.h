@@ -116,7 +116,7 @@ extern "C" {
 /** Firmware Load Command response Authorization Passed */
 #define SCICLIENT_ROM_MSG_CERT_AUTH_PASS                            (0x555555U)
 /** Firmware Load Command response Authorization Failed */
-#define SCICLIENT_ROM_MSG_CERT_AUTH_FAIL                            (0xffffffU)
+#define SCICLIENT_ROM_MSG_CERT_AUTH_FAIL                            (0xFFFFFFU)
 /* @} */
 
 /* ========================================================================== */

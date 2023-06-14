@@ -159,7 +159,7 @@ void App_sciclientUARTConfig(void);
 
 extern App_sciclientTestParams_t gSciclientTestcaseParams[];
 
-uint32_t autoRunEnable = (uint32_t) FALSE;
+uint32_t autoRunEnable = UFALSE;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -178,7 +178,7 @@ int32_t App_sciclientParser(void)
 
     while (!done)
     {
-        autoRunEnable = (uint32_t) FALSE;
+        autoRunEnable = UFALSE;
         App_sciclientShowMainMenu();
         #if (APP_SCICLIENT_UT_AUTORUN == 1)
         option = RUN_TESTS_ALL;
