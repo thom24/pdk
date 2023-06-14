@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -42,6 +42,7 @@
 /* ========================================================================== */
 
 #include <ti/drv/udma/udma.h>
+#include <ti/csl/csl_rat.h>
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/drv/udma/examples/udma_apputils/udma_apputils.h>
 #if defined (BUILD_C7X)
@@ -53,7 +54,10 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-/* None */
+#if defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#define REGION_ID (0x0)
+#define MAIN_OCM_VIRT_BASE (0xD0000000U)
+#endif
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -76,6 +80,37 @@
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
+
+static uint32_t logBase2(uint32_t value)
+{
+    uint32_t retVal = 0U;
+    while(value)
+    {
+        retVal++;
+        value = value >> 1;
+    }
+    return retVal;
+}
+
+void Udma_appMainOcmRatCfg(void)
+{
+#if defined(SOC_J721E)
+    /**
+     *  Main OCMC falls in 32-bit address space in j721e,
+     *  No need for RAT mapping
+     */
+#else
+    /* Input Address */
+    *(unsigned int *)(CSL_R5FSS0_RAT_CFG_BASE + 0x44 + (REGION_ID*0x10)) = MAIN_OCM_VIRT_BASE;
+    /* Lower 32 bits Output Address */
+    *(unsigned int *)(CSL_R5FSS0_RAT_CFG_BASE + 0x48 + (REGION_ID*0x10)) = (unsigned int)((CSL_MSRAM_512K0_RAM_BASE) & (0xFFFFFFFF));
+    /* Upper 32 bits Output Address */
+    *(unsigned int *)(CSL_R5FSS0_RAT_CFG_BASE + 0x4C + (REGION_ID*0x10)) = (unsigned int)((CSL_MSRAM_512K0_RAM_BASE >> 32) & (0xFFFFFFFF));
+    /* Region Enable[31] + SIZE of memory[5:0] */
+    *(unsigned int *)(CSL_R5FSS0_RAT_CFG_BASE + 0x40 + (REGION_ID*0x10)) = (CSL_RAT_REGION_CTRL_EN_MAX << CSL_RAT_REGION_CTRL_EN_SHIFT) |\
+                                                            (logBase2(CSL_MSRAM_512K0_RAM_SIZE) << CSL_RAT_REGION_BASE_BASE_SHIFT);
+#endif
+}
 
 void Udma_appUtilsCacheWb(const void *addr, int32_t size)
 {
@@ -118,6 +153,14 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
     uint64_t    phyAddr;
     uint64_t    atcmSizeLocal = 0U;
     uint64_t    atcmBaseGlobal = 0U;
+
+#if defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined (BUILD_MCU2_0)
+    uint64_t    mainOcmcBaseLocal   = MAIN_OCM_VIRT_BASE;
+    uint64_t    mainOcmcBaseGlobal  = CSL_MSRAM_512K0_RAM_BASE;
+    uint64_t    mainOcmcSize = (512U * 1024U);
+#endif
+#endif
 
     phyAddr = (uint64_t) virtAddr;
 #if defined (BUILD_C66X)
@@ -223,6 +266,17 @@ uint64_t Udma_appVirtToPhyFxn(const void *virtAddr, uint32_t chNum, void *appDat
         phyAddr += atcmBaseGlobal;
     }
 
+
+#if defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined (BUILD_MCU2_0)
+    if((phyAddr >= mainOcmcBaseLocal) && (phyAddr < mainOcmcBaseLocal + mainOcmcSize))
+    {
+        phyAddr -= mainOcmcBaseLocal;
+        phyAddr += mainOcmcBaseGlobal;
+    }
+#endif
+#endif
+
     return (phyAddr);
 }
 
@@ -236,6 +290,14 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
     uint32_t temp;
     uint64_t    atcmBaseGlobal = 0U;
     uint64_t    atcmSizeGlobal = 0U;
+
+#if defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined (BUILD_MCU2_0)
+    uint64_t    mainOcmcBaseLocal   = MAIN_OCM_VIRT_BASE;
+    uint64_t    mainOcmcBaseGlobal  = CSL_MSRAM_512K0_RAM_BASE;
+    uint64_t    mainOcmcSize        = (512U * 1024U);
+#endif
+#endif
 
     /* Convert global L2RAM address to local space */
 #if defined (BUILD_C66X_1)
@@ -323,6 +385,18 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
     /* R5/C66x is 32-bit; need to truncate to avoid void * typecast error */
     temp = (uint32_t) phyAddr;
     virtAddr = (void *) temp;
+
+#if defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined (BUILD_MCU2_0)
+    if((phyAddr >= mainOcmcBaseGlobal) && (phyAddr < mainOcmcBaseGlobal + mainOcmcSize))
+    {
+        phyAddr -= mainOcmcBaseGlobal;
+        phyAddr += mainOcmcBaseLocal;
+    }
+    temp = (uint32_t) phyAddr;
+    virtAddr = (void *) temp;
+#endif
+#endif
 #endif
 
     return (virtAddr);

@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2023
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -152,6 +152,11 @@ uint32_t Udma_appIsPrintSupported(void);
  *  \return TRUE if statistics is supported. Else FALSE
  */
 uint32_t Udma_appIsUdmapStatsSupported(void);
+
+/**
+ *  \brief Configure RAT for MAIN OCMC to DDR
+ */
+void Udma_appMainOcmRatCfg(void);
 
 #ifdef __cplusplus
 }

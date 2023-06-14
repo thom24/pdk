@@ -595,6 +595,35 @@ export udma_baremetal_ospi_flash_testapp_$(SOC)_CORELIST = mcu1_0
 export udma_baremetal_ospi_flash_testapp_SBL_APPIMAGEGEN = yes
 udma_EXAMPLE_LIST += udma_baremetal_ospi_flash_testapp
 
+# RTOS UDMA MAIN OCMC test apps
+define UDMA_MAIN_OCMC_TESTAPP_RULE
+
+# UDMA MAIN OCMC test app
+export udma_main_ocmc_testapp_$(1)_COMP_LIST = udma_main_ocmc_testapp_$(1)
+udma_main_ocmc_testapp_$(1)_RELPATH = ti/drv/udma/examples/udma_main_ocmc_test
+udma_main_ocmc_testapp_$(1)_PATH = $(PDK_UDMA_COMP_PATH)/examples/udma_main_ocmc_test
+export udma_main_ocmc_testapp_$(1)_BOARD_DEPENDENCY = yes
+export udma_main_ocmc_testapp_$(1)_CORE_DEPENDENCY = yes
+export udma_main_ocmc_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+udma_main_ocmc_testapp_$(1)_PKG_LIST = udma_main_ocmc_testapp_$(1)
+udma_main_ocmc_testapp_$(1)_INCLUDE = $(udma_main_ocmc_testapp_$(1)_PATH)
+export udma_main_ocmc_testapp_$(1)_BOARDLIST = $(drvudma_BOARDLIST)
+export udma_main_ocmc_testapp_$(1)_$(SOC)_CORELIST = mcu2_0
+export udma_main_ocmc_testapp_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+udma_EXAMPLE_LIST += udma_main_ocmc_testapp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+udma_EXAMPLE_LIST += udma_main_ocmc_testapp_$(1)
+endif
+endif
+
+endef
+
+UDMA_MAIN_OCMC_TESTAPP_MACRO_LIST := $(foreach curos, $(drvudma_RTOS_LIST), $(call UDMA_MAIN_OCMC_TESTAPP_RULE,$(curos)))
+
+$(eval ${UDMA_MAIN_OCMC_TESTAPP_MACRO_LIST})
+
 -include $(PDK_UDMA_COMP_PATH)/unit_test/udma_ut_component.mk
 ifneq ($(udma_ut_LIB_LIST),)
   udma_LIB_LIST += $(udma_ut_LIB_LIST)
