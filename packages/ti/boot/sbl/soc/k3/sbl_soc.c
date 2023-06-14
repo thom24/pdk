@@ -694,27 +694,8 @@ static void J721E_UART_InitPwrClk(void)
     HW_WR_REG32(SBL_UART_PLL_BASE + SBL_UART_PLL_KICK1_OFFSET, SBL_UART_PLL_KICK_LOCK_VAL);
 }
 
-static void J721E_SetupLvCmosDriveStrength(void)
-{
-    volatile uint32_t *reg1 = (uint32_t *)0x43005008;
-    volatile uint32_t *reg2 = (uint32_t *)0x4300500C;
-    volatile uint32_t *lvcmos_drv_h_base = (uint32_t *)0x430060c0;
-    volatile uint32_t *lvcmos_drv_v_base = (uint32_t *)0x430060d0;
-    volatile uint32_t i;
-
-    *reg1 = 0x68EF3490;
-    *reg2 = 0xD172BC5A;
-    /* Workaround for fixing lvcmos drive strength */
-    for (i = 0; i < 4; i++)
-    {
-       *(lvcmos_drv_h_base + i) = 0xD;
-       *(lvcmos_drv_v_base + i ) = 0xD;
-    }
-}
-
 void SBL_SocEarlyInit()
 {
-    J721E_SetupLvCmosDriveStrength();
     J721E_UART_InitPwrClk();
 }
 
