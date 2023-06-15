@@ -78,7 +78,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 1U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)FALSE,
+        .cacheable        = UFALSE,
         .cachePolicy      = 0U,
         .memAttr          = 0U,
     },
@@ -92,7 +92,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
         .memAttr          = 0U,
     },
@@ -106,7 +106,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
@@ -128,7 +128,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
@@ -142,7 +142,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
@@ -156,7 +156,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_NON_CACHEABLE,
         .memAttr          = 0U,
     },
@@ -170,7 +170,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_CACHE_POLICY_WB_WA,
         .memAttr          = 0U,
     },
@@ -192,7 +192,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         /* OSPI PHY tuning algorithm which runs in DAC mode needs
          * cache to be disabled for this section of FSS data region.
          */
-        .cacheable        = (uint32_t)FALSE,
+        .cacheable        = UFALSE,
         .cachePolicy      = 0U,
         .memAttr          = 0U,
     },
@@ -206,7 +206,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
@@ -221,7 +221,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
@@ -237,7 +237,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
         .exeNeverControl  = 0U,
         .accessPermission = CSL_ARM_R5_ACC_PERM_PRIV_USR_RD_WR,
         .shareable        = 0U,
-        .cacheable        = (uint32_t)TRUE,
+        .cacheable        = UTRUE,
         .cachePolicy      = CSL_ARM_R5_MEM_ATTR_CACHED_WT_NO_WA,
         .memAttr          = 0U,
     },
@@ -290,7 +290,7 @@ int main()
         /* Use UART fclk freq setup by ROM */
         uart_cfg.frequency = SBL_ROM_UART_MODULE_INPUT_CLK;
         /* Disable the UART interrupt */
-        uart_cfg.enableInterrupt = FALSE;
+        uart_cfg.enableInterrupt = UFALSE;
         UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
         /* Init UART for logging. */
         UART_stdioInit(BOARD_UART_INSTANCE);

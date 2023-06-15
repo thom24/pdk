@@ -152,7 +152,7 @@ static int32_t sblUdmaDelete(Sbl_UdmaObj *udmaObj);
 
 static void sblTrpdinit(Sbl_UdmaChObj *udmaChObj, void *srcAddr, void *dstAddr, uint32_t length);
 
-static void SBL_udmaCacheWb(const void *addr, int32_t size);
+static void SBL_udmaCacheWb(const void *addr, uint32_t size);
 
 
 /* ========================================================================== */
@@ -196,7 +196,7 @@ int32_t SBL_udmaInit(Udma_DrvHandle drvHndl)
     }
     else
     {
-        udmaObj->initDone = TRUE;
+        udmaObj->initDone = 1;
         retVal = 0;
     }
 
@@ -224,7 +224,7 @@ void SBL_udmaDeInit(void)
     {
         SBL_log(SBL_LOG_ERR, "[DMA] UDMA App deinit failed!!\n");
     }
-    udmaObj->initDone = FALSE;
+    udmaObj->initDone = 0;
 }
 
 int32_t SBL_udmaReadData(void *dstAddr, void *srcAddr, uint32_t length)
@@ -694,7 +694,7 @@ static void sblTrpdinit(Sbl_UdmaChObj *udmaChObj, void *srcAddr, void *dstAddr, 
 }
 
 
-static void SBL_udmaCacheWb(const void *addr, int32_t size)
+static void SBL_udmaCacheWb(const void *addr, uint32_t size)
 {
     CacheP_wb(addr, size);
 

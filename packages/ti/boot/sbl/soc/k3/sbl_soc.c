@@ -169,7 +169,7 @@ void SBL_DCacheClean(void *addr, uint32_t size)
     if (num_iterations < 64 * 4)
     {
         /* Invalidate by MVA */
-        CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), (bool)TRUE);
+        CSL_armR5CacheWbInv((const void *)addr, size, BTRUE);
     }
     else
     {
@@ -351,7 +351,7 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
         (scratch_sz != 0))
     {
         uint8_t unaligned_bytes = cert_len % 4;
-        uint8_t pad_align = 4 - unaligned_bytes;
+        uint8_t pad_align = 4U - unaligned_bytes;
 
         SBL_log(SBL_LOG_MAX,"SBL reserved memory Found: Start = @ 0x%x, Size = 0x%x\r\n", scratch_mem, scratch_sz);
         /* adjust cert load addr so that the */
@@ -373,7 +373,7 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
 
             img_len += unaligned_bytes;
             unaligned_bytes = img_len % 4;
-            pad_align = 4 - unaligned_bytes;
+            pad_align = 4U - unaligned_bytes;
             img_len += pad_align;
 
             SBL_log(SBL_LOG_MAX,"Copying %d bytes from offset 0x%x to 0x%x...", img_len, *ImageOffsetPtr + cert_len - unaligned_bytes, scratch_mem_ptr);
@@ -611,9 +611,9 @@ void SBL_ConfigureEthernet(void)
 #if !defined(SBL_USE_MCU_DOMAIN_ONLY)
     Board_STATUS status = BOARD_SOK;
 #if defined(SOC_J721E)
-    bool gesiDetected = false;
+    bool gesiDetected = BFALSE;
 #endif
-    bool qenetDetected = false;
+    bool qenetDetected = BFALSE;
 
 #if defined(SOC_J721E)
     /* Ethernet config: set proper board muxes for Eth. firmware */
@@ -652,13 +652,13 @@ void SBL_ConfigureEthernet(void)
     if (qenetDetected)
     {
         /* Release PHY reset */
-        status = Board_cpswEnetExpPhyReset(0U);
+        status = Board_cpswEnetExpPhyReset(BFALSE);
         if (status != BOARD_SOK)
         {
             SBL_log(SBL_LOG_MAX,"Board_cpswEnetExpPhyReset failed to reset the ENET PHY\r\n");
         }
         /* Release the COMA_MODE pin */
-        status = Board_cpswEnetExpComaModeCfg(0U);
+        status = Board_cpswEnetExpComaModeCfg(BFALSE);
         if (status != BOARD_SOK)
         {
             SBL_log(SBL_LOG_MAX,"Board_cpswEnetExpComaModeCfg failed to release COMA_MODE pin\r\n");
@@ -757,7 +757,7 @@ static void J721E_EnableThermalMaxTempAlert(void)
         ts_ctrl_cfg.mode       = CSL_VTM_TS_CTRL_CONTINUOUS_MODE;
         ts_ctrl_cfg.tsReset    = CSL_VTM_TS_CTRL_SENSOR_NORM_OP;
 
-        retStatus = CSL_vtmTsSetCtrl(p_vtm_cfg2_regs, id, &ts_ctrl_cfg, FALSE);
+        retStatus = CSL_vtmTsSetCtrl(p_vtm_cfg2_regs, id, &ts_ctrl_cfg, UFALSE);
         if(retStatus != CSL_PASS)
             SBL_log(SBL_LOG_ERR,"Failed to Set Global Cfg values for Sensor ID %d \r\n", id);
 

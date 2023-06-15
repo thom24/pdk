@@ -144,7 +144,7 @@ int32_t SBL_uartInit(uint32_t inClkFreqHz)
     uart_cfg.frequency = inClkFreqHz;
 #endif
     /* Disable the UART interrupt */
-    uart_cfg.enableInterrupt = FALSE;
+    uart_cfg.enableInterrupt = UFALSE;
     UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
 
 #if(defined(SOC_TPR12) || defined (SOC_AWR294X))

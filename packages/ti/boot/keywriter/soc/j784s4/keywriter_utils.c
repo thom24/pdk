@@ -89,7 +89,7 @@ void OTP_VppEn(void)
 
     i2cCfg.i2cInst    = BOARD_I2C_EEPROM_INSTANCE;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_WKUP;
-    i2cCfg.enableIntr = FALSE;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     /* Check if the board is SK */
