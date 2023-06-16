@@ -935,7 +935,7 @@ static UART_Handle UART_open_v1(UART_Handle handle, const UART_Params *params)
             }
             if (object->params.procChrTimeoutInt == 1U)
             {
-                UARTSetTimeOutValue(hwAttrs->baseAddr, params->timeoutIntrVal, params->timeoutBehavior);
+                UARTSetTimeOutValue(hwAttrs->baseAddr, object->params.timeoutIntrVal, object->params.timeoutBehavior);
             }
             UART_drv_log3("UART:(0x%x) CPU freq: %d; UART baudrate to %d",
                 hwAttrs->baseAddr, hwAttrs->frequency, object->params.baudRate);
