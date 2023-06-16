@@ -37,7 +37,7 @@
         .text
         .arm
         .ref vDataAbort_c
-		.sect "KERNEL_FUNCTION"
+		.sect ".KERNEL_FUNCTION"
 
 ;------------------------------------------------------------------------------
 ; Constant Definitions
