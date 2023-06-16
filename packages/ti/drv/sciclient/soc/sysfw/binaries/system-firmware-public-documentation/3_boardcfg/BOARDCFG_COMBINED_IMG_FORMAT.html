@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.03
+                09.00.06
               </div>
             
           
@@ -253,7 +253,7 @@ configuration</td>
 developer needs to call is as below:</p>
 <p><em>STEP 1</em>: Load the firmware using ROM APIs during boot.</p>
 <div class="highlight-c"><div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span class="normal">1</span>
-<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><span class="cm">/** Firmware Load Command ID from R5 to M3 */</span><span class="w"></span>
+<span class="normal">2</span></pre></div></td><td class="code"><div><pre><span></span><span class="cm">/** Firmware Load Command ID from R5 to M3 */</span>
 <span class="cp">#define ROM_MSG_R5_TO_M3_M3FW                    (0x8105U)</span>
 </pre></div></td></tr></table></div>
 </div>
@@ -266,11 +266,11 @@ authentication and/or decryption of the System Firmware by ROM.</p>
 <span class="normal">3</span>
 <span class="normal">4</span>
 <span class="normal">5</span>
-<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><span class="cm">/** Firmware Load Command ID from M3 to R5 */</span><span class="w"></span>
+<span class="normal">6</span></pre></div></td><td class="code"><div><pre><span></span><span class="cm">/** Firmware Load Command ID from M3 to R5 */</span>
 <span class="cp">#define ROM_MSG_M3_TO_R5_M3FW_RESULT             (0x8805U)</span>
-<span class="cm">/** Firmware Load Command response Authorization Passed */</span><span class="w"></span>
+<span class="cm">/** Firmware Load Command response Authorization Passed */</span>
 <span class="cp">#define ROM_MSG_CERT_AUTH_PASS                   (0x555555U)</span>
-<span class="cm">/** Firmware Load Command response Authorization Failed */</span><span class="w"></span>
+<span class="cm">/** Firmware Load Command response Authorization Failed */</span>
 <span class="cp">#define ROM_MSG_CERT_AUTH_FAIL                   (0xffffffU)</span>
 </pre></div></td></tr></table></div>
 </div>
@@ -438,7 +438,7 @@ passed board configuration to System Firmware.</p>
 <span class="cm"> *</span>
 <span class="cm"> * \def EXTBOOT_BOARDCFG_NUM_FIELDS</span>
 <span class="cm"> * Number of fields in extended boot status</span>
-<span class="cm"> */</span><span class="w"></span>
+<span class="cm"> */</span>
 <span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_PRESENT                BIT(0)</span>
 <span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_VALID                  BIT(1)</span>
 <span class="w"> </span><span class="cp">#define EXTBOOT_BOARDCFG_SECURITY_PRESENT       BIT(2)</span>
@@ -657,7 +657,7 @@ will still need to authenticate.</li>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'09.00.03',
+            VERSION:'09.00.06',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

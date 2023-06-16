@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.03
+                09.00.06
               </div>
             
           
@@ -346,14 +346,108 @@ enabled trace method.
 The data sent out is the dump of the firewall exception registers as
 defined in below section in the corresponding device TRM.</p>
 <p>“System Interconnect” -&gt; “System Interconnect Registers” -&gt; “Firewall Exception Registers”</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">FWL</span><span class="w"> </span><span class="n">Exception</span><span class="w">  </span><span class="mh">0x1116100</span><span class="w"></span>
-<span class="mh">0x70000</span><span class="w"></span>
-<span class="mh">0x70000000</span><span class="w"></span>
-<span class="mh">0x0</span><span class="w"></span>
-<span class="mh">0xE022000</span><span class="w"></span>
-<span class="mh">0x8</span><span class="w"></span>
+<p>The following is an example of an exception log description that was sent via the enabled traces.</p>
+<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">FWL</span><span class="w"> </span><span class="n">Bit</span><span class="w"> </span><span class="mh">0x1D</span>
+<span class="n">Exception</span><span class="w"> </span><span class="n">addr</span><span class="w"> </span><span class="mh">0x45B0B800</span>
+<span class="w">  </span><span class="n">FWL</span><span class="w"> </span><span class="n">Exception</span><span class="w"> </span><span class="mh">0x1129800</span>
+<span class="w">  </span><span class="mh">0x30000</span>
+<span class="w">  </span><span class="mh">0x707FFF20</span>
+<span class="w">  </span><span class="mh">0x0</span>
+<span class="w">  </span><span class="mh">0xFF82360</span>
+<span class="w">  </span><span class="mh">0x8</span>
 </pre></div>
 </div>
+<p>The exception description can be interpreted as follows:</p>
+<ol class="arabic simple">
+<li>Line 1 (FWL Bit …) - This should be ignored.</li>
+<li>Line 2 (Exception addr …) - This is the base address of the exception logging registers.</li>
+<li>Line 3 (FWL Exception …) - Let this number be N, then:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>N[0-7] - Destination ID</li>
+<li>N[8-23] - Source ID</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="4">
+<li>Line 4 - Let this number be N, then:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>N[0-15] - Not relevant for debugging.</li>
+<li>N[16-23] - Represents the exception type. Refer to the table below.</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="5">
+<li>Line 5 - Lower 32 bits of the transaction address.</li>
+<li>Line 6 - Let this number be N, then:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>N[0-15] - Upper 16 bits of the transaction address.</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="7">
+<li>Line 7 - Let this number be N, then:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>N[0-7] - The PRIV ID of the initiator that caused the illegal transaction.</li>
+<li>N[8] - Represents the security level of the transaction.</li>
+<li>N[9] - Represents the privilege level of the transaction.</li>
+<li>N[10] - When set, it indicates a cacheable transaction.</li>
+<li>N[11] - When set, it indicates a debug transaction.</li>
+<li>N[12] - When set, it indicates a read transaction.</li>
+<li>N[13] - When set, it indicates a write transaction.</li>
+<li>N[16-27] - Route ID</li>
+</ul>
+</div></blockquote>
+<ol class="arabic simple" start="8">
+<li>Line 8 - Let this number be N, then:</li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li>N[0-9] - Represents the transaction byte count.</li>
+</ul>
+</div></blockquote>
+<table border="1" class="docutils">
+<colgroup>
+<col width="14%" />
+<col width="86%" />
+</colgroup>
+<tbody valign="top">
+<tr class="row-odd"><td><strong>Line4[16-23]</strong></td>
+<td>Exception Type.</td>
+</tr>
+<tr class="row-even"><td>0x00</td>
+<td>Reserved.</td>
+</tr>
+<tr class="row-odd"><td>0x01</td>
+<td>No region enabled but firewall is active. One region must be enabled for whitelist firewall.</td>
+</tr>
+<tr class="row-even"><td>0x02</td>
+<td>Incoming address does not hit any active region.</td>
+</tr>
+<tr class="row-odd"><td>0x03</td>
+<td>Priv-ID not authorized to access incoming address region, or Priv-ID not found in any slot for hit region.</td>
+</tr>
+<tr class="row-even"><td>0x04</td>
+<td>Cacheable error, a cacheable transaction attempting to read/write non-cached marked region.</td>
+</tr>
+<tr class="row-odd"><td>0x05</td>
+<td>Debug error, a debug transaction attempting to read/write a debug not-allowed region.</td>
+</tr>
+<tr class="row-even"><td>0x06</td>
+<td>Read error, a transaction attempting to read from read not-allowed region.</td>
+</tr>
+<tr class="row-odd"><td>0x07</td>
+<td>Write error, a transaction attempting to write a write not-allowed region.</td>
+</tr>
+<tr class="row-even"><td>0x08</td>
+<td>4KB Crossing error, a transaction attempting to cross a 4KB boundary.</td>
+</tr>
+</tbody>
+</table>
 <p>The 6 hex values shown above correspond to the 2 exception header registers and
 4 exception data registers in the order shown in the TRM.</p>
 <div class="admonition warning">
@@ -412,7 +506,7 @@ will result in a firewall exception.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'09.00.03',
+            VERSION:'09.00.06',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

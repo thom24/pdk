@@ -63,6 +63,7 @@ Secure Management
    security/runtime_debug
    security/extended_otp
    security/dkek_management
+   security/dsmek_management
    security/security_handover
    security/keywriter
    security/otp_revision

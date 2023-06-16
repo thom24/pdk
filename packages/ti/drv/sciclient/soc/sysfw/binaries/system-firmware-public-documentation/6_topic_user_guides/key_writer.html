@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.03
+                09.00.06
               </div>
             
           
@@ -409,145 +409,145 @@ also to be write protected.</p>
 </div>
 <div class="section" id="x509-configuration-template">
 <span id="sysfw-pub-keywr-cert-format"></span><h2>X509 Configuration Template<a class="headerlink" href="#x509-configuration-template" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="o">[</span> req <span class="o">]</span>
-<span class="nv">distinguished_name</span> <span class="o">=</span> req_distinguished_name
-<span class="nv">x509_extensions</span> <span class="o">=</span> v3_ca
-<span class="nv">prompt</span> <span class="o">=</span> no
-<span class="nv">dirstring_type</span> <span class="o">=</span> nobmp
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="o">[</span><span class="w"> </span>req<span class="w"> </span><span class="o">]</span>
+<span class="nv">distinguished_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>req_distinguished_name
+<span class="nv">x509_extensions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>v3_ca
+<span class="nv">prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+<span class="nv">dirstring_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>nobmp
 
 <span class="c1"># This information will be filled by the end user.</span>
 <span class="c1"># The current data is only a place holder.</span>
 <span class="c1"># System firmware does not make decisions based</span>
 <span class="c1"># on the contents of this distinguished name block.</span>
-<span class="o">[</span> req_distinguished_name <span class="o">]</span>
-<span class="nv">C</span> <span class="o">=</span> oR
-<span class="nv">ST</span> <span class="o">=</span> rx
-<span class="nv">L</span> <span class="o">=</span> gQE843yQV0sag
-<span class="nv">O</span> <span class="o">=</span> dqhGYAQ2Y4gFfCq0t1yABCYxex9eAxt71f
-<span class="nv">OU</span> <span class="o">=</span> a87RB35W
-<span class="nv">CN</span> <span class="o">=</span> x0FSqGTPWbGpuiV
-<span class="nv">emailAddress</span> <span class="o">=</span> kFp5uGcgWXxcfxi@vsHs9C9qQWGrBs.com
+<span class="o">[</span><span class="w"> </span>req_distinguished_name<span class="w"> </span><span class="o">]</span>
+<span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>oR
+<span class="nv">ST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>rx
+<span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>gQE843yQV0sag
+<span class="nv">O</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>dqhGYAQ2Y4gFfCq0t1yABCYxex9eAxt71f
+<span class="nv">OU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>a87RB35W
+<span class="nv">CN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>x0FSqGTPWbGpuiV
+<span class="nv">emailAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>kFp5uGcgWXxcfxi@vsHs9C9qQWGrBs.com
 
-<span class="o">[</span> v3_ca <span class="o">]</span>
-<span class="nv">basicConstraints</span> <span class="o">=</span> CA:true
-<span class="m">1</span>.3.6.1.4.1.294.1.64 <span class="o">=</span> ASN1:SEQUENCE:enc_aes_key
-<span class="m">1</span>.3.6.1.4.1.294.1.65 <span class="o">=</span> ASN1:SEQUENCE:enc_smpk_signed_aes_key
-<span class="m">1</span>.3.6.1.4.1.294.1.66 <span class="o">=</span> ASN1:SEQUENCE:enc_bmpk_signed_aes_key
-<span class="m">1</span>.3.6.1.4.1.294.1.67 <span class="o">=</span> ASN1:SEQUENCE:aesenc_smpkh
-<span class="m">1</span>.3.6.1.4.1.294.1.68 <span class="o">=</span> ASN1:SEQUENCE:aesenc_smek
-<span class="m">1</span>.3.6.1.4.1.294.1.69 <span class="o">=</span> ASN1:SEQUENCE:plain_mpk_options
-<span class="m">1</span>.3.6.1.4.1.294.1.70 <span class="o">=</span> ASN1:SEQUENCE:aesenc_bmpkh
-<span class="m">1</span>.3.6.1.4.1.294.1.71 <span class="o">=</span> ASN1:SEQUENCE:aesenc_bmek
-<span class="m">1</span>.3.6.1.4.1.294.1.72 <span class="o">=</span> ASN1:SEQUENCE:plain_mek_options
-<span class="m">1</span>.3.6.1.4.1.294.1.73 <span class="o">=</span> ASN1:SEQUENCE:aesenc_ext_otp
-<span class="m">1</span>.3.6.1.4.1.294.1.74 <span class="o">=</span> ASN1:SEQUENCE:plain_key_rev
-<span class="m">1</span>.3.6.1.4.1.294.1.76 <span class="o">=</span> ASN1:SEQUENCE:plain_msv
-<span class="m">1</span>.3.6.1.4.1.294.1.77 <span class="o">=</span> ASN1:SEQUENCE:plain_key_cnt
-<span class="m">1</span>.3.6.1.4.1.294.1.78 <span class="o">=</span> ASN1:SEQUENCE:plain_swrev_sysfw
-<span class="m">1</span>.3.6.1.4.1.294.1.79 <span class="o">=</span> ASN1:SEQUENCE:plain_swrev_sbl
-<span class="m">1</span>.3.6.1.4.1.294.1.80 <span class="o">=</span> ASN1:SEQUENCE:plain_swrev_sec_brdcfg
-<span class="m">1</span>.3.6.1.4.1.294.1.81 <span class="o">=</span> ASN1:SEQUENCE:plain_keywr_min_version
+<span class="o">[</span><span class="w"> </span>v3_ca<span class="w"> </span><span class="o">]</span>
+<span class="nv">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>CA:true
+<span class="m">1</span>.3.6.1.4.1.294.1.64<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:enc_aes_key
+<span class="m">1</span>.3.6.1.4.1.294.1.65<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:enc_smpk_signed_aes_key
+<span class="m">1</span>.3.6.1.4.1.294.1.66<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:enc_bmpk_signed_aes_key
+<span class="m">1</span>.3.6.1.4.1.294.1.67<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:aesenc_smpkh
+<span class="m">1</span>.3.6.1.4.1.294.1.68<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:aesenc_smek
+<span class="m">1</span>.3.6.1.4.1.294.1.69<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_mpk_options
+<span class="m">1</span>.3.6.1.4.1.294.1.70<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:aesenc_bmpkh
+<span class="m">1</span>.3.6.1.4.1.294.1.71<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:aesenc_bmek
+<span class="m">1</span>.3.6.1.4.1.294.1.72<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_mek_options
+<span class="m">1</span>.3.6.1.4.1.294.1.73<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:aesenc_ext_otp
+<span class="m">1</span>.3.6.1.4.1.294.1.74<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_key_rev
+<span class="m">1</span>.3.6.1.4.1.294.1.76<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_msv
+<span class="m">1</span>.3.6.1.4.1.294.1.77<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_key_cnt
+<span class="m">1</span>.3.6.1.4.1.294.1.78<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_swrev_sysfw
+<span class="m">1</span>.3.6.1.4.1.294.1.79<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_swrev_sbl
+<span class="m">1</span>.3.6.1.4.1.294.1.80<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_swrev_sec_brdcfg
+<span class="m">1</span>.3.6.1.4.1.294.1.81<span class="w"> </span><span class="o">=</span><span class="w"> </span>ASN1:SEQUENCE:plain_keywr_min_version
 
-<span class="o">[</span> enc_aes_key <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>enc_aes_key<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-ENC-AES-KEY with acutal Encrypted AES Key</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_ENC_AES_KEY
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_ENC_AES
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_ENC_AES_KEY
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_ENC_AES
 
-<span class="o">[</span> enc_bmpk_signed_aes_key <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>enc_bmpk_signed_aes_key<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-ENC-BMPK-SIGNED-AES-KEY with acutal Encrypted BMPK signed AES Key</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_ENC_BMPK_SIGNED_AES_KEY
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_ENC_BMPK_SIGNED_AES
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_ENC_BMPK_SIGNED_AES_KEY
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_ENC_BMPK_SIGNED_AES
 
-<span class="o">[</span> enc_smpk_signed_aes_key <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>enc_smpk_signed_aes_key<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-ENC-SMPK-SIGNED-AES-KEY with acutal Encrypted SMPK signed AES Key</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_ENC_SMPK_SIGNED_AES_KEY
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_ENC_SMPK_SIGNED_AES
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_ENC_SMPK_SIGNED_AES_KEY
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_ENC_SMPK_SIGNED_AES
 
-<span class="o">[</span> aesenc_smpkh <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>aesenc_smpkh<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-AESENC-SPMKH with acutal Encrypted AES Key</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_AESENC_SMPKH
-<span class="nv">iv</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_IV_AESENC_SMPKH
-<span class="nv">rs</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_RS_AESENC_SMPKH
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_AESENC_SMPKH
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_AESENC_SMPKH
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_AESENC_SMPKH
+<span class="nv">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_IV_AESENC_SMPKH
+<span class="nv">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_RS_AESENC_SMPKH
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_AESENC_SMPKH
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_AESENC_SMPKH
 
-<span class="o">[</span> aesenc_smek <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>aesenc_smek<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-AESENC-SMEK with acutal Encrypted AES Key</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_AESENC_SMEK
-<span class="nv">iv</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_IV_AESENC_SMEK
-<span class="nv">rs</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_RS_AESENC_SMEK
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_AESENC_SMEK
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_AESENC_SMEK
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_AESENC_SMEK
+<span class="nv">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_IV_AESENC_SMEK
+<span class="nv">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_RS_AESENC_SMEK
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_AESENC_SMEK
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_AESENC_SMEK
 
-<span class="o">[</span> aesenc_bmpkh <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>aesenc_bmpkh<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-AESENC-BMPKH with acutal Encrypted BMPKH</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_AESENC_BMPKH
-<span class="nv">iv</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_IV_AESENC_BMPKH
-<span class="nv">rs</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_RS_AESENC_BMPKH
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_AESENC_BMPKH
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_AESENC_BMPKH
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_AESENC_BMPKH
+<span class="nv">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_IV_AESENC_BMPKH
+<span class="nv">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_RS_AESENC_BMPKH
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_AESENC_BMPKH
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_AESENC_BMPKH
 
-<span class="o">[</span> aesenc_bmek <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>aesenc_bmek<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-AESENC-BMEK with acutal Encrypted BMEK</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_AESENC_BMEK
-<span class="nv">iv</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_IV_AESENC_BMEK
-<span class="nv">rs</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_RS_AESENC_BMEK
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_AESENC_BMEK
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_AESENC_BMEK
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_AESENC_BMEK
+<span class="nv">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_IV_AESENC_BMEK
+<span class="nv">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_RS_AESENC_BMEK
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_AESENC_BMEK
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_AESENC_BMEK
 
-<span class="o">[</span> plain_msv <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_msv<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-MSV with actual MSV value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_MSV
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_MSV
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_MSV
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_MSV
 
-<span class="o">[</span> plain_mpk_options <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_mpk_options<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-MPK-OPT with actual MPK OPT value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_MPK_OPT
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_MPK_OPT
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_MPK_OPT
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_MPK_OPT
 
-<span class="o">[</span> plain_mek_options <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_mek_options<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-MEK-OPT with actual MEK OPT value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_MEK_OPT
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_MEK_OPT
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_MEK_OPT
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_MEK_OPT
 
-<span class="o">[</span> plain_key_rev <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_key_rev<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-KEY-REV with actual Key Rev value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_KEY_REV
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_KEY_REV
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_KEY_REV
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_KEY_REV
 
-<span class="o">[</span> plain_key_cnt <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_key_cnt<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-KEY-CNT with actual Key Count value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_KEY_CNT
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_KEY_CNT
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_KEY_CNT
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_KEY_CNT
 
-<span class="o">[</span> plain_swrev_sysfw <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_swrev_sysfw<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-SWREV-SYSFW with actual SWREV SYSFW value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_SWREV_SYSFW
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_SWREV_SYSFW
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_SWREV_SYSFW
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_SWREV_SYSFW
 
-<span class="o">[</span> plain_swrev_sbl <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_swrev_sbl<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-SWREV-SBL with actual SWREV SBL value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_SWREV_SBL
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_SWREV_SBL
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_SWREV_SBL
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_SWREV_SBL
 
-<span class="o">[</span> plain_swrev_sec_brdcfg <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>plain_swrev_sec_brdcfg<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-PLAIN-SWREV-SEC-BRDCFG with actual SWREV SEC BRDCFG value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_SWREV_SEC_BRDCFG
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_PLAIN_SWREV_SEC_BRDCFG
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_SWREV_SEC_BRDCFG
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_PLAIN_SWREV_SEC_BRDCFG
 
-<span class="o">[</span>plain_keywr_min_version <span class="o">]</span> 
+<span class="o">[</span>plain_keywr_min_version<span class="w"> </span><span class="o">]</span><span class="w"> </span>
 <span class="c1"># Replace PUT-PLAIN-KEYWR-MIN-VER with actual KEYWR-MIN-VER value</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_PLAIN_KEYWR_MIN_VER
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_PLAIN_KEYWR_MIN_VER
 
-<span class="o">[</span> aesenc_ext_otp <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>aesenc_ext_otp<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-AESENC-EXT-OTP with actual Encrypted OTP</span>
-<span class="nv">val</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_AESENC_EXT_OTP
-<span class="nv">iv</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_IV_AESENC_EXT_OTP
-<span class="nv">rs</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_RS_AESENC_EXT_OTP
-<span class="nv">wprp</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT_WPRP_AESENC_EXT_OTP
-<span class="nv">index</span> <span class="o">=</span> INTEGER:PUT_INDX_AESENC_EXT_OTP
-<span class="nv">size</span> <span class="o">=</span> INTEGER:PUT_SIZE_AESENC_EXT_OTP
-<span class="nv">action_flags</span> <span class="o">=</span> INTEGER:PUT_ACTFLAG_AESENC_EXT_OTP
+<span class="nv">val</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_AESENC_EXT_OTP
+<span class="nv">iv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_IV_AESENC_EXT_OTP
+<span class="nv">rs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_RS_AESENC_EXT_OTP
+<span class="nv">wprp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT_WPRP_AESENC_EXT_OTP
+<span class="nv">index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_INDX_AESENC_EXT_OTP
+<span class="nv">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_SIZE_AESENC_EXT_OTP
+<span class="nv">action_flags</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT_ACTFLAG_AESENC_EXT_OTP
 </pre></div>
 </div>
 </div>
@@ -594,7 +594,7 @@ also to be write protected.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'09.00.03',
+            VERSION:'09.00.06',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

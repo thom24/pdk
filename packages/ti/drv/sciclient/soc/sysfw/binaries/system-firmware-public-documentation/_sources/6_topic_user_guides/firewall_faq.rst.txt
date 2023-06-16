@@ -180,14 +180,75 @@ defined in below section in the corresponding device TRM.
 
 "System Interconnect" -> "System Interconnect Registers" -> "Firewall Exception Registers"
 
+The following is an example of an exception log description that was sent via the enabled traces. 
+
 .. code::
 
-   FWL Exception  0x1116100
-   0x70000
-   0x70000000
-   0x0
-   0xE022000
-   0x8
+   FWL Bit 0x1D
+   Exception addr 0x45B0B800
+     FWL Exception 0x1129800
+     0x30000
+     0x707FFF20
+     0x0
+     0xFF82360
+     0x8
+
+The exception description can be interpreted as follows:
+
+1. Line 1 (FWL Bit ...) - This should be ignored.
+2. Line 2 (Exception addr ...) - This is the base address of the exception logging registers.
+3. Line 3 (FWL Exception ...) - Let this number be N, then:
+   
+  - N[0-7] - Destination ID
+  - N[8-23] - Source ID
+
+4. Line 4 - Let this number be N, then:
+
+  - N[0-15] - Not relevant for debugging.
+  - N[16-23] - Represents the exception type. Refer to the table below.
+
+5. Line 5 - Lower 32 bits of the transaction address.
+6. Line 6 - Let this number be N, then:
+
+  - N[0-15] - Upper 16 bits of the transaction address.
+
+7. Line 7 - Let this number be N, then:
+
+  - N[0-7] - The PRIV ID of the initiator that caused the illegal transaction.
+  - N[8] - Represents the security level of the transaction.
+  - N[9] - Represents the privilege level of the transaction.
+  - N[10] - When set, it indicates a cacheable transaction.
+  - N[11] - When set, it indicates a debug transaction.
+  - N[12] - When set, it indicates a read transaction.
+  - N[13] - When set, it indicates a write transaction.
+  - N[16-27] - Route ID
+
+8. Line 8 - Let this number be N, then:
+
+  - N[0-9] - Represents the transaction byte count.
+
++------------------+------------------------------------------------------------------------------------------------------------+
+| **Line4[16-23]** | Exception Type.                                                                                            |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x00             | Reserved.                                                                                                  |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x01             | No region enabled but firewall is active. One region must be enabled for whitelist firewall.               |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x02             | Incoming address does not hit any active region.                                                           |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x03             | Priv-ID not authorized to access incoming address region, or Priv-ID not found in any slot for hit region. |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x04             | Cacheable error, a cacheable transaction attempting to read/write non-cached marked region.                |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x05             | Debug error, a debug transaction attempting to read/write a debug not-allowed region.                      |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x06             | Read error, a transaction attempting to read from read not-allowed region.                                 |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x07             | Write error, a transaction attempting to write a write not-allowed region.                                 |
++------------------+------------------------------------------------------------------------------------------------------------+
+| 0x08             | 4KB Crossing error, a transaction attempting to cross a 4KB boundary.                                      |
++------------------+------------------------------------------------------------------------------------------------------------+
+
 
 The 6 hex values shown above correspond to the 2 exception header registers and
 4 exception data registers in the order shown in the TRM.

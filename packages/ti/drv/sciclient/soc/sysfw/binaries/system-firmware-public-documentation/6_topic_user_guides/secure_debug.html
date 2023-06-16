@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.03
+                09.00.06
               </div>
             
           
@@ -281,48 +281,48 @@ effect.</p>
 <h2><a class="toc-backref" href="#id3">Creating a debug certificate</a><a class="headerlink" href="#creating-a-debug-certificate" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="x509-configuration-template">
 <h3><a class="toc-backref" href="#id4">X509 Configuration Template</a><a class="headerlink" href="#x509-configuration-template" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="o">[</span> req <span class="o">]</span>
-<span class="nv">distinguished_name</span> <span class="o">=</span> req_distinguished_name
-<span class="nv">x509_extensions</span> <span class="o">=</span> v3_ca
-<span class="nv">prompt</span> <span class="o">=</span> no
+<div class="highlight-bash"><div class="highlight"><pre><span></span><span class="o">[</span><span class="w"> </span>req<span class="w"> </span><span class="o">]</span>
+<span class="nv">distinguished_name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>req_distinguished_name
+<span class="nv">x509_extensions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>v3_ca
+<span class="nv">prompt</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
 
-<span class="nv">dirstring_type</span> <span class="o">=</span> nobmp
+<span class="nv">dirstring_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>nobmp
 
 <span class="c1"># This information will be filled by the end user.</span>
 <span class="c1"># The current data is only a place holder.</span>
 <span class="c1"># System firmware does not make decisions based</span>
 <span class="c1"># on the contents of this distinguished name block.</span>
-<span class="o">[</span> req_distinguished_name <span class="o">]</span>
-<span class="nv">C</span> <span class="o">=</span> oR
-<span class="nv">ST</span> <span class="o">=</span> rx
-<span class="nv">L</span> <span class="o">=</span> gQE843yQV0sag
-<span class="nv">O</span> <span class="o">=</span> dqhGYAQ2Y4gFfCq0t1yABCYxex9eAxt71f
-<span class="nv">OU</span> <span class="o">=</span> a87RB35W
-<span class="nv">CN</span> <span class="o">=</span> x0FSqGTPWbGpuiV
-<span class="nv">emailAddress</span> <span class="o">=</span> kFp5uGcgWXxcfxi@vsHs9C9qQWGrBs.com
+<span class="o">[</span><span class="w"> </span>req_distinguished_name<span class="w"> </span><span class="o">]</span>
+<span class="nv">C</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>oR
+<span class="nv">ST</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>rx
+<span class="nv">L</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>gQE843yQV0sag
+<span class="nv">O</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>dqhGYAQ2Y4gFfCq0t1yABCYxex9eAxt71f
+<span class="nv">OU</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>a87RB35W
+<span class="nv">CN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>x0FSqGTPWbGpuiV
+<span class="nv">emailAddress</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>kFp5uGcgWXxcfxi@vsHs9C9qQWGrBs.com
 
-<span class="o">[</span> v3_ca <span class="o">]</span>
-<span class="nv">basicConstraints</span> <span class="o">=</span> CA:true
+<span class="o">[</span><span class="w"> </span>v3_ca<span class="w"> </span><span class="o">]</span>
+<span class="nv">basicConstraints</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>CA:true
 <span class="m">1</span>.3.6.1.4.1.294.1.3<span class="o">=</span>ASN1:SEQUENCE:swrv
 <span class="m">1</span>.3.6.1.4.1.294.1.8<span class="o">=</span>ASN1:SEQUENCE:debug
 
-<span class="o">[</span> swrv <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>swrv<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-SWRV with actual SWREV SYSFW value</span>
-<span class="nv">swrv</span> <span class="o">=</span> INTEGER:PUT-SWRV
+<span class="nv">swrv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT-SWRV
 
-<span class="o">[</span> debug <span class="o">]</span>
+<span class="o">[</span><span class="w"> </span>debug<span class="w"> </span><span class="o">]</span>
 <span class="c1"># Replace PUT-DEVICE-UID with actual device UID value</span>
-<span class="nv">debugUID</span> <span class="o">=</span> FORMAT:HEX,OCT:PUT-DEVICE-UID
+<span class="nv">debugUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>FORMAT:HEX,OCT:PUT-DEVICE-UID
 <span class="c1"># Replace PUT-DBG-TYPE with actual debug type value</span>
-<span class="nv">debugType</span> <span class="o">=</span> INTEGER:PUT-DBG-TYPE
+<span class="nv">debugType</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT-DBG-TYPE
 <span class="c1"># Replace PUT-NONSEC-DBG with actual non secure debug cores value</span>
-<span class="nv">coreDbgEn</span> <span class="o">=</span> INTEGER:PUT-NONSEC-DBG
+<span class="nv">coreDbgEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT-NONSEC-DBG
 <span class="c1"># Replace PUT-SEC-DBG with actual secure debug cores value</span>
-<span class="nv">coreDbgSecEn</span> <span class="o">=</span> INTEGER:PUT-SEC-DBG
+<span class="nv">coreDbgSecEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>INTEGER:PUT-SEC-DBG
 </pre></div>
 </div>
 <p>This X509 config can then be signed with SMPK (private) or BMPK (private) by using the command below:</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ openssl req -new -x509 -key custMpk.pem -nodes -outform der -out debug_unlock_cert.der -config signing_config.txt -sha512
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$<span class="w"> </span>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-x509<span class="w"> </span>-key<span class="w"> </span>custMpk.pem<span class="w"> </span>-nodes<span class="w"> </span>-outform<span class="w"> </span>der<span class="w"> </span>-out<span class="w"> </span>debug_unlock_cert.der<span class="w"> </span>-config<span class="w"> </span>signing_config.txt<span class="w"> </span>-sha512
 </pre></div>
 </div>
 <div class="admonition note">
@@ -364,7 +364,7 @@ ways.</p>
 <p>If the board configuration allows a wild card jtag unlock i.e. skipping the
 SOC UID match, you can set the SOC UID to a 256 bit all zeros string.
 See example below.</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">debugUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FORMAT</span><span class="o">:</span><span class="n">HEX</span><span class="p">,</span><span class="n">OCT</span><span class="o">:</span><span class="mo">0000000000000000000000000000000000000000000000000000000000000000</span><span class="w"></span>
+<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">debugUID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FORMAT</span><span class="o">:</span><span class="n">HEX</span><span class="p">,</span><span class="n">OCT</span><span class="o">:</span><span class="mo">0000000000000000000000000000000000000000000000000000000000000000</span>
 </pre></div>
 </div>
 </li>
@@ -429,7 +429,7 @@ If non-secure debug needs to be enabled for the following four cores on AM65x,</
 </tbody>
 </table>
 <p>the <code class="docutils literal"><span class="pre">coreDbgEn</span></code> field is populated by concatenating the processor ID’s.</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INTEGER</span><span class="o">:</span><span class="mh">0x20210102</span><span class="w"></span>
+<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INTEGER</span><span class="o">:</span><span class="mh">0x20210102</span>
 </pre></div>
 </div>
 </li>
@@ -474,7 +474,7 @@ If secure debug needs to be enabled for the following two cores on AM65x,</p>
 </tbody>
 </table>
 <p>the <code class="docutils literal"><span class="pre">coreSecDbgEn</span></code> field is populated by concatenating the processor ID’s.</p>
-<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgSecEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INTEGER</span><span class="o">:</span><span class="mh">0x2223</span><span class="w"></span>
+<div class="code highlight-cpp"><div class="highlight"><pre><span></span><span class="n">coreDbgSecEn</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">INTEGER</span><span class="o">:</span><span class="mh">0x2223</span>
 </pre></div>
 </div>
 </li>
@@ -573,9 +573,9 @@ following path <code class="docutils literal"><span class="pre">&lt;ccs</span> <
 contain the <code class="docutils literal"><span class="pre">dbgauth</span></code> executable (<code class="docutils literal"><span class="pre">dbgauth.exe</span></code> on windows).</p>
 </li>
 <li><p class="first">Verify K3 support by running</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ ./dbgauth --help
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$<span class="w"> </span>./dbgauth<span class="w"> </span>--help
 ...
-    --mode <span class="nv">3</span> <span class="o">=</span> SUPPORTED TARGETS: All Keystone <span class="m">3</span> devices
+<span class="w">    </span>--mode<span class="w"> </span><span class="nv">3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>SUPPORTED<span class="w"> </span>TARGETS:<span class="w"> </span>All<span class="w"> </span>Keystone<span class="w"> </span><span class="m">3</span><span class="w"> </span>devices
 ...
 </pre></div>
 </div>
@@ -590,19 +590,19 @@ for mode 3.</p>
 <h2><a class="toc-backref" href="#id12">Performing JTAG unlock</a><a class="headerlink" href="#performing-jtag-unlock" title="Permalink to this headline">¶</a></h2>
 <p>To unlock the JTAG, use the <code class="docutils literal"><span class="pre">unlock</span></code> command of <code class="docutils literal"><span class="pre">dbgauth</span></code> tool. We are
 assuming that ccs version is <code class="docutils literal"><span class="pre">ccs1010</span></code>.</p>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> /opt/ti/ccs1010/ccs/ccs_base/common/uscif <span class="o">||</span> <span class="nb">exit</span> <span class="m">1</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/opt/ti/ccs1010/ccs/ccs_base/common/uscif<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
 
-$ ./dbgauth -c ~/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat <span class="se">\</span>
-        -x xds110 <span class="se">\</span>
-        -s cs_dap_0 <span class="se">\</span>
-        -o unlock <span class="se">\</span>
-        -m <span class="m">3</span> <span class="se">\</span>
-        -f ~/debug_unlock_cert.der
-Using board config file:
+$<span class="w"> </span>./dbgauth<span class="w"> </span>-c<span class="w"> </span>~/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-x<span class="w"> </span>xds110<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-s<span class="w"> </span>cs_dap_0<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-o<span class="w"> </span>unlock<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-m<span class="w"> </span><span class="m">3</span><span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-f<span class="w"> </span>~/debug_unlock_cert.der
+Using<span class="w"> </span>board<span class="w"> </span>config<span class="w"> </span>file:
 /home/user/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat
-Successfully opened certificate file /home/user/debug_unlock_cert.der
-Read <span class="m">1509</span> bytes from certificate file /home/user/debug_unlock_cert.der
-The target device is unlocked.
+Successfully<span class="w"> </span>opened<span class="w"> </span>certificate<span class="w"> </span>file<span class="w"> </span>/home/user/debug_unlock_cert.der
+Read<span class="w"> </span><span class="m">1509</span><span class="w"> </span>bytes<span class="w"> </span>from<span class="w"> </span>certificate<span class="w"> </span>file<span class="w"> </span>/home/user/debug_unlock_cert.der
+The<span class="w"> </span>target<span class="w"> </span>device<span class="w"> </span>is<span class="w"> </span>unlocked.
 </pre></div>
 </div>
 <p>Please read the help of <code class="docutils literal"><span class="pre">dbgauth</span></code> for command line options.</p>
@@ -632,17 +632,17 @@ assuming that ccs version is <code class="docutils literal"><span class="pre">cc
 <p class="last">The commands below are shown for Linux. They need to be modified according to
 path name conventions of other operating systems.</p>
 </div>
-<div class="highlight-bash"><div class="highlight"><pre><span></span>$ <span class="nb">cd</span> /opt/ti/ccs1010/ccs/ccs_base/common/uscif <span class="o">||</span> <span class="nb">exit</span> <span class="m">1</span>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/opt/ti/ccs1010/ccs/ccs_base/common/uscif<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exit</span><span class="w"> </span><span class="m">1</span>
 
-$ ./dbgauth -c ~/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat <span class="se">\</span>
-        -x xds110 <span class="se">\</span>
-        -s cs_dap_0 <span class="se">\</span>
-        -o getuid <span class="se">\</span>
-        -m <span class="m">3</span>
-Using board config file:
+$<span class="w"> </span>./dbgauth<span class="w"> </span>-c<span class="w"> </span>~/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-x<span class="w"> </span>xds110<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-s<span class="w"> </span>cs_dap_0<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-o<span class="w"> </span>getuid<span class="w"> </span><span class="se">\</span>
+<span class="w">        </span>-m<span class="w"> </span><span class="m">3</span>
+Using<span class="w"> </span>board<span class="w"> </span>config<span class="w"> </span>file:
 /home/user/.ti/ccs1010/0/0/BrdDat/ccBoard0.dat
 
-<span class="nv">UID</span> <span class="o">=</span> c89491b8edad0fb3a5f201ec4caff17bcde0ed5ac845b17da14e0749da22d4cb
+<span class="nv">UID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>c89491b8edad0fb3a5f201ec4caff17bcde0ed5ac845b17da14e0749da22d4cb
 </pre></div>
 </div>
 <p>The retrieved UID can be populated into the debug certificate in the below manner.</p>
@@ -786,7 +786,7 @@ to unlock the jtag port by using a special host id. Please refer to
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'09.00.03',
+            VERSION:'09.00.06',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.03
+                09.00.06
               </div>
             
           
@@ -119,6 +119,7 @@
 <li class="toctree-l3"><a class="reference internal" href="runtime_debug.html">Runtime Debug TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extended_otp.html">Extended OTP TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dkek_management.html">Derived KEK TISCI Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dsmek_management.html">Derived SMEK TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security_handover.html">Security Handover Message Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="keywriter.html">OTP Keywriter TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="otp_revision.html">OTP Revision Read/Write Message Description</a></li>
@@ -1185,28 +1186,28 @@ refer to appropriate documentation for accurate sequencing and status informatio
 <p class="first admonition-title">Note</p>
 <p>A trivial example for a hypothetical processor status wait could have the parameters as follows:</p>
 <div class="last highlight-bash"><div class="highlight"><pre><span></span><span class="c1"># No optional bits to be set</span>
-<span class="nv">status_flags_1_set_all_wait</span> <span class="o">=</span> <span class="m">0</span>
+<span class="nv">status_flags_1_set_all_wait</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 
 <span class="c1"># Either WFI OR WFE to be set as 1</span>
-<span class="nv">status_flags_1_set_any_wait</span> <span class="o">=</span> WFI <span class="p">|</span> WFE
+<span class="nv">status_flags_1_set_any_wait</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WFI<span class="w"> </span><span class="p">|</span><span class="w"> </span>WFE
 
 <span class="c1"># CLK_STOP must be to be cleared</span>
-<span class="nv">status_flags_1_clr_all_wait</span> <span class="o">=</span> CLK_STOP
+<span class="nv">status_flags_1_clr_all_wait</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>CLK_STOP
 
 <span class="c1"># No optional status bits to be cleared</span>
-<span class="nv">status_flags_1_clr_any_wait</span> <span class="o">=</span> <span class="m">0</span>
+<span class="nv">status_flags_1_clr_any_wait</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 
 <span class="c1"># Check status every ~2 us</span>
-<span class="nv">delay_per_iteration_us</span> <span class="o">=</span> <span class="m">2</span>
+<span class="nv">delay_per_iteration_us</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span>
 
 <span class="c1"># Do not wait to start checks</span>
-<span class="nv">delay_before_iteration_loop_start_us</span> <span class="o">=</span> <span class="m">0</span>
+<span class="nv">delay_before_iteration_loop_start_us</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 
 <span class="c1"># Check for 10 times before timing out</span>
-<span class="nv">num_wait_iterations</span> <span class="o">=</span> <span class="m">10</span>
+<span class="nv">num_wait_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">10</span>
 
 <span class="c1"># Must match at least for 2 consecutive iterations</span>
-<span class="nv">num_match_iterations</span> <span class="o">=</span> <span class="m">2</span>
+<span class="nv">num_match_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span>
 </pre></div>
 </div>
 </div>
@@ -1766,7 +1767,7 @@ gatekeeper for HSM reset control. This is not appicable to general purpose M4 pr
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.00.03',
+            VERSION:'09.00.06',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

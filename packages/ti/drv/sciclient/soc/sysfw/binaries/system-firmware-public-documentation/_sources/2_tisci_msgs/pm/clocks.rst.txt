@@ -191,6 +191,11 @@ Message Data Structures
 
 .. sysfwapistruct:: tisci_msg_set_clock_parent_req
 
+.. note::
+   In the TRM, the parent clock index of the mux starts with 0. But when TISCI_MSG_SET_CLOCK_PARENT is used
+   the parent value refers to the corresponding device clock id of the parent.
+   Reference :ref:`pub_soc_family_doc` to see the clock id of the parent clock.
+
 .. sysfwapistruct:: tisci_msg_set_clock_parent_resp
 
 .. _pm_clocks_msg_get_clock_parent:

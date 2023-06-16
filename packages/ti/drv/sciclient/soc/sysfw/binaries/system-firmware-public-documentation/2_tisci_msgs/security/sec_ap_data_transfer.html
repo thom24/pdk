@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.03
+                09.00.06
               </div>
             
           
@@ -120,6 +120,7 @@
 <li class="toctree-l3"><a class="reference internal" href="runtime_debug.html">Runtime Debug TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="extended_otp.html">Extended OTP TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="dkek_management.html">Derived KEK TISCI Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dsmek_management.html">Derived SMEK TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="security_handover.html">Security Handover Message Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="keywriter.html">OTP Keywriter TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="otp_revision.html">OTP Revision Read/Write Message Description</a></li>
@@ -259,8 +260,8 @@ debug certificate. See the below command.</p>
 this command.</p>
 <p>The response returns a 32 byte value i.e.&nbsp;8 Words. The MSB of Word[0]
 contains the MSB of UID.</p>
-<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="o">|</span><span class="w">      </span><span class="n">Word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">        </span><span class="o">|</span><span class="w">   </span><span class="n">Word</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w">    </span><span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span><span class="n">Word</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"></span>
-<span class="o">|</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="p">..</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">....</span><span class="o">|</span><span class="w">   </span><span class="n">B</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span><span class="w">  </span><span class="o">|</span><span class="w"></span>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="o">|</span><span class="w">      </span><span class="n">Word</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w">        </span><span class="o">|</span><span class="w">   </span><span class="n">Word</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w">    </span><span class="o">|</span><span class="w">     </span><span class="o">|</span><span class="w">  </span><span class="n">Word</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="o">|</span>
+<span class="o">|</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="p">..</span><span class="w"> </span><span class="n">B</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">....</span><span class="o">|</span><span class="w">   </span><span class="n">B</span><span class="p">[</span><span class="mi">31</span><span class="p">]</span><span class="w">  </span><span class="o">|</span>
 </pre></div>
 </div>
 </div>
@@ -345,7 +346,7 @@ register cannot be modified.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.00.03',
+            VERSION:'09.00.06',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
