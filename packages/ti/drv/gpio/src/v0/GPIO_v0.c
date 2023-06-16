@@ -79,7 +79,7 @@ static GPIO_PortCallbackInfo gpioCallbackInfo[GPIO_MAX_HWATTRS_V0_CNT];
 static uint32_t portHwiCreatedBitMask = 0;
 
 /* Boolean to confirm that GPIO_init() has been called */
-static volatile bool initCalled = (bool)false;
+static volatile bool initCalled = BFALSE;
 
 /* GPIO driver config data structure */
 extern GPIO_v0_Config GPIO_v0_config;
@@ -137,7 +137,7 @@ static void GPIO_clearInt_v0(uint32_t idx)
     uint32_t portNum;
 
     /* Input parameter validation */
-    if (((bool)true == initCalled) &&
+    if ((BTRUE == initCalled) &&
         (idx < GPIO_v0_config.numberOfPinConfigs))
     {
         pinConfig = GPIO_v0_config.pinConfigs[idx];
@@ -163,7 +163,7 @@ static void GPIO_disableInt_v0(uint32_t idx)
     uint32_t  portNum;
 
     /* Input parameter validation */
-    if (((bool)true == initCalled) &&
+    if ((BTRUE == initCalled) &&
         (idx < GPIO_v0_config.numberOfPinConfigs))
     {
         pinConfig = GPIO_v0_config.pinConfigs[idx];
@@ -223,7 +223,7 @@ static void GPIO_enableInt_v0(uint32_t idx)
     uint32_t  portNum;
     uint32_t  intrEvtType;
 
-    if (((bool)true == initCalled) &&
+    if ((BTRUE == initCalled) &&
         (idx < GPIO_v0_config.numberOfPinConfigs))
     {
         pinConfig = GPIO_v0_config.pinConfigs[idx];
@@ -341,7 +341,7 @@ static void GPIO_init_v0(void)
         }
     }
 
-    initCalled = (bool)true;
+    initCalled = BTRUE;
 }
 
 /*
@@ -356,7 +356,7 @@ static uint32_t GPIO_read_v0(uint32_t idx)
     uint32_t pinNum;
 
     /* Input parameter validation */
-    if (((bool)true == initCalled) &&
+    if ((BTRUE == initCalled) &&
         (idx < GPIO_v0_config.numberOfPinConfigs))
     {
         pinConfig = GPIO_v0_config.pinConfigs[idx];
@@ -531,7 +531,7 @@ static void GPIO_setConfig_v0(uint32_t idx, GPIO_PinConfig pinConfig)
                 {
                     /* Configure SOC interrupt path if any */
                     if(hwAttrs->socConfigIntrPath!=NULL) {
-                        ret_socIntrPath = (*hwAttrs->socConfigIntrPath)(portNum,pinNum,hwAttrs,TRUE);
+                        ret_socIntrPath = (*hwAttrs->socConfigIntrPath)(portNum,pinNum,hwAttrs,BTRUE);
                     }
                     
                     /* Populate the interrupt parameters */
@@ -595,7 +595,7 @@ static void GPIO_toggle_v0(uint32_t idx)
     uint32_t  portNum;
 
     /* Input parameter validation */
-    if (((bool)true == initCalled) &&
+    if ((BTRUE == initCalled) &&
         (idx < GPIO_v0_config.numberOfPinConfigs))
     {
         pinConfig = GPIO_v0_config.pinConfigs[idx];
@@ -631,7 +631,7 @@ static void GPIO_write_v0(uint32_t idx, uint32_t value)
     uint32_t  portNum;
 
     /* Input parameter validation */
-    if (((bool)true == initCalled) &&
+    if ((BTRUE == initCalled) &&
         (idx < GPIO_v0_config.numberOfPinConfigs))
     {
         pinConfig = GPIO_v0_config.pinConfigs[idx];
