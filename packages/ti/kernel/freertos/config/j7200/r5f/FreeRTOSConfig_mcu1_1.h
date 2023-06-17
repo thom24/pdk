@@ -46,5 +46,5 @@
  * FreeRTOS REFERENCE MANUAL.
  *----------------------------------------------------------*/
 
-#define configTIMER_ID                                                    (2)
+#define configTIMER_ID                                                    (OSAL_FREERTOS_OS_TIMER_ID_MCU1_1)
 #endif /* TI_FREERTOS_MCU1_1_CONFIG_H */

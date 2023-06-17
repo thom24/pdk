@@ -53,6 +53,20 @@ extern "C" {
 #undef  TIMERP_ANY_MASK
 #endif
 
+#define OSAL_MPU1_0                       (0U)    /**< ARM A72 - VM0 */
+#define OSAL_MCU1_0                       (1U)    /**< ARM MCU  R5F - core0 */
+#define OSAL_MCU1_1                       (2U)    /**< ARM MCU  R5F - core1 */
+#define OSAL_MCU2_0                       (3U)    /**< ARM Main R5F - core0 */
+#define OSAL_MCU2_1                       (4U)    /**< ARM Main R5F - core1 */
+#define OSAL_MCU3_0                       (5U)    /**< ARM Main R5F - core2 */
+#define OSAL_MCU3_1                       (6U)    /**< ARM Main R5F - core3 */
+#define OSAL_C7X_1                        (7U)    /**< DSP C7x - core0 */
+#define OSAL_C7X_2                        (8U)    /**< DSP C7x - core1 */
+#define OSAL_INVALID_CORE_ID              (9U)
+
+/* Number of timers restricted for use */
+//#define MAX_RESTRICTED_TIMERS             (8U)
+
 #define  EXTERNAL_CLOCK_KHZ_DEFAULT       (24000U)
 #define  PMU_CLOCK_KHZ_DEFAULT            (1000000U)
 #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
@@ -125,7 +139,6 @@ extern "C" {
 #define OSAL_ARCH_TIMER_INST_FOR_TS         (TimerP_ANY)
 /**< Default timer instance for timer */
 
-#if defined (BUILD_MCU)
 /* Default DM Timer allocation for r5f cores in j721s2   */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1U )   /*  MCU DM Timer 1  */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2U )   /*  MCU DM Timer 2  */  
@@ -133,10 +146,27 @@ extern "C" {
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 3U )   /*  DM Timer 3  */   
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_0        ( 4U )   /*  DM Timer 4  */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU3_1        ( 5U )   /*  DM Timer 5  */
-#endif
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU1_0        ( 1U )   /*  MCU DM Timer 1  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU1_1        ( 2U )   /*  MCU DM Timer 2  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU2_0        ( 2U )   /*  DM Timer 2  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU2_1        ( 3U )   /*  DM Timer 3  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU3_0        ( 4U )   /*  DM Timer 4  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU3_1        ( 5U )   /*  DM Timer 5  */
 
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
+
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 0U )   /*  DMTimer 0  */
+#define OSAL_FREERTOS_OS_TIMER_ID_C7X_1         ( 0U )   /*  DMTimer 0  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 14U )
+
+#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_2         ( 1U )   /*  DMTimer 1  */
+#define OSAL_FREERTOS_OS_TIMER_ID_C7X_2         ( 1U )   /*  DMTimer 1  */
+
+#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2    ( 14U )
+
+#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13U )
 
 #if defined (BUILD_C7X)
 /* The C7x CLEC should be programmed to allow config/re config either in secure
@@ -145,15 +175,6 @@ extern Osal_HwAttrs  gOsal_HwAttrs;
  * Instance is hard-coded for J721S2 only
  *
  */
-#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_1         ( 0U )   /*  DMTimer 0  */
-
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_1    ( 14U )
-
-#define OSAL_SAFERTOS_OS_TIMER_ID_C7X_2         ( 1U )   /*  DMTimer 1  */
-
-#define OSAL_SAFERTOS_OS_TIMER_INT_NUM_C7X_2    ( 14U )
-
-#define OSAL_SAFERTOS_OS_YEILD_INT_NUM_C7X      ( 13U )
 void OsalCfgClecAccessCtrl (bool onlyInSecure);
 #endif
 

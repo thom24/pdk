@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <ti/csl/soc.h>
 #include <ti/osal/src/nonos/Nonos_config.h>
+#include <ti/osal/soc/osal_soc.h>
 
 /*
  * This table sets the default configurations for the DM Timers
@@ -473,51 +474,43 @@ uint32_t TimerP_getDefaultFreqHi(uint32_t timerId)
     return(TIMERP_TIMER_FREQ_HI);
 }
 
+uint32_t TimerP_mapId(uint32_t id, uint32_t coreId)
+{
+     uint32_t translate_id;
+    
+     if (OSAL_MCU2_0 == coreId || OSAL_MCU2_1 == coreId || OSAL_MCU3_0 == coreId || OSAL_MCU3_1 == coreId)
+     {
+          /*
+          * The interrupt events of Main domain's DM Timer instance 12  - 19
+          * are directly connected to the MAIN Pulsar VIMs.
+          * This translation matches to sysbios implementation, where id=0 is
+          * for dmTimer12, id =1 is for dmTimer13 etc.
+          */
+          translate_id = id + 12U;
+     }
+     else
+     {
+          translate_id = id;
+     }
+     return (translate_id);
+}
+
+uint32_t TimerP_reverseMapId(uint32_t id, uint32_t coreId)
+{
+     uint32_t translate_id;
+
+     if (OSAL_MCU2_0 == coreId || OSAL_MCU2_1 == coreId || OSAL_MCU3_0 == coreId || OSAL_MCU3_1 == coreId)
+     {
+          translate_id = id - 12U;
+     }
+     else
+     {
+          translate_id = id;
+     }
+     return (translate_id);
+}
+
 #if defined (BUILD_MCU)
-uint32_t TimerP_mapId(uint32_t id)
-{
-    uint32_t translate_id;
-    
-    CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
-
-    CSL_armR5GetCpuID(&info);
-
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
-    {
-        translate_id = id;
-    }
-    else
-    {
-        /*
-         * The interrupt events of Main domain's DM Timer instance 12  - 19
-         * are directly connected to the MAIN Pulsar VIMs.
-         * This translation matches to sysbios implementation, where id=0 is
-         * for dmTimer12, id =1 is for dmTimer13 etc.
-         */
-        translate_id = id + 12U;
-    }
-    return (translate_id);
-}
-
-uint32_t TimerP_reverseMapId(uint32_t id)
-{
-    uint32_t translate_id;
-    
-    CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
-    
-    CSL_armR5GetCpuID(&info);
-
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
-    {
-        translate_id = id;
-    }
-    else
-    {
-        translate_id = id - 12U;
-    }
-    return (translate_id);
-}
-
 void TimerP_updateDefaultInfoTbl(void)
 {
     uint32_t         i;

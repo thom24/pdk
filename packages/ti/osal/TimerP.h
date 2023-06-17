@@ -71,6 +71,16 @@ extern "C" {
 #define TimerP_ANY            ((uint32_t)0U)
 
 /*!
+ * Const used to specify maximum number of programmable restrictions for TimerP_ANY flag
+ */
+#define TimerP_ANY_MAX_RESTRICTIONS            ((uint32_t)15U)
+
+/*!
+ * Const used to specify invalid timer
+ */
+#define TimerP_ID_INVALID     ((uint32_t)0xFFFFU)
+
+/*!
  * Max value of Timer period for PeriodType_COUNTS
  */
 #define TimerP_MAX_PERIOD     ((uint32_t)0xFFFFFFFFU)

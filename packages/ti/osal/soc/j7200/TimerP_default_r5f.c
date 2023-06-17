@@ -187,12 +187,12 @@ uint32_t TimerP_getDefaultFreqHi(uint32_t timerId)
     return(TIMERP_TIMER_FREQ_HI);
 }
 
-uint32_t TimerP_mapId(uint32_t id)
+uint32_t TimerP_mapId(uint32_t id, uint32_t coreid)
 {
     /* No remaps required */
     return (id);
 }
-uint32_t TimerP_reverseMapId(uint32_t id)
+uint32_t TimerP_reverseMapId(uint32_t id, uint32_t coreid)
 {
     return (id);
 }

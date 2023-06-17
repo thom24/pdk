@@ -38,19 +38,104 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ti/osal/osal.h>
+#include <ti/osal/soc/osal_soc.h>
 
-
-#if defined(gnu_targets_arm_A15F)
-#include <ti/csl/arch/a15/V0/csl_a15.h>
+#if defined(BUILD_MCU)
+#include <ti/csl/arch/r5/csl_arm_r5.h>
+#elif defined(BUILD_C7X)
+#include <ti/csl/csl_clec.h>
+#elif defined (_TMS320C6X)
+#include <ti/csl/csl_chipAux.h>
 #endif
 
-int32_t Osal_getCoreId(void)
+uint32_t Osal_getCoreId(void)
 {
-#if defined(gnu_targets_arm_A15F)
-    return ((int32_t)CSL_a15ReadCoreId());
-#else
-    return (osal_UNSUPPORTED);
+    uint32_t coreId=OSAL_INVALID_CORE_ID;
+#if defined (BUILD_MCU)
+	CSL_ArmR5CPUInfo info = {0};
+
+    CSL_armR5GetCpuID(&info);
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    {
+        /* MAIN SS Pulsar R5 SS0 */
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_MCU1_0:
+                                        OSAL_MCU1_1;
+    }
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
+    {
+        /* MAIN SS Pulsar R5 SS0 */
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_MCU2_0:
+                                        OSAL_MCU2_1;
+    }
+#if defined (SOC_J721E) || defined(SOC_J721S2) || defined (SOC_J784S4)
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
+    {
+        /* MAIN SS Pulsar R5 SS1 */
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_MCU3_0:
+                                        OSAL_MCU3_1;
+    }
+#if defined (SOC_J784S4)
+	else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3)
+    {
+        /* MAIN SS Pulsar R5 SS1 */
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
+                                    OSAL_MCU4_0:
+                                        OSAL_MCU4_1;
+    }
+#endif /* #if defined (SOC_J721E) || defined(SOC_J721S2) || defined (SOC_J784S4) */
+#endif /* #if defined (SOC_J784S4) */
+	else
+	{
+		coreId = OSAL_INVALID_CORE_ID;
+	}
+#elif defined (BUILD_C7X)
+	uint32_t rtmapCpuId;
+	rtmapCpuId = CSL_clecGetC7xRtmapCpuId();
+
+	if(CSL_CLEC_RTMAP_CPU_4 == rtmapCpuId)
+	{
+		coreId=OSAL_C7X_1;
+	}
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+	else if(CSL_CLEC_RTMAP_CPU_5 == rtmapCpuId)
+	{
+		coreId=OSAL_C7X_2;
+	}
+#if defined (SOC_J784S4)
+	else if (CSL_CLEC_RTMAP_CPU_6 == rtmapCpuId)
+	{
+		coreId=OSAL_C7X_3;
+	}
+	else if (CSL_CLEC_RTMAP_CPU_7 == rtmapCpuId)
+	{
+		coreId=OSAL_C7X_4;
+	}
+#endif /* #if defined (SOC_J784S4) */
+#endif /* #if defined (SOC_J721S2) || defined (SOC_J784S4) */
+	else
+	{
+		coreId = OSAL_INVALID_CORE_ID;
+	}
+#elif defined (BUILD_C66X)
+	uint32_t dspNum;
+	dspNum = CSL_chipReadDNUM();
+	if(0U == dspNum)
+	{
+		coreId = OSAL_C66_1;
+	}
+	else if (1U == dspNum)
+	{
+		coreId = OSAL_C66_2;
+	}
+	else
+	{
+		coreId = OSAL_INVALID_CORE_ID;
+	}
 #endif
+	return coreId;
 }
 
 void CacheP_fenceCpu2Dma(uintptr_t addr, uint32_t size, Osal_CacheP_isCoherent isCoherent)

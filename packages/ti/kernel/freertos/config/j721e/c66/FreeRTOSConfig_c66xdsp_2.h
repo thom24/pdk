@@ -46,7 +46,7 @@
  * FreeRTOS REFERENCE MANUAL.
  *----------------------------------------------------------*/
 
-#define configTIMER_ID                                                    (1)
+#define configTIMER_ID                                                    (OSAL_FREERTOS_OS_TIMER_ID_C66X_2)
 #define configTIMER_INT_NUM                                               (15)
 #define configTIMER_EVENT_ID                                              (20)
 #endif /* TI_FREERTOS_C66XDSP_2_CONFIG_H */

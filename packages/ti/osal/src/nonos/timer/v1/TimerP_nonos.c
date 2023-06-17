@@ -482,6 +482,75 @@ static TimerP_Status TimerP_dmTimerInitObj(TimerP_Struct *timer, TimerP_Fxn tick
    return(TimerP_OK);
 }
 
+static uint32_t TimerP_isDMTIdRestricted(uint32_t id)
+{
+    uint32_t isRestricted = 0U;
+    uint32_t looper;
+#if defined (BUILD_MCU)
+	uint32_t coreId;
+	volatile extern Osal_timerReserved Osal_mainMcuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS], Osal_mcuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+	coreId = Osal_getCoreId();
+	if ((OSAL_MCU1_0 == coreId) || (OSAL_MCU1_1 == coreId))
+	{
+    for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    {
+        if(Osal_mcuRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
+          id == TimerP_mapId(Osal_mcuRestrictedTimerID[looper].timerId, Osal_mcuRestrictedTimerID[looper].coreId))
+        {
+            isRestricted = 1U;
+            break;
+        }
+    }
+	}
+	else
+	{
+		for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    {
+        if(Osal_mainMcuRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
+          id == TimerP_mapId(Osal_mainMcuRestrictedTimerID[looper].timerId, Osal_mainMcuRestrictedTimerID[looper].coreId))
+        {
+            isRestricted = 1U;
+            break;
+        }
+    }
+	}
+#elif defined (BUILD_C7X)
+	volatile extern Osal_timerReserved Osal_c7xRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+	for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+  {
+      if(Osal_c7xRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
+        id == TimerP_mapId(Osal_c7xRestrictedTimerID[looper].timerId, Osal_c7xRestrictedTimerID[looper].coreId))
+      {
+          isRestricted = 1U;
+          break;
+      }
+  }
+#elif defined (BUILD_C66X)
+	volatile extern Osal_timerReserved Osal_c66RestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+	for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+  {
+      if(Osal_c66RestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
+        id == TimerP_mapId(Osal_c66RestrictedTimerID[looper].timerId, Osal_c66RestrictedTimerID[looper].coreId))
+      {
+          isRestricted = 1U;
+          break;
+      }
+  }
+#elif defined (BUILD_MPU)
+	volatile extern Osal_timerReserved Osal_mpuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+	for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+  {
+      if(Osal_mpuRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
+        id == TimerP_mapId(Osal_mpuRestrictedTimerID[looper].timerId, Osal_mpuRestrictedTimerID[looper].coreId))
+      {
+          isRestricted = 1U;
+          break;
+      }
+  }
+#endif
+    return isRestricted;
+}
+
 /*
  * This is a private function to initialize the timer instance, that sets up the timer ISR to
  * a specified timer id and sets up the timer compare, counter and period registers
@@ -496,6 +565,8 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
   uintptr_t     baseAddr;
   uint32_t      intNum;
   uint32_t      timerPAnyMask = TIMERP_ANY_MASK;
+  uint32_t      mappedId = 0xFFFF;
+  uint32_t      coreId = Osal_getCoreId();
 
   if ((TimerP_ANY != id) && (id >= TimerP_numTimerDevices)) {
     ret = TimerP_FAILURE;
@@ -515,36 +586,38 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
 
     key = (uint32_t)HwiP_disable();
 
-    if (TimerP_ANY == id) {
-        for (i = 0U; i < TimerP_numTimerDevices; i++) {
+    if (TimerP_ANY == id)
+    {
+        for (i = 0U; i < TimerP_numTimerDevices; i++)
+        {
             uint32_t shift, nshift;
+            mappedId = TimerP_mapId(i, coreId);
             shift  = ((uint32_t) 1U) << i;
             nshift = ~shift;
             if (((uint32_t) 0U != (timerPAnyMask    & shift)) &&
-                ((uint32_t) 0U != (timer->availMask & shift))) {
+                ((uint32_t) 0U != (timer->availMask & shift)) &&
+                0U == TimerP_isDMTIdRestricted(mappedId)) 
+            {
                  timer->availMask &= nshift;
-                 tempId = i;
+                 tempId = mappedId;
                  break;
             }
         }
     }
     else
     {
-	  if ((timer->availMask & ((uint32_t)1U << id)) > 0U) 
-	  {
-        uint32_t shift, nshift;
-        shift  = ((uint32_t) 1U) << id;
-        nshift = ~shift;
-        timer->availMask &= nshift;
-        tempId = id;
-      }
+        if ((timer->availMask & ((uint32_t)1U << id)) > 0U) 
+        {
+            uint32_t shift, nshift;
+            shift  = ((uint32_t) 1U) << id;
+            nshift = ~shift;
+            timer->availMask &= nshift;
+            tempId = id;
+            tempId = TimerP_mapId(tempId, coreId);
+        }
     }  
 
     gTimerAnyMask =  timer->availMask;
-
-#if defined (BUILD_MCU)
-    tempId = TimerP_mapId(tempId);
-#endif
 
     /* Initialize the timer state object */
     timer->timerId = tempId; /* Record the timer Id */
@@ -756,9 +829,7 @@ TimerP_Status TimerP_delete(TimerP_Handle handle)
 
     
     id = gTimerStructs[index].timerId;
-    #if defined (BUILD_MCU)
-    id = TimerP_reverseMapId(id);
-    #endif
+    id = TimerP_reverseMapId(id, Osal_getCoreId());
 
     if((NULL_PTR != timer) && ((bool)true == (gTimerStructs[index].used)))
     {

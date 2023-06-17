@@ -422,7 +422,7 @@ extern int32_t Osal_getStaticMemStatus(Osal_StaticMemStatus *pMemStat);
  *
  *  @return core ID of the running core
  */
-extern int32_t Osal_getCoreId(void);
+extern uint32_t Osal_getCoreId(void);
 
 /*!
  *  @brief  Function to check if the calling task is in privileged mode.

@@ -217,19 +217,20 @@ uint32_t TimerP_getDefaultFreqHi(uint32_t timerId);
  * instances if R5 is on the Main domain
  */
 void TimerP_updateDefaultInfoTbl(void);
+#endif
 
 /*
  * This function maps the ID to respective ID for that core for timer
  * to function. There are multiple R5SS present in SOCs requiring this
  * change. Example: J721e has two R5FSS, one in MAIN and other in MCU.
  */
-uint32_t TimerP_mapId(uint32_t id);
+uint32_t TimerP_mapId(uint32_t id, uint32_t coreId);
 /*
  * This function does the reverse of TimerP_mapId.
  * This is required for TimerP_delete to free up the correct bit in mask. 
  */
-uint32_t TimerP_reverseMapId(uint32_t id);
-#endif
+uint32_t TimerP_reverseMapId(uint32_t id, uint32_t coreId);
+
 
 /* Reference the default initializations for the dmtimers */
 extern  TimerP_dmTimerDefault gDmTimerPInfoTbl[TimerP_numTimerDevices];

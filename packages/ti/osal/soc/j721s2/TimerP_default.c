@@ -392,17 +392,18 @@ uint32_t TimerP_getDefaultFreqHi(uint32_t timerId)
     return(TIMERP_TIMER_FREQ_HI);
 }
 
-#if defined (BUILD_MCU)
-uint32_t TimerP_mapId(uint32_t id)
+
+uint32_t TimerP_mapId(uint32_t id, uint32_t coreId)
 {
     /* No remaps required since all timers interrupts are directly connected to Pulsar VIMs */
     return (id);
 }
-uint32_t TimerP_reverseMapId(uint32_t id)
+uint32_t TimerP_reverseMapId(uint32_t id, uint32_t coreId)
 {
     return (id);
 }
 
+#if defined (BUILD_MCU)
 /*!
  * @brief TimerP_updateDefaultInfoTbl
  *

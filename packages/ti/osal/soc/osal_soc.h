@@ -334,6 +334,10 @@
 #define OSAL_NONOS_CONFIGNUM_SEMAPHORE (OSAL_NONOS_MAX_SEMAPHOREP_PER_SOC)
 #endif
 
+typedef struct {
+	uint32_t coreId;
+	uint32_t timerId;
+} Osal_timerReserved;
 
 
 #ifdef __cplusplus

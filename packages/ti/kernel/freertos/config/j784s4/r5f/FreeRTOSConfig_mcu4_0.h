@@ -61,5 +61,5 @@
  * mcu1_1 - MCU DMTimer 2
  */  
 
-#define configTIMER_ID                                                    (8)
+#define configTIMER_ID                                                    (OSAL_FREERTOS_OS_TIMER_ID_MCU4_0)
 #endif /* TI_FREERTOS_MCU4_0_CONFIG_H */

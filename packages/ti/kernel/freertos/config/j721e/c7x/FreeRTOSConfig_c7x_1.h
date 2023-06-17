@@ -46,7 +46,7 @@
  * FreeRTOS REFERENCE MANUAL.
  *----------------------------------------------------------*/
 
-#define configTIMER_ID                                                    (2)
+#define configTIMER_ID                                                    (OSAL_FREERTOS_OS_TIMER_ID_C7X_1)
 #define configTIMER_INT_NUM                                               (16)
 
 /* Compute Cluster CLEC route map */

@@ -54,6 +54,16 @@ extern "C" {
 #undef  TIMERP_ANY_MASK
 #endif
 
+#define OSAL_MPU1_0                       (0U)    /**< ARM A72 - VM0 */
+#define OSAL_MCU1_0                       (1U)    /**< ARM MCU  R5F - core0 */
+#define OSAL_MCU1_1                       (2U)    /**< ARM MCU  R5F - core1 */
+#define OSAL_MCU2_0                       (3U)    /**< ARM Main R5F - core0 */
+#define OSAL_MCU2_1                       (4U)    /**< ARM Main R5F - core1 */
+#define OSAL_INVALID_CORE_ID              (5U)
+
+/* Number of timers restricted for use */
+//#define MAX_RESTRICTED_TIMERS             (4U)
+
 #define  EXTERNAL_CLOCK_KHZ_DEFAULT       (24000U)
 #define  PMU_CLOCK_KHZ_DEFAULT            (1000000U)
 #define  OSAL_CPU_FREQ_KHZ_DEFAULT        (1000000U)
@@ -119,13 +129,15 @@ extern "C" {
 
 
 
-#if defined (BUILD_MCU)
 /* Default DM Timer allocation for r5f cores in j7200   */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_0        ( 1U )   /*  MCU DM Timer 1  */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU1_1        ( 2U )   /*  MCU DM Timer 2  */  
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_0        ( 0U )   /*  DM Timer 0  */
 #define OSAL_SAFERTOS_OS_TIMER_ID_MCU2_1        ( 1U )   /*  DM Timer 1  */
-#endif
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU1_0        ( 1U )   /*  MCU DM Timer 1  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU1_1        ( 2U )   /*  MCU DM Timer 2  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU2_0        ( 0U )   /*  DM Timer 0  */
+#define OSAL_FREERTOS_OS_TIMER_ID_MCU2_1        ( 1U )   /*  DM Timer 1  */
 
 /* external references */
 extern Osal_HwAttrs  gOsal_HwAttrs;
