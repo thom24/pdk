@@ -68,7 +68,7 @@ extern "C" {
 /*!
  * Const used to specify any timer
  */
-#define TimerP_ANY            ((uint32_t)0U)
+#define TimerP_ANY            ((uint32_t)0xFEEDU)
 
 /*!
  * Const used to specify maximum number of programmable restrictions for TimerP_ANY flag
