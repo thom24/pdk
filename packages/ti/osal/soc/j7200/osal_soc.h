@@ -80,10 +80,13 @@ extern "C" {
 #define  TIMERP_TIMER_FREQ_HI   (0U)
 
 #define TimerP_numTimerDevices  (20U)
-/**< Total number of instances in a given domain */
-#define TIMERP_ANY_MASK         ((uint32_t) 0x1FFFFF)
+/**< Total number of instances in a given domain.
+ * For J7200, Main DMT0 to Main DMT7 are powered on by default. The rest need to
+ * be powered on from LPSC_PER_SPARE0.
+ */
+#define TIMERP_ANY_MASK         ((uint32_t) 0x0000FFU)
 /**< Any available */
-#define TIMERP_AVAILABLE_MASK   ((uint32_t) 0x1FFFFF)
+#define TIMERP_AVAILABLE_MASK   ((uint32_t) 0x0000FFU)
 
 
 
