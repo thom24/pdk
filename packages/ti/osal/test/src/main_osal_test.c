@@ -2111,6 +2111,119 @@ bool OSAL_mempry_test()
 }
 #endif
 
+bool OSAL_TimerP_ANY_test( void )
+{
+	uint32_t looper, numRestricted = 0;
+	uint32_t result=true, availMask=TIMERP_AVAILABLE_MASK, availableTimers = 0;
+	TimerP_Params params;
+	TimerP_Handle handle[TimerP_numTimerDevices];
+	TimerP_Status timerStatus = TimerP_FAILURE;
+
+	/* Figure out the number of timers available to use with the TIMERP_AVAILABLE_MASK. */
+	while(availMask > 0U)
+	{
+		if(1U == (availMask & 1U))
+		{
+			availableTimers++;
+		}
+		availMask = availMask >> 1U;
+	}
+
+/* Figure out the number of restricted timers per core. */
+#if defined (BUILD_MCU)
+	uint32_t coreId;
+    extern Osal_timerReserved Osal_mcuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS], Osal_mainMcuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+	coreId = Osal_getCoreId();
+	if ((OSAL_MCU1_0 == coreId) || (OSAL_MCU1_1 == coreId))
+	{
+		for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+        {
+            if(OSAL_INVALID_CORE_ID != Osal_mcuRestrictedTimerID[looper].coreId)
+            {
+                numRestricted++;
+            }
+        }
+	}
+	else
+	{
+		for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+        {
+            if(OSAL_INVALID_CORE_ID != Osal_mainMcuRestrictedTimerID[looper].coreId)
+            {
+                numRestricted++;
+            }
+        }
+	}
+#elif defined (BUILD_C7X)
+    extern Osal_timerReserved Osal_c7xRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+    for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    {
+        if(OSAL_INVALID_CORE_ID != Osal_c7xRestrictedTimerID[looper].coreId)
+        {
+            numRestricted++;
+        }
+    }
+#elif defined (BUILD_C66X)
+	extern Osal_timerReserved Osal_c66RestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+    for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    {
+        if(OSAL_INVALID_CORE_ID != Osal_c66RestrictedTimerID[looper].coreId)
+        {
+            numRestricted++;
+        }
+    }
+#elif defined (BUILD_MPU)
+	extern Osal_timerReserved Osal_mpuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
+    for (looper = 0; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
+    {
+        if(OSAL_INVALID_CORE_ID != Osal_mpuRestrictedTimerID[looper].coreId)
+        {
+            numRestricted++;
+        }
+    }
+#endif
+	OSAL_log(" Timers available for TimerP_ANY: %d, Restricted Timers: %d\n", availableTimers, numRestricted);
+	/* Create as many timers, as are expected to get created succesfully. */
+	for(looper = 0; looper < availableTimers - numRestricted; looper++)
+	{
+		TimerP_Params_init(&params);
+		params.startMode = TimerP_StartMode_USER;
+		handle[looper] = TimerP_create(TimerP_ANY, NULL, &params);
+		if (NULL == handle[looper])
+		{
+		    result = false;
+		    break;
+		}
+	}
+	OSAL_log(" Created %d Timers...\n", looper);
+
+	/* This TimerP_create should fail, as not more timers are available to get created. */
+	if ( true == result )
+	{
+		handle[looper] = TimerP_create(TimerP_ANY, NULL, NULL);
+		if (NULL != handle[looper])
+		{
+		    result = false;
+		}
+	}
+	/* Delete all create timers. */
+	if ( true == result )
+	{
+		for(looper = 0; looper < availableTimers - numRestricted; looper++)
+		{
+		    timerStatus = TimerP_delete(handle[looper]);
+		    if (TimerP_FAILURE == timerStatus)
+		    {
+                OSAL_log("[ERROR]: TimerP_create was supposed to fail, but it went through!!!");
+		        result = false;
+		        break;
+		    }
+		}
+		OSAL_log(" Deleted %d Timers...\n", looper);
+	}
+    return result;
+}
+
 /*
  *  ======== main test function ========
  */
@@ -2139,7 +2252,15 @@ void osal_test(void *arg0, void *arg1)
 #endif
 
     OSAL_log(" OSAL Test Starting...\n Takes about 30 seconds ...\n"); 
-
+    if(OSAL_TimerP_ANY_test() == true)
+    {
+        OSAL_log("\n TimerP_ANY test has passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n TimerP_ANY test has failed. \n");
+        testFail = true;
+    }
 #if defined(BARE_METAL)
     /* No TASKP test for BAREmetal */
 #else
