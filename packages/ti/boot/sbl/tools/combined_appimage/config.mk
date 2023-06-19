@@ -76,7 +76,11 @@ RAW_EXTENSIONS ?= .bin .dtb
 EXTENSIONLESS_TYPE ?= raw
 
 # Path which contains all HLOS binaries
+ifeq ($(BUILD_HS), no)
 HLOS_BIN_PATH ?= $(mkfile_dir)bin/$(BOARD)
+else
+HLOS_BIN_PATH ?= $(mkfile_dir)bin/$(BOARD)_hs
+endif
 
 # GCC PATH
 GCC_LINUX_ARM_PATH ?= $(SDK_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-$(GCC_ARCH64_BIN_PREFIX)
