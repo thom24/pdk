@@ -452,7 +452,7 @@ uint64_t uxPortReadPmuCounter(void)
     return ts;
 }
 /* Return current counter value of high speed counter in usecs, or return 0 in case of an unexpected error. */
-uint32_t uiPortGetRunTimeCounterValue()
+uint64_t getRunTimeCounterValue()
 {
     uint64_t uxDeltaTs, uxTimeInUsecs;
     volatile uint64_t uxTimeInMilliSecs, t1, t2, pmuCounterRead, pmuCounterReadHi, pmuCounterReadLow;
@@ -511,7 +511,19 @@ uint32_t uiPortGetRunTimeCounterValue()
         * 
         */
     }
-    return (uint32_t)(uxTimeInUsecs);
+    return (uxTimeInUsecs);
+}
+
+/* Return current counter value of high speed counter in usecs as uint32_t, or return 0 in case of an unexpected error. */
+uint32_t uiPortGetRunTimeCounterValue()
+{
+    return (uint32_t)getRunTimeCounterValue();
+}
+
+/* Return current counter value of high speed counter in usecs as uint64_t, or return 0 in case of an unexpected error. */
+uint64_t uiPortGetRunTimeCounterValue64()
+{
+    return getRunTimeCounterValue();
 }
 
 /* This is used to make sure we are using the FreeRTOS API from within a valid interrupt priority level

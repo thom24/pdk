@@ -115,6 +115,8 @@ static        bool        gUpdateFlag = (bool)true;
 /* external variables */
 extern uint32_t  gOsalTimerAllocCnt, gOsalTimerPeak;
 
+extern uint64_t uiPortGetRunTimeCounterValue64();
+
 /* Local functions  */
 static uintptr_t TimerP_getTimerBaseAddr(uint32_t timer_id);
 static void TimerP_dmTimerStub(uintptr_t arg);
@@ -943,7 +945,7 @@ uint64_t TimerP_getTimeInUsecs(void)
     /* In case of FreeRTOS get the current counter value from
      * the timer used by OS itself, instead of using an 
      * additional timer for the same */
-    curTime = uiPortGetRunTimeCounterValue();
+    curTime = uiPortGetRunTimeCounterValue64();
     #else
     TimeStamp_Struct timestamp64;
     uint64_t         cur_ts, freq;
