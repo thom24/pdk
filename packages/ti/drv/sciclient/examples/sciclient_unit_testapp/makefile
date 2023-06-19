@@ -50,11 +50,8 @@ INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
 SRCS_COMMON = sciclient_ut_main.c \
               sciclient_appCommon.c
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SCICLIENT_UT_CFLAGS) $(CFLAGS_OS_DEFINES)
-PACKAGE_SRCS_COMMON = . ../common
-
 # SoCs which use firewall exception notification tests (mcu1_0 UT only)
-ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
   ifeq ($(CORE), mcu1_0)
     ifeq ($(BUILD_OS_TYPE), freertos)
       SCICLIENT_UT_CFLAGS += -DENABLE_FW_NOTIFICATION
@@ -62,6 +59,9 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
     endif
   endif
 endif
+
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SCICLIENT_UT_CFLAGS) $(CFLAGS_OS_DEFINES)
+PACKAGE_SRCS_COMMON = . ../common
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

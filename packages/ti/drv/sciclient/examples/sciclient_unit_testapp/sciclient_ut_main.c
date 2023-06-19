@@ -793,7 +793,7 @@ static int32_t App_fwExcpNotificationTest(void)
     intrPrmsCmbnIntr.corepacConfig.isrRoutine       =
                                 (void*)App_fwNotiIsrCmbn;
     intrPrmsCmbnIntr.corepacConfig.corepacEventNum  = 0;
-    intrPrmsCmbnIntr.corepacConfig.intVecNum        = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_DMSC0_CORTEX_M3_0_SEC_OUT_1;
+    intrPrmsCmbnIntr.corepacConfig.intVecNum        = CMBN_FW_EXCEPTION_INTR;
     status =Osal_RegisterInterrupt(&intrPrmsCmbnIntr, &hwiPHandleCmbnIntr);
 
     /* Interrupt registration for dmsc interrupt notification routing */
@@ -801,7 +801,7 @@ static int32_t App_fwExcpNotificationTest(void)
     intrPrmsDmscIntr.corepacConfig.isrRoutine       =
                                 (void*)App_fwNotiIsrDmsc;
     intrPrmsDmscIntr.corepacConfig.corepacEventNum  = 0;
-    intrPrmsDmscIntr.corepacConfig.intVecNum        = CSLR_MCU_R5FSS0_CORE0_INTR_WKUP_DMSC0_CORTEX_M3_0_SEC_OUT_0;
+    intrPrmsDmscIntr.corepacConfig.intVecNum        = DMSC_FW_EXCEPTION_INTR;
     status =Osal_RegisterInterrupt(&intrPrmsDmscIntr, &hwiPHandleDmscIntr);
     
     /* Invoking a firewall exception notification for the dmsc exception handler by writing to dmsc address */
