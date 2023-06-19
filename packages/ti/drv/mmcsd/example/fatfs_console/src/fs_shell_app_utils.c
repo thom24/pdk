@@ -329,7 +329,7 @@ int32_t FSShellAppUtilsInit(void)
 
 int32_t FSShellAppUtilsProcess(void)
 {
-    uint32_t spinProcess = TRUE;
+    uint32_t spinProcess = UTRUE;
     int32_t retStat = CSL_ESYS_FAIL;
     uint8_t inputChar = 0U;
     uint8_t inputCharIdx = 0U;
@@ -346,7 +346,7 @@ int32_t FSShellAppUtilsProcess(void)
                     UART_printStatus("All tests have PASSED\n");
                     MMCSD_log("%s>", gFsShellAppUtilsCwd);
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_READ_COMMAND;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_SOK;
                 }
                 /* Exit on error. */
@@ -354,7 +354,7 @@ int32_t FSShellAppUtilsProcess(void)
                 {
                     MMCSD_log("%s>", "UNKNOWN");
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_ESYS_FAIL;
                 }
                 break;
@@ -421,13 +421,13 @@ int32_t FSShellAppUtilsProcess(void)
                     if(fatfsShellProcessFlag != 0)
                     {
                         gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_EXECUTE_COMMAND;
-                        spinProcess = TRUE;
+                        spinProcess = UTRUE;
                         retStat = CSL_SOK;
                     }
                     else
                     {
                         gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                        spinProcess = TRUE;
+                        spinProcess = UTRUE;
                         break;
                     }
                 }
@@ -436,7 +436,7 @@ int32_t FSShellAppUtilsProcess(void)
                 {
                     MMCSD_log("%s>", "UNKNOWN");
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_ESYS_FAIL;
                 }
                 break;
@@ -449,7 +449,7 @@ int32_t FSShellAppUtilsProcess(void)
                 {
                     FSShellAppUtilsCmdExecute(gFsShellAppUtilsRxBuf, gFsShellAppUtilsCmdTable);
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_HELP;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_SOK;
                 }
                 /* Exit on error. */
@@ -457,7 +457,7 @@ int32_t FSShellAppUtilsProcess(void)
                 {
                     MMCSD_log("%s>", "UNKNOWN");
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_ESYS_FAIL;
                 }
                 break;
@@ -473,12 +473,12 @@ int32_t FSShellAppUtilsProcess(void)
                     if(FR_OK == f_opendir(&gFsShellAppUtilsDirObj, gFsShellAppUtilsCwd))
                     {
                         gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_HELP;
-                        spinProcess = TRUE;
+                        spinProcess = UTRUE;
                         retStat = CSL_SOK;
                     }
                     else
                     {
-                        spinProcess = TRUE;
+                        spinProcess = UTRUE;
                         gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
                         retStat = CSL_ESYS_FAIL;
                         break;
@@ -487,7 +487,7 @@ int32_t FSShellAppUtilsProcess(void)
             }
         }
 
-    } while(TRUE == spinProcess);
+    } while(UTRUE == spinProcess);
 
     return retStat;
 }
@@ -503,7 +503,7 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
     static uint8_t *argv[FSSHELLAPPUTILS_CMDLINE_MAX_ARGS + 1U];
     uint8_t *pChar;
     int32_t argc;
-    uint32_t findArg = TRUE;
+    uint32_t findArg = UTRUE;
 
     /*
 	 * Initialize the argument counter, and point to the beginning of the
@@ -522,7 +522,7 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
         if(*pChar == ' ')
         {
             *pChar = 0;
-            findArg = TRUE;
+            findArg = UTRUE;
         }
 
         /*
@@ -535,7 +535,7 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
 			 * If findArg is set, then that means we are looking for the start
              * of the next argument.
 			 */
-            if(TRUE == findArg)
+            if(UTRUE == findArg)
             {
                 /*
 				 * As long as the maximum number of arguments has not been
@@ -546,7 +546,7 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
                 {
                     argv[argc] = pChar;
                     argc++;
-                    findArg = FALSE;
+                    findArg = UFALSE;
                     retStatus = CSL_SOK;
                 }
 
@@ -689,7 +689,7 @@ static int32_t FSShellAppUtilsFrmtPath(char* inputPath, char* outputPath)
         }
         else
         {
-            retStat = FALSE;
+            retStat = IFALSE;
         }
     }
 
@@ -882,9 +882,9 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
     FRESULT fresultRead = FR_NOT_READY;
     FRESULT fresultWrite = FR_NOT_READY;
     uint32_t bytesWrite = 0;
-    uint32_t flagWrite = FALSE;
+    uint32_t flagWrite = UFALSE;
     uint32_t usBytesRead = 0;
-    uint32_t flagRead = FALSE;
+    uint32_t flagRead = UFALSE;
     int32_t retStat = CSL_ESYS_FAIL;
 
     strcpy(gFsShellAppUtilsTempPath, "");
@@ -907,7 +907,7 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
         }
         else
         {
-            flagRead = TRUE;
+            flagRead = UTRUE;
         }
     }
 
@@ -940,7 +940,7 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
                     }
                     else
                     {
-                        flagWrite = TRUE;
+                        flagWrite = UTRUE;
                     }
                 }
             }
@@ -977,7 +977,7 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
              * If there was an error writing, then print a newline and return
              * error to the user.
              */
-            if(TRUE == flagWrite)
+            if(UTRUE == flagWrite)
             {
                 fresultWrite = f_write(&gFsShellAppUtilsWriteFileObj, gFsShellAppUtilsDataBuf,
                                        usBytesRead, &bytesWrite);
@@ -1014,7 +1014,7 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
 	 * If there was an error writing, then print a newline and return the
 	 * error to the user.
 	 */
-	if(TRUE == flagRead)
+	if(UTRUE == flagRead)
 	{
 		fresultRead = f_close(&gFsShellAppUtilsReadFileObj);
 
@@ -1030,7 +1030,7 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
 	 * If there was an error writing, then print a newline and return the
 	 * error to the user.
 	 */
-	if(TRUE == flagWrite)
+	if(UTRUE == flagWrite)
 	{
 		fresultWrite = f_close(&gFsShellAppUtilsWriteFileObj);
 

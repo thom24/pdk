@@ -207,7 +207,7 @@ MMCSD_v2_HwAttrs MMCSDInitCfg[MMCSD_CNT] =
 /* MMCSD objects */
 MMCSD_v2_Object MMCSDObjects[MMCSD_CNT];
 
-Bool gIrqRangeQueryFirstTime = TRUE;
+Bool gIrqRangeQueryFirstTime = UTRUE;
 
 
 #if defined(BUILD_MCU)
@@ -335,7 +335,7 @@ MMCSD_Error MMCSD_getIrqRange(uint16_t irId, uint16_t* rangeStart, uint16_t* ran
 }
 
 /* This function will configure the interrupt path to the destination CPU
-  using SYSFW firmware via sciclient if setIntrPath is set to TRUE. */
+  using SYSFW firmware via sciclient if setIntrPath is set to BTRUE. */
 MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
 {
    MMCSD_Error ret=MMCSD_OK;
@@ -343,7 +343,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
     CSL_ArmR5CPUInfo r5CpuInfo = {0};
     int32_t retVal= CSL_PASS;
     MMCSD_v2_HwAttrs const *hwAttrs = (MMCSD_v2_HwAttrs const *)(hwAttrs_ptr);
-    bool isIrInvolved = FALSE;
+    bool isIrInvolved = BFALSE;
     static uint16_t        rangeStart;
     static uint16_t        rangeNum;
     static uint16_t        irId;
@@ -354,7 +354,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
 
     if(r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
-        isIrInvolved = TRUE;
+        isIrInvolved = BTRUE;
         irId = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
         /* Check if core is mcu1_0 || mcu1_1 */
         dstCoreId = (r5CpuInfo.cpuID == CSL_ARM_R5_CPU_ID_0)?
@@ -365,7 +365,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
     {
         if(hwAttrs->instNum == 2 || hwAttrs->instNum == 3)
         {
-            isIrInvolved = TRUE;
+            isIrInvolved = BTRUE;
             irId = TISCI_DEV_R5FSS0_INTROUTER0;
             /* Check if core is mcu2_0 || mcu2_1 */
             dstCoreId = (r5CpuInfo.cpuID == CSL_ARM_R5_CPU_ID_0)?
@@ -377,7 +377,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
     {
         if(hwAttrs->instNum == 2 || hwAttrs->instNum == 3)
         {
-            isIrInvolved = TRUE;
+            isIrInvolved = BTRUE;
             irId = TISCI_DEV_R5FSS1_INTROUTER0;
             /* Check if core is mcu3_0 || mcu3_1 */
             dstCoreId = (r5CpuInfo.cpuID == CSL_ARM_R5_CPU_ID_0)?
@@ -393,7 +393,7 @@ MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr, bool setIntrPath)
             if(gIrqRangeQueryFirstTime)
             {
                 retVal = MMCSD_getIrqRange(irId, &rangeStart, &rangeNum); 
-                gIrqRangeQueryFirstTime = FALSE;
+                gIrqRangeQueryFirstTime = UFALSE;
             }
             if(retVal == CSL_PASS)
             {

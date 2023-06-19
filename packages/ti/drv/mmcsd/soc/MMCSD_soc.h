@@ -88,7 +88,7 @@ uint32_t MMCSD_soc_l2_global_addr (uint32_t addr);
 extern MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance, MMCSD_BusVoltage_e switch_voltage);
 
 /* This function will configure the interrupt path to the destination CPU
-*  using DMSC firmware via sciclient. if setIntrPath is set to TRUE, 
+*  using DMSC firmware via sciclient. if setIntrPath is set to BTRUE, 
 *  a path is set, else the interrupt path is released
 */
 extern MMCSD_Error MMCSD_configSocIntrPath(const void *hwAttrs_ptr,bool setIntrPath);
