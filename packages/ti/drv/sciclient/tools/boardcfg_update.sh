@@ -118,6 +118,9 @@ if [ "${board}" != "j784s4_evm" ]; then
     cp $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/${soc}/sciserver_testapp_safertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/${soc}/
     cp $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/${soc}/sciserver_testapp_safertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/${soc}/
 fi
+if [ "${board}" = "j784s4_evm" ] || [ "${board}" = "j721s2_evm" ] [ "${board}" = "j7200_evm" ]; then
+    make -j -s sciclient_boardcfg_combined BOARD=${board}
+fi
 
 cd -
 

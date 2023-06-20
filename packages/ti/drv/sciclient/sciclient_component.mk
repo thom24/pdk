@@ -192,7 +192,7 @@ export sciclient_boardcfg_combined_PATH = $(PDK_SCICLIENT_COMP_PATH)
 export sciclient_boardcfg_combined_MAKEFILE = -fsrc/boardcfg_makefile SBL_IMAGE_TYPE=combined
 export sciclient_boardcfg_combined_BOARD_DEPENDENCY = yes
 export sciclient_boardcfg_combined_CORE_DEPENDENCY = yes
-export sciclient_boardcfg_combined_BOARDLIST = $(sciclient_BOARDLIST)
+export sciclient_boardcfg_combined_BOARDLIST = j7200_evm j721s2_evm j784s4_evm
 export sciclient_boardcfg_combined_$(SOC)_CORELIST = mcu1_0
 export sciclient_boardcfg_combined_LIBNAME = sciclient_boardcfg_combined
 
