@@ -457,7 +457,7 @@ export MCSPI_MasterSlave_TestApp_$(1)_MAKEFILE =  -f$(PDK_SPI_COMP_PATH)/example
 export MCSPI_MasterSlave_TestApp_$(1)_DEPENDS_ON=MCSPI_Master_TestApp_$(1) MCSPI_Slave_TestApp_$(1)
 MCSPI_MasterSlave_TestApp_$(1)_PKG_LIST = MCSPI_MasterSlave_TestApp_$(1)
 MCSPI_MasterSlave_TestApp_$(1)_INCLUDE = $(MCSPI_MasterSlave_TestApp_$(1)_PATH)
-export MCSPI_MasterSlave_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721s2_evm j721e_evm j7200_evm)
+export MCSPI_MasterSlave_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721s2_evm j721e_evm j7200_evm j784s4_evm)
 export MCSPI_MasterSlave_TestApp_$(1)_$(SOC)_CORELIST := mcu2_1
 export MCSPI_MasterSlave_TestApp_SBL_APPIMAGEGEN = no
 ifneq ($(1),$(filter $(1), safertos))
