@@ -546,8 +546,8 @@ int32_t Sciclient_pmIsModuleValid(uint32_t modId);
  *  \brief   Objective: Prepare SoC to enter into low power mode
  *
  *  \n<b>Message</b>:    #TISCI_MSG_PREPARE_SLEEP
- *  \n<b>Request</b>:    #tisci_msg_prepare_sleep_req
- *  \n<b>Response</b>:   #tisci_msg_prepare_sleep_resp
+ *  \n<b>Request</b>:    tisci_msg_prepare_sleep_req
+ *  \n<b>Response</b>:   tisci_msg_prepare_sleep_resp
  *
  *  \param  timeout         Gives a sense of how long to wait for the operation.
  *                          Refer \ref Sciclient_ServiceOperationTimeout.
@@ -559,8 +559,8 @@ int32_t Sciclient_pmPrepareSleep(uint32_t timeout);
  *  \brief   Objective: Trigger SoC into low power mode.
  *
  *  \n<b>Message</b>:    #TISCI_MSG_ENTER_SLEEP
- *  \n<b>Request</b>:    #tisci_msg_enter_sleep_req
- *  \n<b>Response</b>:   #tisci_msg_enter_sleep_resp
+ *  \n<b>Request</b>:    tisci_msg_enter_sleep_req
+ *  \n<b>Response</b>:   tisci_msg_enter_sleep_resp
  *
  *  \param  timeout         Gives a sense of how long to wait for the operation.
  *                          Refer \ref Sciclient_ServiceOperationTimeout.

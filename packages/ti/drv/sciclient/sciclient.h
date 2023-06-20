@@ -737,13 +737,13 @@ int32_t Sciclient_boardCfgParseHeader (
     Sciclient_BoardCfgPrms_t * pInRmPrms);
 
 /** \brief Sciclient Prepare Sleep Function
- *  \param None
+ *
  *  \return status    Function return status.
  */
 int32_t Sciclient_prepareSleep();
 
 /** \brief Sciclient Enter Sleep Function
- *  \param None
+ *
  *  \return status    Function return status.
  */
 int32_t Sciclient_enterSleep();

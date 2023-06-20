@@ -32,7 +32,7 @@
 */
 
 /**
-*  \file sciclient_defaultBoardCg_tifs_rm_hex.h
+*  \file sciclient_defaultBoardcfg_tifs_rm_hex.h
 *
 *  \brief File containing the Binary in a C array.
 *
@@ -48,11 +48,11 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#ifndef SCICLIENT_DEFAULTBOARDCG_TIFS_RM_HEX_H_
-#define SCICLIENT_DEFAULTBOARDCG_TIFS_RM_HEX_H_
+#ifndef SCICLIENT_DEFAULTBOARDCFG_TIFS_RM_HEX_H_
+#define SCICLIENT_DEFAULTBOARDCFG_TIFS_RM_HEX_H_
 
 
-#define SCICLIENT_BOARDCG_TIFS_RM_SIZE_IN_BYTES (2606U)
+#define SCICLIENT_BOARDCFG_TIFS_RM_SIZE_IN_BYTES (2606U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -70,7 +70,7 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#define SCICLIENT_BOARDCG_TIFS_RM { \
+#define SCICLIENT_BOARDCFG_TIFS_RM { \
     0x4c410100U,     0x00000164U,     0x00000000U,     0x00000000U, \
     0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
     0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \

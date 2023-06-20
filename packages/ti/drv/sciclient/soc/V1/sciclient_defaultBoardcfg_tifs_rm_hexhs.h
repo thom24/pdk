@@ -32,7 +32,7 @@
 */
 
 /**
-*  \file sciclient_defaultBoardCg_tifs_rm_hexhs.h
+*  \file sciclient_defaultBoardcfg_tifs_rm_hexhs.h
 *
 *  \brief File containing the Binary in a C array.
 *
@@ -48,11 +48,11 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
-#ifndef SCICLIENT_DEFAULTBOARDCG_TIFS_RM_HEXHS_H_
-#define SCICLIENT_DEFAULTBOARDCG_TIFS_RM_HEXHS_H_
+#ifndef SCICLIENT_DEFAULTBOARDCFG_TIFS_RM_HEXHS_H_
+#define SCICLIENT_DEFAULTBOARDCFG_TIFS_RM_HEXHS_H_
 
 
-#define SCICLIENT_BOARDCG_TIFS_RM_SIZE_IN_BYTES (5818U)
+#define SCICLIENT_BOARDCFG_TIFS_RM_SIZE_IN_BYTES (5818U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -70,10 +70,10 @@
 /*                            Global Variables                                */
 /* ========================================================================== */
 
-#define SCICLIENT_BOARDCG_TIFS_RM { \
-    0x48068230U,     0x30048230U,     0x010203a0U,     0x4c140202U, \
-    0x4bf55594U,     0xc93fc982U,     0xa758bc1dU,     0x762cbfa0U, \
-    0x30013430U,     0x2a09060dU,     0xf7864886U,     0x0d01010dU, \
+#define SCICLIENT_BOARDCFG_TIFS_RM { \
+    0x48068230U,     0x30048230U,     0x010203a0U,     0x40140202U, \
+    0xc728b30aU,     0xebb9366cU,     0x0cb98edcU,     0xc66ab65cU, \
+    0x30c2354aU,     0x2a09060dU,     0xf7864886U,     0x0d01010dU, \
     0x81300005U,     0x300b318bU,     0x55030609U,     0x02130604U, \
     0x0b315355U,     0x03060930U,     0x0c080455U,     0x31435302U, \
     0x060d300fU,     0x07045503U,     0x6144060cU,     0x73616c6cU, \
@@ -83,8 +83,8 @@
     0x300f3155U,     0x5503060dU,     0x060c0304U,     0x65626c41U, \
     0x1c317472U,     0x09061a30U,     0x8648862aU,     0x09010df7U, \
     0x410d1601U,     0x7265626cU,     0x69744074U,     0x6d6f632eU, \
-    0x0d171e30U,     0x36303332U,     0x39303931U,     0x38323431U, \
-    0x320d175aU,     0x31373033U,     0x31393039U,     0x5a383234U, \
+    0x0d171e30U,     0x36303332U,     0x31313032U,     0x32323934U, \
+    0x320d175aU,     0x32373033U,     0x34313130U,     0x5a323239U, \
     0x318b8130U,     0x0609300bU,     0x06045503U,     0x53550213U, \
     0x09300b31U,     0x04550306U,     0x53020c08U,     0x300f3143U, \
     0x5503060dU,     0x060c0704U,     0x6c6c6144U,     0x21317361U, \
@@ -139,39 +139,39 @@
     0x08d6db59U,     0x192a9d19U,     0x0202dbdbU,     0x18306e10U, \
     0x062b0906U,     0x82010401U,     0x04230126U,     0x0409300bU, \
     0x00000004U,     0x02010200U,     0x09060d30U,     0x8648862aU, \
-    0x01010df7U,     0x0300050dU,     0x00010282U,     0xec86e715U, \
-    0x85f897c8U,     0x70b5d887U,     0x3366e8bcU,     0xffd5b53bU, \
-    0xf036f450U,     0x4bba1d1aU,     0x18055ff0U,     0xc1352046U, \
-    0x5ec7e56aU,     0x710a4803U,     0x5becf864U,     0xb4823473U, \
-    0xcfb0c574U,     0xdac7d12aU,     0xb43007ebU,     0x37888543U, \
-    0x655a3c4cU,     0xf1f9b527U,     0x7baac8b3U,     0x0519424cU, \
-    0x6d441a30U,     0xa987e5e3U,     0x59531e71U,     0xb27af862U, \
-    0x40e16a86U,     0x5fd2a828U,     0x39d57ef0U,     0xe0e2daf3U, \
-    0x704a45f7U,     0xb669ed4cU,     0xd877d99fU,     0xc1051697U, \
-    0xc7c44027U,     0x33b94df7U,     0x45d152d2U,     0x55ac5481U, \
-    0x99180d28U,     0x95728ff9U,     0xfc685c9aU,     0x1259bbd9U, \
-    0xe16f51f5U,     0x4dffaef6U,     0x7c95178dU,     0xe1dcbcf2U, \
-    0xc345e5d9U,     0x94ddc826U,     0xa54372deU,     0x361f3282U, \
-    0x513f1a7fU,     0xd4290e0fU,     0x483dea27U,     0x67c1ee21U, \
-    0x9eed96a8U,     0x4c5d3b2fU,     0x18690fddU,     0xc2861015U, \
-    0x5da8fd81U,     0x52665eeeU,     0x4d4742bbU,     0xbd62ab8fU, \
-    0x5ae39351U,     0x9e0c34d2U,     0xbd3ab955U,     0xc42b32e3U, \
-    0x9333c373U,     0x7d184ad2U,     0x5ae06931U,     0x633fd32dU, \
-    0x855f9470U,     0xc6ced953U,     0x3e0ab3feU,     0x41784706U, \
-    0x2b30f6fbU,     0x55fc9f4dU,     0x608cfe1dU,     0x63925afaU, \
-    0x44e6f4f9U,     0x9c90423fU,     0x5e2190a6U,     0x4bb6d458U, \
-    0x617c568dU,     0x49d88238U,     0xa02ff799U,     0xc2367402U, \
-    0x2d4f85a5U,     0x2704fca7U,     0x42371a45U,     0x7a5fad06U, \
-    0x883e35e9U,     0x7da04529U,     0x235ad344U,     0x968a32e0U, \
-    0x7af3e3b8U,     0xdcd6b8e9U,     0x1eec6222U,     0xabf75944U, \
-    0x391ccb51U,     0xe6a5c425U,     0x81070a37U,     0xe02ea8a1U, \
-    0xd3e7fbe0U,     0x0fbb4062U,     0x288881efU,     0x6f1d9df3U, \
-    0x3ab207c1U,     0x6ac69662U,     0x3e05a18aU,     0xfbea75b6U, \
-    0xe42005fbU,     0xc9620488U,     0x776c1c58U,     0xd916beefU, \
-    0xe3b40bf6U,     0x47b96ad1U,     0xbfb528f1U,     0x6f983146U, \
-    0x7c1112b1U,     0x787cf206U,     0xe26fbba2U,     0x5080a0fbU, \
-    0x829a8572U,     0xf550ff3aU,     0x347aa44fU,     0xb06edaf4U, \
-    0xfa7d0cefU,     0x2683bafbU,     0xdb7b3b98U,     0x4c410100U, \
+    0x01010df7U,     0x0300050dU,     0x00010282U,     0x5908c2a1U, \
+    0xe2ebf778U,     0x142ad57aU,     0x1e949ba6U,     0x19dc4066U, \
+    0x7ab389c8U,     0x43ba29a9U,     0x8421d2e6U,     0x75d72a2dU, \
+    0xe103a77bU,     0xaf585701U,     0x821b5667U,     0x5cb08dffU, \
+    0x99555ff5U,     0x54024759U,     0xd720fc54U,     0x900b1d88U, \
+    0x5845750aU,     0x90781ac2U,     0x7ef6eae4U,     0x5f0a23aaU, \
+    0x006f55b2U,     0xb4719aaeU,     0x260dd003U,     0xfe3d245aU, \
+    0x2081e2ffU,     0xb2efa7beU,     0x6f68ed84U,     0xcbcb9cebU, \
+    0x1f76f210U,     0xc9754890U,     0x78a08dcdU,     0x81ada857U, \
+    0x6c069451U,     0x0b4eb3f9U,     0xa35dbaa5U,     0xa902e834U, \
+    0x664b930cU,     0xb40b9f0bU,     0xd245729eU,     0x442212a3U, \
+    0x907a4442U,     0x9ac8bde6U,     0xbe0b45d2U,     0x66a4988fU, \
+    0x1a48330aU,     0xc028498dU,     0x2003c672U,     0x459f14e3U, \
+    0xebe372f8U,     0x7a39f1e7U,     0x1a9627fcU,     0x8b415ae7U, \
+    0x2807af9eU,     0xe4fc4ef1U,     0x5ce8e52aU,     0x3059a732U, \
+    0xc4029061U,     0x07996cb2U,     0x7d0b7d7dU,     0x3be96efdU, \
+    0xd69db920U,     0x86419160U,     0x5e330669U,     0xe69cc007U, \
+    0x7a49ea97U,     0x01aae0ddU,     0x1605570fU,     0x343d7c91U, \
+    0xbbc5ba27U,     0xa386e066U,     0x30a51bd1U,     0x791e7bd6U, \
+    0xb164f3c2U,     0xb4c90b51U,     0x8cd85737U,     0xac63a2a1U, \
+    0x6f72c547U,     0x9ecb4d27U,     0x4f30c5e6U,     0xb187029cU, \
+    0x73d69d83U,     0x3d3cff84U,     0x70e36ae6U,     0x8a20c3e7U, \
+    0xd5409b17U,     0x3576f27fU,     0x5604e01fU,     0x0b13c1fdU, \
+    0xef76368fU,     0x0223ca87U,     0x6298e228U,     0x32c88256U, \
+    0xc22b682aU,     0xeb083d99U,     0x5f7245bbU,     0x5ac60dadU, \
+    0xbe33c027U,     0xcf7c4979U,     0x5238a449U,     0x03c03d45U, \
+    0x6bdc201aU,     0x6585f22dU,     0x7b8403b7U,     0xcf679129U, \
+    0xa9e903d1U,     0x5e6d3ff9U,     0x77d9bf9eU,     0x9ad7b4daU, \
+    0x57f9931bU,     0x2c1291e7U,     0x1d1e9de1U,     0xab2b11a2U, \
+    0x6c522f7dU,     0x58c4ac61U,     0xcb36f237U,     0xeb574805U, \
+    0xd4afc81eU,     0xb12a6081U,     0x09ae83afU,     0xb226536eU, \
+    0x44f34128U,     0x6b3ced6dU,     0x3a0bb171U,     0xe821288aU, \
+    0xe607c418U,     0x098a35fdU,     0x87dd8eb2U,     0x4c410100U, \
     0x00000164U,     0x00000000U,     0x00000000U,     0x00000000U, \
     0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
     0x00000000U,     0x00000000U,     0x00000000U,     0x00000000U, \
