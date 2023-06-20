@@ -1,5 +1,5 @@
 /******************************************************************************
- * Copyright (c) 2020 Texas Instruments Incorporated - http://www.ti.com
+ * Copyright (c) 2020-2023 Texas Instruments Incorporated - http://www.ti.com
  *
  *  Redistribution and use in source and binary forms, with or without
  *  modification, are permitted provided that the following conditions
@@ -343,6 +343,7 @@ Board_STATUS Board_PLLInit(uint32_t modId,
 Board_STATUS Board_PLLInitMcu(void)
 {
     Board_STATUS  status = BOARD_SOK;
+    Board_STATUS  retVal = BOARD_SOK;
     uint32_t index;
     uint32_t loopCount;
 
@@ -356,10 +357,11 @@ Board_STATUS Board_PLLInitMcu(void)
         if(status != BOARD_SOK)
         {
             BOARD_DEBUG_LOG("Failed to set the PLL clock freq at index =%d\n\n",index);
+            retVal |= (1 << index);
         }
     }
 
-    return status;
+    return retVal;
 }
 
 /**
@@ -370,6 +372,7 @@ Board_STATUS Board_PLLInitMcu(void)
 Board_STATUS Board_PLLInitMain(void)
 {
     Board_STATUS  status = BOARD_SOK;
+    Board_STATUS  retVal = BOARD_SOK;
     uint32_t index;
     uint32_t loopCount;
 
@@ -383,9 +386,10 @@ Board_STATUS Board_PLLInitMain(void)
         if(status != BOARD_SOK)
         {
             BOARD_DEBUG_LOG("Failed to set the PLL clock freq at index =%d\n\n",index);
+            retVal |= (1 << index);
         }
     }
 
-    return status;
+    return retVal;
 }
 
