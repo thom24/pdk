@@ -945,7 +945,11 @@ uint64_t TimerP_getTimeInUsecs(void)
     /* In case of FreeRTOS get the current counter value from
      * the timer used by OS itself, instead of using an 
      * additional timer for the same */
-    curTime = uiPortGetRunTimeCounterValue64();
+    #if defined (BUILD_MCU)
+      curTime = uiPortGetRunTimeCounterValue64();
+    #else
+      curTime = uiPortGetRunTimeCounterValue();
+    #endif
     #else
     TimeStamp_Struct timestamp64;
     uint64_t         cur_ts, freq;
