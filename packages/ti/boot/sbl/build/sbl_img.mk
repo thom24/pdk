@@ -38,6 +38,9 @@ endif
 # (x * 1024) in hexadecimal
 MAX_APP_SIZE_EMMC ?= 0x7D000
 
+# If no address is specified from command prompt, SBL copies EEPROM content to 0x90000000 
+EEPROM_DATA_DDR_ADDRESS ?= 0x90000000
+
 ifeq ($(BOOT_PERF), yes)
   APP_NAME = sbl_boot_perf_cust_img
   LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_$(CORE)
@@ -179,6 +182,7 @@ endif # ifeq ($(filter $(SBL_CFLAGS), -DSBL_USE_DMA=1), -DSBL_USE_DMA=1)
 endif # ifeq ($(filter $(SBL_CFLAGS), -DBOOT_OSPI), -DBOOT_OSPI)
 
 SBL_CFLAGS += -DMAX_APP_SIZE_EMMC=$(MAX_APP_SIZE_EMMC)
+SBL_CFLAGS += -DEEPROM_DATA_DDR_ADDRESS=$(EEPROM_DATA_DDR_ADDRESS)
 
 SRCS_COMMON += sbl_main.c
 

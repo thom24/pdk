@@ -399,6 +399,12 @@ int main()
 #endif
 #endif
 
+#if !defined(BOOT_PERF)
+    SBL_log(SBL_LOG_MAX, "Copying EEPROM content to DDR ... \n");
+    Board_initBoardIdData((uint8_t *) DDR_ADDRESS_TO_DUMP_EEPROM_CONTENT);
+    SBL_log(SBL_LOG_MAX, "EEPROM Data Copy Done.\n");
+#endif
+
     SBL_log(SBL_LOG_MAX, "Begin parsing user application\n");
 
     /* Boot all non-SBL cores in multi-core app image */
