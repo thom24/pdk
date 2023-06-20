@@ -1884,6 +1884,22 @@ sbl_EXAMPLE_LIST += boot_app_mmcsd_qnx_hs
 boot_app_mmcsd_qnx_hs_SBL_APPIMAGEGEN = yes
 export boot_app_mmcsd_qnx_hs_SBL_APPIMAGEGEN
 
+# SBL example to verify EEPROM read functionality
+export sbl_eeprom_test_COMP_LIST = sbl_eeprom_test
+sbl_eeprom_test_RELPATH = ti/boot/sbl/example/eeprom_test
+sbl_eeprom_test_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/example/binary/$(BOARD)
+sbl_eeprom_test_PATH = $(PDK_SBL_COMP_PATH)/example/eeprom_test
+export sbl_eeprom_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/example/eeprom_test/makefile
+export sbl_eeprom_test_BOARD_DEPENDENCY = yes
+export sbl_eeprom_test_SOC_DEPENDENCY = no
+export sbl_eeprom_test_CORE_DEPENDENCY = no
+sbl_eeprom_test_PKG_LIST = sbl_eeprom_test
+sbl_eeprom_test_INCLUDE = $(sbl_eeprom_test_PATH)
+export sbl_eeprom_test_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_eeprom_test_$(SOC)_CORELIST = mcu1_0
+export sbl_eeprom_test_SBL_APPIMAGEGEN = yes
+sbl_EXAMPLE_LIST += sbl_eeprom_test
+
 # SBL not supported for any profile
 # other than release
 ifneq ($(BUILD_PROFILE), release)
