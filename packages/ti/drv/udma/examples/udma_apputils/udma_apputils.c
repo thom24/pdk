@@ -55,8 +55,10 @@
 /* ========================================================================== */
 
 #if defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined (BUILD_MCU2_0)
 #define REGION_ID (0x0)
 #define MAIN_OCM_VIRT_BASE (0xD0000000U)
+#endif
 #endif
 
 /* ========================================================================== */
@@ -81,6 +83,8 @@
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
+#if defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined (BUILD_MCU2_0)
 static uint32_t logBase2(uint32_t value)
 {
     uint32_t retVal = 0U;
@@ -91,6 +95,8 @@ static uint32_t logBase2(uint32_t value)
     }
     return retVal;
 }
+#endif
+#endif
 
 void Udma_appMainOcmRatCfg(void)
 {
@@ -100,6 +106,7 @@ void Udma_appMainOcmRatCfg(void)
      *  No need for RAT mapping
      */
 #else
+#if defined (BUILD_MCU2_0)
     /* Input Address */
     *(unsigned int *)(CSL_R5FSS0_RAT_CFG_BASE + 0x44 + (REGION_ID*0x10)) = MAIN_OCM_VIRT_BASE;
     /* Lower 32 bits Output Address */
@@ -109,6 +116,7 @@ void Udma_appMainOcmRatCfg(void)
     /* Region Enable[31] + SIZE of memory[5:0] */
     *(unsigned int *)(CSL_R5FSS0_RAT_CFG_BASE + 0x40 + (REGION_ID*0x10)) = (CSL_RAT_REGION_CTRL_EN_MAX << CSL_RAT_REGION_CTRL_EN_SHIFT) |\
                                                             (logBase2(CSL_MSRAM_512K0_RAM_SIZE) << CSL_RAT_REGION_BASE_BASE_SHIFT);
+#endif
 #endif
 }
 
