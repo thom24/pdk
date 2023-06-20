@@ -67,7 +67,7 @@ void EventP_Params_init(EventP_Params *params)
  */
 EventP_Handle EventP_create(EventP_Params *params)
 {
-    EventP_Handle       ret_handle;
+    EventP_Handle       ret_handle = NULL_PTR;
     EventP_safertos     *handle = (EventP_safertos *) NULL_PTR;
     EventP_safertos     *eventPool;
     uint32_t            i;
