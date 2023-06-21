@@ -158,7 +158,7 @@ typedef struct fsShellAppUtilsCmdEntry
 /* ========================================================================== */
 /*                            Global Variables Declarations                   */
 /* ========================================================================== */
-extern volatile uint8_t fs_is_media_inserted;
+extern volatile uint32_t fs_is_media_inserted;
 
 /* ========================================================================== */
 /*                          Function Declarations                             */

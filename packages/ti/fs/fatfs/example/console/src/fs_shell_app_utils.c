@@ -275,7 +275,7 @@ int32_t FSShellAppUtilsCmdExit(int32_t argc, char *argv[]);
 /*                            Global Variables Declarations                   */
 /* ========================================================================== */
 #ifdef MULTI_PARTITION
-uint32_t gFsExitStatus = 0;
+uint32_t gFsExitStatus = UFALSE;
 #endif
 
 static DIR gFsShellAppUtilsDirObj;
@@ -351,7 +351,7 @@ int32_t FSShellAppUtilsInit(void)
 }
 
 /* For checking if the media is still inserted */
-volatile uint8_t fs_is_media_inserted=1;
+volatile uint32_t fs_is_media_inserted = UTRUE;
 
 #ifdef MULTI_PARTITION
 int32_t FSShellAppUtilsProcess(char *path)
@@ -359,10 +359,10 @@ int32_t FSShellAppUtilsProcess(char *path)
 int32_t FSShellAppUtilsProcess(void)
 #endif
 {
-    uint32_t spinProcess = TRUE;
+    uint32_t spinProcess = UTRUE;
     int32_t retStat = CSL_ESYS_FAIL;
     uint8_t inputChar = 0U;
-    uint8_t inputCharIdx = 0U;
+    uint8_t inputCharIdx = 0;
 
     do
     {
@@ -376,7 +376,7 @@ int32_t FSShellAppUtilsProcess(void)
                     FATFS_log("All tests have passed.\n");
                     FATFS_log("%s>", gFsShellAppUtilsCwd);
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_READ_COMMAND;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_SOK;
                 }
                 /* Exit on error. */
@@ -384,7 +384,7 @@ int32_t FSShellAppUtilsProcess(void)
                 {
                     FATFS_log("%s>", "UNKNOWN");
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_ESYS_FAIL;
                 }
                 break;
@@ -411,7 +411,7 @@ int32_t FSShellAppUtilsProcess(void)
                         ** See if this character is a backspace and there is at least one
                         ** character in the input line.
                         */
-                        if((inputChar == '\b') && (inputCharIdx != 0))
+                        if(('\b' == inputChar) && (0 != inputCharIdx))
                         {
                             /*
                             ** Erase the last character from the input line.
@@ -424,7 +424,7 @@ int32_t FSShellAppUtilsProcess(void)
                         /*
                         ** See if this character is a newline.
                         */
-                        else if((inputChar == '\r') || (inputChar == '\n'))
+                        else if(('\r' == inputChar) || ('\n' == inputChar))
                         {
                             /*
                             ** Return to the caller.
@@ -436,7 +436,7 @@ int32_t FSShellAppUtilsProcess(void)
                         /*
                         ** See if this is a printable ASCII character.
                         */
-                        else if((inputChar >= ' ') && (inputChar <= '~') &&
+                        else if((' ' <= inputChar) && ('~' >= inputChar) &&
                                 (inputCharIdx < (sizeof(gFsShellAppUtilsRxBuf) - 1)))
                         {
                             /*
@@ -446,10 +446,10 @@ int32_t FSShellAppUtilsProcess(void)
                             gFsShellAppUtilsRxBuf[inputCharIdx] = '\0';
                             UART_printf("%c", inputChar);
                         }
-                    } while (1);
+                    } while (BTRUE);
 
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_EXECUTE_COMMAND;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_SOK;
                 }
                 /* Exit on error. */
@@ -457,7 +457,7 @@ int32_t FSShellAppUtilsProcess(void)
                 {
                     FATFS_log("%s>", "UNKNOWN");
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_ESYS_FAIL;
                 }
                 break;
@@ -474,11 +474,11 @@ int32_t FSShellAppUtilsProcess(void)
                     if(gFsExitStatus)
                     {
                         gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                        spinProcess = FALSE;
-                        gFsExitStatus = 0;
+                        spinProcess = UFALSE;
+                        gFsExitStatus = UFALSE;
                     }
 #else
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
 #endif
                     retStat = CSL_SOK;
                 }
@@ -487,7 +487,7 @@ int32_t FSShellAppUtilsProcess(void)
                 {
                     FATFS_log("%s>", "UNKNOWN");
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_ESYS_FAIL;
                 }
                 break;
@@ -505,12 +505,12 @@ int32_t FSShellAppUtilsProcess(void)
                 if(FR_OK == f_opendir(&gFsShellAppUtilsDirObj, gFsShellAppUtilsCwd))
                 {
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_HELP;
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     retStat = CSL_SOK;
                 }
                 else
                 {
-                    spinProcess = TRUE;
+                    spinProcess = UTRUE;
                     gFsShellAppUtilsCurState = FS_SHELL_APP_UTILS_STATE_MAX;
                     retStat = CSL_ESYS_FAIL;
                     break;
@@ -518,7 +518,7 @@ int32_t FSShellAppUtilsProcess(void)
             }
         }
 
-    } while( (TRUE == spinProcess) && (fs_is_media_inserted == 1) );
+    } while( (UTRUE == spinProcess) && (UTRUE == fs_is_media_inserted) );
 
     return retStat;
 }
@@ -534,13 +534,13 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
     static uint8_t *argv[FSSHELLAPPUTILS_CMDLINE_MAX_ARGS + 1U];
     uint8_t *pChar;
     int32_t argc;
-    uint32_t findArg = TRUE;
+    uint32_t findArg = UTRUE;
 
     /*
 	 * Initialize the argument counter, and point to the beginning of the
      * command line string.
 	 */
-    argc = 0U;
+    argc = 0;
     pChar = pCmdLine;
 
     /* Advance through the command line until a zero character is found. */
@@ -550,10 +550,10 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
 		 * If there is a space, then replace it with a zero, and set the flag
          * to search for the next argument.
 		 */
-        if(*pChar == ' ')
+        if(' ' == *pChar)
         {
             *pChar = 0;
-            findArg = TRUE;
+            findArg = UTRUE;
         }
 
         /*
@@ -566,7 +566,7 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
 			 * If findArg is set, then that means we are looking for the start
              * of the next argument.
 			 */
-            if(TRUE == findArg)
+            if(UTRUE == findArg)
             {
                 /*
 				 * As long as the maximum number of arguments has not been
@@ -577,7 +577,7 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
                 {
                     argv[argc] = pChar;
                     argc++;
-                    findArg = FALSE;
+                    findArg = UFALSE;
                     retStatus = CSL_SOK;
                 }
 
@@ -599,7 +599,7 @@ int32_t FSShellAppUtilsCmdExecute(uint8_t *pCmdLine,
     }
 
     /* If one or more arguments was found, then process the command. */
-    if((CSL_SOK == retStatus) && (0U != argc))
+    if((CSL_SOK == retStatus) && (0 != argc))
     {
         /*
 		 * Search through the command table until a null command string is
@@ -720,7 +720,7 @@ static int32_t FSShellAppUtilsFrmtPath(char* inputPath, char* outputPath)
         }
         else
         {
-            retStat = FALSE;
+            retStat = IFALSE;
         }
     }
 
@@ -827,7 +827,7 @@ int32_t FSShellAppUtilsCmdRm(int32_t argc, char *argv[])
         fresult = f_unlink(gFsShellAppUtilsTempPath);
 
         /* Check status. Inform user and return. */
-        if(fresult != FR_OK)
+        if (FR_OK != fresult)
         {
             retStat = CSL_ESYS_FAIL;
         }
@@ -912,10 +912,10 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
 {
     FRESULT fresultRead = FR_NOT_READY;
     FRESULT fresultWrite = FR_NOT_READY;
-    uint32_t bytesWrite = 0;
-    uint32_t flagWrite = FALSE;
-    uint32_t usBytesRead = 0;
-    uint32_t flagRead = FALSE;
+    uint32_t bytesWrite = 0U;
+    uint32_t flagWrite = UFALSE;
+    uint32_t usBytesRead = 0U;
+    uint32_t flagRead = UFALSE;
     int32_t retStat = CSL_ESYS_FAIL;
 
     strcpy(gFsShellAppUtilsTempPath, "");
@@ -931,14 +931,14 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
         fresultRead = f_open(&gFsShellAppUtilsReadFileObj, gFsShellAppUtilsTempPath, FA_READ);
 
         /* If there was some problem opening the file, then return an error. */
-        if(fresultRead != FR_OK)
+        if (FR_OK != fresultRead)
         {
             FATFS_log("Fail to open file for read !!!!\n");
             retStat = CSL_ESYS_FAIL;
         }
         else
         {
-            flagRead = TRUE;
+            flagRead = UTRUE;
         }
     }
 
@@ -948,7 +948,7 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
          * Check for arguments if requested for copy to another file.
          * Copy the current path to the temporary buffer for new file creation.
          */
-        if(argc >= 4)
+        if(4 <= argc)
         {
             if(0U == strcmp(argv[2], ">"))
             {
@@ -962,16 +962,16 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
                 if (CSL_SOK == retStat)
                 {
                     fresultWrite = f_open(&gFsShellAppUtilsWriteFileObj, gFsShellAppUtilsTempPath,
-                                                               FA_WRITE|FA_OPEN_ALWAYS);
+                                                               FA_WRITE | FA_OPEN_ALWAYS);
 
-                    if(fresultWrite != FR_OK)
+                    if(FR_OK != fresultWrite)
                     {
                         FATFS_log("Fail to open file for write !!!!\n");
                         retStat = CSL_ESYS_FAIL;
                     }
                     else
                     {
-                        flagWrite = TRUE;
+                        flagWrite = UTRUE;
                     }
                 }
             }
@@ -997,7 +997,7 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
              * If there was an error reading, then print a newline and return
              * error to the user.
              */
-            if(fresultRead != FR_OK)
+            if (FR_OK != fresultRead)
             {
                 FATFS_log("Fail to read from file !!!!\n");
                 retStat = CSL_ESYS_FAIL;
@@ -1008,12 +1008,12 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
              * If there was an error writing, then print a newline and return
              * error to the user.
              */
-            if(TRUE == flagWrite)
+            if (UTRUE == flagWrite)
             {
                 fresultWrite = f_write(&gFsShellAppUtilsWriteFileObj, gFsShellAppUtilsDataBuf,
                                        usBytesRead, &bytesWrite);
 
-                if(fresultWrite != FR_OK)
+                if (FR_OK != fresultWrite)
                 {
                     FATFS_log("Fail to write into file !!!!\n");
                     retStat = CSL_ESYS_FAIL;
@@ -1045,11 +1045,11 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
 	 * If there was an error writing, then print a newline and return the
 	 * error to the user.
 	 */
-	if(TRUE == flagRead)
+	if (UTRUE == flagRead)
 	{
 		fresultRead = f_close(&gFsShellAppUtilsReadFileObj);
 
-		if(fresultRead != FR_OK)
+		if (FR_OK != fresultRead)
 		{
             FATFS_log("Fail to close read file !!!!\n");
             retStat = CSL_ESYS_FAIL;
@@ -1061,11 +1061,11 @@ int32_t FSShellAppUtilsCmdCat(int32_t argc, char *argv[])
 	 * If there was an error writing, then print a newline and return the
 	 * error to the user.
 	 */
-	if(TRUE == flagWrite)
+	if (UTRUE == flagWrite)
 	{
 		fresultWrite = f_close(&gFsShellAppUtilsWriteFileObj);
 
-		if(fresultWrite != FR_OK)
+		if (FR_OK != fresultWrite)
 		{
             FATFS_log("Fail to close write file !!!!\n");
             retStat = CSL_ESYS_FAIL;
@@ -1115,7 +1115,7 @@ int32_t FSShellAppUtilsCmdHelp(int32_t argc, char *argv[])
 #ifdef MULTI_PARTITION
 int32_t FSShellAppUtilsCmdExit(int32_t argc, char *argv[])
 {
-	gFsExitStatus =1;
+	gFsExitStatus = UTRUE;
     return CSL_SOK;
 }
 #endif

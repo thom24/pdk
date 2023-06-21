@@ -219,18 +219,18 @@ FATFS_Handle fatfsHandle = NULL;
 FATFS_Handle eMMCFatfsHandle = NULL;
 #endif
 
-Uint32 fatfsShellProcessFlag = 0;
-Uint32 fs_media_needs_initialization=0;
-Uint32 fs_media_needs_close=0;
+Uint32 fatfsShellProcessFlag = UFALSE;
+Uint32 fs_media_needs_initialization = UFALSE;
+Uint32 fs_media_needs_close = UFALSE;
 
 #ifdef MULTI_PARTITION
 /* Main Menu Function */
 static int16_t mainMenu()
 {
-    int16_t i=0,drive_partition=5;
-    while(1)
+    int16_t i = 0,drive_partition = 5;
+    while(UTRUE)
     {
-        for(i=0;(VolToPart[i].pd != FATFS_DFLT_VOLUME_PD) && i < FATFS_NUM_OF_PARTITIONS; i++)
+        for(i = 0; (FATFS_DFLT_VOLUME_PD != VolToPart[i].pd) && (i < FATFS_NUM_OF_PARTITIONS); i++)
         {
             FATFS_log("\n%x:/",i);
         }
@@ -284,21 +284,21 @@ void fatfs_console(void* a0, void* a1)
 
 #if !defined(FATFS_GPIO_ENABLED)
     FATFS_log ("\nPlease ensure SD card is inserted before running this demo\r\n");
-    fs_is_media_inserted = 1;
-    if(1)
+    fs_is_media_inserted = UTRUE;
+    if(UTRUE)
 #else
     if (GPIO_PIN_MMC_SDCD_ACTIVE_STATE == GPIO_read(GPIO_PIN_MMC_SDCD))
 #endif
     {
         FATFS_open(MMCSD_INSTANCE_MMCSD, NULL, &fatfsHandle);
-        fatfsShellProcessFlag = 1;
-        fs_is_media_inserted = 1;
+        fatfsShellProcessFlag = UTRUE;
+        fs_is_media_inserted = UTRUE;
 
     }
     else
     {
         FATFS_log ("\nPlease insert card.\r\n");
-        fs_is_media_inserted = 0;
+        fs_is_media_inserted = UFALSE;
     }
 
 #ifdef CONSOLE_EMMC
@@ -307,7 +307,7 @@ void fatfs_console(void* a0, void* a1)
         FATFS_log("\n eMMC Fails to open \n");
     }
 #endif
-    while(1)
+    while(BTRUE)
     {
         /* Check for any media state changes and initialize/close FATFS accordingly.
          * Please note that this is checked*/
@@ -316,18 +316,18 @@ void fatfs_console(void* a0, void* a1)
 
             FATFS_log("\nMedia Inserted..Initializing..\n");
             FATFS_open(MMCSD_INSTANCE_MMCSD, NULL, &fatfsHandle);
-            fatfsShellProcessFlag = 1;
-            fs_media_needs_initialization=0;
+            fatfsShellProcessFlag = UTRUE;
+            fs_media_needs_initialization = UFALSE;
         }
 
         if(fs_media_needs_close) {
             FATFS_close(fatfsHandle);
-            fatfsShellProcessFlag = 0;
-            fs_media_needs_close=0;
+            fatfsShellProcessFlag = UFALSE;
+            fs_media_needs_close = UFALSE;
             FATFS_log("\nMedia Removed..Please insert media..\n");
         }
 
-        if (0 != fatfsShellProcessFlag)
+        if (UFALSE != fatfsShellProcessFlag)
         {
 #ifdef MULTI_PARTITION
             option = mainMenu();
@@ -335,7 +335,7 @@ void fatfs_console(void* a0, void* a1)
             FSShellAppUtilsProcess(drivePath);
 #else
             FSShellAppUtilsProcess();
-            fatfsShellProcessFlag = 0;
+            fatfsShellProcessFlag = UFALSE;
 #endif
 
         }
@@ -378,7 +378,7 @@ int main(void)
     taskParams.stacksize = sizeof (gAppTskStackMain);
 
     task = TaskP_create(&fatfs_console, &taskParams);
-    if (task == NULL) {
+    if (NULL == task) {
         OS_stop();
     }
 
@@ -392,12 +392,12 @@ int main(void)
 void media_open()
 {
     FATFS_open(MMCSD_INSTANCE_MMCSD, NULL, &fatfsHandle);
-    fatfsShellProcessFlag = 1;
+    fatfsShellProcessFlag = UTRUE;
 }
 void media_close()
 {
     FATFS_close(fatfsHandle);
-    fatfsShellProcessFlag = 0;
+    fatfsShellProcessFlag = UFALSE;
 }
 
 #ifdef FATFS_GPIO_ENABLED
@@ -408,13 +408,13 @@ void AppGpioCallbackFxn(void)
 {
     if (GPIO_PIN_MMC_SDCD_ACTIVE_STATE == GPIO_read(GPIO_PIN_MMC_SDCD))
     {
-        fs_is_media_inserted=1; /* The media has been inserted now */
-        fs_media_needs_initialization=1; /* Need to initialize FATFS with the media */
+        fs_is_media_inserted = UTRUE; /* The media has been inserted now */
+        fs_media_needs_initialization = UTRUE; /* Need to initialize FATFS with the media */
     }
     else
     {
-        fs_is_media_inserted=0;/*  The media has been ejected now */
-        fs_media_needs_close=1; /* Need to close FATFS with the media */
+        fs_is_media_inserted = UFALSE;/*  The media has been ejected now */
+        fs_media_needs_close = UTRUE; /* Need to close FATFS with the media */
     }
 }
 #endif

@@ -111,13 +111,13 @@ extern "C" {
  *  @def  FATFS_DFLT_VOLUME_PD
  *        Default value of the VolToPart structure variable: partition disk
  */
-#define FATFS_DFLT_VOLUME_PD                        (0xf)
+#define FATFS_DFLT_VOLUME_PD                        (0xF)
 
 /**
  *  @def  FATFS_DFLT_VOLUME_PT
  *        Default value of the VolToPart structure variable: partition number
  */
-#define FATFS_DFLT_VOLUME_PT                        (0xf)
+#define FATFS_DFLT_VOLUME_PT                        (0xF)
 
 /**
  *  @def  FATFS_MOUNT_IMMEDIATE

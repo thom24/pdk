@@ -94,7 +94,7 @@ FATFS_Error FATFS_close(FATFS_Handle handle)
 {
     DRESULT                dresult;
     FRESULT                fresult;
-    uint32_t               volIndex = 0;
+    uint32_t               volIndex = 0U;
     FATFS_Object          *object = NULL;
 #ifdef LOG_EN
     FATFS_HwAttrs const   *hwAttrs = NULL;
@@ -102,7 +102,7 @@ FATFS_Error FATFS_close(FATFS_Handle handle)
     TCHAR drive_path[5];
     FATFS_Error ret;
     /* Input parameter validation */
-    if(handle != NULL)
+    if(NULL != handle)
     {
 
     /* Get the pointer to the object and hwAttrs */
@@ -112,13 +112,13 @@ FATFS_Error FATFS_close(FATFS_Handle handle)
 #endif
 
     /* Clear Driver handle only when it is opened */
-    if(1 == object->isOpen)
+    if(UTRUE == object->isOpen)
     {
         ((FATFS_Config *) handle)->drvFxnTablePtr->closeDrvFxn(object->drvHandle);
     }
 
     /*Reset */
-    for(volIndex = 0; volIndex < FATFS_NUM_OF_PARTITIONS; volIndex++)
+    for(volIndex = 0U; volIndex < FATFS_NUM_OF_PARTITIONS; volIndex++)
     {
         if(VolToPart[volIndex].pd == object->driveNumber)
         {
@@ -129,7 +129,7 @@ FATFS_Error FATFS_close(FATFS_Handle handle)
              */
             fresult = f_mount(NULL,drive_path,FATFS_MOUNT_LATER);
 
-            if (fresult != FR_OK) {
+            if (FR_OK != fresult) {
 #ifdef LOG_EN
                 Log_print2(Diags_USER1,
                     "SDFATFS:(%p) Could not unmount FatFs volume @ drive number %d @ partition %d",
@@ -152,7 +152,7 @@ FATFS_Error FATFS_close(FATFS_Handle handle)
 
     /* Unregister the disk_*() functions */
     dresult = disk_unregister(object->driveNumber);
-    if (dresult != RES_OK) {
+    if (RES_OK != dresult) {
 #ifdef LOG_EN
         Log_print2(Diags_USER1,
                    "SDFATFS:(%p) Error unregistering disk functions @ drive number %d",
@@ -167,7 +167,7 @@ FATFS_Error FATFS_close(FATFS_Handle handle)
 
     object->driveNumber = DRIVE_NOT_MOUNTED;
 
-    ((FATFS_Config *) handle)->object->isOpen = 0;
+    ((FATFS_Config *) handle)->object->isOpen = UFALSE;
     ret = FATFS_OK;
     } 
     else
@@ -195,11 +195,11 @@ FATFS_Error FATFS_control(FATFS_Handle handle, uint32_t cmd, void *arg)
  */
 FATFS_Error FATFS_init(void)
 {
-    if (FATFS_count == -1) {
+    if (-1 == FATFS_count) {
         /* Call each driver's init function */
-        for (FATFS_count = 0; FATFS_config[FATFS_count].object != NULL; FATFS_count++) {
+        for (FATFS_count = 0; (NULL != FATFS_config[FATFS_count].object) ; FATFS_count++) {
             /* Mark the object as available */
-            FATFS_config[FATFS_count].object->isOpen = 0;
+            FATFS_config[FATFS_count].object->isOpen = UFALSE;
             FATFS_config[FATFS_count].object->driveNumber = DRIVE_NOT_MOUNTED;
             FATFS_config[FATFS_count].object->diskState = STA_NOINIT;
         }
@@ -224,11 +224,11 @@ FATFS_Error FATFS_open(uint32_t index,
     int32_t                    volIndex = 0;
 	
     /* Input parameter validation */
-    FATFS_osalAssert((FATFS_Handle)&(FATFS_config[index]) == NULL);
+    FATFS_osalAssert(NULL == (FATFS_Handle)&(FATFS_config[index]));
 
     /*Verify there is free index available in VolToPart for mapping this disk partitions */
     volIndex = FATFS_getFreeVolIndex();
-    if(volIndex < 0)
+    if(0 > volIndex)
     {
         return FATFS_VOLUME_FULL_ERR;
     }
@@ -241,7 +241,7 @@ FATFS_Error FATFS_open(uint32_t index,
     hwAttrs = ((FATFS_Config *)&(FATFS_config[index]))->hwAttrs;
 
     /* Store the FATFS parameters */
-    if (params == NULL) {
+    if (NULL == params) {
         /* No params passed in, so use the defaults */
         FATFS_Params_init(&(object->FATFSConfigParams));
     }
@@ -253,7 +253,7 @@ FATFS_Error FATFS_open(uint32_t index,
         object->FATFSConfigParams.custom = ((FATFS_ConfigParams *) params)->custom;
     }
 
-    if(0 != object->isOpen)
+    if(UFALSE != object->isOpen)
     {
         ret = FATFS_ERR;
     }
@@ -275,7 +275,7 @@ FATFS_Error FATFS_open(uint32_t index,
                                 FATFS_diskIOctrl);
 
         /* Check for drive errors */
-        if (dresult != RES_OK) {
+        if (RES_OK != dresult) {
 #ifdef LOG_EN
             FATFS_drv_log(Diags_USER1, "SDFATFS:(%p) disk functions not registered",
                         hwAttrs->baseAddr);
@@ -300,13 +300,13 @@ FATFS_Error FATFS_open(uint32_t index,
         /*
          * Register the filesystem with FatFs.
          */
-        if ((volIndex >= 0) && (volIndex < FATFS_NUM_OF_PARTITIONS))
+        if ((0 <= volIndex) && (FATFS_NUM_OF_PARTITIONS > volIndex))
         {
             snprintf(drive_path,sizeof(drive_path),"%d:",(int)volIndex);
             /*Mount First partition of device to read the MBR*/
             fresult = f_mount(&(object->filesystem[0]),drive_path,FATFS_MOUNT_IMMEDIATE);
 
-		if (fresult != FR_OK) {
+		if (FR_OK != fresult) {
 #ifdef LOG_EN
                 FATFS_drv_log(Diags_USER1, "SDFATFS:(%p) drive %d not mounted",
                         hwAttrs->baseAddr, object->driveNumber);
@@ -317,7 +317,7 @@ FATFS_Error FATFS_open(uint32_t index,
                 VolToPart[volIndex].pt = FATFS_DFLT_VOLUME_PD;
                 VolToPart[volIndex].pd = FATFS_DFLT_VOLUME_PT;
 
-                if(FATFS_volumeStatus == FATFS_VOLUME_FULL_ERR)
+                if(FATFS_VOLUME_FULL_ERR == FATFS_volumeStatus)
                 {
                     ret = FATFS_VOLUME_FULL_ERR;
                 }
@@ -332,14 +332,14 @@ FATFS_Error FATFS_open(uint32_t index,
 
     if(FATFS_OK == ret)
     {
-        object->isOpen = 1;
+        object->isOpen = UTRUE;
 
 #ifdef LOG_EN
         FATFS_drv_log(Diags_USER1, "SDFATFS:(%p) opened", hwAttrs->baseAddr);
 #endif
     }
 
-    if((FATFS_OK != ret) && (0 != object->isOpen))
+    if((FATFS_OK != ret) && (UFALSE != object->isOpen))
     {
         ret = FATFS_OK;
     }
@@ -354,7 +354,7 @@ FATFS_Error FATFS_Params_init(FATFS_Params params)
 {
     FATFS_Error ret;
     /* Input parameter validation */
-    if(params != NULL)
+    if(NULL != params)
     {
       ((FATFS_ConfigParams *) params)->drvHandle = FATFS_defaultParams.drvHandle;
       ((FATFS_ConfigParams *) params)->drvParams = FATFS_defaultParams.drvParams;
@@ -393,7 +393,7 @@ static DSTATUS FATFS_diskInitialize(BYTE drv)
     /* Get the pointer to the object and hwAttrs */
     object = ((FATFS_Config *) handle)->object;
 	
-    if(object == NULL)
+    if(NULL == object)
     {
         return STA_NOINIT;
     }
@@ -423,7 +423,7 @@ static DSTATUS FATFS_diskInitialize(BYTE drv)
     }
 
     readSectorStatus = FATFS_readBootSector(drv);
-    if (FATFS_OK != readSectorStatus && FATFS_VOLUME_FULL_ERR != readSectorStatus)
+    if ((FATFS_OK != readSectorStatus) && (FATFS_VOLUME_FULL_ERR != readSectorStatus))
     {
 #ifdef LOG_EN
         FATFS_drv_log("\r\nReading MBR failed \r\n");
@@ -517,7 +517,7 @@ static DRESULT FATFS_diskRead(BYTE drv, BYTE *buf, DWORD sector, BYTE count)
     hwAttrs = ((FATFS_Config *) handle)->hwAttrs;
 #endif
 
-    if (count == 0U) {
+    if (0U == count) {
 #ifdef LOG_EN
         FATFS_drv_log(Diags_USER1, "SDFATFS:(%p) disk read: 0 sectors to read",
                                  hwAttrs->baseAddr);
@@ -610,7 +610,7 @@ static DRESULT FATFS_diskWrite(BYTE drv, const BYTE *buf,
     hwAttrs = ((FATFS_Config *) handle)->hwAttrs;
 #endif
 
-    if (count == 0U) {
+    if (0U == count) {
 #ifdef LOG_EN
         FATFS_drv_log(Diags_USER1, "SDFATFS:(%p) disk write: 0 sectors to write",
                                  hwAttrs->baseAddr);
@@ -665,7 +665,7 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
     FATFS_Error   res = FATFS_OK;
 
     TCHAR         drive_path[5];
-    DWORD         sector =0;
+    DWORD         sector = 0;
     FATFS_Object  *object = NULL;
 
     BYTE          bufferAlloc[_MAX_SS + CACHE_LINE_SIZE-1];
@@ -677,7 +677,7 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
        support alignment in stack variables */
     bufAddr = (uintptr_t)&bufferAlloc;
     offset = (CACHE_LINE_SIZE - (bufAddr & (CACHE_LINE_SIZE-1)));
-    if (offset == CACHE_LINE_SIZE) 
+    if (CACHE_LINE_SIZE == offset) 
     {
         offset = 0;
     }
@@ -686,13 +686,13 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
     object = ((FATFS_Config *)&(FATFS_config[drv]))->object;
 
     /*Read MBR from the given storage device*/
-    if ((FATFS_diskRead(drv,buffer,sector,1))!= RES_OK)
+    if (RES_OK != (FATFS_diskRead(drv,buffer,sector,1)))
     {
         return FR_DISK_ERR;
     }
 
     index = FATFS_getFreeVolIndex();
-    if(index < 0)
+    if(0 > index)
     {
         return FATFS_VOLUME_FULL_ERR;
     }
@@ -706,17 +706,17 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
      */
 
     /* Determines the card is formatted following the MS DOS standard format */
-    if((pt[FATFS_JUMP_BOOT_SEC_OFFSET] == FATFS_JUMP_BOOT_SEC_JMP_INS_0) || \
-                    (pt[FATFS_JUMP_BOOT_SEC_OFFSET] == FATFS_JUMP_BOOT_SEC_JMP_INS_1))
+    if((FATFS_JUMP_BOOT_SEC_JMP_INS_0 == pt[FATFS_JUMP_BOOT_SEC_OFFSET]) || \
+			 (FATFS_JUMP_BOOT_SEC_JMP_INS_1 == pt[FATFS_JUMP_BOOT_SEC_OFFSET]))
     {
         /* Verifies the media type value has the legal values for either removable or
          * non removable device types.
          * Only a card with boot record can be a MS DOS based formatted and has a valid media
          * type value
          */
-        if((pt[FATFS_MEDIA_BOOT_SEC_OFFSET] == FATFS_BOOT_MEDIA_TYPE_NON_REM) || \
-             ((pt[FATFS_MEDIA_BOOT_SEC_OFFSET] >= FATFS_BOOT_MEDIA_REM_TYPE_MIN) && \
-                  (pt[FATFS_MEDIA_BOOT_SEC_OFFSET] <= FATFS_BOOT_MEDIA_REM_TYPE_MAX)))
+        if((FATFS_BOOT_MEDIA_TYPE_NON_REM == pt[FATFS_MEDIA_BOOT_SEC_OFFSET]) || \
+					 ((FATFS_BOOT_MEDIA_REM_TYPE_MIN <= pt[FATFS_MEDIA_BOOT_SEC_OFFSET]) && \
+					  (FATFS_BOOT_MEDIA_REM_TYPE_MAX >= pt[FATFS_MEDIA_BOOT_SEC_OFFSET])))
         {
             VolToPart[index].pt = 0;
         }
@@ -725,7 +725,7 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
     /* Parse the MBR to find the number of partition that are available
      * and map each partition with its instance/index number.
      */
-    for (ptOffset = 1; ptOffset < FATFS_NUM_OF_PARTITIONS; ptOffset++)
+    for (ptOffset = 1U; ptOffset < FATFS_NUM_OF_PARTITIONS; ptOffset++)
     {
         /*Obtain Free index in VolToPart */
         index = FATFS_getFreeVolIndex();
@@ -734,13 +734,13 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
         pt = buffer + FATFS_MBR_TABLE + ptOffset * FATFS_SZ_PTE;
         if(pt[FATFS_MBR_PT_TYPE_OFFSET])
         {
-            if ((index >= 0) && (index < FATFS_NUM_OF_PARTITIONS))
+            if ((0 <= index) && (FATFS_NUM_OF_PARTITIONS > index))
             {
                 /*Mount the partition(s) */
                 snprintf(drive_path,sizeof(drive_path),"%d:",(int)index);
                 fresult = f_mount(&(object->filesystem[ptIndex]),drive_path,FATFS_MOUNT_LATER);
 
-                if(fresult != FR_OK && fresult != FR_NO_FILESYSTEM) {
+                if((FR_OK != fresult) && (FR_NO_FILESYSTEM != fresult)) {
 #ifdef LOG_EN
                     FATFS_drv_log(Diags_USER1, "SDFATFS: drive %d not mounted",
                             object->driveNumber);
@@ -748,7 +748,7 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
                 }
                 else
                 {
-                    if(fresult != FR_NO_FILESYSTEM) {
+                    if(FR_NO_FILESYSTEM != fresult) {
                         VolToPart[index].pt = ++ptIndex;
                         VolToPart[index].pd = object->driveNumber;
                     }
@@ -777,11 +777,11 @@ static FATFS_Error FATFS_readBootSector(BYTE drv)
 */
 static int32_t FATFS_getFreeVolIndex()
 {
-    uint32_t index = 0;
+    uint32_t index = 0U;
 
-    for (index = 0; index < FATFS_NUM_OF_PARTITIONS; index++)
+    for (index = 0U; index < FATFS_NUM_OF_PARTITIONS; index++)
     {
-        if(VolToPart[index].pt == FATFS_DFLT_VOLUME_PD)
+        if(FATFS_DFLT_VOLUME_PD == VolToPart[index].pt)
         {
             return index;
         }
