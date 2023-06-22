@@ -133,20 +133,20 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
 
     if(UDMA_SOK == retVal)
     {
-        if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) && 
+        if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) &&
             (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventPrms->eventType))
         {
             /* In case of devices like AM64x, Teardown is not supported.
             Therefore no need to allocate resource and configure teardown event.
-            
-            eventHandle is already populated with drvHandle and eventPrms, 
-            becase during Unregistering this event, 
+
+            eventHandle is already populated with drvHandle and eventPrms,
+            becase during Unregistering this event,
             the instType in DrvHandle and evenType in eventPrms
-            are required to bypass the eventReset 
+            are required to bypass the eventReset
             (Since only evenHandle is passed to eventUnRegister) */
         }
         else
-        {   
+        {
             /* Alloc event resources */
             retVal = Udma_eventAllocResource(drvHandle, eventHandle);
             if(UDMA_SOK == retVal)
@@ -209,7 +209,7 @@ int32_t Udma_eventRegister(Udma_DrvHandle drvHandle,
                 else
                 {
                     /* Copy from master handle */
-                    eventPrms->vintrNum       = 
+                    eventPrms->vintrNum       =
                         eventHandle->eventPrms.masterEventHandle->vintrNum;
                     eventPrms->coreIntrNum    =
                         eventHandle->eventPrms.masterEventHandle->coreIntrNum;
@@ -247,7 +247,7 @@ int32_t Udma_eventUnRegister(Udma_EventHandle eventHandle)
 
     if(UDMA_SOK == retVal)
     {
-        if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) && 
+        if ((UDMA_INST_TYPE_NORMAL           != drvHandle->instType) &&
             (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventHandle->eventPrms.eventType))
         {
             /* In case of devices like AM64x, Teardown is not supported.
@@ -317,9 +317,9 @@ int32_t Udma_eventDisable(Udma_EventHandle eventHandle)
         {
             /* In case of shared events "eventHandle->vintrNum" will be invalid,
             * since it relies on the master event.
-            * Hence, use "eventHandle->eventPrms.vintrNum" 
+            * Hence, use "eventHandle->eventPrms.vintrNum"
             * which will be populated with,
-            * master events vintrNum for shared events and 
+            * master events vintrNum for shared events and
             * its own vintrNum for exlcusive events. */
             vintrNum = eventHandle->eventPrms.vintrNum;
             vintrBitNum = vintrNum * UDMA_MAX_EVENTS_PER_VINTR;
@@ -347,9 +347,9 @@ int32_t Udma_eventEnable(Udma_EventHandle eventHandle)
         {
             /* In case of shared events "eventHandle->vintrNum" will be invalid,
              * since it relies on the master event.
-             * Hence, use "eventHandle->eventPrms.vintrNum" 
+             * Hence, use "eventHandle->eventPrms.vintrNum"
              * which will be populated with,
-             * master events vintrNum for shared events and 
+             * master events vintrNum for shared events and
              * its own vintrNum exlcusive events. */
             vintrNum = eventHandle->eventPrms.vintrNum;
             vintrBitNum = vintrNum * UDMA_MAX_EVENTS_PER_VINTR;
@@ -395,7 +395,7 @@ int32_t Udma_eventGetRxFlowIdFwStatus(Udma_EventHandle eventHandle,
     uint32_t                                regVal;
     Udma_DrvHandle                          drvHandle;
     uint32_t                                instType;
-    
+
     if((NULL_PTR == eventHandle) ||
     (UDMA_INIT_DONE != eventHandle->eventInitDone) ||
     (NULL_PTR == status))
@@ -423,6 +423,7 @@ int32_t Udma_eventGetRxFlowIdFwStatus(Udma_EventHandle eventHandle,
             if(CSL_FEXT(regVal, UDMAP_GCFG_RFLOWFWSTAT_PEND) != 0U)
             {
                 struct tisci_msg_rm_udmap_gcfg_cfg_resp resp;
+                memset(&resp, 0, sizeof(resp));
                 status->flowId  = CSL_FEXT(regVal, UDMAP_GCFG_RFLOWFWSTAT_FLOWID);
                 status->chNum   = CSL_FEXT(regVal, UDMAP_GCFG_RFLOWFWSTAT_CHANNEL);
                 status->isException = TRUE;
@@ -649,7 +650,7 @@ static int32_t Udma_eventCheckUnRegister(Udma_DrvHandle drvHandle,
     Udma_RingHandle     ringHandle;
     uint32_t            fOcc;
     uint32_t            rOcc;
-    
+
     Udma_assert(drvHandle, eventHandle != NULL_PTR);
     eventPrms = &eventHandle->eventPrms;
 
@@ -673,7 +674,7 @@ static int32_t Udma_eventCheckUnRegister(Udma_DrvHandle drvHandle,
      if(UDMA_SOK == retVal)
     {
         /* Ring occupancies must be zero before unregistering Ring / DMA completion events.
-         * This is to make sure that there is no resource leak, because unregistering 
+         * This is to make sure that there is no resource leak, because unregistering
          * these events will reset the ring. */
         if((UDMA_EVENT_TYPE_DMA_COMPLETION == eventPrms->eventType) ||
            (UDMA_EVENT_TYPE_RING == eventPrms->eventType))
@@ -690,9 +691,9 @@ static int32_t Udma_eventCheckUnRegister(Udma_DrvHandle drvHandle,
 
             Udma_assert(drvHandle, ringHandle != NULL_PTR);
             fOcc = Udma_ringGetForwardRingOcc(ringHandle);
-            rOcc = Udma_ringGetReverseRingOcc(ringHandle); 
+            rOcc = Udma_ringGetReverseRingOcc(ringHandle);
 
-            if((0U != fOcc) || (0U != rOcc)) 
+            if((0U != fOcc) || (0U != rOcc))
             {
                 retVal = UDMA_EFAIL;
                 Udma_printf(drvHandle,
@@ -1096,7 +1097,7 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
             rmIrqReq.src_index -= drvHandle->txRingIrqOffset;
             rmIrqReq.src_index += drvHandle->rxRingIrqOffset;
         }
-#endif 
+#endif
     }
 
     if(UDMA_EVENT_TYPE_RING_MON == eventPrms->eventType)
@@ -1111,13 +1112,13 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
 
             rmIrqReq.src_id     = drvHandle->devIdRing;
             rmIrqReq.src_index  = monHandle->ringMonNum;
-            rmIrqReq.src_index += TISCI_RINGACC0_MON_IRQ_SRC_IDX_START;    
+            rmIrqReq.src_index += TISCI_RINGACC0_MON_IRQ_SRC_IDX_START;
 #endif
         }
         else
         {
             retVal = UDMA_EFAIL;
-            Udma_printf(drvHandle, "[Error] Ring Monitor not supported; Event Config failed!!!\n");   
+            Udma_printf(drvHandle, "[Error] Ring Monitor not supported; Event Config failed!!!\n");
         }
     }
 
@@ -1127,7 +1128,7 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
         if(UDMA_INST_TYPE_NORMAL == instType)
         {
             rmIrqReq.src_id     = drvHandle->devIdUdma;
-            rmIrqReq.src_index  = TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START;  
+            rmIrqReq.src_index  = TISCI_UDMAP0_RX_FLOW_EOES_IRQ_SRC_IDX_START;
         }
 #endif
 #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1) || (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
@@ -1155,7 +1156,7 @@ static int32_t Udma_eventConfig(Udma_DrvHandle drvHandle,
         if((drvHandle->instType    != UDMA_INST_TYPE_NORMAL) &&
            (UDMA_EVENT_TYPE_MASTER == eventPrms->eventType))
         {
-            /* In case of devices like AM64x, where there are no IRs to configure 
+            /* In case of devices like AM64x, where there are no IRs to configure
                no need to config the Global Master event using DMSC RM */
         }
         else
@@ -1385,7 +1386,7 @@ static int32_t Udma_eventReset(Udma_DrvHandle drvHandle,
             rmIrqReq.src_index -= drvHandle->txRingIrqOffset;
             rmIrqReq.src_index += drvHandle->rxRingIrqOffset;
         }
-#endif 
+#endif
     }
 
     if(UDMA_EVENT_TYPE_RING_MON == eventPrms->eventType)
@@ -1400,13 +1401,13 @@ static int32_t Udma_eventReset(Udma_DrvHandle drvHandle,
 
             rmIrqReq.src_id     = drvHandle->devIdRing;
             rmIrqReq.src_index  = monHandle->ringMonNum;
-            rmIrqReq.src_index += TISCI_RINGACC0_MON_IRQ_SRC_IDX_START;    
+            rmIrqReq.src_index += TISCI_RINGACC0_MON_IRQ_SRC_IDX_START;
 #endif
         }
         else
         {
             retVal = UDMA_EFAIL;
-            Udma_printf(drvHandle, "[Error] Ring Monitor not supported; Event Config failed!!!\n");   
+            Udma_printf(drvHandle, "[Error] Ring Monitor not supported; Event Config failed!!!\n");
         }
     }
 
@@ -1434,7 +1435,7 @@ static int32_t Udma_eventReset(Udma_DrvHandle drvHandle,
         if((drvHandle->instType    != UDMA_INST_TYPE_NORMAL) &&
            (UDMA_EVENT_TYPE_MASTER == eventPrms->eventType))
         {
-            /* In case of devices like AM64x, where there are no IRs  
+            /* In case of devices like AM64x, where there are no IRs
                no need to release the Global Master event using DMSC RM */
         }
         else

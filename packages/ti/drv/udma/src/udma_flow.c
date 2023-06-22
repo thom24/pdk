@@ -261,7 +261,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
 
                 freeFlowOffset =
                     rmInitPrms->startFreeFlow + drvHandle->udmapRegs.rxChanCnt;
-                    
+
                 Udma_assert(drvHandle, flowHandle->flowStart >= freeFlowOffset);
                 for(j = 0U; j < flowHandle->flowCnt; j++)
                 {
@@ -295,7 +295,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
             retVal = UDMA_EFAIL;
 #endif
         }
-    
+
         flowHandle->drvHandle    = (Udma_DrvHandle) NULL_PTR;
         flowHandle->flowStart    = UDMA_FLOW_INVALID;
         flowHandle->flowCnt      = 0U;
@@ -425,6 +425,7 @@ int32_t Udma_flowConfig(Udma_FlowHandle flowHandle,
     struct tisci_msg_rm_udmap_flow_size_thresh_cfg_req  rmOptFlowReq;
     struct tisci_msg_rm_udmap_flow_size_thresh_cfg_resp rmOptFlowResp;
 
+    memset(&rmFlowResp, 0, sizeof(rmFlowResp));
     /* Error check */
     if((NULL_PTR == flowHandle) ||
        (flowHandle->flowInitDone != UDMA_INIT_DONE) ||

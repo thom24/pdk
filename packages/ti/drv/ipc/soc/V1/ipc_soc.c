@@ -712,11 +712,11 @@ int32_t Ipc_sciclientIrqSet(uint16_t coreId, uint32_t clusterId,
     struct tisci_msg_rm_irq_set_req   rmIrqReq;
     struct tisci_msg_rm_irq_set_resp  rmIrqResp;
 
+    memset(&rmIrqResp, 0, sizeof(rmIrqResp));
     rmIrqReq.ia_id                  = 0U;
     rmIrqReq.vint                   = 0U;
     rmIrqReq.global_event           = 0U;
     rmIrqReq.vint_status_bit_index  = 0U;
-
     rmIrqReq.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID |
                               TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
     rmIrqReq.src_id         = map_src_id[clusterId];

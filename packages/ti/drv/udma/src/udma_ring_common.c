@@ -631,7 +631,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
         else
         {
             retVal = UDMA_EFAIL;
-            Udma_printf(drvHandle, "[Error] Ring Monitor only supported for Main/MCU Navss instances; Event Config failed!!!\n");   
+            Udma_printf(drvHandle, "[Error] Ring Monitor only supported for Main/MCU Navss instances; Event Config failed!!!\n");
         }
     }
 
@@ -654,7 +654,7 @@ int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle)
     if(UDMA_SOK == retVal)
     {
         drvHandle = monHandle->drvHandle;
-        
+
         if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
@@ -722,6 +722,7 @@ int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
 #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
             struct tisci_msg_rm_ring_mon_cfg_req    rmRingMonReq;
             struct tisci_msg_rm_ring_mon_cfg_resp   rmRingMonResp;
+            memset(&rmRingMonResp, 0, sizeof(rmRingMonResp));
             rmRingMonReq.valid_params   = TISCI_MSG_VALUE_RM_MON_SOURCE_VALID |
                                         TISCI_MSG_VALUE_RM_MON_MODE_VALID |
                                         TISCI_MSG_VALUE_RM_MON_QUEUE_VALID |
@@ -745,7 +746,7 @@ int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
         else
         {
             retVal = UDMA_EFAIL;
-            Udma_printf(drvHandle, "[Error] Ring Monitor only supported for Main/MCU Navss instances; Event Config failed!!!\n");   
+            Udma_printf(drvHandle, "[Error] Ring Monitor only supported for Main/MCU Navss instances; Event Config failed!!!\n");
         }
     }
 
@@ -786,11 +787,11 @@ int32_t Udma_ringMonGetData(Udma_RingMonHandle monHandle,
             monData->data0 = CSL_REG32_RD(&monHandle->pMonRegs->DATA0);
             monData->data1 = CSL_REG32_RD(&monHandle->pMonRegs->DATA1);
 #endif
-        }  
+        }
         else
         {
             retVal = UDMA_EFAIL;
-            Udma_printf(drvHandle, "[Error] Ring Monitor only supported for Main/MCU Navss instances; Event Config failed!!!\n");   
+            Udma_printf(drvHandle, "[Error] Ring Monitor only supported for Main/MCU Navss instances; Event Config failed!!!\n");
         }
     }
 
