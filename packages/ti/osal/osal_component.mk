@@ -209,6 +209,29 @@ OSAL_TestApp_MACRO_LIST := $(foreach curos,$(libosal_RTOS_LIST) safertos,$(call 
 
 $(eval ${OSAL_TestApp_MACRO_LIST})
 
+define osal_exception_testapp_RULE
+
+export osal_exception_testapp_$(1)_COMP_LIST = osal_exception_testapp_$(1)
+export osal_exception_testapp_$(1)_RELPATH = ti/osal/test/osal_exception_testapp
+export osal_exception_testapp_$(1)_PATH = $(PDK_OSAL_COMP_PATH)/test/osal_exception_testapp
+export osal_exception_testapp_$(1)_BOARD_DEPENDENCY = yes
+export osal_exception_testapp_$(1)_CORE_DEPENDENCY = no
+export osal_exception_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export osal_exception_testapp_$(1)_PKG_LIST = osal_exception_testapp_$(1)
+export osal_exception_testapp_$(1)_INCLUDE = $(osal_exception_testapp_$(1)_PATH)
+export osal_exception_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(libosal_$(1)_BOARDLIST))
+export osal_exception_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4)
+ifeq ($(1),$(filter $(1), freertos))
+osal_EXAMPLE_LIST += osal_exception_testapp_$(1)
+endif
+export osal_exception_testapp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+
+osal_exception_testapp_MACRO_LIST := $(foreach curos,$(libosal_RTOS_LIST) ,$(call osal_exception_testapp_RULE,$(curos)))
+
+$(eval ${osal_exception_testapp_MACRO_LIST})
+
 ifeq ($(SOC),$(filter $(SOC), j721e))
  OSAL_Baremetal_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu2_0 mcu3_0
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
