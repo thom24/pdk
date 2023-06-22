@@ -401,7 +401,7 @@ int main()
 
 #if !defined(BOOT_PERF)
     SBL_log(SBL_LOG_MAX, "Copying EEPROM content to DDR ... \n");
-    Board_initBoardIdData((uint8_t *) DDR_ADDRESS_TO_DUMP_EEPROM_CONTENT);
+    Board_initBoardIdData((uint8_t *) EEPROM_DATA_DDR_ADDRESS);
     SBL_log(SBL_LOG_MAX, "EEPROM Data Copy Done.\n");
 #endif
 
