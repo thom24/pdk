@@ -208,11 +208,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /* Get default OSPI cfg */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
-#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     ospi_cfg.funcClk = OSPI_MODULE_CLK_200M;
-#else
-    ospi_cfg.funcClk = OSPI_MODULE_CLK_133M;
-#endif
 
     /* false: unstable, cpu read @ 120Mbytes per sec          */
     /*        can work with direct ROM load once it is stable */
@@ -234,7 +230,7 @@ if (isXIPEnable == true)
     /* OSPI baud rate = (master reference clock) / (baud rate devisor)
      * Default baud rate devisor is 32
      * Using a smaller devisor to get higher speeds */
-    ospi_cfg.baudRateDiv = 6;
+    ospi_cfg.baudRateDiv = 8;
 }
 else
 {
@@ -243,7 +239,7 @@ else
         /* OSPI baud rate = (master reference clock) / (baud rate devisor)
         * Default baud rate devisor is 32
         * Using a smaller devisor to get higher speeds */
-        ospi_cfg.baudRateDiv = 6;
+        ospi_cfg.baudRateDiv = 8;
     #endif
 }
 
