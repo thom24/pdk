@@ -179,7 +179,7 @@ extern void DebugP_log0(const char *format);
  *
  *  Application needs to call this API to register its print API.
  *
- *  @param  DebugP_exptnLogFxn
+ *  @param  fxn Function pointer for print function to be registerd.
  *
  *  @sa DebugP_LOG_ENABLED
  *
