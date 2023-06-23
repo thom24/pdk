@@ -44,11 +44,9 @@ SECTIONS
         *(.KERNEL_FUNCTION)
     } > __CORE_DDR_SPACE
 
-    .unpriv_code        palign( DEFAULT_SECTION_ALIGNMENT ),
-                        LOAD_START( lnkStartFlashAddress ) :
-    {
-        *(.text)
-    } > __CORE_DDR_SPACE
+    .text:_c_int00      load >  __CORE_DDR_SPACE ALIGN(0x400)
+    .text:              load >  __CORE_DDR_SPACE palign( DEFAULT_SECTION_ALIGNMENT ), 
+                                     LOAD_START( lnkStartFlashAddress )
 
     .unpriv_rodata      palign( DEFAULT_SECTION_ALIGNMENT ) :
     {
