@@ -59,8 +59,10 @@ void Osal_DebugP_assert_fcn(bool expression, const char *file, int32_t line)
 #endif
 
 #if DebugP_LOG_ENABLED
+DebugP_exptnLogFxn Osal_exptnLogFxn;
+
 /*
- *  ======== DebugP_registerLogFxn ========
+ *  ======== DebugP_registerExcptnLogFxn ========
  */
 int32_t DebugP_registerExcptnLogFxn(DebugP_exptnLogFxn fxn)
 {
@@ -89,7 +91,7 @@ void DebugP_exceptionLog(const char * format, uint32_t arg1, uint32_t arg2)
 }
 
 /*
- *  ======== DebugP_unRegisterLogFxn ========
+ *  ======== DebugP_deRegisterExcptnLogFxn ========
  */
 void DebugP_deRegisterExcptnLogFxn()
 {
