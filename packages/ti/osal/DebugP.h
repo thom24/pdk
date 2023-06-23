@@ -185,12 +185,6 @@ extern void DebugP_log0(const char *format);
  *
  */
 #if DebugP_LOG_ENABLED
-/*!
- *  @brief DebugP_registerExcptnLogFxn registers a print function with OSAL.
- *
- *  @param  fxn Function pointer, that points to the print function in the system.
- *
- */
 int32_t DebugP_registerExcptnLogFxn(DebugP_exptnLogFxn fxn);
 #else
 #define DebugP_registerExcptnLogFxn(DebugP_exptnLogFxn fxn)
