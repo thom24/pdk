@@ -617,14 +617,17 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
     }
     else
     {
-        #if defined(SOC_J721E)
-            Board_flashHandle h = *(const Board_flashHandle *) handle;
-            uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
-            SBL_DCacheClean((void *)dst, length);
-            Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
-        #else
-            memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
-        #endif
+        /* Due to change in phy tuning algo, it is taking around to 40ms for tuning.
+           As a workaround using memcpy instead of Board_flashRead(). This should be 
+           reverted after fixing PDK-13114 */
+        // #if defined(SOC_J721E)
+        //     Board_flashHandle h = *(const Board_flashHandle *) handle;
+        //     uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
+        //     SBL_DCacheClean((void *)dst, length);
+        //     Board_flashRead(h, offset, dst, length, (void *)(&ioMode));
+        // #else 
+        memcpy((void *)dst, (void *)(ospi_cfg.dataAddr + offset), length);
+        // #endif
     }
 
 #endif /* #if SBL_USE_DMA */
