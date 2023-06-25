@@ -185,7 +185,6 @@ void SBL_SciclientBoardCfg(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t *b
     sblBoardCfgPrms.devGrp = devGroup;
     
 
-    SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfg(&sblBoardCfgPrms);
     if (status != CSL_PASS)
     {
@@ -201,7 +200,6 @@ void SBL_SciclientBoardCfgPm(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t 
     {
         UART_stdioDeInit();
     }
-    SBL_ADD_PROFILE_POINT;
     CSL_armR5PmuSetCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, CNTR_RELOAD_VALUE);
     SBL_ADD_PROFILE_POINT;
     sblBoardCfgPmPrms.boardConfigLow = (uint32_t)boardCfgInfo->boardCfgLowPm;
@@ -236,7 +234,6 @@ void SBL_SciclientCfgSec(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t *boa
     sblBoardCfgSecPrms.boardConfigSize = boardCfgInfo->boardCfgLowSecSize;
     sblBoardCfgSecPrms.devGrp = devGroup;
     
-    SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgSec(&sblBoardCfgSecPrms);
     if (status != CSL_PASS)
     {
@@ -392,7 +389,6 @@ void SBL_SciclientBoardCfgRm(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t 
     sblBoardCfgRmPrms.devGrp = devGroup;
 
     gCertLength = boardcfgRmFindCertSize((uint32_t*)boardCfgInfo->boardCfgLowRm);
-    SBL_ADD_PROFILE_POINT;
     status = Sciclient_boardCfgRm(&sblBoardCfgRmPrms);
     if (status != CSL_PASS)
     {
@@ -475,6 +471,7 @@ void SBL_SciClientInit(uint32_t devGroup)
 #endif
         SblErrLoop(__FILE__, __LINE__);
     }
+    SBL_ADD_PROFILE_POINT;
 
 #ifndef SBL_SKIP_SYSFW_INIT
 
@@ -499,18 +496,18 @@ void SBL_SciClientInit(uint32_t devGroup)
         SblErrLoop(__FILE__, __LINE__);
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     status = Sciclient_init(&config);
     if (status != CSL_PASS)
     {
         SBL_log(SBL_LOG_ERR,"Sciclient init ...FAILED \n");
         SblErrLoop(__FILE__, __LINE__);
     }
+    SBL_ADD_PROFILE_POINT;
 
 #ifndef SBL_SKIP_BRD_CFG_BOARD
     SBL_SciclientBoardCfg(devGroup, &boardCfgInfo);
 #endif
+    SBL_ADD_PROFILE_POINT;
 
 /* On J7AHP HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround
 SBL needs to open this firewall before doing PM Init. This condition should be
@@ -520,12 +517,14 @@ removed after having a fix in TIFS */
     SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
 #endif
 #endif
+    SBL_ADD_PROFILE_POINT;
 
 #ifndef SBL_SKIP_BRD_CFG_SEC
     SBL_SciclientCfgSec(devGroup, &boardCfgInfo);
 #endif
 
     SBL_OpenFirewalls();
+    SBL_ADD_PROFILE_POINT;
 
 /* As a workaround do PM Init for J7AHP HS after opening up BOLT_PSC firewall */
 #if (defined(SOC_J784S4) && defined(BUILD_HS))
