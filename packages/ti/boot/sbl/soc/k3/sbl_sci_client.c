@@ -509,13 +509,8 @@ void SBL_SciClientInit(uint32_t devGroup)
 #endif
     SBL_ADD_PROFILE_POINT;
 
-/* On J7AHP HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround
-SBL needs to open this firewall before doing PM Init. This condition should be
-removed after having a fix in TIFS */
-#if !(defined(SOC_J784S4) && defined(BUILD_HS))
 #ifndef SBL_SKIP_BRD_CFG_PM
     SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
-#endif
 #endif
     SBL_ADD_PROFILE_POINT;
 
@@ -525,13 +520,6 @@ removed after having a fix in TIFS */
 
     SBL_OpenFirewalls();
     SBL_ADD_PROFILE_POINT;
-
-/* As a workaround do PM Init for J7AHP HS after opening up BOLT_PSC firewall */
-#if (defined(SOC_J784S4) && defined(BUILD_HS))
-#ifndef SBL_SKIP_BRD_CFG_PM
-    SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
-#endif
-#endif
 
 #ifndef SBL_SKIP_BRD_CFG_RM
     SBL_SciclientBoardCfgRm(devGroup, &boardCfgInfo);
@@ -616,13 +604,8 @@ void SBL_SciClientCombinedBootInit(uint32_t devGroup)
     SBL_SciclientBoardCfg(devGroup, &boardCfgInfo);
 #endif
 
-/* On J7AHP HS firewall is not opened for BOLT_PSC device by TIFS. As a workaround
-SBL needs to open this firewall before doing PM Init. This condition should be
-removed after having a fix in TIFS */
-#if !(defined(SOC_J784S4) && defined(BUILD_HS))
 #ifndef SBL_SKIP_BRD_CFG_PM
     SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
-#endif
 #endif
 
 #ifndef SBL_SKIP_BRD_CFG_SEC
@@ -630,13 +613,6 @@ removed after having a fix in TIFS */
 #endif
 
     SBL_OpenFirewalls();
-
-/* As a workaround do PM Init for J7AHP HS after opening up BOLT_PSC firewall */
-#if (defined(SOC_J784S4) && defined(BUILD_HS))
-#ifndef SBL_SKIP_BRD_CFG_PM
-    SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
-#endif
-#endif
 
 #ifndef SBL_SKIP_BRD_CFG_RM
     SBL_SciclientBoardCfgRm(devGroup, &boardCfgInfo);
