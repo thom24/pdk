@@ -40,9 +40,13 @@
 
 #include "keywriter_utils.h"
 
+#include <string.h>
+
 #include <ti/csl/soc.h>
 
 #include <ti/board/board.h>
+#include <ti/board/src/j784s4_evm/include/board_utils.h>
+
 #include <ti/drv/uart/UART_stdio.h>
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/drv/gpio/soc/GPIO_soc.h>
