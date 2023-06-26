@@ -346,14 +346,17 @@ generate_lateapps()
             # Generate and sign lateapp1
             $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName1 $output_args1
             ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/k3_dev_mpk.pem
+            ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName1 -o $MULTICOREAPP_BIN_PATH/$appImageName1.hs_fs -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/rom_degenerateKey.pem
             # Generate and sign lateapp2
             $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName2 $output_args2
             ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/k3_dev_mpk.pem
+            ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName2 -o $MULTICOREAPP_BIN_PATH/$appImageName2.hs_fs -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/rom_degenerateKey.pem
             # Generate and sign lateapp3
             if [ $BOARD_NAME != "j7200_evm" ]
             then
                 $MULTICORE_APPIMAGE_GEN_TOOL_PATH/MulticoreImageGen LE $devId $appImageName3 $output_args3
                 ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.signed -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/k3_dev_mpk.pem
+                ${PDK_INSTALL_PATH}/packages/ti/build/makerules/x509CertificateGen.sh -b ${PDK_INSTALL_PATH}/packages/ti/boot/sbl/example/boot_app/multicore_images/${BOARD_NAME}/$appImageName3 -o $MULTICOREAPP_BIN_PATH/$appImageName3.hs_fs -c R5 -l 0x41C00100 -k ${PDK_INSTALL_PATH}/packages/ti/build/makerules/rom_degenerateKey.pem
             fi
             popd
         done
