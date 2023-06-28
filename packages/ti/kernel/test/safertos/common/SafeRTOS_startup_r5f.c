@@ -468,7 +468,7 @@ __attribute__((section(".startupCode")))  void _system_post_cinit( void )
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = true;
+    cfg.disableIrqOnInit = BTRUE;
     osalArch_Init(&cfg);
 
     uint32_t            loopCnt = 0U, regAddr;
@@ -524,7 +524,7 @@ __attribute__((section(".startupCode")))  void _system_post_cinit( void )
         /* Disable interrupt in vim */
         CSL_vimSetIntrEnable((CSL_vimRegs *)(uintptr_t)regAddr,
                                     loopCnt,
-                                    false);
+                                    BFALSE);
         /* Clear interrupt status */
         CSL_vimClrIntrPending((CSL_vimRegs *)(uintptr_t)regAddr,
                                      loopCnt);

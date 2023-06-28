@@ -104,7 +104,7 @@ void * TaskSupport_setupTaskStack(StackType_t * pxStackArrayEndAddress, StackTyp
 
     align = TaskSupport_getStackAlignment();
 
-    if (align != 0U) {
+    if (UFALSE != align) {
         uintptr_t stackTemp;
         
         DebugP_assert(align >= portBYTE_ALIGNMENT);
@@ -136,7 +136,7 @@ void * TaskSupport_setupTaskStack(StackType_t * pxStackArrayEndAddress, StackTyp
     tcspBase = (void *)(((uintptr_t)pxStackArrayStartAddressAligned + tskStackSize) - TCSP_SIZE);
     if (align)
     {
-        DebugP_assert(((uintptr_t)tcspBase & (align - 1U)) == 0U);
+        DebugP_assert(0U == ((uintptr_t)tcspBase & (align - 1U)));
     }
     /* subtract 16 from size to account for 16-byte free area @SP */
     sp = TaskSupport_buildTaskStack((void *)((size_t)tcspBase - 16), fxn,
@@ -163,4 +163,4 @@ const size_t TaskSupport_defaultStackSize = (size_t)(16 * 1024);
 const unsigned int TaskSupport_stackAlignment = (unsigned int)0x2000U;
 
 #pragma DATA_SECTION(OS_mpeEnabled, ".const:OS_mpeEnabled");
-const uint32_t OS_mpeEnabled = 0;
+const uint32_t OS_mpeEnabled = 0U;

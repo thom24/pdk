@@ -210,7 +210,7 @@ static void * prvWorkerThread( void * pvArgs )
     char pcReceiveBuffer[ MQUEUE_MSG_WORKER_CTRL_MSG_SIZE ] = { 0 };
 
     /* This is a worker thread that reacts based on what is sent to its inbox (mqueue). */
-    while( true )
+    while( BTRUE )
     {
         clock_gettime( CLOCK_REALTIME, &xReceiveTimeout );
         xReceiveTimeout.tv_sec += MQUEUE_TIMEOUT_SECONDS;

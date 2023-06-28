@@ -80,8 +80,8 @@ void vPortInitTimerCLECCfg( uint32_t timerId, uint32_t timerIntNum )
     uint32_t corepackEvent = timerIntNum;
 
     /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.secureClaimEnable = UFALSE;
+    cfgClec.evtSendEnable     = UTRUE;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
     cfgClec.extEvtNum         = 0;
     cfgClec.c7xEvtNum         = corepackEvent;

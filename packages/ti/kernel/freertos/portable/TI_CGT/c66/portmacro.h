@@ -89,7 +89,7 @@
     typedef unsigned long    UBaseType_t;
 
     typedef uint32_t         TickType_t;
-    #define portMAX_DELAY    ( TickType_t ) 0xffffffffUL
+    #define portMAX_DELAY    ( TickType_t ) 0xFFFFFFFFUL
 
 /* Hardware specifics. */
     #define portSTACK_GROWTH      ( -1 )

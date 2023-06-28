@@ -114,7 +114,7 @@ void _system_post_cinit( void )
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = true;
+    cfg.disableIrqOnInit = BTRUE;
     osalArch_Init( &cfg );
 }
 /*---------------------------------------------------------------------------*/

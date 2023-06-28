@@ -49,11 +49,11 @@ void Hwi_dispatchC(int32_t intNum)
     Hwi_switchAndDispatch(intNum);
 
     ulPortInterruptNesting--;
-    if (ulPortInterruptNesting == 0)
+    if (UFALSE == ulPortInterruptNesting)
     {
-        if (ulPortYieldRequired != pdFALSE)
+        if (UFALSE != ulPortYieldRequired)
         {
-            ulPortYieldRequired = pdFALSE;
+            ulPortYieldRequired = UFALSE;
             vPortYieldAsyncFromISR();
         }
     
