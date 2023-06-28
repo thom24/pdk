@@ -118,12 +118,12 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const Char *name)
     {
         pHndl = &gUtils_prfObj.tsObj[hndlId];
 
-        if (FALSE == pHndl->isAlloc)
+        if (UFALSE == pHndl->isAlloc)
         {
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((UInt32) sizeof (pHndl->name) - 1U));
             pHndl->name[sizeof (pHndl->name) - 1U] = (UInt8) '\0';
-            pHndl->isAlloc = (Bool) TRUE;
+            pHndl->isAlloc = UTRUE;
             Utils_prfTsReset(pHndl);
             break;
         }
@@ -136,7 +136,7 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const Char *name)
 
 Int32 Utils_prfTsDelete(Utils_PrfTsHndl *pHndl)
 {
-    pHndl->isAlloc = (Bool) FALSE;
+    pHndl->isAlloc = UFALSE;
     return (0);
 }
 
@@ -250,7 +250,7 @@ Int32 Utils_prfTsPrintAll(uint32_t resetAfterPrint, uint32_t trace)
     {
         pHndl = &gUtils_prfObj.tsObj[hndlId];
 
-        if (TRUE == pHndl->isAlloc)
+        if (UTRUE == pHndl->isAlloc)
         {
             Utils_prfTsPrint(pHndl, resetAfterPrint, trace);
         }
@@ -274,9 +274,9 @@ Int32 Utils_prfLoadRegister(TaskP_Handle pTsk, const Char *name)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if (FALSE == pHndl->isAlloc)
+        if (UFALSE == pHndl->isAlloc)
         {
-            pHndl->isAlloc = (Bool) TRUE;
+            pHndl->isAlloc = UTRUE;
             pHndl->pTsk    = pTsk;
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((UInt32) sizeof (pHndl->name) - 1U));
@@ -304,9 +304,9 @@ Int32 Utils_prfLoadUnRegister(TaskP_Handle pTsk)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if ((TRUE == pHndl->isAlloc) && (pHndl->pTsk == pTsk))
+        if ((UTRUE == pHndl->isAlloc) && (pHndl->pTsk == pTsk))
         {
-            pHndl->isAlloc = (Bool) FALSE;
+            pHndl->isAlloc = UFALSE;
             status         = CSL_SOK;
             break;
         }
@@ -339,13 +339,13 @@ Int32 Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
               hwiLoad,
               swiLoad);
 
-    if (((Bool) TRUE) == printTskLoad)
+    if (UTRUE == printTskLoad)
     {
         for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
         {
             pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-            if (TRUE == pHndl->isAlloc)
+            if (UTRUE == pHndl->isAlloc)
             {
                 tskLoad = (UInt32) ((pHndl->totalTskThreadTime *
                                      (UInt64) 100U) /
@@ -390,8 +390,8 @@ void Utils_prfLoadCalcReset(void)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if (((Bool) TRUE == pHndl->isAlloc) &&
-            (pHndl->pTsk != NULL))
+        if ((UTRUE == pHndl->isAlloc) &&
+            (NULL  != pHndl->pTsk))
         {
             pHndl->totalTskThreadTime = 0;
         }

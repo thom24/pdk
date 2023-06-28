@@ -924,7 +924,7 @@ static void App_udmaTrpdInit(App_UdmaChObj *appChObj)
 static void App_print(const char *str)
 {
     UART_printf("%s", str);
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }

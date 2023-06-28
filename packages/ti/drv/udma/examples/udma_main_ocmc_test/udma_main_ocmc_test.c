@@ -196,7 +196,7 @@ int32_t Udma_ocmcDdrMemcpyTest(void)
             }
             else
             {
-                if (Udma_appIsUdmapStatsSupported() == TRUE)
+                if (UTRUE == Udma_appIsUdmapStatsSupported())
                 {
                     Udma_ChStats    chStats;
                     retVal = Udma_chGetStats(chHandle, &chStats);
@@ -245,7 +245,7 @@ static int32_t App_memcpyTest(Udma_ChHandle chHandle,uint32_t ddrToOcmc)
     uint8_t            *srcBuf = &gUdmaTestOcmcBuf[0U];
     uint8_t            *destBuf = &gUdmaTestDdrBuf[0U];
 
-    if(ddrToOcmc == TRUE)
+    if(UTRUE == ddrToOcmc)
     {
         srcBuf = &gUdmaTestDdrBuf[0U];
         destBuf = &gUdmaTestOcmcBuf[0U];
@@ -692,7 +692,7 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
 static void App_print(const char *str)
 {
     UART_printf("%s", str);
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }
@@ -706,7 +706,7 @@ static void App_printNum(const char *str, uint32_t num)
     snprintf(printBuf, 200U, str, num);
     UART_printf("%s", printBuf);
 
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", printBuf);
     }

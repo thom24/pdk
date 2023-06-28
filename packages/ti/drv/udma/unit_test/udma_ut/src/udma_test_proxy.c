@@ -120,15 +120,15 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
 
     /* Create TimeStamp object */
     taskObj->prfTsHandle = Utils_prfTsCreate(taskObj->prfTsName);
-    GT_assert(taskObj->traceMask, (taskObj->prfTsHandle != NULL));
+    GT_assert(taskObj->traceMask, (NULL != taskObj->prfTsHandle));
 
     if(UDMA_SOK == retVal)
     {
         for(instId = 0U; instId < UDMA_TEST_INST_ID_MAX; instId++)
         {
-            isRingAllocated = FALSE;
-            isQueueProxyAllocated = FALSE;
-            isDequeueProxyAllocated = FALSE;
+            isRingAllocated = UFALSE;
+            isQueueProxyAllocated = UFALSE;
+            isDequeueProxyAllocated = UFALSE;
             ringMode = TISCI_MSG_VALUE_RM_RING_MODE_MESSAGE;
             GT_2trace(taskObj->traceMask, GT_INFO1,
                       " Testing for NAVSS Inst: %s, Ring Mode: %s...\r\n",
@@ -149,7 +149,7 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
             }
             else
             {
-                isRingAllocated = TRUE;
+                isRingAllocated = UTRUE;
             }
 
             if(UDMA_SOK == retVal)
@@ -162,7 +162,7 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
                 }
                 else
                 {
-                    isQueueProxyAllocated = TRUE;
+                    isQueueProxyAllocated = UTRUE;
 
                     /* Config proxy for queue operation */
                     proxyCfg.proxyMode = CSL_PROXY_QUEUE_ACCESS_MODE_TAIL;
@@ -186,7 +186,7 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
                 }
                 else
                 {
-                    isDequeueProxyAllocated = TRUE;
+                    isDequeueProxyAllocated = UTRUE;
 
                     /* Config proxy for dequeue operation */
                     proxyCfg.proxyMode = CSL_PROXY_QUEUE_ACCESS_MODE_HEAD;
@@ -255,7 +255,7 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
                 GT_4trace(taskObj->traceMask, GT_INFO1,
                           " |Proxy Test Duration|:: %d:%0.2d:%0.2d:%0.3d \r\n",
                           hrs, mins, secs, msecs);
-                if(TRUE == taskObj->testPrms->prfEnable)
+                if(BTRUE == taskObj->testPrms->prfEnable)
                 {
                     uint64_t ps;
 
@@ -269,7 +269,7 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
                 Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * elemCnt));
             }
 
-            if(TRUE == isQueueProxyAllocated)
+            if(UTRUE == isQueueProxyAllocated)
             {
                 retVal += Udma_proxyFree(queueProxyHandle);
                 if(UDMA_SOK != retVal)
@@ -277,7 +277,7 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
                     GT_0trace(taskObj->traceMask, GT_ERR, " Proxy free failed!!\n");
                 }
             }
-            if(TRUE == isDequeueProxyAllocated)
+            if(UTRUE == isDequeueProxyAllocated)
             {
                 retVal += Udma_proxyFree(dequeueProxyHandle);
                 if(UDMA_SOK != retVal)
@@ -285,7 +285,7 @@ static int32_t udmaTestProxyTest(UdmaTestTaskObj *taskObj)
                     GT_0trace(taskObj->traceMask, GT_ERR, " Proxy free failed!!\n");
                 }
             }
-            if(TRUE == isRingAllocated)
+            if(UTRUE == isRingAllocated)
             {
                 retVal += Udma_ringFree(ringHandle);
                 if(UDMA_SOK != retVal)

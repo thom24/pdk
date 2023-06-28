@@ -265,12 +265,12 @@ typedef struct
      *   Note: The osal interrupt registration is expected only for the master
      *   event.
      *
-     *   eventCb parameter can be NULL when this flag is set to TRUE as no
+     *   eventCb parameter can be NULL when this flag is set to UTRUE as no
      *   interrupt registration is done
      *
-     *      TRUE    - Disable osal registration
-     *      FALSE   - Enable osal registration. This should be used by all
-     *                TI-RTOS application.
+     *      UTRUE    - Disable osal registration
+     *      UFALSE   - Enable osal registration. This should be used by all
+     *                 TI-RTOS application.
      */
     uint32_t                preferredCoreIntrNum;
     /**< [IN] Preferred core interrupt number which goes to a core. 

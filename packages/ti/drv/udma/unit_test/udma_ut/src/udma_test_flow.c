@@ -164,7 +164,7 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
     uint32_t            instId, flowIdx;
     uint32_t            elemCnt = 100U, ringMemSize;
     uint32_t            flowCnt = 3U, flowStart, flowCntTest;
-    uint32_t            ringAllocated = FALSE, flowAllocated = FALSE;
+    uint32_t            ringAllocated = UFALSE, flowAllocated = UFALSE;
     uint16_t            ringNum;
     uint32_t            heapId = UTILS_MEM_HEAP_ID_MSMC;
     Udma_DrvHandle      drvHandle;
@@ -203,7 +203,7 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
         }
         else
         {
-            ringAllocated = TRUE;
+            ringAllocated = UTRUE;
         }
 
         if(UDMA_SOK == retVal)
@@ -216,7 +216,7 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
             }
             else
             {
-                flowAllocated = TRUE;
+                flowAllocated = UTRUE;
             }
         }
 
@@ -283,7 +283,7 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
         }
 
         /* Free allocated flows and rings */
-        if(TRUE == flowAllocated)
+        if(UTRUE == flowAllocated)
         {
             retVal += Udma_flowFree(flowHandle);
             if(UDMA_SOK != retVal)
@@ -292,7 +292,7 @@ static int32_t udmaTestFlowAttachTestLoop(UdmaTestTaskObj *taskObj)
             }
         }
 
-        if(TRUE == ringAllocated)
+        if(UTRUE == ringAllocated)
         {
             retVal += Udma_ringFree(ringHandle);
             if(UDMA_SOK != retVal)
@@ -321,7 +321,7 @@ static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
     uint32_t            instId, mappedFlowGrp;;
     uint32_t            flowCnt = 1U, mappepdFlowNum, flowCntTest;
     uint32_t            numMappedFlowGrp;
-    uint32_t            mappedFlowAllocated = FALSE;
+    uint32_t            mappedFlowAllocated = UFALSE;
     Udma_DrvHandle      drvHandle;
     struct Udma_FlowObj flowObj, attachFlowObj;
     Udma_FlowHandle     flowHandle = &flowObj, attachFlowHandle = &attachFlowObj;
@@ -364,7 +364,7 @@ static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
             }
             else
             {
-                mappedFlowAllocated = TRUE;
+                mappedFlowAllocated = UTRUE;
             }
         
             if(UDMA_SOK == retVal)
@@ -427,7 +427,7 @@ static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
             }
 
             /* Free allocated flows */
-            if(TRUE == mappedFlowAllocated)
+            if(UTRUE == mappedFlowAllocated)
             {
                 retVal += Udma_flowFree(flowHandle);
                 if(UDMA_SOK != retVal)
@@ -436,7 +436,7 @@ static int32_t udmaTestFlowAttachMappedTestLoop(UdmaTestTaskObj *taskObj)
                 }
                 else
                 {
-                    mappedFlowAllocated = FALSE;
+                    mappedFlowAllocated = UFALSE;
                 }
             }
 

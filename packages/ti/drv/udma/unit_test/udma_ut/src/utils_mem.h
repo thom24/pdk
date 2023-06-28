@@ -123,8 +123,8 @@ int32_t Utils_memFree(uint32_t heapId, void *addr, uint32_t size);
  *
  *  By default allocated buffer will not be cleared to 0
  *
- *  \param enable   [IN] TRUE: clear allocated buffer,
- *                       FALSE: do not clear allocated buffer
+ *  \param enable   [IN] UTRUE: clear allocated buffer,
+ *                       UFALSE: do not clear allocated buffer
  *
  *  \return 0 on sucess, else failure
  */

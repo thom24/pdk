@@ -606,7 +606,7 @@ static void App_udmaRxHpdInit(Udma_ChHandle rxChHandle,
 
     /* Setup descriptor */
     CSL_udmapCppi5SetDescType(pHpd, descType);
-    CSL_udmapCppi5SetEpiDataPresent(pHpd, FALSE);
+    CSL_udmapCppi5SetEpiDataPresent(pHpd, BFALSE);
     CSL_udmapCppi5SetPsDataLoc(pHpd, 0U);
     CSL_udmapCppi5SetPsDataLen(pHpd, 0U);
     CSL_udmapCppi5SetPktLen(pHpd, descType, length);
@@ -639,12 +639,12 @@ static void App_adcInit(void)
     ADCClearIntrStatus(APP_ADC_MODULE, ADC_INTR_STATUS_ALL);
 
     /* Power up AFE */
-    ADCPowerUp(APP_ADC_MODULE, TRUE);
+    ADCPowerUp(APP_ADC_MODULE, UTRUE);
     /* Wait for 4us at least */
     Osal_delay(1);
 
     /* Do the internal calibration */
-    ADCInit(APP_ADC_MODULE, FALSE, 0U, 0U);
+    ADCInit(APP_ADC_MODULE, UFALSE, 0U, 0U);
 
     return;
 }
@@ -667,10 +667,10 @@ static void App_adcConfig(void)
         adcConfig.channel = ADC_CHANNEL_1 + chCnt;
         ADCSetStepParams(APP_ADC_MODULE, ADC_STEP_1 + chCnt, &adcConfig);
         /* step enable */
-        ADCStepEnable(APP_ADC_MODULE, ADC_STEP_1 + chCnt, TRUE);
+        ADCStepEnable(APP_ADC_MODULE, ADC_STEP_1 + chCnt, UTRUE);
     }
 
-    ADCStepIdTagEnable(APP_ADC_MODULE, TRUE);
+    ADCStepIdTagEnable(APP_ADC_MODULE, UTRUE);
     ADCSetDMAFIFOThresholdLevel(APP_ADC_MODULE, APP_ADC_FIFO, APP_ADC_NUM_CH);
 
     return;
@@ -681,7 +681,7 @@ static void App_adcStart(void)
     adcSequencerStatus_t status;
 
     /* Enable DMA */
-    ADCFIFODMAAccessEnable(APP_ADC_MODULE, APP_ADC_FIFO, TRUE);
+    ADCFIFODMAAccessEnable(APP_ADC_MODULE, APP_ADC_FIFO, UTRUE);
 
     /* Check if FSM is idle */
     ADCGetSequencerStatus(APP_ADC_MODULE, &status);
@@ -692,7 +692,7 @@ static void App_adcStart(void)
     }
 
     /* Start ADC conversion */
-    ADCStart(APP_ADC_MODULE, TRUE);
+    ADCStart(APP_ADC_MODULE, UTRUE);
 
     return;
 }
@@ -703,12 +703,12 @@ static void App_adcStop(void)
     adcSequencerStatus_t    status;
 
     /* Disable DMA */
-    ADCFIFODMAAccessEnable(APP_ADC_MODULE, APP_ADC_FIFO, FALSE);
+    ADCFIFODMAAccessEnable(APP_ADC_MODULE, APP_ADC_FIFO, UFALSE);
 
     /* Disable all/enabled steps */
     for(chCnt = 0U; chCnt < APP_ADC_NUM_CH; chCnt++)
     {
-        ADCStepEnable(APP_ADC_MODULE, ADC_STEP_1 + chCnt, FALSE);
+        ADCStepEnable(APP_ADC_MODULE, ADC_STEP_1 + chCnt, UFALSE);
     }
 
     /* Wait for FSM to go IDLE */
@@ -720,7 +720,7 @@ static void App_adcStop(void)
     }
 
     /* Stop ADC */
-    ADCStart(APP_ADC_MODULE, FALSE);
+    ADCStart(APP_ADC_MODULE, UFALSE);
 
     /* Wait for FSM to go IDLE */
     ADCGetSequencerStatus(APP_ADC_MODULE, &status);
@@ -736,7 +736,7 @@ static void App_adcStop(void)
 static void App_adcDeInit(void)
 {
     /* Power down ADC */
-    ADCPowerUp(APP_ADC_MODULE, FALSE);
+    ADCPowerUp(APP_ADC_MODULE, UFALSE);
 
     return;
 }
@@ -745,7 +745,7 @@ static void App_print(const char *str)
 {
     UART_printf("%s", str);
 
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }
@@ -760,7 +760,7 @@ static void App_printNum(const char *str, uint32_t num)
     snprintf(printBuf, 200U, str, num);
     UART_printf("%s", printBuf);
 
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", printBuf);
     }

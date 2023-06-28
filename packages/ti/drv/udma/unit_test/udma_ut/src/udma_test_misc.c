@@ -164,13 +164,13 @@ int32_t udmaTestOsalPrmsTc(UdmaTestTaskObj *taskObj)
 
     /* Check all flags are set */
     maxCnt = UDMA_TEST_OSAL_NUM_FXNS;
-    if(TRUE == Udma_isCacheCoherent())
+    if(UTRUE == Udma_isCacheCoherent())
     {
         maxCnt -= 2U;       /* Cache API not called for coherent system. So skip the check */
     }
     for(cnt = 0U; cnt < maxCnt; cnt++)
     {
-        if(gUdmaTestOsalPrmsFlag[cnt] == 0U)
+        if(0U == gUdmaTestOsalPrmsFlag[cnt])
         {
             retVal = UDMA_EFAIL;
             GT_1trace(testObj->traceMask, GT_ERR,

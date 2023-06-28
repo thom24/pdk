@@ -482,8 +482,8 @@ static void App_udmaTrInit(Udma_ChHandle chHandle,
 {
     /* Setup TR */
     pTr->flags    = CSL_FMK(UDMAP_TR_FLAGS_TYPE, CSL_UDMAP_TR_FLAGS_TYPE_4D_BLOCK_MOVE)         |
-                    CSL_FMK(UDMAP_TR_FLAGS_STATIC, FALSE)                                       |
-                    CSL_FMK(UDMAP_TR_FLAGS_EOL, FALSE)                                          |   /* NA */
+                    CSL_FMK(UDMAP_TR_FLAGS_STATIC, UFALSE)                                       |
+                    CSL_FMK(UDMAP_TR_FLAGS_EOL, UFALSE)                                          |   /* NA */
                     CSL_FMK(UDMAP_TR_FLAGS_EVENT_SIZE, CSL_UDMAP_TR_FLAGS_EVENT_SIZE_COMPLETION)|
                     CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0, CSL_UDMAP_TR_FLAGS_TRIGGER_NONE)           |
                     CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0_TYPE, CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL)  |
@@ -519,7 +519,7 @@ static void App_print(const char *str)
 {
     UART_printf("%s", str);
 
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }

@@ -124,7 +124,7 @@ void Udma_appUtilsCacheWb(const void *addr, int32_t size)
 {
     uint32_t    isCacheCoherent = Udma_isCacheCoherent();
 
-    if(isCacheCoherent != TRUE)
+    if(UTRUE != isCacheCoherent)
     {
         CacheP_wb(addr, size);
     }
@@ -136,7 +136,7 @@ void Udma_appUtilsCacheInv(const void * addr, int32_t size)
 {
     uint32_t    isCacheCoherent = Udma_isCacheCoherent();
 
-    if(isCacheCoherent != TRUE)
+    if(UTRUE != isCacheCoherent)
     {
         CacheP_Inv(addr, size);
     }
@@ -148,7 +148,7 @@ void Udma_appUtilsCacheWbInv(const void * addr, int32_t size)
 {
     uint32_t    isCacheCoherent = Udma_isCacheCoherent();
 
-    if(isCacheCoherent != TRUE)
+    if(UTRUE != isCacheCoherent)
     {
         CacheP_wbInv(addr, size);
     }
@@ -412,18 +412,18 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
 
 uint32_t Udma_appIsPrintSupported(void)
 {
-    uint32_t retVal = TRUE;
+    uint32_t retVal = UTRUE;
 
     /* Semi hosting not supported for MPU on Simulator */
 #if (defined (BUILD_MPU) && defined (SIMULATOR))
-    retVal = FALSE;
+    retVal = UFALSE;
 #endif
 
     /* Printf doesn't work for MPU when run from SBL with no CCS connection
      * There is no flag to detect SBL or CCS mode. Hence disable the print
      * for MPU unconditionally */
 #if defined (BUILD_MPU)
-    retVal = FALSE;
+    retVal = UFALSE;
 #endif
 
     return (retVal);
@@ -431,16 +431,16 @@ uint32_t Udma_appIsPrintSupported(void)
 
 uint32_t Udma_appIsUdmapStatsSupported(void)
 {
-    uint32_t retVal = TRUE;
+    uint32_t retVal = UTRUE;
 
 #if defined (SOC_AM65XX)
     uint32_t jtagIdVal, variatn;
 
     jtagIdVal = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_JTAGID);
     variatn   = CSL_FEXT(jtagIdVal, WKUP_CTRL_MMR_CFG0_JTAGID_VARIATN);
-    if (variatn == 0U)
+    if (0U == variatn)
     {
-        retVal = FALSE;
+        retVal = UFALSE;
     }
 #endif
 

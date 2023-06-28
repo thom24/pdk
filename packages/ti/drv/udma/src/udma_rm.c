@@ -425,7 +425,7 @@ uint32_t Udma_rmAllocBlkCopyCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -434,7 +434,7 @@ uint32_t Udma_rmAllocBlkCopyCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle
         for(i = 0U; i < rmInitPrms->numBlkCopyCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->blkCopyChFlag[offset] & bitMask) == bitMask)
@@ -454,7 +454,7 @@ uint32_t Udma_rmAllocBlkCopyCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle
         {
             i = preferredChNum - rmInitPrms->startBlkCopyCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->blkCopyChFlag[offset] & bitMask) == bitMask)
@@ -465,7 +465,7 @@ uint32_t Udma_rmAllocBlkCopyCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -476,7 +476,7 @@ void Udma_rmFreeBlkCopyCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= (rmInitPrms->startBlkCopyCh));
@@ -484,14 +484,14 @@ void Udma_rmFreeBlkCopyCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startBlkCopyCh + rmInitPrms->numBlkCopyCh));
     i = chNum - rmInitPrms->startBlkCopyCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->blkCopyChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->blkCopyChFlag[offset] & bitMask)));
     drvHandle->blkCopyChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -503,7 +503,7 @@ uint32_t Udma_rmAllocBlkCopyHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHand
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -512,7 +512,7 @@ uint32_t Udma_rmAllocBlkCopyHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHand
         for(i = 0U; i < rmInitPrms->numBlkCopyHcCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->blkCopyHcChFlag[offset] & bitMask) == bitMask)
@@ -532,7 +532,7 @@ uint32_t Udma_rmAllocBlkCopyHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHand
         {
             i = preferredChNum - rmInitPrms->startBlkCopyHcCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->blkCopyHcChFlag[offset] & bitMask) == bitMask)
@@ -543,7 +543,7 @@ uint32_t Udma_rmAllocBlkCopyHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHand
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -554,7 +554,7 @@ void Udma_rmFreeBlkCopyHcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= (rmInitPrms->startBlkCopyHcCh));
@@ -562,14 +562,14 @@ void Udma_rmFreeBlkCopyHcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startBlkCopyHcCh + rmInitPrms->numBlkCopyHcCh));
     i = chNum - rmInitPrms->startBlkCopyHcCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_HC_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->blkCopyHcChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->blkCopyHcChFlag[offset] & bitMask)));
     drvHandle->blkCopyHcChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -581,7 +581,7 @@ uint32_t Udma_rmAllocBlkCopyUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHan
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -590,7 +590,7 @@ uint32_t Udma_rmAllocBlkCopyUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHan
         for(i = 0U; i < rmInitPrms->numBlkCopyUhcCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->blkCopyUhcChFlag[offset] & bitMask) == bitMask)
@@ -610,7 +610,7 @@ uint32_t Udma_rmAllocBlkCopyUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHan
         {
             i = preferredChNum - rmInitPrms->startBlkCopyUhcCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->blkCopyUhcChFlag[offset] & bitMask) == bitMask)
@@ -621,7 +621,7 @@ uint32_t Udma_rmAllocBlkCopyUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHan
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -632,7 +632,7 @@ void Udma_rmFreeBlkCopyUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= (rmInitPrms->startBlkCopyUhcCh));
@@ -640,14 +640,14 @@ void Udma_rmFreeBlkCopyUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startBlkCopyUhcCh + rmInitPrms->numBlkCopyUhcCh));
     i = chNum - rmInitPrms->startBlkCopyUhcCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_BLK_COPY_UHC_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->blkCopyUhcChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->blkCopyUhcChFlag[offset] & bitMask)));
     drvHandle->blkCopyUhcChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -659,7 +659,7 @@ uint32_t Udma_rmAllocTxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -668,7 +668,7 @@ uint32_t Udma_rmAllocTxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         for(i = 0U; i < rmInitPrms->numTxCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_TX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->txChFlag[offset] & bitMask) == bitMask)
@@ -688,7 +688,7 @@ uint32_t Udma_rmAllocTxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         {
             i = preferredChNum - rmInitPrms->startTxCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_TX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->txChFlag[offset] & bitMask) == bitMask)
@@ -699,7 +699,7 @@ uint32_t Udma_rmAllocTxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -710,7 +710,7 @@ void Udma_rmFreeTxCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= (rmInitPrms->startTxCh));
@@ -718,14 +718,14 @@ void Udma_rmFreeTxCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startTxCh + rmInitPrms->numTxCh));
     i = chNum - rmInitPrms->startTxCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_TX_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_TX_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->txChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->txChFlag[offset] & bitMask)));
     drvHandle->txChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -737,7 +737,7 @@ uint32_t Udma_rmAllocRxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -746,7 +746,7 @@ uint32_t Udma_rmAllocRxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         for(i = 0U; i < rmInitPrms->numRxCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_RX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->rxChFlag[offset] & bitMask) == bitMask)
@@ -766,7 +766,7 @@ uint32_t Udma_rmAllocRxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         {
             i = preferredChNum - rmInitPrms->startRxCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_RX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->rxChFlag[offset] & bitMask) == bitMask)
@@ -777,7 +777,7 @@ uint32_t Udma_rmAllocRxCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -788,7 +788,7 @@ void Udma_rmFreeRxCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= rmInitPrms->startRxCh);
@@ -796,14 +796,14 @@ void Udma_rmFreeRxCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startRxCh + rmInitPrms->numRxCh));
     i = chNum - rmInitPrms->startRxCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_RX_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_RX_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->rxChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->rxChFlag[offset] & bitMask)));
     drvHandle->rxChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -815,7 +815,7 @@ uint32_t Udma_rmAllocTxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -824,7 +824,7 @@ uint32_t Udma_rmAllocTxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         for(i = 0U; i < rmInitPrms->numTxHcCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_HC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_TX_HC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->txHcChFlag[offset] & bitMask) == bitMask)
@@ -844,7 +844,7 @@ uint32_t Udma_rmAllocTxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         {
             i = preferredChNum - rmInitPrms->startTxHcCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_HC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_TX_HC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->txHcChFlag[offset] & bitMask) == bitMask)
@@ -855,7 +855,7 @@ uint32_t Udma_rmAllocTxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -866,7 +866,7 @@ void Udma_rmFreeTxHcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= (rmInitPrms->startTxHcCh));
@@ -874,14 +874,14 @@ void Udma_rmFreeTxHcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startTxHcCh + rmInitPrms->numTxHcCh));
     i = chNum - rmInitPrms->startTxHcCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_TX_HC_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_TX_HC_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->txHcChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->txHcChFlag[offset] & bitMask)));
     drvHandle->txHcChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -893,7 +893,7 @@ uint32_t Udma_rmAllocRxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -902,7 +902,7 @@ uint32_t Udma_rmAllocRxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         for(i = 0U; i < rmInitPrms->numRxHcCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_HC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_RX_HC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->rxHcChFlag[offset] & bitMask) == bitMask)
@@ -922,7 +922,7 @@ uint32_t Udma_rmAllocRxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         {
             i = preferredChNum - rmInitPrms->startRxHcCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_HC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_RX_HC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->rxHcChFlag[offset] & bitMask) == bitMask)
@@ -933,7 +933,7 @@ uint32_t Udma_rmAllocRxHcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -944,7 +944,7 @@ void Udma_rmFreeRxHcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= rmInitPrms->startRxHcCh);
@@ -952,14 +952,14 @@ void Udma_rmFreeRxHcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startRxHcCh + rmInitPrms->numRxHcCh));
     i = chNum - rmInitPrms->startRxHcCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_RX_HC_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_RX_HC_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->rxHcChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->rxHcChFlag[offset] & bitMask)));
     drvHandle->rxHcChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -971,7 +971,7 @@ uint32_t Udma_rmAllocTxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -980,7 +980,7 @@ uint32_t Udma_rmAllocTxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         for(i = 0U; i < rmInitPrms->numTxUhcCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_UHC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_TX_UHC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->txUhcChFlag[offset] & bitMask) == bitMask)
@@ -1000,7 +1000,7 @@ uint32_t Udma_rmAllocTxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         {
             i = preferredChNum - rmInitPrms->startTxUhcCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_TX_UHC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_TX_UHC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->txUhcChFlag[offset] & bitMask) == bitMask)
@@ -1011,7 +1011,7 @@ uint32_t Udma_rmAllocTxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -1022,7 +1022,7 @@ void Udma_rmFreeTxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= (rmInitPrms->startTxUhcCh));
@@ -1030,14 +1030,14 @@ void Udma_rmFreeTxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startTxUhcCh + rmInitPrms->numTxUhcCh));
     i = chNum - rmInitPrms->startTxUhcCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_TX_UHC_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_TX_UHC_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->txUhcChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->txUhcChFlag[offset] & bitMask)));
     drvHandle->txUhcChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1049,7 +1049,7 @@ uint32_t Udma_rmAllocRxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
     uint32_t            chNum = UDMA_DMA_CH_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -1058,7 +1058,7 @@ uint32_t Udma_rmAllocRxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         for(i = 0U; i < rmInitPrms->numRxUhcCh; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_UHC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_RX_UHC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->rxUhcChFlag[offset] & bitMask) == bitMask)
@@ -1078,7 +1078,7 @@ uint32_t Udma_rmAllocRxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         {
             i = preferredChNum - rmInitPrms->startRxUhcCh;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_RX_UHC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_RX_UHC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->rxUhcChFlag[offset] & bitMask) == bitMask)
@@ -1089,7 +1089,7 @@ uint32_t Udma_rmAllocRxUhcCh(uint32_t preferredChNum, Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -1100,7 +1100,7 @@ void Udma_rmFreeRxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= rmInitPrms->startRxUhcCh);
@@ -1108,14 +1108,14 @@ void Udma_rmFreeRxUhcCh(uint32_t chNum, Udma_DrvHandle drvHandle)
         chNum < (rmInitPrms->startRxUhcCh + rmInitPrms->numRxUhcCh));
     i = chNum - rmInitPrms->startRxUhcCh;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_RX_UHC_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_RX_UHC_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->rxUhcChFlag[offset] & bitMask) == 0U);
+        (0U == (drvHandle->rxUhcChFlag[offset] & bitMask)));
     drvHandle->rxUhcChFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1131,18 +1131,18 @@ uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
     uint32_t            utcId;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, utcInfo != NULL_PTR);
+    Udma_assert(drvHandle, (NULL_PTR != utcInfo));
     utcId = utcInfo->utcId;
-    Udma_assert(drvHandle, utcId < UDMA_NUM_UTC_INSTANCE);
+    Udma_assert(drvHandle, (utcId < UDMA_NUM_UTC_INSTANCE));
     Udma_assert(drvHandle,
         rmInitPrms->startUtcCh[utcId] >= utcInfo->startCh);
     Udma_assert(drvHandle,
-        rmInitPrms->startUtcCh[utcId] < (utcInfo->startCh + utcInfo->numCh));
+        (rmInitPrms->startUtcCh[utcId] < (utcInfo->startCh + utcInfo->numCh)));
     Udma_assert(drvHandle,
         (rmInitPrms->startUtcCh[utcId] + rmInitPrms->numUtcCh[utcId]) <=
             (utcInfo->startCh + utcInfo->numCh));
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -1151,7 +1151,7 @@ uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
         for(i = 0U; i < rmInitPrms->numUtcCh[utcId]; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_UTC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->utcChFlag[utcId][offset] & bitMask) == bitMask)
@@ -1168,7 +1168,7 @@ uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
         {
             i = preferredChNum;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_UTC_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->utcChFlag[utcId][offset] & bitMask) == bitMask)
@@ -1179,7 +1179,7 @@ uint32_t Udma_rmAllocExtCh(uint32_t preferredChNum,
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -1193,24 +1193,24 @@ void Udma_rmFreeExtCh(uint32_t chNum,
     uint32_t            utcId;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, utcInfo != NULL_PTR);
+    Udma_assert(drvHandle, (NULL_PTR != utcInfo));
     utcId = utcInfo->utcId;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
     Udma_assert(drvHandle, chNum >= rmInitPrms->startUtcCh[utcId]);
     Udma_assert(drvHandle,
         chNum < (rmInitPrms->startUtcCh[utcId] + rmInitPrms->numUtcCh[utcId]));
     i = chNum - rmInitPrms->startUtcCh[utcId];
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_UTC_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_UTC_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->utcChFlag[utcId][offset] & bitMask) == 0U);
+        (0U == (drvHandle->utcChFlag[utcId][offset] & bitMask)));
     drvHandle->utcChFlag[utcId][offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1226,9 +1226,9 @@ uint32_t Udma_rmAllocMappedTxCh(uint32_t preferredChNum,
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, mappedChGrp < UDMA_NUM_MAPPED_TX_GROUP);
+    Udma_assert(drvHandle, (mappedChGrp < UDMA_NUM_MAPPED_TX_GROUP));
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -1237,7 +1237,7 @@ uint32_t Udma_rmAllocMappedTxCh(uint32_t preferredChNum,
         for(i = 0U; i < rmInitPrms->numMappedTxCh[mappedChGrp]; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->mappedTxChFlag[mappedChGrp][offset] & bitMask) == bitMask)
@@ -1257,7 +1257,7 @@ uint32_t Udma_rmAllocMappedTxCh(uint32_t preferredChNum,
         {
             i = preferredChNum;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->mappedTxChFlag[mappedChGrp][offset] & bitMask) == bitMask)
@@ -1268,7 +1268,7 @@ uint32_t Udma_rmAllocMappedTxCh(uint32_t preferredChNum,
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -1281,7 +1281,7 @@ void Udma_rmFreeMappedTxCh(uint32_t chNum,
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= rmInitPrms->startMappedTxCh[mappedChGrp]);
@@ -1289,14 +1289,14 @@ void Udma_rmFreeMappedTxCh(uint32_t chNum,
         chNum < (rmInitPrms->startMappedTxCh[mappedChGrp] + rmInitPrms->numMappedTxCh[mappedChGrp]));
     i = chNum - rmInitPrms->startMappedTxCh[mappedChGrp];
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_TX_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->mappedTxChFlag[mappedChGrp][offset] & bitMask) == 0U);
+        (0U == (drvHandle->mappedTxChFlag[mappedChGrp][offset] & bitMask)));
     drvHandle->mappedTxChFlag[mappedChGrp][offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1312,9 +1312,9 @@ uint32_t Udma_rmAllocMappedRxCh(uint32_t preferredChNum,
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, mappedChGrp < UDMA_NUM_MAPPED_RX_GROUP);
+    Udma_assert(drvHandle, (mappedChGrp < UDMA_NUM_MAPPED_RX_GROUP));
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_DMA_CH_ANY == preferredChNum)
@@ -1323,7 +1323,7 @@ uint32_t Udma_rmAllocMappedRxCh(uint32_t preferredChNum,
         for(i = 0U; i < rmInitPrms->numMappedRxCh[mappedChGrp]; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->mappedRxChFlag[mappedChGrp][offset] & bitMask) == bitMask)
@@ -1343,7 +1343,7 @@ uint32_t Udma_rmAllocMappedRxCh(uint32_t preferredChNum,
         {
             i = preferredChNum;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->mappedRxChFlag[mappedChGrp][offset] & bitMask) == bitMask)
@@ -1354,7 +1354,7 @@ uint32_t Udma_rmAllocMappedRxCh(uint32_t preferredChNum,
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (chNum);
@@ -1367,7 +1367,7 @@ void Udma_rmFreeMappedRxCh(uint32_t chNum,
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     Udma_assert(drvHandle, chNum >= rmInitPrms->startMappedRxCh[mappedChGrp]);
@@ -1375,14 +1375,14 @@ void Udma_rmFreeMappedRxCh(uint32_t chNum,
         chNum < (rmInitPrms->startMappedRxCh[mappedChGrp] + rmInitPrms->numMappedRxCh[mappedChGrp]));
     i = chNum - rmInitPrms->startMappedRxCh[mappedChGrp];
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_RX_CH_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
     Udma_assert(drvHandle,
-        (drvHandle->mappedRxChFlag[mappedChGrp][offset] & bitMask) == 0U);
+        (0U == (drvHandle->mappedRxChFlag[mappedChGrp][offset] & bitMask)));
     drvHandle->mappedRxChFlag[mappedChGrp][offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1402,7 +1402,7 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
     Udma_RmInitPrms             *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
     Udma_MappedChRingAttributes  chAttr;
 
-    Udma_assert(drvHandle, mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP));
+    Udma_assert(drvHandle, (mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)));
 
     retVal = Udma_getMappedChRingAttributes(drvHandle, mappedRingGrp, mappedChNum, &chAttr);
 
@@ -1421,7 +1421,7 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
         */
 
         /* Default Loop Values*/
-        loopStart = 0;
+        loopStart = 0U;
         loopMax   = rmInitPrms->numMappedRing[mappedRingGrp];
 
         /* CASE_A_1 : Channel_ring_Start > Core_ring_Start */
@@ -1445,14 +1445,14 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
         }
         /* For all other CASE 'B's, loopMax should be rmInitPrms->numMappedRing[mappedRingGrp] itself. */
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
         drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
         /* Search and allocate from derived intersecting pool */
         for(i = loopStart; i < loopMax; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_RING_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->mappedRingFlag[mappedRingGrp][offset] & bitMask) == bitMask)
@@ -1463,7 +1463,7 @@ uint32_t Udma_rmAllocMappedRing(Udma_DrvHandle drvHandle,
             }
         }
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
         drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
     }
 
@@ -1480,7 +1480,7 @@ void Udma_rmFreeMappedRing(uint32_t ringNum,
     Udma_MappedChRingAttributes  chAttr;
     int32_t     retVal = UDMA_SOK;
 
-    Udma_assert(drvHandle, mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP));
+    Udma_assert(drvHandle, (mappedRingGrp < (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)));
 
     retVal = Udma_getMappedChRingAttributes(drvHandle, mappedRingGrp, mappedChNum, &chAttr);
     Udma_assert(drvHandle, UDMA_SOK == retVal);
@@ -1488,22 +1488,22 @@ void Udma_rmFreeMappedRing(uint32_t ringNum,
     /* Free up only the free mapped ring - ignore default mapped ring */
     if(ringNum != chAttr.defaultRing)
     {
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
         drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
-        Udma_assert(drvHandle, ringNum >= rmInitPrms->startMappedRing[mappedRingGrp]);
+        Udma_assert(drvHandle, (ringNum >= rmInitPrms->startMappedRing[mappedRingGrp]));
         Udma_assert(drvHandle,
             ringNum < (rmInitPrms->startMappedRing[mappedRingGrp] + rmInitPrms->numMappedRing[mappedRingGrp]));
         i = ringNum - rmInitPrms->startMappedRing[mappedRingGrp];
         offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_MAPPED_RING_ARR_SIZE);
+        Udma_assert(drvHandle, (offset < UDMA_RM_MAPPED_RING_ARR_SIZE));
         bitPos = i - (offset << 5U);
         bitMask = (uint32_t) 1U << bitPos;
         Udma_assert(drvHandle,
-            (drvHandle->mappedRingFlag[mappedRingGrp][offset] & bitMask) == 0U);
+            (0U == (drvHandle->mappedRingFlag[mappedRingGrp][offset] & bitMask)));
         drvHandle->mappedRingFlag[mappedRingGrp][offset] |= bitMask;
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
         drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
     }
     return;
@@ -1521,13 +1521,13 @@ uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle)
         uint32_t            bitPos, bitMask;
         Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
         drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
         for(i = 0U; i < rmInitPrms->numFreeRing; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_FREE_RING_ARR_SIZE));
             temp = i - (offset << 5U);
             bitPos = (uint32_t) temp;
             bitMask = (uint32_t) 1U << bitPos;
@@ -1543,7 +1543,7 @@ uint16_t Udma_rmAllocFreeRing(Udma_DrvHandle drvHandle)
             }
         }
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
         drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 #endif
     }
@@ -1565,18 +1565,18 @@ void Udma_rmFreeFreeRing(uint16_t ringNum, Udma_DrvHandle drvHandle)
         /* Free up only the free ring - ignore FQ rings */
         if(ringNum >= freeRingOffset)
         {
-            Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+            Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
             drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
             i = ringNum - freeRingOffset;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_FREE_RING_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_FREE_RING_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
-            Udma_assert(drvHandle, (drvHandle->freeRingFlag[offset] & bitMask) == 0U);
+            Udma_assert(drvHandle, (0U == (drvHandle->freeRingFlag[offset] & bitMask)));
             drvHandle->freeRingFlag[offset] |= bitMask;
 
-            Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+            Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
             drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
         }
 #endif
@@ -1591,13 +1591,13 @@ uint16_t Udma_rmAllocProxy(Udma_DrvHandle drvHandle)
     uint32_t            bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     for(i = 0U; i < rmInitPrms->numProxy; i++)
     {
         offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_PROXY_ARR_SIZE);
+        Udma_assert(drvHandle, (offset < UDMA_RM_PROXY_ARR_SIZE));
         temp = i - (offset << 5U);
         bitPos = (uint32_t) temp;
         bitMask = (uint32_t) 1U << bitPos;
@@ -1610,7 +1610,7 @@ uint16_t Udma_rmAllocProxy(Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (proxyNum);
@@ -1622,18 +1622,18 @@ void Udma_rmFreeProxy(uint16_t proxyNum, Udma_DrvHandle drvHandle)
     uint32_t           offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     i = proxyNum - rmInitPrms->startProxy;
     offset = (uint32_t)(i >> (uint16_t)5U);
-    Udma_assert(drvHandle, offset < UDMA_RM_PROXY_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_PROXY_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
-    Udma_assert(drvHandle, (drvHandle->proxyFlag[offset] & bitMask) == 0U);
+    Udma_assert(drvHandle, (0U == (drvHandle->proxyFlag[offset] & bitMask)));
     drvHandle->proxyFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1645,13 +1645,13 @@ uint32_t Udma_rmAllocEvent(Udma_DrvHandle drvHandle)
     uint32_t            i, offset, bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     for(i = 0U; i < rmInitPrms->numGlobalEvent; i++)
     {
         offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_GLOBAL_EVENT_ARR_SIZE);
+        Udma_assert(drvHandle, (offset < UDMA_RM_GLOBAL_EVENT_ARR_SIZE));
         bitPos = i - (offset << 5U);
         bitMask = (uint32_t) 1U << bitPos;
         if((drvHandle->globalEventFlag[offset] & bitMask) == bitMask)
@@ -1662,7 +1662,7 @@ uint32_t Udma_rmAllocEvent(Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (globalEvent);
@@ -1677,18 +1677,18 @@ void Udma_rmFreeEvent(uint32_t globalEvent, Udma_DrvHandle drvHandle)
         globalEvent < (rmInitPrms->startGlobalEvent + rmInitPrms->numGlobalEvent));
     Udma_assert(drvHandle, globalEvent >= rmInitPrms->startGlobalEvent);
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     i = globalEvent - rmInitPrms->startGlobalEvent;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_GLOBAL_EVENT_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_GLOBAL_EVENT_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
-    Udma_assert(drvHandle, (drvHandle->globalEventFlag[offset] & bitMask) == 0U);
+    Udma_assert(drvHandle, (0U == (drvHandle->globalEventFlag[offset] & bitMask)));
     drvHandle->globalEventFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1700,13 +1700,13 @@ uint32_t Udma_rmAllocVintr(Udma_DrvHandle drvHandle)
     uint32_t            vintrNum = UDMA_EVENT_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     for(i = 0U; i < rmInitPrms->numVintr; i++)
     {
         offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_VINTR_ARR_SIZE);
+        Udma_assert(drvHandle, (offset < UDMA_RM_VINTR_ARR_SIZE));
         bitPos = i - (offset << 5U);
         bitMask = (uint32_t) 1U << bitPos;
         if((drvHandle->vintrFlag[offset] & bitMask) == bitMask)
@@ -1717,7 +1717,7 @@ uint32_t Udma_rmAllocVintr(Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (vintrNum);
@@ -1732,18 +1732,18 @@ void Udma_rmFreeVintr(uint32_t vintrNum, Udma_DrvHandle drvHandle)
         vintrNum < (rmInitPrms->startVintr + rmInitPrms->numVintr));
     Udma_assert(drvHandle, vintrNum >= rmInitPrms->startVintr);
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     i = vintrNum - rmInitPrms->startVintr;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_VINTR_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_VINTR_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
-    Udma_assert(drvHandle, (drvHandle->vintrFlag[offset] & bitMask) == 0U);
+    Udma_assert(drvHandle, (0U == (drvHandle->vintrFlag[offset] & bitMask)));
     drvHandle->vintrFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1766,13 +1766,13 @@ uint32_t Udma_rmAllocVintrBit(Udma_EventHandle eventHandle)
         masterEventHandle = eventPrms->masterEventHandle;
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     for(i = 0U; i < UDMA_MAX_EVENTS_PER_VINTR; i++)
     {
         bitMask = ((uint64_t) 1U << i);
-        if((masterEventHandle->vintrBitAllocFlag & bitMask) == 0U)
+        if(0U == (masterEventHandle->vintrBitAllocFlag & bitMask))
         {
             masterEventHandle->vintrBitAllocFlag |= bitMask;
             vintrBitNum = i;
@@ -1780,7 +1780,7 @@ uint32_t Udma_rmAllocVintrBit(Udma_EventHandle eventHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (vintrBitNum);
@@ -1802,16 +1802,16 @@ void Udma_rmFreeVintrBit(uint32_t vintrBitNum,
         masterEventHandle = eventPrms->masterEventHandle;
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
-    Udma_assert(drvHandle, vintrBitNum < UDMA_MAX_EVENTS_PER_VINTR);
+    Udma_assert(drvHandle, (vintrBitNum < UDMA_MAX_EVENTS_PER_VINTR));
     bitMask = ((uint64_t) 1U << vintrBitNum);
     Udma_assert(drvHandle,
         (masterEventHandle->vintrBitAllocFlag & bitMask) == bitMask);
     masterEventHandle->vintrBitAllocFlag &= ~bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1824,7 +1824,7 @@ uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
     uint32_t            irIntrNum = UDMA_INTR_INVALID;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     if(UDMA_CORE_INTR_ANY == preferredIrIntrNum)
@@ -1833,7 +1833,7 @@ uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
         for(i = 0U; i < rmInitPrms->numIrIntr; i++)
         {
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_IR_INTR_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->irIntrFlag[offset] & bitMask) == bitMask)
@@ -1853,7 +1853,7 @@ uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
         {
             i = preferredIrIntrNum - rmInitPrms->startIrIntr;
             offset = i >> 5U;
-            Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
+            Udma_assert(drvHandle, (offset < UDMA_RM_IR_INTR_ARR_SIZE));
             bitPos = i - (offset << 5U);
             bitMask = (uint32_t) 1U << bitPos;
             if((drvHandle->irIntrFlag[offset] & bitMask) == bitMask)
@@ -1864,7 +1864,7 @@ uint32_t Udma_rmAllocIrIntr(uint32_t preferredIrIntrNum,
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (irIntrNum);
@@ -1879,18 +1879,18 @@ void Udma_rmFreeIrIntr(uint32_t irIntrNum, Udma_DrvHandle drvHandle)
         irIntrNum < (rmInitPrms->startIrIntr + rmInitPrms->numIrIntr));
     Udma_assert(drvHandle, irIntrNum >= rmInitPrms->startIrIntr);
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     i = irIntrNum - rmInitPrms->startIrIntr;
     offset = i >> 5U;
-    Udma_assert(drvHandle, offset < UDMA_RM_IR_INTR_ARR_SIZE);
+    Udma_assert(drvHandle, (offset < UDMA_RM_IR_INTR_ARR_SIZE));
     bitPos = i - (offset << 5U);
     bitMask = (uint32_t) 1U << bitPos;
-    Udma_assert(drvHandle, (drvHandle->irIntrFlag[offset] & bitMask) == 0U);
+    Udma_assert(drvHandle, (0U == (drvHandle->irIntrFlag[offset] & bitMask)));
     drvHandle->irIntrFlag[offset] |= bitMask;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return;
@@ -1902,13 +1902,13 @@ uint16_t Udma_rmAllocRingMon(Udma_DrvHandle drvHandle)
     uint32_t            bitPos, bitMask;
     Udma_RmInitPrms    *rmInitPrms = &drvHandle->initPrms.rmInitPrms;
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
     drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
     for(i = 0U; i < rmInitPrms->numRingMon; i++)
     {
         offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_RING_MON_ARR_SIZE);
+        Udma_assert(drvHandle, (offset < UDMA_RM_RING_MON_ARR_SIZE));
         temp = i - (offset << 5U);
         bitPos = (uint32_t) temp;
         bitMask = (uint32_t) 1U << bitPos;
@@ -1921,7 +1921,7 @@ uint16_t Udma_rmAllocRingMon(Udma_DrvHandle drvHandle)
         }
     }
 
-    Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+    Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
     drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 
     return (ringMonNum);
@@ -1935,18 +1935,18 @@ void Udma_rmFreeRingMon(uint16_t ringMonNum, Udma_DrvHandle drvHandle)
 
     if(ringMonNum >= ringMonOffset)
     {
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
         drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
         i = ringMonNum - ringMonOffset;
         offset = i >> 5U;
-        Udma_assert(drvHandle, offset < UDMA_RM_RING_MON_ARR_SIZE);
+        Udma_assert(drvHandle, (offset < UDMA_RM_RING_MON_ARR_SIZE));
         bitPos = i - (offset << 5U);
         bitMask = (uint32_t) 1U << bitPos;
-        Udma_assert(drvHandle, (drvHandle->ringMonFlag[offset] & bitMask) == 0U);
+        Udma_assert(drvHandle, (0U == (drvHandle->ringMonFlag[offset] & bitMask)));
         drvHandle->ringMonFlag[offset] |= bitMask;
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
         drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
     }
 
@@ -2031,7 +2031,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
     uint32_t                                     splitResFlag[UDMA_RM_DEFAULT_BOARDCFG_NUM_RES] = {0U};
     uint32_t numRes = 0U;
     uint32_t resIdx;
-    bool blkCopySubType = (bool)false;
+    bool blkCopySubType = BFALSE;
 
     /* Error check */
     if(NULL_PTR == rmInitPrms)
@@ -2055,7 +2055,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
             if(UDMA_INST_ID_MCU_0 == instId)
             {
                 numRes         = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
-                blkCopySubType = (bool)false;
+                blkCopySubType = BFALSE;
                 /* Assign offset Params */
                 numtTxCh    = CSL_NAVSS_MCU_UDMAP_NUM_TX_CHANS;
                 numRxCh     = CSL_NAVSS_MCU_UDMAP_NUM_RX_CHANS;
@@ -2064,7 +2064,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
             else if(UDMA_INST_ID_MAIN_0 == instId)
             {
                 numRes         = UDMA_RM_DEFAULT_BOARDCFG_NUM_RES;
-                blkCopySubType = (bool)false;
+                blkCopySubType = BFALSE;
                 /* Assign offset Params */
                 numtTxCh    = CSL_NAVSS_MAIN_UDMAP_NUM_TX_CHANS;
                 numRxCh     = CSL_NAVSS_MAIN_UDMAP_NUM_RX_CHANS;
@@ -2075,7 +2075,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         #if (UDMA_SOC_CFG_BCDMA_PRESENT == 1)
             if(UDMA_INST_ID_BCDMA_0 == instId)
             {
-                blkCopySubType = (bool)true;
+                blkCopySubType = BTRUE;
                 numRes = UDMA_RM_NUM_BCDMA_RES;
             }
             else
@@ -2083,7 +2083,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
         #if (UDMA_SOC_CFG_PKTDMA_PRESENT == 1)
             if(UDMA_INST_ID_PKTDMA_0 == instId)
             {
-                blkCopySubType = true;
+                blkCopySubType = BTRUE;
                 numRes = UDMA_RM_NUM_PKTDMA_RES;
             }
             else
@@ -2309,7 +2309,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
                                                  rmDefBoardCfgResp[UDMA_RM_RES_ID_GLOBAL_EVENT].rangeNum,
                                                  &rmInitPrms->startGlobalEvent,
                                                  &rmInitPrms->numGlobalEvent);
-          if(rmInitPrms->numGlobalEvent != 0U)
+          if(0U != rmInitPrms->numGlobalEvent)
           {
               uint32_t offset = Udma_getGlobalEventOffset();
               /* Substract Offset for Global Events */
@@ -2345,7 +2345,7 @@ int32_t UdmaRmInitPrms_init(uint32_t instId, Udma_RmInitPrms *rmInitPrms)
            * startResrvCnt and endResrvCnt are number of interrupts reserved for other
            * drivers, can't be used by UDMA driver. \ref Udma_RmSharedResPrms
            */
-          if(rmSharedResPrms != NULL_PTR)
+          if(NULL_PTR != rmSharedResPrms)
           {
               totalResrvIntr  = (rmSharedResPrms->startResrvCnt + rmSharedResPrms->endResrvCnt);
               numIrIntrAvbl   = (rmDefBoardCfgResp[UDMA_RM_RES_ID_IR_INTR].rangeNum - totalResrvIntr);
@@ -2597,7 +2597,7 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
                     &res,
                     UDMA_SCICLIENT_TIMEOUT);
         if((CSL_PASS != retVal) ||
-        ((res.range_num == 0U) && (res.range_num_sec == 0U)))
+        ((0U == res.range_num) && (0U == res.range_num_sec)))
         {
             /* If range_num and range_num_sec = 0 (no entry for the core),
             * There is no reservation for the current core.
@@ -2608,7 +2608,7 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
                         &req,
                         &res,
                         UDMA_SCICLIENT_TIMEOUT);
-            if((CSL_PASS == retVal) && (res.range_num != 0U))
+            if((CSL_PASS == retVal) && (0U != res.range_num))
             {
                 /* If range_num != 0,
                 * ie, When using TISCI_HOST_ID_ALL entry,
@@ -2617,7 +2617,7 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
                 *  since there will only be single entry for TISCI_HOST_ID_ALL) */
                 if(NULL_PTR != splitResFlag)
                 {
-                    *splitResFlag = 1;
+                    *splitResFlag = 1U;
                 }
             }
         }
@@ -2656,9 +2656,9 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
 
     /* Error Check */
     if((NULL_PTR == rmSharedResPrms) ||
-        (instId == UDMA_CORE_ID_INVALID) ||
-        ((instId - startInstId) >=  UDMA_RM_SHARED_RES_MAX_INST) ||
-        (startInstId > instId))
+    (UDMA_CORE_ID_INVALID == instId) ||
+    (UDMA_RM_SHARED_RES_MAX_INST <= (instId - startInstId)) ||
+    (startInstId > instId))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -2684,12 +2684,12 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
         /* Populate share for each instance; Get sum of shares for validation */
         for(i = 0U;i < numInst; i++)
         {
-            if(rmSharedResPrms->instShare[i] == UDMA_RM_SHARED_RES_CNT_MIN)
+            if(UDMA_RM_SHARED_RES_CNT_MIN == rmSharedResPrms->instShare[i])
             {
                 sumInstShare += minReq;
                 instFinalShare[i] = minReq;
             }
-            else if(rmSharedResPrms->instShare[i] == UDMA_RM_SHARED_RES_CNT_REST)
+            else if(UDMA_RM_SHARED_RES_CNT_REST == rmSharedResPrms->instShare[i])
             {
                 sumInstShare += minReq;
                 splitCnt++;
@@ -2717,7 +2717,7 @@ static int32_t Udma_rmSetSharedResRmInitPrms(const Udma_RmSharedResPrms *rmShare
             splitMod = (numUnresvRes - udmaResvCnt) % splitCnt;
             for(i = 0U; i < numInst; i++)
             {
-                if(rmSharedResPrms->instShare[i] == UDMA_RM_SHARED_RES_CNT_REST)
+                if(UDMA_RM_SHARED_RES_CNT_REST == rmSharedResPrms->instShare[i])
                 {
                     instFinalShare[i] = splitShare + splitMod;
                     splitMod = 0U;
@@ -2745,11 +2745,11 @@ static int32_t Udma_rmCheckResLeak(Udma_DrvHandle drvHandle,
     int32_t     retVal = UDMA_SOK;
     uint32_t    i, offset, bitMask;
 
-    offset = 0;
+    offset = 0U;
     i = numRes;
     while(i > 0U)
     {
-        if(i >= (uint32_t)32U)          /* 32 resource per array element */
+        if((uint32_t)32U <= i)          /* 32 resource per array element */
         {
             bitMask = (uint32_t) 0xFFFFFFFFU;
             i -= 32U;

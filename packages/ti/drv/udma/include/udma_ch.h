@@ -286,11 +286,11 @@ typedef struct
 typedef struct
 {
     uint8_t                 pauseOnError;
-    /**< [IN] Bool: When set (TRUE), pause channel on error */
+    /**< [IN] Bool: When set (UTRUE), pause channel on error */
     uint8_t                 filterEinfo;
-    /**< [IN] Bool: When set (TRUE), filter out extended info */
+    /**< [IN] Bool: When set (UTRUE), filter out extended info */
     uint8_t                 filterPsWords;
-    /**< [IN] Bool: When set (TRUE), filter out protocl specific words */
+    /**< [IN] Bool: When set (UTRUE), filter out protocl specific words */
     uint8_t                 addrType;
     /**< [IN] Address type for this channel.
      *   Refer \ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_atype */
@@ -348,8 +348,8 @@ typedef struct
     /**< [IN] Bool: Specifies whether or not the channel should suppress
      *   sending the single data phase teardown packet when teardown is
      *   complete.
-     *      FALSE = TD packet is sent
-     *      TRUE = Suppress sending TD packet
+     *      UFALSE = TD packet is sent
+     *      UTRUE = Suppress sending TD packet
      *   TODO: Should we allocate tdCq based on this flag?
      */
 } Udma_ChTxPrms;
@@ -360,7 +360,7 @@ typedef struct
 typedef struct
 {
     uint8_t                 pauseOnError;
-    /**< [IN] Bool: When set (TRUE), pause channel on error */
+    /**< [IN] Bool: When set (UTRUE), pause channel on error */
     uint8_t                 addrType;
     /**< [IN] Address type for this channel.
      *   Refer \ref tisci_msg_rm_udmap_rx_ch_cfg_req::rx_atype */
@@ -397,17 +397,17 @@ typedef struct
      *   Refer \ref tisci_msg_rm_udmap_flow_cfg_req::rx_sop_offset */
     uint8_t                 ignoreShortPkts;
     /**< [IN] Bool: This field controls whether or not short packets will be
-     *   treated as exceptions (FALSE) or ignored (TRUE) for the channel.
+     *   treated as exceptions (UFALSE) or ignored (UTRUE) for the channel.
      *   This field is only used when the channel is in split UTC mode. */
     uint8_t                 ignoreLongPkts;
     /**< [IN] Bool: This field controls whether or not long packets will be
-     *   treated as exceptions (FALSE) or ignored (TRUE) for the channel.
+     *   treated as exceptions (UFALSE) or ignored (UTRUE) for the channel.
      *   This field is only used when the channel is in split UTC mode. */
     uint32_t                configDefaultFlow;
     /**< [IN] Bool: This field controls whether or not to program the default
      *   flow.
-     *   TRUE - Configures the default flow equal to the RX channel number
-     *   FALSE - Doesn't configure the default flow of channel.
+     *   UTRUE - Configures the default flow equal to the RX channel number
+     *   UFALSE - Doesn't configure the default flow of channel.
      *   The caller can allocate and use other generic flows or get the
      *   default flow handle and configure the flow using #Udma_flowConfig
      *   API at a later point of time */
@@ -438,7 +438,7 @@ typedef struct
 typedef struct
 {
     uint8_t                 pauseOnError;
-    /**< [IN] Bool: When set (TRUE), pause channel on error */
+    /**< [IN] Bool: When set (UTRUE), pause channel on error */
     uint8_t                 addrType;
     /**< [IN] Address type for this channel.
      *   Refer \ref tisci_msg_rm_udmap_tx_ch_cfg_req::tx_atype */
@@ -473,8 +473,8 @@ typedef struct
     /**< [IN] Bool: Specifies whether or not the channel should suppress
      *   sending the single data phase teardown packet when teardown is
      *   complete.
-     *      FALSE = TD packet is sent
-     *      TRUE = Suppress sending TD packet
+     *      UFALSE = TD packet is sent
+     *      UTRUE = Suppress sending TD packet
      *   TODO: Should we allocate tdCq based on this flag?
      */
 #if (UDMA_NUM_UTC_INSTANCE > 0)

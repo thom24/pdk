@@ -394,7 +394,7 @@ Udma_RmSharedResPrms *Udma_rmGetSharedResPrms(uint32_t resId)
     Udma_RmSharedResPrms  *rmSharedResPrms = NULL;
     uint32_t    i;
 
-    for (i = 0; i < UDMA_RM_NUM_SHARED_RES; i++)
+    for (i = 0U; i < UDMA_RM_NUM_SHARED_RES; i++)
     {
         if(resId == gUdmaRmSharedResPrms[i].resId)
         {
@@ -412,7 +412,7 @@ const Udma_RmDefBoardCfgResp *Udma_rmGetLocalBoardCfgResp(uint32_t resId)
     const Udma_RmDefBoardCfgResp *ret = NULL;
     uint32_t    i;
 
-    for (i = 0; i < UDMA_RM_NUM_C7X_DRU; i++)
+    for (i = 0U; i < UDMA_RM_NUM_C7X_DRU; i++)
     {
         if(resId == gUdmaLocalResRange[i].resId)
         {

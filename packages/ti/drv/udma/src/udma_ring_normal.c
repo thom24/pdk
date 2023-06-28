@@ -80,9 +80,9 @@ void Udma_ringSetCfgNormal(Udma_DrvHandle drvHandle,
     CSL_RingAccRingCfg *ringCfg;
 
     /* Configure ring object */
-    Udma_assert(drvHandle, drvHandle->raRegs.pCfgRegs != NULL_PTR);
-    Udma_assert(drvHandle, drvHandle->raRegs.pRtRegs != NULL_PTR);
-    Udma_assert(drvHandle, ringHandle->ringNum < 1024U);
+    Udma_assert(drvHandle, (NULL_PTR != drvHandle->raRegs.pCfgRegs));
+    Udma_assert(drvHandle, (NULL_PTR != drvHandle->raRegs.pRtRegs));
+    Udma_assert(drvHandle, (ringHandle->ringNum < 1024U));
     ringHandle->pCfgRegs =
         &drvHandle->raRegs.pCfgRegs->RING[ringHandle->ringNum];
     ringHandle->pRtRegs         =
@@ -173,7 +173,7 @@ int32_t Udma_ringDequeueRawNormal(Udma_DrvHandle drvHandle, Udma_RingHandle ring
             &ringHandle->cfg,
             phyDescMem,
             &Udma_ringaccMemOps);
-        if(0 != cslRetVal)
+        if(CSL_PASS != cslRetVal)
         {
             retVal = UDMA_ETIMEOUT;
         }
@@ -233,7 +233,7 @@ void Udma_ringPrimeReadNormal(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
     ringPtr = (volatile uint64_t *)(tempPtr);
     *phyDescMem = *ringPtr;
 
-    if (*phyDescMem != 0U)
+    if (0U != *phyDescMem)
     {
         /* Book keeping */
         pRing->waiting++;
@@ -256,9 +256,9 @@ void Udma_ringSetDoorBellNormal(Udma_RingHandle ringHandle, int32_t count)
     pRing = &ringHandle->cfg;
 
     /* count will be positive when ring elements are queued into the ring */
-    if (dbRingCnt >= 0)
+    if (0 <= dbRingCnt)
     {
-        while(dbRingCnt != 0)
+        while(0 != dbRingCnt)
         {
             if(dbRingCnt < (int32_t)UDMA_RING_MAX_DB_RING_CNT)
             {
@@ -279,7 +279,7 @@ void Udma_ringSetDoorBellNormal(Udma_RingHandle ringHandle, int32_t count)
     /* count will be negative when ring elements are dequeued from the ring */
     else
     {
-        while(dbRingCnt != 0)
+        while(0 != dbRingCnt)
         {
             if(dbRingCnt > (-1 * (int32_t)UDMA_RING_MAX_DB_RING_CNT))
             {

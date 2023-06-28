@@ -294,7 +294,7 @@ Udma_RmSharedResPrms *Udma_rmGetSharedResPrms(uint32_t resId)
     Udma_RmSharedResPrms  *rmSharedResPrms = NULL;
     uint32_t    i;
 
-    for (i = 0; i < UDMA_RM_NUM_SHARED_RES; i++)
+    for (i = 0U; i < UDMA_RM_NUM_SHARED_RES; i++)
     {
         if(resId == gUdmaRmSharedResPrms[i].resId)
         {

@@ -77,9 +77,9 @@ void Udma_ringSetCfgLcdma(Udma_DrvHandle drvHandle,
     CSL_LcdmaRingaccRingCfg *lcdmaRingCfg;
 
     /* Configure ring object */
-    Udma_assert(drvHandle, drvHandle->lcdmaRaRegs.pRingCfgRegs != NULL_PTR);
-    Udma_assert(drvHandle, drvHandle->lcdmaRaRegs.pRingRtRegs != NULL_PTR);
-    Udma_assert(drvHandle, ringHandle->ringNum < 303U);//from AM64x DMSS Spec, need to be updated once CSL changes.
+    Udma_assert(drvHandle, (NULL_PTR != drvHandle->lcdmaRaRegs.pRingCfgRegs));
+    Udma_assert(drvHandle, (NULL_PTR != drvHandle->lcdmaRaRegs.pRingRtRegs));
+    Udma_assert(drvHandle, (ringHandle->ringNum < 303U));//from AM64x DMSS Spec, need to be updated once CSL changes.
     ringHandle->pLcdmaCfgRegs =
         &drvHandle->lcdmaRaRegs.pRingCfgRegs->RING[ringHandle->ringNum];
     ringHandle->pLcdmaRtRegs  =
@@ -159,7 +159,7 @@ int32_t Udma_ringDequeueRawLcdma(Udma_DrvHandle  drvHandle, Udma_RingHandle ring
             &ringHandle->lcdmaCfg,
             phyDescMem,
             &Udma_lcdmaRingaccMemOps);
-    if(0 != cslRetVal)
+    if(CSL_PASS != cslRetVal)
     {
         retVal = UDMA_ETIMEOUT;
     }
@@ -178,7 +178,7 @@ int32_t Udma_ringFlushRawLcdma(Udma_DrvHandle drvHandle, Udma_RingHandle ringHan
             &ringHandle->drvHandle->lcdmaRaRegs,
             &ringHandle->lcdmaCfg,
             phyDescMem);
-    if(0 != cslRetVal)
+    if(CSL_PASS != cslRetVal)
     {
         /*---------------------------------------------------------------------------------------
          * In case of LCDMA Rings, #CSL_lcdma_ringaccDequeue returns -1 
@@ -254,7 +254,7 @@ void Udma_ringPrimeReadLcdma(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
     ringPtr = (volatile uint64_t *)(tempPtr);
     *phyDescMem = *ringPtr;
 
-    if (*phyDescMem != 0U)
+    if (0U != *phyDescMem)
     {
         /* Book keeping */
         pLcdmaRing->rdIdx++;
@@ -273,7 +273,7 @@ void Udma_ringSetDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count)
     int32_t     thisDbRingCnt, maxDbRingCnt;
     int32_t     dbRingCnt = count ;
     /* count will be positive when ring elements are queued into the ring */
-    if (dbRingCnt >= 0)
+    if (0 <= dbRingCnt)
     {
         /*-------------------------------------------------------------------------
         * Set maxDbRingCnt to the largest positive value that can be written to
@@ -281,7 +281,7 @@ void Udma_ringSetDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count)
         *-----------------------------------------------------------------------*/
         maxDbRingCnt = (int32_t)((((uint32_t)CSL_LCDMA_RINGACC_RINGRT_RING_FDB_CNT_MAX + 1U) >> 1) - 1U);
 
-        while(dbRingCnt != 0)
+        while(0 != dbRingCnt)
         {
             if(dbRingCnt < maxDbRingCnt)
             {
@@ -307,7 +307,7 @@ void Udma_ringSetDoorBellLcdma(Udma_RingHandle ringHandle, int32_t count)
         *-----------------------------------------------------------------------*/
         maxDbRingCnt = (int32_t)((((uint32_t)CSL_LCDMA_RINGACC_RINGRT_RING_RDB_CNT_MAX + 1U) >> 1) - 1U);
 
-        while(dbRingCnt != 0)
+        while(0 != dbRingCnt)
         {
             if(dbRingCnt > (-1 * (int32_t)maxDbRingCnt))
             {

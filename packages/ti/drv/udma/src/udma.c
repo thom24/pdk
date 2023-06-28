@@ -78,7 +78,7 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
     struct tisci_msg_rm_proxy_cfg_req   req;
 #endif
 
-    if((drvHandle == NULL_PTR) || (initPrms == NULL_PTR))
+    if((drvHandle == NULL_PTR) || (NULL_PTR == initPrms))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -89,7 +89,7 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
         (void) memcpy(&drvHandle->initPrms, initPrms, sizeof(Udma_InitPrms));
         Udma_initDrvHandle(drvHandle);
 
-        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.createMutex != (Udma_OsalMutexCreateFxn) NULL_PTR);
+        Udma_assert(drvHandle, ((Udma_OsalMutexCreateFxn) NULL_PTR != drvHandle->initPrms.osalPrms.createMutex));
         drvHandle->rmLock = drvHandle->initPrms.osalPrms.createMutex();
         if(NULL_PTR == drvHandle->rmLock)
         {
@@ -140,7 +140,7 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
         {
             drvHandle->drvInitDone = UDMA_INIT_DONE;
 
-            if(FALSE == initPrms->skipGlobalEventReg)
+            if(UFALSE == initPrms->skipGlobalEventReg)
             {
                 Udma_EventPrms  eventPrms;
 
@@ -164,7 +164,7 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
         if(UDMA_SOK != retVal)
         {
             /* Free-up allocated resources */
-            Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.deleteMutex != (Udma_OsalMutexDeleteFxn) NULL_PTR);
+            Udma_assert(drvHandle, ((Udma_OsalMutexDeleteFxn) NULL_PTR != drvHandle->initPrms.osalPrms.deleteMutex));
             if(NULL_PTR != drvHandle->rmLock)
             {
                 drvHandle->initPrms.osalPrms.deleteMutex(drvHandle->rmLock);
@@ -187,7 +187,7 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle)
     int32_t     retVal = UDMA_SOK;
 
     /* Error check */
-    if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
+    if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -214,7 +214,7 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle)
     if(UDMA_SOK == retVal)
     {
         Udma_assert(drvHandle,
-            drvHandle->initPrms.osalPrms.deleteMutex != (Udma_OsalMutexDeleteFxn) NULL_PTR);
+            ((Udma_OsalMutexDeleteFxn) NULL_PTR != drvHandle->initPrms.osalPrms.deleteMutex));
         if(NULL_PTR != drvHandle->rmLock)
         {
             drvHandle->initPrms.osalPrms.deleteMutex(drvHandle->rmLock);
@@ -262,8 +262,8 @@ int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
         initPrms->instId                = instId;
         retVal = UdmaRmInitPrms_init(instId, &initPrms->rmInitPrms);
         UdmaOsalPrms_init(&initPrms->osalPrms);
-        initPrms->skipRmOverlapCheck    = FALSE;
-        initPrms->skipGlobalEventReg    = FALSE;
+        initPrms->skipRmOverlapCheck    = UFALSE;
+        initPrms->skipGlobalEventReg    = UFALSE;
         initPrms->virtToPhyFxn          = &Udma_defaultVirtToPhyFxn;
         initPrms->phyToVirtFxn          = &Udma_defaultPhyToVirtFxn;
         initPrms->printFxn              = (Udma_PrintFxn) NULL_PTR;

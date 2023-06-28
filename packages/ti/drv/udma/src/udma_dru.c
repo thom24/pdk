@@ -95,7 +95,7 @@ uint32_t Udma_druGetNumQueue(Udma_DrvHandle drvHandle, uint32_t utcId)
     uint32_t                numQueue = 0U;
 
     /* Error check */
-    if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
+    if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -112,7 +112,7 @@ uint32_t Udma_druGetNumQueue(Udma_DrvHandle drvHandle, uint32_t utcId)
 
     if(UDMA_SOK == retVal)
     {
-        Udma_assert(drvHandle, utcInfo->druRegs != NULL_PTR);
+        Udma_assert(drvHandle, (NULL_PTR != utcInfo->druRegs));
         numQueue = utcInfo->numQueue;
     }
 
@@ -129,7 +129,7 @@ int32_t Udma_druQueueConfig(Udma_DrvHandle               drvHandle,
 
     /* Error check */
     if((NULL_PTR == drvHandle) ||
-       (drvHandle->drvInitDone != UDMA_INIT_DONE) ||
+       (UDMA_INIT_DONE != drvHandle->drvInitDone) ||
        (NULL_PTR == queueCfg))
     {
         retVal = UDMA_EBADARGS;
@@ -147,7 +147,7 @@ int32_t Udma_druQueueConfig(Udma_DrvHandle               drvHandle,
 
     if(UDMA_SOK == retVal)
     {
-        Udma_assert(drvHandle, utcInfo->druRegs != NULL_PTR);
+        Udma_assert(drvHandle, (NULL_PTR != utcInfo->druRegs));
         retVal = CSL_druQueueConfig(utcInfo->druRegs, queueId, queueCfg);
         if(CSL_PASS != retVal)
         {
@@ -166,16 +166,16 @@ volatile uint64_t *Udma_druGetTriggerRegAddr(Udma_ChHandle chHandle)
     volatile uint64_t      *pSwTrigReg = (volatile uint64_t *) NULL_PTR;
 
     /* Error check */
-    if((NULL_PTR == chHandle) ||
-       (chHandle->chInitDone != UDMA_INIT_DONE) ||
-       ((chHandle->chType & UDMA_CH_FLAG_UTC) != UDMA_CH_FLAG_UTC))
+    if((NULL_PTR         == chHandle) ||
+       (UDMA_INIT_DONE   != chHandle->chInitDone) ||
+       (UDMA_CH_FLAG_UTC != (chHandle->chType & UDMA_CH_FLAG_UTC)))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = chHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
+        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
         {
             retVal = UDMA_EFAIL;
         }
@@ -184,10 +184,10 @@ volatile uint64_t *Udma_druGetTriggerRegAddr(Udma_ChHandle chHandle)
     if(UDMA_SOK == retVal)
     {
         utcInfo = chHandle->utcInfo;
-        Udma_assert(drvHandle, utcInfo != NULL_PTR);
+        Udma_assert(drvHandle, (NULL_PTR != utcInfo));
         if(UDMA_UTC_TYPE_DRU == utcInfo->utcType)
         {
-            Udma_assert(drvHandle, chHandle->pDruRtRegs != NULL_PTR);
+            Udma_assert(drvHandle, (NULL_PTR != chHandle->pDruRtRegs));
             pSwTrigReg = &chHandle->pDruRtRegs->CHRT_SWTRIG;
         }
     }

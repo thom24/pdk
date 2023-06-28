@@ -126,7 +126,7 @@ static const UdmaTestRxChPrm gUdmaTestRxChPrm[] =
             .flowIdFwRangeCnt   = 0U,  /* Flow ID not used */
             .ignoreShortPkts    = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION,
             .ignoreLongPkts     = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION,
-            .configDefaultFlow  = TRUE,
+            .configDefaultFlow  = UTRUE,
             .burstSize          = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_64_BYTES,
         }
     },
@@ -147,7 +147,7 @@ static const UdmaTestRxChPrm gUdmaTestRxChPrm[] =
             .flowIdFwRangeCnt   = 0U,  /* Flow ID not used */
             .ignoreShortPkts    = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION,
             .ignoreLongPkts     = TISCI_MSG_VALUE_RM_UDMAP_RX_CH_PACKET_EXCEPTION,
-            .configDefaultFlow  = TRUE,
+            .configDefaultFlow  = UTRUE,
             .burstSize          = TISCI_MSG_VALUE_RM_UDMAP_CH_BURST_SIZE_64_BYTES,
         }
     },
@@ -162,7 +162,7 @@ static const UdmaTestUtcChPrm gUdmaTestUtcChPrm[] =
         .utcChPrmId      = UDMA_TEST_UTCCH_PRMID_DEF,
         .utcPrms         =
         {
-            .pauseOnError   = FALSE,
+            .pauseOnError   = UFALSE,
             .addrType       = TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_PHYS,
             .chanType       = TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_DMA_REF,
             .fetchWordSize  = 16U,
@@ -182,7 +182,7 @@ static const UdmaTestUtcChPrm gUdmaTestUtcChPrm[] =
         .utcChPrmId      = UDMA_TEST_UTCCH_PRMID_DMA_PRIORITY_HIGH,
         .utcPrms         =
         {
-            .pauseOnError   = FALSE,
+            .pauseOnError   = UFALSE,
             .addrType       = TISCI_MSG_VALUE_RM_UDMAP_CH_ATYPE_PHYS,
             .chanType       = TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_DMA_REF,
             .fetchWordSize  = 16U,

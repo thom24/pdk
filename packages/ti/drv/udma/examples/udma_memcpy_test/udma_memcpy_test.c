@@ -251,7 +251,7 @@ int32_t Udma_memcpyTest(void)
             }
             else
             {
-                if (Udma_appIsUdmapStatsSupported() == TRUE)
+                if (UTRUE == Udma_appIsUdmapStatsSupported())
                 {
                     Udma_ChStats    chStats;
                     retVal = Udma_chGetStats(chHandle, &chStats);
@@ -817,7 +817,7 @@ static void App_udmaTrpdInit(Udma_ChHandle chHandle,
 static void App_print(const char *str)
 {
     UART_printf("%s", str);
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }
@@ -831,7 +831,7 @@ static void App_printNum(const char *str, uint32_t num)
     snprintf(printBuf, 200U, str, num);
     UART_printf("%s", printBuf);
 
-    if(TRUE == Udma_appIsPrintSupported())
+    if(UTRUE == Udma_appIsPrintSupported())
     {
         printf("%s", printBuf);
     }
