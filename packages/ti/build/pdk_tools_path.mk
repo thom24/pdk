@@ -8,7 +8,7 @@ ifeq ($(PDK_VERSION),)
 endif
 
   #Tool versions
-  GCC_ARCH64_VERSION=11.3.rel1
+  GCC_ARCH64_VERSION=9.2-2019.12
   GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
   CGT_VERSION=8.3.7
   CGT_C7X_VERSION=3.1.0.LTS
@@ -23,10 +23,10 @@ endif
 
 ifeq ($(OS),Windows_NT)
   #Paths for windows machine
-  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/arm-gnu-toolchain-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-none-elf
+  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-mingw-w64-i686-aarch64-none-elf
 else
   #Paths for linux machine
-  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/arm-gnu-toolchain-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
+  export TOOLCHAIN_PATH_GCC_ARCH64 ?= $(TOOLS_INSTALL_PATH)/gcc-arm-$(GCC_ARCH64_VERSION)-x86_64-aarch64-none-elf
 endif
   export GCC_ARCH64_BIN_PREFIX        ?= $(GCC_ARCH64_BIN_PREFIX_STR)
   export TOOLCHAIN_PATH_A72           ?= $(TOOLCHAIN_PATH_GCC_ARCH64)
