@@ -84,10 +84,10 @@ static int32_t UFP_isNoBootEnabled(void)
     if(((mainDevStat & UFP_MAIN_DEVSTAT_NOBOOT_MASK) == UFP_MAIN_DEVSTAT_NOBOOT_CFG) &&
        ((wkupDevStat & UFP_WKUP_DEVSTAT_NOBOOT_MASK) == UFP_WKUP_DEVSTAT_NOBOOT_CFG))
     {
-        return (TRUE);
+        return (ITRUE);
     }
 
-    return (FALSE);
+    return (IFALSE);
 }
 #endif
 
@@ -245,7 +245,7 @@ int8_t UFP_sciclientInit(void *sysfw)
     config.pBoardCfgPrms            =   NULL;
     config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
     config.c66xRatRegion            =   0;
-    config.skipLocalBoardCfgProcess =   TRUE;
+    config.skipLocalBoardCfgProcess =   (uint8_t)BTRUE;
 
     status = Sciclient_init(&config);
     if (status != CSL_PASS)
@@ -371,12 +371,12 @@ int8_t UFP_socInit(Board_initCfg *cfg)
     int32_t noBootCfg;
 
 #ifdef UFP_DISABLE_JTAG_LOAD
-    noBootCfg = FALSE;
+    noBootCfg = IFALSE;
 #else
     noBootCfg = UFP_isNoBootEnabled();
 #endif
 
-    if(noBootCfg == TRUE)
+    if(noBootCfg == ITRUE)
     {
         boardCfg = (BOARD_INIT_PINMUX_CONFIG |
                     BOARD_INIT_PLL |
@@ -394,7 +394,7 @@ int8_t UFP_socInit(Board_initCfg *cfg)
         }
     }
 
-    if(noBootCfg == TRUE)
+    if(noBootCfg == ITRUE)
     {
         /* No need of changing the UART input clock when
            PLL init is done by board
@@ -408,7 +408,7 @@ int8_t UFP_socInit(Board_initCfg *cfg)
         /* Use UART fclk freq setup by ROM */
         uart_cfg.frequency = UFP_ROM_UART_MODULE_INPUT_CLK;
         /* Disable the UART interrupt */
-        uart_cfg.enableInterrupt = FALSE;
+        uart_cfg.enableInterrupt = UFALSE;
         UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
         UFP_uartConfig(UFP_BAUDRATE_115200);
         ufpTcmEn();
@@ -449,7 +449,7 @@ int8_t UFP_loadSysFW(void *sysFW)
     /* Use UART fclk freq setup by SYSFW */
     uart_cfg.frequency = UFP_SYSFW_UART_MODULE_INPUT_CLK;
     /* Disable the UART interrupt */
-    uart_cfg.enableInterrupt = FALSE;
+    uart_cfg.enableInterrupt = UFALSE;
     UART_socSetInitCfg(BOARD_UART_INSTANCE, &uart_cfg);
 
     UFP_uartClose();

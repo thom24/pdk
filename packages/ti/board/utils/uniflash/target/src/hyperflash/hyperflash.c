@@ -258,7 +258,7 @@ static int8_t UFP_hpfInit(void)
     Board_pinmuxSetCfg(&pixmuxCfg);
 
     status = Board_init(BOARD_INIT_PINMUX_CONFIG);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         return -1;
     }

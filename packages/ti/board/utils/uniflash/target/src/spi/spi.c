@@ -90,14 +90,14 @@ const UFP_fxnTable UFP_spiFxnTable = {
 static int8_t UFP_spiWriteEnable(void)
 {
 	SPI_Transaction transaction;
-	bool ret = false;
+	bool ret = BFALSE;
 
 	txBuffer[0] = WRITE_ENABLE_COMMAND;
     transaction.count = 1U;
     transaction.txBuf = &txBuffer[0];
     transaction.rxBuf = &rxBuffer[0];
     ret = SPI_transfer(gSpiHandle, &transaction);
-    if (ret == false)
+    if (BFALSE == ret)
     {
         SPI_close(gSpiHandle);
         return -1;
@@ -117,7 +117,7 @@ static int8_t UFP_spiWriteEnable(void)
 static int8_t UFP_spiCheckBusy(void)
 {
 	SPI_Transaction transaction;
-	bool ret = false;
+	bool ret = BFALSE;
 
 	do{
 		txBuffer[0] = CHECK_FLASH_BUSY;
@@ -126,7 +126,7 @@ static int8_t UFP_spiCheckBusy(void)
 		transaction.rxBuf = &rxBuffer[0];
 		transaction.count = 2U;
 		ret = SPI_transfer(gSpiHandle, &transaction);
-		if (ret == false)
+		if (BFALSE == ret)
 			return -1;
 	} while(rxBuffer[1] & 0x01); /* checking busy status bit */
 
@@ -145,7 +145,7 @@ static int8_t UFP_spiCheckBusy(void)
 static int8_t UFP_spiErase(uint32_t offset)
 {
 	SPI_Transaction transaction;
-  	bool ret = false;
+  	bool ret = BFALSE;
 
 	txBuffer[0] = ERASE_COMMAND; /* sector command to erase SPI flash */
 	txBuffer[1] = (uint8_t ) (offset >> 16);
@@ -155,7 +155,7 @@ static int8_t UFP_spiErase(uint32_t offset)
 	transaction.rxBuf = &rxBuffer[0];
 	transaction.count = 4U;
 	ret = SPI_transfer(gSpiHandle, &transaction);
-	if (ret == false)
+	if (BFALSE == ret)
 	{
 		SPI_close(gSpiHandle);
 		return -1;
@@ -177,7 +177,7 @@ static int8_t UFP_spiErase(uint32_t offset)
 static int8_t UFP_spiRead(uint8_t *src, uint32_t offset, uint32_t length)
 {
 	SPI_Transaction transaction; 
-	bool ret = false;
+	bool ret = BFALSE;
 
 	txBuffer[0] = READ_COMMAND;
     txBuffer[1] = (uint8_t ) (offset >> 16);
@@ -189,7 +189,7 @@ static int8_t UFP_spiRead(uint8_t *src, uint32_t offset, uint32_t length)
 	transaction.txBuf = &txBuffer[0];
 	transaction.rxBuf = &rxBuffer[0];
 	ret = SPI_transfer(gSpiHandle, &transaction);
-	if (ret == false)
+	if (BFALSE == ret)
 	{
 		SPI_close(gSpiHandle);
 		return -1;
@@ -212,7 +212,7 @@ static int8_t UFP_spiRead(uint8_t *src, uint32_t offset, uint32_t length)
 static int8_t UFP_spiWrite(uint8_t *src, uint32_t offset, uint32_t length)
 {
 	SPI_Transaction transaction; 
-	bool ret = false;
+	bool ret = BFALSE;
 
 	txBuffer[0] = WRITE_COMMAND;
     txBuffer[1] = (uint8_t ) (offset >> 16);
@@ -225,7 +225,7 @@ static int8_t UFP_spiWrite(uint8_t *src, uint32_t offset, uint32_t length)
 	transaction.txBuf = &txBuffer[0];
 	transaction.rxBuf = &rxBuffer[0];
 	ret = SPI_transfer(gSpiHandle, &transaction);
-	if (ret == false)
+	if (BFALSE == ret)
 	{
 		SPI_close(gSpiHandle);
 		return -1;
@@ -252,7 +252,7 @@ static int8_t UFP_spiPageRead(uint8_t *src, uint32_t length, uint32_t offset)
 	while(len < length)
 	{
 		ret = UFP_spiRead((src + len), offset, PAGE_SIZE);
-		if (ret != 0)
+		if (0 != ret)
 			return -1;
 
 		len += PAGE_SIZE;
@@ -282,25 +282,25 @@ static int8_t UFP_spiPageWrite(uint8_t *src, uint32_t length, uint32_t offset)
 		if (!(len % SECTOR_SIZE))
 		{
 			ret = UFP_spiWriteEnable();
-			if (ret != 0)
+			if (0 != ret)
 				return -1;
 
 			ret = UFP_spiErase(offset);
-			if (ret != 0)
+			if (0 != ret)
 				return -1;
 
 			/* Check for Flash Busy */
 			ret = UFP_spiCheckBusy();
-			if (ret != 0)
+			if (0 != ret)
 				return -1;
 		}
 
 		ret = UFP_spiWriteEnable();
-		if (ret != 0)
+		if (0 != ret)
 			return -1;
 
 		ret = UFP_spiWrite((src + len), offset, PAGE_SIZE);
-		if (ret != 0)
+		if (0 != ret)
 			return -1;
 
 		len += PAGE_SIZE;
@@ -308,7 +308,7 @@ static int8_t UFP_spiPageWrite(uint8_t *src, uint32_t length, uint32_t offset)
 
 		/* Check for Flash Busy */
 		ret = UFP_spiCheckBusy();
-		if (ret != 0)
+		if (0 != ret)
 			return -1;
 	}
 	return 0;
@@ -398,14 +398,14 @@ static int8_t UFP_spiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
 	int8_t ret = 0;
 
     ret = UFP_spiFlashWrite(flashAddr, size, offset);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
 
     delay(SPI_FW_WRITE_DELAY);
     ret = UFP_spiFlashRead(checkAddr, size, offset);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -431,16 +431,16 @@ static int8_t UFP_spiFlashErase(uint32_t offset, uint32_t length)
 	while(len < length)
 	{
 		ret = UFP_spiWriteEnable();
-		if (ret != 0)
+		if (0 != ret)
 			return -1;
 
 		ret = UFP_spiErase(offset);
-		if (ret != 0)
+		if (0 != ret)
 			return -1;
 
 		/* Check for Flash Busy */
 		ret = UFP_spiCheckBusy();
-		if (ret != 0)
+		if (0 != ret)
 			return -1;
 
 		len += SECTOR_SIZE;
@@ -461,8 +461,8 @@ static int8_t UFP_spiInit(void)
 {
 	SPI_Params spiParams;       /* SPI params structure */
 
-	((SPI_v1_HWAttrs *)SPI_config[MCSPI_INSTANCE].hwAttrs)->enableIntr = false;
-	((SPI_v1_HWAttrs *)SPI_config[MCSPI_INSTANCE].hwAttrs)->chNum = 0;
+	((SPI_v1_HWAttrs *)SPI_config[MCSPI_INSTANCE].hwAttrs)->enableIntr = BFALSE;
+	((SPI_v1_HWAttrs *)SPI_config[MCSPI_INSTANCE].hwAttrs)->chNum = 0U;
 
 	SPI_init();
 

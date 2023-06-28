@@ -202,7 +202,7 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
             }
             c = inbyte(DELAY);
 #if defined(j7200_evm) || defined(j721e_evm) || defined(am65xx_evm) || defined(am65xx_idk) || defined(am64x_evm) || defined(j721s2_evm) || defined(j784s4_evm)
-            if (c == XMODEM_STS_NSUP)
+            if (XMODEM_STS_NSUP == c)
             {
                 if (gFlowCtrlSts)
                 {
@@ -215,7 +215,7 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
                 c = inbyte(DELAY);
             }
 #endif
-            if (c != XMODEM_STS_ACK)
+            if (XMODEM_STS_ACK != c)
                 return -1;
             break;
         case UFP_CMD_PROGRAM:
@@ -253,7 +253,7 @@ static int8_t UFP_parseHeader(unsigned char *hdrBuf,
     }
 
     c = inbyte(DELAY);
-    if (c == XMODEM_CMD_EOT)
+    if (XMODEM_CMD_EOT == c)
     {
         outbyte(XMODEM_STS_ACK);
     }
@@ -305,14 +305,14 @@ int8_t UFP_uartConfig(uint32_t baudrate)
      * when there is baudrate change needed
      */
     if((gUartParams.baudRate != baudrate) ||
-       (gUfpUartHandle == NULL) ||
+       (NULL == gUfpUartHandle) ||
        (gUartParams.flowControlType != gFlowCtrlSts))
     {
         /* Close UART in case reconfiguring baudrate */
         UFP_uartClose();
 
         UART_socGetInitCfg(uart_inst, &uartCfg);
-        uartCfg.enableInterrupt = FALSE;
+        uartCfg.enableInterrupt = UFALSE;
         UART_socSetInitCfg(uart_inst, &uartCfg);
 
         gUartParams.baudRate = baudrate;
@@ -325,7 +325,7 @@ int8_t UFP_uartConfig(uint32_t baudrate)
             gUartParams.flowControlType = UART_FC_NONE;
         }
         gUfpUartHandle = UART_open(uart_inst, &gUartParams);
-        if(gUfpUartHandle == NULL)
+        if(NULL == gUfpUartHandle)
         {
             return -1;
         }
@@ -340,7 +340,7 @@ int8_t UFP_uartConfig(uint32_t baudrate)
  */
 void UFP_uartClose(void)
 {
-    if(gUfpUartHandle != NULL)
+    if(NULL != gUfpUartHandle)
     {
         UART_close(gUfpUartHandle);
         gUfpUartHandle = NULL;
@@ -373,13 +373,13 @@ int main(void)
 		return -1;
     }
 
-	while(1)
+	while(BTRUE)
 	{
 		/* Receive header */
         ret = UFP_xModemHeaderReceive(&headerBuff[0]);
-        if(ret != 0)
+        if(0 != ret)
         {
-            if (ret == -2)
+            if (-2 == ret)
                 return 0; /* Didn't receive header from uniflash */
             outbyte(XMODEM_CMD_CAN);
             outbyte(XMODEM_CMD_CAN);
@@ -390,23 +390,23 @@ int main(void)
         imgType = 0;
         ret = UFP_parseHeader(&headerBuff[0], &command, &offset, &eraseLength,
                               &devType, &imgType);
-        if (ret != 0)
+        if (0 != ret)
         {
             return -1;
         }
 
         /* Image type is system firmware.
            No need to flash onto boot device */
-        if (imgType == UFP_IMAGE_SYSFW)
+        if (UFP_IMAGE_SYSFW == imgType)
         {
 #if defined(am65xx_evm) || defined(am65xx_idk) || defined(j721e_evm) || defined(j7200_evm) || defined(am64x_evm) || defined(j721s2_evm) || defined(j784s4_evm)
             offset = UFP_xModemFirmwareReceive((unsigned char *)gSysFirmware,
                                                UFP_SYSFW_SIZE);
-            if(offset != 0)
+            if(0U != offset)
             {
                 CacheP_wbInv((void *)gSysFirmware, (int32_t)UFP_SYSFW_SIZE);
                 ret = UFP_loadSysFW((void *)gSysFirmware);
-                if (ret != 0)
+                if (0 != ret)
                 {
                     return -1;
                 }
@@ -415,9 +415,9 @@ int main(void)
 #endif
         }
 
-        if((command == UFP_CMD_ERASE) || (command == UFP_CMD_PROGRAM) || (command == UFP_CMD_PROGRAM_XIP))
+        if((UFP_CMD_ERASE == command) || (UFP_CMD_PROGRAM == command) || (UFP_CMD_PROGRAM_XIP == command))
         {
-            if (UPF_flashFxnPtr[devType].UPF_fxnTablePtr->UFP_flashInit == NULL)
+            if (NULL == UPF_flashFxnPtr[devType].UPF_fxnTablePtr->UFP_flashInit)
             {
                 outbyte(XMODEM_CMD_CAN);
                 outbyte(XMODEM_CMD_CAN);
@@ -426,7 +426,7 @@ int main(void)
             else
             {
                 ret = UPF_flashFxnPtr[devType].UPF_fxnTablePtr->UFP_flashInit();
-                if (ret != 0)
+                if (0 != ret)
                 {
                     outbyte(XMODEM_CMD_CAN);
                     outbyte(XMODEM_CMD_CAN);
@@ -434,12 +434,12 @@ int main(void)
                 }
             }
 
-            if (command == UFP_CMD_ERASE)
+            if (UFP_CMD_ERASE == command)
             {
                 ret = UPF_flashFxnPtr[devType].UPF_fxnTablePtr->
                                                UFP_flashErase(offset, eraseLength);
             }
-            else if (command == UFP_CMD_PROGRAM)
+            else if (UFP_CMD_PROGRAM == command)
             {
                 ret = UFP_xModemFileReceive(offset, devType);
             }
@@ -452,7 +452,7 @@ int main(void)
 
             for (;;)
             {
-                if (ret == 0)
+                if (0 == ret)
                 {
                     outbyte(XMODEM_STS_SUCCESS);
                 }
@@ -462,7 +462,7 @@ int main(void)
                 }
 
                 c = inbyte(DELAY);
-                if(c == XMODEM_STS_ACK)
+                if(XMODEM_STS_ACK == c)
                 {
                     gFlowCtrlSts = 0;
                     break;

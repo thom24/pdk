@@ -119,7 +119,7 @@ static int32_t ospiUdmaInit(OSPI_v0_HwAttrs *cfg)
     Udma_InitPrms   initPrms;
     uint32_t        instId;
 
-    if (gDrvHandle == NULL)
+    if (NULL == gDrvHandle)
     {
 #if defined (SOC_AM64X)
         /* Use Block Copy DMA instance for AM64x */
@@ -140,7 +140,7 @@ static int32_t ospiUdmaInit(OSPI_v0_HwAttrs *cfg)
         }
     }
 
-    if(gDrvHandle != NULL)
+    if(NULL != gDrvHandle)
     {
         gUdmaInfo.drvHandle      = (void *)gDrvHandle;
         gUdmaInfo.chHandle       = (void *)&gUdmaChObj;
@@ -168,7 +168,7 @@ static int32_t ospiUdmaDeinit(void)
 {
     int32_t   retVal = UDMA_SOK;
 
-    if (gDrvHandle != NULL)
+    if (NULL != gDrvHandle)
     {
         retVal = Udma_deinit(gDrvHandle);
         if(UDMA_SOK == retVal)
@@ -310,14 +310,14 @@ static int8_t UFP_ospiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
 
     int8_t ret;
     ret = UFP_ospiFlashWrite(flashAddr, offset, size);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
 
     delay(OSPI_FW_WRITE_DELAY);
     ret = UFP_ospiFlashRead(checkAddr, offset, size);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -376,23 +376,23 @@ static int8_t UFP_ospiFlashErase(uint32_t offset, uint32_t length)
 static int8_t UFP_ospiInit(void)
 {
     OSPI_v0_HwAttrs ospi_cfg;
-    uint32_t tuneEnable = FALSE;
+    uint32_t tuneEnable = UFALSE;
 
     /* Get the default ospi init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Modify the default ospi configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    ospi_cfg.intrEnable = false;
+    ospi_cfg.intrEnable = BFALSE;
 #ifdef SPI_DMA_ENABLE
-    ospi_cfg.dmaEnable  = true;
+    ospi_cfg.dmaEnable  = BTRUE;
     ospiUdmaInit(&ospi_cfg);
 #endif
 
 #if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    ospi_cfg.dacEnable  = false;
+    ospi_cfg.dacEnable  = BFALSE;
 #endif
-    ospi_cfg.phyEnable  = false;
+    ospi_cfg.phyEnable  = BFALSE;
 
     /* Set the default ospi init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);

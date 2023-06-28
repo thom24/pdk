@@ -93,20 +93,20 @@ static EDMA_Handle UFP_qspiEdmaInit(void)
     int32_t errorCode;
 
     gUfpEdmaHandle = EDMA_getHandle(edma3Id, &instanceInfo);
-    if(gUfpEdmaHandle == NULL)
+    if(NULL == gUfpEdmaHandle)
     {
         EDMA3CCInitParams 	initParam;
 
         EDMA3CCInitParams_init(&initParam);
-        initParam.initParamSet = TRUE;
-        if (EDMA_init(edma3Id, &initParam) != EDMA_NO_ERROR)
+        initParam.initParamSet = UTRUE;
+        if (EDMA_NO_ERROR != EDMA_init(edma3Id, &initParam))
         {
             return(gUfpEdmaHandle);
         }
 
         /* Open DMA driver instance 0 for SPI test */
         gUfpEdmaHandle = EDMA_open(edma3Id, &errorCode, &instanceInfo);
-        if(gUfpEdmaHandle == NULL)
+        if(NULL == gUfpEdmaHandle)
         {
             return(gUfpEdmaHandle);
         }
@@ -297,14 +297,14 @@ static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
 #endif
 
     ret = UFP_qspiFlashWrite(pFlashAddr, offset, size);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
 
     delay(QSPI_FW_WRITE_DELAY);
     ret = UFP_qspiFlashRead(pCheckAddr, offset, size);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -322,7 +322,7 @@ static int8_t UFP_qspiFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
     int8_t ret;
 
     ret = UFP_qspiFlashWrite(flashAddr, offset, size);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -415,11 +415,11 @@ static int8_t UFP_qspiInit(void)
 
     /* Modify the default QSPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    qspi_cfg.intrEnable = false;
+    qspi_cfg.intrEnable = BFALSE;
 
 #if (defined(SOC_TPR12) || defined(SOC_AWR294X)) && defined(SPI_DMA_ENABLE)
     qspi_cfg.edmaHandle = UFP_qspiEdmaInit();
-    qspi_cfg.dmaEnable  = true;
+    qspi_cfg.dmaEnable  = BTRUE;
 #endif
 
     /* Set the default QSPI init configurations */
@@ -435,12 +435,12 @@ static int8_t UFP_qspiInit(void)
 
     /* Get the default OSPI init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
-    ospi_cfg.intrEnable = false;
+    ospi_cfg.intrEnable = BFALSE;
     /* Enable quad mode */
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
-    ospi_cfg.phyEnable = false;
-    ospi_cfg.dmaEnable = false;
-    ospi_cfg.dtrEnable = false;
+    ospi_cfg.phyEnable = BFALSE;
+    ospi_cfg.dmaEnable = BFALSE;
+    ospi_cfg.dtrEnable = BFALSE;
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
@@ -459,7 +459,7 @@ static int8_t UFP_qspiInit(void)
     SPI_Params_init(&spiParams);
 
     /* Enabling QSPI in polling mode. */
-    qspiInitCfg[0].intrEnable = false;
+    qspiInitCfg[0].intrEnable = BFALSE;
 
     /* Open QSPI driver */
     gQspiHandle = SF25FL_open(((QSPI_INSTANCE) + (QSPI_OFFSET)),

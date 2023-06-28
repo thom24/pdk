@@ -58,38 +58,38 @@ extern UART_Handle gUfpUartHandle;
 uint8_t gDataRxBuff[DATA_BUFF_LEN], gDataCheckBuff[DATA_BUFF_LEN];
 
 static const unsigned short crc16tab[256]= {
-	0x0000,0x1021,0x2042,0x3063,0x4084,0x50a5,0x60c6,0x70e7,
-	0x8108,0x9129,0xa14a,0xb16b,0xc18c,0xd1ad,0xe1ce,0xf1ef,
-	0x1231,0x0210,0x3273,0x2252,0x52b5,0x4294,0x72f7,0x62d6,
-	0x9339,0x8318,0xb37b,0xa35a,0xd3bd,0xc39c,0xf3ff,0xe3de,
-	0x2462,0x3443,0x0420,0x1401,0x64e6,0x74c7,0x44a4,0x5485,
-	0xa56a,0xb54b,0x8528,0x9509,0xe5ee,0xf5cf,0xc5ac,0xd58d,
-	0x3653,0x2672,0x1611,0x0630,0x76d7,0x66f6,0x5695,0x46b4,
-	0xb75b,0xa77a,0x9719,0x8738,0xf7df,0xe7fe,0xd79d,0xc7bc,
-	0x48c4,0x58e5,0x6886,0x78a7,0x0840,0x1861,0x2802,0x3823,
-	0xc9cc,0xd9ed,0xe98e,0xf9af,0x8948,0x9969,0xa90a,0xb92b,
-	0x5af5,0x4ad4,0x7ab7,0x6a96,0x1a71,0x0a50,0x3a33,0x2a12,
-	0xdbfd,0xcbdc,0xfbbf,0xeb9e,0x9b79,0x8b58,0xbb3b,0xab1a,
-	0x6ca6,0x7c87,0x4ce4,0x5cc5,0x2c22,0x3c03,0x0c60,0x1c41,
-	0xedae,0xfd8f,0xcdec,0xddcd,0xad2a,0xbd0b,0x8d68,0x9d49,
-	0x7e97,0x6eb6,0x5ed5,0x4ef4,0x3e13,0x2e32,0x1e51,0x0e70,
-	0xff9f,0xefbe,0xdfdd,0xcffc,0xbf1b,0xaf3a,0x9f59,0x8f78,
-	0x9188,0x81a9,0xb1ca,0xa1eb,0xd10c,0xc12d,0xf14e,0xe16f,
-	0x1080,0x00a1,0x30c2,0x20e3,0x5004,0x4025,0x7046,0x6067,
-	0x83b9,0x9398,0xa3fb,0xb3da,0xc33d,0xd31c,0xe37f,0xf35e,
-	0x02b1,0x1290,0x22f3,0x32d2,0x4235,0x5214,0x6277,0x7256,
-	0xb5ea,0xa5cb,0x95a8,0x8589,0xf56e,0xe54f,0xd52c,0xc50d,
-	0x34e2,0x24c3,0x14a0,0x0481,0x7466,0x6447,0x5424,0x4405,
-	0xa7db,0xb7fa,0x8799,0x97b8,0xe75f,0xf77e,0xc71d,0xd73c,
-	0x26d3,0x36f2,0x0691,0x16b0,0x6657,0x7676,0x4615,0x5634,
-	0xd94c,0xc96d,0xf90e,0xe92f,0x99c8,0x89e9,0xb98a,0xa9ab,
-	0x5844,0x4865,0x7806,0x6827,0x18c0,0x08e1,0x3882,0x28a3,
-	0xcb7d,0xdb5c,0xeb3f,0xfb1e,0x8bf9,0x9bd8,0xabbb,0xbb9a,
-	0x4a75,0x5a54,0x6a37,0x7a16,0x0af1,0x1ad0,0x2ab3,0x3a92,
-	0xfd2e,0xed0f,0xdd6c,0xcd4d,0xbdaa,0xad8b,0x9de8,0x8dc9,
-	0x7c26,0x6c07,0x5c64,0x4c45,0x3ca2,0x2c83,0x1ce0,0x0cc1,
-	0xef1f,0xff3e,0xcf5d,0xdf7c,0xaf9b,0xbfba,0x8fd9,0x9ff8,
-	0x6e17,0x7e36,0x4e55,0x5e74,0x2e93,0x3eb2,0x0ed1,0x1ef0
+	0x0000,0x1021,0x2042,0x3063,0x4084,0x50A5,0x60C6,0x70E7,
+	0x8108,0x9129,0xA14A,0xB16B,0xC18C,0xD1AD,0xE1CE,0xF1EF,
+	0x1231,0x0210,0x3273,0x2252,0x52B5,0x4294,0x72F7,0x62D6,
+	0x9339,0x8318,0xB37B,0xA35A,0xD3BD,0xC39C,0xF3FF,0xE3dE,
+	0x2462,0x3443,0x0420,0x1401,0x64E6,0x74C7,0x44A4,0x5485,
+	0xA56A,0xB54B,0x8528,0x9509,0xE5EE,0xF5CF,0xC5AC,0xD58D,
+	0x3653,0x2672,0x1611,0x0630,0x76D7,0x66F6,0x5695,0x46B4,
+	0xB75B,0xA77A,0x9719,0x8738,0xF7DF,0xE7FE,0xD79D,0xC7BC,
+	0x48C4,0x58E5,0x6886,0x78A7,0x0840,0x1861,0x2802,0x3823,
+	0xC9CC,0xD9ED,0xE98E,0xF9AF,0x8948,0x9969,0xA90A,0xB92B,
+	0x5AF5,0x4AD4,0x7AB7,0x6A96,0x1A71,0x0A50,0x3A33,0x2A12,
+	0xDBFD,0xCBDC,0xFBBF,0xEB9E,0x9B79,0x8B58,0xBB3B,0xAB1A,
+	0x6CA6,0x7C87,0x4CE4,0x5CC5,0x2C22,0x3C03,0x0C60,0x1C41,
+	0xEDAE,0xFD8F,0xCDEC,0xDDCD,0xAD2A,0xBD0B,0x8D68,0x9D49,
+	0x7E97,0x6EB6,0x5ED5,0x4EF4,0x3E13,0x2E32,0x1E51,0x0E70,
+	0xFF9F,0xEFBE,0xDFDD,0xCFFC,0xBF1B,0xAF3A,0x9F59,0x8F78,
+	0x9188,0x81A9,0xB1CA,0xA1EB,0xD10C,0xC12D,0xF14E,0xE16F,
+	0x1080,0x00A1,0x30C2,0x20E3,0x5004,0x4025,0x7046,0x6067,
+	0x83B9,0x9398,0xA3FB,0xB3DA,0xC33D,0xD31C,0xE37F,0xF35E,
+	0x02B1,0x1290,0x22F3,0x32D2,0x4235,0x5214,0x6277,0x7256,
+	0xB5EA,0xA5CB,0x95A8,0x8589,0xF56E,0xE54F,0xD52C,0xC50D,
+	0x34E2,0x24C3,0x14A0,0x0481,0x7466,0x6447,0x5424,0x4405,
+	0xA7DB,0xB7FA,0x8799,0x97B8,0xE75F,0xF77E,0xC71D,0xD73C,
+	0x26D3,0x36F2,0x0691,0x16B0,0x6657,0x7676,0x4615,0x5634,
+	0xD94C,0xC96D,0xF90E,0xE92F,0x99C8,0x89E9,0xB98A,0xA9AB,
+	0x5844,0x4865,0x7806,0x6827,0x18C0,0x08E1,0x3882,0x28A3,
+	0xCB7D,0xDB5C,0xEB3F,0xFB1E,0x8BF9,0x9BD8,0xABBB,0xBB9A,
+	0x4A75,0x5A54,0x6A37,0x7A16,0x0AF1,0x1AD0,0x2AB3,0x3A92,
+	0xFD2E,0xED0F,0xDD6C,0xCD4D,0xBDAA,0xAD8B,0x9DE8,0x8DC9,
+	0x7C26,0x6C07,0x5C64,0x4C45,0x3CA2,0x2C83,0x1CE0,0x0CC1,
+	0xEF1F,0xFF3E,0xCF5D,0xDF7C,0xAF9B,0xBFBA,0x8FD9,0x9FF8,
+	0x6E17,0x7E36,0x4E55,0x5E74,0x2E93,0x3EB2,0x0ED1,0x1EF0
 };
 
 /* ========================================================================== */
@@ -111,10 +111,10 @@ static const unsigned short crc16tab[256]= {
 static int8_t UFP_flashCheck(uint8_t *flashAddr,
                              uint8_t *checkAddr, uint32_t size)
 {
-    uint32_t i = 0;
+    uint32_t i = 0U;
     uint8_t flashValue = 0, checkValue = 0;
 
-    for(i = 0; i < size; i+=4)
+    for(i = 0U; i < size; i +=4U)
     {
         flashValue = *(flashAddr+i);
         checkValue = *(checkAddr+i);
@@ -138,10 +138,10 @@ static int8_t UFP_flashCheck(uint8_t *flashAddr,
 static unsigned short crc16_ccitt(const void *buf, int len)
 {
 	uint16_t counter;
-	unsigned short crc = 0;
-	for(counter = 0; counter < len; counter++)
+	Bool crc = UFALSE;
+	for(counter = 0U; counter < len; counter++)
 	{
-	  crc = (crc<<8) ^ crc16tab[((crc>>8) ^ *(char *)buf)&0x00FF];
+	  crc = (crc << 8) ^ crc16tab[((crc >> 8) ^ *(char *)buf) & 0x00FF];
 	  buf = ((char *)buf) +1;
 	}
 	return crc;
@@ -161,8 +161,8 @@ static unsigned short crc16_ccitt(const void *buf, int len)
  */
 static uint8_t check(const unsigned char *buf, int sz)
 {
-	unsigned short crc = crc16_ccitt(buf, sz);
-	unsigned short tcrc = (buf[sz]<<8)+buf[sz+1];
+	Bool crc = crc16_ccitt(buf, sz);
+	Bool tcrc = (buf[sz] << 8) + buf[sz+1];
 	if (crc == tcrc)
 	{
 		return 1;
@@ -262,7 +262,7 @@ int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType)
 
     maxBaudRate = UFP_getMaxBaudrate();
     ret = UFP_uartConfig(maxBaudRate);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
@@ -275,7 +275,7 @@ int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType)
 			{
 				outbyte(trychar);
 			}
-			if((c = inbyte(DELAY))>= 0)
+			if(0 <= (c = inbyte(DELAY)))
 			{
 				switch(c)
 				{
@@ -287,24 +287,24 @@ int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType)
 						goto start_recv;
 					case XMODEM_CMD_EOT:
                         outbyte(XMODEM_STS_ACK);
-                        if (len != 0)
+                        if (0 != len)
                         {
                             ret = fnPtr->UFP_flashProgram(&gDataRxBuff[0],
                                   &gDataCheckBuff[0], offset, DATA_BUFF_LEN);
-                            if (ret != 0)
+                            if (0 != ret)
                             {
                                 return -1;
                             }
                             ret = UFP_flashCheck(&gDataRxBuff[0],
                                                  &gDataCheckBuff[0], len);
-                            if (ret != 0)
+                            if (0!= ret)
                             {
                                 return -1;
                             }
                         }
 						return 0; /* normal end */
 					case XMODEM_CMD_CAN:
-						if((c = inbyte(DELAY)) == XMODEM_CMD_CAN)
+						if(XMODEM_CMD_CAN == (c = inbyte(DELAY)))
 						{
 							outbyte(XMODEM_STS_ACK);
 							return -1; /* canceled by remote */
@@ -315,7 +315,7 @@ int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType)
 				}
 			}
 		}
-		if(trychar == 'C')
+		if('C' == trychar)
 		{
 			trychar = XMODEM_STS_NAK;
 			continue;
@@ -350,24 +350,24 @@ int8_t UFP_xModemFileReceive(uint32_t offset, uint8_t devType)
 				++packetno;
 				retrans = MAXRETRANS+1;
 			}
-			if (--retrans <= 0)
+			if (0 >= --retrans)
 			{
 				outbyte(XMODEM_CMD_CAN);
 				outbyte(XMODEM_CMD_CAN);
 				outbyte(XMODEM_CMD_CAN);
 				return -1;
 			}
-            if (len >= DATA_BUFF_LEN)
+            if (DATA_BUFF_LEN <= len)
             {
                 ret = fnPtr->UFP_flashProgram(&gDataRxBuff[0], &gDataCheckBuff[0],
                                               offset, DATA_BUFF_LEN);
-                if (ret != 0)
+                if (0 != ret)
                 {
                     return -1;
                 }
                 ret = UFP_flashCheck(&gDataRxBuff[0], &gDataCheckBuff[0],
                                      DATA_BUFF_LEN);
-                if (ret != 0)
+                if (0 != ret)
                 {
                     return -1;
                 }
@@ -395,7 +395,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
 {
     int32_t c;
 	uint16_t len = 0;
-    uint32_t offset = 0;
+    uint32_t offset = 0U;
     uint16_t i, bufsz;
 	uint16_t retry;
     uint32_t retrans = MAXRETRANS + 1;
@@ -422,7 +422,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
 
     maxBaudRate = UFP_getMaxBaudrate();
     ret = UFP_uartConfig(maxBaudRate);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
@@ -435,7 +435,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
 			{
 				outbyte(trychar);
 			}
-			if((c = inbyte(DELAY))>= 0)
+			if(0 <= (c = inbyte(DELAY)))
 			{
 				switch(c)
 				{
@@ -451,12 +451,12 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
                             memmove(&gDataRxBuff[overflowSize], &gDataRxBuff[0], overflowSize);
                             memcpy(&gDataRxBuff[0], &overflowBuffer[0], overflowSize);
                             ret = fnPtr->UFP_flashProgram(&gDataRxBuff[0], &gDataCheckBuff[0], sectionOffset, DATA_BUFF_LEN);
-                            if (ret != 0)
+                            if (0 != ret)
                             {
                                 return -1;
                             }
                             ret = UFP_flashCheck(&gDataRxBuff[0], &gDataCheckBuff[0], overflowSize);
-                            if (ret != 0)
+                            if (0 != ret)
                             {
                                 return -1;
                             }
@@ -464,7 +464,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
                         outbyte(XMODEM_STS_ACK);
 						return 0; /* normal end */
 					case XMODEM_CMD_CAN:
-						if((c = inbyte(DELAY)) == XMODEM_CMD_CAN)
+						if(XMODEM_CMD_CAN == (c = inbyte(DELAY)))
 						{
 							outbyte(XMODEM_STS_ACK);
 							return -1; /* canceled by remote */
@@ -475,7 +475,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
 				}
 			}
 		}
-		if(trychar == 'C')
+		if('C' == trychar)
 		{
 			trychar = XMODEM_STS_NAK;
 			continue;
@@ -510,7 +510,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
 				++packetno;
 				retrans = MAXRETRANS+1;
 			}
-			if (--retrans <= 0)
+			if (0 >= --retrans)
 			{
 				outbyte(XMODEM_CMD_CAN);
 				outbyte(XMODEM_CMD_CAN);
@@ -532,10 +532,10 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
                     memcpy(&mHdrStr, imgPtr, sizeof(Bootloader_MetaHeaderStart));
                     imgPtr += sizeof(Bootloader_MetaHeaderStart);
                     offset += sizeof(Bootloader_MetaHeaderStart);
-                    if(mHdrStr.magicStr != BOOTLOADER_META_HDR_MAGIC_STR)
+                    if(BOOTLOADER_META_HDR_MAGIC_STR != mHdrStr.magicStr)
                     {
                         ret = -1;
-                        if (ret != 0)
+                        if (0 != ret)
                         {
                             return -1;
                         }
@@ -545,7 +545,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
                         /* Read all the core offset addresses */
                         uint32_t i;
 
-                        for(i=0U; i<mHdrStr.numFiles; i++)
+                        for(i = 0U; i < mHdrStr.numFiles; i++)
                         {
                             memcpy(&mHdrCore[i], imgPtr, sizeof(Bootloader_MetaHeaderCore));
                             imgPtr += sizeof(Bootloader_MetaHeaderCore);
@@ -567,10 +567,10 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
                         memcpy(&rprcHeader, imgPtr, sizeof(Bootloader_RprcFileHeader));
                         imgPtr += sizeof(Bootloader_RprcFileHeader);
                         offset += sizeof(Bootloader_RprcFileHeader);
-                        if(rprcHeader.magic != BOOTLOADER_RPRC_MAGIC_NUMBER)
+                        if(BOOTLOADER_RPRC_MAGIC_NUMBER != rprcHeader.magic)
                         {
                             ret = -1;
-                            if (ret != 0)
+                            if (0 != ret)
                             {
                                 return -1;
                             }
@@ -604,13 +604,13 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
                     }
 
                     ret = fnPtr->UFP_flashProgram(imgPtr, chkPtr, sectionOffset, wrSize);
-                    if (ret != 0)
+                    if (0 != ret)
                     {
                         return -1;
                     }
 
                     ret = UFP_flashCheck(imgPtr, chkPtr, wrSize);
-                    if (ret != 0)
+                    if (0 != ret)
                     {
                         return -1;
                     }
@@ -649,7 +649,7 @@ int8_t UFP_xModemXipFileReceive(uint8_t devType)
             {
                 overflowSize = 0;
             }
-            offset = 0;
+            offset = 0U;
             len = 0;
 			outbyte(XMODEM_STS_ACK);
 			continue;
@@ -681,7 +681,7 @@ int8_t UFP_xModemHeaderReceive(unsigned char *xbuff)
     int8_t ret;
 
     ret = UFP_uartConfig(UFP_BAUDRATE_115200);
-    if(ret != 0)
+    if(0 != ret)
     {
         return -1;
     }
@@ -692,7 +692,7 @@ int8_t UFP_xModemHeaderReceive(unsigned char *xbuff)
         {
             outbyte(trychar);
         }
-        if ((c = inbyte(DELAY)) >= 0)
+        if (0 <= (c = inbyte(DELAY)))
         {
             switch (c)
             {
@@ -757,7 +757,7 @@ uint32_t UFP_xModemFirmwareReceive(unsigned char *dest, uint32_t destsz)
             {
                 outbyte(trychar);
             }
-            if((c = inbyte(DELAY))>= 0)
+            if(0 <= (c = inbyte(DELAY)))
             {
                 switch(c)
                 {
@@ -771,7 +771,7 @@ uint32_t UFP_xModemFirmwareReceive(unsigned char *dest, uint32_t destsz)
                         outbyte(XMODEM_STS_ACK);
                         return len; /* normal end */
                     case XMODEM_CMD_CAN:
-                        if((c = inbyte(DELAY)) == XMODEM_CMD_CAN)
+                        if(XMODEM_CMD_CAN == (c = inbyte(DELAY)))
                         {
                             outbyte(XMODEM_STS_ACK);
                             return 0; /* canceled by remote */
@@ -782,7 +782,7 @@ uint32_t UFP_xModemFirmwareReceive(unsigned char *dest, uint32_t destsz)
                 }
             }
         }
-        if(trychar == 'C')
+        if('C' == trychar)
         {
             trychar = XMODEM_STS_NAK;
             continue;
@@ -829,7 +829,7 @@ uint32_t UFP_xModemFirmwareReceive(unsigned char *dest, uint32_t destsz)
                 ++packetno;
                 retrans = MAXRETRANS+1;
             }
-            if (--retrans <= 0)
+            if (0 >= --retrans)
             {
                 outbyte(XMODEM_CMD_CAN);
                 outbyte(XMODEM_CMD_CAN);

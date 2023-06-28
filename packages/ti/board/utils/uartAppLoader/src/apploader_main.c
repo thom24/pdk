@@ -87,7 +87,7 @@ sblEntryPoint_t entry;
  */
 uint32_t uartReceiveImage(uint32_t ddr_addr)
 {
-	uint32_t retVal = TRUE;
+	uint32_t retVal = UTRUE;
 	uint32_t max_size=128U * 1024U * 1024U;
 	int32_t  receivedSize = 0;
 	UART_printf("\nPlease transfer file with XMODEM protocol...\n");
@@ -97,10 +97,10 @@ uint32_t uartReceiveImage(uint32_t ddr_addr)
 	 if(receivedSize < 0)
     {
         UART_printf("\nXmodem receive error\n");
-        retVal = FALSE;
+        retVal = UFALSE;
     }
 
-    if(TRUE == retVal)
+    if(UTRUE == retVal)
     {
         UART_printf("\nXmodem received %d bytes\n", receivedSize);
         UART_printf("\nCopying application image from UART"

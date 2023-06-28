@@ -109,10 +109,10 @@ void socPlatformConfig(void)
 			boardInitPrms.boardId = BOARD_AMIC110;
 	}
     HW_WR_REG32((SOC_WDT_1_REGS + WDT_WSPR) , 0xAAAAU);
-    while(HW_RD_REG32(SOC_WDT_1_REGS + WDT_WWPS) != 0x00U);
+    while (0x00U != HW_RD_REG32(SOC_WDT_1_REGS + WDT_WWPS));
 
     HW_WR_REG32((SOC_WDT_1_REGS + WDT_WSPR) , 0x5555U);
-    while(HW_RD_REG32(SOC_WDT_1_REGS + WDT_WWPS) != 0x00U);
+    while (0x00U != HW_RD_REG32(SOC_WDT_1_REGS + WDT_WWPS));
 
     /* Set the PLL0 to generate 300MHz for ARM */
     socPlatformPllInit(boardInitPrms.boardId);

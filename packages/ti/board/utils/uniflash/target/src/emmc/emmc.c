@@ -169,7 +169,7 @@ static int8_t UFP_emmcClose(void)
 
     ret = MMCSD_close(gEmmcHandle);
     gEmmcHandle = NULL;
-    if(ret != MMCSD_OK)
+    if(MMCSD_OK != ret)
     {
         return -1;
     }
@@ -199,7 +199,7 @@ static int8_t UFP_emmcFlashRead(uint8_t *dst, uint32_t offset, uint32_t length)
     blockCnt = length/EMMC_SECTOR_SIZE;
 
     ret = MMCSD_read(gEmmcHandle, dst, blockNum, blockCnt);
-    if(ret != MMCSD_OK)
+    if(MMCSD_OK != ret)
     {
         return -1;
     }
@@ -228,7 +228,7 @@ static int8_t UFP_emmcFlashWrite(uint8_t *src, uint32_t offset, uint32_t length)
     blockCnt = length/EMMC_SECTOR_SIZE;
 
     ret = MMCSD_write(gEmmcHandle, src, blockNum, blockCnt);
-    if(ret != MMCSD_OK)
+    if(MMCSD_OK != ret)
     {
         return -1;
     }
@@ -256,7 +256,7 @@ static int8_t UFP_emmcFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
     int8_t ret;
 
     ret = UFP_emmcFlashWrite(flashAddr, offset, size);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -268,7 +268,7 @@ static int8_t UFP_emmcFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
 #endif
 
     ret = UFP_emmcFlashRead(checkAddr, offset, size);
-    if (ret != 0)
+    if (0 != ret)
     {
         return -1;
     }
@@ -297,7 +297,7 @@ static int8_t UFP_emmcFlashErase(uint32_t offset, uint32_t length)
 
     /* Erase the flash.
        There is no erase command for eMMC. Will be filled with 0s */
-    while (length != 0)
+    while (0U != length)
     {
         if (length > DATA_BUFF_LEN)
         {
@@ -318,7 +318,7 @@ static int8_t UFP_emmcFlashErase(uint32_t offset, uint32_t length)
         }
 
         ret = MMCSD_write(gEmmcHandle, (uint8_t *)&eraseBuff[0], blockNum, blockCnt);
-        if(ret != MMCSD_OK)
+        if(MMCSD_OK != ret)
         {
             return -1;
         }
@@ -345,7 +345,7 @@ static int8_t UFP_emmcInit(void)
     MMCSD_init();
 
     ret = MMCSD_open(BOARD_MMCSD_EMMC_INSTANCE, NULL, &gEmmcHandle);
-    if(ret != MMCSD_OK)
+    if(MMCSD_OK != ret)
     {
         return -1;
     }
