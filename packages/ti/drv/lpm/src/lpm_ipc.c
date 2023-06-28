@@ -59,7 +59,7 @@
 /* this should be >= RPMessage_getObjMemRequired() */
 #define IPC_RPMESSAGE_OBJ_SIZE  256U
 
-#define RPMSG_DATA_SIZE        (256U*512U + IPC_RPMESSAGE_OBJ_SIZE)
+#define RPMSG_DATA_SIZE        ((256U*512U) + IPC_RPMESSAGE_OBJ_SIZE)
 #define VQ_BUF_SIZE             2048U
 
 /* Vring start address for each device */
@@ -108,14 +108,14 @@ Lpm_ipcTestParams service_chrdev = { ENDPT_CHRDEV, SERVICE_CHRDEV };
 /* ========================================================================== */
 
 
-uint8_t g_taskStackBuf[(CORE_IN_TEST+3)*IPC_TASK_STACKSIZE]
+uint8_t g_taskStackBuf[(CORE_IN_TEST+3U)*IPC_TASK_STACKSIZE]
 __attribute__ ((section(".bss:taskStackSection")))
 __attribute__ ((aligned(8192)));
 
 uint8_t  gCntrlBuf[RPMSG_DATA_SIZE] __attribute__ ((section("ipc_data_buffer"), aligned (8)));
 uint8_t  sysVqBuf[VQ_BUF_SIZE]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 uint8_t  g_sendBuf[RPMSG_DATA_SIZE * CORE_IN_TEST]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
-uint8_t  g_rspBuf[RPMSG_DATA_SIZE * 2]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
+uint8_t  g_rspBuf[RPMSG_DATA_SIZE * 2U]  __attribute__ ((section ("ipc_data_buffer"), aligned (8)));
 
 uint8_t *pCntrlBuf = gCntrlBuf;
 uint8_t *pTaskBuf = g_taskStackBuf;
@@ -283,7 +283,7 @@ void Lpm_ipcResponderFxn(void *arg0, void *arg1)
         {
             memset(str, 0, MSGSIZE);
             len = snprintf(str, 255, "pong %d", n);
-            if(len > 255)
+            if(len > 255U)
             { 
                 UART_printf("RecvTask: snprintf failed, len %d\n", len);
                 len = 255;
@@ -385,7 +385,7 @@ void Lpm_ipcSenderFxn(void *arg0, void *arg1)
         /* Send data to remote endPt: */
         memset(buf, 0, 256);
         len = snprintf(buf, 255, "ping %d", i);
-        if(len > 255)
+        if(len > 255U)
         {
             UART_printf("SendTask%d: snprintf failed, len %d\n", dstProc, len);
             len = 255;
@@ -425,7 +425,7 @@ void Lpm_ipcSenderFxn(void *arg0, void *arg1)
         /* Make it NULL terminated string */
         if(len >= MSGSIZE)
         {
-            buf[MSGSIZE-1] = '\0';
+            buf[MSGSIZE-1U] = '\0';
         }
         else
         {
@@ -438,7 +438,7 @@ void Lpm_ipcSenderFxn(void *arg0, void *arg1)
                 remoteEndPt);
 #endif
         cntPong++;
-        if((i+1)%50 == 0)
+        if(((i+1)%50) == 0)
         {
             //UART_printf("%s <--> %s, ping/pong iteration %d ...\n",
             //        Ipc_mpGetSelfName(), Ipc_mpGetName(dstProc), i);
@@ -546,7 +546,7 @@ int32_t Lpm_ipcEchoApp(void)
     {
         memset(pCntrlBuf, 0, RPMSG_DATA_SIZE);
         memset(pSendTaskBuf, 0, RPMSG_DATA_SIZE * CORE_IN_TEST);
-        memset(pRecvTaskBuf, 0, RPMSG_DATA_SIZE * 2);
+        memset(pRecvTaskBuf, 0, RPMSG_DATA_SIZE * 2U);
         memset(pSysVqBuf, 0, VQ_BUF_SIZE);
         RecvEndPt = 0;
         gRecvTaskBufIdx = 0;

@@ -81,7 +81,7 @@
 #include <ti/drv/lpm/include/io_retention/dev_info.h>
 
 #if (defined(SOC_J721E) || defined(SOC_J7200))
-Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
+Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, BFALSE};
 #endif
 
 /* Test application stack size */
@@ -130,7 +130,7 @@ int io_retention_main()
     Board_setI2cInitConfig(&boardI2cInitCfg);
     stat = Board_getIDInfo_v2(&info, BOARD_I2C_EEPROM_ADDR);
 
-    if(stat == BOARD_INVALID_PARAM)
+    if(BOARD_INVALID_PARAM == stat)
     {
         stat = BOARD_SOK;
     }
@@ -139,7 +139,7 @@ int io_retention_main()
     *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C120) = 0x0C018007;
 
 
-    if(stat == BOARD_SOK)
+    if(BOARD_SOK == stat)
     {
 
         Lpm_pmicInit();
@@ -188,15 +188,15 @@ void disable_isolation_bit_and_unlock()
     int cnt = 0;
 
     /* Check to see if wakeup events occurred on various pins */
-    if (*mkptr(MAIN_CTRL_BASE, 0x1c020) & (0b1 << 30))
+    if (*mkptr(MAIN_CTRL_BASE, 0x1C020) & (0B1 << 30))
     {  
         UART_printf("Wakeup occured on MAIN_MCAN0_TX pin\n");
     }
-    if (*mkptr(MAIN_CTRL_BASE, 0x1c02c) & (0b1 << 30))
+    if (*mkptr(MAIN_CTRL_BASE, 0x1C02C) & (0B1 << 30))
     {  
         UART_printf("Wakeup occured on MAIN_MCAN1_TX pin\n");
     }
-    if (*mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0B8) & (0b1 << 30))
+    if (*mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0B8) & (0B1 << 30))
     {
         UART_printf("Wakeup occured on MCU_MCAN0_TX pin\n");
     }
@@ -226,8 +226,8 @@ void disable_isolation_bit_and_unlock()
     {
         read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO);
         *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO) = read_data & ~(0b1 << 24);
-        for(i=0; i<io_timeout; i++);
-        if (cnt == 1000)
+        for(i = 0; i < io_timeout; i++);
+        if (1000 == cnt)
         {
             UART_printf(".");
         }
@@ -239,8 +239,8 @@ void disable_isolation_bit_and_unlock()
     {
         read_data =  *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR);
         *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_DDR) = read_data & ~(0b1 << 24);
-        for(i=0; i<io_timeout; i++);
-        if (cnt == 1000)
+        for(i = 0; i < io_timeout; i++);
+        if (1000 == cnt)
         {
             UART_printf(".");
         }
@@ -256,8 +256,8 @@ void disable_isolation_bit_and_unlock()
 int main_io_pm_seq (void)
 {
 
-    unsigned int read_data = 0;
-    volatile unsigned int i = 0; /* Make sure below for loop is not optimized */
+    unsigned int read_data = 0U;
+    volatile unsigned int i = 0U; /* Make sure below for loop is not optimized */
 
     /* Configure MCAN0 PADCONF */
     *mkptr(MAIN_CTRL_BASE, 0x1c020) = 0x20050000;
@@ -295,8 +295,8 @@ int main_io_pm_seq (void)
 
 int wkup_io_pm_seq (void)
 {
-    unsigned int read_data = 0;
-    volatile unsigned int i = 0; /* Make sure below for loop is not optimized */
+    unsigned int read_data = 0U;
+    volatile unsigned int i = 0U; /* Make sure below for loop is not optimized */
 
     /* CONFIGURE MCU_MCAN0_TX with internal pull up resistor */
     *mkptr(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 0x1C0B8) = 0x20060000;
@@ -353,7 +353,7 @@ int wkup_io_pm_seq (void)
     read_data = *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO);
     *mkptr(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, CSL_PMMCCONTROL_PMCTRL_IO) = read_data | 0x1000000 | (0x1 << 6);
 
-    for(i=0; i<io_timeout; i++);    /* Wait for 10us */
+    for(i = 0U; i < io_timeout; i++);    /* Wait for 10us */
     
     return 1;
 }
@@ -431,14 +431,14 @@ int main(void)
     }
 
     /* GPIO early response for timing reasons */
-    if (global_boot_mode_status == IO_RETENTION_BOOT)
+    if (IO_RETENTION_BOOT == global_boot_mode_status)
     {
         GPIO_init();
         {
             GPIO_write(PIN_WKUP_GPIO0_77, 1);
-            for(i=0; i<10000; i++);
+            for(i = 0; i < 10000; i++);
             GPIO_write(PIN_WKUP_GPIO0_77, 0);
-            for(i=0; i<10000; i++);
+            for(i = 0; i < 10000; i++);
         }
     }
 
@@ -447,7 +447,7 @@ int main(void)
     /* Initialize SCI Client Server */
     Sciclient_init(NULL_PTR);
     ret = SetupSciServer();
-    if(ret != CSL_PASS)
+    if(CSL_PASS != ret)
     {
         OS_stop();
     }
@@ -480,17 +480,17 @@ int32_t SetupSciServer(void)
      * Sciclient API to execute message forwarding */
     ret = Sciclient_configPrmsInit(&clientPrms);
 
-    if (ret == CSL_PASS)
+    if (CSL_PASS == ret)
     {
         ret = Sciclient_init(&clientPrms);
     }
 
-    if (ret == CSL_PASS)
+    if (CSL_PASS == ret)
     {
         ret = Sciserver_tirtosInit(&appPrms);
     }
 
-    if (ret == CSL_PASS)
+    if (CSL_PASS == ret)
     {
         AppUtils_Printf(MSG_NORMAL, "Starting Sciserver..... PASSED\n");
     }

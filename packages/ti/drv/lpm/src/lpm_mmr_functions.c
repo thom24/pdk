@@ -87,9 +87,9 @@
      if ( lockNum >= SOC_NUM_SPINLOCKS )
          return -1;
  
-     spinLockReg = (volatile uint32_t *)(base2core(CSL_NAVSS0_SPINLOCK_BASE + 0x800));
+     spinLockReg = (volatile uint32_t *)(base2core(CSL_NAVSS0_SPINLOCK_BASE + 0x800U));
  
-     while ( spinLockReg[ lockNum ] != 0x0 );
+     while ( spinLockReg[ lockNum ] != 0x0U );
  
      return 0;
  }
@@ -102,7 +102,7 @@ int32_t SOC_unlock( uint32_t lockNum )
     if ( lockNum >= SOC_NUM_SPINLOCKS )
         return -1;
 
-    spinLockReg = (volatile uint32_t *)(base2core(CSL_NAVSS0_SPINLOCK_BASE + 0x800));
+    spinLockReg = (volatile uint32_t *)(base2core(CSL_NAVSS0_SPINLOCK_BASE + 0x800U));
     spinLockReg[ lockNum ] = 0x0;
 
     return 0;
@@ -113,9 +113,9 @@ bool Lpm_mmr_isLocked(
     uint32_t  partition
     )
 {
-    volatile uint32_t * lock = mkptr(base, partition * 0x4000 + MMR_LOCK0_KICK0);
+    volatile uint32_t * lock = mkptr(base, ((partition * 0x4000U) + MMR_LOCK0_KICK0));
 
-    return (*lock & 0x1u) ? false : true;
+    return (*lock & 0x1U) ? BFALSE : BTRUE;
 }
 
 /*!
@@ -137,7 +137,7 @@ void Lpm_mmr_unlock (
 {
 #ifndef TBARM9CORE
   /* translate the base address */
-  volatile uint32_t * lock = mkptr(base, partition * 0x4000 + MMR_LOCK0_KICK0);
+  volatile uint32_t * lock = mkptr(base, partition * 0x4000U + MMR_LOCK0_KICK0);
 
   if (!Lpm_mmr_isLocked( base, partition ) )
   {
@@ -172,14 +172,14 @@ void Lpm_mmr_lock (
     uint32_t partition  /*!< which partition to lock */
     )
 {
-  volatile uint32_t * lock = mkptr(base, (partition * 0x4000 + MMR_LOCK0_KICK0));
+  volatile uint32_t * lock = mkptr(base, ((partition * 0x4000U) + MMR_LOCK0_KICK0));
   *lock = 0;
 }
 
 /* Below is the code for MMR modules */
 void Lpm_unlock(unsigned int unlock_num, unsigned int base ) {
   unsigned int const_lock_start_addr, partitionOffset, kick1_val, kick0_val;
-  if(base == CSL_WKUP_CTRL_MMR0_CFG0_BASE || base == CSL_MCU_CTRL_MMR0_CFG0_BASE || base == MAIN_CTRL_BASE)
+  if((base == CSL_WKUP_CTRL_MMR0_CFG0_BASE) || (base == CSL_MCU_CTRL_MMR0_CFG0_BASE) || (base == MAIN_CTRL_BASE))
   {
     const_lock_start_addr = 0x01008;
     kick0_val = MMR_LOCK0_KICK0_UNLOCK_VAL;
@@ -195,5 +195,5 @@ void Lpm_unlock(unsigned int unlock_num, unsigned int base ) {
   }
 
   *mkptr(base, (const_lock_start_addr+partitionOffset*unlock_num)) = kick0_val;
-  *mkptr(base, (const_lock_start_addr+partitionOffset*unlock_num+0x00004)) = kick1_val;
+  *mkptr(base, (const_lock_start_addr+partitionOffset*unlock_num+0x00004U)) = kick1_val;
 }
