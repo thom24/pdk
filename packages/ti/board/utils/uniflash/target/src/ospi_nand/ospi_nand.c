@@ -382,6 +382,7 @@ static int8_t UFP_ospiNandInit(void)
     ospi_cfg.dmaEnable  = true;
     ospiUdmaInit(&ospi_cfg);
 #endif
+    ospi_cfg.phyEnable  = false;
 
     /* Set the default ospi init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
