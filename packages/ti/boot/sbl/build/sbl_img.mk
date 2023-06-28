@@ -43,7 +43,11 @@ EEPROM_DATA_DDR_ADDRESS ?= 0x90000000
 
 ifeq ($(BOOT_PERF), yes)
   APP_NAME = sbl_boot_perf_cust_img
-  LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_$(CORE)
+  ifeq ($(SBL_IMAGE_TYPE),combined)
+    LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_combined_$(CORE)
+  else
+    LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_$(CORE)
+  endif
 else ifeq ($(BOOTMODE), xip)
   ifeq ($(OSPI_FREQ), 133)
     APP_NAME = sbl_xip_133_img$(HS_SUFFIX)

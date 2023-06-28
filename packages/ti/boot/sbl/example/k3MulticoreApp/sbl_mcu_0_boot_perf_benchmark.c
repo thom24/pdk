@@ -223,6 +223,83 @@ static void sblBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
 
 }
 
+static void sblCombinedBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
+{
+    char majorApis[13][100] = {"Sciclient Boot Notification                             :", \
+                                "Sciclient_init                                          :", \
+                                "Board Config                                            :", \
+                                "PM Config                                               :", \
+                                "Security Config                                         :", \
+                                "RM Config                                               :", \
+                                "SBL: Board_init (pinmux)                                :", \
+                                "SBL: Board_init (PLL)                                   :", \
+                                "SBL: Board_init (CLOCKS)                                :", \
+                                "SBL: OSPI init                                          :", \
+                                "SBL: Parsing appimage and copy to MCU SRAM & Jump to App:", \
+                                "Misc                                                    :"};
+    uint64_t mcuClkFreq = SBL_MCU1_CPU0_FREQ_HZ;
+    uint32_t majorApisIndx = 0, cyclesPerUsec;
+    uint32_t indx = 3;
+    uint32_t arrayLen = 16;
+    uint32_t skipIndex = 6;
+
+    float convertMicroToMilli = 1000;
+    float totalTime = 0;
+    char sbl_test_str[256];
+
+    Sciclient_pmGetModuleClkFreq(SBL_DEV_ID_MCU1_CPU0, SBL_CLK_ID_MCU1_CPU0, &mcuClkFreq, SCICLIENT_SERVICE_WAIT_FOREVER);
+    cyclesPerUsec = (mcuClkFreq / 1000000);
+
+    sbl_puts("\r\n NOTE : Below numbers will be corrupted if SBL_ADD_PROFILE_POINT is added anywhere \n");
+    sbl_puts("\r\n           ------- SBL Combined Boot Performance Info overview -------  \r\n\n");
+    float convertToMilli = 250000;
+    float rblExecutionTime = (float)sblBootPerfLog[0].line;
+    sprintf(sbl_test_str, "RBL Execution time                                      : %.3fms \r\n", rblExecutionTime/convertToMilli);
+    sbl_puts(sbl_test_str);
+    totalTime += rblExecutionTime/convertToMilli;
+
+    while(indx < arrayLen)
+    {
+        /* Skipping this index as timer is being reset at this particular index */ 
+        if(indx == skipIndex){
+            indx++;
+            continue;
+        }
+        uint32_t currentCycleCount;
+        uint32_t previousCycleCount;
+        float timeTaken;
+        
+        currentCycleCount = sblBootPerfLog[indx].cycle_cnt/cyclesPerUsec;
+        previousCycleCount = sblBootPerfLog[indx-1].cycle_cnt/cyclesPerUsec;
+        timeTaken = (currentCycleCount-previousCycleCount)/convertMicroToMilli;
+        totalTime += timeTaken;
+        /* For Misc - add the time after copying appimage to MCU SRAM till core 
+        boots and from start of SBL main to before reading sysfw */
+        if(indx == (arrayLen-1))
+        {
+            timeTaken += (sblBootPerfLog[2].cycle_cnt/cyclesPerUsec - sblBootPerfLog[1].cycle_cnt/cyclesPerUsec)/convertMicroToMilli;
+        }
+        sprintf(sbl_test_str,"%s %.3fms\r\n", majorApis[majorApisIndx], timeTaken);
+        sbl_puts(sbl_test_str);
+        indx++;
+        majorApisIndx++;
+    }
+    
+    sprintf(sbl_test_str, "Approximated time to come to main of an application : %.3fms \r\n", totalTime);
+    sbl_puts(sbl_test_str);
+    if(totalTime < expCanRespTime)
+    {
+        sprintf(sbl_test_str, "Boot Performance test has passed");
+        sbl_puts(sbl_test_str);
+    }
+    else
+    {
+        sprintf(sbl_test_str, "Boot Performance test has failed");
+        sbl_puts(sbl_test_str);
+    }
+
+}
+
 static int32_t BOOT_PERF_TEST_sysfwInit(void)
 {
     int32_t status = CSL_PASS;
@@ -391,6 +468,10 @@ int32_t main()
     }
 
     BOOT_PERF_TEST_printSblProfileLog(sblProfileLogAddr, *sblProfileLogIndxAddr, *sblProfileLogOvrFlwAddr);
+#if defined(COMBINED_BOOT_PERF)
+    sblCombinedBootPerfPrint(sblProfileLogAddr);
+#else
     sblBootPerfPrint(sblProfileLogAddr);
+#endif
     return 0;
 }

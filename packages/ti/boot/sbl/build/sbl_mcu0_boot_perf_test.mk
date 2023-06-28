@@ -3,9 +3,14 @@
 #
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-APP_NAME = sbl_boot_perf_test
 BUILD_OS_TYPE = baremetal
-LOCAL_APP_NAME = sbl_$(BUILD_OS_TYPE)_boot_perf_$(BOARD)_$(CORE)TestApp
+ifeq ($(COMBINED_BOOT_PERF), yes)
+  LOCAL_APP_NAME = sbl_$(BUILD_OS_TYPE)_combined_boot_perf_$(BOARD)_$(CORE)TestApp
+  APP_NAME = sbl_combined_boot_perf_test
+else
+  LOCAL_APP_NAME = sbl_$(BUILD_OS_TYPE)_boot_perf_$(BOARD)_$(CORE)TestApp
+  APP_NAME = sbl_boot_perf_test
+endif
 
 SBL_SRC_DIR =  $(PDK_INSTALL_PATH)/ti/boot/sbl
 
@@ -23,6 +28,10 @@ endif # ifeq ($(BOOTMODE), cust)
 
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(SBL_CFLAGS)
 PACKAGE_SRCS_COMMON = .
+
+ifeq ($(COMBINED_BOOT_PERF), yes)
+  CFLAGS_LOCAL_COMMON += -DCOMBINED_BOOT_PERF
+endif
 
 # List all the external components/interfaces, whose interface header files
 #  need to be included for this component

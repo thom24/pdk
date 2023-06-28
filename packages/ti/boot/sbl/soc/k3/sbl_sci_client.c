@@ -570,10 +570,9 @@ void SBL_SciClientCombinedBootInit(uint32_t devGroup)
     config.skipLocalBoardCfgProcess =   TRUE;
 #endif
 
-    SBL_ADD_PROFILE_POINT;
-
 #ifndef SBL_SKIP_SYSFW_INIT
 
+    SBL_ADD_PROFILE_POINT;
     status = Sciclient_bootNotification();
     if (status != CSL_PASS)
     {
@@ -591,8 +590,6 @@ void SBL_SciClientCombinedBootInit(uint32_t devGroup)
         SblErrLoop(__FILE__, __LINE__);
     }
 
-    SBL_ADD_PROFILE_POINT;
-
     status = Sciclient_init(&config);
     if (status != CSL_PASS)
     {
@@ -600,19 +597,24 @@ void SBL_SciClientCombinedBootInit(uint32_t devGroup)
         SblErrLoop(__FILE__, __LINE__);
     }
 
+    SBL_ADD_PROFILE_POINT;
+
 #ifndef SBL_SKIP_BRD_CFG_BOARD
     SBL_SciclientBoardCfg(devGroup, &boardCfgInfo);
 #endif
+    SBL_ADD_PROFILE_POINT;
 
 #ifndef SBL_SKIP_BRD_CFG_PM
     SBL_SciclientBoardCfgPm(devGroup, &boardCfgInfo);
 #endif
+    SBL_ADD_PROFILE_POINT;
 
 #ifndef SBL_SKIP_BRD_CFG_SEC
     SBL_SciclientCfgSec(devGroup, &boardCfgInfo);
 #endif
 
     SBL_OpenFirewalls();
+    SBL_ADD_PROFILE_POINT;
 
 #ifndef SBL_SKIP_BRD_CFG_RM
     SBL_SciclientBoardCfgRm(devGroup, &boardCfgInfo);

@@ -135,7 +135,7 @@ endif
 ############################
 ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
   sbl_EXAMPLE_LIST = sbl_uart_img sbl_ospi_img sbl_mmcsd_img sbl_emmc_boot0_img
-  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos sbl_emmc_uda_img
+  sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos sbl_ospi_img_hlos sbl_emmc_uda_img sbl_boot_perf_cust_img_combined
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs sbl_ospi_img_hlos_hs
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_combined sbl_ospi_img_combined sbl_mmcsd_img_combined_hs sbl_ospi_img_combined_hs
 else ifeq ($(SOC),$(filter $(SOC), j721e))
@@ -145,7 +145,7 @@ else ifeq ($(SOC),$(filter $(SOC), j721e))
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs sbl_hyperflash_img_hlos_hs
 else
   # for j7200
-  sbl_EXAMPLE_LIST = sbl_uart_img sbl_emmc_uda_img sbl_emmc_boot0_img
+  sbl_EXAMPLE_LIST = sbl_uart_img sbl_emmc_uda_img sbl_emmc_boot0_img sbl_boot_perf_cust_img_combined
   sbl_EXAMPLE_LIST += sbl_mmcsd_img sbl_mmcsd_img_hlos sbl_ospi_img sbl_ospi_img_hlos
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hs sbl_ospi_img_hs sbl_uart_img_hs
   sbl_EXAMPLE_LIST += sbl_mmcsd_img_hlos_hs sbl_ospi_img_hlos_hs
@@ -830,6 +830,30 @@ sbl_ospi_img_combined_$(SOC)_CORELIST = mcu1_0
 export sbl_ospi_img_combined_$(SOC)_CORELIST
 sbl_ospi_img_combined_SBL_IMAGEGEN = yes
 export sbl_ospi_img_combined_SBL_IMAGEGEN
+
+# SBL CUST - Combined boot image
+sbl_boot_perf_cust_img_combined_COMP_LIST = sbl_boot_perf_cust_img_combined
+sbl_boot_perf_cust_img_combined_RELPATH = ti/boot/sbl/board/k3
+sbl_boot_perf_cust_img_combined_CUSTOM_BINPATH = $(PDK_SBL_COMP_PATH)/binary/$(BOARD)/cust_combined/bin
+sbl_boot_perf_cust_img_combined_PATH = $(PDK_SBL_COMP_PATH)/board/k3
+sbl_boot_perf_cust_img_combined_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_img.mk BOOTMODE=cust BUILD_HS=no SBL_IMAGE_TYPE=combined CUST_SBL_FLAGS=$(CUST_SBL_BOOT_PERF_TEST_FLAGS) BOOT_PERF=yes
+export sbl_boot_perf_cust_img_combined_MAKEFILE
+export sbl_boot_perf_cust_img_combined_SBL_CERT_KEY=$(SBL_CERT_KEY)
+sbl_boot_perf_cust_img_combined_BOARD_DEPENDENCY = yes
+sbl_boot_perf_cust_img_combined_SOC_DEPENDENCY = yes
+sbl_boot_perf_cust_img_combined_CORE_DEPENDENCY = no
+export sbl_boot_perf_cust_img_combined_COMP_LIST
+export sbl_boot_perf_cust_img_combined_BOARD_DEPENDENCY
+export sbl_boot_perf_cust_img_combined_SOC_DEPENDENCY
+export sbl_boot_perf_cust_img_combined_CORE_DEPENDENCY
+sbl_boot_perf_cust_img_combined_PKG_LIST = sbl
+sbl_boot_perf_cust_img_combined_INCLUDE = $(sbl_boot_perf_cust_img_combined_PATH)
+sbl_boot_perf_cust_img_combined_BOARDLIST = j7200_evm j721s2_evm j784s4_evm
+export sbl_boot_perf_cust_img_combined_BOARDLIST
+sbl_boot_perf_cust_img_combined_$(SOC)_CORELIST = mcu1_0
+export sbl_boot_perf_cust_img_combined_$(SOC)_CORELIST
+sbl_boot_perf_cust_img_combined_SBL_IMAGEGEN = yes
+export sbl_boot_perf_cust_img_combined_SBL_IMAGEGEN
 
 # SBL OSPI "HLOS Boot" Image
 sbl_ospi_img_hlos_COMP_LIST = sbl_ospi_img_hlos
@@ -1623,6 +1647,32 @@ export sbl_boot_perf_test_$(SOC)_CORELIST
 sbl_EXAMPLE_LIST += sbl_boot_perf_test
 sbl_boot_perf_test_SBL_APPIMAGEGEN = yes
 export sbl_boot_perf_test_SBL_APPIMAGEGEN
+
+# R5 combined boot performance Test - works only with custom combined SBL
+sbl_combined_boot_perf_test_COMP_LIST = sbl_combined_boot_perf_test
+sbl_combined_boot_perf_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
+sbl_combined_boot_perf_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+sbl_combined_boot_perf_test_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+sbl_combined_boot_perf_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_mcu0_boot_perf_test.mk BOOTMODE=cust CUST_SBL_FLAGS=$(CUST_SBL_BOOT_PERF_TEST_FLAGS) COMBINED_BOOT_PERF=yes
+export sbl_combined_boot_perf_test_MAKEFILE
+sbl_combined_boot_perf_test_BOARD_DEPENDENCY = no
+sbl_combined_boot_perf_test_SOC_DEPENDENCY = no
+sbl_combined_boot_perf_test_CORE_DEPENDENCY = no
+export sbl_combined_boot_perf_test_COMP_LIST
+export sbl_combined_boot_perf_test_BOARD_DEPENDENCY
+export sbl_combined_boot_perf_test_SOC_DEPENDENCY
+export sbl_combined_boot_perf_test_CORE_DEPENDENCY
+sbl_combined_boot_perf_test_PKG_LIST = sbl_combined_boot_perf_test
+sbl_combined_boot_perf_test_INCLUDE = $(sbl_combined_boot_perf_test_PATH)
+sbl_combined_boot_perf_test_SOCLIST = $(CUST_SBL_TEST_SOCS)
+sbl_combined_boot_perf_test_BOARDLIST = j7200_evm j721s2_evm j784s4_evm
+export sbl_combined_boot_perf_test_SOCLIST
+export sbl_combined_boot_perf_test_BOARDLIST
+sbl_combined_boot_perf_test_$(SOC)_CORELIST = mcu1_0
+export sbl_combined_boot_perf_test_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_combined_boot_perf_test
+sbl_combined_boot_perf_test_SBL_APPIMAGEGEN = yes
+export sbl_combined_boot_perf_test_SBL_APPIMAGEGEN
 
 # Boot App OSPI
 boot_app_ospi_COMP_LIST = boot_app_ospi
