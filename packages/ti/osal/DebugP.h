@@ -200,9 +200,9 @@ int32_t DebugP_registerExcptnLogFxn(DebugP_exptnLogFxn fxn);
  *
  */
 #if DebugP_LOG_ENABLED
-void DebugP_deRegisterExcptnLogFxn();
+void DebugP_deRegisterExcptnLogFxn(void);
 #else
-#define DebugP_deRegisterExcptnLogFxn()
+#define DebugP_deRegisterExcptnLogFxn(void)
 #endif
 
 /*!

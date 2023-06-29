@@ -115,7 +115,7 @@ static        bool        gUpdateFlag = (bool)true;
 /* external variables */
 extern uint32_t  gOsalTimerAllocCnt, gOsalTimerPeak;
 
-extern uint64_t uiPortGetRunTimeCounterValue64();
+extern uint64_t uiPortGetRunTimeCounterValue64(void);
 
 /* Local functions  */
 static uintptr_t TimerP_getTimerBaseAddr(uint32_t timer_id);
@@ -494,8 +494,8 @@ static uint32_t TimerP_isDMTIdRestricted(uint32_t id)
 	{
     for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
     {
-        if(Osal_mcuRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
-          id == TimerP_mapId(Osal_mcuRestrictedTimerID[looper].timerId, Osal_mcuRestrictedTimerID[looper].coreId))
+        if((OSAL_INVALID_CORE_ID != Osal_mcuRestrictedTimerID[looper].coreId) &&
+           (id == TimerP_mapId(Osal_mcuRestrictedTimerID[looper].timerId, Osal_mcuRestrictedTimerID[looper].coreId)))
         {
             isRestricted = 1U;
             break;
@@ -506,8 +506,8 @@ static uint32_t TimerP_isDMTIdRestricted(uint32_t id)
 	{
 		for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
     {
-        if(Osal_mainMcuRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
-          id == TimerP_mapId(Osal_mainMcuRestrictedTimerID[looper].timerId, Osal_mainMcuRestrictedTimerID[looper].coreId))
+        if((OSAL_INVALID_CORE_ID != Osal_mainMcuRestrictedTimerID[looper].coreId) &&
+           (id == TimerP_mapId(Osal_mainMcuRestrictedTimerID[looper].timerId, Osal_mainMcuRestrictedTimerID[looper].coreId)))
         {
             isRestricted = 1U;
             break;
@@ -518,8 +518,8 @@ static uint32_t TimerP_isDMTIdRestricted(uint32_t id)
 	volatile extern Osal_timerReserved Osal_c7xRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
 	for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
   {
-      if(Osal_c7xRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
-        id == TimerP_mapId(Osal_c7xRestrictedTimerID[looper].timerId, Osal_c7xRestrictedTimerID[looper].coreId))
+      if((OSAL_INVALID_CORE_ID != Osal_c7xRestrictedTimerID[looper].coreId) &&
+         (id == TimerP_mapId(Osal_c7xRestrictedTimerID[looper].timerId, Osal_c7xRestrictedTimerID[looper].coreId)))
       {
           isRestricted = 1U;
           break;
@@ -529,8 +529,8 @@ static uint32_t TimerP_isDMTIdRestricted(uint32_t id)
 	volatile extern Osal_timerReserved Osal_c66RestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
 	for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
   {
-      if(Osal_c66RestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
-        id == TimerP_mapId(Osal_c66RestrictedTimerID[looper].timerId, Osal_c66RestrictedTimerID[looper].coreId))
+      if((OSAL_INVALID_CORE_ID != Osal_c66RestrictedTimerID[looper].coreId) &&
+         (id == TimerP_mapId(Osal_c66RestrictedTimerID[looper].timerId, Osal_c66RestrictedTimerID[looper].coreId)))
       {
           isRestricted = 1U;
           break;
@@ -540,8 +540,8 @@ static uint32_t TimerP_isDMTIdRestricted(uint32_t id)
 	volatile extern Osal_timerReserved Osal_mpuRestrictedTimerID[TimerP_ANY_MAX_RESTRICTIONS];
 	for (looper = 0U; looper < TimerP_ANY_MAX_RESTRICTIONS; looper++)
   {
-      if(Osal_mpuRestrictedTimerID[looper].coreId != OSAL_INVALID_CORE_ID && 
-        id == TimerP_mapId(Osal_mpuRestrictedTimerID[looper].timerId, Osal_mpuRestrictedTimerID[looper].coreId))
+      if((OSAL_INVALID_CORE_ID != Osal_mpuRestrictedTimerID[looper].coreId) && 
+         (id == TimerP_mapId(Osal_mpuRestrictedTimerID[looper].timerId, Osal_mpuRestrictedTimerID[looper].coreId)))
       {
           isRestricted = 1U;
           break;
@@ -596,7 +596,7 @@ static TimerP_Status TimerP_dmTimerInstanceInit(TimerP_Struct *timer, uint32_t i
             nshift = ~shift;
             if (((uint32_t) 0U != (timerPAnyMask    & shift)) &&
                 ((uint32_t) 0U != (timer->availMask & shift)) &&
-                0U == TimerP_isDMTIdRestricted(mappedId)) 
+                (0U == TimerP_isDMTIdRestricted(mappedId)))
             {
                  timer->availMask &= nshift;
                  tempId = mappedId;

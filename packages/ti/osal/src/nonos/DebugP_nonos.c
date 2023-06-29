@@ -93,7 +93,7 @@ void DebugP_exceptionLog(const char * format, uint32_t arg1, uint32_t arg2)
 /*
  *  ======== DebugP_deRegisterExcptnLogFxn ========
  */
-void DebugP_deRegisterExcptnLogFxn()
+void DebugP_deRegisterExcptnLogFxn(void)
 {
     Osal_exptnLogFxn=NULL;
 }

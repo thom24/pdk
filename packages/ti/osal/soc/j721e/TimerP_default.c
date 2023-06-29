@@ -478,7 +478,7 @@ uint32_t TimerP_mapId(uint32_t id, uint32_t coreId)
 {
      uint32_t translate_id;
     
-     if (OSAL_MCU2_0 == coreId || OSAL_MCU2_1 == coreId || OSAL_MCU3_0 == coreId || OSAL_MCU3_1 == coreId)
+     if ((OSAL_MCU2_0 == coreId) || (OSAL_MCU2_1 == coreId) || (OSAL_MCU3_0 == coreId) || (OSAL_MCU3_1 == coreId))
      {
           /*
           * The interrupt events of Main domain's DM Timer instance 12  - 19
@@ -499,7 +499,7 @@ uint32_t TimerP_reverseMapId(uint32_t id, uint32_t coreId)
 {
      uint32_t translate_id;
 
-     if (OSAL_MCU2_0 == coreId || OSAL_MCU2_1 == coreId || OSAL_MCU3_0 == coreId || OSAL_MCU3_1 == coreId)
+     if ((OSAL_MCU2_0 == coreId) || (OSAL_MCU2_1 == coreId) || (OSAL_MCU3_0 == coreId) || (OSAL_MCU3_1 == coreId))
      {
           translate_id = id - 12U;
      }
