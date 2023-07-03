@@ -131,13 +131,13 @@ NOR_PhyConfig NOR_spiPhyFindTxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 
-        if((status == NOR_PASS) || (start.txDLL == TX_DLL_HIGH_SEARCH_END))
+        if((status == NOR_PASS) || (start.txDLL < (TX_DLL_HIGH_SEARCH_END + PHY_DDR_SEARCH_STEP)))
         {
             break;
         }
         else
         {
-            start.txDLL--;
+            start.txDLL-=PHY_DDR_SEARCH_STEP;
         }
 
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -172,13 +172,13 @@ NOR_PhyConfig NOR_spiPhyFindTxLow(OSPI_Handle handle, NOR_PhyConfig start, uint3
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 
-        if((status == NOR_PASS) || (start.txDLL == TX_DLL_LOW_SEARCH_END))
+        if((status == NOR_PASS) || (start.txDLL + PHY_DDR_SEARCH_STEP > TX_DLL_LOW_SEARCH_END))
         {
             break;
         }
         else
         {
-            start.txDLL++;
+            start.txDLL+=PHY_DDR_SEARCH_STEP;
         }
 
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -213,13 +213,13 @@ NOR_PhyConfig NOR_spiPhyFindRxHigh(OSPI_Handle handle, NOR_PhyConfig start, uint
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 
-        if((status == NOR_PASS) || (start.rxDLL == RX_DLL_HIGH_SEARCH_END))
+        if((status == NOR_PASS) || (start.rxDLL < (RX_DLL_HIGH_SEARCH_END + PHY_DDR_SEARCH_STEP)))
         {
             break;
         }
         else
         {
-            start.rxDLL--;
+            start.rxDLL-=PHY_DDR_SEARCH_STEP;
         }
 
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -253,13 +253,13 @@ NOR_PhyConfig NOR_spiPhyFindRxLow(OSPI_Handle handle, NOR_PhyConfig start, uint3
         NOR_spiPhyConfig(handle, start);
         status = NOR_spiPhyRdAttack(hwAttrs->dataAddr + offset);
 
-        if((status == NOR_PASS) || (start.rxDLL == RX_DLL_LOW_SEARCH_END))
+        if((status == NOR_PASS) || (start.rxDLL + PHY_DDR_SEARCH_STEP > RX_DLL_LOW_SEARCH_END))
         {
             break;
         }
         else
         {
-            start.rxDLL++;
+            start.rxDLL+=PHY_DDR_SEARCH_STEP;
         }
 
 #ifdef NOR_SPI_TUNE_DEBUG
@@ -380,13 +380,13 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
         }while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX);
 
         if((rxLow.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
-           (searchPoint.txDLL == NOR_SPI_PHY_TXDLL_LOW_WINDOW_END))
+           (searchPoint.txDLL + PHY_DDR_SEARCH_STEP > NOR_SPI_PHY_TXDLL_LOW_WINDOW_END))
         {
             break;
         }
         else
         {
-            searchPoint.txDLL++;
+            searchPoint.txDLL+=PHY_DDR_SEARCH_STEP;
         }
 
     }while(rxLow.rxDLL == PHY_DDR_TUNE_DLL_MAX);
@@ -646,13 +646,13 @@ NOR_STATUS Nor_spiPhyDdrTune(OSPI_Handle handle, uint32_t offset)
             }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);
 
             if((tempSearchPoint.rxDLL != PHY_DDR_TUNE_DLL_MAX) || \
-              (searchPoint.txDLL == NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END))
+              (searchPoint.txDLL < (NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END + PHY_DDR_SEARCH_STEP)))
             {
                 break;
             }
             else
             {
-                searchPoint.txDLL--;
+                searchPoint.txDLL-=PHY_DDR_SEARCH_STEP;
             }
 
         }while(tempSearchPoint.rxDLL == PHY_DDR_TUNE_DLL_MAX);

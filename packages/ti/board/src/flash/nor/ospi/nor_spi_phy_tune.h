@@ -55,11 +55,11 @@ typedef struct NOR_PhyConfig_s
     uint32_t rdDelay;
 } NOR_PhyConfig;
 
-#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_START     (0U)
-#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (127U)
+#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_START     (28U)
+#define NOR_SPI_PHY_TXDLL_LOW_WINDOW_END       (48U)
 
-#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START    (127U)
-#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END      (0U)
+#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_START    (96U)
+#define NOR_SPI_PHY_TXDLL_HIGH_WINDOW_END      (60U)
 
 #define NOR_SPI_PHY_VTM_TARGET      (700)
 
@@ -70,15 +70,16 @@ typedef struct NOR_PhyConfig_s
  * users need to be aware of it while adjusting below
  * ranges to minimize tuning time
  */
+#define PHY_DDR_SEARCH_STEP         (4U)
 #define RX_DLL_LOW_SEARCH_START     (0U)
-#define RX_DLL_LOW_SEARCH_END       (127U)
+#define RX_DLL_LOW_SEARCH_END       (40U)
 #define RX_DLL_HIGH_SEARCH_START    (127U)
-#define RX_DLL_HIGH_SEARCH_END      (0U)
+#define RX_DLL_HIGH_SEARCH_END      (24U)
 #define TX_DLL_LOW_SEARCH_START     (0U)
-#define TX_DLL_LOW_SEARCH_END       (127U)
+#define TX_DLL_LOW_SEARCH_END       (64U)
 #define TX_DLL_HIGH_SEARCH_START    (127U)
-#define TX_DLL_HIGH_SEARCH_END      (0U)
-#define TX_DLL_SEC_SEARCH_OFFSET    (4U)
+#define TX_DLL_HIGH_SEARCH_END      (78U)
+#define TX_DLL_SEC_SEARCH_OFFSET    (8U)
 #define PHY_DDR_TUNE_RD_DELAY_START (1U)
 #define PHY_DDR_TUNE_RD_DELAY_END   (4U)
 #define PHY_DDR_TUNE_DLL_MAX        (128U)
