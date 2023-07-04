@@ -37,9 +37,15 @@
  *
  */
 
+#include <ti/drv/sciclient/sciclient.h>
+
 void Sciserver_socInit()
 {
     /**
-     * No SoC specific changes required for j7200 during sciserver_init 
+     * Set the frequency of msmc clock to 1GHz during DM initialisation
      */
+    Sciclient_pmSetModuleClkFreq(TISCI_DEV_A72SS0_CORE0,TISCI_DEV_A72SS0_CORE0_MSMC_CLK,
+                                1000000000, TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE ,
+                                SCICLIENT_SERVICE_WAIT_FOREVER);
+
 }
