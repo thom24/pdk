@@ -42,10 +42,11 @@ MAX_APP_SIZE_EMMC ?= 0x7D000
 EEPROM_DATA_DDR_ADDRESS ?= 0x90000000
 
 ifeq ($(BOOT_PERF), yes)
-  APP_NAME = sbl_boot_perf_cust_img
   ifeq ($(SBL_IMAGE_TYPE),combined)
+    APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_combined
     LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_combined_$(CORE)
   else
+    APP_NAME = sbl_boot_perf_$(BOOTMODE)_img
     LOCAL_APP_NAME = sbl_boot_perf_$(BOOTMODE)_img_$(CORE)
   endif
 else ifeq ($(BOOTMODE), xip)
