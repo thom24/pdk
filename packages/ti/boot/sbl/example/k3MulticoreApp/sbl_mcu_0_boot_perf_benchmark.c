@@ -65,10 +65,12 @@ struct tisci_boardcfg_sec sblPerfTestBoardCfg_sec __attribute((section(".sysfw_d
 static void  BOOT_PERF_TEST_CacheCleanInvalidateDcacheSetWay (void)
 {
     uint32_t set = 0, way = 0;
+    uint32_t numSets = CSL_armR5CacheGetNumSets();
+    uint32_t numWays = CSL_armR5CacheGetNumWays();
 
-    for (set = 0; set < 128; set ++)
+    for (set = 0; set < numSets; set ++)
     {
-        for (way = 0; way < 4; way++)
+        for (way = 0; way < numWays; way++)
         {
             CSL_armR5CacheCleanInvalidateDcacheSetWay(set, way);
         }
