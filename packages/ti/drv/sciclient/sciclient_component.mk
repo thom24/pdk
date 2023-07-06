@@ -421,6 +421,35 @@ SCICLIENT_FW_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST) sa
 $(eval ${SCICLIENT_FW_TESTAPP_MACRO_LIST})
 
 
+# SCICLIENT PMIC shutdown test
+define SCICLIENT_PMIC_SHUTDOWN_TESTAPP_RULE
+
+export sciclient_pmic_shutdown_testapp_$(1)_COMP_LIST = sciclient_pmic_shutdown_testapp_$(1)
+export sciclient_pmic_shutdown_testapp_$(1)_RELPATH = ti/drv/sciclient/examples/sciclient_pmic_shutdown_testapp
+export sciclient_pmic_shutdown_testapp_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_pmic_shutdown_testapp
+export sciclient_pmic_shutdown_testapp_$(1)_BOARD_DEPENDENCY = no
+export sciclient_pmic_shutdown_testapp_$(1)_CORE_DEPENDENCY = yes
+export sciclient_pmic_shutdown_testapp_$(1)_PKG_LIST = sciclient_pmic_shutdown_testapp_$(1)
+export sciclient_pmic_shutdown_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)),j721e_evm j7200_evm j721s2_evm j784s4_evm)
+export sciclient_pmic_shutdown_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
+export sciclient_pmic_shutdown_testapp_$(1)_SBL_APPIMAGEGEN = yes
+export sciclient_pmic_shutdown_testapp_$(1)_SBL_IMAGEGEN = no
+export sciclient_pmic_shutdown_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export sciclient_pmic_shutdown_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+ifneq ($(1),$(filter $(1), safertos))
+sciclient_EXAMPLE_LIST += sciclient_pmic_shutdown_testapp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+sciclient_EXAMPLE_LIST += sciclient_pmic_shutdown_testapp_$(1)
+endif
+endif
+
+endef
+
+SCICLIENT_PMIC_SHUTDOWN_TESTAPP_MACRO_LIST := $(foreach curos, $(drvsciclient_RTOS_LIST) safertos, $(call SCICLIENT_PMIC_SHUTDOWN_TESTAPP_RULE,$(curos)))
+
+$(eval ${SCICLIENT_PMIC_SHUTDOWN_TESTAPP_MACRO_LIST})
+
 export sciclient_LIB_LIST
 export sciclient_EXAMPLE_LIST
 export drvsciclient_LIB_LIST = $(sciclient_LIB_LIST)
