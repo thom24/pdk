@@ -56,7 +56,7 @@ void UART_disableDmaChannel(UART_Handle handle, bool txChan)
 
     hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
 
-    if (txChan == (bool)true)
+    if (BTRUE == txChan)
     {
         channel = (Udma_ChHandle)(hwAttrs->dmaInfo->txChHandle);
     }
@@ -67,7 +67,7 @@ void UART_disableDmaChannel(UART_Handle handle, bool txChan)
 
     (void)Udma_chDisable(channel, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
     /* Flush any pending request from the free queue */
-    while(1)
+    while(BTRUE)
     {
         uint64_t            pDesc;
         int32_t             tempRetVal;
@@ -118,7 +118,7 @@ static void UART_udmaHpdInit(Udma_ChHandle  chHandle,
 
     /* Setup descriptor */
     CSL_udmapCppi5SetDescType(pHpd, descType);
-    CSL_udmapCppi5SetEpiDataPresent(pHpd, (bool)false);
+    CSL_udmapCppi5SetEpiDataPresent(pHpd, BFALSE);
     CSL_udmapCppi5SetPsDataLoc(pHpd, 0U);
     CSL_udmapCppi5SetPsDataLen(pHpd, 0U);
     CSL_udmapCppi5SetPktLen(pHpd, descType, length);
@@ -139,7 +139,7 @@ static void UART_udmaHpdInit(Udma_ChHandle  chHandle,
     CSL_udmapCppi5SetOrgBufferAddr(pHpd, (uint64_t) bufPtr);
     CSL_udmapCppi5SetOrgBufferLen(pHpd, length);
 
-    if(UART_dmaIsCacheCoherent() != TRUE)
+    if(UTRUE != UART_dmaIsCacheCoherent())
     {
         CacheP_wbInv((const void *)pHpd, (int32_t)(sizeof(CSL_UdmapCppi5HMPD)));
     }
@@ -369,13 +369,13 @@ static void UART_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
     CSL_UdmapCppi5HMPD *pHmpd;
     uint32_t            size = 0;
 
-    if(appData != NULL)
+    if(NULL != appData)
     {
         handle  = (UART_Handle)appData;
         hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
         object  = (UART_V1_Object *)handle->object;
 
-        if(UART_dmaIsCacheCoherent() != TRUE)
+        if(UTRUE != UART_dmaIsCacheCoherent())
         {
             CacheP_Inv((const void *)hwAttrs->dmaInfo->cqRxRingMem, (int32_t)(sizeof(void *)));
         }
@@ -384,7 +384,7 @@ static void UART_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
          * to be re-used for the next transfer
          */
         status = Udma_ringDequeueRaw(Udma_chGetCqRingHandle((Udma_ChHandle) hwAttrs->dmaInfo->rxChHandle), &pDesc);
-        if ((UDMA_SOK == status) && (pDesc != 0UL))
+        if ((UDMA_SOK == status) && (0UL != pDesc))
         {
             pHmpd = (CSL_UdmapCppi5HMPD *)(uintptr_t)pDesc;
             size = (pHmpd->descInfo & CSL_UDMAP_CPPI5_PD_DESCINFO_PKTLEN_MASK) >> CSL_UDMAP_CPPI5_PD_DESCINFO_PKTLEN_SHIFT;
@@ -400,7 +400,7 @@ static void UART_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
                  * bytes that need to be received in non-DMA mode
                  */
                 bytesRemain = (uint32_t)(object->readSize) % (uint32_t)(hwAttrs->rxTrigLvl);
-                if (((uint32_t)(object->readSize) >= (uint32_t)(hwAttrs->rxTrigLvl)) && (bytesRemain != 0U))
+                if (((uint32_t)(object->readSize) >= (uint32_t)(hwAttrs->rxTrigLvl)) && (0U != bytesRemain))
                 {
                     /*
                      * read size is not multiple of RX threshold
@@ -416,14 +416,14 @@ static void UART_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
                     /*
                      * all the data received
                      */
-                    if (object->readTrans != NULL)
+                    if (NULL != object->readTrans)
                     {
                         object->readTrans->count = (uint32_t)(object->readCount);
                         object->readTrans->status = UART_TRANSFER_STATUS_SUCCESS;
                     }
                     object->readSize = 0;
                     UARTIntDisable(hwAttrs->baseAddr, UART_INT_LINE_STAT);
-                    UART_v1_callback(handle, (bool)true);
+                    UART_v1_callback(handle, BTRUE);
                 }
             }
         }
@@ -440,15 +440,15 @@ static void UART_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
     uint64_t            pDesc = 0;
     int32_t             status;
     CSL_UdmapCppi5HMPD *pHmpd;
-    uint32_t            size = 0;
+    uint32_t            size = 0U;
 
-    if(appData != NULL)
+    if(NULL != appData)
     {
         handle = (UART_Handle)appData;
         hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
         object = (UART_V1_Object *)handle->object;
 
-        if(UART_dmaIsCacheCoherent() != TRUE)
+        if(UTRUE != UART_dmaIsCacheCoherent())
         {
             CacheP_Inv((const void *)hwAttrs->dmaInfo->cqTxRingMem, (int32_t)(sizeof(void *)));
         }
@@ -459,7 +459,7 @@ static void UART_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
          */
         status = Udma_ringDequeueRaw(Udma_chGetCqRingHandle((Udma_ChHandle) hwAttrs->dmaInfo->txChHandle), &pDesc);
 
-        if ((UDMA_SOK == status) && (pDesc != 0UL))
+        if ((UDMA_SOK == status) && (0UL != pDesc))
         {
             pHmpd = (CSL_UdmapCppi5HMPD *)(uintptr_t)pDesc;
             size = (pHmpd->descInfo & CSL_UDMAP_CPPI5_PD_DESCINFO_PKTLEN_MASK) >> CSL_UDMAP_CPPI5_PD_DESCINFO_PKTLEN_SHIFT;
@@ -468,13 +468,13 @@ static void UART_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
             /*
              * all the data sent
              */
-            if (object->writeTrans != NULL)
+            if (NULL != object->writeTrans)
             {
                 object->writeTrans->count = (uint32_t)(object->writeCount);
                 object->writeTrans->status = UART_TRANSFER_STATUS_SUCCESS;
             }
             object->writeSize = 0;
-            object->txDataSent = TRUE;
+            object->txDataSent = UTRUE;
             UARTInt2Enable(hwAttrs->baseAddr, UART_INT2_TX_EMPTY);
         }
     }
@@ -485,9 +485,9 @@ static inline uint32_t UART_dmaIsCacheCoherent(void)
     uint32_t isCacheCoherent;
 
 #if (!defined (__aarch64__) || defined(SOC_AM64X))
-    isCacheCoherent = FALSE;
+    isCacheCoherent = UFALSE;
 #else
-    isCacheCoherent = TRUE;
+    isCacheCoherent = UTRUE;
 #endif
 
     return (isCacheCoherent);

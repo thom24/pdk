@@ -78,7 +78,7 @@ bool Board_initUART(void)
     Board_initCfg boardCfg;
     Board_STATUS  boardStatus;
     int32_t status;
-    bool ret = true;
+    bool ret = BTRUE;
 
     /* 
        Initialize the UART PRU FW configuration.
@@ -88,28 +88,28 @@ bool Board_initUART(void)
     
     boardCfg = BOARD_INIT_PLL | BOARD_INIT_MODULE_CLOCK | BOARD_INIT_DDR | BOARD_INIT_ICSS_PINMUX;
     boardStatus = Board_init(boardCfg);
-    if (boardStatus != BOARD_SOK)
+    if (BOARD_SOK != boardStatus)
     {
-        ret = false;
+        ret = BFALSE;
     }
     
-    if (ret == true)
+    if (BTRUE == ret)
     {
         // Enable PRU-ICSS module
         status = PRCMModuleEnable(CHIPDB_MOD_ID_PRU_ICSS, 1U, 0U);
-        if (status != S_PASS)
+        if (S_PASS != status)
         {
-            ret = false;
+            ret = BFALSE;
         }
     }
     
-    if (ret == true)
+    if (BTRUE == ret)
     {
         // Enable UART1 HW module
         status = PRCMModuleEnable(CHIPDB_MOD_ID_UART, 1U, 0U);
-        if (status != S_PASS)
+        if (S_PASS != status)
         {
-            ret = false;
+            ret = BFALSE;
         }
     }
 
@@ -132,7 +132,7 @@ Void uart_test(UArg arg0, UArg arg1)
 
     UART_puts("\nuart driver and utils example test cases :\nEnter 16 characters or press the esc \n",sizeof("uart driver and utils example test cases : please enter 16 characters or press the esc or carriage return\n"));
 
-    while (1) 
+    while (BTRUE) 
     {
         memset(buffPointer,0,INPUT_LENGTH);
         UART_gets(buffPointer, INPUT_LENGTH);
@@ -153,7 +153,7 @@ int main(void)
     Task_Params taskParams;
     Error_Block eb;
 
-    if (Board_initUART() == false)
+    if (BFALSE == Board_initUART())
     {
         System_printf("\nBoard_initUART failed!\n");
         BIOS_exit(0);
@@ -169,7 +169,7 @@ int main(void)
 
     // Create task
     task = Task_create(uart_test, &taskParams, &eb);
-    if (task == NULL) {
+    if (NULL == task) {
         System_printf("Task_create() failed!\n");
         BIOS_exit(0);
     }

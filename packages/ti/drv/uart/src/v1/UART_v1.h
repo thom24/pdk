@@ -57,7 +57,7 @@ extern const UART_FxnTable UART_FxnTable_v1;
  *  @brief Function to set interrupt path
  *
  *  This function will configure the interrupt path to the destination CPU
-*   using DMSC firmware via sciclient. if setIntrPath is set to TRUE,
+*   using DMSC firmware via sciclient. if setIntrPath is set to BTRUE,
 *   a path is set, else the interrupt path is released
  */
 typedef int32_t (*UART_socCfgIntrPathFxn)(const void *pHwAttrs, bool setIntrPath);

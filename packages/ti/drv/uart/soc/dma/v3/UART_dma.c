@@ -109,7 +109,7 @@ static void UartSci_TxEDMACallbackFxn(uintptr_t arg, uint8_t transferCompletionC
     ptrUartSciDriver->writeSize  = 0U;
 
     /* The callee was blocked so post the semaphore to wakeup the callee */
-    UartSci_callback(ptrUartSciDriver->handle, false);
+    UartSci_callback(ptrUartSciDriver->handle, BFALSE);
 
     return;
 }
@@ -153,7 +153,7 @@ static void UartSci_RxEDMACallbackFxn(uintptr_t arg, uint8_t transferCompletionC
     ptrUartSciDriver->readSize  = 0U;
 
     /* The callee was blocked so post the semaphore to wakeup the callee */
-    UartSci_callback(ptrUartSciDriver->handle, true);
+    UartSci_callback(ptrUartSciDriver->handle, BTRUE);
 
     return;
 }
@@ -169,9 +169,9 @@ static void UartSci_RxEDMACallbackFxn(uintptr_t arg, uint8_t transferCompletionC
  *  \ingroup UART_SCI_INTERNAL_FUNCTION
  *
  *  @retval
- *      true    - DMA services are enabled
+ *      BTRUE    - DMA services are enabled
  *  @retval
- *      false   - DMA services are not enabled
+ *      BFALSE   - DMA services are not enabled
  */
 bool UartSci_isEDMAEnabled (UartSci_Driver* ptrUartSciDriver)
 {
@@ -191,8 +191,8 @@ bool UartSci_isEDMAEnabled (UartSci_Driver* ptrUartSciDriver)
  *  @param[in]  numBytes
  *      Number of bytes to be transmitted
  *  @param[in]  pollingMode
- *      Set to true to indicate that we need to poll for completion else
- *      set to false
+ *      Set to BTRUE to indicate that we need to poll for completion else
+ *      set to BFALSE
  *
  *  \ingroup UART_SCI_INTERNAL_FUNCTION
  *
@@ -211,7 +211,7 @@ int32_t UartSci_initiateRxEDMA
     EDMA_channelConfig_t*   ptrEDMACfg;
     int32_t                 retVal = -1;
     int32_t                 errCode;
-    bool                    isTransferComplete = false;
+    bool                    isTransferComplete = BFALSE;
 
     /* Get the DMA Block: */
     ptrDriverEDMA = &ptrUartSciDriver->dmaInfo[UART_DMA_RX];
@@ -227,7 +227,7 @@ int32_t UartSci_initiateRxEDMA
     ptrEDMACfg->paramSetConfig.bCount = numBytes;
 
     /* Is Polling Mode enabled? */
-    if (pollingMode == true)
+    if (BTRUE == pollingMode)
     {
         /* Polling Mode: There is no need to register the callback function */
         ptrEDMACfg->transferCompletionCallbackFxn    = NULL;
@@ -241,8 +241,8 @@ int32_t UartSci_initiateRxEDMA
     }
 
     /* Configure the EDMA Channel: */
-    errCode = EDMA_configChannel(ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle, ptrEDMACfg, true);
-    if (errCode != EDMA_NO_ERROR)
+    errCode = EDMA_configChannel(ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle, ptrEDMACfg, BTRUE);
+    if (EDMA_NO_ERROR != errCode)
     {
         /* Error: Unable to configure the EDMA channel. Setup the return value */
         UART_drv_log1 ("Error: UART EDMA configuration failed [Error code %d]\n", errCode);
@@ -254,10 +254,10 @@ int32_t UartSci_initiateRxEDMA
     UartSci_enableRxDMA(ptrDriverEDMA->ptrHwCfg->ptrSCIRegs);
 
     /* Are we operating in polled mode or blocking mode? */
-    if (pollingMode == true)
+    if (BTRUE == pollingMode)
     {
         /* Polling Mode: Poll for the DMA completion status here */
-        while (isTransferComplete == false)
+        while (BFALSE == isTransferComplete)
         {
             errCode = EDMA_isTransferComplete(ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle,
                                               ptrDriverEDMA->ptrHwCfg->rxDMARequestLine,
@@ -296,8 +296,8 @@ exit:
  *  @param[in]  numBytes
  *      Number of bytes to be transmitted
  *  @param[in]  pollingMode
- *      Set to true to indicate that we need to poll for completion else
- *      set to false
+ *      Set to BTRUE to indicate that we need to poll for completion else
+ *      set to BFALSE
  *
  *  \ingroup UART_SCI_INTERNAL_FUNCTION
  *
@@ -319,7 +319,7 @@ int32_t UartSci_initiateTxEDMA
     EDMA_paramConfig_t*     ptrDummyEDMACfg;
     int32_t                 retVal = -1;
     int32_t                 errCode;
-    bool                    isTransferComplete = false;
+    bool                    isTransferComplete = BFALSE;
 
     /* Get the DMA Block: */
     ptrDriverEDMA = &ptrUartSciDriver->dmaInfo[UART_DMA_TX];
@@ -336,8 +336,8 @@ int32_t UartSci_initiateTxEDMA
     ptrEDMACfg->paramSetConfig.bCount        = numBytes;
 
     /* Configure the EDMA Channel: */
-    errCode = EDMA_configChannel(ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle, ptrEDMACfg, true);
-    if (errCode != EDMA_NO_ERROR)
+    errCode = EDMA_configChannel(ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle, ptrEDMACfg, BTRUE);
+    if (EDMA_NO_ERROR != errCode)
     {
         /* Error: Unable to configure the EDMA channel. Setup the return value */
         UART_drv_log1 ("Error: UART EDMA configuration failed [Error code %d]\n", errCode);
@@ -346,7 +346,7 @@ int32_t UartSci_initiateTxEDMA
     }
 
     /* Is Polling Mode enabled? */
-    if (pollingMode == true)
+    if (BTRUE == pollingMode)
     {
         /* Polling Mode: There is no need to register the callback function */
         ptrDummyEDMACfg->transferCompletionCallbackFxn    = NULL;
@@ -363,7 +363,7 @@ int32_t UartSci_initiateTxEDMA
     errCode = EDMA_configParamSet (ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle,
                                    ptrDriverEDMA->ptrHwCfg->swCfg.paramSetId,
                                    ptrDummyEDMACfg);
-    if (errCode != EDMA_NO_ERROR)
+    if (EDMA_NO_ERROR != errCode)
     {
         /* Error: Unable to configure the param set. Setup the return value */
         UART_drv_log1 ("Error: UART EDMA configuration failed [Error code %d]\n", errCode);
@@ -375,7 +375,7 @@ int32_t UartSci_initiateTxEDMA
     errCode = EDMA_linkParamSets (ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle,
                                   ptrEDMACfg->channelId,
                                   ptrDriverEDMA->ptrHwCfg->swCfg.paramSetId);
-    if (errCode != EDMA_NO_ERROR)
+    if (EDMA_NO_ERROR != errCode)
     {
         /* Error: Unable to link the param set. Setup the return value */
         UART_drv_log1 ("Error: UART EDMA configuration failed [Error code %d]\n", errCode);
@@ -387,17 +387,17 @@ int32_t UartSci_initiateTxEDMA
     UartSci_enableTxDMA(ptrDriverEDMA->ptrHwCfg->ptrSCIRegs);
 
     /* Are we operating in polled mode or blocking mode? */
-    if (pollingMode == true)
+    if (BTRUE == pollingMode)
     {
         /* Polling Mode: Poll for the DMA completion status here */
-        while (isTransferComplete == false)
+        while (BFALSE == isTransferComplete)
         {
             errCode = EDMA_isTransferComplete(ptrDriverEDMA->ptrHwCfg->swCfg.edmaHandle,
                                               ptrDriverEDMA->ptrHwCfg->txDMARequestLine,
                                               &isTransferComplete);
 
             /* Sanity Check: Ensure that there is no EDMA Error. */
-            UART_osalAssert (errCode == EDMA_NO_ERROR);
+            UART_osalAssert (EDMA_NO_ERROR == errCode);
         }
 
         /* Write operation for the driver is complete */
@@ -463,7 +463,7 @@ static void UartSci_initEDMAInfo(UartSci_DriverEDMA* ptrDriverEDMA,
         ptrEDMACfg->paramSetConfig.destinationAddress = (uint32_t)&ptrHwCfg->ptrSCIRegs->SCITD;
         ptrEDMACfg->paramSetConfig.sourceBindex       = 1U;
         ptrEDMACfg->paramSetConfig.destinationBindex  = 0U;
-        ptrEDMACfg->paramSetConfig.isFinalTransferInterruptEnabled = false;
+        ptrEDMACfg->paramSetConfig.isFinalTransferInterruptEnabled = BFALSE;
     }
     else
     {
@@ -471,7 +471,7 @@ static void UartSci_initEDMAInfo(UartSci_DriverEDMA* ptrDriverEDMA,
         ptrEDMACfg->paramSetConfig.sourceAddress       = (uint32_t)&ptrHwCfg->ptrSCIRegs->SCIRD;
         ptrEDMACfg->paramSetConfig.sourceBindex        = 0U;
         ptrEDMACfg->paramSetConfig.destinationBindex   = 1U;
-        ptrEDMACfg->paramSetConfig.isFinalTransferInterruptEnabled = true;
+        ptrEDMACfg->paramSetConfig.isFinalTransferInterruptEnabled = BTRUE;
     }
 
     ptrEDMACfg->channelId                                             = chanIdTcc;
@@ -491,11 +491,11 @@ static void UartSci_initEDMAInfo(UartSci_DriverEDMA* ptrDriverEDMA,
     ptrEDMACfg->paramSetConfig.sourceAddressingMode                   = (uint8_t)EDMA3_ADDRESSING_MODE_LINEAR;
     ptrEDMACfg->paramSetConfig.destinationAddressingMode              = (uint8_t)EDMA3_ADDRESSING_MODE_LINEAR;
     ptrEDMACfg->paramSetConfig.fifoWidth                              = (uint8_t)EDMA3_FIFO_WIDTH_128BIT;
-    ptrEDMACfg->paramSetConfig.isStaticSet                            = false;
-    ptrEDMACfg->paramSetConfig.isEarlyCompletion                      = false;
-    ptrEDMACfg->paramSetConfig.isIntermediateTransferInterruptEnabled = false;
-    ptrEDMACfg->paramSetConfig.isFinalChainingEnabled                 = false;
-    ptrEDMACfg->paramSetConfig.isIntermediateChainingEnabled          = false;
+    ptrEDMACfg->paramSetConfig.isStaticSet                            = BFALSE;
+    ptrEDMACfg->paramSetConfig.isEarlyCompletion                      = BFALSE;
+    ptrEDMACfg->paramSetConfig.isIntermediateTransferInterruptEnabled = BFALSE;
+    ptrEDMACfg->paramSetConfig.isFinalChainingEnabled                 = BFALSE;
+    ptrEDMACfg->paramSetConfig.isIntermediateChainingEnabled          = BFALSE;
 
     if (isTx)
     {
@@ -509,7 +509,7 @@ static void UartSci_initEDMAInfo(UartSci_DriverEDMA* ptrDriverEDMA,
         * - Set the bCount to be 0 to indicate that this is a Dummy Transfer
         * - Generate an interrupt once the final transfer for Tx is done. */
         ptrDummyEDMACfg->paramSetConfig.bCount                          = 0U;
-        ptrDummyEDMACfg->paramSetConfig.isFinalTransferInterruptEnabled = true;
+        ptrDummyEDMACfg->paramSetConfig.isFinalTransferInterruptEnabled = BTRUE;
     }
 }
 
@@ -537,19 +537,19 @@ int32_t UartSci_openEDMA (UartSci_Driver* ptrUartSciDriver, UartSci_HwCfg* ptrHw
     {
         /* Extract and setup transmit EDMA Information Block */
         UartSci_initEDMAInfo(&ptrUartSciDriver->dmaInfo[UART_DMA_TX],
-                             ptrHwCfg, true);
+                             ptrHwCfg, BTRUE);
 
         /* Extract and setup receive EDMA Information Block */
         UartSci_initEDMAInfo(&ptrUartSciDriver->dmaInfo[UART_DMA_RX],
-                             ptrHwCfg, false);
+                             ptrHwCfg, BFALSE);
 
         /* Register the DMA Information Block with the UART Driver: */
-        ptrUartSciDriver->isDMAEnabled = true;
+        ptrUartSciDriver->isDMAEnabled = BTRUE;
 
     }
     else
     {
-        ptrUartSciDriver->isDMAEnabled = false;
+        ptrUartSciDriver->isDMAEnabled = BFALSE;
     }
 
     return 0;
@@ -599,7 +599,7 @@ int32_t UartSci_closeEDMA (UartSci_Driver* ptrUartSciDriver)
         }
 
         /* Deregister the DMA Information: */
-        ptrUartSciDriver->isDMAEnabled = false;
+        ptrUartSciDriver->isDMAEnabled = BFALSE;
         retVal = 0;
     }
 exit:

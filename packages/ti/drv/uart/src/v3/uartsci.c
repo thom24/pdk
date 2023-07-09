@@ -1279,7 +1279,7 @@ void UartSci_callback (UART_Handle handle, bool isRx)
     /* Call back to application */
     if (isRx)
     {
-        if (ptrUartSciDriver->params.readMode == UART_MODE_CALLBACK)
+        if (UART_MODE_CALLBACK == ptrUartSciDriver->params.readMode)
         {
              ptrUartSciDriver->params.readCallback(handle,
                                                    (void *)ptrUartSciDriver->ptrReadBuffer,
@@ -1292,7 +1292,7 @@ void UartSci_callback (UART_Handle handle, bool isRx)
     }
     else
     {
-        if ( ptrUartSciDriver->params.writeMode == UART_MODE_CALLBACK)
+        if (UART_MODE_CALLBACK == ptrUartSciDriver->params.writeMode)
         {
              ptrUartSciDriver->params.writeCallback(handle,
                                                     (void *)(ptrUartSciDriver->ptrWriteBuffer),
@@ -1507,7 +1507,7 @@ static void UartSci_ISR (uintptr_t arg)
                 {
                     /* Disable RX interrupt until we do a new read */
                     UartSci_disableRxInterrupt(ptrHwCfg->ptrSCIRegs);
-                    UartSci_callback((UART_Handle)arg, true);
+                    UartSci_callback((UART_Handle)arg, BTRUE);
                 }
             }
             else
@@ -1545,7 +1545,7 @@ static void UartSci_ISR (uintptr_t arg)
                 {
                     /* Disable TX interrupt until we do a new write */
                     UartSci_disableTxInterrupt(ptrHwCfg->ptrSCIRegs);
-                    UartSci_callback((UART_Handle)arg, false);
+                    UartSci_callback((UART_Handle)arg, BFALSE);
                 }
             }
         }
@@ -1656,7 +1656,7 @@ static int32_t UartSci_read(UART_Handle handle, void *buffer, size_t size)
 
 #ifdef UART_DMA_ENABLE
         /* Determine the DMA Mode for the Driver: */
-        if (ptrUartSciDriver->isDMAEnabled == true)
+        if (BTRUE == ptrUartSciDriver->isDMAEnabled)
         {
             /****************************************************************
             * DMA Mode: Initiate the Receive DMA
@@ -1788,7 +1788,7 @@ static int32_t UartSci_readPolling(UART_Handle handle, void *buffer, size_t size
 
 #ifdef UART_DMA_ENABLE
     /* Determine the DMA Mode for the Driver: */
-    if (ptrUartSciDriver->isDMAEnabled == true)
+    if (BTRUE == ptrUartSciDriver->isDMAEnabled)
     {
         /****************************************************************
          * DMA Mode: Initiate the Receive DMA
@@ -1884,7 +1884,7 @@ static void UartSci_readCancel(UART_Handle handle)
         ptrUartSciDriver->readSize = 0;
 
         /* Determine the DMA Mode for the Driver: */
-        if (ptrUartSciDriver->isDMAEnabled == true)
+        if (BTRUE == ptrUartSciDriver->isDMAEnabled)
         {
             /****************************************************************
              * DMA Mode: Disable the Rx DMA
@@ -1902,7 +1902,7 @@ static void UartSci_readCancel(UART_Handle handle)
         /* Restore the interrupts: */
         UART_osalHardwareIntRestore(key);
 
-        UartSci_callback(handle, true);
+        UartSci_callback(handle, BTRUE);
 
         /* Debug Message: */
         UART_drv_log2 ("Debug: UART(%p) read canceled %d bytes have been read\n",
@@ -1988,7 +1988,7 @@ static int32_t UartSci_write(UART_Handle handle, const void *buffer, size_t size
 
 #ifdef UART_DMA_ENABLE
         /* Determine the DMA Mode for the Driver: */
-        if (ptrUartSciDriver->isDMAEnabled == true)
+        if (BTRUE == ptrUartSciDriver->isDMAEnabled)
         {
             /****************************************************************
             * DMA Mode: Initiate the transmit DMA
@@ -2138,7 +2138,7 @@ static int32_t UartSci_writePolling(UART_Handle handle, const void* buffer, size
 
 #ifdef UART_DMA_ENABLE
     /* Determine the DMA Mode for the Driver: */
-    if (ptrUartSciDriver->isDMAEnabled == true)
+    if (BTRUE == ptrUartSciDriver->isDMAEnabled)
     {
         /****************************************************************
          * DMA Mode: Initiate the transmit DMA
@@ -2237,7 +2237,7 @@ static void UartSci_writeCancel(UART_Handle handle)
         ptrUartSciDriver->writeSize = 0;
 
         /* Determine the DMA Mode for the Driver: */
-        if (ptrUartSciDriver->isDMAEnabled == true)
+        if (BTRUE == ptrUartSciDriver->isDMAEnabled)
         {
             /* DMA Mode: Disable the Tx DMA */
             UartSci_disableTxDMA (ptrHwCfg->ptrSCIRegs);
@@ -2252,7 +2252,7 @@ static void UartSci_writeCancel(UART_Handle handle)
         UART_osalHardwareIntRestore(key);
 
         /* We have cancelled the write operation. Invoke post-write operation */
-        UartSci_callback(handle, false);
+        UartSci_callback(handle, BFALSE);
 
         /* Debug Message: */
         UART_drv_log2 ("Debug: UART(%p) write canceled %d bytes have been written\n",

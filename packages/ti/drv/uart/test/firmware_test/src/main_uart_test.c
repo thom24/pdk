@@ -234,7 +234,7 @@ bool Board_initUART(void)
     Board_initCfg boardCfg;
     Board_STATUS  boardStatus;
     int32_t status;
-    bool ret = true;
+    bool ret = BTRUE;
 
     /* 
        Initialize the UART PRU FW configuration.
@@ -247,32 +247,32 @@ bool Board_initUART(void)
     //boardCfg |= BOARD_INIT_UART_STDIO;
     //boardCfg |= BOARD_INIT_PINMUX_CONFIG;
     boardStatus = Board_init(boardCfg);
-    if (boardStatus != BOARD_SOK)
+    if (BOARD_SOK != boardStatus)
     {
-        ret = false;
+        ret = BFALSE;
     }
     
-    if (ret == true)
+    if (BTRUE == ret)
     {
         // Enable PRU-ICSS module
         status = PRCMModuleEnable(CHIPDB_MOD_ID_PRU_ICSS, 1U, 0U);
-        if (status != S_PASS)
+        if (S_PASS != status)
         {
-            ret = false;
+            ret = BFALSE;
         }
     }
     
-    if (ret == true)
+    if (BTRUE == ret)
     {
         // Enable UART1 HW module
         status = PRCMModuleEnable(CHIPDB_MOD_ID_UART, 1U, 0U);
-        if (status != S_PASS)
+        if (S_PASS != status)
         {
-            ret = false;
+            ret = BFALSE;
         }
     }
     
-    if (ret == true)
+    if (BTRUE == ret)
     {
         // Configure pinmux for UART1 HW IP
         ret = configUartIoPinMux(&gUartIoPinMuxAttrs);
@@ -468,23 +468,23 @@ static bool UART_test_printf_scanf(
 )
 {
     uint32_t uartInst;
-    bool ret = false;
+    bool ret = BFALSE;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
     
-    if (uartParity == UART_PAR_NONE)
+    if (UART_PAR_NONE == uartParity)
     {
         UART_stdioInit(uartInst);
 
         UART_printf(stdioPrint);
 
         memset(scanPrompt, 0, sizeof(scanPrompt));
-        if (UART_scanFmt(scanPrompt) != S_PASS)
+        if (S_PASS != UART_scanFmt(scanPrompt))
         {
             goto Err;
         }
 
-        ret = true;
+        ret = BTRUE;
 
 Err:
         UART_stdioDeInit();
@@ -496,7 +496,7 @@ Err:
          * (UART_PAR_NONE), since UART_stdioInit() only allows default
          * UART parameter settings.
          */
-        ret = true;
+        ret = BTRUE;
     }
 
     return (ret);
@@ -513,7 +513,7 @@ static bool UART_test_printf_scanf_stdio_params(
 )
 {
     uint32_t uartInst;
-    bool    ret = false;
+    bool    ret = BFALSE;
     UART_Params params;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
@@ -527,12 +527,12 @@ static bool UART_test_printf_scanf_stdio_params(
     UART_printf(stdioPrint);
 
     memset(scanPrompt, 0, sizeof(scanPrompt));
-    if (UART_scanFmt(scanPrompt) != S_PASS)
+    if (S_PASS != UART_scanFmt(scanPrompt))
     {
         goto Err;
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     UART_stdioDeInit();
@@ -551,7 +551,7 @@ Void UART_simultaneous_rw_write(UArg a0, UArg a1)
 
     UART_transactionInit(&transaction);
 
-    while (taskSyncFlag == true)
+    while (BTRUE == taskSyncFlag)
 	{
         transaction.buf = (void *)(uintptr_t)addrDataPrint;
 	    transaction.count = SIZEOF16B(dataPrint);
@@ -560,7 +560,7 @@ Void UART_simultaneous_rw_write(UArg a0, UArg a1)
 	}
 
     /* resume the read test task */
-    taskSyncFlag = true;
+    taskSyncFlag = BTRUE;
 
     Task_exit ();
 }
@@ -594,7 +594,7 @@ static bool UART_test_simultaneous_rw(
     Task_Handle      writeTask;
     Task_Params      writeTaskParams;
     Error_Block      eb;
-    bool             ret = false;
+    bool             ret = BFALSE;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
     
@@ -609,7 +609,7 @@ static bool UART_test_simultaneous_rw(
     }
 
     /* run the write teas when task is created */
-    taskSyncFlag = true;
+    taskSyncFlag = BTRUE;
 
     Error_init(&eb);
 
@@ -641,25 +641,25 @@ static bool UART_test_simultaneous_rw(
     transaction.count = UART_TEST_READ_LEN;
     if (UART_read2(uart, &transaction) == UART_ERROR)
     {
-    	taskSyncFlag = false;
+    	taskSyncFlag = BFALSE;
         goto Err;
     }
     if ((transaction.status != UART_TRANSFER_STATUS_SUCCESS) ||
         (transaction.count != UART_TEST_READ_LEN))
     {
-    	taskSyncFlag = false;
+    	taskSyncFlag = BFALSE;
         goto Err;
     }
 
     /* stop the write test task */
-    taskSyncFlag = false;
+    taskSyncFlag = BFALSE;
 
     /* Wait for the write task complete and exit */
-    while (taskSyncFlag == false)
+    while (BFALSE == taskSyncFlag)
     {
         Osal_delay(100);
     }
-    taskSyncFlag = false;
+    taskSyncFlag = BFALSE;
 
     UART_transactionInit(&transaction);
     transaction.buf = (void *)(uintptr_t)addrEchoPrompt;
@@ -679,7 +679,7 @@ static bool UART_test_simultaneous_rw(
 
     Osal_delay(5000);
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (uart)
@@ -711,7 +711,7 @@ static bool UART_test_read_write_cancel(
     UART_Transaction  transaction;
     uint32_t          addrRdCancelPrompt, addrWrCancelPrompt;
     uint32_t          addrDataPrint, addrEchoPrompt, addrScanPrompt;
-    bool              ret = false;
+    bool              ret = BFALSE;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
     
@@ -854,7 +854,7 @@ static bool UART_test_read_write_cancel(
     {
         goto Err;
     }
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (uart)
@@ -885,7 +885,7 @@ static bool UART_test_rx_err(
     UART_Params      uartParams;
     UART_Transaction transaction;
     uint32_t         addrScanPrompt, addrBreakErrPrompt;
-    bool             ret = false;
+    bool             ret = BFALSE;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
     
@@ -925,7 +925,7 @@ static bool UART_test_rx_err(
         }
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (uart)
@@ -951,7 +951,7 @@ static bool UART_test_timeout(
     UART_Params      uartParams;
     UART_Transaction transaction;
     uint32_t         addrScanPrompt, addrReadTimeoutPrompt;
-    bool             ret = false;
+    bool             ret = BFALSE;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
     
@@ -986,7 +986,7 @@ static bool UART_test_timeout(
         }
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (uart)
@@ -1010,7 +1010,7 @@ static bool UART_test_polling_timeout(
     uint32_t         uartInst;
     UART_Handle      uart = NULL;
     UART_Params      uartParams;
-    bool             ret = false;
+    bool             ret = BFALSE;
     uint32_t         rdSize = UART_TEST_READ_LEN;
     uint32_t         wrSize;
 
@@ -1034,12 +1034,12 @@ static bool UART_test_polling_timeout(
     {
         wrSize = SIZEOF16B(readTimeoutPrompt);
         UART_writePolling(uart, (const void *)readTimeoutPrompt, wrSize);
-        ret = true;
+        ret = BTRUE;
     }
     
-    if (ret == true)
+    if (BTRUE == ret)
     {
-        ret = false;
+        ret = BFALSE;
         
         UART_close(uart);
         
@@ -1056,13 +1056,13 @@ static bool UART_test_polling_timeout(
         wrSize = SIZEOF16B(writePollTimeoutPrint);
         if (UART_writePolling(uart, (const void *)writePollTimeoutPrint, wrSize) != wrSize)
         {
-            ret = true;
+            ret = BTRUE;
         }
     }
     
-    if (ret == true)
+    if (BTRUE == ret)
     {
-        ret = false;
+        ret = BFALSE;
 
         UART_close(uart);
 
@@ -1081,13 +1081,13 @@ static bool UART_test_polling_timeout(
         {
             wrSize = SIZEOF16B(readTimeoutPrompt);
             UART_writePolling(uart, (const void *)readTimeoutPrompt, wrSize);
-            ret = true;
+            ret = BTRUE;
         }
     }
 
-    if (ret == true)
+    if (BTRUE == ret)
     {
-        ret = false;
+        ret = BFALSE;
 
         UART_close(uart);
 
@@ -1113,7 +1113,7 @@ static bool UART_test_polling_timeout(
         UART_writePolling(uart, (const void *)echoPrompt, wrSize);
         UART_writePolling(uart, (const void *)scanPrompt, rdSize);
 
-        ret = true;
+        ret = BTRUE;
     }
 
 Err:
@@ -1140,7 +1140,7 @@ static bool UART_test_callback(
     UART_Params       uartParams;
     SemaphoreP_Params semParams;
     uint32_t          addrScanPrompt, addrDataPrint, addrEchoPrompt;
-    bool              ret = false;
+    bool              ret = BFALSE;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
     
@@ -1272,7 +1272,7 @@ static bool UART_test_callback(
         goto Err;
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (uart)
@@ -1303,7 +1303,7 @@ static bool UART_test_read_write(
     int              length = 0;
     uint32_t         addrDataPrint, addrScanPrompt, addrEchoPrompt;
     UART_Transaction transaction;
-    bool             ret = false;
+    bool             ret = BFALSE;
 
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
     
@@ -1385,7 +1385,7 @@ static bool UART_test_read_write(
         goto Err;
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (uart)
@@ -1412,7 +1412,7 @@ static bool UART_test_read_write_int_disable(
     int              length = 0;
     uint32_t         addrDataPrint, addrScanPrompt, addrEchoPrompt;
     UART_Transaction transaction;
-    bool             ret = false;
+    bool             ret = BFALSE;
     UART_SWIPAttrs   uart_cfg;
     
     uartInst = testUartInstance[TEST_UART_INST_IDX0]; // get UART instance ID
@@ -1501,7 +1501,7 @@ static bool UART_test_read_write_int_disable(
         goto Err;
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (uart)
@@ -1549,15 +1549,15 @@ static bool UART_test_hwip_write_to_swip_read_blk(
     // Test read/write API's in blocking mode.
     // Loop over all UART settings.
     //
-    testLoopErr = false;
+    testLoopErr = BFALSE;
     baudRateIdx = 0;
-    while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+    while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
     {
         charLenIdx = 0;
-        while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
         {
             stopBitsIdx = 0;
-            while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
             {
                 // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                 if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -1580,7 +1580,7 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                         hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                         if (hSwIpUartRd == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -1588,14 +1588,14 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                         hHwIpUartWrt = UART_open(hwIpUartWrInst, &uartParams);
                         if (hHwIpUartWrt == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
                         // perform "small" write in blocking mode
                         if (UART_write(hHwIpUartWrt, (void *)gTestExtLoopbackWrData8b, TEST_EXT_LB_SMALL_WR_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -1604,7 +1604,7 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                         length = UART_read(hSwIpUartRd, (void *)gTestExtLoopbackRdData16b, TEST_EXT_LB_SMALL_RD_SZ);
                         if (length != TEST_EXT_LB_SMALL_RD_SZ)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -1616,34 +1616,34 @@ static bool UART_test_hwip_write_to_swip_read_blk(
 
                         // compare read/write data
                         cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData8b, gTestExtLoopbackRdData16b,
-                            TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], true);
-                        if (cmpStatus != true)
+                            TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                        if (BTRUE != cmpStatus)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }                    
                     }
                 }
 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     stopBitsIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {                
                 charLenIdx++;
             }
         }
         
-        if (testLoopErr == false)
+        if (BFALSE == testLoopErr)
         {
             baudRateIdx++;
         }
     }
     
-    if (testLoopErr == true)
+    if (BTRUE == testLoopErr)
     {
         if (hSwIpUartRd)
         {
@@ -1662,15 +1662,15 @@ static bool UART_test_hwip_write_to_swip_read_blk(
         // Test read2/write2 API's in blocking mode.
         // Loop over all UART settings.
         //
-        testLoopErr = false;
+        testLoopErr = BFALSE;
         baudRateIdx = 0;
-        while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
         {
             charLenIdx = 0;
-            while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
             {
                 stopBitsIdx = 0;
-                while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+                while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
                 {
                     // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                     if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -1693,7 +1693,7 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                             hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                             if (hSwIpUartRd == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -1701,7 +1701,7 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                             hHwIpUartWrt = UART_open(hwIpUartWrInst, &uartParams);
                             if (hHwIpUartWrt == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -1711,7 +1711,7 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                             transaction.count = TEST_EXT_LB_SMALL_WR_SZ;
                             if (UART_write2(hHwIpUartWrt, &transaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -1722,13 +1722,13 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                             transaction.count = TEST_EXT_LB_SMALL_RD_SZ;
                             if (UART_read2(hSwIpUartRd, &transaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             if ((transaction.status != UART_TRANSFER_STATUS_SUCCESS) ||
                                 (transaction.count != TEST_EXT_LB_SMALL_RD_SZ))
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -1740,34 +1740,34 @@ static bool UART_test_hwip_write_to_swip_read_blk(
                             
                             // compare read/write data
                             cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData8b, gTestExtLoopbackRdData16b, 
-                                TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], true);
-                            if (cmpStatus != true)
+                                TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                            if (BTRUE != cmpStatus)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                         }
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {                
                         stopBitsIdx++;
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     charLenIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {
                 baudRateIdx++;
             }
         }
 
-        if (testLoopErr == true)
+        if (BTRUE == testLoopErr)
         {
             if (hSwIpUartRd)
             {
@@ -1782,7 +1782,7 @@ static bool UART_test_hwip_write_to_swip_read_blk(
         }
     }
 
-    ret = (testLoopErr == true) ? false : true; // determine overall pass/fail result
+    ret = (BTRUE == testLoopErr) ? BFALSE : BTRUE; // determine overall pass/fail result
     return (ret);
 }
 
@@ -1817,15 +1817,15 @@ static bool UART_test_swip_write_to_hwip_read_blk(
     // Test read/write API's in blocking mode.
     // Loop over all UART settings.
     //
-    testLoopErr = false;
+    testLoopErr = BFALSE;
     baudRateIdx = 0;
-    while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+    while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
     {
         charLenIdx = 0;
-        while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
         {
             stopBitsIdx = 0;
-            while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
             {
                 // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                 if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -1848,7 +1848,7 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                         hHwIpUartRd = UART_open(hwIpUartRdInst, &uartParams);
                         if (hHwIpUartRd == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -1856,14 +1856,14 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                         hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                         if (hSwIpUartWrt == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
                         // perform "small" write in blocking mode
                         if (UART_write(hSwIpUartWrt, (void *)gTestExtLoopbackWrData16b, TEST_EXT_LB_SMALL_WR_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -1872,7 +1872,7 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                         length = UART_read(hHwIpUartRd, (void *)gTestExtLoopbackRdData8b, TEST_EXT_LB_SMALL_RD_SZ);
                         if (length != TEST_EXT_LB_SMALL_RD_SZ)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -1884,34 +1884,34 @@ static bool UART_test_swip_write_to_hwip_read_blk(
 
                         // compare read/write data
                         cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackRdData8b, gTestExtLoopbackWrData16b,
-                            TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], true);
-                        if (cmpStatus != true)
+                            TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                        if (BTRUE != cmpStatus)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }                    
                     }
                 }
 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     stopBitsIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {                
                 charLenIdx++;
             }
         }
         
-        if (testLoopErr == false)
+        if (BFALSE == testLoopErr)
         {
             baudRateIdx++;
         }
     }
     
-    if (testLoopErr == true)
+    if (BTRUE == testLoopErr)
     {
         if (hHwIpUartRd)
         {
@@ -1930,15 +1930,15 @@ static bool UART_test_swip_write_to_hwip_read_blk(
         // Test read2/write2 API's in blocking mode.
         // Loop over all UART settings.
         //
-        testLoopErr = false;
+        testLoopErr = BFALSE;
         baudRateIdx = 0;
-        while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
         {
             charLenIdx = 0;
-            while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
             {
                 stopBitsIdx = 0;
-                while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+                while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
                 {
                     // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                     if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -1961,7 +1961,7 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                             hHwIpUartRd = UART_open(hwIpUartRdInst, &uartParams);
                             if (hHwIpUartRd == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -1969,7 +1969,7 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                             hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                             if (hSwIpUartWrt == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -1979,7 +1979,7 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                             transaction.count = TEST_EXT_LB_SMALL_WR_SZ;
                             if (UART_write2(hSwIpUartWrt, &transaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -1990,13 +1990,13 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                             transaction.count = TEST_EXT_LB_SMALL_RD_SZ;
                             if (UART_read2(hHwIpUartRd, &transaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             if ((transaction.status != UART_TRANSFER_STATUS_SUCCESS) ||
                                 (transaction.count != TEST_EXT_LB_SMALL_RD_SZ))
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -2008,34 +2008,34 @@ static bool UART_test_swip_write_to_hwip_read_blk(
                             
                             // compare read/write data
                             cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackRdData8b, gTestExtLoopbackWrData16b, 
-                                TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], true);
-                            if (cmpStatus != true)
+                                TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                            if (BTRUE != cmpStatus)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                         }
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {                
                         stopBitsIdx++;
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     charLenIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {
                 baudRateIdx++;
             }
         }
 
-        if (testLoopErr == true)
+        if (BTRUE == testLoopErr)
         {
             if (hHwIpUartRd)
             {
@@ -2050,7 +2050,7 @@ static bool UART_test_swip_write_to_hwip_read_blk(
         }
     }
 
-    ret = (testLoopErr == true) ? false : true; // determine overall pass/fail result
+    ret = (BTRUE == testLoopErr) ? BFALSE : BTRUE; // determine overall pass/fail result
     return (ret);
 }
 
@@ -2094,15 +2094,15 @@ static bool UART_test_hwip_write_to_swip_read_cb(
     // Test read/write API's in callback mode.
     // Loop over all UART settings.
     //
-    testLoopErr = false;
+    testLoopErr = BFALSE;
     baudRateIdx = 0;
-    while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+    while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
     {
         charLenIdx = 0;
-        while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
         {
             stopBitsIdx = 0;
-            while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
             {
                 // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                 if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -2129,7 +2129,7 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                         hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                         if (hSwIpUartRd == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -2152,7 +2152,7 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                         hHwIpUartWrt = UART_open(hwIpUartWrInst, &uartParams);
                         if (hHwIpUartWrt == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -2161,7 +2161,7 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                         // perform "large" read in callback mode
                         if (UART_read(hSwIpUartRd, (void *)gTestExtLoopbackRdData16b, TEST_EXT_LB_LARGE_RD_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -2171,19 +2171,19 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                         //
                         if (UART_write(hHwIpUartWrt, (void *)gTestExtLoopbackWrData8b, TEST_EXT_LB_LARGE_WR_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         if (UART_osalPendLock(gWrCallbackSem, uartParams.writeTimeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
                         // wait for read completion    
                         if (UART_osalPendLock(gRdCallbackSem, uartParams.readTimeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -2195,34 +2195,34 @@ static bool UART_test_hwip_write_to_swip_read_cb(
 
                         // compare read/write data
                         cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData8b, gTestExtLoopbackRdData16b,
-                            TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLen[charLenIdx], true);
-                        if (cmpStatus != true)
+                            TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                        if (BTRUE != cmpStatus)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }      
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     stopBitsIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {                
                 charLenIdx++;
             }
         }
         
-        if (testLoopErr == false)
+        if (BFALSE == testLoopErr)
         {
             baudRateIdx++;
         }
     }
     
-    if (testLoopErr == true)
+    if (BTRUE == testLoopErr)
     {
         if (hSwIpUartRd)
         {
@@ -2252,15 +2252,15 @@ static bool UART_test_hwip_write_to_swip_read_cb(
         // Test read2/write2 API's in callback mode.
         // Loop over all UART settings.
         //
-        testLoopErr = false;
+        testLoopErr = BFALSE;
         baudRateIdx = 0;
-        while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
         {
             charLenIdx = 0;
-            while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
             {
                 stopBitsIdx = 0;
-                while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+                while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
                 {
                     // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                     if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -2287,7 +2287,7 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                             hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                             if (hSwIpUartRd == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -2310,7 +2310,7 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                             hHwIpUartWrt = UART_open(hwIpUartWrInst, &uartParams);
                             if (hHwIpUartWrt == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -2325,7 +2325,7 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                             gRdCallbackTransaction.count = TEST_EXT_LB_LARGE_RD_SZ;
                             if (UART_read2(hSwIpUartRd, &gRdCallbackTransaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -2336,19 +2336,19 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                             gWrCallbackTransaction.count = TEST_EXT_LB_LARGE_WR_SZ;
                             if (UART_write2(hHwIpUartWrt, &gWrCallbackTransaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             if (UART_osalPendLock(gWrCallbackSem, gWrCallbackTransaction.timeout) != SemaphoreP_OK)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
                             // wait for read completion
                             if (UART_osalPendLock(gRdCallbackSem, gRdCallbackTransaction.timeout) != SemaphoreP_OK)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }                    
 
@@ -2360,34 +2360,34 @@ static bool UART_test_hwip_write_to_swip_read_cb(
                             
                             // compare read/write data
                             cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData8b, gTestExtLoopbackRdData16b, 
-                                TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLen[charLenIdx], true);
-                            if (cmpStatus != true)
+                                TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                            if (BTRUE != cmpStatus)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                         }
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {                
                         stopBitsIdx++;
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     charLenIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {
                 baudRateIdx++;
             }
         }
 
-        if (testLoopErr == true)
+        if (BTRUE == testLoopErr)
         {
             if (hSwIpUartRd)
             {
@@ -2413,7 +2413,7 @@ static bool UART_test_hwip_write_to_swip_read_cb(
         }
     }
 
-    ret = (testLoopErr == true) ? false : true; // determine overall pass/fail result
+    ret = (BTRUE == testLoopErr) ? BFALSE : BTRUE; // determine overall pass/fail result
     return (ret);
 }
 
@@ -2457,15 +2457,15 @@ static bool UART_test_swip_write_to_hwip_read_cb(
     // Test read/write API's in callback mode.
     // Loop over all UART settings.
     //
-    testLoopErr = false;
+    testLoopErr = BFALSE;
     baudRateIdx = 0;
-    while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+    while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
     {
         charLenIdx = 0;
-        while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
         {
             stopBitsIdx = 0;
-            while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
             {
                 // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                 if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -2492,7 +2492,7 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                         hHwIpUartRd = UART_open(hwIpUartRdInst, &uartParams);
                         if (hHwIpUartRd == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -2515,7 +2515,7 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                         hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                         if (hSwIpUartWrt == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -2524,7 +2524,7 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                         // perform "large" read in callback mode
                         if (UART_read(hHwIpUartRd, (void *)gTestExtLoopbackRdData8b, TEST_EXT_LB_LARGE_RD_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -2534,19 +2534,19 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                         //
                         if (UART_write(hSwIpUartWrt, (void *)gTestExtLoopbackWrData16b, TEST_EXT_LB_LARGE_WR_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         if (UART_osalPendLock(gWrCallbackSem, uartParams.writeTimeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
                         // wait for read completion    
                         if (UART_osalPendLock(gRdCallbackSem, uartParams.readTimeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -2558,34 +2558,34 @@ static bool UART_test_swip_write_to_hwip_read_cb(
 
                         // compare read/write data
                         cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackRdData8b, gTestExtLoopbackWrData16b,
-                            TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLen[charLenIdx], true);
-                        if (cmpStatus != true)
+                            TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                        if (BTRUE != cmpStatus)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }      
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     stopBitsIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {                
                 charLenIdx++;
             }
         }
         
-        if (testLoopErr == false)
+        if (BFALSE == testLoopErr)
         {
             baudRateIdx++;
         }
     }
     
-    if (testLoopErr == true)
+    if (BTRUE == testLoopErr)
     {
         if (hHwIpUartRd)
         {
@@ -2615,15 +2615,15 @@ static bool UART_test_swip_write_to_hwip_read_cb(
         // Test read2/write2 API's in callback mode.
         // Loop over all UART settings.
         //
-        testLoopErr = false;
+        testLoopErr = BFALSE;
         baudRateIdx = 0;
-        while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE))
+        while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_BAUD_RATE > baudRateIdx))
         {
             charLenIdx = 0;
-            while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN))
+            while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_CHAR_LEN > charLenIdx))
             {
                 stopBitsIdx = 0;
-                while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS))
+                while ((BFALSE == testLoopErr) && (TEST_EXT_LB_NUM_UART_STOP_BITS > stopBitsIdx))
                 {
                     // Skip character length==5 & Stop bit duration==2 since this isn't supported by UART HW IP
                     if ((gTestExtLbCharLen[charLenIdx] != UART_LEN_5) ||
@@ -2650,7 +2650,7 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                             hHwIpUartRd = UART_open(hwIpUartRdInst, &uartParams);
                             if (hHwIpUartRd == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -2673,7 +2673,7 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                             hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                             if (hSwIpUartWrt == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -2688,7 +2688,7 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                             gRdCallbackTransaction.count = TEST_EXT_LB_LARGE_RD_SZ;
                             if (UART_read2(hHwIpUartRd, &gRdCallbackTransaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -2699,19 +2699,19 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                             gWrCallbackTransaction.count = TEST_EXT_LB_LARGE_WR_SZ;
                             if (UART_write2(hSwIpUartWrt, &gWrCallbackTransaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             if (UART_osalPendLock(gWrCallbackSem, gWrCallbackTransaction.timeout) != SemaphoreP_OK)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
                             // wait for read completion
                             if (UART_osalPendLock(gRdCallbackSem, gRdCallbackTransaction.timeout) != SemaphoreP_OK)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }                    
 
@@ -2723,34 +2723,34 @@ static bool UART_test_swip_write_to_hwip_read_cb(
                             
                             // compare read/write data
                             cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackRdData8b, gTestExtLoopbackWrData16b, 
-                                TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLen[charLenIdx], true);
-                            if (cmpStatus != true)
+                                TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLen[charLenIdx], BTRUE);
+                            if (BTRUE != cmpStatus)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                         }
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {                
                         stopBitsIdx++;
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     charLenIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {
                 baudRateIdx++;
             }
         }
 
-        if (testLoopErr == true)
+        if (BTRUE == testLoopErr)
         {
             if (hHwIpUartRd)
             {
@@ -2776,7 +2776,7 @@ static bool UART_test_swip_write_to_hwip_read_cb(
         }
     }
 
-    ret = (testLoopErr == true) ? false : true; // determine overall pass/fail result
+    ret = (BTRUE == testLoopErr) ? BFALSE : BTRUE; // determine overall pass/fail result
     return (ret);
 }
 
@@ -2812,15 +2812,15 @@ static bool UART_test_swip_write_to_swip_read_blk(
     // Test read/write API's in blocking mode.
     // Loop over all UART settings.
     //
-    testLoopErr = false;
+    testLoopErr = BFALSE;
     baudRateIdx = 0;
-    while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
+    while ((BFALSE == testLoopErr) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
     {
         charLenIdx = 0;
-        while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
+        while ((BFALSE == testLoopErr) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
         {
             stopBitsIdx = 0;
-            while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
+            while ((BFALSE == testLoopErr) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
             {
                 for (parityIdx = 0; parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP; parityIdx++)
                 {
@@ -2839,7 +2839,7 @@ static bool UART_test_swip_write_to_swip_read_blk(
                     hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                     if (hSwIpUartRd == NULL)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
                     
@@ -2847,14 +2847,14 @@ static bool UART_test_swip_write_to_swip_read_blk(
                     hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                     if (hSwIpUartWrt == NULL)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
 
                     // perform "small" write in blocking mode
                     if (UART_write(hSwIpUartWrt, (void *)gTestExtLoopbackWrData16b, TEST_EXT_LB_SMALL_WR_SZ) == UART_ERROR)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
 
@@ -2863,7 +2863,7 @@ static bool UART_test_swip_write_to_swip_read_blk(
                     length = UART_read(hSwIpUartRd, (void *)gTestExtLoopbackRdData16b, TEST_EXT_LB_SMALL_RD_SZ);
                     if (length != TEST_EXT_LB_SMALL_RD_SZ)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
 
@@ -2875,33 +2875,33 @@ static bool UART_test_swip_write_to_swip_read_blk(
 
                     // compare read/write data
                     cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData16b, gTestExtLoopbackRdData16b,
-                        TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], false);
-                    if (cmpStatus != true)
+                        TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], BFALSE);
+                    if (BTRUE != cmpStatus)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }                    
                 }
 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     stopBitsIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {                
                 charLenIdx++;
             }
         }
         
-        if (testLoopErr == false)
+        if (BFALSE == testLoopErr)
         {
             baudRateIdx++;
         }
     }
     
-    if (testLoopErr == true)
+    if (BTRUE == testLoopErr)
     {
         if (hSwIpUartRd)
         {
@@ -2920,15 +2920,15 @@ static bool UART_test_swip_write_to_swip_read_blk(
         // Test read2/write2 API's in blocking mode.
         // Loop over all UART settings.
         //
-        testLoopErr = false;
+        testLoopErr = BFALSE;
         baudRateIdx = 0;
-        while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
+        while ((BFALSE == testLoopErr) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
         {
             charLenIdx = 0;
-            while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
+            while ((BFALSE == testLoopErr) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
             {
                 stopBitsIdx = 0;
-                while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
+                while ((BFALSE == testLoopErr) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
                 {
                     for (parityIdx = 0; parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP; parityIdx++)
                     {
@@ -2947,7 +2947,7 @@ static bool UART_test_swip_write_to_swip_read_blk(
                         hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                         if (hSwIpUartRd == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -2955,7 +2955,7 @@ static bool UART_test_swip_write_to_swip_read_blk(
                         hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                         if (hSwIpUartWrt == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -2965,7 +2965,7 @@ static bool UART_test_swip_write_to_swip_read_blk(
                         transaction.count = TEST_EXT_LB_SMALL_WR_SZ;
                         if (UART_write2(hSwIpUartWrt, &transaction) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -2976,13 +2976,13 @@ static bool UART_test_swip_write_to_swip_read_blk(
                         transaction.count = TEST_EXT_LB_SMALL_RD_SZ;
                         if (UART_read2(hSwIpUartRd, &transaction) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         if ((transaction.status != UART_TRANSFER_STATUS_SUCCESS) ||
                             (transaction.count != TEST_EXT_LB_SMALL_RD_SZ))
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -2994,33 +2994,33 @@ static bool UART_test_swip_write_to_swip_read_blk(
                         
                         // compare read/write data
                         cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData16b, gTestExtLoopbackRdData16b, 
-                            TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], false);
-                        if (cmpStatus != true)
+                            TEST_EXT_LB_SMALL_RD_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], BFALSE);
+                        if (BTRUE != cmpStatus)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {                
                         stopBitsIdx++;
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     charLenIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {
                 baudRateIdx++;
             }
         }
 
-        if (testLoopErr == true)
+        if (BTRUE == testLoopErr)
         {
             if (hSwIpUartRd)
             {
@@ -3035,7 +3035,7 @@ static bool UART_test_swip_write_to_swip_read_blk(
         }
     }
 
-    ret = (testLoopErr == true) ? false : true; // determine overall pass/fail result
+    ret = (BTRUE == testLoopErr) ? BFALSE : BTRUE; // determine overall pass/fail result
     return (ret);
 }
 
@@ -3081,15 +3081,15 @@ static bool UART_test_swip_write_to_swip_read_cb(
     // Test read/write API's in callback mode.
     // Loop over all UART settings.
     //
-    testLoopErr = false;
+    testLoopErr = BFALSE;
     baudRateIdx = 0;
-    while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
+    while ((BFALSE == testLoopErr) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
     {
         charLenIdx = 0;
-        while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
+        while ((BFALSE == testLoopErr) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
         {
             stopBitsIdx = 0;
-            while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
+            while ((BFALSE == testLoopErr) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
             {
                 for (parityIdx = 0; parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP; parityIdx++)
                 {
@@ -3112,7 +3112,7 @@ static bool UART_test_swip_write_to_swip_read_cb(
                     hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                     if (hSwIpUartRd == NULL)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
                     
@@ -3135,7 +3135,7 @@ static bool UART_test_swip_write_to_swip_read_cb(
                     hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                     if (hSwIpUartWrt == NULL)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
 
@@ -3144,7 +3144,7 @@ static bool UART_test_swip_write_to_swip_read_cb(
                     // perform "large" read in callback mode
                     if (UART_read(hSwIpUartRd, (void *)gTestExtLoopbackRdData16b, TEST_EXT_LB_LARGE_RD_SZ) == UART_ERROR)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
                     
@@ -3154,19 +3154,19 @@ static bool UART_test_swip_write_to_swip_read_cb(
                     //
                     if (UART_write(hSwIpUartWrt, (void *)gTestExtLoopbackWrData16b, TEST_EXT_LB_LARGE_WR_SZ) == UART_ERROR)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
                     if (UART_osalPendLock(gWrCallbackSem, uartParams.writeTimeout) != SemaphoreP_OK)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
 
                     // wait for read completion    
                     if (UART_osalPendLock(gRdCallbackSem, uartParams.readTimeout) != SemaphoreP_OK)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }
 
@@ -3178,33 +3178,33 @@ static bool UART_test_swip_write_to_swip_read_cb(
 
                     // compare read/write data
                     cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData16b, gTestExtLoopbackRdData16b,
-                        TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], false);
-                    if (cmpStatus != true)
+                        TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], BFALSE);
+                    if (BTRUE != cmpStatus)
                     {
-                        testLoopErr = true;
+                        testLoopErr = BTRUE;
                         break;
                     }      
                 }
 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     stopBitsIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {                
                 charLenIdx++;
             }
         }
         
-        if (testLoopErr == false)
+        if (BFALSE == testLoopErr)
         {
             baudRateIdx++;
         }
     }
     
-    if (testLoopErr == true)
+    if (BTRUE == testLoopErr)
     {
         if (hSwIpUartRd)
         {
@@ -3234,15 +3234,15 @@ static bool UART_test_swip_write_to_swip_read_cb(
         // Test read2/write2 API's in callback mode.
         // Loop over all UART settings.
         //
-        testLoopErr = false;
+        testLoopErr = BFALSE;
         baudRateIdx = 0;
-        while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
+        while ((BFALSE == testLoopErr) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP))
         {
             charLenIdx = 0;
-            while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
+            while ((BFALSE == testLoopErr) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP))
             {
                 stopBitsIdx = 0;
-                while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
+                while ((BFALSE == testLoopErr) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP))
                 {
                     for (parityIdx = 0; parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP; parityIdx++)
                     {
@@ -3265,7 +3265,7 @@ static bool UART_test_swip_write_to_swip_read_cb(
                         hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                         if (hSwIpUartRd == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -3288,7 +3288,7 @@ static bool UART_test_swip_write_to_swip_read_cb(
                         hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                         if (hSwIpUartWrt == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -3303,7 +3303,7 @@ static bool UART_test_swip_write_to_swip_read_cb(
                         gRdCallbackTransaction.count = TEST_EXT_LB_LARGE_RD_SZ;
                         if (UART_read2(hSwIpUartRd, &gRdCallbackTransaction) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -3314,19 +3314,19 @@ static bool UART_test_swip_write_to_swip_read_cb(
                         gWrCallbackTransaction.count = TEST_EXT_LB_LARGE_WR_SZ;
                         if (UART_write2(hSwIpUartWrt, &gWrCallbackTransaction) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         if (UART_osalPendLock(gWrCallbackSem, gWrCallbackTransaction.timeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
                         // wait for read completion
                         if (UART_osalPendLock(gRdCallbackSem, gRdCallbackTransaction.timeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }                    
 
@@ -3338,33 +3338,33 @@ static bool UART_test_swip_write_to_swip_read_cb(
                         
                         // compare read/write data
                         cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData16b, gTestExtLoopbackRdData16b, 
-                            TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], false);
-                        if (cmpStatus != true)
+                            TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLenSw2SwIp[charLenIdx], BFALSE);
+                        if (BTRUE != cmpStatus)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {                
                         stopBitsIdx++;
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     charLenIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {
                 baudRateIdx++;
             }
         }
 
-        if (testLoopErr == true)
+        if (BTRUE == testLoopErr)
         {
             if (hSwIpUartRd)
             {
@@ -3390,7 +3390,7 @@ static bool UART_test_swip_write_to_swip_read_cb(
         }
     }
 
-    ret = (testLoopErr == true) ? false : true; // determine overall pass/fail result
+    ret = (BTRUE == testLoopErr) ? BFALSE : BTRUE; // determine overall pass/fail result
     return (ret);
 }
 
@@ -3436,18 +3436,18 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
     // Test read/write API's in callback mode.
     // Loop over all line & hardware flow control threshold settings.
     //
-    testLoopErr = false;
+    testLoopErr = BFALSE;
     baudRateIdx = 0;
-    while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP_HWFC))
+    while ((BFALSE == testLoopErr) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP_HWFC))
     {
         charLenIdx = 0;
-        while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP_HWFC))
+        while ((BFALSE == testLoopErr) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP_HWFC))
         {
             stopBitsIdx = 0;
-            while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP_HWFC))
+            while ((BFALSE == testLoopErr) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP_HWFC))
             {
                 parityIdx = 0;
-                while ((testLoopErr == false) && (parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP_HWFC))
+                while ((BFALSE == testLoopErr) && (parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP_HWFC))
                 {
                     for (hwFcThrIdx = 0; hwFcThrIdx < TEST_EXT_LB_NUM_UART_HW_FC_THR_SW2SWIP_HWFC; hwFcThrIdx++)
                     {
@@ -3471,7 +3471,7 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                         hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                         if (hSwIpUartRd == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -3495,7 +3495,7 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                         hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                         if (hSwIpUartWrt == NULL)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -3504,7 +3504,7 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                         // perform "large" read in callback mode
                         if (UART_read(hSwIpUartRd, (void *)gTestExtLoopbackRdData16b, TEST_EXT_LB_LARGE_RD_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         
@@ -3514,19 +3514,19 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                         //
                         if (UART_write(hSwIpUartWrt, (void *)gTestExtLoopbackWrData16b, TEST_EXT_LB_LARGE_WR_SZ) == UART_ERROR)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
                         if (UART_osalPendLock(gWrCallbackSem, uartParams.writeTimeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
                         // wait for read completion    
                         if (UART_osalPendLock(gRdCallbackSem, uartParams.readTimeout) != SemaphoreP_OK)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }
 
@@ -3538,40 +3538,40 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
 
                         // compare read/write data
                         cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData16b, gTestExtLoopbackRdData16b,
-                            TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLenSw2SwIpHwFc[charLenIdx], false);
-                        if (cmpStatus != true)
+                            TEST_EXT_LB_LARGE_WR_SZ, gTestExtLbCharLenSw2SwIpHwFc[charLenIdx], BFALSE);
+                        if (BTRUE != cmpStatus)
                         {
-                            testLoopErr = true;
+                            testLoopErr = BTRUE;
                             break;
                         }      
                         
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {
                         parityIdx++;
                     }
                 }
 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     stopBitsIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {                
                 charLenIdx++;
             }
         }
         
-        if (testLoopErr == false)
+        if (BFALSE == testLoopErr)
         {
             baudRateIdx++;
         }
     }
     
-    if (testLoopErr == true)
+    if (BTRUE == testLoopErr)
     {
         if (hSwIpUartRd)
         {
@@ -3601,18 +3601,18 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
         // Test read2/write2 API's in callback mode.
         // Loop over all UART settings.
         //
-        testLoopErr = false;
+        testLoopErr = BFALSE;
         baudRateIdx = 0;
-        while ((testLoopErr == false) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP_HWFC))
+        while ((BFALSE == testLoopErr) && (baudRateIdx < TEST_EXT_LB_NUM_UART_BAUD_RATE_SW2SWIP_HWFC))
         {
             charLenIdx = 0;
-            while ((testLoopErr == false) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP_HWFC))
+            while ((BFALSE == testLoopErr) && (charLenIdx < TEST_EXT_LB_NUM_UART_CHAR_LEN_SW2SWIP_HWFC))
             {
                 stopBitsIdx = 0;
-                while ((testLoopErr == false) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP_HWFC))
+                while ((BFALSE == testLoopErr) && (stopBitsIdx < TEST_EXT_LB_NUM_UART_STOP_BITS_SW2SWIP_HWFC))
                 {
                     parityIdx = 0;
-                    while ((testLoopErr == false) && (parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP_HWFC))
+                    while ((BFALSE == testLoopErr) && (parityIdx < TEST_EXT_LB_NUM_UART_PARITY_SW2SWIP_HWFC))
                     {
                         for (hwFcThrIdx = 0; hwFcThrIdx < TEST_EXT_LB_NUM_UART_HW_FC_THR_SW2SWIP_HWFC; hwFcThrIdx++)
                         {
@@ -3636,7 +3636,7 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                             hSwIpUartRd = UART_open(swIpUartRdInst, &uartParams);
                             if (hSwIpUartRd == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -3660,7 +3660,7 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                             hSwIpUartWrt = UART_open(swIpUartWrInst, &uartParams);
                             if (hSwIpUartWrt == NULL)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
 
@@ -3675,7 +3675,7 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                             gRdCallbackTransaction.count = TEST_EXT_LB_LARGE_RD_SZ;
                             if (UART_read2(hSwIpUartRd, &gRdCallbackTransaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
@@ -3686,19 +3686,19 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                             gWrCallbackTransaction.count = TEST_EXT_LB_LARGE_WR_SZ;
                             if (UART_write2(hSwIpUartWrt, &gWrCallbackTransaction) == UART_ERROR)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             if (UART_osalPendLock(gWrCallbackSem, gWrCallbackTransaction.timeout) != SemaphoreP_OK)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                             
                             // wait for read completion
                             if (UART_osalPendLock(gRdCallbackSem, gRdCallbackTransaction.timeout) != SemaphoreP_OK)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }                    
 
@@ -3710,39 +3710,39 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
                             
                             // compare read/write data
                             cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackWrData16b, gTestExtLoopbackRdData16b, 
-                                TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLenSw2SwIpHwFc[charLenIdx], false);
-                            if (cmpStatus != true)
+                                TEST_EXT_LB_LARGE_RD_SZ, gTestExtLbCharLenSw2SwIpHwFc[charLenIdx], BFALSE);
+                            if (BTRUE != cmpStatus)
                             {
-                                testLoopErr = true;
+                                testLoopErr = BTRUE;
                                 break;
                             }
                         }
                                                 
-                        if (testLoopErr == false)
+                        if (BFALSE == testLoopErr)
                         {
                             parityIdx++;
                         }
                     }
                     
-                    if (testLoopErr == false)
+                    if (BFALSE == testLoopErr)
                     {                
                         stopBitsIdx++;
                     }
                 }
                 
-                if (testLoopErr == false)
+                if (BFALSE == testLoopErr)
                 {                
                     charLenIdx++;
                 }
             }
             
-            if (testLoopErr == false)
+            if (BFALSE == testLoopErr)
             {
                 baudRateIdx++;
             }
         }
 
-        if (testLoopErr == true)
+        if (BTRUE == testLoopErr)
         {
             if (hSwIpUartRd)
             {
@@ -3768,7 +3768,7 @@ static bool UART_test_swip_write_to_swip_read_cb_hwfc(
         }
     }
 
-    ret = (testLoopErr == true) ? false : true; // determine overall pass/fail result
+    ret = (BTRUE == testLoopErr) ? BFALSE : BTRUE; // determine overall pass/fail result
     return (ret);
 }
 
@@ -3795,7 +3795,7 @@ static bool UART_test_open_close_swip(
     SemaphoreP_Params semParams;    
     int length = 0;
     bool cmpStatus;
-    bool ret = false;
+    bool ret = BFALSE;
     
     swIpUartPruX    = testUartInstance[TEST_UART_INST_IDX0]; // get PRUX SW IP UART instance ID
     swIpUartPruY    = testUartInstance[TEST_UART_INST_IDX1]; // get PRUY SW IP UART instance ID
@@ -3907,8 +3907,8 @@ static bool UART_test_open_close_swip(
     }
     // Compare read/write data
     cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackRdData16b, gTestExtLoopbackWrData16b, 
-        TEST_EXT_LB_SMALL_RD_SZ, TEST_OPEN_CLOSE_SWIP_DATA_LENGTH, false);
-    if (cmpStatus != true)
+        TEST_EXT_LB_SMALL_RD_SZ, TEST_OPEN_CLOSE_SWIP_DATA_LENGTH, BFALSE);
+    if (BTRUE != cmpStatus)
     {
         goto Err;
     }                    
@@ -3974,8 +3974,8 @@ static bool UART_test_open_close_swip(
     }
     // compare read/write data
     cmpStatus = compareExtLoopbackRdWrData(gTestExtLoopbackRdData16b, gTestExtLoopbackWrData16b,
-        TEST_EXT_LB_LARGE_WR_SZ, TEST_OPEN_CLOSE_SWIP_DATA_LENGTH, false);
-    if (cmpStatus != true)
+        TEST_EXT_LB_LARGE_WR_SZ, TEST_OPEN_CLOSE_SWIP_DATA_LENGTH, BFALSE);
+    if (BTRUE != cmpStatus)
     {
         goto Err;
     }      
@@ -3988,7 +3988,7 @@ static bool UART_test_open_close_swip(
     UART_close(hSwIpUartPruYLb2);
     hSwIpUartPruYLb2 = NULL;
     
-    ret = true;
+    ret = BTRUE;
 
 Err:
     if (hSwIpUartPruX1)
@@ -4088,8 +4088,8 @@ Void UART_stress_hwip_reader(UArg a0, UArg a1)
         //  Read 8-bit data for HW IP.
         //  Write 16-bit data for SW IP.
         cmpStatus = compareExtLoopbackRdWrData(uartXferPrms.rdData, wrUartXferPrms.wrData, 
-            uartXferPrms.rdXferSz, gTestStressUartCfgPrms[pairId].charLen, true);
-        if (cmpStatus != true)
+            uartXferPrms.rdXferSz, gTestStressUartCfgPrms[pairId].charLen, BTRUE);
+        if (BTRUE != cmpStatus)
         {
             gTestStressRdErr[uartIdx] = TEST_STRESS_RD_ERR_READ_CMP_DATA;
             break;
@@ -4235,7 +4235,7 @@ Void UART_stress_swip_reader(UArg a0, UArg a1)
         //  Write 16-bit data for SW IP -OR- 8-bit data for HW IP.
         cmpStatus = compareExtLoopbackRdWrData(wrUartXferPrms.wrData, uartXferPrms.rdData, 
             uartXferPrms.rdXferSz, gTestStressUartCfgPrms[pairId].charLen, wrUartXferPrms.wrData8b);
-        if (cmpStatus != true)
+        if (BTRUE != cmpStatus)
         {
             gTestStressRdErr[uartIdx] = TEST_STRESS_RD_ERR_READ_CMP_DATA;
             break;
@@ -4338,20 +4338,20 @@ static bool UART_test_stress_swip(
     uint8_t i, j;
     //bool status, err, ret;
     bool err;
-    bool rdErr=false;
-    bool wrErr=false;
+    bool rdErr = BFALSE;
+    bool wrErr = BFALSE;
     bool ret;
 
     
     if (numTestUartInstance != TEST_STRESS_NUM_UART)
     {
         // check number of instance is correct
-        return false;
+        return BFALSE;
     }
     else if (testUartInstance[TEST_UART_INST_IDX0] != UART_TEST_INSTANCE0)
     {
         // check first instance is HW IP
-        return false;
+        return BFALSE;
     }
 
     // debug
@@ -4380,20 +4380,20 @@ static bool UART_test_stress_swip(
     gTestStressRdCompleteSem = UART_osalCreateBlockingLock(0, &semParams);
     if (gTestStressRdCompleteSem == NULL)
     {
-        err = true;
+        err = BTRUE;
         goto Err;
     }
     
     // Create Writer semaphores
     UART_osalSemParamsInit(&semParams);
     semParams.mode = SemaphoreP_Mode_BINARY;
-    err = false;
+    err = BFALSE;
     for (i = 0; i < TEST_STRESS_NUM_UART; i++)
     {
         gTestStressWrCallbackSem[i] = UART_osalCreateBlockingLock(0, &semParams);
         if (gTestStressWrCallbackSem[i] == NULL)
         {
-            err = true;
+            err = BTRUE;
             break;
         }
         else
@@ -4401,7 +4401,7 @@ static bool UART_test_stress_swip(
             numWrBlockingLock++;
         }
     }
-    if (err == true)
+    if (BTRUE == err)
     {
         goto Err;
     }
@@ -4409,13 +4409,13 @@ static bool UART_test_stress_swip(
     // Create Reader semaphores
     UART_osalSemParamsInit(&semParams);
     semParams.mode = SemaphoreP_Mode_BINARY;
-    err = false;
+    err = BFALSE;
     for (i = 0; i < TEST_STRESS_NUM_UART; i++)
     {
         gTestStressRdCallbackSem[i] = UART_osalCreateBlockingLock(0, &semParams);
         if (gTestStressRdCallbackSem[i] == NULL)
         {
-            err = true;
+            err = BTRUE;
             break;
         }
         else
@@ -4423,13 +4423,13 @@ static bool UART_test_stress_swip(
             numRdBlockingLock++;
         }
     }
-    if (err == true)
+    if (BTRUE == err)
     {
         goto Err;
     }
  
     // Create writer tasks
-    err = false;
+    err = BFALSE;
     for (i = 0; i < TEST_STRESS_NUM_UART_LB_PAIR; i++)
     {
         for (j = 0; j < TEST_STRESS_NUM_SIDE_PER_LB_PAIR; j++)
@@ -4443,7 +4443,7 @@ static bool UART_test_stress_swip(
                 &taskParams, &eb);
             if (wrTask[numWrTask] == NULL)
             {
-                err = true;
+                err = BTRUE;
                 break;
             }
             else
@@ -4452,18 +4452,18 @@ static bool UART_test_stress_swip(
             }
         }
         
-        if (err == true)
+        if (BTRUE == err)
         {
             break;
         }
     }
-    if (err == true)
+    if (BTRUE == err)
     {
         goto Err;
     }
     
     // Create reader tasks
-    err = false;
+    err = BFALSE;
     for (i = 0; i < TEST_STRESS_NUM_UART_LB_PAIR; i++)
     {
         for (j = 0; j < TEST_STRESS_NUM_SIDE_PER_LB_PAIR; j++)
@@ -4477,7 +4477,7 @@ static bool UART_test_stress_swip(
                 &taskParams, &eb);
             if (rdTask[numRdTask] == NULL)
             {
-                err = true;
+                err = BTRUE;
                 break;
             }
             else
@@ -4486,18 +4486,18 @@ static bool UART_test_stress_swip(
             }
         }
         
-        if (err == true)
+        if (BTRUE == err)
         {
             break;
         }
     }
-    if (err == true)
+    if (BTRUE == err)
     {
         goto Err;
     }    
     
     // Open UARTs
-    err = false;
+    err = BFALSE;
     for (i = 0; i < TEST_STRESS_NUM_UART_LB_PAIR; i++)
     {
         for (j = 0; j < TEST_STRESS_NUM_SIDE_PER_LB_PAIR; j++)
@@ -4530,7 +4530,7 @@ static bool UART_test_stress_swip(
             hUart = UART_open(testUartInstance[i*TEST_STRESS_NUM_SIDE_PER_LB_PAIR + j], &uartParams);
             if (hUart == NULL)
             {
-                err = true;
+                err = BTRUE;
                 break;
             }
             else
@@ -4540,12 +4540,12 @@ static bool UART_test_stress_swip(
             }
         }
         
-        if (err == true)
+        if (BTRUE == err)
         {
             break;
         }
     }
-    if (err == true)
+    if (BTRUE == err)
     {
         goto Err;
     }    
@@ -4564,7 +4564,7 @@ static bool UART_test_stress_swip(
     {
         if (gTestStressRdErr[i] != TEST_STRESS_RD_ERR_SOK)
         {
-            rdErr = true;
+            rdErr = BTRUE;
             break;
         }
     }
@@ -4572,7 +4572,7 @@ static bool UART_test_stress_swip(
     {        
         if (gTestStressWrErr[i] != TEST_STRESS_WR_ERR_SOK)
         {
-            wrErr = true;
+            wrErr = BTRUE;
             break;
         }
     }
@@ -4643,10 +4643,10 @@ Err:
     Task_setPri(taskHandle, saveTaskPri);
     
     // determine overall pass/fail result
-    ret = true;
-    if ((err == true) || (rdErr == true) || (wrErr == true))
+    ret = BTRUE;
+    if ((BTRUE == err) || (BTRUE == rdErr) || (BTRUE == wrErr))
     {
-        ret = false; // test failed
+        ret = BFALSE; // test failed
     }
     return ret;    
 }
@@ -4730,7 +4730,7 @@ void UART_test_print_test_result(uint32_t uartInstance, UART_Tests *test, bool p
     UART_write(uart, (void *)(uintptr_t)crPrompt, SIZEOF16B(crPrompt));
     UART_write(uart, (void *)(uintptr_t)testIdPrompt, SIZEOF16B(testIdPrompt));
     UART_write(uart, (void *)(uintptr_t)testId, SIZEOF16B(testId));
-    if (pass == true)
+    if (BTRUE == pass)
     {
         UART_write(uart, (void *)(uintptr_t)resultPass, SIZEOF16B(resultPass));
     }
@@ -4751,7 +4751,7 @@ void UART_test_print_test_results(uint32_t uartInstance, bool pass)
 
     UART_stdioInit(uartInstance);
 
-    if (pass == true)
+    if (BTRUE == pass)
     {
         UART_printStatus(resultPass);
     }
@@ -4768,7 +4768,7 @@ void UART_test_print_test_results(uint32_t uartInstance, bool pass)
  */
 Void taskFxn(UArg a0, UArg a1)
 {
-    bool testResult = false;
+    bool testResult = BFALSE;
     uint32_t i;
 
     /* Initialize UART driver */
@@ -4785,7 +4785,7 @@ Void taskFxn(UArg a0, UArg a1)
         testResult = Uart_tests[i].testFunc(Uart_tests[i].numUartTestInstance, Uart_tests[i].testUartInstance);
         UART_test_print_test_result(testOutUartInstance, &Uart_tests[i], testResult);
 
-        if (testResult == false)
+        if (BFALSE == testResult)
         {
             break;
         }
@@ -4793,7 +4793,7 @@ Void taskFxn(UArg a0, UArg a1)
 
     UART_test_print_test_results(testOutUartInstance, testResult);
 
-    while (1)
+    while (BTRUE)
     {
     }
 }
@@ -4807,7 +4807,7 @@ Int main()
     Error_Block eb;
     Task_Params taskParams;
 
-    if (Board_initUART() == false)
+    if (BFALSE == Board_initUART())
     {
         System_printf("\nBoard_initUART failed!\n");
         return(0);
