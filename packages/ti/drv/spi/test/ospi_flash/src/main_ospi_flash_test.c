@@ -158,23 +158,23 @@ typedef struct OSPI_Tests_s
 #undef  OSPI_QSPI_FLASH     /* Enable QSPI flash test using OSPI controller */
 
 /* OSPI test ID definitions */
-#define OSPI_TEST_ID_DAC_133M     0   /* OSPI flash test in Direct Acess Controller mode at 133MHz RCLK */
-#define OSPI_TEST_ID_INDAC_133M   1   /* OSPI flash test in Indirect Acess Controller mode at 133MHz RCLK */
-#define OSPI_TEST_ID_DAC_DMA_133M 2   /* OSPI flash test in Direct Acess Controller DMA mode at 133MHz RCLK */
-#define OSPI_TEST_ID_DAC_166M     3   /* OSPI flash test in Direct Acess Controller mode at 166MHz RCLK */
-#define OSPI_TEST_ID_INDAC_166M   4   /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
-#define OSPI_TEST_ID_DAC_DMA_166M 5   /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
-#define OSPI_TEST_ID_DAC_133M_SPI 6   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
-#define OSPI_TEST_ID_WR_TUNING    7   /* OSPI flash test in Direct Acess Controller legacy SPI mode to write tuning data */
-#define OSPI_NAND_TEST_ID_DAC_133M     8   /* OSPI flash test in Direct Acess Controller mode at 133MHz RCLK */
-#define OSPI_NAND_TEST_ID_INDAC_133M   9   /* OSPI flash test in Indirect Acess Controller mode at 133MHz RCLK */
-#define OSPI_NAND_TEST_ID_DAC_DMA_133M 10   /* OSPI flash test in Direct Acess Controller DMA mode at 133MHz RCLK */
-#define OSPI_NAND_TEST_ID_DAC_166M     11   /* OSPI flash test in Direct Acess Controller mode at 166MHz RCLK */
-#define OSPI_NAND_TEST_ID_INDAC_166M   12  /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
-#define OSPI_NAND_TEST_ID_DAC_DMA_166M 13  /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
-#define OSPI_NAND_TEST_ID_DAC_133M_SPI 14  /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
-#define OSPI_TEST_ID_PHY_CFG_MASTER    15   /* OSPI Phy Config Master mode test */
-#define OSPI_TEST_ID_PHY_CFG_BYPASS    16   /* OSPI Phy Config Bypass mode test */
+#define OSPI_TEST_ID_DAC_133M              0    /* OSPI flash test in Direct Acess Controller mode at 133MHz RCLK */
+#define OSPI_TEST_ID_INDAC_133M            1    /* OSPI flash test in Indirect Acess Controller mode at 133MHz RCLK */
+#define OSPI_TEST_ID_DAC_DMA_133M          2    /* OSPI flash test in Direct Acess Controller DMA mode at 133MHz RCLK */
+#define OSPI_TEST_ID_DAC_166M              3    /* OSPI flash test in Direct Acess Controller mode at 166MHz RCLK */
+#define OSPI_TEST_ID_INDAC_166M            4    /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
+#define OSPI_TEST_ID_DAC_DMA_166M          5    /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
+#define OSPI_TEST_ID_DAC_133M_SPI          6    /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
+#define OSPI_TEST_ID_WR_TUNING             7    /* OSPI flash test in Direct Acess Controller legacy SPI mode to write tuning data */
+#define OSPI_NAND_TEST_ID_DAC_133M         8    /* OSPI flash test in Direct Acess Controller mode at 133MHz RCLK */
+#define OSPI_NAND_TEST_ID_INDAC_133M       9    /* OSPI flash test in Indirect Acess Controller mode at 133MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_DMA_133M     10   /* OSPI flash test in Direct Acess Controller DMA mode at 133MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_166M         11   /* OSPI flash test in Direct Acess Controller mode at 166MHz RCLK */
+#define OSPI_NAND_TEST_ID_INDAC_166M       12   /* OSPI flash test in Indirect Acess Controller mode at 166MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_DMA_166M     13   /* OSPI flash test in Direct Acess Controller DMA mode at 166MHz RCLK */
+#define OSPI_NAND_TEST_ID_DAC_133M_SPI     14   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 133MHz RCLK */
+#define OSPI_TEST_ID_PHY_CFG_MASTER        15   /* OSPI Phy Config Master mode test */
+#define OSPI_TEST_ID_PHY_CFG_BYPASS        16   /* OSPI Phy Config Bypass mode test */
 #define OSPI_NAND_TEST_ID_DAC_OSDR_50M     17   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 50MHz RCLK */
 #define OSPI_NAND_TEST_ID_DAC_OSDR_166M    18   /* OSPI flash test in Direct Acess Controller legacy SPI mode at 166MHz RCLK */
 #define OSPI_NAND_TEST_ID_WR_TUNING        19   /* OSPI flash test in Direct Acess Controller legacy SPI mode to write tuning data */
@@ -341,7 +341,7 @@ int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
     Udma_InitPrms   initPrms;
     uint32_t        instId;
 
-    if (gDrvHandle == NULL)
+    if (NULL == gDrvHandle)
     {
         /* UDMA driver init */
 #if defined (SOC_AM64X)
@@ -365,7 +365,7 @@ int32_t Ospi_udma_init(OSPI_v0_HwAttrs *cfg)
         }
     }
 
-    if(gDrvHandle != NULL)
+    if(NULL != gDrvHandle)
     {
         gUdmaInfo.drvHandle      = (void *)gDrvHandle;
         gUdmaInfo.chHandle       = (void *)&gUdmaChObj;
@@ -384,7 +384,7 @@ int32_t Ospi_udma_deinit(void)
 {
     int32_t         retVal = UDMA_SOK;
 
-    if (gDrvHandle != NULL)
+    if (NULL != gDrvHandle)
     {
         retVal = Udma_deinit(gDrvHandle);
         if(UDMA_SOK == retVal)
@@ -426,7 +426,7 @@ void InitMmu(void)
 uint32_t MMR_unlock_one(uint32_t * kick0, uint32_t * kick1)
 {
     // initialize the status variable
-    uint32_t status = 1;
+    uint32_t status = UTRUE;
 
     // if either of the kick lock registers are locked
     if (!(*kick0 & 0x1) | !(*kick1 & 0x1))
@@ -439,7 +439,7 @@ uint32_t MMR_unlock_one(uint32_t * kick0, uint32_t * kick1)
     // check to see if either of the kick registers are unlocked.
     if (!(*kick0 & 0x1))
     {
-        status = 0;
+        status = UFALSE;
     }
 
     // return the status to the calling program
@@ -450,7 +450,7 @@ uint32_t MMR_unlock_one(uint32_t * kick0, uint32_t * kick1)
 uint32_t MMR_lock_one(uint32_t * kick0, uint32_t * kick1)
 {
     // create status return variable
-    uint32_t status = 1;
+    uint32_t status = UTRUE;
 
     // check to see if either of the kick registers are unlocked.
     if ((*kick0 & 0x1))
@@ -463,7 +463,7 @@ uint32_t MMR_lock_one(uint32_t * kick0, uint32_t * kick1)
     // check to see if either of the kick registers are still unlocked.
     if ((*kick0 & 0x1))
     {
-        status = 0;
+        status = UFALSE;
     }
     // return success or failure
     return status;
@@ -473,7 +473,7 @@ uint32_t MCU_CTRL_MMR_unlock_all()
 {
 
     // initialize the status variable
-    uint32_t status = 1;
+    uint32_t status = UTRUE;
 
     // Unlock the 0th partition
     status &= MMR_unlock_one(
@@ -516,7 +516,7 @@ uint32_t MCU_CTRL_MMR_lock_all()
 {
 
     // initialize the status variable
-    uint32_t status = 1;
+    uint32_t status = UTRUE;
 
     // lock the 0th partition
     status &= MMR_lock_one(
@@ -559,7 +559,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
     MCU_CTRL_MMR_unlock_all();
 
 
-    if(freq == OSPI_MODULE_CLK_166M)
+    if(OSPI_MODULE_CLK_166M == freq)
     {
         /* Select CPSWHSDIV4 */
         *(uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_OSPI0_CLKSEL) = 1;
@@ -582,11 +582,11 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
         /* Select MCUPLL0HSDIV4 */
         *(uint32_t *)(CSL_MCU_CTRL_MMR0_CFG0_BASE + CSL_MCU_CTRL_MMR_CFG0_MCU_OSPI0_CLKSEL) = 0;
 
-        if(freq == OSPI_MODULE_CLK_133M)
+        if(OSPI_MODULE_CLK_133M == freq)
             divider = 18;    /* 2400/18 = 133 */
-        if(freq == OSPI_MODULE_CLK_160M)
+        if(OSPI_MODULE_CLK_160M == freq)
             divider = 15;    /* 2400/15 = 160 */
-        if(freq == OSPI_MODULE_CLK_200M)
+        if(OSPI_MODULE_CLK_200M == freq)
             divider = 12;    /* 2400/12 = 200 */
 
         *(uint32_t*)(CSL_MCU_PLL0_CFG_BASE+CSL_MCU_PLL_MMR_CFG_PLL0_HSDIV_CLKDIV) = \
@@ -642,7 +642,7 @@ static void OSPI_flashMux(uint32_t flashType)
 
     GPIO_init();
 
-    if(flashType == OSPI_FLASH_SEL_NOR)
+    if(OSPI_FLASH_SEL_NOR == flashType)
     {
         GPIO_write(0, GPIO_PIN_LOW);
     }
@@ -686,14 +686,14 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
                                           TISCI_MSG_VALUE_CLOCK_SW_STATE_REQ,
                                           TISCI_MSG_FLAG_AOP,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (retVal != CSL_PASS)
+    if (CSL_PASS != retVal)
     {
         SPI_log("\n Sciclient_pmModuleClkRequest failed");
 	    goto clk_cfg_exit;
     }
 
     /* Max clocks */
-    if (freq == OSPI_MODULE_CLK_166M)
+    if (OSPI_MODULE_CLK_166M == freq)
     {
 #if defined (SOC_AM64X)
         parClk = TISCI_DEV_FSS0_OSPI_0_OSPI_RCLK_CLK_PARENT_HSDIV4_16FFT_MAIN_0_HSDIVOUT1_CLK;
@@ -719,7 +719,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
     }
 
-    if (retVal != CSL_PASS)
+    if (CSL_PASS != retVal)
     {
         SPI_log("\n Sciclient_pmSetModuleClkParent failed");
         goto clk_cfg_exit;
@@ -735,7 +735,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
                                           TISCI_MSG_FLAG_AOP,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    if (retVal != CSL_PASS)
+    if (CSL_PASS != retVal)
     {
         SPI_log("\n Sciclient_pmSetModuleClkFreq failed");
 	    goto clk_cfg_exit;
@@ -746,7 +746,7 @@ void OSPI_configClk(uint32_t freq, bool usePHY)
                                           clkID[BOARD_OSPI_NOR_INSTANCE],
                                           &ospi_rclk_freq,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (retVal != CSL_PASS)
+    if (CSL_PASS != retVal)
     {
         SPI_log("\n Sciclient_pmGetModuleClkFreq failed");
 	    goto clk_cfg_exit;
@@ -776,7 +776,7 @@ void OSPI_initConfig(OSPI_Tests *test)
 #endif
 
 #ifdef SPI_CACHE_ENABLE
-    ospi_cfg.cacheEnable = true;
+    ospi_cfg.cacheEnable = BTRUE;
 #endif
 
     /* Modify the default OSPI configurations */
@@ -787,13 +787,13 @@ void OSPI_initConfig(OSPI_Tests *test)
         /* Enable PHY in DAC mode */
         if (test->norFlash)
         {
-            ospi_cfg.phyEnable = true;
+            ospi_cfg.phyEnable = BTRUE;
         }
         else
         {
-            ospi_cfg.phyEnable = false;
+            ospi_cfg.phyEnable = BFALSE;
         }
-        ospi_cfg.intrEnable = false;
+        ospi_cfg.intrEnable = BFALSE;
 #ifdef SPI_DMA_ENABLE
         if (ospi_cfg.dmaEnable)
         {
@@ -804,41 +804,41 @@ void OSPI_initConfig(OSPI_Tests *test)
     else
     {
         /* Enable interrupt in INDAC mode */
-        ospi_cfg.intrEnable = true;
+        ospi_cfg.intrEnable = BTRUE;
         /* Disable PHY in INDAC mode */
-        ospi_cfg.phyEnable = false;
-        ospi_cfg.dmaEnable = false;
+        ospi_cfg.phyEnable = BFALSE;
+        ospi_cfg.dmaEnable = BFALSE;
     }
 
-    if ((test->testId == OSPI_TEST_ID_DAC_133M_SPI) || (test->testId == OSPI_NAND_TEST_ID_DAC_133M_SPI))
+    if ((OSPI_TEST_ID_DAC_133M_SPI == test->testId) || (OSPI_NAND_TEST_ID_DAC_133M_SPI == test->testId))
     {
         /* Disable PHY in legacy SPI mode (1-1-1) */
-        ospi_cfg.phyEnable = false;
-        ospi_cfg.dtrEnable = false;
+        ospi_cfg.phyEnable = BFALSE;
+        ospi_cfg.dtrEnable = BFALSE;
         ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
     }
     else
     {
-        ospi_cfg.dtrEnable = true;
+        ospi_cfg.dtrEnable = BTRUE;
         ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
     }
 
-    if (test->testId == OSPI_TEST_ID_WR_TUNING)
+    if (OSPI_TEST_ID_WR_TUNING == test->testId)
     {
-        ospi_cfg.phyEnable = false;
-        ospi_cfg.cacheEnable = false;
+        ospi_cfg.phyEnable = BFALSE;
+        ospi_cfg.cacheEnable = BFALSE;
     }
 
-    if (test->testId == OSPI_NAND_TEST_ID_WR_TUNING)
+    if (OSPI_NAND_TEST_ID_WR_TUNING == test->testId)
     {
-        ospi_cfg.phyEnable = false;
+        ospi_cfg.phyEnable = BFALSE;
     }
 
     ospi_cfg.funcClk = test->clk;
 
     if(test->norFlash)
     {
-        if (ospi_cfg.funcClk == OSPI_MODULE_CLK_133M)
+        if (OSPI_MODULE_CLK_133M == ospi_cfg.funcClk)
         {
             ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA;
         }
@@ -857,19 +857,19 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.baudRateDiv = 8;
         ospi_cfg.rdDataCapDelay = 0U;
     }
-    if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_50M)
+    if (OSPI_NAND_TEST_ID_DAC_OSDR_50M == test->testId)
     {
-        ospi_cfg.phyEnable = false;
+        ospi_cfg.phyEnable = BFALSE;
         ospi_cfg.baudRateDiv = 4U;
-        ospi_cfg.dtrEnable = false;
+        ospi_cfg.dtrEnable = BFALSE;
         ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
     }
 
-    if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_166M)
+    if (OSPI_NAND_TEST_ID_DAC_OSDR_166M == test->testId)
     {
-        ospi_cfg.phyEnable = true;
+        ospi_cfg.phyEnable = BTRUE;
         ospi_cfg.baudRateDiv = 0U;
-        ospi_cfg.dtrEnable = false;
+        ospi_cfg.dtrEnable = BFALSE;
         ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
         ospi_cfg.devDelays[0] = 0x01U;
         ospi_cfg.devDelays[1] = 0x00U;
@@ -880,7 +880,7 @@ void OSPI_initConfig(OSPI_Tests *test)
     if(ospi_cfg.intrEnable)
     {
         /* Set interrupt path */
-        if(OSPI_configSocIntrPath(&ospi_cfg, TRUE) != CSL_PASS)
+        if(CSL_PASS != OSPI_configSocIntrPath(&ospi_cfg, BTRUE))
         {
             SPI_log("\n Set interrupt path failed!\n");
         }
@@ -902,7 +902,7 @@ void OSPI_deInitConfig(OSPI_Tests *test)
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Release interrupt path */
-    OSPI_configSocIntrPath(&ospi_cfg, FALSE);
+    OSPI_configSocIntrPath(&ospi_cfg, BFALSE);
 }
 
 /*
@@ -914,7 +914,7 @@ static bool OSPI_phyConfigTest(void *arg)
     OSPI_Params     spiParams;  /* SPI params structure */
     OSPI_Handle     hwHandle;  /* SPI handle */
     OSPI_v0_HwAttrs ospiCfg;
-    bool            retVal = true;
+    bool            retVal = BTRUE;
     int32_t         status = SPI_STATUS_SUCCESS;
     OSPI_Tests      *test = (OSPI_Tests *)arg;
     uint32_t        data[3];
@@ -923,30 +923,30 @@ static bool OSPI_phyConfigTest(void *arg)
 #if defined (BUILD_MCU)
     /* Change interrupt number based on core */
     status = OSPI_socInit();
-    if(status != SPI_STATUS_SUCCESS)
+    if(SPI_STATUS_SUCCESS != status)
     {
         SPI_log("\nOSPI_socInit failed!!\n");
-        retVal = false;
+        retVal = BFALSE;
     }
     else
 #endif
     {
         /* Get the OSPI SoC configurations */
         status = OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospiCfg);
-        if(status != SPI_STATUS_SUCCESS)
+        if(SPI_STATUS_SUCCESS != status)
         {
             SPI_log("\nOSPI_socGetInitCfg failed!!\n");
-            retVal = false;
+            retVal = BFALSE;
         }
         else
         {
             ospiCfg.phyOpMode = test->phyOpMode;
 
             status = OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospiCfg);
-            if(status != SPI_STATUS_SUCCESS)
+            if(SPI_STATUS_SUCCESS != status)
             {
                 SPI_log("\nOSPI_socGetInitCfg failed!!\n");
-                retVal = false;
+                retVal = BFALSE;
             }
             else
             {
@@ -954,56 +954,56 @@ static bool OSPI_phyConfigTest(void *arg)
                 OSPI_Params_init(&spiParams);
                 hwHandle = (OSPI_Handle)OSPI_open(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &spiParams);
 
-                if(hwHandle == NULL)
+                if(NULL == hwHandle)
                 {
                     SPI_log("\nOSPI_open failed!!\n");
-                    retVal = false;
+                    retVal = BFALSE;
                 }
                 else
                 {
                     OSPI_v0_HwAttrs const        *hwAttrs= (OSPI_v0_HwAttrs const *)hwHandle->hwAttrs;
                     const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr);
 
-                    data[0] = TRUE;
+                    data[0] = UTRUE;
                     data[1] = 0U;
                     data[2] = 0U;
 
                     status = OSPI_control(hwHandle, OSPI_V0_CMD_CFG_PHY, (void *)data);
 
-                    if(status != SPI_STATUS_SUCCESS)
+                    if(SPI_STATUS_SUCCESS != status)
                     {
                         SPI_log("\nOSPI_control failed!!\n");
-                        retVal = false;
+                        retVal = BFALSE;
                     }
                     else
                     {
                         phyOpMode = CSL_REG32_FEXT(&pRegs->PHY_MASTER_CONTROL_REG,
                                         OSPI_FLASH_CFG_PHY_MASTER_CONTROL_REG_PHY_MASTER_BYPASS_MODE_FLD);
 
-                        if(test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_MASTER)
+                        if(CSL_OSPI_CFG_PHY_OP_MODE_MASTER == test->phyOpMode)
                         {
-                            if(phyOpMode != 0U)
+                            if(0U != phyOpMode)
                             {
                                 SPI_log("\nFAIL: PHY not configured in master mode\n");
-                                retVal = false;
+                                retVal = BFALSE;
                             }
                             else
                             {
                                 SPI_log("\nPHY configured in master mode\n");
-                                retVal = true;
+                                retVal = BTRUE;
                             }
                         }
-                        if(test->phyOpMode == CSL_OSPI_CFG_PHY_OP_MODE_BYPASS)
+                        if(CSL_OSPI_CFG_PHY_OP_MODE_BYPASS == test->phyOpMode)
                         {
-                            if(phyOpMode != 1U)
+                            if(1U != phyOpMode)
                             {
                                 SPI_log("\nFAIL: PHY not configured in bypass mode\n");
-                                retVal = false;
+                                retVal = BFALSE;
                             }
                             else
                             {
                                 SPI_log("\nPHY configured in bypass mode\n");
-                                retVal = true;
+                                retVal = BTRUE;
                             }
                         }
                     }
@@ -1022,7 +1022,7 @@ static bool OSPI_flash_test(void *arg)
     uint32_t          blockNum;     /* flash block number */
     uint32_t          pageNum;      /* flash page number */
 #endif
-    bool              testPassed = true;  /* return value */
+    bool              testPassed = BTRUE;  /* return value */
     uint32_t          writeMode = OSPI_FLASH_OCTAL_PAGE_PROG;
     uint32_t          readMode = OSPI_FLASH_OCTAL_READ;
     uint32_t          deviceId;     /* flash device ID */
@@ -1046,11 +1046,11 @@ static bool OSPI_flash_test(void *arg)
     uint32_t          tuneEnable;
     uint32_t          blockSize;
 
-    if ((test->testId == OSPI_TEST_ID_WR_TUNING) || (test->testId == OSPI_NAND_TEST_ID_WR_TUNING))
+    if ((OSPI_TEST_ID_WR_TUNING == test->testId) || (OSPI_NAND_TEST_ID_WR_TUNING == test->testId))
     {
         testLen = NOR_ATTACK_VECTOR_SIZE;
 #if defined(SOC_J721S2) || defined(SOC_J784S4)
-        if(test->norFlash == true)
+        if(BTRUE == test->norFlash)
         {
             startOffset = NOR_TUNING_DATA_OFFSET;
         }
@@ -1070,11 +1070,11 @@ static bool OSPI_flash_test(void *arg)
 
     if(test->dacMode)
     {
-        tuneEnable = TRUE;
+        tuneEnable = UTRUE;
     }
     else
     {
-        tuneEnable = FALSE;
+        tuneEnable = UFALSE;
     }
 
     OSPI_initConfig(test);
@@ -1129,7 +1129,7 @@ static bool OSPI_flash_test(void *arg)
     if (!boardHandle)
     {
         SPI_log("\n Board_flashOpen failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
     else
@@ -1141,7 +1141,7 @@ static bool OSPI_flash_test(void *arg)
 
     /* Generate the data */
     GeneratePattern(txBuf, rxBuf, testLen);
-    if ((test->testId == OSPI_TEST_ID_WR_TUNING) || (test->testId == OSPI_NAND_TEST_ID_WR_TUNING))
+    if ((OSPI_TEST_ID_WR_TUNING == test->testId) || (OSPI_NAND_TEST_ID_WR_TUNING == test->testId))
     {
         pBuf = nor_attack_vector;
     }
@@ -1158,7 +1158,7 @@ static bool OSPI_flash_test(void *arg)
 #endif
 
 #ifdef OSPI_WRITE
-    if((test->testId != OSPI_NAND_TEST_ID_DAC_OSDR_50M) && (test->testId != OSPI_NAND_TEST_ID_DAC_OSDR_166M))
+    if((OSPI_NAND_TEST_ID_DAC_OSDR_50M != test->testId) && (OSPI_NAND_TEST_ID_DAC_OSDR_166M != test->testId))
     {
     #if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
         if (test->norFlash && test->dacMode)                          /* DAC writes are not supported on Cypress xSPI Flash - Switch to INDAC mode for write as WA to PDK-7115 */
@@ -1179,10 +1179,10 @@ static bool OSPI_flash_test(void *arg)
             }
         #endif
             OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
-            ospi_cfg.dacEnable = false;
-            ospi_cfg.phyEnable = false;
-            ospi_cfg.dmaEnable = false;
-            ospi_cfg.intrEnable = true;
+            ospi_cfg.dacEnable = BFALSE;
+            ospi_cfg.phyEnable = BFALSE;
+            ospi_cfg.dmaEnable = BFALSE;
+            ospi_cfg.intrEnable = BTRUE;
             OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
             boardHandle = Board_flashOpen(deviceId, BOARD_OSPI_NOR_INSTANCE, (void *)(&tuneEnable));
         }
@@ -1194,7 +1194,7 @@ static bool OSPI_flash_test(void *arg)
                                         &blockNum, &pageNum))
             {
                 SPI_log("\n Board_flashOffsetToBlkPage failed. \n");
-                testPassed = false;
+                testPassed = BFALSE;
                 goto err;
             }
 
@@ -1202,7 +1202,7 @@ static bool OSPI_flash_test(void *arg)
             if (Board_flashEraseBlk(boardHandle, blockNum))
             {
                 SPI_log("\n Board_flashEraseBlk failed. \n");
-                testPassed = false;
+                testPassed = BFALSE;
                 goto err;
             }
         }
@@ -1229,7 +1229,7 @@ static bool OSPI_flash_test(void *arg)
                                 xferLen, (void *)(&writeMode)))
             {
                 SPI_log("\n Board_flashWrite failed. \n");
-                testPassed = false;
+                testPassed = BFALSE;
                 goto err;
             }
         }
@@ -1264,39 +1264,39 @@ static bool OSPI_flash_test(void *arg)
         OSPI_v0_HwAttrs ospi_cfg;
         Board_flashClose(boardHandle);
         OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
-        if (test->testId == OSPI_TEST_ID_DAC_133M_SPI)
+        if (OSPI_TEST_ID_DAC_133M_SPI == test->testId)
         {
             /* Disable PHY in legacy SPI mode (1-1-1) */
-            ospi_cfg.phyEnable = false;
-            ospi_cfg.dtrEnable = false;
+            ospi_cfg.phyEnable = BFALSE;
+            ospi_cfg.dtrEnable = BFALSE;
             ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
         }
-        else if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_50M)
+        else if (OSPI_NAND_TEST_ID_DAC_OSDR_50M == test->testId)
         {
             /* Disable PHY in legacy SPI mode (1-1-8) */
-            ospi_cfg.phyEnable = false;
+            ospi_cfg.phyEnable = BFALSE;
             ospi_cfg.baudRateDiv = 4U;
-            ospi_cfg.dtrEnable = false;
+            ospi_cfg.dtrEnable = BFALSE;
             ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
         }
-        else if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_166M)
+        else if (OSPI_NAND_TEST_ID_DAC_OSDR_166M == test->testId)
         {
-            ospi_cfg.phyEnable = true;
+            ospi_cfg.phyEnable = BTRUE;
             ospi_cfg.baudRateDiv = 4U;
-            ospi_cfg.dtrEnable = false;
+            ospi_cfg.dtrEnable = BFALSE;
             ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
         }
         else
         {
             /* Enable PHY in octal SPI mode (8-8-8) */
-            ospi_cfg.phyEnable = true;
-            ospi_cfg.dtrEnable = true;
+            ospi_cfg.phyEnable = BTRUE;
+            ospi_cfg.dtrEnable = BTRUE;
             ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
         }
 
-        ospi_cfg.dacEnable = true;
+        ospi_cfg.dacEnable = BTRUE;
         ospi_cfg.dmaEnable = test->dmaMode;
-        ospi_cfg.intrEnable = false;
+        ospi_cfg.intrEnable = BFALSE;
     #ifdef SPI_DMA_ENABLE
         if (ospi_cfg.dmaEnable)
         {
@@ -1308,9 +1308,9 @@ static bool OSPI_flash_test(void *arg)
     }
 #endif
 #ifdef OSPI_PROFILE
-    if((test->dacMode) && (test->testId!=OSPI_NAND_TEST_ID_DAC_OSDR_50M) &&\
-       (test->testId!=OSPI_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_TEST_ID_WR_TUNING) &&\
-       (test->testId!=OSPI_NAND_TEST_ID_DAC_133M_SPI) && (test->testId!=OSPI_NAND_TEST_ID_WR_TUNING))
+    if((test->dacMode) && (OSPI_NAND_TEST_ID_DAC_OSDR_50M != test->testId) &&\
+       (OSPI_TEST_ID_DAC_133M_SPI != test->testId) && (OSPI_TEST_ID_WR_TUNING != test->testId) &&\
+       (OSPI_NAND_TEST_ID_DAC_133M_SPI != test->testId) && (OSPI_NAND_TEST_ID_WR_TUNING != test->testId))
     {
         uint64_t    startPhyTuningTick;
         uint64_t    elapsedPhyTuningTicks;
@@ -1321,7 +1321,7 @@ static bool OSPI_flash_test(void *arg)
         if (Board_flashRead(boardHandle, 0U, &tmpRxBuf[0], 4U, (void *)(&readMode)))
         {
             SPI_log("\n Dummy Board_flashRead for PHY tuning measurement failed. \n");
-            testPassed = false;
+            testPassed = BFALSE;
             goto err;
         }
         elapsedPhyTuningTicks = Ospi_getGTCTimerTicks() - startPhyTuningTick;
@@ -1348,7 +1348,7 @@ static bool OSPI_flash_test(void *arg)
                             xferLen, (void *)(&readMode)))
         {
             SPI_log("\n Board_flashRead failed. \n");
-            testPassed = false;
+            testPassed = BFALSE;
             goto err;
         }
     }
@@ -1369,10 +1369,10 @@ static bool OSPI_flash_test(void *arg)
 
 #ifdef OSPI_WRITE
     /* Verify Data */
-    if (VerifyData(pBuf, rxBuf, testLen) == false)
+    if (BFALSE == VerifyData(pBuf, rxBuf, testLen))
     {
         SPI_log("\n Data mismatch. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 #endif
@@ -1380,7 +1380,7 @@ static bool OSPI_flash_test(void *arg)
 err:
     OSPI_deInitConfig(test);
 
-    if (boardHandle != 0U)
+    if (0U != boardHandle)
     {
         Board_flashClose(boardHandle);
     }
@@ -1410,39 +1410,39 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
 OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING
-    {OSPI_flash_test,       OSPI_TEST_ID_WR_TUNING,           true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
+    {OSPI_flash_test,       OSPI_TEST_ID_WR_TUNING,           BTRUE,  BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
 #endif
-    {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M,            true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
-    {OSPI_flash_test,       OSPI_TEST_ID_INDAC_133M,          false,  false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M,            BTRUE,  BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_INDAC_133M,          BFALSE, BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test,       OSPI_TEST_ID_DAC_DMA_133M,        true,   true,   true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_DMA_133M,        BTRUE,  BTRUE,   BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC DMA mode at 133MHz RCLK"},
 #endif
-    {OSPI_flash_test,       OSPI_TEST_ID_DAC_166M,            true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
-    {OSPI_flash_test,       OSPI_TEST_ID_INDAC_166M,          false,  false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_166M,            BTRUE,  BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_INDAC_166M,          BFALSE, BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in INDAC mode at 166MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test,       OSPI_TEST_ID_DAC_DMA_166M,        true,   true,   true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_DMA_166M,        BTRUE,  BTRUE,   BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
-    {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M_SPI,        true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M_SPI,        BTRUE,  BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
 #if defined(SOC_J721S2) || defined(SOC_J784S4)
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_WR_TUNING,      true,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to nand flash"},
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_166M,     false,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M_SPI,   true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_OSDR_50M,  true,   false,  false,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_200M, "\r\n OSPI flash test slave in DAC SDR OSPI mode at 50MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_WR_TUNING,      BTRUE,  BFALSE,  BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to nand flash"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_166M,     BFALSE, BFALSE,  BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in INDAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M_SPI,   BTRUE,  BFALSE,  BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC Legacy SPI mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_OSDR_50M,   BTRUE,  BFALSE,  BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_200M, "\r\n OSPI flash test slave in DAC SDR OSPI mode at 50MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_OSDR_166M,  true,   true,  false,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC SDR OSPI mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_OSDR_166M,  BTRUE,  BTRUE,   BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI flash test slave in DAC SDR OSPI mode at 166MHz RCLK"},
 #endif
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_133M,     false,  false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in INDAC mode at 133MHz RCLK"},
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M,       true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_INDAC_133M,     BFALSE, BFALSE,  BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in INDAC mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_133M,       BTRUE,  BFALSE,  BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC mode at 133MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_DMA_133M,   true,   true,   false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 133MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_DMA_133M,   BTRUE,  BTRUE,   BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 133MHz RCLK"},
 #endif
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_166M,       true,   false,  false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_166M,       BTRUE,  BFALSE,  BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC mode at 166MHz RCLK"},
 #ifdef SPI_DMA_ENABLE
-    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_DMA_166M,   true,   true,   false,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 166MHz RCLK"},
+    {OSPI_flash_test,       OSPI_NAND_TEST_ID_DAC_DMA_166M,   BTRUE,  BTRUE,   BFALSE,      CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_166M, "\r\n OSPI NAND flash test slave in DAC DMA mode at 166MHz RCLK"},
 #endif
 #endif
-    {OSPI_phyConfigTest,    OSPI_TEST_ID_PHY_CFG_MASTER,      true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_MASTER,   OSPI_MODULE_CLK_133M, "\r\n OSPI Phy Config Master mode test"},
-    {OSPI_phyConfigTest,    OSPI_TEST_ID_PHY_CFG_BYPASS,      true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_BYPASS,   OSPI_MODULE_CLK_133M, "\r\n OSPI Phy Config bypass mode test"},
+    {OSPI_phyConfigTest,    OSPI_TEST_ID_PHY_CFG_MASTER,      BTRUE,  BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_MASTER,   OSPI_MODULE_CLK_133M, "\r\n OSPI Phy Config Master mode test"},
+    {OSPI_phyConfigTest,    OSPI_TEST_ID_PHY_CFG_BYPASS,      BTRUE,  BFALSE,  BTRUE,       CSL_OSPI_CFG_PHY_OP_MODE_BYPASS,   OSPI_MODULE_CLK_133M, "\r\n OSPI Phy Config bypass mode test"},
     {NULL, }
 };
 
@@ -1456,7 +1456,7 @@ void spi_test()
 #endif
 {
     uint32_t    i;
-    bool        testFail = false;
+    bool        testFail = BFALSE;
     OSPI_Tests *test;
 
 #if defined(SAFERTOS)
@@ -1475,27 +1475,27 @@ void spi_test()
     for (i = 0; ; i++)
     {
         test = &Ospi_tests[i];
-        if (test->testFunc == NULL)
+        if (NULL == test->testFunc)
         {
             break;
         }
 
-        OSPI_configClk(test->clk, true);
+        OSPI_configClk(test->clk, BTRUE);
 
         OSPI_test_print_test_desc(test);
 
-        if (test->testFunc((void *)test) == true)
+        if (BTRUE == test->testFunc((void *)test))
         {
             SPI_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             SPI_log("\r\n %s have failed\r\n", test->testDesc);
-            testFail = true;
+            testFail = BTRUE;
         }
     }
 
-    if(testFail == true)
+    if(BTRUE == testFail)
     {
         SPI_log("\n Some tests have failed. \n");
     }
@@ -1506,7 +1506,7 @@ void spi_test()
 
     SPI_log("Done\n");
 
-    while (true)
+    while (BTRUE)
     {
     }
 }
@@ -1554,7 +1554,7 @@ int main(void)
 
     /* Start BIOS */
 	task = TaskP_create(&spi_test, &taskParams);
-    if (task == NULL) {
+    if (NULL == task) {
         UART_printf("TaskP_create() failed!\n");
         OS_stop();
     }
@@ -1573,14 +1573,14 @@ bool VerifyData(uint8_t *expData,
                 uint32_t length)
 {
     uint32_t idx = 0;
-    uint32_t match = 1;
-    bool retVal = false;
+    uint32_t match = UTRUE;
+    bool retVal = BFALSE;
 
-    for(idx = 0; ((idx < length) && (match != 0)); idx++)
+    for(idx = 0; ((idx < length) && (UFALSE != match)); idx++)
     {
         if(*expData != *rxData)
         {
-            match = 0;
+            match = UFALSE;
             SPI_log("Data mismatch at idx %d\n", idx);
             SPI_log("exp data:%x, rxData:%x\n", *expData, *rxData);
         }
@@ -1588,9 +1588,9 @@ bool VerifyData(uint8_t *expData,
         rxData++;
     }
 
-    if(match == 1)
+    if(UTRUE == match)
     {
-        retVal = true;
+        retVal = BTRUE;
     }
 
     return retVal;
@@ -1613,7 +1613,7 @@ static void GeneratePattern(uint8_t *txBuf, uint8_t *rxBuf, uint32_t length)
         }
         else if (idx < (length/4*3))
         {
-            *txPtr++ = 0xaa;
+            *txPtr++ = 0xAA;
         }
         else
         {
@@ -1635,7 +1635,7 @@ static int32_t App_setGTCClk(uint32_t moduleId,
                                           clkId,
                                           &currClkFreqHz,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-    if ((retVal == CSL_PASS) &&
+    if ((CSL_PASS == retVal) &&
         (currClkFreqHz != clkRateHz))
     {
         retVal = OspiFlash_ClkRateSet(moduleId, clkId, clkRateHz);
@@ -1666,14 +1666,14 @@ int32_t OspiFlash_ClkRateSet(uint32_t modId,
                                             clkId,
                                             &clockStatus,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (status == CSL_PASS)
+    if (CSL_PASS == status)
     {
         /* Get the number of parents for the clock */
         status = Sciclient_pmGetModuleClkNumParent(modId,
                                                    clkId,
                                                    &numParents,
                                                    SCICLIENT_SERVICE_WAIT_FOREVER);
-        if ((status == CSL_PASS) && (numParents > 1U))
+        if ((CSL_PASS == status) && (numParents > 1U))
         {
             status = Sciclient_pmGetModuleClkParent(modId,
                                                     clkId,
@@ -1681,7 +1681,7 @@ int32_t OspiFlash_ClkRateSet(uint32_t modId,
                                                     SCICLIENT_SERVICE_WAIT_FOREVER);
         }
     }
-    if (status == CSL_PASS)
+    if (CSL_PASS == status)
     {
         /* Disabling the clock */
         status = Sciclient_pmModuleClkRequest(modId,
@@ -1690,26 +1690,26 @@ int32_t OspiFlash_ClkRateSet(uint32_t modId,
                                               0U,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-    if (status == CSL_PASS)
+    if (CSL_PASS == status)
     {
         foundParent = 0U;
         /* Try to loop and change parents of the clock */
-        for(i=0U;i<numParents;i++)
+        for(i = 0U; i < numParents; i++)
         {
             if (numParents > 1U)
             {
                 /* Setting the new parent */
                 status = Sciclient_pmSetModuleClkParent(modId,
                                                         clkId,
-                                                        clkId+i+1U,
+                                                        clkId + i + 1U,
                                                         SCICLIENT_SERVICE_WAIT_FOREVER);
                 /* Check if the clock can be set to desirable freq. */
-                if (status == CSL_PASS)
+                if (CSL_PASS == status)
                 {
                     moduleClockParentChanged = 1U;
                 }
             }
-            if (status == CSL_PASS)
+            if (CSL_PASS == status)
             {
                 status = Sciclient_pmQueryModuleClkFreq(modId,
                                                         clkId,
@@ -1717,26 +1717,26 @@ int32_t OspiFlash_ClkRateSet(uint32_t modId,
                                                         &respClkRate,
                                                         SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-            if ((status == CSL_PASS) && (respClkRate == clkRate))
+            if ((CSL_PASS == status) && (respClkRate == clkRate))
             {
                 foundParent = 1U;
                 break;
             }
         }
     }
-    if ((status == CSL_PASS) && (numParents == 0U))
+    if ((CSL_PASS == status) && (0U == numParents))
     {
         status = Sciclient_pmQueryModuleClkFreq(modId,
                                                 clkId,
                                                 clkRate,
                                                 &respClkRate,
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
-        if ((status == CSL_PASS) && (respClkRate == clkRate))
+        if ((CSL_PASS == status) && (respClkRate == clkRate))
         {
             foundParent = 1U;
         }
     }
-    if (foundParent == 1U)
+    if (1U == foundParent)
     {
         /* Set the clock at the desirable frequency*/
         status = Sciclient_pmSetModuleClkFreq(modId,
@@ -1749,8 +1749,8 @@ int32_t OspiFlash_ClkRateSet(uint32_t modId,
     {
         status = CSL_EFAIL;
     }
-    if ((status == CSL_PASS) &&
-        (clockStatus == (uint32_t) TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ))
+    if ((CSL_PASS == status) &&
+        ((uint32_t) TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ == clockStatus))
     {
         /* Restore the clock again to original state */
         status = Sciclient_pmModuleClkRequest(modId,
@@ -1760,7 +1760,7 @@ int32_t OspiFlash_ClkRateSet(uint32_t modId,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
     }
     finalStatus = status;
-    if ((status != CSL_PASS) && (moduleClockParentChanged == 1U))
+    if ((CSL_PASS != status) && (1U == moduleClockParentChanged))
     {
         /* Setting the original parent if failure */
         (void) Sciclient_pmSetModuleClkParent(modId,

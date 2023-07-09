@@ -301,7 +301,7 @@ void SPI_dmaDisableChannel(SPI_Handle handle, bool txChan)
     SPI_HWAttrs const *hwAttrs = (SPI_HWAttrs*)handle->hwAttrs;
     uint32_t           dmaEvent;
 
-    if (txChan == true)
+    if (BTRUE == txChan)
     {
         dmaEvent = (uint32_t) hwAttrs->txDmaEventNumber;
     }
@@ -588,8 +588,8 @@ static void SPI_dmaCallback(SPI_Handle handle)
                               EDMA3_DRV_TRIG_MODE_EVENT);
 
     /* Call the transfer completion callback function */
-    if ((object->transaction->status != SPI_TRANSFER_FAILED) &&
-        (object->transferErr == SPI_XFER_ERR_NONE))
+    if ((SPI_TRANSFER_FAILED != object->transaction->status) &&
+        (SPI_XFER_ERR_NONE   == object->transferErr))
     {
         object->transaction->status = SPI_TRANSFER_COMPLETED;
     }

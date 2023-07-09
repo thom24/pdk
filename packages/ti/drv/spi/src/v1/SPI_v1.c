@@ -139,7 +139,7 @@ static void SPI_close_v1(SPI_Handle handle)
     SPI_v1_Object   *object;
 
     /* Input parameter validation */
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get the pointer to the object */
         object = (SPI_v1_Object*)handle->object;
@@ -160,13 +160,13 @@ static void SPI_init_v1(SPI_Handle handle)
     SPI_v1_Object   *object;
 
     /* Input parameter validation */
-    if (handle != NULL)
+    if (NULL != handle)
     {
         object = (SPI_v1_Object*)handle->object;
 
         /* Get multi-channel handle */
         mcHandle = MCSPI_get_handle(handle);
-        if (mcHandle != NULL)
+        if (NULL != mcHandle)
         {
             MCSPI_init_v1(mcHandle);
         }
@@ -191,16 +191,16 @@ static SPI_Handle SPI_open_v1(SPI_Handle handle, const SPI_Params *params)
     SPI_v1_Object        *object;
 
     /* Input parameter validation */
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get the pointer to the object */
         object = (SPI_v1_Object*)handle->object;
 
         /* Get multi-channel handle */
         mcHandle = MCSPI_get_handle(handle);
-        if (mcHandle != NULL)
+        if (NULL != mcHandle)
         {
-            if (params != NULL)
+            if (NULL != params)
             {
                 /* covert SPI_Params to MCSPI_Params */
                 MCSPI_get_params(params, &mcParams);
@@ -209,7 +209,7 @@ static SPI_Handle SPI_open_v1(SPI_Handle handle, const SPI_Params *params)
                 object->transferCallbackFxn = params->transferCallbackFxn;
             }
             mcHandle = MCSPI_open_v1(mcHandle, &mcParams);
-            if (mcHandle != NULL)
+            if (NULL != mcHandle)
             {
                 object->mcHandle = mcHandle;
             }
@@ -230,14 +230,14 @@ static SPI_Handle SPI_open_v1(SPI_Handle handle, const SPI_Params *params)
 static bool SPI_transfer_v1(SPI_Handle handle, SPI_Transaction *transaction)
 {
     MCSPI_Handle   mcHandle;
-    bool           ret_val = (bool)false;
+    bool           ret_val = BFALSE;
 
     /* Input parameter validation */
-    if ((handle != NULL) && (transaction != NULL))
+    if ((NULL != handle) && (NULL != transaction))
     {
         /* Get multi-channel handle */
         mcHandle = MCSPI_get_handle(handle);
-        if (mcHandle != NULL)
+        if (NULL != mcHandle)
         {
             ret_val = MCSPI_transfer_v1(mcHandle, transaction);
         }
@@ -255,11 +255,11 @@ static void SPI_transferCancel_v1(SPI_Handle handle)
     MCSPI_Handle   mcHandle;
 
     /* Input parameter validation */
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get multi-channel handle */
         mcHandle = MCSPI_get_handle(handle);
-        if (mcHandle != NULL)
+        if (NULL != mcHandle)
         {
             MCSPI_transferCancel_v1(mcHandle);
         }
@@ -276,11 +276,11 @@ static int32_t SPI_control_v1(SPI_Handle handle, uint32_t cmd, const void *arg)
     int32_t        ret_val = SPI_STATUS_ERROR;
 
     /* Input parameter validation */
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get multi-channel handle */
         mcHandle = MCSPI_get_handle(handle);
-        if (mcHandle != NULL)
+        if (NULL != mcHandle)
         {
             ret_val = MCSPI_control_v1(mcHandle, cmd, arg);
         }
@@ -320,7 +320,7 @@ static void MCSPI_close_v1(MCSPI_Handle mcHandle)
     uint32_t              chNum;
 
     /* Input parameter validation */
-    if (mcHandle != NULL)
+    if (NULL != mcHandle)
     {
     /* Get SPI handle and channel */
     handle  = mcHandle->handle;
@@ -334,9 +334,9 @@ static void MCSPI_close_v1(MCSPI_Handle mcHandle)
     MCSPI_init_v1(mcHandle);
 
     object->chOpenedCnt--;
-    if (object->chOpenedCnt == 0U)
+    if (0U == object->chOpenedCnt)
     {
-        if(object->transferComplete != NULL)
+        if(NULL != object->transferComplete)
         {
             /* Destruct the semaphore */
             (void)SPI_osalDeleteBlockingLock(object->transferComplete);
@@ -344,14 +344,14 @@ static void MCSPI_close_v1(MCSPI_Handle mcHandle)
         }
 
         /* All the channels closed */
-        if(object->hwi != NULL)
+        if(NULL != object->hwi)
         {
             /* Destruct the Hwi */
-            (void)SPI_osalHardwareIntDestruct(object->hwi, (int32_t)hwAttrs->eventId);
+            (void)SPI_osalHardwareIntDestruct(object->hwi, hwAttrs->eventId);
             object->hwi = NULL;
         }
 
-        if(object->mutex != NULL)
+        if(NULL != object->mutex)
         {
             /* Destruct the instance lock */
             (void)SPI_osalDeleteBlockingLock(object->mutex);
@@ -363,13 +363,13 @@ static void MCSPI_close_v1(MCSPI_Handle mcHandle)
     }
 
 #ifdef SPI_DMA_ENABLE
-    if (hwAttrs->dmaMode == (bool)true)
+    if (BTRUE == hwAttrs->dmaMode)
     {
         MCSPI_dmaFreeChannel(mcHandle);
     }
 #endif
 
-    chObj->isOpen = (bool)false;
+    chObj->isOpen = BFALSE;
     }
 }
 /* Get recieved data from the RX FIFO based on the data size */
@@ -388,12 +388,12 @@ static void *MCSPI_receiveData_v1 (uint32_t baseAddr, uint32_t dataSize, void *d
 {
     void *dataPtr;
 
-    if (dataSize <= 8U)
+    if (8U >= dataSize)
     {
         *(uint8_t *)dataBuf = (uint8_t)McSPIReceiveData(baseAddr, chNum);
         dataPtr = (void *)(((uint8_t *)dataBuf) + 1U);
     }
-    else if (dataSize <= 16U)
+    else if (16U >= dataSize)
     {
         *(uint16_t *)dataBuf = (uint16_t)McSPIReceiveData(baseAddr, chNum);
         dataPtr = (void *)(((uint8_t *)dataBuf) + 2U);
@@ -421,12 +421,12 @@ void *MCSPI_transmitData_v1 (uint32_t baseAddr, uint32_t dataSize, void *dataBuf
 {
     void *dataPtr;
 
-    if (dataSize <= 8U)
+    if (8U >= dataSize)
     {
         McSPITransmitData(baseAddr, (uint32_t)(*(uint8_t *)dataBuf), chNum);
         dataPtr = (void *)(((uint8_t *)dataBuf) + 1U);
     }
-    else if (dataSize <= 16U)
+    else if (16U >= dataSize)
     {
         McSPITransmitData(baseAddr, (uint32_t)(*(uint16_t *)dataBuf), chNum);
         dataPtr = (void *)(((uint8_t *)dataBuf) + 2U);
@@ -468,7 +468,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     hwAttrs = (const SPI_v1_HWAttrs *)handle->hwAttrs;
     chnCfg  = &(hwAttrs->chnCfg[chNum]);
 
-    if (chnCfg->trMode == MCSPI_RX_ONLY_MODE)
+    if (MCSPI_RX_ONLY_MODE == chnCfg->trMode)
     {
         chObj->writeBufIdx = NULL;
         chObj->writeCountIdx = 0;
@@ -476,7 +476,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     else
     {
         chObj->writeBufIdx = (void *)transaction->txBuf;
-        if (chObj->writeBufIdx != NULL)
+        if (NULL != chObj->writeBufIdx)
         {
             chObj->writeCountIdx = (uint32_t)transaction->count;
         }
@@ -486,7 +486,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
         }
     }
 
-    if (chnCfg->trMode == MCSPI_TX_ONLY_MODE)
+    if (MCSPI_TX_ONLY_MODE == chnCfg->trMode)
     {
         chObj->readBufIdx = NULL;
         chObj->readCountIdx = 0;
@@ -494,7 +494,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     else
     {
         chObj->readBufIdx = (void *)transaction->rxBuf;
-        if (chObj->readBufIdx != NULL)
+        if (NULL != chObj->readBufIdx)
         {
             chObj->readCountIdx = (uint32_t)transaction->count;
         }
@@ -505,9 +505,9 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     }
 
     /* Enable FIFO's dependent on which mode of operation is chosen */
-    if (chnCfg->trMode == MCSPI_TX_RX_MODE)
+    if (MCSPI_TX_RX_MODE == chnCfg->trMode)
     {
-        if ((hwAttrs->txTrigLvl == 0U) || (hwAttrs->rxTrigLvl == 0U))
+        if ((0U == hwAttrs->txTrigLvl) || (0U == hwAttrs->rxTrigLvl))
         {
             txFifo = MCSPI_TX_FIFO_DISABLE;
             rxFifo = MCSPI_RX_FIFO_DISABLE;
@@ -520,10 +520,10 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
             object->fifoSize = MCSPI_RX_TX_FIFO_SIZE;
         }
     }
-    else if (chnCfg->trMode == MCSPI_TX_ONLY_MODE)
+    else if (MCSPI_TX_ONLY_MODE == chnCfg->trMode)
     {
         /* TX_ONLY Mode */
-        if (hwAttrs->txTrigLvl == 0U)
+        if (0U == hwAttrs->txTrigLvl)
         {
             txFifo = MCSPI_TX_FIFO_DISABLE;
             object->fifoSize = 0;
@@ -539,7 +539,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     {
         /* RX_ONLY Mode */
         txFifo = MCSPI_TX_FIFO_DISABLE;
-        if (hwAttrs->rxTrigLvl == 0U)
+        if (0U == hwAttrs->rxTrigLvl)
         {
             rxFifo = MCSPI_RX_FIFO_DISABLE;
             object->fifoSize = 0;
@@ -596,13 +596,13 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
         if (transBytes > object->fifoSize)
         {
 #ifdef SPI_DMA_ENABLE
-            if (hwAttrs->dmaMode == (bool)true)
+            if (BTRUE == hwAttrs->dmaMode)
             {
                 /*
                  * In DMA mode, update the transaction count to be
                  * multiple of FIFO trigger level size
                  */
-                if (chnCfg->trMode == MCSPI_RX_ONLY_MODE)
+                if (MCSPI_RX_ONLY_MODE == chnCfg->trMode)
                 {
                     transBytes = (transBytes / object->rxTrigLvl) * object->rxTrigLvl;
                 }
@@ -620,7 +620,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
                  * set the RX trigger level less than the FIFO size, so that TX FIFO
                  * will not under run.
                  */
-                if ((chnCfg->trMode == MCSPI_TX_RX_MODE) &&
+                if ((MCSPI_TX_RX_MODE == chnCfg->trMode) &&
                     (object->rxTrigLvl == object->fifoSize))
                 {
                     object->rxTrigLvl -= MCSPI_TX_RX_FIFO_OFFSET;
@@ -638,7 +638,7 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     if (object->fifoSize > 0U)
     {
 #ifdef SPI_DMA_ENABLE
-        if (hwAttrs->dmaMode == (bool)true)
+        if (BTRUE == hwAttrs->dmaMode)
         {
             wordCount = object->txTrigLvl >> chObj->wordLenShift;
         }
@@ -662,10 +662,10 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
     /* Set number of words to be transmitted */
     McSPIWordCountSet(hwAttrs->baseAddr, (uint16_t)transaction->count);
 
-    if ((SPI_SLAVE == chObj->spiParams.mode) && (chObj->writeCountIdx != 0U))
+    if ((SPI_SLAVE == chObj->spiParams.mode) && (0U != chObj->writeCountIdx))
     {
 #ifdef SPI_DMA_ENABLE
-        if (hwAttrs->dmaMode == (bool)false)
+        if (BFALSE == hwAttrs->dmaMode)
         {
             for (countIndex = 0; countIndex < wordCount; countIndex++)
             {
@@ -692,12 +692,12 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
 static bool MCSPI_pollingXferTimeout_v1(uint32_t *timeout, uint32_t *timeoutLoop, uint32_t timeoutVal);
 static bool MCSPI_pollingXferTimeout_v1(uint32_t *timeout, uint32_t *timeoutLoop, uint32_t timeoutVal)
 {
-    bool     timeoutFlag = (bool)false;
+    bool     timeoutFlag = BFALSE;
 
     if (*timeout > 0U)
     {
         *timeout -= 1U;
-        if (*timeout == 0U)
+        if (0U == *timeout)
         {
             if (*timeoutLoop > 0U)
             {
@@ -708,10 +708,10 @@ static bool MCSPI_pollingXferTimeout_v1(uint32_t *timeout, uint32_t *timeoutLoop
     }
     else
     {
-        if (*timeoutLoop == 0U)
+        if (0U == *timeoutLoop)
         {
             /* Polling transfer timed out */
-            timeoutFlag = (bool)true;
+            timeoutFlag = BTRUE;
         }
     }
 
@@ -770,14 +770,14 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
     MCSPI_xferSetup_v1(mcHandle, transaction);
 
     /* Interrupt Mode */
-    if(chObj->operMode != (uint32_t)SPI_OPER_MODE_POLLING)
+    if((uint32_t)SPI_OPER_MODE_POLLING != chObj->operMode)
     {
         intStatus =  MCSPI_INT_EOWKE;
-        if (chnCfg->trMode == MCSPI_TX_ONLY_MODE)
+        if (MCSPI_TX_ONLY_MODE == chnCfg->trMode)
         {
             intStatus |= (uint32_t)MCSPI_INT_TX_EMPTY(chNum);
         }
-        else if (chnCfg->trMode == MCSPI_RX_ONLY_MODE)
+        else if (MCSPI_RX_ONLY_MODE == chnCfg->trMode)
         {
             intStatus |= (uint32_t)(MCSPI_INT_RX_FULL(chNum));
         }
@@ -791,7 +791,7 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
         {
             McSPIIntEnable(hwAttrs->baseAddr, intStatus);
 
-            if (hwAttrs->chMode == MCSPI_SINGLE_CH)
+            if (MCSPI_SINGLE_CH == hwAttrs->chMode)
             {
                 /* Assert un-used chip select (Force SPIEN) */
                 McSPICSAssert(hwAttrs->baseAddr, chNum);
@@ -805,8 +805,8 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
     /* Polling mode */
     else
     {
-        if ((SPI_MASTER == chObj->spiParams.mode) &&
-            (hwAttrs->chMode == MCSPI_SINGLE_CH))
+        if ((SPI_MASTER      == chObj->spiParams.mode) &&
+            (MCSPI_SINGLE_CH == hwAttrs->chMode))
         {
             /* SPIEN line is forced to low state.*/
             McSPICSAssert(hwAttrs->baseAddr, chNum);
@@ -815,14 +815,14 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
         /* Initialize the timeout value and loop count in polling mode */
         timeout = chObj->spiParams.transferTimeout;
         timeoutLoop = MCSPI_POLLING_TIMEOUT_LOOP;
-        timeoutFlag = (bool)false;
+        timeoutFlag = BFALSE;
 
         /* Polling mode transfer */
-        while (((chObj->readCountIdx != 0U) || (chObj->writeCountIdx != 0U)) &&
-               (timeoutFlag == (bool)false))
+        while (((0U != chObj->readCountIdx) || (0U != chObj->writeCountIdx)) &&
+               (BFALSE == timeoutFlag))
         {
             channelStatus = McSPIChannelStatusGet(hwAttrs->baseAddr, chNum);
-            if ((SPI_MASTER == chObj->spiParams.mode) && (chObj->writeCountIdx != 0U))
+            if ((SPI_MASTER == chObj->spiParams.mode) && (0U != chObj->writeCountIdx))
             {
                 while (0U == (channelStatus & CSL_MCSPI_CH0STAT_TXS_MASK))
                 {
@@ -830,12 +830,12 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
                     timeoutFlag = MCSPI_pollingXferTimeout_v1(&timeout,
                                                               &timeoutLoop,
                                                               chObj->spiParams.transferTimeout);
-                    if (timeoutFlag == (bool)true)
+                    if (BTRUE == timeoutFlag)
                     {
                         break;
                     }
                 }
-                if (timeoutFlag == (bool)false)
+                if (BFALSE == timeoutFlag)
                 {
                     chObj->writeBufIdx = MCSPI_transmitData_v1 (hwAttrs->baseAddr,
                                                                 chObj->spiParams.dataSize,
@@ -845,7 +845,7 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
                 }
             }
 
-            if ((chObj->readCountIdx != 0U) && (timeoutFlag == (bool)false))
+            if ((0U != chObj->readCountIdx) && (BFALSE == timeoutFlag))
             {
                 while (0U == (channelStatus & CSL_MCSPI_CH0STAT_RXS_MASK))
                 {
@@ -853,12 +853,12 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
                     timeoutFlag = MCSPI_pollingXferTimeout_v1(&timeout,
                                                               &timeoutLoop,
                                                               chObj->spiParams.transferTimeout);
-                    if (timeoutFlag == (bool)true)
+                    if (BTRUE == timeoutFlag)
                     {
                         break;
                     }
                 }
-                if (timeoutFlag == (bool)false)
+                if (BFALSE == timeoutFlag)
                 {
                     chObj->readBufIdx = MCSPI_receiveData_v1(hwAttrs->baseAddr,
                                                              chObj->spiParams.dataSize,
@@ -869,8 +869,8 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
             }
 
             if ((SPI_SLAVE == chObj->spiParams.mode) &&
-                (chObj->writeCountIdx != 0U)         &&
-                (timeoutFlag == (bool)false))
+                (0U != chObj->writeCountIdx)         &&
+                (BFALSE == timeoutFlag))
             {
                 chObj->writeBufIdx = MCSPI_transmitData_v1 (hwAttrs->baseAddr,
                                                             chObj->spiParams.dataSize,
@@ -880,26 +880,26 @@ static void MCSPI_primeTransfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *trans
                 chObj->writeCountIdx--;
             }
 
-            if ((chObj->readCountIdx != 0U) || (chObj->writeCountIdx != 0U))
+            if ((0U != chObj->readCountIdx) || (0U != chObj->writeCountIdx))
             {
                 timeoutFlag = MCSPI_pollingXferTimeout_v1(&timeout,
                                                           &timeoutLoop,
                                                           chObj->spiParams.transferTimeout);
-                if (timeoutFlag == (bool)true)
+                if (BTRUE == timeoutFlag)
                 {
                     /* Transfer timeout */
-                    transaction->status=SPI_TRANSFER_TIMEOUT;
+                    transaction->status = SPI_TRANSFER_TIMEOUT;
                 }
             }
             else
             {
                 /* Transfer completed successfully */
-                transaction->status=SPI_TRANSFER_COMPLETED;
+                transaction->status = SPI_TRANSFER_COMPLETED;
             }
         }
 
-        if ((SPI_MASTER == chObj->spiParams.mode) &&
-            (hwAttrs->chMode == MCSPI_SINGLE_CH))
+        if ((SPI_MASTER      == chObj->spiParams.mode) &&
+            (MCSPI_SINGLE_CH == hwAttrs->chMode))
         {
             /* Force SPIEN line to the inactive state.*/
             McSPICSDeAssert(hwAttrs->baseAddr, chNum);
@@ -949,11 +949,11 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
     SPI_v1_HWAttrs const *hwAttrs;
     SPI_v1_ChnCfg const  *chnCfg;
     uint32_t              intCode = 0;
-    bool                  trigLvlChg = (bool)false;
+    bool                  trigLvlChg = BFALSE;
     uint32_t              rdBytes;
     uint32_t              wrBytes;
     uint32_t              chnStatus;
-    bool                  loopFlag = (bool)true;
+    bool                  loopFlag = BTRUE;
     uint32_t              masterTxCnt = 0;
 
     /* Get the pointer to the object and hwAttrs */
@@ -967,13 +967,13 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
 
     intCode = McSPIIntStatusGet(hwAttrs->baseAddr);
 
-    while (((chObj->readCountIdx != 0U) || (chObj->writeCountIdx != 0U)) &&
-           (loopFlag == (bool)true))
+    while (((0U != chObj->readCountIdx) || (0U != chObj->writeCountIdx)) &&
+           (BTRUE == loopFlag))
     {
         chnStatus = McSPIChannelStatusGet(hwAttrs->baseAddr, chNum);
         if (SPI_MASTER == chObj->spiParams.mode)
         {
-            if (chObj->writeCountIdx != 0U)
+            if (0U != chObj->writeCountIdx)
             {
                 if (0U == (chnStatus & CSL_MCSPI_CH0STAT_TXFFF_MASK))
                 {
@@ -987,16 +987,16 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
                 }
                 else
                 {
-                    loopFlag = (bool)false;
+                    loopFlag = BFALSE;
                 }
             }
             else
             {
-                loopFlag = (bool)false;
+                loopFlag = BFALSE;
             }
         }
 
-        if (chObj->readCountIdx != 0U)
+        if (0U != chObj->readCountIdx)
         {
             if ((0U == (chnStatus & CSL_MCSPI_CH0STAT_RXFFE_MASK)) ||
                 (0U != (chnStatus & CSL_MCSPI_CH0STAT_RXS_MASK)))
@@ -1007,13 +1007,13 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
                                                          chObj->readBufIdx,
                                                          chNum);
                 chObj->readCountIdx--;
-                loopFlag = (bool)true;
+                loopFlag = BTRUE;
             }
             else
             {
                 if (SPI_MASTER != chObj->spiParams.mode)
                 {
-                    loopFlag = (bool)false;
+                    loopFlag = BFALSE;
                 }
             }
         }
@@ -1021,12 +1021,12 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
         {
             if (SPI_MASTER != chObj->spiParams.mode)
             {
-                loopFlag = (bool)false;
+                loopFlag = BFALSE;
             }
         }
 
         if ((SPI_SLAVE == chObj->spiParams.mode) &&
-            (chObj->writeCountIdx != 0U))
+            (0U != chObj->writeCountIdx))
         {
             if (0U == (chnStatus & CSL_MCSPI_CH0STAT_TXFFF_MASK))
             {
@@ -1036,23 +1036,23 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
                                                             chObj->writeBufIdx,
                                                             chNum);
                 chObj->writeCountIdx--;
-                loopFlag = (bool)true;
+                loopFlag = BTRUE;
             }
         }
         if (masterTxCnt == object->txTrigLvl)
         {
-            loopFlag = (bool)false;
+            loopFlag = BFALSE;
         }
     }
 
     /* Update the TX trigger level */
-    if (chObj->writeCountIdx != 0U)
+    if (0U != chObj->writeCountIdx)
     {
         wrBytes = chObj->writeCountIdx << chObj->wordLenShift;
         if (wrBytes < object->txTrigLvl)
         {
             object->txTrigLvl = wrBytes;
-            trigLvlChg = (bool)true;
+            trigLvlChg = BTRUE;
         }
     }
 
@@ -1063,15 +1063,15 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
         if (rdBytes < object->rxTrigLvl)
         {
             object->rxTrigLvl = rdBytes;
-            if (chObj->writeCountIdx == 0U)
+            if (0U == chObj->writeCountIdx)
             {
                 object->txTrigLvl = object->fifoSize;
             }
-            trigLvlChg = (bool)true;
+            trigLvlChg = BTRUE;
         }
     }
 
-    if (trigLvlChg == (bool)true)
+    if (BTRUE == trigLvlChg)
     {
         McSPIFIFOTrigLvlSet(hwAttrs->baseAddr, (uint8_t)object->rxTrigLvl,
                             (uint8_t)object->txTrigLvl, chnCfg->trMode);
@@ -1079,14 +1079,14 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
 
     /*if (MCSPI_INT_EOWKE == (intCode & MCSPI_INT_EOWKE))*/
     if ((MCSPI_INT_EOWKE == (intCode & MCSPI_INT_EOWKE)) ||
-        ((chObj->writeCountIdx == 0U) && (chObj->readCountIdx <= 1U) && (chnCfg->trMode != MCSPI_TX_ONLY_MODE)))
+        ((0U == chObj->writeCountIdx) && (1U >= chObj->readCountIdx) && (MCSPI_TX_ONLY_MODE != chnCfg->trMode)))
     {
         chnStatus = McSPIChannelStatusGet(hwAttrs->baseAddr, chNum);
         while ((0U == (chnStatus & CSL_MCSPI_CH0STAT_EOT_MASK)))
         {
             chnStatus = McSPIChannelStatusGet(hwAttrs->baseAddr, chNum);
         }
-        if (chObj->readCountIdx != 0U)
+        if (0U != chObj->readCountIdx)
         {
             /* Read final RX byte */
             chObj->readBufIdx = MCSPI_receiveData_v1(hwAttrs->baseAddr,
@@ -1101,13 +1101,13 @@ static void MCSPI_v1_hwiFxn (uintptr_t arg)
                   MCSPI_INT_EOWKE;
         McSPIIntDisable(hwAttrs->baseAddr,intCode);
         McSPIIntStatusClear(hwAttrs->baseAddr, intCode);
-        if ((SPI_MASTER == chObj->spiParams.mode) &&
-            (hwAttrs->chMode == MCSPI_SINGLE_CH))
+        if ((SPI_MASTER      == chObj->spiParams.mode) &&
+            (MCSPI_SINGLE_CH == hwAttrs->chMode))
         {
             McSPICSDeAssert(hwAttrs->baseAddr, chNum);
         }
         McSPIChannelDisable(hwAttrs->baseAddr, chNum);
-        chObj->transaction->status=SPI_TRANSFER_COMPLETED;
+        chObj->transaction->status = SPI_TRANSFER_COMPLETED;
         MCSPI_transferCallback_v1((MCSPI_Handle)arg, chObj->transaction);
     }
 
@@ -1126,7 +1126,7 @@ static void MCSPI_init_v1(MCSPI_Handle mcHandle)
     uint32_t              chNum;
 
     /* Input parameter validation */
-    if (mcHandle != NULL)
+    if (NULL != mcHandle)
     {
         /* Get the pointer to the object and hwAttrs */
         handle  = mcHandle->handle;
@@ -1136,7 +1136,7 @@ static void MCSPI_init_v1(MCSPI_Handle mcHandle)
             chObj   = &(object->chObject[chNum]);
             /* reset channel object */
             (void)memset(chObj, 0, sizeof(SPI_v1_chObject));
-            chObj->isOpen = (bool)false;
+            chObj->isOpen = BFALSE;
         }
     }
 }
@@ -1158,10 +1158,10 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
     SPI_v1_HWAttrs const *hwAttrs;
     SPI_v1_ChnCfg const  *chnCfg;
     OsalRegisterIntrParams_t interruptRegParams;
-    uint32_t              ret_flag = 0u;
+    uint32_t              ret_flag = UFALSE;
 
     /* Input parameter validation */
-    if (mcHandle != NULL)
+    if (NULL != mcHandle)
     {
         /* Get the pointer to the object and hwAttrs */
         handle  = mcHandle->handle;
@@ -1172,16 +1172,16 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
         chnCfg  = &(hwAttrs->chnCfg[chNum]);
 
         /* Determine if the device index was already opened */
-        if(chObj->isOpen == (bool)true) {
+        if (BTRUE == chObj->isOpen) {
             retMcHandle = NULL;
         }
         else
         {
             /* Mark the channel handle as being used */
-            chObj->isOpen = (bool)true;
+            chObj->isOpen = BTRUE;
 
             /* Store the SPI parameters */
-            if (pParams == NULL)
+            if (NULL == pParams)
             {
                 /* No params passed in, so use the defaults */
                 MCSPI_Params_init(&(chObj->spiParams));
@@ -1196,17 +1196,17 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
             {
                 /* wrong data size param */
                 retMcHandle = NULL;
-                ret_flag = 1U;
+                ret_flag = UTRUE;
             }
-            else if (pParams->dataSize <= 8U)
+            else if (8U >= pParams->dataSize)
             {
                 chObj->wordLenShift = 0U;
             }
-            else if (pParams->dataSize <= 16U)
+            else if (16U >= pParams->dataSize)
             {
                 chObj->wordLenShift = 1U;
             }
-            else if (pParams->dataSize <= 32U)
+            else if (32U >= pParams->dataSize)
             {
                 chObj->wordLenShift = 2U;
             }
@@ -1214,18 +1214,18 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
             {
                 /* wrong data size param */
                 retMcHandle = NULL;
-                ret_flag = 1U;
+                ret_flag = UTRUE;
             }
 
             /* Store the current mode. Extract operating mode from hwAttrs and params */
             if(SPI_MODE_BLOCKING == pParams->transferMode)
             {
-                if ((bool)true == hwAttrs->enableIntr)
+                if (BTRUE == hwAttrs->enableIntr)
                 {
                     chObj->operMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
                 }
     #ifdef SPI_DMA_ENABLE
-                else if ((bool)true == hwAttrs->dmaMode)
+                else if (BTRUE == hwAttrs->dmaMode)
                 {
                     chObj->operMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
                 }
@@ -1239,62 +1239,62 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
             {
                 chObj->operMode = (uint32_t)SPI_OPER_MODE_CALLBACK;
                 /* Check to see if a callback function was defined for async mode */
-                if ((pParams->transferCallbackFxn == NULL) &&
-                    (object->transferCallbackFxn == NULL))
+                if ((NULL == pParams->transferCallbackFxn) &&
+                    (NULL == object->transferCallbackFxn))
                 {
                     retMcHandle = NULL;
-                    ret_flag = 1U;
+                    ret_flag = UTRUE;
                 }
             }
 
-            if ((chObj->operMode != (uint32_t)SPI_OPER_MODE_POLLING) &&
-                (object->hwi == NULL))
+            if (((uint32_t)SPI_OPER_MODE_POLLING != chObj->operMode) &&
+                (NULL == object->hwi))
             {
                 /* register interrrupt when the 1st
                 channel of the instance is opened */
                 Osal_RegisterInterrupt_initParams(&interruptRegParams);             
 
-                interruptRegParams.corepacConfig.name=NULL;
+                interruptRegParams.corepacConfig.name = NULL;
     #if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R'))
-                interruptRegParams.corepacConfig.priority=0x8U;
+                interruptRegParams.corepacConfig.priority = 0x8U;
     #else
-                interruptRegParams.corepacConfig.priority=0x20U;
+                interruptRegParams.corepacConfig.priority = 0x20U;
     #endif
-                interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->eventId;
-                interruptRegParams.corepacConfig.intVecNum = (int32_t)hwAttrs->intNum; /* Host Interrupt vector */
+                interruptRegParams.corepacConfig.corepacEventNum = hwAttrs->eventId;
+                interruptRegParams.corepacConfig.intVecNum = hwAttrs->intNum; /* Host Interrupt vector */
                 interruptRegParams.corepacConfig.isrRoutine  = (void (*)(uintptr_t))(&MCSPI_v1_hwiFxn);
                 interruptRegParams.corepacConfig.arg         = (uintptr_t)mcHandle;
 
                 (void)SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
 
-                if(object->hwi == NULL)
+                if(NULL == object->hwi)
                 {
                     MCSPI_close_v1(mcHandle);
-                    ret_flag = 1u;
+                    ret_flag = UTRUE;
                     retMcHandle = NULL;
                 }
             }
 
-            if(ret_flag == 0u)
+            if(UFALSE == ret_flag)
             {
                 /*
                 * Construct thread safe handles for this SPI peripheral
                 * Semaphore to provide exclusive access to the SPI peripheral
                 */
-                if (object->mutex == NULL)
+                if (NULL == object->mutex)
                 {
                     SPI_osalSemParamsInit(&semParams);
                     semParams.mode = SemaphoreP_Mode_BINARY;
                     object->mutex = SPI_osalCreateBlockingLock(1U, &semParams);
                 }
 
-                if (chObj->operMode == (uint32_t)SPI_OPER_MODE_BLOCKING)
+                if ((uint32_t)SPI_OPER_MODE_BLOCKING == chObj->operMode)
                 {
                     /*
                     * Construct a semaphore to block task execution for the duration of the
                     * SPI transfer
                     */
-                    if (object->transferComplete == NULL)
+                    if (NULL == object->transferComplete)
                     {
                         SPI_osalSemParamsInit(&semParams);
                         semParams.mode = SemaphoreP_Mode_BINARY;
@@ -1328,10 +1328,10 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                         break;
                 }
 
-                if (object->chOpenedCnt == 0U)
+                if (0U == object->chOpenedCnt)
                 {
 #ifdef SPI_DMA_ENABLE
-                if (hwAttrs->dmaMode == (bool)true)
+                if (BTRUE == hwAttrs->dmaMode)
                 {
                     /* DMA Configuration */
                     if(SPI_STATUS_SUCCESS == MCSPI_dmaConfig(mcHandle))
@@ -1342,12 +1342,12 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                     }
                     else
                     {
-                        ret_flag = 1u;
+                        ret_flag = UTRUE;
                         retMcHandle = NULL;
                     }
                 }
 #endif
-                    if(ret_flag == 0u)
+                    if(UFALSE == ret_flag)
                     {
                         /* Reset SPI Peripheral */
                         McSPIReset(hwAttrs->baseAddr);
@@ -1356,7 +1356,7 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                                             MCSPI_SIDLEMODE_NO, MCSPI_WAKEUP_DISABLE,
                                             MCSPI_AUTOIDLE_OFF);
 
-                        if (hwAttrs->chMode == MCSPI_SINGLE_CH)
+                        if (MCSPI_SINGLE_CH == hwAttrs->chMode)
                         {
                             /* Configure 3 pin or 4 pin mode */
                             if((uint32_t)SPI_PINMODE_3_PIN == hwAttrs->pinMode)
@@ -1373,8 +1373,8 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                     }
                 }
 
-                if ((object->chOpenedCnt != 0U) &&
-                    ((pParams->mode != SPI_MASTER) || (object->mode != SPI_MASTER)))
+                if ((0U != object->chOpenedCnt) &&
+                    ((SPI_MASTER != pParams->mode) || (SPI_MASTER != object->mode)))
                 {
 
                     /*
@@ -1387,15 +1387,15 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                     * 2. if an instance has already had a channle opened in SPI_SLAVE mode,
                     * no new channel can be opened.
                     */
-                    ret_flag = 1u;
+                    ret_flag = UTRUE;
                     retMcHandle = NULL;
                 }
 
-                if(ret_flag == 0U)
+                if(UFALSE == ret_flag)
                 {
                     if(SPI_MASTER == pParams->mode)
                     {
-                        if (object->chOpenedCnt == 0U)
+                        if (0U == object->chOpenedCnt)
                         {
                             /*
                             * first channel opened in this instance,
@@ -1419,14 +1419,14 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                                     chObj->clockMode);
 
                         /* configure initial SPI delay only in signle master mode */
-                        if ((hwAttrs->chMode == MCSPI_SINGLE_CH) && (object->chOpenedCnt == 0U))
+                        if ((MCSPI_SINGLE_CH == hwAttrs->chMode) && (0U == object->chOpenedCnt))
                         {
                             McSPIInitDelayConfig(hwAttrs->baseAddr, hwAttrs->initDelay);
                         }
                     }
                     else
                     {
-                        if (object->chOpenedCnt == 0U)
+                        if (0U == object->chOpenedCnt)
                         {
                             /*
                             * first channel opened in this instance,
@@ -1462,7 +1462,7 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
                 }
             }
 
-            if(ret_flag == 0U)
+            if(UFALSE == ret_flag)
             {
                 if(SPI_MASTER == pParams->mode)
                 {
@@ -1490,11 +1490,11 @@ static bool MCSPI_transfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *transactio
     SPI_v1_chObject      *chObj;
     SPI_v1_HWAttrs const *hwAttrs;
     uint32_t              chNum, clrInt = 0U;;
-    bool                  ret_val = (bool)false;
+    bool                  ret_val = BFALSE;
     SemaphoreP_Status   semStatus = SemaphoreP_OK;
 
     /* Input parameter validation */
-    if ((mcHandle != NULL) && (transaction != NULL))
+    if ((NULL != mcHandle) && (NULL != transaction))
     {
     /* Get the pointer to the object and hwAttrs */
     handle  = mcHandle->handle;
@@ -1505,23 +1505,23 @@ static bool MCSPI_transfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *transactio
 
     /* Acquire the lock for the SPI transfer on this instance */
     (void)SPI_osalPendLock(object->mutex, SemaphoreP_WAIT_FOREVER);
-    if (chObj->spiParams.transferTimeout == 0U)
+    if (0U == chObj->spiParams.transferTimeout)
     {
         /* timeout cannot be NO_WAIT, set it to default value */
         chObj->spiParams.transferTimeout = SPI_WAIT_FOREVER;
     }
 
-    if ((uint32_t)transaction->count != 0U)
+    if (0U != (uint32_t)transaction->count)
     {
         transaction->status = SPI_TRANSFER_STARTED;
 
         /* Check if a transfer is in progress */
-        if (chObj->transaction != NULL)
+        if (NULL != chObj->transaction)
         {
             transaction->status = SPI_TRANSFER_CANCELED;
 
             /* transfer is in progress */
-            ret_val = (bool)false;
+            ret_val = BFALSE;
         }
         else
         {
@@ -1529,7 +1529,7 @@ static bool MCSPI_transfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *transactio
             chObj->transaction = transaction;
 
 #ifdef SPI_DMA_ENABLE
-            if (hwAttrs->dmaMode == (bool)true)
+            if (BTRUE == hwAttrs->dmaMode)
             {
                 MCSPI_dmaTransfer(mcHandle, transaction);
             }
@@ -1539,7 +1539,7 @@ static bool MCSPI_transfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *transactio
                 MCSPI_primeTransfer_v1(mcHandle, transaction);
             }
 
-            if (chObj->operMode == (uint32_t)SPI_OPER_MODE_BLOCKING)
+            if ((uint32_t)SPI_OPER_MODE_BLOCKING == chObj->operMode)
             {
                 semStatus = SPI_osalPendLock(object->transferComplete, chObj->spiParams.transferTimeout);
             }
@@ -1557,8 +1557,8 @@ static bool MCSPI_transfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *transactio
                     McSPIIntDisable(hwAttrs->baseAddr, (uint32_t)(MCSPI_INT_RX_FULL(chNum)));
                 }
                 McSPIIntStatusClear(hwAttrs->baseAddr, clrInt);
-                if ((SPI_MASTER == chObj->spiParams.mode) &&
-                    (hwAttrs->chMode == MCSPI_SINGLE_CH))
+                if ((SPI_MASTER      == chObj->spiParams.mode) &&
+                    (MCSPI_SINGLE_CH == hwAttrs->chMode))
                 {
                     McSPICSDeAssert(hwAttrs->baseAddr, chNum);
                 }
@@ -1568,24 +1568,24 @@ static bool MCSPI_transfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *transactio
                  * Interrupt/dma (timeout) transaction
                  * returns timeout status
                  */
-                transaction->status=SPI_TRANSFER_TIMEOUT;
+                transaction->status = SPI_TRANSFER_TIMEOUT;
                 chObj->transaction = NULL;
-                ret_val = (bool)false;
+                ret_val = BFALSE;
             }
             else
             {
-                if (chObj->operMode == (uint32_t)SPI_OPER_MODE_POLLING)
+                if ((uint32_t)SPI_OPER_MODE_POLLING == chObj->operMode)
                 {
                     /*
                      * Polling transaction status is set in MCSPI_primeTransfer_v1
                      */
-                    if (transaction->status == SPI_TRANSFER_COMPLETED)
+                    if (SPI_TRANSFER_COMPLETED == transaction->status)
                     {
-                        ret_val = (bool)true;
+                        ret_val = BTRUE;
                     }
                     else
                     {
-                        ret_val = (bool)false;
+                        ret_val = BFALSE;
                     }
                 }
                 else
@@ -1595,14 +1595,14 @@ static bool MCSPI_transfer_v1(MCSPI_Handle mcHandle, SPI_Transaction *transactio
                      * returns completed status
                      */
                     transaction->status = SPI_TRANSFER_COMPLETED;
-                    ret_val = (bool)true;
+                    ret_val = BTRUE;
                 }
             }
         }
     }
     else
     {
-        transaction->status=SPI_TRANSFER_CANCELED;
+        transaction->status = SPI_TRANSFER_CANCELED;
     }
 
     /* Release the lock for the SPI transfer on this instance */
@@ -1626,7 +1626,7 @@ void MCSPI_transferCallback_v1(MCSPI_Handle     mcHandle,
     SPI_v1_chObject   *chObj;
     uint32_t           chNum;
 
-    if (mcHandle != NULL)
+    if (NULL != mcHandle)
     {
     /* Get the pointer to the channel object */
     handle  = mcHandle->handle;
@@ -1634,9 +1634,9 @@ void MCSPI_transferCallback_v1(MCSPI_Handle     mcHandle,
     object = (SPI_v1_Object*)handle->object;
     chObj   = &(object->chObject[chNum]);
 
-    if (chObj->operMode == (uint32_t)SPI_OPER_MODE_CALLBACK)
+    if ((uint32_t)SPI_OPER_MODE_CALLBACK == chObj->operMode)
     {
-        if (object->transferCallbackFxn != NULL)
+        if (NULL != object->transferCallbackFxn)
         {
             /* Single channel mode callback */
             object->transferCallbackFxn(handle, transaction);
@@ -1675,7 +1675,7 @@ static void MCSPI_transferCancel_v1(MCSPI_Handle mcHandle)
     chObj   = &(object->chObject[chNum]);
     hwAttrs = (const SPI_v1_HWAttrs *)handle->hwAttrs;
 
-    if(true == hwAttrs->enableIntr)
+    if(BTRUE == hwAttrs->enableIntr)
     {
         intCode = (uint32_t)(MCSPI_INT_RX_FULL(chNum))  |
                   (uint32_t)(MCSPI_INT_TX_EMPTY(chNum)) |
@@ -1684,8 +1684,8 @@ static void MCSPI_transferCancel_v1(MCSPI_Handle mcHandle)
         McSPIIntStatusClear(hwAttrs->baseAddr, intCode);
     }
 
-    if ((SPI_MASTER == chObj->spiParams.mode) &&
-        (hwAttrs->chMode == MCSPI_SINGLE_CH))
+    if ((SPI_MASTER      == chObj->spiParams.mode) &&
+        (MCSPI_SINGLE_CH == hwAttrs->chMode))
     {
         McSPICSDeAssert(hwAttrs->baseAddr, chNum);
     }

@@ -139,7 +139,7 @@ static void OSPI_close_v0(OSPI_Handle handle)
     OSPI_v0_Object        *object = NULL;
     OSPI_v0_HwAttrs const *hwAttrs = NULL;
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get the pointer to the object and hwAttrs */
         object = (OSPI_v0_Object *)handle->object;
@@ -148,13 +148,13 @@ static void OSPI_close_v0(OSPI_Handle handle)
         /* disable the interrupts */
         CSL_ospiIntrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                            CSL_OSPI_INTR_MASK_ALL,
-                           FALSE);
+                           UFALSE);
 
         /* Destruct the Hwi */
-        if(object->hwi != NULL)
+        if(NULL != object->hwi)
         {
             /* Destruct the Hwi */
-            (void)SPI_osalHardwareIntDestruct(object->hwi, (int32_t)hwAttrs->eventId);
+            (void)SPI_osalHardwareIntDestruct(object->hwi, hwAttrs->eventId);
             object->hwi = NULL;
         }
 
@@ -168,14 +168,14 @@ static void OSPI_close_v0(OSPI_Handle handle)
         }
 
 #ifdef SPI_DMA_ENABLE
-        if (hwAttrs->dmaEnable == (bool)true)
+        if (BTRUE == hwAttrs->dmaEnable)
         {
             OSPI_dmaFreeChannel(handle);
         }
 #endif
 
         /* Open flag is set false */
-        object->isOpen = (bool)false;
+        object->isOpen = BFALSE;
     }
 
     return;
@@ -201,17 +201,17 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
     /* Read the interrupt status register */
     intrStatus = CSL_ospiIntrStatus((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
 
-    if (object->readBufIdx != NULL_PTR)
+    if (NULL_PTR != object->readBufIdx)
     {
 		/* Indirect read operation */
-        if ((intrStatus & CSL_OSPI_INTR_MASK_IND_XFER) != 0U)
+        if (0U != (intrStatus & CSL_OSPI_INTR_MASK_IND_XFER))
         {
-            if(object->readCountIdx != 0U)
+            if(0U != object->readCountIdx)
             {
-                while ((bool)true)
+                while (BTRUE)
                 {
                     sramLevel = CSL_ospiGetSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), 1U);
-                    if (sramLevel == 0U)
+                    if (0U == sramLevel)
                     {
                         break;
                     }
@@ -228,7 +228,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 if ((object->readCountIdx > 0U) &&
                     (object->readCountIdx < (CSL_OSPI_SRAM_WARERMARK_RD_LVL * CSL_OSPI_FIFO_WIDTH)))
                 {
-                    while((bool)true)
+                    while(BTRUE)
                     {
                         sramLevel = CSL_ospiGetSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), 1U);
                         rdBytes = sramLevel * CSL_OSPI_FIFO_WIDTH;
@@ -244,7 +244,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 }
             }
 
-            if((object->readCountIdx == 0U) || ((intrStatus & CSL_OSPI_INTR_MASK_IND_OP_DONE) != 0U))
+            if((0U == object->readCountIdx) || (0U != (intrStatus & CSL_OSPI_INTR_MASK_IND_OP_DONE)))
             {
                 /* Clear indirect read operation complete status */
                 CSL_ospiClrIndReadComplete((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
@@ -252,7 +252,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 /* disable and clear the interrupts */
                 CSL_ospiIntrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                     CSL_OSPI_INTR_MASK_ALL,
-                                    FALSE);
+                                    UFALSE);
                 CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                   CSL_OSPI_INTR_MASK_ALL);
 
@@ -274,9 +274,9 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
     else
     {
 		/* Indirect write operation */
-        if ((intrStatus & CSL_OSPI_INTR_MASK_IND_XFER) != 0U)
+        if (0U != (intrStatus & CSL_OSPI_INTR_MASK_IND_XFER))
         {
-            if (object->writeCountIdx != 0U)
+            if (0U != object->writeCountIdx)
             {
                 sramLevel = CSL_OSPI_SRAM_PARTITION_WR - \
                             CSL_ospiGetSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), 0U);
@@ -303,7 +303,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 }
             }
 
-            if ((intrStatus & CSL_OSPI_INTR_MASK_IND_OP_DONE) != 0U)
+            if (0U != (intrStatus & CSL_OSPI_INTR_MASK_IND_OP_DONE))
             {
                 /* Clear indirect write operation complete status */
                 CSL_ospiClrIndWriteComplete((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
@@ -311,7 +311,7 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
                 /* disable and clear the interrupts */
                 CSL_ospiIntrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                     CSL_OSPI_INTR_MASK_ALL,
-                                    FALSE);
+                                    UFALSE);
                 CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                   CSL_OSPI_INTR_MASK_ALL);
 
@@ -337,10 +337,10 @@ static void OSPI_hwiFxn_v0(uintptr_t arg)
  */
 static void OSPI_init_v0(OSPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Mark the object as available */
-        ((OSPI_v0_Object *)(handle->object))->isOpen = (bool)false;
+        ((OSPI_v0_Object *)(handle->object))->isOpen = BFALSE;
     }
 }
 
@@ -365,12 +365,12 @@ static int32_t OSPI_waitIdle(OSPI_Handle handle, uint32_t timeOut)
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-    while (timeOutVal != 0U)
+    while (0U != timeOutVal)
     {
-        if (CSL_ospiIsIdle((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)) != 0U)
+        if (0U != CSL_ospiIsIdle((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)))
         {
             retry++;
-            if (retry == 3U)
+            if (3U == retry)
             {
                 retVal = 0;
                 break;
@@ -398,10 +398,10 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
     OSPI_v0_Object          *object = NULL;
     OSPI_v0_HwAttrs const   *hwAttrs = NULL;
 	OsalRegisterIntrParams_t interruptRegParams;
-    int32_t                  retFlag = 0;
+    int32_t                  retFlag = IFALSE;
     uint32_t                 numAddrBytes;
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get the pointer to the object and hwAttrs */
         object = (OSPI_v0_Object *)handle->object;
@@ -411,9 +411,9 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
         key = SPI_osalHardwareIntDisable();
     }
 
-    if ((handle == NULL) || (object->isOpen == (bool)true))
+    if ((NULL == handle) || (BTRUE == object->isOpen))
     {
-        if (handle != NULL)
+        if (NULL != handle)
         {
             SPI_osalHardwareIntRestore(key);
             retHandle = NULL;
@@ -422,11 +422,11 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
     else
     {
         /* Mark the handle as being used */
-        object->isOpen = (bool)true;
+        object->isOpen = BTRUE;
         SPI_osalHardwareIntRestore(key);
 
         /* Store the OSPI parameters */
-        if (params == NULL) {
+        if (NULL == params) {
             /* No params passed in, so use the defaults */
             OSPI_Params_init(&(object->ospiParams));
         }
@@ -444,13 +444,13 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
         /* Extract OSPI operating mode based on hwAttrs and input parameters */
         if(OSPI_MODE_BLOCKING == object->ospiParams.transferMode)
         {
-            if (((bool)true == hwAttrs->intrEnable) && ((bool)false == hwAttrs->dacEnable))
+            if ((BTRUE == hwAttrs->intrEnable) && (BFALSE == hwAttrs->dacEnable))
             {
                 /* interrupt is only used in indirect access mode */
                 object->intrPollMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
             }
 #ifdef SPI_DMA_ENABLE
-            else if (((bool)true == hwAttrs->dmaEnable) && ((bool)true == hwAttrs->dacEnable))
+            else if ((BTRUE == hwAttrs->dmaEnable) && (BTRUE == hwAttrs->dacEnable))
             {
                 /* DMA mode is only used in direct access mode */
                 object->intrPollMode = (uint32_t)SPI_OPER_MODE_BLOCKING;
@@ -467,30 +467,30 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
         }
 
         /* interrupt mode only enabled in indirect access controller mode */
-        if (((bool)true == hwAttrs->intrEnable) && ((bool)false == hwAttrs->dacEnable))
+        if ((BTRUE == hwAttrs->intrEnable) && (BFALSE == hwAttrs->dacEnable))
         {
             Osal_RegisterInterrupt_initParams(&interruptRegParams);
 
-            interruptRegParams.corepacConfig.name=NULL;
+            interruptRegParams.corepacConfig.name = NULL;
 #if ((__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') && defined(__ARM_FEATURE_IDIV))
-            interruptRegParams.corepacConfig.priority=0x8U;
+            interruptRegParams.corepacConfig.priority = 0x8U;
 #else
-            interruptRegParams.corepacConfig.priority=0x20U;
+            interruptRegParams.corepacConfig.priority = 0x20U;
 #endif
-            interruptRegParams.corepacConfig.corepacEventNum = (int32_t)hwAttrs->eventId;
-            interruptRegParams.corepacConfig.intVecNum = (int32_t)hwAttrs->intrNum; /* Host Interrupt vector */
+            interruptRegParams.corepacConfig.corepacEventNum = hwAttrs->eventId;
+            interruptRegParams.corepacConfig.intVecNum = hwAttrs->intrNum; /* Host Interrupt vector */
             interruptRegParams.corepacConfig.isrRoutine = (void (*)(uintptr_t))(&OSPI_hwiFxn_v0);
             interruptRegParams.corepacConfig.arg = (uintptr_t)handle;
 
             (void)SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
-            if(object->hwi == NULL) {
+            if (NULL == object->hwi) {
                 OSPI_close_v0(handle);
                 retHandle = NULL;
-                retFlag = 1;
+                retFlag = ITRUE;
             }
         }
 
-        if(retFlag == 0)
+        if(IFALSE == retFlag)
         {
             /*
              * Construct thread safe handles for this OSPI peripheral
@@ -504,7 +504,7 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
              * Store a callback function that posts the transfer complete
              * semaphore for synchronous mode
              */
-            if (object->intrPollMode == (uint32_t)SPI_OPER_MODE_BLOCKING)
+            if ((uint32_t)SPI_OPER_MODE_BLOCKING == object->intrPollMode)
             {
                 /*
                  * Semaphore to cause the waiting task to block for the OSPI
@@ -515,53 +515,53 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
                 /* Store internal callback function */
                 object->ospiParams.transferCallbackFxn = &OSPI_transferCallback_v0;
             }
-            if(object->intrPollMode == (uint32_t)SPI_OPER_MODE_CALLBACK)
+            if((uint32_t)SPI_OPER_MODE_CALLBACK == object->intrPollMode)
             {
                 /* Check to see if a callback function was defined for async mode */
-                if (object->ospiParams.transferCallbackFxn == NULL)
+                if (NULL == object->ospiParams.transferCallbackFxn)
                 {
                     OSPI_close_v0(handle);
                     retHandle = NULL;
-                    retFlag = 1;
+                    retFlag = ITRUE;
                 }
             }
 
-            if(retFlag == 0)
+            if(IFALSE == retFlag)
             {
                 object->transaction = NULL;
 
     #ifdef SPI_DMA_ENABLE
-                if (hwAttrs->dmaEnable == (bool)true)
+                if (BTRUE == hwAttrs->dmaEnable)
                 {
                     (void)OSPI_dmaConfig(handle);
                 }
     #endif
                 /* Disable DAC */
-                CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
                 /* Disable DTR protocol */
-                CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
-                if (hwAttrs->xipEnable == (bool)false)
+                if (BFALSE == hwAttrs->xipEnable)
                 {
                     /* Disable XIP */
-                    CSL_ospiXipEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                    CSL_ospiXipEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
                 }
 
                 /* Disable OSPI controller */
-                CSL_ospiEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                CSL_ospiEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
                 /* Wait until Serial Interface and OSPI pipeline is IDLE. */
-                if (OSPI_waitIdle(handle, OSPI_DAC_WRITE_TIMEOUT) != (int32_t)0U)
+                if (IFALSE != OSPI_waitIdle(handle, OSPI_DAC_WRITE_TIMEOUT))
                 {
                     OSPI_close_v0(handle);
                     retHandle = NULL;
-                    retFlag = 1;
+                    retFlag = ITRUE;
                 }
             }
         }
 
-        if(retFlag == 0)
+        if(IFALSE == retFlag)
         {
             /* Chip select setup */
             CSL_ospiSetChipSelect((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
@@ -574,7 +574,7 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
 
             /* Disable the adapted loopback clock circuit */
             CSL_ospiLoopbackClkEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                      FALSE);
+                                      UFALSE);
 
             /* Delay Setup */
             CSL_ospiSetDevDelay((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
@@ -604,15 +604,15 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
             if (hwAttrs->phyEnable)
             {
                 /* Enable PHY mode */
-                CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+                CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
             }
             else
             {
                 /* Disable PHY mode */
-                CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
             }
             /* Disable PHY pipeline mode */
-            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
             if (hwAttrs->dtrEnable)
             {
@@ -658,17 +658,17 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
             /* disable and clear the interrupts */
             CSL_ospiIntrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                 CSL_OSPI_INTR_MASK_ALL,
-                                FALSE);
+                                UFALSE);
             CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                               CSL_OSPI_INTR_MASK_ALL);
 
             if (hwAttrs->dacEnable)
             {
-                CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+                CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
             }
             else
             {
-                CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
             }
 
             CSL_ospiSetDataReadCapDelay((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
@@ -676,7 +676,7 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
             CSL_ospiSetCsSotDelay((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                   hwAttrs->csSotDelay);
             /* Enable OSPI controller */
-            CSL_ospiEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+            CSL_ospiEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
         }
     }
     return(retHandle);
@@ -699,16 +699,16 @@ static int32_t OSPI_primeTransfer_v0(OSPI_Handle handle,
     /* Disable and clear the interrupts */
     CSL_ospiIntrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                         CSL_OSPI_INTR_MASK_ALL,
-                        FALSE);
+                        UFALSE);
     CSL_ospiIntrClear((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                       CSL_OSPI_INTR_MASK_ALL);
 
     /* Interrupt mode */
-    if(object->intrPollMode != (uint32_t)SPI_OPER_MODE_POLLING)
+    if((uint32_t)SPI_OPER_MODE_POLLING != object->intrPollMode)
     {
         CSL_ospiIntrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                            CSL_OSPI_INTR_MASK_ALL,
-                           TRUE);
+                           UTRUE);
     }
 
     /* Identify the direction of transfer (whether read/write) */
@@ -734,10 +734,10 @@ static int32_t OSPI_waitReadSramLvl(const CSL_ospi_flash_cfgRegs *pReg,
     uint32_t retry = OSPI_DAC_WRITE_TIMEOUT;
     uint32_t sramLevel;
     int32_t  retVal = 0;
-    while(retry != 0U)
+    while(0U != retry)
     {
         sramLevel = CSL_ospiGetSramLvl(pReg, 1U);
-        if (sramLevel != 0U)
+        if (0U != sramLevel)
         {
             *rdLevel = sramLevel;
             break;
@@ -746,7 +746,7 @@ static int32_t OSPI_waitReadSramLvl(const CSL_ospi_flash_cfgRegs *pReg,
         retry--;
     }
 
-    if (retry != 0U)
+    if (0U != retry)
     {
         retVal = 0;
     }
@@ -763,9 +763,9 @@ static int32_t OSPI_waitIndReadComplete(const CSL_ospi_flash_cfgRegs *pRegs)
     int32_t  retVal;
 
     /* Check flash indirect read controller status */
-    while (retry != 0U)
+    while (0U != retry)
     {
-        if (CSL_ospiIndReadComplete(pRegs) == TRUE)
+        if (UTRUE == CSL_ospiIndReadComplete(pRegs))
         {
             break;
         }
@@ -773,7 +773,7 @@ static int32_t OSPI_waitIndReadComplete(const CSL_ospi_flash_cfgRegs *pRegs)
         retry--;
     }
 
-    if (retry != 0U)
+    if (0U != retry)
     {
         /* Clear indirect completion status */
         CSL_ospiClrIndReadComplete(pRegs);
@@ -795,8 +795,8 @@ static int32_t OSPI_ind_xfer_mode_read_v0(OSPI_Handle handle,
     uint32_t               count;        /* transaction length */
     uint32_t               offset;       /* OSPI flash offset address */
     uint32_t               remaining;
-    uint32_t               sramLevel = 0, rdBytes = 0;
-    uint32_t               retFlag = 0U;
+    uint32_t               sramLevel = 0U, rdBytes = 0U;
+    uint32_t               retFlag = UFALSE;
     int32_t                retVal = 0;
 
     /* Copy flash transaction parameters to local variables */
@@ -809,18 +809,18 @@ static int32_t OSPI_ind_xfer_mode_read_v0(OSPI_Handle handle,
     object = (OSPI_v0_Object *)handle->object;
 
     /* Disable DAC mode */
-    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
-    if (hwAttrs->phyEnable == (bool)true)
+    if (BTRUE == hwAttrs->phyEnable)
     {
         /* Enable PHY pipeline mode for read */
-        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
     }
 
     /* Set read address in indirect mode */
     CSL_ospiIndSetStartAddr((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                             offset,
-                            TRUE);
+                            UTRUE);
     CSL_ospiIndReadExecute((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), count);
 
     if ((uint32_t)SPI_OPER_MODE_POLLING == object->intrPollMode)
@@ -832,7 +832,7 @@ static int32_t OSPI_ind_xfer_mode_read_v0(OSPI_Handle handle,
             if (OSPI_waitReadSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                      &sramLevel) != (int32_t)0U)
             {
-                retFlag = 1U;
+                retFlag = UTRUE;
                 retVal = (int32_t)(-1);
                 transaction->status=OSPI_TRANSFER_FAILED;
                 break;
@@ -847,13 +847,13 @@ static int32_t OSPI_ind_xfer_mode_read_v0(OSPI_Handle handle,
             pDst += rdBytes;
             remaining -= rdBytes;
         }
-        if(retFlag == 0U)
+        if(UFALSE == retFlag)
         {
             if (OSPI_waitIndReadComplete((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)) != (int32_t)0U)
             {
-                retFlag = 1U;
+                retFlag = UTRUE;
                 retVal = (int32_t)(-1);
-                transaction->status=OSPI_TRANSFER_FAILED;
+                transaction->status = OSPI_TRANSFER_FAILED;
             }
         }
     }
@@ -869,7 +869,7 @@ static uint8_t OSPI_getDeviceStatus(OSPI_Handle handle)
 {
     OSPI_v0_HwAttrs const *hwAttrs; /* OSPI hardware attributes */
     OSPI_v0_Object        *object;  /* OSPI object */
-    uint8_t                status = 0xff;
+    uint8_t                status = 0xFF;
     uint8_t                cmd[3];
     uint32_t               rx_lines;
 
@@ -879,7 +879,7 @@ static uint8_t OSPI_getDeviceStatus(OSPI_Handle handle)
 
     if(object->extRdCmdLen)
     {
-        if (rx_lines == OSPI_XFER_LINES_OCTAL)
+        if (OSPI_XFER_LINES_OCTAL == rx_lines)
         {
             cmd[0] = object->rdStatusCmd;
             cmd[1] = object->rdStatusAddr;
@@ -918,16 +918,16 @@ static uint8_t OSPI_getDeviceStatus(OSPI_Handle handle)
 static bool OSPI_waitDeviceReady(OSPI_Handle handle, uint32_t timeOut);
 static bool OSPI_waitDeviceReady(OSPI_Handle handle, uint32_t timeOut)
 {
-    bool         retVal = (bool)false;
+    bool         retVal = BFALSE;
     uint8_t      status;
     uint32_t     timeOutVal = timeOut;
 
-    while (timeOutVal != 0U)
+    while (0U != timeOutVal)
     {
         status = OSPI_getDeviceStatus(handle);
-        if ((status & 1U) == 0U)
+        if (0U == (status & 1U))
         {
-            retVal = (bool)true;
+            retVal = BTRUE;
             break;
         }
         timeOutVal--;
@@ -955,24 +955,24 @@ static int32_t OSPI_dac_xfer_mode_read_v0(OSPI_Handle handle,
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
 #ifdef SPI_DMA_ENABLE
-    if (hwAttrs->dmaEnable == (bool)true)
+    if (BTRUE == hwAttrs->dmaEnable)
     {
-        if (hwAttrs->phyEnable == (bool)true)
+        if (BTRUE == hwAttrs->phyEnable)
         {
             /* Enable PHY pipeline mode for read */
-            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
         }
         OSPI_dmaTransfer(handle, transaction);
     }
     else
 #endif
     {
-        if (hwAttrs->cacheEnable == (bool)true)
+        if (BTRUE == hwAttrs->cacheEnable)
         {
-            if (hwAttrs->phyEnable == (bool)true)
+            if (BTRUE == hwAttrs->phyEnable)
             {
                 /* Enable PHY pipeline mode for read */
-                CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+                CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
             }
         }
         pSrc = (uint8_t *)(hwAttrs->dataAddr + offset);
@@ -994,7 +994,7 @@ static int32_t OSPI_dac_xfer_mode_read_v0(OSPI_Handle handle,
             CSL_archMemoryFence();
 #endif
         }
-        if (hwAttrs->cacheEnable == (bool)true)
+        if (BTRUE == hwAttrs->cacheEnable)
         {
             CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
         }
@@ -1007,9 +1007,9 @@ static int32_t OSPI_flashExecCmd(const CSL_ospi_flash_cfgRegs *pRegs)
 {
     uint32_t retry = OSPI_DAC_WRITE_TIMEOUT;
     int32_t  retVal = 0;
-    uint32_t idleFlag = FALSE;
+    uint32_t idleFlag = UFALSE;
 
-    while (idleFlag == FALSE)
+    while (UFALSE == idleFlag)
     {
         idleFlag = CSL_ospiIsIdle(pRegs);
     }
@@ -1017,10 +1017,10 @@ static int32_t OSPI_flashExecCmd(const CSL_ospi_flash_cfgRegs *pRegs)
     /* Start to execute flash read/write command */
     CSL_ospiFlashExecCmd(pRegs);
 
-    while (retry != 0U)
+    while (0U != retry)
     {
         /* Check the command execution status */
-        if (CSL_ospiFlashExecCmdComplete(pRegs) == TRUE)
+        if (UTRUE == CSL_ospiFlashExecCmdComplete(pRegs))
         {
             break;
         }
@@ -1028,13 +1028,13 @@ static int32_t OSPI_flashExecCmd(const CSL_ospi_flash_cfgRegs *pRegs)
         retry--;
     }
 
-    if (retry == 0U)
+    if (0U == retry)
     {
         retVal = (int32_t)(-1);
     }
 
-    idleFlag = FALSE;
-    while (idleFlag == FALSE)
+    idleFlag = UFALSE;
+    while (UFALSE == idleFlag)
     {
         idleFlag = CSL_ospiIsIdle(pRegs);
     }
@@ -1054,7 +1054,7 @@ static int32_t OSPI_cmdRead(const CSL_ospi_flash_cfgRegs *pRegs,
 
     (void)CSL_ospiCmdRead(pRegs, cmd, rxLen);
     retVal = OSPI_flashExecCmd(pRegs);
-    if (retVal == 0)
+    if (0 == retVal)
     {
         regVal = CSL_REG32_RD(&pRegs->FLASH_RD_DATA_LOWER_REG);
 
@@ -1086,7 +1086,7 @@ static int32_t OSPI_cmdExtRead(const CSL_ospi_flash_cfgRegs *pRegs,
 
     (void)CSL_ospiCmdExtRead(pRegs, cmd, cmdLen, rxLen, dummyCycles);
     retVal = OSPI_flashExecCmd(pRegs);
-    if (retVal == 0)
+    if (0 == retVal)
     {
         regVal = CSL_REG32_RD(&pRegs->FLASH_RD_DATA_LOWER_REG);
 
@@ -1168,7 +1168,7 @@ static int32_t OSPI_read_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
     }
     else
     {
-        transaction->status=OSPI_TRANSFER_CANCELED;
+        transaction->status = OSPI_TRANSFER_CANCELED;
     }
 
     return(retVal);
@@ -1181,7 +1181,7 @@ static int32_t OSPI_waitWriteSramLvl(const CSL_ospi_flash_cfgRegs *pReg,
     uint32_t sramLevel;
     int32_t  retVal = 0;
 
-    while(retry != 0U)
+    while(0U != retry)
     {
         sramLevel = CSL_ospiGetSramLvl(pReg, 0);
         if (sramLevel <= CSL_OSPI_SRAM_WATERMARK_WR_LVL)
@@ -1193,7 +1193,7 @@ static int32_t OSPI_waitWriteSramLvl(const CSL_ospi_flash_cfgRegs *pReg,
         retry--;
     }
 
-    if (retry != 0U)
+    if (0U != retry)
     {
         retVal = 0;
     }
@@ -1210,9 +1210,9 @@ static int32_t OSPI_waitIndWriteComplete(const CSL_ospi_flash_cfgRegs *pRegs)
     int32_t  retVal;
 
     /* Check flash indirect write controller status */
-    while (retry != 0U)
+    while (0U != retry)
     {
-        if (CSL_ospiIsIndWriteComplete(pRegs) == TRUE)
+        if (UTRUE == CSL_ospiIsIndWriteComplete(pRegs))
         {
             break;
         }
@@ -1220,7 +1220,7 @@ static int32_t OSPI_waitIndWriteComplete(const CSL_ospi_flash_cfgRegs *pRegs)
         retry--;
     }
 
-    if (retry != 0U)
+    if (0U != retry)
     {
         /* Clear indirect completion status */
         CSL_ospiClrIndWriteComplete(pRegs);
@@ -1243,7 +1243,7 @@ static int32_t OSPI_ind_xfer_mode_write_v0(OSPI_Handle handle,
     uint32_t               offset;       /* OSPI flash offset address */
     uint32_t               remaining;
     uint32_t               sramLevel, wrBytes;
-    uint32_t               retFlag = 0;
+    uint32_t               retFlag = UFALSE;
     int32_t                retVal = 0;
 
     object = (OSPI_v0_Object *)handle->object;
@@ -1258,34 +1258,34 @@ static int32_t OSPI_ind_xfer_mode_write_v0(OSPI_Handle handle,
     object = (OSPI_v0_Object *)handle->object;
 
     /* Disable DAC mode */
-    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
     /* Set write address in indirect mode */
     CSL_ospiIndSetStartAddr((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                             offset,
-                            FALSE);
+                            UFALSE);
     CSL_ospiIndWriteExecute((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), count);
 
     if ((uint32_t)SPI_OPER_MODE_POLLING == object->intrPollMode)
     {
         /* Wait Indirect Write  SRAM fill level below the threshold */
-        if (OSPI_waitWriteSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                  &sramLevel) != (int32_t)0U)
+        if ((int32_t)0U != OSPI_waitWriteSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                  &sramLevel))
         {
-            retFlag = 1U;
+            retFlag = UTRUE;
             retVal = (int32_t)(-1);
-            transaction->status=OSPI_TRANSFER_FAILED;
+            transaction->status = OSPI_TRANSFER_FAILED;
         }
         else
         {
             remaining = count;
-            while(remaining > 0U)
+            while(0U < remaining)
             {
                 /* Wait indirect write SRAM fifo level below watermark */
-                if (OSPI_waitWriteSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                          &sramLevel) != (int32_t)0U)
+                if ((int32_t)0U != OSPI_waitWriteSramLvl((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
+                                          &sramLevel))
                 {
-                    retFlag = 1U;
+                    retFlag = UTRUE;
                     retVal = (int32_t)(-1);
                     break;
                 }
@@ -1300,20 +1300,20 @@ static int32_t OSPI_ind_xfer_mode_write_v0(OSPI_Handle handle,
                 remaining -= wrBytes;
             }
 
-            if(retFlag == 0U)
+            if(UFALSE == retFlag)
             {
                 if (OSPI_waitIndWriteComplete((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr)) != (int32_t)0U)
                 {
-                    retFlag = 1U;
+                    retFlag = UTRUE;
                     retVal = (int32_t)(-1);
                 }
             }
         }
     }
 
-    if(retFlag == 1U)
+    if(UTRUE == retFlag)
     {
-        transaction->status=OSPI_TRANSFER_FAILED;
+        transaction->status = OSPI_TRANSFER_FAILED;
         CSL_ospiIndWriteCancel((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
     }
     return (retVal);
@@ -1341,10 +1341,10 @@ static int32_t OSPI_dac_xfer_mode_write_v0(OSPI_Handle handle,
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
     /* Disable PHY pipeline mode */
-    CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+    CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
 #ifdef SPI_DMA_ENABLE
-    if (hwAttrs->dmaEnable == (bool)true)
+    if (BTRUE == hwAttrs->dmaEnable)
     {
         OSPI_dmaTransfer(handle, transaction);
     }
@@ -1386,7 +1386,7 @@ static int32_t OSPI_dac_xfer_mode_write_v0(OSPI_Handle handle,
             }
         }
     }
-    if (hwAttrs->cacheEnable == (bool)true)
+    if (BTRUE == hwAttrs->cacheEnable)
     {
         CacheP_wbInv((void *)(hwAttrs->dataAddr + offset), transaction->count);
     }
@@ -1418,7 +1418,7 @@ static int32_t OSPI_cmd_mode_write_v0(OSPI_Handle handle,
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
-    if (dataLen != 0U)
+    if (0U != dataLen)
     {
         retVal = (OSPI_cmdWrite((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                  txBuf,
@@ -1471,14 +1471,14 @@ static int32_t OSPI_write_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
  */
 static bool OSPI_transfer_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
 {
-    bool                   ret = (bool)false; /* return value */
+    bool                  ret = BFALSE; /* return value */
     OSPI_v0_HwAttrs const *hwAttrs;     /* OSPI hardware attributes */
     OSPI_v0_Object        *object;      /* OSPI object */
     uintptr_t              key;
     int32_t                xferRet;
 
     /* Check if anything needs to be written or read */
-    if ((handle != NULL) && (transaction != NULL) && (0U != (uint32_t)transaction->count))
+    if ((NULL != handle) && (NULL != transaction) && (0U != (uint32_t)transaction->count))
     {
         /* Get the pointer to the object and hwAttrs */
         object = (OSPI_v0_Object *)handle->object;
@@ -1486,7 +1486,7 @@ static bool OSPI_transfer_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
 
         /* Check if a transfer is in progress */
         key = SPI_osalHardwareIntDisable();
-        if (object->transaction != NULL)
+        if (NULL != object->transaction)
         {
             SPI_osalHardwareIntRestore(key);
             /* Transfer is in progress */
@@ -1512,25 +1512,25 @@ static bool OSPI_transfer_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
              */
             if ((uint32_t)SPI_OPER_MODE_POLLING != object->intrPollMode)
             {
-                SPI_osalHardwareIntrEnable((int32_t)hwAttrs->intrNum, (int32_t)hwAttrs->eventId);
+                SPI_osalHardwareIntrEnable(hwAttrs->intrNum, hwAttrs->eventId);
             }
 
             xferRet = OSPI_primeTransfer_v0(handle, transaction);
             SPI_osalHardwareIntRestore(key);
 
-            if (xferRet == 0)
+            if (0 == xferRet)
             {
-                if (object->intrPollMode == (uint32_t)SPI_OPER_MODE_BLOCKING)
+                if ((uint32_t)SPI_OPER_MODE_BLOCKING == object->intrPollMode)
                 {
-                    ret = (bool)true;
-                    if (object->ospiMode == (uint32_t)OSPI_OPER_MODE_IND_XFER)
+                    ret = BTRUE;
+                    if ((uint32_t)OSPI_OPER_MODE_IND_XFER == object->ospiMode)
                     {
                         /* In indirect transfer mode, wait for the lock
                            posted form the word completion interrupt */
                         (void)SPI_osalPendLock(object->transferComplete, SemaphoreP_WAIT_FOREVER);
                     }
 #ifdef SPI_DMA_ENABLE
-                    if ((object->ospiMode == (uint32_t)OSPI_OPER_MODE_DAC_XFER) && (hwAttrs->dmaEnable == (bool)true))
+                    if (((uint32_t)OSPI_OPER_MODE_DAC_XFER == object->ospiMode) && (BTRUE == hwAttrs->dmaEnable))
                     {
                         /* in direct transfer mode with DMA enabled, wait for the lock
                            posted form the word completion interrupt */
@@ -1545,8 +1545,8 @@ static bool OSPI_transfer_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
                 }
                 else
                 {
-                    /* Always return true if in Asynchronous mode */
-                    ret = (bool)true;
+                    /* Always return BTRUE if in Asynchronous mode */
+                    ret = BTRUE;
                 }
                 transaction->status = OSPI_TRANSFER_COMPLETED;
                 /* Release the lock for this particular SPI handle */
@@ -1555,10 +1555,10 @@ static bool OSPI_transfer_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
             }
             else
             {
-                transaction->status=OSPI_TRANSFER_FAILED;
+                transaction->status = OSPI_TRANSFER_FAILED;
             }
 
-            if (object->intrPollMode != (uint32_t)SPI_OPER_MODE_CALLBACK)
+            if ((uint32_t)SPI_OPER_MODE_CALLBACK != object->intrPollMode)
             {
                 object->transaction = NULL;
             }
@@ -1566,7 +1566,7 @@ static bool OSPI_transfer_v0(OSPI_Handle handle, OSPI_Transaction *transaction)
     }
     else
     {
-        if (transaction != NULL)
+        if (NULL != transaction)
         {
             transaction->status = OSPI_TRANSFER_CANCELED;
         }
@@ -1583,7 +1583,7 @@ static void OSPI_transferCallback_v0(OSPI_Handle handle, OSPI_Transaction *msg)
 {
     OSPI_v0_Object        *object;  /* OSPI object */
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get the pointer to the object */
         object = (OSPI_v0_Object *)handle->object;
@@ -1603,25 +1603,25 @@ static int32_t OSPI_configDdr(OSPI_Handle handle, uint32_t cmd, uint32_t addr, u
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
     CSL_ospiFlashStig((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), cmd, addr, data);
     retVal = OSPI_flashExecCmd((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
-    if (retVal == 0)
+    if (0 == retVal)
     {
         if (hwAttrs->dacEnable)
         {
-            CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+            CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
         }
         else
         {
-            CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+            CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
         }
 
         /* Enable DTR protocol */
-        if (hwAttrs->dtrEnable == (bool)true)
+        if (BTRUE == hwAttrs->dtrEnable)
         {
-            CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+            CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
         }
         else
         {
-            CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+            CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
         }
     }
 
@@ -1636,12 +1636,12 @@ static int32_t OSPI_enableXip (OSPI_Handle handle, uint32_t cmd, uint32_t addr, 
     hwAttrs = (OSPI_v0_HwAttrs const *)handle->hwAttrs;
 
     /* Disable Direct Access Controller */
-    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
 
     /* Configure Flash Command Control Register to issue VCR write to FLASH memory to enable/disable XIP mode */
     CSL_ospiFlashStig((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), cmd, addr, data);
     retVal = OSPI_flashExecCmd((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr));
-    if (retVal == 0)
+    if (0 == retVal)
     {
         OSPI_delay(OSPI_XIP_SETUP_DELAY);
 
@@ -1649,11 +1649,11 @@ static int32_t OSPI_enableXip (OSPI_Handle handle, uint32_t cmd, uint32_t addr, 
         CSL_ospiSetModeBits((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), 0x00);
 
         /* Enable the local controllers XIP mode */
-        CSL_ospiXipEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+        CSL_ospiXipEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
     }
 
     /* Re-enable the Direct Access Controller */
-    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+    CSL_ospiDacEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
     return (retVal);
 }
 
@@ -1687,7 +1687,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
     uint32_t               extOpcodeUp;
     CSL_FssCfg             fssCfg;
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Get the pointer to the object */
         object = (OSPI_v0_Object *)handle->object;
@@ -1729,7 +1729,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                                      extOpcodeLo,
                                      extOpcodeUp);
                 CSL_ospiSetDualByteOpcodeMode((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
-                                              TRUE);
+                                              UTRUE);
                 retVal = SPI_STATUS_SUCCESS;
                 break;
             }
@@ -1767,12 +1767,12 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                 uint32_t numAddrBytes;
                 object->xferLines = *ctrlData;
                 numAddrBytes = CSL_OSPI_MEM_MAP_NUM_ADDR_BYTES_3;
-                if ((object->xferLines == OSPI_XFER_LINES_OCTAL) && (hwAttrs->dtrEnable))
+                if ((OSPI_XFER_LINES_OCTAL == object->xferLines) && (hwAttrs->dtrEnable))
                 {
                     numAddrBytes = CSL_OSPI_MEM_MAP_NUM_ADDR_BYTES_4;
                 }
 #if defined(SOC_J721E)
-                if (object->xferLines == OSPI_XFER_LINES_OCTAL)
+                if (OSPI_XFER_LINES_OCTAL == object->xferLines)
                 {
                     /* 8 dummy cycles required for polling status register in octal mode */
                     CSL_ospiSetPollingDummyCycles((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
@@ -1818,15 +1818,15 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
             case OSPI_V0_CMD_CFG_PHY:
             {
                 uint32_t phyEnable = *ctrlData++;
-                if (phyEnable == TRUE)
+                if (UTRUE == phyEnable)
                 {
-                    if (hwAttrs->phyEnable == (bool)false)
+                    if (BFALSE == hwAttrs->phyEnable)
                     {
                         CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                              CSL_OSPI_BAUD_RATE_DIVISOR(2U));
                         /* Enable PHY mode */
-                        CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
-                        hwAttrs->phyEnable = (bool)true;
+                        CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
+                        hwAttrs->phyEnable = BTRUE;
                     }
                     uint32_t txDelay = *ctrlData++;
                     uint32_t rxDelay = *ctrlData;
@@ -1838,13 +1838,13 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                 }
                 else
                 {
-                    if (hwAttrs->phyEnable == (bool)true)
+                    if (BTRUE == hwAttrs->phyEnable)
                     {
                         /* Disable high speed mode when PHY is disabled */
                         CSL_ospiSetPreScaler((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr),
                                              CSL_OSPI_BAUD_RATE_DIVISOR_DEFAULT);
-                        CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
-                        hwAttrs->phyEnable = (bool)false;
+                        CSL_ospiPhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UFALSE);
+                        hwAttrs->phyEnable = BFALSE;
                     }
                 }
                 retVal = SPI_STATUS_SUCCESS;
@@ -1865,7 +1865,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
 
             case OSPI_V0_CMD_CFG_XIP:
             {
-                if (hwAttrs->xipEnable == (bool)true) {
+                if (BTRUE == hwAttrs->xipEnable) {
                     nvcrCmd = *ctrlData;
                     ctrlData++;
                     addr = *ctrlData;
@@ -1875,7 +1875,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                     (void)OSPI_enableXip(handle, nvcrCmd , addr, data);
                 }
                 /* Enable PHY pipeline mode for read */
-                CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
+                CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
                 break;
             }
             case OSPI_V0_CMD_ENABLE_XIP_PREFETCH:

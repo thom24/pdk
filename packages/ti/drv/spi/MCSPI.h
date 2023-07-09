@@ -310,7 +310,7 @@ extern void MCSPI_Params_init(MCSPI_Params *params);
  *                      transaction timeout has occured, SPI_Transaction.count
  *                      will contain the number of frames that were transferred.
  *
- *  @return true if started successfully; else false
+ *  @return BTRUE if started successfully; else BFALSE
  *
  *  @sa     MCSPI_open
  *  @sa     MCSPI_transferCancel

@@ -92,7 +92,7 @@ uint8_t rxBuf[1024];
 void QSPI_clkEnable(bool enable)
 {
 #if defined(evmK2G) || defined(iceK2G)
-    if (enable == false)
+    if (BFALSE == enable)
     {
         /* Set NSS Power domain to ON */
         CSL_PSC_disablePowerDomain (CSL_PSC_PD_SYS_COMP);
@@ -122,7 +122,7 @@ void spi_test(UArg arg0, UArg arg1)
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
     uint32_t blockNum, pageNum;      /* Block, page number */
-    bool testPassed = true;          /* return value */
+    bool testPassed = BTRUE;         /* return value */
     uint32_t ioMode;
 
     /* Open the Board QSPI NOR device with QSPI port 0
@@ -148,7 +148,7 @@ void spi_test(UArg arg0, UArg arg1)
                                    &blockNum, &pageNum))
     {
         SPI_log("\n Board_flashOffsetToBlkPage failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
@@ -156,7 +156,7 @@ void spi_test(UArg arg0, UArg arg1)
     if (Board_flashEraseBlk(boardHandle, blockNum))
     {
         SPI_log("\n Board_flashEraseBlk failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
@@ -168,7 +168,7 @@ void spi_test(UArg arg0, UArg arg1)
                          TEST_DATA_LEN, (void *)(&ioMode)))
     {
         SPI_log("\n Board_flashWrite failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
@@ -177,22 +177,22 @@ void spi_test(UArg arg0, UArg arg1)
                         TEST_DATA_LEN, (void *)(&ioMode)))
     {
         SPI_log("\n Board_flashRead failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
     /* Verify Data */
-    if (VerifyData(txBuf, rxBuf, TEST_DATA_LEN) == false)
+    if (BFALSE == VerifyData(txBuf, rxBuf, TEST_DATA_LEN))
     {
         SPI_log("\n Data mismatch. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
     Board_flashClose(boardHandle);
 
 err:
-    if(true == testPassed)
+    if(BTRUE == testPassed)
     {
         SPI_log("\n All tests have passed. \n");
     }
@@ -230,8 +230,8 @@ int main(void)
      * In order to re-configure the QSPI baud rate, QSPI clock need to be
      * disabled and enabled again.
      */
-    QSPI_clkEnable(false);
-    QSPI_clkEnable(true);
+    QSPI_clkEnable(BFALSE);
+    QSPI_clkEnable(BTRUE);
 
 #if defined (SOC_AM335x) || defined (SOC_AM437x)
     Task_Handle task;
@@ -266,7 +266,7 @@ bool VerifyData(uint8_t *expData,
 {
     uint32_t idx = 0;
     uint32_t match = 1;
-    bool retVal = false;
+    bool retVal = BFALSE;
 
     for(idx = 0; ((idx < length) && (match != 0)); idx++)
     {
@@ -280,7 +280,7 @@ bool VerifyData(uint8_t *expData,
 
     if(match == 1)
     {
-        retVal = true;
+        retVal = BTRUE;
     }
 
     return retVal;

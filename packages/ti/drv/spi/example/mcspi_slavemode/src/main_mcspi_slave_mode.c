@@ -346,7 +346,7 @@ Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg, uint32_t chn, bool useTR)
     Udma_InitPrms   initPrms;
     uint32_t        instId;
 
-    if (gDrvHandle == NULL)
+    if (NULL == gDrvHandle)
     {
         /* UDMA driver init */
 #if defined(SOC_AM64X)
@@ -368,7 +368,7 @@ Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg, uint32_t chn, bool useTR)
         }
     }
 
-    if(gDrvHandle != NULL)
+    if(NULL != gDrvHandle)
     {
         gDrvHandle = &gUdmaDrvObj;
 
@@ -399,7 +399,7 @@ int32_t MCSPI_udma_deinit(void)
 {
     int32_t         retVal = UDMA_SOK;
 
-    if (gDrvHandle != NULL)
+    if (NULL != gDrvHandle)
     {
         retVal = Udma_deinit(gDrvHandle);
         if(UDMA_SOK == retVal)
@@ -470,7 +470,7 @@ SPI_Transaction   transaction;
 SemaphoreP_Params cbSemParams;
 SemaphoreP_Handle cbSem[MCSPI_MAX_NUM_CHN] = {NULL, NULL, NULL, NULL};
 
-static bool loopBackTest = false;
+static bool loopBackTest = BFALSE;
 
 #ifdef SPI_DMA_ENABLE
 #if !(defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4))
@@ -485,7 +485,7 @@ static EDMA3_RM_Handle MCSPIApp_edmaInit(void)
     EDMA3_DRV_Result edmaResult = EDMA3_DRV_E_INVALID_PARAM;
     uint32_t         edma3Id;
 
-    if (gEdmaHandle != NULL)
+    if (NULL != gEdmaHandle)
     {
         return (gEdmaHandle);
     }
@@ -521,7 +521,7 @@ static EDMA3_RM_Handle MCSPIApp_edmaInit(void)
     gEdmaHandle = (EDMA3_RM_Handle)edma3init(edma3Id, &edmaResult);
 
 #if defined (RTOS_ENV)
-    if (edmaResult != EDMA3_DRV_SOK)
+    if (EDMA3_DRV_SOK != edmaResult)
     {
         /* Report EDMA Error */
         printf("\nEDMA driver initialization FAIL\n");
@@ -602,7 +602,7 @@ static void SPI_deInitConfig(uint32_t domain, uint32_t instance, SPI_Tests *test
     SPI_socGetInitCfg(domain, instance, &spi_cfg);
 
     /* Release interrupt path */
-    MCSPI_configSocIntrPath(instance, &spi_cfg, FALSE);
+    MCSPI_configSocIntrPath(instance, &spi_cfg, BFALSE);
 }
 
 /*
@@ -632,36 +632,36 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
      * Set blocking mode (dma mode or non-dma interrupt mode)
      * or callback mode
      */
-    if (pollMode == true)
+    if (BTRUE == pollMode)
     {
         /* polling mode */
-        spi_cfg.enableIntr = false;
+        spi_cfg.enableIntr = BFALSE;
 
         /* SPI DMA mode is not supported in polling mode */
         spi_cfg.edmaHandle = NULL;
-        spi_cfg.dmaMode    = FALSE;
+        spi_cfg.dmaMode    = BFALSE;
     }
     else
     {
         /* interrupt enabled */
-        spi_cfg.enableIntr = true;
+        spi_cfg.enableIntr = BTRUE;
 #if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2PX) || defined(SOC_TDA2EX) || defined (SOC_DRA75x) || \
     defined(SOC_AM574x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM437x) || defined (SOC_AM335x) || \
     defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || \
     defined(SOC_C6678) || defined(SOC_C6657) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #ifdef SPI_DMA_ENABLE
-        if (dmaMode == true)
+        if (BTRUE == dmaMode)
         {
             /* Set the DMA related init config */
             spi_cfg.edmaHandle = (void *)MCSPIApp_udmaInit(&spi_cfg, chn, test->useTR);
-            spi_cfg.dmaMode    = TRUE;
-            spi_cfg.enableIntr = FALSE;
+            spi_cfg.dmaMode    = BTRUE;
+            spi_cfg.enableIntr = BFALSE;
         }
         else
 #endif
         {
             spi_cfg.edmaHandle = NULL;
-            spi_cfg.dmaMode    = FALSE;
+            spi_cfg.dmaMode    = BFALSE;
         }
 #endif
     }
@@ -718,7 +718,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
     }
 
 #ifdef SPI_DMA_ENABLE
-    if (spi_cfg.txTrigLvl != 0)
+    if (0 != spi_cfg.txTrigLvl)
     {
         test->trigLvl = spi_cfg.txTrigLvl;
     }
@@ -734,7 +734,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
 #endif
 #endif
 
-    if ((testId == SPI_TEST_ID_WORD_LEN) || (testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+    if ((SPI_TEST_ID_WORD_LEN == testId) || (SPI_TEST_ID_CB_CANCEL == testId) || (SPI_TEST_ID_DMA_CB_CANCEL == testId))
     {
 #if defined(SOC_DRA78x) || defined(SOC_TDA3XX) || defined(SOC_TDA2XX) || defined(SOC_TDA2EX) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_AM572x) || defined (SOC_AM571x) || defined (SOC_AM574x) || defined (SOC_AM437x) || defined (SOC_AM335x) || defined (SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
         /* enable loopback mode */
@@ -749,7 +749,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
     if(spi_cfg.enableIntr)
     {
         /* Set interrupt path */
-        if(MCSPI_configSocIntrPath(instance, &spi_cfg, TRUE) != CSL_PASS)
+        if(CSL_PASS != MCSPI_configSocIntrPath(instance, &spi_cfg, BTRUE))
         {
             SPI_log("\n Set interrupt path failed!\n");
         }
@@ -767,13 +767,13 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
 bool SPI_verify_data(unsigned char *data1, unsigned char *data2, uint32_t length)
 {
 	uint32_t i;
-	bool     ret = true;
+	bool     ret = BTRUE;
 
     for (i = 0; i < length; i++)
     {
         if (data1[i] != data2[i])
         {
-            ret = false;
+            ret = BFALSE;
             break;
         }
     }
@@ -817,7 +817,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
 {
     bool            transferOK;
     uintptr_t        addrMasterRxBuf, addrMasterTxBuf, addrSlaveRxBuf, addrSlaveTxBuf, addrCancelTxBuff, addrCancelRxBuff;
-    bool            ret = false;
+    bool            ret = BFALSE;
     uint32_t        terminateXfer = 1;
     int32_t         testId = test->testId;
     bool            master = test->master;
@@ -851,14 +851,14 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     memset(masterRxBuffer, 0, sizeof(masterRxBuffer));
     memset(slaveRxBuffer, 0, sizeof(slaveRxBuffer));
 #ifdef SPI_DMA_ENABLE
-    if ((master == true) && (dmaMode == true))
+    if ((BTRUE == master) && (BTRUE == dmaMode))
     {
         CacheP_wbInv((void *)addrMasterTxBuf, (int32_t)sizeof(masterTxBuffer));
         CacheP_wbInv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
         CacheP_wbInv((void *)addrCancelTxBuff, (int32_t)sizeof(cancelTxBuff));
         CacheP_wbInv((void *)addrCancelRxBuff, (int32_t)sizeof(cancelRxBuff));
     }
-    if ((master == false) && (dmaMode == true))
+    if ((BFALSE == master) && (BTRUE == dmaMode))
     {
         CacheP_wbInv((void *)addrSlaveTxBuf, (int32_t)sizeof(slaveTxBuffer));
         CacheP_wbInv((void *)addrSlaveRxBuf, (int32_t)sizeof(slaveRxBuffer));
@@ -868,7 +868,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     testLen = xferLen;
 #if defined(SOC_AM574x) || defined(SOC_AM572x)|| defined(SOC_AM571x) || defined (SOC_DRA72x)  || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #ifdef SPI_DMA_ENABLE
-    if (dmaMode == true)
+    if (BTRUE == dmaMode)
     {
         if (testLen > test->trigLvl)
         {
@@ -884,7 +884,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
 #endif
 #endif
 
-    if (testId == SPI_TEST_ID_WORD_LEN)
+    if (SPI_TEST_ID_WORD_LEN == testId)
     {
         /*
          * Word length can be 8/16/32 bits,
@@ -903,11 +903,11 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     /* Initialize slave SPI transaction structure */
     transaction.count = transCount;
     transaction.arg = (void *)&terminateXfer;
-    if (master == true)
+    if (BTRUE == master)
     {
-        if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+        if ((SPI_TEST_ID_CB_CANCEL == testId) || (SPI_TEST_ID_DMA_CB_CANCEL == testId))
         {
-            if (dmaMode == true)
+            if (BTRUE == dmaMode)
             {
                 transaction.txDmaBuf = (uint64_t)addrCancelTxBuff;
                 transaction.rxDmaBuf = (uint64_t)addrCancelRxBuff;
@@ -920,7 +920,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
         }
         else
         {
-            if (dmaMode == true)
+            if (BTRUE == dmaMode)
             {
                 transaction.txDmaBuf = (uint64_t)addrMasterTxBuf;
                 transaction.rxDmaBuf = (uint64_t)addrMasterRxBuf;
@@ -934,7 +934,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     }
     else
     {
-        if (dmaMode == true)
+        if (BTRUE == dmaMode)
         {
             transaction.txDmaBuf = (uint64_t)addrSlaveTxBuf;
             transaction.rxDmaBuf = (uint64_t)addrSlaveRxBuf;
@@ -949,7 +949,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     /* Initiate SPI transfer */
     SPI_test_xfer_ctrl(spi, 1);
 #ifdef MCSPI_MULT_CHANNEL
-    if (multChn == true)
+    if (BTRUE == multChn)
     {
         transferOK = MCSPI_transfer((MCSPI_Handle)spi, &transaction);
     }
@@ -957,7 +957,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
 #endif
     {
         transferOK = SPI_transfer((SPI_Handle)spi, &transaction);
-        if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+        if ((SPI_TEST_ID_CB_CANCEL == testId) || (SPI_TEST_ID_DMA_CB_CANCEL == testId))
         {
             SPI_transferCancel(spi);
         }
@@ -974,18 +974,18 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
         }
         SPI_test_xfer_ctrl(spi, 0);
 
-       if ((master == true) && (dmaMode == true))
+       if ((master == BTRUE) && (dmaMode == BTRUE))
        {
            CacheP_Inv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
            CacheP_Inv((void *)addrCancelRxBuff, (int32_t)sizeof(cancelRxBuff));
        }
-       if ((master == false) && (dmaMode == true))
+       if ((master == BFALSE) && (dmaMode == BTRUE))
        {
            CacheP_Inv((void *)addrSlaveRxBuf, (int32_t)sizeof(slaveRxBuffer));
        }
 
         /* Get the actual transfer bytes */
-        if (testId == SPI_TEST_ID_WORD_LEN)
+        if (SPI_TEST_ID_WORD_LEN == testId)
         {
             xferBytes = transaction.count * (test->param / 8);
         }
@@ -994,10 +994,10 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
             xferBytes = transaction.count;
         }
 
-        if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+        if ((SPI_TEST_ID_CB_CANCEL == testId) || (SPI_TEST_ID_DMA_CB_CANCEL == testId))
         {
 
-            if (transaction.status == SPI_TRANSFER_CANCELED)
+            if (SPI_TRANSFER_CANCELED == transaction.status)
             {
                 SPI_log("\n SPI Transfer Canceled!\n");
             }
@@ -1007,11 +1007,11 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
                 goto Err;
             }
         }
-        else if (testId != SPI_TEST_ID_TX_ONLY)
+        else if (SPI_TEST_ID_TX_ONLY != testId)
         {
-            if (master == true)
+            if (BTRUE == master)
             {
-                if (testId >= SPI_TEST_ID_LOOPBACK)
+                if (SPI_TEST_ID_LOOPBACK <= testId)
                 {
                     srcPtr = masterTxBuffer;
                 }
@@ -1021,7 +1021,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
                 }
 
                 /* master mode, verify master recieved data match with slave sent data */
-                if (SPI_verify_data(masterRxBuffer, srcPtr, xferBytes) == false)
+                if (BFALSE == SPI_verify_data(masterRxBuffer, srcPtr, xferBytes))
                 {
                     goto Err;
                 }
@@ -1032,7 +1032,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
             else
             {
                 /* slave mode, verify slave recieved data match with master sent data */
-                if (SPI_verify_data(slaveRxBuffer, masterTxBuffer, xferBytes) == false)
+                if (BFALSE == SPI_verify_data(slaveRxBuffer, masterTxBuffer, xferBytes))
                 {
                     goto Err;
                 }
@@ -1043,9 +1043,9 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
     }
     else
     {
-        if ((testId == SPI_TEST_ID_TIMEOUT) || (testId == SPI_TEST_ID_TIMEOUT_POLL))
+        if ((SPI_TEST_ID_TIMEOUT == testId) || (SPI_TEST_ID_TIMEOUT_POLL == testId))
         {
-            if (transaction.status == SPI_TRANSFER_TIMEOUT)
+            if (SPI_TRANSFER_TIMEOUT == transaction.status)
             {
                 SPI_log("SPI Slave transfer Timed out for transfer length %d\n", xferLen);
             }
@@ -1062,7 +1062,7 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
         }
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     return (ret);
@@ -1076,7 +1076,7 @@ static uint32_t SPI_test_get_instance (uint32_t testId, bool master)
      * instances start with 1, to address proper Configuration
      * structure index, McSPI Instance should be substracted with 1
      */
-    if (master == (bool)true)
+    if (BTRUE == master)
     {
         instance = (uint32_t)BOARD_MCSPI_MASTER_INSTANCE - 1;
     }
@@ -1093,7 +1093,7 @@ static uint32_t SPI_test_get_instance (uint32_t testId, bool master)
      */
     if (testId < SPI_TEST_ID_LOOPBACK)
     {
-        if (master == true)
+        if (BTRUE == master)
         {
             instance = 2U;
         }
@@ -1101,8 +1101,8 @@ static uint32_t SPI_test_get_instance (uint32_t testId, bool master)
         {
             instance = 4U;
         }
-        if ((testId == SPI_TEST_ID_TIMEOUT) ||
-            (testId == SPI_TEST_ID_TIMEOUT_POLL))
+        if ((SPI_TEST_ID_TIMEOUT      == testId) ||
+            (SPI_TEST_ID_TIMEOUT_POLL == testId))
         {
             /*
              * Timeout test is done in slave mode,
@@ -1129,7 +1129,7 @@ static uint32_t SPI_test_get_domain (uint32_t testId, bool master)
      */
     if (testId < SPI_TEST_ID_LOOPBACK)
     {
-        if (master == true)
+        if (BTRUE == master)
         {
             domain = SPI_MCSPI_DOMAIN_MCU;
         }
@@ -1137,8 +1137,8 @@ static uint32_t SPI_test_get_domain (uint32_t testId, bool master)
         {
             domain = SPI_MCSPI_DOMAIN_MAIN;
         }
-        if ((testId == SPI_TEST_ID_TIMEOUT) ||
-            (testId == SPI_TEST_ID_TIMEOUT_POLL))
+        if ((SPI_TEST_ID_TIMEOUT      == testId) ||
+            (SPI_TEST_ID_TIMEOUT_POLL == testId))
         {
             /*
              * Timeout test is done in slave mode,
@@ -1157,7 +1157,7 @@ static bool SPI_test_single_channel(void *arg)
     SPI_Handle        spi;
     SPI_Params        spiParams;
     uint32_t          instance, i, modeIndex, SPI_modeIndex, xferLen, num_xfers, domain;
-    bool              ret = false;
+    bool              ret = BFALSE;
     SPI_Tests        *test = (SPI_Tests *)arg;
     int32_t           testId = test->testId;
     bool              master = test->master;
@@ -1172,7 +1172,7 @@ static bool SPI_test_single_channel(void *arg)
     };
 
 
-    if (cbMode == true)
+    if (BTRUE == cbMode)
     {
         /* Create call back semaphore */
         SPI_osalSemParamsInit(&cbSemParams);
@@ -1180,7 +1180,7 @@ static bool SPI_test_single_channel(void *arg)
         cbSem[0] = SPI_osalCreateBlockingLock(0, &cbSemParams);
     }
 
-	if ((testId == SPI_TEST_ID_WORD_LEN) && (test->dmaMode == false))
+	if ((SPI_TEST_ID_WORD_LEN == testId) && (BFALSE == test->dmaMode))
 	{
         SPI_modeIndex = 4;
     }
@@ -1191,31 +1191,31 @@ static bool SPI_test_single_channel(void *arg)
 	/* In case of SPI_TEST_ID_PHA_POL all SPI modes need to be tested */
     for (modeIndex = 0; modeIndex < SPI_modeIndex; modeIndex++)
     {
-        ret = false;
+        ret = BFALSE;
         instance = SPI_test_get_instance(testId, master);
         domain   = SPI_test_get_domain(testId, master);
-        SPI_initConfig(domain, instance, test, MCSPI_TEST_CHN, false);
+        SPI_initConfig(domain, instance, test, MCSPI_TEST_CHN, BFALSE);
 
         /* Initialize SPI handle */
         SPI_Params_init(&spiParams);
-        if (master == false)
+        if (BFALSE == master)
         {
             spiParams.mode = SPI_SLAVE;
         }
-        if (cbMode == true)
+        if (BTRUE == cbMode)
         {
             spiParams.transferMode = SPI_MODE_CALLBACK;
             spiParams.transferCallbackFxn = SPI_callback;
         }
         spiParams.transferTimeout = timeout;
-        if (testId == SPI_TEST_ID_PHA_POL)
+        if (SPI_TEST_ID_PHA_POL == testId)
         {
             spiParams.frameFormat = (SPI_FrameFormat)(test->param);
         }
 
-        if (testId == SPI_TEST_ID_WORD_LEN)
+        if (SPI_TEST_ID_WORD_LEN == testId)
         {
-            if(test->dmaMode == false)
+            if (BFALSE == test->dmaMode)
             {
                 spiParams.frameFormat = frameFormat[modeIndex];
                 SPI_log("\n%s with SPI Mode %d\n", test->testDesc, spiParams.frameFormat);
@@ -1225,7 +1225,7 @@ static bool SPI_test_single_channel(void *arg)
 
         spi = SPI_open(domain, instance, &spiParams);
 
-        if (spi == NULL)
+        if (NULL == spi)
         {
             SPI_log("Error initializing SPI\n");
             goto Err;
@@ -1235,7 +1235,7 @@ static bool SPI_test_single_channel(void *arg)
             SPI_log("SPI initialized\n");
         }
 
-        if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+        if ((SPI_TEST_ID_CB_CANCEL == testId) || (SPI_TEST_ID_DMA_CB_CANCEL == testId))
         {
             num_xfers = 1;
         }
@@ -1249,7 +1249,7 @@ static bool SPI_test_single_channel(void *arg)
         }
         for (i = 0; i < num_xfers; i++)
         {
-            if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+            if ((SPI_TEST_ID_CB_CANCEL == testId) || (SPI_TEST_ID_DMA_CB_CANCEL == testId))
             {
                 xferLen = CANCEL_TX_LEN;
             }
@@ -1257,7 +1257,7 @@ static bool SPI_test_single_channel(void *arg)
             {
                 xferLen = spi_test_xfer_len[i];
             }
-            if ((master == true) && (testId < SPI_TEST_ID_LOOPBACK))
+            if ((BTRUE == master) && (SPI_TEST_ID_LOOPBACK > testId))
             {
                 /*
                  * master sleep for 1 second after each transfer
@@ -1273,19 +1273,19 @@ static bool SPI_test_single_channel(void *arg)
                  */
                 Osal_delay(500);
             }
-            if (SPI_test_mst_slv_xfer((void *)spi, test, xferLen, false) == false)
+            if (BFALSE == SPI_test_mst_slv_xfer((void *)spi, test, xferLen, BFALSE))
             {
                 goto Err;
             }
 
-            if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+            if ((SPI_TEST_ID_CB_CANCEL == testId) || (SPI_TEST_ID_DMA_CB_CANCEL == testId))
             {
                 SPI_log("SPI Master Transfer Cancelled!!\n");
             }
         }
 
-        ret = true;
-        if (testId == SPI_TEST_ID_WORD_LEN){
+        ret = BTRUE;
+        if (SPI_TEST_ID_WORD_LEN == testId) {
                 if (spi)
                 {
                     SPI_close(spi);
@@ -1296,7 +1296,7 @@ static bool SPI_test_single_channel(void *arg)
 	} /* End of for loop */
 
 Err:
-	if (testId != SPI_TEST_ID_WORD_LEN){
+	if (SPI_TEST_ID_WORD_LEN != testId) {
 	    if (spi)
 	    {
 	        SPI_close(spi);
@@ -1326,19 +1326,19 @@ static bool SPI_test_xfer_error(void *arg)
     uint32_t          terminateXfer = 1;
     uint32_t          xferErr;
 
-    if (master == true)
+    if (BTRUE == master)
     {
-        ret = false;
+        ret = BFALSE;
         domain = 0;
         instance = 2;
-        SPI_initConfig(domain, instance, test, MCSPI_TEST_CHN, false);
+        SPI_initConfig(domain, instance, test, MCSPI_TEST_CHN, BFALSE);
 
         /* Initialize SPI handle */
         SPI_Params_init(&spiParams);
         spiParams.transferTimeout = timeout;
         spi = SPI_open(domain, instance, &spiParams);
 
-        if (spi == NULL)
+        if (NULL == spi)
         {
             SPI_log("Error initializing SPI\n");
             goto Err;
@@ -1363,11 +1363,11 @@ static bool SPI_test_xfer_error(void *arg)
         {
             SPI_test_xfer_ctrl(spi, 0);
             SPI_control(spi, SPI_V0_CMD_GET_XFER_ERR, (void *)&xferErr);
-            if (xferErr == SPI_XFER_ERR_RXOR)
+            if (SPI_XFER_ERR_RXOR == xferErr)
             {
                 SPI_log("Receive overrun error detected\n");
             }
-            else if (xferErr == SPI_XFER_ERR_BE)
+            else if (SPI_XFER_ERR_BE == xferErr)
             {
                 SPI_log("Bit error detected\n");
             }
@@ -1375,7 +1375,7 @@ static bool SPI_test_xfer_error(void *arg)
             {
                 SPI_log("No error detected\n");
             }
-            ret = true;
+            ret = BTRUE;
         }
 
         /*
@@ -1397,10 +1397,10 @@ static bool SPI_test_xfer_error(void *arg)
     else
     {
         /* slave do nothing for xfer error test */
-        ret = true;
+        ret = BTRUE;
     }
 #else
-    ret = true;
+    ret = BTRUE;
 #endif
     return (ret);
 }
@@ -1411,7 +1411,7 @@ static bool SPI_test_multi_channel(void *arg)
     MCSPI_Handle      spi[MCSPI_MAX_NUM_CHN];
     MCSPI_Params      spiParams;
     uint32_t          instance, i, domain;
-    bool              ret = false;
+    bool              ret = BFALSE;
     uint32_t          chn, maxNumChn, testChn;
     MCSPI_CallbackFxn cbFxn[MCSPI_MAX_NUM_CHN] = {MCSPI_callback0, MCSPI_callback1, MCSPI_callback2, MCSPI_callback3};
     SPI_Tests        *test = (SPI_Tests *)arg;
@@ -1420,7 +1420,7 @@ static bool SPI_test_multi_channel(void *arg)
     bool              cbMode = test->cbMode;
     uint32_t          timeout = test->timeout;
 
-    if (cbMode == true)
+    if (BTRUE == cbMode)
     {
         /* Create call back semaphore */
         SPI_osalSemParamsInit(&cbSemParams);
@@ -1430,15 +1430,15 @@ static bool SPI_test_multi_channel(void *arg)
     instance = SPI_test_get_instance(testId, master);
     domain   = SPI_test_get_domain(testId, master);
     testChn = MCSPI_TEST_CHN;
-    SPI_initConfig(domain, instance, test, testChn, false);
+    SPI_initConfig(domain, instance, test, testChn, BFALSE);
 
     /* Initialize SPI handle */
     MCSPI_Params_init(&spiParams);
-    if (master == false)
+    if (BFALSE == master)
     {
         spiParams.mode = SPI_SLAVE;
     }
-    if (cbMode == true)
+    if (BTRUE == cbMode)
     {
         spiParams.transferMode = SPI_MODE_CALLBACK;
     }
@@ -1449,7 +1449,7 @@ static bool SPI_test_multi_channel(void *arg)
         spiParams.dataSize = test->param;
     }
 
-    if (master == true)
+    if (BTRUE == master)
     {
         maxNumChn = MCSPI_MAX_NUM_CHN;
     }
@@ -1460,7 +1460,7 @@ static bool SPI_test_multi_channel(void *arg)
     }
     for (i = 0; i < maxNumChn; i++)
     {
-        if (master == true)
+        if (BTRUE == master)
         {
             chn = i;
         }
@@ -1469,7 +1469,7 @@ static bool SPI_test_multi_channel(void *arg)
             chn = testChn;
         }
 
-        if (cbMode == true)
+        if (BTRUE == cbMode)
         {
             cbSem[chn] = SPI_osalCreateBlockingLock(0, &cbSemParams);
             spiParams.transferCallbackFxn = cbFxn[chn];;
@@ -1497,7 +1497,7 @@ static bool SPI_test_multi_channel(void *arg)
 #endif
     {
 
-        if ((master == true) && (testId < SPI_TEST_ID_LOOPBACK))
+        if ((BTRUE == master) && (testId < SPI_TEST_ID_LOOPBACK))
         {
             /*
              * master sleep for 1 second after each transfer
@@ -1519,12 +1519,12 @@ static bool SPI_test_multi_channel(void *arg)
         }
     }
 
-    ret = true;
+    ret = BTRUE;
 
 Err:
     for (i = 0; i < maxNumChn; i++)
     {
-        if (master == true)
+        if (BTRUE == master)
         {
             chn = i;
         }
@@ -1566,63 +1566,63 @@ void SPI_test_print_test_desc(SPI_Tests *test)
 SPI_Tests Spi_tests_master[] =
 {
 #ifndef SPI_MASTERONLY_TESTS
-	    /* testFunc             testID                  master pollMode cbMode  dmaMode, useTr    timeout                     testDesc */
+	    /* testFunc             testID                  master   pollMode   cbMode  dmaMode,   useTr    timeout                     testDesc */
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        true,  false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        BTRUE,  BFALSE,   BFALSE,  BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
 #endif
-    {SPI_test_single_channel,   SPI_TEST_ID_INT,        true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       true,  true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_CB,         true,  false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        BTRUE,  BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       BTRUE,  BTRUE,    BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         BTRUE,  BFALSE,   BTRUE,   BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     true,  false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     BTRUE,  BFALSE,   BTRUE,   BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   BTRUE,  BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    BTRUE,  BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     true,  false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     BTRUE,  BFALSE,   BFALSE,  BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    true,  true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      true,  false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     BTRUE,  BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    BTRUE,  BTRUE,    BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      BTRUE,  BFALSE,   BTRUE,   BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  true,  false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  BTRUE,  BFALSE,   BTRUE,   BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_TX_ONLY,    true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel TX_ONLY test", 0, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_TX_ONLY,    BTRUE,  BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel TX_ONLY test", 0, },
 #endif
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        true,  false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        BTRUE,  BFALSE,   BFALSE,  BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
 #endif
-    {SPI_test_single_channel,   SPI_TEST_ID_INT,        true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       true,  true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_CB,         true,  false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        BTRUE,  BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       BTRUE,  BTRUE,    BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         BTRUE,  BFALSE,   BTRUE,   BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     true,  false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     BTRUE,  BFALSE,   BTRUE,   BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   BTRUE,  BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    BTRUE,  BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     true,  false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     BTRUE,  BFALSE,   BFALSE,  BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    true,  true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      true,  false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     BTRUE,  BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    BTRUE,  BTRUE,    BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      BTRUE,  BFALSE,   BTRUE,   BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  true,  false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  BTRUE,  BFALSE,   BTRUE,   BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_TX_ONLY,    true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel TX_ONLY test", 0, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_TX_ONLY,    BTRUE,  BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel TX_ONLY test", 0, },
 #endif
 #endif
 
 #ifdef SPI_DMA_ENABLE
-     {SPI_test_single_channel, SPI_TEST_ID_DMA_CB_CANCEL, true, false, true, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in dma callback mode", },
+     {SPI_test_single_channel, SPI_TEST_ID_DMA_CB_CANCEL, BTRUE, BFALSE, BTRUE,   BTRUE,    BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in dma callback mode", },
 #endif
-     {SPI_test_single_channel, SPI_TEST_ID_CB_CANCEL, true, false, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in non-dma callback mode", },
+     {SPI_test_single_channel, SPI_TEST_ID_CB_CANCEL,     BTRUE, BFALSE, BTRUE,   BFALSE,   BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in non-dma callback mode", },
     /* NOTE: Timeout Test case should be executed as the final test, as this test requires no transaction on the data lines
      * for the timeout to happen */
-    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT, false, false, false, false, false, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in interrupt mode", },
-    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT_POLL, false, true, false, false, false, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in polling mode", },
+    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT,        BFALSE, BFALSE, BFALSE, BFALSE, BFALSE, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in interrupt mode", },
+    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT_POLL,   BFALSE, BTRUE,  BFALSE, BFALSE, BFALSE, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in polling mode", },
     {NULL, },
 };
 
@@ -1631,50 +1631,50 @@ SPI_Tests Spi_tests_slave[] =
 #ifndef SPI_MASTERONLY_TESTS
 	    /* testFunc             testID                  master pollMode cbMode  dmaMode, useTr    timeout                     testDesc */
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        false, false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        BFALSE, BFALSE,   BFALSE,  BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
 #endif
-    {SPI_test_single_channel,   SPI_TEST_ID_INT,        false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       false, true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_CB,         false, false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        BFALSE, BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       BFALSE, BTRUE,    BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         BFALSE, BFALSE,   BTRUE,   BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     false, false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     BFALSE, BFALSE,   BTRUE,   BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   BFALSE, BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    BFALSE, BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     false, false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     BFALSE, BFALSE,   BFALSE,  BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    false, true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      false, false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     BFALSE, BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    BFALSE, BTRUE,    BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      BFALSE, BFALSE,   BTRUE,   BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  false, false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  BFALSE, BFALSE,   BTRUE,   BTRUE,    BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_RX_ONLY,    false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel RX_ONLY test", 0, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_RX_ONLY,    BFALSE, BFALSE,   BFALSE,  BFALSE,   BTRUE,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel RX_ONLY test", 0, },
 #endif
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        false, false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        BFALSE, BFALSE,   BFALSE,  BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
 #endif
-    {SPI_test_single_channel,   SPI_TEST_ID_INT,        false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       false, true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_CB,         false, false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        BFALSE, BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       BFALSE, BTRUE,    BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         BFALSE, BFALSE,   BTRUE,   BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     false, false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     BFALSE, BFALSE,   BTRUE,   BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
-    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   BFALSE, BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    BFALSE, BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     false, false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     BFALSE, BFALSE,   BFALSE,  BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    false, true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      false, false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     BFALSE, BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    BFALSE, BTRUE,    BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      BFALSE, BFALSE,   BTRUE,   BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  false, false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  BFALSE, BFALSE,   BTRUE,   BTRUE,    BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_multi_channel,    SPI_TEST_ID_RX_ONLY,    false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel RX_ONLY test", 0, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_RX_ONLY,    BFALSE, BFALSE,   BFALSE,  BFALSE,   BFALSE,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel RX_ONLY test", 0, },
 #endif
 #endif
     {NULL, },
@@ -1696,7 +1696,7 @@ void slaveTaskFxn()
 #endif
 {
     uint32_t  i;
-    bool      testFail = false;
+    bool      testFail = BFALSE;
     SPI_Tests *test;
 
     SPI_log("Starting SPI Slave test. \n");
@@ -1710,13 +1710,13 @@ void slaveTaskFxn()
 
     for (i = 0; ; i++)
     {
-        if (loopBackTest == true)
+        if (BTRUE == loopBackTest)
         {
             /* Slave mode test not supported for loopback test */
             break;
         }
         test = &Spi_tests_slave[i];
-        if (test->testFunc == NULL)
+        if (NULL == test->testFunc)
             break;
 
         if (test->testId >= SPI_TEST_ID_LOOPBACK)
@@ -1725,19 +1725,19 @@ void slaveTaskFxn()
             break;
         }
         SPI_test_print_test_desc(test);
-        if (test->testFunc((void *)test) == true)
+        if (BTRUE == test->testFunc((void *)test))
         {
             SPI_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             SPI_log("\r\n %s have failed\r\n", test->testDesc);
-            testFail = true;
+            testFail = BTRUE;
             break;
         }
     }
 
-    if(testFail == true)
+    if(BTRUE == testFail)
     {
         SPI_log("\n Some tests have failed. \n");
     }
@@ -1748,7 +1748,7 @@ void slaveTaskFxn()
 
     SPI_log("Done\n");
 
-    while (true)
+    while (BTRUE)
     {
     }
 }
@@ -1767,7 +1767,7 @@ void masterTaskFxn()
 #endif
 {
     uint32_t  i;
-    bool      testFail = false;
+    bool      testFail = BFALSE;
     SPI_Tests *test;
 
 #if defined (RTOS_ENV)
@@ -1797,31 +1797,31 @@ void masterTaskFxn()
     for (i = 0; ; i++)
     {
         test = &Spi_tests_master[i];
-        if (test->testFunc == NULL)
+        if (NULL == test->testFunc)
             break;
 
-        if (loopBackTest == true)
+        if (BTRUE == loopBackTest)
         {
             /* Only loopback test supported */
-            if ((test->testId < SPI_TEST_ID_LOOPBACK)       &&
-                (test->testId != SPI_TEST_ID_TIMEOUT)       &&
-                (test->testId != SPI_TEST_ID_TIMEOUT_POLL))
+            if ((SPI_TEST_ID_LOOPBACK      > test->testId)       &&
+                (SPI_TEST_ID_TIMEOUT      != test->testId)       &&
+                (SPI_TEST_ID_TIMEOUT_POLL != test->testId))
                 continue;
         }
         SPI_test_print_test_desc(test);
-        if (test->testFunc((void *)test) == true)
+        if (BTRUE == test->testFunc((void *)test))
         {
             SPI_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             SPI_log("\r\n %s have failed\r\n", test->testDesc);
-            testFail = true;
+            testFail = BTRUE;
             break;
         }
     }
 
-    if(testFail == true)
+    if(BTRUE == testFail)
     {
         SPI_log("\n Some tests have failed. \n");
     }
@@ -1832,7 +1832,7 @@ void masterTaskFxn()
 
     SPI_log("Done\n");
 
-    while (true)
+    while (BTRUE)
     {
     }
 }
@@ -1849,12 +1849,12 @@ void MCSPI_setupSciServer(void)
     appPrms.taskPriority[SCISERVER_TASK_USER_LO] = 4;
     appPrms.taskPriority[SCISERVER_TASK_USER_HI] = 5;
 
-    if (ret == CSL_PASS)
+    if (CSL_PASS == ret)
     {
         ret = Sciserver_tirtosInit(&appPrms);
     }
 
-    if (ret == CSL_PASS)
+    if (CSL_PASS == ret)
     {
         printf("Starting Sciserver..... PASSED\n");
     }
@@ -1874,28 +1874,28 @@ void MCSPI_initSciclient()
 
     /* Now reinitialize it as default parameter */
     ret = Sciclient_configPrmsInit(&config);
-    if (ret != CSL_PASS)
+    if (CSL_PASS != ret)
     {
         printf("Sciclient_configPrmsInit Failed\n");
     }
 
 #if defined (BUILD_MCU1_0)
-    if (ret == CSL_PASS)
+    if (CSL_PASS == ret)
     {
         ret = Sciclient_boardCfgParseHeader(
             (uint8_t *)SCISERVER_COMMON_X509_HEADER_ADDR,
             &config.inPmPrms, &config.inRmPrms);
-        if (ret != CSL_PASS)
+        if (CSL_PASS != ret)
         {
             printf("Sciclient_boardCfgParseHeader Failed\n");
         }
     }
 #endif
 
-    if (ret == CSL_PASS)
+    if (CSL_PASS == ret)
     {
         ret = Sciclient_init(&config);
-        if (ret != CSL_PASS)
+        if (CSL_PASS != ret)
         {
             printf("Sciclient_init Failed\n");
         }
@@ -1943,7 +1943,7 @@ int main(void)
     task = TaskP_create(&masterTaskFxn, &taskParams);
 #endif /* Task type */
 
-    if (task == NULL)
+    if (NULL == task)
     {
         printf("TaskP_create() failed!\n");
         return (0);
@@ -1972,13 +1972,13 @@ int main(void)
                BOARD_INIT_MODULE_CLOCK  |
                BOARD_INIT_UART_STDIO;
     boardStatus = Board_init(boardCfg);
-    if (boardStatus != BOARD_SOK)
+    if (BOARD_SOK != boardStatus)
     {
         return (0);
     }
 
 #if defined(SOC_AM64X)
-    loopBackTest = true;
+    loopBackTest = BTRUE;
 #endif
 
 #if defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
@@ -1994,7 +1994,7 @@ int main(void)
 
 #if defined (idkAM571x)
     boardStatus = Board_getIDInfo(&id);
-    if (boardStatus != BOARD_SOK)
+    if (BOARD_SOK != boardStatus)
     {
         return (0);
     }
@@ -2004,7 +2004,7 @@ int main(void)
         (id.boardName[1] == 'R') &&
         (id.boardName[2] == 'A'))
     {
-        loopBackTest = true;
+        loopBackTest = BTRUE;
     }
 #endif
 
@@ -2018,7 +2018,7 @@ int main(void)
 #if defined (evmK2G)
     /* Read the SoC info to get the System clock value */
     Board_getSoCInfo(&socInfo);
-    if(socInfo.sysClock != BOARD_SYS_CLK_DEFAULT)
+    if(BOARD_SYS_CLK_DEFAULT != socInfo.sysClock)
     {
         /* Since this is a generic SPI test,
          * configure the input clock for all the available instances */

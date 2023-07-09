@@ -142,7 +142,7 @@ GPIO_v1_Config GPIO_v1_config = {
 void espi_test(UArg arg0, UArg arg1)
 {
   MCSPI_Params      mcspiParams; /* MCSPI params structure */
-  bool            testPassed = true;
+  bool            testPassed = BTRUE;
   MCSPI_Handle      fwHandle;  /* MCSPI handle */
   SPI_Transaction transaction;     /* SPI transaction structure */
   uint8_t rxBuf[ESPI_PACKET_MAX_SIZE], txBuf[ESPI_PACKET_MAX_SIZE];
@@ -150,9 +150,9 @@ void espi_test(UArg arg0, UArg arg1)
   ESPI_SwIPAttrs espi_cfg;
 
   uint8_t data_len = 0;
-  bool txFlag = false;
-  bool invalidAddrFlag = false;
-  bool errFlag = false;
+  bool txFlag = BFALSE;
+  bool invalidAddrFlag = BFALSE;
+  bool errFlag = BFALSE;
   int8_t sign = 1; 
 
   /* Initialize the ESPI fw configuration */
@@ -185,7 +185,7 @@ void espi_test(UArg arg0, UArg arg1)
   HwiP_enableInterrupt(espi_cfg.intNum);
   fwHandle = (MCSPI_Handle)MCSPI_open(ESPI_INSTANCE, 0, &mcspiParams);
 
-  while (errFlag != true) {
+  while (BTRUE != errFlag) {
     /* Read ESPI Packet */
     transaction.txBuf = NULL;
     transaction.rxBuf = (uint8_t*) rxBuf;
@@ -193,8 +193,8 @@ void espi_test(UArg arg0, UArg arg1)
 
     retVal = MCSPI_transfer(fwHandle, &transaction);  
 
-    if (retVal == false) {
-      testPassed = false;
+    if (BFALSE == retVal) {
+      testPassed = BFALSE;
       goto err;
     }
 
@@ -203,104 +203,104 @@ void espi_test(UArg arg0, UArg arg1)
     transaction.rxBuf = NULL;
     transaction.count = ESPI_PACKET_MAX_SIZE;
     data_len = 0;
-    txFlag = false;
-    invalidAddrFlag = false;
+    txFlag = BFALSE;
+    invalidAddrFlag = BFALSE;
     sign = 1; 
 
     /*** PUT_IORD_SHORT ***/
-    if (rxBuf[0] == 0x40 || rxBuf[0] == 0x41 || rxBuf[0] == 0x43) {
+    if ((0x40 == rxBuf[0]) || (0x41 == rxBuf[0]) || (0x43 == rxBuf[0])) {
       data_len = rxBuf[0] - 0x3F;
 
       SPI_log("\nGOT PUT_IORD_SHORT%d\n", data_len);
 
-      txFlag = true;
+      txFlag = BTRUE;
       /* Send back dummy data if the address is good */
 
-      if (rxBuf[1] == 0xDE && rxBuf[2] == 0xAD) {	
+      if ((0xDE == rxBuf[1]) && (0xAD == rxBuf[2])) {	
 	/* Expected address */
       } else {
 	/* Invalid address */
 	SPI_log("Invalid address: %d%d", rxBuf[1],rxBuf[2]);
-	invalidAddrFlag = true;
+	invalidAddrFlag = BTRUE;
       }
 
       /*** PUT_IOWR_SHORT ***/
-    } else if (rxBuf[0] == 0x44 || rxBuf[0] == 0x45 || rxBuf[0] == 0x47) {
+    } else if ((0x44 == rxBuf[0]) || (0x45 == rxBuf[0]) || (0x47 == rxBuf[0])) {
       data_len = rxBuf[0] - 0x43;
 
       SPI_log("\nGOT PUT_IOWR_SHORT%d\n", data_len);
 
       /* Expected address */
-      if (rxBuf[1] == 0xDE && rxBuf[2] == 0xAD) {
-	if (data_len == 1 && rxBuf[3] == 0x1)
+      if ((0xDE == rxBuf[1]) && (0xAD == rxBuf[2])) {
+	if ((1 == data_len) && (0x1 == rxBuf[3]))
 	  { /* Good 1B */}
-	else if (data_len == 2 &&
-		   rxBuf[3] == 0x1 && rxBuf[4] == 0x2 )
+	else if ((2 == data_len) &&
+		       (0x1 == rxBuf[3]) && (0x2 == rxBuf[4]))
 	  { /* Good 2B */}
-	else if (data_len == 4 &&
-		   rxBuf[3] == 0x1 && rxBuf[4] == 0x2 && rxBuf[5] == 0x3 && rxBuf[6] == 0x4 )
+	else if ((4 == data_len) &&
+		   (0x1 == rxBuf[3]) && (0x2 == rxBuf[4]) && (0x3 == rxBuf[5]) && (0x4 == rxBuf[6]))
 	  { /* Good 4B */}
 	else {
 	  /* Bad */
-	  testPassed = false;
-	  errFlag = true;
+	  testPassed = BFALSE;
+	  errFlag = BTRUE;
 	}
 
 	/* Invalid address */
       } else {
 	SPI_log("Invalid address: %d%d", rxBuf[1],rxBuf[2]);
-	invalidAddrFlag = true;
+	invalidAddrFlag = BTRUE;
       }
 
       /*** PUT_MEMRD32_SHORT ***/
-    } else if (rxBuf[0] == 0x48 || rxBuf[0] == 0x49 || rxBuf[0] == 0x4B) {
+    } else if ((0x48 == rxBuf[0]) || (0x49 == rxBuf[0]) || (0x4B == rxBuf[0])) {
       data_len = rxBuf[0] - 0x47;
 
       SPI_log("\nGOT PUT_MEMRD32_SHORT%d\n", data_len);
 
-      txFlag = true;
+      txFlag = BTRUE;
       /* Send back dummy data if the address is good */
-      if (rxBuf[1] == 0x0D && rxBuf[2] == 0x0E && rxBuf[3] == 0x0A && rxBuf[4] == 0x0D) {
+      if ((0x0D == rxBuf[1]) && (0x0E == rxBuf[2]) && (0x0A == rxBuf[3]) && (0x0D == rxBuf[4])) {
 	/* Expected address */
       } else {
 	/* Invalid address */
 	SPI_log("Invalid address: %d%d%d%d", rxBuf[1],rxBuf[2],rxBuf[3],rxBuf[4]);
-	invalidAddrFlag = true;
+	invalidAddrFlag = BTRUE;
       }
 
       /*** PUT_MEMWR32_SHORT ***/
-    } else if (rxBuf[0] == 0x4C || rxBuf[0] == 0x4D || rxBuf[0] == 0x4F) {
+    } else if ((0x4C == rxBuf[0]) || (0x4D == rxBuf[0]) || (0x4F == rxBuf[0])) {
       data_len = rxBuf[0] - 0x4B;
 
       SPI_log("\nGOT PUT_MEMWR32_SHORT%d\n", data_len);
 
-      if (rxBuf[1] == 0x0D && rxBuf[2] == 0x0E && rxBuf[3] == 0x0A && rxBuf[4] == 0x0D) {
+      if ((0x0D == rxBuf[1]) && (0x0E == rxBuf[2]) && (0x0A == rxBuf[3]) && (0x0D == rxBuf[4])) {
 	/* Expected address */
-	if (data_len == 1 && rxBuf[5] == 0x1) {
+	if ((1 == data_len) && (0x1 == rxBuf[5])) {
 	  /* Good */
-	} else if (data_len == 2 &&
-		   rxBuf[5] == 0x1 &&
-		   rxBuf[6] == 0x2 ) {
+	} else if ((2 == data_len) &&
+		   (0x1 == rxBuf[5]) &&
+		   (0x2 == rxBuf[6])) {
 	  /* Good */
-	} else if (data_len == 4 &&
-		   rxBuf[5] == 0x1 &&
-		   rxBuf[6] == 0x2 &&
-		   rxBuf[7] == 0x3 &&
-		   rxBuf[8] == 0x4 ){
+	} else if ((4 == data_len) &&
+		   (0x1 == rxBuf[5]) &&
+		   (0x2 == rxBuf[6]) &&
+		   (0x3 == rxBuf[7]) &&
+		   (0x4 == rxBuf[8])) {
 	  /* Good */
 	} else {
 	  /* Bad */
-	  testPassed = false;
-	  errFlag = true;
+	  testPassed = BFALSE;
+	  errFlag = BTRUE;
 	}
       } else {
 	/* Invalid address */
 	SPI_log("Invalid address: %d%d%d%d", rxBuf[1],rxBuf[2],rxBuf[3],rxBuf[4]);
-	invalidAddrFlag = true;
+	invalidAddrFlag = BTRUE;
       }
     } else {
       SPI_log("\nGOT unexpected command: 0x%x\n", rxBuf[0]);
-      errFlag = true;
+      errFlag = BTRUE;
     }
 
     /* Prepare TX */
@@ -316,7 +316,7 @@ void espi_test(UArg arg0, UArg arg1)
 	sign = -1;
       }
 
-      if (data_len == 1) {
+      if (1 == data_len) {
 	txBuf[3] = rxBuf[0] + 1 * sign;
 	SPI_log("TX: %d\n", txBuf[0]);
       } else if (data_len == 2) {
@@ -336,9 +336,9 @@ void espi_test(UArg arg0, UArg arg1)
       /* Put response in TX queue */
       retVal = MCSPI_transfer(fwHandle, &transaction);  
       
-      if (retVal == false) {
-	testPassed = false;
-	errFlag = true;
+      if (BFALSE == retVal) {
+	testPassed = BFALSE;
+	errFlag = BTRUE;
       }
     } else { /* is a write */
       
@@ -350,7 +350,7 @@ void espi_test(UArg arg0, UArg arg1)
 
 
  err:
-  if(true == testPassed)
+  if(BTRUE == testPassed)
     {
       SPI_log("\n All tests have passed. \n");
     }
@@ -359,7 +359,7 @@ void espi_test(UArg arg0, UArg arg1)
       SPI_log("\n Some tests have failed. \n");
     }
 	
-  while(1);
+  while(BTRUE);
 }
 
 /*
@@ -377,7 +377,7 @@ int main(void)
   Task_Params_init(&taskParams);
   taskParams.instance->name = "espiTest1";
   task = Task_create(espi_test, &taskParams, &eb);
-  if (task == NULL) {
+  if (NULL == task) {
     System_printf("Task_create() failed!\n");
     BIOS_exit(0);
   }

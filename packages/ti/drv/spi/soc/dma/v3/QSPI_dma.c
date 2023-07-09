@@ -77,12 +77,12 @@ int32_t QSPI_dmaConfig(SPI_Handle handle)
     hwAttrs = (QSPI_HwAttrs*)handle->hwAttrs;
 
     /* Check EDMA handle is not NULL */
-    if (hwAttrs->edmaHandle == NULL)
+    if (NULL == hwAttrs->edmaHandle)
     {
         status = SPI_STATUS_ERROR;
     }
 
-    if ( status == SPI_STATUS_SUCCESS)
+    if (SPI_STATUS_SUCCESS == status)
     {
         edmaStatus = QSPI_edmaChannelConfig((EDMA_Handle)hwAttrs->edmaHandle,
                                             hwAttrs->edmaChId,
@@ -185,7 +185,7 @@ static void QSPI_dmaIsrHandler (uintptr_t appData, uint8_t tcc)
                         tcc,
                         EDMA3_CHANNEL_TYPE_DMA);
 
-    if (object->reminderBytes == 0)
+    if (0 == object->reminderBytes)
     {
         object->transaction->status = SPI_TRANSFER_COMPLETED;
         /* Call the transfer completion callback function */
@@ -217,10 +217,10 @@ static void QSPI_edmaParamInit(EDMA_paramSetConfig_t *param, uint8_t tcc, uint8_
 
     param->transferCompletionCode = tcc;
 
-    param->isEarlyCompletion = false;
-    param->isFinalTransferInterruptEnabled = false;
-    param->isIntermediateChainingEnabled = false;
-    param->isStaticSet = false;
+    param->isEarlyCompletion = BFALSE;
+    param->isFinalTransferInterruptEnabled = BFALSE;
+    param->isIntermediateChainingEnabled = BFALSE;
+    param->isStaticSet = BFALSE;
     param->linkAddress = EDMA_NULL_LINK_ADDRESS;
 
     param->sourceAddress = 0;
@@ -254,12 +254,12 @@ static int32_t QSPI_edmaChannelConfig(EDMA_Handle hEdma,
 
     QSPI_edmaParamInit(&chConfig.paramSetConfig, chId, xferType);
 
-    chConfig.paramSetConfig.isFinalTransferInterruptEnabled = false;
+    chConfig.paramSetConfig.isFinalTransferInterruptEnabled = BFALSE;
 
     chConfig.transferCompletionCallbackFxn    = NULL;
     chConfig.transferCompletionCallbackFxnArg = NULL;
 
-    status = EDMA_configChannel(hEdma, &chConfig,false);
+    status = EDMA_configChannel(hEdma, &chConfig, BFALSE);
 
     return status;
 }
@@ -325,7 +325,7 @@ static int32_t QSPI_dmaMemcpy(SPI_Handle     handle,
     paramSet.paramSetConfig.bCountReload = paramSet.paramSetConfig.bCount;
 
     /* EDMA3_DRV_OPT_FIELD_TCINTEN */
-    paramSet.paramSetConfig.isFinalTransferInterruptEnabled = true;
+    paramSet.paramSetConfig.isFinalTransferInterruptEnabled = BTRUE;
 
     paramSet.transferCompletionCallbackFxn = QSPI_dmaIsrHandler;
     paramSet.transferCompletionCallbackFxnArg = (uintptr_t)handle;

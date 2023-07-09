@@ -191,12 +191,12 @@ static void MCSPI_udmaTrpdInit(Udma_ChHandle  chHandle,
     CSL_UdmapTR1 *pTr = (CSL_UdmapTR1 *)(pTrpdMem + sizeof(CSL_UdmapTR15));
     uint32_t *pTrResp =
                 (uint32_t *) (pTrpdMem + (sizeof(CSL_UdmapTR15) *
-                                         (2u)));
+                                         (2U)));
 
     /* Setup descriptor */
     CSL_udmapCppi5SetDescType(pTrpd, descType);
 
-    CSL_udmapCppi5TrSetReload(pTrpd, FALSE, 0U);
+    CSL_udmapCppi5TrSetReload(pTrpd, UFALSE, 0U);
     /* Since each TRPD will always have only one TR */
     CSL_udmapCppi5SetPktLen(pTrpd, descType, 1U);
     /* Flow ID and Packet ID */
@@ -237,8 +237,8 @@ static void MCSPI_udmaTrpdInit(Udma_ChHandle  chHandle,
     pTr->flags = 0U;
     pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_TYPE,
                             CSL_UDMAP_TR_FLAGS_TYPE_2D_DATA_MOVE);
-    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_STATIC, FALSE);
-    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_EOL, (uint32_t)1u);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_STATIC, UFALSE);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_EOL, UTRUE);
     pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_EVENT_SIZE,
         CSL_UDMAP_TR_FLAGS_EVENT_SIZE_COMPLETION);
 
@@ -309,7 +309,7 @@ static void MCSPI_udmaTrpdInit(Udma_ChHandle  chHandle,
     /* Clear TR response memory */
     *pTrResp = 0xFFFFFFFFU;
 
-    if(MCSPI_dmaIsCacheCoherent() != TRUE)
+    if(UTRUE != MCSPI_dmaIsCacheCoherent())
     {
         CacheP_wbInv((void *)pTrpdMem,
             (int32_t)(sizeof(CSL_UdmapTR15) * 2U) + 4u);
@@ -329,7 +329,7 @@ static void MCSPI_udmaHpdInit(Udma_ChHandle  chHandle,
 
     /* Setup descriptor */
     CSL_udmapCppi5SetDescType(pHpd, descType);
-    CSL_udmapCppi5SetEpiDataPresent(pHpd, (bool)false);
+    CSL_udmapCppi5SetEpiDataPresent(pHpd, BFALSE);
     CSL_udmapCppi5SetPsDataLoc(pHpd, 0U);
     CSL_udmapCppi5SetPsDataLen(pHpd, 0U);
     CSL_udmapCppi5SetPktLen(pHpd, descType, length);
@@ -350,7 +350,7 @@ static void MCSPI_udmaHpdInit(Udma_ChHandle  chHandle,
     CSL_udmapCppi5SetOrgBufferAddr(pHpd, (uint64_t) bufPtr);
     CSL_udmapCppi5SetOrgBufferLen(pHpd, length);
 
-    if(MCSPI_dmaIsCacheCoherent() != TRUE)
+    if(UTRUE != MCSPI_dmaIsCacheCoherent())
     {
         CacheP_wbInv((void *)pHpd, (int32_t)sizeof(CSL_UdmapCppi5HMPD));
     }
@@ -538,8 +538,8 @@ void MCSPI_dmaTransfer(MCSPI_Handle     mcHandle,
     /* Enable the channel */
     McSPIChannelEnable((uint32_t)(hwAttrs->baseAddr), chNum);
 
-    if ((SPI_MASTER == chObj->spiParams.mode) &&
-        (hwAttrs->chMode == MCSPI_SINGLE_CH))
+    if ((SPI_MASTER      == chObj->spiParams.mode) &&
+        (MCSPI_SINGLE_CH == hwAttrs->chMode))
     {
         /* Assert chip select signal */
         McSPICSAssert((uint32_t)(hwAttrs->baseAddr), chNum);
@@ -551,7 +551,7 @@ void MCSPI_dmaTransfer(MCSPI_Handle     mcHandle,
         (void)MCSPI_dmaRx(mcHandle, transaction->rxDmaBuf, transBytes);
         (void)MCSPI_dmaTx(mcHandle, transaction->txDmaBuf, transBytes);
     }
-    else if (chnCfg->trMode == MCSPI_TX_ONLY_MODE)
+    else if (MCSPI_TX_ONLY_MODE == chnCfg->trMode)
     {
         /* TX_ONLY Mode */
         (void)MCSPI_dmaTx(mcHandle, transaction->txDmaBuf, transBytes);
@@ -602,7 +602,7 @@ static void MCSPI_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
     SPI_dmaInfo         *pDmaInfo;
     Udma_ChHandle        txChHandle;
 
-    if(appData != NULL)
+    if(NULL != appData)
     {
         /* Get the pointer to the object and hwAttrs */
         mcHandle = (MCSPI_Handle)appData;
@@ -616,9 +616,9 @@ static void MCSPI_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
         txChHandle = (Udma_ChHandle)(pDmaInfo->txChHandle);
 
         /* Update the transaction status and word count transfered */
-        if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
+        if (UDMA_EVENT_TYPE_DMA_COMPLETION == eventType)
         {
-            if(MCSPI_dmaIsCacheCoherent() != TRUE)
+            if(UTRUE != MCSPI_dmaIsCacheCoherent())
             {
                 CacheP_Inv((const void *)pDmaInfo->cqTxRingMem, (int32_t)(sizeof(void *)));
             }
@@ -642,7 +642,7 @@ static void MCSPI_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
         }
 
         if ((MCSPI_RX_EDMA_CALLBACK_OCCURED == chObj->dmaCbCheck) ||
-            (chnCfg->trMode == MCSPI_TX_ONLY_MODE))
+            (MCSPI_TX_ONLY_MODE == chnCfg->trMode))
         {
             chObj->dmaCbCheck = 0x0;
 
@@ -655,7 +655,7 @@ static void MCSPI_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
         }
         else
         {
-            if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
+            if (UDMA_EVENT_TYPE_DMA_COMPLETION == eventType)
             {
                 chObj->dmaCbCheck = MCSPI_TX_EDMA_CALLBACK_OCCURED;
             }
@@ -680,7 +680,7 @@ static void MCSPI_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
     int32_t              status;
     Udma_ChHandle        rxChHandle;
 
-    if(appData != NULL)
+    if(NULL != appData)
     {
         /* Get the pointer to the object and hwAttrs */
         mcHandle = (MCSPI_Handle)appData;
@@ -693,9 +693,9 @@ static void MCSPI_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
         rxChHandle = (Udma_ChHandle)(hwAttrs->chnCfg[chNum].dmaInfo->rxChHandle);
 
         /* Update the transaction status and word count transfered */
-        if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
+        if (UDMA_EVENT_TYPE_DMA_COMPLETION == eventType)
         {
-            if(MCSPI_dmaIsCacheCoherent() != TRUE)
+            if(UTRUE != MCSPI_dmaIsCacheCoherent())
             {
                 CacheP_Inv((const void *)hwAttrs->chnCfg[chNum].dmaInfo->cqRxRingMem, (int32_t)(sizeof(void *)));
             }
@@ -719,7 +719,7 @@ static void MCSPI_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
         }
 
         if ((MCSPI_TX_EDMA_CALLBACK_OCCURED == chObj->dmaCbCheck) ||
-            (chnCfg->trMode == MCSPI_RX_ONLY_MODE))
+            (MCSPI_RX_ONLY_MODE == chnCfg->trMode))
         {
             /* Now Both Tx and Rx EDMA Callbacks have happened */
             chObj->dmaCbCheck = 0x0;
@@ -733,7 +733,7 @@ static void MCSPI_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
         }
         else
         {
-            if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
+            if (UDMA_EVENT_TYPE_DMA_COMPLETION == eventType)
             {
                 chObj->dmaCbCheck = MCSPI_RX_EDMA_CALLBACK_OCCURED;
             }
@@ -771,8 +771,8 @@ static void MCSPI_dmaCompleteIOCallback(MCSPI_Handle mcHandle)
                      (uint32_t)MCSPI_DMA_TX_EVENT),
                      chNum);
 
-    if ((SPI_MASTER == chObj->spiParams.mode) &&
-        (hwAttrs->chMode == MCSPI_SINGLE_CH))
+    if ((SPI_MASTER      == chObj->spiParams.mode) &&
+        (MCSPI_SINGLE_CH == hwAttrs->chMode))
     {
         /* Deassert chip select signal */
         McSPICSDeAssert(hwAttrs->baseAddr, chNum);
@@ -788,9 +788,9 @@ static inline uint32_t MCSPI_dmaIsCacheCoherent(void)
     uint32_t isCacheCoherent;
 
 #if (!defined (__aarch64__) || defined(SOC_AM64X))
-    isCacheCoherent = FALSE;
+    isCacheCoherent = UFALSE;
 #else
-    isCacheCoherent = TRUE;
+    isCacheCoherent = UTRUE;
 #endif
 
     return (isCacheCoherent);

@@ -108,7 +108,7 @@ void Board_initSPI(void)
 
     /* Update the SPI functional clock based on CPU clock*/
     Board_getSoCInfo(&socInfo);
-    if(socInfo.sysClock != BOARD_SYS_CLK_DEFAULT)
+    if(BOARD_SYS_CLK_DEFAULT != socInfo.sysClock)
     {
         spi_cfg.inputClkFreq = socInfo.sysClock/SPI_MODULE_CLOCK_DIVIDER;
     }
@@ -142,7 +142,7 @@ void spi_test(UArg arg0, UArg arg1)
     Board_FlashInfo   *flashInfo;
     uint32_t           blockNum, pageNum;
     SPI_Params         spiParams;  /* SPI params structure */
-    bool               testPassed = true;
+    bool               testPassed = BTRUE;
 
 #ifdef BARE_METAL
     /* Call board init functions */
@@ -172,7 +172,7 @@ void spi_test(UArg arg0, UArg arg1)
                                    &blockNum, &pageNum))
     {
         SPI_log("\n Board_flashOffsetToBlkPage failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
@@ -187,7 +187,7 @@ void spi_test(UArg arg0, UArg arg1)
     if (Board_flashEraseBlk(boardHandle, blockNum))
     {
         SPI_log("\n Board_flashEraseBlk failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
@@ -196,7 +196,7 @@ void spi_test(UArg arg0, UArg arg1)
                          TEST_TX_LENGTH, NULL))
     {
         SPI_log("\n Board_flashWrite failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 #endif
@@ -206,7 +206,7 @@ void spi_test(UArg arg0, UArg arg1)
                         TEST_TX_LENGTH, NULL))
     {
         SPI_log("\n Board_flashRead failed. \n");
-        testPassed = false;
+        testPassed = BFALSE;
         goto err;
     }
 
@@ -216,16 +216,16 @@ void spi_test(UArg arg0, UArg arg1)
 #endif
 
     /* Verify Data */
-    if (VerifyData(txBuf, rxBuf, transferLength) == false)
+    if (BFALSE == VerifyData(txBuf, rxBuf, transferLength))
     {
         SPI_log("\n Data mismatch. \n");
-        testPassed = false;
+        testPassed = BFALSE;
     }
 
     Board_flashClose(boardHandle);
 
 err:
-    if(true == testPassed)
+    if(BTRUE == testPassed)
     {
         SPI_log("\n All tests have passed. \n");
     }
@@ -260,22 +260,22 @@ bool VerifyData(uint8_t *expData,
                 uint32_t length)
 {
     uint32_t idx = 0;
-    uint32_t match = 1;
-    bool retVal = false;
+    uint32_t match = UTRUE;
+    bool retVal = BFALSE;
 
-    for(idx = 0; ((idx < length) && (match != 0)); idx++)
+    for(idx = 0; ((idx < length) && (UFALSE != match)); idx++)
     {
         if(*expData != *rxData)
         {
-            match = 0;
+            match = UFALSE;
         }
         expData++;
         rxData++;
     }
 
-    if(match == 1)
+    if(UTRUE == match)
     {
-        retVal = true;
+        retVal = BTRUE;
     }
 
     return retVal;

@@ -92,19 +92,19 @@ void Cache_writeBack_Invalidate(void *ptr, int32_t count);
 void spi_test(UArg arg0, UArg arg1)
 {
     SPI_Params spiParams;                /* SPI params structure */
-    W25QFL_Handle flashHandle;            /* Flash handle */
-    bool retVal = false;                 /* return value */
+    W25QFL_Handle flashHandle;           /* Flash handle */
+    bool retVal = BFALSE;                /* return value */
     volatile uint32_t count = 0x6FFFFFU;
     SPI_HWAttrs spi_cfg;
 
     /* Get the default SPI init configurations */
     SPI_socGetInitCfg(MCSPI_DOMAIN, MCSPI_INSTANCE - 1, &spi_cfg);
     spi_cfg.chNum = 0;
-    spi_cfg.enableIntr = false;
+    spi_cfg.enableIntr = BFALSE;
     spi_cfg.rxTrigLvl = 1;
     spi_cfg.txTrigLvl = 1;
     spi_cfg.edmaHandle = MCSPIApp_edmaInit();
-    spi_cfg.dmaMode = true;
+    spi_cfg.dmaMode = BTRUE;
 
     /* Set the SPI init configurations */
     SPI_socSetInitCfg(MCSPI_DOMAIN, MCSPI_INSTANCE - 1, &spi_cfg);
@@ -126,7 +126,7 @@ void spi_test(UArg arg0, UArg arg1)
      * Wait until write enable command is successfully written to
      * flash.
      */
-    while(FALSE == W25QFL_IsWriteSuccess(flashHandle));
+    while(UFALSE == W25QFL_IsWriteSuccess(flashHandle));
 
     /* Erase a sector of flash.*/
     W25QFL_SectorErase(flashHandle);
@@ -135,7 +135,7 @@ void spi_test(UArg arg0, UArg arg1)
     W25QFL_WriteEnable(flashHandle);
 
     /* Wait until write enable command is successfully written to flash.*/
-    while(FALSE == W25QFL_IsWriteSuccess(flashHandle));
+    while(UFALSE == W25QFL_IsWriteSuccess(flashHandle));
 
     /* Write data of 1 page size to flash.*/
     /* Currently the data is programmed for 256 bytes
@@ -157,7 +157,7 @@ void spi_test(UArg arg0, UArg arg1)
 
     W25QFL_close(flashHandle);
 
-    if(true == retVal)
+    if(BTRUE == retVal)
     {
         SPI_log("\n All tests have passed. \n");
     }
@@ -166,7 +166,7 @@ void spi_test(UArg arg0, UArg arg1)
         SPI_log("\n Some tests have failed. \n");
     }
 
-    while(1);
+    while(BTRUE);
 }
 
 /*
@@ -183,7 +183,7 @@ int main(void)
 
     Error_init(&eb);
     task = Task_create(spi_test, NULL, &eb);
-    if (task == NULL) {
+    if (NULL == task) {
         System_printf("Task_create() failed!\n");
         BIOS_exit(0);
     }
@@ -211,7 +211,7 @@ static EDMA3_RM_Handle MCSPIApp_edmaInit(void)
     uint32_t edma3Id = 0;
 
     gEdmaHandle = (EDMA3_RM_Handle)edma3init(edma3Id, &edmaResult);
-    if (edmaResult != EDMA3_DRV_SOK)
+    if (EDMA3_DRV_SOK != edmaResult)
     {
         /* Report EDMA Error */
         System_printf("\nEDMA driver initialization FAIL\n");
@@ -229,5 +229,5 @@ static EDMA3_RM_Handle MCSPIApp_edmaInit(void)
  */
 void Cache_writeBack_Invalidate(void *ptr, int32_t count)
 {
-    Cache_wbInv((Ptr) ptr, count, Cache_Type_ALL, (Bool) TRUE);
+    Cache_wbInv((Ptr) ptr, count, Cache_Type_ALL, UTRUE);
 }

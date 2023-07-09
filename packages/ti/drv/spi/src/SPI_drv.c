@@ -99,9 +99,9 @@ const OSPI_Params OSPI_defaultParams = {
  */
 void SPI_close(SPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Acquire the the SPI driver semaphore */
             (void)SPI_osalPendLock(spiMutex, SemaphoreP_WAIT_FOREVER);
@@ -109,7 +109,7 @@ void SPI_close(SPI_Handle handle)
 
         handle->fxnTablePtr->closeFxn(handle);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Release the the SPI driver semaphorel */
             (void)SPI_osalPostLock(spiMutex);
@@ -124,7 +124,7 @@ int32_t SPI_control(SPI_Handle handle, uint32_t cmd, void *arg)
 {
     int32_t retVal = SPI_STATUS_ERROR;
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         retVal = handle->fxnTablePtr->controlFxn(handle, cmd, arg);
     }
@@ -139,7 +139,7 @@ void SPI_init(void)
 {
     SemaphoreP_Params     semParams;
 
-    if (SPI_count == (-((int32_t)1))) {
+    if ((-((int32_t)1)) == SPI_count) {
         /* Call each driver's init function */
         for (SPI_domain = 0; SPI_domain < (int32_t)SPI_MAX_DOMAIN_CNT; SPI_domain++) {
             for (SPI_count = 0; (SPI_count < (int32_t)SPI_MAX_CONFIG_CNT) && (SPI_config[SPI_domain][SPI_count].fxnTablePtr != NULL); SPI_count++) {
@@ -152,7 +152,7 @@ void SPI_init(void)
      * Construct thread safe handles for SPI driver level
      * Semaphore to provide exclusive access to the SPI APIs
      */
-    if (spiMutex == NULL)
+    if (NULL == spiMutex)
     {
         SPI_osalSemParamsInit(&semParams);
         semParams.mode = SemaphoreP_Mode_BINARY;
@@ -167,12 +167,12 @@ SPI_Handle SPI_open(uint32_t domain, uint32_t index, SPI_Params *params)
 {
     SPI_Handle handle = NULL;
 
-    if ((SPI_Handle)&(SPI_config[domain][index]) != NULL)
+    if (NULL != (SPI_Handle)&(SPI_config[domain][index]))
     {
         /* Get handle for this driver instance */
         handle = (SPI_Handle)&(SPI_config[domain][index]);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Acquire the the SPI driver semaphore */
             (void)SPI_osalPendLock(spiMutex, SemaphoreP_WAIT_FOREVER);
@@ -180,7 +180,7 @@ SPI_Handle SPI_open(uint32_t domain, uint32_t index, SPI_Params *params)
 
         handle = handle->fxnTablePtr->openFxn(handle, params);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Release the the SPI driver semaphorel */
             (void)SPI_osalPostLock(spiMutex);
@@ -195,9 +195,9 @@ SPI_Handle SPI_open(uint32_t domain, uint32_t index, SPI_Params *params)
  */
 void OSPI_close(OSPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Acquire the the SPI driver semaphore */
             (void)SPI_osalPendLock(spiMutex, SemaphoreP_WAIT_FOREVER);
@@ -205,7 +205,7 @@ void OSPI_close(OSPI_Handle handle)
 
         handle->fxnTablePtr->closeFxn(handle);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Release the the SPI driver semaphorel */
             (void)SPI_osalPostLock(spiMutex);
@@ -220,7 +220,7 @@ int32_t OSPI_control(OSPI_Handle handle, uint32_t cmd, void *arg)
 {
     int32_t retVal = SPI_STATUS_ERROR;
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         retVal = handle->fxnTablePtr->controlFxn(handle, cmd, arg);
     }
@@ -235,7 +235,7 @@ void OSPI_init(void)
 {
     SemaphoreP_Params     semParams;
 
-    if (OSPI_count == (-((int32_t)1))) {
+    if ((-((int32_t)1)) == OSPI_count) {
         /* Call each driver's init function */
         for (OSPI_domain = 0; OSPI_domain < (int32_t)OSPI_MAX_DOMAIN_CNT; OSPI_domain++) {
             for (OSPI_count = 0; (OSPI_count < (int32_t)OSPI_MAX_CONFIG_CNT) && (OSPI_config[OSPI_domain][OSPI_count].fxnTablePtr != NULL); OSPI_count++) {
@@ -248,7 +248,7 @@ void OSPI_init(void)
      * Construct thread safe handles for SPI driver level
      * Semaphore to provide exclusive access to the SPI APIs
      */
-    if (spiMutex == NULL)
+    if (NULL == spiMutex)
     {
         SPI_osalSemParamsInit(&semParams);
         semParams.mode = SemaphoreP_Mode_BINARY;
@@ -263,12 +263,12 @@ OSPI_Handle OSPI_open(uint32_t domain, uint32_t index, OSPI_Params *params)
 {
     OSPI_Handle handle = NULL;
 
-    if ((OSPI_Handle)&(OSPI_config[domain][index]) != NULL)
+    if (NULL != (OSPI_Handle)&(OSPI_config[domain][index]))
     {
         /* Get handle for this driver instance */
         handle = (OSPI_Handle)&(OSPI_config[domain][index]);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Acquire the the SPI driver semaphore */
             (void)SPI_osalPendLock(spiMutex, SemaphoreP_WAIT_FOREVER);
@@ -276,7 +276,7 @@ OSPI_Handle OSPI_open(uint32_t domain, uint32_t index, OSPI_Params *params)
 
         handle = handle->fxnTablePtr->openFxn(handle, params);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Release the the SPI driver semaphorel */
             (void)SPI_osalPostLock(spiMutex);
@@ -292,7 +292,7 @@ OSPI_Handle OSPI_open(uint32_t domain, uint32_t index, OSPI_Params *params)
  */
 void OSPI_Params_init(OSPI_Params *params)
 {
-    if (params != NULL)
+    if (NULL != params)
     {
         *params = OSPI_defaultParams;
     }
@@ -303,7 +303,7 @@ void OSPI_Params_init(OSPI_Params *params)
  */
 void OSPI_serviceISR(OSPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
         handle->fxnTablePtr->serviceISRFxn(handle);
     }
@@ -314,9 +314,9 @@ void OSPI_serviceISR(OSPI_Handle handle)
  */
 bool OSPI_transfer(OSPI_Handle handle, OSPI_Transaction *transaction)
 {
-    bool retVal = (bool)false;
+    bool retVal = BFALSE;
 
-    if ((handle != NULL) && (transaction != NULL))
+    if ((NULL != handle) && (NULL != transaction))
     {
         retVal = handle->fxnTablePtr->transferFxn(handle, transaction);
     }
@@ -329,7 +329,7 @@ bool OSPI_transfer(OSPI_Handle handle, OSPI_Transaction *transaction)
  */
 void OSPI_transferCancel(OSPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
         handle->fxnTablePtr->transferCancelFxn(handle);
     }
@@ -340,7 +340,7 @@ void OSPI_transferCancel(OSPI_Handle handle)
  */
 void SPI_Params_init(SPI_Params *params)
 {
-    if (params != NULL)
+    if (NULL != params)
     {
         *params = SPI_defaultParams;
     }
@@ -351,7 +351,7 @@ void SPI_Params_init(SPI_Params *params)
  */
 void SPI_serviceISR(SPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
         handle->fxnTablePtr->serviceISRFxn(handle);
     }
@@ -362,9 +362,9 @@ void SPI_serviceISR(SPI_Handle handle)
  */
 bool SPI_transfer(SPI_Handle handle, SPI_Transaction *transaction)
 {
-    bool retVal = (bool)false;
+    bool retVal = BFALSE;
 
-    if ((handle != NULL) && (transaction != NULL))
+    if ((NULL != handle) && (NULL != transaction))
     {
         retVal = handle->fxnTablePtr->transferFxn(handle, transaction);
     }
@@ -377,7 +377,7 @@ bool SPI_transfer(SPI_Handle handle, SPI_Transaction *transaction)
  */
 void SPI_transferCancel(SPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
         handle->fxnTablePtr->transferCancelFxn(handle);
     }
@@ -388,9 +388,9 @@ void SPI_transferCancel(SPI_Handle handle)
  */
 void MCSPI_close(MCSPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Acquire the the SPI driver semaphore */
             (void)SPI_osalPendLock(spiMutex, SemaphoreP_WAIT_FOREVER);
@@ -398,7 +398,7 @@ void MCSPI_close(MCSPI_Handle handle)
 
         handle->fxnTablePtr->closeFxn(handle);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Release the the SPI driver semaphorel */
             (void)SPI_osalPostLock(spiMutex);
@@ -413,7 +413,7 @@ int32_t MCSPI_control(MCSPI_Handle handle, uint32_t cmd, void *arg)
 {
     int32_t retVal = SPI_STATUS_ERROR;
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         retVal = handle->fxnTablePtr->controlFxn(handle, cmd, arg);
     }
@@ -436,12 +436,12 @@ MCSPI_Handle MCSPI_open(uint32_t domain, uint32_t index, uint32_t channel, MCSPI
 {
     MCSPI_Handle handle = NULL;
 
-    if ((MCSPI_Handle)&(MCSPI_config[domain][index][channel]) != NULL)
+    if (NULL != (MCSPI_Handle)&(MCSPI_config[domain][index][channel]))
     {
         /* Get handle for this driver instance */
         handle = (MCSPI_Handle)&(MCSPI_config[domain][index][channel]);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Acquire the the SPI driver semaphore */
             (void)SPI_osalPendLock(spiMutex, SemaphoreP_WAIT_FOREVER);
@@ -449,7 +449,7 @@ MCSPI_Handle MCSPI_open(uint32_t domain, uint32_t index, uint32_t channel, MCSPI
 
         handle = handle->fxnTablePtr->openFxn(handle, params);
 
-        if (spiMutex != NULL)
+        if (NULL != spiMutex)
         {
             /* Release the the SPI driver semaphorel */
             (void)SPI_osalPostLock(spiMutex);
@@ -464,7 +464,7 @@ MCSPI_Handle MCSPI_open(uint32_t domain, uint32_t index, uint32_t channel, MCSPI
  */
 void MCSPI_Params_init(MCSPI_Params *params)
 {
-    if (params != NULL)
+    if (NULL != params)
     {
         *params = MCSPI_defaultParams;
     }
@@ -475,9 +475,9 @@ void MCSPI_Params_init(MCSPI_Params *params)
  */
 bool MCSPI_transfer(MCSPI_Handle handle, SPI_Transaction *transaction)
 {
-    bool retVal = (bool)false;
+    bool retVal = BFALSE;
 
-    if ((handle != NULL) && (transaction != NULL))
+    if ((NULL != handle) && (NULL != transaction))
     {
         retVal = handle->fxnTablePtr->transferFxn(handle, transaction);
     }
@@ -490,7 +490,7 @@ bool MCSPI_transfer(MCSPI_Handle handle, SPI_Transaction *transaction)
  */
 void MCSPI_transferCancel(MCSPI_Handle handle)
 {
-    if (handle != NULL)
+    if (NULL != handle)
     {
         handle->fxnTablePtr->transferCancelFxn(handle);
     }
