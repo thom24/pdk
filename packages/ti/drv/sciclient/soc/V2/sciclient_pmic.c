@@ -41,7 +41,7 @@
 
 #include <ti/board/src/j7200_evm/include/board_power.h>
 
-int32_t Sciclient_pmicShutdown()
+int32_t Sciclient_pmicShutdown(void)
 {
     int32_t ret = CSL_PASS;
     Board_STATUS status = -1;

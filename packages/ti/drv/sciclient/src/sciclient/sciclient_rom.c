@@ -180,7 +180,7 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
     return status;
 }
 
-int32_t Sciclient_bootNotification()
+int32_t Sciclient_bootNotification(void)
 {
     int32_t  status   = CSL_PASS;
     uint32_t rxThread = SCICLIENT_ROM_R5_RX_NORMAL_THREAD;
@@ -229,7 +229,7 @@ int32_t Sciclient_bootNotification()
 #if defined (CONFIG_MSG_M4_ROM_USE_ALTERNATE_SPROXY)
         /* Switch pointer back to regular sproxy cfg struct used after Boot Notification msg received */
         pSciclient_secProxyCfg = &gSciclient_secProxyCfg;
-        
+
 #endif
 
     return status;

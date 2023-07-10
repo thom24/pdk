@@ -755,19 +755,19 @@ int32_t Sciclient_boardCfgParseHeader (
  *
  *  \return status    Function return status.
  */
-int32_t Sciclient_prepareSleep();
+int32_t Sciclient_prepareSleep(void);
 
 /** \brief Sciclient Enter Sleep Function
  *
  *  \return status    Function return status.
  */
-int32_t Sciclient_enterSleep();
+int32_t Sciclient_enterSleep(void);
 
 /** \brief Sciclient PMIC shutdown function.
  *
  *  \return status    Function return status.
  */
-int32_t Sciclient_pmicShutdown();
+int32_t Sciclient_pmicShutdown(void);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

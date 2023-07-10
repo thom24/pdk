@@ -241,7 +241,7 @@ int32_t Sciclient_pmModuleClkRequest(uint32_t moduleId,
     if(clockId > (uint32_t)(255U))
     {
         request.clk = (uint8_t)(255U);
-        request.clk32 = clockId;    
+        request.clk32 = clockId;
     }
     else
     {

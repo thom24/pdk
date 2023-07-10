@@ -38,15 +38,16 @@
  */
 
 #include <stdint.h>
+#include <ti/drv/sciclient/sciclient.h>
 
-int32_t Sciclient_prepareSleep()
+int32_t Sciclient_prepareSleep(void)
 {
     int32_t ret = -1;
     /* Low power sequence will be implemented by Bootlin */
     return ret;
 }
 
-int32_t Sciclient_enterSleep()
+int32_t Sciclient_enterSleep(void)
 {
     int32_t ret = -1;
     /* Low power sequence will be implemented by Bootlin */

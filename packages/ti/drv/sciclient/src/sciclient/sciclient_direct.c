@@ -306,7 +306,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 hdr = (struct tisci_header *) &message;
                 pRespPrm->flags = hdr->flags;
 
-                if ((ret == CSL_PASS) && 
+                if ((ret == CSL_PASS) &&
                         ((pRespPrm->flags & TISCI_MSG_FLAG_ACK) == TISCI_MSG_FLAG_ACK))
                 {
                     /*
@@ -326,7 +326,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
 
                 /* Send to TIFS */
                 ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
-                if ((ret == CSL_PASS) && 
+                if ((ret == CSL_PASS) &&
                         ((pRespPrm->flags & TISCI_MSG_FLAG_ACK) == TISCI_MSG_FLAG_ACK))
                 {
                     /*
@@ -342,7 +342,7 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                      */
                     ret = boardcfg_RmAdjustReq((uint32_t *)pReqPrm->pReqPayload, adjSize);
                 }
-                if ((ret == CSL_PASS) && 
+                if ((ret == CSL_PASS) &&
                         ((pRespPrm->flags & TISCI_MSG_FLAG_ACK) == TISCI_MSG_FLAG_ACK))
                 {
 
@@ -367,28 +367,28 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
             case TISCI_MSG_RM_PSIL_WRITE:
             {
                 /*
-                 * These RM messages are entirely processed on DMSC. When 
+                 * These RM messages are entirely processed on DMSC. When
                  * called on mcu1_0 directly, these are treated as native calls
-                 * to DMSC. If these requests are made from other CPUs, the 
+                 * to DMSC. If these requests are made from other CPUs, the
                  * sciserver will take care of setting the forward status prior
-                 * to calling this function. 
+                 * to calling this function.
                  * When running on mcu1_0 we still use forwarding to retain
                  * the host id information of the non-secure/secure mode of mcu1_0.
                  * Setting forwarding ensures that the mcu1_0 uses the DM2DMSC
-                 * secure proxy threads.  
+                 * secure proxy threads.
                  * NOTE: Forwarding always leads to forced polling.
                  */
                 *fwdStatus = SCISERVER_FORWARD_MSG;
                 ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
                 break;
-            } 
+            }
             default:
             {
                 /*
                  * All baseport and security messages are entirely processed on
-                 * DMSC. When called on mcu1_0 directly, these are treated as 
-                 * native calls to DMSC. If these requests are made from other 
-                 * CPUs, the sciserver will take care of setting the forward 
+                 * DMSC. When called on mcu1_0 directly, these are treated as
+                 * native calls to DMSC. If these requests are made from other
+                 * CPUs, the sciserver will take care of setting the forward
                  * status prior to calling this function.
                  * The MCU1_0 will always be secure when trying to send the message
                  * to the TIFS directly to avoid self blocking.
@@ -541,6 +541,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                 struct tisci_msg_set_device_req *req =
                     (struct tisci_msg_set_device_req *) tx_msg;
                 uint32_t id = req->id;
+                uint8_t state = req->state;
                 switch (id)
                 {
                     case SCICLIENT_DEV_MCU_R5FSS0_CORE0:
@@ -554,10 +555,10 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                                 SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID);
                     break;
                     case TISCI_DEV_BOARD0:
-                        if (req->state == TISCI_MSG_VALUE_DEVICE_SW_STATE_ON) {
+                        if (state == TISCI_MSG_VALUE_DEVICE_SW_STATE_ON) {
                             coreRefCnt++;
                         }
-                        else if (req->state == TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF) {
+                        else if (state == TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF) {
                             coreRefCnt--;
                             /*
                              * When no core is active, shutdown PMIC.
@@ -706,7 +707,7 @@ static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize)
             /* Invalidate the cache */
             CacheP_Inv((const void*) req->tisci_boardcfg_rmp_low,
                     req->tisci_boardcfg_rm_size);
-    
+
             /*
              * See if there is still a certificate that needs to be compensated for (in
              * case TIFS did not process this upon multiple requests for RM board cfg).
@@ -717,7 +718,7 @@ static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize)
              * is an error.
              */
             newSize = boardcfgRmFindCertSize(msg);
-    
+
             if (newSize == 0U){
                 req->tisci_boardcfg_rm_size -= adjSize;
             }
@@ -838,12 +839,12 @@ int32_t Sciclient_boardCfgPrepHeader (
     {
         ret = CSL_EBADARGS;
     }
-    /* Populate the common header which will be loaded by ROM in case of 
+    /* Populate the common header which will be loaded by ROM in case of
      * combined boot image format.
      */
     if (CSL_PASS == ret)
     {
-        Sciclient_DirectExtBootX509Table  *pX509Table = 
+        Sciclient_DirectExtBootX509Table  *pX509Table =
             (Sciclient_DirectExtBootX509Table *) pCommonHeader;
         memcpy(pX509Table->magic_word, gcSciclientDirectExtBootX509MagicWord,
                sizeof(gcSciclientDirectExtBootX509MagicWord));
@@ -853,7 +854,7 @@ int32_t Sciclient_boardCfgPrepHeader (
         pX509Table->comps[0].boot_core = 0x10U;
         pX509Table->comps[0].comp_opts = 0U;
         pX509Table->comps[0].dest_addr = (uint64_t) pBoardCfgHeader;
-        pX509Table->comps[0].comp_size = 
+        pX509Table->comps[0].comp_size =
             sizeof(Sciclient_DirectBoardCfgDescTable) +
             SCICLIENT_BOARDCFG_PM_SIZE_IN_BYTES +
             SCICLIENT_BOARDCFG_RM_SIZE_IN_BYTES;
@@ -872,7 +873,7 @@ int32_t Sciclient_boardCfgPrepHeader (
         pBoardCfgDesc->descs[0].devgrp = pInPmPrms->devGrp;
         pBoardCfgDesc->descs[0].reserved = 0x0;
         pBoardCfgDesc->descs[1].type = TISCI_MSG_BOARD_CONFIG_RM;
-        pBoardCfgDesc->descs[1].offset = 
+        pBoardCfgDesc->descs[1].offset =
             (uint16_t) ((uint32_t) pInRmPrms->boardConfigLow -
             (uint32_t) pBoardCfgHeader);
         pBoardCfgDesc->descs[1].size = pInRmPrms->boardConfigSize;
@@ -888,13 +889,13 @@ int32_t Sciclient_boardCfgParseHeader (
     Sciclient_BoardCfgPrms_t * pInRmPrms)
 {
     int32_t ret = CSL_PASS;
-    Sciclient_DirectExtBootX509Table  *pX509Table = 
+    Sciclient_DirectExtBootX509Table  *pX509Table =
             (Sciclient_DirectExtBootX509Table *) pCommonHeader;
     if ((pCommonHeader == NULL) || (pInPmPrms == NULL) || (pInRmPrms == NULL))
     {
         ret = CSL_EBADARGS;
     }
-    /* Populate the common header which will be loaded by ROM in case of 
+    /* Populate the common header which will be loaded by ROM in case of
      * combined boot image format.
      */
     if (CSL_PASS == ret)
@@ -924,13 +925,13 @@ int32_t Sciclient_boardCfgParseHeader (
             {
                 continue;
             }
-            Sciclient_DirectBoardCfgDescTable *pBoardCfgDesc = 
+            Sciclient_DirectBoardCfgDescTable *pBoardCfgDesc =
                 (Sciclient_DirectBoardCfgDescTable *) addr;
             for (i = 0U; i < pBoardCfgDesc->num_elems; i++)
             {
                 if (pBoardCfgDesc->descs[i].type == TISCI_MSG_BOARD_CONFIG_PM)
                 {
-                    pInPmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset + 
+                    pInPmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset +
                         (uint32_t) pBoardCfgDesc;
                     pInPmPrms->boardConfigSize = pBoardCfgDesc->descs[i].size;
                     pInPmPrms->devGrp = pBoardCfgDesc->descs[i].devgrp;
@@ -939,7 +940,7 @@ int32_t Sciclient_boardCfgParseHeader (
                 }
                 if (pBoardCfgDesc->descs[i].type == TISCI_MSG_BOARD_CONFIG_RM)
                 {
-                    pInRmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset + 
+                    pInRmPrms->boardConfigLow = pBoardCfgDesc->descs[i].offset +
                         (uint32_t) pBoardCfgDesc;
                     pInRmPrms->boardConfigSize = pBoardCfgDesc->descs[i].size;
                     pInRmPrms->devGrp = pBoardCfgDesc->descs[i].devgrp;

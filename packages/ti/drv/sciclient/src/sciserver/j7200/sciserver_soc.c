@@ -38,6 +38,7 @@
  */
 
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/drv/sciclient/sciserver.h>
 
 void Sciserver_socInit(void)
 {
