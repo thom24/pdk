@@ -324,3 +324,5 @@ extern uint32_t OSPI_getReadDataCapDelay(SPI_Handle handle);
 #endif
 
 #endif /* _OSPI_V0_H */
+
+/* @} */
