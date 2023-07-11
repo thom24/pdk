@@ -80,7 +80,7 @@ pcieRet_e Pcie_init
     }
     pcieLObj.insts[i].pcie_index = i;
   }
-  pcieLObjIsValid = 1U;
+  pcieLObjIsValid = 1;
 
   return pcie_RET_OK;
 } /* Pcie_init */
@@ -99,24 +99,24 @@ pcieRet_e Pcie_open
 {
   pcieRet_e retVal = pcie_RET_OK;
 
-  if (pcieLObjIsValid == 0) {
+  if (0 == pcieLObjIsValid) {
     retVal = pcie_RET_NO_INIT;
   }else{
     if (deviceNum >= pcie_MAX_PERIPHS) {
       retVal = pcie_RET_INV_DEVICENUM;
-    }else if (pHandle == 0) {
+    }else if (0 == pHandle) {
       retVal = pcie_RET_INV_HANDLE;
     }else {
-      if ((pcieLObj.insts[deviceNum].bases.cfgBase != 0) 
-          && (pcieLObj.insts[deviceNum].bases.dataBase != 0)
+      if ((0 != pcieLObj.insts[deviceNum].bases.cfgBase) && 
+          (0 != pcieLObj.insts[deviceNum].bases.dataBase)
 #if defined(SOC_J721E)
-          && (pcieLObj.insts[deviceNum].bases.devParams != 0))
+          && (0 != pcieLObj.insts[deviceNum].bases.devParams))
 #else
       )
 #endif 
       {
         *pHandle = &pcieLObj.insts[deviceNum];
-      }else {
+      } else {
         retVal = pcie_RET_INV_DEVICENUM;
       }
     }
@@ -138,17 +138,17 @@ pcieRet_e Pcie_close
   Pcie_Handle handle;
   pcieRet_e ret_val;
   
-  if (pcieLObjIsValid == 0) {
+  if (0 == pcieLObjIsValid) {
     ret_val = pcie_RET_NO_INIT;
-  }else {
+  } else {
     if (pHandle) {
       handle = *pHandle;
-      if (pcie_check_handle_fcn(handle) == 0) {
+      if (IFALSE == pcie_check_handle_fcn(handle)) {
         ret_val = pcie_RET_INV_HANDLE;
       }
       *pHandle = NULL;
       ret_val = pcie_RET_OK;
-    }else  {
+    } else {
       ret_val = pcie_RET_INV_HANDLE;
     }
   }
