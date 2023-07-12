@@ -64,7 +64,7 @@
 
 /* Enable the below to enable emuwait trap while debugging */
 #ifdef MCASP_ENABLE_DEBUG_ERR_TRAP
-volatile uint32_t mcasp_drv_emuwait=1;
+volatile uint32_t mcasp_drv_emuwait = 1U;
 #define MCASP_DEBUG_ERR_TRAP   while(mcasp_drv_emuwait);
 #else
 #define MCASP_DEBUG_ERR_TRAP 
@@ -82,7 +82,7 @@ extern Mcasp_TempBuffer Mcasp_muteBuf[MCASP_CNT];
 int32_t Mcasp_enableUDMA_PDMA_Channel(Mcasp_ChannelHandle chanHandle)
 {
     Mcasp_Object       *instHandle;
-    int32_t retVal=UDMA_SOK;
+    int32_t retVal = UDMA_SOK;
     Mcasp_dmaInfo_t     *pDmaInfo;
     Udma_ChPdmaPrms     pdmaPrms;
     Udma_ChHandle    udmaChHandle;
@@ -100,7 +100,7 @@ int32_t Mcasp_enableUDMA_PDMA_Channel(Mcasp_ChannelHandle chanHandle)
     }
 
     UdmaChPdmaPrms_init(&pdmaPrms);
-    pdmaPrms.elemSize = chanHandle->roundedWordWidth -1; /* 8-bit/16/24/32 */
+    pdmaPrms.elemSize = chanHandle->roundedWordWidth -1U; /* 8-bit/16/24/32 */
     /* Number of elements to transfer per event */
     pdmaPrms.elemCnt = chanHandle->noOfSerAllocated*chanHandle->hwFifoEventDMARatio;
     pdmaPrms.fifoCnt    = 0U;
@@ -127,30 +127,30 @@ static void Mcasp_udmaTrpdInit(Mcasp_ChannelHandle handle,
     uint32_t cqRingNum = Udma_chGetCqRingNum(chHandle);
     uint32_t descType = CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR;
 
-    uint32_t trType=NAVSS_TRTYPE_TR15; /* TR15 by default */
+    uint32_t trType = NAVSS_TRTYPE_TR15; /* TR15 by default */
     uint64_t hostAddr;
-    uint32_t trpdLength = 16;
-    uint32_t aCnt=0;
-    uint32_t bCnt=0;
-    uint32_t cCnt=0;
+    uint32_t trpdLength = 16U;
+    uint32_t aCnt = 0U;
+    uint32_t bCnt = 0U;
+    uint32_t cCnt = 0U;
     
-    int32_t bIndex=0;
-    int32_t cIndex=0;
+    int32_t bIndex = 0;
+    int32_t cIndex = 0;
     
     chanHandle = (Mcasp_ChannelObj *)handle;
     trParams = (NAVSS_TR_Params *)&(chanHandle->trParams);
     
     
-    aCnt=trParams->hostMemTransferParams.aCnt;
-    bCnt=trParams->hostMemTransferParams.bCnt;
-    cCnt=trParams->hostMemTransferParams.cCnt;
+    aCnt = trParams->hostMemTransferParams.aCnt;
+    bCnt = trParams->hostMemTransferParams.bCnt;
+    cCnt = trParams->hostMemTransferParams.cCnt;
        
-    bIndex=trParams->hostMemTransferParams.bIndex;
-    cIndex=trParams->hostMemTransferParams.cIndex;
+    bIndex = trParams->hostMemTransferParams.bIndex;
+    cIndex = trParams->hostMemTransferParams.cIndex;
 
     hostAddr = (uint64_t)trParams->hostMemTransferParams.hostAddr;
        
-    trType=trParams->type;
+    trType = trParams->type;
     /* Setup descriptor */
     CSL_udmapCppi5SetDescType(pTrpd, descType);
     CSL_udmapCppi5TrSetReload(pTrpd, 0U, 0U);
@@ -193,7 +193,7 @@ static void Mcasp_udmaTrpdInit(Mcasp_ChannelHandle handle,
               pTr->addr  = hostAddr;
 
                 /* Size of TR Packet descriptor */
-                trpdLength = 16;
+                trpdLength = 16U;
               CSL_udmapCppi5TrSetEntryStride(pTrpd, CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_16B);  /* Setting default to be overwritten later */
 
               *((uint32_t *)pTrResp) = 0xFFFFFFFFU;
@@ -226,7 +226,7 @@ static void Mcasp_udmaTrpdInit(Mcasp_ChannelHandle handle,
 		      pTr->dim1  = bIndex;  		
      	  
                 /* Size of TR Packet descriptor */
-                trpdLength = 32;
+                trpdLength = 32U;
               CSL_udmapCppi5TrSetEntryStride(pTrpd, CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_32B);  /* Setting default to be overwritten later */
 
               *((uint32_t *)pTrResp) = 0xFFFFFFFFU;
@@ -264,7 +264,7 @@ static void Mcasp_udmaTrpdInit(Mcasp_ChannelHandle handle,
               pTr->dim2  = cIndex;
               
                 /* Size of TR Packet descriptor */
-                trpdLength = 32;
+                trpdLength = 32U;
               CSL_udmapCppi5TrSetEntryStride(pTrpd, CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_32B);  /* Setting default to be overwritten later */
               
               *((uint32_t *)pTrResp) = 0xFFFFFFFFU;
@@ -311,7 +311,7 @@ static void Mcasp_udmaTrpdInit(Mcasp_ChannelHandle handle,
              pTr->daddr    = (uint64_t) hostAddr;
          
                 /* Size of TR Packet descriptor */
-                trpdLength = 64;
+                trpdLength = 64U;
 
              /* Clear TR response memory */
              *pTrResp = 0xFFFFFFFFU;
@@ -323,7 +323,7 @@ static void Mcasp_udmaTrpdInit(Mcasp_ChannelHandle handle,
     }    
        
 // #if !defined (__aarch64__)
-    CacheP_wbInv((void *)pTrpd, 2 * trpdLength);
+    CacheP_wbInv((void *)pTrpd, 2U * trpdLength);
 // #endif
     return;
 }
@@ -339,7 +339,7 @@ static void Mcasp_udmaHpdInit(Udma_ChHandle  chHandle,
 
     /* Setup descriptor */
     CSL_udmapCppi5SetDescType(pHpd, descType);
-    CSL_udmapCppi5SetEpiDataPresent(pHpd, FALSE);
+    CSL_udmapCppi5SetEpiDataPresent(pHpd, BFALSE);
     CSL_udmapCppi5SetPsDataLoc(pHpd, 1U);
     CSL_udmapCppi5SetPsDataLen(pHpd, 0U);
     CSL_udmapCppi5SetPktLen(pHpd, descType, length);
@@ -368,7 +368,7 @@ static void Mcasp_udmaHpdInit(Udma_ChHandle  chHandle,
 
 int32_t Mcasp_submitUdmaPkt(Mcasp_ChannelHandle chanHandle)
 {
-    int32_t            retVal=UDMA_SOK;
+    int32_t            retVal = UDMA_SOK;
     Udma_ChHandle       udmaChanHandle;
     Mcasp_Object       *instHandle;
     MCASP_Packet       *ioPacket;
@@ -385,7 +385,7 @@ int32_t Mcasp_submitUdmaPkt(Mcasp_ChannelHandle chanHandle)
 
     pDmaInfo = &(instHandle->hwInfo.dmaInfo);
 
-    if (chanHandle->mode == MCASP_INPUT)
+    if (MCASP_INPUT == chanHandle->mode)
     {
         udmaChanHandle = pDmaInfo->rxChHandle;
     }
@@ -397,17 +397,17 @@ int32_t Mcasp_submitUdmaPkt(Mcasp_ChannelHandle chanHandle)
     if(UDMA_SOK == retVal)
     {
        /* Update host packet descriptor */
-       Mcasp_descQueueEntry_t *descQueueEntry=NULL;
+       Mcasp_descQueueEntry_t *descQueueEntry = NULL;
        descQueueEntry = (Mcasp_descQueueEntry_t *) QueueP_get(chanHandle->queueFreeDesc);
        assert((QueueP_Handle) descQueueEntry != chanHandle->queueFreeDesc);
-       if(descQueueEntry != NULL)
+       if(NULL != descQueueEntry)
        {
             pHpdMem = (uint8_t *) descQueueEntry->descMem;
             assert(QueueP_FAILURE != QueueP_put(chanHandle->queueTransitDesc,
                                                             (void *) descQueueEntry));
-            if(pHpdMem!=NULL) 
+            if(NULL != pHpdMem) 
             {    
-                if(pDmaInfo->descType == CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR) 
+                if(CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR == pDmaInfo->descType)
                 {
                     Mcasp_udmaTrpdInit(chanHandle, udmaChanHandle, pHpdMem, buffer, size);
                 } 
@@ -484,13 +484,13 @@ int32_t Mcasp_freeDmaChannel(Mcasp_ChannelHandle chan_handle)
 /* ========================================================================== */
 uint32_t Mcasp_getSizeOfTransfer(uint64_t pDesc,uint32_t descType)
 {
-	uint32_t size=0;
+	uint32_t size = 0U;
 	uint32_t dType;
 	
-	if( descType ==  CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR)
+	if(CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR == descType)
 	{
   	   uint8_t * ptrTRDesc;
-  	   uint32_t trStride=0;
+  	   uint32_t trStride = 0U;
   	   uint32_t trType;
   	   
  	   CSL_UdmapCppi5TRPD *cppi5Desc = (CSL_UdmapCppi5TRPD *)((uintptr_t )pDesc);
@@ -498,20 +498,20 @@ uint32_t Mcasp_getSizeOfTransfer(uint64_t pDesc,uint32_t descType)
        
 	   dType = CSL_udmapCppi5GetDescType((const void *)cppi5Desc);
 	   /* Get the TR type */
-	   if(dType !=CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR) 
+	   if(CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR != dType) 
 	   {
 		  MCASP_DEBUG_ERR_TRAP 
        }
 	   /* Get the beginning of the TR descriptor */
 	   trStride = CSL_udmapCppi5TrGetEntryStride(cppi5Desc);
-	   if( trStride == CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_16B) {
+	   if(CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_16B == trStride) {
    	      ptrTRDesc = (uint8_t *)(uintptr_t )pDesc + 16;
-	   } else if (trStride == CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_32B) {
+	   } else if (CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_32B == trStride) {
   	      ptrTRDesc = (uint8_t *)(uintptr_t )pDesc + 32;
-       }  else if (trStride == CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_64B) {
+       }  else if (CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_64B == trStride) {
           ptrTRDesc = (uint8_t *)(uintptr_t )pDesc + 64;
 	   } else {
-  	      ptrTRDesc = (uint8_t *)(uintptr_t )pDesc + 32;		   
+  	      ptrTRDesc = (uint8_t *)(uintptr_t )pDesc + 32;
 	   }
        
        /* Now that we have the beginning of the descriptor, read the flags and find the length */
@@ -533,18 +533,18 @@ uint32_t Mcasp_getSizeOfTransfer(uint64_t pDesc,uint32_t descType)
 			 size = genTrDesc->icnt0 * genTrDesc->icnt1 * genTrDesc->icnt2 * genTrDesc->icnt3 ;
 			 break;
 			 default:
-			   size =0;
+			   size = 0U;
 			   break;
 		}
 		
-	} else if(descType == CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_HOST)
+	} else if(CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_HOST == descType)
 	{
        CSL_UdmapCppi5HMPD *pHmpd;
        pHmpd = (CSL_UdmapCppi5HMPD *)(uintptr_t)pDesc;
 
        dType = CSL_udmapCppi5GetDescType((const void *)pHmpd);
 	   /* Get the TR type */
-	   if(dType ==CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_HOST)
+	   if(CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_HOST == dType)
        {
           size = (pHmpd->descInfo & CSL_UDMAP_CPPI5_PD_DESCINFO_PKTLEN_MASK) >> CSL_UDMAP_CPPI5_PD_DESCINFO_PKTLEN_SHIFT;
        }   
@@ -559,7 +559,7 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
 {
    Mcasp_ChannelHandle   chanHandle = (Mcasp_ChannelHandle)appData;
    Mcasp_Object         *instHandle = (Mcasp_Object *)chanHandle->devHandle;
-   uint64_t            pDesc = 0;
+   uint64_t            pDesc = 0U;
    CSL_UdmapTdResponse tdResp;
    int32_t status;
 
@@ -569,7 +569,7 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
     const void *tdCqRingMem;
 #endif
 
-    if (chanHandle->mode == MCASP_INPUT)
+    if (MCASP_INPUT == chanHandle->mode)
     {
         udmaChanHandle = instHandle->hwInfo.dmaInfo.rxChHandle;
 #if !defined (__aarch64__)
@@ -589,7 +589,7 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
    do
    {
 	   
-    if (eventType == UDMA_EVENT_TYPE_TEARDOWN_PACKET)
+    if (UDMA_EVENT_TYPE_TEARDOWN_PACKET == eventType)
     {
     #if !defined (__aarch64__)
        CacheP_Inv(tdCqRingMem, sizeof(uint64_t) * instHandle->hwInfo.dmaInfo.ringCnt);
@@ -612,15 +612,15 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
        status = Udma_ringDequeueRaw(Udma_chGetCqRingHandle(udmaChanHandle), &pDesc);
      }
      
-     if ((UDMA_SOK == status) && (pDesc != 0))
+     if ((UDMA_SOK == status) && (0U != pDesc))
      {
-       Mcasp_descQueueEntry_t *descQueueEntry=NULL;
+       Mcasp_descQueueEntry_t *descQueueEntry = NULL;
        
        /* Get a queue entry from the transit descriptor */
        descQueueEntry = (Mcasp_descQueueEntry_t *)
                                     QueueP_get(chanHandle->queueTransitDesc);
        assert((QueueP_Handle) descQueueEntry != chanHandle->queueTransitDesc);
-       if (descQueueEntry != NULL)
+       if (NULL != descQueueEntry)
        {
             descQueueEntry->descMem = (void *)(uintptr_t )pDesc;
             assert(QueueP_FAILURE != QueueP_put(chanHandle->queueFreeDesc,
@@ -628,11 +628,11 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
        }
      }
 
-     if ((UDMA_SOK == status) && (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION))
+     if ((UDMA_SOK == status) && (UDMA_EVENT_TYPE_DMA_COMPLETION == eventType))
      {
          Mcasp_commonDmaCallback(chanHandle, status);
      }
-   } while(status==UDMA_SOK);  
+   } while(UDMA_SOK == status);  
 }
 
 /* ========================================================================== */
@@ -658,8 +658,8 @@ int32_t Mcasp_setupDmaDuringOpen(Mcasp_ChannelHandle chan_handle, Mcasp_HwObj *h
 
     Mcasp_Object         *instHandle;
     Mcasp_ChannelObj     *chanHandle;
-    int32_t            retVal=UDMA_EFAIL;
-    int32_t            status=MCASP_EBADIO;
+    int32_t            retVal = UDMA_EFAIL;
+    int32_t            status = MCASP_EBADIO;
     Mcasp_dmaInfo_t    *pDmaInfo;
     Udma_DrvHandle     drvHandle;
     uint32_t           chType;
@@ -673,7 +673,7 @@ int32_t Mcasp_setupDmaDuringOpen(Mcasp_ChannelHandle chan_handle, Mcasp_HwObj *h
     instHandle = (Mcasp_Object *)chanHandle->devHandle;
 
     /* First packet to be submitted */
-    chanHandle->firstPacket  = TRUE;
+    chanHandle->firstPacket  = UTRUE;
 
     if (MCASP_OUTPUT == chanHandle->mode) 
     {
@@ -699,10 +699,10 @@ int32_t Mcasp_setupDmaDuringOpen(Mcasp_ChannelHandle chan_handle, Mcasp_HwObj *h
        if(UDMA_SOK == retVal)
        {
           UdmaChTxPrms_init(&txPrms, chType);
-       	  if(instHandle->hwInfo.dmaInfo.descType == CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR) {
+       	  if(CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR == instHandle->hwInfo.dmaInfo.descType) {
          	txPrms.chanType    = CSL_UDMAP_CHAN_TYPE_REF_TR_RING;
-            txPrms.filterEinfo     = TRUE;
-            txPrms.filterPsWords   = TRUE;			  
+            txPrms.filterEinfo     = (uint8_t)BTRUE;
+            txPrms.filterPsWords   = (uint8_t)BTRUE;			  
 	      }	  
           retVal = Udma_chConfigTx(pDmaInfo->txChHandle, &txPrms);
        }
@@ -760,11 +760,11 @@ int32_t Mcasp_setupDmaDuringOpen(Mcasp_ChannelHandle chan_handle, Mcasp_HwObj *h
         if(UDMA_SOK == retVal)
         {
           UdmaChRxPrms_init(&rxPrms, chType);
-          if(instHandle->hwInfo.dmaInfo.descType == CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR) {
+          if(CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR == instHandle->hwInfo.dmaInfo.descType) {
          	rxPrms.chanType    = CSL_UDMAP_CHAN_TYPE_REF_TR_RING;
 	      }	  
           
-          rxPrms.ignoreLongPkts = TRUE;
+          rxPrms.ignoreLongPkts = (uint8_t)BTRUE;
           retVal = Udma_chConfigRx(pDmaInfo->rxChHandle, &rxPrms);
          }
 
@@ -857,13 +857,13 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle       chanHandle,
                                     MCASP_Packet *const         ioPacket)
 {
     Mcasp_Object         *instHandle  = NULL;
-    Bool                  falsewhile  = TRUE;
+    Bool                  falsewhile  = UTRUE;
     Mcasp_PktAddrPayload *payLoad     = NULL;
     int32_t                 status      = MCASP_COMPLETED;
     NAVSS_TR_Params *trParams;
-    uint16_t aCnt=0, bCnt=0, cCnt=0;
-    uint32_t trType=0;
-    int16_t  bIndex=0, cIndex=0;
+    uint16_t aCnt = 0, bCnt = 0, cCnt = 0;
+    uint32_t trType = 0U;
+    int16_t  bIndex = 0, cIndex = 0;
     uintptr_t host_addr=(uintptr_t)NULL; /* HOst memory address */
     if ( (NULL == ioPacket) || (NULL == chanHandle) || (NULL == chanHandle->devHandle) )
     {
@@ -873,7 +873,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle       chanHandle,
     {
         do
         {
-            falsewhile = FALSE;
+            falsewhile = UFALSE;
 
             instHandle = (Mcasp_Object *)chanHandle->devHandle;
 
@@ -892,7 +892,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle       chanHandle,
             if (MCASP_INPUT == chanHandle->mode)
             {
 
-                if (TRUE == instHandle->isDataBufferPayloadStructure)
+                if (UTRUE == instHandle->isDataBufferPayloadStructure)
                 {
                     payLoad = (Mcasp_PktAddrPayload *)ioPacket->addr;
                     if(NULL != payLoad) {
@@ -912,7 +912,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle       chanHandle,
                     &bCnt,
                     &cCnt,
                     &trType,
-                    FALSE);
+                    UFALSE);
             }
             else
             {
@@ -921,7 +921,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle       chanHandle,
                 
 
 #endif
-                if (TRUE == chanHandle->bMuteON)
+                if (UTRUE == chanHandle->bMuteON)
                 {
                     /* data buffer is changed to local mutebuffer             */
                     host_addr  =
@@ -936,14 +936,14 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle       chanHandle,
                     &bCnt,
                     &cCnt,
                     &trType,
-                    TRUE);
+                    UTRUE);
                 }
                 else
                 {
-                    if (TRUE == instHandle->isDataBufferPayloadStructure)
+                    if (UTRUE == instHandle->isDataBufferPayloadStructure)
                     {
                         payLoad = (Mcasp_PktAddrPayload *)ioPacket->addr;
-                        if(payLoad != NULL) 
+                        if(NULL != payLoad)
                         {
                           host_addr = (uintptr_t)payLoad->addr;
                         }  
@@ -961,7 +961,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle       chanHandle,
                     &bCnt,
                     &cCnt,
                     &trType,
-                    FALSE);
+                    UFALSE);
                 }/*for mute on/off*/
             }
 
@@ -1025,7 +1025,7 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
                                     uint32_t             *trType,
                                     Bool                forLoopJobBuf)
 {
-    uint32_t  tempSize  = 0x0;
+    uint32_t  tempSize  = 0x0U;
     int32_t   status    = MCASP_COMPLETED;
     Uint16    temp_var  = 0x0U;
     Uint16    aCntByBCnt = 0x0U;
@@ -1042,9 +1042,9 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
      *         used.                                                          *
      * case 2. user supplied loop job buffer then the user loop job length    *
      *         will be used.                                                  */
-    if (((Bool) TRUE == forLoopJobBuf) && ((Bool) FALSE == chanHandle->bMuteON))
+    if ((UTRUE == forLoopJobBuf) && (UFALSE == chanHandle->bMuteON))
     {
-        if ((Bool) TRUE == chanHandle->userLoopJob)
+        if (UTRUE == chanHandle->userLoopJob)
         {
             /* use the user supplied buffer length for the EDMA params        */
             tempSize = chanHandle->userLoopJobLength;
@@ -1102,7 +1102,7 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
              * multiple slots hence the result will be always an integer      */
             temp_var = (((uint16_t)(tempSize))/(*bCnt));
             *bIndex = (int16_t)(temp_var);
-            temp_var = ((*aCnt) - (((*bCnt)- ((uint16_t)1u)) * (((uint16_t)(tempSize))/(*bCnt))));
+            temp_var = ((*aCnt) - (((*bCnt)- ((uint16_t)1U)) * (((uint16_t)(tempSize))/(*bCnt))));
             *cIndex = (int16_t)(temp_var);
   //          *syncType = EDMA3_DRV_SYNC_A;
             *trType = NAVSS_TRTYPE_TR2;
@@ -1173,10 +1173,10 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
 
     /* if the loop job buffer being used is the driver internal loop job      *
      * buffer, dont increment the index for it.Same is the case if mute is ON */
-    if (TRUE == forLoopJobBuf)
+    if (UTRUE == forLoopJobBuf)
     {
-        if ((TRUE == chanHandle->bMuteON) ||
-            (FALSE == chanHandle->userLoopJob))
+        if ((UTRUE  == chanHandle->bMuteON) ||
+            (UFALSE == chanHandle->userLoopJob))
         {
             *bIndex = 0;
             *cIndex = 0;
@@ -1208,7 +1208,7 @@ void Mcasp_initChanDmaObj(Mcasp_ChannelHandle chanHandle)
     chanHandle->queueTransitDesc = QueueP_create(&qPrms);
     assert(NULL != chanHandle->queueTransitDesc);
 
-    if (chanHandle->mode == MCASP_INPUT)
+    if (MCASP_INPUT == chanHandle->mode)
     {
         trpdMem = instHandle->hwInfo.dmaInfo.rxHpdMem;
     }
@@ -1228,7 +1228,7 @@ void Mcasp_initChanDmaObj(Mcasp_ChannelHandle chanHandle)
      */
     chanHandle->maxActiveSubmit = instHandle->hwInfo.dmaInfo.ringCnt;
     chanHandle->dmaCallback = NULL;
-    chanHandle->udmaEnabled = FALSE;
+    chanHandle->udmaEnabled = UFALSE;
 }
 
 int32_t Mcasp_enableDMA(Mcasp_ChannelHandle chanHandle)
@@ -1248,10 +1248,10 @@ int32_t Mcasp_enableDMA(Mcasp_ChannelHandle chanHandle)
     }
 
     /* We don't want to enable if already enabled */
-    if (chanHandle->udmaEnabled != TRUE)
+    if (UTRUE != chanHandle->udmaEnabled)
     {
         retVal = Udma_chEnable(udmaChHandle);
-        chanHandle->udmaEnabled = TRUE;
+        chanHandle->udmaEnabled = UTRUE;
     }
 
     return retVal;
@@ -1275,15 +1275,15 @@ int32_t Mcasp_disableDMA(Mcasp_ChannelHandle chanHandle)
 
     retVal = Udma_chDisable(udmaChHandle, UDMA_DEFAULT_CH_DISABLE_TIMEOUT);
 
-    chanHandle->udmaEnabled = FALSE;
+    chanHandle->udmaEnabled = UFALSE;
 
     return retVal;
 }
 
 void Mcasp_getDmaPosition(Mcasp_ChannelHandle chanHandle, uint32_t *dmaPosition)
 {
-    uint32_t localbCnt = 0;
-    uint32_t localcCnt = 0;
+    uint32_t localbCnt = 0U;
+    uint32_t localcCnt = 0U;
 
     /* Todo: get UDMA/PDMA parameters */
 

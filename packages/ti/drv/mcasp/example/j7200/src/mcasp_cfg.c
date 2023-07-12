@@ -161,7 +161,7 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         {Mcasp_SerializerNum_4, Mcasp_SerializerNum_5, Mcasp_SerializerNum_6}, /* serialiser index */
 #endif
         &mcasp0RcvSetup,
-        TRUE,
+        (uint16_t)BTRUE,
         Mcasp_OpMode_TDM,          /* Mode (TDM/DIT)             */
         Mcasp_WordLength_32,
         NULL,
@@ -170,9 +170,9 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         (Mcasp_GblCallback)&GblErrRcv,
         2, /* number of TDM channels      */
         Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_1,
-        TRUE,
+        (uint16_t)BTRUE,
         RX_FIFO_EVENT_DMA_RATIO,
-        TRUE,
+        (uint16_t)BTRUE,
         Mcasp_WordBitsSelect_LSB
     },
     {
@@ -183,7 +183,7 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         {Mcasp_SerializerNum_0, Mcasp_SerializerNum_1, Mcasp_SerializerNum_2}, /* serialiser index */
 #endif
         &mcasp0XmtSetup,
-        TRUE,
+        (uint16_t)BTRUE,
         Mcasp_OpMode_TDM,
         Mcasp_WordLength_32,      /* word width                  */
         NULL,
@@ -192,9 +192,9 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         (Mcasp_GblCallback)&GblErrXmt,
         2, /* number of TDM channels      */
         Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_1,
-        TRUE,
+        (uint16_t)BTRUE,
         TX_FIFO_EVENT_DMA_RATIO,
-        TRUE,
+        (uint16_t)BTRUE,
         Mcasp_WordBitsSelect_LSB
     }
 };

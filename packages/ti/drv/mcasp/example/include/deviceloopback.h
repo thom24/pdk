@@ -71,31 +71,31 @@ extern "C" {
 #define MAX_NUM_TIMESLOTS   (6)
 
 /* Create the ramp sample combining the ramp value (val), and the serializer and timeslot signature*/
-#define CREATE_SAMPLE_VAL(serIndex,tsIndex,word_width_bits,val)   ((serIndex<<(word_width_bits-4)) | (tsIndex<<(word_width_bits-8)) |  (val & ~((~(0x0u))<<(word_width_bits-8))))
+#define CREATE_SAMPLE_VAL(serIndex,tsIndex,word_width_bits,val)   ((serIndex<<(word_width_bits-4)) | (tsIndex<<(word_width_bits-8)) |  (val & ~((~(0x0U))<<(word_width_bits-8))))
 /* Extract the ramp from the word, removing the serializer and timeslot signature used for ramp */
-#define EXTRACT_SAMPLE_VAL(serIndex,tsIndex,word_width_bits,val)  (val & (~((~(0x0u))<<((word_width_bits)-8))))
+#define EXTRACT_SAMPLE_VAL(serIndex,tsIndex,word_width_bits,val)  (val & (~((~(0x0U))<<((word_width_bits)-8))))
 /* Extract the timeslot signature from the word */
-#define EXTRACT_SAMPLE_TS(serIndex,tsIndex,word_width_bits,val)   ((val >> (word_width_bits-8)) & 0xf)
+#define EXTRACT_SAMPLE_TS(serIndex,tsIndex,word_width_bits,val)   ((val >> (word_width_bits-8)) & 0xF)
 /* Extract the serializer signature from the word */
-#define EXTRACT_SAMPLE_SER(serIndex,tsIndex,word_width_bits,val)  ((val >> (word_width_bits-4)) & 0xf)
+#define EXTRACT_SAMPLE_SER(serIndex,tsIndex,word_width_bits,val)  ((val >> (word_width_bits-4)) & 0xF)
 
 /* Create the ramp mask used to read/write the ramp value */
-#define SAMPLE_MASK(ramp_width_bits)                              (~((~(0x0u))<<(ramp_width_bits)))
+#define SAMPLE_MASK(ramp_width_bits)                              (~((~(0x0U))<<(ramp_width_bits)))
 
 /* Direction. This is being used in the mcasp_chanparams[] to configure Tx and RX  */
 #define RX 0
 #define TX 1
 
 typedef enum {
-    RX_LOOPBACK_NOT_SYNCHED=0,
-    RX_LOOPBACK_SYNCHED=1,
+    RX_LOOPBACK_NOT_SYNCHED = 0,
+    RX_LOOPBACK_SYNCHED = 1,
 } rampSynchState_e;
 
 
 typedef enum {
-   FOUND_SYNC=0,
-   LOST_SYNC_RAMP_VAL=1,
-   LOST_SYNC_SER_TS_MISMATCH=2,
+   FOUND_SYNC = 0,
+   LOST_SYNC_RAMP_VAL = 1,
+   LOST_SYNC_SER_TS_MISMATCH = 2,
 } rampSynchStatusChange_e;
 
 

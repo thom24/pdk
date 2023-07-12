@@ -120,7 +120,7 @@ void I2CCodecIfInit(unsigned int baseAddr, unsigned int intCh,
     I2C_socGetInitCfg(I2C_MCASP_INSTANCE, &mcasp_i2c_cfg);
 
     /* Modify the default I2C configurations if necessary */
-    mcasp_i2c_cfg.enableIntr=false; 
+    mcasp_i2c_cfg.enableIntr = BFALSE; 
     /* Set the default I2C init configurations */
     I2C_socSetInitCfg(I2C_MCASP_INSTANCE, &mcasp_i2c_cfg);
     I2C_handle_glob = I2C_open(I2C_MCASP_INSTANCE, &i2cParams);

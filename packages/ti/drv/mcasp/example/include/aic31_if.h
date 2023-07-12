@@ -56,17 +56,17 @@ extern "C" {
 /*
 ** Macros for the dataType variable to pass to AIC31DataConfig function
 */
-#define AIC31_DATATYPE_I2S             (0u << 6u) /* I2S Mode */
-#define AIC31_DATATYPE_DSP             (1u << 6u) /* DSP Mode */
-#define AIC31_DATATYPE_RIGHTJ          (2u << 6u) /* Right Aligned Mode */
-#define AIC31_DATATYPE_LEFTJ           (3u << 6u) /* Left Aligned Mode */
+#define AIC31_DATATYPE_I2S             (0U << 6U) /* I2S Mode */
+#define AIC31_DATATYPE_DSP             (1U << 6U) /* DSP Mode */
+#define AIC31_DATATYPE_RIGHTJ          (2U << 6U) /* Right Aligned Mode */
+#define AIC31_DATATYPE_LEFTJ           (3U << 6U) /* Left Aligned Mode */
 
 /*
 ** Macros for the mode variable for the AIC31SampleRateConfig function
 */
-#define AIC31_MODE_ADC                 (0xF0u)
-#define AIC31_MODE_DAC                 (0x0Fu)
-#define AIC31_MODE_BOTH                (0xFFu)
+#define AIC31_MODE_ADC                 (0xF0U)
+#define AIC31_MODE_DAC                 (0x0FU)
+#define AIC31_MODE_BOTH                (0xFFU)
 
 /**************************************************************************
 **                      API function Prototypes

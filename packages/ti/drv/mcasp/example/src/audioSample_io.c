@@ -209,10 +209,10 @@ Mcasp_Params mcaspParams;
 Ptr hMcaspTxChan;
 Ptr hMcaspRxChan;
 
-volatile int RxFlag=0,TxFlag=0;
+volatile int RxFlag = 0,TxFlag = 0;
 SemaphoreP_Handle semR,semT;
 SemaphoreP_Params params;
-int mcaspApiTest = FALSE;
+int mcaspApiTest = 0;
 
 typedef struct McASP_App_Buffer_s {
 	QueueP_Elem  link;
@@ -222,8 +222,8 @@ typedef struct McASP_App_Buffer_s {
 
 /* For TX and RX */
 typedef enum {
- APP_BUFFER_RX=0,
- APP_BUFFER_TX=1
+ APP_BUFFER_RX = 0,
+ APP_BUFFER_TX = 1
 }McASP_App_Buffer_Direction_e;
 
 QueueP_Handle McASP_App_Buffer_FreeList[2];
@@ -232,8 +232,8 @@ QueueP_Handle McASP_App_Buffer_TransitList[2];
 McASP_App_BufferInfo_t McASP_App_bufs[2][NUM_APP_BUFS_QUEUE_ENTRIES];
 
 #ifdef MCASP_ENABLE_DEBUG_LOG
-uint32_t mcaspFrames_rx[NUM_TEST_FRAMES+PRIME_COUNT][MCASPFRAMES_RX_SIZE/4];
-uint8_t mcaspFrame_rx_index=0;
+uint32_t mcaspFrames_rx[NUM_TEST_FRAMES+PRIME_COUNT][MCASPFRAMES_RX_SIZE/4U];
+uint8_t mcaspFrame_rx_index = 0;
 #endif
 
 #if defined(SOC_J721S2)
@@ -248,11 +248,11 @@ I2C_Handle I2C_CodecInit()
     i2cParams.transferMode = I2C_MODE_BLOCKING;
 
     I2C_socGetInitCfg(I2C_CODEC_INSTANCE, &codec_i2c_cfg);
-    codec_i2c_cfg.enableIntr=false;
+    codec_i2c_cfg.enableIntr = BFALSE;
     I2C_socSetInitCfg(I2C_CODEC_INSTANCE, &codec_i2c_cfg);
 
     I2C_handle = I2C_open(I2C_CODEC_INSTANCE, &i2cParams);
-    if(I2C_handle != NULL)
+    if(NULL != I2C_handle)
     {
         MCASP_log("I2c Open successful \n ");
     }
@@ -286,7 +286,7 @@ void McASP_App_BufferInfo_Init()
     assert(NULL != McASP_App_Buffer_TransitList[APP_BUFFER_TX]);
 
     /* Put buffers in the queue */
-	for(i=0;i<test_prime_count;i++) {
+	for(i = 0U; i < test_prime_count; i++) {
       /* For priming, we would need to put 'prime_count' number of buffers in to the Free List to begin with.
 	   * During priming process, these will be popped and submitted to the McASP */
 	    bufno= i%test_num_bufs;	/* There are only NUM_BUFS buffers allocated from memory. If more buffers are needed for priming, say 4, these
@@ -341,7 +341,7 @@ int mcaspControlChanTest(void * mcaspChan);
 /**************************************************************************************/
 static uintptr_t getGlobalAddr (uintptr_t addr)
 {
-    if ((addr >= 0x800000) && (addr < 0x1000000))
+    if ((0x800000U <= addr) && (0x1000000U > addr))
     {
 #ifdef _TMS320C6X
         uint32_t coreNum;
@@ -351,11 +351,11 @@ static uintptr_t getGlobalAddr (uintptr_t addr)
 
 #if defined(SOC_AM572x) || defined(SOC_AM571x)
         /* Compute the global address. */
-        return ((1 << 30) | (coreNum << 24) | (addr & 0x00ffffff));
+        return ((1 << 30) | (coreNum << 24) | (addr & 0x00FFFFFFU));
 
 #else
   /* Compute the global address. */
-        return ((1 << 28) | (coreNum << 24) | (addr & 0x00ffffff));
+        return ((1 << 28) | (coreNum << 24) | (addr & 0x00FFFFFFU));
 #endif
 #else
         return addr;
@@ -388,7 +388,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
        uintptr_t *buf_ptr;
 #endif
 
-	if(ioBuf->cmd == MCASP_READ)
+	if(MCASP_READ == ioBuf->cmd)
 	{
 		RxFlag++;
 		/* Get the buffer which is supposed to be the next. It should be in the transit queue */
@@ -413,7 +413,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
 	    /* post semaphore */
 	    SemaphoreP_postFromISR(semR);
 
-	} else if(ioBuf->cmd == MCASP_WRITE)
+	} else if(MCASP_WRITE == ioBuf->cmd)
 		{
 		 TxFlag++;
 
@@ -454,8 +454,8 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
  * are later used for analyzing the errors seen.
  */
 /* The below variables are used to quit the frame processing loop if an error occurs */
-int gblErrFlagXmt=0;
-int gblErrFlagRcv=0;
+int gblErrFlagXmt = 0;
+int gblErrFlagRcv = 0;
 /* The below variables are used to analyze the errors if an error interrupt happens */
 Mcasp_errCbStatus errCbStatusXmt;
 Mcasp_errCbStatus errCbStatusRcv;
@@ -463,14 +463,14 @@ Mcasp_errCbStatus errCbStatusRcv;
 /* Error handler for Transmit side */
 void GblErrXmt(Mcasp_errCbStatus errCbStat)
 {
-	gblErrFlagXmt=1;
-	errCbStatusXmt=errCbStat;
+	gblErrFlagXmt = 1;
+	errCbStatusXmt = errCbStat;
 }
 /* Error handler for Rcv side */
 void GblErrRcv(Mcasp_errCbStatus errCbStat)
 {
-    gblErrFlagRcv=1;
-    errCbStatusRcv=errCbStat;
+    gblErrFlagRcv = 1;
+    errCbStatusRcv = errCbStat;
 }
 /*********************** APPLICATION DEFINED FUNCTIONS: End ****************************/
 
@@ -545,7 +545,7 @@ static void createStreams()
 			(IOM_COMPLETED != status))
 	{
 		MCASP_log("AIC Create Channel Failed\n");
-		assert(FALSE);
+		assert(BFALSE);
 	}
 #endif
 
@@ -565,10 +565,10 @@ static void createStreams()
 							 mcaspAppCallback, NULL);
 #endif
 
-	if((status != MCASP_COMPLETED) || (hMcaspTxChan == NULL))
+	if((MCASP_COMPLETED != status) || (NULL == hMcaspTxChan))
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Tx Failed\n");
-		assert(FALSE);
+		assert(BFALSE);
 	}
 
 #ifdef MCASP_ENABLE_DEBUG_LOG
@@ -580,10 +580,10 @@ static void createStreams()
 	                         MCASP_INPUT,
 	                         &mcasp_chanparam[0],
 	                         mcaspAppCallback, NULL);
-	if((status != MCASP_COMPLETED) || (hMcaspRxChan == NULL))
+	if((MCASP_COMPLETED != status) || (NULL == hMcaspRxChan))
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Rx Failed\n");
-		assert(FALSE);
+		assert(BFALSE);
 	}
 #ifdef MCASP_ENABLE_DEBUG_LOG
     mcaspDebugLog(DEBUG_APP_AFTER_RX_CREATECHAN, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED, MCASP_DEBUG_UNDEFINED,MCASP_DEBUG_UNDEFINED);
@@ -593,7 +593,7 @@ static void createStreams()
     I2C_handle = I2C_CodecInit();
 
     status = Board_pcm3168Config(I2C_handle, I2C_CODEC_SLAVE_ADDRESS);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         MCASP_log("I2C communication failed with codec \n");
     }
@@ -768,7 +768,7 @@ EDMA3_DRV_Handle McaspApp_edmaInit(Mcasp_HwInfo *cfg)
 
     hEdma = edma3init(EDMACC_NUM, &edmaResult);
 
-    if (edmaResult != EDMA3_DRV_SOK)
+    if (EDMA3_DRV_SOK != edmaResult)
     {
         /* Report EDMA Error
          */
@@ -831,7 +831,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
     uint32_t        instId;
     int32_t i;
 
-    if (gDrvHandle == NULL)
+    if (NULL == gDrvHandle)
     {
         /* UDMA driver init */
 #if (defined (SOC_J721E) || defined (SOC_J7200)) && defined (BUILD_MCU1_0) || defined(SOC_J721S2)
@@ -847,7 +847,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
         }
     }
 
-    if(gDrvHandle != NULL)
+    if(NULL != gDrvHandle)
     {
         gDrvHandle = &gUdmaDrvObj;
         cfg->dmaInfo.descType =      CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR;
@@ -880,7 +880,7 @@ int32_t McaspApp_udma_deinit(void)
 {
     int32_t         retVal = UDMA_SOK;
 
-    if (gDrvHandle != NULL)
+    if (NULL != gDrvHandle)
     {
         retVal = Udma_deinit(gDrvHandle);
         if(UDMA_SOK == retVal)
@@ -900,25 +900,25 @@ int32_t McaspApp_udma_deinit(void)
  */
 extern Int aic31MdBindDev(Ptr *, Int, Ptr);
 
-int gtxFrameIndexCount=0;
-int grxFrameIndexCount=0;
+int gtxFrameIndexCount = 0;
+int grxFrameIndexCount = 0;
 int itemp;
 int result, pwr_status, fs_status, bck_status;
-int total_frames_sent=0;
+int total_frames_sent = 0;
 
 void Audio_echo_Task(void *arg0, void *arg1)
 {
     Mcasp_HwInfo hwInfo;
-    volatile int32_t status = 0;
+    volatile int32_t status = MCASP_COMPLETED;
     uint32_t i32Count;
-    volatile uint32_t loopForever = 1u;
+    volatile uint32_t loopForever = UTRUE;
 	hMcaspDev  = NULL;
 #ifdef DEVICE_LOOPBACK
-    uint32_t timeout = 0;
+    uint32_t timeout = 0U;
 #endif
     uint32_t semTimeout;
     int32_t txSemStatus, rxSemStatus;
-    uint32_t rx_frames = 0, tx_frames = 0;
+    uint32_t rx_frames = 0U, tx_frames = 0U;
 
     uint32_t tx_bytes_per_sample=(mcasp_chanparam[1].wordWidth/8);
     uint32_t rx_bytes_per_sample=(mcasp_chanparam[0].wordWidth/8);
@@ -1011,7 +1011,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
 	mcaspDITParams.mcaspHwSetup.rx.clk.clkSetupClk = 0x23;
 
 	/* Initialize user data and channel status bits */
-	for(i32Count = 0; i32Count < 6; i32Count++)
+	for(i32Count = 0U; i32Count < 6U; i32Count++)
 	{
 		ditUserData.userDataLeft[i32Count]  = 0;
 		ditUserData.userDataRight[i32Count] = 0;
@@ -1022,13 +1022,13 @@ void Audio_echo_Task(void *arg0, void *arg1)
 
 	ditPayload.chStat         = &ditChStatus;
 	ditPayload.userData       = &ditUserData;
-	ditPayload.writeDitParams = TRUE;
+	ditPayload.writeDitParams = (uint16_t)BTRUE;
 
 	pDitPayload = &ditPayload;
 #endif
 
 	status = mcaspBindDev(&hMcaspDev, MCASP_NUM, &mcaspParams);
-	if((status != MCASP_COMPLETED) || (hMcaspDev == NULL))
+	if((MCASP_COMPLETED != status) || (NULL == hMcaspDev))
 	{
 		MCASP_log("mcaspBindDev for McASP Failed\n");
 		abort();
@@ -1036,7 +1036,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
 
 #if defined(AUDIO_DC_DIGITAL_TEST)
 	status = mcaspBindDev(&hMcaspDevDIT, MCASP_DIT_NUM, &mcaspDITParams);
-	if((status != MCASP_COMPLETED) || (hMcaspDevDIT == NULL))
+	if((MCASP_COMPLETED != status) || (NULL == hMcaspDevDIT))
 	{
 		MCASP_log("mcaspBindDev for McASP DIT channel Failed\n");
 		abort();
@@ -1064,7 +1064,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
      * ping-pong if it is ready to process more data.  Therefore, we make
      * semaphore timeout non-blocking
      */
-    semTimeout = 0;
+    semTimeout = 0U;
 #else
     /* Since Rx data arrival due to Tx buffering in non device-loopback cases,
      * and because we need data from Rx before submitting to the Tx stream, we
@@ -1073,7 +1073,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
     semTimeout = SemaphoreP_WAIT_FOREVER;
 #endif
 
-    i32Count = 0;
+    i32Count = 0U;
 
     /* Forever loop to continuously receive and transmit audio data           */
     while (loopForever)
@@ -1134,7 +1134,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
         /* For Device loopback test (ramp) we send a fininte number of frames. For other tests and
            the default case, the number of frames is inifinite and the demo never exits out of
            the for loop */
-        if(total_frames_sent==NUM_TEST_FRAMES * 2)
+        if((NUM_TEST_FRAMES * 2) == total_frames_sent)
             break;
 
         /* If we didn't reclaim any packets, sleep for small amount of time
@@ -1147,12 +1147,12 @@ void Audio_echo_Task(void *arg0, void *arg1)
          * to submit anymore to the stream.  Setting the status to FALSE will
          * prevent this from happening.
          */
-        if (rx_frames == NUM_TEST_FRAMES)
+        if (NUM_TEST_FRAMES == rx_frames)
             rxSemStatus = SemaphoreP_FAILURE;
-        if (tx_frames == NUM_TEST_FRAMES)
+        if (NUM_TEST_FRAMES == tx_frames)
             txSemStatus = SemaphoreP_FAILURE;
 
-        if (++timeout > 1000)
+        if (++timeout > 1000U)
         {
             MCASP_log("Error waiting for packets!\r\n");
             break;
@@ -1175,7 +1175,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
               */
              deviceloopback_process_samples(appBuf_ptr_rx->buf,rx_frame_size, RX);
              rx_frames++;
-             timeout = 0;
+             timeout = 0U;
 #endif
             /* Issue an empty buffer to the input stream                          */
             rxFrame[grxFrameIndexCount].cmd = MCASP_READ;
@@ -1267,7 +1267,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
              * Consequently Tx OverRun is triggered whose call back function is GlbErrXmt.
              * Put a CCS breakpoint at this function and watch it triggered.
              * Please note that the test may not recover from this state. */
-            bool dlbMode=FALSE; /* Forcefully disable */
+            bool dlbMode = BFALSE; /* Forcefully disable */
             Mcasp_localSubmitIoctl(hMcaspTxChan,Mcasp_IOCTL_SET_DLB_MODE,&dlbMode,NULL);
             TaskP_sleep(1000);
             /* The test should be hung by now after "Total 100 frames sent" */
@@ -1289,7 +1289,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
 
 
 
-			for(i32Count = 0; i32Count < (test_num_bufs); i32Count ++)
+			for(i32Count = 0U; i32Count < (test_num_bufs); i32Count ++)
 				{
                     if (NULL != rxbuf[i32Count])
                     {
@@ -1313,7 +1313,7 @@ void Audio_echo_Task(void *arg0, void *arg1)
 
 #ifdef DEVICE_LOOPBACK
 	/* Analyze and print results of the loopback test */
-	if(total_frames_sent!=NUM_TEST_FRAMES * 2) {
+	if((NUM_TEST_FRAMES * 2) != total_frames_sent) {
 	   MCASP_log("\nTEST FAIL: Test quit after sending %d frames "
                  "and receiving %d frames.\n", tx_frames, rx_frames);
 	}
@@ -1338,19 +1338,19 @@ void Audio_echo_Task(void *arg0, void *arg1)
  */
 int mcaspControlChanTest(void * mcaspChan)
 {
-    static unsigned int testCount = 0;
+    static unsigned int testCount = 0U;
     int status;
 
     status = MCASP_COMPLETED;
 
     /* Test this API every 100 frames to make sure it doesn't cause any audio glitch. */
-    if((testCount % 100) == 0) {
+    if(0U == (testCount % 100U)) {
         /* Testing the reconfiguration of wordWidth: first change it to 16. */
         mcasp_chanparam[0].wordWidth = Mcasp_WordLength_16;
         status = mcaspControlChan(mcaspChan, Mcasp_IOCTL_CHAN_PARAMS_WORD_WIDTH, &mcasp_chanparam[0]);
 
         /* If there is no error, change wordWidth back to 32. This shouldn't impact audio playing out. */
-        if(status == MCASP_COMPLETED) {
+        if(MCASP_COMPLETED == status) {
            mcasp_chanparam[0].wordWidth = Mcasp_WordLength_32;
            status = mcaspControlChan(mcaspChan, Mcasp_IOCTL_CHAN_PARAMS_WORD_WIDTH, &mcasp_chanparam[0]);
         }

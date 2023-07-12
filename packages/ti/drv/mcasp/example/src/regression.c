@@ -79,7 +79,7 @@ mcaspTestProfile_t mcaspTestProfile_1 = {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_1, /* testID */
    "I2S Default test , 1 ser, 2 tslots, buffer frmt: 1ser_multislot_interleaved",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -89,7 +89,7 @@ mcaspTestProfile_t mcaspTestProfile_1 = {
    Mcasp_BufferFormat_1SER_MULTISLOT_INTERLEAVED, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -98,7 +98,7 @@ mcaspTestProfile_t mcaspTestProfile_2 = {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_2, /* testID */
    "I2S 2 Ser Test: 2 ser, 2 tslots, buffer frmt: MULTISER_MULTISLOT_SEMI_INTERLEAVED_1",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -108,7 +108,7 @@ mcaspTestProfile_t mcaspTestProfile_2 = {
    Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_1, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -117,7 +117,7 @@ mcaspTestProfile_t mcaspTestProfile_3 = {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_3, /* testID */
    "I2S 4 timeslots , 2 ser, 4 tslots, frmt: MULTISER_MULTISLOT_SEMI_INTERLEAVED_1",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -127,7 +127,7 @@ mcaspTestProfile_t mcaspTestProfile_3 = {
    Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_1, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -138,7 +138,7 @@ mcaspTestProfile_t mcaspTestProfile_4 = {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_4, /* testID */
    "DSP Burst mode test, 1 ser, 1 tslot, frmt: 1SER_1SLOT",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -148,7 +148,7 @@ mcaspTestProfile_t mcaspTestProfile_4 = {
    Mcasp_BufferFormat_1SER_1SLOT, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -158,7 +158,7 @@ mcaspTestProfile_t mcaspTestProfile_5 = {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_5, /* testID */
    "I2S Interleaved-2 format test , 2 ser , 2 tslot, frmt: MULTISER_MULTISLOT_SEMI_INTERLEAVED_2",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -168,7 +168,7 @@ mcaspTestProfile_t mcaspTestProfile_5 = {
    Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_2, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -177,7 +177,7 @@ mcaspTestProfile_t mcaspTestProfile_6= {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_6, /* testID */
    "McASP Instance/port test , Inst 1:  2 ser, 2 tslots, frmt: MULTISER_MULTISLOT_SEMI_INTERLEAVED_2",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    1, /* instance_num */
@@ -187,7 +187,7 @@ mcaspTestProfile_t mcaspTestProfile_6= {
    Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_2, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -196,7 +196,7 @@ mcaspTestProfile_t mcaspTestProfile_7= {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_7, /* testID */
    "McASP Instance/port test  , Inst 2:  2 ser, 2 tslots, MULTISER_MULTISLOT_SEMI_INTERLEAVED_2",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    2, /* instance_num */
@@ -206,7 +206,7 @@ mcaspTestProfile_t mcaspTestProfile_7= {
    Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_2, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -216,7 +216,7 @@ mcaspTestProfile_t mcaspTestProfile_8= {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_8, /* testID */
    "I2S 1 ser non-interleaved format test , 1 ser , 2 tslot, frmt: 1SER_MULTISLOT_NON_INTERLEAVED",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -226,7 +226,7 @@ mcaspTestProfile_t mcaspTestProfile_8= {
    Mcasp_BufferFormat_1SER_MULTISLOT_NON_INTERLEAVED, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -236,7 +236,7 @@ mcaspTestProfile_t mcaspTestProfile_9= {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_9, /* testID */
    "DSP 1 ser non-interleaved format test ,2 ser , 1 tslot, frmt: MULTISER_1SLOT_SER_NON_INTERLEAVED,",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -246,7 +246,7 @@ mcaspTestProfile_t mcaspTestProfile_9= {
    Mcasp_BufferFormat_MULTISER_1SLOT_SER_NON_INTERLEAVED, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -255,7 +255,7 @@ mcaspTestProfile_t mcaspTestProfile_10= {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_10, /* testID */
    "DSP 1 ser multislot interleaved format test ,2 ser , 1 tslot, frmt: MULTISER_1SLOT_SER_INTERLEAVED,",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -265,7 +265,7 @@ mcaspTestProfile_t mcaspTestProfile_10= {
    Mcasp_BufferFormat_MULTISER_1SLOT_SER_INTERLEAVED, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -274,7 +274,7 @@ mcaspTestProfile_t mcaspTestProfile_11= {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_11, /* testID */
    "FIFO test: EventDMARatio=2 , I2S 1 ser ,2 tslot, frmt: 1SER_MULTISLOT_INTERLEAVED,,",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -284,7 +284,7 @@ mcaspTestProfile_t mcaspTestProfile_11= {
    Mcasp_BufferFormat_1SER_MULTISLOT_INTERLEAVED, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   TRUE, /* enableFifo */
+   BTRUE, /* enableFifo */
    2, /* hwFifoEventDMARatio */
 };
 
@@ -294,7 +294,7 @@ mcaspTestProfile_t mcaspTestProfile_12= {
    /***** Test ID/description  *****/
    MCASP_REGRESSION_TEST_12, /* testID */
    "FIFO disable: EventDMARatio=2 , I2S 1 ser ,2 tslot, frmt: 1SER_MULTISLOT_INTERLEAVED,,",	/* testDescription */
-   TRUE, /* powerCycleRequired */
+   BTRUE, /* powerCycleRequired */
 
    /***** Device Configuration *****/
    MCASP_NUM, /* instance_num */
@@ -304,7 +304,7 @@ mcaspTestProfile_t mcaspTestProfile_12= {
    Mcasp_BufferFormat_1SER_MULTISLOT_INTERLEAVED, /* bufferformat */
    Mcasp_OpMode_TDM, /* opMode */
    Mcasp_WordLength_32, /* wordLength */
-   FALSE, /* enableFifo */
+   BFALSE, /* enableFifo */
    1, /* hwFifoEventDMARatio */
 };
 
@@ -446,7 +446,7 @@ int32_t mcasp_regression_seek_testID()
 {
    mcaspTestProfile_t *testProfilePtr;
    uint32_t testprofile;
-   bool validInput=FALSE;
+   bool validInput = BFALSE;
    int32_t			selection;
    char Response[10];
 
@@ -459,15 +459,15 @@ int32_t mcasp_regression_seek_testID()
    MCASP_log (" Test ID:   Description    Powercycle Required?\n");  
    
      /* Display the menu*/
-     for(testprofile=0;testprofile<sizeof(mcaspTestProfiles)/sizeof(mcaspTestProfile_t *);testprofile++)
+     for(testprofile = 0;testprofile<sizeof(mcaspTestProfiles)/sizeof(mcaspTestProfile_t *);testprofile++)
      {
         testProfilePtr = mcaspTestProfiles[testprofile];
     
-        if(testProfilePtr==NULL) 
+        if(NULL == testProfilePtr) 
         {  /* End of test profiles */
 	      break;
 	    }
-        MCASP_log ("%5d      %20s       %4s \n",testProfilePtr->testID,testProfilePtr->testDescription,((testProfilePtr->powerCycleRequired==TRUE)?"Yes":"No"));
+        MCASP_log ("%5d      %20s       %4s \n",testProfilePtr->testID,testProfilePtr->testDescription,((BTRUE == testProfilePtr->powerCycleRequired)?"Yes":"No"));
 	 }
 
     MCASP_log ("%5d     %50s      %4s \n",MCASP_REGRESSION_TEST_EXIT,"Exit the regression","Yes");
@@ -479,18 +479,18 @@ int32_t mcasp_regression_seek_testID()
 	 selection = atoi(Response);
 
       if(selection >= 0  && selection <MCASP_REGRESSION_TEST_MAX) {
-		 validInput=TRUE;
+		 validInput = BTRUE;
 	  } else {
          
          if( !((selection == MCASP_REGRESSION_ALL_NON_POWERCYCLE_TESTS) || 
              (selection == MCASP_REGRESSION_TEST_EXIT)) ) {
              MCASP_log ("Invalid selection: %d !! Please enter a valid test ID from the table!!!\n", selection);
          } else {
-		   validInput=TRUE;
+		   validInput = BTRUE;
 		 }   
 	  }
 	  
-  } while(validInput==FALSE);
+  } while(BFALSE == validInput);
   
   return(selection);
 }
