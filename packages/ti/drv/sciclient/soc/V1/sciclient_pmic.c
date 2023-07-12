@@ -40,6 +40,7 @@
 #include <stdint.h>
 
 #include <ti/board/src/j721e_evm/include/board_power.h>
+#include <ti/drv/sciclient/sciclient.h>
 
 int32_t Sciclient_pmicShutdown(void)
 {

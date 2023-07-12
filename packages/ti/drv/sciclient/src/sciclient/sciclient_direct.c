@@ -569,6 +569,9 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                                 ret = Sciclient_pmicShutdown();
                             }
                         }
+                        else {
+                          ret = CSL_EFAIL;
+                        }
                     break;
                     default:
                         ret = set_device_handler((uint32_t*)tx_msg);
