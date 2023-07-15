@@ -189,9 +189,9 @@ bool Board_initI2C(void)
         BOARD_INIT_UART_STDIO;
 #endif
     boardStatus = Board_init(boardCfg);
-    if (boardStatus != BOARD_SOK)
+    if (BOARD_SOK != boardStatus)
     {
-        return (false);
+        return (BFALSE);
     }
     
     I2C_init();
@@ -221,13 +221,13 @@ bool Board_initI2C(void)
     CSL_ArmR5CPUInfo info;
 
     CSL_armR5GetCpuID(&info);
-    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 != info.grpId)
     {
         /*
          * Pulsar R5 core is on the Main domain, use the Main Pulsar
          * interrupt router
          */
-        if(info.cpuID == 0U)
+        if(0U == info.cpuID)
         {
             i2c_cfg.intNum = I2C_INST_WKUP_I2C0_INT_NUM_MAIN;
         }
@@ -254,9 +254,9 @@ bool Board_initI2C(void)
 
 #if defined (idkAM571x)
     boardStatus = Board_getIDInfo(&id);
-    if (boardStatus != BOARD_SOK)
+    if (BOARD_SOK != boardStatus)
     {
-        return (false);
+        return (BFALSE);
     }
     memcpy(eepromData, &id.header[I2C_EEPROM_TEST_ADDR],
            BOARD_EEPROM_HEADER_LENGTH - I2C_EEPROM_TEST_ADDR);
@@ -268,7 +268,7 @@ bool Board_initI2C(void)
 #if defined (evmK2G)
     /* Read the SoC info to get the System clock value */
     Board_getSoCInfo(&socInfo);
-    if(socInfo.sysClock != BOARD_SYS_CLK_DEFAULT)
+    if(BOARD_SYS_CLK_DEFAULT != socInfo.sysClock)
     {
         /* Get the default I2C init configurations */
         I2C_socGetInitCfg(I2C_EEPROM_INSTANCE, &i2c_cfg);
@@ -281,7 +281,7 @@ bool Board_initI2C(void)
 
 
     I2C_log("\n I2C Test: Using Instance %d", I2C_EEPROM_INSTANCE);
-    return (true);
+    return (BTRUE);
 }
 
 /*
@@ -301,7 +301,7 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
      * route wakeup domain I2C0 interrupt to C66x cores due to
      * the hardware limitation, use polling mode for eeprom test
      */
-    i2c_cfg.enableIntr = false;
+    i2c_cfg.enableIntr = BFALSE;
 #else
     i2c_cfg.enableIntr = test->intrMode;
 #endif
@@ -318,18 +318,18 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
  */
 static bool CompareData(char *expData, char *rxData, uint32_t length)
 {
-    uint32_t idx = 0;
-    uint32_t match = 1;
-    bool retVal = false;
+    uint32_t idx = 0U;
+    uint32_t match = UTRUE;
+    bool retVal = BFALSE;
 
-    for(idx = 0; ((idx < length) && (match != 0)); idx++)
+    for(idx = 0U; ((idx < length) && (UFALSE != match)); idx++)
     {
-        if(*expData != *rxData) match = 0;
+        if(*expData != *rxData) match = UFALSE;
         expData++;
         rxData++;
     }
 
-    if(match == 1) retVal = true;
+    if(UTRUE == match) retVal = BTRUE;
 
     return retVal;
 }
@@ -343,12 +343,12 @@ static bool i2c_bitrate_test (I2C_BitRate bitRate, I2C_Tests *test)
     char            txBuf[I2C_EEPROM_TEST_LENGTH + I2C_EEPROM_ADDR_SIZE] = {0x00, };
     char            rxBuf[I2C_EEPROM_TEST_LENGTH];
     int16_t         status;
-    bool            copyData = FALSE;
-    bool            testStatus = true;
+    bool            copyData = BFALSE;
+    bool            testStatus = BTRUE;
 
     /* Set the I2C EEPROM write/read address */
-    txBuf[0] = (I2C_EEPROM_TEST_ADDR >> 8) & 0xff; /* EEPROM memory high address byte */
-    txBuf[1] = I2C_EEPROM_TEST_ADDR & 0xff;        /* EEPROM memory low address byte */
+    txBuf[0] = (I2C_EEPROM_TEST_ADDR >> 8) & 0xFF; /* EEPROM memory high address byte */
+    txBuf[1] = I2C_EEPROM_TEST_ADDR & 0xFF;        /* EEPROM memory low address byte */
 
     I2C_initConfig(I2C_EEPROM_INSTANCE, test);
 
@@ -379,7 +379,7 @@ static bool i2c_bitrate_test (I2C_BitRate bitRate, I2C_Tests *test)
         I2C_log("\n I2C Test: ");
         I2C_log(bitRateLog[bitRate]);
         I2C_log(": Write Data Transfer failed. \n");
-        testStatus = false;
+        testStatus = BFALSE;
         goto Err;
     }
 
@@ -389,7 +389,7 @@ static bool i2c_bitrate_test (I2C_BitRate bitRate, I2C_Tests *test)
 #else
 #if defined (evmK2H) || defined (evmK2K) || defined (evmK2E) || defined (evmK2L) || defined (evmK2G) || defined (iceK2G) || defined (EVM_OMAPL137) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined(j7200) || defined (am64x_evm) || defined (j721s2_evm) || defined (j784s4_evm)
     /* EEPROM write disabled on K2, need copy data */
-    copyData = TRUE;
+    copyData = BTRUE;
 #endif
 #endif
     memset(rxBuf, 0, I2C_EEPROM_TEST_LENGTH);
@@ -407,13 +407,13 @@ static bool i2c_bitrate_test (I2C_BitRate bitRate, I2C_Tests *test)
         I2C_log("\n I2C Test: ");
         I2C_log(bitRateLog[bitRate]);
         I2C_log(": Read Data Transfer failed. \n");
-        testStatus = false;
+        testStatus = BFALSE;
         goto Err;
     }
     else
     {
 #if defined (evmC6678) || defined (evmC6657) || defined (am65xx_evm) || defined (am65xx_idk) || defined (j721e_sim) || defined (j721e_evm) || defined (j7200_evm) || defined (am64x_evm) || defined (j721s2_evm) || defined (j784s4_evm)
-        copyData = TRUE;
+        copyData = BTRUE;
 #endif
 
         /* read only test, copy data from rx buffer to eepromData to pass the test */
@@ -421,7 +421,7 @@ static bool i2c_bitrate_test (I2C_BitRate bitRate, I2C_Tests *test)
             memcpy(eepromData, rxBuf, I2C_EEPROM_TEST_LENGTH);
 
         testStatus = CompareData(&eepromData[0], &rxBuf[0], I2C_EEPROM_TEST_LENGTH);
-        if(false == testStatus)
+        if(BFALSE == testStatus)
         {
             I2C_log("\n I2C Test: ");
             I2C_log(bitRateLog[bitRate]);
@@ -440,13 +440,13 @@ Err:
 
 static bool I2C_bitrate_test(void *arg)
 {
-    bool       testResult = true;
+    bool       testResult = BTRUE;
     uint32_t   i;
 
     for (i = 0; i < 2; i++)
     {
         testResult = i2c_bitrate_test((I2C_BitRate)i, (I2C_Tests *)arg);
-        if (testResult == false)
+        if (BFALSE == testResult)
         {
             break;
         }
@@ -462,7 +462,7 @@ static bool I2C_Probe_BusFrequency_test(void *arg)
     I2C_Handle      handle;
     I2C_Params      i2cParams;
     uint32_t        busFrequency;
-    bool            status = false;
+    bool            status = BFALSE;
     int16_t         transferStatus;
     I2C_Transaction i2cTransaction;
     uint32_t        slaveAddress;
@@ -476,14 +476,14 @@ static bool I2C_Probe_BusFrequency_test(void *arg)
 
     I2C_Params_init(&i2cParams);
     handle = I2C_open(I2C_EEPROM_INSTANCE, &i2cParams);
-    if (handle == NULL)
+    if (NULL == handle)
     {
         goto Err;
     }
 
     /* Set the I2C EEPROM write/read address */
-    txBuf[0] = (I2C_EEPROM_TEST_ADDR >> 8) & 0xff; /* EEPROM memory high address byte */
-    txBuf[1] = I2C_EEPROM_TEST_ADDR & 0xff;        /* EEPROM memory low address byte */
+    txBuf[0] = (I2C_EEPROM_TEST_ADDR >> 8) & 0xFF; /* EEPROM memory high address byte */
+    txBuf[1] = I2C_EEPROM_TEST_ADDR & 0xFF;        /* EEPROM memory low address byte */
 
 
     /* Test Runtime Configuration of Bus Frequency */
@@ -510,7 +510,7 @@ static bool I2C_Probe_BusFrequency_test(void *arg)
 
     status = CompareData(&eepromData[0], &rxBuf[0], I2C_EEPROM_TEST_LENGTH);
 
-    if(true == status)
+    if(BTRUE == status)
     {
         /* Test runtime configuration of 100 kHz */
         busFrequency = I2C_100kHz;
@@ -537,7 +537,7 @@ static bool I2C_Probe_BusFrequency_test(void *arg)
 
     /* Test Probe functionality */
 
-    if(true == status)
+    if(BTRUE == status)
     {
         /* Probe test with valid slave address */
         slaveAddress = I2C_EEPROM_ADDR;
@@ -545,17 +545,17 @@ static bool I2C_Probe_BusFrequency_test(void *arg)
 
         if(I2C_STATUS_SUCCESS == controlStatus)
         {
-            status = true;
+            status = BTRUE;
         }
         else
         {
-            status = false;
+            status = BFALSE;
             I2C_log("\n I2C Test: Probe test failed. \n");
             goto Err;
         }
     }
 
-    if(true == status)
+    if(BTRUE == status)
     {
         /* Probe test with invalid slave address */
         slaveAddress = 0x70U;
@@ -563,17 +563,17 @@ static bool I2C_Probe_BusFrequency_test(void *arg)
 
         if(I2C_STATUS_ERROR == controlStatus)
         {
-            status = true;
+            status = BTRUE;
         }
         else
         {
-            status = false;
+            status = BFALSE;
             I2C_log("\n I2C Test: Probe test failed. \n");
             goto Err;
         }
     }
 
-    if(true == status)
+    if(BTRUE == status)
     {
         /* Test bus recovery functionality */
         delayValue = 2000U;
@@ -601,7 +601,7 @@ static bool I2C_Probe_BusFrequency_test(void *arg)
         }
         else
         {
-            status = false;
+            status = BFALSE;
         }
     }
 
@@ -618,7 +618,7 @@ static bool I2C_timeout_test(void *arg)
     I2C_Handle      handle;
     I2C_Params      i2cParams;
     uint32_t        busFrequency;
-    bool            status = false;
+    bool            status = BFALSE;
     int16_t         transferStatus;
     I2C_Transaction i2cTransaction;
     char            txBuf[I2C_EEPROM_TEST_LENGTH + I2C_EEPROM_ADDR_SIZE] = {0x00, };
@@ -633,7 +633,7 @@ static bool I2C_timeout_test(void *arg)
 
     I2C_Params_init(&i2cParams);
     handle = I2C_open(I2C_EEPROM_INSTANCE, &i2cParams);
-    if (handle == NULL)
+    if (NULL == handle)
     {
         goto Err;
     }
@@ -656,7 +656,7 @@ static bool I2C_timeout_test(void *arg)
 
     if(I2C_STS_ERR_TIMEOUT == transferStatus)
     {
-        status = true;
+        status = BTRUE;
     }
 
 Err:
@@ -683,11 +683,14 @@ void I2C_test_print_test_desc(I2C_Tests *test)
 
 I2C_Tests I2c_tests[] =
 {
-    /* testFunc                   testID                       dma    intr   cbMode timeout                  testDesc */
-    {I2C_bitrate_test,            I2C_TEST_ID_BIT_RATE,        false, true,  false, SemaphoreP_WAIT_FOREVER, "\r\n I2C bit rate test in interrupt mode"},
-#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X) || defined (SOC_J784S4)
+    /* testFunc                   testID                       dma     intr    cbMode  timeout                  testDesc */
+    {I2C_bitrate_test,            I2C_TEST_ID_BIT_RATE,        BFALSE, BTRUE,  BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C bit rate test in interrupt mode"},
+#if defined (SOC_AM335X) || defined (SOC_AM437x) || defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM65XX) || defined (SOC_AM64X)
     {I2C_Probe_BusFrequency_test, I2C_TEST_ID_PROBE_BUS_FREQ,  false, true,  false, SemaphoreP_WAIT_FOREVER, "\r\n I2C probe bus freq test in interrupt mode"},
     {I2C_timeout_test,            I2C_TEST_ID_TIMEOUT_INT,     false, true,  false, 1,                       "\r\n I2C timeout test in interrupt mode"},
+#elif defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J784S4)
+    {I2C_Probe_BusFrequency_test, I2C_TEST_ID_PROBE_BUS_FREQ,  BFALSE, BTRUE,  BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C probe bus freq test in interrupt mode"},
+    {I2C_timeout_test,            I2C_TEST_ID_TIMEOUT_INT,     BFALSE, BTRUE,  BFALSE, 1,                       "\r\n I2C timeout test in interrupt mode"},
 #endif
     {NULL, },
 };
@@ -709,11 +712,11 @@ void tearDown(void)
 
 bool test_I2C_Eeprom_common(void)
 {
-    bool       testResult = true;
+    bool       testResult = BTRUE;
     uint32_t   i;
     I2C_Tests *test;
 
-    if (Board_initI2C() == false)
+    if (BFALSE == Board_initI2C())
     {
         I2C_log("\r\n %s Board_initI2C failed\r\n");
 #ifdef UNITY_INCLUDE_CONFIG_H
@@ -722,22 +725,22 @@ bool test_I2C_Eeprom_common(void)
         while(1);
     }
 
-    for (i = 0; ; i++)
+    for (i = 0U; ; i++)
     {
         test = &I2c_tests[i];
-        if (test->testFunc == NULL)
+        if (NULL == test->testFunc)
         {
             break;
         }
         I2C_test_print_test_desc(test);
-        if (test->testFunc((void *)test) == true)
+        if (BTRUE == test->testFunc((void *)test))
         {
             I2C_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             I2C_log("\r\n %s have failed\r\n", test->testDesc);
-            testResult = false;
+            testResult = BFALSE;
             break;
         }
     }
@@ -746,10 +749,10 @@ bool test_I2C_Eeprom_common(void)
 
 void test_I2C_Eeprom_TestApp(void)
 {
-    bool       testResult = true;
+    bool       testResult = BTRUE;
     testResult = test_I2C_Eeprom_common();
 
-    if(testResult == true)
+    if(BTRUE == testResult)
     {
         I2C_log("\n All tests have passed. \n");
 #ifdef UNITY_INCLUDE_CONFIG_H
@@ -764,17 +767,17 @@ void test_I2C_Eeprom_TestApp(void)
 #endif
     }
 
-    while (true)
+    while (BTRUE)
     {
     }
 }
 
 void test_I2C_Eeprom_BareMetal_TestApp(void)
 {
-    bool       testResult = true;
+    bool       testResult = BTRUE;
     testResult = test_I2C_Eeprom_common();
 
-    if(testResult == true)
+    if(BTRUE == testResult)
     {
         I2C_log("\n All tests have passed. \n");
 #ifdef UNITY_INCLUDE_CONFIG_H
@@ -789,7 +792,7 @@ void test_I2C_Eeprom_BareMetal_TestApp(void)
 #endif
     }
 
-    while (true)
+    while (BTRUE)
     {
     }
 }
@@ -828,11 +831,11 @@ int main ()
 #if defined(UNITY_INCLUDE_CONFIG_H) && (defined(SOC_J721E) || defined (SOC_J784S4) || defined(SOC_J7200) || defined (SOC_AM65XX) || defined (SOC_AM64X))
     test_I2C_Eeprom_TestApp_runner();
 #else
-    bool       testResult = true;
+    bool       testResult = BTRUE;
     uint32_t   i;
     I2C_Tests *test;
 
-    if (Board_initI2C() == false)
+    if (BFALSE == Board_initI2C())
     {
 #ifdef RTOS_ENV
         return;
@@ -844,23 +847,23 @@ int main ()
     for (i = 0; ; i++)
     {
         test = &I2c_tests[i];
-        if (test->testFunc == NULL)
+        if (NULL == test->testFunc)
         {
             break;
         }
         I2C_test_print_test_desc(test);
-        if (test->testFunc((void *)test) == true)
+        if (BTRUE == test->testFunc((void *)test))
         {
             I2C_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             I2C_log("\r\n %s have failed\r\n", test->testDesc);
-            testResult = false;
+            testResult = BFALSE;
             break;
         }
     }
-    if(testResult == true)
+    if(BTRUE == testResult)
     {
         I2C_log("\n All tests have passed. \n");
     }
@@ -868,7 +871,7 @@ int main ()
     {
         I2C_log("\n Some tests have failed. \n");
     }
-    while (true)
+    while (BTRUE)
     {
     }
 #endif
@@ -900,9 +903,9 @@ int main(void)
     taskParams.stack = (void *) gEepromReadAppStack;
 
     task = TaskP_create(&i2c_test, &taskParams);
-    if (task == NULL) {
+    if (NULL == task) {
         OS_stop();
-        OSAL_Assert(task == NULL);
+        OSAL_Assert(NULL == task);
     }
 
     /* Start RTOS */

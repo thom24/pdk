@@ -74,7 +74,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C0_POINTRPEND_0,  /* intNum */
         0,                                  /* eventId */
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             /* default own slave addresses */
             0x70, 0x0, 0x0, 0x0
@@ -86,7 +86,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C1_POINTRPEND_0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x71, 0x0, 0x0, 0x0
         },
@@ -97,7 +97,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C2_POINTRPEND_0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x72, 0x0, 0x0, 0x0
         },
@@ -108,7 +108,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C3_POINTRPEND_0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x73, 0x0, 0x0, 0x0
         },
@@ -119,7 +119,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C4_POINTRPEND_0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x74, 0x0, 0x0, 0x0
         },
@@ -130,7 +130,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C5_POINTRPEND_0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x75, 0x0, 0x0, 0x0
         },
@@ -141,7 +141,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_COMPUTE_CLUSTER0_MSMC_1MB_GIC_SPI_I2C6_POINTRPEND_0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x76, 0x0, 0x0, 0x0
         },
@@ -168,7 +168,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_I2C0_POINTRPEND_0,
         0,                                  /* eventId */
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             /* default own slave addresses */
             0x70, 0x0, 0x0, 0x0
@@ -180,7 +180,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         CSLR_MCU_R5FSS0_CORE0_INTR_MCU_I2C1_POINTRPEND_0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x71, 0x0, 0x0, 0x0
         },
@@ -191,7 +191,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x72, 0x0, 0x0, 0x0
         },
@@ -202,7 +202,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x73, 0x0, 0x0, 0x0
         },
@@ -213,7 +213,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x74, 0x0, 0x0, 0x0
         },
@@ -224,7 +224,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x75, 0x0, 0x0, 0x0
         },
@@ -235,7 +235,7 @@ I2C_HwAttrs i2cInitCfg[I2C_HWIP_MAX_CNT] =
         0,
         0,
         I2C_INPUT_CLK,
-        (bool)true,
+        BTRUE,
         {
             0x76, 0x0, 0x0, 0x0
         },
@@ -338,15 +338,15 @@ int32_t I2C_socGetInitCfg(uint32_t idx, I2C_HwAttrs *cfg)
  */
 int32_t I2C_socSetInitCfg(uint32_t idx, const I2C_HwAttrs *cfg)
 {
-    int32_t ret = 0;
+    int32_t ret = I2C_STATUS_SUCCESS;
 
-    if (idx < I2C_HWIP_MAX_CNT)
+    if (I2C_HWIP_MAX_CNT > idx)
     {
         i2cInitCfg[idx] = *cfg;
     }
     else
     {
-        ret = (int32_t)(-1);
+        ret = I2C_STATUS_ERROR;
     }
 
     return ret;
@@ -371,18 +371,18 @@ void I2C_socInit(void);
 void I2C_socInit(void)
 {
     uint32_t         i;
-    CSL_ArmR5CPUInfo info = {0};
+    CSL_ArmR5CPUInfo info;
 
     CSL_armR5GetCpuID(&info);
-    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
+    if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0 != info.grpId)
     {
         /* Pulsar R5 core is on the Main domain */
-        for (i = 0; i < I2C_HWIP_MAX_CNT; i++)
+        for (i = 0U; i < I2C_HWIP_MAX_CNT; i++)
         {
             /* Configure the Main SS UART instances for Main SS Pulsar R5 */
             i2cInitCfg[i].baseAddr = (uint32_t)CSL_I2C0_CFG_BASE + (0x10000U * i);
 
-            if (i < 2U)
+            if (2U > i)
             {
                 i2cInitCfg[i].intNum = CSLR_R5FSS0_CORE0_INTR_I2C0_POINTRPEND_0 + i;
             }
@@ -411,7 +411,7 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
     int32_t                              retVal;
     I2C_HwAttrs const                   *hwAttrs = (I2C_HwAttrs const *)(pHwAttrs);
 
-    if (hwAttrs->baseAddr == CSL_WKUP_I2C0_CFG_BASE)
+    if (CSL_WKUP_I2C0_CFG_BASE == hwAttrs->baseAddr)
     {
         /*
          * The interrupt path is established using the DMSC firmware
@@ -421,9 +421,9 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
         src_index = (uint16_t)hwAttrs->eventId;  /* set to 0 for non-event based interrupt */
 
         CSL_armR5GetCpuID(&r5CpuInfo);
-        if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
+        if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1 == r5CpuInfo.grpId)
         {
-            if(r5CpuInfo.cpuID == 0U)
+            if(0U == r5CpuInfo.cpuID)
             {
                 dst_id = TISCI_DEV_R5FSS0_CORE0;
             }
@@ -432,9 +432,9 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
                 dst_id = TISCI_DEV_R5FSS0_CORE1;
             }
         }
-        else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
+        else if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2 == r5CpuInfo.grpId)
         {
-            if(r5CpuInfo.cpuID == 0U)
+            if(0U == r5CpuInfo.cpuID)
             {
                 dst_id = TISCI_DEV_R5FSS1_CORE0;
             }
@@ -448,7 +448,7 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
             ret = I2C_STATUS_ERROR;
         }
 
-        if (ret == I2C_STATUS_SUCCESS)
+        if (I2C_STATUS_SUCCESS == ret)
         {
             if(setIntrPath)
             {
@@ -495,7 +495,7 @@ static int32_t I2C_configSocIntrPath(const void *pHwAttrs, bool setIntrPath)
                             (const struct tisci_msg_rm_irq_release_req *)&rmIrqRelease,
                              SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-            if ((int32_t)0 != retVal)
+            if (CSL_PASS != retVal)
             {
                ret = I2C_STATUS_ERROR;
             }

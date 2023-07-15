@@ -54,7 +54,7 @@ extern void I2C_socInit(void);
 #endif
 
 /* Used to check status and initialization */
-static uint32_t gisI2CInitDone = 0U;
+static uint32_t gisI2CInitDone = UFALSE;
 
 /* Default I2C parameters structure */
 const I2C_Params I2C_defaultParams = {
@@ -75,8 +75,8 @@ const I2C_Transaction I2C_defaultTransaction = {
     NULL,                         /* arg */
     NULL,                         /* nextPtr */
     I2C_WAIT_FOREVER,             /* timeout */
-    (bool)true,                   /* masterMode */
-    (bool)false                   /* expandSA */
+    BTRUE,                        /* masterMode */
+    BFALSE                        /* expandSA */
 };
 
 /*
@@ -85,7 +85,7 @@ const I2C_Transaction I2C_defaultTransaction = {
 void I2C_close(I2C_Handle handle)
 {
     /* Input parameter validation */
-    if (handle != NULL)
+    if (NULL != handle)
     {
         handle->fxnTablePtr->closeFxn(handle);
     }
@@ -99,7 +99,7 @@ int32_t I2C_control(I2C_Handle handle, uint32_t cmd, void *arg)
     int32_t retVal = I2C_STATUS_ERROR;
 
     /* Input parameter validation */
-    if (handle != NULL)
+    if (NULL != handle)
     {
         retVal = handle->fxnTablePtr->controlFxn(handle, cmd, arg);
     }
@@ -114,10 +114,10 @@ void I2C_init(void)
 {
     uint32_t I2C_count = 0U;
 
-    if(0U == gisI2CInitDone)
+    if(UFALSE == gisI2CInitDone)
     {
         /* Call each driver's init function */
-        for (I2C_count = 0; I2C_config[I2C_count].fxnTablePtr != NULL; I2C_count++) {
+        for (I2C_count = 0U; (NULL != I2C_config[I2C_count].fxnTablePtr); I2C_count++) {
             I2C_config[I2C_count].fxnTablePtr->initFxn((I2C_Handle)&(I2C_config[I2C_count]));
         }
 
@@ -125,7 +125,7 @@ void I2C_init(void)
     I2C_socInit();
 #endif
 
-        gisI2CInitDone = 1U;
+        gisI2CInitDone = UTRUE;
     }
 }
 
@@ -137,7 +137,7 @@ I2C_Handle I2C_open(uint32_t idx, I2C_Params *params)
     I2C_Handle handle = NULL;
 
     /* Input parameter validation */
-    if ((params != NULL) && (idx < (sizeof(I2C_config)/sizeof(I2C_config[0]))))
+    if ((NULL != params) && (idx < (sizeof(I2C_config)/sizeof(I2C_config[0]))))
     {
         handle = (I2C_Handle)&(I2C_config[idx]);
         handle = handle->fxnTablePtr->openFxn(handle, params);
@@ -152,7 +152,7 @@ I2C_Handle I2C_open(uint32_t idx, I2C_Params *params)
 void I2C_Params_init(I2C_Params *params)
 {
     /* Input parameter validation */
-    if (params != NULL)
+    if (NULL != params)
     {
         *params = I2C_defaultParams;
     }
@@ -166,7 +166,7 @@ int16_t I2C_transfer(I2C_Handle handle, I2C_Transaction *transaction)
     int16_t status = I2C_STS_ERR;
 
     /* Input parameter validation */
-    if ((handle != NULL) && (transaction != NULL))
+    if ((NULL != handle) && (NULL != transaction))
     {
         status = handle->fxnTablePtr->transferFxn(handle, transaction);
     }

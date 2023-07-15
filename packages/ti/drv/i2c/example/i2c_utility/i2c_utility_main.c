@@ -204,7 +204,7 @@ uint32_t gCurrInst = 6U;
 char gInputStr[APP_I2C_MAX_IN_STRING];
 char *gInputArgs[128];
 uint32_t gNumArgs;
-Bool gInitDone = FALSE;
+Bool gInitDone = UFALSE;
 I2C_Handle gI2cHandle = NULL;
 uint8_t gByteOrder = BOARD_I2C_REG_ADDR_MSB_FIRST;
 uint8_t gFileReadLoc = 0U;
@@ -228,7 +228,7 @@ static int32_t App_file(void);
 static int32_t App_writeRegN(void);
 static int32_t App_readRegRaw(void);
 static int32_t App_deviceI2cProbeAll(uint32_t inst);
-static int xstrtoi(char *hex);
+static int32_t xstrtoi(char *hex);
 static int32_t HextoDec(char *hex, int32_t l);
 static char xtod(char c);
 static int32_t App_setupI2CInst(void);
@@ -248,7 +248,7 @@ static int32_t App_gets(char *str);
 /* ========================================================================== */
 int32_t main(void)
 {
-    Bool done = FALSE;
+    Bool done = UFALSE;
     Board_STATUS status;
     Board_initCfg boardCfg;
     int32_t retVal = CSL_SOK;
@@ -260,7 +260,7 @@ int32_t main(void)
     boardCfg |= BOARD_INIT_UART_STDIO;
 #endif
     status = Board_init(boardCfg);
-    if(status != BOARD_SOK)
+    if(BOARD_SOK != status)
     {
         App_consolePrintf(" Board Init FAILED!!!\r\n");
     }
@@ -275,16 +275,16 @@ int32_t main(void)
     retVal = App_showSetting();
     retVal = App_showMenu();
 
-    if (retVal == CSL_SOK)
+    if (CSL_SOK == retVal)
     {
         while (!done)
         {
             App_consolePrintf("\n\r I2C-%d> ", gCurrInst);
-            done = App_exeCmd(TRUE);
+            done = App_exeCmd(UTRUE);
         }
     }
 
-    if (gInitDone == TRUE)
+    if (UTRUE == gInitDone)
     {
         I2C_close(gI2cHandle);
     }
@@ -332,7 +332,7 @@ static int32_t App_changeSetting(void)
 
     App_consolePrintf("%s", &gAppSettingSubMenu[0U]);
     retVal = App_getNum(&mode);
-    if (retVal == CSL_SOK)
+    if (CSL_SOK == retVal)
     {
         switch (mode)
         {
@@ -347,10 +347,10 @@ static int32_t App_changeSetting(void)
                 }
                 App_consolePrintf(" \r\n Enter I2C Instance ID:");
                 retVal = App_getNum(&mode);
-                if (retVal == CSL_SOK)
+                if (CSL_SOK == retVal)
                 {
                     /* Close older I2C instance */
-                    if (gInitDone == TRUE)
+                    if (UTRUE == gInitDone)
                     {
                         I2C_close(gI2cHandle);
                         gI2cHandle = NULL;
@@ -371,7 +371,7 @@ static int32_t App_changeSetting(void)
                 }
                 App_consolePrintf(" \r\n Enter I2C Mode ID:");
                 retVal = App_getNum(&mode);
-                if (retVal == CSL_SOK)
+                if (CSL_SOK == retVal)
                 {
                     gAddrDataMode = mode;
                 }
@@ -386,9 +386,9 @@ static int32_t App_changeSetting(void)
                 }
                 App_consolePrintf(" \r\n Enter Byte Ordering Mode ID:");
                 retVal = App_getNum(&mode);
-                if (retVal == CSL_SOK)
+                if (CSL_SOK == retVal)
                 {
-                    gByteOrder = mode;
+                    gByteOrder = (uint8_t)mode;
                 }
             break;
             case 3:
@@ -402,9 +402,9 @@ static int32_t App_changeSetting(void)
                 }
                 App_consolePrintf(" \r\n Enter File Read Mode ID:");
                 retVal = App_getNum(&mode);
-                if (retVal == CSL_SOK)
+                if (CSL_SOK == retVal)
                 {
-                    gFileReadLoc = mode;
+                    gFileReadLoc = (uint8_t)mode;
                 }
             break;
             default:
@@ -418,13 +418,13 @@ static int32_t App_changeSetting(void)
 
 static Bool App_exeCmd(Bool echoCmd)
 {
-    Bool  done = FALSE;
+    Bool  done = UFALSE;
     int32_t retVal = CSL_SOK;
 
     retVal = App_gets(&gInputStr[0U]);
-    if (retVal != CSL_SOK)
+    if (CSL_SOK != retVal)
     {
-        done = TRUE;
+        done = UTRUE;
     }
 
     else
@@ -438,56 +438,56 @@ static Bool App_exeCmd(Bool echoCmd)
         gNumArgs = App_tokenizeInput(gInputStr, gInputArgs);
         if (gNumArgs)
         {
-            if (strcmp(gInputArgs[0U], "quit") == 0)
+            if (0 == strcmp(gInputArgs[0U], "quit"))
             {
-                done = TRUE;
+                done = UTRUE;
             }
-            else if (strcmp(gInputArgs[0U], "menu") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "menu"))
             {
                 retVal = App_showMenu();
             }
-            else if ((strcmp(gInputArgs[0U], "show") == 0) &&
-                     (strcmp(gInputArgs[1U], "setting") == 0))
+            else if ((0 == strcmp(gInputArgs[0U], "show")) &&
+                     (0 == strcmp(gInputArgs[1U], "setting")))
             {
                 retVal = App_showSetting();
             }
-            else if (strcmp(gInputArgs[0U], "setting") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "setting"))
             {
                 retVal = App_changeSetting();
-                if (retVal != CSL_SOK)
+                if (CSL_SOK != retVal)
                 {
-                    done = TRUE;
+                    done = UTRUE;
                 }
             }
-            else if (strcmp(gInputArgs[0U], "help") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "help"))
             {
                 retVal = App_showMenu();
             }
-            else if (strcmp(gInputArgs[0U], "rd") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "rd"))
             {
                 retVal = App_readRegs();
             }
-            else if (strcmp(gInputArgs[0U], "wr") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "wr"))
             {
                 retVal = App_writeReg();
             }
-            else if (strcmp(gInputArgs[0U], "wait") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "wait"))
             {
                 retVal = App_delay();
             }
-            else if (strcmp(gInputArgs[0U], "file") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "file"))
             {
                 retVal = App_file();
             }
-            else if (strcmp(gInputArgs[0U], "wr_raw") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "wr_raw"))
             {
                 retVal = App_writeRegN();
             }
-            else if (strcmp(gInputArgs[0U], "rd_raw") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "rd_raw"))
             {
                 retVal = App_readRegRaw();
             }
-            else if (strcmp(gInputArgs[0U], "probe") == 0)
+            else if (0 == strcmp(gInputArgs[0U], "probe"))
             {
                 retVal = App_deviceI2cProbeAll(gCurrInst);
             }
@@ -501,10 +501,10 @@ static uint32_t App_tokenizeInput(char *inStr, char *argv[])
 {
     char   delimiters[] = " \r\n";
     char  *token;
-    uint32_t argc = 0;
+    uint32_t argc = 0U;
 
     token = strtok(inStr, delimiters);
-    while (token != NULL)
+    while (NULL != token)
     {
         argv[argc] = token;
         argc++;
@@ -523,13 +523,13 @@ static int32_t App_readRegs(void)
     int32_t  retVal   = CSL_SOK;
     //uint32_t currTime = 0, timeElapsed = 0;
 
-    if (gNumArgs == 4)
+    if (4U == gNumArgs)
     {
         devAddr = xstrtoi(gInputArgs[1]);
         regAddr = xstrtoi(gInputArgs[2]);
         numRegs = xstrtoi(gInputArgs[3]);
 
-        if (numRegs < APP_I2C_MAX_REG_RD_WR)
+        if (APP_I2C_MAX_REG_RD_WR > numRegs)
         {
             App_consolePrintf(
             "\n\r I2C: Reading 0x%02x registers starting from REG 0x%02x of device 0x%02x ... !!!\r\n",
@@ -578,7 +578,7 @@ static int32_t App_readRegs(void)
                     default:
                     break;
                 }
-                if(ret == 0)
+                if(BOARD_SOK == ret)
                 {
                     App_consolePrintf(" I2C: 0x%x = 0x%x\r\n",
                                 (regAddr + loopCnt),
@@ -609,7 +609,7 @@ static int32_t App_writeReg(void)
     uint32_t regVal;
     int32_t  retVal = CSL_SOK;
 
-    if (gNumArgs == 4)
+    if (4U == gNumArgs)
     {
         devAddr = xstrtoi(gInputArgs[1]);
         regAddr = xstrtoi(gInputArgs[2]);
@@ -683,7 +683,7 @@ static int32_t App_writeReg(void)
             default:
             break;
         }
-        if(ret == 0)
+        if(BOARD_SOK == ret)
         {
             App_consolePrintf(" I2C Read back value: 0x%x = 0x%x\r\n",
                         (regAddr),
@@ -708,7 +708,7 @@ static int32_t App_delay(void)
     int32_t retVal = CSL_SOK;
     uint32_t timeInMsecs;
 
-    if (gNumArgs > 1)
+    if (1U < gNumArgs)
     {
         timeInMsecs = atoi(gInputArgs[1]);
 
@@ -729,26 +729,26 @@ static int32_t App_file(void)
 {
     int32_t retVal = CSL_SOK;
 
-    if (gFileReadLoc == 0U)
+    if (0U == gFileReadLoc)
     {
         FILE *fp;
 
-        if (gNumArgs > 1U)
+        if (1U < gNumArgs)
         {
             strncpy(gFileName, gInputArgs[1], (sizeof (gFileName) - 1U));
             gFileName[sizeof (gFileName) - 1] = '\0';
 
             fp = fopen(gFileName, "r");
-            if (fp == NULL)
+            if (NULL == fp)
             {
                 retVal = CSL_EFAIL;
                 App_consolePrintf(" I2C: Unable to open file [%s] for reading!!! \r\n", gFileName);
             }
-            if (retVal == CSL_SOK)
+            if (CSL_SOK == retVal)
             {
                 App_consolePrintf("\n\r I2C: Reading from file [%s] !!! \r\n", gFileName);
                 /* Read from file line by line */
-                while ( fgets(gLine, sizeof(gLine), fp) != NULL )
+                while ( NULL != fgets(gLine, sizeof(gLine), fp) )
                 {
                    /* parse read line here */
                    App_consolePrintf("\n\r Parsing for the line: %s", gLine);
@@ -756,27 +756,27 @@ static int32_t App_file(void)
                    if (gNumArgs)
                    {
                        /* Ignore return types of the function call for file read*/
-                       if (strcmp(gInputArgs[0U], "rd") == 0)
+                       if (0 == strcmp(gInputArgs[0U], "rd"))
                         {
                             (void)App_readRegs();
                         }
-                        else if (strcmp(gInputArgs[0U], "wr") == 0)
+                        else if (0 == strcmp(gInputArgs[0U], "wr"))
                         {
                             (void)App_writeReg();
                         }
-                        else if (strcmp(gInputArgs[0U], "wait") == 0)
+                        else if (0 == strcmp(gInputArgs[0U], "wait"))
                         {
                             (void)App_delay();
                         }
-                        else if (strcmp(gInputArgs[0U], "wr_raw") == 0)
+                        else if (0 == strcmp(gInputArgs[0U], "wr_raw"))
                         {
                             (void)App_writeRegN();
                         }
-                        else if (strcmp(gInputArgs[0U], "rd_raw") == 0)
+                        else if (0 == strcmp(gInputArgs[0U], "rd_raw"))
                         {
                             (void)App_readRegRaw();
                         }
-                        else if (strcmp(gInputArgs[0U], "probe") == 0)
+                        else if (0 == strcmp(gInputArgs[0U], "probe"))
                         {
                             (void)App_deviceI2cProbeAll(gCurrInst);
                         }
@@ -788,7 +788,7 @@ static int32_t App_file(void)
 
                 }
             }
-            if (fp != NULL)
+            if (NULL != fp)
             {
                 fclose(fp);
                 App_consolePrintf(" I2C: File closed [%s] !!! \r\n", gFileName);
@@ -800,7 +800,7 @@ static int32_t App_file(void)
             App_consolePrintf(" I2C: Insufficient arguments specified !!!\r\n");
         }
     }
-    else if (gFileReadLoc == 1U)
+    else if (1U == gFileReadLoc)
     {
         App_consolePrintf("\r\n This feature is not supported currently. Checkout other exciting features!!!\r\n");
     }
@@ -818,11 +818,11 @@ static int32_t App_writeRegN(void)
     uint32_t slaveAddr, numWrites, loopCnt;
     uint8_t regVal[APP_I2C_MAX_REG_RD_WR];
 
-    numWrites = gNumArgs - 2;
-    if ((gNumArgs > 2) && (numWrites <= APP_I2C_MAX_REG_RD_WR))
+    numWrites = gNumArgs - 2U;
+    if ((2U < gNumArgs) && (APP_I2C_MAX_REG_RD_WR >= numWrites))
     {
         slaveAddr = xstrtoi(gInputArgs[1]);
-        if (gAddrDataMode == 0U)
+        if (0U == gAddrDataMode)
         {
             App_consolePrintf("\n\r I2C: Writing device 0x%02x:\r\n", slaveAddr);
             for (loopCnt = 0U ; loopCnt < numWrites ; loopCnt++)
@@ -834,7 +834,7 @@ static int32_t App_writeRegN(void)
                                           slaveAddr,
                                           &regVal[0U],
                                           numWrites);
-            if (retVal != CSL_SOK)
+            if (CSL_SOK != retVal)
             {
                 App_consolePrintf(" I2C: Write ERROR !!!\r\n");
             }
@@ -861,20 +861,20 @@ static int32_t App_readRegRaw(void)
     uint32_t numRegs, loopCnt;
     uint8_t regVal[APP_I2C_MAX_REG_RD_WR];
 
-    if (gNumArgs == 3U)
+    if (3U == gNumArgs)
     {
         slaveAddr = xstrtoi(gInputArgs[1]);
-        if (gAddrDataMode == 0U)
+        if (0U == gAddrDataMode)
         {
             numRegs = xstrtoi(gInputArgs[2]);
-            if (numRegs < APP_I2C_MAX_REG_RD_WR)
+            if (APP_I2C_MAX_REG_RD_WR > numRegs)
             {
                 App_consolePrintf("\n\r I2C: Reading 0x%02x registers of device 0x%02x ...\r\n",
                             numRegs,
                             slaveAddr);
                 for (loopCnt = 0U ; loopCnt < numRegs ; loopCnt++)
                 {
-                    regVal[loopCnt] = 0;
+                    regVal[loopCnt] = 0U;
                 }
 
                 retVal += App_deviceRawRead8(gCurrInst,
@@ -888,7 +888,7 @@ static int32_t App_readRegRaw(void)
                                regVal[loopCnt]);
                 }
 
-                if (retVal != CSL_SOK)
+                if (CSL_SOK != retVal)
                 {
                     App_consolePrintf(" I2C: Read ERROR !!!\r\n");
                 }
@@ -928,8 +928,7 @@ static int32_t App_deviceI2cProbeAll(uint32_t inst)
     {
         for (slaveAddr = 0U; slaveAddr < 128U; slaveAddr++)
         {
-            if (I2C_control(gI2cHandle, I2C_CMD_PROBE, &slaveAddr) ==
-                            I2C_STATUS_SUCCESS)
+            if (I2C_STATUS_SUCCESS == I2C_control(gI2cHandle, I2C_CMD_PROBE, &slaveAddr))
             {
                 App_consolePrintf("I2C%d: Passed for address 0x%x !!! \r\n",
                             inst,
@@ -948,7 +947,7 @@ static int32_t xstrtoi(char *hex)      // hex string to integer
 
 static int32_t HextoDec(char *hex, int32_t l)
 {
-    if (*hex == 0)
+    if (0 == *hex)
     {
         return (l);
     }
@@ -988,14 +987,14 @@ static int32_t App_setupI2CInst(void)
     i2cInst = (uint8_t)gCurrInst;
     /* Configures the I2C instance with the passed parameters*/
     gI2cHandle = I2C_open(i2cInst, &i2cParams);
-    if(gI2cHandle == NULL)
+    if(NULL == gI2cHandle)
 	{
 		App_consolePrintf("\nI2C Open failed!\n");
         retVal = CSL_EFAIL;
 	}
     else
     {
-        gInitDone = TRUE;
+        gInitDone = UTRUE;
     }
 
     return retVal;
@@ -1010,7 +1009,7 @@ int32_t App_deviceRawRead8(uint32_t i2cInstId,
     bool status;
     I2C_Transaction i2cXferPrms;
 
-    if ((regValue == NULL) || (numRegs == 0U))
+    if ((NULL == regValue) || (0U == numRegs))
     {
         App_consolePrintf(" I2C%d: DEV 0x%02x: Illegal Params ... ERROR !!!\n",
                   i2cInstId,
@@ -1019,7 +1018,7 @@ int32_t App_deviceRawRead8(uint32_t i2cInstId,
     }
     else
     {
-        if (gI2cHandle != NULL)
+        if (NULL != gI2cHandle)
         {
             /* I2C transfer parameter default initializations */
             I2C_transactionInit(&i2cXferPrms);
@@ -1031,7 +1030,7 @@ int32_t App_deviceRawRead8(uint32_t i2cInstId,
             i2cXferPrms.timeout     = 5000U;
 
             status = I2C_transfer(gI2cHandle, &i2cXferPrms);
-            if (status == FALSE)
+            if (BFALSE == status)
             {
                 retVal = CSL_EFAIL;
                 App_consolePrintf(" I2C%d: DEV 0x%02x: RD ERROR !!!\n",
@@ -1058,7 +1057,7 @@ int32_t App_deviceRawWrite8(uint32_t i2cInstId,
     bool status;
     I2C_Transaction i2cXferPrms;
 
-    if ((regValue == NULL) || (numRegs == 0U))
+    if ((NULL == regValue) || (0U == numRegs))
     {
         App_consolePrintf("I2C%d: DEV 0x%02x: Illegal Params ... ERROR !!!\n",
                     i2cInstId,
@@ -1067,7 +1066,7 @@ int32_t App_deviceRawWrite8(uint32_t i2cInstId,
     }
     else
     {
-        if (gI2cHandle != NULL)
+        if (NULL != gI2cHandle)
         {
             /* I2C transfer parameter default initializations */
             I2C_transactionInit(&i2cXferPrms);
@@ -1080,7 +1079,7 @@ int32_t App_deviceRawWrite8(uint32_t i2cInstId,
             i2cXferPrms.timeout      = 5000U;
 
             status = I2C_transfer(gI2cHandle, &i2cXferPrms);
-            if (status == FALSE)
+            if (BFALSE == status)
             {
                 retVal = CSL_EFAIL;
                 App_consolePrintf(" I2C%d: DEV 0x%x: ERROR !!! \n",
@@ -1123,7 +1122,7 @@ static int32_t App_getNum(uint32_t *num)
 #if (APP_USE_UART_CONSOLE == 0U)
     scanf("%d", num);
 #else
-    if (UART_scanFmt("%d", num) != S_PASS)
+    if (S_PASS != UART_scanFmt("%d", num))
     {
         App_consolePrintf("Read from UART Console failed\n");
         retVal = CSL_EFAIL;
@@ -1141,7 +1140,7 @@ static int32_t App_gets(char *str)
 #if (APP_USE_UART_CONSOLE == 0U)
     gets(str);
 #else
-    if (UART_gets(str, APP_I2C_MAX_IN_STRING) == 0U)
+    if (S_PASS == UART_gets(str, APP_I2C_MAX_IN_STRING))
     {
         App_consolePrintf("Read from UART Console failed\n");
         retVal = CSL_EFAIL;
@@ -1209,7 +1208,7 @@ static int32_t App_i2cPreInt(void)
             I2C_socGetInitCfg(inst, &i2cCfg);
 
             i2cCfg.baseAddr = baseAddr;
-            i2cCfg.enableIntr = 0;
+            i2cCfg.enableIntr = BFALSE;
 
             I2C_socSetInitCfg(inst, &i2cCfg);
         }
@@ -1229,12 +1228,12 @@ static int32_t App_i2cPreInt(void)
     {
         I2C_socGetInitCfg(inst, &i2cCfg);
 
-        i2cCfg.enableIntr = 0;
+        i2cCfg.enableIntr = BFALSE;
 
         I2C_socSetInitCfg(inst, &i2cCfg);
     }
 
-    return 0;
+    return I2C_STATUS_SUCCESS;
 }
 
 #endif

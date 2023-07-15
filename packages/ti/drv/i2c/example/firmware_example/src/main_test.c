@@ -212,7 +212,7 @@ void i2c_test(UArg arg0, UArg arg1)
     else
     {
         copyStatus = CompareData(&eepromTestData[0], &rxBuf[0], I2C_EEPROM_TEST_LENGTH);
-        if(TRUE != copyStatus)
+        if(BTRUE != copyStatus)
         {
             I2C_log("\n Error: Standard Data Mismatch \n");
             I2C_log("\n Some tests have failed. \n");
@@ -289,18 +289,18 @@ int main(void)
  */
 bool CompareData(char *expData, char *rxData, unsigned int length)
 {
-    uint32_t idx = 0;
-    uint32_t match = 1;
-    bool retVal = false;
+    uint32_t idx = 0U;
+    uint32_t match = UTRUE;
+    bool retVal = BFALSE;
 
-    for(idx = 0; ((idx < length) && (match != 0)); idx++)
+    for(idx = 0U; ((idx < length) && (UFALSE != match)); idx++)
     {
-        if(*expData != *rxData) match = 0;
+        if(*expData != *rxData) match = UFALSE;
         expData++;
         rxData++;
     }
 
-    if(match == 1) retVal = true;
+    if(UTRUE == match) retVal = BTRUE;
 
     return retVal;
 }
