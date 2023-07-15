@@ -95,9 +95,9 @@ const char* Ipc_getCoreName(uint32_t procId);
 uint32_t Ipc_getCoreId(void);
 
 /**
- *  \brief Returns TRUE if the memory is cache coherent
+ *  \brief Returns UTRUE if the memory is cache coherent
  *
- *  \return TRUE/FALSE
+ *  \return UTRUE/UFALSE
  */
 uint32_t Ipc_isCacheCoherent(void);
 

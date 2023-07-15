@@ -261,7 +261,7 @@ int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
 int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId,
                  uint32_t *clusterId, uint32_t *userId, uint32_t *queueId)
 {
-    int32_t retVal = -1;
+    int32_t retVal = IPC_EFAIL;
 
     if( (selfId < IPC_MAX_PROCS) &&
         (remoteId < IPC_MAX_PROCS))
@@ -271,7 +271,7 @@ int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId,
         *clusterId = pMailboxInfo->tx.cluster;
         *userId    = pMailboxInfo->tx.user;
         *queueId   = pMailboxInfo->tx.fifo;
-        retVal = 0;
+        retVal = IPC_SOK;
     }
 
     return retVal;
@@ -280,7 +280,7 @@ int32_t Ipc_getMailboxInfoTx(uint32_t selfId, uint32_t remoteId,
 int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
                  uint32_t *clusterId, uint32_t *userId, uint32_t *queueId)
 {
-    int32_t retVal = -1;
+    int32_t retVal = IPC_EFAIL;
 
     if( (selfId < IPC_MAX_PROCS) &&
         (remoteId < IPC_MAX_PROCS))
@@ -290,7 +290,7 @@ int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
         *clusterId = pMailboxInfo->rx.cluster;
         *userId    = pMailboxInfo->rx.user;
         *queueId   = pMailboxInfo->rx.fifo;
-        retVal = 0;
+        retVal = IPC_SOK;
     }
 
     return retVal;
@@ -306,7 +306,7 @@ uintptr_t Ipc_getMailboxBaseAddr(uint32_t clusterId)
         baseAddr = g_IPC_Mailbox_BasePhyAddr[clusterId];
 
 #if defined(BUILD_MPU1_0) && defined(QNX_OS)
-        if (g_IPC_Mailbox_BaseVirtAddr[clusterId] == 0)
+        if ((uintptr_t)0 == g_IPC_Mailbox_BaseVirtAddr[clusterId])
         {
             g_IPC_Mailbox_BaseVirtAddr[clusterId] =
                 IpcUtils_getMemoryAddress(baseAddr, MAILBOX_REG_SIZE);
@@ -322,10 +322,10 @@ uint32_t Ipc_getNavss512MailboxInputIntr(uint32_t clusterId, uint32_t userId)
 {
     uint32_t   mailboxIntrNum = 0U;
 
-    if( (clusterId != MAILBOX_CLUSTER_INVALID) &&
-        (clusterId < IPC_MAILBOX_CLUSTER_CNT)  &&
-        (userId != MAILBOX_USER_INVALID)       &&
-        (userId < IPC_MAILBOX_USER_CNT))
+    if( (MAILBOX_CLUSTER_INVALID != clusterId)  &&
+        (IPC_MAILBOX_CLUSTER_CNT >  clusterId)  &&
+        (MAILBOX_USER_INVALID != userId)        &&
+        (IPC_MAILBOX_USER_CNT >  userId))
     {
         mailboxIntrNum = g_Navss512MbInput[clusterId] + userId;
     }
@@ -335,35 +335,35 @@ uint32_t Ipc_getNavss512MailboxInputIntr(uint32_t clusterId, uint32_t userId)
 int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt)
 {
     int32_t    retVal          = IPC_SOK;
-    uint32_t   outIntrBaseNum  = 0;
-    uint32_t   vimEventBaseNum = 0;
-    uint16_t   proc_irq        = 0;
+    uint32_t   outIntrBaseNum  = 0U;
+    uint32_t   vimEventBaseNum = 0U;
+    uint16_t   proc_irq        = 0U;
 
     /*
      * static variable used to store the base and count of
      * Interrupt Router o/p # allocated for the core.
      * In subsequent call, it uses the offset of intrCnt from base
      */
-    static uint16_t   start    = 0;
-    static uint16_t   range    = 0;
-    uint16_t   offset   = 0;
+    static uint16_t   start    = 0U;
+    static uint16_t   range    = 0U;
+    uint16_t   offset   = 0U;
 
 #ifdef IPC_SUPPORT_SCICLIENT
     /* Get available CorePack IRQ number from DMSC */
-    if( (start == 0U) && (range == 0U))
+    if( (0U == start) && (0U == range))
     {
         /* Query the Interrupt Router o/p # alloacted for the core. */
         retVal = Ipc_getIntNumRange(selfId, &start, &range);
     }
 
-    if((retVal == IPC_SOK) && (range >= 1U))
+    if((IPC_SOK == retVal) && (1U <= range))
     {
         /* Allocate the last 5 interrupts for IPC. Note that the IR allocation is
          * static so this needs to be carefully set. Currently first interrupt is
          * used by UDMA and middle one's are used by other modules like CPSW9G so
          * we are using last 5 as a safe option.
          */
-        if(range >= IPC_INTERRUPT_OFFSET)
+        if(IPC_INTERRUPT_OFFSET <= range)
         {
             offset = IPC_INTERRUPT_OFFSET;
         }
@@ -446,7 +446,7 @@ int32_t Ipc_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId,
         uint32_t userId, Ipc_MbConfig* cfg, uint32_t cnt)
 {
     int32_t    retVal         = IPC_SOK;
-    uint32_t   mailboxIntrNum = 0;
+    uint32_t   mailboxIntrNum = 0U;
 
     /* Get Navss512 input interrupt number for mailbox */
     mailboxIntrNum = Ipc_getNavss512MailboxInputIntr(clusterId, userId);
@@ -489,8 +489,8 @@ uint32_t Ipc_configClecRouter(uint32_t corePackEvent, uint32_t corePackEventBase
     input = corePackEvent + C7X_CLEC_OFFSET;
 
     /* Configure CLEC */
-    cfgClec.secureClaimEnable = FALSE;
-    cfgClec.evtSendEnable     = TRUE;
+    cfgClec.secureClaimEnable = UFALSE;
+    cfgClec.evtSendEnable     = UTRUE;
 #if defined(BUILD_C7X_1)
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_4;
 #elif defined(BUILD_C7X_2)
@@ -648,7 +648,7 @@ int32_t Ipc_getIntNumRange(uint32_t coreIndex,
                 &req,
                 &res,
                 IPC_SCICLIENT_TIMEOUT);
-    if ((CSL_PASS != retVal) || (res.range_num == 0U)) {
+    if ((CSL_PASS != retVal) || (0U == res.range_num)) {
         /* Try with HOST_ID_ALL */
         req.type           = req_type[coreIndex];
         req.subtype        = (uint8_t)req_subtype[coreIndex];
@@ -703,9 +703,9 @@ uint32_t Ipc_isCacheCoherent(void)
     uint32_t isCacheCoherent;
 
 #if defined (BUILD_MPU1_0) || defined(BUILD_C7X)
-    isCacheCoherent = TRUE;
+    isCacheCoherent = UTRUE;
 #else
-    isCacheCoherent = FALSE;
+    isCacheCoherent = UFALSE;
 #endif
 
     return (isCacheCoherent);

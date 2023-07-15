@@ -99,7 +99,7 @@ typedef struct Ipc_NotifyIdEntry_s
 } Ipc_NotifyIdEntry;
 
 int32_t  virtio_cnt = 0;
-static uint32_t g_vqItemCnt = 0;
+static uint32_t g_vqItemCnt = 0U;
 extern uint32_t g_ipc_mBoxCnt;
 
 /**
@@ -195,7 +195,7 @@ static Ipc_TranslationTable  vrTranslationTable =
     /* initialize number of translation entry explicitly to zero at build time.
     * this is needed for c7x where in RAM model static globals are not zero initialized by default.
     */
-    .count = 0
+    .count = 0U
 };
 
 void* Ipc_allocVirtio(void)
@@ -332,12 +332,12 @@ static int32_t Ipc_physToVirt(uint32_t pa, uintptr_t *va)
 
     *va = 0U;
 
-    if(vrTranslationTable.count == 0U)
+    if(0U == vrTranslationTable.count)
     {
         *va = pa;
     }
 
-    for (n = 0; n < vrTranslationTable.count; n++)
+    for (n = 0U; n < vrTranslationTable.count; n++)
     {
         e = &vrTranslationTable.entry[n];
         if ((pa >= e->pa) && (pa < (e->pa + e->len)))
@@ -361,12 +361,12 @@ static int32_t Ipc_virtToPhys(uintptr_t va, uint32_t *pa)
 
     *pa = 0U;
 
-    if(vrTranslationTable.count == 0U)
+    if(0U == vrTranslationTable.count)
     {
         *pa = va;
     }
 
-    for (n = 0; n < vrTranslationTable.count; n++)
+    for (n = 0U; n < vrTranslationTable.count; n++)
     {
         e = &vrTranslationTable.entry[n];
         if ((va >= e->va) && (va < (e->va + e->len)))
@@ -406,7 +406,7 @@ uint32_t Ipc_getVqObjMemoryRequiredPerCore(void)
 uint8_t Virtio_isRemoteLinux(uint16_t procId)
 {
     uint8_t  retVal;
-    if((procId == IPC_MPU1_0) && (rscTable != NULL))
+    if((IPC_MPU1_0 == procId) && (NULL != rscTable))
     {
         retVal = 1;
     }
@@ -427,16 +427,16 @@ uint8_t Virtio_isRemoteLinux(uint16_t procId)
  */
 Bool Ipc_isRemoteReady(uint16_t procId)
 {
-    Bool            retVal = TRUE;
+    Bool            retVal = UTRUE;
     Ipc_ResourceTable *rsc    = NULL;
 
-    if(TRUE == Virtio_isRemoteLinux(procId))
+    if((uint8_t)UTRUE == Virtio_isRemoteLinux(procId))
     {
         rsc = (Ipc_ResourceTable*)rscTable;
         CacheP_Inv(rsc, (int32_t)sizeof(Ipc_ResourceTable));
-        if(rsc->rpmsg_vdev.status != 0x7U)
+        if(0x7U != rsc->rpmsg_vdev.status)
         {
-            retVal = FALSE;
+            retVal = UFALSE;
         }
     }
 
@@ -450,22 +450,22 @@ int32_t Ipc_initVirtIO(Ipc_VirtIoParams *vqParam)
 {
     int32_t   retVal = IPC_SOK;
 
-    if( (vqParam == NULL) ||
-        (vqParam->vringBufSize < IPC_VRING_BUFFER_SIZE) ||
-		(vqParam->vqBufSize == 0U))
+    if( (NULL == vqParam) ||
+        (IPC_VRING_BUFFER_SIZE > vqParam->vringBufSize) ||
+		(0U == vqParam->vqBufSize) )
     {
         SystemP_printf("Ipc_initVirtIO : Invalid Memory, Failed\n");
         retVal = IPC_EFAIL;
     }
 
-    if(retVal == IPC_SOK)
+    if(IPC_SOK == retVal)
     {
         /* Initialize the global queue registry */
         memset(queueRegistry, 0, sizeof(queueRegistry));
 
         virtio_cnt = 0;
-        g_vqItemCnt = 0;
-        g_ipc_mBoxCnt = 0;
+        g_vqItemCnt = 0U;
+        g_ipc_mBoxCnt = 0U;
 
         vqBaseAddr = (void*)vqParam->vqObjBaseAddr;
         vqSizeLeft = vqParam->vqBufSize;
@@ -500,13 +500,13 @@ void * Ipc_getResourceTraceBufPtr(void)
     Ipc_Trace *entry = NULL;
     void *tracePtr = NULL;
 
-    if (rscTable != NULL) {
+    if (NULL != rscTable) {
         rsc = (Ipc_ResourceTable*)rscTable;
 
-        for (i = 0; i < rsc->base.num; i++) {
+        for (i = 0U; i < rsc->base.num; i++) {
             offset = (uintptr_t)((uint8_t *)rsc + rsc->offset[i]);
             type = *(uint32_t *)offset;
-            if (type == TYPE_TRACE) {
+            if (TYPE_TRACE == type) {
                 entry = (Ipc_Trace *)offset;
                 tracePtr = (void *)((uintptr_t)entry->da);
                 break;
@@ -747,7 +747,7 @@ static void Virtio_isr(uint32_t* msg, uint32_t priv)
         vring_init(&(vq->vring), params->num, (void*)params->addr, params->align);
 
         /* Each processor clears only its TX vq memory. */
-        if (direction == VIRTIO_TX)
+        if (VIRTIO_TX == direction)
         {
             memset((void*)params->addr, 0, vring_size(params->num, params->align));
             /* Don't trigger a mailbox message every time remote rpoc */
@@ -756,12 +756,12 @@ static void Virtio_isr(uint32_t* msg, uint32_t priv)
             queueRegistry[2U*procId] = vq;
         }
 
-        if (direction == VIRTIO_RX)
+        if (VIRTIO_RX == direction)
         {
             uint32_t selfId = Ipc_mpGetSelfId();
             queueRegistry[(2U*procId)+1U] = vq;
             retVal = Ipc_mailboxRegister((uint16_t)selfId, (uint16_t)procId, Virtio_isr, procId, timeoutCnt);
-            if (retVal != IPC_SOK)
+            if (IPC_SOK != retVal)
             {
                  SystemP_printf("Virtio_create : Failed to register mailbox\n");
             }
@@ -786,14 +786,14 @@ Virtio_Handle Virtio_getHandle(uint32_t procId, VIRTIO_DIR dir)
  */
 int32_t Virtio_setCallback(uint32_t procId, Virtio_callback callback, uint32_t* priv)
 {
-    int32_t status = 1;
+    int32_t status = ITRUE;
     Virtio_Object *vq = Virtio_getHandle(procId, VIRTIO_RX);
 
     if (NULL != vq)
     {
         vq->callback = callback;
         vq->callback_priv = priv;
-        status = 0;
+        status = IFALSE;
     }
 
     return status;
@@ -806,7 +806,7 @@ static void Virtio_prime(Virtio_Object *vq, uintptr_t addr, uint32_t num)
 
     /* Add buffers to the vring's available ring. */
     buf = (uint8_t *)addr;
-    for (i = 0; i < num; i++)
+    for (i = 0U; i < num; i++)
     {
         Virtio_addAvailBuf(vq, (void *)(uintptr_t)buf, (uint16_t)i);
         buf += RP_MSG_BUF_SIZE;
@@ -841,9 +841,9 @@ Bool VirtioIPC_getVirtQueues(uint32_t type, uint32_t procId, uint32_t rank,
                              uint32_t *tx_vqId, uint32_t *rx_vqId)
 {
     uint32_t i;
-    Bool retVal = FALSE;
+    Bool retVal = UFALSE;
 
-    for (i = 0; i < g_vqItemCnt; i++)
+    for (i = 0U; i < g_vqItemCnt; i++)
     {
         if ((type   == g_vqTable[i].virtioId) &&
             (rank   == g_vqTable[i].rank)     &&
@@ -851,7 +851,7 @@ Bool VirtioIPC_getVirtQueues(uint32_t type, uint32_t procId, uint32_t rank,
         {
             *tx_vqId = g_vqTable[i].tx_vqId;
             *rx_vqId = g_vqTable[i].rx_vqId;
-            retVal   = TRUE;
+            retVal   = UTRUE;
             break;
         }
     }
@@ -872,12 +872,12 @@ static int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t t
     params.align = vqInfo->align;
     tx_vq = Virtio_create(vqInfo->txNotifyId, vqInfo->remoteId, NULL,
                   &params, VIRTIO_TX, status, timeoutCnt);
-    if (tx_vq == NULL)
+    if (NULL == tx_vq)
     {
         SystemP_printf("TX Virtio creation failure: %d\n", vqInfo->txNotifyId);
         retVal = IPC_EFAIL;
     }
-    if(retVal == IPC_SOK)
+    if(IPC_SOK == retVal)
     {
         /* Prime the transmit buffer */
         uint32_t *primeBuf = (uint32_t *)mapPAtoVA(vqInfo->primeBuf);
@@ -889,18 +889,18 @@ static int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t t
         params.align = vqInfo->align;
         rx_vq = Virtio_create(vqInfo->rxNotifyId, vqInfo->remoteId, NULL,
                   &params, VIRTIO_RX, status, timeoutCnt);
-        if (rx_vq == NULL)
+        if (NULL == rx_vq)
         {
             SystemP_printf("RX Virtio creation failure: %d\n", vqInfo->rxNotifyId);
             retVal = IPC_EFAIL;
         }
     }
 
-    if(retVal == IPC_SOK)
+    if(IPC_SOK == retVal)
     {
         /* Add to global registry */
         g_vqTable[g_vqItemCnt].virtioId = VIRTIO_ID_RPMSG;
-        g_vqTable[g_vqItemCnt].rank     = 0;
+        g_vqTable[g_vqItemCnt].rank     = 0U;
         g_vqTable[g_vqItemCnt].tx_vqId  = vqInfo->txNotifyId;
         g_vqTable[g_vqItemCnt].rx_vqId  = vqInfo->rxNotifyId;
         g_vqTable[g_vqItemCnt].procId   = vqInfo->remoteId;
@@ -912,14 +912,14 @@ static int32_t VirtioIPC_createVirtioCorePair(Ipc_VirtioInfo* vqInfo, uint32_t t
 
 Bool Ipc_isRemoteVirtioCreated(uint32_t remoteId)
 {
-    Bool      vqCreated = FALSE;
-    uint32_t  idx     = 0;
+    Bool      vqCreated = UFALSE;
+    uint32_t  idx     = 0U;
 
-    for(idx = 0; idx < (uint32_t)g_vqItemCnt; idx++)
+    for(idx = 0U; idx < g_vqItemCnt; idx++)
     {
         if (remoteId == g_vqTable[idx].procId)
         {
-            vqCreated = TRUE;
+            vqCreated = UTRUE;
             break;
         }
     }
@@ -929,7 +929,7 @@ Bool Ipc_isRemoteVirtioCreated(uint32_t remoteId)
 static void Ipc_updateVirtioInfo(uint32_t numProc, const void *baseAddr, uint32_t vrBufSize,
                       Ipc_VirtioInfo* info)
 {
-    uint32_t cnt = 0, a , b, i;
+    uint32_t cnt = 0U, a , b, i;
 #ifdef QNX_OS
     uint32_t revPrimeBuf;
 #endif
@@ -945,7 +945,7 @@ static void Ipc_updateVirtioInfo(uint32_t numProc, const void *baseAddr, uint32_
         b = info->selfId;
     }
 
-    for(i = 0; i < a; i++)
+    for(i = 0U; i < a; i++)
     {
         cnt += (numProc - i - 1U);
     }
@@ -978,7 +978,7 @@ static void Ipc_updateVirtioInfo(uint32_t numProc, const void *baseAddr, uint32_
     /* If remote core is Linux, and vdev is ready
      * update the address
      */
-    if(TRUE == Virtio_isRemoteLinux((uint16_t)(info->remoteId)))
+    if((uint8_t)UTRUE == Virtio_isRemoteLinux((uint16_t)(info->remoteId)))
     {
         Ipc_ResourceTable *rsc = (Ipc_ResourceTable*)rscTable;
         info->daTx      = rsc->rpmsg_vring0.da;
@@ -1015,17 +1015,17 @@ int32_t VirtioIPC_init(Ipc_VirtIoParams *vqParams)
     vqInfo.num   = IPC_VRING_BUF_CNT;
     vqInfo.selfId = selfId;
 
-    for(idx = 0; idx < numProcessors; idx++)
+    for(idx = 0U; idx < numProcessors; idx++)
     {
         procId = Ipc_mpGetRemoteProcId(idx);
 
         /* if virtio is already created for this core then ignore */
-        if(TRUE == Ipc_isRemoteVirtioCreated(procId))
+        if(UTRUE == Ipc_isRemoteVirtioCreated(procId))
         {
             continue;
         }
 
-        if(FALSE == Ipc_isRemoteReady((uint16_t)procId))
+        if(UFALSE == Ipc_isRemoteReady((uint16_t)procId))
         {
             /* Linux on A72 is not ready, go to next core
              * Virtio is not created at this moment, it must be
@@ -1036,7 +1036,7 @@ int32_t VirtioIPC_init(Ipc_VirtIoParams *vqParams)
         vqInfo.remoteId   = procId;
         Ipc_updateVirtioInfo(IPC_MAX_PROCS, vqParams->vringBaseAddr, IPC_VRING_SIZE, &vqInfo);
         retVal = VirtioIPC_createVirtioCorePair(&vqInfo, vqParams->timeoutCnt);
-        if(retVal != IPC_SOK)
+        if(IPC_SOK != retVal)
         {
             SystemP_printf("VirtioIPC_init: Failed to create VirtIO for procId..\n",
                  procId);
@@ -1060,7 +1060,7 @@ int32_t Ipc_lateVirtioCreate(uint16_t procId)
     Ipc_VirtioInfo      vqInfo;
     uint32_t            vrBufSize = IPC_VRING_SIZE;
 
-    if(TRUE == Ipc_isRemoteReady(procId))
+    if(UTRUE == Ipc_isRemoteReady(procId))
     {
         /* Initialize the structure */
         memset(&vqInfo, 0, sizeof(Ipc_VirtioInfo));
@@ -1069,7 +1069,7 @@ int32_t Ipc_lateVirtioCreate(uint16_t procId)
         vqInfo.selfId     = Ipc_mpGetSelfId();
 
         rsc = (Ipc_ResourceTable*)rscTable;
-        if(rsc != NULL)
+        if(NULL != rsc)
         {
             vqInfo.align     = rsc->rpmsg_vring0.align;
             vqInfo.num       = rsc->rpmsg_vring0.num;
@@ -1078,7 +1078,7 @@ int32_t Ipc_lateVirtioCreate(uint16_t procId)
             vqInfo.primeBuf  = vqInfo.daTx + (2U*vrBufSize);
 
             retVal = VirtioIPC_createVirtioCorePair(&vqInfo, 100);
-            if(retVal != IPC_SOK)
+            if(IPC_SOK != retVal)
             {
                 SystemP_printf("Ipc_lateVirtioCreate: Failed to create VirtIO for procId..\n",
                     procId);

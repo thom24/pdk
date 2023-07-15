@@ -51,12 +51,12 @@
 #include "ipc_priv.h"
 
 #if defined(BUILD_M4F)
-static uint32_t Ipc_HwiDisableCount = 0;
-static uintptr_t Ipc_HwiDisableKey = 0;
+static uint32_t Ipc_HwiDisableCount = 0U;
+static uintptr_t Ipc_HwiDisableKey = 0U;
 
 static uintptr_t Ipc_osalHwiDisable(void)
 {
-    if (Ipc_HwiDisableCount++ == 0)
+    if (0U == Ipc_HwiDisableCount++)
     {
         Ipc_HwiDisableKey = HwiP_disable();
     }
@@ -65,7 +65,7 @@ static uintptr_t Ipc_osalHwiDisable(void)
 
 static void Ipc_osalHwiRestore(uintptr_t key)
 {
-    if (--Ipc_HwiDisableCount == 0)
+    if (0U == --Ipc_HwiDisableCount)
     {
         HwiP_restore(Ipc_HwiDisableKey);
     }

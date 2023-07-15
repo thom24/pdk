@@ -217,10 +217,10 @@ uint32_t Ipc_copyRestResult(uint8_t *buf, uint32_t bufSize)
 
 uint32_t Ipc_hasPerfTestResult(void)
 {
-    uint32_t hasTestResult = TRUE;
+    uint32_t hasTestResult = UTRUE;
     if(0U == gPerfTestResCnt)
     {
-        hasTestResult = FALSE;
+        hasTestResult = UFALSE;
     }
 
     return hasTestResult;

@@ -157,7 +157,7 @@ uint32_t Virtio_getProcId(Virtio_Handle vq);
  *  \param   tx_vqId  [Out]  Id of the transmitting Virtio
  *  \param   rx_vqId  [OUT]  Id of the receiving Virtio
  *
- *  \returns    Returns TRUE on success
+ *  \returns    Returns UTRUE on success
  *
  *  \sa         VirtioIPC_getVirtQueues
  */
@@ -202,12 +202,12 @@ int32_t VirtioIPC_init(Ipc_VirtIoParams* vqInfo);
 /**
  *  \brief      Check if a Virtio is ready.
  *
- *  When FALSE a VirtQueue has not been initialized.  When TRUE it is
+ *  When UFALSE a VirtQueue has not been initialized.  When UTRUE it is
  *  safe to check it for messages.
  *
  *  \param  vq  [IN]      VirtQueue handle
  *
- *  \returns    Returns TRUE or FALSE
+ *  \returns    Returns UTRUE or UFALSE
  *
  *  \sa         Virtio_isReady
  */

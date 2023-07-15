@@ -116,7 +116,7 @@ void Ipc_addPerfTestResults(uint8_t *buf, uint32_t bufSize);
 uint32_t Ipc_copyRestResult(uint8_t *buf, uint32_t bufSize);
 
 /**
- * Return TRUE/FALSE if it has test  result to send
+ * Return UTRUE/UFALSE if it has test  result to send
  * */
 uint32_t Ipc_hasPerfTestResult(void);
 

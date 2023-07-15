@@ -78,7 +78,7 @@ void Ipc_appUtilsCacheWb(const void *addr, int32_t size)
 {
     uint32_t    isCacheCoherent = Ipc_isCacheCoherent();
 
-    if(isCacheCoherent != TRUE)
+    if(UTRUE != isCacheCoherent)
     {
         CacheP_wb(addr, size);
     }
@@ -90,7 +90,7 @@ void Ipc_appUtilsCacheInv(const void * addr, int32_t size)
 {
     uint32_t    isCacheCoherent = Ipc_isCacheCoherent();
 
-    if(isCacheCoherent != TRUE)
+    if(UTRUE != isCacheCoherent)
     {
         CacheP_Inv(addr, size);
     }
@@ -102,7 +102,7 @@ void Ipc_appUtilsCacheWbInv(const void * addr, int32_t size)
 {
     uint32_t    isCacheCoherent = Ipc_isCacheCoherent();
 
-    if(isCacheCoherent != TRUE)
+    if(UTRUE != isCacheCoherent)
     {
         CacheP_wbInv(addr, size);
     }
@@ -171,18 +171,18 @@ void *Ipc_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData)
 
 uint32_t Ipc_appIsPrintSupported(void)
 {
-    uint32_t retVal = TRUE;
+    uint32_t retVal = UTRUE;
 
     /* Semi hosting not supported for MPU on Simulator */
 #if (defined (BUILD_MPU) && defined (SIMULATOR))
-    retVal = FALSE;
+    retVal = UFALSE;
 #endif
 
     /* Printf doesn't work for MPU when run from SBL with no CCS connection
      * There is no flag to detect SBL or CCS mode. Hence disable the print
      * for MPU unconditionally */
 #if defined (BUILD_MPU)
-    retVal = FALSE;
+    retVal = UFALSE;
 #endif
 
     return (retVal);

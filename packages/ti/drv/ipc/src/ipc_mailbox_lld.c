@@ -91,7 +91,7 @@ static void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance rem
 #ifndef IPC_EXCLUDE_POLLED_RX
 #define IPC_POLL_TIMER  10
 
-uint32_t     g_pollTaskExit = FALSE;
+uint32_t     g_pollTaskExit = UFALSE;
 TaskP_Handle g_pollTask     = NULL;
 
 void Mailbox_Poll_Task(void* argNotUsed)
@@ -99,13 +99,13 @@ void Mailbox_Poll_Task(void* argNotUsed)
     uint32_t                n    = 0U;
     uint32_t                msg;
 
-    while(FALSE == g_pollTaskExit)
+    while(UFALSE == g_pollTaskExit)
     {
-        for (n = 0; n < IPC_MAX_PROCS; n++)
+        for (n = 0U; n < IPC_MAX_PROCS; n++)
 	{
-            if (g_ipc_mBoxData[n].handle != NULL)
+            if (NULL != g_ipc_mBoxData[n].handle)
             {
-                if (Mailbox_GetMessageCount(g_ipc_mBoxData[n].handle) > 0)
+                if (0U < Mailbox_GetMessageCount(g_ipc_mBoxData[n].handle))
 		{
                     retVal = Mailbox_read(g_ipc_mBoxData[n].handle, &msg, sizeof(uint32_t));
 		}
@@ -119,7 +119,7 @@ void Mailbox_Poll_Task(void* argNotUsed)
 
 void Mailbox_Poll_TaskExit()
 {
-    g_pollTaskExit = TRUE;
+    g_pollTaskExit = UTRUE;
 }
 
 #if defined(BUILD_C7X) && !defined(MAILBOX_INTERRUPT_MODE)
@@ -174,8 +174,8 @@ static void *Mailbox_osalRegisterIntr(Mbox_OsalIsrFxn isrFxn,
 
     mbConfig.priority = intrPriority;
     mbConfig.eventId = coreIntrNum;
-    mbConfig.inputIntrNum = 0; /* Only used without sciclient support */
-    mbConfig.outputIntrNum = 0; /* Only used without sciclient support */
+    mbConfig.inputIntrNum = 0U; /* Only used without sciclient support */
+    mbConfig.outputIntrNum = 0U; /* Only used without sciclient support */
     return (pOsal->registerIntr(&mbConfig, isrFxn, (uintptr_t)arg));
 }
 
@@ -230,7 +230,7 @@ int32_t Ipc_mailboxModuleStartup (void)
     initParam.osalPrms.createMutex = pOsal->createMutex;
     initParam.osalPrms.deleteMutex = pOsal->deleteMutex;
     initParam.osalPrms.lockMutex = pOsal->lockMutex;
-    if (pOsal->unlockMutex != NULL)
+    if (NULL != pOsal->unlockMutex)
     {
         initParam.osalPrms.unlockMutex = &Mailbox_osalMutexUnlock;
     }
@@ -238,7 +238,7 @@ int32_t Ipc_mailboxModuleStartup (void)
     {
         initParam.osalPrms.unlockMutex = NULL;
     }
-    if (pOsal->registerIntr != NULL)
+    if (NULL != pOsal->registerIntr)
     {
         initParam.osalPrms.registerIntr = &Mailbox_osalRegisterIntr;
     }
@@ -246,7 +246,7 @@ int32_t Ipc_mailboxModuleStartup (void)
     {
         initParam.osalPrms.registerIntr = NULL;
     }
-    if (pOsal->unRegisterIntr != NULL)
+    if (NULL != pOsal->unRegisterIntr)
     {
         initParam.osalPrms.unRegisterIntr = &Mailbox_osalUnregisterIntr;
     }
@@ -255,7 +255,7 @@ int32_t Ipc_mailboxModuleStartup (void)
         initParam.osalPrms.unRegisterIntr = NULL;
     }
 
-    if (pObj->initPrms.virtToPhyFxn != NULL)
+    if (NULL != pObj->initPrms.virtToPhyFxn)
     {
         initParam.virtToPhyFxn = &Mailbox_osalVirtToPhyFxn;
     }
@@ -263,7 +263,7 @@ int32_t Ipc_mailboxModuleStartup (void)
     {
         initParam.virtToPhyFxn = NULL;
     }
-    if (pObj->initPrms.phyToVirtFxn != NULL)
+    if (NULL != pObj->initPrms.phyToVirtFxn)
     {
         initParam.phyToVirtFxn = &Mailbox_osalPhyToVirtFxn;
     }
@@ -285,7 +285,7 @@ int32_t Ipc_mailboxModuleStartup (void)
  */
 uint32_t Ipc_mailboxClear(uint32_t baseAddr, uint32_t queueId)
 {
-    uint32_t retVal = 0;
+    uint32_t retVal = 0U;
     uint32_t msg[4];
 
     retVal = MailboxGetMessage(baseAddr, queueId, msg);
@@ -299,7 +299,7 @@ uint32_t Ipc_mailboxClear(uint32_t baseAddr, uint32_t queueId)
 int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
                         uint32_t timeoutCnt)
 {
-    int32_t   status = 0;
+    int32_t   status = IPC_SOK;
     uint32_t  cnt = timeoutCnt;
     uint32_t    retVal;
 
@@ -308,7 +308,7 @@ int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
         retVal = Mailbox_write(g_ipc_mBoxData[remoteProcId].handle,
                                (uint8_t *)&val, sizeof(uint32_t));
         cnt--;
-    } while( (cnt != 0U) && (retVal == MESSAGE_INVALID));
+    } while( (0U != cnt) && (MESSAGE_INVALID == retVal) );
 
     if(MESSAGE_INVALID == retVal)
     {
@@ -343,16 +343,16 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
     openParam.cfg.readTimeout = timeoutCnt;
     openParam.cfg.readCallback = Ipc_mailboxInternalCallback;
     /*
-     * Set enableInterrupts to false, we want to enable later after
+     * Set enableInterrupts to BFALSE, we want to enable later after
      * control endpoint callback is configured
      */
-    openParam.cfg.enableInterrupts = false;
+    openParam.cfg.enableInterrupts = BFALSE;
 
     openParam.remoteEndpoint = Ipc_rprocIdToMboxId(remoteProcId);
 
     handle = Mailbox_open(&openParam, &errCode);
 
-    if (handle != NULL)
+    if (NULL != handle)
     {
         /* Save the data */
         g_ipc_mBoxData[remoteProcId].handle = handle;
@@ -379,7 +379,7 @@ void Ipc_mailboxIsr(uint32_t remoteProcId)
 {
     if (IPC_MAX_PROCS > remoteProcId)
     {
-        if (g_ipc_mBoxData[remoteProcId].handle != NULL)
+        if (NULL != g_ipc_mBoxData[remoteProcId].handle)
 	{
             Ipc_mailboxInternalCallback(g_ipc_mBoxData[remoteProcId].handle,
                                         g_ipc_mBoxData[remoteProcId].mboxId);
@@ -402,7 +402,7 @@ static void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance rem
 
     ret = Mailbox_read(handle, (uint8_t *)&msg, sizeof(uint32_t));
 
-    if (ret == MAILBOX_SOK)
+    if (MAILBOX_SOK == ret)
     {
         if ((remoteProcId < IPC_MAX_PROCS) && (g_ipc_mBoxData[remoteProcId].func))
         {
@@ -421,7 +421,7 @@ static void Ipc_mailboxInternalCallback(Mbox_Handle handle, Mailbox_Instance rem
 
 void Ipc_mailboxEnableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
 {
-    if (g_ipc_mBoxData[remoteProcId].handle != NULL)
+    if (NULL != g_ipc_mBoxData[remoteProcId].handle)
     {
         Mailbox_enableInterrupts(g_ipc_mBoxData[remoteProcId].handle);
     }
@@ -431,7 +431,7 @@ void Ipc_mailboxEnableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
 
 void Ipc_mailboxDisableNewMsgInt(uint16_t selfId, uint16_t remoteProcId)
 {
-    if (g_ipc_mBoxData[remoteProcId].handle != NULL)
+    if (NULL != g_ipc_mBoxData[remoteProcId].handle)
     {
         Mailbox_disableInterrupts(g_ipc_mBoxData[remoteProcId].handle);
     }

@@ -311,9 +311,9 @@ static void taskFxn(void* a0, void* a1)
 #if defined(BUILD_C7X)
 void InitMmu(void)
 {
-    IpcInitMmu(FALSE);
-    IpcInitMmu(TRUE);
-    OsalCfgClecAccessCtrl(false);
+    IpcInitMmu(BFALSE);
+    IpcInitMmu(BTRUE);
+    OsalCfgClecAccessCtrl(BFALSE);
 
 }
 #endif
