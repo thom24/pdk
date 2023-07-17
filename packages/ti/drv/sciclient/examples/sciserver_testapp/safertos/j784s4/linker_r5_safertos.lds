@@ -122,7 +122,7 @@ SECTIONS
         .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4)
         RUN_START(__SVC_STACK_START)
         RUN_END(__SVC_STACK_END)
-    } > OCMC_RAM_SCISERVER
+    } > R5F_TCMA0
 
 
 }
