@@ -29,8 +29,16 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/**
+ *  \ingroup DRV_OSAL_SOC_CONFIG
+ *  \defgroup DRV_OSAL_SOC_CONFIG_J7200 J7200 specific SOC config
+ *
+ *  @{
+ */
+
 /** ============================================================================
- *  @file       osal_soc.h
+ *  @file       j7200/osal_soc.h
  *
  *  @brief      SOC specific includes for Osal
  *
@@ -156,6 +164,8 @@ int32_t TimerP_getPreferredDefInst(void);
 #ifdef __cplusplus
 }
 #endif
+
+/* @} */
 
 #endif
 /* nothing past this point */

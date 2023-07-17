@@ -29,8 +29,16 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/**
+ *  \ingroup DRV_OSAL_SOC_CONFIG
+ *  \defgroup DRV_OSAL_SOC_CONFIG_J721S2 J721S2 specific SOC config
+ *
+ *  @{
+ */ 
+
 /** ============================================================================
- *  @file       osal_soc.h
+ *  @file       j721s2/osal_soc.h
  *
  *  @brief      SOC specific includes for Osal
  *
@@ -181,6 +189,8 @@ void OsalCfgClecAccessCtrl (bool onlyInSecure);
 #ifdef __cplusplus
 }
 #endif
+
+/* @} */
 
 #endif
 /* nothing past this point */

@@ -31,7 +31,14 @@
  */
 
 /**
- *  \file   SafeRTOS_MPU.c
+ *  \ingroup DRV_OSAL_MODULE
+ *  \defgroup DRV_OSAL_SAFERTOS_MPU_CONFIG SafeRTOS MPU configurations
+ *
+ *  @{
+ */ 
+
+/**
+ *  \file   SafeRTOS_MPU.h
  *
  **/
 #ifndef SAFERTOS_MPU_H
@@ -100,3 +107,5 @@ typedef struct MPU_CONFIG_PARAMETERS
 __attribute__((section(".startupCode"))) portBaseType xConfigureMPU(void);
 
 #endif /* SAFERTOS_MPU_H */
+
+/* @} */

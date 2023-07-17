@@ -29,8 +29,16 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+/**
+ *  \ingroup DRV_OSAL_MODULE
+ *  \defgroup DRV_OSAL_SOC_CONFIG SOC config
+ *
+ *  @{
+ */ 
+
 /** ============================================================================
- *  @file       osal_soc.h
+ *  @file       soc/osal_soc.h
  *
  *  @brief      SOC specific includes for Osal
  *
@@ -345,5 +353,6 @@ typedef struct {
 #endif
 
 #endif
+/* @} */
 
 /* Nothing past this point */
