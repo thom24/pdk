@@ -31,6 +31,13 @@
  */
 
 /**
+ *  \ingroup DRV_SCICLIENT_MODULE
+ *  \defgroup SCISERVER_TIRTOS Sciserver TI-RTOS APIs
+ *
+ *  @{
+ */
+
+/**
  *  \file sciserver_tirtos.h
  *
  *  \brief This file contains prototypes for APIs contained
@@ -89,7 +96,6 @@ typedef struct {
 int32_t Sciserver_tirtosInit(Sciserver_TirtosCfgPrms_t *pPrms);
 
 /** \brief Sciserver TI-RTOS Application Deinit.
- *  \param None
  *  \return None
  */
 void Sciserver_tirtosDeinit(void);
@@ -120,3 +126,4 @@ static int32_t Sciserver_tirtosInitPrms_Init(Sciserver_TirtosCfgPrms_t *pPrms)
 
 #endif /* #ifndef SCISERVER_TIRTOS_H_ */
 
+/* @} */

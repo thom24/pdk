@@ -31,6 +31,13 @@
  */
 
 /**
+ *  \ingroup DRV_SCICLIENT_MODULE
+ *  \defgroup SCISERVER_APIS Sciserver APIs
+ *
+ *  @{
+ */
+
+/**
  *  \file sciserver.h
  *
  *  \brief This file contains prototypes for APIs contained
@@ -307,13 +314,11 @@ typedef struct {
 /* ========================================================================== */
 
 /** \brief Sciserver Get Version String Function
- *  \param None
  *  \return string with Sciserver version info
  */
 char * Sciserver_getVersionStr(void);
 
 /** \brief Sciserver Get RM_PM_HAL Version String Function
- *  \param None
  *  \return string with RM_PM_HAL version info
  */
 char * Sciserver_getRmPmHalVersionStr(void);
@@ -327,7 +332,6 @@ char * Sciserver_getRmPmHalVersionStr(void);
 int32_t Sciserver_init(Sciserver_CfgPrms_t *pPrms);
 
 /** \brief Sciserver De-Initialization Function.
- *  \param None
  *  \return CSL_PASS if the server has been de-initialized correctly.
  *          CSL_EFAIL if otherwise.
  */
@@ -340,7 +344,6 @@ int32_t Sciserver_deinit(void);
 void Sciserver_setCtrlState (uint8_t state);
 
 /** \brief Sciserver Get the Control Command State.
- *  \param None
  *  \return state     Control Command State.
  */
 uint8_t Sciserver_getCtrlState (void);
@@ -352,7 +355,6 @@ uint8_t Sciserver_getCtrlState (void);
 void Sciserver_setProcessState (uint8_t state);
 
 /** \brief Sciserver Get the Process State.
- *  \param None
  *  \return state     Process State.
  */
 uint8_t Sciserver_getProcessState (void);
@@ -392,3 +394,4 @@ void Sciserver_socInit (void);
 
 #endif /* #ifndef SCISERVER_H_ */
 
+/* @} */

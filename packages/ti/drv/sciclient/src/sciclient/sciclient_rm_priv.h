@@ -32,6 +32,13 @@
  */
 
 /**
+ *  \ingroup DRV_SCICLIENT_MODULE
+ *  \defgroup SCICLIENT_RM_PRIV_APIS Sciclient RM Private APIs
+ *
+ *  @{
+ */
+
+/**
  *  \file sciclient_rm_priv.h
  *
  *  \brief This file contains macros and structures used internally by sciclient_rm.
@@ -378,3 +385,5 @@ extern const uint32_t gRmIrqTreeCount;
 #endif
 
 #endif /* #ifndef SCICLIENT_PRIV_RM_H_*/
+
+/* @} */

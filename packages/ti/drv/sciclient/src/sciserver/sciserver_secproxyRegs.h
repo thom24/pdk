@@ -31,7 +31,14 @@
  */
 
 /**
- * \file secure_proxy_regs.h
+ *  \ingroup DRV_SCICLIENT_MODULE
+ *  \defgroup SCISERVER_SEC_PROXY_REGS Sciserver SecProxy Registers
+ *
+ *  @{
+ */
+
+/**
+ * \file sciserver_secproxyRegs.h
  *
  * \brief Private include file for secure proxy describing the registers
  */
@@ -334,3 +341,4 @@ static inline soc_phys_addr_t Sciserver_SecProxyTargetMsgConfirm(
 
 #endif
 
+/* @} */

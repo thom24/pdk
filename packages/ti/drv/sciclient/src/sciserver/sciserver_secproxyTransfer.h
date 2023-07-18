@@ -31,7 +31,14 @@
  */
 
 /**
- * \file sciserver_sec_proxy_transfer.h
+ *  \ingroup DRV_SCICLIENT_MODULE
+ *  \defgroup SCISERVER_SEC_PROXY_TRANSFER Sciserver SecProxy Transfer Messaging APIs
+ *
+ *  @{
+ */
+
+/**
+ * \file sciserver_secproxyTransfer.h
  *
  * \brief Secure Proxy Transfer (Messaging) APIs
  */
@@ -261,3 +268,4 @@ int32_t Sciserver_SproxyGetNotifyConfId(uint16_t host_id, uint16_t *tx_config_id
 
 #endif
 
+/* @} */

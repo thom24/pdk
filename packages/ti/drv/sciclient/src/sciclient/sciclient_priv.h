@@ -32,6 +32,13 @@
  */
 
 /**
+ *  \ingroup DRV_SCICLIENT_MODULE
+ *  \defgroup SCICLIENT_PRIV_APIS Sciclient Private APIs
+ *
+ *  @{
+ */
+
+/**
  *  \file sciclient_priv.h
  *
  *  \brief This file contains the handle structure used internally by sciclient.
@@ -187,7 +194,7 @@ typedef struct
 
 
 /**
- *  \anchor Sciclient_proxyMap
+ *  \anchor Sciclient_proxyMapStruct
  *  \name Sciclient map structure
  *  @{
  *  Map structure for R5F,A53,GPU and ICSSG \n
@@ -396,3 +403,5 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg);
 #endif
 
 #endif /* #ifndef SCICLIENT_PRIV_H_*/
+
+/* @} */

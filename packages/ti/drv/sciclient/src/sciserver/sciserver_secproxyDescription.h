@@ -31,7 +31,14 @@
  */
 
 /**
- * \file sciserver_secproxy_description.h
+ *  \ingroup DRV_SCICLIENT_MODULE
+ *  \defgroup SCISERVER_SEC_PROXY_DESCP Sciserver SecProxy Description
+ *
+ *  @{
+ */
+
+/**
+ * \file sciserver_secproxyDescription.h
  *
  * \brief Include file for Secure Proxy Data descriptions and initialization
  *        routine
@@ -86,7 +93,7 @@
  * \param num_threads - Number of secure proxy threads
  *
  * \param ra_idx - Pointer to Ring accelerator used
- *        Index to \ref soc_ring_accelerator_instances
+ *        Index to soc_ring_accelerator_instances
  *
  * \param buffer_idx - index to comm_memory_instances for the buffer to use
  *
@@ -131,7 +138,7 @@ extern const struct Sciserver_SecureProxy gSciserverSecureProxyInstances[SOC_MAX
  * \param ring_config_instance_id - Which ring does this thread use?
  *        NOTE: There should be only a single Rx thread per ring,
  *        though multiple Tx threads may be associated with the same Rx
- *        thread's ring. This is an index into \ref soc_ring_configurations
+ *        thread's ring. This is an index into soc_ring_configurations
  *
  * \param threshold -        Threshold for events (optional)
  *
@@ -202,3 +209,4 @@ extern const struct Sciserver_SecureProxyTxThreadConfig
 
 #endif /* SCISERVER_SECPROXY_DESC_H */
 
+/* @} */
