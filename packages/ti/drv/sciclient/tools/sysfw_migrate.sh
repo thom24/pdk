@@ -68,6 +68,10 @@ case $i in
         SKIP_COMMIT=YES
         shift
         ;;
+    -st|--skip-testreport) # Skips the Copy SYSFW Test Report step
+        SKIP_TEST_REPORT=YES
+        shift
+        ;;
     -*) # Invalid flag
         $ECHO "!!!WARNING!!! - IGNORING INVALID FLAG: $1"
         shift
@@ -90,12 +94,18 @@ fi
 export SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd )
 export SCI_CLIENT_DIR=$(cd "$SCRIPT_DIR/.." && pwd )
 export ROOTDIR=$(cd "$SCI_CLIENT_DIR/../../.." && pwd )
+export PDK_DIR=$(cd "$ROOTDIR/.." && pwd )
 
 ################################################################################
 # Checkout SYSFW release and prepare it for use with PDK
 
 if [ "$SKIP_RESET" != "YES" ]; then
     $ECHO "Reset PDK branch and rebase onto master"
+    git reset --hard HEAD
+    git fetch origin; git rebase origin/master
+
+    cd $PDK_DIR/docs/
+    $ECHO "Reset PDK_DOCS branch and rebase onto master"
     git reset --hard HEAD
     git fetch origin; git rebase origin/master
 fi
@@ -142,9 +152,23 @@ if [ "$SKIP_CHECKOUT" != "YES" ]; then
     $RM -fr binaries/system-firmware-design-documentation
     $RM -fr binaries/system-firmware-full-documentation
     $RM -fr docs/BUILD.md
-    $RM -fr reports
 fi
 
+if [ "$SKIP_TEST_REPORT" != "YES" ]; then
+    
+    $ECHO "Copy SYSFW Test report to pdk_docs.."
+    cd $PDK_DIR/docs/
+
+    for SOC in $SOC_LIST
+    do
+        $COPY $SCI_CLIENT_DIR/soc/sysfw/reports/tests/JACINTO_SYSFW_TestExecutionResult.xlsx test_report/$SOC/syfw_testreport.xlsx
+    done
+
+    git add $PDK_DIR/docs/test_report/
+    git commit -m "Update SYSFW version $RELEASE_TAG Test report"
+
+    $RM -fr $SCI_CLIENT_DIR/soc/sysfw/reports
+fi
 ################################################################################
 # Build sciclient_ccs_init for use with launch.js
 if [ "$SKIP_BUILD" != "YES" ]; then
