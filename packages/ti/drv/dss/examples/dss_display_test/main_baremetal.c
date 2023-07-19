@@ -87,16 +87,16 @@ int main(void)
     Board_init(boardCfg);
 
 #if defined (SOC_AM65XX)
-    lcdParams.outType  = (uint32_t)APP_OUTPUT_OLDI;
+    lcdParams.outType  = APP_OUTPUT_OLDI;
     lcdParams.pixelClk = (uint64_t)497500000;
     App_configureLCD(lcdParams);
 #else
 #if (1U == DISP_APP_TEST_EDP)
-    lcdParams.outType  = (uint32_t)APP_OUTPUT_EDP;
+    lcdParams.outType  = APP_OUTPUT_EDP;
     lcdParams.pixelClk = (uint64_t)148500000ULL;
     App_configureLCD(lcdParams);
 #else
-    lcdParams.outType  = (uint32_t)APP_OUTPUT_HDMI;
+    lcdParams.outType  = APP_OUTPUT_HDMI;
     lcdParams.pixelClk = (uint64_t)148500000ULL;
     App_configureLCD(lcdParams);
 #endif

@@ -200,7 +200,7 @@ int32_t DispApp_SetBoardMux()
     /*setting power mux for dsi lcd*/
     i2cCfg.i2cInst   = BOARD_I2C_IOEXP_DEVICE4_INSTANCE;
     i2cCfg.socDomain = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = false;
+    i2cCfg.enableIntr = BFALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     /* Enable DSI in IO Expander */
@@ -237,18 +237,18 @@ int32_t DispApp_SetBoardMux()
 
 void DispApp_ErrorRegRead(void)
 {
-    int i=0;
+    int i = 0;
     uint8_t readVal;
 
     for(i = 0xF0; i < 0xF8; i++)
     {
         Board_i2c8BitRegRd(gI2cHandle,
-                           0x2c,
+                           0x2C,
                            i & 0xFF,
                            &readVal,
                            1,
                            DISP_APP_I2C_TIMEOUT);
-        if (readVal != 0)
+        if (0 != readVal)
         {
             printf("Status at 0x%x in the SN65DSI bridge is 0x%x...\n", i, readVal);
         }
@@ -258,88 +258,88 @@ void DispApp_ErrorRegRead(void)
 void DisapApp_prepareI2cConfig(uint32_t resolution)
 {
     int32_t i = 0;
-    for(i=0; i<sizeof(gI2cDsiBridgeCfg)/sizeof(gI2cDsiBridgeCfg[0]); i++)
+    for(i = 0; i<sizeof(gI2cDsiBridgeCfg)/sizeof(gI2cDsiBridgeCfg[0]); i++)
     {
-        if (gI2cDsiBridgeCfg[i][0] == 0x10)
+        if (0x10 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x26;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x12)
+        else if (0x12 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
-                gI2cDsiBridgeCfg[i][1] = 0x4f;
+                gI2cDsiBridgeCfg[i][1] = 0x4F;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x93)
+        else if (0x93 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x20;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x20)
+        else if (0x20 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x80;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x21)
+        else if (0x21 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x07;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x24)
+        else if (0x24 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x38;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x25)
+        else if (0x25 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x4;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x30)
+        else if (0x30 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x08;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x34)
+        else if (0x34 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x28;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x36)
+        else if (0x36 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x06;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x38)
+        else if (0x38 == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x08;
             }
         }
-        else if (gI2cDsiBridgeCfg[i][0] == 0x3a)
+        else if (0x3A == gI2cDsiBridgeCfg[i][0])
         {
-            if (resolution == DSS_BRIDGE_1080P)
+            if (DSS_BRIDGE_1080P == resolution)
             {
                 gI2cDsiBridgeCfg[i][1] = 0x10;
             }
@@ -359,10 +359,10 @@ int32_t DispApp_InitI2c()
     I2C_HwAttrs i2cConfig;
 
     /* Initialize I2C Driver */
-    for(loopCnt = 0; loopCnt < I2C_HWIP_MAX_CNT; loopCnt++)
+    for(loopCnt = 0U; loopCnt < I2C_HWIP_MAX_CNT; loopCnt++)
     {
         I2C_socGetInitCfg(loopCnt, &i2cConfig);
-        i2cConfig.enableIntr = false;
+        i2cConfig.enableIntr = BFALSE;
         I2C_socSetInitCfg(loopCnt, &i2cConfig);
     }
 
@@ -377,7 +377,7 @@ int32_t DispApp_InitI2c()
 
     /* Configures the I2C instance with the passed parameters*/
     gI2cHandle = I2C_open(i2cInst, &i2cParams);
-    if(gI2cHandle == NULL)
+    if(NULL == gI2cHandle)
     {
         App_print("\nI2C Open failed!\n");
         status = FVID2_EFAIL;
@@ -396,7 +396,7 @@ int32_t DispApp_InitI2c()
     /* Initializes the I2C Parameters for instance 4*/
     I2C_Params_init(&i2cParams);
     gI2cHandle = I2C_open(4, &i2cParams);
-    if(gI2cHandle == NULL)
+    if(NULL == gI2cHandle)
     {
         printf("\nI2C Open failed!\n");
         status = FVID2_EFAIL;
@@ -423,7 +423,7 @@ int32_t DispApp_cfgAdditionalDsiPeripherals()
 #if defined (SOC_J721E)
     if (FVID2_SOK == status)
     {
-        for (cnt = 0; cnt < sizeof(serdesConfig)/4; cnt ++)
+        for (cnt = 0U; cnt < sizeof(serdesConfig)/4; cnt ++)
         {
             clientAddr = serdesConfig[cnt][0];
             status = Board_i2c8BitRegWr(
@@ -432,7 +432,7 @@ int32_t DispApp_cfgAdditionalDsiPeripherals()
 
             App_wait((uint32_t)serdesConfig[cnt][3]);
 
-            if (0 != status)
+            if (BOARD_SOK != status)
             {
                 App_print("\n Write Failed for 0x%x 0x%x 0x%x !\n",
                     clientAddr, serdesConfig[cnt][1], serdesConfig[cnt][2]);
@@ -441,51 +441,51 @@ int32_t DispApp_cfgAdditionalDsiPeripherals()
         }
     }
 #elif defined (SOC_J721S2) || defined (SOC_J784S4)
-    uint8_t readVal, wrVal=0xFF, i;
+    uint8_t readVal, wrVal = 0xFF, i;
     for(i = 0xF0; i < 0xF9; i++)
     {
         Board_i2c8BitRegWr(gI2cHandle,
-                            0x2c,
+                            0x2C,
                             i & 0xFF,
                             &wrVal,
                             1,
                             DISP_APP_I2C_TIMEOUT);
     }
     DisapApp_prepareI2cConfig(DSS_BRIDGE_720P);
-    for(i=0; i<sizeof(gI2cDsiBridgeCfg)/sizeof(gI2cDsiBridgeCfg[0]); i++)
+    for(i = 0; i < sizeof(gI2cDsiBridgeCfg)/sizeof(gI2cDsiBridgeCfg[0]); i++)
     {
         /* Read the value at bridge address. */
         Board_i2c8BitRegWr(gI2cHandle,
-                            0x2c,
+                            0x2C,
                             gI2cDsiBridgeCfg[i][0] & 0xFF,
                             &(gI2cDsiBridgeCfg[i][1]),
                             1,
                             DISP_APP_I2C_TIMEOUT);
         Osal_delay(200);
         /* Wait untill the DP_PLL has been locked. */
-        if(gI2cDsiBridgeCfg[i][0] == 0x0d)
+        if (0x0D == gI2cDsiBridgeCfg[i][0])
         {
             do {
                 Board_i2c8BitRegRd(gI2cHandle,
-                            0x2c,
-                            0x0a,
+                            0x2C,
+                            0x0A,
                             &readVal,
                             1,
                             DISP_APP_I2C_TIMEOUT);
-            } while( (readVal & 0x80) == 0x00);
+            } while (0x00 == (readVal & 0x80));
         }
 
         /* Main link should not be off. So keep waiting as long as the main links are off. */
-        if(gI2cDsiBridgeCfg[i][0] == 0x96)
+        if (0x96 == gI2cDsiBridgeCfg[i][0])
         {
             do {
                 Board_i2c8BitRegRd(gI2cHandle,
-                            0x2c,
+                            0x2C,
                             0x96,
                             &readVal,
                             1,
                             DISP_APP_I2C_TIMEOUT);
-            } while( (readVal) == 0x00);
+            } while (0x00 == (readVal));
         }
     }
     DispApp_ErrorRegRead();

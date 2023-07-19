@@ -535,7 +535,7 @@ void Dss_getEnabledWbPipeFuncEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENT
  *
  *  \param  nodeId  Node Id.
  *
- *  \return TRUE if node is Video pipe node else returns FALSE.
+ *  \return UTRUE if node is Video pipe node else returns UFALSE.
  */
 uint32_t Dss_dctrlIsPipeNode(uint32_t nodeId);
 
@@ -544,7 +544,7 @@ uint32_t Dss_dctrlIsPipeNode(uint32_t nodeId);
  *
  *  \param  nodeId  Node Id.
  *
- *  \return TRUE if given node is valid else returns FALSE.
+ *  \return UTRUE if given node is valid else returns UFALSE.
  */
 uint32_t Dss_dctrlIsValidNode(uint32_t nodeId);
 
@@ -554,7 +554,7 @@ uint32_t Dss_dctrlIsValidNode(uint32_t nodeId);
  *  \param  vpNodeId   Video Port Node Id.
  *  \param  outNodeId  Output Node Id.
  *
- *  \return TRUE if programming is needed else returns FALSE.
+ *  \return UTRUE if programming is needed else returns UFALSE.
  */
 uint32_t Dss_dctrlIsVideoMuxNeeded(uint32_t vpNodeId,
                                    uint32_t outNodeId);
@@ -625,7 +625,7 @@ uint32_t Dss_dctrlGetVpSafetyRegionId(uint32_t evtId);
  *
  *  \param  evtId      Event id.
  *
- *  \return TRUE if event is safety event, else FALSE.
+ *  \return UTRUE if event is safety event, else UFALSE.
  */
 uint32_t Dss_dctrlIsSafetyEvent(uint32_t evtId);
 
@@ -647,25 +647,25 @@ static inline void Dss_socInfoInit(Dss_SocInfo *socInfo)
     uint32_t i = 0U;
     if(NULL != socInfo)
     {
-        for(i=CSL_DSS_COMM_REG_ID_0; i<CSL_DSS_COMM_REG_ID_MAX; i++)
+        for(i = CSL_DSS_COMM_REG_ID_0; i < CSL_DSS_COMM_REG_ID_MAX; i++)
         {
-            socInfo->commRegs[i]=NULL;
+            socInfo->commRegs[i] = NULL;
         }
-        for(i=CSL_DSS_VID_PIPE_ID_VID1; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
+        for(i = CSL_DSS_VID_PIPE_ID_VID1; i < CSL_DSS_VID_PIPE_ID_MAX; i++)
         {
-            socInfo->pipeRegs[i]=NULL;
+            socInfo->pipeRegs[i] = NULL;
         }
-        for(i=CSL_DSS_OVERLAY_ID_1; i<CSL_DSS_OVERLAY_ID_MAX; i++)
+        for(i = CSL_DSS_OVERLAY_ID_1; i < CSL_DSS_OVERLAY_ID_MAX; i++)
         {
-            socInfo->overlayRegs[i]=NULL;
+            socInfo->overlayRegs[i] = NULL;
         }
-        for(i=CSL_DSS_VP_ID_1; i<CSL_DSS_VP_ID_MAX; i++)
+        for(i = CSL_DSS_VP_ID_1; i < CSL_DSS_VP_ID_MAX; i++)
         {
-            socInfo->vpRegs[i]=NULL;
+            socInfo->vpRegs[i] = NULL;
         }
-        for(i=CSL_DSS_WB_PIPE_ID_1; i<CSL_DSS_WB_PIPE_ID_MAX; i++)
+        for(i = CSL_DSS_WB_PIPE_ID_1; i < CSL_DSS_WB_PIPE_ID_MAX; i++)
         {
-            socInfo->wbRegs[i]=NULL;
+            socInfo->wbRegs[i] = NULL;
         }
     }
 }

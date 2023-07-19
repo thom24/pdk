@@ -100,7 +100,7 @@ int32_t Dss_dispDrvPrivInit(uint32_t numInst,
     Fvid2Utils_memset(pObj, 0U, sizeof (Dss_DispDrvCommonObj));
 
     /* Initialize instance object members */
-    if(numInst > CSL_DSS_VID_PIPE_ID_MAX)
+    if(CSL_DSS_VID_PIPE_ID_MAX < numInst)
     {
         /* Number of instances exceeds the global variable used to store the
          * instance object */
@@ -113,7 +113,7 @@ int32_t Dss_dispDrvPrivInit(uint32_t numInst,
     {
         pObj->instObj = &gDss_DispDrvInstObj[0];
         Fvid2Utils_memset(pObj->instObj, 0U, sizeof (gDss_DispDrvInstObj));
-        for(i=0U; i<DSS_DISP_EVT_MGR_MAX_CLIENTS; i++)
+        for(i = 0U; i < DSS_DISP_EVT_MGR_MAX_CLIENTS; i++)
         {
             pClientInfo = &gDss_DispEvtMgrClientInfo[i];
             Fvid2Utils_memset(pClientInfo, 0U, sizeof (Dss_EvtMgrClientInfo));
@@ -124,7 +124,7 @@ int32_t Dss_dispDrvPrivInit(uint32_t numInst,
     {
         pObj->numInst = numInst;
         instObj = pObj->instObj;
-        for(instCnt=0U; instCnt<numInst; instCnt++)
+        for(instCnt = 0U; instCnt < numInst; instCnt++)
         {
             /* Copy the information */
             instObj->drvInstId = initParams->drvInstId;
@@ -164,11 +164,11 @@ int32_t Dss_dispDrvPrivInit(uint32_t numInst,
                 instObj->numRegEvtHandle++;
             }
 
-            instObj->drvState.isInit     = TRUE;
-            instObj->drvState.isOpened   = FALSE;
-            instObj->drvState.isStarted  = FALSE;
-            instObj->drvState.isStarting = FALSE;
-            instObj->drvState.isStopping = FALSE;
+            instObj->drvState.isInit     = UTRUE;
+            instObj->drvState.isOpened   = UFALSE;
+            instObj->drvState.isStarted  = UFALSE;
+            instObj->drvState.isStarting = UFALSE;
+            instObj->drvState.isStopping = UFALSE;
 
             initParams++;
             instObj++;
@@ -195,9 +195,9 @@ int32_t Dss_dispDrvPrivDeInit(void)
     if(NULL != pObj->instObj)
     {
         instObj = pObj->instObj;
-        for(instCnt=0U; instCnt<pObj->numInst; instCnt++)
+        for(instCnt = 0U; instCnt < pObj->numInst; instCnt++)
         {
-            if(TRUE == instObj->drvState.isOpened)
+            if(UTRUE == instObj->drvState.isOpened)
             {
                 GT_0trace(DssTrace, GT_ERR,
                           "Can't de-initialize when an instance is active\r\n");
@@ -212,10 +212,10 @@ int32_t Dss_dispDrvPrivDeInit(void)
                 instObj->lockSem = NULL;
             }
 
-            instObj->drvState.isInit = FALSE;
+            instObj->drvState.isInit = UFALSE;
             numRegEvtHandle = instObj->numRegEvtHandle;
             /* Unregister event groups and delete object */
-            for(cnt=0U; cnt<numRegEvtHandle; cnt++)
+            for(cnt = 0U; cnt < numRegEvtHandle; cnt++)
             {
                 retVal += Dss_evtMgrUnRegister(instObj->evtGroupHandle[cnt]);
                 instObj->numRegEvtHandle--;
@@ -224,7 +224,7 @@ int32_t Dss_dispDrvPrivDeInit(void)
 
             instObj++;
         }
-        if(retVal == FVID2_SOK)
+        if(FVID2_SOK == retVal)
         {
             pObj->instObj = NULL;
             pObj->numInst = 0U;
@@ -243,9 +243,9 @@ Dss_DispDrvInstObj *Dss_dispDrvGetInstObj(uint32_t instId)
     pObj = &gDss_DispDrvCommonObj;
     GT_assert(DssTrace, (NULL != pObj));
     GT_assert(DssTrace, (NULL != pObj->instObj));
-    for(instCnt=0U; instCnt<pObj->numInst; instCnt++)
+    for(instCnt = 0U; instCnt < pObj->numInst; instCnt++)
     {
-        if((TRUE == pObj->instObj[instCnt].drvState.isInit) &&
+        if((UTRUE == pObj->instObj[instCnt].drvState.isInit) &&
            (pObj->instObj[instCnt].drvInstId == instId))
         {
             instObj = &pObj->instObj[instCnt];
@@ -274,10 +274,10 @@ int32_t Dss_dispDrvCreateInstObj(Dss_DispDrvInstObj *instObj)
     instObj->currStatus.underflowCount = 0U;
     instObj->currStatus.safetyViolationCount = 0U;
 
-    bmObj->isProgressive = TRUE;
+    bmObj->isProgressive = UTRUE;
     bmObj->curFid = 0U;
     bmObj->expectedFid = 0U;
-    bmObj->fieldMerged = TRUE;
+    bmObj->fieldMerged = UTRUE;
     bmObj->freeQ = NULL;
     bmObj->reqQ = NULL;
     bmObj->currQ = NULL;
@@ -285,25 +285,25 @@ int32_t Dss_dispDrvCreateInstObj(Dss_DispDrvInstObj *instObj)
 
     /* Create Queues */
     retVal = Fvid2Utils_constructQ(&bmObj->freeLlObj);
-    GT_assert(DssTrace, (retVal == FVID2_SOK));
+    GT_assert(DssTrace, (FVID2_SOK == retVal));
     bmObj->freeQ = &bmObj->freeLlObj;
 
     retVal = Fvid2Utils_constructQ(&bmObj->reqLlObj);
-    GT_assert(DssTrace, (retVal == FVID2_SOK));
+    GT_assert(DssTrace, (FVID2_SOK == retVal));
     bmObj->reqQ = &bmObj->reqLlObj;
 
     retVal = Fvid2Utils_constructQ(&bmObj->curLlObj);
-    GT_assert(DssTrace, (retVal == FVID2_SOK));
+    GT_assert(DssTrace, (FVID2_SOK == retVal));
     bmObj->currQ = &bmObj->curLlObj;
 
     retVal = Fvid2Utils_constructQ(&bmObj->doneLlObj);
-    GT_assert(DssTrace, (retVal == FVID2_SOK));
+    GT_assert(DssTrace, (FVID2_SOK == retVal));
     bmObj->doneQ = &bmObj->doneLlObj;
 
     if(FVID2_SOK == retVal)
     {
         /* Initialize and queue the allocate queue object to free Q */
-        for(qCnt=0U; qCnt<DSS_DEF_QUEUE_LEN_PER_INST; qCnt++)
+        for(qCnt = 0U; qCnt < DSS_DEF_QUEUE_LEN_PER_INST; qCnt++)
         {
             qObj = &bmObj->dispQObj[qCnt];
             qObj->instObj = instObj;
@@ -338,10 +338,10 @@ int32_t Dss_dispDrvDeleteInstObj(Dss_DispDrvInstObj *instObj)
     GT_assert(DssTrace, (NULL != instObj));
     bmObj = &instObj->bmObj;
 
-    bmObj->isProgressive = TRUE;
+    bmObj->isProgressive = UTRUE;
     bmObj->curFid        = 0U;
     bmObj->expectedFid   = 0U;
-    bmObj->fieldMerged   = TRUE;
+    bmObj->fieldMerged   = UTRUE;
 
     if(NULL != bmObj->freeQ)
     {
@@ -410,7 +410,7 @@ static void Dss_dispErrCbFxn(const uint32_t *event,
     Dss_convEventGrouptoModule(eventGroup, &pipeId);
     GT_assert(DssTrace, (CSL_DSS_MODULE_INVALID != pipeId));
     instObj = &gDss_DispDrvInstObj[pipeId];
-    for(i=0U; i<numEvents; i++)
+    for(i = 0U; i < numEvents; i++)
     {
         currEvent = event[i];
         if(DSS_PIPE_EVENT_BUFF_UNDERFLOW == currEvent)
@@ -424,7 +424,7 @@ static void Dss_dispErrCbFxn(const uint32_t *event,
         }
         else
         {
-            GT_assert(DssTrace, FALSE);
+            GT_assert(DssTrace, BFALSE);
         }
     }
 

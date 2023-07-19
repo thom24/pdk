@@ -151,7 +151,7 @@ static void taskFxn(void* a0, void* a1)
                               TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK,
                               &clkFreq);
     App_consolePrintf("\n TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK = %lld Hz\n", clkFreq);
-    if (retVal == CSL_PASS)
+    if (CSL_PASS == retVal)
     {
         Dss_displayM2MTest();
     }
@@ -173,11 +173,11 @@ static void App_clkRateSet(uint32_t moduleId,
     uint64_t currClkFreqHz;
 
     status = PMLIBClkRateGet(moduleId, clkId, &currClkFreqHz);
-    if ((status == CSL_PASS) &&
+    if ((CSL_PASS == status) &&
         (currClkFreqHz != clkRateHz))
     {
         status = PMLIBClkRateSet(moduleId, clkId, clkRateHz);
-        if (status == CSL_PASS)
+        if (CSL_PASS == status)
         {
             App_consolePrintf("\nPMLIBClkRateSet Passed for clock Id = %d\n", clkId);
         }

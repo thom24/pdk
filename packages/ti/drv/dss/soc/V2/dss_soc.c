@@ -185,41 +185,41 @@ void Dss_fillSocInfo(Dss_RmInfo *rmInfo)
 {
     uint32_t i = 0U;
 
-    for(i=CSL_DSS_COMM_REG_ID_0; i<CSL_DSS_COMM_REG_ID_MAX; i++)
+    for(i = CSL_DSS_COMM_REG_ID_0; i < CSL_DSS_COMM_REG_ID_MAX; i++)
     {
-        if(TRUE == rmInfo->isCommRegAvailable[i])
+        if(UTRUE == rmInfo->isCommRegAvailable[i])
         {
             gDss_SocInfo.commRegs[i] =
                 (CSL_dss_commRegs *)gDss_commRegInfo[i].commRegs;
         }
     }
-    for(i=CSL_DSS_VID_PIPE_ID_VID1; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
+    for(i = CSL_DSS_VID_PIPE_ID_VID1; i < CSL_DSS_VID_PIPE_ID_MAX; i++)
     {
-        if(TRUE == rmInfo->isPipeAvailable[i])
+        if(UTRUE == rmInfo->isPipeAvailable[i])
         {
             gDss_SocInfo.pipeRegs[i] =
                     (CSL_dss_pipeRegs *)gDss_pipeRegInfo[i].pipeRegs;
         }
     }
-    for(i=CSL_DSS_OVERLAY_ID_1; i<CSL_DSS_OVERLAY_ID_MAX; i++)
+    for(i = CSL_DSS_OVERLAY_ID_1; i < CSL_DSS_OVERLAY_ID_MAX; i++)
     {
-        if(TRUE == rmInfo->isOverlayAvailable[i])
+        if(UTRUE == rmInfo->isOverlayAvailable[i])
         {
             gDss_SocInfo.overlayRegs[i] =
                     (CSL_dss_overlayRegs *)gDss_overlayRegInfo[i].overlayRegs;
         }
     }
-    for(i=CSL_DSS_VP_ID_1; i<CSL_DSS_VP_ID_MAX; i++)
+    for(i = CSL_DSS_VP_ID_1; i < CSL_DSS_VP_ID_MAX; i++)
     {
-        if(TRUE == rmInfo->isPortAvailable[i])
+        if(UTRUE == rmInfo->isPortAvailable[i])
         {
             gDss_SocInfo.vpRegs[i] =
                     (CSL_dss_vpRegs *)gDss_vpRegInfo[i].vpRegs;
         }
     }
-    for(i=CSL_DSS_WB_PIPE_ID_1; i<CSL_DSS_WB_PIPE_ID_MAX; i++)
+    for(i = CSL_DSS_WB_PIPE_ID_1; i < CSL_DSS_WB_PIPE_ID_MAX; i++)
     {
-        if(TRUE == rmInfo->isWbPipeAvailable[i])
+        if(UTRUE == rmInfo->isWbPipeAvailable[i])
         {
             gDss_SocInfo.wbRegs[i] =
                     (CSL_dss_wbRegs *)gDss_wbRegInfo[i].wbPipeRegs;
@@ -239,8 +239,8 @@ int32_t Dss_convNodetoModule(uint32_t nodeId,
     uint32_t i;
     *moduleId = CSL_DSS_MODULE_INVALID;
 
-    for(i=0U;
-        i<sizeof (gDss_DctrlNodeIdInfo) / sizeof (gDss_DctrlNodeIdInfo[0U]);
+    for(i = 0U;
+        i < (sizeof (gDss_DctrlNodeIdInfo) / sizeof (gDss_DctrlNodeIdInfo[0U]));
         i++)
     {
         if(nodeId == gDss_DctrlNodeIdInfo[i].nodeId)
@@ -262,12 +262,12 @@ int32_t Dss_convModuletoNode(uint32_t *nodeId,
     uint32_t i;
     *nodeId = DSS_DCTRL_NODE_INVALID;
 
-    for(i=0U;
-        i<sizeof (gDss_DctrlNodeIdInfo) / sizeof (gDss_DctrlNodeIdInfo[0U]);
+    for(i = 0U;
+        i < (sizeof (gDss_DctrlNodeIdInfo) / sizeof (gDss_DctrlNodeIdInfo[0U]));
         i++)
     {
         if((moduleId == gDss_DctrlNodeIdInfo[i].moduleId) &&
-        (nodeType == gDss_DctrlNodeIdInfo[i].nodeType))
+           (nodeType == gDss_DctrlNodeIdInfo[i].nodeType))
         {
             *nodeId = gDss_DctrlNodeIdInfo[i].nodeId;
             retVal = FVID2_SOK;
@@ -284,8 +284,8 @@ void Dss_convEventGrouptoModule(uint32_t eventGroup,
     uint32_t i;
     *moduleId = CSL_DSS_MODULE_INVALID;
 
-    for(i=0U;
-        i<sizeof (gDss_EventGroupInfo) / sizeof (gDss_EventGroupInfo[0U]);
+    for(i = 0U;
+        i < (sizeof (gDss_EventGroupInfo) / sizeof (gDss_EventGroupInfo[0U]));
         i++)
     {
         if(eventGroup == gDss_EventGroupInfo[i].eventGroup)
@@ -303,8 +303,8 @@ void Dss_convModuletoEventGroup(uint32_t *eventGroup,
     uint32_t i;
     *eventGroup = DSS_EVENT_GROUP_INVALID;
 
-    for(i=0U;
-        i<sizeof (gDss_EventGroupInfo) / sizeof (gDss_EventGroupInfo[0U]);
+    for(i = 0U;
+        i < (sizeof (gDss_EventGroupInfo) / sizeof (gDss_EventGroupInfo[0U]));
         i++)
     {
         if((moduleId == gDss_EventGroupInfo[i].moduleId) &&
@@ -320,8 +320,8 @@ uint32_t Dss_getVpConnId(uint32_t overlayId)
 {
     uint32_t vpId = CSL_DSS_MODULE_INVALID, i;
 
-    for(i=0U;
-        i<sizeof(gDss_OverlayConnInfo)/sizeof(gDss_OverlayConnInfo[0U]);
+    for(i = 0U;
+        i < (sizeof(gDss_OverlayConnInfo)/sizeof(gDss_OverlayConnInfo[0U]));
         i++)
     {
         if(overlayId == gDss_OverlayConnInfo[i].overlayId)
@@ -516,7 +516,7 @@ int32_t Dss_enableL1Event(Dss_EvtMgrInfo *evtMgrInfo,
     }
     else
     {
-        GT_assert(DssTrace, FALSE);
+        GT_assert(DssTrace, BFALSE);
         retVal = FVID2_EBADARGS;
     }
 
@@ -528,7 +528,7 @@ void Dss_getEnabledVpFuncEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
 {
     uint32_t i;
     *numEvts = sizeof(gDss_VpFuncEvents)/sizeof(uint32_t);
-    for(i=0U; i<*numEvts; i++)
+    for(i = 0U; i < *numEvts; i++)
     {
         events[i] = gDss_VpFuncEvents[i];
     }
@@ -539,7 +539,7 @@ void Dss_getEnabledVpErrEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
 {
     uint32_t i;
     *numEvts = sizeof(gDss_VpErrEvents)/sizeof(uint32_t);
-    for(i=0U; i<*numEvts; i++)
+    for(i = 0U; i < *numEvts; i++)
     {
         events[i] = gDss_VpErrEvents[i];
     }
@@ -550,7 +550,7 @@ void Dss_getEnabledPipeErrEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENTS],
 {
     uint32_t i;
     *numEvts = sizeof(gDss_PipeErrEvents)/sizeof(uint32_t);
-    for(i=0U; i<*numEvts; i++)
+    for(i = 0U; i < *numEvts; i++)
     {
         events[i] = gDss_PipeErrEvents[i];
     }
@@ -561,7 +561,7 @@ void Dss_getEnabledWbPipeFuncEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENT
 {
     uint32_t i;
     *numEvts = sizeof(gDss_WbFuncEvents)/sizeof(uint32_t);
-    for(i=0U; i<*numEvts; i++)
+    for(i = 0U; i < *numEvts; i++)
     {
         events[i] = gDss_WbFuncEvents[i];
     }
@@ -569,14 +569,14 @@ void Dss_getEnabledWbPipeFuncEvents(uint32_t events[DSS_EVT_MGR_MAX_CLIENT_EVENT
 
 uint32_t Dss_dctrlIsPipeNode(uint32_t nodeId)
 {
-    uint32_t isPipeNode = FALSE;
+    uint32_t isPipeNode = UFALSE;
 
-    if((DSS_DCTRL_NODE_VID1 == nodeId) ||
+    if((DSS_DCTRL_NODE_VID1  == nodeId) ||
        (DSS_DCTRL_NODE_VIDL1 == nodeId) ||
-       (DSS_DCTRL_NODE_VID2 == nodeId) ||
+       (DSS_DCTRL_NODE_VID2  == nodeId) ||
        (DSS_DCTRL_NODE_VIDL2 == nodeId))
     {
-        isPipeNode = TRUE;
+        isPipeNode = UTRUE;
     }
 
     return (isPipeNode);
@@ -584,16 +584,16 @@ uint32_t Dss_dctrlIsPipeNode(uint32_t nodeId)
 
 uint32_t Dss_dctrlIsValidNode(uint32_t nodeId)
 {
-    uint32_t i, isValidNode = FALSE, graphNodeInfoSize = 0U;
+    uint32_t i, isValidNode = UFALSE, graphNodeInfoSize = 0U;
     const Fvid2_GraphNodeInfo *graphNodeInfo;
 
     graphNodeInfo = Dss_dctrlGetDefaultNodeInfo(&graphNodeInfoSize);
 
-    for(i=1U; i<graphNodeInfoSize; i++)
+    for(i = 1U; i < graphNodeInfoSize; i++)
     {
         if(nodeId == graphNodeInfo[i].nodeId)
         {
-            isValidNode = TRUE;
+            isValidNode = UTRUE;
             break;
         }
     }
@@ -604,14 +604,14 @@ uint32_t Dss_dctrlIsValidNode(uint32_t nodeId)
 uint32_t Dss_dctrlIsVideoMuxNeeded(uint32_t vpNodeId,
                                    uint32_t outNodeId)
 {
-    uint32_t isMuxNeeded = FALSE;
+    uint32_t isMuxNeeded = UFALSE;
 
     if(((DSS_DCTRL_NODE_DPI_DPI0 == outNodeId) ||
         (DSS_DCTRL_NODE_DPI_DPI1 == outNodeId)) &&
        ((DSS_DCTRL_NODE_VP2 == vpNodeId) ||
         (DSS_DCTRL_NODE_VP4 == vpNodeId)))
     {
-        isMuxNeeded = TRUE;
+        isMuxNeeded = UTRUE;
     }
 
     return isMuxNeeded;
@@ -689,9 +689,9 @@ uint32_t Dss_dctrlGetVpSafetyRegionId(uint32_t evtId)
     uint32_t i;
     uint32_t regionId = CSL_DSS_VP_SAFETY_REGION_INVALID;
 
-    for(i=0U;
-        i<sizeof (gDss_VpSafetyRegionIdInfo) /
-           sizeof (gDss_VpSafetyRegionIdInfo[0U]);
+    for(i = 0U;
+        i < (sizeof (gDss_VpSafetyRegionIdInfo) /
+            sizeof (gDss_VpSafetyRegionIdInfo[0U]));
         i++)
     {
         if(evtId == gDss_VpSafetyRegionIdInfo[i].regionErrEvt)
@@ -706,11 +706,11 @@ uint32_t Dss_dctrlGetVpSafetyRegionId(uint32_t evtId)
 
 uint32_t Dss_dctrlIsSafetyEvent(uint32_t evtId)
 {
-    uint32_t retVal = FALSE;
-    if((evtId >= DSS_VP_EVENT_SAFETY_VIOLATION_0) &&
-       (evtId <= DSS_VP_EVENT_SAFETY_VIOLATION_7))
+    uint32_t retVal = UFALSE;
+    if((DSS_VP_EVENT_SAFETY_VIOLATION_0 <= evtId) &&
+       (DSS_VP_EVENT_SAFETY_VIOLATION_7 >= evtId))
     {
-        retVal = TRUE;
+        retVal = UTRUE;
     }
     return retVal;
 }
@@ -721,9 +721,9 @@ uint32_t Dss_dctrlGetVpSafetyEvtId(uint32_t regionId)
     uint32_t i;
     uint32_t evtId = DSS_VP_EVENT_INVALID;
 
-    for(i=0U;
-        i<sizeof (gDss_VpSafetyRegionIdInfo) /
-           sizeof (gDss_VpSafetyRegionIdInfo[0U]);
+    for(i = 0U;
+        i < (sizeof (gDss_VpSafetyRegionIdInfo) /
+           sizeof (gDss_VpSafetyRegionIdInfo[0U]));
         i++)
     {
         if(regionId == gDss_VpSafetyRegionIdInfo[i].regionId)

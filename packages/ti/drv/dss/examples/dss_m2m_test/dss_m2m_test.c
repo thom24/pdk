@@ -201,9 +201,9 @@ static int32_t App_initParams(M2MApp_AppObj *appObj)
             dispParams->pipeCfg.inFmt.dataFormat  = APP_DSS_M2M_IN_FRAME_FORMAT;
             dispParams->pipeCfg.outWidth          = APP_DSS_M2M_IN_FRAME_WIDTH;
             dispParams->pipeCfg.outHeight         = APP_DSS_M2M_IN_FRAME_HEIGHT;
-            dispParams->pipeCfg.scEnable          = FALSE;
+            dispParams->pipeCfg.scEnable          = UFALSE;
             dispParams->alphaCfg.globalAlpha      = 0xFFU;
-            dispParams->alphaCfg.preMultiplyAlpha = FALSE;
+            dispParams->alphaCfg.preMultiplyAlpha = UFALSE;
             dispParams->layerPos.startX           = 0U;
             dispParams->layerPos.startY           = 0U;
 
@@ -223,11 +223,11 @@ static int32_t App_initParams(M2MApp_AppObj *appObj)
         wbPipeCfg->outFmt.dataFormat = APP_DSS_M2M_OUT_FRAME_FORMAT;
         if ( (wbPipeCfg->inFmt.width != wbPipeCfg->outFmt.width) || (wbPipeCfg->inFmt.height != wbPipeCfg->outFmt.height))
         {
-            wbPipeCfg->scEnable = TRUE;
+            wbPipeCfg->scEnable = UTRUE;
         }
         else
         {
-            wbPipeCfg->scEnable = FALSE;
+            wbPipeCfg->scEnable = UFALSE;
         }
         wbPipeCfg->outFmt.ccsFormat  = FVID2_CCSF_BITS8_PACKED;
         wbPipeCfg->inPos.startX      = 0U;
@@ -245,10 +245,10 @@ static int32_t App_initParams(M2MApp_AppObj *appObj)
         ovrParams = &instObj->ovrCfg;
         Dss_dctrlOverlayParamsInit(ovrParams);
         ovrParams->overlayId = APP_DSS_M2M_DSS_OVERLAY_ID;
-        ovrParams->colorbarEnable = FALSE;
-        ovrParams->overlayCfg.colorKeyEnable = FALSE;
+        ovrParams->colorbarEnable = UFALSE;
+        ovrParams->overlayCfg.colorKeyEnable = UFALSE;
         ovrParams->overlayCfg.colorKeySel = CSL_DSS_OVERLAY_TRANS_COLOR_DEST;
-        ovrParams->overlayCfg.backGroundColor = 0xc8c800U;
+        ovrParams->overlayCfg.backGroundColor = 0xC8C800U;
 
         layerParams = &instObj->layerCfg;
         Dss_dctrlOverlayLayerParamsInit(layerParams);
@@ -275,7 +275,7 @@ static int32_t App_initParams(M2MApp_AppObj *appObj)
         SemaphoreP_Params_init(&semParams);
         semParams.mode   = SemaphoreP_Mode_BINARY;
         instObj->syncSem = SemaphoreP_create(0U, &semParams);
-        if (instObj->syncSem == NULL)
+        if (NULL == instObj->syncSem)
         {
             retVal = FVID2_EFAIL;
             App_consolePrintf("\nERROR: Semaphore create failed!!!\n");
@@ -310,7 +310,7 @@ static int32_t App_init(M2MApp_AppObj *appObj)
     Fvid2InitPrms_init(&initPrms);
     initPrms.printFxn = &App_consolePrintf;
     retVal = Fvid2_init(&initPrms);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
         App_consolePrintf("\nERROR: FVID2 Init Failed!!!\r\n");
     }
@@ -321,7 +321,7 @@ static int32_t App_init(M2MApp_AppObj *appObj)
     appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_FUNC]     = 53U;
     appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_SAFETY]   = 55U;
     appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_SECURITY] = 57U;
-    appObj->initParams.socParams.dpInitParams.isHpdSupported                    = FALSE;
+    appObj->initParams.socParams.dpInitParams.isHpdSupported                    = UFALSE;
     Dss_init(&appObj->initParams);
 
     if (FVID2_SOK == retVal)
@@ -338,7 +338,7 @@ static int32_t App_deInit(M2MApp_AppObj *appObj)
 
     retVal += Dss_deInit();
     retVal += Fvid2_deInit(NULL);
-    if(retVal != FVID2_SOK)
+    if(FVID2_SOK != retVal)
     {
          App_consolePrintf("\nERROR: App_deInit failed!!!\r\n");
     }
@@ -366,7 +366,7 @@ static int32_t App_create(M2MApp_AppObj *appObj)
                                              &instObj->createStatus,
                                              &instObj->cbParams);
         if((NULL == instObj->drvHandle) ||
-           (instObj->createStatus.retVal != FVID2_SOK))
+           (FVID2_SOK == instObj->createStatus.retVal))
         {
             retVal = instObj->createStatus.retVal;
             App_consolePrintf("\nERROR: Display M2M DRV Create Failed!!!\r\n");
@@ -483,13 +483,13 @@ static int32_t App_delete(M2MApp_AppObj *appObj)
     {
         instObj = &appObj->instParams[instIdx];
         /* Dequeue all the request from the driver */
-        while (1U)
+        while (BTRUE)
         {
             retVal = Fvid2_getProcessedRequest(instObj->drvHandle,
                                                &inFrmList,
                                                &outFrmList,
                                                FVID2_TIMEOUT_NONE);
-            if (retVal == FVID2_ENO_MORE_BUFFERS)
+            if (FVID2_ENO_MORE_BUFFERS == retVal)
             {
                 retVal = FVID2_SOK;
                 break;

@@ -55,11 +55,11 @@ extern "C" {
 /* ========================================================================== */
 /* Display output type */
 #if defined (SOC_AM65XX)
-#define APP_OUTPUT_OLDI          (0)
+#define APP_OUTPUT_OLDI          ((uint32_t) 0)
 #else
-#define APP_OUTPUT_HDMI          (0)
-#define APP_OUTPUT_EDP           (1)
-#define APP_OUTPUT_DSI           (2)
+#define APP_OUTPUT_HDMI          ((uint32_t) 0)
+#define APP_OUTPUT_EDP           ((uint32_t) 1)
+#define APP_OUTPUT_DSI           ((uint32_t) 2)
 #endif
 
 /* ========================================================================== */

@@ -65,18 +65,18 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-/* Returns TRUE if instance and channel/context configurations matches,
-   returns FALSE otherwise */
+/* Returns UTRUE if instance and channel/context configurations matches,
+   returns UFALSE otherwise */
 uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
                                   const Dss_DispParams *progCfg);
 
-/* Returns TRUE if instance and channel/context configurations matches,
-   returns FALSE otherwise */
+/* Returns UTRUE if instance and channel/context configurations matches,
+   returns UFALSE otherwise */
 uint32_t Dss_m2mDrvDispMFlagCfgChk(const Dss_DispPipeMflagParams *instCfg,
                                    const Dss_DispPipeMflagParams *progCfg);
 
-/* Returns TRUE if instance and channel/context configurations matches,
-   returns FALSE otherwise */
+/* Returns UTRUE if instance and channel/context configurations matches,
+   returns UFALSE otherwise */
 uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
                                  const CSL_DssCscCoeff *progCfg);
 
@@ -115,7 +115,7 @@ int32_t Dss_m2mDrvDispCheckPitch(const Fvid2_Format *instCfg, const Fvid2_Format
     uint32_t numFields, fieldIdx, planeIdx;
     int32_t retVal = FVID2_SOK;
 
-    if (scanFmt == FVID2_SF_INTERLACED)
+    if (FVID2_SF_INTERLACED == scanFmt)
     {
         numFields = 2;
     }
@@ -142,9 +142,9 @@ int32_t Dss_m2mDrvDispCheckFieldMerge(const Fvid2_Format *instCfg, const Fvid2_F
     int32_t retVal = FVID2_SOK;
     uint32_t planeIdx;
 
-    if (scanFmt == FVID2_SF_INTERLACED)
+    if (FVID2_SF_INTERLACED == scanFmt)
     {
-        for (planeIdx=0; planeIdx<FVID2_MAX_PLANES_PER_FIELD; planeIdx++)
+        for (planeIdx = 0U; planeIdx < FVID2_MAX_PLANES_PER_FIELD; planeIdx++)
         {
             if(instCfg->fieldMerged[planeIdx] != progCfg->fieldMerged[planeIdx])
             {
@@ -163,7 +163,7 @@ int32_t Dss_m2mDrvDispCheckFieldMerge(const Fvid2_Format *instCfg, const Fvid2_F
 uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
                                   const Dss_DispParams *progCfg)
 {
-    uint32_t retVal = (uint32_t) TRUE;
+    uint32_t retVal = UTRUE;
     uint32_t loopCnt = 0U, scanFmt;
 
     scanFmt = instCfg->pipeCfg.inFmt.scanFormat;
@@ -180,13 +180,13 @@ uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
         (instCfg->pipeCfg.gammaEnable       != progCfg->pipeCfg.gammaEnable)                                        ||
         (instCfg->pipeCfg.inFmt.width       != progCfg->pipeCfg.inFmt.width)                                        ||
         (instCfg->pipeCfg.inFmt.height      != progCfg->pipeCfg.inFmt.height)                                       ||
-        (Dss_m2mDrvDispCheckPitch(&(instCfg->pipeCfg.inFmt), &(progCfg->pipeCfg.inFmt), scanFmt) != FVID2_SOK)      ||
+        (FVID2_SOK                          != Dss_m2mDrvDispCheckPitch(&(instCfg->pipeCfg.inFmt), &(progCfg->pipeCfg.inFmt), scanFmt))      ||
         (instCfg->pipeCfg.inFmt.dataFormat  != progCfg->pipeCfg.inFmt.dataFormat)                                   ||
         (instCfg->pipeCfg.inFmt.scanFormat  != progCfg->pipeCfg.inFmt.scanFormat)                                   ||
         (instCfg->pipeCfg.inFmt.ccsFormat   != progCfg->pipeCfg.inFmt.ccsFormat)                                    ||
-        (Dss_m2mDrvDispCheckFieldMerge(&(instCfg->pipeCfg.inFmt), &(progCfg->pipeCfg.inFmt), scanFmt) != FVID2_SOK))
+        (FVID2_SOK                          != Dss_m2mDrvDispCheckFieldMerge(&(instCfg->pipeCfg.inFmt), &(progCfg->pipeCfg.inFmt), scanFmt)))
     {
-        retVal = (uint32_t) FALSE;
+        retVal = UFALSE;
     }
     else
     {
@@ -198,13 +198,13 @@ uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
                 break;
             }
         }
-        if (loopCnt < CSL_DSS_NUM_LUT_ENTRIES)
+        if (CSL_DSS_NUM_LUT_ENTRIES > loopCnt)
         {
-            retVal = (uint32_t) FALSE;
+            retVal = UFALSE;
         }
     }
     /* check for DMA configurations */
-    if (retVal == ((uint32_t) TRUE))
+    if (UTRUE == retVal)
     {
         if ((instCfg->dmaCfg.bufPreloadControl  != progCfg->dmaCfg.bufPreloadControl)  ||
             (instCfg->dmaCfg.preloadVal         != progCfg->dmaCfg.preloadVal)         ||
@@ -214,30 +214,30 @@ uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
             (instCfg->dmaCfg.selfRefreshEnable  != progCfg->dmaCfg.selfRefreshEnable)  ||
             (instCfg->dmaCfg.arbitration        != progCfg->dmaCfg.arbitration))
         {
-            retVal = (uint32_t) FALSE;
+            retVal = UFALSE;
         }
     }
     /* check for Alpha configurations */
-    if (retVal == ((uint32_t) TRUE))
+    if (UTRUE == retVal)
     {
         if ((instCfg->alphaCfg.globalAlpha      != progCfg->alphaCfg.globalAlpha)  ||
             (instCfg->alphaCfg.preMultiplyAlpha != progCfg->alphaCfg.preMultiplyAlpha))
         {
-            retVal = (uint32_t) FALSE;
+            retVal = UFALSE;
         }
     }
     /* check for VC1 configurations */
-    if (retVal == ((uint32_t) TRUE))
+    if (UTRUE == retVal)
     {
         if ((instCfg->vc1Cfg.vc1Enable != progCfg->vc1Cfg.vc1Enable) ||
             (instCfg->vc1Cfg.rangeY    != progCfg->vc1Cfg.rangeY)    ||
             (instCfg->vc1Cfg.rangeUV   != progCfg->vc1Cfg.rangeUV))
         {
-            retVal = (uint32_t) FALSE;
+            retVal = UFALSE;
         }
     }
     /* check for Crop configurations */
-    if (retVal == ((uint32_t) TRUE))
+    if (UTRUE == retVal)
     {
         if ((instCfg->cropParams.cropEnable         != progCfg->cropParams.cropEnable)         ||
             (instCfg->cropParams.cropCfg.cropTop    != progCfg->cropParams.cropCfg.cropTop)    ||
@@ -245,16 +245,16 @@ uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
             (instCfg->cropParams.cropCfg.cropLeft   != progCfg->cropParams.cropCfg.cropLeft)   ||
             (instCfg->cropParams.cropCfg.cropRight  != progCfg->cropParams.cropCfg.cropRight))
         {
-            retVal = (uint32_t) FALSE;
+            retVal = UFALSE;
         }
     }
     /* check for Layer configurations */
-    if (retVal == ((uint32_t) TRUE))
+    if (UTRUE == retVal)
     {
         if ((instCfg->layerPos.startX != progCfg->layerPos.startX) ||
             (instCfg->layerPos.startY != progCfg->layerPos.startY))
         {
-            retVal = (uint32_t) FALSE;
+            retVal = UFALSE;
         }
     }
 
@@ -264,12 +264,12 @@ uint32_t Dss_m2mDrvDispPipeCfgChk(const Dss_DispParams *instCfg,
 uint32_t Dss_m2mDrvDispMFlagCfgChk(const Dss_DispPipeMflagParams *instCfg,
                                    const Dss_DispPipeMflagParams *progCfg)
 {
-    uint32_t retVal = (uint32_t) TRUE;
+    uint32_t retVal = UTRUE;
 
     if ((instCfg->mflagCfg.thresholdLow  != progCfg->mflagCfg.thresholdLow)  ||
         (instCfg->mflagCfg.thresholdHigh != progCfg->mflagCfg.thresholdHigh))
     {
-        retVal = (uint32_t) FALSE;
+        retVal = UFALSE;
     }
 
     return retVal;
@@ -278,7 +278,7 @@ uint32_t Dss_m2mDrvDispMFlagCfgChk(const Dss_DispPipeMflagParams *instCfg,
 uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
                                  const CSL_DssCscCoeff *progCfg)
 {
-    uint32_t retVal = (uint32_t) TRUE;
+    uint32_t retVal = UTRUE;
 
     if ((instCfg->cscRange     != progCfg->cscRange)    ||
         (instCfg->c00          != progCfg->c00)         ||
@@ -297,7 +297,7 @@ uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
         (instCfg->postOffset2  != progCfg->postOffset2) ||
         (instCfg->postOffset3  != progCfg->postOffset3))
     {
-        retVal = (uint32_t) FALSE;
+        retVal = UFALSE;
     }
 
     return retVal;
@@ -306,7 +306,7 @@ uint32_t Dss_m2mDrvDispCscCfgChk(const CSL_DssCscCoeff *instCfg,
 int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t copyCfg = (uint32_t) FALSE;
+    uint32_t copyCfg = UFALSE;
     uint32_t layerNum, pipeIdx;
     DssM2MDrv_InstObj *instObj;
     DssM2MDrv_DispPipeCfg *instCfg, *progCfg;
@@ -323,7 +323,7 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
         if (FVID2_SOK == retVal)
         {
             /* Check DSS Pipeline configuration */
-            if (((uint32_t) FALSE) == Dss_m2mDrvDispPipeCfgChk(&instCfg->cfgParams,
+            if (UFALSE == Dss_m2mDrvDispPipeCfgChk(&instCfg->cfgParams,
                                                                &progCfg->cfgParams))
             {
                 if (FVID2_SOK == retVal)
@@ -358,7 +358,7 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
 
                     layerNum = CSL_dssOverlayGetEnabledPipeLayerNum(instObj->ovrRegs,
                                                                     context->pipeId[pipeIdx]);
-                    GT_assert(DssTrace, (layerNum < CSL_DSS_OVERLAY_LAYER_MAX));
+                    GT_assert(DssTrace, (CSL_DSS_OVERLAY_LAYER_MAX > layerNum));
                     overlayPosCfg.layerPos.startX = instCfg->cfgParams.layerPos.startX;
                     overlayPosCfg.layerPos.startY = instCfg->cfgParams.layerPos.startY;
                     CSL_dssOverlaySetPipePosConfig(instObj->ovrRegs,
@@ -367,14 +367,14 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
                 }
                 if (FVID2_SOK == retVal)
                 {
-                    copyCfg = (uint32_t) TRUE;
+                    copyCfg = UTRUE;
                 }
             }
         }
         if (FVID2_SOK == retVal)
         {
             /* Check DSS Pipeline MFlag configuration */
-            if (((uint32_t) FALSE) == Dss_m2mDrvDispMFlagCfgChk(&instCfg->mFlagParams,
+            if (UFALSE == Dss_m2mDrvDispMFlagCfgChk(&instCfg->mFlagParams,
                                                                 &progCfg->mFlagParams))
             {
                 if (FVID2_SOK == retVal)
@@ -382,14 +382,14 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
                     /* Program: DSS Pipeline MFlag */
                     CSL_dssVidPipeSetMflagConfig(instObj->pipeRegs[context->pipeId[pipeIdx]],
                         (const CSL_DssVidPipeMFlagCfg *)(&instCfg->mFlagParams.mflagCfg));
-                    copyCfg = (uint32_t) TRUE;
+                    copyCfg = UTRUE;
                 }
             }
         }
         if (FVID2_SOK == retVal)
         {
             /* Check DSS Pipeline Csc configuration */
-            if (((uint32_t) FALSE) == Dss_m2mDrvDispCscCfgChk(&instCfg->cscCoeff,
+            if (UFALSE == Dss_m2mDrvDispCscCfgChk(&instCfg->cscCoeff,
                                                               &progCfg->cscCoeff))
             {
                 if (FVID2_SOK == retVal)
@@ -397,11 +397,11 @@ int32_t Dss_m2mDrvPrgramDisp(DssM2MDrv_VirtContext *context)
                     /* Program: DSS Pipeline Csc */
                     CSL_dssVidPipeSetCSCCoeff(instObj->pipeRegs[context->pipeId[pipeIdx]],
                             (const CSL_DssCscCoeff *)(&instCfg->cscCoeff));
-                    copyCfg = (uint32_t) TRUE;
+                    copyCfg = UTRUE;
                 }
             }
         }
-        if ((FVID2_SOK == retVal) && (((uint32_t) TRUE) == copyCfg))
+        if ((FVID2_SOK == retVal) && (UTRUE == copyCfg))
         {
             /* Update instance configurations */
             Fvid2Utils_memcpy(progCfg, instCfg, sizeof(DssM2MDrv_DispPipeCfg));
@@ -444,14 +444,14 @@ static int32_t Dss_m2mDrvValidateDispParams(DssM2MDrv_InstObj *instObj,
     if((dispParams->pipeCfg.inFmt.height != dispParams->pipeCfg.outHeight) ||
        (dispParams->pipeCfg.inFmt.width != dispParams->pipeCfg.outWidth))
     {
-        if(TRUE == Dss_dispIsVidLInst(pipeCfg->pipeId))
+        if(UTRUE == Dss_dispIsVidLInst(pipeCfg->pipeId))
         {
             GT_0trace(DssTrace,
                       GT_ERR,
                       "M2M: Scaling cant be enabled for video lite pipe \r\n");
             retVal = FVID2_EINVALID_PARAMS;
         }
-        if(FALSE == dispParams->pipeCfg.scEnable)
+        if(UFALSE == dispParams->pipeCfg.scEnable)
         {
             GT_0trace(DssTrace,
                       GT_ERR,
@@ -460,10 +460,10 @@ static int32_t Dss_m2mDrvValidateDispParams(DssM2MDrv_InstObj *instObj,
         }
     }
 
-    if((dispParams->cropParams.cropCfg.cropTop >= 32U) ||
-       (dispParams->cropParams.cropCfg.cropBottom >= 32U) ||
-       (dispParams->cropParams.cropCfg.cropLeft >= 32U) ||
-       (dispParams->cropParams.cropCfg.cropRight >= 32U))
+    if((32U <= dispParams->cropParams.cropCfg.cropTop   ) ||
+       (32U <= dispParams->cropParams.cropCfg.cropBottom) ||
+       (32U <= dispParams->cropParams.cropCfg.cropLeft  ) ||
+       (32U <= dispParams->cropParams.cropCfg.cropRight ))
     {
         GT_0trace(DssTrace,
                   GT_ERR,
@@ -471,10 +471,10 @@ static int32_t Dss_m2mDrvValidateDispParams(DssM2MDrv_InstObj *instObj,
         retVal = FVID2_EINVALID_PARAMS;
     }
 
-    if(((dispParams->pipeCfg.flipType == FVID2_FLIP_TYPE_V) ||
-        (dispParams->pipeCfg.flipType == FVID2_FLIP_TYPE_H)) &&
-       ((dispParams->pipeCfg.inFmt.dataFormat == FVID2_DF_RGB24_888) ||
-        (dispParams->pipeCfg.inFmt.dataFormat == FVID2_DF_BGR24_888)))
+    if(((FVID2_FLIP_TYPE_V  == dispParams->pipeCfg.flipType) ||
+        (FVID2_FLIP_TYPE_H  == dispParams->pipeCfg.flipType)) &&
+       ((FVID2_DF_RGB24_888 == dispParams->pipeCfg.inFmt.dataFormat) ||
+        (FVID2_DF_BGR24_888 == dispParams->pipeCfg.inFmt.dataFormat)))
     {
         GT_0trace(DssTrace,
                   GT_ERR,
@@ -501,14 +501,14 @@ int32_t Dss_m2mDrvIoctlSetDssPipeParams(DssM2MDrv_VirtContext *context,
     {
         retVal = FVID2_EBADARGS;
     }
-    else if (pipeCfg->pipeId >= CSL_DSS_VID_PIPE_ID_MAX)
+    else if (CSL_DSS_VID_PIPE_ID_MAX <= pipeCfg->pipeId)
     {
         retVal = FVID2_EBADARGS;
     }
     else
     {
         retVal = Dss_m2mDrvValidateDispParams(context->instObj, pipeCfg);
-        if (retVal == FVID2_SOK)
+        if (FVID2_SOK == retVal)
         {
             /* upgrade configurations into context object and re-program HW module
                on buffer submission */
@@ -531,7 +531,7 @@ int32_t Dss_m2mDrvIoctlSetPipeMflagParams(DssM2MDrv_VirtContext *context,
     {
         retVal = FVID2_EBADARGS;
     }
-    else if (mFlagParams->pipeId >= CSL_DSS_VID_PIPE_ID_MAX)
+    else if (CSL_DSS_VID_PIPE_ID_MAX <= mFlagParams->pipeId)
     {
         retVal = FVID2_EBADARGS;
     }
@@ -557,7 +557,7 @@ int32_t Dss_m2mDrvIoctlSetPipeCsc(DssM2MDrv_VirtContext *context,
     {
         retVal = FVID2_EBADARGS;
     }
-    else if (csc->pipeId >= CSL_DSS_VID_PIPE_ID_MAX)
+    else if (CSL_DSS_VID_PIPE_ID_MAX <= csc->pipeId)
     {
         retVal = FVID2_EBADARGS;
     }

@@ -344,7 +344,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -352,7 +352,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -426,7 +426,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -434,7 +434,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -508,7 +508,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -516,7 +516,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -590,7 +590,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -598,7 +598,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -672,7 +672,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -680,7 +680,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -754,7 +754,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -762,7 +762,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -836,7 +836,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -844,7 +844,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -918,7 +918,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -926,7 +926,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -1000,7 +1000,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        FALSE
+        UFALSE
     },
     /* Global Alpha */
     {
@@ -1008,7 +1008,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -1082,7 +1082,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -1090,7 +1090,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -1164,7 +1164,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE
+        UTRUE
     },
     /* Global Alpha */
     {
@@ -1172,7 +1172,7 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE
+        UFALSE
     },
     /* X Position */
     {
@@ -1341,8 +1341,8 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE,
-        FALSE
+        UTRUE,
+        UFALSE
     },
     /* Global Alpha */
     {
@@ -1351,8 +1351,8 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE,
-        FALSE
+        UFALSE,
+        UFALSE
     },
 #if defined (SOC_AM65XX)
     /* X Position */
@@ -1451,8 +1451,8 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        TRUE,
-        FALSE
+        UTRUE,
+        UFALSE
     },
     /* Global Alpha */
     {
@@ -1461,8 +1461,8 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        FALSE,
-        FALSE
+        UFALSE,
+        UFALSE
     },
 #if defined (SOC_AM65XX)
     /* X Position */

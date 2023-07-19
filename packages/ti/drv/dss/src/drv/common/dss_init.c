@@ -122,12 +122,12 @@ int32_t Dss_init(const Dss_InitParams *initParams)
         /* Initialize display controller driver */
         dctrlInitParams.drvInstId = DSS_DCTRL_INST_0;
         dctrlInitParams.numAvailablePorts = 0U;
-        for(i=CSL_DSS_VP_ID_1; i<CSL_DSS_VP_ID_MAX; i++)
+        for(i = CSL_DSS_VP_ID_1; i < CSL_DSS_VP_ID_MAX; i++)
         {
             isPortAvailable[i] =
                             initParams->socParams.rmInfo.isPortAvailable[i];
 
-            if(TRUE == isPortAvailable[i])
+            if(UTRUE == isPortAvailable[i])
             {
                 dctrlInitParams.availablePortId[
                                         dctrlInitParams.numAvailablePorts] = i;
@@ -140,7 +140,7 @@ int32_t Dss_init(const Dss_InitParams *initParams)
         dctrlInitParams.dpInitParams.isHpdSupported = initParams->socParams.dpInitParams.isHpdSupported;
 #endif
 
-        dctrlInitParams.dsiInitParams.isAvailable = FALSE;
+        dctrlInitParams.dsiInitParams.isAvailable = UFALSE;
 #if defined(SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
         dctrlInitParams.dsiInitParams.isAvailable =
             initParams->socParams.dsiInitParams.isAvailable;
@@ -154,12 +154,12 @@ int32_t Dss_init(const Dss_InitParams *initParams)
     if(FVID2_SOK == retVal)
     {
         /* Initialize display driver */
-        for(i=0U; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
+        for(i = 0U; i < CSL_DSS_VID_PIPE_ID_MAX; i++)
         {
             isPipeAvailable[i] =
                                 initParams->socParams.rmInfo.isPipeAvailable[i];
 
-            if(TRUE == isPipeAvailable[i])
+            if(UTRUE == isPipeAvailable[i])
             {
                 dispInitParams[numInst].drvInstId = i;
                 numInst++;

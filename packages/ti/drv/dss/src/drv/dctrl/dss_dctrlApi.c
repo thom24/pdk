@@ -210,7 +210,7 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
     Fvid2Utils_memset(pDrvInfo, 0U, sizeof (Dss_DctrlDrvInfo));
     Fvid2Utils_memset(pDrvInstObj, 0U, sizeof (Dss_DctrlDrvInstObj));
 
-    for(i=0U; i<DSS_DCTRL_EVT_MGR_MAX_CLIENTS; i++)
+    for(i = 0U; i < DSS_DCTRL_EVT_MGR_MAX_CLIENTS; i++)
     {
         pClientInfo = &gDss_DctrlEvtMgrClientInfo[i];
         Fvid2Utils_memset(pClientInfo, 0U, sizeof (Dss_EvtMgrClientInfo));
@@ -236,7 +236,7 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
             retVal = FVID2_EALLOC;
         }
 
-        for(i=0U; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
+        for(i = 0U; i < CSL_DSS_VID_PIPE_ID_MAX; i++)
         {
             /* Allocate instance semaphore */
             pDrvInfo->pipeInfo[i].stopSem = SemaphoreP_create(0U, &semParams);
@@ -249,20 +249,20 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
             }
         }
 
-        for(i=0U; i<CSL_DSS_VP_ID_MAX; i++)
+        for(i = 0U; i < CSL_DSS_VP_ID_MAX; i++)
         {
             pDrvInfo->vpState[i] = DSS_DCTRL_VP_IDLE;
         }
 
-        pObj->instObj->drvState.isInit = TRUE;
-        pObj->instObj->drvState.isOpened = FALSE;
-        pObj->instObj->drvState.isStarted = FALSE;
+        pObj->instObj->drvState.isInit    = UTRUE;
+        pObj->instObj->drvState.isOpened  = UFALSE;
+        pObj->instObj->drvState.isStarted = UFALSE;
     }
 
     if(FVID2_SOK == retVal)
     {
         /* Register for Video Port events */
-        for(cnt=0U; cnt<drvInitParams->numAvailablePorts; cnt++)
+        for(cnt = 0U; cnt < drvInitParams->numAvailablePorts; cnt++)
         {
             vpId = drvInitParams->availablePortId[cnt];
             Dss_convModuletoEventGroup(&eventGroup,
@@ -301,12 +301,12 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
 
 #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     if((FVID2_SOK == retVal) &&
-    (TRUE == drvInitParams->dpInitParams.isAvailable))
+    (UTRUE == drvInitParams->dpInitParams.isAvailable))
     {
         retVal = Dss_dctrlDrvInitDp(drvInitParams->dpInitParams.isHpdSupported);
     }
 
-    if (TRUE == drvInitParams->dsiInitParams.isAvailable)
+    if (UTRUE == drvInitParams->dsiInitParams.isAvailable)
     {
         Dss_dctrlDrvInitDSI();
     }
@@ -332,7 +332,7 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
         else
         {
             /* Init successful */
-            pObj->isRegistered = TRUE;
+            pObj->isRegistered = UTRUE;
 
             /* Copy Init params to local object, for future use. */
             Fvid2Utils_memcpy(&pObj->drvInitParams, drvInitParams,
@@ -353,7 +353,7 @@ int32_t Dss_dctrlDrvInit(const Dss_DctrlDrvInitParams *drvInitParams)
 int32_t Dss_dctrlDrvDeInit(void)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t cnt, numRegEvtHandle, i, vpFound = FALSE;;
+    uint32_t cnt, numRegEvtHandle, i, vpFound = UFALSE;
     Dss_DctrlDrvCommonObj *pObj;
     Dss_DctrlDrvInstObj *instObj;
     Dss_DctrlDrvGraphObj *pGraphObj;
@@ -364,7 +364,7 @@ int32_t Dss_dctrlDrvDeInit(void)
     if(NULL != pObj->instObj)
     {
         instObj = pObj->instObj;
-        if(instObj->drvState.isOpened == TRUE)
+        if(UTRUE == instObj->drvState.isOpened)
         {
             GT_0trace(DssTrace,
                       GT_ERR,
@@ -372,15 +372,15 @@ int32_t Dss_dctrlDrvDeInit(void)
             retVal = FVID2_EFAIL;
         }
 
-        for(i=0U; i<CSL_DSS_VP_ID_MAX; i++)
+        for(i = 0U; i < CSL_DSS_VP_ID_MAX; i++)
         {
             if(DSS_DCTRL_VP_IDLE != pDrvInfo->vpState[i])
             {
-                vpFound = TRUE;
+                vpFound = UTRUE;
                 break;
             }
         }
-        if(TRUE == vpFound)
+        if(UTRUE == vpFound)
         {
             GT_0trace(DssTrace,
                     GT_ERR,
@@ -393,7 +393,7 @@ int32_t Dss_dctrlDrvDeInit(void)
 
         numRegEvtHandle = instObj->numRegEvtHandle;
         /* Unregister event groups and delete object */
-        for(cnt=0U; cnt<numRegEvtHandle; cnt++)
+        for(cnt = 0U; cnt<numRegEvtHandle; cnt++)
         {
             (void) Dss_evtMgrUnRegister(instObj->evtGroupHandle[cnt]);
             instObj->numRegEvtHandle--;
@@ -406,7 +406,7 @@ int32_t Dss_dctrlDrvDeInit(void)
             instObj->lockSem = NULL;
         }
 
-        for(i=0U; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
+        for(i = 0U; i < CSL_DSS_VID_PIPE_ID_MAX; i++)
         {
             /* Delete instance semaphore */
             if(NULL != pDrvInfo->pipeInfo[i].stopSem)
@@ -416,11 +416,11 @@ int32_t Dss_dctrlDrvDeInit(void)
             }
         }
 
-        instObj->drvState.isInit = FALSE;
+        instObj->drvState.isInit = UFALSE;
         pObj->instObj = NULL;
     }
 
-    if(TRUE == pObj->isRegistered)
+    if(UTRUE == pObj->isRegistered)
     {
         /* Unregister from driver manager */
         retVal = Fvid2_unRegisterDriver(&pObj->fvidDrvOps);
@@ -430,10 +430,10 @@ int32_t Dss_dctrlDrvDeInit(void)
                       GT_ERR,
                       "Unregistering from FVID2 driver manager failed\r\n");
         }
-        pObj->isRegistered = FALSE;
+        pObj->isRegistered = UFALSE;
     }
 
-    if (gDssStartSyncSem != NULL)
+    if (NULL != gDssStartSyncSem)
     {
         /* Delete semaphore */
         (void)SemaphoreP_delete(gDssStartSyncSem);
@@ -450,9 +450,9 @@ DssDctrlDrvClientHandle Dss_dctrlDrvRegisterClient(
     DssDctrlDrvClientHandle clientHandle = NULL;
     GT_assert(DssTrace, (NULL != clientInfo));
     GT_assert(DssTrace,
-              (gDss_DctrlDrvInfo.numValidPipes <= CSL_DSS_VID_PIPE_ID_MAX));
+              (CSL_DSS_VID_PIPE_ID_MAX >= gDss_DctrlDrvInfo.numValidPipes));
 
-    for(i=0U; i<gDss_DctrlDrvInfo.numValidPipes; i++)
+    for(i = 0U; i < gDss_DctrlDrvInfo.numValidPipes; i++)
     {
         if(gDss_DctrlDrvInfo.pipeInfo[i].pipeNodeId == nodeId)
         {
@@ -492,7 +492,7 @@ int32_t Dss_dctrlDrvStartClient(DssDctrlDrvClientHandle handle,
     cookie = HwiP_disable();
 
     pipeInfo = (Dss_DctrlDrvPipeInfo *) handle;
-    if(TRUE == dummyStart)
+    if(UTRUE == dummyStart)
     {
         pipeInfo->pipeState = DSS_DCTRL_PIPE_STARTING;
     }
@@ -501,7 +501,7 @@ int32_t Dss_dctrlDrvStartClient(DssDctrlDrvClientHandle handle,
         pipeInfo->pipeState = DSS_DCTRL_PIPE_STARTED;
     }
 
-    if(FALSE == dummyStart)
+    if(UFALSE == dummyStart)
     {
         retVal = Dss_dctrlDrvSetGoBit(handle);
     }
@@ -521,7 +521,7 @@ int32_t Dss_dctrlDrvStopClient(DssDctrlDrvClientHandle handle,
 
     cookie = HwiP_disable();
     pipeInfo = (Dss_DctrlDrvPipeInfo *) handle;
-    if(TRUE == syncStop)
+    if(UTRUE == syncStop)
     {
         pipeInfo->pipeState = DSS_DCTRL_PIPE_STOPPING;
     }
@@ -530,7 +530,7 @@ int32_t Dss_dctrlDrvStopClient(DssDctrlDrvClientHandle handle,
         pipeInfo->pipeState = DSS_DCTRL_PIPE_STOPPED;
     }
 
-    if(FALSE == syncStop)
+    if(UFALSE == syncStop)
     {
         retVal = Dss_dctrlDrvSetGoBit(handle);
     }
@@ -559,7 +559,7 @@ int32_t Dss_dctrlDrvGetVpParams(DssDctrlDrvClientHandle handle,
 
     /* Get VP Params */
     pipeInfo = (Dss_DctrlDrvPipeInfo *) handle;
-    for(i=0U; i<CSL_DSS_VP_ID_MAX; i++)
+    for(i = 0U; i < CSL_DSS_VP_ID_MAX; i++)
     {
         if(pipeInfo->vpId == gDss_DctrlDrvInfo.vpParams[i].vpId)
         {
@@ -598,7 +598,7 @@ int32_t Dss_dctrlDrvSetGoBit(DssDctrlDrvClientHandle handle)
 
 uint32_t Dss_dctrlDrvIsSafeToPush(DssDctrlDrvClientHandle handle)
 {
-    uint32_t retVal = FALSE, cookie;
+    uint32_t retVal = UFALSE, cookie;
     Dss_DctrlDrvPipeInfo *pipeInfo;
     GT_assert(DssTrace, (NULL != handle));
 
@@ -617,21 +617,21 @@ Dss_DctrlDrvPipeInfo *Dss_dctrlDrvGetPipeInfo(DssDctrlDrvClientHandle handle)
     GT_assert(DssTrace, (NULL != handle));
 
     pipeInfo = (Dss_DctrlDrvPipeInfo *) handle;
-    for(i=0U; i<gDss_DctrlDrvInfo.numValidPipes; i++)
+    for(i = 0U; i < gDss_DctrlDrvInfo.numValidPipes; i++)
     {
         if((gDss_DctrlDrvInfo.pipeInfo[i].pipeId == pipeInfo->pipeId) &&
-           ((gDss_DctrlDrvInfo.pipeInfo[i].pipeState ==
-                                            DSS_DCTRL_PIPE_OPENED)   ||
-            (gDss_DctrlDrvInfo.pipeInfo[i].pipeState ==
-                                            DSS_DCTRL_PIPE_STARTING) ||
-            (gDss_DctrlDrvInfo.pipeInfo[i].pipeState ==
-                                            DSS_DCTRL_PIPE_STARTED)  ||
-            (gDss_DctrlDrvInfo.pipeInfo[i].pipeState ==
-                                            DSS_DCTRL_PIPE_RUNNING)  ||
-            (gDss_DctrlDrvInfo.pipeInfo[i].pipeState ==
-                                            DSS_DCTRL_PIPE_STOPPING) ||
-            (gDss_DctrlDrvInfo.pipeInfo[i].pipeState ==
-                                            DSS_DCTRL_PIPE_STOPPED)))
+           ((DSS_DCTRL_PIPE_OPENED == 
+                            gDss_DctrlDrvInfo.pipeInfo[i].pipeState)   ||
+            (DSS_DCTRL_PIPE_STARTING == 
+                            gDss_DctrlDrvInfo.pipeInfo[i].pipeState)   ||
+            (DSS_DCTRL_PIPE_STARTED == 
+                            gDss_DctrlDrvInfo.pipeInfo[i].pipeState)   ||
+            (DSS_DCTRL_PIPE_RUNNING == 
+                            gDss_DctrlDrvInfo.pipeInfo[i].pipeState)   ||
+            (DSS_DCTRL_PIPE_STOPPING == 
+                            gDss_DctrlDrvInfo.pipeInfo[i].pipeState)   ||
+            (DSS_DCTRL_PIPE_STOPPED == 
+                            gDss_DctrlDrvInfo.pipeInfo[i].pipeState)))
         {
             break;
         }
@@ -678,7 +678,7 @@ static Fdrv_Handle Dss_dctrlDrvCreate(uint32_t drvId,
         /* Initialize instance variables */
         if(0U == instObj->numOpenDrvHandle)
         {
-            instObj->drvState.isOpened = TRUE;
+            instObj->drvState.isOpened = UTRUE;
         }
         instObj->numOpenDrvHandle++;
         drvHandle = instObj;
@@ -725,7 +725,7 @@ static int32_t Dss_dctrlDrvDelete(Fdrv_Handle handle, void *reserved)
         (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);
 
         /* Check if already opened. */
-        if(TRUE != instObj->drvState.isOpened)
+        if(UTRUE != instObj->drvState.isOpened)
         {
             GT_0trace(DssTrace, GT_ERR, "ERROR: Driver not opened\r\n");
             retVal = FVID2_EFAIL;
@@ -738,8 +738,8 @@ static int32_t Dss_dctrlDrvDelete(Fdrv_Handle handle, void *reserved)
         instObj->numOpenDrvHandle--;
         if(0U == instObj->numOpenDrvHandle)
         {
-            instObj->drvState.isOpened  = FALSE;
-            instObj->drvState.isStarted = FALSE;
+            instObj->drvState.isOpened  = UFALSE;
+            instObj->drvState.isStarted = UFALSE;
         }
     }
 
@@ -897,7 +897,7 @@ static int32_t Dss_dctrlDrvSetPathIoctl(Dss_DctrlDrvInstObj *instObj,
     /* Take the instance semaphore */
     (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);
 
-    gDss_DctrlDrvInfo.numValidPipes = 0;
+    gDss_DctrlDrvInfo.numValidPipes = 0U;
 
     if(0U != pathInfo->numEdges)
     {
@@ -907,16 +907,16 @@ static int32_t Dss_dctrlDrvSetPathIoctl(Dss_DctrlDrvInstObj *instObj,
 
     if((FVID2_SOK == retVal) && (0U != pathInfo->numEdges))
     {
-        for(i=0U; i<gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; i++)
+        for(i = 0U; i < gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; i++)
         {
             currEdge = &gDss_DctrlDrvGraphObj.dctrlEdgeList.list[i];
 
-            if(TRUE == Dss_dctrlIsPipeNode(currEdge->startNode))
+            if(UTRUE == Dss_dctrlIsPipeNode(currEdge->startNode))
             {
                 /* Start graph construction from pipe */
                 currPipeNum = gDss_DctrlDrvInfo.numValidPipes;
                 pPipeInfo = &gDss_DctrlDrvInfo.pipeInfo[currPipeNum];
-                GT_assert(DssTrace, (currPipeNum <= CSL_DSS_VID_PIPE_ID_MAX));
+                GT_assert(DssTrace, (CSL_DSS_VID_PIPE_ID_MAX >= currPipeNum));
                 pPipeInfo->pipeNodeId = currEdge->startNode;
                 /* Get Pipe Id */
                 retVal = Dss_convNodetoModule(currEdge->startNode, &moduleId);
@@ -937,7 +937,7 @@ static int32_t Dss_dctrlDrvSetPathIoctl(Dss_DctrlDrvInstObj *instObj,
                 GT_assert(DssTrace, (FVID2_SOK == retVal));
 
                 /* Find video port connected to overlay */
-                for(j=0U; j<gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; j++)
+                for(j = 0U; j < gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; j++)
                 {
                     vpEdge = &gDss_DctrlDrvGraphObj.dctrlEdgeList.list[j];
                     if(vpEdge->startNode == currEdge->endNode)
@@ -955,7 +955,7 @@ static int32_t Dss_dctrlDrvSetPathIoctl(Dss_DctrlDrvInstObj *instObj,
                         GT_assert(DssTrace, (FVID2_SOK == retVal));
 
                         /* Find output node connected to video port */
-                        for(k=0U; k<gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; k++)
+                        for(k = 0U; k < gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; k++)
                         {
                             /* Assign output node */
                             outEdge = &gDss_DctrlDrvGraphObj.dctrlEdgeList.list[k];
@@ -1016,7 +1016,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
                             const Dss_DctrlVpParams *vpParams)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t i, vpId, syncVpId, vpFound = FALSE;
+    uint32_t i, vpId, syncVpId, vpFound = UFALSE;
     CSL_dss_vpRegs *vpRegs;
     const Dss_SocInfo *socInfo;
     const CSL_DssVpLcdOpTimingCfg *lcdOpTimingCfg;
@@ -1033,7 +1033,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
     GT_assert(DssTrace, (NULL != vpParams));
 
     /* Check for wrong inputs */
-    if(vpParams->vpId >= CSL_DSS_VP_ID_MAX)
+    if(CSL_DSS_VP_ID_MAX <= vpParams->vpId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1064,8 +1064,8 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
         Dss_DctrlDrvCommonObj *pObj;
 
         pObj = &gDss_DctrlDrvCommonObj;
-        if ((TRUE == Dss_dctrlDrvIsOutputDSI(vpId)) &&
-            (FALSE == pObj->drvInitParams.dsiInitParams.isAvailable))
+        if ((UTRUE  == Dss_dctrlDrvIsOutputDSI(vpId)) &&
+            (UFALSE == pObj->drvInitParams.dsiInitParams.isAvailable))
         {
             retVal = FVID2_EINVALID_PARAMS;
             GT_0trace(DssTrace, GT_ERR, "DSI is not supported!!\r\n");
@@ -1085,7 +1085,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
         pVpParams->syncOpCfg.enabled = syncOpCfg->enabled;
         pVpParams->syncOpCfg.isPrimary = syncOpCfg->isPrimary;
         pVpParams->syncOpCfg.numSyncVpIds = syncOpCfg->numSyncVpIds;
-        for(i = 0; i < syncOpCfg->numSyncVpIds; i++)
+        for(i = 0U; i < syncOpCfg->numSyncVpIds; i++)
         {
             pVpParams->syncOpCfg.syncVpIds[i] = syncOpCfg->syncVpIds[i];
         }
@@ -1102,22 +1102,22 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
     }
 
     if((FVID2_SOK == retVal) &&
-    (TRUE == vpParams->syncOpCfg.enabled) &&
-    (TRUE == vpParams->syncOpCfg.isPrimary))
+    (UTRUE == vpParams->syncOpCfg.enabled) &&
+    (UTRUE == vpParams->syncOpCfg.isPrimary))
     {
         syncOpCfg = &vpParams->syncOpCfg;
 
-        for(i = 0; i < syncOpCfg->numSyncVpIds; i++)
+        for(i = 0U; i < syncOpCfg->numSyncVpIds; i++)
         {
             syncVpId = syncOpCfg->syncVpIds[i];
 
             if(DSS_DCTRL_VP_STARTING != pDrvInfo->vpState[syncVpId])
             {
-                vpFound = TRUE;
+                vpFound = UTRUE;
                 break;
             }
         }
-        if(TRUE == vpFound)
+        if(UTRUE == vpFound)
         {
             retVal = FVID2_EBADARGS;
             GT_0trace(DssTrace, GT_ERR, "Secondary sync VPs not started!!\r\n");
@@ -1132,7 +1132,7 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
         GT_assert(DssTrace, (NULL != vpRegs));
 
         /* Not safe to push */
-        gDss_DctrlDrvInfo.isPushSafe[vpId] = FALSE;
+        gDss_DctrlDrvInfo.isPushSafe[vpId] = UFALSE;
 
         /* Call CSL APIs */
         CSL_dssVpSetLcdSignalPolarityConfig(vpRegs, lcdPolarityCfg);
@@ -1141,17 +1141,17 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
 
         if(FVID2_SOK != retVal)
         {
-            GT_assert(DssTrace, FALSE);
+            GT_assert(DssTrace, BFALSE);
         }
 
-        if(lcdOpTimingCfg->mInfo.height > 5U)
+        if(5U < lcdOpTimingCfg->mInfo.height)
         {
             CSL_dssVpSetLcdLineNum(vpRegs, lcdOpTimingCfg->mInfo.height - 5U);
         }
 
 #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
         if ((FVID2_SOK == retVal) &&
-            (TRUE == Dss_dctrlDrvIsOutputDSI(vpId)))
+            (UTRUE == Dss_dctrlDrvIsOutputDSI(vpId)))
         {
             retVal = Dss_dctrlDrvEnableVideoDSI(pDrvInfo, &lcdOpTimingCfg->mInfo,
                 lcdPolarityCfg->hsPolarity, lcdPolarityCfg->vsPolarity,
@@ -1159,12 +1159,12 @@ static int32_t Dss_dctrlDrvSetVpParamsIoctl(
         }
 #endif
 
-        Dss_dctrlVpEnable(vpId, TRUE);
+        Dss_dctrlVpEnable(vpId, UTRUE);
     }
 
 #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
     if((FVID2_SOK == retVal) &&
-    (TRUE == Dss_dctrlDrvIsOutputDP(vpId)))
+    (UTRUE == Dss_dctrlDrvIsOutputDP(vpId)))
     {
         retVal = Dss_dctrlDrvEnableVideoDP(&lcdOpTimingCfg->mInfo,
                                lcdPolarityCfg->hsPolarity,
@@ -1234,7 +1234,7 @@ static uint32_t Dss_dctrlDrvIsOutputDP(uint32_t vpId)
 {
     int32_t retVal;
     uint32_t i;
-    uint32_t nodeId, vpFound = FALSE;
+    uint32_t nodeId, vpFound = UFALSE;
     Fvid2_GraphEdgeInfo *currEdge;
 
     retVal = Dss_convModuletoNode(&nodeId, vpId, DSS_DCTRL_NODE_TYPE_VP);
@@ -1242,13 +1242,13 @@ static uint32_t Dss_dctrlDrvIsOutputDP(uint32_t vpId)
             ((DSS_DCTRL_NODE_INVALID != nodeId) ||
              (FVID2_SOK == retVal)));
 
-    for(i=0U; i<gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; i++)
+    for(i = 0U; i < gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; i++)
     {
         currEdge = &gDss_DctrlDrvGraphObj.dctrlEdgeList.list[i];
         if((DSS_DCTRL_NODE_EDP_DPI0 == currEdge->endNode) &&
                 (nodeId == currEdge->startNode))
         {
-            vpFound = TRUE;
+            vpFound = UTRUE;
             break;
         }
     }
@@ -1260,7 +1260,7 @@ static uint32_t Dss_dctrlDrvIsOutputDSI(uint32_t vpId)
 {
     int32_t retVal;
     uint32_t i;
-    uint32_t nodeId, vpFound = FALSE;
+    uint32_t nodeId, vpFound = UFALSE;
     Fvid2_GraphEdgeInfo *currEdge;
 
     retVal = Dss_convModuletoNode(&nodeId, vpId, DSS_DCTRL_NODE_TYPE_VP);
@@ -1268,13 +1268,13 @@ static uint32_t Dss_dctrlDrvIsOutputDSI(uint32_t vpId)
             ((DSS_DCTRL_NODE_INVALID != nodeId) ||
              (FVID2_SOK == retVal)));
 
-    for(i=0U; i<gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; i++)
+    for(i = 0U; i < gDss_DctrlDrvGraphObj.dctrlEdgeList.numEdges; i++)
     {
         currEdge = &gDss_DctrlDrvGraphObj.dctrlEdgeList.list[i];
         if((DSS_DCTRL_NODE_DSI_DPI2 == currEdge->endNode) &&
                 (nodeId == currEdge->startNode))
         {
-            vpFound = TRUE;
+            vpFound = UTRUE;
             break;
         }
     }
@@ -1298,7 +1298,7 @@ static int32_t Dss_dctrlDrvSetOverlayParamsIoctl(
     GT_assert(DssTrace, (NULL != overlayParams));
 
     /* Check for wrong inputs */
-    if(overlayId >= CSL_DSS_OVERLAY_ID_MAX)
+    if(CSL_DSS_OVERLAY_ID_MAX <= overlayId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1322,14 +1322,14 @@ static int32_t Dss_dctrlDrvSetOverlayParamsIoctl(
         overlayCfg = &overlayParams->overlayCfg;
 
         /* Call CSL APIs */
-        if(FALSE == overlayParams->colorbarEnable)
+        if(UFALSE == overlayParams->colorbarEnable)
         {
-            CSL_dssOverlayColorBarEnable(overlayRegs, FALSE);
+            CSL_dssOverlayColorBarEnable(overlayRegs, UFALSE);
             CSL_dssOverlaySetConfig(overlayRegs, overlayCfg);
         }
         else
         {
-            CSL_dssOverlayColorBarEnable(overlayRegs, TRUE);
+            CSL_dssOverlayColorBarEnable(overlayRegs, UTRUE);
             Dss_dctrlVpSetGoBit(vpId);
         }
     }
@@ -1360,7 +1360,7 @@ static int32_t Dss_dctrlDrvSetLayerParamsIoctl(
     GT_assert(DssTrace, (NULL != layerParams));
 
     /* Check for wrong inputs */
-    if(overlayId >= CSL_DSS_OVERLAY_ID_MAX)
+    if(CSL_DSS_OVERLAY_ID_MAX <= overlayId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1380,11 +1380,11 @@ static int32_t Dss_dctrlDrvSetLayerParamsIoctl(
         GT_assert(DssTrace, (NULL != overlayRegs));
 
         /* Call CSL APIs */
-        for(i=0U; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
+        for(i = 0U; i < CSL_DSS_VID_PIPE_ID_MAX; i++)
         {
             if(CSL_DSS_OVERLAY_LAYER_INVALID != layerParams->pipeLayerNum[i])
             {
-                layerCfg.layerEnable = TRUE;
+                layerCfg.layerEnable = UTRUE;
                 layerCfg.layerNum = layerParams->pipeLayerNum[i];
                 layerCfg.inputPipe = i;
                 CSL_dssOverlaySetLayerConfig(
@@ -1435,7 +1435,7 @@ static int32_t Dss_dctrlDrvSetVpCscCoeffIoctl(
     /* Call CSL API */
     if(FVID2_SOK == retVal)
     {
-        CSL_dssVpSetCSCCoeff(vpRegs, cscCoeff, cscPos, TRUE);
+        CSL_dssVpSetCSCCoeff(vpRegs, cscCoeff, cscPos, UTRUE);
     }
 
     if(FVID2_SOK != retVal)
@@ -1463,7 +1463,7 @@ static int32_t Dss_dctrlDrvSetAdvVpParamsIoctl(
     GT_assert(DssTrace, (NULL != advVpParams));
 
     /* Check for wrong inputs */
-    if(advVpParams->vpId >= CSL_DSS_VP_ID_MAX)
+    if(CSL_DSS_VP_ID_MAX <= advVpParams->vpId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1514,7 +1514,7 @@ static int32_t Dss_dctrlDrvSetLcdBlankTimingIoctl(
     GT_assert(DssTrace, (NULL != timingParams));
 
     /* Check for wrong inputs */
-    if(timingParams->vpId >= CSL_DSS_VP_ID_MAX)
+    if(CSL_DSS_VP_ID_MAX <= timingParams->vpId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1543,7 +1543,7 @@ static int32_t Dss_dctrlDrvSetLcdBlankTimingIoctl(
                         lcdBlankTimingCfg,
                         timingParams->dvoFormat,
                         scanFormat,
-                        TRUE);
+                        UTRUE);
     }
 
     if(FVID2_SOK != retVal)
@@ -1577,7 +1577,7 @@ static int32_t Dss_dctrlDrvSetVpSafetyChkParamsIoctl(
     vpId = safetyChkParams->vpId;
     regionId = safetyChkParams->regionSafetyChkCfg.regionId;
     /* Check for wrong inputs */
-    if((vpId >= CSL_DSS_VP_ID_MAX)||(regionId >= CSL_DSS_VP_SAFETY_REGION_MAX))
+    if((CSL_DSS_VP_ID_MAX <= vpId) || (CSL_DSS_VP_SAFETY_REGION_MAX <= regionId))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1655,14 +1655,14 @@ static int32_t Dss_dctrlDrvGetErrorStatsIoctl(
                             Dss_DctrlVpErrorStats *vpErrStats)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t i, vpFound = FALSE;
+    uint32_t i, vpFound = UFALSE;
 
     /* Check for NULL pointers */
     GT_assert(DssTrace, (NULL != instObj));
     GT_assert(DssTrace, (NULL != vpErrStats));
 
     /* Check for wrong inputs */
-    if(vpErrStats->vpId >= CSL_DSS_VP_ID_MAX)
+    if(CSL_DSS_VP_ID_MAX <= vpErrStats->vpId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1674,21 +1674,21 @@ static int32_t Dss_dctrlDrvGetErrorStatsIoctl(
     if(FVID2_SOK == retVal)
     {
         /* Check if Video Port is valid */
-        for(i=0U; i<CSL_DSS_VP_ID_MAX; i++)
+        for(i = 0U; i < CSL_DSS_VP_ID_MAX; i++)
         {
             if(gDss_DctrlDrvInfo.vpParams[i].vpId == vpErrStats->vpId)
             {
-                vpFound = TRUE;
+                vpFound = UTRUE;
                 break;
             }
         }
 
-        if(TRUE == vpFound)
+        if(UTRUE == vpFound)
         {
             retVal = FVID2_SOK;
             vpErrStats->syncLost =
                     gDss_DctrlDrvInfo.errorCnt.vpsyncLost[vpErrStats->vpId];
-            for(i=0U; i<CSL_DSS_VP_SAFETY_REGION_MAX; i++)
+            for(i = 0U; i < CSL_DSS_VP_SAFETY_REGION_MAX; i++)
             {
                 vpErrStats->safetyViolation[i] =
                     gDss_DctrlDrvInfo.errorCnt.vpSafetyViolation[i][vpErrStats->vpId];
@@ -1760,7 +1760,7 @@ static int32_t Dss_dctrlDrvSetOldiParamsIoctl(
                             const Dss_DctrlOldiParams *oldiParams)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t resetOldi = FALSE;
+    uint32_t resetOldi = UFALSE;
     CSL_dss_commRegs *commRegs;
     CSL_dss_vpRegs *vpRegs;
     const Dss_SocInfo *socInfo;
@@ -1790,10 +1790,10 @@ static int32_t Dss_dctrlDrvSetOldiParamsIoctl(
     do
     {
         resetOldi = CSL_dssIsOldiResetDone(commRegs);
-    } while (TRUE != resetOldi);
+    } while (UTRUE != resetOldi);
 
     CSL_dssVpSetOldiConfig(vpRegs, oldiCfg);
-    CSL_dssVpOldiEnable(vpRegs, TRUE);
+    CSL_dssVpOldiEnable(vpRegs, UTRUE);
 
     if(FVID2_SOK != retVal)
     {
@@ -1812,20 +1812,20 @@ static int32_t Dss_dctrlDrvStopVpIoctl(Dss_DctrlDrvInstObj *instObj,
 {
     int32_t retVal = FVID2_SOK;
     uint32_t i, vpId, syncVpId;
-    uint32_t vpFound = FALSE;
+    uint32_t vpFound = UFALSE;
     uint32_t cookie;
     Dss_DctrlVpParams *sVpParams = NULL;
 
     /* Check for NULL pointers */
     GT_assert(DssTrace, (NULL != instObj));
     GT_assert(DssTrace, (NULL != vpParams));
-    GT_assert(DssTrace, (vpParams->vpId < CSL_DSS_VP_ID_MAX));
+    GT_assert(DssTrace, (CSL_DSS_VP_ID_MAX > vpParams->vpId));
 
     vpId = vpParams->vpId;
     sVpParams = &gDss_DctrlDrvInfo.vpParams[vpId];
 
     /* Check for wrong inputs */
-    if(vpParams->vpId >= CSL_DSS_VP_ID_MAX)
+    if(CSL_DSS_VP_ID_MAX <= vpParams->vpId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1845,20 +1845,20 @@ static int32_t Dss_dctrlDrvStopVpIoctl(Dss_DctrlDrvInstObj *instObj,
     }
 
     if((FVID2_SOK == retVal) &&
-    (TRUE == sVpParams->syncOpCfg.enabled) &&
-    (TRUE == sVpParams->syncOpCfg.isPrimary))
+    (UTRUE == sVpParams->syncOpCfg.enabled) &&
+    (UTRUE == sVpParams->syncOpCfg.isPrimary))
     {
-        for(i = 0; i < sVpParams->syncOpCfg.numSyncVpIds; i++)
+        for(i = 0U; i < sVpParams->syncOpCfg.numSyncVpIds; i++)
         {
             syncVpId = sVpParams->syncOpCfg.syncVpIds[i];
 
             if(DSS_DCTRL_VP_STOPPING != gDss_DctrlDrvInfo.vpState[syncVpId])
             {
-                vpFound = TRUE;
+                vpFound = UTRUE;
             }
         }
 
-        if(TRUE == vpFound)
+        if(UTRUE == vpFound)
         {
             GT_0trace(DssTrace, GT_ERR, "Secondary sync VPs not stopped!!\r\n");
             retVal = FVID2_EBADARGS;
@@ -1866,7 +1866,7 @@ static int32_t Dss_dctrlDrvStopVpIoctl(Dss_DctrlDrvInstObj *instObj,
     }
 
 #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    if((FVID2_SOK == retVal) && (TRUE == Dss_dctrlDrvIsOutputDP(vpId)))
+    if((FVID2_SOK == retVal) && (UTRUE == Dss_dctrlDrvIsOutputDP(vpId)))
     {
         retVal = Dss_dctrlDrvDisableVideoDP();
     }
@@ -1875,15 +1875,15 @@ static int32_t Dss_dctrlDrvStopVpIoctl(Dss_DctrlDrvInstObj *instObj,
     if(FVID2_SOK == retVal)
     {
         cookie = HwiP_disable();
-        Dss_dctrlVpEnable(vpId, FALSE);
+        Dss_dctrlVpEnable(vpId, UFALSE);
         HwiP_restore(cookie);
 
         Dss_dctrlVpReset(vpId);
 
-        if((TRUE == sVpParams->syncOpCfg.enabled) &&
-        (TRUE == sVpParams->syncOpCfg.isPrimary))
+        if((UTRUE == sVpParams->syncOpCfg.enabled) &&
+           (UTRUE == sVpParams->syncOpCfg.isPrimary))
         {
-            for(i = 0; i < sVpParams->syncOpCfg.numSyncVpIds; i++)
+            for(i = 0U; i < sVpParams->syncOpCfg.numSyncVpIds; i++)
             {
                 syncVpId = sVpParams->syncOpCfg.syncVpIds[i];
                 Dss_dctrlVpReset(syncVpId);
@@ -1914,7 +1914,7 @@ static int32_t Dss_dctrlDrvSetSyncLostCbParamsIoctl(
     GT_assert(DssTrace, (NULL != syncLostCbParams));
 
     /* Check for wrong inputs */
-    if(syncLostCbParams->vpId >= CSL_DSS_VP_ID_MAX)
+    if(CSL_DSS_VP_ID_MAX <= syncLostCbParams->vpId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1956,7 +1956,7 @@ static int32_t Dss_dctrlDrvSetLineNumCbParamsIoctl(
     GT_assert(DssTrace, (NULL != lineNumCbParams));
 
     /* Check for wrong inputs */
-    if(vpId >= CSL_DSS_VP_ID_MAX)
+    if(CSL_DSS_VP_ID_MAX <= vpId)
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1993,18 +1993,18 @@ static void Dss_dctrlFuncCbFxn(const uint32_t *event,
     Dss_EvtMgrClientInfo *pClientObj = (Dss_EvtMgrClientInfo *)arg;
 
     GT_assert(DssTrace,
-              (gDss_DctrlDrvInfo.numValidPipes <= CSL_DSS_VID_PIPE_ID_MAX));
+              (CSL_DSS_VID_PIPE_ID_MAX >= gDss_DctrlDrvInfo.numValidPipes));
 
     uint32_t eventGroup = pClientObj->eventGroup;
     Dss_convEventGrouptoModule(eventGroup, &vpId);
     GT_assert(DssTrace, (CSL_DSS_MODULE_INVALID != vpId));
 
-    for(i=0U; i<numEvents; i++)
+    for(i = 0U; i < numEvents; i++)
     {
         currEvent = event[i];
         if(DSS_VP_EVENT_LINE_NUM == currEvent)
         {
-            gDss_DctrlDrvInfo.isPushSafe[vpId] = FALSE;
+            gDss_DctrlDrvInfo.isPushSafe[vpId] = UFALSE;
             if(NULL != gDss_DctrlDrvInfo.lineNumCbParams[vpId].lineNumCbFxn)
             {
                 gDss_DctrlDrvInfo.lineNumCbParams[vpId].lineNumCbFxn(
@@ -2021,22 +2021,22 @@ static void Dss_dctrlFuncCbFxn(const uint32_t *event,
                 (void) SemaphoreP_post(gDssStartSyncSem);
             }
             activePipeNum = 0U;
-            for(j=0U; j<gDss_DctrlDrvInfo.numValidPipes; j++)
+            for(j = 0U; j < gDss_DctrlDrvInfo.numValidPipes; j++)
             {
                 if(gDss_DctrlDrvInfo.pipeInfo[j].vpId == vpId)
                 {
-                    if((gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                DSS_DCTRL_PIPE_STARTING)     ||
-                       (gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                DSS_DCTRL_PIPE_STARTED)      ||
-                       (gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                DSS_DCTRL_PIPE_RUNNING)      ||
-                       (gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                DSS_DCTRL_PIPE_STOPPING))
+                    if((DSS_DCTRL_PIPE_STARTING == 
+                                gDss_DctrlDrvInfo.pipeInfo[j].pipeState)     ||
+                       (DSS_DCTRL_PIPE_STARTED == 
+                                gDss_DctrlDrvInfo.pipeInfo[j].pipeState)      ||
+                       (DSS_DCTRL_PIPE_RUNNING == 
+                                gDss_DctrlDrvInfo.pipeInfo[j].pipeState)      ||
+                       (DSS_DCTRL_PIPE_STOPPING == 
+                                gDss_DctrlDrvInfo.pipeInfo[j].pipeState))
                     {
                         activePipeNum++;
-                        if(gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                    DSS_DCTRL_PIPE_STARTING)
+                        if(DSS_DCTRL_PIPE_STARTING == 
+                                gDss_DctrlDrvInfo.pipeInfo[j].pipeState)
                         {
                             /* This is the first VSync for dummy start i.e.
                              * either start is synchronous or start was called
@@ -2044,30 +2044,30 @@ static void Dss_dctrlFuncCbFxn(const uint32_t *event,
                             gDss_DctrlDrvInfo.pipeInfo[j].pipeState =
                                                         DSS_DCTRL_PIPE_STARTED;
                         }
-                        if(gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                    DSS_DCTRL_PIPE_STARTED)
+                        if(DSS_DCTRL_PIPE_STARTED == 
+                                gDss_DctrlDrvInfo.pipeInfo[j].pipeState)
                         {
                             /* This is the first actual VSync where the buffer
                              * B1's display has started */
                             gDss_DctrlDrvInfo.pipeInfo[j].pipeState =
                                                         DSS_DCTRL_PIPE_RUNNING;
                         }
-                        if(gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                    DSS_DCTRL_PIPE_STOPPING)
+                        if(DSS_DCTRL_PIPE_STOPPING ==
+                                gDss_DctrlDrvInfo.pipeInfo[j].pipeState)
                         {
                             /* This is the VSYNC before synchronous stop */
                             gDss_DctrlDrvInfo.pipeInfo[j].pipeState =
                                                         DSS_DCTRL_PIPE_STOPPED;
                         }
-                        gDss_DctrlDrvInfo.isPushSafe[vpId] = TRUE;
+                        gDss_DctrlDrvInfo.isPushSafe[vpId] = UTRUE;
                         GT_assert(DssTrace,
                                   (NULL !=
                                    gDss_DctrlDrvInfo.pipeInfo[j].gClientInfo.cbFxn));
                         gDss_DctrlDrvInfo.pipeInfo[j].gClientInfo.cbFxn(
                             gDss_DctrlDrvInfo.pipeInfo[j].gClientInfo.arg);
                     }
-                    else if(gDss_DctrlDrvInfo.pipeInfo[j].pipeState ==
-                                                    DSS_DCTRL_PIPE_STOPPED)
+                    else if(DSS_DCTRL_PIPE_STOPPED == 
+                                  gDss_DctrlDrvInfo.pipeInfo[j].pipeState)
                     {
                         /* This is the actual stop */
                         gDss_DctrlDrvInfo.pipeInfo[j].pipeState =
@@ -2080,14 +2080,14 @@ static void Dss_dctrlFuncCbFxn(const uint32_t *event,
                 }
             }
 
-            if(activePipeNum > 0U)
+            if(0U < activePipeNum)
             {
                 Dss_dctrlVpSetGoBit(vpId);
             }
         }
         else
         {
-            GT_assert(DssTrace, FALSE);
+            GT_assert(DssTrace, BFALSE);
         }
     }
 
@@ -2107,7 +2107,7 @@ static void Dss_dctrlErrCbFxn(const uint32_t *event,
     Dss_convEventGrouptoModule(eventGroup, &vpId);
     GT_assert(DssTrace, (CSL_DSS_MODULE_INVALID != vpId));
 
-    for(i=0U; i<numEvents; i++)
+    for(i = 0U; i < numEvents; i++)
     {
         currEvent = event[i];
         if(DSS_VP_EVENT_SYNC_LOST == currEvent)
@@ -2122,7 +2122,7 @@ static void Dss_dctrlErrCbFxn(const uint32_t *event,
         }
         else
         {
-            GT_assert(DssTrace, FALSE);
+            GT_assert(DssTrace, BFALSE);
         }
     }
 
@@ -2150,10 +2150,10 @@ static void Dss_dctrlSafetyErrCbFxn(const uint32_t *event,
     vpRegs = socInfo->vpRegs[vpId];
     GT_assert(DssTrace, (NULL != vpRegs));
 
-    for(i=0U; i<numEvents; i++)
+    for(i = 0U; i < numEvents; i++)
     {
         currEvent = event[i];
-        if(TRUE == Dss_dctrlIsSafetyEvent(currEvent))
+        if(UTRUE == Dss_dctrlIsSafetyEvent(currEvent))
         {
             regionId = Dss_dctrlGetVpSafetyRegionId(currEvent);
             GT_assert(DssTrace, (CSL_DSS_VP_SAFETY_REGION_INVALID != regionId));
@@ -2176,7 +2176,7 @@ static void Dss_dctrlSafetyErrCbFxn(const uint32_t *event,
         }
         else
         {
-            GT_assert(DssTrace, FALSE);
+            GT_assert(DssTrace, BFALSE);
         }
     }
 
@@ -2187,13 +2187,13 @@ static int32_t Dss_dctrlConnectNodes(uint32_t inputNode, uint32_t outNode)
 {
     int32_t retVal = FVID2_SOK;
 
-    if((FALSE == Dss_dctrlIsValidNode(inputNode)) ||
-       (FALSE == Dss_dctrlIsValidNode(outNode)))
+    if((UFALSE == Dss_dctrlIsValidNode(inputNode)) ||
+       (UFALSE == Dss_dctrlIsValidNode(outNode)))
     {
         retVal = FVID2_EBADARGS;
     }
 
-    if(TRUE == Dss_dctrlIsVideoMuxNeeded(inputNode, outNode))
+    if(UTRUE == Dss_dctrlIsVideoMuxNeeded(inputNode, outNode))
     {
         retVal = Dss_dctrlProgramVideoMux(inputNode,
                                           outNode);
@@ -2269,11 +2269,11 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
 
     vpParams = &gDss_DctrlDrvInfo.vpParams[vpId];
 
-    if(TRUE == vpParams->syncOpCfg.enabled)
+    if(UTRUE == vpParams->syncOpCfg.enabled)
     {
-        if(TRUE == vpParams->syncOpCfg.isPrimary)
+        if(UTRUE == vpParams->syncOpCfg.isPrimary)
         {
-            vpMask = (uint32_t)(1U << vpId);
+            vpMask = ((uint32_t)1U << vpId);
             for(i = 0U; i < vpParams->syncOpCfg.numSyncVpIds; i++)
             {
                 syncVpId = vpParams->syncOpCfg.syncVpIds[i];
@@ -2282,7 +2282,7 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
 
             CSL_dssGlobalVpEnable(commRegs, vpMask, enable);
 
-            if(TRUE == enable)
+            if(UTRUE == enable)
             {
                 gDss_DctrlDrvInfo.vpState[vpId] = DSS_DCTRL_VP_RUNNING;
             }
@@ -2294,7 +2294,7 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
             for(i = 0U; i < vpParams->syncOpCfg.numSyncVpIds; i++)
             {
                 syncVpId = vpParams->syncOpCfg.syncVpIds[i];
-                if(TRUE == enable)
+                if(UTRUE == enable)
                 {
                     gDss_DctrlDrvInfo.vpState[syncVpId] = DSS_DCTRL_VP_RUNNING;
                 }
@@ -2306,7 +2306,7 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
         }
         else
         {
-            if(TRUE == enable)
+            if(UTRUE == enable)
             {
                 gDss_DctrlDrvInfo.vpState[vpId] = DSS_DCTRL_VP_STARTING;
             }
@@ -2319,7 +2319,7 @@ static void Dss_dctrlVpEnable(uint32_t vpId, uint32_t enable)
     else
     {
         CSL_dssVpEnable(vpRegs, enable);
-        if(TRUE == enable)
+        if(UTRUE == enable)
         {
             gDss_DctrlDrvInfo.vpState[vpId] = DSS_DCTRL_VP_RUNNING;
         }
@@ -2351,7 +2351,7 @@ static int32_t Dss_dctrlSetDsiParamsIoctl(Dss_DctrlDrvInstObj *instObj,
 
     if(FVID2_SOK == retVal)
     {
-        if (FALSE ==
+        if (UFALSE ==
                 gDss_DctrlDrvCommonObj.drvInitParams.dsiInitParams.isAvailable)
         {
             GT_0trace(DssTrace,
@@ -2390,11 +2390,11 @@ static int32_t Dss_dctrlIsDPConnectedIoctl(int32_t *isDpConnected)
     {
         if (FVID2_SOK == Dss_dctrlDrvDetectDp())
         {
-            *isDpConnected = TRUE;
+            *isDpConnected = ITRUE;
         }
         else 
         {
-            *isDpConnected = FALSE;
+            *isDpConnected = IFALSE;
         }
     }
     

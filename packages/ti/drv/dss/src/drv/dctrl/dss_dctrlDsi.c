@@ -62,10 +62,10 @@
    multipled by 3 for RGB24 */
 #define DSITX_VID_DATA_TYPE                 (DSITX_VID_DATA_TYPE_RGB_24)
 #define DSITX_VID_PIX_MODE                  (DSITX_VID_PIXEL_MODE_RGB_24)
-#define BPP                                 (3u)
+#define BPP                                 (3U)
 
-#define PLL_LOCK_REPEAT_COUNT               (10000u)
-#define WAIT_FOR_LANES_ACTIVE_REPEAT_COUNT  (10000u)
+#define PLL_LOCK_REPEAT_COUNT               (10000U)
+#define WAIT_FOR_LANES_ACTIVE_REPEAT_COUNT  (10000U)
 
 /* Base Address of PHY */
 #define DPHYTX0_CORE_BASE                   (CSL_DPHY_TX0_BASE)
@@ -225,72 +225,72 @@ static Dsitx_DphyRangeData gDsiTxLaneSpeedBandInfo[] =
     {
         .rangeMin = 80U,
         .rangeMax = 100U,
-        .progVal  = 0x0,
+        .progVal  = 0x0U,
     },
     {
         .rangeMin = 100U,
         .rangeMax = 120U,
-        .progVal  = 0x1,
+        .progVal  = 0x1U,
     },
     {
         .rangeMin = 120U,
         .rangeMax = 160U,
-        .progVal  = 0x2,
+        .progVal  = 0x2U,
     },
     {
         .rangeMin = 160U,
         .rangeMax = 200U,
-        .progVal  = 0x3,
+        .progVal  = 0x3U,
     },
     {
         .rangeMin = 200U,
         .rangeMax = 240U,
-        .progVal  = 0x4,
+        .progVal  = 0x4U,
     },
     {
         .rangeMin = 240U,
         .rangeMax = 320U,
-        .progVal  = 0x5,
+        .progVal  = 0x5U,
     },
     {
         .rangeMin = 320U,
         .rangeMax = 390U,
-        .progVal  = 0x6,
+        .progVal  = 0x6U,
     },
     {
         .rangeMin = 390U,
         .rangeMax = 450U,
-        .progVal  = 0x7,
+        .progVal  = 0x7U,
     },
     {
         .rangeMin = 450U,
         .rangeMax = 510U,
-        .progVal  = 0x8,
+        .progVal  = 0x8U,
     },
     {
         .rangeMin = 510U,
         .rangeMax = 560U,
-        .progVal  = 0x9,
+        .progVal  = 0x9U,
     },
     {
         .rangeMin = 560U,
         .rangeMax = 640U,
-        .progVal  = 0xA,
+        .progVal  = 0xAU,
     },
     {
         .rangeMin = 640U,
         .rangeMax = 690U,
-        .progVal  = 0xB,
+        .progVal  = 0xBU,
     },
     {
         .rangeMin = 690U,
         .rangeMax = 770U,
-        .progVal  = 0xC,
+        .progVal  = 0xCU,
     },
     {
         .rangeMin = 770U,
         .rangeMax = 870U,
-        .progVal  = 0xD,
+        .progVal  = 0xDU,
     },
     {
         .rangeMin = 870U,
@@ -300,42 +300,42 @@ static Dsitx_DphyRangeData gDsiTxLaneSpeedBandInfo[] =
     {
         .rangeMin = 950U,
         .rangeMax = 1000U,
-        .progVal  = 0xF,
+        .progVal  = 0xFU,
     },
     {
         .rangeMin = 1000U,
         .rangeMax = 1200U,
-        .progVal  = 0x10,
+        .progVal  = 0x10U,
     },
     {
         .rangeMin = 1200U,
         .rangeMax = 1400U,
-        .progVal  = 0x11,
+        .progVal  = 0x11U,
     },
     {
         .rangeMin = 1400U,
         .rangeMax = 1600U,
-        .progVal  = 0x12,
+        .progVal  = 0x12U,
     },
     {
         .rangeMin = 1600U,
         .rangeMax = 1800U,
-        .progVal  = 0x13,
+        .progVal  = 0x13U,
     },
     {
         .rangeMin = 1800U,
         .rangeMax = 2000U,
-        .progVal  = 0x14,
+        .progVal  = 0x14U,
     },
     {
         .rangeMin = 2000U,
         .rangeMax = 2200U,
-        .progVal  = 0x15,
+        .progVal  = 0x15U,
     },
     {
         .rangeMin = 2200U,
         .rangeMax = 2500U,
-        .progVal  = 0x16,
+        .progVal  = 0x16U,
     },
 };
 
@@ -346,7 +346,8 @@ static Dss_DctrlDsi2DpBridgeBlankingParams supportedBlanks[] =
         .vpBlankingParams = {
             .standard = FVID2_STD_CUSTOM,
             .scanFormat = FVID2_SF_PROGRESSIVE,
-            .fps = 60U, .width = 1280U,
+            .fps = 60U,
+            .width = 1280U,
             .height = 720U,
             .pixelClock = 64000000U,
             .hFrontPorch = 48U,
@@ -408,7 +409,7 @@ static Dss_DctrlDsi2DpBridgeBlankingParams supportedBlanks[] =
 /*                  Internal/Private Function Declarations                    */
 /* ========================================================================== */
 
-static void dssDctrlSetDSIInCtrlMod();
+static void dssDctrlSetDSIInCtrlMod(void);
 static uint32_t dssDctrlInitPhyConfig(Dss_DctrlDSIDrvObj *drvObj,
     DSITX_PrivateData* pD, DSITX_Config* cfg);
 static uint32_t dssDctrlSetDphyConfiguration(Dss_DctrlDSIDrvObj *dsiObj,
@@ -436,7 +437,7 @@ static int32_t dssdctrlCalcDsiParams(Dss_DctrlDSIDrvObj *dsiObj, const Dss_Dctrl
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-void Dss_dctrlDrvInitDSI()
+void Dss_dctrlDrvInitDSI(void)
 {
     Dss_DctrlDSIDrvObj *dsiObj;
 
@@ -454,12 +455,12 @@ void Dss_dctrlDrvInitDSI()
         (DPHYTX0_CORE_BASE + CSL_WIZ16B8M4CDT_WIZ_CONFIG_MOD_VER);
 
 
-    dsiObj->dphyTxIpDiv = 0x2;
-    dsiObj->dphyTxOpDiv = 0x2;
-    dsiObj->dphyTxFbDiv = 0x173;
-    dsiObj->dphyTxRate = 0x1CE;
-    dsiObj->cfgDsiTx.numOfLanes = 0x2u;
-    dsiObj->privDsiTx.numOfLanes = 0x2u;
+    dsiObj->dphyTxIpDiv = 0x2U;
+    dsiObj->dphyTxOpDiv = 0x2U;
+    dsiObj->dphyTxFbDiv = 0x173U;
+    dsiObj->dphyTxRate = 0x1CEU;
+    dsiObj->cfgDsiTx.numOfLanes = 0x2U;
+    dsiObj->privDsiTx.numOfLanes = 0x2U;
 }
 
 int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
@@ -477,7 +478,7 @@ int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
 
     /* Checks to see if the configuration (num of lanes) is valid */
     status = DSITX_Probe(&dsiObj->cfgDsiTx, &dsiObj->sysReqDsiTx);
-    if (CDN_EOK == status)
+    if (CDN_EOK == (uint32_t)status)
     {
         /* Calculate lane parameters based on the input speed */
         status = FVID2_SOK;
@@ -493,9 +494,9 @@ int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
 static int32_t dssDctrlValidateSupportedVpModes(const Fvid2_ModeInfo *mInfo, Fvid2_ModeInfo **dsiMode)
 {
     uint32_t supLen = sizeof(supportedBlanks)/sizeof(supportedBlanks[0]);
-    uint32_t supInd = 0;
+    uint32_t supInd = 0U;
     int32_t retVal = CSL_EFAIL;
-    for (supInd = 0; supInd < supLen; supInd++)
+    for (supInd = 0U; supInd < supLen; supInd++)
     {
         if (0 == memcmp(mInfo, &(supportedBlanks[supInd].vpBlankingParams), sizeof(Fvid2_ModeInfo)))
         {
@@ -621,14 +622,14 @@ static int32_t dssdctrlCalcDsiParams(Dss_DctrlDSIDrvObj *dsiObj, const Dss_Dctrl
         retVal = FVID2_EFAIL;
     }
 
-    if (retVal == FVID2_SOK)
+    if (FVID2_SOK == retVal)
     {
         PMLIBClkRateGet(TISCI_DEV_DPHY_TX0,
                     TISCI_DEV_DPHY_TX0_DPHY_REF_CLK,
                     &refClkKHz);
         refClkKHz = refClkKHz/1000;
         /* Calculate DPHY ipdiv - PLL input divider */
-        if (retVal == FVID2_SOK)
+        if (FVID2_SOK == retVal)
         {
             for (idx = 0U ;
                  idx < (sizeof(gDsiTxIpDivInfo) / sizeof(Dsitx_DphyRangeData));
@@ -651,7 +652,7 @@ static int32_t dssdctrlCalcDsiParams(Dss_DctrlDSIDrvObj *dsiObj, const Dss_Dctrl
         }
 
         /* Calculate DPHY opdiv - PLL output divider */
-        if (retVal == FVID2_SOK)
+        if (FVID2_SOK == retVal)
         {
             for (idx = 0U ;
                  idx < (sizeof(gDsiTxOpDivInfo) / sizeof(Dsitx_DphyRangeData));
@@ -676,7 +677,7 @@ static int32_t dssdctrlCalcDsiParams(Dss_DctrlDSIDrvObj *dsiObj, const Dss_Dctrl
         }
 
         /* Calculate DPHY fbdiv - PLL feedback divider */
-        if (retVal == FVID2_SOK)
+        if (FVID2_SOK == retVal)
         {
             tempResult = (((uint64_t)dsiPrms->laneSpeedInKbps) *
                           ((uint64_t)2U) *
@@ -691,7 +692,7 @@ static int32_t dssdctrlCalcDsiParams(Dss_DctrlDSIDrvObj *dsiObj, const Dss_Dctrl
     return retVal;
 }
 
-static void dssDctrlSetDSIInCtrlMod()
+static void dssDctrlSetDSIInCtrlMod(void)
 {
     /*
      * XXX push this things to some CSL kind of functions
@@ -716,10 +717,10 @@ static uint32_t dssDctrlInitPhyConfig(Dss_DctrlDSIDrvObj *drvObj,
     status = DSITX_GetPhyConfig(pD, &drvObj->phyCfg);
     if (CDN_EOK == status)
     {
-        drvObj->phyCfg.lane2Enabled =  (((cfg->numOfLanes) >  (1U)) ? (bool)(1U) : (bool)(0U));
-        drvObj->phyCfg.lane3Enabled =  (((cfg->numOfLanes) >  (2U)) ? (bool)(1U) : (bool)(0U));
-        drvObj->phyCfg.lane4Enabled =  (((cfg->numOfLanes) >  (3U)) ? (bool)(1U) : (bool)(0U));
-        drvObj->phyCfg.laneClkContinous = TRUE;
+        drvObj->phyCfg.lane2Enabled =  (((cfg->numOfLanes) >  (1U)) ? BTRUE : BFALSE);
+        drvObj->phyCfg.lane3Enabled =  (((cfg->numOfLanes) >  (2U)) ? BTRUE : BFALSE);
+        drvObj->phyCfg.lane4Enabled =  (((cfg->numOfLanes) >  (3U)) ? BTRUE : BFALSE);
+        drvObj->phyCfg.laneClkContinous = BTRUE;
         drvObj->phyCfg.waitBurstTime = 15; /* TODO: How to calculate waitBurstTime */
         status = DSITX_SetPhyConfig(pD, &drvObj->phyCfg);
     }
@@ -735,11 +736,11 @@ static uint32_t dssDctrlSetDphyConfiguration(Dss_DctrlDSIDrvObj *dsiObj,
     if (CDN_EOK == status)
     {
         /* TODO: How to calculate these parameters */
-        dsiObj->dphyCfg.clkDivisionRatio = 0xB;
-        dsiObj->dphyCfg.hstxTimeout = 0xAFFF;
-        dsiObj->dphyCfg.lprxTimeout = 0x3FFFF;
-        dsiObj->dphyCfg.clkLaneUlpTimeout = 0x105;
-        dsiObj->dphyCfg.dataLaneUlpTimeout = 0x1d5;
+        dsiObj->dphyCfg.clkDivisionRatio = 0xBU;
+        dsiObj->dphyCfg.hstxTimeout = 0xAFFFU;
+        dsiObj->dphyCfg.lprxTimeout = 0x3FFFFU;
+        dsiObj->dphyCfg.clkLaneUlpTimeout = 0x105U;
+        dsiObj->dphyCfg.dataLaneUlpTimeout = 0x1D5U;
 
         status = DSITX_SetDphyConfig(pD, &dsiObj->dphyCfg);
     }
@@ -821,14 +822,14 @@ static int32_t dssDctrlWaitForLock(Dss_DctrlDSIDrvObj *dsiObj)
     uint32_t    timeout;
 
     /* First, wait for PLL to get locked */
-    timeout = 0;
+    timeout = 0U;
     do
     {
         value = *(volatile uint32_t *)(
             DPHYTX0_CORE_BASE + CSL_WIZ16B8M4CDT_WIZ_CONFIG_PLL_CTRL) &
-            0x80000000;
+            0x80000000U;
 
-        if (timeout >= PLL_LOCK_REPEAT_COUNT)
+        if (PLL_LOCK_REPEAT_COUNT <= timeout)
         {
             break;
         }
@@ -836,16 +837,16 @@ static int32_t dssDctrlWaitForLock(Dss_DctrlDSIDrvObj *dsiObj)
         {
             timeout ++;
         }
-    } while(value != 0x80000000);
+    } while(0x80000000U != value);
 
     /* Wait for CMN to be ready */
-    timeout = 0;
+    timeout = 0U;
     do
     {
         value = *(volatile uint32_t *)(
             DPHYTX0_CORE_BASE + CSL_WIZ16B8M4CDT_WIZ_CONFIG_STATUS) &
-            0x80000000;
-        if (timeout >= PLL_LOCK_REPEAT_COUNT)
+            0x80000000U;
+        if (PLL_LOCK_REPEAT_COUNT <= timeout)
         {
             break;
         }
@@ -853,7 +854,7 @@ static int32_t dssDctrlWaitForLock(Dss_DctrlDSIDrvObj *dsiObj)
         {
             timeout ++;
         }
-    } while(value != 0x80000000);
+    } while(0x80000000U != value);
 
     return (CDN_EOK);
 }
@@ -865,9 +866,9 @@ static int32_t dssDctrlSetDphyPowerAndReset(Dss_DctrlDSIDrvObj *dsiObj)
     /* DSI - D-PHY release c_rstb and d_rstb */
     Fvid2Utils_memset(&dsiObj->dphyRstCfg, 0, sizeof(DSITX_DphyPwrRstConfig));
 
-    dsiObj->dphyRstCfg.dphyCRstb = 0x1;
+    dsiObj->dphyRstCfg.dphyCRstb = 0x1U;
 
-    for (cnt = 0u; cnt < dsiObj->cfgDsiTx.numOfLanes; cnt ++)
+    for (cnt = 0; cnt < dsiObj->cfgDsiTx.numOfLanes; cnt ++)
     {
         dsiObj->dphyRstCfg.dphyDRstb |= (1 << cnt);
     }
@@ -886,12 +887,12 @@ static int32_t dssDctrlInitDsiLinkConfig(Dss_DctrlDSIDrvObj *dsiObj)
     status = DSITX_GetDsiLinkConfig(&dsiObj->privDsiTx, &dsiObj->dsiLinkCfg);
     if (CDN_EOK == status)
     {
-        dsiObj->dsiLinkCfg.pllEnabled = TRUE;
-        dsiObj->dsiLinkCfg.clkLaneEnabled = TRUE;
+        dsiObj->dsiLinkCfg.pllEnabled = BTRUE;
+        dsiObj->dsiLinkCfg.clkLaneEnabled = BTRUE;
 
         for (cnt = 0U; cnt < (dsiObj->privDsiTx.numOfLanes); cnt ++)
         {
-            dsiObj->dsiLinkCfg.datLaneEnabled[cnt] = TRUE;
+            dsiObj->dsiLinkCfg.datLaneEnabled[cnt] = BTRUE;
         }
 
         status = DSITX_SetDsiLinkConfig(&dsiObj->privDsiTx,
@@ -961,20 +962,20 @@ static void dssDctrlUpdateVideoModeConfig(Dss_DctrlDSIDrvObj *dsiObj,
     /* TODO: Only RGB24 input and output supported as of now */
     dsiObj->videoModeCfg.header = DSITX_VID_DATA_TYPE;
     dsiObj->videoModeCfg.vidPixelMode = DSITX_VID_PIX_MODE;
-    dsiObj->videoModeCfg.syncPulseActive = TRUE;
-    dsiObj->videoModeCfg.syncPulseHorizontal = TRUE;
+    dsiObj->videoModeCfg.syncPulseActive = BTRUE;
+    dsiObj->videoModeCfg.syncPulseHorizontal = BTRUE;
     dsiObj->videoModeCfg.blkLineMode = DSITX_VID_BLK_MODE_BLANKING_PACKET;
     dsiObj->videoModeCfg.blkEolMode = DSITX_VID_BLK_MODE_BLANKING_PACKET;
     /* TODO: How to calculate this params */
-    dsiObj->videoModeCfg.regWakeupTime = 0x1A8u; // any non-zero value, value from other tests
-    dsiObj->videoModeCfg.ignoreMissVsync = TRUE;
+    dsiObj->videoModeCfg.regWakeupTime = 0x1A8U; // any non-zero value, value from other tests
+    dsiObj->videoModeCfg.ignoreMissVsync = BTRUE;
 
     horzTotal = mInfo->width + mInfo->hFrontPorch + mInfo->hBackPorch + mInfo->hSyncLen;
 
     dsiObj->videoModeCfg.regLineDuration =
         ((horzTotal * BPP) / dsiObj->cfgDsiTx.numOfLanes) -
         ((mInfo->hSyncLen * BPP) / dsiObj->cfgDsiTx.numOfLanes) -
-        (4u / dsiObj->cfgDsiTx.numOfLanes);
+        (4U / dsiObj->cfgDsiTx.numOfLanes);
 }
 
 static int32_t dssDctrlUpdateVideoSizeConfig(Dss_DctrlDSIDrvObj *dsiObj,
@@ -1011,11 +1012,11 @@ static int32_t dssDctrlUpdateVideoSizeConfig(Dss_DctrlDSIDrvObj *dsiObj,
         }
         dsiObj->videoSizeCfg.vbp = mInfo->vBackPorch;
         dsiObj->videoSizeCfg.vsa = mInfo->vSyncLen;
-        dsiObj->videoSizeCfg.hsa = (mInfo->hSyncLen * BPP) - 14;
-        dsiObj->videoSizeCfg.hbp = (mInfo->hBackPorch * BPP) - 12;
+        dsiObj->videoSizeCfg.hsa = (mInfo->hSyncLen * BPP) - 14U;
+        dsiObj->videoSizeCfg.hbp = (mInfo->hBackPorch * BPP) - 12U;
         dsiObj->videoSizeCfg.rgb = mInfo->width * BPP;
-        dsiObj->videoSizeCfg.hfp = (mInfo->hFrontPorch * BPP) - 6;
-        dsiObj->videoSizeCfg.blkLinePulsePacket = (horzTotal * BPP) - 20 - dsiObj->videoSizeCfg.hsa;
+        dsiObj->videoSizeCfg.hfp = (mInfo->hFrontPorch * BPP) - 6U;
+        dsiObj->videoSizeCfg.blkLinePulsePacket = (horzTotal * BPP) - 20U - dsiObj->videoSizeCfg.hsa;
     }
     return retVal;
 }
@@ -1041,9 +1042,9 @@ static int32_t dssDctrlEnableDsiLink(Dss_DctrlDSIDrvObj *dsiObj)
     status = DSITX_GetDsiLinkConfig(&dsiObj->privDsiTx, &dsiObj->dsiLinkCfg);
     if (CDN_EOK == status)
     {
-        dsiObj->dsiLinkCfg.if1Enabled = FALSE;
-        dsiObj->dsiLinkCfg.if2Enabled = TRUE;
-        dsiObj->dsiLinkCfg.if3Enabled = FALSE;
+        dsiObj->dsiLinkCfg.if1Enabled = BFALSE;
+        dsiObj->dsiLinkCfg.if2Enabled = BTRUE;
+        dsiObj->dsiLinkCfg.if3Enabled = BFALSE;
         status = DSITX_SetDsiLinkConfig(&dsiObj->privDsiTx, &dsiObj->dsiLinkCfg);
     }
 
@@ -1057,9 +1058,9 @@ static int32_t dssDctrlEnableDsiDatapath(Dss_DctrlDSIDrvObj *dsiObj)
     status = DSITX_GetDataPathConfig(&dsiObj->privDsiTx, &dsiObj->datapathCfg);
     if (CDN_EOK == status)
     {
-        dsiObj->datapathCfg.linkEnabled = 1;
+        dsiObj->datapathCfg.linkEnabled = BTRUE;
         dsiObj->datapathCfg.videoIfSelect = DSITX_VID_IF_SELECT_IF2;
-        dsiObj->datapathCfg.videoStreamGenEnabled = true;
+        dsiObj->datapathCfg.videoStreamGenEnabled = BTRUE;
         status = DSITX_SetDataPathConfig(&dsiObj->privDsiTx, &dsiObj->datapathCfg);
     }
 
@@ -1079,7 +1080,7 @@ static int32_t dssDctrlEnableDsiDatapath(Dss_DctrlDSIDrvObj *dsiObj)
 
 static int32_t dssDctrlWaitForLaneReady(Dss_DctrlDSIDrvObj *dsiObj)
 {
-    int32_t status = CDN_EOK, done = FALSE;
+    int32_t status = CDN_EOK, done = IFALSE;
     uint32_t timeout, laneCnt;
     uint32_t numOfLanes = dsiObj->cfgDsiTx.numOfLanes;
     uint32_t laneStatus, readData;
@@ -1105,57 +1106,57 @@ static int32_t dssDctrlWaitForLaneReady(Dss_DctrlDSIDrvObj *dsiObj)
         CSL_WIZ16B8M4CDT_DPHYTX_ISO_LDD_PHY_ISO_DL_CTRL_L3_ISO_LANE_READY_DL_L_3_SHIFT
     };
 
-    timeout = 0;
+    timeout = 0U;
     do
     {
         laneStatus = (CPS_REG_READ(reg[0]) & mask[0]) >> shift[0];
-        for (laneCnt = 1u; laneCnt <= numOfLanes; laneCnt ++)
+        for (laneCnt = 1U; laneCnt <= numOfLanes; laneCnt ++)
         {
             laneStatus = laneStatus &
                 ((CPS_REG_READ(reg[laneCnt]) & mask[laneCnt]) >>
                 shift[laneCnt]);
         }
 
-        if (1u == laneStatus)
+        if (1U == laneStatus)
         {
-            done = TRUE;
+            done = ITRUE;
         }
 
         if (WAIT_FOR_LANES_ACTIVE_REPEAT_COUNT == timeout)
         {
             status = CDN_ETIMEDOUT;
-            done = TRUE;
+            done = ITRUE;
         }
         else
         {
             timeout ++;
         }
-    } while (FALSE == done);
+    } while (IFALSE == done);
 
     if (CDN_EOK == status)
     {
-        done = FALSE;
-        timeout = 0;
+        done = IFALSE;
+        timeout = 0U;
         /* DSI HS Ready Check */
         do
         {
             readData = CSL_REG32_RD (
                 &dsiObj->cfgDsiTx.regBase->mctl_lane_sts);
-            if ((readData & 0x40000) == 0x40000)
+            if (0x40000U == (readData & 0x40000U))
             {
-                done = TRUE;
+                done = ITRUE;
             }
 
             if (WAIT_FOR_LANES_ACTIVE_REPEAT_COUNT == timeout)
             {
                 status = CDN_ETIMEDOUT;
-                done = TRUE;
+                done = ITRUE;
             }
             else
             {
                 timeout ++;
             }
-        } while (FALSE == done);
+        } while (IFALSE == done);
     }
 
     return (status);

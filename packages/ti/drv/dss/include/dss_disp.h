@@ -318,24 +318,24 @@ typedef void (*Dss_DispSafetyErrCbFxn)(uint32_t capturedSign,
 typedef struct
 {
     uint32_t periodicCbEnable;
-    /**< Periodic Callback Enable. Possible values are TRUE or FALSE.
-     *   TRUE: User callback passed during FVID2 create is called periodically.
+    /**< Periodic Callback Enable. Possible values are UTRUE or UFALSE.
+     *   UTRUE: User callback passed during FVID2 create is called periodically.
      *   For progressive display, this interval is equal to VSYNC interval.
      *   For interlaced display, this interval is equal to twice the VSYNC
      *   interval as frames (two fields) are queued to the driver
-     *   FALSE: User callback passed during FVID2 create is called only
+     *   UFALSE: User callback passed during FVID2 create is called only
      *   if one or more frames (requests) are available in the driver output
      *   queue for the application to dequeue */
     uint32_t progPipeVsyncEnable;
-    /**< Program Pipe at Vsync Enable. Possible values are TRUE or FALSE.
-     *   TRUE: Pipe Registers will be updated only during VSYNC context. This
+    /**< Program Pipe at Vsync Enable. Possible values are UTRUE or UFALSE.
+     *   UTRUE: Pipe Registers will be updated only during VSYNC context. This
      *   essentially implies that start and stop will be dummy. The actual
      *   buffer programming will happen at next VSYNC and hence there
      *   will be one frame delay. In case of queue operation the frame will
      *   always be pushed to request queue. This means buffer will not be
      *   updated immediately even when driver is repeating frames in safe to
      *   push context.
-     *   FALSE: This is the default behavior. Start and stop will be agnostic
+     *   UFALSE: This is the default behavior. Start and stop will be agnostic
      *   to Vsync and happen immediately. In case of queue operation, driver
      *   will display the new frame if there was frame repeat and queue is done
      *   during safe to push period.
@@ -687,8 +687,8 @@ static inline void Dss_dispCreateParamsInit(Dss_DispCreateParams *createParams)
 {
     if(NULL != createParams)
     {
-        createParams->periodicCbEnable = TRUE;
-        createParams->progPipeVsyncEnable = FALSE;
+        createParams->periodicCbEnable    = UTRUE;
+        createParams->progPipeVsyncEnable = UFALSE;
     }
 }
 
@@ -697,7 +697,7 @@ static inline void Dss_dispPipeCropParamsInit(
 {
     if(NULL != cropParams)
     {
-        cropParams->cropEnable = FALSE;
+        cropParams->cropEnable = UFALSE;
         Fvid2EdgeCropConfig_init(&(cropParams->cropCfg));
     }
 }

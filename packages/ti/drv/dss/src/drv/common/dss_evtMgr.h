@@ -199,7 +199,7 @@ static inline void Dss_evtMgrInitParamsInit(Dss_EvtMgrInitParams *evtMgrParams)
     {
         evtMgrParams->dssCommonRegionId = CSL_DSS_COMM_REG_ID_0;
         evtMgrParams->numIrq = 0U;
-        for(i=0U; i<DSS_EVT_MGR_INST_ID_MAX; i++)
+        for(i = 0U; i < DSS_EVT_MGR_INST_ID_MAX; i++)
         {
             evtMgrParams->instId[i] = 0x0U;
             evtMgrParams->irqNum[i] = 0x0U;
