@@ -40,7 +40,7 @@
  */
 
 /**
- *  \file ipc_soc.h
+ *  \file V3/ipc_soc.h
  *
  *  \brief IPC Low Level Driver J721S2 SOC specific file.
  */

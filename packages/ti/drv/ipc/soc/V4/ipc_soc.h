@@ -40,7 +40,7 @@
  */
 
 /**
- *  \file ipc_soc.h
+ *  \file V4/ipc_soc.h
  *
  *  \brief IPC Low Level Driver J784S4 SOC specific file.
  */

@@ -40,7 +40,7 @@
  */
 
 /**
- *  \file ipc_soc.h
+ *  \file V1/ipc_soc.h
  *
  *  \brief IPC Low Level Driver J7 SOC specific file.
  */

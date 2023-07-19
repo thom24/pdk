@@ -32,7 +32,14 @@
  */
 
 /**
- *  \file ipc_soc.h
+ *  \ingroup DRV_IPC_MODULE
+ *  \defgroup DRV_TOP_LEVEL_IPC_SOC_MODULE Top Level IPC SoC Config
+ *
+ *  @{
+ */
+
+/**
+ *  \file soc/ipc_soc.h
  *
  *  \brief IPC Low Level Driver SOC specific file.
  */
@@ -112,3 +119,5 @@ uint32_t Ipc_isCacheCoherent(void);
 #endif
 
 #endif /* #ifndef IPC_SOC_TOP_H_ */
+
+/* @} */
