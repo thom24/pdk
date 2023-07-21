@@ -71,6 +71,7 @@ extern uint32_t CSL_armR5StartupCacheInvalidateAllCache( void );
 extern __attribute__((section(".startupCode"))) portBaseType xConfigureMPU(void);
 void vFiqHandler( void );
 __attribute__((section(".startupCode"))) void __mpu_init( void );
+__attribute__((section(".startupCode"))) extern void Osal_disableMPU( void );
 
 /*---------------------------------------------------------------------------*/
 
@@ -117,6 +118,9 @@ extern uint32_t             intrSrcType[ R5_VIM_INTR_NUM ];
 __attribute__((section(".startupCode"))) void __mpu_init( void )
 {
     portBaseType xInitMpuResult;
+
+    /* Disable the MPU region, before configuring it. */
+    Osal_disableMPU();
 
     /* Override the startup code mpu initialisation. */
 
