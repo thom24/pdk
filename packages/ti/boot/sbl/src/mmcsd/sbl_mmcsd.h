@@ -70,6 +70,18 @@ extern const FATFS_Config FATFS_config[_VOLUMES + 1];
  */
 int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry);
 
+/*
+ *  \brief            This function copies HSM binary to the specified OCMC address from the SD Card 
+ *
+ *  \param pHsm       OCMC address where HSM binary is copied
+ *
+ *  \param maxSize    Maximum size of HSM binary
+ *
+ *  \return           CSL_PASS if copy successful else CSL_EFAIL or returns SBL_HSM_IMG_NOT_FOUND if file not found
+ *
+ */
+int32_t SBL_mmcCopyHsmImage(uint8_t* pHsm, uint32_t maxSize);
+
 #ifdef __cplusplus
 }
 #endif

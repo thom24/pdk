@@ -56,6 +56,13 @@
 #include <ti/board/src/j784s4_evm/include/board_control.h>
 #include <ti/board/src/j784s4_evm/include/board_ethernet_config.h>
 #endif
+#if defined(BOOT_OSPI)
+#include <ti/boot/sbl/src/ospi/sbl_ospi.h>
+#elif defined(BOOT_MMCSD)
+#include <ti/boot/sbl/src/mmcsd/sbl_mmcsd.h>
+#elif defined(BOOT_UART)
+#include <ti/boot/sbl/src/uart/sbl_uart.h>
+#endif
 
 #if SBL_USE_DMA
 #include "sbl_dma.h"
@@ -427,6 +434,96 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
     {
         SBL_log(SBL_LOG_ERR,"Is app signed correctly??\n\r");
         SBL_log(SBL_LOG_ERR,"App verification fails!! Boot Halted!!\n\r");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    return retVal;
+}
+
+int32_t SBL_loadAndAuthHsmBinary()
+{
+    int32_t retVal = CSL_PASS;
+    /* Define sbl scratch memory as OCMC address */
+    uint8_t *sblScratchMem = ((uint8_t *)(SBL_OCMC_MEMORY_TO_LOAD_HSM_BINARY));
+    struct tisci_msg_proc_auth_boot_req authReq;
+    struct tisci_msg_proc_get_status_resp cpuStatus;
+    uint32_t hsmCoreProcId = SBL_PROC_ID_HSM_M4;
+
+#if defined(BOOT_OSPI)
+    retVal = SBL_ospiCopyHsmImage(&sblScratchMem, SBL_OSPI_OFFSET_HSM, SBL_HSM_IMG_MAX_SIZE);
+#elif defined(BOOT_MMCSD)
+    retVal = SBL_mmcCopyHsmImage(sblScratchMem, SBL_HSM_IMG_MAX_SIZE);
+#elif defined(BOOT_UART)
+    retVal = SBL_uartCopyHsmImage(sblScratchMem, SBL_HSM_IMG_MAX_SIZE);
+#endif
+    if(retVal != CSL_PASS)
+    {
+        if (retVal == SBL_HSM_IMG_NOT_FOUND)
+        {
+            SBL_log(SBL_LOG_MAX, "\n HSM Binary is not present.. \n");
+            SBL_log(SBL_LOG_MAX, "\n Continuing with normal boot.. \n");
+            return retVal;
+        }
+        else
+        {
+            SBL_log(SBL_LOG_ERR, "\nFailed to copy hsm binary.. \n");
+            SblErrLoop(__FILE__, __LINE__);
+        }
+    }
+    
+    /* Get Processor state */
+    SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootGetProcessorState, ProcId 0x%x... \n", hsmCoreProcId);
+    retVal = Sciclient_procBootGetProcessorState(hsmCoreProcId, &cpuStatus, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR, "Sciclient_procBootGetProcessorState...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    /* Request for processor */
+    SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootRequestProcessor, ProcId 0x%x... \n", hsmCoreProcId);
+    retVal = Sciclient_procBootRequestProcessor(hsmCoreProcId, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR, "Sciclient_procBootRequestProcessor, ProcId 0x%x...FAILED \n", hsmCoreProcId);
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    /* Setting HALT for Processor */
+    SBL_log(SBL_LOG_MAX, "Setting HALT for ProcId 0x%x... \n", hsmCoreProcId);
+    retVal =  Sciclient_procBootSetSequenceCtrl(hsmCoreProcId, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_HSM_M4_RESET, 0, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    authReq.certificate_address_hi = 0;
+    authReq.certificate_address_lo = (uint32_t) sblScratchMem;
+    /* Request TIS to authenticate and load the HSM image */
+    SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootAuthAndStart ... \n");
+    retVal = Sciclient_procBootAuthAndStart(&authReq, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR, "Sciclient_procBootAuthAndStart...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    /* Clearing HALT for Processor */
+    SBL_log(SBL_LOG_MAX, "Clearing HALT for ProcId 0x%x... \n", hsmCoreProcId);
+    retVal =  Sciclient_procBootSetSequenceCtrl(hsmCoreProcId, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_HSM_M4_RESET, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR, "Sciclient_procBootSetSequenceCtrl...FAILED \n");
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
+    /* Release Processor */
+    SBL_log(SBL_LOG_MAX, "Calling Sciclient_procBootReleaseProcessor, ProcId 0x%x... \n", hsmCoreProcId);
+    retVal = Sciclient_procBootReleaseProcessor(hsmCoreProcId, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != CSL_PASS)
+    {
+        SBL_log(SBL_LOG_ERR, "Sciclient_procBootReleaseProcessor, ProcId 0x%x...FAILED \n", hsmCoreProcId);
         SblErrLoop(__FILE__, __LINE__);
     }
 

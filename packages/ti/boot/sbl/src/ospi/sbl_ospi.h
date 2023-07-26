@@ -54,6 +54,13 @@ extern "C" {
 #include "sbl_typecast.h"
 #include "sbl_profile.h"
 
+/* Macro representing the offset where the App Image has to be written/Read from
+   the OSPI Flash.
+*/
+#define SBL_OSPI_OFFSET_SI              (0x100000U)
+#define SBL_OSPI_OFFSET_SYSFW           (0x80000U)
+#define SBL_OSPI_OFFSET_HSM             (0xC0000U)
+#define SBL_HSM_HEADER                  (0x30)
 /*
  *  \brief    SBL_OSPIBootImage function initializes the OSPI driver and copies
  *            the application image from the OSPI device to the DDR memory and
@@ -136,6 +143,17 @@ void SBL_enableXIPMode(uint32_t freq);
 
 /* Update global variable gIsNandBootEnable to true if OSPI_NAND_BOOT is defined */
 void SBL_enableNandBoot();
+
+/**
+ * @brief                 This function copies HSM binary to the specified OCMC address from the OSPI address 
+ *
+ * @param dstAddr         OCMC address where HSM binary is copied
+ * @param srcOffsetAddr   OSPI offset address where hsm.bin is flashed
+ * @param size            Max size of hsm.bin 
+ *
+ * @return -              CSL_PASS if copy successful else CSL_EFAIL or returns SBL_HSM_IMG_NOT_FOUND if file not found
+ */
+int32_t SBL_ospiCopyHsmImage(uint8_t** dstAddr, uint32_t srcOffsetAddr, uint32_t size);
 
 #endif
 

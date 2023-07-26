@@ -83,7 +83,21 @@ int32_t SBL_FileRead(void  *buff,
  */
 void SBL_FileSeek(void *fileptr, uint32_t location);
 
+/**
+ * \brief    SBL_getWkupCtrlDevStat function to get the value of Wakeup
+ *           Domain Device Status Register
+ *
+ * \return   Value of Wakeup Domain Device Status Register
+ */
+static uint32_t SBL_getWkupCtrlDevStat(void);
 
+/**
+ * \brief    SBL_getMainCtrlDevStat function to get the value of Main
+ *           Domain Device Status Register
+ *
+ * \return   Value of Main Domain Device Status Register
+ */
+static uint32_t SBL_getMainCtrlDevStat(void);
 
 int32_t SBL_loadMMCSDBootFile(FIL * fp);
 
@@ -195,8 +209,8 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
      }
 
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    uint32_t wkupCtrlDevstat = (*((volatile uint32_t *)(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_WKUP_DEVSTAT)));
-    uint32_t mainCtrlDevstat = (*((volatile uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_MAIN_DEVSTAT)));
+    uint32_t wkupCtrlDevstat = SBL_getWkupCtrlDevStat();
+    uint32_t mainCtrlDevstat = SBL_getMainCtrlDevStat();
 
     if(((wkupCtrlDevstat & SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MASK) == SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD) &&
        ((mainCtrlDevstat & SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK) == SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK))
@@ -326,6 +340,88 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
     return retVal;
 }
 
+int32_t SBL_mmcCopyHsmImage(uint8_t* pHsm, uint32_t numBytes)
+{
+    int32_t retVal = CSL_PASS;
+    const TCHAR *fileName = "0:/hsm.bin";
+    FIL     fp;
+    memset(&fp, 0, sizeof(fp));
+    FRESULT  fresult;
+    uint32_t bytes_read = 0;
+    MMCSD_v2_HwAttrs hwAttrsConfig;
+
+    if(MMCSD_socGetInitCfg(FATFS_initCfg[0].drvInst, &hwAttrsConfig) != 0)
+    {
+        UART_printf("\nUnable to get MMCSD default config.\r\n");
+        retVal = E_FAIL;
+    }
+
+    uint32_t wkupCtrlDevstat = SBL_getWkupCtrlDevStat();
+    uint32_t mainCtrlDevstat = SBL_getMainCtrlDevStat();
+
+    if(((wkupCtrlDevstat & SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MASK) == SBL_WKUP_DEVSTAT_PRIMARY_BOOT_MMCSD) &&
+       ((mainCtrlDevstat & SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK) == SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK))
+    {
+        /* MMCSD as primary bootmode */
+        /* Check MAIN CTRL MMR DEVSTAT register for Primary boot mode Bus Width */
+        if((mainCtrlDevstat & SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK) == SBL_MAIN_DEVSTAT_PRIMARY_BUS_WIDTH_MASK)
+        {
+            hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_1BIT;
+        }
+        else
+        {
+            hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_4BIT;
+        }
+    }
+    else if((mainCtrlDevstat & SBL_MAIN_DEVSTAT_BACKUP_BOOT_MASK) == SBL_MAIN_DEVSTAT_BACKUP_BOOT_MMCSD)
+    {
+        /* MMCSD as backup bootmode only supports 1-bit bus width, as set by ROM code */
+        hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_1BIT;
+    }
+    else
+    {
+        hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_4BIT;
+    }
+
+    hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
+    hwAttrsConfig.configSocIntrPath = NULL;
+
+    if(MMCSD_socSetInitCfg(FATFS_initCfg[0].drvInst,&hwAttrsConfig)!=0) {
+       UART_printf("\nUnable to set config.Exiting. TEST FAILED.\r\n");
+       retVal = E_FAIL;
+     }
+
+    /* Initialization of the driver. */
+    FATFS_init();
+
+    /* MMCSD FATFS initialization */
+    FATFS_open(0U, NULL, &sbl_fatfsHandle);
+
+    fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
+    if (fresult != FR_OK)
+    {
+        SBL_log(SBL_LOG_MAX, "\n SD Boot - hsm File open fails \n");
+        retVal = SBL_HSM_IMG_NOT_FOUND;
+        return retVal;
+    }
+    else
+    {
+        fresult  = f_read(&fp, pHsm, numBytes, &bytes_read);
+        if (fresult != FR_OK)
+        {
+            UART_printf("\n SD Boot - hsm read fails \n");
+            retVal = E_FAIL;
+        }
+
+        f_close(&fp);
+    }
+
+    FATFS_close(sbl_fatfsHandle);
+    sbl_fatfsHandle = NULL;
+
+    return retVal;
+}
+
 int32_t SBL_FileRead(void       *buff,
                       void *fileptr,
                       uint32_t    size)
@@ -396,3 +492,14 @@ void SBL_FileSeek(void *fileptr, uint32_t location)
     f_lseek(fp, location);
 }
 
+static uint32_t SBL_getWkupCtrlDevStat()
+{
+    uint32_t devStat = CSL_REG32_RD(CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_WKUP_DEVSTAT);
+    return devStat;
+}
+
+static uint32_t SBL_getMainCtrlDevStat()
+{
+    uint32_t devStat = CSL_REG32_RD(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_MAIN_DEVSTAT);
+    return devStat;
+}

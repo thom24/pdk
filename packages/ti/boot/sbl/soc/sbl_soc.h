@@ -184,4 +184,15 @@ int32_t SBL_spiClose(void *handle);
 
 #endif /* end of BOOT_SPI definitions */
 
+/**
+ * @brief - Loads the hsm binary to OCMC memory then hsm binary will be authenticated by 
+ *          TIFS. If authentication passes, TIFS loads HSM binary to SMS memory and 
+ *          boots the HSM core.
+ *
+ * @return - CSL_PASS = if HSM core booted successfully 
+ *           CSL_EFAIL = if failed to boot HSM core
+ *
+ */
+int32_t SBL_loadAndAuthHsmBinary(void);
+
 #endif

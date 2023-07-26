@@ -114,6 +114,23 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 }
 #endif
 
+int32_t SBL_uartCopyHsmImage(uint8_t* pHsm, uint32_t numBytes)
+{
+    int32_t retVal = 0;
+    SBL_log(SBL_LOG_MIN, "Waiting for hsm.bin ...\n");
+
+    retVal = SBL_uartXmodemRead(pHsm, numBytes);
+    /* SBL_uartXmodemRead returns 0 incase of failure and returns size in case of success */
+    if(retVal > 0)
+    {
+        return CSL_PASS;
+    }
+    else
+    {
+        return CSL_EFAIL;
+    }
+}
+
 int32_t SBL_uartInit(uint32_t inClkFreqHz)
 {
     /* Init UART for xmodem boot */

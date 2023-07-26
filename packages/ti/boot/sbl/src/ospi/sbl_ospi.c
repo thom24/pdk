@@ -74,14 +74,6 @@
 #include <ti/board/src/flash/include/board_flash.h>
 #include "sbl_ospi.h"
 
-/* Macro representing the offset where the App Image has to be written/Read from
-   the OSPI Flash.
-*/
-#define OSPI_OFFSET_SI              (0x100000U)
-#define OSPI_OFFSET_SYSFW           (0x80000U)
-#define OSPI_MPU_REGION_NUM         (0x6)
-#define OSPI_MPU_ENABLE_REGION      (0x1)
-
 /* Macro to specify the counter number */
 #define CNTR_NUMBER 0x1F
 
@@ -279,7 +271,7 @@ else
         {
             if (gIsNandBootEnable == true)
             {
-                if (Board_flashRead(h, OSPI_OFFSET_SYSFW, (uint8_t *) *pBuffer, SBL_SYSFW_MAX_SIZE, NULL))
+                if (Board_flashRead(h, SBL_OSPI_OFFSET_SYSFW, (uint8_t *) *pBuffer, SBL_SYSFW_MAX_SIZE, NULL))
                 {
                     SBL_log(SBL_LOG_ERR, "Board_flashRead failed in SBL_ReadSysfwImage \n");
                     SblErrLoop(__FILE__, __LINE__);
@@ -288,12 +280,12 @@ else
             else
             {
                 /* Set up ROM to load system firmware */
-                *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
+                *pBuffer = (void *)(ospi_cfg.dataAddr + SBL_OSPI_OFFSET_SYSFW);
             }   /* (gIsNandBootEnable == true) && defined(SOC_J721S2) */
         }
 #else
         /* Optimized CPU copy loop - can be removed once ROM load is working */
-        SBL_SysFwLoad((void *)(*pBuffer), (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW), num_bytes);
+        SBL_SysFwLoad((void *)(*pBuffer), (void *)(ospi_cfg.dataAddr + SBL_OSPI_OFFSET_SYSFW), num_bytes);
 #endif
 
         /* Update handle for later use*/
@@ -314,7 +306,7 @@ else
    if(pBuffer)
    {
       /* Set up ROM to load system firmware */
-      *pBuffer = (void *)(ospi_cfg.dataAddr + OSPI_OFFSET_SYSFW);
+      *pBuffer = (void *)(ospi_cfg.dataAddr + SBL_OSPI_OFFSET_SYSFW);
    }
 
    return CSL_PASS;
@@ -724,17 +716,17 @@ int32_t SBL_ospiLeaveConfigSPI()
 int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 {
     int32_t retVal;
-    uint32_t offset = OSPI_OFFSET_SI;
+    uint32_t offset = SBL_OSPI_OFFSET_SI;
 
     SBL_ADD_PROFILE_POINT;
     /* Initialization of the driver. */
     SBL_OSPI_Initialize();
 
 #if defined(SBL_ENABLE_HLOS_BOOT) && (defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
-    retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
+    retVal =  SBL_MulticoreImageParse((void *) &offset, SBL_OSPI_OFFSET_SI, pEntry, SBL_SKIP_BOOT_AFTER_COPY);
 #else
     SBL_ADD_PROFILE_POINT;
-    retVal =  SBL_MulticoreImageParse((void *) &offset, OSPI_OFFSET_SI, pEntry, SBL_BOOT_AFTER_COPY);
+    retVal =  SBL_MulticoreImageParse((void *) &offset, SBL_OSPI_OFFSET_SI, pEntry, SBL_BOOT_AFTER_COPY);
 #endif
 
     SBL_ospiClose(&boardHandle);
@@ -761,6 +753,40 @@ if(isXIPEnable == true)
     SBL_ospiLeaveConfigSPI();
 #endif
 
+    return retVal;
+}
+
+int32_t SBL_ospiCopyHsmImage(uint8_t** dstAddr, uint32_t srcOffsetAddr, uint32_t numBytes)
+{
+    int32_t retVal = CSL_PASS;
+    Board_flashHandle h = (Board_flashHandle) boardHandle;
+    uint64_t ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_200M);
+    /* OSPI clock has been reconfigured by PM Init API. Set clock to 200MHz to match settings while reading SYSFW. */
+    OSPI_configClk(ospiFunClk);
+
+    if (gIsNandBootEnable == true)
+    {
+        /* In case of OSPI NAND, first hsm.bin should be copied to OCMC memory and then 
+        pointer to OCMC memory should be passed to Sciclient_procBootAuthAndStart() API */
+        retVal = Board_flashRead(h, srcOffsetAddr, *dstAddr, numBytes, NULL);
+        if (retVal != CSL_PASS)
+        {
+            SBL_log(SBL_LOG_ERR, "Board_flashRead failed in SBL_ospiCopyHsmImage !! \n");
+        }
+    }
+    else
+    {
+        /* In case of OSPI NOR, Pointer to OSPI NOR can be directly passed to 
+           Sciclient_procBootAuthAndStart() API */
+        *dstAddr = (uint8_t *) (ospi_cfg.dataAddr + SBL_OSPI_OFFSET_HSM);
+    }
+
+    /* Check if HSM binary is present or not */
+    uint8_t* ptr = (uint8_t *) *dstAddr;
+    if (*ptr != SBL_HSM_HEADER)
+    {
+        retVal = SBL_HSM_IMG_NOT_FOUND;
+    }
     return retVal;
 }
 

@@ -118,6 +118,19 @@ int32_t SBL_uartClose(void);
  *
  */
 int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz);
+
+/**
+ *  @brief           This function copies HSM binary to the specified OCMC address via UART
+ *
+ *  @param pHsm      OCMC address where HSM binary is copied
+ *
+ *  @param maxSize   Max size of hsm.bin
+ *
+ *  @return          CSL_PASS if copy successful else CSL_EFAIL
+ *
+ */
+int32_t SBL_uartCopyHsmImage(uint8_t* pHsm, uint32_t maxSize);
+
 #ifdef __cplusplus
 }
 #endif

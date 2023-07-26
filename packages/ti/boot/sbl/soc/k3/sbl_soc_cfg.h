@@ -41,6 +41,10 @@
 #include <ti/csl/csl_vtm.h>
 #include <ti/drv/sciclient/sciclient.h>
 
+#define SBL_HSM_IMG_NOT_FOUND              (((int32_t)(-2)))
+#define SBL_OCMC_MEMORY_TO_LOAD_HSM_BINARY (0x41C90000U)
+#define SBL_HSM_IMG_MAX_SIZE               (0x40000)
+
 #if defined (SOC_J721E)
 #include <ti/csl/soc/j721e/src/cslr_wkup_ctrl_mmr.h>
 #include <ti/csl/soc/j721e/src/cslr_mcu_pll_mmr.h>
