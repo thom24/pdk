@@ -175,15 +175,15 @@ uint32_t gFlowInstShare[UDMA_NUM_CORE] =
 #endif
 #if defined (BUILD_C66X_1)
         /*          instShare[                    MAIN_NAVSS,                  MCU_NAVSS ] */
-    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
-    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
-    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN};
 #endif
 #if defined (BUILD_C66X_2)
         /*          instShare[                    MAIN_NAVSS,                  MCU_NAVSS ] */
-    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
-    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
-    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_MIN, UDMA_RM_SHARED_RES_CNT_REST};
+    uint32_t gEvtInstShare[UDMA_NUM_INST_ID]  = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN};
+    uint32_t gVintInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN};
+    uint32_t gIntrInstShare[UDMA_NUM_INST_ID] = {UDMA_RM_SHARED_RES_CNT_REST, UDMA_RM_SHARED_RES_CNT_MIN};
 #endif
 #if defined (BUILD_MCU1_0)
         /*          instShare[                    MAIN_NAVSS,                  MCU_NAVSS ] */
