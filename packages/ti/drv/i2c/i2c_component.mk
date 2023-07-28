@@ -127,9 +127,9 @@ drvi2c_FIRM_LIST = $(i2c_FIRM_LIST)
 # List below all examples for allowed values
 ############################
 ifeq ($(SOC),$(filter $(SOC), j784s4))
-i2c_EXAMPLE_LIST = drv_i2c_utility I2C_Baremetal_Eeprom_TestApp
+i2c_EXAMPLE_LIST = drv_i2c_utility I2C_Baremetal_Eeprom_TestApp i2c_extended_testapp
 else
-i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp
+i2c_EXAMPLE_LIST = drv_i2c_led_blink_test I2C_Baremetal_Eeprom_TestApp drv_i2c_utility I2C_Master_TestApp  I2C_Slave_TestApp i2c_extended_testapp
 endif
 
 #
@@ -388,6 +388,29 @@ I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
 endif
 export I2C_Baremetal_Eeprom_TestApp_$(SOC)_CORELIST
 export I2C_Baremetal_Eeprom_TestApp_SBL_APPIMAGEGEN = yes
+
+# I2C extended testapp
+i2c_extended_testapp_COMP_LIST = i2c_extended_testapp
+i2c_extended_testapp_RELPATH = ti/drv/i2c/test/i2c_extended_testapp
+i2c_extended_testapp_PATH = $(PDK_I2C_COMP_PATH)/test/i2c_extended_testapp
+i2c_extended_testapp_BOARD_DEPENDENCY = yes
+i2c_extended_testapp_CORE_DEPENDENCY = no
+i2c_extended_testapp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+export i2c_extended_testapp_COMP_LIST
+export i2c_extended_testapp_BOARD_DEPENDENCY
+export i2c_extended_testapp_CORE_DEPENDENCY
+export i2c_extended_testapp_MAKEFILE
+i2c_extended_testapp_PKG_LIST = i2c_extended_testapp
+i2c_extended_testapp_INCLUDE = $(i2c_extended_testapp_PATH)
+i2c_extended_testapp_BOARDLIST = j784s4_evm  
+export i2c_extended_testapp_BOARDLIST
+ifeq ($(SOC),$(filter $(SOC), j784s4))
+i2c_extended_testapp_$(SOC)_CORELIST = mcu1_0
+else
+i2c_extended_testapp_$(SOC)_CORELIST = $(drvi2c_$(SOC)_CORELIST)
+endif
+export i2c_extended_testapp_$(SOC)_CORELIST
+export i2c_extended_testapp_SBL_APPIMAGEGEN = yes
 
 # I2C rtos EEPROM test
 define I2C_Eeprom_TestApp_RULE
