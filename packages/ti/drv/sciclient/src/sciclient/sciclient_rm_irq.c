@@ -714,7 +714,7 @@ static bool Sciclient_rmIaIsIa(uint16_t id);
  *
  * \return register offset for the output
  */
-static uint32_t Sciclient_rmIrIntControlReg(uint16_t    outp);
+static uint32_t Sciclient_rmIrIntControlReg(uint32_t    outp);
 
 /**
  * \brief Get IR instance mapped to provided device ID
@@ -840,25 +840,22 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
     uint16_t messageType = TISCI_MSG_RM_IRQ_SET;
     uint8_t dst_host;
     struct Sciclient_rmIrqCfg cfg;
-
     memset(&cfg, 0, sizeof(cfg));
-
     /* Run all error checks */
     if((req == NULL) || (resp == NULL)) {
         r = CSL_EBADARGS;
     }
-
-    if (((r == CSL_PASS) &&
-        Sciclient_rmParamIsValid(req->valid_params,
-                                 TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID)) == TRUE) {
+    if ((r == CSL_PASS) &&
+        (Sciclient_rmParamIsValid(req->valid_params,
+                                 TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID) == (bool)true)) {
         dst_host = req->secondary_host;
     } else {
         dst_host = (uint8_t) gSciclientMap[Sciclient_getCurrentContext(messageType)].hostId;
     }
 
-    if (((r == CSL_PASS) &&
-        Sciclient_rmParamIsValid(req->valid_params,
-                                 TISCI_MSG_VALUE_RM_IA_ID_VALID)) == TRUE) {
+    if ((r == CSL_PASS) &&
+        (Sciclient_rmParamIsValid(req->valid_params,
+                                 TISCI_MSG_VALUE_RM_IA_ID_VALID) == (bool)true)) {
         cfg.s_ia = req->ia_id;
     } else {
         cfg.s_ia = SCICLIENT_RM_DEV_NONE;
@@ -875,7 +872,6 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
         cfg.vint = req->vint;
         cfg.vint_sb = req->vint_status_bit_index;
         cfg.set_resp = resp;
-
         if (Sciclient_rmIrqCfgIsDirectNonEvent(cfg.valid_params) == (bool)true) {
             if (Sciclient_rmIaIsIa(cfg.s_id) == (bool)true) {
                 /*
@@ -886,7 +882,6 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
                  */
                 cfg.vint = cfg.s_idx;
             }
-
             /* Route search for non event-source routes */
             r = Sciclient_rmIrqFindRoute(&cfg);
             if (r == CSL_PASS) {
@@ -921,7 +916,6 @@ int32_t Sciclient_rmProgramInterruptRoute (const struct tisci_msg_rm_irq_set_req
             r = CSL_EBADARGS;
         }
     }
-
     return r;
 }
 
@@ -933,25 +927,23 @@ int32_t Sciclient_rmClearInterruptRoute (const struct tisci_msg_rm_irq_release_r
     uint16_t messageType = TISCI_MSG_RM_IRQ_RELEASE;
     uint8_t dst_host;
     struct Sciclient_rmIrqCfg cfg;
-
     memset(&cfg, 0, sizeof(cfg));
-
     /* Run all error checks */
     if((req == NULL) || (resp == NULL)) {
         r = CSL_EBADARGS;
     }
 
-    if (((r == CSL_PASS) &&
-        Sciclient_rmParamIsValid(req->valid_params,
-                                 TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID)) == TRUE) {
+    if ((r == CSL_PASS) &&
+        (Sciclient_rmParamIsValid(req->valid_params,
+                                 TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID) == (bool)true)) {
         dst_host = req->secondary_host;
     } else {
         dst_host = (uint8_t) gSciclientMap[Sciclient_getCurrentContext(messageType)].hostId;
     }
 
-    if (((r == CSL_PASS) &&
-        Sciclient_rmParamIsValid(req->valid_params,
-                                 TISCI_MSG_VALUE_RM_IA_ID_VALID)) == TRUE) {
+    if ((r == CSL_PASS) &&
+        (Sciclient_rmParamIsValid(req->valid_params,
+                                 TISCI_MSG_VALUE_RM_IA_ID_VALID) == (bool)true)) {
         cfg.s_ia = req->ia_id;
     } else {
         cfg.s_ia = SCICLIENT_RM_DEV_NONE;
@@ -1633,11 +1625,10 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
             next_n = Sciclient_rmPsGetIrqNode(i + 1u);
             if (next_n == NULL) {
                 valid = (bool)false;
-                break;
             }
         }
 
-        if (i > 0u) {
+        if ((valid != (bool)false) && (i > 0u)) {
             /* All intermediate nodes between source and
              * destination must be interrupt routers, which are the
              * only programmable routing subsystems.  IAs are
@@ -1646,60 +1637,60 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
              * events onto the ETL bus */
             if (Sciclient_rmIrIsIr(cur_n->id) != (bool)true) {
                 valid = (bool)false;
-                break;
             }
         }
         if (next_n != NULL)
         {
-            if ((i == 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
-                if (Sciclient_rmIaIsIa(cur_n->id) == (bool)true) {
-                    cur_outp = cfg->vint;
-                    cur_outp_valid = (bool)true;
-                    next_inp_valid = (bool)false;
-                    next_inp = SCICLIENT_OUTP_TO_INP(cfg->vint,
-                                   cur_if->lbase,
-                                   cur_if->rbase);
+          if ((valid != (bool)false) && (i == 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
+              if (Sciclient_rmIaIsIa(cur_n->id) == (bool)true) {
+                  cur_outp = cfg->vint;
+                  cur_outp_valid = (bool)true;
+                  next_inp_valid = (bool)false;
+                  next_inp = SCICLIENT_OUTP_TO_INP(cfg->vint,
+                                 cur_if->lbase,
+                                 cur_if->rbase);
 
-                    if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
-                        CSL_PASS) {
-                        next_inp_valid = (bool)true;
-                    }
+                  if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
+                      CSL_PASS) {
+                      next_inp_valid = (bool)true;
+                  }
 
-                    if (Sciclient_rmParamIsValid(cfg->valid_params,
-                                   TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID) ==
-                        (bool)true) {
-                        /*  cur_inp = cfg global event */
-                        cur_inp = cfg->global_evt;
-                        if (Sciclient_rmIaValidateGlobalEvt(cur_n->id,
-                                          cur_inp) ==
-                            CSL_PASS) {
-                            if (Sciclient_rmPsSetInp(i, cur_inp) != CSL_PASS) {
-                                valid = (bool)false;
-                                break;
-                            }
-                        } else {
-                            valid = (bool)false;
-                            break;
-                        }
-                    }
-                } else {
-                    /* outp is from source peripheral and specified
-                     * by configuration so always valid */
-                    cur_outp_valid = (bool)true;
-                    next_inp_valid = (bool)false;
+                  if (Sciclient_rmParamIsValid(cfg->valid_params,
+                                 TISCI_MSG_VALUE_RM_GLOBAL_EVENT_VALID) ==
+                      (bool)true) {
+                      /*  cur_inp = cfg global event */
+                      cur_inp = cfg->global_evt;
+                      if (Sciclient_rmIaValidateGlobalEvt(cur_n->id,
+                                        cur_inp) ==
+                          CSL_PASS) {
+                          if (Sciclient_rmPsSetInp(i, cur_inp) != CSL_PASS) {
+                              valid = (bool)false;
+                          }
+                      } else {
+                          valid = (bool)false;
+                      }
+                  }
+              } else if(valid != (bool)false) {
+                      /* outp is from source peripheral and specified
+                       * by configuration so always valid */
+                      cur_outp_valid = (bool)true;
+                      next_inp_valid = (bool)false;
 
-                    cur_outp = cfg->s_idx;
-                    next_inp = SCICLIENT_OUTP_TO_INP(cur_outp, cur_if->lbase,
-                                   cur_if->rbase);
+                      cur_outp = cfg->s_idx;
+                      next_inp = SCICLIENT_OUTP_TO_INP(cur_outp, cur_if->lbase,
+                                     cur_if->rbase);
 
-                    if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
-                        CSL_PASS) {
-                        next_inp_valid = (bool)true;
-                    }
-                }
-            }
+                      if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
+                          CSL_PASS) {
+                          next_inp_valid = (bool)true;
+                      }
+              } else  {
+                  /* Do Nothing */
+              }
+           }
         }
-        if ((i > 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
+
+        if ((valid != (bool)false) && (i > 0u) && (i < (Sciclient_rmPsGetPsp() - 1u))) {
             /* Get the IR output resource range host assignments */
             req.secondary_host = cfg->host;
             req.type = cur_n->id;
@@ -1707,59 +1698,61 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
             if (Sciclient_rmGetResourceRange(&req, &host_resp,
                     SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
                 valid = (bool)false;
-                break;
-            }
-            req.secondary_host = TISCI_HOST_ID_ALL;
-            if (Sciclient_rmGetResourceRange(&req, &all_resp,
-                    SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
-                valid = (bool)false;
-                break;
-            }
+            }else if(valid != (bool)false){
+                req.secondary_host = TISCI_HOST_ID_ALL;
+                if (Sciclient_rmGetResourceRange(&req, &all_resp,
+                        SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
+                    valid = (bool)false;
+                }
+                if(valid != (bool)false){
+                    for (j = cur_if->lbase; j < (cur_if->lbase + cur_if->len);
+                         j++) {
+                        cur_outp_valid = (bool)false;
+                        next_inp_valid = (bool)false;
 
-            for (j = cur_if->lbase; j < (cur_if->lbase + cur_if->len);
-                 j++) {
-                cur_outp_valid = (bool)false;
-                next_inp_valid = (bool)false;
+                        cur_outp = j;
+                        next_inp = SCICLIENT_OUTP_TO_INP(cur_outp, cur_if->lbase,
+                                       cur_if->rbase);
 
-                cur_outp = j;
-                next_inp = SCICLIENT_OUTP_TO_INP(cur_outp, cur_if->lbase,
-                               cur_if->rbase);
-
-                /* Check IR output against boardcfg ranges. First against
-                 * the passed host then against HOST_ID_ALL if the passed
-                 * host does not match.  Validate the input and output by
-                 * checking the hardware if the output validates against
-                 * the board configuration range. */
-                if ((((cur_outp >= host_resp.range_start) &&
-                      (cur_outp < (host_resp.range_start + host_resp.range_num))) ||
-                     ((cur_outp >= host_resp.range_start_sec) &&
-                      (cur_outp < (host_resp.range_start_sec +
-                                  host_resp.range_num_sec)))) ||
-                    (((cur_outp >= all_resp.range_start) &&
-                      (cur_outp < (all_resp.range_start + all_resp.range_num))) ||
-                     ((cur_outp >= all_resp.range_start_sec) &&
-                      (cur_outp < (all_resp.range_start_sec +
-                                  all_resp.range_num_sec))))) {
-                    if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
-                        CSL_PASS) {
-                        cur_outp_valid = (bool)true;
-                    }
-                    if(next_n !=NULL)
-                    {
-                        if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
-                            CSL_PASS) {
-                            next_inp_valid = (bool)true;
+                        /* Check IR output against boardcfg ranges. First against
+                         * the passed host then against HOST_ID_ALL if the passed
+                         * host does not match.  Validate the input and output by
+                         * checking the hardware if the output validates against
+                         * the board configuration range. */
+                        if ((((cur_outp >= host_resp.range_start) &&
+                              (cur_outp < (host_resp.range_start + host_resp.range_num))) ||
+                             ((cur_outp >= host_resp.range_start_sec) &&
+                              (cur_outp < (host_resp.range_start_sec +
+                                          host_resp.range_num_sec)))) ||
+                            (((cur_outp >= all_resp.range_start) &&
+                              (cur_outp < (all_resp.range_start + all_resp.range_num))) ||
+                             ((cur_outp >= all_resp.range_start_sec) &&
+                              (cur_outp < (all_resp.range_start_sec +
+                                          all_resp.range_num_sec))))) {
+                            if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
+                                CSL_PASS) {
+                                cur_outp_valid = (bool)true;
+                            }
+                            if(next_n !=NULL)
+                            {
+                              if (Sciclient_rmIrInpIsFree(next_n->id, next_inp) ==
+                                  CSL_PASS) {
+                                  next_inp_valid = (bool)true;
+                              }
+                            }
+                            if ((cur_outp_valid == (bool)true) &&
+                                (next_inp_valid == (bool)true)) {
+                                break;
+                            }
                         }
                     }
-                    if ((cur_outp_valid == (bool)true) &&
-                        (next_inp_valid == (bool)true)) {
-                        break;
-                    }
                 }
+            }else{
+                /* Do Nothing */
             }
         }
 
-        if (i == (Sciclient_rmPsGetPsp() - 1u)) {
+        if ((valid != (bool)false) && (i == (Sciclient_rmPsGetPsp() - 1u))) {
             /* inp always valid since it's the input to the
              * destination host processor which is assumed to be
              * valid as long as the node output is valid */
@@ -1773,59 +1766,62 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
             if (Sciclient_rmGetResourceRange(&req, &host_resp,
                     SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
                 valid = (bool)false;
-                break;
             }
-            req.secondary_host = TISCI_HOST_ID_ALL;
-            if (Sciclient_rmGetResourceRange(&req, &all_resp,
-                    SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
-                valid = (bool)false;
-                break;
-            }
-
-            cur_outp = SCICLIENT_INP_TO_OUTP(cfg->d_irq,
-                           cur_if->rbase,
-                           cur_if->lbase);
-
-            /* Check IR output against boardcfg ranges. First against
-             * the passed host then against HOST_ID_ALL if the passed
-             * host does not match.  Validate the output by
-             * checking the hardware if the output validates against
-             * the board configuration range. */
-            if ((((cur_outp >= host_resp.range_start) &&
-                  (cur_outp < (host_resp.range_start + host_resp.range_num))) ||
-                 ((cur_outp >= host_resp.range_start_sec) &&
-                  (cur_outp < (host_resp.range_start_sec +
-                              host_resp.range_num_sec)))) ||
-                (((cur_outp >= all_resp.range_start) &&
-                  (cur_outp < (all_resp.range_start + all_resp.range_num))) ||
-                 ((cur_outp >= all_resp.range_start_sec) &&
-                  (cur_outp < (all_resp.range_start_sec +
-                              all_resp.range_num_sec))))) {
-                if ((cur_if->rid == cfg->d_id) &&
-                    (cfg->d_irq >= (cur_if->rbase)) &&
-                    (cfg->d_irq < (cur_if->rbase + cur_if->len))) {
-
-                    if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
-                        CSL_PASS) {
-                        cur_outp_valid = (bool)true;
-                    }
+            if(valid != (bool)false){
+                req.secondary_host = TISCI_HOST_ID_ALL;
+                if (Sciclient_rmGetResourceRange(&req, &all_resp,
+                        SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
+                    valid = (bool)false;
                 }
-	    }
-        }
+            }
+            if(valid != (bool)false){
+                cur_outp = SCICLIENT_INP_TO_OUTP(cfg->d_irq,
+                               cur_if->rbase,
+                               cur_if->lbase);
 
-        if ((cur_outp_valid == (bool)true) && (next_inp_valid == (bool)true)) {
+                /* Check IR output against boardcfg ranges. First against
+                 * the passed host then against HOST_ID_ALL if the passed
+                 * host does not match.  Validate the output by
+                 * checking the hardware if the output validates against
+                 * the board configuration range. */
+                if ((((cur_outp >= host_resp.range_start) &&
+                      (cur_outp < (host_resp.range_start + host_resp.range_num))) ||
+                     ((cur_outp >= host_resp.range_start_sec) &&
+                      (cur_outp < (host_resp.range_start_sec +
+                                  host_resp.range_num_sec)))) ||
+                    (((cur_outp >= all_resp.range_start) &&
+                      (cur_outp < (all_resp.range_start + all_resp.range_num))) ||
+                     ((cur_outp >= all_resp.range_start_sec) &&
+                      (cur_outp < (all_resp.range_start_sec +
+                                  all_resp.range_num_sec))))) {
+                    if ((cur_if->rid == cfg->d_id) &&
+                        (cfg->d_irq >= (cur_if->rbase)) &&
+                        (cfg->d_irq < (cur_if->rbase + cur_if->len))) {
+
+                        if (Sciclient_rmIrOutpIsFree(cur_n->id, cur_outp) ==
+                            CSL_PASS) {
+                            cur_outp_valid = (bool)true;
+                        }
+                    }
+	         }
+            }
+        }
+        if ((valid != (bool)false) && (cur_outp_valid == (bool)true) && (next_inp_valid == (bool)true)) {
             if (i < (Sciclient_rmPsGetPsp() - (1u))) {
                 if (Sciclient_rmPsSetInp(i + (1u), next_inp) != CSL_PASS) {
                     valid = (bool)false;
-                    break;
                 }
             }
-            if (Sciclient_rmPsSetOutp(i, cur_outp) != CSL_PASS) {
+            if ((valid != (bool)false) && (Sciclient_rmPsSetOutp(i, cur_outp) != CSL_PASS)) {
                 valid = (bool)false;
-                break;
             }
-        } else {
+        } else if(valid != (bool)false) {
             valid = (bool)false;
+        } else  {
+            /* Do Nothing */
+        }
+
+        if(valid == (bool)false)  {
             break;
         }
     }
@@ -1840,6 +1836,7 @@ static int32_t Sciclient_rmIrqFindRoute(struct Sciclient_rmIrqCfg *cfg)
     uint16_t search_depth;
     uint16_t if_idx;
     bool node_clear;
+    bool flag_brk = (bool)false;
     const struct Sciclient_rmIrqNode *cur_n;
     const struct Sciclient_rmIrqNode *root_n;
     const struct Sciclient_rmIrqIf *cur_if;
@@ -1883,10 +1880,10 @@ static int32_t Sciclient_rmIrqFindRoute(struct Sciclient_rmIrqCfg *cfg)
         if (if_idx < cur_n->n_if) {
             r = Sciclient_rmIrqGetNodeItf(cur_n, if_idx, &cur_if);
             if (r != CSL_PASS) {
-                break;
+                flag_brk = (bool)true;
             }
 
-            if ((Sciclient_rmIaIsIa(cur_n->id) == (bool)false) &&
+            if ((flag_brk != (bool)true) && (Sciclient_rmIaIsIa(cur_n->id) == (bool)false) &&
                 (Sciclient_rmPsIsEmpty() == (bool)true) &&
                 ((cfg->s_idx < cur_if->lbase) ||
                  (cfg->s_idx >= (cur_if->lbase + cur_if->len)))) {
@@ -1896,25 +1893,26 @@ static int32_t Sciclient_rmIrqFindRoute(struct Sciclient_rmIrqCfg *cfg)
                  * search so move to next root node interface
                  */
                 if_idx++;
-            } else if (Sciclient_rmPsGetPsp() < search_depth) {
+            } else if ((flag_brk != (bool)true) && (Sciclient_rmPsGetPsp() < search_depth)) {
                 r = Sciclient_rmPsPush(cur_n, if_idx);
                 if (r != CSL_PASS) {
-                    break;
+                    flag_brk = (bool)true;;
                 }
-
-                r = Sciclient_rmIrqGetNode(cur_if->rid, &cur_n);
-                if (cur_n == NULL) {
-                    /* Node not found here means no outgoing
-                     * connections from subsystem so not
-                     * stored in tree.  Just pop back to
-                     * node above */
-                    node_clear = (bool)true;
-                    /* Clear false negative */
-                    r = CSL_PASS;
-                } else {
-                    if_idx = 0u;
+                if(flag_brk != (bool)true)  {
+                    r = Sciclient_rmIrqGetNode(cur_if->rid, &cur_n);
+                    if ((cur_n == NULL) && (r != CSL_PASS))  {
+                        /* Node not found here means no outgoing
+                         * connections from subsystem so not
+                         * stored in tree.  Just pop back to
+                         * node above */
+                        node_clear = (bool)true;
+                        /* Clear false negative */
+                        r = CSL_PASS;
+                    } else {
+                        if_idx = 0u;
+                    }
                 }
-            } else {
+            } else if(flag_brk != (bool)true) {
                 if ((cur_if->rid == cfg->d_id) &&
                     (cfg->d_irq >= (cur_if->rbase)) &&
                     (cfg->d_irq <
@@ -1926,22 +1924,27 @@ static int32_t Sciclient_rmIrqFindRoute(struct Sciclient_rmIrqCfg *cfg)
                      */
                     r = Sciclient_rmPsPush(cur_n, if_idx);
                     if (r != CSL_PASS) {
-                        break;
+                        flag_brk = (bool)true;
                     }
-
-                    if (Sciclient_rmIrqRouteValidate(cfg) == (bool)true) {
-                        break;
-                    } else {
-                        (void)Sciclient_rmPsPop(&cur_n, &if_idx);
+                    if(flag_brk != (bool)true){
+                        if (Sciclient_rmIrqRouteValidate(cfg) == (bool)true) {
+                            flag_brk = (bool)true;
+                        } else {
+                            (void)Sciclient_rmPsPop(&cur_n, &if_idx);
+                        }
                     }
                 }
-                if_idx++;
+                if(flag_brk != (bool)true)  {
+                  if_idx++;
+                }
+            } else  {
+                /* Do Nothing */
             }
         } else {
             node_clear = (bool)true;
         }
 
-        if (node_clear == (bool)true) {
+        if ((flag_brk != (bool)true) && ((node_clear == (bool)true) || (r != CSL_PASS))) {
             if (Sciclient_rmPsIsEmpty() == (bool)true) {
                 /* Back at root node, increase search depth and
                  * reset the if_idx to restart the search at
@@ -1952,15 +1955,22 @@ static int32_t Sciclient_rmIrqFindRoute(struct Sciclient_rmIrqCfg *cfg)
 
                 if (search_depth >= Sciclient_rmPsGetMaxPsp()) {
                     r = CSL_EFAIL;
-                    break;
+                    flag_brk = (bool)true;
                 }
-            } else {
+            } else if(flag_brk != (bool)true){
                 r = Sciclient_rmPsPop(&cur_n, &if_idx);
                 if (r != CSL_PASS) {
-                    break;
+                    flag_brk = (bool)true;
                 }
-                if_idx++;
+                if(flag_brk != (bool)true){
+                  if_idx++;
+                }
+            }else{
+                /* Do Nothing */
             }
+        }
+        if(flag_brk == (bool)true){
+            break;
         }
     }
 
@@ -2163,8 +2173,10 @@ static int32_t Sciclient_rmIrqGetRoute(struct Sciclient_rmIrqCfg    *cfg)
     uint16_t search_depth;
     uint16_t if_idx;
     uint16_t cur_psp;
-    uint16_t inp, next_inp;
-    uint16_t outp, next_outp;
+    uint16_t inp = 0U, next_inp = 0U ;
+    uint16_t outp =0U, next_outp = 0U;
+    bool flag_brk1 = (bool)false;
+    bool flag_brk2 = (bool)false;
     bool search, rt_complete, push_node;
     const struct Sciclient_rmIrqNode *cur_n, *next_n;
     const struct Sciclient_rmIrqIf *cur_if;
@@ -2222,81 +2234,92 @@ static int32_t Sciclient_rmIrqGetRoute(struct Sciclient_rmIrqCfg    *cfg)
         for (if_idx = 0u; if_idx < cur_n->n_if; if_idx++) {
             r = Sciclient_rmIrqGetNodeItf(cur_n, if_idx, &cur_if);
             if (r != CSL_PASS) {
-                break;
+                flag_brk1 = (bool)true;
             }
 
-            if ((outp >= cur_if->lbase) &&
-                (outp < (cur_if->lbase + cur_if->len))) {
+            if ((flag_brk1 != (bool)true) && ((outp >= cur_if->lbase) &&
+                (outp < (cur_if->lbase + cur_if->len)))) {
                 if ((cur_if->rid == cfg->d_id) &&
                     (SCICLIENT_OUTP_TO_INP(outp, cur_if->lbase,
                          cur_if->rbase) ==
                      cfg->d_irq)) {
                     rt_complete = (bool)true;
-                    break;
+                    flag_brk1 = (bool)true;
                 }
 
-                if (Sciclient_rmIrIsIr(cur_if->rid) == (bool)true) {
+                if ((flag_brk1 != (bool)true) && (Sciclient_rmIrIsIr(cur_if->rid) == (bool)true)) {
                     r = Sciclient_rmIrqGetNode(cur_if->rid, &next_n);
                     if (r != CSL_PASS) {
-                        break;
+                        flag_brk1 = (bool)true;
                     }
-
-                    next_inp = SCICLIENT_OUTP_TO_INP(outp,
-                                   cur_if->lbase,
-                                   cur_if->rbase);
-                    r = Sciclient_rmIrGetOutp(next_n->id, next_inp,
-                               &next_outp);
-                    if (r == CSL_PASS) {
-                        push_node = (bool)true;
-                        r = CSL_PASS;
-                        break;
+                    if(flag_brk1 != (bool)true){
+                        next_inp = SCICLIENT_OUTP_TO_INP(outp,
+                                       cur_if->lbase,
+                                       cur_if->rbase);
+                        r = Sciclient_rmIrGetOutp(next_n->id, next_inp,
+                                   &next_outp);
+                        if (r == CSL_PASS) {
+                            push_node = (bool)true;
+                            r = CSL_PASS;
+                            flag_brk1 = (bool)true;
+                        }
                     }
-
-                    if (r != CSL_EFAIL) {
-                        break;
+                    if ((flag_brk1 != (bool)true) && (r != CSL_EFAIL)) {
+                        flag_brk1 = (bool)true;
                     }
                 }
             }
+            if (flag_brk1 == (bool)true) {
+              break;
+            }
         }
 
-        if (r != CSL_PASS) {
-            break;
+        if ((flag_brk2 == (bool)true) && (r != CSL_PASS)) {
+            flag_brk2 = (bool)true;
         }
 
-        if ((rt_complete == (bool)true) || (push_node == (bool)true)) {
+        if ((flag_brk2 != (bool)true) && ((rt_complete == (bool)true) || (push_node == (bool)true))) {
             /* Route passes through next
              * node so save current node
              * and index since it's valid */
             r = Sciclient_rmPsPush(cur_n, if_idx);
             if (r != CSL_PASS) {
-                break;
+                flag_brk2 = (bool)true;
             }
 
-            if ((search_depth > 0u) ||
+            if ((flag_brk2 != (bool)true) && ((search_depth > 0u) ||
                 ((search_depth == 0u) &&
-                 (Sciclient_rmIaIsIa(cur_n->id) == (bool)true))) {
+                 (Sciclient_rmIaIsIa(cur_n->id) == (bool)true)))) {
                 /* Only push inp and outp to stack for
                  * intermediate routing subsystems or
                  * if the first node is an IA */
                 cur_psp = Sciclient_rmPsGetPsp();
                 r = Sciclient_rmPsSetInp(cur_psp - (1u), inp);
                 if (r != CSL_PASS) {
-                    break;
+                    flag_brk2 = (bool)true;
                 }
-                r = Sciclient_rmPsSetOutp(cur_psp - (1u),
+                if(flag_brk2 != (bool)true){
+                    r = Sciclient_rmPsSetOutp(cur_psp - (1u),
                         outp);
-                if (r != CSL_PASS) {
-                    break;
+
+                    if (r != CSL_PASS) {
+                        flag_brk2 = (bool)true;
+                    }
                 }
             }
 
-            if (rt_complete == (bool)true) {
-                break;
-            } else {
+            if ((flag_brk2 != (bool)true) && (rt_complete == (bool)true)) {
+                flag_brk2 = (bool)true;
+            }else if(flag_brk2 != (bool)true){
                 cur_n = next_n;
                 inp = next_inp;
                 outp = next_outp;
+            }else{
+                /* Do Nothing */
             }
+        }
+        if((flag_brk1 == (bool)true) || (flag_brk2 == (bool)true)){
+            break;
         }
     }
 
@@ -2531,7 +2554,7 @@ static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *ins
                                          bool                               in_use)
 {
     int32_t r = CSL_PASS;
-    volatile uint32_t *entry_int_map_lo;
+    volatile uintptr_t *entry_int_map_lo;
     uint16_t reg_vint, reg_sb;
 
     if (evt >= inst->n_sevt) {
@@ -2540,12 +2563,12 @@ static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *ins
 
     if (r == CSL_PASS) {
 #if defined (BUILD_MPU1_0) || defined(BUILD_MPU1_1)
-        entry_int_map_lo = (volatile uint32_t *)((uint64_t)inst->imap + (uint64_t)SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
+        entry_int_map_lo = (volatile uintptr_t *)((uintptr_t)inst->imap + (uintptr_t)SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
 #else
-        entry_int_map_lo = (volatile uint32_t *)(inst->imap + SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
+        entry_int_map_lo = (volatile uintptr_t *)((uint16_t)inst->imap + (uint16_t)SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
 #endif
 #ifdef QNX_OS
-        entry_int_map_lo = ((uint32_t *) mmap_device_memory(0, sizeof(uint32_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)entry_int_map_lo));
+        entry_int_map_lo = ((uintptr_t *) mmap_device_memory(0, sizeof(uintptr_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)entry_int_map_lo));
 #endif
         if (in_use == (bool)true) {
             /* Check if event is in use */
@@ -2584,7 +2607,7 @@ static int32_t Sciclient_rmIaValidateEvt(const struct Sciclient_rmIaInst    *ins
             }
         }
  #ifdef QNX_OS
-        munmap_device_memory((void *)entry_int_map_lo, sizeof(uint32_t));
+        munmap_device_memory((void *)entry_int_map_lo, sizeof(uintptr_t));
  #endif
     }
 
@@ -2621,7 +2644,7 @@ static int32_t Sciclient_rmIaValidateMapping(uint8_t   host,
     int32_t r = CSL_PASS;
     struct Sciclient_rmIaInst *inst = NULL;
     uint16_t evt;
-    volatile uint32_t *entry_int_map_lo;
+    volatile uintptr_t *entry_int_map_lo;
     uint16_t reg_vint, reg_sb;
 
     inst = Sciclient_rmIaGetInst(id);
@@ -2646,13 +2669,13 @@ static int32_t Sciclient_rmIaValidateMapping(uint8_t   host,
 
     if (r == CSL_PASS) {
 #if defined (BUILD_MPU1_0) || defined(BUILD_MPU1_1)
-        entry_int_map_lo = (volatile uint32_t *)((uint64_t)inst->imap + (uint64_t)SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
+        entry_int_map_lo = (volatile uintptr_t *)((uintptr_t)inst->imap + (uintptr_t)SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
 #else
-        entry_int_map_lo = (volatile uint32_t *)(inst->imap + SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
+        entry_int_map_lo = (volatile uintptr_t *)((uint16_t)inst->imap + (uint16_t)SCICLIENT_IA_ENTRY_INTMAP_LO(evt));
 #endif
 
 #ifdef QNX_OS
-        entry_int_map_lo = ((uint32_t *) mmap_device_memory(0, sizeof(uint32_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)entry_int_map_lo));
+        entry_int_map_lo = ((uintptr_t *) mmap_device_memory(0, sizeof(uintptr_t), PROT_READ|PROT_WRITE|PROT_NOCACHE, 0, (uint64_t)entry_int_map_lo));
 #endif
         /* Check if event is in use */
         reg_vint = (uint16_t)CSL_REG32_FEXT(entry_int_map_lo,
@@ -2660,7 +2683,7 @@ static int32_t Sciclient_rmIaValidateMapping(uint8_t   host,
         reg_sb = (uint16_t)CSL_REG32_FEXT(entry_int_map_lo,
                                 INTAGGR_IMAP_GEVI_IMAP_BITNUM);
  #ifdef QNX_OS
-        munmap_device_memory((void *)entry_int_map_lo, sizeof(uint32_t));
+        munmap_device_memory((void *)entry_int_map_lo, sizeof(uintptr_t));
  #endif
         if ((reg_vint == 0u) && (reg_sb == 0u)) {
             /*
@@ -2722,11 +2745,11 @@ static bool Sciclient_rmIaIsIa(uint16_t id)
     return r;
 }
 
-static uint32_t Sciclient_rmIrIntControlReg(uint16_t    outp)
+static uint32_t Sciclient_rmIrIntControlReg(uint32_t    outp)
 {
     uint32_t ret=0U;
 
-    ret= (((uint16_t)outp) * SCICLIENT_IR_INT_CONTROL_REG_STEP) + SCICLIENT_IR_INT_CONTROL_REG_OFFSET;
+    ret= (outp * SCICLIENT_IR_INT_CONTROL_REG_STEP) + SCICLIENT_IR_INT_CONTROL_REG_OFFSET;
     return (ret);
 }
 
