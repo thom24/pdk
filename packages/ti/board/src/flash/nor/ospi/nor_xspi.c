@@ -416,13 +416,13 @@ static void Nor_ospiSetOpcode(OSPI_Handle handle)
         }
         else
         {
-            rdDummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE_INDAC;
+            rdDummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE_INDAC - 1U;
             latencyCode   = NOR_OCTAL_READ_DUMMY_CYCLE_LC_INDAC;
         }
 
         if (gDtrEnable == true)
         {
-            cmdDummyCycles = NOR_OCTAL_DDR_CMD_READ_DUMMY_CYCLE;
+            cmdDummyCycles = NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE;
             readCmd = NOR_CMD_OCTAL_DDR_READ;
             if (gPhyEnable == (bool)false)
             {
@@ -507,13 +507,14 @@ NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
         ospiCfg.phyEnable = false;
     }
 
-    if(ospiCfg.funcClk == OSPI_MODULE_CLK_200M)
+    /* For XSPI flash the read data capture delay needs to be half the value of the baudrate divider */
+    if(ospiCfg.baudRateDiv > 0U)
     {
-        ospiCfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV_200M;
+        ospiCfg.rdDataCapDelay = ospiCfg.baudRateDiv/2U;
     }
     else
     {
-        ospiCfg.baudRateDiv = BOARD_XSPI_BAUDRATE_DIV_133M;
+        ospiCfg.rdDataCapDelay = NOR_XSPI_READ_DELAY_MAX;
     }
 
     OSPI_socSetInitCfg(SPI_OSPI_DOMAIN_MCU, portNum, &ospiCfg);

@@ -140,6 +140,8 @@ extern "C" {
 #define NOR_RDID_CMD_LENGTH_SINGLE            (1U)
 #define NOR_RDID_CMD_LENGTH_OCTAL             (5U)
 
+#define NOR_XSPI_READ_DELAY_MAX               (15U)
+
 /** In Micro seconds */
 #define NOR_PAGE_PROG_TIMEOUT		(400U)
 #define NOR_SECTOR_ERASE_TIMEOUT	(600U * 1000U)

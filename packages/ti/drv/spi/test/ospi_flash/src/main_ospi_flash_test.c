@@ -848,7 +848,8 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.devDelays[2] = OSPI_DEV_DELAY_CSDA_A;
         ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_A;
         ospi_cfg.blkSize = 16;
-        ospi_cfg.baudRateDiv = 6;
+        ospi_cfg.baudRateDiv = 8;
+        ospi_cfg.rdDataCapDelay = 0U;
     }
     if (test->testId == OSPI_NAND_TEST_ID_DAC_OSDR_50M)
     {
@@ -1403,12 +1404,7 @@ void OSPI_test_print_test_desc(OSPI_Tests *test)
 OSPI_Tests Ospi_tests[] =
 {
 #ifdef OSPI_WRITE_TUNING
-#if defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    /* testFunc             testID                            dacMode dmaMode norFlash    phyOpMode                           clk                   testDesc */
-    {OSPI_flash_test,       OSPI_TEST_ID_WR_TUNING,           false,  false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
-#else
     {OSPI_flash_test,       OSPI_TEST_ID_WR_TUNING,           true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave to write tuning data to flash"},
-#endif
 #endif
     {OSPI_flash_test,       OSPI_TEST_ID_DAC_133M,            true,   false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in DAC mode at 133MHz RCLK"},
     {OSPI_flash_test,       OSPI_TEST_ID_INDAC_133M,          false,  false,  true,       CSL_OSPI_CFG_PHY_OP_MODE_DEFAULT,   OSPI_MODULE_CLK_133M, "\r\n OSPI flash test slave in INDAC mode at 133MHz RCLK"},
@@ -1580,6 +1576,7 @@ bool VerifyData(uint8_t *expData,
         {
             match = 0;
             SPI_log("Data mismatch at idx %d\n", idx);
+            SPI_log("exp data:%x, rxData:%x\n", *expData, *rxData);
         }
         expData++;
         rxData++;
