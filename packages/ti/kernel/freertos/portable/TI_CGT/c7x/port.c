@@ -579,6 +579,15 @@ void vPortYieldAsyncFromISR( void )
     /* Enable interrupts if task was preempted outside critical section */
     portDISABLE_INTERRUPTS();
 
+    /* If the Interrupt occured while NLCINIT was being executed,
+     * The NLC state might get corrupted when re-entering the interrupted task.
+     * Refer the issue: DOCU-470.
+     * Workaround is to execute a dummy NLCINIT that refreshes the NLC hardware state.
+     * For FreeRTOS, this is only a problem with the configUSE_TIME_SLICING turned on.
+     */
+#if (1U == configUSE_TIME_SLICING)
+    vPortRefreshNLC();
+#endif
 }
 
 /*
