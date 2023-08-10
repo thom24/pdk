@@ -848,19 +848,15 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
 #ifdef SPI_DMA_ENABLE
     if ((master == true) && (dmaMode == true))
     {
+        CacheP_wbInv((void *)addrMasterTxBuf, (int32_t)sizeof(masterTxBuffer));
         CacheP_wbInv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
-        CacheP_wbInv((void *)addrSlaveRxBuf, (int32_t)sizeof(slaveRxBuffer));
         CacheP_wbInv((void *)addrCancelTxBuff, (int32_t)sizeof(cancelTxBuff));
         CacheP_wbInv((void *)addrCancelRxBuff, (int32_t)sizeof(cancelRxBuff));
     }
     if ((master == false) && (dmaMode == true))
     {
-        CacheP_wbInv((void *)addrMasterTxBuf, (int32_t)sizeof(masterTxBuffer));
         CacheP_wbInv((void *)addrSlaveTxBuf, (int32_t)sizeof(slaveTxBuffer));
-        CacheP_wbInv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
         CacheP_wbInv((void *)addrSlaveRxBuf, (int32_t)sizeof(slaveRxBuffer));
-        CacheP_wbInv((void *)addrCancelTxBuff, (int32_t)sizeof(cancelTxBuff));
-        CacheP_wbInv((void *)addrCancelRxBuff, (int32_t)sizeof(cancelRxBuff));
     }
 #endif
 
@@ -972,6 +968,16 @@ static bool SPI_test_mst_slv_xfer(void *spi, SPI_Tests *test, uint32_t xferLen, 
             }
         }
         SPI_test_xfer_ctrl(spi, 0);
+
+       if ((master == true) && (dmaMode == true))
+       {
+           CacheP_Inv((void *)addrMasterRxBuf, (int32_t)sizeof(masterRxBuffer));
+           CacheP_Inv((void *)addrCancelRxBuff, (int32_t)sizeof(cancelRxBuff));
+       }
+       if ((master == false) && (dmaMode == true))
+       {
+           CacheP_Inv((void *)addrSlaveRxBuf, (int32_t)sizeof(slaveRxBuffer));
+       }
 
         /* Get the actual transfer bytes */
         if (testId == SPI_TEST_ID_WORD_LEN)
