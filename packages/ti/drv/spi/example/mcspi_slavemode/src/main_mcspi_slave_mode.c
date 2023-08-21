@@ -1651,7 +1651,7 @@ SPI_Tests Spi_tests_slave[] =
     {NULL, },
 };
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-#define MCSPI_SYNC_ADDR         (0x90000000U)
+#define MCSPI_SYNC_ADDR         (0x70000000U)
 #endif
 /*
  *  ======== slaveTaskFxn ========
