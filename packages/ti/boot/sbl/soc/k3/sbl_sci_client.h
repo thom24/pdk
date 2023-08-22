@@ -57,6 +57,24 @@ extern "C" {
 #define SBL_SYS_STATUS_DEV_TYPE_TEST    (0x5U)
 #define SBL_SYS_STATUS_DEV_SUBTYPE_FS   (0x00000A00U)
 
+/* Firewall Background bit */
+#define SBL_FWL_REGION_MASK                   (0x00000100U)
+#define SBL_FWL_REGION_SHIFT                  (0x00000008U)
+#define SBL_FWL_REGION_BACKGROUND             (0x1U)
+#define SBL_FWL_REGION_FOREGROUND             (0x0U)
+
+/**
+ * @brief - Structure to store firewall data
+ *
+ */
+typedef struct
+{
+    /* firewall ID */
+    uint16_t fwlId;
+    /* Number of Regions */
+    uint32_t numRegions;
+} sblFwlData;
+
 /**
  * @brief - SBL_SciClientInit() - function to do load DMSC firmware.
  *
@@ -104,6 +122,18 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes);
  *
  */
 uint32_t SBL_IsAuthReq(void);
+
+/**
+ * @brief - SBL_disableFwlRegion() - Function to identify if firewall region is enabled and disable it based on parameters
+ *
+ * @param tisci_msg_fwl_get_firewall_region_req              [IN] Structure to request for retrieving the firewall permissions.
+ * @param numRegions                                         [IN] Max number of regions that can be configured for fwId
+ * @param disableRegion                                      [IN] Firewall region to be disabled: SBL_FWL_REGION_BACKGROUND or SBL_FWL_REGION_FOREGROUND
+ *
+ * @return CSL_PASS on success, CSL_EFAIL failure
+ *
+ */
+int32_t SBL_disableFwlRegion(struct tisci_msg_fwl_get_firewall_region_req* reqGetFwCtrl, uint32_t numRegions, uint32_t disableRegion);
 
 extern const struct tisci_boardcfg_pm gBoardConfigLow_pm;
 

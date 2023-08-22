@@ -58,28 +58,26 @@ uint8_t combinedBootmode = FALSE;
 #if (!defined(SBL_SKIP_BRD_CFG_PM)) || (!defined(SBL_SKIP_BRD_CFG_RM))
 static int32_t Sciclient_setBoardConfigHeader ();
 #endif
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-/* Firewall ID for MCU_FSS0_S0 */
-#define MCU_FSS0_S0_FWID (1036)
-#define MCU_FSS0_S0_FW_REGIONS (8)
 
-/* Firewall ID for PCIE region */
-#define PCIE0_CFG_FWID (2560)
-#define PCIE0_CFG_REGIONS (8)
-#define PCIE1_CFG_FWID (2561)
-#define PCIE1_CFG_REGIONS (8)
-
-/* Firewall ID for OCMC region */
+/* Firewall Data for OCMC region */
 #if defined(SOC_J721E)
-#define OCMC_FWID          CSL_STD_FW_MCU_MSRAM_1MB0_SLV_ID
-#define OCMC_REGIONS       CSL_STD_FW_MCU_MSRAM_1MB0_SLV_NUM_REGIONS
-#define OCMC_START_ADDRESS CSL_STD_FW_MCU_MSRAM_1MB0_SLV_RAM_START
-#define OCMC_END_ADDRESS   CSL_STD_FW_MCU_MSRAM_1MB0_SLV_RAM_END
+    #define OCMC_FWID       CSL_STD_FW_MCU_MSRAM_1MB0_SLV_ID
+    #define OCMC_REGIONS    CSL_STD_FW_MCU_MSRAM_1MB0_SLV_NUM_REGIONS
 #else
-#define OCMC_FWID          CSL_STD_FW_MCU_MSRAM_1MB0_RAM_ID
-#define OCMC_REGIONS       CSL_STD_FW_MCU_MSRAM_1MB0_RAM_NUM_REGIONS
-#define OCMC_START_ADDRESS CSL_STD_FW_MCU_MSRAM_1MB0_RAM_RAM_START
-#define OCMC_END_ADDRESS   CSL_STD_FW_MCU_MSRAM_1MB0_RAM_RAM_END
+    #define OCMC_FWID       CSL_STD_FW_MCU_MSRAM_1MB0_RAM_ID
+    #define OCMC_REGIONS    CSL_STD_FW_MCU_MSRAM_1MB0_RAM_NUM_REGIONS
+#endif
+
+/* Firewall Data for MCU_FSS_S0 region */
+#if defined(SOC_J721E)
+#define MCU_FSS0_S0_FWID           CSL_STD_FW_MCU_FSS0_FSS_S0_ID
+#define MCU_FSS0_S0_FW_REGIONS     CSL_STD_FW_MCU_FSS0_FSS_S0_NUM_REGIONS
+#elif defined(SOC_J7200)
+#define MCU_FSS0_S0_FWID           CSL_STD_FW_MCU_FSS0_DAT_REG1_ID
+#define MCU_FSS0_S0_FW_REGIONS     CSL_STD_FW_MCU_FSS0_DAT_REG1_NUM_REGIONS
+#else
+#define MCU_FSS0_S0_FWID           CSL_STD_FW_MCU_FSS0_FSAS_0_DAT_REG1_ID
+#define MCU_FSS0_S0_FW_REGIONS     CSL_STD_FW_MCU_FSS0_FSAS_0_DAT_REG1_NUM_REGIONS
 #endif
 
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined(SOC_J784S4)
@@ -90,7 +88,44 @@ static int32_t Sciclient_setBoardConfigHeader ();
 #define SCISERVER_BOARDCONFIG_DATA_ADDR (0x41c80040U)
 
 #endif
+
+/* Global array which contains firewall data */
+const sblFwlData gFwlDisableInfo [] =
+{
+#if defined(SOC_J721E)
+    /* Firewall data for MCU_FSS0_S0 */
+    {
+        MCU_FSS0_S0_FWID,
+        MCU_FSS0_S0_FW_REGIONS
+    },
+    /* Firewall data for OCMC Region */
+    {
+        OCMC_FWID,
+        OCMC_REGIONS
+    },
+    /* Firewall data for PCIE0 Region */
+    {
+        CSL_STD_FW_PCIE0_PCIE_CFG_ID,
+        CSL_STD_FW_PCIE0_PCIE_CFG_NUM_REGIONS
+    },
+    /* Firewall data for PCIE1 Region */
+    {
+        CSL_STD_FW_PCIE1_PCIE_CFG_ID,
+        CSL_STD_FW_PCIE1_PCIE_CFG_NUM_REGIONS
+    }
+#else
+    /* Firewall data for MCU_FSS0_S0 */
+    {
+        MCU_FSS0_S0_FWID,
+        MCU_FSS0_S0_FW_REGIONS
+    },
+    /* Firewall data for OCMC Region */
+    {
+        OCMC_FWID,
+        OCMC_REGIONS
+    }
 #endif
+};
 
 uint32_t SBL_IsAuthReq(void)
 {
@@ -244,137 +279,28 @@ void SBL_SciclientCfgSec(uint32_t devGroup, Sciclient_DefaultBoardCfgInfo_t *boa
 
 void SBL_OpenFirewalls()
 {
-    int32_t status = CSL_EFAIL;
 #ifndef SBL_SKIP_BRD_CFG_SEC
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    /* Secure ROM has left firewall regions for FSS DAT0 set.  Disable them for DMA usage. */
-    uint16_t i;
-    struct tisci_msg_fwl_set_firewall_region_resp respFwCtrl = {0};
-    struct tisci_msg_fwl_set_firewall_region_req reqFwCtrl =
+    int32_t status = CSL_EFAIL;
+    int32_t fwlDataSize = sizeof(gFwlDisableInfo)/sizeof(gFwlDisableInfo[0]);
+    struct tisci_msg_fwl_get_firewall_region_req reqGetFwlCtrl;
+    for (int32_t loopCnt = 0; loopCnt < fwlDataSize; loopCnt++)
     {
-        .fwl_id = (uint16_t) MCU_FSS0_S0_FWID,
-        .region = (uint16_t) 0,
-        .n_permission_regs = (uint32_t) 3,
-        /* Set .control to zero to disable the firewall region */
-        .control = (uint32_t) 0,
-        .permissions[0] = (uint32_t) 0,
-        .permissions[1] = (uint32_t) 0,
-        .permissions[2] = (uint32_t) 0,
-        .start_address = 0,
-        .end_address = 0
-    };
-    for (i = 0; i < MCU_FSS0_S0_FW_REGIONS; i++)
-    {
-        reqFwCtrl.region = i;
-        status = Sciclient_firewallSetRegion(&reqFwCtrl, &respFwCtrl, SCICLIENT_SERVICE_WAIT_FOREVER);
+        memset(&reqGetFwlCtrl, 0, sizeof(reqGetFwlCtrl));
+        reqGetFwlCtrl = (struct tisci_msg_fwl_get_firewall_region_req) {
+            .fwl_id = gFwlDisableInfo[loopCnt].fwlId
+        };
+
+        /* Remove Foreground firewall regions */
+        status = SBL_disableFwlRegion(&reqGetFwlCtrl, gFwlDisableInfo[loopCnt].numRegions, SBL_FWL_REGION_FOREGROUND);
         if (status != CSL_PASS)
         {
-            SBL_log(SBL_LOG_ERR,"MCU FSS0_S0 firewall region # %d disable...FAILED \n", i);
+            SBL_log(SBL_LOG_ERR, "Failed to disable foreground region firewall of ID %d !! \n", gFwlDisableInfo[loopCnt].fwlId);
         }
-    }
-#endif
-#endif
-
-#if defined(BUILD_HS)
-    /* Secure ROM enables firewall for SBL loaded OCMC memory to access from DMA 
-       Disable for DMA usage */
-    struct tisci_msg_fwl_set_firewall_region_resp respSetOCMCFwCtrl;
-    struct tisci_msg_fwl_set_firewall_region_req reqSetOCMCFwCtrl;
-    memset(&respSetOCMCFwCtrl, 0, sizeof(respSetOCMCFwCtrl));
-    reqSetOCMCFwCtrl = (struct tisci_msg_fwl_set_firewall_region_req){
-        .fwl_id = (uint16_t) OCMC_FWID,
-        .region = (uint16_t) 1U,
-        .n_permission_regs = (uint32_t) 3U,
-        /* Set .control to zero to disable the firewall region */
-        .control = (uint32_t) 0U,
-        .permissions[0] = (uint32_t) 0U,
-        .permissions[1] = (uint32_t) 0U,
-        .permissions[2] = (uint32_t) 0U,
-        .start_address = OCMC_START_ADDRESS,
-        .end_address = OCMC_END_ADDRESS
-    };
-
-    for (uint32_t regionNum = 0; regionNum < OCMC_REGIONS; regionNum++)
-    {
-        reqSetOCMCFwCtrl.region = regionNum;
-        status = Sciclient_firewallSetRegion(&reqSetOCMCFwCtrl, &respSetOCMCFwCtrl, SCICLIENT_SERVICE_WAIT_FOREVER);
+        /* Remove Background firewall regions */
+        status = SBL_disableFwlRegion(&reqGetFwlCtrl, gFwlDisableInfo[loopCnt].numRegions, SBL_FWL_REGION_BACKGROUND);
         if (status != CSL_PASS)
         {
-            SBL_log(SBL_LOG_ERR,"OCMC region # %d: FAILED to disable Firewall... \n", regionNum);
-        }
-    }
-
-#endif
-
-#if (defined(BUILD_HS) && defined(SOC_J721E))
-    /* By default firewall regions for PCIE is enabled on J721E HS. Disable them since PCIE is not able to access that */
-    uint16_t temp;
-    struct tisci_msg_fwl_get_firewall_region_resp resp_get_fw_ctrl[2] = {{0}, {0}};
-    struct tisci_msg_fwl_get_firewall_region_req req_get_fw_ctrl[2] = 
-    {
-        {
-            .fwl_id = (uint16_t) PCIE0_CFG_FWID,
-            .region = (uint16_t) 0,
-            .n_permission_regs = (uint16_t) 3
-        },
-        {
-            .fwl_id = (uint16_t) PCIE1_CFG_FWID,
-            .region = (uint16_t) 0,
-            .n_permission_regs = (uint16_t) 3
-        }
-    };
-
-    if (Sciclient_firewallGetRegion(&req_get_fw_ctrl[0], &resp_get_fw_ctrl[0], SCICLIENT_SERVICE_WAIT_FOREVER) != 0){
-        SBL_log(SBL_LOG_ERR,"Unable to get the start and end address of PCIE0_CFG\n");
-    }
-    if (Sciclient_firewallGetRegion(&req_get_fw_ctrl[1], &resp_get_fw_ctrl[1], SCICLIENT_SERVICE_WAIT_FOREVER) != 0){
-        SBL_log(SBL_LOG_ERR,"Unable to get the start and end address of PCIE1_CFG\n");
-    }
-
-    struct tisci_msg_fwl_set_firewall_region_resp resp_fw_ctrl[2] = {{0}, {0}};
-    struct tisci_msg_fwl_set_firewall_region_req req_fw_ctrl[2] =
-    {
-        {
-            .fwl_id = (uint16_t) PCIE0_CFG_FWID,
-            .region = (uint16_t) 0,
-            .n_permission_regs = (uint32_t) 3,
-            /* Set .control to zero to disable the firewall region */
-            .control = (uint32_t) 0,
-            .permissions[0] = (uint32_t) 0,
-            .permissions[1] = (uint32_t) 0,
-            .permissions[2] = (uint32_t) 0,
-            .start_address = resp_get_fw_ctrl[0].start_address,
-            .end_address = resp_get_fw_ctrl[0].end_address
-        },
-        {
-            .fwl_id = (uint16_t) PCIE1_CFG_FWID,
-            .region = (uint16_t) 0,
-            .n_permission_regs = (uint32_t) 3,
-            /* Set .control to zero to disable the firewall region */
-            .control = (uint32_t) 0,
-            .permissions[0] = (uint32_t) 0,
-            .permissions[1] = (uint32_t) 0,
-            .permissions[2] = (uint32_t) 0,
-            .start_address = resp_get_fw_ctrl[1].start_address,
-            .end_address = resp_get_fw_ctrl[1].end_address
-        }
-    };
-    for (temp = 0; temp < PCIE0_CFG_REGIONS; temp++)
-    {
-        req_fw_ctrl[0].region = temp;
-        status = Sciclient_firewallSetRegion(&req_fw_ctrl[0], &resp_fw_ctrl[0], SCICLIENT_SERVICE_WAIT_FOREVER);
-        if (status != CSL_PASS)
-        {
-            SBL_log(SBL_LOG_ERR,"PCIE0_CFG firewall region # %d disable...FAILED \n", temp);
-        }
-    }
-    for (temp = 0; temp < PCIE1_CFG_REGIONS; temp++)
-    {
-        req_fw_ctrl[1].region = temp;
-        status = Sciclient_firewallSetRegion(&req_fw_ctrl[1], &resp_fw_ctrl[1], SCICLIENT_SERVICE_WAIT_FOREVER);
-        if (status != CSL_PASS)
-        {
-            SBL_log(SBL_LOG_ERR,"PCIE1_CFG firewall region # %d disable...FAILED \n", temp);
+            SBL_log(SBL_LOG_ERR, "Failed to disable background region firewall of ID %d !! \n", gFwlDisableInfo[loopCnt].fwlId);
         }
     }
 #endif
@@ -690,3 +616,51 @@ static int32_t Sciclient_setBoardConfigHeader ()
     return status;
 }
 #endif
+
+int32_t SBL_disableFwlRegion(struct tisci_msg_fwl_get_firewall_region_req* reqGetFwlCtrl, uint32_t numRegions, uint32_t disableRegion)
+{
+    int32_t retVal = CSL_PASS;
+    uint32_t currentRegionType;
+    struct tisci_msg_fwl_get_firewall_region_resp respGetFwlCtrl;
+    struct tisci_msg_fwl_set_firewall_region_resp respSetFwlCtrl;
+    struct tisci_msg_fwl_set_firewall_region_req reqSetFwlCtrl;
+    memset(&respGetFwlCtrl, 0, sizeof(respGetFwlCtrl));
+    memset(&respSetFwlCtrl, 0, sizeof(respSetFwlCtrl));
+    memset(&reqSetFwlCtrl, 0, sizeof(reqSetFwlCtrl));
+    
+    /* Looping over all the regions for that particular Firewall ID */
+    for(uint32_t regionNum = 0; regionNum < numRegions; regionNum++)
+    {
+        reqGetFwlCtrl->region = regionNum;
+        retVal = Sciclient_firewallGetRegion(reqGetFwlCtrl, &respGetFwlCtrl, SCICLIENT_SERVICE_WAIT_FOREVER);
+        currentRegionType = ((respGetFwlCtrl.control & SBL_FWL_REGION_MASK) >> SBL_FWL_REGION_SHIFT);
+        if (retVal != CSL_PASS){
+            SBL_log(SBL_LOG_ERR,"Sciclient_firewallGetRegion failed !!\n");
+        }
+        else
+        {
+            /* Check whether firewall is enabled */
+            if (respGetFwlCtrl.control != 0)
+            {
+                reqSetFwlCtrl = (struct tisci_msg_fwl_set_firewall_region_req) {
+                    .fwl_id = respGetFwlCtrl.fwl_id,
+                    .region = regionNum,
+                    /* Set control to zero to disable the firewall region */
+                    .control = (uint32_t) 0U,
+                    .start_address = respGetFwlCtrl.start_address,
+                    .end_address = respGetFwlCtrl.end_address
+                };
+
+                if (disableRegion == currentRegionType)
+                {
+                    retVal = Sciclient_firewallSetRegion(&reqSetFwlCtrl, &respSetFwlCtrl, SCICLIENT_SERVICE_WAIT_FOREVER);
+                    if (retVal != CSL_PASS)
+                    {
+                        SBL_log(SBL_LOG_ERR,"Firewall region (background) # %d of ID %d disable...FAILED \n", regionNum, reqGetFwlCtrl->fwl_id);
+                    }
+                }
+            }
+        }
+    }
+    return retVal;
+}
