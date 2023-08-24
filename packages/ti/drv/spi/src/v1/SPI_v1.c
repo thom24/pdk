@@ -560,11 +560,10 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
         /* Set FIFO XFER levels */
         transBytes = (uint32_t)transaction->count << chObj->wordLenShift;
 
-        if (transBytes <= object->fifoSize)
+        if (transBytes <= hwAttrs->rxTrigLvl)
         {
             /* Transaction fits entirely in FIFO */
             object->rxTrigLvl = transBytes;
-            object->txTrigLvl = transBytes;
         }
         else
         {
@@ -572,8 +571,22 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
              * Transaction count is more than FIFO size
              */
             object->rxTrigLvl = hwAttrs->rxTrigLvl;
+        }
+        if (transBytes <= hwAttrs->txTrigLvl)
+        {
+            /* Transaction fits entirely in FIFO */
+            object->txTrigLvl = transBytes;
+        }
+        else
+        {
+            /*
+             * Transaction count is more than FIFO size
+             */
             object->txTrigLvl = hwAttrs->txTrigLvl;
+        }
 
+        if (transBytes > object->fifoSize)
+        {
 #ifdef SPI_DMA_ENABLE
             if (hwAttrs->dmaMode == (bool)true)
             {
@@ -1309,23 +1322,23 @@ static MCSPI_Handle MCSPI_open_v1(MCSPI_Handle        mcHandle,
 
                 if (object->chOpenedCnt == 0U)
                 {
-    #ifdef SPI_DMA_ENABLE
-                    if (hwAttrs->dmaMode == (bool)true)
+#ifdef SPI_DMA_ENABLE
+                if (hwAttrs->dmaMode == (bool)true)
+                {
+                    /* DMA Configuration */
+                    if(SPI_STATUS_SUCCESS == MCSPI_dmaConfig(mcHandle))
                     {
-                        /* DMA Configuration */
-                        if(SPI_STATUS_SUCCESS == MCSPI_dmaConfig(mcHandle))
-                        {
-                            McSPIDMADisable(hwAttrs->baseAddr,
-                                            ((uint32_t) MCSPI_DMA_RX_EVENT | (uint32_t) MCSPI_DMA_TX_EVENT),
-                                            chNum);
-                        }
-                        else
-                        {
-                            ret_flag = 1u;
-                            retMcHandle = NULL;
-                        }
+                        McSPIDMADisable(hwAttrs->baseAddr,
+                                        ((uint32_t) MCSPI_DMA_RX_EVENT | (uint32_t) MCSPI_DMA_TX_EVENT),
+                                        chNum);
                     }
-    #endif
+                    else
+                    {
+                        ret_flag = 1u;
+                        retMcHandle = NULL;
+                    }
+                }
+#endif
                     if(ret_flag == 0u)
                     {
                         /* Reset SPI Peripheral */
