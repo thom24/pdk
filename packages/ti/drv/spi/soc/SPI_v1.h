@@ -143,6 +143,12 @@ typedef struct SPI_dmaInfo_s {
     void            *rxRingMem;
     /*! UDMA RX completion queue ring memory pointer */
     void            *cqRxRingMem;
+    /*! Flag to indicate using TR, instead of HPD */
+    uint32_t         useTR;
+    /*! UDMA TX TR memory pointersm, used when useTR is true */
+    void            *txTrpdMem;
+    /*! UDMA RX TR memory pointers, used when useTR is true */
+    void            *rxTrpdMem;
     /*! UDMA TX PD memory pointers */
     void            *txHpdMem;
     /*! UDMA RX PD memory pointers */
@@ -151,7 +157,13 @@ typedef struct SPI_dmaInfo_s {
     void            *txEventHandle;
     /*! UDMA RX event handles */
     void            *rxEventHandle;
-
+    /*! Flag to enable TR Trigger */
+    uint32_t         useTrTrigger;
+    /*! Type of Trigger, one of CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0
+        or CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1 */
+    uint32_t         triggerType;
+    /*! Flag to enable reloading of TR for indefinitely */
+    uint32_t         enableReloadTR;
 } SPI_dmaInfo;
 
 /*!
@@ -231,7 +243,6 @@ typedef struct SPI_v1_chObject_s {
                                                2: 4 bytes per SPI transfer word */
     uint32_t           dmaCbCheck;          /* dma callback flag */
     uint32_t           navssHandle;         /* NAVSS handle for K3 DMA driver */
-
 } SPI_v1_chObject;
 
 

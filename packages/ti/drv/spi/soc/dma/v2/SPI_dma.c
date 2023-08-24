@@ -72,7 +72,7 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
     SPI_dmaInfo       *pDmaInfo;
     uint32_t           chNum;
     Udma_DrvHandle     drvHandle;
-    uint32_t           chType;
+    uint32_t           txChType, rxChType;
     Udma_ChPrms        chPrms;
     Udma_ChTxPrms      txPrms;
     Udma_ChRxPrms      rxPrms;
@@ -91,8 +91,8 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
     chNum      = mcHandle->chnNum;
 
     /* Init TX channel parameters */
-    chType = UDMA_CH_TYPE_PDMA_TX;
-    UdmaChPrms_init(&chPrms, chType);
+    txChType = UDMA_CH_TYPE_PDMA_TX;
+    UdmaChPrms_init(&chPrms, txChType);
     chPrms.peerChNum            = hwAttrs->txDmaEventNumber + chNum;
     chPrms.fqRingPrms.ringMem   = pDmaInfo->txRingMem;
     chPrms.cqRingPrms.ringMem   = pDmaInfo->cqTxRingMem;
@@ -100,13 +100,13 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
     chPrms.cqRingPrms.elemCnt   = 1;
 
     /* Open TX channel for transmit */
-    retVal = Udma_chOpen(drvHandle, txChHandle, chType, &chPrms);
+    retVal = Udma_chOpen(drvHandle, txChHandle, txChType, &chPrms);
 
     if(UDMA_SOK == retVal)
     {
         /* Init RX channel parameters */
-        chType = UDMA_CH_TYPE_PDMA_RX;
-        UdmaChPrms_init(&chPrms, chType);
+        rxChType = UDMA_CH_TYPE_PDMA_RX;
+        UdmaChPrms_init(&chPrms, rxChType);
         chPrms.peerChNum            = hwAttrs->rxDmaEventNumber + chNum;
         chPrms.fqRingPrms.ringMem   = pDmaInfo->rxRingMem;
         chPrms.cqRingPrms.ringMem   = pDmaInfo->cqRxRingMem;
@@ -114,18 +114,26 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
         chPrms.cqRingPrms.elemCnt   = 1;
 
         /* Open RX channel for transmit */
-        retVal = Udma_chOpen(drvHandle, rxChHandle, chType, &chPrms);
+        retVal = Udma_chOpen(drvHandle, rxChHandle, rxChType, &chPrms);
     }
 
     if(UDMA_SOK == retVal)
     {
-        UdmaChTxPrms_init(&txPrms, chType);
+        UdmaChTxPrms_init(&txPrms, txChType);
+        if (pDmaInfo->useTR)
+        {
+            /**
+             * Channel needs to be programmed as Third Party DMA channel
+             * in order to transfer data by submitting TR's
+             */
+            txPrms.chanType         = TISCI_MSG_VALUE_RM_UDMAP_CH_TYPE_3P_DMA_REF;
+        }
         retVal = Udma_chConfigTx(txChHandle, &txPrms);
     }
 
     if(UDMA_SOK == retVal)
     {
-        UdmaChRxPrms_init(&rxPrms, chType);
+        UdmaChRxPrms_init(&rxPrms, rxChType);
         retVal = Udma_chConfigRx(rxChHandle, &rxPrms);
     }
 
@@ -138,7 +146,7 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
         eventPrms.eventType         = UDMA_EVENT_TYPE_DMA_COMPLETION;
         eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
         eventPrms.chHandle          = txChHandle;
-        eventPrms.masterEventHandle = NULL;
+        eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(drvHandle);
         eventPrms.eventCb           = &MCSPI_dmaTxIsrHandler;
         eventPrms.appData           = (void *)mcHandle;
         retVal = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
@@ -153,7 +161,7 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
         eventPrms.eventType         = UDMA_EVENT_TYPE_DMA_COMPLETION;
         eventPrms.eventMode         = UDMA_EVENT_MODE_SHARED;
         eventPrms.chHandle          = rxChHandle;
-        eventPrms.masterEventHandle = NULL;
+        eventPrms.masterEventHandle = Udma_eventGetGlobalHandle(drvHandle);
         eventPrms.eventCb           = &MCSPI_dmaRxIsrHandler;
         eventPrms.appData           = (void *)mcHandle;
         retVal = Udma_eventRegister(drvHandle, eventHandle, &eventPrms);
@@ -168,6 +176,146 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
         status = SPI_STATUS_ERROR;
     }
     return(status);
+}
+
+static void MCSPI_udmaTrpdInit(Udma_ChHandle  chHandle,
+                               SPI_dmaInfo   *pDmaInfo,
+                               uint8_t       *pTrpdMem,
+                               uint64_t       bufPtr,
+                               uint32_t       elemSize,
+                               uint32_t       length)
+{
+    CSL_UdmapCppi5TRPD *pTrpd = (CSL_UdmapCppi5TRPD *) pTrpdMem;
+    uint32_t descType = (uint32_t)CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR;
+    uint32_t cqRingNum = Udma_chGetCqRingNum(chHandle);
+    CSL_UdmapTR1 *pTr = (CSL_UdmapTR1 *)(pTrpdMem + sizeof(CSL_UdmapTR15));
+    uint32_t *pTrResp =
+                (uint32_t *) (pTrpdMem + (sizeof(CSL_UdmapTR15) *
+                                         (2u)));
+
+    /* Setup descriptor */
+    CSL_udmapCppi5SetDescType(pTrpd, descType);
+
+    CSL_udmapCppi5TrSetReload(pTrpd, FALSE, 0U);
+    /* Since each TRPD will always have only one TR */
+    CSL_udmapCppi5SetPktLen(pTrpd, descType, 1U);
+    /* Flow ID and Packet ID */
+    CSL_udmapCppi5SetIds(pTrpd, descType, 0U, (uint32_t)1234);
+    CSL_udmapCppi5SetSrcTag(pTrpd, 0x0044);             /* Not used */
+    CSL_udmapCppi5SetDstTag(pTrpd, 0x0416);             /* Not used */
+    CSL_udmapCppi5TrSetEntryStride(pTrpd,
+        CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_64B);
+    CSL_udmapCppi5SetReturnPolicy(pTrpd,
+        descType,
+        /* Don't care for TR */
+        CSL_UDMAP_CPPI5_PD_PKTINFO2_RETPOLICY_VAL_ENTIRE_PKT,
+        CSL_UDMAP_CPPI5_PD_PKTINFO2_EARLYRET_VAL_NO,
+        CSL_UDMAP_CPPI5_PD_PKTINFO2_RETPUSHPOLICY_VAL_TO_TAIL,
+        cqRingNum);
+
+    if (pDmaInfo->enableReloadTR)
+    {
+        /* Reload indefinately */
+        CSL_udmapCppi5TrSetReload((CSL_UdmapCppi5TRPD*)pTrpd, 0x1FF, 0U);
+    }
+
+    /* Initialize TR packet: Start */
+    /* Setup TR */
+    /* Bit fields::
+       Bit No.->Info
+       3:0->Type: 2D transfer
+       7:6->Event Size: Event is only generated with the TR is complete
+       9:8->Trigger0: No Trigger
+       10:11->Trigger0 Type:
+                    The second inner most loop (ICNT1) will be decremented by 1.
+       13:12->Trigger1: No Trigger
+       15:14->Trigger1 Type:
+                    The second inner most loop (ICNT1) will be decremented by 1.
+       23:16->Command ID: The Command ID for the TR
+       31:24->Conf Flags: Configuration Specific Flags
+       */
+    pTr->flags = 0U;
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_TYPE,
+                            CSL_UDMAP_TR_FLAGS_TYPE_2D_DATA_MOVE);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_STATIC, FALSE);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_EOL, (uint32_t)1u);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_EVENT_SIZE,
+        CSL_UDMAP_TR_FLAGS_EVENT_SIZE_COMPLETION);
+
+    if (pDmaInfo->useTrTrigger)
+    {
+        if (pDmaInfo->triggerType == CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0)
+        {
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0);
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0_TYPE,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT1_DEC);
+        }
+        else
+        {
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_NONE);
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0_TYPE,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL);
+        }
+        if (pDmaInfo->triggerType == CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1)
+        {
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL1);
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1_TYPE,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT1_DEC);
+        }
+        else
+        {
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_NONE);
+            pTr->flags |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1_TYPE,
+                CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL);
+        }
+    }
+    else
+    {
+        pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0,
+                                CSL_UDMAP_TR_FLAGS_TRIGGER_NONE);
+        pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0_TYPE,
+                                CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL);
+        pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1,
+                                CSL_UDMAP_TR_FLAGS_TRIGGER_NONE);
+        pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1_TYPE,
+                                CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL);
+    }
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_CMD_ID, 0x25);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_SA_INDIRECT, (uint32_t)0U);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_DA_INDIRECT, (uint32_t)0U);
+    pTr->flags   |= CSL_FMK(UDMAP_TR_FLAGS_EOP, (uint32_t)1U);
+
+    if (pDmaInfo->enableReloadTR)
+    {
+        pTr->icnt0    = length;
+        pTr->icnt1    = 1u;
+        pTr->dim1     = pTr->icnt0;
+    }
+    else
+    {
+        pTr->icnt0    = elemSize;
+        pTr->icnt1    = length/elemSize;
+        pTr->dim1     = pTr->icnt0;
+    }
+
+    /* Destination address does not needed to be programmed,
+       this will overwritten in Queue */
+    pTr->addr     = (uint64_t) (bufPtr);
+
+    /* Clear TR response memory */
+    *pTrResp = 0xFFFFFFFFU;
+
+    if(MCSPI_dmaIsCacheCoherent() != TRUE)
+    {
+        CacheP_wbInv((void *)pTrpdMem,
+            (int32_t)(sizeof(CSL_UdmapTR15) * 2U) + 4u);
+    }
+
+    return;
 }
 
 static void MCSPI_udmaHpdInit(Udma_ChHandle  chHandle,
@@ -219,8 +367,10 @@ static int32_t MCSPI_dmaTx(MCSPI_Handle   mcHandle,
     SPI_HWAttrs const *hwAttrs;
     SPI_dmaInfo       *pDmaInfo;
     uint32_t           chNum;
+    uint32_t           elemSize;
     Udma_ChPdmaPrms    pdmaPrms;
     uint8_t           *pHpdMem;
+    uint8_t           *pTrpdMem;
     Udma_ChHandle      txChHandle;
 
     /* Get the pointer to the object and hwAttrs */
@@ -262,12 +412,27 @@ static int32_t MCSPI_dmaTx(MCSPI_Handle   mcHandle,
 
     if(UDMA_SOK == retVal)
     {
-        /* Update host packet descriptor */
-        pHpdMem = (uint8_t *) pDmaInfo->txHpdMem;
-        MCSPI_udmaHpdInit(txChHandle, pHpdMem, srcBuf, length);
+        if (pDmaInfo->useTR)
+        {
+            elemSize = (1 << object->chObject[chNum].wordLenShift);
+            /* Update TR descriptor */
+            pTrpdMem = (uint8_t *) pDmaInfo->txTrpdMem;
+            MCSPI_udmaTrpdInit(txChHandle, pDmaInfo, pTrpdMem,
+                srcBuf, elemSize, length);
 
-        /* Submit HPD to channel */
-        retVal = Udma_ringQueueRaw(Udma_chGetFqRingHandle(txChHandle), (uint64_t) pHpdMem);
+            /* Submit TRPD to channel */
+            retVal = Udma_ringQueueRaw(Udma_chGetFqRingHandle(txChHandle), (uint64_t) pTrpdMem);
+        }
+        else
+        {
+            /* Update host packet descriptor */
+            pHpdMem = (uint8_t *) pDmaInfo->txHpdMem;
+            MCSPI_udmaHpdInit(txChHandle, pHpdMem, srcBuf, length);
+
+            /* Submit HPD to channel */
+            retVal = Udma_ringQueueRaw(Udma_chGetFqRingHandle(txChHandle), (uint64_t) pHpdMem);
+        }
+
     }
 
     return (retVal);
