@@ -83,12 +83,12 @@ int32_t MCSPI_dmaConfig(MCSPI_Handle mcHandle)
 
     /* Get the pointer to the object and hwAttrs */
     handle     = mcHandle->handle;
+    chNum      = mcHandle->chnNum;
     hwAttrs    = (SPI_HWAttrs const *)handle->hwAttrs;
-    pDmaInfo   = hwAttrs->dmaInfo;
+    pDmaInfo   = hwAttrs->chnCfg[chNum].dmaInfo;
     drvHandle  = (Udma_DrvHandle)(hwAttrs->edmaHandle);
     txChHandle = (Udma_ChHandle)(pDmaInfo->txChHandle);
     rxChHandle = (Udma_ChHandle)(pDmaInfo->rxChHandle);
-    chNum      = mcHandle->chnNum;
 
     /* Init TX channel parameters */
     txChType = UDMA_CH_TYPE_PDMA_TX;
@@ -375,10 +375,10 @@ static int32_t MCSPI_dmaTx(MCSPI_Handle   mcHandle,
 
     /* Get the pointer to the object and hwAttrs */
     handle   = mcHandle->handle;
-    hwAttrs  = (SPI_HWAttrs const *)handle->hwAttrs;
-    pDmaInfo = hwAttrs->dmaInfo;
-    txChHandle = (Udma_ChHandle)(pDmaInfo->txChHandle);
     chNum    = mcHandle->chnNum;
+    hwAttrs  = (SPI_HWAttrs const *)handle->hwAttrs;
+    pDmaInfo = hwAttrs->chnCfg[chNum].dmaInfo;
+    txChHandle = (Udma_ChHandle)(pDmaInfo->txChHandle);
     object   = (SPI_v1_Object *)handle->object;
 
     UdmaChPdmaPrms_init(&pdmaPrms);
@@ -454,10 +454,10 @@ static int32_t MCSPI_dmaRx(MCSPI_Handle   mcHandle,
 
     /* Get the pointer to the object and hwAttrs */
     handle   = mcHandle->handle;
-    hwAttrs  = (SPI_HWAttrs const *)handle->hwAttrs;
-    pDmaInfo = hwAttrs->dmaInfo;
-    rxChHandle = (Udma_ChHandle)(pDmaInfo->rxChHandle);
     chNum    = mcHandle->chnNum;
+    hwAttrs  = (SPI_HWAttrs const *)handle->hwAttrs;
+    pDmaInfo = hwAttrs->chnCfg[chNum].dmaInfo;
+    rxChHandle = (Udma_ChHandle)(pDmaInfo->rxChHandle);
     object   = (SPI_v1_Object *)handle->object;
 
     UdmaChPdmaPrms_init(&pdmaPrms);
@@ -565,14 +565,16 @@ void MCSPI_dmaTransfer(MCSPI_Handle     mcHandle,
 
 void MCSPI_dmaFreeChannel(MCSPI_Handle mcHandle)
 {
+    uint32_t           chNum;
     SPI_Handle         handle;
     SPI_HWAttrs const *hwAttrs;
     SPI_dmaInfo       *pDmaInfo;
 
     /* Get the pointer to the object and hwAttrs */
     handle   = mcHandle->handle;
+    chNum    = mcHandle->chnNum;
     hwAttrs  = (SPI_HWAttrs const *)handle->hwAttrs;
-    pDmaInfo = hwAttrs->dmaInfo;
+    pDmaInfo = hwAttrs->chnCfg[chNum].dmaInfo;
 
     /* Close the TX channel */
     (void)Udma_eventUnRegister((Udma_EventHandle)(pDmaInfo->txEventHandle));
@@ -597,6 +599,7 @@ static void MCSPI_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
     uint32_t             intStatus;
     uint64_t             pDesc = 0;
     int32_t              status;
+    SPI_dmaInfo         *pDmaInfo;
     Udma_ChHandle        txChHandle;
 
     if(appData != NULL)
@@ -609,14 +612,15 @@ static void MCSPI_dmaTxIsrHandler(Udma_EventHandle  eventHandle,
         chObj    = &(object->chObject[chNum]);
         hwAttrs  = (SPI_HWAttrs const *)handle->hwAttrs;
         chnCfg   = &(hwAttrs->chnCfg[chNum]);
-        txChHandle = (Udma_ChHandle)(hwAttrs->dmaInfo->txChHandle);
+        pDmaInfo = chnCfg->dmaInfo;
+        txChHandle = (Udma_ChHandle)(pDmaInfo->txChHandle);
 
         /* Update the transaction status and word count transfered */
         if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
         {
             if(MCSPI_dmaIsCacheCoherent() != TRUE)
             {
-                CacheP_Inv((const void *)hwAttrs->dmaInfo->cqTxRingMem, (int32_t)(sizeof(void *)));
+                CacheP_Inv((const void *)pDmaInfo->cqTxRingMem, (int32_t)(sizeof(void *)));
             }
             /*
              * Dequeue the descriptor from the TX completion queue
@@ -686,14 +690,14 @@ static void MCSPI_dmaRxIsrHandler(Udma_EventHandle  eventHandle,
         chObj    = &(object->chObject[chNum]);
         hwAttrs  = (SPI_HWAttrs const *)handle->hwAttrs;
         chnCfg   = &(hwAttrs->chnCfg[chNum]);
-        rxChHandle = (Udma_ChHandle)(hwAttrs->dmaInfo->rxChHandle);
+        rxChHandle = (Udma_ChHandle)(hwAttrs->chnCfg[chNum].dmaInfo->rxChHandle);
 
         /* Update the transaction status and word count transfered */
         if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
         {
             if(MCSPI_dmaIsCacheCoherent() != TRUE)
             {
-                CacheP_Inv((const void *)hwAttrs->dmaInfo->cqRxRingMem, (int32_t)(sizeof(void *)));
+                CacheP_Inv((const void *)hwAttrs->chnCfg[chNum].dmaInfo->cqRxRingMem, (int32_t)(sizeof(void *)));
             }
             /*
              * Dequeue the descriptor from the RX completion queue

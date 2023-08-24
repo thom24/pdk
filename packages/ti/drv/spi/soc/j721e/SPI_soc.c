@@ -68,24 +68,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,       /* dataLineCommMode */
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,   /* tcs */
                     MCSPI_TX_RX_MODE,                  /* trMode */
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MCU_MCSPI0_CH0_RX,      /* rxDmaEventNumber */
@@ -96,7 +104,6 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,                                  /* edmaRxTC */
             NULL,                               /* edmaHandle */
             (bool)false,                        /* dmaMode */
-            NULL                                /* dmaInfo */
         },
         {
             (uint32_t)CSL_MCU_MCSPI1_CFG_BASE,
@@ -116,24 +123,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MCU_MCSPI1_CH0_RX,
@@ -143,8 +158,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
         {
             (uint32_t)CSL_MCU_MCSPI2_CFG_BASE,
@@ -164,24 +178,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MCU_MCSPI2_CH0_RX,
@@ -191,8 +213,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
     },
     /* MAIN Domain MCSPI Instances */
@@ -215,24 +236,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,       /* dataLineCommMode */
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,   /* tcs */
                     MCSPI_TX_RX_MODE,                  /* trMode */
+                    NULL,                               /* edmaHandle */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI0_CH0_RX,     /* rxDmaEventNumber */
@@ -242,8 +271,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,                                  /* edmaTxTC */
             0,                                  /* edmaRxTC */
             NULL,                               /* edmaHandle */
-            (bool)false,                        /* dmaMode */
-            NULL                                /* dmaInfo */
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI1_CFG_BASE,
@@ -263,24 +291,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI1_CH0_RX,
@@ -290,8 +326,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI2_CFG_BASE,
@@ -311,24 +346,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI2_CH0_RX,
@@ -338,8 +381,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI3_CFG_BASE,
@@ -359,24 +401,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI3_CH0_RX,
@@ -386,8 +436,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI4_CFG_BASE,
@@ -407,24 +456,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI4_CH0_RX,
@@ -434,8 +491,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI5_CFG_BASE,
@@ -455,24 +511,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI5_CH0_RX,
@@ -482,8 +546,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI6_CFG_BASE,
@@ -503,24 +566,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI6_CH0_RX,
@@ -530,8 +601,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI7_CFG_BASE,
@@ -551,24 +621,32 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
                     MCSPI_DATA_LINE_COMM_MODE_7,
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
+                    NULL,                              /* dmaInfo */
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI7_CH0_RX,
@@ -578,8 +656,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            (bool)false,
-            NULL
+            (bool)false
         },
     },
 };

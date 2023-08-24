@@ -334,7 +334,7 @@ static void App_print(const char *str)
     return;
 }
 
-Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg)
+Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg, uint32_t chn)
 {
     int32_t         retVal = UDMA_SOK;
     Udma_InitPrms   initPrms;
@@ -376,7 +376,7 @@ Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg)
         gUdmaInfo.rxHpdMem       = (void *)&gUdmaRxHpdMem[0];
         gUdmaInfo.txEventHandle  = (void *)&gUdmaTxCqEventObj;
         gUdmaInfo.rxEventHandle  = (void *)&gUdmaRxCqEventObj;
-        cfg->dmaInfo             = &gUdmaInfo;
+        cfg->chnCfg[chn].dmaInfo = &gUdmaInfo;
     }
     else
     {
@@ -645,7 +645,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
         {
             /* Set the DMA related init config */
 #if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-            spi_cfg.edmaHandle = (void *)MCSPIApp_udmaInit(&spi_cfg);
+            spi_cfg.edmaHandle = (void *)MCSPIApp_udmaInit(&spi_cfg, chn);
 #else
             spi_cfg.edmaHandle = MCSPIApp_edmaInit();
 #endif

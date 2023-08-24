@@ -113,21 +113,6 @@ typedef enum spiOperMode_s {
 } spiOperMode;
 
 /*!
- *  @brief  SPI_v1 channel configurations
- */
-typedef struct SPI_v1_ChnCfg_s {
-    /*! Polarity of the chip select signal */
-    uint32_t csPolarity;
-    /*! data lines mode : which lines are used for tx */
-    uint32_t dataLineCommMode;
-    /*! SPI_v1 chip-select time control */
-    uint32_t tcs;
-    /*! channel transmit/receive mode */
-    uint32_t trMode;
-
-} SPI_v1_ChnCfg;
-
-/*!
  *  @brief  SPI UDMA info structure
  */
 typedef struct SPI_dmaInfo_s {
@@ -165,6 +150,24 @@ typedef struct SPI_dmaInfo_s {
     /*! Flag to enable reloading of TR for indefinitely */
     uint32_t         enableReloadTR;
 } SPI_dmaInfo;
+
+/*!
+ *  @brief  SPI_v1 channel configurations
+ */
+typedef struct SPI_v1_ChnCfg_s {
+    /*! Polarity of the chip select signal */
+    uint32_t csPolarity;
+    /*! data lines mode : which lines are used for tx */
+    uint32_t dataLineCommMode;
+    /*! SPI_v1 chip-select time control */
+    uint32_t tcs;
+    /*! channel transmit/receive mode */
+    uint32_t trMode;
+    /*! DMA configuration info */
+    SPI_dmaInfo  *dmaInfo;
+    /*! Flag to enable/disable FIFO */
+    uint32_t      enableFIFO;
+} SPI_v1_ChnCfg;
 
 /*!
  *  @brief  SPI_v1 Hardware attributes
@@ -216,8 +219,6 @@ typedef struct SPI_v1_HWAttrs_s {
     void         *edmaHandle;
     /*! flag to indicate in DMA mode, not used for non-DMA lib  */
     bool          dmaMode;
-    /*! DMA configuration info */
-    SPI_dmaInfo  *dmaInfo;
 
 } SPI_v1_HWAttrs;
 
@@ -262,7 +263,7 @@ typedef struct SPI_v1_Object_s {
     uint32_t         txTrigLvl;           /* TX FIFO almost empty level */
     uint32_t         rxTrigLvl;           /* RX FIFO almost full level */
 
-    MCSPI_Handle     mcHandle;            /* multi-channel handle of the opened channel 
+    MCSPI_Handle     mcHandle;            /* multi-channel handle of the opened channel
                                              per instance for backward compatibility */
     uint32_t         chOpenedCnt;         /* Opened channel count */
     SPI_Mode         mode;                /* saved SPI master/slave mode for the instance opened */

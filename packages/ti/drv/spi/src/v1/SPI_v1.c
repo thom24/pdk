@@ -550,8 +550,16 @@ void MCSPI_xferSetup_v1(MCSPI_Handle mcHandle, SPI_Transaction *transaction)
             object->fifoSize = MCSPI_FULL_FIFO_SIZE;
         }
     }
-    McSPITxFIFOConfig(hwAttrs->baseAddr, txFifo, chNum);
-    McSPIRxFIFOConfig(hwAttrs->baseAddr, rxFifo, chNum);
+    if (0 == chnCfg->enableFIFO)
+    {
+        McSPITxFIFOConfig(hwAttrs->baseAddr, MCSPI_TX_FIFO_DISABLE, chNum);
+        McSPIRxFIFOConfig(hwAttrs->baseAddr, MCSPI_RX_FIFO_DISABLE, chNum);
+    }
+    else
+    {
+        McSPITxFIFOConfig(hwAttrs->baseAddr, txFifo, chNum);
+        McSPIRxFIFOConfig(hwAttrs->baseAddr, rxFifo, chNum);
+    }
 
     if (object->fifoSize > 0U)
     {
