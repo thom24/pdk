@@ -37,24 +37,24 @@ SRCS_COMMON += main_mcspi_slave_mode.c SPI_log.c
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
+ifeq ($(BUILD_OS_TYPE), baremetal)
+    EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu.lds
+endif
+ifeq ($(BUILD_OS_TYPE), freertos)
+    EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_freertos.lds
+endif
+
 ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
     ifeq ($(CORE), mcu2_1)
         # Slave running on mcu2_1 core
         CFLAGS_SPI_MS     = -DMCSPI_SLAVE_TASK
-        APP_MASTER_SLAVE  = Slave
-        ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
-            # Slave uses local linker command file to avoid code/data memory conflict with master application
-            ifeq ($(BUILD_OS_TYPE), baremetal)
-                EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu.lds
-            endif
-            ifeq ($(BUILD_OS_TYPE), freertos)
-                EXTERNAL_LNKCMD_FILE_LOCAL =  $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/linker_mcu_freertos.lds
-            endif
-        endif
+        APP_MASTER_SLAVE  = slave
+        APPEND_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/slave_linker_append_r5f.cmd
     else
         # Master running on mcu2_0 core, use the common linker command file in build
         CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK
         APP_MASTER_SLAVE  = Master
+        APPEND_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/master_linker_append_r5f.cmd
     endif
 endif
 

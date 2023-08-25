@@ -28,6 +28,19 @@ __ABORT_STACK_SIZE = 0x0100;
 __UND_STACK_SIZE   = 0x0100;
 __SVC_STACK_SIZE   = 0x0100;
 
+#define DDR0_ALLOCATED_START 0x80000000
+#define DDR0_ALLOCATED_SIZE  0x10000000
+
+#define OCMC_ALLOCATED_START 0x41C00100
+#define OCMC_ALLOCATED_SIZE  0x00001000
+
+#define MCU2_0_DDR0_ALLOCATED_START   DDR0_ALLOCATED_START
+#define MCU2_0_OCMC_ALLOCATED_START   OCMC_ALLOCATED_START
+
+
+#define MCU2_1_DDR0_ALLOCATED_START   MCU2_0_DDR0_ALLOCATED_START + DDR0_ALLOCATED_SIZE
+#define MCU2_1_OCMC_ALLOCATED_START   MCU2_0_OCMC_ALLOCATED_START + OCMC_ALLOCATED_SIZE
+
 /*--------------------------------------------------------------------------*/
 /*                               Memory Map                                 */
 /*--------------------------------------------------------------------------*/
@@ -46,7 +59,8 @@ MEMORY
     /*- Refer user guide for details on persistence of these sections -*/
     OCMC_RAM_BOARD_CFG   (RWIX) : ORIGIN = 0x41C80000 LENGTH = 0x00002000
     OCMC_RAM_SCISERVER   (RWIX) : ORIGIN = 0x41C82000 LENGTH = 0x00060000
-    OCMC_RAM             (RWIX) : ORIGIN = 0x41CE3100 LENGTH = 0x0001AA00
+    MCSPI_MASTER_OCMC_RAM (RWIX) : ORIGIN = MCU2_0_OCMC_ALLOCATED_START LENGTH = OCMC_ALLOCATED_SIZE
+    MCSPI_SLAVE_OCMC_RAM (RWIX) : ORIGIN = MCU2_1_OCMC_ALLOCATED_START LENGTH = OCMC_ALLOCATED_SIZE
     OCMC_RAM_X509_HEADER (RWIX) : ORIGIN = 0x41CFDB00 LENGTH = 0x00000500
 
     /*========================J784S4 MCMS3 LOCATIONS ===================*/
@@ -57,59 +71,6 @@ MEMORY
     MSMC3_DMSC_FW  (RWIX)       : ORIGIN=0x707F0000 LENGTH=0x10000         /* 64KB */
 
     /*======================= J784S4 DDR LOCATION =======================*/
-    DDR0 (RWIX)                 : ORIGIN = 0x88000000 LENGTH = 0x8000000   /* 128 MB */
-}
-
-/*--------------------------------------------------------------*/
-/*                     Section Configuration                    */
-/*--------------------------------------------------------------*/
-SECTIONS
-{
-    .freertosrstvectors      : {} palign(8)      > VECTORS
-    .bootCode        : {} palign(8)      > OCMC_RAM
-    .startupCode     : {} palign(8)      > OCMC_RAM
-    .startupData     : {} palign(8)      > OCMC_RAM, type = NOINIT
-    .text            : {} palign(8)      > DDR0
-    GROUP {
-        .text.hwi    : palign(8)
-        .text.cache  : palign(8)
-        .text.mpu    : palign(8)
-        .text.boot   : palign(8)
-    }                                    > DDR0
-    .const           : {} palign(8)      > DDR0
-    .rodata          : {} palign(8)      > DDR0
-    .cinit           : {} palign(8)      > DDR0
-    .bss             : {} align(4)       > DDR0
-    .far             : {} align(4)       > DDR0
-    .data            : {} palign(128)    > DDR0
-    .sysmem          : {}                > DDR0
-    .data_buffer     : {} palign(128)    > DDR0
-    .bss.devgroup    : {*(.bss.devgroup*)} align(4)       > DDR0
-    .const.devgroup  : {*(.const.devgroup*)} align(4)     > DDR0
-    .boardcfg_data   : {} align(4)       > DDR0
-
-    /* USB or any other LLD buffer for benchmarking */
-    .benchmark_buffer (NOLOAD) {} ALIGN (8) > DDR0
-
-    .stack      : {} align(4)                               > DDR0  (HIGH)
-
-    .irqStack   : {. = . + __IRQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
-    RUN_START(__IRQ_STACK_START)
-    RUN_END(__IRQ_STACK_END)
-
-    .fiqStack   : {. = . + __FIQ_STACK_SIZE;} align(4)      > DDR0  (HIGH)
-    RUN_START(__FIQ_STACK_START)
-    RUN_END(__FIQ_STACK_END)
-
-    .abortStack : {. = . + __ABORT_STACK_SIZE;} align(4)    > DDR0  (HIGH)
-    RUN_START(__ABORT_STACK_START)
-    RUN_END(__ABORT_STACK_END)
-
-    .undStack   : {. = . + __UND_STACK_SIZE;} align(4)      > DDR0  (HIGH)
-    RUN_START(__UND_STACK_START)
-    RUN_END(__UND_STACK_END)
-
-    .svcStack   : {. = . + __SVC_STACK_SIZE;} align(4)      > DDR0  (HIGH)
-    RUN_START(__SVC_STACK_START)
-    RUN_END(__SVC_STACK_END)
+    MCSPI_MASTER_DDR0 (RWIX)    : ORIGIN = MCU2_0_DDR0_ALLOCATED_START LENGTH = DDR0_ALLOCATED_SIZE   /* 128 MB */
+    MCSPI_SLAVE_DDR0 (RWIX)     : ORIGIN = MCU2_1_DDR0_ALLOCATED_START LENGTH = DDR0_ALLOCATED_SIZE   /* 128 MB */
 }
