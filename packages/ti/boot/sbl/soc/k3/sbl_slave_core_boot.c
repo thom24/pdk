@@ -83,6 +83,55 @@
 #define SBL_DISABLE_MCU_LOCKSTEP    (0)
 #define SBL_ENABLE_MCU_LOCKSTEP     (1)
 
+int32_t c7xCoreID[]={DSP1_C7X_ID,DSP2_C7X_ID,DSP3_C7X_ID,DSP4_C7X_ID};
+
+/* List of device that shares DSP power domain*/
+int32_t c7xLpscSharedDevid[4][2] =
+{
+    {
+#if defined(SOC_J7200)
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
+#elif defined(SOC_J721S2) || defined(SOC_J721E)
+        TISCI_DEV_RTI16,
+        SBL_INVALID_ID
+#elif defined(SOC_J784S4)
+        TISCI_DEV_RTI16,
+        TISCI_DEV_COMPUTE_CLUSTER0_C71SS0_CORE0
+#endif
+    },
+    {
+#if defined(SOC_J7200)
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
+#elif defined(SOC_J721S2) || defined(SOC_J721E)
+        TISCI_DEV_RTI16,
+        SBL_INVALID_ID
+#elif defined(SOC_J784S4)
+        TISCI_DEV_RTI17,
+        TISCI_DEV_COMPUTE_CLUSTER0_C71SS1_CORE0
+#endif
+    },
+    {
+#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J721E)
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
+#elif defined(SOC_J784S4)
+        TISCI_DEV_RTI18,
+        TISCI_DEV_COMPUTE_CLUSTER0_C71SS2_CORE0
+#endif
+    },
+    {
+#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J721E)
+        SBL_INVALID_ID,
+        SBL_INVALID_ID
+#elif defined(SOC_J784S4)
+        TISCI_DEV_RTI19,
+        TISCI_DEV_COMPUTE_CLUSTER0_C71SS3_CORE0
+#endif
+    }
+};
+
 /* Don't forget to update parameter OPP of the AVS   */
 /* setup function in SBL_SocLateInit if the CPU freq */
 /* are changed to a higher or lower operating  point */
@@ -904,15 +953,45 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             }
             break;
         default:
-            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
-            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
-            Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+            if (status == CSL_PASS) {
+                /* DSP LPSC's is shared among other devices.               */
+                /* Inorder to turnoff DSP cores, we need to make sure all  */
+                /* devices connected to DSP power domain is turned off     */
 
-            /* Release core */
-            if (requestCoresFlag == SBL_REQUEST_CORE)
-            {
-                SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
+                int32_t coreIdIndex = 0;
+                int32_t coreIdCount=sizeof(c7xCoreID)/sizeof(c7xCoreID[0]);
+                for (coreIdIndex = 0 ; coreIdIndex < coreIdCount; coreIdIndex++)
+                {
+                    if (core_id == c7xCoreID[coreIdIndex])
+                    {
+                        int32_t loopCount = 0;
+                        int32_t devIndex =0;
+
+                        loopCount=sizeof(c7xLpscSharedDevid[coreIdIndex])/sizeof(c7xLpscSharedDevid[coreIdIndex][0]);
+
+                        for (devIndex = 0; devIndex < loopCount; devIndex++)
+                        {
+                            int32_t devId = c7xLpscSharedDevid[coreIdIndex][devIndex];
+                            if (devId == SBL_INVALID_ID)
+                            {
+                                break;
+                            }
+                            SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", devId);
+                            Sciclient_pmSetModuleState(devId, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+                        }
+                    }
+                }
+
+                SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState Off, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
+                Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+                SBL_log(SBL_LOG_MAX, "Sciclient_pmSetModuleState On, DevId 0x%x... \n", sblSlaveCoreInfoPtr->tisci_dev_id);
+                Sciclient_pmSetModuleState(sblSlaveCoreInfoPtr->tisci_dev_id, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+
+                /* Release core */
+                if (requestCoresFlag == SBL_REQUEST_CORE)
+                {
+                    SBL_ReleaseCore(core_id, TISCI_MSG_FLAG_AOP);
+                }
             }
 
             break;
