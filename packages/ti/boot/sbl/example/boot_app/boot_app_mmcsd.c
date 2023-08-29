@@ -100,8 +100,16 @@ int32_t BootApp_MMCBootImageInit()
 
 void BootApp_MMCBootImageDeInit()
 {
+    int32_t retVal = E_PASS;
     FATFS_close(sbl_fatfsHandle);
     sbl_fatfsHandle = NULL;
+
+    /* Power OFF MMCSD before passing control to Linux */
+    retVal = Sciclient_pmSetModuleState(TISCI_DEV_MMCSD1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, TISCI_MSG_FLAG_AOP, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if (retVal != E_PASS)
+    {
+        UART_printf("Sciclient_pmSetModuleState failed to power OFF MMCSD !! \n");
+    }
 }
 
 int32_t BootApp_MMCBootImageLate(sblEntryPoint_t *pEntry, TCHAR *fileName)
