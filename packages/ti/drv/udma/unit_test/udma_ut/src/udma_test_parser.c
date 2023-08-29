@@ -1365,7 +1365,8 @@ static uint32_t udmaTestGetTestId(UdmaTestObj *testObj, uint32_t tcType)
     for(testCnt = 0U; testCnt < UDMA_TEST_NUM_TESTCASES; testCnt++)
     {
         testPrms = &gUdmaTestCases[testCnt];
-        if(FALSE != testPrms->enableTest && (tcType & testPrms->tcType))
+	    /* Prints enabled testcases */
+        if(FALSE != testPrms->enableTest && (tcType & testPrms->tcType) && ((testObj->runFlag & testPrms->runFlag) == testObj->runFlag))
         {
             GT_assert(testObj->traceMask, (NULL != testPrms->tcName));
             GT_2trace(testObj->traceMask, GT_INFO,
@@ -1390,13 +1391,15 @@ static uint32_t udmaTestGetTestId(UdmaTestObj *testObj, uint32_t tcType)
                     break;
                 }
             }
-            if(testId == gUdmaTestCases[testCnt].tcId)
-            {
+	        /* Returns testcase ID if user entered testcase ID is equal to gUdmaTestCases[testCnt].tcId */
+            if((testId == gUdmaTestCases[testCnt].tcId) && ((testObj->runFlag & gUdmaTestCases[testCnt].runFlag) == testObj->runFlag))
+	        {
                 break;
             }
         }
-
-        if(testCnt == UDMA_TEST_NUM_TESTCASES)
+	
+	    /* Prints Error Message if user entered testcase ID is not equal to gUdmaTestCases[testCnt].tcId */
+        if((testCnt == UDMA_TEST_NUM_TESTCASES) || ((testObj->runFlag & gUdmaTestCases[testCnt].runFlag) != testObj->runFlag))
         {
             GT_0trace(testObj->traceMask, GT_INFO,
                       "Invalid Test ID. Enter Again!!\n");
@@ -1438,3 +1441,4 @@ void udmaTestPrint(const char *str, ...)
 
     return;
 }
+
