@@ -114,6 +114,7 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_C7X_2 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_MCU_PROXY          (UDMA_TEST_RF_CORE_ALL)
 #define UDMA_TEST_RF_BCDMA              (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CFG_DEF)

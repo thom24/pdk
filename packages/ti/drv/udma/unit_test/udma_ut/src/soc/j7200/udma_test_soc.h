@@ -106,6 +106,8 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_MCU2_1 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_MCU_PROXY          (UDMA_TEST_RF_CORE_ALL)
+
 #define UDMA_TEST_RF_MCU_BC_INTERNAL_MEM (UDMA_TEST_RF_MCU_BC)
 #define UDMA_TEST_RF_DRU                (0U)
 /* Need at least two channels - so enable only for those cores */

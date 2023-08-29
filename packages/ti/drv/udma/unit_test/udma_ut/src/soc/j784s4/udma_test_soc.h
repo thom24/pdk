@@ -116,6 +116,19 @@ extern "C" {
                                          UDMA_TEST_RF_CORE_C7X_4 | \
                                          UDMA_TEST_RF_CORE_MCU1_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
+#define UDMA_TEST_RF_MCU_PROXY          (UDMA_TEST_RF_SOC | \
+                                         UDMA_TEST_RF_CORE_MPU1_0 | \
+                                         UDMA_TEST_RF_CORE_MCU2_0 | \
+                                         UDMA_TEST_RF_CORE_MCU2_1 | \
+                                         UDMA_TEST_RF_CORE_MCU3_0 | \
+                                         UDMA_TEST_RF_CORE_MCU3_1 | \
+                                         UDMA_TEST_RF_CORE_MCU4_0 | \
+                                         UDMA_TEST_RF_CORE_C7X_1 | \
+                                         UDMA_TEST_RF_CORE_C7X_2 | \
+                                         UDMA_TEST_RF_CORE_C7X_3 | \
+                                         UDMA_TEST_RF_CORE_C7X_4 | \
+                                         UDMA_TEST_RF_CORE_MCU1_0 | \
+                                         UDMA_TEST_RF_CFG_DEF)
 #define UDMA_TEST_RF_BCDMA              (UDMA_TEST_RF_SOC | \
                                          UDMA_TEST_RF_CORE_MCU2_0 | \
                                          UDMA_TEST_RF_CFG_DEF)
