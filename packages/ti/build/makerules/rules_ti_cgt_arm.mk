@@ -95,9 +95,14 @@ endif
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
   CFLAGS_INTERNAL = -c -Wall -Werror $(SUPRESS_WARNINGS_FLAG) -fno-strict-aliasing -$(RTSLIB_ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT) -g -mfloat-abi=hard
   ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
-    CFLAGS_INTERNAL += -mfpu=vfpv3-d16 -mcpu=cortex-r5 -march=armv7-r
-    # Enabling thumb2 mode
-    CFLAGS_INTERNAL +=
+    CFLAGS_INTERNAL += -mfpu=vfpv3-d16 -mcpu=cortex-r5
+    ifeq ($(COMPILE_MODE), thumb)
+      # Enabling thumb2 mode
+      CFLAGS_INTERNAL += -mthumb -march=thumbv7r
+    # else
+    #   # Enabling arm mode
+    #   CFLAGS_INTERNAL += -marm -march=armv7-r
+    endif
   else
     CFLAGS_INTERNAL += -mfpu=vfplib
   endif

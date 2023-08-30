@@ -248,7 +248,7 @@ void __attribute__((interrupt("UNDEF"), section(".text.hwi"))) HwiP_reserved_han
         ;
 }
 
-void __attribute__((interrupt("UNDEF"), section(".text.hwi"))) HwiP_undefined_handler(void)
+void __attribute__((section(".text.hwi"))) HwiP_undefined_handler_c(void)
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;
@@ -256,7 +256,7 @@ void __attribute__((interrupt("UNDEF"), section(".text.hwi"))) HwiP_undefined_ha
         ;
 }
 
-void __attribute__((interrupt("ABORT"), section(".text.hwi"))) HwiP_prefetch_abort_handler(void)
+void __attribute__((section(".text.hwi"))) HwiP_prefetch_abort_handler_c(void)
 {
     /* Go into an infinite loop.*/
     volatile uint32_t loop = 1;

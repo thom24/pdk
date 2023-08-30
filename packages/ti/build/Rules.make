@@ -87,6 +87,10 @@ export CORE
 # Supported Values: debug | release
 export BUILD_PROFILE ?= release
 
+# Default compile mode for R5 is thumb
+# Supported Values: thumb
+export COMPILE_MODE ?= thumb
+
 # Treat compiler warning as error
 # Supported Values: yes | no
 export TREAT_WARNINGS_AS_ERROR ?= yes
