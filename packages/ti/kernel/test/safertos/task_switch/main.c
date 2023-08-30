@@ -50,7 +50,7 @@
 #define MAIN_TASK_PRI  ( 4U )
 
 #if !defined (BUILD_C7X)
-#define MAIN_TASK_SIZE ( 4096U )
+#define MAIN_TASK_SIZE ( 8192u )
 #else
 #define MAIN_TASK_SIZE ( 32U * 1024U)
 #endif
@@ -59,7 +59,7 @@
 #if defined (BUILD_MCU)
 static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned( MAIN_TASK_SIZE ) ) );
 #else
-static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned(128) ) );
+static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned(MAIN_TASK_SIZE) ) );
 #endif
 /* Declare task TCB:
  * Due to the use of the MPU background region, by default, all RAM can only

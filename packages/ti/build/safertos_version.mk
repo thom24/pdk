@@ -18,7 +18,7 @@ endif
 
 ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm ))
   export SAFERTOS_j721s2_r5f_INSTALL_PATH = 
-  export SAFERTOS_j721s2_c7x_INSTALL_PATH =
+  export SAFERTOS_j721s2_c7x_INSTALL_PATH = 
 endif
 
 ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm ))
@@ -37,7 +37,7 @@ ifeq ($(BOARD),$(filter $(BOARD), j7200_evm ))
 endif
 ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm ))
   SAFERTOS_VERSION_r5f = 009-004-199-024-235-002
-  SAFERTOS_VERSION_c7x = 009-004-230-005-235-001
+  SAFERTOS_VERSION_c7x = 009-004-230-005-235-003
 endif
 ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm ))
   SAFERTOS_VERSION_r5f = 009-004-199-024-251-001

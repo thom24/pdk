@@ -48,6 +48,7 @@
 #endif
 
 #include "SafeRTOS_priv.h"
+#include "SafeRTOS_config.h"
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */

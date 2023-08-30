@@ -126,7 +126,8 @@ export safertos_CORE_DEPENDENCY
 export safertos_SOC_DEPENDENCY
 safertos_PKG_LIST = safertos
 export safertos_PKG_LIST
-safertos_INCLUDE =  ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT_$(ISA))
+safertos_INCLUDE = ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/checkpoints
+safertos_INCLUDE +=  ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT_$(ISA))
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/kernel/include_api
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))
 safertos_INCLUDE += ${SAFERTOS_KERNEL_INSTALL_PATH_${ISA}}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))/$(SAFERTOS_COMPILER_EXT_$(ISA))

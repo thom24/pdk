@@ -38,9 +38,6 @@
 /* --> axEventVectorTable */
 extern void* axEventVectorTable;
 
-/* --> axSecureEventVectorTable */
-extern void* axSecureEventVectorTable;
-
 /* vectorTableBase__C */
 #pragma DATA_SECTION(Hwi_vectorTableBase, ".const:Hwi_vectorTableBase");
 extern const void *Hwi_vectorTableBase;
@@ -50,6 +47,4 @@ const void * Hwi_vectorTableBase = ((const void *)((void*)&axEventVectorTable));
 /* vectorTableBase_SS__C */
 #pragma DATA_SECTION(Hwi_vectorTableBase_SS, ".const:Hwi_vectorTableBase_SS");
 extern const void * Hwi_vectorTableBase_SS;
-extern void (*secure_soft_reset)(void);
-const void * Hwi_vectorTableBase_SS = ((const void *)((void*)&axSecureEventVectorTable));
-
+const void * Hwi_vectorTableBase_SS = NULL;

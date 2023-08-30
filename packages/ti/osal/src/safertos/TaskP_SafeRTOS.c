@@ -35,6 +35,7 @@
 #include <ti/osal/TaskP.h>
 
 #include "SafeRTOS_priv.h"
+#include "SafeRTOS_config.h"
 
 portTaskHandleType TaskP_getSafeRTOSHandle( TaskP_Handle handle );
 

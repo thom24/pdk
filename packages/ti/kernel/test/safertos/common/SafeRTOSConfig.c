@@ -38,6 +38,7 @@
 
 /* Program Includes */
 #include "aborts.h"     /* Required for Hook Function Prototypes */
+#include "safertos_config.h"
 
 #include <string.h>
 #include <ti/osal/TimerP.h>

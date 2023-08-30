@@ -16,13 +16,15 @@ SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRT
 endif
 ifeq ($(ISA),$(filter $(ISA), c7x))
 SRCDIR += $(PDK_SAFERTOS_COMP_PATH)/TI_CGT/c7x
+SRCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/checkpoints
 endif
 
-INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT_$(ISA))
+INCDIR = ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/checkpoints
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/$(SAFERTOS_ISA_EXT_$(ISA))
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/api/PrivWrapperStd
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/config
-INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/kernel/include_api
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/kernel/include_prv
+INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/kernel/include_api
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))
 INCDIR += ${SAFERTOS_KERNEL_INSTALL_PATH_$(ISA)}/source_code_and_projects/SafeRTOS/portable/$(SAFERTOS_ISA_EXT_$(ISA))/$(SAFERTOS_COMPILER_EXT_$(ISA))
 ifeq ($(ISA),$(filter $(ISA), c7x))

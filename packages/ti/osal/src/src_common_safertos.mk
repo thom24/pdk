@@ -19,7 +19,7 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
                       build src/safertos/SafeRTOS_priv.h \
                       osalver.h \
-				      Safertos_Aborts.h
+				              Safertos_Aborts.h SafeRTOS_config.h
 
 ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
   SRCDIR      += soc/$(SOC)

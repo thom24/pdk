@@ -57,6 +57,7 @@ SECTIONS
         .KERNEL_FUNCTION LOAD_START( lnkKernelFuncStartAddr ),
                          LOAD_END( lnkKernelFuncEndAddr )
                                 : {} palign( 0x10000 )
+        .interrupt_vectors      : {} ALIGN(0x400000)
     } > C7X_DDR_SPACE
 
 /* Data sections. */

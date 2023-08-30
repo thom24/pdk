@@ -59,7 +59,7 @@
 #if defined (BUILD_MCU)
 static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned( MAIN_TASK_SIZE ) ) );
 #else
-static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned(128) ) );
+static portInt8Type  gMainTaskStack[MAIN_TASK_SIZE] __attribute__( ( aligned(0x2000) ) );
 #endif
 /* Declare task TCB:
  * Due to the use of the MPU background region, by default, all RAM can only

@@ -958,7 +958,7 @@ Err:
 #if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(APP_TSK_STACK_WRITE)));
 #else
-static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(32)));
+static uint8_t  gAppTskStackWrite[APP_TSK_STACK_WRITE] __attribute__((aligned(0x2000)));
 #endif
 /* Use a global variable to sync the read task and the write task */
 volatile bool taskSyncFlag;

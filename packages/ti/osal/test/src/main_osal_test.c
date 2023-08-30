@@ -272,7 +272,7 @@ TimerP_Handle handle;
 #if defined(SAFERTOS) && defined (BUILD_MCU)
 static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( APP_TSK_STACK_MAIN ))) = { 0 };
 #else
-static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( 32 )));
+static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( 0x2000 )));
 #endif
 #endif
 
@@ -370,7 +370,7 @@ bool OSAL_startup_hook_test()
 #if defined (BUILD_MCU) && defined (SAFERTOS)
 uint8_t gFloatingNoiseTaskStack[4*1024] __attribute__((aligned(4*1024)));
 #else
-uint8_t gFloatingNoiseTaskStack[32*1024] __attribute__(( aligned( 128 )));
+uint8_t gFloatingNoiseTaskStack[32*1024] __attribute__(( aligned( 0x2000 )));
 #endif
 SemaphoreP_Handle noiseSem, floatSem;
 

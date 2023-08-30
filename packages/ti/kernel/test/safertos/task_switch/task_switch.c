@@ -44,6 +44,9 @@
 #include <c7x.h>    /* for C7x intrinsics */
 #endif
 
+#include "safertos_config.h"
+
+
 /*
  * IMPORTANT NOTES:
  *

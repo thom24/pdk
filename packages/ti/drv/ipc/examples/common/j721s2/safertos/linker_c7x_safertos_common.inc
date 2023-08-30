@@ -65,6 +65,7 @@ SECTIONS
         .KERNEL_DATA LOAD_START( lnkKernelDataStartAddr ),
                      LOAD_END( lnkKernelDataEndAddr )
                                 : {} palign( 0x800 )
+        .interrupt_vectors      : {} ALIGN(0x400000)
     } > __CORE_DDR_SPACE
 
     GROUP:              >  __CORE_DDR_SPACE

@@ -42,6 +42,7 @@
 #include <SAFERTOS_log.h>
 #include <SafeRTOS_API.h>
 
+#include "safertos_config.h"
 
 #if defined (BUILD_C7X)
 #include <c7x.h>    /* for C7x intrinsics */
@@ -242,6 +243,9 @@
 #if defined (BUILD_MCU)
 static portInt8Type  gPingTaskStack[PING_TASK_SIZE] __attribute__( ( aligned( PING_TASK_SIZE ) ) );
 static portInt8Type  gPongTaskStack[PONG_TASK_SIZE] __attribute__( ( aligned( PONG_TASK_SIZE ) ) );
+#elif defined (BUILD_C7X)
+static portInt8Type  gPingTaskStack[PING_TASK_SIZE] __attribute__( ( aligned( 0x2000 ) ) );
+static portInt8Type  gPongTaskStack[PONG_TASK_SIZE] __attribute__( ( aligned( 0x2000 ) ) );
 #else
 static portInt8Type  gPingTaskStack[PING_TASK_SIZE] __attribute__( ( aligned( 128 ) ) );
 static portInt8Type  gPongTaskStack[PONG_TASK_SIZE] __attribute__( ( aligned( 128 ) ) );
