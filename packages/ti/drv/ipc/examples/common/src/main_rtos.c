@@ -1,5 +1,5 @@
 /*
- *  Copyright (c) Texas Instruments Incorporated 2018
+ *  Copyright (c) Texas Instruments Incorporated 2018-2023
  *  All rights reserved.
  *
  *  Redistribution and use in source and binary forms, with or without
@@ -79,6 +79,12 @@
 #ifdef IPC_NEGATIVE_TEST
 #include <ti/drv/ipc/examples/rtos/ipc_negative_test/ipc_neg_setup.h>
 #endif
+
+/* This needs to be enabled only for extended test cases */
+#ifdef IPC_EXTENDED_TEST
+#include <ti/drv/ipc/examples/rtos/ipc_extended_test/ipc_extended_setup.h>
+#endif
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -292,11 +298,14 @@ static void taskFxn(void* a0, void* a1)
 #endif
 #endif
 
-#ifdef IPC_NEGATIVE_TEST
+#if defined IPC_NEGATIVE_TEST
     Ipc_echo_neg_test();
+#elif IPC_EXTENDED_TEST
+    IpcApp_echoExtTest();
 #else
     Ipc_echo_test();
 #endif
+
 }
 
 #if defined(BUILD_C7X)

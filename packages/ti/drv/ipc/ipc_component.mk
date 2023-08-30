@@ -332,6 +332,30 @@ endef
 IPC_PERF_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_PERF_TEST_RULE,$(curos)))
 $(eval ${IPC_PERF_TEST_MACRO_LIST})
 
+#Test Configuration: Set of tests to validate IPC APIs, run indpendently on each core
+define IPC_EXTENDED_TEST_RULE
+export ipc_extended_test_$(1)_COMP_LIST = ipc_extended_test_$(1)
+ipc_extended_test_$(1)_RELPATH = ti/drv/ipc/examples/rtos/ipc_extended_test
+ipc_extended_test_$(1)_PATH = $(PDK_IPC_COMP_PATH)/examples/rtos/ipc_extended_test
+export ipc_extended_test_$(1)_BOARD_DEPENDENCY = yes
+export ipc_extended_test_$(1)_CORE_DEPENDENCY = yes
+export ipc_extended_test_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export ipc_extended_test_$(1)_MAKEFILE =  -fmakefile BUILD_OS_TYPE=$(1)
+ipc_extended_test_$(1)_PKG_LIST = ipc_extended_test_$(1)
+ipc_extended_test_$(1)_INCLUDE = $(ipc_extended_test_$(1)_PATH)
+export ipc_extended_test_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvipc_BOARDLIST))
+export ipc_extended_test_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvipc_$(SOC)_RTOS_CORELIST))
+export ipc_extended_test_$(1)_SBL_APPIMAGEGEN = yes
+ifneq ($(1),$(filter $(1), safertos))
+ipc_EXAMPLE_LIST += ipc_extended_test_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+ipc_EXAMPLE_LIST += ipc_extended_test_$(1)
+endif
+endif
+endef
+IPC_EXTENDED_TEST_MACRO_LIST := $(foreach curos, $(drvipc_RTOS_LIST), $(call IPC_EXTENDED_TEST_RULE,$(curos)))
+$(eval ${IPC_EXTENDED_TEST_MACRO_LIST})
 
 #############################################
 # IPC Echo tests involving QNX
