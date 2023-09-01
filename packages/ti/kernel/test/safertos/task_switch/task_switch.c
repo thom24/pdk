@@ -233,24 +233,37 @@
 
 #define PING_TASK_PRI  ( 2u )
 #define PONG_TASK_PRI  ( 3u )
+#if defined (SOC_J721S2) && defined (BUILD_C7X)
+#define STAT_TASK_PRI  ( 2U )
+#endif
 
 
 #if !defined (BUILD_C7X)
 #define PING_TASK_SIZE ( 4096u )
 #define PONG_TASK_SIZE ( 4096u )
 #else
-#define PING_TASK_SIZE ( 16U * 1024U)
-#define PONG_TASK_SIZE ( 16U * 1024U)
+#define PING_TASK_SIZE ( 16U * 1024U )
+#define PONG_TASK_SIZE ( 16U * 1024U )
+#if defined (SOC_J721S2)
+#define STAT_TASK_SIZE ( 16U * 1024U )
+#endif
 #endif
 
 static portInt8Type  gPingTaskStack[PING_TASK_SIZE] __attribute__( ( aligned( PING_TASK_SIZE ) ) );
 
 static portInt8Type  gPongTaskStack[PONG_TASK_SIZE] __attribute__( ( aligned( PONG_TASK_SIZE ) ) );
 
+#if defined (SOC_J721S2) && defined (BUILD_C7X)
+static portInt8Type  gStatTaskStack[STAT_TASK_SIZE] __attribute__( ( aligned( STAT_TASK_SIZE ) ) );
+#endif
 
 static xTCB xPingTaskTCB = { 0 };
 static xTCB xPongTaskTCB = { 0 };
+#if defined (SOC_J721S2) && defined (BUILD_C7X)
+static xTCB xStatTaskTCB = { 0 };
+#endif
 
+portTaskHandleType gPongTaskHandle, gPingTaskHandle;
 
 /* Semaphore buffers. No actual data is stored into these buffers, so the
  * buffer need only be large enough to hold the queue structure itself. */
@@ -288,6 +301,104 @@ uint32_t uiPortGetRunTimeCounterValue()
      * ((0x100000000/1000000)/(60*60))*10 hours ~ 12 hrs
      */
     return (uint32_t)timeInUsecs;
+}
+#endif
+
+/* Below is to test the Task Switch Hook functionality.
+ * The finctionality is there only on the J721S2-C7X SafeRTOS package.
+ * SafeRTOS package: 009-004-230-005-235-003
+ */
+#if defined (BUILD_C7X) && defined (SOC_J721S2)
+/* Variables to keep a count of switched in and switched out tasks. */
+volatile uint32_t gPingToPong = 0, gPongToPing = 0;
+volatile uint32_t gIdleToPong = 0, gPongToIdle = 0;
+volatile uint32_t gIdleToPing = 0, gPingToIdle = 0;
+volatile uint32_t isPingDeleted = 0U, isPongDeleted = 0U;
+
+uint32_t gStatsShown = 0U;
+
+void stat_task(void *args)
+{
+    SAFERTOS_log("\r\n------Task Switch Hook Stats------\r\n");
+    SAFERTOS_log("Ping To Idle task switches = %d\r\n", gPingToIdle);
+    SAFERTOS_log("Ping To Pong task switches = %d\r\n", gPingToPong);
+    SAFERTOS_log("Idle To Ping task switches = %d\r\n", gIdleToPing);
+    SAFERTOS_log("Idle To Pong task switches = %d\r\n", gIdleToPong);
+    SAFERTOS_log("Pong To Idle task switches = %d\r\n", gPongToIdle);
+    SAFERTOS_log("Pong To Ping task switches = %d\r\n", gPongToPing);
+    ( void )xTaskDelete(  NULL  );
+}
+
+void vApplicationTaskDeleteHook(portTaskHandleType xTaskBeingDeleted)
+{
+    if(xTaskBeingDeleted == gPongTaskHandle)
+    {
+        isPongDeleted = 1U;
+    }
+    else if(xTaskBeingDeleted == gPingTaskHandle)
+    {
+        isPingDeleted = 1U;
+    }
+}
+
+xTaskParameters gxStatParameters =
+{
+    &stat_task,                         /* Task code */
+    "stat",                             /* Task name */
+    &xStatTaskTCB,                      /* TCB */
+    gStatTaskStack,                     /* Stack buffer */
+    STAT_TASK_SIZE,                     /* Stack depth bytes */
+    NULL,                               /* Parameters */
+    STAT_TASK_PRI,                      /* Priority */
+    NULL,                               /* TLS object */
+};
+void vApplicationIdleHook( void )
+{
+    if ( (1U == isPingDeleted) && (1U == isPongDeleted) && (0U == gStatsShown))
+    {
+        gStatsShown = 1U;
+        /*
+         * Idle Task must not be blocked. 
+         * Hence creating a task to print the
+         * switch counts.
+         */
+        xTaskCreate( &gxStatParameters, NULL );
+    }
+}
+
+void vApplicationTaskSwitchHook( const xTCB * const pxTCBOfTaskSwitchedOut,
+                                 const xTCB * const pxTCBOfTaskSwitchedIn )
+
+{
+    char idleName[5]="IDLE\0";
+    if(pxTCBOfTaskSwitchedOut == &xPingTaskTCB && pxTCBOfTaskSwitchedIn == &xPongTaskTCB)
+    {
+        gPingToPong++;
+    }
+    else if(pxTCBOfTaskSwitchedIn == &xPingTaskTCB && pxTCBOfTaskSwitchedOut == &xPongTaskTCB)
+    {
+        gPongToPing++;
+    }
+    /* 
+     * There is no easy way to get the TCB of the idle task.
+     * Hence using the pcNameOfTask to detect an idle task.
+     */
+    else if (strcmp(pxTCBOfTaskSwitchedOut->pcNameOfTask, idleName) && pxTCBOfTaskSwitchedIn == &xPongTaskTCB)
+    {
+        gIdleToPong++;
+    }
+    else if (strcmp(pxTCBOfTaskSwitchedIn->pcNameOfTask, idleName) && pxTCBOfTaskSwitchedOut == &xPongTaskTCB)
+    {
+        gPongToIdle++;
+    }
+    else if (strcmp(pxTCBOfTaskSwitchedOut->pcNameOfTask, idleName) && pxTCBOfTaskSwitchedIn == &xPingTaskTCB)
+    {
+        gIdleToPing++;
+    }
+    else if (strcmp(pxTCBOfTaskSwitchedIn->pcNameOfTask, idleName) && pxTCBOfTaskSwitchedOut == &xPingTaskTCB)
+    {
+        gPingToIdle++;
+    }
 }
 #endif
 
@@ -493,13 +604,13 @@ void task_switch_main( void *args )
     };
     
     /* Create the privileged test tasks. */
-    if( xTaskCreate( &xPongMainParameters, NULL ) != pdPASS )
+    if( xTaskCreate( &xPongMainParameters, &gPongTaskHandle ) != pdPASS )
     {
         xStatus = pdFAIL;
     } 
     DebugP_assert(xStatus != pdFAIL);
 
-    if( xTaskCreate( &xPingMainParameters, NULL ) != pdPASS )
+    if( xTaskCreate( &xPingMainParameters, &gPingTaskHandle ) != pdPASS )
     {
         xStatus = pdFAIL;
     }
