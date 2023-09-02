@@ -103,6 +103,7 @@ void __mpu_init( void )
 /*****************************************************************************/
 __attribute__((weak))  portBaseType _system_pre_init( void )
 {
+    extended_system_pre_init();
     return 1;
 }
 /*---------------------------------------------------------------------------*/
@@ -121,6 +122,7 @@ __attribute__((weak)) void _system_post_cinit( void )
 {
     extern void c7x_startup_init(void);
     c7x_startup_init();
+    extended_system_post_cinit();
 }
 /*---------------------------------------------------------------------------*/
 

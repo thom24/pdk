@@ -600,6 +600,7 @@ void vPortCacheConfig(void)
 int32_t _system_pre_init(void)
 {
     vPortCacheConfig();
+    extended_system_pre_init();
     return 1;
 }
 
@@ -623,6 +624,7 @@ void _system_post_cinit(void)
 
     cfg.disableIrqOnInit = (bool)true;
     osalArch_Init(&cfg);
+    extended_system_post_cinit();
 }
 
 /* This function is called when configUSE_IDLE_HOOK is 1 in FreeRTOSConfig.h */

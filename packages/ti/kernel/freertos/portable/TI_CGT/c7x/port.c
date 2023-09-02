@@ -648,6 +648,7 @@ int32_t _system_pre_init(void)
 {
     /* WA for K3_OPEN_SI-457 */
     __sa_set_cr(0, __sa_get_cr(1));
+    extended_system_pre_init();
     return 1;
 }
 
@@ -669,5 +670,6 @@ void _system_post_cinit(void)
     extern void Exception_Module_startup(void);
     c7x_startup_init();
     Exception_Module_startup();
+    extended_system_post_cinit();
 }
 

@@ -173,6 +173,7 @@ __attribute__((section(".startupCode"))) void __mpu_init( void )
 /*****************************************************************************/
 __attribute__((section(".startupCode")))  portBaseType _system_pre_init( void )
 {
+    extended_system_pre_init();
     return 1;
 }
 /*---------------------------------------------------------------------------*/
@@ -259,6 +260,7 @@ __attribute__((section(".startupCode")))  void _system_post_cinit( void )
         CSL_vimClrIntrPending((CSL_vimRegs *)(uintptr_t)regAddr,
                                      loopCnt);
     }
+    extended_system_post_cinit();
 }
 
 /*-----------------------------------------------------------------------------

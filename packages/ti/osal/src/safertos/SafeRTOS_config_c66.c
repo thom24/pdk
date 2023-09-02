@@ -164,6 +164,7 @@ void __mpu_init( void )
 portBaseType _system_pre_init( void )
 {
     vPortCacheConfig();
+    extended_system_pre_init();
     return 1;
 }
 /*---------------------------------------------------------------------------*/
@@ -184,6 +185,7 @@ void _system_post_cinit( void )
 
     cfg.disableIrqOnInit = (bool)true;
     osalArch_Init( &cfg );
+    extended_system_post_cinit();
 }
 /*---------------------------------------------------------------------------*/
 
